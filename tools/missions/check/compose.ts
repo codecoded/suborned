@@ -14,7 +14,8 @@
 //   by      m:ss: the latest the step may be given; past it the plan fails to compose, naming the step;
 //   when    an engine log code that must have been logged first (fight.over: the last hostile is down; blocker.out, brief 018: every
 //           hostile the engine sent for the road is down, broken or gone);
-//   unless  an engine log code that must not be logged by the order or `clear` s after it (captured: nobody left behind at the extract);
+//   unless  an engine log code (or several) that must not be logged by the order or `clear` s after it (captured: nobody left behind at
+//           the extract; withdraw.car: the car does not leave before Vale is in, brief 031);
 //   every   seconds between the search's coarse tries (default 5): a step whose window is shorter (a takedown on a passer-by is taken only
 //           while he is within reach, about 2 s) sets it under that window, so the search can't step over it (brief 023).
 // The search: from the earliest tick, every `every` s until taken, then back tick by tick to the first tick taken. Deterministic: the same
@@ -30,7 +31,7 @@ export const Step = z.strictObject({
   to: z.union([z.string().min(1), z.tuple([z.number().int(), z.number().int()])]).optional(), target: z.string().min(1).optional(), approach: z.string().min(1).optional(),
   run: z.boolean().optional(), force: z.boolean().optional(), stance: z.enum(['hold', 'return', 'free']).optional(), how: z.enum(['knockout', 'kill']).optional(),
   label: z.string().min(1).optional(), after: z.array(z.string().min(1)).optional(), gap: z.number().nonnegative().optional(),
-  at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), unless: z.string().min(1).optional(), why: z.string().min(1).optional(),
+  at: at.optional(), clear: z.number().positive().optional(), by: at.optional(), when: z.string().min(1).optional(), unless: z.union([z.string().min(1), z.array(z.string().min(1)).min(1)]).optional(), why: z.string().min(1).optional(),
   every: z.number().min(0.1).max(5).optional(),
 });
 export const Plan = z.strictObject({
@@ -61,7 +62,7 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
     /** Is the order taken at tick t (and, with `clear`, the run not failed `clear` s later)? The last match is this step's: a repeated order (Help twice) placed at a tick an earlier one holds sorts after it. */
     const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12)).map((p, k) => {
       const t = ts[k]!, mine = p.orders.findLast(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
-      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => l.code === s.unless));
+      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => (typeof s.unless === 'string' ? [s.unless] : s.unless!).includes(l.code)));
     });
     let found = -1;
     const every = Math.round((s.every ?? 5) * 10);

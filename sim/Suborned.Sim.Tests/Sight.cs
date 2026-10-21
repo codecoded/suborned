@@ -163,7 +163,16 @@ public class SightTests
     public void TheRulebookSightSectionIsReadStrictly()
     {
         var r = Repo.Inputs.Rules;
-        Assert.Equal((20, 1800, 40), (r.SightWatchS, r.SightReachCm, r.SightRoutineS));
+        Assert.Equal((20, 40), (r.SightWatchS, r.SightRoutineS));
+        // brief 031: the reach is the agent's (Scout 30, Fixer 12, Tech 24, Enforcer 3 m); SightReachCm is the Scout's, for hosts that read one
+        Assert.Equal(new[] { 3000, 1200, 2400, 300 }, r.WatchReachCms);
+        Assert.Equal(3000, r.SightReachCm);
+        Assert.Equal(new[] { ("unknown", 0, 8, 20, 45), ("noticed", 3, 6, 18, 35), ("wanted", 6, 5, 15, 25), ("infamous", 10, 3, 12, 18) }, r.AttnBands.ToArray());
+        Assert.Equal(("infamous", "wanted", "unknown"), (r.AttnBand(11).id, r.AttnBand(9).id, r.AttnBand(2).id));
+        Assert.Equal((true, true, 300, 1, 20, 3), (r.AttnGuardNear, r.AttnOfficerNear, r.AttnNearCm, r.AttnAlert, r.AttnScanS, r.AttnCallS));
+        var badSense = Repo.Inputs.Rulebook.Replace("\"robot\": \"cone\"", "\"robot\": \"near\"");
+        Assert.NotEqual(Repo.Inputs.Rulebook, badSense); // the canonical text
+        Assert.Throws<FormatException>(() => Engine.FromTexts(badSense, Repo.Inputs.PeopleRules, Repo.Inputs.Site)); // L2: a robot sees by its cone only
         Assert.Equal(("watch", "watched"), r.SightKinds["patrol"]);
         Assert.Equal(("arrival", "none"), r.SightKinds["security"]);
         var bad = Repo.Inputs.Rulebook.Replace("\"routine\": \"watched\"", "\"routine\": \"guessed\"");

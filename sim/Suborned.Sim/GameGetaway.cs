@@ -232,7 +232,7 @@ namespace Suborned.Sim
             foreach (var h in Hostiles)
             {
                 if (IsRival(h.Id) || SecIndex(h.Id) >= 0 || !h.Present || h.Down || h.Gun.St == "gone") continue;
-                var p = h.Pos(Tick); if ((G.Within(p, car, R.Pistol.MaxCm) && Sees(p, car)) || near(p)) c.Add(h.Id);
+                var p = h.Pos(Tick); if ((G.Within(p, car, PistolW.MaxCm) && Sees(p, car)) || near(p)) c.Add(h.Id);
             }
             foreach (var u in Units)
             {
@@ -280,7 +280,7 @@ namespace Suborned.Sim
         CoverPoint? BlockCover(Pt from)
         {
             CoverPoint? best = null; long bd = long.MaxValue;
-            foreach (var c in S.Cover)
+            foreach (var c in LiveCover)
             {
                 if (coverTaken.ContainsKey(c.Id) || c.Q < R.CoverQPartial || !c.Present(Tick / Hz) || !S.InExitLane(c.At)) continue;
                 if (G.Within(c.At, Car, R.BlockNearCm - 1) || !G.Within(c.At, Car, R.BlockFarCm)) continue; // the ring: not at the door, in the cell's reach

@@ -17,7 +17,8 @@ export const BANDS = ['hero', 'neutral', 'menace'] as const;
 export const FITS = ['suits', 'worse', 'refused'] as const;
 export const KNOWS = ['routine', 'need', 'temperament', 'refused', 'secret'] as const; // refused: the cell knows this event's approach is refused by this person
 export const PHASES = ['mission-start', 'mission', 'between-missions'] as const;
-export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'contact', 'person', 'investigator', 'city'] as const;
+/** Who an event is by; `cell` (brief 031): any of the four operatives (cell.watch). */
+export const BY = ['scout', 'fixer', 'tech', 'enforcer', 'cell', 'contact', 'person', 'investigator', 'city'] as const;
 /** What the cell did to a person this mission that their word carries (standing.word): a Help, a Pressure, a knockout. */
 export const DONE_TO = ['helped', 'pressured', 'knocked-out'] as const;
 /** Whom the cell fired on in a fight (fight.public): authority, or a rival crew. */
@@ -113,7 +114,7 @@ export type Eff = z.infer<typeof Eff>;
 /** The bounds of a value by its unit, the same in the C# loader (Rules.cs): a duration is at least 1 s (Redline E3), nothing wraps (E9). */
 export const UNIT_BOUNDS = {
   s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [0, 100], alert: [0, 3], standing: [-1000, 1000],
-  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100],
+  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100], deg: [0, 360],
 } as const;
 const Value = ground({
   v: z.number().int(), // integer state (§11)
@@ -131,6 +132,40 @@ const Also = z.strictObject({ when: z.array(Cond).min(1), changes: z.array(Eff).
 const Witness = z.strictObject({ when: z.array(Cond).optional(), act: id });
 
 const Weapon = z.strictObject({ damage: Ref, every: Ref, eff: Ref, max: Ref });
+/** brief 027 (EXPERIMENTAL): a playground weapon: damage a hit, cadence, rings, its Arms in the loadout, the charge a targeted shot costs,
+ *  and optionally the charge each shot draws, a near band with its own damage (the riot gun), and no fire while walking (the long rifle). */
+const LabWeapon = z.strictObject({ damage: Ref, every: Ref, eff: Ref, max: Ref, arms: Ref, target: Ref, charge: Ref.optional(), near: Ref.optional(), nearDamage: Ref.optional(), noFireMoving: z.literal(true).optional() })
+  .refine((w) => (w.near === undefined) === (w.nearDamage === undefined), { message: 'a near band names its damage, and only then' });
+export const LAB_WEAPONS = ['sidearm', 'carbine', 'machine', 'riot', 'rifle'] as const;
+const LabArm = z.enum([...LAB_WEAPONS, 'none']);
+/** brief 027 (EXPERIMENTAL): fight.lab, the fight playground (briefs/027/playground.md §2, §3). */
+const FightLab = ground({
+  experimental: text, on: z.boolean(), healthScale: Ref,
+  weapons: z.strictObject({ sidearm: LabWeapon, carbine: LabWeapon, machine: LabWeapon, riot: LabWeapon, rifle: LabWeapon }),
+  pips: z.boolean(), chance: z.tuple([Ref, Ref, Ref, Ref]), /* engine 0.15.0 (tuning.md §8.3); optional only so runs pinned before it parse */ runPips: Ref.optional(), pip0: Ref.optional(), draw: Ref, aimNew: Ref,
+  /** tuning.md §6.1–6.2: a shooter's count per target it has fired at (aim memory); a new target's starts here. */
+  accStart: Ref,
+  stances: z.enum(['two', 'three']), then: z.enum(['free', 'stop']), close: z.boolean(),
+  /** tuning.md §6.3: regen waits `rest` ticks after the last charged or targeted shot. */
+  charge: z.strictObject({ on: z.boolean(), max: Ref, regen: Ref, rest: Ref }),
+  field: z.strictObject({ on: z.boolean(), cost: Ref, absorb: Ref, ticks: Ref }),
+  target: z.strictObject({ maxShots: Ref, volleysPerFight: Ref }),
+  /** tuning.md §6.4: at most perWatcher warnings from one watcher a mission; a heeded one adds trail. */
+  policeWarning: z.strictObject({ on: z.boolean(), ticks: Ref, alert: Ref, perWatcher: Ref, trail: Ref }),
+  hostilesFireMoving: z.boolean(),
+  /** brief 027 F2 (EXPERIMENTAL; Pulse, briefs/027/pulse/kite-response.md): armed hostiles shot at from beyond their reach answer, the side together. */
+  kite: z.strictObject({ on: z.boolean(), react: Ref, replan: Ref, chase: Ref, lapse: Ref, hide: Ref,
+    /** brief 027 retest (Pulse retest-fixes.md §1, §5): the budget counts within `contact` of the shooter; a capped body re-arms after `rearm`; the crew's hold becomes an advance after `hideMax`. */
+    contact: Ref, rearm: Ref, hideMax: Ref,
+    /** tuning.md §7.10 rule 2: a shielded police body shot from beyond its max holds at most this long, then closes; optional only so runs pinned before it parse. */
+    coverHold: Ref.optional() }),
+  /** brief 027 retest R1 (Pulse retest-fixes.md §2; Motive tuning.md §7.2): the first n loud-fight officers stand within their ring of the car. */
+  policeContest: Ref,
+  /** brief 027 B5 (EXPERIMENTAL): a move ending within snap of a free cover point ends on it; the host's marks within marks. */
+  coverSnap: z.strictObject({ on: z.boolean(), snap: Ref, marks: Ref }),
+  loadout: z.strictObject({ scout: LabArm, fixer: LabArm, tech: LabArm, enforcer: LabArm }),
+  rule: text,
+});
 
 export const Event = z.strictObject({
   id: eventId,
@@ -162,14 +197,13 @@ const Traceable = ground({ standing: z.enum(['hero', 'menace', 'none']) });
 const DebriefLine = z.strictObject({ fields: z.array(id).min(1), src: text });
 
 /** One watcher kind's knowledge rule: learned by a Watch or on arrival; its routine fixed, the person's, watched over time, or none; `by`,
- *  for a kind learned by a Watch, the operatives who may Watch it (Sky 2026-10-18: the Tech watches the machines too). The Scout is always
- *  one of them (cones are the Scout's skill), and the guard, a person, is the Scout's alone (his Watch is scout.watch). */
+ *  for a kind learned by a Watch, the operatives who may Watch it (Sky 2026-10-18: the Tech watches the machines too; brief 031, Sky
+ *  2026-10-20: every agent watches, the guard included, his Watch being cell.watch). The Scout is always one of them. */
 const SightKind = z.strictObject({
   learn: z.enum(['watch', 'arrival']), routine: z.enum(['fixed', 'person', 'watched', 'none']),
   by: z.array(z.enum(['scout', 'fixer', 'tech', 'enforcer'])).min(1).optional(),
 }).refine((k) => (k.learn === 'watch') === (k.by !== undefined), { message: 'a kind learned by a Watch names who watches it (`by`), and only such a kind' })
-  .refine((k) => k.by === undefined || (k.by.includes('scout') && new Set(k.by).size === k.by.length), { message: '`by` holds the Scout, each operative once' })
-  .refine((k) => k.routine !== 'person' || (k.by?.length === 1), { message: 'a person (routine person) is watched by the Scout alone' });
+  .refine((k) => k.by === undefined || (k.by.includes('scout') && new Set(k.by).size === k.by.length), { message: '`by` holds the Scout, each operative once' });
 
 export const Rulebook = z.strictObject({
   schema: z.literal('suborned.rulebook/1'),
@@ -239,17 +273,22 @@ export const Rulebook = z.strictObject({
   }),
   // Weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md): deterministic hits by accumulator.
   weapons: ground({
-    pistol: Weapon, carbine: Weapon, pointBlank: Ref,
+    pistol: Weapon, carbine: Weapon, pointBlank: Ref, /* engine 0.15.0 (tuning.md §8.3–8.4); optional only so runs pinned before it parse */ pointBlankCover: z.boolean().optional(), runAwayCone: Ref.optional(),
     acc: z.strictObject({ point: Ref, eff: Ref, long: Ref, start: Ref }),
-    mod: z.strictObject({ moving: Ref, cover: Ref, vale: Ref, untrained: Ref }),
+    mod: z.strictObject({ moving: Ref, running: Ref.optional(), runningAway: Ref.optional(), targetRunning: Ref.optional(), cover: Ref, vale: Ref, untrained: Ref }),
     draw: Ref, holster: Ref, aimNew: Ref, react: Ref, lineLapse: Ref, sidearmArms: Ref,
-    health: z.strictObject({ enforcer: Ref, op: Ref, guard: Ref, officer: Ref, rival: Ref, patrol: Ref, civilian: Ref, responseOfficers: Ref }),
+    settle: text.optional(), // tuning.md §10.2 (engine 0.16.0): the settle's rule; optional only so a rulebook pinned before it parses
+    trigger: text.optional(), follow: Ref.optional(), // tuning.md §11 (engine 0.17.0): the trigger's rule and the follow ring (follow-m); optional only so a rulebook pinned before it parses
+    // brief 030 (Sky 2026-10-20): a fire order out of reach walks in; a weapon drawn by a fire order or panic holsters `autoHolster` after the fight.
+    // Optional here only so runs pinned before it parse; the engine requires them and rulebook.test.ts holds the live rulebook to having them.
+    close: z.boolean().optional(), autoHolster: Ref.optional(),
+    health: z.strictObject({ enforcer: Ref, op: Ref, guard: Ref, officer: Ref, rival: Ref, patrol: Ref, civilian: Ref, camera: Ref.optional(), responseOfficers: Ref }),
     costs: z.strictObject({ hit: Ref, down: Ref, gunfire: Ref, drawWindow: Ref, drawSeenSecurity: Ref, drawSeenPeople: Ref, loudHold: Ref }),
     rule: text,
   }),
   // Fight AI (Pulse, briefs/011/pulse-fight-ai.md): what a hostile does; every number a ref.
   ai: ground({
-    cover: z.strictObject({ snap: Ref, qFull: Ref, qPartial: Ref, modPartial: Ref, retreat: Ref, stepCloser: Ref, stepGap: Ref, leave: Ref }),
+    cover: z.strictObject({ snap: Ref, qFull: Ref, qPartial: Ref, modPartial: Ref, retreat: Ref, stepCloser: Ref, stepGap: Ref, leave: Ref, stepFires: z.boolean().optional() }),
     engageLapse: Ref, reacquire: Ref, stopReach: Ref, overflow: Ref,
     seek: z.strictObject({ rival: Ref, police: Ref, response: Ref, ally: Ref, guard: Ref }),
     rivalGone: Ref, guardReturn: Ref, patrolResume: Ref, rule: text,
@@ -279,11 +318,22 @@ export const Rulebook = z.strictObject({
   // Optional here only so the runs that pinned the rulebook before it (dialogue r017–r019) still parse and replay; the engine requires it,
   // and rulebook.test.ts holds the live rulebook to having it.
   sight: ground({
-    watch: z.strictObject({ s: Ref, reach: Ref, routine: Ref }),
+    // reach: one ref (pinned runs before brief 031: one reach for every watcher), or one per operative (brief 031: the reach is the agent's)
+    watch: z.strictObject({ s: Ref, reach: z.union([Ref, z.strictObject({ scout: Ref, fixer: Ref, tech: Ref, enforcer: Ref })]), routine: Ref }),
     kinds: z.strictObject({
       camera: SightKind, guard: SightKind, patrol: SightKind, security: SightKind, rivals: SightKind,
     }),
     unknown: z.literal('?'),
+    rule: text,
+  }).optional(),
+  // Brief 031 (Sky 2026-10-20): watchers notice loiterers. A clock per security watcher and operative; the marks by the cell's Heat band
+  // (bands ascending from heatFrom 0); machines by their cone, people also within near. Optional here only so runs pinned before it parse;
+  // the engine requires it and rulebook.test.ts holds the live rulebook to having it.
+  attention: ground({
+    bands: z.array(z.strictObject({ id, heatFrom: Ref, notice: Ref, wary: Ref, report: Ref })).min(1),
+    sense: z.strictObject({ camera: z.literal('cone'), patrol: z.literal('cone'), robot: z.literal('cone'), guard: z.enum(['cone', 'near']), officer: z.enum(['cone', 'near']) }),
+    near: Ref, alert: Ref,
+    report: z.strictObject({ scan: Ref, call: Ref }),
     rule: text,
   }).optional(),
   // Brief 013 (Sky 2026-10-16): takedowns, bodies, the people who report them, the response dial and what the campaign keeps. Optional here
@@ -328,7 +378,9 @@ export const Rulebook = z.strictObject({
   rounds: ground({ linger: Ref, close: Ref, clear: Ref, part: Ref, holds: z.array(id).nonempty(), ends: z.array(z.enum(['alert-2', 'gunfire', 'body-found', 'final-fight'])).nonempty(), rule: text }).optional(),
   // brief 023 (engine 0.8.2): where a moving car may go, the site's drive grid; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
   // brief 023: car.drive (0.8.2) and car.pace (Motive 2026-10-19); pace optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
-  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional() }).optional(),
+  // tuning.md §10.7 (engine 0.16.0): cars are targets; optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
+  car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(),
+    target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
   fight: ground({
     safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
@@ -338,6 +390,11 @@ export const Rulebook = z.strictObject({
     rivalsPublic: z.enum(RIVALS_PUBLIC).optional(), rivalsPublicReason: text.optional(),
     // brief 023 (Motive 2026-10-19): fire orders on final-fight hostiles end when the final fight is over (fight-over); optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
     over: text.optional(), overReason: text.optional(),
+    // brief 027 (EXPERIMENTAL, engine 0.10.0): the fight playground's rules, read only when a run's start turns them on; optional: a rulebook
+    // without it plays today's fight (rulebook.test.ts holds the live one to having it, off by default)
+    lab: FightLab.optional(),
+    // Sky 2026-10-20 (tuning.md §7.9): the lab's kite response promoted to today; optional only so runs pinned before it parse (rulebook.test.ts holds the live one to it)
+    kite: z.strictObject({ on: z.boolean(), react: Ref, replan: Ref, chase: Ref, lapse: Ref, hide: Ref, contact: Ref, rearm: Ref, hideMax: Ref, coverHold: Ref, rule: text, src: text }).optional(),
   }),
   investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
@@ -384,7 +441,7 @@ export const Rulebook = z.strictObject({
     for (const c of [...(e.also ?? []).flatMap((a) => a.when), ...(e.witnesses ?? []).flatMap((w) => w.when ?? [])])
       if (c.k === 'outcome') for (const o of c.is) if (!outs.has(o)) bad(['events', e.id], `outcome ${o} is not one of ${e.id}'s`);
     for (const w of e.witnesses ?? []) if (!rb.traceable[w.act]) bad(['events', e.id, 'witnesses'], `${w.act} is not traceable`);
-    if (rb.privacy && (e.by === 'fixer' || e.by === 'scout') && e.private === undefined) bad(['events', e.id, 'private'], 'an event by the Fixer or the Scout says whether it is private (rulebook privacy)');
+    if (rb.privacy && (e.by === 'fixer' || e.by === 'scout' || e.by === 'cell') && e.private === undefined) bad(['events', e.id, 'private'], 'an event by the Fixer, the Scout or the cell says whether it is private (rulebook privacy)');
     if (e.private && (e.witnesses ?? []).length > 0) bad(['events', e.id, 'witnesses'], 'a private event has no witnesses (rulebook privacy)');
     if (e.price && e.price[0]?.line !== 'base') bad(['events', e.id, 'price'], 'the first price line is the base');
   }

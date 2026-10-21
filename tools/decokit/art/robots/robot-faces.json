@@ -1,0 +1,771 @@
+{
+ "schema": "suborned.robotfaces/1",
+ "note": "Faces for DK_RobotFace.shader (unity/Assets/Suborned/Shaders/DecoKit) driven by RobotFace.cs / RobotIdle.cs of the old project (Scripts/Robots), which Latch ports. Glyph atlas: RobotGlyphs.txt packed into 8 x 8 tiles in a row, r = lit, g = glyph height / 8, glyphs bottom-left, point filtered, global texture _DK_RobotGlyphs. Screens are the renderers named *_Face on the model (here DK_<Robot>_Play_Head_Face); heads are *_Head. grid / corner / eye / mouth are LED cells; eye = the viewer's-right eye centre from the grid centre, the left is its mirror. Idle: range deg, turn s, hold s, home = chance a glance returns ahead. Moods held out need Sky.",
+ "timing": {
+  "blinkEvery": [
+   2.5,
+   5.5
+  ],
+  "moodEvery": [
+   8,
+   18
+  ],
+  "moodHold": [
+   1.4,
+   2.6
+  ],
+  "blinkHalf": 0.04,
+  "blinkShut": 0.07,
+  "doubleBlink": 0.26,
+  "alarmFlicker": 0.25,
+  "alarmFlickerHz": 16,
+  "alarmPulseHz": 1.5,
+  "alarmPulse": 0.25,
+  "alarmGlowLinear": [
+   2.6,
+   0.1,
+   0.04
+  ],
+  "lead": 0.15,
+  "gazeCells": 2,
+  "overshoot": 1.1,
+  "snap": 0.2,
+  "snapOvershoot": 1.7,
+  "settle": 0.6,
+  "stareMax": 120
+ },
+ "shader": {
+  "ghost": 0.05,
+  "dot": 0.36,
+  "glowMaterials": {
+   "DK_Face_Amber": {
+    "hex": "#F28A1E",
+    "strength": 1.6
+   },
+   "DK_Face_Teal": {
+    "hex": "#3FC9A0",
+    "strength": 1.4
+   }
+  }
+ },
+ "glyphs": {
+  "round": {
+   "rows": [
+    ".##.",
+    "####",
+    "####",
+    ".##."
+   ],
+   "w": 4,
+   "h": 4,
+   "kind": "eye",
+   "lit": 12
+  },
+  "wide": {
+   "rows": [
+    ".###.",
+    "#####",
+    "#####",
+    "#####",
+    ".###."
+   ],
+   "w": 5,
+   "h": 5,
+   "kind": "eye",
+   "lit": 21
+  },
+  "calm": {
+   "rows": [
+    ".###.",
+    "#####"
+   ],
+   "w": 5,
+   "h": 2,
+   "kind": "eye",
+   "lit": 8
+  },
+  "happy": {
+   "rows": [
+    ".###.",
+    "#...#"
+   ],
+   "w": 5,
+   "h": 2,
+   "kind": "eye",
+   "lit": 5
+  },
+  "heart": {
+   "rows": [
+    ".##.##.",
+    "#######",
+    "#######",
+    ".#####.",
+    "..###..",
+    "...#..."
+   ],
+   "w": 7,
+   "h": 6,
+   "kind": "eye",
+   "lit": 27,
+   "needsSky": true,
+   "why": "a heart glyph is a cartoon sticker, not an LED shape (section 15: no cartoon eyes); the Nanny's old mood"
+  },
+  "star": {
+   "rows": [
+    "..#..",
+    ".###.",
+    "#####",
+    ".###.",
+    ".#.#."
+   ],
+   "w": 5,
+   "h": 5,
+   "kind": "eye",
+   "lit": 14,
+   "needsSky": true,
+   "why": "a star glyph is a cartoon sticker (section 15: no cartoon eyes); the Porter's and Shopkeeper's old mood"
+  },
+  "angry_l": {
+   "rows": [
+    "#....",
+    "###..",
+    "#####",
+    "#####",
+    ".###."
+   ],
+   "w": 5,
+   "h": 5,
+   "kind": "alarm-eye",
+   "lit": 17
+  },
+  "angry_r": {
+   "rows": [
+    "....#",
+    "..###",
+    "#####",
+    "#####",
+    ".###."
+   ],
+   "w": 5,
+   "h": 5,
+   "kind": "alarm-eye",
+   "lit": 17
+  },
+  "smile": {
+   "rows": [
+    "#....#",
+    ".####."
+   ],
+   "w": 6,
+   "h": 2,
+   "kind": "mouth",
+   "lit": 6
+  },
+  "grin": {
+   "rows": [
+    "#.....#",
+    ".#...#.",
+    "..###.."
+   ],
+   "w": 7,
+   "h": 3,
+   "kind": "mouth",
+   "lit": 7
+  },
+  "beam": {
+   "rows": [
+    "#######",
+    ".#####.",
+    "..###.."
+   ],
+   "w": 7,
+   "h": 3,
+   "kind": "mouth",
+   "lit": 15
+  },
+  "o": {
+   "rows": [
+    ".##.",
+    "#..#",
+    "#..#",
+    ".##."
+   ],
+   "w": 4,
+   "h": 4,
+   "kind": "mouth",
+   "lit": 8
+  },
+  "grit": {
+   "rows": [
+    "#######",
+    "#.#.#.#",
+    "#######"
+   ],
+   "w": 7,
+   "h": 3,
+   "kind": "mouth",
+   "lit": 18
+  },
+  "alarm_s": {
+   "rows": [
+    "...#...",
+    "..#.#..",
+    "..#.#..",
+    ".#.#.#.",
+    ".#.#.#.",
+    "#.....#",
+    "#######"
+   ],
+   "w": 7,
+   "h": 7,
+   "kind": "mouth",
+   "lit": 20
+  }
+ },
+ "robots": {
+  "RobotButler": {
+   "face": "DK_Face_Amber",
+   "range": 35,
+   "turn": 0.7,
+   "hold": [
+    2,
+    5
+   ],
+   "home": 0.5,
+   "grid": [
+    21,
+    7
+   ],
+   "corner": 1.7,
+   "eye": [
+    5,
+    0.3
+   ],
+   "mouth": [
+    0,
+    0
+   ],
+   "neutral": {
+    "left": "calm",
+    "right": "calm",
+    "mouth": ""
+   },
+   "angry": {
+    "left": "angry_l",
+    "right": "angry_r",
+    "mouth": ""
+   },
+   "moods": [
+    {
+     "left": "happy",
+     "right": "happy",
+     "mouth": ""
+    }
+   ],
+   "moodsHeld": [
+    {
+     "left": "calm",
+     "right": "happy",
+     "mouth": "",
+     "needsSky": true,
+     "why": "a wink is two different eyes at once, a cartoon expression (section 15: no cartoon eyes)"
+    }
+   ],
+   "attention": {
+    "stages": [
+     {
+      "stage": 0,
+      "name": "calm",
+      "left": "calm",
+      "right": "calm",
+      "mouth": "",
+      "blink": true,
+      "moods": true,
+      "glow": "own"
+     },
+     {
+      "stage": 1,
+      "name": "noticed",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 2,
+      "name": "wary",
+      "left": "angry_l",
+      "right": "angry_r",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 3,
+      "name": "reporting",
+      "left": "",
+      "right": "",
+      "mouth": "alarm_s",
+      "mouthAt": [
+       0,
+       0
+      ],
+      "glow": "alarm",
+      "flashHz": 2,
+      "on": 0.3,
+      "off": 0.2
+     }
+    ],
+    "glowOptions": {
+     "own": "the robot's own LED colour (DK_Face_Amber / DK_Face_Teal)",
+     "phosphor": "#BFF3E6 x1.6, the patrol robot's seafoam; shown beside the own colour in briefs/031/robot-face",
+     "alarm": "#FF5A3C x2.2"
+    },
+    "gazeCells": 2,
+    "dropAfterS": 2.0
+   }
+  },
+  "RobotPorter": {
+   "face": "DK_Face_Amber",
+   "range": 70,
+   "turn": 0.35,
+   "hold": [
+    0.8,
+    2.5
+   ],
+   "home": 0.3,
+   "grid": [
+    30,
+    13
+   ],
+   "corner": 2.3,
+   "eye": [
+    6.8,
+    2.3
+   ],
+   "mouth": [
+    0,
+    -3.2
+   ],
+   "neutral": {
+    "left": "wide",
+    "right": "wide",
+    "mouth": "grin"
+   },
+   "angry": {
+    "left": "angry_l",
+    "right": "angry_r",
+    "mouth": "grit"
+   },
+   "moods": [
+    {
+     "left": "happy",
+     "right": "happy",
+     "mouth": "beam"
+    },
+    {
+     "left": "wide",
+     "right": "wide",
+     "mouth": "o"
+    }
+   ],
+   "moodsHeld": [
+    {
+     "left": "star",
+     "right": "star",
+     "mouth": "grin",
+     "needsSky": true,
+     "why": "a star glyph is a cartoon sticker (section 15: no cartoon eyes); the Porter's and Shopkeeper's old mood"
+    }
+   ],
+   "attention": {
+    "stages": [
+     {
+      "stage": 0,
+      "name": "calm",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "grin",
+      "blink": true,
+      "moods": true,
+      "glow": "own"
+     },
+     {
+      "stage": 1,
+      "name": "noticed",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "o",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 2,
+      "name": "wary",
+      "left": "angry_l",
+      "right": "angry_r",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 3,
+      "name": "reporting",
+      "left": "",
+      "right": "",
+      "mouth": "alarm_s",
+      "mouthAt": [
+       0,
+       0
+      ],
+      "glow": "alarm",
+      "flashHz": 2,
+      "on": 0.3,
+      "off": 0.2
+     }
+    ],
+    "glowOptions": {
+     "own": "the robot's own LED colour (DK_Face_Amber / DK_Face_Teal)",
+     "phosphor": "#BFF3E6 x1.6, the patrol robot's seafoam; shown beside the own colour in briefs/031/robot-face",
+     "alarm": "#FF5A3C x2.2"
+    },
+    "gazeCells": 2,
+    "dropAfterS": 2.0
+   }
+  },
+  "RobotWaiter": {
+   "face": "DK_Face_Teal",
+   "range": 50,
+   "turn": 0.4,
+   "hold": [
+    1,
+    3
+   ],
+   "home": 0.35,
+   "grid": [
+    15,
+    12
+   ],
+   "corner": 5,
+   "eye": [
+    3.5,
+    2.1
+   ],
+   "mouth": [
+    0,
+    -2.9
+   ],
+   "neutral": {
+    "left": "round",
+    "right": "round",
+    "mouth": "smile"
+   },
+   "angry": {
+    "left": "angry_l",
+    "right": "angry_r",
+    "mouth": "grit"
+   },
+   "moods": [
+    {
+     "left": "happy",
+     "right": "happy",
+     "mouth": "grin"
+    },
+    {
+     "left": "round",
+     "right": "round",
+     "mouth": "o"
+    }
+   ],
+   "moodsHeld": [
+    {
+     "left": "round",
+     "right": "happy",
+     "mouth": "smile",
+     "needsSky": true,
+     "why": "a wink is two different eyes at once, a cartoon expression (section 15: no cartoon eyes)"
+    }
+   ],
+   "attention": {
+    "stages": [
+     {
+      "stage": 0,
+      "name": "calm",
+      "left": "round",
+      "right": "round",
+      "mouth": "smile",
+      "blink": true,
+      "moods": true,
+      "glow": "own"
+     },
+     {
+      "stage": 1,
+      "name": "noticed",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "o",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 2,
+      "name": "wary",
+      "left": "angry_l",
+      "right": "angry_r",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 3,
+      "name": "reporting",
+      "left": "",
+      "right": "",
+      "mouth": "alarm_s",
+      "mouthAt": [
+       0,
+       0
+      ],
+      "glow": "alarm",
+      "flashHz": 2,
+      "on": 0.3,
+      "off": 0.2
+     }
+    ],
+    "glowOptions": {
+     "own": "the robot's own LED colour (DK_Face_Amber / DK_Face_Teal)",
+     "phosphor": "#BFF3E6 x1.6, the patrol robot's seafoam; shown beside the own colour in briefs/031/robot-face",
+     "alarm": "#FF5A3C x2.2"
+    },
+    "gazeCells": 2,
+    "dropAfterS": 2.0
+   }
+  },
+  "RobotNanny": {
+   "face": "DK_Face_Teal",
+   "range": 30,
+   "turn": 0.6,
+   "hold": [
+    1.5,
+    4
+   ],
+   "home": 0.6,
+   "grid": [
+    26,
+    15
+   ],
+   "corner": 7,
+   "eye": [
+    6,
+    1.8
+   ],
+   "mouth": [
+    0,
+    -3.4
+   ],
+   "neutral": {
+    "left": "happy",
+    "right": "happy",
+    "mouth": "smile"
+   },
+   "angry": {
+    "left": "angry_l",
+    "right": "angry_r",
+    "mouth": "grit"
+   },
+   "moods": [
+    {
+     "left": "round",
+     "right": "round",
+     "mouth": "smile"
+    },
+    {
+     "left": "happy",
+     "right": "happy",
+     "mouth": "beam"
+    }
+   ],
+   "moodsHeld": [
+    {
+     "left": "heart",
+     "right": "heart",
+     "mouth": "smile",
+     "needsSky": true,
+     "why": "a heart glyph is a cartoon sticker, not an LED shape (section 15: no cartoon eyes); the Nanny's old mood"
+    }
+   ],
+   "attention": {
+    "stages": [
+     {
+      "stage": 0,
+      "name": "calm",
+      "left": "happy",
+      "right": "happy",
+      "mouth": "smile",
+      "blink": true,
+      "moods": true,
+      "glow": "own"
+     },
+     {
+      "stage": 1,
+      "name": "noticed",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "o",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 2,
+      "name": "wary",
+      "left": "angry_l",
+      "right": "angry_r",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 3,
+      "name": "reporting",
+      "left": "",
+      "right": "",
+      "mouth": "alarm_s",
+      "mouthAt": [
+       0,
+       0
+      ],
+      "glow": "alarm",
+      "flashHz": 2,
+      "on": 0.3,
+      "off": 0.2
+     }
+    ],
+    "glowOptions": {
+     "own": "the robot's own LED colour (DK_Face_Amber / DK_Face_Teal)",
+     "phosphor": "#BFF3E6 x1.6, the patrol robot's seafoam; shown beside the own colour in briefs/031/robot-face",
+     "alarm": "#FF5A3C x2.2"
+    },
+    "gazeCells": 2,
+    "dropAfterS": 2.0
+   }
+  },
+  "RobotShopkeeper": {
+   "face": "DK_Face_Teal",
+   "range": 55,
+   "turn": 0.45,
+   "hold": [
+    1,
+    3
+   ],
+   "home": 0.4,
+   "grid": [
+    24,
+    9
+   ],
+   "corner": 1.6,
+   "eye": [
+    5.3,
+    1.3
+   ],
+   "mouth": [
+    0,
+    -3.2
+   ],
+   "neutral": {
+    "left": "round",
+    "right": "round",
+    "mouth": "smile"
+   },
+   "angry": {
+    "left": "angry_l",
+    "right": "angry_r",
+    "mouth": "grit"
+   },
+   "moods": [
+    {
+     "left": "happy",
+     "right": "happy",
+     "mouth": "beam"
+    }
+   ],
+   "moodsHeld": [
+    {
+     "left": "round",
+     "right": "happy",
+     "mouth": "smile",
+     "needsSky": true,
+     "why": "a wink is two different eyes at once, a cartoon expression (section 15: no cartoon eyes)"
+    },
+    {
+     "left": "star",
+     "right": "star",
+     "mouth": "smile",
+     "needsSky": true,
+     "why": "a star glyph is a cartoon sticker (section 15: no cartoon eyes); the Porter's and Shopkeeper's old mood"
+    }
+   ],
+   "attention": {
+    "stages": [
+     {
+      "stage": 0,
+      "name": "calm",
+      "left": "round",
+      "right": "round",
+      "mouth": "smile",
+      "blink": true,
+      "moods": true,
+      "glow": "own"
+     },
+     {
+      "stage": 1,
+      "name": "noticed",
+      "left": "wide",
+      "right": "wide",
+      "mouth": "o",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 2,
+      "name": "wary",
+      "left": "angry_l",
+      "right": "angry_r",
+      "mouth": "",
+      "gaze": true,
+      "glow": "own"
+     },
+     {
+      "stage": 3,
+      "name": "reporting",
+      "left": "",
+      "right": "",
+      "mouth": "alarm_s",
+      "mouthAt": [
+       0,
+       0
+      ],
+      "glow": "alarm",
+      "flashHz": 2,
+      "on": 0.3,
+      "off": 0.2
+     }
+    ],
+    "glowOptions": {
+     "own": "the robot's own LED colour (DK_Face_Amber / DK_Face_Teal)",
+     "phosphor": "#BFF3E6 x1.6, the patrol robot's seafoam; shown beside the own colour in briefs/031/robot-face",
+     "alarm": "#FF5A3C x2.2"
+    },
+    "gazeCells": 2,
+    "dropAfterS": 2.0
+   }
+  }
+ },
+ "playPieces": {
+  "RobotButler": "RobotButler_Play",
+  "RobotPorter": "RobotPorter_Play",
+  "RobotWaiter": "RobotWaiter_Play",
+  "RobotNanny": "RobotNanny_Play",
+  "RobotShopkeeper": "RobotShopkeeper_Play"
+ }
+}

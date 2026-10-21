@@ -63,11 +63,20 @@ namespace Suborned.Play
         /// <summary>Samples refused or corrected since control began (diagnostic for the lab).</summary>
         public int DriveCorrections { get; private set; }
 
+        /// <summary>Sky 2026-10-20 (replaces brief 024's "no auto-walk in ground mode"): a right-click act or fire out of reach while driven hands
+        /// the agent to the engine, which walks it in and acts, exactly as on the map; the controller trails the engine's agent and the chase camera
+        /// follows. WASD takes the stick back (the walk and its queued act are dropped); the act done, the stick comes back by itself.</summary>
+        public bool DriveWalking => Driving && dAuto;
+        bool dAuto;
+        /// <summary>Give the driven agent to the engine for a walk-to-act (the drive released on this tick; samples stop until WASD or the act ends).</summary>
+        void DriveAutoBegin() { if (!Driving || dAgent < 0) return; DriveRelease(dAgent); dAuto = true; dSent = null; dVel = Vector2.zero; }
         int dAgent = -1; Vector2 dCm, dVel; float dYaw; bool dRunLatch, dMoving; Pt? dSent; bool dSentRun; int dSentFace = -1; string dFocusKey = "";
         readonly List<Pt> dPeople = new(); int dPeopleTick = -1;
 
         /// <summary>T: take control of the selected agent, or let go.</summary>
         public void DriveToggle() { if (Driving) DriveExit(true); else DriveEnter(); }
+        /// <summary>T while driven (the player's own switch): let go and back to the map.</summary>
+        public void DriveLetGoToMap() { if (Driving) DriveExit(true, true); }
 
         void DriveEnter()
         {
@@ -92,16 +101,19 @@ namespace Suborned.Play
         void DriveRelease(int k) { if (k >= 0 && Game != null && Game.DrivePoseOf((OpId)k).Driven) Guard("drive", () => Game.Issue(Game.DriveRelease((OpId)k))); }
 
         /// <summary>Let go (release: the engine's onRelease applies) or lose control (the engine ended it); the map opens centred on the agent.</summary>
-        void DriveExit(bool release)
+        void DriveExit(bool release, bool toMap = false)
         {
             if (!Driving) return;
             int k = dAgent; if (release) DriveRelease(k);
             if (Lab.explore) { Lab.explore = false; Paused = exploreWasPaused; }
-            Driving = false; dAgent = -1; DriveFocus = null; dFocusKey = "";
+            Driving = false; dAuto = false; dAgent = -1; DriveFocus = null; dFocusKey = "";
+            dResume = !release && !toMap; // the game ended control (not the player): WASD takes it back (DriveResume)
             if (views != null) views.DriveKey = null;
-            if (Following) FollowExit();
-            if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t) { LookAt(t.position); PopKey("take-control", null, t.position, Feedback.Info); }
-            Status = "Overhead view";
+            // Sky 2026-10-20: no automatic view switch: a freeze, target mode, the engine ending the drive or the agent going down leave the
+            // ground view as a plain follow; only T (DriveLetGoToMap) goes back to the map
+            if (toMap && Following) FollowExit();
+            if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t) { if (!Following) LookAt(t.position); PopKey("take-control", null, t.position, Feedback.Info); }
+            Status = Following ? "Follow view" : "Overhead view";
         }
 
         Vector3 CmWorld(Vector2 cm) { float bx = cm.x / 100f, by = cm.y / 100f; var plan = frame.ToPlan(bx, by); return new Vector3(plan.x, frame.Height(bx, by), plan.y); }
@@ -122,7 +134,7 @@ namespace Suborned.Play
         /// <summary>Per frame (before the clock steps): the agent swap, the input, the controller's move and the drawn pose.</summary>
         void DriveFrame(Keyboard kb)
         {
-            if (!Driving || Game == null) return;
+            if (!Driving || Game == null) { DriveResume(kb); return; }
             if (Game.Over) { DriveExit(false); return; }
             int who = FollowWho();
             if (who != dAgent) { DriveRelease(dAgent); var op2 = Game.Ops[who]; if (op2.Down || op2.Inside || op2.InCar) { DriveExit(false); return; } DriveTake(who); } // Tab, F1-F4, a click on an agent: control moves at once
@@ -147,7 +159,18 @@ namespace Suborned.Play
                 if (controls.Held(kb, PlayAction.PanRight)) input.x += 1; if (controls.Held(kb, PlayAction.PanLeft)) input.x -= 1;
                 run |= controls.Held(kb, PlayAction.AddToGroup);
                 if (controls.Down(kb, PlayAction.Gait)) dRunLatch = !dRunLatch;
-                if (controls.Down(kb, PlayAction.TurnRight) && !Paused) DriveAct(); // E acts (brief 024 §4)
+                DriveE(kb); // brief 030: E is the quick click on the focus; held 0.22 s, the ring on it
+            }
+            if (dAuto)
+            {
+                if (input.sqrMagnitude > 0f && DriveRoute == null && DriveInputOverride == null) { dAuto = false; pending[dAgent] = null; dCm = new Vector2(op.Pos.X, op.Pos.Y); dVel = Vector2.zero; dSent = null; } // the stick taken back: the next sample takes control (the engine drops its walk)
+                else
+                {
+                    dCm = new Vector2(op.Pos.X, op.Pos.Y); dMoving = op.Walk != null;
+                    if (views != null) views.DriveKey = null; // the engine's walk draws the agent
+                    if (pending[dAgent] == null && op.Walk == null && op.Busy == null && op.Gun.Order.Length == 0) dAuto = false; // the act done: the stick comes back
+                    DriveFocusFrame(); return;
+                }
             }
             bool free = (!Paused || Exploring) && !(op.Busy != null && DriveOnBusyHold) && !op.Down && !op.Inside && !op.InCar;
             DriveMove(free ? input : Vector2.zero, run, dt, Following ? fYaw : yawNow);
@@ -191,6 +214,23 @@ namespace Suborned.Play
             return (end, wd.sqrMagnitude > 1e-6f ? wd.normalized : Vector3.zero);
         }
 
+        /// <summary>Control ended by the game, not the player (the engine ended the drive: a move order, a correction it would not take), the
+        /// ground view still on: WASD takes the stick back at once (Sky 2026-10-21: "if I click on a space, then the movement WASD keys fail to
+        /// respond"; brief 024 §1: input takes the stick over an engine order). The player's own let-go (T, the lab's button) and the map clear it.</summary>
+        bool dResume;
+        public bool DriveResumable => dResume;
+        void DriveResume(Keyboard kb)
+        {
+            if (!dResume || Game == null) return;
+            if (Game.Over || !Following) { dResume = false; return; }
+            if (kb == null || Modal != ModalGate.Modal.None || CameraLab.Typing || ConvoOn || FailCamOn) return;
+            if (!(controls.Held(kb, PlayAction.PanUp) || controls.Held(kb, PlayAction.PanDown) || controls.Held(kb, PlayAction.PanLeft) || controls.Held(kb, PlayAction.PanRight))) return;
+            var op = Game.Ops[FollowWho()]; if (op.Down || op.Inside || op.InCar || op.CarriedBy.HasValue) return; // nothing to take: no pop each frame
+            if (Time.unscaledTime < dResumeAt) return; dResumeAt = Time.unscaledTime + 0.5f; // a take the engine refuses at once is not retried every frame
+            dResume = false; DriveEnter();
+        }
+        float dResumeAt = -1f;
+
         bool DriveOnBusyHold => (Game.Start.DriveOnBusy ?? Game.R.Drive?.OnBusy) == "hold";
 
         /// <summary>The controller's step against the walk grid, as the engine resolves one: x first, then y, each stopping before the first blocked
@@ -225,7 +265,7 @@ namespace Suborned.Play
         /// <summary>Once per tick, before the step: the controller's position as a drive sample, when it changed (a still agent sends nothing).</summary>
         void DriveTick()
         {
-            if (!Driving || Exploring || Game == null || Game.Over) return;
+            if (!Driving || Exploring || Game == null || Game.Over || dAuto) return;
             var at = new Pt(Mathf.RoundToInt(dCm.x), Mathf.RoundToInt(dCm.y)); bool run = (dRunLatch || DriveRunOverride || (Keyboard.current != null && DriveInputOverride == null && DriveRoute == null && controls.Held(Keyboard.current, PlayAction.AddToGroup))) && dMoving;
             int face = Mathf.RoundToInt(Mathf.Repeat(dYaw, 360f)) % 360;
             if (dSent.HasValue && dSent.Value == at && dSentRun == run && (dSentFace == face || !dMoving)) return;
@@ -237,7 +277,7 @@ namespace Suborned.Play
         /// <summary>After the step: control ended by the game leaves ground mode; a sample not taken whole pulls the controller to the engine's pose.</summary>
         void DriveAfterStep()
         {
-            if (!Driving || Exploring || Game == null) return;
+            if (!Driving || Exploring || Game == null || dAuto) return;
             var p = Game.DrivePoseOf((OpId)dAgent);
             if (!p.Driven && dSent.HasValue) { Status = $"The {Op.Name((OpId)dAgent)} is no longer yours to walk."; DriveExit(false); return; }
             var e = new Vector2(p.Pos.X, p.Pos.Y);
@@ -262,7 +302,7 @@ namespace Suborned.Play
         }
 
         /// <summary>A restart: nobody is driven, explore is off (the views are new).</summary>
-        void DriveReset() { Driving = false; dAgent = -1; DriveFocus = null; dFocusKey = ""; Lab.explore = false; DriveInputOverride = null; DriveRunOverride = false; DriveRoute = null; }
+        void DriveReset() { dResume = false; Driving = false; dAuto = false; dAgent = -1; DriveFocus = null; dFocusKey = ""; Lab.explore = false; DriveInputOverride = null; DriveRunOverride = false; DriveRoute = null; }
 
         /// <summary>Leaving explore: the controller goes back to where the engine has the agent.</summary>
         public void DriveExploreOff() { if (Driving && Game != null) { var p = Game.Ops[dAgent].Pos; dCm = new Vector2(p.X, p.Y); dVel = Vector2.zero; dSent = null; } }
@@ -275,6 +315,7 @@ namespace Suborned.Play
             if (Exploring) { if (dFocusKey.Length > 0 || DriveFocus != null) { DriveFocus = null; Hover = null; HoverIntent = null; HoverAnchor = null; HoverName = ""; intentKey = "drive"; dFocusKey = ""; } return; } // view only: nothing to act on
             var me = views.DrivePos; var fwd = Quaternion.Euler(0f, dYaw, 0f) * Vector3.forward;
             Target best = null; float bestScore = float.MaxValue; Vector3 bestAt = default;
+            var cands = new List<(Target t, Vector3 at, float score)>();
             foreach (var p in Pickables())
             {
                 var t = p.T; if (t.Kind is "op" or "unit") continue;
@@ -282,8 +323,12 @@ namespace Suborned.Play
                 float ang = Vector3.Angle(fwd, d); if (ang > 100f) continue;
                 if (cam) { var vp = cam.WorldToViewportPoint(p.Anchor); if (vp.z <= 0f || vp.x < 0.08f || vp.x > 0.85f || vp.y < 0.08f || vp.y > 0.92f) continue; } // on screen, with room for its chip
                 float score = dist * (1f + ang / 60f);
-                if (score < bestScore) { bestScore = score; best = t; bestAt = p.Anchor; }
+                cands.Add((t, p.Anchor, score));
             }
+            // brief 030 §8: Z / Shift+Z step the focus through what is in front, nearest first (dFocusStep; a lost focus starts again)
+            cands.Sort((a, b) => a.score.CompareTo(b.score));
+            if (cands.Count == 0) dFocusStep = 0;
+            else { int pick = ((dFocusStep % cands.Count) + cands.Count) % cands.Count; best = cands[pick].t; bestAt = cands[pick].at; bestScore = cands[pick].score; }
             DriveFocus = best;
             if (best == null)
             {
@@ -299,16 +344,14 @@ namespace Suborned.Play
             intentKey = ik; dFocusKey = key; Hover = best; HoverFeedback(best); HoverIntent = IntentFor(best); MoveChip = null; UpdateAim();
         }
 
-        /// <summary>E: act on the focus. One way acts at once (its hold where it needs one); more open the panel at it.</summary>
+        /// <summary>E: act on the focus, as a quick right click on it (brief 030).</summary>
         public void DriveAct()
         {
             if (DriveFocus == null && Panel == null) { dFocusKey = "?"; DriveFocusFrame(); } // the focus as it stands this instant
             if (DriveFocus is not Target t || !cam) { PopKey("nothing-here", null, views.DrivePos, Feedback.Info); return; }
             var w = TargetWorld(t) ?? views.DrivePos; var sp = cam.WorldToScreenPoint(w + Vector3.up); var screen = new Vector2(sp.x, sp.y);
-            OpenPanel(t, screen);
-            if (Panel == null) return;
-            int only = -1, n = 0; for (int i = 0; i < Panel.Rows.Count; i++) if (Panel.Rows[i].Available && Panel.Rows[i].By == (OpId)dAgent) { n++; only = i; }
-            if (n == 1) PanelDo(only);
+            if (IsFire(t)) { PointerRightOn(t, screen); return; } // a hostile in front: E fires, as the right press does
+            ActContext(t, screen); // brief 030: the same one act as a quick right click on it (else the ring, else nothing)
         }
     }
 }

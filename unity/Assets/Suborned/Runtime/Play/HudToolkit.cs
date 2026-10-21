@@ -24,6 +24,7 @@ namespace Suborned.Play
         {
             if (CameraLab.Blocks(screen)) return true; // brief 025: the camera lab's panel takes its clicks
             if (!Active || live.root?.panel == null) return false;
+            if (live.host != null && live.host.ConvoOn) { if (live.convoSkip == null) return false; var sp = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y)); return live.convoSkip.worldBound.Contains(sp); } // brief 032
             var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));
             return live.root.panel.Pick(p) != null;
         }
@@ -115,7 +116,9 @@ namespace Suborned.Play
         sealed class Strip { public VisualElement Root, Tags, Icon, Bar, Fill, Cancel, QueuedIcon, Stance; public Label Role, State, Action, Time, Queued, Ready, Hint; public bool Compact; }
         /// <summary>One agent's window in a roster frame (the column, or the row for the corner and bottom docks).</summary>
         const float EndCardW = 400f, EndCardPad = 30f; // the end card at rest (Debrief opens it to 560)
-        sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips, Arm, Car, Rim; public Label Num; public readonly List<VisualElement> PipDots = new(); }
+        sealed class Window { public VisualElement Portrait, RingSel, RingBusy, Pips, Arm, Car, Rim; public Label Num; public readonly List<VisualElement> PipDots = new();
+            /* brief 033 (live portraits) and brief 030 (no plate): the cross-fade layer, the photo's clip, the cue and eye layers, the armed verb's glyph, the stance glyph in the sidearm mark */
+            public VisualElement Next, Clip, Glyph, GunIcon; public Paint Cue, Eye, StanceIn; public string Face = ""; public float FadeAt = -10f; public int Index; public HandoverHost.Face CueFace; public float CueSince; }
         int rosterHover = -1; readonly VisualElement[] leftTips = new VisualElement[4];
         /// <summary>Brief 018 §6.6 (Glyph r1): the left-behind flag's line on hover (the whole portrait) or Alt: "Left behind", then Fable's fate line.</summary>
         void LeftTip(int i, Window w, HudModel.Slot s)
@@ -153,7 +156,8 @@ namespace Suborned.Play
         // step 3: the hint, the chips at the cursor, the going-loud card, the briefing, the end card, the history
         VisualElement chipSeenIcon; Label chipSeen; readonly List<VisualElement> unknownMarks = new();
         VisualElement hint, toast, chip, chipPrice, chipIcon, chipMark, loud, loudRing, brief, end, endDetail, history, historyRows; Label hintBody, hintKey, toastText, chipText, chipUsd, chipTime, chipTrail, chipAlert;
-        Label loudTitle, loudSub, loudHold, briefTitle, briefSub, briefObjective, briefTarget, briefWin, briefLose, briefClose, briefPurse, briefAlert, briefArms, briefBeginKey, endTitle, endLine, endReplayKey;
+        readonly VisualElement[] briefPhase = new VisualElement[2];
+        Label briefHeat; int briefHeatTurns; Label loudTitle, loudSub, loudHold, briefTitle, briefSub, briefObjective, briefTarget, briefWin, briefLose, briefClose, briefPurse, briefAlert, briefArms, briefBeginKey, endTitle, endLine, endReplayKey;
         readonly List<Label> loudRows = new(), endLines = new(); readonly List<VisualElement> loudDots = new(); readonly (Label title, Label body)[] briefWays = new (Label, Label)[2];
         readonly List<VisualElement> filterChips = new(); bool endDetailOpen; Label intelCount; readonly IntelUi[] intelRows = new IntelUi[4];
         // collapsible panels (Glyph #8, collapse-states.jpg): the hint folds to a "?" chip after 6 s, the objective after 20 s; a click pins either
@@ -401,16 +405,25 @@ namespace Suborned.Play
                 Vector2 c0 = sprite == "s-roster_column" && i < ColumnBezels.Length ? ColumnBezels[i] : new Vector2(r.x + r.width / 2, r.y + r.height / 2);
                 const float rad = BezelR; var clip = E(frame, null, c0.x - rad, c0.y - rad, 2 * rad, 2 * rad); Round(clip, rad); clip.style.overflow = Overflow.Hidden;
                 w.Portrait.RemoveFromHierarchy(); clip.Add(w.Portrait); w.Portrait.style.left = 0; w.Portrait.style.top = 0; w.Portrait.style.width = 2 * rad; w.Portrait.style.height = 2 * rad;
+                w.Clip = clip; w.Index = i; w.Next = E(clip, null, 0, 0, 2 * rad, 2 * rad); Show(w.Next, false); // brief 033: the next face fades in over the last (0.15 s)
                 E(clip, "s-portrait_scrim", 0, 2 * rad - 16, 2 * rad, 16);
                 w.RingSel = E(clip, "s-portrait_ring_inner", 0, 0, 2 * rad, 2 * rad); // Glyph round 2: the selected agent's ring, inside the photo circle (layers: photo, scrim, ring, pips)
                 w.Pips = E(clip, null, 0, 2 * rad - 14, 2 * rad, 8); w.Pips.style.flexDirection = FlexDirection.Row; w.Pips.style.justifyContent = Justify.Center; // raised 2 px to clear the ring's band
                 w.RingBusy = E(frame, null, 0, 0, 0, 0); // busy is the timer chip; never drawn
-                w.Arm = E(frame, "s-disc_dark_24", c0.x + 14, c0.y + 13, 20, 20); Round(w.Arm, 10); Border(w.Arm, 1.6f, Color.clear); // Glyph fight r1 #5: 3 px in, 2 px up, clear of the selection ring; the top right stays free for 018's in-car badge
-                Icon(E(w.Arm, null, 2.4f, 2.4f, 12, 12), "fire", Cream); // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
+                w.Arm = E(frame, "s-disc_dark_24", c0.x - 38, c0.y + 15, 20, 20, pick: true); /* brief 033 (Glyph's slots): the sidearm mark bottom left; the armed verb takes the bottom right */ Round(w.Arm, 10); Border(w.Arm, 1.6f, Color.clear); // Glyph fight r1 #5: 3 px in, 2 px up, clear of the selection ring; the top right stays free for 018's in-car badge
+                w.GunIcon = E(w.Arm, null, 2.4f, 2.4f, 12, 12); Icon(w.GunIcon, "fire", Cream); var wk = w; w.StanceIn = P(w.Arm, 2.4f, 2.4f, 12, 12, (p, r) => StanceGlyph(p, new Vector2(6, 6), 5f, wk.Index >= 0 && host.Game != null ? host.Game.Ops[wk.Index].Gun.Stance : "return", Cream)); // brief 030: a stance other than return shows inside the mark // Sky 2026-10-18: a sidearm pip on every armed agent (all four carry one in the Handover)
+                // brief 030 §5: the mark toggles that one agent's weapon (F does the selection); a watcher's warning shows its seconds beside it
+                int ka = i; w.Arm.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.DrawOrHolsterAgent(ka); e.StopPropagation(); } }); w.Arm.RegisterCallback<PointerEnterEvent>(_ => { fanAgent = ka; fanArm = true; }); w.Arm.RegisterCallback<PointerLeaveEvent>(_ => { fanArm = false; fanLeft = Time.unscaledTime; }); // brief 030: hovering the drawn mark opens the stance fan
+                var wl = L(w.Arm, "keycap"); wl.name = "warn"; wl.style.position = Position.Absolute; wl.style.left = -12; wl.style.top = 1; wl.style.color = Amber; wl.style.fontSize = 12; Show(wl, false);
                 w.Car = E(frame, null, c0.x + 13, c0.y - 34, 22, 22); Round(w.Car, 11); Border(w.Car, 1.6f, Color.clear); E(w.Car, null, 4, 4, 14, 14).name = "g"; P(w.Car, 3, 3, 16, 16, (p, r) => CuffsPaint(p, r, Red)).name = "cf"; Show(w.Car, false);
                 w.Rim = E(frame, null, c0.x - BezelR - 2, c0.y - BezelR - 2, 2 * BezelR + 4, 2 * BezelR + 4); Round(w.Rim, BezelR + 2); Border(w.Rim, 2f, Cream); Show(w.Rim, false); // the hover rim (brief 018 §6.6: the left-behind flag's line on hover)
                 int kk = i; w.Portrait.RegisterCallback<PointerEnterEvent>(_ => rosterHover = kk); w.Portrait.RegisterCallback<PointerLeaveEvent>(_ => { if (rosterHover == kk) rosterHover = -1; }); // brief 018 §6.6: the in-car badge, or (Go card up) the left-behind flag, in the top right kept for it
                 var plate = E(frame, "s-plate_light", c0.x - 34, c0.y - 34, 25, 21); plate.name = "keyplate"; w.Num = L(plate, "numplate"); w.Num.style.flexGrow = 1; w.Num.style.unityTextAlign = TextAnchor.MiddleCenter;
+                // brief 033: the cue layer round the photo (Glyph's shapes, one per state, drawn outside the selection ring) and the attention eye
+                // badge top right; brief 030: the armed verb's glyph bottom right on the selected portrait
+                var wc = w; w.Cue = P(frame, c0.x - 60, c0.y - 60, 120, 120, (p, r) => CuePaint(wc, p)); w.Cue.style.overflow = Overflow.Visible;
+                w.Eye = P(frame, c0.x + 14, c0.y - 50, 34, 24, (p, r) => EyePaint(wc, p));
+                w.Glyph = E(frame, null, c0.x + 18, c0.y + 15, 20, 20); Round(w.Glyph, 10); Border(w.Glyph, 1.6f, TurqLight); w.Glyph.style.backgroundColor = new Color(0.086f, 0.4f, 0.369f); E(w.Glyph, null, 3.4f, 3.4f, 13.2f, 13.2f).name = "g"; Show(w.Glyph, false);
             }
         }
 
@@ -469,7 +482,19 @@ namespace Suborned.Play
             briefWin = Box("mark_ok", "YOU WIN", 0); briefLose = Box("mark_no", "YOU LOSE", 10);
             var facts = E(brief); facts.style.flexDirection = FlexDirection.Row; facts.style.marginTop = 12;
             Label Fact(string icon) { var f = E(facts); f.style.flexDirection = FlexDirection.Row; f.style.alignItems = Align.Center; f.style.marginRight = 22; Icon(E(f, null, w: 14, h: 14), icon, Cream); var l = L(f, "briefing-fact"); l.style.marginLeft = 6; return l; }
-            briefClose = Fact("p_time"); briefPurse = Fact("p_cash"); briefAlert = Fact("p_alert"); briefArms = Fact("fire");
+            briefClose = Fact("p_time"); briefPurse = Fact("p_cash"); briefAlert = Fact("p_alert");
+            briefHeat = Fact("eye_open"); // brief 031 (Glyph §7): the cell's notoriety, a watcher's eye with 0 to 3 turns, then Fable's word
+            P(briefHeat.parent, 0, 0, 14, 14, (p, r) => { for (int k = 0; k < briefHeatTurns; k++) { float a = -60f - k * 30f; var c = new Vector2(7, 7); var d = new Vector2(Mathf.Cos(a * Mathf.Deg2Rad), Mathf.Sin(a * Mathf.Deg2Rad)); p.strokeColor = TurqLight; p.lineWidth = 1.6f; p.BeginPath(); p.MoveTo(c + d * 8.5f); p.LineTo(c + d * 11f); p.Stroke(); } }).name = "turns";
+            briefArms = Fact("fire");
+            { // brief 026 round 2 (Sky: a night Handover): Day / Night, look only; the chosen one lit
+                var ph = E(facts); ph.style.flexDirection = FlexDirection.Row; ph.style.marginLeft = StyleKeyword.Auto; facts.style.alignItems = Align.Center; // on the facts row, right: the footer is the key line and Begin
+                for (int i = 0; i < 2; i++)
+                {
+                    bool night = i == 1; var b = E(ph, "s-btn_text_normal btn_text", w: 76, h: 34, pick: true); b.style.flexDirection = FlexDirection.Row; b.style.alignItems = Align.Center; b.style.justifyContent = Justify.Center; if (i == 1) b.style.marginLeft = 6;
+                    b.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.SetNight(night); e.StopPropagation(); } });
+                    var lb = L(b, "button-label"); lb.text = night ? "Night" : "Day"; briefPhase[i] = b;
+                }
+            }
             var ways = E(brief); ways.style.flexDirection = FlexDirection.Row; ways.style.marginTop = 12;
             for (int i = 0; i < 2; i++) { var c = E(ways, "s-panel_card"); c.style.flexGrow = 1; c.style.flexBasis = 0; c.style.minHeight = 106; if (i == 1) c.style.marginLeft = 10; var t = L(c, "card-title"); t.style.marginLeft = 12; t.style.marginTop = 5; var b = L(c, "card-body"); b.style.whiteSpace = WhiteSpace.Normal; b.style.marginLeft = 12; b.style.marginRight = 12; b.style.marginTop = 10; briefWays[i] = (t, b); }
             var foot = E(brief); foot.style.flexDirection = FlexDirection.Row; foot.style.alignItems = Align.Center; foot.style.marginTop = 16;
@@ -704,6 +729,7 @@ namespace Suborned.Play
                 Text(briefClose, m.BriefClock.Contains("8:30") ? "Closes 8:30" : m.BriefClock); Text(briefPurse, m.Cash.Length > 0 ? "Purse " + m.Cash : m.BriefPurse); Text(briefAlert, $"Alert {m.Alert} of 3"); Text(briefArms, "Cell armed");
                 for (int i = 0; i < 2; i++) { bool has = i < m.BriefWays.Count; Show(briefWays[i].title.parent, has); if (has) { Text(briefWays[i].title, $"Approach {(char)('A' + i)}: {m.BriefWays[i].title}"); Text(briefWays[i].body, m.BriefWays[i].body); } }
                 Text(briefBeginKey, m.BeginKey);
+                for (int i = 0; i < 2; i++) if (briefPhase[i] != null) { bool on = (i == 1) == host.NightLook; briefPhase[i].style.opacity = on ? 1f : 0.5f; Border(briefPhase[i], on ? 2f : 0f, new Color(0x4f / 255f, 0xe3 / 255f, 0xe8 / 255f)); }
             }
             // the end card
             Show(end, m.Ended);
@@ -928,6 +954,7 @@ namespace Suborned.Play
             if (want != on) { on = want; Show(root, on); }
             if (!on) return;
             if (FailCamHud()) return; // the fail camera: its caption alone
+            if (ConvoHud()) return; // brief 032: the conversation scene: its bubble, dots, bars and Skip, the pill (HudToolkit.Live)
             m.Frame(host); CrispScale();
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
@@ -961,17 +988,25 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++)
             {
                 var s = m.Slots[i]; var st = strips[i]; var w = wins[i];
-                string look = s.Down ? "down" : s.Hurt ? "hurt" : !any || s.Selected ? "normal" : "dim";
-                Bg(w.Portrait, $"portraits/portrait_{s.Role}_{look}");
+                if (!LivePortrait(i, w, s, any)) // brief 033: the live faces when Forma's stills are imported, else the kit's four looks
+                { string look = s.Down ? "down" : s.Hurt ? "hurt" : !any || s.Selected ? "normal" : "dim"; Bg(w.Portrait, $"portraits/portrait_{s.Role}_{look}"); }
                 Show(w.RingSel, s.Selected); Show(w.RingBusy, s.Busy && !s.Selected);
                 bool inCar = s.InCar, left = s.LeftFate.Length > 0; Show(w.Car, inCar || left);
                 if (inCar) { w.Car.style.backgroundColor = TurqLight; Icon(w.Car.Q("g"), "car", Ink); Border(w.Car, 1.4f, Ink); } // Glyph r1: a solid cyan disc, a dark glyph (unlike the stance ring)
                 bool capF = !inCar && left && s.LeftFate == "captured"; Show(w.Car.Q("cf"), capF); Show(w.Car.Q("g"), !capF);
                 if (left && !inCar) { w.Car.style.backgroundColor = Ink; if (!capF) Icon(w.Car.Q("g"), "s_moving", Cream); Border(w.Car, 1.6f, s.LeftFate == "captured" ? Red : Cream); } // captured: a red lock on a red rim; walks out: footprints on a cream rim
                 bool tipOn = left && (rosterHover == i || host.Peeking); Show(w.Rim, tipOn); LeftTip(i, w, tipOn ? s : null);
-                Show(w.Arm, s.Armed && !s.Down); if (s.Armed && w.Arm.childCount > 0) w.Arm[0].style.unityBackgroundImageTintColor = s.Drawn ? TurqLight : Cream; Border(w.Arm, 1.6f, s.Drawn ? TurqLight : Color.clear); // drawn: turquoise, and a turquoise rim (the shape cue)
+                Show(w.Arm, s.Armed && !s.Down);
+                if (s.Armed && w.Arm.childCount > 0) // brief 030 §5: hollow = holstered (a cream rim on the dark disc), filled = drawn (a turquoise disc, an ink glyph); a watcher's warning pulses with its seconds
+                {
+                    int warn = host.WarnS(i); bool pulse = warn >= 0 && Mathf.Repeat(Time.unscaledTime, 0.8f) < 0.4f;
+                    w.Arm[0].style.unityBackgroundImageTintColor = s.Drawn ? Ink : Cream;
+                    w.Arm.style.backgroundColor = s.Drawn ? TurqLight : Color.clear; w.Arm.style.unityBackgroundImageTintColor = s.Drawn ? new Color(1, 1, 1, 0) : Color.white;
+                    Border(w.Arm, warn >= 0 ? (pulse ? 2.6f : 1.6f) : 1.4f, warn >= 0 ? Amber : s.Drawn ? TurqLight : Cream);
+                    var wl = w.Arm.Q<Label>("warn"); Show(wl, warn >= 0); if (warn >= 0) Text(wl, $"{warn}");
+                }
                 Text(w.Num, s.Key); w.Num.parent.style.unityBackgroundImageTintColor = s.Selected ? TurqLight : Color.white; // selected: the key badge turns turquoise (no ring: see BuildRoster)
-                Pips(w, s.Hp, s.HpMax);
+                Pips(w, s.Hp, s.HpMax); LivePips(i, w, s); // brief 033: the lost pip flashes, a badly hurt agent's pips pulse
                 if (st.Root.style.display == DisplayStyle.None) continue;
                 // compact (Glyph #8): a ready or downed agent is one 34 px line, "SCOUT · READY"; ` shows every strip full
                 if (st.Compact != s.Compact)
@@ -997,7 +1032,7 @@ namespace Suborned.Play
             for (int i = 0; i < 4; i++)
             {
                 Class(knobs[i], "selected", i == m.VerbLit && m.VerbHas[i]); Class(knobs[i], "disabled", !m.VerbHas[i]);
-                Icon(knobIcons[i], m.VerbIcon[i], m.VerbHas[i] ? Cream : Grey); Text(knobNums[i], m.VerbKey[i]);
+                Icon(knobIcons[i], m.VerbIcon[i], m.VerbHas[i] ? Cream : Grey); Text(knobNums[i], m.VerbKey[i]); knobNums[i].style.opacity = host.PlateKeysDim ? 0.35f : 1f; // brief 030 §8: ⇧ caps dim while the driven agent moves
             }
             if (m.VerbLit >= 0 && m.VerbLit < 4) Text(armedName, m.VerbName[m.VerbLit]);
             // the cancel tooltip at the cursor
@@ -1039,10 +1074,11 @@ namespace Suborned.Play
             followRing.Clear();
             if (f && host.FollowAgent >= 0 && host.Views?.Find("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)host.FollowAgent)) is Transform ft && ft.gameObject.activeSelf)
                 for (int i = 0; i <= 40; i++) { float a = i * Mathf.PI * 2f / 40f; if (!Proj(ft.position + new Vector3(Mathf.Cos(a) * 0.55f, 0.03f, Mathf.Sin(a) * 0.55f), out var q)) { followRing.Clear(); break; } followRing.Add(q); }
+            ActMarkFrame(); // Sky 2026-10-21: the hover marker says what a right click does (HudToolkit.ActMark), in both views
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {
-                bool keep = c == world; foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                bool keep = c == world || c == actBadge; foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }

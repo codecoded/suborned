@@ -10,6 +10,7 @@ import { footprintOf } from '../../plan/street-zones';
 import { discRing } from '../gen/box';
 import { ROAD_Z, lawn, onRoad } from '../gen/street/ground';
 import { ARC_SAMPLES, type Look, PART_KINDS, arcPoints, arcSites, bandGap, freeSpans, modulesIn, outerOf } from '../gen/street/parts';
+import { FLAT_KINDS } from '../gen/street/capstone-rules';
 import { roadYaw } from './roadyaw';
 import { GLOW, INLAY, ORB } from '../gen/surfaces';
 
@@ -21,7 +22,7 @@ const at2 = (a: V, b: V, tol = TOL) => dist(a, b) <= tol;
 const turn = (a: number, b: number) => Math.abs(Math.atan2(Math.sin(a - b), Math.cos(a - b)));
 /** What stands on the ground a halo lights, as footprints: every ground item but a crossing's own parts, bollards and beacons (they flank a landing) and a tram stop's kit. */
 export function groundItems(c: WCtx): { id: string; at: V; ring: V[] }[] {
-  const skip = new Set<string>(['bollard', 'beacon', 'crossing', ...PART_KINDS]);
+  const skip = new Set<string>(['bollard', 'beacon', 'crossing', ...PART_KINDS, ...FLAT_KINDS]); // + the capstone programme's flat ground pieces (brief 026): the halo lights paving
   return c.w.street.filter(s => s.z < 1 && !skip.has(s.kind) && !s.edge.startsWith('stop/')).map(s => ({ id: s.id, at: s.at, ring: footprintOf(c.S, s.kind, s.variant, s.at, s.size, s.yaw) }));
 }
 

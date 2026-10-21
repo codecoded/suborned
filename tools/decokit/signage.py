@@ -25,7 +25,7 @@ from structures import along, ccw, sec, superell, tube
 
 for _n, _k, _h, *_e in (("DK_Billboard_Ads", "art", "#FFFFFF"), ("DK_Billboard_Ads_Lit", "emit", "#FFFFFF", 1.0),
                         ("DK_Neon_Red", "emit", "#FF4A3A", 5.0), ("DK_Neon_Coral", "emit", "#F58468", 2.4),
-                        ("DK_Neon_Cream", "emit", "#FFE6C4", 1.8),  # brief 022: the cafe sign's own lit pair, warm, soft, no pink bloom ("DK_Neon_Teal", "emit", "#3CF2D2", 4.0),
+                        ("DK_Neon_Cream", "emit", "#FFE6C4", 1.8), ("DK_Neon_Teal", "emit", "#3CF2D2", 4.0),  # brief 022: Neon_Cream is the cafe sign's own lit pair, warm, soft, no pink bloom
                         ("DK_Neon_Gold", "emit", "#FFC94A", 4.0), ("DK_Bulb_Dim", "emit", "#F0B860", 0.5),
                         ("DK_Enamel_Coral", "enamel", "#E07560"),  # = skyline.py's entry
                         ("DK_Steel_Ivory", "enamel", "#E4DFD2")):  # = landmarks.py's painted lattice steel

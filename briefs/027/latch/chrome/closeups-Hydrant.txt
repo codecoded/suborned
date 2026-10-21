@@ -1,0 +1,2 @@
+CloseUps from 11338 placed kit instances, nearest the block at (-150.00, 0.00, -235.00)
+street Hydrant: DK_Hydrant at (-125.20, 0.18, -246.00) (27 m from the block)

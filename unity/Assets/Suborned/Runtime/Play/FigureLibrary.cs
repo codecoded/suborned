@@ -18,6 +18,10 @@ namespace Suborned.Play
             public float[] lodHeights = Array.Empty<float>();
             [Tooltip("Walks with walk_f.")]
             public bool female;
+            [Tooltip("Forma's testbed cell (briefs/020/people/cell-generic): a Generic figure on its own skeleton, drawn with its own override of the shared controller (each state's clip the same-named clip from its FBX). Null: the shared Humanoid controller.")]
+            public RuntimeAnimatorController controller;
+            [Tooltip("Its own clips' natural speeds (m/s; manifest-cell clipSpeedsMs), read before the library's.")]
+            public string[] speedStates = Array.Empty<string>(); public float[] speeds = Array.Empty<float>();
         }
 
         public Figure[] figures = Array.Empty<Figure>();
@@ -36,6 +40,13 @@ namespace Suborned.Play
 
         public Figure Find(string id) { foreach (var f in figures) if (f.id == id) return f; return null; }
         public float Speed(string state) { for (int i = 0; i < speedStates.Length; i++) if (speedStates[i] == state) return speeds[i]; return 0f; }
+        /// <summary>A figure's clip speed: its own (a Generic cell figure's clipSpeedsMs) when it has one, else the library's.</summary>
+        public float Speed(string id, string state)
+        {
+            var f = Find(id); if (f != null) for (int i = 0; i < f.speedStates.Length; i++) if (f.speedStates[i] == state) return f.speeds[i];
+            return Speed(state);
+        }
+        public RuntimeAnimatorController ControllerFor(Figure f) => f != null && f.controller != null ? f.controller : controller;
 
         /// <summary>A figure id from a pool, the same for the same seed (a person's id) every run.</summary>
         public string Pick(string pool, string seed)

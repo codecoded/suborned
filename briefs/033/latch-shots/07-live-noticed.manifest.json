@@ -1,0 +1,16 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 42, "y": 42, "w": 262, "h": 998, "text": "roster portraits"},
+  {"kind": "image", "x": 5665, "y": 198, "w": 309, "h": 108, "text": "known people"},
+  {"kind": "line", "x": 2663, "y": 3222, "w": 691, "h": 120, "text": "Watch the café terrace."},
+  {"kind": "image", "x": 42, "y": 2946, "w": 636, "h": 396, "text": "plot scope"},
+  {"kind": "speech", "x": -790, "y": -2076, "w": 727, "h": 75, "text": "Friends first, force last. Remember."},
+  {"kind": "speech", "x": -714, "y": -2252, "w": 888, "h": 75, "text": "The square looks ordinary. That's the trouble."},
+  {"kind": "image", "x": 3974, "y": 2224, "w": 78, "h": 78, "text": "door marker"},
+  {"kind": "image", "x": 2900, "y": 1019, "w": 216, "h": 216, "text": "attention callout"},
+  {"kind": "image", "x": 3893, "y": 1966, "w": 78, "h": 78, "text": "pip guard"},
+  {"kind": "image", "x": 5616, "y": 2593, "w": 78, "h": 78, "text": "pip driver"},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

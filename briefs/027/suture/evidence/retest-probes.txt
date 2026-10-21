@@ -1,0 +1,153 @@
+# Suture retest probes, 2026-10-20 16:33 +0700; scratch = copy of sim/ (engine identical, harness patch only), rulebook sha256 008eeeb37e7d5f59
+## preset lab
+L3                       success                    4:54.6  T 22/26 A 2 St 2>-2 down 2 capt 1 hp 44% hits 8 foes 5 shots 35 free 1/1 | pass (heavy debrief) | replay identical
+L3:kite                  failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 1 capt 0 hp 33% hits 6 foes 7 shots 72 free 3/1 | pass (fail) | replay identical
+L3:reset-kite            failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 1 capt 0 hp 33% hits 6 foes 7 shots 72 free 3/1 | pass (fail) | replay identical
+L3:rawreset-kite         failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 1 capt 0 hp 33% hits 6 foes 7 shots 72 free 3/1 | pass (fail) | replay identical
+L3:focus-rawreset-kite   failure sealed             5:05.0  T 18/18 A 2 St 2>-1 down 1 capt 0 hp 22% hits 4 foes 7 shots 73 free 2/1 | pass (fail) | replay identical
+L3:cycle-kite            failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 1 capt 0 hp 33% hits 6 foes 7 shots 72 free 3/1 | pass (fail) | replay identical
+L3:runkite               failure sealed             5:05.0  T 16/16 A 2 St 2>-1 down 0 capt 0 hp 0% hits 0 foes 7 shots 65 free 3/2 | pass (fail) | replay identical
+L3:enfgo-carfree-kite    success                    4:53.3  T 19/19 A 2 St 2>0 down 1 capt 0 hp 44% hits 8 foes 5 shots 46 free 2/1 | pass (heavy debrief) | replay identical
+L3:focus-enfgo-carfree-kite success                    4:55.3  T 17/17 A 2 St 2>0 down 1 capt 0 hp 27% hits 5 foes 5 shots 48 free 1/1 | pass (heavy debrief) | replay identical
+L3:enfgo-carfree-runkite success                    4:39.2  T 15/15 A 2 St 2>0 down 0 capt 0 hp 11% hits 2 foes 5 shots 33 free 1/1 | FAIL — no op down or captured, health lost 11 % < 40, no open case | replay identical
+L3:focus-enfgo-carfree-runkite success                    4:36.4  T 15/15 A 2 St 2>0 down 0 capt 0 hp 11% hits 2 foes 5 shots 34 free 1/1 | FAIL — no op down or captured, health lost 11 % < 40, no open case | replay identical
+P-A                      success                    5:24.3  T 5/5 A 1 St 2>3 down 0 capt 0 hp 0% hits 0 foes 3 shots 33 free 1/1 | pass | replay identical
+P-G                      success                    4:41.9  T 6/6 A 1 St 2>3 down 0 capt 0 hp 22% hits 4 foes 3 shots 33 free 0/0 | pass | replay identical
+P-B                      success                    8:40.6  T 3/3 A 0 St 2>3 down 0 capt 0 hp 16% hits 3 foes 2 shots 27 free 0/0 | pass | replay identical
+## preset today
+L3                       failure sealed             5:05.0  T 26/26 A 2 St 2>-2 down 3 capt 0 hp 66% hits 12 foes 3 shots 23 free 1/1 | pass (fail) | replay identical
+L3:kite                  failure sealed             5:05.0  T 17/17 A 2 St 2>0 down 1 capt 0 hp 22% hits 4 foes 7 shots 56 free 4/1 | pass (fail) | replay identical
+L3:reset-kite            failure sealed             5:05.0  T 23/23 A 2 St 2>0 down 0 capt 0 hp 16% hits 3 foes 6 shots 50 free 1/1 | pass (fail) | replay identical
+L3:rawreset-kite         failure sealed             5:05.0  T 15/15 A 2 St 2>0 down 0 capt 0 hp 0% hits 0 foes 1 shots 195 free 1/1 | pass (fail) | replay identical
+L3:focus-rawreset-kite   failure sealed             5:05.0  T 15/15 A 2 St 2>0 down 0 capt 0 hp 0% hits 0 foes 1 shots 203 free 1/1 | pass (fail) | replay identical
+L3:cycle-kite            failure sealed             5:05.0  T 23/23 A 2 St 2>0 down 0 capt 0 hp 16% hits 3 foes 6 shots 50 free 1/1 | pass (fail) | replay identical
+L3:runkite               failure sealed             5:05.0  T 17/17 A 2 St 2>0 down 0 capt 0 hp 0% hits 0 foes 7 shots 57 free 2/2 | pass (fail) | replay identical
+L3:enfgo-carfree-kite    failure sealed             5:05.0  T 17/17 A 2 St 2>0 down 1 capt 0 hp 33% hits 6 foes 3 shots 27 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-kite failure sealed             5:05.0  T 17/17 A 2 St 2>0 down 1 capt 0 hp 33% hits 6 foes 3 shots 27 free 1/1 | pass (fail) | replay identical
+L3:enfgo-carfree-runkite success                    4:45.0  T 18/18 A 2 St 2>0 down 0 capt 0 hp 0% hits 0 foes 3 shots 20 free 2/1 | FAIL — no op down or captured, health lost 0 % < 40, no open case | replay identical
+L3:focus-enfgo-carfree-runkite success                    4:45.0  T 18/18 A 2 St 2>0 down 0 capt 0 hp 0% hits 0 foes 3 shots 20 free 2/1 | FAIL — no op down or captured, health lost 0 % < 40, no open case | replay identical
+P-A                      success                    5:00.1  T 5/5 A 1 St 2>3 down 0 capt 0 hp 11% hits 2 foes 3 shots 15 free 2/2 | pass | replay identical
+P-G                      success                    4:24.5  T 6/6 A 1 St 2>3 down 1 capt 0 hp 44% hits 8 foes 3 shots 15 free 1/0 | FAIL — 1 op down; health lost 44 % > 33 | replay identical
+P-B                      success                    8:35.4  T 3/3 A 0 St 2>3 down 0 capt 0 hp 22% hits 4 foes 2 shots 13 free 0/0 | pass | replay identical
+## lab, kite off
+L3:enfgo-carfree-runkite success                    4:34.2  T 13/13 A 2 St 2>0 down 0 capt 0 hp 11% hits 2 foes 5 shots 37 free 2/1 | FAIL — no op down or captured, health lost 11 % < 40, no open case | replay identical
+L3:focus-enfgo-carfree-runkite success                    4:36.2  T 13/13 A 2 St 2>0 down 1 capt 0 hp 22% hits 4 foes 5 shots 39 free 2/1 | pass (heavy debrief) | replay identical
+L3:runkite               failure sealed             5:05.0  T 13/13 A 2 St 2>0 down 0 capt 0 hp 0% hits 0 foes 7 shots 73 free 3/2 | pass (fail) | replay identical
+## lab, lab-kite-chase-cm probe chase-30
+L3                       success                    4:54.6  T 22/26 A 2 St 2>-2 down 2 capt 1 hp 44% hits 8 foes 5 shots 35 free 1/1 | pass (heavy debrief) | replay identical
+L3:kite                  failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 2 capt 0 hp 55% hits 10 foes 7 shots 68 free 1/1 | pass (fail) | replay identical
+L3:enfgo-carfree-runkite failure enforcer-down      3:53.1  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 3 shots 33 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-runkite failure enforcer-down      3:53.3  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 3 shots 31 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-kite success                    4:07.5  T 17/29 A 2 St 2>0 down 3 capt 3 hp 72% hits 13 foes 6 shots 50 free 1/1 | pass (heavy debrief) | replay identical
+P-A                      success                    5:24.3  T 5/5 A 1 St 2>3 down 0 capt 0 hp 0% hits 0 foes 3 shots 33 free 1/1 | pass | replay identical
+P-G                      success                    4:41.9  T 6/6 A 1 St 2>3 down 0 capt 0 hp 22% hits 4 foes 3 shots 33 free 0/0 | pass | replay identical
+P-B                      success                    8:40.6  T 3/3 A 0 St 2>3 down 0 capt 0 hp 16% hits 3 foes 2 shots 27 free 0/0 | pass | replay identical
+## lab, lab-kite-chase-cm probe chase-40
+L3                       success                    4:54.6  T 22/26 A 2 St 2>-2 down 2 capt 1 hp 44% hits 8 foes 5 shots 35 free 1/1 | pass (heavy debrief) | replay identical
+L3:kite                  failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 3 capt 0 hp 66% hits 12 foes 3 shots 37 free 1/1 | pass (fail) | replay identical
+L3:enfgo-carfree-runkite failure enforcer-down      3:52.1  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 1 shots 29 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-runkite failure enforcer-down      3:52.3  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 1 shots 27 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-kite success                    4:07.5  T 17/29 A 2 St 2>0 down 3 capt 3 hp 72% hits 13 foes 6 shots 50 free 1/1 | pass (heavy debrief) | replay identical
+P-A                      success                    5:24.3  T 5/5 A 1 St 2>3 down 0 capt 0 hp 0% hits 0 foes 3 shots 33 free 1/1 | pass | replay identical
+P-G                      success                    4:41.9  T 6/6 A 1 St 2>3 down 0 capt 0 hp 22% hits 4 foes 3 shots 33 free 0/0 | pass | replay identical
+P-B                      success                    8:40.6  T 3/3 A 0 St 2>3 down 0 capt 0 hp 16% hits 3 foes 2 shots 27 free 0/0 | pass | replay identical
+## lab, lab-kite-chase-cm probe chase-60
+L3                       success                    4:54.6  T 22/26 A 2 St 2>-2 down 2 capt 1 hp 44% hits 8 foes 5 shots 35 free 1/1 | pass (heavy debrief) | replay identical
+L3:kite                  failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 3 capt 0 hp 66% hits 12 foes 3 shots 37 free 1/1 | pass (fail) | replay identical
+L3:enfgo-carfree-runkite failure enforcer-down      3:49.5  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 1 shots 27 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-runkite failure enforcer-down      3:48.9  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 1 shots 28 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-kite success                    4:07.5  T 17/29 A 2 St 2>0 down 3 capt 3 hp 72% hits 13 foes 6 shots 50 free 1/1 | pass (heavy debrief) | replay identical
+P-A                      success                    5:24.3  T 5/5 A 1 St 2>3 down 0 capt 0 hp 0% hits 0 foes 3 shots 33 free 1/1 | pass | replay identical
+P-G                      success                    4:41.9  T 6/6 A 1 St 2>3 down 0 capt 0 hp 22% hits 4 foes 3 shots 33 free 0/0 | pass | replay identical
+P-B                      success                    8:40.6  T 3/3 A 0 St 2>3 down 0 capt 0 hp 16% hits 3 foes 2 shots 27 free 0/0 | pass | replay identical
+## lab, lab-kite-chase-cm probe chase-1000
+L3                       success                    4:54.6  T 22/26 A 2 St 2>-2 down 2 capt 1 hp 44% hits 8 foes 5 shots 35 free 1/1 | pass (heavy debrief) | replay identical
+L3:kite                  failure sealed             5:05.0  T 20/20 A 2 St 2>-1 down 3 capt 0 hp 66% hits 12 foes 3 shots 37 free 1/1 | pass (fail) | replay identical
+L3:enfgo-carfree-runkite failure enforcer-down      3:47.3  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 1 shots 26 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-runkite failure enforcer-down      3:49.0  T 15/15 A 2 St 2>0 down 2 capt 0 hp 55% hits 10 foes 1 shots 28 free 1/1 | pass (fail) | replay identical
+L3:focus-enfgo-carfree-kite success                    4:07.5  T 17/29 A 2 St 2>0 down 3 capt 3 hp 72% hits 13 foes 6 shots 50 free 1/1 | pass (heavy debrief) | replay identical
+P-A                      success                    5:24.3  T 5/5 A 1 St 2>3 down 0 capt 0 hp 0% hits 0 foes 3 shots 33 free 1/1 | pass | replay identical
+P-G                      success                    4:41.9  T 6/6 A 1 St 2>3 down 0 capt 0 hp 22% hits 4 foes 3 shots 33 free 0/0 | pass | replay identical
+P-B                      success                    8:40.6  T 3/3 A 0 St 2>3 down 0 capt 0 hp 16% hits 3 foes 2 shots 27 free 0/0 | pass | replay identical
+## chase-budget trace (lab, L3:focus-enfgo-carfree-runkite)
+   3:15.0 officer-1 hp 30 st advance kiteAt -1 walked 0 cm capped False tgt  nearest scout 81.8 m
+   3:16.0 security-2 hp 30 st advance kiteAt 1874 walked 1843 cm capped False tgt  nearest tech 18.0 m
+   3:18.0 officer-2 hp 30 st advance kiteAt 1959 walked 433 cm capped False tgt  nearest scout 74.1 m
+   3:20.0 officer-1 hp 30 st advance kiteAt 1959 walked 865 cm capped False tgt  nearest scout 69.2 m
+   3:21.0 security-2 hp 30 st hold kiteAt 1874 walked 1999 cm capped False tgt  nearest tech 16.4 m
+   3:23.0 officer-2 hp 30 st advance kiteAt 1959 walked 1513 cm capped False tgt  nearest scout 61.9 m
+   3:25.0 officer-1 hp 30 st advance kiteAt 1959 walked 1944 cm capped False tgt  nearest scout 57.2 m
+   3:26.0 security-2 hp 20 st hold kiteAt 1874 walked 1999 cm capped False tgt  nearest tech 16.4 m
+   3:28.0 officer-2 hp 30 st hold kiteAt 1959 walked 1999 cm capped False tgt  nearest scout 53.3 m
+   3:30.0 officer-1 hp 30 st hold kiteAt 1959 walked 1999 cm capped False tgt  nearest scout 51.0 m
+   3:31.0 security-2 hp 10 st hold kiteAt 1874 walked 1999 cm capped False tgt  nearest tech 16.4 m
+   3:33.0 officer-2 hp 30 st hold kiteAt 1959 walked 1999 cm capped False tgt  nearest scout 47.7 m
+   3:36.0 officer-1 hp 30 st hold kiteAt 1959 walked 1999 cm capped False tgt  nearest scout 44.4 m
+   3:38.0 officer-2 hp 30 st hold kiteAt 1959 walked 1999 cm capped False tgt  nearest scout 42.4 m
+   3:41.0 officer-1 hp 30 st hold kiteAt 1959 walked 1999 cm capped False tgt  nearest scout 39.5 m
+   3:43.0 officer-2 hp 30 st advance kiteAt -1 walked 1999 cm capped False tgt  nearest scout 37.6 m
+   3:46.0 officer-1 hp 30 st advance kiteAt -1 walked 1999 cm capped False tgt  nearest scout 28.6 m
+   3:48.0 officer-2 hp 30 st advance kiteAt -1 walked 1999 cm capped False tgt  nearest scout 23.4 m
+   3:51.0 officer-1 hp 30 st hold kiteAt 2309 walked 1999 cm capped False tgt  nearest scout 18.0 m
+   3:53.0 officer-2 hp 30 st hold kiteAt 2309 walked 1999 cm capped False tgt  nearest scout 20.2 m
+   3:56.0 officer-1 hp 30 st hold kiteAt 2309 walked 1999 cm capped False tgt  nearest scout 18.2 m
+   3:58.0 officer-2 hp 30 st hold kiteAt 2309 walked 1999 cm capped False tgt  nearest scout 20.2 m
+   4:01.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest enforcer 17.7 m
+   4:03.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:06.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+   4:08.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:11.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+   4:13.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:16.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+   4:18.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:21.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+   4:23.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:26.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+   4:28.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:31.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+   4:33.0 officer-2 hp 30 st hold kiteAt -1 walked 1999 cm capped False tgt  nearest scout 19.4 m
+   4:36.0 officer-1 hp 30 st hold kiteAt -1 walked 2001 cm capped True tgt  nearest scout 17.7 m
+## pre-fight rivals trace
+   2:34.0 rivals hp 30 st  kiteAt -1 walked 0 cm capped False tgt  nearest tech 16.7 m
+   2:35.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 16.6 m
+   2:36.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.7 m
+   2:37.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 15.9 m
+   2:38.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.2 m
+   2:39.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 16.7 m
+   2:40.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 16.7 m
+   2:41.0 rivals hp 30 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 18.0 m
+   2:42.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 16.6 m
+   2:43.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 16.0 m
+   2:44.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 18.3 m
+   2:45.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 18.5 m
+   2:46.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.0 m
+   2:47.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.0 m
+   2:48.0 rivals hp 20 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.3 m
+   2:49.0 rivals hp 10 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.1 m
+   2:50.0 rivals hp 10 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.5 m
+   2:51.0 rivals hp 10 st  kiteAt 1543 walked 0 cm capped False tgt  nearest tech 17.1 m
+   2:52.0 rivals hp 10 st  kiteAt 1713 walked 0 cm capped False tgt  nearest tech 16.1 m
+   2:53.0 rivals hp 10 st  kiteAt 1713 walked 0 cm capped False tgt  nearest tech 17.8 m
+   2:54.0 rivals hp 10 st  kiteAt 1713 walked 0 cm capped False tgt  nearest tech 18.8 m
+   2:55.0 rivals hp 10 st  kiteAt 1713 walked 0 cm capped False tgt  nearest tech 17.1 m
+## band micro, police-1
+inputs c75922cfa066d97d rulebook out/suture027/rulebook.snapshot3.json preset lab
+L3:focus-enfgo-carfree-runkite success                    4:36.4  T 15/15 A 2 St 2>0 down 0 capt 0 hp 11% hits 2 foes 5 shots 34 free 1/1 resets 0 kites 9 | FAIL — no op down or captured, health lost 11 % < 40, no open case | replay identical
+   band: at 3:49.0 police-1 at (6400,-4125) hp 30; fixer at (1706,-4237)
+   band spot (4725,-4625)
+     3:50.9 shot.miss scout fires on officer-1 at 17 m (250 ‰): miss.
+     4:13.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:14.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:15.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:16.3 shot.hit fixer fires on police-1 at 17 m (250 ‰): hit.
+     4:17.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:18.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:19.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:20.3 shot.hit fixer fires on police-1 at 17 m (250 ‰): hit.
+     4:21.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:22.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:23.3 shot.miss fixer fires on police-1 at 17 m (250 ‰): miss.
+     4:24.3 shot.hit fixer fires on police-1 at 17 m (250 ‰): hit.
+     4:24.3 response.down police-1 is down.
+   band replay identical
+   end 4:24.3 police-1 down True fixer hp 40 Trail 21 Alert 2

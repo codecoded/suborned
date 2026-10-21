@@ -1,0 +1,39 @@
+--- sim/Suborned.Sim/GameKite.cs	2026-10-20 17:40:49
++++ out/suture027/r3/Suborned.Sim/GameKite.cs	2026-10-20 18:02:29
+@@ -184,11 +184,14 @@
+ 
+         void KiteFightCover(Gun g, Pt pos, Pt sp, Hostile? h, Unit? u)
+         {
++            if (Environment.GetEnvironmentVariable("DBG") is string dbg && dbg.Contains(g.Id) && Tick % 5 == 0) Console.Error.WriteLine($"DBG {Sim.Report.Clock(Tick)} {g.Id} by {g.KiteBy} d {G.Dist(pos, sp) / 100.0:0.00} m blocker {h?.Blocker} prot {Protected(pos, sp)} gap {Tick - g.StepAt} hp {g.Health} cover {g.Cover}");
+             if (h != null && h.Blocker) return;
+             if (u != null && !UnitStill(u)) return;
+-            if (Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
++            bool prA = Environment.GetEnvironmentVariable("PROBE_REPLAN") == "1", prB = Environment.GetEnvironmentVariable("PROBE_CLOSE") == "1";
++            if (Protected(pos, sp)) return;
++            if (Tick - g.StepAt < (prA ? Labr!.KiteReact : T(R.CoverStepGapS))) return;
+             g.StepAt = Tick;
+-            var best = FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) { KiteFightClose(g, pos, sp, h, u); return; }
++            var best = prB ? null : FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) { KiteFightClose(g, pos, sp, h, u); return; }
+             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks).");
+             g.KiteLast = Tick;
+             if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At); g.St = "advance"; return; }
+@@ -207,6 +210,7 @@
+             if (h != null)
+             {
+                 if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");
++                if (Environment.GetEnvironmentVariable("PROBE_RELEASE") == "1") ReleaseCover(g);
+                 g.KiteLast = Tick; h.Home = to; MoveTo(h, to); g.St = "advance"; return;
+             }
+             var path = KitePath(pos, to, int.MaxValue / 20); if (path == null) return;
+--- sim/Suborned.Sim/GameAi.cs	2026-10-20 15:54:10
++++ out/suture027/r3/Suborned.Sim/GameAi.cs	2026-10-20 17:59:11
+@@ -74,7 +74,8 @@
+             {
+                 if (op.Down || op.Inside) continue;
+                 bool foe = anyOp || (op.Gun.Drawn && !(Lab && Warned(op))) || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || markedFoes.Contains(Sim.Op.Name(op.Id)); // brief 013: security saw them do violence
+-                if (!foe || G.D2(pos, op.Pos) > eff || !sees(op.Pos)) continue;
++                long reach = eff; if (Lab && Environment.GetEnvironmentVariable("PROBE_ANSWERMAX") == "1" && g.ShotBy == Sim.Op.Name(op.Id) && g.ShotByTick >= 0 && Tick - g.ShotByTick <= T(R.LineLapseS)) reach = (long)g.W.MaxCm * g.W.MaxCm;
++                if (!foe || G.D2(pos, op.Pos) > reach || !sees(op.Pos)) continue;
+                 l.Add((Sim.Op.Name(op.Id), op.Pos));
+             }
+             if (anyOp && IsRival(id) && GuardAlly && !GuardDown) { var ga = PosOf("guard"); if (ga.HasValue && G.D2(pos, ga.Value) <= eff && sees(ga.Value)) l.Add(("guard", ga.Value)); }

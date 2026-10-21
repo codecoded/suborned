@@ -54,7 +54,8 @@ export function streetRules(c: WCtx): Check[] {
   out.push(rule('SF-11', G, 'Trees keep clear of junction corners 6, lamps 3, hydrants 2, pylon faces 3, megastructure supports 6 and any deck or bridge above', trees.length, bad11, 'all', 'streetscape.trees.keepClear'));
 
   // SF-12 every tram stop platform and every station side has its whole transit kit
-  const bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => (kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)) : spots.filter(x => x.s.kind === kind && test(x.s.edge))).length; // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
+  const twin = S.catalogue['phone-booth']?.twin as { variant: string; counts: number } | undefined, worth = (x: Spot) => twin && x.s.kind === 'phone-booth' && x.s.variant === twin.variant ? twin.counts : 1; // brief 026: a twin booth serves a pair
+  const bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)).length : spots.filter(x => x.s.kind === kind && test(x.s.edge)).reduce((a, x) => a + worth(x), 0); // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
   const need = (label: string, kind: string, test: (e: string) => boolean, n: number) => { const got = by(kind, test); if (got < n) bad12.push(`${label}: ${got} ${kind} (needs ${n})`); };
   const stops = w.transit.stops;
   for (const m of stops) for (const [kind, n] of [['tram-shelter', 1], ['bench', 2], ['ticket-machine', 1], ['timetable-column', 1], ['bin', 1], ['bollard', 2], ['pole-camera', 1]] as const) need(m.id, kind, e => e === m.id, n);

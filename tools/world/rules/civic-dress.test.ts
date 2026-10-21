@@ -7,7 +7,7 @@ import { civic, toPlanFn } from '../../plan/civic';
 import { type V, inPoly } from '../../plan/geom';
 import { derive, type Plan } from '../../plan/plan';
 import { ctxOf, generated } from '../../plan/world-ctx';
-import { civicClearance } from '../build';
+import { LAMP, civicClearance } from '../build';
 import { type Dressing, dressingOf, footOf, placementKinds } from '../civic/dress';
 import { look } from '../civic/look';
 import { adoptedBy } from '../gen/kitrefs';
@@ -59,8 +59,8 @@ describe('civic dressing: what is placed', () => {
     for (const s of dr.parasols.on) { const t = civicMass(base.w, `civic/${s.table}`).kit!.at, p = toPlan(s.at); expect(Math.hypot(t[0] - p[0], t[1] - p[1])).toBeLessThan(0.02); }
   });
   test('the piers under the v2 shelter take the stated 1.2, and the table sets are the play-zoom set', () => {
-    for (const id of ['civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']) expect(civicMass(base.w, id).kit!.scale).toEqual([1.2, 1.2, 1.2]);
-    expect(civicMass(base.w, 'civic/square-boarding-pavilion').kit!.id).toBe('BoardingPavilion_Square_v2');
+    for (const id of ['civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']) { expect(civicMass(base.w, id).hidden).toBe(true); expect(civicMass(base.w, id).kit).toBeUndefined(); } // brief 028: the testbed bay carries its own supports
+    expect(civicMass(base.w, 'civic/square-boarding-pavilion').kit!.id).toBe('BoardingPavilion_TB_Square');
     expect(base.w.civic.filter(m => /cafe-table-\d$/.test(m.id)).every(m => m.kit?.id === 'CafeSet_Tulip_Play')).toBe(true);
   });
   test('the parasols, the frontages, the shelter and the cypresses take the architecture fade; lamps, bollards and planters do not', () => {
@@ -130,12 +130,12 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
   test('the civic masses draw the override table of civic-look.json and no other mass replaces a material; the pool its own water, the planters the brass bead', () => {
     const drawn = Object.fromEntries(base.w.civic.filter(m => m.materials).map(m => [m.id, m.materials]));
     expect(drawn).toEqual(look.materials);
-    expect(civicMass(base.w, 'civic/atom-fountain').materials).toEqual({ DK_Enamel_Turquoise: 'DK_Enamel_Seafoam', DK_Lamp: 'DK_Lamp_Deco', DK_Water: 'DK_Pool_Civic' });
+    expect(civicMass(base.w, 'civic/atom-fountain').materials).toBeUndefined(); // brief 028: AtomFountain_Testbed draws its own materials
     const planters = ['north-east', 'north-west', 'south-west', 'south-east'].map(c => `civic/fountain-garden-${c}`);
     // DK_Accent_Gold is brass #99784D in the kit now, the same colour as DK_Brass_Civic: the slot swap is kept (it is in the export, and Latch builds from it), not needed for the colour
     for (const id of planters) expect(civicMass(base.w, id).materials).toMatchObject({ DK_Accent_Gold: 'DK_Brass_Civic', DK_Faience_Teal: 'DK_Enamel_Seafoam', DK_Leaf_CoreShrub: 'DK_Leaf_CivicDark' });
     expect(planters.map(id => civicMass(base.w, id).materials!.DK_Flower_Coral)).toEqual(['DK_Flower_CoralSoft', 'DK_Flower_Flamingo', 'DK_Flower_CoralSoft', 'DK_Flower_Flamingo']);
-    expect(civicMass(base.w, 'civic/foreground-civic-robot').materials).toEqual({ DK_Signal_Amber: 'DK_Glow_Seafoam', DK_Face_Amber: 'DK_Face_Teal', DK_Enamel_Coral: 'DK_Enamel_Coral17' });
+    expect(civicMass(base.w, 'civic/foreground-civic-robot').materials).toEqual({ DK_Signal_Amber: 'DK_Glow_Seafoam', DK_Face_Amber: 'DK_Face_Teal', DK_RobotEnamel_Coral: 'DK_Enamel_Coral17' });
     expect(adoptedBy('AtomFountain')!.materials).toContain('DK_Water');
     expect(adoptedBy('PlanterArc')!.materials).toContain('DK_Accent_Gold');
   });
@@ -206,10 +206,10 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
     expect(overrideProblems(base.w.civic)).toEqual([]);
     const fountain = (m: Record<string, string>): Mass => ({ ...civicMass(base.w, 'civic/atom-fountain'), materials: m });
     const wrongSlot = rules(w => { civicMass(w, 'civic/atom-fountain').materials = { DK_Nothing: 'DK_Pool_Civic' }; })['CD-2']!;
-    expect(wrongSlot.ok).toBe(false); expect(wrongSlot.detail).toContain('replaces DK_Nothing, which AtomFountain does not draw');
-    expect(overrideProblems([fountain({ DK_Water: 'DK_Lagoon' })])).toEqual(['civic/atom-fountain draws DK_Water as DK_Lagoon, which the palette does not list']);
-    expect(overrideProblems([fountain({ DK_Water: 'DK_Pool_Civic' })], () => undefined)).toEqual([]); // a pinned kit digest lists no materials: the slot cannot be judged, the palette still is
-    expect(overrideProblems([{ ...fountain({ DK_Water: 'DK_Pool_Civic' }), kit: undefined }])).toEqual(['civic/atom-fountain replaces DK_Water, which a mass with no kit piece does not draw']);
+    expect(wrongSlot.ok).toBe(false); expect(wrongSlot.detail).toContain('replaces DK_Nothing, which AtomFountain_Testbed does not draw');
+    expect(overrideProblems([fountain({ DK_Fountain_Water: 'DK_Lagoon' })])).toEqual(['civic/atom-fountain draws DK_Fountain_Water as DK_Lagoon, which the palette does not list']);
+    expect(overrideProblems([fountain({ DK_Fountain_Water: 'DK_Pool_Civic' })], () => undefined)).toEqual([]); // a pinned kit digest lists no materials: the slot cannot be judged, the palette still is
+    expect(overrideProblems([{ ...fountain({ DK_Fountain_Water: 'DK_Pool_Civic' }), kit: undefined }])).toEqual(['civic/atom-fountain replaces DK_Fountain_Water, which a mass with no kit piece does not draw']);
   });
   test('CD-3 counts the LOD0 triangles of the new pieces as placed (the tufts and the terrace among them), and fails over the budget', () => {
     const n = civicTris(base.w.civic);
@@ -228,13 +228,13 @@ describe('CD-2 adopted, CD-3 budget, CD-4 palette listing', () => {
   });
   test('CD-4 also holds the bed kerb and hedge and the replaced slots', () => {
     const apart = drawnApart(base.w.civic);
-    expect(apart.map(a => a.material)).toEqual(expect.arrayContaining(['DK_Limestone', 'DK_Leaf_CivicDark', 'DK_Pool_Civic']));
+    expect(apart.map(a => a.material)).toEqual(expect.arrayContaining(['DK_Limestone', 'DK_Leaf_CivicDark', 'DK_Brass_Civic']));
     expect(paletteRule(look.pieces, look.palette, undefined, apart).ok).toBe(true);
     expect(paletteRule([], look.palette, undefined, [{ material: 'DK_Mauve', by: 'bed kerb' }]).detail).toContain('DK_Mauve (bed kerb) has no unlit colour');
-    expect(look.palette.materials.map(m => m.material)).toEqual(expect.arrayContaining(['DK_Brass_Civic', 'DK_Banner_Comet_Seafoam', 'DK_Pool_Civic']));
+    expect(look.palette.materials.map(m => m.material)).toEqual(expect.arrayContaining(['DK_Brass_Civic', 'DK_Banner_Comet_Seafoam', 'DK_Fountain_Water']));
   });
   test('every piece brief 008 added is named in the placement kinds or a swap, so none is orphaned', () => {
-    const kinds = placementKinds(dr), used = new Set([...kinds.keys(), ...Object.values(look.swaps), ...Object.keys(look.place), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces, ...look.pieces.filter(p => /^(CafeSet_Tulip_Play|PavilionPier|CafeBay$)/.test(p))]);
+    const kinds = placementKinds(dr), used = new Set([...LAMP.hues.map(h => `CafeLamp_Testbed_${h}`), ...kinds.keys(), ...Object.values(look.swaps), ...Object.keys(look.place), ...Object.values(look.companions).flat(), ...look.beds.tufts.pieces, ...look.pieces.filter(p => /^(CafeSet_Tulip_Play|PavilionPier|CafeBay$)/.test(p))]);
     expect(look.pieces.filter(p => !used.has(p) && !/^PlanterRun_(2|Corner|End)/.test(p))).toEqual([]);
   });
 });

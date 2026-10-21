@@ -1,0 +1,9 @@
+[OldWorld] crowd: 3000 agents, drawn 174; camera DK crowd camera
+[OldWorld] play crowd-native.png (3316 ms)
+[OldWorld] play crowd-square-play-30.png (94 ms)
+[OldWorld] play crowd-square-play-210.png (89 ms)
+[OldWorld] play crowd-square-street.png (146 ms)
+[OldWorld] play crowd-avenue-play-30.png (68 ms)
+[OldWorld] play crowd-avenue-play-210.png (86 ms)
+[OldWorld] play crowd-avenue-street.png (108 ms)
+[OldWorld] crowd drawn 617 (615184 tris) last frame

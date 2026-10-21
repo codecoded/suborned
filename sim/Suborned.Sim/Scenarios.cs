@@ -10,14 +10,59 @@ namespace Suborned.Sim
     public sealed class Scenario
     {
         public string Id = "", Intent = "", Proto = ""; public Start Start = new Start(); public Action<Run> Body = _ => { };
+        /// <summary>Brief 029: a fight range scenario's layout (open, dense; Engine.LoadRange); "" for the Handover's.</summary>
+        public string Layout = "";
     }
 
     /// <summary>A scenario being played: the game, and the checks it made.</summary>
     public sealed class Run
     {
         public readonly Game G; public readonly List<(bool ok, string what)> Checks = new List<(bool, string)>();
+        /// <summary>The inputs the run was made with (Scenarios.Run sets it; null for a run made by hand).</summary>
+        public Engine.Inputs? Inputs;
         public Run(Game g) { G = g; }
+        /// <summary>Brief 027 (the fight-lab matrix only): orders a scripted player gives each tick of a fight, before the step. Null in every scenario.</summary>
+        public Action? PerTick;
+        /// <summary>Tuning.md §7.11.3 (b) (the prepared player, lab): fire first on whoever fires on the Vale holder, then the blocker, then the nearest; off, the nearest.</summary>
+        public bool Focus;
+        /// <summary>Brief 027 B5 (the fight-lab matrix with coverSnap on): the perfect player uses the cover marks. Standing with a target in its
+        /// weapon's max ring and no point held, an agent clicks 1 m short of the nearest free mark (Game.CoverMarks) that shields against that
+        /// target and keeps it in reach with a line, and the snap lands it; holding a point with a target in reach, it holds instead of advancing.
+        /// False in every scenario and for every other preset, so their runs are as before.</summary>
+        public bool CoverPlayer;
+        readonly Dictionary<string, int> coverSeekAt = new Dictionary<string, int>(StringComparer.Ordinal);
+        const int SupportCm = 1500;
+        /// <summary>The cover player's step for one agent: true when it gave a move (or holds its point), so Engage leaves it there this tick.</summary>
+        bool CoverStep(string name, Op e, Weapon w, Pt np, long bd, bool line, List<string> ts)
+        {
+            if (!CoverPlayer || !G.CoverSnapOn) return false;
+            if (e.Walk != null) return e.Gun.Cover.Length > 0; // on its way to a point it snapped to: let it get there
+            if (bd > (long)w.MaxCm * w.MaxCm) return false;
+            if (e.Gun.Cover.Length > 0) return line; // holding a point with the target in reach and a line: hold, fire from cover
+            if (coverSeekAt.TryGetValue(name, out var at) && G.Tick < at) return false;
+            coverSeekAt[name] = G.Tick + Game.T(3);
+            int sec = G.Tick / Game.Hz; CoverMark? best = null; int bestN = 0;
+            bool valeOut = G.Vale == ValeAt.WithEnforcer || G.Vale == ValeAt.Car; var en = G.OpOf(OpId.Enforcer); var holder = G.Vale == ValeAt.Car || en.Inside ? G.S.At(G.S.GetawayCar) : en.Pos;
+            var foes = new List<Pt>(); foreach (var id in ts) { var p = G.PosOf(id); if (p.HasValue && G.GunOf(id) is Gun fg && !fg.Down) foes.Add(p.Value); }
+            foreach (var m in G.CoverMarks(e.Id))
+            {
+                if (m.HeldBy.Length > 0) continue;
+                var cp = G.S.Cover.Find(x => x.Id == m.Id)!;
+                if (!CoverRules.Protects(cp, np, sec, G.R.PointBlankCm) || !G.Within(m.At, np, w.MaxCm) || !G.S.Sight(m.At, np, G.R.Eye)) continue;
+                if (valeOut && !G.Within(m.At, holder, SupportCm)) continue; // Motive tuning.md §7.5: once Vale is out, a mark within 15 m of whoever holds him (support, not a cover hunt)
+                int n = 0; foreach (var f in foes) if (CoverRules.Protects(cp, f, sec, G.R.PointBlankCm)) n++; // the most of the foes it shields against, then the nearest
+                if (best == null || n > bestN || (n == bestN && m.DistanceCm < best.DistanceCm)) { best = m; bestN = n; }
+            }
+            if (best == null) return false;
+            long d = Math.Max(1, best.DistanceCm); Pt click = best.At;
+            if (d > 100) { var q = new Pt(best.At.X + (int)((e.Pos.X - best.At.X) * 100 / d), best.At.Y + (int)((e.Pos.Y - best.At.Y) * 100 / d)); if (G.S.Grid.Free(q) && G.PreviewSnap(e.Id, q)?.Id == best.Id) click = q; }
+            return G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = click }).ok;
+        }
         public bool Is(bool ok, string what) { Checks.Add((ok, what)); return ok; }
+        /// <summary>A balance line a design note predicts (tuning.md §8.7): recorded with its verdict, never a failed check, so the engine's
+        /// numbers go back to the line's author (Motive) instead of being tuned to it. The suite's Lines() lists them.</summary>
+        public bool Line(bool ok, string what) { Checks.Add((true, (ok ? "line met: " : "LINE MISSED: ") + what)); Lines.Add((ok, what)); return ok; }
+        public readonly List<(bool ok, string what)> Lines = new List<(bool, string)>();
         public void Eq<T>(T a, T b, string what) => Is(EqualityComparer<T>.Default.Equals(a, b), what + " (got " + Inv(a) + ", want " + Inv(b) + ")");
         static string Inv(object? v)
         {
@@ -116,21 +161,37 @@ namespace Suborned.Sim
                     var e = Op(name); var w = e.Gun.W;
                     if (e.Down || e.Inside || e.InCar || e.Busy != null || w == null) continue; // in the car: no fire, and a move would step out (brief 018)
                     string near = ""; Pt np = default; long bd = long.MaxValue;
-                    foreach (var id in ts) { var at = G.PosOf(id); if (!at.HasValue || G.GunOf(id)!.Down) continue; long d = G.D2(e.Pos, at.Value); if (d < bd) { bd = d; near = id; np = at.Value; } }
+                    int rank = 9;
+                    foreach (var id in ts)
+                    {
+                        var at = G.PosOf(id); if (!at.HasValue || G.GunOf(id)!.Down) continue; long d = G.D2(e.Pos, at.Value);
+                        if (G.FightOverTick != int.MaxValue / 4 && G.Hostiles.Exists(h => h.Id == id)) continue; // tuning.md §9.1: after fight.over a hostile is an ordinary person (traced); the scripted player leaves them
+                        int k = 2;
+                        if (Focus) { var hg = G.GunOf(id)!; bool onHolder = G.Vale == ValeAt.WithEnforcer && hg.Target == "enforcer" && hg.Fired; bool blocker = G.Hostiles.Exists(h => h.Id == id && h.Blocker); k = onHolder ? 0 : blocker ? 1 : 2; } // §7.11.3 (b)
+                        if (k < rank || (k == rank && d < bd)) { rank = k; bd = d; near = id; np = at.Value; }
+                    }
                     if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.S.Stand(G.S.GetawayCar) }); continue; }
                     if (name == "enforcer" && G.Vale == ValeAt.WithEnforcer) { if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } // brief 018: walking Vale he doesn't fire; he holds back while the others fight
                     bool line = G.S.Sight(e.Pos, np, G.R.Eye);
                     bool inEff = line && bd <= (long)(w.EffCm - 200) * (w.EffCm - 200);
                     bool firedOn = G.GunOf(near)!.Target == name;
                     if (e.Gun.Order.Length == 0 && line && bd <= (long)w.MaxCm * w.MaxCm && (inEff || (advance && e.Walk == null) || firedOn)) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "fire", Target = near });
+                    // tuning.md §7.11.3 (a), the ping-pong: a fire order's walk into range (fire.close; today's weapons.close) wins until its target is
+                    // down or out of reach, so neither the cover seek nor the move toward the target re-orders an agent walking in to fire
+                    if (e.CloseWalk && e.Gun.Order.Length > 0) continue;
+                    if (CoverStep(name, e, w, np, bd, line, ts)) continue; // brief 027 B5: the matrix's cover player only
                     if (!advance) continue; // holding a post
                     if (!inEff)
                     {
                         var to = G.S.Grid.NearestFree(np);
-                        if (to.HasValue && (e.Walk == null || !G.Within(e.Walk.End, to.Value, 200))) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = to.Value }); // re-aim the walk only when the target has moved 2 m
+                        // §7.11.3 (a): a move the cover snap moved counts as arrived at the snapped point: re-aim only when the target has moved 2 m
+                        // from where the move would end now (the snap of the same click)
+                        Pt? ends = to.HasValue ? (G.PreviewSnap(e.Id, to.Value)?.At ?? to.Value) : (Pt?)null;
+                        if (to.HasValue && (e.Walk == null || !G.Within(e.Walk.End, ends!.Value, 200))) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = to.Value }); // re-aim the walk only when the target has moved 2 m
                     }
                     else if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); // in reach: stand and shoot
                 }
+                PerTick?.Invoke(); // brief 027 (the fight-lab matrix): a player's extra orders each tick (the field); null in every scenario
                 G.Step();
             }
         }
@@ -213,7 +274,7 @@ namespace Suborned.Sim
         public static Scenario? Find(string id) { foreach (var s in All) if (string.Equals(s.Id, id, StringComparison.OrdinalIgnoreCase)) return s; return null; }
         public static Run Run(Engine.Inputs i, Scenario s)
         {
-            var r = new Run(Engine.New(i, s.Start));
+            var r = new Run(Engine.New(i, s.Start)) { Inputs = i };
             s.Body(r);
             r.G.Finish();
             return r;
@@ -224,9 +285,10 @@ namespace Suborned.Sim
             // The 28 are the top-down test's: it had no final fight and no crowd. N10, N11 and N12 test those; the 28 keep their own world.
             // Brief 013: they also keep the top-down test's response, security level 1 (routine: today's dispatch and seal, no robots at Alert 2);
             // the mission's own level (the civic district's 2) is the N cases' and the route scripts'.
-            if (id.StartsWith("S", StringComparison.Ordinal)) { s.Start.FinalFight = false; s.Start.Crowd = false; s.Start.Security ??= 1; }
+            if (id.StartsWith("S", StringComparison.Ordinal) && !id.Contains('-')) /* the 28 are S1–S28; Motive's S9-* (tuning.md §9.5) are Handover cases */ { s.Start.FinalFight = false; s.Start.Crowd = false; s.Start.Security ??= 1; }
             all!.Add(s); return s;
         }
         static int T(int s) => Game.T(s);
+
     }
 }

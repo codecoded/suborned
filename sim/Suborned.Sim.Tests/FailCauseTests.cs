@@ -11,7 +11,7 @@ public class FailCauseTests
 {
     static readonly Engine.Inputs I = Repo.Inputs;
     static readonly string Root = Engine.FindRoot(AppContext.BaseDirectory);
-    static readonly string[] Fails = { "vale-dead", "vale-leaves", "rivals-reach-vale", "sealed", "enforcer-down", "entry-seen-guard", "entry-seen-camera", "entry-seen-patrol", "abduction-seen-camera", "driver-shot", "engine-error" };
+    static readonly string[] Fails = { "vale-dead", "vale-leaves", "rivals-reach-vale", "sealed", "enforcer-down", "entry-seen-guard", "entry-seen-camera", "entry-seen-patrol", "abduction-seen-camera", "driver-shot", "getaway-lost", "engine-error" };
     static readonly string[] Kinds = { "camera", "guard", "patrol", "officer", "robot", "rival", "person", "vale", "op", "car", "desk", "heard" };
 
     /// <summary>The cause's shape, whatever the ending: it matches the result, it is at the last tick, a single culprit is named and placed
@@ -76,7 +76,7 @@ public class FailCauseTests
         var seen = new SortedSet<string>(StringComparer.Ordinal);
         foreach (var s in Scenarios.All) { var g = Scenarios.Run(I, s).G; if (g.Cause != null) seen.Add(g.Cause.Fail + "/" + g.Cause.Why); }
         // engine-error is never reached by play (EngineErrorNamesNoCulprit); brief 018's rival at the car is a fixture (ARivalAtTheCar…)
-        var want = new[] { "abduction-seen-camera/seen", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "entry-seen-patrol/seen",
+        var want = new[] { "abduction-seen-camera/seen", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "entry-seen-patrol/seen", "getaway-lost/wrecked",
             "rivals-reach-vale/beat-to-pickup", "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/reached-at-close", "sealed/sealed", "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
             "withdraw/car-left-without-vale", "withdraw/withdrew" };
         foreach (var w in want) Assert.True(seen.Contains(w), $"no scenario ends in {w} (seen: {string.Join(", ", seen)})");

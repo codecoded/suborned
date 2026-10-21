@@ -26,6 +26,9 @@ namespace Suborned.World
 
         public Vector3 At(int i) => v[i];
 
+        /// <summary>A vertex with its own UV (brief 026: the kerb stone and gutter strip, UV in metres along and across the kerb).</summary>
+        public int Vert(Vector3 p, Vector2 uv0) { PadUv(); v.Add(p); uv.Add(uv0); return v.Count - 1; }
+
         void PadUv() { uv ??= new List<Vector2>(); while (uv.Count < v.Count) uv.Add(default); }
         void PadNormals() { nrm ??= new List<Vector3>(); while (nrm.Count < v.Count) nrm.Add(default); }
 
@@ -44,6 +47,19 @@ namespace Suborned.World
                 var into = -new Vector2(n.x, n.z).normalized * inset;
                 for (int k = 0; k < 3; k++) { var p = v[t[i + k]]; uv[t[i + k]] = (new Vector2(p.x, p.z) + into) / tile; }
             }
+            return this;
+        }
+
+        /// <summary>Brief 026 (Vela's round 1): breaks a periodic ground sheet's repeat across patches. Each patch (seeded by its id, FNV-1a, so
+        /// the same export lays the same ground) shifts its world-metre UVs by up to one `period` and mirrors them in u and/or v; never a 90°
+        /// turn, so flags keep their bond along the street. Within a patch the sheet stays continuous.</summary>
+        public MeshKit SeedUv(string id, float period)
+        {
+            if (uv == null || period <= 0f) return this;
+            uint h = 2166136261u; unchecked { foreach (char c in id) { h ^= c; h *= 16777619u; } }
+            float ox = (h & 0xffff) / 65536f * period, oy = ((h >> 16) & 0x7fff) / 32768f * period;
+            float mx = (h & 0x80000000u) != 0 ? -1f : 1f, my = (h & 0x8000u) != 0 ? -1f : 1f;
+            for (int i = 0; i < uv.Count; i++) uv[i] = new Vector2(mx * uv[i].x + ox, my * uv[i].y + oy);
             return this;
         }
 

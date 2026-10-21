@@ -1,6 +1,6 @@
 // Copy the adopted assets (with their materials and textures) from the DecoKit into unity/Assets/Suborned/Kit/, verifying sha256. Idempotent.
 import { createHash } from 'node:crypto';
-import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 
@@ -13,21 +13,27 @@ export function copyAdopted(kit: Kit, root: string, dest: string, gen?: string):
     assets.push(a.id);
     for (const f of a.files) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); }
   }
-  const r: CopyResult = { copied: [], skipped: [], bytes: 0, errors, assets, pruned: [] };
+  const staged: [string, string][] = [], r: CopyResult = { copied: [], skipped: [], bytes: 0, errors, assets, pruned: [] };
   for (const [path, f] of [...want].sort(([a], [b]) => a.localeCompare(b))) { // f.root = 'generated': from the generator's output
     const src = join(f.root === 'generated' ? (gen ?? root) : root, path), out = join(dest, path);
     if (existsSync(out) && statSync(out).size === f.bytes && sha(out) === f.sha256) { r.skipped.push(path); continue; }
     if (!existsSync(src)) { errors.push(`${path}: missing in source`); continue; }
     if (sha(src) !== f.sha256) { errors.push(`${path}: source hash differs from kit.json (rerun bun run kit catalogue)`); continue; }
-    mkdirSync(dirname(out), { recursive: true }); copyFileSync(src, out);
-    if (sha(out) !== f.sha256) { errors.push(`${path}: copy hash mismatch`); continue; }
-    r.copied.push(path); r.bytes += f.bytes;
+    mkdirSync(dirname(out), { recursive: true }); const tmp = out + '~'; copyFileSync(src, tmp); // staged under a name Unity ignores (trailing ~), renamed in one burst below so the editor reimports a finished set
+    if (sha(tmp) !== f.sha256) { errors.push(`${path}: copy hash mismatch`); rmSync(tmp, { force: true }); continue; }
+    staged.push([tmp, out]); r.copied.push(path); r.bytes += f.bytes;
   }
+  if (!errors.length) for (const [tmp, out] of staged) renameSync(tmp, out); else for (const [tmp] of staged) rmSync(tmp, { force: true });
   // LOD files no adopted piece lists any more (a piece regenerated lighter loses its LODs, brief 007 round 3): removed with their meta, so no stale LOD is imported
   const walk = (d: string): string[] => existsSync(d) ? readdirSync(d, { withFileTypes: true }).flatMap(e => e.isDirectory() ? walk(join(d, e.name)) : [join(d, e.name)]) : [];
   for (const abs of walk(join(dest, 'Models'))) {
     const path = relative(dest, abs); if (!/_L\d\.fbx$/.test(path) || want.has(path)) continue;
     rmSync(abs); if (existsSync(abs + '.meta')) rmSync(abs + '.meta'); r.pruned.push(path);
+  }
+  // textures no adopted piece lists any more (a material re-pointed at a lighter sheet leaves the old one behind: brief 026, the six pave_flags_v1 files): removed with their meta. Only Textures/ is pruned: it holds nothing but the kit's copies.
+  for (const abs of walk(join(dest, 'Textures'))) {
+    const path = relative(dest, abs).replace(/\.meta$/, ''); if (want.has(path) || want.has(path + '.meta') || want.has(relative(dest, abs))) continue;
+    rmSync(abs); r.pruned.push(`${relative(dest, abs)}`);
   }
   return r;
 }

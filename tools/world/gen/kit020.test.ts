@@ -29,14 +29,15 @@ test('the pieces of the pick are adopted, their sha256 rows carry every file, an
 
 test('the street kinds Vela picked now draw their kit pieces; the _Play copies and the single booth and newsstand took the slots of the heavy or ill-sized ones (follow-up)', () => {
   const ids = (k: string) => new Set(kinds(k).map(s => s.kit?.id ?? 'procedural'));
-  expect(ids('planter')).toEqual(new Set(['Planter_Trough', 'Planter_Urn_Play']));
+  expect(ids('planter')).toEqual(new Set(['Planter_Trough'])); // every deck planter holds a planted palm, so it is the trough bed: an urn under a palm sliced (Vela round 2, CAP-6); the urn stands on its own at frontages (capstone programme)
   expect(ids('mailbox')).toEqual(new Set(['PneumaticPost_Play'])); expect(ids('public-clock')).toEqual(new Set(['StreetClock']));
   expect(ids('tram-shelter')).toEqual(new Set(['BusShelter_Play', 'TramCanopy_Play'])); expect(ids('newsstand')).toEqual(new Set(['Newsstand'])); expect(ids('kiosk-food')).toEqual(new Set(['CoffeeCart_Play']));
   expect([...ids('tub-palm')].sort()).toEqual(['FanPalm_Play', 'PottedFern']);
-  expect(ids('phone-booth')).toEqual(new Set(['PhoneBooth_Single']));
-  const ph = by.get('PhoneBooth')!, slot = slotOf(ctx, kinds('phone-booth')[0]!)!;
-  expect(ph.size[0]).toBeGreaterThan(slot.along! * 2); expect(fit(ph, slot)).toBeNull(); // the 2.6 m twin never fit; the single cabinet does
-  for (const id of ['FanPalm', 'Planter_Urn', 'PneumaticPost', 'PhoneBooth', 'CurvedKiosk_Play']) expect(w.street.some(s => s.kit?.id === id), `${id} is retired from the street slots`).toBe(false);
+  expect(ids('phone-booth')).toEqual(new Set(['PhoneBooth_Single', 'PhoneBooth'])); // the twin pod serves the 11 booth pairs (brief 026), the one-hood single the rest
+  expect(ids('kiosk-pavilion')).toEqual(new Set(['CurvedKiosk']));
+  const ph = by.get('PhoneBooth')!, slot = slotOf(ctx, kinds('phone-booth').find(x => !x.variant)!)!;
+  expect(ph.size[0]).toBeGreaterThan(slot.along!); expect(fit(ph, slot)).toBeNull(); // the 2.6 m twin pod does not fit a one-booth slot (it needs a pair of items, brief 026); the one-hood single does
+  for (const id of ['FanPalm', 'Planter_Urn', 'PneumaticPost', 'CurvedKiosk_Play']) expect(w.street.some(s => s.kit?.id === id), `${id} is retired from the street slots`).toBe(false);
 });
 
 test('a palm in a planter\'s bed is the bare palm (FanPalm_Play), never a potted piece; the two share the one point', () => {
@@ -58,7 +59,7 @@ test('roof programmes stand their kit piece in place of the parts it draws: one 
 
 test('the café: the block names CafeBay, the world draws CafeBay_v2 with its room, both fading with the architecture', () => {
   const ground = w.civic.find(m => m.id === 'civic/cafe/ground')!, room = w.civic.find(m => m.id === 'civic/cafe/interior')!;
-  expect(ground.kit!.id).toBe('CafeBay_v2'); expect(room.kit!.id).toBe('CafeInterior'); expect(ground.fade && room.fade).toBe(true);
+  expect(ground.kit!.id).toBe('CafeBay_v2'); expect(room.kit!.id).toBe('CafeInterior_Testbed'); expect(ground.fade && room.fade).toBe(true);
   expect(w.civic.some(m => m.kit?.id === 'CafeBay')).toBe(false);
 });
 

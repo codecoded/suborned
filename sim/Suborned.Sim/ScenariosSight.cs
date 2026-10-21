@@ -16,13 +16,13 @@ namespace Suborned.Sim
         static Pt? FindWatchSpot(Run r, string watcher, bool unseen, bool line, string who = Scout)
         {
             var g = r.G; var at = g.ConeFan(watcher)!.At; var grid = g.S.Grid; var from = r.Op(who).Pos;
-            var cands = new List<(long d, int i, int j, Pt c)>(); int reach = g.R.SightReachCm - 200;
+            var cands = new List<(long d, int i, int j, Pt c)>(); int reach = g.R.WatchReachCm(r.Op(who).Id) - 200; // brief 031: the agent's own reach
             for (int i = 0; i < grid.Nx; i++)
                 for (int j = 0; j < grid.Ny; j++)
                 {
                     if (!grid.FreeCell(i, j)) continue;
                     var c = grid.Centre(i, j);
-                    if (!G.Within(c, at, reach) || g.S.Sight(c, at, g.R.Eye) != line) continue;
+                    if (!G.Within(c, at, reach) || g.S.Sight(c, at, g.R.Eye) != line || (line && g.CrowdBlocks(c, at))) continue; // brief 031: people on the street block a Watch's line
                     if (unseen && g.WatcherIds().Exists(w => g.SeesNow(w, c, false))) continue;
                     cands.Add((G.D2(c, from), i, j, c));
                 }
@@ -35,7 +35,7 @@ namespace Suborned.Sim
         static bool Watchable(Run r, string watcher, string who = Scout)
         {
             var f = r.G.ConeFan(watcher); var at = r.Op(who).Pos;
-            return f != null && G.Within(at, f.At, r.G.R.SightReachCm) && r.G.S.Sight(at, f.At, r.G.R.Eye);
+            return f != null && G.Within(at, f.At, r.G.R.WatchReachCm(r.Op(who).Id)) && r.G.S.Sight(at, f.At, r.G.R.Eye) && !r.G.CrowdBlocks(at, f.At); // brief 031: the agent's reach, a clear line
         }
 
         static void SightCases()

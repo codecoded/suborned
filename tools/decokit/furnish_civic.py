@@ -135,17 +135,23 @@ def capsule(s, L=0.2, r=0.045, seg=12):
 
 @asset("PneumaticPost", "Furnish")
 def pneumatic_post(s):
+    post_body(s)
+
+
+def post_body(s, red=None, py=0.45, pr=0.045, pb=0.1):
     """2.34 m tube-mail post, footprint 0.6 x 1.0 m (return pipe dives into the pavement at y = +0.45): red
     streamline pillar on a chrome foot, POST plaque, lit capsule hatch, destination dial, send lever, status lamps,
-    a glass chute with a capsule in flight up to a chrome junction head with an amber beacon."""
+    a glass chute with a capsule in flight up to a chrome junction head with an amber beacon.
+    PneumaticPost_Play draws the same post in a 0.6 x 0.6 footprint (return pipe tucked to y = py against the pillar) in bright red."""
+    red = red or pal.Enamel_Red
     s.lathe([(0.3, 0.0), (0.3, 0.03), (0.26, 0.05), (0.24, 0.1)], pal.Chrome, seg=24, cap_bottom=False, cap_top=False)
     s.lathe([(0.236, 0.095), (0.24, 0.2), (0.235, 0.9), (0.225, 1.3), (0.21, 1.36), (0.175, 1.41), (0.12, 1.44)],
-            pal.Enamel_Red, seg=24, cap_bottom=False, cap_top=False)
+            red, seg=24, cap_bottom=False, cap_top=False)
     s.lathe([(0.231, 1.12), (0.229, 1.2)], pal.Enamel_Mustard, seg=24, cap_bottom=False, cap_top=False)
     s.lathe([(0.238, 0.2), (0.244, 0.215), (0.238, 0.23)], pal.Chrome, seg=24, cap_bottom=False, cap_top=False)
     with s.at((0, 0, 1.28), FRONT):  # plaque
         flat(s, rrect(0.3, 0.11, 0.03, 3), 0.15, 0.238, pal.Enamel_Ivory)
-        letters(s, "POST", 0.07, pal.Enamel_Red, lift=0.238, wt=0.17, depth=0.004)
+        letters(s, "POST", 0.07, red, lift=0.238, wt=0.17, depth=0.004)
     with s.at((0, 0, 0.92), FRONT):  # capsule hatch on a mounting plate
         flat(s, rrect(0.3, 0.34, 0.06, 3), 0.17, 0.245, pal.Enamel_Ivory)
         with s.at((0, 0.01, 0.245)):
@@ -156,7 +162,7 @@ def pneumatic_post(s):
             s.sweep(fillet([(0.12, -0.02, 0.0), (0.16, -0.02, 0.03), (0.16, 0.07, 0.04)], 0.03, n=3, closed=False),
                     0.008, pal.Chrome, seg=10, caps=False)  # send lever
             with s.at((0.16, 0.075, 0.04), (-90, 0, 0)):
-                knob(s, 0.016, pal.Enamel_Red)
+                knob(s, 0.016, red)
             for x, m in ((-0.05, pal.Signal_Green), (0.05, pal.Signal_Amber)):
                 with s.at((x, 0.135, 0.0)):
                     lamp(s, 0.009, m)
@@ -168,7 +174,7 @@ def pneumatic_post(s):
                 c, sn = 0.07 * math.cos(a), 0.07 * math.sin(a)
                 strip(s, c - 0.007, sn - 0.007, c + 0.007, sn + 0.007, pal.Enamel_Charcoal, 0.001)
             knob(s, 0.03, pal.Enamel_Ivory)
-            strip(s, -0.004, 0.02, 0.004, 0.05, pal.Enamel_Red, 0.02)
+            strip(s, -0.004, 0.02, 0.004, 0.05, red, 0.02)
     s.lathe([(0.13, 1.43), (0.13, 1.47), (0.1, 1.49), (0.09, 1.5)], pal.Chrome, seg=20, cap_bottom=False, cap_top=False)
     s.lathe([(0.075, 1.49), (0.075, 2.06)], pal.Glass, seg=20, cap_bottom=False, cap_top=False)  # chute
     for z in (1.66, 1.9):
@@ -178,11 +184,11 @@ def pneumatic_post(s):
     s.lathe([(0.09, 2.04), (0.13, 2.08), (0.15, 2.14), (0.15, 2.2), (0.12, 2.25), (0.07, 2.28), (0.04, 2.29)],
             pal.Chrome, seg=20, cap_bottom=False, cap_top=False)  # junction head
     s.lathe([(0.042, 2.285)] + dome(0.045, 2.29, 0.05, 3), pal.Signal_Amber, seg=12, cap_bottom=False)
-    band(s, 0.15, 0.158, 2.155, 2.185, pal.Enamel_Red, seg=20)
-    s.sweep(fillet([(0.0, 0.1, 2.17), (0.0, 0.45, 2.17), (0.0, 0.45, 0.0)], 0.12, n=5, closed=False), 0.045,
+    band(s, 0.15, 0.158, 2.155, 2.185, red, seg=20)
+    s.sweep(fillet([(0.0, 0.1, 2.17), (0.0, py, 2.17), (0.0, py, 0.0)], 0.12, n=5, closed=False), pr,
             pal.Chrome, seg=12, caps=False)  # return pipe into the pavement
-    with s.at((0, 0.45, 0)):
-        s.lathe([(0.1, 0.0), (0.1, 0.02), (0.06, 0.04)], pal.Chrome, seg=12, cap_bottom=False, cap_top=False)
+    with s.at((0, py, 0)):
+        s.lathe([(pb, 0.0), (pb, 0.02), (pb * 0.6, 0.04)], pal.Chrome, seg=12, cap_bottom=False, cap_top=False)
 
 
 # ----------------------------------------------------------------- coin telescope

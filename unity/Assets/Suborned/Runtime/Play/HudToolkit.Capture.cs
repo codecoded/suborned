@@ -29,6 +29,7 @@ namespace Suborned.Play
         IEnumerator ShootCo(string basePath, string state)
         {
             try { Directory.CreateDirectory(Path.GetDirectoryName(basePath)!); } catch { }
+            yield return CaptureSize.ToPicture(); // one pass (CaptureSize: -frames-size): the window at the picture size for this capture, back after it
             for (int i = 0; i < 4; i++) yield return null; // the layout settles (a mark placed from its own size reads it a frame late)
             yield return new WaitForEndOfFrame();
             var full = ScreenCapture.CaptureScreenshotAsTexture();
@@ -39,6 +40,7 @@ namespace Suborned.Play
             File.WriteAllText(basePath + ".manifest.json", Manifest(state, h));
             File.WriteAllText(basePath + ".parts.json", Parts(h)); // brief 014 round 2: every visible HUD part's rect, for the 2x inspection crops
             Destroy(full);
+            var nh = new List<(VisualElement, StyleEnum<Visibility>)>(); foreach (var e in notHud) { nh.Add((e, e.style.visibility)); e.style.visibility = Visibility.Hidden; } // brief 032: the letterbox bars and the dip are not HUD
             var ps = doc.panelSettings; bool clear = ps.clearColor; var col = ps.colorClearValue;
             var rt = new RenderTexture(w, h, 0, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
             ps.targetTexture = rt; ps.clearColor = true; ps.colorClearValue = new Color(0, 0, 0, 0);
@@ -47,8 +49,10 @@ namespace Suborned.Play
             var hud = new Texture2D(w, h, TextureFormat.RGBA32, false); hud.ReadPixels(new Rect(0, 0, w, h), 0, 0); hud.Apply();
             RenderTexture.active = prev;
             ps.targetTexture = null; ps.clearColor = clear; ps.colorClearValue = col;
+            foreach (var (e, v) in nh) e.style.visibility = v;
             File.WriteAllBytes(basePath + ".hud.png", hud.EncodeToPNG());
             Destroy(hud); rt.Release(); Destroy(rt);
+            yield return CaptureSize.ToRun();
             LastShot = basePath; ShotBusy = false;
         }
 
@@ -83,7 +87,8 @@ namespace Suborned.Play
         string Parts(int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
-            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate) };
+            var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoBubble), ("scene-skip", convoSkip) };
+            for (int i = 0; i < 4; i++) list.Add(($"portrait-{i + 1}", colWins[i]?.Clip));
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));
             for (int i = 0; i < beatEls.Count; i++) list.Add(($"beat-{i + 1}", beatEls[i].root));
             for (int i = 0; i < bubbleEls.Count; i++) list.Add(($"bubble-{i + 1}", bubbleEls[i].root));

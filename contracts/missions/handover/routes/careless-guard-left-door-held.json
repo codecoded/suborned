@@ -1,21 +1,21 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "Careless violence (brief 013 D, rev 4 lockdown): route-g-fast's knockout at 2:01, but the Tech leaves the cabinet as soon as the guard is down and the Enforcer waits half a minute before the Enter, so the guard is left at the door the cell still needs. The entrance camera's watcher reads him at 2:17 (Alert 1: a knockout), a unit comes from the Office's door post, brings him round (his statement, +4 T) and holds the scene: the Enter at 2:36 is refused (door-held). Vale is never reached: at 8:30 the rivals have him. The careful twin is route-g-fast (Enter at once, the loop held until the Enforcer is inside). Retimed 2026-10-19 (Waymark, brief 023): as route-g-fast, 4.1 s later throughout (the loop at 0:16.6, the knockout at 2:03.6, the refused Enter at 2:39.6).",
+ "note": "Careless violence (brief 013 D, rev 4 lockdown): route-g-fast's knockout, but the Tech leaves the cabinet as soon as the guard is down and the Enforcer waits half a minute before the Enter, so the guard is left at the door the cell still needs. The entrance camera's watcher reads him (Alert 1: a knockout), a unit comes from the Office's door post, brings him round (his statement, +4 T) and holds the scene: the Enter is refused (door-held). Vale is never reached: at 8:30 the rivals have him. The careful twin is route-g-fast (Enter at once, the loop held until the Enforcer is inside). Re-sited 2026-10-20 (Waymark, brief 031): route-g-fast's orders as re-sited, to the knockout at 2:12.6 (the Enforcer waits on the forecourt out of every cone and walks in once the patrol has gone), then the Tech's move 6 s and the refused Enter 36 s after it. On the old orders the Enforcer stood 39 s beside the guard, who grew wary and drew at the blow (entry-seen-guard).",
  "start": {},
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
-  {"tick":0,"op":"enforcer","do":"move","to":[6950,-4250]},
-  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
-  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
   {"tick":166,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":462,"op":"scout","do":"watch","target":"guard"},
-  {"tick":662,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[1175,-4825]},
   {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":786,"op":"enforcer","do":"move","to":[6520,-4110]},
-  {"tick":1236,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
-  {"tick":1296,"op":"tech","do":"move","to":"crew:tech"},
-  {"tick":1596,"op":"enforcer","do":"enter"}
+  {"tick":1236,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":1326,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":1386,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":1686,"op":"enforcer","do":"enter"}
  ],
  "until": 5100
 }

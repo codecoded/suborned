@@ -1,0 +1,24 @@
+# Waymark, brief 027, engine suborned.sim/0.18.0 (tree, 2026-10-21). Quiet fight-it-out routes (the Enforcer holds until fight.over, the three walk out):
+# the three's waits, scripted player briefs/027/waymark/player with QUIET=1 KEEP=<the ambush tick> L2CODE=fight.down RELOCK=none (draw and fire at will as the ambush springs).
+# New: S=cv-003 (725,-4625) F=cv-002 (725,-5025) T=cv-100 (675,-4625). Old: S=cv-006 (1175,-4825) F=cv-093 (1025,-4625) T=cv-100.
+## route-a
+ 48/48 clean, hp 0-5 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+ 48/48 clean, hp 0-22 | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+## route-a-pressure
+ 38/48 clean, hp 11-33 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+  0/48 clean, hp - | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+## route-b
+ 45/48 clean, hp 0-22 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+ 35/48 clean, hp 16-38 | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+## route-b-block
+ 45/48 clean, hp 0-22 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+ 35/48 clean, hp 16-38 | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+## route-g
+ 38/48 clean, hp 11-22 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+  0/48 clean, hp - | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+## route-g-fast
+ 38/48 clean, hp 11-22 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+  0/48 clean, hp - | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+## route-g-kill
+ 38/48 clean, hp 11-22 | S=cv-003 F=cv-002 T=cv-100 none go | base: Success  x down[]
+  0/48 clean, hp - | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]

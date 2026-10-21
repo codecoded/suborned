@@ -283,6 +283,9 @@ namespace Suborned.Play
             /// world points with the watcher's kind), and the unwatched watchers on the route (a faint "?" over each).</summary>
             public Vector3 At; public string State = "safe", SeenKind = "";
             public readonly List<(Vector3 a, Vector3 b, string kind)> Glow = new(); public readonly List<Vector3> Unwatched = new();
+            /// <summary>Brief 027 B5 (lab, cover snap): the move ends on a cover point instead of the cursor's ground. At is moved to the point;
+            /// SnapFrom keeps the cursor's ground for the tether; SnapId names the point (its mark lights). Null / "" when it doesn't snap.</summary>
+            public Vector3? SnapFrom; public string SnapId = "";
         }
 
         /// <summary>The ring's state and the route's glow for a walk from agent k to `to` (the engine's card-only SeenAt per route sample; read-only).</summary>
@@ -321,7 +324,7 @@ namespace Suborned.Play
         public MoveParts MoveNow { get; private set; }
 
         /// <summary>The crosshair chip: the target's badge, down in n s, hits as a fraction, Trail per hit; never: the refusal.</summary>
-        public sealed class AimParts { public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover; }
+        public sealed class AimParts { public string Badge = "", Down = "", Ratio = "", Trail = "", Refused = ""; public bool Civilian, Cover, Lab; public int WalkS = -1, Charge, Exposed; public string Band = ""; /** brief 027: Down is pips · −damage · ×hits (no seconds) */ }
         public AimParts AimNow { get; private set; }
 
         /// <summary>A watcher-or-not eye for a SeenQuote: "shut" nobody, "open" a known watcher sees it, "unk" an unknown one could.</summary>

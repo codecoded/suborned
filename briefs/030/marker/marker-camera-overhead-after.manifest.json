@@ -1,0 +1,21 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 1472, "y": 1810, "w": 247, "h": 25, "text": "I can clear your debt with the lender."},
+  {"kind": "speech", "x": 1582, "y": 1890, "w": 163, "h": 25, "text": "Oh! You startled me. Yes?"},
+  {"kind": "image", "x": 626, "y": 334, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 602, "y": 323, "w": 20, "h": 20, "text": "door turn"},
+  {"kind": "image", "x": 909, "y": 439, "w": 59, "h": 26, "text": "name chip"},
+  {"kind": "image", "x": 626, "y": 251, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 102, "y": 51, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "image", "x": 1190, "y": 1042, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 36, "h": 16, "text": "Listen"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Inez: Yes. Yes. And thank you."},
+  {"kind": "image", "x": 1161, "y": 1042, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

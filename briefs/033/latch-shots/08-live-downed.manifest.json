@@ -1,0 +1,13 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 42, "y": 42, "w": 262, "h": 998, "text": "roster portraits"},
+  {"kind": "image", "x": 5665, "y": 198, "w": 309, "h": 108, "text": "known people"},
+  {"kind": "line", "x": 2654, "y": 3222, "w": 709, "h": 120, "text": "Go: drive off in the car."},
+  {"kind": "image", "x": 42, "y": 2946, "w": 636, "h": 396, "text": "plot scope"},
+  {"kind": "speech", "x": 2839, "y": 1274, "w": 338, "h": 75, "text": "My leg. Help."},
+  {"kind": "image", "x": 2917, "y": 1732, "w": 78, "h": 78, "text": "car marker"},
+  {"kind": "beat", "x": 5026, "y": 3103, "w": 221, "h": 47, "text": "Tech is down"},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

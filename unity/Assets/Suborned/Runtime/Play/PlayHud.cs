@@ -98,7 +98,7 @@ namespace Suborned.Play
 
         void OnGUI()
         {
-            if (host == null || host.Game == null || host.FailCamOn) return; // the fail camera: its caption only (HudToolkit)
+            if (host == null || host.Game == null || host.FailCamOn || host.ConvoOn) return; // the fail camera: its caption only (HudToolkit); brief 032: the conversation scene's own HUD
             s = Screen.height / 1080f; Styles();
             if (Event.current.type == EventType.Layout) { hits.Clear(); m.Frame(host); } // the model, once a frame
             var cam = host.View; bool kit = HudToolkit.Active; // the kit view draws the pill, roster, strips, verb plate, ticker and feed

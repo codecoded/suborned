@@ -48,6 +48,7 @@ namespace Suborned.Sim
         /// <summary>A shot lands (Resolve): it opens or extends the fight, and the people within reach of its shooter hear it.</summary>
         void FightShot(string by, string t, Pt from)
         {
+            if (Range) return; // brief 029: the range has no public, no Standing
             bool cellBy = IsOpId(by), cellAt = IsOpId(t);
             var f = OpenFight;
             if (!cellBy && !cellAt) { if (f != null && f.Final) Hear(f, from); return; } // in the final fight every shot is the fight's
@@ -101,6 +102,7 @@ namespace Suborned.Sim
         void EndFight()
         {
             var f = OpenFight!; OpenFight = null; f.End = Tick;
+            autoHolsterAt = Tick + T(R.AutoHolsterS); // brief 030 (weapons.autoHolster)
             if (f.Final) finalFightJudged = true;
             f.Outcome = "unheard";
             if (f.Public)

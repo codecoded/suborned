@@ -2,11 +2,12 @@
 // Each script is an order script in the engine's own format (suborned.sim.script/1, sim/Suborned.Sim/Script.cs: a start state, timed
 // orders, `until`), played headless by the mission checker (tools/missions/check). This file says what every script is for:
 // - kind: quiet (a route that wins with no shot), loud (wins with gunfire), fail (reaches one §07 fail), outcome (withdraw),
-//   careless (brief 013: a takedown done carelessly, seen or found or reported; `twin` names the careful script it is compared with);
+//   careless (brief 013: a takedown done carelessly, seen or found or reported; brief 031, careless: loiter, an agent left standing in a
+//   watcher's sight until reported; `twin` names the careful script it is compared with);
 // - route: which of the mission's routes it plays (quiet routes are counted by route, not by script: a variant is the same route);
 // - primary: the route's reference script (the one the §09 conditions compare and vary);
 // - expects: the outcome and fail code the engine must report (sim/Suborned.Sim/Game*.cs Fail codes), and (brief 018) who the car
-//   left behind, with fate and why;
+//   left behind, with fate and why, and (brief 031) the Alert the run ends at;
 // - pending: why it can't be played yet (the final fight, N10/N11, is not in the engine); a pending script is listed, never played.
 // `fails` is the mission's fail list (GDD §07), each with the engine codes that reach it; `contacts` the roles a route may turn.
 // `closing` is the mission's closing event; each primary quiet route names its own (`closes`): the fully informed player secures
@@ -31,14 +32,19 @@ export const RouteScript = z.strictObject({
     outcome: z.enum(['success', 'failure', 'withdrawn']), fail: id.optional(),
     /** brief 018 §3: everyone the car left behind, by op, with fate and why (the debrief's left-behind lines), exactly. */
     left: z.partialRecord(z.enum(['scout', 'fixer', 'tech', 'enforcer']), z.enum(['captured downed', 'captured fighting', 'captured sealed', 'walked'])).optional(),
+    /** brief 031: the Alert the run ends at, exactly (a loiterer reported is a found fault, Alert at least 1, with no Trail: the outcome alone can't show it). */
+    alert: z.number().int().min(0).max(3).optional(),
   }),
+  /** A careless script's fault (default violence, brief 013 D, MC-7): `loiter` (brief 031, MC-12) is its careful twin with an agent left standing in a watcher's sight. */
+  careless: z.enum(['violence', 'loiter']).optional(),
   reaches: id.optional().describe('the `fails` entry a fail script reaches'),
   twin: id.optional().describe('a careless script: the careful script it is the careless version of (brief 013 D, MC-7)'),
   pending: z.string().min(1).optional(),
   src, note: z.string().min(1).optional(),
 }).refine(s => s.kind !== 'fail' || (s.expects.outcome === 'failure' && !!s.expects.fail && !!s.reaches), { error: 'a fail script expects a failure with its code and names the fail it reaches' })
   .refine(s => !['quiet', 'loud'].includes(s.kind) || (!!s.route && s.expects.outcome === 'success'), { error: 'a quiet or loud script names its route and expects a win' })
-  .refine(s => (s.kind === 'careless') === !!s.twin, { error: 'a careless script, and only a careless script, names its careful twin' });
+  .refine(s => (s.kind === 'careless') === !!s.twin, { error: 'a careless script, and only a careless script, names its careful twin' })
+  .refine(s => !s.careless || s.kind === 'careless', { error: 'only a careless script names its fault' });
 
 export const Routes = z.strictObject({
   schema: z.literal('suborned.mission.routes/1'),

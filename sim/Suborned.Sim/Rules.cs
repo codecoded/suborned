@@ -11,6 +11,8 @@ namespace Suborned.Sim
 {
     public enum Band { Hero, Neutral, Menace }
     public enum Fit { Suits, Worse, Refused }
+    /// <summary>A shooter's gait this tick (tuning.md §8.3): from its own step. Hostiles have one moving pace: a walk.</summary>
+    public enum Gait { Stand, Walk, Run, RunAway }
 
     public sealed class Cond
     {
@@ -71,7 +73,7 @@ namespace Suborned.Sim
             n.Only("id", "by", "phase", "private", "tag", "src", "proposed", "reason", "needs", "price", "outcomes", "also", "witnesses", "how", "order", "band");
             Id = n["id"].Str(); By = n["by"].Str(); Phase = n["phase"].Str();
             if (n.Opt("private") is JNode pv) Private = pv.Bool();
-            else if (By == "fixer" || By == "scout") throw new FormatException($"{Id}: an event by the Fixer or the Scout says whether it is private (rulebook privacy)");
+            else if (By == "fixer" || By == "scout" || By == "cell") throw new FormatException($"{Id}: an event by the Fixer, the Scout or the cell says whether it is private (rulebook privacy)");
             foreach (var c in n["needs"].Items) Needs.Add(new Cond(c));
             if (n.Opt("price") is JNode p) foreach (var l in p.Items) Price.Add(new Line(l));
             foreach (var o in n["outcomes"].Items) Outcomes.Add(new ROutcome(o));
@@ -194,6 +196,9 @@ namespace Suborned.Sim
         /// <summary>cell.drive (brief 025, EXPERIMENTAL): the driven agent's rules; null when the rulebook has none (drive = unknown verb).</summary>
         public readonly DriveRules? Drive;
         public sealed class DriveRules { public int SlackCm, BurstTicks, BusyPushCm, GapCm; public string OnBusy = "cancel", OnRelease = "stand"; }
+        /// <summary>fight.lab (brief 027, EXPERIMENTAL): the fight playground's rules; null when the rulebook has none (a start that turns it on is
+        /// refused). Read only by a run whose start turns it on (Start.FightLabOn); off, every rule is today's.</summary>
+        public readonly LabRules? Lab;
         public readonly int CellSpeed, RunSpeed, RunAlert, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, TakeStruggleS, CarryS;
         // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
         public readonly Weapon Pistol, Carbine;
@@ -211,7 +216,23 @@ namespace Suborned.Sim
         public readonly string CarDrive = "";
         /// <summary>car.pace (brief 023, Motive 2026-10-19): cm/s (= mm a tick) on a carriageway cell and on a drive or bay cell.</summary>
         public readonly int CarRoadSpeed, CarYardSpeed;
+        /// <summary>Brief 030: a fire order out of reach walks into the effective ring (weapons.close); a weapon drawn by fire or panic holsters this long after its fight (weapons.autoHolster, s).</summary>
+        public readonly bool FireClose; public readonly int AutoHolsterS;
+        /// <summary>Sky 2026-10-20 (tuning.md §7.9): today's kite response (fight.kite): on, and its numbers (ticks, cm), as the lab's are.</summary>
+        public readonly bool KiteOn; public readonly int KiteCoverHold, KiteReact, KiteReplan, KiteChaseCm, KiteLapse, KiteHide, KiteContactCm, KiteRearm, KiteHideMax;
+        /// <summary>Tuning.md §8.3 (Sky 2026-10-21, engine 0.15.0): fire on the move. A run toward or across, a run away (within runAwayCone of
+        /// straight away from the target), a running target past point blank (one step, never with cover); the away cone as a per-mille cosine.
+        /// PointBlankCover: today's cover counts inside point blank (§8.4: the switch Keel measures; true is today's rule).</summary>
+        /// <summary>ai.cover.stepFires: true, a step to cover fires at the walk's chance; false is tuning.md §8.3's fallback (a rival's cover
+        /// step and a cover-snap walk fire nothing), measured, not adopted.</summary>
+        public readonly bool CoverStepFires;
+        public readonly int ModRunning, ModRunningAway, ModTargetRunning, RunAwayConeDeg, RunAwayCosPm; public readonly bool PointBlankCover;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
+        public readonly int HealthCar, CarDisabledAt, CarBurnS, CarBlastCm, CarBlastDamage; // tuning.md §10.7 (Sky 2026-10-21, cars "as in Syndicate"): car.target, ×healthScale in the lab (not burn, not the ring)
+        public readonly string WeaponsSettle = ""; // tuning.md §10.2 settle: the rule text (no number: it waits weapons.aimNew)
+        /// <summary>Tuning.md §11 (engine 0.17.0): the follow ring round the driven agent (weapons.follow, follow-m, cm) and the trigger's rule text.</summary>
+        public readonly int FollowCm; public readonly string WeaponsTrigger = "";
+        public readonly int HealthCamera; // tuning.md §9.2 gap 2 (Sky 2026-10-21): a camera's health (one sidearm hit; ×healthScale in the lab)
         public readonly int HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian, ResponseOfficers, HitTrail, DownTrail, GunfireTrail, DrawWindowS, DrawSeenSecurity, DrawSeenPeople, LoudHoldTicks;
         // security
         public readonly int RespWitnessS, RespSeenS, RespUnseenS, RespCivilianS, RespRivalsUnseenS, SecuritySpeed, RivalsSpeed, RivalsDrawnS, RivalsRetreatS, PatrolBreakCm, PatrolPeriodS, PatrolChase;
@@ -219,7 +240,18 @@ namespace Suborned.Sim
         public readonly int NearCm, Eye, DoorReachCm, DoorHalfCm, FacingReachCm, FacingHalfCm, SecReachCm, SecHalfCm, RivReachCm, RivHalfCm, PatrolDepthCm, PatrolHalfBase, PatrolHalfPerMille;
         // the cell's knowledge of watchers (Sky 2026-10-16: cones are the Scout's skill): Watch's time and reach on a watcher, the watched
         // seconds a routine needs, and per kind (camera, guard, patrol, security, rivals) how its sight is learned and what its routine is
-        public readonly int SightWatchS, SightReachCm, SightRoutineS;
+        public readonly int SightWatchS, SightRoutineS;
+        /// <summary>Brief 031 (Sky 2026-10-20): the Watch's reach by operative (sight.watch.reach.*; Scout 30, Fixer 12, Tech 24, Enforcer 3 m), indexed by OpId.</summary>
+        public readonly int[] WatchReachCms = new int[4];
+        public int WatchReachCm(OpId op) => WatchReachCms[(int)op];
+        /// <summary>The Scout's Watch reach (kept for hosts that read one reach; brief 031 gives each operative its own: WatchReachCm).</summary>
+        public int SightReachCm => WatchReachCms[(int)OpId.Scout];
+        /// <summary>Brief 031 §2 (rulebook attention): the Heat bands (ascending from heatFrom 0) with their marks in seconds; whether the guard and
+        /// the officers sense within AttnNearCm all round (people) or by their cone; the Alert a loiterer reported raises; the report's scan and call.</summary>
+        public readonly List<(string id, int heatFrom, int noticeS, int waryS, int reportS)> AttnBands = new List<(string, int, int, int, int)>();
+        public readonly bool AttnGuardNear, AttnOfficerNear; public readonly int AttnNearCm, AttnAlert, AttnScanS, AttnCallS;
+        /// <summary>The band a Heat falls in: the last whose heatFrom it reaches.</summary>
+        public (string id, int heatFrom, int noticeS, int waryS, int reportS) AttnBand(int heat) { var b = AttnBands[0]; foreach (var x in AttnBands) if (heat >= x.heatFrom) b = x; return b; }
         public readonly Dictionary<string, (string learn, string routine)> SightKinds = new Dictionary<string, (string, string)>(StringComparer.Ordinal);
         /// <summary>sight.kinds.*.by: the operatives who may Watch a kind (Sky 2026-10-18), empty for a kind known on arrival.</summary>
         public readonly Dictionary<string, string[]> SightBy = new Dictionary<string, string[]>(StringComparer.Ordinal);
@@ -256,7 +288,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -317,7 +349,7 @@ namespace Suborned.Sim
                 {
                     "s" => (1L, 3600L), "usd" => (-1_000_000_000L, 1_000_000_000L), "m" => (0L, 1000L), "cm" => (0L, 100_000L), "cm-per-s" => (1L, 10_000L),
                     "trail" => (0L, 100L), "alert" => (0L, 3L), "standing" => (-1000L, 1000L), "orders" => (0L, 10L), "scale-steps" => (-10L, 10L),
-                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L), "pct" => (0L, 100L),
+                    "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L), "pct" => (0L, 100L), "deg" => (0L, 360L),
                     _ => throw new FormatException($"{v.Path}.unit '{unit}' is unknown"),
                 };
                 if (x < lo || x > hi) throw new FormatException($"{v.Path} = {x} is outside {lo}..{hi} for unit {unit}");
@@ -414,21 +446,33 @@ namespace Suborned.Sim
             SecuritySpeed = RI(se["speed"]);
             se["rivals"].Only("speed", "drawn", "retreat"); RivalsSpeed = RI(se["rivals"]["speed"]); RivalsDrawnS = RI(se["rivals"]["drawn"]); RivalsRetreatS = RI(se["rivals"]["retreat"]);
             se["patrol"].Only("breakTo", "period", "chase"); PatrolBreakCm = RI(se["patrol"]["breakTo"]) * 100; PatrolPeriodS = RI(se["patrol"]["period"]); PatrolChase = RI(se["patrol"]["chase"]);
-            var wp = b["weapons"]; wp.Only("pistol", "carbine", "pointBlank", "acc", "mod", "draw", "holster", "aimNew", "react", "lineLapse", "sidearmArms", "health", "costs", "rule", "tag", "src", "proposed", "reason");
+            var wp = b["weapons"]; wp.Only("pistol", "carbine", "pointBlank", "pointBlankCover", "runAwayCone", "acc", "mod", "draw", "holster", "aimNew", "settle", "trigger", "follow", "react", "lineLapse", "sidearmArms", "close", "autoHolster", "health", "costs", "rule", "tag", "src", "proposed", "reason");
+            WeaponsSettle = wp.Opt("settle")?.Str() ?? throw new FormatException("weapons.settle is missing: engine 0.16.0 settles a shooter whose run ends (tuning.md §10.2)"); if (WeaponsSettle.Length == 0) throw new FormatException("weapons.settle is empty");
+            WeaponsTrigger = wp.Opt("trigger")?.Str() ?? throw new FormatException("weapons.trigger is missing: engine 0.17.0 reads the driven agent's trigger (tuning.md §11)"); if (WeaponsTrigger.Length == 0) throw new FormatException("weapons.trigger is empty");
+            FollowCm = RI(wp.Opt("follow") ?? throw new FormatException("weapons.follow: engine 0.17.0 reads the follow ring (tuning.md §11.1, follow-m)")) * 100; if (FollowCm < 100) throw new FormatException("weapons.follow is 1 m or more");
+            FireClose = (wp.Opt("close") ?? throw new FormatException("weapons.close: engine 0.12.0 reads it (brief 030)")).Bool();
+            AutoHolsterS = RI(wp.Opt("autoHolster") ?? throw new FormatException("weapons.autoHolster: engine 0.12.0 reads it (brief 030)")); if (AutoHolsterS < 0) throw new FormatException("weapons.autoHolster is 0 s or more");
             PointBlankCm = RI(wp["pointBlank"]) * 100;
             Pistol = LoadWeapon(wp["pistol"], "pistol", PointBlankCm); Carbine = LoadWeapon(wp["carbine"], "carbine", PointBlankCm);
             wp["acc"].Only("point", "eff", "long", "start"); AccPoint = RI(wp["acc"]["point"]); AccEff = RI(wp["acc"]["eff"]); AccLong = RI(wp["acc"]["long"]); AccStart = RI(wp["acc"]["start"]);
-            wp["mod"].Only("moving", "cover", "vale", "untrained"); ModMoving = RI(wp["mod"]["moving"]); ModCover = RI(wp["mod"]["cover"]); ModVale = RI(wp["mod"]["vale"]); ModUntrained = RI(wp["mod"]["untrained"]);
+            PointBlankCover = (wp.Opt("pointBlankCover") ?? throw new FormatException("weapons.pointBlankCover: engine 0.15.0 reads it (tuning.md §8.4)")).Bool();
+            RunAwayConeDeg = RI(wp.Opt("runAwayCone") ?? throw new FormatException("weapons.runAwayCone: engine 0.15.0 reads it (tuning.md §8.3)"));
+            if (RunAwayConeDeg < 1 || RunAwayConeDeg > 89) throw new FormatException("weapons.runAwayCone is 1..89 degrees");
+            RunAwayCosPm = (int)Math.Round(Math.Cos(RunAwayConeDeg * Math.PI / 180) * 1000); // load time only: the rule's integer from here on (60° → 500)
+            wp["mod"].Only("moving", "running", "runningAway", "targetRunning", "cover", "vale", "untrained");
+            ModRunning = RI(wp["mod"].Opt("running") ?? throw new FormatException("weapons.mod.running: engine 0.15.0 reads it (tuning.md §8.3)")); ModRunningAway = RI(wp["mod"].Opt("runningAway") ?? throw new FormatException("weapons.mod.runningAway: engine 0.15.0 reads it")); ModTargetRunning = RI(wp["mod"].Opt("targetRunning") ?? throw new FormatException("weapons.mod.targetRunning: engine 0.15.0 reads it"));
+            ModMoving = RI(wp["mod"]["moving"]); ModCover = RI(wp["mod"]["cover"]); ModVale = RI(wp["mod"]["vale"]); ModUntrained = RI(wp["mod"]["untrained"]);
             DrawTicks = RI(wp["draw"]); HolsterTicks = RI(wp["holster"]); AimNewTicks = RI(wp["aimNew"]); ReactS = RI(wp["react"]); LineLapseS = RI(wp["lineLapse"]); SidearmArms = RI(wp["sidearmArms"]);
             if (SidearmArms < 1) throw new FormatException("weapons.sidearmArms must be at least 1");
-            var hp = wp["health"]; hp.Only("enforcer", "op", "guard", "officer", "rival", "patrol", "civilian", "responseOfficers");
+            var hp = wp["health"]; hp.Only("enforcer", "op", "guard", "officer", "rival", "patrol", "civilian", "camera", "responseOfficers");
+            HealthCamera = RI(hp.Opt("camera") ?? throw new FormatException("weapons.health.camera: engine 0.15.0 reads it (tuning.md §9.2)")); if (HealthCamera < 1) throw new FormatException("weapons.health.camera is at least 1");
             HealthEnforcer = RI(hp["enforcer"]); HealthOp = RI(hp["op"]); HealthGuard = RI(hp["guard"]); HealthOfficer = RI(hp["officer"]); HealthRival = RI(hp["rival"]); HealthPatrol = RI(hp["patrol"]); HealthCivilian = RI(hp["civilian"]); ResponseOfficers = RI(hp["responseOfficers"]);
             foreach (var h in new[] { HealthEnforcer, HealthOp, HealthGuard, HealthOfficer, HealthRival, HealthPatrol, HealthCivilian }) if (h < 1) throw new FormatException("weapons.health: every health is at least 1");
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
             var co = wp["costs"]; co.Only("hit", "down", "gunfire", "drawWindow", "drawSeenSecurity", "drawSeenPeople", "loudHold");
             HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); GunfireTrail = RI(co["gunfire"]); DrawWindowS = RI(co["drawWindow"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
             var ai = b["ai"]; ai.Only("cover", "engageLapse", "reacquire", "stopReach", "overflow", "seek", "rivalGone", "guardReturn", "patrolResume", "rule", "tag", "src", "proposed", "reason");
-            var aic = ai["cover"]; aic.Only("snap", "qFull", "qPartial", "modPartial", "retreat", "stepCloser", "stepGap", "leave");
+            var aic = ai["cover"]; aic.Only("snap", "qFull", "qPartial", "modPartial", "retreat", "stepCloser", "stepGap", "leave", "stepFires"); CoverStepFires = (aic.Opt("stepFires") ?? throw new FormatException("ai.cover.stepFires: engine 0.15.0 reads it (tuning.md §8.3 fallback)")).Bool();
             CoverSnapCm = RI(aic["snap"]); CoverQFull = RI(aic["qFull"]); CoverQPartial = RI(aic["qPartial"]); ModCoverPartial = RI(aic["modPartial"]); CoverRetreatCm = RI(aic["retreat"]); CoverStepCloserCm = RI(aic["stepCloser"]); CoverStepGapS = RI(aic["stepGap"]); CoverLeaveS = RI(aic["leave"]);
             if (!(CoverQPartial <= CoverQFull)) throw new FormatException("ai.cover: qPartial ≤ qFull");
             EngageLapseS = RI(ai["engageLapse"]); ReacquireS = RI(ai["reacquire"]); StopReachPerMille = RI(ai["stopReach"]); OverflowCm = RI(ai["overflow"]);
@@ -461,7 +505,13 @@ namespace Suborned.Sim
             pe["rivals"].Only("reach", "half"); RivReachCm = RI(pe["rivals"]["reach"]) * 100; RivHalfCm = RI(pe["rivals"]["half"]) * 100;
             pe["patrol"].Only("depth", "halfBase", "halfPerMille"); PatrolDepthCm = RI(pe["patrol"]["depth"]) * 100; PatrolHalfBase = RI(pe["patrol"]["halfBase"]); PatrolHalfPerMille = RI(pe["patrol"]["halfPerMille"]);
             var si = b["sight"]; si.Only("watch", "kinds", "unknown", "rule", "tag", "src", "proposed", "reason");
-            si["watch"].Only("s", "reach", "routine"); SightWatchS = RI(si["watch"]["s"]); SightReachCm = RI(si["watch"]["reach"]) * 100; SightRoutineS = RI(si["watch"]["routine"]);
+            si["watch"].Only("s", "reach", "routine"); SightWatchS = RI(si["watch"]["s"]); SightRoutineS = RI(si["watch"]["routine"]);
+            { // brief 031: one reach a operative (a single reach, as runs pinned before it carry, is every operative's)
+                var wr = si["watch"]["reach"];
+                if (wr.Kind == JKind.Str) { int one = RI(wr) * 100; for (int q = 0; q < 4; q++) WatchReachCms[q] = one; }
+                else { wr.Only("scout", "fixer", "tech", "enforcer"); for (int q = 0; q < 4; q++) WatchReachCms[q] = RI(wr[Sim.Op.Name((OpId)q)]) * 100; }
+                foreach (var v in WatchReachCms) if (v <= 0) throw new FormatException("sight.watch.reach: every operative's reach is above 0");
+            }
             si["kinds"].Only(WatcherKinds);
             foreach (var k in WatcherKinds)
             {
@@ -473,10 +523,29 @@ namespace Suborned.Sim
                 var who = new List<string>();
                 if (kby != null) foreach (var w in kby.Items) { var n = OneOf(w, new[] { "scout", "fixer", "tech", "enforcer" }); if (who.Contains(n)) throw new FormatException($"sight.kinds.{k}.by: '{n}' twice"); who.Add(n); }
                 if (kby != null && !who.Contains("scout")) throw new FormatException($"sight.kinds.{k}.by: the Scout watches every watched kind (cones are the Scout's skill)");
-                if (SightKinds[k].routine == "person" && who.Count != 1) throw new FormatException($"sight.kinds.{k}.by: a person is watched by the Scout alone (scout.watch)");
                 SightBy[k] = who.ToArray();
             }
             if (si["unknown"].Str() != "?") throw new FormatException("sight.unknown is not '?'");
+            { // brief 031 §2: the attention clock (Sky 2026-10-20 D1, D3, L1-L3)
+                var at = b.Opt("attention") ?? throw new FormatException("rulebook has no attention section: engine 0.11.0 runs the attention clock (brief 031)");
+                at.Only("bands", "sense", "near", "alert", "report", "rule", "tag", "src", "proposed", "reason");
+                foreach (var bn in at["bands"].Items)
+                {
+                    bn.Only("id", "heatFrom", "notice", "wary", "report");
+                    var row = (bn["id"].Str(), RI(bn["heatFrom"]), RI(bn["notice"]), RI(bn["wary"]), RI(bn["report"]));
+                    if (!(row.Item3 >= 1 && row.Item3 < row.Item4 && row.Item4 < row.Item5)) throw new FormatException($"attention.bands.{row.Item1}: 1 <= notice < wary < report");
+                    if (AttnBands.Count == 0 ? row.Item2 != 0 : row.Item2 <= AttnBands[AttnBands.Count - 1].heatFrom) throw new FormatException($"attention.bands.{row.Item1}: heatFrom ascends from 0");
+                    foreach (var x in AttnBands) if (x.id == row.Item1) throw new FormatException($"attention.bands: '{row.Item1}' twice");
+                    AttnBands.Add(row);
+                }
+                if (AttnBands.Count == 0) throw new FormatException("attention.bands: at least one band");
+                var asn = at["sense"]; asn.Only("camera", "patrol", "robot", "guard", "officer");
+                foreach (var m in new[] { "camera", "patrol", "robot" }) OneOf(asn[m], new[] { "cone" }); // L2: a machine sees by its cone only
+                AttnGuardNear = OneOf(asn["guard"], new[] { "cone", "near" }) == "near"; AttnOfficerNear = OneOf(asn["officer"], new[] { "cone", "near" }) == "near";
+                AttnNearCm = RI(at["near"]) * 100; AttnAlert = RI(at["alert"]);
+                at["report"].Only("scan", "call"); AttnScanS = RI(at["report"]["scan"]); AttnCallS = RI(at["report"]["call"]);
+                if (AttnScanS < 1 || AttnCallS < 0 || AttnAlert < 1 || AttnAlert > 3) throw new FormatException("attention: scan >= 1 s, call >= 0 s, alert 1..3");
+            }
             if (SightKinds["guard"].routine == "person" && SightKinds["guard"].learn != "watch") throw new FormatException("sight.kinds.guard: a person routine is learned by a Watch");
             // ---- brief 013: the takedown, the witnesses, the response dial, the campaign
             var td = b["takedown"]; td.Only("ko", "kill", "struggle", "reach", "trail", "koAlertMax", "foundKillStanding", "wake", "stagger", "restrain", "free", "callOut", "carry", "stash", "service", "rule", "tag", "src", "proposed", "reason");
@@ -532,18 +601,35 @@ namespace Suborned.Sim
             // brief 023 (engine 0.8.2): where a car may be. The rule has no numbers; the engine routes every moving car on the site's drive grid
             // only when the rulebook states it (unknown = reject: a rulebook without car.drive is one the engine was not built for)
             var cd = b.Opt("car") ?? throw new FormatException("rulebook has no car section: engine 0.8.2 routes cars by car.drive (brief 023)");
-            cd.Only("drive", "pace", "paceRule", "tag", "src", "proposed", "reason"); CarDrive = cd["drive"].Str(); if (CarDrive.Length == 0) throw new FormatException("car.drive is empty");
+            cd.Only("drive", "pace", "paceRule", "target", "tag", "src", "proposed", "reason"); CarDrive = cd["drive"].Str(); if (CarDrive.Length == 0) throw new FormatException("car.drive is empty");
             // car.pace (Motive 2026-10-19, brief 023): a moving car drives each cell at its surface's pace; required from engine 0.8.2
             var cp = cd.Opt("pace") ?? throw new FormatException("rulebook car.pace is missing: engine 0.8.2 drives each cell at its surface's pace (brief 023)");
             cp.Only("road", "yard"); CarRoadSpeed = RI(cp["road"]); CarYardSpeed = RI(cp["yard"]);
             if ((cd.Opt("paceRule")?.Str() ?? "").Length == 0) throw new FormatException("rulebook car.paceRule is missing (brief 023)");
+            { // tuning.md §10.7 (engine 0.16.0): cars are targets; required (unknown = reject: a rulebook without it is one this engine was not built for)
+                var ct = cd.Opt("target") ?? throw new FormatException("rulebook car.target is missing: engine 0.16.0 makes cars targets (tuning.md §10.7)");
+                ct.Only("health", "disabledAt", "burn", "blast", "rule", "src"); ct["rule"].Str(); ct["src"].Str();
+                var bl = ct["blast"]; bl.Only("m", "damage");
+                HealthCar = RI(ct["health"]); CarDisabledAt = RI(ct["disabledAt"]); CarBurnS = RI(ct["burn"]); CarBlastCm = RI(bl["m"]) * 100; CarBlastDamage = RI(bl["damage"]);
+                if (HealthCar < 2 || CarDisabledAt < 1 || CarDisabledAt >= HealthCar) throw new FormatException("car.target: health at least 2, disabledAt between 1 and health − 1 (disabled before it burns)");
+                if (CarBurnS < 1 || CarBlastCm < 100 || CarBlastDamage < 1) throw new FormatException("car.target: burn at least 1 s, blast.m at least 1 m, blast.damage at least 1");
+            }
             var rd = b["rounds"]; rd.Only("linger", "close", "clear", "part", "holds", "ends", "rule", "tag", "src", "proposed", "reason"); // brief 022
             RoundsLingerS = RI(rd["linger"]); PartnersCloseCm = RI(rd["close"]); PartnersClearCm = RI(rd["clear"]); PartnersPartS = RI(rd["part"]);
             foreach (var v in rd["holds"].Strs()) { if (v != "listen" && !approaches.ContainsKey(v)) throw new FormatException($"rounds.holds: '{v}' is neither listen nor an approach (unknown = reject)"); RoundHolds.Add(v); }
             foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
             if (PartnersCloseCm < 1 || PartnersCloseCm >= TogetherCm) throw new FormatException("rounds.close is inside summon.together (a Watch that ends with them standing together still teaches the affair)");
             if (PartnersClearCm < 1) throw new FormatException("rounds.clear is a distance of 1 cm or more (the summoned partner's room round his stop)");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "rule", "tag", "src");
+            { // Sky 2026-10-20 (tuning.md §7.9): the kite response, today's (the lab reads its own fight.lab.kite)
+                var kt = fg.Opt("kite") ?? throw new FormatException("rulebook fight.kite is missing: engine 0.13.0 runs the kite response in today (tuning.md §7.9)");
+                kt.Only("on", "react", "replan", "chase", "lapse", "hide", "contact", "rearm", "hideMax", "coverHold", "rule", "src"); kt["rule"].Str(); kt["src"].Str();
+                KiteCoverHold = RI(kt["coverHold"]); if (KiteCoverHold < 1) throw new FormatException("fight.kite.coverHold is at least 1 tick"); // tuning.md §7.10
+                KiteOn = kt["on"].Bool(); KiteReact = RI(kt["react"]); KiteReplan = RI(kt["replan"]); KiteChaseCm = RI(kt["chase"]); KiteLapse = RI(kt["lapse"]); KiteHide = RI(kt["hide"]);
+                KiteContactCm = RI(kt["contact"]); KiteRearm = RI(kt["rearm"]); KiteHideMax = RI(kt["hideMax"]);
+                if (KiteReact < 1 || KiteReplan < 1 || KiteLapse < 1 || KiteHide < 1 || KiteContactCm < 0 || KiteRearm < 1 || KiteHideMax < 1) throw new FormatException("fight.kite: react, replan, lapse, hide, rearm, hideMax at least 1 tick; contact at least 0 cm");
+            }
+            if (fg.Opt("lab") is JNode flab) Lab = LoadLab(flab); // brief 027 (EXPERIMENTAL, engine 0.10.0): the fight playground; absent, a start that turns it on is refused
             // fight.over (Motive 2026-10-19, brief 023): the engine ends fire orders on final-fight hostiles at the fight's end and refuses new ones (fight-over); the words are required
             if (fg.Opt("over") is not JNode fover || fover.Str().Length == 0) throw new FormatException("rulebook fight.over is missing: engine 0.8.2 ends the fire orders on the final fight's hostiles when it is over (brief 023)");
             BlockCm = RI(fg["block"]) * 100; Blockers = RI(fg["blockers"]); // brief 018 §1
@@ -614,26 +700,101 @@ namespace Suborned.Sim
         }
         public Weapon WeaponOf(string id) => id == "pistol" ? Pistol : id == "carbine" ? Carbine : throw new FormatException($"weapon '{id}' is unknown (pistol, carbine)");
 
+        LabRules LoadLab(JNode n)
+        {
+            n.Only("experimental", "on", "healthScale", "weapons", "pips", "chance", "runPips", "pip0", "draw", "aimNew", "accStart", "stances", "then", "close", "charge", "field", "target", "policeWarning", "hostilesFireMoving", "kite", "policeContest", "coverSnap", "loadout", "rule", "tag", "src", "proposed", "reason");
+            if (n["experimental"].Str().Length == 0) throw new FormatException("fight.lab.experimental: say what the playground is (brief 027)");
+            var l = new LabRules { On = n["on"].Bool(), HealthScale = RI(n["healthScale"]), Pips = n["pips"].Bool(), DrawTicks = RI(n["draw"]), AimNewTicks = RI(n["aimNew"]), AccStart = RI(n["accStart"]),
+                Stances = OneOf(n["stances"], new[] { "two", "three" }), Then = OneOf(n["then"], new[] { "free", "stop" }), Close = n["close"].Bool(), FireMoving = n["hostilesFireMoving"].Bool() };
+            if (l.HealthScale < 1 || l.HealthScale > 100) throw new FormatException("fight.lab.healthScale is 1..100");
+            var ws = n["weapons"]; ws.Only(LabRules.WeaponIds);
+            foreach (var id in LabRules.WeaponIds)
+            {
+                var wn = ws[id]; wn.Only("damage", "every", "eff", "max", "arms", "target", "charge", "near", "nearDamage", "noFireMoving");
+                var w = new Weapon(id, RI(wn["damage"]), RI(wn["every"]), RI(wn["eff"]) * 100, RI(wn["max"]) * 100)
+                {
+                    Arms = RI(wn["arms"]), TargetCharge = RI(wn["target"]), Charge = wn.Opt("charge") is JNode wc ? RI(wc) : 0,
+                    NearCm = wn.Opt("near") is JNode wnr ? RI(wnr) * 100 : 0, NearDamage = wn.Opt("nearDamage") is JNode wnd ? RI(wnd) : 0,
+                    NoFireMoving = wn.Opt("noFireMoving") is JNode nf && nf.Bool(),
+                };
+                if (w.Damage < 1 || w.Every < 1) throw new FormatException($"fight.lab.weapons.{id}: damage and every are at least 1");
+                if (!(PointBlankCm <= w.EffCm && w.EffCm <= w.MaxCm)) throw new FormatException($"fight.lab.weapons.{id}: point blank ≤ eff ≤ max");
+                if ((w.NearCm > 0) != (w.NearDamage > 0) || w.NearCm > w.EffCm) throw new FormatException($"fight.lab.weapons.{id}: a near band names its damage and lies inside eff");
+                l.Weapons[id] = w;
+            }
+            var ch = n["chance"].Items; if (ch.Count != 4) throw new FormatException("fight.lab.chance is four steps (one pip to four)");
+            for (int k = 0; k < 4; k++) { l.Chance[k + 1] = RI(ch[k]); if (l.Chance[k + 1] < 0 || l.Chance[k + 1] > 1000 || (k > 0 && l.Chance[k + 1] < l.Chance[k])) throw new FormatException("fight.lab.chance rises 0..1000"); }
+            l.RunPips = RI(n.Opt("runPips") ?? throw new FormatException("fight.lab.runPips: engine 0.15.0 reads it (tuning.md §8.3)")); l.Chance[0] = RI(n.Opt("pip0") ?? throw new FormatException("fight.lab.pip0: engine 0.15.0 reads it (tuning.md §8.3)"));
+            if (l.RunPips < 1 || l.RunPips > 3 || l.Chance[0] < 0 || l.Chance[0] > l.Chance[1]) throw new FormatException("fight.lab: runPips 1..3, pip0 0..the one-pip step");
+            var cg = n["charge"]; cg.Only("on", "max", "regen", "rest"); l.Charge = cg["on"].Bool(); l.ChargeMax = RI(cg["max"]); l.ChargeRegen = RI(cg["regen"]); l.ChargeRestTicks = RI(cg["rest"]); // rest: tuning.md §6.3
+            var fd = n["field"]; fd.Only("on", "cost", "absorb", "ticks"); l.Field = fd["on"].Bool(); l.FieldCost = RI(fd["cost"]); l.FieldAbsorb = RI(fd["absorb"]); l.FieldTicks = RI(fd["ticks"]);
+            var tg = n["target"]; tg.Only("maxShots", "volleysPerFight"); l.MaxShots = RI(tg["maxShots"]); l.VolleysPerFight = RI(tg["volleysPerFight"]);
+            var pw = n["policeWarning"]; pw.Only("on", "ticks", "alert", "perWatcher", "trail"); l.Warn = pw["on"].Bool(); l.WarnTicks = RI(pw["ticks"]); l.WarnAlert = RI(pw["alert"]); l.WarnPerWatcher = RI(pw["perWatcher"]); l.WarnTrail = RI(pw["trail"]); // perWatcher, trail: tuning.md §6.4
+            if (l.AccStart < 0 || l.AccStart >= 1000 || l.ChargeRestTicks < 1 || l.WarnPerWatcher < 0) throw new FormatException("fight.lab: accStart is 0..999, charge.rest at least 1 tick, policeWarning.perWatcher at least 0");
+            var kt = n["kite"]; kt.Only("on", "react", "replan", "chase", "lapse", "hide", "contact", "rearm", "hideMax", "coverHold");
+            l.KiteCoverHold = RI(kt.Opt("coverHold") ?? throw new FormatException("fight.lab.kite.coverHold: engine 0.14.0 reads it (tuning.md §7.10)")); if (l.KiteCoverHold < 1) throw new FormatException("fight.lab.kite.coverHold is at least 1 tick"); l.Kite = kt["on"].Bool(); l.KiteReact = RI(kt["react"]); l.KiteReplan = RI(kt["replan"]); l.KiteChaseCm = RI(kt["chase"]); l.KiteLapse = RI(kt["lapse"]); l.KiteHide = RI(kt["hide"]); // F2, Pulse kite-response.md
+            if (l.KiteReact < 1 || l.KiteReplan < 1 || l.KiteLapse < 1 || l.KiteHide < 1) throw new FormatException("fight.lab.kite: react, replan, lapse and hide are at least 1 tick");
+            l.KiteContactCm = RI(kt["contact"]); l.KiteRearm = RI(kt["rearm"]); l.KiteHideMax = RI(kt["hideMax"]); l.PoliceContest = RI(n["policeContest"]); // brief 027 retest (Pulse retest-fixes.md §1, §2, §5)
+            if (l.KiteContactCm < 0 || l.KiteRearm < 1 || l.KiteHideMax < 1 || l.PoliceContest < 0) throw new FormatException("fight.lab: kite.contact at least 0 cm, kite.rearm and kite.hideMax at least 1 tick, policeContest at least 0");
+            var cs = n["coverSnap"]; cs.Only("on", "snap", "marks"); l.CoverSnap = cs["on"].Bool(); l.CoverSnapCm = RI(cs["snap"]); l.CoverMarksCm = RI(cs["marks"]) * 100; // brief 027 B5
+            if (l.CoverSnapCm < 1 || l.CoverMarksCm < l.CoverSnapCm) throw new FormatException("fight.lab.coverSnap: snap at least 1 cm, marks at least snap");
+            var lo = n["loadout"]; lo.Only("scout", "fixer", "tech", "enforcer");
+            for (int k = 0; k < 4; k++) { var a = lo[Op.Name((OpId)k)].Str(); if (a != "none" && !l.Weapons.ContainsKey(a)) throw new FormatException($"fight.lab.loadout: weapon '{a}' is unknown (unknown = reject)"); l.Loadout[k] = a; }
+            if (l.ChargeMax < 1 || l.MaxShots < 1 || l.FieldTicks < 1 || l.WarnTicks < 1 || l.DrawTicks < 1 || l.AimNewTicks < 1) throw new FormatException("fight.lab: charge.max, target.maxShots, field.ticks, policeWarning.ticks, draw and aimNew are at least 1");
+            return l;
+        }
+
+        /// <summary>Brief 027 (EXPERIMENTAL, fight.lab pips): a shot's pips, 0 beyond the weapon's max ring, else the band (4 within point blank, 3
+        /// within eff, 2 within max), −1 untrained and −1 cover beyond point blank, −1 moving, +1 high, clamped 1–4. rulebook.ref.ts labPips().
+        /// Tuning.md §8.3 (engine 0.15.0): the shooter's gait: a walk −1 (floor 1), a run toward or across −runPips (floor 0), a run away 0
+        /// pips whatever the band; 0 pips inside the max ring is the pip0 rung (only a runner reaches it). Beyond max: −1 (no shot).</summary>
+        public int LabPips(Weapon w, long distanceCm, Gait gait, bool cover, bool untrained, bool high, int runPips)
+        {
+            if (distanceCm > w.MaxCm) return -1;
+            if (gait == Gait.RunAway) return 0;
+            int p = distanceCm <= PointBlankCm ? 4 : distanceCm <= w.EffCm ? 3 : 2;
+            if (distanceCm > PointBlankCm) { if (untrained) p--; if (cover) p--; }
+            if (gait == Gait.Walk) p--;
+            if (gait == Gait.Run) p -= runPips;
+            if (high) p++;
+            return Math.Max(gait == Gait.Run ? 0 : 1, Math.Min(4, p));
+        }
+        /// <summary>Before engine 0.15.0's gaits: moving is a walk; 0 beyond max.</summary>
+        public int LabPips(Weapon w, long distanceCm, bool moving, bool cover, bool untrained, bool high) => Math.Max(0, LabPips(w, distanceCm, moving ? Gait.Walk : Gait.Stand, cover, untrained, high, 2));
+
         /// <summary>A shot's accuracy in per mille (rulebook weapons): the band's (point blank, effective, long; 0 beyond max), times each
         /// modifier that applies, in this order, each rounded down: moving, cover, vale, untrained. rulebook.ref.ts accuracy() is the same.</summary>
-        public int Accuracy(Weapon w, long distanceCm, bool moving, bool cover, bool vale, bool untrained) => Accuracy(w, distanceCm, moving, cover ? ModCover : 1000, vale, untrained);
+        public int Accuracy(Weapon w, long distanceCm, bool moving, bool cover, bool vale, bool untrained) => Accuracy(w, distanceCm, moving ? Gait.Walk : Gait.Stand, cover ? ModCover : 1000, vale, untrained, false);
         /// <summary>As above, with the cover modifier given in per mille (full, partial or 1000 none: Pulse's cover points).</summary>
-        public int Accuracy(Weapon w, long distanceCm, bool moving, int coverMod, bool vale, bool untrained)
+        public int Accuracy(Weapon w, long distanceCm, bool moving, int coverMod, bool vale, bool untrained) => Accuracy(w, distanceCm, moving ? Gait.Walk : Gait.Stand, coverMod, vale, untrained, false);
+        /// <summary>Tuning.md §8.3 (engine 0.15.0): the shooter's gait first (walk mod.moving, a run toward or across mod.running, a run away
+        /// mod.runningAway), then cover, or for a running target past point blank mod.targetRunning in its place (one step, never stacked with
+        /// cover: a mover has none), then vale, then untrained; each rounded down.</summary>
+        public int Accuracy(Weapon w, long distanceCm, Gait gait, int coverMod, bool vale, bool untrained, bool targetRunning)
         {
             if (distanceCm > w.MaxCm) return 0;
             long a = distanceCm <= PointBlankCm ? AccPoint : distanceCm <= w.EffCm ? AccEff : AccLong;
-            if (moving) a = a * ModMoving / 1000;
-            a = a * coverMod / 1000;
+            a = a * GaitMod(gait) / 1000;
+            a = a * (targetRunning && distanceCm > PointBlankCm ? ModTargetRunning : coverMod) / 1000;
             if (vale) a = a * ModVale / 1000;
             if (untrained) a = a * ModUntrained / 1000;
             return (int)a;
+        }
+        public int GaitMod(Gait g) => g == Gait.Walk ? ModMoving : g == Gait.Run ? ModRunning : g == Gait.RunAway ? ModRunningAway : 1000;
+        /// <summary>Tuning.md §8.3: a step s runs away from a target t (the vector to it) when it points within runAwayCone of straight away:
+        /// dot(s, t) &lt; 0 and dot² · 10⁶ ≥ cos² · |s|² · |t|² (cos per mille), integers only. The cone's edge is away.</summary>
+        public bool RunsAway(Pt s, Pt t)
+        {
+            long dot = (long)s.X * t.X + (long)s.Y * t.Y; if (dot >= 0) return false;
+            long s2 = (long)s.X * s.X + (long)s.Y * s.Y, t2 = (long)t.X * t.X + (long)t.Y * t.Y;
+            return (decimal)dot * dot * 1000000m >= (decimal)RunAwayCosPm * RunAwayCosPm * s2 * t2;
         }
 
         int RI(JNode n) { if (n.Kind != JKind.Str) throw new FormatException($"{n.Path} is not a ref"); return (int)Num(n.Str()); }
 
         void ValidateEvent(Event ev)
         {
-            bool interpreted = ev.Id.StartsWith("turn.", StringComparison.Ordinal) || ev.Id.StartsWith("scout.", StringComparison.Ordinal);
+            bool interpreted = ev.Id.StartsWith("turn.", StringComparison.Ordinal) || ev.Id.StartsWith("scout.", StringComparison.Ordinal) || ev.Id == "cell.watch"; // brief 031: the Watch is the cell's
             bool choosesOnly = ev.Id == "investigator.question"; // the engine reads its needs and picks its outcome; its effects are the investigation's own
             if (ev.IsTurn) Known(approaches, ev.Approach, "approach", ev.Id);
             var outs = new HashSet<string>(StringComparer.Ordinal); foreach (var o in ev.Outcomes) if (!outs.Add(o.Id)) throw new FormatException($"{ev.Id}: outcome {o.Id} repeats");
@@ -806,6 +967,27 @@ namespace Suborned.Sim
     public sealed class Weapon
     {
         public readonly string Id; public readonly int Damage, Every, EffCm, MaxCm;
+        /// <summary>Brief 027 (EXPERIMENTAL, fight.lab weapons; 0 or false for today's two): Arms in the loadout, charge drawn a shot, the
+        /// charge a targeted shot costs (target mode), a near band and its damage (the riot gun), no fire while walking (the long rifle).</summary>
+        public int Arms, Charge, TargetCharge, NearCm, NearDamage; public bool NoFireMoving;
         public Weapon(string id, int damage, int every, int effCm, int maxCm) { Id = id; Damage = damage; Every = every; EffCm = effCm; MaxCm = maxCm; }
+        /// <summary>A hit's damage at a distance: the near band's within it (the riot gun), else Damage.</summary>
+        public int DamageAt(long distanceCm) => NearCm > 0 && distanceCm <= NearCm ? NearDamage : Damage;
+    }
+
+    /// <summary>fight.lab (brief 027, EXPERIMENTAL): the playground's numbers and its switches' defaults (a run's start may set the switches).</summary>
+    public sealed class LabRules
+    {
+        public static readonly string[] WeaponIds = { "sidearm", "carbine", "machine", "riot", "rifle" };
+        public bool On, Pips, Close, Charge, Field, Warn, FireMoving, CoverSnap, Kite; public string Stances = "two", Then = "free";
+        public int KiteReact, KiteReplan, KiteChaseCm, KiteLapse, KiteHide; // brief 027 F2 (Pulse): the hostiles' answer to fire from beyond their reach
+        public int KiteContactCm, KiteRearm, KiteHideMax, PoliceContest, KiteCoverHold; // brief 027 retest (Pulse retest-fixes.md §1, §2, §5)
+        public int CoverSnapCm, CoverMarksCm; // brief 027 B5: a move's end snaps to a free cover point within CoverSnapCm; the host's marks within CoverMarksCm
+        public int HealthScale, DrawTicks, AimNewTicks, ChargeMax, ChargeRegen, FieldCost, FieldAbsorb, FieldTicks, MaxShots, VolleysPerFight, WarnTicks, WarnAlert;
+        public int AccStart, ChargeRestTicks, WarnPerWatcher, WarnTrail; // tuning.md §6.1–6.4: a new target's count, the charge's rest, warnings per watcher, a heeded warning's Trail
+        public readonly int[] Chance = new int[5]; // [pips] per mille; [0] = pip0, the running shooter's rung (tuning.md §8.3; only a run reaches it)
+        public int RunPips;                       // tuning.md §8.3: pips off a run toward or across (floor 0); a run away is 0 pips
+        public readonly Dictionary<string, Weapon> Weapons = new Dictionary<string, Weapon>(StringComparer.Ordinal);
+        public readonly string[] Loadout = new string[4]; // by OpId: a weapon id or "none"
     }
 }

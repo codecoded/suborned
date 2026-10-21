@@ -1,0 +1,213 @@
+=== Assets/Settings/PC_RPAsset.asset
+28c28
+<   m_MSAA: 1
+---
+>   m_MSAA: 4
+36c36
+<   m_LightProbeSystem: 0
+---
+>   m_LightProbeSystem: 1
+85c85
+<   m_GPUResidentDrawerMode: 1
+---
+>   m_GPUResidentDrawerMode: 0
+86a87
+>   m_ShadowSmallMeshScreenPercentages: {x: 0, y: 0, z: 0, w: 0}
+103,104c104,105
+<   m_PrefilteringModeAdditionalLight: 4
+<   m_PrefilteringModeAdditionalLightShadows: 0
+---
+>   m_PrefilteringModeAdditionalLight: 0
+>   m_PrefilteringModeAdditionalLightShadows: 2
+106c107
+<   m_PrefilteringModeForwardPlus: 1
+---
+>   m_PrefilteringModeForwardPlus: 2
+108,109c109,110
+<   m_PrefilteringModeScreenSpaceOcclusion: 1
+<   m_PrefilteringModeScreenSpaceReflection: 1
+---
+>   m_PrefilteringModeScreenSpaceOcclusion: 2
+>   m_PrefilteringModeScreenSpaceReflection: 0
+112c113
+<   m_PrefilterWriteRenderingLayers: 0
+---
+>   m_PrefilterWriteRenderingLayers: 1
+114c115
+<   m_PrefilterAlphaOutput: 0
+---
+>   m_PrefilterAlphaOutput: 1
+126,129c127,130
+<   m_PrefilterDBufferMRT3: 0
+<   m_PrefilterSoftShadowsQualityLow: 0
+<   m_PrefilterSoftShadowsQualityMedium: 0
+<   m_PrefilterSoftShadowsQualityHigh: 0
+---
+>   m_PrefilterDBufferMRT3: 1
+>   m_PrefilterSoftShadowsQualityLow: 1
+>   m_PrefilterSoftShadowsQualityMedium: 1
+>   m_PrefilterSoftShadowsQualityHigh: 1
+132c133
+<   m_PrefilterScreenSpaceIrradiance: 0
+---
+>   m_PrefilterScreenSpaceIrradiance: 1
+135,136c136,137
+<   m_PrefilterBicubicLightmapSampling: 0
+<   m_PrefilterReflectionProbeRotation: 0
+---
+>   m_PrefilterBicubicLightmapSampling: 1
+>   m_PrefilterReflectionProbeRotation: 1
+139a141,143
+>   m_PrefilterPointSamplingUpsampling: 1
+>   m_Light2DPrefilteringMode: 0
+>   m_Light2DKeptVariantCombos: []
+=== Assets/Settings/PC_Renderer.asset
+2a3,22
+> --- !u!114 &-8435663247623494562
+> MonoBehaviour:
+>   m_ObjectHideFlags: 1
+>   m_CorrespondingSourceObject: {fileID: 0}
+>   m_PrefabInstance: {fileID: 0}
+>   m_PrefabAsset: {fileID: 0}
+>   m_GameObject: {fileID: 0}
+>   m_Enabled: 1
+>   m_EditorHideFlags: 0
+>   m_Script: {fileID: 11500000, guid: b00045f12942b46c698459096c89274e, type: 3}
+>   m_Name: Harbour fog
+>   m_EditorClassIdentifier: Unity.RenderPipelines.Universal.Runtime::UnityEngine.Rendering.Universal.FullScreenPassRendererFeature
+>   m_Active: 1
+>   injectionPoint: 550
+>   fetchColorBuffer: 1
+>   requirements: 1
+>   passMaterial: {fileID: 2100000, guid: 5150bb27c977d46548db0884ba68590b, type: 2}
+>   passIndex: 0
+>   bindDepthStencilAttachment: 0
+>   m_Version: 1
+16,17c36
+<     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7,
+<       type: 3}
+---
+>     debugReplacementPS: {fileID: 4800000, guid: cf852408f2e174538bcd9b7fda1c5ae7, type: 3}
+19,20c38
+<     probeVolumeSamplingDebugComputeShader: {fileID: 7200000, guid: 53626a513ea68ce47b59dc1299fe3959,
+<       type: 3}
+---
+>     probeVolumeSamplingDebugComputeShader: {fileID: 7200000, guid: 53626a513ea68ce47b59dc1299fe3959, type: 3}
+22,35c40,46
+<     probeVolumeDebugShader: {fileID: 4800000, guid: e5c6678ed2aaa91408dd3df699057aae,
+<       type: 3}
+<     probeVolumeFragmentationDebugShader: {fileID: 4800000, guid: 03cfc4915c15d504a9ed85ecc404e607,
+<       type: 3}
+<     probeVolumeOffsetDebugShader: {fileID: 4800000, guid: 53a11f4ebaebf4049b3638ef78dc9664,
+<       type: 3}
+<     probeVolumeSamplingDebugShader: {fileID: 4800000, guid: 8f96cd657dc40064aa21efcc7e50a2e7,
+<       type: 3}
+<     probeSamplingDebugMesh: {fileID: -3555484719484374845, guid: 57d7c4c16e2765b47a4d2069b311bffe,
+<       type: 3}
+<     probeSamplingDebugTexture: {fileID: 2800000, guid: 24ec0e140fb444a44ab96ee80844e18e,
+<       type: 3}
+<     probeVolumeBlendStatesCS: {fileID: 7200000, guid: b9a23f869c4fd45f19c5ada54dd82176,
+<       type: 3}
+---
+>     probeVolumeDebugShader: {fileID: 4800000, guid: e5c6678ed2aaa91408dd3df699057aae, type: 3}
+>     probeVolumeFragmentationDebugShader: {fileID: 4800000, guid: 03cfc4915c15d504a9ed85ecc404e607, type: 3}
+>     probeVolumeOffsetDebugShader: {fileID: 4800000, guid: 53a11f4ebaebf4049b3638ef78dc9664, type: 3}
+>     probeVolumeSamplingDebugShader: {fileID: 4800000, guid: 8f96cd657dc40064aa21efcc7e50a2e7, type: 3}
+>     probeSamplingDebugMesh: {fileID: -3555484719484374845, guid: 57d7c4c16e2765b47a4d2069b311bffe, type: 3}
+>     probeSamplingDebugTexture: {fileID: 2800000, guid: 24ec0e140fb444a44ab96ee80844e18e, type: 3}
+>     probeVolumeBlendStatesCS: {fileID: 7200000, guid: b9a23f869c4fd45f19c5ada54dd82176, type: 3}
+38,39c49,51
+<   m_RendererFeatureMap: ad6b866f10d7b46c
+<   m_UseNativeRenderPass: 1
+---
+>   - {fileID: -8435663247623494562}
+>   m_RendererFeatureMap: ad6b866f10d7b46c5e649568f880ee8al
+>   xrSystemData: {fileID: 0}
+41c53,56
+<   m_AssetVersion: 2
+---
+>   m_AssetVersion: 3
+>   m_PrepassLayerMask:
+>     serializedVersion: 2
+>     m_Bits: 4294967295
+58a74,75
+>   m_DepthAttachmentFormat: 0
+>   m_DepthTextureFormat: 0
+60a78
+>   m_TileOnlyMode: 0
+63c81
+<   m_ObjectHideFlags: 0
+---
+>   m_ObjectHideFlags: 1
+80c98
+<     Intensity: 0.4
+---
+>     Intensity: 0.9
+82c100
+<     Radius: 0.3
+---
+>     Radius: 0.45
+87,95d104
+<   m_BlueNoise256Textures:
+<   - {fileID: 2800000, guid: 36f118343fc974119bee3d09e2111500, type: 3}
+<   - {fileID: 2800000, guid: 4b7b083e6b6734e8bb2838b0b50a0bc8, type: 3}
+<   - {fileID: 2800000, guid: c06cc21c692f94f5fb5206247191eeee, type: 3}
+<   - {fileID: 2800000, guid: cb76dd40fa7654f9587f6a344f125c9a, type: 3}
+<   - {fileID: 2800000, guid: e32226222ff144b24bf3a5a451de54bc, type: 3}
+<   - {fileID: 2800000, guid: 3302065f671a8450b82c9ddf07426f3a, type: 3}
+<   - {fileID: 2800000, guid: 56a77a3e8d64f47b6afe9e3c95cb57d5, type: 3}
+<   m_Shader: {fileID: 4800000, guid: 0849e84e3d62649e8882e9d6f056a017, type: 3}
+=== Assets/Settings/DefaultVolumeProfile.asset
+381a382,384
+>   filter:
+>     m_OverrideState: 1
+>     m_Value: 0
+=== ProjectSettings/QualitySettings.asset
+67c67
+<     shadowResolution: 1
+---
+>     shadowResolution: 3
+69,70c69,70
+<     shadowCascades: 2
+<     shadowDistance: 40
+---
+>     shadowCascades: 4
+>     shadowDistance: 90
+79c79
+<     antiAliasing: 0
+---
+>     antiAliasing: 4
+82c82
+<     realtimeReflectionProbes: 0
+---
+>     realtimeReflectionProbes: 1
+121d120
+<     AndroidXR: 0
+125d123
+<     MetaQuest: 0
+=== ProjectSettings/GraphicsSettings.asset
+38a39,47
+>   m_GraphicsStateCollection: {fileID: 0}
+>   m_CollectionStartupAction: 0
+>   m_TraceSavePath: TracedCollection
+>   m_TraceSendToEditor: 1
+>   m_AdditionalWarmupCollections: []
+>   m_WarmupAsync: 1
+>   m_EnableCacheMissTracing: 0
+>   m_WarmupProgressivelyLimit: -1
+>   m_CacheMissCollectionPath: CacheMissCollection
+40c49
+<   m_CustomRenderPipeline: {fileID: 0}
+---
+>   m_CustomRenderPipeline: {fileID: 11400000, guid: 4b83569d67af61e458304325a23e5dfd, type: 2}
+49c58,59
+<   m_BrgStripping: 2
+---
+>   m_BrgStripping: 0
+>   m_DefaultLightBaker: 0
+61a72,76
+>   m_ShaderBuildSettings:
+>     keywordDeclarationOverrides: []
+>     numInternalDefines: 0
+>     defines: []
+>     compilerSettings: []

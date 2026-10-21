@@ -1,0 +1,1863 @@
+{
+ "a": "HEAD c5fa88598c18",
+ "b": "the working tree",
+ "routes": [
+  {
+   "id": "careless-body-found",
+   "status": "moved",
+   "a": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3370,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "2a870d9db219bbc5",
+    "scriptSha": "9ae1834ce36feffbd4104c85523be44576c2140a887a1e508bff8a7081704457"
+   },
+   "b": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2495,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "e99a4657f5597c25",
+    "scriptSha": "9ae1834ce36feffbd4104c85523be44576c2140a887a1e508bff8a7081704457"
+   },
+   "cols": [
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "662\tscout.watch.watched\tFolake Okafor (guard): scout.watch → watched.",
+    "b": "542\tattention.noticed\tguard notices the scout standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-enforcer-watches-guard",
+   "status": "added",
+   "b": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2152,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "49869fe0efba02cc",
+    "scriptSha": "a5055ec5fc980a6a44ab98854bc9838e37b345ed0923a954fd3388340e26b879"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "status": "moved",
+   "a": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "38c22ab5a91b575a",
+    "scriptSha": "1da3519e0af1ef8c8be0b38a5354525aad1ee5f09dc4c68d5922ae10ca892d81"
+   },
+   "b": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "660cc51466b9c451",
+    "scriptSha": "665b0647b750a7636d5ca1d08433e67a0155bef8f9f8a557559a9256401d9827"
+   },
+   "cols": [],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "status": "moved",
+   "a": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4785,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "0686e2972c22b903",
+    "scriptSha": "381cc07d6af009c12c9bcf9ba4f06e11e3327f8e4294a2bd9640baa814ec6168"
+   },
+   "b": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "4f27d4ccf884ebda",
+    "scriptSha": "85a68528137f5995e0be726cf0bc5adee53a7013a10faf32d68cc24b46ea0fcf"
+   },
+   "cols": [
+    "end",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "576\torder.watch\tscout watch driver (20 s)",
+    "b": "620\torder.watch\tscout watch driver (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-scout-idles-pickup",
+   "status": "added",
+   "b": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "10e68e9a021f8c94",
+    "scriptSha": "10287f10fe744f845bbdec22c543fde73e8d768657c15395218408149c7afb3f"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "status": "moved",
+   "a": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "e21ceb0d99bc5d39",
+    "scriptSha": "4fd078ded200acc765f07a049c6ec5356cade475f847b74a86cf26ff89dec25c"
+   },
+   "b": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "b4e06215c402a0d1",
+    "scriptSha": "4fd078ded200acc765f07a049c6ec5356cade475f847b74a86cf26ff89dec25c"
+   },
+   "cols": [
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 6,
+    "a": "662\tscout.watch.watched\tFolake Okafor (guard): scout.watch → watched.",
+    "b": "542\tattention.noticed\tguard notices the scout standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "status": "moved",
+   "a": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 4139,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 0,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "e6e351719ade2528",
+    "scriptSha": "0a3ce0204c7764c693f93e78dfb06bfd207e161d6bca36766068442127ec7e07"
+   },
+   "b": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 4139,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 0,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "542bb514ae0c39cd",
+    "scriptSha": "0a3ce0204c7764c693f93e78dfb06bfd207e161d6bca36766068442127ec7e07"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 7,
+    "a": "662\tscout.watch.watched\tFolake Okafor (guard): scout.watch → watched.",
+    "b": "542\tattention.noticed\tguard notices the scout standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-district-seals",
+   "status": "moved",
+   "a": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 6,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "11825f1973f4ddd5",
+    "scriptSha": "4734c60ee85e70718fc8fbe5f94caf833310bae188ca3cb806a220d6071a8b36"
+   },
+   "b": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "c9658f3e2b2565c5",
+    "scriptSha": "4734c60ee85e70718fc8fbe5f94caf833310bae188ca3cb806a220d6071a8b36"
+   },
+   "cols": [
+    "trail"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "1000\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "b": "574\tattention.noticed\tthe camera entrance notices the enforcer standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1040,
+    "trail": 20,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "e3680bebcd90b4ad",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "b": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 991,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "d48682a7f98143d3",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "cols": [
+    "end",
+    "trail"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "374\tshot.miss\tenforcer fires on guard at 11 m (375 ‰): miss.",
+    "b": "374\tshot.hit\tenforcer fires on guard at 13 m (750 ‰): hit.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "4e391b551dc95dd7",
+    "scriptSha": "4222fbf7bd177f5dde63f0f941941a94ff44f6ed7030adb5b65c36920275ea6c"
+   },
+   "b": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "57783653beacd0a7",
+    "scriptSha": "4222fbf7bd177f5dde63f0f941941a94ff44f6ed7030adb5b65c36920275ea6c"
+   },
+   "cols": [
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 10,
+    "a": "1733\tturn.help.not-yet\tInez Nikolaou (waitress): turn.help → not-yet.",
+    "b": "1387\tattention.noticed\tthe camera entrance notices the enforcer standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "5fa672d3aa3ad736",
+    "scriptSha": "d1fea0b14670165068bad27e439b834115cfc4578e8a2d7c30c679bcb6979c61"
+   },
+   "b": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "56c262b7c52c27db",
+    "scriptSha": "d1fea0b14670165068bad27e439b834115cfc4578e8a2d7c30c679bcb6979c61"
+   },
+   "cols": [
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 15,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "1872\tattention.noticed\tguard notices the enforcer standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-patrol",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "8c5ffb536bbfc3d7",
+    "scriptSha": "691794cb22f7bfe6af0fa3b05d450710b18e998acdcf5ff8b46e64adc4d9495d"
+   },
+   "b": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "1c855691ce49dd75",
+    "scriptSha": "691794cb22f7bfe6af0fa3b05d450710b18e998acdcf5ff8b46e64adc4d9495d"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 16,
+    "a": "2233\tturn.help.turned\tInez Nikolaou (waitress): turn.help → turned.",
+    "b": "2017\tattention.noticed\tpatrol notices the enforcer standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "status": "moved",
+   "a": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "f65296d6bc1bcc5a",
+    "scriptSha": "c3be5d778f1256b439a5997cc31167c1e9a389023d0982550ecac01959bef970"
+   },
+   "b": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "1f93ab2187064d51",
+    "scriptSha": "c3be5d778f1256b439a5997cc31167c1e9a389023d0982550ecac01959bef970"
+   },
+   "cols": [
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 5,
+    "a": "776\tscout.watch.watched\tMei Zhou (driver): scout.watch → watched.",
+    "b": "656\tattention.noticed\tthe camera pickup notices the scout standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "status": "moved",
+   "a": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "99771177458916fd",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "b": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "00d76351be006100",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "cols": [
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 3,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "673\tattention.noticed\tthe camera pickup notices the enforcer standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-vale-dead",
+   "status": "moved",
+   "a": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "710c15a04137cbfe",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "b": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "ec458aec400e71e2",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 2,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "673\tattention.noticed\tthe camera pickup notices the enforcer standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-vale-leaves",
+   "status": "moved",
+   "a": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "c280e8d55624a96f",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "b": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "5b03158b7e03e7bc",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "cols": [
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 2,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "742\tattention.noticed\tthe camera pickup notices the scout standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2506,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "782b86ca59166952",
+    "scriptSha": "5a3e1a4e9d4e925bdfe46ace2ce2b463bc4265f3514d010d42bbead3ecf5f21c"
+   },
+   "b": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2517,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "e0b10fbc9483b02c",
+    "scriptSha": "6183598e14278033c65203e613b1ba51564eb1899906b8ce86315dbad79d0f19"
+   },
+   "cols": [
+    "end",
+    "trail"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "201\trun.seen\tThe guard sees the enforcer running: a found fault. Alert 1.",
+    "b": "786\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "status": "moved",
+   "a": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4558,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 10,
+     "total": 18,
+     "pct": 55
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "fc515d2739ebaecc",
+    "scriptSha": "30ae5c9c54945d71251823d181ee996eb0cb860bada0ca595a69264906a1007a"
+   },
+   "b": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4490,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 10,
+     "total": 18,
+     "pct": 55
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "c028a93ce18bfd70",
+    "scriptSha": "30ae5c9c54945d71251823d181ee996eb0cb860bada0ca595a69264906a1007a"
+   },
+   "cols": [
+    "end",
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 5,
+    "a": "776\tscout.watch.watched\tMei Zhou (driver): scout.watch → watched.",
+    "b": "656\tattention.noticed\tthe camera pickup notices the scout standing still in its sight.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud",
+   "status": "moved",
+   "a": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2746,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "04a11f65b9f7d1cc",
+    "scriptSha": "9bc5d8813f41cd0d1be6151c574de482261e820410633771e449008f6aee7678"
+   },
+   "b": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2769,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "693c204ec3b86b47",
+    "scriptSha": "a07ea951aca304d5bddb353893fb7c0a1edac6256badcfb6f82f4073a6a53440"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "201\trun.seen\tThe guard sees the enforcer running: a found fault. Alert 1.",
+    "b": "786\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fast",
+   "status": "moved",
+   "a": {
+    "id": "loud-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2746,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "04a11f65b9f7d1cc",
+    "scriptSha": "1d75699f2df06e48848ec56aaca9eec346e53103d308f4f45a72b26ca9799c0c"
+   },
+   "b": {
+    "id": "loud-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2769,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "693c204ec3b86b47",
+    "scriptSha": "f302b440a619b96db7576aa0b8ca6b7017da0512d32c78ffaa1df03564f8d424"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "201\trun.seen\tThe guard sees the enforcer running: a found fault. Alert 1.",
+    "b": "786\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fight",
+   "status": "moved",
+   "a": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2822,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "e6b2b50f19af74b2",
+    "scriptSha": "c98892571ec22aa5e86e5e172358449ed1abe9e09352bfed3a1d67bc74e3304d"
+   },
+   "b": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2746,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "2c26bb0b58d83335",
+    "scriptSha": "d576f49ec3916380246c777857fbe0972b2a83831a4dca4dc0ac1b7dc1d73c89"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "201\trun.seen\tThe guard sees the enforcer running: a found fault. Alert 1.",
+    "b": "786\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-downed",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2755,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "47d8b02b277677f9",
+    "scriptSha": "cd193d88517989fc78a0282c625eaf5789089b68d2c29e7ad30a6084eed57cb8"
+   },
+   "b": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2799,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "fe824fe62af6c4c0",
+    "scriptSha": "481cb10c3ebd1bc48fb0fdafd0e11217363b949ce56cdd5fae5f3f4e75e5d455"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "201\trun.seen\tThe guard sees the enforcer running: a found fault. Alert 1.",
+    "b": "786\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-standing",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2755,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "ec8c1a09ca12cfa1",
+    "scriptSha": "207220030a63b82c419f328236e73fcf356b4ffb14e08ca2045e1024821583e4"
+   },
+   "b": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2799,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "2f1b74cd8e1047db",
+    "scriptSha": "59472cfd4db62a13b557a4cd9705017ad87f09f2f6922383f44aa06d6403b2db"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "201\trun.seen\tThe guard sees the enforcer running: a found fault. Alert 1.",
+    "b": "786\tloop.on\tOne feed repeats. The Tech is tied to the cabinet.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a",
+   "status": "moved",
+   "a": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2764,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "2e578eb607a35b85",
+    "scriptSha": "d8a986def736e10190e9badcea6e59d54b85a357a191788e5b6fd336092388c6"
+   },
+   "b": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2887,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "f091a4c067e5ad89",
+    "scriptSha": "f4d7557711c34e35b91d59d2ce0576945297dc85b7d3ba20a0f07767269958c6"
+   },
+   "cols": [
+    "end"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 5,
+    "a": "54\torder.watch\tscout watch waitress (20 s)",
+    "b": "90\torder.watch\tscout watch waitress (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2702,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "e8e10589eeaa541a",
+    "scriptSha": "28f9603616204f731291a618b24feefddbafe0bc5503217dd677f6bc470cdfbd"
+   },
+   "b": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2677,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "93cc8d497f7e9bbf",
+    "scriptSha": "47e1b6ece7b8fbb59ad4558b4c17d7b1e26feee2317297440a7b66cbc093df45"
+   },
+   "cols": [
+    "end"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 5,
+    "a": "54\torder.watch\tscout watch waitress (20 s)",
+    "b": "90\torder.watch\tscout watch waitress (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "6bbbde764c29d75d",
+    "scriptSha": "5baba8e1b180e941b490a7ef61aca99fcd9b278860787e3733db641f6ba1ff06"
+   },
+   "b": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2402,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "9286ea4a363e3d1d",
+    "scriptSha": "984e16da481f5c192a2003d019882aae1f33e4a1bb5ffabb4b6936d2f9a25f31"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 5,
+    "a": "54\torder.watch\tscout watch waitress (20 s)",
+    "b": "90\torder.watch\tscout watch waitress (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2218,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "c3634cc96f7162e7",
+    "scriptSha": "e424aca5e0704523352b8ad3f4275f1547206685811abe8559961466074b6517"
+   },
+   "b": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2179,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "5745196be96182f4",
+    "scriptSha": "fd2375acbd8ec6ebb44f5b7969d6749d488fa2305bbfa4efaafd7427ef4b93b5"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 5,
+    "a": "54\torder.watch\tscout watch waitress (20 s)",
+    "b": "90\torder.watch\tscout watch waitress (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b",
+   "status": "moved",
+   "a": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4745,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "ffce15e7448ae71c",
+    "scriptSha": "faf7ce3e9aee0b05460f6b5c537c7d97e0a8ef7bf910196db00810362160b55f"
+   },
+   "b": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4807,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "cba529157d14d083",
+    "scriptSha": "377b3866360dc37133107261b67ce3791cb1ee9657ed87730bb68da95371baf5"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "576\torder.watch\tscout watch driver (20 s)",
+    "b": "620\torder.watch\tscout watch driver (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-block",
+   "status": "moved",
+   "a": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4745,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "e42b07b90c9f6c14",
+    "scriptSha": "17db077d5cf2558e3118fa399d5b864fdc5f074fb62abbc9eac6541400f5d8c5"
+   },
+   "b": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4807,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "ce375de9f64619dd",
+    "scriptSha": "692af858f670ffefec35959a831d8f88d327065d550bc85c7617e616c09b592c"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "576\torder.watch\tscout watch driver (20 s)",
+    "b": "620\torder.watch\tscout watch driver (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-block-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4682,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "04510ad45a2ee34b",
+    "scriptSha": "4bcff15773343e5875435fc7dec08e153763038f42c9c3bdb087df1cbc0714cb"
+   },
+   "b": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "5cee9d5112e3374f",
+    "scriptSha": "42e9a32bc14382e5b467e2ac184b99fe1e561a0e6f375622e2234cf53143d01c"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "576\torder.watch\tscout watch driver (20 s)",
+    "b": "620\torder.watch\tscout watch driver (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4682,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "b9943001156b53b9",
+    "scriptSha": "5bf07f1431508471c4c15320bf815fea064fac0d5d1c9d6cb30e74776b8645e9"
+   },
+   "b": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "02f0be5fe2519791",
+    "scriptSha": "6a1dd91da8e941e0ad7760affd164bc82b697f4cf0d750042d1ac3f6830f1c6a"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 4,
+    "a": "576\torder.watch\tscout watch driver (20 s)",
+    "b": "620\torder.watch\tscout watch driver (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g",
+   "status": "moved",
+   "a": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2662,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "d397f56d537c3e17",
+    "scriptSha": "1463782e5e43bfaff973e004a5f888b2b7431af46816bbfdaf484c16407fc39d"
+   },
+   "b": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2735,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "fa8219e794b58215",
+    "scriptSha": "7291d6db5173ba1543d67d3a7db7dd9c17a6a651d8d7ac159ad83e348ef9f8a6"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2552,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "4a713395e9eb757d",
+    "scriptSha": "e240dfbca3144b3376fd1a3fe3825533fa71f38335ecefa74dfac8b5c7869bfc"
+   },
+   "b": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2512,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "1882fe53e9c646ec",
+    "scriptSha": "1a78f24cdfbbdeb027e435f772ae08afe05c14c9b92dd40db2a70bf127e48401"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2388,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "00342e0f9bfa16ed",
+    "scriptSha": "4631d3b258f4008872a3267f918a67ee8560716fbcaee6e3906f1f88f548c7aa"
+   },
+   "b": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2551,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "4870eea7e81bc818",
+    "scriptSha": "73cdbdf663abc77cfc3557e50a3ed47051fe51aa18a57c42380a178b7bb7d38c"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2278,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "81d71640437c28f2",
+    "scriptSha": "4a07c11b4fc5436290fdba093f4a4599e1fd3aa02fa83aeb5557339e966c7c91"
+   },
+   "b": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "f5e8846754c22a99",
+    "scriptSha": "033ebcd7a05105a4bdb8e3bdb969f29fd257e8c11e65068e95c89cfd34c0f63d"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3532,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "b22c84edcd47217e",
+    "scriptSha": "eb5fd13e09e043e53277175f5e0732383bd4a8fe365fa19dd82c0a9104263049"
+   },
+   "b": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3605,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "5638a158d3425e56",
+    "scriptSha": "d3bca867492c0c34e8562fe96c5dd5daf2158ddce3ea443301a226009053903a"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3422,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "f9153ef29322af46",
+    "scriptSha": "468a8c16629dd0fc97dff90506dc0c571532b5f439128ee6897455c53978df2d"
+   },
+   "b": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3382,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "c3aefd19233264b5",
+    "scriptSha": "dd640e99e1f4af9f4549055a4f8d390b3ac15c0cca21092232d4952bee2b5cc0"
+   },
+   "cols": [
+    "end",
+    "health"
+   ],
+   "scriptChanged": true,
+   "divergence": {
+    "at": 6,
+    "a": "462\torder.watch\tscout watch guard (20 s)",
+    "b": "310\torder.watch\tscout watch guard (20 s)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "withdraw",
+   "status": "same",
+   "a": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "765848c8e9011959",
+    "finalHash": "1ed85f25a97324b5",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "b": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "facab9b495991a1d",
+    "finalHash": "54f02d3bf85a97a2",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  }
+ ]
+}

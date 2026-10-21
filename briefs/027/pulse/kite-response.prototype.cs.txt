@@ -1,0 +1,126 @@
+using System; using System.Collections.Generic;
+namespace Suborned.Sim
+{
+    public sealed class Disp { public Path P = null!; public int Start, Phase, BackStart; public Pt Face; }
+    public sealed partial class Game
+    {
+        Disp? rd;
+        readonly Dictionary<int, Disp> secDisp = new Dictionary<int, Disp>();
+        static int KE(string k, int d) => int.TryParse(Environment.GetEnvironmentVariable(k), out var v) ? v : d;
+        public bool KiteOn => Lab && Environment.GetEnvironmentVariable("KITE") != "0";
+        int kReact => KE("K_REACT", 5); int kReplan => KE("K_REPLAN", 10); int kChaseCm => KE("K_CHASE", 2000); int kLapse => KE("K_LAPSE", 100);
+        int kRivals => KE("K_RIVALS", 1); int kPolice => KE("K_POLICE", 1); int kStop => KE("K_STOP", 900);
+        int Side(string id) => id == "rivals" || id.StartsWith("rival-", StringComparison.Ordinal) ? 2 : (id.StartsWith("security-") || id.StartsWith("officer-")) ? 1 : 0;
+
+        void KiteAlarm(string by, string t)
+        {
+            int side = Side(t); if (side == 0) return;
+            if (t == "rivals") { if (kRivals != 0) { RivalsGun.KiteBy = by; RivalsGun.KiteSeen = Tick; if (RivalsGun.KiteAt < 0) RivalsGun.KiteAt = Tick; } return; }
+            if (side == 1 && kPolice == 0 || side == 2 && kRivals == 0) return;
+            foreach (var g in KiteGuns(side)) { if (g.Down) continue; g.KiteBy = by; g.KiteSeen = Tick; if (g.KiteAt < 0) g.KiteAt = Tick; }
+        }
+        IEnumerable<Gun> KiteGuns(int side)
+        {
+            if (side == 1) { foreach (var g in SecGuns) yield return g; foreach (var h in Hostiles) if (Side(h.Id) == 1 && !IsSecId(h.Id)) yield return h.Gun; }
+            else foreach (var h in Hostiles) if (Side(h.Id) == 2) yield return h.Gun;
+        }
+        bool IsSecId(string id) => SecIndex(id) >= 0;
+
+        void KiteRivals()
+        {
+            var gg = RivalsGun; if (!RivalsDrawn || !RivalsPresent || gg.Down) { rd = null; return; }
+            if (rd != null)
+            {
+                long len = rd.P.Length;
+                if (rd.Phase == 0 && (Tick - rd.Start) * rivSpeed >= len) rd.Phase = 1;
+                if (rd.Phase == 1 && Tick - gg.KiteSeen >= KE("K_HIDE", 30)) { rd.Phase = 2; rd.BackStart = Tick; }
+                if (rd.Phase == 2 && (Tick - rd.BackStart) * rivSpeed >= len) { int tot = Tick - rd.Start; if (RivalsDelayedUntil <= RivalsDrawnTick) RivalsDrawnTick += tot; rd = null; gg.KiteAt = -1; }
+                return;
+            }
+            if (gg.KiteAt < 0 || Tick < gg.KiteAt + kReact) return;
+            var shooter = OpOf(Sim.Op.Parse(gg.KiteBy)); if (shooter.Down || shooter.Inside) { gg.KiteAt = -1; return; }
+            var pose = RivalsPose(); if (!pose.HasValue) return; var pos = pose.Value.pos; var sp = shooter.Pos; int eff = gg.W!.EffCm;
+            bool answer = false;
+            foreach (var o2 in Ops) { if (o2.Down || o2.Inside || !(o2.Gun.Drawn || o2.Gun.Fired)) continue; if (G.D2(pos, o2.Pos) <= (long)eff * eff && Sees(pos, o2.Pos)) { answer = true; break; } }
+            if (answer || RivalsDelayedUntil > RivalsDrawnTick) return;
+            Pt? dest = null; var c = SelectCover(pos, pos, sp, R.SeekRivalCm);
+            if (c != null) { TakeCover(gg, c); dest = c.At; }
+            else dest = S.Grid.Nearest(pos, q => !Sees(q, sp), 800);
+            if (!dest.HasValue) return;
+            var a = S.Grid.NearestFree(pos) ?? pos; var b = S.Grid.NearestFree(dest.Value) ?? dest.Value; var route = S.Grid.Route(a, b); if (route == null || route.Length < 2) return;
+            rd = new Disp { P = new Path(route), Start = Tick, Face = new Pt(sp.X - b.X, sp.Y - b.Y) };
+        }
+
+        void KiteTick()
+        {
+            if (kRivals != 0) KiteRivals();
+            for (int k = 0; k < SecGuns.Length; k++)
+            {
+                var gg = SecGuns[k]; if (gg.Down || secJoined[k]) continue;
+                var pose = SecOfficerPose(k); if (!pose.HasValue) continue;
+                KiteBody(gg, pose.Value.pos, null, k);
+            }
+            foreach (var h in Hostiles)
+            {
+                if (h.Down || !h.Present || h.Gun.St == "break" || h.Gun.St == "gone") continue;
+                KiteBody(h.Gun, h.Pos(Tick), h, -1);
+            }
+        }
+
+        void KiteBody(Gun gg, Pt pos, Hostile? h, int k)
+        {
+            if (gg.KiteAt < 0) return;
+            var shooter = OpOf(Sim.Op.Parse(gg.KiteBy));
+            if (Tick - gg.KiteSeen > kLapse || shooter.Down || shooter.Inside) { gg.KiteLast = -1; gg.KiteAt = -1; gg.KiteBy = ""; gg.KiteCapped = false; return; }
+            if (gg.KitePrev != default) gg.KiteWalked += (int)Dist(gg.KitePrev, pos); gg.KitePrev = pos;
+            if (Tick < gg.KiteAt + kReact) return;
+            var sp = shooter.Pos; int eff = gg.W!.EffCm;
+            bool answer = false;
+            foreach (var o2 in Ops) { if (o2.Down || o2.Inside || !(o2.Gun.Drawn || o2.Gun.Fired)) continue; if (G.D2(pos, o2.Pos) <= (long)eff * eff && Sees(pos, o2.Pos)) { answer = true; break; } }
+            int side = Side(gg.Id);
+            bool moving = h != null ? h.Moving(Tick) : Moving(gg.Id);
+            if (answer) { if (moving && side == 1 && h != null && !h.Blocker) Stop(h); if (moving && side == 1 && k >= 0) SecStop(k, pos, sp); return; }
+            if (side == 1)
+            {
+                if (gg.KiteCapped) return;
+                if (moving && Tick - gg.KiteLast < kReplan) return;
+                int rem = kChaseCm - gg.KiteWalked / 10; // cm; walked in mm? KitePrev distance is in cm (Dist cm)
+                rem = kChaseCm - gg.KiteWalked;
+                if (rem <= 0) { gg.KiteCapped = true; var cv = SelectCover(pos, pos, sp, R.SeekPoliceCm); if (cv != null && h != null) { TakeCover(gg, cv); MoveTo(h, cv.At); } return; }
+                Pt dest = StopPointK(pos, sp, eff);
+                var a = S.Grid.NearestFree(pos) ?? pos; var b = S.Grid.NearestFree(dest) ?? dest; var route = S.Grid.Route(a, b);
+                if (route == null || route.Length < 2) return;
+                var path = new Path(route); long remMm = (long)rem * 10; if (path.Length > remMm) { dest = path.At(remMm); route = S.Grid.Route(a, S.Grid.NearestFree(dest) ?? dest); if (route == null || route.Length < 2) return; path = new Path(route); }
+                if (gg.KiteLast < 0) Note("ai.kite", $"{gg.Id} answers {gg.KiteBy}: first shot at {gg.KiteAt}, moves at {Tick} ({(Tick-gg.KiteAt)} ticks), {Dist(pos, sp)/100} m out.");
+                gg.KiteLast = Tick;
+                if (h != null) { MoveTo(h, dest); gg.St = "advance"; }
+                else secDisp[k] = new Disp { P = path, Start = Tick, Face = new Pt(sp.X - dest.X, sp.Y - dest.Y) };
+                return;
+            }
+            // rivals: out of the line
+            if (h == null || Tick - gg.StepAt < T(R.CoverStepGapS)) return;
+            if (gg.Cover.Length > 0 && !(Lab && false)) { var c0 = CoverById(gg.Cover); if (c0 != null && Protected(pos, sp)) return; }
+            var c = SelectCover(pos, Car, sp, R.SeekRivalCm);
+            gg.StepAt = Tick;
+            if (c != null) { TakeCover(gg, c); MoveTo(h, c.At); return; }
+            var blind = S.Grid.Nearest(pos, q => !Sees(q, sp) && G.D2(q, sp) > 0, 800);
+            if (blind.HasValue) MoveTo(h, blind.Value);
+        }
+        int kReReplan() => kReplan;
+
+        void SecStop(int k, Pt pos, Pt sp)
+        {
+            secDisp[k] = new Disp { P = new Path(new[] { pos, pos }), Start = Tick, Face = new Pt(sp.X - pos.X, sp.Y - pos.Y) };
+        }
+        Pt StopPointK(Pt from, Pt target, int effCm)
+        {
+            long stop = (long)effCm * kStop / 1000;
+            if (G.D2(from, target) <= stop * stop) return from;
+            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(target) ?? target;
+            var route = S.Grid.Route(a, b); if (route == null) return from;
+            var p = new Path(route);
+            for (long mm = 0; mm <= p.Length; mm += 500) { var q = p.At(mm); if (G.D2(q, target) <= stop * stop) return q; }
+            return p.End;
+        }
+    }
+}

@@ -3,7 +3,7 @@
 // Frame: 1 unit = 1 m, pivot = footprint centre at ground, front = +Z. `status` is edited by hand (or by a brief); `bun run kit` keeps it.
 export type KitStatus = 'candidate' | 'adopted' | 'rejected';
 /** root: 'generated' = under the generator's output (tools/decokit: $DECOKIT_OUT, default out/decokit), else under the DecoKit root. */
-export type KitFile = { root?: 'generated'; role: 'fbx' | 'lod' | 'fbx-meta' | 'prefab' | 'prefab-meta' | 'material' | 'material-meta' | 'texture' | 'texture-meta'; path: string; sha256: string; bytes: number };
+export type KitFile = { root?: 'generated'; role: 'fbx' | 'lod' | 'fbx-meta' | 'prefab' | 'prefab-meta' | 'material' | 'material-meta' | 'texture' | 'texture-meta' | 'data'; path: string; sha256: string; bytes: number };
 /** Generator tags. `scale` = allowed uniform scale on height; `squash` = the smallest allowed ratio of the width scale to the height scale (1 = uniform only). */
 /** reach: the side the piece's working end extends to from the pivot (`axis` in kit axes, `m` metres), e.g. a streetlamp's head over the road. */
 export type KitReach = { axis: '+x' | '-x' | '+z' | '-z'; m: number };

@@ -8,8 +8,8 @@
 // MC-4 no single contact is essential: without each contact a quiet route still wins. The routes that need the contact are named,
 //      and a contact that leaves fewer than 2 quiet routes is named as the one those routes depend on (brief 011 B).
 // MC-6 T2 (§13): the fastest informed quiet win is not slower than the fastest loud win; the margin is reported.
-// MC-7 careless violence is worse (brief 013 D): every careless script fails, or wins only at Alert ≥ 2 and dearer in total Trail
-//      than its careful twin (a takedown seen, found or reported is never a cheap quiet win).
+// MC-7 careless violence is worse (brief 013 D): every careless script fails, or wins only at Alert ≥ 2 (brief 031: or at a higher
+//      Alert than its careful twin's, as a body left unhidden and missed at its post's mark) and dearer in total Trail than its careful twin (a takedown seen, found or reported is never a cheap quiet win).
 // MC-8 takedown routes are viable with a real time cost (brief 013 D): at least one quiet route whose orders take someone down wins
 //      at Alert ≤ 1, and each such win spends Enforcer time on the takedown (the act, the lift, the carry, the stash: > 0 s).
 // MC-9 turning people stays competitive (brief 013 D): no takedown win dominates every turning win, i.e. for each takedown win some
@@ -20,6 +20,9 @@
 // MC-11 no stop holds the car (brief 018 §1, §5): every place the final fight posts a hostile at (the ambush spots, the police stands)
 //      stands outside fight-hold-m of the car and outside the exit lane, so only a hostile that comes for the car (the blocker, or one
 //      that walks in) holds it; and every reference win's car left free (none waits on a hostile it merely stands at).
+// MC-12 loitering costs (brief 031): no quiet script has a watcher report an agent loitering (the attention clock's report: a found
+//      fault, Alert ≥ 1), and each careless-loiter script (its careful twin with an agent left standing in a watcher's sight) is
+//      reported and fails, or ends at a higher Alert, where its twin wins.
 // Trail is compared in total (brief 013): the mission's own Trail plus what the debrief carries into the campaign (a knockout's
 // statement, a missing person's file), plus `case-trail-eq` T for each open case it leaves (rulebook, rev 4 R4.4), so a body hidden
 // until the debrief is not cheaper than it is.
@@ -99,15 +102,18 @@ export const quietWin = (d?: Digest) => !!d && d.outcome === 'success' && d.shot
 export const clock = (tick: number) => { const s = Math.floor(tick / 10); return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}${tick % 10 ? `.${tick % 10}` : ''}`; };
 const ticksOf = (at: string) => { const [m, s] = at.split(':').map(Number); return (m! * 60 + s!) * 10; };
 const got = (d: Digest) => (d.outcome === 'failure' ? `failure ${d.fail}` : d.outcome) + (d.left && Object.values(d.left).some(f => f !== 'walked') ? `; left: ${leftOf(d.left)}` : '');
+const gotA = (s: RouteScript, d: Digest) => got(d) + (s.expects.alert !== undefined ? ` at A ${d.alert}` : '');
+/** brief 031: a watcher reported an agent loitering (attention.reporting: the report may still be stopped before it lands) */
+export const loiterReported = (d?: Digest) => !!d && 'attention.reporting' in d.marks;
 const leftOf = (l?: Record<string, string>) => Object.entries(l ?? {}).sort(([a], [b]) => a.localeCompare(b)).map(([op, f]) => `${op} ${f}`).join(', ');
-const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.expects.fail}` : s.expects.outcome) + (s.expects.left ? `; left: ${leftOf(s.expects.left)}` : '');
+const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.expects.fail}` : s.expects.outcome) + (s.expects.left ? `; left: ${leftOf(s.expects.left)}` : '') + (s.expects.alert !== undefined ? ` at A ${s.expects.alert}` : '');
 /** brief 018: a script that names who is left behind must leave exactly them, so (as `want`) */
-const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && (!s.expects.left || leftOf(s.expects.left) === leftOf(d.left)) && d.replayIdentical;
+const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && (!s.expects.left || leftOf(s.expects.left) === leftOf(d.left)) && (s.expects.alert === undefined || d.alert === s.expects.alert) && d.replayIdentical;
 
 export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway } = {}): Report {
   const eq = o.caseTrailEq ?? 0, totalTrail = (d: Digest) => totalTrailOf(d, eq);
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
-  const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: got(d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
+  const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: gotA(s, d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
   const C: Condition[] = [];
 
   const off = rows.filter(x => !x.ok);
@@ -169,14 +175,14 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
     detail: [...quietWins.map(x => `${x.id} (quiet) ${clock(x.tick)}`), ...loudAll.map(x => `${x.id} (loud) ${clock(x.tick)}${x.captured ? ', leaves an operative captured: not raced' : ''}`)].join('; '),
   });
   // MC-7, MC-8, MC-9 (brief 013 D): takedowns
-  const careless = live.filter(s => s.kind === 'careless');
+  const careless = live.filter(s => s.kind === 'careless' && (s.careless ?? 'violence') === 'violence');
   const worse = careless.map(s => {
     const d = plays[s.id]!, tw = plays[s.twin!], dear = !!tw && totalTrail(d) > totalTrail(tw);
-    const ok = d.outcome === 'failure' || (d.outcome === 'success' && d.alert >= 2 && dear) || (d.outcome !== 'success' && d.alert >= 2);
+    const ok = d.outcome === 'failure' || (d.outcome === 'success' && (d.alert >= 2 || (!!tw && d.alert > tw.alert)) && dear) || (d.outcome !== 'success' && d.alert >= 2);
     return { s, d, ok, why: d.outcome === 'failure' ? `fails: ${d.fail}` : `${got(d)} at Alert ${d.alert}, ${totalTrail(d)} T against ${s.twin}'s ${tw ? totalTrail(tw) : '?'} T at Alert ${tw?.alert ?? '?'}` };
   });
   C.push({
-    id: 'MC-7', rule: 'Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 and dearer in total Trail than its careful twin', ok: careless.length > 0 && worse.every(x => x.ok),
+    id: 'MC-7', rule: 'Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 (or above its careful twin\'s) and dearer in total Trail than its careful twin', ok: careless.length > 0 && worse.every(x => x.ok),
     value: `${worse.filter(x => x.ok).length}/${careless.length}`, detail: worse.map(x => `${x.s.id}: ${x.why}${x.ok ? '' : ' (NOT WORSE)'}`).join('; ') || 'no careless script',
   });
   const takes = (s: RouteScript) => scripts[s.id]?.orders.some(o => o.do === 'takedown') ?? false, turns = (s: RouteScript) => scripts[s.id]?.orders.some(o => o.do === 'turn') ?? false;
@@ -226,6 +232,15 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
         ...refs.map(s => { const d = plays[s.id]!; return `${s.id}: ${d.carFreeS === undefined ? 'no blocker out logged (NOT FREE)' : `blocker out ${d.carFreeS.toFixed(1)} s before Go`}`; })].join('; '),
     });
   }
+  // MC-12 (brief 031): loitering in a watcher's sight is reported, so the quiet routes stand out of sight
+  const quietRep = live.filter(s => s.kind === 'quiet' && loiterReported(plays[s.id])), loiter = live.filter(s => s.kind === 'careless' && s.careless === 'loiter');
+  const loiterRows = loiter.map(s => { const d = plays[s.id]!, tw = plays[s.twin!]; return { s, d, tw, ok: loiterReported(d) && !!tw && (d.alert > tw.alert || (d.outcome === 'failure' && tw.outcome === 'success')) }; });
+  C.push({
+    id: 'MC-12', rule: 'Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin', ok: !quietRep.length && loiter.length > 0 && loiterRows.every(x => x.ok),
+    value: `${live.filter(s => s.kind === 'quiet').length - quietRep.length}/${live.filter(s => s.kind === 'quiet').length} quiet scripts unreported; ${loiterRows.filter(x => x.ok).length}/${loiter.length} loiter twins dearer`,
+    detail: [...quietRep.map(s => `${s.id}: a loiterer reported at ${clock(plays[s.id]!.marks['attention.reporting']!)} (NOT QUIET)`),
+      ...loiterRows.map(x => `${x.s.id}: ${loiterReported(x.d) ? `reported at ${clock(x.d.marks['attention.reporting']!)}` : 'never reported'}, ${got(x.d)} at A ${x.d.alert} against ${x.s.twin}'s ${x.tw ? `${got(x.tw)} at A ${x.tw.alert}` : '?'}${x.ok ? '' : ' (NOT DEARER)'}`)].join('; ') || 'no careless-loiter script',
+  });
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }
 

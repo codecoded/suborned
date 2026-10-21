@@ -1,0 +1,20 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Careless (brief 031 §7 Waymark 4): route-g-fast, but the Enforcer watches the guard from his side (3 m reach) before the knockout. The guard senses anyone within 3 m whatever his facing, so the 20 s Watch runs his attention clock to wary (Heat 0: 20 s), and a wary guard is aware at the takedown: armed, he beats it and draws (Alert at least 2). The careful twin is route-g-fast (the Scout watches him from beyond his cone, the Enforcer walks in and strikes at once). The plan ends at the blow: the run plays on to the fail it reaches.",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {"op": "tech", "do": "move", "to": "cabinet", "run": true, "why": "to the control cabinet"},
+  {"op": "enforcer", "do": "move", "to": [5650, -4750], "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone and the patrol's sweep, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)"},
+  {"op": "scout", "do": "move", "to": [3800, -5000], "why": "brief 031: to watch the guard from 27.4 m, beyond his door cone (26 m) and behind the entrance camera and the sweep: from the Office approach, inside his cone, the Watch made him wary of the Scout"},
+  {"op": "fixer", "do": "move", "to": [1025, -4625], "why": "no one to turn on this route: the Fixer waits armed at the getaway car; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the fixer fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
+  {"op": "scout", "do": "watch", "target": "guard", "why": "once there (the walk is about 29 s): a Watch in reach starts where the Scout stands", "gap": 31},
+  {"op": "tech", "do": "loop", "target": "entrance", "label": "loop", "why": "the entrance camera sees the guard's post all mission"},
+  {"op": "scout", "do": "move", "to": [1175, -4825], "why": "the watch done, to the getaway car; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
+  {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute", "why": "as soon as the loop holds"},
+  {"op": "enforcer", "do": "move", "to": [6520, -4110], "why": "as route-g-fast: once the patrol has left its sweep, to the guard's blind side, 1.2 m from him", "after": ["reroute"], "when": "patrol.rerouted"},
+  {"op": "enforcer", "do": "watch", "target": "guard", "gap": 9, "label": "ewatch", "why": "careless: once beside him (the walk is about 8 s), the Enforcer watches the guard himself from 1.2 m"},
+  {"op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout", "label": "td", "why": "careless: the knockout after the Watch: the guard has sensed him beside him all that time (within 3 m, whatever his facing), is wary, so aware, and draws", "after": ["ewatch"], "gap": 20}
+ ]
+}

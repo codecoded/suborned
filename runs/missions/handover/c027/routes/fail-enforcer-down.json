@@ -1,0 +1,11 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"Enforcer down\" (Suture N4): an unprepared shot at the guard from inside his cone (Keel S12), and the Enforcer stays to trade fire until he is down.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Office approach"},
+  {"tick": 354, "op": "enforcer", "do": "fire", "target": "guard"}
+ ],
+ "until": 5100
+}

@@ -1,0 +1,14 @@
+{
+ "label": "R1-c: contact only, wider and stronger; ambient, sun, grade unchanged",
+ "contact": {
+  "enabled": true,
+  "footWidth": 1.6,
+  "kerbWidth": 0.6,
+  "footStrength": 0.6,
+  "footPower": 1.2,
+  "kerbStrength": 0.6,
+  "kerbPower": 1.2,
+  "blobStrength": 0.7,
+  "blobPower": 1.1
+ }
+}

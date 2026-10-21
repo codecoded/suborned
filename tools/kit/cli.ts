@@ -21,6 +21,6 @@ const r = copyAdopted(kit, root, dest, GEN_ROOT);
 console.log(`adopted ${r.assets.length}: ${r.assets.join(', ')}`);
 console.log(`copied ${r.copied.length} files (${(r.bytes / 1048576).toFixed(2)} MB), skipped ${r.skipped.length} already present and verified → ${dest}`);
 for (const f of r.copied) console.log(`  + ${f}`);
-for (const f of r.pruned) console.log(`  - ${f} (stale LOD)`);
+for (const f of r.pruned) console.log(`  - ${f} (stale: no adopted piece lists it)`);
 for (const e of r.errors) console.error(`ERROR ${e}`);
 process.exit(r.errors.length ? 1 : 0);

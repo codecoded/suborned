@@ -50,9 +50,11 @@ namespace Suborned.Sim
         static void FireOnArrivingRivals(Run r, bool once)
         {
             var g = r.G;
+            // c025 (brief 031): he waits outside the pickup camera's cone (Waymark's tip point) and walks beside the rival car as it parks
+            r.To(r.SendTo(Enf, new Pt(8600, -3400)));
+            r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), $"the rival crew is here at {Report.Clock(g.Tick)}");
             r.To(r.SendTo(Enf, Beside(r, g.S.Stand(g.S.RivalsPark)) ?? g.S.Stand(g.S.RivalsPark)));
             r.Do(Enf, "draw");
-            r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), $"the rival crew is here at {Report.Clock(g.Tick)}");
             r.Fire(Enf, "rivals");
             r.Is(r.Until(() => r.Shots().Exists(x => x.by == Enf && x.target == "rivals"), T(10)), "the Enforcer fires on the crew");
             if (once) { r.Do(Enf, "cease"); return; }
@@ -101,7 +103,7 @@ namespace Suborned.Sim
                 r.Eq(l.Cause, "seen-fight-rivals", "the line's cause: the fight (the earliest of the two equal moves)");
             });
 
-            Add("N137", "—", "Fire ends with the final fight (rulebook fight.over, Motive 2026-10-19): N95's route and ambush, but once a rival breaks the cell gives an explicit fire order on him (fire until down). When the final fight is over every fire order still on a final-fight hostile ends (fire.done, 'the fight is over'), a new one is refused fight-over, and 35 s later (past crowd.quiet) no shot has opened a second fight: one fight, one Standing move, +1 seen-fight-rivals.", r =>
+            Add("N137", "—", "Fire ends with the final fight (rulebook fight.over, Motive 2026-10-19): N95's route and ambush, but once a rival breaks the cell gives an explicit fire order on him (fire until down). When the final fight is over every fire order still on a final-fight hostile ends (fire.done, 'the fight is over'; a new one is taken since engine 0.15.0, S9-AFTER), and 35 s later (past crowd.quiet) no shot has opened a second fight: one fight, one Standing move, +1 seen-fight-rivals.", r =>
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
@@ -126,12 +128,8 @@ namespace Suborned.Sim
                     var o = r.Op(name);
                     r.Is(o.Down || o.Gun.Order.Length == 0 || !g.Hostiles.Exists(h => h.Id == o.Gun.Order), $"{name}: no fire order left on a final-fight hostile ({o.Gun.Order})");
                 }
-                var still = g.Hostiles.Find(h => h.Present && !h.Down);
-                if (still != null && by.Length > 0 && !r.Op(by).Down)
-                {
-                    var a = g.Issue(new Order { Tick = g.Tick, Op = by, Do = "fire", Target = still.Id });
-                    r.Eq(a.code, "fight-over", $"a new fire order on {still.Id} ({still.Gun.St}) is refused");
-                }
+                // engine 0.15.0 (tuning.md §9.1, Sky 2026-10-21): a new fire order after fight.over is no longer refused; it is an ordinary
+                // person again (S9-AFTER). Here the cell gives none, so the fight stays one.
                 int over = g.FightOverTick;
                 r.Wait(T(35));
                 r.Is(!g.Log.Exists(l => (l.Code == "shot.hit" || l.Code == "shot.miss") && l.Tick > over && g.Hostiles.Exists(h => l.Text.Contains(" fires on " + h.Id + " "))), "no cell shot at a final-fight hostile after the fight is over");

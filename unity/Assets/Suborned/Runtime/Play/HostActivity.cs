@@ -208,6 +208,7 @@ namespace Suborned.Play
             string speaker = Op.Name(by), verb = VerbOf(o);
             if (!Beat("ack", verb, speaker, who: Name(o.Target), kind: Feedback.Ok))
                 Say(speaker, w != null ? $"Heading to {(w.Place.Length > 0 ? PlaceName(w.Place) : Name(o.Target))}." : "On it.", Feedback.Ok);
+            ConvoHeard((int)by, false); // brief 032: the scene shows the same ack
             if (w == null) SayArrive(by, o);
             if (o.Do == "call") FeedCall(o.Target);
         }
@@ -216,7 +217,7 @@ namespace Suborned.Play
         void SayArrive(OpId by, Order o)
         {
             var verb = VerbOf(o);
-            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } } // Fable §6: arrive is history only
+            if (Text != null && Text.Exchange.TryGetValue(verb, out var ex) && ex.Contains("arrive")) { arriveSaying = true; try { Beat("arrive", verb, Op.Name(by), who: Name(o.Target)); } finally { arriveSaying = false; } ConvoHeard((int)by, true); } // Fable §6: arrive is history only (brief 032: the scene shows it)
         }
 
         /// <summary>The refusal said for the player: the text's lock line for its code, filled (a port of `fillLock`); else the engine's words.</summary>
@@ -265,23 +266,30 @@ namespace Suborned.Play
             if (quiet.HasValue && quiet.Value.Tick == l.Tick && quiet.Value.Code == l.Code && quiet.Value.Text == l.Text) return; // its card is out of sight: so are its lines
             string code = l.Code, role = RoleIn(l);
             if (code.StartsWith("crowd.")) return; // the crowd speaks by its states (CityBeats): one passer-by near the cell, not the log's counts
-            if (code is "scout.watch.watched" or "tech.watch.watched" && role == null)
-            {   // a machine watched (Sky 2026-10-18: the Tech watches machines too): its sight learned, the patrol's rounds once known
-                string speaker = code.StartsWith("tech.") ? "tech" : "scout";
+            if (code.EndsWith(".watch.watched") && role == null)
+            {   // a machine watched (brief 031: any agent; scout., fixer., tech., enforcer.watch.watched): its sight learned, the patrol's rounds once known
+                string speaker = code[..code.IndexOf('.')];
                 var mm = System.Text.RegularExpressions.Regex.Match(l.Text, @"watched the (\w+)( camera)?");
                 string about = !mm.Success ? null : mm.Groups[2].Success ? "camera-" + mm.Groups[1].Value : mm.Groups[1].Value;
                 string outcome = about == "patrol" ? (l.Text.Contains(", and its routine") ? "routine" : "sight") : null;
                 if (about == null || !Beat("read", "watch", speaker, outcome, null, about, "", Feedback.Ok)) Say(speaker, l.Text, Feedback.Ok);
                 return;
             }
-            if (code.StartsWith("scout.") && role != null)
-            {
+            if ((code.StartsWith("scout.") || code.EndsWith(".watch.watched")) && role != null)
+            {   // brief 031: a person watched by any agent speaks in that agent's voice (fixer.watch.watched, enforcer.watch.watched, ...)
                 bool listen = code.StartsWith("scout.listen");
+                string speaker = listen ? "scout" : code[..code.IndexOf('.')];
                 var p = Game.PersonByRole(role);
-                if (!Beat("read", listen ? "listen" : "watch", "scout", null, listen ? p.Temperament : null, role, Name(role), Feedback.Ok))
-                    Say("scout", listen ? $"{Cap(Name(role))} {NeedWords(p.Need)}. {Cap(TemperWords(p.Temperament))}." : $"I have {Name(role)}'s routine.", Feedback.Ok);
+                if (!Beat("read", listen ? "listen" : "watch", speaker, null, listen ? p.Temperament : null, role, Name(role), Feedback.Ok))
+                    Say(speaker, listen ? $"{Cap(Name(role))} {NeedWords(p.Need)}. {Cap(TemperWords(p.Temperament))}." : $"I have {Name(role)}'s routine.", Feedback.Ok);
                 return;
             }
+            if (code == "attention.reporting" && l.Text.StartsWith("guard "))
+            {   // brief 031 (Fable): the guard reports a loiterer by radio: his one line (report-begins, radio)
+                Beat("report-begins", null, "guard", "radio", kind: Feedback.Refused);
+                return;
+            }
+            if (code.StartsWith("attention.")) return; // the cues show the rest (Fable's silentLogs: noticed, wary, stopped; landed speaks as a report)
             if (code.StartsWith("turn.") && role != null)
             {
                 var parts = code.Split('.'); string approach = parts.Length > 2 ? parts[1] : "", outcome = parts[^1];

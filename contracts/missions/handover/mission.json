@@ -157,6 +157,11 @@
   "src": "Sky 2026-10-16 (via Aster: 'a rival gang that has menace level authority is a +1'); briefs/014/motive-standing.md, a public fight, rule 4: the Handover's rivals are menace",
   "note": "How the public sees this mission's rival crew: menace (feared) or neutral (not). The rulebook's fight.public reads it: breaking feared rivals in a public fight is +1 Standing, firing first on rivals nobody fears is -1; without it the rulebook's fight.rivalsPublic (menace) stands. Adopted by Waymark 2026-10-16 as Keel wrote it, kept a top-level block rather than a field on a role: the rivals are a crew the mission sends, not people cast from the district (roles names only cast people), so they have no role to carry it. Menace because the Handover's rivals come to take a councillor off the street outside the Records Office, and a crew that takes people off the street is feared (motive-standing rule 4). tools/sim/site.ts reads it into the site (rivals.public); tools/missions/handover/mission.test.ts locks it."
  },
+ "start": {
+  "heat": 0,
+  "src": "brief 031 §2.1 (Sky 2026-10-20 L3; Waymark 2026-10-20): the Handover is the first mission, so campaign Trail 0, and Standing starts at +2 leaning Hero (GDD §01), so Menace = max(0, -2) = 0: Heat 0, the unknown band (8/20/45 s)",
+  "note": "Read once at the start and fixed for the mission (GDD §05 Heat). Once a campaign layer exists it writes heat from the last debrief; until then the mission carries it. tools/sim/site.ts reads it into the site (heat)."
+ },
  "securityBonus": 0,
  "securityBonusWhy": "The Handover adds nothing to the civic area's base of 2 (watchful, S2): the training mission runs at the district's own level, no open cases (GDD v0.23 §05; briefs/013/motive-takedowns.md §5.3, Sky 2026-10-16). A lighter mission would say -1 here.",
  "arms": {

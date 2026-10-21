@@ -17,7 +17,7 @@ namespace Suborned.Sim
             var g = r.G; var s = g.OpOf(OpId.Scout);
             var (tick, cash, trail, alert, mem) = (g.Tick, g.Cash, g.Trail, g.Alert, p?.Memory.Count ?? 0);
             r.Eq(g.ScoutQuery(verb, target).code, code, $"before the click, {verb} {target} reads {code} (ScoutQuery)");
-            if (p != null) r.Eq(g.Quote(g.R.Ev("scout." + verb), p).Refused, code, $"the {verb} card on {target} carries {code}");
+            if (p != null) r.Eq(g.Quote(g.LearnEv(verb), p).Refused, code, $"the {verb} card on {target} carries {code}");
             var a = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = verb, Target = target });
             r.Is(!a.ok && a.code == code, $"{verb} {target} again is refused {code} (got {(a.ok ? "taken" : a.code)})");
             r.Is(s.Busy == null && g.Tick == tick && g.Cash == cash && g.Trail == trail && g.Alert == alert && (p?.Memory.Count ?? 0) == mem,
@@ -32,7 +32,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard"));
                 { var q = g.ScoutQuery("listen", Inez); r.Is(!q.ok && q.code != "already-heard", $"before a Watch, Listen is refused, but not for knowledge ({q.code})"); }
-                r.Is(g.ScoutQuery("watch", Inez).ok && g.Quote(g.R.Ev("scout.watch"), g.Inez).Refused == "", "the first Watch is open: card and query");
+                r.Is(g.ScoutQuery("watch", Inez).ok && g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "", "the first Watch is open: card and query");
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez"));
                 r.Is(g.ScoutQuery("listen", Inez).ok && g.Quote(g.R.Ev("scout.listen"), g.Inez).Refused == "", "the first Listen is open: card and query");
@@ -77,7 +77,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Is(g.GuardP.KRoutine && g.GuardP.KSecret && !g.Known(GuardR)!.Sight, "told his routine and the affair, not his sight");
                 r.To(r.SendTo(Scout, AheadOfGuard(r, 400)));
-                r.Is(g.ScoutQuery("watch", GuardR).ok && g.Quote(g.R.Ev("scout.watch"), g.GuardP).Refused == "", "his sight unknown: the Watch is open, card and query");
+                r.Is(g.ScoutQuery("watch", GuardR).ok && g.Quote(g.R.Ev("cell.watch"), g.GuardP).Refused == "", "his sight unknown: the Watch is open, card and query");
                 r.Do(Scout, "watch", GuardR); r.Done(Scout);
                 r.Is(g.Known(GuardR)!.Sight, "his sight is learned");
                 RefusedFree(r, "watch", GuardR, "already-watched", g.GuardP);
@@ -89,7 +89,7 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Is(g.Inez.KRoutine && !g.Inez.KSecret && g.Inez.Lover == g.GuardP, "her routine known, the affair not, the guard her lover");
-                r.Is(g.Quote(g.R.Ev("scout.watch"), g.Inez).Refused == "" && g.ScoutQuery("watch", Inez).ok, "a second Watch is open: card and query");
+                r.Is(g.Quote(g.R.Ev("cell.watch"), g.Inez).Refused == "" && g.ScoutQuery("watch", Inez).ok, "a second Watch is open: card and query");
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Is(g.Quote(g.R.Ev("scout.listen"), g.Inez).Refused == "", "Listen is still open: her need and temperament unknown");
             });

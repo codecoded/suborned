@@ -1,0 +1,45 @@
+CloseUps from 11285 placed kit instances, nearest the block at (-150.00, 0.00, -235.00)
+robot RobotButler: DK_RobotButler_Play at (-106.75, 0.18, -255.87) (48 m from the block)
+  robot faces: 3 screens, 6 head parts; mood at 18.1 s
+robot RobotNanny: DK_RobotNanny_Play at (-83.65, 0.18, -320.60) (108 m from the block)
+  robot faces: 3 screens, 6 head parts; mood at 8.5 s
+robot RobotPorter: DK_RobotPorter_Play at (-4.60, 0.30, -363.81) (194 m from the block)
+  robot faces: 3 screens, 6 head parts; mood at 18.1 s
+robot RobotShopkeeper: DK_RobotShopkeeper_Play at (-171.63, 0.18, -186.93) (53 m from the block)
+  robot faces: 3 screens, 6 head parts; mood at 11.3 s
+robot RobotWaiter: DK_RobotWaiter_Play at (-142.89, 0.18, -217.61) (19 m from the block)
+  robot faces: 3 screens, 6 head parts; mood at 11.2 s
+vending VendingMachine_Cola: DK_VendingMachine_Cola at (-120.58, 0.18, -252.42) (34 m from the block)
+vending VendingMachine_Snack: DK_VendingMachine_Snack at (-120.59, 0.18, -251.40) (34 m from the block)
+vending Automat: not placed
+signage Marquee_Cinema: not placed
+signage BladeSign: DK_BladeSign_Cafe at (-120.10, 4.33, -222.80) (33 m from the block)
+signage Billboard_Pylon_A: not placed
+signage Billboard_Wall_A: not placed
+signage NeonStar_Wall: DK_NeonStar_Wall at (-197.50, 6.48, -237.00) (48 m from the block)
+signage AdColumn: DK_AdColumn at (173.00, 0.18, -7.00) (395 m from the block)
+signage SandwichBoard: DK_SandwichBoard at (-121.50, 0.18, -252.41) (33 m from the block)
+signage InfoLightbox: DK_InfoLightbox at (-113.26, 0.18, -284.00) (61 m from the block)
+plant CoconutPalm: DK_CoconutPalm at (-142.02, 0.18, -327.82) (93 m from the block)
+plant FanPalm: DK_FanPalm_Play at (133.05, 9.43, -420.05) (338 m from the block)
+plant Cypress: DK_Cypress at (-124.80, 0.18, -238.50) (25 m from the block)
+plant FlowerBed: DK_FlowerBed at (-99.64, 0.18, -209.39) (56 m from the block)
+plant Planter_Urn: DK_Planter_Urn_Play at (-197.38, 0.18, -217.03) (51 m from the block)
+plant PottedTopiary: DK_PottedTopiary at (-197.25, 0.18, -225.71) (48 m from the block)
+plant TopiaryCone: DK_TopiaryCone at (-120.77, 0.18, -213.46) (36 m from the block)
+plant TubPalm: not placed
+street SignalOrb: not placed
+street Streetlamp: DK_Streetlamp at (-125.40, 0.18, -231.00) (25 m from the block)
+street Bench: DK_Bench at (-192.80, 0.18, -239.00) (43 m from the block)
+street PhoneBooth: DK_PhoneBooth_Single at (-144.00, 0.18, -260.00) (26 m from the block)
+street BusShelter: DK_BusShelter_Play at (-340.65, 0.30, -280.18) (196 m from the block)
+street TicketMachine: DK_TicketMachine at (-341.40, 0.30, -266.38) (194 m from the block)
+street Hydrant: DK_Hydrant at (-125.20, 0.18, -246.00) (27 m from the block)
+street StreetClock: DK_StreetClock at (-14.80, 0.18, -64.00) (218 m from the block)
+street PneumaticPost: DK_PneumaticPost_Play at (-166.00, 0.18, -322.75) (89 m from the block)
+street DrainGrate: DK_DrainGrate at (-137.38, 0.00, -231.00) (13 m from the block)
+street ManholeCover: DK_ManholeCover at (-135.00, 0.00, -222.00) (20 m from the block)
+street BikeRack: DK_BikeRack at (-125.06, 0.18, -220.00) (29 m from the block)
+street Tile_Tactile: DK_Tile_Tactile at (-125.00, 0.02, -255.00) (32 m from the block)
+street Tile_Terrazzo: DK_Tile_Terrazzo at (-117.50, 0.03, -256.10) (39 m from the block)
+kerb: at the signal orb DK_SignalEye (-138.90, 0.18, -256.00)

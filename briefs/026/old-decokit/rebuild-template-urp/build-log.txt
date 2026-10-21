@@ -1,0 +1,123 @@
+reel.log:[DecoKit] robot reel: RobotButler from t = 6.0 s, alarmed at 7.44 s
+reel.log:[DecoKit] robot reel: RobotPorter from t = 7.6 s, alarmed at 8.97 s
+reel.log:[DecoKit] robot reel: RobotWaiter from t = 6.1 s, alarmed at 7.98 s
+reel.log:[DecoKit] robot reel: RobotNanny from t = 9.3 s, alarmed at 7.44 s
+reel.log:[DecoKit] robot reel: RobotShopkeeper from t = 8.5 s, alarmed at 8.85 s
+reel.log:[DecoKit] robot reel robot_reel.mp4: 1440 frames, ffmpeg exit 0
+reel.log:[DecoKit] robot reel OK
+capture.log:[OldWorld] square play yaw 30 at (0.00, 0.00, -125.00)
+capture.log:[OldWorld] square play yaw 210 at (0.00, 0.00, -125.00)
+capture.log:[OldWorld] cafe play yaw 30 at (-57.50, 0.00, -127.00)
+capture.log:[OldWorld] cafe play yaw 210 at (-57.50, 0.00, -127.00)
+capture.log:[OldWorld] crossing play yaw 30 at (-8.60, 0.00, 56.30)
+capture.log:[OldWorld] crossing play yaw 210 at (-8.60, 0.00, 56.30)
+capture.log:[OldWorld] avenue play yaw 30 at (0.00, 0.00, 60.00)
+capture.log:[OldWorld] avenue play yaw 210 at (0.00, 0.00, 60.00)
+capture.log:[OldWorld] park play yaw 30 at (-78.00, 0.00, 105.00)
+capture.log:[OldWorld] park play yaw 210 at (-78.00, 0.00, 105.00)
+capture.log:[OldWorld] side-street play yaw 30 at (-45.00, 0.00, -195.00)
+capture.log:[OldWorld] side-street play yaw 210 at (-45.00, 0.00, -195.00)
+capture.log:[OldWorld] close-up close-robot-RobotButler.png: DK_RobotButler at (-20.00, 0.15, -112.00), size 1.8 m
+capture.log:[OldWorld] close-up close-robot-RobotNanny.png: DK_RobotNanny at (-9.00, 0.15, -182.00), size 1.8 m
+capture.log:[OldWorld] close-up close-robot-RobotPorter.png: DK_RobotPorter at (5.60, 0.15, -236.00), size 2.0 m
+capture.log:[OldWorld] close-up close-robot-RobotShopkeeper.png: DK_RobotShopkeeper at (-6.40, 0.15, -212.00), size 1.7 m
+capture.log:[OldWorld] close-up close-robot-RobotWaiter.png: DK_RobotWaiter at (57.00, 0.15, -163.00), size 1.5 m
+capture.log:[OldWorld] close-up close-vending-VendingMachine_Cola.png: DK_VendingMachine_Cola at (-12.00, 0.15, -148.90), size 2.0 m
+capture.log:[OldWorld] close-up close-vending-VendingMachine_Snack.png: DK_VendingMachine_Snack at (17.58, 0.15, 16.30), size 1.9 m
+capture.log:[OldWorld] close-up close-vending-Automat.png: DK_Automat at (17.73, 0.15, 149.50), size 2.4 m
+capture.log:[OldWorld] close-up close-signage-Marquee_Cinema.png: DK_Marquee_Cinema at (18.00, 0.15, 5.00), size 8.3 m
+capture.log:[OldWorld] close-up close-signage-BladeSign_Cafe.png: DK_BladeSign_Cafe at (18.00, 4.75, 44.00), size 6.6 m
+capture.log:[OldWorld] close-up close-signage-BladeSign_Hotel.png: DK_BladeSign_Hotel at (18.00, 4.75, 98.00), size 6.6 m
+capture.log:[OldWorld] close-up close-signage-Billboard_Pylon_A.png: DK_Billboard_Pylon_A at (84.00, -0.85, 52.00), size 14.0 m
+capture.log:[OldWorld] close-up close-signage-Billboard_Wall_A.png: DK_Billboard_Wall_A at (20.43, 8.15, 234.26), size 5.8 m
+capture.log:[OldWorld] close-up close-signage-NeonStar_Wall.png: DK_NeonStar_Wall at (18.00, 5.15, 38.00), size 2.6 m
+capture.log:[OldWorld] close-up close-signage-AdColumn.png: DK_AdColumn at (36.00, 0.15, -146.00), size 3.3 m
+capture.log:[OldWorld] close-up close-signage-SandwichBoard.png: DK_SandwichBoard at (-47.80, 0.15, -121.00), size 1.2 m
+capture.log:[OldWorld] close-up close-signage-InfoLightbox.png: DK_InfoLightbox at (-49.70, 0.15, -284.00), size 2.0 m
+capture.log:[OldWorld] close-up close-plant-CoconutPalm.png: DK_CoconutPalm at (-58.50, 19.80, -292.50), size 8.4 m
+capture.log:[OldWorld] close-up close-plant-FanPalm.png: DK_FanPalm at (-62.00, 0.15, -245.00), size 3.9 m
+capture.log:[OldWorld] close-up close-plant-Cypress.png: DK_Cypress at (-112.69, 0.15, -277.62), size 6.3 m
+capture.log:[OldWorld] close-up close-plant-FlowerBed.png: DK_FlowerBed at (-120.63, 16.40, -248.87), size 2.1 m
+capture.log:[OldWorld] close-up close-plant-Planter_Urn.png: DK_Planter_Urn at (-17.55, 0.15, -23.20), size 1.3 m
+capture.log:[OldWorld] close-up close-plant-PottedTopiary.png: DK_PottedTopiary at (-17.40, 0.15, -29.20), size 2.0 m
+capture.log:[OldWorld] close-up close-plant-TopiaryCone.png: DK_TopiaryCone at (-13.00, 0.15, -181.00), size 1.7 m
+capture.log:[OldWorld] close-up close-street-TrafficLight.png: DK_TrafficLight at (-8.60, 0.15, 56.30), size 3.7 m
+capture.log:[OldWorld] close-up close-street-Streetlamp.png: DK_Streetlamp at (93.80, -0.85, -300.00), size 3.9 m
+capture.log:[OldWorld] close-up close-street-Bench.png: DK_Bench at (92.30, -0.85, -246.00), size 1.9 m
+capture.log:[OldWorld] close-up close-street-PhoneBooth.png: DK_PhoneBooth at (-39.30, 0.15, -294.00), size 2.6 m
+capture.log:[OldWorld] close-up close-street-BusShelter.png: DK_BusShelter at (-11.40, 0.15, 116.00), size 4.7 m
+capture.log:[OldWorld] close-up close-street-TicketMachine.png: DK_TicketMachine at (-10.70, 0.15, 119.60), size 1.8 m
+capture.log:[OldWorld] close-up close-street-Hydrant.png: DK_Hydrant at (-96.95, 0.15, -255.68), size 0.8 m
+capture.log:[OldWorld] close-up close-street-StreetClock.png: DK_StreetClock at (0.00, 0.15, -103.00), size 4.5 m
+capture.log:[OldWorld] close-up close-street-PneumaticPost.png: DK_PneumaticPost at (17.40, 0.15, 22.50), size 2.3 m
+capture.log:[OldWorld] crowd knot at (1.46, 0.15, -141.82) (2851 people nodes)
+capture.log:[OldWorld] done -> /Users/sky/Projects/suborned/briefs/026/old-decokit
+import-street.log:[DecoKit] imported 113 materials, 202 prefabs
+import-street.log:[DecoKit] roofline: 46 roofs, 5 towers, plots cafe 4, garden 8, glass 4, lido 6, machine 9, planters 6, sun 6, tower 11
+import-street.log:[DecoKit] sky: Sky rail children 230, first at (0.00, 0.00, 0.00)
+import-street.log:[DecoKit] sky: Harbour rail children 140, first at (0.00, 0.00, 0.00)
+import-street.log:[DecoKit] sky: Lane canyon 30 m children 10, first at (-6.39, 30.53, -156.00)
+import-street.log:[DecoKit] sky: Lane rooftop 70 m children 8, first at (-101.05, 70.13, -130.57)
+import-street.log:[DecoKit] sky: Lane high 130 m children 6, first at (-65.75, 128.70, 157.34)
+import-street.log:[DecoKit] sky: Lane skyport 45 m children 6, first at (181.33, 49.50, 144.73)
+import-street.log:[DecoKit] sky: Liner ascent children 2, first at (216.53, 683.59, 1800.37)
+import-street.log:[DecoKit] sky: Liner landing children 2, first at (-292.47, 843.75, 1789.20)
+import-street.log:[DecoKit] street life: BikeRack 14, BusShelter 1, DrainGrate 36, HoverScooter 6, Hydrant 7, InfoLightbox 8, ManholeCover 25, PhoneBooth 7, Planter_Trough 9, Planter_Urn 38, PottedTopiary 30, RecyclingBins 18, RobotButler 2, RobotNanny 2, RobotPorter 1, RobotShopkeeper 2, RobotWaiter 2, TicketMachine 1, TrafficLight 8; 10 spots refused
+import-street.log:[DecoKit] district life: 1243 people, 70 cars; 102 tinted materials
+import-street.log:[DecoKit] square inlay: 3 orbits, 33 stars
+import-street.log:[DecoKit] Southside life: 1608 people, 162 cars
+import-street.log:[DecoKit] tile merge: 3419 tile renderers -> 32 chunks, 204 submeshes
+import-street.log:[DecoKit] Southside: 14 blocks, 85 tree pits; missing prefabs: none
+import-street.log:[DecoKit] city mass: 466 blocks, 30 chunks, 168608 tris
+import-street.log:[DecoKit] colourway plan+livery+soft: 515 frontage pieces (boulevard 114, harbour 68, gardens 99, circus 16, southside 218), 20 high-street buildings painted, 394 landmarks, 1608 slots painted, 31 paint materials
+import-street.log:[DecoKit] road markings: 1763 kerbs, 564 spans, 120 dashes, 44 zebras
+import-street.log:[DecoKit] tile merge: 2425 tile renderers -> 18 chunks, 157 submeshes
+import-street.log:[DecoKit] cutaway: 1071 of 8583 renderers may be cut
+import-street.log:[DecoKit] ambient L0 = (0.530, 0.485, 0.425)
+import-street.log:[DecoKit] showpiece probe SpaceHQ: 112 x 344 x 124 m
+import-street.log:[DecoKit] occlusion baked in 12 s, 0 KB
+import-street.log:[DecoKit] Pave_Flags_0 top y = 0.150 (walk 0.150)
+import-street.log:[DecoKit] cost unity_street: 26326 renderers, 33731 submeshes, 366 materials; submeshes by screen height <0.5% 24586, 0.5-2% 4387, 2-10% 2274, >10% 2484
+import-street.log:[DecoKit] cost unity_street_corner: 17637 renderers, 22630 submeshes, 360 materials; submeshes by screen height <0.5% 15660, 0.5-2% 3509, 2-10% 1452, >10% 2009
+import-street.log:[DecoKit] cost unity_street_walk: 25562 renderers, 32826 submeshes, 366 materials; submeshes by screen height <0.5% 23359, 0.5-2% 4602, 2-10% 2011, >10% 2854
+import-street.log:[DecoKit] cost unity_street_promenade: 14996 renderers, 19294 submeshes, 358 materials; submeshes by screen height <0.5% 12695, 0.5-2% 3391, 2-10% 1164, >10% 2044
+import-street.log:[DecoKit] cost unity_street_promenade_e: 3595 renderers, 5152 submeshes, 286 materials; submeshes by screen height <0.5% 2242, 0.5-2% 1258, 2-10% 725, >10% 927
+import-street.log:[DecoKit] cost unity_street_side: 2695 renderers, 3068 submeshes, 207 materials; submeshes by screen height <0.5% 1650, 0.5-2% 965, 2-10% 173, >10% 280
+import-street.log:[DecoKit] cost unity_street_skyline: 27633 renderers, 35555 submeshes, 367 materials; submeshes by screen height <0.5% 25934, 0.5-2% 4476, 2-10% 2550, >10% 2595
+import-street.log:[DecoKit] cost unity_street_plaza: 52 renderers, 228 submeshes, 34 materials; submeshes by screen height <0.5% 36, 0.5-2% 71, 2-10% 16, >10% 105
+import-street.log:[DecoKit] cost unity_street_sky: 16128 renderers, 21004 submeshes, 361 materials; submeshes by screen height <0.5% 14729, 0.5-2% 2906, 2-10% 1285, >10% 2084
+import-street.log:[DecoKit] cost unity_street_sunward: 75199 renderers, 91028 submeshes, 384 materials; submeshes by screen height <0.5% 77445, 0.5-2% 5905, 2-10% 5414, >10% 2264
+import-street.log:[DecoKit] cost unity_street_air: 29050 renderers, 37404 submeshes, 366 materials; submeshes by screen height <0.5% 28452, 0.5-2% 3991, 2-10% 2698, >10% 2263
+import-street.log:[DecoKit] cost unity_street_circus: 9693 renderers, 12890 submeshes, 343 materials; submeshes by screen height <0.5% 7796, 0.5-2% 2735, 2-10% 848, >10% 1511
+import-street.log:[DecoKit] cost unity_street_canopy: 1879 renderers, 2178 submeshes, 175 materials; submeshes by screen height <0.5% 1097, 0.5-2% 675, 2-10% 169, >10% 237
+import-street.log:[DecoKit] cost unity_street_parade: 2941 renderers, 3289 submeshes, 197 materials; submeshes by screen height <0.5% 1734, 0.5-2% 980, 2-10% 366, >10% 209
+import-street.log:[DecoKit] cost unity_street_harbour: 17862 renderers, 22371 submeshes, 355 materials; submeshes by screen height <0.5% 17039, 0.5-2% 2656, 2-10% 1260, >10% 1416
+import-street.log:[DecoKit] cost unity_street_alley: 2572 renderers, 3132 submeshes, 183 materials; submeshes by screen height <0.5% 1626, 0.5-2% 854, 2-10% 225, >10% 427
+import-street.log:[DecoKit] cost unity_street_gardens: 2216 renderers, 2780 submeshes, 167 materials; submeshes by screen height <0.5% 982, 0.5-2% 1013, 2-10% 415, >10% 370
+import-street.log:[DecoKit] cost unity_street_canal: 59213 renderers, 69653 submeshes, 370 materials; submeshes by screen height <0.5% 58197, 0.5-2% 5232, 2-10% 4466, >10% 1758
+import-street.log:[DecoKit] cost unity_street_aerial: 26163 renderers, 33784 submeshes, 365 materials; submeshes by screen height <0.5% 27011, 0.5-2% 2771, 2-10% 2339, >10% 1663
+import-street.log:[DecoKit] cost unity_street_aerial_e: 38078 renderers, 48541 submeshes, 377 materials; submeshes by screen height <0.5% 40302, 0.5-2% 3214, 2-10% 3986, >10% 1039
+import-street.log:[DecoKit] cost unity_street_plan: 54835 renderers, 67240 submeshes, 382 materials; submeshes by screen height <0.5% 59071, 0.5-2% 2903, 2-10% 4979, >10% 287
+import-street.log:[DecoKit] cost unity_street_hq: 22 renderers, 90 submeshes, 28 materials; submeshes by screen height <0.5% 28, 0.5-2% 23, 2-10% 0, >10% 39
+import-street.log:[DecoKit] cost unity_street_aerial_full: 84722 renderers, 101336 submeshes, 384 materials; submeshes by screen height <0.5% 91005, 0.5-2% 4466, 2-10% 5491, >10% 374
+import-street.log:[DecoKit] cost unity_street_plan_full: 84647 renderers, 101162 submeshes, 384 materials; submeshes by screen height <0.5% 92029, 0.5-2% 4749, 2-10% 4144, >10% 240
+import-street.log:[DecoKit] iso square: size 14, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso square_r: size 14, pitch 38, yaw 225, cutaway column
+import-street.log:[DecoKit] iso square_q: size 14, pitch 38, yaw 135, cutaway column
+import-street.log:[DecoKit] iso close: size 8, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso rocket: size 14, pitch 38, yaw 315, cutaway column
+import-street.log:[DecoKit] iso satellite: size 14, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso lane: size 14, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso launch: size 11, pitch 38, yaw 135, cutaway column
+import-street.log:[DecoKit] iso hero: size 36, pitch 38, yaw 45, cutaway off
+import-street.log:[DecoKit] iso hero_tall: size 95, pitch 38, yaw 45, cutaway off
+import-street.log:[DecoKit] iso hero_deck: size 18, pitch 38, yaw 45, cutaway off
+import-street.log:[DecoKit] iso seam: size 17, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso boulevard: size 17, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso roofs_s: size 60, pitch 38, yaw 45, cutaway off
+import-street.log:[DecoKit] iso roofs_n: size 60, pitch 38, yaw 45, cutaway off
+import-street.log:[DecoKit] iso district: size 165, pitch 38, yaw 45, cutaway off
+import-street.log:[DecoKit] iso tactical: size 48, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] iso quarter: size 95, pitch 38, yaw 45, cutaway column
+import-street.log:[DecoKit] street built; missing prefabs: none
+import-street.log:[DecoKit] import+street OK

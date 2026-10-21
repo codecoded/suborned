@@ -1,0 +1,27 @@
+{
+  "note": "Editor frame time per shot at 1920x1080: the shot's camera rendered by hand into the capture's HDR target (MSAA 1), the GPU Resident Drawer as the asset has it, the GPU waited on after each render (1 px read-back); 8 warm-up renders, then the median and p90 of 30. Not the player: no HUD, people or sim, editor overhead included, and outside Play Mode the architecture fade draws every tagged renderer with its cutting variant. Indicative only; the Air (GDD §11) is the reference.",
+  "machine": "Mac17,14, Apple M5 Max, Apple M5 Max",
+  "when": "2026-10-20 13:27",
+  "shots": [
+    { "shot": "office-front/play-30", "kind": "play", "medianMs": 2.99, "p90Ms": 3.96 },
+    { "shot": "office-front/play-210", "kind": "play", "medianMs": 2.64, "p90Ms": 4.87 },
+    { "shot": "office-front/street", "kind": "follow", "medianMs": 10.73, "p90Ms": 13.72 },
+    { "shot": "cafe/play-30", "kind": "play", "medianMs": 6.46, "p90Ms": 6.63 },
+    { "shot": "cafe/play-210", "kind": "play", "medianMs": 7.21, "p90Ms": 9.15 },
+    { "shot": "cafe/street", "kind": "follow", "medianMs": 16.67, "p90Ms": 17.09 },
+    { "shot": "crossing/play-30", "kind": "play", "medianMs": 2.97, "p90Ms": 3.23 },
+    { "shot": "crossing/play-210", "kind": "play", "medianMs": 4.18, "p90Ms": 5.02 },
+    { "shot": "crossing/street", "kind": "follow", "medianMs": 11.43, "p90Ms": 11.74 },
+    { "shot": "avenue/play-30", "kind": "play", "medianMs": 4.35, "p90Ms": 4.87 },
+    { "shot": "avenue/play-210", "kind": "play", "medianMs": 7.22, "p90Ms": 7.4 },
+    { "shot": "avenue/street", "kind": "follow", "medianMs": 23.52, "p90Ms": 27.35 },
+    { "shot": "park/play-30", "kind": "play", "medianMs": 3.51, "p90Ms": 3.92 },
+    { "shot": "park/play-210", "kind": "play", "medianMs": 1.82, "p90Ms": 1.94 },
+    { "shot": "park/street", "kind": "follow", "medianMs": 3.51, "p90Ms": 3.71 },
+    { "shot": "side-street/play-30", "kind": "play", "medianMs": 2.54, "p90Ms": 2.62 },
+    { "shot": "side-street/play-210", "kind": "play", "medianMs": 2.29, "p90Ms": 2.4 },
+    { "shot": "side-street/street", "kind": "follow", "medianMs": 20.6, "p90Ms": 25.23 },
+    { "shot": "skyline/aerial", "kind": "eye", "medianMs": 42.72, "p90Ms": 45.23 },
+    { "shot": "skyline/street", "kind": "follow", "medianMs": 17.82, "p90Ms": 21.66 }
+  ]
+}

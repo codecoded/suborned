@@ -1,26 +1,26 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "Route G, knockout (brief 013 D; Motive 013 §6.1 G-KO): the Scout watches the guard (his sight and check-in marks), the Tech loops the entrance camera and reroutes the patrol, the Enforcer knocks the guard out from beside just after his 2:30 mark and leaves him where he fell, enters at once and takes Vale out by the service lane; the cell fights the rivals' ambush at the getaway car. No contact, $0. A knockout found is an inquiry (Alert 1 at most): the camera reads him once the loop goes, his 4:00 mark is missed, guard 74 finds him; he gives a statement (+4 T).",
+ "note": "Route G, knockout (brief 013 D; Motive 013 §6.1 G-KO): the Scout watches the guard (his sight and check-in marks), the Tech loops the entrance camera and reroutes the patrol, the Enforcer knocks the guard out from beside just after his 2:30 mark and leaves him where he fell, enters at once and takes Vale out by the service lane; the cell fights the rivals' ambush at the getaway car. No contact, $0. A knockout found is an inquiry (Alert 1 at most): the camera reads him once the loop goes, his 4:00 mark is missed, guard 74 finds him; he gives a statement (+4 T). Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md §10.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
  "start": {},
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
-  {"tick":0,"op":"enforcer","do":"move","to":[6950,-4250]},
-  {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
-  {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[725,-5025]},
   {"tick":166,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":462,"op":"scout","do":"watch","target":"guard"},
-  {"tick":662,"op":"scout","do":"move","to":"crew:scout"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[725,-4625]},
   {"tick":1060,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":1440,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":1400,"op":"enforcer","do":"move","to":[6520,-4110]},
   {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
   {"tick":1570,"op":"enforcer","do":"enter"},
-  {"tick":1570,"op":"tech","do":"move","to":"crew:tech"},
+  {"tick":1570,"op":"tech","do":"move","to":[675,-4625]},
   {"tick":1950,"op":"enforcer","do":"move","to":[2400,-6000]},
   {"tick":2340,"op":"cell","do":"panic"},
-  {"tick":2493,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":2622,"op":"enforcer","do":"board","target":"car"},
-  {"tick":2662,"op":"cell","do":"go"}
+  {"tick":2566,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2695,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2735,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

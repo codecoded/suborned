@@ -18,7 +18,7 @@ namespace Suborned.World
     {
         const string Prefix = "__LOD";
 
-        public static int Groups, Levels, Colliders, ConcaveMesh, ConvexMesh, Boxes, OtherColliders, ExtraSlots, OldLodGroups, MissingPrefabs, MissingScripts;
+        public static int RobotFaces, Groups, Levels, Colliders, ConcaveMesh, ConvexMesh, Boxes, OtherColliders, ExtraSlots, OldLodGroups, MissingPrefabs, MissingScripts;
         public static readonly List<string> ExtraSlotPieces = new();
 
         /// <summary>t is part of LOD0 (not under a `__LOD` child of the piece's root).</summary>
@@ -34,7 +34,7 @@ namespace Suborned.World
 
         public static void Build(KitPlacer kit)
         {
-            Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
+            RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
             Folder(KitPlacer.BuiltRoot.TrimEnd('/'));
             var written = new Dictionary<string, string>(System.StringComparer.Ordinal); // built path → id
             foreach (var id in kit.Prefabs.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
@@ -53,6 +53,7 @@ namespace Suborned.World
                 {
                     Strip(go);
                     Lod(id, go, kit.Lods[id]);
+                    if (RobotKit.Rig(go, id)) RobotFaces++; // brief 026: a service robot's face and head, from robots.json (view only)
                     if (!PrefabUtility.SaveAsPrefabAsset(go, path)) throw new IOException($"World: could not save {path}");
                 }
                 finally { Object.DestroyImmediate(go); }
@@ -67,7 +68,7 @@ namespace Suborned.World
             Debug.Log($"World: kit built {written.Count} prefabs: {Groups} LODGroups ({Levels} LOD levels beyond LOD0, no cull level); colliders stripped {Colliders} " +
                 $"(concave mesh {ConcaveMesh}, convex mesh {ConvexMesh}, box {Boxes}, other {OtherColliders}); LOD slots the LOD0 does not list {ExtraSlots} " +
                 $"({string.Join(", ", ExtraSlotPieces)}), all mapped; " +
-                $"removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts");
+                $"removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts; robot faces rigged {RobotFaces}");
         }
 
         static bool SameLods(List<(string file, float screen)> a, List<(string file, float screen)> b) => a.Count == b.Count && a.Zip(b, (x, y) => x == y).All(v => v);
@@ -99,6 +100,7 @@ namespace Suborned.World
             }
         }
 
+        public static int DroppedParts;
         static void Lod(string id, GameObject go, List<(string file, float screen)> lods)
         {
             if (lods.Count == 0) return;
@@ -122,7 +124,10 @@ namespace Suborned.World
                     asset = AssetDatabase.LoadAssetAtPath<GameObject>(file) ?? throw new FileNotFoundException($"World: kit `{id}` LOD{i + 1} missing at {file} (run `bun run kit`)");
                 }
                 var lr = asset.GetComponentsInChildren<MeshRenderer>(true);
-                if (lr.Length != r0.Length) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} {file} has {lr.Length} renderers, LOD0 {r0.Length}");
+                // a multi-part piece's far LOD may drop parts (the restored porter's L1 keeps 3 of 6): each one left still maps to its LOD0 part by
+                // name below, so nothing stands in the wrong place; more renderers than LOD0, or a single-part piece that splits, still fails
+                if (lr.Length > r0.Length || (!parts && lr.Length != r0.Length)) throw new InvalidDataException($"World: kit `{id}` LOD{i + 1} {file} has {lr.Length} renderers, LOD0 {r0.Length}");
+                if (lr.Length < r0.Length) { Debug.Log($"World: kit `{id}` LOD{i + 1} keeps {lr.Length} of {r0.Length} parts"); DroppedParts++; }
                 Transform holder = go.transform;
                 if (parts) { holder = new GameObject(Prefix + (i + 1)).transform; holder.SetParent(go.transform, false); }
                 var level = new List<Renderer>();

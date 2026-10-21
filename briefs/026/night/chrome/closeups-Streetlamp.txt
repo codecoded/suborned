@@ -1,0 +1,2 @@
+CloseUps from 11338 placed kit instances, nearest the block at (-150.00, 0.00, -235.00)
+street Streetlamp: DK_Streetlamp at (-125.40, 0.18, -231.00) (25 m from the block)

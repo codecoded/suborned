@@ -9,7 +9,9 @@ import math
 from mathutils import Vector
 
 from geo import dome, fillet, thicken
-from mats import pal, register
+from mats import RobotPal, register
+
+pal = RobotPal()  # enamels as their detailed robot variants (mats.py)
 from signals import ball, band, puck
 from vehicles_parts import lamp, mesh, rot_to, slab
 

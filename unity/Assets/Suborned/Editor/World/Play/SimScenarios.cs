@@ -36,12 +36,14 @@ namespace Suborned.World.Play
         {
             var b = SimBundle.Load();
             CheckDll(b);
-            var rows = SimCheck.RunAll(b.Inputs, SimBundle.Headless());
+            var head = SimBundle.Headless();
+            var rows = SimCheck.RunAll(b.Inputs, head);
+            var rangeRows = SimCheck.RunRange(head); rows.AddRange(rangeRows); // brief 029: R01..R10 on the range's own inputs
             Directory.CreateDirectory(Out);
             var file = Path.Combine(Out, "unity-editor.json");
             File.WriteAllText(file, SimCheck.Json(rows, b, "editor") + "\n");
             int match = rows.Count(r => r.Match), same = rows.Count(r => r.ReplayIdentical), ok = rows.Count(r => r.ChecksFailed == 0 && r.Why.Length == 0);
-            var msg = $"Sim: {match}/{rows.Count} scenarios match headless at every checkpoint, {same}/{rows.Count} replay identically, {ok}/{rows.Count} pass their checks; Editor {SimBundle.Runtime}, engine {b.Source}, DLL {b.DllSha[..12]}, {rows.Sum(r => r.Ms):F0} ms → {file}";
+            var msg = $"Sim: {match}/{rows.Count} scenarios ({rangeRows.Count} of them the fight range) match headless at every checkpoint, {same}/{rows.Count} replay identically, {ok}/{rows.Count} pass their checks; Editor {SimBundle.Runtime}, engine {b.Source}, DLL {b.DllSha[..12]}, {rows.Sum(r => r.Ms):F0} ms → {file}";
             if (SimCheck.Passed(rows)) Debug.Log(msg);
             else Debug.LogError(msg + "\n" + string.Join("\n", rows.Where(r => !r.Match || !r.ReplayIdentical || r.Why.Length > 0).Select(r => $"{r.Id}: {r.Why}")));
             return SimCheck.Passed(rows);

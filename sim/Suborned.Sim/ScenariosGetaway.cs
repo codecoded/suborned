@@ -252,13 +252,14 @@ namespace Suborned.Sim
                 r.Eq((f.Final, f.Public, f.Outcome, f.Delta), (true, true, "none", 0), "judged when the car leaves: the crew unbroken, Standing 0");
                 r.Eq(f.End, g.CarLeftTick, "it ends with the mission, at the tick the car leaves");
                 r.Eq(FightMoves(g).Count, 0, "no move from the fight");
-                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => x.fate == "captured" && x.why == "fighting"), "the rest, left while the crew fights on, are captured fighting");
+                // tuning.md §7.9 (2026-10-20): with the 16 m sidearm the three cover from inside the crew's reach, and some go down before Go
+                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => x.fate == "captured" && (x.why == "fighting" || x.why == "downed")), $"the rest, left while the crew fights on, are captured, fighting or downed ({string.Join(", ", g.LeftBehindAtGo.Select(x => x.why))})");
                 r.Eq(g.StandingMoves.Count, 0, "the captures move nothing");
                 var next = g.BetweenMissions(g.Investigate());
                 var l = OneLine(r, next);
                 r.Eq((l.From, l.End, l.Word, l.To), (2, 2, 1, 3), "2 + 0 the fight + 1 Inez's word = +3 (Motive's board-and-go row)");
                 r.Eq(next.Captives.Count, 3, "three captives");
-                r.Is(next.Captives.TrueForAll(c => c.Holds == 1 && c.Facts.Contains("contact:" + g.Inez.Id)), "each holds 1 mission and would give Inez as a contact");
+                r.Is(next.Captives.TrueForAll(c => c.Holds >= 1 && c.Facts.Contains("contact:" + g.Inez.Id)), $"each is held a mission or more and would give Inez as a contact ({string.Join(", ", next.Captives.Select(c => c.Holds))})");
             });
 
             Add("N114", "—", "Left behind, walked (brief 018 §3 row 4): route A fought out until the crew breaks (FightItOutAll; with the blocker on the road, the car comes free before the crew breaks), the Enforcer boards with Vale and the car goes before the guard's missed check-in (the rivals downed him) calls security. The fight is over and no seal runs: the three left walk out, nobody is captured, no captive in the debrief. The fight +1 (the crew driven off).", r =>

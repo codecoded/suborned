@@ -23,27 +23,31 @@ namespace Suborned.World
                 RenderSettings.ambientGroundColor = look.Colour(J.Get(amb, "ground"));
             }
             if (look.Light("skyGradient") is { } sky)
-            {
+                RenderSettings.skybox = Sky(look, sky, RenderSettings.sun ? -RenderSettings.sun.transform.forward : Vector3.up);
+            if (look.Light("post") is { } post) Grade(lighting, Profile(look, post, "grade"), "grade");
+        }
+
+        /// <summary>The sky gradient material for a phase's `skyGradient` block, the glow toward `toSun` (the moon at night).</summary>
+        public static Material Sky(Look look, object sky, Vector3 toSun)
+        {
                 var m = new Material(Shader.Find("Suborned/SkyGradient") ?? throw new InvalidDataException("World: shader Suborned/SkyGradient not found")) { name = "sky" };
                 m.SetColor("_Zenith", look.Palette(J.S(sky, "zenith")));
                 m.SetColor("_Mid", look.Palette(J.S(sky, "mid")));
                 m.SetColor("_Horizon", look.Palette(J.S(sky, "horizon")));
                 m.SetColor("_Below", look.Palette(J.S(sky, "below")));
                 m.SetColor("_SunColour", look.Palette(J.S(sky, "sunGlow")));
-                var toSun = RenderSettings.sun ? -RenderSettings.sun.transform.forward : Vector3.up;
                 m.SetVector("_SunDir", new Vector4(toSun.x, toSun.y, toSun.z, 0));
                 m.SetFloat("_MidHeight", J.F(sky, "midHeight"));
                 m.SetFloat("_Curve", J.F(sky, "curve"));
                 m.SetVector("_Glow", new Vector4(J.F(sky, "glowWidth"), J.F(sky, "glowStrength"), J.F(sky, "disc"), 0));
-                RenderSettings.skybox = m;
-            }
-            if (look.Light("post") is { } post) Post(lighting, look, post);
+                return m;
         }
 
-        static void Post(Transform lighting, Look look, object post)
+        /// <summary>A grade profile from a phase's `post` block, saved beside the scene as &lt;scene&gt;-&lt;name&gt;.asset.</summary>
+        public static VolumeProfile Profile(Look look, object post, string name)
         {
             var profile = ScriptableObject.CreateInstance<VolumeProfile>();
-            profile.name = "grade";
+            profile.name = name;
             var tm = profile.Add<Tonemapping>(true);
             tm.mode.Override(J.S(post, "tonemapping") == "ACES" ? TonemappingMode.ACES : TonemappingMode.Neutral);
             if (J.Get(post, "bloom") is { } b)
@@ -75,15 +79,22 @@ namespace Suborned.World
                 var vg = profile.Add<Vignette>(true);
                 vg.intensity.Override(J.F(v, "intensity")); vg.smoothness.Override(J.F(v, "smoothness")); vg.color.Override(look.Palette(J.S(v, "colour")));
             }
-            var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-grade.asset";
+            var path = Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-" + name + ".asset";
             AssetDatabase.DeleteAsset(path);
             AssetDatabase.CreateAsset(profile, path);
             foreach (var o in profile.components) AssetDatabase.AddObjectToAsset(o, profile);
             AssetDatabase.SaveAssets();
-            var go = new GameObject("grade");
+            return profile;
+        }
+
+        /// <summary>A global volume under `lighting` with the profile.</summary>
+        public static Volume Grade(Transform lighting, VolumeProfile profile, string name)
+        {
+            var go = new GameObject(name);
             go.transform.SetParent(lighting, false);
             var vol = go.AddComponent<Volume>();
             vol.isGlobal = true; vol.sharedProfile = profile;
+            return vol;
         }
 
         /// <summary>Colour with weight in w, the ShadowsMidtonesHighlights lift/gamma/gain form (rgb = colour, w = weight offset).</summary>

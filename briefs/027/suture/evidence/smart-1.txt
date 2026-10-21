@@ -1,0 +1,32 @@
+inputs d001d60896991589 rulebook out/suture027/rulebook.snapshot.json
+policy             run  result             end     T  A St     down hp-lost hits foes shots resets verdict
+matrix             L1c  failure sealed     5:00.4  31 2  2>-2     1    33%    6    6    34      0 pass (fail)
+focus              L1c  failure enforcer-down 3:44.7  31 2  2>-2     1    44%    8    5    27      0 pass (fail)
+reset              L1c  failure enforcer-down 3:44.7  31 2  2>-2     1    38%    7    5    19     13 pass (fail)
+focus-reset        L1c  failure enforcer-down 3:44.7  31 2  2>-2     1    38%    7    5    22     15 pass (fail)
+kite               L1c  failure entry-seen-camera 2:32.7  15 2  2>-1     0     5%    1    3    10      0 pass (fail)
+focus-reset-kite   L1c  failure entry-seen-camera 2:32.7  15 2  2>-1     0     5%    1    3    10      4 pass (fail)
+matrix             L3   success            4:50.3  22 2  2>-2     1    33%    6    5    25      0 pass (heavy debrief)
+focus              L3   failure enforcer-down 3:38.7  26 2  2>-2     3    88%   16    4    29      0 pass (fail)
+reset              L3   failure sealed     5:05.0  26 2  2>-2     0    33%    6    5    24     15 pass (fail)
+focus-reset        L3   failure sealed     5:05.0  26 2  2>-2     0    22%    4    5    23     15 pass (fail)
+kite               L3   failure sealed     5:05.0  18 2  2>-1     1    22%    4    7    58      0 pass (fail)
+focus-reset-kite   L3   success            4:43.3  24 2  2>-1     0     0%    0    6    33     15 FAIL — no op down or captured, health lost 0 % < 40, no open case
+matrix             P-A  success            4:53.6   5 1  2>3      0     0%    0    3    15      0 pass
+focus              P-A  success            4:56.5   5 1  2>3      0     0%    0    3    22      0 pass
+reset              P-A  success            4:53.6   5 1  2>3      0     0%    0    3    15      8 pass
+focus-reset        P-A  success            4:56.5   5 1  2>3      0     0%    0    3    22      8 pass
+kite               P-A  success            5:15.3   5 1  2>3      1    44%    8    3    26      0 FAIL — 1 op down; health lost 44 % > 25
+focus-reset-kite   P-A  success            5:00.6   5 1  2>3      0    11%    2    3    30     11 pass
+matrix             P-G  success            4:11.2   6 1  2>3      0    27%    5    3    15      0 FAIL — health lost 27 % > 25
+focus              P-G  failure rivals-reach-vale 3:44.3   6 1  2>2      4   100%   18    2    21      0 FAIL — failure rivals-reach-vale; 4 op down; health lost 100 % > 25
+reset              P-G  success            4:11.2   6 1  2>3      0    27%    5    3    15      8 FAIL — health lost 27 % > 25
+focus-reset        P-G  failure rivals-reach-vale 3:44.3   6 1  2>2      4   100%   18    2    21      7 FAIL — failure rivals-reach-vale; 4 op down; health lost 100 % > 25
+kite               P-G  failure rivals-reach-vale 3:43.5   6 1  2>2      3    88%   16    2    20      0 FAIL — failure rivals-reach-vale; 3 op down; health lost 88 % > 25
+focus-reset-kite   P-G  success            4:23.3   6 1  2>3      1    66%   12    3    28      9 FAIL — 1 op down; health lost 66 % > 25
+matrix             P-B  success            8:33.2   3 0  2>3      0    22%    4    2    13      0 pass
+focus              P-B  success            8:33.2   3 0  2>3      0    22%    4    2    13      0 pass
+reset              P-B  success            8:32.7   3 0  2>3      0    22%    4    2    12      6 pass
+focus-reset        P-B  success            8:32.7   3 0  2>3      0    22%    4    2    12      6 pass
+kite               P-B  success            8:17.1   3 0  2>3      0    16%    3    2    13      0 pass
+focus-reset-kite   P-B  success            8:17.1   3 0  2>3      0    16%    3    2    13      6 pass

@@ -1,0 +1,13 @@
+{
+ "objects": 2,
+ "triangles": 3812,
+ "materials": 9,
+ "images": {
+  "terrazzo_ivory_v1.png": [
+   1024,
+   1024
+  ]
+ },
+ "texelsM": 1.0,
+ "bc7MiBWithMips": 1.3
+}

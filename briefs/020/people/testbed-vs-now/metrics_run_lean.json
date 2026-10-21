@@ -1,0 +1,190 @@
+{
+ "scout": {
+  "fig": "scout",
+  "now": {
+   "run": {
+    "label": "now run",
+    "frames": 26,
+    "fps": 30,
+    "cycleS": 0.867,
+    "stepsPerS": 2.31,
+    "naturalSpeedMs": 1.83,
+    "strideM": 1.58,
+    "stepM": 0.79,
+    "footSlideCmS": 57.2,
+    "flightFramesPct": 30,
+    "hipBobCm": 10.6,
+    "hipSwayCm": 1.6,
+    "armSwingDeg": 66.0,
+    "legSwingDeg": 56.0,
+    "kneeMinDeg": 68.0,
+    "elbowMinDeg": 63.0,
+    "footLiftCm": 26.0,
+    "torsoLeanDeg": 7.8
+   }
+  },
+  "lean": {
+   "run": {
+    "label": "lean run_lean",
+    "frames": 25,
+    "fps": 30,
+    "cycleS": 0.833,
+    "stepsPerS": 2.4,
+    "naturalSpeedMs": 2.09,
+    "strideM": 1.74,
+    "stepM": 0.87,
+    "footSlideCmS": 20.9,
+    "flightFramesPct": 76,
+    "hipBobCm": 9.2,
+    "hipSwayCm": 6.0,
+    "armSwingDeg": 80.0,
+    "legSwingDeg": 54.0,
+    "kneeMinDeg": 99.0,
+    "elbowMinDeg": 80.0,
+    "footLiftCm": 30.1,
+    "torsoLeanDeg": 18.7
+   }
+  }
+ },
+ "fixer": {
+  "fig": "fixer",
+  "now": {
+   "run": {
+    "label": "now run",
+    "frames": 26,
+    "fps": 30,
+    "cycleS": 0.867,
+    "stepsPerS": 2.31,
+    "naturalSpeedMs": 1.76,
+    "strideM": 1.53,
+    "stepM": 0.76,
+    "footSlideCmS": 59.2,
+    "flightFramesPct": 27,
+    "hipBobCm": 9.9,
+    "hipSwayCm": 1.5,
+    "armSwingDeg": 66.0,
+    "legSwingDeg": 56.0,
+    "kneeMinDeg": 68.0,
+    "elbowMinDeg": 63.0,
+    "footLiftCm": 25.6,
+    "torsoLeanDeg": 7.9
+   }
+  },
+  "lean": {
+   "run": {
+    "label": "lean run_lean",
+    "frames": 25,
+    "fps": 30,
+    "cycleS": 0.833,
+    "stepsPerS": 2.4,
+    "naturalSpeedMs": 2.0,
+    "strideM": 1.67,
+    "stepM": 0.84,
+    "footSlideCmS": 19.1,
+    "flightFramesPct": 76,
+    "hipBobCm": 8.6,
+    "hipSwayCm": 5.6,
+    "armSwingDeg": 79.0,
+    "legSwingDeg": 55.0,
+    "kneeMinDeg": 99.0,
+    "elbowMinDeg": 80.0,
+    "footLiftCm": 29.7,
+    "torsoLeanDeg": 19.1
+   }
+  }
+ },
+ "tech": {
+  "fig": "tech",
+  "now": {
+   "run": {
+    "label": "now run",
+    "frames": 26,
+    "fps": 30,
+    "cycleS": 0.867,
+    "stepsPerS": 2.31,
+    "naturalSpeedMs": 1.74,
+    "strideM": 1.51,
+    "stepM": 0.76,
+    "footSlideCmS": 55.3,
+    "flightFramesPct": 28,
+    "hipBobCm": 10.1,
+    "hipSwayCm": 1.6,
+    "armSwingDeg": 66.0,
+    "legSwingDeg": 55.0,
+    "kneeMinDeg": 68.0,
+    "elbowMinDeg": 63.0,
+    "footLiftCm": 23.9,
+    "torsoLeanDeg": 7.9
+   }
+  },
+  "lean": {
+   "run": {
+    "label": "lean run_lean",
+    "frames": 25,
+    "fps": 30,
+    "cycleS": 0.833,
+    "stepsPerS": 2.4,
+    "naturalSpeedMs": 2.0,
+    "strideM": 1.67,
+    "stepM": 0.83,
+    "footSlideCmS": 19.0,
+    "flightFramesPct": 77,
+    "hipBobCm": 8.7,
+    "hipSwayCm": 5.7,
+    "armSwingDeg": 79.0,
+    "legSwingDeg": 54.0,
+    "kneeMinDeg": 99.0,
+    "elbowMinDeg": 80.0,
+    "footLiftCm": 28.4,
+    "torsoLeanDeg": 18.8
+   }
+  }
+ },
+ "enforcer": {
+  "fig": "enforcer",
+  "now": {
+   "run": {
+    "label": "now run",
+    "frames": 26,
+    "fps": 30,
+    "cycleS": 0.867,
+    "stepsPerS": 2.31,
+    "naturalSpeedMs": 1.85,
+    "strideM": 1.6,
+    "stepM": 0.8,
+    "footSlideCmS": 62.0,
+    "flightFramesPct": 26,
+    "hipBobCm": 9.9,
+    "hipSwayCm": 1.5,
+    "armSwingDeg": 62.0,
+    "legSwingDeg": 55.0,
+    "kneeMinDeg": 68.0,
+    "elbowMinDeg": 63.0,
+    "footLiftCm": 26.7,
+    "torsoLeanDeg": 7.8
+   }
+  },
+  "lean": {
+   "run": {
+    "label": "lean run_lean",
+    "frames": 25,
+    "fps": 30,
+    "cycleS": 0.833,
+    "stepsPerS": 2.4,
+    "naturalSpeedMs": 2.01,
+    "strideM": 1.67,
+    "stepM": 0.84,
+    "footSlideCmS": 20.4,
+    "flightFramesPct": 76,
+    "hipBobCm": 8.5,
+    "hipSwayCm": 5.6,
+    "armSwingDeg": 85.0,
+    "legSwingDeg": 52.0,
+    "kneeMinDeg": 99.0,
+    "elbowMinDeg": 80.0,
+    "footLiftCm": 31.5,
+    "torsoLeanDeg": 20.0
+   }
+  }
+ }
+}

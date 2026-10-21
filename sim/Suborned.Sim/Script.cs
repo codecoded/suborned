@@ -17,13 +17,16 @@ namespace Suborned.Sim
     public sealed class Script
     {
         public Start Start = new Start(); public readonly List<Order> Orders = new List<Order>(); public int Until; public Expect? Expect;
+        /// <summary>"handover", or "range" (brief 029): which site the script plays on (Engine.Load or Engine.LoadRange).</summary>
+        public string Mission = "handover";
         public static Script Parse(string json)
         {
             var n = JNode.Parse(json, "script");
             n.Only("schema", "mission", "note", "start", "orders", "until", "expect");
             if (n["schema"].Str() != "suborned.sim.script/1") throw new FormatException("script schema is not suborned.sim.script/1");
-            if (n["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
-            var s = new Script { Start = Start.Parse(n.Opt("start")), Until = n.Opt("until")?.Int() ?? 0 }; // 0: to the mission's close
+            var mission = n["mission"].Str();
+            if (mission != "handover" && mission != "range") throw new FormatException("only the Handover plays (brief 011), and the fight range (brief 029)");
+            var s = new Script { Mission = mission, Start = Start.Parse(n.Opt("start")), Until = n.Opt("until")?.Int() ?? 0 }; // 0: to the mission's close
             foreach (var o in n["orders"].Items) s.Orders.Add(Order.Parse(o));
             if (n.Opt("expect") is JNode e)
             {
@@ -37,7 +40,7 @@ namespace Suborned.Sim
         /// <summary>The run as a script: its start state, its orders (rejected ones too: they are the player's), and its record.</summary>
         public static string Write(Game g, ulong inputsHash)
         {
-            var w = new JWriter().Obj().Prop("schema", "suborned.sim.script/1").Prop("mission", "handover").Key("start").Raw(g.Start.Canonical()).OpenArr("orders");
+            var w = new JWriter().Obj().Prop("schema", "suborned.sim.script/1").Prop("mission", g.S.Mission).Key("start").Raw(g.Start.Canonical()).OpenArr("orders");
             foreach (var (o, _, _, _) in g.Orders) o.Write(w);
             w.EndArr().Prop("until", g.Tick);
             w.Open("expect").Prop("inputs", Hash.Hex(inputsHash)).Prop("engine", Engine.Version).Prop("mvid", Engine.Mvid).Prop("start", Hash.Hex(g.StartHash)).Prop("outcome", g.Result.ToString().ToLowerInvariant());

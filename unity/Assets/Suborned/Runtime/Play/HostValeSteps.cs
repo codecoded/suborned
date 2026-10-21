@@ -69,9 +69,10 @@ namespace Suborned.Play
         /// <summary>The objective's step (Fable's less.objective.steps): take, then bring once Enter is given, then carry once Vale is with him.</summary>
         public string ObjectiveKey => Game == null ? "take" : Game.Vale == ValeAt.Car ? "go" : Game.Vale == ValeAt.WithEnforcer ? "carry" : Game.Vale == ValeAt.Office && EnterGiven ? "bring" : "take";
 
-        /// <summary>Intel's next-step chip (HudToolkit.Intel): the Scout's Watch or Listen on a person, given as the action panel gives it (walk,
-        /// then act; refused orders pop their reason), or the Fixer's panel on the person for a turn.</summary>
-        public void IntelOrder(string role, string verb)
+        /// <summary>Intel's next-step chip (HudToolkit.Intel): a Watch by the agent it names (brief 031: any agent) or the Scout's Listen on a
+        /// person, given as the action panel gives it (walk, then act; refused orders pop their reason), or the Fixer's panel on the person for
+        /// a turn.</summary>
+        public void IntelOrder(string role, string verb, OpId by)
         {
             if (Game == null || Modal != ModalGate.Modal.None) return;
             var t = new Target { Kind = "person", Key = role, Label = Name(role), Id = role };
@@ -81,17 +82,51 @@ namespace Suborned.Play
                 var vp = cam.WorldToViewportPoint(tr.position); if (vp.z <= 0 || vp.x < 0.1f || vp.x > 0.9f || vp.y < 0.1f || vp.y > 0.9f) LookAt(tr.position);
                 var sp = cam.WorldToScreenPoint(tr.position + Vector3.up); Physics.SyncTransforms(); PointerHover(sp); OpenPanel(t, sp); return;
             }
-            int slot = verb == "watch" ? 0 : 1; Intent i = null; Guard("intel", () => i = Verb(OpId.Scout, slot, t)); if (i?.Order == null) return;
-            var lk = Locked(OpId.Scout, i, t);
+            if (verb == "listen") by = OpId.Scout; // Listen stays the Scout's
+            var plate = PlateOf(by); int slot = Array.FindIndex(plate, x => x.Id == verb); if (slot < 0) return;
+            Intent i = null; Guard("intel", () => i = Verb(by, slot, t)); if (i?.Order == null) return;
+            var lk = Locked(by, i, t);
             if (!lk.ok) { var w = views?.Find(role); Pop(ShortOf(i.Order, lk) ?? lk.why, null, w ? w.position : (Vector3?)null, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), lk.why); return; }
             if (SeenGate(i, t, null, "left")) return;
-            Give(OpId.Scout, i.Order, t, null);
+            Give(by, i.Order, t, null);
         }
 
-        /// <summary>The door marker's next step while it reads "unk" (Sky 2026-10-18, the Tech's Watch on machines): the first watcher of the
-        /// door the cell has not learned (the entrance camera unless looped, then the patrol), and who should watch it: the Scout or the Tech,
-        /// whichever the engine would take (LearnQuery; too far or busy still counts), a free one before a busy one, then the closer. Null when
-        /// the door is not "unk" or nobody can.</summary>
+        readonly Dictionary<string, (float at, int sel, int tick, OpId? by)> watchPick = new();
+
+        /// <summary>Brief 031 (Intel's chip and the door's next step): who should Watch `target` (a role, camera:&lt;id&gt;, patrol): the selected
+        /// agent if it can (too far or out of line still counts: it walks to its ring); else the free agent who'd learn soonest (the walk to
+        /// its ring plus the Watch), ties to the Scout; else the busy one free soonest. Null when nobody can (already watched, tethered, down).
+        /// Read-only (LearnQuery, one A* each); kept a second.</summary>
+        public OpId? WatchBy(string target)
+        {
+            var g = Game; if (g == null) return null;
+            int sel = Selected[(int)Agent] ? (int)Agent : -1;
+            if (watchPick.TryGetValue(target, out var c) && c.sel == sel && Time.unscaledTime - c.at < 1f && Math.Abs(g.Tick - c.tick) < 2 * Game.Hz) return c.by;
+            Answer Q(int k) { Answer a = default; Guard("watch by", () => a = g.LearnQuery(Op.Name((OpId)k), "watch", target)); return a; }
+            bool Can(Answer a, bool busy) => a.ok || a.code is "too-far" or "no-clear-line" || (busy && a.code == "agent-busy");
+            OpId? by = null;
+            if (sel >= 0 && Can(Q(sel), false)) by = (OpId)sel;
+            else
+            {
+                var t = target.StartsWith("camera:") || target == "patrol" ? WatcherTarget(target) : new Target { Kind = "person", Key = target, Label = Name(target), Id = target };
+                long best = long.MaxValue;
+                for (int k = 0; k < 4; k++)
+                {
+                    var a = Q(k); if (!Can(a, true)) continue;
+                    long s = g.R.SightWatchS;
+                    if (a.code == "agent-busy") s += 100000 + Math.Max(0, g.Ops[k].BusyEnd - g.Tick) / Game.Hz; // a free agent first
+                    else { ActWalk w = null; Guard("watch by", () => w = ActPlace((OpId)k, new Order { Op = Op.Name((OpId)k), Do = "watch", Target = target }, t)); if (w != null) s += w.Seconds; }
+                    long score = s * 10 + k; // ties: the Scout first (then the plate order)
+                    if (score < best) { best = score; by = (OpId)k; }
+                }
+            }
+            watchPick[target] = (Time.unscaledTime, sel, g.Tick, by);
+            return by;
+        }
+
+        /// <summary>The door marker's next step while it reads "unk" (Sky 2026-10-18, the Tech's Watch on machines; brief 031: any agent): the
+        /// first watcher of the door the cell has not learned (the entrance camera unless looped, then the patrol), and who should watch it
+        /// (WatchBy). Null when the door is not "unk" or nobody can.</summary>
         public (OpId by, string watcher)? DoorNext()
         {
             var g = Game; if (g == null || DoorState != "unk") return null;
@@ -99,17 +134,7 @@ namespace Suborned.Play
             string watcher = !(g.LoopOn && g.LoopCam == "entrance") && !Learned("camera:entrance", false) ? "camera:entrance"
                 : !g.PatrolDown && g.PatrolAwayUntil <= g.Tick && !Learned("patrol", true) ? "patrol" : null;
             if (watcher == null) return null;
-            var t = WatcherTarget(watcher); var at = PosOf(t);
-            OpId? best = null; long bestScore = long.MaxValue;
-            foreach (var by in new[] { OpId.Scout, OpId.Tech })
-            {
-                Answer a = default; bool ok = false; Guard("door next", () => { a = g.LearnQuery(Op.Name(by), "watch", watcher); ok = true; }); if (!ok) continue;
-                if (!(a.ok || a.code is "too-far" or "agent-busy")) continue;
-                var op = g.Ops[(int)by]; long d = at.HasValue ? G.Isqrt(G.D2(op.Pos, at.Value)) : 0;
-                long score = (op.Busy != null ? 1_000_000_000L + Math.Max(0, op.BusyEnd - g.Tick) : 0) + d;
-                if (score < bestScore) { bestScore = score; best = by; }
-            }
-            return best is OpId b ? (b, watcher) : null;
+            return WatchBy(watcher) is OpId b ? (b, watcher) : null;
         }
 
         /// <summary>The Tech's Watch knob greys while his loop holds (he is tied to the cabinet: the engine refuses run-tethered); its rows on a

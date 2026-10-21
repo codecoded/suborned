@@ -44,11 +44,11 @@ namespace Suborned.Sim
 
         void TakeCover(Gun g, CoverPoint c) { ReleaseCover(g); coverTaken[c.Id] = g.Id; g.Cover = c.Id; g.UnprotSince = -1; Note("ai.cover", $"{g.Id} takes cover at {c.Id} ({c.Kind} {c.Of}, q {c.Q})."); }
         void ReleaseCover(Gun g) { if (g.Cover.Length > 0 && coverTaken.TryGetValue(g.Cover, out var who) && who == g.Id) coverTaken.Remove(g.Cover); g.Cover = ""; }
-        CoverPoint? CoverById(string id) { foreach (var c in S.Cover) if (c.Id == id) return c; return null; }
+        CoverPoint? CoverById(string id) { foreach (var c in LiveCover) if (c.Id == id) return c; return null; }
         HashSet<string> Taken() => new HashSet<string>(coverTaken.Keys, StringComparer.Ordinal);
-        bool Protected(Pt pos, Pt shooter) => S.Cover.Count > 0 && CoverRules.Modifier(S.Cover, pos, shooter, Tick / Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial) < 1000;
+        bool Protected(Pt pos, Pt shooter) => LiveCover.Count > 0 && CoverRules.Modifier(LiveCover, pos, shooter, Tick / Hz, R.CoverSnapCm, R.PointBlankCm, R.CoverQFull, R.CoverQPartial, R.ModCover, R.ModCoverPartial) < 1000;
         CoverPoint? SelectCover(Pt me, Pt objective, Pt? foe, int seekCm) =>
-            S.Cover.Count == 0 ? null : CoverRules.Select(S.Cover, me, objective, foe, Taken(), seekCm, Tick / Hz, R.PointBlankCm, R.CoverQPartial, R.CoverRetreatCm, R.CoverStepCloserCm);
+            LiveCover.Count == 0 ? null : CoverRules.Select(LiveCover, me, objective, foe, Taken(), seekCm, Tick / Hz, R.PointBlankCm, R.CoverQPartial, R.CoverRetreatCm, R.CoverStepCloserCm);
 
         /// <summary>Where an advancer without cover halts: the first point of its route within ai.stopReach of its weapon's effective reach of
         /// the target (Pulse §2.1), or where it stands if it is already that close.</summary>
@@ -73,8 +73,10 @@ namespace Suborned.Sim
             foreach (var op in Ops)
             {
                 if (op.Down || op.Inside) continue;
-                bool foe = anyOp || op.Gun.Drawn || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || markedFoes.Contains(Sim.Op.Name(op.Id)); // brief 013: security saw them do violence
-                if (!foe || G.D2(pos, op.Pos) > eff || !sees(op.Pos)) continue;
+                bool foe = anyOp || (op.Gun.Drawn && !(Lab && Warned(op))) || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || markedFoes.Contains(Sim.Op.Name(op.Id)); // brief 013: security saw them do violence
+                if (!foe || !sees(op.Pos)) continue;
+                long d2 = G.D2(pos, op.Pos);
+                if (d2 > eff && !(d2 <= (long)g.W.MaxCm * g.W.MaxCm && PoliceBody(id) && ShotAtRecently(g, Sim.Op.Name(op.Id)))) continue; // tuning.md §7.10 rule 1: shot at, the police answer to their max ring
                 l.Add((Sim.Op.Name(op.Id), op.Pos));
             }
             if (anyOp && IsRival(id) && GuardAlly && !GuardDown) { var ga = PosOf("guard"); if (ga.HasValue && G.D2(pos, ga.Value) <= eff && sees(ga.Value)) l.Add(("guard", ga.Value)); }
@@ -89,7 +91,7 @@ namespace Suborned.Sim
             if (foes.Count == 0) return "";
             int Class(string f, Pt at)
             {
-                if (g.ShotBy == f && g.ShotByTick >= 0 && Tick - g.ShotByTick <= T(R.LineLapseS)) return 1;
+                if (PoliceBody(id) && IsOpId(f) ? ShotByOpRecently(g, f) : g.ShotBy == f && g.ShotByTick >= 0 && Tick - g.ShotByTick <= T(R.LineLapseS)) return 1; // tuning.md §12.2: police, any operative shooting them; the rest, the last shooter
                 if (ally) return 3;
                 if (f == "enforcer" && Vale == ValeAt.WithEnforcer) return 2;
                 var fg = GunOf(f); return fg != null && fg.Drawn ? 3 : 4;
@@ -158,7 +160,7 @@ namespace Suborned.Sim
             if (t.Length == 0) { LoseTarget(g); if (g.NoFoeSince < 0) g.NoFoeSince = Tick; return; }
             g.NoFoeSince = -1;
             AimAt(g, t, true);
-            if (Tick >= g.NextShot) { var at = PosOf(t)!.Value; Shoot(id, g, pos, t, at, Dist(pos, at), Moving(id), false); }
+            if (Tick >= g.NextShot) { var at = PosOf(t)!.Value; Shoot(id, g, pos, t, at, Dist(pos, at), Moving(id) ? Gait.Walk : Gait.Stand, false); }
         }
 
         /// <summary>A final-fight body (rivals, officers, the response unit once joined): one transition a tick, then its action.</summary>
@@ -176,7 +178,7 @@ namespace Suborned.Sim
                 case "alerted":
                     if (Tick >= g.Until)
                     {
-                        if (foes.Count > 0) { g.St = "engage"; var t0 = ChooseTarget(h.Id, g, pos, foes); g.Target = t0; g.Acc = R.AccStart; g.NextShot = Math.Max(g.NextShot, Tick); } // the wait was the aim
+                        if (foes.Count > 0) { g.St = "engage"; var t0 = ChooseTarget(h.Id, g, pos, foes); g.Target = t0; g.Acc = AccFor(g, t0); g.NextShot = Math.Max(g.NextShot, Tick); } // the wait was the aim
                         else { g.St = "advance"; Advance(h); }
                     }
                     break;
@@ -191,21 +193,22 @@ namespace Suborned.Sim
                         else if (Tick - g.NoFoeSince >= T(R.EngageLapseS))
                         {
                             g.NoFoeSince = -1; LoseTarget(g);
-                            if (IsHolder(h) && pos == h.Home) g.St = "hold"; else { g.St = "advance"; Advance(h); }
+                            if (IsHolder(h) && pos == h.Home) g.St = "hold"; else if (IsHolder(h) && KiteHolds(g)) g.St = "hold"; else { g.St = "advance"; Advance(h); } // brief 027 F2: no walk home while alarmed
                         }
                     }
                     else g.NoFoeSince = -1;
                     break;
                 case "hold":
                     if (foes.Count > 0) g.St = "engage";
-                    else if (IsHolder(h) && pos != h.Home && !moving) { g.St = "advance"; Advance(h); }
+                    else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { g.St = "advance"; Advance(h); }
                     break;
                 case "break":
                     if (G.Within(pos, S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
                     return;
             }
             if (g.St != "engage" || foes.Count == 0) { if (g.St != "engage") LoseTarget(g); return; }
-            if (moving) return; // stepping to cover: fires nothing (run or shoot)
+            if (moving && !R.CoverStepFires && CoverStepping(h)) return; // tuning.md §8.3 fallback: a step to cover fires nothing
+            if (moving && Lab && !LabFireMoving) return; // tuning.md §8.3 (Sky 2026-10-21, engine 0.15.0): a hostile fires as it walks in both presets (the lab's hostilesFireMoving switch can still turn it off there)
             string t = ChooseTarget(h.Id, g, pos, foes);
             var at = PosOf(t)!.Value;
             // cover (Pulse §2.3): leave a point unprotected for cover.leave; a rival steps to a point that shields it, once each cover.stepGap
@@ -221,10 +224,18 @@ namespace Suborned.Sim
             if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
             {
                 var c = SelectCover(pos, Car, at, R.SeekRivalCm);
-                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); if (h.Moving(Tick)) return; }
+                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
             }
             AimAt(g, t, false);
-            if (Tick >= g.NextShot) Shoot(h.Id, g, pos, t, at, Dist(pos, at), false, false);
+            if (Tick >= g.NextShot) Shoot(h.Id, g, pos, t, at, Dist(pos, at), h.Moving(Tick) ? Gait.Walk : Gait.Stand, false);
+        }
+
+        /// <summary>Tuning.md §8.3's fallback: a rival (not the blocker) in a fight, walking to the cover point it stepped to (FightBody's cover
+        /// step: engage, holding the point, its walk ending on it). Advances, closes and lanes are not steps to cover.</summary>
+        bool CoverStepping(Hostile h)
+        {
+            var g = h.Gun; if (g.St != "engage" || h.Blocker || !IsRival(h.Id) || g.Cover.Length == 0 || h.Run == null) return false;
+            var c = CoverById(g.Cover); return c != null && G.Within(h.Run.End, c.At, R.CoverSnapCm);
         }
 
         /// <summary>Where an advancer goes (Pulse §3): police and the response unit to their stand; a rival to the cover the data give with the
@@ -256,7 +267,7 @@ namespace Suborned.Sim
             if (t.Length == 0) { LoseTarget(g); return; }
             AimAt(g, t, false);
             var tp = PosOf(t)!.Value;
-            if (Tick >= g.NextShot) Shoot("guard", g, pos.Value, t, tp, Dist(pos.Value, tp), false, false);
+            if (Tick >= g.NextShot) Shoot("guard", g, pos.Value, t, tp, Dist(pos.Value, tp), Gait.Stand, false);
         }
 
         /// <summary>The guard ally's post: the cover the data give within ai.seek.ally of guard-ally, else the post itself.</summary>
@@ -269,15 +280,16 @@ namespace Suborned.Sim
         }
 
         /// <summary>Rivals break (Pulse §3.1): the tick a rival goes down, if more than half the crew is down, every rival still up runs for its car.</summary>
-        void RivalDown()
+        void RivalDown(Hostile? who = null)
         {
             int n = 0, down = 0;
-            foreach (var h in Hostiles) if (IsRival(h.Id)) { n++; if (h.Down) down++; }
+            bool Crew(Hostile h) => IsRival(h.Id) && (!Range || who == null || h.Wave == who.Wave); // brief 029: in the range a crew is one spawn
+            foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down) down++; }
             if (down * 2 <= n) return;
             bool any = false;
             foreach (var h in Hostiles)
             {
-                if (!IsRival(h.Id) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
+                if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
                 if (!h.Present) { h.Gun.St = "gone"; continue; } // still lying in wait: it never comes
                 ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; MoveTo(h, S.Stand(S.RivalsPark)); any = true;
             }
@@ -305,7 +317,7 @@ namespace Suborned.Sim
                 if (taken)
                 {
                     CoverPoint? best = null; long cd = long.MaxValue;
-                    foreach (var c in S.Cover)
+                    foreach (var c in LiveCover)
                     {
                         if (coverTaken.ContainsKey(c.Id) || c.Q < R.CoverQPartial || !c.Present(Tick / Hz)) continue;
                         long d = G.D2(sp, c.At); if (d > (long)R.SeekPoliceCm * R.SeekPoliceCm) continue;

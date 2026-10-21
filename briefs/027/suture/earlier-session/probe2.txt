@@ -1,0 +1,65 @@
+suture probes · suborned.sim/0.10.0 · inputs d001d60896991589
+preset          run                       result            end      T  A  St     down hp-lost hits foes shots  verdict
+today           L3                        success           4:53.3   26  2  2→-2     1    33 %    6    5    36  pass (heavy debrief)
+today           L3:kite                   success           4:40.7   25  2  2→0      0     0 %    0    5    46  FAIL  CHEAP-WIN — no op down or captured, health lost 0 % < 40, no open case
+today           L3:kite+focus             success           4:40.7   25  2  2→0      0     0 %    0    5    46  FAIL  CHEAP-WIN — no op down or captured, health lost 0 % < 40, no open case
+today           L3:focus                  success           4:41.2   26  2  2→-2     0    22 %    4    5    34  FAIL  CHEAP-WIN — no op down or captured, health lost 22 % < 40, no open case
+today           L3:alpha+focus+swap       failure enforcer-down 3:55.4   18  2  2→-2     4   100 %   18    1     9  pass (fail)
+today           L3:vswap                  success           4:53.3   26  2  2→-2     1    33 %    6    5    36  pass (heavy debrief)
+today           L3:vswap+focus            success           4:41.2   26  2  2→-2     0    22 %    4    5    34  FAIL  CHEAP-WIN — no op down or captured, health lost 22 % < 40, no open case
+today           L1c:kite+focus            failure entry-seen-camera 2:32.7   15  2  2→-1     0    16 %    3    3    19  pass (fail)
+today           L1c:vswap                 failure enforcer-down 4:15.3   43  2  2→-2     1    33 %    6    7    42  pass (fail)
+today           PG                        success           4:04.9    6  1  2→3      1    50 %    9    3    20  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2
+today           PG:focus                  success           3:50.9    6  1  2→3      0    44 %    8    3    21  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2
+today           PG:vswap                  success           4:04.9    6  1  2→3      1    50 %    9    3    20  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2
+today           PG:kite                   failure rivals-reach-vale 3:41.5    6  1  2→2      2    72 %   13    0     8  pass (fail)
+today           PA                        success           4:39.6    5  1  2→3      0    11 %    2    3    20  FAIL  CHEAP-WIN — Trail 5 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 11 % < 40, no open case
+today           PA:vswap                  success           4:39.6    5  1  2→3      0    11 %    2    3    20  FAIL  CHEAP-WIN — Trail 5 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 11 % < 40, no open case
+lab             L3                        success           4:51.6   26  2  2→-2     1    44 %    8    5    34  pass (heavy debrief)
+lab             L3:kite                   success           4:54.6   25  2  2→0      0     5 %    1    5    42  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab             L3:kite+focus             success           4:54.5   25  2  2→0      0     5 %    1    5    41  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab             L3:focus                  success           4:40.5   26  2  2→-2     1    38 %    7    5    32  pass (heavy debrief)
+lab             L3:alpha+focus+swap       success           4:43.2   26  2  2→-2     0    33 %    6    5    25  FAIL — no op down or captured, health lost 33 % < 40, no open case
+lab             L3:vswap                  failure sealed    5:05.0   26  2  2→-2     0    27 %    5    5    26  pass (fail)
+lab             L3:vswap+focus            failure enforcer-down 3:52.2   26  2  2→-2     1    33 %    6    3    17  pass (fail)
+lab             L1c:kite+focus            failure entry-seen-camera 2:32.7   15  2  2→-1     0     5 %    1    3    10  pass (fail)
+lab             L1c:vswap                 failure enforcer-down 4:16.8   43  2  2→-2     1    38 %    7    7    33  pass (fail)
+lab             PG                        success           3:57.3    6  1  2→3      0    38 %    7    3    15  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 38 % < 40, no open case
+lab             PG:focus                  success           3:57.3    6  1  2→3      0    38 %    7    3    15  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 38 % < 40, no open case
+lab             PG:vswap                  failure rivals-reach-vale 3:34.8    6  1  2→2      2    66 %   12    1    16  pass (fail)
+lab             PG:kite                   failure rivals-reach-vale 3:36.5    6  1  2→2      3    88 %   16    1    15  pass (fail)
+lab             PA                        success           4:39.7    5  1  2→3      0     0 %    0    3    15  FAIL  CHEAP-WIN — Trail 5 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 0 % < 40, no open case
+lab             PA:vswap                  failure rivals-reach-vale 4:23.5    5  1  2→2      1    44 %    8    1    31  pass (fail)
+lab-charge-off  L3                        success           4:51.6   26  2  2→-2     1    44 %    8    5    34  pass (heavy debrief)
+lab-charge-off  L3:kite                   success           4:54.6   25  2  2→0      0     5 %    1    5    42  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab-charge-off  L3:kite+focus             success           4:54.5   25  2  2→0      0     5 %    1    5    41  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab-charge-off  L3:focus                  success           4:40.5   26  2  2→-2     1    38 %    7    5    32  pass (heavy debrief)
+lab-charge-off  L3:alpha+focus+swap       success           4:43.2   26  2  2→-2     0    33 %    6    5    25  FAIL — no op down or captured, health lost 33 % < 40, no open case
+lab-charge-off  L3:vswap                  failure sealed    5:05.0   22  2  2→-2     2    44 %    8    5    23  pass (fail)
+lab-charge-off  L3:vswap+focus            failure enforcer-down 3:52.2   26  2  2→-2     1    33 %    6    3    17  pass (fail)
+lab-charge-off  L1c:kite+focus            failure entry-seen-camera 2:32.7   15  2  2→-1     0     5 %    1    3    10  pass (fail)
+lab-charge-off  L1c:vswap                 failure enforcer-down 4:16.8   43  2  2→-2     1    50 %    9    7    36  pass (fail)
+lab-charge-off  PG                        success           3:57.3    6  1  2→3      0    38 %    7    3    15  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 38 % < 40, no open case
+lab-charge-off  PG:focus                  success           3:57.3    6  1  2→3      0    38 %    7    3    15  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 38 % < 40, no open case
+lab-charge-off  PG:vswap                  failure rivals-reach-vale 3:34.8    6  1  2→2      1    55 %   10    2    22  pass (fail)
+lab-charge-off  PG:kite                   failure rivals-reach-vale 3:36.5    6  1  2→2      3    88 %   16    1    15  pass (fail)
+lab-charge-off  PA                        success           4:39.7    5  1  2→3      0     0 %    0    3    15  FAIL  CHEAP-WIN — Trail 5 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 0 % < 40, no open case
+lab-charge-off  PA:vswap                  success           4:46.7    5  1  2→3      0     0 %    0    3    27  FAIL  CHEAP-WIN — Trail 5 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 0 % < 40, no open case
+lab-field-on    L3                        success           4:51.6   26  2  2→-2     1    44 %    8    5    34  pass (heavy debrief)
+lab-field-on    L3:kite                   success           4:54.6   25  2  2→0      0     5 %    1    5    42  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab-field-on    L3:kite+focus             success           4:54.5   25  2  2→0      0     5 %    1    5    41  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab-field-on    L3:focus                  success           4:40.5   26  2  2→-2     1    38 %    7    5    32  pass (heavy debrief)
+lab-field-on    L3:alpha+focus+swap       success           4:43.2   26  2  2→-2     0    33 %    6    5    25  FAIL — no op down or captured, health lost 33 % < 40, no open case
+lab-field-on    L3:vswap                  failure sealed    5:05.0   26  2  2→-2     0    27 %    5    5    26  pass (fail)
+lab-field-on    L3:vswap+focus            failure enforcer-down 3:52.2   26  2  2→-2     1    33 %    6    3    17  pass (fail)
+lab-field-on    L3:field+focus            success           4:27.0   26  2  2→-2     0    16 %   24    5    30  FAIL  CHEAP-WIN — no op down or captured, health lost 16 % < 40, no open case
+lab-field-on    L3:field+kite             success           4:56.1   25  2  2→0      0     0 %    1    5    46  FAIL  CHEAP-WIN — no op down or captured, health lost 0 % < 40, no open case
+lab-field-on    L1c:kite+focus            failure entry-seen-camera 2:32.7   15  2  2→-1     0     5 %    1    3    10  pass (fail)
+lab-field-on    L1c:vswap                 failure enforcer-down 4:16.8   43  2  2→-2     1    38 %    7    7    33  pass (fail)
+lab-field-on    PG                        success           3:57.3    6  1  2→3      0    38 %    7    3    15  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 38 % < 40, no open case
+lab-field-on    PG:focus                  success           3:57.3    6  1  2→3      0    38 %    7    3    15  FAIL — Trail 6 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 38 % < 40, no open case
+lab-field-on    PG:vswap                  failure rivals-reach-vale 3:34.8    6  1  2→2      2    66 %   12    1    16  pass (fail)
+lab-field-on    PG:kite                   failure rivals-reach-vale 3:36.5    6  1  2→2      3    88 %   16    1    15  pass (fail)
+lab-field-on    PA                        success           4:39.7    5  1  2→3      0     0 %    0    3    15  FAIL  CHEAP-WIN — Trail 5 < 12; Alert 1 < 2; Standing 3 > start−2; no op down or captured, health lost 0 % < 40, no open case
+lab-field-on    PA:vswap                  failure rivals-reach-vale 4:23.5    5  1  2→2      1    44 %    8    1    31  pass (fail)
+every probe replays identically from its order log

@@ -10,6 +10,8 @@ namespace Suborned.World
     /// Static state, reset per build, like Poly's counters.</summary>
     public static class Combine
     {
+        /// <summary>Batches given tangents for a normal-mapped material (brief 026).</summary>
+        public static int TangentMeshes;
         sealed class Acc { public Material Mat; public MeshKit Kit = new(); public Bounds Box; }
 
         static readonly Dictionary<string, Acc> accs = new(System.StringComparer.Ordinal);
@@ -22,7 +24,7 @@ namespace Suborned.World
 
         public static void Reset(float tileSize, float cellSize = 0f, System.Func<string, bool> cellLayers = null)
         {
-            accs.Clear(); bounds.Clear(); triangles.Clear(); kitTris.Clear(); elements.Clear(); covered.Clear(); tile = tileSize;
+            accs.Clear(); bounds.Clear(); triangles.Clear(); kitTris.Clear(); elements.Clear(); covered.Clear(); tile = tileSize; TangentMeshes = 0;
             cell = cellSize; celled = cellLayers ?? (_ => false);
         }
 
@@ -138,7 +140,11 @@ namespace Suborned.World
                 if (!layers.TryGetValue(p[0], out var layer)) layers[p[0]] = layer = Nodes.Group(root, p[0]);
                 var go = new GameObject(p.Length > 5 ? $"{p[1]}@{p[2]},{p[3]}#{p[4]},{p[5]}" : $"{p[1]}@{p[2]},{p[3]}") { isStatic = true };
                 go.transform.SetParent(layer, false);
-                go.AddComponent<MeshFilter>().sharedMesh = acc.Kit.Build($"{p[0]}/{go.name}");
+                var mesh = acc.Kit.Build($"{p[0]}/{go.name}");
+                // brief 026: a normal-mapped material (the textured ground, DK_Pave_Civic) needs tangents; the builder's meshes had none,
+                // so their normal maps lit from a zero tangent frame (the textured asphalt read near black)
+                if (acc.Mat && acc.Mat.IsKeywordEnabled("_NORMALMAP") && mesh.uv.Length == mesh.vertexCount) { mesh.RecalculateTangents(); TangentMeshes++; }
+                go.AddComponent<MeshFilter>().sharedMesh = mesh;
                 var mr = go.AddComponent<MeshRenderer>();
                 mr.sharedMaterial = acc.Mat;
                 // Flat ground (roads, kerbs 0.18 m, paving, water) shadows nothing readable: ~40% of the shadow-caster vertices at play zoom.

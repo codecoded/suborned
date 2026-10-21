@@ -32,6 +32,11 @@ def legacy_mats():
     return root / "Materials"
 
 
+def tex_guid(file):
+    """The guid of a texture this generator writes (ground_tex.py, lit_art_text): derived from the file name, so the same table gives the same bytes."""
+    return hashlib.md5(f"suborned.decokit.tex/{file}".encode()).hexdigest()
+
+
 def _lin(c):
     return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
 
@@ -122,6 +127,47 @@ def lit_art_text(row, legacy, tex_guid):
     return t
 
 
+def pbr_text(row, legacy):
+    """A textured ground .mat (brief 026): URP Lit, albedo + normal + mask (R metallic, G occlusion, A smoothness, the old pave sheets' packing), optional detail
+    pair, the tile as m_Scale = 1 / metres per UV unit (so a mesh with UV = world metres tiles at its real size). row['pbr'] is mats.GROUND's entry."""
+    g = row["pbr"]
+    tint = tuple(int(g["tint"].lstrip("#")[i:i + 2], 16) / 255 for i in (0, 2, 4)) if g.get("tint") else (1.0, 1.0, 1.0)
+    base = mat_text(dict(name=row["name"], kind="stone", color=tint, smoothness=g["smoothness"], metallic=0.0, emission=0.0, coatSmoothness=0.0))
+    sx, sy = (1 / g["tile"][0], 1 / g["tile"][1])
+    scale = {"_BaseMap": (sx, sy), "_MainTex": (sx, sy), "_BumpMap": (sx, sy), "_MetallicGlossMap": (sx, sy), "_OcclusionMap": (sx, sy)}
+    dsx, dsy = (1 / g["detailTile"], 1 / g["detailTile"]) if g.get("detail") else (1, 1)
+    slots = {"_BaseMap": g["albedo"], "_MainTex": g["albedo"], "_BumpMap": g.get("normal"), "_MetallicGlossMap": g.get("mask"), "_OcclusionMap": g.get("mask"),
+             "_DetailAlbedoMap": g.get("detail"), "_DetailNormalMap": g.get("detailNormal")}
+    for slot, file in slots.items():
+        if not file:
+            continue
+        sc = scale.get(slot, (dsx, dsy))
+        old = f"    - {slot}:\n        m_Texture: {{fileID: 0}}\n        m_Scale: {{x: 1, y: 1}}\n"
+        assert old in base, slot
+        base = base.replace(old, f"    - {slot}:\n        m_Texture: {{fileID: 2800000, guid: {file if re.fullmatch('[0-9a-f]{32}', file) else tex_guid(file)}, type: 3}}\n"
+                                 f"        m_Scale: {{x: {_f(sc[0])}, y: {_f(sc[1])}}}\n")
+    kws = (["_DETAIL_MULX2"] if g.get("detail") else []) + (["_METALLICSPECGLOSSMAP"] if g.get("mask") else []) + (["_NORMALMAP"] if g.get("normal") else []) \
+        + (["_OCCLUSIONMAP"] if g.get("mask") else [])
+    base = base.replace("  m_ValidKeywords: []", "  m_ValidKeywords:" + "".join(f"\n  - {k}" for k in kws) if kws else "  m_ValidKeywords: []")
+    base = re.sub(r"(- _BumpScale: )[0-9.]+", rf"\g<1>{_f(g.get('bump', 1.0))}", base)
+    if g.get("detail"):
+        base = re.sub(r"(- _DetailNormalMapScale: )[0-9.]+", rf"\g<1>{_f(g.get('detailBump', 1.0))}", base)
+    return base
+
+
+def robot_enamel_text(row):
+    """DK_RobotEnamel_*: the enamel .mat (Complex Lit, clear coat) with the robot detail pair: albedo (linear, x2) and normal at the row's bump, tiled 0.5 m x 2 m."""
+    d = row["robotDetail"]
+    base = mat_text(row)
+    sx, sy = 1 / d["tile"][0], 1 / d["tile"][1]
+    for slot, file in (("_DetailAlbedoMap", d["detail"]), ("_DetailNormalMap", d["detailNormal"])):
+        old = f"    - {slot}:\n        m_Texture: {{fileID: 0}}\n        m_Scale: {{x: 1, y: 1}}\n"
+        assert old in base, slot
+        base = base.replace(old, f"    - {slot}:\n        m_Texture: {{fileID: 2800000, guid: {tex_guid(file)}, type: 3}}\n        m_Scale: {{x: {_f(sx)}, y: {_f(sy)}}}\n")
+    base = base.replace("  m_ValidKeywords:\n  - _CLEARCOAT", "  m_ValidKeywords:\n  - _CLEARCOAT\n  - _DETAIL_MULX2")
+    return re.sub(r"(- _DetailNormalMapScale: )[0-9.]+", rf"\g<1>{_f(d['bump'])}", base)
+
+
 def write(table_path, dst, retuned):
     """Write the .mat for the missing and retuned materials; returns the names."""
     rows = json.loads(Path(table_path).read_text())["materials"]
@@ -136,8 +182,20 @@ def write(table_path, dst, retuned):
             (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
             out.append(n)
             continue
+        if row.get("robotDetail"):  # a robot enamel: written whether or not the legacy kit has the name (it has not)
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(robot_enamel_text(row))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
+        if row.get("pbr"):  # a ground material (mats.GROUND): textured Lit with its own maps; the .mat is written whether or not the legacy kit has the name
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(pbr_text(row, legacy))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
         if row["texture"] and row["kind"] == "emit" and not (legacy / f"{n}.mat").exists():  # lit art: a texture + .meta with a name-derived guid, and the .mat
-            tg = hashlib.md5(f"suborned.decokit.tex/{row['texture']}".encode()).hexdigest()
+            tg = tex_guid(row["texture"])
             tm = (legacy / "../Textures/poster_travel_v1.png.meta").resolve().read_text()
             (Path(dst) / "Textures").mkdir(parents=True, exist_ok=True)
             (Path(dst) / "Textures" / f"{row['texture']}.meta").write_text(re.sub(r"guid: [0-9a-f]{32}", f"guid: {tg}", tm, count=1))

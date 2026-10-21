@@ -101,6 +101,7 @@ class Shape:
         self.bm = bmesh.new()
         self._uvkeep = self.bm.faces.layers.int.new("uvkeep")
         self._pending_uv = []
+        self.up_uv = False
         self.mats = []
         self._stack = [Matrix.Identity(4)]
         self.parts = {}
@@ -134,6 +135,7 @@ class Shape:
         p = self.parts.get(name)
         if p is None:
             p = self.parts[name] = Shape(f"{self.name}_{name}")
+        p.up_uv = self.up_uv  # set by kit.build before the builder runs
         p._stack = self._stack  # shares the frame, so nested s.at() places part geometry like any other
         yield p
 
@@ -304,7 +306,10 @@ class Shape:
             ax = max(range(3), key=lambda i: abs(n[i]))
             u, v = [(1, 2), (0, 2), (0, 1)][ax]
             for lp in f.loops:
-                lp[uv].uv = (lp.vert.co[u], lp.vert.co[v])
+                if self.up_uv and ax == 2:  # Robots (brief 026 round 2): v is height everywhere so a vertical gradient in a detail map holds on tops too (half of y keeps the grain 2D; 15 cm of ring top moves the gradient by 7 cm)
+                    lp[uv].uv = (lp.vert.co[0], lp.vert.co[2] + 0.5 * lp.vert.co[1])
+                else:
+                    lp[uv].uv = (lp.vert.co[u], lp.vert.co[v])
         me = bpy.data.meshes.new(self.name)
         bm.to_mesh(me)
         bm.free()

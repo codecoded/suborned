@@ -1,0 +1,24 @@
+{
+ "label": "R1-b: R1-a plus textured asphalt albedo x1.3 (needs Vela)",
+ "ambient": {
+  "sky": 1.1,
+  "equator": 1.1,
+  "ground": 1.1
+ },
+ "contact": {
+  "enabled": true,
+  "footWidth": 1.2,
+  "kerbWidth": 0.5,
+  "footStrength": 0.5,
+  "footPower": 1.5,
+  "kerbStrength": 0.5,
+  "kerbPower": 1.4,
+  "blobStrength": 0.6,
+  "blobPower": 1.3
+ },
+ "surfaces": {
+  "DK_Ground_Asphalt": {
+   "value": 1.3
+  }
+ }
+}

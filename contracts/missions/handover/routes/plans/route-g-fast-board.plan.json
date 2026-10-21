@@ -6,18 +6,18 @@
  "until": 5100,
  "steps": [
   {"op": "tech", "do": "move", "to": "cabinet", "run": true, "why": "to the control cabinet"},
-  {"op": "enforcer", "do": "move", "to": [6950, -4250], "why": "beside the door on the west face, 5.6 m south of it, out of the guard's door cone (he faces west over the forecourt)"},
-  {"op": "scout", "do": "move", "to": "d:Office approach", "why": "to where the guard can be watched"},
-  {"op": "fixer", "do": "move", "to": "crew:fixer", "why": "no one to turn on this route: the Fixer waits armed at the getaway car"},
-  {"op": "scout", "do": "watch", "target": "guard", "why": "the guard's sight and his check-in marks (1:00, 2:30, 4:00): the takedown card reads 'sees it coming: no' and 'next mark' from this"},
+  {"op": "enforcer", "do": "move", "to": [5650, -4750], "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone and the patrol's sweep, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)"},
+  {"op": "scout", "do": "move", "to": [3800, -5000], "why": "brief 031: to watch the guard from 27.4 m, beyond his door cone (26 m) and behind the entrance camera and the sweep: from the Office approach, inside his cone, the Watch made him wary of the Scout"},
+  {"op": "fixer", "do": "move", "to": [1025, -4625], "why": "no one to turn on this route: the Fixer waits armed at the getaway car; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the fixer fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
+  {"op": "scout", "do": "watch", "target": "guard", "why": "once there (the walk is about 29 s): a Watch in reach starts where the Scout stands", "gap": 31},
   {"op": "tech", "do": "loop", "target": "entrance", "label": "loop", "why": "the entrance camera sees the guard's post all mission"},
-  {"op": "scout", "do": "move", "to": "crew:scout", "why": "the watch done, to the getaway car"},
+  {"op": "scout", "do": "move", "to": [1175, -4825], "why": "the watch done, to the getaway car; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
   {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute", "why": "as soon as the loop holds"},
-  {"op": "enforcer", "do": "move", "to": [6520, -4110], "why": "beside the guard on the landing, 1.2 m to his south, outside his door cone (he faces west over the forecourt): from here he doesn't see it coming", "after": ["reroute"]},
-  {"op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout", "when": "patrol.rerouted", "label": "td", "why": "the moment the patrol leaves the door's sweep (2:01); the next mark is 2:30"},
+  {"op": "enforcer", "do": "move", "to": [6520, -4110], "why": "brief 031: only once the patrol has left its sweep, from the wait to the guard's blind side, 1.2 m from him (the walk drains his clock; standing there 39 s made him wary, so aware, and the knockout failed)", "after": ["reroute"], "when": "patrol.rerouted"},
+  {"op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout", "when": "patrol.rerouted", "label": "td", "why": "the knockout once he is there (the walk is about 8 s), from the guard's blind side: given on the way, the guard sees him coming in his cone and draws", "gap": 9},
   {"op": "enforcer", "do": "enter", "clear": 1, "label": "enter"},
-  {"op": "tech", "do": "move", "to": "crew:tech", "after": ["enter"], "why": "the loop is no longer needed once the Enforcer is inside"},
-  {"op": "enforcer", "do": "move", "to": [2400,-6000], "after": ["enter"], "why": "out of the service door with Vale, to the point south-east of the car where the Enforcer holds while the cell fights the ambush (as route A)"},
+  {"op": "tech", "do": "move", "to": [675, -4625], "after": ["enter"], "why": "the loop is no longer needed once the Enforcer is inside; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the tech fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
+  {"op": "enforcer", "do": "move", "to": [2400, -6000], "after": ["enter"], "why": "out of the service door with Vale, to the point south-east of the car where the Enforcer holds while the cell fights the ambush (as route A)"},
   {"op": "cell", "do": "panic", "after": ["enter"], "why": "the ambush: the armed cell fires at will"},
   {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.ambush", "label": "out", "why": "board and go (brief 018 §5): the ambush springs, and the Enforcer walks Vale straight to the car while the three fire; he cannot run or fire"},
   {"op": "enforcer", "do": "board", "target": "car", "after": ["out"], "label": "in", "why": "Vale in first (Board, 4 s carrying)"},
@@ -27,6 +27,6 @@
   {"op": "fixer", "do": "board", "target": "car", "label": "fixer-in"},
   {"op": "tech", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out"},
   {"op": "tech", "do": "board", "target": "car", "label": "tech-in"},
-  {"op": "cell", "do": "go", "after": ["scout-in", "fixer-in", "tech-in"], "gap": 1, "unless": "captured", "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind"}
+  {"op": "cell", "do": "go", "after": ["scout-in", "fixer-in", "tech-in"], "gap": 1, "unless": ["captured", "withdraw.car"], "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind; and not before Vale is in (withdraw.car: with the crew broken sooner from the new posts, the three's boards land before the Enforcer's 4 s)"}
  ]
 }

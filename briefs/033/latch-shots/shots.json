@@ -1,0 +1,26 @@
+{
+ "schema": "suborned.shots-033/1",
+ "status": "ok",
+ "screen": "6016x3384",
+ "build": "Build 0.2.19 · c026 · sim 0.14.1 · c5fa8859+",
+ "audit": [
+  {"shot": "01-rest-no-plate", "clean": true, "issues": []},
+  {"shot": "02-tab-strip", "clean": true, "issues": []},
+  {"shot": "03-armed-pay", "clean": true, "issues": []},
+  {"shot": "04-faces-calm-noticed-underfire-hurt", "clean": true, "issues": []},
+  {"shot": "05-faces-firing-badlyhurt-downed-success", "clean": true, "issues": []},
+  {"shot": "06-faces-focused", "clean": true, "issues": []},
+  {"shot": "07-live-noticed", "clean": true, "issues": []},
+  {"shot": "08-live-firing", "clean": true, "issues": []},
+  {"shot": "08-live-underfire", "clean": true, "issues": []},
+  {"shot": "08-live-badlyhurt", "clean": true, "issues": []},
+  {"shot": "08-live-hurt", "clean": true, "issues": []},
+  {"shot": "08-live-downed", "clean": true, "issues": []},
+  {"shot": "09-scene-1-listen", "clean": true, "issues": []},
+  {"shot": "09-scene-2-help", "clean": true, "issues": []},
+  {"shot": "09-scene-3-help", "clean": true, "issues": []},
+  {"shot": "09-scene-4-call", "clean": true, "issues": []}
+ ],
+ "hashes": [{"mode": "Always", "tick": 1800, "scenes": 4, "checkpoint": "1800:214a1b2f7a21fb87", "log": 27, "orders": 17}, {"mode": "FirstTime", "tick": 1800, "scenes": 1, "checkpoint": "1800:214a1b2f7a21fb87", "log": 27, "orders": 17}, {"mode": "Never", "tick": 1800, "scenes": 0, "checkpoint": "1800:214a1b2f7a21fb87", "log": 27, "orders": 17}],
+ "log": ["01-rest-no-plate: queued", "02-tab-strip: queued", "03-armed-pay: queued", "04-faces-calm-noticed-underfire-hurt: queued", "04-faces-calm-noticed-underfire-hurt: forced Calm, Noticed, UnderFire, Hurt", "05-faces-firing-badlyhurt-downed-success: queued", "05-faces-firing-badlyhurt-downed-success: forced Firing, BadlyHurt, Downed, Success", "06-faces-focused: queued", "06-faces-focused: forced Focused, Focused, Focused, Focused", "noticed live: face Noticed, eye stage 1 at 0:47.7", "07-live-noticed: queued", "live Firing (loud-fight): the enforcer at 2:32.0, health 6/6, faces Calm,Calm,Success,Firing", "08-live-firing: queued", "live UnderFire (loud-fight): the scout at 3:46.6, health 3/4, faces UnderFire,Calm,Calm,Calm", "08-live-underfire: queued", "live BadlyHurt (loud-fight): the scout at 3:50.2, health 1/4, faces BadlyHurt,Calm,UnderFire,Calm", "08-live-badlyhurt: queued", "live Hurt (loud-fight): the tech at 3:50.8, health 3/4, faces BadlyHurt,Calm,Hurt,Calm", "08-live-hurt: queued", "live Downed (loud-fight): the tech at 4:41.6, health 0/4, faces BadlyHurt,Focused,Downed,Calm", "08-live-downed: queued", "fight faces (loud-fight): ran to 4:41.6, over False (None), fight True", "fight faces not reached live: none", "09-scene-1-listen: queued", "scene-1: listen waitress, 3 beats: scout: Right beside them. | waitress: Don't touch my hand. People are looking. | guard: Nobody's looking.; clock 0:29.0 before, 0:29.0 after; skipped; view back bit-identical; view bit-identical after", "09-scene-2-help: queued", "scene-2: help waitress, 3 beats: fixer: I hear you're in a spot. | waitress: Oh! You startled me. Yes? | fixer: I can clear your debt with the lender.; clock 1:11.0 before, 1:11.0 after; skipped; view back bit-identical; view bit-identical after", "09-scene-3-help: queued", "scene-3: help waitress, 3 beats: fixer: I hear you're in a spot. | waitress: Oh! You startled me. Yes? | fixer: I can clear your debt with the lender.; clock 2:01.0 before, 2:01.0 after; skipped; view back bit-identical; view bit-identical after", "09-scene-4-call: queued", "scene-4: call waitress, 2 beats: fixer: Making the call. | waitress: Okay. Okay. I'll call him. Be quick.; clock 2:51.0 before, 2:51.0 after; skipped; view back bit-identical; view bit-identical after", "hash Always: tick 1800, 4 scenes, checkpoint 1800:214a1b2f7a21fb87, log 27 lines, 17 orders", "hash FirstTime: tick 1800, 1 scenes, checkpoint 1800:214a1b2f7a21fb87, log 27 lines, 17 orders", "hash Never: tick 1800, 0 scenes, checkpoint 1800:214a1b2f7a21fb87, log 27 lines, 17 orders"]
+}

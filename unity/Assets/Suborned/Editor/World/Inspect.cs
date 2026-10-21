@@ -64,7 +64,7 @@ namespace Suborned.World
                 if (have != kv.Value) { bad++; Debug.LogError($"World: layer {kv.Key} has {have} objects, export has {kv.Value}"); }
                 int empty = layer ? Combine.Empty(layer) : 0;
                 if (empty > 0) { bad++; Debug.LogError($"World: layer {kv.Key}: {empty} elements built without geometry"); }
-                if (w.Counts != null && (!w.Counts.TryGetValue(kv.Key, out var declared) || declared != kv.Value))
+                if (w.Counts != null && (!w.Counts.TryGetValue(kv.Key, out var declared) || declared != kv.Value + (kv.Key == "civic" ? w.HiddenCivic : 0))) // `hidden` civic masses are read and not drawn
                 { bad++; Debug.LogError($"World: layer {kv.Key}: reader found {kv.Value}, export declares {(w.Counts.ContainsKey(kv.Key) ? w.Counts[kv.Key] : -1)}"); }
             }
             if (w.Counts != null)

@@ -1,0 +1,9 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "speech", "x": 4305, "y": 945, "w": 574, "h": 111, "text": "Right beside them."},
+  {"kind": "image", "x": 2918, "y": 3091, "w": 180, "h": 42, "text": "scene beats"},
+  {"kind": "image", "x": 5688, "y": 3055, "w": 208, "h": 84, "text": "skip keycap"},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

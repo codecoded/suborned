@@ -1,0 +1,28 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><title>Brief 026 · Glint · round 2: the Waiter robot, contact shade</title>
+<style>body{font:15px/1.5 -apple-system,Helvetica,Arial,sans-serif;max-width:1400px;margin:24px auto;padding:0 20px;color:#2a2628;background:#faf6ee}h2{margin-top:32px;border-bottom:2px solid #9fd1c9}table{border-collapse:collapse;margin:8px 0}td,th{border:1px solid #d9cdb8;padding:4px 10px;text-align:right}th{background:#efe5d2}td:first-child,th:first-child{text-align:left}code{background:#efe5d2;padding:1px 4px}img{max-width:100%;border:1px solid #d9cdb8}.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}.box{background:#fff;border:1px solid #d9cdb8;padding:10px 16px;border-radius:6px}figcaption{font-size:12px;color:#6b5d50}figure{margin:0}</style>
+<h1>Round 2: why the Waiter reads flat, and the contact shade</h1>
+<div>Brief 026 · Glint · 2026-10-20 · round 2 scene (<code>round2-20261020-1338</code>), shots through <code>GlintRounds</code> (variants in <code>briefs/026/glint/variants-r2/</code>, nothing saved; a control run reproduces the round-2 close-up to 0.2 of 255).</div>
+
+<h2>1. The Waiter: not the light. The body has no surface variation.</h2>
+<div class="box"><ol>
+<li><b>Colour is not the problem.</b> Body mean (HSV): round 2 hue 37, saturation 0.44, value 0.58; old city hue 41, saturation 0.48, value 0.50. Same family, same hue; the new body is slightly lighter.</li>
+<li><b>Variation is.</b> Pixel spread across the cone body: round 2 about 12, old city about 35. The old body has grain, a patina, a vertical seam and a darker base; the new one is one flat enamel colour with no albedo map, no normal map, no baked occlusion (the enamel materials have <code>map=False norm=False</code>).</li>
+<li><b>Material response is fine.</b> DK_Enamel_Cream / Mustard / Ivory / Seafoam: smoothness 0.68, metallic 0, clear coat on; chrome 0.95 / 1.0 (the ring, tray, arms and dome mirror the cafe correctly). I took the enamels to smoothness 0.35 and 0.2 and the clear coat to 0: no visible change on the cone (the body is lit by ambient in the cafe's shade and a dielectric at that angle shows little reflection). Not a smoothness or metallic issue.</li>
+<li><b>Probes are fine.</b> The Waiter stands at (-142.9, 0.2, -217.6), inside the civic-square probe (box x -188 to -132, z -285 to -215, box projection on), baked with the round-2 build and the B sun, with the district's default cube behind it.</li>
+<li><b>Light can add only a little.</b> The cone sits in shade where the ambient equator is uniform, so the lit side has no gradient. Giving the trilight a top-down gradient (sky x1.0, equator x0.9 / x0.8, ground x0.7 / x0.6) lifts the pixel spread from 12 to 14 / 16 and costs 4.5 / 8.5 levels of play-zoom mean luma (137.8 to 133.3 / 129.3). That is not worth it for one prop, and the frame would drift toward the old city's darkness; <b>I did not change light.json for it.</b></li></ol></div>
+<h2>2. Fix for Vela (a material value, not a hue)</h2>
+<div class="box"><p>Give the robot enamels what the old DecoKit robots had: (a) a fine-grain detail albedo or normal (a tileable grain at the robot's scale, strength about 0.3), so the cone breaks up under the same light; (b) baked ambient occlusion in the vertex colour or a base-gradient darkening on the cone's lower third and under the skirt (the old base reads 20 to 30 levels darker); (c) the vertical seam and the buttons already on the old body. Keep the enamel hex (cream #f3ddb0, mustard #967509, ivory #efe8d6, seafoam #72b5a7): hues untouched. Smoothness 0.68 with the clear coat can stay.</p></div>
+<h3>Waiter, side by side</h3>
+<div class="row2"><figure><img src="../rounds/round2-20261020-1338/close/close-robot-RobotWaiter.png"><figcaption>Round 2</figcaption></figure><figure><img src="../old-decokit/close-robot-RobotWaiter.png"><figcaption>Old city (real settings)</figcaption></figure></div>
+<p>Left to right below: round 2 control, ambient gradient c5 (equator x0.9, ground x0.7), ambient gradient c3 (equator x0.8, ground x0.6). The cone barely changes; the gradient is the most light can do.</p>
+<img src="robot-waiter-compare.png">
+
+<h2>3. Contact shade in round 2 (plinth offset in)</h2>
+<div class="box"><ul>
+<li>The wall-foot strip now starts outside the plinth and shows as a soft dark band along the plinth and the pavement where the pavement is lit; in a building's own shade (the Records Office front at yaw 210) it is faint because the ground is already dark. Crop below: round 1 tune (top) against round 2 (bottom), 2x.</li>
+<li>Play-zoom mean luma: round 1 138.5, round 2 138.0 (the five stops differ by -1.3 to +0.3 except the park, +3.8, which is the lawn texture, not the contact); p5 44.0 to 43.7. The frame did not get brighter.</li>
+<li>Sunlit wall feet read well in the side-street yaw 30 frame (cypress bases, kerb feet, the booth). No change to the <code>contact</code> values: footWidth 1.6 m can stay while the offset is in.</li></ul></div>
+<img src="crop-r2-foot.png">
+<h2>4. Applied and next</h2>
+<div class="box"><p>Applied: nothing in light.json or look.json this round (the Waiter fix is a texture, and the ambient gradient cost more than it gave). Tool change: <code>GlintRounds.RunClose(variant, piece)</code> applies a variant and shoots one close-up through Latch's CloseUps.</p>
+<p>Next: Vela adds grain, a normal and baked occlusion to the robot enamels (section 2) and Latch re-shoots the close-up; if Sky wants more form on every shaded vertical surface, c5 is the one to try and costs 4.5 levels of mean luma.</p></div></html>

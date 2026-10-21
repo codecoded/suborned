@@ -20,7 +20,7 @@ namespace Suborned.World
         public List<StreetItemDto> Street = new();
         public List<LevelDto> Levels = new();
         public List<MegaDto> Megastructures = new();
-        public List<MassDto> Civic = new();
+        public List<MassDto> Civic = new(); public int HiddenCivic;
         public List<LandmarkDto> Landmarks = new();
         public List<MassDto> Gates = new();
         public List<FacadeDto> Facades = new();
@@ -56,6 +56,7 @@ namespace Suborned.World
         public List<WaterDto> Flats = new(); // flat land layers (surface at Level)
         public List<MassDto> Plots = new();  // one 0.18 m pavement slab per plot
         public List<DriveDto> Drives = new(); // brief 023: a car's way from a road's carriageway over a plot's pavement to a bay that touches no road
+        public List<StreetItemDto> Pieces = new(); // brief 026 (Splice): flat kit pieces on the ground (tactile, terrazzo, drain, manhole; kerb, flags, pits when adopted); not in counts.ground
     }
 
     /// <summary>A drive (brief 023, world.schema.ts Drive): Ring a flat at Level in Surface, from Road (a road id) to To (a bay flat id); the road's
@@ -77,7 +78,7 @@ namespace Suborned.World
     /// Materials: this mass's piece draws the slot (a material name on the piece) in the named kit material.</summary>
     public sealed class MassDto
     {
-        public string Id, Surface, GroundBy; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; public Dictionary<string, string> Materials;
+        [System.NonSerialized] public object Raw; public string Id, Surface, GroundBy; public Vector2[] Ring; public float Base, Height; public KitRefDto Kit; public bool Fade; public Dictionary<string, string> Materials;
 
         /// <summary>This mass on another ring (its own ring is left alone).</summary>
         public MassDto With(Vector2[] ring) { var c = (MassDto)MemberwiseClone(); c.Ring = ring; return c; }

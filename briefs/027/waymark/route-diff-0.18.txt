@@ -1,0 +1,168 @@
+A = HEAD c5fa88598c18    B = the working tree    (= means the value did not move)
+route                                     outcome  fail                    end              Trail    Alert  health lost
+careless-body-found                       =        sealed → enforcer-down  5:37.0 → 4:09.5  8 → 2    =      0 % → 38 %
+    first log line apart (line 8):
+      A  1:06.2  scout.watch.watched  Folake Okafor (guard): scout.watch → watched.
+      B  0:54.2  attention.noticed  guard notices the scout standing still in its sight.
+careless-enforcer-watches-guard [B only]  failure  enforcer-down           3:35.2           2        2      33 %
+careless-guard-left-door-held             =        =                       =                =        =      =
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+careless-reporter-not-stopped             =        =                       7:58.5 → 7:53.9  =        2 → 1  16 % → 22 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:57.6  order.watch  scout watch driver (20 s)
+      B  1:02.0  order.watch  scout watch driver (20 s)
+careless-scout-idles-pickup [B only]      success  -                       7:53.9           3        1      22 %
+careless-takedown-seen-camera             =        =                       =                =        0 → 1  =
+    first log line apart (line 7):
+      A  1:06.2  scout.watch.watched  Folake Okafor (guard): scout.watch → watched.
+      B  0:54.2  attention.noticed  guard notices the scout standing still in its sight.
+careless-takedown-seen-crowd              =        =                       =                =        =      =
+    first log line apart (line 8):
+      A  1:06.2  scout.watch.watched  Folake Okafor (guard): scout.watch → watched.
+      B  0:54.2  attention.noticed  guard notices the scout standing still in its sight.
+fail-district-seals                       =        =                       =                13 → 9   =      =
+    first log line apart (line 5):
+      A  1:40.0  loop.on  One feed repeats. The Tech is tied to the cabinet.
+      B  0:57.4  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-enforcer-down                        =        =                       1:44.0 → 1:39.1  20 → 12  =      =
+    first log line apart (line 5):
+      A  0:37.4  shot.miss  enforcer fires on guard at 11 m (375 ‰): miss.
+      B  0:37.4  shot.hit  enforcer fires on guard at 13 m (750 ‰): hit.
+fail-entry-seen-camera                    =        =                       =                =        0 → 1  =
+    first log line apart (line 11):
+      A  2:53.3  turn.help.not-yet  Inez Nikolaou (waitress): turn.help → not-yet.
+      B  2:18.7  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-entry-seen-guard                     =        =                       =                =        0 → 1  =
+    first log line apart (line 16):
+      A  3:10.0  rivals.arrive  A rival car parks near Vale's pickup. Its crew starts watching the building.
+      B  3:07.2  attention.noticed  guard notices the enforcer standing still in its sight.
+fail-entry-seen-patrol                    =        =                       =                =        =      =
+    first log line apart (line 17):
+      A  3:43.3  turn.help.turned  Inez Nikolaou (waitress): turn.help → turned.
+      B  3:21.7  attention.noticed  patrol notices the enforcer standing still in its sight.
+fail-rivals-reach-vale                    =        =                       =                =        0 → 1  =
+    first log line apart (line 6):
+      A  1:17.6  scout.watch.watched  Mei Zhou (driver): scout.watch → watched.
+      B  1:05.6  attention.noticed  the camera pickup notices the scout standing still in its sight.
+fail-take-seen-camera                     =        =                       =                =        0 → 1  =
+    first log line apart (line 4):
+      A  3:10.0  rivals.arrive  A rival car parks near Vale's pickup. Its crew starts watching the building.
+      B  1:07.3  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+fail-vale-dead                            =        =                       =                =        =      =
+    first log line apart (line 3):
+      A  3:10.0  rivals.arrive  A rival car parks near Vale's pickup. Its crew starts watching the building.
+      B  1:07.3  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+fail-vale-leaves                          =        =                       =                =        0 → 1  =
+    first log line apart (line 3):
+      A  3:10.0  rivals.arrive  A rival car parks near Vale's pickup. Its crew starts watching the building.
+      B  1:14.2  attention.noticed  the camera pickup notices the scout standing still in its sight.
+fight-loud-enforcer-down                  =        =                       4:10.6 → 4:11.7  10 → 9   =      =
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:20.1  run.seen  The guard sees the enforcer running: a found fault. Alert 1.
+      B  1:18.6  loop.on  One feed repeats. The Tech is tied to the cabinet.
+fight-safe-rivals-reach-vale              =        =                       7:35.8 → 7:29.0  =        0 → 1  =
+    first log line apart (line 6):
+      A  1:17.6  scout.watch.watched  Mei Zhou (driver): scout.watch → watched.
+      B  1:05.6  attention.noticed  the camera pickup notices the scout standing still in its sight.
+loud                                      =        =                       4:34.6 → 4:36.9  =        =      33 % → 11 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:20.1  run.seen  The guard sees the enforcer running: a found fault. Alert 1.
+      B  1:18.6  loop.on  One feed repeats. The Tech is tied to the cabinet.
+loud-fast                                 =        =                       4:34.6 → 4:36.9  =        =      33 % → 11 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:20.1  run.seen  The guard sees the enforcer running: a found fault. Alert 1.
+      B  1:18.6  loop.on  One feed repeats. The Tech is tied to the cabinet.
+loud-fight                                =        =                       4:42.2 → 4:34.6  =        =      33 % → 27 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:20.1  run.seen  The guard sees the enforcer running: a found fault. Alert 1.
+      B  1:18.6  loop.on  One feed repeats. The Tech is tied to the cabinet.
+loud-left-downed                          =        =                       4:35.5 → 4:39.9  =        =      38 % → 44 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:20.1  run.seen  The guard sees the enforcer running: a found fault. Alert 1.
+      B  1:18.6  loop.on  One feed repeats. The Tech is tied to the cabinet.
+loud-left-standing                        =        =                       4:35.5 → 4:39.9  =        =      33 % → 22 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:20.1  run.seen  The guard sees the enforcer running: a found fault. Alert 1.
+      B  1:18.6  loop.on  One feed repeats. The Tech is tied to the cabinet.
+route-a                                   =        =                       4:36.4 → 4:48.7  =        =      =
+    note  the route script differs between A and B
+    first log line apart (line 6):
+      A  0:05.4  order.watch  scout watch waitress (20 s)
+      B  0:09.0  order.watch  scout watch waitress (20 s)
+route-a-board                             =        =                       4:30.2 → 4:27.7  =        =      =
+    note  the route script differs between A and B
+    first log line apart (line 6):
+      A  0:05.4  order.watch  scout watch waitress (20 s)
+      B  0:09.0  order.watch  scout watch waitress (20 s)
+route-a-pressure                          =        =                       3:52.8 → 4:00.2  =        =      22 % → 16 %
+    note  the route script differs between A and B
+    first log line apart (line 6):
+      A  0:05.4  order.watch  scout watch waitress (20 s)
+      B  0:09.0  order.watch  scout watch waitress (20 s)
+route-a-pressure-board                    =        =                       3:41.8 → 3:37.9  =        =      27 % → 33 %
+    note  the route script differs between A and B
+    first log line apart (line 6):
+      A  0:05.4  order.watch  scout watch waitress (20 s)
+      B  0:09.0  order.watch  scout watch waitress (20 s)
+route-b                                   =        =                       7:54.5 → 8:00.7  =        =      16 % → 5 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:57.6  order.watch  scout watch driver (20 s)
+      B  1:02.0  order.watch  scout watch driver (20 s)
+route-b-block                             =        =                       7:54.5 → 8:00.7  =        =      16 % → 5 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:57.6  order.watch  scout watch driver (20 s)
+      B  1:02.0  order.watch  scout watch driver (20 s)
+route-b-block-board                       =        =                       7:48.2 → 7:44.2  =        =      27 % → 11 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:57.6  order.watch  scout watch driver (20 s)
+      B  1:02.0  order.watch  scout watch driver (20 s)
+route-b-board                             =        =                       7:48.2 → 7:44.2  =        =      27 % → 11 %
+    note  the route script differs between A and B
+    first log line apart (line 5):
+      A  0:57.6  order.watch  scout watch driver (20 s)
+      B  1:02.0  order.watch  scout watch driver (20 s)
+route-g                                   =        =                       4:26.2 → 4:33.5  =        =      22 % → 16 %
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+route-g-board                             =        =                       4:15.2 → 4:11.2  =        =      27 % → 33 %
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+route-g-fast                              =        =                       3:58.8 → 4:15.1  =        =      22 % → 16 %
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+route-g-fast-board                        =        =                       3:47.8 → 3:52.8  =        =      27 % → 33 %
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+route-g-kill                              =        =                       5:53.2 → 6:00.5  =        =      22 % → 16 %
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+route-g-kill-board                        =        =                       5:42.2 → 5:38.2  =        =      27 % → 33 %
+    note  the route script differs between A and B
+    first log line apart (line 7):
+      A  0:46.2  order.watch  scout watch guard (20 s)
+      B  0:31.0  order.watch  scout watch guard (20 s)
+
+38 routes: 35 moved, 1 unchanged, 2 only on B

@@ -36,17 +36,18 @@ namespace Suborned.Play
             for (int i = 0; i < 2; i++) Person("security/" + i, host.securityColour);
             Box("car/official", new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true);
             Box("car/getaway", new Vector3(1.8f, 1.4f, 4.6f), host.getawayColour, true);
-            if (Visual("patrol", host.patrolRobot) is Transform pr) { if (things["patrol"].t.Find("head")?.GetComponent<MeshRenderer>() is MeshRenderer ph) ph.enabled = false; carModels["patrol"] = pr; } // the patrol is the lighter butler robot (RobotButler_Play), facing where it goes
+            if (Visual("patrol", host.patrolRobot) is Transform pr) { if (things["patrol"].t.Find("head")?.GetComponent<MeshRenderer>() is MeshRenderer ph) ph.enabled = false; carModels["patrol"] = pr; } // the patrol is Vela's PatrolRobot (brief 031: its head is the attention face), facing where it goes
             if (Visual("car/official", host.sedanOfficial) is Transform so) carModels["car/official"] = so; // brief 020: Vela's sedans; the boxes stay the click targets
             if (Visual("car/getaway", host.sedanGetaway) is Transform sg) carModels["car/getaway"] = sg;
-            Marker("door", frame.World(s.At(s.GuardPost)) + Vector3.up * 1.2f, new Vector3(2.4f, 2.4f, 2.4f));
-            Marker("cabinet", frame.World(s.At("cabinet")) + Vector3.up * 0.7f, new Vector3(1.4f, 1.4f, 1.4f));
-            foreach (var c in s.Cameras)
+            if (!g.Range) Marker("door", frame.World(s.At(s.GuardPost)) + Vector3.up * 1.2f, new Vector3(2.4f, 2.4f, 2.4f)); // brief 029: the range has no door, cabinet or cameras to draw
+            if (s.HasPlace("cabinet")) Marker("cabinet", frame.World(s.At("cabinet")) + Vector3.up * 0.7f, new Vector3(1.4f, 1.4f, 1.4f));
+            foreach (var c in g.Range ? new List<Suborned.Sim.Camera>() : s.Cameras)
             {
                 var at = frame.World(c.At);
                 var pole = Part(root, "camera/" + c.Id, cylinder, Lit(host.carColour), at + Vector3.up * 1.6f, new Vector3(0.25f, 1.6f, 0.25f));
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
+                CamHeadFor(c, at); // brief 031: the lens that shows the camera's attention
             }
             // brief 013: the stashes (a bin, a service door) are click targets: a box round each, named stash/<id>
             foreach (var st in s.Stashes)
@@ -136,7 +137,7 @@ namespace Suborned.Play
             if (pts == null || pts.Count < 2) { path.enabled = false; return; }
             path.positionCount = pts.Count; for (int i = 0; i < pts.Count; i++) path.SetPosition(i, pts[i]); path.enabled = true;
         }
-        const int MaxHostiles = 8;
+        const int MaxHostiles = 24; // brief 029: the range spawns up to 6 a side of three sides
         static readonly string[] OpKeys = { "op/scout", "op/fixer", "op/tech", "op/enforcer" }, SelKeys = { "sel/0", "sel/1", "sel/2", "sel/3" }, DestKeys = { "dest/0", "dest/1", "dest/2", "dest/3" };
         string[] crowdKeys = System.Array.Empty<string>(), hostileKeys = System.Array.Empty<string>(); // no string building per tick
 
@@ -145,6 +146,21 @@ namespace Suborned.Play
         {
             var g = host.Game; var s = g.S;
             for (int i = 0; i < 4; i++) { var op = g.Ops[i]; Set(OpKeys[i], op.Inside || op.InCar ? null : op.Pos, op.Down); } // brief 018: in the car is off the street (the car marker's seat pips say who)
+            if (g.Range)
+            {   // brief 029 (Keel): the fight range draws the cell and the spawned hostiles only; the Handover's cast, guard, patrol, Vale, cars and
+                // cameras are the site format's required keys parked in the wings, and are never drawn
+                foreach (var k in new[] { "waitress", "driver", "guard", "councillor", "patrol", "car/official", "car/getaway" }) Set(k, null);
+                for (int i = 0; i < 3; i++) Set("rivals/" + i, null); for (int i = 0; i < 2; i++) Set("security/" + i, null);
+                faces.Clear(); phases.Clear();
+                var gone = new HashSet<string>(); foreach (var rh in g.RangeHostiles()) if (rh.Gone) gone.Add(rh.Id);
+                for (int i = 0; i < MaxHostiles; i++)
+                {
+                    var h = i < g.Hostiles.Count ? g.Hostiles[i] : null; bool show = h != null && h.Present && !gone.Contains(h.Id);
+                    Set(hostileKeys[i], show ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down);
+                    if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
+                }
+                return;
+            }
             Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
             Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car ? null : g.ValePos(), g.ValeP.Down);
             // brief 022: Inez's round gives her facing (to her table, to the guard when they stand together), the guard's pose his
@@ -174,6 +190,7 @@ namespace Suborned.Play
             }
             Bodies(g);
             Units(g);
+            RobotFaces(g); // brief 026: view only
             // the final fight's hostiles (officers in the loud branch, the rival ambush in the safe one)
             for (int i = 0; i < MaxHostiles; i++)
             {
@@ -298,6 +315,9 @@ namespace Suborned.Play
         /// <summary>Brief 025 (take control): the driven agent's view key, drawn from the host's controller (position, facing, ground speed), not
         /// from the engine's eased 10 Hz pose, so input feels immediate. Null when nobody is driven.</summary>
         public string DriveKey; public Vector3 DrivePos; public float DriveYaw, DriveSpeed;
+        /// <summary>Every shooter's target this frame (view key → the target's drawn position) and who fired within 0.4 s: the figure, robot or
+        /// vehicle turns to face it, whatever it is (Sky 2026-10-20: "anything shooting at a target - must turn to face it").</summary>
+        public readonly Dictionary<string, Vector3> Aim = new(); public readonly HashSet<string> FiredNow = new();
 
         /// <summary>Per frame: eases positions, draws the cones and the selection rings.</summary>
         public void Frame(float alpha)
@@ -323,7 +343,9 @@ namespace Suborned.Play
                 if (d.gameObject.activeSelf != dest) d.gameObject.SetActive(dest);
                 if (dest) { d.position = frame.World(walk.End) + Vector3.up * 0.03f; d.localScale = new Vector3(0.6f, 0.01f, 0.6f); }
             }
+            host.AimTargets(Aim, FiredNow); // Sky 2026-10-20: every shooter faces its target (one rule, HandoverHost.AimTargets)
             Figures(alpha); Cars(); CellRings(); RivalRings();
+            AttentionViews(); // brief 031: lenses, faces and heads (HostViews.Attention)
         }
 
         /// <summary>Glyph 022 (N119: the Enforcer at the public door stood in the guard, one figure where two were): the engine may put an agent

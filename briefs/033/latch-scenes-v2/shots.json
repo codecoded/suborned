@@ -1,0 +1,14 @@
+{
+ "schema": "suborned.shots-033/1",
+ "status": "ok",
+ "screen": "1920x1080",
+ "build": "Build 0.2.26 · c026 · sim 0.14.1 · c5fa8859+",
+ "audit": [
+  {"shot": "09-scene-1-listen", "clean": true, "issues": []},
+  {"shot": "09-scene-2-help", "clean": true, "issues": []},
+  {"shot": "09-scene-3-help", "clean": true, "issues": []},
+  {"shot": "09-scene-4-call", "clean": true, "issues": []}
+ ],
+ "hashes": [],
+ "log": ["09-scene-1-listen: queued", "scene-1: listen waitress, 3 beats: scout: Right beside them. | waitress: Don't touch my hand. People are looking. | guard: Nobody's looking.; clock 0:29.0 before, 0:29.0 after; skipped; view back bit-identical; view bit-identical after", "09-scene-2-help: queued", "scene-2: help waitress, 3 beats: fixer: I hear you're in a spot. | waitress: Oh! You startled me. Yes? | fixer: I can clear your debt with the lender.; clock 1:11.0 before, 1:11.0 after; skipped; view back bit-identical; view bit-identical after", "09-scene-3-help: queued", "scene-3: help waitress, 3 beats: fixer: I hear you're in a spot. | waitress: Oh! You startled me. Yes? | fixer: I can clear your debt with the lender.; clock 2:01.0 before, 2:01.0 after; skipped; view back bit-identical; view bit-identical after", "09-scene-4-call: queued", "scene-4: call waitress, 2 beats: fixer: Making the call. | waitress: Okay. Okay. I'll call him. Be quick.; clock 2:51.0 before, 2:51.0 after; skipped; view back bit-identical; view bit-identical after"]
+}

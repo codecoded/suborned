@@ -31,6 +31,8 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   /** A texture only the generator has (the legacy root lacks it) is the generator's file; one both have stays the legacy root's, as before. */
   const genTex = (path: string) => !!gen && /^Textures\/[^/]+(\.meta)?$/.test(path) && existsSync(join(gen, path)) && !existsSync(join(root, path));
   const cache = new Map<string, KitFile>();
+  /** brief 031: the attention face's files ride with the patrol robot: the stage atlas and the face data Latch's RobotFace.cs reads (copied to Kit/Data/). */
+  const dataFiles = (id: string): KitFile[] => id !== 'PatrolRobot' || !gen ? [] : ['Data/robot-face-stage.json', 'Data/robot-faces.json', 'Data/RobotGlyphs.txt'].filter(p => existsSync(join(gen, p))).map(p => { const b = readFileSync(join(gen, p)); return { root: 'generated' as const, role: 'data' as const, path: p, sha256: sha(b), bytes: b.length }; });
   // Materials the generator wrote (tools/decokit unity_mats.py: the v0.17 colours and the retuned ones) win over the legacy root's.
   const genMat = (path: string) => !!gen && /^Materials\/[^/]+\.mat(\.meta)?$/.test(path) && existsSync(join(gen, path));
   const file = (role: KitFile['role'], path: string): KitFile | null => {
@@ -73,6 +75,7 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     const a = g ? { ...a0, tris: g.tris, size: g.size, materials: g.materials, parts: g.parts ?? a0.parts } : a0;
     const fbx: KitFile[] = g ? [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(readFileSync(join(gen!, g.fbx))), bytes: statSync(join(gen!, g.fbx)).size }, ...pair('fbx', a.fbx).filter(f => f.role === 'fbx-meta')] : pair('fbx', a.fbx);
     const files: KitFile[] = [...fbx, ...pair('prefab', a.fbx.replace(/^Models\//, 'Prefabs/').replace(/\.fbx$/, '.prefab')), ...matFiles(a.materials)];
+    files.push(...pair('fbx', a.fbx.replace(/\.fbx$/, '_Far.fbx')).filter(f => !files.some(x => x.path === f.path))); // the full robots' prefabs nest a `_Far` model (brief 026, Latch): copied with the piece, hash-checked like it
     const lo = st === 'adopted' ? lodsOf(a.name) : { files: [] }; // LOD files exist for the pieces the generator was asked about (adopted)
     files.push(...lo.files);
     const lc = lodCategoryOf(a.name, a.category);
@@ -84,15 +87,15 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   const fresh = new Set(genManifest.filter(g => g.order && g.built).map(g => g.name));
   for (const g of genManifest.filter(g => g.order && g.built)) {
     const fbxAbs = join(gen!, g.fbx), b = readFileSync(fbxAbs), files: KitFile[] = [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(b), bytes: b.length }];
-    files.push(...matFiles(g.materials), ...lodsOf(g.name).files);
+    files.push(...matFiles(g.materials), ...lodsOf(g.name).files, ...dataFiles(g.name), ...(g.name === 'PatrolRobot' ? pair('texture', 'Textures/robot_face_stage_v1.png') : []));
     generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category)) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: generatedTags(g.name), status: status.get(g.name) ?? 'adopted', source: 'generated', order: g.order!, built: g.built! });
   }
   // Pieces the generator built without an order (tools/decokit atompunk.py, horizon.py: crowns, fountain, pavilions, horizon band, twin station): fixed size, tags by category.
   const plain = genManifest.filter(g => !(g.order && g.built) && !manifestIds.has(g.name));
   for (const g of plain) {
     const fbxAbs = join(gen!, g.fbx), b = readFileSync(fbxAbs), files: KitFile[] = [{ root: 'generated', role: 'fbx', path: g.fbx, sha256: sha(b), bytes: b.length }];
-    files.push(...matFiles(g.materials), ...lodsOf(g.name).files);
-    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.lods?.length ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category)) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
+    files.push(...matFiles(g.materials), ...lodsOf(g.name).files, ...dataFiles(g.name), ...(g.name === 'PatrolRobot' ? pair('texture', 'Textures/robot_face_stage_v1.png') : []));
+    generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category)) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
   }
   for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files, tags, status: st, source, order, built, ...rest } = a; generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
   generated.sort((a, b) => a.id.localeCompare(b.id));

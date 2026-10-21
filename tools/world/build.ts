@@ -6,11 +6,12 @@ import type { Derived, Plan } from '../plan/plan';
 import { type Civic, toPlanFn } from '../plan/civic';
 import { placements, modeOf } from '../plan/transit';
 import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, World } from '../../contracts/world/world.schema';
-import { ctxOf } from './gen/common';
+import { ctxOf, rng } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
 import { adoptedBy, landmarkKit } from './gen/kitrefs';
 import { horizonOf } from './gen/horizon';
+import { civicPorterGap, civicRobots } from './gen/street/capstone-civic';
 import { WATER_LEVEL } from './gen/signatures';
 import { dressCivic, dressingOf, footOf } from './civic/dress';
 import { seededYaw } from './civic/cafe';
@@ -108,7 +109,29 @@ export function civicMasses(civ: Civic, toPlan: (p: V) => V): Mass[] {
   const fountain = out.find(m => /\/atom-fountain$/.test(m.id)), fc = fountain ? boxOf(fountain.ring).c : undefined;
   const dress = dressingOf(civ) ? look : undefined; // the block's dressing (brief 008): the pieces it swaps in, grounds and scales
   const kitted = out.map(m => civicKit(m, fc, dress));
-  return dressCivic(civ, toPlan, clearWalls(kitted, new Set(civ.buildings.map(b => `civic/${b.id}`))), PROV.pavement);
+  const carried = new Set(Object.entries(look.carries ?? {}).filter(([k]) => kitted.some(m => m.kit?.id === k)).flatMap(([, v]) => v));
+  const hid = kitted.map(m => carried.has(m.id) ? ({ ...m, kit: undefined, source: undefined, hidden: true as const }) : m);
+  const cleared = clearWalls(hid, new Set(civ.buildings.map(b => `civic/${b.id}`)));
+  return dressCivic(civ, toPlan, dressingOf(civ) ? [...cleared, ...lampsOnSets(cleared)] : cleared, PROV.pavement);
+}
+
+/** brief 026 (Sky: the testbed's table lamps, a colour per table): CafeSet_Testbed carries no lamp; one CafeLamp_Testbed_<Hue> stands on each set at (0.116, 0.320) from its pivot (Vela: Blender (0.116, -0.320, 0.797), kit z = -Blender y),
+ *  0.797 m up. The hue is seeded by the table id and differs from every set within HUE_APART m; the piece id carries it (`CafeLamp_Testbed_Teal`), which is what the night light reads. */
+export const LAMP = { hues: ['Amber', 'Teal', 'Peach', 'Coral', 'Lilac'], apart: 6,
+  /** Per terrace set: where its lamp stands, from the set's pivot in kit axes (x along its yaw, z across), and how high. The tulip table's pivot is its centre (R 0.4, top 0.74): the lamp stands 0.26 m off the pole, in the gap between two chairs (180 deg). */
+  sets: { CafeSet_Tulip_Play: { at: [-0.26, 0] as V, up: 0.74 }, CafeSet_Testbed: { at: [0.116, 0.320] as V, up: 0.797 } } as Record<string, { at: V; up: number }> };
+export function lampsOnSets(masses: Mass[]): Mass[] {
+  const sets = masses.filter(m => m.kit && LAMP.sets[m.kit.id]).sort((a, b) => a.id.localeCompare(b.id)), out: Mass[] = [], given: { at: V; hue: string }[] = [];
+  for (const m of sets) {
+    const k = m.kit!, L0 = LAMP.sets[k.id]!, y = k.yaw ?? 0, cs = Math.cos(y), sn = Math.sin(y), at: V = [r3(k.at[0] + L0.at[0] * cs - L0.at[1] * sn), r3(k.at[1] + L0.at[0] * sn + L0.at[1] * cs)];
+    const r = rng(`cafe-lamp/${m.id}`), order = LAMP.hues.map(h => ({ h, w: r.f() })).sort((a, b) => a.w - b.w).map(o => o.h);
+    const taken = new Set(given.filter(g => Math.hypot(g.at[0] - at[0], g.at[1] - at[1]) < LAMP.apart).map(g => g.hue)), hue = order.find(h => !taken.has(h)) ?? order[0]!;
+    const id = `CafeLamp_Testbed_${hue}`, a = adoptedBy(id); if (!a) continue;
+    given.push({ at, hue });
+    const kit = { id, scale: [1, 1, 1] as [number, number, number], yaw: y, at, base: r3(m.base + L0.up) };
+    out.push({ id: `${m.id}/lamp`, surface: 'trim', ring: footOf(a, kit).map(q => [r3(q[0]), r3(q[1])] as V), base: kit.base, height: r3(a.size[1]), source: 'kit', kit });
+  }
+  return out;
 }
 
 /** Grammar §11: civic objects and structures a kit piece stands for. The extrusion stays for ids and footprint.
@@ -118,7 +141,7 @@ export function civicMasses(civ: Civic, toPlan: (p: V) => V): Mass[] {
  *  plinth: a monument piece shorter than its mass stands on a plinth of the mass ring up to kit.base. */
 const CIVIC_KIT: [RegExp, string, 'fit' | 'person' | 'plinth' | 'arc'][] = [[/\/atom-fountain$/, 'AtomFountain', 'fit'], [/\/fountain-garden-[a-z-]+$/, 'PlanterArc', 'arc'], [/\/cafe-table-\d+$/, 'CafeSet_Tulip', 'person'], [/\/cafe-palm-\d+$/, 'PottedPalm_Small', 'person'],
   [/\/office-boarding-pavilion$/, 'BoardingPavilion_Office', 'fit'], [/\/square-boarding-pavilion$/, 'BoardingPavilion_Square', 'fit'],
-  [/\/office-pavilion-support-\d+$/, 'PavilionPier_Office', 'fit'], [/\/square-pavilion-support-\d+$/, 'PavilionPier_Square', 'fit'], [/\/civic-(control|service)-cabinet/, 'UtilityCabinet', 'fit'],
+  [/\/office-pavilion-support-\d+$/, 'PavilionPier_Office', 'fit'], [/\/square-pavilion-support-\d+$/, 'PavilionPier_Square', 'fit'], [/\/civic-control-cabinet/, 'CivicCabinet', 'fit'], [/\/civic-service-cabinet/, 'UtilityCabinet', 'fit'],
   [/\/civic-monument-(west|east)$/, 'OvalPlanter', 'fit'], [/\/foreground-civic-robot$/, 'RobotButler', 'plinth']];
 const FILL = 0.85;
 /** arc: a curved bed about the fountain (the four `fountain-garden-*`, Vela brief 007 round 3). PlanterArc is built to the bed's band (r 5.36-7.06): its pivot
@@ -186,6 +209,7 @@ export function civicClearance(civic: Mass[]): string[] {
     const f = foot(m);
     for (const o of civic) {
       if (o === m || o.base > m.base + 1.2 || o.base + o.height < m.base + 0.05) continue; // only what stands in the same body of air
+      if (o.kit && o.id === `${m.id}/lamp`) continue; // the table lamp stands on its own set (brief 026)
       if (o.kit && look.overhead.includes(o.kit.id)) continue; // a parasol stands over its table: only its pole is on the ground
       if (o.kit && look.frame.includes(o.kit.id)) continue; // the terrace's box is open ground inside its wall: the tables and palms belong there
       const ring = o.kit && person.has(o.kit.id) ? foot(o) : o.ring;
@@ -230,12 +254,15 @@ function gates(plan: Plan, d: Derived): Mass[] {
 export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen: Generated } {
   const g = ground(plan, d, civ), t = transit(plan, d), gen = generate(ctxOf(plan, d, civ, PROV.pavement), t.stops, t.stations);
   g.plots = gen.slabs;
+  if (gen.groundPieces?.length) g.pieces = gen.groundPieces; // brief 026: flat ground pieces (kerb, flags, pits, drains, manholes, tactile, terrazzo)
+  const civicM = civicMasses(civ, toPlanFn(plan.civic));
+  if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
   const sq = d.plots.find(p => p.civic === 'square')!;
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
     ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped } } : {}),
-    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicMasses(civ, toPlanFn(plan.civic)), ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
+    levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicM, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {
     ground: g.roads.length + g.foot.length + g.medians.length + g.circuses.length + g.water.length + g.quays.length + g.flats.length + g.plots.length,

@@ -11,6 +11,7 @@ namespace Suborned.Sim
     public sealed class Hostile
     {
         public string Id = ""; public Pt At, Home; public Path? Run; public int RunStart, Speed; public bool Present; public Gun Gun = null!; // Home: its stand (police; a blocker's lane point)
+        public int Wave; // brief 029: the range's spawn it came with (a crew breaks by its own spawn)
         public bool Blocker; // brief 018 §1: it went for the road, and holds its point in the exit lane as police hold a stand
         public bool Down => Gun.Down; public int Health => Gun.Health;
         public Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
@@ -48,8 +49,14 @@ namespace Suborned.Sim
                 for (int i = 0; i < n && i < stands.Length; i++)
                 {
                     var route = S.Grid.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
-                    var gun = NewGun($"officer-{i + 1}", R.Pistol, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
-                    Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(stands[i]), Home = S.Stand(stands[i]), Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
+                    var gun = NewGun($"officer-{i + 1}", PistolW, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
+                    var home = S.Stand(stands[i]);
+                    if (Lab && i < Labr!.PoliceContest) // brief 027 retest R1 (lab; Pulse retest-fixes.md §2, Motive tuning.md §7.2): its stand pulled into its ring of the car
+                    {
+                        var cp = StopPoint(home, Car, gun.W!.EffCm);
+                        if (cp != home) { Note("ai.kite", $"{gun.Id} comes for the car: its stand is {G.Dist(cp, Car) / 100} m from it, not {G.Dist(home, Car) / 100} m."); home = cp; route = S.Grid.Route(entry, home) ?? new[] { entry, home }; }
+                    }
+                    Hostiles.Add(new Hostile { Id = gun.Id, At = home, Home = home, Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }
                 int lockBefore = Lockdown;
                 Lockdown = Math.Min(Lockdown, Tick + T(SealS));
@@ -64,7 +71,7 @@ namespace Suborned.Sim
                 var spots = S.FightAmbush;
                 for (int i = 0; i < n && i < spots.Length; i++)
                 {
-                    var gun = NewGun($"rival-{i + 1}", R.Pistol, false, R.HealthRival); gun.St = "routine"; // lurking (Pulse §3.1)
+                    var gun = NewGun($"rival-{i + 1}", PistolW, false, R.HealthRival); gun.St = "routine"; // lurking (Pulse §3.1)
                     Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(spots[i]), Home = S.Stand(spots[i]), Speed = rivSpeed, Gun = gun });
                 }
                 FightWarned = Inez.Turned && !Inez.Down && Inez.Has(R.HelpedAct);
@@ -82,6 +89,7 @@ namespace Suborned.Sim
 
         void FightStep()
         {
+            ContactStep(); // brief 027 verdict 6.4.8: an observer for the fight-lab matrix (output only)
             if (FightBranch.Length == 0 || FightOverTick != INF) return;
             JoinResponse();
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
@@ -91,7 +99,7 @@ namespace Suborned.Sim
             {
                 FightSprung = Tick;
                 // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing)
-                foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + R.AimNewTicks + (FightWarned ? T(R.SafeWarnS) : 0); }
+                foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
                 Note("fight.ambush", FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
                 if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
                 if (GuardAlly)

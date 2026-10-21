@@ -1,0 +1,26 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route G, fast (brief 013 D; Motive 013 §6.1 G-fast): route G with the patrol rerouted as soon as the loop holds and the guard knocked out the moment the patrol leaves (2:01). Half a minute earlier, but his 2:30 mark is missed while the Enforcer is still inside: the gamble Motive names (robots on the forecourt as he comes out), which the dial's 60 m robot reach and the patrol's reroute answer on this block.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[1175,-4825]},
+  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1236,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":1326,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":1386,"op":"enforcer","do":"enter"},
+  {"tick":1386,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1766,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":2156,"op":"cell","do":"panic"},
+  {"tick":2297,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2426,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2466,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

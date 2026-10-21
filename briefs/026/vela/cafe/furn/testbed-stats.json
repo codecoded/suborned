@@ -1,0 +1,25 @@
+{
+ "objects": 4,
+ "triangles": 4886,
+ "materials": 1,
+ "images": {
+  "furniture-base": [
+   2048,
+   1024
+  ],
+  "furniture-orm": [
+   2048,
+   1024
+  ],
+  "furniture-normal": [
+   2048,
+   1024
+  ],
+  "furniture-sheen": [
+   2048,
+   1024
+  ]
+ },
+ "texelsM": 8.4,
+ "bc7MiBWithMips": 10.7
+}

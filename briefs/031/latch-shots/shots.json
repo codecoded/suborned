@@ -1,0 +1,7 @@
+{
+ "schema": "suborned.shots-031/1",
+ "status": "ok",
+ "screen": "6016x3384",
+ "frames": [{"spot": "office-front-yaw30", "frames": 572, "meanMs": 10.503, "fps": 95.211, "p99Ms": 10.883, "gpuMs": 13.344}, {"spot": "patrol-sweep-yaw30", "frames": 571, "meanMs": 10.51, "fps": 95.147, "p99Ms": 10.83, "gpuMs": 13.328}],
+ "log": ["01-briefing-heat: queued", "02-ring-scout: queued", "03-ring-fixer: queued", "04-ring-tech: queued", "05-ring-enforcer: queued", "entrance camera spot (5683,-4337)", "06-camera-noticed: cue (1, enforcer) at 0:47.8, callouts 1", "06-camera-noticed: queued", "07-camera-wary: cue (2, enforcer) at 0:59.8, callouts 1", "07-camera-wary: queued", "08-camera-reporting: cue (3, enforcer) at 1:24.8, callouts 1", "08-camera-reporting: queued", "mast spot (-1850,-950)", "old robot: robot-1 at 3:45.1; units patrol:gone,robot-1:check", "10-robot-old-noticed: queued", "11-robot-old-close: queued", "patrol spot (5825,-4005) (sweep at (6800,-4480))", "patrol: cue (1, fixer) at 1:01.9, callouts 1", "12-patrol-noticed: queued", "13-patrol-close: queued", "patrol: cue (2, fixer) at 1:13.9", "14-patrol-wary: queued"]
+}

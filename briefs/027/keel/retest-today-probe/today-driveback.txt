@@ -1,0 +1,21 @@
+== driveback
+L1   failure entry-seen-camera 0:56.5   14/14    2  2→-1  raised  active      0    0    0     0 %    0    3    15    1/1    c0/0 s0   pass (fail)
+L1c  failure sealed    4:58.4   31/31    2  2→-2  raised  active      0    0    0    44 %    8    6    51    4/1    c3/6 s6   pass (fail)
+L2   failure sealed    3:22.2   44/44    3  2→-2  high    active      0    0    0    33 %    6    7    34    2/2    c0/0 s0   pass (fail)
+L3   failure sealed    5:05.0   26/26    2  2→-2  raised  active      0    3    0    66 %   12    3    23    1/1    c1/6 s15  pass (fail)
+L4   failure sealed    7:21.2   31/31    3  2→-2  high    active      0    0    0    11 %    2    5    26    3/2    c0/0 s0   pass (fail)
+P-A  success           5:00.1    5/5     1  2→3   calm    active      0    0    0    11 %    2    3    15    2/2    c0/0 s2   pass
+P-G  success           4:24.5    6/6     1  2→3   calm    active      0    1    0    44 %    8    3    15    1/0    c0/2 s12  FAIL — 1 op down; health lost 44 % > 33
+P-B  success           8:35.4    3/3     0  2→3   calm    active      0    0    0    22 %    4    2    13    0/0    c0/0 s5   pass
+L3:kite failure sealed    5:05.0   17/17    2  2→0   raised  active      0    1    0    22 %    4    7    56    4/1    c0/8 s0   pass (fail)
+L3:reset-kite failure sealed    5:05.0   23/23    2  2→0   raised  active      0    0    0    16 %    3    6    50    1/1    c0/7 s0   pass (fail)
+L3:focus-reset-kite failure sealed    5:05.0   23/23    2  2→0   raised  active      0    0    0    16 %    3    6    50    1/1    c0/7 s0   pass (fail)
+L3:cycle-kite failure sealed    5:05.0   23/23    2  2→0   raised  active      0    0    0    16 %    3    6    50    1/1    c0/7 s0   pass (fail)
+L3:carbine-kite failure enforcer-down 3:40.7   29/29    2  2→0   raised  active      0    1    0    33 %    6    3    15    4/2    c0/0 s0   pass (fail)
+P-G:reset success           4:27.1    6/6     1  2→3   calm    active      0    0    0    22 %    4    3    18    1/0    c0/2 s6   pass
+L3:enfgo-carfree-runkite success           4:45.0   18/18    2  2→0   raised  active      0    0    0     0 %    0    3    20    2/1    c0/8 s0   FAIL — note 6.4.8a, brief-013 units (n
+L3:focus-enfgo-carfree-runkite success           4:45.0   18/18    2  2→0   raised  active      0    0    0     0 %    0    3    20    2/1    c0/8 s0   FAIL — note 6.4.8a, brief-013 un
+L3:enfgo-carfree-kite failure sealed    5:05.0   17/17    2  2→0   raised  active      0    1    0    33 %    6    3    27    1/1    c1/8 s2   pass (fail)
+6.4 triggers: 6.4.1 L3:enfgo-carfree-runkite wins with 0 hits taken, 0 % health lost | 6.4.1 L3:focus-enfgo-carfree-runkite wins with 0 hits taken, 0 % health lost | 6.4.5 P-G downs 1 
+6.4.7 lethality (two trained shooters at the sidearm's effective ring, open ground): an op down in 2.5 s, the Enforcer in 5.5 s
+6.4.7b cell → hostile (three trained sidearms at their effective ring on an uncovered rival): down 0.0 s after the first shot  (today: no line)

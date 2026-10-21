@@ -55,7 +55,7 @@ namespace Suborned.Sim
             Add("N69", "—", "A takedown under the live entrance camera (Waymark §6): route G without the Loop. The camera is a watcher like any other: it records the act, its watcher reads the screen at the next scan and the report lands 3 s later (Alert 3, a takedown seen); nothing fails at the act or when he is out. At this level Alert 3 locks the Office doors: the Enter is refused, and the response comes by the dial. (The old guard-down rule is kept only for a guard shot: his missed mark calls the response, as gunfire's own rule.)", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, Forecourt) /* c025 (brief 031): waits out of sight */));
                 r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 int mark = g.NextMarkOf(g.GuardP, g.Tick); r.To(mark + 1);
                 r.To(r.SendTo(Enf, BesideGuard));
@@ -97,7 +97,7 @@ namespace Suborned.Sim
             Add("N70", "—", "One incident, one dispatch (Aster 2026-10-16; Waymark §6: six dispatches in 0.1 s): the guard knocked out after 5:30 in front of the clerks streaming out after the chime. Many report it, one incident; the first report to land dispatches the response; a later report that raises the incident's Alert tops the same dispatch up to the new Alert's counts (from the destinations the first set); every other later report lands (logged) and sends nothing.", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, Forecourt) /* c025 (brief 031): waits out of sight */));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.To(T(286)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 r.To(r.SendTo(Enf, BesideGuard));
@@ -166,7 +166,7 @@ namespace Suborned.Sim
             Add("N73", "—", "A Take seen is a takedown seen (Aster 2026-10-16; Waymark §5.2: guard 74 stood 4 m from Vale at 6:10 and did nothing): the pickup camera looped and the rivals sent away, the Enforcer takes Vale at his car at 6:10 in front of guard 74 at the official entrance. At sight: the witnesses' reactions, +1 witness Trail and one step toward Menace, no Alert; guard 74 (staff) radios it, and when the first report lands, Alert 3 (a takedown seen) and the response. One incident; no assault Trail (the Take keeps its own, +2 T on an unturned driver, when it lands). An unseen Take opens nothing (N57b).", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, Beside(r, g.S.Stand(g.S.RivalsPark)) ?? g.S.Stand(g.S.RivalsPark))));
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, new Pt(8600, -3400)))); // c025 (brief 031): the tip waits outside the pickup camera's cone
                 r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals");
                 r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
                 r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
@@ -275,9 +275,11 @@ namespace Suborned.Sim
             Add("N77", "—", "Route B under rev 4 (Motive R4.2; Sky 2026-10-16), Waymark's route-b orders: the Take at Vale's own car with its driver turned happens inside the car, off-screen: no witness window, though the clerks fill the lane at 6:10; the turned driver is the act's accomplice, never its witness. The escort to the getaway car (by the lane's south end, as the route walks it) is seen only by Vale's kin, or by anyone within 3 m who sees the grip: nobody. 7:39, 3 T (the Pay is private since Sky 2026-10-16; 4 T before), Alert 0.", r =>
             {
                 var g = r.G;
-                Orders(r, Mv(0, Enf, "d:Service lane"), Mv(0, Scout, "d:Meet driver"), Mv(0, Fixer, "d:Boarding pavilion"), Act(576, Scout, "watch", Driver), // Waymark's route-b (re-pinned 2026-10-19, brief 023: the west-face door, the crowd's pace)
-                    Mv(776, Scout, "d:Meet driver"), new Order { Tick = 776, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(797, Scout, "listen", Driver),
-                    MvTo(1217, Scout, new Pt(8250, -3100)), Mv(1276, Fixer, "crew:fixer"), Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"));
+                // c025 (Waymark 2026-10-21, engine 0.14.1; brief 031): route-b re-pinned: the Scout watches the driver from the SW corner and tips the
+                // rivals from (8600, -3400), 2.8 m outside the pickup cone; the three's posts by the car within 15 m of the ambush
+                Orders(r, Mv(0, Enf, "d:Service lane"), MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), Act(620, Scout, "watch", Driver),
+                    Mv(760, Fixer, "d:Boarding pavilion"), Mv(820, Scout, "d:Meet driver"), new Order { Tick = 820, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(838, Scout, "listen", Driver),
+                    MvTo(1258, Scout, new Pt(8600, -3400)), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals"), MvTo(2340, Scout, new Pt(1175, -4825)), MvTo(2340, Tech, new Pt(675, -4625)));
                 r.To(T(370));
                 r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the lane, its driver turned");
                 int near = 0; var vp = g.ValePos()!.Value; foreach (var w in g.Walkers) if (g.CrowdPos(w) is Pt p && G.Within(p, vp, g.R.WitnessRangeCm)) near++;
@@ -288,10 +290,10 @@ namespace Suborned.Sim
                 r.Done(Enf);
                 r.Is(!g.Acts.Exists(x => x.Take), "inside the car: nobody saw a Take, the driver no witness");
                 r.Eq(g.Alert, 0, "Alert 0");
-                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4470, "cell", "panic"), Mv(4576, Enf, "d:Getaway bay"), Act(4705, Enf, "board", "car"), Act(4745, "cell", "go")); // brief 018: Board (with Vale, 4 s) and Go
+                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4470, "cell", "panic"), Mv(4570, Enf, "d:Getaway bay"), Act(4699, Enf, "board", "car"), Act(4739, "cell", "go")); // c025: Board (with Vale, 4 s) and Go
                 r.Is(!g.Acts.Exists(x => x.Take), "the escort: no kin of Vale near, nobody within 3 m of the grip");
                 r.Eq(g.Result, Outcome.Success, "route B wins");
-                r.Eq((g.Tick, g.Trail, g.Alert), (4745, 3, 0), "at 7:54.5 (Waymark's route-b, 2026-10-19; 7:43.3 before the west-face door; brief 018: Board with Vale takes 4 s, then Go), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
+                r.Eq((g.Tick, g.Trail, g.Alert), (4739, 3, 0), "at 7:53.9 (Waymark's c025 route-b, 2026-10-21, engine 0.14.1), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
             });
 
             Add("N78", "—", "The escort seen (rev 4 R4.2): Vale taken inside his car in the lane (the driver turned), then walked straight at a clerk standing in the lane: within 3 m she sees the grip. A carry seen: +1 witness Trail and one step toward Menace at sight; her report lands at Alert 2. Workmate is not kin (rev 4): Vale's workmates further off see two men walking.", r =>

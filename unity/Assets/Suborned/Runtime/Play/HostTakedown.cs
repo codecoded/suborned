@@ -70,7 +70,7 @@ namespace Suborned.Play
             var i = new Intent { Slot = slot, Label = $"Loop {CameraName(cam)}", Order = new Order { Op = "tech", Do = "loop", Target = cam } };
             i.Time = $"{R.LoopS} s"; i.Trail = $"T +{R.LoopTrail}"; i.Outcome = "tethered";
             var k = Game.Known("camera:" + cam);
-            i.Rows.Add(("watch", k != null && k.Sight ? $"Blinds: what {CameraName(cam)} sees{(Game.S.Cameras.Find(x => x.Id == cam)?.Facings.Length > 1 ? " (all three heads)" : "")}" : "Blinds: ? until the Scout watches it"));
+            i.Rows.Add(("watch", k != null && k.Sight ? $"Blinds: what {CameraName(cam)} sees{(Game.S.Cameras.Find(x => x.Id == cam)?.Facings.Length > 1 ? " (all three heads)" : "")}" : "Blinds: ? until the cell watches it"));
             if (Game.LoopOn && Game.LoopCam != cam) i.Rows.Add(("loop", $"Replaces the loop on {CameraName(Game.LoopCam)}"));
             return i;
         }

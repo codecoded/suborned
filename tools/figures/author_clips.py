@@ -306,3 +306,101 @@ def make_pinned(entry, store, dst):
                              axis_forward='-Z', axis_up='Y', apply_unit_scale=True, apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False,
                              primary_bone_axis='Y', secondary_bone_axis='X', armature_nodetype='NULL', path_mode='STRIP')
     return f1 - f0 + 1
+
+
+def _strip_basisu(src, dst):
+    """The testbed glbs name KHR_texture_basisu as required; Blender's importer refuses it. The mesh and animation do not use it, so write a copy that does not name it."""
+    import json, struct
+    b = open(src, 'rb').read(); n = struct.unpack('<I', b[12:16])[0]; j = json.loads(b[20:20 + n]); rest = b[20 + n:]
+    for k in ('extensionsRequired', 'extensionsUsed'):
+        if k in j: j[k] = [e for e in j[k] if e != 'KHR_texture_basisu']
+    for t in j.get('textures', []):
+        t.get('extensions', {}).pop('KHR_texture_basisu', None)
+        if not t.get('extensions'): t.pop('extensions', None)
+    js = json.dumps(j, separators=(',', ':')).encode(); js += b' ' * ((4 - len(js) % 4) % 4)
+    open(dst, 'wb').write(b'glTF' + struct.pack('<II', 2, 20 + len(js) + len(rest)) + struct.pack('<I', len(js)) + b'JSON' + js + rest)
+
+
+def make_testbed(entry, store, dst):
+    """run_lean (brief 020): a clip from the old web testbed, retargeted once onto the library's Mixamo skeleton (the donor's) and written as a clip-only FBX.
+    entry['glb'] (relative to the store root, the folder above source-art) holds the testbed figure with its own action entry['clip']; both rigs use Mixamo bone names, so
+    each bone takes the source's rotation change from its rest pose (in world space, after first swinging the donor's rest directions onto the source's: swing only, so an
+    A-pose and a T-pose rig agree), and the hips take the source's hip movement scaled by the hip heights, with the horizontal travel taken out (in place, like the library).
+    The cycle is resampled from the source's frame rate to 30 fps (entry['frames'] distinct frames, none repeated at the end: Unity loops it, like the library's own loops)."""
+    import tempfile
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    new = load(os.path.join(store, entry['donor']))
+    arm, _ = rigs(new)
+    for o in list(bpy.data.objects):
+        if o.type != 'ARMATURE': bpy.data.objects.remove(o, do_unlink=True)
+    if arm.animation_data and arm.animation_data.action: bpy.data.actions.remove(arm.animation_data.action)
+    tmp = os.path.join(tempfile.mkdtemp(), 'tb.glb'); _strip_basisu(os.path.normpath(os.path.join(store, '..', entry['glb'])), tmp)
+    before = set(bpy.data.objects); bpy.ops.import_scene.gltf(filepath=tmp)
+    src = [o for o in bpy.data.objects if o not in before and o.type == 'ARMATURE'][0]
+    for o in list(bpy.data.objects):
+        if o.type == 'MESH': bpy.data.objects.remove(o, do_unlink=True)
+    sact = bpy.data.actions[entry['clip']]; src.animation_data_create(); src.animation_data.action = sact
+    sc = bpy.context.scene
+    s0, s1 = sact.frame_range; sfps = sc.render.fps; SN = s1 - s0     # the glTF importer keys at the scene's 24 fps
+    sc.render.fps = FPS
+    names = [b.name for b in arm.data.bones if b.name.startswith('mixamorig:') and b.name[10:] in src.data.bones]
+    bare = lambda n: n[10:]
+    SW, DW = src.matrix_world, arm.matrix_world
+    s_rest = {n: SW @ src.data.bones[bare(n)].matrix_local for n in names}
+    d_rest = {n: DW @ arm.data.bones[n].matrix_local for n in names}
+    d_rest_a = {n: arm.data.bones[n].matrix_local.copy() for n in names}
+    def facing(M, bones, prefix=''):
+        d = M.to_3x3() @ (bones[prefix + 'LeftToeBase'].head_local - bones[prefix + 'LeftFoot'].head_local); d.z = 0; return d.normalized()
+    fs, fd = facing(SW, src.data.bones), facing(DW, arm.data.bones, 'mixamorig:')
+    R = fs.rotation_difference(fd).to_matrix()           # source frame -> donor frame (yaw only: both are drawn upright)
+    s_rest = {n: R.to_4x4() @ m for n, m in s_rest.items()}
+    def depth(b): return 0 if b.parent is None else 1 + depth(b.parent)
+    order = sorted(names, key=lambda n: depth(arm.data.bones[n]))
+    dpar = {n: (arm.data.bones[n].parent.name if arm.data.bones[n].parent and arm.data.bones[n].parent.name in names else None) for n in names}
+    kids = {n: [k for k in names if dpar[k] == n] for n in names}
+    Cn = {}
+    for n in order:
+        if kids[n]:
+            k = max(kids[n], key=lambda x: (d_rest[x].translation - d_rest[n].translation).length)
+            df = (d_rest[k].translation - d_rest[n].translation).normalized(); dc = (s_rest[k].translation - s_rest[n].translation).normalized()
+            Cn[n] = df.rotation_difference(dc).to_matrix()
+        else: Cn[n] = Cn[dpar[n]] if dpar[n] else Matrix.Identity(3)
+    ratio = d_rest['mixamorig:Hips'].translation.z / s_rest['mixamorig:Hips'].translation.z
+    nf = int(entry.get('frames', round(SN / sfps * FPS)))
+    # source pose per sample
+    samples = []
+    for i in range(nf):
+        fr = s0 + (i % nf) / nf * SN
+        sc.frame_set(int(fr), subframe=fr - int(fr)); bpy.context.view_layer.update()
+        samples.append({n: R.to_4x4() @ (SW @ src.pose.bones[bare(n)].matrix) for n in names})
+    hips = 'mixamorig:Hips'
+    mean = Vector((sum(s[hips].translation.x for s in samples[:nf]) / nf, sum(s[hips].translation.y for s in samples[:nf]) / nf, 0))
+    bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode='POSE')
+    arm.animation_data_create(); act = bpy.data.actions.new('mixamo.com'); arm.animation_data.action = act
+    for pb in arm.pose.bones: pb.rotation_mode = 'QUATERNION'
+    DWi = DW.inverted()
+    for i, S in enumerate(samples):
+        pose = {}
+        for n in order:
+            D = S[n].to_3x3() @ s_rest[n].to_3x3().inverted()
+            rot_a = DWi.to_3x3() @ (D @ Cn[n] @ d_rest[n].to_3x3())
+            p = dpar[n]
+            if p is None:
+                dw = S[n].translation - s_rest[n].translation - mean
+                head_a = DWi @ (d_rest[n].translation + dw * ratio)
+            else:
+                head_a = (pose[p] @ (d_rest_a[p].inverted() @ d_rest_a[n])).translation
+            M = Matrix.Translation(head_a) @ rot_a.to_4x4(); pose[n] = M
+            basis = d_rest_a[n].inverted() @ M if p is None else (d_rest_a[p].inverted() @ d_rest_a[n]).inverted() @ pose[p].inverted() @ M
+            loc, q, _ = basis.decompose(); pb = arm.pose.bones[n]
+            pb.rotation_quaternion = q; pb.location = loc if p is None else Vector()
+            pb.keyframe_insert('rotation_quaternion', frame=i + 1)
+            if p is None: pb.keyframe_insert('location', frame=i + 1)
+    act.frame_range = (1, nf); sc.frame_start, sc.frame_end = 1, nf
+    bpy.ops.object.mode_set(mode='OBJECT')
+    bpy.ops.object.select_all(action='DESELECT'); arm.select_set(True); bpy.context.view_layer.objects.active = arm
+    bpy.ops.export_scene.fbx(filepath=dst, use_selection=True, object_types={'ARMATURE'}, add_leaf_bones=False, bake_anim=True,
+                             bake_anim_use_all_actions=False, bake_anim_use_nla_strips=False, bake_anim_simplify_factor=SIMPLIFY, bake_anim_step=1.0,
+                             axis_forward='-Z', axis_up='Y', apply_unit_scale=True, apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False,
+                             primary_bone_axis='Y', secondary_bone_axis='X', armature_nodetype='NULL', path_mode='STRIP')
+    return nf

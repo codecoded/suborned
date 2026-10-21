@@ -1,0 +1,4 @@
+renderers 2782
+lights 238
+pipeline Civic runtime Forward+ pipeline
+plaza at (0.00, 0.00, 0.00) rot (0.00, 0.00, 0.00)

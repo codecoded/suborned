@@ -1,0 +1,61 @@
+{
+ "note": "Brief 026, Vela. Geometry of the 2.5D testbed's caf\u00e9 furniture and room contents, baked from the store's glb files by tools/decokit/port_cafe3d.py (no edits). Original procedural geometry made for The Suborned; no external asset library (the sources' own provenance).",
+ "sources": {
+  "furniture": {
+   "path": "~/Projects/the-suborned-store/testbed-art/cafe-table-set/cafe-furniture-pbr-v2.glb",
+   "sha256": "e05fe9436180594eb1c2616ac0140079b0536851cf1eaf2a96db5367686f02eb",
+   "bytes": 3722972
+  },
+  "cafe": {
+   "path": "~/Projects/the-suborned-store/testbed-art/cafe-3d/cafe-3d.glb",
+   "sha256": "244d9bcfd2ca945218bbe3d2ee171d1b5586f444df57651db1e2edaf018dad96",
+   "bytes": 20583364
+  }
+ },
+ "parts_json": {
+  "sha256": "c9adfb637c2acbff1c87f827091c716989b338ce8cc33f1c1591e8416074c52b",
+  "bytes": 902238
+ },
+ "triangles": {
+  "furniture": {
+   "chair": 520,
+   "lamp": 600,
+   "parasol": 3008,
+   "table": 758
+  },
+  "room": {
+   "amber cove emitter": 88,
+   "interior glossy foliage": 1232,
+   "petrol enamel": 752,
+   "petrol velvet booths": 432,
+   "pilot counter enamel": 2,
+   "polished chrome": 1684,
+   "register black bakelite": 880,
+   "shared live PBR.001": 5394,
+   "teal mood emitter": 44,
+   "walnut cabinetry": 372,
+   "warm opal luminaires": 44,
+   "warm pendant emitter": 1792
+  },
+  "total": 17602
+ },
+ "filters": {
+  "content": [
+   "shared live PBR.001",
+   "petrol velvet booths",
+   "walnut cabinetry",
+   "register black bakelite",
+   "warm opal luminaires",
+   "warm pendant emitter",
+   "interior glossy foliage",
+   "amber cove emitter",
+   "teal mood emitter",
+   "pilot counter enamel"
+  ],
+  "loose_only": [
+   "petrol enamel",
+   "polished chrome"
+  ],
+  "max_loose_m": 1.2
+ }
+}

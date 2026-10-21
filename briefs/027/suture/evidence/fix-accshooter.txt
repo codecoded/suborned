@@ -1,0 +1,22 @@
+inputs d001d60896991589 rulebook out/suture027/rulebook.snapshot.json
+policy             run  result             end     T  A St     down hp-lost hits foes shots resets verdict
+matrix             L1c  failure sealed     5:00.4  31 2  2>-2     1    38%    7    6    39      0 pass (fail)
+reset              L1c  failure enforcer-down 3:43.7  15 2  2>-1     2    83%   15    3    12    881 pass (fail)
+reset-kite         L1c  failure entry-seen-camera 2:32.7  15 2  2>-1     0    11%    2    3    14      4 pass (fail)
+focus-reset-kite   L1c  failure entry-seen-camera 2:32.7  15 2  2>-1     0    11%    2    3    14      4 pass (fail)
+matrix             L3   success            4:50.3  22 2  2>-2     1    38%    7    5    27      0 pass (heavy debrief)
+reset              L3   failure enforcer-down 3:38.7  26 2  2>-2     3    88%   16    3    21     99 pass (fail)
+reset-kite         L3   failure sealed     5:05.0  14 2  2>-1     1    22%    4    5    33   1428 pass (fail)
+focus-reset-kite   L3   failure sealed     5:05.0  14 2  2>-1     1    22%    4    7    63    214 pass (fail)
+matrix             P-A  success            4:58.6   5 1  2>3      0     0%    0    3    29      0 pass
+reset              P-A  success            4:58.6   5 1  2>3      0     0%    0    3    30     17 pass
+reset-kite         P-A  failure rivals-reach-vale 4:29.5   5 1  2>2      2    55%   10    1    18    273 FAIL — failure rivals-reach-vale; 2 op down; health lost 55 % > 25
+focus-reset-kite   P-A  success            5:11.0   5 1  2>3      1    22%    4    3    38    116 FAIL — 1 op down
+matrix             P-G  failure rivals-reach-vale 3:44.1   6 1  2>2      4   100%   18    2    26      0 FAIL — failure rivals-reach-vale; 4 op down; health lost 100 % > 25
+reset              P-G  failure rivals-reach-vale 3:44.1   6 1  2>2      4   100%   18    2    26     14 FAIL — failure rivals-reach-vale; 4 op down; health lost 100 % > 25
+reset-kite         P-G  failure rivals-reach-vale 3:42.1   6 1  2>2      3    83%   15    1     9    159 FAIL — failure rivals-reach-vale; 3 op down; health lost 83 % > 25
+focus-reset-kite   P-G  failure rivals-reach-vale 3:42.1   6 1  2>2      3    83%   15    1     7    149 FAIL — failure rivals-reach-vale; 3 op down; health lost 83 % > 25
+matrix             P-B  success            8:33.1   3 0  2>3      0    27%    5    2    18      0 FAIL — health lost 27 % > 25
+reset              P-B  failure rivals-reach-vale 7:44.5   3 0  2>2      2    66%   12    1    12    262 FAIL — failure rivals-reach-vale; 2 op down; health lost 66 % > 25
+reset-kite         P-B  failure rivals-reach-vale 7:42.5   3 0  2>2      1    44%    8    1    19    249 FAIL — failure rivals-reach-vale; 1 op down; health lost 44 % > 25
+focus-reset-kite   P-B  failure rivals-reach-vale 7:42.5   3 0  2>2      1    44%    8    1    16    247 FAIL — failure rivals-reach-vale; 1 op down; health lost 44 % > 25

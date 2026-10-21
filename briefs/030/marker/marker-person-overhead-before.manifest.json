@@ -1,0 +1,17 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 859, "y": 404, "w": 203, "h": 25, "text": "Someone is. Someone always is."},
+  {"kind": "speech", "x": 1917, "y": 2078, "w": 133, "h": 25, "text": "Nobody's looking."},
+  {"kind": "image", "x": 1971, "y": 2195, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 947, "y": 439, "w": 26, "h": 26, "text": "pip waitress"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 37, "h": 16, "text": "Watch"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Inez: Hush, and drink it before it cools."},
+  {"kind": "image", "x": 1154, "y": 1042, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

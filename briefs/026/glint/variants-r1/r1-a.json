@@ -1,0 +1,19 @@
+{
+ "label": "R1-a: contact wider and stronger, ambient +10% (light.json only)",
+ "ambient": {
+  "sky": 1.1,
+  "equator": 1.1,
+  "ground": 1.1
+ },
+ "contact": {
+  "enabled": true,
+  "footWidth": 1.2,
+  "kerbWidth": 0.5,
+  "footStrength": 0.5,
+  "footPower": 1.5,
+  "kerbStrength": 0.5,
+  "kerbPower": 1.4,
+  "blobStrength": 0.6,
+  "blobPower": 1.3
+ }
+}

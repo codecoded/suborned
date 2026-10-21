@@ -5,7 +5,7 @@ Names: <Base>_Play. Same pivot, size and parts as the base."""
 
 from kit import REGISTRY, asset
 
-CAPS = {"RobotPorter": 2600, "ServiceRobot": 1800, "RobotWaiter": 2200, "RobotButler": 2600, "BoxTruck": 3600, "CoffeeCart": 3000, "BusShelter": 2800, "CurvedKiosk": 3200, "TramCanopy": 3000}
+CAPS = {"RobotPorter": 2600, "ServiceRobot": 1800, "RobotWaiter": 2200, "RobotButler": 2600, "RobotNanny": 2600, "RobotShopkeeper": 2400, "BoxTruck": 3600, "CoffeeCart": 3000, "BusShelter": 2800, "CurvedKiosk": 3200, "TramCanopy": 3000}
 
 
 def _register():

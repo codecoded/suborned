@@ -256,7 +256,7 @@ test('civic square: fountain, cafe sets, palms, pavilions, piers and cabinets ar
   const kitted = w.civic.filter(m => m.kit);
   expect(kitted.length).toBeGreaterThanOrEqual(27);
   const fountain = w.civic.find(m => m.id === 'civic/atom-fountain')!;
-  expect(fountain.kit!.id).toBe('AtomFountain'); expect(fountain.kit!.scale[0]).toBeGreaterThan(0.95); expect(fountain.kit!.scale[0]).toBeLessThan(1.05);
+  expect(fountain.kit!.id).toBe('AtomFountain_Testbed'); expect(fountain.kit!.scale[0]).toBeGreaterThan(0.95); expect(fountain.kit!.scale[0]).toBeLessThan(1.05);
   for (const m of kitted) expect(by.get(m.kit!.id)!.status).toBe('adopted');
 });
 

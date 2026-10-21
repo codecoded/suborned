@@ -1,0 +1,49 @@
+{
+ "note": "Brief 028, Vela. The testbed's boarding pavilion B, ported at full detail by tools/decokit/pavilion.py (+ pavilion_tex.py). Original procedural/Meshy art made for The Suborned (Meshy v1 text-to-3D, the old repo's SourceArt/BoardingPavilionB/v1); no external asset library. No compression of any kind: not decimated, not rebaked, not downscaled; the testbed's LOD1 (12,000 tris) and LOD2 (5,999) and its KTX2 / meshopt web copies are not used.",
+ "sources": {
+  "body": {
+   "path": "~/Projects/the-suborned-store/testbed-art/boarding-pavilion/source/boarding-pavilion-b.glb",
+   "sha256": "7552d622d2a71b1885f69eb82c48956d76bd8d100a784ccab0631fca181ccd13",
+   "bytes": 33427784,
+   "triangles": 28190,
+   "images": {
+    "Image_0 base": "4096 jpeg",
+    "normal": "4096 png",
+    "Image_1 metal-rough": "2048 jpeg",
+    "Image_3 emissive": "2048 jpeg, black (max 8/255), not exported"
+   }
+  },
+  "fittings": {
+   "script": "art/pavilion/pavilion_integrated_lights.original.mjs (testbed tools/pavilion_integrated_lights.mjs)",
+   "sha256": "5a334909e91d721311b0e179dab59332f0d5b4ee21f414984a73f99f701040e6",
+   "fixtures": "art/pavilion/fixtures.testbed.json",
+   "fixtures_sha256": "d280ce4fa64b20e81113a41530684e564447df35f20b6bcb5b0b4adfb758c62f",
+   "triangles": 576
+  },
+  "placement": {
+   "file": "~/Projects/the-suborned/testbed/src/civic-boarding-pavilion-layout.js",
+   "sha256": "9328acde3d383f70f502bcd148b6cd03bf005745169d184fc4510fce7e831924",
+   "official": "scale 1.25 (15 m)",
+   "getaway": "scale 0.70 (8.4 m)"
+  }
+ },
+ "output": {
+  "triangles": 28766,
+  "fbx_sha256": {
+   "Square": "5f6f1bf2d25cdcd7c8fa8f03744ec71759c212546a53265bf23c4ffcfa1b43bf",
+   "Office": "2df2ae8f6250a64e314d1460caf328744e2d9c48c19ed90ee2622678150cce02"
+  },
+  "textures": {
+   "pavilion_atlas_v1.png": "6f713b286daa7db89042719299adbd0a41fa269be0c9de2409e4beb7aef23e67",
+   "pavilion_atlas_v1_normal.png": "98cce158c479cf60ccc8f63d0a6ad750bd2f5ff264fe02fbf5ebf7a6876a5a8f",
+   "pavilion_atlas_v1_mask.png": "78afaf754c316d332ea17201fcad5ebb429b40aa1cfb49fcb17ced4f6de8488a"
+  }
+ },
+ "changes_from_source": [
+  "fitted to 12 m (testbed's own fit), centred, ground z 0",
+  "shading: kit's sharp-from-angle 38 deg + weighted normal (the glb's split normals are not kept)",
+  "mask repacked from the glb's ORM (R metallic, G occlusion, A smoothness)",
+  "emissive map (black) not exported",
+  "doubleSided dropped"
+ ]
+}

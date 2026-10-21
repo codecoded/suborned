@@ -10,6 +10,15 @@ namespace Suborned.World
         readonly Look look;
         public Nodes(Look look) => this.look = look;
 
+        /// <summary>The ground layer's surface for an export surface (Look.Ground).</summary>
+        public string Ground(string surface) => look.Ground(surface);
+
+        /// <summary>A surface's material (for parts that carry their own UVs).</summary>
+        public Material Mat(string surface) => look.Mat(surface);
+
+        /// <summary>look.json has this surface.</summary>
+        public bool Has(string surface) => look.Has(surface);
+
         public static Transform Group(Transform parent, string name)
         {
             var go = new GameObject(name) { isStatic = true };
@@ -30,7 +39,11 @@ namespace Suborned.World
         /// <summary>Adds a part to element `el` in surface's material; warns on polygon repairs.</summary>
         public void Part(Transform el, string name, MeshKit kit, string surface)
         {
-            if (look.Tile(surface) is > 0f and var tile) kit.PlanarUv(tile, UvInset);
+            if (look.Tile(surface) is > 0f and var tile)
+            {
+                kit.PlanarUv(tile, UvInset);
+                if (look.SeededPeriod(surface) is > 0f and var period) kit.SeedUv(el.name + "/" + name, period); // brief 026: no sheet repeat across patches
+            }
             Part(el, name, kit, look.Mat(surface));
         }
 

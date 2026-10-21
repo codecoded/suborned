@@ -3,18 +3,22 @@
   "surfaces": {
     "asphalt": {
       "palette": "harbour.asphalt",
-      "value": 1,
-      "smoothness": 0.1
+      "value": 0.9,
+      "smoothness": 0.1,
+      "material": "DK_Ground_Asphalt",
+      "tile": 1
     },
     "kerb": {
       "palette": "harbour.kerb",
-      "value": 1,
-      "smoothness": 0.1
+      "value": 0.92,
+      "smoothness": 0.1,
+      "material": "DK_Ground_Kerb",
+      "tile": 1
     },
     "pavement": {
       "palette": "harbour.pavement",
       "value": 1,
-      "smoothness": 0.1
+      "smoothness": 0.25
     },
     "quay": {
       "palette": "harbour.quay",
@@ -24,17 +28,17 @@
     "foot": {
       "palette": "harbour.foot",
       "value": 1,
-      "smoothness": 0.1
+      "smoothness": 0.25
     },
     "open": {
       "palette": "harbour.open",
       "value": 1,
-      "smoothness": 0.1
+      "smoothness": 0.25
     },
     "square": {
       "palette": "harbour.square",
       "value": 1,
-      "smoothness": 0.1,
+      "smoothness": 0.3,
       "material": "DK_Pave_Civic",
       "tile": 4
     },
@@ -99,19 +103,19 @@
     "pylon": {
       "palette": "harbour.pylon",
       "value": 1,
-      "smoothness": 0.5,
+      "smoothness": 0.85,
       "metallic": 0.6
     },
     "column": {
       "palette": "harbour.column",
       "value": 1,
-      "smoothness": 0.5,
+      "smoothness": 0.85,
       "metallic": 0.6
     },
     "limestone": {
       "palette": "harbour.limestone",
       "value": 1,
-      "smoothness": 0.15
+      "smoothness": 0.3
     },
     "deck": {
       "palette": "harbour.deck",
@@ -126,7 +130,7 @@
     "civic": {
       "palette": "harbour.civic",
       "value": 1,
-      "smoothness": 0.2,
+      "smoothness": 0.35,
       "material": "DK_Pave_Civic",
       "tile": 4
     },
@@ -140,31 +144,31 @@
     "trim": {
       "palette": "harbour.trim",
       "value": 1,
-      "smoothness": 0.5,
+      "smoothness": 0.7,
       "metallic": 0.7
     },
     "crossing": {
       "palette": "harbour.crossing",
       "value": 1,
-      "smoothness": 0.5,
+      "smoothness": 0.75,
       "metallic": 0.7
     },
     "canopy": {
       "palette": "harbour.column",
       "value": 1,
-      "smoothness": 0.4,
+      "smoothness": 0.75,
       "metallic": 0.5
     },
     "plate": {
       "palette": "harbour.pylon",
       "value": 1,
-      "smoothness": 0.6,
+      "smoothness": 0.9,
       "metallic": 0.6
     },
     "hoop": {
       "palette": "harbour.pylon",
       "value": 1,
-      "smoothness": 0.6,
+      "smoothness": 0.9,
       "metallic": 0.6
     },
     "booth": {
@@ -265,7 +269,7 @@
     "enamel": {
       "palette": "harbour.enamel",
       "value": 1,
-      "smoothness": 0.6
+      "smoothness": 0.8
     },
     "sign": {
       "palette": "harbour.sign",
@@ -317,6 +321,98 @@
       "palette": "harbour.canvas",
       "value": 1,
       "smoothness": 0.2
+    },
+    "ground/pavement": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/foot": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/open": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/residential": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/mixed": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/commercial": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/industrial": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/port": {
+      "palette": "harbour.pavement",
+      "value": 1,
+      "smoothness": 0.25,
+      "material": "DK_Ground_Pavement",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/park": {
+      "palette": "harbour.park",
+      "value": 1,
+      "smoothness": 0.1,
+      "material": "DK_Ground_Lawn",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/median": {
+      "palette": "harbour.park",
+      "value": 1,
+      "smoothness": 0.1,
+      "material": "DK_Ground_Lawn",
+      "tile": 1,
+      "seed": true
+    },
+    "ground/gutter": {
+      "palette": "harbour.asphalt",
+      "value": 0.8,
+      "smoothness": 0.2,
+      "material": "DK_Ground_Gutter",
+      "tile": 1
+    },
+    "ground/paint": {
+      "palette": "road.paint",
+      "value": 1,
+      "smoothness": 0.3
     }
   },
   "sky": {
@@ -519,6 +615,10 @@
     },
     "harbour.canvas": {
       "hex": "#f7f4ec"
+    },
+    "road.paint": {
+      "hex": "#E8E2D2",
+      "why": "brief 026 round 2: road paint, the old city DK_Road_Paint (DecoKitRoadMarkings), a warm off-white, never pure white"
     }
   }
 }

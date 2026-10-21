@@ -26,6 +26,23 @@ namespace Suborned.Sim
             h.S(g.Id).S(g.W?.Id ?? "").Z(g.Trained).I(g.Health).I(g.Max).Z(g.Down).Z(g.Drawn).I(g.DrawReady).I(g.HolsterAt).I(g.DrawTick).S(g.Stance)
              .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit)
              .I(g.ShotByTick).S(g.St).I(g.Until).I(g.NoFoeSince).I(g.StepAt).I(g.UnprotSince).I(g.Class).I(g.LostTick).I(g.SightLostAt).S(g.Cover).S(g.LostTarget);
+            if (g.Order.Length > 0) h.I(g.OrderTick); // engine 0.15.0: only a standing order adds bytes
+            if (g.DrawnBy.Length > 0) h.S(g.DrawnBy); // brief 030: how the weapon was drawn (only an operative's drawn weapon adds bytes)
+            if (g.Mem != null) // aim memory (the pair's count)
+            {
+                if (HLab) { h.S("mem").I(g.Mem.Count); foreach (var kv in g.Mem) h.S(kv.Key).I(kv.Value); } // the lab (brief 027): every entry, as hashed since 0.10.0
+                else foreach (var kv in g.Mem) // today (tuning.md §13.1, engine 0.18.0): only an entry the state doesn't already say: not the target in hand at its count, not one shot down (a gun down stays down)
+                    if (!(kv.Key == g.Target && kv.Value == g.Acc) && !(HGame != null && HGame.MemDown(kv.Key))) h.S("mem").S(kv.Key).I(kv.Value);
+            }
+            if (g.Trig || g.TrigTap || g.TrigForce || g.TrigT.Length > 0) h.S("trig").Z(g.Trig).Z(g.TrigTap).Z(g.TrigForce).S(g.TrigT); // tuning.md §11 (engine 0.17.0): only a trigger used adds bytes
+            if (g.FollowBy.Length > 0) h.S("follow").S(g.FollowBy); // likewise a follower
+            if (g.LockAsk.Length > 0) h.S("lockask").S(g.LockAskBy).S(g.LockAsk).Z(g.LockAskForce); // engine 0.18.0: a press waiting on a lock whose target may fall this tick
+            for (int k = 0; k < 4; k++) // tuning.md §12.2: an operative's last shot on this one, only while live (within lineLapse) and not already ShotBy/ShotByTick
+            {
+                int st = g.OpShot[k]; if (st < 0 || HTick - st > HLapse) continue;
+                if (g.ShotBy == Sim.Op.Name((OpId)k) && g.ShotByTick == st) continue;
+                h.S("opshot").I(k).I(st);
+            }
         }
 
         /// <summary>One person's state alone (what they are, know and remember), for "before and after" checks.</summary>
@@ -48,8 +65,11 @@ namespace Suborned.Sim
             foreach (var r in f.Rivals) h.S(r);
             h.S(f.Outcome).I(f.Delta);
         }
+        [ThreadStatic] static int HTick, HLapse; // the tick and weapons.lineLapse (ticks) of the state being hashed (§12.2's live window)
+        [ThreadStatic] static bool HLab; [ThreadStatic] static Game? HGame; // the lab on, and the game, of the state being hashed (§13.1's aim memory)
         public static ulong State(Game g)
         {
+            HTick = g.Tick; HLapse = Game.T(g.R.LineLapseS); HLab = g.Lab; HGame = g;
             var h = new H();
             h.I(unchecked((long)g.StartHash)).I(g.Tick).I(g.Cash).I(g.Trail).I(g.Alert).I(g.Gunfire).I(g.Reported).I(g.Standing + StandingAs).I((int)g.Result).S(g.FailCode);
             foreach (var op in g.Ops)
@@ -57,6 +77,8 @@ namespace Suborned.Sim
                 h.I((int)op.Id).P(op.Pos).Z(op.Walk != null).I(op.WalkMm).Z(op.Inside);
                 if (op.Running && op.Walk != null) h.S("run").I(op.WalkSpeed); // only a run adds bytes: a walk hashes as it always did
                 if (op.Driven) h.S("drive").Z(op.DriveTo.HasValue).P(op.DriveTo ?? default).Z(op.DriveRun).Z(op.DriveSpan).Z(op.Running).Z(op.DriveMoved).I(op.Face).I(op.DriveBudget).I(op.DrivePush).Z(op.DriveResume.HasValue).P(op.DriveResume ?? default).Z(op.DriveResumeRun); // brief 025: only a driven operative adds bytes
+                if (op.RanLast != Game.RunsNow(op)) h.S("ran").Z(op.RanLast); // tuning.md §10.2 settle: only a run ended since the last fight tick adds bytes
+                if (op.CloseSpent) h.S("spent"); // engine 0.15.0 (tuning.md §8.2 rule 4): only a spent walk-in adds bytes
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
                 Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }
@@ -70,6 +92,7 @@ namespace Suborned.Sim
                 foreach (var m in p.Memory) h.S(m.Act).S(m.By).S(m.Place).I(m.Tick).Z(m.Witnessed).S(m.Told ?? "");
             }
             h.Z(g.LoopOn).Z(g.CellFiredOn);
+            if (g.FollowLock) h.S("followLock"); // tuning.md §11.5: the follow setting on adds bytes (off, every run hashes as before)
             if (g.LoopCam != "entrance") h.S(g.LoopCam); // only a loop on another camera adds bytes
             Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
             foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
@@ -118,7 +141,12 @@ namespace Suborned.Sim
             g.HashSight(h); // what the cell knows of watchers: no bytes until it knows something (rulebook sight)
             g.HashTakedown(h);
             g.HashGetaway(h);
+            if (g.AutoHolsterDue >= 0) h.S("auto-holster").I(g.AutoHolsterDue); // brief 030: only while one is due
+            g.HashAttention(h); // brief 031: no bytes until a watcher's clock has moved
             g.HashStashWatch(h); // container rounds learned by Watch (§05): no bytes until one is learned
+            if (g.Lab) g.HashLab(h);
+            else { g.HashKiteToday(h); g.HashCloseToday(h); } // tuning.md §7.9 the kite in today; brief 030 the walk-in in today // brief 027: only a run with the fight lab on adds bytes
+            if (g.Range) g.HashRange(h); // brief 029: only a run on the fight range adds bytes
             g.HashRounds(h); // brief 022: no bytes unless the round is played // brief 018: no bytes until someone boards, a blocker is picked or the car leaves // brief 013: no bytes until a takedown, a downed guard's mark, an alarm or a marked foe
             return h.V;
         }

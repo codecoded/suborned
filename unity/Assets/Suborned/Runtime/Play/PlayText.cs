@@ -51,6 +51,8 @@ namespace Suborned.Play
         /// <summary>The status pill's marks (briefing.timeline): m:ss, label, and whether the cell knows it before it happens.</summary>
         public readonly List<(string at, string label, bool known)> Timeline = new();
         public readonly Dictionary<string, string> Cell = new(), Speakers = new(), TargetNames = new(), TargetAbout = new();
+        /// <summary>Brief 031: the briefing's Heat word by band (briefing.heat: unknown, noticed, wanted, infamous).</summary>
+        public readonly Dictionary<string, string> Heat = new();
         public readonly Dictionary<string, ActionText> Actions = new();
         public readonly List<LockText> Locks = new();
         public readonly Dictionary<string, EventText> Events = new();
@@ -105,6 +107,7 @@ namespace Suborned.Play
         public string ObjTake = "Take [Vale] alive.", ObjBring = "Bring [Vale] out.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
         /// <summary>debrief.standing (Fable, brief 014): the line's form, the band names, the cause words.</summary>
         public string StandingLine = "{district}: {band} {to}, was {from}. {cause}"; public readonly Dictionary<string, string> StandingBands = new(), StandingCauses = new();
+        /** brief 030 (no plate): Fable's one hint, less.hint.firstAct ("Right-click to act."); "" until text.json carries it */ public string FirstActHint = "";
         public float ObjShowS = 6, FeedS = 4, FeedDedupeS = 10, BubbleS = 3, HintShowS = 6, HintReturnS = 20; public int FeedMax = 2, BubbleMax = 2, CityBeats = 3, HintMaxShows = 2;
 
         // ---------------------------------------------------------------- reading
@@ -139,6 +142,7 @@ namespace Suborned.Play
                 if (b.Opt("hints") is JNode h) foreach (var kv in h.Entries) Hints.Add(kv.Value.Str());
                 if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) { Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool())); if (S(x, "short") is string sh) TimelineShort[x["at"].Str()] = sh; }
                 if (b.Opt("cell") is JNode ce) foreach (var kv in ce.Entries) Cell[kv.Key] = kv.Value.Str();
+                if (b.Opt("heat") is JNode ht) foreach (var kv in ht.Entries) if (kv.Value.Kind == JKind.Str) Heat[kv.Key] = kv.Value.Str(); // brief 031
             }
             if (n.Opt("targets") is JNode ts) foreach (var kv in ts.Entries) { TargetNames.TryAdd(kv.Key, S(kv.Value, "name") ?? kv.Key); TargetAbout[kv.Key] = S(kv.Value, "about") ?? ""; }
             if (n.Opt("actions") is JNode acts)
@@ -252,7 +256,7 @@ namespace Suborned.Play
             if (l.Opt("briefing") is JNode br) BriefGoal = S(br, "goal") ?? BriefGoal;
             if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
             if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }
-            if (l.Opt("hint") is JNode hn) { HintShowS = F(hn, "showSeconds", HintShowS); HintReturnS = F(hn, "returnSeconds", HintReturnS); HintMaxShows = (int)F(hn, "maxShows", HintMaxShows); }
+            if (l.Opt("hint") is JNode hn) { HintShowS = F(hn, "showSeconds", HintShowS); HintReturnS = F(hn, "returnSeconds", HintReturnS); HintMaxShows = (int)F(hn, "maxShows", HintMaxShows); if (hn.Opt("firstAct") is JNode fa && fa.Kind == JKind.Str) FirstActHint = fa.Str(); }
             if (l.Opt("price") is JNode pr)
             {
                 if (pr.Opt("order") is JNode po) PriceOrder.AddRange(po.Strs());
@@ -421,6 +425,15 @@ namespace Suborned.Play
 
         readonly Dictionary<string, int> uses = new();
         public void ResetUses() { uses.Clear(); sceneUses.Clear(); }
+
+        /// <summary>The line Pick would give next for a query, without using it (brief 032: the scene shows an arrive the chatter left unsaid,
+        /// as pickLine would choose it; nothing advances, so the run's later lines are the same with or without the scene).</summary>
+        public string PeekLine(Query q)
+        {
+            var e = Lookup(q); if (e == null || e.Lines.Count == 0) return null;
+            var key = LineKey(q); uses.TryGetValue(key, out var n);
+            return e.Lines[PickIndex(Seed, key, n, e.Lines.Count)];
+        }
 
         /// <summary>A line for a query, or null; each use of a key advances its count, so a run's n-th use always shows the same variant.</summary>
         public string Pick(Query q)

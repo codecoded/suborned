@@ -447,6 +447,19 @@
     -0.1,
     0.12
    ]
+  },
+  {
+   "name": "run_lean",
+   "author": "tools/figures/author_clips.py",
+   "kind": "testbed",
+   "donor": "Anim/mixamo_library/Running__c9c610bc.fbx",
+   "glb": "testbed-art/players/enforcer/web/enforcer_G2.web.glb",
+   "clip": "run",
+   "frames": 25,
+   "loop": true,
+   "use": "the cell's run (double-click): a leaning sprint, longer stride and flight than run (the old web testbed's run, retargeted); keep run for the crowd and panic",
+   "loco": true,
+   "feet": true
   }
  ]
 }

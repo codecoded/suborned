@@ -13,7 +13,7 @@ os.makedirs(f'{out}/Clips', exist_ok=True)
 for c in spec['clips']:
     if 'author' in c:   # posed here, on the donor clip's skeleton (tools/figures/author_clips.py); the donor is the recorded source
         os.makedirs(f'{out}/.authored', exist_ok=True); src = f"{out}/.authored/{c['name']}.fbx"
-        (author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make)(c, STORE, src); c['src'] = c['donor']
+        (author_clips.make_testbed if c.get('kind') == 'testbed' else author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make)(c, STORE, src); c['src'] = c['donor']
     else:
         src = c['src'] if os.path.isabs(c['src']) else os.path.join(STORE, c['src'])
     clean(); new = load(src); arm, _ = rigs(new)
@@ -36,6 +36,7 @@ for c in spec['clips']:
     rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
+    if 'glb' in c: rows[-1]['retargetedFrom'] = c['glb'] + ':' + c['clip']; rows[-1]['retargetedFromSha256'] = hashlib.sha256(open(os.path.join(STORE, '..', c['glb']), 'rb').read()).hexdigest()
     if 'pin' in c: rows[-1]['pinnedTo'] = c['pin']; rows[-1]['pinnedToSha256'] = hashlib.sha256(open(os.path.join(STORE, c['pin']), 'rb').read()).hexdigest(); rows[-1]['seat'] = c.get('seat')
     print('CLIP', name, rows[-1]['frames'], 'f', 'speed', nat)
 json.dump(rows, open(f'{out}/Clips/clips.rows.json', 'w'), indent=1)

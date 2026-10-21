@@ -1,0 +1,9 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "speech", "x": 469, "y": 623, "w": 215, "h": 37, "text": "I hear you're in a spot."},
+  {"kind": "image", "x": 930, "y": 985, "w": 60, "h": 14, "text": "scene beats"},
+  {"kind": "image", "x": 1810, "y": 973, "w": 70, "h": 28, "text": "skip keycap"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

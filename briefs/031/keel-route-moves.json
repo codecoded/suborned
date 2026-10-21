@@ -1,0 +1,347 @@
+{
+ "schema": "keel.route-moves/1",
+ "from": "Keel, 2026-10-20",
+ "engine": "suborned.sim/0.14.0 (briefs 031 + 030 + tuning.md §7.9 kite and 16 m sidearm + §7.10 police in cover answer fire)",
+ "note": "One re-record for all three changes. before = the engine before brief 031 (the attention clock off: brief 031's L2 and Watch change no recorded result); now = the working tree. Played headless: suborned-sim play <route> --json. Routes not listed play as before.",
+ "unchanged": [
+  "loud",
+  "loud-fast",
+  "fail-vale-dead",
+  "fail-entry-seen-patrol",
+  "withdraw",
+  "loud-left-downed",
+  "loud-left-standing",
+  "careless-takedown-seen-crowd"
+ ],
+ "moves": [
+  {
+   "route": "route-a",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 4:36.4 T5 A1",
+   "now": "failure:rivals-reach-vale 4:35.0 T5 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)",
+    "brief 030: auto-holster 4 s after a fight (Board waits for the holster; a holstered Enforcer meets the rivals)"
+   ]
+  },
+  {
+   "route": "route-a-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 4:30.2 T5 A1",
+   "now": "success 4:31.7 T5 A1",
+   "why": [
+    "brief 030: auto-holster 4 s after a fight (Board waits for the holster; a holstered Enforcer meets the rivals)"
+   ]
+  },
+  {
+   "route": "route-a-pressure",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 3:52.8 T7 A1",
+   "now": "failure:rivals-reach-vale 3:43.5 T7 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-a-pressure-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 3:41.8 T7 A1",
+   "now": "failure:rivals-reach-vale 3:37.5 T7 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-b",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 7:54.5 T3 A0",
+   "now": "failure:rivals-reach-vale 7:49.8 T3 A0",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-b-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 7:48.2 T3 A0",
+   "now": "failure:rivals-reach-vale 7:43.8 T3 A0",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-b-block",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 7:54.5 T4 A0",
+   "now": "failure:rivals-reach-vale 7:49.8 T4 A0",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-b-block-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 7:48.2 T4 A0",
+   "now": "failure:rivals-reach-vale 7:43.8 T4 A0",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-g",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 4:26.2 T6 A1",
+   "now": "failure:rivals-reach-vale 4:16.8 T6 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-g-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 4:15.2 T6 A1",
+   "now": "failure:rivals-reach-vale 4:10.8 T6 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-g-fast",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 3:58.8 T6 A1",
+   "now": "failure:rivals-reach-vale 3:58.4 T6 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)",
+    "brief 031: the Enforcer lingers within 3 m of the guard: wary, the knockout fails"
+   ]
+  },
+  {
+   "route": "route-g-fast-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 3:47.8 T6 A1",
+   "now": "failure:rivals-reach-vale 3:52.4 T6 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)",
+    "brief 031: the Enforcer lingers within 3 m of the guard: wary, the knockout fails"
+   ]
+  },
+  {
+   "route": "route-g-kill",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 5:53.2 T2 A1",
+   "now": "failure:rivals-reach-vale 5:43.8 T2 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "route-g-kill-board",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 5:42.2 T2 A1",
+   "now": "failure:rivals-reach-vale 5:37.8 T2 A1",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "loud-fight",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 4:42.2 T9 A2",
+   "now": "success 4:42.1 T10 A2",
+   "why": [
+    "kite+16 m: small change in the loud fight"
+   ]
+  },
+  {
+   "route": "fail-vale-leaves",
+   "expects": {
+    "outcome": "failure",
+    "fail": "vale-leaves"
+   },
+   "before": "failure:vale-leaves 8:30.0 T1 A0",
+   "now": "failure:vale-leaves 8:30.0 T1 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "fail-rivals-reach-vale",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "before": "failure:rivals-reach-vale 6:10.0 T2 A0",
+   "now": "failure:rivals-reach-vale 6:10.0 T2 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "fail-district-seals",
+   "expects": {
+    "outcome": "failure",
+    "fail": "sealed"
+   },
+   "before": "failure:sealed 5:05.0 T13 A2",
+   "now": "failure:sealed 5:05.0 T9 A2",
+   "why": [
+    "brief 030: auto-holster 4 s after a fight (Board waits for the holster; a holstered Enforcer meets the rivals)"
+   ]
+  },
+  {
+   "route": "fail-enforcer-down",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "before": "failure:enforcer-down 1:44.0 T20 A2",
+   "now": "failure:enforcer-down 1:35.4 T12 A2",
+   "why": [
+    "brief 030: auto-holster 4 s after a fight (Board waits for the holster; a holstered Enforcer meets the rivals)"
+   ]
+  },
+  {
+   "route": "fail-entry-seen-guard",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard"
+   },
+   "before": "failure:entry-seen-guard 3:52.9 T2 A0",
+   "now": "failure:entry-seen-guard 3:52.9 T2 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "fail-entry-seen-camera",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera"
+   },
+   "before": "failure:entry-seen-camera 4:42.9 T3 A0",
+   "now": "failure:entry-seen-camera 4:42.9 T3 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "fail-take-seen-camera",
+   "expects": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera"
+   },
+   "before": "failure:abduction-seen-camera 6:10.0 T1 A0",
+   "now": "failure:abduction-seen-camera 6:10.0 T1 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "fight-loud-enforcer-down",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "before": "failure:enforcer-down 4:10.6 T10 A2",
+   "now": "failure:enforcer-down 4:11.7 T9 A2",
+   "why": [
+    "kite+16 m: small change in the loud fight"
+   ]
+  },
+  {
+   "route": "fight-safe-rivals-reach-vale",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "before": "failure:rivals-reach-vale 7:35.8 T3 A0",
+   "now": "failure:rivals-reach-vale 7:35.8 T3 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "careless-takedown-seen-camera",
+   "expects": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera"
+   },
+   "before": "failure:entry-seen-camera 2:37.0 T1 A0",
+   "now": "failure:entry-seen-camera 2:37.0 T1 A1",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)"
+   ]
+  },
+  {
+   "route": "careless-body-found",
+   "expects": {
+    "outcome": "failure",
+    "fail": "sealed"
+   },
+   "before": "failure:sealed 5:37.0 T8 A2",
+   "now": "failure:enforcer-down 4:09.5 T2 A2",
+   "why": [
+    "kite+16 m: the cell can no longer hold the officers off from beyond their reach: enforcer-down before the seal (expected sealed)"
+   ]
+  },
+  {
+   "route": "careless-reporter-not-stopped",
+   "expects": {
+    "outcome": "success"
+   },
+   "before": "success 7:58.5 T3 A2",
+   "now": "failure:rivals-reach-vale 7:49.8 T3 A2",
+   "why": [
+    "kite+16 m: the final fight (tuning.md §7.9: the 16 m sidearm and the kite response): the recorded posts by the car fire from 16-25 m and no longer break the crew; re-site the three closer (inside 15 m, at cover) as the scenarios do (N11, N11b: FightItOutAll)"
+   ]
+  },
+  {
+   "route": "careless-guard-left-door-held",
+   "expects": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale"
+   },
+   "before": "failure:rivals-reach-vale 8:30.0 T6 A1",
+   "now": "failure:entry-seen-guard 2:39.6 T2 A2",
+   "why": [
+    "brief 031: loiter report raises Alert (see brief 031 table)",
+    "brief 031: the Enforcer lingers within 3 m of the guard: wary, the knockout fails"
+   ]
+  }
+ ],
+ "tuning-7.10": {
+  "from": "Keel, 2026-10-20",
+  "result": "no recorded route moves: all 38 scripts in contracts/missions/handover/routes (your files as of 22:59, the two careless twins included) play identically with §7.10 on and off. Re-record against 0.14.0 and nothing changes for it.",
+  "checked": "out/b031/routes-710on.txt vs routes-710off.txt (the same engine with rules 1, 2, 4 gated off by a scratch switch, since removed)"
+ }
+}

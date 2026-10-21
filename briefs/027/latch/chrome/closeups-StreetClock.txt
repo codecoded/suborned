@@ -1,0 +1,2 @@
+CloseUps from 11338 placed kit instances, nearest the block at (-150.00, 0.00, -235.00)
+street StreetClock: DK_StreetClock at (-14.80, 0.18, -64.00) (218 m from the block)

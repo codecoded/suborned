@@ -1,0 +1,100 @@
+Suture's retest3 policy set (briefs/027/suture/probe/retest3/policies.all.txt, 3,792 L3/L1c policies), engine 0.17.0 (baseline copy out/keel039/base, built before the first edit; its sweeps are out/keel038/sweep-now-*, identical to Motive's s13 base) against 0.18.0 (tuning.md §13.1 the pair's count in today, §13.2 hold never follows, §13.4 lab stances three, and a press in the tick a lock's target falls takes that agent), both on the baseline contracts (out/keel039/rootC: the 0.18.0 rulebook and lab preset only). No policy uses the trigger, so §13.2 and the re-lock move no row: today's moves are §13.1's, the lab presets' §13.4's (the lab already had the pair's count). today matches Motive's PAIR=1 sweep and lab his lab3 sweep line for line. Cheap = a win with < 40 % health lost. Every chunk: 'every run replays identically from its order log'.
+
+today: 3792 policies; wins 165 -> 156 (66 new, 75 lost); cheap 8 -> 4 (4 newly cheap)
+  newly cheap  L3:km10-fm5-step60-focus-norivals-at208-runkite            failure enforcer-down 72 % -> success 11 %, 0 down, T 18, Standing 2→-3
+  newly cheap  L3:km10-fm5-step60-focus-norivals-enfgo-runkite            failure enforcer-down 66 % -> success 22 %, 0 down, T 18, Standing 2→-3
+  newly cheap  L3:km10-fm20-step200-norivals-at208-runkite                failure enforcer-down 61 % -> success 33 %, 0 down, T 16, Standing 2→-3
+  newly cheap  L3:km30-fm5-step300-norivals-at220-runkite                 success 66 % -> success 38 %, 0 down, T 17, Standing 2→-2
+
+lab: 3792 policies; wins 125 -> 111 (12 new, 26 lost); cheap 13 -> 12 (5 newly cheap)
+  newly cheap  L3:km30-fm15-step250-norivals-enfgo-carfree-runkite        success 55 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm20-step250-norivals-enfgo-carfree-runkite         failure enforcer-down 77 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm5-step300-blk-norivals-at208-runkite              failure enforcer-down 72 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  newly cheap  L3:km15-fm20-step250-focus-norivals-at208-runkite          failure enforcer-down 100 % -> success 38 %, 0 down, T 22, Standing 2→-3
+  newly cheap  L3:km10-fm10-step300-norivals-enfgo-carfree-runkite        success 44 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm15-step300-norivals-enfgo-carfree-runkite        22 % -> success 22 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm20-step300-norivals-enfgo-carfree-runkite        27 % -> success 27 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km5-fm5-step300-norivals-enfgo-carfree-runkite          38 % -> success 33 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:tight-step400-blk-norivals-enfgo-runkite                38 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km5-fm10-step300-norivals-enfgo-carfree-runkite         38 % -> success 33 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm5-step400-focus-norivals-enfgo-runkite           33 % -> success 33 %, 0 down, T 22, Standing 2→-3
+  still cheap  L3:tight-step400-blk-norivals-at208-runkite                38 % -> success 33 %, 0 down, T 21, Standing 2→-2
+
+lab-field-on: 3792 policies; wins 506 -> 494 (85 new, 97 lost); cheap 59 -> 62 (19 newly cheap)
+  newly cheap  L3:tight-step400-blk-norivals-carfree-runkite              failure sealed 27 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km30-fm15-step250-norivals-enfgo-carfree-runkite        success 55 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:tight-step400-norivals-carfree-runkite                  failure sealed 27 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm5-step300-blk-norivals-at208-runkite              success 50 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:tight-step400-blk-norivals-enfgo-carfree-runkite        failure sealed 27 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm10-step300-norivals-hold-runkite                  failure sealed 38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km30-fm15-step250-blk-norivals-at208-runkite            success 66 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm5-step300-norivals-at208-runkite                  failure sealed 50 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km10-fm10-step300-norivals-enfgo-carfree-runkite        success 44 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm20-step250-norivals-enfgo-carfree-runkite         success 88 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km20-fm10-step250-norivals-enfgo-runkite                success 50 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km20-fm10-step250-norivals-at196-runkite                success 50 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:tight-step400-norivals-enfgo-carfree-runkite            failure sealed 27 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm5-step300-norivals-at196-runkite                  success 44 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km20-fm10-step250-blk-norivals-at208-runkite            success 50 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm5-step300-norivals-enfgo-runkite                  success 44 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km5-fm5-step300-norivals-at220-runkite                  failure sealed 44 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:tight-step300-focus-norivals-at216-runkite              failure enforcer-down 88 % -> success 38 %, 1 down, T 28, Standing 2→-3
+  newly cheap  L3:tight-step300-focus-norivals-at212-runkite              failure enforcer-down 88 % -> success 38 %, 1 down, T 28, Standing 2→-3
+  still cheap  L3:km10-fm15-step300-norivals-enfgo-carfree-runkite        22 % -> success 22 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm20-step300-norivals-at220-runkite                27 % -> success 27 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km15-fm20-step250-blk-norivals-at208-runkite            27 % -> success 27 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm20-step300-norivals-enfgo-carfree-runkite        27 % -> success 27 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm20-step300-norivals-at208-runkite                27 % -> success 27 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm15-step300-blk-norivals-at208-runkite            38 % -> success 33 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm5-step400-focus-norivals-enfgo-runkite           33 % -> success 33 %, 0 down, T 22, Standing 2→-3
+  still cheap  L3:km5-fm10-step300-norivals-enfgo-carfree-runkite         38 % -> success 33 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km5-fm5-step300-norivals-enfgo-carfree-runkite          38 % -> success 33 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm15-step300-norivals-at220-runkite                38 % -> success 38 %, 0 down, T 17, Standing 2→-2
+  still cheap  L3:km10-fm5-step60-blk-norivals-enfgo-runkite              38 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km15-fm20-step250-norivals-at208-runkite                38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km15-fm20-step250-norivals-at196-runkite                38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:tight-step60-focus-norivals-enfgo-carfree-kite          38 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:km10-fm5-step60-norivals-carfree-runkite                38 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km5-fm10-step300-norivals-at208-runkite                 38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm10-step300-blk-norivals-at208-runkite            38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:tight-step100-norivals-carfree-runkite                  38 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:km15-fm20-step250-norivals-at220-runkite                38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm15-step300-blk-norivals-at208-runkite            38 % -> success 38 %, 0 down, T 17, Standing 2→-2
+  still cheap  L3:km10-fm5-step100-focus-norivals-enfgo-runkite           38 % -> success 38 %, 0 down, T 22, Standing 2→-3
+  still cheap  L3:tight-step100-blk-norivals-carfree-runkite              38 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:tight-step60-focus-norivals-carfree-kite                38 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:km10-fm5-step60-norivals-enfgo-carfree-runkite          38 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km5-fm10-step300-norivals-at220-runkite                 38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm20-step300-blk-norivals-at208-runkite            38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm5-step60-blk-norivals-at208-runkite              38 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km5-fm10-step300-norivals-at196-runkite                 38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm5-step60-blk-norivals-carfree-runkite            38 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm15-step300-norivals-enfgo-runkite                38 % -> success 38 %, 0 down, T 17, Standing 2→-2
+  still cheap  L3:km10-fm5-step100-focus-norivals-at208-runkite           38 % -> success 38 %, 0 down, T 22, Standing 2→-3
+  still cheap  L3:km10-fm5-step60-blk-norivals-enfgo-carfree-runkite      38 % -> success 38 %, 1 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm5-step100-blk-norivals-enfgo-kite                38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km20-fm20-step250-norivals-enfgo-carfree-runkite        38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm5-step100-blk-norivals-at208-kite                38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km15-fm20-step250-norivals-enfgo-runkite                38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm20-step300-blk-norivals-at208-runkite            38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:tight-step100-blk-norivals-enfgo-carfree-runkite        38 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:tight-step100-norivals-enfgo-carfree-runkite            38 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:km5-fm10-step300-norivals-enfgo-runkite                 38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km10-fm20-step300-norivals-enfgo-carfree-runkite        38 % -> success 38 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm15-step300-norivals-at196-runkite                38 % -> success 38 %, 0 down, T 17, Standing 2→-2
+  still cheap  L3:km30-fm15-step300-norivals-at208-runkite                38 % -> success 38 %, 0 down, T 17, Standing 2→-2
+
+lab-snap-off: 3792 policies; wins 68 -> 65 (10 new, 13 lost); cheap 9 -> 12 (5 newly cheap)
+  newly cheap  L3:km15-fm20-step250-norivals-enfgo-carfree-runkite        failure enforcer-down 94 % -> success 16 %, 0 down, T 21, Standing 2→-2
+  newly cheap  L3:km10-fm5-step400-focus-norivals-carfree-runkite         failure sealed 50 % -> success 33 %, 1 down, T 22, Standing 2→-3
+  newly cheap  L3:km10-fm5-step400-focus-norivals-enfgo-carfree-runkite   failure enforcer-down 72 % -> success 33 %, 1 down, T 22, Standing 2→-3
+  newly cheap  L3:km10-fm5-step400-focus-norivals-at208-runkite           success 44 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  newly cheap  L3:km10-fm5-step400-focus-norivals-enfgo-runkite           success 44 % -> success 38 %, 1 down, T 22, Standing 2→-3
+  still cheap  L3:km5-fm20-step250-norivals-enfgo-carfree-runkite         22 % -> success 22 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km30-fm10-step250-norivals-enfgo-carfree-runkite        27 % -> success 27 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:tight-step400-focus-norivals-enfgo-runkite              27 % -> success 27 %, 0 down, T 22, Standing 2→-3
+  still cheap  L3:km10-fm20-step300-norivals-enfgo-carfree-runkite        27 % -> success 27 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:km20-fm20-step250-norivals-enfgo-carfree-runkite        27 % -> success 27 %, 0 down, T 21, Standing 2→-2
+  still cheap  L3:tight-step400-focus-norivals-at208-runkite              27 % -> success 27 %, 0 down, T 22, Standing 2→-3
+  still cheap  L3:km5-fm15-step300-norivals-enfgo-carfree-runkite         33 % -> success 33 %, 1 down, T 21, Standing 2→-2
+

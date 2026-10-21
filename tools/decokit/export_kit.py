@@ -183,11 +183,25 @@ def copy_textures():
     return {n: (f, nm, mk) for n, f, nm, mk in rows}
 
 
+def copy_ground():
+    """The budgeted ground set (ground_tex.py): its PNGs and .metas into Textures/, the role table as ground.json beside the manifest. Run `python3 tools/decokit/ground_tex.py` first
+    (run.ts does); a stale or missing set stops here rather than export ground materials with no textures."""
+    src = mats.GROUND_DIR
+    if not (src / "ground.json").exists():
+        raise SystemExit(f"[DK-EXPORT] no ground set in {src}: run python3 tools/decokit/ground_tex.py")
+    out = DST / "Textures"
+    out.mkdir(parents=True, exist_ok=True)
+    for f in sorted(p for g in ("ground_*", "robot_*", "cabinet_*", "pavilion_*", "fountain_*") for p in src.glob(g) if p.suffix != ".json"):
+        shutil.copy2(f, out / f.name)
+    shutil.copy2(src / "ground.json", DST / "ground.json")
+
+
 def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     _fixed_fbx_header()
     unity_mats.legacy_mats()  # needed for the .mat set: fail before building, not after
     reg = kit.load()
+    mats.register_robot_enamels()
     only = [n for n in (ARGS[ARGS.index("--only") + 1].split(",") if "--only" in ARGS else []) if n]
     cats = [c for c in (ARGS[ARGS.index("--cats") + 1].split(",") if "--cats" in ARGS else []) if c]
     if cats:
@@ -212,7 +226,7 @@ def main():
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
         if len(objs) > 1:
             row["parts"] = [nm for nm, _ in full[1:]]
-        if (tris >= LOD_SPEC[0][3] or kit.REGISTRY[n].get("near")) and not NO_LODS:
+        if (tris >= LOD_SPEC[0][3] or kit.REGISTRY[n].get("near")) and not NO_LODS and not kit.REGISTRY[n].get("nolod"):
             row["lods"] = make_lods(n, cat, src, srcs, tris)
         if not NO_LODS:  # a level this piece no longer takes (slimmed under the floor) leaves no file from an earlier build
             for tag, *_ in LOD_SPEC:
@@ -230,6 +244,7 @@ def main():
         for b in objs:
             bpy.data.meshes.remove(b.data)
     tex = copy_textures()
+    copy_ground()
     mats.export_json(DST / "decokit_materials.json")
     table = json.loads((DST / "decokit_materials.json").read_text())
     for row in table["materials"]:

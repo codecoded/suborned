@@ -107,13 +107,16 @@ public class GoalWatchTests
     }
 
     [Fact]
-    public void ContainersRequireScoutAndAnActualContainerTarget()
+    public void ContainersAreWatchedByAnyAgentFromItsOwnReachAndNeedAnActualContainerTarget()
     {
+        // brief 031 (Sky 2026-10-20): every agent Watches, a container included; the reach is the agent's (was: the Scout's alone)
         var g = BesideBin(); var id = Bin(g).Id;
         foreach (var op in new[] { "fixer", "tech", "enforcer" })
         {
-            Assert.Equal("only-scout", g.LearnQuery(op, "watch", id).code);
-            Assert.Equal("only-scout", Order(g, "watch", id, op).code);
+            var o = g.OpOf(Op.Parse(op));
+            Assert.False(G.Within(o.Pos, Bin(g).Stand, g.R.WatchReachCm(o.Id))); // still at the car, beyond its reach
+            Assert.Equal("too-far", g.LearnQuery(op, "watch", id).code);
+            Assert.Equal("too-far", Order(g, "watch", id, op).code);
         }
         foreach (var target in new[] { "no-such-container", g.S.Stashes.First(s => s.Kind == "door").Id })
         {

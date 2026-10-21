@@ -24,6 +24,10 @@ namespace Suborned.Sim
     public sealed class Site
     {
         public readonly JNode Root;
+        /// <summary>The site's mission: "handover", or "range", the fight range (brief 029, sim/data/range*.site.json from tools/sim/range.ts), whose
+        /// Handover keys are parked in the wings and never read (Game.Range).</summary>
+        public readonly string Mission = "";
+        public bool IsRange => Mission == "range";
         public readonly Grid Grid;
         public readonly List<Occluder> Occluders = new List<Occluder>();
         readonly Dictionary<string, Pt> at = new Dictionary<string, Pt>(StringComparer.Ordinal);
@@ -107,6 +111,8 @@ namespace Suborned.Sim
         }
         public readonly int RivalsArrive, Chime, DriverLast, ValeExits, ValeAtCar, Over, BlockMoveS, BlockHoldS; // the guard's visit: the summons' grid walk and the rulebook's stay (Game.VisitWalkTicks), never the site
         public readonly long Purse;
+        /// <summary>Brief 031: the cell's Heat at the mission's start as the mission gives it (mission.json start.heat, via the site); 0 when absent.</summary>
+        public readonly int Heat;
         /// <summary>How the public sees the mission's rivals (mission.json rivals.public: menace or neutral; Sky 2026-10-16, fight.public); "" when the
         /// mission names none, and the rulebook's fight.rivalsPublic stands.</summary>
         public readonly string RivalsPublic = "";
@@ -211,9 +217,10 @@ namespace Suborned.Sim
         {
             Root = JNode.Parse(json, "site");
             var r = Root;
-            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover", "drive");
+            r.Only("schema", "mission", "frame", "from", "grid", "occluders", "places", "cameras", "patrol", "guard", "vale", "car", "rivals", "security", "getaway", "fight", "schedule", "purse", "purseSrc", "arms", "armsSrc", "cast", "cover", "drive", "heat", "heatSrc");
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
-            if (r["mission"].Str() != "handover") throw new FormatException("only the Handover plays (brief 011)");
+            Mission = r["mission"].Str();
+            if (Mission != "handover" && Mission != "range") throw new FormatException("only the Handover plays (brief 011), and the fight range (brief 029)");
             r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "src");
             Grid = new Grid(r["grid"]);
             // brief 023 (engine 0.8.2, rulebook car.drive): where a car may be, on the walk grid's window and cells. Required: no car moves without it
@@ -288,6 +295,7 @@ namespace Suborned.Sim
             BlockMoveS = Sec("blockMoveS", 1); BlockHoldS = Sec("blockHoldS", 1);
             if (!(DriverLast < ValeExits && ValeExits < ValeAtCar && ValeAtCar < Over)) throw new FormatException("site schedule: driverLast < valeExits < valeAtCar < over");
             Purse = r["purse"].Long(); if (Purse < 0 || Purse > 1_000_000_000) throw new FormatException("site purse is out of range");
+            if (r.Opt("heat") is JNode ht) { Heat = ht.Int(); if (Heat < 0 || Heat > 1000) throw new FormatException("site heat is out of range (0..1000)"); r["heatSrc"].Str(); } // brief 031: mission.json start.heat
             var cv = r["cover"]; cv.Only("from", "sha256", "src", "points", "blockers", "refuge");
             foreach (var f in cv["refuge"].Items)
             {

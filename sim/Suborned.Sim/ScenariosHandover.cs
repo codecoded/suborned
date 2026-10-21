@@ -19,6 +19,8 @@ namespace Suborned.Sim
         // forecourt, where Waymark's c022 routes park him (route G, loud); was (4850, -2300) beside the old north door. The entrance
         // camera, which now looks south along the face, sees it unless looped; the patrol's sweep crosses it.
         static readonly Pt BesideDoor = new Pt(6950, -4250);
+        /// <summary>Waymark's c025 Enforcer wait on the forecourt (brief 031: out of every clock-keeping watcher's sight, more than 3 m from the guard).</summary>
+        static readonly Pt Forecourt = new Pt(5650, -4750);
         // posts covering the service lane exit, 10 m down the lane from where the response unit stops (motive-fights.md §2.9: the cell covers the exit).
         // Re-sited 2026-10-19: the service door is on the east face, in a quiet yard the unit enters from the north; the posts are at
         // its south end. Were (62.5, -53) and (60, -53), down the old lane west of the Office.
@@ -279,10 +281,13 @@ namespace Suborned.Sim
             Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; success. The Enforcer hit, Raised.", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.Send(Enf, "d:Office approach")));
+                // brief 031: the Enforcer no longer waits at the Office approach while the Tech works (the guard, the entrance camera and the
+                // sweep would report him loitering): he sets off once the reroute is under way, so he arrives as the patrol leaves
+                r.To(r.Send(Tech, "cabinet"));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.Is(g.PatrolWatching(r.At("d:Office entrance")) || g.SweepSeesEntrance(g.Tick + T(45)), "the patrol covers the door on its sweep");
                 r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.To(r.Send(Enf, "d:Office approach"));
                 r.Is(g.LoopOn, "the Tech holds the loop while diverting the patrol");
                 r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "the patrol is away");
                 r.Fire(Enf, GuardR);
@@ -542,7 +547,7 @@ namespace Suborned.Sim
             Add("S22", "386", "Gating: no action at a distance; an unknown person isn't callable; the Fixer and the Scout must stand beside Inez; a turned contact is callable.", r =>
             {
                 var g = r.G;
-                r.Refused(Scout, "watch", Inez, "a distant person has no interaction");
+                r.Refused(Fixer, "watch", Inez, "a distant person has no interaction (brief 031: every agent watches, the Fixer from 12 m; the Scout's 30 m reaches Inez from the car)");
                 r.Is(!g.CanCall(Inez), "an unknown person is not a contact to call");
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
@@ -554,7 +559,9 @@ namespace Suborned.Sim
                 HelpUntilTurned(r, Inez);
                 r.Is(g.CanCall(Inez), "a turned contact can be called");
                 r.To(r.Send(Enf, "d:Courtyard"));
-                r.Refused(Enf, "fire", GuardR, "being near Inez does not reach the guard (carbine max, a clear line)");
+                // brief 030 (weapons.close): a fire order out of reach now walks into range, so the gate is the walk's: none, or a long one
+                var fp = g.PreviewFire(OpId.Enforcer, GuardR);
+                r.Is(fp.Refused.Length > 0 || (fp.Walk && fp.WalkS > 0), $"being near Inez does not reach the guard: no shot from here, only a walk into range first ({(fp.Refused.Length > 0 ? fp.Refused : $"walks {fp.WalkS} s")})");
             });
 
             Add("S23", "402", "Ask cold: refused and remembered (+1 T), can't be repeated; routine alone doesn't unlock Help; after Listen, each Help at +$10,000 and +1 T.", r =>
@@ -689,12 +696,19 @@ namespace Suborned.Sim
                 r.Send(Enf, "d:Getaway bay");
                 r.FightItOut(120, Scout, Fixer, Tech);
                 r.Extract();
-                r.Eq(g.Result, Outcome.Success, "the loud route wins through the fight");
+                // Retired as a win (Sky 2026-10-21 picked Motive's A, tuning.md §10.1, §10.3): both sides fire on the move in today, so loud may lose at
+                // routine security, "a last resort" (§05). The v0.24 loud reference (a win at 5:00.3 / 4:23.5) is retired, not fixed: this scripted
+                // cell loses at level 1 (engine 0.15.0: three agents down, sealed at 5:48.5). The assert is §10.3's: a heavy debrief or a failure,
+                // sealed or the Enforcer down; §7.1's "at least one loud row wins heavy" is no longer a done-check. The win's own lines (car seen
+                // leaving) are checked only when it wins.
+                bool won = g.Result == Outcome.Success;
+                r.Is(won || g.FailCode == "sealed" || g.FailCode == "enforcer-down", $"§10.3 (Sky's A): the loud fight ends in a heavy debrief or a failure, sealed or the Enforcer down ({g.Result} {g.FailCode})");
                 var d = Debrief.Of(g);
                 r.Eq(d.FightBranch, "loud", "the debrief names the loud fight");
                 r.Is(g.Log.Exists(l => l.Code == "ai.join"), "the response unit on the street joins the loud fight (Pulse §3.3)");
                 r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick)), "police hold their stand: none left it (Pulse §3.2)");
                 r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles, "the fight took its time");
+                if (!won) return;
                 // brief 018 §10 (Pulse): a final-fight officer sees the car go within the pistol's 25 m on a clear line: officer-2 at his stand, 19.4 m
                 r.Is(g.CarSeenBy.StartsWith("officer-", StringComparison.Ordinal) && g.Ledger.Exists(x => x.cause == "car-seen:" + g.CarSeenBy && x.delta == g.R.WitnessTrail), $"seen leaving: +1 T, by {g.CarSeenBy}");
                 r.Is(d.Inv.Hunted.Contains("cell-car") && d.Next.Lines.Exists(l => l.Line == "car-seen"), "the car hunted; the debrief's car-seen line");
@@ -1020,10 +1034,15 @@ namespace Suborned.Sim
             StandingCases(); // brief 014
             RepeatCases(); // Sky 2026-10-18: a Watch or Listen that teaches nothing more is refused
             TechWatchCases(); // Sky 2026-10-18: the Tech watches the machines too
+            AttentionCases(); // brief 031: everyone watches, watchers notice loiterers
+            ContextualCases(); // brief 030: auto-holster, the walk-in to fire outside the lab
             RoundsCases(); // brief 022: the living café
             GetawayCases(); // brief 018 (Sky 2026-10-18): the hold, the blocker, Board and Go, left behind, seen leaving, custody
+            FireMoveCases(); // engine 0.15.0 (tuning.md §8, §9): fire on the move, anyone can be shot
+            CarCases(); // engine 0.16.0 (tuning.md §10.7): cars are targets
             FailCauseCases(); // Sky 2026-10-18: the fail camera's culprit, every way the Handover ends without Vale
             DriveCases(); // brief 025 (EXPERIMENTAL): the driven agent, and the recorded driven session (DP1)
+            FightLabCases(); // brief 027 (EXPERIMENTAL): the fight playground's mechanics, N140–N148
         }
     }
 }

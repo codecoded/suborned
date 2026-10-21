@@ -1,11 +1,11 @@
 // Street dressing that is not a plot edge: medians, malls, walks and the pier, the circus island ring, park lawns and the
 // edge bands of decks and concourses.
-import { type V, dist, lineDist, polyline } from '../../../plan/geom';
+import { type V, dist, lineDist, polyline, segDist } from '../../../plan/geom';
 import type { Ctx } from '../common';
 import { rng } from '../common';
 import { type Rect, areaOf, bbox, pointInRing } from '../geo';
 import type { DeckRec } from '../types';
-import { boxRing, samples9, tramBlock } from '../../../plan/street-zones';
+import { boxRing, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
 import type { Layer } from './kit';
 
 const WASH = (S: any) => S.trees.species.washingtonia, PHX = (S: any) => S.trees.species.phoenix;
@@ -74,6 +74,31 @@ export function dressCircus(ctx: Ctx, L: Layer): void {
   const rk = c.ring[1] + 1.2, arms = ctx.d.roads.filter(r => !r.gyratory);
   ring(rk, S.trees.spacing, (a, p) => { if (arms.some(r => lineDist(p, r.line) < r.w / 2 + 5)) return; L.add('tree', p, a, z, id, { size: [0.5, 0.5, WASH(S).top], variant: 'washingtonia', r: 1.5 }); }, 0.03);
   ring(c.ring[1] + 0.9, 48, (a, p) => { if (!arms.some(r => lineDist(p, r.line) < r.w / 2 + 5)) L.add('lamp', p, 0, z, id, { size: [0.3, 0.3, 8], variant: 'atom-ring', r: 0.6 }); }, 0.2);
+}
+
+/**
+ * The curved kiosk (catalogue.kiosk-pavilion, brief 026): one on each square, open plot or park whose free ground holds its room (footprint + 2 m clear all round), never on a civic
+ * square or a plot kept for a station bank. Placed before the lawn trees so they keep clear. The spot nearest the plot's edge that passes the layer's tests and has its whole room
+ * inside the plot, off every walk zone and clear of everything placed; it faces the nearest edge (the street or path side). Deterministic: a 1 m scan, ties by position.
+ */
+export function dressPavilions(ctx: Ctx, L: Layer): void {
+  const K = ctx.S.catalogue['kiosk-pavilion'] as { size: [number, number, number]; room: [number, number]; uses: string[] } | undefined; if (!K) return;
+  for (const pl of ctx.d.plots) {
+    if (!K.uses.includes(pl.use) || pl.civic || (pl as { bank?: unknown }).bank) continue;
+    const bb = bbox(pl.polyV), edge = `lawn/${pl.id}`, edges = pl.polyV.map((a, i) => [a, pl.polyV[(i + 1) % pl.polyV.length]!] as [V, V]), reach = Math.hypot(K.room[0], K.room[1]) / 2;
+    const toEdge = (q: V) => edges.map(([a, b]) => ({ d: segDist(q, a, b), a, b })).sort((x, y) => x.d - y.d)[0]!;
+    let best: { at: V; yaw: number; d: number } | undefined;
+    for (let x = Math.ceil(bb[0]); x <= bb[1]; x++) for (let y = Math.ceil(bb[2]); y <= bb[3]; y++) {
+      const q: V = [x, y], e = toEdge(q);
+      if (!pointInRing(q, pl.polyV) || e.d < Math.min(K.room[0], K.room[1]) / 2 || (best && e.d >= best.d)) continue;
+      // facing the nearest edge: the kiosk's front (+Z of the piece, yaw + 90 deg) looks to the street or path side
+      const m: V = [e.a[0] + (e.b[0] - e.a[0]) * 0.5, e.a[1] + (e.b[1] - e.a[1]) * 0.5], nx = (e.b[1] - e.a[1]), ny = -(e.b[0] - e.a[0]), sgn = Math.sign((m[0] - q[0]) * nx + (m[1] - q[1]) * ny) || 1;
+      const yaw = Math.atan2(ny * sgn, nx * sgn) - Math.PI / 2, room = boxRing(q, K.room[0], K.room[1], yaw);
+      if (!room.every(c => pointInRing(c, pl.polyV)) || walkBlock(ctx, samples9(room), edge) || !L.free(q, reach, true, 'kiosk-pavilion') || !L.fits('kiosk-pavilion', q, yaw, ctx.pav, edge)) continue;
+      best = { at: q, yaw, d: e.d };
+    }
+    if (best) L.add('kiosk-pavilion', best.at, best.yaw, ctx.pav, edge, { r: reach });
+  }
 }
 
 export function dressParks(ctx: Ctx, L: Layer): void {

@@ -106,6 +106,7 @@ namespace Suborned.Play
             scroll = GUILayout.BeginScrollView(scroll);
             GUILayout.Label($"<b>{(host.Following ? "Follow view" : "Overhead view")}</b>  yaw {host.Yaw:0}°  zoom {(cam ? cam.orthographicSize : 0):0.0}  scroll {host.LastScroll:0.###}", Rich);
             if (!host.Driving && GUILayout.Button(host.Following ? "Back to the overhead view" : "Follow view only (no control)")) host.FollowToggle();
+            FightSection(); // brief 027: the fight playground
 
             Head("Overhead");
             float z = cam ? cam.orthographicSize : o.zoom; float nz = Slider("zoom (half-height, m)", z, Mathf.Min(o.zoomMin, 1f), Mathf.Max(o.zoomMax, z), "0.0");
@@ -162,6 +163,55 @@ namespace Suborned.Play
             GUILayout.EndScrollView();
             if (zoom && cam) { cam.orthographicSize = o.zoom; o.zoomMin = Mathf.Min(o.zoomMin, o.zoom); o.zoomMax = Mathf.Max(o.zoomMax, o.zoom); host.CamApply(); }
             else if (changed) host.CamApply();
+        }
+
+        static readonly string[] CheckpointNames = { "none", "CP-LOUD", "CP-SAFE" };
+
+        /// <summary>Brief 027 (EXPERIMENTAL): the fight playground. Preset (today, lab: its start part applies from a restart) and checkpoint
+        /// (restart there); the fight mode and the freeze switches apply live.</summary>
+        void FightSection()
+        {
+            var fl = host.Fights; var g = host.Game;
+            Head("Fights (brief 027 playground)");
+            GUILayout.BeginHorizontal(); GUILayout.Label("preset", GUILayout.Width(80));
+            int pi = Mathf.Max(0, Array.IndexOf(FightLab.Presets, fl.preset)); int np = GUILayout.Toolbar(pi, FightLab.Presets); if (np != pi) fl.Load(FightLab.Presets[np]);
+            GUILayout.EndHorizontal();
+            if (fl.LoadError.Length > 0) GUILayout.Label("<color=#ff8a7a>" + fl.LoadError + "</color>", Rich);
+            GUILayout.BeginHorizontal(); GUILayout.Label("checkpoint", GUILayout.Width(80));
+            int ci = Mathf.Max(0, Array.IndexOf(FightLab.Checkpoints, fl.checkpoint)); int nc = GUILayout.Toolbar(ci, CheckpointNames); if (nc != ci) fl.checkpoint = FightLab.Checkpoints[nc];
+            GUILayout.EndHorizontal();
+            if (host.FightLabPending) { if (GUILayout.Button(fl.checkpoint.Length > 0 ? $"Load {CheckpointNames[nc]} with the {fl.preset} preset" : $"Restart with the {fl.preset} preset")) host.Begin(); }
+            else if (g != null) GUILayout.Label($"this run: {host.FightRunPreset}{(host.FightRunCheckpoint.Length > 0 ? " · " + host.FightRunCheckpoint : "")} · lab {(g.Lab ? "on" : "off")} · health ×{g.HealthScale}", Small);
+            GUILayout.BeginHorizontal(); GUILayout.Label("fight mode", GUILayout.Width(80));
+            int mi = Mathf.Max(0, Array.IndexOf(FightLab.Modes, fl.fightMode)); int nm = GUILayout.Toolbar(mi, FightLab.Modes); if (nm != mi) { fl.fightMode = FightLab.Modes[nm]; if (host.Frozen && fl.fightMode == "realtime") host.LeaveFreeze(); }
+            GUILayout.EndHorizontal();
+            if (fl.fightMode == "realtime") fl.pauseInFight = GUILayout.Toggle(fl.pauseInFight, " Space pauses during a fight (off: pure real time)");
+            else
+            {
+                GUILayout.Label(fl.fightMode == "freeze" ? "freeze on:" : "target mode opens on:", Small);
+                if (fl.fightMode == "freeze")
+                {
+                    GUILayout.BeginHorizontal(); fl.onLoud = GUILayout.Toggle(fl.onLoud, " loud order"); fl.onSpotted = GUILayout.Toggle(fl.onSpotted, " spotted"); fl.onFiredOn = GUILayout.Toggle(fl.onFiredOn, " fired on"); GUILayout.EndHorizontal();
+                    GUILayout.BeginHorizontal(); fl.onAmbush = GUILayout.Toggle(fl.onAmbush, " fight springs"); fl.onReinforce = GUILayout.Toggle(fl.onReinforce, " reinforce"); fl.onDown = GUILayout.Toggle(fl.onDown, " op down"); GUILayout.EndHorizontal();
+                    GUILayout.Label("beat end: not built yet (B0 keeps it off)", Small);
+                }
+                else { GUILayout.BeginHorizontal(); fl.tAmbush = GUILayout.Toggle(fl.tAmbush, " fight springs"); fl.tFiredOn = GUILayout.Toggle(fl.tFiredOn, " fired on"); fl.tDown = GUILayout.Toggle(fl.tDown, " op down"); GUILayout.EndHorizontal(); fl.targetPlayback = Slider("playback (x)", fl.targetPlayback, 0.25f, 1f, "0.00"); }
+                fl.freezeMinGapS = Mathf.Round(Slider("min gap (s)", fl.freezeMinGapS, 0f, 10f, "0"));
+                bool cap = fl.freezesPerFight >= 0; bool nc2 = GUILayout.Toggle(cap, " cap manual freezes per fight"); if (nc2 != cap) fl.freezesPerFight = nc2 ? 3 : -1;
+                if (fl.freezesPerFight >= 0) fl.freezesPerFight = Mathf.RoundToInt(Slider("manual freezes", fl.freezesPerFight, 0f, 10f, "0"));
+            }
+            GUILayout.Label("fight HUD (Glyph §3; defaults = Glyph's picks):", Small);
+            var hl = fl.Hud;
+            GUILayout.BeginHorizontal(); hl.creamFill = GUILayout.Toggle(hl.creamFill, " 1 cream bars"); hl.ladder = GUILayout.Toggle(hl.ladder, " 2 queue on roster"); hl.trailAltOnly = GUILayout.Toggle(hl.trailAltOnly, " 3 Trail on Alt"); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); hl.rimOnly = GUILayout.Toggle(hl.rimOnly, " 4 rim only"); hl.keysOnly = GUILayout.Toggle(hl.keysOnly, " 5 keys only"); hl.chargeOnPortrait = GUILayout.Toggle(hl.chargeOnPortrait, " 6 charge bar"); GUILayout.EndHorizontal();
+            GUILayout.BeginHorizontal(); hl.hatched = GUILayout.Toggle(hl.hatched, " hatched preview"); hl.arrows = GUILayout.Toggle(hl.arrows, " arrowheads"); hl.debugLayer = GUILayout.Toggle(hl.debugLayer, " debug layer"); GUILayout.EndHorizontal();
+            GUILayout.Label(fl.fightMode switch
+            {
+                "freeze" => "Space freezes a fight (manual); Return releases the queue; Esc or Space leaves without orders.",
+                "target" => "Y opens target mode; click a combatant to add a shot, right click removes; Y or Return fires (lab preset).",
+                _ => "Right click fires, X holds (lab) or ceases, V panic (lab) or stance, F draws.",
+            }, Small);
+            if (host.Frozen) GUILayout.Label($"<b>{(host.TargetFreeze ? "TARGET" : "FROZEN")}</b> ({host.FrozenWhy}) · freezes {host.FreezeCount} · volleys {host.VolleyCount}", Rich);
         }
 
         static readonly string[] BusyWays = { "rulebook", "cancel", "hold" }, ReleaseWays = { "rulebook", "stand", "resume" };

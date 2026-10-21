@@ -1,0 +1,15 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 860, "y": 1026, "w": 200, "h": 40, "text": "Get Vale to the car."},
+  {"kind": "beat", "x": 1731, "y": 927, "w": 175, "h": 36, "text": "One takes the road."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 864, "y": 483, "w": 192, "h": 25, "text": "One's heading for the road."},
+  {"kind": "speech", "x": -193, "y": 1288, "w": 174, "h": 25, "text": "Behind the wall, officers!"},
+  {"kind": "image", "x": 234, "y": 985, "w": 113, "h": 30, "text": "follow view chip"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 231, "h": 17, "text": "Passer-by: Run! Get off the street!"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

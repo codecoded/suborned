@@ -81,7 +81,7 @@ namespace Suborned.Play
         public void FailCamStart()
         {
             if (endGame?.Cause is not FailCause c || FailTarget(c) is not { } tgt || !cam || FailCamOn) return;
-            if (Following) FollowExit();
+            // Sky 2026-10-20: the fail camera plays in the view the player is in (the follow view keeps its agent; no swing to the map)
             var orders = new List<(int idx, Order o)>(); for (int k = 0; k < endGame.Orders.Count; k++) orders.Add((k, endGame.Orders[k].order));
             orders.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.idx.CompareTo(b.idx));
             failOrders.Clear(); foreach (var (_, o) in orders) failOrders.Add(o);
@@ -143,7 +143,7 @@ namespace Suborned.Play
             if (!FailCamOn) return;
             FailCamLast = $"{why} at clock {failClock:0.00} s, tick {failGame?.Tick} of {failTo}, over {failGame?.Over}";
             FailCamOn = false; Game = endGame; failGame = null; views.Tick(); views.Frame(1f); views.ShowFans(null);
-            cam.orthographic = camOrtho0; cam.orthographicSize = camSize0; cam.transform.SetPositionAndRotation(camPos0, camRot0); focus = focus0; if (fade) fade.focus = focus;
+            if (!Following) { cam.orthographic = camOrtho0; cam.orthographicSize = camSize0; cam.transform.SetPositionAndRotation(camPos0, camRot0); focus = focus0; if (fade) fade.focus = focus; }
             System.Array.Copy(sel0, Selected, 4);
             if (fade) { fade.radiusPerZoom = fadeR0; fade.ghost = ghost0; fade.feather = feather0; fade.SetPoints(null); }
             foreach (var r in failHidden) if (r) r.forceRenderingOff = false; failHidden.Clear(); failProps.Clear();
@@ -186,6 +186,7 @@ namespace Suborned.Play
 
         void FailPlace(float t)
         {
+            if (Following) return; // in the follow view the chase camera stays on its agent through the replay
             // Glyph r1: the culprit and the caught operative together: aimed 60 % of the way from the op to the culprit, the camera looking
             // from the op's side (culprit above the centre, op below), zoomed so the pair spans about 40 % of the width (people 40-60 px)
             Vector3? op = failOpKey != null && views?.Find(failOpKey) is Transform ot && ot.gameObject.activeSelf ? ot.position : (Vector3?)null;

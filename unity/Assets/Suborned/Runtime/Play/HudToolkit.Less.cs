@@ -203,6 +203,7 @@ namespace Suborned.Play
             manifest.Add((briefGoal, "line", () => briefGoal.text)); manifest.Add((briefPeople, "image", () => "cell portraits"));
             BuildScope();
             BuildMenu();
+            BuildRing(); // brief 030
         }
 
         bool goalHover; int busyHover = -1; string goalText = "";
@@ -230,7 +231,7 @@ namespace Suborned.Play
                 float WinMid(int i) => ColY + ColumnBezels[i].y * RosterScale; // the bezel's measured centre
                 float plateX = ColX + colW + 4, plateY = WinMid(a) - PlateH / 2; // brief 014: chips and the plate share one line, 4 off the column
                 verbPlate.style.left = plateX; verbPlate.style.top = plateY;
-                PlateFold(plateX, WinMid(a)); bool folded = PlateFolded;
+                PlateFold(plateX, WinMid(a)); bool folded = PlateFolded && PlateOn; // brief 030 (no plate): LiveFrame hides the plate and its stub
                 for (int k = 0; k < 4; k++)
                 {
                     bool has = m.VerbHas[k], refused = m.VerbRefused[k]; knobs[k].style.opacity = has ? 1f : refused ? 0.55f : 0.28f; Show(knobIcons[k], has || refused); Show(verbPlate.Q("badge" + k), has || refused); // an empty knob: a quiet socket; a refused one (Fire while carrying Vale) keeps its glyph, greyed
@@ -254,7 +255,7 @@ namespace Suborned.Play
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
                     bool on = (s.Busy || s.Down || s.Pace.Length > 0) && !ended && !s.InCar; Show(r, on); if (!on) continue; // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
-                    float bx = i == a ? plateX + (folded ? StubW + 4 : PlateW + 16 + 6) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
+                    float bx = i == a ? SelectedChipX(plateX, folded) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
                     Icon(ic, s.Down ? "s_downed" : moving ? (running ? "run" : "s_moving") : s.Icon, running ? TurqLight : Cream);
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
@@ -281,7 +282,7 @@ namespace Suborned.Play
                 if (show && !m.PanelOpen) { Text(sheetTipText, alt ? m.Slots[tipFor].CancelBody : shortCost); var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse); sheetTip.style.left = p.x + 14; sheetTip.style.top = p.y + 12; sheetTip.style.width = alt ? 300 : StyleKeyword.Auto; }
             }
             // the pill: clock, pause glyph (or speed), next mark as icon and time ("?" when unknown; its word on Alt), $ and Trail dimming
-            Show(pauseIcon, host.Paused); Text(state, host.Speed > 1 ? $"x{host.Speed}" : ""); Show(state, host.Speed > 1);
+            Show(pauseIcon, host.Paused || host.Frozen); pauseIcon.style.opacity = host.Frozen && !PlateOn ? 0.45f + 0.55f * (0.5f + 0.5f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f)) : 1f; /* brief 030: the pause glyph pulses while frozen */ Text(state, host.Speed > 1 ? $"x{host.Speed}" : ""); Show(state, host.Speed > 1);
             {
                 bool unknown = m.NextLabel == "?"; string shortLabel = "";
                 if (host.Text != null && host.Text.TimelineShort.TryGetValue(m.NextTime, out var sl)) shortLabel = sl;
@@ -310,7 +311,10 @@ namespace Suborned.Play
             Pops(cam);
             Sheet(alt, W, H);
             Chip(alt, W);
+            RingFrame(); CursorFrame(); // brief 030: the ring, the cursor's mark
             StreetLess(alt, cam);
+            AttentionHud(W, H); // brief 031: the Watch ring, the person watchers' marks, the callouts (HudToolkit.Attention)
+            FightLabLayer(alt, cam); // brief 027: Glyph's finished fight HUD (HudToolkit.FightLab), with the lab preset
             Pips(cam); BubbleTails();
             foreach (var (br, _, _) in bubbleEls) if (br.resolvedStyle.display != DisplayStyle.None) br.BringToFront(); // Glyph 016 r2 B: speech above the pins
             ClearUnderChip(alt);
@@ -321,6 +325,7 @@ namespace Suborned.Play
             EndLess();
             ScopeFrame();
             IntelFrame();
+            LiveFrame(W); // brief 030 (no plate) and brief 033 (HudToolkit.Live)
             for (int i = worldUsed; i < worldEls.Count; i++) Show(worldEls[i], false);
             world.MarkDirtyRepaint();
         }
@@ -384,6 +389,7 @@ namespace Suborned.Play
                 }
                 else hintQOn = true; // folded: a "?" disc at the goal line's place reopens it
             }
+            if (line == null && !hintQOn && !PlateOn && host.FirstActDue) { line = t.FirstActHint; glyph = "p_unknown"; } // brief 030: Fable's one hint, until a right click is used (per profile)
             host.HintLineShowing = hintAlpha > 0f;
             Show(hintQ, hintQOn && !show0(line)); if (hintQOn) hintQ.style.left = (W - 26) / 2;
             if (line != null) line = Keys(line);
@@ -765,7 +771,7 @@ namespace Suborned.Play
         {
             var it = host.HoverIntent; var hov = host.Hover; bool ended = m.Ended;
             string lead = null; List<HudModel.PField> fs = null; string refused = "";
-            if (!ended && host.Panel == null && host.Loud == null)
+            if (!ended && host.Panel == null && host.Loud == null && host.Ring == null)
             {
                 if (host.AimNow is HandoverHost.AimParts a && host.AimLine != null)
                 {
@@ -773,9 +779,11 @@ namespace Suborned.Play
                     if (a.Refused.Length > 0) refused = a.Refused;
                     else
                     {
-                        fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = a.Down });
+                        if (a.Lab && a.WalkS >= 0) fs.Add(new HudModel.PField { Kind = "walk", Icon = "s_moving", Text = $"{a.WalkS} s" }); // Keel's walk-in: the walk first, the pips from the stop point
+                        fs.Add(new HudModel.PField { Kind = "time", Icon = a.Lab ? "" : "p_time", Text = a.Down }); // brief 027: the lab chip has no seconds
+                        if (a.Lab && a.Charge > 0) fs.Add(new HudModel.PField { Kind = "charge", Icon = "", Text = $"▮{a.Charge}" });
                         if (alt) fs.Add(new HudModel.PField { Kind = "hits", Icon = "", Text = "hits " + a.Ratio }); // Glyph fight r1 #2: "3/10" read as shots, odds or a magazine; the odds in words, with Alt
-                        if (a.Trail.Length > 0) fs.Add(new HudModel.PField { Kind = "trail", Icon = "p_trail", Text = a.Trail });
+                        if (a.Trail.Length > 0 && (!a.Lab || alt || !host.Fights.Hud.trailAltOnly)) fs.Add(new HudModel.PField { Kind = "trail", Icon = "p_trail", Text = a.Trail });
                         if (a.Civilian) fs.Add(new HudModel.PField { Kind = "mark", Mark = "no" });
                     }
                 }
@@ -794,6 +802,7 @@ namespace Suborned.Play
                 {
                     lead = "icons/singles/" + (it.Lead.Length > 0 ? it.Lead : HudModel.AtlasIcon(it.Order.Do, it.Order.Approach, ""));
                     fs = HudModel.PriceLine(host, it);
+                    if (it.More) fs.Add(new HudModel.PField { Kind = "more", Icon = "", Text = "⋯" }); // brief 030: other ways are one hold away
                 }
             }
             bool on = fs != null; Show(chip2, on); if (!on) return;
@@ -802,6 +811,8 @@ namespace Suborned.Play
             var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse); float cw = chip2.resolvedStyle.width; if (float.IsNaN(cw)) cw = 220;
             if (hov == null && host.MoveNow != null && ringOn) p = ringAt + new Vector2(ringRx + 6, 18); // beside the ring, tail to it
             chip2.style.left = p.x + 16 + cw > W - 14 ? p.x - cw - 16 : p.x + 16; chip2.style.top = p.y - 46;
+            if (host.AimNow is { Lab: true } && host.LabFireTarget.Length > 0 && host.DrawnAt(host.LabFireTarget) is Vector3 tw && Proj(tw, out var tq))
+            { chip2.style.left = tq.x + 22 + cw > W - 14 ? tq.x - cw - 22 : tq.x + 22; chip2.style.top = tq.y + 6; } // Glyph frame B: down-right of the target, off the heads
         }
 
         // ---------------------------------------------------------------- the street
@@ -862,8 +873,11 @@ namespace Suborned.Play
         {
             if (host.Following) // the follow view keeps one world mark, the ring under its agent; the rest are sized for the orthographic camera
             {
-                if (followRing.Count < 3) return;
-                for (int pass = 0; pass < 2; pass++) { p.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.5f) : Cream; p.lineWidth = pass == 0 ? 3.6f : 2f; p.BeginPath(); p.MoveTo(followRing[0]); for (int i = 1; i < followRing.Count; i++) p.LineTo(followRing[i]); p.Stroke(); }
+                foreach (var ring in new[] { followRing, followHoverRing }) // the agent's ring, and the hover target's (the marker's disc sits on its front)
+                {
+                    if (ring.Count < 3) continue;
+                    for (int pass = 0; pass < 2; pass++) { p.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.5f) : Cream; p.lineWidth = pass == 0 ? 3.6f : 2f; p.BeginPath(); p.MoveTo(ring[0]); for (int i = 1; i < ring.Count; i++) p.LineTo(ring[i]); p.Stroke(); }
+                }
                 return;
             }
             foreach (var f in paints) f(p);
@@ -948,7 +962,7 @@ namespace Suborned.Play
                 }
             }
             // a fight: health pips over fighters; a downed agent's mark
-            foreach (var f in m.Fighters)
+            if (!g.Lab) foreach (var f in m.Fighters) // brief 027: with the lab the segment bars over the heads replace these pips (Glyph frame B)
             {
                 if (!Proj(f.World + Vector3.up * 2.1f, out var q)) continue; int hp = f.Hp, mx = f.Max; bool cell = f.Cell;
                 paints.Add(pp => { for (int k = 0; k < mx; k++) { var c = new Vector2(q.x + (k - (mx - 1) / 2f) * 8, q.y); if (!cell) { pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.55f); pp.BeginPath(); pp.Arc(c, 3.6f, Deg(0), Deg(360)); pp.Fill(); } pp.fillColor = k < hp ? (cell ? Cream : new Color(0.78f, 0.27f, 0.25f)) : new Color(1, 1, 1, 0.25f); pp.BeginPath(); pp.Arc(c, 2.6f, Deg(0), Deg(360)); pp.Fill(); } /* Glyph 022: a hostile's pips a deep red on an ink rim (the pale pink washed out on the paving) */ });
@@ -1264,7 +1278,7 @@ namespace Suborned.Play
                 // the car: no second label over either
                 bool marked = host.Hover?.Kind == "hostile" && holderIds.Contains(host.Hover.Key)
                     || host.Hover?.Kind == "car" && host.Hover.Key == "getaway" && (carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex);
-                if (!pip && !marked)
+                if (!pip && !marked && !(host.AimNow is { Lab: true })) // brief 027 (Glyph frame B): the chip's side coin names a fighter; the bar over the head stays clear
                 {
                     Text(nameText, host.HoverName); float w = float.IsNaN(nameChip.resolvedStyle.width) ? 60 : nameChip.resolvedStyle.width;
                     float x = hq.x - w / 2, y = hq.y - 17 - 8 - 22, h = float.IsNaN(nameChip.resolvedStyle.height) ? 30 : nameChip.resolvedStyle.height;
@@ -1282,7 +1296,7 @@ namespace Suborned.Play
             int used = 0;
             if (live && host.TargetMode && cam)
             {
-                var icon = m.VerbIcon[Mathf.Clamp(host.Picked, 0, 3)]; var focus = host.Focused;
+                var icon = m.VerbIcon[Mathf.Clamp(host.Picked, 0, 4)]; var focus = host.Focused;
                 foreach (var p in host.TargetMarks)
                 {
                     var vp = cam.WorldToViewportPoint(p.Anchor); if (vp.z <= 0 || vp.x < 0.02f || vp.x > 0.98f || vp.y < 0.02f || vp.y > 0.98f) continue; // off screen: an edge pin (Edges)
@@ -1645,7 +1659,7 @@ namespace Suborned.Play
                 // target mode: the valid targets off screen get edge pins with the verb's glyph (up to four); a click pans to one and focuses it
                 if (host.TargetMode)
                 {
-                    int tb = 4; var icon = m.VerbIcon[Mathf.Clamp(host.Picked, 0, 3)];
+                    int tb = 4; var icon = m.VerbIcon[Mathf.Clamp(host.Picked, 0, 4)];
                     foreach (var tp in host.TargetMarks)
                     {
                         if (tb <= 0) break; if (Spot(tp.Anchor, 13) is not { } tsp) continue; var (ta, td) = tsp;
@@ -1711,6 +1725,13 @@ namespace Suborned.Play
             Show(briefArms.parent, alt); Show(briefSub, alt); if (brief.childCount > 0) Show(brief[0], alt); // at rest: the title alone (the tab and the place and time are Alt)
             Text(briefGoal, (host.Text?.BriefGoal ?? "").Replace("[", "").Replace("]", "")); Show(briefGoal, !alt); Show(briefPeople, !alt);
             Text(briefClose, host.Text?.Close ?? "8:30"); Text(briefPurse, m.Cash); Text(briefAlert, $"{m.Alert}/3");
+            if (briefHeat != null && host.Game is { } hg) // brief 031: the Heat band's word (Fable's), read once at the start; the eye's turns count the band
+            {
+                string band = ""; try { band = hg.HeatBand; } catch (Exception) { }
+                Text(briefHeat, host.Text != null && host.Text.Heat.TryGetValue(band, out var hw) ? hw : band.Length > 0 ? char.ToUpperInvariant(band[0]) + band[1..] : "");
+                int turns = band switch { "noticed" => 1, "wanted" => 2, "infamous" => 3, _ => 0 };
+                if (turns != briefHeatTurns) { briefHeatTurns = turns; briefHeat.parent.Q("turns")?.MarkDirtyRepaint(); }
+            }
             brief.style.width = alt ? 700 : 520; var bsz = root.panel.visualTree.layout.size; brief.style.left = ((float.IsNaN(bsz.x) ? 1920 : bsz.x) - (alt ? 700 : 520)) / 2;
         }
 

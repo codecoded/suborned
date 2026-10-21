@@ -1,0 +1,57 @@
+{
+ "objects": 31,
+ "triangles": 37810,
+ "materials": 23,
+ "images": {
+  "limestone-base": [
+   2048,
+   2048
+  ],
+  "limestone-orm": [
+   2048,
+   2048
+  ],
+  "limestone-normal": [
+   2048,
+   2048
+  ],
+  "roof-enamel-base-v1": [
+   1254,
+   1254
+  ],
+  "roof-enamel-orm-v1": [
+   1024,
+   1024
+  ],
+  "roof-enamel-normal-v1": [
+   1024,
+   1024
+  ],
+  "surface-atlas-v1": [
+   1254,
+   1254
+  ],
+  "back-wall-v1": [
+   1519,
+   1035
+  ],
+  "furniture-base": [
+   2048,
+   1024
+  ],
+  "furniture-orm": [
+   2048,
+   1024
+  ],
+  "furniture-normal": [
+   2048,
+   1024
+  ],
+  "furniture-sheen": [
+   2048,
+   1024
+  ]
+ },
+ "texelsM": 27.8,
+ "bc7MiBWithMips": 35.3
+}

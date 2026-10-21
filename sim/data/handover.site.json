@@ -1059,6 +1059,8 @@
  "purseSrc": "GDD §07: Purse $100,000",
  "arms": 3,
  "armsSrc": "mission.json arms: GDD v0.22.0 §07: Full cell, all four armed (Arms 3); Sky 2026-10-15 Q1 (briefs/011/motive-fights.md §2.1)",
+ "heat": 0,
+ "heatSrc": "mission.json start.heat: brief 031 §2.1 (Sky 2026-10-20 L3; Waymark 2026-10-20): the Handover is the first mission, so campaign Trail 0, and Standing starts at +2 leaning Hero (GDD §01), so Menace = max(0, -2) = 0: Heat 0, the unknown band (8/20/45 s)",
  "cast": {
   "waitress": {
    "id": "p-cafe-14",
@@ -1093,13 +1095,13 @@
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "67f1f202467bf943aec6313506df7b9b0c169072106464b416da1f24b4acdcb6",
+  "sha256": "d4f884d4e0981dbfff7d5a1b29f523b9ab6dc34ff874dc888c3a39b5e5e28231",
   "startsAt": "17:24:30",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "71fbe83bcd08802e215cf471be93265353b9dc241c138b154764a178a5724ba8",
+  "sha256": "e9cba7149e0d6b7ecdcc3a64891416d19a62d414a418324ad3b883b234945371",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {

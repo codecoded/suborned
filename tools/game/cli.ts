@@ -11,7 +11,7 @@
 // Build numbers: tools/game/version.json (committed) counts them; every successful build takes the next (GameBuild.Version), so the app's
 // Finder Version, the pause menu, the briefing's corner and the zip all say 0.2.<build>.
 // `bun run game:signing-check` says whether the Developer ID identity and the notary profile exist, and how to make each.
-// Flags: --build (force), --check, --pack, --send [device], --dry-run, --signing-check, --no-open, --windowed (open in a window).
+// Flags: --build (force), --check (pictures 1920x1080, frame times at the Air's 2880x1864, one proof run: the window switches to 1080p around each picture (CaptureSize -frames-size); --native: everything at the display's own size; --capture-size WxH: everything at that size; --no-air: frame times at 1920x1080; --reuse-proof: use the proof the build just took, if it is complete and newer than the build), --pack, --send [device], --dry-run, --signing-check, --no-open, --windowed (open in a window).
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -117,9 +117,27 @@ function check(): boolean {
   const s = spawnSync(bin, ['-batchmode', '-nographics', '-runScenarios', scen, '-logFile', join(out, 'scenarios.log')], { encoding: 'utf8', timeout: 600000 });
   const sj = existsSync(scen) ? JSON.parse(readFileSync(scen, 'utf8')) : null;
   console.log(`game: scenarios ${sj ? `${sj.matching}/${sj.scenarios} match headless, passed ${sj.passed} (${sj.runtime}, DLL ${String(sj.dllSha256).slice(0, 12)})` : 'no report'}; exit ${s.status}`);
-  const { pj, status } = proof();
+  const reuse = has('--reuse-proof') ? reusableProof() : null; // `bun run batch`: the build just took this proof (buildDrawn); it is not taken a second time
+  if (reuse) console.log(`game: proof reused, taken right after the build (${reuse.screen} ${reuse.mode}, ${reuse.frames?.fps} fps mean, p99 ${reuse.frames?.p99Ms} ms)`);
+  const first = reuse ? { pj: reuse, status: 0 } : proof();
+  const pj = airFrames(first.pj), status = first.status; // the pictures are 1920x1080; the frame times are the Air's size
   const drive = driveReplay(pj);
-  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive;
+  const inputs = inputChecks(pj);
+  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs;
+}
+
+/** Latch 2026-10-21 (ProofInput.cs): the input checks the proof ran through the Input System's devices. ok false fails the check; ok null
+ *  (the fight gave no hostile in range) is reported, not failed. */
+function inputChecks(pj: any): boolean {
+  let pass = true;
+  for (const k of ['driveClick', 'fireStop', 'ringCheck']) {
+    const r = pj?.frames?.[k];
+    if (r === undefined) { console.log(`game: ${k}: not in this proof (an older build)`); continue; }
+    const { ok, ...rest } = r ?? {};
+    console.log(`game: ${k} ${ok === true ? 'ok' : ok === false ? 'FAILED' : 'not reached'}: ${JSON.stringify(rest).slice(0, 600)}`);
+    if (ok === false || r === null) pass = false;
+  }
+  return pass;
 }
 
 /** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on
@@ -139,16 +157,59 @@ function driveReplay(pj: any): boolean {
 }
 
 /** -gameProof: the briefing, play, the menu, frame times; `blank` when the frame was one flat colour (the build's URP failed to start). */
-function proof(): { pj: any; status: number | null } {
+function proof(sub = 'proof', extra: string[] = []): { pj: any; status: number | null } {
   const exe = join(APP, 'Contents', 'MacOS', 'The Suborned');
   const bin = existsSync(exe) ? exe : join(APP, 'Contents', 'MacOS', readdirSync(join(APP, 'Contents', 'MacOS'))[0]);
-  const out = join(DIR, 'proof');
+  const out = join(DIR, sub);
   run('mkdir', ['-p', out]);
   if (existsSync(join(out, 'proof.json'))) run('rm', ['-f', join(out, 'proof.json')]);
-  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 420000 }); // uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
+  const p = spawnSync(bin, ['-gameProof', out, '-novsync', ...(has('--windowed') ? ['-windowed'] : []), ...(has('--native') ? ['-capture-native'] : []), ...(has('--capture-size') ? ['-capture-size', args[args.indexOf('--capture-size') + 1]] : []), ...(onePass() && !extra.includes('-capture-size') ? ['-frames-size', AIR] : []), ...extra, '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 420000 }); // uncapped: the headroom over 60 fps; 420 s: the follow spots, the people cost, brief 022's café call and brief 025's drive run about 4 min (180 s cut it off, 2026-10-18)
   const pj = existsSync(join(out, 'proof.json')) ? JSON.parse(readFileSync(join(out, 'proof.json'), 'utf8')) : null;
   console.log(`game: proof ${pj ? `${pj.status}, ${pj.screen} ${pj.mode}, HUD x${pj.hudScale}, ${pj.frames ? `${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)${pj.frames.byYaw ? `; by yaw ${pj.frames.byYaw.map((y: { yaw: number; fps: number; p99Ms: number }) => `${y.yaw}° ${y.fps} fps (p99 ${y.p99Ms} ms)`).join(', ')}` : ''}${pj.frames.follow?.length ? `; spots ${pj.frames.follow.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}${pj.frames.people?.length ? `; people ${pj.frames.people.map((f: { spot: string; fps: number; p99Ms: number; gpuMs?: number }) => `${f.spot} ${f.fps} fps (p99 ${f.p99Ms} ms${f.gpuMs !== undefined && f.gpuMs >= 0 ? `, gpu ${f.gpuMs} ms` : ''})`).join(', ')}` : ''}` : 'no frames'}` : 'no proof.json'}; exit ${p.status}`);
   return { pj, status: p.status };
+}
+
+/** The 15-inch MacBook Air M4's screen (Mac16,13), the machine the 60 fps limit is set on (GDD §01, §11). */
+const AIR = '2880x1864';
+/** Frame times at the Air's resolution (Sky/coordinator, 2026-10-21: the pictures are 1920x1080, the limit is 60 fps on the Air). The proof's pictures are taken at 1920x1080
+ *  (CaptureSize.cs), whose frame times flatter the machine; so the same proof runs once more at 2880x1864 into proof-air/ (its pictures are not kept as evidence) and its
+ *  frames replace the proof's in proof.json, labelled: `framesAt`, and `framesNote` saying whether this machine is the Air or an Air-sized proxy. Skipped with --native or
+ *  --capture-size (one run at that size), --no-air, or when proof.json already carries Air-sized frames. */
+function airFrames(pj: any): any {
+  if (pj?.status === 'ok' && pj.frames && pj.framesAt && !pj.framesNote) return noteFrames(pj); // one pass: the proof took them at the Air's size itself
+  if (!pj || pj.status !== 'ok' || !pj.frames || pj.framesAt || has('--native') || has('--capture-size') || has('--no-air')) return pj;
+  console.log(`game: frame times again at ${AIR} (the Air's screen); the pictures stay ${pj.screen}`);
+  const a = proof('proof-air', ['-capture-size', AIR]);
+  if (a.pj?.status !== 'ok' || !a.pj.frames) { console.error(`game: the ${AIR} run gave no frame times (${a.pj?.status ?? 'no proof.json'}); the proof's frames stay at ${pj.screen}`); return pj; }
+  const model = spawnSync('sysctl', ['-n', 'hw.model'], { encoding: 'utf8' }).stdout.trim() || '?';
+  const framesNote = model === 'Mac16,13' ? `at ${a.pj.screen} on the reference MacBook Air` : `at ${a.pj.screen}: an Air-sized proxy on ${model}, not the Air's own GPU`;
+  const merged = { ...pj, picturesScreen: pj.screen, picturesFrames: pj.frames, frames: a.pj.frames, framesAt: a.pj.screen, framesNote, framesModel: model };
+  Bun.write(join(DIR, 'proof', 'proof.json'), JSON.stringify(merged, null, 1) + '\n');
+  console.log(`game: frame times ${framesNote}: ${a.pj.frames.fps} fps mean (p99 ${a.pj.frames.p99Ms} ms)`);
+  return merged;
+}
+
+/** One pass (Latch, 2026-10-21; CaptureSize.cs `-frames-size`): the proof runs once with its window at the Air's 2880x1864 for the frame times and
+ *  switches to 1920x1080 around each picture (HudToolkit.ShootCo), so the second run (proof-air/) is not needed. Off with --native,
+ *  --capture-size or --no-air, which keep one size for both. */
+function onePass(): boolean { return !has('--native') && !has('--capture-size') && !has('--no-air'); }
+
+/** The one-pass proof's frames labelled as the two-run merge labels them (`framesNote`, `framesModel`); written back to proof.json. */
+function noteFrames(pj: any): any {
+  const model = spawnSync('sysctl', ['-n', 'hw.model'], { encoding: 'utf8' }).stdout.trim() || '?';
+  const framesNote = model === 'Mac16,13' ? `at ${pj.framesAt} on the reference MacBook Air` : `at ${pj.framesAt}: an Air-sized proxy on ${model}, not the Air's own GPU`;
+  const merged = { ...pj, framesNote, framesModel: model, framesPass: 'one' };
+  Bun.write(join(DIR, 'proof', 'proof.json'), JSON.stringify(merged, null, 1) + '\n');
+  console.log(`game: frame times ${framesNote} (one pass; pictures ${pj.screen}): ${pj.frames.fps} fps mean (p99 ${pj.frames.p99Ms} ms)`);
+  return merged;
+}
+
+/** The proof the last build took (buildDrawn), when it is complete and newer than the build; else null and the check takes its own. */
+function reusableProof(): any | null {
+  const f = join(DIR, 'proof', 'proof.json');
+  if (!existsSync(f) || !existsSync(STAMP) || statSync(f).mtimeMs < statSync(STAMP).mtimeMs) return null;
+  const j = JSON.parse(readFileSync(f, 'utf8'));
+  return j.status === 'ok' && j.frames ? j : null;
 }
 
 function proofBlank(): boolean { const f = join(DIR, 'proof', 'proof.json'); return existsSync(f) && JSON.parse(readFileSync(f, 'utf8')).status === 'blank'; }

@@ -224,6 +224,35 @@ namespace Suborned.Sim
             return path.ToArray();
         }
 
+        /// <summary>Brief 027 (fight.close, EXPERIMENTAL): the nearest free cell centre by walk from `from` (Dijkstra over the walk grid, 8 neighbours,
+        /// no corner cutting, ties to the lower cell index) for which `ok` holds, within `maxCm` of walk; null if none. The cell `from` stands on
+        /// counts (its centre is tried first).</summary>
+        public Pt? Nearest(Pt from, Func<Pt, bool> ok, int maxCm)
+        {
+            Pt? s0 = NearestFree(from); if (!s0.HasValue) return null;
+            int si = CI(s0.Value.X), sj = CJ(s0.Value.Y), n = Nx * Ny, s = si * Ny + sj;
+            var P = pool ??= new Pool(); P.Fit(n); var heap = P.Heap;
+            P.Set(s, 0, -1); heap.Push(0, s);
+            int orth = Cell, diag = Cell * 1414 / 1000;
+            while (heap.Count > 0)
+            {
+                int k = heap.Pop(); if (P.IsClosed(k)) continue; P.Closed[k] = true;
+                int i = k / Ny, j = k % Ny, g = P.G(k);
+                if (g > maxCm) return null;
+                var c = Centre(i, j); if (ok(c)) return c;
+                for (int d = 0; d < 8; d++)
+                {
+                    int ni = i + DI[d], nj = j + DJ[d];
+                    if (!FreeCell(ni, nj)) continue;
+                    if (d >= 4 && (!FreeCell(i + DI[d], j) || !FreeCell(i, j + DJ[d]))) continue;
+                    int nk = ni * Ny + nj; if (P.IsClosed(nk)) continue;
+                    int ng = g + (d < 4 ? orth : diag);
+                    if (ng < P.G(nk)) { P.Set(nk, ng, k); heap.Push(ng, nk); }
+                }
+            }
+            return null;
+        }
+
         int H(int i, int j, int ti, int tj)
         {
             int dx = Math.Abs(i - ti), dy = Math.Abs(j - tj), mn = Math.Min(dx, dy), mx = Math.Max(dx, dy);

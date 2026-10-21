@@ -28,7 +28,6 @@
   "PlanterRun_End_A",
   "PlanterRun_End_B",
   "PlanterRun_End_C",
-  "BoardingPavilion_Square_v2",
   "CafeBay",
   "CafeBay_v2",
   "RecordsEntrance",
@@ -43,26 +42,36 @@
   "CafeTerrace",
   "BedTuft_A",
   "BedTuft_B",
-  "BedTuft_C"
+  "BedTuft_C",
+  "Parasol_Testbed",
+  "CafeInterior_Testbed",
+  "CafeLamp_Testbed_Amber",
+  "CafeLamp_Testbed_Teal",
+  "CafeLamp_Testbed_Peach",
+  "CafeLamp_Testbed_Coral",
+  "CafeLamp_Testbed_Lilac",
+  "BoardingPavilion_TB_Square",
+  "AtomFountain_Testbed"
  ],
  "swaps": {
   "CafeSet_Tulip": "CafeSet_Tulip_Play",
-  "BoardingPavilion_Square": "BoardingPavilion_Square_v2",
+  "BoardingPavilion_Square": "BoardingPavilion_TB_Square",
   "CafeBay": "CafeBay_v2",
-  "RobotButler": "RobotButler_Play"
+  "RobotButler": "RobotButler_Play",
+  "Parasol_Stripe": "Parasol_Testbed",
+  "AtomFountain": "AtomFountain_Testbed"
  },
  "grounded": [
-  "BoardingPavilion_Square_v2"
+  "BoardingPavilion_TB_Square"
  ],
- "scales": {
-  "PavilionPier_Square": 1.2
- },
+ "scales": {},
  "place": {
   "RecordsEntrance": "civic/office-public-entrance",
   "RecordsEntrance_Official": "civic/office-official-entrance",
   "CafeTerrace": "civic/cafe/terrace",
   "CafeBay_v2": "civic/cafe/ground",
-  "CafeInterior": "civic/cafe/interior"
+  "CafeInterior": "civic/cafe/interior",
+  "CafeInterior_Testbed": "civic/cafe/interior"
  },
  "ground": {
   "CafeBay_v2": {
@@ -71,21 +80,21 @@
   }
  },
  "overhead": [
-  "Parasol_Stripe"
+  "Parasol_Stripe",
+  "Parasol_Testbed"
  ],
  "fade": [
-  "Parasol_Stripe",
+  "Parasol_Testbed",
   "Cypress_Play",
-  "CafeInterior",
   "CafeBay_v2",
   "RecordsEntrance",
   "RecordsEntrance_Official",
-  "BoardingPavilion_Square_v2",
-  "PavilionPier_Square"
+  "BoardingPavilion_TB_Square",
+  "CafeInterior_Testbed"
  ],
  "companions": {
   "CafeBay_v2": [
-   "CafeInterior",
+   "CafeInterior_Testbed",
    "CafeTerrace"
   ]
  },
@@ -93,7 +102,8 @@
   "CafeTerrace"
  ],
  "budget": {
-  "lod0Tris": 110000
+  "lod0Tris": 330000,
+  "note": "brief 026 (Splice, 2026-10-20): raised from 110000 to the 211,311 the restored original pieces cost (CafeSet_Tulip 3,984, PlazaSphereLamp 7,932, Cypress 5,004, PottedTopiary 4,720; Sky: old detail back). A performance call for Redline to confirm against 60 fps; lower it when the pieces get cheaper. Raised again to 260,000 (236,449 with the testbed cafe: CafeInterior_Testbed 18.7k, CafeSet_Testbed 3.6k a set, Parasol_Testbed 3.0k): Sky's rule, any compression goes through him, so the budget goes up with a note, no model is reduced; Redline to measure on the Air. Raised to 330,000 for the testbed bay (BoardingPavilion_TB_Square 28.8k) and fountain (AtomFountain_Testbed 41.9k), both at full detail (brief 028): the budget goes up with a note, no model is reduced."
  },
  "slab": {
   "material": "DK_Pave_Civic",
@@ -102,14 +112,9 @@
    "square",
    "civic"
   ],
-  "note": "plot surfaces of the fountain square, the café terrace and the office apron; world-space UVs"
+  "note": "plot surfaces of the fountain square, the caf\u00e9 terrace and the office apron; world-space UVs"
  },
  "materials": {
-  "civic/atom-fountain": {
-   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam",
-   "DK_Lamp": "DK_Lamp_Deco",
-   "DK_Water": "DK_Pool_Civic"
-  },
   "civic/cafe-palm-0": {
    "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
    "DK_Enamel_Coral": "DK_Enamel_Ivory"
@@ -134,9 +139,6 @@
    "DK_Enamel_Mustard": "DK_Enamel_Seafoam",
    "DK_Enamel_Coral": "DK_Enamel_Ivory"
   },
-  "civic/civic-control-cabinet": {
-   "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
-  },
   "civic/civic-service-cabinet-0": {
    "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
   },
@@ -146,7 +148,7 @@
   "civic/foreground-civic-robot": {
    "DK_Signal_Amber": "DK_Glow_Seafoam",
    "DK_Face_Amber": "DK_Face_Teal",
-   "DK_Enamel_Coral": "DK_Enamel_Coral17"
+   "DK_RobotEnamel_Coral": "DK_Enamel_Coral17"
   },
   "civic/fountain-garden-north-east": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
@@ -171,12 +173,6 @@
    "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",
    "DK_Flower_Coral": "DK_Flower_CoralSoft",
    "DK_Accent_Gold": "DK_Brass_Civic"
-  },
-  "civic/square-pavilion-support-0": {
-   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam"
-  },
-  "civic/square-pavilion-support-1": {
-   "DK_Enamel_Turquoise": "DK_Enamel_Seafoam"
   }
  },
  "beds": {
@@ -223,7 +219,7 @@
      -29.5
     ],
     "yawDeg": 0,
-    "role": "café door to the fountain"
+    "role": "caf\u00e9 door to the fountain"
    },
    {
     "id": "spine-north.1",
@@ -234,7 +230,7 @@
      -29.5
     ],
     "yawDeg": 0,
-    "role": "café door to the fountain"
+    "role": "caf\u00e9 door to the fountain"
    },
    {
     "id": "spine-north.2",
@@ -245,7 +241,7 @@
      -29.5
     ],
     "yawDeg": 0,
-    "role": "café door to the fountain"
+    "role": "caf\u00e9 door to the fountain"
    },
    {
     "id": "spine-north.3",
@@ -257,7 +253,7 @@
     ],
     "yawDeg": 0,
     "scaleX": 0.75,
-    "role": "café door to the fountain"
+    "role": "caf\u00e9 door to the fountain"
    },
    {
     "id": "spine-inner.0",
@@ -335,7 +331,7 @@
      -30
     ],
     "yawDeg": 0,
-    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the caf\u00e9 terrace wall (coping outer face x -3.97) and clear of the crew line"
    },
    {
     "id": "ring-outer.1",
@@ -346,7 +342,7 @@
      -30
     ],
     "yawDeg": 90,
-    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the caf\u00e9 terrace wall (coping outer face x -3.97) and clear of the crew line"
    },
    {
     "id": "ring-outer.2",
@@ -357,7 +353,7 @@
      -30
     ],
     "yawDeg": 180,
-    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the caf\u00e9 terrace wall (coping outer face x -3.97) and clear of the crew line"
    },
    {
     "id": "ring-outer.3",
@@ -368,7 +364,7 @@
      -30
     ],
     "yawDeg": 270,
-    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the café terrace wall (coping outer face x -3.97) and clear of the crew line"
+    "role": "0.94 m of slab outside the planter ring (7.06); 1.27 m clear of the caf\u00e9 terrace wall (coping outer face x -3.97) and clear of the crew line"
    },
    {
     "id": "spoke-west.0",
@@ -763,6 +759,13 @@
     ]
    },
    {
+    "material": "DK_Cafe_Mood",
+    "unlit": "#56C9B8",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
     "material": "DK_Cafe_Mural",
     "unlit": "#9EA58E",
     "used_by": [
@@ -795,6 +798,55 @@
     "unlit": "#72B5A7",
     "used_by": [
      "CafeInterior"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Atlas",
+    "unlit": "#826D58",
+    "used_by": [
+     "Parasol_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Bakelite",
+    "unlit": "#23282A",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Counter",
+    "unlit": "#B18F74",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Foliage",
+    "unlit": "#3D794C",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Petrol",
+    "unlit": "#266B70",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Velvet",
+    "unlit": "#224C4F",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Cafe_TB_Walnut",
+    "unlit": "#58402B",
+    "used_by": [
+     "CafeInterior_Testbed"
     ]
    },
    {
@@ -899,6 +951,13 @@
     ]
    },
    {
+    "material": "DK_Enamel_Coral",
+    "unlit": "#E07560",
+    "used_by": [
+     "CafeSet_Tulip_Play"
+    ]
+   },
+   {
     "material": "DK_Enamel_Coral17",
     "unlit": "#F5849E",
     "used_by": [
@@ -923,6 +982,13 @@
     "used_by": [
      "RecordsEntrance",
      "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Enamel_Mustard",
+    "unlit": "#EEA82D",
+    "used_by": [
+     "CafeSet_Tulip_Play"
     ]
    },
    {
@@ -968,6 +1034,62 @@
     "unlit": "#976470",
     "used_by": [
      "PlanterArc"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Ceramic",
+    "unlit": "#17515F",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Foam",
+    "unlit": "#D3EDDF",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Gold",
+    "unlit": "#FFFFFF",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Jet",
+    "unlit": "#BDE4E8",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Light",
+    "unlit": "#93E7E4",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Marble",
+    "unlit": "#AEAFB8",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Silver",
+    "unlit": "#FFFFFF",
+    "used_by": [
+     "AtomFountain_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Fountain_Water",
+    "unlit": "#287E89",
+    "used_by": [
+     "AtomFountain_Testbed"
     ]
    },
    {
@@ -1060,6 +1182,13 @@
     ]
    },
    {
+    "material": "DK_Lamp",
+    "unlit": "#FFE2A6",
+    "used_by": [
+     "PlazaSphereLamp_Play"
+    ]
+   },
+   {
     "material": "DK_Lamp_Deco",
     "unlit": "#FFF1C4",
     "used_by": [
@@ -1068,6 +1197,41 @@
      "CafeBay",
      "RecordsEntrance",
      "RecordsEntrance_Official"
+    ]
+   },
+   {
+    "material": "DK_Lamp_Table_Amber",
+    "unlit": "#FFC066",
+    "used_by": [
+     "CafeLamp_Testbed_Amber"
+    ]
+   },
+   {
+    "material": "DK_Lamp_Table_Coral",
+    "unlit": "#FFA891",
+    "used_by": [
+     "CafeLamp_Testbed_Coral"
+    ]
+   },
+   {
+    "material": "DK_Lamp_Table_Lilac",
+    "unlit": "#B79BE4",
+    "used_by": [
+     "CafeLamp_Testbed_Lilac"
+    ]
+   },
+   {
+    "material": "DK_Lamp_Table_Peach",
+    "unlit": "#FFD099",
+    "used_by": [
+     "CafeInterior_Testbed"
+    ]
+   },
+   {
+    "material": "DK_Lamp_Table_Teal",
+    "unlit": "#67D6CE",
+    "used_by": [
+     "CafeInterior_Testbed"
     ]
    },
    {
@@ -1167,6 +1331,27 @@
     ]
    },
    {
+    "material": "DK_Pavilion_Atlas",
+    "unlit": "#D5C9B1",
+    "used_by": [
+     "BoardingPavilion_TB_Square"
+    ]
+   },
+   {
+    "material": "DK_Pavilion_Opal",
+    "unlit": "#FFE3AF",
+    "used_by": [
+     "BoardingPavilion_TB_Square"
+    ]
+   },
+   {
+    "material": "DK_Petiole",
+    "unlit": "#7F7A40",
+    "used_by": [
+     "CafeSet_Tulip_Play"
+    ]
+   },
+   {
     "material": "DK_Pool_Civic",
     "unlit": "#3A9AA6",
     "used_by": [
@@ -1174,10 +1359,24 @@
     ]
    },
    {
+    "material": "DK_Soil",
+    "unlit": "#3B2C22",
+    "used_by": [
+     "PottedTopiary_Play"
+    ]
+   },
+   {
     "material": "DK_Steel",
     "unlit": "#A9ABAE",
     "used_by": [
      "RecordsEntrance"
+    ]
+   },
+   {
+    "material": "DK_Terrazzo_Ivory",
+    "unlit": "#D5C5AF",
+    "used_by": [
+     "CafeSet_Tulip_Play"
     ]
    }
   ]
@@ -1199,7 +1398,7 @@
     "facade_swatch": {
      "civic_w": "#EEE9DA"
     },
-    "role": "walls, piers, planters, kerbs, steps, paving, soffits, the facade fields of the café and the Office",
+    "role": "walls, piers, planters, kerbs, steps, paving, soffits, the facade fields of the caf\u00e9 and the Office",
     "painting": "records-office and inez-cutaway: ivory stone fields (shade reads tan in the paintings too: #AE9881 on gp-entrance's door pier); gp-entrance kerb face #E3CEB1 in sun",
     "use": "walls, piers, planters, steps, paving, soffits"
    },
@@ -1217,7 +1416,7 @@
      "e_seafoam_pale": "#9BCFC2"
     },
     "role": "canopy and marquee fascias, window surround, pier and pilaster caps, bands and fins on the facades, plinth bands, banner cloth, paving inlay (DK_Inlay_Seafoam, same hex)",
-    "painting": "records-office: the seafoam bands and fins of the tower; inez-cutaway: the café canopy fascia and the wrap-round band; gp-entrance: marquee top #A4B3A1 and fascia #778D84 in sun and shade",
+    "painting": "records-office: the seafoam bands and fins of the tower; inez-cutaway: the caf\u00e9 canopy fascia and the wrap-round band; gp-entrance: marquee top #A4B3A1 and fascia #778D84 in sun and shade",
     "use": "canopy and marquee fascias, bands, shelter fascia, bollard band, banners (cloth), paving inlay (DK_Inlay_Seafoam, same hex)"
    },
    "deep": {
@@ -1227,7 +1426,7 @@
     "hex": [
      "#1F6C67"
     ],
-    "rule": "an accent of 0.3 m or less: the café blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
+    "rule": "an accent of 0.3 m or less: the caf\u00e9 blade-sign body, the lamp sleeve, chair cushions, an 8 cm reveal round the Office window. Never a field, fin, fascia, cap or band (Unity read them as dark panels and a dark marquee)",
     "painting": "the paintings use it only as thin edge lines and the sign blades",
     "use": "sign body, cushions, lamp sleeve, window reveal"
    },
@@ -1421,7 +1620,7 @@
     "band": "DK_Inlay_Seafoam (glazed tile, #72B5A7), 4 mm proud"
    },
    "paving": {
-    "stone": "DK_Pave_Civic slabs on the plot surfaces of the square, the café terrace and the office apron (world-space UVs, 4 m tile, like DK_Asphalt_Fine)"
+    "stone": "DK_Pave_Civic slabs on the plot surfaces of the square, the caf\u00e9 terrace and the office apron (world-space UVs, 4 m tile, like DK_Asphalt_Fine)"
    }
   },
   "pool_water": {
@@ -1509,5 +1708,11 @@
    },
    "gate": "every swatch above is at least dE2000 20 from cones #E03A2F, guard #F0A020 and rivals #8A4FD0 (facade_check in out/decokit-008/facade-patch.check.txt)"
   }
+ },
+ "carries": {
+  "BoardingPavilion_TB_Square": [
+   "civic/square-pavilion-support-0",
+   "civic/square-pavilion-support-1"
+  ]
  }
 }

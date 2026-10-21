@@ -203,7 +203,8 @@ describe('times and numbers agree with the mission', () => {
 
 describe('verbs and refusals', () => {
   test('every panel verb has an action, a label, an agent and an engine order', () => {
-    expect(Object.keys(t.actions).sort()).toEqual([...VERBS, ...CONTROL_VERBS].sort());
+    expect(Object.keys(t.actions).filter((k) => !k.startsWith('ring-')).sort()).toEqual([...VERBS, ...CONTROL_VERBS].sort());
+    for (const [k, a] of Object.entries(t.actions)) if (k.startsWith('ring-')) expect(a.label.length, k).toBeLessThanOrEqual(8); // brief 030: one word on a wedge
     for (const a of Object.values(t.actions)) { expect(a.label.length).toBeGreaterThan(0); expect(a.by.length).toBeGreaterThan(0); }
   });
   test('every rulebook verb is an action: scout events, turn approaches, the cell\'s verbs', () => {
@@ -212,6 +213,7 @@ describe('verbs and refusals', () => {
       if (e.id.startsWith('scout.')) ids.add(e.id.slice(6));
       if (e.id.startsWith('turn.')) ids.add(e.id.slice(5));
       if (e.id === 'contact.job') ids.add('call');
+      if (e.id === 'cell.watch') ids.add('watch');
     }
     for (const k of Object.keys(rb.cell)) if (['loop', 'reroute', 'mislead', 'call', 'enter', 'carry', 'take'].includes(k)) ids.add(k);
     expect([...ids].filter((i) => !(i in t.actions))).toEqual([]);
@@ -228,7 +230,7 @@ describe('verbs and refusals', () => {
     expect(new Set(dos).size).toBeGreaterThanOrEqual(19);
     for (const d of ['withdraw', 'cancel', 'panic']) expect(dos, d).toContain(d);
     // the approaches
-    const approaches = Object.values(t.actions).filter((a) => a.engine.do === 'turn').map((a) => a.engine.approach).sort();
+    const approaches = Object.entries(t.actions).filter(([k, a]) => !k.startsWith('ring-') && a.engine.do === 'turn').map(([, a]) => a).map((a) => a.engine.approach).sort();
     expect(approaches).toEqual(['ask', 'help', 'pay', 'pressure']);
   });
   test('brief 013: the takedown has a way for each `how` the engine takes (knockout, kill), and the body orders are for any agent but the takedown is the Enforcer\'s', () => {
@@ -335,7 +337,7 @@ describe('verbs and refusals', () => {
     // Note("call." + p.Role, …) builds the lovers' call code: expand it to the roles whose call can succeed (the driver's own call logs "call.driver" literally)
     expect(simAll().join('\n')).toContain('Note("call." + p.Role');
     if (codes.delete('call.')) for (const r of ['waitress', 'driver']) codes.add('call.' + r);
-    for (const c of ['scout.watch.watched', 'scout.listen.heard', 'scout.down', 'fixer.down', 'tech.down', 'enforcer.down']) codes.add(c);
+    for (const c of ['scout.watch.watched', 'tech.watch.watched', 'fixer.watch.watched', 'enforcer.watch.watched', 'scout.listen.heard', 'scout.down', 'fixer.down', 'tech.down', 'enforcer.down']) codes.add(c);
     const spoken = new Set(Object.values(t.events).flatMap((e) => e.log ?? []));
     const covers = (code: string, set: Iterable<string>) => [...set].some((p) => (p.endsWith('.') ? code.startsWith(p) : code === p));
     const silent = Object.keys(t.silentLogs);
@@ -354,14 +356,14 @@ describe('training hints, the run toast, the going-loud card', () => {
   if (existsSync(motive)) for (const m of read('briefs/011/motive-fights.md').matchAll(/^\| (H\d+) \| (.*?) \| (.*?) \| (.*?) \| (.*?) \|$/gm)) rows.set(m[1]!, { trigger: m[2]!, rings: m[4]!, goneWhen: m[5]! });
   const items = Object.entries(t.hints.items);
   const motiveIds = (id: string) => Number(id.slice(1)) <= 11;
-  test('H1–H18 are all here, H1–H12 in priority order, H13 (turn the view) ahead of them at 0, H17 (the fight hint) ahead of H13 and H14–H16 (the end steps) ahead of H17, H18 (Go, brief 018) ahead of all; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, H13 brief 016\'s, H14–H17 Aster\'s end steps and fight hint, not in Motive\'s table)', () => {
-    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 18 }, (_, i) => `H${i + 1}`));
+  test('H1–H19 are all here, H1–H12 in priority order, H13 (turn the view) ahead of them at 0, H17 (the fight hint) ahead of H13 and H14–H16 (the end steps) ahead of H17, H18 (Go, brief 018) and H19 (noticed, brief 031) ahead of all; H1–H11 carry Motive\'s trigger, ring and gone-when word for word (H12 is brief 014\'s, H13 brief 016\'s, H14–H17 Aster\'s end steps and fight hint, not in Motive\'s table)', () => {
+    expect(items.map(([id]) => id)).toEqual(Array.from({ length: 19 }, (_, i) => `H${i + 1}`));
     expect(items.slice(0, 12).map(([, h]) => h.priority)).toEqual(Array.from({ length: 12 }, (_, i) => i + 1));
     expect(t.hints.items.H13!.priority).toBe(0);
-    const end = ['H14', 'H15', 'H16', 'H18'].map((id) => t.hints.items[id]!.priority);
+    const end = ['H14', 'H15', 'H16', 'H18', 'H19'].map((id) => t.hints.items[id]!.priority);
     for (const p of end) expect(p).toBeLessThan(t.hints.items.H17!.priority); // they win over the fight hint and every flavour hint, the view turn included, when their trigger holds
     expect(t.hints.items.H17!.priority).toBeLessThan(t.hints.items.H13!.priority); // a shot to take beats a view to turn
-    expect(new Set([...end, t.hints.items.H17!.priority, t.hints.items.H13!.priority]).size).toBe(6); // no tie: the host's sort is not stable
+    expect(new Set([...end, t.hints.items.H17!.priority, t.hints.items.H13!.priority]).size).toBe(7); // no tie: the host's sort is not stable
     if (!rows.size) return;
     expect([...rows.keys()]).toEqual(items.filter(([id]) => motiveIds(id)).map(([id]) => id));
     for (const [id, h] of items.filter(([id]) => motiveIds(id))) expect({ trigger: h.trigger, rings: h.rings, goneWhen: h.goneWhen }, id).toEqual(rows.get(id)!);
@@ -375,7 +377,7 @@ describe('training hints, the run toast, the going-loud card', () => {
       if (l.length > HINT_MAX) bad.push(`${id}: ${l.length} characters`);
       const named = h.agent === 'any' ? /\bagent\b/i.test(l) : new RegExp(`\\b${h.agent}\\b`, 'i').test(l);
       if (!named) bad.push(`${id}: names no agent`);
-      if (!l.toLowerCase().includes(word[h.verb] ?? h.verb)) bad.push(`${id}: names no verb (${h.verb})`);
+      if (id !== 'H19' && !l.toLowerCase().includes(word[h.verb] ?? h.verb)) bad.push(`${id}: names no verb (${h.verb})`);
       const own = (word[h.verb] ?? h.verb).toLowerCase();
       for (const lab of labels) if (new RegExp(`\\b${lab}\\b`).test(l) && lab.toLowerCase() !== own) bad.push(`${id}: also introduces ${lab}`);
       if (!h.target.length) bad.push(`${id}: no target`);
@@ -1010,9 +1012,9 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^Run\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'turn-view': /^Turn (the view|twice)\b/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Keep moving)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'turn-view': /^Turn (the view|twice)\b/ };
     const bad: string[] = [];
-    const forms = Object.entries(t.hints.items).flatMap(([id, h]) => [{ id, h, short: h.short, line: h.line, ring: id === 'H13' ? 0 : 1 }, ...(h.door ? [{ id: `${id}.door`, h, short: h.door.short, line: h.door.line, ring: 0 }] : [])]);
+    const forms = Object.entries(t.hints.items).flatMap(([id, h]) => [{ id, h, short: h.short, line: h.line, ring: id === 'H13' || id === 'H19' ? 0 : 1 }, ...(h.door ? [{ id: `${id}.door`, h, short: h.door.short, line: h.door.line, ring: 0 }] : [])]);
     for (const { id, h, short, line, ring } of forms) {
       const bare = short.replace(/<[A-Za-z]+>/g, ''); // for the other rules, a key token is no word
       const n = marked(short);
@@ -1141,7 +1143,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'entry-seen-patrol': ['seen'], 'abduction-seen-camera': ['seen'],
       'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
-      'enforcer-down': ['shot'], 'driver-shot': ['shot'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
+      'enforcer-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
     for (const f of FAILS) expect(f in F.caption, f).toBe(true);

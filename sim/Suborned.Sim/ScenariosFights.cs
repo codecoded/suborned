@@ -308,6 +308,11 @@ namespace Suborned.Sim
                 r.To(g.LureTick + g.VisitWalkTicks);
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Is(g.Inez.KSecret && g.GuardP.KSecret, "a Watch that ends with them together teaches the affair, on both");
+                { // c025 (brief 031): the Scout steps more than 3 m from the guard (a person senses anyone within 3 m), so his clock on her never runs
+                    var gp0 = g.GuardPose()!.Value.pos; var me = r.Op(Scout).Pos; var dir = me - gp0;
+                    var away = g.S.Grid.NearestFree(gp0 + Along(dir == new Pt(0, 0) ? new Pt(100, 0) : dir, 600));
+                    if (away.HasValue) r.SendTo(Scout, away.Value);
+                }
                 var q = g.Preview("pressure", GuardR);
                 r.Is(q.Leverage, "the card reads exposure: his secret");
                 r.Eq(q.Reports, "no", "a Loyal man pressed by exposure doesn't report it");

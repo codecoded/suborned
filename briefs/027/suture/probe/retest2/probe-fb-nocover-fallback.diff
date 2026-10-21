@@ -1,0 +1,23 @@
+--- sim/Suborned.Sim/GameKite.cs	2026-10-20 17:05:15
++++ out/suture027/src4/Suborned.Sim/GameKite.cs	2026-10-20 17:27:55
+@@ -117,6 +117,7 @@
+             if (Tick < g.KiteAt + Labr.KiteReact) return;
+             bool moving = h != null ? h.Moving(Tick) : u != null ? Moving(u.Id) : Moving(g.Id);
+             var sees = u != null ? (p => UnitSees(u, p, false)) : KiteSees(g.Id, pos);
++            if (Environment.GetEnvironmentVariable("DBG") == g.Id && Tick % 10 == 0) Console.WriteLine($"DBG {Sim.Report.Clock(Tick)} {g.Id} by {g.KiteBy} canAnswer {KiteCanAnswer(pos, eff, sees)} side {side} h {(h != null)} blocker {h?.Blocker} branch {FightBranch} prot {Protected(pos, sp)} dist {G.Dist(pos, sp)/100}");
+             if (KiteCanAnswer(pos, eff, sees))
+             {
+                 if (moving && side == 1 && h != null && !h.Blocker) Stop(h);
+@@ -184,9 +185,10 @@
+         {
+             if (h != null && h.Blocker) return;
+             if (u != null && !UnitStill(u)) return;
+-            if (Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
++            if (Environment.GetEnvironmentVariable("DBG") == g.Id && Tick % 10 == 0) Console.WriteLine($"DBG2 {Sim.Report.Clock(Tick)} stepGap {Tick - g.StepAt < T(R.CoverStepGapS)} prot {Protected(pos, sp)} cover {FightCover(pos, sp, h != null ? h.Home : pos)?.Id} home {(h != null ? G.Dist(h.Home, Car)/100 : -1)}");
++            if (Tick - g.StepAt < T(R.CoverStepGapS) || (Protected(pos, sp) && Environment.GetEnvironmentVariable("FB2") != "1")) return;
+             g.StepAt = Tick;
+-            var best = FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) return;
++            var best = FightCover(pos, sp, h != null ? h.Home : pos); if (best == null) { if (Environment.GetEnvironmentVariable("FB") == "1" && h != null && g.W != null) { var to = StopPoint(pos, sp, g.W.EffCm); if (to != pos) { if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} (probe FB) has no cover from {g.KiteBy}: it closes to its ring."); g.KiteLast = Tick; h.Home = to; MoveTo(h, to); g.St = "advance"; } } return; }
+             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach: first shot at {Sim.Report.Clock(g.KiteAt)}, it takes cover at {best.Id} ({Tick - g.KiteAt} ticks).");
+             g.KiteLast = Tick;
+             if (h != null) { TakeCover(g, best); h.Home = best.At; MoveTo(h, best.At); g.St = "advance"; return; }

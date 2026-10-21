@@ -1,4 +1,4 @@
-// The Scout's Watch on a container (GDD §05 bodies: "A container is emptied on a round every 15:00, its time learnable by Watch, in the
+// A Watch on a container (brief 031: any agent's, from its own reach; was the Scout's) (GDD §05 bodies: "A container is emptied on a round every 15:00, its time learnable by Watch, in the
 // mission only"). The round itself is GameTakedown's ServiceRound and the HUD's NextRound; this file holds what the cell has learned of
 // it. The Watch reuses the rulebook's sight.watch (its seconds and its reach) and the Watch cancel line (lost: nothing learned). Mission
 // knowledge only: never carried to the debrief. Hashed only once something is learned, so every run that never watches a container
@@ -26,10 +26,11 @@ namespace Suborned.Sim
         {
             var s = StashById(o.Target);
             if (s == null || s.Kind != "container") return No("target-unknown", $"'{o.Target}' is no container to watch here");
-            if (op.Id != OpId.Scout) return No("only-scout", "only the Scout watches a container's round (§03)");
+            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (KnowsRound(s.Id)) return No("already-watched", $"the cell knows when the round empties the {s.Id} already: a Watch teaches nothing more");
-            if (!G.Within(op.Pos, s.Stand, R.SightReachCm)) return No("too-far", $"stand within {R.SightReachCm / 100} m of the {s.Id}", m: R.SightReachCm / 100);
-            if (!Sees(op.Pos, s.Stand)) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it");
+            int reach = R.WatchReachCm(op.Id); // brief 031: any agent, from its own reach
+            if (!G.Within(op.Pos, s.Stand, reach)) return No("too-far", $"stand within {reach / 100} m of the {s.Id}", m: reach / 100);
+            if (!Sees(op.Pos, s.Stand) || CrowdBlocks(op.Pos, s.Stand)) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it");
             if (!engage) return "";
             Engage(op, o, R.SightWatchS);
             op.BusyQuote = null; op.BusyPaid = 0;
@@ -42,7 +43,7 @@ namespace Suborned.Sim
             if (s == null || s.Kind != "container" || KnowsRound(s.Id)) return;
             roundsKnown.Add((s.Id, Tick));
             int next = NextRound(s.Id).tick, secs = next / Hz;
-            Note("scout.watch.container", $"The Scout has watched the {s.Id}: the round empties it every {R.ServicePeriodS / 60}:{R.ServicePeriodS % 60:00}, next at {secs / 60}:{secs % 60:00}.");
+            Note($"{Sim.Op.Name(op.Id)}.watch.container", $"The {OpTitle(op.Id)} has watched the {s.Id}: the round empties it every {R.ServicePeriodS / 60}:{R.ServicePeriodS % 60:00}, next at {secs / 60}:{secs % 60:00}.");
         }
 
         /// <summary>The learned rounds for the checkpoint hash: no bytes until the cell has learned one.</summary>

@@ -60,7 +60,7 @@ namespace Suborned.Play
         public string Clock = "", Next = "", Cash = "", Trail = "", State = "", City = "", Tracker = ""; public int Alert;
         // the roster and hotbar
         public readonly Slot[] Slots = { new(), new(), new(), new() };
-        public readonly string[] VerbGlyph = new string[4], VerbKey = new string[4], VerbIcon = new string[4], VerbName = new string[4]; public readonly bool[] VerbHas = new bool[4], VerbRefused = new bool[4]; /* a verb the agent has but can't give now (Fire while carrying Vale): its knob greys, its glyph kept */ public int VerbLit, Agent; public string VerbCaption = "";
+        public readonly string[] VerbGlyph = new string[5], VerbKey = new string[5], VerbIcon = new string[5], VerbName = new string[5]; public readonly bool[] VerbHas = new bool[5], VerbRefused = new bool[5]; /* brief 031: five, the Fixer's Watch is his fifth verb (no knob yet) */ /* a verb the agent has but can't give now (Fire while carrying Vale): its knob greys, its glyph kept */ public int VerbLit, Agent; public string VerbCaption = "";
         public bool AllStrips, Fight; public string NextLabel = "", NextTime = "", Objective = "", ObjectiveTail = "", CancelKey = "";
         // marks in the world
         public readonly AgentMark[] Marks = { new(), new(), new(), new() };
@@ -134,7 +134,7 @@ namespace Suborned.Play
             {
                 var s = Slots[i]; var op = g.Ops[i]; var d = h.DoingOf(i);
                 s.Key = h.AgentKeyLabel(i); s.Name = Names[i]; s.Selected = h.Selected[i]; s.HintRing = h.HintNow != null && h.HintNow.Portrait == i;
-                s.Hp = op.Gun.Health; s.HpMax = Mathf.Max(op.Gun.Max, op.Gun.Health); s.Armed = op.Gun.W != null; s.Drawn = op.Gun.Drawn && op.Gun.HolsterAt < 0;
+                s.Hp = h.Seg(op.Gun.Health); s.HpMax = h.Seg(Mathf.Max(op.Gun.Max, op.Gun.Health)); s.Armed = op.Gun.W != null; s.Drawn = op.Gun.Drawn && op.Gun.HolsterAt < 0; // brief 027: one segment per 10 with the lab (Latch 2026-10-21: Armed and Drawn had slipped into this comment, so the sidearm mark never showed)
                 s.Stance = op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down;
                 s.Busy = d.Busy; s.Phase = d.Phase; s.Glyph = d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph; s.Label = d.Label; s.Progress = d.Progress;
                 s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : d.Phase == "firing" ? (h.FireDownS(i) is int fs && fs >= 0 ? $"{fs} s" : "?") : ""; // firing: until the target is down at the present odds, "?" while the line is broken (Glyph fight r1 #6)
@@ -175,7 +175,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 4; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -187,11 +187,12 @@ namespace Suborned.Play
             VerbLit = h.LitSlot; VerbCaption = $"{Names[(int)h.Agent]}: {(h.LitSlot >= 0 && h.LitSlot < slots.Length ? slots[h.LitSlot].Label : "")}";
             // the fight
             Fighters.Clear(); Down.Clear();
-            foreach (var (id, gun) in h.Fighters()) { var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = gun.Health, Max = Mathf.Max(gun.Max, gun.Health), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
+            foreach (var (id, gun) in h.Fighters()) { var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
             for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip
-            var hov = h.Hover; bool act = hov != null && hov.Kind != "crowd" && hov.Kind != "op" && !ended;
+            var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it
             Cursor = h.AimLine != null ? (h.AimNoLine ? 3 : 2) : act ? 1 : 0;
+            if (h.Frozen && h.TargetFreeze && !h.controls.actionPlate && !ended) Cursor = 2; // brief 030 (no plate): target mode is a crosshair cursor
             HoverRing = act ? h.TargetWorld(hov) : null;
             string alt = !ended && h.Panel == null && h.Loud == null ? h.AimLine ?? (hov == null ? h.MoveChip : null) : null;
             var it = h.HoverIntent;

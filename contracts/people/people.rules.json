@@ -185,7 +185,7 @@
     "perPerson": { "min": 0, "max": 1 },
     "list": {
       "affair": {
-        "requires": "lover-tie", "learnedBy": ["scout.listen", "scout.watch"],
+        "requires": "lover-tie", "learnedBy": ["scout.listen", "cell.watch"],
         "src": "Story spine v0.1: Inez's affair with the guard is her secret; Pressure threatens to expose it",
         "proposed": true,
         "reason": "every person with a lover tie holds `affair`, and nobody else does: the tie is the secret, so the checker can see it. Watch teaches it only when it ends with the two lovers together."

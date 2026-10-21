@@ -15,6 +15,13 @@ const orders = resolve(out, 'orders.json'); writeOrders(orders);
 const pass = argv.filter((_, i) => argv[i] !== '--out' && argv[i - 1] !== '--out');
 const blender = process.env.BLENDER ?? '/Applications/Blender.app/Contents/MacOS/Blender';
 const run = (args: string[]) => Bun.spawnSync([blender, '-b', '-t', '1', '-P', resolve(import.meta.dir, 'export_kit.py'), '--', ...args, '--orders', orders], { env: { ...process.env, DECOKIT_OUT: out, PYTHONHASHSEED: '0' }, stdout: 'inherit', stderr: 'inherit' }).exitCode;
+// The budgeted ground textures (brief 026): numpy and Pillow, no Blender; export_kit copies them with the pieces.
+const gt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'ground_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (gt.exitCode) process.exit(gt.exitCode);
+const ct = Bun.spawnSync(['python3', resolve(import.meta.dir, 'cabinet_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ct.exitCode) process.exit(ct.exitCode);
+const pt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'pavilion_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (pt.exitCode) process.exit(pt.exitCode);
+const ft = Bun.spawnSync(['python3', resolve(import.meta.dir, 'fountain_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ft.exitCode) process.exit(ft.exitCode);
+const rt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rt.exitCode) process.exit(rt.exitCode);
+const rf = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_face_stage.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rf.exitCode) process.exit(rf.exitCode);
 // Default: the plan's generated pieces (full export + LODs), then LODs only for the adopted DecoKit pieces (their binaries stay the store's).
 const passes = pass.length ? [pass] : [['--only', readOrders().pieces.map(o => o.id).join(',')], ['--lods-only', '--only', [...WAVE1].join(',')]];
 for (const a of passes) { const c = run(a); if (c) process.exit(c); }

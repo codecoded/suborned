@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Brief 033 · Portrait cues the faces cannot carry at 64 px</title>
+<style>
+:root{--teal:#0f4a45;--teal2:#16665e;--cream:#f4ecd8;--cell:#4fe3e8;--ink:#12302d;--brass:#c9a35a;--alarm:#ff5a3c}
+*{box-sizing:border-box}
+body{margin:0;background:#efe7d3;color:#1d2b29;font:15px/1.5 "Helvetica Neue",Arial,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:28px 24px 90px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:36px 0 8px;border-top:2px solid var(--teal);padding-top:14px}
+.sub{color:#4a5b58;margin:0 0 14px;max-width:920px}code{background:#e4dbc0;padding:1px 5px;border-radius:3px;font-size:13px}
+.cap{font-size:13px;color:#4a5b58;margin:4px 0 14px;max-width:900px}
+table{border-collapse:collapse;background:#fbf7ec;margin:8px 0}th,td{border:1px solid #cdbf99;padding:6px 9px;font-size:14px;text-align:left;vertical-align:top}th{background:var(--teal);color:var(--cream)}
+.btn{font:600 13px "Helvetica Neue",Arial;background:var(--teal);color:var(--cream);border:0;border-radius:4px;padding:6px 12px;cursor:pointer}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:900px}
+.cell{background:#2a3d3a;border-radius:8px;padding:8px;text-align:center;color:var(--cream);font-size:13px}
+.cell .row{display:flex;gap:10px;align-items:center;justify-content:center}
+.cell b{display:block;margin-top:4px}
+.cell span{font-size:12px;color:#bfe3dc;display:block;min-height:32px}
+.strip{background:#0f4a45;padding:10px 14px;display:flex;gap:6px;width:max-content;border-radius:6px}
+.gs{filter:grayscale(1)}
+svg text{font-family:"Helvetica Neue",Arial,sans-serif}
+@keyframes orbit{to{transform:rotate(360deg)}}
+.orbit{animation:orbit 2s linear infinite;transform-box:fill-box;transform-origin:center}
+@keyframes ripple{0%{transform:scale(.92);opacity:.95}70%,100%{transform:scale(1.28);opacity:0}}
+.ripple{animation:ripple 2.4s ease-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes jit{0%{transform:rotate(-5deg)}50%{transform:rotate(5deg)}100%{transform:rotate(-5deg)}}
+.jit{animation:jit .24s steps(2) infinite;transform-box:fill-box;transform-origin:center}
+@keyframes flick{0%,100%{opacity:1}50%{opacity:.1}}
+.flick{animation:flick .5s steps(1) infinite}
+@keyframes crack{0%,18%{opacity:1}22%,100%{opacity:0}}
+.crack{animation:crack 3s steps(1) infinite}
+@keyframes shake{0%,20%,100%{transform:translate(0,0)}4%{transform:translate(-2px,1px)}8%{transform:translate(2px,-1px)}12%{transform:translate(-1px,0)}}
+.shake{animation:shake 3s linear infinite}
+@keyframes beat{0%,100%{stroke-width:3}12%{stroke-width:5.500}24%{stroke-width:3}36%{stroke-width:5}48%{stroke-width:3}}
+.beat{animation:beat 1.4s ease-in-out infinite}
+@keyframes sweep{0%{stroke-dashoffset:0;opacity:1}20%{stroke-dashoffset:-100;opacity:1}21%,100%{opacity:0;stroke-dashoffset:-100}}
+.sweep{animation:sweep 3s linear infinite}
+@keyframes pipbeat{0%,100%{opacity:1}50%{opacity:.35}}
+.pipbeat{animation:pipbeat 1s ease-in-out infinite}
+@keyframes pipflash{0%,12%{fill:#ff5a3c;stroke:#ff5a3c}16%,100%{fill:none}}
+.pipflash{animation:pipflash 3s steps(1) infinite}
+</style></head><body><main id="m">
+<h1>Brief 033 · what the portrait carries besides the face</h1>
+<p class="sub"><b style="background:#0f4a45;color:#f4ecd8;padding:2px 8px;border-radius:10px">Ready for Latch</b> Glyph, 2026-10-21. Forma's second pass is landing: Tech's nine final stills are in <code>briefs/033/portraits/final/</code> and are used below; the other three agents use the same layer once their stills land. At 64 px, calm, focused and noticed are close, and hurt and under fire are close (brief 033), so the cues below are drawn as a separate vector layer over the still, one shape or motion per state, never colour alone. They are UI, not baked into the stills, so the 0.15 s cross-fade changes only the face. <button class="btn" onclick="document.getElementById('m').classList.toggle('gs')">Greyscale check</button></p>
+
+<h2>1 · The slots on a portrait</h2>
+<div id="slots"></div>
+<table>
+<tr><th>slot</th><th>carries</th><th>source</th></tr>
+<tr><td>top left</td><td>the key cap, 1 to 4</td><td>brief 030</td></tr>
+<tr><td>top right</td><td><b>attention eye badge</b>: an eye with 1, 2 or 3 ticks (noticed, wary, reporting). The same badge as on the attention callout (brief 031 cues): the callout is the moment, this is the lasting state, until the stage cools (shown after the 2 s display delay). It is drawn from <code>AttentionStage</code> towards this agent, never from a cone test.</td><td>brief 031</td></tr>
+<tr><td>bottom left</td><td>the sidearm mark: hollow holstered, filled drawn, pulsing ring with a seconds count when a watcher has shouted; click toggles; stance fan on hover</td><td>brief 030</td></tr>
+<tr><td>bottom right</td><td>the walk/run glyph, or the busy chip (act glyph, bar, seconds)</td><td>§10</td></tr>
+<tr><td>the ring</td><td>the state cue (section 2): selection ring stays turquoise inside; the state cue is drawn outside it, 4 px out</td><td>this brief</td></tr>
+<tr><td>pips</td><td>health: 4 (Scout, Fixer, Tech) or 6 (Enforcer), a row of 8 x 14 px bars. On the board below, under the face; in the roster chip they sit beside it, as today</td><td>§10, §03</td></tr>
+</table>
+
+<h2>2 · The nine states, with their cues (3x, and true size beside)</h2>
+<div class="g3" id="states"></div>
+<p class="cap">Motion loops every 3 s here so you can see it; in play the motion runs only while the state holds (held at least 1 s, 033's priority table; the first true wins). Each state has a different shape as well as its motion: orbit arc, ripple, spiked ring, rays at the gun, a cracked ring with a shake, a dashed heartbeat ring, a slash, a one-off sweep.</p>
+
+<h2>3 · True size, as the player sees it</h2>
+<div class="strip" id="strip"></div>
+<p class="cap">64 px, 1:1. Squint test: you can tell downed (slash, grey), under fire (spikes), badly hurt (dashed ring, one pip), hurt (crack, one pip hollow) and success (a sweep) from calm without reading the face; calm, focused and noticed differ by the orbit arc and the eye badge.</p>
+
+<h2>4 · Rules</h2>
+<table>
+<tr><th>question</th><th>answer [S, tune by play]</th></tr>
+<tr><td>priority</td><td>As brief 033: downed, badly hurt, under fire, hurt, firing, noticed, success, focused, calm; the first true wins; held at least 1 s. The eye badge, the sidearm mark, the busy chip and the pips are not states: they show whenever they are true.</td></tr>
+<tr><td>noticed</td><td>True when this agent's highest <code>AttentionStage</code> is 1 or more (never the cone test). The state cue is the ripple and the eye badge appears with it; at stage 2 and 3 the badge adds ticks, the ripple repeats once per step up. It cools with the 2 s delay.</td></tr>
+<tr><td>under fire</td><td>A shot at this agent in the last 1.5 s. The ring is replaced by 8 short spikes that jitter at 4 Hz.</td></tr>
+<tr><td>firing</td><td>Three rays at the sidearm corner, flickering at 2 Hz, in time with the shots; the sidearm mark is filled.</td></tr>
+<tr><td>hurt</td><td>On a hit: one lost pip flashes alarm-orange and goes hollow, the ring shows a crack (a zigzag across the rim) for 0.6 s and the face shakes 2 px once. It then shows the health baseline.</td></tr>
+<tr><td>badly hurt</td><td>Health at most a third: the ring is dashed and beats 1 Hz (thickness swell), the remaining pips pulse.</td></tr>
+<tr><td>downed</td><td>The face desaturates to 20 % and a diagonal slash crosses it; the ring turns solid dark; all pips hollow; the sidearm mark hides. Held until carried, rescued or the mission ends.</td></tr>
+<tr><td>success</td><td>A beat of 2 s: one bright arc sweeps the ring once (0.6 s) and three short ticks sit at the top.</td></tr>
+<tr><td>focused</td><td>A short arc orbits the ring (2 s a turn) while a Watch, Listen, talk or timed act runs; the busy chip carries the seconds.</td></tr>
+<tr><td>budget</td><td>0 added at rest: calm draws nothing. The layer sits inside the existing 64 px portrait plus a 4 px halo and the 14 px eye badge. No text on any portrait except the key cap and a seconds count on the shouted sidearm mark.</td></tr>
+<tr><td>colour</td><td>Cream and ink for shape, the cell's turquoise for selection (existing), and the alarm orange only on the hurt flash and the pip flash, where the shape already says it. Greyscale check is on this page.</td></tr>
+</table>
+<p class="cap"><b>For Latch:</b> one vector layer per portrait (UI Toolkit, the shapes are circles, arcs, short lines and a slash), driven by the state function in 033 plus <code>AttentionStage</code>, health and the sidearm mark's inputs; pips are bars. <b>For Forma:</b> nothing more; keep the faces' important detail inside the central 44 px so the eye badge and the sidearm mark never sit on a face (the Tech finals do). Check at 64 and 96 px on the real HUD once the four agents' finals are in. No decision is left for Sky: the cues follow his approved states; he can say if the blood level, the slash or the spikes read too much.</p>
+
+<script>
+const IMG=s=>`portraits/final/tech_${s}@2x.png`;
+const ST=[['calm','calm',4],['focused','focused',4],['noticed','noticed',4],['under_fire','under fire',3],['firing','firing',4],['hurt','hurt',3],['badly_hurt','badly hurt',1],['downed','downed',0],['success','success',4]];
+const TAG=['','arc orbits (busy)','ripple + eye badge','spiked ring, jitter','rays at the gun, flicker','cracked ring, shake, pip flash','dashed heartbeat ring, pips pulse','slash, grey, pips out','one sweep, three ticks'];
+const sel='#4fe3e8';
+function eye(x,y,n){let t='';for(let i=0;i<n;i++)t+=`<rect x="${x+9-n*2.5+i*5}" y="${y-8}" width="3" height="5" rx="1.200" fill="#ffe9a8"/>`;
+  return `<g><rect x="${x}" y="${y}" width="26" height="16" rx="8" fill="#12302d" stroke="#f4ecd8" stroke-width="1.200"/><path d="M${x+5} ${y+8} Q${x+13} ${y+2} ${x+21} ${y+8} Q${x+13} ${y+14} ${x+5} ${y+8}Z" fill="none" stroke="#f4ecd8" stroke-width="1.500"/><circle cx="${x+13}" cy="${y+8}" r="2.300" fill="#f4ecd8"/>${t}</g>`;}
+function gun(drawn,x=2,y=44){return `<circle cx="${x+9}" cy="${y+9}" r="9.500" fill="${drawn?'#4fe3e8':'#16665e'}" stroke="${drawn?'#12302d':'#f4ecd8'}" stroke-width="1.500"/><path d="M${x+4} ${y+7} h9 v3 h-3 l-1 3 h-3 l1 -3 h-3z" fill="${drawn?'#12302d':'none'}" stroke="${drawn?'#12302d':'#f4ecd8'}" stroke-width="1.200" stroke-linejoin="round"/>`;}
+function pips(n,total=4,key=''){let o='';for(let i=0;i<total;i++){const on=i<n;const cls=(key=='hurt'&&i==3)?' class="pipflash"':(key=='badly_hurt'&&on?' class="pipbeat"':'');
+  o+=`<rect x="${8+i*14}" y="78" width="10" height="14" rx="2" ${cls} fill="${on||(key=='hurt'&&i==3)?'#f4ecd8':'none'}" stroke="#f4ecd8" stroke-width="1.500"/>`;}return o;}
+function portrait(k,size){
+  let under='',over='',img='',ringStroke=sel,ringDash='',ringCls='',ringW=3;
+  const imgfilter=k=='downed'?'filter:grayscale(.8) brightness(.8)':'';
+  switch(k){
+   case 'focused':over+=`<g class="orbit"><circle cx="32" cy="32" r="36" fill="none" stroke="none"/><path d="M32 -4 A36 36 0 0 1 60 9" fill="none" stroke="#12302d" stroke-width="5.500" stroke-linecap="round"/><path d="M32 -4 A36 36 0 0 1 60 9" fill="none" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/></g>`;break;
+   case 'noticed':over+=`<g class="ripple"><circle cx="32" cy="32" r="33" fill="none" stroke="#ffe9a8" stroke-width="3"/></g>`;break;
+   case 'under_fire':{let sp='';for(let i=0;i<8;i++){const a=(i*45+22.5)*Math.PI/180;sp+=`<path d="M${32+Math.cos(a)*36} ${32+Math.sin(a)*36} L${32+Math.cos(a)*43} ${32+Math.sin(a)*43}" stroke="#12302d" stroke-width="5.500" stroke-linecap="round"/><path d="M${32+Math.cos(a)*36} ${32+Math.sin(a)*36} L${32+Math.cos(a)*43} ${32+Math.sin(a)*43}" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/>`;}
+      over+=`<g class="jit"><circle cx="32" cy="32" r="43" fill="none" stroke="none"/>${sp}</g>`;break;}
+   case 'firing':over+=`<g class="flick"><path d="M2 54 l-8 4 M4 60 l-6 8 M12 64 l-2 9" stroke="#12302d" stroke-width="5" stroke-linecap="round"/><path d="M2 54 l-8 4 M4 60 l-6 8 M12 64 l-2 9" stroke="#ffe9a8" stroke-width="2.600" stroke-linecap="round"/></g>`;break;
+   case 'hurt':over+=`<g class="crack"><path d="M52 8 l-3 5 l5 2 l-4 6 l5 2" fill="none" stroke="#12302d" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/><path d="M52 8 l-3 5 l5 2 l-4 6 l5 2" fill="none" stroke="#ff5a3c" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round"/></g>`;break;
+   case 'badly_hurt':ringDash='stroke-dasharray="7 5"';ringCls='beat';break;
+   case 'downed':ringStroke='#3b4a47';over+=`<path d="M8 56 L56 8" stroke="#12302d" stroke-width="8" stroke-linecap="round"/><path d="M8 56 L56 8" stroke="#f4ecd8" stroke-width="3.500" stroke-linecap="round"/>`;break;
+   case 'success':over+=`<circle class="sweep" cx="32" cy="32" r="36" fill="none" stroke="#12302d" stroke-width="6" pathLength="100" stroke-dasharray="18 82" stroke-linecap="round"/><circle class="sweep" cx="32" cy="32" r="36" fill="none" stroke="#fff" stroke-width="3.200" pathLength="100" stroke-dasharray="18 82" stroke-linecap="round"/><path d="M26 -9 v-4 M32 -10 v-6 M38 -9 v-4" stroke="#f4ecd8" stroke-width="2.600" stroke-linecap="round"/>`;break;
+  }
+  const badge=k=='noticed'?eye(44,-6,1):'';
+  const drawn=['under_fire','firing','hurt','badly_hurt'].includes(k);
+  const sidearm=k=='downed'?'':gun(drawn);
+  const row=ST.find(s=>s[0]==k);
+  const total=4;
+  const face=`<g class="${k=='hurt'?'shake':''}"><image href="${IMG(k)}" x="3" y="3" width="58" height="58" clip-path="url(#cp)" preserveAspectRatio="xMidYMid slice" style="${imgfilter}"/></g>`;
+  return `<svg width="${size}" height="${size*1.34}" viewBox="-16 -20 96 128" overflow="visible">
+   <defs><clipPath id="cp"><circle cx="32" cy="32" r="29"/></clipPath></defs>
+   <circle cx="32" cy="32" r="31" fill="#16665e"/>${face}
+   <circle cx="32" cy="32" r="31" fill="none" stroke="#12302d" stroke-opacity=".7" stroke-width="5.500" ${ringDash}/>
+   <circle class="${ringCls}" cx="32" cy="32" r="31" fill="none" stroke="${ringStroke}" stroke-width="3" ${ringDash}/>
+   ${over}${sidearm}${badge}${pips(row[2],total,k)}
+   <rect x="-4" y="-4" width="18" height="20" rx="3.500" fill="#f4ecd8"/><text x="5" y="11.500" text-anchor="middle" font-size="14" font-weight="700" fill="#0f4a45">3</text>
+  </svg>`;
+}
+document.getElementById('states').innerHTML=ST.map((s,i)=>`<div class="cell"><div class="row">${portrait(s[0],168)}${portrait(s[0],64)}</div><b>${i+1} · ${s[1]}</b><span>${TAG[i]}</span></div>`).join('');
+document.getElementById('strip').innerHTML=ST.map(s=>portrait(s[0],64)).join('');
+document.getElementById('slots').innerHTML=`<div style="display:flex;gap:30px;align-items:center;background:#0f4a45;padding:14px 24px;border-radius:8px;width:max-content">${portrait('noticed',230)}<div style="color:#f4ecd8;font-size:13px;line-height:1.9">① key cap (top left)<br>② attention eye badge (top right, 1 to 3 ticks)<br>③ sidearm mark (bottom left)<br>④ walk/run glyph or busy chip (bottom right)<br>⑤ the state cue, outside the selection ring<br>⑥ health pips</div></div>`;
+</script>
+</main></body></html>

@@ -1,0 +1,114 @@
+lab             L1   failure entry-seen-camera 0:56.0   13/13    2  2→0   raised  active      0    0    0     5 %    1    3    26    1/1    c0/0 s0   pass (fail)
+lab             L1c  failure sealed    5:00.4   30/30    2  2→-1  raised  active      0    1    0    44 %    8    6    51    2/1    c3/6 s9   pass (fail)
+lab             L2   failure sealed    3:24.2   68/68    3  2→-2  high    active      0    2    0    44 %    8   11    73    2/2    c0/0 s0   pass (fail)
+lab             L3   success           4:54.6   22/26    2  2→-2  raised  active      0    2    1    50 %    9    5    32    1/1    c1/6 s15  pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4 up at the end without contact
+lab             L4   failure sealed    7:21.7   31/31    3  2→-2  high    active      0    0    0     5 %    1    5    42    3/2    c0/0 s0   pass (fail)
+lab             P-A  success           5:25.5    5/5     1  2→3   calm    active      0    0    0     5 %    1    3    34    1/1    c0/0 s3   pass
+lab             P-G  success           4:43.1    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    34    0/0    c0/2 s21  pass
+lab             P-B  success           8:40.6    3/3     0  2→3   calm    active      0    0    0    16 %    3    2    26    0/0    c0/0 s13  pass
+lab             L3:kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab             L3:reset-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab             L3:focus-reset-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab             L3:cycle-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab             L3:carbine-kite failure enforcer-down 3:40.6   35/35    2  2→0   raised  active      0    1    0    33 %    6    4    20    3/1    c0/0 s0   pass (fail)
+lab             P-G:reset success           4:43.1    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    34    0/0    c0/2 s21  pass
+lab             L3:enfgo-carfree-runkite failure enforcer-down 3:51.5    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab             L3:focus-enfgo-carfree-runkite failure enforcer-down 3:51.5    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab             L3:enfgo-carfree-kite failure enforcer-down 3:51.5   13/13    2  2→0   raised  active      0    2    0    55 %   10    1     6    1/1    c3/6 s17  pass (fail)
+lab             L3:at208-runkite failure enforcer-down 4:05.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab             L3:focus-at208-runkite failure enforcer-down 4:05.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab             L3:at208-kite failure enforcer-down 4:05.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab             L3:at196-runkite failure enforcer-down 3:53.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab             L3:at236-runkite failure enforcer-down 4:33.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/8 s9   pass (fail)
+lab             L3:hold-runkite failure enforcer-down 4:51.5    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/8 s9   pass (fail)
+lab             L3:tight-kite failure enforcer-down 4:50.4   18/18    2  2→-1  raised  active      0    2    0    55 %   10    6    60    2/1    c1/8 s8   pass (fail)
+lab             L3:tight-reset-kite failure enforcer-down 4:50.4   18/18    2  2→-1  raised  active      0    2    0    61 %   11    6    63    1/1    c1/8 s10  pass (fail)
+lab             L3:tight-focus-reset-kite failure enforcer-down 4:49.7   18/18    2  2→-1  raised  active      0    2    0    55 %   10    6    59    3/1    c1/8 s8   pass (fail)
+lab             L3:tight-cycle-kite failure enforcer-down 4:50.4   18/18    2  2→-1  raised  active      0    2    0    61 %   11    6    63    1/1    c1/8 s10  pass (fail)
+lab             L3:tight-carbine-kite failure enforcer-down 3:41.3   35/35    2  2→0   raised  active      0    1    0    33 %    6    4    20    3/1    c0/0 s0   pass (fail)
+lab             L3:tight-enfgo-carfree-runkite failure enforcer-down 3:51.5   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c3/6 s17  pass (fail)
+lab             L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 3:51.5   15/15    2  2→-1  raised  active      0    3    0    83 %   15    1    14    1/1    c3/6 s29  pass (fail)
+lab             L3:tight-enfgo-carfree-kite failure enforcer-down 3:51.5   17/17    2  2→0   raised  active      0    2    0    55 %   10    1    25    1/1    c2/6 s9   pass (fail)
+lab             L3:tight-at196-runkite failure enforcer-down 3:53.4   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c3/6 s17  pass (fail)
+lab             L3:tight-at208-runkite failure enforcer-down 4:05.4   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c1/6 s17  pass (fail)
+lab             L3:tight-focus-at208-runkite failure enforcer-down 4:05.4   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c1/6 s17  pass (fail)
+lab             L3:tight-hold-runkite failure enforcer-down 4:51.5   15/15    2  2→-1  raised  active      0    4    0   100 %   18    1    15    1/1    c5/8 s35  pass (fail)
+lab             6.4 triggers: none
+lab             6.4.7 lethality (two trained shooters at the sidearm's effective ring, open ground): an op down in 3.5 s, the Enforcer in 4.5 s
+lab             6.4.7b cell → hostile (three trained sidearms at their effective ring on an uncovered rival): down 1.0 s after the first shot
+lab-cover       L1   failure entry-seen-camera 0:56.0   13/13    2  2→0   raised  active      0    0    0     5 %    1    3    26    2/1    c0/0 s0   pass (fail)
+lab-cover       L1c  failure entry-seen-camera 2:32.2   14/14    2  2→0   raised  active      0    0    0     5 %    1    3    23    1/0    c0/0 s0   pass (fail)
+lab-cover       L2   failure sealed    3:24.2   30/30    2  2→-1  raised  active      0    0    0    16 %    3    5    54    2/1    c0/0 s0   pass (fail)
+lab-cover       L3   success           4:42.7   26/38    2  2→-2  raised  active      0    3    3    66 %   12    4    41    1/1    c2/6 s18  pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4 up at the end without contact
+lab-cover       L4   failure sealed    7:21.7   31/31    3  2→-2  high    active      0    0    0     5 %    1    5    42    3/2    c0/0 s0   pass (fail)
+lab-cover       P-A  success           5:12.6    5/5     1  2→3   calm    active      0    0    0     5 %    1    3    32    1/1    c0/0 s3   pass
+lab-cover       P-G  success           4:30.2    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    32    0/0    c0/2 s21  pass
+lab-cover       P-B  success           8:22.7    3/3     0  2→3   calm    active      0    0    0    16 %    3    2    26    0/0    c0/0 s14  pass
+lab-cover       L3:kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-cover       L3:reset-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-cover       L3:focus-reset-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-cover       L3:cycle-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-cover       L3:carbine-kite failure enforcer-down 3:40.6   35/35    2  2→0   raised  active      0    1    0    33 %    6    4    20    3/1    c0/0 s0   pass (fail)
+lab-cover       P-G:reset success           4:43.1    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    34    0/0    c0/2 s21  pass
+lab-cover       L3:enfgo-carfree-runkite failure enforcer-down 3:51.5    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab-cover       L3:focus-enfgo-carfree-runkite failure enforcer-down 3:51.5    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab-cover       L3:enfgo-carfree-kite failure enforcer-down 3:51.5   13/13    2  2→0   raised  active      0    2    0    55 %   10    1     6    1/1    c3/6 s17  pass (fail)
+lab-cover       L3:at208-runkite failure enforcer-down 4:05.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab-cover       L3:focus-at208-runkite failure enforcer-down 4:05.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab-cover       L3:at208-kite failure enforcer-down 4:05.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab-cover       L3:at196-runkite failure enforcer-down 3:53.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/6 s9   pass (fail)
+lab-cover       L3:at236-runkite failure enforcer-down 4:33.4    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/8 s9   pass (fail)
+lab-cover       L3:hold-runkite failure enforcer-down 4:51.5    9/9     2  2→0   raised  active      0    1    0    33 %    6    1     2    1/1    c1/8 s9   pass (fail)
+lab-cover       L3:tight-kite failure enforcer-down 4:50.4   18/18    2  2→-1  raised  active      0    2    0    55 %   10    6    60    2/1    c1/8 s8   pass (fail)
+lab-cover       L3:tight-reset-kite failure enforcer-down 4:50.4   18/18    2  2→-1  raised  active      0    2    0    61 %   11    6    63    1/1    c1/8 s10  pass (fail)
+lab-cover       L3:tight-focus-reset-kite failure enforcer-down 4:49.7   18/18    2  2→-1  raised  active      0    2    0    55 %   10    6    59    3/1    c1/8 s8   pass (fail)
+lab-cover       L3:tight-cycle-kite failure enforcer-down 4:50.4   18/18    2  2→-1  raised  active      0    2    0    61 %   11    6    63    1/1    c1/8 s10  pass (fail)
+lab-cover       L3:tight-carbine-kite failure enforcer-down 3:41.3   35/35    2  2→0   raised  active      0    1    0    33 %    6    4    20    3/1    c0/0 s0   pass (fail)
+lab-cover       L3:tight-enfgo-carfree-runkite failure enforcer-down 3:51.5   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c3/6 s17  pass (fail)
+lab-cover       L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 3:51.5   15/15    2  2→-1  raised  active      0    3    0    83 %   15    1    14    1/1    c3/6 s29  pass (fail)
+lab-cover       L3:tight-enfgo-carfree-kite failure enforcer-down 3:51.5   17/17    2  2→0   raised  active      0    2    0    55 %   10    1    25    1/1    c2/6 s9   pass (fail)
+lab-cover       L3:tight-at196-runkite failure enforcer-down 3:53.4   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c3/6 s17  pass (fail)
+lab-cover       L3:tight-at208-runkite failure enforcer-down 4:05.4   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c1/6 s17  pass (fail)
+lab-cover       L3:tight-focus-at208-runkite failure enforcer-down 4:05.4   15/15    2  2→-1  raised  active      0    2    0    55 %   10    1     9    1/1    c1/6 s17  pass (fail)
+lab-cover       L3:tight-hold-runkite failure enforcer-down 4:51.5   15/15    2  2→-1  raised  active      0    4    0   100 %   18    1    15    1/1    c5/8 s35  pass (fail)
+lab-cover       6.4 triggers: none
+lab-cover       6.4.7 lethality (two trained shooters at the sidearm's effective ring, open ground): an op down in 3.5 s, the Enforcer in 4.5 s
+lab-cover       6.4.7b cell → hostile (three trained sidearms at their effective ring on an uncovered rival): down 1.0 s after the first shot
+lab-field-on    L1   failure entry-seen-camera 0:56.0   13/13    2  2→0   raised  active      0    0    0     5 %    1    3    26    1/1    c0/0 s0   pass (fail)
+lab-field-on    L1c  failure sealed    5:00.4   30/30    2  2→-1  raised  active      0    1    0    44 %    9    6    50    2/1    c3/6 s10  pass (fail)
+lab-field-on    L2   failure sealed    3:24.2   68/68    3  2→-2  high    active      0    0    0    22 %    8   11    73    2/2    c0/0 s0   pass (fail)
+lab-field-on    L3   success           4:54.6   22/26    2  2→-2  raised  active      0    2    1    50 %    9    5    32    1/1    c1/6 s15  pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4 up at the end without contact
+lab-field-on    L4   failure sealed    7:21.7   31/31    3  2→-2  high    active      0    0    0     5 %    1    5    42    3/2    c0/0 s0   pass (fail)
+lab-field-on    P-A  success           5:25.5    5/5     1  2→3   calm    active      0    0    0     5 %    1    3    34    1/1    c0/0 s3   pass
+lab-field-on    P-G  success           4:43.9    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    34    0/0    c0/2 s22  pass
+lab-field-on    P-B  success           8:40.6    3/3     0  2→3   calm    active      0    0    0    16 %    3    2    26    0/0    c0/0 s13  pass
+lab-field-on    L3:kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-field-on    L3:reset-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-field-on    L3:focus-reset-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-field-on    L3:cycle-kite failure sealed    5:05.0    9/9     2  2→0   raised  active      0    0    0     0 %    0    1     2    1/1    c0/8 s0   pass (fail)
+lab-field-on    L3:carbine-kite failure enforcer-down 3:40.6   35/35    2  2→0   raised  active      0    1    0    33 %    6    4    20    3/1    c0/0 s0   pass (fail)
+lab-field-on    P-G:reset success           4:43.9    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    34    0/0    c0/2 s22  pass
+lab-field-on    L3:enfgo-carfree-runkite failure enforcer-down 3:55.5    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/6 s13  pass (fail)
+lab-field-on    L3:focus-enfgo-carfree-runkite failure enforcer-down 3:55.5    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/6 s13  pass (fail)
+lab-field-on    L3:enfgo-carfree-kite failure enforcer-down 3:55.5   11/11    2  2→0   raised  active      0    2    0    55 %   17    1     5    1/1    c3/6 s25  pass (fail)
+lab-field-on    L3:at208-runkite failure enforcer-down 4:09.4    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/8 s13  pass (fail)
+lab-field-on    L3:focus-at208-runkite failure enforcer-down 4:09.4    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/8 s13  pass (fail)
+lab-field-on    L3:at208-kite failure enforcer-down 4:09.4    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/8 s13  pass (fail)
+lab-field-on    L3:at196-runkite failure enforcer-down 3:57.4    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/6 s13  pass (fail)
+lab-field-on    L3:at236-runkite failure enforcer-down 4:37.4    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/8 s13  pass (fail)
+lab-field-on    L3:hold-runkite failure enforcer-down 4:55.5    9/9     2  2→0   raised  active      0    1    0    33 %   10    1     2    1/1    c1/8 s13  pass (fail)
+lab-field-on    L3:tight-kite failure enforcer-down 4:55.0   18/18    2  2→-1  raised  active      0    2    0    61 %   20    6    65    1/1    c1/8 s17  pass (fail)
+lab-field-on    L3:tight-reset-kite failure enforcer-down 4:55.0   18/18    2  2→-1  raised  active      0    2    0    61 %   20    6    62    1/1    c1/8 s15  pass (fail)
+lab-field-on    L3:tight-focus-reset-kite failure enforcer-down 4:54.1   18/18    2  2→-1  raised  active      0    2    0    55 %   19    6    55    1/1    c1/8 s14  pass (fail)
+lab-field-on    L3:tight-cycle-kite failure enforcer-down 4:55.0   18/18    2  2→-1  raised  active      0    2    0    61 %   20    6    62    1/1    c1/8 s15  pass (fail)
+lab-field-on    L3:tight-carbine-kite failure enforcer-down 3:41.3   35/35    2  2→0   raised  active      0    1    0    33 %    6    4    20    3/1    c0/0 s0   pass (fail)
+lab-field-on    L3:tight-enfgo-carfree-runkite failure enforcer-down 3:55.5   15/15    2  2→-1  raised  active      0    2    0    55 %   14    1     9    1/1    c3/6 s21  pass (fail)
+lab-field-on    L3:tight-focus-enfgo-carfree-runkite failure enforcer-down 3:55.5   15/15    2  2→-1  raised  active      0    3    0    94 %   24    1    13    1/1    c3/6 s41  pass (fail)
+lab-field-on    L3:tight-enfgo-carfree-kite failure enforcer-down 3:55.5   17/17    2  2→0   raised  active      0    2    0    55 %   19    1    30    1/1    c2/6 s14  pass (fail)
+lab-field-on    L3:tight-at196-runkite failure enforcer-down 3:57.4   15/15    2  2→-1  raised  active      0    2    0    55 %   14    1     9    1/1    c3/6 s21  pass (fail)
+lab-field-on    L3:tight-at208-runkite failure enforcer-down 4:09.4   15/15    2  2→-1  raised  active      0    2    0    55 %   14    1     9    1/1    c1/8 s21  pass (fail)
+lab-field-on    L3:tight-focus-at208-runkite failure enforcer-down 4:09.4   15/15    2  2→-1  raised  active      0    2    0    55 %   14    1     9    1/1    c1/8 s21  pass (fail)
+lab-field-on    L3:tight-hold-runkite failure enforcer-down 4:55.5   15/15    2  2→-1  raised  active      0    4    0   100 %   22    1    15    1/1    c5/8 s39  pass (fail)
+lab-field-on    6.4 triggers: none
+lab-field-on    6.4.7 lethality (two trained shooters at the sidearm's effective ring, open ground): an op down in 3.5 s, the Enforcer in 4.5 s
+lab-field-on    6.4.7b cell → hostile (three trained sidearms at their effective ring on an uncovered rival): down 1.0 s after the first shot

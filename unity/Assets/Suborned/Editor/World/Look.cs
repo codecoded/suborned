@@ -71,6 +71,7 @@ namespace Suborned.World
         public object Light(string key) => light != null ? J.Get(light, key) : null;
 
         /// <summary>A §15 palette colour by key (facade kit: sign boards).</summary>
+        public bool HasPalette(string key) => key != null && palette.ContainsKey(key);
         public Color Palette(string key) => palette.TryGetValue(key ?? "", out var c) ? c : throw new InvalidDataException($"World: palette key `{key}` not in §15 palette");
 
         public object Entry(string key) => (light != null ? J.Get(light, key) : null) ?? J.Get(table, key) ?? throw new InvalidDataException($"World: look.json has no `{key}`");
@@ -132,6 +133,22 @@ namespace Suborned.World
 
         /// <summary>Metres per repeat of a surface's texture laid on plan (look.json `tile`, with `material`); 0 = the surface has none.</summary>
         public float Tile(string surface) => J.Get(Surface(surface), "tile") is double t ? (float)t : 0f;
+
+        /// <summary>Brief 026: a textured ground surface with `seed: true` (pavement, lawn) gets a seeded UV offset and mirror per patch
+        /// (MeshKit.SeedUv); returns the material's repeat in metres (1 / its _BaseMap scale, Vela's m_Scale = 1 / tile), 0 = not seeded.
+        /// Never on surfaces whose patches overlap (roads, kerbs at junctions): there the world-continuous UVs hide the overlap.</summary>
+        /// <summary>Brief 026: the surface a ground-layer element draws in: `ground/<surface>` when look.json has one (plots share their
+        /// surface key with the buildings on them, so the textured ground sheet is keyed apart), else the surface itself.</summary>
+        public bool Has(string surface) => J.Get(Entry("surfaces"), surface) != null;
+
+        public string Ground(string surface) => surface != null && J.Get(Entry("surfaces"), "ground/" + surface) != null ? "ground/" + surface : surface;
+
+        public float SeededPeriod(string surface)
+        {
+            if (J.Get(Surface(surface), "seed") is not true) return 0f;
+            var m = Mat(surface); var sc = m.HasProperty("_BaseMap") ? m.GetTextureScale("_BaseMap") : Vector2.one;
+            return sc.x > 0f ? 1f / sc.x : 0f;
+        }
 
         public Material Mat(string surface)
         {

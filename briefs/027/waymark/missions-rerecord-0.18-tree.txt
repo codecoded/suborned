@@ -1,0 +1,677 @@
+$ bun tools/missions/check/cli.ts compose handover --engine tree --inputs tree && bun tools/missions/check/cli.ts handover --engine tree --inputs tree --record "Brief 027 on engine 0.18.0 (Waymark, 2026-10-21; tuning.md §10-§13): every plan recomposed and every script re-recorded once on 0.18.0. Loud re-planned with the 0.17 locks: the three wait behind the getaway car and all lock the response unit's nearest officer as the doors open, then the blocker (loud, loud-fast 4:36.9 10 T; loud-fight steps to the pavilion pier and downs the café wall officers, 4:34.6 9 T, nobody left). Quiet fight-it-out routes (A-pressure, G, G-fast, G-kill, A, B, B-block): the Scout and Fixer wait at the car's north-west and south-west corners, so the three walk out (§10.5); board twins unchanged. Evidence briefs/027/waymark/."
+· route-a 1/22 scout move beside-inez at tick 0
+· route-a-board 1/28 scout move beside-inez at tick 0
+· route-a-pressure 1/20 scout move beside-inez at tick 0
+· route-a-pressure-board 1/26 scout move beside-inez at tick 0
+· route-a-board 2/28 tech move cabinet at tick 0
+· route-a 2/22 tech move cabinet at tick 0
+· route-a-pressure 2/20 tech move cabinet at tick 0
+· route-a-pressure-board 2/26 tech move cabinet at tick 0
+· route-a 3/22 fixer move d:Courtyard at tick 0
+· route-a-board 3/28 fixer move d:Courtyard at tick 0
+· route-a-pressure 3/20 fixer move d:Courtyard at tick 0
+· route-a-pressure-board 3/26 fixer move d:Courtyard at tick 0
+· route-a-board 4/28 enforcer move at tick 0
+· route-a 4/22 enforcer move at tick 0
+· route-a-pressure 4/20 enforcer move at tick 0
+· route-a-pressure-board 4/26 enforcer move at tick 0
+· route-a 5/22 scout watch waitress at tick 90
+· route-a-board 5/28 scout watch waitress at tick 90
+· route-a-pressure 5/20 scout watch waitress at tick 90
+· route-a-pressure-board 5/26 scout watch waitress at tick 90
+· route-a 6/22 tech loop entrance at tick 166
+· route-a-board 6/28 tech loop entrance at tick 166
+· route-a-pressure 6/20 tech loop entrance at tick 166
+· route-a-pressure-board 6/26 tech loop entrance at tick 166
+· route-a 7/22 scout listen waitress at tick 290
+· route-a-board 7/28 scout listen waitress at tick 290
+· route-a-pressure 7/20 scout listen waitress at tick 290
+· route-a-pressure-board 7/26 scout listen waitress at tick 290
+· route-a 8/22 tech reroute patrol at tick 786
+· route-a-board 8/28 tech reroute patrol at tick 786
+· route-a-pressure 8/20 tech reroute patrol at tick 786
+· route-a-pressure-board 8/26 tech reroute patrol at tick 786
+· route-a-pressure 9/20 fixer turn waitress at tick 710
+· route-a-pressure-board 9/26 fixer turn waitress at tick 710
+· route-a 9/22 enforcer move at tick 1236
+· route-a-board 9/28 enforcer move at tick 1236
+· route-a 10/22 fixer turn waitress at tick 710
+· route-a-board 10/28 fixer turn waitress at tick 710
+· route-a-pressure 10/20 fixer call waitress at tick 1060
+· route-a-pressure-board 10/26 fixer call waitress at tick 1060
+· route-a-pressure 11/20 enforcer move d:Office entrance at tick 1201
+· route-a-pressure-board 11/26 enforcer move d:Office entrance at tick 1201
+· route-a-pressure 12/20 enforcer enter at tick 1237
+· route-a 11/22 fixer turn waitress at tick 1210
+· route-a-pressure-board 12/26 enforcer enter at tick 1237
+· route-a-board 11/28 fixer turn waitress at tick 1210
+· route-a-pressure 13/20 fixer move at tick 1060
+· route-a-pressure-board 13/26 fixer move at tick 1060
+· route-a-pressure 14/20 scout move at tick 1060
+· route-a-pressure-board 14/26 scout move at tick 1060
+· route-a-pressure 15/20 tech move at tick 1237
+· route-a-pressure-board 15/26 tech move at tick 1237
+· route-a 12/22 fixer call waitress at tick 1710
+· route-a-board 12/28 fixer call waitress at tick 1710
+· route-a 13/22 enforcer move d:Office entrance at tick 1710
+· route-a-pressure 16/20 enforcer move at tick 1617
+· route-a-pressure-board 16/26 enforcer move at tick 1617
+· route-a-board 13/28 enforcer move d:Office entrance at tick 1710
+· route-a 14/22 enforcer enter at tick 1735
+· route-a-pressure 17/20 cell panic at tick 2007
+· route-a-pressure-board 17/26 cell panic at tick 2007
+· route-a-board 14/28 enforcer enter at tick 1735
+· route-a 15/22 fixer move at tick 1710
+· route-a-board 15/28 fixer move at tick 1710
+· route-a 16/22 scout move at tick 1710
+· route-a-board 16/28 scout move at tick 1710
+· route-a 17/22 tech move at tick 1735
+· route-a-board 17/28 tech move at tick 1735
+· route-a-pressure 18/20 enforcer move d:Getaway bay at tick 2233
+· route-a-pressure-board 18/26 enforcer move d:Getaway bay at tick 2007
+· route-a 18/22 enforcer move at tick 2115
+· route-a-board 18/28 enforcer move at tick 2115
+· route-a-pressure 19/20 enforcer board car at tick 2362
+· route-a-pressure-board 19/26 enforcer board car at tick 2139
+· route-a-pressure-board 20/26 scout move d:Getaway bay at tick 2139
+· route-a 19/22 cell panic at tick 2505
+· route-a-board 19/28 cell panic at tick 2505
+· route-a-pressure-board 21/26 scout board car at tick 2152
+· route-a 20/22 enforcer move d:Getaway bay at tick 2718
+· route-a-pressure 20/20 cell go at tick 2402
+composed route-a-pressure: 20 orders, last at tick 2402 (63.6 s) → routes/route-a-pressure.json
+· route-a-pressure-board 22/26 fixer move d:Getaway bay at tick 2139
+· route-b 1/19 enforcer move d:Service lane at tick 0
+· route-b 2/19 scout move at tick 0
+· route-b 3/19 fixer move at tick 0
+· route-a-board 20/28 enforcer move d:Getaway bay at tick 2505
+· route-a-pressure-board 23/26 fixer board car at tick 2148
+· route-b 4/19 scout watch driver at tick 620
+· route-a-pressure-board 24/26 tech move d:Getaway bay at tick 2139
+· route-a 21/22 enforcer board car at tick 2847
+· route-a-pressure-board 25/26 tech board car at tick 2148
+· route-a-board 21/28 enforcer board car at tick 2637
+· route-b 5/19 scout move d:Meet driver at tick 820
+· route-a-board 22/28 scout move d:Getaway bay at tick 2637
+· route-a-pressure-board 26/26 cell go at tick 2179
+composed route-a-pressure-board: 26 orders, last at tick 2179 (75.8 s) → routes/route-a-pressure-board.json
+· route-b-board 1/25 enforcer move d:Service lane at tick 0
+· route-b 6/19 scout listen driver at tick 838
+· route-a 22/22 cell go at tick 2887
+composed route-a: 22 orders, last at tick 2887 (77.7 s) → routes/route-a.json
+· route-b-board 2/25 scout move at tick 0
+· route-b 7/19 fixer move d:Boarding pavilion at tick 760
+· route-b-block 1/20 enforcer move d:Service lane at tick 0
+· route-b-board 3/25 fixer move at tick 0
+· route-a-board 23/28 scout board car at tick 2650
+· route-b-block 2/20 scout move at tick 0
+· route-b-board 4/25 scout watch driver at tick 620
+· route-b 8/19 fixer turn driver at tick 820
+· route-b-block 3/20 fixer move at tick 0
+· route-a-board 24/28 fixer move d:Getaway bay at tick 2637
+· route-b-block 4/20 scout watch driver at tick 620
+· route-a-board 25/28 fixer board car at tick 2646
+· route-a-board 26/28 tech move d:Getaway bay at tick 2637
+· route-b-board 5/25 scout move d:Meet driver at tick 820
+· route-b 9/19 fixer move at tick 1320
+· route-b-block 5/20 scout move d:Meet driver at tick 820
+· route-a-board 27/28 tech board car at tick 2646
+· route-b-board 6/25 scout listen driver at tick 838
+· route-b 10/19 scout move at tick 1258
+· route-b-board 7/25 fixer move d:Boarding pavilion at tick 760
+· route-b-block 6/20 scout listen driver at tick 838
+· route-b 11/19 scout mislead rivals at tick 1900
+· route-b-block 7/20 fixer move d:Boarding pavilion at tick 760
+· route-b-board 8/25 fixer turn driver at tick 820
+· route-a-board 28/28 cell go at tick 2677
+composed route-a-board: 28 orders, last at tick 2677 (91.8 s) → routes/route-a-board.json
+· route-b-block-board 1/26 enforcer move d:Service lane at tick 0
+· route-b-block 8/20 fixer turn driver at tick 820
+· route-b-block-board 2/26 scout move at tick 0
+· route-b-block-board 3/26 fixer move at tick 0
+· route-b-block-board 4/26 scout watch driver at tick 620
+· route-b 12/19 scout move at tick 2340
+· route-b 13/19 tech move at tick 2340
+· route-b-board 9/25 fixer move at tick 1320
+· route-b-block 9/20 fixer call driver at tick 1320
+· route-b-block 10/20 fixer move at tick 1320
+· route-b-board 10/25 scout move at tick 1258
+· route-b-block-board 5/26 scout move d:Meet driver at tick 820
+· route-b-board 11/25 scout mislead rivals at tick 1900
+· route-b-block 11/20 scout move at tick 1258
+· route-b-block-board 6/26 scout listen driver at tick 838
+· route-b-block 12/20 scout mislead rivals at tick 1900
+· route-b-block-board 7/26 fixer move d:Boarding pavilion at tick 760
+· route-b-block-board 8/26 fixer turn driver at tick 820
+· route-b-board 12/25 scout move at tick 2340
+· route-b-board 13/25 tech move at tick 2340
+· route-b-block 13/20 scout move at tick 2340
+· route-b-block 14/20 tech move at tick 2340
+· route-b 14/19 enforcer take at tick 3700
+· route-b-block-board 9/26 fixer call driver at tick 1320
+· route-b-block-board 10/26 fixer move at tick 1320
+· route-b-block-board 11/26 scout move at tick 1258
+· route-b 15/19 enforcer move at tick 4080
+· route-b-block-board 12/26 scout mislead rivals at tick 1900
+· route-b 16/19 cell panic at tick 4470
+· route-b-board 14/25 enforcer take at tick 3700
+· route-b-block-board 13/26 scout move at tick 2340
+· route-b-block-board 14/26 tech move at tick 2340
+· route-b-block 15/20 enforcer take at tick 3700
+· route-b 17/19 enforcer move d:Getaway bay at tick 4638
+· route-b-board 15/25 enforcer move at tick 4080
+· route-b-block 16/20 enforcer move at tick 4080
+· route-b 18/19 enforcer board car at tick 4767
+· route-b-board 16/25 cell panic at tick 4470
+· route-b-block 17/20 cell panic at tick 4470
+· route-b-block-board 15/26 enforcer take at tick 3700
+· route-b 19/19 cell go at tick 4807
+composed route-b: 19 orders, last at tick 4807 (80.4 s) → routes/route-b.json
+· route-b-block 18/20 enforcer move d:Getaway bay at tick 4638
+· route-b-board 17/25 enforcer move d:Getaway bay at tick 4470
+· route-g 1/17 tech move cabinet at tick 0
+· route-g 2/17 enforcer move at tick 0
+· route-g 3/17 scout move at tick 0
+· route-b-block-board 16/26 enforcer move at tick 4080
+· route-g 4/17 fixer move at tick 0
+· route-g 5/17 scout watch guard at tick 310
+· route-b-board 18/25 enforcer board car at tick 4602
+· route-b-block 19/20 enforcer board car at tick 4767
+· route-g 6/17 tech loop entrance at tick 166
+· route-b-board 19/25 scout move d:Getaway bay at tick 4602
+· route-b-block-board 17/26 cell panic at tick 4470
+· route-g 7/17 scout move at tick 510
+· route-b-board 20/25 scout board car at tick 4615
+· route-g 8/17 tech reroute patrol at tick 1060
+· route-g 9/17 enforcer move at tick 1400
+· route-b-board 21/25 fixer move d:Getaway bay at tick 4602
+· route-b-block 20/20 cell go at tick 4807
+composed route-b-block: 20 orders, last at tick 4807 (82.7 s) → routes/route-b-block.json
+· route-g-board 1/23 tech move cabinet at tick 0
+· route-g 10/17 enforcer takedown guard at tick 1510
+· route-g-board 2/23 enforcer move at tick 0
+· route-b-block-board 18/26 enforcer move d:Getaway bay at tick 4470
+· route-g-board 3/23 scout move at tick 0
+· route-b-board 22/25 fixer board car at tick 4611
+· route-g 11/17 enforcer enter at tick 1570
+· route-g-board 4/23 fixer move at tick 0
+· route-g 12/17 tech move at tick 1570
+· route-b-board 23/25 tech move d:Getaway bay at tick 4602
+· route-g-board 5/23 scout watch guard at tick 310
+· route-g-board 6/23 tech loop entrance at tick 166
+· route-b-board 24/25 tech board car at tick 4611
+· route-b-block-board 19/26 enforcer board car at tick 4602
+· route-g 13/17 enforcer move at tick 1950
+· route-b-block-board 20/26 scout move d:Getaway bay at tick 4602
+· route-b-board 25/25 cell go at tick 4642
+composed route-b-board: 25 orders, last at tick 4642 (96.9 s) → routes/route-b-board.json
+· route-g-board 7/23 scout move at tick 510
+· route-g-fast 1/17 tech move cabinet at tick 0
+· route-g 14/17 cell panic at tick 2340
+· route-g-board 8/23 tech reroute patrol at tick 1060
+· route-g-fast 2/17 enforcer move at tick 0
+· route-b-block-board 21/26 scout board car at tick 4615
+· route-g-board 9/23 enforcer move at tick 1400
+· route-g-fast 3/17 scout move at tick 0
+· route-g-fast 4/17 fixer move at tick 0
+· route-g-board 10/23 enforcer takedown guard at tick 1510
+· route-b-block-board 22/26 fixer move d:Getaway bay at tick 4602
+· route-g-fast 5/17 scout watch guard at tick 310
+· route-g-board 11/23 enforcer enter at tick 1570
+· route-b-block-board 23/26 fixer board car at tick 4611
+· route-g 15/17 enforcer move d:Getaway bay at tick 2566
+· route-g-board 12/23 tech move at tick 1570
+· route-g-fast 6/17 tech loop entrance at tick 166
+· route-b-block-board 24/26 tech move d:Getaway bay at tick 4602
+· route-g-board 13/23 enforcer move at tick 1950
+· route-b-block-board 25/26 tech board car at tick 4611
+· route-g 16/17 enforcer board car at tick 2695
+· route-g-fast 7/17 scout move at tick 510
+· route-b-block-board 26/26 cell go at tick 4642
+composed route-b-block-board: 26 orders, last at tick 4642 (98.1 s) → routes/route-b-block-board.json
+· route-g-board 14/23 cell panic at tick 2340
+· route-g-fast 8/17 tech reroute patrol at tick 786
+· route-g-fast-board 1/23 tech move cabinet at tick 0
+· route-g-fast-board 2/23 enforcer move at tick 0
+· route-g-fast-board 3/23 scout move at tick 0
+· route-g 17/17 cell go at tick 2735
+composed route-g: 17 orders, last at tick 2735 (49.6 s) → routes/route-g.json
+· route-g-fast-board 4/23 fixer move at tick 0
+· route-g-kill 1/21 tech move cabinet at tick 0
+· route-g-fast-board 5/23 scout watch guard at tick 310
+· route-g-kill 2/21 enforcer move at tick 0
+· route-g-kill 3/21 scout move at tick 0
+· route-g-board 15/23 enforcer move d:Getaway bay at tick 2340
+· route-g-fast 9/17 enforcer move at tick 1236
+· route-g-kill 4/21 fixer move at tick 0
+· route-g-fast-board 6/23 tech loop entrance at tick 166
+· route-g-fast 10/17 enforcer takedown guard at tick 1326
+· route-g-kill 5/21 scout watch guard at tick 310
+· route-g-fast 11/17 enforcer enter at tick 1386
+· route-g-kill 6/21 tech loop entrance at tick 166
+· route-g-fast 12/17 tech move at tick 1386
+· route-g-board 16/23 enforcer board car at tick 2472
+· route-g-fast-board 7/23 scout move at tick 510
+· route-g-board 17/23 scout move d:Getaway bay at tick 2472
+· route-g-fast 13/17 enforcer move at tick 1766
+· route-g-kill 7/21 scout move at tick 510
+· route-g-fast-board 8/23 tech reroute patrol at tick 786
+· route-g-kill 8/21 tech reroute patrol at tick 1060
+· route-g-board 18/23 scout board car at tick 2485
+· route-g-kill 9/21 enforcer move at tick 1400
+· route-g-board 19/23 fixer move d:Getaway bay at tick 2472
+· route-g-kill 10/21 enforcer takedown guard at tick 1510
+· route-g-fast 14/17 cell panic at tick 2156
+· route-g-board 20/23 fixer board car at tick 2481
+· route-g-fast-board 9/23 enforcer move at tick 1236
+· route-g-board 21/23 tech move d:Getaway bay at tick 2472
+· route-g-kill 11/21 enforcer carry guard at tick 1540
+· route-g-fast-board 10/23 enforcer takedown guard at tick 1326
+· route-g-board 22/23 tech board car at tick 2481
+· route-g-fast 15/17 enforcer move d:Getaway bay at tick 2382
+· route-g-fast-board 11/23 enforcer enter at tick 1386
+· route-g-fast-board 12/23 tech move at tick 1386
+· route-g-kill 12/21 enforcer move at tick 1570
+· route-g-board 23/23 cell go at tick 2512
+composed route-g-board: 23 orders, last at tick 2512 (61.1 s) → routes/route-g-board.json
+· route-g-kill-board 1/27 tech move cabinet at tick 0
+· route-g-fast-board 13/23 enforcer move at tick 1766
+· route-g-fast 16/17 enforcer board car at tick 2511
+· route-g-kill-board 2/27 enforcer move at tick 0
+· route-g-kill-board 3/27 scout move at tick 0
+· route-g-kill 13/21 enforcer stash stash/office-service-door/door at tick 1864
+· route-g-kill-board 4/27 fixer move at tick 0
+· route-g-kill-board 5/27 scout watch guard at tick 310
+· route-g-fast-board 14/23 cell panic at tick 2156
+· route-g-kill-board 6/27 tech loop entrance at tick 166
+· route-g-fast 17/17 cell go at tick 2551
+composed route-g-fast: 17 orders, last at tick 2551 (57.7 s) → routes/route-g-fast.json
+· loud 1/32 tech move cabinet at tick 0
+· route-g-kill 14/21 enforcer move d:Office entrance at tick 1964
+· loud 2/32 enforcer move at tick 0
+· route-g-kill 15/21 enforcer enter at tick 2440
+· route-g-kill-board 7/27 scout move at tick 510
+· route-g-kill 16/21 tech move at tick 2440
+· route-g-fast-board 15/23 enforcer move d:Getaway bay at tick 2156
+· loud 3/32 tech loop entrance at tick 166
+· route-g-kill-board 8/27 tech reroute patrol at tick 1060
+· route-g-kill-board 9/27 enforcer move at tick 1400
+· route-g-kill-board 10/27 enforcer takedown guard at tick 1510
+· loud 4/32 tech reroute patrol at tick 786
+· route-g-kill 17/21 enforcer move at tick 2820
+· route-g-fast-board 16/23 enforcer board car at tick 2288
+· route-g-fast-board 17/23 scout move d:Getaway bay at tick 2288
+· route-g-kill-board 11/27 enforcer carry guard at tick 1540
+· loud 5/32 enforcer move at tick 1236
+· route-g-kill 18/21 cell panic at tick 3210
+· route-g-fast-board 18/23 scout board car at tick 2301
+· loud 6/32 enforcer fire guard at tick 1510
+· route-g-kill-board 12/27 enforcer move at tick 1570
+· route-g-fast-board 19/23 fixer move d:Getaway bay at tick 2288
+· loud 7/32 scout move at tick 1510
+· loud 8/32 fixer move at tick 1510
+· loud 9/32 enforcer move d:Office entrance at tick 1550
+· route-g-fast-board 20/23 fixer board car at tick 2297
+· route-g-kill 19/21 enforcer move d:Getaway bay at tick 3436
+· route-g-fast-board 21/23 tech move d:Getaway bay at tick 2288
+· route-g-kill-board 13/27 enforcer stash stash/office-service-door/door at tick 1864
+· route-g-fast-board 22/23 tech board car at tick 2297
+· loud 10/32 enforcer enter at tick 1575
+· loud 11/32 tech move at tick 1575
+· route-g-kill 20/21 enforcer board car at tick 3565
+· route-g-fast-board 23/23 cell go at tick 2328
+composed route-g-fast-board: 23 orders, last at tick 2328 (69.2 s) → routes/route-g-fast-board.json
+· route-g-kill-board 14/27 enforcer move d:Office entrance at tick 1964
+· loud-fight 1/34 tech move cabinet at tick 0
+· loud-fight 2/34 enforcer move at tick 0
+· route-g-kill-board 15/27 enforcer enter at tick 2440
+· route-g-kill-board 16/27 tech move at tick 2440
+· loud 12/32 scout draw at tick 2255
+· loud-fight 3/34 tech loop entrance at tick 166
+· loud 13/32 scout stance at tick 2255
+· route-g-kill 21/21 cell go at tick 3605
+composed route-g-kill: 21 orders, last at tick 3605 (72.0 s) → routes/route-g-kill.json
+· loud 14/32 scout fire security-2 at tick 2255
+· loud-fast 1/32 tech move cabinet at tick 0
+· loud-fast 2/32 enforcer move at tick 0
+· route-g-kill-board 17/27 enforcer move at tick 2820
+· loud-fight 4/34 tech reroute patrol at tick 786
+· loud-fast 3/32 tech loop entrance at tick 166
+· loud 15/32 fixer draw at tick 2255
+· route-g-kill-board 18/27 cell panic at tick 3210
+· loud-fight 5/34 enforcer move at tick 1236
+· loud 16/32 fixer stance at tick 2255
+· loud-fast 4/32 tech reroute patrol at tick 786
+· loud-fight 6/34 enforcer fire guard at tick 1510
+· loud 17/32 fixer fire security-2 at tick 2255
+· loud-fight 7/34 scout move at tick 1510
+· loud-fight 8/34 fixer move at tick 1510
+· loud-fight 9/34 enforcer move d:Office entrance at tick 1550
+· route-g-kill-board 19/27 enforcer move d:Getaway bay at tick 3210
+· loud-fast 5/32 enforcer move at tick 1236
+· loud-fast 6/32 enforcer fire guard at tick 1510
+· loud 18/32 tech draw at tick 2255
+· loud-fast 7/32 scout move at tick 1510
+· loud-fight 10/34 enforcer enter at tick 1575
+· loud 19/32 tech stance at tick 2255
+· loud-fast 8/32 fixer move at tick 1510
+· loud-fight 11/34 tech move at tick 1575
+· loud 20/32 tech fire security-2 at tick 2255
+· loud-fast 9/32 enforcer move d:Office entrance at tick 1550
+· route-g-kill-board 20/27 enforcer board car at tick 3342
+· route-g-kill-board 21/27 scout move d:Getaway bay at tick 3342
+· loud-fast 10/32 enforcer enter at tick 1575
+· loud-fight 12/34 scout draw at tick 2255
+· loud-fast 11/32 tech move at tick 1575
+· loud 21/32 enforcer move d:Getaway bay at tick 2255
+· route-g-kill-board 22/27 scout board car at tick 3355
+· loud-fight 13/34 scout stance at tick 2255
+· route-g-kill-board 23/27 fixer move d:Getaway bay at tick 3342
+· loud-fight 14/34 scout fire security-2 at tick 2255
+· loud 22/32 scout fire security-1 at tick 2275
+· route-g-kill-board 24/27 fixer board car at tick 3351
+· loud 23/32 fixer fire security-1 at tick 2275
+· loud-fast 12/32 scout draw at tick 2255
+· route-g-kill-board 25/27 tech move d:Getaway bay at tick 3342
+· loud-fast 13/32 scout stance at tick 2255
+· loud 24/32 tech fire security-1 at tick 2275
+· loud-fight 15/34 fixer draw at tick 2255
+· loud-fast 14/32 scout fire security-2 at tick 2255
+· route-g-kill-board 26/27 tech board car at tick 3351
+· loud-fight 16/34 fixer stance at tick 2255
+· loud 25/32 enforcer board car at tick 2706
+· loud-fight 17/34 fixer fire security-2 at tick 2255
+· route-g-kill-board 27/27 cell go at tick 3382
+composed route-g-kill-board: 27 orders, last at tick 3382 (85.1 s) → routes/route-g-kill-board.json
+· fight-loud-enforcer-down 1/8 tech move cabinet at tick 0
+· fight-loud-enforcer-down 2/8 enforcer move at tick 0
+· loud-fast 15/32 fixer draw at tick 2255
+· loud-fast 16/32 fixer stance at tick 2255
+· fight-loud-enforcer-down 3/8 tech loop entrance at tick 166
+· loud-fight 18/34 tech draw at tick 2255
+· loud-fast 17/32 fixer fire security-2 at tick 2255
+· loud 26/32 scout move d:Getaway bay at tick 2746
+· loud-fight 19/34 tech stance at tick 2255
+· loud-fight 20/34 tech fire security-2 at tick 2255
+· fight-loud-enforcer-down 4/8 tech reroute patrol at tick 786
+· fight-loud-enforcer-down 5/8 enforcer fire guard at tick 1236
+· fight-loud-enforcer-down 6/8 enforcer move d:Office entrance at tick 1276
+· loud-fast 18/32 tech draw at tick 2255
+· loud-fast 19/32 tech stance at tick 2255
+· loud 27/32 fixer move d:Getaway bay at tick 2746
+· loud-fight 21/34 enforcer move d:Getaway bay at tick 2255
+· loud-fast 20/32 tech fire security-2 at tick 2255
+· fight-loud-enforcer-down 7/8 enforcer enter at tick 1312
+· loud-fight 22/34 scout fire security-1 at tick 2275
+· loud-fight 23/34 fixer fire security-1 at tick 2275
+· loud 28/32 tech move d:Getaway bay at tick 2746
+· loud-fast 21/32 enforcer move d:Getaway bay at tick 2255
+· fight-loud-enforcer-down 8/8 enforcer move police-1 at tick 1992
+composed fight-loud-enforcer-down: 8 orders, last at tick 1992 (22.5 s) → routes/fight-loud-enforcer-down.json
+· loud-fight 24/34 tech fire security-1 at tick 2275
+· loud-left-downed 1/31 tech move cabinet at tick 0
+· loud-left-downed 2/31 enforcer move at tick 0
+· loud-fast 22/32 scout fire security-1 at tick 2275
+· loud 29/32 scout board car at tick 2750
+· loud-left-downed 3/31 tech loop entrance at tick 166
+· loud-fast 23/32 fixer fire security-1 at tick 2275
+· loud 30/32 fixer board car at tick 2759
+· loud-fast 24/32 tech fire security-1 at tick 2275
+· loud-left-downed 4/31 tech reroute patrol at tick 786
+· loud 31/32 tech board car at tick 2752
+· loud 32/32 cell go at tick 2769
+composed loud: 32 orders, last at tick 2769 (107.7 s) → routes/loud.json
+· loud-fast 25/32 enforcer board car at tick 2706
+· loud-left-standing 1/30 tech move cabinet at tick 0
+· loud-left-standing 2/30 enforcer move at tick 0
+· loud-left-downed 5/31 enforcer move at tick 1236
+· loud-left-standing 3/30 tech loop entrance at tick 166
+· loud-left-downed 6/31 enforcer fire guard at tick 1510
+· loud-fight 25/34 scout move at tick 2290
+· loud-left-downed 7/31 scout move at tick 1510
+· loud-left-downed 8/31 fixer move at tick 1510
+· loud-fast 26/32 scout move d:Getaway bay at tick 2746
+· loud-left-standing 4/30 tech reroute patrol at tick 786
+· loud-left-downed 9/31 enforcer move d:Office entrance at tick 1550
+· loud-left-downed 10/31 enforcer enter at tick 1575
+· loud-left-downed 11/31 tech move at tick 1575
+· loud-left-standing 5/30 enforcer move at tick 1236
+· loud-left-standing 6/30 enforcer fire guard at tick 1510
+· loud-fast 27/32 fixer move d:Getaway bay at tick 2746
+· loud-left-standing 7/30 scout move at tick 1510
+· loud-left-standing 8/30 fixer move at tick 1510
+· loud-left-standing 9/30 enforcer move d:Office entrance at tick 1550
+· loud-left-downed 12/31 scout draw at tick 2255
+· loud-fight 26/34 tech move at tick 2290
+· loud-left-downed 13/31 scout stance at tick 2255
+· loud-fast 28/32 tech move d:Getaway bay at tick 2746
+· loud-left-standing 10/30 enforcer enter at tick 1575
+· loud-left-downed 14/31 scout fire security-2 at tick 2255
+· loud-fight 27/34 enforcer board car at tick 2706
+· loud-left-standing 11/30 tech move at tick 1575
+· loud-fight 28/34 scout move d:Getaway bay at tick 2706
+· loud-fast 29/32 scout board car at tick 2750
+· loud-fight 29/34 scout board car at tick 2719
+· loud-fast 30/32 fixer board car at tick 2759
+· loud-left-downed 15/31 fixer draw at tick 2255
+· loud-fight 30/34 fixer move d:Getaway bay at tick 2706
+· loud-left-standing 12/30 scout draw at tick 2255
+· loud-left-downed 16/31 fixer stance at tick 2255
+· loud-fast 31/32 tech board car at tick 2752
+· loud-left-standing 13/30 scout stance at tick 2255
+· loud-left-downed 17/31 fixer fire security-2 at tick 2255
+· loud-fight 31/34 fixer board car at tick 2719
+· loud-left-standing 14/30 scout fire security-2 at tick 2255
+· loud-fast 32/32 cell go at tick 2769
+composed loud-fast: 32 orders, last at tick 2769 (107.2 s) → routes/loud-fast.json
+· loud-fight 32/34 tech move d:Getaway bay at tick 2706
+· careless-reporter-not-stopped 1/21 enforcer move at tick 0
+· careless-reporter-not-stopped 2/21 scout move at tick 0
+· careless-reporter-not-stopped 3/21 fixer move at tick 0
+· careless-reporter-not-stopped 4/21 scout watch driver at tick 620
+· loud-fight 33/34 tech board car at tick 2715
+· loud-left-downed 18/31 tech draw at tick 2255
+· loud-left-standing 15/30 fixer draw at tick 2255
+· loud-left-downed 19/31 tech stance at tick 2255
+· loud-left-standing 16/30 fixer stance at tick 2255
+· loud-left-downed 20/31 tech fire security-2 at tick 2255
+· loud-fight 34/34 cell go at tick 2746
+composed loud-fight: 34 orders, last at tick 2746 (122.8 s) → routes/loud-fight.json
+· loud-left-standing 17/30 fixer fire security-2 at tick 2255
+· careless-reporter-not-stopped 5/21 scout move d:Meet driver at tick 820
+· careless-enforcer-watches-guard 1/11 tech move cabinet at tick 0
+· careless-enforcer-watches-guard 2/11 enforcer move at tick 0
+· careless-enforcer-watches-guard 3/11 scout move at tick 0
+· careless-enforcer-watches-guard 4/11 fixer move at tick 0
+· careless-reporter-not-stopped 6/21 scout listen driver at tick 838
+· careless-enforcer-watches-guard 5/11 scout watch guard at tick 310
+· careless-reporter-not-stopped 7/21 fixer move d:Boarding pavilion at tick 760
+· loud-left-downed 21/31 enforcer move d:Getaway bay at tick 2255
+· careless-reporter-not-stopped 8/21 fixer turn driver at tick 820
+· loud-left-standing 18/30 tech draw at tick 2255
+· careless-enforcer-watches-guard 6/11 tech loop entrance at tick 166
+· loud-left-standing 19/30 tech stance at tick 2255
+· loud-left-downed 22/31 scout fire security-1 at tick 2275
+· loud-left-standing 20/30 tech fire security-2 at tick 2255
+· loud-left-downed 23/31 fixer fire security-1 at tick 2275
+· careless-enforcer-watches-guard 7/11 scout move at tick 510
+· careless-reporter-not-stopped 9/21 fixer move at tick 1320
+· loud-left-downed 24/31 tech fire security-1 at tick 2275
+· loud-left-standing 21/30 enforcer move d:Getaway bay at tick 2255
+· careless-reporter-not-stopped 10/21 scout move at tick 1258
+· careless-enforcer-watches-guard 8/11 tech reroute patrol at tick 786
+· careless-reporter-not-stopped 11/21 scout mislead rivals at tick 1900
+· loud-left-standing 22/30 scout fire security-1 at tick 2275
+· loud-left-downed 25/31 scout move at tick 2290
+· loud-left-standing 23/30 fixer fire security-1 at tick 2275
+· loud-left-downed 26/31 enforcer board car at tick 2706
+· careless-enforcer-watches-guard 9/11 enforcer move at tick 1236
+· careless-reporter-not-stopped 12/21 scout move at tick 2340
+· careless-enforcer-watches-guard 10/11 enforcer watch guard at tick 1326
+· loud-left-standing 24/30 tech fire security-1 at tick 2275
+· careless-reporter-not-stopped 13/21 tech move at tick 2340
+· careless-enforcer-watches-guard 11/11 enforcer takedown guard at tick 1526
+composed careless-enforcer-watches-guard: 11 orders, last at tick 1526 (24.1 s) → routes/careless-enforcer-watches-guard.json
+· careless-scout-idles-pickup 1/19 enforcer move d:Service lane at tick 0
+· careless-scout-idles-pickup 2/19 scout move at tick 0
+· loud-left-standing 25/30 enforcer board car at tick 2706
+· careless-reporter-not-stopped 14/21 enforcer takedown p-records-office-73 at tick 2698
+· careless-scout-idles-pickup 3/19 fixer move at tick 0
+· careless-scout-idles-pickup 4/19 scout watch driver at tick 620
+· loud-left-downed 27/31 fixer move d:Getaway bay at tick 2746
+· careless-reporter-not-stopped 15/21 enforcer move d:Service lane at tick 2728
+· careless-scout-idles-pickup 5/19 scout move d:Meet driver at tick 820
+· loud-left-standing 26/30 fixer move d:Getaway bay at tick 2746
+· careless-scout-idles-pickup 6/19 scout listen driver at tick 838
+· loud-left-downed 28/31 tech move d:Getaway bay at tick 2746
+· careless-reporter-not-stopped 16/21 enforcer take at tick 3700
+· careless-scout-idles-pickup 7/19 fixer move d:Boarding pavilion at tick 760
+· careless-scout-idles-pickup 8/19 fixer turn driver at tick 820
+· loud-left-downed 29/31 fixer board car at tick 2759
+· loud-left-standing 27/30 tech move d:Getaway bay at tick 2746
+· loud-left-downed 30/31 tech board car at tick 2752
+· careless-reporter-not-stopped 17/21 enforcer move at tick 4080
+· loud-left-downed 31/31 cell go at tick 2799
+composed loud-left-downed: 31 orders, last at tick 2799 (98.7 s) → routes/loud-left-downed.json
+· loud-left-standing 28/30 fixer board car at tick 2759
+· careless-scout-idles-pickup 9/19 fixer move at tick 1320
+· loud-left-standing 29/30 tech board car at tick 2752
+· careless-scout-idles-pickup 10/19 scout move at tick 1258
+· careless-reporter-not-stopped 18/21 cell panic at tick 4470
+· loud-left-standing 30/30 cell go at tick 2799
+composed loud-left-standing: 30 orders, last at tick 2799 (93.1 s) → routes/loud-left-standing.json
+· careless-scout-idles-pickup 11/19 scout mislead rivals at tick 1900
+· careless-scout-idles-pickup 12/19 scout move at tick 2340
+· careless-reporter-not-stopped 19/21 enforcer move d:Getaway bay at tick 4570
+· careless-scout-idles-pickup 13/19 tech move at tick 2340
+· careless-reporter-not-stopped 20/21 enforcer board car at tick 4699
+· careless-reporter-not-stopped 21/21 cell go at tick 4739
+composed careless-reporter-not-stopped: 21 orders, last at tick 4739 (70.6 s) → routes/careless-reporter-not-stopped.json
+· careless-scout-idles-pickup 14/19 enforcer take at tick 3700
+· careless-scout-idles-pickup 15/19 enforcer move at tick 4080
+· careless-scout-idles-pickup 16/19 cell panic at tick 4470
+· careless-scout-idles-pickup 17/19 enforcer move d:Getaway bay at tick 4570
+· careless-scout-idles-pickup 18/19 enforcer board car at tick 4699
+· careless-scout-idles-pickup 19/19 cell go at tick 4739
+composed careless-scout-idles-pickup: 19 orders, last at tick 4739 (51.1 s) → routes/careless-scout-idles-pickup.json
+· playing 46 scripts and contact variations on the engine at the working tree
+· late from each of route-a-board's 10 planned steps, 1 s at a time to 120 s
+· late from each of route-b-board's 11 planned steps, 1 s at a time to 120 s
+· late from each of route-g-fast-board's 8 planned steps, 1 s at a time to 120 s
+ok    MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 38/38
+        0 pending: none
+ok    MC-1  ≥ 2 quiet routes win (no shot before the final fight), counted by route: 3 (A, B, G)
+        route-a (route A) wins at 4:48.7, 5 T
+        route-a-board (route A) wins at 4:27.7, 5 T
+        route-a-pressure (route A) wins at 4:00.2, 7 T
+        route-a-pressure-board (route A) wins at 3:37.9, 7 T
+        route-b (route B) wins at 8:00.7, 3 T
+        route-b-board (route B) wins at 7:44.2, 3 T
+        route-b-block (route B) wins at 8:00.7, 4 T
+        route-b-block-board (route B) wins at 7:44.2, 4 T
+        route-g (route G) wins at 4:33.5, 6 T
+        route-g-board (route G) wins at 4:11.2, 6 T
+        route-g-fast (route G) wins at 4:15.1, 6 T
+        route-g-fast-board (route G) wins at 3:52.8, 6 T
+        route-g-kill (route G) wins at 6:00.5, 2 T
+        route-g-kill-board (route G) wins at 5:38.2, 2 T
+ok    MC-2  The loud route exists, wins, and costs more T than every quiet win (variants too): loud 10+3 (case) T vs quiet route-a 5, route-a-board 5, route-a-pressure 7, route-a-pressure-board 7, route-b 3, route-b-board 3, route-b-block 4, route-b-block-board 4, route-g 6, route-g-board 6, route-g-fast 6, route-g-fast-board 6, route-g-kill 2+2+3 (case), route-g-kill-board 2+2+3 (case) (mission+campaign+cases at 3 T)
+        loud: success, 10 T, 2 shots before the fight, A 2
+        loud-fight: success, 9 T, 2 shots before the fight, A 2
+        loud-fast: success, 10 T, 2 shots before the fight, A 2
+ok    MC-3  Every §07 fail is reached by a played script: 8/8
+        Vale killed: fail-vale-dead
+        Vale leaves in official car: fail-vale-leaves
+        rivals reach Vale: fail-rivals-reach-vale, fight-safe-rivals-reach-vale
+        district seals: fail-district-seals
+        Enforcer down: fail-enforcer-down, fight-loud-enforcer-down
+        entry seen by guard: fail-entry-seen-guard
+        entry seen by live camera: fail-entry-seen-camera, fail-take-seen-camera
+        entry seen by patrol: fail-entry-seen-patrol
+ok    MC-4  No single contact is essential: without each, a quiet route still wins (a contact that leaves < 2 quiet routes is named): without waitress: B, G; without driver: A, G
+        waitress (Inez (route A: she calls the guard away)): route A depends on it
+        driver (the official driver (route B: he moves the pickup to the service lane)): route B depends on it
+ok    MC-5  The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event: route A 2:56 early, route B 1:42 early, route G 3:31 early
+        route A (route-a-board): Vale secured at 2:53.5, 2:56 before 5:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 4:27.7, 4:02 before the mission's 8:30 close
+        every planned step can slip 7 s and still win
+        route B (route-b-board): Vale secured at 6:48, 1:42 before 8:30 rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)
+        at the getaway car 7:44.2, 0:45 before the mission's 8:30 close
+        every planned step can slip 71 s and still win
+        route G (route-g-fast-board): Vale secured at 2:18.6, 3:31 before 5:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 3:52.8, 4:37 before the mission's 8:30 close
+        every planned step can slip 19 s and still win
+ok    MC-6  The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2): route-a-pressure-board 3:37.9 vs loud-fight 4:34.6: 56.7 s faster
+        route-a-pressure-board (quiet) 3:37.9
+        route-g-fast-board (quiet) 3:52.8
+        route-a-pressure (quiet) 4:00.2
+        route-g-board (quiet) 4:11.2
+        route-g-fast (quiet) 4:15.1
+        route-a-board (quiet) 4:27.7
+        route-g (quiet) 4:33.5
+        route-a (quiet) 4:48.7
+        route-g-kill-board (quiet) 5:38.2
+        route-g-kill (quiet) 6:00.5
+        route-b-board (quiet) 7:44.2
+        route-b-block-board (quiet) 7:44.2
+        route-b (quiet) 8:00.7
+        route-b-block (quiet) 8:00.7
+        loud-fight (loud) 4:34.6
+        loud (loud) 4:36.9
+        loud-fast (loud) 4:36.9
+ok    MC-7  Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 (or above its careful twin's) and dearer in total Trail than its careful twin: 6/6
+        careless-takedown-seen-camera: fails: entry-seen-camera
+        careless-takedown-seen-crowd: fails: enforcer-down
+        careless-body-found: fails: enforcer-down
+        careless-reporter-not-stopped: success at Alert 1, 12 T against route-b's 3 T at Alert 0
+        careless-guard-left-door-held: fails: rivals-reach-vale
+        careless-enforcer-watches-guard: fails: enforcer-down
+ok    MC-8  Takedown routes are viable with a real time cost: ≥ 1 quiet route that takes someone down wins at Alert ≤ 1, each spending Enforcer time on it: route-g 4:33.5, 6 s of takedown, route-g-board 4:11.2, 6 s of takedown, route-g-fast 4:15.1, 6 s of takedown, route-g-fast-board 3:52.8, 6 s of takedown, route-g-kill 6:00.5, 45.4 s of takedown, route-g-kill-board 5:38.2, 45.4 s of takedown
+        route-g (route G): success at 4:33.5, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-board (route G): success at 4:11.2, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-fast (route G): success at 4:15.1, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-fast-board (route G): success at 3:52.8, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-kill (route G): success at 6:00.5, 2+2+3 (case) T, A 1, $100,000 left, takedown work 45.4 s, 1 open case
+        route-g-kill-board (route G): success at 5:38.2, 2+2+3 (case) T, A 1, $100,000 left, takedown work 45.4 s, 1 open case
+ok    MC-9  Turning people stays competitive: no takedown win is at once as fast and as cheap in total Trail as every turning win: 6 takedown wins, none dominant over 8 turning wins
+        route-g (4:33.5, 6 T): faster route-a-board, route-a-pressure, route-a-pressure-board
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-block, route-b-block-board
+        route-g-board (4:11.2, 6 T): faster route-a-pressure, route-a-pressure-board
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-block, route-b-block-board
+        route-g-fast (4:15.1, 6 T): faster route-a-pressure, route-a-pressure-board
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-block, route-b-block-board
+        route-g-fast-board (3:52.8, 6 T): faster route-a-pressure-board
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-block, route-b-block-board
+        route-g-kill (6:00.5, 7 T): faster route-a, route-a-board, route-a-pressure, route-a-pressure-board
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-block, route-b-block-board
+        route-g-kill-board (5:38.2, 7 T): faster route-a, route-a-board, route-a-pressure, route-a-pressure-board
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-block, route-b-block-board
+ok    MC-10  Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no seal clock: quiet 3-7 T, A ≤ 1, Standing ≥ 2; loud 12-13 T, A ≥ 2, Standing ≤ -2
+        loud 10+3 (case) T, A 2, Standing -2, seal clock
+        loud-fight 9+3 (case) T, A 2, Standing -2, seal clock
+        loud-fast 10+3 (case) T, A 2, Standing -2, seal clock
+ok    MC-11  No stop holds the car: every ambush spot and police stand lies beyond fight-hold 8 m of the car and outside the exit lane, and every reference win's car was free when it left: 9/9 posts clear (nearest 12.2 m); 17/17 reference wins free at Go
+        route-a: blocker out 32.9 s before Go
+        route-a-board: blocker out 12.1 s before Go
+        route-a-pressure: blocker out 34.2 s before Go
+        route-a-pressure-board: blocker out 12.1 s before Go
+        route-b: blocker out 28.6 s before Go
+        route-b-board: blocker out 12.1 s before Go
+        route-b-block: blocker out 28.6 s before Go
+        route-b-block-board: blocker out 12.1 s before Go
+        route-g: blocker out 34.2 s before Go
+        route-g-board: blocker out 12.1 s before Go
+        route-g-fast: blocker out 34.2 s before Go
+        route-g-fast-board: blocker out 12.1 s before Go
+        route-g-kill: blocker out 34.2 s before Go
+        route-g-kill-board: blocker out 12.1 s before Go
+        loud: blocker out 47.9 s before Go
+        loud-fight: blocker out 45.6 s before Go
+        loud-fast: blocker out 47.9 s before Go
+ok    MC-12  Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin: 14/14 quiet scripts unreported; 1/1 loiter twins dearer
+        careless-scout-idles-pickup: reported at 2:55.3, success at A 1 against route-b's success at A 0
+slack route-a-board: every planned step can slip 7 s (0:00 7 s → entry-seen-guard, 0:09 7 s → entry-seen-guard, 0:16 7 s → entry-seen-guard, 0:29 7 s → entry-seen-guard, 1:11 11 s → entry-seen-guard, 1:18 11 s → entry-seen-guard, 2:01 11 s → entry-seen-guard, 2:03 100 s → entry-seen-patrol, 2:51 100 s → entry-seen-patrol, 2:53 89 s → sealed)
+slack route-b-board: every planned step can slip 71 s (0:00 102 s → vale-leaves, 1:02 102 s → vale-leaves, 1:16 102 s → vale-leaves, 1:22 102 s → vale-leaves, 1:23 102 s → vale-leaves, 2:05 102 s → vale-leaves, 2:12 102 s → vale-leaves, 3:10 102 s → vale-leaves, 3:54 93 s → rivals-reach-vale, 6:10 93 s → rivals-reach-vale, 6:48 71 s → rivals-reach-vale)
+slack route-g-fast-board: every planned step can slip 19 s (0:00 120 s, 0:16 120 s, 0:31 120 s, 0:51 120 s, 1:18 120 s, 2:03 105 s → entry-seen-patrol, 2:12 19 s → entry-seen-guard, 2:18 120 s)
+SHIPS handover: 2336 plays on engine tree in 184.0 s; report out/missions/handover/check.html
+recorded runs/missions/handover/c027

@@ -475,7 +475,8 @@
           "hours": [0, 24],
           "wants": ["mall", "concourse", "district", "access"],
           "spill": "none",
-          "sign": ["disc", "coin", "chrome"]
+          "sign": ["disc", "coin", "chrome"],
+          "door": { "at": "end", "jamb": 0.6, "unit": 1.86, "rule": "on a front under 7.6 m the 2.4 m door stands at the front's start (end a), its near jamb `jamb` m in, and the machine wall (the Automat, a streetscape.doors wall unit) takes the rest; from 7.6 m the door stays centred", "why": "brief 026: 47 street automat fronts, 7 hold the 1.86 m unit. A centred door leaves (w − 2.4) / 2 each side: 1.8 m on a 6 m front, short of the unit at any clearance. At the end: 6 − 0.6 − 2.4 = 3.0 m, which holds 0.6 + 1.86 + 0.1. 7.6: a centred door leaves room once (w − 2.4) / 2 ≥ 0.6 + 1.86 + 0.1, w ≥ 7.52 (0.1 = the wall scan’s end margin). The pier of 0.6 is one shoulder width, as streetscape.doors.wallUnit" }
         },
         "soda-fountain": {
           "w": [9, 15],
@@ -1053,6 +1054,13 @@
         "where": ["2 at each crossing end, flanking the dropped kerb on the kerb-zone line", "a line across every place a road meets the mall or a walk (Crown Parade ends, Garden Walk ends), gaps 1.5", "2 at each tram platform ramp foot", "2 on the road side of any kiosk at a corner"],
         "why": "1.0 m tall (Inclusive Mobility ≥ 1.0); 1.5 m gap passes wheelchairs and prams, stops a car (≥ 1.7 m wide)"
       },
+      "doors": {
+        "clear": 2.0,
+        "wallUnit": 0.6,
+        "wallUnits": ["automat"],
+        "rule": "SF-2: an item stands ≥ clear m from a doorway's jambs; a wall unit (wallUnits: backed on the frontage wall, unstaffed, nobody queues at it) stands ≥ wallUnit m from them. A unit joins wallUnits by name, with its reason.",
+        "why": "brief 026 (Sky: the old city's Automat back, on every automat front): 2 m keeps a door readable where people wait, queue or stand beside a thing (kiosks, booths, benches, vending pairs, robots). Nobody waits beside an Automat: it is used standing in front of it (the 1 m keep-clear CAP-7 holds), so its jamb side need only let one person step out of the door sideways, one shoulder width: 0.6 m (Fruin 1971, body ellipse 0.61 × 0.46 m). With 0.6 a 1.86 m unit fits beside a centred 2.4 m door on a front of 7.6 m or more (9, 10.5, 12); a 6 m front needs the door at one end (frontage.trades.automat.door)."
+      },
       "sight": {
         "note": "starting values for Keel's sightline and cover rules [S]; Keel owns the rule. Eye height 1.6.",
         "blocks": "solid, ≥ 1.6 m tall and ≥ 0.8 m wide: blocks camera, robot and witness sight (as §05 roofs and parked vehicles)",
@@ -1066,7 +1074,9 @@
         "kiosk-food":      { "size": [2.4, 1.8, 3.0], "roof": [3.6, 2.4, 3.6], "zone": "widening", "count": "≤ 1 per 60 m; never 2 within 30 m; ≤ 1 per access edge", "wants": ["mall", "squares", "parks", "quay", "stops", "lantern corners", "docks gates"], "staffed": { "occupation": "snack vendor", "hours": [7, 24], "lantern": [16, 26] }, "sight": "blocks", "cover": "full", "source": "Googie boomerang-roof stand; 26 = 02:00 next day" },
         "kiosk-flowers":   { "size": [2.4, 1.5, 2.7], "zone": "kerb", "count": "≤ 1 per 120 m; none within 60 m of a florist frontage", "wants": ["corners in crescent, gardens, records", "stops", "park gates"], "staffed": { "trade": "florist", "hours": [8, 19] }, "sight": "blocks", "cover": "full", "source": "frontage.trades.florist hours; buckets spill on the kerb side, never into the walk" },
         "kiosk-tickets":   { "size": [2.0, 1.5, 2.7], "zone": "kerb", "count": "transit kits only: 1 per tram stop, 1 per station", "wants": ["stops", "stations"], "staffed": { "trade": "tram-kiosk | skyrail-kiosk", "hours": "service" }, "sight": "blocks", "cover": "full", "source": "frontage.trades tram-kiosk / skyrail-kiosk; the one item allowed coral_transit (frontage.placement.signs)" },
-        "phone-booth":     { "size": [1.0, 1.0, 2.5], "cap": 2.7, "zone": "kerb", "count": "1 per 150 m of district or access edge; 2 per station bank, tram stop and square; 1 per gate on its area side", "wants": ["corners", "stops", "stations", "bars in lantern"], "staffed": false, "sight": "glazed", "cover": "none", "source": "K6 kiosk 0.91 × 0.91 × 2.51 m; Googie glazed capsule with a domed cap" },
+        "phone-booth":     { "size": [1.0, 1.0, 2.5], "cap": 2.7, "zone": "kerb", "count": "1 per 150 m of district or access edge; 2 per station bank, tram stop and square (a twin booth counts as two); 1 per gate on its area side", "wants": ["corners", "stops", "stations", "bars in lantern"], "staffed": false, "sight": "glazed", "cover": "none", "source": "K6 kiosk 0.91 × 0.91 × 2.51 m; Googie glazed capsule with a domed cap",
+          "twin": { "variant": "twin", "size": [2.6, 1.3, 2.4], "counts": 2, "pair": 2.0, "rule": "two booths of one tram stop, station bank or square whose centres stand ≤ pair m apart on one edge may be one twin booth (item variant 'twin', footprint size, centred between the pair, facing as they did); SF-12 counts it as `counts` booths", "why": "brief 026 (Sky: the old city's twin-pod PhoneBooth, 2.58 × 1.26 × 2.36 m, back). The pairs already stand 1.5–2.0 m apart (11 today: 3 tram stops, 8 station banks), so the twin covers the same 2.5–3.0 m of kerb; 1.3 deep + 0.45 off the kerb face fits the 2.0 m kerb zone (SF-5, SF-6)" } },
+        "kiosk-pavilion":  { "size": [6.1, 4.4, 6.5], "room": [10.1, 8.4], "zone": "open ground", "count": "≤ 1 per square, open plot or park whose free ground holds its room (footprint + 2 m clear all round, off every walk zone, path, bank keep-clear and crossing landing); never on a civic square (Records Square: the civic block stays as built, GDD v0.24) nor on a plot kept for a station bank (plot.bank)", "uses": ["square", "open", "park"], "wants": ["squares", "open plots", "parks beside a path, near a gate"], "staffed": { "trade": "soda-fountain", "hours": [8, 22] }, "sight": "blocks", "cover": "full", "source": "brief 026: the old city's CurvedKiosk (tools/decokit/structures.py, 6.08 × 4.36 × 6.5 m), a Googie corner kiosk: quarter-round glazed counter, speed band, 6.5 m fin tower; sodas, ices and coffee (frontage.trades.soda-fountain). The room's 2 m is SF-2's door clearance: the serving window is the kiosk's door. Sites today: Orbit Gardens, Sphere Gardens, Starline Green (3)" },
         "mailbox":         { "size": [0.6, 0.6, 1.3], "zone": "kerb", "count": "1 per 250 m of edge; 1 per square", "wants": ["corners", "lobbies"], "staffed": false, "sight": "open", "cover": "half", "source": "USPS collection box 0.53 × 0.61 × 1.27 m; rounded rocket-nose top" },
         "bench":           { "size": [2.0, 0.7, 0.85], "seat": 0.46, "zone": "kerb", "count": "district every 36 m; avenue access every 48 m; mall tree bands every 12 m (between palms); squares and parks every 24 m of path; 2 per tram shelter", "wants": ["stops", "squares", "parks", "mall", "facing frontages"], "staffed": false, "sight": "open", "cover": "none", "source": "Inclusive Mobility seat 0.45–0.48 with arms" },
         "bin":             { "size": [0.5, 0.5, 1.0], "zone": "kerb", "count": "1 by every bench group, kiosk, stop and district crossing; ≥ 1 per 50 m on district and mall, per 100 m on access", "staffed": false, "sight": "open", "cover": "none", "source": "litter bin, chrome drum on a cream plinth" },
@@ -1124,9 +1134,106 @@
         "estimate": "4 stations × (4 canopy + 2 pole + 1 robot) + 3 tram stops × 2 pole + 14 gates × 1 pole + Records Square (1 mast + 1 robot) + the circus (2 masts + 2 robots) ≈ 44 cameras, 3 masts, 7 robots before skybridges",
         "sightBlockers": "roofs, deck slabs, parked vehicles (§05), crowds (§05), catalogue items with sight 'blocks'; palm trunks and glazed items do not block"
       },
+      "roads": {
+        "tag": "[S]",
+        "source": "brief 026/028 (Sky 2026-10-20: the 2.5D testbed's road, finish B, Vela's briefs/026/vela/testbed-vs-now.html) · testbed civic-road-guides.js (ribbon lip 0.048–0.080, lens 0.064–0.12 from the kerb face, warm #ffe6b5, auto/on/off), civic-road-finish.js (markerSpacing 8.5, panelSpacing 9), civic-roads.js (lozenges on the carriageway's middle line, 4.6 m chrome seams across it, no zebra) · Vela's pieces tools/decokit/road_ribbon.py (lens 0.12 between 0.02 brass hairlines, 1.0 pool) · GDD §15 design test (light set in the road, never paint)",
+        "rule": "The carriageway is drawn by light and stone, never paint. Rules the generator applies per carriageway (kerb face to kerb face, or kerb to a median or reservation kerb), seeded by road id; nothing is placed item by item. Order: finish → ribbons along every kerb face → breaks cut → lozenges on the middle line → seams across. Anything that does not fit is dropped, never squeezed (SF-6).",
+        "finish": {
+          "byClass": { "primary": "enamel", "district": "enamel", "access": "enamel" },
+          "keys": {
+            "enamel": { "material": "DK_Ground_RoadEnamel", "hex": "#AED0E6", "tile": 2.0, "why": "Sky's pick B of 20 Oct: the testbed's sealed powder-blue enamel; pale, even, slightly glossy, so the ribbon and the lozenges read on it" },
+            "asphalt": { "material": "DK_Ground_Asphalt", "why": "the old city's sheet (brief 026 round 1); no class takes it now, kept so a plan can name it" }
+          },
+          "kerb": { "pieces": ["Kerb_Pearl_0", "Kerb_Pearl_1"], "material": "DK_Ground_RoadPearl", "why": "the testbed's pearl kerb cap, brass crown hairline, no gutter: the ribbon takes the gutter's place" },
+          "also": "junction boxes, the circus ring and kerbed bays take their road's finish; a drive keeps the pavement's (it crosses the pavement at road level)",
+          "paint": false,
+          "note": "the §15 road role still says pale asphalt (#a5a2a8): Aster amends it to the enamel with Sky's decision (Vela's note)"
+        },
+        "ribbon": {
+          "classes": ["primary", "district", "access"],
+          "along": "every kerb face that bounds a carriageway: both outer kerbs, median and reservation kerbs, the circus ring's outer and island kerbs, a kerbed bay's kerb (back and ends) and every kerb return, so each carriageway reads as one closed line of light (the testbed's loop)",
+          "offset": 0.10,
+          "section": 0.16,
+          "lens": 0.12,
+          "pool": 1.0,
+          "pieces": { "straight": "RoadRibbon_Straight_6m", "arcs": { "4": "RoadRibbon_Arc90_R4", "8": "RoadRibbon_Arc90_R8" } },
+          "corners": "a rounded kerb return takes the arc piece nearest its lens radius (return radius ± offset), else the ribbon is swept along the kerb at offset from the pieces' section; a square kerb corner (today's plot slabs) is mitred",
+          "light": "lens #FFE6B5 (DK_Road_Lens, emissive, drawn unlit); its state (off by day to a faint lens, on at evening and night: the testbed's auto) is the lighting rig's (Glint, Latch), not the plan's",
+          "why": "offset = the lens centre from the kerb face: the testbed's lens is 0.064–0.12 (centre 0.092); with Vela's 0.16 section (0.02 brass + 0.12 lens + 0.02 brass) at 0.10 the outer hairline starts 0.02 m off the kerb, clear of the kerb's own brass crown. Every class: Sky chose the road, and the testbed traced every kerb it had; ≈ 24 pieces (16 tris) per side per 100 m (Vela)"
+        },
+        "breaks": {
+          "stopShort": 0.3,
+          "at": {
+            "crossing": "the strip's two edges (crossings.w): ribbon, lozenges and seams stop stopShort before the strip; nothing of the road's finish lies on it",
+            "junction": "the junction box (between the kerb returns' tangent points): the ribbon turns with the return into the side road and never runs across a mouth; no lozenge or seam inside the box",
+            "bay": "a kerbed bay keeps the ribbon round its kerb; a bay with a dropped or flush kerb (loading, service) is a break at both ends of its mouth",
+            "drive": "a drive's dropped kerb (ground.drives kerb segment): the ribbon stops stopShort before each end",
+            "platform": "a tram platform (kerb or median, its whole length): its edge lies in the swept envelope, so it carries none; the ribbon stops stopShort before each end and resumes past it",
+            "track": "where a track crosses a kerb line (the T2 slew across the open median, curves through a junction): the swept envelope (track centre ± 1.825) + stopShort"
+          },
+          "why": "0.3 m: Vela's stop-short, a hand's width so the crossing's own light (dots, edge lines, field) and the dropped kerb read as their own and never touch the ribbon; the testbed left its exit caps open the same way"
+        },
+        "lozenges": {
+          "piece": "RoadMark_Lozenge",
+          "length": 1.7,
+          "spacing": 8.5,
+          "on": "the middle line of every carriageway, yaw along it; none where that line lies in a track's swept envelope (the T2 half of a primary: its rails mark it), in a junction box, or within stopShort of a break",
+          "phase": "per run between breaks: one lozenge at the run's middle, then every spacing both ways; a lozenge whose tip comes within stopShort of a break is dropped",
+          "why": "the testbed's markerSpacing 8.5 on the middle of its 6.6 m one-way loop: the pearl diamond replaces the dashed lane line (1.7 × 0.48)"
+        },
+        "seams": {
+          "piece": "RoadMark_Seam",
+          "length": 4.6,
+          "spacing": 9.0,
+          "across": "square across the carriageway, from stopShort past one ribbon's brass to stopShort before the other's: n = ceil(span / length) pieces end to end, each stretched along its length to span / n (a plain 0.03 m chrome strip, nothing to distort; Splice may sweep the same section instead)",
+          "phase": "per run: the first seam half a spacing (4.5) from the run's middle, then every spacing, so seams fall between lozenges; a seam within half a lozenge length + stopShort of a lozenge's centre is dropped, the lozenge stays",
+          "never": "on a carriageway a tram runs in (the rails are its joints), in a junction box, on a crossing strip",
+          "why": "the testbed's panelSpacing 9 (chrome joints 4.6 m across a 6.6 m road): the enamel reads as laid panels, not poured"
+        },
+        "crossings": {
+          "meet": "stop",
+          "never": ["zebra", "paint", "ribbon across the strip"],
+          "rule": "crossings keep the light set in the road (crossings.strip.lights: dots, edge lines, field; signal orbs): the road's ribbon, lozenges and seams stop stopShort before the strip's edges, so the two lights never join. The crossing's control stays signal on every class (crossings.strip.control).",
+          "why": "§15 and brief 009: no zebra, no paint, no landing slab; a crossing is its own light"
+        },
+        "checks": "RF-1 (tools/plan/road-finish.ts) holds this standard against the plan and the kit; SF-22 is the world-side rule once the export carries the ribbon (Splice)"
+      },
+      "inlays": {
+        "tag": "[S]",
+        "source": "testbed fountain-plaza.js (createFountainPlaza: ring 4.36–4.88 round the 3.3 m atom fountain, four 0.82 m approach bands on its axes from r 4.92 to the plaza's edge less 0.16, a 0.28 m border with r 1.15 quarter corners) · Vela's pieces tools/decokit/pave026.py (PaveInlay_Band_6m 6 × 0.82, PaveInlay_Ring_Q centre-line r 4.62, both on a fixed 0.72 m tile pitch: never scaled)",
+        "rule": "Glazed teal tile (DK_Ground_TileTeal #669FAB) marks a place's centre and the ways to it, as the testbed's fountain plaza: a ring round a round centrepiece and bands on its axes out to the street. Flush with the paving: it blocks nothing and is walked on. Elsewhere pavements stay plain limestone (the testbed laid no tile on its pavements).",
+        "ring": {
+          "piece": "PaveInlay_Ring_Q",
+          "count": 4,
+          "inner": 4.36,
+          "outer": 4.88,
+          "centrepiece": { "kinds": ["fountain", "basin"], "maxR": 3.3, "minSlab": 1.06 },
+          "where": "centred on every round centrepiece of radius ≤ maxR on public ground (square, open plot, park, the mall's centre band), yaws 0/90/180/270 on the place's axes",
+          "clear": "the disc to outer + stopShort holds nothing standing but the centrepiece (benches facing it stand outside); if not, no ring (never squeezed)",
+          "why": "one radius exists (the tile is on a fixed pitch): inner 4.36 − maxR 3.3 = the testbed's 1.06 m of slab round the basin. Another radius is a new piece (Vela)"
+        },
+        "bands": {
+          "piece": "PaveInlay_Band_6m",
+          "length": 6.0,
+          "w": 0.82,
+          "spokes": {
+            "from": 4.92,
+            "on": "the four axes of a ringed centrepiece (the place's axes, one toward its main entrance)",
+            "to": "outward, whole pieces end to end, to the first of: the place's edge less 0.16 (testbed), a standing item, a planting bed, a bank keep-clear, a bay, or the inner line of the kerb zone of the pavement the axis meets (the band carries on across that pavement's walk and frontage zones, so the line reads from the street to the centre)",
+            "min": 1,
+            "why": "the testbed's broad approach strips; whole pieces only (fixed tile pitch), a spoke shorter than one piece is not laid"
+          },
+          "pavements": "only as a spoke's continuation; a district pavement's walk + frontage (3.0 + 3.0) takes exactly one piece across it, an access pavement's (2.0 + 3.0) none",
+          "border": "the testbed's 0.28 m border with r 1.15 quarter corners has no piece: not sited (Vela, if Sky wants it)"
+        },
+        "stopShort": 0.3,
+        "civic": "the civic block dresses itself (pavement rule): its look (civic-look.json, Vantage) already lays the testbed's plan in terrazzo (ring-inner InlayArc_R4_W06 between the coping 3.6 and the planters 5.36, spines and spokes in InlayBand_12_2); Ring_Q (4.36–4.88) fits that ring, Band_6m the spokes. Vantage's call",
+        "sites": "today: no district square, open plot or park has a round centrepiece, so the rule sites nothing outside the civic block; a garden fountain (Orbit Gardens, Sphere Gardens, Starline Green) would take a ring and its spokes (Datum's proposal, Sky's call)",
+        "checks": "RF-2 (tools/plan/road-finish.ts) holds this standard against the kit; SF-23 is the world-side rule once the export carries inlays (Splice)"
+      },
       "rules": [
         { "id": "SF-1",  "if": "any item, spill, tree pit, kit, bank or watcher intrudes on a section's walk zone (or deck/concourse clearMin)", "why": "the clear walking zone is never blocked (Inclusive Mobility; standards.walking)" },
-        { "id": "SF-2",  "if": "an item other than a bollard, crossing beacon or tram stop kit stands within 2 m (along the edge) of a crossing's edge or a doorway's jambs", "why": "crossings and doors stay readable and passable" },
+        { "id": "SF-2",  "if": "an item other than a bollard, crossing beacon or tram stop kit stands within 2 m (along the edge) of a crossing's edge, or within doors.clear (2 m) of a doorway's jambs; a wall unit nobody queues at (doors.wallUnits: the Automat) within doors.wallUnit (0.6 m)", "why": "crossings and doors stay readable and passable" },
         { "id": "SF-3",  "if": "anything other than track, lawn and the tram stop kit's platforms stands on a tram reservation or within a track's swept envelope (track centre ± 1.325 + 0.5) on any road", "why": "the reservation and the tram's path are the tram's; people cross them, nothing stands on them" },
         { "id": "SF-4",  "if": "a tree's canopy envelope is < 5 m (3D) from the sky rail beam envelope (skyrailEnvelope), or a tree pit lies inside the envelope's plan footprint", "why": "trees clear the beam and the cars; the beam reads clean from the street" },
         { "id": "SF-5",  "if": "a kerb-zone item stands < 0.45 m from the kerb face (hydrant: < 0.6)", "why": "car doors and mirrors (Manual for Streets)" },
@@ -1141,7 +1248,9 @@
         { "id": "SF-14", "if": "an item other than a lamp or mooring cleat stands within 1.5 m of a quay edge", "why": "the quay edge is the water's" },
         { "id": "SF-15", "if": "a roof programme is picked whose minRoof does not fit the roof, or a roof item is < its setback from the parapet", "why": "every roof is buildable, then programmed (§15)" },
         { "id": "SF-16", "if": "frontage spill depth > its section's frontage zone", "why": "spill stays out of the walk" },
-        { "id": "SF-17", "if": "a lamp glass, sign or furniture colour is a signal colour (cones, guard, rivals) or coral_transit off a transit item", "why": "§15 signals are gameplay only; coral is transit" }
+        { "id": "SF-17", "if": "a lamp glass, sign or furniture colour is a signal colour (cones, guard, rivals) or coral_transit off a transit item", "why": "§15 signals are gameplay only; coral is transit" },
+        { "id": "SF-22", "if": "a road ribbon, lozenge or seam lies within roads.breaks.stopShort (0.3 m) of a crossing strip, a drive's dropped kerb, a flush bay mouth, a tram platform or a track's swept envelope, or inside a junction box; a ribbon runs across a mouth; a lozenge or seam lies on a carriageway a tram runs in; any road marking is paint", "why": "the road is drawn by light and stone and the crossing keeps its own light (brief 026/028)", "status": "to build (Splice) once the export carries the ribbon; RF-1 holds the standard now" },
+        { "id": "SF-23", "if": "a tile ring is not centred on a round centrepiece of r ≤ inlays.ring.centrepiece.maxR, or its disc holds a standing item; a tile band is scaled, cut, off a ringed centrepiece's axis, or crosses a standing item, bed, bank keep-clear, bay or a kerb zone", "why": "the testbed's fountain plaza, on a fixed tile pitch", "status": "to build (Splice) once the export carries inlays; RF-2 holds the standard now" }
       ]
     }
   },
@@ -1934,6 +2043,7 @@
       "Records Precinct: two vehicle gates (Rocket, Satellite) to seal against cars, but on foot the crew can leave across any street. Is the escape on foot meant to be open like that, with the police sealing stations rather than streets?"
     ],
     "history": [
+      "2026-10-20 (Datum, brief 026/028, Sky's pick of the testbed road, finish B; input edit, version kept at 0.3.0): standards.streetscape.roads (finish enamel DK_Ground_RoadEnamel on every class, pearl kerb, no paint; a light ribbon along every kerb face of every class, lens centre 0.10 m off the kerb face; breaks stop 0.3 m short at crossings, junction boxes, flush bays, drives, tram platforms and track crossings; lozenges 8.5 m on each carriageway's middle line, seams 9 m across, neither on a carriageway a tram runs in; crossings keep their own light, signal, never zebra) and standards.streetscape.inlays (the testbed's fountain plaza: PaveInlay_Ring_Q ×4 round a round centrepiece r ≤ 3.3, PaveInlay_Band_6m spokes on its axes out across a district pavement to the kerb zone; pavements otherwise plain). Rules SF-22, SF-23 listed for the world side (Splice); plan-side RF-1, RF-2 in tools/plan/road-finish.ts with failing examples.",
       "2026-10-15 (Splice, brief 009, Sky's d1 and his approval of Datum's crossing proposal; input edit, version kept at 0.3.0): (1) standards.streetscape.crossings.strip.lights.field {modules [2, 1], width 3.9, end 0, thick 0.002}: the lit strip under the light lines (LightField_2 / _1 adopted in the kit, use tag crossing:field; part kind crossing-field). (2) strip.across.track [stop] → [stop, kerb]: a kerb crossing may cross a tram track (every kerb crossing carries a signal). (3) crossings.coverage.rules {reach 4, arms {offset 8}, island {ring crown-circus}, mall {}, midBlock {gap 120, class [district], reach 15}, dedupe {mouth 30, bend 20, turn 45}}: Datum's proposal as generator rules (the proposal's add/remove/lines stay as the record); crossings.where gains the arms, island, mall, mid-block and twin rules. Result in the export: 95 crossings → see briefs/009 (the rules place 12 arms, 8 island, 2 mall and 3 mid-block crossings, drop 11 twins, and the tram allowance adds 7 on the Boulevard). (4) The walk's body clearance is read from standards.walking.body by every walk (the plan's walk.ts and walk-fine.ts, the people's walk graph), and rule W-5 holds it in the world rules (tools/world/rules/walking.ts).",
       "2026-10-15 (Datum, on Aster's call, Sky to see the crossing proposal before deciding; input edit, version kept at 0.3.0; the generator reads none of it, the export is unchanged): standards.streetscape.crossings.coverage gains the proposal's geometry (add[].lines, each proposed crossing's line kerb to kerb; remove[].ids), a callout for Crown Circus, and the paths of its evidence (walks: briefs/009/crossings-proposal/desire-lines.json; pictures: the same folder). The plan sheet draws it as a layer, off by default: kept crossings, the 21 proposed, the 7 dropped struck through, the desire lines faint underneath. Recounted per walk crossing rather than per cluster median: 70 % → 96 % served within a 30 m detour (was given as 69 → 95), median 13 → 8 m, longest 232 → 41 m, none over 60 m.",
       "2026-10-15 (Datum, Aster's backlog from briefs/HANDOFF.md §4.6 and the 2026-10-13 handoff §5.4, input edit, version kept at 0.3.0; the generator reads none of these keys, so the export is unchanged: the plan regenerates out/world byte for byte): (1) standards.walking.body {r 0.65, clearWidth 2.0, constrained 1.5 for ≤ 6 m, aisle 1.3 in a seating area, ends 1.5} and standards.walking.rules W-5 (walks keep body.r from the ground solids on any grid, and pass no gap under the clear width): the walk's body clearance leaves the constant in tools/plan/walk-solids.ts for the plan; measured on the civic block, no walk outside the café terrace passes a gap under 2.0 m; Splice writes the rule and the people's walk graph honours the solids. (2) standards.streetscape.crossings.coverage: the 95 crossings against 245 desire lines between the civic doors, the tram platforms and the station banks (69 % served within a 30 m detour; the circus ring has none); proposed X1–X4 (+21: the circus island, primary junction arms and the Parade's mouth, the mid-block rule as written, Apron Road at Rocket Lane) and R1–R2 (−7 twins), 95 % served; for Splice and Vantage, not generated. The refuge's 2.0 m is sourced (Wakefield District Design Code 4.44c). (3) minor fields: standards.levels.connectors.lift.attachGap 0.75 (L-7's default, now stated); megastructures.skyport-tower.liftTubes {r 9.2, radius 1.5, spine 0.7}; signatures[].yawDeg and numeric base (space-hq 90 / 0.18, ocean-liner 0 / −1; the liner's prose base moves to standWhy); parade-galleries.galleryCanopies.x 263.7 → 257.7: 121.4 m, the gallery deck the generator roofs, not 127.4 over the gate podiums' roofs. The sheet draws the signatures (tools/plan/draw.ts).",

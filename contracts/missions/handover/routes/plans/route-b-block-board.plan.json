@@ -6,19 +6,21 @@
  "until": 5100,
  "steps": [
   {"op": "enforcer", "do": "move", "to": "d:Service lane", "why": "to wait where the turned driver will bring the car"},
-  {"op": "scout", "do": "move", "to": "d:Meet driver"},
-  {"op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
-  {"op": "scout", "do": "watch", "target": "driver"},
+  {"op": "scout", "do": "move", "to": [7950, -4000], "why": "brief 031: to watch the driver from the Office's south-west corner, 4.7 m from him, 3.4 m outside the pickup camera's cone and outside the guard's (Waymark)"},
+  {"op": "fixer", "do": "move", "to": [7950, -3850], "why": "brief 031: to wait for the Watch beside the Scout, 2.2 m outside the pickup camera's cone (Waymark)"},
+  {"op": "scout", "do": "watch", "target": "driver", "label": "watched", "gap": 62, "why": "brief 031: from the corner, 4.7 m from the driver, once there (the walk is about 60 s): a Watch in reach starts where the Scout stands, so given on the way it would stop him in the guard's cone"},
   {"op": "scout", "do": "move", "to": "d:Meet driver", "why": "Watch reaches 6 m and stops the walk; Listen needs 3 m: on to the driver"},
   {"op": "scout", "do": "listen", "target": "driver"},
+  {"op": "fixer", "do": "move", "to": "d:Boarding pavilion", "after": ["watched"], "why": "brief 031: to the driver as the Watch ends (20 s; the walk is about 6 s), for the Pay, which holds the pickup camera's clock (an act, Sky L1); waiting idle by the car in its view would be noticed", "gap": 14},
   {"op": "fixer", "do": "turn", "target": "driver", "approach": "pay", "by": "5:40", "label": "turned", "why": "the card shows Pay works on this driver (a Mercenary); §07's Help is one step worse on him"},
   {"op": "fixer", "do": "call", "target": "driver", "after": ["turned"], "why": "the turned driver also parks across the pickup camera for 2:30"},
-  {"op": "fixer", "do": "move", "to": "crew:fixer", "why": "back to the getaway car to cover the extraction"},
-  {"op": "scout", "do": "move", "to": [8250,-3100], "after": ["scout"], "why": "near the rivals' car"},
+  {"op": "fixer", "do": "move", "to": [1025, -4625], "why": "back to the getaway car to cover the extraction; tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the fixer fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
+  {"op": "scout", "do": "move", "to": [8600, -3400], "after": ["scout"], "why": "near the rivals' car (3.6 m from where they park), 2.8 m outside the pickup camera's cone: the wait for the 3:10 tip is out of its sight (brief 031)"},
   {"op": "scout", "do": "mislead", "target": "rivals", "at": "3:10", "why": "a false tip sends the rivals away (3:50) as soon as they park"},
-  {"op": "scout", "do": "move", "to": "crew:scout"},
+  {"op": "scout", "do": "move", "to": [1175, -4825], "why": "tuning.md §7.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"},
+  {"op": "tech", "do": "move", "to": [675, -4625], "after": ["scout"], "why": "tuning.md §7.9 (the 16 m sidearm, the kite response): the Tech, idle at the car all mission, to the post by it the loud route takes, within 15 m of the ambush spots"},
   {"op": "enforcer", "do": "take", "label": "take", "why": "Vale reaches the car in the service lane at 6:10"},
-  {"op": "enforcer", "do": "move", "to": [2400,-6000], "after": ["take"], "gap": 0, "why": "with Vale, to a point 19.5 m south-east of the car, off the rivals' posts by the planters: the ambush springs at 20 m, and the Enforcer holds there while the cell fights"},
+  {"op": "enforcer", "do": "move", "to": [2400, -6000], "after": ["take"], "gap": 0, "why": "with Vale, to a point 19.5 m south-east of the car, off the rivals' posts by the planters: the ambush springs at 20 m, and the Enforcer holds there while the cell fights"},
   {"op": "cell", "do": "panic", "after": ["take"], "why": "the ambush: the armed cell fires at will"},
   {"op": "enforcer", "do": "move", "to": "d:Getaway bay", "when": "fight.ambush", "label": "out", "why": "board and go (brief 018 §5): the ambush springs, and the Enforcer walks Vale straight to the car while the three fire; he cannot run or fire"},
   {"op": "enforcer", "do": "board", "target": "car", "after": ["out"], "label": "in", "why": "Vale in first (Board, 4 s carrying)"},
@@ -28,6 +30,6 @@
   {"op": "fixer", "do": "board", "target": "car", "label": "fixer-in"},
   {"op": "tech", "do": "move", "to": "d:Getaway bay", "after": ["in"], "when": "blocker.out"},
   {"op": "tech", "do": "board", "target": "car", "label": "tech-in"},
-  {"op": "cell", "do": "go", "after": ["scout-in", "fixer-in", "tech-in"], "gap": 1, "unless": "captured", "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind"}
+  {"op": "cell", "do": "go", "after": ["scout-in", "fixer-in", "tech-in"], "gap": 1, "unless": ["captured", "withdraw.car"], "why": "once the last board lands (1 s), the whole cell in the car and the car free: it leaves with nobody behind; and not before Vale is in (withdraw.car: with the crew broken sooner from the new posts, the three's boards land before the Enforcer's 4 s)"}
  ]
 }

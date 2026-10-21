@@ -1,0 +1,4 @@
+scout-generic-walk: human False avatar scoutAvatar clip walk (1.13 s) forward stride (foot to foot) 0.01..0.71 m, hand swing ahead of hips up to 0.30 m, lowest foot 0.14 m above the floor
+scout-generic-run: human False avatar scoutAvatar clip run (0.80 s) forward stride (foot to foot) 0.01..0.64 m, hand swing ahead of hips up to 0.30 m, lowest foot 0.13 m above the floor
+crowd-humanoid-walk: human True avatar d5cAvatar clip walk (1.17 s) forward stride (foot to foot) 0.00..0.73 m, hand swing ahead of hips up to 0.30 m, lowest foot 0.11 m above the floor
+crowd-humanoid-run: human True avatar d5cAvatar clip run (0.83 s) forward stride (foot to foot) 0.00..0.72 m, hand swing ahead of hips up to 0.20 m, lowest foot 0.09 m above the floor

@@ -149,9 +149,10 @@ namespace Suborned.Play
             var g = host.Game; if (g == null || p.Turned) return null;
             bool needOpen = !p.KNeed, tempOpen = !p.KTemperament, tiesOpen = !(p.KSecret || (p.KNeed && p.KTemperament && p.Secret.Length == 0));
             bool Ok(string verb) { Answer a = default; try { a = g.ScoutQuery(verb, role); } catch { return false; } return a.ok || a.code is "too-far" or "agent-busy"; }
-            if (!p.KRoutine && Ok("watch")) return (OpId.Scout, "watch");
+            // brief 031: a Watch names its agent (the selected one if it can, else who'd learn soonest); Listen stays the Scout's
+            if (!p.KRoutine && host.WatchBy(role) is OpId wb) return (wb, "watch");
             if ((needOpen || tempOpen || tiesOpen) && Ok("listen")) return (OpId.Scout, "listen");
-            if ((needOpen || tempOpen || tiesOpen) && Ok("watch")) return (OpId.Scout, "watch");
+            if ((needOpen || tempOpen || tiesOpen) && host.WatchBy(role) is OpId wb2) return (wb2, "watch");
             if (!needOpen && !tempOpen && role != "councillor") return (OpId.Fixer, "turn");
             return null;
         }
@@ -163,7 +164,7 @@ namespace Suborned.Play
             var g = host.Game; if (g == null || ci >= icards.Count) return; var role = icards[ci].Who; var p = g.PersonByRole(role);
             if (IntelNext(p, role) is not { } nx0) return; var (by, verb) = nx0;
             if (!host.Selected[(int)by] || host.Agent != by) { host.Select(by, false); return; }
-            host.IntelOrder(role, verb);
+            host.IntelOrder(role, verb, by);
         }
 
         void IntelFrame()
@@ -178,7 +179,7 @@ namespace Suborned.Play
             {
                 intelSig = sig; string markRole = "";
                 var tl = host.Text?.Timeline; if (tl != null) foreach (var (at, label, known) in tl) { var pr = at.Split(':'); int tick = (int.Parse(pr[0]) * 60 + int.Parse(pr[1])) * Game.Hz; if (tick <= g.Tick) continue; markRole = known ? MarkPerson(label) : ""; break; }
-                int Rank(string r) { var p = g.PersonByRole(r); return r == markRole && !p.Turned ? 0 : IntelNext(p, r) is { by: OpId.Scout } ? 1 : 2; }
+                int Rank(string r) { var p = g.PersonByRole(r); return r == markRole && !p.Turned ? 0 : IntelNext(p, r) is { verb: "watch" or "listen" } ? 1 : 2; } // brief 031: a learn ranks by its verb, whoever gives it
                 var list = new List<string>(IntelRoles); list.Sort((a, b) => { int c = Rank(a).CompareTo(Rank(b)); return c != 0 ? c : Array.IndexOf(IntelRoles, a).CompareTo(Array.IndexOf(IntelRoles, b)); });
                 intelOrder = list.ToArray();
             }
@@ -201,7 +202,7 @@ namespace Suborned.Play
                 bool tiesKnown = p.KSecret && p.Secret.Length > 0, noneKnown = p.KNeed && p.KTemperament && p.Secret.Length == 0;
                 string lover = p.Lover != null ? host.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; // "Loves Inez", "Loves the guard" (Aster)
                 Fill(c.Slots[2], tiesKnown || noneKnown ? "learned" : "unk", tiesKnown ? (p.Secret == "affair" ? "kin" : "secret") : noneKnown ? "secret_none" : "", tiesKnown ? IntelFragment("secret", p.Secret, lover) : noneKnown ? IntelFragment("secret", "") : "");
-                foreach (var sl in c.Slots) sl.Verb = sl.State == "unk" && nx is { by: OpId.Scout } ? nx.Value.verb : sl.State == "unk" ? "listen" : "";
+                foreach (var sl in c.Slots) sl.Verb = sl.State == "unk" && nx is { verb: "watch" or "listen" } ? nx.Value.verb : sl.State == "unk" ? "listen" : "";
                 if (stress) foreach (var sl in c.Slots) { sl.Frag = IntelWorst[0]; }
                 // the chip
                 Show(c.Chip, nx.HasValue);

@@ -185,8 +185,8 @@
  ],
  "totals": {
   "figures": 22,
-  "clips": 40,
-  "bytes": 88917428
+  "clips": 41,
+  "bytes": 89321360
  },
  "figures": [
   {
@@ -3558,6 +3558,22 @@
    "naturalSpeedMs": 2.52,
    "use": "run (double-click, panic run)",
    "naturalSpeedSource": "Unity planted-foot median, scout",
+   "sourceSha256": "022e1adba12735baa2493d4885a092acad69af59212b2f293127e38ff47e5bd8"
+  },
+  {
+   "name": "run_lean",
+   "file": "Clips/run_lean.fbx",
+   "source": "Anim/mixamo_library/Running__c9c610bc.fbx",
+   "sha256": "0d940c94c62b6d0fcd8a15af0f0bb30af60aafb1effd63c8514633a6d3427d22",
+   "frames": 25,
+   "fps": 30,
+   "seconds": 0.833,
+   "loop": true,
+   "naturalSpeedMs": 2.72,
+   "use": "the cell's run (double-click): a leaning sprint, longer stride and flight than run (the old web testbed's run, retargeted); keep run for the crowd and panic",
+   "authoredBy": "tools/figures/author_clips.py",
+   "retargetedFrom": "testbed-art/players/enforcer/web/enforcer_G2.web.glb:run",
+   "retargetedFromSha256": "56b93a636bc52e53ec2c8cdd2c4a6c0f0a8b99d5188a6d972a04fc70eb5e1825",
    "sourceSha256": "022e1adba12735baa2493d4885a092acad69af59212b2f293127e38ff47e5bd8"
   },
   {

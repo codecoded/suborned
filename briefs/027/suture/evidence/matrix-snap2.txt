@@ -1,0 +1,13 @@
+brief 027 fight-lab matrix · suborned.sim/0.10.0 · inputs ec12cac13a494db2
+preset          run  result            end      T(m/tot) A  St(s→e) pub     inv     cases down capt hp-lost hits foes shots  verdict
+lab             L1   failure entry-seen-camera 0:56.0   13/13    2  2→0   raised  active      0    0    0     0 %    0    3    15  pass (fail)
+lab             L1c  failure sealed    5:00.2   30/30    2  2→-1  raised  active      0    1    0    38 %    7    6    34  pass (fail)
+lab             L2   failure sealed    3:24.2   44/44    3  2→-3  high    active      0    0    0     0 %    0    7    25  pass (fail)
+lab             L3   success           4:50.4   22/22    2  2→-2  raised  active      0    1    0    33 %    6    5    25  pass (heavy debrief)
+lab             L4   failure sealed    7:21.7   31/31    3  2→-2  high    active      0    0    0     0 %    0    5    24  pass (fail)
+lab             P-A  success           4:53.6    5/5     1  2→3   calm    active      0    0    0     0 %    0    3    15  pass
+lab             P-G  success           4:11.2    6/6     1  2→3   calm    active      0    0    0    27 %    5    3    15  FAIL — health lost 27 % > 25
+lab             P-B  failure rivals-reach-vale 8:30.0    4/4     1  2→-1  calm    active      0    0    0     0 %    0    0     0  FAIL — failure rivals-reach-vale; Standing -1 < start
+lab             6.4 triggers: 6.4.5 P-B fails rivals-reach-vale
+lab             6.4.7 lethality (two trained shooters at the sidearm's effective ring, open ground): an op down in 2.5 s, the Enforcer in 4.5 s
+every run replays identically from its order log

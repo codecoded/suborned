@@ -1,0 +1,32 @@
+inputs ec12cac13a494db2 rulebook out/suture027/rulebook.snapshot2.json
+policy             run  result             end     T  A St     down hp-lost hits foes shots resets verdict
+matrix             L1c  failure sealed     5:00.2  30 2  2>-1     1    38%    7    6    34      0 pass (fail)
+reset              L1c  failure enforcer-down 3:44.0  30 2  2>-1     1    38%    7    5    19     13 pass (fail)
+enfkite            L1c  failure enforcer-down 3:44.0  30 2  2>-1     1    44%    8    5    27      0 pass (fail)
+reset-kite         L1c  failure entry-seen-camera 2:32.0  14 2  2>0      0     5%    1    3    10      4 pass (fail)
+focus-reset-kite   L1c  failure entry-seen-camera 2:32.0  14 2  2>0      0     5%    1    3    10      4 pass (fail)
+cycle-kite         L1c  failure entry-seen-camera 2:32.0  14 2  2>0      0     5%    1    3    10      4 pass (fail)
+matrix             L3   success            4:50.4  22 2  2>-2     1    33%    6    5    25      0 pass (heavy debrief)
+reset              L3   failure sealed     5:05.0  26 2  2>-2     0    33%    6    5    25     15 pass (fail)
+enfkite            L3   failure sealed     5:05.0  26 2  2>-2     1    50%    9    5    33      0 pass (fail)
+reset-kite         L3   success            4:44.5  24 2  2>-1     0     5%    1    6    33     15 FAIL — no op down or captured, health lost 5 % < 40, no open case
+focus-reset-kite   L3   success            4:43.2  24 2  2>-1     0     0%    0    6    33     15 FAIL — no op down or captured, health lost 0 % < 40, no open case
+cycle-kite         L3   success            4:47.0  24 2  2>-1     0     5%    1    6    33     15 FAIL — no op down or captured, health lost 5 % < 40, no open case
+matrix             P-A  success            4:53.6   5 1  2>3      0     0%    0    3    15      0 pass
+reset              P-A  success            4:53.6   5 1  2>3      0     0%    0    3    15      8 pass
+enfkite            P-A  success            4:56.3   5 1  2>3      0     0%    0    3    15      0 pass
+reset-kite         P-A  success            5:09.7   5 1  2>3      0    33%    6    3    26     11 FAIL — health lost 33 % > 25
+focus-reset-kite   P-A  success            4:48.2   5 1  2>3      0    11%    2    3    31     12 pass
+cycle-kite         P-A  success            5:09.7   5 1  2>3      0    33%    6    3    26     11 FAIL — health lost 33 % > 25
+matrix             P-G  success            4:11.2   6 1  2>3      0    27%    5    3    15      0 FAIL — health lost 27 % > 25
+reset              P-G  success            4:11.2   6 1  2>3      0    27%    5    3    15      8 FAIL — health lost 27 % > 25
+enfkite            P-G  success            4:13.9   6 1  2>3      0    27%    5    3    15      0 FAIL — health lost 27 % > 25
+reset-kite         P-G  failure rivals-reach-vale 3:43.5   6 1  2>2      3    88%   16    2    20      8 FAIL — failure rivals-reach-vale; 3 op down; health lost 88 % > 25
+focus-reset-kite   P-G  success            4:16.6  10 1  2>3      2    61%   11    3    26      8 FAIL — Trail 10 > 7; 2 op down; health lost 61 % > 25
+cycle-kite         P-G  failure rivals-reach-vale 3:43.5   6 1  2>2      3    88%   16    2    20      8 FAIL — failure rivals-reach-vale; 3 op down; health lost 88 % > 25
+matrix             P-B  failure rivals-reach-vale 8:30.0   4 1  2>-1     0     0%    0    0     0      0 FAIL — failure rivals-reach-vale; Standing -1 < start
+reset              P-B  failure rivals-reach-vale 8:30.0   4 1  2>-1     0     0%    0    0     0      0 FAIL — failure rivals-reach-vale; Standing -1 < start
+enfkite            P-B  failure rivals-reach-vale 8:30.0   4 1  2>-1     0     0%    0    0     0      0 FAIL — failure rivals-reach-vale; Standing -1 < start
+reset-kite         P-B  failure rivals-reach-vale 8:30.0   4 1  2>-1     0     0%    0    0     0      0 FAIL — failure rivals-reach-vale; Standing -1 < start
+focus-reset-kite   P-B  failure rivals-reach-vale 8:30.0   4 1  2>-1     0     0%    0    0     0      0 FAIL — failure rivals-reach-vale; Standing -1 < start
+cycle-kite         P-B  failure rivals-reach-vale 8:30.0   4 1  2>-1     0     0%    0    0     0      0 FAIL — failure rivals-reach-vale; Standing -1 < start

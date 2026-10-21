@@ -1,0 +1,14 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 42, "y": 42, "w": 262, "h": 998, "text": "roster portraits"},
+  {"kind": "image", "x": 5665, "y": 198, "w": 309, "h": 108, "text": "known people"},
+  {"kind": "line", "x": 2710, "y": 3222, "w": 596, "h": 120, "text": "Get Vale to the car."},
+  {"kind": "image", "x": 42, "y": 2946, "w": 636, "h": 396, "text": "plot scope"},
+  {"kind": "image", "x": 2778, "y": 1425, "w": 78, "h": 78, "text": "car held marker"},
+  {"kind": "image", "x": 5902, "y": 2627, "w": 72, "h": 72, "text": "edge cameo"},
+  {"kind": "image", "x": 3161, "y": 2001, "w": 78, "h": 78, "text": "holder"},
+  {"kind": "speech", "x": 5026, "y": 3102, "w": 693, "h": 49, "text": "Passer-by: Stay inside. Stay down."},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

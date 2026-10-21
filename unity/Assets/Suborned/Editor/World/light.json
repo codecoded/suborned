@@ -3,7 +3,7 @@
   "sun": {
     "palette": "light.sun",
     "value": 1,
-    "intensity": 1.6,
+    "intensity": 1.8,
     "pitch": 38,
     "yaw": 330,
     "honest": "Glint, 008 light-honest (2026-10-15). Retuned on honest frames (Capture: ARGBHalf, the player's HDR chain). Honest frames showed B5's orange came from the grade, not the sun: the highlights tint (1, 0.85, 0.66) is a full-strength multiplier above luma 0.55 and the colour filter warmed everything. Both are neutral now, the sun keeps the warmth (colour unchanged, #ffe0d0), and the intensity rises 1.35 -> 1.6 to pay back what the tint took (1.7 puts 11 percent of the home frame at R 246 or more, 1.6 puts 4 percent), with the ambient down 10 percent so shade stays shade. Sun paving (238, 206, 169) -> about (237, 217, 198), the paintings' lit paving (mean of four: 240, 220, 201). Evidence: briefs/008/light-honest/.",
@@ -30,16 +30,17 @@
     "mode": "trilight",
     "sky": {
       "palette": "light.ambientSky",
-      "value": 0.77
+      "value": 0.69
     },
     "equator": {
       "palette": "light.ambientEquator",
-      "value": 0.81
+      "value": 0.71
     },
     "ground": {
       "palette": "light.ambientGround",
-      "value": 0.5
+      "value": 0.41
     },
+    "r026": "Glint, 026 phase 1 (2026-10-19), variant B (briefs/026/glint/lighting.html): sun 1.6 -> 1.8, ambient x0.9 / 0.88 / 0.82 (0.77/0.81/0.5 -> 0.69/0.71/0.41), ACES in place of Neutral (the filmic toe and shoulder give form to the mid-values while the cream and the shade anchors hold: lit paving about 235, shade paving about 160), exposure +0.15, contrast 14 -> 6 (ACES carries it), saturation 14 -> 18, bloom 0.22. Hues unchanged.",
     "honest": "Glint, 008 light-honest: values x 0.9 (was 0.85 / 0.9 / 0.55) with the sun at 1.6. Shade on paving over sun on paving, linear Y: 0.60 -> 0.50 (the paintings 0.40 to 0.63, the play-angle painting 0.48); shaded paving (183, 167, 150) -> about (169, 156, 145), the paintings' shaded stone and paving (161-197, 148-185, 137-173). Hues unchanged, so shaded ivory stays ivory (R-B 24).",
     "note": "Glint, 008 B5. Shade carries the stone: a neutral-warm equator (#faeadc x 0.9, was #f8e6cc x 0.62) so shaded ivory stays ivory, a near-neutral sky fill (#dedce0 x 0.85, was #b2cbe6 x 0.7: a blue fill greyed cream paving and streets in shade), a warm ground bounce. Same wall in sun and shade (stone / seafoam / paving, displayed Y): was 0.25 / 0.12 / 0.42, now 0.64 / 0.48 / 0.69."
   },
@@ -66,27 +67,35 @@
   },
   "reflection": {
     "ground": "light.reflectGround",
+    "street": {
+      "note": "Glint, 026 chrome fix (briefs/027/latch/chrome). Chrome read flat pale grey because the default cube is haze (L 0.93) from the horizon up and only a short ramp to ground, so chrome outside the two probes mirrors nothing dark (cube mean luminance 0.56, 0% dark, 16% bright). A street canyon is dark at the horizon, mid-grey walls, bright only high up. Cube function (Latch, ReflectionCube.cs; no colour constants in C#): elevation e in degrees; below the horizon lerp groundHorizon to groundNadir over groundDepth; above it lerp wallBase to wall over baseHeight, then to the sky over bandHeight..bandHeight+bandSoft, where sky = lerp(horizon, zenith, skyMix * y^0.55) (y = sin e). The sun glow terms stay as they are. Palette values scale in HSV as every entry does.",
+      "wallBase": "light.reflectWallBase", "wall": "light.reflectWall", "groundHorizon": "light.reflectGroundHorizon", "groundNadir": "light.reflectGroundNadir",
+      "baseHeight": 10, "bandHeight": 20, "bandSoft": 16, "groundDepth": 55, "skyMix": 0.4,
+      "streak": { "colour": "light.reflectStreak", "elevationFrom": 34, "elevationTo": 54, "soft": 8, "azimuthHalfWidth": 70, "towardSun": true, "strength": 1.0, "note": "Glint 026 round 3: day chrome had tone and band (mean 0.35) but nothing above 0.8. A bright sky-window band toward the sun: displayed 0.97 (the cube is RGBA32, so it cannot exceed 1), 34 to 54 deg above the horizon, +-70 deg either side of the sun azimuth, 8 deg soft edges, replacing the sky colour there. About 4 percent of the sphere; chrome caps that face the sun and the sky get one bright streak, the rest keeps the dark band." },
+      "measured": "area-weighted over the sphere, displayed luminance: mean 0.56 -> 0.40; below 0.35: 0% -> 54%; above 0.75: 16% -> 24%. Target for Latch's re-measure of the close-ups: chrome cap mean 0.35-0.5 with a visible dark band and one bright sky/sun streak, not one flat tone."
+    },
+    "intensity": 0.8,
     "note": "Glint, 008 B5. The default cube is what chrome and glass mirror where no probe reaches. Ground is a dark warm brown (was a pale tan) so the lower half of a sphere is dark, the horizon bright and the top blue: a chrome gradient, not a pale plastic one."
   },
   "probes": {
     "note": "Glint, 008 B5; built by Latch (Light/Probes.cs: the builder makes and bakes them once the world is built and verified, before it saves the scene). Two baked-only reflection probes (Custom mode, baked in the Editor to Assets/Scenes/HarbourDistrict-probe-*.exr beside the scene; no realtime probe, no refresh at runtime), box projection on, HDR, 128 px, so chrome (entrance globe, sphere lamps, bollards, the orrery) mirrors the square and the Office front. Positions are world metres (x, y height, z); box is the size of the influence volume centred on the probe. Bake after the world is built, with the sun as light.json sets it.",
     "list": [
-      { "name": "civic-square", "position": [-160, 2.4, -250], "size": [56, 40, 70], "resolution": 128, "importance": 1, "blendDistance": 6 },
-      { "name": "office-front", "position": [-160, 2.6, -272], "size": [26, 22, 24], "resolution": 128, "importance": 2, "blendDistance": 4 }
+      { "name": "civic-square", "position": [-160, 2.4, -250], "size": [56, 40, 70], "resolution": 128, "importance": 1, "blendDistance": 6, "intensity": 0.75 },
+      { "name": "office-front", "position": [-160, 2.6, -272], "size": [26, 22, 24], "resolution": 128, "importance": 2, "blendDistance": 4, "intensity": 0.85 }
     ]
   },
   "post": {
-    "tonemapping": "Neutral",
+    "tonemapping": "ACES",
     "bloom": {
       "threshold": 1.1,
-      "intensity": 0.18,
+      "intensity": 0.22,
       "scatter": 0.6,
       "tint": "light.bloomTint"
     },
     "colour": {
-      "postExposure": 0.12,
-      "contrast": 14,
-      "saturation": 14,
+      "postExposure": 0.15,
+      "contrast": 6,
+      "saturation": 18,
       "filter": "light.filter",
       "honest": "Glint, 008 light-honest. The colour filter is neutral (was #fffbf4): it warmed shade as well as sun (shaded paving R-B 31 against the paintings' 17-24). Post-exposure, contrast and saturation are unchanged (saturation keeps the enamel accents saturated)."
     },
@@ -110,7 +119,117 @@
       "note": "neutral (was +3): the warmth comes from the sun, not the grade; +3 pushed lit ivory to mustard"
     }
   },
+  "contact": {
+    "note": "Glint, 026 round 1 (briefs/026/glint/lighting-r1.html). Baked contact shade (Light/ContactShade.cs): URP SSAO is blind at the orthographic play zoom, so the shade is geometry. Strength and power are materials; widths are geometry (rebuild). Round 1 defaults (foot 0.8 m / 0.45 / 2.2, kerb 0.3 m / 0.4 / 1.6, blob 0.5 / 1.5) were drawn but did not read at play zoom (0.8 m is about 22 px and the power-2.2 falloff leaves about 6 px). Now wider with a softer falloff: the darkest pixel at a contact line is 20 to 50 levels below round 1 (the old city: up to about 36), over 1 to 4 percent of a frame, and the frame mean does not rise (138.5 -> 138.0). Tint stays the shader's cool shade.",
+    "enabled": true,
+    "footWidth": 1.6,
+    "footStrength": 0.6,
+    "footPower": 1.2,
+    "kerbWidth": 0.6,
+    "kerbStrength": 0.6,
+    "kerbPower": 1.2,
+    "blobStrength": 0.7,
+    "blobPower": 1.1
+  },
+  "night": {
+    "note": "Glint, 026 café night (2026-10-20; briefs/026/glint/cafe-lighting.md). The Handover at night, LOOK ONLY: the sim, sight, schedules and every replay are untouched (Keel's rulebook has no light input; night changes nothing a rule reads). Same keys and shapes as the day entries above (sun, ambient, fog, skyGradient, post, reflection), so Latch's builder applies this block with the code it has for the day one, to a second Volume profile (<scene>-grade-night.asset) and a second lighting state, chosen by a `phase` (day | night) argument; day stays the default and byte-identical. Palette entries are `night.*` in the palette below. Recipe from the testbed café: a dark teal-black base so every local pool has about 10:1 contrast, then many small unshadowed pools in a warm base with 1 in 3 accents (see `lamps`). The post grade is ACES, as day.",
+    "phase": "night",
+    "sun": { "palette": "night.moon", "value": 1, "intensity": 0.22, "pitch": 45, "yaw": 330, "note": "moon, cool; testbed 0.18-0.25 #a7c5df. Soft shadows stay on (they cost the same as day)." },
+    "ambient": {
+      "mode": "trilight",
+      "sky": { "palette": "night.ambientSky", "value": 0.20 },
+      "equator": { "palette": "night.ambientEquator", "value": 0.18 },
+      "ground": { "palette": "night.ambientGround", "value": 0.12 },
+      "note": "0.12-0.16 of day with the cool tint (0.75, 0.9, 1.15) the proof used; teal-leaning so unlit stone is teal-black, not blue-grey (the day trilight scaled down went flat grey-blue)."
+    },
+    "fog": { "palette": "night.haze", "value": 1, "mode": "linear", "start": 1100, "end": 7500, "density": 0.0 },
+    "skyGradient": { "zenith": "night.zenith", "mid": "night.skyMid", "horizon": "night.haze", "below": "night.haze", "sunGlow": "night.moon", "midHeight": 0.16, "curve": 0.7, "glowWidth": 30, "glowStrength": 0.06, "disc": 0.0 },
+    "reflection": { "ground": "night.reflectGround", "intensity": 0.1,
+      "street": { "wallBase": "night.reflectWallBase", "wall": "night.reflectWall", "groundHorizon": "night.reflectGround", "groundNadir": "night.reflectGroundNadir", "baseHeight": 6, "bandHeight": 22, "bandSoft": 14, "groundDepth": 40, "skyMix": 0.4,
+        "streak": { "colour": "night.reflectStreak", "elevationFrom": 30, "elevationTo": 50, "soft": 8, "azimuthHalfWidth": 80, "towardSun": true, "strength": 1.0, "note": "a cool moon-haze window band, displayed 0.7, so chrome in the dark has one soft highlight" },
+        "measured": "mean 0.13 displayed before intensity (a lit-window band at the horizon, the rest teal-black). Intensity 0.25 here, not 0.1: at 0.1 the cube is invisible and chrome goes black; the point lights' speculars supply the bright streaks.", "intensityOverride": 0.45 }, "note": "environment and reflection probes at 0.1 of day (testbed env 0.08-0.12; chrome 0.7 only where a lamp is near, which the lamp pieces' own emissive and the point lights give)." },
+    "exposure": { "toneMappingExposure": 1.05, "note": "testbed night exposure 1.05; day here is post exposure +0.15 (about the same)." },
+    "post": {
+      "tonemapping": "ACES",
+      "bloom": { "threshold": 0.9, "intensity": 0.35, "scatter": 0.6, "tint": "night.bloomTint", "note": "the testbed had no bloom (emissive through the ACES shoulder). Our emissives need some; test 0.25 to 0.45 in game before committing. Half resolution if over budget." },
+      "colour": { "postExposure": 0.2, "contrast": 8, "saturation": 14, "filter": "light.filter", "note": "saturation kept high so lamp hues and enamel accents survive the dark (palette survives the light)." },
+      "shadowsMidtonesHighlights": {
+        "shadows": "night.gradeShadows", "shadowsWeight": 0.0,
+        "midtones": "light.gradeMid", "midtonesWeight": 0.0,
+        "highlights": "light.gradeHighlights", "highlightsWeight": 0.0,
+        "note": "Teal-black shadows. URP multiplies by this colour below luma 0.3 (see the day `honest` note), so it is a MILD teal multiplier (#6fa3a8 = 0.44, 0.64, 0.66), not the near-black #0f2a33; the black comes from the ambient. Highlights stay neutral so lamp colour is the lamp's, not the grade's."
+      },
+      "vignette": { "intensity": 0.18, "smoothness": 0.5, "colour": "night.vignette" },
+      "whiteBalance": { "temperature": 0, "tint": 0 }
+    },
+    "signals": "Signals (cones, guard, rivals) draw unlit and emissive outside this grade, exactly as by day; night never lights or tints them, and none of the lights below may be the thing that makes one readable.",
+    "lamps": {
+      "note": "Light-spawn rules for Latch (builder-spawned beside each fixture; nothing hand-placed in a scene). URP units; start from the proof in briefs/026/glint/cafe/ and retune in game against testbed-detail-night.png at zoom 14, yaw 30 and 210. Every pool has a glowing fixture (Vela) and a matching light, or neither.",
+      "palette": { "base": ["night.lampAmber", "night.lampPeach"], "accents": ["night.lampTeal", "night.lampCoral", "night.lampLilac"], "accentShare": 0.34, "cycle": ["night.lampAmber", "night.lampTeal", "night.lampPeach", "night.lampCoral", "night.lampLilac"] },
+      "rules": {
+        "shadows": "none on every additional light. At most ONE cached shadow (the interior pendant), only if the budget allows. No cookies.",
+        "liveCap": 28,
+        "liveRadiusM": 45,
+        "liveNote": "a controller enables only lights within 60 m of the camera focus, nearest first, at most 28 at once; the rest sit at intensity 0 (the slots always exist, day is intensity 0, so no shader variant churn).",
+        "renderer": "keep PC_Renderer on Deferred; the per-object limit stays 4 (only Complex Lit enamels are forward-only).",
+        "falloff": "range-bounded; wall washers use a soft penumbra (inner 35 percent of the cone)."
+      },
+      "kinds": [
+        { "kind": "table", "light": "point", "intensity": 1.7, "range": 3.2, "height": 0.16, "above": "table top", "colour": "cycle", "emissivePiece": "table lamp" },
+        { "kind": "interior", "light": "point", "intensity": 8, "range": 6.5, "height": 3.3, "colour": "night.lampInterior", "count": 3, "emissivePiece": "cove, opal" },
+        { "kind": "awning", "light": "spot", "intensity": 16, "range": 6.5, "spotAngle": 90, "inner": 0.35, "count": 4, "colour": "night.lampInterior", "aim": "paving 1.15 m out", "emissivePiece": "awning lamp" },
+        { "kind": "palm", "light": "spot", "intensity": 14, "range": 6.5, "spotAngle": 45, "colour": "night.uplight", "aim": "up the trunk, +3 m", "emissivePiece": "uplight can", "note": "attach to the real palm meshes, not the empty transforms" },
+        { "kind": "street", "light": "spot", "intensity": 19, "range": 6.5, "spotAngle": 85, "colour": "night.lampStreet", "aim": "down", "emissivePiece": "street-lamp globe", "note": "range 11 -> 6.5: the floor pool is only about 4 m from the head, so the cone volume shrinks by 3.4x with the pool unchanged; intensity x1.35 pays back the smaller range window (URP smooth window at 0.62 of range 0.73 against 0.97)" },
+        { "kind": "office", "light": "mixed", "fixture": "RecordsEntrance* and RecordsEntrance_Official (the capstone front, played at yaw 210)", "note": "Glint 026 round 3. The Records Office front had no lamp kind. Five lights, all unshadowed, named by the entrance piece's own frame (door axis, landing 4.6 m wide, 0.75 m above street), placed relative to it.",
+          "parts": [
+            { "name": "door", "light": "point", "intensity": 9, "range": 5.5, "colour": "night.lampInterior", "at": "door axis, 2.9 m above the landing, 0.6 m out from the face", "emissivePiece": "AwningLamp (x2 flanking the door)" },
+            { "name": "landing", "light": "spot", "intensity": 15, "range": 6.5, "spotAngle": 75, "inner": 0.35, "colour": "night.lampInterior", "at": "3.2 m above the landing, 1 m out", "aim": "centre of the landing", "note": "the pool Vale and the guard stand in; people read against it" },
+            { "name": "pierWash", "count": 2, "light": "spot", "intensity": 12, "range": 7, "spotAngle": 55, "colour": "night.uplight", "at": "at the foot of each pier, 0.4 m out", "aim": "up the pier, +3.5 m", "note": "lifts the arch so the front reads as a building at night" },
+            { "name": "forecourt", "light": "spot", "intensity": 14, "range": 8, "spotAngle": 85, "colour": "night.lampStreet", "at": "4 m above the forecourt centre (x 64, y -40.5 plan), pointing down", "note": "one lamp pool where the forecourt meets Rocket Lane, as the street lamps do" }
+          ] }
+      ]
+    },
+    "emissive": {
+      "note": "For Vela. HDR _EmissionColor intensity per material, on its own glow-only material so signals and the grade never meet it. One per-material night scalar (0 by day, so day frames do not move). Interior opal and cove exist already: add the multiplier.",
+      "night": { "tableOpal": 2.2, "wallAwningLampOpal": 4.0, "uplightLens": 2.3, "pendantCove": 2.6, "interiorOpal": 2.6, "sign": 3.2, "signCoral": 2.0 },
+      "dayResidual": { "pendantCove": 0.35, "sign": 0.6, "note": "what the testbed kept lit by day; optional" },
+      "pieces": [
+        { "name": "TableLamp_Opal", "size": "0.29 m tall, atom-age opal diffuser on a brass body (thin brass line, SF-21), diffuser tinted per lamp from the cycle", "emissive": "tableOpal" },
+        { "name": "AwningLamp", "size": "chrome plate 0.24 x 0.07, opal strip 0.2 x 0.03, projecting chrome eyelid so the lens is not seen from the play view", "emissive": "wallAwningLampOpal" },
+        { "name": "UplightCan_Palm", "size": "chrome can r 0.08 x 0.13 long, recessed lens r 0.063, on a short chrome stem, 0.425 m from the trunk", "emissive": "uplightLens" },
+        { "name": "StreetLampGlobe", "size": "opal globe on the existing DK_Lamp head (the head is only 0.2 m at y 4.3), clearly a globe at zoom 14", "emissive": "tableOpal", "intensity": 3.0 }
+      ]
+    }
+  },
   "palette": {
+    "light.reflectStreak": { "hex": "#fff8ec" },
+    "night.reflectStreak": { "hex": "#b3cde0" },
+    "light.reflectWallBase": { "hex": "#2f3a3b" },
+    "light.reflectWall": { "hex": "#7d8785" },
+    "light.reflectGroundHorizon": { "hex": "#4a4036" },
+    "light.reflectGroundNadir": { "hex": "#1f1b18" },
+    "night.reflectWallBase": { "hex": "#0c1a1f" },
+    "night.reflectWall": { "hex": "#8a6b48" },
+    "night.reflectGroundNadir": { "hex": "#05090b" },
+    "night.moon": { "hex": "#a7c5df" },
+    "night.ambientSky": { "hex": "#8fb3d6" },
+    "night.ambientEquator": { "hex": "#7fa6bf" },
+    "night.ambientGround": { "hex": "#3d5b66" },
+    "night.haze": { "hex": "#102b36" },
+    "night.zenith": { "hex": "#07202c" },
+    "night.skyMid": { "hex": "#0e3342" },
+    "night.reflectGround": { "hex": "#2b3d44" },
+    "night.bloomTint": { "hex": "#ffd9a8" },
+    "night.gradeShadows": { "hex": "#6fa3a8" },
+    "night.vignette": { "hex": "#0a1f27" },
+    "night.lampAmber": { "hex": "#ffc066" },
+    "night.lampPeach": { "hex": "#ffd099" },
+    "night.lampTeal": { "hex": "#67d6ce" },
+    "night.lampCoral": { "hex": "#ffa891" },
+    "night.lampLilac": { "hex": "#b79be4" },
+    "night.lampInterior": { "hex": "#ffd39b" },
+    "night.lampStreet": { "hex": "#ffe6bf" },
+    "night.uplight": { "hex": "#e4efc7" },
     "light.sun": {
       "hex": "#ffe0d0"
     },

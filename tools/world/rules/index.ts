@@ -4,6 +4,7 @@
 import type { Check } from '../../plan/checks';
 import type { WCtx } from '../../plan/world-ctx';
 import { civicDressRules } from './civic-dress';
+import { capstoneRules } from './capstone';
 import { connectorRules } from './connectors';
 import { crossingRules } from './crossings';
 import { pylonRules } from './pylons';
@@ -12,4 +13,4 @@ import { signRules } from './signs';
 import { trimRules } from './trim';
 import { walkingRules } from './walking';
 
-export const extraRules = (c: WCtx): Check[] => [...signRules(c), ...pylonRules(c), ...connectorRules(c), ...crossingRules(c), ...civicDressRules(c), ...trimRules(c), ...walkingRules(c), ...quietRules(c)];
+export const extraRules = (c: WCtx): Check[] => [...signRules(c), ...pylonRules(c), ...connectorRules(c), ...crossingRules(c), ...civicDressRules(c), ...trimRules(c), ...walkingRules(c), ...quietRules(c), ...capstoneRules(c)];

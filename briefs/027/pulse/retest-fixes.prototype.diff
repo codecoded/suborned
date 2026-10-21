@@ -1,0 +1,117 @@
+--- sim/Suborned.Sim/GameKite.cs	2026-10-20 16:00:27
++++ out/pulse027b/Suborned.Sim/GameKite.cs	2026-10-20 16:42:31
+@@ -27,6 +27,7 @@
+     public sealed partial class Game
+     {
+         bool LabKite;
++        static int KE(string k, int d) => int.TryParse(Environment.GetEnvironmentVariable(k), out var v) ? v : d;
+         KiteDisp? rivalsDisp;
+         readonly SortedDictionary<int, KiteDisp> secDisp = new SortedDictionary<int, KiteDisp>();
+         const int KiteBlindCm = 800; // Pulse §2: the rivals' blind-point fallback, within 8 m
+@@ -44,7 +45,7 @@
+             else foreach (var h in Hostiles) if (KiteSide(h.Id) == 2) KiteMark(h.Gun, by);
+         }
+         void KiteMark(Gun g, string by) { if (g.Down) return; g.KiteBy = by; g.KiteSeen = Tick; if (g.KiteAt < 0) g.KiteAt = Tick; }
+-        void KiteClear(Gun g) { g.KiteAt = -1; g.KiteLast = -1; g.KiteBy = ""; g.KiteHasPrev = false; }
++        void KiteClear(Gun g) { if (KE("KALARM", 0) == 1) { g.KiteWalked = 0; g.KiteCapped = false; } g.KiteAt = -1; g.KiteLast = -1; g.KiteBy = ""; g.KiteHasPrev = false; }
+ 
+         /// <summary>Any operative with a weapon out inside `effCm` of `pos` that the body sees by its own sight (a pre-fight officer's watch, the
+         /// crew's, a fight body's line): the body can answer, and keeps its own fight.</summary>
+@@ -82,7 +83,8 @@
+             if (g.KiteAt < 0 || g.W == null) return;
+             var shooter = OpOf(Sim.Op.Parse(g.KiteBy));
+             if (Tick - g.KiteSeen > Labr!.KiteLapse || shooter.Down || shooter.Inside) { KiteClear(g); return; }
+-            if (g.KiteHasPrev) g.KiteWalked += G.Dist(g.KitePrev, pos);
++            int contact = KE("KCONTACT", 3000);
++            { var sp0 = shooter.Pos; if (g.KiteHasPrev && (contact <= 0 || G.Dist(pos, sp0) <= contact)) g.KiteWalked += G.Dist(g.KitePrev, pos); }
+             g.KitePrev = pos; g.KiteHasPrev = true;
+             if (Tick < g.KiteAt + Labr.KiteReact) return;
+             var sp = shooter.Pos; int eff = g.W.EffCm, side = KiteSide(g.Id);
+@@ -90,19 +92,21 @@
+             if (KiteCanAnswer(pos, eff, KiteSees(g.Id, pos))) { if (moving && side == 1 && h != null && !h.Blocker) Stop(h); if (moving && side == 1 && k >= 0) SecStop(k, pos, sp); return; }
+             if (side == 1)
+             {
++                if (g.KiteCapped && KE("KREARM", 0) > 0 && Tick - g.KiteCapTick >= KE("KREARM", 0)) { g.KiteCapped = false; g.KiteWalked = 0; }
+                 if (g.KiteCapped) return;
+                 if (moving && g.KiteLast >= 0 && Tick - g.KiteLast < Labr.KiteReplan) return;
+                 int rem = Labr.KiteChaseCm - g.KiteWalked;
+-                if (rem <= 0)
++                int free = contact <= 0 ? 0 : (int)Math.Max(0, G.Dist(pos, sp) - contact);
++                if (rem <= 0 || (KE("KCELL", 1) == 1 && rem < S.Grid.Cell && free == 0))
+                 {
+-                    g.KiteCapped = true;
++                    g.KiteCapped = true; g.KiteCapTick = Tick;
+                     var cv = SelectCover(pos, pos, sp, R.SeekPoliceCm);
+                     if (h != null) { if (cv != null) { TakeCover(g, cv); MoveTo(h, cv.At); g.St = "advance"; } else Stop(h); }
+                     else if (moving) SecStop(k, pos, sp);
+                     Note("ai.kite", $"{g.Id} has walked its {Labr.KiteChaseCm / 100} m: it {(cv != null && h != null ? $"takes cover at {cv.Id}" : "holds")} against {g.KiteBy}.");
+                     return;
+                 }
+-                var path = KitePath(pos, StopPoint(pos, sp, eff), rem);
++                var path = KitePath(pos, StopPoint(pos, sp, eff), rem + free);
+                 if (path == null) return;
+                 if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {G.Dist(pos, sp) / 100} m out.");
+                 g.KiteLast = Tick;
+@@ -114,6 +118,7 @@
+             if (h == null || Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
+             g.StepAt = Tick;
+             var dest = KiteHide(g, pos, sp, Car, out var c);
++            if (!dest.HasValue && KE("RFALL", 1) == 1) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos) dest = sp2; }
+             if (!dest.HasValue) return;
+             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), out of the line{(c != null ? $" to {c.Id}" : "")}.");
+             g.KiteLast = Tick;
+@@ -127,6 +132,7 @@
+         {
+             c = SelectCover(pos, objective, sp, R.SeekRivalCm);
+             if (c != null) return c.At;
++            if (KE("RBLIND", 1) == 0) return null;
+             return S.Grid.Nearest(pos, q => !Sees(q, sp), KiteBlindCm);
+         }
+ 
+@@ -171,11 +177,13 @@
+             var pos = pose.Value.pos; var sp = shooter.Pos;
+             if (KiteCanAnswer(pos, g.W.EffCm, RivalsWatching) || RivalsDelayedUntil > RivalsDrawnTick) return;
+             var dest = KiteHide(g, pos, sp, pos, out var c);
++            if (!dest.HasValue && KE("RFALL", 1) == 1) { var sp2 = StopPoint(pos, sp, g.W.EffCm); if (sp2 != pos) dest = sp2; }
+             if (!dest.HasValue) return;
+             var path = KitePath(pos, dest.Value, int.MaxValue / 20); if (path == null) return;
+             if (c != null) TakeCover(g, c);
+             Note("ai.kite", $"rivals answer {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, move at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), out of the line{(c != null ? $" to {c.Id}" : "")}.");
+             rivalsDisp = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
+         }
+ 
+         /// <summary>A displaced body's pose: out along its walk (then facing the shooter), held, or back along it.</summary>
+--- sim/Suborned.Sim/GameFight.cs	2026-10-20 00:47:21
++++ out/pulse027b/Suborned.Sim/GameFight.cs	2026-10-20 16:41:22
+@@ -49,7 +49,9 @@
+                 {
+                     var route = S.Grid.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
+                     var gun = NewGun($"officer-{i + 1}", PistolW, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
+-                    Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(stands[i]), Home = S.Stand(stands[i]), Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
++                    var stp = S.Stand(stands[i]);
++                    if ((Lab || KE("CONTESTTODAY", 0) == 1) && KE("CONTEST", 1) == 1 && i < KE("CONTESTN", 9)) { var cp = StopPoint(stp, Car, gun.W!.EffCm); if (cp != stp) { stp = cp; route = S.Grid.Route(entry, stp) ?? new[] { entry, stp }; } }
++                    Hostiles.Add(new Hostile { Id = gun.Id, At = stp, Home = stp, Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
+                 }
+                 int lockBefore = Lockdown;
+                 Lockdown = Math.Min(Lockdown, Tick + T(SealS));
+--- sim/Suborned.Sim/GameAi.cs	2026-10-20 15:54:10
++++ out/pulse027b/Suborned.Sim/GameAi.cs	2026-10-20 16:41:00
+@@ -298,6 +298,7 @@
+                 string stand = ""; long bd = long.MaxValue;
+                 foreach (var st in S.FightPolice) { long d = G.D2(from, S.Stand(st)); if (d < bd || (d == bd && string.CompareOrdinal(st, stand) < 0)) { bd = d; stand = st; } }
+                 var sp = S.Stand(stand);
++                if (Lab && KE("CONTEST", 1) == 1 && KE("CONTESTJ", 1) == 1) sp = StopPoint(sp, Car, SecGuns[k].W!.EffCm);
+                 bool taken = false;
+                 foreach (var o in Hostiles) if (!o.Down && o.Home == sp) taken = true;
+                 standOverflow.TryGetValue(stand, out int overflow);
+--- sim/Suborned.Sim/Model.cs	2026-10-20 15:54:10
++++ out/pulse027b/Suborned.Sim/Model.cs	2026-10-20 16:39:43
+@@ -72,7 +72,7 @@
+         public SortedDictionary<string, int>? Mem;
+         /// <summary>Brief 027 F2 (lab kite only; hashed in Game.HashKite): the alarm (first and latest shot on its side, the shooter), the last
+         /// answer, the walk spent on alarms this run (cm) and where it stood last tick, and whether the chase budget is spent.</summary>
+-        public int KiteAt = -1, KiteSeen = -1, KiteLast = -1, KiteWalked; public string KiteBy = ""; public Pt KitePrev; public bool KiteHasPrev, KiteCapped;
++        public int KiteCapTick; public int KiteAt = -1, KiteSeen = -1, KiteLast = -1, KiteWalked; public string KiteBy = ""; public Pt KitePrev; public bool KiteHasPrev, KiteCapped;
+         public Gun(string id) { Id = id; }
+     }
+ 

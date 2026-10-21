@@ -1,0 +1,19 @@
+{
+  "schema": "suborned.fightlab.preset/1",
+  "name": "lab",
+  "note": "Brief 027 playground: Motive's recommendations as the switch defaults (briefs/027/playground.md §2), EXPERIMENTAL. The engine part (start.fightLab) is a run's start state; every value it does not name is the rulebook's fight.lab (contracts/rules/rulebook.json). The host part is Latch's PlayControls.",
+  "host": {
+    "fightMode": "realtime",
+    "pauseInFight": false,
+    "freezeOn": { "loudOrder": true, "spotted": true, "firedOn": true, "ambush": true, "reinforce": true, "down": true, "beat": false },
+    "freezeMinGapS": 3, "freezesPerFight": null,
+    "targetAuto": ["ambush", "firedOn", "down"], "targetPlayback": 1.0
+  },
+  "start": {
+    "fightLab": {
+      "on": true, "healthScale": 10, "pips": true, "stances": "three", "then": "free", "close": true, "charge": true, "field": false,
+      "policeWarning": true, "hostilesFireMoving": true, "coverSnap": true, "kite": true,
+      "loadout": { "scout": "sidearm", "fixer": "sidearm", "tech": "sidearm", "enforcer": "carbine" }
+    }
+  }
+}

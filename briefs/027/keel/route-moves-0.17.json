@@ -1,0 +1,130 @@
+{
+ "schema": "keel.route-moves/1",
+ "from": "Keel, 2026-10-21",
+ "engine": "suborned.sim/0.17.0 (tuning.md §11 trigger, locks and follow fire; §12.2 police answer everyone shooting them)",
+ "note": "before = engine 0.16.0 (out/keel038/base, built before the first edit); now = the working tree. §11 alone moved no recorded result (284/284 checkpoint hashes identical with --start-text, 42/42 range); every move below is §12.2's. Played by bun run route-diff (briefs/027/keel/route-diff-0.17.json). Routes not listed play to the same outcome, end, Trail, Alert and health.",
+ "unchanged": [
+  "careless-enforcer-watches-guard",
+  "careless-guard-left-door-held",
+  "careless-reporter-not-stopped",
+  "careless-scout-idles-pickup",
+  "careless-takedown-seen-camera",
+  "careless-takedown-seen-crowd",
+  "fail-district-seals",
+  "fail-enforcer-down",
+  "fail-entry-seen-camera",
+  "fail-entry-seen-guard",
+  "fail-entry-seen-patrol",
+  "fail-rivals-reach-vale",
+  "fail-take-seen-camera",
+  "fail-vale-dead",
+  "fail-vale-leaves",
+  "fight-loud-enforcer-down",
+  "fight-safe-rivals-reach-vale",
+  "route-a",
+  "route-a-board",
+  "route-a-pressure",
+  "route-a-pressure-board",
+  "route-b",
+  "route-b-block",
+  "route-b-block-board",
+  "route-b-board",
+  "route-g",
+  "route-g-board",
+  "route-g-fast",
+  "route-g-fast-board",
+  "route-g-kill",
+  "route-g-kill-board",
+  "withdraw"
+ ],
+ "moves": [
+  {
+   "route": "careless-body-found",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "alert": 2
+   },
+   "before": "failure:enforcer-down 4:09.5 T2 A2 health lost 33 %",
+   "now": "failure:enforcer-down 4:09.5 T2 A2 health lost 38 %",
+   "why": [
+    "tuning.md §12.2: the same rule; only health lost moves"
+   ],
+   "expectsMet": true
+  },
+  {
+   "route": "loud",
+   "expects": {
+    "outcome": "success",
+    "alert": 2
+   },
+   "before": "success 4:34.6 T10 A2 health lost 61 %",
+   "now": "failure:enforcer-down 4:24.4 T9 A2 health lost 77 %",
+   "why": [
+    "tuning.md §12.2 (engine 0.17.0): police answer every operative who fired on them within line-lapse-s 3 s, not only the last shooter; in the loud final fight the officers' class-1 target no longer flips between the cell's shooters (first line apart 3:48.0: security-2 fires on the scout at 2 m where it fired on the tech at 7 m), so they fire on cadence and the Enforcer goes down"
+   ],
+   "expectsMet": false
+  },
+  {
+   "route": "loud-fast",
+   "expects": {
+    "outcome": "success",
+    "alert": 2
+   },
+   "before": "success 4:34.6 T10 A2 health lost 61 %",
+   "now": "failure:enforcer-down 4:24.4 T9 A2 health lost 77 %",
+   "why": [
+    "tuning.md §12.2 (engine 0.17.0): police answer every operative who fired on them within line-lapse-s 3 s, not only the last shooter; in the loud final fight the officers' class-1 target no longer flips between the cell's shooters (first line apart 3:48.0: security-2 fires on the scout at 2 m where it fired on the tech at 7 m), so they fire on cadence and the Enforcer goes down"
+   ],
+   "expectsMet": false
+  },
+  {
+   "route": "loud-fight",
+   "expects": {
+    "outcome": "success",
+    "alert": 2,
+    "left": {
+     "tech": "captured downed"
+    }
+   },
+   "before": "success 4:42.1 T10 A2 health lost 38 %",
+   "now": "success 4:42.1 T10 A2 health lost 66 %",
+   "why": [
+    "tuning.md §12.2: the same rule; only health lost moves"
+   ],
+   "expectsMet": true
+  },
+  {
+   "route": "loud-left-downed",
+   "expects": {
+    "outcome": "success",
+    "left": {
+     "scout": "captured downed"
+    },
+    "alert": 2
+   },
+   "before": "success 4:35.5 T10 A2 health lost 66 %",
+   "now": "failure:enforcer-down 4:24.4 T9 A2 health lost 77 %",
+   "why": [
+    "tuning.md §12.2 (engine 0.17.0): police answer every operative who fired on them within line-lapse-s 3 s, not only the last shooter; in the loud final fight the officers' class-1 target no longer flips between the cell's shooters (first line apart 3:48.0: security-2 fires on the scout at 2 m where it fired on the tech at 7 m), so they fire on cadence and the Enforcer goes down"
+   ],
+   "expectsMet": false
+  },
+  {
+   "route": "loud-left-standing",
+   "expects": {
+    "outcome": "success",
+    "left": {
+     "scout": "captured fighting"
+    },
+    "alert": 2
+   },
+   "before": "success 4:35.5 T10 A2 health lost 61 %",
+   "now": "failure:enforcer-down 4:24.4 T9 A2 health lost 77 %",
+   "why": [
+    "tuning.md §12.2 (engine 0.17.0): police answer every operative who fired on them within line-lapse-s 3 s, not only the last shooter; in the loud final fight the officers' class-1 target no longer flips between the cell's shooters (first line apart 3:48.0: security-2 fires on the scout at 2 m where it fired on the tech at 7 m), so they fire on cadence and the Enforcer goes down"
+   ],
+   "expectsMet": false
+  }
+ ]
+}

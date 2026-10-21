@@ -1,0 +1,19 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 42, "y": 42, "w": 262, "h": 998, "text": "roster portraits"},
+  {"kind": "image", "x": 5665, "y": 198, "w": 309, "h": 108, "text": "known people"},
+  {"kind": "line", "x": 2663, "y": 3222, "w": 691, "h": 120, "text": "Watch the café terrace."},
+  {"kind": "image", "x": 42, "y": 2946, "w": 636, "h": 396, "text": "plot scope"},
+  {"kind": "speech", "x": -778, "y": -1799, "w": 550, "h": 74, "text": "Alert. Armed citizen. Alert."},
+  {"kind": "speech", "x": 2516, "y": 874, "w": 580, "h": 74, "text": "He's armed! Raise the alarm!"},
+  {"kind": "image", "x": 2767, "y": 1235, "w": 78, "h": 78, "text": "door marker"},
+  {"kind": "image", "x": 2767, "y": 977, "w": 78, "h": 78, "text": "pip guard"},
+  {"kind": "image", "x": 4410, "y": 1605, "w": 78, "h": 78, "text": "pip driver"},
+  {"kind": "image", "x": 1334, "y": 42, "w": 72, "h": 72, "text": "edge cameo"},
+  {"kind": "image", "x": 1140, "y": 42, "w": 72, "h": 72, "text": "edge cameo"},
+  {"kind": "beat", "x": 5026, "y": 3062, "w": 102, "h": 47, "text": "Guard"},
+  {"kind": "speech", "x": 5026, "y": 3119, "w": 864, "h": 49, "text": "Patrol: Alert. Armed citizen. Alert."},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

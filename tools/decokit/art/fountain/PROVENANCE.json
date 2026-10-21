@@ -1,0 +1,77 @@
+{
+ "note": "Brief 028, Vela. The testbed's atom fountain ported at full detail (finest level, 'close') by tools/decokit/fountain_tb.py, fountain_tex.py, art/fountain/dump_basin.mjs. Original geometry and Blender sculpture made for The Suborned (the testbed's own model-report); marble = ambientCG Marble012 (CC0, https://ambientcg.com/view?id=Marble012). No decimation, re-meshing or downscaling; the testbed's gameplay (13,216 tris total) and near (22,480) levels and its KTX2 copies are not used.",
+ "sources": {
+  "basin": {
+   "script": "~/Projects/the-suborned/testbed/src/fountain-geometry.js",
+   "sha256": "c52566175abdeacd3e82e2b243d79047f72bfb6b6820fa8f2f73f328b8a45d7e",
+   "spec": "fountain-spec.js",
+   "baked": "art/fountain/basin-close.json",
+   "baked_sha256": "160c766b2b55c91480cce891536c82ccf2b23d25df9690faf08b1519a39a3a4c",
+   "triangles": 21888
+  },
+  "sculpture": {
+   "path": "~/Projects/the-suborned-store/source-art/CivicFountain/atom-sculpture-v1.blend",
+   "sha256": "565edd86c997684b5dceb6b470987eab45e840159f8b7217faef4835d4237772",
+   "collection": "Atom close",
+   "objects": [
+    "Silver globe and pedestal.002",
+    "Gold orbit 0/1/2.002"
+   ],
+   "triangles": 20000,
+   "glb_checked_against": {
+    "path": "testbed-art/civic-fountain/sculpture/atom-close-v1.glb",
+    "sha256": "2426cc3c636e14fa825844c0dec4528ac9d26cdff095dc3f22275ca02b257d93"
+   },
+   "centreHeightMetres": 2.33,
+   "orbitRatesRadiansPerSecond": [
+    0.075,
+    -0.055,
+    0.04
+   ],
+   "waterContactRadiusMetres": 0.546001283211071
+  },
+  "textures": {
+   "marble-base.webp": {
+    "sha256": "aca4e98e61224bda4bb7dfce4f81bf1707bfa4a2cad88226cb53deb638e8e567"
+   },
+   "marble-normal.webp": {
+    "sha256": "5d6c5af6b28273871493e74d33d46d98f70442ea8233b31c40da9b3a5453dbaa"
+   },
+   "marble-orm.webp": {
+    "sha256": "a037cebc6310147d253832e984a4489a96cd5e2fe5bbd7ddeea1d965c262014b"
+   },
+   "ceramic-base.webp": {
+    "sha256": "58a1291d473c2a2a36caa771ae0efcf8d8f23fdff55e6b914647a4950272a5da"
+   },
+   "ceramic-orm.webp": {
+    "sha256": "e9f84a2056ee09ae5e597e7ea0eb03429fbe84548b97a23d4354259dfa569be9"
+   },
+   "polish-normal.webp": {
+    "sha256": "5fa22e81387ba82a5ade4f5dc80f3298429737fe0e7bfcede48ae686f4e50ad4"
+   },
+   "polish-orm.webp": {
+    "sha256": "f2289ea0c73b8ef3459af17ea718be0bb24451544727169e9fac0b29aacea76f"
+   },
+   "pool-mosaic.webp": {
+    "sha256": "93dfe22ecd7ee7b76465e415251edf93b181018756e1d4eba94223817b2fd2a7"
+   }
+  }
+ },
+ "output": {
+  "triangles": 41888,
+  "fbx_sha256": "9f6cd629fcdfd5709d6eb4b7d07e9091a78b2b258e8581d51cf6d37fd135e0dc",
+  "parts": [
+   "DK_AtomFountain_Testbed_Orbit0",
+   "DK_AtomFountain_Testbed_Orbit1",
+   "DK_AtomFountain_Testbed_Orbit2"
+  ]
+ },
+ "changes_from_source": [
+  "three Y-up to Blender Z-up (pure rotation, winding kept)",
+  "water UVs replaced by world xz/2 (what the testbed shader samples)",
+  "marble/glaze/metal ORM repacked to the kit mask (R metal, G occlusion, A 1-roughness); gold roughness x2 as the testbed",
+  "shading: kit sharp-from-angle 38 + weighted normal",
+  "jets/foam use the kit's 'sheen' transparent (alpha 0.2) until the water shader is ported (testbed: 0.50 / 0.42)",
+  "clearcoat, probe reflections, animated water, night lights not carried"
+ ]
+}

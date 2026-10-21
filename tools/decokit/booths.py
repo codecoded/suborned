@@ -183,8 +183,12 @@ def starburst(s, r, spikes, length, mat):
                 [r * 0.22, r * 0.09, 0.0015], mat, seg=8)
 
 
-@asset("PhoneBooth", "Booths", bevel=0.0, lean=0.45, cap=1500)
+@asset("PhoneBooth", "Booths", bevel=0.0)
 def phone_booth(s):
+    booth_body(s)
+
+
+def booth_body(s, single=False):
     """Twin acoustic hoods, teal and cream, back to back on a coral drum; each opens toward the walk at head
     height with a videophone on its back wall, a ledge, a lamp; a chrome starburst rides the join."""
     R, A, ZC, X, YAW, WALL = 0.65, 0.47, 1.45, 0.63, 15.0, -0.25
@@ -192,16 +196,17 @@ def phone_booth(s):
     s.lathe([(0.58, 0.07), (0.58, 0.96), (0.565, 1.0), (0.53, 1.02)], pal.Enamel_Coral, seg=48,
             cap_bottom=False, cap_top=False)
     s.lathe(dome(0.53, 1.015, 0.05, 6), pal.Chrome, seg=48, cap_bottom=False)  # under the hood ledges
-    with s.at((0, 0, ZC), (0, 90, 0)):  # waist: a fillet of revolution tangent to both shells, chrome seam ring
-        rw = 0.45  # waist radius; the fillet lies outside both spheres, so it never reaches into a hood
-        rho = (R * R - X * X - rw * rw) / (2 * (rw - R))  # tangency: X^2 + (rw + rho)^2 = (R + rho)^2
-        rc, xt = rw + rho, X * rho / (R + rho)
-        prof = [(rc - math.sqrt(rho * rho - x * x), x) for x in (-xt + 2 * xt * k / 16 for k in range(17))]
-        plathe(s, prof, [pal.Enamel_Seafoam] * 8 + [pal.Enamel_Ivory] * 8, seg=40)  # open band: its edges lie on the shells
-        s.lathe([(rw - 0.02, -0.018), (rw + 0.012, -0.012), (rw + 0.016, 0.0), (rw + 0.012, 0.012),
-                 (rw - 0.02, 0.018)], pal.Chrome, seg=40, cap_bottom=False, cap_top=False)
-    for sx, shell in ((-1, pal.Enamel_Seafoam), (1, pal.Enamel_Ivory)):
-        with s.at((sx * X, 0, ZC), (90, 0, sx * YAW)):  # local +Z out of the opening, Y up, X along the street
+    if not single:  # the waist joins two hoods
+        with s.at((0, 0, ZC), (0, 90, 0)):  # waist: a fillet of revolution tangent to both shells, chrome seam ring
+            rw = 0.45  # waist radius; the fillet lies outside both spheres, so it never reaches into a hood
+            rho = (R * R - X * X - rw * rw) / (2 * (rw - R))  # tangency: X^2 + (rw + rho)^2 = (R + rho)^2
+            rc, xt = rw + rho, X * rho / (R + rho)
+            prof = [(rc - math.sqrt(rho * rho - x * x), x) for x in (-xt + 2 * xt * k / 16 for k in range(17))]
+            plathe(s, prof, [pal.Enamel_Seafoam] * 8 + [pal.Enamel_Ivory] * 8, seg=40)  # open band: its edges lie on the shells
+            s.lathe([(rw - 0.02, -0.018), (rw + 0.012, -0.012), (rw + 0.016, 0.0), (rw + 0.012, 0.012),
+                     (rw - 0.02, 0.018)], pal.Chrome, seg=40, cap_bottom=False, cap_top=False)
+    for sx, shell in (((-1, pal.Enamel_Seafoam),) if single else ((-1, pal.Enamel_Seafoam), (1, pal.Enamel_Ivory))):  # single: one hood on the drum's axis
+        with s.at((0 if single else sx * X, 0, ZC), (90, 0, sx * YAW)):  # local +Z out of the opening, Y up, X along the street
             zr, Ri = hood(s, R, A, 0.04, shell, pal.Enamel_Cream)
             s.extrude(circle(math.sqrt(Ri * Ri - WALL * WALL) + 0.005, 40), WALL - 0.02, WALL, pal.Enamel_Cream)
             with s.at((0, 0.02, WALL), (-90, 0, 0)):  # alcove wall, panel frame

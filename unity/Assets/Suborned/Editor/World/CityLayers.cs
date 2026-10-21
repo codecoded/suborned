@@ -38,6 +38,19 @@ namespace Suborned.World
 
         /// <summary>Each item with a DecoKit ref is that piece; the rest (source "procedural") are built from their kit.json parts,
         /// scaled to the item's size and turned by its yaw.</summary>
+        /// <summary>Brief 026 (Splice): the export's flat ground pieces (ground.pieces: tactile and terrazzo tiles, drains, manholes; kerb stones,
+        /// flags and tree pits when adopted), each its kit piece at its pivot, under their own root (`ground-pieces`: the export's counts.ground
+        /// leaves them out, so the ground layer's count stays the export's). A piece without a kit ref = reject.</summary>
+        public int GroundPieces(Transform layer, List<StreetItemDto> items)
+        {
+            foreach (var s in items)
+            {
+                if (s.Kit == null) throw new System.IO.InvalidDataException($"World: ground piece {s.Id} ({s.Kind}) has no kit ref");
+                placer.Place(Nodes.Element(layer, s.Id), layer.name, s.Kit, s.At, s.Z, s.Yaw);
+            }
+            return items.Count;
+        }
+
         public void Street(Transform layer, List<StreetItemDto> items)
         {
             foreach (var s in items)

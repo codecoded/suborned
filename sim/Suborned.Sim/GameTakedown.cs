@@ -125,6 +125,7 @@ namespace Suborned.Sim
             var e = Enforcer; bool armed = p == GuardP && GuardGun.W != null && !GuardAlly;
             bool aware = e.Running && (e.Walk != null || e.DriveMoved) && G.Within(e.Pos, at, witnessRange); // brief 025: a driven run is a run
             if (!aware && p == GuardP) aware = GuardWatching(e.Pos, false);
+            if (!aware && p == GuardP && AttentionWary("guard", "enforcer")) aware = true; // brief 031 (Sky D1): a wary guard is aware of him
             // Motive rev 3 §1.3: a person who witnessed one of the cell's acts (a takedown, a carry, a drawn weapon) stays aware of the
             // Enforcer for the rest of the mission (until Pulse gives a stop its facing)
             if (!aware) foreach (var m in p.Memory) if (m.Act == "saw-takedown" || m.Act == "saw-carry" || m.Act == "saw-weapon-drawn") { aware = true; break; }
@@ -908,6 +909,8 @@ namespace Suborned.Sim
         /// without them hashes as it always did.</summary>
         internal void HashTakedown(Hash.H h)
         {
+            HashCameras(h); // engine 0.15.0: only a run with a camera fired on adds bytes
+            HashCars(h); // engine 0.16.0: only a run with a car fired on adds bytes
             if (Acts.Count == 0 && Bodies.Count == 0 && Reps.Count == 0 && Units.Count == 0 && markedFoes.Count == 0 && missedMarks.Count == 0 && suspicious.Count == 0 && extraCivGuns.Count == 0) return;
             h.S("takedown");
             foreach (var a in Acts)

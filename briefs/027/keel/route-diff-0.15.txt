@@ -1,0 +1,115 @@
+$ bun tools/route-diff/cli.ts --a "out/keel036/base/sim/cli/bin/Release/net10.0/suborned-sim.dll" --a-root "out/keel036/base" --b "sim/cli/bin/Release/net10.0/suborned-sim.dll" --json "briefs/027/keel/route-diff-0.15.json"
+· engines ready (0.0 s); playing 38 routes on A and 38 on B
+A = suborned-sim.dll 45a086a7 on /Users/sky/Projects/suborned/out/keel036/base    B = suborned-sim.dll 0d0b12c5 on the working tree's inputs    (= means the value did not move)
+route                          outcome  fail  end              Trail  Alert  health lost
+careless-body-found            =        =     =                =      =      =
+    first log line apart (line 58):
+      A  3:30.6  ai.cover  officer-2 takes cover at cv-046 (wall civic/cafe/wall-arc-w, q 800).
+      B  3:30.1  shot.miss  security-1 fires on fixer at 12 m (375 ‰): miss.
+careless-reporter-not-stopped  =        =     =                =      1 → 2  22 % → 38 %
+    first log line apart (line 48):
+      A  7:29.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  7:28.0  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+careless-scout-idles-pickup    =        =     =                =      =      22 % → 38 %
+    first log line apart (line 45):
+      A  7:29.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  7:28.0  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+careless-takedown-seen-crowd   =        =     =                =      =      =
+    first log line apart (line 80):
+      A  6:16.0  shot.hit  security-2 fires on fixer at 6 m (750 ‰): hit.
+      B  6:16.0  shot.miss  security-1 fires on fixer at 9 m (375 ‰): miss.
+fail-district-seals            =        =     =                =      =      =
+    first log line apart (line 34):
+      A  2:43.0  rivals.arrive  The rival crew comes in from the east street, following the gunfire.
+      B  2:32.6  witness.react  p-records-office-29 finds a body: radio.
+fail-enforcer-down             =        =     1:35.4 → 1:39.4  =      =      =
+    first log line apart (line 5):
+      A  0:37.4  shot.miss  enforcer fires on guard at 11 m (375 ‰): miss.
+      B  0:37.4  shot.hit  enforcer fires on guard at 13 m (750 ‰): hit.
+fight-loud-enforcer-down       =        =     =                =      =      =
+    first log line apart (line 17):
+      A  2:07.6  fire.cancelled  enforcer runs: the fire order ends.
+      B  2:07.6  order.move  enforcer runs for d:Office entrance.
+fight-safe-rivals-reach-vale   =        =     7:35.8 → 7:29.0  =      =      =
+    first log line apart (line 50):
+      A  7:20.0  shot.hit  rival-2 fires on tech at 9 m (562 ‰): hit.
+      B  7:20.0  shot.miss  rival-1 fires on enforcer at 5 m (281 ‰): miss.
+loud                           =        =     =                =      =      =
+    first log line apart (line 21):
+      A  2:35.0  fire.cancelled  enforcer runs: the fire order ends.
+      B  2:35.0  order.move  enforcer runs for d:Office entrance.
+loud-fast                      =        =     =                =      =      =
+    first log line apart (line 21):
+      A  2:35.0  fire.cancelled  enforcer runs: the fire order ends.
+      B  2:35.0  order.move  enforcer runs for d:Office entrance.
+loud-fight                     =        =     =                =      =      =
+    first log line apart (line 21):
+      A  2:35.0  fire.cancelled  enforcer runs: the fire order ends.
+      B  2:35.0  order.move  enforcer runs for d:Office entrance.
+loud-left-downed               =        =     =                =      =      =
+    first log line apart (line 21):
+      A  2:35.0  fire.cancelled  enforcer runs: the fire order ends.
+      B  2:35.0  order.move  enforcer runs for d:Office entrance.
+loud-left-standing             =        =     =                =      =      =
+    first log line apart (line 21):
+      A  2:35.0  fire.cancelled  enforcer runs: the fire order ends.
+      B  2:35.0  order.move  enforcer runs for d:Office entrance.
+route-a                        =        =     =                =      =      5 % → 0 %
+    first log line apart (line 72):
+      A  4:21.6  shot.hit  tech fires on rival-2 at 15 m (150 ‰): hit.
+      B  4:21.5  shot.miss  rival-3 fires on scout at 12 m (281 ‰): miss.
+route-a-board                  =        =     =                =      =      5 % → 0 %
+    first log line apart (line 73):
+      A  4:21.6  shot.hit  tech fires on rival-2 at 15 m (150 ‰): hit.
+      B  4:21.5  shot.miss  rival-3 fires on scout at 12 m (281 ‰): miss.
+route-a-pressure               =        =     =                =      =      44 % → 66 %
+    first log line apart (line 40):
+      A  3:22.7  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  3:21.7  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+route-a-pressure-board         =        =     =                =      =      11 % → 33 %
+    first log line apart (line 40):
+      A  3:21.7  shot.hit  rival-5 fires on fixer at 10 m (562 ‰): hit.
+      B  3:21.7  shot.miss  rival-1 fires on enforcer at 10 m (281 ‰): miss.
+route-b                        =        =     =                =      =      22 % → 38 %
+    first log line apart (line 37):
+      A  7:29.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  7:28.0  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+route-b-block                  =        =     =                =      =      22 % → 38 %
+    first log line apart (line 40):
+      A  7:29.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  7:28.0  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+route-b-block-board            =        =     =                =      =      0 % → 11 %
+    first log line apart (line 41):
+      A  7:29.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  7:28.0  shot.miss  rival-1 fires on enforcer at 10 m (281 ‰): miss.
+route-b-board                  =        =     =                =      =      0 % → 11 %
+    first log line apart (line 38):
+      A  7:29.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  7:28.0  shot.miss  rival-1 fires on enforcer at 10 m (281 ‰): miss.
+route-g                        =        =     =                =      =      44 % → 66 %
+    first log line apart (line 42):
+      A  3:56.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  3:55.0  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+route-g-board                  =        =     =                =      =      11 % → 33 %
+    first log line apart (line 42):
+      A  3:55.0  shot.hit  rival-5 fires on fixer at 10 m (562 ‰): hit.
+      B  3:55.0  shot.miss  rival-1 fires on enforcer at 10 m (281 ‰): miss.
+route-g-fast                   =        =     =                =      =      44 % → 66 %
+    first log line apart (line 43):
+      A  3:37.6  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  3:36.6  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+route-g-fast-board             =        =     =                =      =      11 % → 33 %
+    first log line apart (line 43):
+      A  3:36.6  shot.hit  rival-5 fires on fixer at 10 m (562 ‰): hit.
+      B  3:36.6  shot.miss  rival-1 fires on enforcer at 10 m (281 ‰): miss.
+route-g-kill                   =        =     =                =      =      44 % → 66 %
+    first log line apart (line 43):
+      A  5:23.0  shot.hit  scout fires on rival-1 at 9 m (562 ‰): hit.
+      B  5:22.0  shot.miss  rival-1 fires on enforcer at 12 m (281 ‰): miss.
+route-g-kill-board             =        =     =                =      =      11 % → 33 %
+    first log line apart (line 43):
+      A  5:22.0  shot.hit  rival-5 fires on fixer at 10 m (562 ‰): hit.
+      B  5:22.0  shot.miss  rival-1 fires on enforcer at 10 m (281 ‰): miss.
+
+38 routes: 27 moved, 11 unchanged
+(2.8 s)

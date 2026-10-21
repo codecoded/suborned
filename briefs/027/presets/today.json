@@ -1,0 +1,13 @@
+{
+  "schema": "suborned.fightlab.preset/1",
+  "name": "today",
+  "note": "Brief 027 playground: the baseline Sky has played. The fight lab off: every rule is v0.24 (engine 0.10.0 hashes this start exactly as a start with no fightLab). Host: pure real time.",
+  "host": {
+    "fightMode": "realtime",
+    "pauseInFight": true,
+    "freezeOn": { "loudOrder": true, "spotted": true, "firedOn": true, "ambush": true, "reinforce": true, "down": true, "beat": false },
+    "freezeMinGapS": 3, "freezesPerFight": null,
+    "targetAuto": ["ambush", "firedOn", "down"], "targetPlayback": 1.0
+  },
+  "start": { "fightLab": { "on": false } }
+}

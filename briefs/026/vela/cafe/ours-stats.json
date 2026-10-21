@@ -1,0 +1,25 @@
+{
+ "objects": 11,
+ "triangles": 30104,
+ "materials": 35,
+ "images": {
+  "cafe_floor_v1.png": [
+   512,
+   512
+  ],
+  "cafe_mural_v1.png": [
+   1376,
+   768
+  ],
+  "cafe_back_bar_v1.png": [
+   1376,
+   768
+  ],
+  "terrazzo_ivory_v1.png": [
+   1024,
+   1024
+  ]
+ },
+ "texelsM": 3.4,
+ "bc7MiBWithMips": 4.4
+}

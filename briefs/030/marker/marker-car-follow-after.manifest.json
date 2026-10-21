@@ -1,0 +1,15 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 860, "y": 1026, "w": 200, "h": 40, "text": "Get Vale to the car."},
+  {"kind": "beat", "x": 1719, "y": 927, "w": 187, "h": 36, "text": "Inez called the guard."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 1015, "y": 410, "w": 192, "h": 25, "text": "One's heading for the road."},
+  {"kind": "speech", "x": 1132, "y": 365, "w": 179, "h": 25, "text": "Rivals! By the car! Look out!"},
+  {"kind": "image", "x": 234, "y": 985, "w": 113, "h": 30, "text": "follow view chip"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 232, "h": 17, "text": "Passer-by: Stay inside. Stay down."},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

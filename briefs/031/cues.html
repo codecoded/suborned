@@ -1,0 +1,450 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Brief 031 · Watchers' attention: the cue board</title>
+<style>
+:root{--teal:#0f4a45;--teal2:#16665e;--cream:#f4ecd8;--cell:#4fe3e8;--ink:#12302d;--brass:#c9a35a;--glow:#ffe9a8;--alarm:#ff5a3c}
+*{box-sizing:border-box}
+body{margin:0;background:#efe7d3;color:#1d2b29;font:15px/1.5 "Helvetica Neue",Arial,sans-serif}
+main{max-width:1180px;margin:0 auto;padding:28px 24px 90px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:40px 0 8px;border-top:2px solid var(--teal);padding-top:14px}
+.sub{color:#4a5b58;margin:0 0 14px;max-width:900px}
+code{background:#e4dbc0;padding:1px 5px;border-radius:3px;font-size:13px}
+.cap{font-size:13px;color:#4a5b58;margin:4px 0 14px;max-width:760px}
+svg text{font-family:"Helvetica Neue",Arial,sans-serif}
+table{border-collapse:collapse;background:#fbf7ec;margin:8px 0}th,td{border:1px solid #cdbf99;padding:6px 9px;font-size:14px;text-align:left;vertical-align:top}th{background:var(--teal);color:var(--cream)}
+.grid{display:grid;grid-template-columns:96px repeat(4,1fr);gap:0;background:#fff;border:1px solid #cdbf99;max-width:980px}
+.grid>div{border-bottom:1px solid #e4dbc0;border-right:1px solid #e4dbc0;padding:6px;text-align:center}
+.grid .h{background:var(--teal);color:var(--cream);font-weight:600;font-size:14px;padding:8px 6px}
+.grid .rl{background:#f3ecd6;font-weight:600;text-align:left;font-size:14px}
+.grid .cue{font-size:12px;color:#4a5b58;margin-top:2px;min-height:34px}
+.ground{background:#e9e0c6}
+.frame{background:#fff;border:1px solid #cdbf99;display:inline-block;margin:0 14px 14px 0;vertical-align:top}
+.frame svg{display:block}
+.btn{font:600 13px "Helvetica Neue",Arial;background:var(--teal);color:var(--cream);border:0;border-radius:4px;padding:6px 12px;cursor:pointer}
+.gs{filter:grayscale(1)}
+.strip{display:flex;gap:0;background:#e9e0c6;border:1px solid #cdbf99;width:max-content;padding:8px 14px}
+.strip svg{display:block}
+.pill{display:inline-block;background:var(--teal);color:var(--cream);border-radius:10px;padding:0 8px;font-size:12px}
+.ok{color:#1d6b4e;font-weight:600}.no{color:#a33b2b;font-weight:600}
+/* motion */
+@keyframes nod{0%,45%,100%{transform:rotate(0)}10%{transform:rotate(7deg)}24%{transform:rotate(-2deg)}}
+.nod{animation:nod 3s ease-in-out infinite;transform-origin:57px 50px}
+@keyframes ring{0%{transform:scale(1);opacity:.95}100%{transform:scale(2.2);opacity:0}}
+.ringp{animation:ring 1.6s ease-out infinite;transform-origin:104px 38px}
+@keyframes breathe{0%,100%{opacity:.55}50%{opacity:1}}
+.breathe{animation:breathe 1.6s ease-in-out infinite}
+@keyframes fl{0%,49%{opacity:1}50%,100%{opacity:.1}}
+.fl{animation:fl .25s steps(1) infinite}
+@keyframes flc{0%,49%{fill:#ffffff}50%,100%{fill:#ff5a3c}}
+.flc{animation:flc .25s steps(1) infinite}
+@keyframes blink{0%,94%,100%{opacity:0}96%,98%{opacity:1}}
+.blink{animation:blink 4s steps(1) infinite}
+@keyframes sway{0%{transform:rotate(-7deg)}100%{transform:rotate(7deg)}}
+.sway{animation:sway 1.8s ease-in-out infinite alternate;transform-origin:30px 26px}
+@keyframes swayv{0%{transform:translateX(0)}100%{transform:translateX(3px)}}
+.swayv{animation:swayv 1.8s ease-in-out infinite alternate}
+@keyframes alarm{0%,59%{opacity:1}60%,100%{opacity:.08}}
+.alarm{animation:alarm .5s steps(1) infinite}
+@keyframes dash{to{stroke-dashoffset:-20}}
+.march{animation:dash 1.2s linear infinite}
+</style></head><body><main id="m">
+<h1>Brief 031 · how a watcher shows its attention</h1>
+<p class="sub"><b style="background:#0f4a45;color:#f4ecd8;padding:2px 8px;border-radius:10px">Ready for Latch, option A (Sky, 2026-10-21)</b> Glyph, 2026-10-21. Cue board for <code>briefs/031-everyone-watches.md</code> (§3 cues, §7 Glyph list). Everything below is a world signal drawn unlit and emissive, outside the post grade; no sentence appears in play. The stage is the engine's <code>AttentionStage</code> (0 calm, 1 noticed, 2 wary, 3 reporting): the watcher shows its highest stage towards any agent. Frames marked "true size" are 1080p pixels, characters 55 px tall. <button class="btn" onclick="document.getElementById('m').classList.toggle('gs')">Greyscale check</button> <span class="cap">Every stage must still read with colour off, and with motion off (the static shape differs).</span></p>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+<filter id="glow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="3"/></filter>
+<linearGradient id="chrome" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfdfb"/><stop offset=".5" stop-color="#d7e4e0"/><stop offset="1" stop-color="#9db3ae"/></linearGradient>
+<symbol id="g-eyen" viewBox="0 0 16 16"><path d="M1.5 10 Q8 6.600 14.500 10 Q8 13.500 1.500 10Z" fill="currentColor"/><path d="M2 4.500 L14 7.500" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></symbol>
+<symbol id="g-radio" viewBox="0 0 16 16"><rect x="5" y="6" width="5" height="9" rx="1.500" fill="currentColor"/><path d="M8 6V1.500" stroke="currentColor" stroke-width="1.500"/><path d="M11.500 5.500a3 3 0 010 4M13.500 3.800a5.500 5.500 0 010 7.400" fill="none" stroke="currentColor" stroke-width="1.400" stroke-linecap="round"/></symbol>
+</defs></svg>
+
+<h2>1 · The ladder, and the rule that keeps it honest</h2>
+<table>
+<tr><th>stage</th><th>camera</th><th>robot</th><th>guard, officers</th><th>what moves (so colour is never alone)</th></tr>
+<tr><td>0 calm</td><td>lens dim</td><td>open eyes, slow blink</td><td>idle, head forward</td><td>nothing but the robot's blink</td></tr>
+<tr><td>1 noticed</td><td>iris glows, steady; the head nods one small arc</td><td>eyes widen, turn to the agent</td><td>head turns to the agent and holds</td><td>a turn (nod, glance, head), then still</td></tr>
+<tr><td>2 wary</td><td>iris pulses slowly (ring that grows and fades, 1.6 s)</td><td>eyes narrow, brows down; the head tracks</td><td>head tracks; narrowed-eye mark over him</td><td>a slow repeat</td></tr>
+<tr><td>3 reporting</td><td>lens flashes with a star burst (4 Hz)</td><td>alarm triangle, flashing (2 Hz)</td><td>hand to the radio; radio mark; "Desk, I've got one."</td><td>a fast repeat; falls back when the report lands</td></tr>
+</table>
+<p class="cap"><b>The rule (Sky: it never reveals an unlearned cone).</b> A cue is a state of the watcher, never a drawing in the street. (1) No cue draws a cone, a wedge, a line or a flare on the ground. (2) Calm looks identical whether anyone is in sight or not, so the cone's edge never flickers. (3) Stages are earned by standing still for seconds, and the cue falls one stage only after the clock has stayed under the mark for 2 s [S, Latch: display delay only, the sim is untouched], so stepping across an edge paints no edge. (4) The only geometry a cue carries is a turn towards the agent. It tells you "this watcher has you", exactly where you stand, which is the warning Sky wants; it does not tell you where the cone ends. (5) Only watchers on screen show anything; nothing is added at the screen edge.</p>
+
+<h2>2 · The board: three kinds, four stages</h2>
+<div class="grid" id="board"></div>
+<p class="cap">The turquoise disc is the agent being looked at (stand-in; in play it is the cell's own disc). Motion runs live in this page: camera nod once per 3 s here (in play, once on entering noticed), then still.</p>
+
+<h2>3 · True size and the readable test</h2>
+<p class="cap">1080p pixels, no zoom: the robot is about 52 px tall, so its face plate is 26 x 16 px. The four faces are different shapes (round, ringed with a pupil, slit with brows, triangle), not four colours. Cells are drawn at 0.55.</p>
+<div class="strip" id="strip"></div>
+
+<h2>4 · Robot face: the spec for Vela (kit piece)</h2>
+<div id="robotspec"></div>
+
+<h2>5 · How fast the faces turn: the Heat bands</h2>
+<p class="cap">Marks in seconds of standing still in sight (numbers are for this board and for Alt; in play you read the faces). The dashed line is a 20 s Watch: at Heat 0 it just reaches wary, only when infamous does it reach reporting before the Watch ends.</p>
+<div class="frame"><svg id="timeline" width="760" height="320" viewBox="0 0 760 320"></svg></div>
+
+<h2>6 · The Watch ring</h2>
+<p class="cap">Drawn on the ground when Watch is picked (cell turquoise, 3 px with a dark inner edge so it reads on cream stone and on the quay). One 38° ellipse, 1 m = 5 px in A and B, 4 px in C. The agent's portrait disc sits on its east rim. No digits in play; Alt adds the metres.</p>
+<div id="rings"></div>
+
+<h2>7 · The briefing's Heat word</h2>
+<p class="cap">One chip on the briefing card, under the mission title, beside the cell's start state ($, Trail). Icon first, then Fable's word (unknown / noticed / wanted / infamous, a proposal pending plain copy). The icon is a watcher's eye with 0 to 3 turns: the more notorious, the more the eye is looking. It is the same eye family as the world marker, so the player already knows it.</p>
+<div id="heat"></div>
+
+<h2>8 · Budget, over-person icons, and the open choice</h2>
+<table>
+<tr><th>item</th><th>HUD cost</th></tr>
+<tr><td>Camera, robot and person cues</td><td>0 %: they are world objects</td></tr>
+<tr><td>Watch ring</td><td>0 %: ground marking, only while Watch is picked</td></tr>
+<tr><td>Heat chip</td><td>0 % in play: the briefing card is modal, before Begin</td></tr>
+<tr><td>Guard's wary and reporting marks</td><td>counted against "at most two icons over a person": at wary the narrowed-eye mark takes one slot, the watched eye keeps the other, and the check-in clock pip moves to Alt; at reporting the radio mark replaces the narrowed eye</td></tr>
+<tr><td>Option O1 (Sky picks): an eye badge on the roster portrait of the agent being looked at, 1/2/3 ticks for noticed/wary/reporting</td><td>about 0.05 % (a 14 px badge, only while a watcher is at noticed or more). It lets the player see which of four spread-out agents is being watched without hunting for the watcher. Recommended on; it can be left out and nothing else changes.</td></tr>
+</table>
+<div id="o1"></div>
+<p class="cap">Conversations: an act pauses the clock, so the cue holds its current stage and never rises while the Fixer talks.</p>
+
+<h2>9 · The close-up callout (PiP): Sky, 2026-10-21</h2>
+<p class="cap">Instead of bigger robot heads: when a watcher steps up a stage towards an agent, a small round close-up of its face, lens or head appears for a moment. Same round medallion as the live portraits (brief 033), so the player reads "his face, my face". Two options, same content and rules; they differ only in where it sits.</p>
+<div id="pip"></div>
+<h3 style="margin:18px 0 6px">What is the same in both</h3>
+<table>
+<tr><th>question</th><th>answer [S, tune by play]</th></tr>
+<tr><td>size</td><td>72 px round at 1080p (the portraits are 64): 0.25 % of the screen each; 0 % at rest. A 56 px medallion is the floor.</td></tr>
+<tr><td>content</td><td>The watcher close up, nothing else: camera lens and collar, the robot's face plate, the guard's head and visor. Its ring repeats the world cue: thin ring (noticed), double ring that breathes (wary), dashed ring flashing (reporting). Corner badge: the watched agent's mini portrait and an eye with 1 to 3 ticks. No text.</td></tr>
+<tr><td>triggers</td><td>Only a step <b>up</b> to noticed, wary or reporting, from a watcher whose clock is running on that agent (so it is in sight of him by definition). Never on calm, never on a fall (cooling shows nothing, so stepping out of a cone paints no edge). Noticed shows once per watcher per mission (then the world cue alone); wary and reporting show once each, which is how often the engine produces them. So at most 3 per watcher per agent per mission. Civilians and rivals have none.</td></tr>
+<tr><td>stay</td><td>Appears in 0.15 s. Noticed holds 2 s, wary 3 s, reporting holds until the report lands (6 s cap) plus 1 s. A higher stage replaces it and restarts the timer. It does not stop for pause, and it does not show under a modal (briefing, end card).</td></tr>
+<tr><td>stacking</td><td>One inset per agent at a time, the highest stage wins, the newest wins a tie; any others queue behind it (a small "+1" count, no number above 3). So at most four on screen (1 % of the screen), usually one.</td></tr>
+<tr><td>click</td><td>Click an inset: the camera centres on that watcher (a double-tap, as for portraits). It never issues an order.</td></tr>
+<tr><td>no leak</td><td>The close-up is rendered against a plain cream disc with only the watcher visible: no ground, no cone, no sight line, no neighbours. It reveals the face, never where the cone ends. Rise only after the clock's seconds, as in section 1.</td></tr>
+<tr><td>rendered how</td><td><b>Recommend a real camera inset (Latch):</b> one small orthographic camera, 128 px render texture, culling mask = the watcher only, unlit emissive so the face reads exactly as built, drawn on demand only while an inset is up (at most 4 tiny renders). It reuses Vela's face states, Forma's head clip and every old-city robot's own face with no extra art, and can never disagree with the street. A drawn close-up would need 12 stills plus one per old robot, and would drift from the real clips. Redline to check the cost on the M4 Air.</td></tr>
+<tr><td>live portraits (033)</td><td>The roster portrait is the agent's face, the inset is the watcher's face: the pair reads "he has seen me". Both draw from the same 72 px medallion ground, ring and mask. One catch: 033's <b>noticed</b> state is triggered "inside a watcher's cone", which would show an unlearned cone's edge the moment the agent steps in. Drive the portrait's noticed face from <code>AttentionStage</code> &gt;= 1 instead (and keep the cone test for the learned cones only). The portrait then changes face at the same instant the inset opens.</td></tr>
+</table>
+<h3 style="margin:18px 0 6px">Which option</h3>
+<table>
+<tr><th></th><th>A · callout beside the watcher</th><th>B · tab on the agent's portrait (the fixed corner)</th></tr>
+<tr><td>placement</td><td>Floats above the watcher with a short stem to it; pushed inside the screen and clear of the HUD; if three crowd together, they fan out.</td><td>Slides out of the agent's roster portrait, right, 12 px overlapped, with a notch pointing at the portrait. Left column, where the eye already goes for "who".</td></tr>
+<tr><td>ties to the agent</td><td>The mini portrait on its badge (no line across the street).</td><td>Its position is the tie: no line, no badge needed (the ticks stay).</td></tr>
+<tr><td>watcher off screen</td><td>Fails: nothing to hang it on, so it needs a second path (an edge arrow).</td><td>Works. This is the strongest point: an agent can be wary-watched by a camera you are not looking at.</td></tr>
+<tr><td>cost to the street</td><td>Covers the action, on a crowded entrance exactly where four things happen at once.</td><td>Covers about 72 x 72 px of the left of the street, only while it is up; never over the action.</td></tr>
+<tr><td>stacking</td><td>Up to 3 floating, they collide.</td><td>One per agent, fixed slots: no collision logic.</td></tr>
+<tr><td>reads "where"</td><td>Yes, by the stem.</td><td>Click to centre; the world cue shows where.</td></tr>
+</table>
+<p class="cap"><b>Glyph's recommendation was B.</b> Fixed slots tied to the portraits cost nothing in layout and tell the player which agent, even when the watcher is off screen, which is the case the world cues cannot cover. A is better only if Sky wants the picture to stay in the street; if so, add B's edge route for off-screen watchers. Variant B2 (a fixed stack in the free top-right corner, with a mini portrait on each badge) is the same as A without the stem: not recommended, because it breaks the agent link.</p>
+<p class="cap"><b>Sky chose A (2026-10-21), to revisit after play.</b> B stays on the board as the alternative; the shared rules above hold for both. A is specified below.</p>
+<h3 style="margin:18px 0 6px">A, final: placement, off-screen, stacking</h3>
+<div id="pipA"></div>
+<table>
+<tr><th>rule</th><th>A, as built</th></tr>
+<tr><td>anchor</td><td>The medallion centre sits 70 px above the watcher's head (screen up), with a stem on its lower rim pointing at the head. The stem is a notch of 14 px; when the medallion is moved aside, the notch slides round the rim and stays aimed at the head, never longer than 48 px.</td></tr>
+<tr><td>what it must not cover</td><td>(1) the watcher itself (its figure box); (2) any agent (22 px margin); (3) the strip between the watched agent and the watcher (a 36 px keep-out capsule, so the line of the confrontation stays visible); (4) any other callout; (5) the HUD and a 12 px screen margin.</td></tr>
+<tr><td>which side</td><td>Candidates are tried in a fixed order, so the result is steady and replayable: straight up; then up and to the side <b>away from the agent</b> (the side the agent is not on, so the callout moves out of the action, the stem leans back towards the watcher); then up and to the agent's side; then level away; level toward; then the same again a row higher (140 px). Away first, because the player's eye is on the agent and the watcher between them.</td></tr>
+<tr><td>order of claim</td><td>Highest stage first, then newest. The first claims its best spot and the rest fit round it (the fan-out in the frame above).</td></tr>
+<tr><td>no spot fits</td><td>If none of the 8 spots clears every rule within 140 px, that callout takes the edge dock (below) rather than cover anything.</td></tr>
+<tr><td>moving</td><td>Positions are recomputed each frame (the camera pans and turns with Q/E) but eased over 0.1 s and only re-chosen when the current spot is blocked, so a callout does not jump between spots. It fades with the watcher when the watcher is hidden (the architecture fade does not hide it).</td></tr>
+<tr><td>watcher off screen</td><td>If the watcher leaves the view while the callout is up, or was off screen when it stepped up, the callout <b>docks to the screen edge</b> nearest the watcher: 56 px, inset 12 px, clear of the roster column, the plot scope, the notes key and the status pill, with a chevron on its edge side pointing towards the watcher (the same chevron as the objective edge arrows). Timer and stage are unchanged; if the watcher comes back into view it floats back to its spot. A click centres the camera on the watcher. So the case the world cue cannot show still reaches the player.</td></tr>
+<tr><td>stacking</td><td>One callout per watcher and one per agent: the same watcher towards two agents shows the higher stage only; two watchers towards the same agent show the higher stage and queue the other behind it (a "+1" chip on the medallion's top right; when the first expires, the queued one shows for its remaining time, at most 2 s, if its stage is still 1 or more). At most 3 float in the street; a fourth takes the edge dock at 56 px, from the roster-free edge. Never more than 4 in total (1 % of the screen).</td></tr>
+<tr><td>for Latch</td><td>Inputs: <code>Attention(watcher)</code> (stage and target), a stage-up event per (watcher, agent), the watcher's screen head point, agent screen points, HUD rects. Output: the layout is presentation only and changes nothing the engine records (replays unaffected). The placement function is deterministic from those inputs, so it can be unit-tested in Unity edit mode.</td></tr>
+</table>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const NAMES=['calm','noticed','wary','reporting'];
+const CUE={cam:['lens dim','iris glows, one nod','iris pulses, ring grows','lens flashes, star burst'],
+ bot:['open eyes, slow blink','wide eyes, turned to you','slit eyes, brows down, head tracks','alarm triangle, flashing'],
+ per:['idle, head forward','head turns to you, holds','head tracks, eye mark','hand to radio, radio mark']};
+const agent=(x,y,r=5)=>`<circle cx="${x}" cy="${y}" r="${r}" fill="#4fe3e8" stroke="#0f4a45" stroke-width="1.500"/>`;
+
+/* ---------- camera ---------- */
+function cam(st){
+  const lit=st>0, iris=st==0?'#1b2726':(st==3?'':'#ffe9a8'), collar=st==0?'#41544f':'#ffe9a8';
+  let spikes='';
+  if(st==3){let p=[];for(let i=0;i<16;i++){const a=i*Math.PI/8,r=i%2?9:(i%4==0?34:24);p.push((104+Math.cos(a)*r*0.8).toFixed(1)+','+(38+Math.sin(a)*r).toFixed(1));}
+    spikes=`<polygon class="fl" points="${p.join(' ')}" fill="#ffe9a8" stroke="#ff5a3c" stroke-width="1.500"/>`;}
+  const halo=lit?`<ellipse cx="104" cy="38" rx="${st==3?14:10}" ry="${st==3?26:21}" fill="#ffe9a8" filter="url(#glow)" class="${st==2?'breathe':''}" opacity=".85"/>`:'';
+  const pr=st==2?`<ellipse class="ringp" cx="104" cy="38" rx="7" ry="18" fill="none" stroke="#ffe9a8" stroke-width="2.500"/>`:'';
+  return `<svg viewBox="0 -14 130 114" width="100%">
+  <rect x="52" y="58" width="9" height="34" fill="url(#chrome)" stroke="#5b7a76"/><rect x="40" y="54" width="34" height="7" rx="3" fill="#b9ccc7" stroke="#5b7a76"/>
+  <g class="${st==1?'nod':''}" style="transform-origin:57px 50px">
+   <rect x="20" y="24" width="64" height="30" rx="9" fill="url(#chrome)" stroke="#5b7a76" stroke-width="1.500"/><rect x="26" y="29" width="30" height="4" rx="2" fill="#72b5a7"/>
+   <path d="M84 28 L104 20 L104 56 L84 50 Z" fill="#c4d4d0" stroke="#5b7a76"/>
+   ${halo}${spikes}
+   <ellipse cx="104" cy="38" rx="7" ry="18" fill="#e9f1ee" stroke="#5b7a76" stroke-width="1.500"/>
+   <ellipse cx="104" cy="38" rx="5.500" ry="15" fill="none" stroke="${collar}" stroke-width="2.500"/>
+   <ellipse cx="104" cy="38" rx="3.600" ry="10.500" ${st==3?'class="flc"':`fill="${iris}"`}/>
+   ${st==0?'<ellipse cx="102.500" cy="32" rx="1.200" ry="3" fill="#7d918c"/>':''}
+   ${pr}
+  </g>
+  ${agent(118,84)}</svg>`;
+}
+
+/* ---------- robot face (16 x 10 dot matrix, 3 units per dot) ---------- */
+const BM={
+ calm:["................","................","................","...####..####...","...####..####...","...####..####...","...####..####...","...####..####...","................","................"],
+ blink:["................","................","................","................","................","...####..####...","................","................","................","................"],
+ noticed:["................","................","..#####..#####..","..#...#..#...#..","..#.###..#.###..","..#.###..#.###..","..#...#..#...#..","..#####..#####..","................","................"],
+ wary:["................","................","................","..##........##..","....##....##....","......#..#......","..#####..#####..","..#####..#####..","................","................"],
+ alarm:["................",".......##.......","......####......","......#..#......",".....#.##.#.....",".....#.##.#.....","....#..##..#....","....#..##..#....","...#...##...#...","...##########..."]
+};
+for(const k in BM){if(BM[k].length!==10||BM[k].some(r=>r.length!==16))console.error('bad bitmap',k);}
+const mat=(bm,col,x0=6,y0=12,c=3)=>bm.map((r,y)=>[...r].map((ch,x)=>ch=='#'?`<rect x="${x0+x*c}" y="${y0+y*c}" width="${c-0.25}" height="${c-0.25}" fill="${col}"/>`:'').join('')).join('');
+function robot(st){
+  const ph='#bff3e6';
+  const bm=[BM.calm,BM.noticed,BM.wary,BM.alarm][st];
+  const face=st==3?`<g class="alarm">${mat(bm,'#ff5a3c')}</g>`:mat(bm,ph);
+  const blink=st==0?`<g class="blink"><rect x="15" y="21" width="30" height="15" fill="#0d1f1d"/>${mat(BM.blink,ph)}</g>`:'';
+  return `<svg viewBox="0 -14 130 114" width="100%"><g transform="translate(22,0)">
+  <ellipse cx="30" cy="92" rx="28" ry="7" fill="#9db3ae" stroke="#5b7a76"/>
+  <rect x="0" y="58" width="7" height="22" rx="3" fill="#b9ccc7" stroke="#5b7a76"/><rect x="53" y="58" width="7" height="22" rx="3" fill="#b9ccc7" stroke="#5b7a76"/>
+  <path d="M10 53 H50 L54 88 H6 Z" fill="url(#chrome)" stroke="#5b7a76" stroke-width="1.500"/><rect x="24" y="48" width="12" height="6" fill="#9db3ae" stroke="#5b7a76"/>
+  <g class="${st==2?'sway':''}"><line x1="30" y1="-4" x2="30" y2="5" stroke="#5b7a76" stroke-width="1.500"/><circle cx="30" cy="-5" r="2.500" fill="#e9f1ee" stroke="#5b7a76"/>
+   <rect x="2" y="4" width="56" height="44" rx="14" fill="url(#chrome)" stroke="#5b7a76" stroke-width="1.500"/><rect x="10" y="6.500" width="40" height="3" rx="1.500" fill="#72b5a7"/>
+   <rect x="6" y="12" width="48" height="30" rx="3" fill="#0d1f1d" ${st==3?'stroke="#ff5a3c" stroke-width="1.200"':''}/>${face}${blink}</g></g>${agent(118,84)}</svg>`;
+}
+
+/* ---------- person (guard, officer) ---------- */
+function person(st){
+  const dx=[-6,6,5,6][st];
+  const visor=st==2?`<g class="swayv"><rect x="${30+dx-5}" y="22" width="10" height="3.500" rx="1.700" fill="#1a2538"/></g>`:`<rect x="${30+dx-5}" y="22" width="10" height="3.500" rx="1.700" fill="#1a2538"/>`;
+  const arm=st==3?`<path d="M43 38 L53 30 L55 19 L48 19 L46 28 L42 34 Z" fill="#2d3f5a"/><rect x="47" y="12" width="8" height="12" rx="2" fill="#9db3ae" stroke="#5b7a76"/><line x1="51" y1="12" x2="51" y2="6" stroke="#5b7a76" stroke-width="1.500"/>`
+    :`<rect x="43" y="36" width="7" height="26" rx="3" fill="#2d3f5a"/>`;
+  const disc=(x,g)=>`<circle cx="${x}" cy="-6" r="8.500" fill="#12302d" stroke="#f4ecd8" stroke-width="1.200"/><use href="#${g}" x="${x-6}" y="-12" width="12" height="12" style="color:#f4ecd8"/>`;
+  const marks=st==2?disc(24,'g-eyen')+disc(40,'g-eye'):st==3?disc(24,'g-radio')+disc(40,'g-eye'):'';
+  return `<svg viewBox="0 -14 130 114" width="100%"><g transform="translate(20,0)">
+  <rect x="21" y="68" width="7" height="26" fill="#22324a"/><rect x="32" y="68" width="7" height="26" fill="#22324a"/><rect x="19" y="90" width="11" height="5" rx="2" fill="#12302d"/><rect x="30" y="90" width="11" height="5" rx="2" fill="#12302d"/>
+  <rect x="9" y="36" width="7" height="26" rx="3" fill="#2d3f5a"/>${arm}
+  <rect x="16" y="34" width="28" height="38" rx="8" fill="#2d3f5a"/><rect x="16" y="52" width="28" height="3" fill="#c9a35a"/>
+  <circle cx="30" cy="24" r="10" fill="#e2b48c"/><path d="M20 22 A10 10 0 0 1 40 22 Z" fill="#2d3f5a"/>${visor}
+  ${marks}</g>${agent(118,84)}</svg>`;
+}
+const SYM=`<svg width="0" height="0" style="position:absolute"><defs><symbol id="g-eye" viewBox="0 0 16 16"><path d="M1 8Q8 2 15 8Q8 14 1 8Z" fill="none" stroke="currentColor" stroke-width="1.800"/><circle cx="8" cy="8" r="2.500" fill="currentColor"/></symbol></defs></svg>`;
+document.body.insertAdjacentHTML('afterbegin',SYM);
+
+/* ---------- board ---------- */
+{
+  const b=document.getElementById('board');let h='<div class="h"></div>'+NAMES.map((n,i)=>`<div class="h">${i} · ${n}</div>`).join('');
+  [['Camera',cam,'cam'],['Patrol / response robot',robot,'bot'],['Guard, officers',person,'per']].forEach(([lab,fn,k])=>{
+    h+=`<div class="rl">${lab}</div>`+[0,1,2,3].map(i=>`<div class="ground">${fn(i)}<div class="cue">${CUE[k][i]}</div></div>`).join('');});
+  b.innerHTML=h;
+}
+{
+  let h='';[cam,robot,person].forEach((fn,gi)=>{h+=`<div style="display:flex;margin-right:${gi<2?28:0}px">`+[0,1,2,3].map(i=>`<div style="width:72px">${fn(i)}</div>`).join('')+'</div>';});
+  document.getElementById('strip').innerHTML=h;
+}
+
+/* ---------- robot spec ---------- */
+{
+  const big=(st)=>{const bm=[BM.calm,BM.noticed,BM.wary,BM.alarm][st];const col=st==3?'#ff5a3c':'#bff3e6';
+    return `<div class="frame" style="padding:6px"><svg width="224" height="150" viewBox="0 0 54 36"><rect x="0" y="0" width="54" height="36" rx="3" fill="#0d1f1d"/>${mat(bm,col,3,3,3)}</svg><div class="cap" style="margin:2px 0 0">${NAMES[st]}</div></div>`;};
+  document.getElementById('robotspec').innerHTML=`<div>${[0,1,2,3].map(big).join('')}</div>
+<table>
+<tr><th>part</th><th>spec</th></tr>
+<tr><td>piece</td><td><code>robot_face_display</code>, status candidate in <code>contracts/world/kit.json</code>. One emissive display on the robot's head; the patrol robot and the response robots share it.</td></tr>
+<tr><td>size</td><td>The face plate fills the head front: 48 x 30 head-units on a 56 x 44 head, i.e. 0.86 of the head width. Make the head about 1.4x a human-scaled robot head (a barrel body with a big head) so the plate is 24 to 26 x 15 to 16 px at play zoom. Smaller than that and the four faces stop reading.</td></tr>
+<tr><td>dot grid</td><td>16 x 10 dots, round-cornered dots with a 0.25-unit gap (a lamp-bank or flip-dot display, 1950s). Point filtered, no mip bleed.</td></tr>
+<tr><td>states</td><td>A 16 x 40 R8 atlas, four 16 x 10 slices (calm, noticed, wary, reporting); one material <code>M_RobotFace</code> with <code>_Stage</code> 0 to 3 set per robot by a property block. Bitmaps below are the master.</td></tr>
+<tr><td>colour</td><td>Unlit, emissive, outside the post grade. Stages 0 to 2 pale seafoam phosphor #bff3e6 (HDR 1.6); stage 3 alarm #ff5a3c (HDR 2.2), a small display pictogram, which §10 allows. Colour is a second cue only: each stage has its own shape.</td></tr>
+<tr><td>motion</td><td>calm: blink every 4 s (eye rows 3 to 7 squeeze to row 5 for 120 ms). noticed: the eyes snap from calm to the ringed eyes with the pupil on the agent's side, held (mirror the bitmap when the agent is on the left; or shift the pupil one dot). wary: slit eyes and brows, the head sways +-7 deg over 1.8 s (Forma: the head yaw tracks the agent instead where it has a clear angle). reporting: pictogram on 0.3 s, off 0.2 s (2 Hz) until the report lands, then back to calm.</td></tr>
+<tr><td>no leak</td><td>The face is a state, not a sensor: calm is the same in or out of sight; it only changes after the clock's seconds, and falls one stage after 2 s under the mark.</td></tr>
+<tr><td>camera lens (same card)</td><td><code>M_LensCollar</code> on the iris plus a collar ring on the hood, so it reads from above: dim (#1b2726, 0), glow (#ffe9a8 HDR 1.2, steady), pulse (HDR 0.8 to 1.8 on a 1.6 s sine, plus a growing ring mesh), flash (white and #ff5a3c alternating at 4 Hz plus a star-burst quad). The nod is a 7 deg head arc once on entering noticed; the cone does not move.</td></tr>
+</table>
+<pre style="background:#fbf7ec;border:1px solid #cdbf99;padding:10px;font-size:12px;line-height:1.15;overflow:auto">${['calm','blink','noticed','wary','alarm'].map(k=>'-- '+k+'\n'+BM[k].join('\n')).join('\n\n')}</pre>`;
+}
+
+/* ---------- timeline ---------- */
+{
+  const bands=[['unknown','Heat 0 to 2',8,20,45],['noticed','Heat 3 to 5',6,18,35],['wanted','Heat 6 to 9',5,15,25],['infamous','Heat 10+',3,12,18]];
+  const x0=130,k=12;let s='';
+  const star=(x,y,r)=>{let p=[];for(let i=0;i<16;i++){const a=i*Math.PI/8,rr=i%2?r*0.45:r;p.push((x+Math.cos(a)*rr).toFixed(1)+','+(y+Math.sin(a)*rr).toFixed(1));}return `<polygon points="${p.join(' ')}" fill="#ffe9a8" stroke="#ff5a3c" stroke-width="1.500"/>`;};
+  for(let t=0;t<=45;t+=5)s+=`<line x1="${x0+t*k}" y1="30" x2="${x0+t*k}" y2="238" stroke="#e4dbc0"/><text x="${x0+t*k}" y="254" font-size="11" text-anchor="middle" fill="#4a5b58">${t}</text>`;
+  s+=`<text x="${x0}" y="270" font-size="11" fill="#4a5b58">s standing still in sight</text>`;
+  bands.forEach(([n,r,a,b,c],i)=>{const y=62+i*50;
+    s+=`<text x="12" y="${y-2}" font-size="14" font-weight="700" fill="#12302d">${n}</text><text x="12" y="${y+14}" font-size="11" fill="#4a5b58">${r}</text>`;
+    s+=`<line x1="${x0}" y1="${y}" x2="${x0+c*k}" y2="${y}" stroke="#0f4a45" stroke-width="3"/>`;
+    s+=`<circle cx="${x0+a*k}" cy="${y}" r="7" fill="#ffe9a8" stroke="#12302d" stroke-width="1.500"/>`;
+    s+=`<circle cx="${x0+b*k}" cy="${y}" r="7" fill="#ffe9a8" stroke="#12302d" stroke-width="1.500"/><circle cx="${x0+b*k}" cy="${y}" r="11" fill="none" stroke="#12302d" stroke-width="1.800"/>`;
+    s+=star(x0+c*k,y,12);
+    [[a,'#12302d'],[b,'#12302d'],[c,'#a33b2b']].forEach(([v,col])=>s+=`<text x="${x0+v*k}" y="${y+27}" font-size="11" font-weight="700" text-anchor="middle" fill="${col}">${v}</text>`);
+  });
+  s+=`<line x1="${x0+20*k}" y1="26" x2="${x0+20*k}" y2="240" stroke="#0f4a45" stroke-width="2" stroke-dasharray="6 4" class="march"/><text x="${x0+20*k+6}" y="26" font-size="12" font-weight="700" fill="#0f4a45">a 20 s Watch</text>`;
+  s+=`<g transform="translate(140,282)" font-size="11" fill="#12302d"><circle cx="8" cy="0" r="7" fill="#ffe9a8" stroke="#12302d" stroke-width="1.500"/><text x="22" y="4">noticed: the turn</text><circle cx="8" cy="22" r="7" fill="#ffe9a8" stroke="#12302d" stroke-width="1.500"/><circle cx="8" cy="22" r="11" fill="none" stroke="#12302d" stroke-width="1.800"/><text x="22" y="26" transform="translate(0,0)">wary: the repeat</text></g>`;
+  s+=`<g transform="translate(560,282)"><polygon points="${(()=>{let p=[];for(let i=0;i<16;i++){const a=i*Math.PI/8,rr=i%2?5.4:12;p.push((Math.cos(a)*rr).toFixed(1)+','+(Math.sin(a)*rr).toFixed(1));}return p.join(' ');})()}" fill="#ffe9a8" stroke="#ff5a3c" stroke-width="1.500"/><text x="14" y="4" font-size="11" fill="#12302d">reporting: the flash</text></g>`;
+  document.getElementById('timeline').innerHTML=s;
+}
+
+/* ---------- Watch rings ---------- */
+const RY=0.616;
+const ell=(cx,cy,r,extra='')=>`<ellipse cx="${cx}" cy="${cy}" rx="${r}" ry="${(r*RY).toFixed(1)}" ${extra}/>`;
+const ring=(cx,cy,r,dash='')=>`${ell(cx,cy,r,`fill="none" stroke="#0f4a45" stroke-width="5.500" stroke-opacity=".85"`)}${ell(cx,cy,r,`fill="#4fe3e8" fill-opacity=".10" stroke="#4fe3e8" stroke-width="3" ${dash}`)}`;
+const bg=`<defs><pattern id="pave" width="40" height="24" patternUnits="userSpaceOnUse"><rect width="40" height="24" fill="#e9e0c6"/><path d="M0 0H40M0 12H40" stroke="#ddd2b3" stroke-width="1"/><path d="M20 0V12M0 12V24" stroke="#ddd2b3" stroke-width="1"/></pattern>
+<pattern id="hatch" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="#12302d" fill-opacity=".14"/><line x1="0" y1="0" x2="0" y2="7" stroke="#12302d" stroke-opacity=".45" stroke-width="2"/></pattern></defs><rect width="640" height="400" fill="url(#pave)"/>`;
+const pill=(x,y,t)=>`<g transform="translate(${x},${y})"><rect x="-4" y="-13" width="${t.length*7+12}" height="19" rx="9" fill="#0f4a45"/><text x="2" y="1" font-size="12" fill="#f4ecd8">${t}</text></g>`;
+const disc=(x,y,l,c='#4fe3e8')=>`<circle cx="${x}" cy="${y}" r="9" fill="${c}" stroke="#0f4a45" stroke-width="2"/><text x="${x}" y="${y+4}" font-size="11" font-weight="700" text-anchor="middle" fill="#0f4a45">${l}</text>`;
+const eyeM=(x,y,ok)=>`<g transform="translate(${x-9},${y-24})"><circle cx="9" cy="9" r="11" fill="#12302d" stroke="#f4ecd8" stroke-width="1.200"/><use href="#g-eye" x="2" y="2" width="14" height="14" style="color:#f4ecd8"/>${ok?'':'<path d="M-2 -2L20 20" stroke="#f4ecd8" stroke-width="3"/><path d="M-2 -2L20 20" stroke="#ff5a3c" stroke-width="1.400"/>'}</g>`;
+const post=(x,y)=>`<g><ellipse cx="${x}" cy="${y+10}" rx="9" ry="4" fill="#12302d" fill-opacity=".25"/><rect x="${x-5}" y="${y-18}" width="10" height="28" rx="4" fill="#2d3f5a"/><circle cx="${x}" cy="${y-22}" r="6" fill="#e2b48c"/></g>`;
+{
+  // A: Scout with the line check
+  const ax=230,ay=260,r=150;
+  const A=`<svg width="640" height="400" viewBox="0 0 640 400">${bg}
+  <clipPath id="cl">${ell(ax,ay,r)}</clipPath>
+  ${ring(ax,ay,r)}
+  <g clip-path="url(#cl)"><polygon points="270,205 320,245 500,215 350,95" fill="url(#hatch)"/></g>
+  <rect x="270" y="191" width="50" height="54" fill="#eee9da" stroke="#5b7a76" stroke-width="1.500"/><rect x="270" y="191" width="50" height="14" fill="#9bcfc2" stroke="#5b7a76"/>
+  ${post(130,215)}${eyeM(130,215,true)}
+  ${post(335,215)}${eyeM(335,215,false)}
+  ${disc(ax,ay,'S')}
+  <g transform="translate(${ax+r},${ay})">${disc(0,0,'S')}</g>
+  ${pill(24,30,'Scout · Watch picked')}${pill(24,56,'hatch = no clear line, no Watch from here')}</svg>`;
+  // B: compare
+  const cx=320,cy=210;const kk=5;
+  const lab=[['Scout',30,'#4fe3e8'],['Tech',24,'#4fe3e8'],['Fixer',12,'#4fe3e8'],['Enforcer',3,'#4fe3e8']];
+  const B=`<svg width="640" height="400" viewBox="0 0 640 400">${bg}
+  ${lab.map(([n,m],i)=>ring(cx,cy,m*kk,i%2?'stroke-dasharray="10 6"':'')).join('')}
+  ${lab.map(([n,m],i)=>`<g transform="translate(${cx+m*kk},${cy})">${disc(0,0,n[0])}</g>`).join('')}
+  ${disc(cx,cy,'')}
+  ${pill(24,30,'Compare (Alt held): 30 / 24 / 12 / 3 m')}
+  <text x="${cx+30*kk-6}" y="${cy-16}" font-size="12" fill="#12302d">30</text><text x="${cx+24*kk-6}" y="${cy-16}" font-size="12" fill="#12302d">24</text><text x="${cx+12*kk-6}" y="${cy-16}" font-size="12" fill="#12302d">12</text></svg>`;
+  // C: out of reach, Fixer
+  const fx=120,fy=310,tx=470,ty=150,fr=48;
+  const dx=fx-tx,dy=(fy-ty)/RY,n=Math.hypot(dx,dy),px=tx+fr*dx/n,py=ty+fr*RY*dy/n;
+  const C=`<svg width="640" height="400" viewBox="0 0 640 400">${bg}
+  ${ring(fx,fy,fr,'stroke-dasharray="6 6" stroke-opacity=".55"')}
+  ${ring(tx,ty,fr)}
+  <path d="M${fx} ${fy} L${px.toFixed(1)} ${py.toFixed(1)}" stroke="#0f4a45" stroke-width="3" stroke-dasharray="10 8" class="march" fill="none"/>
+  ${post(tx,ty+6)}${eyeM(tx,ty+6,true)}
+  ${disc(fx,fy,'F')}
+  <g transform="translate(${px.toFixed(1)},${py.toFixed(1)})"><circle r="15" fill="none" stroke="#12302d" stroke-width="5" stroke-opacity=".25"/><path d="M0 -15 A15 15 0 1 1 -11 10" fill="none" stroke="#12302d" stroke-width="3.500"/><circle r="9" fill="#4fe3e8" stroke="#0f4a45" stroke-width="2"/><text y="4" font-size="11" font-weight="700" text-anchor="middle" fill="#0f4a45">1</text></g>
+  ${pill(24,30,'Fixer · Watch · target out of reach')}${pill(24,56,'the ring moves to the target; the agent walks to its rim first')}</svg>`;
+  document.getElementById('rings').innerHTML=[['A · the selected agent, with the line check',A],['B · all four, to compare scale',B],['C · out of reach: the stand spot',C]].map(([t,s])=>`<div class="frame">${s}<div class="cap" style="margin:4px 8px 6px">${t}</div></div>`).join('');
+}
+
+/* ---------- Heat chips ---------- */
+function eyeChip(n,x,y,sc=1){
+  let t='';const ang=[-125,-90,-55];
+  for(let i=0;i<n;i++){const a=ang[i+(n==1?1:n==2?0:0)]*Math.PI/180;}
+  const angs=n==1?[-90]:n==2?[-110,-70]:n==3?[-125,-90,-55]:[];
+  angs.forEach(d=>{const a=d*Math.PI/180;t+=`<line x1="${(Math.cos(a)*22).toFixed(1)}" y1="${(Math.sin(a)*22*0.9-2).toFixed(1)}" x2="${(Math.cos(a)*31).toFixed(1)}" y2="${(Math.sin(a)*31*0.9-2).toFixed(1)}" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/>`;});
+  const body=n==0?`<path d="M-20 0Q0 -18 20 0Q0 18 -20 0Z" fill="none" stroke="#f4ecd8" stroke-width="2.500" stroke-dasharray="4 4"/><text y="7" font-size="18" font-weight="700" text-anchor="middle" fill="#f4ecd8">?</text>`
+   :n<3?`<path d="M-20 0Q0 -18 20 0Q0 18 -20 0Z" fill="none" stroke="#f4ecd8" stroke-width="2.500"/><circle r="${n==1?4:6.500}" fill="#f4ecd8"/>`
+   :`<path d="M-20 0Q0 -18 20 0Q0 18 -20 0Z" fill="#f4ecd8"/><circle r="7" fill="#0f4a45"/><circle r="2.600" fill="#f4ecd8"/>`;
+  return `<g transform="translate(${x},${y}) scale(${sc})">${body}${t}</g>`;
+}
+{
+  const words=['unknown','noticed','wanted','infamous'];
+  const card=`<svg width="640" height="330" viewBox="0 0 640 330"><rect width="640" height="330" fill="#d9cfb2"/>
+  <rect x="40" y="24" width="560" height="282" rx="10" fill="#0f4a45" stroke="#c9a35a" stroke-width="1.500"/>
+  <text x="68" y="62" font-size="22" font-weight="700" fill="#f4ecd8">The Handover</text><line x1="68" y1="72" x2="572" y2="72" stroke="#c9a35a" stroke-width="1"/>
+  <g fill="#16665e" stroke="#c9a35a" stroke-width="1"><rect x="68" y="92" width="120" height="80" rx="6"/><rect x="200" y="92" width="120" height="80" rx="6"/><rect x="332" y="92" width="120" height="80" rx="6"/><rect x="464" y="92" width="108" height="80" rx="6"/></g>
+  <text x="128" y="138" font-size="12" text-anchor="middle" fill="#bfe3dc">(cell portraits)</text>
+  <g transform="translate(68,196)"><rect width="170" height="40" rx="20" fill="#12302d" stroke="#c9a35a"/>${eyeChip(0,28,20,0.8)}<text x="62" y="26" font-size="17" font-weight="700" fill="#f4ecd8">unknown</text></g>
+  <text x="250" y="222" font-size="12" fill="#bfe3dc">the city's word for the cell, from its Heat at the start</text>
+  <rect x="440" y="258" width="132" height="34" rx="17" fill="#f4ecd8"/><text x="506" y="281" font-size="16" font-weight="700" text-anchor="middle" fill="#0f4a45">Begin</text></svg>`;
+  const chips=words.map((w,i)=>`<div class="frame" style="margin-right:10px"><svg width="170" height="64" viewBox="0 0 170 64"><rect width="170" height="64" fill="#0f4a45"/><g transform="translate(0,12)"><rect x="0" width="170" height="40" rx="20" fill="#12302d" stroke="#c9a35a"/>${eyeChip(i,28,20,0.8)}<text x="62" y="26" font-size="17" font-weight="700" fill="#f4ecd8">${w}</text></g></svg></div>`).join('');
+  document.getElementById('heat').innerHTML=`<div class="frame">${card}</div><div style="margin-top:6px">${chips}</div>
+  <p class="cap">Greyscale-safe: the eye changes shape (dashed with "?", outline, bigger pupil, filled) and gains 0, 1, 2, 3 turns. The word is the second reading, not the first. In play the same Heat shows only as how quickly the faces turn (section 5).</p>`;
+}
+
+/* ---------- O1 roster badge ---------- */
+{
+  const names=['S','T','F','E'];const ticks=[0,0,2,0];
+  const one=(i)=>{const x=20+i*86;let b='';
+    if(ticks[i]){b=`<g transform="translate(${x+30},56)"><circle r="12" fill="#12302d" stroke="#f4ecd8" stroke-width="1.200"/><use href="#g-eye" x="-8" y="-8" width="16" height="16" style="color:#f4ecd8"/>${[0,1].map(j=>`<line x1="${-5+j*10}" y1="-17" x2="${-5+j*10}" y2="-13" stroke="#ffe9a8" stroke-width="2.500" stroke-linecap="round"/>`).join('')}</g>`;}
+    return `<circle cx="${x+24}" cy="40" r="26" fill="#16665e" stroke="${i==2?'#4fe3e8':'#c9a35a'}" stroke-width="${i==2?3:1.500}"/><text x="${x+24}" y="47" font-size="20" font-weight="700" text-anchor="middle" fill="#f4ecd8">${names[i]}</text>${b}`;};
+  document.getElementById('o1').innerHTML=`<div class="frame"><svg width="380" height="88" viewBox="0 0 380 88"><rect width="380" height="88" fill="#0f4a45"/>${[0,1,2,3].map(one).join('')}</svg><div class="cap" style="margin:4px 8px 6px">O1 · the Fixer is wary-watched: an eye with 2 ticks on her portrait (1 noticed, 2 wary, 3 reporting)</div></div>`;
+}
+
+/* ---------- PiP ---------- */
+function medal(kind,st,size=72,opt={}){
+  const win={cam:60,bot:64,per:50}[kind],c={cam:[102,38],bot:[52,24],per:[50,26]}[kind];
+  const k=size/win,fn={cam,bot:robot,per:person}[kind];
+  let svg=fn(st).replace(/<circle cx="118" cy="84"[^>]*\/>/,'').replace('width="100%"',`width="${(130*k).toFixed(1)}" height="${(114*k).toFixed(1)}"`);
+  const ml=-(c[0]-win/2)*k,mt=-((c[1]+14)-win/2)*k;
+  const ringcol=st==3?'#ff5a3c':'#0f4a45';
+  const rings=st==1?`<div style="position:absolute;inset:0;border-radius:50%;border:3px solid #0f4a45"></div>`
+   :st==2?`<div style="position:absolute;inset:0;border-radius:50%;border:3px solid #0f4a45;box-shadow:0 0 0 3px #f4ecd8,0 0 0 6px #0f4a45" class="breathe"></div>`
+   :`<div style="position:absolute;inset:0;border-radius:50%;border:4px dashed #12302d;outline:2px solid #ff5a3c;outline-offset:-1px" class="fl"></div>`;
+  const ticks=[1,2,3].slice(0,st).map(i=>`<i style="display:inline-block;width:3px;height:5px;background:#ffe9a8;margin:0 1px;border-radius:1px"></i>`).join('');
+  const badge=`<div style="position:absolute;right:-8px;bottom:-6px;display:flex;align-items:center;gap:2px;background:#12302d;border:1.5px solid #f4ecd8;border-radius:11px;padding:2px 4px 2px 3px"><svg width="14" height="14" style="color:#f4ecd8"><use href="#g-eye" width="14" height="14"/></svg><span>${ticks}</span>${opt.who?`<b style="width:14px;height:14px;border-radius:50%;background:#4fe3e8;border:1.5px solid #0f4a45;color:#0f4a45;font:700 9px/11px Arial;text-align:center;display:block;margin-left:2px">${opt.who}</b>`:''}</div>`;
+  const tail=opt.stem?`<div style="position:absolute;left:${size/2-7}px;bottom:-9px;width:14px;height:14px;background:#e9e0c6;border-right:3px solid #0f4a45;border-bottom:3px solid #0f4a45;transform:rotate(45deg)"></div>`:'';
+  const tab=opt.tab?`<div style="position:absolute;left:-14px;top:${size/2-8}px;width:0;height:0;border:8px solid transparent;border-right:10px solid #0f4a45;border-left:0"></div>`:'';
+  return `<div style="position:relative;width:${size}px;height:${size}px;display:inline-block;filter:drop-shadow(0 2px 3px rgba(0,0,0,.35))">${tail}${tab}<div style="position:relative;width:${size}px;height:${size}px;border-radius:50%;overflow:hidden;background:#f1e9d0"><div style="margin-left:${ml.toFixed(1)}px;margin-top:${mt.toFixed(1)}px;width:${130*k}px;height:${114*k}px">${svg}</div></div>${rings}${badge}</div>`;
+}
+const wrap=(inner,x,y,w=72)=>`<div style="position:absolute;left:${x}px;top:${y}px;width:${w}px">${inner}</div>`;
+const ground='background-color:#e9e0c6;background-image:linear-gradient(#ddd2b3 1px,transparent 1px),linear-gradient(90deg,#ddd2b3 1px,transparent 1px);background-size:40px 24px';
+const tokenS=(x,y,l)=>`<div style="position:absolute;left:${x}px;top:${y}px;width:20px;height:20px;border-radius:50%;background:#4fe3e8;border:2px solid #0f4a45;font:700 11px/16px Arial;text-align:center;color:#0f4a45">${l}</div>`;
+{
+  // A: callouts in the street
+  const A=`<div class="frame" style="position:relative;width:640px;height:330px;${ground}">
+   ${wrap(cam(2),70,150)} ${wrap(medal('cam',2,72,{stem:1,who:'E'}),70,70)}
+   ${wrap(robot(1),270,160)} ${wrap(medal('bot',1,72,{stem:1,who:'F'}),270,80)}
+   ${wrap(person(3),470,150)} ${wrap(medal('per',3,72,{stem:1,who:'T'}),470,70)}
+   ${tokenS(180,235,'E')}${tokenS(335,255,'F')}${tokenS(560,250,'T')}
+   <div style="position:absolute;left:12px;top:10px">${'<span class="pill">A · beside the watcher</span>'}</div>
+   <div style="position:absolute;left:12px;bottom:8px;font-size:12px;color:#4a5b58">Three at once: three stems, three floating medallions (the fan-out case).</div></div>`;
+  // B: tabs on the roster
+  const names=['S','T','F','E'],col=['#16665e','#16665e','#16665e','#16665e'];
+  const por=(i,sel)=>`<div style="position:absolute;left:14px;top:${14+i*88}px;width:64px;height:64px;border-radius:50%;background:${col[i]};border:${sel?'3px solid #4fe3e8':'2px solid #c9a35a'};color:#f4ecd8;font:700 22px/58px Arial;text-align:center">${names[i]}</div>`;
+  const B=`<div class="frame" style="position:relative;width:640px;height:370px;${ground}">
+   <div style="position:absolute;left:0;top:0;width:92px;height:100%;background:#0f4a45"></div>
+   ${[0,1,2,3].map(i=>por(i,i==2)).join('')}
+   ${wrap(medal('bot',2,72,{tab:1}),82,18+2*88-4)}
+   ${wrap(medal('cam',3,72,{tab:1}),82,18+3*88-4)}
+   <div style="position:absolute;left:78px;top:${14+2*88+50}px;width:20px;height:20px;border-radius:50%;background:#12302d;border:1.5px solid #f4ecd8;color:#f4ecd8;font:700 10px/17px Arial;text-align:center">+1</div>
+   <div style="position:absolute;left:112px;top:10px"><span class="pill">B · tab on the portrait</span></div>
+   <div style="position:absolute;left:260px;top:120px;font-size:12px;color:#4a5b58;width:340px">Fixer: a robot went wary (shown); a guard noticed her too (queued, "+1"). Enforcer: a camera is reporting. Scout and Tech: nothing. The street is untouched.</div></div>`;
+  // true size
+  const T=`<div class="frame" style="position:relative;width:360px;height:130px;${ground}">${wrap(person(0),20,20,72)}${wrap(medal('per',2,72,{stem:1,who:'T'}),130,10)}${wrap(medal('bot',3,72,{stem:1,who:'F'}),215,10)}<div style="position:absolute;left:12px;bottom:4px;font-size:11px;color:#4a5b58">1080p, 1:1: figure 55 px, medallion 72 px</div></div>`;
+  document.getElementById('pip').innerHTML=A+B+T;
+}
+
+/* ---------- A: greedy placement demo ---------- */
+{
+  const S=72,R=(c)=>({x:c.x-S/2-6,y:c.y-S/2-4,w:S+12,h:S+8});
+  const hit=(a,b)=>a.x<b.x+b.w&&b.x<a.x+a.w&&a.y<b.y+b.h&&b.y<a.y+a.h;
+  const segd=(p,a,b)=>{const dx=b.x-a.x,dy=b.y-a.y,t=Math.max(0,Math.min(1,((p.x-a.x)*dx+(p.y-a.y)*dy)/(dx*dx+dy*dy)));return Math.hypot(p.x-a.x-t*dx,p.y-a.y-t*dy);};
+  const W=640,H=330,hud={x:0,y:0,w:0,h:0};
+  const agent={x:90,y:268};
+  const ws=[{k:'cam',st:1,x:290,y:200},{k:'bot',st:2,x:340,y:200},{k:'per',st:3,x:390,y:200}];
+  const fw=56,fh=49;
+  ws.forEach(w=>{w.head={x:w.x+fw/2,y:w.y+8};w.box={x:w.x,y:w.y,w:fw,h:fh};});
+  const order=[...ws].sort((a,b)=>b.st-a.st);
+  const placed=[];
+  order.forEach(w=>{
+    const sg=w.head.x>=agent.x?1:-1;
+    const cands=[[0,-70],[sg*60,-66],[-sg*60,-66],[sg*100,-30],[-sg*100,-30],[0,-140],[sg*60,-136],[-sg*60,-136]];
+    let pick=null,n=0;
+    for(const [dx,dy] of cands){n++;
+      const c={x:w.head.x+dx,y:w.head.y+dy};const r=R(c);
+      if(r.x<12||r.y<12||r.x+r.w>W-12||r.y+r.h>H-12)continue;
+      if(ws.some(o=>hit(r,o.box)))continue;
+      if(placed.some(o=>hit(r,R(o.c))))continue;
+      if(Math.hypot(c.x-agent.x,c.y-agent.y)<S/2+22)continue;
+      if(segd(c,agent,w.head)<36+S/2-14&&false)continue;
+      if(segd(c,agent,w.head)<S/2+18)continue;
+      pick={c,n};break;}
+    placed.push({w,c:pick.c,n:pick.n});
+  });
+  const stem=(c,h)=>{const dx=h.x-c.x,dy=h.y-c.y,d=Math.hypot(dx,dy);return {x:c.x+dx/d*(S/2),y:c.y+dy/d*(S/2),a:Math.atan2(dy,dx)*180/Math.PI,len:d-S/2};};
+  let inner=`<div style="position:absolute;left:12px;top:10px"><span class="pill">A · crowded entrance, placed by the rules</span></div>
+   <div style="position:absolute;left:${agent.x-30}px;top:${agent.y-4}px;width:80px;height:20px;"></div>`;
+  // keep-out capsules
+  inner+=`<svg width="${W}" height="${H}" style="position:absolute;left:0;top:0">${ws.map(w=>`<line x1="${agent.x}" y1="${agent.y}" x2="${w.head.x}" y2="${w.head.y}" stroke="#12302d" stroke-opacity=".16" stroke-width="30" stroke-linecap="round"/><line x1="${agent.x}" y1="${agent.y}" x2="${w.head.x}" y2="${w.head.y}" stroke="#12302d" stroke-width="1.500" stroke-dasharray="4 5"/>`).join('')}
+   ${placed.map(p=>{const st=stem(p.c,p.w.head);return `<line x1="${st.x.toFixed(1)}" y1="${st.y.toFixed(1)}" x2="${p.w.head.x}" y2="${p.w.head.y-6}" stroke="#0f4a45" stroke-width="3"/>`;}).join('')}</svg>`;
+  ws.forEach(w=>{inner+=wrap({cam,bot:robot,per:person}[w.k](w.st),w.x,w.y,fw);});
+  inner+=tokenS(agent.x-10,agent.y-10,'E');
+  placed.forEach(p=>{inner+=wrap(medal(p.w.k,p.w.st,72,{who:'E'}),p.c.x-36,p.c.y-36);
+    inner+=`<div style="position:absolute;left:${p.c.x-36}px;top:${p.c.y-36}px;width:18px;height:18px;border-radius:50%;background:#f4ecd8;border:1.5px solid #0f4a45;font:700 11px/15px Arial;text-align:center;color:#0f4a45">${p.n}</div>`;});
+  inner+=`<div style="position:absolute;right:8px;bottom:8px;font-size:12px;color:#4a5b58;width:190px">Dark strip = keep-out between the agent (E) and each watcher. Numbers = which candidate spot won (1 up, 2 away side). Guard (stage 3) claims first, then robot, then camera.</div>`;
+  const A2=`<div class="frame" style="position:relative;width:${W}px;height:${H}px;${ground}">${inner}</div>`;
+  // edge dock
+  const D=`<div class="frame" style="position:relative;width:640px;height:330px;${ground}">
+   <div style="position:absolute;left:0;top:0;width:92px;height:100%;background:#0f4a45"></div>
+   <div style="position:absolute;left:14px;top:14px;width:64px;height:64px;border-radius:50%;background:#16665e;border:3px solid #4fe3e8;color:#f4ecd8;font:700 22px/58px Arial;text-align:center">F</div>
+   ${tokenS(250,170,'F')}
+   <div style="position:absolute;right:12px;top:90px">${medal('cam',2,56,{who:'F'})}<div style="position:absolute;right:-6px;top:20px;width:0;height:0;border:9px solid transparent;border-left:12px solid #0f4a45;border-right:0"></div></div>
+   <div style="position:absolute;right:12px;top:210px;opacity:.9">${medal('bot',1,56,{who:'F'})}<div style="position:absolute;right:-6px;top:20px;width:0;height:0;border:9px solid transparent;border-left:12px solid #0f4a45;border-right:0"></div></div>
+   <div style="position:absolute;left:112px;top:10px"><span class="pill">A · watcher off screen: docked, 56 px, chevron points to it</span></div>
+   <div style="position:absolute;left:112px;bottom:8px;font-size:12px;color:#4a5b58;width:380px">Two watchers off to the right (a camera above, a robot below): each docks at the edge nearest its bearing, clear of the roster, the scope and the pill.</div></div>`;
+  document.getElementById('pipA').innerHTML=A2+D;
+}
+</script>
+</main></body></html>

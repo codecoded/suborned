@@ -83,7 +83,7 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
     along(p, pav);
   }
 
-  for (const s of dr.parasols.on) keep(put(`civic/${s.table}/parasol`, dr.parasols.piece, s.at, 0, pav));
+  for (const s of dr.parasols.on) keep(put(`civic/${s.table}/parasol`, look.swaps[dr.parasols.piece] ?? dr.parasols.piece, s.at, 0, pav)) // brief 026: Parasol_Testbed over each set's table;
   for (const l of dr.lamps.at) keep(put(`civic/${l.id}`, dr.lamps.piece, l.at, l.yawDeg, pav));
   for (const b of dr.bollards.at) keep(put(`civic/${b.id}`, dr.bollards.piece, b.at, 0, pav));
   for (const run of dr.planterRuns.runs) run.modules.forEach((m, i) => keep(put(`civic/${run.id}/${i}`, m.piece, m.at, run.yawDeg, pav)));
@@ -103,7 +103,7 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
 /** The keep-clear kind of each piece the dressing places (dressing.keepClear `bars`): the kit id → planter | lamp | bollard | tree | parasol | band. */
 export function placementKinds(dr: Dressing): Map<string, 'planter' | 'lamp' | 'bollard' | 'tree' | 'parasol' | 'band'> {
   const m = new Map<string, 'planter' | 'lamp' | 'bollard' | 'tree' | 'parasol' | 'band'>();
-  m.set(dr.parasols.piece, 'parasol'); m.set(dr.lamps.piece, 'lamp'); m.set(dr.bollards.piece, 'bollard'); m.set(dr.cypress.piece, 'tree'); m.set(dr.topiary.piece, 'planter'); // a pot is a planter
+  m.set(dr.parasols.piece, 'parasol'); m.set(look.swaps[dr.parasols.piece] ?? dr.parasols.piece, 'parasol'); m.set(dr.lamps.piece, 'lamp'); m.set(dr.bollards.piece, 'bollard'); m.set(dr.cypress.piece, 'tree'); m.set(dr.topiary.piece, 'planter'); // a pot is a planter
   for (const r of dr.planterRuns.runs) for (const x of r.modules) m.set(x.piece, 'planter');
   for (const b of look.bands.pieces) m.set(b.piece, 'band');
   return m;

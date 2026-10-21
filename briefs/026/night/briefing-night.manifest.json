@@ -1,0 +1,11 @@
+{
+ "state": "briefing",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "line", "x": 1266, "y": 473, "w": 920, "h": 53, "text": "Take Vale alive to the car."},
+  {"kind": "image", "x": 1266, "y": 554, "w": 920, "h": 155, "text": "cell portraits"},
+  {"kind": "image", "x": 694, "y": 110, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 54, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "image", "x": 3219, "y": 24, "w": 209, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

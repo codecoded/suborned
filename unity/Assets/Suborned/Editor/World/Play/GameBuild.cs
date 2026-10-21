@@ -69,6 +69,7 @@ namespace Suborned.World.Play
 
         public static bool Build()
         {
+            Debug.Log(Suborned.World.UI.KitImport.LivePortraits()); // brief 033: Forma's live portraits as they are now (a re-cut rides with the next build)
             var b = SimBundle.Load(); SimScenarios.CheckDll(b); // the DLL Unity builds is the bundle's
             var active = EditorSceneManager.GetActiveScene();
             if (active.path != HarbourWorldBuilder.ScenePath)
@@ -94,7 +95,7 @@ namespace Suborned.World.Play
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
-                    scenes = new[] { HarbourWorldBuilder.ScenePath },
+                    scenes = File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { HarbourWorldBuilder.ScenePath, RangeScene.ScenePath } : new[] { HarbourWorldBuilder.ScenePath }, // brief 029: the fight range, from the menu
                     target = BuildTarget.StandaloneOSX,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,

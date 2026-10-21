@@ -210,6 +210,7 @@
    "entry-seen-patrol": "The patrol saw the Enforcer go in. The Office locked down.",
    "abduction-seen-camera": "The pickup camera saw us. Vale was rescued.",
    "driver-shot": "The driver was shot. Security pulled Vale away.",
+   "getaway-lost": "The getaway car is wrecked. We can't get Vale out.",
    "engine-error": "Something broke. This run doesn't count. Start again.",
    "withdraw": "We pulled out. The attempt is over."
   },
@@ -226,6 +227,7 @@
    "pickup": "Pickup: Vale rides from the official bay, and his driver is short of cash."
   },
   "tracker": "Take Vale alive to the getaway car · closes 8:30",
+  "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
   "timeline": [
    {
     "at": "3:10",
@@ -265,7 +267,7 @@
    }
   ],
   "cell": {
-   "scout": "Scout: watches and listens to learn who people are. Can send rivals astray.",
+   "scout": "Scout: watches from furthest, listens, and can send rivals astray.",
    "fixer": "Fixer: turns people (Ask, Pay, Help, Pressure) and can Call them to act.",
    "tech": "Tech: loops cameras and reroutes patrols from the control cabinet.",
    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
@@ -292,7 +294,7 @@
   "stash-door": {"name":"The service door","about":"The Office service door, off the lane. A body can go in, but slowly."}
  },
  "actions": {
-  "watch": {"label":"Watch","by":["scout","tech"],"engine":{"do":"watch"},"does":"Learn where they go and when. No Trail, but it takes time.","onTarget":{"waitress":"Learn Inez's rounds: door, tables, and when the guard drops in.","driver":"Learn the driver's routine: when he waits and when he moves.","guard":"Learn the guard's rounds: door, steps, and his coffee break.","councillor":"Learn when Vale moves. He stays inside until the chime.","camera-entrance":"Watch it from close by to learn what it sees. Needs a clear line.","camera-pickup":"Watch it from close by to learn what it sees. Needs a clear line.","camera-mast-314":"Watch it from close by to learn what it sees. Needs a clear line.","patrol":"Learn what the patrol sees. Its rounds take longer. Needs a clear line."},"onTargetBy":{"tech":{"camera-entrance":"Study the lens: what it sees, and where it goes blind. Needs a clear line.","camera-pickup":"Study the lens on the pickup: its cone, its blind side. Needs a clear line.","camera-mast-314":"Study the lens: its cone, and when it turns. Needs a clear line.","patrol":"Time the patrol: its cone first, its turns after. Needs a clear line."}},"withTarget":"Watch {target}","then":"watches {target}"},
+  "watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"Learn where they go and when. No Trail, but it takes time.","onTarget":{"waitress":"Learn Inez's rounds: door, tables, and when the guard drops in.","driver":"Learn the driver's routine: when he waits and when he moves.","guard":"Learn the guard's rounds: door, steps, and his coffee break.","councillor":"Learn when Vale moves. He stays inside until the chime.","camera-entrance":"Watch it from close by to learn what it sees. Needs a clear line.","camera-pickup":"Watch it from close by to learn what it sees. Needs a clear line.","camera-mast-314":"Watch it from close by to learn what it sees. Needs a clear line.","patrol":"Learn what the patrol sees. Its rounds take longer. Needs a clear line."},"onTargetBy":{"tech":{"camera-entrance":"Study the lens: what it sees, and where it goes blind. Needs a clear line.","camera-pickup":"Study the lens on the pickup: its cone, its blind side. Needs a clear line.","camera-mast-314":"Study the lens: its cone, and when it turns. Needs a clear line.","patrol":"Time the patrol: its cone first, its turns after. Needs a clear line."}},"withTarget":"Watch {target}","then":"watches {target}"},
   "listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"Learn what they need and who they are. Stand close; it takes a while.","onTarget":{"waitress":"Hear what Inez needs and how she'd take an offer.","driver":"Hear what the driver needs and how he'd take an offer. Stand close.","guard":"Hear what the guard wants and whom he answers to. Stand close.","councillor":"Hear what Vale wants and who he answers to. Stand close."},"withTarget":"Listen to {target}","then":"listens to {target}"},
   "mislead": {"label":"False tip","by":["scout"],"engine":{"do":"mislead"},"does":"Send the rivals the wrong way for a while. They may come back.","onTarget":{"rivals":"Whisper the rivals a bad address. It buys minutes, not safety."},"withTarget":"Give {target} a false tip","then":"gives {target} a false tip"},
   "ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"Ask outright. Free, but most refuse, and they remember you asked.","onTarget":{"waitress":"Ask Inez outright. Free, but she'll likely refuse and remember.","driver":"Ask the driver outright. Free, but he'll likely refuse and remember.","guard":"Ask the guard outright. Free, but he may report you."},"withTarget":"Ask {target}","then":"asks {target}"},
@@ -306,10 +308,13 @@
   "take": {"label":"Take Vale","by":["enforcer"],"engine":{"do":"take"},"does":"Take Vale at his car. A watching camera or the rivals will ruin it.","onTarget":{"councillor":"Take Vale at his car. A watching camera or the rivals will ruin it."},"withTarget":"Take {target}","then":"takes {target}"},
   "board": {"label":"Board","by":["scout","fixer","tech","enforcer"],"engine":{"do":"board"},"does":"Get into the getaway car, with anyone you carry.","onTarget":{"car-getaway":"Get in the car, with anyone you carry. In the car you can't fire."},"withTarget":"Board {target}","then":"boards {target}"},
   "go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"Drive off with whoever is in the car. The rest stay behind.","onTarget":{"car-getaway":"Leave now. Anyone outside the car stays behind. A hostile near it blocks it."},"withTarget":"Go in {target}","then":"drives off in {target}"},
+  "spawn": {"label":"Spawn","by":["fixer"],"engine":{"do":"spawn"},"does":"Fight range only: put 1 to 6 hostiles on the range."},
   "fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"Shoot to stop them. Gunfire raises Alert, and every hit adds Trail.","onTarget":{"hostile":"Fire until this one is down. Shots in this fight add no Trail.","councillor":"Never fire on Vale. Shooting Vale fails the mission."},"withTarget":"Fire on {target}","then":"fires on {target}"},
   "draw": {"label":"Draw weapon","by":["scout","fixer","tech","enforcer"],"engine":{"do":"draw"},"does":"Draw a weapon. Anyone who sees it may raise the alarm."},
   "holster": {"label":"Holster","by":["scout","fixer","tech","enforcer"],"engine":{"do":"holster"},"does":"Put the weapon away. It doesn't undo what was seen."},
   "cease": {"label":"Cease fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cease"},"does":"Stop firing. The weapon stays drawn."},
+  "volley": {"label":"Volley","by":["scout","fixer","tech","enforcer"],"engine":{"do":"volley"},"does":"Fire a set number of shots at one target. Each shot spends charge.","onTarget":{"hostile":"Fire 1 to 6 shots here. Charge pays; unfired shots come back."},"withTarget":"Volley at {target}","then":"volleys at {target}"},
+  "field": {"label":"Field","by":["enforcer"],"engine":{"do":"field"},"does":"Raise a shield that soaks hits for a moment. You can't fire while it's up."},
   "stance": {"label":"When to fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"stance"},"does":"Choose when to fire: hold fire, return fire, or fire at will."},
   "panic": {"label":"Panic","by":["scout","fixer","tech","enforcer"],"engine":{"do":"panic"},"does":"Everyone armed draws and fires. Works only once a fight is on."},
   "carry": {"label":"Carry","by":["scout","fixer","tech","enforcer"],"engine":{"do":"carry"},"does":"Lift a downed agent or a body. Only the Enforcer carries at a walk.","withTarget":"Carry {target}","then":"carries {target}"},
@@ -320,8 +325,30 @@
   "move": {"label":"Walk","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Walk there. Quiet, and the only pace while carrying Vale.","withTarget":"Walk to {target}","then":"walks to {target}"},
   "run": {"label":"Run","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Run there. Twice as fast, but anyone who can see you will notice.","withTarget":"Run to {target}","then":"runs to {target}"},
   "cancel": {"label":"Cancel","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"Stop what this agent is doing. Some stops cost something: check the price."},
+  "ring-watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"The ring's word for this verb."},
+  "ring-listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"The ring's word for this verb."},
+  "ring-mislead": {"label":"Tip","by":["scout"],"engine":{"do":"mislead"},"does":"The ring's word for this verb."},
+  "ring-ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"The ring's word for this verb."},
+  "ring-pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"The ring's word for this verb."},
+  "ring-help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"The ring's word for this verb."},
+  "ring-pressure": {"label":"Pressure","by":["fixer"],"engine":{"do":"turn","approach":"pressure"},"does":"The ring's word for this verb."},
+  "ring-call": {"label":"Call","by":["fixer"],"engine":{"do":"call"},"does":"The ring's word for this verb."},
+  "ring-take": {"label":"Take","by":["enforcer"],"engine":{"do":"take"},"does":"The ring's word for this verb."},
+  "ring-enter": {"label":"Enter","by":["enforcer"],"engine":{"do":"enter"},"does":"The ring's word for this verb."},
+  "ring-board": {"label":"Board","by":["scout","fixer","tech","enforcer"],"engine":{"do":"board"},"does":"The ring's word for this verb."},
+  "ring-go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"The ring's word for this verb."},
+  "ring-fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"The ring's word for this verb."},
+  "ring-loop": {"label":"Loop","by":["tech"],"engine":{"do":"loop"},"does":"The ring's word for this verb."},
+  "ring-reroute": {"label":"Reroute","by":["tech"],"engine":{"do":"reroute"},"does":"The ring's word for this verb."},
+  "ring-carry": {"label":"Carry","by":["scout","fixer","tech","enforcer"],"engine":{"do":"carry"},"does":"The ring's word for this verb."},
+  "ring-stash": {"label":"Hide","by":["scout","fixer","tech","enforcer"],"engine":{"do":"stash"},"does":"The ring's word for this verb."},
+  "ring-restrain": {"label":"Tie","by":["scout","fixer","tech","enforcer"],"engine":{"do":"restrain"},"does":"The ring's word for this verb."},
+  "ring-drop": {"label":"Drop","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drop"},"does":"The ring's word for this verb."},
+  "ring-more": {"label":"More","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"The ring's last wedge: the full panel."},
   "withdraw": {"label":"Withdraw","by":["fixer"],"engine":{"do":"withdraw"},"does":"Call off the attempt. The cell gets away to try again."},
-  "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Let go","does":"Hand this agent back. They stop, or carry on their walk."}}}
+  "drive": {"label":"Take control","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive"},"does":"Walk this agent yourself, at their pace. Anyone nearby still sees them.","ways":{"release":{"label":"Let go","does":"Hand this agent back. They stop, or carry on their walk."}}},
+  "trigger": {"label":"Trigger","by":["scout","fixer","tech","enforcer"],"engine":{"do":"trigger"},"does":"Fire by hand from the agent you drive: hold to keep firing, let go to stop."},
+  "follow": {"label":"Follow fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"follow"},"does":"Agents near you fire on your target. On: they keep firing till it is down."}
  },
  "cancelCosts": {
   "stop": "Stops where they stand. Nothing is lost.",
@@ -391,12 +418,12 @@
   "run-carrying-vale": {"line":"Nobody can run while carrying Vale. Walk Vale to the car.","short":"No running","verbs":["run"]},
   "run-carrying-downed": {"line":"Nobody can run while carrying a downed agent. Walk to the car.","short":"No running","verbs":["run"]},
   "run-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to move him.","short":"Busy looping","verbs":["run","move","watch"]},
-  "only-scout": {"line":"Only the Scout can watch or listen to people.","short":"Scout only","verbs":["watch","listen","mislead"],"byTarget":{"machine":{"line":"Only the Scout or the Tech can watch cameras and robots.","short":"Scout or Tech"}}},
+  "only-scout": {"line":"Only the Scout can listen or give a false tip.","short":"Scout only","verbs":["listen","mislead"]},
   "only-fixer": {"line":"Only the Fixer can do this. Select the Fixer.","short":"Fixer only","verbs":["ask","pay","help","pressure","call"]},
   "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","reroute"]},
   "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take"]},
   "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"],"byTarget":{"serving":{"line":"{who} is serving a table. Back at the door in {s} s.","short":"Serving · back in {s} s"}}},
-  "needs-routine": {"line":"Learn {who}'s routine first: have the Scout Watch them.","short":"Watch first","verbs":["listen","pay"]},
+  "needs-routine": {"line":"Learn {who}'s routine first: Watch them.","short":"Watch first","verbs":["listen","pay"]},
   "needs-need": {"line":"Find out what {who} needs first: have the Scout Listen.","short":"Listen first","verbs":["help","pressure"]},
   "needs-temperament": {"line":"Find out who {who} is first: have the Scout Listen.","short":"Listen first","verbs":["ask","pay","help","pressure"]},
   "no-act-need": {"line":"This won't meet {who}'s need. Try another approach.","short":"Not what they need","verbs":["help","pressure"]},
@@ -431,6 +458,7 @@
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
   "in-car": {"line":"That agent is in the car. Walk them out first.","short":"In the car","verbs":["*"]},
+  "no-charge": {"line":"Not enough charge. Wait for the bar, or fire fewer shots.","short":"No charge","verbs":["volley","field"]},
   "no-weapon": {"line":"{op} has no weapon. Pick an armed agent.","short":"Unarmed","verbs":["fire","draw","stance"]},
   "already-drawn": {"line":"The weapon is already out. Fire on a hostile.","short":"Already drawn","verbs":["draw"]},
   "not-drawn": {"line":"No weapon drawn. Draw one first (F).","short":"Not drawn","verbs":["holster","cease"]},
@@ -439,6 +467,8 @@
   "panic-no-fight": {"line":"Panic works only once a fight is on.","short":"No fight yet","verbs":["panic"]},
   "panic-nobody": {"line":"No armed agent is free to fire.","short":"Nobody armed","verbs":["panic"]},
   "fire-running": {"line":"Can't fire while running. Walk or stop first.","short":"Not while running","verbs":["fire"]},
+  "not-driven": {"line":"Only the agent you drive has a trigger. Take control first.","short":"Take control first","verbs":["trigger"]},
+  "follow-not-cell": {"line":"Follow fire is for the whole cell, not one agent.","short":"Whole cell only","verbs":["follow"]},
   "fire-carrying-vale": {"line":"The Enforcer is carrying Vale. Get Vale in the car, and let the others fire.","short":"Hands full · Vale","verbs":["fire"]},
   "fire-carrying": {"line":"Can't fire while carrying. Put them down, or let another shoot.","short":"Hands full","verbs":["fire"]},
   "no-target": {"line":"Nothing to fire at: no hostile in range with a clear line.","short":"No target","verbs":["fire"]},
@@ -605,12 +635,12 @@
   }
  },
  "events": {
-  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","reroute","enter","take","board","go","fire","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
+  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","reroute","enter","take","board","go","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
   "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
   "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
   "reply": {"kind":"reply","trigger":"a turn order lands on a person: their answer, by the rulebook outcome (suspicious when the approach is reported)","speakers":["waitress","driver","guard"],"verbs":["ask","pay","help","pressure"],"note":"one answer per turn order; the contact's temperament picks the voice"},
   "confirm": {"kind":"reply","trigger":"the Fixer calls a turned contact: the contact confirms aloud (Chime voices it)","speakers":["waitress","driver"],"log":["call.waitress","call.driver"],"verbs":["call"]},
-  "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech"],"log":["scout.watch.watched","tech.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
+  "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
   "taken": {"kind":"reply","trigger":"Vale is brought out (the Enforcer takes him at the car, or comes out of the Office with him)","speakers":["councillor"],"log":["take.done","enter.out"],"verbs":["enter","take"]},
   "start": {"kind":"world","trigger":"the mission starts, cell at the getaway car","speakers":["scout","fixer","tech","enforcer"],"log":["start"]},
   "chime": {"kind":"world","trigger":"the 5:30 handover chime","speakers":["scout","fixer"],"clock":"5:30"},
@@ -627,6 +657,7 @@
   "guard-back": {"kind":"world","trigger":"the guard is back on the door","speakers":["guard","scout"],"log":["guard.back"]},
   "car-blocks": {"kind":"world","trigger":"the driver's car crosses the pickup camera","speakers":["driver","tech"],"log":["car.blocks"]},
   "car-clears": {"kind":"world","trigger":"the car clears the pickup camera","speakers":["scout","tech"],"log":["car.clears"]},
+  "car-burns": {"kind":"world","trigger":"a shot car catches fire and will explode in a few seconds","speakers":["scout","tech"],"log":["car.burning"]},
   "car-leaves": {"kind":"world","trigger":"the turned driver takes the car to the service lane","speakers":["driver","fixer"],"log":["car.leaves"]},
   "loop-ends": {"kind":"world","trigger":"the loop ends (the Tech leaves the cabinet or goes down)","speakers":["tech","scout"],"log":["loop.ends"]},
   "patrol-rerouted": {"kind":"world","trigger":"the patrol takes the false orders","speakers":["patrol","tech"],"log":["patrol.rerouted"]},
@@ -664,7 +695,7 @@
   "takedown-seen": {"kind":"world","trigger":"a watcher with a weapon or a post sees a takedown or a carried body: Alert at sight, the Enforcer is a foe they engage","speakers":["guard","patrol","watcher","security","fixer","enforcer"],"log":["takedown.seen"]},
   "witness-reacts": {"kind":"world","trigger":"a person sees a takedown or a carry, or finds a body: their first reaction, by what they do (outcome is the engine's verb: report, flee, avoid, check, quiet, radio)","speakers":["crowd","waitress","driver","guard"],"log":["witness.react"],"note":"keyed by what the cell can see them do, never by the temperament: a loyal person calls out (report), a fearful one freezes or whispers (flee, avoid). Inez has lines by temperament as well; the host picks the most specific"},
   "witness-screams": {"kind":"world","trigger":"a witness screams (heard within the scream range with no line)","speakers":["crowd","waitress"],"log":["witness.scream"]},
-  "report-begins": {"kind":"world","trigger":"a witness starts a report: staff radio from where they stand (outcome radio), anyone else goes for a phone (outcome phone)","speakers":["guard","crowd"],"log":["report.started"]},
+  "report-begins": {"kind":"world","trigger":"a witness starts a report: staff radio from where they stand (outcome radio), anyone else goes for a phone (outcome phone)","speakers":["guard","crowd"],"log":["report.started","attention.reporting"]},
   "victim-wakes": {"kind":"world","trigger":"a knocked out victim wakes, staggers, then reports","speakers":["guard","driver","waitress","crowd"],"log":["victim.wakes"]},
   "victim-calls-out": {"kind":"world","trigger":"a hidden, awake, untied victim calls out; anyone near hears a muffled voice","speakers":["guard","driver","waitress","crowd"],"log":["victim.calls-out"]},
   "person-missed": {"kind":"world","trigger":"a person who expected someone (a lover, kin, a workmate, the driver) finds them gone and grows suspicious; about is the missing person","speakers":["councillor","waitress","guard","crowd"],"log":["person.missed"],"note":"Vale at the car with the driver gone: about driver, by Vale's temperament; the scene plays the same moment"},
@@ -751,6 +782,9 @@
    "ack",
    "win"
   ],
+  "spawn": [
+   "ack"
+  ],
   "fire": [
    "ack"
   ],
@@ -764,6 +798,12 @@
    "ack"
   ],
   "stance": [
+   "ack"
+  ],
+  "volley": [
+   "ack"
+  ],
+  "field": [
    "ack"
   ],
   "panic": [
@@ -809,6 +849,7 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "ai.kite": "a hostile side answers fire from beyond its ring (brief 027 lab, Pulse kite-response): police running in and rivals ducking to cover speak for it on the street",
   "fight.judged": "a fight ends and the street judges it (fight.public, Sky 2026-10-16): the debrief's Standing line speaks for it, by its cause",
   "shot.": "a shot (shot.hit, shot.miss): the tracer and the pips speak; no line per shot",
   "order.": "the order echo (Game.Note \"order.*\"): the agent's own ack and arrive lines speak for it",
@@ -816,6 +857,14 @@
   "witness.": "witness bookkeeping (camera, patrol, told); the spoken reactions are witness-reacts and witness-screams, the visible ones the feed cards",
   "fail.": "the fail text is the `fail` event, keyed by code",
   "scout.": "scout.watch.watched and scout.listen.heard: spoken by `read`",
+  "attention.noticed": "a watcher notices a loiterer: its cue shows it, and hint H19 teaches it once",
+  "attention.wary": "a watcher turns wary: its cue shows it",
+  "attention.stopped": "a watcher cools: its cue shows it",
+  "attention.landed": "the loiterer report reaches the desk: report.landed speaks",
+  "fixer.watch.container": "a container Watch: the card says the round",
+  "tech.watch.container": "a container Watch: the card says the round",
+  "enforcer.watch.container": "a container Watch: the card says the round",
+  "scout.watch.container": "a container Watch: the card says the round",
   "turn.": "turn.<approach>.<outcome>: spoken by `reply` and `done`",
   "security.officer-down": "an officer is hit: no line",
   "security.hit": "an officer is hit: no line",
@@ -837,7 +886,15 @@
   "captured": "an agent left behind and captured: told in the debrief (left-behind, captive), not spoken",
   "blocker.out": "the road blocker is down or gone: the street shows it, and car.free speaks if that frees the car",
   "car.free": "the car is free to go: the feed card says it",
+  "car.hit": "a car is hit: the tracer and the pips speak; no line per shot",
+  "car.disabled": "a car is shot dead: smoke on it shows it, and the fail card speaks if it was the getaway car",
+  "car.out": "the driver or Vale gets out of the stopped official car: the street shows it",
+  "car.exploded": "a burning car explodes: the blast ring and the wreck show it",
+  "car.blast-hits": "the blast hits someone: the hit marks speak, and agent-down if an agent falls",
   "round.ends": "a server's rounds end (an order or a body holds her at her post): the street shows her there",
+  "range.spawn": "the fight range: hostiles are put on the range; the spawn order's ack and the hostiles themselves speak",
+  "range.clear": "the fight range: every hostile is down, broken or gone; the range shows it",
+  "holster.auto": "the engine holsters a gun a few seconds after a fight ends: the portrait's gun mark shows it",
   "walked": "an agent left behind who walks out: the mission ends at Go; the debrief's left-behind line says it",
   "car.seen": "the car was seen leaving: the mission ends at Go; the debrief's car-seen line says it and the feed card keeps it",
   "board.in": "an agent is in the car: the order's ack spoke, and the car marker's pip fills",
@@ -876,10 +933,10 @@
   "items": {
    "H1": {
     "priority": 1,
-    "agent": "scout",
+    "agent": "any",
     "verb": "watch",
     "target": "the people on the café terrace",
-    "line": "The door has a guard. The Scout can Watch the people on the café terrace.",
+    "line": "The door has a guard. Any agent can Watch the people on the café terrace.",
     "short": "Watch the [café terrace].",
     "trigger": "briefing closed, nothing learned about anyone, no Watch or Listen given",
     "rings": "the café terrace (the place, not Inez)",
@@ -1075,6 +1132,17 @@
     "trigger": "Vale is in the car and no Go has been given; shown once, on the first final fight (brief 018 section 6, point 7)",
     "rings": "the getaway car",
     "goneWhen": "a Go order"
+   },
+   "H19": {
+    "priority": -6,
+    "agent": "any",
+    "verb": "move",
+    "target": "the watcher that noticed",
+    "line": "A watcher has noticed an agent standing still. Keep moving, or step out of its sight.",
+    "short": "Keep moving, or leave its sight.",
+    "trigger": "the first time a security watcher's attention reaches noticed for any agent (brief 031); shown once",
+    "rings": "nothing: the watcher's own cue shows it",
+    "goneWhen": "the agent moves out of sight, or the watcher cools"
    }
   }
  },
@@ -1268,6 +1336,9 @@
      "name",
      "trail"
     ],
+    "spawn": [
+     "name"
+    ],
     "fire": [
      "name",
      "trail",
@@ -1283,6 +1354,12 @@
      "name"
     ],
     "stance": [
+     "name"
+    ],
+    "volley": [
+     "name"
+    ],
+    "field": [
      "name"
     ],
     "panic": [
@@ -1383,6 +1460,7 @@
     "entry-seen-patrol": "The patrol saw you.",
     "abduction-seen-camera": "Seen taking Vale.",
     "driver-shot": "Driver shot.",
+    "getaway-lost": "Getaway car wrecked.",
     "engine-error": "Run doesn't count.",
     "withdraw": "You withdrew."
    }
@@ -1448,7 +1526,8 @@
    "rule": "The Next Step is `hints.items.*.short`: one imperative, one [noun] ringed in the street and coloured as its ring, no agent named (the agent's portrait pulses with the verb icon at the line's left). It shows for `showSeconds`, fades to its ring, returns once after `returnSeconds` more of idling if still undone, and never shows more than `maxShows` times in a run. It retires for good, per profile, once the player has given the verb it teaches; the long `line` is Alt and the relearn key.",
    "showSeconds": 6,
    "returnSeconds": 20,
-   "maxShows": 2
+   "maxShows": 2,
+   "firstAct": "Right-click to act."
   },
   "go": {
    "rule": "Brief 018 (the getaway, section 6.5 and 6.6): the Go card and the roster flag. Nobody left: the card reads `none`. Someone left: `leaves`, with {list} the names in id order, each followed by its `why` in brackets when the fate is captured (\"Tech (down), Scout\"), and `seen` added when a police officer, a robot or the patrol would see the car leave. The roster shows `flag` on every agent not in the car while the Go card is open; Alt on a fate glyph is `fate`.",
@@ -1511,6 +1590,9 @@
     "driver-shot": {
      "shot": "{by} shot the driver."
     },
+    "getaway-lost": {
+     "wrecked": "The getaway car is wrecked."
+    },
     "sealed": {
      "response": "{by} raised the alarm.",
      "confirmed": "{by} reported it.",
@@ -1553,6 +1635,9 @@
     },
     "driver-shot": {
      "shot": "Keep shots away from the driver."
+    },
+    "getaway-lost": {
+     "wrecked": "Keep fire off the getaway car."
     },
     "sealed": {
      "response": "Anyone who sees you can report.",
@@ -1603,11 +1688,14 @@
   {"event":"ack","verb":"help","speaker":"fixer","lines":["Their trouble becomes ours.","Let's lift that weight.","A kindness. Leave it with me."]},
   {"event":"ack","verb":"pressure","speaker":"fixer","lines":["A gentle squeeze, then.","I know where it hurts. Sorry.","I don't like this. Doing it."]},
   {"event":"ack","verb":"call","speaker":"fixer","lines":["Time for that call.","Now, please. Right now.","Making the call."]},
+  {"event":"ack","verb":"watch","speaker":"fixer","lines":["Let me have a look.","I'll keep an eye out.","Just browsing, friends."]},
+  {"event":"ack","verb":"watch","speaker":"enforcer","lines":["Looking.","I'll look.","Eyes open."]},
   {"event":"ack","verb":"watch","speaker":"tech","lines":["Taking a look.","Logging it.","Lens first."]},
   {"event":"ack","verb":"loop","speaker":"tech","lines":["Cabinet. One minute.","Looping the feed.","Give me a minute."]},
   {"event":"ack","verb":"reroute","speaker":"tech","lines":["New orders for the patrol.","Sending it the long way round.","The patrol takes a stroll."]},
   {"event":"ack","verb":"enter","speaker":"enforcer","lines":["Going in.","The door is mine.","Right. Inside."]},
   {"event":"ack","verb":"take","speaker":"enforcer","lines":["I've got him.","Taking him.","Councillor. Walk with me."]},
+  {"event":"ack","verb":"spawn","speaker":"fixer","lines":["There they are.","Targets up.","Hostiles up."]},
   {"event":"ack","verb":"board","speaker":"scout","lines":["Boarding.","Moving to the car.","Car next."]},
   {"event":"ack","verb":"board","speaker":"fixer","lines":["Climbing in. After you.","All aboard, then.","In we get."]},
   {"event":"ack","verb":"board","speaker":"tech","lines":["Aboard. Hold on to something.","Getting in. Mind the wiring.","In. Doors shut."]},
@@ -1629,6 +1717,11 @@
   {"event":"ack","verb":"holster","speaker":"fixer","lines":["Putting it away.","Better. Now smile."]},
   {"event":"ack","verb":"holster","speaker":"tech","lines":["Stowed.","Weapon away."]},
   {"event":"ack","verb":"holster","speaker":"enforcer","lines":["Back it goes.","Done with that."]},
+  {"event":"ack","verb":"volley","speaker":"scout","lines":["Counting shots.","Short burst."]},
+  {"event":"ack","verb":"volley","speaker":"fixer","lines":["A few, then.","Only these."]},
+  {"event":"ack","verb":"volley","speaker":"tech","lines":["Set. Firing.","Measured burst."]},
+  {"event":"ack","verb":"volley","speaker":"enforcer","lines":["Hard and fast.","Here goes."]},
+  {"event":"ack","verb":"field","speaker":"enforcer","lines":["Field up.","Behind me."]},
   {"event":"ack","verb":"cease","speaker":"scout","lines":["Holding fire.","Stopped."]},
   {"event":"ack","verb":"cease","speaker":"fixer","lines":["Enough. Hold.","Stop, stop."]},
   {"event":"ack","verb":"cease","speaker":"tech","lines":["Ceasing fire.","Stopping. Eyes open."]},
@@ -1672,6 +1765,8 @@
   {"event":"ack","verb":"restrain","speaker":"fixer","lines":["Sorry. It's for everyone's good.","Forgive the rope.","Just until we're gone."]},
   {"event":"ack","verb":"restrain","speaker":"tech","lines":["Knotting. Properly.","Tight, not cruel.","Cable ties. Handy."]},
   {"event":"ack","verb":"restrain","speaker":"enforcer","lines":["Tying.","Hands first.","That'll hold."]},
+  {"event":"arrive","verb":"watch","speaker":"fixer","lines":["Nicely placed. Looking.","A good view from here.","Settled. Watching."]},
+  {"event":"arrive","verb":"watch","speaker":"enforcer","lines":["Here. Watching.","Near enough.","In place."]},
   {"event":"arrive","verb":"watch","speaker":"tech","lines":["In line. Timing it.","Clear view. Logging.","Eyes on the lens."]},
   {"event":"arrive","verb":"watch","speaker":"scout","lines":["In position.","Good sightline.","Settled in. Counting."]},
   {"event":"arrive","verb":"listen","speaker":"scout","lines":["Close enough to hear.","Right beside them.","Ears open."]},
@@ -1707,6 +1802,8 @@
   {"event":"done","verb":"restrain","speaker":"scout","lines":["Tied. No calling out.","Bound. Quiet.","Secured."]},
   {"event":"done","verb":"restrain","speaker":"fixer","lines":["Tied. I'm sorry.","There. Not too tight.","Only for a while."]},
   {"event":"done","verb":"restrain","speaker":"tech","lines":["Tied off.","Knots done. Neat ones.","That holds."]},
+  {"event":"read","verb":"watch","speaker":"fixer","lines":["Got their routine. Noted.","Now I know their habits.","Clear enough. Noted."]},
+  {"event":"read","verb":"watch","speaker":"enforcer","lines":["Seen enough.","Fine. Noted.","Noted. Done."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"waitress","lines":["Inez works the café door. Never leaves.","Tables, counter, door. Round and round.","The guard stops by her door for coffee."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"driver","lines":["The driver waits in the car for Vale.","Never leaves the bay. Polishes the badge.","Car at the bay. Engine warm."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"guard","lines":["Guard on the public door. Coffee soon.","Door, steps, door. Café before he goes.","He sweeps the steps, then back."]},
@@ -1851,6 +1948,8 @@
   {"event":"car-blocks","speaker":"tech","lines":["Pickup camera's blind. Move now.","Car across the lens. Good."]},
   {"event":"car-clears","speaker":"scout","lines":["Car's moving off. Camera's live.","The lens is clear again."]},
   {"event":"car-clears","speaker":"tech","lines":["Pickup feed is back. Careful.","Camera sees again. Mind it."]},
+  {"event":"car-burns","speaker":"scout","lines":["That car's on fire. Get clear!","It's about to go up. Back off!"]},
+  {"event":"car-burns","speaker":"tech","lines":["Fuel's alight. Everyone back.","Fire in the car. Move away."]},
   {"event":"car-leaves","speaker":"driver","lines":["Service lane, Councillor. Quieter that way.","Taking the car round to the lane."]},
   {"event":"car-leaves","speaker":"fixer","lines":["The driver's moved the car. Service lane.","He's taken it round the back."]},
   {"event":"loop-ends","speaker":"tech","lines":["Left the cabinet. The feed is live again.","Loop's gone. The camera sees again."]},
@@ -1921,6 +2020,8 @@
   {"event":"fail","speaker":"watcher","outcome":"abduction-seen-camera","lines":["Camera two. Councillor seized!","Pickup camera. Abduction! Send everyone."]},
   {"event":"fail","speaker":"fixer","outcome":"driver-shot","lines":["Not the driver. We never meant that.","He's down. Security has Vale."]},
   {"event":"fail","speaker":"crowd","outcome":"driver-shot","lines":["He shot the driver!","Somebody help him!"]},
+  {"event":"fail","speaker":"fixer","outcome":"getaway-lost","lines":["The car's wrecked. We can't get him out.","No car, no way out. It's over."]},
+  {"event":"fail","speaker":"scout","outcome":"getaway-lost","lines":["Our car's gone. Nowhere to run.","That was our way out. Burned."]},
   {"event":"withdraw","speaker":"fixer","lines":["Pull out. We try again.","Walk away. Slowly."]},
   {"event":"cliffhanger","speaker":"councillor","outcome":"named","temperament":"loyal","pending":"pending Sky: Halcyon is a Story proposal (the-suborned-story-v0.1, ending beat). Ship `unnamed` until Sky decides.","lines":["The clearance wasn't mine. Halcyon wrote it.","Halcyon pays the Council. The next list is signed."]},
   {"event":"cliffhanger","speaker":"councillor","outcome":"named","temperament":"mercenary","pending":"pending Sky: Halcyon is a Story proposal (the-suborned-story-v0.1, ending beat). Ship `unnamed` until Sky decides.","lines":["Get me safe and I'll name them. Halcyon.","Halcyon bought my signature. The next list is ready."]},
@@ -2019,7 +2120,7 @@
   {"event":"witness-reacts","speaker":"guard","outcome":"radio","lines":["What's this? Hold on.","Trouble. Right here at the post.","Stay where you are!"]},
   {"event":"witness-screams","speaker":"crowd","lines":["Help! Somebody help!","Over here! Help!","No! Oh, no!"]},
   {"event":"witness-screams","speaker":"waitress","lines":["Help! Please!","Somebody! Anybody!","Oh, no. No, no!"]},
-  {"event":"report-begins","speaker":"guard","outcome":"radio","lines":["Post to desk. Incident at the Office.","Desk, come in. Send a unit.","This is the post. Reporting an incident."]},
+  {"event":"report-begins","speaker":"guard","outcome":"radio","lines":["Post to desk. Incident at the Office.","Desk, come in. Send a unit.","This is the post. Reporting an incident.","Desk, I've got one."]},
   {"event":"report-begins","speaker":"crowd","outcome":"phone","lines":["Operator? The police, please. Quickly.","I need to report something. At once.","Is there a phone near? Police!"]},
   {"event":"victim-wakes","speaker":"guard","lines":["My head. Who was that?","Ugh. What hit me?","Someone was here. Where did they go?"]},
   {"event":"victim-wakes","speaker":"driver","lines":["Ow. My head. The car?","What happened? Where's the Councillor?"]},

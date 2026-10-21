@@ -25,6 +25,8 @@ export type Look = {
   fade: string[];
   /** A piece placed with another at the same pivot and yaw (the café terrace with the café bay): the dressing's piece → the pieces that go with it. */
   companions: Record<string, string[]>;
+  /** brief 028: a piece that carries its own supports: the masses (ids) it makes redundant stay in the export (ids, footprints, clearance) but draw nothing (`hidden`). */
+  carries?: Record<string, string[]>;
   /** Pieces whose footprint is a box round open ground (the terrace): a person-scale piece inside it is where it belongs, not overlapping it. */
   frame: string[];
   /** Materials a civic mass draws in place of its piece's own: export mass id → kit slot → material (the atom fountain's water is DK_Pool_Civic). */

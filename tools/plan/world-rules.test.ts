@@ -7,7 +7,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { civic } from './civic';
 import { lineDist, type V } from './geom';
-import { quayEdges } from './street-zones';
+import { boxRing, footprintOf, quayEdges, ringGap } from './street-zones';
 import { derive, type Plan } from './plan';
 import { ctxOf, generated } from './world-ctx';
 import { worldRules } from './world-rules';
@@ -98,4 +98,37 @@ describe('world rules', () => {
     ['SF-17', 'a sign outside the city palette', (w) => { w.frontages[0].sign.palette = 'no-such-colour'; }],
   ];
   for (const [id, what, mutate] of cases) test(`${id} fails on ${what}`, () => { expect(failing(mutate)).toContain(id); });
+});
+
+// Brief 026 (the old city's models back): a twin booth serves a booth pair, the curved kiosk stands on open ground, and a wall unit
+// nobody queues at (streetscape.doors.wallUnits) keeps 0.6 m off a door's jambs instead of 2 m.
+describe('brief 026 plan standards', () => {
+  /** An Automat moved along its wall until its footprint is `gap` m from the nearest street door's jambs; `kind` re-labels it. */
+  const nearDoor = (gap: number, kind?: string) => (w: W) => {
+    const a = first(w.street, (s: W) => s.kind === 'automat' && s.z < 1), S = plan.standards.streetscape;
+    const doors = w.frontages.filter((f: W) => f.level === 'street').map((f: W) => boxRing(f.entrance.c, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw));
+    const gapNow = () => Math.min(...doors.map((r: V[]) => ringGap(footprintOf(S, a.kind, a.variant, a.at, a.size, a.yaw), r)));
+    const door = doors.reduce((p: V[], r: V[]) => ringGap(footprintOf(S, a.kind, a.variant, a.at, a.size, a.yaw), r) < ringGap(footprintOf(S, a.kind, a.variant, a.at, a.size, a.yaw), p) ? r : p);
+    const dc: V = [(door[0]![0] + door[2]![0]) / 2, (door[0]![1] + door[2]![1]) / 2], u: V = [Math.cos(a.yaw), Math.sin(a.yaw)], side = Math.sign((a.at[0] - dc[0]) * u[0] + (a.at[1] - dc[1]) * u[1]) || 1;
+    for (let i = 0; i < 4000 && Math.abs(gapNow() - gap) > 0.005; i++) { const k = Math.sign(gapNow() - gap) * 0.005; a.at = [a.at[0] - u[0] * side * k, a.at[1] - u[1] * side * k]; } // toward the door when farther than `gap`, away when nearer (the generator now puts an Automat 0.6 m off its door)
+    expect(Math.abs(gapNow() - gap)).toBeLessThan(0.02);
+    if (kind) a.kind = kind;
+  };
+  test('an Automat 1.0 m from a door passes SF-2 (a wall unit: 0.6 m)', () => { expect(failing(nearDoor(1.0))).not.toContain('SF-2'); });
+  test('an Automat 0.4 m from a door fails SF-2', () => { expect(failing(nearDoor(0.4))).toContain('SF-2'); });
+  test('a phone booth 1.0 m from a door still fails SF-2 (2 m)', () => { expect(failing(nearDoor(1.0, 'phone-booth'))).toContain('SF-2'); });
+
+  // The generator merges each booth pair into one twin (variant 'twin', counts 2). A bank served by its twin passes SF-12; the same item turned into one single booth does not.
+  const twinAs = (edge: string, single: boolean) => (w: W) => {
+    const t = first(w.street, (s: W) => s.kind === 'phone-booth' && s.edge === edge && s.variant === 'twin');
+    if (single) { delete t.variant; t.size = [1, 1, 2.5]; }
+  };
+  test('a station bank served by one twin booth passes SF-12 (counts as two)', () => { expect(failing(twinAs('bank/S1/gardens/l', false))).not.toContain('SF-12'); });
+  test('a station bank with one single booth fails SF-12', () => { expect(failing(twinAs('bank/S1/gardens/l', true))).toContain('SF-12'); });
+
+  const pavilion = (...at: V[]) => (w: W) => { w.street = w.street.filter((s: W) => s.kind !== 'kiosk-pavilion'); at.forEach((p, i) => w.street.push({ id: `street/test/kiosk-pavilion-${i}`, kind: 'kiosk-pavilion', at: p, yaw: 0, z: 0.18, size: [6.1, 4.4, 6.5], surface: 'enamel', edge: 'test', sight: 'blocks', staffed: { trade: 'soda-fountain', hours: [8, 22] } })); };
+  test('a kiosk pavilion on Orbit Gardens passes SF-7', () => { expect(failing(pavilion([-120, -360]))).not.toContain('SF-7'); });
+  test('two kiosk pavilions on Orbit Gardens fail SF-7', () => { expect(failing(pavilion([-120, -360], [-100, -340]))).toContain('SF-7'); });
+  test('a kiosk pavilion on Records Square (the civic block) fails SF-7', () => { expect(failing(pavilion([-160, -250]))).toContain('SF-7'); });
+  test('a kiosk pavilion on a residential plot fails SF-7', () => { const r = first(d.plots, p => p.use === 'residential').polyV; expect(failing(pavilion([(r[0]![0] + r[2]![0]) / 2, (r[0]![1] + r[2]![1]) / 2]))).toContain('SF-7'); });
 });

@@ -118,7 +118,7 @@
   {
    "id": "street/orbit-gardens/e2/phone-booth-472",
    "kind": "call-box",
-   "at": [9300,400],
+   "at": [9315,400],
    "stand": [9325,425],
    "item": "street/orbit-gardens/e2/phone-booth-472"
   },
@@ -132,7 +132,7 @@
   {
    "id": "street/civic/call-box-0",
    "kind": "call-box",
-   "at": [3000,-1400],
+   "at": [3015,-1400],
    "stand": [3025,-1375],
    "item": "street/civic/call-box-0"
   },
@@ -146,7 +146,7 @@
   {
    "id": "street/civic/call-box-2",
    "kind": "call-box",
-   "at": [-200,-4900],
+   "at": [-200,-4915],
    "stand": [-175,-4875],
    "item": "street/civic/call-box-2"
   },
@@ -167,7 +167,7 @@
   {
    "id": "street/civic/call-box-5",
    "kind": "call-box",
-   "at": [5000,-4900],
+   "at": [5000,-4915],
    "stand": [5025,-4875],
    "item": "street/civic/call-box-5"
   }
@@ -265,8 +265,8 @@
  "solids": [
   {
    "id": "street/civic/call-box-0",
-   "poly": [[3050,-1450],[3050,-1350],[2950,-1350],[2950,-1450]],
-   "h": 250
+   "poly": [[3080,-1530],[3080,-1270],[2950,-1270],[2950,-1530]],
+   "h": 240
   },
   {
    "id": "street/civic/call-box-1",
@@ -275,8 +275,8 @@
   },
   {
    "id": "street/civic/call-box-2",
-   "poly": [[-250,-4950],[-150,-4950],[-150,-4850],[-250,-4850]],
-   "h": 250
+   "poly": [[-330,-4980],[-70,-4980],[-70,-4850],[-330,-4850]],
+   "h": 240
   },
   {
    "id": "street/civic/call-box-3",
@@ -290,8 +290,8 @@
   },
   {
    "id": "street/civic/call-box-5",
-   "poly": [[4950,-4950],[5050,-4950],[5050,-4850],[4950,-4850]],
-   "h": 250
+   "poly": [[4870,-4980],[5130,-4980],[5130,-4850],[4870,-4850]],
+   "h": 240
   },
   {
    "id": "street/civic/police-post-0",

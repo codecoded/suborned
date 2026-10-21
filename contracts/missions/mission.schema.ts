@@ -124,6 +124,9 @@ export const Mission = z.strictObject({
    *  A flat number with its reason beside it; tools/sim/site.ts reads both into the sim data. */
   securityBonus: z.number().int().min(-4).max(4).optional(),
   securityBonusWhy: z.string().min(1).optional(),
+  /** The mission's start state the engine reads (brief 031 §2.1): `heat`, the cell's Heat (campaign Trail + Menace) at the start, fixed for the mission; it picks the attention band.
+   *  Until a campaign layer writes it from the debrief, the mission carries it with its reason; tools/sim/site.ts reads it into the site (heat). */
+  start: z.strictObject({ heat: z.number().int().nonnegative(), src, note: z.string().min(1).optional() }).optional(),
   /** The cell's issue of arms (GDD §07 "Arms 3"): read into the site. */
   arms: z.strictObject({ sidearms: z.number().int().nonnegative(), src, note }).optional(),
   /** §07's route prep times restated against the rulebook (the Scout's Watch and Listen): `from` names the rulebook values summed. */

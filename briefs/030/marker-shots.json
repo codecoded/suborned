@@ -1,0 +1,193 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "Brief 030/038 (Sky 2026-10-21): the hover marker says what a right click does. Before (mark false: the plain ring) and after, at play zoom and in the follow view, on a person, a camera, the car and a hostile. Run: bun run batch --only shots --shots briefs/030/marker-shots.json --shots-out briefs/030/marker.",
+ "defaults": {
+  "hud": true
+ },
+ "shots": [
+  {
+   "name": "marker-person-overhead-before",
+   "tick": 600,
+   "select": "fixer",
+   "hover": "waitress",
+   "mark": false,
+   "state": "active",
+   "script": "route-a-board",
+   "focus": "waitress",
+   "yaw": 0
+  },
+  {
+   "name": "marker-person-overhead-after",
+   "tick": 600,
+   "select": "fixer",
+   "hover": "waitress",
+   "mark": true,
+   "state": "active",
+   "script": "route-a-board",
+   "focus": "waitress",
+   "yaw": 0
+  },
+  {
+   "name": "marker-person-follow-before",
+   "tick": 600,
+   "select": "fixer",
+   "hover": "waitress",
+   "mark": false,
+   "state": "active",
+   "script": "route-a-board",
+   "view": "follow",
+   "agent": "fixer",
+   "face": "waitress"
+  },
+  {
+   "name": "marker-person-follow-after",
+   "tick": 600,
+   "select": "fixer",
+   "hover": "waitress",
+   "mark": true,
+   "state": "active",
+   "script": "route-a-board",
+   "view": "follow",
+   "agent": "fixer",
+   "face": "waitress"
+  },
+  {
+   "name": "marker-camera-overhead-before",
+   "tick": 1200,
+   "select": "scout",
+   "hover": "camera/entrance",
+   "mark": false,
+   "state": "active",
+   "script": "route-a-board",
+   "focus": "camera/entrance",
+   "yaw": 2
+  },
+  {
+   "name": "marker-camera-overhead-after",
+   "tick": 1200,
+   "select": "scout",
+   "hover": "camera/entrance",
+   "mark": true,
+   "state": "active",
+   "script": "route-a-board",
+   "focus": "camera/entrance",
+   "yaw": 2
+  },
+  {
+   "name": "marker-camera-follow-before",
+   "tick": 1200,
+   "select": "scout",
+   "hover": "camera/entrance",
+   "mark": false,
+   "state": "active",
+   "script": "route-a-board",
+   "view": "follow",
+   "agent": "scout",
+   "face": "camera/entrance"
+  },
+  {
+   "name": "marker-camera-follow-after",
+   "tick": 1200,
+   "select": "scout",
+   "hover": "camera/entrance",
+   "mark": true,
+   "state": "active",
+   "script": "route-a-board",
+   "view": "follow",
+   "agent": "scout",
+   "face": "camera/entrance"
+  },
+  {
+   "name": "marker-car-overhead-before",
+   "tick": 2600,
+   "select": "enforcer",
+   "hover": "car/getaway",
+   "mark": false,
+   "state": "active",
+   "script": "route-a-board",
+   "focus": "car/getaway",
+   "yaw": 2
+  },
+  {
+   "name": "marker-car-overhead-after",
+   "tick": 2600,
+   "select": "enforcer",
+   "hover": "car/getaway",
+   "mark": true,
+   "state": "active",
+   "script": "route-a-board",
+   "focus": "car/getaway",
+   "yaw": 2
+  },
+  {
+   "name": "marker-car-follow-before",
+   "tick": 2600,
+   "select": "enforcer",
+   "hover": "car/getaway",
+   "mark": false,
+   "state": "active",
+   "script": "route-a-board",
+   "view": "follow",
+   "agent": "enforcer",
+   "face": "car/getaway"
+  },
+  {
+   "name": "marker-car-follow-after",
+   "tick": 2600,
+   "select": "enforcer",
+   "hover": "car/getaway",
+   "mark": true,
+   "state": "active",
+   "script": "route-a-board",
+   "view": "follow",
+   "agent": "enforcer",
+   "face": "car/getaway"
+  },
+  {
+   "name": "marker-hostile-overhead-before",
+   "tick": 2270,
+   "select": "scout",
+   "hover": "hostile/0",
+   "mark": false,
+   "state": "active",
+   "focus": "hostile/0",
+   "yaw": 0,
+   "script": "loud-fight"
+  },
+  {
+   "name": "marker-hostile-overhead-after",
+   "tick": 2270,
+   "select": "scout",
+   "hover": "hostile/0",
+   "mark": true,
+   "state": "active",
+   "focus": "hostile/0",
+   "yaw": 0,
+   "script": "loud-fight"
+  },
+  {
+   "name": "marker-hostile-follow-before",
+   "tick": 2270,
+   "select": "scout",
+   "hover": "hostile/0",
+   "mark": false,
+   "state": "active",
+   "view": "follow",
+   "agent": "scout",
+   "face": "hostile/0",
+   "script": "loud-fight"
+  },
+  {
+   "name": "marker-hostile-follow-after",
+   "tick": 2270,
+   "select": "scout",
+   "hover": "hostile/0",
+   "mark": true,
+   "state": "active",
+   "view": "follow",
+   "agent": "scout",
+   "face": "hostile/0",
+   "script": "loud-fight"
+  }
+ ]
+}

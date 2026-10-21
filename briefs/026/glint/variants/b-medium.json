@@ -1,0 +1,73 @@
+{
+ "label": "B medium: ACES filmic curve; anchors held (lit paving about 235, shade about 160); deeper mids, richer colour, wider AO, polished stone and chrome",
+ "sun": {
+  "intensity": 1.8
+ },
+ "ambient": {
+  "sky": 0.9,
+  "equator": 0.88,
+  "ground": 0.82
+ },
+ "post": {
+  "tonemapping": "ACES",
+  "postExposure": 0.15,
+  "contrast": 6,
+  "saturation": 18,
+  "bloomIntensity": 0.22
+ },
+ "ssao": {
+  "intensity": 1.0,
+  "radius": 0.7,
+  "directLighting": 0.5
+ },
+ "surfaces": {
+  "asphalt": {
+   "value": 0.9
+  },
+  "kerb": {
+   "value": 0.92
+  },
+  "pylon": {
+   "smoothness": 0.85
+  },
+  "column": {
+   "smoothness": 0.85
+  },
+  "plate": {
+   "smoothness": 0.9
+  },
+  "hoop": {
+   "smoothness": 0.9
+  },
+  "trim": {
+   "smoothness": 0.7
+  },
+  "crossing": {
+   "smoothness": 0.75
+  },
+  "canopy": {
+   "smoothness": 0.75
+  },
+  "enamel": {
+   "smoothness": 0.8
+  },
+  "limestone": {
+   "smoothness": 0.3
+  },
+  "civic": {
+   "smoothness": 0.35
+  },
+  "pavement": {
+   "smoothness": 0.25
+  },
+  "foot": {
+   "smoothness": 0.25
+  },
+  "square": {
+   "smoothness": 0.3
+  },
+  "open": {
+   "smoothness": 0.25
+  }
+ }
+}

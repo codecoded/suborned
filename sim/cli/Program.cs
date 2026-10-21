@@ -4,7 +4,9 @@
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
 //   probe                                       distances and windows on the real block (for writing scenarios)
+//   fight-lab [--runs ..] [--presets ..]       brief 027's balance matrix: L1–L4, P-A, P-G, P-B under today, lab, lab charge off, lab field on
 //   drive-session [out]                         record the driven session the DP1 scenario replays (brief 025; Fixtures/drive-session.script.json)
+//   range list|play|script|hashes               brief 029's fight range on its own site (sim/cli/Range.cs)
 //   codes                                       every refusal code an order can get (Fable's text.json locks read these)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 //   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
@@ -57,6 +59,8 @@ static class Program
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
+                case "range": return RangeCli.Run(root, args); // brief 029: the fight range, on its own inputs
+                case "fight-lab": return FightLabCli.Run(inputs, root, args); // brief 027 §6.5: the balance matrix (briefs/027/keel/fight-lab.json)
                 case "drive-session": return DriveSession.Record(inputs, root, args.Length > 1 ? args[1] : null); // brief 025: record DP1's session
                 case "cover-vectors": Console.WriteLine(CoverVectors(inputs)); return 0;
                 case "fans": return Fans(inputs, args.Length > 1 && args[1] != "--crowd" ? int.Parse(args[1], CultureInfo.InvariantCulture) : 0, Array.IndexOf(args, "--crowd") > 0);

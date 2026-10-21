@@ -9,7 +9,9 @@ import math
 
 from geo import dome, fillet, rrect
 from kit import asset
-from mats import pal
+from mats import RobotPal
+
+pal = RobotPal()  # enamels as their detailed robot variants (mats.py)
 from robot_parts import (antenna, arm, badge, bowtie, bud_vase, cloche, cup, display, emblem, glass, heart, hose,
                          hover_disc, lights, panel, pennant, profile_rad, rivets, screen, shoulder, stud, surf, teapot,
                          towel, tray, vents, vseam)

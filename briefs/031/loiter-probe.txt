@@ -1,0 +1,57 @@
+# brief 031 loiter probe (Motive, 2026-10-20): engine as of 2026-10-20, routes from contracts/missions/handover/routes.
+# model: per operative x watcher, +1 tick while in its sight (today's detection: cameras, guard incl. walking near 3 m, patrol, security) standing still idle or watching; held while in another act; -1 otherwise, floor 15 s once wary; wary at 15 s, report at 30 s. guardnear = within 3 m of the guard (the proposed people's close sense). Peaks >= 5 s shown.
+== loud.json Success 4:34.6
+   Enforcer|cam:entrance    peak   53.7 s at 1:18.5  WARY  REPORT at 0:54.8
+   Scout|security           peak   18.3 s at 3:53.4  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2
+   Tech|security            peak    8.6 s at 3:53.4
+== route-a-board.json Success 4:30.2
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2
+== route-a-pressure-board.json Success 3:41.8
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Enforcer|patrol          peak   23.8 s at 2:03.5  WARY
+== route-a-pressure.json Success 3:52.8
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Enforcer|patrol          peak   23.8 s at 2:03.5  WARY
+== route-a.json Success 4:36.4
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2
+== route-b-block-board.json Success 7:48.2
+   Scout|cam:pickup         peak   23.0 s at 2:15.5  WARY
+   Fixer|cam:pickup         peak   16.2 s at 2:07.6  WARY
+== route-b-block.json Success 7:54.5
+   Scout|cam:pickup         peak   23.0 s at 2:15.5  WARY
+   Fixer|cam:pickup         peak   16.2 s at 2:07.6  WARY
+== route-b-board.json Success 7:48.2
+   Scout|cam:pickup         peak   77.6 s at 3:54.0  WARY  REPORT at 2:22.5
+   Fixer|cam:pickup         peak   16.2 s at 2:07.6  WARY
+== route-b.json Success 7:54.5
+   Scout|cam:pickup         peak   77.6 s at 3:54.0  WARY  REPORT at 2:22.5
+   Fixer|cam:pickup         peak   16.2 s at 2:07.6  WARY
+== route-g-board.json Success 4:15.2
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Scout|guard              peak   20.0 s at 1:06.2  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2
+== route-g-fast-board.json Success 3:47.8
+   Enforcer|guardnear       peak   39.0 s at 2:03.6  WARY  REPORT at 1:54.6
+   Enforcer|patrol          peak   37.9 s at 2:02.5  WARY  REPORT at 1:54.6
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Scout|guard              peak   20.0 s at 1:06.2  WARY
+== route-g-fast.json Success 3:58.8
+   Enforcer|guardnear       peak   39.0 s at 2:03.6  WARY  REPORT at 1:54.6
+   Enforcer|patrol          peak   37.9 s at 2:02.5  WARY  REPORT at 1:54.6
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Scout|guard              peak   20.0 s at 1:06.2  WARY
+== route-g-kill-board.json Success 5:42.2
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Scout|guard              peak   20.0 s at 1:06.2  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2
+== route-g-kill.json Success 5:53.2
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Scout|guard              peak   20.0 s at 1:06.2  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2
+== route-g.json Success 4:26.2
+   Enforcer|cam:entrance    peak   29.0 s at 1:18.5  WARY
+   Scout|guard              peak   20.0 s at 1:06.2  WARY
+   Enforcer|patrol          peak   12.5 s at 1:46.2

@@ -1,0 +1,92 @@
+; Dot-matrix glyphs for the service robots' display faces (RobotFace.cs, DK_RobotFace.shader).
+; "= name" starts a glyph; rows top first, "#" = lit LED, "." = dark; at most 8 x 8. Blinks are generated
+; (rows switch off toward the middle, then one bar), so no closed-eye frames are drawn here.
+
+; ---- eyes
+= round
+.##.
+####
+####
+.##.
+
+= wide
+.###.
+#####
+#####
+#####
+.###.
+
+= calm
+.###.
+#####
+
+= happy
+.###.
+#...#
+
+= heart
+.##.##.
+#######
+#######
+.#####.
+..###..
+...#...
+
+= star
+..#..
+.###.
+#####
+.###.
+.#.#.
+
+; alarm (RobotFace.Alarm): lids slanting down toward the nose; "angry_l" is the viewer's-left eye
+= angry_l
+#....
+###..
+#####
+#####
+.###.
+
+= angry_r
+....#
+..###
+#####
+#####
+.###.
+
+; ---- mouths
+= smile
+#....#
+.####.
+
+= grin
+#.....#
+.#...#.
+..###..
+
+= beam
+#######
+.#####.
+..###..
+
+= o
+.##.
+#..#
+#..#
+.##.
+
+= grit
+#######
+#.#.#.#
+#######
+
+; ---- pictogram (brief 031, Vela): the one glyph the old table lacked, the reporting stage. 7 x 7 so it fits the shortest display (the Butler's 21 x 7), drawn
+; as a mouth glyph centred on the display, in the alarm red. The patrol robot's 16 x 10 version is in robot_face_stage.py.
+= alarm_s
+...#...
+..#.#..
+..#.#..
+.#.#.#.
+.#.#.#.
+#.....#
+#######

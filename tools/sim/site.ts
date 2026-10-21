@@ -190,6 +190,8 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     purseSrc: 'GDD §07: Purse $100,000',
     arms: mission.arms.sidearms,
     armsSrc: `mission.json arms: ${mission.arms.src}`,
+    // brief 031 §2.1: the cell's Heat at the start (the attention band), from mission.json start.heat (Waymark) once it carries it; absent, the engine reads 0
+    ...(typeof mission.start?.heat === 'number' ? { heat: mission.start.heat, heatSrc: `mission.json start.heat${mission.start.src ? `: ${mission.start.src}` : ''}` } : {}),
     cast,
     cover: coverOf(),
   };

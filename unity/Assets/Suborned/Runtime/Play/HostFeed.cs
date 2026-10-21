@@ -89,6 +89,7 @@ namespace Suborned.Play
                         }
                         if (c.Scene != null) { c.SceneN = Text.SceneUse(c.Scene); Fill(c, Text.PlayScene(c.Scene, c.SceneN)); }
                     }
+                    ConvoAct(k, verb, target, c); // brief 032: the act's first tick (its scene decides at the next frame)
                 }
                 if (c == null || !c.Live) continue;
                 if (d.Phase == "acting")
@@ -223,6 +224,7 @@ namespace Suborned.Play
             if (sc != null) { c.Scene = sc; c.SceneN = Text.SceneUse(sc); Fill(c, Text.PlayScene(sc, c.SceneN)); c.Footer = Result(sc.Result, c); SceneBeat(sc, "call"); }
             else c.Footer = $"{Cap(Name(role))} acts on the call.";
             c.Revealed = 1; c.NextBeatAt = Game.Tick + 15; c.Tone = Feedback.Ok;
+            ConvoAct((int)OpId.Fixer, "call", role, c); // brief 032
         }
 
         /// <summary>A call the contact's lover refuses (the engine's summon-* codes): a call card with Fable's summon-refused lines from both

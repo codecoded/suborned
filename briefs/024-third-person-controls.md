@@ -46,7 +46,7 @@ Standard third-person PC (Witcher 3, Elden Ring, Fortnite, WoW) with one deliber
 | **Collision** | Keep HostFollow's boom (indexed solids, 0.4 m margin, in at once, back out eased 4 m/s), now a 0.35 m sphere, plus the ground clamp above. Keep the existing hiding: props up to 6 m wide on the line or within 1.6 m of the camera, and passers-by covering 12 % of the agent. Wall behind you: pull in, never up. |
 | **Sensitivity** | Yaw 0.25 and pitch 0.18 degrees per pixel at 1080p (scaled by screen height), a 0.5x to 2x slider each. Trackpad and mouse share it. |
 | **Inversion** | Mouse-look semantics by default (drag right turns the view right; drag up looks up). Invert X and Invert Y switches; scroll follows the system's natural-scroll setting, plus an Invert zoom switch (Latch checks the Air's direction on first run). |
-| **Recentre** | **Z** swings behind the agent (0.3 s). No auto-recentre while keys are held: with camera-relative steering it makes you walk in a circle on W+D, and PC games do not do it. Two exceptions: the swoop in starts behind the agent facing where the map faced, and while only an engine walk drives the agent, the camera trails after 1 s without look input. |
+| **Recentre** | **Superseded (Sky, 2026-10-20, see Decisions):** the camera is a chase camera. As the agent moves it swings behind its heading (eased, about 0.5 s, no overshoot) at a constant distance and pitch; standing still it holds where it is. A drag-orbit or a Q/E turn is a look-around that eases back behind the agent about 1 s after it ends. Zoom is the player's setting and does not drift; the boom pulls in only when a wall really blocks the line, then backs out. (Was: Z recentres, no auto-recentre while keys are held.) |
 | **Settings** | A "Camera" row in the Esc menu: the sliders, the two inversions, lookMode. Stored in `PlayControls`. |
 
 ## 3 · Ground-level readability: who sees you
@@ -75,7 +75,7 @@ The overhead view's act path stays, so the price rule is the same one:
 
 - **Focus:** the thing under the cursor, else the nearest valid target in front within reach (`ActReachCm`), cycled with **Tab** when a verb is picked (the existing target mode). It gets a ring on the ground and the **price chip** at its head: the existing one-line hover chip (verb, seconds, `$`, Trail, Alert; the "found" glyph on takedown numbers). Alt for the breakdown, as now.
 - **E acts on the focus.** A verb picked (1 to 4) fires at once, the existing fast path. None picked: E opens the action panel, one line per way, each priced. Right-click does the same at the cursor.
-- **Out of reach:** the prompt shows greyed with the metres to go (the engine's `too-far` carries them). **No auto-walk in ground mode: you walk.** The "walk and act as one time" line is a map-mode price; on the ground the walk is yours and free.
+- **Out of reach:** **Superseded (Sky, 2026-10-20, see Decisions):** a right-click act (or, with the lab, fire) on a target out of reach walks the agent there and acts, exactly as on the map (the engine's walk-and-act), with the map's price line (the walk's seconds) on hover. For fire, the engine's preview has no walk-in for a driven agent (a driven agent is never walked), so the ghost and the seconds appear once the walk starts; a hover forecast needs a Keel read (PreviewFire as if released). WASD during that walk takes the stick back and drops the walk and its act; the chase camera trails the walk. (Was: no auto-walk in ground mode, you walk.)
 - **Holds stay holds.** The going-loud card and a seen takedown commit on a 0.5 s hold; E becomes one more source (`"e"` beside `"right"`, `"left"`, `"both"` in `HostFight`), the ring fills at the target.
 - **Fights:** right-click or E on a hostile fires as today; hit rates stay deterministic ("down in n s"). Free movement matters because the engine now reads your position for cover and range. Stance V, draw F, cease X, cancel C are unchanged. There is no aiming skill, no crouch, no cover button in this prototype.
 
@@ -97,6 +97,8 @@ The other three keep doing what they were ordered, in real time, as in the map v
 - **Next, not now:** Wildlands' Sync Shot: mark a target, the squad acts. Here: with a focus, the wheel shows who can do what to it (each segment a portrait and its best verb, one priced line). A held "on my mark" for prepared acts would put Time into the player's hand, but the engine starts acts at once today, so it is a Motive and Keel question.
 
 ## 6 · Switching map and ground
+
+**Sky, 2026-10-20:** the view changes only when the player switches it (T today; M is not bound). Nothing switches it automatically: not a freeze, target mode, a fight springing, the engine ending a drive, an agent going down, a restart or the fail camera (it plays in the view the player is in). See Decisions.
 
 - **M** (and **T**, kept) toggles. **Map to ground:** drops into the selected agent (the lead of the selection, else the Scout), 0.6 s swoop down from where the map is looking (the existing swing). The chip beside the scope becomes **Ground [M]** and is clickable (trackpad). **Ground to map:** 0.6 s up; the map opens at its last zoom and yaw, **centred on the agent you held**, not where you left it.
 - **Swap agent without the map:** **Tab** and **Shift+Tab**, F1 to F4 (on a stock MacBook those need Fn, a standing audit finding, so Tab and the portraits are the way) or a click on a squad member. Control moves at once; the one you left holds, or finishes its order. The camera blends 0.45 s, or dips to black for 0.12 s past 30 m.
@@ -158,6 +160,14 @@ In: §1 to §8 on the Handover, routes A and B. Out: crouch, cover, prone, aimed
 6. **Budget and speed:** HUD budget ≤ 15 % at rest and 22 % with a card open, key strip included, from `bun run verify`; frame times at the same spots as brief 016's follow proof, 60 fps at play zoom on the Air.
 7. **Sky plays it on the Air with the trackpad only, then once with a mouse,** and answers the three questions in §9.
 
+## Decisions
+
+- **2026-10-20, Sky (third-person play):** "the auto camera switching is really annoying and the camera should swing behind the player as they move, not have them have to drag and rotate, try keep it constant distance and angle."
+  - No automatic switch between map and ground. Removed in the host: the restart's return to the map (`HandoverHost.Begin`), the return to the map whenever a drive ended (`HostDrive.DriveExit`: a freeze or target mode letting go, the engine ending the drive, the agent going down or inside; now a plain follow view; only T goes back to the map), and the fail camera's exit to the map and its own camera path while the ground view is on (`HostFailCam`).
+  - A chase camera on the ground (`HostFollow`): see §2 Recentre. Replaces "no auto-recentre".
+- **2026-10-20, Sky:** "a player if they right click action whilst in third person, should move towards the target automatically - not stop." Out of reach while driven, the act walks in and acts as on the map; WASD cancels (§4). Replaces "No auto-walk in ground mode".
+- Evidence: `briefs/024/chase-curve.mp4` (the Scout walking an S-curve in the ground view, the camera behind her throughout).
+
 ## Evidence
 
 `briefs/024/` (shots, frame times, the replay hash, the key-table test output, `research/notes.md`, Sky's three answers).
@@ -169,3 +179,107 @@ Sky approves or changes this. Then Aster splits it:
 - **Latch**: controller, camera, switch, wheel, perspective goal markers.
 - **Glyph**: awareness art (eye, pips, edge markers, cone curtain), the strip, the wheel, the chip. **Glint**: the curtain outside the grade.
 - **Motive**: speeds and the notice ramp question. **Fable**: the strip words and H19. **Chime**: the notice cue. **Suture**: the done-check. **Redline**: curtain and boom cost.
+
+## Revision: action-game controls (2026-10-21)
+
+**Sky:** "yeah, think so - just find E for actions kinda odd, vs mouse buttons but if it's the norm wire it in." Asked: third-person controls the way action games do them (GTA, The Witcher): a prompt on whatever you face, act with E, hold E for the options, right mouse aims, left mouse fires. Commander view: untouched. This revision is the third-person chase camera only, and it supersedes the third-person parts of §4 and §7 above where they differ. Author: Glyph. Mockup: `briefs/024/action-controls/index.html` (1920 x 1080, keys 1 to 2 to 3 or the buttons switch prompt, hold-E ring, aim; rendered checks `shot-1..3.png`; rebuild with `bun briefs/024/action-controls/build.ts`). Sources: `briefs/024/research/action-defaults.md` (community key guides, not checked in each game).
+
+### Is E the norm? Mostly.
+
+| PC default | Interact | Options | Aim | Fire | Draw / holster | Sprint |
+|---|---|---|---|---|---|---|
+| GTA V | E context, F vehicles | hold Tab: weapon wheel | RMB | LMB | aiming draws; wheel | Shift |
+| Witcher 3 | E | Q sign; RMB parry | (RMB parry) | LMB attack | 1, 2 | Shift |
+| Red Dead 2 | E (guides split E / F) | hold Tab: wheel | RMB | LMB | aiming draws | Shift |
+| Cyberpunk 2077 | F (fixed) | | RMB | LMB | Alt | Shift |
+| Ghost Recon Breakpoint | E | | RMB | LMB | not listed | Shift |
+| Mass Effect (Legendary) | Space (E in ME1) | | RMB | LMB | | |
+
+Aim RMB, fire LMB and sprint Shift are universal. Interact is E in four of six, F in two, Space in one: E is the plurality, not a law, so it is the default and rebindable. Nobody uses "hold E for options" as a standard (the wheel sits on Tab); that part is ours, and it is safe because the prompt shows it. The lesson from Red Dead 2 (tap and hold on one button, "inconsistent", see 038) shapes the rules below.
+
+### Scheme (third person only)
+
+The cursor stays free (it is how the prompt follows what you point at). Prompt target = the thing under the cursor, else the nearest valid one in front within 8 m (Z steps it). WASD, Shift, G, F, X, C, V, Q-hold wheel, 1 to 4, Tab and the arrows are as in §7 and brief 030; only the rows below are new or changed.
+
+| Input | Does |
+|---|---|
+| **E, tap** (act on release, under 0.22 s) | Take the prompted way, if the three checks of brief 030 pass (one clear best, no "?" outcome, not harmful). If one fails, the prompt shows the dots and E opens the ring instead. It never guesses. |
+| **E, hold 0.22 s** | The options ring on the target (brief 030 ring, same wedges and order). Release over a wedge takes it; a harmful wedge fills over 0.5 s under the pointer and only takes if still held when full. |
+| **Left click on the prompted target** (setting `controls.clickActs`, default **On**) | Exactly E: tap acts, hold 0.22 s opens the ring. Only on the prompted target; a click elsewhere does what it does today (swap agent, nothing on the ground). |
+| **Left drag past 6 px** | Orbit look-around (kept: the trackpad has no middle button). |
+| **Right button, hold 0.22 s** | **Aim**: draws the gun if holstered (price "draws 0.6 s" on the chip), cursor becomes the reticle with its band ticks, the agent turns to face it. Release lowers the aim; the gun stays drawn until F or the engine's auto-holster. `controls.aimMode` Hold (default) / Toggle (for the trackpad's two-finger click). |
+| **Left button while aiming** | **Fire** at the reticle. A hostile of a fight fires on press (down in n s). Anything not hostile (guard, civilian, patrol, rivals with no fight): hold 0.5 s, the reticle ring fills, release early cancels, and the pill carries the loud mark. Never on Vale. |
+| **Left button, not aiming** | Never fires. (No hidden "hip fire"; a hostile's prompt says Aim, with the RMB cap.) |
+| **Right button, tap** (under 0.22 s, under 6 px, not aiming) | The ring at the target, as on the map (brief 038: right click always opens the ring). The chosen way walks in if out of reach and acts, without stopping. On the ground: stops the current walk, as today. |
+| **Middle drag, arrows** | Look-around, unchanged. |
+| **Esc, right tap on empty ground** | Close the ring, cancel a walk that has not started its act. |
+
+**Mouse binding: left click on the prompted target.** Why: it is the natural mouse twin of E (point, click), it needs no new button, it cannot clash with aim and fire because fire exists only while the right button is held, and it works on a trackpad (tap-to-click) where a middle or side button does not exist. The 6 px and 0.22 s rules already used for orbit and the ring keep a click from becoming a drag. It is one setting (`clickActs`), not a second scheme: the prompt always shows both caps ("E" and the mouse glyph) when it is on, and one cap when it is off. Rejected: middle mouse (no trackpad, and it orbits), side buttons (not on every mouse), right button (aim).
+
+### Rules (Sky's, with the numbers Latch needs)
+
+1. **The prompt says what the act will do.** One line over the target, 34 px high at 1080p: key caps, icon, one word, then the price in the panel's order (walk plus act as one time, `$`, Trail, Alert, the eye or "found" glyph). No sentence. The dots at its end mean more ways are one hold away. Alt gives the breakdown. The same line is the reticle's chip while aiming. The ground ring marks the target. Same ranking as `IntentFor`, so the prompt and the act agree.
+2. **Harm is never the default.** Kill, Knockout, Pressure, Fire at a non-hostile and any Fire with a holstered gun are never lit and never taken by E or a click. Kill and Fire at a non-hostile need the 0.5 s hold (the going-loud card's hold, the same ring-fill art); a Knockout that a watcher would see takes it too (`SeenGate`); Pressure is a plain pick on its dashed wedge. A drawn gun does not change this: a click on a civilian never fires.
+3. **Firing stops a walking agent; a running one keeps going.** While the trigger is down at walk pace, movement input is ignored and the agent plants (it resumes on release if the keys are still held). Running (Shift or G latched) keeps moving, with reduced accuracy: starting value hit chance x 0.6 (Motive tunes), shown at once by wider band ticks and a longer "down n s". Keel: the drive sample's run flag feeds the hit rate, so replays stay exact.
+4. **The camera never switches view by itself, and never changes distance or pitch.** Aiming, the prompt, the ring and firing do not move it (no over-the-shoulder, no zoom, no pitch change). As the agent moves it swings behind the travel heading (eased about 0.5 s, constant distance and pitch). It follows the travel heading, not the aim facing, so turning to aim does not swing it. Standing still it holds. A look-around eases back about 1 s after it ends.
+5. **Right-clicking a target in third person walks the agent to it, without stopping.** The ring opens at the target; a way that is out of reach starts the walk and the act as one order (one time on the line, the move ring on the ground). E on a prompted target beyond reach (within 8 m) does the same. Any WASD input takes the stick back and drops the walk and the act.
+6. **WASD keeps working after any click.** No pointer event, ring, panel, portrait click or HUD button may keep keyboard focus: Latch blurs the focused UI element after every pointer-up and when a ring or panel closes, and the movement input never reads UI focus. While a ring is open WASD still moves the agent (the ring stays on its target).
+
+### Key strip and HUD
+
+One row, one word per cap: `WASD move` `Shift run` `E act` `hold E options` `RMB aim` `LMB fire` `F draw` (and `Q squad` `M map` on the existing strip). HUD at rest adds only the prompt over the focused target and the ground ring; reticle and ring exist only while in use. Budget: at rest 15 % or less, ring open 22 % or less (`bun run verify`).
+
+### Done-check (Latch builds against this; Suture runs it)
+
+1. **One meaning per input per state:** a unit test over the third-person input map: E tap, E hold, left tap, left hold, left drag, left while aiming, right tap, right hold, middle drag, each resolves to exactly one result for each of: free, aiming, ring open, walking, running, carrying Vale.
+2. **Prompt equals act:** for each target kind in brief 030's table, the prompt's word and price equal what E (and a left click, with `clickActs` On) then does; if a check fails the prompt shows the dots and E opens the ring.
+3. **No blind harm:** scripted pointer, 20 E taps, 20 left clicks and 20 aim-and-click presses on a guard, a civilian, Vale and a door, holstered and drawn: zero Kill, Knockout, Pressure or non-hostile Fire without the hold.
+4. **Fire and movement:** LMB while aiming and walking stops the agent; running does not and the hit chance shown drops; a recorded session replays hash-identical.
+5. **Camera:** with aim, prompt, ring and firing, camera distance and pitch stay within 1 % of their values; no view switch; on moving, yaw settles behind the heading within 0.6 s.
+6. **Right tap and walk:** a right tap on an out-of-reach target opens the ring; the chosen way walks without a pause and acts; any WASD press cancels both.
+7. **WASD after clicks:** after each of a HUD button click, a portrait click, a ring open and close, a right tap, a left click on a prompt and Esc, W moves the agent within one frame.
+8. **Setting:** with `clickActs` Off a left tap on the prompted target does nothing and the prompt shows only the E cap; E is unchanged. The act key is rebindable.
+9. **Budget and look:** HUD at rest 15 % or less and ring open 22 % or less; prompt, ring and reticle match `briefs/024/action-controls/` at 1080p (Glyph reviews a 2x crop of each).
+10. **Sky plays** one Handover in third person using E and left click only, then once with aim and fire, and says whether he reached for the wrong one.
+
+### Questions for Sky
+
+1. Left click acts by default (recommended, you prefer the mouse), or E only until you ask?
+2. Keep the right-button tap (ring at the target, walks in) next to hold-to-aim? It is the one tap/hold pair on a button, which Red Dead 2 players complain about. The alternative is to drop it in third person, since E and left click do the same; I would only do that if it misfires in your play.
+
+**Next owner:** Latch (unity-engineer): input map, prompt, reticle, aim state, fire gating. Keel: the run flag in the hit rate. Motive: the 0.6 starting value. Fable: the key-strip words (`options`). Suture: the done-check.
+
+### Firing (Sky, 2026-10-21)
+
+**Sky:** "I think if visually, they keep shooting and it's clear then maybe ok, though I always imagined more a GTA firefight, so you have to keep shooting yourself, complete control, that's how I was playing our game like, but that's also because it's not clear I was firing at the agent (or that it was 'on')." Today drawing sets the agent to fire at will, and a fire order runs until the target is down, X, or the fight ends, with nothing on screen to say so. Mockup tabs 4 (Firing) and 5 (Stopped), `briefs/024/action-controls/`.
+
+**1 · Firing is visible, whatever the control model (must).** Drawn as light, outside the post grade, with a shape cue (not a colour) for who is firing:
+- **Tracer:** from the muzzle to the target while a fire order runs, a bright dashed line moving toward the target (own side: cream core, turquoise edge). A driven agent's tracer is thick; an agent returning fire has a thin one. Muzzle flash and a hit spark per shot. Hostile fire reads by shape: a solid long streak, not dashes.
+- **Firing mark on the agent** (one of its two icons: the gun with rays, over the head) **and on its portrait** (the sidearm mark becomes the filled gun with rays and a pulsing ring). An agent holding to return fire wears the gun with a back arrow (dashed ring on the portrait).
+- **One line** on the marker, at the reticle or target: `Firing at the guard`, then `down in n s`, then the controls (`held`, and the `X stop` cap). Plain: it names who and how long, no sentence beyond that.
+- **A clear stop:** on release, X, the target down or the fight ending, the tracer cuts that frame, the marks go, and the line reads `Stopped` for 1 s (with "gun still drawn" until F or the auto-holster). Never a silent end.
+
+**2 · Control model, to try in play (recommendation).**
+- **Driven agent in third person: GTA-style.** It fires only while LMB is held (aiming); a tap fires one shot. No fire order is left behind. Taking control of an agent drops its standing fire order; leaving control returns it to "return fire".
+- **Commander view: I would not make hold-to-fire the default.** The commander's hand must stay free for the other three, and right button already carries tap = ring, hold = sweep and the going-loud hold, so a held-to-fire right click adds a third meaning. Keep the click giving the lasting order (now visible with a tracer, mark and stop) and add `controls.commanderHoldFire` (off) so Sky can try Syndicate-style hold-to-fire in one play. If Sky prefers hold as the default, it works on a hostile (no ring there), so it does not collide with the ring.
+- **Agents not controlled: return fire only when shot at** (the GDD's stance `return`), with the return mark and thin tracer showing it. Panic still sets at will.
+
+**For Keel:** a new logged input, `trigger` (op, target or aim point, on/off, tick), beside the drive samples, so a replay is exact. While on, the op shoots on its weapon's cadence at that target; a tap is on-then-off and fires one shot if the cadence allows (no queue). The per-person hit accumulator, Trail per person hit and the "first shot on a new target 1.0 s" are unchanged. Taking control cancels a fire order; the default stance of a draw must be `return` (the GDD says so; confirm the engine does not set at will). GDD §06 says running cancels fire; Sky's rule is that a runner keeps firing at reduced accuracy: Keel to reconcile (Sky's rule wins).
+
+**For Motive:** pacing does not change if the cadence stays (pistol 1.5 s, carbine 2.0 s): a held button and a lasting order fire the same shots, and "down in n s" becomes the fastest case, not a promise. The risk is feel: a GTA firefight is faster than a shot every 1.5 s, so Sky may find hold-to-fire sluggish; if so, shorten the cadence for everyone (the clock's truth), never only for the driven agent, and retest fight sizes. The same applies to the walk-then-fire modifier (x 0.5) and the run penalty (x 0.6 here).
+
+**Done-check additions:** a recorded hold, tap and release session replays hash-identical; no fire order survives taking control; the tracer, mark, line and Stopped appear within one frame of the engine's own start and stop (read from the engine's fire state, never inferred); a returning agent shows its mark only while it is shooting or has been shot at.
+
+**Question for Sky:** hold-to-fire as the third-person default (recommended), and lasting orders kept in the commander view with the `commanderHoldFire` setting off?
+
+## Sky on firing, 2026-10-21 (after the action-controls mockup)
+Sky: "well it needs a clear animation when the player fires, which we don't have right now - so need some placeholder, that might be enough. And so if auto / locked fire is on, then all agents near would fire same target if not engaged, otherwise they fire same time you, again if not engaged. For instance, I could have one agent lock on a officer, and another on another, whilst I control my own player realtime."
+
+Aster's reading (Sky to correct in play):
+- **Fire animation:** a placeholder aim-and-shoot clip (raise, recoil per shot, lower) on every cell figure, with a muzzle flash, so firing reads without the HUD. Owner: Forma (clip), Latch (wiring, flash).
+- **Lock:** a lasting fire order on a target ("locked"). A locked agent is engaged, keeps its own target and ignores your trigger. Several agents can each lock a different target while you drive one in real time.
+- **Agents near you, not engaged, follow your fire:**
+  - **Follow setting on (locked follow):** when you open fire, they lock your target and keep firing on it.
+  - **Follow setting off:** they fire at your target only while you are firing, and stop when you stop.
+- An agent being shot at returns fire on its own shooter, which counts as engaged.
+- Open for Motive: what "near" means, whether a joining agent pays the aim-new wait, and what four guns on one target does to the fight table.

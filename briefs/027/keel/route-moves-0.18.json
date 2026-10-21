@@ -1,0 +1,163 @@
+{
+ "schema": "keel.route-moves/1",
+ "from": "Keel, 2026-10-21",
+ "engine": "suborned.sim/0.18.0 (tuning.md §13.1 pair count in today, §13.2 hold never follows, §13.4 lab stances three; a press in the tick a lock's target falls takes that agent)",
+ "note": "before = engine 0.17.0 (out/keel039/base, built before the first edit, its own contracts copy); now = 0.18.0 on the same contracts with the 0.18.0 rulebook and lab preset (out/keel039/rootC), so Waymark's in-flight route edits are in neither side. No outcome or fail code moves. Every move is §13.1's: §13.2, §13.4 and the re-lock fix move no route. Every inputs hash moves with the rulebook, so every recorded route re-records once against 0.18.0; 25 route scripts' checkpoint sequences also move with --start-text BASE (the pair's count, and its hashed memory). Played by bun run route-diff (briefs/027/keel/route-diff-0.18.json).",
+ "unchanged": [
+  "careless-body-found",
+  "careless-enforcer-watches-guard",
+  "careless-guard-left-door-held",
+  "careless-takedown-seen-camera",
+  "careless-takedown-seen-crowd",
+  "fail-district-seals",
+  "fail-entry-seen-camera",
+  "fail-entry-seen-guard",
+  "fail-entry-seen-patrol",
+  "fail-rivals-reach-vale",
+  "fail-take-seen-camera",
+  "fail-vale-dead",
+  "fail-vale-leaves",
+  "fight-loud-enforcer-down",
+  "fight-safe-rivals-reach-vale",
+  "loud",
+  "loud-fast",
+  "loud-fight",
+  "loud-left-downed",
+  "loud-left-standing",
+  "route-a",
+  "route-a-board",
+  "route-a-pressure",
+  "route-a-pressure-board",
+  "route-b-block-board",
+  "route-b-board",
+  "route-g",
+  "route-g-board",
+  "route-g-fast",
+  "route-g-fast-board",
+  "route-g-kill",
+  "route-g-kill-board",
+  "withdraw"
+ ],
+ "moves": [
+  {
+   "route": "careless-reporter-not-stopped",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 2,
+    "healthLostPct": 38
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "why": "§13.1: rival-3 resumes the count it left on the Fixer (the pair's count in today), so its 7:35.0 shot misses; health lost 38 → 22 %; Alert 2 → 1 follows from that miss (the first log line apart; not traced further)"
+  },
+  {
+   "route": "careless-scout-idles-pickup",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "healthLostPct": 38
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "why": "§13.1: rival-3 resumes the count it left on the Fixer (the pair's count in today), so its 7:35.0 shot misses; health lost 38 → 22 %"
+  },
+  {
+   "route": "fail-enforcer-down",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 994,
+    "trail": 12,
+    "alert": 2,
+    "healthLostPct": 33
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 991,
+    "trail": 12,
+    "alert": 2,
+    "healthLostPct": 33
+   },
+   "why": "§13.1: the rivals resume the count they left on the Enforcer (the pair's count in today), so their 1:39.1 shot hits; the Enforcer goes down 0.3 s sooner"
+  },
+  {
+   "route": "route-b",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 0,
+    "healthLostPct": 38
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 0,
+    "healthLostPct": 22
+   },
+   "why": "§13.1: rival-3 resumes the count it left on the Fixer (the pair's count in today), so its 7:35.0 shot misses; health lost 38 → 22 %"
+  },
+  {
+   "route": "route-b-block",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 4,
+    "alert": 0,
+    "healthLostPct": 38
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 4,
+    "alert": 0,
+    "healthLostPct": 22
+   },
+   "why": "§13.1: rival-3 resumes the count it left on the Fixer (the pair's count in today), so its 7:35.0 shot misses; health lost 38 → 22 %"
+  }
+ ]
+}

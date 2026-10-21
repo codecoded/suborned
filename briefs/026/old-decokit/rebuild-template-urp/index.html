@@ -1,0 +1,130 @@
+<!doctype html><html><head><meta charset="utf-8"><title>Brief 026 · the old DecoKit city, rebuilt</title><style>body{font:13px/1.45 -apple-system,Helvetica,sans-serif;background:#1c1c1e;color:#ddd;margin:24px;max-width:1900px}h1{font-size:20px}h2{font-size:15px;margin:28px 0 6px}.row{display:flex;gap:10px;flex-wrap:wrap}.cell{flex:1 1 30%;min-width:300px;max-width:620px}.cell img{width:100%;display:block;border:1px solid #333}.cap{color:#999;font-size:11px;margin:3px 0 8px}table{border-collapse:collapse;font-size:12px}td{border-bottom:1px solid #333;padding:4px 10px;vertical-align:top}a{color:#9cf}code{color:#cfc}</style></head><body>
+<h1>Brief 026 · the old DecoKit city, rebuilt and captured</h1>
+<p>Rebuilt 2026-10-19 by Latch in a scratch project (<code>out/old-world/unity</code>, git-ignored): Unity 6000.6.2f1, URP 17.6 with the template settings, glTFast 6.20 and Newtonsoft added; <code>~/Projects/the-suborned/game/Assets/TheSuborned</code> copied in unchanged (the old tree was only read). The old builders ran as they were: <code>DecoKitMenu.ImportStreet</code> (kit import: 113 materials, 202 prefabs; then the DecoKitStreet city with its street life, district and Southside crowds, traffic, sky traffic, city mass, colourway, road markings, probes and occlusion), <code>DecoKitMenu.RobotReel</code> (faces), and a scratch-only capture script (<code>Assets/OldWorldCapture</code>) for the play-zoom stops and close-ups. Lighting is the old street build's own (HDRI sky, sun 3, ACES, exposure -0.8, soft focus), not the new world's. Build log extract: <a href="build-log.txt">build-log.txt</a>; prefab counts: <a href="inventory.json">inventory.json</a>. New-world baseline: <a href="../baseline/index.html">../baseline/</a>.</p>
+<h2>What would not build</h2><ul><li><b>The Handover block in the district</b> (<code>HandoverDistrictBuilder</code>): needs <code>Art/CivicTestbed/</code> (environment.glb and the six actor GLBs), which is not on the Studio; NullReferenceException in CivicPlazaBuilder.BuildInto. The DecoKit city itself is complete without it.</li><li><b>The VAT crowd test</b> (<code>DecoKitCrowdTest</code>): the scene builds (Citizens3D VAT bakes import), but <code>Assets/TheSuborned/Shaders/VatCrowd.shader</code> and <code>VatCrowdBlob.shader</code> are missing, so it cannot render. The city's crowd is the static RetroFutureMobility figures (shown below), not the VAT crowd.</li><li>Not reproduced: the old project's own URP asset (the template one stands in) and its saved scenes; the old play camera's exact grade at play zoom (the iso shots use the street build's grade with fog x0.35, as the old DecoKitIso did).</li></ul>
+<h2>What the old world placed (for Vela's gap audit)</h2><table>
+<tr><td>Robots (each with a running dot-matrix face, RobotFace)</td><td>21 : butler 5, nanny 4, porter 3, shopkeeper 4, waiter 5</td></tr>
+<tr><td>Vending</td><td>cola 3, snack 2, automat 1, coffee cart 3, ticket machine 1, pneumatic post 2</td></tr>
+<tr><td>People (RetroFutureMobility GLB figures, static poses)</td><td>2851 (build log: district 1243 + Southside 1608)</td></tr>
+<tr><td>Ground vehicles</td><td>232 cars and vans (build log: 70 + 162), hover scooters 11, tram 3</td></tr>
+<tr><td>Sky traffic</td><td>air cars 9, rocket 1, sky rail pylons 122 (sky rail + harbour rail), aircar lanes at 30/45/70/130 m, liner ascent and landing paths</td></tr>
+<tr><td>Signage</td><td>38: ad columns 8, billboards 14, blade signs 6, cinema marquee 1, neon stars 2, sandwich boards 7; info lightboxes 14</td></tr>
+<tr><td>Plants</td><td>coconut palms 166, fan palms 26, cypress 75, flower beds 41, shrub mounds 64, topiary 58, urns 44, troughs 53, potted palms/ferns 58, hanging baskets 15, tree pits 153</td></tr>
+<tr><td>Roads and crossings</td><td>granite kerbs 1819, flag paving tiles 3767, drain grates 36, manholes 25, tram rail tiles 105, traffic lights 8; road markings (log): 120 dashes, 44 painted zebras</td></tr>
+<tr><td>Street furniture</td><td>streetlamps 139, sphere lamps 28, benches 89, bollards 41, bins 24, bike racks 19, hydrants 12, phone booths 11, street clocks 3, café sets 93, deckchairs 104, terrace screens 40</td></tr>
+<tr><td>Buildings</td><td>facade bays/corners 494, high-rise towers 17, landmarks 12, rooftop pieces 120; city mass (log): 466 blocks, 168,608 tris</td></tr>
+</table>
+<h2>Play zoom 14 at 38°, yaw 30 and 210, old cutaway on (the baseline's stops by kind: square = Orbit Square, the old civic square)</h2><div class="row">
+<div class="cell"><a href="square-play-30.png"><img src="square-play-30.png" loading="lazy"></a><div class="cap">square-play-30</div></div>
+<div class="cell"><a href="square-play-210.png"><img src="square-play-210.png" loading="lazy"></a><div class="cap">square-play-210</div></div>
+<div class="cell"><a href="cafe-play-30.png"><img src="cafe-play-30.png" loading="lazy"></a><div class="cap">cafe-play-30</div></div>
+<div class="cell"><a href="cafe-play-210.png"><img src="cafe-play-210.png" loading="lazy"></a><div class="cap">cafe-play-210</div></div>
+<div class="cell"><a href="crossing-play-30.png"><img src="crossing-play-30.png" loading="lazy"></a><div class="cap">crossing-play-30</div></div>
+<div class="cell"><a href="crossing-play-210.png"><img src="crossing-play-210.png" loading="lazy"></a><div class="cap">crossing-play-210</div></div>
+<div class="cell"><a href="avenue-play-30.png"><img src="avenue-play-30.png" loading="lazy"></a><div class="cap">avenue-play-30</div></div>
+<div class="cell"><a href="avenue-play-210.png"><img src="avenue-play-210.png" loading="lazy"></a><div class="cap">avenue-play-210</div></div>
+<div class="cell"><a href="park-play-30.png"><img src="park-play-30.png" loading="lazy"></a><div class="cap">park-play-30</div></div>
+<div class="cell"><a href="park-play-210.png"><img src="park-play-210.png" loading="lazy"></a><div class="cap">park-play-210</div></div>
+<div class="cell"><a href="side-street-play-30.png"><img src="side-street-play-30.png" loading="lazy"></a><div class="cap">side-street-play-30</div></div>
+<div class="cell"><a href="side-street-play-210.png"><img src="side-street-play-210.png" loading="lazy"></a><div class="cap">side-street-play-210</div></div>
+</div><h2>The old 2.5D shots (DecoKitIso: yaw 45/135/225/315; sizes 8 to 165)</h2><div class="row">
+<div class="cell"><a href="iso/boulevard.png"><img src="iso/boulevard.png" loading="lazy"></a><div class="cap">boulevard</div></div>
+<div class="cell"><a href="iso/close.png"><img src="iso/close.png" loading="lazy"></a><div class="cap">close</div></div>
+<div class="cell"><a href="iso/district.png"><img src="iso/district.png" loading="lazy"></a><div class="cap">district</div></div>
+<div class="cell"><a href="iso/hero.png"><img src="iso/hero.png" loading="lazy"></a><div class="cap">hero</div></div>
+<div class="cell"><a href="iso/hero_deck.png"><img src="iso/hero_deck.png" loading="lazy"></a><div class="cap">hero_deck</div></div>
+<div class="cell"><a href="iso/hero_tall.png"><img src="iso/hero_tall.png" loading="lazy"></a><div class="cap">hero_tall</div></div>
+<div class="cell"><a href="iso/lane.png"><img src="iso/lane.png" loading="lazy"></a><div class="cap">lane</div></div>
+<div class="cell"><a href="iso/launch.png"><img src="iso/launch.png" loading="lazy"></a><div class="cap">launch</div></div>
+<div class="cell"><a href="iso/quarter.png"><img src="iso/quarter.png" loading="lazy"></a><div class="cap">quarter</div></div>
+<div class="cell"><a href="iso/rocket.png"><img src="iso/rocket.png" loading="lazy"></a><div class="cap">rocket</div></div>
+<div class="cell"><a href="iso/roofs_n.png"><img src="iso/roofs_n.png" loading="lazy"></a><div class="cap">roofs_n</div></div>
+<div class="cell"><a href="iso/roofs_s.png"><img src="iso/roofs_s.png" loading="lazy"></a><div class="cap">roofs_s</div></div>
+<div class="cell"><a href="iso/satellite.png"><img src="iso/satellite.png" loading="lazy"></a><div class="cap">satellite</div></div>
+<div class="cell"><a href="iso/seam.png"><img src="iso/seam.png" loading="lazy"></a><div class="cap">seam</div></div>
+<div class="cell"><a href="iso/square.png"><img src="iso/square.png" loading="lazy"></a><div class="cap">square</div></div>
+<div class="cell"><a href="iso/square_q.png"><img src="iso/square_q.png" loading="lazy"></a><div class="cap">square_q</div></div>
+<div class="cell"><a href="iso/square_r.png"><img src="iso/square_r.png" loading="lazy"></a><div class="cap">square_r</div></div>
+<div class="cell"><a href="iso/tactical.png"><img src="iso/tactical.png" loading="lazy"></a><div class="cap">tactical</div></div>
+</div><h2>Street level (the old street study's shots, 1536x1024)</h2><div class="row">
+<div class="cell"><a href="street/aerial.png"><img src="street/aerial.png" loading="lazy"></a><div class="cap">aerial</div></div>
+<div class="cell"><a href="street/aerial_e.png"><img src="street/aerial_e.png" loading="lazy"></a><div class="cap">aerial_e</div></div>
+<div class="cell"><a href="street/aerial_full.png"><img src="street/aerial_full.png" loading="lazy"></a><div class="cap">aerial_full</div></div>
+<div class="cell"><a href="street/air.png"><img src="street/air.png" loading="lazy"></a><div class="cap">air</div></div>
+<div class="cell"><a href="street/alley.png"><img src="street/alley.png" loading="lazy"></a><div class="cap">alley</div></div>
+<div class="cell"><a href="street/canal.png"><img src="street/canal.png" loading="lazy"></a><div class="cap">canal</div></div>
+<div class="cell"><a href="street/canopy.png"><img src="street/canopy.png" loading="lazy"></a><div class="cap">canopy</div></div>
+<div class="cell"><a href="street/circus.png"><img src="street/circus.png" loading="lazy"></a><div class="cap">circus</div></div>
+<div class="cell"><a href="street/corner.png"><img src="street/corner.png" loading="lazy"></a><div class="cap">corner</div></div>
+<div class="cell"><a href="street/gardens.png"><img src="street/gardens.png" loading="lazy"></a><div class="cap">gardens</div></div>
+<div class="cell"><a href="street/harbour.png"><img src="street/harbour.png" loading="lazy"></a><div class="cap">harbour</div></div>
+<div class="cell"><a href="street/hq.png"><img src="street/hq.png" loading="lazy"></a><div class="cap">hq</div></div>
+<div class="cell"><a href="street/main.png"><img src="street/main.png" loading="lazy"></a><div class="cap">main</div></div>
+<div class="cell"><a href="street/parade.png"><img src="street/parade.png" loading="lazy"></a><div class="cap">parade</div></div>
+<div class="cell"><a href="street/plan.png"><img src="street/plan.png" loading="lazy"></a><div class="cap">plan</div></div>
+<div class="cell"><a href="street/plan_full.png"><img src="street/plan_full.png" loading="lazy"></a><div class="cap">plan_full</div></div>
+<div class="cell"><a href="street/plaza.png"><img src="street/plaza.png" loading="lazy"></a><div class="cap">plaza</div></div>
+<div class="cell"><a href="street/promenade.png"><img src="street/promenade.png" loading="lazy"></a><div class="cap">promenade</div></div>
+<div class="cell"><a href="street/promenade_e.png"><img src="street/promenade_e.png" loading="lazy"></a><div class="cap">promenade_e</div></div>
+<div class="cell"><a href="street/side.png"><img src="street/side.png" loading="lazy"></a><div class="cap">side</div></div>
+<div class="cell"><a href="street/sky.png"><img src="street/sky.png" loading="lazy"></a><div class="cap">sky</div></div>
+<div class="cell"><a href="street/skyline.png"><img src="street/skyline.png" loading="lazy"></a><div class="cap">skyline</div></div>
+<div class="cell"><a href="street/sunward.png"><img src="street/sunward.png" loading="lazy"></a><div class="cap">sunward</div></div>
+<div class="cell"><a href="street/walk.png"><img src="street/walk.png" loading="lazy"></a><div class="cap">walk</div></div>
+</div><h2>Robots: faces running (stills every 3 s; the last of each is the alarm stare)</h2><p><a href="robots/robot_reel.mp4">robots/robot_reel.mp4</a> (12 s each, 24 fps)</p><div class="row">
+<div class="cell"><a href="robots/RobotButler_00.00.png"><img src="robots/RobotButler_00.00.png" loading="lazy"></a><div class="cap">RobotButler_00.00</div></div>
+<div class="cell"><a href="robots/RobotButler_03.00.png"><img src="robots/RobotButler_03.00.png" loading="lazy"></a><div class="cap">RobotButler_03.00</div></div>
+<div class="cell"><a href="robots/RobotButler_06.00.png"><img src="robots/RobotButler_06.00.png" loading="lazy"></a><div class="cap">RobotButler_06.00</div></div>
+<div class="cell"><a href="robots/RobotButler_09.00.png"><img src="robots/RobotButler_09.00.png" loading="lazy"></a><div class="cap">RobotButler_09.00</div></div>
+<div class="cell"><a href="robots/RobotNanny_00.00.png"><img src="robots/RobotNanny_00.00.png" loading="lazy"></a><div class="cap">RobotNanny_00.00</div></div>
+<div class="cell"><a href="robots/RobotNanny_03.00.png"><img src="robots/RobotNanny_03.00.png" loading="lazy"></a><div class="cap">RobotNanny_03.00</div></div>
+<div class="cell"><a href="robots/RobotNanny_06.00.png"><img src="robots/RobotNanny_06.00.png" loading="lazy"></a><div class="cap">RobotNanny_06.00</div></div>
+<div class="cell"><a href="robots/RobotNanny_09.00.png"><img src="robots/RobotNanny_09.00.png" loading="lazy"></a><div class="cap">RobotNanny_09.00</div></div>
+<div class="cell"><a href="robots/RobotPorter_00.00.png"><img src="robots/RobotPorter_00.00.png" loading="lazy"></a><div class="cap">RobotPorter_00.00</div></div>
+<div class="cell"><a href="robots/RobotPorter_03.00.png"><img src="robots/RobotPorter_03.00.png" loading="lazy"></a><div class="cap">RobotPorter_03.00</div></div>
+<div class="cell"><a href="robots/RobotPorter_06.00.png"><img src="robots/RobotPorter_06.00.png" loading="lazy"></a><div class="cap">RobotPorter_06.00</div></div>
+<div class="cell"><a href="robots/RobotPorter_09.00.png"><img src="robots/RobotPorter_09.00.png" loading="lazy"></a><div class="cap">RobotPorter_09.00</div></div>
+<div class="cell"><a href="robots/RobotShopkeeper_00.00.png"><img src="robots/RobotShopkeeper_00.00.png" loading="lazy"></a><div class="cap">RobotShopkeeper_00.00</div></div>
+<div class="cell"><a href="robots/RobotShopkeeper_03.00.png"><img src="robots/RobotShopkeeper_03.00.png" loading="lazy"></a><div class="cap">RobotShopkeeper_03.00</div></div>
+<div class="cell"><a href="robots/RobotShopkeeper_06.00.png"><img src="robots/RobotShopkeeper_06.00.png" loading="lazy"></a><div class="cap">RobotShopkeeper_06.00</div></div>
+<div class="cell"><a href="robots/RobotShopkeeper_09.00.png"><img src="robots/RobotShopkeeper_09.00.png" loading="lazy"></a><div class="cap">RobotShopkeeper_09.00</div></div>
+<div class="cell"><a href="robots/RobotWaiter_00.00.png"><img src="robots/RobotWaiter_00.00.png" loading="lazy"></a><div class="cap">RobotWaiter_00.00</div></div>
+<div class="cell"><a href="robots/RobotWaiter_03.00.png"><img src="robots/RobotWaiter_03.00.png" loading="lazy"></a><div class="cap">RobotWaiter_03.00</div></div>
+<div class="cell"><a href="robots/RobotWaiter_06.00.png"><img src="robots/RobotWaiter_06.00.png" loading="lazy"></a><div class="cap">RobotWaiter_06.00</div></div>
+<div class="cell"><a href="robots/RobotWaiter_09.00.png"><img src="robots/RobotWaiter_09.00.png" loading="lazy"></a><div class="cap">RobotWaiter_09.00</div></div>
+</div><h2>Close-ups by family (first placed instance; a few land behind or inside the piece, the robot stills above are the faces)</h2><div class="row">
+<div class="cell"><a href="close-crowd.png"><img src="close-crowd.png" loading="lazy"></a><div class="cap">close-crowd</div></div>
+<div class="cell"><a href="close-plant-CoconutPalm.png"><img src="close-plant-CoconutPalm.png" loading="lazy"></a><div class="cap">close-plant-CoconutPalm</div></div>
+<div class="cell"><a href="close-plant-Cypress.png"><img src="close-plant-Cypress.png" loading="lazy"></a><div class="cap">close-plant-Cypress</div></div>
+<div class="cell"><a href="close-plant-FanPalm.png"><img src="close-plant-FanPalm.png" loading="lazy"></a><div class="cap">close-plant-FanPalm</div></div>
+<div class="cell"><a href="close-plant-FlowerBed.png"><img src="close-plant-FlowerBed.png" loading="lazy"></a><div class="cap">close-plant-FlowerBed</div></div>
+<div class="cell"><a href="close-plant-Planter_Urn.png"><img src="close-plant-Planter_Urn.png" loading="lazy"></a><div class="cap">close-plant-Planter_Urn</div></div>
+<div class="cell"><a href="close-plant-PottedTopiary.png"><img src="close-plant-PottedTopiary.png" loading="lazy"></a><div class="cap">close-plant-PottedTopiary</div></div>
+<div class="cell"><a href="close-plant-TopiaryCone.png"><img src="close-plant-TopiaryCone.png" loading="lazy"></a><div class="cap">close-plant-TopiaryCone</div></div>
+<div class="cell"><a href="close-robot-RobotButler.png"><img src="close-robot-RobotButler.png" loading="lazy"></a><div class="cap">close-robot-RobotButler</div></div>
+<div class="cell"><a href="close-robot-RobotNanny.png"><img src="close-robot-RobotNanny.png" loading="lazy"></a><div class="cap">close-robot-RobotNanny</div></div>
+<div class="cell"><a href="close-robot-RobotPorter.png"><img src="close-robot-RobotPorter.png" loading="lazy"></a><div class="cap">close-robot-RobotPorter</div></div>
+<div class="cell"><a href="close-robot-RobotShopkeeper.png"><img src="close-robot-RobotShopkeeper.png" loading="lazy"></a><div class="cap">close-robot-RobotShopkeeper</div></div>
+<div class="cell"><a href="close-robot-RobotWaiter.png"><img src="close-robot-RobotWaiter.png" loading="lazy"></a><div class="cap">close-robot-RobotWaiter</div></div>
+<div class="cell"><a href="close-signage-AdColumn.png"><img src="close-signage-AdColumn.png" loading="lazy"></a><div class="cap">close-signage-AdColumn</div></div>
+<div class="cell"><a href="close-signage-Billboard_Pylon_A.png"><img src="close-signage-Billboard_Pylon_A.png" loading="lazy"></a><div class="cap">close-signage-Billboard_Pylon_A</div></div>
+<div class="cell"><a href="close-signage-Billboard_Wall_A.png"><img src="close-signage-Billboard_Wall_A.png" loading="lazy"></a><div class="cap">close-signage-Billboard_Wall_A</div></div>
+<div class="cell"><a href="close-signage-BladeSign_Cafe.png"><img src="close-signage-BladeSign_Cafe.png" loading="lazy"></a><div class="cap">close-signage-BladeSign_Cafe</div></div>
+<div class="cell"><a href="close-signage-BladeSign_Hotel.png"><img src="close-signage-BladeSign_Hotel.png" loading="lazy"></a><div class="cap">close-signage-BladeSign_Hotel</div></div>
+<div class="cell"><a href="close-signage-InfoLightbox.png"><img src="close-signage-InfoLightbox.png" loading="lazy"></a><div class="cap">close-signage-InfoLightbox</div></div>
+<div class="cell"><a href="close-signage-Marquee_Cinema.png"><img src="close-signage-Marquee_Cinema.png" loading="lazy"></a><div class="cap">close-signage-Marquee_Cinema</div></div>
+<div class="cell"><a href="close-signage-NeonStar_Wall.png"><img src="close-signage-NeonStar_Wall.png" loading="lazy"></a><div class="cap">close-signage-NeonStar_Wall</div></div>
+<div class="cell"><a href="close-signage-SandwichBoard.png"><img src="close-signage-SandwichBoard.png" loading="lazy"></a><div class="cap">close-signage-SandwichBoard</div></div>
+<div class="cell"><a href="close-street-Bench.png"><img src="close-street-Bench.png" loading="lazy"></a><div class="cap">close-street-Bench</div></div>
+<div class="cell"><a href="close-street-BusShelter.png"><img src="close-street-BusShelter.png" loading="lazy"></a><div class="cap">close-street-BusShelter</div></div>
+<div class="cell"><a href="close-street-Hydrant.png"><img src="close-street-Hydrant.png" loading="lazy"></a><div class="cap">close-street-Hydrant</div></div>
+<div class="cell"><a href="close-street-PhoneBooth.png"><img src="close-street-PhoneBooth.png" loading="lazy"></a><div class="cap">close-street-PhoneBooth</div></div>
+<div class="cell"><a href="close-street-PneumaticPost.png"><img src="close-street-PneumaticPost.png" loading="lazy"></a><div class="cap">close-street-PneumaticPost</div></div>
+<div class="cell"><a href="close-street-StreetClock.png"><img src="close-street-StreetClock.png" loading="lazy"></a><div class="cap">close-street-StreetClock</div></div>
+<div class="cell"><a href="close-street-Streetlamp.png"><img src="close-street-Streetlamp.png" loading="lazy"></a><div class="cap">close-street-Streetlamp</div></div>
+<div class="cell"><a href="close-street-TicketMachine.png"><img src="close-street-TicketMachine.png" loading="lazy"></a><div class="cap">close-street-TicketMachine</div></div>
+<div class="cell"><a href="close-street-TrafficLight.png"><img src="close-street-TrafficLight.png" loading="lazy"></a><div class="cap">close-street-TrafficLight</div></div>
+<div class="cell"><a href="close-vending-Automat.png"><img src="close-vending-Automat.png" loading="lazy"></a><div class="cap">close-vending-Automat</div></div>
+<div class="cell"><a href="close-vending-VendingMachine_Cola.png"><img src="close-vending-VendingMachine_Cola.png" loading="lazy"></a><div class="cap">close-vending-VendingMachine_Cola</div></div>
+<div class="cell"><a href="close-vending-VendingMachine_Snack.png"><img src="close-vending-VendingMachine_Snack.png" loading="lazy"></a><div class="cap">close-vending-VendingMachine_Snack</div></div>
+</div></body></html>

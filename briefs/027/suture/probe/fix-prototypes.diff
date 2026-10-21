@@ -1,0 +1,64 @@
+--- ../../src/Suborned.Sim/GameCombat.cs	2026-10-20 14:13:19
++++ GameCombat.cs	2026-10-20 15:16:41
+@@ -204,7 +204,7 @@
+             if (op.Busy != null || op.Running || op.Carrying.HasValue || op.CarryBody.Length > 0 || CarriesVale(op) || !Ready(g)) return; // brief 018: walking Vale, the Enforcer doesn't fire
+             if (Lab && op.FieldUntil > Tick) return; // brief 027: the field holds, nothing fires
+             string t = g.Order.Length > 0 ? g.Order : StanceTarget(op);
+-            if (t.Length == 0) { g.Target = ""; return; }
++            if (t.Length == 0) { if (g.Target.Length > 0) { g.SPrevT = g.Target; g.SPrevAcc = g.Acc; } g.Target = ""; return; }
+             var at = PosOf(t)!.Value; long d = Dist(op.Pos, at);
+             if (d > g.W.MaxCm || !Sees(op.Pos, at))
+             {
+@@ -268,7 +268,12 @@
+         void Aim(Gun g, string t, bool react)
+         {
+             if (g.Target == t) return;
+-            g.Target = t; g.Acc = R.AccStart;
++            var fx = Environment.GetEnvironmentVariable("SUTURE_FIX");
++            bool keep = Lab && IsOpId(g.Id) && fx == "1"; // SUTURE PROTOTYPE 1: the cell's accumulator is the shooter's (set at the draw), never reset by a re-aim
++            bool warm = Lab && IsOpId(g.Id) && fx == "2" && t == g.SPrevT; // SUTURE PROTOTYPE 2: re-aiming the same target keeps its accumulator (a new target still resets)
++            if (g.Target.Length > 0) { g.SPrevT = g.Target; g.SPrevAcc = g.Acc; }
++            g.Target = t; if (warm) g.Acc = g.SPrevAcc; else if (!keep) g.Acc = R.AccStart;
++            if (warm) return;
+             g.NextShot = Math.Max(g.NextShot, Tick + (react && !g.Engaged ? T(R.ReactS) : AimNewT));
+         }
+ 
+@@ -589,7 +594,7 @@
+         void StartDraw(Op op)
+         {
+             var g = op.Gun;
+-            g.Drawn = true; g.HolsterAt = -1; g.DrawReady = Tick + DrawT; g.DrawTick = Tick; g.Stance = LabTwo ? "free" : "return"; g.Target = "";
++            g.Drawn = true; g.HolsterAt = -1; g.DrawReady = Tick + DrawT; g.DrawTick = Tick; g.Acc = R.AccStart; g.Stance = LabTwo ? "free" : "return"; g.Target = "";
+         }
+ 
+         string Draw(Op op, Order o)
+@@ -605,7 +610,7 @@
+         {
+             var g = op.Gun;
+             if (!g.Drawn || g.HolsterAt >= 0) return No("not-drawn", "no weapon drawn");
+-            g.HolsterAt = Tick + R.HolsterTicks; g.Order = ""; g.Force = false; g.Target = "";
++            if (g.Target.Length > 0) { g.SPrevT = g.Target; g.SPrevAcc = g.Acc; } g.HolsterAt = Tick + R.HolsterTicks; g.Order = ""; g.Force = false; g.Target = "";
+             if (Lab) LabTidy(op);
+             Note("order.holster", $"{Sim.Op.Name(op.Id)} holsters.");
+             return "";
+--- ../../src/Suborned.Sim/GameFightLab.cs	2026-10-20 14:13:08
++++ GameFightLab.cs	2026-10-20 15:16:47
+@@ -147,6 +147,7 @@
+         void OrderEnd(Op op, bool down)
+         {
+             var g = op.Gun;
++            if (g.Target.Length > 0) { g.SPrevT = g.Target; g.SPrevAcc = g.Acc; }
+             g.Order = ""; g.Force = false; g.Target = ""; g.LostAt = -1;
+             if (!Lab) return;
+             bool volley = g.VolleyLeft > 0;
+--- ../../src/Suborned.Sim/Model.cs	2026-10-20 13:12:21
++++ Model.cs	2026-10-20 15:16:41
+@@ -66,7 +66,7 @@
+         public string Cover = "", LostTarget = "";     // the cover point it holds; the target it last lost (its aim stays warm)
+         // brief 027 (EXPERIMENTAL, fight.lab; hashed only with the lab on): a volley's shots still to fire and the charge each one paid (refunded
+         // if it ends early), and the standing fire order's then (free: back to at will when its target is down; stop: today's)
+-        public int VolleyLeft, VolleyPer; public string Then = "";
++        public int VolleyLeft, VolleyPer; public string Then = ""; public string SPrevT = ""; public int SPrevAcc;
+         public Gun(string id) { Id = id; }
+     }
+ 

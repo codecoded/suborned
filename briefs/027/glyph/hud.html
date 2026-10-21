@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<title>Brief 027 · Fight overlay: Glyph review and finished design</title>
+<style>
+:root{--teal:#0f4a45;--teal2:#16665e;--cream:#f4ecd8;--cell:#4fe3e8;--rival:#8a4fd0;--guard:#f0a020;--cone:#e03a2f;--ink:#12302d;--brass:#c9a35a}
+*{box-sizing:border-box}
+body{margin:0;background:#efe7d3;color:#1d2b29;font:15px/1.5 "Helvetica Neue",Arial,sans-serif}
+main{max-width:1120px;margin:0 auto;padding:28px 24px 80px}
+h1{font-size:26px;margin:0 0 4px}h2{font-size:20px;margin:42px 0 8px;border-top:2px solid var(--teal);padding-top:14px}h3{font-size:16px;margin:22px 0 4px}
+.sub{color:#4a5b58;margin:0 0 18px}
+table{border-collapse:collapse;width:100%;margin:10px 0;background:#fbf7ec}
+th,td{border:1px solid #cdbf99;padding:7px 9px;text-align:left;vertical-align:top;font-size:14px}
+th{background:var(--teal);color:var(--cream);font-weight:600}
+.fix{color:#a33a1e;font-weight:700}.ok{color:#1b7a52;font-weight:700}
+.frame{background:#fff;border:1px solid #cdbf99;margin:10px 0 4px}
+.frame svg{display:block;width:100%;height:auto}
+.cap{font-size:13px;color:#4a5b58;margin:0 0 14px}
+.row{display:flex;gap:14px;flex-wrap:wrap}.row>*{flex:1 1 300px}
+.sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px;border:1px solid #0003}
+code{background:#e4dbc0;padding:1px 5px;border-radius:3px;font-size:13px}
+.shot{width:100%;border:1px solid #cdbf99}
+.note{background:#fbf7ec;border-left:4px solid var(--teal);padding:8px 12px;margin:10px 0}
+.open{border-left-color:var(--guard)}
+svg text{font-family:"Helvetica Neue",Arial,sans-serif}
+@keyframes march{to{stroke-dashoffset:-14}}
+.march{animation:march .7s linear infinite}
+@keyframes pulse{50%{opacity:.35}}.pulse{animation:pulse 1.2s ease-in-out infinite}
+</style></head><body><main>
+<h1>Brief 027 · fight overlay (B0 to B2)</h1>
+<p class="sub">Glyph, 2026-10-20. Reviews Latch's debug layer (<code>briefs/027/latch/</code>) against GDD §15, the HUD budget and the signal rules, then proposes the finished design for Latch to build. Frames below are drawn in true 1080p pixels at 2× zoom. Nothing in the game was edited.</p>
+
+<h2>1 · Verdict on what is built</h2>
+<p>The shots are 1280×720, so sizes are scaled ×1.5 to 1080p. The mechanics are right: one action per agent, the volley count, the hit chip with damage and hits to down. The look is a developer layer: grey translucent boxes, a different typeface, sentences, and three colours that already mean something else.</p>
+<table>
+<tr><th style="width:17%">Item</th><th style="width:9%">Verdict</th><th>What I see · fix (who)</th></tr>
+<tr><td>Freeze banner and queue strip (b0)</td><td class="fix">Fix</td><td>
+<b>Sentences in play:</b> "FROZEN · fired on · one action each · Return releases · Esc leaves" breaks "no sentences in play". Words like "move there" and "fire rivals" on the cards do too. <b>Legibility:</b> grey 45 % boxes over busy stone, type about 13 px at 1080p in the IMGUI default face, so it fails on dithered building fade. <b>Budget:</b> a 4-card strip across 56 % of the width, about 3.7 % of the screen, on top of the roster the player is already reading. <b>Colour:</b> "FROZEN" is ice-blue, "TARGET" is yellow, a third and fourth hue for modes. <b>Fix (Latch, art from Glyph):</b> replace the strip with the queue ladder on the roster and a one-glyph mode pill (frame A). About 1 %.</td></tr>
+<tr><td>Target lines (b0, b2)</td><td class="fix">Fix</td><td>
+Our ghost line is ice-blue (a fifth colour; the cell is turquoise). It runs along the same ground as the hostile's dashed focus line, so in b0 the two lie on top of each other, and neither has an arrowhead, so you can't tell "we aim at them" from "they aim at us". In b2 the amber police line is short and half hidden by the kiosk. Two police share one line. <b>Fix (Glyph rule, Latch draws):</b> one grammar: ours = turquoise dashed, still, F-number badge at the target end; theirs = signal colour, dotted, marching toward the target, arrowhead; each offset 4 px sideways (frame A).</td></tr>
+<tr><td>Hit chip (b1)</td><td class="fix">Mostly reads; fix three things</td><td>
+The numbers read at about 14 px type: "−10 ×3 ▮ +4 T" is the right content, one line. Fix: (1) the word <b>"walk"</b> stands where the pips ●●●○ should be; I can't see pips in the shot. Latch: is that the pip row losing to the walk label? The walk-in becomes a footsteps glyph (see the open item). (2) The chip sits to the right of the head and covers the second guard. Put it down-right of the target, off the heads. (3) The amber coin on the left is good: it is the target's side. Keep it, and let it carry the range state (filled / half / hollow).</td></tr>
+<tr><td>Health segments (b1)</td><td class="fix">Fix</td><td>
+Counting segments reads well, and 3 segments for a 30-health guard is right. But: the filled segments are <b>turquoise, the cell's colour, on a hostile</b>, so the bar says "ours". The lost segment is salmon on a red cone wash, almost the same value, so a lost segment vanishes inside the cone. The bar is under the feet, about 120 px wide (twice the body) and fights the ring. <b>Fix:</b> over the head, 8 px segments (guard 3 = 26 px wide), cream fill, empty segments dark with an outline, so it still reads inside a red cone (frame B). The old red three-dot pips are still over the hostiles in b0 and b2: remove them when the lab is on (Latch).</td></tr>
+<tr><td>Target forecast (b2)</td><td class="fix">Fix</td><td>
+This is the unreadable one: the "scout ○●○" label is about 7 px type in a grey box laid over the kiosk, at the target's feet, so the hits can't be told from misses. The strip's second line ("●●○ → 30 · ▮30") is also illegible. <b>Fix:</b> a pip row of the shots just above the target's bar (filled = hit, hollow = miss), the hatched chunk on the bar, DOWN as a bar fully hatched with a cross. Same pips chip grammar as the hit chip (frame C).</td></tr>
+<tr><td>Charge bars (b2)</td><td class="fix">Fix</td><td>
+Yellow, full card width, drawn even on empty slots. Yellow sits next to amber (police) and breaks brief 027 P12, which says charge is the cell's turquoise. <b>Fix:</b> a thin turquoise bar under each portrait, with segments for 10 charge, the preview spend hatched. No bar on a slot that has no shot (frame C).</td></tr>
+<tr><td>Signal colours and post grade</td><td class="fix">Check</td><td>
+Cone red is used only for cones, good. Hostile focus lines in violet and amber are the right use of signals. They have to be drawn unlit and emissive, outside the grade, each with its own motion cue: the marching dots are that cue. Latch: draw them on the signal layer, not with IMGUI lines over the grade. Do not use cone red for "hurt", and do not use amber or violet for our own marks.</td></tr>
+<tr><td>P panel Fights section (p-panel-fights.png)</td><td class="ok">Leave</td><td>A developer panel. Plain is fine. Nothing for the player to learn from it.</td></tr>
+</table>
+<p class="cap">Before shots, as built:</p>
+<div class="row">
+<div><img class="shot" src="../latch/b0-freeze.png" alt="b0"><div class="cap">b0: banner and strip, two lines on one path</div></div>
+<div><img class="shot" src="../latch/b1-lab-chip.png" alt="b1"><div class="cap">b1: chip with "walk", bar under feet in the cone</div></div>
+<div><img class="shot" src="../latch/b2-target.png" alt="b2"><div class="cap">b2: forecast box and yellow charge bars</div></div>
+</div>
+
+<h2>2 · The finished design</h2>
+<p>Five parts, one grammar. <b>Teal enamel, cream type, brass hairline</b>, the same plate as the rest of the HUD. No grey boxes. The cell is always turquoise (rings, our lines, charge). Rivals are violet, police amber, cones red: only for what they already are.</p>
+
+<h3>A · Freeze: the queue ladder, the mode pill, the lines</h3>
+<div class="frame"><svg id="fa" viewBox="0 0 480 270"></svg></div>
+<p class="cap">Frame A (2×). A 3 px turquoise rim pulses round the screen; the world keeps its grade. Top centre: a 28 px pill with the trigger's glyph (here the shot glyph, "fired on") and "Go ⏎" / "Esc" as keycaps, no sentence. Left: each portrait has a queue pill to its right: action glyph, target glyph, pips. Empty = dashed outline. Rival lines march toward the Enforcer with arrowheads; our line is still, with an F4 badge at the target end. The Enforcer's ring pulses because he is being aimed at.</p>
+<table>
+<tr><th>Piece</th><th>Spec (1080p px)</th></tr>
+<tr><td>Rim</td><td>3 px, cell turquoise at 60 %, 1.2 s pulse. Auto-trigger freezes pulse the pill's glyph once. Hand freezes: no glyph, just "❚❚".</td></tr>
+<tr><td>Mode pill</td><td>Top centre, below the clock. 28 px tall, 96 px wide. Glyph + keycaps. Freeze: pause glyph; target: crosshair glyph. Trigger glyphs: shot, eye (spotted), drawn gun, siren (reinforce), cross (down), horn (loud order).</td></tr>
+<tr><td>Queue pill</td><td>To the right of each portrait, 150 × 28, 14 px type. Action glyph (move, draw, fire, hold), target glyph (side coin), pips + "−10 ×3" for a fire. Replaced by one click. A "Go ⏎" chip, 60 × 28, below the last pill.</td></tr>
+<tr><td>Ours line</td><td>Turquoise, 2 px, dashes 6/4, static; 14 px badge with the F-number at the target end; goes to a ring or a ground mark for moves.</td></tr>
+<tr><td>Theirs line</td><td>Signal colour (violet rival, amber police), 2 px, dots 2/5 marching toward the target; 8 px arrowhead; target ring pulses once. Only in freeze or target mode (engine truth).</td></tr>
+<tr><td>Overlap</td><td>Offset each line 4 px sideways perpendicular to the path. Lines always end at the body's chest, not the feet.</td></tr>
+<tr><td>Budget</td><td>4 pills 150 × 28 + Go + mode pill ≈ 22 000 px² = 1.1 % of 1080p, against about 3.7 % now. Gone again on release.</td></tr>
+</table>
+
+<h3>B · The hit chip and the health bar</h3>
+<div class="frame"><svg id="fb" viewBox="0 0 480 270"></svg></div>
+<p class="cap">Frame B (2×). Over a guard of 30 health, with the selected agent's next hit lit as a hatched chunk. The chip sits down-right of the target so it never covers a head. At the right, the five states of a bar.</p>
+<table>
+<tr><th>Piece</th><th>Spec (1080p px)</th></tr>
+<tr><td>Chip</td><td>26 px tall, pill, teal enamel with a brass hairline, 15 px cream type. Order: <b>side coin · ●●●○ · −10 · ×3</b>, then a divider and <b>▮15</b> (charge, only with the lab on) and <b>+4 T</b> (Trail; Alt only, as brief 027 says, or always, see decisions). No seconds, no words. The footsteps glyph appears before the pips only when the agent walks into range first.</td></tr>
+<tr><td>Pips</td><td>Four 7 px dots. Cream filled = chance, outlined = not. This is the chance, not the forecast.</td></tr>
+<tr><td>Side coin</td><td>18 px. Police: amber with the shield; rival: violet with the diamond; the shape differs so it reads without colour. It also carries the range: filled ring = effective, half = long, hollow = out.</td></tr>
+<tr><td>Health bar</td><td>Over the head, 10 px above it. 8 × 5 px segments, 2 px gap, one segment = 10 health. Guard 3 = 26 px, Enforcer 6 = 58 px. Dark ground with a 1 px side-coloured frame (cell turquoise, rival violet, police amber). Fill cream. At most one icon next to it: the bar counts as the one icon of the two-icon budget.</td></tr>
+<tr><td>Segment states</td><td>full = cream. <b>Hit</b> = lost segments flash white for 0.25 s, then empty (dark, outlined, so they still read in a red cone). <b>Preview</b> = the next hit's chunk hatched diagonally, pulsing at 1.2 s. <b>Down</b> = every remaining segment hatched plus a small cross at the right end. Wounded cell: the same bar, plus turquoise charge under it on the portrait only.</td></tr>
+<tr><td>Cell bars on portraits</td><td>Same bar along the portrait's lower edge, 6 px segments so six fit in 40 px. Charge: a thinner 3 px turquoise bar below it.</td></tr>
+<tr><td>Show when</td><td>In a fight: every combatant and the cell. Out of a fight: no bars on anyone, and the old red pips are retired.</td></tr>
+</table>
+
+<h3>C · Target mode: forecast and charge</h3>
+<div class="frame"><svg id="fc" viewBox="0 0 480 270"></svg></div>
+<p class="cap">Frame C (2×). F1 has queued three shots on the near rival. Above the rival's bar: the three shots as pips (two hit, one miss), and on the bar the damage they will do, hatched, with the second rival at DOWN. F1's charge bar on the ladder shows the spend hatched. A second shot at the far rival shows the reserved <b>range state</b> (open item below).</p>
+<table>
+<tr><th>Piece</th><th>Spec (1080p px)</th></tr>
+<tr><td>Volley line</td><td>Our turquoise dashed line, badge "F1 ×3": F-number and shot count. +1 shot per click, −1 per right click, the badge counts.</td></tr>
+<tr><td>Forecast pips</td><td>Above the target's bar, one 7 px dot per queued shot, in firing order: filled cream = hit, outlined = miss. A row of at most 6. They are only a forecast "if they stand" (brief 027 §1.3); the row is drawn dotted-outlined so it never reads as a result.</td></tr>
+<tr><td>Damage on the bar</td><td>The hatched chunk is exactly what the hits will take. If it empties the bar: DOWN (all hatched + cross).</td></tr>
+<tr><td>Charge bar</td><td>Thin turquoise bar, 3 px, 10 charge per segment, 10 segments = 100. The volley's spend is hatched; a volley the charge can't pay is refused: the click flashes the bar and adds nothing (no sentence). Also drawn on the queue pill. Never drawn for a slot with no shot.</td></tr>
+<tr><td>Mode pill</td><td>Crosshair glyph and three keycaps: left click "+", right click "−", Y "➤". No words.</td></tr>
+<tr><td>Budget</td><td>Pill + pips + badges: under 0.4 %. The ladder is shared with freeze.</td></tr>
+</table>
+<div class="note open"><b>Left open for Keel:</b> what the forecast shows for a target out of range, where today it shows misses even though the agent will walk into range first. The design reserves the slot: the side coin's range state (filled / half / hollow) and the footsteps glyph before the pips, plus a dashed placeholder under the far rival in frame C. Whatever Keel decides, no new element is needed, only which pips fill.</div>
+
+<h3>D · Tokens, and the colour rules</h3>
+<div class="frame"><svg id="fd" viewBox="0 0 480 150"></svg></div>
+<table>
+<tr><th>Mark</th><th>Colour and cue</th></tr>
+<tr><td>Cell (rings, our lines, charge, bar frame)</td><td><span class="sw" style="background:#4fe3e8"></span>turquoise #4fe3e8. Dashed or solid, still.</td></tr>
+<tr><td>Rival (focus lines, bar frame, coin, tracer)</td><td><span class="sw" style="background:#8a4fd0"></span>violet #8a4fd0. Dotted, marching. Diamond coin.</td></tr>
+<tr><td>Police / guard (same)</td><td><span class="sw" style="background:#f0a020"></span>amber #f0a020. Dotted, marching. Shield coin.</td></tr>
+<tr><td>Cones</td><td><span class="sw" style="background:#e03a2f"></span>red #e03a2f. Only the cone and its sight line; never for damage.</td></tr>
+<tr><td>Health fill</td><td><span class="sw" style="background:#f4ecd8"></span>cream, for everyone; side is the frame. Lost segments: dark, outlined.</td></tr>
+<tr><td>Tracers</td><td>Mine to rule. Cell: cream core, turquoise glow, 2 px, 80 ms streak. Rival: violet core. Police: amber core. A tracer is a solid fast streak; a focus line is dotted and slow, so the two never read as one. A miss: a 6 px spark on stone and a pale ricochet streak; a hit: the target's bar flashes.</td></tr>
+<tr><td>Signals in the shader</td><td>All hostile lines, tracers and rings are drawn unlit and emissive, outside the post grade, on the signal layer, not with IMGUI lines.</td></tr>
+<tr><td>Type</td><td>The HUD face already used on the plate, 14 px minimum at 1080p, cream on teal enamel (contrast 9:1). No translucent grey plates.</td></tr>
+</table>
+
+<h2>3 · For Sky to decide</h2>
+<table>
+<tr><th>#</th><th>Question</th><th>My pick</th></tr>
+<tr><td>1</td><td>Health fill: cream for every side with a coloured frame, or filled in the side colour (turquoise, violet, amber)?</td><td>Cream with frame. It reads inside a red cone and a hostile bar never looks "ours". Side-coloured fill is louder in a crowd.</td></tr>
+<tr><td>2</td><td>Freeze queue: a ladder on the roster (1 % of the screen, tied to portraits) or a bar across the top (3.7 %, with room for words)?</td><td>The ladder. A bar needs words, which §10 forbids.</td></tr>
+<tr><td>3</td><td>Trail on the chip: always (+4 T), or only with Alt, as brief 027 says?</td><td>Alt, so the resting chip is five marks, not six. Keep it in the playground until played.</td></tr>
+<tr><td>4</td><td>Freeze look: the world keeps its colours (rim only), or desaturates a little as in Desperados?</td><td>Rim only. A grade shift touches the signals, and the signals must stay outside the grade.</td></tr>
+<tr><td>5</td><td>Key legends: glyph keycaps only (as drawn), or a one-time word legend the first two fights?</td><td>Keycaps only. A word legend can be a tutorial beat (Fable), not the HUD.</td></tr>
+<tr><td>6</td><td>Charge in turquoise under health on the portraits (brief 027 P12, option A), or its own element?</td><td>Option A, as P12 already says. Needs a yes before the playground ships it.</td></tr>
+<tr><td>7</td><td>Out-of-range forecast (Keel's decision): leave the design slot as drawn, or add a fourth pip state?</td><td>Not mine to choose before Keel; the slot is ready for either.</td></tr>
+</table>
+
+<h2>4 · Hand-off to Latch</h2>
+<ul>
+<li><b>Do first:</b> remove the sentence banner and the grey strip; build the queue ladder and the mode pill (A). Then the bar over the head and the chip offset (B). Then the forecast pips and the charge bar (C).</li>
+<li><b>Ask before building:</b> why the chip shows "walk" where the pips should be (b1); whether the old red pips in b0 and b2 are today's pips left on with the lab.</li>
+<li><b>Art:</b> I supply the glyph set (shot, eye, drawn gun, siren, cross, horn, side coins, footsteps, keycaps) through Runware only if Aster approves the spend; otherwise Latch uses the existing HUD glyphs and I draw the 6 new ones as SVG.</li>
+<li><b>Done-check:</b> a 1080p shot of each of A, B, C in a fight with three hostiles; the bars still read inside a red cone; no sentence in the frame; the signal lines unaffected by a grade change.</li>
+<li><b>Next owner:</b> Latch builds; Glyph reviews the new shots.</li>
+</ul>
+</main>
+<script>
+const NS='http://www.w3.org/2000/svg';
+const C={cell:'#4fe3e8',rival:'#8a4fd0',guard:'#f0a020',cone:'#e03a2f',cream:'#f4ecd8',teal:'#0f4a45',ink:'#12302d',brass:'#c9a35a'};
+function defs(){return `<defs>
+<pattern id="hatch" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="4" height="4" fill="#12302d"/><rect width="2" height="4" fill="#f4ecd8"/></pattern>
+<pattern id="tile" width="40" height="20" patternUnits="userSpaceOnUse"><rect width="40" height="20" fill="#eadfc4"/><path d="M0 0H40M0 10H40M20 0V10M0 10V20" stroke="#d9cba7" stroke-width=".8" fill="none"/></pattern>
+${['cell','rival','guard'].map(k=>`<marker id="ar-${k}" markerUnits="userSpaceOnUse" markerWidth="9" markerHeight="9" refX="8" refY="4" orient="auto"><path d="M0 0L9 4.5L0 9z" fill="${C[k]}"/></marker>`).join('')}
+</defs>`}
+function stage(w,h){return `${defs()}<rect width="${w}" height="${h}" fill="url(#tile)"/><path d="M0 ${h*.78}L${w} ${h*.62}L${w} ${h*.72}L0 ${h*.9}z" fill="#8fd1c0" opacity=".5"/>`}
+function person(x,y,coat,opt={}){const hat=opt.hat||'#2b2a33';
+return `<g><ellipse cx="${x}" cy="${y}" rx="11" ry="3" fill="#0002"/><rect x="${x-4}" y="${y-18}" width="3.4" height="18" rx="1.5" fill="#222"/><rect x="${x+.8}" y="${y-18}" width="3.4" height="18" rx="1.5" fill="#222"/><rect x="${x-7}" y="${y-38}" width="14" height="22" rx="5" fill="${coat}"/><circle cx="${x}" cy="${y-44}" r="5.5" fill="#c99a78"/><path d="M${x-6} ${y-46}a6 6 0 0 1 12 0z" fill="${hat}"/></g>`}
+function ring(x,y,col,w=1.6,cls=''){return `<ellipse class="${cls}" cx="${x}" cy="${y}" rx="15" ry="7" fill="none" stroke="${col}" stroke-width="${w}"/>`}
+function bar(cx,top,n,o={}){ // o: lost, chunk, frame, down
+const lost=o.lost||0,chunk=o.chunk||0,seg=8,gap=2,w=n*seg+(n-1)*gap,x0=cx-w/2,frame=o.frame||C.cell;let s=`<rect x="${x0-2}" y="${top-2}" width="${w+4}" height="9" rx="2" fill="#0c2f2c" stroke="${frame}" stroke-width="1.1"/>`;
+const full=n-lost-chunk;
+for(let i=0;i<n;i++){const x=x0+i*(seg+gap);let f;
+ if(i<full)f=`<rect x="${x}" y="${top}" width="${seg}" height="5" fill="${C.cream}"/>`;
+ else if(i<full+chunk)f=`<rect class="pulse" x="${x}" y="${top}" width="${seg}" height="5" fill="url(#hatch)"/>`;
+ else f=`<rect x="${x+.5}" y="${top+.5}" width="${seg-1}" height="4" fill="none" stroke="#f4ecd866" stroke-width=".8"/>`;
+ s+=f}
+if(o.down)s+=`<path d="M${x0+w+6} ${top-1}l6 6m0-6l-6 6" stroke="${C.cream}" stroke-width="1.6"/>`;
+return s}
+function pips(x,y,hits,filledOnly=false){let s='';hits.forEach((h,i)=>{s+=h?`<circle cx="${x+i*10}" cy="${y}" r="3.4" fill="${C.cream}"/>`:`<circle cx="${x+i*10}" cy="${y}" r="3" fill="none" stroke="${C.cream}" stroke-width="1.2" opacity=".85"/>`});return s}
+function coin(x,y,side,range){const col=side=='rival'?C.rival:C.guard;const g=side=='rival'?`<path d="M${x} ${y-5}l5 5-5 5-5-5z" fill="#fff"/>`:`<path d="M${x-4} ${y-5}h8v5l-4 5-4-5z" fill="#fff"/>`;
+const r=range=='full'?`<circle cx="${x}" cy="${y}" r="9" fill="${col}"/>`:range=='half'?`<circle cx="${x}" cy="${y}" r="9" fill="${col}" opacity=".5"/><path d="M${x} ${y-9}a9 9 0 0 1 0 18z" fill="${col}"/>`:`<circle cx="${x}" cy="${y}" r="8.2" fill="none" stroke="${col}" stroke-width="2"/>`;
+return r+(range=='hollow'?g.replace(/#fff/,col):g)}
+function chip(x,y,o){ // x,y = left centre
+const w=o.w||(o.charge?(o.walk?176:156):128);let s=`<rect x="${x}" y="${y-13}" width="${w}" height="26" rx="13" fill="${C.teal}" stroke="${C.brass}" stroke-width="1"/>`;
+s+=coin(x+14,y,o.side,o.range||'full');
+let px=x+32;if(o.walk){s+=`<text x="${px}" y="${y+5}" font-size="13" fill="${C.cream}">&#x1F463;</text>`;px+=16}
+for(let i=0;i<4;i++)s+=i<(o.p??3)?`<circle cx="${px+i*9+3}" cy="${y}" r="3.2" fill="${C.cream}"/>`:`<circle cx="${px+i*9+3}" cy="${y}" r="2.8" fill="none" stroke="${C.cream}" stroke-width="1.1"/>`;
+s+=`<text x="${px+42}" y="${y+5}" font-size="14" font-weight="700" fill="${C.cream}">&#8722;${o.d||10} &#215;${o.h||3}</text>`;
+if(o.charge)s+=`<line x1="${x+w-26}" y1="${y-7}" x2="${x+w-26}" y2="${y+7}" stroke="${C.brass}" stroke-width=".8"/><text x="${x+w-22}" y="${y+5}" font-size="12" font-weight="700" fill="${C.cell}">&#9646;${o.charge}</text>`;
+return s}
+function line(x1,y1,x2,y2,kind,badge){
+if(kind=='ours')return `<path d="M${x1} ${y1}L${x2} ${y2}" stroke="${C.cell}" stroke-width="2" stroke-dasharray="6 4" fill="none" marker-end="url(#ar-cell)"/>`+(badge?`<g><circle cx="${x2}" cy="${y2-10}" r="0"/><rect x="${(x1+x2)/2-14}" y="${(y1+y2)/2-9}" width="28" height="16" rx="8" fill="${C.teal}" stroke="${C.cell}"/><text x="${(x1+x2)/2}" y="${(y1+y2)/2+3}" font-size="10.5" font-weight="700" text-anchor="middle" fill="${C.cream}">${badge}</text></g>`:'');
+const col=kind=='rival'?C.rival:C.guard;
+return `<path class="march" d="M${x1} ${y1}L${x2} ${y2}" stroke="${col}" stroke-width="2" stroke-dasharray="2 5" stroke-linecap="round" fill="none" marker-end="url(#ar-${kind})"/>`}
+function glyph(x,y,kind,col=C.cream){ // simple 16px glyphs
+const m={
+move:`<path d="M${x-6} ${y+5}l6-10 6 10M${x-4} ${y+1}h8" stroke="${col}" stroke-width="1.8" fill="none"/>`,
+draw:`<path d="M${x-7} ${y-3}h10v3h-4v6h-3v-6h-3z" fill="${col}"/>`,
+fire:`<circle cx="${x}" cy="${y}" r="6" fill="none" stroke="${col}" stroke-width="1.6"/><path d="M${x-9} ${y}h5M${x+4} ${y}h5M${x} ${y-9}v5M${x} ${y+4}v5" stroke="${col}" stroke-width="1.6"/>`,
+shot:`<path d="M${x-8} ${y}h16M${x+3} ${y-4}l5 4-5 4" stroke="${col}" stroke-width="2" fill="none"/>`,
+pause:`<rect x="${x-5}" y="${y-5}" width="3.5" height="10" fill="${col}"/><rect x="${x+1.5}" y="${y-5}" width="3.5" height="10" fill="${col}"/>`,
+cross:`<path d="M${x-5} ${y-5}l10 10m0-10l-10 10" stroke="${col}" stroke-width="2"/>`};
+return m[kind]||''}
+function key(x,y,txt,w=18){return `<rect x="${x}" y="${y-9}" width="${w}" height="18" rx="4" fill="#f4ecd8" stroke="#0004"/><text x="${x+w/2}" y="${y+4.5}" font-size="11" font-weight="700" text-anchor="middle" fill="${C.ink}">${txt}</text>`}
+function portrait(x,y,n,sel,o={}){let s=`<circle cx="${x}" cy="${y}" r="22" fill="#cfd8d3" stroke="${sel?C.cell:C.brass}" stroke-width="${sel?3:1.6}"/><circle cx="${x}" cy="${y-4}" r="9" fill="#9b7b63"/><path d="M${x-14} ${y+16}a14 12 0 0 1 28 0z" fill="#5b6b68"/><text x="${x-18}" y="${y-14}" font-size="9" font-weight="700" fill="${C.ink}">F${n}</text>`;
+// health bar along the lower edge
+s+=bar(x,y+18,o.hp||4,{lost:o.lost||0,frame:C.cell}).replace(/width="8"/g,'width="6"');
+// charge bar
+if(o.ch!=null){s+=`<rect x="${x-20}" y="${y+29}" width="40" height="3" rx="1" fill="#0c2f2c"/><rect x="${x-20}" y="${y+29}" width="${40*o.ch}" height="3" rx="1" fill="${C.cell}"/>`;
+if(o.spend)s+=`<rect x="${x-20+40*(o.ch-o.spend)}" y="${y+29}" width="${40*o.spend}" height="3" fill="url(#hatch)"/>`}
+return s}
+function pill(x,y,w,body,empty){return empty?`<rect x="${x}" y="${y-14}" width="${w}" height="28" rx="14" fill="none" stroke="${C.cream}" stroke-opacity=".7" stroke-dasharray="4 3"/><text x="${x+w/2}" y="${y+5}" font-size="14" text-anchor="middle" fill="${C.teal}">&#8212;</text>`:`<rect x="${x}" y="${y-14}" width="${w}" height="28" rx="14" fill="${C.teal}" stroke="${C.brass}"/>${body}`}
+function ladder(y0,rows){let s='';rows.forEach((r,i)=>{const y=y0+i*66;s+=portrait(34,y,i+1,i==r.sel,r.p||{});s+=pill(64,y,r.w||150,r.body||'',!r.body);});return s}
+
+const PX=[70,136,202,268];
+function ladderRows(rows){let s='';rows.forEach((r,i)=>{const y=PX[i];s+=portrait(34,y,i+1,r.sel,r.p||{});s+=pill(66,y,r.w||130,r.body||'',!r.body)});return s}
+const P=(...a)=>a.join('');
+
+// Frame A: freeze
+document.getElementById('fa').innerHTML=stage(480,270)+
+`<rect x="1.5" y="1.5" width="477" height="267" fill="none" stroke="${C.cell}" stroke-width="3" opacity=".6" class="pulse"/>`+
+`<rect x="190" y="12" width="110" height="28" rx="14" fill="${C.teal}" stroke="${C.brass}"/>`+glyph(206,26,'shot')+key(218,26,'&#9166;',22)+key(244,26,'Esc',34)+
+person(370,200,'#4a3a73',{hat:'#241a3b'})+ring(370,201,C.rival,1.4)+
+person(402,216,'#4a3a73',{hat:'#241a3b'})+ring(402,217,C.rival,1.4)+
+person(434,196,'#4a3a73',{hat:'#241a3b'})+ring(434,197,C.rival,1.4)+
+bar(370,142,3,{frame:C.rival})+bar(402,158,3,{frame:C.rival,lost:1})+bar(434,138,3,{frame:C.rival})+
+person(270,216,'#efe6d0',{hat:'#9aa'})+ring(270,217,C.cell,2.4)+ring(270,217,C.cream,1)+
+`<ellipse class="pulse" cx="270" cy="217" rx="21" ry="10" fill="none" stroke="${C.cell}" stroke-width="2"/>`+
+person(220,196,'#efe6d0',{hat:'#9aa'})+ring(220,197,C.cell,1.6)+
+bar(270,160,6,{frame:C.cell,lost:1})+bar(220,140,4,{frame:C.cell})+
+line(362,176,288,192,'rival')+line(394,196,290,200,'rival')+line(426,176,288,188,'rival')+
+line(284,180,362,172,'ours','F4')+
+ladderRows([
+ {sel:false,p:{hp:4,ch:.8},body:glyph(84,PX[0],'move')+`<text x="98" y="${PX[0]+5}" font-size="13" fill="${C.cream}">&#8594;</text><circle cx="122" cy="${PX[0]}" r="5" fill="none" stroke="${C.cream}" stroke-dasharray="2 2"/>`},
+ {p:{hp:4,ch:.5}},
+ {p:{hp:4,ch:.9},body:glyph(84,PX[2],'draw')},
+ {sel:true,p:{hp:6,lost:1,ch:.6},body:glyph(84,PX[3],'fire')+coin(112,PX[3],'rival','full')+pips(126,PX[3],[1,1,0,1])+`<text x="170" y="${PX[3]+5}" font-size="13" font-weight="700" fill="${C.cream}">&#8722;10</text>`}
+])+
+`<rect x="66" y="286" width="0" height="0"/>`;
+document.getElementById('fa').setAttribute('viewBox','0 0 480 300');
+document.getElementById('fa').innerHTML+=`<rect x="66" y="278" width="62" height="20" rx="10" fill="${C.cell}"/><text x="97" y="292" font-size="12" font-weight="700" text-anchor="middle" fill="${C.ink}">&#9166; Go</text>`;
+// labels
+document.getElementById('fa').innerHTML+=`<text x="250" y="262" font-size="9" fill="#555">theirs: dotted, marching, arrowhead</text><text x="250" y="274" font-size="9" fill="#555">ours: dashed, still, F-badge</text>`;
+
+// Frame B: chip and bar
+document.getElementById('fb').setAttribute('viewBox','0 0 480 290');document.getElementById('fb').innerHTML=stage(480,290)+
+person(60,200,'#2f3b63',{hat:'#1b2038'})+person(96,190,'#2f3b63',{hat:'#1b2038'})+
+// target: guard with hovered white ring, hatched chunk
+ring(60,201,C.cream,1.6)+bar(60,142,3,{frame:C.guard,chunk:1})+
+chip(84,226,{side:'guard',p:3,d:10,h:3})+
+person(262,196,'#efe6d0',{hat:'#9aa'})+ring(262,197,C.cell,2.4)+bar(262,138,6,{frame:C.cell})+
+// anatomy
+`<text x="40" y="128" font-size="9" fill="#555">chip: coin · pips · damage · hits to down</text>`+
+`<text x="300" y="26" font-size="11" font-weight="700" fill="${C.ink}">bar states (30 health)</text>`+
+[['full',{}],['hit: lost flash',{lost:1}],['preview chunk',{chunk:1}],['down',{chunk:3,down:1}],['Enforcer 60',{n:6,lost:2}]].map((s,i)=>{const o=s[1];return bar(340,50+i*28,o.n||3,{frame:C.guard,lost:o.lost||0,chunk:o.chunk||0,down:o.down})+`<text x="380" y="${53+i*28}" font-size="9.5" fill="#333">${s[0]}</text>`}).join('')+
+// chip variants
+`<text x="300" y="200" font-size="11" font-weight="700" fill="${C.ink}">chip variants</text>`+
+chip(300,222,{side:'rival',p:3,d:10,h:3})+
+chip(300,252,{side:'guard',p:2,d:20,h:2,charge:15,range:'half',walk:true});
+document.getElementById('fb').insertAdjacentHTML('beforeend',`<text x="300" y="282" font-size="9" fill="#333">long range, walks in first, charge 15</text>`);
+
+// Frame C: target mode
+document.getElementById('fc').setAttribute('viewBox','0 0 480 300');
+document.getElementById('fc').innerHTML=stage(480,300)+
+`<rect x="186" y="12" width="132" height="28" rx="14" fill="${C.teal}" stroke="${C.brass}"/>`+glyph(204,26,'fire')+key(220,26,'+',16)+key(240,26,'&#8722;',16)+key(260,26,'Y',16)+key(280,26,'&#10148;',22)+
+person(340,190,'#4a3a73',{hat:'#241a3b'})+ring(340,191,C.rival,1.4)+ring(340,191,C.cream,1.6)+
+person(410,230,'#4a3a73',{hat:'#241a3b'})+ring(410,231,C.rival,1.4)+
+bar(340,132,3,{frame:C.rival,chunk:2})+pips(332,123,[1,0,1])+
+bar(410,172,3,{frame:C.rival,chunk:3,down:1})+`<text x="396" y="166" font-size="10" font-weight="700" fill="${C.ink}">DOWN</text>`+
+`<g opacity=".9"><rect x="360" y="250" width="100" height="22" rx="11" fill="none" stroke="${C.ink}" stroke-dasharray="3 3"/><text x="410" y="265" font-size="10" text-anchor="middle" fill="${C.ink}">range state: Keel</text></g>`+
+person(230,215,'#efe6d0',{hat:'#9aa'})+ring(230,216,C.cell,2.4)+ring(230,216,C.cream,1)+
+line(244,196,328,184,'ours','F1 &#215;3')+line(244,206,398,226,'ours','F1 &#215;2')+
+ladderRows([
+ {sel:true,p:{hp:4,ch:.8,spend:.3},body:glyph(84,PX[0],'fire')+coin(112,PX[0],'rival','full')+pips(126,PX[0],[1,0,1])+`<text x="160" y="${PX[0]+5}" font-size="13" font-weight="700" fill="${C.cream}">&#215;3</text>`},
+ {p:{hp:4,ch:.5}},
+ {p:{hp:4,ch:.9}},
+ {p:{hp:6,ch:1}}])+
+`<text x="66" y="296" font-size="9" fill="#555">no bar spend on empty slots · spend hatched on portrait</text>`;
+// move the ladder's second pill content: none (empty = dashed)
+
+// Frame D: tokens
+document.getElementById('fd').innerHTML=defs()+`<rect width="480" height="150" fill="#fbf7ec"/>`+
+[['cell',C.cell,'ours'],['rival',C.rival,'rival'],['guard',C.guard,'police'],['cone',C.cone,'cone']].map((t,i)=>`<rect x="${14+i*116}" y="12" width="100" height="18" rx="4" fill="${t[1]}"/><text x="${64+i*116}" y="25" font-size="11" font-weight="700" text-anchor="middle" fill="${i==0||i==2?C.ink:'#fff'}">${t[2]} ${t[1]}</text>`).join('')+
+`<text x="14" y="52" font-size="10" fill="#333">tracer: solid, fast, 80 ms</text>`+
+[C.cell,C.rival,C.guard].map((c,i)=>`<path d="M${14+i*150} ${70}l110 -8" stroke="${c}" stroke-width="5" opacity=".35" stroke-linecap="round"/><path d="M${14+i*150} ${70}l110 -8" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/>`).join('')+
+`<text x="14" y="94" font-size="10" fill="#333">focus line: dotted, marching, arrowhead</text>`+
+['rival','guard'].map((k,i)=>line(14+i*200,112,190+i*200,112,k)).join('')+
+`<text x="14" y="136" font-size="10" fill="#333">ours: dashed, still, F-badge</text>`+line(180,132,300,132,'ours','F2');
+</script>
+</body></html>

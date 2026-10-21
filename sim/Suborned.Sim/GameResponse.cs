@@ -183,7 +183,7 @@ namespace Suborned.Sim
                 u = new Unit { Id = "patrol", Robot = true, Patrol = true, Gun = PatrolGun, Speed = R.RobotSpeed, Launch = land + T(R.RobotWireS), Dest = dest, From = PatrolPose()!.Value.pos };
                 PatrolAlarmed = true;
             }
-            else u = new Unit { Id = "robot-" + (++robotSeq), Robot = true, Gun = NewGun("robot-" + robotSeq, R.Pistol, true, R.HealthPatrol), Speed = R.RobotSpeed, Launch = launch, From = origin, Dest = dest };
+            else u = new Unit { Id = "robot-" + (++robotSeq), Robot = true, Gun = NewGun("robot-" + robotSeq, PistolW, true, R.HealthPatrol), Speed = R.RobotSpeed, Launch = launch, From = origin, Dest = dest };
             u.Act = a?.Id ?? -1; u.Scene = dests.Count > 0 && G.Within(dest, dests[0], 100); if (u.Scene && stash.Length > 0) u.ToOpen.Add(stash);
             Units.Add(u); robotsSent++;
             return true;
@@ -196,7 +196,7 @@ namespace Suborned.Sim
             for (int k = 0; k < R.ResponseOfficers; k++)
             {
                 var id = "police-" + (++policeSeq);
-                var u = new Unit { Id = id, Gun = NewGun(id, R.Pistol, true, R.HealthOfficer), Speed = secSpeed, Launch = launch + k * R.LaunchGapTicks, From = origin, Dest = dest, Act = a?.Id ?? -1, Scene = scene };
+                var u = new Unit { Id = id, Gun = NewGun(id, PistolW, true, R.HealthOfficer), Speed = secSpeed, Launch = launch + k * R.LaunchGapTicks, From = origin, Dest = dest, Act = a?.Id ?? -1, Scene = scene };
                 if (scene && stash.Length > 0) u.ToOpen.Add(stash);
                 Units.Add(u);
             }
@@ -255,6 +255,7 @@ namespace Suborned.Sim
         {
             if (u.Legacy) { int k = SecIndex(u.Id); return k >= 0 ? SecOfficerPose(k) : null; }
             if (u.Gun.Down) return null;
+            if (UnitDispPose(u) is var kdp && kdp.HasValue) return kdp; // brief 027 retest R3 (lab kite): off its post, answering a shooter
             switch (u.St)
             {
                 case "wait": case "gone": return null;
@@ -270,7 +271,7 @@ namespace Suborned.Sim
         bool UnitSees(Unit u, Pt p, bool crowd = true)
         {
             var s = UnitPose(u); if (!s.HasValue) return false;
-            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p));
+            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, u.Robot ? 0 : near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p)); // brief 031 L2: a robot by its cone only, an officer also within near
         }
 
         void UnitsStep()
@@ -528,6 +529,7 @@ namespace Suborned.Sim
             foreach (var b in Bodies)
             {
                 var p = b.P; if (!IsStaff(p) || missedMarks.Contains(p.Id)) continue;
+                if (p == GuardP && ActOf(b).How == "shot") continue; // tuning.md §9.2 gap 1: the shot guard's body; his missed check-in is the shot guard's, below
                 var post = PostOf(p, Tick); if (!post.HasValue || Tick < post.Value.from) continue;
                 if ((Tick - post.Value.from) % period != 0 && Tick != post.Value.to) continue;
                 missedMarks.Add(p.Id);
@@ -535,7 +537,7 @@ namespace Suborned.Sim
                 Note("post.missed", $"{Who(p)} misses his check-in at {Sim.Report.Clock(Tick)}. The post is reported empty.");
                 LandAct(a, "mark", "desk", null, post.Value.at, R.AlertMark, "");
             }
-            if (GuardDown && BodyOf(GuardP) == null && !missedMarks.Contains(GuardP.Id))
+            if (GuardDown && (BodyOf(GuardP) is not Body gb || ActOf(gb).How == "shot") && !missedMarks.Contains(GuardP.Id))
             {
                 var post = PostOf(GuardP, Tick);
                 if (post.HasValue && Tick >= post.Value.from && (Tick - post.Value.from) % period == 0)

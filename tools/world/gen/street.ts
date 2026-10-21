@@ -12,13 +12,14 @@ import { edgeN } from './geo';
 import { streetKit } from './kitrefs';
 import { bindPart } from './street/partkit';
 import { type CrossingLog, bankFeet, civicLandings, pairCrossings } from './street/crossings';
-import { Layer } from './street/kit';
-import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks } from './street/public';
+import { Layer, twinBooths } from './street/kit';
+import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks, dressPavilions } from './street/public';
 import { dressQuiet } from './street/quiet';
+import { type CapLog, dressCapstone } from './street/capstone';
 import { dressRoads } from './street/roads';
 import { dressTransit } from './street/transit';
 
-export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown } {
+export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[] } {
   const ground = (m: Mass) => m.base < 1;
   const solids: V[][] = [...o.buildings.filter(ground).map(m => m.ring), ...o.megas.flatMap(m => m.parts.filter(ground).map(p => p.ring))];
   const post = (p: V): V[] => [[p[0] - 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] - 0.7], [p[0] + 0.7, p[1] + 0.7], [p[0] - 0.7, p[1] + 0.7]];
@@ -29,7 +30,7 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   const doors = o.frontages.filter(f => f.level === 'street').map(f => boxRing(f.entrance.c as V, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw));
   const L = new Layer(ctx, solids, under, cols, keep, ctx.d.pylons.map(p => p.p), doors);
   dressTransit(ctx, L, o.stops, o.stations, o.connectors, o.decks); // transit kits first: their places are fixed
-  dressRoads(ctx, L); dressMedians(ctx, L); dressFoot(ctx, L); dressCircus(ctx, L); dressParks(ctx, L);
+  dressRoads(ctx, L); dressMedians(ctx, L); dressFoot(ctx, L); dressCircus(ctx, L); dressPavilions(ctx, L); dressParks(ctx, L);
   const hall = o.megas.flatMap(m => m.parts.filter(p => /\/(hall|core)-/.test(p.id)).map(p => p.ring));
   const D = new Layer(ctx, hall, [], [], keep, []);
   dressDecks(ctx, D, o.decks.filter(d => !/\/(mezzanine|bridge)/.test(d.id)));
@@ -38,7 +39,13 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   const civicIds = ctx.S.crossings.strip ? civicLandings(ctx, L) : [];
   const strips = ctx.S.crossings.strip ? pairCrossings(ctx, L, civicIds) : undefined; // opt-in (streetscape.crossings.strip): crossings take the spots the furniture left
   const takedown = dressQuiet(ctx, L); // brief 013: after the crossings, so a stash, a post or a call box takes what the furniture and the crossings left
-  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}) };
+  const capstone = dressCapstone(ctx, L, { frontages: o.frontages, crossings: strips?.crossings ?? [], stops: o.stops }); // brief 026: last of all, the capstone block's ground, robots and props take what everything else left
+  const booths = twinBooths(ctx, L); // brief 026: the twin pod wherever it fits
+  if (takedown) { // a twin that stepped back from the kerb moved its item: the report and origin points that name it follow (R-REPORT: a point is where its street item is)
+    const at = new Map(L.items.map(i => [i.id, i.at] as const));
+    for (const pts of [takedown.report, takedown.origins] as { item?: string; at: V }[][]) for (const q of pts) { const a = q.item ? at.get(q.item) : undefined; if (a) q.at = [a[0], a[1]]; }
+  }
+  return { items: streetKit(ctx, [...L.items.filter(x => x.kind !== 'flag-mast'), ...D.items, ...(strips?.parts ?? [])]).map(bindPart), flags, ...(strips ? { crossings: strips.crossings, crossingLog: strips.log } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone: capstone.log, groundPieces: capstone.ground } : {}) };
 }
 
 /** Grammar §2a flag masts (8 m, 9 m pitch): both sides of Crown Parade in the mall's kerb band (outside SpaceHQ's ground hall), along hotel and civic

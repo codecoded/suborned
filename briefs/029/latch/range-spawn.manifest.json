@@ -1,0 +1,18 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 28, "y": 28, "w": 174, "h": 666, "text": "roster portraits"},
+  {"kind": "image", "x": 3218, "y": 132, "w": 206, "h": 72, "text": "known people"},
+  {"kind": "line", "x": 1456, "y": 1925, "w": 540, "h": 80, "text": "Fire at officer: right click."},
+  {"kind": "image", "x": 1488, "y": 1947, "w": 36, "h": 36, "text": "hint portrait"},
+  {"kind": "image", "x": 28, "y": 1741, "w": 424, "h": 264, "text": "plot scope"},
+  {"kind": "image", "x": 694, "y": 110, "w": 44, "h": 44, "text": "plate fold tab"},
+  {"kind": "image", "x": 210, "y": 54, "w": 496, "h": 156, "text": "order plate"},
+  {"kind": "image", "x": 4832, "y": 755, "w": 52, "h": 52, "text": "door marker"},
+  {"kind": "image", "x": 1071, "y": 1214, "w": 52, "h": 52, "text": "car marker"},
+  {"kind": "image", "x": 4782, "y": 731, "w": 43, "h": 43, "text": "door turn"},
+  {"kind": "beat", "x": 2792, "y": 1818, "w": 55, "h": 32, "text": "Rival"},
+  {"kind": "speech", "x": 2792, "y": 1856, "w": 576, "h": 33, "text": "Police: Behind the wall, officers!"},
+  {"kind": "image", "x": 3271, "y": 24, "w": 157, "h": 96, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

@@ -25,6 +25,14 @@
    "service": "none: procedural",
    "cost": 0,
    "use": "DK_Cafe_Floor, metric tiling 1.2 m (cells of 0.6 m)"
+  },
+  {
+   "file": "cafe_surface_tb_v1.png",
+   "source": "~/Projects/the-suborned-store/testbed-art/cafe-3d/cafe-3d.glb (embedded image surface-atlas-v1, 1254 px, kept at its own size)",
+   "sha256": "e13e054e36c1d6cf0963c9bc23b39e283cf0585eabb7d8daf8e807a07b052953",
+   "bytes": 3016499,
+   "service": "the 2.5D testbed's caf\u00e9 pilot artwork (testbed-art/cafe-pilot, prompts there); brief 026 port by tools/decokit/port_cafe3d.py",
+   "use": "the painted counter front (CafeInterior_Testbed), lit art"
   }
  ]
 }

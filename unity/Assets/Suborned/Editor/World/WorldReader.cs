@@ -42,6 +42,7 @@ namespace Suborned.World
                 Id = Id(x), Surface = J.S(x, "surface"), Ring = J.Poly(x, "ring"), Level = J.F(x, "level"), Road = J.S(x, "road"), To = J.S(x, "to"),
                 Kerb = J.Poly(x, "kerb"), KerbWidth = J.F(x, "kerbWidth"), KerbHeight = J.F(x, "kerbHeight"),
             }); // optional (present when the civic block states drives)
+            w.Ground.Pieces = Each(g, "pieces", StreetItem); // brief 026: optional
 
             var t = J.Get(o, "transit");
             w.Transit.Tram = Each(t, "tram", x => new TrackDto
@@ -117,7 +118,8 @@ namespace Suborned.World
             if (J.Get(o, "takedown") is { } td)
                 w.Entrances = Each(td, "entrances", x => new EntranceDto { Id = Id(x), Building = J.S(x, "building"), Name = J.S(x, "name"), Kind = J.S(x, "kind"), At = J.P(x, "at"), Z = J.F(x, "z") });
             w.Megastructures = Each(o, "megastructures", m => new MegaDto { Id = Id(m), Parts = Each(m, "parts", Mass), Prims = Each(m, "prims", Prim), Gateway = Kit(J.Get(m, "gateway")) });
-            w.Civic = Each(o, "civic", Mass);
+            // Splice (18:0x export): a mass with `hidden: true` is data only (the two PavilionPier_Square supports the walk grid keeps); nothing draws it
+            var civic = Each(o, "civic", Mass); w.HiddenCivic = civic.Count(m => J.Get(m.Raw, "hidden") is true); w.Civic = civic.Where(m => !(J.Get(m.Raw, "hidden") is true)).ToList();
             w.Landmarks = Each(o, "landmarks", l => new LandmarkDto
             {
                 Id = Id(l), Surface = J.S(l, "surface"), Shape = J.S(l, "shape"), Centre = J.P(l, "centre"), Radius = J.F(l, "radius"), Base = J.F(l, "base"), Height = J.F(l, "height"), Source = J.S(l, "source"), Kit = Kit(J.Get(l, "kit")), Kits = Each(l, "kits", Kit),
@@ -200,7 +202,7 @@ namespace Suborned.World
         static MassDto Mass(object m) => new()
         {
             Id = Id(m), Surface = J.S(m, "surface"), Ring = J.Poly(m, "ring"), Base = J.F(m, "base"), Height = J.F(m, "height"), Kit = Kit(J.Get(m, "kit")),
-            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string,
+            Fade = J.Get(m, "fade") is true, GroundBy = J.Get(m, "groundBy") as string, Raw = m,
             Materials = J.Get(m, "materials") is Dictionary<string, object> slots ? slots.ToDictionary(kv => kv.Key, kv => (string)kv.Value) : null,
         };
 

@@ -1,0 +1,21 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 860, "y": 1026, "w": 200, "h": 40, "text": "Get Vale to the car."},
+  {"kind": "beat", "x": 1731, "y": 927, "w": 175, "h": 36, "text": "One takes the road."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 2534, "y": 2737, "w": 216, "h": 25, "text": "Block the street. Nobody leaves."},
+  {"kind": "speech", "x": 1409, "y": 1708, "w": 192, "h": 25, "text": "One's heading for the road."},
+  {"kind": "image", "x": 1431, "y": 1758, "w": 26, "h": 26, "text": "car held marker"},
+  {"kind": "image", "x": 912, "y": 463, "w": 56, "h": 26, "text": "name chip"},
+  {"kind": "image", "x": 1054, "y": 1012, "w": 56, "h": 56, "text": "attention callout"},
+  {"kind": "image", "x": 1169, "y": 1042, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "image", "x": 1588, "y": 1042, "w": 24, "h": 24, "text": "edge cameo"},
+  {"kind": "speech", "x": 1590, "y": 986, "w": 231, "h": 17, "text": "Passer-by: Run! Get off the street!"},
+  {"kind": "image", "x": 1499, "y": 1870, "w": 26, "h": 26, "text": "holder"},
+  {"kind": "image", "x": 1555, "y": 1791, "w": 26, "h": 26, "text": "holder"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

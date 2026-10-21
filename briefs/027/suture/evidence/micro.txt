@@ -1,0 +1,12 @@
+cycles 1 hold 5t gap 25t: warnings opened 2, Alert 1 (max 1), Trail 2, Standing 2->2, drawn.seen 0, guard engaged False, guard memories 2 (saw-weapon-drawn 2), over False 
+cycles 10 hold 5t gap 10t: warnings opened 20, Alert 1 (max 1), Trail 2, Standing 2->2, drawn.seen 0, guard engaged False, guard memories 8 (saw-weapon-drawn 8), over False 
+cycles 10 hold 15t gap 5t: warnings opened 2, Alert 1 (max 1), Trail 2, Standing 2->2, drawn.seen 0, guard engaged False, guard memories 8 (saw-weapon-drawn 8), over False 
+cycles 30 hold 10t gap 5t: warnings opened 60, Alert 1 (max 1), Trail 2, Standing 2->2, drawn.seen 0, guard engaged False, guard memories 8 (saw-weapon-drawn 8), over False 
+volley 6 x until 30s: given 1, refused 0, bar low 40, shots 0, hits 0, guard down False at 0:32.0
+volley 1 x until 30s: given 1, refused 0, bar low 90, shots 0, hits 0, guard down False at 0:32.0
+volley 1 x until 30s (cease between): given 1, refused 0, bar low 90, shots 0, hits 0, guard down False at 0:32.0
+volley 3 x until 30s (cease between): given 1, refused 0, bar low 70, shots 0, hits 0, guard down False at 0:32.0
+pattern 250: plain ○●○○○●○○ reset ○○○○○○○○
+pattern 500: plain ●○●○●○●○ reset ●●●●●●●●
+pattern 600: plain ●○●○●●○● reset ●●●●●●●●
+pattern 1000: plain ●●●●●●●● reset ●●●●●●●●

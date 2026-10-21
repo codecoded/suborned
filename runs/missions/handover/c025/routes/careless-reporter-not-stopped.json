@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless violence (brief 013 D): route B, with the idle Enforcer killing guard 73 (p-records-office-73, the incoming door guard) on his walk to the public door and leaving him where he fell instead of hiding him. The careful twin is route-b. Re-sited 2026-10-19 (Waymark, brief 023; engine 0.8.2 crowd.pace strings walkers out along a leg): the kill is timed to 73's arrival, not pinned to a tick (the composer takes the first tick he is in reach, searched every 0.5 s), at a spot a finder passes: on the square north of the Office, where nobody sees the act and the records-office guards walking back to the Office pass within witness range at about 7:35. Played on 0.8.2: the kill at 4:29.8 is unseen; his missed 5:30 mark is Alert 1; guard 64 (p-records-office-64) finds him at 7:35.2 and radios it in, nobody stopping him (the Enforcer is walking Vale to the car), landing at 7:40.2 after the Take: Alert 2, a unit sent; the car leaves at 7:58.5. A win at Alert 2 and 3 T plus 6 T carried into the campaign and an open case (12 T in total at case-trail-eq 3) against route B's 3 T at Alert 0: MC-7 counts it worse, not failed. At the car the whole cell boards (the seal clock may run, so anyone left standing would be captured).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"enforcer","do":"move","to":[3319,-3785]},
+  {"tick":0,"op":"scout","do":"move","to":[7950,-4000]},
+  {"tick":0,"op":"fixer","do":"move","to":[7950,-3850]},
+  {"tick":620,"op":"scout","do":"watch","target":"driver"},
+  {"tick":760,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":820,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":820,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":838,"op":"scout","do":"listen","target":"driver"},
+  {"tick":1258,"op":"scout","do":"move","to":[8600,-3400]},
+  {"tick":1320,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
+  {"tick":2340,"op":"scout","do":"move","to":[1175,-4825]},
+  {"tick":2340,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":2698,"op":"enforcer","do":"takedown","target":"p-records-office-73","how":"kill"},
+  {"tick":2728,"op":"enforcer","do":"move","to":"d:Service lane"},
+  {"tick":3700,"op":"enforcer","do":"take"},
+  {"tick":4080,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":4470,"op":"cell","do":"panic"},
+  {"tick":4570,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":4699,"op":"enforcer","do":"board","target":"car"},
+  {"tick":4739,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

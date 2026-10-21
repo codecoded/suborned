@@ -1,0 +1,15 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 883, "y": 1026, "w": 155, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 859, "y": 432, "w": 203, "h": 25, "text": "Someone is. Someone always is."},
+  {"kind": "speech", "x": 891, "y": 393, "w": 138, "h": 25, "text": "Closer. I'll hear it."},
+  {"kind": "image", "x": 234, "y": 985, "w": 113, "h": 30, "text": "follow view chip"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 37, "h": 16, "text": "Watch"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Inez: Hush, and drink it before it cools."},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

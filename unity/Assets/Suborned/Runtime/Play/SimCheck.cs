@@ -20,17 +20,24 @@ namespace Suborned.Play
             public int Tick, Checkpoints, Checks, ChecksFailed; public bool ReplayIdentical, Match; public double Ms;
         }
 
-        public static List<Row> RunAll(Engine.Inputs inputs, JNode headless)
+        public static List<Row> RunAll(Engine.Inputs inputs, JNode headless) => RunSet(Scenarios.All, _ => inputs, headless["scenarios"]);
+
+        /// <summary>Brief 029: the fight range's set (R01..R10) on its own inputs (SimBundle.LoadRange by each scenario's layout), against
+        /// headless.json `range`. Empty when the bundle carries no range.</summary>
+        public static List<Row> RunRange(JNode headless) => headless.Opt("range") is JNode r && r.Items.Count > 0 ? RunSet(Scenarios.Range, sc => SimBundle.LoadRange(sc.Layout), r) : new List<Row>();
+
+        static List<Row> RunSet(IEnumerable<Scenario> set, Func<Scenario, Engine.Inputs> inputsOf, JNode headlessRows)
         {
             var want = new Dictionary<string, JNode>(StringComparer.Ordinal);
-            foreach (var s in headless["scenarios"].Items) want[s["id"].Str()] = s;
+            foreach (var s in headlessRows.Items) want[s["id"].Str()] = s;
             var rows = new List<Row>();
-            foreach (var sc in Scenarios.All)
+            foreach (var sc in set)
             {
                 var row = new Row { Id = sc.Id };
                 var sw = Stopwatch.StartNew();
                 try
                 {
+                    var inputs = inputsOf(sc);
                     var run = Scenarios.Run(inputs, sc);
                     var g = run.G;
                     var replay = Engine.Replay(inputs, g);

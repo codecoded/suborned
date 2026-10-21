@@ -1,0 +1,13 @@
+before (the Scout at (300,1775), open ground)
+officer-1→scout 0‰ at 21 m (out), cover none
+officer-2→scout 0‰ at 20 m (out), cover none
+officer-3→scout 0‰ at 22 m (out), cover none
+officer-4→scout 500‰ at 15 m (long), cover none
+officer-5→scout 600‰ at 14 m (eff), cover none
+
+after (the Scout on cover point cv-001, a car box, (525,1875), , hp 30/40)
+officer-1→scout 0‰ at 18 m (out), cover full
+officer-2→scout 0‰ at 18 m (out), cover full
+officer-3→scout 0‰ at 20 m (out), cover full
+officer-4→scout 500‰ at 12 m (eff), cover full
+officer-5→scout 500‰ at 12 m (eff), cover full

@@ -58,13 +58,17 @@ namespace Suborned.Sim
 
         string Check(Order o)
         {
+            if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
+            if (Range && Array.IndexOf(RangeVerbs, o.Do) < 0) return No("unknown-verb", $"verb '{o.Do}' is not the fight range's (brief 029: {string.Join(", ", RangeVerbs)})");
             if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (o.Do == "panic") return Panic(o);
+            if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
             if (o.Do == "go") return Go(o); // brief 018: anyone, from the car's card (GameGetaway.cs)
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");
             if (o.Do == "cancel") return Cancel(op); // before the inside and busy checks: cancel stops exactly those
             if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
+            if (o.Do == "trigger") return Trigger(op, o); // tuning.md §11 (engine 0.17.0): before the busy check, so a release is always taken
             if (o.Do == "drive") return Drive(op, o); // brief 025 (EXPERIMENTAL): before the busy check, since moving a busy agent is the step's to judge (cell.drive.onBusy)
             if (op.Busy != null) return No("agent-busy", $"{o.Op} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             if (op.InCar) // brief 018: a move steps out first; a stance, holster or cease changes nothing on the street; the rest waits for stepping out
@@ -82,6 +86,8 @@ namespace Suborned.Sim
                 case "reroute": return Reroute(op, o);
                 case "mislead": return Mislead(op, o);
                 case "fire": return Fire(op, o);
+                case "volley": return Volley(op, o); // brief 027 (EXPERIMENTAL, fight.lab): target mode
+                case "field": return Field(op, o);
                 case "draw": return Draw(op, o);
                 case "holster": return Holster(op, o);
                 case "cease": return Cease(op, o);
@@ -117,11 +123,15 @@ namespace Suborned.Sim
             if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
             var route = S.Grid.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
             if (op.Driven) EndDrive(op, false); // brief 025: a click move takes control back
-            op.Walk = new Path(route); op.WalkMm = 0;
+            var snap = o.Point.HasValue ? SnapPoint(op, to) : null; // brief 027 B5 (EXPERIMENTAL fight.lab.coverSnap): a click on the ground (never a named place: a mission point or a person's) ending by a free cover point ends on it; null with the lab off
+            if (snap != null) { var rs = S.Grid.Route(op.Pos, snap.At); if (rs != null) route = rs; else snap = null; }
+            if (CoverSnapOn) { if (snap != null) HoldCover(op, snap); else DropCover(op); }
+            op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; // brief 027: a click move is the player's walk, not a walk into range
             if (op.Walk.Length == 0) op.Walk = null;
             op.Running = o.Run; op.WalkSpeed = PaceOf(op, o.Run);
-            if (o.Run) { op.RunAlerted = false; op.RunSeen.Clear(); if (op.Gun.Order.Length > 0) { op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; Note("fire.cancelled", $"{Sim.Op.Name(op.Id)} runs: the fire order ends."); } }
-            Note("order.move", $"{Sim.Op.Name(op.Id)} {(o.Run ? "runs" : "heads")} for {(o.To.Length > 0 ? o.To : to.ToString())}.");
+            if (o.Run) { op.RunAlerted = false; op.RunSeen.Clear(); }
+            if (op.Gun.Order.Length > 0) op.CloseSpent = true; // tuning.md §8.2 rule 4 (engine 0.15.0): the fire order stands and fires on the move, walk or run; the player's move spends its walk-in
+            Note("order.move", $"{Sim.Op.Name(op.Id)} {(o.Run ? "runs" : "heads")} for {(o.To.Length > 0 ? o.To : to.ToString())}{(snap != null ? $" and takes cover at {snap.Id} ({snap.Kind} {snap.Of})" : "")}.");
             return "";
         }
 
@@ -138,28 +148,33 @@ namespace Suborned.Sim
             pos = at.Value; return "";
         }
 
-        /// <summary>A Watch or a Listen; `engage` false checks it only (LearnQuery, the card before the click) and changes nothing. A Watch on a
-        /// machine (a camera, the patrol) is open to the operatives in its kind's sight `by` (Sky 2026-10-18: the Tech too); a person's Watch
-        /// and every Listen are the Scout's. A watcher known on arrival (the response, the rivals) is nothing to watch for anyone (target-unknown).
-        /// Any other operative is refused only-scout, as before.</summary>
+        /// <summary>The rulebook event of a Watch or a Listen: cell.watch (brief 031: any agent) or scout.listen.</summary>
+        public Event LearnEv(string verb) => R.Ev(verb == "watch" ? "cell.watch" : "scout." + verb);
+
+        /// <summary>A Watch or a Listen; `engage` false checks it only (LearnQuery, the card before the click) and changes nothing. A Watch
+        /// (brief 031, Sky 2026-10-20) is open to every operative, on a person, a camera, the patrol or a container, within the operative's own
+        /// reach (sight.watch.reach) on a clear line; a Listen is the Scout's (only-scout). A watcher known on arrival (the response, the
+        /// rivals) is nothing to watch for anyone (target-unknown).</summary>
         string Scout(Op op, Order o, bool engage = true)
         {
             bool machine = o.Do == "watch" && !IsPersonRoleName(o.Target);
-            if (op.Id != OpId.Scout && !(machine && (WatchesKind(op, o.Target) || ArrivesKnown(o.Target)))) return No("only-scout", "only the Scout watches people and listens (§03)");
+            if (o.Do == "listen" && op.Id != OpId.Scout) return No("only-scout", "only the Scout listens (§03)");
             if (machine && IsContainer(o.Target)) return WatchContainer(op, o, engage); // a container's round (§05; GameStashWatch.cs)
             if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
             var p = PersonByRole(o.Target);
-            if (!ScoutTeaches(R.Ev("scout." + o.Do), p)) return o.Do == "listen" ? No("already-heard", $"the cell knows {p.Role}'s need and temperament already: a Listen teaches nothing more") : No("already-watched", $"the cell knows {p.Role}'s place and when already: a Watch teaches nothing more");
+            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds"); // brief 031: his tether covers Watch
+            if (!ScoutTeaches(LearnEv(o.Do), p)) return o.Do == "listen" ? No("already-heard", $"the cell knows {p.Role}'s need and temperament already: a Listen teaches nothing more") : No("already-watched", $"the cell knows {p.Role}'s place and when already: a Watch teaches nothing more");
             var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
-            var ev = R.Ev("scout." + o.Do);
-            int reach = actReach;
+            var ev = LearnEv(o.Do);
+            int reach = o.Do == "watch" ? R.WatchReachCm(op.Id) : actReach; // brief 031: the Watch's reach is the agent's
             foreach (var c in ev.Needs) if (c.K == "reach") reach = (int)R.Num(c.S("m")) * 100;
             var x = Ctx(p, ev);
             // only asking (ScoutQuery, target mode; Latch 2026-10-18): a need the order lacks outranks its reach, since walking closer won't
             // cure it. Issue keeps its order (reach, then needs), so every recorded run replays as before.
             if (!engage) foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
             if (!G.Within(op.Pos, pos, reach)) return No("too-far", $"stand within {reach / 100} m of {p.Role}", m: reach / 100);
+            if (o.Do == "watch" && !(Sees(op.Pos, pos) && !CrowdBlocks(op.Pos, pos))) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see {p.Role}"); // brief 031: a person's Watch needs a clear line too
             foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
             if (!engage) return "";
             var q = Quote(ev, p);
@@ -181,7 +196,7 @@ namespace Suborned.Sim
             foreach (var oc in ev.Outcomes) if (Learns(oc.Changes)) return true;
             foreach (var a in ev.Also) if (!a.When.Exists(c => c.K == "lover-within") || p.Lover != null) if (Learns(a.Changes)) return true;
             if (R.KnownBy.Contains(ev.Id) && !p.KTemperament) return true;
-            if (ev.Id == "scout.watch" && p == GuardP && !(Known("guard")?.Sight ?? true)) return true;
+            if (ev.Id == "cell.watch" && p == GuardP && !(Known("guard")?.Sight ?? true)) return true;
             return false;
         }
 
@@ -237,7 +252,7 @@ namespace Suborned.Sim
                 case "watch" when IsContainer(o.Target): LandWatchContainer(op, o); break; // a container's round (GameStashWatch.cs)
                 case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break; // a camera or the patrol (rulebook sight), the Scout's or the Tech's
                 case "watch": case "listen":
-                    LandPersonEvent(op, o, R.Ev("scout." + o.Do), PersonByRole(o.Target));
+                    LandPersonEvent(op, o, LearnEv(o.Do), PersonByRole(o.Target));
                     if (o.Do == "watch" && o.Target == "guard") WatchedWatcher("guard", R.SightWatchS); // the guard's Watch teaches his sight too
                     break;
                 case "turn": LandPersonEvent(op, o, R.Ev("turn." + o.Approach), PersonByRole(o.Target)); break;
@@ -310,7 +325,8 @@ namespace Suborned.Sim
                 Actions.Add($"{ev.Id}:{p.Role}");
                 if (outcome.Id == "turned" && p == Inez) InezMethod = o.Approach;
             }
-            Note($"{ev.Id}.{outcome.Id}", $"{p.Name} ({p.Role}): {ev.Id} → {outcome.Id}.");
+            // brief 031: a Watch logs as the agent's (scout.watch.watched, fixer.watch.watched, tech.watch.watched, enforcer.watch.watched)
+            Note(ev.Id == "cell.watch" ? $"{Sim.Op.Name(op.Id)}.watch.{outcome.Id}" : $"{ev.Id}.{outcome.Id}", $"{p.Name} ({p.Role}): {ev.Id} → {outcome.Id}.");
         }
 
         /// <summary>One change from a rulebook outcome. Returns true if it charged money.</summary>
@@ -491,7 +507,7 @@ namespace Suborned.Sim
             q.Orders = OrdersFor(ev, x);
             q.Outcome = p.KTemperament ? FirstOutcome(ev, x).Id : Agree(p, t => FirstOutcome(ev, WithTemperament(x, t)).Id);
             q.Event = ev.Id;
-            if (ev.Id.StartsWith("scout.", StringComparison.Ordinal) && !ScoutTeaches(ev, p)) q.Refused = ev.Id == "scout.listen" ? "already-heard" : "already-watched"; // the same test Issue refuses by
+            if ((ev.Id.StartsWith("scout.", StringComparison.Ordinal) || ev.Id == "cell.watch") && !ScoutTeaches(ev, p)) q.Refused = ev.Id == "scout.listen" ? "already-heard" : "already-watched"; // the same test Issue refuses by
             q.Leverage = ev.Id == "turn.pressure" && p.Knows("secret");
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal) && p.KnownRefused.Contains(ev.Id.Substring(5))) q.Outcome = "refused"; // a refusal seen: ✗
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal))

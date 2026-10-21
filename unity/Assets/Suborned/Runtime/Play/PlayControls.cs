@@ -13,9 +13,14 @@ namespace Suborned.Play
         TurnLeft, TurnRight, TurnDrag,
         FollowView,
         CameraLab,
+        TargetMode,
+        StepTarget,
     }
 
     public enum RosterDock { Bottom, Left, Corner }
+
+    /// <summary>Brief 032's setting: the conversation scene plays always, the first time with each person (the default), or never (bubbles only).</summary>
+    public enum ConversationScenes { Always, FirstTime, Never }
 
     /// <summary>Which HUD draws: Glyph's kit on UI Toolkit (HudToolkit, its pieces as they land) or the IMGUI placeholder (PlayHud).</summary>
     public enum HudView { Kit, Imgui }
@@ -37,15 +42,15 @@ namespace Suborned.Play
             new() { action = PlayAction.PanDown, keys = new[] { Key.S, Key.DownArrow }, label = "S" },
             new() { action = PlayAction.PanLeft, keys = new[] { Key.A, Key.LeftArrow }, label = "A" },
             new() { action = PlayAction.PanRight, keys = new[] { Key.D, Key.RightArrow }, label = "D" },
-            new() { action = PlayAction.Verb1, keys = new[] { Key.Digit1, Key.Numpad1 }, label = "1" },
-            new() { action = PlayAction.Verb2, keys = new[] { Key.Digit2, Key.Numpad2 }, label = "2" },
-            new() { action = PlayAction.Verb3, keys = new[] { Key.Digit3, Key.Numpad3 }, label = "3" },
-            new() { action = PlayAction.Verb4, keys = new[] { Key.Digit4, Key.Numpad4 }, label = "4" },
-            new() { action = PlayAction.Agent1, keys = new[] { Key.F1 }, label = "F1" },
-            new() { action = PlayAction.Agent2, keys = new[] { Key.F2 }, label = "F2" },
-            new() { action = PlayAction.Agent3, keys = new[] { Key.F3 }, label = "F3" },
-            new() { action = PlayAction.Agent4, keys = new[] { Key.F4 }, label = "F4" },
-            new() { action = PlayAction.CycleAgent, keys = new[] { Key.Tab }, label = "Tab" },
+            new() { action = PlayAction.Verb1, keys = new[] { Key.Digit1, Key.Numpad1 }, label = "⇧1" }, // brief 030 §8 (Sky 2026-10-20): Shift + the digit picks the action; the plain digit selects the agent
+            new() { action = PlayAction.Verb2, keys = new[] { Key.Digit2, Key.Numpad2 }, label = "⇧2" },
+            new() { action = PlayAction.Verb3, keys = new[] { Key.Digit3, Key.Numpad3 }, label = "⇧3" },
+            new() { action = PlayAction.Verb4, keys = new[] { Key.Digit4, Key.Numpad4 }, label = "⇧4" },
+            new() { action = PlayAction.Agent1, keys = new[] { Key.Digit1, Key.Numpad1, Key.F1 }, label = "1" }, // F1–F4: hidden aliases for an external keyboard (Sky uses them as Mac function keys)
+            new() { action = PlayAction.Agent2, keys = new[] { Key.Digit2, Key.Numpad2, Key.F2 }, label = "2" },
+            new() { action = PlayAction.Agent3, keys = new[] { Key.Digit3, Key.Numpad3, Key.F3 }, label = "3" },
+            new() { action = PlayAction.Agent4, keys = new[] { Key.Digit4, Key.Numpad4, Key.F4 }, label = "4" },
+            new() { action = PlayAction.CycleAgent, keys = new[] { Key.Tab }, label = "Tab" }, // brief 030 §8: Tab steps the selected agent's actions (the name is kept for saved tables)
             new() { action = PlayAction.Pause, keys = new[] { Key.Space }, label = "Space" },
             new() { action = PlayAction.Faster, keys = new[] { Key.Equals, Key.NumpadPlus }, label = "=" },
             new() { action = PlayAction.Slower, keys = new[] { Key.Minus, Key.NumpadMinus }, label = "−" },
@@ -72,7 +77,9 @@ namespace Suborned.Play
             new() { action = PlayAction.TurnRight, keys = new[] { Key.E }, label = "E" },
             new() { action = PlayAction.TurnDrag, keys = new[] { Key.LeftAlt, Key.RightAlt }, label = "Alt" }, // held with the middle button: turn freely (Alt alone is Peek; the detail layer stays off while turning)
             new() { action = PlayAction.FollowView, keys = new[] { Key.T }, label = "T" }, // Sky 2026-10-18, a test: the third-person follow view (V is Stance; T was free)
-            new() { action = PlayAction.CameraLab, keys = new[] { Key.P }, label = "P" }, // brief 025: the camera lab (P was free; no fn needed on a MacBook)
+            new() { action = PlayAction.CameraLab, keys = new[] { Key.P }, label = "P" },
+            new() { action = PlayAction.TargetMode, keys = new[] { Key.Y }, label = "Y" },
+            new() { action = PlayAction.StepTarget, keys = new[] { Key.Z }, label = "Z" }, // brief 030 §8: step the target (Tab's old overlap and target uses; Z was free) // brief 027: target mode (Y was free; Motive proposed it) // brief 025: the camera lab (P was free; no fn needed on a MacBook)
         };
         static readonly Binding[] defaults = Defaults();
 
@@ -90,10 +97,34 @@ namespace Suborned.Play
         public HudView view = HudView.Kit;
         [UnityEngine.Tooltip("Pause the clock while the action panel is open (off: real time, Sky's lean).")]
         public bool pauseWithPanel = false;
+        [UnityEngine.Tooltip("Brief 030: a right click opens the full action panel as before (off: the contextual act and the ring).")]
+        public bool panelOnRight = false;
         [UnityEngine.Tooltip("Two presses or clicks within this many seconds count as a double (centre on the agent, run).")]
         public float doubleSeconds = 0.35f;
+        [UnityEngine.Tooltip("Brief 030 (Sky 2026-10-21, option A): the action plate beside the selected portrait. Off by default: the armed verb rides the cursor and the portrait, Tab or Shift shows the strip. On brings the plate back (pause menu, Action plate).")]
+        public bool actionPlate = false;
+        [UnityEngine.Tooltip("Brief 032: when an act's opening lines play as a close two-shot with the clock held (pause menu, Conversations). Never: bubbles only, as before.")]
+        public ConversationScenes conversations = ConversationScenes.FirstTime;
+        [UnityEngine.Tooltip("Sky 2026-10-21 (after 0.2.19): off (the default), a right click (or E in third person) opens the ring at the target with the likely way lit, and a second click takes it. On: the quick action of brief 030 (a click takes the likely way at once, a hold opens the ring). Pause menu, Right-click.")]
+        public bool quickAction = false;
+
+        const string PlatePref = "Suborned.Controls.ActionPlate", ConvoPref = "Suborned.Controls.Conversations", QuickPref = "Suborned.Controls.QuickAction";
+        /// <summary>The two menu settings from the player's profile (PlayerPrefs), when saved; the table's own values otherwise.</summary>
+        public void LoadSettings()
+        {
+            if (UnityEngine.PlayerPrefs.HasKey(PlatePref)) actionPlate = UnityEngine.PlayerPrefs.GetInt(PlatePref) == 1;
+            if (UnityEngine.PlayerPrefs.HasKey(ConvoPref)) conversations = (ConversationScenes)Math.Clamp(UnityEngine.PlayerPrefs.GetInt(ConvoPref), 0, 2);
+            if (UnityEngine.PlayerPrefs.HasKey(QuickPref)) quickAction = UnityEngine.PlayerPrefs.GetInt(QuickPref) == 1;
+        }
+        public void SaveSettings()
+        {
+            UnityEngine.PlayerPrefs.SetInt(PlatePref, actionPlate ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(ConvoPref, (int)conversations); UnityEngine.PlayerPrefs.SetInt(QuickPref, quickAction ? 1 : 0); UnityEngine.PlayerPrefs.Save();
+        }
 
         /// <summary>The binding for an action: this table's, else the default's (a table saved in a scene before an action existed keeps working).</summary>
+        /// <summary>A table saved in a scene before brief 030 (agents on F1–F4 only) takes the new defaults: the digits select, Shift + digit picks.</summary>
+        public void Migrate() { var a = Of(PlayAction.Agent1); if (keys == null || a.keys == null || Array.IndexOf(a.keys, Key.Digit1) < 0) keys = Defaults(); }
+
         Binding Of(PlayAction a) { if (keys != null) foreach (var b in keys) if (b.action == a) return b; foreach (var b in defaults) if (b.action == a) return b; return default; }
 
         public bool Down(Keyboard kb, PlayAction a) { if (kb == null) return false; var b = Of(a); if (b.keys == null) return false; foreach (var k in b.keys) if (kb[k].wasPressedThisFrame) return true; return false; }

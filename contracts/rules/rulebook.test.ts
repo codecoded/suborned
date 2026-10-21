@@ -212,7 +212,7 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
     expect(after.outcome).toBe('refused'); // Pay shows ✗ on Inez
     expect(R.quote(rb, people, turn('help'), { subject: person('idealist'), band: 'neutral', knows: new Set<R.Know>(['routine', 'need']), refusedKnown: new Set(['pay']) }).outcome).toBe('?'); // her temperament is still unknown
     expect(rb.preview.knownBy).toEqual(['scout.listen']); // Sky 2026-10-15: Listen reveals the temperament, Watch only the routine
-    expect(R.event(rb, 'scout.watch').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['routine'], of: 'subject' }]);
+    expect(R.event(rb, 'cell.watch').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['routine'], of: 'subject' }]);
   });
 });
 
@@ -342,9 +342,41 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect(R.accuracy(rb, people, 'pistol', 4, ['untrained'])).toBe(750);
     expect(R.accuracy(rb, people, 'pistol', 12, ['moving'])).toBe(375);
     expect(R.accuracy(rb, people, 'pistol', 12, ['moving', 'cover'])).toBe(187);
-    expect(R.accuracy(rb, people, 'pistol', 20, [])).toBe(400);
-    expect(R.accuracy(rb, people, 'pistol', 26, [])).toBe(0);
+    expect(R.accuracy(rb, people, 'pistol', 15.5, [])).toBe(400); // the long band: 15–16 m since tuning.md §7.9 (was 15–25)
+    expect(R.accuracy(rb, people, 'pistol', 17, [])).toBe(0);
     expect(R.accuracy(rb, people, 'carbine', 18, [])).toBe(750);
+  });
+  test('brief 027 (EXPERIMENTAL fight.lab): four pips from range and edges, each a step; health ×10; every lab value proposed with its reason', () => {
+    const step = (p: number) => ({ pips: p, acc: p === 0 ? 0 : num(rb, people, rb.fight.lab!.chance[p - 1]!) }); // the chance per pip is the rulebook's (Motive tunes it)
+    const sideEff = num(rb, people, rb.fight.lab!.weapons.sidearm.eff), sideMax = num(rb, people, rb.fight.lab!.weapons.sidearm.max), long = (sideEff + sideMax) / 2;
+    expect(R.labPips(rb, people, 'sidearm', 12, [])).toEqual(step(3));
+    expect(R.labPips(rb, people, 'sidearm', 4, ['untrained', 'cover'])).toEqual(step(4)); // point blank: untrained and cover don't count
+    expect(R.labPips(rb, people, 'sidearm', long, ['untrained', 'cover'])).toEqual(step(1)); // the long band, two edges: clamped at one
+    expect(R.labPips(rb, people, 'sidearm', long, ['untrained', 'cover', 'high'])).toEqual(step(1));
+    expect(R.labPips(rb, people, 'carbine', 15, ['untrained', 'cover', 'high'])).toEqual(step(2));
+    expect(R.labPips(rb, people, 'sidearm', 12, ['moving'])).toEqual(step(2));
+    expect(R.labPips(rb, people, 'sidearm', sideMax + 1, [])).toEqual(step(0));
+    expect(R.labPips(rb, people, 'rifle', 40, [])).toEqual(step(2));
+    expect([1, 2, 3, 4].map((p) => step(p).acc)).toEqual([...[1, 2, 3, 4].map((p) => step(p).acc)].sort((a, b) => a - b)); // the steps rise
+    expect(num(rb, people, rb.fight.lab!.healthScale) * num(rb, people, rb.weapons.health.rival)).toBe(30);
+    expect(num(rb, people, rb.fight.lab!.coverSnap.snap)).toBeGreaterThan(num(rb, people, rb.ai.cover.snap)); // B5: the snap reaches past the cover's own 70 cm, or it would do nothing
+    for (const [k, v] of Object.entries(rb.values)) if (k.startsWith('lab-')) { expect(v.proposed, k).toBe(true); expect(v.reason, k).toMatch(/^EXPERIMENTAL: brief 027 playground/); }
+  });
+  test('tuning.md §8.3 (Sky 2026-10-21): fire on the move, the tables for every shooter; a running target ×850 past point blank, never with cover', () => {
+    const t = (d: number, mods: R.AccMod[]) => R.accuracy(rb, people, 'pistol', d, mods);
+    // trained: point blank, effective, long × stand, walk, run toward or across, run away
+    expect([4, 12, 15.5].map((d) => [t(d, []), t(d, ['moving']), t(d, ['running']), t(d, ['runningAway'])])).toEqual([[1000, 500, 250, 125], [750, 375, 187, 93], [400, 200, 100, 50]]);
+    expect([4, 12, 15.5].map((d) => [t(d, ['untrained']), t(d, ['moving', 'untrained']), t(d, ['running', 'untrained']), t(d, ['runningAway', 'untrained'])])).toEqual([[750, 375, 187, 93], [562, 281, 140, 69], [300, 150, 75, 37]]);
+    expect(t(12, ['targetRunning'])).toBe(637); expect(t(4, ['targetRunning'])).toBe(1000); // not at point blank
+    expect(t(12, ['targetRunning', 'cover'])).toBe(637); // one step, never stacked with cover
+    expect(t(4, ['cover'])).toBe(1000); // tuning.md §8.4 (Sky 2026-10-21): inside point blank cover doesn't count, as in the lab
+    const lab = (d: number, e: Parameters<typeof R.labPips>[4]) => R.labPips(rb, people, 'sidearm', d, e);
+    const c = (p: number) => num(rb, people, rb.fight.lab!.chance[p - 1]!), zero = num(rb, people, rb.fight.lab!.pip0!);
+    expect(zero).toBe(100);
+    expect([4, 12, 15.5].map((d) => [lab(d, []).pips, lab(d, ['moving']).pips, lab(d, ['running']).pips, lab(d, ['runningAway']).pips])).toEqual([[4, 3, 2, 0], [3, 2, 1, 0], [2, 1, 0, 0]]);
+    expect([4, 12, 15.5].map((d) => [lab(d, ['untrained']).pips, lab(d, ['moving', 'untrained']).pips, lab(d, ['running', 'untrained']).pips])).toEqual([[4, 3, 2], [2, 1, 0], [1, 1, 0]]);
+    expect(lab(12, ['running', 'untrained']).acc).toBe(zero); expect(lab(4, ['running']).acc).toBe(c(2));
+    expect(lab(12, ['targetRunning']).acc).toBe(Math.floor(c(3) * 850 / 1000)); expect(lab(4, ['targetRunning']).acc).toBe(c(4));
   });
   test('hit counting is deterministic: exactly 3 in 4 at 75 %, the first shot a hit; 2 in 5 at 40 %, the first a miss', () => {
     expect(R.hits(rb, people, 750, 4)).toEqual([true, true, false, true]);
@@ -357,15 +389,41 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect([rb.weapons.costs.hit, rb.weapons.costs.down, rb.alert.gunfire, rb.weapons.costs.drawSeenSecurity, rb.weapons.costs.drawSeenPeople].map(n)).toEqual([2, 2, 2, 2, 1]);
     expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([280, 30, 5]);
   });
+  test('brief 030: a fire order out of reach walks in, outside the lab too; a gun the fight drew holsters 4 s after it (Sky 2026-10-20)', () => {
+    expect(rb.weapons.close).toBe(true);
+    expect(num(rb, people, rb.weapons.autoHolster!)).toBe(4);
+    expect(rb.fight.lab!.close).toBe(true); // the lab's own switch is unchanged
+  });
+  test('tuning.md §11 (Sky on firing 2026-10-21, engine 0.17.0): the trigger has its rule and the follow ring is 8 m; the cadence stays 1.5 s', () => {
+    expect(rb.weapons.trigger!.length).toBeGreaterThan(0);
+    expect(num(rb, people, rb.weapons.follow!)).toBe(8);
+    expect(num(rb, people, rb.weapons.pistol.every)).toBe(15);
+  });
+  test('tuning.md §7.9 (Sky 2026-10-20): the kite response and the 16 m sidearm are today\'s; the lab keeps the same kite', () => {
+    const n = (r: string) => num(rb, people, r);
+    const k = rb.fight.kite!, lk = rb.fight.lab!.kite;
+    expect(k.on && lk.on).toBe(true);
+    for (const f of ['react', 'replan', 'chase', 'lapse', 'hide', 'contact', 'rearm', 'hideMax', 'coverHold'] as const) expect(k[f], f).toBe(lk[f]!); // one set of numbers
+    expect([k.react, k.replan, k.chase, k.lapse, k.hide, k.contact, k.rearm, k.hideMax, k.coverHold].map((r) => n(r!))).toEqual([5, 10, 2000, 100, 30, 3000, 80, 150, 30]); // coverHold: tuning.md §7.10, 3 s
+    expect([n(rb.weapons.pistol.eff), n(rb.weapons.pistol.max)]).toEqual([15, 16]);
+    expect(Object.keys(rb.values).some((v) => v.startsWith('lab-kite-'))).toBe(false);
+  });
 });
 
-describe('sight: cones are the Scout\'s skill (Sky 2026-10-16)', () => {
-  test('a watcher is watched with the Watch a person gets, from 18 m; a watched routine takes two Watches; the hunters are known on arrival', () => {
+describe('sight: cones are the Scout\'s skill (Sky 2026-10-16), every agent watches (brief 031, Sky 2026-10-20)', () => {
+  test('a watcher is watched with the Watch a person gets, from each agent\'s reach; a watched routine takes two Watches; the hunters are known on arrival', () => {
     const n = (r: string) => num(rb, people, r);
     expect(rb.sight).toBeDefined(); // the live rulebook has it (the schema lets runs pinned before it parse)
     const sight = rb.sight!;
-    expect(sight.watch.s === R.event(rb, 'scout.watch').price![0]!.s).toBe(true); // the same Watch, the same time
-    expect([sight.watch.s, sight.watch.reach, sight.watch.routine].map(n)).toEqual([20, 18, 40]);
+    expect(sight.watch.s === R.event(rb, 'cell.watch').price![0]!.s).toBe(true); // the same Watch, the same time
+    expect(n(sight.watch.s)).toBe(20);
+    expect(typeof sight.watch.reach).toBe('object'); // brief 031: the reach is the agent's
+    const reach = sight.watch.reach as Record<'scout' | 'fixer' | 'tech' | 'enforcer', string>;
+    expect([reach.scout, reach.tech, reach.fixer, reach.enforcer].map(n)).toEqual([30, 24, 12, 3]);
+    expect(n(reach.scout)).toBeGreaterThan(n('v:door-reach-m')); // the Scout watches from beyond every cone (the posted guard's 26 m)
+    expect(n(reach.enforcer)).toBe(n('v:near-m')); // arm's length: inside a person's all-round sense
+    expect(rb.values['watch-sight-reach-m']).toBeUndefined(); // retired
+    expect(n(sight.watch.routine)).toBe(40);
     expect(n(sight.watch.routine) % n(sight.watch.s)).toBe(0); // a whole number of Watches
     expect(Object.entries(sight.kinds).map(([k, v]) => `${k}:${v.learn}/${v.routine}`))
       .toEqual(['camera:watch/fixed', 'guard:watch/person', 'patrol:watch/watched', 'security:arrival/none', 'rivals:arrival/none']);
@@ -374,20 +432,45 @@ describe('sight: cones are the Scout\'s skill (Sky 2026-10-16)', () => {
     expect(Rulebook.safeParse(bad).success).toBe(false);
     const missing = structuredClone(raw); delete missing.sight.kinds.rivals;
     expect(Rulebook.safeParse(missing).success).toBe(false);
+    const old = structuredClone(raw); old.sight.watch.reach = 'v:watch-s'; delete old.attention; // a pinned run's one reach still parses (the four reach values then read by no rule: left out)
+    for (const a of ['scout', 'fixer', 'tech', 'enforcer']) delete old.values[`watch-reach-${a}-m`];
+    for (const v of Object.keys(old.values)) if (v.startsWith('attention-') || v.startsWith('heat-')) delete old.values[v];
+    const r = Rulebook.safeParse(old); expect(r.success, JSON.stringify(r.error?.issues?.slice(0, 3))).toBe(true);
   });
-  test('the Tech watches the machines too, people stay the Scout\'s (Sky 2026-10-18)', () => {
+  test('every agent watches every watched kind, people included; Listen stays the Scout\'s (brief 031)', () => {
     const sight = rb.sight!;
     expect(Object.entries(sight.kinds).map(([k, v]) => `${k}:${(v.by ?? []).join('+')}`))
-      .toEqual(['camera:scout+tech', 'guard:scout', 'patrol:scout+tech', 'security:', 'rivals:']);
-    expect(R.event(rb, 'scout.watch').by).toBe('scout'); // the guard's Watch is the person event, the Scout's
+      .toEqual(['camera:scout+fixer+tech+enforcer', 'guard:scout+fixer+tech+enforcer', 'patrol:scout+fixer+tech+enforcer', 'security:', 'rivals:']);
+    expect(R.event(rb, 'cell.watch').by).toBe('cell'); // any agent
+    expect(R.event(rb, 'cell.watch').private).toBe(false);
+    expect(R.event(rb, 'scout.listen').by).toBe('scout');
+    expect(rb.events.some((e) => e.id === 'scout.watch')).toBe(false); // renamed
     const bad = (f: (k: any) => void) => { const b = structuredClone(raw); f(b.sight.kinds); return Rulebook.safeParse(b).success; };
     expect(bad(() => {})).toBe(true);
     expect(bad((k) => { delete k.camera.by; })).toBe(false);                  // a watched kind names who watches it
     expect(bad((k) => { k.security.by = ['scout']; })).toBe(false);           // a kind known on arrival has nothing to watch
     expect(bad((k) => { k.camera.by = ['tech']; })).toBe(false);              // the Scout always watches
-    expect(bad((k) => { k.guard.by = ['scout', 'tech']; })).toBe(false);      // a person is the Scout's alone
     expect(bad((k) => { k.patrol.by = ['scout', 'tech', 'tech']; })).toBe(false);
     expect(bad((k) => { k.patrol.by = ['scout', 'driver']; })).toBe(false);   // unknown = reject
+  });
+  test('the attention clock: four Heat bands, generous at the start, wary within a Watch in every band (brief 031 §2.1)', () => {
+    const n = (r: string) => num(rb, people, r);
+    expect(rb.attention).toBeDefined();
+    const at = rb.attention!;
+    expect(at.bands.map((b) => [b.id, n(b.heatFrom), n(b.notice), n(b.wary), n(b.report)])).toEqual([
+      ['unknown', 0, 8, 20, 45], ['noticed', 3, 6, 18, 35], ['wanted', 6, 5, 15, 25], ['infamous', 10, 3, 12, 18],
+    ]);
+    for (const b of at.bands) {
+      expect(n(b.notice)).toBeLessThan(n(b.wary));
+      expect(n(b.wary)).toBeLessThan(n(b.report));
+      expect(n(b.wary)).toBeLessThanOrEqual(n(rb.sight!.watch.s)); // D1: a whole Watch in sight makes the watcher wary
+    }
+    for (let i = 1; i < at.bands.length; i++) expect(n(at.bands[i]!.heatFrom)).toBeGreaterThan(n(at.bands[i - 1]!.heatFrom));
+    expect(at.bands.filter((b) => n(b.report) < n(rb.sight!.watch.s)).map((b) => b.id)).toEqual(['infamous']); // only a famous cell can't Watch from inside a sight line
+    expect(at.sense).toEqual({ camera: 'cone', patrol: 'cone', robot: 'cone', guard: 'near', officer: 'near' }); // L2: machines by their cone only
+    expect([at.near, at.alert, at.report.scan, at.report.call]).toEqual(['v:near-m', 'v:alert-inquiry', 'v:camera-scan-s', 'v:post-call-s']);
+    const bad = structuredClone(raw); bad.attention.sense.robot = 'near';
+    expect(Rulebook.safeParse(bad).success).toBe(false);
   });
 });
 
@@ -410,6 +493,7 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(rb.fight.over).toBeDefined(); // brief 023 (Motive 2026-10-19): fight.over, fire orders end with the final fight
     expect(rb.car?.pace && rb.car?.paceRule).toBeTruthy(); // brief 023 (Motive 2026-10-19): car.pace
     expect(rb.cell.drive?.experimental).toBeTruthy(); // brief 025 (engine 0.9.0): cell.drive, marked experimental
+    expect(rb.fight.lab?.experimental).toBeTruthy(); expect(rb.fight.lab?.on).toBe(false); // brief 027 (engine 0.10.0): fight.lab, marked experimental, off unless a run's start turns it on
     expect(rb.crowd.pace).toBeDefined(); // brief 023 (Pulse): crowd.pace, optional in the schema only so dialogue r017-r019's pinned rulebook parses
     expect(rb.values['check-in-s']).toBeUndefined();
     expect(rb.values['response-check-in-s']).toBeUndefined();

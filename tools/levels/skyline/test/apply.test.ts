@@ -122,13 +122,13 @@ describe('skyline apply', () => {
     test('a kit the edit changes is a name in the catalogue, whatever the variant (N2)', () => {
       const unknown = 'Datum: signature space-hq: kit NoSuchPiece is not a piece in the kit catalogue';
       expect(hq({ kit: 'NoSuchPiece' })).toEqual([unknown]); // the variant SpaceHQ_Portal is still the piece built
-      expect(hq({ kit: 'Barrier' })).toEqual([]); // known, so a name; the variant is what is built
+      expect(hq({ kit: 'Tower_Setback' })).toEqual([]); // known, so a name; the variant is what is built
       expect(hq({ kit: 'SpaceHQ' })).toEqual([]); // the plan's own, rejected, with its adopted variant
     });
     test('a variant has to be adopted: a candidate piece is not built yet, so it is a problem (N3)', () => {
-      expect(kit.get('Barrier')).toBe('candidate');
-      const why = 'regen.variant Barrier is a candidate piece in the kit catalogue, not an adopted one';
-      expect(hq({ regen: { variant: 'Barrier' } })).toEqual([`Datum: signature space-hq: ${why}`]);
+      expect(kit.get('Tower_Setback')).toBe('candidate');
+      const why = 'regen.variant Tower_Setback is a candidate piece in the kit catalogue, not an adopted one';
+      expect(hq({ regen: { variant: 'Tower_Setback' } })).toEqual([`Datum: signature space-hq: ${why}`]);
       expect(hq({ regen: { variant: 'SpaceHQ_Portal' } })).toEqual([]);
     });
   });

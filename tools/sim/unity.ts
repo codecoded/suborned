@@ -36,6 +36,10 @@ const MAX_DEPTH = 24; // the site nests 6 deep today; the engine's JSON reader r
 // brief 013 E: the provisional facts (security level) and the world's takedown places (stashes, service doors, call boxes, posts, watchers)
 // are inputs too: without them the engine runs at level 1 with no stashes, and its records differ from every headless run of the repo.
 const INPUTS = { 'rulebook.json': 'contracts/rules/rulebook.json', 'people.rules.json': 'contracts/people/people.rules.json', 'handover.site.json': 'sim/data/handover.site.json', 'handover.people.json': 'sim/data/handover.people.json', 'handover.provisional.json': 'sim/data/handover.provisional.json', 'handover.takedown.json': 'sim/data/handover.takedown.json', 'handover.rounds.json': 'sim/data/handover.rounds.json' } as const; // rounds: brief 022 (Keel), the mission's data plays the round in the host too
+// brief 029 (Keel): the fight range's two sites, its own inputs beside the Handover's (a range run never loads the Handover's files, and the
+// Handover's inputs and hashes are untouched by these). Copied to StreamingAssets/sim/, hashed in engine.json `range`, and R01..R10 played
+// headless into headless.json `range` for the Unity match.
+const RANGE = { 'range.site.json': 'sim/data/range.site.json', 'range-dense.site.json': 'sim/data/range-dense.site.json' } as const;
 const commit = need(sh(['git', 'rev-parse', 'HEAD']), 'git rev-parse').trim();
 const dirty = sh(['git', 'diff', '--quiet', 'HEAD', '--', 'sim/Suborned.Sim', ...Object.values(INPUTS)]).code !== 0;
 const label = (tree ? `working tree on ${commit.slice(0, 12)}${dirty ? ' (uncommitted engine or input changes)' : ''}` : `commit ${commit.slice(0, 12)}`) + (dllArg ? `, engine bytes from ${dllArg}` : '');
@@ -44,12 +48,12 @@ rmSync(work, { recursive: true, force: true }); mkdirSync(work, { recursive: tru
 
 // 1. the source: git archive of the commit, or a copy of the working tree (no bin/obj)
 if (tree) {
-  for (const p of ['sim/Suborned.Sim', 'sim/cli', ...Object.values(INPUTS)])
+  for (const p of ['sim/Suborned.Sim', 'sim/cli', ...Object.values(INPUTS), ...Object.values(RANGE)])
     cpSync(join(root, p), join(work, p), { recursive: true, filter: s => !/\/(bin|obj)(\/|$)/.test(s) });
   for (const p of SCHEMAS) cpSync(join(root, p), join(work, p));
 } else {
   const tar = join(work, 'src.tar');
-  need(sh(['git', 'archive', '-o', tar, 'HEAD', 'sim/Suborned.Sim', 'sim/cli', ...Object.values(INPUTS), ...SCHEMAS]), 'git archive');
+  need(sh(['git', 'archive', '-o', tar, 'HEAD', 'sim/Suborned.Sim', 'sim/cli', ...Object.values(INPUTS), ...Object.values(RANGE).filter(r => sh(['git', 'cat-file', '-e', `HEAD:${r}`]).code === 0), ...SCHEMAS]), 'git archive'); // the range sites only once committed (use --tree until then)
   need(sh(['tar', '-xf', tar, '-C', work]), 'tar'); rmSync(tar);
 }
 
@@ -93,6 +97,9 @@ const play = (what: string): Played => {
   } catch { return { id: what, outcome: 'error', fail: '', tick: 0, cash: 0, trail: 0, alert: 0, startHash: '', finalHash: '', replayIdentical: false, checks: 0, checksFailed: 0, checkpoints: [], exit: r.code, error: (r.err || r.out).trim().slice(0, 400) }; }
 };
 const scenarios = ids.map(play);
+const rangeOk = Object.values(RANGE).every(r => existsSync(join(work, r)));
+const rangeIds = rangeOk ? need(cli('range', 'list'), 'cli range list').trim().split('\n').map(l => l.split('\t')[0]!).filter(Boolean) : [];
+const rangePlays: Played[] = rangeIds.map(id => { const r = cli('range', 'play', id, '--json'); try { const j = JSON.parse(r.out); return { id: j.id, outcome: j.outcome, fail: j.fail, tick: j.tick, cash: j.cash, trail: j.trail, alert: j.alert, startHash: j.startHash, finalHash: j.finalHash, replayIdentical: j.replayIdentical, checks: j.checks.length, checksFailed: (j.checks as { ok: boolean }[]).filter(c => !c.ok).length, checkpoints: j.checkpoints, exit: r.code }; } catch { return { id, outcome: 'error', fail: '', tick: 0, cash: 0, trail: 0, alert: 0, startHash: '', finalHash: '', replayIdentical: false, checks: 0, checksFailed: 0, checkpoints: [], exit: r.code, error: (r.err || r.out).trim().slice(0, 400) }; } });
 const routes: Played[] = [];
 if (argv.includes('--routes')) {
   const dir = join(root, 'contracts/missions/handover/routes');
@@ -105,6 +112,8 @@ mkdirSync(plugin, { recursive: true }); mkdirSync(stream, { recursive: true });
 cpSync(dll, join(plugin, 'Suborned.Sim.dll'));
 const inputs: Record<string, string> = {};
 for (const [name, rel] of Object.entries(INPUTS)) { const b = readFileSync(join(work, rel)); writeFileSync(join(stream, name), b); inputs[name] = sha(b); }
+const range: Record<string, string> = {};
+for (const [name, rel] of Object.entries(RANGE)) { if (!existsSync(join(work, rel))) { rmSync(join(stream, name), { force: true }); continue; } const b = readFileSync(join(work, rel)); writeFileSync(join(stream, name), b); range[name] = sha(b); }
 // 4b. the mission's words (Fable, suborned.text/1): host content, not an engine input. From the same source as the inputs (the commit, or
 // the tree with --tree), validated by its own zod schema; absent, the host shows its placeholders and any stale copy is removed.
 const TEXT = 'contracts/missions/handover/text.json', TEXT_SCHEMA = 'contracts/missions/handover/text.schema.ts';
@@ -143,13 +152,14 @@ let seats = 'absent (nobody is drawn seated)';
     seats = `handover.seats.json ${sha(body).slice(0, 12)} (${Object.keys(j.seated).length} people, ${Object.keys(j.tables).length} tables; view only, unhashed)`;
   } else rmSync(join(stream, 'handover.seats.json'), { force: true });
 }
-const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, text, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
+const engine = { schema: 'suborned.sim.unity/1', validated: 'bun: zod schemas of the same source, rulebook refs, site schema id, nesting <= ' + MAX_DEPTH + '; CLI played every scenario', source: label, commit, tree, dirtyAtCommit: dirty, dll: 'Assets/Suborned/Sim/Plugins/Suborned.Sim.dll', dllSha256: dllSha, inputs, range, text, dotnet: need(sh(['dotnet', '--version']), 'dotnet --version').trim(), built: new Date().toISOString() };
 writeFileSync(join(stream, 'engine.json'), JSON.stringify(engine, null, 1) + '\n');
-writeFileSync(join(stream, 'headless.json'), JSON.stringify({ schema: 'suborned.sim.headless/1', engine: { commit, dllSha256: dllSha, inputs }, scenarios, routes }, null, 1) + '\n');
+writeFileSync(join(stream, 'headless.json'), JSON.stringify({ schema: 'suborned.sim.headless/1', engine: { commit, dllSha256: dllSha, inputs, range }, scenarios, routes, range: rangePlays }, null, 1) + '\n');
 
 const bad = scenarios.filter(s => s.exit !== 0 || !s.replayIdentical);
 console.log(`engine ${label}: Suborned.Sim.dll sha256 ${dllSha.slice(0, 12)} (${readFileSync(dll).length} bytes), inputs ${Object.entries(inputs).map(([k, v]) => `${k} ${v.slice(0, 12)}`).join(', ')}`);
 console.log(`headless: ${scenarios.length - bad.length}/${scenarios.length} scenarios pass with identical replay${bad.length ? `; failing: ${bad.map(b => b.id).join(' ')}` : ''}`);
+{ const rb = rangePlays.filter(s => s.exit !== 0 || !s.replayIdentical); console.log(rangeOk ? `range: ${rangePlays.length - rb.length}/${rangePlays.length} scenarios pass with identical replay${rb.length ? `; failing: ${rb.map(b => b.id).join(' ')}` : ''} (${Object.entries(range).map(([k, v]) => `${k} ${v.slice(0, 12)}`).join(', ')})` : 'range: sites not in this source (commit them, or --tree)'); }
 for (const r of routes) console.log(`route ${r.id}: ${r.outcome}${r.fail ? ` (${r.fail})` : ''} at tick ${r.tick}, trail ${r.trail}, final ${r.finalHash.slice(0, 12)}${r.error ? `, error ${r.error}` : ''}`);
 console.log(`mission text: ${text}`);
 console.log(`seats: ${seats}`);

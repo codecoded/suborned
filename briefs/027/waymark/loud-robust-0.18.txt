@@ -1,0 +1,26 @@
+# Waymark, brief 027, engine suborned.sim/0.18.0 (tree, 2026-10-21). The loud route's waits and locks, measured with the scripted player
+# briefs/027/waymark/player (built against sim/Suborned.Sim; run from a repo root: dotnet player.dll contracts/missions/handover/routes/loud.json, env as below).
+# Waits: S=cv-005 (975,-4625) F=cv-006 (1175,-4825) T=cv-003 (725,-4625). Robustness: each agent's wait moved 0.5 m and 1 m in 8 directions (48 plays).
+
+## with the locks (all three on security-2 at the doors, then security-1 once it is down; then at will)
+ 37/48 clean, hp 38-44 | S=cv-005 F=cv-006 T=cv-003 none go | base: Success  x down[]
+
+## at will only (stance free, no locks)
+ 22/48 clean, hp 22-61 | S=cv-005 F=cv-006 T=cv-003 none go | base: Success  x down[]
+
+## the first locks given late (ticks after the doors open; the second 1.0 s after the first officer is down)
+lock +0: Success  left[] 4:38.9 T10 A2 hp-lost 38% down[] foes-down 2/4
+lock +5: Success  left[] 4:38.9 T10 A2 hp-lost 38% down[] foes-down 2/4
+lock +8: Failure sealed left[] 5:41.0 T9 A2 hp-lost 22% down[fixer] foes-down 2/4
+lock +10: Failure sealed left[] 5:41.0 T9 A2 hp-lost 22% down[fixer] foes-down 2/4
+lock +15: Failure enforcer-down left[] 4:35.0 T9 A2 hp-lost 55% down[fixer,enforcer] foes-down 2/4
+
+## the old waits (cv-006, cv-093, cv-100: the c026 loud), at will and with the same locks
+at will: Success  left[scout,tech] 4:38.4 T10 A2 hp-lost 66% down[scout,tech] foes-down 2/4
+locks:   Success  left[] 4:38.9 T10 A2 hp-lost 44% down[] foes-down 2/4
+
+## the old waits' robustness (48 moves): with the locks, then at will
+ 30/48 clean, hp 38-44 | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+  5/48 clean, hp 22-44 | S=cv-006 F=cv-093 T=cv-100 none go | base: Success  x down[]
+
+# 'clean' = a win with nobody downed or left. 'sealed' with an op down is the player not carrying him (a player would carry or lose him). Raw sweeps: out/waymark027/ (git-ignored).

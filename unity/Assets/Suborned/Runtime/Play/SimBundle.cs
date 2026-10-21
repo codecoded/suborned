@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System;
 using System.IO;
 using System.Security.Cryptography;
@@ -48,6 +49,25 @@ namespace Suborned.Play
                 Inputs = Engine.FromTexts(texts[0], texts[1], texts[2], texts[3], texts[4], texts[5], texts[6]),
                 Commit = m["commit"].Str(), Source = m["source"].Str(), DllSha = m["dllSha256"].Str(), Manifest = m,
             };
+        }
+
+        static readonly Dictionary<string, Engine.Inputs> range = new();
+        /// <summary>Brief 029: the fight range's inputs for a layout (open, dense): the rulebook and people rules (engine.json `inputs`) and the
+        /// range site (engine.json `range`), every hash checked as Load checks the Handover's. Throws when the bundle carries no range.</summary>
+        public static Engine.Inputs LoadRange(string layout)
+        {
+            if (range.TryGetValue(layout, out var have)) return have;
+            var site = layout == "dense" ? "range-dense.site.json" : layout == "open" ? "range.site.json" : throw new InvalidDataException($"Sim: range layout '{layout}' is not open or dense");
+            var m = JNode.Parse(File.ReadAllText(Path.Combine(Dir, "engine.json")), "engine.json");
+            if (m.Opt("range") is not JNode rb || rb.Opt(site) is not JNode want) throw new InvalidDataException($"Sim: engine.json has no range {site}; run `bun tools/sim/unity.ts --tree`");
+            string Read(string file, string sha)
+            {
+                var bytes = File.ReadAllBytes(Path.Combine(Dir, file)); var got = Sha(bytes);
+                if (got != sha) throw new InvalidDataException($"Sim: {file} sha256 {got[..12]} is not the validated {sha[..12]} (engine.json); run `bun tools/sim/unity.ts`");
+                return new UTF8Encoding(false).GetString(bytes);
+            }
+            var inputs = Engine.FromTexts(Read("rulebook.json", m["inputs"]["rulebook.json"].Str()), Read("people.rules.json", m["inputs"]["people.rules.json"].Str()), Read(site, want.Str()));
+            range[layout] = inputs; return inputs;
         }
 
         /// <summary>headless.json: every scenario as the CLI played it with the same DLL and inputs.</summary>

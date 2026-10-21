@@ -60,7 +60,9 @@ function prims(ctx: Ctx, h: Host, id: string, t: string, T: Trade, a: V, u: V, n
   const door = t === 'hotel-lobby' || t === 'department-store' ? 4 : 2.4;
   const canopyD = Math.min(spill, 2.4) || 1.2;
   const front = mk('front', 'box', 'frontage', at(depth / 2), [w, depth, cl], z);
-  const entrance = mk('door', 'box', 'trim', at(depth + 0.1), [door, 0.2, 2.4], z);
+  // frontage.trades.<t>.door (brief 026): on a front too short to hold the machine unit beside a centred door, the door stands at the start (end a), its near jamb `jamb` m in
+  const dp = (T as Trade & { door?: { at?: string; jamb: number; unit: number } }).door, atEnd = !!dp && dp.at === 'end' && w < Math.ceil((2 * (dp.jamb + dp.unit + 0.1) + door) * 10 - 1e-9) / 10;
+  const entrance = mk('door', 'box', 'trim', at(depth + 0.1, atEnd ? dp!.jamb + door / 2 - w / 2 : 0), [door, 0.2, 2.4], z);
   const canopy = mk('canopy', 'box', 'awning', at(depth + canopyD / 2), [w, canopyD, 0.25], z + cl - 0.8);
   const sw = Math.min(w * 0.75, 9), sign = { ...mk('sign', 'box', 'sign', at(SIGN_OFF), [sw, 0.3, 1.2], z + cl + 0.3), motif: T.sign[0], icon: T.sign[1], palette: T.sign[2] };
   let service: Prim | undefined;

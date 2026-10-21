@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Collections.Generic;
 using System.IO;
 using UnityEditor;
@@ -161,9 +162,20 @@ namespace Suborned.World
         {
             var root = Prefab(r.Id).transform; var used = new HashSet<string>(); int n = 0;
             var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? 0f : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
+            int orbit = 0;
             foreach (var mr in KitLods.Lod0(root.gameObject))
             {
                 var mesh = mr.GetComponent<MeshFilter>().sharedMesh; var mats = mr.sharedMaterials;
+                if (KitLods.Part(mr.name).Contains("_Orbit"))
+                {   // Splice: AtomFountain_Testbed's orbits turn, so they never join a batch: their own renderer, a Spin about the piece's vertical axis
+                    var m = trs * mr.transform.localToWorldMatrix; var go = new GameObject(KitLods.Part(mr.name)); go.transform.SetParent(el, true);
+                    go.transform.SetPositionAndRotation(m.GetColumn(3), m.rotation); go.transform.localScale = m.lossyScale;
+                    go.AddComponent<MeshFilter>().sharedMesh = mesh; var rr = go.AddComponent<MeshRenderer>();
+                    rr.sharedMaterials = mats.Select(x => KitSlots.For(x, slots, used)).ToArray(); rr.shadowCastingMode = mr.shadowCastingMode;
+                    var sp = go.AddComponent<Suborned.Play.Spin>(); sp.axisPoint = new Vector3(at.x, z, at.y); sp.degreesPerSecond = KitParts.Rate(orbit++);
+                    for (int s2 = 0; s2 < mesh.subMeshCount; s2++) n += (int)mesh.GetIndexCount(s2) / 3;
+                    KitParts.Baked++; continue;
+                }
                 for (int s = 0; s < mesh.subMeshCount; s++)
                 {
                     var kit = new MeshKit().Mesh(mesh, s, trs * mr.transform.localToWorldMatrix);

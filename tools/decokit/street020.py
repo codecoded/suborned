@@ -15,7 +15,7 @@ import random
 from mathutils import Vector
 
 from booths import starburst as booth_starburst
-from furnish_civic import band
+from furnish_civic import band, post_body
 from furnish_garden import disc
 from furnish_parts import FRONT, Z, flat, frame, knob, lamp, letters, mound, strip
 from geo import dome, fillet, rrect, stadium
@@ -108,21 +108,9 @@ def planter_urn_play(s):
 
 @asset("PneumaticPost_Play", "Furnish")
 def pneumatic_post_play(s):
-    """0.6 x 0.6 x 1.3 m: red streamline pillar on a chrome foot with a rocket-nose cap, POST plaque, capsule hatch, an amber beacon; front -Y."""
-    s.lathe([(0.3, 0.0), (0.3, 0.03), (0.26, 0.05), (0.24, 0.1)], pal.Chrome, seg=16, cap_bottom=False, cap_top=False)
-    s.lathe([(0.236, 0.095), (0.24, 0.2), (0.235, 0.7), (0.222, 0.9), (0.2, 1.0), (0.16, 1.1), (0.1, 1.18), (0.04, 1.22)],
-            pal.Enamel_Red, seg=16, cap_bottom=False, cap_top=False)
-    s.lathe([(0.231, 0.76), (0.229, 0.82)], pal.Enamel_Mustard, seg=16, cap_bottom=False, cap_top=False)
-    band(s, 0.238, 0.246, 0.2 - 0.015, 0.2 + 0.015, pal.Chrome, seg=16)
-    with s.at((0, 0, 0.93), FRONT):  # plaque
-        flat(s, rrect(0.26, 0.1, 0.03, 3), 0.15, 0.226, pal.Enamel_Ivory)
-        letters(s, "POST", 0.06, pal.Enamel_Red, lift=0.226, wt=0.17, depth=0.004)
-    with s.at((0, 0, 0.52), FRONT):  # capsule hatch on a plate, a lit window
-        flat(s, rrect(0.3, 0.34, 0.06, 3), 0.17, 0.245, pal.Enamel_Ivory)
-        with s.at((0, 0.01, 0.245)):
-            frame(s, 0.22, 0.2, 0.08, 0.035, 0.024, pal.Chrome, pal.Iron, pal.LampSoft)
-            s.face([(x, y, 0.03) for x, y in rrect(0.17, 0.15, 0.055, 3)], pal.GlassDark)
-    s.lathe([(0.042, 1.21)] + dome(0.05, 1.22, 0.07, 2), pal.Signal_Amber, seg=8, cap_bottom=False)
+    """The street mailbox: the original tube-mail post (red pillar, plaque, capsule hatch, dial, chute with a capsule, junction head, amber beacon, return pipe) in the
+    old bright red, in a 0.6 x 0.6 footprint (the return pipe tucked against the pillar), 2.34 m tall. 20 Oct (Sky, brief 026): the 1.3 m rocket-nose cut lost the character."""
+    post_body(s, red=pal.Enamel_RedBright, py=0.255, pr=0.035, pb=0.04)
 
 
 # ----------------------------------------------------------------- PhoneBooth_Single

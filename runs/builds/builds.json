@@ -41,6 +41,66 @@
     }
    ],
    "whatsNew": "Take control (brief 025): T drives the selected agent (WASD, Shift/G run, drag orbit), E acts on the nearest with its price, T or a click lets go; explore toggle holds the clock; P panel playground switches (pace, onBusy, onRelease, people gap); engine 0.9.0, c024."
+  },
+  {
+   "build": 5,
+   "version": "0.2.5",
+   "date": "2026-10-20T10:03:26.016Z",
+   "builtAt": "2026-10-20T09:57:35.2785390Z",
+   "sha": "c5fa8859",
+   "dirty": true,
+   "engine": "0.10.0",
+   "engineSource": "working tree on c5fa88598c18 (uncommitted engine or input changes)",
+   "dllSha256": "701e28aeaa108fc85d97bd428b6230ba3235abbaf31d80f6b3d976c1095c2b6a",
+   "recording": "c024",
+   "zip": "TheSuborned-0.2.5.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-10-20T10:03:26.016Z"
+    }
+   ],
+   "whatsNew": ""
+  },
+  {
+   "build": 9,
+   "version": "0.2.9",
+   "date": "2026-10-20T10:54:39.250Z",
+   "builtAt": "2026-10-20T10:48:39.8798420Z",
+   "sha": "c5fa8859",
+   "dirty": true,
+   "engine": "0.10.0",
+   "engineSource": "working tree on c5fa88598c18 (uncommitted engine or input changes)",
+   "dllSha256": "74c221f0da553411e0bd3fe9a29b23258adc942219856567047245884b3574f3",
+   "recording": "c024",
+   "zip": "TheSuborned-0.2.9.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-10-20T10:54:39.250Z"
+    }
+   ],
+   "whatsNew": ""
+  },
+  {
+   "build": 13,
+   "version": "0.2.13",
+   "date": "2026-10-20T13:57:54.240Z",
+   "builtAt": "2026-10-20T13:43:06.4675610Z",
+   "sha": "c5fa8859",
+   "dirty": true,
+   "engine": "0.10.0",
+   "engineSource": "working tree on c5fa88598c18 (uncommitted engine or input changes)",
+   "dllSha256": "71a9bb4fa02a5545c0ded4ac785bb01e943058c0c0430f1347680e52286baa89",
+   "recording": "c024",
+   "zip": "TheSuborned-0.2.13.zip",
+   "sent": [
+    {
+     "device": "skys-macbook-air-1",
+     "at": "2026-10-20T13:57:54.240Z"
+    }
+   ],
+   "whatsNew": ""
   }
  ]
 }

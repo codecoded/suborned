@@ -31,6 +31,12 @@ namespace Suborned.Play
         public float followTurnStep = 45f;
         [Tooltip("Seconds the camera takes to catch up with the agent (smooth follow), and to swing in.")]
         public float followSmooth = 0.2f, followSwing = 0.5f;
+        [Tooltip("Sky 2026-10-20 (replaces brief 024's no auto-recentre): the chase camera swings behind the agent's heading as it moves; critically damped (no overshoot), this smooth time settles in about 0.5 s.")]
+        public float followChaseSmooth = 0.15f;
+        [Tooltip("Seconds after a drag-orbit or a Q/E turn before the camera eases back behind a moving agent.")]
+        public float followLookHold = 1f;
+        [Tooltip("The agent's ground speed (m/s) above which the camera chases its heading; below it the camera holds where it is.")]
+        public float followChaseSpeed = 0.5f;
 
         /// <summary>The follow view is on (the HUD hides its world marks; the camera paths that assume an orthographic camera stand down).</summary>
         public bool Following { get; private set; }
@@ -41,6 +47,7 @@ namespace Suborned.Play
         Overhead left;
         float fYaw, fYawFrom, fYawTo, fTurnStart = -1f, fDist, fSwingStart, fDragX; bool fDragging; int fAgent = -1;
         Vector3 fPivot, fPivotVel; Vector3 fSwingFromPos; Quaternion fSwingFromRot;
+        Vector3 fLast, fHeadVel; bool fHasLast; float fChaseVel, fLookUntil = -1f;
 
         /// <summary>Toggle the follow view (T, or a script).</summary>
         public void FollowToggle() { if (Following) FollowExit(); else FollowEnter(); }
@@ -52,7 +59,7 @@ namespace Suborned.Play
             turnDragging = false; grabbing = false;
             left = new Overhead { pos = cam.transform.position, rot = cam.transform.rotation, focus = focus, ortho = cam.orthographic, size = cam.orthographicSize, fov = cam.fieldOfView, near = cam.nearClipPlane, far = cam.farClipPlane, shadows = shadows && shadows.enabled };
             fAgent = FollowWho(); fPivot = FollowPoint(fAgent) ?? focus; fPivotVel = Vector3.zero;
-            fYaw = fYawFrom = fYawTo = yawNow; fTurnStart = -1f; fDist = fDistNow = followDistance; fDragging = false; // behind the agent, looking the way the overhead view looked
+            fYaw = fYawFrom = fYawTo = yawNow; fTurnStart = -1f; fDist = fDist > 0f ? fDist : followDistance; fDistNow = fDist; fDragging = false; fHasLast = false; fHeadVel = Vector3.zero; fChaseVel = 0f; fLookUntil = -1f; // Sky: the zoom is the player's setting, kept between visits // behind the agent, looking the way the overhead view looked
             fSwingFromPos = cam.transform.position; fSwingFromRot = cam.transform.rotation; fSwingStart = Time.unscaledTime;
             cam.orthographic = false; cam.fieldOfView = followFov; cam.nearClipPlane = 0.2f; cam.farClipPlane = followFar;
             if (shadows) shadows.enabled = false;
@@ -65,7 +72,7 @@ namespace Suborned.Play
         void FollowExit()
         {
             if (!Following) return;
-            Following = false; fAgent = -1; fDragging = false; FollowUnhide();
+            Following = false; fAgent = -1; fDragging = false; FollowUnhide(); dResume = false;
             cam.orthographic = left.ortho; cam.orthographicSize = left.size; cam.fieldOfView = left.fov; cam.nearClipPlane = left.near; cam.farClipPlane = left.far;
             cam.transform.SetPositionAndRotation(left.pos, left.rot);
             focus = left.focus; if (fade) fade.focus = focus;
@@ -97,7 +104,7 @@ namespace Suborned.Play
             if (!fDragging && controls.Held(kb, PlayAction.TurnDrag) && mouse.middleButton.wasPressedThisFrame) { fDragging = true; fDragX = x; fTurnStart = -1f; }
             if (fDragging)
             {
-                if (!mouse.middleButton.isPressed) fDragging = false;
+                if (!mouse.middleButton.isPressed) { fDragging = false; fLookUntil = Time.unscaledTime + followLookHold; } // a look-around: eases back behind the agent after followLookHold
                 else { fYaw += (x - fDragX) * turnDragDegPerPixel * 1080f / Mathf.Max(1f, Screen.height); fYawFrom = fYawTo = fYaw; fDragX = x; }
             }
             float wheel = mouse.scroll.ReadValue().y;
@@ -192,7 +199,7 @@ namespace Suborned.Play
             }
         }
 
-        void FollowTurn(int dir) { fYawFrom = fYaw; fYawTo += followTurnStep * dir; fTurnStart = Time.unscaledTime; }
+        void FollowTurn(int dir) { fYawFrom = fYaw; fYawTo += followTurnStep * dir; fTurnStart = Time.unscaledTime; fLookUntil = Time.unscaledTime + turnSeconds + followLookHold; }
 
         /// <summary>T in either view (under a modal too: the camera may look round there).</summary>
         /// <summary>T (brief 025): take control of the selected agent, or let go; under a modal, or in a plain follow view (the lab's button), the
@@ -200,7 +207,7 @@ namespace Suborned.Play
         bool FollowKey(Keyboard kb)
         {
             if (!controls.Down(kb, PlayAction.FollowView)) return false;
-            if (Driving) DriveToggle(); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter();
+            if (Driving) DriveLetGoToMap(); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter();
             return true;
         }
 
@@ -221,6 +228,20 @@ namespace Suborned.Play
                 float t = turnSeconds <= 0f ? 1f : Mathf.Clamp01((Time.unscaledTime - fTurnStart) / turnSeconds), s = t * t * (3f - 2f * t);
                 fYaw = Mathf.LerpAngle(fYawFrom, fYawTo, s); if (t >= 1f) { fYaw = fYawTo; fTurnStart = -1f; intentKey = ""; }
             }
+            // Sky 2026-10-20: the chase camera. The agent's drawn heading (its smoothed ground velocity); moving faster than followChaseSpeed, the
+            // yaw eases behind it (SmoothDampAngle: critically damped, no overshoot); standing still, the camera holds; a drag or a Q/E turn is a
+            // look-around that eases back followLookHold after it ends. Distance and pitch stay as set: only a wall on the line pulls the boom in.
+            if (FollowPoint(fAgent) is Vector3 raw)
+            {
+                if (fHasLast && dt > 1e-4f) { var v = (raw - fLast) / dt; v.y = 0f; fHeadVel = Vector3.Lerp(fHeadVel, v, 1f - Mathf.Exp(-dt / 0.12f)); }
+                fLast = raw; fHasLast = true;
+            }
+            if (!snap && !fDragging && fTurnStart < 0f && Time.unscaledTime >= fLookUntil && fHeadVel.magnitude > followChaseSpeed)
+            {
+                float target = Mathf.Atan2(fHeadVel.x, fHeadVel.z) * Mathf.Rad2Deg;
+                fYaw = Mathf.SmoothDampAngle(fYaw, target, ref fChaseVel, followChaseSmooth, Mathf.Infinity, dt); fYawFrom = fYawTo = fYaw;
+            }
+            else fChaseVel = 0f;
             var fwd = Quaternion.Euler(0f, fYaw, 0f) * Vector3.forward;
             // the boom pulls in when a wall, a planter or a tree bed stands between the agent and the camera, or beside the camera (the city has no
             // colliders: the engine's walk grid, read only, is the test); in at once, back out eased

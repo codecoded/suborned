@@ -26,7 +26,8 @@ namespace Suborned.Play
             if (Application.isEditor || Application.isBatchMode) return;
             var r = Screen.currentResolution;
             if (!Arg("-novsync")) QualitySettings.vSyncCount = 1; // the display's own rate, no tearing, no heat for frames nobody sees (-novsync: uncapped, for the proof's headroom)
-            if (Arg("-windowed")) Screen.SetResolution(r.width * 4 / 5 / 2 * 2, r.height * 4 / 5 / 2 * 2, FullScreenMode.Windowed);
+            if (CaptureSize.Captures) Debug.Log($"Game: display {r.width}x{r.height}; a capture run (CaptureSize sizes the window)");
+            else if (Arg("-windowed")) Screen.SetResolution(r.width * 4 / 5 / 2 * 2, r.height * 4 / 5 / 2 * 2, FullScreenMode.Windowed);
             else Screen.SetResolution(r.width, r.height, FullScreenMode.FullScreenWindow);
             Debug.Log($"Game: display {r.width}x{r.height} @{r.refreshRateRatio.value:0.#} Hz; {(Arg("-windowed") ? "windowed" : "full screen")}");
         }
@@ -35,6 +36,8 @@ namespace Suborned.Play
         static void Proof()
         {
             if (Application.isEditor || Application.isBatchMode) return;
+            if (ArgValue("-shots033") is string s33) { var sg = new GameObject("shots-033"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots033>().Dir = s33; return; } // briefs 030, 032, 033 (Latch)
+            if (ArgValue("-shots031") is string sd) { var sg = new GameObject("shots-031"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots031>().Dir = sd; return; } // brief 031's shots (Latch)
             var dir = ArgValue("-gameProof"); if (dir == null) return;
             var go = new GameObject("game-proof"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<GameProof>().Dir = dir;
         }
@@ -61,6 +64,7 @@ namespace Suborned.Play
             Directory.CreateDirectory(Dir);
             HandoverHost h = null; float t0 = Time.realtimeSinceStartup;
             while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write(null, "no host after 60 s"); Application.Quit(2); yield break; } yield return null; }
+            h.controls.conversations = ConversationScenes.Never; // brief 032: the proof measures play, never a conversation cutaway (its café spot played one)
             yield return new WaitForSecondsRealtime(3f); // the HUD built, the briefing up, the world streamed in
             log.Add($"briefing up: {h.ShowBriefing}, modal {h.Modal}, screen {Screen.width}x{Screen.height} {Screen.fullScreenMode}, HUD scale {HudScale()}");
             yield return Shot("briefing", "active");
@@ -93,10 +97,17 @@ namespace Suborned.Play
             // brief 025: take control of the Scout at street level (frame times while driven), E on Inez, let go; the session replays headless (game:check)
             var drive = new List<string>(); var session = new string[1];
             yield return DriveSpot(h, Dir, log, drive, session);
+            // Latch 2026-10-21: the input checks (a ground click while driven, WASD taking the stick back; a fire order stopping a walk)
+            var driveClick = new string[] { "null" }; var fireStop = new string[] { "null" };
+            ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}");
+            yield return ProofInput.DriveClick(h, log, driveClick);
+            yield return ProofInput.FireStop(h, log, fireStop);
+            var ringCheck = new string[] { "null" }; yield return ProofInput.RingCheck(h, log, ringCheck); // brief 038's done-check
+            ProofInput.Focusless(false);
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
             yield return PeopleCost(h, log, people, 6f, Dir);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}}}";
+            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
@@ -106,7 +117,7 @@ namespace Suborned.Play
         }
 
         /// <summary>Route G's orders up to the way out (briefs/013/play/route-g-by-hand.script.json): the fight starts on the walk out with Vale.</summary>
-        static readonly Suborned.Sim.Order[] RouteToFight =
+        internal static readonly Suborned.Sim.Order[] RouteToFight =
         {
             new() { Tick = 0, Op = "tech", Do = "move", To = "cabinet", Run = true }, new() { Tick = 0, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(4850, -2300) },
             new() { Tick = 0, Op = "scout", Do = "move", To = "d:Office approach" }, new() { Tick = 0, Op = "fixer", Do = "move", To = "crew:fixer" },
@@ -119,7 +130,7 @@ namespace Suborned.Play
         };
 
         /// <summary>Route A (contracts/missions/handover/routes/route-a.json) to the Fixer's call: Inez is turned, then summons the guard to her.</summary>
-        static readonly Suborned.Sim.Order[] RouteToCall =
+        internal static readonly Suborned.Sim.Order[] RouteToCall =
         {
             new() { Tick = 0, Op = "scout", Do = "move", To = "d:Courtyard", Run = true }, new() { Tick = 0, Op = "tech", Do = "move", To = "cabinet", Run = true },
             new() { Tick = 0, Op = "fixer", Do = "move", To = "d:Courtyard", Run = true }, new() { Tick = 0, Op = "enforcer", Do = "move", Point = new Suborned.Sim.Pt(4900, -1700) },
@@ -179,6 +190,20 @@ namespace Suborned.Play
                 log.Add($"follow-{spot}: " + HudToolkit.Shoot(Path.Combine(dir, "follow-" + spot), "rest"));
                 yield return null; while (HudToolkit.ShotBusy) yield return null;
                 if (h.Following) h.FollowToggle();
+            }
+            // an avenue: play zoom over the densest stretch of avenue palms (803 WashingtoniaPalm_Street, 19.2k tris, no LODs: the district's
+            // biggest frame-time risk), the clock running, 6 s of frames and a shot (overhead-avenue)
+            var palms = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude).Where(t => t.name == "DK_WashingtoniaPalm_Street").Select(t => t.position).ToList();
+            if (palms.Count > 0)
+            {
+                Vector3 best = palms[0]; int bn = -1;
+                for (int i = 0; i < palms.Count; i += 4) { int c = 0; foreach (var q in palms) if ((q - palms[i]).sqrMagnitude < 900f) c++; if (c > bn) { bn = c; best = palms[i]; } }
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.ClearHover(); h.LookAt(best); h.SetPaused(false);
+                var da = new List<float>(); var ga = new float[1];
+                yield return new WaitForSecondsRealtime(1f); yield return Sample(seconds, da, ga);
+                rows.Add(Row("avenue-overhead", da, ga[0])); log.Add($"overhead avenue ({bn} palms within 30 m of {best}): {1000f / da.Average():0.#} fps mean, p99 {da[(int)(da.Count * 0.99f)]:0.#} ms, gpu {ga[0]:0.##} ms");
+                h.SetPaused(true); while (HudToolkit.ShotBusy) yield return null;
+                log.Add("overhead-avenue: " + HudToolkit.Shoot(Path.Combine(dir, "overhead-avenue"), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null;
             }
         }
 
@@ -301,10 +326,129 @@ namespace Suborned.Play
             yield return null; while (HudToolkit.ShotBusy) yield return null;
         }
 
+        /// <summary>The pictures' size: the picture size when the run's window is another (CaptureSize, one pass), else the screen's.</summary>
+        static string Pictures => CaptureSize.Picture is Vector2Int p ? $"{p.x}x{p.y}" : $"{Screen.width}x{Screen.height}";
+
         void Write(string frames, string status)
         {
             var esc = string.Join(", ", log.Select(l => "\"" + l.Replace("\\", "\\\\").Replace("\"", "'") + "\""));
-            File.WriteAllText(Path.Combine(Dir, "proof.json"), $"{{\n \"schema\": \"suborned.game-proof/1\",\n \"status\": \"{status}\",\n \"unity\": \"{Application.unityVersion}\",\n \"product\": \"{Application.productName}\",\n \"screen\": \"{Screen.width}x{Screen.height}\",\n \"mode\": \"{Screen.fullScreenMode}\",\n \"hudScale\": {F(HudScale())},\n \"frames\": {frames ?? "null"},\n \"log\": [{esc}]\n}}\n");
+            File.WriteAllText(Path.Combine(Dir, "proof.json"), $"{{\n \"schema\": \"suborned.game-proof/1\",\n \"status\": \"{status}\",\n \"unity\": \"{Application.unityVersion}\",\n \"product\": \"{Application.productName}\",\n \"screen\": \"{Pictures}\",{(CaptureSize.Run is Vector2Int ? $"\n \"framesAt\": \"{Screen.width}x{Screen.height}\",\n \"framesHudScale\": {F(HudScale())}," : "")}\n \"mode\": \"{Screen.fullScreenMode}\",\n \"hudScale\": {(CaptureSize.Picture is Vector2Int pic ? F(Mathf.Max(1f, Mathf.Round(pic.y / 1080f))) : F(HudScale()))},\n \"frames\": {frames ?? "null"},\n \"log\": [{esc}]\n}}\n");
+        }
+    }
+
+    /// <summary>`-shots031 &lt;dir&gt;` (brief 031, Latch): day shots of the attention cues in the built player, then Quit. The briefing's Heat chip; the
+    /// Watch ring of each agent (Watch picked); the Enforcer standing still 4 m in front of the entrance camera (its lens and the callout at
+    /// noticed, wary and reporting), then the response's robots that come for the report (an old robot's own face); a fresh run with the Fixer
+    /// standing in the patrol robot's sweep (its stage face and the callout). Frame times at the two play spots. Orders go in as engine
+    /// orders, so each run is an ordinary session; shots.json logs what happened.</summary>
+    public sealed class Shots031 : MonoBehaviour
+    {
+        public string Dir = "";
+        readonly List<string> log = new(), rows = new();
+
+        IEnumerator Start()
+        {
+            Directory.CreateDirectory(Dir);
+            HandoverHost h = null; float t0 = Time.realtimeSinceStartup;
+            while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write("no host"); Application.Quit(2); yield break; } yield return null; }
+            yield return new WaitForSecondsRealtime(3f);
+            h.SetNight(false); h.IntelOpen = false; yield return null;
+            yield return Shot(h, "01-briefing-heat", "rest");
+            h.StartClock(); h.SetPaused(true); yield return new WaitForSecondsRealtime(0.5f);
+            var cam = h.View; float play = cam ? cam.orthographicSize : 14f;
+            // the Watch ring for each agent, Watch picked (the Fixer's is his fifth verb)
+            for (int k = 0; k < 4; k++)
+            {
+                var id = (Suborned.Sim.OpId)k; h.Select(id, false); var plate = h.PlateOf(id); int slot = Array.FindIndex(plate, x => x.Id == "watch");
+                h.Pick(slot); h.ClearHover(); if (h.Views.Find("op/" + Suborned.Sim.Op.Name(id)) is Transform at) h.LookAt(at.position);
+                if (cam) cam.orthographicSize = k is 0 or 2 ? 18.5f : 14f; // the Scout's 30 m and the Tech's 24 m at the widest play zoom
+                yield return new WaitForSecondsRealtime(0.3f);
+                yield return Shot(h, $"0{2 + k}-ring-{Suborned.Sim.Op.Name(id)}", "rest"); h.Cancel();
+            }
+            if (cam) cam.orthographicSize = play;
+            // the entrance camera: the Enforcer idles in front of it
+            var g = h.Game; var c = g.S.Cameras.Find(x => x.Id == "entrance"); const string camW = "camera:entrance";
+            var spot = Spot(g, c.At, c.Facing, 400, "enforcer", p => g.InSight(camW, p, false) && !g.InSight("guard", p, false) && !g.InSight("patrol", p, false));
+            log.Add($"entrance camera spot {spot}");
+            if (spot.HasValue)
+            {
+                h.Issue(new Suborned.Sim.Order { Op = "enforcer", Do = "move", Point = spot.Value }); Arrive(h, 3, 1200);
+                h.Select(Suborned.Sim.OpId.Enforcer, false); h.TurnSnap(0); h.LookAt(h.Views.Find("camera/entrance").position);
+                foreach (var (stage, name) in new[] { (1, "06-camera-noticed"), (2, "07-camera-wary"), (3, "08-camera-reporting") })
+                {
+                    int cap = 0; while (h.Cue(camW).stage < stage && cap++ < 900 && !g.Over) { h.RunTo(g.Tick + 1); if (cap % 10 == 0) yield return null; }
+                    yield return null; yield return null; log.Add($"{name}: cue {h.Cue(camW)} at {Suborned.Sim.Report.Clock(g.Tick)}, callouts {h.Callouts.Count}");
+                    yield return Shot(h, name, "rest");
+                    if (stage == 1) { var ds = new List<float>(); var gpu = new float[1]; h.SetPaused(false); yield return GameProof.Sample(6f, ds, gpu); h.SetPaused(true); rows.Add(Row("office-front-yaw30", ds, gpu[0])); }
+                }
+                // an old robot: the first report brought the patrol robot; a second, from the square's mast (within robot reach of the square's
+                // dock), brings a porter from the dock: the Enforcer idles in the mast's sight until one of the response's robots has him
+                var mast = g.S.Cameras.Find(x => x.Id == "mast-314");
+                var ms = mast == null ? null : Spot(g, mast.At, mast.Facings.Length > 0 ? mast.Facings[0] : mast.Facing, 600, "enforcer", p => g.InSight("camera:mast-314", p, false));
+                log.Add($"mast spot {ms}");
+                if (ms.HasValue) { h.Issue(new Suborned.Sim.Order { Op = "enforcer", Do = "move", Point = ms.Value }); Arrive(h, 3, 1500); }
+                string robot = null; int cap2 = 0;
+                while (robot == null && cap2++ < 3000 && !g.Over) { h.RunTo(g.Tick + 1); foreach (var u in g.Units) if (u.Robot && !u.Patrol && h.Cue(u.Id).stage >= 1) { robot = u.Id; break; } if (cap2 % 10 == 0) yield return null; }
+                log.Add($"old robot: {robot ?? "none"} at {Suborned.Sim.Report.Clock(g.Tick)}; units {string.Join(",", g.Units.ConvertAll(u => u.Id + ":" + u.St))}");
+                if (robot != null && h.Views.Find("unit/" + robot) is Transform rt)
+                {
+                    yield return null; yield return null; h.Select(Suborned.Sim.OpId.Enforcer, false); h.LookAt(rt.position); yield return Shot(h, "10-robot-old-noticed", "rest");
+                    if (cam) { cam.orthographicSize = 7f; yield return Shot(h, "11-robot-old-close", "rest"); cam.orthographicSize = play; }
+                }
+            }
+            // the patrol robot: a fresh run; the Fixer stands 4 m out in front of the middle of its sweep, out of the camera's and the guard's sight
+            h.Begin(); yield return null; h.StartClock(); h.SetPaused(true); h.IntelOpen = false; g = h.Game;
+            var pp = g.PatrolPose().Value; var mid = Suborned.Sim.G.Lerp(g.S.Stand(g.S.PatrolA), g.S.Stand(g.S.PatrolB), 1, 2);
+            var ps = Spot(g, mid, g.S.PatrolFacing, 400, "fixer", p => !g.InSight(camW, p, false) && !g.InSight("guard", p, false));
+            log.Add($"patrol spot {ps} (sweep at {pp.pos})");
+            if (ps.HasValue)
+            {
+                h.Issue(new Suborned.Sim.Order { Op = "fixer", Do = "move", Point = ps.Value }); Arrive(h, 1, 1200);
+                h.Select(Suborned.Sim.OpId.Fixer, false); h.TurnSnap(0);
+                int cap = 0; while (h.Cue("patrol").stage < 1 && cap++ < 1800 && !g.Over) { h.RunTo(g.Tick + 1); if (cap % 10 == 0) yield return null; }
+                yield return null; yield return null;
+                log.Add($"patrol: cue {h.Cue("patrol")} at {Suborned.Sim.Report.Clock(g.Tick)}, callouts {h.Callouts.Count}");
+                if (h.Views.Find("patrol") is Transform pt) h.LookAt(pt.position);
+                yield return Shot(h, "12-patrol-noticed", "rest");
+                if (cam) { cam.orthographicSize = 7f; yield return Shot(h, "13-patrol-close", "rest"); cam.orthographicSize = play; }
+                var ds = new List<float>(); var gpu = new float[1]; h.SetPaused(false); yield return GameProof.Sample(6f, ds, gpu); h.SetPaused(true); rows.Add(Row("patrol-sweep-yaw30", ds, gpu[0]));
+                int cap3 = 0; while (h.Cue("patrol").stage < 2 && cap3++ < 600 && !g.Over) { h.RunTo(g.Tick + 1); if (cap3 % 10 == 0) yield return null; }
+                yield return null; yield return null; log.Add($"patrol: cue {h.Cue("patrol")} at {Suborned.Sim.Report.Clock(g.Tick)}");
+                if (h.Cue("patrol").stage >= 2) { if (h.Views.Find("patrol") is Transform pt2) h.LookAt(pt2.position); yield return Shot(h, "14-patrol-wary", "rest"); }
+            }
+            Write("ok"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(0);
+        }
+
+        static void Arrive(HandoverHost h, int k, int cap) { int g = 0; while ((h.Game.Ops[k].Walk != null || h.Game.Ops[k].Busy != null) && g++ < cap && !h.Game.Over) h.RunTo(h.Game.Tick + 1); }
+
+        /// <summary>The free ground nearest `cm` out along `facing` from `from` that the agent can walk to and `ok` accepts (within 3 m of it).</summary>
+        static Suborned.Sim.Pt? Spot(Suborned.Sim.Game g, Suborned.Sim.Pt from, Suborned.Sim.Pt facing, int cm, string who, Func<Suborned.Sim.Pt, bool> ok)
+        {
+            double len = Math.Sqrt((double)facing.X * facing.X + (double)facing.Y * facing.Y); if (len < 1) return null;
+            var aim = new Suborned.Sim.Pt(from.X + (int)(facing.X / len * cm), from.Y + (int)(facing.Y / len * cm));
+            var grid = g.S.Grid; var me = g.Ops[(int)Suborned.Sim.Op.Parse(who)].Pos; Suborned.Sim.Pt? best = null; long bd = long.MaxValue;
+            for (int dx = -300; dx <= 300; dx += 25) for (int dy = -300; dy <= 300; dy += 25)
+            {
+                var p = new Suborned.Sim.Pt(aim.X + dx, aim.Y + dy); long d = (long)dx * dx + (long)dy * dy; if (d >= bd || !grid.Free(p) || !ok(p)) continue;
+                if (grid.Route(me, p) == null) continue; best = p; bd = d;
+            }
+            return best;
+        }
+
+        IEnumerator Shot(HandoverHost h, string name, string state)
+        {
+            yield return new WaitForSecondsRealtime(0.35f); // the callout's 0.15 s fade-in and its 0.1 s ease after a pan or a zoom (it holds 2 s or more)
+            while (HudToolkit.ShotBusy) yield return null;
+            log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(Dir, name), state));
+            yield return null; while (HudToolkit.ShotBusy) yield return null;
+        }
+
+        static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);
+        static string Row(string spot, List<float> ds, float gpu) => $"{{\"spot\": \"{spot}\", \"frames\": {ds.Count}, \"meanMs\": {F(ds.Average())}, \"fps\": {F(1000f / ds.Average())}, \"p99Ms\": {F(ds[(int)(ds.Count * 0.99f)])}, \"gpuMs\": {F(gpu)}}}";
+        void Write(string status)
+        {
+            var esc = string.Join(", ", log.Select(l => "\"" + l.Replace("\\", "\\\\").Replace("\"", "'") + "\""));
+            File.WriteAllText(Path.Combine(Dir, "shots.json"), $"{{\n \"schema\": \"suborned.shots-031/1\",\n \"status\": \"{status}\",\n \"screen\": \"{Screen.width}x{Screen.height}\",\n \"frames\": [{string.Join(", ", rows)}],\n \"log\": [{esc}]\n}}\n");
         }
     }
 }

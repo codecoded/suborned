@@ -1,0 +1,3 @@
+CloseUps from 11285 placed kit instances, nearest the block at (-150.00, 0.00, -235.00)
+robot RobotWaiter: DK_RobotWaiter_Play at (-142.89, 0.18, -217.61) (19 m from the block)
+  robot faces: 3 screens, 6 head parts; mood at 11.2 s

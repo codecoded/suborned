@@ -1,0 +1,32 @@
+suture probes · suborned.sim/0.10.0 · inputs d001d60896991589
+preset          run                       result            end      T  A  St     down hp-lost hits foes shots  verdict
+today           L3                        success           4:53.3   26  2  2→-2     1    33 %    6    5    36  pass (heavy debrief)
+today           L3:focus                  success           4:41.2   26  2  2→-2     0    22 %    4    5    34  FAIL  CHEAP-WIN — no op down or captured, health lost 22 % < 40, no open case
+today           L3:swap                   success           4:23.5   39  2  2→-2     3    66 %   12    4    32  pass (heavy debrief)
+today           L3:kite                   success           4:40.7   25  2  2→0      0     0 %    0    5    46  FAIL  CHEAP-WIN — no op down or captured, health lost 0 % < 40, no open case
+today           L3:alpha+focus            success           4:41.2   26  2  2→-2     0    22 %    4    5    34  FAIL  CHEAP-WIN — no op down or captured, health lost 22 % < 40, no open case
+today           L3:alpha+focus+swap       failure enforcer-down 3:55.4   18  2  2→-2     4   100 %   18    1     9  pass (fail)
+today           L3:alpha+focus+kite       success           4:40.7   25  2  2→0      0     0 %    0    5    46  FAIL  CHEAP-WIN — no op down or captured, health lost 0 % < 40, no open case
+today           L3:panic                  success           4:53.4   26  2  2→-2     1    33 %    6    5    36  pass (heavy debrief)
+today           L1c                       failure enforcer-down 4:15.3   43  2  2→-2     1    33 %    6    7    42  pass (fail)
+today           L1c:alpha+focus           failure enforcer-down 4:15.3   43  2  2→-2     1    33 %    6    7    42  pass (fail)
+today           L1c:alpha+focus+swap      failure enforcer-down 3:43.0   31  2  2→-1     1    38 %    7    5    48  pass (fail)
+today           L1c:kite+focus            failure entry-seen-camera 2:32.7   15  2  2→-1     0    16 %    3    3    19  pass (fail)
+today           L4c:alpha+focus+swap      failure enforcer-down 4:49.8   11  2  2→-1     1    38 %    7    0    22  pass (fail)
+today           L4c:kite+focus            failure sealed    7:21.2   32  3  2→-2     0    27 %    5    5    32  pass (fail)
+lab             L3                        success           4:51.6   26  2  2→-2     1    44 %    8    5    34  pass (heavy debrief)
+lab             L3:focus                  success           4:40.5   26  2  2→-2     1    38 %    7    5    32  pass (heavy debrief)
+lab             L3:swap                   failure enforcer-down 3:52.2   26  2  2→-2     4   100 %   18    3    25  pass (fail)
+lab             L3:kite                   success           4:54.6   25  2  2→0      0     5 %    1    5    42  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab             L3:alpha+focus            success           4:39.2   26  2  2→-2     1    33 %    6    5    33  pass (heavy debrief)
+lab             L3:alpha+focus+swap       success           4:43.2   26  2  2→-2     0    33 %    6    5    25  FAIL — no op down or captured, health lost 33 % < 40, no open case
+lab             L3:alpha+focus+kite       success           4:54.8   26  2  2→-1     0     5 %    1    5    43  FAIL  CHEAP-WIN — no op down or captured, health lost 5 % < 40, no open case
+lab             L3:volley+focus+alpha     success           4:39.2   26  2  2→-2     1    33 %    6    5    33  pass (heavy debrief)
+lab             L3:panic                  success           4:51.6   26  2  2→-2     1    44 %    8    5    34  pass (heavy debrief)
+lab             L1c                       failure enforcer-down 4:15.8   43  2  2→-2     1    44 %    8    7    36  pass (fail)
+lab             L1c:alpha+focus           failure enforcer-down 4:15.8   43  2  2→-2     1    44 %    8    7    37  pass (fail)
+lab             L1c:alpha+focus+swap      failure enforcer-down 4:13.8   31  2  2→-2     1    44 %    8    5    25  pass (fail)
+lab             L1c:kite+focus            failure entry-seen-camera 2:32.7   15  2  2→-1     0     5 %    1    3    10  pass (fail)
+lab             L4c:alpha+focus+swap      failure sealed    7:23.2   32  3  2→-2     0     5 %    1    5    17  pass (fail)
+lab             L4c:kite+focus            failure sealed    7:23.2   32  3  2→-2     0    11 %    2    5    22  pass (fail)
+every probe replays identically from its order log

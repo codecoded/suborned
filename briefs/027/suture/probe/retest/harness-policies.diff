@@ -1,0 +1,57 @@
+--- sim/Suborned.Sim/ScenariosFightLabAdv.cs	2026-10-20 15:55:31
++++ scratch/Suborned.Sim/ScenariosFightLabAdv.cs	2026-10-20 16:26:49
+@@ -14,8 +14,8 @@
+     /// <summary>An adversarial player policy (Suture, briefs/027/suture/balance.md §1): the matrix player plus focus, reset, cycle, kite, enfkite, clear.</summary>
+     public sealed class LabPolicy
+     {
+-        public bool Cycle, Focus, Reset, Kite, EnfKite, Clear; public string Name = "";
+-        public static LabPolicy Parse(string s) => new LabPolicy { Name = s, Focus = s.Contains("focus"), Reset = s.Contains("reset") || s.Contains("cycle"), Cycle = s.Contains("cycle"), Kite = s.Contains("kite") && !s.Contains("enfkite") || s.Contains("allkite"), EnfKite = s.Contains("enfkite") || s.Contains("allkite"), Clear = s.Contains("clear") || s.Contains("carbine") };
++        public bool Cycle, Focus, Reset, Kite, EnfKite, Clear, EnfGo, CarFree, Units, RawReset, RunKite; public string Name = "";
++        public static LabPolicy Parse(string s) => new LabPolicy { Name = s, Focus = s.Contains("focus"), Reset = s.Contains("reset") || s.Contains("cycle"), Cycle = s.Contains("cycle"), Kite = s.Contains("kite") && !s.Contains("enfkite") || s.Contains("allkite"), EnfKite = s.Contains("enfkite") || s.Contains("allkite"), Clear = s.Contains("clear") || s.Contains("carbine"), EnfGo = s.Contains("enfgo"), CarFree = s.Contains("carfree"), Units = s.Contains("units"), RawReset = s.Contains("rawreset"), RunKite = s.Contains("runkite") };
+     }
+ 
+     public static partial class Scenarios
+@@ -84,11 +84,12 @@
+                     {
+                         lastNext!.TryGetValue(name, out int ln);
+                         if (e.Gun.NextShot != ln && e.Gun.NextShot == G0.Tick - 1 + w.Every) { lastNext[name] = e.Gun.NextShot; // a shot went last tick (Keel: Suture's test was "NextShot moved", which an aim also does; at lab-acc-start 0 a fresh aim reads under 500 and the script re-aimed every tick and never fired) if (p.Cycle && e.Gun.Acc < G0.R.AccStart && e.Gun.Target == e.Gun.Order) { string alt = ""; foreach (var id in ts) { if (id == e.Gun.Order) continue; var at = G0.PosOf(id)!.Value; if (G.D2(e.Pos, at) <= (long)(w.MaxCm - 50) * (w.MaxCm - 50) && G0.S.Sight(e.Pos, at, G0.R.Eye)) { alt = id; break; } } if (alt.Length > 0) { G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "fire", Target = alt }); Resets++; continue; } }
+-                        if (e.Gun.Acc < G0.R.AccStart && e.Gun.Target == e.Gun.Order) { string t0 = e.Gun.Order; G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "cease" }); G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "fire", Target = t0 }); Resets++; } }
++                        if ((p.RawReset || e.Gun.Acc < G0.R.AccStart) && e.Gun.Target == e.Gun.Order) { string t0 = e.Gun.Order; G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "cease" }); G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "fire", Target = t0 }); Resets++; } }
+                     }
+                     string near = ""; Pt np = default; long bd = long.MaxValue;
+                     foreach (var id in ts) { var at = G0.PosOf(id)!.Value; long d = G.D2(e.Pos, at); if (d < bd) { bd = d; near = id; np = at; } }
+                     if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = G0.S.Stand(G0.S.GetawayCar) }); continue; }
++                    if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.EnfGo) { var st = G0.S.Stand(G0.S.GetawayCar); if (e.Walk == null && !G.Within(e.Pos, G0.S.At(G0.S.GetawayCar), G0.R.AtReachCm)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = st }); continue; }
+                     if (name == "enforcer" && G0.Vale == ValeAt.WithEnforcer && p.EnfKite)
+                     {
+                         string thr = ""; Pt tp = default; long td = long.MaxValue;
+@@ -107,7 +108,7 @@
+                         {
+                             long dx = e.Pos.X - tp.X, dy = e.Pos.Y - tp.Y; double n = Math.Sqrt((double)dx * dx + (double)dy * dy); if (n < 1) n = 1;
+                             var away = G0.S.Grid.NearestFree(new Pt(e.Pos.X + (int)(dx / n * 400), e.Pos.Y + (int)(dy / n * 400)));
+-                            if (away.HasValue && (e.Walk == null || !G.Within(e.Walk.End, away.Value, 150))) { G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = away.Value }); Kites++; }
++                            if (away.HasValue && (e.Walk == null || !G.Within(e.Walk.End, away.Value, 150))) { G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = away.Value, Run = p.RunKite }); Kites++; }
+                         }
+                         else if (e.Walk != null && e.Gun.Order.Length > 0 && G0.PosOf(e.Gun.Order) is Pt op2 && G.Within(e.Pos, op2, w.MaxCm - 100) && G0.S.Sight(e.Pos, op2, G0.R.Eye)) G0.Issue(new Order { Tick = G0.Tick, Op = name, Do = "move", Point = e.Pos });
+                     }
+@@ -133,17 +134,17 @@
+             }
+         }
+ 
+-        static void SHold(Run r, Func<bool> done, int limitS, bool advance, params string[] ops) => SEngage(r, () => Foes(r), done, limitS, ops, false, advance);
++        static void SHold(Run r, Func<bool> done, int limitS, bool advance, params string[] ops) => SEngage(r, () => { var l = Foes(r); if (pol != null && pol.Units) foreach (var u in r.G.Units) if (!u.Legacy && !u.Patrol && !u.Gun.Down && u.St != "gone" && r.G.PosOf(u.Id).HasValue && !l.Contains(u.Id)) l.Add(u.Id); return l; }, done, limitS, ops, false, advance);
+ 
+         static void SFightItOut(Run r, int limitS, string[] with)
+         {
+             var G0 = r.G;
+-            Func<bool> free = () => !G0.CarHeld() && G0.FightOverTick != int.MaxValue / 4;
++            Func<bool> free = pol != null && pol.CarFree ? () => !G0.CarHeld() : () => !G0.CarHeld() && G0.FightOverTick != int.MaxValue / 4;
+             var ops = new List<string> { "enforcer" }; ops.AddRange(with);
+             int end = G0.Tick + Game.T(limitS); var car = G0.S.At(G0.S.GetawayCar);
+             while (!G0.Over && G0.Tick < end)
+             {
+-                SEngage(r, () => { var l = new List<string>(); foreach (var h in G0.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(r.CityGunmen()); return l; }, free, Math.Max(1, (end - G0.Tick) / Game.Hz), ops.ToArray(), true);
++                SEngage(r, () => { var l = new List<string>(); foreach (var h in G0.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(r.CityGunmen()); if (pol != null && pol.Units) foreach (var u in G0.Units) if (!u.Legacy && !u.Patrol && !u.Gun.Down && u.St != "gone" && G0.PosOf(u.Id).HasValue && !l.Contains(u.Id)) l.Add(u.Id); return l; }, free, Math.Max(1, (end - G0.Tick) / Game.Hz), ops.ToArray(), true);
+                 if (G0.Over || G0.Tick >= end) return;
+                 if (!G.Within(r.Op("enforcer").Pos, car, G0.R.AtReachCm))
+                 {

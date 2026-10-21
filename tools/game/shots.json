@@ -1,0 +1,18 @@
+{
+  "schema": "suborned.shots/1",
+  "note": "The shots `bun run batch` takes in the built player, in this order (tools/game/shots.schema.ts says what each key does). A round that wants a new picture adds a row here. Shots with the same start go on in one run while their ticks do not go back; a shot at an earlier tick restarts the run. Views are keys of the host's figures (op/scout, waitress, guard, car/getaway, camera/entrance, patrol). Captures are 1920x1080 (the size the HUD budget is defined at) unless a row gives size; world-only shots and clip frames are JPEG, HUD shots PNG. First written 2026-10-21, before the first run in the player: adjust a row that frames badly.",
+  "defaults": { "hud": true },
+  "shots": [
+    { "name": "briefing-day", "briefing": true, "tick": 0, "note": "the briefing card" },
+    { "name": "start-overhead-day", "tick": 0, "perf": 4, "note": "play zoom at the opening, frame times" },
+    { "name": "start-overhead-night", "tick": 0, "night": true },
+    { "name": "cafe-front-day", "script": "route-a-board", "night": false, "tick": 600, "focus": "waitress", "yaw": 0 },
+    { "name": "office-front-yaw210", "script": "route-a-board", "tick": 1200, "focus": "camera/entrance", "yaw": 2, "note": "the Records Office front is played at yaw 210" },
+    { "name": "plate-pay-armed", "script": "route-a-board", "tick": 1200, "select": "fixer", "arm": "pay", "focus": "waitress", "yaw": 0, "pointer": [0.62, 0.42], "state": "active" },
+    { "name": "follow-scout-cafe", "script": "route-a-board", "tick": 600, "view": "follow", "agent": "scout", "face": "waitress" },
+    { "name": "getaway-car-yaw210", "script": "route-a-board", "tick": 2600, "focus": "car/getaway", "yaw": 2 },
+    { "name": "fight-loud-checkpoint", "checkpoint": "cp-loud", "preset": "today", "tick": 0, "select": "enforcer", "focus": "op/enforcer", "note": "the loud fight checkpoint as it loads" },
+    { "name": "walk-clip-follow", "script": "route-a-board", "tick": 200, "view": "follow", "agent": "scout", "face": "waitress", "clip": { "seconds": 3, "fps": 15 }, "hud": false, "note": "3 s at real time" },
+    { "name": "scout-side-pose", "skip": true, "hud": false, "script": "route-a-board", "tick": 400, "pose": { "view": "op/scout", "offset": [4.2, 1.1, 0], "lookOffset": [0, 0.9, 0], "fov": 39.6 }, "size": [960, 1080], "note": "a free side camera on the Scout (what out/latch/gamecap2.cs did); remove skip to take it" }
+  ]
+}

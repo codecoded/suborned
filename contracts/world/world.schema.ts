@@ -15,6 +15,7 @@ export type World = {
   ground: {
     roads: Road[]; foot: Road[]; medians: Mass[]; circuses: Circus[];
     water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`
+    pieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces, each with a kit ref (kinds kerb, pave-flags, tree-pit, drain, manhole, tactile, terrazzo): paving laid on the plot slabs and the carriageway, not furniture; z = the piece's base
     plots: Mass[]; // one 0.18 m pavement slab per plot (the ground a plot stands on, courts and setback strips included)
     drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
@@ -57,6 +58,8 @@ export type Mass = {
   fade?: true;
   /** Civic only: the id of the kit mass that is this mass's ground storey. This mass starts above it (its `base` is that piece's top): draw no plinth, shopfront or ground floor at its base. */
   groundBy?: string;
+  /** Civic only (brief 028): this mass stays for its id, footprint and clearance but draws nothing: the piece beside it carries it (`BoardingPavilion_TB_Square` has its own supports, so the two `square-pavilion-support-*` piers are hidden). */
+  hidden?: true;
   /** Civic only: a material this mass draws in place of its kit piece's own, by the piece's material slot (`{ DK_Water: 'DK_Pool_Civic' }` on the atom fountain). Absent = the piece's own. */
   materials?: Record<string, string>;
 }; // civic objects (grammar §11): `kit` stands in for the extrusion (the ring stays the footprint)

@@ -9,7 +9,8 @@ SIDE = (90, 0, 90)  # extrude frame: local X -> world Y, local Y -> world Z, ext
 FRONT = (90, 0, 0)  # local XY -> world XZ (a panel facing -Y), extrusion -> world -Y
 
 
-@asset("Bollard", "Street", bevel=0.0, lean=0.2, cap=400)
+# 20 Oct (Sky: compression goes through Sky): the full old bollard, no lean and no 400-tri cap (the old generator's settings give the old 5116 tris)
+@asset("Bollard", "Street")
 def bollard(s):
     s.lathe([(0, 0), (0.27, 0), (0.27, 0.025), (0.25, 0.045), (0.16, 0.055), (0, 0.055)], pal.Chrome, seg=48)
     s.lathe(ring(0.17, 0.215, 0.04, 0.058), pal.Enamel_Red, seg=48, cap_bottom=False, cap_top=False)
@@ -36,25 +37,26 @@ def streetlamp(s):
         s.lathe([(0.045, 0.12)] + dome(0.045, 0.16, 0.05), pal.Chrome, seg=16)
 
 
-@asset("Hydrant", "Street", bevel=0.0, lean=0.2, cap=400)
+# 20 Oct (Sky, brief 026): the old hydrant back: no lean (40-side lathes, not 8) and no 400-tri cap (the collapse decimate made the body an octagon); bright enamel red
+@asset("Hydrant", "Street")
 def hydrant(s):
     s.lathe([(0, 0), (0.2, 0), (0.2, 0.03), (0.17, 0.05), (0, 0.05)], pal.Chrome, seg=40)
     body = [(0.15, 0.05), (0.15, 0.085), (0.125, 0.11), (0.125, 0.52), (0.14, 0.535), (0.14, 0.585),
             (0.128, 0.6)] + dome(0.128, 0.6, 0.11, n=8)[1:]
-    s.lathe(body, pal.Enamel_Red, seg=40)
+    s.lathe(body, pal.Enamel_RedBright, seg=40)
     s.lathe(ring(0.138, 0.152, 0.535, 0.585), pal.Chrome, seg=40, cap_bottom=False, cap_top=False)
     s.lathe([(0.055, 0.68), (0.055, 0.735), (0.038, 0.755), (0, 0.76)], pal.Chrome, seg=24)
     s.extrude([(0.02 * c, 0.02 * d) for c, d in ((1, -.58), (1, .58), (0, 1.15), (-1, .58), (-1, -.58), (0, -1.15))],
               0.76, 0.79, pal.Chrome)
     for side, rot in ((1, (0, 90, 0)), (-1, (0, -90, 0))):
         with s.at((0.1 * side, 0, 0.4), rot):
-            s.lathe([(0.052, 0), (0.052, 0.07)], pal.Enamel_Red, seg=24, cap_bottom=False)
+            s.lathe([(0.052, 0), (0.052, 0.07)], pal.Enamel_RedBright, seg=24, cap_bottom=False)
             s.lathe([(0.064, 0.07), (0.064, 0.105), (0.05, 0.115), (0, 0.115)], pal.Chrome, seg=24)
         chain = [(0.19 * side, -0.03, 0.37), (0.17 * side, -0.07, 0.3), (0.13 * side, -0.08, 0.3),
                  (0.11 * side, -0.07, 0.34)]
         s.sweep(fillet(chain, 0.03, n=4, closed=False), 0.006, pal.Steel, seg=6)
     with s.at((0, -0.1, 0.34), (90, 0, 0)):
-        s.lathe([(0.068, 0), (0.068, 0.07)], pal.Enamel_Red, seg=28, cap_bottom=False)
+        s.lathe([(0.068, 0), (0.068, 0.07)], pal.Enamel_RedBright, seg=28, cap_bottom=False)
         s.lathe([(0.08, 0.07), (0.08, 0.11), (0.062, 0.122), (0, 0.122)], pal.Chrome, seg=28)
 
 

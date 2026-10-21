@@ -25,6 +25,12 @@ namespace Suborned.Sim
         public readonly List<string> Untie = new List<string>(); // roles whose lover tie (and affair) a test cuts: "with no tie, the call doesn't pull him"
         public int? Security;           // brief 013: the security level 0..4 a scenario fixes (else the district's base + the mission's bonus)
         public int? Standing;           // brief 014: the district's Standing at the start, as a campaign hands it on (else rulebook standing.start)
+        /// <summary>Brief 031 §2.1: the cell's Heat (campaign Trail + Menace) at the start, fixed for the mission; it picks the attention band.
+        /// Null: the mission's start.heat (site heat), else 0. Once a campaign layer exists it writes this from the debrief.</summary>
+        public int? Heat;
+        /// <summary>Tuning.md §11.5 (engine 0.17.0): the follow setting at the start: true, followers lock the driven agent's target at a press;
+        /// false, they fire with its trigger. Null: off. Logged as a follow order when it changes in play. Hashed when set.</summary>
+        public bool? FollowLock;
         /// <summary>Brief 022: the server's round. Null: the mission's data decides (on when the site carries a rounds file). false: off, the
         /// migration gate only (rounds off plays exactly as before the round existed); no recorded route sets it.</summary>
         public bool? Rounds;
@@ -36,13 +42,36 @@ namespace Suborned.Sim
         /// of every pace, 250..4000), onBusy (cancel, hold), onRelease (stand, resume), gap (cm, 0 off). Null: the rulebook's. Hashed when set.</summary>
         public int? DrivePace, DriveGap; public string? DriveOnBusy, DriveOnRelease;
         public string? RivalsPublic;    // fight.public: how the public sees the rivals, as a scenario fixes it (else site rivals.public, else fight.rivalsPublic)
+        /// <summary>Brief 027 playground (EXPERIMENTAL, rulebook fight.lab): the fight lab for this run. Off (the default, and today's preset): every
+        /// rule is today's v0.24 and nothing below is read or hashed. On: the rulebook's fight.lab with these switches over its defaults (null: the
+        /// rulebook's): healthScale, pips, stances (two, three), then (free, stop), close, charge, field, policeWarning, hostilesFireMoving, coverSnap (B5), kite (F2), and the
+        /// loadout (per operative: sidearm, carbine, machine, riot, rifle or none). Hashed into the start state only when on.</summary>
+        public bool FightLabOn; public int? LabHealthScale; public bool? LabPips, LabClose, LabCharge, LabField, LabWarn, LabFireMoving, LabCoverSnap, LabKite; public string? LabStances, LabThen;
+        public readonly string?[] LabLoadout = new string?[4];
         /// <summary>For a behaviour-only comparison across brief 013 (suborned-sim hashes --legacy-start): leave the security level out of the
         /// canonical start, as the start states before it had none. Never set in play.</summary>
         public static bool LegacyCanonical;
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock");
+            if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
+            {
+                fl.Only("on", "healthScale", "pips", "stances", "then", "close", "charge", "field", "policeWarning", "hostilesFireMoving", "coverSnap", "kite", "loadout");
+                s.FightLabOn = fl["on"].Bool();
+                if (fl.Opt("healthScale") is JNode hsn) { s.LabHealthScale = hsn.Int(); if (s.LabHealthScale < 1 || s.LabHealthScale > 100) throw new FormatException($"{hsn.Path}: healthScale 1..100"); }
+                if (fl.Opt("pips") is JNode x1) s.LabPips = x1.Bool();
+                if (fl.Opt("close") is JNode x2) s.LabClose = x2.Bool();
+                if (fl.Opt("charge") is JNode x3) s.LabCharge = x3.Bool();
+                if (fl.Opt("field") is JNode x4) s.LabField = x4.Bool();
+                if (fl.Opt("policeWarning") is JNode x5) s.LabWarn = x5.Bool();
+                if (fl.Opt("hostilesFireMoving") is JNode x6) s.LabFireMoving = x6.Bool();
+                if (fl.Opt("coverSnap") is JNode x9) s.LabCoverSnap = x9.Bool(); // brief 027 B5
+                if (fl.Opt("kite") is JNode x10) s.LabKite = x10.Bool(); // brief 027 F2 (Pulse kite-response.md)
+                if (fl.Opt("stances") is JNode x7) { s.LabStances = x7.Str(); if (s.LabStances != "two" && s.LabStances != "three") throw new FormatException($"{x7.Path}: stances two or three"); }
+                if (fl.Opt("then") is JNode x8) { s.LabThen = x8.Str(); if (s.LabThen != "free" && s.LabThen != "stop") throw new FormatException($"{x8.Path}: then free or stop"); }
+                if (fl.Opt("loadout") is JNode lo) { lo.Only("scout", "fixer", "tech", "enforcer"); for (int q = 0; q < 4; q++) if (lo.Opt(Sim.Op.Name((OpId)q)) is JNode a) s.LabLoadout[q] = a.Str(); }
+            }
             if (n.Opt("drive") is JNode dr)
             {
                 dr.Only("pace", "onBusy", "onRelease", "gap");
@@ -59,6 +88,8 @@ namespace Suborned.Sim
             }
             if (n.Opt("rounds") is JNode ro) s.Rounds = ro.Bool();
             if (n.Opt("rivalsPublic") is JNode rp) { s.RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, s.RivalsPublic) < 0) throw new FormatException($"{rp.Path}: rivalsPublic is one of {string.Join(", ", Rules.RivalsPublics)}"); }
+            if (n.Opt("followLock") is JNode fk) s.FollowLock = fk.Bool(); // tuning.md §11.5
+            if (n.Opt("heat") is JNode ht) { s.Heat = ht.Int(); if (s.Heat < 0 || s.Heat > 1000) throw new FormatException($"{ht.Path}: heat 0..1000"); } // brief 031
             if (n.Opt("standing") is JNode st) { s.Standing = st.Int(); if (s.Standing < -1000 || s.Standing > 1000) throw new FormatException($"{st.Path}: standing -1000..1000"); }
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
             if (n.Opt("security") is JNode sl) { s.Security = sl.Int(); if (s.Security < 0 || s.Security > 4) throw new FormatException($"{sl.Path}: security level 0..4"); }
@@ -87,6 +118,8 @@ namespace Suborned.Sim
             if (Security.HasValue && !LegacyCanonical) w.Prop("security", Security.Value);
             if (Standing.HasValue) w.Prop("standing", Standing.Value); // only a start that fixes it adds bytes: every earlier start hashes as before
             if (RivalsPublic != null) w.Prop("rivalsPublic", RivalsPublic); // likewise
+            if (Heat.HasValue) w.Prop("heat", Heat.Value); // brief 031: likewise
+            if (FollowLock.HasValue) w.Prop("followLock", FollowLock.Value); // tuning.md §11.5: likewise
             if (Rounds.HasValue) w.Prop("rounds", Rounds.Value); // brief 022: likewise
             if (DrivePace.HasValue || DriveGap.HasValue || DriveOnBusy != null || DriveOnRelease != null) // brief 025: only a playground start adds bytes
             {
@@ -95,6 +128,24 @@ namespace Suborned.Sim
                 if (DriveOnBusy != null) w.Prop("onBusy", DriveOnBusy);
                 if (DriveOnRelease != null) w.Prop("onRelease", DriveOnRelease);
                 if (DriveGap.HasValue) w.Prop("gap", DriveGap.Value);
+                w.EndObj();
+            }
+            if (FightLabOn) // brief 027: only a run with the fight lab on adds bytes (today's preset, lab off, hashes as before)
+            {
+                w.Open("fightLab").Prop("on", true);
+                if (LabHealthScale.HasValue) w.Prop("healthScale", LabHealthScale.Value);
+                if (LabPips.HasValue) w.Prop("pips", LabPips.Value);
+                if (LabStances != null) w.Prop("stances", LabStances);
+                if (LabThen != null) w.Prop("then", LabThen);
+                if (LabClose.HasValue) w.Prop("close", LabClose.Value);
+                if (LabCharge.HasValue) w.Prop("charge", LabCharge.Value);
+                if (LabField.HasValue) w.Prop("field", LabField.Value);
+                if (LabWarn.HasValue) w.Prop("policeWarning", LabWarn.Value);
+                if (LabFireMoving.HasValue) w.Prop("hostilesFireMoving", LabFireMoving.Value);
+                if (LabCoverSnap.HasValue) w.Prop("coverSnap", LabCoverSnap.Value);
+                if (LabKite.HasValue) w.Prop("kite", LabKite.Value);
+                bool any = false; foreach (var a in LabLoadout) any |= a != null;
+                if (any) { w.Open("loadout"); for (int k = 0; k < 4; k++) if (LabLoadout[k] != null) w.Prop(Sim.Op.Name((OpId)k), LabLoadout[k]!); w.EndObj(); }
                 w.EndObj();
             }
             if (Holds.Count > 0) { w.OpenArr("holds"); foreach (var (d, f, u) in Holds) w.Obj().Prop("door", d).Prop("from", f).Prop("until", u).EndObj(); w.EndArr(); } // test only: likewise
@@ -174,7 +225,8 @@ namespace Suborned.Sim
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
         {
-            R = rules; S = site; Start = start ?? new Start(); People2 = crowd;
+            R = rules; S = site; Start = start ?? new Start(); People2 = crowd; Range = site.IsRange;
+            FollowLock = Start.FollowLock ?? false; // tuning.md §11.5
             if (crowd != null) foreach (var w in crowd.Walkers) Walkers.Add(w.Fresh());
             StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical());
             eye = R.Eye; near = R.NearCm;
@@ -189,18 +241,20 @@ namespace Suborned.Sim
             string[] crew = { "crew:scout", "crew:fixer", "crew:tech", "crew:enforcer" };
             // Arms (Sky 2026-10-15 Q1): the Enforcer's carbine is the cell's; each sidearm takes weapons.sidearmArms, issued Scout, Fixer, Tech
             int sidearms = (Start.Arms ?? S.Arms) / R.SidearmArms;
+            InitLab(); InitKite(); // brief 027; tuning.md §7.9 the kite response in today too. brief 027 (EXPERIMENTAL): the fight lab's switches, weapons and health scale; off, today's (GameFightLab.cs)
             for (int i = 0; i < 4; i++)
             {
                 var id = (OpId)i; bool enf = id == OpId.Enforcer;
-                var gun = new Gun(Sim.Op.Name(id)) { W = enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = enf ? R.HealthEnforcer : R.HealthOp };
+                var gun = new Gun(Sim.Op.Name(id)) { W = Lab ? LoadoutWeapon(i) : enf ? R.Carbine : i < sidearms ? R.Pistol : null, Trained = enf, Health = (enf ? R.HealthEnforcer : R.HealthOp) * HealthScale };
                 gun.Max = gun.Health;
-                Ops[i] = new Op { Id = id, Pos = S.Stand(crew[i]), Gun = gun };
+                Ops[i] = new Op { Id = id, Pos = S.Stand(crew[i]), Gun = gun, Charge = Lab ? Labr!.ChargeMax : 0 };
             }
-            GuardGun = NewGun("guard", R.Pistol, true, R.HealthGuard);
-            PatrolGun = NewGun("patrol", R.Pistol, true, R.HealthPatrol);
-            RivalsGun = NewGun("rivals", R.Pistol, false, R.HealthRival);
+            if (Lab) CheckLoadout(Start.Arms ?? S.Arms);
+            GuardGun = NewGun("guard", PistolW, true, R.HealthGuard);
+            PatrolGun = NewGun("patrol", PistolW, true, R.HealthPatrol);
+            RivalsGun = NewGun("rivals", PistolW, false, R.HealthRival);
             SecGuns = new Gun[R.ResponseOfficers];
-            for (int k = 0; k < SecGuns.Length; k++) SecGuns[k] = NewGun($"security-{k + 1}", R.Pistol, true, R.HealthOfficer);
+            for (int k = 0; k < SecGuns.Length; k++) SecGuns[k] = NewGun($"security-{k + 1}", PistolW, true, R.HealthOfficer);
 
             string[] places = { S.GuardCafe, S.CarDriver, S.GuardPost, S.ValeExit };
             string[] roles = { "waitress", "driver", "guard", "councillor" };
@@ -246,7 +300,8 @@ namespace Suborned.Sim
             var sec2 = S.Grid.Route(S.Stand(S.SecVia), S.Stand(S.SecTo)) ?? throw new FormatException("no walk for the response unit");
             var sp = new List<Pt>(sec1); for (int i = 1; i < sec2.Length; i++) sp.Add(sec2[i]);
             securityPath = new Path(sp.ToArray());
-            Note("start", "Vale is inside. His official car will collect him later. The city is already moving.");
+            if (Range) InitRange(); // brief 029 (GameRange.cs): the fight range: no mission, no schedule, no cast but what is spawned
+            else Note("start", "Vale is inside. His official car will collect him later. The city is already moving.");
         }
 
         public Person PersonByRole(string role)
@@ -283,9 +338,10 @@ namespace Suborned.Sim
         void StepInner()
         {
             Tick++;
-            GuardTimeline(); CarTimeline(); RivalsTimeline(); ValeTimeline();
+            if (!Range) { GuardTimeline(); CarTimeline(); RivalsTimeline(); ValeTimeline(); } // brief 029: the range has no schedule
             foreach (var op in Ops)
             {
+                op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
                 if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
                 if (op.Walk != null)
                 {
@@ -296,12 +352,15 @@ namespace Suborned.Sim
                 else if (op.Driven) { StepDrive(op); if (Over) break; } // brief 025 (EXPERIMENTAL): the host's sample, checked (GameDrive.cs)
             }
             foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
+            if (Range) { RangeTick(); return; } // brief 029 (GameRange.cs): the fight range runs the fight and nothing of the mission
             if (!Over) Tether();
             if (!Over) Watchers();
+            if (!Over) AttentionStep(); // brief 031: the watchers' attention clocks and the loiterers' reports (GameAttention.cs)
             if (!Over) PatrolChase();
             if (!Over) DrawnSeen();
             if (!Over) FightStep();
             if (!Over) Combat();
+            if (!Over) CarsStep(); // tuning.md §10.7: a burning car blows (GameCars.cs; nothing while no car is named)
             if (!Over) GetawayAfterFire(); // brief 018: the blocker picked among those still standing after this tick's fire; blocker.out, car.free
             if (!Over) CrowdStep();
             if (!Over) TakedownStep(); // brief 013: bodies, reports, check-in marks, suspicion, the response's units
@@ -352,7 +411,7 @@ namespace Suborned.Sim
         void RivalsTimeline()
         {
             if (Tick != RivalAt) return;
-            RivalsArrived = true;
+            RivalsArrived = true; rivalCarParked = !RivalsDrawn; // tuning.md §10.7: a crew drawn by gunfire comes on foot
             Note("rivals.arrive", RivalsDrawn ? "The rival crew comes in from the east street, following the gunfire." : "A rival car parks near Vale's pickup. Its crew starts watching the building.");
         }
         void ValeTimeline()
@@ -458,14 +517,16 @@ namespace Suborned.Sim
         {
             if (Driver.Down) return null;
             var car = CarPos();
-            return car == blockPath.Points[0] ? S.Stand(S.CarDriver) : car;
+            if (car == blockPath.Points[0]) return S.Stand(S.CarDriver);
+            return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car
         }
         public Pt? ValePos()
         {
             switch (Vale)
             {
                 case ValeAt.Leaving: { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.At(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
-                case ValeAt.Pickup: case ValeAt.Taking: return PickupService ? S.Stand(S.ValeService) : CarPos();
+                case ValeAt.Pickup: return PickupService ? S.Stand(S.ValeService) : OfficialOut ? BesideCar(CarPos(), 1) : CarPos(); // tuning.md §10.7: out of a disabled car
+                case ValeAt.Taking: return PickupService ? S.Stand(S.ValeService) : CarPos();
                 case ValeAt.WithEnforcer: return Enforcer.Inside ? (Pt?)null : Enforcer.Pos + new Pt(100, 0);
                 default: return null;
             }
@@ -485,7 +546,7 @@ namespace Suborned.Sim
             if (PatrolDown) return (patrolDownAt, new Pt(0, 0));
             if (PatrolUnit() is Unit pu && UnitPose(pu) is var up && up.HasValue) return up.Value; // brief 013: answering an alarm
             if (PatrolAwayUntil > Tick) return (S.Stand(S.PatrolReroute), S.PatrolRerouteFacing);
-            if (PatrolChasing) return (chasePos, Enforcer.Pos - chasePos);
+            if (PatrolChasing) { var fc = OpOf(chaseOp).Pos - chasePos; return (chasePos, fc == new Pt(0, 0) ? Enforcer.Pos - chasePos : fc); } // brief 031 L2: with no all-round sense, the chasing patrol faces the operative it chases (was: always the Enforcer)
             return (SweepPos(Tick), S.PatrolFacing);
         }
         Pt SweepPos(int t)
@@ -503,6 +564,7 @@ namespace Suborned.Sim
                 bool atService = Tick >= T(valeAtCarS) && PickupService;
                 return (S.Stand(atService ? S.ValeService : S.RivalsPark), new Pt(0, 100));
             }
+            if (rivalsDisp != null) return DispPose(rivalsDisp, rivSpeed, Tick); // brief 027 F2 (lab kite): out of the shooter's line
             bool restarting = RivalsDelayedUntil > RivalsDrawnTick;
             var path = restarting ? (rivalsRestartPath ??= new Path(S.Grid.Route(S.Stand(S.RivalsEntry), S.Stand(S.RivalsFront))!)) : rivalsPath!;
             int start = restarting ? RivalsDelayedUntil : RivalsDrawnTick;
@@ -521,6 +583,7 @@ namespace Suborned.Sim
         public (Pt pos, Pt facing)? SecOfficerPose(int k)
         {
             if (Tick < SecurityArrives || SecGuns[k].Down) return null;
+            if (!secJoined[k] && secDisp.TryGetValue(k, out var kd)) return DispPose(kd, secSpeed, Tick); // brief 027 F2 (lab kite): closing on a shooter
             if (secJoined[k]) { var h = HostileOf(SecGuns[k].Id)!; var p = h.Pos(Tick); return (p, Car - p == new Pt(0, 0) ? new Pt(100, 0) : Car - p); } // joined the loud fight: faces the car
             long mm = (long)(Tick - SecurityArrives) * secSpeed - k * SecFileMm, end = Math.Max(0, securityPath.Length - k * SecFileMm);
             if (mm < 0) mm = 0;
@@ -536,6 +599,7 @@ namespace Suborned.Sim
         bool Sees(Pt from, Pt to) => S.Sight(from, to, eye);
         public bool CameraWatching(string id, Pt p, bool crowd = true)
         {
+            if (CameraDark(id)) return false; // tuning.md §9.2 gap 2: shot out, it watches nothing
             if (id == LoopCam && LoopOn) return false;
             if (id == "pickup" && !PickupCameraLive()) return false;
             foreach (var c in S.Cameras) if (c.Id == id) return InHeads(c, p) && Sees(c.At, p) && !(crowd && CrowdBlocks(c.At, p));
@@ -557,7 +621,7 @@ namespace Suborned.Sim
             if (PatrolDown || PatrolAwayUntil > Tick) return false;
             if (PatrolUnit() is Unit pu) return UnitSees(pu, p, crowd); // brief 013: on an alarm it looks where it walks and holds
             var (pos, f) = PatrolPose()!.Value;
-            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, near, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
+            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, 0, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p)); // brief 031 L2: a machine sees by its cone only
             return InSweepCone(pos, f, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
         }
         bool InSweepCone(Pt pos, Pt f, Pt p)
@@ -579,7 +643,7 @@ namespace Suborned.Sim
             for (int k = 0; k < SecGuns.Length; k++) if (SecOfficerWatching(k, p)) return true;
             return false;
         }
-        bool SecOfficerWatching(int k, Pt p, bool crowd = true)
+        public bool SecOfficerWatching(int k, Pt p, bool crowd = true)
         {
             var s = SecOfficerPose(k); if (!s.HasValue) return false;
             return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p));

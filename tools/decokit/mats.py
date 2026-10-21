@@ -28,7 +28,7 @@ LIB = {
     "DK_Enamel_Ivory": ("enamel", "#EFE8D6"), "DK_Enamel_Cream": ("enamel", "#F3DDB0"),
     "DK_Enamel_Teal": ("enamel", "#1F6C67"), "DK_Enamel_Seafoam": ("enamel", "#72B5A7"),
     "DK_Enamel_Mint": ("enamel", "#A8D3BE"), "DK_Enamel_Red": ("enamel", "#820606"),
-    "DK_Enamel_Mustard": ("enamel", "#967509"), "DK_Enamel_Powder": ("enamel", "#86ADD3"),
+    "DK_Enamel_Mustard": ("enamel", "#EEA82D"), "DK_Enamel_RedBright": ("enamel", "#C42A1F"), "DK_Enamel_Powder": ("enamel", "#86ADD3"),
     "DK_Enamel_Royal": ("enamel", "#2C56A6"), "DK_Enamel_Charcoal": ("enamel", "#2B2F33"),
     # ceramic paving
     "DK_Tile_Ivory": ("ceramic", "#E8E1CF"), "DK_Tile_Grey": ("ceramic", "#B9B7AF"),
@@ -52,6 +52,9 @@ LIB = {
     "DK_Poster_Travel": ("art", "#FFFFFF"), "DK_Lightbox_Travel": ("emit", "#FFFFFF", 1.2),
     "DK_Banner_Comet": ("fabric", "#FFFFFF"), "DK_Awning_Teal": ("fabric", "#FFFFFF"),
     "DK_Steel_Brushed": ("metal", "#FFFFFF"), "DK_Asphalt": ("stone", "#FFFFFF"),
+    # ground roles (brief 026, GROUND below): textured Lit, mesh UV = world metres; colours are in the textures (ground_tex.py), the tint stays white
+    "DK_Ground_Asphalt": ("ground", "#FFFFFF"), "DK_Ground_Kerb": ("ground", "#FFFFFF"), "DK_Ground_Gutter": ("paving", "#FFFFFF"),
+    "DK_Ground_Pavement": ("ground", "#FFFFFF"), "DK_Ground_Lawn": ("ground", "#FFFFFF"), "DK_Ground_Path": ("ground", "#FFFFFF"),
     # foliage cards: white-keyed cutouts (derive_maps.py), alpha-tested and two-sided in both engines
     "DK_Leaf_PalmFeather": ("cutout", "#FFFFFF"), "DK_Leaf_PalmFan": ("cutout", "#FFFFFF"),
     "DK_Leaf_Cypress": ("cutout", "#FFFFFF"), "DK_Leaf_Shrub": ("cutout", "#FFFFFF"),
@@ -94,6 +97,7 @@ LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal
 # old -> new, dE2000 min over the three signals at the time: Enamel_Mustard #EEA82D 2.9 -> #967509 20.8 (dark ochre mustard);
 # Gold #D6AE62 10.1 -> #E3D681 20.6 (pale atompunk gold); Enamel_Red #C42A1F 7.2 -> #820606 21.5 (oxblood);
 # Signal_Red #FF3B26 6.7 -> the flamingo accent (24.6). DK_Signal_Red stays only because legacy FBXs bind it by name.
+# 20 Oct (Sky, brief 026 compare): Enamel_Mustard back to #EEA82D (the old mustard; "everything else, old looked better"); Enamel_Red stays oxblood #820606.
 # 14 Oct (Sky, brass over gold): Gold #E3D681 20.6 -> BRASS #99784D 21.3 (the crowns keep #E3D681 as DK_Crown_Gold).
 WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red")
 LIB["DK_Signal_Red"] = ("emit", ACCENT["flamingo"], 4.0)
@@ -116,16 +120,39 @@ TEXTURES = {
     "DK_Leaf_Cypress": ("cypress_foliage_v1_alpha.png", 1.0), "DK_Leaf_Shrub": ("shrub_leaves_v1_alpha.png", 1.0),
     "DK_Flower_Coral": ("flower_cluster_coral_v1_alpha.png", 1.0),
     # pave_sheet.py sets (albedo + _normal + _mask): sheets are UV-mapped per module, the kerb granite is metric
-    "DK_Pave_Flags": ("pave_flags_v1.png", 4.0), "DK_Gutter_Setts": ("gutter_setts_v1.png", 4.0),
-    "DK_Granite_Kerb": ("granite_kerb_v1.png", 0.5), "DK_Granite_Kerb_B": ("granite_kerb_v1.png", 0.5),
+    "DK_Pave_Flags": ("ground_pavement_v1.png", 4.0), "DK_Gutter_Setts": ("ground_gutter_v1.png", 4.0),
+    "DK_Granite_Kerb": ("ground_kerb_v1.png", 0.5), "DK_Granite_Kerb_B": ("ground_kerb_v1.png", 0.5),
     "DK_Asphalt_Fine": ("asphalt_fine_v1.png", 1.5),
+    "DK_Ground_Asphalt": ("ground_asphalt_v1.png", 16.0), "DK_Ground_Kerb": ("ground_kerb_v1.png", 0.5), "DK_Ground_Gutter": ("ground_gutter_v1.png", 4.0),
+    "DK_Ground_Pavement": ("ground_pavement_v1.png", 4.0), "DK_Ground_Lawn": ("ground_lawn_v1.png", 8.0), "DK_Ground_Path": ("ground_path_v1.png", 2.0),
     "DK_Hull_Ivory": ("hull_panels_v1.png", 8.0), "DK_Hull_Silver": ("hull_panels_v1.png", 8.0),
 }
+# Ground roles (brief 026 round 1). Every one tiles by the metre: the mesh's UV is world metres (u = x, v = z; the gutter strip: u along the kerb, v from the road
+# edge across its 0.375 m), the .mat's m_Scale = 1 / tile. Textures: ground_tex.py (out/decokit-ground, budgeted, recoloured to the paintings); maps: albedo, _normal,
+# _mask (R metallic 0, G occlusion, A smoothness). `smoothness` is the multiplier (1 with a mask, the flat value without).
+GROUND = {
+    "DK_Ground_Asphalt": dict(albedo="ground_asphalt_v1.png", normal="ground_asphalt_v1_normal.png", mask="ground_asphalt_v1_mask.png", tile=(16.0, 16.0), smoothness=1.0,
+                              detail="ground_asphalt_detail_v1.png", detailNormal="ground_asphalt_detail_v1_normal.png", detailTile=1.5, detailBump=0.45),  # 1.0 in round 1: read coarse and sparkly in sun at street level
+    "DK_Ground_Kerb": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0),
+    "DK_Ground_Gutter": dict(albedo="ground_gutter_v1.png", normal="ground_gutter_v1_normal.png", mask="ground_gutter_v1_mask.png", tile=(4.0, 0.375), smoothness=1.0),
+    "DK_Ground_Pavement": dict(albedo="ground_pavement_v1.png", normal="ground_pavement_v1_normal.png", mask="ground_pavement_v1_mask.png", tile=(4.0, 4.0), smoothness=1.0),
+    "DK_Ground_Lawn": dict(albedo="ground_lawn_v1.png", normal="ground_lawn_v1_normal.png", tile=(8.0, 8.0), smoothness=0.2),
+    "DK_Ground_Path": dict(albedo="ground_path_v1.png", normal="ground_path_v1_normal.png", tile=(2.0, 2.0), smoothness=0.12),
+    # Round 2: the legacy ground pieces (Pave_Flags_i, Kerb_Granite*, TreePit_Flags_i, Tile_*, gutters) bind these four names by their FBX materials and UV conventions (sheet
+    # quadrants 0..1 over the 4 m sheet; kerb stone 0.5 m metric). The generator's .mat of the same name wins over the legacy one and keeps its guid, so the same pieces now use the
+    # budgeted, re-coloured sheets (the same layouts, so the UVs hold) instead of the old 4096 x 3 maps (64 MiB): adopting them no longer costs the budget.
+    "DK_Pave_Flags": dict(albedo="ground_pavement_v1.png", normal="ground_pavement_v1_normal.png", mask="ground_pavement_v1_mask.png", tile=(1.0, 1.0), smoothness=1.0),
+    "DK_Gutter_Setts": dict(albedo="ground_gutter_v1.png", normal="ground_gutter_v1_normal.png", mask="ground_gutter_v1_mask.png", tile=(1.0, 1.0), smoothness=1.0),
+    "DK_Granite_Kerb": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0),
+    "DK_Granite_Kerb_B": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0, tint="#EAE6DF"),
+}
+
 UV_MAPPED = ("decal", "art", "emit", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")
 EXTRA_TEXDIRS = tuple(Path(p).expanduser() for p in os.environ.get("DECOKIT_TEXDIRS_EXTRA", "").split(os.pathsep) if p)  # candidate textures (brief 008): searched first, the store stays read-only
 ART_DIRS = (Path(__file__).resolve().parent / "art/cafe",)  # source art kept in this repo (brief 020: the café's paintings and floor, with PROVENANCE.json)
-TEXDIRS = (*EXTRA_TEXDIRS, *ART_DIRS, SOURCE_ART / "Textures/derived", SOURCE_ART / "Textures/gen")
+GROUND_DIR = Path(os.environ.get("DECOKIT_GROUND") or Path(__file__).resolve().parents[2] / "out/decokit-ground")  # ground_tex.py's budgeted ground set (brief 026)
+TEXDIRS = (*EXTRA_TEXDIRS, GROUND_DIR, *ART_DIRS, SOURCE_ART / "Textures/derived", SOURCE_ART / "Textures/gen")
 
 
 def tex_path(file):
@@ -166,10 +193,40 @@ KIND = {
     # zenith above a street: near-black studs and edge lines in Unity. Metallic 0.3, smoothness 0.5 is lit by sun and sky and reads as the brass hex; the colours are unchanged
     # (dE2000 21.3 from the guard amber). The skyline crowns keep `metal` and their gold (DK_Crown_Gold, DK_Crown_Gold17: crown.py).
     "brass": (0.5, 0.3, 0.0, 0.0, 1.0),
+    "ground": (0.75, 0.0, 0.0, 0.0, 1.0),  # world-metre-UV ground (GROUND); roughness comes from the _mask alpha where there is one
     "paving": (0.5, 0.0, 0.0, 0.0, 1.0),  # sheet-mapped stone (paving.py); roughness comes from the _mask alpha
     "face": (0.2, 0.0, 0.0, 0.0, 0.0),  # robot display face: drawn by DK_RobotFace.shader in Unity, clear here
     "glow": (1.0, 0.0, 0.0, 0.0, 1.0),  # light volume (crossing beam, halo disc; brief 009): register(name, "glow", hex, strength, alpha); no .mat is written, Latch draws it additive, double-sided
 }
+
+
+# Robot enamels (brief 026 round 2): DK_RobotEnamel_<X> is DK_Enamel_<X> (same hex, read from LIB when registered, so a later colour change follows; smoothness .68, clear coat) with the
+# shared grain / patina / seam / base-darkening detail pair of robot_tex.py laid over it. The robot pieces draw these through RobotPal; the UVs of a Robots piece run v = height in metres.
+ROBOT_DETAIL = dict(detail="robot_enamel_detail_v1.png", detailNormal="robot_enamel_detail_v1_normal.png", tile=(0.5, 2.0), bump=0.3)
+
+
+def robot_enamel(key):
+    """The robot variant of an enamel row (key = 'Enamel_Cream'): registered on first ask."""
+    name = "DK_Robot" + key
+    if name not in LIB and "DK_" + key in LIB:
+        kind, hexstr, *extra = LIB["DK_" + key]
+        LIB[name] = (kind, hexstr, *extra)
+    return name
+
+
+def register_robot_enamels():
+    """Every DK_Enamel_* row has a robot variant in the table (export_kit calls this after all families are imported)."""
+    for n in [n for n in LIB if n.startswith("DK_Enamel_")]:
+        robot_enamel(n[3:])
+
+
+class RobotPal:
+    """pal for the robot builders: enamels come as their detailed robot variants, everything else as pal."""
+
+    def __getattr__(self, key):
+        if key.startswith("Enamel_"):
+            return get(robot_enamel(key))
+        return getattr(pal, key)
 
 
 def register(name, kind, hexstr, *extra):
@@ -242,6 +299,35 @@ def get(name):
             nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
             m.surface_render_method = "DITHERED"
         _pbr_maps(nt, b, tex, TEXTURES[name][0])
+    if name.startswith("DK_RobotEnamel_"):  # the detail pair, as Unity reads it: albedo x2 around mid grey (linear), normal at the material's strength
+        nt = m.node_tree
+        uvn, mp = nt.nodes.new("ShaderNodeTexCoord"), nt.nodes.new("ShaderNodeMapping")
+        mp.inputs["Scale"].default_value = (1 / ROBOT_DETAIL["tile"][0], 1 / ROBOT_DETAIL["tile"][1], 1)
+        nt.links.new(uvn.outputs["UV"], mp.inputs["Vector"])
+        imgs = []
+        for f in (ROBOT_DETAIL["detail"], ROBOT_DETAIL["detailNormal"]):
+            t = nt.nodes.new("ShaderNodeTexImage")
+            pth = tex_path(f)
+            if pth is None:
+                return m
+            t.image = bpy.data.images.load(str(pth), check_existing=True)
+            t.image.colorspace_settings.name = "Non-Color"
+            nt.links.new(mp.outputs["Vector"], t.inputs["Vector"])
+            imgs.append(t)
+        mul = nt.nodes.new("ShaderNodeMix")
+        mul.data_type, mul.blend_type = "RGBA", "MULTIPLY"
+        mul.inputs["Factor"].default_value = 1.0
+        mul.inputs["A"].default_value = col
+        g = nt.nodes.new("ShaderNodeVectorMath")
+        g.operation = "SCALE"
+        g.inputs["Scale"].default_value = 2.0
+        nt.links.new(imgs[0].outputs["Color"], g.inputs[0])
+        nt.links.new(g.outputs["Vector"], mul.inputs["B"])
+        nt.links.new(mul.outputs["Result"], b.inputs["Base Color"])
+        nm = nt.nodes.new("ShaderNodeNormalMap")
+        nm.inputs["Strength"].default_value = ROBOT_DETAIL["bump"]
+        nt.links.new(imgs[1].outputs["Color"], nm.inputs["Color"])
+        nt.links.new(nm.outputs["Normal"], b.inputs["Normal"])
     m.diffuse_color = col  # viewport solid colour
     return m
 
@@ -297,7 +383,7 @@ def export_json(path):
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
                          emission=extra[0] if extra else 0.0, texture=tex[0] if tex else "",
-                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0))
+                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"robotDetail": ROBOT_DETAIL} if name.startswith("DK_RobotEnamel_") else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
 

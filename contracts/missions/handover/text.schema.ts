@@ -41,9 +41,9 @@ export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', '
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
-  'board', 'go', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw'] as const;
+  'board', 'go', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
-export const CONTROL_VERBS = ['drive'] as const;
+export const CONTROL_VERBS = ['drive', 'trigger', 'follow'] as const;
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
 /** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
 export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'extract'] as const;
@@ -51,7 +51,7 @@ export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'extract'] as cons
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
 /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. */
 export const FAILS = ['abduction-seen-camera', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard', 'entry-seen-patrol',
-  'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
+  'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
 export const NAMED = ['Inez', 'Vale'] as const; // the only people the words may name (people.rules names.pinned); others by role
 /** Speakers only a scene has: the people around the target (the café's owner, a customer, an Office clerk). */
 export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;
@@ -273,6 +273,7 @@ export const Less = z.strictObject({
     showSeconds: z.number().int().min(2).max(10),
     returnSeconds: z.number().int().min(5),
     maxShows: z.number().int().min(1).max(3),
+    firstAct: Short().describe('brief 030: the goal line\'s first-time hint, shown until the player\'s first right click'),
   }),
   go: z.strictObject({
     rule: z.string().min(1),
@@ -335,6 +336,7 @@ export const TextFile = z.strictObject({
     purse: z.strictObject({ usd: z.number().int().positive(), line: Line }),
     hints: z.strictObject({ 'front-door': Line, pickup: Line }),
     tracker: Line,
+    heat: z.strictObject({ unknown: Short(16), noticed: Short(16), wanted: Short(16), infamous: Short(16) }).describe('brief 031: the briefing card\'s word for the cell\'s Heat band (engine HeatBand), from how quickly watchers notice: unknown, noticed, wanted, infamous'),
     timeline: z.array(z.strictObject({ at: clock, label: Line, short: Short(16).describe('brief 014: the mark in a word or two (the pill shows its icon and time; the word is on Alt)'), known: z.boolean().describe('false = the pill shows "?" until it happens') })),
     cell: z.record(z.enum(AGENTS), Line),
   }),
@@ -342,7 +344,7 @@ export const TextFile = z.strictObject({
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
   goingLoud: z.strictObject({ captured: Line }).describe('lines on the going-loud card beyond its numbers'),
-  actions: z.record(z.enum([...VERBS, ...CONTROL_VERBS]), Action),
+  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the right-click ring (label, at most 8 characters)'),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),

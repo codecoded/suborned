@@ -22,6 +22,8 @@ namespace Suborned.Play
         public sealed class Gate { public LoudCard Card; public readonly List<Order> Orders = new(); public string Source = "", What = ""; public float Start; public Vector2 Gui; public Vector3? At; /** brief 013: a takedown a known watcher sees */ public bool Takedown; public Target Target; public OpId By; /** brief 018: a Go that leaves someone behind (who, fate, why), and whether security sees the car leave */ public List<(string op, string fate, string why)> Left; public bool SeenLeaving; }
         /// <summary>The going-loud card while it is held open, else null.</summary>
         public Gate Loud { get; private set; }
+        /// <summary>For scripted checks: the open hold card closes, nothing given.</summary>
+        public void SetLoudNull() => Loud = null;
         public float GateProgress => Loud == null ? 0f : Mathf.Clamp01((Time.unscaledTime - Loud.Start) / HoldSeconds);
         float HoldSeconds => Mathf.Max(0.1f, Game.R.LoudHoldTicks / (float)Game.Hz);
 
@@ -38,6 +40,7 @@ namespace Suborned.Play
             }
             if (loud != null)
             {
+                FreezeOnLoud(); // brief 027: freeze mode opens a freeze first; the card shows inside it and the queue holds the order
                 Loud = new Gate { Card = loud, Source = source, What = what, Start = Time.unscaledTime, At = at, Gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : Mouse };
                 Loud.Orders.AddRange(orders);
                 Status = $"Going loud: hold {SourceName(source)} {HoldSeconds:0.0} s to commit, release to back off";
@@ -46,7 +49,7 @@ namespace Suborned.Play
             Send(orders, screen, at);
         }
 
-        static string SourceName(string s) => s switch { "F" => "F", "right" => "the right button", "both" => "both buttons", _ => "the button" };
+        static string SourceName(string s) => s switch { "F" => "F", "V" => "V", "right" => "the right button", "both" => "both buttons", _ => "the button" };
 
         /// <summary>Orders the cell takes in silence (Fable §4): a click confirmed is not a line; the strip and the badge show it.</summary>
         static readonly HashSet<string> SilentAcks = new() { "move", "run", "cancel", "stance", "cease", "holster" };
@@ -55,12 +58,30 @@ namespace Suborned.Play
         {
             bool said = false;
             foreach (var o in orders)
-                if (Issue(o, screen, at) && !said && !SilentAcks.Contains(o.Do))
+            {
+                // Sky 2026-10-21: a fire order stops a walking agent (the engine fires on the move; the walk and the act it was for are dropped
+                // with the walk-only cancel, an order in the log). A running agent is left to the engine (Motive: running fire, its penalty), and a
+                // walk into range the fire itself asked for (weapons.close) is the fire's own
+                int fk = o.Do == "fire" && IsOpName(o.Op) ? (int)Op.Parse(o.Op) : -1;
+                bool walked = fk >= 0 && Game.Ops[fk].Walk != null && !Game.Ops[fk].Running && !Game.Ops[fk].Driven;
+                bool ok = Issue(o, screen, at);
+                if (ok && walked && Game.Ops[fk].Walk != null && !Game.Ops[fk].CloseWalk && !Game.Ops[fk].Running) { CancelAgent(fk, null); FireStopped++; }
+                if (ok && !said && !SilentAcks.Contains(o.Do))
                 {
                     said = true;
                     string speaker = o.Op == "cell" ? "enforcer" : o.Op;
                     if (!Beat("ack", o.Do, speaker, who: Name(o.Target), kind: Feedback.Ok) && o.Op == "cell") Beat("ack", o.Do, "fixer", kind: Feedback.Ok);
                 }
+            }
+        }
+
+        /// <summary>For checks: walks a fire order has stopped this run.</summary>
+        public int FireStopped { get; private set; }
+        /// <summary>For scripted checks: the selection fires on `id` as a right click gives it (the going-loud hold committed at once).</summary>
+        public void FireScripted(string id, bool force = false)
+        {
+            FireSelected(id, force, null, "right");
+            if (Loud is Gate g && g.Left == null && !g.Takedown) { Loud = null; Send(new List<Order>(g.Orders), null, g.At); FeedLoud(g.Card, g.What); }
         }
 
         /// <summary>Each frame while the card is open: the hold fills; released early (or Esc), the card closes and nothing is given.</summary>
@@ -70,7 +91,9 @@ namespace Suborned.Play
             bool held = Loud.Source switch
             {
                 "F" => controls.Held(kb, PlayAction.Draw),
+                "V" => controls.Held(kb, PlayAction.Stance), // brief 027: V is panic with the lab
                 "right" => mouse != null && mouse.rightButton.isPressed,
+                "E" => controls.Held(kb, PlayAction.TurnRight), // brief 030: third person, E fired on the focus
                 "both" => mouse != null && mouse.rightButton.isPressed && mouse.leftButton.isPressed,
                 _ => mouse != null && mouse.leftButton.isPressed,
             };
@@ -108,6 +131,13 @@ namespace Suborned.Play
         /// <summary>X: the selection ceases fire (their weapons stay drawn).</summary>
         void CeaseFire()
         {
+            if (Game.Lab) // brief 027 (stances two): X is hold (it also ends the fire order and refunds a volley)
+            {
+                var hold = new List<Order>();
+                for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) hold.Add(new Order { Op = Op.Name((OpId)k), Do = "stance", Stance = "hold" });
+                if (hold.Count == 0) { PopKey("unarmed", null, SelectedWorld(), Feedback.Info, "Nobody selected is armed."); return; }
+                Send(hold, null, SelectedWorld()); PopKey("stance-hold", null, SelectedWorld(), Feedback.Info, "stance: hold fire"); return;
+            }
             var list = new List<Order>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
             if (list.Count == 0) { PopKey("not-drawn", null, SelectedWorld(), Feedback.Info, "No weapon drawn."); return; }
@@ -120,6 +150,7 @@ namespace Suborned.Play
         /// <summary>V: the selection's stance moves on one (hold → return → at will), from the first armed agent's.</summary>
         void CycleStance()
         {
+            if (Game.Lab) { Panic(UnityEngine.InputSystem.Mouse.current?.position.ReadValue() ?? Vector2.zero, "V"); return; } // brief 027: with the lab, V is panic (allowed outside a fight, gated by the going-loud card)
             int first = -1; for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) { first = k; break; }
             if (first < 0) { PopKey("unarmed", null, SelectedWorld(), Feedback.Info, "Nobody selected is armed."); return; }
             var next = Stances[(Array.IndexOf(Stances, Game.Ops[first].Gun.Stance) + 1) % 3];
@@ -131,10 +162,11 @@ namespace Suborned.Play
 
         /// <summary>Both buttons: panic (every armed agent draws and fires at will), only once a fight is on. Outside a fight the gesture is not
         /// read at all (Controls), so nothing is sent, refused or said.</summary>
-        void Panic(Vector2 screen)
+        void Panic(Vector2 screen, string source = "both")
         {
-            if (!Game.FightOn) return;
+            if (!Game.FightOn && !Game.Lab) return;
             if (Panel != null) ClosePanel();
+            if (Game.Lab) { Fight(new List<Order> { new Order { Op = "cell", Do = "panic" } }, source, screen, null, "panic"); return; } // brief 027: gated by GoingLoud
             Send(new List<Order> { new Order { Op = "cell", Do = "panic" } }, screen, null);
         }
 
@@ -151,6 +183,7 @@ namespace Suborned.Play
             {
                 case "hostile": id = t.Key; return true;
                 case "patrol": case "rivals": case "security": if (!(drawn || ctrl)) return false; id = t.Kind; return true;
+                case "unit": if (!(drawn || ctrl || Game.FightOn)) return false; id = "security"; return true; // brief 030: a response unit or officer fires as the response (ShotAt had no case for it)
                 case "person":
                     if (t.Key == "councillor") return false;
                     if (t.Key == "guard") { if (!(drawn || ctrl)) return false; id = "guard"; return true; }
@@ -170,6 +203,8 @@ namespace Suborned.Play
             {
                 if (!Selected[k] || !Armed(k)) continue;
                 var op = Game.Ops[k];
+                bool walkIn = Game.Lab && Driving && k == dAgent && at.HasValue && (!G.Within(op.Pos, at.Value, op.Gun.W.MaxCm) || !Game.S.Sight(op.Pos, at.Value, Game.R.Eye)); // Sky 2026-10-20: driven and out of reach, the lab's close walks it in
+                if (walkIn) { DriveAutoBegin(); list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force }); continue; }
                 if (at.HasValue && !G.Within(op.Pos, at.Value, op.Gun.W.MaxCm)) { why = $"out of range ({G.Isqrt(G.D2(op.Pos, at.Value)) / 100} m, max {op.Gun.W.MaxCm / 100} m): walk closer"; continue; }
                 if (at.HasValue && !Game.S.Sight(op.Pos, at.Value, Game.R.Eye)) { why = "no clear line"; continue; }
                 list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force });
@@ -217,7 +252,7 @@ namespace Suborned.Play
 
         void UpdateAim()
         {
-            AimLine = null; AimNoLine = false; AimNow = null; if (!ModalGate.AllowsHover(Modal)) return;
+            AimLine = null; AimNoLine = false; AimNow = null; LabChunk = null; LabFire = null; LabFireAgent = -1; if (!ModalGate.AllowsHover(Modal)) return;
             var t = Hover; if (t == null || Game == null || Game.Over) return;
             bool ctrl = Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed);
             if (t.Kind == "person" && t.Key == "councillor") { if (ctrl || AnyDrawn()) { AimLine = "Vale · never: shooting him fails the mission"; AimNow = new AimParts { Badge = "badges/npc_councillor", Refused = Text != null && Text.Pops.TryGetValue("never-vale", out var nv) ? nv : "Never Vale" }; } return; }
@@ -262,6 +297,7 @@ namespace Suborned.Play
             var g = Game; var R = g.R; var op = g.Ops[k]; var gun = op.Gun; var w = gun.W;
             string id = target;
             if (target is "security") { foreach (var s in g.SecGuns) if (g.PosOf(s.Id).HasValue) { id = s.Id; break; } }
+            if (g.Lab) { var lp = AimNow = new AimParts { Civilian = force, Badge = t.Kind == "person" ? t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "guard" => "badges/signal_guard", _ => "badges/npc_passer" } : id.StartsWith("rival") || t.Kind == "rivals" ? "badges/signal_rival" : "badges/signal_police" }; return LabAim(k, id, force, t, lp); } // brief 027 B1: PreviewFire
             var tg = g.GunOf(id); var at = g.PosOf(id);
             string who = force ? $"CIVILIAN · {Name(id)}" : Cap(Name(id));
             var parts = AimNow = new AimParts { Civilian = force, Badge = t.Kind == "person" ? t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "guard" => "badges/signal_guard", _ => "badges/npc_passer" } : id.StartsWith("rival") || t.Kind == "rivals" ? "badges/signal_rival" : "badges/signal_police" };
@@ -327,7 +363,11 @@ namespace Suborned.Play
             bool carrying = Game.Ops[k].CarryBody.Length > 0;
             if (carrying) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)
             Guard("move preview", () => PreviewRoute(k, to.Value, MoveNow, q.Seen, carrying && lastCarry != null && lastCarry.SeenS.Count > 0)); // Glyph's ring: its state and the route's glow
+            { var mp = MoveNow; var tp = to.Value; Guard("cover snap", () => CoverSnapPreview(k, tp, mp)); } // brief 027 B5: the ring moves to the cover point the move will end on
         }
+
+        /// <summary>Brief 027 B5 (HostCover.cs, with Keel's cover snap): where the move will snap. A no-op without it.</summary>
+        partial void CoverSnapPreview(int k, Pt to, MoveParts mp);
 
         // ---------------------------------------------------------------- shots, read from the engine's log
 
@@ -339,6 +379,7 @@ namespace Suborned.Play
             string by = l.Text[..f], t = l.Text[(f + 10)..a];
             var from = WorldOf(by); var to = WorldOf(t); if (!from.HasValue || !to.HasValue) return;
             bool hit = l.Code == "shot.hit";
+            lastShot[by] = (t, Time.unscaledTime); // Sky 2026-10-20: the shooter turns to face it (AimTargets)
             var src = from.Value + Vector3.up * 1.3f; var dst = to.Value + Vector3.up * 1.2f;
             if (!hit) // a miss runs past and ends on the ground beside the target, never on the body
             {
@@ -360,13 +401,59 @@ namespace Suborned.Play
             var tr = views.Find(ViewKey(id)); return tr ? tr.position : (Vector3?)null;
         }
 
-        /// <summary>The view an engine id draws as (an agent, a cast person, the patrol, the rivals, an officer, a fight hostile).</summary>
+        /// <summary>Brief 027: where the player sees a fighter: its view's position when it has one drawn (a security view can stand up to 1.5 m off
+        /// its engine point), else WorldOf. The fight overlay (bars, forecasts, badges, lines) anchors here so it sits on the drawn body.</summary>
+        public Vector3? DrawnAt(string id)
+        {
+            var tr = views?.Find(ViewKey(id)); if (tr && tr.gameObject.activeInHierarchy) return tr.position;
+            return WorldOf(id);
+        }
+
+        readonly Dictionary<string, (string t, float at)> lastShot = new();
+        const float AimAfterShotS = 1.2f;
+
+        /// <summary>Sky 2026-10-20 (the fight range): "when they shoot they need to be facing their target!", then "same for anything shooting at
+        /// a target - must turn to face it". One rule for every shooter, whatever it is: any gun in the engine (the cell, the guard, the patrol,
+        /// the rivals, the officers, the response's units and robots, a final-fight hostile) drawn and aiming at a target on the street, or
+        /// any body that fired in the last 1.2 s (the log's shots: whoever fired, so a new armed thing needs no code), faces that target.
+        /// Fills view key → the target's drawn position; `fired`: the view keys that shot within 0.4 s (the fire clip). View only.</summary>
+        public void AimTargets(Dictionary<string, Vector3> into, HashSet<string> fired)
+        {
+            into.Clear(); fired.Clear(); var g = Game; if (g == null || views == null) return;
+            float now = Time.unscaledTime;
+            void Face(string by, string target)
+            {
+                if (string.IsNullOrEmpty(by) || string.IsNullOrEmpty(target) || by == target) return;
+                Vector3? at = null; Guard("aim", () => at = DrawnAt(target)); if (!at.HasValue) return;
+                var key = ViewKey(by);
+                if (by == "rivals") { for (int i = 0; i < 3; i++) into["rivals/" + i] = at.Value; return; } // the crew shoots as one gun
+                into[key] = at.Value;
+            }
+            bool Aiming(Gun gun) => gun != null && !gun.Down && gun.W != null && gun.Drawn && gun.HolsterAt < 0 && gun.Target.Length > 0 && g.PosOf(gun.Target).HasValue;
+            Guard("aim", () =>
+            {
+                var guns = new List<Gun>(); foreach (var op in g.Ops) guns.Add(op.Gun);
+                guns.Add(g.GuardGun); guns.Add(g.PatrolGun); guns.Add(g.RivalsGun); guns.AddRange(g.SecGuns);
+                foreach (var u in g.Units) guns.Add(u.Gun); foreach (var h in g.Hostiles) guns.Add(h.Gun);
+                foreach (var gun in guns) if (Aiming(gun)) Face(gun.Id, gun.Target);
+            });
+            var stale = new List<string>();
+            foreach (var kv in lastShot)
+            {
+                float age = now - kv.Value.at; if (age > AimAfterShotS) { stale.Add(kv.Key); continue; }
+                Face(kv.Key, kv.Value.t); if (age < 0.4f) { var k = ViewKey(kv.Key); if (kv.Key == "rivals") for (int i = 0; i < 3; i++) fired.Add("rivals/" + i); else fired.Add(k); }
+            }
+            foreach (var k in stale) lastShot.Remove(k);
+        }
+
+        /// <summary>The view an engine id draws as (an agent, a cast person, the patrol, the rivals, an officer, a fight hostile, a unit).</summary>
         public string ViewKey(string id)
         {
             if (id is "scout" or "fixer" or "tech" or "enforcer") return "op/" + id;
             if (id == "rivals") return "rivals/0";
             for (int i = 0; i < Game.Hostiles.Count; i++) if (Game.Hostiles[i].Id == id) return "hostile/" + i;
             for (int i = 0; i < Game.SecGuns.Length; i++) if (Game.SecGuns[i].Id == id) return "security/" + Math.Min(i, 1);
+            foreach (var u in Game.Units) if (u.Id == id) return "unit/" + id; // a response officer or robot
             return id;
         }
 

@@ -134,12 +134,12 @@ namespace Suborned.Sim
                     {
                         if (PatrolDown) return null;
                         var (pos, f) = PatrolPose()!.Value;
-                        if (PatrolChasing && PatrolAwayUntil <= Tick) return new Shape { At = pos, F = f, Reach = R.FacingReachCm, Half = R.FacingHalfCm, Near = near, Live = true };
+                        if (PatrolChasing && PatrolAwayUntil <= Tick) return new Shape { At = pos, F = f, Reach = R.FacingReachCm, Half = R.FacingHalfCm, Near = 0, Live = true }; // brief 031 L2: a machine sees by its cone only
                         return new Shape { Sweep = true, At = pos, F = f, Depth = R.PatrolDepthCm, HalfBase = R.PatrolHalfBase, PerMille = R.PatrolHalfPerMille, Live = PatrolAwayUntil <= Tick };
                     }
                 case "security":
                     {
-                        if (UnitOf(w) is Unit u) { var up = UnitPose(u); if (!up.HasValue) return null; return new Shape { At = up.Value.pos, F = up.Value.facing, Reach = R.SecReachCm, Half = R.SecHalfCm, Near = near, Live = true }; }
+                        if (UnitOf(w) is Unit u) { var up = UnitPose(u); if (!up.HasValue) return null; return new Shape { At = up.Value.pos, F = up.Value.facing, Reach = R.SecReachCm, Half = R.SecHalfCm, Near = u.Robot ? 0 : near, Live = true }; } // brief 031 L2: a robot by its cone only
                         int k = SecIndex(w); if (k < 0) return null;
                         var s = SecOfficerPose(k); if (!s.HasValue) return null;
                         return new Shape { At = s.Value.pos, F = s.Value.facing, Reach = R.SecReachCm, Half = R.SecHalfCm, Near = near, Live = true };
@@ -487,11 +487,23 @@ namespace Suborned.Sim
             SightFacts.Add(new SightFact { Watcher = watcher, What = what, How = how, Tick = Tick });
         }
 
-        /// <summary>A completed Watch of a watcher (rulebook sight learn watch): its sight, the watched seconds, and the routine once they reach
-        /// sight.watch.routine (a watched routine). The guard's Watch is his person event's too: his routine is his person routine.</summary>
+        /// <summary>Brief 031: each watcher's completed Watches as spans of mission time [from, to) ticks, merged, so that two agents watching at
+        /// once count once (the patrol's routine is the union of watched time).</summary>
+        readonly SortedDictionary<string, List<(int from, int to)>> watchedSpans = new SortedDictionary<string, List<(int, int)>>(StringComparer.Ordinal);
+
+        /// <summary>A completed Watch of a watcher (rulebook sight learn watch), ending now and lasting `seconds`: its sight, the watched seconds
+        /// (the union of every completed Watch's span: brief 031), and the routine once they reach sight.watch.routine (a watched routine).
+        /// The guard's Watch is his person event's too: his routine is his person routine.</summary>
         void WatchedWatcher(string watcher, int seconds)
         {
-            watchedS[watcher] = (watchedS.TryGetValue(watcher, out var s) ? s : 0) + seconds;
+            if (!watchedSpans.TryGetValue(watcher, out var spans)) watchedSpans[watcher] = spans = new List<(int, int)>();
+            spans.Add((Tick - T(seconds), Tick));
+            spans.Sort((a, b) => a.from != b.from ? a.from.CompareTo(b.from) : a.to.CompareTo(b.to));
+            var merged = new List<(int from, int to)>();
+            foreach (var sp in spans) { if (merged.Count > 0 && sp.from <= merged[merged.Count - 1].to) { var l = merged[merged.Count - 1]; merged[merged.Count - 1] = (l.from, Math.Max(l.to, sp.to)); } else merged.Add(sp); }
+            spans.Clear(); spans.AddRange(merged);
+            int ticks = 0; foreach (var sp in merged) ticks += sp.to - sp.from;
+            watchedS[watcher] = ticks / Hz;
             LearnSight(watcher, "sight", "watched");
             if (R.SightKinds[WatcherKind(watcher)].routine == "watched" && watchedS[watcher] >= R.SightRoutineS) LearnSight(watcher, "routine", "watched");
         }
@@ -515,6 +527,7 @@ namespace Suborned.Sim
             h.S("sight");
             foreach (var f in SightFacts) h.S(f.Watcher).S(f.What).S(f.How).I(f.Tick);
             foreach (var kv in watchedS) h.S(kv.Key).I(kv.Value);
+            foreach (var kv in watchedSpans) if (kv.Value.Count > 1 || WatcherKind(kv.Key) == "patrol") { h.S(kv.Key); foreach (var (f, t) in kv.Value) h.I(f).I(t); } // brief 031: the spans the union is taken over
         }
 
         // ---------------------------------------------------------------- Watch on a watcher (the order)
@@ -527,13 +540,13 @@ namespace Suborned.Sim
         /// <summary>A Watch on a camera or the patrol (rulebook sight.watch) by the Scout or the Tech (sight.kinds.*.by): within its reach of the
         /// watcher on a clear line; it takes watch.s and lands as WatchedWatcher, the cell's knowledge whoever watched (the patrol's seconds add
         /// up across both). The Tech doesn't Watch while his loop holds (tethered to the cabinet: run-tethered, as for a run). The guard is
-        /// watched as a person (scout.watch) and Land teaches his sight as well.</summary>
+        /// watched as a person (cell.watch) and Land teaches his sight as well.</summary>
         string WatchWatcher(Op op, Order o, bool engage = true)
         {
             var kind = WatcherKind(o.Target);
             if (!IsWatcher(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to watch here");
             if (R.SightKinds[kind].learn != "watch") return No("target-unknown", $"the {kind}'s sight is known when they come: there is nothing to watch for");
-            if (!WatchesKind(op, o.Target)) return No("only-scout", $"only the Scout watches the {kind} (§03)");
+            if (!WatchesKind(op, o.Target)) return No("only-scout", $"the {Sim.Op.Name(op.Id)} doesn't watch the {kind} (sight.kinds.{kind}.by)");
             if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             // Sky 2026-10-18: a Watch that can teach nothing is refused, free: its sight known, and its routine (a camera's comes with its sight;
             // the patrol's once the cell's Watches of it total sight.watch.routine seconds, or told)
@@ -541,19 +554,23 @@ namespace Suborned.Sim
             var sh = ShapeOf(o.Target);
             if (!sh.HasValue) return kind == "patrol" ? No("patrol-down", "the patrol is down") : No("target-unknown", $"the {o.Target} is not on the street");
             var at = sh.Value.At;
-            if (!G.Within(op.Pos, at, R.SightReachCm)) return No("too-far", $"stand within {R.SightReachCm / 100} m of the {o.Target.Replace("camera:", "")} {(kind == "camera" ? "camera" : "")}".TrimEnd(), m: R.SightReachCm / 100);
-            if (!Sees(op.Pos, at)) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it");
+            int reach = R.WatchReachCm(op.Id); // brief 031: the reach is the agent's
+            if (!G.Within(op.Pos, at, reach)) return No("too-far", $"stand within {reach / 100} m of the {o.Target.Replace("camera:", "")} {(kind == "camera" ? "camera" : "")}".TrimEnd(), m: reach / 100);
+            if (!Sees(op.Pos, at) || CrowdBlocks(op.Pos, at)) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it");
             if (!engage) return "";
             Engage(op, o, R.SightWatchS);
             op.BusyQuote = null; op.BusyPaid = 0;
             return "";
         }
 
+        /// <summary>An operative's name for the log's words: Scout, Fixer, Tech, Enforcer.</summary>
+        static string OpTitle(OpId id) { var n = Sim.Op.Name(id); return char.ToUpperInvariant(n[0]) + n.Substring(1); }
+
         void LandWatchWatcher(Op op, Order o)
         {
             WatchedWatcher(o.Target, R.SightWatchS);
             var k = Known(o.Target)!;
-            Note(op.Id == OpId.Tech ? "tech.watch.watched" : "scout.watch.watched", $"The {(op.Id == OpId.Tech ? "Tech" : "Scout")} has watched the {o.Target.Replace("camera:", "") + (k.Kind == "camera" ? " camera" : "")}: its sight is known{(k.Routine ? ", and its routine" : k.RoutineNeedsS > 0 ? $" ({k.WatchedS} of {k.RoutineNeedsS} s toward its routine)" : "")}.");
+            Note($"{Sim.Op.Name(op.Id)}.watch.watched", $"The {OpTitle(op.Id)} has watched the {o.Target.Replace("camera:", "") + (k.Kind == "camera" ? " camera" : "")}: its sight is known{(k.Routine ? ", and its routine" : k.RoutineNeedsS > 0 ? $" ({k.WatchedS} of {k.RoutineNeedsS} s toward its routine)" : "")}.");
         }
 
         // ---------------------------------------------------------------- the routine ahead (stage 2)

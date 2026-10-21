@@ -111,9 +111,9 @@ namespace Suborned.Play
         }
 
         /// <summary>Tab or the wheel over overlapping things: the next one is what a right click hits (its name on the chip).</summary>
-        void StepStack()
+        void StepStack(bool back = false)
         {
-            if (stack.Count < 2) return; stackIndex = (stackIndex + 1) % stack.Count; intentKey = ""; PointerHover(stackAt);
+            if (stack.Count < 2) return; stackIndex = (stackIndex + (back ? stack.Count - 1 : 1)) % stack.Count; intentKey = ""; PointerHover(stackAt);
             Status = $"{OneWord(stack[stackIndex])} ({stackIndex + 1} of {stack.Count})";
         }
 
@@ -154,10 +154,10 @@ namespace Suborned.Play
         public Pickable Focused => focusIndex >= 0 && focusIndex < targets.Count ? targets[focusIndex] : null;
 
         /// <summary>Tab in target mode: the next valid target, nearest the agent first; the view pans to it when off screen; its price shows.</summary>
-        void FocusNext()
+        void FocusNext(bool back = false)
         {
             var list = TargetMarks; if (list.Count == 0 || !cam) return;
-            focusIndex = (focusIndex + 1) % list.Count; var f = list[focusIndex];
+            focusIndex = back ? (focusIndex <= 0 ? list.Count - 1 : focusIndex - 1) : (focusIndex + 1) % list.Count; var f = list[focusIndex];
             var vp = cam.WorldToViewportPoint(f.Anchor); if (vp.z <= 0 || vp.x < 0.08f || vp.x > 0.92f || vp.y < 0.08f || vp.y > 0.92f) LookAt(f.Anchor);
             var sp = cam.WorldToScreenPoint(f.Anchor); intentKey = ""; PointerHover(sp);
             Status = $"{OneWord(f.T)} ({focusIndex + 1} of {list.Count})";

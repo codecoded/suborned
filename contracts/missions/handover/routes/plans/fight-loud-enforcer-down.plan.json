@@ -6,7 +6,7 @@
  "until": 5100,
  "steps": [
   {"op": "tech", "do": "move", "to": "cabinet", "run": true},
-  {"op": "enforcer", "do": "move", "to": [6950, -4250], "why": "beside the door on the west face, 5.6 m south of it and out of the guard's cone (the entrance camera is looped from 1:18)", "run": true},
+  {"op": "enforcer", "do": "move", "to": [5650, -4750], "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone and the patrol's sweep, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)", "run": true},
   {"op": "tech", "do": "loop", "target": "entrance"},
   {"op": "tech", "do": "reroute", "target": "patrol", "label": "reroute"},
   {"op": "enforcer", "do": "fire", "target": "guard", "after": ["reroute", "enforcer"], "gap": 45, "label": "shot", "why": "once the patrol has gone: fire until the guard is down"},

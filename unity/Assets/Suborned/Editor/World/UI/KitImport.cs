@@ -98,6 +98,39 @@ namespace Suborned.World.UI
             return $"Kit: {pngs.Count} sprites ({copied} files copied, {same} unchanged, {set} importers set), 6 fonts, kit.uss {uss.Length / 1024} KB, HudPanel.asset → {Dest}";
         }
 
+        /// <summary>Brief 033 (Sky 2026-10-21): Forma's live portraits, briefs/033/portraits/final/&lt;agent&gt;_&lt;state&gt;@2x.png (128 px, RGBA, cut to the
+        /// ring), into Kit/portraits/live as sprites (HudToolkit.LivePortrait loads them by state). Copied only when the bytes differ, so a re-cut
+        /// that lands later rides with the next build (GameBuild runs this first). Menu: Suborned/UI/Import Live Portraits.</summary>
+        [MenuItem("Suborned/UI/Import Live Portraits")]
+        public static void LiveMenu() => Debug.Log(LivePortraits());
+
+        public static string LivePortraits()
+        {
+            var src = Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "briefs", "033", "portraits", "final"));
+            if (!Directory.Exists(src)) return $"Live portraits: {src} is missing (the HUD keeps the kit's four looks)";
+            var full = Path.GetFullPath(Path.Combine(Application.dataPath, "..", Dest, "portraits", "live")); Directory.CreateDirectory(full);
+            int copied = 0, same = 0; var paths = new List<string>();
+            foreach (var f in Directory.GetFiles(src, "*@2x.png"))
+            {
+                var name = Path.GetFileName(f); var dst = Path.Combine(full, name); var b = File.ReadAllBytes(f);
+                if (File.Exists(dst) && File.ReadAllBytes(dst).AsSpan().SequenceEqual(b)) same++; else { File.WriteAllBytes(dst, b); copied++; }
+                paths.Add($"{Dest}/portraits/live/{name}");
+            }
+            if (copied > 0) AssetDatabase.Refresh(ImportAssetOptions.ForceSynchronousImport);
+            int set = 0;
+            foreach (var path in paths)
+            {
+                if (AssetImporter.GetAtPath(path) is not TextureImporter ti) { AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceSynchronousImport); if (AssetImporter.GetAtPath(path) is not TextureImporter t2) continue; ti = t2; }
+                bool dirty = ti.textureType != TextureImporterType.Sprite || ti.spriteImportMode != SpriteImportMode.Single || ti.mipmapEnabled || ti.textureCompression != TextureImporterCompression.Uncompressed || !ti.alphaIsTransparency || ti.npotScale != TextureImporterNPOTScale.None;
+                if (!dirty) continue;
+                ti.textureType = TextureImporterType.Sprite; ti.spriteImportMode = SpriteImportMode.Single; ti.mipmapEnabled = false; ti.alphaIsTransparency = true;
+                ti.textureCompression = TextureImporterCompression.Uncompressed; ti.npotScale = TextureImporterNPOTScale.None; ti.filterMode = FilterMode.Bilinear;
+                ti.wrapMode = TextureWrapMode.Clamp; ti.spriteBorder = Vector4.zero; ti.spritePixelsPerUnit = 100;
+                ti.SaveAndReimport(); set++;
+            }
+            return $"Live portraits: {paths.Count} from briefs/033/portraits/final ({copied} copied, {same} unchanged, {set} importers set) -> {Dest}/portraits/live";
+        }
+
         static void WriteIfChanged(string path, string text) { if (!File.Exists(path) || File.ReadAllText(path) != text) File.WriteAllText(path, text); }
 
         static Dictionary<string, (int l, int t, int r, int b)> SliceTable(JNode sprites)

@@ -63,7 +63,32 @@ namespace Suborned.World.Play
             f.origin = J.P(b2p, "origin"); f.axisX = J.P(b2p, "x"); f.axisY = J.P(b2p, "y");
             f.x0 = -52f; f.y0 = -66f; f.cell = 1f; f.nx = 164; f.ny = 82; // the site window (tools/sim/site.ts WINDOW), block metres
             f.heights = Heights(world, f);
+            Dress(host);
+            MeasureDoor(host);
+            EditorSceneManager.MarkSceneDirty(go.scene);
+            Debug.Log($"Play: installed the Handover host (`{RootName}`): frame origin {f.origin}, heights {f.nx}x{f.ny} at {f.cell} m (max {f.heights.Max():F2} m)");
+            return host;
+        }
 
+        /// <summary>Brief 029: the host in the fight range's scene: range mode, the engine's cm straight onto Unity metres (x along the range,
+        /// y across it as Unity z), a flat floor (no heights), the same palette, figures and materials as the Handover, and the range panel.</summary>
+        public static HandoverHost InstallRange()
+        {
+            if (Root() is { } old) Object.DestroyImmediate(old);
+            var go = new GameObject(RootName);
+            var host = go.AddComponent<HandoverHost>(); go.AddComponent<PlayHud>(); go.AddComponent<DebugHud>(); go.AddComponent<RangePanel>();
+            host.rangeMode = true; host.rangeLayout = "open";
+            var f = host.frame; f.origin = Vector2.zero; f.axisX = new Vector2(1f, 0f); f.axisY = new Vector2(0f, 1f); f.x0 = 0f; f.y0 = 0f; f.cell = 1f; f.nx = 0; f.ny = 0; f.heights = new float[0];
+            Dress(host); host.doorSeen = new float[0]; host.doorPlayedYaw = 30;
+            EditorSceneManager.MarkSceneDirty(go.scene);
+            Debug.Log($"Play: installed the fight range host (`{RootName}`, range mode)");
+            return host;
+        }
+
+        /// <summary>The palette, figures, kit models and material templates every host carries.</summary>
+        static void Dress(HandoverHost host)
+        {
+            var repo = HarbourWorldBuilder.RepoRoot;
             var look = Json.Parse(File.ReadAllText(Path.Combine(repo, "contracts/world/civic-look.json")));
             var pal = J.A(J.Get(look, "palette"), "materials").ToDictionary(m => J.S(m, "material"), m => J.S(m, "unlit"));
             Color P(string material) => pal.TryGetValue(material, out var hex) && ColorUtility.TryParseHtmlString(hex, out var c) ? c : throw new InvalidDataException($"Play: {material} is not in the civic look palette (unknown = reject)");
@@ -87,8 +112,13 @@ namespace Suborned.World.Play
             host.jobs = jobBlocks.Keys.ToArray(); host.jobColours = jobBlocks.Values.Select(Block).ToArray();
             host.figures = People.FigureBuild.Library(); // brief 020: the stand-in figures, when installed (else capsules)
             GameObject Kit(string path) => AssetDatabase.LoadAssetAtPath<GameObject>("Assets/Suborned/Kit/Models/" + path); // brief 020: kit models (bun run kit), else the boxes
-            host.sedanOfficial = Kit("Vehicles/DK_Sedan_Official.fbx"); host.sedanGetaway = Kit("Vehicles/DK_Sedan_Getaway.fbx"); host.robotPorter = Kit("Robots/DK_RobotPorter_Play.fbx"); host.patrolRobot = Kit("Robots/DK_RobotButler_Play.fbx"); // the patrol robot (a sim agent, no world element): the lighter butler, as the café's foreground robot (Splice, brief 020)
+            host.sedanOfficial = Kit("Vehicles/DK_Sedan_Official.fbx"); host.sedanGetaway = Kit("Vehicles/DK_Sedan_Getaway.fbx"); host.robotPorter = Kit("Robots/DK_RobotPorter_Play.fbx"); host.patrolRobot = Kit("Robots/DK_PatrolRobot.fbx") ?? throw new FileNotFoundException("Play: Kit/Models/Robots/DK_PatrolRobot.fbx missing (run `bun run kit`)"); // brief 031: the patrol robot is Vela's PatrolRobot (adopted), its head the attention face (M_RobotFace); was the lighter butler
+            host.robotRigs = RobotKit.Table; host.robotGlyphs = RobotKit.Glyphs; // brief 026: the patrol and response robots' live faces (view only)
             host.litTemplate = Template("PlayLit", "Universal Render Pipeline/Lit"); host.unlitTemplate = Template("PlayUnlit", "Universal Render Pipeline/Unlit"); host.fanTemplate = FanTemplate();
+        }
+
+        static void MeasureDoor(HandoverHost host)
+        {
             // GDD v0.24: the public door's view from each yaw (DoorSight), for the door marker's turn glyph and H13's door cause
             try
             {
@@ -99,9 +129,6 @@ namespace Suborned.World.Play
                 Debug.Log($"Play: the public door seen at yaw 30/120/210/300: {string.Join(" / ", host.doorSeen.Select(x => x.ToString("0.00")))} (clear at {HandoverHost.DoorClearLimit}); played at {host.doorPlayedYaw}");
             }
             catch (System.Exception e) { host.doorSeen = new float[0]; Debug.LogWarning($"Play: the door's view was not measured ({e.Message}); the host falls back to the GDD's yaw 210"); }
-            EditorSceneManager.MarkSceneDirty(go.scene);
-            Debug.Log($"Play: installed the Handover host (`{RootName}`): frame origin {f.origin}, heights {f.nx}x{f.ny} at {f.cell} m (max {f.heights.Max():F2} m)");
-            return host;
         }
 
         /// <summary>The host's root in the active scene: a root object by name, never a child (GameObject.Find matches any depth).</summary>

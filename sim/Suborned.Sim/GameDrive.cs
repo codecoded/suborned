@@ -48,6 +48,7 @@ namespace Suborned.Sim
             if (!op.Driven)
             {
                 op.Driven = true; op.DriveSpan = false; op.DrivePush = 0; op.DriveResume = null; op.DriveHeld = 0;
+                if (op.Gun.Order.Length > 0) { op.CloseSpent = true; if (op.CloseWalk) op.CloseWalk = false; } // tuning.md §8.2 rules 3–4: the drive is the player's motion; any WASD input ends the walk-in, the order holds
                 if (op.Walk != null) { op.DriveResume = op.Walk.End; op.DriveResumeRun = op.Running; } // the walk control takes over (resumed on release if onRelease resume)
                 op.Walk = null; op.WalkMm = 0; op.Running = false;
                 op.DriveBudget = DriveCapMm(op, false);
@@ -109,7 +110,6 @@ namespace Suborned.Sim
                 if (!op.DriveSpan)
                 {
                     op.DriveSpan = true; op.RunAlerted = false; op.RunSeen.Clear();
-                    if (op.Gun.Order.Length > 0) { op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; Note("fire.cancelled", $"{Sim.Op.Name(op.Id)} runs: the fire order ends."); }
                 }
                 op.Running = true; RunAttention(op);
             }
@@ -156,10 +156,11 @@ namespace Suborned.Sim
         void EndDrive(Op op, bool release)
         {
             op.Driven = false; op.DriveTo = null; op.DriveRun = false; op.DriveSpan = false; op.DriveMoved = false; op.Running = false; op.DrivePush = 0; op.DriveBudget = 0;
+            if (op.Gun.TrigT.Length > 0 || op.Gun.Trig || op.Gun.TrigTap) { ClearTrigger(op.Gun); if (op.Gun.Order.Length == 0) op.Gun.Target = ""; } // tuning.md §11: control ends, the trigger with it
             var resume = op.DriveResume; bool resumeRun = op.DriveResumeRun; op.DriveResume = null; op.DriveResumeRun = false;
             if (!release || DriveOnRelease != "resume" || !resume.HasValue || op.Down || op.Inside || op.InCar || op.Busy != null) return;
             var route = S.Grid.Route(op.Pos, resume.Value); if (route == null) return;
-            op.Walk = new Path(route); op.WalkMm = 0; if (op.Walk.Length == 0) { op.Walk = null; return; }
+            op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; if (op.Walk.Length == 0) { op.Walk = null; return; }
             bool run = resumeRun && DriveCapMm(op, true) > DriveCapMm(op, false); // a run where one is allowed (as RunRefusal, without its refusal)
             op.Running = run; op.WalkSpeed = PaceOf(op, run);
             if (run) { op.RunAlerted = false; op.RunSeen.Clear(); }

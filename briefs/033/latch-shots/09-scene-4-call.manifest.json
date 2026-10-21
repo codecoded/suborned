@@ -1,0 +1,9 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "speech", "x": 4445, "y": 888, "w": 487, "h": 111, "text": "Making the call."},
+  {"kind": "image", "x": 2918, "y": 2749, "w": 180, "h": 42, "text": "scene beats"},
+  {"kind": "image", "x": 5688, "y": 3055, "w": 208, "h": 84, "text": "skip keycap"},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

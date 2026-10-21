@@ -101,7 +101,11 @@ namespace Suborned.World
             var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
             stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
             stamp.exportPath = Path.GetRelativePath(RepoRoot, Path.GetFullPath(path)).Replace('\\', '/');
-            layers.Ground(Nodes.Group(root, "ground"), world.Ground);
+            KerbKit.KitKerbs(world.Ground.Pieces); // where the export lays kit kerb stones, the builder's kerb steps aside
+            var groundLayer = Nodes.Group(root, "ground");
+            layers.Ground(groundLayer, world.Ground);
+            RoadMarkings.Build(nodes, groundLayer, world); // brief 026 round 2: the dashed centre lines
+            Debug.Log($"World: kerbs as stones {KerbKit.Stones} segments, gutter strips {KerbKit.Gutters} segments; {KerbKit.Covered} segments left to the export's kit kerb stones (brief 026 round 2)");
             layers.Transit(Nodes.Group(root, "transit"), world.Transit);
             var buildings = Nodes.Group(root, "buildings");
             ProcSkin.Elements(Nodes.Group(root, "skins"), world.Skins);
@@ -118,9 +122,11 @@ namespace Suborned.World
             city.Connectors(Nodes.Group(root, "connectors"), world.Connectors);
             var street = Nodes.Group(root, "street");
             city.Street(street, world.Street);
+            if (world.Ground.Pieces.Count > 0) { int gp = city.GroundPieces(Nodes.Group(root, "ground-pieces"), world.Ground.Pieces); Debug.Log($"World: ground pieces {gp} (export ground.pieces: tiles, drains, manholes)"); }
             if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), street, world);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
+            if (world.HiddenCivic > 0) Debug.Log($"World: {world.HiddenCivic} civic masses `hidden` in the export, not drawn (data only)");
             facade.Civic(Nodes.Group(root, "civic"), Coplanar.Masses(world.Civic), placer);
             Debug.Log($"World: civic monument plinths {facade.Plinths}");
             if (world.Entrances.Count > 0) ServiceDoors.Build(nodes, Nodes.Group(root, "takedown"), world); // brief 013: the service doors (export takedown.entrances)
@@ -130,6 +136,7 @@ namespace Suborned.World
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
             int renderers = batches.GetComponentsInChildren<MeshRenderer>().Length;
+            Debug.Log($"World: tangents for {Combine.TangentMeshes} normal-mapped batches (brief 026: textured ground)");
             var cameras = Nodes.Group(null, "cameras");
             var lighting = Nodes.Group(null, "lighting");
             Rig.Build(cameras, lighting, root, world, Views.Load(ViewsPath), look);
@@ -142,13 +149,17 @@ namespace Suborned.World
             var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
             Debug.Log($"World: shadow proxies {proxies} ({proxyTris} LOD1 triangles), {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
             ProcKit.Report(world, facade);
+            ContactShade.Build(look, world, root); // brief 026: contact shade at building feet, kerb feet and under street pieces (SSAO is blind at ortho play zoom)
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
             Play.PlayInstall.Install(world); // the live Handover host (brief 011 D): its own root, `play`
+            Debug.Log($"World: kit parts spinning {KitParts.Spin(root)} (kit.json `parts`; view only)");
+            Debug.Log($"World: robots alive: {RobotKit.Seeds(root)} placed robots rigged (face + head), seeded by their export path (brief 026; view only)");
 
             // Verify before saving: a scene that disagrees with the export is never written.
             Debug.Log(placer.Summary());
             if (Inspect.Verify(root, world) + Inspect.VerifyKit(root, world, placer, standIns) > 0) throw new InvalidDataException("World: layer counts differ from the export");
             Debug.Log($"World: reflection probes baked {Probes.Build(lighting, look)} (light.json probes; <scene>-probe-<name>.exr)");
+            NightPhase.Build(lighting, root, look, world); // brief 026 round 2: the night look (light.json night), off; the scene is saved by day
             Directory.CreateDirectory(Path.GetDirectoryName(InUnity(ScenePath)));
             if (!EditorSceneManager.SaveScene(scene, ScenePath)) throw new IOException($"World: could not save {ScenePath}");
             Debug.Log($"World: kit facades hide procedural walls on {KitCover.Hidden} wall edges");

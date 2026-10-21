@@ -1,7 +1,7 @@
 // The Tech watches the machines too (Sky 2026-10-18: "I think tech should be able to watch camera / robots like scout can"; rulebook
-// sight.kinds.*.by). A Watch on a camera or the patrol is open to the Scout and the Tech, with the same reach, time and teaching; what either
-// learns is the cell's, and the patrol's watched seconds add up across both. A person's Watch (the guard, Inez, the driver) and every Listen
-// stay the Scout's (only-scout). The Tech doesn't Watch while his loop holds (tethered to the cabinet: run-tethered). The query before the
+// sight.kinds.*.by); brief 031 (Sky 2026-10-20): every agent watches everything watched, each from its own reach (sight.watch.reach), with
+// the same time and teaching; what any learns is the cell's, and the patrol's routine counts the union of watched time. Every Listen stays
+// the Scout's (only-scout). The Tech doesn't Watch while his loop holds (tethered to the cabinet: run-tethered). The query before the
 // click (LearnQuery, for any agent) answers as Issue does. Each scenario also runs twice and replays from its orders (the Theory tests).
 using System;
 using System.Linq;
@@ -68,19 +68,19 @@ namespace Suborned.Sim
                 r.Eq(g.LearnQuery(Scout, "watch", "patrol").code, "already-watched", "the Scout's Watch is refused for knowledge too");
             });
 
-            Add("N109", "—", "People stay the Scout's (Sky 2026-10-18): the Tech's Watch on the guard, Inez or the driver, and his Listen, are refused only-scout, free, even standing beside the guard; the response unit is watched by no one (target-unknown: its sight is known when it comes); the Fixer and the Enforcer watch no camera.", r =>
+            Add("N109", "—", "Every agent watches, Listen stays the Scout's (brief 031, Sky 2026-10-20; was 'people stay the Scout's', Sky 2026-10-18): the Tech's Watch on the guard from 4 m in front of him is taken, his Listen is refused only-scout, free; the response unit is watched by no one (target-unknown: its sight is known when it comes); the Fixer's Watch on a camera and the Enforcer's on the patrol are no longer only-scout, only too far from the car, each by its own reach (Fixer 12 m, Enforcer 3 m).", r =>
             {
                 var g = r.G;
                 r.To(r.SendTo(Tech, AheadOfGuard(r, 400)));
-                RefusedFreeBy(r, Tech, "watch", GuardR, "only-scout");
                 RefusedFreeBy(r, Tech, "listen", GuardR, "only-scout");
-                RefusedFreeBy(r, Tech, "watch", Inez, "only-scout");
-                RefusedFreeBy(r, Tech, "watch", Driver, "only-scout");
                 RefusedFreeBy(r, Tech, "watch", "security-1", "target-unknown");
                 RefusedFreeBy(r, Scout, "watch", "security-1", "target-unknown");
-                RefusedFreeBy(r, Fixer, "watch", "camera:entrance", "only-scout");
-                RefusedFreeBy(r, Enf, "watch", "patrol", "only-scout");
-                r.Is(!g.Known(GuardR)!.Sight && !g.GuardP.KRoutine, "nothing learned of the guard");
+                var fx = g.LearnQuery(Fixer, "watch", "camera:entrance"); r.Is(!fx.ok && fx.code == "too-far" && fx.m == 12, $"the Fixer's Watch on the entrance camera: too far, within 12 m (got {fx.code} {fx.m})");
+                var en = g.LearnQuery(Enf, "watch", "patrol"); r.Is(!en.ok && en.code == "too-far" && en.m == 3, $"the Enforcer's Watch on the patrol: too far, within 3 m (got {en.code} {en.m})");
+                r.Is(g.LearnQuery(Tech, "watch", GuardR).ok, "the Tech's Watch on the guard is open (LearnQuery)");
+                r.Do(Tech, "watch", GuardR); r.Done(Tech);
+                r.Is(g.Known(GuardR)!.Sight && g.GuardP.KRoutine, "the Tech's Watch teaches the guard's routine and his sight");
+                r.Is(g.Log.Exists(l => l.Code == "tech.watch.watched" && l.Text.Contains("guard")), "logged as the Tech's Watch (tech.watch.watched)");
             });
 
             Add("N110", "—", "The Tech doesn't Watch while his loop holds (rulebook sight: tethered to the cabinet): looping the mast camera, he is refused run-tethered on any camera, free, the loop still holding; when he lets the loop go, he walks within reach of the mast camera, watches it and learns it.", r =>
@@ -96,6 +96,7 @@ namespace Suborned.Sim
                 r.Is(!g.LoopOn, "the loop ends");
                 var spot = WatchSpot(r, "camera:mast-314", unseen: false, who: Tech);
                 r.To(r.SendTo(Tech, spot));
+                r.Is(r.Until(() => Watchable(r, "camera:mast-314", Tech), T(30)), "a clear line to the mast camera (brief 031: people on the street block it)");
                 r.Do(Tech, "watch", "camera:mast-314"); r.Done(Tech);
                 r.Is(g.Known("camera:mast-314")!.Sight, "the mast camera's sight is learned by the Tech");
             });

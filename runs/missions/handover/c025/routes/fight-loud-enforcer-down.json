@@ -1,0 +1,17 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail 'Enforcer down' in the final fight, loud (Suture N10): the loud route to the entry, then the Enforcer carries Vale straight at the officers and the response unit while the cell stays holstered.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750],"run":true},
+  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1236,"op":"enforcer","do":"fire","target":"guard"},
+  {"tick":1276,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1312,"op":"enforcer","do":"enter"},
+  {"tick":1992,"op":"enforcer","do":"move","to":"police-1"}
+ ],
+ "until": 5100
+}

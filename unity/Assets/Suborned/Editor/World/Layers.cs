@@ -9,40 +9,47 @@ namespace Suborned.World
         readonly Nodes nodes;
         public Layers(Nodes nodes) => this.nodes = nodes;
 
+        /// <summary>The look surface the kerbs' gutter strip draws in (look.json; absent = no gutter).</summary>
+        const string GutterSurface = "ground/gutter";
+
         public void Ground(Transform layer, GroundDto g)
         {
+            KerbKit.PaveTop = 0f; foreach (var p in g.Plots) if (p.Height < 0.5f) KerbKit.PaveTop = Mathf.Max(KerbKit.PaveTop, p.Base + p.Height);
             foreach (var r in g.Roads)
             {
                 var el = Nodes.Element(layer, r.Id);
-                nodes.Part(el, "carriageway", new MeshKit().Ribbon(r.Line, r.Width, r.Level, r.Level), r.Surface);
+                nodes.Part(el, "carriageway", new MeshKit().Ribbon(r.Line, r.Width, r.Level, r.Level), nodes.Ground(r.Surface));
                 // Kerb strips centred on the carriageway edges' outer side: offset lines at (width + kerb) / 2.
                 var (l, rr) = Poly.Ribbon(Poly.CleanLine(r.Line), r.Width + r.KerbWidth, false);
                 var drives = g.Drives.FindAll(d => d.Road == r.Id && d.Kerb is { Length: 2 });
-                var kerbs = new MeshKit(); var dropped = new MeshKit(); bool anyDrop = false;
+                var kerbs = new MeshKit(); var dropped = new MeshKit(); var gutters = new MeshKit(); bool anyDrop = false;
+                var roadLine = Poly.CleanLine(r.Line); bool gutter = nodes.Has(GutterSurface);
                 foreach (var side in new[] { l, rr }) // brief 023: the kerb is dropped where a drive crosses it (the drive's kerb segment)
                     foreach (var (piece, drop, h) in KerbPieces(side, drives, r.KerbWidth))
-                    {
-                        if (!drop) kerbs.Ribbon(piece, r.KerbWidth, r.Level, r.Level + r.KerbHeight);
-                        else { dropped.Ribbon(piece, r.KerbWidth, r.Level, r.Level + h); anyDrop = true; }
+                    {   // brief 026 round 2: a stone (top, face, end caps) with UVs in metres, and the gutter along its foot
+                        if (!drop) KerbKit.Build(kerbs, gutter ? gutters : null, piece, roadLine, r.KerbWidth, r.Level, Mathf.Max(r.Level + r.KerbHeight, KerbKit.PaveTop + KerbKit.TopProud), r.Level);
+                        else { KerbKit.Build(dropped, gutter ? gutters : null, piece, roadLine, r.KerbWidth, r.Level, r.Level + h, r.Level); anyDrop = true; }
                     }
-                nodes.Part(el, "kerbs", kerbs, r.KerbSurface);
-                if (anyDrop) nodes.Part(el, "kerbs-dropped", dropped, r.KerbSurface);
+                var kerbMat = nodes.Mat(nodes.Ground(r.KerbSurface)); // its own UVs: no planar UV pass
+                nodes.Part(el, "kerbs", kerbs, kerbMat);
+                if (anyDrop) nodes.Part(el, "kerbs-dropped", dropped, kerbMat);
+                if (gutter) nodes.Part(el, "gutters", gutters, nodes.Mat(GutterSurface));
                 // the drive itself: a flat at its level from the carriageway's edge to its bay, drawn with the road it leaves (one element per
                 // export id, and counts.ground has no drives: world.schema.ts)
-                foreach (var d in drives) nodes.Part(el, "drive/" + d.Id, new MeshKit().Flat(d.Ring, d.Level), d.Surface);
+                foreach (var d in drives) nodes.Part(el, "drive/" + d.Id, new MeshKit().Flat(d.Ring, d.Level), nodes.Ground(d.Surface));
             }
             foreach (var c in g.Circuses)
             {
                 var el = Nodes.Element(layer, c.Id);
                 var outer = Poly.Circle(c.Centre, c.Radius, 64); var island = Poly.Circle(c.Centre, c.IslandRadius, 64);
-                nodes.Part(el, "carriageway", new MeshKit().Flat(outer, island, c.Level), c.Surface);
-                nodes.Part(el, "island", new MeshKit().Prism(island, c.Level, c.Level + c.IslandHeight), c.IslandSurface);
+                nodes.Part(el, "carriageway", new MeshKit().Flat(outer, island, c.Level), nodes.Ground(c.Surface));
+                nodes.Part(el, "island", new MeshKit().Prism(island, c.Level, c.Level + c.IslandHeight), nodes.Ground(c.IslandSurface));
             }
-            foreach (var f in g.Foot) nodes.Solid(layer, f.Id, new MeshKit().Ribbon(f.Line, f.Width, f.Level, f.Level), f.Surface);
-            foreach (var m in g.Medians) Mass(layer, m);
-            foreach (var f in g.Flats) nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), f.Surface);
+            foreach (var f in g.Foot) nodes.Solid(layer, f.Id, new MeshKit().Ribbon(f.Line, f.Width, f.Level, f.Level), nodes.Ground(f.Surface));
+            foreach (var m in g.Medians) Mass(layer, m, true);
+            foreach (var f in g.Flats) nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), nodes.Ground(f.Surface));
             foreach (var w in g.Water) nodes.Solid(layer, w.Id, new MeshKit().Flat(w.Ring, w.Level), w.Surface);
-            foreach (var q in g.Quays) Mass(layer, q);
+            foreach (var q in g.Quays) Mass(layer, q, true);
             // brief 023: a drive and the bay it reaches lie below the plot slab's top: the slab is cut round them (each a convex ring)
             var cuts = new System.Collections.Generic.List<Vector2[]>();
             foreach (var d in g.Drives) { cuts.Add(d.Ring); var bay = g.Flats.Find(f => f.Id == d.To); if (bay != null) cuts.Add(bay.Ring); }
@@ -52,7 +59,7 @@ namespace Suborned.World
                 foreach (var c in cuts) parts = CutConvex(parts, Poly.Clean(c));
                 var kit = new MeshKit();
                 foreach (var q in parts) kit.Prism(q, p.Base, p.Base + p.Height);
-                nodes.Solid(layer, p.Id, kit, p.Surface);
+                nodes.Solid(layer, p.Id, kit, nodes.Ground(p.Surface));
             }
         }
 
@@ -220,7 +227,7 @@ namespace Suborned.World
             }
         }
 
-        void Mass(Transform parent, MassDto m) => nodes.Solid(parent, m.Id, new MeshKit().Prism(m.Ring, m.Base, m.Base + m.Height), m.Surface);
+        void Mass(Transform parent, MassDto m, bool ground = false) => nodes.Solid(parent, m.Id, new MeshKit().Prism(m.Ring, m.Base, m.Base + m.Height), ground ? nodes.Ground(m.Surface) : m.Surface);
 
         /// <summary>Solid straight flight: n equal steps (n = rise / riser, rounded up), each a block from the foot level.</summary>
         static MeshKit Stair(StairDto s)

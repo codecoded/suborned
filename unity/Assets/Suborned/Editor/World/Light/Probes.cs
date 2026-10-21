@@ -13,6 +13,9 @@ namespace Suborned.World
     /// cannot be baked would mirror nothing.</summary>
     public static class Probes
     {
+        /// <summary>A probe light.json gives no intensity (Glint, 026 chrome fix).</summary>
+        public const float DefaultIntensity = 0.8f;
+
         /// <summary>Makes and bakes every listed probe under `lighting/probes`; returns how many.</summary>
         public static int Build(Transform lighting, Look look)
         {
@@ -40,6 +43,7 @@ namespace Suborned.World
                 p.resolution = (int)J.F(e, "resolution");
                 p.importance = (int)J.F(e, "importance");
                 p.blendDistance = J.F(e, "blendDistance");
+                p.intensity = J.Get(e, "intensity") != null ? J.F(e, "intensity") : DefaultIntensity; // Glint, 026 chrome fix: 0.75 civic square, 0.85 office front, 0.8 by default
                 made.Add((p, Path.ChangeExtension(HarbourWorldBuilder.ScenePath, null) + "-probe-" + name + ".exr"));
             }
             using (new Review.RenderSession()) // GPU Resident Drawer off and shaders compiled synchronously, as for every manual render

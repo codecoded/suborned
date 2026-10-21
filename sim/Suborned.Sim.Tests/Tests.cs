@@ -45,8 +45,8 @@ public class ScenarioTests
     [Fact]
     public void TwentyEightPortedPlusTheEnginesNCases()
     {
-        Assert.Equal(28, Scenarios.All.Count(s => s.Id.StartsWith("S")));
-        Assert.Equal(Enumerable.Range(1, 28).Select(i => $"S{i:00}"), Scenarios.All.Where(s => s.Id.StartsWith("S")).Select(s => s.Id));
+        Assert.Equal(28, Scenarios.All.Count(s => s.Id.StartsWith("S") && !s.Id.Contains('-')));
+        Assert.Equal(Enumerable.Range(1, 28).Select(i => $"S{i:00}"), Scenarios.All.Where(s => s.Id.StartsWith("S") && !s.Id.Contains('-')).Select(s => s.Id)); // engine 0.15.0: Motive's S9-* (tuning.md §9.5) are Handover cases, not the 28
     }
 
     [Fact]
@@ -177,9 +177,10 @@ public class RulesTests
         Assert.True(refused > 10, $"the scenarios refuse orders ({refused})");
         Assert.Empty(bad);
         var a = New(); var b = New();
-        var x = a.Issue(new Order { Tick = 0, Op = "scout", Do = "watch", Target = "waitress" });
+        // a Listen (3 m) from the car: too far (brief 031: the Scout's Watch reaches 30 m, so Inez at 25 m is in its reach, behind a wall)
+        var x = a.Issue(new Order { Tick = 0, Op = "scout", Do = "listen", Target = "waitress" });
         Assert.Equal(("too-far", false), (x.code, x.ok)); Assert.True(x.m > 0); // the number the line needs, as a field
-        var (ok2, code2, why2) = b.Issue(new Order { Tick = 0, Op = "scout", Do = "watch", Target = "waitress" });
+        var (ok2, code2, why2) = b.Issue(new Order { Tick = 0, Op = "scout", Do = "listen", Target = "waitress" });
         Assert.Equal(x.code, code2);
         Assert.Equal(Hash.State(a), Hash.State(b));
         Assert.Equal(Answer.Codes.Length, Answer.Codes.Distinct().Count());
@@ -277,8 +278,8 @@ public class RulesTests
         Assert.Equal(750, r.Accuracy(r.Pistol, 400, false, false, false, true));
         Assert.Equal(375, r.Accuracy(r.Pistol, 1200, true, false, false, false));
         Assert.Equal(187, r.Accuracy(r.Pistol, 1200, true, true, false, false));
-        Assert.Equal(400, r.Accuracy(r.Pistol, 2000, false, false, false, false));
-        Assert.Equal(0, r.Accuracy(r.Pistol, 2600, false, false, false, false));
+        Assert.Equal(400, r.Accuracy(r.Pistol, 1550, false, false, false, false)); // the long band: 15–16 m since tuning.md §7.9 (was 15–25)
+        Assert.Equal(0, r.Accuracy(r.Pistol, 1700, false, false, false, false));
         Assert.Equal(750, r.Accuracy(r.Carbine, 1800, false, false, false, false));
     }
 }

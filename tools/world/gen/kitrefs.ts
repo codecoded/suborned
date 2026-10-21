@@ -8,10 +8,11 @@ import type { Frontage, KitRef, Landmark, Mass, Prim, StreetItem } from '../../.
 import { Grid } from '../../plan/street-geo';
 import { type Slot, type Scale, fit } from '../../kit/fit';
 import { signBox, signObstacles } from './box';
-import { type Ctx, r3, r4, rng } from './common';
+import { type Ctx, r3, r4, rng, rv } from './common';
 import type { V } from '../../plan/geom';
 import type { Landmark as PlanLandmark } from '../../plan/plan';
 import { footOf } from '../civic/foot';
+import { CAPSTONE_KINDS } from './street/capstone-rules';
 
 const KIT = resolve(import.meta.dir, '../../../contracts/world/kit.json');
 const catalogues = new Map<string, KitAsset[]>();
@@ -52,7 +53,7 @@ export function cataloguedFor(use: string): KitAsset | undefined {
 export const forUse = (use: string) => adopted().filter(a => a.tags.use.includes(use));
 
 /** Metres within which two items of one kind must not use the same piece. */
-const NEAR: Record<string, number> = { tree: 16, 'tub-palm': 12, 'tub-palm:planted': 12, planter: 24, 'tram-shelter': 60, newsstand: 60, 'kiosk-food': 60, lamp: 50, bench: 40, bin: 40, bollard: 6, hydrant: 100, 'phone-booth': 100, 'ticket-machine': 40, 'pole-camera': 40, 'canopy-camera': 20, 'advertising-column': 100 };
+const NEAR: Record<string, number> = { tree: 16, 'tree:washingtonia': 6, 'tub-palm': 12, 'tub-palm:planted': 12, planter: 24, 'tram-shelter': 60, newsstand: 60, 'kiosk-food': 60, lamp: 50, bench: 40, bin: 40, bollard: 6, hydrant: 100, 'phone-booth': 100, 'ticket-machine': 40, 'pole-camera': 40, 'canopy-camera': 20, 'advertising-column': 100 };
 /** Kerb zone depth: the narrowest in the plan (standards.streetscape.sections). */
 export const kerbZone = (ctx: Ctx): number => Math.min(...Object.values<any>(ctx.S.sections).map(s => s?.kerb).filter((k): k is number => typeof k === 'number'));
 
@@ -65,7 +66,7 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'bench': return { h, along: w * 1.2, depth: d * 1.3 };
     case 'bin': return { h, hTol: 0.25, along: 1.3, depth: 0.6 };
     case 'hydrant': return { h, along: 0.6, depth: 0.6 };
-    case 'phone-booth': return { h, maxH: ctx.S.catalogue['phone-booth'].cap, along: w * 1.1, depth: d * 1.1 }; // the item's own footprint (plan K6 capsule 1 × 1 m): a wider piece is not a phone booth here
+    case 'phone-booth': if (s.variant === 'twin') return { h, maxH: ctx.S.catalogue['phone-booth'].cap, along: w * 1.1, depth: d * 1.3 }; return { h, maxH: ctx.S.catalogue['phone-booth'].cap, along: w * 1.4, depth: d * 1.3 }; // the item's footprint is the plan's K6 capsule 1 × 1 m; brief 026: Sky wants the old booth back, so the room is the one-hood PhoneBooth_Single (1.32 × 1.26 m). The twin pod (2.58 m) takes two items, see twinBooths
     case 'dumpster': return { h, hTol: 0.25, along: w * 1.1, depth: d * 1.2 }; // brief 013: the stash container beside a service door; only an adopted Dumpster (status adopted) is ever drawn
     case 'ticket-machine': return { h, along: 1.1, depth: 0.8 };
     case 'pole-camera': return { h, along: 0.8, depth: kerb };
@@ -73,14 +74,15 @@ export function slotOf(ctx: Ctx, s: Pick<StreetItem, 'kind' | 'variant' | 'size'
     case 'advertising-column': return { h, along: w * 1.3, depth: d * 1.3 };
     // brief 020 (Vela's pick; the plan's sizes stay the plan's, the slot says how far a piece may differ from them):
     case 'planter': return { h, hTol: 0.4, along: w * 1.4, depth: d }; // the deck's planting bed 1.5 x 1.5 x 0.9: a trough 2.0 m long may stand across it, an urn inside it
-    case 'mailbox': return { h, hTol: 0.15, along: 1.0, depth: 1.0 }; // the plan's 0.6 x 0.6 x 1.3 m box; PneumaticPost_Play is that box (brief 020 follow-up)
+    case 'mailbox': return { h: 2.34, hTol: 0.1, along: 1.0, depth: 1.0 }; // the plan's 0.6 x 0.6 box stays the footprint; its 1.3 m height is not held: PneumaticPost_Play is the full original post, 2.34 m (brief 026)
     case 'public-clock': return { h, hTol: 0.1, along: (ctx.S.catalogue['public-clock'].face as number) * 1.1, depth: 0.8 }; // the double face is 1.2 m wide
     case 'tram-shelter': { const r = ctx.S.catalogue['tram-shelter'].roof as [number, number, number]; return { h, hTol: 0.15, along: r[0], depth: r[1] }; } // the roof's footprint 9.0 x 2.4
-    case 'newsstand': return { h, hTol: 0.15, along: w * 1.1, depth: d * 1.3 };
+    case 'kiosk-pavilion': return { h, hTol: 0.05, along: w * 1.05, depth: d * 1.2 }; // brief 026: the old CurvedKiosk 6.08 x 4.36 x 6.5 m at its own size
+    case 'newsstand': return { h, hTol: 0.15, along: w * 1.1, depth: d * 1.4 }; // brief 026: the curved kiosk at 0.46, 2.80 × 2.01 m in plan, 2.99 m tall (the plan's box is 3.0 × 1.5 × 2.8; the kerb zone is 2.0 plus 0.45 widening)
     case 'kiosk-food': { const r = ctx.S.catalogue['kiosk-food'].roof as [number, number, number]; return { h, hTol: 0.2, along: r[0], depth: r[1] }; }
     case 'tub-palm': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.5, along: sp.spread, depth: sp.spread } : null; } // brief 020: a tub palm may stand to half its plan height (FanPalm's crown is 2.8 m wide: 4.5 m at that crown is a 5 m crown in a 3 m room)
     case 'tree': { const sp = ctx.S.trees.species[s.variant ?? ''] as { top: number; spread: number } | undefined; return sp ? { h: sp.top, hTol: 0.35, along: sp.spread, depth: sp.spread } : null; }
-    default: return null;
+    default: return CAPSTONE_KINDS.has(s.kind) ? { h: s.size[2], hTol: 0.01, along: s.size[0] + 0.001, depth: s.size[1] + 0.001 } : null; // the capstone programme's pieces are placed at the size their item states: the slot is the item
   }
 }
 
@@ -104,8 +106,10 @@ export function choose(id: string, options: Fit[], taken: string[], adjacent: st
 export function streetKit(ctx: Ctx, items: StreetItem[]): StreetItem[] {
   const grids = new Map<string, Grid<{ at: V; id: string }>>();
   const planted = new Set(items.filter(i => i.kind === 'planter').map(i => `${i.at[0].toFixed(1)},${i.at[1].toFixed(1)}`)); // a palm standing in a planter's bed (a deck's planting bed carries one): it takes a bare palm, never a potted piece
+  const palmAt = new Set(items.filter(i => i.kind === 'tub-palm').map(i => `${i.at[0].toFixed(1)},${i.at[1].toFixed(1)}`)); // a planter with a palm planted in it is a bed (the trough), never an urn: the trunk would stand through the urn wall (brief 026, Vela round 2)
   return items.map(it => {
-    const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' && planted.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'tub-palm:planted' : it.kind;
+    if (it.kit) return { ...it, source: 'kit' as const }; // already named by its programme (street/capstone.ts)
+    const slot = slotOf(ctx, it), use = it.kind === 'tub-palm' && planted.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'tub-palm:planted' : it.kind === 'planter' && palmAt.has(`${it.at[0].toFixed(1)},${it.at[1].toFixed(1)}`) ? 'planter:planted' : it.kind === 'phone-booth' && it.variant === 'twin' ? 'phone-booth:twin' : it.kind === 'tree' && it.variant === 'washingtonia' ? 'tree:washingtonia' : it.kind;
     const g = grids.get(use) ?? grids.set(use, new Grid(8, o => o.at)).get(use)!, near = g.near(it.at, NEAR[use] ?? 20).filter(o => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]) < (NEAR[use] ?? 20));
     const gap = (o: { at: V }) => Math.hypot(o.at[0] - it.at[0], o.at[1] - it.at[1]);
     near.sort((a, b) => gap(a) - gap(b));

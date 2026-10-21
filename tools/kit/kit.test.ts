@@ -58,13 +58,12 @@ test('LOD categories (Vela, brief 007 round 3): every piece names one; its LOD s
     .toEqual(['street', 'street', 'trees', 'facades', 'facades', 'towers', 'towers', 'signatures', 'signatures', 'horizon']);
 });
 
-test('Vela\'s slimmed street props (round 3) are the generator\'s binaries; Bollard and RecyclingBins have no LODs', () => {
+test('Vela\'s street props are the generator\'s binaries; since brief 026 (old detail back) the heavy ones carry LODs, so the 1,500-tri cap and the no-LOD claim are gone', () => {
   for (const id of ['Bollard', 'Hydrant', 'RecyclingBins', 'DomeCamera', 'CCTVPole', 'PhoneBooth']) {
     const a = kit.assets.find(x => x.id === id)!, fbx = a.files.find(f => f.role === 'fbx')!;
     expect(fbx.root, id).toBe('generated'); expect(a.files.some(f => f.role === 'fbx-meta'), id).toBe(true); // the DecoKit meta keeps the GUID the prefab uses
-    expect(a.tris, id).toBeLessThanOrEqual(1500);
+    if (a.tris > 1500) expect(a.lods?.length, `${id} over 1,500 tris needs LODs`).toBeGreaterThan(0);
   }
-  for (const id of ['Bollard', 'RecyclingBins']) { const a = kit.assets.find(x => x.id === id)!; expect(a.lods).toBeUndefined(); expect(a.files.some(f => f.role === 'lod')).toBe(false); }
 });
 
 test('brief 007 round 3 wrap-up: the concept-B liner (hand-built far L2) and PlanterArc adopted, base SpaceHQ rejected; every LOD asks only for its piece\'s materials', () => {

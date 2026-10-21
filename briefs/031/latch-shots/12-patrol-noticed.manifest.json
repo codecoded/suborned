@@ -1,0 +1,18 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 42, "y": 42, "w": 262, "h": 998, "text": "roster portraits"},
+  {"kind": "image", "x": 5665, "y": 198, "w": 309, "h": 108, "text": "known people"},
+  {"kind": "line", "x": 2778, "y": 3222, "w": 460, "h": 120, "text": "Take Vale alive."},
+  {"kind": "image", "x": 42, "y": 2946, "w": 636, "h": 396, "text": "plot scope"},
+  {"kind": "image", "x": 1042, "y": 391, "w": 66, "h": 66, "text": "plate fold tab"},
+  {"kind": "image", "x": 316, "y": 307, "w": 744, "h": 234, "text": "order plate"},
+  {"kind": "speech", "x": 3289, "y": 1255, "w": 727, "h": 75, "text": "Friends first, force last. Remember."},
+  {"kind": "speech", "x": -853, "y": -2444, "w": 888, "h": 75, "text": "The square looks ordinary. That's the trouble."},
+  {"kind": "image", "x": 3835, "y": 2032, "w": 78, "h": 78, "text": "door marker"},
+  {"kind": "image", "x": 2912, "y": 1238, "w": 216, "h": 216, "text": "attention callout"},
+  {"kind": "image", "x": 3754, "y": 1773, "w": 78, "h": 78, "text": "pip guard"},
+  {"kind": "image", "x": 5478, "y": 2401, "w": 78, "h": 78, "text": "pip driver"},
+  {"kind": "image", "x": 5664, "y": 36, "w": 316, "h": 144, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

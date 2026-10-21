@@ -1,0 +1,81 @@
+scout	person/waitress	Default	best	watch:	ways 1	chip watch:	agree
+scout	person/driver	Default	best	watch:	ways 1	chip watch:	agree
+scout	person/guard	Default	best	watch:	ways 1	chip watch:	agree
+scout	person/councillor	Lock	locked		ways 0	chip label	agree
+scout	patrol/patrol	Default	best	watch:	ways 2	chip watch: ⋯	agree
+scout	camera/entrance	Default	best	watch:	ways 1	chip watch:	agree
+scout	camera/pickup	Default	best	watch:	ways 1	chip watch:	agree
+scout	camera/mast-314	Default	best	watch:	ways 1	chip watch:	agree
+scout	rivals/rivals	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+scout	security/security	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+scout	car/official	Lock	locked		ways 0	chip label	agree
+scout	car/getaway	Default	best	board:	ways 1	chip board:	agree
+scout	door/door	Hint	nothing here		ways 0	chip label	agree
+scout	cabinet/cabinet	Hint	nothing here		ways 0	chip label	agree
+scout	crowd/crowd/0	Silent	passer-by		ways 0	chip label	agree
+scout	crowd/crowd/1	Silent	passer-by		ways 0	chip label	agree
+scout	crowd/crowd/2	Silent	passer-by		ways 0	chip label	agree
+scout	stash/stash/cafe-kitchen-door/door	Silent	nothing carried		ways 0	chip label	agree
+scout	stash/stash/office-service-door/door	Silent	nothing carried		ways 0	chip label	agree
+scout	stash/stash/office-service-door/container	Silent	nothing carried		ways 0	chip label	agree
+fixer	person/waitress	Ring	violent	turn:ask	ways 1	chip turn:ask (opens) ⋯	agree
+fixer	person/driver	Ring	violent	turn:ask	ways 1	chip turn:ask (opens) ⋯	agree
+fixer	person/guard	Ring	violent	turn:ask	ways 1	chip turn:ask (opens) ⋯	agree
+fixer	person/councillor	Lock	locked		ways 0	chip label	agree
+fixer	patrol/patrol	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+fixer	camera/entrance	Hint	nothing here		ways 0	chip label	agree
+fixer	camera/pickup	Hint	nothing here		ways 0	chip label	agree
+fixer	camera/mast-314	Hint	nothing here		ways 0	chip label	agree
+fixer	rivals/rivals	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+fixer	security/security	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+fixer	car/official	Lock	locked		ways 0	chip label	agree
+fixer	car/getaway	Default	best	board:	ways 1	chip board:	agree
+fixer	door/door	Hint	nothing here		ways 0	chip label	agree
+fixer	cabinet/cabinet	Hint	nothing here		ways 0	chip label	agree
+fixer	crowd/crowd/0	Silent	passer-by		ways 0	chip label	agree
+fixer	crowd/crowd/1	Silent	passer-by		ways 0	chip label	agree
+fixer	crowd/crowd/2	Silent	passer-by		ways 0	chip label	agree
+fixer	stash/stash/cafe-kitchen-door/door	Silent	nothing carried		ways 0	chip label	agree
+fixer	stash/stash/office-service-door/door	Silent	nothing carried		ways 0	chip label	agree
+fixer	stash/stash/office-service-door/container	Silent	nothing carried		ways 0	chip label	agree
+tech	person/waitress	Hint	nothing here		ways 0	chip label	agree
+tech	person/driver	Hint	nothing here		ways 0	chip label	agree
+tech	person/guard	Hint	nothing here		ways 0	chip label	agree
+tech	person/councillor	Lock	locked		ways 0	chip label	agree
+tech	patrol/patrol	Default	best	watch:	ways 3	chip watch: ⋯	agree
+tech	camera/entrance	Default	best	watch:	ways 2	chip watch: ⋯	agree
+tech	camera/pickup	Default	best	watch:	ways 2	chip watch: ⋯	agree
+tech	camera/mast-314	Default	best	watch:	ways 2	chip watch: ⋯	agree
+tech	rivals/rivals	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+tech	security/security	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+tech	car/official	Lock	locked		ways 0	chip label	agree
+tech	car/getaway	Default	best	board:	ways 1	chip board:	agree
+tech	door/door	Hint	nothing here		ways 0	chip label	agree
+tech	cabinet/cabinet	Ring	tie	loop:	ways 4	chip loop: (opens) ⋯	agree
+tech	crowd/crowd/0	Silent	passer-by		ways 0	chip label	agree
+tech	crowd/crowd/1	Silent	passer-by		ways 0	chip label	agree
+tech	crowd/crowd/2	Silent	passer-by		ways 0	chip label	agree
+tech	stash/stash/cafe-kitchen-door/door	Silent	nothing carried		ways 0	chip label	agree
+tech	stash/stash/office-service-door/door	Silent	nothing carried		ways 0	chip label	agree
+tech	stash/stash/office-service-door/container	Silent	nothing carried		ways 0	chip label	agree
+enforcer	person/waitress	Ring	violent	takedown:	ways 2	chip takedown: (opens) ⋯	agree
+enforcer	person/driver	Ring	violent	takedown:	ways 2	chip takedown: (opens) ⋯	agree
+enforcer	person/guard	Ring	violent	takedown:	ways 3	chip takedown: (opens) ⋯	agree
+enforcer	person/councillor	Lock	locked		ways 0	chip label	agree
+enforcer	patrol/patrol	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+enforcer	camera/entrance	Hint	nothing here		ways 0	chip label	agree
+enforcer	camera/pickup	Hint	nothing here		ways 0	chip label	agree
+enforcer	camera/mast-314	Hint	nothing here		ways 0	chip label	agree
+enforcer	rivals/rivals	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+enforcer	security/security	Ring	violent	fire:	ways 1	chip fire: (opens) ⋯	agree
+enforcer	car/official	Lock	locked		ways 0	chip label	agree
+enforcer	car/getaway	Default	best	board:	ways 1	chip board:	agree
+enforcer	door/door	Default	best	enter:	ways 1	chip enter:	agree
+enforcer	cabinet/cabinet	Hint	nothing here		ways 0	chip label	agree
+enforcer	crowd/crowd/0	Silent	passer-by		ways 0	chip label	agree
+enforcer	crowd/crowd/1	Silent	passer-by		ways 0	chip label	agree
+enforcer	crowd/crowd/2	Silent	passer-by		ways 0	chip label	agree
+enforcer	stash/stash/cafe-kitchen-door/door	Silent	nothing carried		ways 0	chip label	agree
+enforcer	stash/stash/office-service-door/door	Silent	nothing carried		ways 0	chip label	agree
+enforcer	stash/stash/office-service-door/container	Silent	nothing carried		ways 0	chip label	agree
+agree 80/80

@@ -1,0 +1,28 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail 'rivals reach Vale' (Suture N2): route B without the false tip; the rivals follow the car to the service lane and reach Vale at the take. Retimed 2026-10-19 (Waymark, brief 023): the Scout's walk to the driver is longer round the moved forecourt, so Watch at 0:57.6, a step on to the driver (Watch stops the walk at 6 m, Listen needs 3 m) and Listen at 1:19.7, as route B.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "enforcer", "do": "move", "to": "d:Service lane"},
+  {"tick": 0, "op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"tick": 0, "op": "fixer", "do": "move", "to": "d:Boarding pavilion"},
+  {"tick": 576, "op": "scout", "do": "watch", "target": "driver"},
+  {"tick": 776, "op": "scout", "do": "move", "to": "d:Meet driver"},
+  {"tick": 797, "op": "scout", "do": "listen", "target": "driver"},
+  {"tick": 1217, "op": "fixer", "do": "turn", "target": "driver", "approach": "pay"},
+  {"tick": 1717, "op": "scout", "do": "move", "to": [8250, -3100]},
+  {"tick": 3700, "op": "enforcer", "do": "take"},
+  {"tick": 4080, "op": "enforcer", "do": "move", "to": "d:Getaway bay"},
+  {"tick": 4468, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4469, "op": "enforcer", "do": "move", "to": [2000, -5600]},
+  {"tick": 4528, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4529, "op": "enforcer", "do": "move", "to": [-400, -5800]},
+  {"tick": 4588, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4648, "op": "enforcer", "do": "fire", "target": "hostiles"},
+  {"tick": 4649, "op": "enforcer", "do": "move", "to": [850, -4820]},
+  {"tick": 4698, "op": "enforcer", "do": "board", "target": "car"},
+  {"tick": 4739, "op": "cell", "do": "go"}
+ ],
+ "until": 5100
+}

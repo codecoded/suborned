@@ -1,0 +1,1859 @@
+{
+ "schema": "suborned.cell-generic/1",
+ "brief": "briefs/020",
+ "owner": "Forma",
+ "built": "tools/figures/cell_generic.py (Blender 5.2.2)",
+ "figures": [
+  {
+   "id": "enforcer",
+   "role": "enforcer",
+   "label": "Enforcer G2, the testbed model on its own 65-bone rig (white coat, black suit, gold trim); one 28.8k LOD, as the testbed had it",
+   "standIn": true,
+   "fbx": "Figures/enforcer/enforcer.fbx",
+   "sha256": "25ced8f83d77fab487b31e2e672f41208b96ac718df4465523f58992f8885a93",
+   "rig": {
+    "type": "generic",
+    "bones": 65,
+    "names": "own (Mixamo names; the Meshy-style rig has Spine02/Spine01/Spine and neck)",
+    "root": "Armature/Hips"
+   },
+   "heightM": 1.75,
+   "female": false,
+   "lods": [
+    {
+     "name": "enforcer_LOD0",
+     "tris": 28796,
+     "tex": 2048,
+     "source": "characters/enforcer_G2/07_export/enforcer_G2.2k.glb"
+    }
+   ],
+   "materials": [
+    {
+     "name": "enforcer_body_L0",
+     "file": "Figures/enforcer/Materials/enforcer_body_L0.mat",
+     "lod": 0,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/enforcer/Textures/enforcer_body_L0_albedo.png",
+      "normal": "Figures/enforcer/Textures/enforcer_body_L0_normal.png",
+      "emissive": "Figures/enforcer/Textures/enforcer_body_L0_emissive.png"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "emissive": 2048
+     }
+    }
+   ],
+   "clips": [
+    {
+     "name": "walk",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "run",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "idle",
+     "frames": 299,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "tb_aim",
+     "frames": 95,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_cover",
+     "frames": 79,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_draw",
+     "frames": 62,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_fire_rifle",
+     "frames": 36,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_holster",
+     "frames": 71,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_kneel_grenade",
+     "frames": 175,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_pistol_aim",
+     "frames": 215,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "tb_reload",
+     "frames": 111,
+     "fps": 30,
+     "loop": false,
+     "ownClip": true
+    },
+    {
+     "name": "run_lean",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "idle_alt",
+     "frames": 299,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_f",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_old",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_armed",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "run_armed",
+     "frames": 23,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim",
+     "frames": 64,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim_pistol",
+     "frames": 214,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "shoot",
+     "frames": 18,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "draw",
+     "frames": 61,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee_whip",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit",
+     "frames": 39,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit_large",
+     "frames": 31,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "panic",
+     "frames": 303,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "cower",
+     "frames": 47,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "crouch",
+     "frames": 51,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "crouch_walk",
+     "frames": 52,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stunned",
+     "frames": 65,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout",
+     "frames": 169,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout_alt",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim",
+     "frames": 133,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim_back",
+     "frames": 110,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_attacker",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "struggle",
+     "frames": 144,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "struggle_strangled",
+     "frames": 529,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carry",
+     "frames": 301,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carried",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "lying",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "restrained",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "captor",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "phone",
+     "frames": 1166,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "look_around",
+     "frames": 191,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "talk",
+     "frames": 156,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "point",
+     "frames": 109,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "beckon",
+     "frames": 79,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "search",
+     "frames": 151,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "pickup",
+     "frames": 288,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carried_drape",
+     "frames": 73,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder",
+     "frames": 36,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve_walk",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit",
+     "frames": 130,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_alt",
+     "frames": 211,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_talk",
+     "frames": 1323,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stand_to_sit",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "sit_to_stand",
+     "frames": 69,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.41,
+    "run": 2.43,
+    "run_lean": 2.43,
+    "walk_f": 1.02,
+    "walk_old": 0.35,
+    "walk_armed": 2.34,
+    "run_armed": 2.79,
+    "crouch_walk": 0.76,
+    "carry_shoulder": 1.38,
+    "serve_walk": 1.02
+   },
+   "lodScreenHeights": [
+    0.012
+   ]
+  },
+  {
+   "id": "fixer",
+   "role": "fixer",
+   "label": "Fixer P4-6 (her model and skeleton, re-exported Generic)",
+   "standIn": true,
+   "fbx": "Figures/fixer/fixer.fbx",
+   "sha256": "a4ab52ea0c04ebcd4467c779de1483a8febb7cc834341e41abb0bb5d20271c0b",
+   "rig": {
+    "type": "generic",
+    "bones": 23,
+    "names": "own (Mixamo names; the Meshy-style rig has Spine02/Spine01/Spine and neck)",
+    "root": "Armature/Hips"
+   },
+   "heightM": 1.75,
+   "female": true,
+   "lods": [
+    {
+     "name": "fixer_LOD0",
+     "tris": 11998,
+     "tex": null,
+     "source": "unchanged from the Humanoid build"
+    },
+    {
+     "name": "fixer_LOD1",
+     "tris": 4497,
+     "tex": null,
+     "source": "unchanged from the Humanoid build"
+    },
+    {
+     "name": "fixer_LOD2",
+     "tris": 1497,
+     "tex": null,
+     "source": "unchanged from the Humanoid build"
+    }
+   ],
+   "materials": [],
+   "clips": [
+    {
+     "name": "idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "idle_alt",
+     "frames": 299,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk",
+     "frames": 36,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_f",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_old",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "run",
+     "frames": 26,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "run_lean",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_armed",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "run_armed",
+     "frames": 23,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim",
+     "frames": 64,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim_pistol",
+     "frames": 214,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "shoot",
+     "frames": 18,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "draw",
+     "frames": 61,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee_whip",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit",
+     "frames": 39,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit_large",
+     "frames": 31,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "panic",
+     "frames": 303,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "cower",
+     "frames": 47,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "crouch",
+     "frames": 51,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "crouch_walk",
+     "frames": 52,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stunned",
+     "frames": 65,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout",
+     "frames": 169,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout_alt",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim",
+     "frames": 133,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim_back",
+     "frames": 110,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_attacker",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "struggle",
+     "frames": 144,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "struggle_strangled",
+     "frames": 529,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carry",
+     "frames": 301,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carried",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "lying",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "restrained",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "captor",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "phone",
+     "frames": 1166,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "look_around",
+     "frames": 191,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "talk",
+     "frames": 156,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "point",
+     "frames": 109,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "beckon",
+     "frames": 79,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "search",
+     "frames": 151,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "pickup",
+     "frames": 288,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carried_drape",
+     "frames": 73,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder",
+     "frames": 36,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve_walk",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit",
+     "frames": 130,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_alt",
+     "frames": 211,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_talk",
+     "frames": 1323,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stand_to_sit",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "sit_to_stand",
+     "frames": 69,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.29,
+    "walk_f": 0.94,
+    "walk_old": 0.32,
+    "run": 2.15,
+    "run_lean": 2.39,
+    "walk_armed": 2.2,
+    "run_armed": 2.54,
+    "crouch_walk": 0.77,
+    "carry_shoulder": 1.29,
+    "serve_walk": 0.94
+   },
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "scout",
+   "role": "scout",
+   "label": "Scout S1-2, the testbed model on its own rig (hooded jacket, shorts, harness)",
+   "standIn": true,
+   "fbx": "Figures/scout/scout.fbx",
+   "sha256": "fda145ed1135194daf15ecf8dadf6e8e317cf6f5e92dd03be150eb65554f2b0c",
+   "rig": {
+    "type": "generic",
+    "bones": 26,
+    "names": "own (Mixamo names; the Meshy-style rig has Spine02/Spine01/Spine and neck)",
+    "root": "Armature/Hips"
+   },
+   "heightM": 1.75,
+   "female": true,
+   "lods": [
+    {
+     "name": "scout_LOD0",
+     "tris": 29148,
+     "tex": 2048,
+     "source": "source-art/Citizens3D/rigged/scout_lod/scout_S1-2_LOD0_30k.glb"
+    },
+    {
+     "name": "scout_LOD1",
+     "tris": 12000,
+     "tex": 2048,
+     "source": "source-art/Citizens3D/rigged/scout_lod/scout_S1-2_LOD1_12k.glb"
+    },
+    {
+     "name": "scout_LOD2",
+     "tris": 4500,
+     "tex": 1024,
+     "source": "source-art/Citizens3D/rigged/scout_lod/scout_S1-2_LOD2_4k5.glb"
+    }
+   ],
+   "materials": [
+    {
+     "name": "scout_body_L0",
+     "file": "Figures/scout/Materials/scout_body_L0.mat",
+     "lod": 0,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_L0_albedo.jpg",
+      "normal": "Figures/scout/Textures/scout_body_L0_normal.jpg"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048
+     }
+    },
+    {
+     "name": "scout_body_L1",
+     "file": "Figures/scout/Materials/scout_body_L1.mat",
+     "lod": 1,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_L1_albedo.jpg",
+      "normal": "Figures/scout/Textures/scout_body_L1_normal.jpg"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048
+     }
+    },
+    {
+     "name": "scout_body_L2",
+     "file": "Figures/scout/Materials/scout_body_L2.mat",
+     "lod": 2,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/scout/Textures/scout_body_L2_albedo.jpg",
+      "normal": "Figures/scout/Textures/scout_body_L2_normal.jpg"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024
+     }
+    }
+   ],
+   "clips": [
+    {
+     "name": "walk",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "run",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "walk_f",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "run_lean",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "idle_alt",
+     "frames": 299,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_old",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_armed",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "run_armed",
+     "frames": 23,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim",
+     "frames": 64,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim_pistol",
+     "frames": 214,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "shoot",
+     "frames": 18,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "draw",
+     "frames": 61,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee_whip",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit",
+     "frames": 39,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit_large",
+     "frames": 31,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "panic",
+     "frames": 303,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "cower",
+     "frames": 47,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "crouch",
+     "frames": 51,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "crouch_walk",
+     "frames": 52,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stunned",
+     "frames": 65,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout",
+     "frames": 169,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout_alt",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim",
+     "frames": 133,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim_back",
+     "frames": 110,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_attacker",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "struggle",
+     "frames": 144,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "struggle_strangled",
+     "frames": 529,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carry",
+     "frames": 301,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carried",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "lying",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "restrained",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "captor",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "phone",
+     "frames": 1166,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "look_around",
+     "frames": 191,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "talk",
+     "frames": 156,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "point",
+     "frames": 109,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "beckon",
+     "frames": 79,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "search",
+     "frames": 151,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "pickup",
+     "frames": 288,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carried_drape",
+     "frames": 73,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder",
+     "frames": 36,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve_walk",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit",
+     "frames": 130,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_alt",
+     "frames": 211,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_talk",
+     "frames": 1323,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stand_to_sit",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "sit_to_stand",
+     "frames": 69,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.33,
+    "run": 2.25,
+    "walk_f": 1.33,
+    "run_lean": 2.25,
+    "walk_old": 0.32,
+    "walk_armed": 2.2,
+    "run_armed": 2.52,
+    "crouch_walk": 0.79,
+    "carry_shoulder": 1.32,
+    "serve_walk": 0.95
+   },
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  },
+  {
+   "id": "tech",
+   "role": "tech",
+   "label": "Tech F2-1, the testbed model on its own rig (vest, visor, cargo skirt-shorts)",
+   "standIn": true,
+   "fbx": "Figures/tech/tech.fbx",
+   "sha256": "ed07078fdb71fa37db27f944a365bb77b6723de73cf527bde097c5cb8ab93f28",
+   "rig": {
+    "type": "generic",
+    "bones": 26,
+    "names": "own (Mixamo names; the Meshy-style rig has Spine02/Spine01/Spine and neck)",
+    "root": "Armature/Hips"
+   },
+   "heightM": 1.75,
+   "female": false,
+   "lods": [
+    {
+     "name": "tech_LOD0",
+     "tris": 33628,
+     "tex": 2048,
+     "source": "source-art/Citizens3D/rigged/tech_lod/tech_F2-1_LOD0_30k.glb"
+    },
+    {
+     "name": "tech_LOD1",
+     "tris": 14999,
+     "tex": 2048,
+     "source": "source-art/Citizens3D/rigged/tech_lod/tech_F2-1_LOD1_12k.glb"
+    },
+    {
+     "name": "tech_LOD2",
+     "tris": 6999,
+     "tex": 1024,
+     "source": "source-art/Citizens3D/rigged/tech_lod/tech_F2-1_LOD2_4k5.glb"
+    }
+   ],
+   "materials": [
+    {
+     "name": "tech_visor_L0",
+     "file": "Figures/tech/Materials/tech_visor_L0.mat",
+     "lod": 0,
+     "label": "visor",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_L0_albedo.png",
+      "normal": "Figures/tech/Textures/tech_visor_L0_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_visor_L0_emissive.jpg"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "emissive": 1024
+     }
+    },
+    {
+     "name": "tech_body_L0",
+     "file": "Figures/tech/Materials/tech_body_L0.mat",
+     "lod": 0,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_L0_albedo.jpg",
+      "normal": "Figures/tech/Textures/tech_body_L0_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_body_L0_emissive.jpg"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "emissive": 2048
+     }
+    },
+    {
+     "name": "tech_visor_L1",
+     "file": "Figures/tech/Materials/tech_visor_L1.mat",
+     "lod": 1,
+     "label": "visor",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_L1_albedo.png",
+      "normal": "Figures/tech/Textures/tech_visor_L1_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_visor_L1_emissive.jpg"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "emissive": 1024
+     }
+    },
+    {
+     "name": "tech_body_L1",
+     "file": "Figures/tech/Materials/tech_body_L1.mat",
+     "lod": 1,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_L1_albedo.jpg",
+      "normal": "Figures/tech/Textures/tech_body_L1_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_body_L1_emissive.jpg"
+     },
+     "texturePx": {
+      "albedo": 2048,
+      "normal": 2048,
+      "emissive": 2048
+     }
+    },
+    {
+     "name": "tech_visor_L2",
+     "file": "Figures/tech/Materials/tech_visor_L2.mat",
+     "lod": 2,
+     "label": "visor",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_visor_L2_albedo.png",
+      "normal": "Figures/tech/Textures/tech_visor_L2_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_visor_L2_emissive.jpg"
+     },
+     "texturePx": {
+      "albedo": 512,
+      "normal": 512,
+      "emissive": 512
+     }
+    },
+    {
+     "name": "tech_body_L2",
+     "file": "Figures/tech/Materials/tech_body_L2.mat",
+     "lod": 2,
+     "label": "body",
+     "textures": {
+      "albedo": "Figures/tech/Textures/tech_body_L2_albedo.jpg",
+      "normal": "Figures/tech/Textures/tech_body_L2_normal.jpg",
+      "emissive": "Figures/tech/Textures/tech_body_L2_emissive.jpg"
+     },
+     "texturePx": {
+      "albedo": 1024,
+      "normal": 1024,
+      "emissive": 1024
+     }
+    }
+   ],
+   "clips": [
+    {
+     "name": "walk",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "run",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "walk_f",
+     "frames": 35,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "run_lean",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": true
+    },
+    {
+     "name": "idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "idle_alt",
+     "frames": 299,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_old",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "walk_armed",
+     "frames": 25,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "run_armed",
+     "frames": 23,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim",
+     "frames": 64,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "aim_pistol",
+     "frames": 214,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "shoot",
+     "frames": 18,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "draw",
+     "frames": 61,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "melee_whip",
+     "frames": 78,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit",
+     "frames": 39,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "hit_large",
+     "frames": 31,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "panic",
+     "frames": 303,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "cower",
+     "frames": 47,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "crouch",
+     "frames": 51,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "crouch_walk",
+     "frames": 52,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stunned",
+     "frames": 65,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout",
+     "frames": 169,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "knockout_alt",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim",
+     "frames": 133,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_victim_back",
+     "frames": 110,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "kill_attacker",
+     "frames": 149,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "struggle",
+     "frames": 144,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "struggle_strangled",
+     "frames": 529,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carry",
+     "frames": 301,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carried",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "lying",
+     "frames": 376,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "restrained",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "captor",
+     "frames": 151,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "phone",
+     "frames": 1166,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "look_around",
+     "frames": 191,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "talk",
+     "frames": 156,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "point",
+     "frames": 109,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "beckon",
+     "frames": 79,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "search",
+     "frames": 151,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "pickup",
+     "frames": 288,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "carried_drape",
+     "frames": 73,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder",
+     "frames": 36,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "carry_shoulder_idle",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve",
+     "frames": 264,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "serve_walk",
+     "frames": 39,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit",
+     "frames": 130,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_alt",
+     "frames": 211,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "sit_talk",
+     "frames": 1323,
+     "fps": 30,
+     "loop": true,
+     "ownClip": false
+    },
+    {
+     "name": "stand_to_sit",
+     "frames": 68,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    },
+    {
+     "name": "sit_to_stand",
+     "frames": 69,
+     "fps": 30,
+     "loop": false,
+     "ownClip": false
+    }
+   ],
+   "clipSpeedsMs": {
+    "walk": 1.29,
+    "run": 2.2,
+    "walk_f": 1.29,
+    "run_lean": 2.2,
+    "walk_old": 0.32,
+    "walk_armed": 2.18,
+    "run_armed": 2.43,
+    "crouch_walk": 0.7,
+    "carry_shoulder": 1.28,
+    "serve_walk": 0.91
+   },
+   "lodScreenHeights": [
+    0.18,
+    0.08,
+    0.012
+   ]
+  }
+ ]
+}

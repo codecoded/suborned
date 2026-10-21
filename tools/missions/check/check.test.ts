@@ -32,7 +32,7 @@ describe('the Handover route manifest and scripts', () => {
     expect(by('outcome')).toEqual(['withdraw', 'loud-left-downed', 'loud-left-standing']); // brief 018 §5: an op left downed, an op left standing
     expect(L.manifest.scripts.filter(s => s.expects.left).map(s => `${s.id} ${JSON.stringify(s.expects.left)}`)).toEqual(['loud-left-downed {"scout":"captured downed"}', 'loud-left-standing {"scout":"captured fighting"}']);
     expect(Object.values(L.scripts).some(s => s.orders.some(o => o.do === 'extract'))).toBe(false); // brief 018: extract is retired into Board and Go
-    expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held']); // brief 013 D
+    expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held', 'careless-enforcer-watches-guard', 'careless-scout-idles-pickup']); // brief 013 D; brief 031
     expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in official car', 'rivals reach Vale', 'district seals', 'Enforcer down', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
     expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual([]);
     expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale']);
@@ -92,10 +92,13 @@ describe('the §09 conditions, each with a failing example', () => {
     // brief 013 D: route G takes the guard out (no contact); careless twins fail or win only loud and dearer
     p['route-g'] = { ...win(2474, 2), campaignTrail: 4, alert: 1, takedownS: 6 }; p['route-g-fast'] = { ...win(2170, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 };
     p['route-g-kill'] = { ...win(2843, 2), campaignTrail: 2, alert: 1, takedownS: 34.4, openCases: 1 };
-    p['careless-takedown-seen-camera'] = fail('entry-seen-camera'); p['careless-takedown-seen-crowd'] = fail('enforcer-down'); p['careless-body-found'] = fail('sealed');
+    p['careless-takedown-seen-camera'] = fail('entry-seen-camera'); p['careless-takedown-seen-crowd'] = fail('enforcer-down'); p['careless-body-found'] = fail('enforcer-down');
     p['careless-reporter-not-stopped'] = { ...win(4604, 14), alert: 2 }; p['careless-guard-left-door-held'] = fail('rivals-reach-vale');
     for (const s of ['route-a', 'route-a-pressure']) p[`${s}~no-waitress`] = fail('entry-seen-guard');
     for (const s of ['route-b', 'route-b-block']) p[`${s}~no-driver`] = fail('abduction-seen-camera');
+    // brief 031: the Enforcer watching the guard from his side is sensed, and the blow fails; the Scout idling in the pickup camera's view is reported
+    p['careless-enforcer-watches-guard'] = fail('enforcer-down'); p['careless-scout-idles-pickup'] = { ...win(4739, 3, { 'attention.reporting': 1553 }), alert: 1 };
+    for (const s of L.manifest.scripts) if (s.expects.alert !== undefined && p[s.id]) p[s.id] = { ...p[s.id]!, alert: s.expects.alert }; // each ends at the Alert its manifest states
     return p;
   };
   /** Brief 018 §5: each board-and-go twin (<route>-board, the primary of A, B and G) plays as its fight-it-out route here, so a test
@@ -121,7 +124,7 @@ describe('the §09 conditions, each with a failing example', () => {
   // brief 018 §5: quiet beats loud on Trail (a captive's +4 T is campaign Trail), Alert, Standing and the seal, against every loud win
   test('MC-10: a quiet win dearer than a loud variant, as alert, lower in Standing, or under a seal clock is not better', () => {
     const t = good(); t['loud-fight'] = { ...t['loud-fight']!, trail: 6 }; expect(ids(t)).toEqual(['MC-10']); // a loud variant, not the primary: MC-2 holds
-    const a = good(); a['route-b-block'] = { ...a['route-b-block']!, alert: 2 }; expect(ids(a)).toEqual(['MC-10']);
+    const a = good(); a['route-b-block'] = { ...a['route-b-block']!, alert: 2 }; expect(ids(a)).toEqual(['MC-0', 'MC-10']); // and not the Alert its manifest states
     const st = good(); st.loud = { ...st.loud!, standing: 3 }; st['route-a'] = { ...st['route-a']!, standing: 2 }; expect(ids(st)).toEqual(['MC-10']);
     const se = good(); se['route-g-kill'] = { ...se['route-g-kill']!, marks: { 'seal.starts': 2600 } }; expect(ids(se)).toEqual(['MC-10']);
     const cap = good(); cap['loud-fast'] = { ...cap['loud-fast']!, trail: 2 }; expect(ids(cap)).toEqual(['MC-10']); // 2 + the captive's 4 = 6: route-a-pressure's 6 is not under it
@@ -142,8 +145,17 @@ describe('the §09 conditions, each with a failing example', () => {
     expect(inLane(g, [3850, -5000])).toBe(true); expect(inLane(g, [3900, -5600])).toBe(false); expect(inLane(g, [850, -4820])).toBe(false);
   });
   test('MC-7: a careless takedown that wins quietly, or at Alert 2 no dearer than its twin, is not worse', () => {
-    const p = good(); p['careless-reporter-not-stopped'] = { ...p['careless-reporter-not-stopped']!, alert: 1 }; expect(ids(p)).toContain('MC-7');
+    const p = good(); p['careless-reporter-not-stopped'] = { ...p['careless-reporter-not-stopped']!, alert: 0 }; expect(ids(p)).toContain('MC-7'); // at its twin's Alert
     const q = good(); q['careless-reporter-not-stopped'] = { ...q['careless-reporter-not-stopped']!, trail: 4 }; expect(ids(q)).toContain('MC-7');
+  });
+  test('MC-0: a script that ends at another Alert than its manifest states (brief 031: a loiterer reported is Alert 1, with no Trail)', () => {
+    const p = good(); p['route-b'] = { ...p['route-b']!, alert: 1 }; expect(ids(p)).toContain('MC-0');
+    expect(J(p).scripts.find(x => x.id === 'route-b')!.got).toBe('success at A 1');
+  });
+  test('MC-12: a quiet route reported for loitering, or a loiter twin that costs no more than its careful twin, fails', () => {
+    const p = good(); p['route-b'] = { ...p['route-b']!, marks: { ...p['route-b']!.marks, 'attention.reporting': 1524 } }; expect(ids(p)).toEqual(['MC-12']);
+    const q = good(); q['careless-scout-idles-pickup'] = { ...q['careless-scout-idles-pickup']!, marks: {} }; expect(ids(q)).toEqual(['MC-12']); // never reported
+    const r = good(); r['careless-scout-idles-pickup'] = { ...r['careless-scout-idles-pickup']!, alert: 0 }; expect(ids(r)).toEqual(['MC-0', 'MC-12']); // a win at its twin's Alert
   });
   test('MC-8: takedown routes that win only above Alert 1, or cost the Enforcer no time, are not viable', () => {
     const p = good(); for (const s of ['route-g', 'route-g-fast', 'route-g-kill']) p[s] = { ...p[s]!, alert: 2 }; expect(ids(p)).toContain('MC-8');
@@ -182,8 +194,8 @@ describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on 
     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
     expect(c.plays.loud!.trail).toBeGreaterThan(c.plays['route-a-pressure']!.trail); // MC-2 against every quiet variant (Motive's addendum)
     // brief 018 §5: the board-and-go primaries leave nobody behind; the fight-it-out references leave three to walk out; loud leaves nobody
-    for (const id of ['route-a-board', 'route-b-board', 'route-g-fast-board', 'loud', 'loud-fight', 'loud-fast']) expect([id, c.plays[id]!.left]).toEqual([id, undefined]);
-    expect(c.plays['route-a']!.left).toEqual({ scout: 'walked', fixer: 'walked', tech: 'walked' });
+    for (const id of ['route-a-board', 'route-b-board', 'route-g-fast-board', 'loud', 'loud-fast', 'loud-fight']) expect([id, c.plays[id]!.left]).toEqual([id, undefined]); // brief 027: loud-fight's locks and the pier save the Tech again
+    for (const id of ['route-a', 'route-a-pressure', 'route-b', 'route-b-block', 'route-g', 'route-g-fast', 'route-g-kill']) expect([id, c.plays[id]!.left]).toEqual([id, { scout: 'walked', fixer: 'walked', tech: 'walked' }]); // brief 027 (tuning.md §10.5): fought out from the car's west corners, the three walk out
     expect([c.plays['loud-left-downed']!.left, c.plays['loud-left-downed']!.campaignTrail]).toEqual([{ scout: 'captured downed' }, 4]);
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });

@@ -1,0 +1,96 @@
+Suture's retest3 policy set (briefs/027/suture/probe/retest3/policies.all.txt, 3,792 L3/L1c policies), engine 0.15.0 (baseline copy out/keel037/base) against 0.15.0 + the settle (tuning.md §10.2); cars move no row. Cheap = a win with < 40 % health lost. Every chunk: 'every run replays identically from its order log'.
+
+today: 3792 policies; wins 524 -> 216 (54 new, 362 lost); cheap 335 -> 26 (10 newly cheap)
+  newly cheap  L3:km20-fm15-step250-norivals-at220-runkite                  failure enforcer-down 55 % -> success 16 %, 0 down
+  newly cheap  L3:km30-fm15-step250-norivals-enfgo-carfree-runkite          failure sealed 11 % -> success 22 %, 0 down
+  newly cheap  L3:km10-fm5-step150-focus-norivals-at208-runkite             failure enforcer-down 100 % -> success 33 %, 0 down
+  newly cheap  L3:km20-fm10-step150-norivals-enfgo-carfree-runkite          success  83 % -> success 33 %, 0 down
+  newly cheap  L3:km20-fm20-step300-norivals-enfgo-carfree-runkite          failure enforcer-down 83 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm5-step250-norivals-enfgo-carfree-runkite           failure sealed 50 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm10-step250-norivals-enfgo-carfree-runkite          failure enforcer-down 66 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm20-step300-norivals-enfgo-carfree-runkite          failure enforcer-down 33 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step60-blk-norivals-enfgo-runkite                   failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step60-norivals-enfgo-runkite                       failure enforcer-down 100 % -> success 38 %, 0 down
+
+lab: 3792 policies; wins 254 -> 152 (76 new, 178 lost); cheap 82 -> 18 (13 newly cheap)
+  newly cheap  L3:km10-fm20-step250-norivals-enfgo-carfree-runkite          failure enforcer-down 100 % -> success 27 %, 0 down
+  newly cheap  L3:km30-fm20-step250-norivals-enfgo-carfree-runkite          failure enforcer-down 100 % -> success 27 %, 0 down
+  newly cheap  L3:tight-step350-norivals-at196-runkite                      success  44 % -> success 27 %, 0 down
+  newly cheap  L3:km15-fm15-step300-norivals-at196-runkite                  failure enforcer-down 77 % -> success 33 %, 0 down
+  newly cheap  L3:km15-fm15-step300-norivals-at208-runkite                  failure enforcer-down 77 % -> success 33 %, 0 down
+  newly cheap  L3:km15-fm15-step300-norivals-enfgo-runkite                  failure enforcer-down 77 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm10-step250-focus-norivals-at208-runkite            success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm10-step250-norivals-enfgo-carfree-runkite          failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:km10-fm15-step300-blk-norivals-at208-runkite              failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:km15-fm20-step150-norivals-enfgo-carfree-runkite          success  50 % -> success 38 %, 0 down
+  newly cheap  L3:km15-fm5-step250-focus-norivals-at208-runkite             failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:km20-fm10-step200-blk-norivals-at208-runkite              failure sealed 72 % -> success 38 %, 1 down
+  newly cheap  L3:km30-fm15-step250-blk-norivals-at208-runkite              success  50 % -> success 38 %, 1 down
+
+lab-field-on: 3792 policies; wins 458 -> 299 (105 new, 264 lost); cheap 75 -> 37 (27 newly cheap)
+  newly cheap  L3:km10-fm20-step250-norivals-enfgo-carfree-runkite          failure sealed 88 % -> success 27 %, 0 down
+  newly cheap  L3:km30-fm20-step250-norivals-enfgo-carfree-runkite          failure sealed 50 % -> success 27 %, 0 down
+  newly cheap  L3:km15-fm15-step300-norivals-at196-runkite                  failure enforcer-down 88 % -> success 33 %, 0 down
+  newly cheap  L3:km15-fm15-step300-norivals-at208-runkite                  failure enforcer-down 88 % -> success 33 %, 0 down
+  newly cheap  L3:km15-fm15-step300-norivals-enfgo-runkite                  failure enforcer-down 88 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm10-step250-focus-norivals-at208-runkite            success  72 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm10-step250-norivals-at220-runkite                  failure sealed 55 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm15-step250-norivals-at196-runkite                  success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km30-fm15-step250-norivals-enfgo-runkite                  success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm10-step250-norivals-enfgo-carfree-runkite          failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:km10-fm15-step300-blk-norivals-at208-runkite              failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:km10-fm5-step100-blk-norivals-carfree-runkite             success  44 % -> success 38 %, 0 down
+  newly cheap  L3:km10-fm5-step100-blk-norivals-enfgo-carfree-runkite       success  44 % -> success 38 %, 0 down
+  newly cheap  L3:km10-fm5-step100-norivals-carfree-runkite                 success  44 % -> success 38 %, 0 down
+  newly cheap  L3:km10-fm5-step100-norivals-enfgo-carfree-runkite           success  44 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm10-step250-norivals-at196-runkite                  failure enforcer-down 83 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm10-step250-norivals-enfgo-runkite                  failure enforcer-down 83 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm20-step250-norivals-at196-runkite                  success  72 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm20-step250-norivals-at208-runkite                  success  66 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm20-step250-norivals-at220-runkite                  failure sealed 77 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm20-step250-norivals-enfgo-runkite                  success  72 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step250-norivals-at196-runkite                      success  72 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step250-norivals-at204-runkite                      success  77 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step250-norivals-at208-runkite                      success  66 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step250-norivals-at212-runkite                      success  77 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step250-norivals-at216-runkite                      failure sealed 66 % -> success 38 %, 0 down
+  newly cheap  L3:tight-step250-norivals-at220-runkite                      failure sealed 77 % -> success 38 %, 0 down
+
+lab-snap-off: 3792 policies; wins 214 -> 128 (78 new, 164 lost); cheap 67 -> 41 (37 newly cheap)
+  newly cheap  L3:km30-fm20-step200-focus-norivals-at208-runkite            failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at196-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at204-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at208-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at212-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at216-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at220-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at224-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at228-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at230-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at232-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-at236-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:tight-step200-focus-norivals-enfgo-runkite                failure enforcer-down 100 % -> success 22 %, 0 down
+  newly cheap  L3:km10-fm10-step300-norivals-at196-runkite                  failure enforcer-down 100 % -> success 27 %, 0 down
+  newly cheap  L3:km10-fm10-step300-norivals-at220-runkite                  failure enforcer-down 94 % -> success 27 %, 0 down
+  newly cheap  L3:km10-fm10-step300-norivals-enfgo-runkite                  failure enforcer-down 100 % -> success 27 %, 0 down
+  newly cheap  L3:km10-fm10-step300-norivals-hold-runkite                   failure sealed 61 % -> success 27 %, 0 down
+  newly cheap  L3:km20-fm15-step150-norivals-enfgo-carfree-runkite          failure enforcer-down 100 % -> success 27 %, 0 down
+  newly cheap  L3:km20-fm5-step250-focus-norivals-at208-runkite             failure enforcer-down 100 % -> success 27 %, 0 down
+  newly cheap  L3:km10-fm10-step300-blk-norivals-at208-runkite              success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm10-step300-norivals-at208-runkite                  failure enforcer-down 100 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm15-step300-norivals-at196-runkite                  success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm15-step300-norivals-at208-runkite                  success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm15-step300-norivals-at220-runkite                  success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm15-step300-norivals-enfgo-runkite                  success  50 % -> success 33 %, 0 down
+  newly cheap  L3:km20-fm5-step200-norivals-enfgo-carfree-runkite           failure enforcer-down 100 % -> success 33 %, 0 down
+  newly cheap  L3:km10-fm5-step60-focus-norivals-at208-runkite              failure sealed 66 % -> success 38 %, 1 down
+  newly cheap  L3:km10-fm5-step60-focus-norivals-enfgo-runkite              success  50 % -> success 38 %, 1 down
+  newly cheap  L3:km15-fm10-step150-focus-norivals-at208-runkite            failure enforcer-down 100 % -> success 38 %, 0 down
+  newly cheap  L3:km20-fm20-step250-focus-norivals-at208-runkite            failure sealed 50 % -> success 38 %, 0 down
+  newly cheap  L3:km30-fm20-step250-blk-norivals-at208-runkite              failure enforcer-down 100 % -> success 38 %, 1 down
+  newly cheap  L3:km30-fm20-step250-norivals-at196-runkite                  failure enforcer-down 100 % -> success 38 %, 1 down
+  newly cheap  L3:km30-fm20-step250-norivals-at208-runkite                  failure enforcer-down 100 % -> success 38 %, 1 down
+  newly cheap  L3:km30-fm20-step250-norivals-enfgo-runkite                  failure enforcer-down 100 % -> success 38 %, 1 down
+  newly cheap  L3:tight-step250-norivals-at196-runkite                      failure enforcer-down 100 % -> success 38 %, 1 down
+  newly cheap  L3:tight-step250-norivals-at204-runkite                      failure enforcer-down 100 % -> success 38 %, 1 down
+  newly cheap  L3:tight-step250-norivals-at208-runkite                      failure enforcer-down 100 % -> success 38 %, 1 down

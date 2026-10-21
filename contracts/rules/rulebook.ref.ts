@@ -271,13 +271,42 @@ export function replaceNeed(rb: Rulebook, people: PeopleRules, p: NeedHolder, mi
   return drawWeighted(key, weighted.length ? weighted : cands.map((n) => ({ item: n, weight: 1 })));
 }
 
-/** A shot's accuracy in per mille (Sky 2026-10-15, briefs/011/motive-fights.md): the band's, times each modifier that applies. */
-export function accuracy(rb: Rulebook, people: PeopleRules, weapon: 'pistol' | 'carbine', distanceM: number, mods: readonly ('moving' | 'cover' | 'vale' | 'untrained')[]): number {
-  const w = rb.weapons, n = (r: string) => num(rb, people, r);
+/** A shot's accuracy in per mille (Sky 2026-10-15, briefs/011/motive-fights.md): the band's, times each modifier that applies, in the engine's
+ *  order (Rules.Accuracy): the gait (moving = a walk, running = a run toward or across, runningAway; tuning.md §8.3), then cover, or a running
+ *  target past point blank in its place (never both), then vale, then untrained; each rounded down. Inside point blank cover counts only with
+ *  weapons.pointBlankCover (Sky 2026-10-21, tuning.md §8.4: false, as the lab). */
+export type AccMod = 'moving' | 'running' | 'runningAway' | 'targetRunning' | 'cover' | 'vale' | 'untrained';
+export function accuracy(rb: Rulebook, people: PeopleRules, weapon: 'pistol' | 'carbine', distanceM: number, mods: readonly AccMod[]): number {
+  const w = rb.weapons, n = (r: string) => num(rb, people, r), pb = distanceM <= n(w.pointBlank);
   if (distanceM > n(w[weapon].max)) return 0;
-  let a = distanceM <= n(w.pointBlank) ? n(w.acc.point) : distanceM <= n(w[weapon].eff) ? n(w.acc.eff) : n(w.acc.long);
-  for (const m of mods) a = Math.floor((a * n(w.mod[m])) / 1000);
+  let a = pb ? n(w.acc.point) : distanceM <= n(w[weapon].eff) ? n(w.acc.eff) : n(w.acc.long);
+  const step = (r: string) => { a = Math.floor((a * n(r)) / 1000); };
+  if (mods.includes('moving')) step(w.mod.moving); else if (mods.includes('running')) step(w.mod.running!); else if (mods.includes('runningAway')) step(w.mod.runningAway!);
+  if (mods.includes('targetRunning') && !pb) step(w.mod.targetRunning!); else if (mods.includes('cover') && (!pb || w.pointBlankCover)) step(w.mod.cover);
+  if (mods.includes('vale')) step(w.mod.vale);
+  if (mods.includes('untrained')) step(w.mod.untrained);
   return a;
+}
+
+/** Brief 027 (EXPERIMENTAL, fight.lab): a playground shot's pips (0 beyond the max ring, else 1–4) and its chance in per mille, as the engine's
+ *  Rules.LabPips: the band (4 within weapons.pointBlank, 3 within the weapon's eff, 2 within its max), −1 untrained and −1 cover beyond point
+ *  blank, −1 moving, +1 high, clamped 1–4; the chance is fight.lab.chance[pips − 1]. Tuning.md §8.3: running (toward or across) −runPips,
+ *  floor 0; runningAway 0 pips whatever the band; 0 pips inside the max ring is fight.lab.pip0 (beyond max: pips 0, acc 0); targetRunning
+ *  past point blank takes weapons.mod.targetRunning on the chance. */
+export type LabWeaponId = 'sidearm' | 'carbine' | 'machine' | 'riot' | 'rifle';
+export function labPips(rb: Rulebook, people: PeopleRules, weapon: LabWeaponId, distanceM: number, edges: readonly ('untrained' | 'cover' | 'moving' | 'running' | 'runningAway' | 'targetRunning' | 'high')[]): { pips: number; acc: number } {
+  const lab = rb.fight.lab!, w = lab.weapons[weapon], n = (r: string) => num(rb, people, r), pb = n(rb.weapons.pointBlank);
+  if (distanceM > n(w.max)) return { pips: 0, acc: 0 };
+  let p = distanceM <= pb ? 4 : distanceM <= n(w.eff) ? 3 : 2;
+  if (distanceM > pb) { if (edges.includes('untrained')) p--; if (edges.includes('cover')) p--; }
+  const run = edges.includes('running');
+  if (edges.includes('moving')) p--;
+  if (run) p -= n(lab.runPips!);
+  if (edges.includes('high')) p++;
+  p = edges.includes('runningAway') ? 0 : Math.max(run ? 0 : 1, Math.min(4, p));
+  let acc = p === 0 ? n(lab.pip0!) : n(lab.chance[p - 1]!);
+  if (edges.includes('targetRunning') && distanceM > pb) acc = Math.floor((acc * n(rb.weapons.mod.targetRunning!)) / 1000);
+  return { pips: p, acc };
 }
 
 /** Deterministic hits: the accumulator starts at acc.start; each shot adds the accuracy, and at 1000 the shot hits and 1000 comes off. */

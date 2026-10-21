@@ -204,6 +204,10 @@ namespace Suborned.Play
                 case "H18": // brief 018 §6.7 (Fable): Vale is in the car and no Go has been given; rings the car
                     if (g.Vale != ValeAt.Car || g.Over || Given(o => o.Do == "go")) return false;
                     ring = At("car/getaway"); return true;
+                case "H19": // brief 031 (Fable): the first time a security watcher's attention reaches noticed; shown once
+                    if (!AttnHint(out ring, out portrait)) return false;
+                    foreach (var (w, view, st, op) in Cues()) if (st >= 1) { trigWho = op; break; } // rings nothing: the watcher's own cue shows it
+                    return true;
                 case "H11": // brief 018 §6.6: anyone a Go would leave captured (a downed one not carried rings first, else the first standing one)
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
                     foreach (var (name, fate, why) in LeftBehindNow()) // brief 018: anyone not in the car stays behind (LeftBehind); a downed one not carried is the warning's ring
@@ -238,6 +242,7 @@ namespace Suborned.Play
                 case "H15": return Given(o => o.Do == "board" && o.Op == "enforcer", from);
                 case "H18": return Given(o => o.Do == "go", from) || Game.Over;
                 case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.Pickup;
+                case "H19": { foreach (var c in Cues()) if (c.stage >= 1) return false; return true; } // the agent moved on or out of sight, and the watcher cooled
             }
             return false;
         }

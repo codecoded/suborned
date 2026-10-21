@@ -52,6 +52,7 @@ namespace Suborned.World
                 AssetDatabase.ImportAsset(Materials + name + ".mat", ImportAssetOptions.ForceSynchronousImport);
                 lib = AssetDatabase.LoadAssetAtPath<Material>(Materials + name + ".mat");
             }
+            if (!lib && name == RobotKit.StageMaterialName) return RobotKit.StageMaterial(); // brief 031: the patrol robot's attention face (committed, not copied by the kit)
             return lib ? lib : AssetDatabase.LoadAssetAtPath<Material>(Glow + name + ".mat");
         }
 
