@@ -46,7 +46,7 @@ export class Marker {
     if (showLine) { this.line.geometry.dispose(); this.line.geometry = new THREE.BufferGeometry().setFromPoints(path.map(([x, z]) => new THREE.Vector3(x, 0.07, z))); this.line.computeLineDistances(); this.line.material.color.set(kind.color); }
     // ground ring
     const ring = harm ? this.dashed : this.solid; (harm ? this.solid : this.dashed).visible = false;
-    ring.visible = style === 'ring' || style === 'built';
+    ring.visible = true; // the target always gets a ring on the ground, never a lift
     if (ring.visible) {
       const s = (ent.r + 0.55) * 2.2 * (style === 'ring' ? 1 + 0.04 * Math.sin(performance.now() / 180) : 1);
       ring.position.set(ent.g.position.x, 0.04, ent.g.position.z); ring.scale.set(s, s, 1);

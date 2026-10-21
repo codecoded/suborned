@@ -1,7 +1,7 @@
 // Two views: the commander camera (pitch 38, quarter turns) and third person.
 // Third person has two follow models: the 0.2.34 snap and the brief 040 leash.
 import * as THREE from './vendor/three.module.min.js';
-import { G } from './state.js';
+import { G, say } from './state.js';
 
 const rad = (d) => d * Math.PI / 180, deg = (r) => r * 180 / Math.PI;
 const angDiff = (a, b) => { let d = (b - a) % (Math.PI * 2); if (d > Math.PI) d -= Math.PI * 2; if (d < -Math.PI) d += Math.PI * 2; return d; };
@@ -23,12 +23,21 @@ const SNAP = { smoothS: 0.15, lookReturnS: 1.0 };
 export class Rig {
   constructor(camera) {
     this.cam = camera; this.mode = 'cmd'; this.blend = 1; this.from = null;
-    this.focus = new THREE.Vector3(2, 0, 4.5); this.yaw = rad(210); this.yawTarget = this.yaw; this.yawVel = { v: 0 }; this.dist = 38;
+    this.focus = new THREE.Vector3(2, 0, 4.5); this.yaw = rad(210); this.yawTarget = this.yaw; this.yawVel = { v: 0 }; this.dist = 38; this.distGoal = 38; this.focusGoal = null;
     this.f = 0; this.fVel = { v: 0 }; this.arm = LEASH.arm; this.pivot = new THREE.Vector3(); this.pitch = rad(15);
     this.idle = 99; this.steady = 0; this.lastH = 0; this.side = 1; this.frame = null; this.lastTgt = new THREE.Vector3();
   }
   turn(dir) { if (this.mode === 'cmd') this.yawTarget += dir * Math.PI / 2; }
-  zoom(dy) { if (this.mode === 'cmd') this.dist = clamp(this.dist * (1 + dy * 0.001), 16, 56); else this.arm = clamp(this.arm * (1 + dy * 0.001), 3, 10); }
+  zoom(dy) { if (this.mode === 'cmd') this.distGoal = clamp(this.distGoal * (1 + dy * 0.001), 30, 46); else this.arm = clamp(this.arm * (1 + dy * 0.001), 3, 10); }
+  // The commander view moves by hand: a middle-drag, WASD or the edge of the screen. Any of them ends a follow or a centring.
+  pan(dx, dy) {
+    if (this.mode !== 'cmd') return;
+    const mpp = 2 * Math.tan(rad(15)) * this.dist / innerHeight, sy = Math.sin(rad(38));
+    this.focus.x += Math.cos(this.yaw) * -dx * mpp - Math.sin(this.yaw) * dy * mpp / sy; this.focus.z += -Math.sin(this.yaw) * -dx * mpp - Math.cos(this.yaw) * dy * mpp / sy;
+    this.handMoved();
+  }
+  handMoved() { this.focusGoal = null; if (G.camFollow) { G.camFollow = false; say('Follow off'); } }
+  centreOn(p) { this.focusGoal = new THREE.Vector3(p.x, 0, p.z); }
   orbit(dx, dy) { if (this.mode !== 'tp') return; this.f -= dx * 0.005; this.pitch = clamp(this.pitch + dy * 0.003, rad(4), rad(55)); this.idle = 0; this.frame = null; this.fVel.v = 0; }
   setMode(m, agent) {
     if (m === this.mode) return;
@@ -41,7 +50,6 @@ export class Rig {
   refocus(agent) { this.from = { pos: this.cam.position.clone(), tgt: this.lastTgt.clone(), fov: this.cam.fov }; this.blend = 0; this.pivot.copy(agent.g.position); }
   // The yaw that W is relative to. The leash latches it while a key is held, so the path stays straight.
   moveYaw(held) {
-    if (G.camMode !== 'leash') return this.f;
     if (held && this.frame === null) this.frame = this.f; if (!held) this.frame = null;
     return this.frame ?? this.f;
   }
@@ -50,7 +58,13 @@ export class Rig {
     let pos, tgt, fov;
     if (this.mode === 'cmd') {
       this.yaw = smoothDamp(this.yaw, this.yawTarget, this.yawVel, 0.12, 20, dt);
-      const s = 14 * dt * this.dist / 38, ax = (k.has('KeyD') - k.has('KeyA')), az = (k.has('KeyW') - k.has('KeyS'));
+      this.dist += (this.distGoal - this.dist) * (1 - Math.exp(-dt / 0.1)); // scroll zoom eases
+      const s = 14 * dt * this.dist / 38; let ax = k.has('KeyD') - k.has('KeyA'), az = k.has('KeyW') - k.has('KeyS');
+      if (!ax && !az && G.edgePan === 'on' && G.ptr.over) { const m = 24; ax = G.ptr.x > innerWidth - m ? 1 : G.ptr.x < m ? -1 : 0; az = G.ptr.y < m ? 1 : G.ptr.y > innerHeight - m ? -1 : 0; }
+      if (ax || az) this.handMoved();
+      const goal = G.camFollow ? agent.g.position : this.focusGoal; // a follow or a centring glides there
+      if (goal) this.focus.lerp(new THREE.Vector3(goal.x, 0, goal.z), 1 - Math.exp(-dt / 0.15));
+      if (this.focusGoal && !G.camFollow && this.focus.distanceTo(this.focusGoal) < 0.05) this.focusGoal = null;
       this.focus.x += (-Math.sin(this.yaw) * az + Math.cos(this.yaw) * ax) * s; this.focus.z += (-Math.cos(this.yaw) * az - Math.sin(this.yaw) * ax) * s;
       this.focus.x = clamp(this.focus.x, -22, 26); this.focus.z = clamp(this.focus.z, -8, 14);
       const p = rad(38); tgt = this.focus.clone();

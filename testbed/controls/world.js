@@ -77,8 +77,9 @@ export function buildWorld(scene) {
   ground(-26, 28, 0, 7, 0xeadfc6); // pavement
   ground(-26, 28, 7, 18, 0xd9cfb8);
   for (let x = -22; x < 28; x += 8) { const m = box(3, 0.02, 0.25, 0xf6f0de); m.position.set(x, 0.01, -4.5); group.add(m); }
-  solid(9, 12, 22, 10, 8, 0xbfe3d6); nav.box(9, 12, 22, 10); // records office, front at z = 7
-  solid(-14, 11, 14, 8, 4.8, 0xf2c9a8); nav.box(-14, 11, 14, 8); // cafe, front at z = 7
+  const buildings = []; // they fade when they hide the agent in third person
+  for (const m of [solid(9, 12, 22, 10, 8, 0xbfe3d6), solid(-14, 11, 14, 8, 4.8, 0xf2c9a8)]) { m.material.transparent = true; buildings.push({ mesh: m, box: new THREE.Box3().setFromObject(m) }); }
+  nav.box(9, 12, 22, 10); nav.box(-14, 11, 14, 8); // records office and cafe, fronts at z = 7
   solid(9, 7.05, 22, 0.3, 0.5, 0xd0b88a, 3.2); // band over the door
   const kerb = box(54, 0.15, 0.3, 0xcfc4a8); kerb.position.set(1, 0.07, 0); group.add(kerb);
 
@@ -122,14 +123,15 @@ export function buildWorld(scene) {
     for (const e of ents) {
       if (e.walker && e.state === 'ok' && !e.frozen) {
         const w = e.walker; if (w.wait > 0) { w.wait -= dt; continue; }
-        const p = e.g.position, to = w.dir > 0 ? w.b : w.a;
-        p.x += w.dir * 1.1 * dt; p.z = w.z;
-        if ((to - p.x) * w.dir <= 0) { w.dir *= -1; w.wait = 1 + ((t * 7 + e.id.length) % 2); e.g.rotation.y = w.dir > 0 ? Math.PI / 2 : -Math.PI / 2; }
+        const p = e.g.position, to = w.dir > 0 ? w.b : w.a, zAxis = w.axis === 'z', turn = () => (zAxis ? (w.dir > 0 ? 0 : Math.PI) : w.dir > 0 ? Math.PI / 2 : -Math.PI / 2);
+        if (zAxis) { p.z += w.dir * (w.speed ?? 1.1) * dt; p.x = w.z; } else { p.x += w.dir * (w.speed ?? 1.1) * dt; p.z = w.z; }
+        if ((to - (zAxis ? p.z : p.x)) * w.dir <= 0) { w.dir *= -1; w.wait = w.crowd ? 0.2 : 1 + ((t * 7 + e.id.length) % 2); }
+        e.g.rotation.y = turn();
       }
       if (e.id === 'door') e.g.leaf.position.x += ((e.open ? 1.9 : 0) - e.g.leaf.position.x) * Math.min(1, dt * 4);
     }
   }
   const raise = (e, s) => { e.g.pose && (e.g.pose.rotation.x = s ? -Math.PI / 2 : 0, e.g.pose.position.y = s ? 0.4 : 0); };
   const tint = (e, c) => { const m = (e.body || e.g.tintMesh); if (m) m.material.emissive = new THREE.Color(c); };
-  return { group, ents, byId, agents, nav, update, raise, tint, addPerson: person, dispose: () => scene.remove(group) };
+  return { group, ents, byId, agents, nav, buildings, update, raise, tint, addPerson: person, dispose: () => scene.remove(group) };
 }

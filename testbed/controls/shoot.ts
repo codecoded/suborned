@@ -89,11 +89,11 @@ for (let i = 1; i <= 6; i++) await send("Input.dispatchMouseEvent", { type: "mou
 await shot("squad-portrait-drag"); await mouse("mouseReleased", ine.x, ine.y, "left", 1); await sleep(300);
 check("portrait drag: the dragged agent alone gets the order", JSON.stringify(await sel()) === JSON.stringify([true, false, false, false]) && (await ev(`__ctl.G.world.agents[1].order?.act?.id`)) === "pay", (await logText()).split(" | ").pop());
 // third person with a squad
-await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.squad()`); await key("KeyT", "t"); await sleep(500);
+await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.squad()`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(500);
 await send("Input.dispatchKeyEvent", { type: "keyDown", code: "KeyW", key: "w" }); await sleep(2500); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "KeyW", key: "w" }); await sleep(800);
 const far = JSON.parse(await ev(`JSON.stringify(__ctl.G.world.agents.map(a => Math.hypot(a.g.position.x - __ctl.G.world.agents[0].g.position.x, a.g.position.z - __ctl.G.world.agents[0].g.position.z)))`)) as number[];
 check("third person: the squad follows the lead", far.slice(1).every((d) => d < 6), far.map((d) => d.toFixed(1)).join(" "));
-await shot("squad-third-person"); await key("KeyT", "t"); await sleep(700);
+await shot("squad-third-person"); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(700);
 
 // breakaway and avatar: three agents selected, hover the cabinet (the Tech does the work)
 await ev(`document.querySelector('[data-reset]').click()`); await sleep(300); await ev(`__ctl.preset('dbl'); __ctl.G.marker = 'pill'; __ctl.squad()`);
@@ -129,11 +129,11 @@ await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.select(2)
 check("run: the pill says (run) with Shift held", (await ev(`document.querySelector('#marker').textContent`)).includes("(run)"), await ev(`document.querySelector('#marker').textContent`));
 await send("Input.dispatchKeyEvent", { type: "keyUp", code: "ShiftLeft", key: "Shift" });
 // third person: hold Shift to run
-await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.select(3)`); await key("KeyT", "t"); await sleep(700);
+await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.select(3)`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(700);
 await send("Input.dispatchKeyEvent", { type: "keyDown", code: "ShiftLeft", key: "Shift", modifiers: 8 }); await send("Input.dispatchKeyEvent", { type: "keyDown", code: "KeyW", key: "w", modifiers: 8 }); await sleep(700);
 const sp = await ev(`__ctl.G.world.agents[3].speed`); await shot("run-third-person");
 await send("Input.dispatchKeyEvent", { type: "keyUp", code: "KeyW", key: "w" }); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "ShiftLeft", key: "Shift" });
-check("run: Shift + W runs in third person (2.8 m/s)", sp === 2.8, String(sp)); await key("KeyT", "t"); await sleep(700);
+check("run: Shift + W runs in third person (2.8 m/s)", sp === 2.8, String(sp)); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(700);
 check("run: the log notes that people notice", (await logText()).includes("Running: people notice"));
 
 // the default tab: click acts, double click runs
@@ -222,7 +222,7 @@ check("ring (hold setting on): a quick click on Knock out does nothing", (await 
 await click(gu.x, gu.y, "right"); await sleep(250); wk = await wedge(1); await press(wk.x, wk.y); await sleep(700); await lift(wk.x, wk.y); await sleep(300);
 check("ring (hold setting on): holding Knock out does it", (await ev(`__ctl.G.world.agents[3].order?.act?.id`)) === "knock");
 // third person: aim, then fire; the others follow
-await fresh(); await ev(`__ctl.squad(); __ctl.select(3); __ctl.squad()`); await key("KeyF", "f"); await key("KeyT", "t"); await sleep(900); await ev(`__ctl.G.rig.f = Math.PI`); await sleep(300);
+await fresh(); await ev(`__ctl.squad(); __ctl.select(3); __ctl.squad()`); await key("KeyF", "f"); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(900); await ev(`__ctl.G.rig.f = Math.PI`); await sleep(300);
 await press(960, 600, 2, "right"); await sleep(400);
 check("third person: the right button held aims at the nearest hostile ahead", (await ev(`!!__ctl.G.aim && !!__ctl.G.aimT`)) === true, await ev(`__ctl.G.aimT?.id`));
 await send("Input.dispatchMouseEvent", { type: "mousePressed", x: 960, y: 600, button: "left", clickCount: 1, buttons: 3 }); await sleep(900);
@@ -230,7 +230,7 @@ check("third person: the left button then fires, and drawn agents within 8 m joi
 await shot("fire-third-person-aim");
 await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 960, y: 600, button: "left", clickCount: 1, buttons: 2 }); await lift(960, 600, 0, "right"); await sleep(200);
 check("third person: letting go stops the fire", (await ev(`__ctl.G.sessions.length`)) === 0);
-await key("KeyT", "t"); await sleep(700);
+await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(700);
 // stopping and replacing orders
 await fresh(); await ev(`__ctl.select(2); __ctl.G.actScale = 1; __ctl.G.world.agents[2].g.position.set(3, 0, 3.4)`); const cb3 = await at("cabinet"); await click(cb3.x, cb3.y); await sleep(1500);
 await key("KeyX", "x"); await sleep(100);
@@ -315,14 +315,14 @@ await ev(`__ctl.squad(); __ctl.G.squadAct = 'best'; __ctl.G.world.agents.forEach
 check("hold preset: a right hold fires with the whole squad", (await ev(`__ctl.G.world.agents.filter(a => a.shotAt > 0).length`)) >= 3 || (await ev(`__ctl.G.world.byId.police1.state`)) === "down", await ev(`__ctl.G.world.agents.filter(a => a.shotAt > 0).length`));
 await lift(ph.x, ph.y, 0, "right");
 // third person
-await fresh("hold"); await ev(`__ctl.select(3)`); await key("KeyT", "t"); await sleep(900); await ev(`__ctl.G.rig.f = Math.PI`); await sleep(300);
+await fresh("hold"); await ev(`__ctl.select(3)`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(900); await ev(`__ctl.G.rig.f = Math.PI`); await sleep(300);
 await press(960, 600, 2, "right"); await sleep(900);
 check("hold preset, third person: right hold fires at the hostile ahead", (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.byId.police1.hp < 3`)), await ev(`__ctl.G.sessions.length`));
 await lift(960, 600, 0, "right"); await sleep(100);
 await ev(`__ctl.G.tpAim = 'aim'`); await press(960, 600, 2, "right"); await sleep(400);
 await send("Input.dispatchMouseEvent", { type: "mousePressed", x: 960, y: 600, button: "left", clickCount: 1, buttons: 3 }); await sleep(800);
 check("hold preset, third person (GTA setting): right aims, left fires", (await ev(`__ctl.G.sessions.length`)) === 1, await ev(`__ctl.G.sessions.length`));
-await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 960, y: 600, button: "left", clickCount: 1, buttons: 2 }); await lift(960, 600, 0, "right"); await ev(`__ctl.G.tpAim = 'fire'`); await key("KeyT", "t"); await sleep(600);
+await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 960, y: 600, button: "left", clickCount: 1, buttons: 2 }); await lift(960, 600, 0, "right"); await ev(`__ctl.G.tpAim = 'fire'`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(600);
 
 // the pill tracks an act while you hold: ordered, walking, acting, done
 const pillText = async () => (await ev(`(() => { const m = document.querySelector('#marker'); return m.style.display === 'none' ? '' : m.textContent; })()`)) as string;
@@ -354,6 +354,59 @@ await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.world.agents[0].drawnUnt
 check("fire pill: Out of range", (await pillText()).includes("Out of range"), await pillText()); await shot("fire-status-out-of-range");
 await ev(`__ctl.G.fire.range = 60; __ctl.G.world.agents[0].g.position.set(-14, 0, 16.5)`); await sleep(500);
 check("fire pill: No clear shot behind a wall", (await pillText()).includes("No clear shot"), await pillText()); await lift(ph.x, ph.y, 0, "right"); await ev(`__ctl.G.fire = { drawS: 0, aimS: 0, cadence: 1.5, range: 20 }`);
+
+// busy streets, the commander camera, third-person edge cases
+const wheel = async (dy: number) => send("Input.dispatchMouseEvent", { type: "mouseWheel", x: 960, y: 540, deltaX: 0, deltaY: dy });
+await fresh("hold"); await ev(`__ctl.setCrowd('busy')`); await sleep(1200);
+check("crowd: busy puts walkers on the street", (await ev(`__ctl.G.world.ents.filter(e => e.crowd).length`)) === 16);
+await shot("crowd-busy-street");
+await ev(`__ctl.setCrowd('none')`); check("crowd: none clears them", (await ev(`__ctl.G.world.ents.filter(e => e.crowd).length`)) === 0);
+await ev(`__ctl.G.world.byId.walker1.frozen = true; __ctl.G.world.byId.walker2.frozen = true; __ctl.G.world.byId.walker1.g.position.set(3.4, 0, 4.2); __ctl.G.world.byId.walker2.g.position.set(3.6, 0, 4.3); __ctl.select(0)`);
+const c_ov = await at("walker1"); await mouse("mouseMoved", c_ov.x, c_ov.y); await sleep(300);
+const c_first = await ev(`__ctl.G.stick?.id`); await mouse("mouseMoved", c_ov.x + 5, c_ov.y + 4); await sleep(200);
+check("overlap: the pill stays on the person you are on when you move a little", (await ev(`__ctl.G.stick?.id`)) === c_first, c_first);
+await key("Tab", "Tab"); await sleep(250);
+check("overlap: Tab steps to the other person", !!(await ev(`__ctl.G.stick?.id`)) && (await ev(`__ctl.G.stick?.id`)) !== c_first, await ev(`__ctl.G.stick?.id`));
+await shot("crowd-overlap-tab");
+check("target ring: the pill style still gets a ground ring, no lift", (await ev(`__ctl.marker.solid.visible`)) === true);
+await press(c_ov.x + 5, c_ov.y + 4); await sleep(700); await ev(`__ctl.G.world.byId.walker2.g.position.set(__ctl.G.world.byId.walker1.g.position.x, 0, __ctl.G.world.byId.walker1.g.position.z + 0.05)`); await sleep(300);
+const heldEnt = await ev(`__ctl.G.holdEnt?.id ?? __ctl.G.charge?.ent?.id ?? 'none'`); await lift(c_ov.x + 5, c_ov.y + 4);
+check("hold: it keeps its target when someone walks across in front", heldEnt !== "none", heldEnt);
+// commander camera
+await fresh("hold"); const c_y0 = await ev(`__ctl.G.rig.yawTarget`); await key("KeyQ", "q"); await sleep(60);
+check("camera: Q turns a quarter, eased", Math.abs((await ev(`__ctl.G.rig.yawTarget`)) - c_y0 + Math.PI / 2) < 1e-6 && Math.abs((await ev(`__ctl.G.rig.yaw`)) - (await ev(`__ctl.G.rig.yawTarget`))) > 0.05);
+await sleep(700); check("camera: and settles on the quarter", Math.abs((await ev(`__ctl.G.rig.yaw`)) - (await ev(`__ctl.G.rig.yawTarget`))) < 0.01);
+await key("KeyE", "e"); await sleep(800);
+await wheel(3000); await sleep(600); const c_dMax = await ev(`__ctl.G.rig.dist`); await wheel(-6000); await sleep(600); const c_dMin = await ev(`__ctl.G.rig.dist`);
+check("camera: scroll zoom stays near play zoom", c_dMax <= 46.1 && c_dMin >= 29.9 && c_dMax > c_dMin, `${c_dMin.toFixed(1)} to ${c_dMax.toFixed(1)}`);
+const c_f0 = JSON.parse(await ev(`JSON.stringify([__ctl.G.rig.focus.x, __ctl.G.rig.focus.z])`));
+await send("Input.dispatchMouseEvent", { type: "mousePressed", x: 900, y: 500, button: "middle", clickCount: 1, buttons: 4 }); for (let i = 1; i <= 5; i++) await send("Input.dispatchMouseEvent", { type: "mouseMoved", x: 900 - i * 40, y: 500, button: "middle", buttons: 4 }); await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 700, y: 500, button: "middle", clickCount: 1, buttons: 0 });
+const c_f1 = JSON.parse(await ev(`JSON.stringify([__ctl.G.rig.focus.x, __ctl.G.rig.focus.z])`));
+check("camera: a middle-drag pans the view", Math.hypot(c_f1[0] - c_f0[0], c_f1[1] - c_f0[1]) > 1, `${c_f0.map((n: number) => n.toFixed(1))} to ${c_f1.map((n: number) => n.toFixed(1))}`);
+await ev(`__ctl.G.edgePan = 'on'`); await mouse("mouseMoved", 1915, 540); await sleep(800); const c_f2x = await ev(`__ctl.G.rig.focus.x + __ctl.G.rig.focus.z`); await mouse("mouseMoved", 960, 540); await ev(`__ctl.G.edgePan = 'off'`);
+check("camera: edge pan moves the view when it is on", Math.abs(c_f2x - (c_f1[0] + c_f1[1])) > 0.5);
+await key("Digit3", "3"); await sleep(120); await key("Digit3", "3"); await sleep(900);
+check("camera: double tapping 3 centres on the Tech", (await ev(`Math.hypot(__ctl.G.rig.focus.x - __ctl.G.world.agents[2].g.position.x, __ctl.G.rig.focus.z - __ctl.G.world.agents[2].g.position.z)`)) < 0.6);
+await key("KeyC", "c"); await ev(`__ctl.G.world.agents[2].g.position.set(-8, 0, 3)`); await sleep(1200);
+check("camera: C makes the view follow the lead", (await ev(`Math.hypot(__ctl.G.rig.focus.x + 8, __ctl.G.rig.focus.z - 3)`)) < 0.8);
+await key("KeyC", "c"); await shot("camera-commander-zoomed");
+// third person
+await fresh("hold"); await ev(`__ctl.select(0); __ctl.setView('tp')`); await sleep(800);
+await key("KeyT", "t"); await sleep(100);
+check("third person: T takes the next agent and the camera flies to them", (await ev(`__ctl.G.sel`)) === 1 && (await ev(`__ctl.G.rig.blend`)) < 1);
+await sleep(700); await ev(`__ctl.G.world.agents[1].g.position.set(-14, 0, 6.4); __ctl.G.rig.f = Math.PI; __ctl.G.rig.pivot.set(-14, 0, 6.4)`); await sleep(900);
+check("third person: a building between the camera and the agent fades", (await ev(`__ctl.G.world.buildings.some(b => b.mesh.material.opacity < 0.4)`)) === true, await ev(`JSON.stringify(__ctl.G.world.buildings.map(b => +b.mesh.material.opacity.toFixed(2)))`));
+await shot("tp-building-fades");
+await ev(`__ctl.G.world.agents[1].g.position.set(-4, 0, 1); __ctl.G.rig.f = 0; __ctl.G.rig.pivot.set(-4, 0, 1); __ctl.G.camMode = 'leash'`); await sleep(900); const c_yawA = await ev(`__ctl.G.rig.f`);
+await send("Input.dispatchKeyEvent", { type: "keyDown", code: "KeyS", key: "s" }); await sleep(1200); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "KeyS", key: "s" });
+check("leash: walking straight toward the camera barely turns it", Math.abs((await ev(`__ctl.G.rig.f`)) - c_yawA) < 0.15, ((await ev(`__ctl.G.rig.f`)) - c_yawA).toFixed(3));
+await ev(`__ctl.G.camMode = 'snap'; __ctl.G.world.agents[1].g.position.set(-4, 0, 1); __ctl.G.rig.f = 0; __ctl.G.rig.pivot.set(-4, 0, 1)`); await sleep(500);
+const c_path: number[][] = []; await send("Input.dispatchKeyEvent", { type: "keyDown", code: "KeyS", key: "s" });
+for (let i = 0; i < 14; i++) { c_path.push(JSON.parse(await ev(`JSON.stringify([__ctl.G.world.agents[1].g.position.x, __ctl.G.world.agents[1].g.position.z])`))); await sleep(120); }
+await send("Input.dispatchKeyEvent", { type: "keyUp", code: "KeyS", key: "s" });
+const c_chord = Math.hypot(c_path[13][0] - c_path[0][0], c_path[13][1] - c_path[0][1]), c_len = c_path.slice(1).reduce((s, p, i) => s + Math.hypot(p[0] - c_path[i][0], p[1] - c_path[i][1]), 0);
+check("snap camera: holding S walks a straight line, never circling", c_chord > 0.97 * c_len && c_len > 1, `c_chord ${c_chord.toFixed(2)} of ${c_len.toFixed(2)}`);
+await ev(`__ctl.setView('cmd')`); await sleep(500);
 
 // the marker styles on one target
 await reset(); await ev(`__ctl.preset('lead'); __ctl.select(1)`);
@@ -387,17 +440,17 @@ check("double click: one click only selects", (await ev(`__ctl.G.world.agents[2]
 await mouse("mousePressed", c.x, c.y, "left", 1); await mouse("mouseReleased", c.x, c.y, "left", 1); await sleep(7000);
 check("double click: the second click does the main action", (await ev(`__ctl.G.trail`)) === 1, await logText());
 // third person
-await reset(); await ev(`__ctl.preset('lead'); __ctl.G.camMode = 'leash'; __ctl.select(3)`); await key("KeyT", "t"); await sleep(900);
+await reset(); await ev(`__ctl.preset('lead'); __ctl.G.camMode = 'leash'; __ctl.select(3)`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(900);
 const f0 = await ev(`__ctl.G.rig.f`); const p0 = await ev(`__ctl.G.world.agents[3].g.position.x`);
 await send("Input.dispatchKeyEvent", { type: "keyDown", code: "KeyD", key: "d" }); await sleep(1500); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "KeyD", key: "d" });
 const f1 = await ev(`__ctl.G.rig.f`), p1 = await ev(`__ctl.G.world.agents[3].g.position.x`);
 check("third person leash: walking sideways turns the camera slowly", Math.abs(f1 - f0) > 0.05 && Math.abs(f1 - f0) < 0.9, `yaw moved ${(((f1 - f0) * 180) / Math.PI).toFixed(1)} deg in 1.5 s; agent x ${p0.toFixed(2)} -> ${p1.toFixed(2)}`);
 await send("Input.dispatchKeyEvent", { type: "keyDown", code: "KeyW", key: "w" }); await sleep(600); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "KeyW", key: "w" });
 check("third person: W moves the agent", Math.abs((await ev(`__ctl.G.world.agents[3].g.position.z`)) - 3.1) > 0.3);
-await key("KeyT", "t"); await sleep(900);
+await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(900);
 
 // third person with the leash camera
-await ev(`__ctl.preset('lead')`); await ev(`__ctl.select(3); __ctl.G.camMode = 'leash'`); await key("KeyT", "t"); await sleep(1200);
+await ev(`__ctl.preset('lead')`); await ev(`__ctl.select(3); __ctl.G.camMode = 'leash'`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(1200);
 await key("KeyW", "w"); const pol = await at("guard").catch(() => null); if (pol) await mouse("mouseMoved", pol.x, pol.y); await shot("lead-third-person");
 
 // frame rate over 3 s
