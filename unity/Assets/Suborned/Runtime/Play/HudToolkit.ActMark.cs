@@ -19,6 +19,79 @@ namespace Suborned.Play
         /// <summary>Shots only (ShotRunner's `mark: false`): the marker is not drawn, the plain hover ring as before (a before shot).</summary>
         public static bool ActMarkOff;
 
+        // ---------------------------------------------------------------- brief 041: the verb pill (Sky's pick, testbed/controls/markers.js 'pill')
+
+        VisualElement vpill, vpillIcon; Label vpillText; Paint vpillTail; string vpillKey = "";
+        static readonly Color PillInk = new(0x10 / 255f, 0x20 / 255f, 0x1f / 255f);
+        /// <summary>The act's kind colour (data.js KINDS): look blue, talk green, tech teal, take cream, harm pink (harm also has square corners).</summary>
+        public static (Color c, bool harm) KindOf(Suborned.Sim.Order o)
+        {
+            static Color H(int rgb) => new(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
+            switch (o?.Do ?? "")
+            {
+                case "watch": case "listen": case "read": return (H(0x4aa8ff), false);
+                case "turn": case "call": case "ask": case "pay": case "mislead": return (H(0x4cc35f), false);
+                case "loop": case "reroute": case "open": case "enter": case "act": return (H(0x1fd1b5), false);
+                case "takedown": case "fire": return (H(0xff4d7d), true);
+                default: return (H(0xf1ead8), false);
+            }
+        }
+
+        /// <summary>The words on the pill (data.js priceLine, time Total): the act and its target, the whole time (walk and act), the cash, the Trail, the Alert.</summary>
+        public static string PillLine(HandoverHost h, HandoverHost.Intent i)
+        {
+            var parts = new List<string> { i.Label.Length > 0 ? i.Label : i.Order?.Do ?? "" };
+            foreach (var f in HudModel.PriceLine(h, i))
+                switch (f.Kind)
+                {
+                    case "time": case "walk": if (f.Text.Length > 0) parts.Add(i.Order?.Do == "fire" ? "down in " + f.Text : f.Text); break;
+                    case "usd": if (f.Text.Length > 0) parts.Add("$" + f.Text); break;
+                    case "trail": if (f.Text.Length > 0) parts.Add(f.Text + " Trail" + (f.Found ? " if found" : "")); break;
+                    case "alert": if (f.Text.Length > 0) parts.Add("Alert " + f.Text); break;
+                }
+            return string.Join(" · ", parts);
+        }
+
+        /// <summary>What the pill is on now: the hovered thing's act, else the single-clicked thing's; null when nothing to say (the Double click
+        /// scheme only; a ring, the panel, the going-loud card or the aim's chip up: none).</summary>
+        (HandoverHost.Target t, HandoverHost.Intent i)? PillNow()
+        {
+            if (!host.controls.DoubleClick || m.Ended || host.Ring != null || host.Panel != null || host.Loud != null || host.AimNow != null || host.Modal != ModalGate.Modal.None) return null;
+            if (host.Hover != null && host.HoverIntent is { Actionable: true } hi && host.Hover.Kind != "op") return (host.Hover, hi);
+            if (host.SelTarget != null && host.SelIntent is { Actionable: true } si) return (host.SelTarget, si);
+            return null;
+        }
+        /// <summary>The proof reads it: the pill's words now ("" hidden).</summary>
+        public static string PillWords => live != null && live.vpill != null && live.vpill.resolvedStyle.display != DisplayStyle.None ? live.vpillText.text : "";
+
+        void BuildPill()
+        {
+            vpill = E(marks, null, 0, 0, float.NaN, 34); vpill.style.flexDirection = FlexDirection.Row; vpill.style.alignItems = Align.Center; vpill.pickingMode = PickingMode.Ignore;
+            vpill.style.paddingLeft = 11; vpill.style.paddingRight = 15; Border(vpill, 2f, Color.white);
+            vpillIcon = E(vpill, null, w: 20, h: 20); vpillIcon.style.marginRight = 8; vpillIcon.style.flexShrink = 0;
+            vpillText = L(vpill, "chip-value"); vpillText.style.fontSize = 16; vpillText.style.unityFontStyleAndWeight = FontStyle.Bold; vpillText.style.color = PillInk; vpillText.style.whiteSpace = WhiteSpace.NoWrap;
+            vpillTail = P(marks, 0, 0, 14, 9, (p, r) => { p.fillColor = Color.white; p.BeginPath(); p.MoveTo(new Vector2(0, 0)); p.LineTo(new Vector2(14, 0)); p.LineTo(new Vector2(7, 9)); p.ClosePath(); p.Fill(); });
+            manifest.Add((vpill, "line", () => vpillText.text));
+            Show(vpill, false); Show(vpillTail, false);
+        }
+
+        /// <summary>Per frame: the pill above the thing (centred, clamped to the screen), its tail pointing down at it.</summary>
+        void PillFrame()
+        {
+            if (marks == null) return; if (vpill == null) BuildPill();
+            var now = PillNow(); var cam = host.View;
+            Vector2 q = default; bool on = now.HasValue && cam && host.TargetWorld(now.Value.t) is Vector3 w && Proj(w + Vector3.up * (now.Value.t.Kind is "person" or "crowd" or "hostile" or "bystander" or "patrol" or "rivals" or "security" ? 2.25f : 1.5f), out q);
+            Show(vpill, on); Show(vpillTail, on); if (!on) return;
+            var (t, i) = now.Value; var (c, harm) = KindOf(i.Order);
+            string key = (t.Kind + t.Key + i.Label + i.Usd + i.Time + i.Trail + i.Alert + i.WalkS);
+            if (key != vpillKey) { vpillKey = key; Text(vpillText, PillLine(host, i)); Art(vpillIcon, "icons/singles/" + (i.Lead.Length > 0 ? i.Lead : HudModel.AtlasIcon(i.Order.Do, i.Order.Approach, "")), PillInk); }
+            vpill.style.backgroundColor = c; Round(vpill, harm ? 6f : 17f);
+            float pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, W = root.layout.width > 0 ? root.layout.width : 1920f;
+            float x = Mathf.Clamp(q.x - pw / 2f, 14f, Mathf.Max(14f, W - pw - 14f));
+            vpill.style.left = x; vpill.style.top = q.y - 10f - 34f - 9f; vpillTail.style.left = q.x - 7f; vpillTail.style.top = q.y - 10f - 9f - 1f;
+            vpill.BringToFront(); vpillTail.BringToFront();
+        }
+
         void BuildActMark()
         {
             actBadge = E(marks, null, 0, 0, 0, 0); actBadge.style.overflow = Overflow.Visible; actBadge.pickingMode = PickingMode.Ignore;
@@ -37,6 +110,7 @@ namespace Suborned.Play
             if (marks == null) return;
             if (actBadge == null) BuildActMark();
             followHoverRing.Clear();
+            PillFrame(); if (host.controls.DoubleClick) { Show(actBadge, false); return; } // brief 041: no ground ring, no disc, no name: the pill alone
             var cam = host.View; var hr = m.HoverRing;
             if (!cam || !hr.HasValue || m.Ended) { Show(actBadge, false); return; }
             Vector2 front; bool have;
@@ -56,7 +130,7 @@ namespace Suborned.Play
                 front = q + new Vector2(0f, 64f * px / 2f * 0.62f);
             }
             var (glyph, more, walk, draws) = host.HoverAct;
-            bool on = have && (glyph.Length > 0 || more) && !ActMarkOff;
+            bool on = have && (glyph.Length > 0 || more) && !ActMarkOff && !host.controls.DoubleClick; // brief 041: the verb pill (PillFrame) instead of the disc
             Show(actBadge, on); if (!on) return;
             actBadge.style.left = front.x; actBadge.style.top = front.y;
             Show(actDisc, glyph.Length > 0); Icon(actGlyph, glyph, Cream); // a harmful likely way (never lit): the dots alone

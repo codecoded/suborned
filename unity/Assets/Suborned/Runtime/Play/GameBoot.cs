@@ -39,9 +39,32 @@ namespace Suborned.Play
             if (ArgValue("-shots033") is string s33) { var sg = new GameObject("shots-033"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots033>().Dir = s33; return; } // briefs 030, 032, 033 (Latch)
             if (ArgValue("-rangeShots") is string rs) { var sg = new GameObject("range-shots"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<RangeShots>().Dir = rs; return; } // brief 029, engine 0.18 (Latch)
             if (ArgValue("-shots031") is string sd) { var sg = new GameObject("shots-031"); UnityEngine.Object.DontDestroyOnLoad(sg); sg.AddComponent<Shots031>().Dir = sd; return; } // brief 031's shots (Latch)
+            if (ArgValue("-drawCheck") is string dc) { var dg = new GameObject("draw-check"); UnityEngine.Object.DontDestroyOnLoad(dg); dg.AddComponent<DrawCheck>().Dir = dc; return; } // Splice 2026-10-21: the short blank-frame check `bun run game` takes after a rebuild
             var dir = ArgValue("-gameProof"); if (dir == null) return;
             var go = new GameObject("game-proof"); UnityEngine.Object.DontDestroyOnLoad(go); go.AddComponent<GameProof>().Dir = dir;
         }
+    }
+
+    /// <summary>`-drawCheck &lt;dir&gt;` (Splice, 2026-10-21): the short check that a fresh build draws, for `bun run game` (a second player build in one
+    /// Editor domain can ship a black screen; GameBuild.cs). Waits for the host, 3 s for the world to stream in, tests one frame the way GameProof does
+    /// (Rendered), writes proof.json (status ok or blank; same schema name, no frames) and quits. No shots, no frame times: `-gameProof` is the full proof.</summary>
+    public sealed class DrawCheck : MonoBehaviour
+    {
+        public string Dir = "";
+
+        IEnumerator Start()
+        {
+            Directory.CreateDirectory(Dir);
+            HandoverHost h = null; float t0 = Time.realtimeSinceStartup;
+            while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write("no host after 60 s"); Application.Quit(2); yield break; } yield return null; }
+            yield return new WaitForSecondsRealtime(3f);
+            yield return new WaitForEndOfFrame();
+            bool ok = GameProof.Rendered();
+            Write(ok ? "ok" : "blank");
+            Application.Quit(ok ? 0 : 3);
+        }
+
+        void Write(string status) => File.WriteAllText(Path.Combine(Dir, "proof.json"), $"{{\n \"schema\": \"suborned.draw-check/1\",\n \"status\": \"{status}\",\n \"unity\": \"{Application.unityVersion}\",\n \"screen\": \"{Screen.width}x{Screen.height}\"\n}}\n");
     }
 
     /// <summary>`-gameProof &lt;dir&gt;`: the briefing, then play at play zoom, then the pause menu; each a HudToolkit shot (frame, HUD layer,
@@ -53,7 +76,7 @@ namespace Suborned.Play
         bool rendered;
 
         /// <summary>The frame is a picture, not one flat colour (a pipeline that failed to start draws only the clear colour).</summary>
-        static bool Rendered()
+        internal static bool Rendered()
         {
             var t = ScreenCapture.CaptureScreenshotAsTexture(); var seen = new HashSet<Color32>();
             for (int y = 0; y < t.height; y += Mathf.Max(1, t.height / 40)) for (int x = 0; x < t.width; x += Mathf.Max(1, t.width / 40)) seen.Add(t.GetPixel(x, y));
@@ -103,23 +126,42 @@ namespace Suborned.Play
             ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}");
             yield return ProofInput.DriveClick(h, log, driveClick);
             yield return ProofInput.FireStop(h, log, fireStop);
+            // brief 041: the ring-on-press and hold-ring checks are the Built scheme's (0.2.34 as it was); the Double click scheme (the default) has its own (dblClick)
+            h.controls.preset = ControlPreset.Built; h.ControlsChanged(); yield return null;
             var ringCheck = new string[] { "null" }; yield return ProofInput.RingCheck(h, log, ringCheck); // brief 038's done-check
+            var act = new string[] { "null" }; yield return ProofFire.Act(h, Dir, log, act);
+            h.controls.preset = ControlPreset.DoubleClick; h.ControlsChanged(); yield return null;
             // brief 024 (action-game controls, firing): the input map, the act on the prompt, the trigger and its marks and animation, the cars
             var inputMap = new string[] { "null" }; ProofFire.InputMap(log, inputMap);
-            var act = new string[] { "null" }; yield return ProofFire.Act(h, Dir, log, act);
+            var dblClick = new string[] { "null" }; yield return ProofInput.DblClick(h, Dir, log, dblClick); // brief 041: single and double clicks on a person, a prop and the ground; the right tap and hold
             var fire = new string[] { "null" }; var fireSession = new string[1]; yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
             var cars = new string[] { "null" }; yield return ProofFire.Cars(h, Dir, log, cars);
+            var hudClick = new string[] { "null" }; yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
             ProofInput.Focusless(false);
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
             yield return PeopleCost(h, log, people, 6f, Dir);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
+            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
+            // Sky on 0.2.34, the fight range's panel: its clicks never reach the street (both views). Last, as it leaves the Handover's scene
+            h.ResumeFromMenu();
+            var rangeClick = new string[] { "null" }; var leash = new string[] { "null" };
+            {
+                ProofInput.Focusless(true);
+                h.SwitchRangeScene(); // the run saved, then the range scene (the pause menu's own switch)
+                HandoverHost rh = null; float r0 = Time.realtimeSinceStartup;
+                while (((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
+                if (rh != null && rh.rangeMode && rh.Game != null) { yield return new WaitForSecondsRealtime(1.5f); yield return ProofInput.RangePanelClick(rh, log, rangeClick); yield return ProofInput.Leash(rh, Dir, log, leash); } // brief 041: the leash on the range's open floor
+                else log.Add("rangePanelClick: no range host after 60 s");
+                ProofInput.Focusless(false);
+            }
+            frames = frames.Replace("__LEASH__", leash[0]);
+            frames = frames.Replace("__HUDCLICK__", $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
             Write(frames, rendered ? "ok" : "blank");
             yield return new WaitForSecondsRealtime(0.5f);
-            if (rendered) h.QuitFromMenu(); else Application.Quit(3);
+            Application.Quit(rendered ? 0 : 3); // the Handover's run was saved by the switch (QuitFromMenu's save)
         }
 
         /// <summary>Route G's orders up to the way out (briefs/013/play/route-g-by-hand.script.json): the fight starts on the walk out with Vale.</summary>

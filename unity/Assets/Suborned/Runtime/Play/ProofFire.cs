@@ -84,12 +84,13 @@ namespace Suborned.Play
                 if (s != HandoverHost.TpState.Aiming) Want(HandoverHost.TpIn.LeftAiming, s, HandoverHost.TpDo.Nothing); // no hidden hip fire
                 else { Want(HandoverHost.TpIn.LeftTap, s, HandoverHost.TpDo.Fire); Want(HandoverHost.TpIn.LeftAiming, s, HandoverHost.TpDo.Fire); }
             }
-            Want(HandoverHost.TpIn.ETap, HandoverHost.TpState.Free, HandoverHost.TpDo.Act); Want(HandoverHost.TpIn.EHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Ring);
+            Want(HandoverHost.TpIn.ETap, HandoverHost.TpState.Free, HandoverHost.TpDo.Act); Want(HandoverHost.TpIn.EHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act); // brief 041: the Double click scheme opens nothing on a hold
+            Want(HandoverHost.TpIn.LeftHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act);
             Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.RingAtTarget); Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
             Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.CarryingVale, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftDrag, HandoverHost.TpState.Walking, HandoverHost.TpDo.Orbit);
             int n = System.Enum.GetValues(typeof(HandoverHost.TpIn)).Length * System.Enum.GetValues(typeof(HandoverHost.TpState)).Length;
             log.Add("inputMap: " + HandoverHost.TpTable().Replace("\n", " | "));
-            json[0] = $"{{\"ok\": {B(ok)}, \"pairs\": {n}, \"bad\": [{string.Join(", ", bad.Select(b => "\"" + b + "\""))}], \"table\": \"{HandoverHost.TpTable().Replace("\n", " | ")}\"}}";
+            json[0] = $"{{\"ok\": {B(ok)}, \"holdRing\": {B(HandoverHost.HoldRing)}, \"pairs\": {n}, \"bad\": [{string.Join(", ", bad.Select(b => "\"" + b + "\""))}], \"table\": \"{HandoverHost.TpTable().Replace("\n", " | ")}\"}}";
         }
 
         // ---------------------------------------------------------------- done-checks 2, 3, 6, 7, 8

@@ -343,7 +343,7 @@ export const TextFile = z.strictObject({
   targets: z.record(z.string(), Target),
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
-  goingLoud: z.strictObject({ captured: Line }).describe('lines on the going-loud card beyond its numbers'),
+  goingLoud: z.strictObject({ captured: Line, fails: z.record(code, Line).describe('the hold card\'s line when the shot would fail the mission, by fail code (vale-dead, driver-shot, getaway-lost): what dies, then "The mission fails."') }).describe('lines on the going-loud card beyond its numbers'),
   actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the right-click ring (label, at most 8 characters)'),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,

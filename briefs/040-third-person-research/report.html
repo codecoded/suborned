@@ -1,0 +1,448 @@
+<!doctype html><html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width"><title>Third person camera and controls</title><style>body{font:16px/1.55 -apple-system,system-ui,sans-serif;max-width:920px;margin:2em auto;padding:0 1.2em;color:#1d2b2a;background:#fbf8f1}h1,h2,h3{color:#0f4f4a}table{border-collapse:collapse;margin:1em 0}td,th{border:1px solid #c9d6d3;padding:5px 9px;vertical-align:top}th{background:#e3efec}code{background:#e9f1ef;padding:1px 4px;border-radius:3px}a{color:#0b6e66}blockquote{border-left:3px solid #8cc;margin:0;padding-left:1em;color:#445}</style><body><h1>Turn the Chase Camera Into a Leash</h1>
+<p>The camera should stop chasing the agent&#39;s heading and start following the agent&#39;s path. Today&#39;s chase camera eases back behind the heading with a critically damped spring that settles in about 0.5 s. A spring like that turns fastest when the gap is largest, so turning round, the move the designer complained about, produces the hardest swing: by my arithmetic a 180° turn peaks near 880°/s. The best-supported fix has three parts. First, a lazy follow that keeps distance and height but turns as little as it can. Second, a &quot;leash&quot; that yaws the camera only by the sideways part of the agent&#39;s motion, so walking toward the camera pushes it back rather than spinning it. Third, a slow settle behind the agent that starts only after the agent has held one heading for about a second and the mouse has been idle for about two seconds. It takes about 2 s and is capped near 45°/s. Movement stays camera-relative, which every reference game uses, but the key-to-world mapping should hold still while a key is held, so the camera turning doesn&#39;t bend the path. The AAA references ship &quot;camera follows my movement&quot; as a named option (The Last of Us Part I&#39;s Camera Assist; The Witcher 3&#39;s default mode). Forced recentring that players can&#39;t turn off (GTA V&#39;s vehicle camera) drew years of complaints, and the Xbox accessibility guidelines require an off switch. For the squad layer, the strongest precedents are one context key that acts on what you face and one key that hands a target to the cell, shown by markers in the world, not text. The evidence is strongest on engine behaviour, practitioner rules and accessibility guidelines. It is weakest on numbers: no AAA studio publishes its recentre timings, and the comfort thresholds come from lab drum studies, not third-person games.</p>
+<h2>Camera-relative movement wins, but the rigid swing is an aiming camera</h2>
+<p>Every game in the reference set moves the character relative to the camera. A design write-up modelled on Breath of the Wild puts it simply: one stick steers, one rotates the camera, and &quot;the players forward is the same as the cameras&quot; (<a href="https://babel.speldesign.uu.se/?p=1085896">Uppsala speldesign blog</a>). The only place a shipped game lets players choose character-relative input is narrow. The Last of Us Part II offers &quot;Character or Camera&quot; for rope and ladder movement only (<a href="https://www.playstation.com/en-us/games/the-last-of-us-part-ii/accessibility/">PlayStation: TLOU Part II accessibility</a>). Heavy, character-led movement is the most-cited complaint against Red Dead Redemption 2 on PC: &quot;Movement is heavy and clunky&quot; (<a href="https://www.windowscentral.com/red-dead-redemption-2-pc-review">Windows Central</a>), and one tester said Arthur &quot;feels like a tank&quot; (<a href="https://mein-mmo.de/en/red-dead-redemption-2-experte-steuerung-traege,288771">MeinMMO</a>). The Suborned&#39;s driving code already maps WASD through the camera&#39;s yaw (<code>HostDrive.cs</code>), so the input model is right. The trouble is what happens when the camera turns on its own.</p>
+<p>Camera-relative input has a known failure: when the camera turns, the meaning of a held key turns with it. Eric Martel, writing about a shipped action-adventure camera, notes that players &quot;gradually adjust&quot; to continuous rotation. On a cut, though, the game should keep using the previous view&#39;s frame &quot;as long as the input is held&quot;, so movement doesn&#39;t reverse (<a href="https://www.gameaipro.com/GameAIPro/GameAIPro_Chapter47_Tips_and_Tricks_for_a_Robust_Third-Person_Camera_System.pdf">Martel, Game AI Pro ch. 47</a>). The current camera turns fast enough to behave like a cut. Reading <code>HostFollow.cs</code> together with <code>HostDrive.cs</code> points to a worse case (my inference from the code, still to be confirmed in play). Holding S sends the agent toward the camera, and the camera then chases that heading. As it turns, S turns with it, so the target heading moves away as fast as the camera closes on it. The likely result is an agent running in a circle with the camera spinning behind it for as long as S is held. Latching the input frame while a movement key is held removes this by construction.</p>
+<p>The deeper issue is the camera&#39;s class. Mark Haigh-Hutchinson&#39;s <em>Real-Time Cameras</em> separates cameras &quot;fixed with respect to the character orientation&quot; from those with &quot;rotational lag around the vertical axis&quot;. Over-the-shoulder views &quot;typically carry little or no orientation lag&quot; because they serve aiming (<a href="https://epdf.pub/real-time-cameras.html">epdf.pub excerpt</a>, seen only as search snippets). Martel draws the same line. His over-the-shoulder camera &quot;always follows the character&#39;s facing&quot;, while his orbit camera returns behind the character only when the player isn&#39;t steering it (<a href="https://www.gameaipro.com/GameAIPro/GameAIPro_Chapter47_Tips_and_Tricks_for_a_Robust_Third-Person_Camera_System.pdf">Martel</a>). Unity&#39;s Cinemachine names the exploration alternative directly. In <strong>Lazy Follow</strong>, &quot;the camera moves as little as possible to keep the same distance and height from the target, regardless of the target&#39;s orientation&quot; (<a href="https://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/manual/CinemachineOrbitalFollow.html">Cinemachine 3.1 Orbital Follow manual</a>). A camera-placement paper adds that third-person cameras follow the avatar&#39;s movement &quot;but not necessarily its orientation, since that might induce motion sickness&quot; (<a href="https://arxiv.org/pdf/2109.03750">arXiv 2109.03750</a>). A swing behind the heading in 0.5 s is an aiming camera fitted to a walking agent. The Witcher 3 shows the alternative: camera settings chosen separately for Exploration, Combat and Horseback (<a href="https://vulkk.com/2022/12/14/how-to-change-the-camera-in-the-witcher-3-next-gen/">Vulkk</a>). Following that model, The Suborned would keep a lazy profile for walking and a rigid over-the-shoulder profile for aiming and fights.</p>
+<h2>A leash turns the camera by sideways motion, so a turn-around never whips it</h2>
+<p>The current spring (<code>followChaseSmooth = 0.15</code>, SmoothDampAngle toward the smoothed velocity heading) has the same flaw as the one an open-source Little Big Adventure 2 project worked through. Because the pull is a share of the remaining angle, &quot;a large offset swings faster. Turning round and running toward the camera swings it through 180 degrees quickly&quot;, which reads as &quot;the camera fixing itself to his back&quot; (<a href="https://github.com/LBALab/lba2-classic-community/issues/732">LBALab issue #732</a>, one hobby project). The numbers here are my arithmetic. A critically damped spring with a smooth time of 0.15 s has a natural frequency of about 13/s. Its peak angular speed for a step is the step size × ω / e: about <strong>880°/s for a 180° turn and 440°/s for 90°</strong>. Even Cinemachine&#39;s gentler default (smooth time 1 s) peaks near 130°/s on a full turn-around, so any angle-driven recentre needs a speed cap as well as a longer time.</p>
+<p>The <strong>leash</strong> comes from Little Polygon&#39;s breakdown of third-person cameras: &quot;the vertical component of the cross product between view direction and player velocity is scaled and added to yaw&quot; (<a href="https://blog.littlepolygon.com/posts/cameras/">Kaufmann, Little Polygon</a>). Put plainly, the yaw rate equals the agent&#39;s sideways speed across the view divided by the arm length. The LBA2 write-up spells out the consequences. &quot;Running toward or away from the camera does not turn it.&quot; &quot;Standing or turning on the spot leaves it where it is.&quot; The camera &quot;only ends up behind him if he keeps moving the same way&quot; (<a href="https://github.com/LBALab/lba2-classic-community/issues/732">LBALab #732</a>). A forum description of the Dark Souls camera gives the same feel: &quot;When you walk towards the camera you push it out of the way, and later on drag it behind you&quot; (<a href="https://forums.unrealengine.com/t/third-person-camera-that-aligns-to-movement-direction/1642">Unreal forums</a>, anecdotal). At The Suborned&#39;s 5.5 m arm, a 1.4 m/s walk straight across the view turns the camera about <strong>15°/s</strong>, and a 4 m/s run about <strong>42°/s</strong> (illustrative speeds; my arithmetic). That is the designer&#39;s &quot;let the player be moving in that direction and then slow pan around&quot;, produced by the agent&#39;s own motion rather than a timer.</p>
+<p>A leash alone never brings the camera behind an agent that keeps walking straight toward it. The second part is therefore a slow settle-behind, and both engines and practitioners agree on its gating. Martel blends back behind the character only when &quot;the player is not actively rotating the camera and the character is in motion&quot; (<a href="https://www.gameaipro.com/GameAIPro/GameAIPro_Chapter47_Tips_and_Tricks_for_a_Robust_Third-Person_Camera_System.pdf">Martel</a>). In the engine source, Cinemachine&#39;s recentring waits <strong>1 s</strong> after the last axis input and then takes <strong>2 s</strong>, using SmoothDamp with half that as its smooth time. It is <strong>off by default</strong> (<a href="https://raw.githubusercontent.com/Unity-Technologies/com.unity.cinemachine/main/com.unity.cinemachine/Runtime/Core/InputAxis.cs">Cinemachine InputAxis.cs</a>). Sea of Thieves, the Xbox guidelines&#39; example of good practice, ships Auto Centre Delay at <strong>2.0</strong> and Auto Centre Speed at <strong>180</strong> (units not stated) as player settings (<a href="https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/117">XAG 117</a>). John Nesky&#39;s camera rules, known here only through a translated summary, put &quot;player input comes first&quot; and say not to pull focus while the player inspects something (<a href="https://skillbox.ru/media/gamedev/50-principov-vazhnyh-dlya-sozdaniya-horoshey-igrovoy-kamery/">Skillbox summary of Nesky, GDC 2014</a>). For hysteresis, Itay Keren&#39;s &quot;dual forward focus&quot; keeps the camera&#39;s target until the player crosses a threshold, so small reversals don&#39;t flip the frame (<a href="https://www.gamedeveloper.com/design/scroll-back-the-theory-and-practice-of-cameras-in-side-scrollers">Keren, Scroll Back</a>).</p>
+<p>Together these give a turn-around recipe. The table below is my synthesis; the sources support each rule&#39;s direction, but the thresholds are inference.</p>
+<table>
+<thead>
+<tr>
+<th>Situation</th>
+<th>What the camera does</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Agent stands or turns on the spot</td>
+<td>Holds yaw</td>
+<td>Martel; LBA2 (sourced)</td>
+</tr>
+<tr>
+<td>Agent turns round and walks toward the camera</td>
+<td>Pushed back along its line, no yaw; the player sees the agent&#39;s face and keeps walking</td>
+<td>Lazy Follow; leash; Dark Souls push (sourced pattern)</td>
+</tr>
+<tr>
+<td>Path gains any sideways part</td>
+<td>Leash yaws toward the path at sideways speed ÷ arm</td>
+<td>Little Polygon; LBA2 (sourced); gain 1.0 is inference</td>
+</tr>
+<tr>
+<td>Agent holds one heading (±20°) for 1 s, mouse idle 2 s</td>
+<td>Settles behind over ~2 s, capped at 45°/s, eased in and out</td>
+<td>Martel gate, Cinemachine timing, Sea of Thieves delay (sourced); thresholds and cap are inference</td>
+</tr>
+<tr>
+<td>Player orbits with the mouse or presses a camera key</td>
+<td>Camera stays put; all automation suspended for the delay</td>
+<td>Nesky; Cinemachine Wait; PC norm (sourced)</td>
+</tr>
+<tr>
+<td>Aiming or in a fight</td>
+<td>Rigid over-the-shoulder, little or no yaw lag</td>
+<td>Haigh-Hutchinson; Martel (sourced)</td>
+</tr>
+<tr>
+<td>Wall behind the agent</td>
+<td>Arm shortens at once and recovers over ~0.5 s; agent backed onto a wall slides the yaw along it</td>
+<td>Cinemachine collision defaults; Martel; Nesky &quot;move closer rather than swing&quot; (sourced)</td>
+</tr>
+</tbody></table>
+<p>Dead zones and collision complete the picture. Cinemachine&#39;s screen dead zone defaults to 0.2 × 0.2 of the screen, with hard limits at 0.8, both off until enabled (<a href="https://raw.githubusercontent.com/Unity-Technologies/com.unity.cinemachine/main/com.unity.cinemachine/Runtime/Core/ScreenComposerSettings.cs">ScreenComposerSettings.cs</a>). Martel&#39;s &quot;sweet spot&quot; rotates the camera only when the target leaves a screen rectangle, and is disabled while the player rotates the camera (<a href="https://www.gameaipro.com/GameAIPro/GameAIPro_Chapter47_Tips_and_Tricks_for_a_Robust_Third-Person_Camera_System.pdf">Martel</a>). Cinemachine&#39;s Third Person Follow damps position at 0.1 s sideways, 0.5 s vertically and 0.3 s forward. It pulls into collisions with zero damping and recovers over 0.5 s, with a 0.2 m camera radius (<a href="https://raw.githubusercontent.com/Unity-Technologies/com.unity.cinemachine/main/com.unity.cinemachine/Runtime/Components/CinemachineThirdPersonFollow.cs">CinemachineThirdPersonFollow.cs</a>). Haigh-Hutchinson argues for vertical lag &quot;to dampen the effect of the player walking over small obstructions&quot; (<a href="https://epdf.pub/real-time-cameras.html">epdf.pub excerpt</a>). The current camera already pulls in at once and eases out, which matches this practice. The leash also helps here: a camera that doesn&#39;t sweep a 180° arc doesn&#39;t sweep through the facades beside the agent.</p>
+<h2>Shipped games make follow a switch, and players punish forced recentring</h2>
+<p>The designer&#39;s request has a named precedent. The Last of Us Part I&#39;s <strong>Camera Assist</strong> &quot;automatically reorients the camera in the direction of your movement&quot;, with On, Off, Horizontal and Vertical settings (<a href="https://mp1st.com/news/full-list-of-the-last-of-us-part-i-accessibility-features-revealed">MP1st</a>). Part II aims it at &quot;newcomers to action games or players who find it hard to use both sticks at once&quot; and turns it on through the Motor accessibility preset. That implies it is off by default for most players (<a href="https://www.playstation.com/en-us/games/the-last-of-us-part-ii/accessibility/">PlayStation: TLOU Part II accessibility</a>). The Witcher 3&#39;s original movement had the camera pan &quot;slowly in the direction you press&quot;. Patch 1.07 added an optional alternative movement mode without it, after complaints about Geralt&#39;s heavy movement (<a href="https://www.pcgamer.com/au/the-witcher-3-patch-107-geralts-new-movement-mode-analyzed">PC Gamer</a>, seen through a search summary; <a href="https://gamebanshee.com/kwax8">GameBanshee changelog</a>). Both studios kept the behaviour and gave players a way out.</p>
+<p>The cautionary cases are forced. GTA V&#39;s third-person vehicle camera &quot;will always snap back after a few seconds&quot;, and its settings toggle covers only the first-person vehicle view. One player called it &quot;one of the most annoying things in the GTA games&quot;, and mods exist solely to disable it (<a href="https://steamcommunity.com/app/271590/discussions/0/611703999972682423/">Steam: Disable camera auto-center?</a>; <a href="https://steamcommunity.com/app/271590/discussions/0/611703999964185246/">Steam: Auto center vehicle camera</a>). Assassin&#39;s Creed Mirage players complain that the camera &quot;keeps shifting back and forth&quot; with no option to centre it, and that a promised fix never came (<a href="https://steamcommunity.com/app/3035570/discussions/0/4632611455209884705/">Steam: AC Mirage</a>). These come from community threads, not studies, but they agree: on PC the camera should stay where the mouse left it, unless the player has asked otherwise. The same games give the player an explicit recentre instead. Mirage binds Focus Camera to a middle-mouse click and Valhalla binds it to F (<a href="https://frondtech.com/assassins-creed-ac-mirage-pc-keyboard-controls-and-key-bindings/">Frondtech Mirage keybinds</a>; <a href="https://www.shacknews.com/article/121397/pc-keybindings-and-controls-assassins-creed-valhalla">Shacknews Valhalla keybinds</a>). RDR2&#39;s V cycles three third-person distances and first person (<a href="https://steamcommunity.com/app/1174180/discussions/0/2143091644400133682">Steam RDR2</a>).</p>
+<p>Aiming conventions are just as settled. Right mouse aims over the shoulder, left mouse fires, and one key swaps the shoulder: V in Hitman, Tab while aiming in TLOU Part I, X while aiming in RDR2 (<a href="https://www.feralinteractive.com/en/manual/hitman/latest/linux/">Feral HITMAN manual</a>; <a href="https://www.destructoid.com/the-last-of-us-part-1-all-controls-list-for-pc/">Destructoid TLOU Part I controls</a>; <a href="https://steamcommunity.com/app/1174180/discussions/0/5788831477026480773">Steam RDR2 shoulder thread</a>). Exploration framing is different. Tears of the Kingdom puts its bow camera directly behind Link rather than over a shoulder: it &quot;chose clarity over cinematic impact&quot; (<a href="https://80.lv/articles/tears-of-the-kingdom-s-bow-aiming-camera-explained">80.lv</a>). An off-centre exploration camera in Elder Scrolls Online leads players to misjudge doors and opponents (<a href="https://www.gamedeveloper.com/design/third-person-camera-view-in-games-a-record-of-the-most-common-problems-in-modern-games-solutions-taken-from-new-and-retro-games">Buehler, Game Developer</a>). For a game about reading people and doors, the walking camera should be centred, with the shoulder offset kept for aiming.</p>
+<p>The squad-tactics hybrids add the commander&#39;s side. Satellite Reign, the nearest Syndicate-like precedent, takes or releases direct control of an agent with a single key, Backspace (<a href="https://steamcommunity.com/app/268870/discussions/0/520518688941640674">Steam guide</a>). No source reviewed how well that mode played. Mass Effect 2 and 3 pause combat while the squad wheel is held on PC, which turns the wheel&#39;s slowness into planning time (<a href="https://gamesradar.com/mass-effect-2-review-2-2/3">GamesRadar</a>). Jagged Alliance 3 and Satellite Reign drew complaints for having no full pause in which to give orders (<a href="https://mp1st.com/reviews/jagged-alliance-3-review-mercenaries-for-hire">MP1st JA3 review</a>; <a href="https://steamcommunity.com/app/268870/discussions/0/351660338704778867">Steam: Satellite Reign</a>). The most damaging complaint about Satellite Reign was readability: a reviewer wanted &quot;something that made it clear to see what agents were about to do&quot; and found &quot;a myriad of keybindings&quot; (<a href="https://mancunion.com/2015/10/14/satellite-reign-review/">The Mancunion</a>).</p>
+<h2>One key acts on what you face; one key hands the target to the cell</h2>
+<p>On PC, E is the context key in GTA V, RDR2, Hitman, TLOU and Assassin&#39;s Creed. Hitman and Valhalla add a second interaction key for a second verb (<a href="https://www.bisecthosting.com/es-es/blog/gta-v-controls-guide-pc-playstation-xbox-keyboard-mouse-gamepad">BisectHosting GTA V</a>; <a href="https://www.feralinteractive.com/en/manual/hitman/latest/linux/">Feral HITMAN manual</a>; <a href="https://www.shacknews.com/article/121397/pc-keybindings-and-controls-assassins-creed-valhalla">Shacknews Valhalla</a>). RDR2 shows the risk of overloading: players complain of &quot;too many systems and mechanics bound to one button or key&quot; (<a href="https://steamcommunity.com/app/1174180/discussions/0/4331977787522221714/?ctp=3">Steam RDR2</a>). Heavy acts use hold-to-fill prompts after a person is targeted (<a href="https://steamcommunity.com/app/1174180/discussions/0/1742268065070583609">Steam RDR2</a>). This fits the GDD rule that every order shows its price before the player commits. The Xbox guidelines treat holds of 2–3 s or more as a barrier, accept presses under 3 s, and ask for a toggle or tap alternative to every hold (<a href="https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/107">XAG 107</a>).</p>
+<p>None of the sources documents how these games choose among several nearby interactables, which is a real gap. The squad games show the principle instead: the thing you aim at decides the order. In Rainbow Six Vegas you &quot;mostly just look at something and press A&quot;: a door gives breach options, open floor gives a move (<a href="https://www.gamerevolution.com/?p=38457">GameRevolution FAQ</a>; <a href="https://giantbomb.com/user-reviews/id/1433/infuriatingly-difficult-but-incredibly-intense-and">Giant Bomb user review</a>). SWAT 4 builds its right-click menu from what is under the cursor (<a href="https://gamespot.com/reviews/swat-4-review/1900-6121423/">GameSpot review</a>). In Brothers in Arms the avatar gives a hand signal and the team moves to the spot you look at, or focuses fire on the enemy you look at (<a href="https://gamespot.com/articles/brothers-in-arms-road-to-hill-30-qanda-final-thoughts/1100-6119621/">GameSpot Q&amp;A</a>). For The Suborned, I infer a pick order from these. The thing under the cursor wins if there is one. Otherwise the focus is the nearest valid target in a forward cone, scored by distance and by angle from the agent&#39;s facing. A newly scored candidate replaces the current focus only if it wins by a clear margin, so the prompt doesn&#39;t flicker between two people side by side. The existing Z steps through candidates. Only one prompt shows at a time: a keycap and one verb on the object, with the price line on hold. This matches the evidence that feedback belongs in the world. Rainbow Six Vegas&#39;s audio-only confirmations were criticised (<a href="https://forums.obsidian.net/blogs/entry/50-rainbow-six-vegas-review">Obsidian forums</a>), and Brothers in Arms&#39; visible hand signal was not.</p>
+<p>For locking squadmates onto a target, Ghost Recon&#39;s <strong>Sync Shot</strong> is the best-loved scheme. You mark a target, a number appears over its head, the teammate confirms &quot;in position&quot;, and your shot fires everyone&#39;s (<a href="https://twinfinite.net/?p=265009">Twinfinite</a>). Wildlands&#39; reported PC default for Mark Enemy is Q (<a href="https://www.magicgameworld.com/?p=3146">MagicGameWorld</a>, a third-party guide). Breakpoint guarantees the synced action can run: each teammate&#39;s second weapon is always a standard rifle, so a sync shot never silently fails (<a href="https://gamechronicles.com/play-tom-clancys-ghost-recon-breakpoint-with-ai-teammates-today">GameChronicles</a>). Future Soldier is the warning. When sync was the squad&#39;s only command, reviewers found play predictable and the campaign dull (<a href="https://www.theregister.com/2012/05/30/review_game_ghost_recon_future_soldier">The Register</a>; <a href="https://www.expertreviews.co.uk/technology/gaming/ghost-recon-future-soldier-review">Expert Reviews</a>). Two other schemes fit a cell of four. Mass Effect puts one key per squadmate (Q, E) to send them at the crosshair target (<a href="https://forums.ea.com/discussions/mass-effect-franchise-discussion-en/squad-commands-are-broken-for-km/9191739">EA forums</a>). Freedom Fighters makes a tap order the nearest squadmate and a hold order everyone (<a href="https://giantbomb.com/wiki/Games/Freedom_Fighters">Giant Bomb</a>). Rainbow Six Vegas adds a global stance (Assault or Infiltration) that changes how every order is carried out, which keeps the order list short (<a href="https://www.gamerevolution.com/?p=38457">GameRevolution FAQ</a>). That maps naturally onto the existing V Stance and the game&#39;s quiet-versus-loud costs.</p>
+<p>Wheels need not be ruled out. In Kurtenbach and Buxton&#39;s field study, practised users selected from marking menus by gesture <strong>3.5× faster</strong> than from the popup, though the marks &quot;are not intrinsically self-explanatory&quot; (<a href="https://www.research.autodesk.com/publications/user-learning-and-performance-with-marking-menus/">Autodesk Research</a>; <a href="https://research.autodesk.com/publications/the-design-and-evaluation-of-marking-menus">Kurtenbach thesis</a>). The supported layering is one key for the obvious act, a hold-to-open ring for alternatives, and hotkeys for experts. The ring E already opens is that middle layer.</p>
+<h2>Comfort depends on who moves the camera and how sharply it turns</h2>
+<p>The mechanism evidence agrees with the design evidence. In a visual yaw-rotation study at a constant 60°/s, 12 of 15 participants felt sick in at least one session, and vection gain was the only significant predictor (<a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0175305">Nooij et al., PLoS ONE 2017</a>). Changing the rotation speed between 30 and 60°/s produced more sickness than holding it constant (<a href="https://pubmed.ncbi.nlm.nih.gov/16909874/">PubMed 16909874</a>). People who drove a game were less often sick than passengers who watched it (<a href="https://www.frontiersin.org/journals/virtual-reality/articles/10.3389/frvir.2020.581132/text">Frontiers in VR 2020</a>). A reviewer made &quot;physically ill&quot; by Final Fantasy VII Remake described the cause: &quot;When Cloud turns, the camera turns whether you touched it or not&quot; (<a href="https://caniplaythat.com/2020/05/05/final-fantasy-vii-remake-broke-my-heart/">Can I Play That?</a>). Optokinetic drums fill the whole visual field, so 60°/s is a warning level, not a safe limit for a monitor. Two inferences still follow. The current swing, peaking at hundreds of degrees per second and starting without the player&#39;s say, is the riskiest kind of camera motion. A leash is gentler in kind, not only in speed, because its rotation is proportional to movement the player is steering at that moment.</p>
+<p>The guidelines turn this into requirements. XAG 117 asks for &quot;the ability to disable automatic camera movement&quot;, separate horizontal and vertical sensitivity, an adjustable FOV, and an off switch for shake, bob and blur (<a href="https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/117">XAG 117</a>). XAG 107 asks for sensitivity adjustable by at least ±50%, remapping of every action including Esc, per-axis invert, and a keyboard-only route to camera control (<a href="https://learn.microsoft.com/en-us/gaming/accessibility/xbox-accessibility-guidelines/107">XAG 107</a>). The Game Accessibility Guidelines name <strong>mouse smoothing</strong> among the culprits when camera motion differs from input. They give about 90° as an appropriate monitor FOV and say it must be adjustable (<a href="https://gameaccessibilityguidelines.com/avoid-or-provide-option-to-disable-any-difference-between-controller-movement-and-camera-movement/">GAG: controller vs camera movement</a>; <a href="https://gameaccessibilityguidelines.com/if-the-game-uses-field-of-view-3d-engine-only-set-an-appropriate-default-for-the-expected-viewing-environment/">GAG: FOV default</a>). Unity&#39;s FOV is vertical; 90° horizontal at 16:9 is about 59° vertical (my conversion). The current 55° vertical is about 86° horizontal, close to that guidance. TLOU Part II&#39;s Motion Sickness group adds camera distance (−5 to +5), FOV, shake (1–10), a dolly-zoom toggle and a <strong>persistent centre dot</strong>. The dot is backed by the finding that a fixation point reduces sickness by reducing vection (<a href="https://www.playstation.com/en-us/games/the-last-of-us-part-ii/accessibility/">PlayStation: TLOU Part II</a>; <a href="https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0175305">Nooij et al.</a>). Practitioners also advise against dynamic FOV for drama, preferring distance changes (<a href="https://blog.littlepolygon.com/posts/cameras/">Kaufmann, Little Polygon</a>).</p>
+<p>Who benefits from recentre and who is harmed by it splits cleanly. Novices and players who struggle with a second camera input benefit, which is why TLOU puts Camera Assist in its Motor preset. Motion-sensitive players and experts who place the camera on purpose are harmed. Research on adaptive cameras found a camera tuned to the individual &quot;perceived extremely positively by non-expert participants&quot; (<a href="https://yannakakis.net/wp-content/uploads/2015/02/J30.pdf">Burelli &amp; Yannakakis</a>, via summary). The answer the evidence supports is a default plus settings, not one behaviour for everyone. The overhead view is in the low-risk class. Its 38° pitch, distant camera and discrete Q/E quarter steps cause little vection, and keyboard rotation is the digital camera control XAG 107 favours.</p>
+<h2>Conclusion</h2>
+<p>The designer&#39;s complaint and the accessibility evidence point to the same design once follow is driven by speed rather than by angle. An angle-driven recentre, however slow, still turns hardest at the worst moment, a turn-around, and it turns on its own clock. A leash turns only as fast as the agent crosses the view, so its rotation is always proportional to something the player is doing. That makes it a stronger default than the evidence would allow for classic auto-recentre, which TLOU, Cinemachine and PC norms all leave off. The remaining tension is the slow settle-behind. The designer wants it and the precedents allow it, but only behind a gate (heading held, mouse idle, agent moving) and a switch. It is also the part to watch in playtests, because the sources give no shipped numbers for it.</p>
+<p>Two things change beyond the camera itself. First, camera yaw is part of the input: driving resolves camera-relative keys into world moves, so latching the frame while a key is held is a correctness fix, not polish, and the probable S-key spin should be checked first. Second, the third-person key question is less about Q and E as camera keys than about what a commander needs at street level. In practice that is one key to act on what the agent faces and one to hand a target to the cell. The PC conventions (E to act, Q to mark) happen to sit on exactly the keys the overhead view uses for turning, which is workable only if each mode shows its own keycaps and nothing costly fires on a single stray press.</p>
+<h2>Recommended defaults</h2>
+<p>Each row is marked <strong>Sourced</strong> (a value taken from a cited engine default, shipped setting or guideline), <strong>Mixed</strong> (sourced pattern, chosen number) or <strong>Inference</strong> (my reasoning, to be tuned in playtest). Parameter names in brackets are the current <code>HostFollow.cs</code> fields where one exists.</p>
+<h3>Camera numbers</h3>
+<table>
+<thead>
+<tr>
+<th>Parameter</th>
+<th>Recommended default</th>
+<th>Range offered</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Follow profile (walking)</td>
+<td>Lazy follow: keep distance and height, turn as little as possible</td>
+<td>—</td>
+<td>Sourced (Cinemachine Lazy Follow; Haigh-Hutchinson; Martel)</td>
+</tr>
+<tr>
+<td>Position damping, horizontal [<code>followSmooth</code> 0.2]</td>
+<td>0.15 s</td>
+<td>—</td>
+<td>Mixed (Cinemachine 0.1 side / 0.3 forward)</td>
+</tr>
+<tr>
+<td>Position damping, vertical</td>
+<td>0.5 s</td>
+<td>—</td>
+<td>Sourced (Cinemachine 0.5; Haigh-Hutchinson vertical lag)</td>
+</tr>
+<tr>
+<td>Vertical dead zone (kerbs, steps)</td>
+<td>0.25 m</td>
+<td>—</td>
+<td>Inference (pattern sourced: Haigh-Hutchinson, Solar Ash, Buehler)</td>
+</tr>
+<tr>
+<td>Leash gain (yaw rate = sideways speed ÷ arm)</td>
+<td>1.0, about 15°/s walking and 42°/s running at 5.5 m</td>
+<td>0–1.5</td>
+<td>Mixed (Little Polygon, LBA2 pattern; gain inference)</td>
+</tr>
+<tr>
+<td>Settle-behind start</td>
+<td>Agent moving &gt; 0.5 m/s [<code>followChaseSpeed</code>] and heading steady within ±20° for 1.0 s</td>
+<td>—</td>
+<td>Mixed (Martel gate; Keren hysteresis; numbers inference)</td>
+</tr>
+<tr>
+<td>Delay after mouse orbit or camera key [<code>followLookHold</code> 1.0]</td>
+<td>2.0 s</td>
+<td>Off, 0.5–5 s</td>
+<td>Sourced (Sea of Thieves 2.0; Cinemachine 1.0)</td>
+</tr>
+<tr>
+<td>Settle time [<code>followChaseSmooth</code> 0.15]</td>
+<td>2 s to about 90% (smooth time 1.0 s)</td>
+<td>1–6 s</td>
+<td>Sourced (Cinemachine Time 2, SmoothDamp at Time/2)</td>
+</tr>
+<tr>
+<td>Automatic yaw speed cap</td>
+<td>45°/s</td>
+<td>—</td>
+<td>Inference (drum studies: 60°/s sickening)</td>
+</tr>
+<tr>
+<td>Automatic yaw acceleration cap</td>
+<td>90°/s² (eased start and stop)</td>
+<td>—</td>
+<td>Inference (velocity changes worse than steady rotation)</td>
+</tr>
+<tr>
+<td>Turn-around toward the camera (heading &gt; 120° from view)</td>
+<td>No settle until the heading is steady, then settle toward the side with more sideways motion or more room</td>
+<td>—</td>
+<td>Inference</td>
+</tr>
+<tr>
+<td>Input frame for WASD</td>
+<td>Latched while any movement key is held whenever yaw is automatic; mouse orbit updates it live</td>
+<td>—</td>
+<td>Mixed (Martel latch across cuts)</td>
+</tr>
+<tr>
+<td>Mouse orbit</td>
+<td>Direct, no smoothing, no cap, suspends all automation</td>
+<td>—</td>
+<td>Sourced (GAG mouse smoothing; Nesky &quot;player input comes first&quot;)</td>
+</tr>
+<tr>
+<td>Distance, walking [<code>followDistance</code> 5.5]</td>
+<td>5.5 m</td>
+<td>3–10 m (wheel)</td>
+<td>Mixed (Cinemachine orbit radius 4–5 m)</td>
+</tr>
+<tr>
+<td>Distance, aiming</td>
+<td>2.0 m</td>
+<td>—</td>
+<td>Sourced (Cinemachine Third Person Follow 2 m)</td>
+</tr>
+<tr>
+<td>Pitch, walking</td>
+<td>15° down at 5.5 m, on a spline: about 8° at 3 m, 25° at 10 m</td>
+<td>—</td>
+<td>Mixed (Cinemachine 17.5° default; Martel and Nesky closer-low, farther-high; numbers inference)</td>
+</tr>
+<tr>
+<td>FOV [<code>followFov</code> 55]</td>
+<td>60° vertical (about 91° horizontal at 16:9); fixed during play, no sprint or aim FOV changes</td>
+<td>50–75° vertical (about 79–107° horizontal)</td>
+<td>Mixed (GAG about 90° monitor; Little Polygon and Nesky on dynamic FOV; conversion mine)</td>
+</tr>
+<tr>
+<td>Shoulder offset, walking</td>
+<td>0 m (centred)</td>
+<td>Centre / left / right</td>
+<td>Sourced (TotK clarity; ESO misread doors; Mirage complaints)</td>
+</tr>
+<tr>
+<td>Shoulder offset, aiming</td>
+<td>0.5 m right, 0.4 m below pivot; swap key</td>
+<td>—</td>
+<td>Sourced (Cinemachine (0.5, −0.4); Hitman V swap)</td>
+</tr>
+<tr>
+<td>Aim profile yaw lag</td>
+<td>≤ 0.1 s (rigid)</td>
+<td>—</td>
+<td>Sourced (Haigh-Hutchinson: little or no lag)</td>
+</tr>
+<tr>
+<td>Screen dead zone / hard limit (framing composer)</td>
+<td>0.2 × 0.2 of screen / 0.8 × 0.8</td>
+<td>—</td>
+<td>Sourced (Cinemachine defaults)</td>
+</tr>
+<tr>
+<td>Collision</td>
+<td>In: instant; out: 0.5 s; camera radius 0.2 m; people and thin props ignored; facades between camera and agent faded</td>
+<td>—</td>
+<td>Sourced (Cinemachine; Martel; Nesky)</td>
+</tr>
+<tr>
+<td>Entry from overhead</td>
+<td>Eased fly-in ≤ 0.5 s [<code>followSwing</code>], option to cut</td>
+<td>Fly-in / cut</td>
+<td>Mixed (Martel: cut when views differ by more than 90°)</td>
+</tr>
+</tbody></table>
+<h3>Mouse-and-keyboard scheme (third person, with overhead for comparison)</h3>
+<table>
+<thead>
+<tr>
+<th>Action</th>
+<th>Overhead</th>
+<th>Third person</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Move</td>
+<td>WASD pans</td>
+<td>WASD camera-relative, frame latched while held</td>
+<td>Sourced (universal convention; Martel)</td>
+</tr>
+<tr>
+<td>Run</td>
+<td>Shift held; G latches</td>
+<td>Same</td>
+<td>Sourced (Shift sprint in GTA V, RDR2, Hitman, TLOU; XAG toggle)</td>
+</tr>
+<tr>
+<td>Orbit camera</td>
+<td>Alt + middle drag</td>
+<td>Middle drag (no Alt); optional locked mouse-look</td>
+<td>Inference</td>
+</tr>
+<tr>
+<td>Recentre behind agent</td>
+<td>—</td>
+<td>Middle click</td>
+<td>Sourced (AC Mirage Focus Camera on middle click)</td>
+</tr>
+<tr>
+<td>Turn view</td>
+<td>Q / E quarter steps</td>
+<td>Not bound; the mouse orbits</td>
+<td>GDD fixed limit; inference for third person</td>
+</tr>
+<tr>
+<td>Act on focus</td>
+<td>Click</td>
+<td>E tap; hold E (0.22 s) opens the ring; costly acts need the ring or a hold</td>
+<td>Sourced (E convention; RDR2 hold-to-fill; XAG hold limits)</td>
+</tr>
+<tr>
+<td>Mark target for the cell</td>
+<td>—</td>
+<td>Q tap: next free agent (number over the target, &quot;ready&quot; bark); hold Q: all free agents; Q on a marked target clears it; marked agents fire on your own act</td>
+<td>Mixed (Wildlands Mark = Q, Sync Shot; Freedom Fighters tap/hold; mapping inference)</td>
+</tr>
+<tr>
+<td>Step focus</td>
+<td>Z</td>
+<td>Z</td>
+<td>Existing binding</td>
+</tr>
+<tr>
+<td>Stance (quiet / loud for every order)</td>
+<td>V</td>
+<td>V</td>
+<td>Mixed (Rainbow Six Vegas rules of engagement)</td>
+</tr>
+<tr>
+<td>Drop in / out</td>
+<td>T</td>
+<td>T</td>
+<td>Sourced pattern (Satellite Reign one-key take/release)</td>
+</tr>
+<tr>
+<td>Switch agent</td>
+<td>1–4 select</td>
+<td>1–4 drop into that agent</td>
+<td>Inference</td>
+</tr>
+<tr>
+<td>Pause and order</td>
+<td>Space</td>
+<td>Space</td>
+<td>Sourced pattern (pause expected; JA3, Satellite Reign complaints)</td>
+</tr>
+</tbody></table>
+<p><strong>The Q/E clash.</strong> E is bound twice today, to TurnRight overhead and to Act in third person. The follow view already ignores Q/E turns while driving. Keep it that way: E as interact is the strongest PC convention in the reference set, and a mouse orbit plus a middle-click recentre covers what Q/E turns did. The risk is muscle memory. A player who has just pressed E to turn the overhead view may drop in and press E again. Three things make that harmless. The ring is the default, so the first E opens options rather than committing. Anything with a Trail or Alert price needs a second press or a hold. The HUD keycaps must change with the mode, so the overhead view shows &quot;Q E turn&quot; and third person shows &quot;E act · Q mark&quot;. I don&#39;t recommend keeping Q/E as camera turns in third person and moving interact elsewhere: F is already Draw, and moving interact off E would cut against every reference game. One open question for Sky: the AAA convention is right mouse to aim, but this game&#39;s right click acts, as it does overhead. Keeping the two views consistent fits &quot;commander &gt; avatar&quot;, so the aim key needs a deliberate choice rather than a default.</p>
+<h3>Options menu</h3>
+<table>
+<thead>
+<tr>
+<th>Group</th>
+<th>Setting</th>
+<th>Default</th>
+<th>Choices</th>
+<th>Basis</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Third-person camera</td>
+<td>Camera follow</td>
+<td>Follow path, then settle behind</td>
+<td>Off (stays where left) / Follow path / Follow path, then settle behind</td>
+<td>Sourced (XAG 117 off switch; TLOU Camera Assist modes)</td>
+</tr>
+<tr>
+<td></td>
+<td>Follow delay after you move the camera</td>
+<td>2.0 s</td>
+<td>0.5–5 s</td>
+<td>Sourced (Sea of Thieves)</td>
+</tr>
+<tr>
+<td></td>
+<td>Settle speed</td>
+<td>2 s</td>
+<td>1–6 s</td>
+<td>Sourced (Sea of Thieves speed; Cinemachine Time)</td>
+</tr>
+<tr>
+<td></td>
+<td>Follow strength (leash)</td>
+<td>100%</td>
+<td>0–150%</td>
+<td>Inference</td>
+</tr>
+<tr>
+<td></td>
+<td>Camera distance</td>
+<td>5.5 m</td>
+<td>3–10 m</td>
+<td>Sourced (TLOU distance; Valhalla close camera)</td>
+</tr>
+<tr>
+<td></td>
+<td>Field of view</td>
+<td>60° vertical, shown as about 91° horizontal</td>
+<td>50–75° vertical</td>
+<td>Sourced (XAG 117; GAG)</td>
+</tr>
+<tr>
+<td></td>
+<td>Walking shoulder</td>
+<td>Centre</td>
+<td>Centre / left / right</td>
+<td>Mixed</td>
+</tr>
+<tr>
+<td></td>
+<td>Fly-in from overhead</td>
+<td>On</td>
+<td>On / cut</td>
+<td>Inference</td>
+</tr>
+<tr>
+<td></td>
+<td>Centre dot</td>
+<td>Off</td>
+<td>On / off</td>
+<td>Sourced (TLOU II; Nooij fixation)</td>
+</tr>
+<tr>
+<td></td>
+<td>Camera shake</td>
+<td>100%</td>
+<td>0–100%</td>
+<td>Sourced (XAG 117; TLOU II; Halo Infinite)</td>
+</tr>
+<tr>
+<td>Mouse</td>
+<td>Sensitivity, horizontal and vertical</td>
+<td>100% each</td>
+<td>25–300%, separate</td>
+<td>Sourced (XAG 107 at least ±50%)</td>
+</tr>
+<tr>
+<td></td>
+<td>Invert X, invert Y</td>
+<td>Off</td>
+<td>Each axis separately</td>
+<td>Sourced (XAG 107)</td>
+</tr>
+<tr>
+<td></td>
+<td>Mouse smoothing</td>
+<td>Off</td>
+<td>On / off</td>
+<td>Sourced (GAG)</td>
+</tr>
+<tr>
+<td>Overhead camera</td>
+<td>Q / E turn</td>
+<td>Eased</td>
+<td>Eased / instant cut</td>
+<td>Inference (a cut produces no vection)</td>
+</tr>
+<tr>
+<td>Controls</td>
+<td>Remap every action, Esc included; labels update in every hint</td>
+<td>—</td>
+<td>—</td>
+<td>Sourced (XAG 107)</td>
+</tr>
+<tr>
+<td></td>
+<td>Run</td>
+<td>Hold</td>
+<td>Hold / toggle</td>
+<td>Sourced (XAG 107; TLOU II)</td>
+</tr>
+<tr>
+<td></td>
+<td>Hold time for E and Q</td>
+<td>0.22 s</td>
+<td>0.15–0.6 s, or tap twice instead</td>
+<td>Sourced (XAG 107 tap alternatives)</td>
+</tr>
+<tr>
+<td>Presets</td>
+<td>Motion comfort</td>
+<td>—</td>
+<td>Sets follow Off, shake 0, cut on entry and turns, centre dot on</td>
+<td>Mixed (TLOU preset pattern)</td>
+</tr>
+</tbody></table>
+<p>Head bob and motion blur should simply not be added to the chase camera. If either ever is, it needs its own off switch (XAG 117; GAG). Three known gaps limit these numbers. No AAA studio&#39;s recentre timing was found, the Nesky rules come from a translated summary, and no study measures sickness for third-person follow behaviours on a flat screen.</p>
+</body></html>

@@ -35,9 +35,9 @@ namespace Suborned.Play
             switch (i)
             {
                 case TpIn.ETap: return s == TpState.RingOpen ? TpDo.TakeLit : TpDo.Act;
-                case TpIn.EHold: return s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Ring;
+                case TpIn.EHold: return s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act; // brief 041 (Double click): no hold opens a ring; a held E acts as a tap on release
                 case TpIn.LeftTap: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Act;
-                case TpIn.LeftHold: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Ring;
+                case TpIn.LeftHold: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act;
                 case TpIn.LeftDrag: return s == TpState.Aiming ? TpDo.Fire : TpDo.Orbit;
                 case TpIn.LeftAiming: return s == TpState.Aiming ? TpDo.Fire : TpDo.Nothing; // no hidden hip fire
                 case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : s == TpState.RingOpen ? TpDo.CloseRing : TpDo.RingAtTarget;
@@ -125,7 +125,7 @@ namespace Suborned.Play
                     {
                         var d = TpResolve(TpIn.RightTap, TpNow);
                         if (d == TpDo.LowerAim) AimEnd();
-                        else if (d == TpDo.RingAtTarget) { var t = rTapTarget; if (t == null || t.Kind == "op") ActContext(t, rTapFrom); else RightRing(t, rTapFrom); }
+                        else if (d == TpDo.RingAtTarget) { var t = rTapTarget; if (t == null || t.Kind == "op") ActContext(t, rTapFrom); else if (controls.DoubleClick) TapRing(t, rTapFrom); else RightRing(t, rTapFrom); }
                     }
                     return true;
                 }
@@ -152,7 +152,12 @@ namespace Suborned.Play
                 {
                     lTapPending = false;
                     if (lRing) { var rs = Ring; if (rs == null) return true; int s = (p - rs.PointerAtOpen).magnitude > RingDeadPx * KitScale ? RingSegAt(p) : -1; if (s >= 0) RingTakeTry(s, "release"); else { rs.Sticky = true; rs.Always = true; } return true; }
-                    if (TpResolve(TpIn.LeftTap, TpNow) == TpDo.Act) TpAct(lTapTarget, "click");
+                    if (TpResolve(TpIn.LeftTap, TpNow) == TpDo.Act)
+                    {
+                        if (!controls.DoubleClick) TpAct(lTapTarget, "click");
+                        else if (lastThing != null && SameTarget(lastThing, lTapTarget) && now - lastThingAt < controls.doubleSeconds) { lastThing = null; lastThingAt = -9f; ClearSel(); DoubleActs++; TpAct(lTapTarget, "click"); } // brief 041: a double click acts
+                        else { lastThing = lTapTarget; lastThingAt = now; SelectThing(lTapTarget); } // a single click selects
+                    }
                     return true;
                 }
                 if (!lRing && now - lTapAt >= RingHoldS && TpResolve(TpIn.LeftHold, TpNow) == TpDo.Ring) { lRing = true; TpRing(lTapTarget, false); if (Ring != null) Ring.Sticky = false; }
@@ -221,7 +226,6 @@ namespace Suborned.Play
         /// <summary>Seconds to down from a preview: the first shot (the next ready tick, or the draw and aim-new), then one each cadence.</summary>
         int PreviewDownS(FirePreview fp, int k, string target = "")
         {
-            if (target.StartsWith("car:") && Game.CarOf(target) == null) return -1; // a car not yet shot has no health in the engine's preview (Keel: PreviewFire before EnsureCar)
             if (fp == null || fp.ShotsToDown <= 0 || fp.Refused.Length > 0 && fp.Refused != "out-of-range" && fp.Refused != "no-clear-line" || !fp.Line) return -1;
             var g = Game.Ops[k].Gun; if (g.W == null) return -1;
             int first = Drawn(k) ? Math.Max(0, g.NextShot - Game.Tick) : Game.R.DrawTicks + Game.R.AimNewTicks;
@@ -505,8 +509,8 @@ namespace Suborned.Play
             if (fs.Firing && fs.Target.Length > 0)
             {
                 var lk = $"{fs.Target}|{Game.Tick}";
-                if (lineKey[k] != lk) { lineKey[k] = lk; int s = -1; FirePreview fp = null; if (Guard("fire line", () => fp = Game.PreviewFire((OpId)k, fs.Target, Game.Ops[k].Gun.TrigForce))) s = PreviewDownS(fp, k, fs.Target); lineDown[k] = s; } // priced once a tick
-                return ($"Firing at {FireName(fs.Target)}", lineDown[k] >= 0 ? $"down in {lineDown[k]} s" : "", false, true);
+                if (lineKey[k] != lk) { lineKey[k] = lk; int s = -1; FirePreview fp = null; if (Guard("fire line", () => fp = Game.PreviewFire((OpId)k, fs.Target, Game.Ops[k].Gun.TrigForce))) s = PreviewDownS(fp, k, fs.Target); lineDown[k] = s; lineDownIs[k] = fp?.DownIs ?? "down"; } // priced once a tick
+                return ($"Firing at {FireName(fs.Target)}", lineDown[k] >= 0 ? $"{(lineDownIs[k] == "disabled" ? "disabled" : "down")} in {lineDown[k]} s" : "", false, true); // engine 0.18 (Keel): an undisabled car counts to disabled
             }
             if (Time.unscaledTime - FireStoppedAt[k] < StoppedS) return ("Stopped", "", true, Drawn(k));
             return ("", "", false, false);
@@ -518,7 +522,7 @@ namespace Suborned.Play
 
         /// <summary>The agent whose line shows: the driven one, else the selected agent (the commander's), else none.</summary>
         public int FireLineAgent => Driving ? dAgent : (int)Agent;
-        readonly string[] lineKey = { "", "", "", "" }; readonly int[] lineDown = { -1, -1, -1, -1 };
+        readonly string[] lineKey = { "", "", "", "" }; readonly int[] lineDown = { -1, -1, -1, -1 }; readonly string[] lineDownIs = { "down", "down", "down", "down" };
 
         /// <summary>For the HUD: whether agent k's fire mark is the return mark (returning fire on its shooter).</summary>
         public bool Returning(int k) => FireNow[k].Firing && FireNow[k].Mode == "return";

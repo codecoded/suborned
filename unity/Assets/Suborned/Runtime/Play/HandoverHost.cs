@@ -185,7 +185,7 @@ namespace Suborned.Play
             DriveReset(); // brief 025: nobody driven
             if (Game != null && Fault == null) Save(); // a restart closes the run being left at its last tick
             Fault = null; Ending = ""; EndDebrief = null; lastLog = 0; acc = 0f; steps = 0; stepMs = 0; StepMsMax = 0; frames = 0; frameEngineMs = 0;
-            Paused = startPaused; Speed = 1; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null; Panel = null; PanelHover = -1; Array.Clear(pending, 0, 4); Pops.Clear(); Pulses.Clear();
+            Paused = startPaused; Speed = 1; SelTarget = null; SelIntent = null; Picked = -1; intentKey = ""; HoverIntent = null; Hover = null; Panel = null; PanelHover = -1; Array.Clear(pending, 0, 4); Pops.Clear(); Pulses.Clear();
             if (viewRoot) Destroy(viewRoot.gameObject);
             Guard("load", () =>
             {
@@ -252,6 +252,7 @@ namespace Suborned.Play
             }
             frames++;
             if (Game.Over && Ending.Length == 0) End();
+            Guard("selection", SelFrame); // brief 041: the single click's selected thing and its price (the verb pill)
             Guard("fire view", FireFrame); Guard("cars", CarFrame); // brief 024 Firing: each agent's fire state this frame (HostAim), the cars' effects
             Guard("attention cues", AttentionFrame);
             Guard("faces", FacesFrame); // brief 033: the roster's live portraits (HostPortraits) // brief 031: the watchers' displayed stages and the callouts (HostAttention), before the views draw them
@@ -295,13 +296,20 @@ namespace Suborned.Play
         {
             string id = ""; foreach (var c in Game.S.Cameras) if (x.Text.Contains("The " + c.Id + " camera")) id = c.Id;
             var at = id.Length > 0 && views?.Find("camera/" + id) is Transform ct ? ct.position : (Vector3?)null;
-            if (x.Code == "fire.camera-dark") Pop(Text != null && Text.Pops.TryGetValue("camera-dark", out var cd) ? cd : "The camera goes dark.", null, at, Feedback.Info, 2.5f, "icons/singles/eye_shut");
+            if (x.Code == "fire.camera-dark") Pop(Text != null && Text.Pops.TryGetValue("camera-dark", out var cd) ? cd : "camera-dark", null, at, Feedback.Info, 2.5f, "icons/singles/eye_shut"); // Fable's less.pop key (2026-10-21); a hit stays silent: the tracer and the spark say it
             else if (at.HasValue) Pulses.Add((at.Value, Feedback.Refused, Time.unscaledTime));
         }
 
         double Now() { if (!sw.IsRunning) sw.Start(); return sw.Elapsed.TotalMilliseconds; }
 
         // ---------------------------------------------------------------- controls
+
+        /// <summary>Whether a screen point (pixels, origin bottom left) is on any HUD that takes clicks: the IMGUI view, the debug layer, the kit
+        /// (and the camera lab), the fight range's panel. A click there never reaches the street: no move, no ring, no selection, no box (Sky on
+        /// 0.2.34, the range panel's click-through). Every pointer path asks this one place.</summary>
+        public static bool OverHud(Vector2 p) => PlayHud.Blocks(p) || DebugHud.Blocks(p) || HudToolkit.Blocks(p) || RangePanel.Blocks(p);
+        /// <summary>Left or right presses that reached the street (not over the HUD) this run of the app: the proof's click-through check.</summary>
+        public int WorldPresses { get; private set; }
 
         /// <summary>The modal up now, if any (ModalGate): the briefing until Begin, the end card.</summary>
         public ModalGate.Modal Modal => MenuOpen ? ModalGate.Modal.Menu : Ending.Length > 0 ? ModalGate.Modal.EndCard : ShowBriefing ? ModalGate.Modal.Briefing : ModalGate.Modal.None;
@@ -314,7 +322,7 @@ namespace Suborned.Play
         {
             var c = controls;
             FollowKey(kb);
-            if (Following) { FollowInput(kb, mouse, mouse != null && HudToolkit.Blocks(mouse.position.ReadValue())); return; } // the follow view: its own turn and distance, no pan
+            if (Following) { FollowInput(kb, mouse, mouse != null && OverHud(mouse.position.ReadValue())); return; } // the follow view: its own turn and distance, no pan
             if (kb != null)
             {
                 var pan = Vector2.zero;
@@ -327,7 +335,7 @@ namespace Suborned.Play
             var p = mouse.position.ReadValue();
             if (!turnDragging) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
             float wheel = mouse.scroll.ReadValue().y;
-            if (wheel != 0f && !HudToolkit.Blocks(p)) OverheadWheel(wheel); // stepped or proportional (brief 025: the camera lab)
+            if (wheel != 0f && !OverHud(p)) OverheadWheel(wheel); // stepped or proportional (brief 025: the camera lab)
         }
 
         void Controls()
@@ -372,7 +380,7 @@ namespace Suborned.Play
                     if (digit && shift) { if (!standing) continue; if (Ring != null) RingKey(i); else if (Panel != null) PanelKey(i); else Pick(i); continue; }
                     if (c.Down(kb, PlayAction.Agent1 + i) && Ring == null) AgentKey(i, shift && !digit);
                 }
-                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Ring != null) { /* the ring closes in RightFrame */ } else if (Frozen && Panel == null) LeaveFreeze(); else if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (Picked >= 0) { Picked = -1; intentKey = ""; } else if (FeedHistoryOpen) FeedHistoryOpen = false; else OpenMenu(); } // nothing nearer to close: the pause menu
+                if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Ring != null) { /* the ring closes in RightFrame */ } else if (Frozen && Panel == null) LeaveFreeze(); else if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (SelTarget != null) ClearSel(); else if (Picked >= 0) { Picked = -1; intentKey = ""; } else if (FeedHistoryOpen) FeedHistoryOpen = false; else OpenMenu(); } // nothing nearer to close: the pause menu
                 if (c.Down(kb, PlayAction.CycleAgent) && Ring == null) CycleAction(shift); // brief 030 §8: Tab steps the selected agent's actions (never the camera or the selection)
                 if (c.Down(kb, PlayAction.StepTarget)) StepTarget(shift); // Z: overlapping things, the picked action's targets, the driven focus
                 if (!Driving && !Frozen) // driven: real time (the controller's pace), no skipping ahead; frozen: no tick runs
@@ -387,7 +395,7 @@ namespace Suborned.Play
                 if (pan != Vector2.zero && cam && !Following) Pan(pan * KeyPanSpeed * Time.unscaledDeltaTime);
             }
             GateFrame(kb, mouse);
-            if (Following) FollowInput(kb, mouse, mouse != null && (PlayHud.Blocks(mouse.position.ReadValue()) || HudToolkit.Blocks(mouse.position.ReadValue()))); else TurnInput(kb, mouse);
+            if (Following) FollowInput(kb, mouse, mouse != null && OverHud(mouse.position.ReadValue())); else TurnInput(kb, mouse);
             if (mouse == null || !cam) return;
             var p = PointerWorld is Vector3 pw && cam ? (Vector2)cam.WorldToScreenPoint(pw) : PointerOverride ?? mouse.position.ReadValue(); // PointerWorld: the proof's pointer held on a world point (whatever the window's size)
             // both buttons together: panic, read only once a fight is on (outside one they are just two clicks: no order, no refusal, no card);
@@ -403,12 +411,13 @@ namespace Suborned.Play
                 if (e != Vector2.zero) Pan(e * KeyPanSpeed * Time.unscaledDeltaTime);
             }
             float wheel = mouse.scroll.ReadValue().y; // over the HUD the wheel scrolls the HUD (the action panel's cards), not the zoom
-            if (wheel != 0f && HoverStackCount > 1 && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them
-            if (wheel != 0f && !Following && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p))) OverheadWheel(wheel); // the follow view's wheel is its distance (FollowInput); stepped or proportional (brief 025)
+            if (wheel != 0f && HoverStackCount > 1 && !OverHud(p)) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them
+            if (wheel != 0f && !Following && !OverHud(p)) OverheadWheel(wheel); // the follow view's wheel is its distance (FollowInput); stepped or proportional (brief 025)
             if (Driving && DriveFocus != null) lastMouse = p;             // driven: the chip is on what E acts on (HostDrive), not under the cursor
             else if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
-            bool onHud = PlayHud.Blocks(p) || DebugHud.Blocks(p) || HudToolkit.Blocks(p);
+            bool onHud = OverHud(p);
+            if (!onHud && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)) WorldPresses++; // the proof's click-through check reads it
             if (mouse.leftButton.wasReleasedThisFrame || mouse.rightButton.wasReleasedThisFrame) HudToolkit.BlurFocus(); // brief 024 rule 6: no click keeps keyboard focus (WASD after any click)
             CommanderHoldFireFrame(mouse); // controls.commanderHoldFire: the right button up ceases (HostAim)
             if (TpPointer(mouse, p, onHud)) { BoxScreen = null; return; } // brief 024 revision: third person's aim, trigger, right tap and the left click on the prompt (HostAim)
@@ -552,6 +561,7 @@ namespace Suborned.Play
             var t = TargetAt(screen, true);
             if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
             if (Driving) return; // brief 024 §2 (Sky 2026-10-21: "if I click on a space, then the movement WASD keys fail to respond"): in third person walking is the keys; a click on the ground gives no walk (it was a move order, which ends the drive in the engine and left WASD dead)
+            if (controls.DoubleClick) { if (t != null && ThingClick(t, screen, shift)) return; ClearSel(); } // brief 041: a thing selects (twice: its act); the ground walks (twice: runs)
             bool twice = Time.unscaledTime - lastGroundAt < controls.doubleSeconds && (screen - lastGround).magnitude < 24f;
             lastGroundAt = Time.unscaledTime; lastGround = screen;
             if (twice)

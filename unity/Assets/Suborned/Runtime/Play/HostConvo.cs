@@ -213,7 +213,7 @@ namespace Suborned.Play
             if (c.OutAt < 0f)
             {
                 bool esc = kb != null && kb.escapeKey.wasPressedThisFrame;
-                bool next = controls.Down(kb, PlayAction.Pause) || mouse != null && mouse.leftButton.wasPressedThisFrame && !HudToolkit.Blocks(mouse.position.ReadValue());
+                bool next = controls.Down(kb, PlayAction.Pause) || mouse != null && mouse.leftButton.wasPressedThisFrame && !OverHud(mouse.position.ReadValue());
                 float hold = Text?.BubbleS ?? 3f;
                 if (esc) ConvoSkip();
                 else if (now >= c.BeatAt)

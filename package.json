@@ -9,6 +9,7 @@
     "doctor": "bun tools/doctor.ts",
     "verify": "bun tools/verify.ts",
     "budget": "bun tools/hud-budget/cli.ts briefs/014/play",
+    "controls": "bun testbed/controls/serve.ts",
     "game": "bun tools/game/cli.ts",
     "game:build": "bun tools/game/cli.ts --build",
     "game:check": "bun tools/game/cli.ts --check",

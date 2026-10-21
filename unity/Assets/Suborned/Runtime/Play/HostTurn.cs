@@ -157,7 +157,7 @@ namespace Suborned.Play
             if (Modal == ModalGate.Modal.None && UnityEngine.InputSystem.Mouse.current is { } mouse)
             {
                 var p = mouse.position.ReadValue();
-                if (p.x >= 0 && p.y >= 0 && p.x <= cam.pixelWidth && p.y <= cam.pixelHeight && !(PlayHud.Blocks(p) || HudToolkit.Blocks(p)) && frame.Ground(cam.ScreenPointToRay(p), out var g)) Add(g, r);
+                if (p.x >= 0 && p.y >= 0 && p.x <= cam.pixelWidth && p.y <= cam.pixelHeight && !OverHud(p) && frame.Ground(cam.ScreenPointToRay(p), out var g)) Add(g, r);
             }
             Add(Person("guard"), rp);
             for (int k = 0; k < 4; k++) if (!Selected[k]) Add(OpAt(k), rp);

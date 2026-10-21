@@ -894,6 +894,14 @@
   "round.ends": "a server's rounds end (an order or a body holds her at her post): the street shows her there",
   "range.spawn": "the fight range: hostiles are put on the range; the spawn order's ack and the hostiles themselves speak",
   "range.clear": "the fight range: every hostile is down, broken or gone; the range shows it",
+  "range.car-out": "the fight range: the occupant of a disabled car gets out; the person on the street shows it",
+  "range.witness": "the fight range: a bystander sees the cell fire; the bystander's own stance shows it",
+  "range.bystander-startled": "the fight range: a bystander is startled; the person on the street shows it, and no one is made to speak (civilians are never the payload)",
+  "range.bystander-runs": "the fight range: a bystander runs for safety; the person on the street shows it, and no one is made to speak (civilians are never the payload)",
+  "range.bystander-safe": "the fight range: a bystander reaches safety; the person on the street shows it, and no one is made to speak (civilians are never the payload)",
+  "range.bystander-back": "the fight range: a bystander comes back; the person on the street shows it, and no one is made to speak (civilians are never the payload)",
+  "range.bystander-hit": "the fight range: a bystander is hit; the person on the street shows it, and no one is made to speak (civilians are never the payload)",
+  "range.bystander-down": "the fight range: a bystander goes down; the person on the street shows it, and no one is made to speak (civilians are never the payload)",
   "holster.auto": "the engine holsters a gun a few seconds after a fight ends: the portrait's gun mark shows it",
   "walked": "an agent left behind who walks out: the mission ends at Go; the debrief's left-behind line says it",
   "car.seen": "the car was seen leaving: the mission ends at Go; the debrief's car-seen line says it and the feed card keeps it",
@@ -1153,7 +1161,12 @@
   }
  },
  "goingLoud": {
-  "captured": "Anyone left behind in a fight is captured."
+  "captured": "Anyone left behind in a fight is captured.",
+  "fails": {
+   "vale-dead": "Vale dies. The mission fails.",
+   "driver-shot": "The driver dies. The mission fails.",
+   "getaway-lost": "The car is wrecked. The mission fails."
+  }
  },
  "less": {
   "rule": "brief 014 (Sky, 2026-10-16: \"It's the reading, it's too much\"). The play HUD at rest shows no sentences: people speaking (bubbles in the world), icons, numbers, rings, and at most two story beats. Every long line elsewhere in this file stays and is the Alt text (hold Alt, or the history key L) or the debrief; nothing was deleted. `fates` says where each group of text goes; the rest of this block is the short forms and the one-line price grammar. Told/learned holds: a beat or a pop never names what the cell has not been told or has not learned.",
@@ -1192,6 +1205,7 @@
    "hints.items.line": "alt",
    "toasts.run-seen": "cut",
    "goingLoud.captured": "alt",
+   "goingLoud.fails": "alt",
    "less.go": "label",
    "less.failcam": "beat",
    "dialogue": "speech",
@@ -1485,7 +1499,9 @@
    "no-line": "No clear line",
    "car-held": "Fight blocks car",
    "take-control": "Take control: T",
-   "let-go": "Let go: T"
+   "let-go": "Let go: T",
+   "camera-dark": "Camera dark",
+   "camera-hit": "Camera hit"
   },
   "cancel": {
    "stop": "free",

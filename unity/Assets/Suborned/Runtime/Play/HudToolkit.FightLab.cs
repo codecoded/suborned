@@ -26,7 +26,13 @@ namespace Suborned.Play
         readonly Dictionary<string, (int hp, float at, int from)> flHp = new();
         float flFrozenAt = -1f; bool flWasFrozen; Paint flCoinRing; string flCoinBand = "";
 
+        /// <summary>Bars drawn this frame over the range's cars and bystanders (the range proof reads it).</summary>
+        public static int RangeBarsDrawn { get; private set; }
+        /// <summary>The goal line's words now ("" hidden; the range proof reads it).</summary>
+        public static string GoalNow => live != null ? live.goalText : "";
         static readonly Color FlGround = new(0.035f, 0.09f, 0.09f, 0.88f);
+        /// <summary>The frame of a range car's or bystander's bar: nobody's side (the range panel's pale line onto a bystander).</summary>
+        static readonly Color RangeNeutral = new(0.92f, 0.92f, 0.88f);
 
         bool FlOn => host.Game != null && host.Game.Lab;
 
@@ -134,24 +140,31 @@ namespace Suborned.Play
                 if (g.FightOn) foreach (var cid in g.Combatants()) if (!have.Contains(cid) && g.GunOf(cid) is Gun cg && !cg.Down) fighters.Add((cid, cg)); // Keel: Combatants() is whom the bars go over (plus the cell)
                 // placement: bars first, then the forecast rows over them, then the badges; each steps clear of what is already placed (two
                 // fighters a body apart would otherwise draw their bars, rows and badges on top of each other)
-                var placed = new List<Rect>(); var barsAt = new List<(string id, Rect bar, Vector2 q)>();
-                Rect Place(Rect r, float dy) { for (int i = 0; i < 8; i++) { bool hit = false; foreach (var u in placed) if (u.Overlaps(r)) { hit = true; break; } if (!hit) break; r.y += dy; } placed.Add(r); return r; }
-                fighters.Sort((a2, b2) => { var wa = host.DrawnAt(a2.id); var wb = host.DrawnAt(b2.id); float ya = wa.HasValue && Proj(wa.Value, out var qa) ? qa.y : 0, yb = wb.HasValue && Proj(wb.Value, out var qb) ? qb.y : 0; return yb.CompareTo(ya); }); // nearest the camera first: it keeps its place
-                foreach (var (id, gun) in fighters)
+                // brief 029 (Sky on 0.2.34): the range's cars and bystanders wear the same bar (the engine's RangeCars / RangeBystanders health), neutral-framed
+                var bars = new List<(string id, int hp, int max, bool neutral)>(); foreach (var (fid, fg) in fighters) bars.Add((fid, fg.Health, fg.Max, false));
+                if (host.rangeMode)
                 {
-                    seen.Add(id); if (gun.Max <= 0) continue;
-                    if (!flHp.TryGetValue(id, out var st)) st = (gun.Health, -9f, gun.Health);
-                    if (gun.Health < st.hp) st = (gun.Health, now, st.hp); else if (gun.Health > st.hp) st = (gun.Health, -9f, gun.Health);
+                    foreach (var c in g.RangeCars()) if (c.State != "wrecked" && c.Max > 0 && !have.Contains(c.Id)) bars.Add((c.Id, c.Health, c.Max, true));
+                    foreach (var b in g.RangeBystanders()) if (!b.Down && b.State != "safe" && b.Max > 0 && !have.Contains(b.Id)) bars.Add((b.Id, b.Health, b.Max, true));
+                }
+                int rangeBars = 0; var placed = new List<Rect>(); var barsAt = new List<(string id, Rect bar, Vector2 q)>();
+                Rect Place(Rect r, float dy) { for (int i = 0; i < 8; i++) { bool hit = false; foreach (var u in placed) if (u.Overlaps(r)) { hit = true; break; } if (!hit) break; r.y += dy; } placed.Add(r); return r; }
+                bars.Sort((a2, b2) => { var wa = host.DrawnAt(a2.id); var wb = host.DrawnAt(b2.id); float ya = wa.HasValue && Proj(wa.Value, out var qa) ? qa.y : 0, yb = wb.HasValue && Proj(wb.Value, out var qb) ? qb.y : 0; return yb.CompareTo(ya); }); // nearest the camera first: it keeps its place
+                foreach (var (id, ghp, gmax, neutral) in bars)
+                {
+                    seen.Add(id); if (gmax <= 0) continue;
+                    if (!flHp.TryGetValue(id, out var st)) st = (ghp, -9f, ghp);
+                    if (ghp < st.hp) st = (ghp, now, st.hp); else if (ghp > st.hp) st = (ghp, -9f, ghp);
                     flHp[id] = st;
                     var w = host.DrawnAt(id); if (!w.HasValue || !Proj(w.Value + Vector3.up * 2.1f, out var q)) continue;
-                    var side = HandoverHost.SideColour(id); int hp = gun.Health, max = Mathf.Max(gun.Max, gun.Health);
+                    var side = neutral ? RangeNeutral : HandoverHost.SideColour(id); int hp = ghp, max = Mathf.Max(gmax, ghp);
                     int aft = after.TryGetValue(id, out var av) ? av : hp; float flashT = now - st.at; int flashFrom = flashT < 0.25f ? st.from : hp;
                     bool hatch = look.hatched; Color fill = look.creamFill ? Cream : side;
                     var top = new Vector2(q.x, q.y - 10); var barRect = BarRect(top, max, 8f, 5f, 2f);
                     { var outer = new Rect(barRect.xMin - 3, barRect.yMin - 3, barRect.width + 6 + (exposed.ContainsKey(id) ? 18 : 0), barRect.height + 6); var cl = Place(outer, -11f); barRect.y += cl.y - outer.y; }
                     flPaints.Add(pp => SegBar(pp, barRect, hp, max, aft, flashFrom, side, fill, 8f, 2f, hatch, now));
                     if (exposed.ContainsKey(id)) { var at = new Vector2(barRect.xMax + 9, barRect.center.y); flPaints.Add(pp => Exposed(pp, at, side)); }
-                    barsAt.Add((id, barRect, q));
+                    barsAt.Add((id, barRect, q)); if (neutral) rangeBars++;
                 }
                 foreach (var (id, barRect, q) in barsAt)
                 {
@@ -176,6 +189,7 @@ namespace Suborned.Play
                         }
                     }
                 }
+                RangeBarsDrawn = rangeBars;
                 var gone = new List<string>(); foreach (var kv in flHp) if (!seen.Contains(kv.Key)) gone.Add(kv.Key); foreach (var x in gone) flHp.Remove(x);
                 // ---- the F-number badges at our lines' target ends (HostFightLab's signal lines)
                 foreach (var (text, at) in host.LineBadges)

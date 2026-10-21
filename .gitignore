@@ -97,3 +97,6 @@ runs/goals/**/bin/
 runs/goals/**/obj/
 runs/crew/**/bin/
 runs/crew/**/obj/
+
+# web controls playground screenshots (brief 041)
+testbed/controls/shots/

@@ -7,7 +7,7 @@ namespace Suborned.Play
     /// buttons, labels only (no keycaps: Sky), a one-word title. Built with the less-reading HUD, drawn above everything while it is up.</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement menuVeil, menuCard; Label menuConvo, menuPlate, menuRight, menuClick, menuAim, menuFollow, menuHoldFire;
+        VisualElement menuVeil, menuCard; Label menuPreset, menuSettle, menuConvo, menuPlate, menuRight, menuClick, menuAim, menuFollow, menuHoldFire;
         const float MenuW = 340;
 
         void BuildMenu()
@@ -25,6 +25,9 @@ namespace Suborned.Play
                 var l = L(b, "button-label"); l.text = text; return l;
             }
             Btn("Resume", () => host.ResumeFromMenu());
+            // brief 041 (Sky's pick from the controls playground): the click scheme, and the leash camera's settle
+            menuPreset = Btn("", () => { var c = host.controls; c.preset = c.DoubleClick ? ControlPreset.Built : ControlPreset.DoubleClick; c.SaveSettings(); host.ControlsChanged(); });
+            menuSettle = Btn("", () => { var c = host.controls; c.leashSettle = !c.leashSettle; c.SaveSettings(); });
             // brief 032 and brief 030 (Sky 2026-10-21): the two settings, saved to the profile; a click steps them
             menuConvo = Btn("", () => { var c = host.controls; c.conversations = (ConversationScenes)(((int)c.conversations + 1) % 3); c.SaveSettings(); });
             menuPlate = Btn("", () => { var c = host.controls; c.actionPlate = !c.actionPlate; c.SaveSettings(); });
@@ -47,6 +50,8 @@ namespace Suborned.Play
             if (menuCard == null) return;
             bool open = host.MenuOpen; Show(menuVeil, open); Show(menuCard, open);
             if (!open) return;
+            Text(menuPreset, "Controls: " + (host.controls.DoubleClick ? "double click" : "as built"));
+            Text(menuSettle, "Camera settle: " + (host.controls.leashSettle ? "on" : "off"));
             Text(menuConvo, "Conversations: " + host.controls.conversations switch { ConversationScenes.Always => "always", ConversationScenes.Never => "never", _ => "first time" });
             Text(menuPlate, "Action plate: " + (host.controls.actionPlate ? "on" : "off"));
             Text(menuRight, "Right-click: " + (host.controls.quickAction ? "quick action" : "ring"));
@@ -56,7 +61,7 @@ namespace Suborned.Play
             Text(menuHoldFire, "Map fire: " + (host.controls.commanderHoldFire ? "while held" : "until down"));
             if (root.IndexOf(menuCard) != root.childCount - 1) { menuVeil.BringToFront(); menuCard.BringToFront(); }
             var size = root.panel.visualTree.layout.size; float W = float.IsNaN(size.x) || size.x <= 0 ? 1920 : size.x, H = float.IsNaN(size.y) || size.y <= 0 ? 1080 : size.y;
-            menuCard.style.left = (W - MenuW) / 2; menuCard.style.top = H * 0.16f; // brief 024: four more settings
+            menuCard.style.left = (W - MenuW) / 2; menuCard.style.top = H * 0.06f; // brief 024: four more settings
         }
     }
 }

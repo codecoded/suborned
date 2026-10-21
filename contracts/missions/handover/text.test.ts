@@ -57,6 +57,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [id, h] of Object.entries(t.hints.items)) push(`hints.${id}`, h.line, false, HINT_MAX);
   for (const [k, x] of Object.entries(t.toasts)) push(`toasts.${k}`, x.line, false, HINT_MAX);
   push('goingLoud.captured', t.goingLoud.captured);
+  for (const [k, x] of Object.entries(t.goingLoud.fails)) push(`goingLoud.fails.${k}`, x);
   for (const [k, x] of Object.entries(t.cancelCosts)) push(`cancelCosts.${k}`, x);
   const walk = (path: string, o: unknown) => { if (typeof o === 'string') push(path, o); else for (const [k, v] of Object.entries(o as object)) walk(`${path}.${k}`, v); };
   walk('activity', t.activity);

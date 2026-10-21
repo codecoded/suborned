@@ -20,3 +20,7 @@ Sky can open the range from the menu, spawn three police behind cover at 20 m, w
 ## Owners
 
 Keel (the synthetic site, start state, spawn presets, a `range` scenario set), Latch (scene, menu entry, spawn panel, controls), Glyph (one review of the panel and the numbers overlay), Suture (a 10-minute uncoached try against the done-check).
+
+## Sky's play notes on build 0.2.34 (2026-10-21)
+- **Click-through bug:** "when I select a menu option, it also registers as a place for the player to walk to underneath." A click on the range panel must never reach the world: no move order, no ring, no selection. Check every panel and HUD element that takes clicks, not only the range panel. Owner: Latch, next build.
+- Still open from 0.2.33: line labels stack where lines share a path; the Handover's "Take Vale alive." goal line shows in the range; cars and bystanders have no health bars.

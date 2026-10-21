@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Suborned.Sim;
 using UnityEngine;
+using Event = UnityEngine.Event;
 
 namespace Suborned.Play
 {
@@ -24,6 +25,15 @@ namespace Suborned.Play
         GUIStyle box, label, small, tag;
 
         void Awake() => h = GetComponent<HandoverHost>();
+
+        /// <summary>The panel's rect on screen (GUI space: origin top left, pixels) as last drawn, and the frame it was drawn on. Sky on 0.2.34: "when I
+        /// select a menu option, it also registers as a place for the player to walk to underneath" (IMGUI hears its click after the host's Update
+        /// has read the same press), so the host asks Blocks before any click reaches the street (HandoverHost.OverHud).</summary>
+        static Rect panelScreen; static int panelFrame = -9;
+        /// <summary>Named controls on screen (GUI space) as last drawn: the proof clicks them (RangeShots, the click-through check).</summary>
+        public static readonly Dictionary<string, Rect> Controls = new();
+        public static bool Blocks(Vector2 mouse) => Time.frameCount - panelFrame <= 2 && panelScreen.Contains(new Vector2(mouse.x, Screen.height - mouse.y));
+        void OnDisable() { panelFrame = -9; Controls.Clear(); }
 
         void Update()
         {
@@ -86,7 +96,12 @@ namespace Suborned.Play
             if (h == null || !h.rangeMode || h.Game == null) return;
             Styles(); var g = h.Game; var cam = UnityEngine.Camera.main;
             float k = Screen.height / 1080f; GUI.matrix = Matrix4x4.Scale(new Vector3(k, k, 1f)); float W = Screen.width / k;
-            // labels: each cover piece by kind, and each line of fire in the engine's plain words
+            var r = new Rect(W - 470, 120, 456, 420); // the panel, top right under the clock
+            panelScreen = new Rect(r.x * k, r.y * k, r.width * k, r.height * k); panelFrame = Time.frameCount;
+            // labels: each cover piece by kind, and each line of fire in the engine's plain words; placed clear of each other and of the panel
+            // (Sky on 0.2.33/0.2.34: labels stacked where lines share a path): a label that would overlap steps up or down a row, with a hairline
+            // back to its line; one with no room within three rows each way is left off (its line still shows)
+            placed.Clear(); placed.Add(r); if (Event.current.type == EventType.Repaint) lp = lm = ld = 0;
             if (cam)
             {
                 foreach (var o in g.S.Occluders)
@@ -97,17 +112,17 @@ namespace Suborned.Play
                     Tag(cam, at, kindW, k, small);
                 }
                 if (numbers && !h.Following)
-                    foreach (var l in Shown())
+                    foreach (var l in Ordered())
                     {
                         // the label sits a third of the way from the shooter, so two lines onto one target don't stack their words
                         var at = Vector3.Lerp(h.frame.World(l.From), h.frame.World(l.To), 0.38f) + Vector3.up * 1.4f;
                         Tag(cam, at, l.Text.Length > 0 ? l.Text : $"{l.Acc / 10}% · {l.DistanceCm / 100} m", k, tag);
                     }
             }
-            // the panel, top right under the clock
             bool car = Kinds[kind] == "car";
-            var r = new Rect(W - 470, 120, 456, 420); GUI.Box(r, GUIContent.none, box);
-            GUILayout.BeginArea(new Rect(r.x + 12, r.y + 10, r.width - 24, r.height - 20));
+            GUI.Box(r, GUIContent.none, box);
+            var area = new Rect(r.x + 12, r.y + 10, r.width - 24, r.height - 20);
+            GUILayout.BeginArea(area);
             GUILayout.Label("FIGHT RANGE", label);
             kind = GUILayout.Toolbar(kind, KindWords);
             if (car)
@@ -126,7 +141,8 @@ namespace Suborned.Play
             {
                 GUILayout.BeginHorizontal(); GUILayout.Label("How many", small, GUILayout.Width(80)); count = GUILayout.Toolbar(count - 1, new[] { "1", "2", "3", "4", "5", "6" }) + 1; GUILayout.EndHorizontal();
                 place = GUILayout.Toolbar(place, PlaceWords);
-                if (GUILayout.Button($"Spawn {count} {KindWords[kind].ToLowerInvariant()} · {PlaceWords[place]}"))
+                bool spawnHit = GUILayout.Button($"Spawn {count} {KindWords[kind].ToLowerInvariant()} · {PlaceWords[place]}"); Mark("spawn", area, k);
+                if (spawnHit)
                 {
                     var o = new Order { Do = "spawn", Target = Kinds[kind], To = Places[place], Count = count };
                     bool ok = h.Issue(o); last = ok ? $"spawned {count} {Kinds[kind]} at {Places[place]}" : $"refused: {h.Status}"; lastAt = Time.unscaledTime;
@@ -140,7 +156,7 @@ namespace Suborned.Play
             int pr = h.Fights.preset == "lab" ? 1 : 0, np = GUILayout.Toolbar(pr, new[] { "Today", "Lab" }); GUILayout.EndHorizontal();
             if (np != pr) { h.Fights.Load(np == 1 ? "lab" : "today"); h.Begin(); }
             GUILayout.BeginHorizontal(); GUILayout.Label("Fight mode", small, GUILayout.Width(80));
-            int fm = System.Array.IndexOf(FightLab.Modes, h.Fights.fightMode); int nf = GUILayout.Toolbar(Mathf.Max(0, fm), new[] { "Realtime", "Freeze", "Target" }); GUILayout.EndHorizontal();
+            int fm = System.Array.IndexOf(FightLab.Modes, h.Fights.fightMode); int nf = GUILayout.Toolbar(Mathf.Max(0, fm), new[] { "Realtime", "Freeze", "Target" }); Mark("fightMode", area, k); GUILayout.EndHorizontal();
             if (nf != fm) h.Fights.fightMode = FightLab.Modes[nf];
             // the two fire settings (the pause menu's own), side by side here so Sky can compare them on the range
             GUILayout.BeginHorizontal(); GUILayout.Label("Agents near", small, GUILayout.Width(80));
@@ -150,9 +166,10 @@ namespace Suborned.Play
             int hf = h.controls.commanderHoldFire ? 1 : 0, nhf = GUILayout.Toolbar(hf, new[] { "Until down", "While held" }); GUILayout.EndHorizontal();
             if (nhf != hf) { h.controls.commanderHoldFire = nhf == 1; h.controls.SaveSettings(); }
             GUILayout.BeginHorizontal(); h.rangeHalf = GUILayout.Toggle(h.rangeHalf, " ½× time"); numbers = GUILayout.Toggle(numbers, " Numbers"); if (GUILayout.Button("Restart (R)")) h.Begin(); GUILayout.EndHorizontal();
-            GUILayout.Label(Tally(g) + (Time.unscaledTime - lastAt < 4f ? " · " + last : ""), small);
+            GUILayout.Label(Tally(g) + (Time.unscaledTime - lastAt < 4f ? " · " + last : ""), small); Mark("tally", area, k);
             GUILayout.EndArea();
             GUI.matrix = Matrix4x4.identity;
+            if (Event.current.type == EventType.Repaint) { LabelsPlaced = lp; LabelsMoved = lm; LabelsDropped = ld; }
         }
 
         /// <summary>One line: hostiles up, bystanders on the floor, fled and witnesses, cars standing and burning.</summary>
@@ -167,11 +184,48 @@ namespace Suborned.Play
             return s;
         }
 
-        static void Tag(UnityEngine.Camera cam, Vector3 world, string text, float k, GUIStyle st)
+        readonly List<Rect> placed = new(); static Texture2D hair;
+        /// <summary>The last repaint's labels: placed, stepped off their point, left off for room (the range proof reads them).</summary>
+        public static int LabelsPlaced, LabelsMoved, LabelsDropped; int lp, lm, ld;
+
+        /// <summary>A control's rect on screen (GUI space, pixels) as GUILayout placed it in the area, on the repaint (the proof clicks it).</summary>
+        static void Mark(string name, Rect area, float k)
+        {
+            if (Event.current.type != EventType.Repaint) return;
+            var l = GUILayoutUtility.GetLastRect(); Controls[name] = new Rect((area.x + l.x) * k, (area.y + l.y) * k, l.width * k, l.height * k);
+        }
+
+        /// <summary>The selected agent's lines first (they keep their place when labels crowd), then the rest as shown.</summary>
+        List<FireLine> Ordered()
+        {
+            var all = Shown(); int sel = -1; for (int i = 0; i < 4; i++) if (h.Selected[i]) { sel = i; break; }
+            if (sel < 0) return all; string me = Op.Name((OpId)sel);
+            var l = all.FindAll(x => x.Shooter == me); l.AddRange(all.FindAll(x => x.Shooter != me)); return l;
+        }
+
+        /// <summary>A label at a world point, stepped clear of the labels already placed this frame: up a row, down a row, then two, then three;
+        /// moved, a hairline joins it to its point; no room, it is left off.</summary>
+        void Tag(UnityEngine.Camera cam, Vector3 world, string text, float k, GUIStyle st)
         {
             var s = cam.WorldToScreenPoint(world); if (s.z <= 0f) return;
-            var c = new GUIContent(text); var size = st.CalcSize(c); var x = s.x / k - size.x / 2f; var y = (Screen.height - s.y) / k - size.y / 2f;
-            GUI.Label(new Rect(x, y, size.x, size.y), c, st);
+            var c = new GUIContent(text); var size = st.CalcSize(c); size.x += 4f; float ax = s.x / k, ay = (Screen.height - s.y) / k;
+            var at = new Rect(ax - size.x / 2f, ay - size.y / 2f, size.x, size.y); float row = size.y + 3f;
+            Rect? free = null;
+            foreach (var step in new[] { 0, -1, 1, -2, 2, -3, 3 })
+            {
+                var cand = new Rect(at.x, at.y + step * row, at.width, at.height); bool hit = false;
+                foreach (var u in placed) if (u.Overlaps(cand)) { hit = true; break; }
+                if (!hit) { free = cand; break; }
+            }
+            bool rep = Event.current.type == EventType.Repaint;
+            if (free is not Rect f) { if (rep) ld++; return; }
+            placed.Add(f); if (rep) { lp++; if (Mathf.Abs(f.y - at.y) > 0.5f) lm++; }
+            if (Mathf.Abs(f.y - at.y) > 0.5f && Event.current.type == EventType.Repaint)
+            {
+                if (!hair) { hair = new Texture2D(1, 1); hair.SetPixel(0, 0, new Color(0.96f, 0.93f, 0.85f, 0.7f)); hair.Apply(); }
+                float y0 = f.y > ay ? ay : f.yMax, y1 = f.y > ay ? f.y : ay; GUI.DrawTexture(new Rect(ax - 0.5f, y0, 1f, Mathf.Max(0f, y1 - y0)), hair);
+            }
+            GUI.Label(f, c, st);
         }
     }
 }

@@ -70,6 +70,44 @@ namespace Suborned.Sim
                 }, lab ? LabStart() : null);
             }
 
+            // preview only (Latch, 0.2.33; engine version unchanged): the chip on a car counts to disabled, the car's own "down", from its full health before any shot
+            // (a car not yet shot has no record: the preview reads a fresh one), then to burning; the time at the weapon's cadence matches the run
+            foreach (var (lab, drawn) in new[] { (false, true), (false, false), (true, true) })
+            {
+                string id = "CAR-PREVIEW" + (lab ? "-LAB" : "") + (drawn ? "" : "-HOLSTERED");
+                Add(id, "—", "the fire chip on a car not yet shot counts shots to disabled (car.target.health to disabledAt" + (lab ? ", ×healthScale" : "") + "), not to 0; TicksToDown at the weapon's cadence" + (drawn ? "" : " from holstered (draw and aimNew)") + " is when the run disables it; disabled, the chip counts to burning", r =>
+                {
+                    var g = r.G; const string C = "car:official"; int k = g.HealthScale;
+                    var car = g.CarAt(C)!.Value;
+                    var spot = SpotFor(r, r.Op(Scout).Pos, car, 800, 1200); if (!r.Is(spot.HasValue, "a spot 8–12 m from the official car with a line")) return;
+                    r.To(r.SendTo(Scout, spot!.Value));
+                    if (drawn) { r.Do(Scout, "draw"); r.Wait(g.DrawT + 1); }
+                    r.Is(g.CarOf(C) == null, "not yet shot: the car has no record (the preview reads a fresh one)");
+                    var pv = g.PreviewFire(OpId.Scout, C);
+                    int dmg = pv.Damage, toDisabled = (g.R.HealthCar * k - g.R.CarDisabledAt * k + dmg - 1) / dmg;
+                    r.Eq((pv.Refused, pv.DownIs, pv.Health, pv.Max), ("", "disabled", g.R.HealthCar * k, g.R.HealthCar * k), $"the chip: a car at full health ({g.R.HealthCar * k}), down = disabled");
+                    r.Eq(pv.HitsToDown, toDisabled, $"hits to disabled: ({g.R.HealthCar}−{g.R.CarDisabledAt})×{k} at {dmg} a hit");
+                    r.Is(pv.HitsToDown > 1 && pv.ShotsToDown >= pv.HitsToDown, $"more than one shot: {pv.ShotsToDown} shots for {pv.HitsToDown} hits");
+                    var w = r.Op(Scout).Gun.W!;
+                    int first = drawn ? 1 + g.AimNewT : g.DrawT + g.AimNewT; // drawn: the order aims on the next tick; holstered: the draw, then aimNew
+                    r.Eq(pv.TicksToDown, first + (pv.ShotsToDown - 1) * w.Every, $"time to disabled: the first shot after {first} ticks, then one each {w.Every} ticks");
+                    int t0 = g.Tick;
+                    r.Is(r.Fire(Scout, C), "fire on the official car taken");
+                    if (!r.Is(r.Until(() => g.CarDisabled(C) || g.Over, T(120)) && g.CarDisabled(C), "it is disabled")) return;
+                    var cv = g.CarOf(C)!; var at = r.Shots().Where(x => x.by == Scout && x.target == C).ToList();
+                    r.Eq(at.Count, pv.ShotsToDown, "the run disabled it in the chip's shots");
+                    r.Eq(at.Count(x => x.hit), pv.HitsToDown, "with the chip's hits");
+                    r.Eq(cv.DisabledAt - t0, pv.TicksToDown, $"at the chip's time ({(pv.TicksToDown + Game.Hz - 1) / Game.Hz} s)");
+                    var pb = g.PreviewFire(OpId.Scout, C);
+                    r.Eq((pb.DownIs, pb.HitsToDown), ("burns", (cv.Gun.Health + pb.Damage - 1) / pb.Damage), "disabled: the chip counts on to burning (health to 0)");
+                    int t1 = g.Tick, n0 = at.Count;
+                    if (!r.Is(r.Until(() => g.CarBurning(C) || g.Over, T(120)) && g.CarBurning(C), "it burns")) return;
+                    var more = r.Shots().Where(x => x.by == Scout && x.target == C).Count() - n0;
+                    r.Eq(more, pb.ShotsToDown, "it burns in the chip's shots");
+                    r.Eq(cv.BurningAt - t1, pb.TicksToDown, "at the chip's time");
+                }, lab ? LabStart() : null);
+            }
+
             Add("CAR-VALE", "—", "§10.7: Vale at the official car: the card's fail is vale-dead (always the hold); disabled, Vale gets out beside it; the blast kills him: vale-dead", r =>
             {
                 var g = r.G; var car = g.CarAt("car:official")!.Value;

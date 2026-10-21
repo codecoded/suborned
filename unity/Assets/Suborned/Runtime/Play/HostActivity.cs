@@ -188,6 +188,7 @@ namespace Suborned.Play
 
         void WorldBeat(PlayText.EventText e, string outcome, string who, Feedback kind, int most)
         {
+            if (rangeMode && e.Id != "going-loud") return; // brief 029 (Sky on 0.2.34): the range has no mission, so none of the Handover's story lines (the start's "The square looks ordinary")
             // a city event that repeats (a drawn weapon seen each tick, gunfire) speaks at most once every 15 s
             if (e.Kind == "world" && beatAt.TryGetValue(e.Id, out var last) && Game.Tick - last < 15 * Game.Hz) return;
             beatAt[e.Id] = Game.Tick;
@@ -346,7 +347,7 @@ namespace Suborned.Play
         /// 10 s; a person who has just seen a shot (the memory saw-gunfire written) says so (saw-gunfire), Inez and the guard by name.</summary>
         void CityBeats()
         {
-            if (Text == null) return;
+            if (Text == null || rangeMode) return; // brief 029 (Sky on 0.2.34): no Handover lines in the fight range
             var ws = Game.Walkers;
             if (crowdSt == null || crowdSt.Length != ws.Count) { crowdSt = new string[ws.Count]; for (int i = 0; i < ws.Count; i++) crowdSt[i] = ws[i].St; }
             string bestKind = null; long bestD = long.MaxValue;
@@ -379,7 +380,7 @@ namespace Suborned.Play
         /// <summary>The text's clock beats with no log line of their own (the 5:30 chime, the 5:40 last turn), on the tick they fall.</summary>
         void ClockBeats()
         {
-            if (Text == null) return;
+            if (Text == null || rangeMode) return; // brief 029: the Handover's clock lines ("The square looks ordinary") never play in the range
             foreach (var e in Text.Events.Values)
                 if (e.Clock.Length > 0 && e.Log.Count == 0 && Game.Tick == ClockTick(e.Clock)) WorldBeat(e, null, "", Feedback.Info, 1);
         }

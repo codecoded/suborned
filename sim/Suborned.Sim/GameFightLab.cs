@@ -47,6 +47,14 @@ namespace Suborned.Sim
         public string Gait = "stand"; public bool TargetRunning;
         public bool HasEnd; public Pt EndAt; public int AccEnd, PipsEnd, ShotsToDownEnd = -1;
         public int TrailShooting, TrailHit, TrailDown; public bool Untraced; // the price: +T once per shooting (0 once paid), per person hit (0 once hit), per down; untraced in the final fight
+        /// <summary>Preview only (Latch, 0.2.33 shots; engine version unchanged): what "down" means for this target: "down" a person or a camera (health to 0), "disabled"
+        /// a car not yet disabled (health to car.target.disabledAt ×healthScale: it stops, its occupants get out), "burns" a disabled car (to 0).
+        /// HitsToDown, ShotsToDown and ShotsToDownEnd count to it.</summary>
+        public string DownIs = "down";
+        /// <summary>Preview only: ticks from now to the shot that takes the target down (DownIs), standing where the agent stands: the first shot
+        /// (drawn: its next ready tick, a new target aimed on the next tick and waiting aimNew; holstered: the draw and aimNew), then one each cadence; -1 when it can't
+        /// hit, or walks in first. Today's pistol: a shot each pistol.every.</summary>
+        public int TicksToDown = -1;
     }
 
     /// <summary>A volley's forecast "if they stand" (brief 027 §1.3 target mode): shot by shot, from the agent's aim on the target now. Read-only.</summary>
@@ -383,6 +391,15 @@ namespace Suborned.Sim
             walk = !op.Driven || ignoreDriven; return "";
         }
 
+        /// <summary>Hits to "down" (FirePreview.DownIs) at `dmg` a hit: a car not yet disabled counts to car.target.disabledAt ×healthScale, at least
+        /// one; anything else (a disabled car, a person, a camera) to 0.</summary>
+        int HitsToDown(string t, Gun tg, int dmg, out string downIs)
+        {
+            downIs = "down"; int left = tg.Health;
+            if (IsCarId(t)) { if (CarDisabled(t)) downIs = "burns"; else { downIs = "disabled"; left = tg.Health - R.CarDisabledAt * HealthScale; } }
+            return Math.Max(1, (left + dmg - 1) / dmg);
+        }
+
         /// <summary>Brief 027 P1, the chip: pips, damage a hit, hits and shots to down, charge a shot, the walk into range (fire.close) and the
         /// price, for agent `op` on `target` now. Works with the lab off too (pips 0, today's chance). Read-only: nothing changes.</summary>
         /// <summary>Brief 030: the same chip for a driven agent as if the engine walked it in (the host's preview of the walk-in for a fire while
@@ -399,7 +416,7 @@ namespace Suborned.Sim
             var tg = GunOf(t)!; var at = PosOf(t)!.Value; var w = g.W!;
             long d = Dist(op.Pos, at); p.DistanceCm = (int)Math.Min(int.MaxValue, d);
             p.Health = tg.Health; p.Max = tg.Max;
-            p.Damage = w.DamageAt(d); p.HitsToDown = Math.Max(1, (tg.Health + p.Damage - 1) / p.Damage);
+            p.Damage = w.DamageAt(d); p.HitsToDown = HitsToDown(t, tg, p.Damage, out p.DownIs);
             p.ChargePerShot = Lab && LabCharge ? w.Charge : 0; p.TargetChargePerShot = Lab && LabCharge ? w.TargetCharge : 0;
             p.Band = d <= R.PointBlankCm ? "point" : d <= w.EffCm ? "eff" : d <= w.MaxCm ? "long" : "out";
             p.Line = d <= w.MaxCm && Sees(op.Pos, at);
@@ -424,7 +441,7 @@ namespace Suborned.Sim
                 }
                 p.StopAt = q2; p.WalkTicks = k; p.WalkExposedTo.AddRange(exposed);
                 from = q2; d = Dist(from, at); p.DistanceCm = (int)Math.Min(int.MaxValue, d);
-                p.Damage = w.DamageAt(d); p.HitsToDown = Math.Max(1, (tg.Health + p.Damage - 1) / p.Damage);
+                p.Damage = w.DamageAt(d); p.HitsToDown = HitsToDown(t, tg, p.Damage, out p.DownIs);
                 p.Band = d <= R.PointBlankCm ? "point" : d <= w.EffCm ? "eff" : d <= w.MaxCm ? "long" : "out";
                 p.Line = d <= w.MaxCm && Sees(from, at); p.Moving = false; p.High = LevelOf(from) > LevelOf(at); p.Cover = CoverMod(t, at, from) < 1000;
             }
@@ -434,6 +451,11 @@ namespace Suborned.Sim
             int ToDown(int acc) { if (acc <= 0) return -1; int a = start, hits = 0, shots = 0; while (hits < p.HitsToDown && shots < 1000) { shots++; a += acc; if (a >= 1000) { a -= 1000; hits++; } } return shots; }
             if (p.Line) { p.Acc = ShotAcc(g, t, from, at, d, gait, vale, out int pips); p.Pips = pips; p.ShotsToDown = ToDown(p.Acc); }
             else p.ShotsToDown = -1;
+            if (!walk && p.ShotsToDown > 0) // preview only: the time to down at the weapon's cadence (Aim: a new target waits aimNew; Shoot: every)
+            {
+                int first = !g.Drawn || g.HolsterAt >= 0 ? DrawT + AimNewT : Math.Max(0, Math.Max(g.DrawReady, g.Target == t ? g.NextShot : Math.Max(g.NextShot, Tick + 1 + AimNewT)) - Tick); // an order given now aims on the next tick
+                p.TicksToDown = first + (p.ShotsToDown - 1) * w.Every;
+            }
             if (!walk && op.Walk != null) // §8.8: now → on arrival
             {
                 var e = op.Walk.End; long de = Dist(e, at);

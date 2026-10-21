@@ -275,12 +275,13 @@ namespace Suborned.Play
                 if (mouse.leftButton.wasPressedThisFrame) { if (rs.Hover >= 0) RingTakeTry(rs.Hover, "left"); else if (rs.Always && middle) RingTakeTry(rs.Lit, "left"); else CloseRing(); return true; }
                 if (mouse.rightButton.wasPressedThisFrame)
                 {
+                    if (controls.DoubleClick && !rs.Always) return RingRightDbl(p); // brief 041: the wedge under it, else close (a quick release elsewhere opens that ring)
                     if (rs.Always) // brief 038 §4.1: a second right click on the same target takes the lit way; on another target the ring moves there; on the ground it closes
                     {
                         if (rs.Hover >= 0) { RingTakeTry(rs.Hover, "right"); return true; }
                         var t2 = middle ? rs.Plan.T : TargetAt(p);
                         if (t2 != null && SameTarget(t2, rs.Plan.T)) { RingTakeTry(rs.Lit, "right"); return true; }
-                        CloseRing(); if (t2 != null && t2.Kind != "op" && !HudToolkit.Blocks(p)) RightRing(t2, p);
+                        CloseRing(); if (t2 != null && t2.Kind != "op" && !OverHud(p)) RightRing(t2, p);
                         return true;
                     }
                     if (rs.Hover >= 0 && rs.Sticky) RingTakeTry(rs.Hover, "right"); else CloseRing(); return true;
@@ -295,11 +296,13 @@ namespace Suborned.Play
                 if (CtrlFireRing(t, p)) return true; // brief 038 §4.3: Ctrl + right opens the ring with Fire held, never an instant shot
                 bool shift = controls.Held(kb, PlayAction.AddToGroup), fire = IsFire(t) && (controls.quickAction || PressFires(t));
                 if (controls.panelOnRight || (Picked >= 0 && !shift) || fire) { PointerRight(p); return false; } // Fire acts on press (the going-loud hold and the sweep belong to it)
+                if (controls.DoubleClick) { RightTapBegin(t, p); return true; } // brief 041: the ring opens on a quick release (a hold opens nothing)
                 if (!controls.quickAction) { RightRing(t, p); return true; } // Sky 2026-10-21: a right click opens the ring at the target, the likely way lit
                 if (shift && t != null && t.Kind != "op") { ContextPlan plan = null; if (Guard("panel", () => plan = ContextFor(t, p)) && plan != null) { OpenRing(plan, p, false); if (Ring != null) Ring.Sticky = true; } return true; } // Shift + right: the ring at once, to look
                 rTarget = t; rPressAt = p; rPressT = Time.unscaledTime; rPending = true; rRingThisPress = false;
                 return true;
             }
+            if (RightTapFrame(mouse, p)) return true; // brief 041: the tap's release
             if (rPending)
             {
                 if (!mouse.rightButton.isPressed) { rPending = false; ActContext(rTarget, rPressAt); return true; } // a click: the one act

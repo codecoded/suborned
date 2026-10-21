@@ -1,11 +1,14 @@
-// The game build (Aster, 2026-10-17): `bun run game` opens out/build/play/The Suborned.app, building it first when it is missing or older
-// than the last commit or any input; `bun run game:build` builds whatever its age; `bun run game:check` proves the built app (the scenario
+// The game build (Aster, 2026-10-17): `bun run game` opens out/build/play/The Suborned.app, building it first when it is missing or an input changed; `bun run game:build` builds whatever its age; `bun run game:check` proves the built app (the scenario
 // match against headless, then the briefing, play and pause-menu shots with frame times, into out/build/play/proof/).
 //
 // How it builds (Unity holds a lock on the project while the Editor has it open, so a batch build cannot run beside it):
 //   Editor closed: Unity in batch mode, -executeMethod Suborned.World.Play.GameBuild.Cli (log: out/build/play/build.log).
 //   Editor open:   through the Editor (`unity cmd menu "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
 //                  refuses and says so (a build would end the session). Either way the result is out/build/play/build.json.
+// Staleness is by content (Splice, 2026-10-21): the app is rebuilt only when an input (unity/Assets, ProjectSettings, Packages, the icon, the engine
+// DLL) differs from what the last build read (out/build/play/inputs.json, a fingerprint of blob ids); a commit that only records built files
+// changes nothing. After a rebuild for play only the short draw check runs (`-drawCheck`: one frame, windowed, a few seconds); `--check` is the
+// full proof. A running game is never built under: it says to close it. `--dry-run` says whether it would build and stops.
 // `bun run game:pack` zips the app for another Mac (TheSuborned-0.2.<build>.zip); `bun run game:send [device]` packs and sends it by
 // Taildrop (default the MacBook Air, skys-macbook-air-1; --dry-run prints the command) and logs it in runs/builds/builds.json.
 // Build numbers: tools/game/version.json (committed) counts them; every successful build takes the next (GameBuild.Version), so the app's
@@ -15,6 +18,7 @@
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
@@ -41,23 +45,61 @@ const has = (f: string) => args.includes(f);
 const run = (cmd: string, a: string[], opts: { quiet?: boolean } = {}) => spawnSync(cmd, a, { cwd: ROOT, encoding: 'utf8', stdio: opts.quiet ? 'pipe' : 'inherit' });
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-/** Newest input: the last commit, and every file under unity/Assets (scripts, the scene, StreamingAssets/sim, the kit), ProjectSettings,
- *  Packages, and the icon. */
-function newestInput(): { at: number; what: string } {
-  let at = 0, what = '';
-  const commit = Number(run('git', ['log', '-1', '--format=%ct'], { quiet: true }).stdout.trim()) * 1000;
-  if (commit > at) { at = commit; what = 'the last commit'; }
+/** What a build reads (Splice, 2026-10-21): the Unity project's Assets, ProjectSettings and Packages, and the icon. tools/game/version.json is an
+ *  output of a build (its counter), so it is not here. */
+const INPUTS = ['unity/Assets', 'unity/ProjectSettings', 'unity/Packages', 'tools/game/app-icon.png'];
+/** The engine DLL and its inputs are git-ignored but part of the app, so they are read by content too. */
+const IGNORED_INPUTS = [join(UNITY, 'Assets', 'Suborned', 'Sim')];
+const INPUTS_JSON = join(DIR, 'inputs.json');
+
+/** A fingerprint of the inputs by content, not by time (a commit that only records files already built changes nothing): every git file under
+ *  INPUTS by its blob id (the index's, or the working file's when it differs or is untracked), plus the ignored engine files by sha256. */
+function inputFiles(): Map<string, string> {
+  const git = (a: string[], input?: string) => spawnSync('git', a, { cwd: ROOT, encoding: 'utf8', input, maxBuffer: 1 << 28 }).stdout ?? '';
+  const files = new Map<string, string>();
+  for (const l of git(['ls-files', '-s', '-z', '--', ...INPUTS]).split('\0').filter(Boolean)) { const m = l.match(/^\d+ ([0-9a-f]+) \d\t(.+)$/); if (m) files.set(m[2], m[1]); }
+  const dirty = [...git(['diff-files', '--name-only', '-z', '--', ...INPUTS]).split('\0'), ...git(['ls-files', '-o', '--exclude-standard', '-z', '--', ...INPUTS]).split('\0')].filter(Boolean);
+  const live = dirty.filter(f => existsSync(join(ROOT, f)));
+  for (const f of dirty) if (!live.includes(f)) files.set(f, 'deleted');
+  if (live.length) { const ids = git(['hash-object', '--stdin-paths'], live.join('\n') + '\n').trim().split('\n'); live.forEach((f, i) => files.set(f, ids[i])); }
   const walk = (d: string) => {
+    if (!existsSync(d)) return;
     for (const e of readdirSync(d, { withFileTypes: true })) {
       const p = join(d, e.name);
-      if (e.isDirectory()) walk(p);
-      else { const m = statSync(p).mtimeMs; if (m > at) { at = m; what = relative(ROOT, p); } }
+      if (e.isDirectory()) walk(p); else files.set(relative(ROOT, p), 'sha256:' + createHash('sha256').update(readFileSync(p)).digest('hex'));
     }
   };
-  for (const d of ['Assets', 'ProjectSettings', 'Packages']) if (existsSync(join(UNITY, d))) walk(join(UNITY, d));
-  const icon = join(ROOT, 'tools', 'game', 'app-icon.png');
-  if (existsSync(icon) && statSync(icon).mtimeMs > at) { at = statSync(icon).mtimeMs; what = 'tools/game/app-icon.png'; }
-  return { at, what };
+  for (const d of IGNORED_INPUTS) walk(d);
+  return files;
+}
+function fingerprint(files: Map<string, string>): string {
+  return createHash('sha256').update([...files].sort(([a], [b]) => (a < b ? -1 : 1)).map(([f, h]) => `${f}\t${h}`).join('\n')).digest('hex');
+}
+/** Written after every successful build: the fingerprint of the inputs the app was built from (and the files, to say what changed later). */
+function recordInputs(): void {
+  const files = inputFiles();
+  Bun.write(INPUTS_JSON, JSON.stringify({ schema: 'suborned.build-inputs/1', fingerprint: fingerprint(files), files: Object.fromEntries(files) }) + '\n');
+}
+/** Why the app is out of date, or '' when no input changed since it was built. */
+function inputsChanged(): string {
+  const files = inputFiles();
+  if (existsSync(INPUTS_JSON)) {
+    const rec = JSON.parse(readFileSync(INPUTS_JSON, 'utf8'));
+    if (rec.fingerprint === fingerprint(files)) return '';
+    const was: Record<string, string> = rec.files ?? {};
+    const diff = [...new Set([...Object.keys(was), ...files.keys()])].filter(f => was[f] !== files.get(f));
+    return `${diff[0] ?? 'an input'}${diff.length > 1 ? ` and ${diff.length - 1} more` : ''} changed since the build`;
+  }
+  // an app built before the record: what differs from the commit it was built on, and is newer than the build
+  const sha = existsSync(STAMP) ? JSON.parse(readFileSync(STAMP, 'utf8')).sha : '';
+  if (!sha) return 'no record of what the app was built from';
+  const git = (a: string[]) => run('git', a, { quiet: true }).stdout.split('\0').filter(Boolean);
+  const moved = [...git(['diff', '--name-only', '-z', sha, '--', ...INPUTS]), ...git(['ls-files', '-o', '--exclude-standard', '-z', '--', ...INPUTS])];
+  const at = statSync(STAMP).mtimeMs;
+  const newer = moved.find(f => !existsSync(join(ROOT, f)) || statSync(join(ROOT, f)).mtimeMs > at);
+  if (newer) return `${newer} changed since the build`;
+  recordInputs(); // current: keep the record from here on
+  return '';
 }
 
 function built(): { ok: boolean; at: number; why: string } {
@@ -102,6 +144,7 @@ async function build(): Promise<boolean> {
   }
   const b = built();
   if (!b.ok || b.at <= before) { console.error(`game: the build did not finish (${b.why || 'no new build.json'}); see out/build/play/build.json and build.log or the Editor console`); return false; }
+  recordInputs();
   const j = JSON.parse(readFileSync(STAMP, 'utf8'));
   console.log(`game: built ${j.version ? `Build ${j.version} (${j.recording}, sim ${j.sim}, ${j.sha}${j.dirty ? '+' : ''}) ` : ''}in ${j.seconds} s, engine ${j.engine}; ${j.post}`);
   return true;
@@ -130,7 +173,7 @@ function check(): boolean {
  *  (the fight gave no hostile in range) is reported, not failed. */
 function inputChecks(pj: any): boolean {
   let pass = true;
-  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars']) {
+  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'leash']) {
     const r = pj?.frames?.[k];
     if (r === undefined) { console.log(`game: ${k}: not in this proof (an older build)`); continue; }
     const { ok, ...rest } = r ?? {};
@@ -220,10 +263,25 @@ function giveBackNumber(): void {
   const v = JSON.parse(readFileSync(f, 'utf8')); if (typeof v.build === 'number' && v.build > 0) { v.build -= 1; Bun.write(f, JSON.stringify(v, null, 4) + '\n'); }
 }
 
-/** A fresh build is proved to draw before it is trusted: a second player build in one Editor domain can ship a player whose URP pipeline
- *  fails to start (a black screen; GameBuild.cs). A blank proof gets one more build, then the proof again. */
-async function buildDrawn(): Promise<boolean> {
-  if (!(await build())) return false;
+/** The cheap proof that a fresh build draws (Splice, 2026-10-21; GameBoot.DrawCheck, `-drawCheck`; plain `bun run game` only): the player in a window for a few seconds,
+ *  one frame tested for being a picture, no shot tour, no frame times. `bun run game:check` still takes the full proof. */
+function drawCheck(): { status: string; seconds: number } {
+  const exe = join(APP, 'Contents', 'MacOS', 'The Suborned');
+  const bin = existsSync(exe) ? exe : join(APP, 'Contents', 'MacOS', readdirSync(join(APP, 'Contents', 'MacOS'))[0]);
+  const out = join(DIR, 'drawcheck');
+  run('mkdir', ['-p', out]);
+  run('rm', ['-f', join(out, 'proof.json')]);
+  const t0 = Date.now();
+  spawnSync(bin, ['-drawCheck', out, '-windowed', '-logFile', join(out, 'player.log')], { encoding: 'utf8', timeout: 90000 });
+  const f = join(out, 'proof.json');
+  return { status: existsSync(f) ? JSON.parse(readFileSync(f, 'utf8')).status : 'no result', seconds: Math.round((Date.now() - t0) / 100) / 10 };
+}
+
+/** The app is open in a Finder session: a build would replace the bundle under it. */
+function appRunning(): boolean { return run('pgrep', ['-f', join(APP, 'Contents', 'MacOS')], { quiet: true }).status === 0; }
+
+/** The full proof after a build (the tour, the frame times); a blank frame gets one more build under the same number, then the proof again. */
+async function fullDrawn(): Promise<boolean> {
   const first = proof();
   if (first.pj?.status !== 'blank') return true;
   console.log('game: the build drew a blank frame (the second-build black screen); building once more, under the same number…');
@@ -234,12 +292,33 @@ async function buildDrawn(): Promise<boolean> {
   return true;
 }
 
+/** A fresh build is checked to draw before it is trusted: a second player build in one Editor domain can ship a player whose URP pipeline
+ *  fails to start (a black screen; GameBuild.cs). A blank frame gets one more build, then the check again. The check is the short one
+ *  (drawCheck); `--build`, `--check`, `--pack` and `--send` keep the full proof. */
+async function buildDrawn(why: string, quick: boolean): Promise<boolean> {
+  if (appRunning()) { console.error('game: the game is open and out of date (' + why + '); close it and run again. A build would replace the app under it.'); return false; }
+  const next = (JSON.parse(existsSync(join(ROOT, 'tools', 'game', 'version.json')) ? readFileSync(join(ROOT, 'tools', 'game', 'version.json'), 'utf8') : '{}').build ?? 0) + 1;
+  console.log(`game: building 0.2.${next} (${why}), about a minute, then the game opens`);
+  if (!(await build())) return false;
+  if (!quick) return fullDrawn(); // `--build`, `--check`, `--pack`: the full proof right after the build (bun run batch reuses it)
+  const first = drawCheck();
+  console.log(`game: draw check ${first.status} in ${first.seconds} s`);
+  if (first.status !== 'blank') return first.status === 'ok' || (console.error(`game: the draw check gave ${first.status}; see out/build/play/drawcheck/player.log`), false);
+  console.log('game: the build drew a blank frame (the second-build black screen); building once more, under the same number…');
+  giveBackNumber();
+  if (!(await build())) return false;
+  const again = drawCheck();
+  console.log(`game: draw check ${again.status} in ${again.seconds} s`);
+  if (again.status !== 'ok') { console.error('game: the rebuild did not draw either; see out/build/play/drawcheck/player.log'); return false; }
+  return true;
+}
+
 if (has('--signing-check')) process.exit(signingCheck() ? 0 : 1);
-const b = built(), inp = newestInput();
-const stale = !b.ok ? b.why : inp.at > b.at ? `older than ${inp.what}` : '';
+const b = built();
+const stale = !b.ok ? b.why : inputsChanged();
+if (has('--dry-run') && !has('--send') && (stale || has('--build'))) { console.log(`game: would build (${has('--build') ? 'forced' : stale})`); process.exit(0); }
 if (has('--build') || stale) {
-  if (stale && !has('--build')) console.log(`game: rebuilding (${stale})`);
-  if (!(await buildDrawn())) process.exit(1);
+  if (!(await buildDrawn(has('--build') ? 'forced' : stale, !has('--build') && !has('--check') && !has('--pack') && !has('--send')))) process.exit(1);
 } else console.log('game: the app is current');
 if (has('--check')) {
   if (check()) process.exit(0);

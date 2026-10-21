@@ -362,6 +362,7 @@ namespace Suborned.Play
             bool objOn = now - host.ClockStarted < showS || now - objChanged < showS && host.ClockStarted > 0 || now - markAt < showS || pillHover;
             string line = null, cameo = null, glyph = null; hintAlpha = 0f; hintQOn = false;
             if (host.RangeHint is string rh) { line = rh; glyph = HudModel.AtlasIcon("fire", "fire", ""); } // engine 0.18 (the fight range): over a bystander, how to fire on one
+            else if (host.rangeMode) { } // brief 029 (Sky on 0.2.34): the range has no mission, so no Handover goal, hint or first-act line; only its own hint above
             else if (objOn) line = obj;
             else if (host.HintNow != null && t.Hints2.Find(x => x.Id == host.HintNow.Id) is PlayText.Hint h && h.Short.Length > 0)
             {
@@ -390,7 +391,7 @@ namespace Suborned.Play
                 }
                 else hintQOn = true; // folded: a "?" disc at the goal line's place reopens it
             }
-            if (line == null && !hintQOn && !PlateOn && host.FirstActDue) { line = t.FirstActHint; glyph = "p_unknown"; } // brief 030: Fable's one hint, until a right click is used (per profile)
+            if (line == null && !hintQOn && !PlateOn && !host.rangeMode && host.FirstActDue) { line = t.FirstActHint; glyph = "p_unknown"; } // brief 030: Fable's one hint, until a right click is used (per profile)
             host.HintLineShowing = hintAlpha > 0f;
             Show(hintQ, hintQOn && !show0(line)); if (hintQOn) hintQ.style.left = (W - 26) / 2;
             if (line != null) line = Keys(line);
@@ -812,6 +813,7 @@ namespace Suborned.Play
                     if (it.More) fs.Add(new HudModel.PField { Kind = "more", Icon = "", Text = "⋯" }); // brief 030: other ways are one hold away
                 }
             }
+            if (fs != null && host.controls.DoubleClick && host.AimNow == null && (hov != null || host.SelTarget != null) && host.MoveNow == null) fs = null; // brief 041: the verb pill carries the price
             bool on = fs != null; Show(chip2, on); if (!on) return;
             Art(chipLead, lead, Cream); Text(chipRefused, refused); Show(chipRefused, refused.Length > 0);
             Fields(chipFields, fs, Cream, ref chipKey, true);
@@ -910,7 +912,7 @@ namespace Suborned.Play
                 });
             }
             bool carMarked = host.Hover?.Kind == "car" && host.Hover.Key == "getaway" && (carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex);
-            if (m.HoverRing.HasValue && !carMarked) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // Glyph fight r1 B: the car's marker is its one mark
+            if (m.HoverRing.HasValue && !carMarked && !host.controls.DoubleClick) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone // Glyph fight r1 B: the car's marker is its one mark
             // the Next Step's ring: only while its line shows, fading with it, in its noun's colour, with the verb's glyph at the centre ("do this here")
             if (host.HintNow?.Ring is Vector3 hr && !m.Ended && hintAlpha > 0f)
             {
@@ -1274,7 +1276,7 @@ namespace Suborned.Play
                 Text(nameText, "Unknown. Watch first."); float w = float.IsNaN(nameChip.resolvedStyle.width) ? 150 : nameChip.resolvedStyle.width;
                 nameChip.style.left = doorMark.style.left.value.value + 13 - w / 2; nameChip.style.top = doorMark.style.top.value.value + 32; named = true; // under the marker: the price chip and the wake disc sit above it
             }
-            else if (live && host.HoverAnchor is Vector3 ha && host.HoverName.Length > 0 && Proj(ha, out var hq))
+            else if (live && !host.controls.DoubleClick && host.HoverAnchor is Vector3 ha && host.HoverName.Length > 0 && Proj(ha, out var hq)) // brief 041: no name tag
             {
                 // Glyph 016 r2 E: one ellipse on the ground (the hover ring when the thing is actionable, else this one, the same size)
                 if (m.HoverRing == null && host.Hover != null && !(host.Hover.Kind == "car" && host.Hover.Key == "getaway" && (host.CarRingOn || carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex)) && host.TargetWorld(host.Hover) is Vector3 gw && Proj(gw, out var gq)) // the fight ring is the car's one marker
@@ -1714,8 +1716,8 @@ namespace Suborned.Play
             }
             if (c.Fails.Length > 0) // engine 0.15.0 (tuning.md §9.3): a shot that fails the mission always takes the hold; the card says what fails, at rest (Fable's fail line)
             {
-                var fl = host.Text?.Fails.Find(f => f.code == c.Fails).line ?? ""; fl = c.Fails == "vale-dead" || fl.Length == 0 ? "Vale dies." : fl.Split(new[] { ". " }, StringSplitOptions.None)[0].TrimEnd('.') + ".";
-                Part("icons/singles/refused", fl + " The mission fails.", Red); // Keel 0.15 host notes, Fable: "Vale dies. The mission fails." 
+                var fl = host.Text != null && host.Text.LoudFails.TryGetValue(c.Fails, out var lf) ? lf : c.Fails; // Fable's goingLoud.fails (2026-10-21): the whole line is text, never the host's
+                Part("icons/singles/refused", fl, Red);
             }
             if (!c.Loud && c.Fails.Length == 0 && host.Loud.What == "panic") { Part("icons/singles/run", ""); return; } // brief 038 §5: the panic hold in a fight: the run glyph and the hold ring
             Part("icons/singles/p_alert", c.AlertTo.ToString());

@@ -170,5 +170,217 @@ namespace Suborned.Play
             h.Begin(); // back to the plain start (the checkpoint off)
             json[0] = $"{{\"ok\": {B(ok)}, \"agent\": \"{name}\", \"target\": \"{id}\", \"walking\": {B(walking)}, \"stopped\": {B(stopped)}, \"stoppedBy\": \"{by}\", \"firing\": {B(firing)}, \"running\": {B(running)}, \"runFire\": \"{runAnswer}\", \"runsOn\": {B(runsOn)}}}";
         }
+
+        // ---------------------------------------------------------------- the click-through check (Sky on 0.2.34)
+
+        static string J(string x) => (x ?? "").Replace("\\", "/").Replace("\"", "'").Replace("\n", " ");
+
+        /// <summary>One left click at a screen point through the Input System's mouse; what reached the street: presses the host let through
+        /// (WorldPresses), move orders, a ring or a box. `pressed` = the street heard the press.</summary>
+        static IEnumerator ClickAt(HandoverHost h, Vector2 sp, (int presses, int moves, bool ring, bool box)[] got)
+        {
+            var g = h.Game; int w0 = h.WorldPresses, n0 = g.Orders.Count;
+            MouseAt(sp, false); yield return null; yield return null;
+            MouseAt(sp, true); yield return null; yield return null;
+            MouseAt(sp, false); yield return null; yield return null; yield return null;
+            int moves = 0; for (int i = n0; i < g.Orders.Count; i++) if (g.Orders[i].order.Do == "move") moves++;
+            got[0] = (h.WorldPresses - w0, moves, h.Ring != null, h.BoxScreen.HasValue);
+        }
+
+        /// <summary>A point on open ground near the selected agent, off every HUD (the control click: the street must hear it).</summary>
+        static Vector2? Ground(HandoverHost h, OpId who)
+        {
+            var me = h.Views.Find("op/" + Suborned.Sim.Op.Name(who)); var cam = h.View; if (!me || !cam) return null;
+            foreach (var off in new[] { new Vector3(3f, 0f, 0f), new Vector3(-3f, 0f, 0f), new Vector3(0f, 0f, 3f), new Vector3(0f, 0f, -3f), new Vector3(2f, 0f, 2f) })
+            {
+                var sp = cam.WorldToScreenPoint(me.position + off); if (sp.z <= 0f) continue; var v = new Vector2(sp.x, sp.y);
+                if (v.x > 20 && v.y > 20 && v.x < Screen.width - 20 && v.y < Screen.height - 20 && !HandoverHost.OverHud(v)) return v;
+            }
+            return null;
+        }
+
+        /// <summary>Every piece of the kit HUD that takes clicks, clicked in the overhead view and in the follow view, plus a ground click as the
+        /// control: a HUD click is never heard by the street (no press through, no move order, no ring, no box); the ground click is.</summary>
+        public static IEnumerator HudClick(HandoverHost h, List<string> log, string[] json)
+        {
+            HandoverHost.PointerOverride = null; h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; yield return null;
+            h.Select(OpId.Scout, false); yield return new WaitForSecondsRealtime(0.5f);
+            var parts = new List<string>(); bool ok = true; var got = new (int, int, bool, bool)[1];
+            foreach (var view in new[] { "overhead", "follow" })
+            {
+                if (view == "follow") { h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; h.Select(OpId.Scout, false); if (!h.Following) h.FollowToggle(); yield return new WaitForSecondsRealtime(0.8f); }
+                // the control: the street hears a ground click
+                int heard = -1; var gp = Ground(h, OpId.Scout);
+                if (gp.HasValue) { yield return ClickAt(h, gp.Value, got); heard = got[0].Item1; }
+                h.CloseRing(); h.ClearHover();
+                var pts = HudToolkit.ClickPoints(40); int clicked = 0, through = 0, moves = 0, rings = 0, boxes = 0; var bad = new List<string>(); var movedBy = new List<string>();
+                foreach (var (what, sp) in pts)
+                {
+                    if (!HandoverHost.OverHud(sp) || h.MenuOpen || h.Modal != ModalGate.Modal.None) continue; // the layout moved under an earlier click (a sheet opened): skip
+                    yield return ClickAt(h, sp, got); clicked++;
+                    var (pr, mv, rg, bx) = got[0]; through += pr; moves += mv; if (rg) rings++; if (bx) boxes++;
+                    if (pr > 0 || rg || bx) bad.Add(what); else if (mv > 0) movedBy.Add(what + "@" + (int)sp.x + "," + (int)sp.y);
+                    h.CloseRing(); if (h.MenuOpen) h.ResumeFromMenu();
+                }
+                bool vok = heard == 1 && clicked >= 3 && through == 0 && rings == 0 && boxes == 0; // a move given by a HUD button's own act (the door or car step mark sends the Enforcer) is the HUD's, not a click through: the gate is pressesThrough
+                ok &= vok;
+                parts.Add($"\"{view}\": {{\"ok\": {B(vok)}, \"groundHeard\": {heard}, \"hudPieces\": {pts.Count}, \"clicked\": {clicked}, \"pressesThrough\": {through}, \"moves\": {moves}, \"rings\": {rings}, \"boxes\": {boxes}, \"failedOn\": \"{J(string.Join(" ", bad))}\", \"movesByHudButtons\": \"{J(string.Join(" ", movedBy))}\"}}");
+                log.Add($"hudClick {view}: {(vok ? "ok" : "FAILED")}: ground click heard {heard}; {clicked} of {pts.Count} HUD pieces clicked: {through} presses through, {moves} moves, {rings} rings, {boxes} boxes{(bad.Count > 0 ? " on " + string.Join(" ", bad) : "")}{(movedBy.Count > 0 ? "; moves given by HUD buttons " + string.Join(" ", movedBy) : "")}");
+                if (h.Following) h.FollowToggle();
+            }
+            h.Begin(); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false);
+            json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
+        }
+
+        /// <summary>The fight range's panel (IMGUI), the bug Sky hit: its Spawn button, its Realtime choice and its tally line clicked in the
+        /// overhead view and the follow view, plus the ground control; nothing reaches the street. `imgui` says whether the panel itself took
+        /// the click (a spawn order), which the check does not need.</summary>
+        public static IEnumerator RangePanelClick(HandoverHost h, List<string> log, string[] json)
+        {
+            HandoverHost.PointerOverride = null; h.rangeLayout = "open"; h.Begin(); yield return null; h.StartClock(); h.SetPaused(true);
+            h.Select(OpId.Scout, false); yield return new WaitForSecondsRealtime(0.6f);
+            var parts = new List<string>(); bool ok = true; var got = new (int, int, bool, bool)[1];
+            foreach (var view in new[] { "overhead", "follow" })
+            {
+                if (view == "follow") { h.Begin(); yield return null; h.StartClock(); h.SetPaused(true); h.Select(OpId.Scout, false); if (!h.Following) h.FollowToggle(); yield return new WaitForSecondsRealtime(0.8f); }
+                int heard = -1; var gp = Ground(h, OpId.Scout);
+                if (gp.HasValue) { yield return ClickAt(h, gp.Value, got); heard = got[0].Item1; }
+                h.CloseRing(); h.ClearHover(); yield return null;
+                var rows = new List<string>(); bool vok = heard == 1; int spawns = 0, clicked = 0;
+                foreach (var name in new[] { "spawn", "fightMode", "tally" })
+                {
+                    if (!RangePanel.Controls.TryGetValue(name, out var r)) { rows.Add($"\"{name}\": null"); vok = false; continue; }
+                    float x = name == "fightMode" ? r.x + r.width / 6f : r.center.x; // the first choice (Realtime, as it is): the click changes nothing
+                    var sp = new Vector2(x, Screen.height - r.center.y);
+                    if (!HandoverHost.OverHud(sp)) { rows.Add($"\"{name}\": {{\"blocked\": false}}"); vok = false; continue; }
+                    int n0 = h.Game.Orders.Count; yield return ClickAt(h, sp, got); clicked++;
+                    for (int i = n0; i < h.Game.Orders.Count; i++) if (h.Game.Orders[i].order.Do == "spawn") spawns++;
+                    var (pr, mv, rg, bx) = got[0]; bool rok = pr == 0 && mv == 0 && !rg && !bx; vok &= rok;
+                    rows.Add($"\"{name}\": {{\"ok\": {B(rok)}, \"pressesThrough\": {pr}, \"moves\": {mv}, \"ring\": {B(rg)}, \"box\": {B(bx)}}}");
+                    h.CloseRing();
+                }
+                vok &= clicked == 3; ok &= vok;
+                parts.Add($"\"{view}\": {{\"ok\": {B(vok)}, \"groundHeard\": {heard}, \"imguiSpawned\": {spawns}, {string.Join(", ", rows)}}}");
+                log.Add($"rangePanelClick {view}: {(vok ? "ok" : "FAILED")}: ground click heard {heard}; {clicked} panel controls clicked; the panel itself spawned {spawns}; {string.Join(" ", rows).Replace("\"", "")}");
+                if (h.Following) h.FollowToggle();
+            }
+            h.Begin(); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false);
+            json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
+        }
+
+        // ---------------------------------------------------------------- brief 041: the Double click scheme and the leash
+
+        static IEnumerator Click(Vector2 sp) { MouseAt(sp, false); yield return null; MouseAt(sp, true); yield return null; MouseAt(sp, false); yield return null; }
+        static IEnumerator RightAt(Vector2 sp, float hold)
+        {
+            if (Mouse.current is not Mouse m) yield break;
+            InputSystem.QueueStateEvent(m, new MouseState { position = sp }.WithButton(MouseButton.Right, true)); yield return null;
+            if (hold > 0f) yield return new WaitForSecondsRealtime(hold); else yield return null;
+            InputSystem.QueueStateEvent(m, new MouseState { position = sp }); yield return null; yield return null;
+        }
+
+        /// <summary>Single and double left clicks on a person (the guard with the Scout; Inez with the Fixer), a prop (the entrance camera, the Tech selected) and the
+        /// ground (the Scout), each from a fresh run, paused; then the right tap (the ring opens) and the right hold (nothing) on the guard. Through
+        /// the Input System's mouse, so the host reads them as it reads the hand.</summary>
+        public static IEnumerator DblClick(HandoverHost h, string dir, List<string> log, string[] json)
+        {
+            var rows = new List<string>(); bool ok = true; HandoverHost.PointerOverride = null;
+            foreach (var (key, who) in new[] { ("guard", OpId.Scout), ("waitress", OpId.Fixer), ("camera/entrance", OpId.Tech), ("ground", OpId.Scout) })
+            {
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; yield return null;
+                var g = h.Game; h.Select(who, false);
+                var me = h.Views.Find("op/" + Suborned.Sim.Op.Name(who)); Transform v = key == "ground" ? me : h.Views.Find(key);
+                if (!v || !me) { rows.Add($"{{\"target\": \"{key}\", \"seen\": false}}"); ok = false; continue; }
+                h.LookAt(v.position); yield return null; yield return null;
+                var cam = h.View; Vector2 sp;
+                if (key == "ground") { var gp = Ground(h, who); if (!gp.HasValue) { rows.Add("{\"target\": \"ground\", \"seen\": false}"); ok = false; continue; } sp = gp.Value; }
+                else { var w = cam.WorldToScreenPoint(v.position + Vector3.up * (key.StartsWith("camera/") ? 0f : 1.0f)); sp = new Vector2(w.x, w.y); }
+                MouseAt(sp, false); for (int i = 0; i < 4; i++) yield return null;
+                string probe = h.ProbeAt(sp);
+                // single
+                int n0 = g.Orders.Count, sel0 = h.ThingSelects; yield return Click(sp); yield return new WaitForSecondsRealtime(0.5f);
+                var singleOrders = new List<string>(); for (int i = n0; i < g.Orders.Count; i++) singleOrders.Add(g.Orders[i].order.Do + (g.Orders[i].order.Run ? ":run" : ""));
+                string selKey = h.SelTarget == null ? "" : h.SelTarget.Kind + "/" + h.SelTarget.Key; bool ringAfterSingle = h.Ring != null;
+                MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.12f), false); for (int i = 0; i < 6; i++) yield return null;
+                string pill = HudToolkit.PillWords; if (key != "ground") { MouseAt(sp, false); for (int i = 0; i < 3; i++) yield return null; }
+                if (h.Ring != null) h.CloseRing();
+                // double (two clicks inside controls.doubleSeconds)
+                int n1 = g.Orders.Count, d0 = h.DoubleActs; yield return Click(sp); yield return Click(sp); yield return new WaitForSecondsRealtime(0.4f);
+                var dblOrders = new List<string>(); for (int i = n1; i < g.Orders.Count; i++) dblOrders.Add(g.Orders[i].order.Do + (g.Orders[i].order.Run ? ":run" : ""));
+                bool ringAfterDouble = h.Ring != null; var pend = h.PendingOf((int)who).verb; if (h.Ring != null) h.CloseRing();
+                bool rowOk;
+                if (key == "ground") rowOk = singleOrders.Count >= 1 && singleOrders.TrueForAll(o => o == "move") && dblOrders.Exists(o => o == "move:run") && selKey.Length == 0;
+                else rowOk = !singleOrders.Exists(o => o != "drive") && (selKey.Length > 0 || ringAfterSingle) && (h.DoubleActs > d0 && (dblOrders.Count > 0 || pend.Length > 0) || ringAfterDouble);
+                ok &= rowOk;
+                rows.Add($"{{\"target\": \"{key}\", \"agent\": \"{Suborned.Sim.Op.Name(who)}\", \"single\": \"{string.Join(",", singleOrders)}\", \"selected\": \"{J(selKey)}\", \"ringAfterSingle\": {B(ringAfterSingle)}, \"pill\": \"{J(pill)}\", \"double\": \"{string.Join(",", dblOrders)}\", \"pending\": \"{pend}\", \"ringAfterDouble\": {B(ringAfterDouble)}, \"probe\": \"{J(probe)}\", \"ok\": {B(rowOk)}}}");
+                log.Add($"dblClick {key} ({Suborned.Sim.Op.Name(who)}): {(rowOk ? "ok" : "FAILED")}: single gave [{string.Join(",", singleOrders)}] selected '{selKey}' ring {ringAfterSingle}, pill '{pill}'; double gave [{string.Join(",", dblOrders)}] pending '{pend}' ring {ringAfterDouble}; probe: {probe}");
+            }
+            // the right tap opens the ring on Inez; the right hold opens nothing
+            {
+                h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; h.Select(OpId.Scout, false);
+                var v = h.Views.Find("guard"); bool tapRing = false, holdRing = true; int holdOrders = -1;
+                if (v)
+                {
+                    h.LookAt(v.position); yield return null; yield return null; var w = h.View.WorldToScreenPoint(v.position + Vector3.up); var sp = new Vector2(w.x, w.y);
+                    MouseAt(sp, false); for (int i = 0; i < 3; i++) yield return null; log.Add("dblClick right probe: " + h.ProbeAt(sp));
+                    yield return RightAt(sp, 0f); tapRing = h.Ring != null; h.CloseRing(); yield return null;
+                    int n0 = h.Game.Orders.Count; yield return RightAt(sp, 0.45f); holdRing = h.Ring != null; holdOrders = h.Game.Orders.Count - n0; h.CloseRing();
+                }
+                bool rOk = tapRing && !holdRing && holdOrders == 0; ok &= rOk;
+                rows.Add($"{{\"target\": \"right on guard\", \"tapOpensRing\": {B(tapRing)}, \"holdOpensRing\": {B(holdRing)}, \"holdOrders\": {holdOrders}, \"ok\": {B(rOk)}}}");
+                log.Add($"dblClick right: {(rOk ? "ok" : "FAILED")}: a tap opens the ring {tapRing}; a 0.45 s hold opens it {holdRing}, orders {holdOrders}");
+            }
+            h.Begin(); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false);
+            json[0] = $"{{\"ok\": {B(ok)}, \"rows\": [{string.Join(", ", rows)}]}}";
+        }
+
+        /// <summary>The leash (brief 041): the Scout driven on the range's lane, the mouse still; W for 2.5 s, then S for 7 s (a 180° turn).
+        /// The camera must hold while she walks at it (no spin), her path must stay straight (the keys' frame latched while S is held), and then
+        /// the camera settles behind her at no more than 45°/s. The yaw of every frame goes to leash-yaw.tsv beside the proof.</summary>
+        public static IEnumerator Leash(HandoverHost h, string dir, List<string> log, string[] json)
+        {
+            HandoverHost.PointerOverride = null; h.rangeLayout = "lane"; h.Begin(); yield return null; h.StartClock(); h.SetPaused(false);
+            var keepSettle = h.controls.leashSettle; h.controls.leashSettle = true;
+            h.Select(OpId.Scout, false); yield return null;
+            var g = h.Game; var me = h.Views.Find("op/scout"); if (!me) { json[0] = "{\"ok\": false, \"why\": \"no scout\"}"; yield break; }
+            // a straight line of free floor (the lane): 5.5 m ahead and 10 m back
+            Vector3 p0 = me.position, best = Vector3.zero; bool found = false;
+            for (int a = 0; a < 360 && !found; a += 15)
+            {
+                var d = Quaternion.Euler(0f, a, 0f) * Vector3.forward; bool free = true;
+                for (float k = -10f; k <= 5.5f && free; k += 0.5f) free = g.S.Grid.Free(h.frame.Engine(p0 + d * k));
+                if (free) { best = d; found = true; }
+            }
+            if (!found) { json[0] = "{\"ok\": false, \"why\": \"no straight free line on the floor\"}"; yield break; }
+            h.DriveToggle(); yield return new WaitForSecondsRealtime(0.8f);
+            h.FollowFace(p0 + best * 10f); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false);
+            h.LeashLog.Clear(); h.LeashLogOn = true;
+            Keys(Key.W); yield return new WaitForSecondsRealtime(2.5f);
+            float tS = Time.unscaledTime; Keys(Key.S); yield return new WaitForSecondsRealtime(7f); Keys(); yield return new WaitForSecondsRealtime(0.3f);
+            h.LeashLogOn = false;
+            var L = new List<(float t, float yaw, float heading, float speed, bool settling)>(h.LeashLog);
+            var sb = new System.Text.StringBuilder("t\tyaw\theading\tspeed\tsettling\n");
+            foreach (var r in L) sb.Append(F(r.t - tS)).Append('\t').Append(F(r.yaw)).Append('\t').Append(F(r.heading)).Append('\t').Append(F(r.speed)).Append('\t').Append(r.settling ? 1 : 0).Append('\n');
+            System.IO.File.WriteAllText(System.IO.Path.Combine(dir, "leash-yaw.tsv"), sb.ToString());
+            float y0 = 0f; foreach (var r in L) if (r.t <= tS) y0 = r.yaw;
+            float holdMax = 0f, settleAt = -1f, maxRate = 0f, hMin = 999f, hMax = -999f; float? hRef = null;
+            for (int i = 0; i < L.Count; i++)
+            {
+                var r = L[i]; float s = r.t - tS; if (s < 0f) continue;
+                if (s <= 1.0f) holdMax = Mathf.Max(holdMax, Mathf.Abs(Mathf.DeltaAngle(y0, r.yaw)));
+                if (r.settling && settleAt < 0f && s > 0.3f) settleAt = s; // after the S heading took (before it, the W walk's own settle may still read true)
+                if (i > 0 && r.t - L[i - 1].t > 1e-4f) maxRate = Mathf.Max(maxRate, Mathf.Abs(Mathf.DeltaAngle(L[i - 1].yaw, r.yaw)) / (r.t - L[i - 1].t));
+                if (s >= 0.6f && r.speed > 0.5f) { hRef ??= r.heading; float dh = Mathf.DeltaAngle(hRef.Value, r.heading); hMin = Mathf.Min(hMin, dh); hMax = Mathf.Max(hMax, dh); }
+            }
+            var last = L.Count > 0 ? L[L.Count - 1] : default; float behind = Mathf.Abs(Mathf.DeltaAngle(last.yaw, last.heading));
+            float turnSpread = hMax - hMin;
+            float vMax = 0f; foreach (var r in L) vMax = Mathf.Max(vMax, r.speed);
+            float rateCap = h.leashMaxDegS + vMax / h.leashArm * Mathf.Rad2Deg * h.leashGain + 4f; // the settle's cap plus the leash's own drag at her speed (camera.js adds both)
+            bool okHold = holdMax < 15f, okSettle = settleAt > 0.5f && behind < 30f, okRate = maxRate < rateCap, okStraight = turnSpread < 12f;
+            bool ok = L.Count > 100 && okHold && okSettle && okRate && okStraight;
+            log.Add($"leash: {(ok ? "ok" : "FAILED")}: {L.Count} frames; S at yaw {F(y0)}: the first 1 s moved the camera {F(holdMax)}° (holds < 15); settling began {F(settleAt)} s after S; at the end {F(behind)}° off her heading (< 30); fastest turn {F(maxRate)}°/s (settle cap 45 plus the leash's drag: under {F(rateCap)}); her heading spread under S {F(turnSpread)}° (straight < 12)");
+            if (h.Driving) h.DriveLetGoToMap(); yield return null; h.controls.leashSettle = keepSettle;
+            json[0] = $"{{\"ok\": {B(ok)}, \"frames\": {L.Count}, \"holdDeg1s\": {F(holdMax)}, \"settleStartS\": {F(settleAt)}, \"endOffDeg\": {F(behind)}, \"maxDegPerS\": {F(maxRate)}, \"headingSpreadDeg\": {F(turnSpread)}, \"tsv\": \"leash-yaw.tsv\"}}";
+        }
     }
 }

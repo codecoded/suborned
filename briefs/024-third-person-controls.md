@@ -433,3 +433,68 @@ The honest reading: per-agent drags alone are on the line; the quarter speed is 
 2. **Quarter speed while you drag a portrait**, in place of a pause. Is that fine, or do you want no slow at all (then the three-agent lock needs the group drag or auto-split)?
 
 **Sky, 2026-10-21:** "Maybe. I need to play the game for a bit before confirming." Held until Sky has played build 0.2.32.
+
+
+## Revision: calm ring, clear default (2026-10-21)
+
+**Sky, after playing build 0.2.34 (two screenshots, the ring on the driver and the hover on a cabinet):** "this is really busy. Also, still not finding it clear what the default action is." Author: Glyph. Mockup: `briefs/024/calm-ring/` (1920 x 1080 PNGs: `moment1-ring-before-after.png`, `moment2-hover-before-after.png`, and full-size afters `moment1-ring-after.png`, `moment1-ring-after-knock.png`, `moment1-ring-after-dots.png`, `moment2-hover-after.png`; Sky's two shots are the before; rebuild with `retouch.py` then `build.py`). The world in the afters is Sky's shot with the old plates painted out, so the pavement near them is retouched; only the marks are mockup. This replaces the ring's plates, tag and badges from briefs 030 and 038 and folds into the fewer-keys revision above (the Shift + 1 to 4 badges go with the verb-first keys). No GDD, code or data has been edited.
+
+### What was wrong, from the two shots
+
+- The ring carried five plates at once (Take, Watch, Knockout, Kill, Fire), each with an icon, time, fingerprint, siren, an eye with a question mark, a "!" and a Shift-number badge, plus a "driver" tag: about 40 marks to read before choosing.
+- The lit wedge was lit by colour only, and its plate looked like the other four. Nothing said "this is what a click does".
+- The hover on the cabinet had a name tag, three icons on the ground ring and a plate with numbers and no verb. The player had to guess the verb from an icon.
+
+### The rules (for Latch)
+
+**1 · One line says the default, in words.**
+- Hovering a target with a clear best way shows one plate: `Verb the target · time · +n Trail · raises Alert`, the last two only when they apply. Examples: `Loop camera · 75 s · +1 Trail`, `Watch the driver · 29 s`, `Take the driver · 47 s · +2 Trail`.
+- **Left click and E do exactly that way**, nothing else. The plate and the click read the same `IntentFor` and the same three checks (brief 030 section 1), so they cannot disagree.
+- The trailing dots cap on the plate (a small pill with three dots) is shown only when other ways exist; it means "right click for them". No other mark.
+- When the three checks fail and a click would open the ring instead of acting (unknown temperament, nothing clearly best, harm while holstered), the line has no verb: `the driver` and the dots cap. It never shows a verb the click will not take. Fable owns the words.
+- The name tag goes whenever the verb names the target. No icons on the ground ring (the verb's icon sits once, at the start of the line). The ground ring stays as the target mark.
+
+**2 · The ring is calm.**
+- Right click or hold opens the ring as in brief 030. Wedges show **icons only**; no plate beside any wedge, no key badge, no number, no warning mark.
+- **At most three ways and the dots** (four wedges, 90 degrees each). Rank order clockwise from the top (brief 030 section 1). A harmful way takes a slot only after the non-harmful ways, and only the lightest harmful way (Knock out, then Kill, then Fire) shows; the rest sit behind the dots. For the driver and the Enforcer: Take, Watch, Knock out, dots; Kill and Fire behind the dots.
+- **The default is a shape, not text and not only colour:** its wedge is at the top, **sticks out beyond the others with a pointer tab** (a triangle on the outer rim), fills with the teal, and carries the larger icon. With no default (a click would open the ring) there is no tab and the ring opens with the pointer in the centre.
+- A harmful wedge has a **dashed outer rim** (the shape cue already built). That is all it carries.
+- **One plate for the whole ring, always in the same place:** hanging from the target's pin or head (where the old Watch plate sat; it flips to stay on screen). It shows the line for the wedge under the pointer, and for the tab wedge when the pointer is in the centre or on none. The pointed wedge lights (lighter fill, cream outline). Moving between wedges changes the text, never the place, so the eye does not travel.
+- E or Enter in the open ring takes the tab wedge. A left click on a wedge takes that wedge. A click outside closes it.
+- **The dots** open one outer arc beside them with the remaining ways, same icons-only rule and the same single plate, dashed rim on harm.
+
+**3 · The line is the price, folded.** Per way, in this order and only what applies:
+
+| Part | Shown | Replaces |
+|---|---|---|
+| Verb (and the target when no ring is open) | always | the icon-only plate, the name tag |
+| Time, walk plus act as one number | always | unchanged |
+| `+n Trail` | when the way adds Trail; takedowns add ` if found` | the fingerprint icon and the "found" glyph |
+| `raises Alert` (one coral chip) | when the way raises Alert (the old Alert number, `>= 2`, the siren) | the "1", "2", ">= 2", the siren and the "!" |
+| (nothing) | | the eye with the question mark ("a watcher may see it"), the Shift-number badge, the "!" |
+
+Alt still opens the full breakdown for the way under the pointer: walk and act separately, Alert level reached, who could see it, the seen odds. The eye mark is not lost: what a watcher sees is already shown in the world by their cones and by the watch marks on people.
+
+**Hold change to rule on (Aster):** the §14 hold says "the 'found' glyph on takedown numbers". The glyph is a warning triangle, which is one of the marks Sky called busy, so the mockup says `if found` in words. If Sky agrees, the §14 hold becomes "takedown Trail reads 'if found'".
+
+### Done-check (Latch builds against this; Suture runs it)
+
+1. **One plate:** with a ring open, or while hovering, exactly one act plate is on screen; the ring has no text in it. A manifest count of plate parts is 1.
+2. **Format:** the plate text matches `^<Verb>( the <target>)? . <n> s( . \+<n> Trail( if found)?)?( . raises Alert)?$` and may end with the dots cap. No "!", no ">=", no number badge, no eye, no fingerprint, no siren anywhere on it.
+3. **Click equals line:** for every target kind in brief 030's table, the verb on the hover plate equals the way a left click and E take (a unit test over `IntentFor`). If the click would open the ring, the plate has no verb.
+4. **Wedges:** at rest no target kind shows more than four wedges (three ways and the dots). The tab is on exactly one wedge when a default exists and on none when not. Harmful ways are behind the dots except the lightest one.
+5. **Same place:** moving the pointer across all wedges changes the plate text and not its position (within 2 px). The plate follows the target, not the pointer.
+6. **No ghosts:** no name tag when the verb names the target; no icons on the ground ring; no Shift-number badges.
+7. **Budget:** HUD at rest 15 % or less, ring open 22 % or less (`bun run verify`); the ring-open frame is no busier than the 0.2.34 shot (it has about 40 marks; the mockup has about 12).
+8. **Look:** a 1080p capture of both moments matches `briefs/024/calm-ring/` (Glyph reviews a 2x crop of each).
+9. **Sky plays** one Handover and says whether, before he clicks, he can tell what a click will do.
+
+### Hand-offs
+
+- **Latch:** the one plate and its anchor, the four-wedge ring with the tab, the dots arc, the hover line, removal of the wedge plates, name tag, ground-ring icons and badges. **Keel:** the preview exposes a plain `raisesAlert` flag and a `foundOnly` flag for takedown Trail (the numbers stay in the Alt breakdown); nothing in the sim. **Motive:** confirm Knock out is the lightest harm for the Enforcer on a person, so it is the one harmful way on the ring. **Fable:** the verb words ("Take the driver", "Loop camera", "raises Alert", "if found") and the no-verb line. **Glint:** the tab, the dashed rim and the coral chip are signal layers (unlit, outside the post grade). **Suture:** the done-check. **Glyph:** I redo the art from Latch's first build.
+
+### Questions for Sky
+
+1. **Kill and Fire behind the dots** (one more tap), Knock out stays on the ring. Fine for the Enforcer, or do you want Kill on the ring too?
+2. **`if found` in words** instead of the triangle glyph on takedown Trail. Fine?
+3. **The plate hangs from the target** (the driver, the cabinet), not from the ring. Fine? Also: your shot had the History panel open next to the ring. Should it fold while a ring is open?

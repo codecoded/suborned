@@ -1,5 +1,5 @@
 {
     "version": "0.2",
-    "build": 33,
+    "build": 39,
     "note": "The last game build's number: `bun run game:build` takes the next and writes it back on success (GameBuild.Version)."
 }

@@ -1,0 +1,13 @@
+{
+ "state": "rest",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 87, "h": 333, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 2711, "y": 366, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 713, "y": 610, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 2685, "y": 353, "w": 23, "h": 23, "text": "door turn"},
+  {"kind": "image", "x": 1155, "y": 305, "w": 346, "h": 38, "text": "fire line: who, how long, the stop key"},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

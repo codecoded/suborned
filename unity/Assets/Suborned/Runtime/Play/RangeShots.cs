@@ -51,6 +51,7 @@ namespace Suborned.Play
             yield return Guarded(Car(h));
             yield return Guarded(Bystanders(h));
             yield return Guarded(Lines(h));
+            yield return Guarded(Fixes(h)); // Sky's notes on 0.2.34 (Latch): labels, the goal line, the bars, the car's time, the click-through
             HandoverHost.PointerOverride = null;
             Write(ok ? "ok" : "failed");
             yield return new WaitForSecondsRealtime(0.5f);
@@ -173,6 +174,46 @@ namespace Suborned.Play
             bool plain = shown.Count > 0 && shown.All(l => l.Text.Length > 0) && shown.Exists(l => l.Text.Contains("%") || l.Text.Contains("●"));
             parts.Add($"\"lineTexts\": [{string.Join(", ", texts.Take(12).Select(t => "\"" + Esc(t) + "\""))}]");
             Check("lines", sp && plain, $"{shown.Count} lines shown, every one with the engine's plain words: {plain}; e.g. {(texts.Count > 0 ? texts[0] : "none")}");
+        }
+
+        // 5 · Sky's notes on 0.2.34: lab preset; a car with police inside, four bystanders near, three officers at 15 m; the Enforcer and the Scout
+        // fire on one officer, so lines share paths. The labels never overlap (stepped or left off), no Handover goal line, a bar over the car and
+        // each bystander on the floor. Then the Enforcer fires on the car: the fire line says when it is disabled. Then the panel's clicks.
+        IEnumerator Fixes(HandoverHost h)
+        {
+            h.Fights.Load("lab"); h.Fights.fightMode = "realtime"; yield return Fresh(h, "open");
+            var g = h.Game;
+            bool s1 = Spawn(h, "car", "car:1", 1, "police"), s2 = Spawn(h, "bystanders", "near", 4), s3 = Spawn(h, "police", "eff", 3); h.RunTo(g.Tick + 1);
+            var target = g.RangeHostiles().FirstOrDefault(x => !x.Gone)?.Id ?? "";
+            foreach (var a in new[] { "enforcer", "scout" }) h.Issue(new Order { Op = a, Do = "fire", Target = target });
+            h.Select(OpId.Enforcer, false);
+            yield return Until(h, () => false, 1.6f);
+            if (h.View) h.View.orthographicSize = 18f; h.LookAt(h.frame.World(g.RangeMark) + new Vector3(4f, 0f, 6f));
+            h.SetPaused(false); yield return new WaitForSecondsRealtime(0.5f); h.SetPaused(true); yield return null; yield return null;
+            int bystandersUp = g.RangeBystanders().Count(b => !b.Down && b.State != "safe"), carsUp = g.RangeCars().Count(c => c.State != "wrecked");
+            yield return Shot("range-fixes-labels-bars");
+            int placed = RangePanel.LabelsPlaced, moved = RangePanel.LabelsMoved, dropped = RangePanel.LabelsDropped, bars = HudToolkit.RangeBarsDrawn; string goal = HudToolkit.GoalNow ?? "";
+            Check("labels", placed > 0, $"labels placed {placed}, stepped clear {moved}, left off for room {dropped} (each placed clear of the others and the panel by construction)");
+            Check("goalLine", !goal.Contains("Vale"), $"the goal line in the range: \"{goal}\"");
+            Check("bars", s1 && s2 && s3 && bars >= Mathf.Min(1, carsUp) + 1, $"bars over range cars and bystanders {bars} (on the floor: cars {carsUp}, bystanders {bystandersUp}); spawns {s1} {s2} {s3}; lab {g.Lab}");
+            // the car's time: the Enforcer alone on the car, the fire line's words
+            foreach (var a in new[] { "enforcer", "scout" }) h.Issue(new Order { Op = a, Do = "cease" });
+            var car = g.RangeCars().FirstOrDefault(); string words = "", downIs = "";
+            if (car != null)
+            {
+                h.Issue(new Order { Op = "enforcer", Do = "fire", Target = car.Id }); h.Select(OpId.Enforcer, false);
+                FirePreview fp = null; try { fp = g.PreviewFire(OpId.Enforcer, car.Id, false); } catch { }
+                downIs = fp?.DownIs ?? "";
+                h.LookAt(h.frame.World(car.At)); yield return Until(h, () => false, 0.4f); yield return null; yield return null;
+                var fl = h.FireLine((int)OpId.Enforcer); words = fl.head + " · " + fl.down;
+                yield return Shot("range-fixes-car-time");
+            }
+            Check("carTime", car != null && downIs == "disabled" && words.Contains("disabled in"), $"{car?.Id} {car?.State}: preview down is {downIs}; the fire line \"{words}\"");
+            h.Issue(new Order { Op = "enforcer", Do = "cease" });
+            h.Fights.Load("today");
+            ProofInput.Focusless(true); var pc = new string[] { "null" }; yield return ProofInput.RangePanelClick(h, log, pc); ProofInput.Focusless(false);
+            parts.Add($"\"panelClickJson\": {pc[0]}");
+            Check("panelClick", pc[0].StartsWith("{\"ok\": true"), "the panel's clicks in both views never reach the street (see panelClickJson)");
         }
 
         void Write(string status)

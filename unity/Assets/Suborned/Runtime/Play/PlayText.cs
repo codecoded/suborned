@@ -73,6 +73,8 @@ namespace Suborned.Play
         public readonly List<Scene> Scenes = new();
         public readonly Dictionary<string, string> Toasts = new();
         public string LoudCaptured = "";
+        /// <summary>The going-loud card's fail lines by the engine's fail code (goingLoud.fails; Fable 2026-10-21: "Vale dies. The mission fails.").</summary>
+        public readonly Dictionary<string, string> LoudFails = new();
         public readonly List<(string sample, string code)> LockSamples = new();
         public readonly List<Entry> Dialogue = new();
         /// <summary>Brief 014 (Fable's `less` block): the short forms the play HUD shows at rest. Pops by the host's own refusals, a cancel's 1 to 3
@@ -217,7 +219,7 @@ namespace Suborned.Play
             }
             if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
-            if (n.Opt("goingLoud") is JNode gl) LoudCaptured = S(gl, "captured") ?? "";
+            if (n.Opt("goingLoud") is JNode gl) { LoudCaptured = S(gl, "captured") ?? ""; if (gl.Opt("fails") is JNode glf) foreach (var kv in glf.Entries) LoudFails[kv.Key] = kv.Value.Str(); }
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();
             if (n.Opt("exchange") is JNode ex) foreach (var kv in ex.Entries) Exchange[kv.Key] = kv.Value.Strs();
             if (n.Opt("silentLogs") is JNode sl) foreach (var kv in sl.Entries) Silent.Add(kv.Key);

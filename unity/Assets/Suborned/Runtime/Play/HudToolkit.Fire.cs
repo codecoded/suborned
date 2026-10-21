@@ -378,7 +378,7 @@ namespace Suborned.Play
                     bool trig = host.Driving && k == host.DriveAgent && host.TriggerDown;
                     if (aimChip)
                     {
-                        Text(fireHead, host.AimHolding ? "Hold to fire" : "Fire"); Text(fireDown, host.AimDownS >= 0 ? $"down in {host.AimDownS} s" : host.AimPreview?.Line == false ? "no line" : "");
+                        Text(fireHead, host.AimHolding ? "Hold to fire" : "Fire"); Text(fireDown, host.AimDownS >= 0 ? $"{(host.AimPreview?.DownIs == "disabled" ? "disabled" : "down")} in {host.AimDownS} s" : host.AimPreview?.Line == false ? "no line" : "");
                         Show(fireCapLmb, true); Show(fireIcon, true); Show(fireHeldIcon, false); Show(fireHeld, false); Show(fireCapX, false);
                     }
                     else

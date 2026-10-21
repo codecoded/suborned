@@ -28,6 +28,33 @@ namespace Suborned.Play
             var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));
             return live.root.panel.Pick(p) != null;
         }
+        /// <summary>The proof's probe: the kit element on top at a screen point (its name, else its classes, else its parent's), "" none.</summary>
+        public static string PickedName(Vector2 screen)
+        {
+            if (!Active || live.root?.panel == null) return "";
+            var e = live.root.panel.Pick(RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y)));
+            for (var x = e; x != null; x = x.parent) { var n = string.IsNullOrEmpty(x.name) ? string.Join(".", x.GetClasses()) : x.name; if (n.Length > 0) return n + (x == e ? "" : " (parent of a " + e.GetType().Name + ")"); }
+            return e?.GetType().Name ?? "";
+        }
+        /// <summary>The proof's click-through check (Sky on 0.2.34): the centre of every piece that takes clicks and is on top there now, in screen
+        /// pixels (origin bottom left), each with its name or class, one per 8 px; at most `max`.</summary>
+        public static List<(string what, Vector2 screen)> ClickPoints(int max = 40)
+        {
+            var l = new List<(string, Vector2)>(); if (!Active || live.root?.panel == null) return l;
+            var panel = live.root.panel; var p0 = RuntimePanelUtils.ScreenToPanel(panel, Vector2.zero); var p1 = RuntimePanelUtils.ScreenToPanel(panel, new Vector2(1000f, 1000f));
+            var sc = (p1 - p0) / 1000f; if (sc.x <= 0f || sc.y <= 0f) return l;
+            live.root.Query<VisualElement>().ForEach(e =>
+            {
+                if (l.Count >= max || e.pickingMode != PickingMode.Position || e == live.root) return;
+                var b = e.worldBound; if (float.IsNaN(b.width) || b.width < 6f || b.height < 6f || e.resolvedStyle.display == DisplayStyle.None || e.resolvedStyle.visibility == Visibility.Hidden || e.resolvedStyle.opacity <= 0.01f) return;
+                for (var a = e.parent; a != null; a = a.parent) if (a.resolvedStyle.display == DisplayStyle.None || a.resolvedStyle.visibility == Visibility.Hidden) return;
+                var top = new Vector2((b.center.x - p0.x) / sc.x, (b.center.y - p0.y) / sc.y); var screen = new Vector2(top.x, Screen.height - top.y);
+                if (screen.x < 2f || screen.y < 2f || screen.x > Screen.width - 2f || screen.y > Screen.height - 2f || panel.Pick(b.center) == null) return;
+                foreach (var (_, q) in l) if ((q - screen).sqrMagnitude < 64f) return;
+                string nm = string.IsNullOrEmpty(e.name) ? string.Join(".", e.GetClasses()) : e.name; for (var x = e.parent; nm.Length == 0 && x != null; x = x.parent) nm = string.IsNullOrEmpty(x.name) ? string.Join(".", x.GetClasses()) : x.name + ">"; l.Add((nm.Length > 0 ? nm : e.GetType().Name, screen));
+            });
+            return l;
+        }
         /// <summary>The place of the feed card under the mouse (the IMGUI view rings it in the street).</summary>
         public static Vector3? HoverPlace => Active && live.hoverCard != null ? live.host.PlaceNow(live.hoverCard) : null;
 

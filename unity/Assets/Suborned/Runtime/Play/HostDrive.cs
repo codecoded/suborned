@@ -175,7 +175,7 @@ namespace Suborned.Play
             }
             if (TriggerDown && !run) input = Vector2.zero; // brief 024 rule 3: firing at a walk plants the agent; a runner keeps going (the engine reads the run flag)
             bool free = (!Paused || Exploring) && !(op.Busy != null && DriveOnBusyHold) && !op.Down && !op.Inside && !op.InCar;
-            DriveMove(free ? input : Vector2.zero, run, dt, Following ? fYaw : yawNow);
+            DriveMove(free ? input : Vector2.zero, run, dt, DriveRoute == null && DriveInputOverride == null ? MoveYaw(input.sqrMagnitude > 0f) : Following ? fYaw : yawNow); // brief 041: the keys' frame latched while held (MoveYaw)
             if (Aiming && AimFaceOn && !dMoving) dYaw = AimFace; // brief 024: aiming, the agent turns to the reticle (the sample's facing; the camera follows the travel heading only)
             if (views != null) { views.DriveKey = "op/" + Op.Name((OpId)dAgent); views.DrivePos = CmWorld(dCm); views.DriveYaw = dYaw; views.DriveSpeed = dVel.magnitude / 100f; }
             DriveFocusFrame();
@@ -334,7 +334,7 @@ namespace Suborned.Play
             else { int pick = ((dFocusStep % cands.Count) + cands.Count) % cands.Count; best = cands[pick].t; bestAt = cands[pick].at; bestScore = cands[pick].score; }
             // brief 024 revision: the prompt is the thing under the cursor (within 15 m, on screen, off the HUD), else the nearest in front (Z steps it)
             var mp = PointerWorld is Vector3 pw && cam ? (Vector2)cam.WorldToScreenPoint(pw) : PointerOverride ?? UnityEngine.InputSystem.Mouse.current?.position.ReadValue();
-            if (cam && mp is Vector2 mpv && dFocusStep == 0 && mpv.x >= 0 && mpv.y >= 0 && mpv.x <= Screen.width && mpv.y <= Screen.height && !HudToolkit.Blocks(mpv) && !PlayHud.Blocks(mpv))
+            if (cam && mp is Vector2 mpv && dFocusStep == 0 && mpv.x >= 0 && mpv.y >= 0 && mpv.x <= Screen.width && mpv.y <= Screen.height && !OverHud(mpv))
             {
                 var under = TargetAt(mpv);
                 if (under != null && under.Kind is not ("op" or "unit") && TargetWorld(under) is Vector3 uw && (uw - me).magnitude <= 15f) { best = under; bestAt = uw + Vector3.up * (under.Kind == "car" ? 0.8f : under.Kind == "camera" ? 0f : under.Kind is "body" or "stash" ? 0.25f : 1.0f); }
