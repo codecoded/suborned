@@ -148,7 +148,7 @@ namespace Suborned.Play
                 s.By.AddRange(plan.Givers[w]);
                 s.Draws = o.Do == "fire" && !drawn; // the draw is in the price (brief 030 §5): the pill's "draws 0.6 s" (DrawS)
                 s.Harmful = Harmful(o, plan.T, drawn); // brief 038 §4.3: never lit, never taken by the second click
-                s.HoldWedge = o.Do == "takedown" && o.How == "kill" || o.Do == "fire" && !Combatant(plan.T); // brief 024 rule 2, brief 038 §4.3: Kill and Fire on a non-combatant take the 0.5 s hold
+                s.HoldWedge = HoldOn ? o.Do == "fire" : o.Do == "takedown" && o.How == "kill" || o.Do == "fire" && !Combatant(plan.T); // brief 041 (Sky): Kill and Knock out are on a click in the ring; only Fire is held // brief 024 rule 2, brief 038 §4.3: Kill and Fire on a non-combatant take the 0.5 s hold
                 s.Key = r.Key >= 0 && Selected[(int)r.By] ? r.Key : -1;
                 rs.Segs.Add(s);
             }
@@ -234,6 +234,7 @@ namespace Suborned.Play
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
             var s = rs.Segs[seg]; var plan = rs.Plan; var at = rs.Screen; CloseRing();
             if (s.More) { OpenPanel(plan.T, at); return; }
+            if (HoldOn && s.Way >= 0) { HoldGive(plan, s.Way, plan.T, at, ringRun, "left"); return; } // brief 041: Shift on a wedge runs there
             DoRow(s.Row, plan.T, at, plan.Pn.World, "left");
         }
 
@@ -275,7 +276,7 @@ namespace Suborned.Play
                 if (mouse.leftButton.wasPressedThisFrame) { if (rs.Hover >= 0) RingTakeTry(rs.Hover, "left"); else if (rs.Always && middle) RingTakeTry(rs.Lit, "left"); else CloseRing(); return true; }
                 if (mouse.rightButton.wasPressedThisFrame)
                 {
-                    if (controls.DoubleClick && !rs.Always) return RingRightDbl(p); // brief 041: the wedge under it, else close (a quick release elsewhere opens that ring)
+                    if (controls.Modern && !rs.Always) return RingRightDbl(p); // brief 041: the wedge under it, else close (a quick release elsewhere opens that ring)
                     if (rs.Always) // brief 038 §4.1: a second right click on the same target takes the lit way; on another target the ring moves there; on the ground it closes
                     {
                         if (rs.Hover >= 0) { RingTakeTry(rs.Hover, "right"); return true; }
@@ -296,7 +297,7 @@ namespace Suborned.Play
                 if (CtrlFireRing(t, p)) return true; // brief 038 §4.3: Ctrl + right opens the ring with Fire held, never an instant shot
                 bool shift = controls.Held(kb, PlayAction.AddToGroup), fire = IsFire(t) && (controls.quickAction || PressFires(t));
                 if (controls.panelOnRight || (Picked >= 0 && !shift) || fire) { PointerRight(p); return false; } // Fire acts on press (the going-loud hold and the sweep belong to it)
-                if (controls.DoubleClick) { RightTapBegin(t, p); return true; } // brief 041: the ring opens on a quick release (a hold opens nothing)
+                if (controls.Modern) { RightTapBegin(t, p); return true; } // brief 041: the ring opens on a quick release (a hold opens nothing)
                 if (!controls.quickAction) { RightRing(t, p); return true; } // Sky 2026-10-21: a right click opens the ring at the target, the likely way lit
                 if (shift && t != null && t.Kind != "op") { ContextPlan plan = null; if (Guard("panel", () => plan = ContextFor(t, p)) && plan != null) { OpenRing(plan, p, false); if (Ring != null) Ring.Sticky = true; } return true; } // Shift + right: the ring at once, to look
                 rTarget = t; rPressAt = p; rPressT = Time.unscaledTime; rPending = true; rRingThisPress = false;

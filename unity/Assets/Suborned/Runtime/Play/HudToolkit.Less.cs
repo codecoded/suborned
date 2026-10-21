@@ -254,19 +254,21 @@ namespace Suborned.Play
                 for (int i = 0; i < 4; i++)
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
-                    bool on = (s.Busy || s.Down || s.Pace.Length > 0) && !ended && !s.InCar; Show(r, on); if (!on) continue; // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
+                    string hw = host.controls.HoldActs && !s.Down ? host.PlateWords(i) : ""; // brief 041: the plate says the pill's words (walking 9 s, watching 12 s, aiming, queued)
+                    bool on = (s.Busy || s.Down || s.Pace.Length > 0 || hw.Length > 0) && !ended && !s.InCar; Show(r, on); if (!on) continue; // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
                     float bx = i == a ? SelectedChipX(plateX, folded) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
-                    Icon(ic, s.Down ? "s_downed" : moving ? (running ? "run" : "s_moving") : s.Icon, running ? TurqLight : Cream);
+                    Icon(ic, s.Down ? "s_downed" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" ? "fire" : s.Icon, running ? TurqLight : Cream);
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
                     string eye = running ? host.RunEye(i) : ""; var eb = busyEyes[i]; Show(eb, eye.Length > 0); // a run is noticed: who could see it, as on the price line
                     if (eye.Length > 0) Icon(eb[0], "eye_" + eye, eye == "open" ? new Color(0.878f, 0.227f, 0.184f) : Cream);
                     bool carry = s.Pace.Length > 0 && s.Progress < 0;
                     bar.style.visibility = s.Progress >= 0 && !s.Down ? Visibility.Visible : Visibility.Hidden; fill.style.width = Length.Percent(100f * Mathf.Clamp01(s.Progress / 1000f)); // the slot keeps its place
-                    Text(tx, s.Down ? "" : carry ? System.Text.RegularExpressions.Regex.Match(s.Pace, @"[\d.]+ m/s").Value : s.Left);
+                    Text(tx, s.Down ? "" : hw.Length > 0 ? hw : carry ? System.Text.RegularExpressions.Regex.Match(s.Pace, @"[\d.]+ m/s").Value : s.Left);
+                    tx.style.width = hw.Length > 0 ? StyleKeyword.Auto : ValueW;
                     if (Stress && tx.text.Length > 0) Text(tx, carry ? "1.4 m/s" : "88 s");
-                    bool iconOnly = (s.Progress < 0 || s.Down) && tx.text.Length == 0; // no end ("holding the loop"), or down: the icon alone (Glyph §1)
-                    float cw = iconOnly ? IconOnlyW : ChipW; r.style.width = cw; Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
+                    bool iconOnly = (s.Progress < 0 || s.Down) && tx.text.Length == 0 && hw.Length == 0; // no end ("holding the loop"), or down: the icon alone (Glyph §1)
+                    float cw = iconOnly ? IconOnlyW : ChipW; if (hw.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
                     float isz = iconOnly ? 13 : Glyph; ic.style.width = isz; ic.style.height = isz; r.style.paddingLeft = iconOnly ? (IconOnlyW - isz) / 2 : ChipPad; r.style.paddingRight = iconOnly ? (IconOnlyW - isz) / 2 : ChipPad; /* Glyph round 3: the loop glyph centred at ~75% in the small chip */
                     bool canX = s.CanCancel && (busyHover == i || tipFor == i); x.style.left = cw + 4;
                     Show(x, canX);
@@ -813,7 +815,7 @@ namespace Suborned.Play
                     if (it.More) fs.Add(new HudModel.PField { Kind = "more", Icon = "", Text = "⋯" }); // brief 030: other ways are one hold away
                 }
             }
-            if (fs != null && host.controls.DoubleClick && host.AimNow == null && (hov != null || host.SelTarget != null) && host.MoveNow == null) fs = null; // brief 041: the verb pill carries the price
+            if (fs != null && host.controls.Modern && host.AimNow == null && (hov != null || host.SelTarget != null) && host.MoveNow == null) fs = null; // brief 041: the verb pill carries the price
             bool on = fs != null; Show(chip2, on); if (!on) return;
             Art(chipLead, lead, Cream); Text(chipRefused, refused); Show(chipRefused, refused.Length > 0);
             Fields(chipFields, fs, Cream, ref chipKey, true);
@@ -912,7 +914,7 @@ namespace Suborned.Play
                 });
             }
             bool carMarked = host.Hover?.Kind == "car" && host.Hover.Key == "getaway" && (carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex);
-            if (m.HoverRing.HasValue && !carMarked && !host.controls.DoubleClick) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone // Glyph fight r1 B: the car's marker is its one mark
+            if (m.HoverRing.HasValue && !carMarked && !host.controls.Modern) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone // Glyph fight r1 B: the car's marker is its one mark
             // the Next Step's ring: only while its line shows, fading with it, in its noun's colour, with the verb's glyph at the centre ("do this here")
             if (host.HintNow?.Ring is Vector3 hr && !m.Ended && hintAlpha > 0f)
             {
@@ -1276,7 +1278,7 @@ namespace Suborned.Play
                 Text(nameText, "Unknown. Watch first."); float w = float.IsNaN(nameChip.resolvedStyle.width) ? 150 : nameChip.resolvedStyle.width;
                 nameChip.style.left = doorMark.style.left.value.value + 13 - w / 2; nameChip.style.top = doorMark.style.top.value.value + 32; named = true; // under the marker: the price chip and the wake disc sit above it
             }
-            else if (live && !host.controls.DoubleClick && host.HoverAnchor is Vector3 ha && host.HoverName.Length > 0 && Proj(ha, out var hq)) // brief 041: no name tag
+            else if (live && !host.controls.Modern && host.HoverAnchor is Vector3 ha && host.HoverName.Length > 0 && Proj(ha, out var hq)) // brief 041: no name tag
             {
                 // Glyph 016 r2 E: one ellipse on the ground (the hover ring when the thing is actionable, else this one, the same size)
                 if (m.HoverRing == null && host.Hover != null && !(host.Hover.Kind == "car" && host.Hover.Key == "getaway" && (host.CarRingOn || carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex)) && host.TargetWorld(host.Hover) is Vector3 gw && Proj(gw, out var gq)) // the fight ring is the car's one marker

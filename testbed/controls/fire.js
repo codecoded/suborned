@@ -1,8 +1,8 @@
 // Hold the left button to fire. A press on a hostile charges the pill (0.4 s), then the shot goes;
 // it keeps firing every 1.5 s while the button is held. Releasing early cancels. Hostiles take hits and go down; they don't shoot back.
 import { G, say } from './state.js';
-import { ACTS } from './data.js';
-import { crew, agentOf, names } from './orders.js';
+import { ACTS, RIGHT_TAP_S } from './data.js';
+import { crew, agentOf, names, squadAll } from './orders.js';
 
 export const FOLLOW_M = 8, HITS = { hostile: 3, other: 2 };
 export const isDrawn = (a) => G.clock < (a.drawnUntil ?? 0);
@@ -15,6 +15,8 @@ export function holdFor(ent) {
   if (!ent || ent.agent || !ent.person || down(ent) || !ent.acts?.length) return null;
   return { id: 'fire', ...ACTS.fire };
 }
+// How full the pill is: a right-hold charge starts filling after the tap window, a left-hold one from the press.
+export const chargeFrac = (c) => Math.max(0, Math.min(1, c.right ? (c.t - RIGHT_TAP_S) / (G.chargeS - RIGHT_TAP_S) : c.t / G.chargeS));
 export function startCharge(ent, way, ring = false, run = false) { G.charge = { ent, way, t: 0, done: false, ring, run, label: way.id === 'fire' ? 'fire' : way.verb.toLowerCase(), bystander: !ent.hostile && way.id === 'fire' }; }
 
 // Who shoots: in third person the driven agent (the others join by the follow setting); on the map the squad rule: best placed or everyone.
@@ -22,7 +24,7 @@ export function shooters(ent, force = false) {
   if (G.view === 'tp') return [agentOf()];
   const able = crew().filter((a) => ACTS.fire.by.includes(a.role));
   if (force) { const drawn = able.filter(isDrawn); return drawn.length ? drawn : able; } // right hold: every selected drawn agent
-  return G.squadAct === 'all' || able.length < 2 ? able : [able.reduce((b, a) => (dist(a, ent) < dist(b, ent) ? a : b))];
+  return squadAll() || able.length < 2 ? able : [able.reduce((b, a) => (dist(a, ent) < dist(b, ent) ? a : b))];
 }
 
 // A fire hold goes through the same steps for each shooter: draw (if the gun is holstered), aim at a new target, then shoot every cadence.

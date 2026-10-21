@@ -274,7 +274,7 @@ namespace Suborned.Play
         void UpdateAim()
         {
             AimLine = null; AimNoLine = false; AimNow = null; LabChunk = null; LabFire = null; LabFireAgent = -1; if (!ModalGate.AllowsHover(Modal)) return;
-            var t = Hover; if (t == null || Game == null || Game.Over) return;
+            var t = Hover; if (t == null || Game == null || Game.Over || HoldOn) return; // brief 041 (hold): the verb pill is the only hover marker
             bool ctrl = Keyboard.current != null && (Keyboard.current.leftCtrlKey.isPressed || Keyboard.current.rightCtrlKey.isPressed);
             if (t.Kind == "person" && t.Key == "councillor") { if (ctrl || AnyDrawn()) { AimLine = "Vale · never: shooting him fails the mission"; AimNow = new AimParts { Badge = "badges/npc_councillor", Refused = Text != null && Text.Pops.TryGetValue("never-vale", out var nv) ? nv : "Never Vale" }; } return; }
             if (!ShotAt(t, ctrl, out var id, out var force)) return;
@@ -366,7 +366,7 @@ namespace Suborned.Play
 
         void UpdateMoveChip(Vector2 screen, bool force)
         {
-            if (!ModalGate.AllowsHover(Modal)) { MoveChip = null; MoveNow = null; return; }
+            if (!ModalGate.AllowsHover(Modal) || HoldOn) { MoveChip = null; MoveNow = null; return; } // brief 041 (hold): no chip on the ground
             if (Hover != null || Panel != null || Game.Over || !cam) { MoveChip = null; MoveNow = null; return; }
             int k = Array.IndexOf(Selected, true); if (k < 0 || Game.Ops[k].Inside || Game.Ops[k].Down) { MoveChip = null; MoveNow = null; return; }
             if (!frame.Ground(cam.ScreenPointToRay(screen), out var w)) { MoveChip = null; MoveNow = null; return; }
@@ -405,7 +405,7 @@ namespace Suborned.Play
             string by = l.Text[..f], t = l.Text[(f + 10)..a];
             views.ShotEvent(ViewKey(by)); // the shooter's recoil, one per engine shot (HostViews.Figures), whatever became of the target
             var from = WorldOf(by); var to = WorldOf(t); if (!from.HasValue || !to.HasValue) return;
-            bool hit = l.Code == "shot.hit";
+            bool hit = l.Code == "shot.hit"; HoldShotSeen(by, t, hit); // brief 041: the pill's hit or miss
             lastShot[by] = (t, Time.unscaledTime); // Sky 2026-10-20: the shooter turns to face it (AimTargets)
             var src = from.Value + Vector3.up * 1.3f; var dst = to.Value + Vector3.up * 1.2f;
             if (!hit) // a miss runs past and ends on the ground beside the target, never on the body

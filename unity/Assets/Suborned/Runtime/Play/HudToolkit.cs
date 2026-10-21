@@ -251,7 +251,7 @@ namespace Suborned.Play
             {
                 var st = strips[i]; int k = i;
                 st.Root = E(root, "s-panel_slot", ColX + 113, 0, 228, 92, pick: true);
-                st.Root.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.PortraitClick(k, e.shiftKey); e.StopPropagation(); } });
+                st.Root.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.PortraitPress(k, e.shiftKey || e.ctrlKey || e.commandKey); e.StopPropagation(); } });
                 var tags = st.Tags = E(st.Root, null, 30, 7, 170, 16); tags.style.flexDirection = FlexDirection.Row;
                 st.Role = L(tags, "role-tag"); st.State = L(tags, "slot-state-ready"); st.State.style.marginLeft = 8;
                 st.Stance = E(st.Root, null, 190, 7, 20, 20);
@@ -417,7 +417,7 @@ namespace Suborned.Play
             {
                 var w = into[i] = new Window(); int k = i; var r = wins[i];
                 w.Portrait = E(frame, null, r.x, r.y, r.width, r.height, pick: true);
-                w.Portrait.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.PortraitClick(k, e.shiftKey); e.StopPropagation(); } });
+                w.Portrait.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.PortraitPress(k, e.shiftKey || e.ctrlKey || e.commandKey); e.StopPropagation(); } });
             }
             E(frame, sprite, 0, 0, w0, h0);
             for (int i = 0; i < 4; i++)
@@ -1106,7 +1106,7 @@ namespace Suborned.Play
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {
-                bool keep = c == world || c == actBadge || c == fireLayer; foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
+                bool keep = c == world || c == actBadge || c == fireLayer || c == vpill || c == vpillTail; // brief 041: the pill in both views foreach (var b in bubbleEls) if (b.root == c) keep = true; foreach (var pe in popEls) if (pe.root == c) keep = true;
                 c.style.visibility = f && !keep ? Visibility.Hidden : StyleKeyword.Null;
             }
         }

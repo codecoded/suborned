@@ -305,6 +305,15 @@ await ev(`__ctl.G.chargeS = 4`); await press(ph.x, ph.y, 2, "right"); await slee
 check("hold preset: the pill reads Hold to fire · down in n s while the right button is down", (await ev(`document.querySelector('#marker').textContent`)).includes("Hold to fire · down in 4 s"), await ev(`document.querySelector('#marker').textContent`));
 await shot("hold-right-hold-to-fire"); await lift(ph.x, ph.y, 0, "right"); await sleep(100); await ev(`__ctl.G.chargeS = 0.4`);
 check("hold preset: letting go of right early cancels", (await logText()).includes("Fire cancelled") && (await ev(`__ctl.G.sessions.length`)) === 0);
+// the 0.2 s tap window: a slow tap is a tap, the charge shows only after it
+await ev(`__ctl.G.chargeS = 4`); await press(ph.x, ph.y, 2, "right"); await sleep(120);
+check("hold preset: under 0.2 s there is no charge, no pill, no draw", (await ev(`!__ctl.G.charge || __ctl.G.charge.t < 0.2`)) === true && !(await ev(`document.querySelector('#marker').textContent`)).includes("Hold to fire") && (await ev(`__ctl.G.world.agents.every(a => !(a.drawnUntil > 0))`)) === true, await ev(`document.querySelector('#marker').textContent`));
+await lift(ph.x, ph.y, 0, "right"); await sleep(250);
+check("hold preset: a right tap just under 0.2 s opens the ring, no Fire cancelled", (await ev(`!!__ctl.G.ring`)) === true && !(await logText()).split(" | ").pop()!.includes("cancelled"), (await logText()).split(" | ").pop()); await key("Escape", "Escape");
+await press(ph.x, ph.y, 2, "right"); await sleep(450);
+check("hold preset: after 0.2 s the charge pill shows", (await ev(`document.querySelector('#marker').textContent`)).includes("Hold to fire"));
+await lift(ph.x, ph.y, 0, "right"); await sleep(100); await ev(`__ctl.G.chargeS = 0.4`);
+check("hold preset: the Squad acts setting is gone", (await ev(`!document.querySelector('[data-o="squadAct"]')`)) === true);
 await press(ph.x, ph.y, 2, "right"); await sleep(700);
 check("hold preset: a right hold fires", (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.byId.police1.hp`)) === 2);
 await lift(ph.x, ph.y, 0, "right"); await sleep(100);
@@ -340,7 +349,7 @@ check("act pill: Stopped after X, then the offer comes back", (await pillText())
 check("act pill: after that the first offer is back", (await pillText()).startsWith("Hold"), await pillText());
 // squad: a face with its own state each
 await fresh("hold"); await ev(`__ctl.squad(); __ctl.G.squadAct = 'all'; __ctl.G.actScale = 20`); let gdh = await at("guard"); await press(gdh.x, gdh.y); await sleep(1100);
-check("act pill (squad, everyone): each face has its own short state", (await ev(`document.querySelectorAll('#marker .faces img').length`)) >= 3, await pillText());
+check("act pill (squad, hold preset): even with the lab flag on, only the best-placed agent acts", (await ev(`__ctl.G.world.agents.filter(a => a.order?.kind === 'act').length`)) === 1, await pillText());
 await shot("hold-act-squad-states"); await lift(gdh.x, gdh.y);
 // fire hold, step by step
 await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.fire = { drawS: 1.0, aimS: 1.0, cadence: 1.5, range: 20 }; __ctl.G.world.agents.forEach(a => { a.drawnUntil = 0 })`); ph = await at("police1");

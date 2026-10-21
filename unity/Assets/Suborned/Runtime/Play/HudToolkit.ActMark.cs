@@ -79,6 +79,8 @@ namespace Suborned.Play
         void PillFrame()
         {
             if (marks == null) return; if (vpill == null) BuildPill();
+            if (host.controls.HoldActs) { HoldPillFrame(); HoldMarks(); world?.MarkDirtyRepaint(); return; } // brief 041: the hold preset's pill and marks (HudToolkit.Hold)
+            if (squadBtn != null) HoldMarks();
             var now = PillNow(); var cam = host.View;
             Vector2 q = default; bool on = now.HasValue && cam && host.TargetWorld(now.Value.t) is Vector3 w && Proj(w + Vector3.up * (now.Value.t.Kind is "person" or "crowd" or "hostile" or "bystander" or "patrol" or "rivals" or "security" ? 2.25f : 1.5f), out q);
             Show(vpill, on); Show(vpillTail, on); if (!on) return;
@@ -110,7 +112,7 @@ namespace Suborned.Play
             if (marks == null) return;
             if (actBadge == null) BuildActMark();
             followHoverRing.Clear();
-            PillFrame(); if (host.controls.DoubleClick) { Show(actBadge, false); return; } // brief 041: no ground ring, no disc, no name: the pill alone
+            PillFrame(); if (host.controls.Modern) { Show(actBadge, false); return; } // brief 041: no ground ring, no disc, no name: the pill alone
             var cam = host.View; var hr = m.HoverRing;
             if (!cam || !hr.HasValue || m.Ended) { Show(actBadge, false); return; }
             Vector2 front; bool have;
@@ -130,7 +132,7 @@ namespace Suborned.Play
                 front = q + new Vector2(0f, 64f * px / 2f * 0.62f);
             }
             var (glyph, more, walk, draws) = host.HoverAct;
-            bool on = have && (glyph.Length > 0 || more) && !ActMarkOff && !host.controls.DoubleClick; // brief 041: the verb pill (PillFrame) instead of the disc
+            bool on = have && (glyph.Length > 0 || more) && !ActMarkOff && !host.controls.Modern; // brief 041: the verb pill (PillFrame) instead of the disc
             Show(actBadge, on); if (!on) return;
             actBadge.style.left = front.x; actBadge.style.top = front.y;
             Show(actDisc, glyph.Length > 0); Icon(actGlyph, glyph, Cream); // a harmful likely way (never lit): the dots alone

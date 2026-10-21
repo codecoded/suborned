@@ -79,7 +79,7 @@ namespace Suborned.Play
             FocusWatcher = null;
             Guard("sight", () =>
             {
-                if (Peeking) { shownFans.AddRange(Game.KnownFans()); return; }
+                if (Peeking || HoldOn && WatchReach.HasValue && Hover != null) { shownFans.AddRange(Game.KnownFans()); return; } // brief 041: hovering a Watch shows the cones the cell has learned
                 var w = WatcherOf(Hover) ?? WatcherOf(Panel?.T) ?? ScoutWatch();
                 if (w == null || Game.Known(w) is not { Sight: true }) return;
                 FocusWatcher = w; var f = Game.ConeFan(w); if (f != null) shownFans.Add(f);

@@ -1,7 +1,9 @@
 // Fake acts: walk there, then a timer, then the result. Prices are the Handover's.
 import * as THREE from './vendor/three.module.min.js';
 import { G, say } from './state.js';
-import { ACTS, WALK, RUN, ROLES, priceLine } from './data.js';
+import { ACTS, WALK, RUN, ROLES, PRESETS, priceLine } from './data.js';
+// The Squad acts lab setting only counts outside the hold preset: there the best-placed agent does a calm act, always.
+export const squadAll = () => G.squadAct === 'all' && !PRESETS[G.preset]?.holdActs;
 
 const HARM_ORDER = ['knock', 'kill', 'fire'];
 export const agentOf = () => G.world.agents[G.sel]; // the lead: first selected, the one driven in third person
@@ -31,7 +33,7 @@ export function planFor(e, w, agents = crew(), run = false) {
   if (!able.length) return { agents: [], walkS: 0, lead: null, running: false, holds: agents };
   const rf = () => run; // the order's gait: run only if it was given as a run (Shift or a double click)
   let who = able;
-  if (G.squadAct === 'best' && able.length > 1 && true) who = [able.reduce((b, a) => (walkSeconds(a, e, w, rf(a)) < walkSeconds(b, e, w, rf(b)) ? a : b))];
+  if (!squadAll() && able.length > 1 && true) who = [able.reduce((b, a) => (walkSeconds(a, e, w, rf(a)) < walkSeconds(b, e, w, rf(b)) ? a : b))];
   const walks = who.map((a) => walkSeconds(a, e, w, rf(a))).filter(isFinite);
   const said = agents.length > 1 ? (who.length === agents.length ? `all ${who.length}` : names(who)) : '';
   return { agents: who, walkS: walks.length ? Math.max(...walks) : Infinity, lead: who[0], running: rf(who[0]), holds: agents.filter((a) => !who.includes(a)), who: said };

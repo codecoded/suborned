@@ -16,6 +16,7 @@ namespace Suborned.Play
         TargetMode,
         StepTarget,
         Act,
+        SelectAll,
     }
 
     /// <summary>Brief 024 revision (action-game controls): the right button aims while held (the default) or toggles the aim (for the trackpad's two-finger click).</summary>
@@ -27,7 +28,11 @@ namespace Suborned.Play
     /// thing or walks on the ground, a double click does the thing's main act (walking there first) or runs, a right tap opens the ring, no hold
     /// opens anything; the hover marker is the verb pill; third person's camera is the leash. Built: 0.2.34 as it was (the ring on the right
     /// press, the hold rings, the disc marker, the chase camera).</summary>
-    public enum ControlPreset { DoubleClick, Built }
+    /// <summary>HoldActs (Sky 2026-10-21, "this is all playing pretty well - lets move it into the game"; testbed/controls data.js PRESETS.hold,
+    /// the default): a click walks (on a thing to where its act is done, without acting), a double click runs, a held left button (0.4 s) does the
+    /// main calm act (Shift + hold runs there first; an early release cancels); a right tap opens the ring; a held right button fires (drawing first).
+    /// The left button never harms.</summary>
+    public enum ControlPreset { DoubleClick, Built, HoldActs }
 
     /// <summary>Brief 032's setting: the conversation scene plays always, the first time with each person (the default), or never (bubbles only).</summary>
     public enum ConversationScenes { Always, FirstTime, Never }
@@ -91,6 +96,7 @@ namespace Suborned.Play
             new() { action = PlayAction.TargetMode, keys = new[] { Key.Y }, label = "Y" },
             new() { action = PlayAction.StepTarget, keys = new[] { Key.Z }, label = "Z" }, // brief 030 §8: step the target (Tab's old overlap and target uses; Z was free) // brief 027: target mode (Y was free; Motive proposed it) // brief 025: the camera lab (P was free; no fn needed on a MacBook)
             new() { action = PlayAction.Act, keys = new[] { Key.E }, label = "E" }, // brief 024 revision: third person's act key (tap acts, hold the options); E is the view's turn on the map, so the two never meet in one mode
+            new() { action = PlayAction.SelectAll, keys = new[] { Key.Digit5, Key.Numpad5 }, label = "5" }, // brief 041 (the playground's squad): 5 selects all four (Ctrl/Cmd+A too)
         };
         static readonly Binding[] defaults = Defaults();
 
@@ -127,13 +133,21 @@ namespace Suborned.Play
         [UnityEngine.Tooltip("Brief 024 (Sky on firing): the follow setting. Off (the default), agents near the driven one fire at its target while its trigger is held; on, they lock its target and keep firing. Sent to the engine as the logged follow order (op cell).")]
         public bool followLock = false;
 
-        [UnityEngine.Tooltip("Brief 041: the click scheme (Sky's pick, Double click; or 0.2.34 as built). Pause menu, Controls.")]
-        public ControlPreset preset = ControlPreset.DoubleClick;
+        [UnityEngine.Tooltip("Brief 041: the click scheme (Click walks, hold acts, the default; Double click; or 0.2.34 as built). Pause menu, Controls.")]
+        public ControlPreset preset = ControlPreset.HoldActs;
+        [UnityEngine.Tooltip("Brief 041 (HoldActs): third person's right button. On (the default), a right hold fires (drawing first); off, the right button aims and the left fires.")]
+        public bool tpRightFires = true;
+        [UnityEngine.Tooltip("Brief 041 (HoldActs): orders given while paused wait as ghosts and start together when the clock runs (on, the default), or start as given (off).")]
+        public bool planTogether = true;
         [UnityEngine.Tooltip("Brief 041 (the leash camera, briefs/040 report): third person's camera settles behind a steady heading on its own (after 1 s of one heading and 2 s with no look-around, at most 45°/s). Off: it only turns with the agent's sideways motion. Pause menu, Camera settle.")]
         public bool leashSettle = true;
-        /// <summary>The Double click preset's pieces: no hold opens a ring, the verb pill marker, the leash camera.</summary>
+        /// <summary>The Double click preset (a single click selects a thing, a double click acts).</summary>
         public bool DoubleClick => preset == ControlPreset.DoubleClick;
-        const string PresetPref = "Suborned.Controls.Preset", SettlePref = "Suborned.Controls.LeashSettle";
+        /// <summary>Brief 041: Click walks, hold acts (the default).</summary>
+        public bool HoldActs => preset == ControlPreset.HoldActs;
+        /// <summary>Either playground preset's shared pieces: no hold opens a ring, the verb pill marker, the leash camera, the right tap's ring.</summary>
+        public bool Modern => preset != ControlPreset.Built;
+        const string PresetPref = "Suborned.Controls.Preset2", SettlePref = "Suborned.Controls.LeashSettle", TpFirePref = "Suborned.Controls.TpRightFires", PlanPref = "Suborned.Controls.PlanTogether", EdgePref = "Suborned.Controls.EdgePan"; // Preset2: the hold preset is the new default whatever an older profile saved
         const string PlatePref = "Suborned.Controls.ActionPlate", ConvoPref = "Suborned.Controls.Conversations", QuickPref = "Suborned.Controls.QuickAction", ClickPref = "Suborned.Controls.ClickActs", AimPref = "Suborned.Controls.AimMode", HoldFirePref = "Suborned.Controls.CommanderHoldFire", FollowPref = "Suborned.Controls.FollowLock";
         /// <summary>The two menu settings from the player's profile (PlayerPrefs), when saved; the table's own values otherwise.</summary>
         public void LoadSettings()
@@ -145,14 +159,18 @@ namespace Suborned.Play
             if (UnityEngine.PlayerPrefs.HasKey(AimPref)) aimMode = (AimMode)Math.Clamp(UnityEngine.PlayerPrefs.GetInt(AimPref), 0, 1);
             if (UnityEngine.PlayerPrefs.HasKey(HoldFirePref)) commanderHoldFire = UnityEngine.PlayerPrefs.GetInt(HoldFirePref) == 1;
             if (UnityEngine.PlayerPrefs.HasKey(FollowPref)) followLock = UnityEngine.PlayerPrefs.GetInt(FollowPref) == 1;
-            if (UnityEngine.PlayerPrefs.HasKey(PresetPref)) preset = (ControlPreset)Math.Clamp(UnityEngine.PlayerPrefs.GetInt(PresetPref), 0, 1);
+            preset = UnityEngine.PlayerPrefs.HasKey(PresetPref) ? (ControlPreset)Math.Clamp(UnityEngine.PlayerPrefs.GetInt(PresetPref), 0, 2) : ControlPreset.HoldActs; // a scene saved before brief 041's port (FightRange.unity: preset 0) still opens on the hold preset
+            if (UnityEngine.PlayerPrefs.HasKey(TpFirePref)) tpRightFires = UnityEngine.PlayerPrefs.GetInt(TpFirePref) == 1;
+            if (UnityEngine.PlayerPrefs.HasKey(PlanPref)) planTogether = UnityEngine.PlayerPrefs.GetInt(PlanPref) == 1;
+            if (UnityEngine.PlayerPrefs.HasKey(EdgePref)) edgeScroll = UnityEngine.PlayerPrefs.GetInt(EdgePref) == 1;
             if (UnityEngine.PlayerPrefs.HasKey(SettlePref)) leashSettle = UnityEngine.PlayerPrefs.GetInt(SettlePref) == 1;
         }
         public void SaveSettings()
         {
             UnityEngine.PlayerPrefs.SetInt(PlatePref, actionPlate ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(ConvoPref, (int)conversations); UnityEngine.PlayerPrefs.SetInt(QuickPref, quickAction ? 1 : 0);
             UnityEngine.PlayerPrefs.SetInt(ClickPref, clickActs ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(AimPref, (int)aimMode); UnityEngine.PlayerPrefs.SetInt(HoldFirePref, commanderHoldFire ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(FollowPref, followLock ? 1 : 0);
-            UnityEngine.PlayerPrefs.SetInt(PresetPref, (int)preset); UnityEngine.PlayerPrefs.SetInt(SettlePref, leashSettle ? 1 : 0); UnityEngine.PlayerPrefs.Save();
+            UnityEngine.PlayerPrefs.SetInt(PresetPref, (int)preset); UnityEngine.PlayerPrefs.SetInt(SettlePref, leashSettle ? 1 : 0);
+            UnityEngine.PlayerPrefs.SetInt(TpFirePref, tpRightFires ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(PlanPref, planTogether ? 1 : 0); UnityEngine.PlayerPrefs.SetInt(EdgePref, edgeScroll ? 1 : 0); UnityEngine.PlayerPrefs.Save();
         }
 
         /// <summary>The binding for an action: this table's, else the default's (a table saved in a scene before an action existed keeps working).</summary>

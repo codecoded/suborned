@@ -152,7 +152,7 @@ namespace Suborned.Play
         public static Vector2? PointerOverride;
         /// <summary>For the proof: the pointer held on a world point (its screen position each frame, so a window resize never moves it off).</summary>
         public static Vector3? PointerWorld;
-        string intentKey = ""; GameObject background; Vector2 lastMouse = new(-1, -1), lastHover; readonly List<Camera> covered = new();
+        string intentKey = ""; float hoverAt; GameObject background; Vector2 lastMouse = new(-1, -1), lastHover; readonly List<Camera> covered = new();
         readonly Stopwatch sw = new();
 
         void Start()
@@ -195,7 +195,7 @@ namespace Suborned.Play
                 if (Game.S.Root.Opt("cast")?.Opt("startsAt") is JNode st && st.Kind == JKind.Str) MissionStartsAt = st.Str();
             });
             if (Fault != null) return;
-            FightLabReset();
+            FightLabReset(); HoldReset(); // brief 041: the hold preset's host memory (charge, plan, drag, follow)
             viewRoot = new GameObject("engine").transform; viewRoot.SetParent(transform, false);
             views = new HostViews(this, viewRoot, frame);
             views.Tick(); views.Tick(); views.Frame(1f);
@@ -239,11 +239,12 @@ namespace Suborned.Play
             if (ConvoFrame()) return; // brief 032: a conversation scene plays (HostConvo): the clock held, its keys only, the cutaway camera // the fail camera plays (HostFailCam): nothing else this frame but the follow view, if on (Sky 2026-10-20: it plays in the view the player is in)
             if (Ending.Length > 0) { ClearHover(); if (kb != null && kb.escapeKey.wasPressedThisFrame) { OpenMenu(); return; } if (controls.Down(kb, PlayAction.Restart)) Begin(); CameraOnly(kb, UnityEngine.InputSystem.Mouse.current); views?.Frame(1f); FollowFrame(); FadePoints(); return; } // the end card is modal (ModalGate)
             if (!CameraLab.Typing) Controls(); // brief 025: no keys reach the street while a preset name is typed
+            if (Fault == null) Guard("plan", PlanFrame); // brief 041: the pause lifted gives the queued orders on this tick, before the clock steps
             if (Fault != null) return;
             DriveFrame(kb); // brief 025: the driven agent's controller, before the clock steps (HostDrive)
             if (!Paused && !Frozen && !Game.Over && !(Panel != null && controls.pauseWithPanel))
             {
-                acc += Time.unscaledDeltaTime * Speed * PlaybackScale * (rangeHalf ? 0.5f : 1f); // brief 027: targetPlayback slows the host while a volley fires (ticks identical)
+                acc += Time.unscaledDeltaTime * Speed * PlaybackScale * (rangeHalf ? 0.5f : 1f) * DragSlow; // brief 041: ¼ speed while a portrait is dragged (the ticks are identical) // brief 027: targetPlayback slows the host while a volley fires (ticks identical)
                 int n = 0; double t0 = Now();
                 while (acc >= 0.1f && n < 80 && !Game.Over && !Frozen && !ConvoOn && convoWant == null) { if (!StepOnce()) return; acc -= 0.1f; n++; } // brief 032: an act that opens a scene holds the clock on its first tick // brief 027: a freeze stops the steps at once
                 if (n == 80) acc = 0f;
@@ -258,6 +259,7 @@ namespace Suborned.Play
             Guard("faces", FacesFrame); // brief 033: the roster's live portraits (HostPortraits) // brief 031: the watchers' displayed stages and the callouts (HostAttention), before the views draw them
             views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
             FollowFrame(); // the test follow view (HostFollow): after the views moved
+            CamFollowFrame(); Guard("hold status", HoldStatusFrame); // brief 041: C's follow and the eased centring; the pill's live words
             Guard("fight lab", FightLabFrame); // brief 027: queued ghost lines and the hostiles' focus in a freeze
             FadePoints();
             DoorViewFrame(); // GDD v0.24: the Office door's clear-view clock (H13's door cause)
@@ -358,9 +360,10 @@ namespace Suborned.Play
                 if (Frozen && Loud == null && Ring == null && c.Down(kb, PlayAction.Restart)) Release(); // a ring open: Enter takes its lit way (RightFrame) // brief 027: Return releases the queue on the frozen tick
                 if (c.Down(kb, PlayAction.TargetMode)) TargetKey(); // brief 027: target mode (Y)
                 if (c.Down(kb, PlayAction.DialogueLog)) FeedHistoryOpen = !FeedHistoryOpen; // L: the feed's history (the old dialogue log is the ticker now)
-                if (c.Down(kb, PlayAction.Cancel)) CancelSelected();
+                if (!HoldOn && c.Down(kb, PlayAction.Cancel)) CancelSelected(); // brief 041 (hold): C is the camera's follow, X stops (HoldKeys)
                 if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
-                if (c.Down(kb, PlayAction.Cease)) CeaseFire();
+                if (!HoldOn && c.Down(kb, PlayAction.Cease)) CeaseFire();
+                if (HoldOn) HoldKeys(kb, shift); // brief 041: 1–4 (Shift or Ctrl toggles), 5 and Ctrl/Cmd+A, C follow, X stop, Tab steps the overlap
                 if (c.Down(kb, PlayAction.Stance)) CycleStance();
                 if (c.Down(kb, PlayAction.Hints)) { if (shift) RelearnHints(); else if (HintNow != null && !HintLineShowing && HintsOn) HintReopenAt = Time.unscaledTime; else ToggleHints(); } // H: a folded hint comes back, else the layer on or off; Shift+H: the retired control hints come back
                 if (c.Down(kb, PlayAction.Intel)) IntelOpen = !IntelOpen;
@@ -374,14 +377,14 @@ namespace Suborned.Play
                 // brief 030 §8 (Sky 2026-10-20): 1–4 select the agents (F1–F4 stay as hidden aliases), Shift+1–4 pick the selected agent's action
                 // (in third person only while standing); plain digits are ignored while a ring is open
                 bool standing = DriveStanding(kb);
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 4 && !HoldOn; i++)
                 {
                     bool digit = c.Down(kb, PlayAction.Verb1 + i);
                     if (digit && shift) { if (!standing) continue; if (Ring != null) RingKey(i); else if (Panel != null) PanelKey(i); else Pick(i); continue; }
                     if (c.Down(kb, PlayAction.Agent1 + i) && Ring == null) AgentKey(i, shift && !digit);
                 }
                 if (kb.escapeKey.wasPressedThisFrame && Loud == null) { if (Ring != null) { /* the ring closes in RightFrame */ } else if (Frozen && Panel == null) LeaveFreeze(); else if (Panel != null) ClosePanel(); else if (ShowBriefing) ShowBriefing = false; else if (SelTarget != null) ClearSel(); else if (Picked >= 0) { Picked = -1; intentKey = ""; } else if (FeedHistoryOpen) FeedHistoryOpen = false; else OpenMenu(); } // nothing nearer to close: the pause menu
-                if (c.Down(kb, PlayAction.CycleAgent) && Ring == null) CycleAction(shift); // brief 030 §8: Tab steps the selected agent's actions (never the camera or the selection)
+                if (!HoldOn && c.Down(kb, PlayAction.CycleAgent) && Ring == null) CycleAction(shift); // brief 030 §8: Tab steps the selected agent's actions (never the camera or the selection)
                 if (c.Down(kb, PlayAction.StepTarget)) StepTarget(shift); // Z: overlapping things, the picked action's targets, the driven focus
                 if (!Driving && !Frozen) // driven: real time (the controller's pace), no skipping ahead; frozen: no tick runs
                 {
@@ -402,7 +405,7 @@ namespace Suborned.Play
             // the drag and the right click's own act give way
             if (!Driving && Game.FightOn && Ring == null && ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed))) // third person: the right button aims and the left fires (HostAim)
             { dragging = false; BoxScreen = null; if (Loud == null) Panic(p); return; }
-            Sweep(p, mouse.rightButton.isPressed);
+            if (!HoldOn) Sweep(p, mouse.rightButton.isPressed); // brief 041 (hold): a hold keeps its target
             if (!turnDragging && !Following) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);
             if (c.edgeScroll && Application.isFocused && !Following)
             {
@@ -415,13 +418,15 @@ namespace Suborned.Play
             if (wheel != 0f && !Following && !OverHud(p)) OverheadWheel(wheel); // the follow view's wheel is its distance (FollowInput); stepped or proportional (brief 025)
             if (Driving && DriveFocus != null) lastMouse = p;             // driven: the chip is on what E acts on (HostDrive), not under the cursor
             else if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
-            else if (intentKey.Length == 0) PointerHover(lastHover);    // the agent, the verb or the world changed under a still mouse
+            else if (intentKey.Length == 0 || HoldOn && Time.unscaledTime - hoverAt > 0.1f) { hoverAt = Time.unscaledTime; PointerHover(lastHover); } // the agent, the verb or the world changed under a still mouse (the hold preset: ten times a second, for the hover's 150 ms hold)
             bool onHud = OverHud(p);
             if (!onHud && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)) WorldPresses++; // the proof's click-through check reads it
             if (mouse.leftButton.wasReleasedThisFrame || mouse.rightButton.wasReleasedThisFrame) HudToolkit.BlurFocus(); // brief 024 rule 6: no click keeps keyboard focus (WASD after any click)
-            CommanderHoldFireFrame(mouse); // controls.commanderHoldFire: the right button up ceases (HostAim)
+            if (!HoldOn) CommanderHoldFireFrame(mouse); // controls.commanderHoldFire: the right button up ceases (HostAim)
+            if (HoldOn && PortraitDragFrame(mouse, p)) { BoxScreen = null; return; } // brief 041: a portrait dragged onto the street
             if (TpPointer(mouse, p, onHud)) { BoxScreen = null; return; } // brief 024 revision: third person's aim, trigger, right tap and the left click on the prompt (HostAim)
             if (!onHud && VolleyClick(p, mouse.leftButton.wasPressedThisFrame, mouse.rightButton.wasPressedThisFrame)) { dragging = false; return; } // brief 027: target mode builds volleys
+            if (HoldOn && !Driving && HoldFrame(mouse, p, onHud)) { dragging = false; return; } // brief 041: click walks, hold acts; right tap ring, right hold fires
             if (RightFrame(mouse, p, onHud)) { dragging = false; BoxScreen = null; return; } // brief 030: the right button's click, hold and ring
             if (mouse.leftButton.wasPressedThisFrame && !onHud && Panel != null) { ClosePanel(); return; } // a left click elsewhere closes the panel
             if (mouse.leftButton.wasPressedThisFrame && !onHud) { dragFrom = p; dragging = true; }
@@ -449,7 +454,7 @@ namespace Suborned.Play
         /// <summary>A roster portrait clicked: as the agent's key (double click centres).</summary>
         public void PortraitClick(int i, bool add) => AgentKey(i, add);
 
-        public void CentreOn(OpId id) { var op = Game.Ops[(int)id]; LookAt(frame.World(op.Pos)); Status = $"centred on {Op.Name(id)}"; }
+        public void CentreOn(OpId id) { var op = Game.Ops[(int)id]; if (HoldOn) { camFollow = false; centreGoal = frame.World(op.Pos); } else LookAt(frame.World(op.Pos)); Status = $"centred on {Op.Name(id)}"; } // brief 041: an eased glide
 
         static Rect GuiRect(Vector2 a, Vector2 b) => Rect.MinMaxRect(Mathf.Min(a.x, b.x), Screen.height - Mathf.Max(a.y, b.y), Mathf.Max(a.x, b.x), Screen.height - Mathf.Min(a.y, b.y));
 
@@ -492,7 +497,7 @@ namespace Suborned.Play
             if (!grabPlane.Raycast(r, out var d)) return;
             var under = r.GetPoint(d); var move = (grabWorld - under) * controls.dragPan; move.y = 0f;
             if (move.sqrMagnitude < 1e-8f) return;
-            focus += move; TurnMoved(move); PlaceCamera(); // the grabbed point is back under the cursor
+            focus += move; TurnMoved(move); HandMoved(); PlaceCamera(); // the grabbed point is back under the cursor
         }
 
         void Pan(Vector2 screen)
@@ -500,7 +505,7 @@ namespace Suborned.Play
             var right = cam.transform.right; right.y = 0; right.Normalize();
             var up = cam.transform.forward; up.y = 0; up.Normalize();
             var d = right * screen.x + up * screen.y / Mathf.Sin(cam.transform.eulerAngles.x * Mathf.Deg2Rad); // the screen's own axes: at any yaw a key pans along the screen
-            focus += d; TurnMoved(d);
+            focus += d; TurnMoved(d); HandMoved();
             PlaceCamera();
         }
 
@@ -543,11 +548,11 @@ namespace Suborned.Play
         {
             if (!ModalGate.AllowsHover(Modal)) { ClearHover(); return; } // nothing in the street answers under a modal
             lastHover = screen; Mouse = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y); // GUI space: origin top left
-            var t = TargetAt(screen);
-            string key = $"{t?.Kind}:{t?.Key}:{Agent}:{Picked}:{Game.Orders.Count}";
+            var t = TargetAt(screen); if (HoldOn) t = Sticky(t, screen); // brief 041: the pill stays on the one you are on
+            string key = $"{t?.Kind}:{t?.Key}:{Agent}:{Picked}:{Game.Orders.Count}:{(HoldOn ? Array.IndexOf(Selected, true) * 16 + (Selected[0] ? 1 : 0) + (Selected[1] ? 2 : 0) + (Selected[2] ? 4 : 0) + (Selected[3] ? 8 : 0) : 0)}";
             if (key == intentKey) { if (t == null) UpdateMoveChip(screen, false); return; }
             intentKey = key; Hover = t; HoverFeedback(t);
-            HoverIntent = t == null ? null : IntentFor(t);
+            HoverIntent = HoldOn ? HoldIntent(t) : t == null ? null : IntentFor(t); // brief 041: the main calm act (or a right hold's fire), its doers, seen there
             UpdateAim();
             if (t == null) UpdateMoveChip(screen, false); else MoveChip = null;
         }
@@ -728,14 +733,15 @@ namespace Suborned.Play
         static readonly string[] AgentNames = { "Scout", "Fixer", "Tech", "Enforcer" };
 
         /// <summary>The range's context hint over a bystander (engine 0.18: a civilian is fired on only when forced): what to press, in one line.</summary>
-        public string BystanderHint => $"Bystander: hold {controls.Label(PlayAction.Force)} and right click to fire.";
+        public string BystanderHint => controls.HoldActs ? "Bystander: hold the right button to fire." : $"Bystander: hold {controls.Label(PlayAction.Force)} and right click to fire."; // brief 041 (Sky): the same hold, no Ctrl
         /// <summary>The goal line's context hint now, else null: in the fight range, a bystander hovered with an armed agent selected and Ctrl up.</summary>
         public string RangeHint
         {
             get
             {
                 if (!rangeMode || Game == null || Hover == null || Hover.Kind != "bystander" || Ring != null || Panel != null) return null;
-                if (controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null;
+                if (!controls.HoldActs && controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null;
+                if (controls.HoldActs && (Charge != null || FireHold != null)) return null;
                 for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) return BystanderHint;
                 return null;
             }
@@ -818,7 +824,7 @@ namespace Suborned.Play
                     {
                         // engine 0.15.0 (tuning.md §9.1): anyone can be shot: every person (Vale too: the hold card says the mission fails), forced
                         // (a civilian), a unit by its own id, a camera, a car (0.16.0); each a harmful wedge with the 0.5 s hold (HoldWedge)
-                        if (t.Kind == "bystander" && !controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null; // engine 0.18: a range bystander is fired on only with Ctrl held (the goal line says so)
+                        if (t.Kind == "bystander" && !controls.HoldActs && !controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null; // engine 0.18: a range bystander is fired on only with Ctrl held (the goal line says so)
                         string target = t.Kind is "person" or "hostile" or "unit" or "bystander" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : "";
                         if (target.Length == 0) return null;
                         var i = I("fire", target, "", $"Fire on {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? "" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
@@ -832,7 +838,7 @@ namespace Suborned.Play
         {
             var R = Game.R; string target = t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind is "hostile" or "unit" ? t.Key : "";
             if (Game.Range && t.Kind == "car") target = "car:" + t.Key; // engine 0.18: the range's cars, by every armed agent
-            if (Game.Range && t.Kind == "bystander" && controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) target = t.Key; // and a bystander, only with Ctrl held
+            if (Game.Range && t.Kind == "bystander" && (controls.HoldActs || controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force))) target = t.Key; // brief 041: no Ctrl in the hold preset // and a bystander, only with Ctrl held
             if (target.Length == 0) return null; // Keel 0.15.0: a unit by its own id
             var i = new Intent { Slot = -1, Label = $"Fire on {t.Label}", Order = new Order { Op = Op.Name(by), Do = "fire", Target = target, Force = t.Kind == "bystander" } };
             i.Time = "until down"; i.Trail = $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
@@ -1090,7 +1096,7 @@ namespace Suborned.Play
             Answer No(string code, string why, int tick = -1, long usd = -1) => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = usd, tick = tick };
             var yes = new Answer { ok = true, code = "", why = "" };
             if (op.Inside) return No("enforcer-inside", "inside the Office");
-            if (op.Busy != null) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
+            if (op.Busy != null && !HoldOn) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
             if (o.Do is "listen" or "turn" && ServingBackS(o.Target) > 0) return No("too-far", $"serving a table; back in {ServingBackS(o.Target)} s"); // brief 022 (N130): out at a table she is out of reach; the row says when she is back
             if (o.Do is "watch" or "listen") { var sq = g.LearnQuery(Op.Name(by), o.Do, o.Target); /* any agent (the Tech watches machines): only-scout, run-tethered, already-watched */ if (!sq.ok && sq.code is not ("too-far" or "agent-busy" or "mission-over")) return sq; } // Keel's refusals (a second Watch or Listen teaches nothing): the engine's, not the host's
             switch (o.Do)
@@ -1229,7 +1235,7 @@ namespace Suborned.Play
             if (w == null && order.Do == "watch" && CrowdBlocked((int)by, order.Target)) // brief 031: a passer-by across the line: the Watch waits a moment and goes (FollowUp)
             { pending[(int)by] = order; pendingAt[(int)by] = tw; pendingFrom[(int)by] = Game.Tick; SayOrder(by, order, new ActWalk { Place = "" }); Track(); return; }
             if (w == null) { if (Issue(order, screen, tw)) SayOrder(by, order, null); return; }
-            var walk = w.Place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = w.Place } : new Order { Op = order.Op, Do = "move", Point = w.To };
+            var walk = w.Place.Length > 0 ? new Order { Op = order.Op, Do = "move", To = w.Place, Run = giveRun && RunInRulebook } : new Order { Op = order.Op, Do = "move", Point = w.To, Run = giveRun && RunInRulebook }; // brief 041: Shift + hold (or Shift on a wedge) runs there first
             if (Issue(walk, screen, null))
             {
                 pending[(int)by] = new Order { Op = order.Op, Do = order.Do, Target = order.Target, Approach = order.Approach, How = order.How };

@@ -1,5 +1,9 @@
 import { G } from './state.js';
 // Everything a designer tunes: acts and their prices, who can be acted on, and the presets.
+// Right button timing (brief 041; Latch mirrors these in Unity). Under RIGHT_TAP_S it is a tap: the ring, no charge, no pill, no draw.
+// After it the "Hold to fire" charge shows and fills for FIRE_CHARGE_S; the shot goes at RIGHT_TAP_S + FIRE_CHARGE_S (0.4 s). Letting go before that cancels.
+export const RIGHT_TAP_S = 0.2, FIRE_CHARGE_S = 0.2;
+G.chargeS = RIGHT_TAP_S + FIRE_CHARGE_S; // the total from the press; the lab and the left-hold charge read this too
 export const WALK = 1.4, RUN = 2.8; // m/s: the engine's walk and run (sim/cli/DriveSession.cs, Handover chip: run 2x walk)
 
 // Kind colours. Not red, amber or violet: those belong to cones, guards and rivals.
@@ -61,7 +65,7 @@ export const PRESETS = {
     label: 'Click walks, hold acts', marker: 'pill', ring: 'calm', runMode: 'dbl',
     left: { thing: 'walk', ground: 'walk' }, dbl: { thing: 'run', ground: 'run' },
     leftHold: false, right: 'tap', eHold: false, agentClick: 'none', shiftRuns: true, thingWalk: true, holdActs: true, rightFires: true,
-    about: 'Click walks there, on a thing too; double click runs. Hold the left button on a thing to do its main action; Shift + hold runs there first. Right tap opens the other ways; right hold fires.',
+    about: 'Click walks there, on a thing too; double click runs. Hold the left button on a thing to do its main action; Shift + hold runs there first. Right tap (under 0.2 s) opens the other ways; right hold fires after 0.4 s.',
   },
   runs: {
     label: 'Click acts, double click runs', marker: 'pill', ring: 'calm', runMode: 'dbl',

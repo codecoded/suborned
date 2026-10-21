@@ -48,3 +48,4 @@ Sky, 2026-10-21, after playing 0.2.34 and seeing the calm-ring mockup:
 
 ## To the game (Sky, 2026-10-21)
 "this is all playing pretty well - lets move it into the game - make sure fight lab is updated." Port the **Click walks, hold acts** preset and everything around it to Unity (Latch), the fight range included. Building fade: Sky is "not into our main fade - was gonna come back to that": keep the game's fade as it is for now and don't port the playground's; a fade pass comes later.
+- Sky: "Alt to flip best placed or everyone - that shouldn't even exist - was a lab setting." In the game there is no Alt flip and no squad-acts setting: the best-placed agent does a calm act and the rest hold; a right hold on a hostile fires with every selected drawn agent. Playground toggles are test settings, not game controls, unless Sky says so.

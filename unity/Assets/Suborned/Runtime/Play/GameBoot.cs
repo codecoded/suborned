@@ -134,6 +134,9 @@ namespace Suborned.Play
             // brief 024 (action-game controls, firing): the input map, the act on the prompt, the trigger and its marks and animation, the cars
             var inputMap = new string[] { "null" }; ProofFire.InputMap(log, inputMap);
             var dblClick = new string[] { "null" }; yield return ProofInput.DblClick(h, Dir, log, dblClick); // brief 041: single and double clicks on a person, a prop and the ground; the right tap and hold
+            // brief 041's port: Click walks, hold acts (the default) from here on: its Handover proofs, then fire, cars and the click-through under it
+            h.controls.preset = ControlPreset.HoldActs; h.ControlsChanged(); yield return null;
+            var holdActs = new string[] { "null" }; yield return ProofHold.Handover(h, Dir, log, holdActs);
             var fire = new string[] { "null" }; var fireSession = new string[1]; yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
             var cars = new string[] { "null" }; yield return ProofFire.Cars(h, Dir, log, cars);
             var hudClick = new string[] { "null" }; yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
@@ -141,23 +144,23 @@ namespace Suborned.Play
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
             yield return PeopleCost(h, log, people, 6f, Dir);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
+            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
             // Sky on 0.2.34, the fight range's panel: its clicks never reach the street (both views). Last, as it leaves the Handover's scene
             h.ResumeFromMenu();
-            var rangeClick = new string[] { "null" }; var leash = new string[] { "null" };
+            var rangeClick = new string[] { "null" }; var leash = new string[] { "null" }; var holdRange = new string[] { "null" };
             {
                 ProofInput.Focusless(true);
                 h.SwitchRangeScene(); // the run saved, then the range scene (the pause menu's own switch)
                 HandoverHost rh = null; float r0 = Time.realtimeSinceStartup;
                 while (((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
-                if (rh != null && rh.rangeMode && rh.Game != null) { yield return new WaitForSecondsRealtime(1.5f); yield return ProofInput.RangePanelClick(rh, log, rangeClick); yield return ProofInput.Leash(rh, Dir, log, leash); } // brief 041: the leash on the range's open floor
+                if (rh != null && rh.rangeMode && rh.Game != null) { yield return new WaitForSecondsRealtime(1.5f); yield return ProofInput.RangePanelClick(rh, log, rangeClick); yield return ProofInput.Leash(rh, Dir, log, leash); rh.controls.preset = ControlPreset.HoldActs; rh.ControlsChanged(); yield return ProofHold.Range(rh, Dir, log, holdRange); } // brief 041: the hold preset on the range // brief 041: the leash on the range's open floor
                 else log.Add("rangePanelClick: no range host after 60 s");
                 ProofInput.Focusless(false);
             }
-            frames = frames.Replace("__LEASH__", leash[0]);
+            frames = frames.Replace("__LEASH__", leash[0]).Replace("__HOLDRANGE__", holdRange[0]);
             frames = frames.Replace("__HUDCLICK__", $"{{\"ok\": {(hudClick[0].StartsWith("{\"ok\": true") && rangeClick[0].StartsWith("{\"ok\": true") ? "true" : "false")}, \"handover\": {hudClick[0]}, \"range\": {rangeClick[0]}}}");
             Write(frames, rendered ? "ok" : "blank");
             yield return new WaitForSecondsRealtime(0.5f);

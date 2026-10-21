@@ -132,7 +132,7 @@ namespace Suborned.Play
             if (Game == null || Fault != null || Game.Over) return;
             var d = doing[k]; string cost = d.CancelText, what = d.CancelVerb.Length > 0 ? d.CancelVerb : "it";
             bool walking = d.Phase is "walking" or "running", costly = !walking && !CancelFree.Contains(d.CancelCode);
-            pending[k] = null; pendingAt[k] = null;
+            pending[k] = null; pendingAt[k] = null; HoldCancelled(k); // brief 041: the pill says Stopped
             Activity a = null; Guard("activity", () => a = Game.ActivityOf((OpId)k));
             if (a != null && a.CanCancel && costly) FeedCancelled(k, cost, what);
             else CloseActCard(k);

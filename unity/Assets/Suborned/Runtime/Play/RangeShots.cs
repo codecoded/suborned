@@ -147,7 +147,7 @@ namespace Suborned.Play
             yield return Shot("range-bystanders-flee");
             HandoverHost.PointerOverride = null; h.ClearHover();
             Check("bystanders", s1 && s2 && fleeing >= 2 && saw >= 1, $"spawned {s1}/{s2}; at the shot {fleeing} fleeing, {saw} saw an agent fire ({string.Join(", ", bs.Where(b => b.Saw.Length > 0).Select(b => b.Id + " saw " + b.Saw))}); states {string.Join(" ", bs.Select(b => b.State))}");
-            Check("ctrlHint", hint.Contains("Ctrl"), $"over {run?.Id}: \"{hint}\"");
+            Check("bystanderHint", h.controls.HoldActs ? hint.Contains("right button") && !hint.Contains("Ctrl") : hint.Contains("Ctrl"), $"over {run?.Id}: \"{hint}\" (brief 041: the same right hold, no Ctrl)");
             // they come back: the clock runs on after the cell ceases; quiet 30 s after the last shot, they walk back to their slots
             foreach (var a in new[] { "enforcer", "tech" }) h.Issue(new Order { Op = a, Do = "cease" });
             foreach (var a in new[] { "scout", "fixer", "tech", "enforcer" }) h.Issue(new Order { Op = a, Do = "holster" });

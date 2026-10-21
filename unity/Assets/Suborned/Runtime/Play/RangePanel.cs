@@ -96,7 +96,7 @@ namespace Suborned.Play
             if (h == null || !h.rangeMode || h.Game == null) return;
             Styles(); var g = h.Game; var cam = UnityEngine.Camera.main;
             float k = Screen.height / 1080f; GUI.matrix = Matrix4x4.Scale(new Vector3(k, k, 1f)); float W = Screen.width / k;
-            var r = new Rect(W - 470, 120, 456, 420); // the panel, top right under the clock
+            var r = new Rect(W - 470, 120, 456, h.controls.HoldActs ? 445 : 420); // the panel, top right under the clock (the hold preset: one more setting row and the fire readout)
             panelScreen = new Rect(r.x * k, r.y * k, r.width * k, r.height * k); panelFrame = Time.frameCount;
             // labels: each cover piece by kind, and each line of fire in the engine's plain words; placed clear of each other and of the panel
             // (Sky on 0.2.33/0.2.34: labels stacked where lines share a path): a label that would overlap steps up or down a row, with a hairline
@@ -162,11 +162,21 @@ namespace Suborned.Play
             GUILayout.BeginHorizontal(); GUILayout.Label("Agents near", small, GUILayout.Width(80));
             int fl = h.controls.followLock ? 1 : 0, nfl = GUILayout.Toolbar(fl, new[] { "Fire with you", "Lock your target" }); GUILayout.EndHorizontal();
             if (nfl != fl) h.SetFollowLock(nfl == 1);
-            GUILayout.BeginHorizontal(); GUILayout.Label("Map fire", small, GUILayout.Width(80));
-            int hf = h.controls.commanderHoldFire ? 1 : 0, nhf = GUILayout.Toolbar(hf, new[] { "Until down", "While held" }); GUILayout.EndHorizontal();
-            if (nhf != hf) { h.controls.commanderHoldFire = nhf == 1; h.controls.SaveSettings(); }
+            if (h.controls.HoldActs) // brief 041: the hold preset fires while the right button is held; its two fire settings instead
+            {
+                GUILayout.BeginHorizontal(); GUILayout.Label("Third person", small, GUILayout.Width(80));
+                int tf = h.controls.tpRightFires ? 0 : 1, ntf = GUILayout.Toolbar(tf, new[] { "Right hold fires", "Right aims, left fires" }); GUILayout.EndHorizontal();
+                if (ntf != tf) { h.controls.tpRightFires = ntf == 0; h.controls.SaveSettings(); h.ControlsChanged(); }
+            }
+            else
+            {
+                GUILayout.BeginHorizontal(); GUILayout.Label("Map fire", small, GUILayout.Width(80));
+                int hf = h.controls.commanderHoldFire ? 1 : 0, nhf = GUILayout.Toolbar(hf, new[] { "Until down", "While held" }); GUILayout.EndHorizontal();
+                if (nhf != hf) { h.controls.commanderHoldFire = nhf == 1; h.controls.SaveSettings(); }
+            }
             GUILayout.BeginHorizontal(); h.rangeHalf = GUILayout.Toggle(h.rangeHalf, " ½× time"); numbers = GUILayout.Toggle(numbers, " Numbers"); if (GUILayout.Button("Restart (R)")) h.Begin(); GUILayout.EndHorizontal();
             GUILayout.Label(Tally(g) + (Time.unscaledTime - lastAt < 4f ? " · " + last : ""), small); Mark("tally", area, k);
+            if (h.controls.HoldActs) { int sel = System.Array.IndexOf(h.Selected, true); var fw = h.FireWords(h.Driving ? h.DriveAgent : sel); GUILayout.Label(fw.Length > 0 ? "Fire: " + fw : "Fire: right hold on a target", small); FireReadout = fw; } // brief 041: the pill's own words
             GUILayout.EndArea();
             GUI.matrix = Matrix4x4.identity;
             if (Event.current.type == EventType.Repaint) { LabelsPlaced = lp; LabelsMoved = lm; LabelsDropped = ld; }
@@ -187,6 +197,8 @@ namespace Suborned.Play
         readonly List<Rect> placed = new(); static Texture2D hair;
         /// <summary>The last repaint's labels: placed, stepped off their point, left off for room (the range proof reads them).</summary>
         public static int LabelsPlaced, LabelsMoved, LabelsDropped; int lp, lm, ld;
+        /// <summary>The panel's fire readout as last drawn (the proof reads it): the pill's words.</summary>
+        public static string FireReadout = "";
 
         /// <summary>A control's rect on screen (GUI space, pixels) as GUILayout placed it in the area, on the repaint (the proof clicks it).</summary>
         static void Mark(string name, Rect area, float k)

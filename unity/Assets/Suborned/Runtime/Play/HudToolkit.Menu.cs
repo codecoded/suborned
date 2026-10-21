@@ -7,7 +7,7 @@ namespace Suborned.Play
     /// buttons, labels only (no keycaps: Sky), a one-word title. Built with the less-reading HUD, drawn above everything while it is up.</summary>
     public sealed partial class HudToolkit
     {
-        VisualElement menuVeil, menuCard; Label menuPreset, menuSettle, menuConvo, menuPlate, menuRight, menuClick, menuAim, menuFollow, menuHoldFire;
+        VisualElement menuVeil, menuCard; Label menuPreset, menuSettle, menuConvo, menuPlate, menuRight, menuClick, menuAim, menuFollow, menuHoldFire, menuTpFire, menuPlan, menuEdge;
         const float MenuW = 340;
 
         void BuildMenu()
@@ -26,7 +26,7 @@ namespace Suborned.Play
             }
             Btn("Resume", () => host.ResumeFromMenu());
             // brief 041 (Sky's pick from the controls playground): the click scheme, and the leash camera's settle
-            menuPreset = Btn("", () => { var c = host.controls; c.preset = c.DoubleClick ? ControlPreset.Built : ControlPreset.DoubleClick; c.SaveSettings(); host.ControlsChanged(); });
+            menuPreset = Btn("", () => { var c = host.controls; c.preset = c.HoldActs ? ControlPreset.DoubleClick : c.DoubleClick ? ControlPreset.Built : ControlPreset.HoldActs; c.SaveSettings(); host.ControlsChanged(); }); // brief 041: Click walks, hold acts → Double click → as built
             menuSettle = Btn("", () => { var c = host.controls; c.leashSettle = !c.leashSettle; c.SaveSettings(); });
             // brief 032 and brief 030 (Sky 2026-10-21): the two settings, saved to the profile; a click steps them
             menuConvo = Btn("", () => { var c = host.controls; c.conversations = (ConversationScenes)(((int)c.conversations + 1) % 3); c.SaveSettings(); });
@@ -37,6 +37,10 @@ namespace Suborned.Play
             menuAim = Btn("", () => { var c = host.controls; c.aimMode = c.aimMode == AimMode.Hold ? AimMode.Toggle : AimMode.Hold; c.SaveSettings(); });
             menuFollow = Btn("", () => host.SetFollowLock(!host.controls.followLock));
             menuHoldFire = Btn("", () => { var c = host.controls; c.commanderHoldFire = !c.commanderHoldFire; c.SaveSettings(); });
+            // brief 041 (Click walks, hold acts): the playground's settings; the four above that the hold preset does not read hide
+            menuTpFire = Btn("", () => { var c = host.controls; c.tpRightFires = !c.tpRightFires; c.SaveSettings(); host.ControlsChanged(); });
+            menuPlan = Btn("", () => { var c = host.controls; c.planTogether = !c.planTogether; c.SaveSettings(); });
+            menuEdge = Btn("", () => { var c = host.controls; c.edgeScroll = !c.edgeScroll; c.SaveSettings(); });
             Btn("Restart mission", () => host.RestartFromMenu());
             Btn(host.rangeMode ? "The Handover" : "Fight range", () => host.SwitchRangeScene()); // brief 029: the range from the menu, and back
             Btn("Quit", () => host.QuitFromMenu());
@@ -50,7 +54,13 @@ namespace Suborned.Play
             if (menuCard == null) return;
             bool open = host.MenuOpen; Show(menuVeil, open); Show(menuCard, open);
             if (!open) return;
-            Text(menuPreset, "Controls: " + (host.controls.DoubleClick ? "double click" : "as built"));
+            var cc = host.controls; bool hold = cc.HoldActs;
+            Text(menuPreset, "Controls: " + (hold ? "click walks, hold acts" : cc.DoubleClick ? "double click" : "as built"));
+            foreach (var l in new[] { menuPlate, menuRight, menuClick, menuHoldFire }) Show(l.parent, !hold); // settings the hold preset does not read
+            foreach (var l in new[] { menuTpFire, menuPlan }) Show(l.parent, hold);
+            Text(menuTpFire, "Third person: " + (cc.tpRightFires ? "right hold fires" : "right aims, left fires"));
+            Text(menuPlan, "Orders while paused: " + (cc.planTogether ? "start together" : "start as given"));
+            Text(menuEdge, "Edge pan: " + (cc.edgeScroll ? "on" : "off"));
             Text(menuSettle, "Camera settle: " + (host.controls.leashSettle ? "on" : "off"));
             Text(menuConvo, "Conversations: " + host.controls.conversations switch { ConversationScenes.Always => "always", ConversationScenes.Never => "never", _ => "first time" });
             Text(menuPlate, "Action plate: " + (host.controls.actionPlate ? "on" : "off"));

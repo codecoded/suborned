@@ -25,7 +25,7 @@ namespace Suborned.Play
         public int ThingSelects { get; private set; }
 
         /// <summary>The pause menu changed the scheme: nothing selected, no ring, the hold rule set.</summary>
-        public void ControlsChanged() { HoldRing = !controls.DoubleClick; SelTarget = null; SelIntent = null; CloseRing(); intentKey = ""; }
+        public void ControlsChanged() { HoldRing = !controls.Modern; HoldControlsChanged(); SelTarget = null; SelIntent = null; CloseRing(); intentKey = ""; }
 
         public void ClearSel() { SelTarget = null; SelIntent = null; }
 
@@ -43,7 +43,7 @@ namespace Suborned.Play
         /// <summary>Per frame: the selected thing's price (the pill), dropped when the thing is gone.</summary>
         void SelFrame()
         {
-            HoldRing = !controls.DoubleClick;
+            HoldRing = !controls.Modern;
             if (SelTarget == null) return;
             if (!controls.DoubleClick || TargetWorld(SelTarget) == null || Ring != null || Panel != null) { ClearSel(); return; }
             if (Time.unscaledTime - selPricedAt < 0.25f) return;

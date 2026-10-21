@@ -1,7 +1,7 @@
 // The controls playground: wires the scene, the camera, the presets and the pointer together.
 import * as THREE from './vendor/three.module.min.js';
 import { G, say } from './state.js';
-import { PRESETS, ACTS, WALK, RUN, ROLES, priceLine, phrase } from './data.js';
+import { PRESETS, ACTS, WALK, RUN, ROLES, RIGHT_TAP_S, priceLine, phrase } from './data.js';
 import { buildWorld } from './world.js';
 import { Rig } from './camera.js';
 import { Marker, groundRing, facesHtml } from './markers.js';
@@ -147,10 +147,10 @@ function rightTap(hit) {
   if (e && !e.agent && waysFor(e).length) return openRing(e, waysFor(e), P.ring);
   if (crew().map((a) => cancel(a)).some(Boolean)) say('Right click · stopped'); else say('Right click · nothing there');
 }
-// Shift on a wedge runs there; Alt flips the squad setting for that one order.
+// Shift on a wedge runs there; Alt flips the squad setting for that one order (not in the hold preset: there is no such setting).
 function takeWay(w, m = {}) {
   if (w.kind === 'harm' && (w.id === 'fire' || G.harmHold === 'all') && !m.held) { startCharge(G.ring.ent, w, true); return; } // a harmful wedge is held, not clicked (the ring stays open while it fills)
-  const e = G.ring.ent, was = G.squadAct, run = !!(m.shift || runHeld()); if (m.alt) G.squadAct = was === 'best' ? 'all' : 'best'; closeRing(); doAct(e, w, 'Ring', run); G.squadAct = was; }
+  const e = G.ring.ent, was = G.squadAct, run = !!(m.shift || runHeld()); if (m.alt && !preset().holdActs) G.squadAct = was === 'best' ? 'all' : 'best'; closeRing(); doAct(e, w, 'Ring', run); G.squadAct = was; }
 initRing($('ring'), takeWay);
 
 // ---- the pointer --------------------------------------------------------------------------
@@ -189,7 +189,7 @@ canvas.addEventListener('pointermove', (e) => {
 canvas.addEventListener('pointerup', (e) => {
   const d = down; down = null; G.holdEnt = null; if (!d) return;
   const now = performance.now(), hold = (now - d.t) / 1000;
-  if (d.rcharge) { const c = G.charge; if (c && !c.done && c.t < 0.22) G.charge = null; /* a tap: the ring */ else return releaseHold(); }
+  if (d.rcharge) { const c = G.charge; if (c && !c.done && (performance.now() - d.t) / 1000 < RIGHT_TAP_S) G.charge = null; /* a tap: the ring, silently */ else return releaseHold(); }
   if (d.charge) { const c = G.charge; if (c && !c.done && c.t < 0.2 && !c.ent.hostile) G.charge = null; /* a quick click on a bystander is its normal click */ else return releaseHold(); }
   if (G.aim && d.b === 2) { G.aim = false; return; }
   if (d.drag && d.b === 0 && G.box) { boxSelect(G.box, e.shiftKey || e.ctrlKey || e.metaKey); G.box = null; $('box').style.display = 'none'; }
@@ -200,7 +200,7 @@ canvas.addEventListener('pointerup', (e) => {
     lastClick = dbl ? { t: 0, x: 0, y: 0, ent: null } : { t: now, x: e.clientX, y: e.clientY, ent: hit.ent };
     leftClick(hit, dbl, e.shiftKey);
   } else if (d.b === 2) {
-    if (hold >= 0.22 && G.view === 'tp') return; else if (hold >= 0.22) say('Right hold · nothing happens', 'warn'); else rightTap(hit);
+    if (hold >= RIGHT_TAP_S && G.view === 'tp') return; else if (hold >= RIGHT_TAP_S) say('Right hold · nothing happens', 'warn'); else rightTap(hit);
   }
 });
 addEventListener('pointermove', (e) => { if (G.ring) ringPointer(e, false); });
@@ -391,7 +391,7 @@ function frame(now) {
     }
   }
   // third person: the right button held aims, and the nearest hostile ahead is the aim target
-  G.aim = G.view === 'tp' && !G.ring && down?.b === 2 && performance.now() - down.t >= 220; G.aimT = null;
+  G.aim = G.view === 'tp' && !G.ring && down?.b === 2 && performance.now() - down.t >= RIGHT_TAP_S * 1000; G.aimT = null;
   if (G.aim) { G.aimT = hostileAhead(); if (!G.hover) G.prompt = G.aimT; if (preset().rightFires && G.tpAim === 'fire') me.drawnUntil = G.clock + 1; } // the gun is up while right is held
   $('reticle').style.display = G.aim ? 'block' : 'none'; if (G.aim) $('reticle').style.transform = `translate(${G.ptr.x}px,${G.ptr.y}px)`;
   if (dt > 0) stepFire(dt, { tracer, charged: (c) => {
@@ -406,7 +406,7 @@ function frame(now) {
   if (eDown && !eDown.ring && nowMs - eDown.t >= 220) { const e = promptTarget(); eDown.ring = true; if (e) openRing(e, waysFor(e), P.ring); }
   if (G.ring && !waysFor(G.ring.ent).length) closeRing();
   // the marker: the main action on one thing
-  const ch = G.charge && !G.charge.done && !G.charge.ring && (G.charge.right ? G.charge.t > 0.22 : G.charge.ent.hostile && !PRESETS[G.preset].holdActs || G.charge.t > 0.2) ? G.charge : null;
+  const ch = G.charge && !G.charge.done && !G.charge.ring && (G.charge.right ? G.charge.t > RIGHT_TAP_S : G.charge.ent.hostile && !PRESETS[G.preset].holdActs || G.charge.t > 0.2) ? G.charge : null;
   let tgt = G.ring ? null : ch?.ent ?? G.holdEnt ?? G.hover ?? G.selTarget ?? G.prompt;
   const st = ch || G.ring ? null : liveStatus(tgt); if (st) tgt = st.ent; // the live words win over the first offer
   const act = ch ? ch.way : st ? (st.fire ? { id: 'fire', ...ACTS.fire } : st.act) : tgt && mainFor(tgt);
@@ -439,7 +439,7 @@ function frame(now) {
   fadeBuildings(real); drawGhosts(); document.body.classList.toggle('paused', G.paused);
   if (G.vale && !G.vale.done) { const v = G.vale, locked = new Set(G.sessions.filter((s) => s.lock && s.ent.id.startsWith('officer')).flatMap((s) => s.agents.map((a) => a.id))); v.n = locked.size; v.sim = G.clock - v.t0s; v.real = (performance.now() - v.t0r) / 1000; if (v.n >= 3) v.done = true; }
   placeRing(project);
-  const hint = G.paused ? (G.planMode === 'sync' ? 'Paused · Space starts every order together' : 'Paused · Space to go') : G.ring ? (crew().length > 1 ? 'Shift runs there · Alt: everyone or the best placed' : P.right === 'press' ? 'Right click again takes the lit way' : 'Click away to close') : G.view === 'tp' && G.prompt ? 'E does it' : G.view === 'tp' && G.clock - (G.tpAt ?? -99) < 5 ? 'T lets go of the agent' : preset().holdActs && G.hover ? 'Hold the left button to do it · right hold fires' : G.hover?.hostile ? 'Hold the left button to fire' : P.dbl.thing && (G.hover || G.selTarget) ? (P.dbl.thing === 'run' ? 'Double click runs there' : 'Double click to do it') : '';
+  const hint = G.paused ? (G.planMode === 'sync' ? 'Paused · Space starts every order together' : 'Paused · Space to go') : G.ring ? (crew().length > 1 ? preset().holdActs ? 'Shift runs there' : 'Shift runs there · Alt: everyone or the best placed' : P.right === 'press' ? 'Right click again takes the lit way' : 'Click away to close') : G.view === 'tp' && G.prompt ? 'E does it' : G.view === 'tp' && G.clock - (G.tpAt ?? -99) < 5 ? 'T lets go of the agent' : preset().holdActs && G.hover ? 'Hold the left button to do it · right hold fires' : G.hover?.hostile ? 'Hold the left button to fire' : P.dbl.thing && (G.hover || G.selTarget) ? (P.dbl.thing === 'run' ? 'Double click runs there' : 'Double click to do it') : '';
   setHint(hint); refresh(project);
   renderer.render(scene, camera);
   frames++; if (now - fpsAt > 1000) { setFps(Math.round(frames * 1000 / (now - fpsAt))); frames = 0; fpsAt = now; }

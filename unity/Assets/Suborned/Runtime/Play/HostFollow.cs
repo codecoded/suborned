@@ -242,7 +242,7 @@ namespace Suborned.Play
         float? dMoveFrame;
         float MoveYaw(bool held)
         {
-            if (!Following || !controls.DoubleClick) { dMoveFrame = null; return Following ? fYaw : yawNow; }
+            if (!Following || !controls.Modern) { dMoveFrame = null; return Following ? fYaw : yawNow; }
             if (!held) { dMoveFrame = null; return fYaw; }
             dMoveFrame ??= fYaw; return dMoveFrame.Value;
         }
@@ -255,6 +255,7 @@ namespace Suborned.Play
         bool FollowKey(Keyboard kb)
         {
             if (!controls.Down(kb, PlayAction.FollowView)) return false;
+            if (controls.HoldActs && Driving && controls.Held(kb, PlayAction.AddToGroup)) { DriveNextAgent(); return true; } // brief 041: Shift+T takes the next agent; T lets go (Esc stays the pause menu)
             if (Driving) DriveLetGoToMap(); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter();
             return true;
         }
@@ -284,7 +285,7 @@ namespace Suborned.Play
                 if (fHasLast && dt > 1e-4f) { var v = (raw - fLast) / dt; v.y = 0f; fHeadVel = Vector3.Lerp(fHeadVel, v, 1f - Mathf.Exp(-dt / 0.12f)); }
                 fLast = raw; fHasLast = true;
             }
-            if (controls.DoubleClick) LeashFrame(snap, dt); // brief 041: the leash (testbed/controls/camera.js, briefs/040 report): sideways motion turns it; it settles behind a steady heading
+            if (controls.Modern) LeashFrame(snap, dt); // brief 041: the leash (testbed/controls/camera.js, briefs/040 report): sideways motion turns it; it settles behind a steady heading
             else if (!snap && !fDragging && fTurnStart < 0f && Time.unscaledTime >= fLookUntil && fHeadVel.magnitude > followChaseSpeed)
             {
                 float target = Mathf.Atan2(fHeadVel.x, fHeadVel.z) * Mathf.Rad2Deg;

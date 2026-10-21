@@ -371,7 +371,8 @@ namespace Suborned.Play
             if (live && k >= 0)
             {
                 var (head, down, stopped, drawn) = host.FireLine(k);
-                bool aimChip = head.Length == 0 && host.Aiming && host.AimId.Length > 0;
+                if (host.controls.HoldActs) { if (host.FireStatus() != null) head = ""; else if (head.Length > 0 && !stopped) { head = host.FireWords(k); down = ""; } } // brief 041: the pill's words; the pill itself when a hold or a lock is on
+                bool aimChip = head.Length == 0 && host.Aiming && host.AimId.Length > 0 && !(host.controls.HoldActs && host.FireHold != null);
                 if (head.Length > 0 || aimChip)
                 {
                     show = true;

@@ -27,7 +27,7 @@ const OPTS = [
 export function buildChrome(hooks) {
   const draw = () => {
     $('tabs').innerHTML = Object.entries(PRESETS).map(([k, p]) => `<button data-p="${k}" class="${G.preset === k ? 'on' : ''}">${p.label}</button>`).join('') + `<button data-settings class="gear">Settings ${document.body.classList.contains('opts-open') ? '▴' : '▾'}</button>`;
-    $('opts').innerHTML = OPTS.map(([label, key, list]) => `<span class="grp"><em>${label}</em>${list.map(([v, t]) => `<button data-o="${key}" data-v="${v}" class="${String(G[key]) === String(v) ? 'on' : ''}">${t}</button>`).join('')}</span>`).join('') + '<button data-pause class="reset">Pause / play</button><button data-vale class="reset">Vale comes out</button><button data-reset class="reset">Reset scene</button>';
+    $('opts').innerHTML = OPTS.filter((o) => !(o[1] === 'squadAct' && PRESETS[G.preset].holdActs)).map(([label, key, list]) => `<span class="grp"><em>${label}</em>${list.map(([v, t]) => `<button data-o="${key}" data-v="${v}" class="${String(G[key]) === String(v) ? 'on' : ''}">${t}</button>`).join('')}</span>`).join('') + '<button data-pause class="reset">Pause / play</button><button data-vale class="reset">Vale comes out</button><button data-reset class="reset">Reset scene</button>';
     $('about').textContent = PRESETS[G.preset].about;
   };
   document.addEventListener('click', (e) => {

@@ -109,6 +109,7 @@ namespace Suborned.Play
         {
             if (!Driving || Game == null || !ModalGate.AllowsClicks(Modal)) { if (Aiming) AimEnd(); return false; }
             float now = Time.unscaledTime;
+            if (TpHold(mouse, p, onHud)) return true; // brief 041: the hold preset's right hold fires, left hold acts
             if (Ring != null) { rTapPending = false; if (!(lRing && lTapPending)) return false; } // the ring has the pointer (RightFrame); a left hold that opened it keeps the release
             // ---- the right button: tap = the ring at the target (or stop the walk on the ground), hold = aim
             if (mouse.rightButton.wasPressedThisFrame && !onHud)
@@ -125,7 +126,7 @@ namespace Suborned.Play
                     {
                         var d = TpResolve(TpIn.RightTap, TpNow);
                         if (d == TpDo.LowerAim) AimEnd();
-                        else if (d == TpDo.RingAtTarget) { var t = rTapTarget; if (t == null || t.Kind == "op") ActContext(t, rTapFrom); else if (controls.DoubleClick) TapRing(t, rTapFrom); else RightRing(t, rTapFrom); }
+                        else if (d == TpDo.RingAtTarget) { var t = rTapTarget; if (t == null || t.Kind == "op") ActContext(t, rTapFrom); else if (controls.Modern) TapRing(t, rTapFrom); else RightRing(t, rTapFrom); }
                     }
                     return true;
                 }

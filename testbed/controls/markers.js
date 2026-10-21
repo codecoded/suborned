@@ -5,6 +5,7 @@
 //   built : the 0.2.34 look, for comparison (three icons on the ring, a name tag, a plate of numbers)
 import * as THREE from './vendor/three.module.min.js';
 import { G } from './state.js';
+import { chargeFrac } from './fire.js';
 import { KINDS, ACTS, ROLES, PRESETS, priceLine } from './data.js';
 import { icon } from './icons.js';
 
@@ -36,7 +37,7 @@ export class Marker {
     const dwelled = this.dwell > 0.5;
     const key = [status?.text, status?.items?.map((i) => i.a.id + i.text).join(), extra?.seen, charge ? 'chg' + !ent.hostile : '', ent.id, act.id, style, time, faces?.map((a) => a.id).join(), run, G.timeMode, dwelled && style === 'badge'].join('|');
     if (key !== this.key) { this.key = key; this.el.innerHTML = status ? `<div class="pill st">${status.items ? status.items.map((i) => facesHtml([i.a]) + '<span>' + i.text + '</span>').join('<i>·</i>') : '<span>' + status.text + '</span>' + facesHtml(status.agents)}</div>` : charge ? `<div class="pill chg"><i class="fill"></i><span>Hold to ${charge.label}${charge.bystander ? ' · bystander' : ''}${charge.extra ? ' · ' + charge.extra : ''}</span></div>` : this.html(style, kind, act, ent, parts, dwelled, facesHtml(faces) + (extra?.seen ? '<span class="seen">seen there</span>' : '')); this.el.className = `mk mk-${style}${harm ? ' harm' : ''}`; this.el.style.setProperty('--c', kind.color); }
-    if (charge) { const f = this.el.querySelector('.fill'); if (f) f.style.width = `${Math.min(1, charge.t / G.chargeS) * 100}%`; }
+    if (charge) { const f = this.el.querySelector('.fill'); if (f) f.style.width = `${chargeFrac(charge) * 100}%`; }
     // Watch: how far this agent can watch from, around the target
     this.reach.visible = !!extra?.reach && extra.reach < 60;
     if (this.reach.visible) { this.reach.position.set(ent.g.position.x, 0.05, ent.g.position.z); this.reach.scale.setScalar(extra.reach * 2.286); this.reach.material.color.set(kind.color); }
