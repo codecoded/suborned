@@ -71,7 +71,7 @@ namespace Suborned.Sim
         /// role or id; null for an operative, the guard, the patrol, the rivals, an officer or a robot. One rule for every person (brief 013,
         /// Sky 2026-10-16: no named target list): a civilian is shot at only when forced (the Ctrl case).</summary>
         Person? CivilianOf(string id) => IsOpId(id) ? null : PersonById(id) is Person p && p.Civilian ? p : null;
-        bool IsCivilian(string id) => CivilianOf(id) != null;
+        bool IsCivilian(string id) => CivilianOf(id) != null || (Range && RangeCivOf(id) != null); // the range's bystanders are civilians
         bool IsFightHostile(string id) { foreach (var h in Hostiles) if (h.Id == id) return true; return false; }
         Hostile? HostileOf(string id) { foreach (var h in Hostiles) if (h.Id == id) return h; return null; }
         int SecIndex(string id) { for (int k = 0; k < SecGuns.Length; k++) if (SecGuns[k].Id == id) return k; return -1; }
@@ -98,6 +98,7 @@ namespace Suborned.Sim
             int k = SecIndex(id); if (k >= 0) return SecGuns[k];
             if (UnitOf(id) is Unit u) return u.Gun;
             var h = HostileOf(id); if (h != null) return h.Gun;
+            if (Range && RangeCivOf(id) is RangeCiv rc) return rc.Gun; // the range's bystanders (GameRange.cs)
             if (CivilianOf(id) is Person p && WalkerOf(p) != null) { var g = NewGun(p.Id, null, false, R.HealthCivilian); civGuns[p.Id] = g; extraCivGuns.Add(p.Id); return g; } // a person of the crowd, the first time a shot names them
             if (IsCameraId(id)) return CameraGun(id); // tuning.md §9.2 gap 2
             if (IsCarId(id)) return CarGun(id); // tuning.md §10.7: a car
@@ -122,6 +123,7 @@ namespace Suborned.Sim
             int k = SecIndex(id); if (k >= 0) return SecOfficerPose(k)?.pos;
             if (UnitOf(id) is Unit u) return UnitPose(u)?.pos;
             var h = HostileOf(id); if (h != null) return h.Present && !h.Down ? h.Pos(Tick) : (Pt?)null;
+            if (Range && RangeCivOf(id) is RangeCiv rc) return rc.Gun.Down || rc.St == "safe" ? (Pt?)null : rc.Pos(Tick); // safe: off the floor, as the street's sheltered
             if (IsCameraId(id)) return CameraOf(id)?.At; // tuning.md §9.2 gap 2: a camera where it hangs
             if (IsCarId(id)) return CarOf(id) is CarTarget ct && ct.Gun.Down ? (Pt?)null : CarAt(id); // tuning.md §10.7: a car where it stands, until it burns
             return CivilianOf(id) is Person p ? PosOfPerson(p) ?? (KoBody(id) is Body kb ? BodyPos(kb) : (Pt?)null) : null; // tuning.md §9.1: a knocked-out person where they lie
@@ -147,7 +149,7 @@ namespace Suborned.Sim
             if (k >= 0 && !secJoined[k] && secDisp.TryGetValue(k, out var kd)) return DispMoving(kd, secSpeed, Tick); // brief 027 F2: walked off its path
             if (k >= 0) { long mm = (long)(Tick - SecurityArrives) * secSpeed - k * SecFileMm; return mm < Math.Max(0, securityPath.Length - k * SecFileMm); }
             if (UnitOf(id) is Unit u) return UnitDispMoving(u) ?? (u.St == "walk" || u.St == "back"); // brief 027 retest R3: a unit's walk off its post
-            return HostileOf(id)?.Moving(Tick) ?? false;
+            return HostileOf(id)?.Moving(Tick) ?? (Range && RangeCivOf(id) is RangeCiv rc && rc.Moving(Tick));
         }
 
         /// <summary>The cover modifier on a shot at `t` standing at `at` from a shooter at `from` (Pulse §2.3, rulebook ai.cover): standing
@@ -205,7 +207,7 @@ namespace Suborned.Sim
         void CellShooter(Op op)
         {
             var g = op.Gun; string name = Sim.Op.Name(op.Id);
-            { bool runs = RunsNow(op); if (op.RanLast && !runs && g.Drawn && !g.Down && g.W != null) g.NextShot = Math.Max(g.NextShot, Tick + AimNewT); op.RanLast = runs; } // tuning.md §10.2 settle (both presets; Sky 2026-10-21): a run that ends waits aimNew before the next shot, keeping the target and the count
+            { bool runs = RunsNow(op); if (op.RanLast && !runs && g.Drawn && !g.Down && g.W != null) { g.NextShot = Math.Max(g.NextShot, Tick + AimNewT); op.SettleUntil = Tick + AimNewT; } op.RanLast = runs; } // tuning.md §10.2 settle (both presets; Sky 2026-10-21): a run that ends waits aimNew before the next shot, keeping the target and the count
             if (g.FollowBy.Length > 0 || AnyTrigger()) // tuning.md §11.1 (engine 0.17.0): who follows the driven agent's trigger, derived each tick
             {
                 string lead = FollowLeadOf(op);
@@ -339,13 +341,14 @@ namespace Suborned.Sim
                 resolving = s;
                 var tg = GunOf(s.T)!;
                 tg.ShotBy = s.By; tg.ShotByTick = Tick; if (IsOpId(s.By)) tg.OpShot[(int)Sim.Op.Parse(s.By)] = Tick; // tuning.md §12.2
+                if (Range) rangeShots.Add((s.By, s.From)); // the range's bystanders hear and see it (GameRange.cs)
                 if (LabKite && IsOpId(s.By)) KiteAlarm(s.By, s.T); // brief 027 F2: the side of an armed hostile shot at answers
                 shotsThisTick.Add(s.From); LastShotTick = Tick; lastShooter = s.From; // the crowd hears it (Pulse §4)
                 RoundsEnd("gunfire"); // brief 022: any shot ends the round
                 FightShot(s.By, s.T, s.From); // the public hears it: one fight, judged when it ends (fight.public)
                 if (IsOpId(s.T)) CellFiredOn = true;
                 Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
-                bool cell = IsOpId(s.By), untraced = cell && IsFightHostile(s.T) && ((!R.FightTraced && FightOverTick == INF) || Range); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced)
+                bool cell = IsOpId(s.By), untraced = cell && (Range || IsFightHostile(s.T) && !R.FightTraced && FightOverTick == INF); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced)
                 if (cell) CellGunfire(OpOf(Sim.Op.Parse(s.By)), s.T, s.At, untraced);
                 else if (!IsFightHostile(s.By) && !(s.By == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + s.By); // any gunfire (§05)
                 if (Over) return;
@@ -452,6 +455,7 @@ namespace Suborned.Sim
             if (IsCameraId(t)) { if (down) { tg.Down = true; Chain.Add(t + "-shot"); Note("fire.camera-dark", $"The {t.Substring(7)} camera is shot out. It goes dark."); } else Note("fire.camera-hit", $"The {t.Substring(7)} camera is hit."); return; }
             if (down && t != "rivals") { tg.Down = true; if (traced) AddTrail(R.DownTrail, "down:" + t); }
             if (IsOpId(t)) { OpHit(OpOf(Sim.Op.Parse(t)), down, by); return; }
+            if (Range && RangeCivOf(t) is RangeCiv rcv) { RangeCivHit(rcv, down, by); return; } // GameRange.cs
             switch (t)
             {
                 case "guard": GuardHit(down, by); return;
@@ -766,7 +770,7 @@ namespace Suborned.Sim
             string t = FireTarget(op, o.Target);
             if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
-            if (Range && !IsFightHostile(t)) return No("target-unknown", $"target '{o.Target}' is not one of the range's spawned hostiles (brief 029)");
+            if (Range && !RangeTarget(t)) return No("target-unknown", $"target '{o.Target}' is not one the range spawned (brief 029: hostiles, bystanders, cars)");
             if (IsCameraId(t)) EnsureCameraGun(t); // tuning.md §9.2 gap 2: a camera is a target (its gun is made by the order, never by a preview)
             if (IsCarId(t)) EnsureCar(t); // tuning.md §10.7: so is a car
             var tg = GunOf(t); if (tg == null) return No("target-unknown", $"target '{o.Target}' is unknown (unknown = reject)");

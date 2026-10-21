@@ -66,7 +66,7 @@ namespace Suborned.Sim
             string t = FireTarget(op, o.Target);
             if (t.Length == 0) return No("no-target", o.Target == "hostiles" ? "no hostile in range with a clear line" : $"no {o.Target} to fire at");
             if (IsOpId(t)) return No("fire-on-cell", "the cell doesn't fire on its own");
-            if (Range && !IsFightHostile(t)) return No("target-unknown", $"target '{o.Target}' is not one of the range's spawned hostiles (brief 029)");
+            if (Range && !RangeTarget(t)) return No("target-unknown", $"target '{o.Target}' is not one the range spawned (brief 029: hostiles, bystanders, cars)");
             if (IsCameraId(t)) EnsureCameraGun(t);
             if (IsCarId(t)) EnsureCar(t);
             var tg = GunOf(t); if (tg == null) return No("target-unknown", $"target '{o.Target}' is unknown (unknown = reject)");

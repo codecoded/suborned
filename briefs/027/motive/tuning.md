@@ -1225,7 +1225,7 @@ All ten are the loud route (L3) with the same stand-off. The other flags are inc
 - **Aster, for Sky:** field-on only (§12.3).
 
 ### 12.6 Keel: built, engine 0.17.0 (2026-10-21)
-**`today` and lab, shipped with §11 at Aster's direction (2026-10-21) on this ruling.** **Awaiting Sky:** no yes from Sky is recorded for §12.2 (the police answer every recent shooter). Aster has asked him (2026-10-21); it stays built until he answers.
+**`today` and lab, shipped with §11 at Aster's direction (2026-10-21) on this ruling.** **Sky said yes (2026-10-21):** "1. Yes" to the police answering everyone who has shot at them recently, not only the last one (see "§12 decision" below). It stays as built.
 - **The rule:** police (`PoliceBody`) answer every operative who fired on them within `line-lapse-s`, out to their max ring. It applies to class 1 in `ChooseTarget`, the max-ring foes and `KiteBody`'s answer; rule 3's cover only when they can answer none. Rivals are unchanged.
 - **State:** `Gun.OpShot` (4 ints, op id order). It is hashed only while live and only where it says more than `ShotBy`/`ShotByTick`. Rule text is on `fight.kite` and `ai`.
 - **Scenarios:**
@@ -1299,7 +1299,7 @@ All 5 cost T 15–18 and Standing → −2 or −3. None has a cheap neighbour (
 - **Aster:** no Sky decision is needed. 13.1 and 13.4 use values that already exist, and 13.2 is §06 as written.
 
 ### 13.6 Keel: built, engine 0.18.0 (2026-10-21)
-**A `today` change, recorded under §13.1, which closes an exploit in a rule Sky approved** (the §11 trigger model, "Sky on firing, 2026-10-21", brief 024): the trigger made the tap-switch reset one key. No new value. §13.2 is §06 as written; §13.4 uses an existing value. §12.2 is still awaiting Sky (§12.6).
+**A `today` change, recorded under §13.1, which closes an exploit in a rule Sky approved** (the §11 trigger model, "Sky on firing, 2026-10-21", brief 024): the trigger made the tap-switch reset one key. No new value. §13.2 is §06 as written; §13.4 uses an existing value. §12.2 has Sky's yes (§12.6, §12 decision).
 1. **§13.1, the count is the pair's in `today`** (`AccFor`, `Shoot`): taking a target resumes the count the shooter left on it, and a target it has not fired at starts at `acc-start` 500. This holds for every shooter. `Gun.Mem` is kept in today and hashed only where the state doesn't already say it: not the target in hand at its count, and not a target shot down (a gun down stays down). The lab hashes it as before. Rule text is on `weapons` (the accumulator sentence) and `fight.lab`.
 2. **§13.2, hold never follows** (`CanFollow`): a holding agent neither follows nor is locked by a press. Rule text is on `weapons.trigger`.
 3. **§13.4, the lab's stances are `three`**: `fight.lab.stances` and `briefs/027/presets/lab.json`, and the range's lab preset. A lab draw sets `return`. N148 now plays stances `two` explicitly, as a lab option. P-G's support agents set `free` after drawing, in the lab only.
@@ -1337,3 +1337,7 @@ The rulebook moves every inputs hash, so every recorded route re-records once ag
 - **Suture:** the 4 newly cheap `today` wins.
 - **Motive:** the cheapest of them, at 11 %.
 
+
+### §12 decision (Sky, 2026-10-21)
+- **§12.2: yes.** Sky: "1. Yes" to "should police fire back at everyone who has shot at them recently, not only the last one?" No longer awaiting Sky.
+- On the taught loud plan (wait by the car, lock as the doors open): "It's a way. But not sure how they can lock targets easily. Also what about rival gang? As long as player has to be present and adaptive then how they play is fine, and they're not just doing only a few actions."

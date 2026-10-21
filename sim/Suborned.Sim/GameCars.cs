@@ -45,7 +45,7 @@ namespace Suborned.Sim
         /// <summary>Where a car stands now, or null when it is not on the street (the range has none; the rival car until it parks).</summary>
         public Pt? CarAt(string id)
         {
-            if (Range) return null;
+            if (Range) return RangeCarAt(id); // the range's spawned cars (GameRange.cs)
             switch (id)
             {
                 case "car:getaway": return Car;
@@ -82,7 +82,7 @@ namespace Suborned.Sim
             }
             if (c.DisabledAt != Tick) Note("car.hit", $"The {CarName(t)} is hit.");
         }
-        static string CarName(string id) => id == "car:getaway" ? "getaway car" : id == "car:official" ? "official car" : "rival car";
+        static string CarName(string id) => id == "car:getaway" ? "getaway car" : id == "car:official" ? "official car" : id == "car:rivals" ? "rival car" : "car " + id.Substring(4); // the range's: car range-1, …
 
         void CarDisable(CarTarget c)
         {
@@ -93,6 +93,9 @@ namespace Suborned.Sim
             {
                 case "car:getaway":
                     Fail("getaway-lost", "The getaway car is wrecked.", () => With(Because("wrecked", true, Locate("getaway-car", "wrecked")), OpIn(c.By)));
+                    return;
+                default:
+                    if (Range) RangeCarOut(c); // the range's car: its occupant gets out (GameRange.cs)
                     return;
                 case "car:official":
                     carStoppedAt = c.At; // it stops where it is (the driver-shot rule's own stop)
@@ -122,7 +125,7 @@ namespace Suborned.Sim
             c.Blown = true; var at = c.At;
             Chain.Add(c.Id.Substring(4) + "-car-exploded");
             Note("car.exploded", $"The {CarName(c.Id)} explodes.");
-            var of = CarCover(c.Id); liveCover = new List<CoverPoint>(LiveCover.FindAll(p => p.Of != of)); // its cover points are gone
+            var of = Range ? RangeCarCover(c.Id) : CarCover(c.Id); liveCover = new List<CoverPoint>(LiveCover.FindAll(p => p.Of != of)); // its cover points are gone
             // violence seen by a civilian (§05; rulebook car.target): Alert to alert.violenceSeen and a Menace step, once a car
             bool civSees = false; foreach (var p in WitnessesOf(at, null)) if (p.Civilian) { civSees = true; break; }
             if (civSees)
@@ -137,7 +140,7 @@ namespace Suborned.Sim
                 bool inside = Inside(c, id);
                 var pos = PosOf(id);
                 if (!inside && (!pos.HasValue || !G.Within(pos.Value, at, (int)ring) || !Sees(at, pos.Value))) continue;
-                bool cell = IsOpId(c.By) && !IsOpId(id), untraced = IsFightHostile(id) && ((!R.FightTraced && FightOverTick == INF) || Range);
+                bool cell = IsOpId(c.By) && !IsOpId(id), untraced = Range || IsFightHostile(id) && !R.FightTraced && FightOverTick == INF;
                 resolving = new PendingShot { By = c.By.Length > 0 ? c.By : c.Id, T = id, G = g, At = pos ?? at, From = at, D = pos.HasValue ? Dist(pos.Value, at) : 0, Dmg = dmg, Hit = true };
                 Note("car.blast-hits", $"The blast hits {id}.");
                 Damage(id, g, IsOpId(id) ? Absorb(OpOf(Sim.Op.Parse(id)), dmg) : dmg, IsOpId(id) ? "blast" : c.By, cell, untraced);
@@ -160,6 +163,7 @@ namespace Suborned.Sim
             foreach (var h in Hostiles) yield return h.Id;
             var crowd = new List<string>(); foreach (var (p, _) in OnTheStreet()) if (p.Civilian && p != ValeP && p != Driver && p != Inez) crowd.Add(p.Id);
             crowd.Sort(StringComparer.Ordinal); foreach (var id in crowd) yield return id;
+            foreach (var b in rangeCivs) yield return b.Id; // the range's bystanders (none outside the range)
         }
 
         internal void HashCars(Hash.H h)

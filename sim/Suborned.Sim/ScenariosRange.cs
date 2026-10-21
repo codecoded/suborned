@@ -180,13 +180,13 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => r.Shots().Exists(s => s.by.StartsWith("officer-", StringComparison.Ordinal)), Game.T(30)), "the police fire back within 30 s");
                 r.Is(r.Until(() => r.Shots().Exists(s => s.by == "scout"), Game.T(10)), "the scout fires");
                 string shooter = ""; FireLine? open = null;
-                r.Until(() => { foreach (var l in g.RangeLines()) if (l.Target == "scout" && l.InReach && l.Cover == "none") { shooter = l.Shooter; open = l; return true; } return false; }, Game.T(20));
+                r.Until(() => { foreach (var l in g.RangeLines()) if (l.Target == "scout" && l.InReach && l.Band != "long" && l.Cover == "none") /* in its effective ring: in reach at long range is police answering fire (§7.10) */ { shooter = l.Shooter; open = l; return true; } return false; }, Game.T(20));
                 r.Is(open != null, $"an officer has the scout in reach in the open ({shooter})");
                 if (open == null) return;
                 var sp = g.Hostiles.Find(h => h.Id == shooter)!.Pos(g.Tick);
                 var me = g.OpOf(OpId.Scout).Pos; int sec = g.Tick / Game.Hz;
                 int reach = g.Hostiles.Find(x => x.Id == shooter)!.Gun.W!.EffCm;
-                var cover = g.S.Cover.Where(c => c.Q >= g.R.CoverQPartial && CoverRules.Protects(c, sp, sec, g.R.PointBlankCm) && G.Within(c.At, me, 800) && G.Within(c.At, sp, reach) && g.S.Sight(c.At, sp, g.R.Eye)
+                var cover = g.CoverNow().Where(c => c.Q >= g.R.CoverQPartial && CoverRules.Protects(c, sp, sec, g.R.PointBlankCm) && G.Within(c.At, me, 800) && G.Within(c.At, sp, reach) && g.S.Sight(c.At, sp, g.R.Eye)
                     && !g.Hostiles.Exists(x => x.Gun.Cover == c.Id)).OrderBy(c => G.D2(c.At, me)).ThenBy(c => c.Id, StringComparer.Ordinal).FirstOrDefault();
                 r.Is(cover != null, "a cover point within 8 m of the scout shields him from that officer, inside its reach on a clear line");
                 if (cover == null) return;
@@ -280,13 +280,14 @@ namespace Suborned.Sim
                     for (int k = 1; k <= 6; k++) { var s = g.RangeSlot(p, k); long d = G.Isqrt(G.D2(s, mark)); r.Is(d >= band[p].lo && d <= band[p].hi, $"{p} slot {k} stands {d / 100.0:0.00} m from the mark"); }
                 }
                 r.Eq(g.Hostiles.Count, 24, "24 police on the dense floor");
-                r.Is(g.S.Cover.Count > 54, $"the dense layout has more cover than the open ({g.S.Cover.Count} points)");
+                r.Is(g.CoverNow().Count > 54, $"the dense layout has more cover than the open ({g.CoverNow().Count} points standing)");
                 r.Wait(Game.T(5));
                 r.Eq(g.Result, Outcome.None, "it runs");
             });
 
             FireMoveRange(); // engine 0.15.0 (tuning.md §8): fire on the move
             TriggerRange(); // engine 0.17.0 (tuning.md §11): the trigger, locks and follow fire
+            RangeKindsSet(); // cars, bystanders, the lane, the lines in words (ScenariosRangeKinds.cs)
             AddRange("R10", "lab", "open", "replay: the run as a script (mission range, the spawn's count) replays and verifies its record", r =>
             {
                 var g = r.G;

@@ -785,6 +785,30 @@
    "src": "brief 029 spawn beyond: 18 m from the mark, -25° off the firing line",
    "reason": "stands 18.00 m from the mark"
   },
+  "spawn:car:1": {
+   "at": [
+    1250,
+    2000
+   ],
+   "src": "the range's car slot 1: a car's centre, its long side across the firing line (nose +y); its cover points are car/slot-1's",
+   "reason": "stands 9.50 m from the mark"
+  },
+  "spawn:car:2": {
+   "at": [
+    1050,
+    600
+   ],
+   "src": "the range's car slot 2: a car's centre, its long side across the firing line (nose +y); its cover points are car/slot-2's",
+   "reason": "stands 15.88 m from the mark"
+  },
+  "spawn:car:3": {
+   "at": [
+    1050,
+    3400
+   ],
+   "src": "the range's car slot 3: a car's centre, its long side across the firing line (nose +y); its cover points are car/slot-3's",
+   "reason": "stands 15.88 m from the mark"
+  },
   "spawn:cover:1": {
    "at": [
     2375,
@@ -1296,7 +1320,7 @@
  },
  "cover": {
   "from": "tools/sim/range.ts (tools/cover/gen.ts pointsOf)",
-  "sha256": "3e4a2dc0f0f3d3a2180f464e1bf43ce049d612771dafada4730f3355d37abd89",
+  "sha256": "0f2933868c7af6e74304ffd3049fa980c06051f999a57e5625379a509095e702",
   "src": "brief 029: the range's cover points, by the Handover's rule (quality = height class × arc)",
   "points": [
    {
@@ -2342,6 +2366,294 @@
     "q": 350,
     "kind": "pier",
     "of": "range/pillar-5"
+   },
+   {
+    "id": "cv-slot-1-1",
+    "at": [
+     1075,
+     1875
+    ],
+    "faces": [
+     1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-1"
+   },
+   {
+    "id": "cv-slot-1-2",
+    "at": [
+     1075,
+     2125
+    ],
+    "faces": [
+     1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-1"
+   },
+   {
+    "id": "cv-slot-1-3",
+    "at": [
+     1225,
+     1675
+    ],
+    "faces": [
+     0,
+     1000
+    ],
+    "arc": 30,
+    "cos": 866,
+    "h": 145,
+    "against": "fire",
+    "q": 562,
+    "kind": "car",
+    "of": "car/slot-1"
+   },
+   {
+    "id": "cv-slot-1-4",
+    "at": [
+     1225,
+     2325
+    ],
+    "faces": [
+     0,
+     -1000
+    ],
+    "arc": 30,
+    "cos": 866,
+    "h": 145,
+    "against": "fire",
+    "q": 562,
+    "kind": "car",
+    "of": "car/slot-1"
+   },
+   {
+    "id": "cv-slot-1-5",
+    "at": [
+     1425,
+     1875
+    ],
+    "faces": [
+     -1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-1"
+   },
+   {
+    "id": "cv-slot-1-6",
+    "at": [
+     1425,
+     2125
+    ],
+    "faces": [
+     -1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-1"
+   },
+   {
+    "id": "cv-slot-2-1",
+    "at": [
+     875,
+     475
+    ],
+    "faces": [
+     1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-2"
+   },
+   {
+    "id": "cv-slot-2-2",
+    "at": [
+     875,
+     725
+    ],
+    "faces": [
+     1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-2"
+   },
+   {
+    "id": "cv-slot-2-3",
+    "at": [
+     1025,
+     275
+    ],
+    "faces": [
+     0,
+     1000
+    ],
+    "arc": 30,
+    "cos": 866,
+    "h": 145,
+    "against": "fire",
+    "q": 562,
+    "kind": "car",
+    "of": "car/slot-2"
+   },
+   {
+    "id": "cv-slot-2-4",
+    "at": [
+     1025,
+     925
+    ],
+    "faces": [
+     0,
+     -1000
+    ],
+    "arc": 30,
+    "cos": 866,
+    "h": 145,
+    "against": "fire",
+    "q": 562,
+    "kind": "car",
+    "of": "car/slot-2"
+   },
+   {
+    "id": "cv-slot-2-5",
+    "at": [
+     1225,
+     475
+    ],
+    "faces": [
+     -1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-2"
+   },
+   {
+    "id": "cv-slot-2-6",
+    "at": [
+     1225,
+     725
+    ],
+    "faces": [
+     -1000,
+     0
+    ],
+    "arc": 44,
+    "cos": 719,
+    "h": 145,
+    "against": "fire",
+    "q": 720,
+    "kind": "car",
+    "of": "car/slot-2"
+   },
+   {
+    "id": "cv-slot-3-1",
+    "at": [
+     875,
+     3375
+    ],
+    "faces": [
+     1000,
+     0
+    ],
+    "arc": 58,
+    "cos": 529,
+    "h": 145,
+    "against": "fire",
+    "q": 877,
+    "kind": "car",
+    "of": "car/slot-3"
+   },
+   {
+    "id": "cv-slot-3-2",
+    "at": [
+     1025,
+     3075
+    ],
+    "faces": [
+     0,
+     1000
+    ],
+    "arc": 30,
+    "cos": 866,
+    "h": 145,
+    "against": "fire",
+    "q": 562,
+    "kind": "car",
+    "of": "car/slot-3"
+   },
+   {
+    "id": "cv-slot-3-3",
+    "at": [
+     1025,
+     3725
+    ],
+    "faces": [
+     0,
+     -1000
+    ],
+    "arc": 30,
+    "cos": 866,
+    "h": 145,
+    "against": "fire",
+    "q": 562,
+    "kind": "car",
+    "of": "car/slot-3"
+   },
+   {
+    "id": "cv-slot-3-4",
+    "at": [
+     1225,
+     3375
+    ],
+    "faces": [
+     -1000,
+     0
+    ],
+    "arc": 58,
+    "cos": 529,
+    "h": 145,
+    "against": "fire",
+    "q": 877,
+    "kind": "car",
+    "of": "car/slot-3"
    }
   ],
   "blockers": [],

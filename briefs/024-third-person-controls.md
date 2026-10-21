@@ -283,3 +283,153 @@ Aster's reading (Sky to correct in play):
   - **Follow setting off:** they fire at your target only while you are firing, and stop when you stop.
 - An agent being shot at returns fire on its own shooter, which counts as engaged.
 - Open for Motive: what "near" means, whether a joining agent pays the aim-new wait, and what four guns on one target does to the fight table.
+
+## Revision: fewer keys, easy locks (2026-10-21)
+
+**Status:** proposal for Sky. Author: Glyph. No Unity, sim, GDD or data edited. Mockup: `briefs/024/fewer-keys/index.html` (1920 × 1080, four tabs; PNG renders `shot-0..3.png`; rebuild with `bun briefs/024/fewer-keys/build.ts`). The bases are the build's own shots (0.2.32); everything drawn over them is mockup.
+
+**Sky, after build 0.2.32's shots (`briefs/024/build/tp-firing.png`, `commander-firing.png`):**
+1. "I don't like that control panel showing every key combo. If it needs that much explaining something's wrong."
+2. On the taught loud plan (Scout, Fixer and Tech wait by the car and each lock a police officer as Vale's doors open): "not sure how they can lock targets easily."
+
+Standing rules: less reading, one-line prices, show the system in the world, plain words. New rule: **the player stays present and adaptive.** Nothing below pauses the game, and nothing takes a choice away.
+
+### 1 · The key bar goes; a hint comes to the thing
+
+**Remove** the third-person strip (`tpStrip`, `HudToolkit.Fire.cs` lines 60 to 65, and its fold and H19 line in §7 above). No legend anywhere in play. Also sweep the other text legends: `HudModel.City` ("Space pause · B briefing · L history · C cancel · N next", `HudModel.cs:101`), the briefing footer (`HudModel.cs:334`) and the status lines that name keys (`HandoverHost.cs:212`). Check which of them the kit draws; any that is drawn goes. The only list of controls is the pause menu's **Controls** page: one screen, grouped Move, Look, Act, Fight, Squad, View, each row "what you want, the key", rebindable, shown in mouse or trackpad terms.
+
+**A hint** is one key cap and at most one word, 24 px, sitting on the thing it is about, at the first moment the input would help:
+- One at a time. It never covers the reticle, a price line or a person's two icons. Budget 0.5 % of the screen.
+- **It fades for good after the input has been used 3 times** (by any route: key, click, ring), kept in the player's profile. A hint nobody uses stops after 5 showings and only returns from the pause menu ("Show hints again").
+- No sentence. Fable owns the one word.
+
+| Moment | Hint | Where | Retires after |
+|---|---|---|---|
+| First time on the ground | four WASD caps, no words | under the agent's feet | the first step (1) |
+| A way is open to the target | **E** and the mouse (built) | the prompt | 3 acts |
+| The prompt ends in the three dots | a right-mouse cap | the dots | 3 rings |
+| A hostile in sight, gun holstered | **RMB** "aim" (brief 024 rule) | the prompt | 3 aims |
+| Aiming, nothing fired yet | **LMB** | the reticle | 3 shots |
+| A gun is firing | **X** "stop" (built) | the fire line | 3 stops; the line keeps "held" |
+| A hostile appears and agents are idle | a ghost of the drag from a portrait to the hostile, and the cap "drag" | portrait to target | 3 drags |
+| A watcher shouts, the warning window runs | **F** pulsing | the portrait's sidearm mark | 3 holsters |
+| An agent drops below a third | hold **V** "fall back" | that portrait | 3 uses |
+| A price line has a breakdown | **Alt** | the chip's end | 3 uses |
+| Two prompt candidates within 3 m | **Tab** | beside the prompt | 3 uses |
+| Driving (built) | **T** "let go" | the scope chip | 3 uses, then the icon alone |
+
+Not hinted, because every game has them: drag to look, scroll to zoom, Space to pause (the clock pill's pause icon is also a button).
+
+### 2 · The audit: every input, in both views
+
+Read: `PlayControls.Defaults` (lines 45 to 87), `HostAim.TpResolve`, `HostContext`, `HandoverHost` (lines 335 to 382), `HostFollow`, and briefs 024, 030 and 038. **Taught** = shown once in context (§1). **Quiet** = stays bound, never hinted, listed on the Controls page. **Cut** = unbound.
+
+| Input | Today | Verdict | What the cut costs |
+|---|---|---|---|
+| W A S D | map pan · ground move | **Taught** (WASD ghost) | nothing |
+| Arrows | pan (bound) · orbit (spec, §2) | **Quiet** on the map; **cut** on the ground | one-handed orbit; drag orbits |
+| Left drag past 6 px | box select · orbit | **Taught by use** | nothing |
+| Middle drag, wheel and two-finger scroll | pan or look · zoom | **Quiet** | nothing |
+| Q / E | turn the view a quarter (map); E acts, Q was a squad wheel (ground) | **Map only**. The wheel (hold Q) was never built and is **cut from the spec**: the portrait drag replaces its orders | no "Come" or "Go there" group order on the ground; use the map or the drag |
+| Alt + middle drag | free turn, snaps to a quarter | **Quiet** | nothing |
+| 1 to 4 | select (map) · take control (ground) | **Taught** (the portrait numerals) | nothing |
+| F1 to F4 | hidden aliases | **Cut** | an external keyboard rebinds |
+| Shift | add to group (map) · run (ground) | **Taught** (run) | nothing |
+| Shift + 1 to 4, Tab and Shift + Tab | pick, then cycle the agent's actions | **Cut** | the verb-first fast path (arm, then click): the ring and E cover every way, and the plate it served is gone. Sky chose these on 20 Oct, before the plate went |
+| Z | step the target | **Merged into Tab** (step the target, on the map and the ground) | none |
+| Portrait click · double click · sidearm mark click | select, take control · centre · draw or holster | **Keep** | nothing |
+| **Portrait drag onto a target** | none | **New**, §3 | n/a |
+| T | take control or let go | **Taught** (the chip). M was only ever in the spec: **cut from the spec** | nothing |
+| E, tap | act on the prompt | **Taught** | nothing |
+| E hold 0.22 s, left hold 0.22 s | open the ring | **Cut** (three ways to the ring is two too many). The 0.5 s hold for a harmful way stays | the keyboard-only ring: a right click opens it; the prompt's dots now show a right-mouse cap |
+| Left click on the prompt | acts, same as E | **Keep** | nothing |
+| Right tap | ring at the target, a second tap takes the lit way (brief 038) | **Taught** | nothing |
+| Right hold 0.22 s | aim (draws if holstered) | **Taught**; left then fires | nothing |
+| Shift + right, Ctrl + right | ring at once · ring with Fire held | **Cut** (the ring always opens now; the Fire wedge already needs the 0.5 s hold; on a Mac Ctrl-click is a right click) | none |
+| Right hold and drag (sweep) | move fire to the next hostile | **Cut** as a taught gesture | a sweep is one more drag from the roster, or one right click |
+| Both buttons | panic | **Cut** | panic is hold V |
+| F | draw or holster the selection | **Quiet**. Aiming and a click on a hostile already draw; auto-holster ends it; the sidearm mark is the visible control; the hint F appears only in a warning window | a first-minute key is gone; nothing is lost |
+| X and C | cease fire (stance: hold) · cancel orders | **Merged: X = stop** (fire, walk, an act not yet started) | cancelling a walk while keeping a lock now takes one drag to re-lock; WASD on the ground still drops a walk |
+| V | cycle stance (panic in the lab) | **Hold V, 0.5 s = fall back.** The stance cycle is cut: the default is return fire, X is hold fire, a lock is the explicit target | no "fire at will" key; a lock is better |
+| G | run latch | **Cut** (ground: Shift; map: double click) | Sky's 16 Oct latch; a long run needs Shift held |
+| Space | pause | **Taught** | nothing |
+| = / − and N | speed, next event | **Quiet** (the clock pill's fast-forward is also a button); off on the ground | nothing |
+| Enter | restart, release a freeze, take the ring's lit way | **Quiet** | nothing |
+| Esc | close, then the pause menu | **Keep** | nothing |
+| I, L, B, R, K, H, ` | Intel, history, briefing, response list, acknowledge, hints, strips | **I = Notes**, which opens on the last tab (people, log, briefing, response; each also a HUD button); the rest are **cut** to buttons or the pause menu | B and L lose a key; the Notes tabs hold both |
+| F11, F12, P, Y, the range's R | HUD view, debug, camera lab, target mode, restart | **Lab only**, behind the lab flag, off the Controls page | none for players |
+
+**What a new player learns in the first minute:** move (WASD), look (drag), act (E or a click on the prompt), options (right click), pick an agent (1 to 4 or a portrait). Five things, each shown on the thing itself. The rest arrives as a hint at its moment.
+
+**Final set (what stays in play):** WASD move · Shift run · drag look, scroll zoom · E or left click act · right click options · right hold aim, then left fires · 1 to 4 or portrait click take an agent · portrait drag order · X stop · hold V fall back · Space pause · Esc menu · T take over or let go · Tab next target · Alt show more · I Notes · Q and E turn the map. F (draw) is bound but shown only in a warning window.
+
+### 3 · Easy locks: drag a portrait onto the target
+
+**What a lock costs today.** A right click on a hostile gives the fire order to the *selection* (`PressFires`, `HostContext`). To give three agents their own targets you select one (digit or portrait), right-click the first officer, select the next, right-click the second, and again: **6 inputs**, and the selection ends somewhere you did not choose. That is the doubt.
+
+**The pick: press a portrait, drag onto the target, let go. That agent is locked on it.** One gesture per agent. Why this one:
+- **It is the same in both views.** The roster is on screen in the commander view and on the ground, and never moves, so the hand learns where each face is. Aim-and-press-a-number (your third option) cannot work, because the digits already mean "take control", so the key would change meaning with a hidden state.
+- **No selection state.** Nothing to set first, nothing left changed. Click on a portrait still selects or takes control; a press that moves 6 px is a drag (the 6 px rule the orbit and the ring already use).
+- **It is how you would say it**: "Scout, that one." It also works for everything else an agent does: a face onto Inez is that agent's ring on Inez; onto a camera, that agent's ring there. One gesture to learn, not a lock-only trick.
+- **It is already an order.** A drop is today's fire order for that agent, logged like any order, so a replay is exact. No engine change.
+
+**While you drag**
+- A rubber line from the portrait to the cursor (white halo, turquoise dashes) with the agent's face at the cursor.
+- Every target that agent can take in sight gets a thin bracket; the one under the cursor pulses and carries **one line**: the face and "down in n s" (the walk and the shot as one time when it is out of reach). Targets it cannot take show nothing.
+- **The world runs at a quarter speed** while any drag is held and for 0.5 s after the last drop, so a second and a third drag follow without the clock catching up. It is not a pause: the city keeps moving and you stay in it. Shown by "¼" on the clock and a turquoise rim (the freeze look). Host time only, as the freeze is, so orders keep their tick and replays stay exact. Tunables for Motive: `lock.slow` 0.25, `lock.linger` 0.5 s. This is the "slow while choosing" step brief 038 §4.7 held in reserve.
+- Dragging a portrait that is **selected** carries every selected agent; an unselected one carries only itself (the way files drag). So "you two, that one" is one drag.
+
+**On the drop**
+| Dropped on | Result |
+|---|---|
+| A hostile | the agent locks it: a lasting fire order (draws first, walks into range, as today). It replaces that agent's earlier lock. A locked agent is engaged: it keeps its target and ignores the follow setting |
+| A civilian, guard, patrol, Vale or anyone not hostile | the ring for that agent at the target. Harm is never taken blind (rule 2) |
+| A door, camera, cabinet, car or person with a way | the ring, or the way if only one is open, as a right click would do |
+| Empty ground | that agent walks there, price on the move ring |
+| Nowhere valid | the line snaps back; one plain pop: "Can't see him" (Fable's words) |
+| Esc, or back onto the roster | cancels the drag |
+
+**It shows in the world, not in text** (and at most two icons over a person: the bracket and its numbers count as one)
+- A bracket round the officer with the numbers of the agents on him, as Ghost Recon Wildlands numbers its marked heads (`briefs/024/research/notes.md`).
+- A tracer from each locked agent while firing, a dotted tether while it waits to shoot (range, cadence, the first-shot wait).
+- A lock mark on the agent's portrait; clicking that mark frees the agent. The fire line names the target ("Firing at the officer, down in 4 s, X stop"); X stops the selected agents' fire and walks.
+- If you do nothing, agents return fire at whoever shoots them, as now. A lock is a choice you make, never a chore.
+
+**On the ground.** You can drag a portrait while you drive. It costs your left button for about a third of a second (it is the trigger when you aim), which is about 0.08 s of game time at a quarter speed. The unlocked agents still follow your trigger when the follow setting is on.
+
+**The test, the loud plan's moment: three agents, two officers, half a second of game time** between Vale's doors opening and the officers' first shot. Estimates (a drag from the roster to a target in sight about 0.3 s, reaching for the portrait 0.2 s, 0.15 s between drags; Suture times real players):
+
+| Method | Gestures | Game time | Result |
+|---|---|---|---|
+| Select, then right click, per agent (today) | 6 inputs | about 1.5 s | fails |
+| Portrait drag, no slow | 3 drags | about 1.2 s | fails |
+| Portrait drag, quarter speed | 0.2 s at full speed, then (3 × 0.3 + 2 × 0.15) at a quarter | about 0.5 s | on the line |
+| Group drag, then one drag (the selected three to officer 1, the Fixer to officer 2) | 2 drags | about 0.4 s | passes |
+
+The honest reading: per-agent drags alone are on the line; the quarter speed is what makes it work, and the group drag gives the margin. If Motive rejects the slow, the test fails and the fallback is **auto-split**: one right click on an officer sends the nearest agent to him and the others to the nearest other officer. It is faster and I do not recommend it, because it decides for the player and surprises.
+
+**Rejected:** (a) select an agent and right-click a hostile (6 inputs, selection state under pressure); (b) drag from a portrait only while paused (the player leaves the game; the drag itself is kept, in real time); (c) aim and tap a number (digits already take control, so the meaning hides in a state); (d) auto-split as the default (decides for the player).
+
+### 4 · Done-check (Latch builds against this; Suture runs it)
+
+1. **No legend:** at rest in either view, no screen shows more than two key caps at once, and the manifest lists no "key strip". Pause menu Controls page lists every bound key by task.
+2. **Hints:** each row of §1's table appears at its moment, one at a time, never over the reticle, and is gone after 3 uses (the counter in the profile survives a restart). "Show hints again" brings them back.
+3. **Input table:** a unit test over `PlayControls` and `TpResolve`: no input bound twice in one state; every "cut" input is unbound; E hold and left hold no longer open the ring.
+4. **Lock:** a scripted pointer drags three portraits onto two officers: three fire orders in the log, each with its own target, the clock at 0.25 only while a drag is held and for 0.5 s after, a replay hash-identical. A drop on a civilian, Vale or a guard never fires. An invalid drop changes no order.
+5. **Time:** Suture times 6 players on the loud plan's moment; at least 5 of 6 have all three locked within 0.5 s of game time with the quarter speed on.
+6. **Present:** nothing here pauses the clock; the only slowing is during and 0.5 s after a drag.
+7. **Sky plays** one loud Handover and says whether he ever reached for a key he could not see.
+
+### 5 · Hand-offs
+
+- **Latch:** remove `tpStrip` and the text legends; the hint system (profile counters, one at a time); the portrait drag (press, 6 px, rubber line, brackets, drop rules, the group carry); the quarter-speed host clock and its rim; the prompt dots' right-mouse cap; unbind the cut inputs; Notes on I; the Controls page.
+- **Keel:** nothing new if a drop issues the existing fire order per agent and one new fire order replaces the old lock; confirm that, and that the slow is host time only.
+- **Motive:** `lock.slow` and `lock.linger`; whether a lock counts as "engaged" for the follow setting (it should); the tracer's thickness against a held trigger.
+- **Fable:** the hint words (aim, drag, stop, fall back), the refusal pop "Can't see him". **Glint:** the bracket, the rubber line and the rim are signal layers, drawn unlit and outside the post grade. **Chime:** a tick on lock. **Suture:** the done-check above. **Glyph:** I redo the art from Latch's first build.
+
+### 6 · Questions for Sky
+
+1. **Verb-first keys go** (Shift + 1 to 4, and Tab changes from "next action" to "next target"). You chose them on 20 Oct, before the plate went. Is that fine?
+2. **Quarter speed while you drag a portrait**, in place of a pause. Is that fine, or do you want no slow at all (then the three-agent lock needs the group drag or auto-split)?
+
+**Sky, 2026-10-21:** "Maybe. I need to play the game for a bit before confirming." Held until Sky has played build 0.2.32.

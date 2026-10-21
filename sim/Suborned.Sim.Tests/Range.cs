@@ -75,6 +75,25 @@ public class RangeScenarioTests
     }
 
     [Fact]
+    public void TheHostsReadsOfCarsBystandersAndSlotsChangeNothing()
+    {
+        foreach (var layout in Engine.RangeSiteFiles.Keys)
+        {
+            var g = Engine.New(Engine.LoadRange(Root, layout));
+            Assert.True(g.Issue(new Order { Tick = 0, Do = "spawn", Target = "car", To = "car", Count = 1, With = "police" }).ok);
+            Assert.True(g.Issue(new Order { Tick = 0, Do = "spawn", Target = "bystanders", To = "near", Count = 2 }).ok);
+            Assert.True(g.Issue(new Order { Tick = 0, Op = "enforcer", Do = "fire", Target = "car:range-1" }).ok);
+            g.RunTo(Game.T(9));
+            var before = Hash.State(g);
+            var cars = g.RangeCars(); var bys = g.RangeBystanders(); var slots = g.RangeSlotList(); var cover = g.CoverNow(); var lines = g.RangeLines();
+            Assert.Equal(before, Hash.State(g));
+            Assert.Single(cars); Assert.Equal(2, bys.Count); Assert.Equal(Game.RangePlacements.Length * Game.RangeSlots + g.RangeCarSlots, slots.Count);
+            Assert.Contains(cover, c => c.Of == "car/slot-1"); Assert.Contains(lines, l => l.Target == "car:range-1" && l.Text.Length > 0);
+        }
+        Assert.Equal(new[] { "dense", "lane", "open" }, Game.RangeLayouts.ToArray());
+    }
+
+    [Fact]
     public void AHandoverRunRefusesTheSpawn()
     {
         var g = Engine.New(Repo.Inputs);

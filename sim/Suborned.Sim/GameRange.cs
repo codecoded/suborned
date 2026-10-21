@@ -5,18 +5,20 @@
 //    close: the range is one fight from its first tick (FightBranch "range", FightOn) and nothing in it is traced;
 //  · the cell of four at the near end (the site's crew:*), its orders as in the mission (move, drive, draw, holster, stance, fire, volley,
 //    field, panic, cancel, carry a downed agent), the fight lab's presets as any run's start (Start.fightLab: today = off, lab = on);
-//    any other verb is refused unknown-verb; a fire order names only a spawned hostile (target-unknown otherwise);
+//    any other verb is refused unknown-verb; a fire order names only what the range spawned (target-unknown otherwise);
 //  · hostiles only by the spawn order {do: spawn, target: police|rivals|response, to: near|eff|beyond|cover, count: 1..6}, onto the
 //    site's spawn slots (spawn:<to>:1..6, the first free ones), into the final fight's machine (GameAi.cs FightBody, GameKite.cs with the
 //    lab kite): police are officers that hold the slot as their stand (trained, health-officer); rivals a crew that waits weapons.aimNew,
 //    then engages or advances on the range's mark by the site's cover, and breaks (more than half of its own spawn down) for the far
 //    corner; the response unit officers that walk in from the far end (range:entry) to the slot as their stand. Behind cover: the
 //    hostile takes the cover point its slot stands on.
+//  · bystanders and shootable cars by the same order (target bystanders | car): GameRangeKinds.cs;
 //  · the car-contest rule (fight.lab.policeContest: the first officers' stands pulled into their ring of the getaway car) is the loud final
-//    fight's, and the range has no car: it is not applied. The AI's objective, the car it fights over in the Handover (site getaway.car),
+//    fight's, and the range has no getaway car: it is not applied. The AI's objective, the car it fights over in the Handover (site getaway.car),
 //    is the range's mark (range:mark, the centre of the cell's line): rivals advance on it, a police body's kite cover is no farther from it
 //    than its stand. No blocker, no hold, no Board or Go.
-// Reads for the host (read-only): RangeHostiles (whom to draw) and RangeLines (the "numbers": every line of fire, its chance, band, cover).
+// Reads for the host (read-only): RangeHostiles (whom to draw) and RangeLines (the "numbers": every line of fire, its chance, and the rules
+// in play on it in plain words); the cars, bystanders, slots and standing cover in GameRangeKinds.cs.
 using System;
 using System.Collections.Generic;
 
@@ -34,8 +36,10 @@ namespace Suborned.Sim
         public bool Moving, Down, Gone;
     }
 
-    /// <summary>One line of fire now (brief 029 "show the numbers"): shooter → target, the chance the next shot has, the band, the cover the
-    /// target has against this shooter. Both ways: each agent to each hostile and each hostile to each agent. Read-only, never hashed.</summary>
+    /// <summary>One line of fire now (brief 029 "show the numbers"): shooter → target, the chance the next shot has, and every fight rule
+    /// in play on it (engine 0.18: the settle, follow and locks, police answering every recent shooter, the pair's count, fire on the move),
+    /// as fields and as one line of plain words (Text). Each agent to each hostile, bystander and car, then each hostile to each agent.
+    /// Read-only, never hashed.</summary>
     public sealed class FireLine
     {
         public string Shooter = "", Target = "";
@@ -43,16 +47,31 @@ namespace Suborned.Sim
         public int DistanceCm;
         public string Band = "";               // point (inside weapons.pointBlank), eff (inside the shooter's effective ring), long (inside its max), out
         public bool Line;                      // within the shooter's max ring on a clear line (an agent can fire on it)
-        public bool InReach;                   // the shooter would fire now: an agent, Line; a hostile, inside its effective ring on a clear line (FoesInReach)
+        public bool InReach;                   // the shooter would fire on it now: an agent, Line; a hostile, the fight AI's own foes in reach
+                                               // (its effective ring, or its max ring when it is police answering this agent's fire)
         public bool Aimed;                     // the shooter's aim is on this target now
         public int Acc;                        // the chance of the next shot, per mille (0 with no line)
         public int Pips;                       // 1–4 with the lab's pips on, else 0
         public int Damage;                     // a hit's damage at this distance
         public string Cover = "none";          // the target's cover against this shooter as the shot counts it now: none, partial, full
-        public string CoverId = "";            // the cover point that gives it (or that would, while the target walks)
-        public bool CoverLost;                 // a point shields the target from this shooter but it is walking, so the shot ignores it
-        public bool Moving;                    // the shooter is walking (the walking edge)
-        public bool Untrained;                 // the shooter is untrained (the untrained edge)
+        public string CoverId = "";            // the cover point that gives it (or that would, while the target moves)
+        public bool CoverLost;                 // a point shields the target from this shooter but it is moving, so the shot ignores it
+        public bool Moving;                    // the shooter is moving (walking or running): Gait says which
+        public bool Untrained;                 // the shooter is untrained
+        // engine 0.16–0.18 rules on this line
+        public string Gait = "";               // the shooter's step now (fire on the move): stand, walk, run, run-away
+        public bool TargetRunning;             // the target runs: harder to hit past point blank
+        public int Count;                      // the pair's count toward its next hit, per mille: the shooter's aim on this target, kept for the
+                                               // whole fight, between shots and between targets (a target it hasn't fired at starts at acc.start)
+        public int ShotsToHit;                 // shots until the next hit at this chance and count (0: no chance)
+        public bool AimKept;                   // the shooter fired on this target before and takes it back at that count
+        public int ReadyIn;                    // ticks until the shooter can fire again (cadence, drawing, the settle); -1 holstered
+        public bool Steadying;                 // the settle: it stopped running and waits aim-new before its next shot
+        public string Mode = "";               // an agent's fire on this target: trigger, trigger-held, lock, follow, follow-held, return, free
+        public string Lead = "";               // the agent it follows, or whose press locked it
+        public bool Answers;                   // police this agent fired on in the last line-lapse (3 s): it answers out to its max ring
+        public bool Bystander, Car;            // the target is a bystander (fired on only when forced: Ctrl) or a car
+        public string Text = "";               // all of it in one line of plain words, for the numbers overlay
     }
 
     public sealed partial class Game
@@ -82,6 +101,7 @@ namespace Suborned.Sim
                     if (p == "cover" && !S.Cover.Exists(c => c.At == S.Stand(id))) throw new FormatException($"range site: '{id}' stands on no cover point (unknown = reject)");
                 }
             if (!S.HasPlace("range:entry")) throw new FormatException("range site: no 'range:entry' (where the response unit walks in)");
+            InitRangeKinds(); // the car slots and their cover (GameRangeKinds.cs)
             FightBranch = "range"; FightStart = 0;
             Note("start", "The fight range: the cell at the near end, nothing else until something is spawned.");
         }
@@ -90,6 +110,8 @@ namespace Suborned.Sim
         {
             if (!Over) RangeStep();
             if (!Over) Combat();
+            if (!Over) CarsStep(); // a burning car blows (GameCars.cs; nothing while no car is spawned)
+            if (!Over) RangeCivStep(); else rangeShots.Clear(); // the bystanders (GameRangeKinds.cs)
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
         }
 
@@ -111,6 +133,7 @@ namespace Suborned.Sim
                 if (h.Down || !h.Present || h.Gun.St == "gone") continue;
                 if (G.Within(h.Pos(Tick), p, SlotHeldCm) || (IsHolder(h) && G.Within(h.Home, p, SlotHeldCm))) return true;
             }
+            foreach (var c in rangeCivs) if (!c.Gun.Down && (G.Within(c.Pos(Tick), p, SlotHeldCm) || G.Within(c.Home, p, SlotHeldCm))) return true; // a bystander comes back to its slot
             return false;
         }
 
@@ -118,7 +141,10 @@ namespace Suborned.Sim
         string Spawn(Order o)
         {
             string side = o.Target, at = o.To; int n = o.Count == 0 ? 1 : o.Count;
-            if (Array.IndexOf(RangeSides, side) < 0) return No("target-unknown", $"spawn: '{side}' is not a side of the range ({string.Join(", ", RangeSides)})");
+            if (side == "car") return SpawnCar(o); // GameRangeKinds.cs
+            if (o.With.Length > 0) return No("target-unknown", "spawn: with is for a car");
+            if (side == "bystanders") return SpawnBystanders(o);
+            if (Array.IndexOf(RangeSides, side) < 0) return No("target-unknown", $"spawn: '{side}' is not what the range spawns ({string.Join(", ", RangeKinds)})");
             if (o.Point.HasValue || Array.IndexOf(RangePlacements, at) < 0) return No("no-place", $"spawn: '{at}' is not a placement of the range ({string.Join(", ", RangePlacements)})");
             if (n < 1 || n > RangeSlots) return No("no-place", $"spawn: count {n} is outside 1..{RangeSlots}");
             var slots = new List<int>();
@@ -171,7 +197,7 @@ namespace Suborned.Sim
         (string state, string id) CoverAgainst(Pt at, Pt from)
         {
             int best = 0; string bid = ""; long snap2 = (long)R.CoverSnapCm * R.CoverSnapCm; int sec = Tick / Hz;
-            foreach (var c in S.Cover)
+            foreach (var c in LiveCover) // the cover standing (a car slot's only while a car stands there)
             {
                 if (G.D2(at, c.At) > snap2 || !CoverRules.Protects(c, from, sec, R.PointBlankCm)) continue;
                 int cls = c.Q >= R.CoverQFull ? 2 : c.Q >= R.CoverQPartial ? 1 : 0; if (cls == 0) continue;
@@ -182,29 +208,87 @@ namespace Suborned.Sim
 
         FireLine LineOf(string by, Gun g, Pt from, bool moving, bool agent, string t, Pt at)
         {
-            var w = g.W!; long d = Dist(from, at);
-            var f = new FireLine { Shooter = by, Target = t, From = from, To = at, DistanceCm = (int)Math.Min(int.MaxValue, d), Moving = moving, Untrained = !g.Trained, Aimed = g.Target == t, Damage = w.DamageAt(d) };
+            var w = g.W!; long d = Dist(from, at); bool car = IsCarId(t);
+            var f = new FireLine { Shooter = by, Target = t, From = from, To = at, DistanceCm = (int)Math.Min(int.MaxValue, d), Moving = moving, Untrained = !g.Trained, Aimed = g.Target == t, Damage = w.DamageAt(d),
+                Bystander = RangeCivOf(t) != null, Car = car };
             f.Band = d <= R.PointBlankCm ? "point" : d <= w.EffCm ? "eff" : d <= w.MaxCm ? "long" : "out";
             bool sees = Sees(from, at);
             f.Line = d <= w.MaxCm && sees;
-            f.InReach = agent ? f.Line : d <= w.EffCm && sees;
-            var (cs, cid) = CoverAgainst(at, from); f.CoverId = cid;
-            bool tMoving = Moving(t); // a walking target is not beside cover (CoverMod)
+            if (agent) f.InReach = f.Line;
+            else if (IsFightHostile(by)) { foreach (var (id, _) in FoesInReach(by, g, from, p => Sees(from, p), true)) if (id == t) f.InReach = true; f.Answers = IsOpId(t) && PoliceBody(by) && ShotByOpRecently(g, t); }
+            var (cs, cid) = car ? ("none", "") : CoverAgainst(at, from); f.CoverId = cid;
+            bool tMoving = Moving(t); // a moving target is not beside cover (CoverMod)
             f.Cover = tMoving ? "none" : cs; f.CoverLost = tMoving && cs != "none";
-            if (f.Line) { f.Acc = ShotAcc(g, t, from, at, d, GaitOf(by, at), false, out int pips); f.Pips = pips; }
+            var gait = GaitOf(by, at); f.Gait = gait == Gait.Walk ? "walk" : gait == Gait.Run ? "run" : gait == Gait.RunAway ? "run-away" : "stand";
+            f.TargetRunning = TargetRunning(t);
+            if (f.Line) { f.Acc = ShotAcc(g, t, from, at, d, gait, false, out int pips); f.Pips = pips; }
+            f.Count = f.Aimed ? g.Acc : AccFor(g, t);
+            f.AimKept = !f.Aimed && g.Mem != null && g.Mem.ContainsKey(t);
+            f.ShotsToHit = f.Acc > 0 ? Math.Max(1, (1000 - f.Count + f.Acc - 1) / f.Acc) : 0;
+            if (agent)
+            {
+                var op = OpOf(Sim.Op.Parse(by));
+                f.ReadyIn = !g.Drawn || g.HolsterAt >= 0 ? -1 : Math.Max(0, Math.Max(g.NextShot, g.DrawReady) - Tick);
+                f.Steadying = op.SettleUntil > Tick;
+                var fs = FireStateOf(op.Id); if (fs.Target == t) { f.Mode = fs.Mode; f.Lead = fs.Lead; }
+            }
+            else f.ReadyIn = Math.Max(0, g.NextShot - Tick);
+            f.Text = Say(f, agent);
             return f;
         }
 
+        /// <summary>A line of fire in plain words (no design terms): the chance, the distance, then each rule in play on it.</summary>
+        string Say(FireLine f, bool agent)
+        {
+            var p = new List<string>();
+            string Name(string id) => IsOpId(id) ? "the " + char.ToUpperInvariant(id[0]) + id.Substring(1) : id;
+            if (!f.Line) p.Add(f.Band == "out" ? "out of range" : "no clear shot");
+            else p.Add(Lab && LabPipsOn ? new string('●', Math.Min(4, f.Pips)) + new string('○', 4 - Math.Min(4, f.Pips)) : $"{f.Acc / 10}%");
+            p.Add($"{f.DistanceCm / 100} m" + (f.Band == "point" ? " point blank" : f.Band == "long" ? " long shot" : ""));
+            if (f.Car) { var c = CarOf(f.Target); p.Add(c == null ? "car" : c.BurningAt >= 0 ? "car burning" : c.DisabledAt >= 0 ? "car disabled" : "car"); }
+            if (f.Bystander) p.Add("bystander: hold Ctrl to fire");
+            if (f.Cover != "none") p.Add(f.Cover == "full" ? "full cover" : "half cover");
+            if (f.CoverLost) p.Add("moving: cover doesn't count");
+            if (f.Line && f.Acc > 0) p.Add(f.ShotsToHit == 1 ? "hits next shot" : $"hits in {f.ShotsToHit} shots");
+            if (f.AimKept) p.Add("aim kept from before");
+            else if (!f.Aimed && f.Line && f.ReadyIn >= 0) p.Add("new target: aims first");
+            if (f.Steadying) p.Add("steadying after the run");
+            if (f.Gait == "walk") p.Add("walking");
+            else if (f.Gait == "run") p.Add("running");
+            else if (f.Gait == "run-away") p.Add("running away");
+            if (f.TargetRunning) p.Add("target running");
+            switch (f.Mode)
+            {
+                case "trigger": p.Add("trigger held"); break;
+                case "trigger-held": p.Add("trigger up, aim kept"); break;
+                case "lock": p.Add(f.Lead.Length > 0 ? $"locked on by {Name(f.Lead)}" : "locked on"); break;
+                case "follow": p.Add($"following {Name(f.Lead)}"); break;
+                case "follow-held": p.Add($"following {Name(f.Lead)}, waiting"); break;
+                case "return": p.Add("firing back"); break;
+                case "free": p.Add("firing at will"); break;
+            }
+            if (agent && f.ReadyIn < 0) p.Add("holstered");
+            if (f.Answers) p.Add("answering your fire");
+            if (f.Untrained) p.Add("untrained");
+            return string.Join(" · ", p);
+        }
+
         /// <summary>Brief 029 "show the numbers": every line of fire now, each agent (up, on the floor, armed) to each hostile (up and present),
-        /// then each hostile to each agent, in that order. Read-only: nothing changes, nothing is hashed. Empty outside the range.</summary>
+        /// bystander (on the floor) and car (standing, not burnt out), then each hostile to each agent, in that order. Read-only: nothing
+        /// changes, nothing is hashed. Empty outside the range.</summary>
         public List<FireLine> RangeLines()
         {
             var l = new List<FireLine>(); if (!Range) return l;
             var hs = new List<Hostile>(); foreach (var h in Hostiles) if (!h.Down && h.Present && h.Gun.St != "gone") hs.Add(h);
+            var others = new List<(string id, Pt at)>();
+            foreach (var c in rangeCivs) if (PosOf(c.Id) is Pt cp) others.Add((c.Id, cp));
+            foreach (var c in rangeCars) if (!c.Replaced && PosOf(c.Id) is Pt kp) others.Add((c.Id, kp));
             foreach (var op in Ops)
             {
                 if (op.Down || op.Inside || op.Gun.W == null) continue;
-                foreach (var h in hs) l.Add(LineOf(Sim.Op.Name(op.Id), op.Gun, op.Pos, op.Walk != null || op.DriveMoved, true, h.Id, h.Pos(Tick)));
+                string name = Sim.Op.Name(op.Id); bool moving = op.Walk != null || op.DriveMoved;
+                foreach (var h in hs) l.Add(LineOf(name, op.Gun, op.Pos, moving, true, h.Id, h.Pos(Tick)));
+                foreach (var (id, at) in others) l.Add(LineOf(name, op.Gun, op.Pos, moving, true, id, at));
             }
             foreach (var h in hs)
             {
@@ -219,6 +303,7 @@ namespace Suborned.Sim
         {
             h.S("range").I(rangeWaves).Z(rangeClear);
             foreach (var x in Hostiles) h.I(x.Wave);
+            HashRangeKinds(h); // cars and bystanders: no bytes until one is spawned
         }
     }
 }

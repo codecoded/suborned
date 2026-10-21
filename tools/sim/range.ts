@@ -70,6 +70,13 @@ const DENSE: Piece[] = [
   P('high-wall', 29, 5), P('high-wall', 29, 35), P('low-wall', 30, 16), P('car-box', 30.75, 20.5), P('low-wall', 30, 25), P('pillar', 34, 12), P('pillar', 34, 28),
 ];
 
+/** Car slots (the range's shootable cars, GameRange.cs): where a spawned car stands, centre (m), a car-box's size with its long side across
+ * the firing line (nose +y), each a body's width (1.3 m) clear of every piece and 0.65 m clear of every spawn slot's stand. Slot 1 on the
+ * firing line between the near and effective rings (hostiles at both are inside its blast ring); 2 and 3 on the flanks, 16 m out. The walk
+ * grid stays the floor's: a car stands on open ground (no wall when none is spawned). Its cover points (`of: car/slot-<k>`, by the same
+ * pointsOf rule as every piece) are in the site's cover and stand only while a car stands on the slot (GameRange.cs, Game.CoverNow). */
+const CAR_SLOTS: [number, number][] = [[12.5, 20], [10.5, 6], [10.5, 34]];
+
 const SLOT_ANGLES = [5, -5, 15, -15, 25, -25]; // degrees off the firing line, slot 1..6: the middle first
 const PLACEMENTS = { near: 800, eff: 1500, beyond: 1800 } as const; // cm from the mark
 const COVER_BAND = { min: 1600, max: 2600, want: 2000 } as const;
@@ -121,6 +128,15 @@ export function buildRange(layout: keyof typeof RANGE_FILES): { json: string; si
     return best;
   };
   const cover = pointsOf(objs.map(({ id, kind, poly, h }) => ({ id, kind, poly, h })), g).map((c, i) => ({ id: `cv-${String(i + 1).padStart(3, '0')}`, ...c }));
+  // the car slots: each a car-box's footprint, clear of every piece; its cover points by the same rule, with the pieces around it
+  const cars = CAR_SLOTS.map(([x, y], k) => ({ id: `car/slot-${k + 1}`, kind: SIZE['car-box'].cover, poly: rectM(P('car-box', x, y)), h: SIZE['car-box'].h, at: [x, y] as V2 }));
+  for (const c of cars) {
+    const b = box(c.poly);
+    if (b.x0 * 100 < FLOOR.x0 + 100 || b.x1 * 100 > FLOOR.x1 - 100 || b.y0 * 100 < FLOOR.y0 + 100 || b.y1 * 100 > FLOOR.y1 - 100) throw new Error(`${layout}: ${c.id} is off the floor`);
+    for (const q of objs) { const qb = box(q.poly), gx = Math.max(qb.x0 - b.x1, b.x0 - qb.x1, 0), gy = Math.max(qb.y0 - b.y1, b.y0 - qb.y1, 0); if (Math.hypot(gx, gy) < 1.3) throw new Error(`${layout}: ${c.id} and ${q.id} are ${Math.hypot(gx, gy).toFixed(2)} m apart (want 1.3 m)`); }
+  }
+  const carCover = cars.flatMap(c => pointsOf([...objs, c].map(({ id, kind, poly, h }) => ({ id, kind, poly, h })), g).filter(p => p.of === c.id).map((p, i) => ({ id: `cv-${c.id.slice(4)}-${i + 1}`, ...p })));
+  for (const c of cars) if (!carCover.some(p => p.of === c.id)) throw new Error(`${layout}: ${c.id} has no cover point`);
 
   type Place = { at: number[]; stand?: number[]; src: string; reason?: string };
   const places: Record<string, Place> = {};
@@ -136,7 +152,9 @@ export function buildRange(layout: keyof typeof RANGE_FILES): { json: string; si
   const shield = cover.filter(c => c.against === 'fire' && c.q >= RULES.qPartial && protects(c, MARK) && dist(c.at, MARK) >= COVER_BAND.min && dist(c.at, MARK) <= COVER_BAND.max)
     .sort((a, b) => Math.abs(dist(a.at, MARK) - COVER_BAND.want) - Math.abs(dist(b.at, MARK) - COVER_BAND.want) || (a.id < b.id ? -1 : 1));
   if (shield.length < 6) throw new Error(`${layout}: only ${shield.length} cover points shield against the mark ${COVER_BAND.min / 100}–${COVER_BAND.max / 100} m out (want 6)`);
+  cars.forEach((c, k) => { places[`spawn:car:${k + 1}`] = { at: [Math.round(c.at[0] * 100), Math.round(c.at[1] * 100)], src: `the range's car slot ${k + 1}: a car's centre, its long side across the firing line (nose +y); its cover points are ${c.id}'s`, reason: `stands ${(R([c.at[0] * 100, c.at[1] * 100], MARK) / 100).toFixed(2)} m from the mark` }; });
   shield.slice(0, 6).forEach((c, k) => { places[`spawn:cover:${k + 1}`] = { at: c.at, src: `brief 029 spawn cover: the cover point ${c.id} (${c.of}, q ${c.q}, ${c.q >= RULES.qFull ? 'full' : 'partial'}) that shields against the mark`, reason: `stands ${(dist(c.at, MARK) / 100).toFixed(2)} m from the mark` }; });
+  for (const c of cars) for (const [id, p] of Object.entries(places)) if (id.startsWith('spawn:') && !id.startsWith('spawn:car:')) { const st = (p.stand ?? p.at) as V2; if (dRect([st[0] / 100, st[1] / 100], c.poly) < BODY / 100) throw new Error(`${layout}: ${id} stands inside ${c.id}`); }
   // the wings: the loader's Handover anchors, parked where no walk from the floor reaches (the engine's range mode never reads them)
   const wing = (k: number, y: number): V2 => [5500 + wx + (k % 3) * 200 - 200, y];
   const W: Record<string, V2> = {
@@ -149,7 +167,8 @@ export function buildRange(layout: keyof typeof RANGE_FILES): { json: string; si
   for (const [id, at] of Object.entries(W)) places[id] = { at, src: 'brief 029: a Handover anchor the site format requires, parked in the wings; the range never reads it' };
   const wings = 'brief 029: the site format\'s Handover key, parked in the wings; the range never reads it';
   const sorted = Object.fromEntries(Object.entries(places).sort(([a], [b]) => (a < b ? -1 : 1)));
-  const pointsJson = JSON.stringify(cover);
+  const allCover = [...cover, ...carCover];
+  const pointsJson = JSON.stringify(allCover);
   const site = {
     schema: 'suborned.sim.site/1', mission: 'range',
     frame: `the fight range (brief 029): integer centimetres, x along the range from the cell's end, y across; the floor x 0–${FLOOR.x1 / 100} m, y 0–40 m; the wings x ${WINGS.x0 / 100}–${WINGS.x1 / 100} m. No clock: the range has no schedule (the schedule below is the format's, never read).`,
@@ -173,7 +192,7 @@ export function buildRange(layout: keyof typeof RANGE_FILES): { json: string; si
     purse: 0, purseSrc: 'brief 029: the range buys nothing',
     arms: 3, armsSrc: 'brief 029: as the Handover (GDD v0.22.0 §07: all four armed, Arms 3), so the lab loadouts check the same',
     cast: Object.fromEntries(['waitress', 'driver', 'guard', 'councillor'].map((role, k) => [role, { id: `wings-${k + 1}`, name: '(none)', temperament: 'mercenary', need: 'cash', secret: '', lover: '' }]).concat([['src', wings] as any])),
-    cover: { from: 'tools/sim/range.ts (tools/cover/gen.ts pointsOf)', sha256: createHash('sha256').update(pointsJson).digest('hex'), src: 'brief 029: the range\'s cover points, by the Handover\'s rule (quality = height class × arc)', points: cover, blockers: [], refuge: [] },
+    cover: { from: 'tools/sim/range.ts (tools/cover/gen.ts pointsOf)', sha256: createHash('sha256').update(pointsJson).digest('hex'), src: 'brief 029: the range\'s cover points, by the Handover\'s rule (quality = height class × arc)', points: allCover, blockers: [], refuge: [] },
     drive: { x0: 0, y0: 0, cell: CELL, nx: WINDOW.nx, ny: WINDOW.ny, lane: 165, rows: drive, src: wings },
   };
   return { json: JSON.stringify(site, null, 1) + '\n', site };

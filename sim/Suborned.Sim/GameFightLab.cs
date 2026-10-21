@@ -169,6 +169,7 @@ namespace Suborned.Sim
         {
             if (IsOpId(id)) { var o = OpOf(Sim.Op.Parse(id)); return o.Running && (o.Walk != null || o.DriveMoved); }
             var h = HostileOf(id); if (h != null) return h.Gun.St == "break" && h.Present && h.Moving(Tick);
+            if (Range && RangeCivOf(id) is RangeCiv rc) return rc.St == "fleeing" && rc.Moving(Tick); // a fleeing bystander runs at the crowd's run
             if (Start.Crowd && CivilianOf(id) is Person p && !p.Down && WalkerOf(p) is Walker w && w.Run != null && Tick >= w.RunStart)
             {
                 int pace = w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : 0;
@@ -371,7 +372,7 @@ namespace Suborned.Sim
             t = FireTarget(op, target);
             if (t.Length == 0) return "no-target";
             if (IsOpId(t)) return "fire-on-cell";
-            if (Range && !IsFightHostile(t)) return "target-unknown"; // brief 029: only the range's spawned hostiles
+            if (Range && !RangeTarget(t)) return "target-unknown"; // brief 029: only what the range spawned (hostiles, bystanders, cars)
             var tg = GunOf(t); if (tg == null) return "target-unknown";
             if (IsCivilian(t) && !force) return "civilian-target";
             var at = PosOf(t);
@@ -438,7 +439,7 @@ namespace Suborned.Sim
                 var e = op.Walk.End; long de = Dist(e, at);
                 if (de <= w.MaxCm && Sees(e, at)) { p.HasEnd = true; p.EndAt = e; p.AccEnd = ShotAcc(g, t, e, at, de, Sim.Gait.Stand, vale, out int pe); p.PipsEnd = pe; p.ShotsToDownEnd = ToDown(p.AccEnd); }
             }
-            p.Untraced = IsFightHostile(t) && ((!R.FightTraced && FightOverTick == INF) || Range); // brief 029: nothing in the range is traced; tuning.md §9.1: traced after fight.over
+            p.Untraced = Range || IsFightHostile(t) && !R.FightTraced && FightOverTick == INF; // brief 029: nothing in the range is traced; tuning.md §9.1: traced after fight.over
             if (!p.Untraced) { p.TrailShooting = fireIncident.ContainsKey(t) ? 0 : R.GunfireTrail; p.TrailHit = tg.Hit || IsPropertyId(t) ? 0 : R.HitTrail; p.TrailDown = IsPropertyId(t) ? 0 : R.DownTrail; } // a camera or a car: gunfire only (§9.2, §10.7)
             return p;
         }

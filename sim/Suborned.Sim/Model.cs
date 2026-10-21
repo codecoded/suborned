@@ -104,6 +104,7 @@ namespace Suborned.Sim
         public Path? Walk; public long WalkMm;           // a move in progress
         public int WalkSpeed; public bool Running;       // its pace in cm/s (= mm a tick), and whether it is a run (Sky 2026-10-15: double-click runs)
         public bool RanLast;                             // tuning.md §10.2 settle: it was running (and moving) at the last fight tick (hashed only when it disagrees with now)
+        public int SettleUntil = -1;                     // the settle's wait ends at this tick (host read only: Game.RangeLines "steadying"; never hashed, never read by a rule)
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
         public int BusyStart;                            // when it began (the HUD's progress; derived, so not hashed)
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
@@ -163,7 +164,9 @@ namespace Suborned.Sim
         /// <summary>Tuning.md §11 (engine 0.17.0): a trigger's press (true) or release (false), and the follow setting's on (lock) or off
         /// (fire with the trigger). Written for those two verbs only, always.</summary>
         public bool On;
-        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release", "shots", "then", "count", "on" };
+        /// <summary>The fight range (GameRange.cs): who sits in a spawned car ("" nobody; police, rivals, bystander). Written only when set.</summary>
+        public string With = "";
+        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release", "shots", "then", "count", "on", "with" };
         public static Order Parse(JNode n)
         {
             n.Only(Keys);
@@ -182,6 +185,7 @@ namespace Suborned.Sim
             if (n.Opt("how") is JNode hw) { o.How = hw.Str(); if (o.Do != "takedown") throw new FormatException($"{n.Path}: how is for a takedown (knockout or kill)"); }
             if (n.Opt("shots") is JNode sh) { o.Shots = sh.Int(); if (o.Do != "volley" || o.Shots < 1 || o.Shots > 100) throw new FormatException($"{n.Path}: shots is a volley's, 1 or more"); }
             if (n.Opt("count") is JNode ct) { o.Count = ct.Int(); if (o.Do != "spawn" || o.Count < 1 || o.Count > 6) throw new FormatException($"{n.Path}: count is a spawn's, 1..6"); }
+            if (n.Opt("with") is JNode wi) { o.With = wi.Str(); if (o.Do != "spawn") throw new FormatException($"{n.Path}: with is a spawn's (who sits in a car; the engine refuses it on anything else)"); }
             if (n.Opt("then") is JNode th) { o.Then = th.Str(); if (o.Do != "fire" || (o.Then != "free" && o.Then != "stop")) throw new FormatException($"{n.Path}: then is a fire order's, free or stop"); }
             return o;
         }
@@ -203,6 +207,7 @@ namespace Suborned.Sim
             if (Shots > 0) w.Prop("shots", Shots); // brief 027: likewise
             if (Then.Length > 0) w.Prop("then", Then);
             if (Count > 0) w.Prop("count", Count); // brief 029: likewise
+            if (With.Length > 0) w.Prop("with", With); // the range's car spawn: likewise
             if (Do == "trigger" || Do == "follow") w.Prop("on", On); // tuning.md §11: only these verbs, always (a release is on: false)
             w.EndObj();
         }
