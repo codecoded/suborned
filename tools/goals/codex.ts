@@ -1,5 +1,5 @@
 // Standalone structured generation; the coordinator owns every read, write and command.
-// Checked against codex-cli 0.163.0 exec --help / features list (2026-10-19).
+// Written against codex-cli 0.163.0 exec --help / features list (2026-10-19); any installed version runs, and the audit records which.
 // Sources: https://developers.openai.com/codex/config-reference
 // https://developers.openai.com/codex/noninteractive
 // https://developers.openai.com/cookbook/examples/codex/build_iterative_repair_loops_with_codex
@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { root } from '../rag/config';
 import type { Card, ClaudeResult } from '../rag/claude';
 
+/** The CLI version this adapter was written against; tests use it as their recorded version. */
 export const CODEX_VERSION = '0.163.0';
 const AUDIT = 'suborned.codex.audit', CAPTURE = 'suborned.codex.capture';
 const MODEL_SOURCE = 'explicit --model; not server-attested';
@@ -145,7 +146,7 @@ function normalize(value: any, schema: any): any {
 }
 
 const AuditSchema = z.object({
-  type: z.literal(AUDIT), version: z.union([z.literal(1), z.literal(2)]), cliVersion: z.literal(CODEX_VERSION),
+  type: z.literal(AUDIT), version: z.union([z.literal(1), z.literal(2)]), cliVersion: z.string().regex(/^\d+\.\d+\.\d+/),
   promptSha256: z.string().regex(/^[a-f0-9]{64}$/).optional(),
   model: z.string().min(1), modelSource: z.literal(MODEL_SOURCE), effort: z.string(),
   timeoutMs: z.number().int().positive().max(300000), cwd: z.string(), argv: z.array(z.string()),
@@ -280,12 +281,13 @@ export async function invokeCodex(c: Card, prompt: string, schema: z.ZodType, op
       finally { clearTimeout(timer); }
     };
     const probe = await collect([bin, '--version'], '', Math.min(10000, selected.timeoutMs));
-    if (probe.timedOut || probe.exitCode !== 0 || probe.stdout.trim() !== `codex-cli ${CODEX_VERSION}`)
-      throw new Error(`Codex adapter requires CLI ${CODEX_VERSION}; version probe failed or differs`);
+    const cliVersion = probe.stdout.trim().match(/^codex-cli (\d+\.\d+\.\d+\S*)$/)?.[1];
+    if (probe.timedOut || probe.exitCode !== 0 || !cliVersion)
+      throw new Error('Codex CLI not found: install it and sign in with ChatGPT (codex login)');
     const schemaFile = resolve(temp, 'schema.json'), lastFile = resolve(temp, 'last-message.txt');
     await Bun.write(schemaFile, JSON.stringify(outputSchema));
     const argv = codexArgs(c, schemaFile, lastFile, selected, bin);
-    const audit = { type: AUDIT, version: 2, promptSha256: digest(prompt), cliVersion: CODEX_VERSION, modelSource: MODEL_SOURCE,
+    const audit = { type: AUDIT, version: 2, promptSha256: digest(prompt), cliVersion, modelSource: MODEL_SOURCE,
       ...selected, cwd, argv, config: codexConfig(c, selected), schema: originalSchema, outputSchema };
     const result = await collect(argv, prompt, selected.timeoutMs);
     const lastMessage = await Bun.file(lastFile).text().catch(() => null);

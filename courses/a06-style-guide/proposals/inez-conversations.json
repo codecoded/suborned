@@ -1,0 +1,1171 @@
+{
+  "schema": "suborned.conversation-proposals/1",
+  "brief": "briefs/054-conversations-that-reveal.md",
+  "note": "Proposals for contracts/missions/handover/text.json scenes.items; the game is unchanged until they are reviewed and the scene limits raised.",
+  "conversations": [
+    {
+      "id": "inez/watch/any",
+      "scene": 0,
+      "verb": "watch",
+      "temperament": null,
+      "outcome": null,
+      "seconds": 20,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-20-39.268Z-inez-watch-any",
+      "lines": [
+        {
+          "speaker": "keeper",
+          "line": "Inez, window tables, then the terrace door."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Tables and door all evening. As usual."
+        },
+        {
+          "speaker": "customer",
+          "line": "Can you see the Office steps from here?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes, from every terrace table. Another coffee?"
+        },
+        {
+          "speaker": "guard",
+          "line": "My usual coffee, please. My shift ends shortly."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Coming. You'll have it before your shift ends."
+        }
+      ]
+    },
+    {
+      "id": "inez/listen/idealist",
+      "scene": 4,
+      "verb": "listen",
+      "temperament": "idealist",
+      "outcome": null,
+      "seconds": 42,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-20-39.268Z-inez-listen-idealist",
+      "lines": [
+        {
+          "speaker": "waitress",
+          "line": "Early again, love? Your shift hasn't finished."
+        },
+        {
+          "speaker": "guard",
+          "line": "Brief visit. I must return to my post."
+        },
+        {
+          "speaker": "waitress",
+          "line": "After closing, then? I'll leave the kettle on."
+        },
+        {
+          "speaker": "guard",
+          "line": "Until closing, I'm here for the tea."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Of course. That's all the café needs to know."
+        },
+        {
+          "speaker": "guard",
+          "line": "The Office gets the same answer."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Your usual, then. I'll be waiting."
+        },
+        {
+          "speaker": "customer",
+          "line": "Was that the lender's man again?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. I owe more than I've got. Payment's due."
+        },
+        {
+          "speaker": "customer",
+          "line": "Will he give you more time?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "He wants his money. I can't stretch mine further."
+        },
+        {
+          "speaker": "customer",
+          "line": "You'd accept a helping hand, though?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Gladly. But I won't do wrong for money."
+        },
+        {
+          "speaker": "customer",
+          "line": "Fair enough. Just the tea, please."
+        }
+      ]
+    },
+    {
+      "id": "inez/listen/mercenary",
+      "scene": 5,
+      "verb": "listen",
+      "temperament": "mercenary",
+      "outcome": null,
+      "seconds": 42,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-33-11.435Z-inez-listen-mercenary",
+      "lines": [
+        {
+          "speaker": "guard",
+          "line": "My shift hasn't ended. Just a moment."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Another early visit, darling? They'll notice."
+        },
+        {
+          "speaker": "guard",
+          "line": "One coffee. I'm still on duty."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'll keep yours warm after closing."
+        },
+        {
+          "speaker": "guard",
+          "line": "After closing. You have my word."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Then I'll save your place."
+        },
+        {
+          "speaker": "guard",
+          "line": "Until then, strictly a customer."
+        },
+        {
+          "speaker": "customer",
+          "line": "Has the lender's man been round again?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes, love. Still short of what I owe."
+        },
+        {
+          "speaker": "customer",
+          "line": "Can't offer much except sympathy."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Cash buys favours, love. Sympathy doesn't."
+        },
+        {
+          "speaker": "customer",
+          "line": "Even for your regulars?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Whoever pays most gets my help."
+        },
+        {
+          "speaker": "customer",
+          "line": "Just the coffee, then."
+        }
+      ]
+    },
+    {
+      "id": "inez/listen/fearful",
+      "scene": 6,
+      "verb": "listen",
+      "temperament": "fearful",
+      "outcome": null,
+      "seconds": 42,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-21-10.240Z-inez-listen-fearful",
+      "lines": [
+        {
+          "speaker": "waitress",
+          "line": "Early again, love? Your shift hasn't ended."
+        },
+        {
+          "speaker": "guard",
+          "line": "Brief visit. No word to the Office."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Your coffee's here. Separate tables till closing."
+        },
+        {
+          "speaker": "guard",
+          "line": "After closing. Off duty. Usual arrangement."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. If anyone asks, you came for coffee."
+        },
+        {
+          "speaker": "guard",
+          "line": "Agreed. You're trembling."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please go. I can't bear them finding out."
+        },
+        {
+          "speaker": "customer",
+          "line": "Has the lender's man been round today?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. Coffee? I've counted today's takings twice."
+        },
+        {
+          "speaker": "customer",
+          "line": "Still short?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Still short. What I owe keeps growing."
+        },
+        {
+          "speaker": "customer",
+          "line": "Could you ask him for more time?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "I daren't. When he insists, I hand it over."
+        },
+        {
+          "speaker": "customer",
+          "line": "All right. Just a coffee, please."
+        }
+      ]
+    },
+    {
+      "id": "inez/listen/loyal",
+      "scene": 7,
+      "verb": "listen",
+      "temperament": "loyal",
+      "outcome": null,
+      "seconds": 42,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-22-13.072Z-inez-listen-loyal",
+      "lines": [
+        {
+          "speaker": "guard",
+          "line": "My shift hasn't ended. Just a minute."
+        },
+        {
+          "speaker": "waitress",
+          "line": "For coffee, if anyone asks."
+        },
+        {
+          "speaker": "guard",
+          "line": "And after closing, my love?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'll leave the light on for you."
+        },
+        {
+          "speaker": "guard",
+          "line": "The Office need only hear about the coffee."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Back to your post, then. I'll be here."
+        },
+        {
+          "speaker": "guard",
+          "line": "After closing."
+        },
+        {
+          "speaker": "waitress",
+          "line": "The lender's man again. I've counted the till twice."
+        },
+        {
+          "speaker": "customer",
+          "line": "Still can't pay him? Someone you trust might help."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'd need to know them better than that."
+        },
+        {
+          "speaker": "customer",
+          "line": "And if you knew they were trouble?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'd tell the Office. We have rules here."
+        },
+        {
+          "speaker": "customer",
+          "line": "Fair enough. Another coffee, please."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Coming right up. At least the pot's still full."
+        }
+      ]
+    },
+    {
+      "id": "inez/help/idealist",
+      "scene": 29,
+      "verb": "help",
+      "temperament": "idealist",
+      "outcome": "turned",
+      "seconds": 50,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-23-20.447Z-inez-help-idealist",
+      "lines": [
+        {
+          "speaker": "waitress",
+          "line": "Hello, love. What can I get you?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "A moment, Inez. We know about your lender."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Then you know why I keep counting the till."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We can clear your debt. One favour later."
+        },
+        {
+          "speaker": "waitress",
+          "line": "What sort? I won't take a bribe."
+        },
+        {
+          "speaker": "fixer",
+          "line": "You choose what you'll do. We can ask."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I won't hurt someone because you've paid."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Keep that rule. We won't ask you to."
+        },
+        {
+          "speaker": "waitress",
+          "line": "And his man won't be coming round again?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "All of it. We'll get the lender's receipt."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Then yes. I'd like to do some good."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'd be glad of your help, Inez."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Call when you need me. I'll help."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Thank you. We'll call."
+        }
+      ]
+    },
+    {
+      "id": "inez/help/mercenary",
+      "scene": 33,
+      "verb": "help",
+      "temperament": "mercenary",
+      "outcome": "turned",
+      "seconds": 50,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-23-27.180Z-inez-help-mercenary",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "The lender's man needn't come back, Inez."
+        },
+        {
+          "speaker": "waitress",
+          "line": "That takes more than sympathy, love."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'll cover every penny. One favour later."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Every penny? I won't work for a part payment."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Here's the full sum. You can cross it off."
+        },
+        {
+          "speaker": "waitress",
+          "line": "That's him satisfied. What's my favour worth?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "A clean slate. We pay before we ask."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Someone offers more, I listen. That's business, love."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Then remember who paid when you needed it."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'll remember. But I don't work on gratitude."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We ask one favour. Do we have your word?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "For every penny? Yes. Call when you need me."
+        }
+      ]
+    },
+    {
+      "id": "inez/help/fearful",
+      "scene": 36,
+      "verb": "help",
+      "temperament": "fearful",
+      "outcome": "turned",
+      "seconds": 50,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-33-11.436Z-inez-help-fearful",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Inez? We'd like a quiet word."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Of course. Is something wrong?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "We know what you owe the lender."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please. Keep your voice down."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We can clear it. Just a favour later."
+        },
+        {
+          "speaker": "waitress",
+          "line": "People say you're kind. But I don't know you."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'll pay half now. You needn't promise anything yet."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Half leaves him coming back. I couldn't risk it."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Then we'll pay the rest too. Nothing left owing."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Both halves? Before you ask me for anything?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "Before we ask. Here's his receipt, paid in full."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Let me see. Yes. That's all of it."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'd only ask your help when we call."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Then he can't come asking for the rest?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "It's cleared. Can we count on you?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. When you call, I'll help."
+        }
+      ]
+    },
+    {
+      "id": "inez/help/loyal",
+      "scene": 39,
+      "verb": "help",
+      "temperament": "loyal",
+      "outcome": "turned",
+      "seconds": 50,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-24-51.902Z-inez-help-loyal",
+      "lines": [
+        {
+          "speaker": "waitress",
+          "line": "Tea? You've caught a quiet minute."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Please. The lender's final envelope. We've covered the rest."
+        },
+        {
+          "speaker": "waitress",
+          "line": "You've helped before. You've kept your word each time."
+        },
+        {
+          "speaker": "fixer",
+          "line": "As promised. Enough to settle it, every penny."
+        },
+        {
+          "speaker": "waitress",
+          "line": "And what will you want once it's paid?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "Only a favour later. No interest."
+        },
+        {
+          "speaker": "waitress",
+          "line": "The keeper trusts me. I won't betray that."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We respect that. Keep your word to him."
+        },
+        {
+          "speaker": "waitress",
+          "line": "You haven't pushed. That's why I trust you."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Then count it. We'll wait."
+        },
+        {
+          "speaker": "waitress",
+          "line": "That's the last of it. I'll get his receipt."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Then he has no reason to send his man."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Good. Tea first, before something else needs paying."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Can we count on your help when we call?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. You've stood by me. Call, and I'll help."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Thank you, Inez. Enjoy a quiet minute."
+        }
+      ]
+    },
+    {
+      "id": "inez/pressure/idealist",
+      "scene": 42,
+      "verb": "pressure",
+      "temperament": "idealist",
+      "outcome": "turned",
+      "seconds": 35,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-25-23.365Z-inez-pressure-idealist",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Your guard's fond of you. Let's spare him Office questions."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please. We've hurt nobody. Leave him out of this."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We can keep this quiet. We need your help."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Ask me for help. Don't buy it with threats."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'll call. You'll answer."
+        },
+        {
+          "speaker": "waitress",
+          "line": "And if I don't?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "The Office might question his loyalty, hearing about you."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please, don't. I'll do what's asked when you call."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We knew we could count on you."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Don't call this kindness. I'm doing it for him."
+        }
+      ]
+    },
+    {
+      "id": "inez/pressure/mercenary",
+      "scene": 44,
+      "verb": "pressure",
+      "temperament": "mercenary",
+      "outcome": "turned",
+      "seconds": 35,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-27-35.394Z-inez-pressure-mercenary",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "We know about you and the door guard."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Keep your voice down. We're careful."
+        },
+        {
+          "speaker": "fixer",
+          "line": "The Office might question his visits after closing."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I take cash, love. Threats cost you extra."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We can keep quiet. You answer when we call."
+        },
+        {
+          "speaker": "waitress",
+          "line": "And if somebody pays me more?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "Enough to risk the Office hearing about you both?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please. Don't tell them."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Then we can count on you when we call."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'll answer. Now leave. Your cup can stay empty."
+        }
+      ]
+    },
+    {
+      "id": "inez/pressure/fearful",
+      "scene": 45,
+      "verb": "pressure",
+      "temperament": "fearful",
+      "outcome": "turned",
+      "seconds": 35,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-27-45.242Z-inez-pressure-fearful",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Inez. You and the door guard, after closing."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Quiet, please. That's between him and me."
+        },
+        {
+          "speaker": "fixer",
+          "line": "The Office would call that a breach of duty."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please. Don't tell them. What do you want?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "When we telephone, ask him to come to you."
+        },
+        {
+          "speaker": "waitress",
+          "line": "And then you'll leave us alone?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "We need one small favour. Then this stays between us."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I haven't any choice, have I?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "We can count on you when we call?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. I'll fetch him. Don't expect me to thank you."
+        }
+      ]
+    },
+    {
+      "id": "inez/pressure/loyal",
+      "scene": 46,
+      "verb": "pressure",
+      "temperament": "loyal",
+      "outcome": "suspicious",
+      "seconds": 35,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-27-52.008Z-inez-pressure-loyal",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Inez, could we speak?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Of course. What can I get you?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "You and the door guard. Does the Office know?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Keep your voice down. He's dear to me."
+        },
+        {
+          "speaker": "fixer",
+          "line": "The Office calls that misconduct. We can keep quiet."
+        },
+        {
+          "speaker": "waitress",
+          "line": "You won't turn me against the Office."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Then we understand each other. A little cooperation?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "No. Leave him alone."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We'd rather settle this quietly."
+        },
+        {
+          "speaker": "waitress",
+          "line": "I'll tell the Office what you said."
+        }
+      ]
+    },
+    {
+      "id": "inez/call/idealist",
+      "scene": 90,
+      "verb": "call",
+      "temperament": "idealist",
+      "outcome": null,
+      "seconds": 60,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-28-57.268Z-inez-call-idealist",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Inez? Can you hear me over the café?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Yes. You helped me. I won't take a penny."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Understood. Will you call him over now?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Gladly. Let me put the telephone down."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Come over a moment, dear. I need you."
+        },
+        {
+          "speaker": "guard",
+          "line": "I'm required at my door. What's wrong?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please. Just over here, by my table."
+        },
+        {
+          "speaker": "guard",
+          "line": "Very well. Just to your table, then."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Thank you. There's coffee, if you've a moment."
+        },
+        {
+          "speaker": "guard",
+          "line": "One moment. Then I return to my post."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Oh! Your coat! Forgive me."
+        },
+        {
+          "speaker": "guard",
+          "line": "It's on the lining. Mind the cup."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Let me blot it. Sit here."
+        },
+        {
+          "speaker": "guard",
+          "line": "I'll stand. Give me the cloth."
+        },
+        {
+          "speaker": "waitress",
+          "line": "You're rubbing it in. Please, let me."
+        },
+        {
+          "speaker": "guard",
+          "line": "Very well. How long?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Two minutes. Keep your coat over this chair."
+        },
+        {
+          "speaker": "guard",
+          "line": "Two minutes. Then I need my coat back."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Stay by the table. I'll fetch a dry cloth."
+        },
+        {
+          "speaker": "guard",
+          "line": "Here, then. Be quick, Inez."
+        }
+      ]
+    },
+    {
+      "id": "inez/call/mercenary",
+      "scene": 91,
+      "verb": "call",
+      "temperament": "mercenary",
+      "outcome": null,
+      "seconds": 60,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-33-11.436Z-inez-call-mercenary",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Inez? We need you now."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Café speaking. Our agreed price still stands?"
+        },
+        {
+          "speaker": "fixer",
+          "line": "Of course. We're counting on you."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Cash received, love. Higher offers get served first."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Officer! Come over. Your coffee's waiting."
+        },
+        {
+          "speaker": "guard",
+          "line": "I'm on door duty, Inez."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Two minutes at my table, dear."
+        },
+        {
+          "speaker": "guard",
+          "line": "Two minutes. I'm leaving my post."
+        },
+        {
+          "speaker": "waitress",
+          "line": "There. Coffee, just how you like it."
+        },
+        {
+          "speaker": "guard",
+          "line": "Careful with that cup."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Oh, your sleeve! Let me wipe that."
+        },
+        {
+          "speaker": "guard",
+          "line": "It's gone down the cuff."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Stay seated. You'll spread it."
+        },
+        {
+          "speaker": "guard",
+          "line": "I should return to the door."
+        },
+        {
+          "speaker": "waitress",
+          "line": "With coffee dripping down your uniform?"
+        },
+        {
+          "speaker": "guard",
+          "line": "That would breach dress regulations."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Then sit. I've a clean cloth."
+        },
+        {
+          "speaker": "guard",
+          "line": "Very well. Two minutes here."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Your arm, please. The cloth is on the house."
+        },
+        {
+          "speaker": "guard",
+          "line": "Mind the buttons, please."
+        }
+      ]
+    },
+    {
+      "id": "inez/call/fearful",
+      "scene": 92,
+      "verb": "call",
+      "temperament": "fearful",
+      "outcome": null,
+      "seconds": 60,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-29-32.457Z-inez-call-fearful",
+      "lines": [
+        {
+          "speaker": "fixer",
+          "line": "Inez? We said we'd telephone. It's time."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Now? Please, don't make me do this."
+        },
+        {
+          "speaker": "fixer",
+          "line": "We only need you to call him over. You can."
+        },
+        {
+          "speaker": "waitress",
+          "line": "All right. Please don't raise your voice."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please, come over. Quickly. Quietly."
+        },
+        {
+          "speaker": "guard",
+          "line": "I'm on door duty. What's wrong?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Just come to my table. Please."
+        },
+        {
+          "speaker": "guard",
+          "line": "Can it wait until I'm relieved?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "No. I'm sorry. I wouldn't ask."
+        },
+        {
+          "speaker": "guard",
+          "line": "All right. I'm leaving the door."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Thank you. Sit here, close beside me."
+        },
+        {
+          "speaker": "guard",
+          "line": "Two minutes. Then I return to my post."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Oh! Your coffee! I'm sorry, I'm shaking."
+        },
+        {
+          "speaker": "guard",
+          "line": "It's on my sleeve. Leave it."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please, let me wipe it. Don't stand."
+        },
+        {
+          "speaker": "guard",
+          "line": "I can clean it at the door."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Please. Rest your arm here. Let me dab it."
+        },
+        {
+          "speaker": "guard",
+          "line": "All right. Hand me that napkin."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Here. Under your cuff, too. Let me."
+        },
+        {
+          "speaker": "guard",
+          "line": "Steady, Inez. I'll stay here two minutes."
+        }
+      ]
+    },
+    {
+      "id": "inez/call/loyal",
+      "scene": 93,
+      "verb": "call",
+      "temperament": "loyal",
+      "outcome": null,
+      "seconds": 60,
+      "score": 10,
+      "run": "../../runs/style-agent/2026-10-23T15-30-51.320Z-inez-call-loyal",
+      "lines": [
+        {
+          "speaker": "waitress",
+          "line": "Café. Inez speaking."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Inez, it's time. Can we count on you?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "You've helped every time. But no trouble for his post."
+        },
+        {
+          "speaker": "fixer",
+          "line": "Just coffee, Inez. We give you our word."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Officer, could you come over to my table?"
+        },
+        {
+          "speaker": "guard",
+          "line": "I'm on door duty, Inez."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Just a moment, dear. Please?"
+        },
+        {
+          "speaker": "guard",
+          "line": "Very well. I'll come over. One minute."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Thank you. Sit here."
+        },
+        {
+          "speaker": "guard",
+          "line": "One moment, then. What is it?"
+        },
+        {
+          "speaker": "waitress",
+          "line": "Oh! Sorry, I've knocked the coffee over."
+        },
+        {
+          "speaker": "guard",
+          "line": "Mind your hand. It's hot."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Keep seated. It's running towards you."
+        },
+        {
+          "speaker": "guard",
+          "line": "Give me the cloth."
+        },
+        {
+          "speaker": "waitress",
+          "line": "You're my customer. Café rules: I clean it."
+        },
+        {
+          "speaker": "guard",
+          "line": "I ought to return to my post."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Two minutes, dear. Let me finish."
+        },
+        {
+          "speaker": "guard",
+          "line": "Two minutes. Then back to duty."
+        },
+        {
+          "speaker": "waitress",
+          "line": "Thank you. Keep your cup lifted."
+        },
+        {
+          "speaker": "guard",
+          "line": "There. I'll stay seated while you finish."
+        }
+      ]
+    }
+  ]
+}

@@ -1,15 +1,12 @@
 # AGENTS.md
 
-## Marking or reviewing Assignment 4 (content pipeline)?
-Start at **`courses/a04-content-pipeline/README.md` → "For markers"**. It maps each requirement to its evidence and gives the verification steps with their times.
+## Marking or reviewing Assignment 6 (Style Guide Agent)?
+Start at **`courses/a06-style-guide/README.md`**. It maps each requirement to its evidence and gives the review steps.
 
-- You are reviewing, not building. Don't edit files, commit, or start the game's agent crew (`claude --agent …`).
-- The fastest complete check is `bun install && bun run verify`: offline, no Docker, no model, 1–2.5 minutes. Give it a 5-minute timeout: on a busy machine it can pass 2 minutes.
-- Some commands outlast a 2-minute tool timeout. Run them in the background, or with a longer timeout:
-  - `bun run check`: 3–10 min;
-  - `bun run up` on first start: about 3 min;
-  - `bun run levels transit`: 5–17 min.
-- Unity and the Unity MCP server in `.mcp.json` are not needed.
+- You are reviewing, not building. Don't edit files, commit, or start the game's agent crew.
+- The full review is offline and takes under a minute: `bun install --frozen-lockfile`, then `bun run style:replay tone` (also `lore`, `length`), `bun run style:report` and `bun test tools/style-agent`. No model, login or Docker.
+- Live runs are optional and need the Codex CLI signed in with ChatGPT; see the README.
+- Unity and the Unity MCP server in `.mcp.json` are not needed. Assignment 4 is on the `assignment-04` branch.
 
 ## Everything else
 This repo is a game (The Suborned) built by an agent crew. Development instructions for that crew are in `CLAUDE.md`. They don't apply to marking.

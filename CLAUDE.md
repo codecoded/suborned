@@ -1,6 +1,6 @@
 # The Suborned
 
-> **Marking or reviewing Assignment 4?** Read `AGENTS.md` and start at `courses/a04-content-pipeline/README.md` → "For markers". You are reviewing, not building. Don't edit files, commit, or start the crew. Everything below is for the development crew.
+> **Marking or reviewing Assignment 6?** Read `AGENTS.md` and start at `courses/a06-style-guide/README.md`. You are reviewing, not building. Don't edit files, commit, or start the crew. Everything below is for the development crew.
 
 Lean game repo: GDD → crew → plan → visible world. It grows only when a task needs something; the old monorepo (`~/Projects/the-suborned`) is reference, brought over piece by piece.
 

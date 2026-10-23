@@ -36,7 +36,7 @@ Setup ingests a corpus-hash-specific SurrealDB database, or reuses a complete ma
 
 ## Run an approved, bounded goal
 
-Codex uses your authenticated ChatGPT CLI session. The adapter supports **Codex CLI 0.163.0** and rejects unsupported versions or unexpected tool/runtime events. Replace the model, approver and goal below. Do not opt in until you have approved the run: it uses the model subscription and can edit simulation code.
+Codex uses your authenticated ChatGPT CLI session. The adapter supports the installed Codex CLI (written against 0.163.0; the version that ran is recorded) and rejects unexpected tool/runtime events. Replace the model, approver and goal below. Do not opt in until you have approved the run: it uses the model subscription and can edit simulation code.
 
 ```sh
 SUBORNED_LIVE=1 bun run goals run \
