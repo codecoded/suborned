@@ -6,7 +6,7 @@ Start at **`courses/a06-style-guide/README.md`**. It maps each requirement to it
 - You are reviewing, not building. Don't edit files, commit, or start the game's agent crew.
 - The full review is offline and takes under a minute: `bun install --frozen-lockfile`, then `bun run style:replay tone` (also `lore`, `length`), `bun run style:report` and `bun test tools/style-agent`. No model, login or Docker.
 - Live runs are optional and need the Codex CLI signed in with ChatGPT; see the README.
-- Unity and the Unity MCP server in `.mcp.json` are not needed. Assignment 4 is on the `assignment-04` branch.
+- Unity and the Unity MCP server in `.mcp.json` are not needed. Earlier submissions are on the `assignment-04` and `assignment-05` branches.
 
 ## Everything else
 This repo is a game (The Suborned) built by an agent crew. Development instructions for that crew are in `CLAUDE.md`. They don't apply to marking.

@@ -6,8 +6,8 @@ The [illustrated art bible](GDD/the-suborned-art-bible-v0.24.0-2026-10-18.html) 
 
 The game is built by an agent crew defined in the GDD (§12 Crew, §14 Roles): Aster leads 16 agents, Sky is the only human. Content is generated at build time by the same crew, from the GDD retrieved out of a local index; nothing runs AI at play time.
 
-## Assignment 4 submission (content pipeline)
-Branch `assignment-04`. Everything for marking is in **[`courses/a04-content-pipeline/`](courses/a04-content-pipeline/README.md)**: start at "For markers". The quick check is `bun install && bun run verify` (offline, 1–2.5 minutes; allow a 5-minute timeout).
+## Assignment 6 submission (Style Guide Agent)
+Everything for marking is in **[`courses/a06-style-guide/`](courses/a06-style-guide/README.md)**. The review is offline and takes under a minute: `bun install --frozen-lockfile`, then `bun run style:replay tone` (also `lore`, `length`) and `bun run style:report`. Earlier submissions are on the `assignment-04` and `assignment-05` branches.
 
 ## Goal-oriented development and the Codex crew
 
