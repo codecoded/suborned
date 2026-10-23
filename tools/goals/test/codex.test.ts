@@ -136,7 +136,7 @@ describe('Codex transcript verification', () => {
   });
 
   test('rejects audit tampering, missing captures and failed exits', () => {
-    for (const patch of [{ cwd: root }, { cliVersion: '0.1.0' }, { config: [] }, { argv: ['codex', 'exec'] },
+    for (const patch of [{ cwd: root }, { cliVersion: 'unknown' }, { config: [] }, { argv: ['codex', 'exec'] },
       { outputSchema: {} }, { timeoutMs: 0 }, { modelSource: 'server' }]) {
       const f = fixture(); f[0] = { ...f[0], ...patch } as any;
       expect(parse(f).ok).toBe(false);
@@ -243,11 +243,11 @@ describe('Codex invocation with an injected process (never a model)', () => {
     expect(existsSync(dirname(cwd))).toBe(false);
   });
 
-  test('rejects unsupported CLI versions before generation and cleans its directory', async () => {
+  test('stops before generation when no Codex CLI answers, and cleans its directory', async () => {
     let calls = 0, cwd = '';
     const spawn: CodexSpawn = (_argv, o) => { calls++; cwd = o.cwd;
-      return { stdout: stream('codex-cli 0.162.0'), stderr: stream(''), exited: Promise.resolve(0), kill() {} }; };
-    await expect(invokeCodex(c, 'p', schema, options, spawn, { SUBORNED_LIVE: '1' })).rejects.toThrow('requires CLI');
+      return { stdout: stream('command not found'), stderr: stream(''), exited: Promise.resolve(127), kill() {} }; };
+    await expect(invokeCodex(c, 'p', schema, options, spawn, { SUBORNED_LIVE: '1' })).rejects.toThrow('Codex CLI not found');
     expect(calls).toBe(1); expect(existsSync(dirname(cwd))).toBe(false);
   });
 
