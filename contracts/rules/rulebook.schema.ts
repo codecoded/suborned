@@ -131,6 +131,8 @@ const Outcome = z.strictObject({ id, when: z.array(Cond), changes: z.array(Eff) 
 const Also = z.strictObject({ when: z.array(Cond).min(1), changes: z.array(Eff).min(1) });
 const Witness = z.strictObject({ when: z.array(Cond).optional(), act: id });
 
+// ai.intent's foes (engine 0.19.0): a closed set, unknown = reject
+const IntentFoe = z.enum(['drawn', 'fired', 'vale', 'violence', 'face', 'seen']);
 const Weapon = z.strictObject({ damage: Ref, every: Ref, eff: Ref, max: Ref });
 /** brief 027 (EXPERIMENTAL): a playground weapon: damage a hit, cadence, rings, its Arms in the loadout, the charge a targeted shot costs,
  *  and optionally the charge each shot draws, a near band with its own damage (the riot gun), and no fire while walking (the long rifle). */
@@ -261,6 +263,9 @@ export const Rulebook = z.strictObject({
     // brief 025 (EXPERIMENTAL, engine 0.9.0): the driven agent; optional: a rulebook without it makes drive an unknown verb (rulebook.test.ts holds the live one to it)
     drive: z.strictObject({ experimental: text, slack: Ref, burst: Ref, busyPush: Ref, gap: Ref, onBusy: z.enum(['cancel', 'hold']), onRelease: z.enum(['stand', 'resume']), rule: text, tag: z.string().optional(), src: z.string().optional() }).optional(),
     take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
+    // engine 0.23.0 (Sky 2026-10-22): a person act out of reach walks in instead of being refused too-far; optional so a rulebook pinned before it parses
+    // (absent or walkIn false: too-far as before); rulebook.test.ts holds the live rulebook to having it
+    approach: z.strictObject({ walkIn: z.boolean(), repath: Ref, rule: text, tag: z.string().optional(), src: z.string().optional(), proposed: z.boolean().optional(), reason: z.string().optional() }).optional(),
     rule: text,
   }),
   // checkIn (both) and seal: optional only so runs pinned before brief 013 parse; brief 013 retires them (response.checkIn, response.levels[].seal).
@@ -279,6 +284,7 @@ export const Rulebook = z.strictObject({
     draw: Ref, holster: Ref, aimNew: Ref, react: Ref, lineLapse: Ref, sidearmArms: Ref,
     settle: text.optional(), // tuning.md §10.2 (engine 0.16.0): the settle's rule; optional only so a rulebook pinned before it parses
     trigger: text.optional(), follow: Ref.optional(), // tuning.md §11 (engine 0.17.0): the trigger's rule and the follow ring (follow-m); optional only so a rulebook pinned before it parses
+    free: z.strictObject({ start: z.boolean(), settle: Ref, rule: text }).optional(), // tuning.md §14 (engine 0.19.0): weapons free; optional only so a rulebook pinned before it parses
     // brief 030 (Sky 2026-10-20): a fire order out of reach walks in; a weapon drawn by a fire order or panic holsters `autoHolster` after the fight.
     // Optional here only so runs pinned before it parse; the engine requires them and rulebook.test.ts holds the live rulebook to having them.
     close: z.boolean().optional(), autoHolster: Ref.optional(),
@@ -292,6 +298,13 @@ export const Rulebook = z.strictObject({
     engageLapse: Ref, reacquire: Ref, stopReach: Ref, overflow: Ref,
     seek: z.strictObject({ rival: Ref, police: Ref, response: Ref, ally: Ref, guard: Ref }),
     rivalGone: Ref, guardReturn: Ref, patrolResume: Ref, rule: text,
+    // Pulse hostile-initiative.md with Sky's answers (engine 0.19.0): who a hostile fires on, per agent; optional only so a rulebook pinned before it parses
+    intent: ground({
+      police: z.strictObject({ foes: z.array(IntentFoe), face: Ref, warn: z.strictObject({ ticks: Ref, alert: Ref, maxAlert: Ref, perWatcher: Ref, trail: Ref }), closeIn: Ref, closeLevel: Ref }),
+      robots: z.strictObject({ foes: z.array(IntentFoe), face: Ref, faceHeat: z.array(z.enum(['unknown', 'noticed', 'wanted', 'infamous'])) }),
+      rivals: z.strictObject({ calm: z.array(IntentFoe), alerted: z.array(IntentFoe), alertedAt: Ref, street: z.boolean(), press: z.boolean() }),
+      final: z.enum(['every', 'agent']), rule: text, // tuning.md §15.2 (engine 0.20.0, PROVISIONAL until Sky plays it): agent = the final fight per agent as before it; every = every operative (the range always)
+    }).optional(),
   }),
   // The crowd in a fight (Pulse §4): every number a ref.
   crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it

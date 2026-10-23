@@ -96,14 +96,29 @@ const play = (what: string): Played => {
     return { id: j.id, outcome: j.outcome, fail: j.fail, tick: j.tick, cash: j.cash, trail: j.trail, alert: j.alert, startHash: j.startHash, finalHash: j.finalHash, replayIdentical: j.replayIdentical, checks: j.checks.length, checksFailed: failed, checkpoints: j.checkpoints, exit: r.code };
   } catch { return { id: what, outcome: 'error', fail: '', tick: 0, cash: 0, trail: 0, alert: 0, startHash: '', finalHash: '', replayIdentical: false, checks: 0, checksFailed: 0, checkpoints: [], exit: r.code, error: (r.err || r.out).trim().slice(0, 400) }; }
 };
-const scenarios = ids.map(play);
+/** Many plays in one process (the CLI's `batch`, brief 042: the inputs load once and the plays use every core; each line is what `play --json` prints). A CLI without it plays a process each. */
+const playMany = (whats: string[]): Played[] => {
+  if (!existsSync(join(work, 'sim/cli/Batch.cs'))) return whats.map(play);
+  const r = cli('batch', ...whats), lines = r.out.trim().split('\n');
+  if (lines.length !== whats.length) { console.error(`batch gave ${lines.length} lines for ${whats.length} plays:\n${r.err}`); process.exit(1); }
+  return whats.map((what, i) => {
+    try {
+      const j = JSON.parse(lines[i]!);
+      if (j.error !== undefined) return { id: what, outcome: 'error', fail: '', tick: 0, cash: 0, trail: 0, alert: 0, startHash: '', finalHash: '', replayIdentical: false, checks: 0, checksFailed: 0, checkpoints: [], exit: 1, error: String(j.error).slice(0, 400) };
+      const failed = (j.checks as { ok: boolean }[]).filter(c => !c.ok).length;
+      return { id: j.id, outcome: j.outcome, fail: j.fail, tick: j.tick, cash: j.cash, trail: j.trail, alert: j.alert, startHash: j.startHash, finalHash: j.finalHash, replayIdentical: j.replayIdentical, checks: j.checks.length, checksFailed: failed, checkpoints: j.checkpoints, exit: failed === 0 && j.replayIdentical ? 0 : 1 };
+    } catch { return { id: what, outcome: 'error', fail: '', tick: 0, cash: 0, trail: 0, alert: 0, startHash: '', finalHash: '', replayIdentical: false, checks: 0, checksFailed: 0, checkpoints: [], exit: 1, error: lines[i]!.slice(0, 400) }; }
+  });
+};
+const scenarios = playMany(ids);
 const rangeOk = Object.values(RANGE).every(r => existsSync(join(work, r)));
 const rangeIds = rangeOk ? need(cli('range', 'list'), 'cli range list').trim().split('\n').map(l => l.split('\t')[0]!).filter(Boolean) : [];
 const rangePlays: Played[] = rangeIds.map(id => { const r = cli('range', 'play', id, '--json'); try { const j = JSON.parse(r.out); return { id: j.id, outcome: j.outcome, fail: j.fail, tick: j.tick, cash: j.cash, trail: j.trail, alert: j.alert, startHash: j.startHash, finalHash: j.finalHash, replayIdentical: j.replayIdentical, checks: j.checks.length, checksFailed: (j.checks as { ok: boolean }[]).filter(c => !c.ok).length, checkpoints: j.checkpoints, exit: r.code }; } catch { return { id, outcome: 'error', fail: '', tick: 0, cash: 0, trail: 0, alert: 0, startHash: '', finalHash: '', replayIdentical: false, checks: 0, checksFailed: 0, checkpoints: [], exit: r.code, error: (r.err || r.out).trim().slice(0, 400) }; } });
 const routes: Played[] = [];
 if (argv.includes('--routes')) {
   const dir = join(root, 'contracts/missions/handover/routes');
-  for (const f of existsSync(dir) ? readdirSync(dir).filter(f => f.endsWith('.json') && f !== 'routes.json').sort() : []) routes.push({ ...play(join(dir, f)), id: f });
+  const files = existsSync(dir) ? readdirSync(dir).filter(f => f.endsWith('.json') && f !== 'routes.json').sort() : [];
+  playMany(files.map(f => join(dir, f))).forEach((p, i) => routes.push({ ...p, id: files[i]! }));
 }
 
 // 4. into Unity

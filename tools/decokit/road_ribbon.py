@@ -98,3 +98,49 @@ def road_lozenge(s):
 def road_seam(s):
     """A chrome joint across the enamel: 4.6 m x 0.03 m, 4 mm proud (the testbed's `seamParts`, every 9 m)."""
     s.face([(-0.015, -2.3, 0.004), (0.015, -2.3, 0.004), (0.015, 2.3, 0.004), (-0.015, 2.3, 0.004)], pal.Chrome)
+
+
+# ----------------------------------------------------------------------------- brief 028 (2026-10-22): what the 20 Oct pieces left out of the testbed's road
+# civic-road-finish.js / civic-roads.js also lay (1) a pearl "streamline" band along both kerbs, 0.36 to 0.98 m out from the kerb face, edged by two 0.035 m chrome lines (bandStart .36, bandEnd .98,
+# chromeWidth .035, the white-marble shoulder every testbed frame shows between the kerb and the blue) and (2) a "gold pavement pinstripe" 0.05 m wide 0.5 m inside the pavement edge (brass here: hairline only).
+# Frame as the ribbon's: along +X, centred, y 0 = the lens centre line = 0.10 m out from the kerb face (plan roads.ribbon.offset), the carriageway on +Y, z 0 = the carriageway top; so the shoulder
+# is placed by the same rule as the ribbon beside it (every kerb face), and its band is y 0.26 to 0.88 (0.36 to 0.98 from the kerb face) with the chrome lines 0.26-0.295 and 0.88-0.915.
+SHOULDER_D0, SHOULDER_D1, CHROME_W, Z_SHOULDER, Z_CHROME = 0.26, 0.88, 0.035, 0.0025, 0.0035
+PINSTRIPE_W, Z_PINSTRIPE = 0.04, 0.003
+
+
+def shoulder(s, path):
+    """The pearl band and its chrome borders along `path` (the lens centre line): marble DK_Ground_RoadPearl, chrome DK_Chrome."""
+    _band(s, path, SHOULDER_D0, SHOULDER_D1, Z_SHOULDER, pal.Ground_RoadPearl)
+    _band(s, path, SHOULDER_D0, SHOULDER_D0 + CHROME_W, Z_CHROME, pal.Chrome)
+    _band(s, path, SHOULDER_D1, SHOULDER_D1 + CHROME_W, Z_CHROME, pal.Chrome)
+
+
+@asset("RoadShoulder_Straight_6m", "Ground", bevel=0.0)
+def shoulder_straight(s):
+    shoulder(s, _line(6.0, 2))
+
+
+@asset("RoadShoulder_Arc90_R4", "Ground", bevel=0.0)
+def shoulder_arc4(s):
+    shoulder(s, _arc(4.0, n=10))
+
+
+@asset("RoadShoulder_Arc90_R8", "Ground", bevel=0.0)
+def shoulder_arc8(s):
+    shoulder(s, _arc(8.0, n=14))
+
+
+@asset("PaveEdge_Pinstripe_6m", "Ground", bevel=0.0)
+def pave_pinstripe(s):
+    """The brass pinstripe in the pavement 0.5 m from the kerb face: 6 m x 0.04 m, lying on the pavement (z 0 = the pavement top), centre line y 0."""
+    _band(s, _line(6.0, 1), -PINSTRIPE_W / 2, PINSTRIPE_W / 2, Z_PINSTRIPE, pal.Brass_Civic)
+
+
+@asset("Ground_RoadSwatch", "Ground", bevel=0)
+def road_swatch(s):
+    """Carries the carriageway's materials into the kit (a material no piece uses is never copied): the powder-blue enamel 4 x 4 m and the pearl marble 2 x 4 m side by side at true scale, UV = metres.
+    Not placed in the world; a Unity prefab shows the finish at scale."""
+    for (x0, w, d, mat) in ((-3.1, 4.0, 4.0, pal.Ground_RoadEnamel), (1.1, 2.0, 4.0, pal.Ground_RoadPearl)):
+        pts = [(x0, -2.0, 0.0), (x0 + w, -2.0, 0.0), (x0 + w, -2.0 + d, 0.0), (x0, -2.0 + d, 0.0)]
+        s.decal(pts, mat, ((0, 0), (w, 0), (w, d), (0, d)), lift=0.0)

@@ -7,6 +7,10 @@ import type { Derived, Plan } from '../../plan/plan';
 export const r3 = (n: number) => Math.round(n * 1000) / 1000;
 export const r4 = (n: number) => Math.round(n * 10000) / 10000;
 export const rv = (p: V): V => [r3(p[0]), r3(p[1])];
+/** The level of the export's flat layers beside the carriageway (a footway, a civic bay): build.ts PROV.foot. A kerbed bay's road finish lies on its floor (brief 028 Road). */
+export const FLAT_FOOT = 0.02;
+/** The land flat under whatever has no plot slab (a circus pavement band): build.ts PROV.ground. */
+export const LAND = -0.03;
 
 /** FNV-1a, 32 bit. */
 export function hash32(s: string): number {

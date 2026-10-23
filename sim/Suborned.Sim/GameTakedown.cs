@@ -118,12 +118,13 @@ namespace Suborned.Sim
 
         /// <summary>Is the target aware of the Enforcer as the order is given (Motive §1.3)? The guard by his own cone (his door cone at the
         /// door); anyone walking by the facing cone along the way they walk; anyone who has witnessed one of the cell's acts this mission;
-        /// otherwise a person standing at a stop has no facing yet (Pulse), so is surprised. A runner within witness range is heard.
+        /// otherwise a person standing at a stop has no facing yet (Pulse), so is surprised. A runner within witness range is heard by security
+        /// staff (the door guard, a job in witness.staff) only (engine 0.22.0, Sky 2026-10-22).
         /// Armed: carries a weapon (the door guard).</summary>
         (bool aware, bool armed) Awareness(Person p, Pt at)
         {
             var e = Enforcer; bool armed = p == GuardP && GuardGun.W != null && !GuardAlly;
-            bool aware = e.Running && (e.Walk != null || e.DriveMoved) && G.Within(e.Pos, at, witnessRange); // brief 025: a driven run is a run
+            bool aware = IsStaff(p) && e.Running && (e.Walk != null || e.DriveMoved) && G.Within(e.Pos, at, witnessRange); // brief 025: a driven run is a run; engine 0.22.0: only security staff hear it (Sky 2026-10-22)
             if (!aware && p == GuardP) aware = GuardWatching(e.Pos, false);
             if (!aware && p == GuardP && AttentionWary("guard", "enforcer")) aware = true; // brief 031 (Sky D1): a wary guard is aware of him
             // Motive rev 3 §1.3: a person who witnessed one of the cell's acts (a takedown, a carry, a drawn weapon) stays aware of the
@@ -185,7 +186,7 @@ namespace Suborned.Sim
         void TakedownFails(Op op, Person p, Pt at)
         {
             Note("takedown.fails", $"{Who(p)} sees the Enforcer coming and draws: the takedown fails.");
-            markedFoes.Add("enforcer");
+            markedFoes.Add("enforcer"); KnowFace("enforcer"); // engine 0.19.0 (ai.intent face)
             var pose = GuardPose();
             if (pose.HasValue && pose.Value.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.Value.pos; heldFacing = pose.Value.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; }
             GuardEngaged = true; Remember(GuardP, "attacked-aware", "enforcer", true);
@@ -467,7 +468,7 @@ namespace Suborned.Sim
         void SecuritySees(TdAct a, string w, string what, Body? b)
         {
             string actor = what == "carry" && b != null && b.Carrier.HasValue ? Sim.Op.Name(b.Carrier.Value) : "enforcer";
-            markedFoes.Add(actor);
+            markedFoes.Add(actor); KnowFace(actor); // engine 0.19.0 (ai.intent face)
             Note("takedown.seen", $"The {w.Replace("camera:", "")} sees {(what == "carry" ? "a body carried" : a.Take ? "Vale taken" : "the takedown")}: Alert {Math.Max(Alert, R.DrawSeenSecurity)}.");
             if (w == "guard" && !GuardDown)
             {
@@ -587,7 +588,7 @@ namespace Suborned.Sim
                 var phoneAt = next.W != null ? (next.W.Run?.End ?? next.W.At) : (Pt?)null;
                 if (next.W != null && (next.W.St == "calling" || next.W.St == "reporting")) Return(next.W, next.W.Run?.End ?? next.W.At);
                 if (next.Kind == "tell") { Tell(a, next.P!, phoneAt ?? PosOfPerson(next.P!) ?? next.Place, true); continue; } // at the phone: a call to a tie, no report
-                if (next.P != null) Remember(next.P, "reported", "", false);
+                if (next.P != null) { Remember(next.P, "reported", "", false); FacesFromReport(next.P); } // engine 0.19.0 (ai.intent face): the faces the report carries
                 LandAct(a, next.Kind, next.By, next.P, next.Place, next.Sev, next.Stash);
                 if (next.P != null && next.Kind != "woken" && next.Kind != "mark") { var from = PosOfPerson(next.P) ?? phoneAt ?? next.Place; Tell(a, next.P, from, atPhone || AtPhone(from)); }
                 if (Over) return;

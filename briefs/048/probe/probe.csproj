@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Brief 048: a draw-distance probe compiled against the built player's own managed assemblies (Mono, .NET Standard 2.1). -->
+  <PropertyGroup>
+    <TargetFramework>netstandard2.1</TargetFramework>
+    <AssemblyName>Redline048</AssemblyName>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
+    <NoStdLib>true</NoStdLib>
+    <LangVersion>9.0</LangVersion>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <Managed Condition="'$(Managed)' == ''">/Users/sky/Projects/suborned/out/build/play/The Suborned.app/Contents/Resources/Data/Managed</Managed>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Probe.cs" />
+    <Reference Include="$(Managed)/*.dll" Exclude="$(Managed)/Unity.Collections.Tests*.dll" Private="false" />
+  </ItemGroup>
+</Project>

@@ -35,14 +35,17 @@ const git = (...a: string[]) => { const r = Bun.spawnSync(['git', ...a], { cwd: 
 /** The tree at `rev`, enough to replay in: tools, contracts, runs, GDD, the crew cards (a run pins their hashes) and the sim's data, with this tree's node_modules. Cached by commit. */
 export function materialize(rev: string): { dir: string; label: string } {
   const commit = git('rev-parse', `${rev}^{commit}`), dir = resolve(root, 'out/drift-auto/base', commit.slice(0, 12));
+  const have = ['tools', 'contracts', 'runs', 'GDD', '.claude/agents', 'sim/data', 'package.json', 'tsconfig.json', 'bunfig.toml'].filter(p => git('ls-tree', commit, '--', p) !== '');
   if (!existsSync(resolve(dir, '.ready'))) {
     rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true });
-    const have = ['tools', 'contracts', 'runs', 'GDD', '.claude/agents', 'sim/data', 'package.json', 'tsconfig.json', 'bunfig.toml'].filter(p => git('ls-tree', commit, '--', p) !== '');
     const tar = Bun.spawnSync(['sh', '-c', `git archive ${commit} ${have.join(' ')} | tar -x -C '${dir}'`], { cwd: root, stdout: 'pipe', stderr: 'pipe' });
     if (tar.exitCode !== 0) throw new Error(`git archive ${commit}: ${tar.stderr}`);
     symlinkSync(resolve(root, 'node_modules'), resolve(dir, 'node_modules'));
     writeFileSync(resolve(dir, '.ready'), commit + '\n');
   }
+  // the images a run pins by sha256 (concept sheets, round pictures) are git-ignored, so the commit does not hold them: read them where they are, from this tree.
+  // Without them the base replays "not on this machine" and the tree replays "checked", a difference that is not the code's, and every skyline declaration is refused.
+  if (existsSync(resolve(root, 'briefs')) && !existsSync(resolve(dir, 'briefs'))) symlinkSync(resolve(root, 'briefs'), resolve(dir, 'briefs'));
   return { dir, label: `${rev === 'HEAD' ? 'HEAD ' : ''}${commit.slice(0, 12)}` };
 }
 

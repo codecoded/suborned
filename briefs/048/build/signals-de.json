@@ -1,0 +1,32 @@
+{
+ "150": {
+  "maskPixels": 15667,
+  "seenShare": {
+   "asbuilt": 0.636,
+   "offset": 0.752,
+   "ztestAlways": 0.991
+  },
+  "rim": {
+   "pixels": 236,
+   "meanColourDeltaE2000": 1.29,
+   "pixelMedian": 0.38,
+   "pass": false
+  },
+  "fill": {
+   "pixels": 9729,
+   "meanColourDeltaE2000": 2.31,
+   "pixelMedian": 2.19,
+   "pass": false
+  }
+ },
+ "250": {
+  "maskPixels": 3177,
+  "seenShare": {
+   "asbuilt": 0.0,
+   "offset": 0.0,
+   "ztestAlways": 0.984
+  },
+  "rim": null,
+  "fill": null
+ }
+}

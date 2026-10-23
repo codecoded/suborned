@@ -122,5 +122,40 @@ namespace Suborned.Sim
         /// <summary>The same for a person the engine handed out (a contact the debrief carries: Between.Contacts, whose need may be replaced).</summary>
         public (string kind, string record, string label) NeedRecordOf(Person p)
             => (p.Need, p.Record, p.Record.Length > 0 && People2 != null && People2.Records.TryGetValue(p.Record, out var r) ? r.label : "");
+
+        /// <summary>The cell's open windows now (brief 043 §6, the window marker; engine 0.24.0), in a fixed order, so the host reads one
+        /// list instead of five fields. Read-only: no state, no hash moves. Each is (Kind, Thing, Until): Kind the verb that opened it, Thing
+        /// what it changed (the chip's anchor), Until the tick it closes, as the engine has it now (a later event may move it), or -1 when it
+        /// is held with no end. The host's number is (Until − Tick) / Hz.
+        ///  · call, guard: Call Inez, the guard away from the door until GuardAwayUntil (closes on guard.back); not while he is held or down.
+        ///  · call, pickup: Call driver, the car blinds the pickup camera from car.blocks until BlockedUntil (car.clears), or until driverLast
+        ///    if that comes first and the turned driver will take the car to the service lane (car.leaves).
+        ///  · reroute, patrol: the patrol away on false orders until PatrolAwayUntil (patrol.returns).
+        ///  · mislead, rivals: the False tip, the rival crew away until RivalsDelayedUntil (no log code at its end; a retreat under fire is
+        ///    not a window).
+        ///  · loop, the camera id (LoopCam): held while the Tech stays at the cabinet, Until -1 (loop.ends).</summary>
+        public List<OpenWindow> Windows()
+        {
+            var l = new List<OpenWindow>();
+            if (LureTick >= 0 && !GuardDown && !GuardHeld && Tick < GuardAwayUntil) l.Add(new OpenWindow("call", "guard", GuardAwayUntil));
+            if (Tick >= BlockedFrom && !PickupCameraLive())
+            {
+                int until = BlockedUntil, last = T(driverLastS);
+                if (Tick < last && last < until && Driver.Turned && !Driver.Down) until = last; // he drives it away at driverLast (CarTimeline)
+                l.Add(new OpenWindow("call", "pickup", until));
+            }
+            if (!PatrolDown && PatrolAwayUntil > Tick) l.Add(new OpenWindow("reroute", "patrol", PatrolAwayUntil));
+            if (RivalsDelayMethod == "mislead" && RivalsDelayedUntil > Tick && !RivalsAbsorbed) l.Add(new OpenWindow("mislead", "rivals", RivalsDelayedUntil));
+            if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, -1));
+            return l;
+        }
+    }
+
+    /// <summary>One open window (Game.Windows): the verb that opened it, the thing it changed, the tick it closes or -1 while held.</summary>
+    public sealed class OpenWindow
+    {
+        public readonly string Kind, Thing; public readonly int Until;
+        public OpenWindow(string kind, string thing, int until) { Kind = kind; Thing = thing; Until = until; }
+        public override string ToString() => Kind + ":" + Thing + "@" + Until.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 }

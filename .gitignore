@@ -51,6 +51,7 @@ unity/Assets/StreamingAssets.meta
 # C# engine build output (brief 011 A)
 sim/**/bin/
 sim/**/obj/
+tools/game/closing-hash/obj/
 
 # Screenshots, renders and test captures in briefs stay on disk, out of git (Sky, 2026-10-19; history rewritten to drop them).
 # Kept: concept art and images a tool reads.
@@ -100,3 +101,15 @@ runs/crew/**/obj/
 
 # web controls playground screenshots (brief 041)
 testbed/controls/shots/
+# Local screenshot link used by the HUD research page; its targets are ignored captures.
+testbed/hud-style/research-crops
+
+# Paid-API output: media, ledgers, thumbnails and the viewer (brief 053). The rollup without media is committed: tools/paid/spend.json
+/paid/
+# Directory symlinks left in briefs/ by the paid migration (they point into paid/; files inside already match the media rules above)
+briefs/047/takes
+briefs/047/picks
+briefs/047/fix
+briefs/052/keyframes
+briefs/052/shots
+briefs/052/audio

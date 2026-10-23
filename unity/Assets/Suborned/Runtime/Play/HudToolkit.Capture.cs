@@ -89,6 +89,7 @@ namespace Suborned.Play
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
             var list = new System.Collections.Generic.List<(string, VisualElement)> { ("roster", column), ("plate", verbPlate), ("pill", pill), ("keys", keys), ("response", respPill), ("next-tip", nextTip), ("scope", scope), ("sheet", sheet), ("chip", chip2), ("goal", goal), ("end", end), ("briefing", brief), ("intel", intel), ("history", history), ("loud", loud), ("armed", armedPlate), ("strip", strip), ("cursor-armed", cursorArmed), ("cursor-cross", cursorCross), ("target-pill", targetPill), ("stance-fan", fan), ("scene-bubble", convoBubble), ("scene-skip", convoSkip) };
             for (int i = 0; i < 4; i++) list.Add(($"portrait-{i + 1}", colWins[i]?.Clip));
+            for (int i = 0; i < 4; i++) { list.Add(($"roster-weapon-{i + 1}", colWins[i]?.Arm)); list.Add(($"roster-status-{i + 1}", colWins[i]?.Status)); list.Add(($"roster-dots-{i + 1}", colWins[i]?.Dots)); } // brief 046: the row under each portrait
             for (int i = 0; i < busy.Count; i++) list.Add(($"timer-{i + 1}", busy[i].root));
             for (int i = 0; i < beatEls.Count; i++) list.Add(($"beat-{i + 1}", beatEls[i].root));
             for (int i = 0; i < bubbleEls.Count; i++) list.Add(($"bubble-{i + 1}", bubbleEls[i].root));
@@ -97,6 +98,12 @@ namespace Suborned.Play
             for (int i = 0; i < edgeEls.Count; i++) list.Add(($"edge-{i + 1}", edgeEls[i]));
             for (int i = 0; i < edgeCams.Count; i++) list.Add(($"edge-cameo-{i + 1}", edgeCams[i].Root));
             list.Add(("history-key", historyKey2));
+            // brief 044: the overlays of the done moment and the hold controls (the 2x crops of Glyph's review)
+            list.Add(("verb-pill", vpill)); list.Add(("verb-pill-tail", vpillTail)); list.Add(("cancel-tag", cancelTag)); list.Add(("drag-faces", dragGhost));
+            for (int i = 0; i < chipEls.Count; i++) list.Add(($"gain-chip-{i + 1}", chipEls[i].Root));
+            for (int i = 0; i < winEls.Count; i++) list.Add(($"window-mark-{i + 1}", winEls[i].root));
+            for (int i = 0; i < ghostEls.Count; i++) list.Add(($"plan-ghost-{i + 1}", ghostEls[i].root));
+            for (int i = 0; i < clockEls.Count; i++) list.Add(($"attention-clock-{i + 1}", clockEls[i].root));
             for (int i = 0; i < stashMarks.Count; i++) list.Add(($"stash-{i + 1}", stashMarks[i].Plate));
             var sb = new StringBuilder("{\n"); bool first = true;
             foreach (var (n, e) in list)
@@ -138,7 +145,9 @@ namespace Suborned.Play
                 // chrome (6.5 px in, measured on plate_dark's art); a satellite drawn wholly outside the plate (a cancel ✕) is not its content
                 if (e.ClassListContains("s-plate_dark") && e.worldBound.width > 0)
                 {
-                    var plate = e.worldBound; float inset = RimIn + Clear - 0.3f;
+                    // the rim thins with the plate's slice scale (RimIn is measured at the kit's 0.5; brief 044's smaller plates set their own)
+                    float ss = e.resolvedStyle.unitySliceScale, rimScale = ss > 0.01f && ss < 0.5f ? ss / 0.5f : 1f; // never wider than the kit's own
+                    var plate = e.worldBound; float inset = RimIn * rimScale + Clear - 0.3f;
                     var inner = Rect.MinMaxRect(plate.xMin + inset, plate.yMin + inset, plate.xMax - inset, plate.yMax - inset);
                     void Glyphs(VisualElement x, string px)
                     {
@@ -160,6 +169,7 @@ namespace Suborned.Play
             FeedAudit(bad);
             EndCardAudit(bad);
             EndButtonAudit(bad);
+            RosterAlign(bad); // brief 046: the lab's ALIGN rules on the tall column
             return bad;
         }
 

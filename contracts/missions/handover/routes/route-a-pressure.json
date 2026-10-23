@@ -21,9 +21,9 @@
   {"tick":1237,"op":"tech","do":"move","to":[675,-4625]},
   {"tick":1617,"op":"enforcer","do":"move","to":[2400,-6000]},
   {"tick":2007,"op":"cell","do":"panic"},
-  {"tick":2233,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":2362,"op":"enforcer","do":"board","target":"car"},
-  {"tick":2402,"op":"cell","do":"go"}
+  {"tick":2238,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":2367,"op":"enforcer","do":"board","target":"car"},
+  {"tick":2407,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

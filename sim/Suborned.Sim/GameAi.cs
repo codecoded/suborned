@@ -66,14 +66,14 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- foes and targets
 
         /// <summary>The foes a body may shoot: in its weapon's effective reach, on a clear line its `sees` allows. Before the final fight only an
-        /// operative with a weapon out, who has fired, or who holds Vale; in it every operative (Pulse §2.1) and, for the rivals, the guard ally.</summary>
+        /// operative with a weapon out, who has fired, or who holds Vale; in it every operative (ai.intent.final every; the range always) or, with final agent (tuning.md §15.2), only an operative with its own cause, and, for the rivals, the guard ally.</summary>
         List<(string id, Pt at)> FoesInReach(string id, Gun g, Pt pos, Func<Pt, bool> sees, bool anyOp)
         {
             var l = new List<(string, Pt)>(); long eff = (long)g.W!.EffCm * g.W.EffCm;
             foreach (var op in Ops)
             {
                 if (op.Down || op.Inside) continue;
-                bool foe = anyOp || (op.Gun.Drawn && !(Lab && Warned(op))) || op.Gun.Fired || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) || markedFoes.Contains(Sim.Op.Name(op.Id)); // brief 013: security saw them do violence
+                bool foe = (anyOp && (R.Intent.FinalEvery || Range)) || Provoked(id, op); // engine 0.20.0 (ai.intent.final agent, tuning.md §15.2, PROVISIONAL): in the final fight too, per agent; the range every // engine 0.19.0 (ai.intent): per agent, from what it is seen doing or its own known face (was: a weapon out, fired, Vale, or security saw violence, for every body)
                 if (!foe || !sees(op.Pos)) continue;
                 long d2 = G.D2(pos, op.Pos);
                 if (d2 > eff && !(d2 <= (long)g.W.MaxCm * g.W.MaxCm && PoliceBody(id) && ShotAtRecently(g, Sim.Op.Name(op.Id)))) continue; // tuning.md §7.10 rule 1: shot at, the police answer to their max ring
@@ -145,6 +145,8 @@ namespace Suborned.Sim
                     return;
                 case "rivals":
                     if (RivalsDrawn && RivalsPresent) PreFight("rivals", RivalsGun, PosOf("rivals"), RivalsWatching);
+                    else if (RivalsStreetOn) // engine 0.19.0 (Sky's answer 3): the crew watches the street from its arrival; no foe leaves its gun as it was (no NoFoeSince: nothing reads it for the crew)
+                    { int nf = RivalsGun.NoFoeSince; PreFight("rivals", RivalsGun, PosOf("rivals"), RivalsStreetWatching); if (RivalsGun.Target.Length == 0) RivalsGun.NoFoeSince = nf; }
                     return;
             }
         }

@@ -1,0 +1,6 @@
+{
+ "schema": "suborned.tplong.long/1", "row": "tp-street", "screen": [2880, 1864],
+ "dofOn": {"frames": 734, "meanMs": 5.453, "p99Ms": 5.997, "gpuMs": 5.053, "renderMs": 4.148},
+ "dofOff": {"frames": 752, "meanMs": 5.32, "p99Ms": 5.804, "gpuMs": 4.83, "renderMs": 4.028},
+ "deltaMeanMs": 0.133, "deltaGpuMs": 0.223
+}

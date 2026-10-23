@@ -324,11 +324,11 @@ namespace Suborned.Play
             var g = host.Game; int used = 0;
             void Ring(string key)
             {
-                if (!things.TryGetValue(key, out var th) || !th.shown || !th.t.gameObject.activeInHierarchy || lifted.ContainsKey(key)) return; // a downed rival lies without one
+                if (!things.TryGetValue(key, out var th) || !th.shown || !th.t.gameObject.activeInHierarchy || lifted.ContainsKey(key) || host.TargetRingKeys.Contains(key)) return; // a downed rival lies without one; a target ring replaces it (brief 049)
                 if (rivalRings.Count <= used)
                 {
                     var go = new GameObject("rivalring/" + used); go.transform.SetParent(root, false); var lr = go.AddComponent<LineRenderer>();
-                    var c = host.rivalColour; rivalRingMat ??= Unlit(c);
+                    var c = host.rivalColour; rivalRingMat ??= host.SignalMat(c, false); // a signal: no fog
                     lr.sharedMaterial = rivalRingMat; lr.loop = true; lr.positionCount = 32; lr.useWorldSpace = false; lr.alignment = LineAlignment.TransformZ;
                     go.transform.localRotation = Quaternion.Euler(90f, 0f, 0f); lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                     for (int i = 0; i < 32; i++) { float a = i * Mathf.PI * 2f / 32f; lr.SetPosition(i, new Vector3(Mathf.Cos(a) * 0.42f, Mathf.Sin(a) * 0.42f, 0f)); }

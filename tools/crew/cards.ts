@@ -35,6 +35,19 @@ const TOOLS: Record<string, string[]> = {
   Suture: [...REVIEW, 'Write', ...UNITY], Redline: [...REVIEW, 'Write'],
 };
 
+/** Roles who make or build anything seen get the agent art bible embedded in their card (Sky, 2026-10-22). Edit this list only. */
+const ART_BIBLE_ROLES = ['Glyph', 'Vela', 'Forma', 'Glint', 'Latch'];
+const ART_BIBLE_PATH = 'contracts/style/art-bible.agent.md';
+const artBible = (() => {
+  const file = resolve(root, ART_BIBLE_PATH);
+  if (!existsSync(file)) throw new Error(`Art bible missing: ${ART_BIBLE_PATH} is embedded in the cards of ${ART_BIBLE_ROLES.join(', ')}; refusing to generate cards without it.`);
+  const body = readFileSync(file, 'utf8').trim();
+  if (!body) throw new Error(`Art bible empty: ${ART_BIBLE_PATH}.`);
+  const missing = ART_BIBLE_ROLES.filter(n => !roles.some(r => r.name === n));
+  if (missing.length) throw new Error(`ART_BIBLE_ROLES names roles not in the GDD §14: ${missing.join(', ')}.`);
+  return body;
+})();
+
 /** Agent name = the job, not the GDD's code name: "Schedule and AI designer" → schedule-ai-designer. */
 const agent = (r: Role) => r.job.toLowerCase().replace(/\band\b/g, ' ').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 const roster = `Crew (GDD name → agent): ${roles.map(x => `${x.name} → ${agent(x)}`).join(' · ')}. The GDD and briefs use the names; spawn and address agents by job.`;
@@ -83,7 +96,7 @@ ${crew}
 - ${roster}
 ${repo}
 ${provider === 'claude' ? rules : rules.replace('(WebSearch and WebFetch are fine)', '(web search and fetching source documents are fine)')}
-${provider === 'codex' ? codexWorkingRules(r) : ''}`;
+${ART_BIBLE_ROLES.includes(r.name) ? `\n## Art bible (agent)\nFrom ${ART_BIBLE_PATH}, embedded by tools/crew/cards.ts; rerun \`bun run crew\` after it changes.\n\n${artBible}\n` : ''}${provider === 'codex' ? codexWorkingRules(r) : ''}`;
 }
 
 function codexWorkingRules(r: Role): string {

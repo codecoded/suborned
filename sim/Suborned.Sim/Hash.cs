@@ -27,6 +27,7 @@ namespace Suborned.Sim
              .S(g.Order).Z(g.Force).S(g.Target).I(g.Acc).I(g.NextShot).I(g.LostAt).S(g.ShotBy).Z(g.Fired).Z(g.Engaged).Z(g.Hit)
              .I(g.ShotByTick).S(g.St).I(g.Until).I(g.NoFoeSince).I(g.StepAt).I(g.UnprotSince).I(g.Class).I(g.LostTick).I(g.SightLostAt).S(g.Cover).S(g.LostTarget);
             if (g.Order.Length > 0) h.I(g.OrderTick); // engine 0.15.0: only a standing order adds bytes
+            if (g.Order.Length > 0 && g.Reached) h.S("reached"); // engine 0.21.0: only a standing order that has had reach and line adds bytes
             if (g.DrawnBy.Length > 0) h.S(g.DrawnBy); // brief 030: how the weapon was drawn (only an operative's drawn weapon adds bytes)
             if (g.Mem != null) // aim memory (the pair's count)
             {
@@ -36,6 +37,7 @@ namespace Suborned.Sim
             }
             if (g.Trig || g.TrigTap || g.TrigForce || g.TrigT.Length > 0) h.S("trig").Z(g.Trig).Z(g.TrigTap).Z(g.TrigForce).S(g.TrigT); // tuning.md §11 (engine 0.17.0): only a trigger used adds bytes
             if (g.FollowBy.Length > 0) h.S("follow").S(g.FollowBy); // likewise a follower
+            if (g.StandDown >= 0) h.S("standdown").I(g.StandDown); // tuning.md §14 (engine 0.19.0): only a stand-down adds bytes
             if (g.LockAsk.Length > 0) h.S("lockask").S(g.LockAskBy).S(g.LockAsk).Z(g.LockAskForce); // engine 0.18.0: a press waiting on a lock whose target may fall this tick
             for (int k = 0; k < 4; k++) // tuning.md §12.2: an operative's last shot on this one, only while live (within lineLapse) and not already ShotBy/ShotByTick
             {
@@ -79,6 +81,7 @@ namespace Suborned.Sim
                 if (op.Driven) h.S("drive").Z(op.DriveTo.HasValue).P(op.DriveTo ?? default).Z(op.DriveRun).Z(op.DriveSpan).Z(op.Running).Z(op.DriveMoved).I(op.Face).I(op.DriveBudget).I(op.DrivePush).Z(op.DriveResume.HasValue).P(op.DriveResume ?? default).Z(op.DriveResumeRun); // brief 025: only a driven operative adds bytes
                 if (op.RanLast != Game.RunsNow(op)) h.S("ran").Z(op.RanLast); // tuning.md §10.2 settle: only a run ended since the last fight tick adds bytes
                 if (op.CloseSpent) h.S("spent"); // engine 0.15.0 (tuning.md §8.2 rule 4): only a spent walk-in adds bytes
+                if (op.Act != null) h.S("act").S(op.Act.ToString()).I(op.ActNext); // engine 0.23.0: only a person act walking in adds bytes
                 h.S(op.Busy?.ToString() ?? "").I(op.BusyEnd);
                 Gun(h, op.Gun); h.I(op.Carrying.HasValue ? (int)op.Carrying.Value : -1).I(op.CarriedBy.HasValue ? (int)op.CarriedBy.Value : -1).Z(op.RunAlerted).I(op.RunSeen.Count);
             }
@@ -93,6 +96,7 @@ namespace Suborned.Sim
             }
             h.Z(g.LoopOn).Z(g.CellFiredOn);
             if (g.FollowLock) h.S("followLock"); // tuning.md §11.5: the follow setting on adds bytes (off, every run hashes as before)
+            g.HashFree(h); g.HashIntent(h); // engine 0.19.0: weapons free and hostile intent; no bytes until either has state
             if (g.LoopCam != "entrance") h.S(g.LoopCam); // only a loop on another camera adds bytes
             Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
             foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
@@ -132,7 +136,7 @@ namespace Suborned.Sim
             foreach (var (t, line, who, detail) in g.DebriefLines) h.I(t).S(line).S(who).S(detail);
             foreach (var x in g.Chain) h.S(x);
             foreach (var x in g.Actions) h.S(x);
-            foreach (var (o, ok, code, _) in g.Orders) h.S(o.ToString()).Z(ok).S(code); // the refusal code, never the words (Fable)
+            for (int k = 0; k < g.Orders.Count; k++) { var (_, ok, code, _) = g.Orders[k]; h.S(g.OrderText(k)).Z(ok).S(code); } // the refusal code, never the words (Fable); the text as issued (engine 0.25.0, brief 045)
             foreach (var l in g.Log) h.I(l.Tick).S(l.Code);
             foreach (var op in g.Ops) h.I(op.BusyPaid);
             foreach (var i in g.Incidents) { h.I(i.Tick).S(i.Kind).S(i.Cause).P(i.At).I(i.Witnesses.Count); foreach (var (p, at) in i.Witnesses) h.S(p.Id).P(at); }

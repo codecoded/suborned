@@ -168,6 +168,10 @@ namespace Suborned.Sim
                 r.To(land - 1); r.Eq(g.Alert, 0, "still nothing before the first report lands");
                 r.To(land);
                 r.Eq(g.Alert, 3, "Alert 3 when the report lands (a takedown seen)");
+                // engine 0.19.0 (ai.intent face): the report carries the face its witness saw do it; at Alert 3 the response fires on him,
+                // so the lock is read where he stands now (the refusal comes before the door's reach), not after a walk to the door
+                r.Is(g.KnownFaces.Contains(Enf), "the report carries the Enforcer's face (ai.intent face)");
+                if (g.DialNow.DoorsLock) r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" }).code, "doors-locked", "Alert 3 at this level: the doors are locked");
                 r.Is(a.ActTrail, "the act's Trail is charged when a seen takedown's report lands");
                 r.Is(g.SecurityArrives == land + T(g.DialNow.DispatchS), "the response unit rolls the level's dispatch after the landing");
                 r.Is(g.Units.Count(u => u.Robot) == g.DialNow.A2Robots, "the level's Alert-2 robots");
@@ -182,7 +186,6 @@ namespace Suborned.Sim
                 const string Stays = "p-garden-row-east-03";
                 var ws = WalkerById(r, Stays);
                 r.Is(ws.P.Has("saw-takedown") && g.CrowdPos(ws) is Pt ps && G.Within(ps, seat, 600) && g.QuoteTakedown(Stays, "knockout").Aware == "yes", "a witness stays aware of the Enforcer for the rest of the mission (Motive rev 3): taking her now is the seen-coming case, though she sits at a stop");
-                if (g.DialNow.DoorsLock) { r.To(r.Send(Enf, "d:Office entrance")); r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "enter" }).code, "doors-locked", "Alert 3 at this level: the doors are locked"); }
             });
 
             Add("N49", "—", "A takedown seen by a camera: guard 29 at the official entrance knocked out under the pickup camera. The driver beside him is a Mercenary and keeps quiet at Alert 0; the camera's watcher reads the screen at its next scan (every 20 s, phase from the camera's id) and calls it in 3 s later: Alert 3.", r =>

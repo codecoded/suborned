@@ -7,6 +7,7 @@ import type { Check } from './checks';
 import { type V, lineToPoly } from './geom';
 import { type Spot, indexes, spotsOf, walkBlock } from './street-geo';
 import { FLAT, quayBlock } from './street-zones';
+import { speciesOf } from './trees';
 import { type WCtx, TOL, bb, f1, ringGap, rule } from './world-ctx';
 
 const G = 'Streetscape';
@@ -43,7 +44,7 @@ export function streetRules(c: WCtx): Check[] {
   const supports: V[] = [...w.levels.flatMap(l => l.decks.flatMap(x => x.columns)), ...w.megastructures.flatMap(m => [...m.prims.filter(p => /colonnade-\d+-col-/.test(p.id)).map(p => p.c as V), ...m.parts.filter(p => /\/leg-\d+$/.test(p.id)).map(p => { const b = bb(p.ring as V[]); return [(b[0] + b[1]) / 2, (b[2] + b[3]) / 2] as V; })])];
   const decks = w.levels.filter(l => l.height > 1).flatMap(l => l.decks.map(x => ({ id: x.id, ring: x.ring as V[], under: l.height - x.thickness })));
   for (const t of trees) {
-    const sp = S.trees.species[t.s.variant ?? 'washingtonia'] as { top: number }, p = t.s.at;
+    const sp = speciesOf(S, t.s.variant) as { top: number }, p = t.s.at;
     const q = corners.find(k => dist(k, p) < K.junctionCorner - TOL); if (q) bad11.push(`${t.s.id}: ${f1(dist(q, p))} m from a junction corner (< ${K.junctionCorner})`);
     const l = lamps.find(x => dist(x.s.at, p) < K.lamp - TOL); if (l) bad11.push(`${t.s.id}: ${f1(dist(l.s.at, p))} m from ${l.s.id}`);
     const h = hyd.find(x => dist(x.s.at, p) < K.hydrant - TOL); if (h) bad11.push(`${t.s.id}: ${f1(dist(h.s.at, p))} m from a hydrant`);

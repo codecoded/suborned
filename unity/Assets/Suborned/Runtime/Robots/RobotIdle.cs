@@ -73,15 +73,15 @@ namespace Suborned.Robots
         /// <summary>The idle head yaw at `seconds` (captures pick a moment when it is looking away).</summary>
         public float YawAt(float seconds)
         {
-            if (heads == null || glanceAt == null || glanceAt.Length == 0) Build();
+            if (!Ready) Build();
             return Yaw(seconds);
         }
 
         /// <summary>Pose at `seconds` on this robot's schedule; t = 0 is the rest pose (facing ahead).</summary>
         public void PoseAt(float seconds)
         {
-            if (heads == null || glanceAt == null || glanceAt.Length == 0) Build();
-            float yaw = Yaw(seconds), ahead = glanceYaw[Glance(seconds + lead)];
+            if (!Ready) Build();
+            float yaw = Yaw(seconds), ahead = float.IsFinite(seconds) && glanceLoop > 0f ? glanceYaw[Glance(seconds + lead)] : 0f;
             // a turn to the robot's right (+yaw) moves its eyes toward the viewer's left (-u on the screen)
             int eyes = Mathf.RoundToInt(Mathf.Clamp((yaw - ahead) / range, -1f, 1f) * gaze);
             if (seconds >= alarmAt && (suspect || seconds >= calmAt))
@@ -112,6 +112,8 @@ namespace Suborned.Robots
             return Mathf.Clamp(Mathf.Atan2(d.x, d.z) * Mathf.Rad2Deg, -StareMax, StareMax);
         }
 
+        bool Ready => heads != null && headRest != null && glanceAt != null && glanceYaw != null && glanceAt.Length == Glances && glanceYaw.Length == Glances && headRest.Length == heads.Length;
+
         int Glance(float t)
         {
             t = Mathf.Repeat(t, glanceLoop);
@@ -122,6 +124,10 @@ namespace Suborned.Robots
 
         float Yaw(float t)
         {
+            // brief 050: the schedule is rebuilt whenever it is missing or not the right length (a hot reload in play mode, an old
+            // serialized copy); never index a short array (1 M IndexOutOfRange per session on 2026-10-20), and a bad clock reads home
+            if (!Ready) Build();
+            if (float.IsNaN(t) || float.IsInfinity(t) || !(glanceLoop > 0f)) return 0f;
             int i = Glance(t);
             float from = glanceYaw[(i + Glances - 1) % Glances];
             float u = Mathf.Clamp01((Mathf.Repeat(t, glanceLoop) - glanceAt[i]) / turn) - 1f;

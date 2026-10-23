@@ -1,0 +1,12 @@
+{
+ "schema": "suborned.shots.report/1",
+ "status": "ok",
+ "screen": "1920x1080",
+ "build": "Build 0.2.60 · c030 · sim 0.24.0 · 04a4fb75+",
+ "shots": [
+  {"name": "m0", "status": "ok", "tick": 5, "error": "", "files": ["m0.jpg"]},
+  {"name": "early", "status": "ok", "tick": 831, "error": "", "files": ["early.jpg"], "frames": {"count": 1376, "meanMs": 8.725, "fps": 114.618, "p99Ms": 30.694, "gpuMs": 5.207}},
+  {"name": "late", "status": "ok", "tick": 4074, "error": "", "files": ["late.jpg"], "frames": {"count": 1220, "meanMs": 9.841, "fps": 101.615, "p99Ms": 31.358, "gpuMs": 5.272}},
+  {"name": "lldb", "status": "ok", "tick": 4100, "error": "", "files": ["lldb.jpg"], "frames": {"count": 426, "meanMs": 118.758, "fps": 8.42, "p99Ms": 7.799, "gpuMs": 3.609}}
+ ]
+}

@@ -277,15 +277,18 @@ namespace Suborned.Sim
         /// today's drawn-seen at once.</summary>
         void SawDraw(string w, Op op)
         {
-            if (!Lab || !LabWarn || Gunfire > 0 || CellFiredOn || FightBranch.Length > 0 || w.StartsWith("camera:", StringComparison.Ordinal)) { SecuritySawDraw(w, op); return; }
+            bool labWarn = Lab && LabWarn && !(Gunfire > 0 || CellFiredOn || FightBranch.Length > 0 || w.StartsWith("camera:", StringComparison.Ordinal));
+            if (!labWarn && !TodayWarns(w, op)) { SecuritySawDraw(w, op); return; } // engine 0.19.0: today's police warning (ai.intent.police.warn), the lab's numbers otherwise
+            int perWatcher = Lab ? Labr!.WarnPerWatcher : R.Intent.WarnPerWatcher, ticks = Lab ? Labr!.WarnTicks : R.Intent.WarnTicks, alertTo = Lab ? Labr!.WarnAlert : R.Intent.WarnAlert;
             string name = Sim.Op.Name(op.Id);
             // tuning.md §6.4: one shout a watcher a mission. An agent he sees drawn while his shout is open joins it (same window); once it
             // has closed, the next drawn weapon he sees is drawn-seen at once, no second chance.
             int open = warnings.FindIndex(x => x.Watcher == w);
-            if (open < 0 && warnedBy.TryGetValue(w, out int given) && given >= Labr!.WarnPerWatcher) { SecuritySawDraw(w, op); return; }
+            if (open < 0 && warnedBy.TryGetValue(w, out int given) && given >= perWatcher) { SecuritySawDraw(w, op); return; }
             if (open < 0) warnedBy[w] = (warnedBy.TryGetValue(w, out int g0) ? g0 : 0) + 1;
-            warnings.Add(new LabWarning { Watcher = w, Op = op.Id, Until = open >= 0 ? warnings[open].Until : Tick + Labr!.WarnTicks, DrawTick = op.Gun.DrawTick });
-            RaiseAlert(Labr!.WarnAlert, $"drawn-warned:{w}:{name}");
+            warnings.Add(new LabWarning { Watcher = w, Op = op.Id, Until = open >= 0 ? warnings[open].Until : Tick + ticks, DrawTick = op.Gun.DrawTick });
+            RaiseAlert(alertTo, $"drawn-warned:{w}:{name}");
+            KnowFace(name); // engine 0.19.0 (ai.intent face): the watcher who shouts has the face
             if (w == "guard" && !GuardDown) Remember(GuardP, "saw-weapon-drawn", name, true);
         }
         /// <summary>Each open warning closes when its window ends or a shot is fired: the agent still drawn (the same draw), today's drawn-seen
@@ -301,7 +304,7 @@ namespace Suborned.Sim
                 warnings.RemoveAt(k);
                 var op = OpOf(x.Op); var g = op.Gun;
                 if (g.Drawn && g.HolsterAt < 0 && g.DrawTick == x.DrawTick && !op.Down && !op.Inside) SecuritySawDraw(x.Watcher, op);
-                else if (!op.Down && warnLogged.Add($"{x.Watcher}/{x.Until}")) AddTrail(Labr!.WarnTrail, $"warning-heeded:{x.Watcher}"); // tuning.md §6.4: he logs it, once a shout
+                else if (!op.Down && warnLogged.Add($"{x.Watcher}/{x.Until}")) AddTrail(Lab ? Labr!.WarnTrail : R.Intent.WarnTrail, $"warning-heeded:{x.Watcher}"); // tuning.md §6.4: he logs it, once a shout
                 if (Over) return;
             }
         }

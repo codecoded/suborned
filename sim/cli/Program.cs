@@ -1,5 +1,7 @@
 // suborned-sim: the engine headless (brief 011 A).
 //   play <scenario id | script.json> [--json]   play a scenario (S01…S28, N8…) or an order script; print outcome, log, checksums
+//   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
+//   batch --serve                               the same as a server: lines `tag<TAB>replay|noreplay<TAB>path` on stdin, `tag<TAB>json` out as each finishes (tools/missions/check/engine.ts)
 //   list                                        the scenarios
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
@@ -56,6 +58,7 @@ static class Program
                         var sc = Scenarios.Find(args.Length > 1 ? args[1] : "") ?? throw new ArgumentException("script which scenario?");
                         Console.WriteLine(Script.Write(Scenarios.Run(inputs, sc).G, inputs.Hash)); return 0;
                     }
+                case "batch": return BatchCli.Run(inputs, root, args); // brief 042: many scripts, one process, every core
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
@@ -79,19 +82,8 @@ static class Program
 
     static int Play(Engine.Inputs inputs, string root, string what, bool json)
     {
-        Game g; List<(bool ok, string what)> checks = new List<(bool, string)>(); string id; string record = "";
-        var sc = Scenarios.Find(what);
-        if (sc != null) { var run = Scenarios.Run(inputs, sc); g = run.G; checks = run.Checks; id = sc.Id; }
-        else
-        {
-            var path = File.Exists(what) ? what : System.IO.Path.Combine(root, what);
-            var script = Script.Parse(File.ReadAllText(path));
-            g = Engine.Play(inputs, script.Start, script.Orders, script.Until); id = System.IO.Path.GetFileName(path);
-            if (script.Expect != null) { record = script.Verify(g, inputs.Hash); checks.Add((record.Length == 0, record.Length == 0 ? "the replay matches its record (inputs, engine, start, every checkpoint, outcome)" : "record: " + record)); }
-        }
-        var replay = Engine.Replay(inputs, g);
-        bool same = Same(g, replay);
-        bool passed = checks.TrueForAll(c => c.ok);
+        var p = BatchCli.PlayOne(inputs, root, what); var g = p.G; var id = p.Id; var checks = p.Checks; bool same = p.Same;
+        bool passed = p.Passed;
         if (json) { Console.WriteLine(Report.Json(id, g, checks, same)); }
         else
         {
@@ -154,13 +146,6 @@ static class Program
         w.Key("coldMsAllFans").Raw((coldMs / 50).ToString("0.0000", CultureInfo.InvariantCulture)).Key("warmUsAllFans").Raw((warm.Elapsed.TotalMilliseconds * 1000 / 10000).ToString("0.000", CultureInfo.InvariantCulture));
         Console.WriteLine(w.EndObj().ToString());
         return 0;
-    }
-
-    static bool Same(Game a, Game b)
-    {
-        if (a.Checkpoints.Count != b.Checkpoints.Count) return false;
-        for (int i = 0; i < a.Checkpoints.Count; i++) if (a.Checkpoints[i] != b.Checkpoints[i]) return false;
-        return true;
     }
 
     static int Perf(Engine.Inputs inputs, int runs, string id)

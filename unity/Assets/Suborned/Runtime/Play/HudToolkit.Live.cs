@@ -53,9 +53,9 @@ namespace Suborned.Play
             // the cue layer: redrawn while its state moves
             if (w.CueFace != face) { w.CueFace = face; w.CueSince = host.FaceSince(i); }
             Show(w.Cue, !m.Ended || face == Face.Downed); w.Cue.MarkDirtyRepaint();
-            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended; Show(w.Eye, eye); if (eye) w.Eye.MarkDirtyRepaint();
+            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended && !w.Under; Show(w.Eye, eye); // the tall column: the status slot's cone if (eye) w.Eye.MarkDirtyRepaint();
             // brief 030 (no plate): the armed verb's glyph on the selected portrait
-            int pk = host.Picked; bool armed = !PlateOn && pk >= 0 && pk < 5 && i == m.Agent && s.Selected && m.VerbHas[pk] && !m.Ended;
+            int pk = host.Picked; bool armed = !PlateOn && pk >= 0 && pk < 5 && i == m.Agent && s.Selected && m.VerbHas[pk] && !m.Ended && !w.Under; // the tall column: the status slot
             Show(w.Glyph, armed);
             if (armed) { Icon(w.Glyph.Q("g"), ArmedIcon(), Cream); w.Glyph.style.opacity = host.PlateKeysDim ? 0.4f : 1f; }
             // the stance inside the drawn mark when it is not the default (return)
@@ -111,7 +111,8 @@ namespace Suborned.Play
                         break;
                     }
                 case Face.UnderFire:
-                    {   // the ring is ringed by 8 short spikes that jitter at 4 Hz
+                    {   // brief 041 (engine 0.19 UnderFireOf): the ring pulses and ticks come in from the shooter's side; then the 8 jittering spikes
+                        UnderFireTicks(p, w.Index, c, s);
                         int step = Mathf.FloorToInt(now * 4f); float jit = ((step * 7919) % 5 - 2) * 2.2f;
                         for (int i = 0; i < 8; i++)
                         {
@@ -248,17 +249,23 @@ namespace Suborned.Play
             bool so = StripOn; Show(strip, so);
             if (so)
             {
-                int a = m.Agent; float colW = 109 * RosterScale, mid = ColY + ColumnBezels[a].y * RosterScale;
+                int a = m.Agent; float colW = 109 * RosterScale, mid = ColY + BezelAt(a).y * RosterScale;
                 strip.style.left = ColX + colW + 4; strip.style.top = mid - StripH / 2; strip.BringToFront();
                 strip.style.opacity = Mathf.Clamp01((HandoverHost.VerbStripS - (now - host.VerbStripAt)) / 0.3f);
+                // Glyph 0.2.65 review 10 and Sky's no-legend rule: no keycaps on the slots (their "⇧1" read "1.1", clipped); a slot with no verb is
+                // left out, the rest close up and the plate fits them
+                int n = 0;
                 for (int k = 0; k < 4; k++)
                 {
                     var (sl, ic, cap, key) = stripSlots[k]; bool has = m.VerbHas[k], refused = m.VerbRefused[k], lit = has && host.Picked == k;
-                    Show(ic, has || refused); if (has || refused) Icon(ic, m.VerbIcon[k], has ? Cream : Grey);
+                    Show(sl, has || refused); Show(cap, KeyLegends); if (!has && !refused) continue;
+                    sl.style.left = StripPad + n * (StripSlot + StripGap); n++;
+                    Icon(ic, m.VerbIcon[k], has ? Cream : Grey);
                     sl.style.backgroundColor = lit ? DiscTeal : new Color(0.03f, 0.11f, 0.11f, 0.55f); Border(sl, lit ? 2.2f : 1f, lit ? TurqLight : new Color(0.51f, 0.627f, 0.612f, 0.7f));
-                    sl.style.opacity = has ? 1f : refused ? 0.55f : 0.3f;
+                    sl.style.opacity = has ? 1f : 0.55f;
                     Text(key, m.VerbKey[k]); cap.style.opacity = host.PlateKeysDim ? 0.35f : 1f;
                 }
+                strip.style.width = StripPad * 2 + Mathf.Max(1, n) * StripSlot + Mathf.Max(0, n - 1) * StripGap;
             }
             // the cursor: the armed verb rides it (Fire's crosshair mark wins where a press fires); target mode: a crosshair
             var mp = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse);

@@ -210,7 +210,7 @@ namespace Suborned.Sim
                 r.Is(!g.InezWitnessedShooting, "a shot after he leaves the café does not make Inez a witness");
             }, Turned(Inez));
 
-            Add("S07", "108", "Shooting Inez: only when forced (the Ctrl case); the contact is lost and can't be called, Alert 3, the mission goes on.", r =>
+            Add("S07", "108", "Shooting Inez: only when forced; the contact is lost and can't be called, Alert 3, the mission goes on.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Courtyard"));
@@ -304,7 +304,11 @@ namespace Suborned.Sim
                 r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Scout, Fixer, Tech);
                 r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
                 r.Done(Enf);
-                r.To(r.Send(Enf, "d:Getaway bay"));
+                // engine 0.19.0 (ai.intent.rivals.press, Pulse hostile-initiative.md §2.2): the rivals drawn by the gunfire press for the Vale
+                // holder, who can't fire walking Vale: the others go after them while he walks to the car
+                int bay = r.Send(Enf, "d:Getaway bay");
+                r.Engage(r.CityGunmen, () => g.Tick >= bay, (bay - g.Tick) / Game.Hz + 1, new[] { Scout, Fixer, Tech }, false);
+                r.To(Math.Max(bay, g.Tick));
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "the loud front wins");
                 r.Is(g.EnforcerHealth < g.R.HealthEnforcer, "the Enforcer was hit");
@@ -360,7 +364,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "guard.check-in"), "the log: he misses his check-in");
                 r.To(g.SecurityArrives);
                 r.Is(g.SecurityPose().HasValue, "the response unit reaches the street");
-                r.Is(g.SecurityWatching(g.SecurityPose()!.Value.pos + new Pt(200, 0)) || g.SecurityWatching(g.SecurityPose()!.Value.pos), "it has a cone");
+                r.Is(g.SecurityPose() is var s14p && s14p.HasValue && (g.SecurityWatching(s14p.Value.pos + new Pt(200, 0)) || g.SecurityWatching(s14p.Value.pos)), "it has a cone");
                 r.Eq(g.Result, Outcome.None, "the player can still escape during the response");
             });
 
@@ -544,17 +548,22 @@ namespace Suborned.Sim
                 r.Eq(d.InvestigationCause, "several-interventions", "several interventions left a trail");
             }, drv);
 
-            Add("S22", "386", "Gating: no action at a distance; an unknown person isn't callable; the Fixer and the Scout must stand beside Inez; a turned contact is callable.", r =>
+            Add("S22", "386", "Gating: no action at a distance; an unknown person isn't callable; the Fixer and the Scout must stand beside Inez; a turned contact is callable. Engine 0.23.0 (rulebook cell.approach, Sky 2026-10-22): an act given at a distance is taken and walks the agent in, and starts only in reach; a need walking won't cure is still refused.", r =>
             {
                 var g = r.G;
-                r.Refused(Fixer, "watch", Inez, "a distant person has no interaction (brief 031: every agent watches, the Fixer from 12 m; the Scout's 30 m reaches Inez from the car)");
+                // brief 031: every agent watches, the Fixer from 12 m; the Scout's 30 m reaches Inez from the car. Engine 0.23.0: out of reach, the order walks him in
+                var w = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "watch", Target = Inez });
+                r.Is(w.ok && r.Op(Fixer).Act != null && r.Op(Fixer).Busy == null, $"a distant person: no act at a distance, the Fixer walks in first ({w.code})");
+                r.Do(Fixer, "cancel"); r.Is(r.Op(Fixer).Act == null && r.Op(Fixer).Busy == null && !g.Inez.KRoutine, "cancelled on the way: nothing watched");
                 r.Is(!g.CanCall(Inez), "an unknown person is not a contact to call");
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.Refused(Fixer, "turn", Inez, "the Fixer must approach Inez too", "help");
-                r.Refused(Scout, "listen", Inez, "the Scout must stand beside Inez to hear the debt (3 m)");
-                r.To(r.Send(Scout, "beside-inez"));
-                r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.Refused(Fixer, "turn", Inez, "Help needs her need first (a Listen): refused wherever the Fixer stands, walking closer won't cure it", "help");
+                r.ForHer("listen", Inez);
+                var l = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); int given = g.Tick;
+                r.Is(l.ok && r.Op(Scout).Busy == null, $"the Scout's Listen from the Courtyard is taken, and walks him in first ({l.code})");
+                r.Is(r.Until(() => r.Op(Scout).Busy != null, T(30)) && G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ListenReachCm), $"the Scout must stand beside Inez to hear the debt (3 m): it starts there, {(g.Tick - given) / Game.Hz} s later");
+                r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 HelpUntilTurned(r, Inez);
                 r.Is(g.CanCall(Inez), "a turned contact can be called");
@@ -1039,10 +1048,17 @@ namespace Suborned.Sim
             RoundsCases(); // brief 022: the living café
             GetawayCases(); // brief 018 (Sky 2026-10-18): the hold, the blocker, Board and Go, left behind, seen leaving, custody
             FireMoveCases(); // engine 0.15.0 (tuning.md §8, §9): fire on the move, anyone can be shot
+            LastingFireCases(); // engine 0.21.0 (Sky 2026-10-22): a new act ends a lasting fire order (ScenariosLastingFire.cs)
             CarCases(); // engine 0.16.0 (tuning.md §10.7): cars are targets
             FailCauseCases(); // Sky 2026-10-18: the fail camera's culprit, every way the Handover ends without Vale
             DriveCases(); // brief 025 (EXPERIMENTAL): the driven agent, and the recorded driven session (DP1)
             FightLabCases(); // brief 027 (EXPERIMENTAL): the fight playground's mechanics, N140–N148
+            IntentCases(); // engine 0.19.0: hostile intent per agent (Pulse hostile-initiative.md, Sky's answers) and weapons free on the block (ScenariosWeaponsFree.cs)
+            FireLineCases(); // Sky 2026-10-22 (build 0.2.48): the driven Scout at the kerb fires on the patrol (ScenariosFireLine.cs)
+            FinalIntentCases(); // engine 0.20.0 (tuning.md §15.2, PROVISIONAL): the final fight per agent (ScenariosFinalIntent.cs)
+            WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
+            FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
+            SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
         }
     }
 }

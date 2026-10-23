@@ -1,0 +1,55 @@
+Suture's retest3 policy set (briefs/027/suture/probe/retest3/policies.all.txt, 3,792 policies), engine 0.20.0 (baseline copy out/keel-s16/base, built before the first edit) against 0.21.0 (Sky 2026-10-22: the lasting fire order keeps firing on a walk or a run and ends when its target leaves the weapon's max ring after it has had reach and line, or on a new act), one parallel fight-lab call per preset (out/keel-s16/run.sh, 1:37 for the matrix and all four presets). Rows compared sorted; 'differing' counts any column (shots, T, hits, times), 'outcome moved' the result and fail code; cheap = a win with < 40 % health lost.
+
+today: n=3792/3792 rows differing 2678, outcome moved 166, wins 28 -> 19 (new 3, lost 12), cheap(<40%) 0 -> 0 (newly cheap [])
+    88 failure sealed -> failure enforcer-down
+    63 failure enforcer-down -> failure sealed
+    12 success  -> failure enforcer-down
+    3 failure enforcer-down -> success 
+lab: n=3792/3792 rows differing 2753, outcome moved 123, wins 1 -> 0 (new 0, lost 1), cheap(<40%) 0 -> 0 (newly cheap [])
+    91 failure sealed -> failure enforcer-down
+    31 failure enforcer-down -> failure sealed
+    1 success  -> failure enforcer-down
+lab-field-on: n=3792/3792 rows differing 2781, outcome moved 280, wins 29 -> 19 (new 11, lost 21), cheap(<40%) 0 -> 0 (newly cheap [])
+    160 failure sealed -> failure enforcer-down
+    88 failure enforcer-down -> failure sealed
+    17 success  -> failure enforcer-down
+    9 failure enforcer-down -> success 
+    4 success  -> failure sealed
+    2 failure sealed -> success 
+lab-snap-off: n=3792/3792 rows differing 2679, outcome moved 130, wins 0 -> 0 (new 0, lost 0), cheap(<40%) 0 -> 0 (newly cheap [])
+    96 failure sealed -> failure enforcer-down
+    34 failure enforcer-down -> failure sealed
+today replay: every run replays identically from its order log
+lab replay: every run replays identically from its order log
+lab-field-on replay: every run replays identically from its order log
+lab-snap-off replay: every run replays identically from its order log
+
+Matrix (briefs/027/keel/matrix-0.21.txt, 42 runs x 7 presets): the named rows L1, L1c, L2, L3, L4, P-A, P-G, P-B are identical in every preset but lab-cover L3 (failure sealed both; T 30 -> 32, shots 43 -> 41). The adversarial rows (the kite family, P-G:runfire, P-G:reset, L3:charge) move in their numbers:
+today: n=42/42 rows differing 19, outcome moved 0, wins 2 -> 2 (new 0, lost 0), cheap(<40%) 1 -> 1 (newly cheap [])
+lab: n=42/42 rows differing 28, outcome moved 0, wins 3 -> 3 (new 0, lost 0), cheap(<40%) 2 -> 2 (newly cheap [])
+lab-cover: n=42/42 rows differing 29, outcome moved 0, wins 3 -> 3 (new 0, lost 0), cheap(<40%) 2 -> 2 (newly cheap [])
+lab-snap-off: n=42/42 rows differing 28, outcome moved 0, wins 3 -> 3 (new 0, lost 0), cheap(<40%) 1 -> 1 (newly cheap [])
+lab-charge-off: n=42/42 rows differing 28, outcome moved 0, wins 3 -> 3 (new 0, lost 0), cheap(<40%) 2 -> 2 (newly cheap [])
+lab-field-on: n=42/42 rows differing 30, outcome moved 4, wins 3 -> 4 (new 1, lost 0), cheap(<40%) 2 -> 2 (newly cheap [])
+    2 failure sealed -> failure enforcer-down
+    1 failure rivals-reach-vale -> success 
+    1 failure enforcer-down -> failure sealed
+lab-kite-off: n=42/42 rows differing 21, outcome moved 0, wins 5 -> 5 (new 0, lost 0), cheap(<40%) 2 -> 2 (newly cheap [])
+
+New wins in today's sweep (none cheap):
+today           L3:km10-fm5-step60-blk-aware-enfgo-carfree-kite success           4:33.8   16/20    2  2→-2  raised  active      1    2    1    61 %   11    5    35    1/1    c2/10 s16  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-1, officer-2 up at the end, never had the Vale holder in reach
+today           L3:km10-fm5-step60-blk-enfgo-carfree-kite success           4:33.8   16/20    2  2→-2  raised  active      1    2    1    61 %   11    5    35    1/1    c2/10 s16  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-1, officer-2 up at the end, never had the Vale holder in reach
+today           L3:tight-hold30-runkite-carfree success           4:56.3   15/27    2  2→-2  raised  active      1    3    3    88 %   18    5    36    2/1    c1/10 s25  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-2 up at the end, never had the Vale holder in reach
+Lost wins in today's sweep (0.20.0 rows):
+today           L1c:km10-fm5-step60-at208-kite success           4:42.9   43/43    2  2→-3  raised  active      1    1    0    72 %   13    8    77    1/1    c2/6 s8   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:km10-fm5-step60-blk-at208-kite success           4:42.9   43/43    2  2→-3  raised  active      1    1    0    72 %   13    8    77    1/1    c2/6 s8   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:km10-fm5-step60-blk-enfgo-kite success           4:42.9   43/43    2  2→-3  raised  active      1    1    0    72 %   13    8    77    1/1    c2/6 s8   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:km10-fm5-step60-enfgo-kite success           4:42.9   43/43    2  2→-3  raised  active      1    1    0    72 %   13    8    77    1/1    c2/6 s8   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:km10-fm5-step60-focus-at208-kite success           4:42.9   43/43    2  2→-3  raised  active      1    1    0    72 %   13    8    79    1/1    c3/6 s8   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:km10-fm5-step60-focus-enfgo-kite success           4:42.9   43/43    2  2→-3  raised  active      1    1    0    72 %   13    8    79    1/1    c3/6 s8   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:tight-step100-focus-at208-kite success           4:48.1   43/43    2  2→-3  raised  active      1    0    0    72 %   13    8    81    1/1    c3/6 s6   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L1c:tight-step100-focus-enfgo-kite success           4:48.1   43/43    2  2→-3  raised  active      1    0    0    72 %   13    8    81    1/1    c3/6 s6   pass (heavy debrief) — note 6.4.8a, brief-013 units (not judged): police-5, police-6 up at the end without contact
+today           L3:km10-fm5-step100-blk-norivals-carfree-runkite success           4:50.3   21/29    2  2→-2  raised  active      1    2    2    72 %   14    5    22    1/1    c0/10 s12  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-1, officer-2 up at the end, never had the Vale holder in reach
+today           L3:km10-fm5-step100-blk-norivals-enfgo-carfree-runkite success           4:48.2   21/29    2  2→-2  raised  active      1    2    2    72 %   14    5    22    1/1    c0/10 s12  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-1, officer-2 up at the end, never had the Vale holder in reach
+today           L3:km10-fm5-step100-norivals-carfree-runkite success           4:50.3   21/29    2  2→-2  raised  active      1    2    2    72 %   14    5    22    1/1    c0/10 s12  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-1, officer-2 up at the end, never had the Vale holder in reach
+today           L3:km10-fm5-step100-norivals-enfgo-carfree-runkite success           4:48.2   21/29    2  2→-2  raised  active      1    2    2    72 %   14    5    22    1/1    c0/10 s12  FAIL — note 6.4.8a, brief-013 units (not judged): police-1, police-2, police-3, police-4, police-5, police-6 up at the end without contact; 6.4.8a officer-1, officer-2 up at the end, never had the Vale holder in reach

@@ -5,8 +5,8 @@
 //   built : the 0.2.34 look, for comparison (three icons on the ring, a name tag, a plate of numbers)
 import * as THREE from './vendor/three.module.min.js';
 import { G } from './state.js';
-import { chargeFrac } from './fire.js';
-import { KINDS, ACTS, ROLES, PRESETS, priceLine } from './data.js';
+import { chargeFrac, fightOn } from './fire.js';
+import { KINDS, ACTS, ROLES, PRESETS, priceLine, phrase } from './data.js';
 import { icon } from './icons.js';
 
 function ringTexture(dashed) {
@@ -33,10 +33,13 @@ export class Marker {
     if (!ent || !act) return this.hide();
     if (ent !== this.target) { this.target = ent; this.dwell = 0; } else this.dwell += dt;
     const kind = KINDS[act.kind], style = G.marker, harm = act.kind === 'harm';
-    const parts = priceLine(act, ent, walkS, true, '', run); if (PRESETS[G.preset]?.holdActs && !charge) parts.unshift('Hold'); const time = parts[parts.length > 2 && parts[0] === 'Hold' ? 2 : 1];
+    const parts = priceLine(act, ent, walkS, true, '', run); if (PRESETS[G.preset]?.holdActs && !charge && !(act.fire && fightOn())) parts.unshift('Hold'); const time = parts[parts.length > 2 && parts[0] === 'Hold' ? 2 : 1];
     const dwelled = this.dwell > 0.5;
-    const key = [status?.text, status?.items?.map((i) => i.a.id + i.text).join(), extra?.seen, charge ? 'chg' + !ent.hostile : '', ent.id, act.id, style, time, faces?.map((a) => a.id).join(), run, G.timeMode, dwelled && style === 'badge'].join('|');
-    if (key !== this.key) { this.key = key; this.el.innerHTML = status ? `<div class="pill st">${status.items ? status.items.map((i) => facesHtml([i.a]) + '<span>' + i.text + '</span>').join('<i>·</i>') : '<span>' + status.text + '</span>' + facesHtml(status.agents)}</div>` : charge ? `<div class="pill chg"><i class="fill"></i><span>Hold to ${charge.label}${charge.bystander ? ' · bystander' : ''}${charge.extra ? ' · ' + charge.extra : ''}</span></div>` : this.html(style, kind, act, ent, parts, dwelled, facesHtml(faces) + (extra?.seen ? '<span class="seen">seen there</span>' : '')); this.el.className = `mk mk-${style}${harm ? ' harm' : ''}`; this.el.style.setProperty('--c', kind.color); }
+    const key = [status?.text, status?.items?.map((i) => i.a.id + i.text).join(), extra?.seen, extra?.fresh, extra?.cx, charge ? 'chg' + !ent.hostile + !!charge.ready : '', ent.id, act.id, style, time, faces?.map((a) => a.id).join(), run, G.timeMode, dwelled && style === 'badge'].join('|');
+    if (key !== this.key) { this.key = key; let html = status ? `<div class="pill st">${status.items ? status.items.map((i) => facesHtml([i.a]) + '<span>' + i.text + '</span>').join('<i>·</i>') : '<span>' + status.text + '</span>' + facesHtml(status.agents)}</div>` : charge ? `<div class="pill chg${charge.ready ? ' ready' : ''}"><i class="fill"></i><span>${charge.ready ? 'Let go to ' + phrase(charge.way, charge.ent) : 'Hold to ' + charge.label}${charge.bystander ? ' · bystander' : ''}${charge.extra && !charge.ready ? ' · ' + charge.extra : ''}</span></div>` : this.html(style, kind, act, ent, parts, dwelled, facesHtml(faces) + (extra?.seen ? '<span class="seen">seen there</span>' : ''));
+      if (!status && extra?.fresh) html = html.replace('<span>', '<em class="new"></em><span>'); // brief 043: a lit pip on an act that just opened
+      if (!status && extra?.cx) html += `<div class="cxw">${extra.cx}</div>`; // brief 043: what this order would drop, before you commit
+      this.el.innerHTML = html; this.el.className = `mk mk-${style}${harm ? ' harm' : ''}`; this.el.style.setProperty('--c', kind.color); }
     if (charge) { const f = this.el.querySelector('.fill'); if (f) f.style.width = `${chargeFrac(charge) * 100}%`; }
     // Watch: how far this agent can watch from, around the target
     this.reach.visible = !!extra?.reach && extra.reach < 60;

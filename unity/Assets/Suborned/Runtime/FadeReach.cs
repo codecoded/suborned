@@ -161,6 +161,9 @@ namespace Suborned
         List<int> on = new(), next = new();
         /// <summary>Per renderer, the last Set that reached it (`frame`).</summary>
         readonly int[] now;
+        /// <summary>Per renderer, when a cut last reached it (unscaled s); the linger (F6).</summary>
+        readonly float[] lastIn;
+        const float Linger = 1.5f;
         int frame;
         bool any;
 
@@ -193,7 +196,7 @@ namespace Suborned
                     tagged.Add(r);
                 }
             renderers = tagged.ToArray();
-            bounds = new Bounds[renderers.Length]; plain = new Material[renderers.Length][]; cutting = new Material[renderers.Length][]; reached = new bool[renderers.Length]; now = new int[renderers.Length];
+            bounds = new Bounds[renderers.Length]; plain = new Material[renderers.Length][]; cutting = new Material[renderers.Length][]; reached = new bool[renderers.Length]; now = new int[renderers.Length]; lastIn = new float[renderers.Length];
             var shared = new Dictionary<Material, Material[]>(); // one twin array per single-material renderer kind: few
             for (int i = 0; i < renderers.Length; i++)
             {
@@ -258,8 +261,12 @@ namespace Suborned
                 int w = from; for (int k = from; k < next.Count; k++) { int i = next[k]; if (now[i] == frame) continue; now[i] = frame; next[w++] = i; }
                 next.RemoveRange(w, next.Count - w);
             }
-            foreach (int i in next) Mark(i, true);
-            foreach (int i in on) if (now[i] != frame) Mark(i, false);
+            // brief 045 F6 (Redline: the GPU Resident Drawer rebuilt its draw lists every frame late; a material swap is an instance destroyed
+            // and made again): a renderer leaving every reach keeps its cutting twin for Linger seconds (it draws the same with no cut near), so
+            // the discs of people walking past a tile's edge do not swap its materials back and forth every frame
+            float t = Time.unscaledTime;
+            foreach (int i in next) { Mark(i, true); lastIn[i] = t; }
+            foreach (int i in on) if (now[i] != frame) { if (t - lastIn[i] < Linger) { now[i] = frame; next.Add(i); } else Mark(i, false); }
             (on, next) = (next, on);
         }
 

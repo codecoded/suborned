@@ -54,7 +54,7 @@ namespace Suborned.Play
         /// <summary>Once a frame after the attention cues: each agent's face from the run.</summary>
         void FacesFrame()
         {
-            var g = Game; if (g == null || g.Range) return;
+            var g = Game; if (g == null) return; // brief 041: the range too (the under-fire cue is tested there)
             float now = Time.unscaledTime;
             if (!ReferenceEquals(g, faceGame)) { faceGame = g; faceLog = g.Log.Count; foreach (var f in faces) { f.Shown = Face.Calm; f.Since = now; f.LastHp = int.MinValue; f.HitTick = -100000; f.LastNext = int.MinValue; f.ShotTick = -100000; f.Eye = 0; f.SuccessUntil = -10f; f.HitAt = -10f; f.EyeUpAt = -10f; f.LostPip = -1; } }
             // the landings since the last frame: a success beat for the act's agent
@@ -63,7 +63,7 @@ namespace Suborned.Play
             faceLog = g.Log.Count;
             // the displayed attention toward each agent (HostAttention's cue: up at once, down after its 2 s)
             Span<int> eye = stackalloc int[4];
-            foreach (var (_, _, stage, op) in Cues()) { if (stage <= 0 || !IsOpName(op)) continue; int k = (int)Op.Parse(op); if (stage > eye[k]) eye[k] = stage; }
+            if (!g.Range) foreach (var (_, _, stage, op) in Cues()) { if (stage <= 0 || !IsOpName(op)) continue; int k = (int)Op.Parse(op); if (stage > eye[k]) eye[k] = stage; }
             for (int k = 0; k < 4; k++)
             {
                 var f = faces[k]; var op = g.Ops[k]; var gun = op.Gun;
@@ -84,7 +84,7 @@ namespace Suborned.Play
             var op = g.Ops[k]; var gun = op.Gun; int max = Mathf.Max(gun.Max, gun.Health);
             if (op.Down || gun.Down) return Face.Downed;
             if (max > 0 && gun.Health * 3 <= max) return Face.BadlyHurt;
-            if (gun.ShotByTick >= 0 && g.Tick - gun.ShotByTick <= 2 * Suborned.Sim.Game.Hz) return Face.UnderFire;
+            if (UnderFireNow[k].Count > 0) return Face.UnderFire; // engine 0.19 UnderFireOf: a shooter's spell on this agent, still up, within 3 s
             if (max > 0 && (gun.Health * 3 < max * 2 || g.Tick - f.HitTick <= 3 * Suborned.Sim.Game.Hz)) return Face.Hurt;
             bool targetUp = gun.Target.Length > 0 && !(g.GunOf(gun.Target) is Gun tg && tg.Down);
             if (gun.Drawn && gun.Order.Length > 0 && targetUp || g.Tick - f.ShotTick <= Suborned.Sim.Game.Hz) return Face.Firing;
@@ -98,19 +98,10 @@ namespace Suborned.Play
         /// <summary>Whose landed act a log line is (the agent's index), or -1: see the class note for the codes.</summary>
         static int SuccessAgent(Suborned.Sim.Game g, LogLine l)
         {
-            var c = l.Code ?? "";
-            if (c.EndsWith(".watch.watched", StringComparison.Ordinal)) { var who = c[..c.IndexOf('.')]; return IsOpName(who) ? (int)Op.Parse(who) : -1; }
-            if (c.StartsWith("scout.listen.", StringComparison.Ordinal) || c == "rivals.misled") return (int)OpId.Scout;
-            if (c.StartsWith("turn.", StringComparison.Ordinal) && c.EndsWith(".turned", StringComparison.Ordinal)) return (int)OpId.Fixer;
-            if (c.StartsWith("call.", StringComparison.Ordinal) && c[5..] is "waitress" or "driver" or "guard") return (int)OpId.Fixer;
-            if (c is "loop.on" or "patrol.rerouted") return (int)OpId.Tech;
-            if (c is "take.done" or "enter.in") return (int)OpId.Enforcer;
-            if (c is "takedown.out" or "takedown.dead")
-            {
-                foreach (var x in g.Log) if (x.Tick == l.Tick && x.Code == "takedown.seen") return -1; // seen: not a quiet win
-                return (int)OpId.Enforcer;
-            }
-            return -1;
+            var land = LandingOf(g, l); // brief 043: one landing detector for the face, the tick, the plate, the chip and the row
+            if (land.Agent < 0 || land.Outcome is "not-yet" or "refused" or "suspicious" || land.Do is "carry" or "stash" or "restrain" or "drop" or "board" || land.Code == "enter.out") return -1;
+            if (land.Do == "takedown") { foreach (var x in g.Log) if (x.Tick == l.Tick && x.Code == "takedown.seen") return -1; } // seen: not a quiet win
+            return land.Agent;
         }
     }
 }

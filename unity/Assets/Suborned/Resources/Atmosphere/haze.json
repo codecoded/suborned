@@ -1,0 +1,10 @@
+{
+  "schema": "suborned.haze/2",
+  "note": "Glint, brief 048 'Old city atmosphere' (2026-10-22; Sky: 'try the atmosphere'). Distance haze by camera tier, LOOK ONLY (no rule, sight or replay reads it). Tiers (DistanceHaze.TierOf): play = the orthographic play camera (zoom 14 at 38 degrees) and every overlay camera: NO FOG, so the play area stays crisp and the signals draw as built. follow = a perspective camera with far <= followFarMax (third person, conversation and fail cutaways): LINEAR, clear to 90 m, the haze colour at the 350 m far clip (0 percent at 80 m, 23 at 150, 62 at 250, 81 at 300, 100 at 350); the exp2 this file held before (17 percent at 80 m, 47 at 150) greyed the enamel accents by 100 m, the old city had 4 and 7 percent. long = a perspective camera with a longer far plane (flyby, free fly): the old city's exponential 0.0005 (4 percent at 80 m, 22 at 500, 39 at 1 km, 63 at 2 km, 78 at 3 km), so the horizon rings 1.4 to 8 km stay visible. colour (#f4e3c3, was #ecd9b4: measured in the game frame the old value rendered #dbcdb0 to #d2c2a0, S 0.20 to 0.25, V 0.85, the ACES tonemap and the grade darkening it about 7 percent, a dun band; this renders about #e4d8bf, 15 to 20 percent less saturated and 4 to 5 percent lighter) = the one haze value for fog and the sky horizon by day (AtmosphereLens gives the sky the same); light.json light.haze holds the same hex for a scene rebuild. At night the scene's own fog colour (night.haze) is kept. follow.end is the far clip: HostFollow.followFar must equal it (DistanceHaze.FarClip). Modes: linear (start, end) | exp2 (farClip, reach: density = sqrt(-ln(1 - reach)) / farClip) | exp (density). Unknown schema or mode, or out-of-range values, are rejected with an error and the scene keeps its fog. Not built, on purpose: a height term (haze lying low so tower tops stand clear) needs a depth pass per frame.",
+  "colour": "#f4e3c3",
+  "follow": { "mode": "linear", "start": 90, "end": 350 },
+  "long": { "mode": "exp", "density": 0.0005 },
+  "followFarMax": 900,
+  "orthographic": false,
+  "overlays": false
+}

@@ -31,6 +31,9 @@ namespace Suborned.Sim
         /// <summary>Tuning.md §11.5 (engine 0.17.0): the follow setting at the start: true, followers lock the driven agent's target at a press;
         /// false, they fire with its trigger. Null: off. Logged as a follow order when it changes in play. Hashed when set.</summary>
         public bool? FollowLock;
+        /// <summary>Tuning.md §14 (engine 0.19.0): weapons free at the start. Null: the rulebook's weapons.free.start (on). Logged as a free order
+        /// when it changes in play. Hashed into the start state when set.</summary>
+        public bool? WeaponsFree;
         /// <summary>Brief 022: the server's round. Null: the mission's data decides (on when the site carries a rounds file). false: off, the
         /// migration gate only (rounds off plays exactly as before the round existed); no recorded route sets it.</summary>
         public bool? Rounds;
@@ -54,7 +57,7 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree");
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
             {
                 fl.Only("on", "healthScale", "pips", "stances", "then", "close", "charge", "field", "policeWarning", "hostilesFireMoving", "coverSnap", "kite", "loadout");
@@ -89,6 +92,7 @@ namespace Suborned.Sim
             if (n.Opt("rounds") is JNode ro) s.Rounds = ro.Bool();
             if (n.Opt("rivalsPublic") is JNode rp) { s.RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, s.RivalsPublic) < 0) throw new FormatException($"{rp.Path}: rivalsPublic is one of {string.Join(", ", Rules.RivalsPublics)}"); }
             if (n.Opt("followLock") is JNode fk) s.FollowLock = fk.Bool(); // tuning.md §11.5
+            if (n.Opt("weaponsFree") is JNode wf) s.WeaponsFree = wf.Bool(); // tuning.md §14
             if (n.Opt("heat") is JNode ht) { s.Heat = ht.Int(); if (s.Heat < 0 || s.Heat > 1000) throw new FormatException($"{ht.Path}: heat 0..1000"); } // brief 031
             if (n.Opt("standing") is JNode st) { s.Standing = st.Int(); if (s.Standing < -1000 || s.Standing > 1000) throw new FormatException($"{st.Path}: standing -1000..1000"); }
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
@@ -120,6 +124,7 @@ namespace Suborned.Sim
             if (RivalsPublic != null) w.Prop("rivalsPublic", RivalsPublic); // likewise
             if (Heat.HasValue) w.Prop("heat", Heat.Value); // brief 031: likewise
             if (FollowLock.HasValue) w.Prop("followLock", FollowLock.Value); // tuning.md §11.5: likewise
+            if (WeaponsFree.HasValue) w.Prop("weaponsFree", WeaponsFree.Value); // tuning.md §14: likewise
             if (Rounds.HasValue) w.Prop("rounds", Rounds.Value); // brief 022: likewise
             if (DrivePace.HasValue || DriveGap.HasValue || DriveOnBusy != null || DriveOnRelease != null) // brief 025: only a playground start adds bytes
             {
@@ -173,6 +178,9 @@ namespace Suborned.Sim
         public Outcome Result; public string FailCode = "", FailText = "";
         public readonly List<LogLine> Log = new List<LogLine>();
         public readonly List<(Order order, bool ok, string code, string why)> Orders = new List<(Order, bool, string, string)>();
+        readonly List<string> orderText = new List<string>(); // Orders[k].order.ToString() as it was issued (engine 0.25.0, brief 045: Hash.State no longer writes every order's JSON)
+        /// <summary>Order k's canonical text, as Hash.State reads it: taken when it was issued (an order is never changed after), else written now.</summary>
+        internal string OrderText(int k) => k < orderText.Count ? orderText[k] : Orders[k].order.ToString();
         public readonly List<(int tick, ulong hash)> Checkpoints = new List<(int, ulong)>();
         public readonly List<string> Chain = new List<string>();
         public readonly List<string> Actions = new List<string>();
@@ -227,6 +235,7 @@ namespace Suborned.Sim
         {
             R = rules; S = site; Start = start ?? new Start(); People2 = crowd; Range = site.IsRange;
             FollowLock = Start.FollowLock ?? false; // tuning.md §11.5
+            WeaponsFree = Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0)
             if (crowd != null) foreach (var w in crowd.Walkers) Walkers.Add(w.Fresh());
             StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical());
             eye = R.Eye; near = R.NearCm;
@@ -338,7 +347,7 @@ namespace Suborned.Sim
         void StepInner()
         {
             Tick++;
-            if (!Range) { GuardTimeline(); CarTimeline(); RivalsTimeline(); ValeTimeline(); } // brief 029: the range has no schedule
+            if (!Range) { GuardTimeline(); CarTimeline(); RivalsTimeline(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
@@ -350,6 +359,7 @@ namespace Suborned.Sim
                     if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
                 }
                 else if (op.Driven) { StepDrive(op); if (Over) break; } // brief 025 (EXPERIMENTAL): the host's sample, checked (GameDrive.cs)
+                if (op.Act != null) ApproachStep(op); // engine 0.23.0 (rulebook cell.approach): a person act walking in starts once in place (GameApproach.cs)
             }
             foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
             if (Range) { RangeTick(); return; } // brief 029 (GameRange.cs): the fight range runs the fight and nothing of the mission
@@ -407,6 +417,12 @@ namespace Suborned.Sim
                 carDrive = CarProfile(carToService); // car.pace: each tick at its surface's pace, then parked in the bay
                 Note("car.leaves", "The official car leaves the bay for the service lane.");
             }
+        }
+        /// <summary>engine 0.24.0 (brief 043 §6): the rerouted patrol's false orders run out and it is back on its entrance sweep (PatrolPose
+        /// returns to the sweep on this tick); before, only PatrolAwayUntil passing said so. The window marker's closing code.</summary>
+        void PatrolTimeline()
+        {
+            if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on the entrance sweep.");
         }
         void RivalsTimeline()
         {
@@ -723,6 +739,25 @@ namespace Suborned.Sim
             // a fight still open when the run ends ends with it (fight.public): its move replaces a checkpoint already taken at this tick
             if (EndOpenFight() | fightClosedLate) { fightClosedLate = false; if (Checkpoints.Count > 0 && Checkpoints[Checkpoints.Count - 1].tick == Tick) Checkpoints.RemoveAt(Checkpoints.Count - 1); }
             if (Checkpoints.Count == 0 || Checkpoints[Checkpoints.Count - 1].tick != Tick) Checkpoints.Add((Tick, Hash.State(this)));
+        }
+
+        /// <summary>Engine 0.25.0 (brief 045 F3, Redline): the closing checkpoint Finish would take now, without changing the live game: the
+        /// hash Engine.Play(start, orders, Tick) ends with, so a host's save needs no replay. A fight still open is closed (EndFight: Standing,
+        /// the ledger, the log, the fight's record), hashed, and every piece of it put back as it was; with no fight to close it is the
+        /// checkpoint already taken at this tick, else the state's hash. Costs one Hash.State.</summary>
+        public ulong ClosingHash()
+        {
+            var f = OpenFight;
+            if (f == null && !fightClosedLate) return Checkpoints.Count > 0 && Checkpoints[Checkpoints.Count - 1].tick == Tick ? Checkpoints[Checkpoints.Count - 1].hash : Hash.State(this);
+            if (f == null) return Hash.State(this); // closed late (Go, the investigation's end): Finish re-takes this tick's checkpoint
+            int end = f.End, delta = f.Delta, holster = autoHolsterAt, fights = Fights.Count, ledger = Ledger.Count, moves = StandingMoves.Count, log = Log.Count, standing = Standing;
+            string outcome = f.Outcome, cause = f.Cause; bool judged = finalFightJudged;
+            try { EndFight(); return Hash.State(this); }
+            finally
+            {
+                OpenFight = f; f.End = end; f.Delta = delta; f.Outcome = outcome; f.Cause = cause; autoHolsterAt = holster; finalFightJudged = judged; Standing = standing;
+                Fights.RemoveRange(fights, Fights.Count - fights); Ledger.RemoveRange(ledger, Ledger.Count - ledger); StandingMoves.RemoveRange(moves, StandingMoves.Count - moves); Log.RemoveRange(log, Log.Count - log);
+            }
         }
     }
 }

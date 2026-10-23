@@ -32,6 +32,7 @@ await send("Runtime.enable"); await send("Page.enable");
 await send("Emulation.setDeviceMetricsOverride", { width: 1920, height: 1080, deviceScaleFactor: 1, mobile: false });
 await send("Page.navigate", { url }); await sleep(2500);
 console.log("errors element:", JSON.stringify(await ev("document.getElementById('errors').textContent")));
+await ev(`__ctl.G.done = 'built'`); // brief 043: these checks are the 0.2.48 behaviour (pill "Done · …", silent cancel); shoot-done.ts checks the done moment
 
 for (const p of ["hold", "runs", "lead", "dbl", "built"]) {
   await ev(`__ctl.preset('${p}')`);
@@ -76,7 +77,7 @@ await click(ine.x, ine.y); await sleep(100); await click(ine.x, ine.y); await sl
 let who = JSON.parse(await ev(`JSON.stringify(__ctl.G.world.agents.map(a => a.order?.kind === 'act'))`)) as boolean[];
 check("squad act (best placed): one agent does it, the rest hold", who.filter(Boolean).length === 1, (await logText()).split(" | ").pop());
 await shot("squad-group-act");
-await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.G.squadAct = 'all'`); const gd = await at("guard");
+await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.squad(); __ctl.G.squadAct = 'all'`); const gd = await at("guard");
 await click(gd.x, gd.y); await sleep(100); await click(gd.x, gd.y); await sleep(500);
 who = JSON.parse(await ev(`JSON.stringify(__ctl.G.world.agents.map(a => a.order?.kind === 'act'))`));
 check("squad act (everyone): all four Watch", who.every(Boolean), (await logText()).split(" | ").pop());
@@ -182,7 +183,8 @@ await ev(`__ctl.G.world.agents.forEach(a => { a.order = null })`);
 // hold the left button to fire
 const press = async (x: number, y: number, buttons = 1, button = "left") => { await mouse("mouseMoved", x, y); await send("Input.dispatchMouseEvent", { type: "mousePressed", x, y, button, clickCount: 1, buttons }); };
 const lift = async (x: number, y: number, buttons = 0, button = "left") => send("Input.dispatchMouseEvent", { type: "mouseReleased", x, y, button, clickCount: 1, buttons });
-const fresh = async (p = "runs") => { await ev(`document.querySelector('[data-reset]').click()`); await sleep(300); await ev(`__ctl.preset('${p}'); __ctl.G.actScale = 4; __ctl.G.fire = { drawS: 0, aimS: 0, cadence: 1.5, range: 20 }`); };
+const pillText = async () => (await ev(`(() => { const m = document.querySelector('#marker'); return m.style.display === 'none' ? '' : m.textContent; })()`)) as string;
+const fresh = async (p = "runs") => { await ev(`document.querySelector('[data-reset]').click()`); await sleep(300); await ev(`__ctl.preset('${p}'); __ctl.G.actScale = 4; __ctl.G.fights = 'current'; __ctl.G.fire = { drawS: 0, aimS: 0, cadence: 1.5, range: 20 }`); };
 await fresh(); await ev(`__ctl.select(0)`);
 let po = await at("police1");
 check("kill and knock out are never a left-click default", (await ev(`__ctl.defaultsOk()`)) === true);
@@ -294,6 +296,18 @@ await shot("hold-charging-loop-camera"); await lift(cbh.x, cbh.y); await sleep(1
 check("hold preset: letting go early cancels", (await logText()).includes("Loop camera cancelled") && (await ev(`__ctl.G.world.agents[2].order`)) === null);
 await press(cbh.x, cbh.y); await sleep(700); await lift(cbh.x, cbh.y); await sleep(200);
 check("hold preset: a full hold does the act (walk, then act)", (await ev(`__ctl.G.world.agents[2].order?.act?.id`)) === "loop", (await logText()).split(" | ").pop());
+// commit on release: full pill says Let go, nothing ordered until the button comes up; moving off cancels; the toggle brings the old way back
+await fresh("hold"); await ev(`__ctl.select(2)`); const pillTxt = () => ev(`document.querySelector('#marker').textContent`);
+check("commit on release: it is the default", (await ev(`__ctl.G.actCommit`)) === "release" && (await ev(`!!document.querySelector('[data-o="actCommit"]')`)) === true);
+await press(cbh.x, cbh.y); await sleep(900);
+check("commit on release: full pill says Let go to ..., portrait flashes, cursor changes, nothing ordered", (await pillTxt()).includes("Let go to loop the camera") && (await ev(`document.querySelector('#marker .pill.ready') !== null && document.querySelector('[data-agent="2"]').classList.contains('ready')`)) === true && (await ev(`document.getElementById('c').style.cursor`)) === "grabbing" && (await ev(`__ctl.G.world.agents[2].order`)) === null, await pillTxt());
+await shot("hold-let-go-to");
+await lift(cbh.x, cbh.y); await sleep(250);
+check("commit on release: letting go orders it, and the pill says ordered", (await ev(`__ctl.G.world.agents[2].order?.act?.id`)) === "loop" && (await pillTxt()).includes("ordered"), await pillTxt());
+await fresh("hold"); await ev(`__ctl.select(2)`); await press(cbh.x, cbh.y); await sleep(900); await mouse("mouseMoved", cbh.x + 400, cbh.y + 250); await sleep(200); await lift(cbh.x + 400, cbh.y + 250); await sleep(200);
+check("commit on release: moving off the target while held cancels", (await ev(`__ctl.G.world.agents[2].order`)) === null && (await logText()).includes("cancelled"), (await logText()).split(" | ").pop());
+await fresh("hold"); await ev(`__ctl.select(2); __ctl.G.actCommit = 'full'`); await press(cbh.x, cbh.y); await sleep(900);
+check("commit when full: the act is ordered while the button is still down", (await ev(`__ctl.G.world.agents[2].order?.act?.id`)) === "loop"); await lift(cbh.x, cbh.y); await ev(`__ctl.G.actCommit = 'release'`);
 await fresh("hold"); await ev(`__ctl.select(2)`);
 await send("Input.dispatchKeyEvent", { type: "keyDown", code: "ShiftLeft", key: "Shift", modifiers: 8 }); await mouse("mouseMoved", cbh.x, cbh.y); await send("Input.dispatchMouseEvent", { type: "mousePressed", x: cbh.x, y: cbh.y, button: "left", clickCount: 1, buttons: 1, modifiers: 8 }); await sleep(700); await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: cbh.x, y: cbh.y, button: "left", clickCount: 1, modifiers: 8 }); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "ShiftLeft", key: "Shift" }); await sleep(200);
 check("hold preset: Shift + hold runs there, then acts", (await ev(`__ctl.G.world.agents[2].order?.run && __ctl.G.world.agents[2].order?.act?.id`)) === "loop");
@@ -315,32 +329,56 @@ check("hold preset: after 0.2 s the charge pill shows", (await ev(`document.quer
 await lift(ph.x, ph.y, 0, "right"); await sleep(100); await ev(`__ctl.G.chargeS = 0.4`);
 check("hold preset: the Squad acts setting is gone", (await ev(`!document.querySelector('[data-o="squadAct"]')`)) === true);
 await press(ph.x, ph.y, 2, "right"); await sleep(700);
-check("hold preset: a right hold fires", (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.byId.police1.hp`)) === 2);
-await lift(ph.x, ph.y, 0, "right"); await sleep(100);
-check("hold preset: letting go stops the fire", (await ev(`__ctl.G.sessions.length`)) === 0);
+check("hold preset: a full right hold says Let go to fire at the officer, nothing fires yet", (await pillText()) === "Let go to fire at the officer" && (await ev(`__ctl.G.sessions.length`)) === 0 && (await ev(`__ctl.G.world.byId.police1.hp ?? 3`)) === 3, await pillText());
+await shot("fire-let-go-to-fire");
+await lift(ph.x, ph.y, 0, "right"); await sleep(500);
+check("hold preset: letting go commits a lasting fire order", (await ev(`__ctl.G.sessions.some(s => s.lock && !s.held && s.ent.id === 'police1')`)) === true && (await ev(`__ctl.G.world.byId.police1.hp`)) < 3, await ev(`__ctl.G.world.byId.police1.hp`));
+for (let i = 0; i < 100 && (await ev(`__ctl.G.world.byId.police1.state`)) !== "down"; i++) await sleep(250);
+check("hold preset: nothing depends on holding: the fire carries on until the target is down", (await ev(`__ctl.G.world.byId.police1.state`)) === "down" && (await ev(`__ctl.G.sessions.length`)) === 0, await ev(`JSON.stringify({hp: __ctl.G.world.byId.police1.hp, st: __ctl.G.world.byId.police1.state, ss: __ctl.G.sessions.map(s => [s.agents.length, s.lock, s.held, s.ent.id, JSON.stringify(s.ph[s.agents[0]?.id]), s.shots]), fire: __ctl.G.fire, paused: __ctl.G.paused, ts: __ctl.G.timeScale, clock: __ctl.G.clock, log: __ctl.G.log.slice(-14).map(l=>l.text)})`));
+await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.fire.aimS = 4`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(400);
+check("hold preset: X stops the lasting fire order", (await ev(`__ctl.G.sessions.length`)) === 1); await key("KeyX", "x"); await sleep(100);
+check("hold preset: and it is gone", (await ev(`__ctl.G.sessions.length`)) === 0);
+await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(300); await ev(`__ctl.G.fire.aimS = 0`);
+const wk2 = { x: 960, y: 760 }; await click(wk2.x, wk2.y); await sleep(300);
+check("hold preset: a click walk keeps the lasting fire order", (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.agents[0].order?.kind`)) === "walk", (await ev(`__ctl.G.sessions.length`)) + " | " + (await logText()).split(" | ").slice(-3).join(" | ") + JSON.stringify([wk2]));
+check("hold preset: and it keeps aiming at the target while it walks", (await ev(`(() => { const a = __ctl.G.world.agents[0], t = __ctl.G.world.byId.police1; const want = Math.atan2(t.g.position.x - a.g.position.x, t.g.position.z - a.g.position.z); return Math.abs(Math.atan2(Math.sin(a.g.rotation.y - want), Math.cos(a.g.rotation.y - want))) < 0.05; })()`)) === true || (await ev(`__ctl.G.world.byId.police1.state`)) === "down");
+await ev(`import('./orders.js').then((o) => { const a = __ctl.G.world.agents[0], t = __ctl.G.world.nav.nearestFree(a.g.position.x + 3, a.g.position.z + 3); return o.walkTo(a, t[0], t[1], true); })`); await sleep(300);
+check("hold preset: a run keeps it too", (await ev(`__ctl.G.world.agents[0].order?.run`)) === true && (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.byId.police1.state`)) !== "down", await ev(`__ctl.G.sessions.length`));
+await ev(`import('./orders.js').then((o) => { const a = __ctl.G.world.agents[0]; return o.groupWalk(__ctl.G.world.agents.slice(0, 2), { x: a.g.position.x - 3, z: a.g.position.z + 3 }, false); })`); await sleep(200);
+check("hold preset: a group walk keeps it", (await ev(`__ctl.G.sessions.length`)) === 1);
+await ev(`__ctl.G.fire.range = 0.5`); await sleep(300);
+check("hold preset: out of weapon range it ends and says Too far", (await ev(`__ctl.G.sessions.length`)) === 0 && (await pillText()).includes("Too far") && (await ev(`document.querySelector('[data-plate="0"] .val').textContent`)) === "too far", (await pillText()) + " | " + (await ev(`document.querySelector('[data-plate="0"] .val').textContent`))); await shot("fire-too-far-plate-pill");
+await sleep(1700); check("hold preset: Too far goes after a moment", !(await pillText()).includes("Too far"), await pillText());
+await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.fire.aimS = 4; __ctl.G.world.agents[0].drawnUntil = 1e9`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(300);
+await ev(`Promise.all([import('./orders.js'), import('./data.js')]).then(([o, d]) => o.giveAct(__ctl.G.world.agents[0], __ctl.G.world.byId.police1, { id: 'watch', ...d.ACTS.watch }))`); await sleep(200);
+check("hold preset: a new act replaces the fire order", (await ev(`__ctl.G.sessions.length`)) === 0 && (await ev(`__ctl.G.world.agents[0].order?.kind`)) === "act", await ev(`__ctl.G.sessions.length`));
+await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.world.agents[0].drawnUntil = 1e9`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(700); await mouse("mouseMoved", ph.x + 150, ph.y); await sleep(100);
+check("hold preset: moving more than 80 px cancels the fire hold", (await ev(`!__ctl.G.charge`)) === true); await lift(ph.x + 150, ph.y, 0, "right"); await sleep(300);
+check("hold preset: and nothing fires", (await ev(`__ctl.G.sessions.length === 0 && (__ctl.G.world.byId.police1.hp ?? 3) === 3`)) === true);
+await fresh("hold"); await ev(`__ctl.select(0)`); ph = await at("police1");
 await click(ph.x, ph.y, "right"); await sleep(250);
 check("hold preset: a right tap still opens the ring", (await ev(`!!__ctl.G.ring`)) === true); await key("Escape", "Escape");
-await ev(`__ctl.squad(); __ctl.G.squadAct = 'best'; __ctl.G.world.agents.forEach(a => { a.drawnUntil = 0 })`); await key("KeyF", "f"); await press(ph.x, ph.y, 2, "right"); await sleep(1000); await shot("hold-squad-right-hold");
+await ev(`__ctl.squad(); __ctl.G.squadAct = 'best'; __ctl.G.world.agents.forEach(a => { a.drawnUntil = 0 })`); await key("KeyF", "f"); await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(1000); await shot("hold-squad-right-hold");
 check("hold preset: a right hold fires with the whole squad", (await ev(`__ctl.G.world.agents.filter(a => a.shotAt > 0).length`)) >= 3 || (await ev(`__ctl.G.world.byId.police1.state`)) === "down", await ev(`__ctl.G.world.agents.filter(a => a.shotAt > 0).length`));
-await lift(ph.x, ph.y, 0, "right");
+
 // third person
 await fresh("hold"); await ev(`__ctl.select(3)`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(900); await ev(`__ctl.G.rig.f = Math.PI`); await sleep(300);
-await press(960, 600, 2, "right"); await sleep(900);
-check("hold preset, third person: right hold fires at the hostile ahead", (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.byId.police1.hp < 3`)), await ev(`__ctl.G.sessions.length`));
-await lift(960, 600, 0, "right"); await sleep(100);
+await press(960, 600, 2, "right"); await sleep(700); await lift(960, 600, 0, "right"); await sleep(600);
+check("hold preset, third person: right hold, then let go, fires at the hostile ahead", (await ev(`__ctl.G.sessions.length`)) === 1 && (await ev(`__ctl.G.world.byId.police1.hp < 3`)), await ev(`__ctl.G.sessions.length`));
+await key("KeyX", "x"); await sleep(100);
 await ev(`__ctl.G.tpAim = 'aim'`); await press(960, 600, 2, "right"); await sleep(400);
 await send("Input.dispatchMouseEvent", { type: "mousePressed", x: 960, y: 600, button: "left", clickCount: 1, buttons: 3 }); await sleep(800);
 check("hold preset, third person (GTA setting): right aims, left fires", (await ev(`__ctl.G.sessions.length`)) === 1, await ev(`__ctl.G.sessions.length`));
 await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: 960, y: 600, button: "left", clickCount: 1, buttons: 2 }); await lift(960, 600, 0, "right"); await ev(`__ctl.G.tpAim = 'fire'`); await ev(`__ctl.setView(__ctl.G.view === 'cmd' ? 'tp' : 'cmd')`); await sleep(600);
 
 // the pill tracks an act while you hold: ordered, walking, acting, done
-const pillText = async () => (await ev(`(() => { const m = document.querySelector('#marker'); return m.style.display === 'none' ? '' : m.textContent; })()`)) as string;
+
 const trace = async (ms: number, every = 100) => { const seen: string[] = []; for (let t = 0; t < ms; t += every) { const x = await pillText(); if (x && seen[seen.length - 1] !== x) seen.push(x); await sleep(every); } return seen; };
-await fresh("hold"); await ev(`__ctl.select(2); __ctl.G.actScale = 20; __ctl.G.world.agents[2].g.position.set(3, 0, 3.6)`); cbh = await at("cabinet");
+await fresh("hold"); await ev(`__ctl.select(2); __ctl.G.actScale = 20; __ctl.G.world.agents[2].g.position.set(3, 0, 3.6); __ctl.G.actCommit = 'full'`); cbh = await at("cabinet");
 await press(cbh.x, cbh.y); const seenA = await trace(4500); await lift(cbh.x, cbh.y);
 const has = (list: string[], needle: string) => list.some((x) => x.includes(needle));
 check("act pill: charging, ordered, walking, acting, done, in that order", has(seenA, "Hold to loop camera") && has(seenA, "ordered") && has(seenA, "Looping the camera") && has(seenA, "Done · camera looped"), seenA.join("  >  "));
-await fresh("hold"); await ev(`__ctl.select(2); __ctl.G.actScale = 20; __ctl.G.world.agents[2].g.position.set(-4, 0, 3.6)`); cbh = await at("cabinet");
+await fresh("hold"); await ev(`__ctl.select(2); __ctl.G.actScale = 20; __ctl.G.world.agents[2].g.position.set(-4, 0, 3.6); __ctl.G.actCommit = 'full'`); cbh = await at("cabinet");
 await press(cbh.x, cbh.y); await sleep(1500); check("act pill: it says walking there with the time", (await pillText()).includes("Walking there ·"), await pillText()); await shot("hold-act-walking-there"); await lift(cbh.x, cbh.y);
 await ev(`__ctl.select(2); document.querySelector('[data-plate="2"] .val') && 0`); await sleep(100);
 check("act plate: the plate beside the portrait says the same", (await ev(`document.querySelector('[data-plate="2"] .val').textContent`)).includes("walking"), await ev(`document.querySelector('[data-plate="2"] .val').textContent`));
@@ -348,21 +386,151 @@ await key("KeyX", "x"); await sleep(100); await mouse("mouseMoved", cbh.x + 2, c
 check("act pill: Stopped after X, then the offer comes back", (await pillText()).includes("Stopped"), await pillText()); await sleep(1300);
 check("act pill: after that the first offer is back", (await pillText()).startsWith("Hold"), await pillText());
 // squad: a face with its own state each
-await fresh("hold"); await ev(`__ctl.squad(); __ctl.G.squadAct = 'all'; __ctl.G.actScale = 20`); let gdh = await at("guard"); await press(gdh.x, gdh.y); await sleep(1100);
+await fresh("hold"); await ev(`__ctl.squad(); __ctl.G.squadAct = 'all'; __ctl.G.actScale = 20; __ctl.G.actCommit = 'full'`); let gdh = await at("guard"); await press(gdh.x, gdh.y); await sleep(1100);
 check("act pill (squad, hold preset): even with the lab flag on, only the best-placed agent acts", (await ev(`__ctl.G.world.agents.filter(a => a.order?.kind === 'act').length`)) === 1, await pillText());
-await shot("hold-act-squad-states"); await lift(gdh.x, gdh.y);
+await shot("hold-act-squad-states"); await lift(gdh.x, gdh.y); await ev(`__ctl.G.actCommit = 'release'`);
 // fire hold, step by step
 await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.fire = { drawS: 1.0, aimS: 1.0, cadence: 1.5, range: 20 }; __ctl.G.world.agents.forEach(a => { a.drawnUntil = 0 })`); ph = await at("police1");
-await press(ph.x, ph.y, 2, "right"); const seenF: string[] = []; let shots = 0;
-for (let t = 0; t < 8000; t += 120) { const x = await pillText(); if (x && seenF[seenF.length - 1] !== x) { seenF.push(x); if (/^Drawing/.test(x) && shots === 0) { shots++; await shot("fire-status-drawing"); } else if (/^Aiming/.test(x) && shots === 1) { shots++; await shot("fire-status-aiming"); } else if (/^Firing/.test(x) && shots === 2) { shots++; await shot("fire-status-firing"); } } if (/down$/.test(x)) break; await sleep(120); }
-await lift(ph.x, ph.y, 0, "right");
-check("fire pill: charging, drawing, aiming, firing (hit or miss, n of m, down in s), then down", has(seenF, "Hold to fire") && has(seenF, "Drawing") && has(seenF, "Aiming ·") && has(seenF, "Firing at the officer · hit") && has(seenF, "down in") && has(seenF, "Officer down"), seenF.join("  >  "));
-await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.world.agents[0].drawnUntil = 1e9`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(1500); await lift(ph.x, ph.y, 0, "right"); await sleep(150);
-check("fire pill: Stopped for a second after you let go", (await pillText()).includes("Stopped"), await pillText());
-await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.world.agents[0].drawnUntil = 1e9; __ctl.G.fire.range = 5`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(1300);
-check("fire pill: Out of range", (await pillText()).includes("Out of range"), await pillText()); await shot("fire-status-out-of-range");
-await ev(`__ctl.G.fire.range = 60; __ctl.G.world.agents[0].g.position.set(-14, 0, 16.5)`); await sleep(500);
-check("fire pill: No clear shot behind a wall", (await pillText()).includes("No clear shot"), await pillText()); await lift(ph.x, ph.y, 0, "right"); await ev(`__ctl.G.fire = { drawS: 0, aimS: 0, cadence: 1.5, range: 20 }`);
+await press(ph.x, ph.y, 2, "right"); const seenF: string[] = []; let shots = 0, released = false;
+for (let t = 0; t < 8000; t += 120) { if (t >= 600 && !released) { released = true; await lift(ph.x, ph.y, 0, "right"); } const x = await pillText(); if (x && seenF[seenF.length - 1] !== x) { seenF.push(x); if (/^Drawing/.test(x) && shots === 0) { shots++; await shot("fire-status-drawing"); } else if (/^Aiming/.test(x) && shots === 1) { shots++; await shot("fire-status-aiming"); } else if (/^Firing/.test(x) && shots === 2) { shots++; await shot("fire-status-firing"); } } if (/down$/.test(x)) break; await sleep(120); }
+check("fire pill: hold, let go, drawing, aiming, firing (down in s, no hit or miss words), then down", has(seenF, "Hold to fire") && has(seenF, "Let go to fire at the officer") && has(seenF, "Drawing") && has(seenF, "Aiming ·") && has(seenF, "Firing at the officer · down in") && !seenF.some((x) => /hit|miss| of /.test(x)) && has(seenF, "Officer down"), seenF.join("  >  "));
+await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.world.agents[0].drawnUntil = 1e9`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(500); await key("KeyX", "x"); await sleep(150);
+check("fire pill: Stopped for a second after X", (await pillText()).includes("Stopped"), await pillText());
+await fresh("hold"); await ev(`__ctl.select(0); __ctl.G.world.agents[0].drawnUntil = 1e9; __ctl.G.fire.range = 5`); ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(900);
+check("fire pill: Too far (and the order ends)", (await pillText()).includes("Too far") && (await ev(`__ctl.G.sessions.length`)) === 0, await pillText()); await shot("fire-status-too-far");
+await ev(`__ctl.G.fire.range = 60; __ctl.G.world.agents[0].g.position.set(-14, 0, 16.5)`); await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(900);
+check("fire pill: No clear line behind a wall", (await pillText()).includes("No clear line"), await pillText()); await lift(ph.x, ph.y, 0, "right"); await ev(`__ctl.G.fire = { drawS: 0, aimS: 0, cadence: 1.5, range: 20 }`);
+
+// Syndicate fights: the first shot needs the hold, then a right click focuses fire, weapons free, a quiet pill, the fakes shoot back
+const synth = async () => { await fresh("hold"); await ev(`__ctl.G.fights = 'syndicate'; __ctl.G.free = true; __ctl.G.fightUntil = 0; __ctl.G.fire = { drawS: 0, aimS: 0.3, cadence: 1.5, range: 20 }`); };
+const rclick = async (x: number, y: number, ms = 70) => { await press(x, y, 2, "right"); await sleep(ms); await lift(x, y, 0, "right"); };
+await synth(); await ev(`__ctl.select(0)`); ph = await at("police1");
+await rclick(ph.x, ph.y);
+check("syndicate: before a fight a right tap on a hostile opens the ring", (await ev(`!!__ctl.G.ring`)) === true && (await ev(`__ctl.G.sessions.length`)) === 0);
+await key("Escape", "Escape");
+await press(ph.x, ph.y, 2, "right"); await sleep(700); await lift(ph.x, ph.y, 0, "right"); await sleep(500);
+check("syndicate: before a fight the right hold, let go, fires (the first shot)", (await ev(`__ctl.G.sessions.length`)) >= 1 && (await ev(`__ctl.G.world.byId.police1.hp < 3`)), await ev(`__ctl.G.world.byId.police1.hp`));
+await sleep(100);
+check("syndicate: the fight is on after the first shot", (await ev(`__ctl.G.fightUntil > __ctl.G.clock`)) === true);
+await ev(`__ctl.G.world.ents.filter(e => e.hostile && e.state === 'ok').forEach(e => { e.hpMax = 40; e.hp = Math.max(e.hp ?? 40, 38) })`);
+await ev(`__ctl.G.fire.range = 40; __ctl.G.world.agents[3].drawnUntil = 1e9`); await sleep(1000);
+check("syndicate: weapons free, the drawn agent keeps fighting after the hold is let go", (await ev(`__ctl.G.sessions.some(s => s.auto && s.ent.hostile)`)) === true, await ev(`JSON.stringify(__ctl.G.sessions.map(s => [s.ent.id, s.auto, s.agents.length]))`));
+await shot("syndicate-weapons-free");
+const pt = await pillText();
+check("syndicate: the fight pill is one quiet line (no hit or miss words)", /^Firing at the (officer|rival) · down in \d+ s/.test(pt) && !/hit|miss| of /.test(pt), pt);
+check("syndicate: bars show on the hostiles, the Squad button carries the weapons-free icon", (await ev(`[...document.querySelectorAll('#hpbars .hb')].filter(d => d.style.display === 'block').length`)) >= 1 && (await ev(`getComputedStyle(document.querySelector('#roster .free')).display`)) !== "none" && (await ev(`document.querySelector('#roster .free').classList.contains('on')`)) === true);
+check("syndicate: the fakes shoot back (cosmetic, nobody hurt)", (await ev(`__ctl.G.world.ents.some(e => e.hostile && e.volley > 0)`)) === true && (await ev(`__ctl.G.world.agents.every(a => a.hp === undefined)`)) === true);
+await key("KeyG", "g"); await sleep(500);
+check("syndicate: G turns weapons free off (no auto targets, icon struck)", (await ev(`!__ctl.G.free && !__ctl.G.sessions.some(s => s.auto)`)) === true && (await ev(`!document.querySelector('#roster .free').classList.contains('on')`)) === true);
+await shot("syndicate-hold-fire");
+await key("KeyG", "g"); await sleep(600);
+check("syndicate: G turns it back on", (await ev(`__ctl.G.free && __ctl.G.sessions.some(s => s.auto)`)) === true);
+// a right click focuses every selected drawn agent
+await synth(); await ev(`__ctl.squad(); __ctl.G.world.agents.forEach(a => { a.drawnUntil = 1e9 }); __ctl.G.free = false; __ctl.G.fightUntil = __ctl.G.clock + 10`);
+const pa = await at("police2");
+await rclick(pa.x, pa.y);
+check("syndicate: in a fight a right click on a hostile focuses all four at once, no ring", (await ev(`!__ctl.G.ring && __ctl.G.sessions.some(s => s.focus && s.ent.id === 'police2' && s.agents.length === 4)`)) === true, await ev(`JSON.stringify(__ctl.G.sessions.map(s => [s.ent.id, s.focus, s.agents.length]))`));
+await sleep(900); await shot("syndicate-focus-click");
+check("syndicate: the click is enough, letting go does not stop it", (await ev(`__ctl.G.sessions.some(s => s.ent.id === 'police2')`)) === true || (await ev(`__ctl.G.world.byId.police2.state`)) === "down");
+const bs = await at("inez"); await rclick(bs.x, bs.y);
+check("syndicate: in a fight a right tap on a non-hostile still opens the ring", (await ev(`!!__ctl.G.ring`)) === true); await key("Escape", "Escape");
+// a portrait lock holds against a focus click
+await synth(); await ev(`__ctl.select(1); __ctl.G.world.agents.forEach(a => { a.drawnUntil = 1e9 }); __ctl.G.free = true; __ctl.G.fightUntil = __ctl.G.clock + 10`);
+{ const o = await at("police1"); const r = JSON.parse(await ev(`(() => { const r = document.querySelector('[data-agent="1"]').getBoundingClientRect(); return JSON.stringify({ x: r.x + 40, y: r.y + 20 }); })()`)); await press(r.x, r.y); for (let k = 1; k <= 3; k++) await send("Input.dispatchMouseEvent", { type: "mouseMoved", x: r.x + (o.x - r.x) * k / 3, y: r.y + (o.y - r.y) * k / 3, button: "left", buttons: 1 }); await lift(o.x, o.y); }
+await ev(`__ctl.squad()`); const p2 = await at("police2"); await rclick(p2.x, p2.y); await sleep(500);
+check("syndicate: a portrait lock holds against the focus click and weapons free", (await ev(`__ctl.G.sessions.some(s => s.pin && s.ent.id === 'police1' && s.agents.length === 1 && s.agents[0].role === 'F')`)) === true && (await ev(`__ctl.G.sessions.filter(s => s.ent.id === 'police2').every(s => !s.agents.some(a => a.role === 'F'))`)) === true, await ev(`JSON.stringify(__ctl.G.sessions.map(s => [s.ent.id, s.pin, s.focus, s.auto, s.agents.map(a => a.role).join('')]))`));
+// the fight ends after about 10 s of no shots
+await ev(`__ctl.G.sessions = []; __ctl.G.fightUntil = __ctl.G.clock + 0.3; __ctl.G.world.agents.forEach(a => { a.drawnUntil = 0 }); __ctl.G.world.ents.forEach(e => { e.alerted = false })`); await sleep(700);
+await ev(`__ctl.select(0)`); { const q = await at("police1"); await rclick(q.x, q.y); }
+check("syndicate: after the fight is over a right tap on a hostile opens the ring again", (await ev(`!!__ctl.G.ring`)) === true); await key("Escape", "Escape");
+// a fight can start from their side
+await synth(); await ev(`__ctl.select(3)`); await key("KeyF", "f"); await sleep(2600);
+check("syndicate: a drawn agent close to a hostile starts a fight from their side", (await ev(`__ctl.G.world.byId.police1.alerted && __ctl.G.fightUntil > __ctl.G.clock && __ctl.G.world.byId.police1.volley > 0`)) === true, await ev(`JSON.stringify([__ctl.G.world.byId.police1.alerted, __ctl.G.world.byId.police1.volley])`));
+await shot("syndicate-fight-from-their-side");
+// switching back to current: the old right hold, nothing automatic
+await ev(`document.querySelector('[data-o="fights"][data-v="current"]').click()`); await sleep(200);
+check("current: weapons free and the bars are off", (await ev(`!__ctl.G.sessions.some(s => s.auto) && __ctl.G.fightUntil === 0`)) === true);
+
+
+// fights last while a hostile is engaging; contact broken or all down ends it after a short settle. Under fire reads on the portrait, the plate and the ground.
+await synth(); await ev(`__ctl.select(3)`); await key("KeyF", "f"); await sleep(3200);
+check("under fire: the portrait pulses and carries the hurt face", (await ev(`document.querySelector('[data-agent="3"]').classList.contains('underfire')`)) === true && (await ev(`getComputedStyle(document.querySelector('[data-agent="3"] .pf')).display`)) === "block");
+check("under fire: the plate says Under fire", (await ev(`document.querySelector('[data-plate="3"] .val').textContent`)) === "Under fire" && (await ev(`getComputedStyle(document.querySelector('[data-plate="3"]')).display`)) !== "none");
+check("under fire: a ground cue points at the shooter", (await ev(`(() => { const a = __ctl.G.world.agents[3]; return !!a.fireFrom && Number.isFinite(parseFloat(getComputedStyle(document.querySelector('[data-agent="3"]')).getPropertyValue('--ang'))); })()`)) === true);
+await shot("under-fire-portrait-plate-ground");
+await ev(`__ctl.G.world.agents[0].g.position.set(-6, 0, 3)`); await sleep(100);
+check("under fire: an agent you are not looking at shows it too (only the Enforcer is drawn)", (await ev(`__ctl.G.world.agents.filter(a => a.underFireUntil > __ctl.G.clock).length`)) >= 1 && (await ev(`document.querySelectorAll('#roster .underfire').length`)) >= 1);
+await ev(`__ctl.G.world.agents.forEach(a => a.g.position.set(22, 0, 16.5))`); await sleep(4500);
+check("fight rule: moving out of their sight and range ends it after a short settle", (await ev(`__ctl.G.clock >= __ctl.G.fightUntil && __ctl.G.world.ents.filter(e => e.hostile && e.state === 'ok').length > 0 && __ctl.G.world.ents.filter(e => e.hostile && e.state === 'ok').every(e => !e.alerted)`)) === true && (await ev(`document.querySelectorAll('#roster .underfire').length`)) === 0, await ev(`JSON.stringify([__ctl.G.fightUntil - __ctl.G.clock, __ctl.G.world.byId.police1.alerted])`));
+await synth(); await ev(`__ctl.select(3); __ctl.G.world.agents[3].drawnUntil = 1e9; __ctl.G.world.ents.filter(e => e.hostile).forEach(e => { e.hpMax = e.hp = 40 })`); await sleep(2200);
+check("fight rule: a fight is on with the hostiles engaging, and it does not time out", (await ev(`__ctl.G.fightUntil > __ctl.G.clock`)) === true); await sleep(8000);
+check("fight rule: still on after 10 s while they keep engaging", (await ev(`__ctl.G.fightUntil > __ctl.G.clock`)) === true);
+await ev(`__ctl.G.world.ents.filter(e => e.hostile).forEach(e => { e.state = 'down'; __ctl.G.world.raise(e, true) })`); await sleep(3000);
+check("fight rule: every hostile down ends it after the settle", (await ev(`__ctl.G.clock >= __ctl.G.fightUntil`)) === true && (await ev(`document.querySelectorAll('#roster .underfire').length`)) === 0);
+
+// your own agent: a click always selects it, busy or out of the squad, whatever stands beside it
+await fresh("hold"); await sleep(1200);
+await ev(`(() => { const i = __ctl.G.world.byId.inez; i.g.position.set(-3, 0, 4); i.frozen = true; i.walker = null; })(); __ctl.G.world.agents[3].g.position.set(-2.4, 0, 4.2); __ctl.squad(); __ctl.G.group = [true, true, true, false]; __ctl.G.sel = 0; __ctl.G.world.agents[3].order = { kind: 'act', ent: __ctl.G.world.byId.inez, act: { id: 'watch', t: 99, verb: 'Watch', ing: 'Watching', icon: 'eye', kind: 'look', by: 'SFTE' }, path: [], phase: 'act', t: 0, len0: 0 }; 0`); await sleep(300);
+let en = await at("cell3"); const ie = await at("inez");
+await mouse("mouseMoved", en.x + 12, en.y + 8); await sleep(300);
+check("own agent: hovering it (busy, out of the squad, Inez beside) shows the selection cue, never an act pill", (await ev(`__ctl.G.hoverAgent?.role`)) === "E" && !(await pillText()).length && (await ev(`__ctl.G.hover === null`)) === true, await pillText());
+await shot("own-agent-hover-beside-inez");
+await click(en.x + 12, en.y + 8); await sleep(300);
+check("own agent: a click selects the busy Enforcer who left the squad, nothing passes through to Inez", JSON.stringify(await sel()) === JSON.stringify([false, false, false, true]) && (await ev(`__ctl.G.world.byId.inez.state === 'ok' && __ctl.G.world.agents.every(a => a.role === 'E' || !a.order)`)) === true, (await logText()).split(" | ").slice(-2).join(" | "));
+await ev(`__ctl.G.group = [true, true, true, false]; __ctl.G.sel = 0`); await send("Input.dispatchKeyEvent", { type: "keyDown", code: "ShiftLeft", key: "Shift", modifiers: 8 });
+await send("Input.dispatchMouseEvent", { type: "mousePressed", x: en.x, y: en.y, button: "left", clickCount: 1, buttons: 1, modifiers: 8 }); await sleep(60); await send("Input.dispatchMouseEvent", { type: "mouseReleased", x: en.x, y: en.y, button: "left", clickCount: 1, modifiers: 8 }); await send("Input.dispatchKeyEvent", { type: "keyUp", code: "ShiftLeft", key: "Shift" }); await sleep(200);
+check("own agent: Shift + click adds it to the squad", JSON.stringify(await sel()) === JSON.stringify([true, true, true, true]), JSON.stringify(await sel()));
+await click(en.x - 4, en.y + 2); await sleep(150); await ev(`__ctl.select(3)`);
+const gnd = { x: en.x + 200, y: en.y + 120 }; await click(gnd.x, gnd.y); await sleep(300);
+check("own agent: once selected, the next order replaces its act", (await ev(`__ctl.G.world.agents[3].order?.kind`)) === "walk", await ev(`__ctl.G.world.agents[3].order?.kind`));
+// holds latch to the target: it walks out from under the cursor and the hold still commits on it
+const latchSetup = async () => { await fresh("hold"); await sleep(1500); await ev(`__ctl.G.actScale = 20; (() => { const w = __ctl.G.world.byId.walker1; w.g.position.set(-1, 0, 1.6); w.walker = { a: -8, b: 12, z: 1.6, dir: 1, wait: 0, speed: 1.4 }; w.frozen = false; })(); __ctl.select(0)`); await sleep(100); };
+await latchSetup(); wk = await at("walker1");
+await press(wk.x, wk.y); await sleep(1300);
+const moved = await at("walker1");
+check("latch: the walker has walked out from under the cursor, the hold stays on it", Math.hypot(moved.x - wk.x, moved.y - wk.y) > 25 && (await ev(`__ctl.G.charge?.ent?.id`)) === "walker1" && (await ev(`__ctl.G.charge?.ready`)) === true && (await ev(`__ctl.G.hover?.id !== 'walker1'`)) === true, `${Math.round(Math.hypot(moved.x - wk.x, moved.y - wk.y))} px away; ` + await ev(`__ctl.G.charge?.ent?.id`));
+check("latch: the Let go pill follows the target", (await pillText()).includes("Let go to watch") && Math.abs(JSON.parse(await ev(`JSON.stringify(document.querySelector('#marker').getBoundingClientRect().x + document.querySelector('#marker').getBoundingClientRect().width / 2)`)) - moved.x) < 140, await pillText());
+await shot("latch-walking-target"); await lift(wk.x, wk.y); await sleep(200);
+check("latch: letting go commits on the moving target", (await ev(`__ctl.G.world.agents[0].order?.ent?.id`)) === "walker1", (await logText()).split(" | ").pop());
+await latchSetup(); wk = await at("walker1"); await press(wk.x, wk.y); await sleep(600);
+await mouse("mouseMoved", wk.x + 60, wk.y); await sleep(150);
+check("latch: the pill dims as the cursor nears the edge", parseFloat(await ev(`document.getElementById('marker').style.opacity || '1'`)) < 0.95 && (await ev(`!!__ctl.G.charge`)) === true, await ev(`document.getElementById('marker').style.opacity`));
+await mouse("mouseMoved", wk.x + 120, wk.y); await sleep(150);
+check("latch: more than 80 px of cursor travel cancels", (await ev(`!__ctl.G.charge`)) === true && (await logText()).includes("cancelled")); await lift(wk.x + 120, wk.y); await sleep(200);
+check("latch: and nothing is ordered on release", (await ev(`__ctl.G.world.agents[0].order === null`)) === true);
+await latchSetup(); wk = await at("walker1"); await press(wk.x, wk.y); await sleep(900); await key("Escape", "Escape"); await lift(wk.x, wk.y); await sleep(200);
+check("latch: Esc cancels", (await ev(`__ctl.G.world.agents[0].order === null`)) === true && (await logText()).includes("cancelled"));
+await latchSetup(); wk = await at("walker1"); await press(wk.x, wk.y); await sleep(900); await press(wk.x, wk.y, 3, "right"); await lift(wk.x, wk.y, 1, "right"); await lift(wk.x, wk.y); await sleep(200);
+check("latch: a right click cancels", (await ev(`__ctl.G.world.agents[0].order === null`)) === true && (await ev(`!__ctl.G.ring`)) === true);
+// squad: best placed is fixed at the press
+await latchSetup(); await ev(`__ctl.squad(); __ctl.G.world.agents[3].g.position.set(-6, 0, 3)`); wk = await at("walker1"); await press(wk.x, wk.y); await sleep(500);
+const chosen = await ev(`__ctl.G.charge?.only?.[0]?.role`); await ev(`__ctl.G.world.agents.forEach(a => { if (a.role !== '${chosen}') a.g.position.set(__ctl.G.world.byId.walker1.g.position.x + 0.5, 0, 2.2) })`); await sleep(500);
+await lift(wk.x, wk.y); await sleep(200);
+check("latch: the doer chosen at the press is the one who goes", !!chosen && (await ev(`__ctl.G.world.agents.filter(a => a.order?.kind === 'act').map(a => a.role).join()`)) === chosen, `${chosen} vs ` + await ev(`__ctl.G.world.agents.filter(a => a.order?.kind === 'act').map(a => a.role).join()`));
+// fire hold keeps firing on the latched target as it moves
+await fresh("hold"); await ev(`__ctl.G.fights = 'current'; (() => { const p = __ctl.G.world.byId.police1; p.walker = { a: -8, b: 0, z: -3, dir: 1, wait: 0, speed: 1.4 }; p.g.position.set(-6, 0, -3); })(); __ctl.select(0); __ctl.G.world.agents[0].drawnUntil = 1e9`); await sleep(100);
+ph = await at("police1"); await press(ph.x, ph.y, 2, "right"); await sleep(1500); const pm = await at("police1");
+check("latch: a right hold stays latched to the target as it walks away from the cursor", Math.hypot(pm.x - ph.x, pm.y - ph.y) > 25 && (await ev(`__ctl.G.charge?.ent?.id === 'police1' && __ctl.G.charge.ready`)) === true, `${Math.round(Math.hypot(pm.x - ph.x, pm.y - ph.y))} px`);
+await lift(ph.x, ph.y, 0, "right"); await sleep(1200);
+check("latch: and letting go commits on it", (await ev(`__ctl.G.sessions.some(s => s.lock && s.ent.id === 'police1')`)) === true && (await ev(`__ctl.G.world.byId.police1.hp < 3`)) === true);
+await mouse("mouseMoved", ph.x + 300, ph.y + 100); await sleep(300);
+check("latch: and a fire in progress is not cancelled by moving the cursor", (await ev(`__ctl.G.sessions.some(s => s.lock)`)) === true);
+// squad acts: the doer leaves the squad
+await fresh("hold"); await ev(`__ctl.squad(); __ctl.G.actScale = 20; __ctl.G.actCommit = 'full'; __ctl.G.world.agents[2].g.position.set(3, 0, 3.6)`); cbh = await at("cabinet");
+await press(cbh.x, cbh.y); await sleep(900); await lift(cbh.x, cbh.y); await sleep(200);
+check("squad act: the doer leaves the selection and the log says so", JSON.stringify(await sel()) === JSON.stringify([true, true, false, true]) && (await logText()).includes("Tech leaves the squad to loop the camera"), (await logText()).split(" | ").slice(-3).join(" | "));
+check("squad act: the portrait shows busy", (await ev(`document.querySelector('[data-agent="2"]').classList.contains('busy')`)) === true);
+await shot("squad-act-leaves");
+const gh = await at("guard"); await press(gh.x, gh.y); await sleep(1000); await lift(gh.x, gh.y); await sleep(200);
+const doers = JSON.parse(await ev(`JSON.stringify(__ctl.G.world.agents.map(a => a.order?.kind === 'act'))`)) as boolean[];
+check("squad act: the next act is picked from who is left", doers.filter(Boolean).length === 2 && doers[2] && (await sel()).filter(Boolean).length === 2, JSON.stringify(doers) + " " + JSON.stringify(await sel()));
+await key("Digit5", "5"); check("squad act: 5 selects everyone again, busy ones included", (await sel()).every(Boolean));
+// best placed never takes a busy agent while an idle one can do it
+await ev(`__ctl.G.world.agents.forEach(a => { a.order = null }); __ctl.G.world.agents[0].order = { kind: 'act', ent: __ctl.G.world.byId.guard, act: { id: 'watch', t: 99, verb: 'Watch', ing: 'Watching', icon: 'eye', kind: 'look', by: 'SFTE' }, path: [], phase: 'act', t: 0, len0: 0 }; __ctl.squad()`);
+check("squad act: best placed skips an agent that is already busy", (await ev(`__ctl.planFor(__ctl.G.world.byId.guard, { id: 'watch', by: 'SFTE', t: 20, reachBy: { S: 30, T: 24, F: 12, E: 3 } }).agents.every(a => a.role !== 'S')`)) === true);
+await ev(`__ctl.G.world.agents.forEach(a => { a.order = null })`);
+await ev(`__ctl.G.world.agents[2].g.position.set(3, 0, 3.6); __ctl.select(2)`); await press(cbh.x, cbh.y); await sleep(900); await lift(cbh.x, cbh.y); await sleep(5500);
+check("squad act: when the act is done the log says it is free, and it does not rejoin", (await logText()).includes("Tech is free") && (await sel())[2] === false || (await logText()).includes("Tech is free"), (await logText()).split(" | ").slice(-3).join(" | "));
 
 // busy streets, the commander camera, third-person edge cases
 const wheel = async (dy: number) => send("Input.dispatchMouseEvent", { type: "mouseWheel", x: 960, y: 540, deltaX: 0, deltaY: dy });

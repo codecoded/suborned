@@ -1,0 +1,136 @@
+{
+ "schema": "keel.hash-moves/1",
+ "what": "engine 0.22.0 behaviour (the same dll on a copy of the inputs with the rulebook's cell.approach and approach-repath-s removed: out/keel-approach/base; with no approach section the engine refuses too-far exactly as 0.22.0, Op.Act is never set and adds no bytes) against 0.23.0 (Sky 2026-10-22: a person act out of reach walks in), every scenario's and route script's checkpoints with the inputs hash replaced (hashes --start-text keel-approach; range hashes --start-text keel-approach).",
+ "scenariosAndRoutes": {
+  "compared": 307,
+  "identical": 301,
+  "moved": 6,
+  "behaviour": {
+   "N130": "rewritten: the Listen at 0:45 while Inez serves table 3 is taken; the Scout walks 4.5 s (card 5 s) and the Listen starts 2.9 m from her at the table, holding her there",
+   "N178": "new: a Listen while she walks home from table 3 at 0:58: the walk aims at her round ahead, meets her 3 m on, 5.7 m short of her post, after 2 s (card 2 s); held mid-walk, then her round goes on",
+   "N179": "new: a move ends the walk in (order.walk-in-ends), a cancel stops it (cancel.move); nothing paid, no hold",
+   "N180": "new: the Fixer's Watch walks in while the Scout's lands; in place it teaches nothing: dropped already-watched (order.dropped), free",
+   "S22": "rewritten (one of the 28; GDD §13 S22 'no action at a distance' to be reworded by Aster/Sky): a distant Watch is taken and walks the Fixer in (cancelled on the way); the Scout's Listen from the Courtyard walks him in and starts within 3 m; Help without her need is still refused (needs-need)",
+   "N106": "the order given far off with her routine unknown now answers needs-routine, as the query did (was too-far)"
+  },
+  "routes": "every route script and briefs/011 script replays to identical checkpoints under the replaced inputs hash: no recorded order was a person act given out of reach"
+ },
+ "range": {
+  "compared": 85,
+  "moved": 0
+ },
+ "routes": {
+  "missionCheck": "bun tools/missions/check/cli.ts handover --engine tree --inputs tree: SHIPS, MC-0..MC-12 ok (briefs/027/keel/missions-check-0.23-tree.txt)",
+  "recordedScriptsUnchanged": 38,
+  "recordedScripts": 38,
+  "variationsMoved": [
+   {
+    "play": "route-a-board~late@90+8s",
+    "cash": [
+     100000,
+     60000
+    ],
+    "trail": [
+     2,
+     3
+    ],
+    "rejected": [
+     5,
+     3
+    ]
+   },
+   {
+    "play": "route-a-board~late@0+8s",
+    "cash": [
+     100000,
+     60000
+    ],
+    "trail": [
+     2,
+     3
+    ],
+    "rejected": [
+     5,
+     3
+    ]
+   },
+   {
+    "play": "route-a-board~late@166+8s",
+    "cash": [
+     100000,
+     60000
+    ],
+    "trail": [
+     2,
+     3
+    ],
+    "rejected": [
+     5,
+     3
+    ]
+   },
+   {
+    "play": "route-a-board~late@290+8s",
+    "cash": [
+     100000,
+     60000
+    ],
+    "trail": [
+     2,
+     3
+    ],
+    "rejected": [
+     5,
+     3
+    ]
+   },
+   {
+    "play": "route-a-board~late@1210+12s",
+    "cash": [
+     60000,
+     20000
+    ],
+    "trail": [
+     3,
+     4
+    ]
+   },
+   {
+    "play": "route-a-board~late@786+12s",
+    "cash": [
+     60000,
+     20000
+    ],
+    "trail": [
+     3,
+     4
+    ]
+   },
+   {
+    "play": "route-b-board~late@620+1s",
+    "outcome": [
+     "success",
+     "failure"
+    ],
+    "fail": [
+     "",
+     "rivals-reach-vale"
+    ],
+    "tick": [
+     4652,
+     3710
+    ],
+    "trail": [
+     3,
+     2
+    ],
+    "rejected": [
+     1,
+     2
+    ]
+   }
+  ],
+  "slack": "route-b-board's slack falls from 71 s to 0 s: at late@620+1s every order from 1:02 slips 1 s, so the Listen at 1:24.8 is given 1.8 s before the Scout reaches 'Meet driver'. 0.22.0 refused it too-far (the route won without it); 0.23.0 walks in and the Listen (42 s) runs to 2:07.7, so the planned move at 2:06.8 is refused agent-busy and the Scout misleads from the wrong place (refused): rivals-reach-vale. The route-a-board late variations now land a Help the old engine refused (more cash spent, +1 T). The recorded scripts are unchanged; the slack sweep reads a plan whose steps are timed to the old refusal. Waymark: re-compose route-b-board (its plan's Listen after the walk lands, or its next move after the Listen lands)."
+ },
+ "fightLab": "briefs/027/keel/fight-lab.json identical apart from engine and inputs; CP-LOUD and CP-SAFE: identical orders and outcome (matrix-0.23.txt)"
+}

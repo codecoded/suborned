@@ -17,6 +17,11 @@ namespace Suborned.Play
         public float turnSeconds = 0.35f;
         [Tooltip("Alt + middle-drag: degrees of yaw per pixel of horizontal drag at 1080p.")]
         public float turnDragDegPerPixel = 0.3f;
+        bool turnByLeft;
+        /// <summary>Brief 051 (Options, Camera): Orbit sensitivity x Invert orbit, on the drag turn of both views.</summary>
+        static float OrbitScale { get { var c = Settings.Current.camera; return c.orbitSensitivity * (c.invertOrbit ? -1f : 1f); } }
+        /// <summary>Brief 051: Trackpad drag orbit on and the free-turn key held: a left drag turns the view (a trackpad has no middle button).</summary>
+        bool TrackpadOrbitHeld(Keyboard kb) => Settings.Current.camera.trackpadOrbit && controls.Held(kb, PlayAction.TurnDrag) && !Following;
         [Tooltip("Radius (m) of the disc the fade keeps clear round each agent, key person, the action target and the cursor's ground point.")]
         public float fadePointRadius = 4f;
 
@@ -84,10 +89,11 @@ namespace Suborned.Play
                 if (controls.Down(kb, PlayAction.TurnRight)) { TurnQueueCancel(); TurnBy(1); }
             }
             if (mouse == null) return;
-            bool mod = controls.Held(kb, PlayAction.TurnDrag), held = mouse.middleButton.isPressed;
+            bool mod = controls.Held(kb, PlayAction.TurnDrag), tpad = TrackpadOrbitHeld(kb), held = mouse.middleButton.isPressed || turnByLeft && mouse.leftButton.isPressed;
             float x = mouse.position.ReadValue().x;
-            if (!turnDragging && mod && mouse.middleButton.wasPressedThisFrame)
+            if (!turnDragging && (mod && mouse.middleButton.wasPressedThisFrame || tpad && mouse.leftButton.wasPressedThisFrame))
             {
+                turnByLeft = !mouse.middleButton.wasPressedThisFrame;
                 TurnQueueCancel(); turnPivot = Turning ? turnPivot : TurnPivot(); turnDragging = true; turnStart = -1f; turnDragX = x; grabbing = false; TurnedThisRun = true;
                 return;
             }
@@ -101,7 +107,7 @@ namespace Suborned.Play
                 return;
             }
             float dx = x - turnDragX; turnDragX = x;
-            yawNow += dx * turnDragDegPerPixel * 1080f / Mathf.Max(1f, Screen.height); yawFrom = yawTo = yawNow;
+            yawNow += dx * turnDragDegPerPixel * OrbitScale * 1080f / Mathf.Max(1f, Screen.height); yawFrom = yawTo = yawNow;
         }
 
         /// <summary>Per frame: the eased yaw, the camera turned about the pivot so the pivot stays at the screen centre.</summary>

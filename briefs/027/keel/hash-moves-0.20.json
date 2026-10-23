@@ -1,0 +1,303 @@
+{
+ "schema": "keel.hash-moves/1",
+ "what": "engine 0.19.0 (baseline copy out/keel-s15/base, built before the first edit) against 0.20.0 (tuning.md §15.2: ai.intent.final agent, PROVISIONAL), every scenario's and route script's checkpoints with the inputs hash replaced (suborned-sim hashes --start-text BASE; range hashes --start-text BASE), so only behaviour is compared",
+ "scenariosAndRoutes": {
+  "compared": 294,
+  "moved": 9,
+  "new": [
+   "F15-CLEAN",
+   "F15-DRAWN",
+   "F15-FACE"
+  ]
+ },
+ "range": {
+  "compared": 77,
+  "moved": 0
+ },
+ "moved": {
+  "N36": {
+   "result": [
+    "result:Failure:rivals-reach-vale",
+    "result:Failure:rivals-reach-vale"
+   ],
+   "final": [
+    "3020:3a6c651392e7f8be",
+    "3020:ceeced7a3c4ed395"
+   ]
+  },
+  "contracts/missions/handover/routes/careless-takedown-seen-crowd.json": {
+   "result": [
+    "result:Failure:enforcer-down",
+    "result:Failure:enforcer-down"
+   ],
+   "final": [
+    "4139:7868c480a58dab2c",
+    "4139:e15826a1a5fb77e2"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "failure",
+     "fail": "enforcer-down",
+     "tick": 4139,
+     "trail": 8,
+     "alert": 3,
+     "hitsOnCell": 18,
+     "down": [
+      "scout",
+      "fixer",
+      "tech"
+     ],
+     "finalHash": "8eb7870f48891fe8"
+    },
+    "0.20.0": {
+     "outcome": "failure",
+     "fail": "enforcer-down",
+     "tick": 4139,
+     "trail": 8,
+     "alert": 3,
+     "hitsOnCell": 6,
+     "down": [],
+     "finalHash": "d6f56f682a27c76a"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/fight-loud-enforcer-down.json": {
+   "result": [
+    "result:Failure:enforcer-down",
+    "result:Failure:enforcer-down"
+   ],
+   "final": [
+    "2336:e74d3b0d344fa736",
+    "2336:9d0da91a0c7d6e8a"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "failure",
+     "fail": "enforcer-down",
+     "tick": 2336,
+     "trail": 9,
+     "alert": 2,
+     "hitsOnCell": 18,
+     "down": [
+      "scout",
+      "fixer",
+      "tech"
+     ],
+     "finalHash": "c121e6340cf37282"
+    },
+    "0.20.0": {
+     "outcome": "failure",
+     "fail": "enforcer-down",
+     "tick": 2336,
+     "trail": 8,
+     "alert": 2,
+     "hitsOnCell": 6,
+     "down": [],
+     "finalHash": "1cf94b6190b56de2"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/fight-safe-rivals-reach-vale.json": {
+   "result": [
+    "result:Failure:rivals-reach-vale",
+    "result:Failure:rivals-reach-vale"
+   ],
+   "final": [
+    "4490:087334f10435407e",
+    "4490:3a70caa6fb61024d"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "failure",
+     "fail": "rivals-reach-vale",
+     "tick": 4490,
+     "trail": 3,
+     "alert": 1,
+     "hitsOnCell": 10,
+     "down": [
+      "tech"
+     ],
+     "finalHash": "7906a2010f074672"
+    },
+    "0.20.0": {
+     "outcome": "failure",
+     "fail": "rivals-reach-vale",
+     "tick": 4490,
+     "trail": 3,
+     "alert": 1,
+     "hitsOnCell": 6,
+     "down": [],
+     "finalHash": "11931ad9fbe5efb5"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/loud-fast.json": {
+   "result": [
+    "result:Success:",
+    "result:Success:"
+   ],
+   "final": [
+    "3096:b1f4ac4c456399b0",
+    "3096:4595b6c614e535aa"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3096,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 2,
+     "down": [],
+     "finalHash": "30fbb01a38a61f04"
+    },
+    "0.20.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3096,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 2,
+     "down": [],
+     "finalHash": "42abee2d2fe27c62"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/loud-fight.json": {
+   "result": [
+    "result:Success:",
+    "result:Success:"
+   ],
+   "final": [
+    "3124:831037fc2fa15c68",
+    "3124:50ddfbf79d9666aa"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3124,
+     "trail": 13,
+     "alert": 2,
+     "hitsOnCell": 5,
+     "down": [],
+     "finalHash": "3a3da5219fa18f04"
+    },
+    "0.20.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3124,
+     "trail": 13,
+     "alert": 2,
+     "hitsOnCell": 5,
+     "down": [],
+     "finalHash": "d7d4a2734c9dfd32"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/loud-left-downed.json": {
+   "result": [
+    "result:Success:",
+    "result:Success:"
+   ],
+   "final": [
+    "3126:dcd3b4e832ea904b",
+    "3126:2f97d7f3b09a4b35"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3126,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 8,
+     "down": [
+      "scout"
+     ],
+     "finalHash": "afba1ad296ec233f"
+    },
+    "0.20.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3126,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 8,
+     "down": [
+      "scout"
+     ],
+     "finalHash": "d79290df6c53c59d"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/loud-left-standing.json": {
+   "result": [
+    "result:Success:",
+    "result:Success:"
+   ],
+   "final": [
+    "3126:c48a13521a470cf2",
+    "3126:4e23f8c7303ebaaa"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3126,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 4,
+     "down": [],
+     "finalHash": "e2365ac6c0d82346"
+    },
+    "0.20.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3126,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 4,
+     "down": [],
+     "finalHash": "04f0544a59b78892"
+    }
+   }
+  },
+  "contracts/missions/handover/routes/loud.json": {
+   "result": [
+    "result:Success:",
+    "result:Success:"
+   ],
+   "final": [
+    "3096:b1f4ac4c456399b0",
+    "3096:4595b6c614e535aa"
+   ],
+   "route": {
+    "0.19.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3096,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 2,
+     "down": [],
+     "finalHash": "30fbb01a38a61f04"
+    },
+    "0.20.0": {
+     "outcome": "success",
+     "fail": "",
+     "tick": 3096,
+     "trail": 14,
+     "alert": 2,
+     "hitsOnCell": 2,
+     "down": [],
+     "finalHash": "42abee2d2fe27c62"
+    }
+   }
+  }
+ },
+ "notes": {
+  "N36": "a scenario, outside Motive's measured set (routes, matrix, sweep): rival-2 no longer fires on the holstered Fixer (Pressure, loitering, never drawn) in the safe final fight; same outcome, its 24 checks pass",
+  "route finalHash": "the route summaries' finalHash is play's (inputs hash in the start state), so it moves on every route with the rulebook; the moved list above is the behaviour-only comparison"
+ }
+}

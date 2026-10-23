@@ -1,0 +1,305 @@
+{
+ "camera": {
+  "eye": [
+   -9.5,
+   -104.0
+  ],
+  "yaw": 180.0,
+  "fov": 55.0,
+  "pitch": 7.2,
+  "eyeZ": 3.4200000000000004
+ },
+ "haze": {
+  "light.haze": "#f3eee4",
+  "night.haze": "#102b36"
+ },
+ "sampledAt": "14 m ahead",
+ "rows": [
+  {
+   "tag": "boulevard-third-now-day",
+   "d": 40,
+   "fog": 0.023,
+   "road": "#a5968e",
+   "pavement": "#c8b598",
+   "kerbline": "#afa59f",
+   "dE_road_haze": 22.5,
+   "dE_road_pavement": 12.3,
+   "dE_kerbline_road": 4.9
+  },
+  {
+   "tag": "boulevard-third-now-day",
+   "d": 80,
+   "fog": 0.09,
+   "road": "#ab9e96",
+   "pavement": "#cbb99f",
+   "kerbline": "#b5aca5",
+   "dE_road_haze": 20.1,
+   "dE_road_pavement": 10.5,
+   "dE_kerbline_road": 4.3
+  },
+  {
+   "tag": "boulevard-third-now-day",
+   "d": 150,
+   "fog": 0.283,
+   "road": "#beb3ab",
+   "pavement": "#d5c6b1",
+   "kerbline": "#c4bcb5",
+   "dE_road_haze": 14.1,
+   "dE_road_pavement": 7.3,
+   "dE_kerbline_road": 2.6
+  },
+  {
+   "tag": "boulevard-third-now-day",
+   "d": 250,
+   "fog": 0.603,
+   "road": "#d8d0c7",
+   "pavement": "#e3d9ca",
+   "kerbline": "#dbd4cc",
+   "dE_road_haze": 6.8,
+   "dE_road_pavement": 3.3,
+   "dE_kerbline_road": 1.1
+  },
+  {
+   "tag": "boulevard-third-now-day",
+   "d": 350,
+   "fog": 0.837,
+   "road": "#e8e2d9",
+   "pavement": "#ede6da",
+   "kerbline": "#e9e4da",
+   "dE_road_haze": 2.6,
+   "dE_road_pavement": 1.5,
+   "dE_kerbline_road": 0.9
+  },
+  {
+   "tag": "boulevard-third-now-day",
+   "d": 450,
+   "fog": 0.95,
+   "road": "#f0ebe1",
+   "pavement": "#f1ece1",
+   "kerbline": "#f0ebe1",
+   "dE_road_haze": 0.6,
+   "dE_road_pavement": 0.5,
+   "dE_kerbline_road": 0.0
+  },
+  {
+   "tag": "boulevard-third-proposed-day",
+   "d": 40,
+   "fog": 0.023,
+   "road": "#c3d0d4",
+   "pavement": "#c8b598",
+   "kerbline": "#f0e4c7",
+   "dE_road_haze": 11.9,
+   "dE_road_pavement": 18.1,
+   "dE_kerbline_road": 16.4
+  },
+  {
+   "tag": "boulevard-third-proposed-day",
+   "d": 80,
+   "fog": 0.09,
+   "road": "#c7d2d6",
+   "pavement": "#cbb99f",
+   "kerbline": "#f0e5c9",
+   "dE_road_haze": 11.1,
+   "dE_road_pavement": 16.7,
+   "dE_kerbline_road": 15.5
+  },
+  {
+   "tag": "boulevard-third-proposed-day",
+   "d": 150,
+   "fog": 0.283,
+   "road": "#d1d8d9",
+   "pavement": "#d5c6b1",
+   "kerbline": "#f1e7cf",
+   "dE_road_haze": 8.6,
+   "dE_road_pavement": 12.7,
+   "dE_kerbline_road": 12.2
+  },
+  {
+   "tag": "boulevard-third-proposed-day",
+   "d": 250,
+   "fog": 0.603,
+   "road": "#e1e2de",
+   "pavement": "#e3d9ca",
+   "kerbline": "#f2ead9",
+   "dE_road_haze": 4.5,
+   "dE_road_pavement": 6.4,
+   "dE_kerbline_road": 6.5
+  },
+  {
+   "tag": "boulevard-third-proposed-day",
+   "d": 350,
+   "fog": 0.837,
+   "road": "#ece9e1",
+   "pavement": "#ede6da",
+   "kerbline": "#f3ecdf",
+   "dE_road_haze": 1.6,
+   "dE_road_pavement": 2.3,
+   "dE_kerbline_road": 2.6
+  },
+  {
+   "tag": "boulevard-third-proposed-day",
+   "d": 450,
+   "fog": 0.95,
+   "road": "#f1ede3",
+   "pavement": "#f1ece1",
+   "kerbline": "#f3eee3",
+   "dE_road_haze": 0.6,
+   "dE_road_pavement": 0.6,
+   "dE_kerbline_road": 0.6
+  },
+  {
+   "tag": "boulevard-third-now-night",
+   "d": 40,
+   "fog": 0.023,
+   "road": "#192b2f",
+   "pavement": "#051114",
+   "kerbline": "#24323d",
+   "dE_road_haze": 3.9,
+   "dE_road_pavement": 8.4,
+   "dE_kerbline_road": 6.0
+  },
+  {
+   "tag": "boulevard-third-now-night",
+   "d": 80,
+   "fog": 0.09,
+   "road": "#182b30",
+   "pavement": "#061417",
+   "kerbline": "#23313c",
+   "dE_road_haze": 3.3,
+   "dE_road_pavement": 7.4,
+   "dE_kerbline_road": 5.5
+  },
+  {
+   "tag": "boulevard-third-now-night",
+   "d": 150,
+   "fog": 0.283,
+   "road": "#172b31",
+   "pavement": "#081a20",
+   "kerbline": "#20303b",
+   "dE_road_haze": 2.7,
+   "dE_road_pavement": 5.3,
+   "dE_kerbline_road": 4.5
+  },
+  {
+   "tag": "boulevard-third-now-night",
+   "d": 250,
+   "fog": 0.603,
+   "road": "#142b33",
+   "pavement": "#0c232b",
+   "kerbline": "#1a2e39",
+   "dE_road_haze": 1.6,
+   "dE_road_pavement": 2.5,
+   "dE_kerbline_road": 2.7
+  },
+  {
+   "tag": "boulevard-third-now-night",
+   "d": 350,
+   "fog": 0.837,
+   "road": "#122b35",
+   "pavement": "#0f2832",
+   "kerbline": "#142c37",
+   "dE_road_haze": 0.5,
+   "dE_road_pavement": 0.9,
+   "dE_kerbline_road": 0.9
+  },
+  {
+   "tag": "boulevard-third-now-night",
+   "d": 450,
+   "fog": 0.95,
+   "road": "#112b36",
+   "pavement": "#102a35",
+   "kerbline": "#112b36",
+   "dE_road_haze": 0.2,
+   "dE_road_pavement": 0.3,
+   "dE_kerbline_road": 0.0
+  },
+  {
+   "tag": "boulevard-third-proposed-night",
+   "d": 40,
+   "fog": 0.023,
+   "road": "#25526d",
+   "pavement": "#051114",
+   "kerbline": "#fcfcfc",
+   "dE_road_haze": 13.7,
+   "dE_road_pavement": 22.6,
+   "dE_kerbline_road": 55.6
+  },
+  {
+   "tag": "boulevard-third-proposed-night",
+   "d": 80,
+   "fog": 0.09,
+   "road": "#24506a",
+   "pavement": "#061417",
+   "kerbline": "#f5f5f5",
+   "dE_road_haze": 12.9,
+   "dE_road_pavement": 21.0,
+   "dE_kerbline_road": 55.4
+  },
+  {
+   "tag": "boulevard-third-proposed-night",
+   "d": 150,
+   "fog": 0.283,
+   "road": "#204a62",
+   "pavement": "#081a20",
+   "kerbline": "#dcddde",
+   "dE_road_haze": 10.9,
+   "dE_road_pavement": 16.6,
+   "dE_kerbline_road": 54.0
+  },
+  {
+   "tag": "boulevard-third-proposed-night",
+   "d": 250,
+   "fog": 0.603,
+   "road": "#1a3e52",
+   "pavement": "#0c232b",
+   "kerbline": "#aaacad",
+   "dE_road_haze": 7.0,
+   "dE_road_pavement": 9.8,
+   "dE_kerbline_road": 46.3
+  },
+  {
+   "tag": "boulevard-third-proposed-night",
+   "d": 350,
+   "fog": 0.837,
+   "road": "#153443",
+   "pavement": "#0f2832",
+   "kerbline": "#72777a",
+   "dE_road_haze": 3.3,
+   "dE_road_pavement": 4.3,
+   "dE_kerbline_road": 25.9
+  },
+  {
+   "tag": "boulevard-third-proposed-night",
+   "d": 450,
+   "fog": 0.95,
+   "road": "#122e3a",
+   "pavement": "#102a35",
+   "kerbline": "#424c52",
+   "dE_road_haze": 1.0,
+   "dE_road_pavement": 1.3,
+   "dE_kerbline_road": 11.7
+  }
+ ],
+ "near": {
+  "boulevard-third-now-day": {
+   "road": "#a2938b",
+   "pavement": "#c7b396",
+   "kerbline": "#ada39d"
+  },
+  "boulevard-third-proposed-day": {
+   "road": "#c2cfd4",
+   "pavement": "#c7b396",
+   "kerbline": "#f0e4c6"
+  },
+  "boulevard-third-now-night": {
+   "road": "#192b2f",
+   "pavement": "#051012",
+   "kerbline": "#24323d"
+  },
+  "boulevard-third-proposed-night": {
+   "road": "#25536e",
+   "pavement": "#051012",
+   "kerbline": "#ffffff"
+  }
+ }
+}

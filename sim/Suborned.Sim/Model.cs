@@ -59,6 +59,10 @@ namespace Suborned.Sim
         public string DrawnBy = "";
         public string Order = ""; public bool Force;   // a standing fire order: until the target is down, cease, or another order
         public int OrderTick = -1;                     // when the standing fire order was given (tuning.md §9.1: an order given in the final fight ends at fight.over; one given after it stands)
+        /// <summary>Engine 0.21.0 (Sky 2026-10-22, brief 041: "Keep them firing until out of range"): the standing fire order has had its target in
+        /// reach (the weapon's max ring) and line on some tick. From then, the target beyond the max ring ends the order (fire.out-of-range): no walk
+        /// back in, no lapse. Read only while Order stands; every assignment of a new Order clears it. Hashed only when an order stands and has it.</summary>
+        public bool Reached;
         public string Target = ""; public int Acc, NextShot, LostAt = -1; // the target aimed at, its accumulator, the next shot, when the line broke
         public string ShotBy = "";                     // the last shooter who fired on this one (stance return answers them)
         public bool Fired, Engaged, Hit;               // has fired; in action (a new target costs aimNew, not react); hit once (its Trail paid)
@@ -85,7 +89,7 @@ namespace Suborned.Sim
         public int KiteCoverAt = -1;
         /// <summary>Tuning.md §11 (engine 0.17.0; Sky on firing, brief 024): the driven agent's trigger, from the logged trigger input. Down
         /// (Trig); its target (TrigT), kept on release with the aim and the count, so a press on the same target fires on cadence with no
-        /// aim-new and no reset; a press waiting for its one shot (TrigTap: a buffer of one, never a queue); forced (the Ctrl case). Hashed
+        /// aim-new and no reset; a press waiting for its one shot (TrigTap: a buffer of one, never a queue); forced (the host's hold or the ring's Fire). Hashed
         /// only when set.</summary>
         public bool Trig, TrigTap, TrigForce; public string TrigT = "";
         /// <summary>Tuning.md §11.1: the driven agent whose fire this agent follows ("" none), derived each tick from the state (op id order,
@@ -95,6 +99,9 @@ namespace Suborned.Sim
         /// that target falls in the tick that follows, the press takes the agent at the tick's end (the lead's name, the pressed target, forced).
         /// Set between ticks by the press, cleared at the next tick's end. Hashed only when set.</summary>
         public string LockAskBy = "", LockAsk = ""; public bool LockAskForce;
+        /// <summary>Tuning.md §14 (engine 0.19.0): the tick cease (X) stood this agent down from weapons free, -1 none; it picks again once shot at
+        /// after it, given a fire order or a trigger, or when the fight goes off. Hashed only when set.</summary>
+        public int StandDown = -1;
         public Gun(string id) { Id = id; }
     }
 
@@ -106,6 +113,9 @@ namespace Suborned.Sim
         public bool RanLast;                             // tuning.md §10.2 settle: it was running (and moving) at the last fight tick (hashed only when it disagrees with now)
         public int SettleUntil = -1;                     // the settle's wait ends at this tick (host read only: Game.RangeLines "steadying"; never hashed, never read by a rule)
         public Order? Busy; public int BusyEnd;          // an action in progress, landing at BusyEnd
+        /// <summary>Engine 0.23.0 (rulebook cell.approach): a person act taken out of reach, walking in (the act starts in reach); and the tick its walk is
+        /// next re-aimed. Hashed only when set.</summary>
+        public Order? Act; public int ActNext;
         public int BusyStart;                            // when it began (the HUD's progress; derived, so not hashed)
         public Quote? BusyQuote; public long BusyPaid;   // the card's price when the order was given, and the money taken (Redline E2)
         public bool Inside;                              // the Enforcer inside the Office (§01 exteriors only: an off-screen action)
@@ -166,7 +176,10 @@ namespace Suborned.Sim
         public bool On;
         /// <summary>The fight range (GameRange.cs): who sits in a spawned car ("" nobody; police, rivals, bystander). Written only when set.</summary>
         public string With = "";
-        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release", "shots", "then", "count", "on", "with" };
+        /// <summary>Tuning.md §14 (engine 0.19.0): a fire order that is a focus (the commander's click on a hostile in a fight): a lock, lasting until
+        /// its target is down, its walk-in spent (it never walks). Written only when set.</summary>
+        public bool Focus;
+        static readonly string[] Keys = { "tick", "op", "do", "target", "approach", "to", "run", "stance", "force", "how", "face", "release", "shots", "then", "count", "on", "with", "focus" };
         public static Order Parse(JNode n)
         {
             n.Only(Keys);
@@ -179,9 +192,10 @@ namespace Suborned.Sim
             if (n.Opt("face") is JNode fc) { o.Face = fc.Int(); if (o.Do != "drive" || o.Face < 0 || o.Face > 359) throw new FormatException($"{n.Path}: face is a drive sample's facing, 0..359 degrees"); }
             if (n.Opt("release") is JNode rl) { o.Release = rl.Bool(); if (o.Do != "drive") throw new FormatException($"{n.Path}: release is for a drive order"); }
             if (n.Opt("stance") is JNode st) { o.Stance = st.Str(); if (o.Do != "stance") throw new FormatException($"{n.Path}: stance is for the stance order"); }
-            if (n.Opt("force") is JNode fo) { o.Force = fo.Bool(); if (o.Force && o.Do != "fire" && o.Do != "trigger") throw new FormatException($"{n.Path}: force is for a fire order or a trigger (the Ctrl case)"); }
-            if (o.Do == "trigger" || o.Do == "follow") o.On = (n.Opt("on") ?? throw new FormatException($"{n.Path}: a {o.Do} says on: true or false")).Bool(); // tuning.md §11
-            else if (n.Opt("on") != null) throw new FormatException($"{n.Path}: on is for a trigger or the follow setting");
+            if (n.Opt("force") is JNode fo) { o.Force = fo.Bool(); if (o.Force && o.Do != "fire" && o.Do != "trigger") throw new FormatException($"{n.Path}: force is for a fire order or a trigger"); }
+            if (o.Do == "trigger" || o.Do == "follow" || o.Do == "free") o.On = (n.Opt("on") ?? throw new FormatException($"{n.Path}: a {o.Do} says on: true or false")).Bool(); // tuning.md §11, §14
+            else if (n.Opt("on") != null) throw new FormatException($"{n.Path}: on is for a trigger, the follow setting or weapons free");
+            if (n.Opt("focus") is JNode fc2) { o.Focus = fc2.Bool(); if (o.Focus && o.Do != "fire") throw new FormatException($"{n.Path}: focus is a fire order's (tuning.md §14)"); }
             if (n.Opt("how") is JNode hw) { o.How = hw.Str(); if (o.Do != "takedown") throw new FormatException($"{n.Path}: how is for a takedown (knockout or kill)"); }
             if (n.Opt("shots") is JNode sh) { o.Shots = sh.Int(); if (o.Do != "volley" || o.Shots < 1 || o.Shots > 100) throw new FormatException($"{n.Path}: shots is a volley's, 1 or more"); }
             if (n.Opt("count") is JNode ct) { o.Count = ct.Int(); if (o.Do != "spawn" || o.Count < 1 || o.Count > 6) throw new FormatException($"{n.Path}: count is a spawn's, 1..6"); }
@@ -208,7 +222,8 @@ namespace Suborned.Sim
             if (Then.Length > 0) w.Prop("then", Then);
             if (Count > 0) w.Prop("count", Count); // brief 029: likewise
             if (With.Length > 0) w.Prop("with", With); // the range's car spawn: likewise
-            if (Do == "trigger" || Do == "follow") w.Prop("on", On); // tuning.md §11: only these verbs, always (a release is on: false)
+            if (Do == "trigger" || Do == "follow" || Do == "free") w.Prop("on", On); // tuning.md §11, §14: only these verbs, always (a release is on: false)
+            if (Focus) w.Prop("focus", true); // tuning.md §14: written only when set
             w.EndObj();
         }
         public override string ToString() { var w = new JWriter(); Write(w); return w.ToString(); }
@@ -252,6 +267,8 @@ namespace Suborned.Sim
             "fight-over",
             // brief 027 (EXPERIMENTAL, fight.lab): a volley or the field the agent's charge can't pay (with charge off: no volleys left this fight)
             "no-charge",
+            // tuning.md §14 (engine 0.19.0): weapons free is the cell's setting
+            "free-not-cell",
         };
     }
 

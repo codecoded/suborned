@@ -42,8 +42,8 @@ namespace Suborned.Play
             if (loud != null)
             {
                 FreezeOnLoud(); // brief 027: freeze mode opens a freeze first; the card shows inside it and the queue holds the order
-                Loud = new Gate { Card = loud, Source = source, What = what, Start = Time.unscaledTime, At = at, Gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : Mouse };
-                Loud.Orders.AddRange(orders);
+                Loud = new Gate { Card = loud, Source = holdCommits && source == "right" ? "wait" : source, What = what, Start = Time.unscaledTime, At = at, Gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : Mouse };
+                Loud.Orders.AddRange(orders); // a right hold already let go (commit on release) opens a card it can still be committed on: held on the card (item 7: it backed off on the next frame)
                 Status = $"Going loud: hold {SourceName(source)} {HoldSeconds:0.0} s to commit, release to back off";
                 return;
             }
@@ -98,6 +98,12 @@ namespace Suborned.Play
                 "both" => mouse != null && mouse.rightButton.isPressed && mouse.leftButton.isPressed,
                 _ => mouse != null && mouse.leftButton.isPressed,
             };
+            if (Loud.Source == "wait") // item 7 (Keel): a right hold already let go opened a card that would fail the mission: it waits for a hold on the card (GateHoldByCard), Esc or a right click backs off
+            {
+                bool off = kb != null && kb.escapeKey.wasPressedThisFrame || mouse != null && mouse.rightButton.wasPressedThisFrame;
+                if (off) { Status = "Going loud: backed off"; Loud = null; } else Loud.Start = Time.unscaledTime;
+                return;
+            }
             if (kb != null && kb.escapeKey.wasPressedThisFrame) held = false;
             if (!held) { Status = "Going loud: backed off"; Loud = null; return; } // the card closing is the answer (Fable B9)
             if (GateProgress < 1f) return;
@@ -379,12 +385,14 @@ namespace Suborned.Play
             if (!to.HasValue || G.Dist(to.Value, at) > 300) { MoveChip = "can't walk there"; MoveNow = new MoveParts { Refused = NoWay() }; return; }
             MoveQuote q = null; if (!Guard("move quote", () => q = Game.QuoteMove(Op.Name((OpId)k), to.Value))) return;
             if (q.WalkS == 0 && q.RunS == 0 && q.RunRefused.Length > 0) { MoveChip = q.RunRefused == "no walk there" ? "can't walk there" : q.RunRefused; MoveNow = new MoveParts { Refused = NoWay() }; return; }
-            MoveNow = new MoveParts { WalkS = q.WalkS, RunS = q.RunRefused.Length > 0 ? -1 : q.RunS, RunFree = q.RunFree, Eye = q.RunFree ? "" : EyeOf(q.Seen), Alert = q.RunFree || q.Seen.Seen == "no" ? "" : q.Seen.AlertIfSeen.ToString() };
+            bool crowdGuard = !q.RunFree && CrowdGuardSees(q); // engine 0.22: a guard on the street sees the run (item 4: the price counts him)
+            MoveNow = new MoveParts { WalkS = q.WalkS, RunS = q.RunRefused.Length > 0 ? -1 : q.RunS, RunFree = q.RunFree, Eye = q.RunFree ? "" : crowdGuard ? "open" : EyeOf(q.Seen), Alert = q.RunFree || q.Seen.Seen == "no" && !crowdGuard ? "" : (crowdGuard ? Math.Max(q.AlertIfRun, q.Seen.AlertIfSeen) : q.Seen.AlertIfSeen).ToString() };
             // "seen by" is the engine's SeenQuote (rulebook sight.unknown): a known watcher's true answer, "?" for one the Scout hasn't watched that
             // could; never RunSeenBy, which knows every watcher (Sky 2026-10-16: sight is the Scout's skill)
-            var seen = SeenWords(q.Seen);
+            var seen = SeenWords(q.Seen); int runAlert = q.Seen.AlertIfSeen;
+            if (crowdGuard) { seen = seen.Length > 0 && seen != "?" ? seen + ", a guard" : "a guard"; runAlert = Math.Max(q.AlertIfRun, runAlert); }
             string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
-                : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {q.Seen.AlertIfSeen})" : "")}";
+                : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {runAlert})" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
             bool carrying = Game.Ops[k].CarryBody.Length > 0;
             if (carrying) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)

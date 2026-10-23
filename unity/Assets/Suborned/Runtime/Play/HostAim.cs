@@ -288,6 +288,8 @@ namespace Suborned.Play
         void TriggerPress(string id, bool force, LoudCard card, Vector2? screen)
         {
             if (dAgent < 0) return;
+            DriveTakeBack(); // Sky after 0.2.56: a trailed agent (T kept its work) is taken by the player's own trigger: the trigger is the driven agent's
+            if (Game.Ops[dAgent].Gun.Order.Length > 0) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)dAgent), Do = "cease" })); // brief 024: the player's trigger replaces a standing fire order (T alone keeps it)
             var o = new Order { Op = Op.Name((OpId)dAgent), Do = "trigger", On = true, Target = id, Force = force };
             bool ok = Issue(o, screen, DrawnAt(id));
             FireLogAdd($"trigger\t{o.Op}\ton\t{id}\t{(ok ? "taken" : "refused")}");
@@ -471,6 +473,14 @@ namespace Suborned.Play
 
         /// <summary>Each agent's fire state this frame (Keel's FireStateOf): the tracer, the marks, the line and Stopped read only this.</summary>
         public readonly FireState[] FireNow = { NoFire, NoFire, NoFire, NoFire };
+        /// <summary>Engine 0.19.0 UnderFireOf per agent this frame: every hostile whose last shot at it landed within the line lapse (3 s), in id
+        /// order (Sky's answer 1: no auto-draw, the avatar shows it is being shot at). Engine 0.20.0: in the final fight only for the agent's own causes.</summary>
+        public readonly List<UnderFireBy>[] UnderFireNow = { new(), new(), new(), new() };
+        /// <summary>Engine 0.25.0 (Sky on 0.2.56: "I couldn't tell if that's because weapon was out, carrying Vale or coz they shot police"): per
+        /// agent, each hostile on it and why, as data only (`by`, the one cause word FireWhy.Main: range, final, fired, vale, violence, drawn, face,
+        /// seen; live causes first, else the first ones). The cue's look waits for Glyph's lab and Sky's pick (brief 046).</summary>
+        public readonly List<(string by, string main)>[] FireWhyNow = { new(), new(), new(), new() };
+        readonly int[] fireWhyTick = { -1, -1, -1, -1 };
         /// <summary>Not firing (the struct's default carries null strings).</summary>
         public static readonly FireState NoFire = new() { Mode = "", Target = "", Lead = "", NextShot = -1 };
         /// <summary>When each agent's fire last stopped (unscaled s) and on what: the line reads "Stopped" for 1 s.</summary>
@@ -490,6 +500,8 @@ namespace Suborned.Play
                 FireState fs = default; if (!Guard("fire state", () => fs = g.FireStateOf((OpId)k))) return;
                 bool was = FireNow[k].Firing; string wasOn = FireNow[k].Target ?? "";
                 FireNow[k] = fs; Locks[k] = g.LockOf((OpId)k) ?? "";
+                var uf = UnderFireNow[k]; uf.Clear(); Guard("under fire", () => uf.AddRange(g.UnderFireOf((OpId)k))); // engine 0.19: who is shooting at this agent now (the under-fire cue)
+                var fw = FireWhyNow[k]; if (uf.Count == 0) fw.Clear(); else if (fireWhyTick[k] != g.Tick) { fireWhyTick[k] = g.Tick; fw.Clear(); Guard("fire why", () => { foreach (var w in g.FireWhyOf((OpId)k)) fw.Add((w.By, w.Main)); }); } // engine 0.25.0: why (data; the look waits for the lab), read once a tick
                 if (was && !fs.Firing) { FireStoppedAt[k] = Time.unscaledTime; FireStoppedOn[k] = wasOn; }
                 if (fs.Firing) FireStoppedAt[k] = -10f;
                 var key = $"{fs.Mode}\t{fs.Target}\t{(fs.Firing ? 1 : 0)}\t{(fs.Hollow ? 1 : 0)}\t{fs.Lead}";
@@ -519,7 +531,7 @@ namespace Suborned.Play
 
         /// <summary>A fire target's name in the line: a car by the text's car names ("Vale's car"), else the usual name.</summary>
         string FireName(string id) => id.StartsWith("car:") ? Text?.TargetName("car-" + id[4..], "the car") ?? "the car"
-            : id.StartsWith("rival") && id != "rivals" ? "a rival" : id.StartsWith("robot") ? "a robot" : id.StartsWith("police") || id.StartsWith("officer") || id.StartsWith("security-") || id.StartsWith("unit") ? "an officer" : Name(id); // a fight hostile by what it is, never its id
+            : id.StartsWith("bystander") ? "a passer-by" : id.StartsWith("rival") && id != "rivals" ? "a rival" : id.StartsWith("robot") ? "a robot" : id.StartsWith("police") || id.StartsWith("officer") || id.StartsWith("security-") || id.StartsWith("unit") ? "an officer" : Name(id); // a fight hostile by what it is, never its id
 
         /// <summary>The agent whose line shows: the driven one, else the selected agent (the commander's), else none.</summary>
         public int FireLineAgent => Driving ? dAgent : (int)Agent;

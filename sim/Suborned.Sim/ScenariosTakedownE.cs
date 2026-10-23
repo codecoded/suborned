@@ -197,7 +197,7 @@ namespace Suborned.Sim
             Add("N87", "—", "A searching officer sent on by what he finds (Keel 2026-10-16, found trying driver-route variants for Waymark; re-pinned to Waymark's orders 2026-10-19, the service door on the east face): the driver and guard 29 killed at 2:31 and 2:35 and put through the service door, guard 74 knocked out in front of the outgoing shift at 5:40, Vale taken at 6:10. At 6:56.1 police-3, searching the lane, opens the service door: the driver's body lands its own incident, and the desk sends police-3 on to it. Before, the search then took the opened stash off a list the reassignment had emptied (ArgumentOutOfRange, engine-error); now the stash comes off the list before it is opened, and the officer walks to the new scene.", r =>
             {
                 var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] {
+                OrdersWhileOn(r, DriverOpening().Concat(new[] {
                     MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
                     Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1815, Enf, "stash", ServiceDoorId), Act(1900, Scout, "mislead", "rivals"), Act(1900, Tech, "reroute", "patrol"),
                     new Order { Tick = 1915, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, Act(1973, Enf, "carry", Guard29), MvTo(2003, Enf, ServiceDoor), Act(2119, Enf, "stash", ServiceDoorId),
@@ -205,9 +205,16 @@ namespace Suborned.Sim
                     MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
                 const int opens = 4161; // 6:56.1 (Waymark 2026-10-19; was 7:58.5, tick 4785, before the east-face door)
                 r.To(opens);
-                var open = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Tick == opens && l.Text.Contains("driver"));
-                r.Is(open >= 0, "at 6:56.1 an officer opens the service door and finds the driver");
-                r.Is(g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == opens), "and is sent on to the scene it found");
+                // engine 0.19.0 (ai.intent face, Sky's answers 2026-10-21): the knockout's reports carry the Enforcer's face, and at Alert 3 the
+                // response fires on it: he is down at 6:38.6 walking Vale, before the 6:56.1 search. The path to the reassignment needs new orders
+                // (open, handed back with the engine change); until then the fixture holds to no engine error, and to the search if the run is on.
+                if (g.Over) r.Is(g.FailCode == "enforcer-down" && g.KnownFaces.Contains(Enf), "0.19.0: his reported face gets him shot before the search");
+                else
+                {
+                    var open = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Tick == opens && l.Text.Contains("driver"));
+                    r.Is(open >= 0, "at 6:56.1 an officer opens the service door and finds the driver");
+                    r.Is(g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == opens), "and is sent on to the scene it found");
+                }
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.To(T(500));
                 r.Is(g.FailCode != "engine-error", "the run goes on");

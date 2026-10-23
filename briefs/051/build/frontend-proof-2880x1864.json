@@ -1,0 +1,24 @@
+{
+ "schema": "suborned.frontend.proof/1",
+ "status": "ok",
+ "build": "Build 0.2.87 · c031 · sim 0.26.0 · 04a4fb75+",
+ "screen": [2880, 1864],
+ "shots": ["loading", "menu", "menu-focus", "menu-nosave", "options-display", "options-audio", "options-camera", "options-gameplay", "controls-command", "controls-rebind-focus", "controls-clash", "controls-camera", "controls-fights", "brief", "briefing", "pause", "options-from-pause", "menu-continue"],
+ "checks": {
+  "settingsFile": {"ok": true, "detail": "persists True, /Users/sky/Projects/suborned/out/scratch/latch/fe-2880x1864/settings.json, source migrated"},
+  "menuNoSave": {"ok": true, "detail": ""},
+  "rebindRoundTrip": {"ok": true, "detail": "file J, game J"},
+  "clash": {"ok": true, "detail": "strip True, untouched before Swap True, after: Cancel J, Next event C"},
+  "contexts": {"ok": true, "detail": ""},
+  "resetAll": {"ok": true, "detail": ""},
+  "toggles": {"ok": true, "detail": "file True, game True"},
+  "togglesReset": {"ok": true, "detail": "preset HoldActs"},
+  "migration": {"ok": true, "detail": "13 keys"},
+  "newGameBrief": {"ok": true, "detail": "showing Brief; brief pick A, 102 words"},
+  "briefingAfter": {"ok": true, "detail": "host briefing True"},
+  "backToPause": {"ok": true, "detail": "menu True, covers False"},
+  "quitToMenu": {"ok": true, "detail": "showing Menu, continue True"},
+  "continueLive": {"ok": true, "detail": "covers False, tick 17 (was 17)"}
+ },
+ "log": ["settingsFile: ok persists True, /Users/sky/Projects/suborned/out/scratch/latch/fe-2880x1864/settings.json, source migrated", "menu: Continue shown", "menuNoSave: ok ", "rebindRoundTrip: ok file J, game J", "clash: ok strip True, untouched before Swap True, after: Cancel J, Next event C", "contexts: ok ", "resetAll: ok ", "toggles: ok file True, game True", "togglesReset: ok preset HoldActs", "migration: ok 13 keys", "newGameBrief: ok showing Brief; brief pick A, 102 words", "briefingAfter: ok host briefing True", "backToPause: ok menu True, covers False", "quitToMenu: ok showing Menu, continue True", "continueLive: ok covers False, tick 17 (was 17)"]
+}

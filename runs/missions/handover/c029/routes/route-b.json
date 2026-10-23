@@ -1,0 +1,28 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Route B, the pickup, quiet (GDD §07; Keel N11b): watch and listen to the driver, turn him before 5:40 with the approach the card shows works, the pickup moves to the service lane, a false tip sends the rivals away, take Vale at 6:10 and fight the smaller ambush (the turned driver and the tip each take a rival) with the whole armed cell. Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md §10.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"enforcer","do":"move","to":"d:Service lane"},
+  {"tick":0,"op":"scout","do":"move","to":[7950,-4000]},
+  {"tick":0,"op":"fixer","do":"move","to":[7950,-3850]},
+  {"tick":620,"op":"scout","do":"watch","target":"driver"},
+  {"tick":760,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
+  {"tick":820,"op":"scout","do":"move","to":"d:Meet driver"},
+  {"tick":820,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
+  {"tick":870,"op":"scout","do":"listen","target":"driver"},
+  {"tick":1320,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":1390,"op":"scout","do":"move","to":[8600,-3400]},
+  {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
+  {"tick":2340,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":2340,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":3700,"op":"enforcer","do":"take"},
+  {"tick":4080,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":4470,"op":"cell","do":"panic"},
+  {"tick":4626,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":4755,"op":"enforcer","do":"board","target":"car"},
+  {"tick":4795,"op":"cell","do":"go"}
+ ],
+ "until": 5100
+}

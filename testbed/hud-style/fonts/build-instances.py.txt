@@ -1,0 +1,33 @@
+# usage: build.py <download dir> <out dir>. Static instances of the variable OFL fonts, digits and number punctuation mapped to their tabular forms by default (Unity's text engine has no tnum switch).
+import sys, os
+from fontTools.ttLib import TTFont
+from fontTools.varLib import instancer
+src, out = sys.argv[1], sys.argv[2]
+os.makedirs(out, exist_ok=True)
+J = [("Jost", "Jost-var.ttf", [(400, "Regular"), (500, "Medium"), (600, "SemiBold")]),
+     ("Outfit", "Outfit-var.ttf", [(500, "Medium"), (600, "SemiBold")]),
+     ("Figtree", "Figtree-var.ttf", [(500, "Medium"), (600, "SemiBold")]),
+     ("Manrope", "Manrope-var.ttf", [(500, "Medium"), (600, "SemiBold")])]
+def tnum_map(t):
+    gsub = t["GSUB"].table; look = set()
+    for fr in gsub.FeatureList.FeatureRecord:
+        if fr.FeatureTag == "tnum": look.update(fr.Feature.LookupListIndex)
+    m = {}
+    for i in look:
+        for st in gsub.LookupList.Lookup[i].SubTable:
+            if st.__class__.__name__ == "ExtensionSubst": st = st.ExtSubTable
+            if hasattr(st, "mapping"): m.update(st.mapping)
+    return m
+for fam, f, ws in J:
+    for w, name in ws:
+        t = TTFont(os.path.join(src, f))
+        t = instancer.instantiateVariableFont(t, {"wght": w})
+        m = tnum_map(t); cmap = t.getBestCmap(); n = 0
+        for sub in t["cmap"].tables:
+            for cp, g in list(sub.cmap.items()):
+                if g in m: sub.cmap[cp] = m[g]; n += 1
+        hm = t["hmtx"]; cm = t.getBestCmap()
+        dw = {hm[cm[ord(c)]][0] for c in "0123456789"}
+        xh = t["OS/2"].sxHeight / t["head"].unitsPerEm
+        fn = f"{fam}-{name}-Tab.ttf"; t.save(os.path.join(out, fn))
+        print(fn, "remapped", n, "digit widths", sorted(dw), "xHeight %.3f" % xh, "size", os.path.getsize(os.path.join(out, fn)))

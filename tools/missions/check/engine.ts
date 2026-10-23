@@ -1,12 +1,13 @@
 // The headless engine as the mission checker calls it (brief 011 A, B): Keel's C# CLI (sim/cli), built once per process and run as a
-// plain `dotnet <dll> play <script> --json`, many plays in parallel. Each play is a fresh process: the same script gives the same
-// bytes (Keel's determinism), so a play here is the play anyone else gets.
+// batch server (`dotnet <dll> batch --serve`: inputs loaded once, every core, brief 042) that prints exactly what `play <script> --json` prints;
+// an engine without the batch mode (an old pinned commit) is run as a plain `play` process a script. Either way the same script gives the same
+// bytes (Keel's determinism), so a play here is the play anyone else gets (tools/sim/batch-proof.ts proves the two equal).
 // The engine is pinned to a commit (default HEAD): its sim/ (sources and the data it reads: the site, its people) and the rules it
 // reads (contracts/rules, contracts/people/people.rules.json) are taken with `git archive` into out/missions/engine/<commit>, built
 // and run there, so a check plays one consistent commit and a replay rebuilds the same one, whatever the working tree holds (Keel's
 // sim/ and the rulebook move under his hands). `--engine tree` builds and plays the working tree instead. The route scripts are the
 // caller's (the working tree's, or a recorded copy); the record holds the sha256 of every input the engine read.
-import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createHash } from 'node:crypto';
 import { join, resolve } from 'node:path';
 
@@ -21,7 +22,7 @@ export type Script = { schema: 'suborned.sim.script/1'; mission: 'handover'; not
 /** What a play reports (sim/Suborned.Sim/Script.cs Report.Json); the checker keeps all of it in memory and records a digest. */
 export type Play = {
   id: string; outcome: 'success' | 'failure' | 'withdrawn' | 'none'; fail: string; tick: number; cash: number; trail: number; alert: number; gunfire: number; standing: number;
-  startHash: string; finalHash: string; replayIdentical: boolean; checkpoints: { tick: number; hash: string }[];
+  startHash: string; finalHash: string; replayIdentical: boolean; /* null (typed away) when played with replay: false */ checkpoints: { tick: number; hash: string }[];
   orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number; lines?: { line: string; who: string; detail: string }[] } };
 };
 
@@ -73,24 +74,104 @@ export function build(e: EngineAt = engineAt()): string {
   return dll;
 }
 
-/** Play one script; `name` labels its temp file (out/missions/plays). */
-export async function play(script: Script, name: string, e?: EngineAt): Promise<Play> {
-  const dll = build(e);
+/** The batch server (sim/cli/Batch.cs, brief 042): one `suborned-sim batch --serve` process per engine, started on first use, that loads the inputs
+ *  once and plays every asked script on all cores; a play is a line out and a line back, not a process. It ends when this process does (its
+ *  stdin closes). An engine from before the batch mode (a pinned commit's sim/cli has no Batch.cs) is played the old way, a process a play. */
+class Server {
+  private proc!: ReturnType<typeof Bun.spawn>;
+  private pending = new Map<string, { resolve: (l: string) => void; reject: (e: Error) => void }>();
+  private seq = 0; private err = ''; private ended: Error | undefined;
+  constructor(dll: string, dir: string) {
+    // server GC and a settled JIT: the plays are short and allocate; concurrent GC and PGO instrumentation only slow a batch (measured, briefs/042-fast-checks.md)
+    this.proc = Bun.spawn(['dotnet', dll, 'batch', '--serve'], { cwd: dir, env: { ...env, DOTNET_gcServer: '1', DOTNET_gcConcurrent: '0', DOTNET_TieredPGO: '0' }, stdin: 'pipe', stdout: 'pipe', stderr: 'pipe' });
+    this.proc.unref();
+    void (async () => { for await (const c of this.proc.stderr as ReadableStream<Uint8Array>) if (this.err.length < 4000) this.err += new TextDecoder().decode(c); })();
+    void (async () => {
+      const dec = new TextDecoder(); let buf = '';
+      try {
+        for await (const chunk of this.proc.stdout as ReadableStream<Uint8Array>) {
+          buf += dec.decode(chunk, { stream: true });
+          let k: number; while ((k = buf.indexOf('\n')) >= 0) { this.line(buf.slice(0, k)); buf = buf.slice(k + 1); }
+        }
+      } finally {
+        this.ended = new Error(`the engine's batch server ended${this.err.trim() ? `: ${this.err.trim()}` : ''}`);
+        for (const [, p] of this.pending) p.reject(this.ended);
+        this.pending.clear();
+      }
+    })();
+  }
+  private line(l: string) {
+    const t = l.indexOf('\t'), tag = l.slice(0, t), p = this.pending.get(tag);
+    if (!p) return;
+    this.pending.delete(tag); if (this.pending.size === 0) this.proc.unref();
+    p.resolve(l.slice(t + 1));
+  }
+  ask(file: string, replay: boolean): Promise<string> {
+    if (this.ended) return Promise.reject(this.ended);
+    return new Promise((resolve, reject) => {
+      const tag = `p${this.seq++}`;
+      if (this.pending.size === 0) this.proc.ref();
+      this.pending.set(tag, { resolve, reject });
+      const sink = this.proc.stdin as import('bun').FileSink;
+      sink.write(`${tag}\t${replay ? 'replay' : 'noreplay'}\t${file}\n`); sink.flush();
+    });
+  }
+}
+const servers = new Map<string, Server>();
+/** The dll that runs `batch` for this engine, or undefined (play a process each). An engine whose sim/cli has Batch.cs (the working tree, a recent commit)
+ *  is its own; an older pinned commit gets the standalone host (sim/batch: BatchHost.cs, batch.csproj and ../cli/Batch.cs) copied to <engine>/batch and built
+ *  against that engine's own library, so its sources, and the engine hash recorded for it, stay as committed. A host that does not build (the library's
+ *  API moved) falls back to a process a play. SUBORNED_SIM_BATCH=0 plays a process a script anyway (to time or compare). */
+const hosts = new Map<string, string | undefined>();
+function batchDll(e: EngineAt, dll: string): string | undefined {
+  if (process.env.SUBORNED_SIM_BATCH === '0') return undefined;
+  if (existsSync(join(e.dir, 'sim/cli/Batch.cs'))) return dll;
+  if (hosts.has(e.dir)) return hosts.get(e.dir);
+  let host: string | undefined;
+  try {
+    const src = join(e.dir, 'batch'), out = join(e.dir, 'batch-bin');
+    mkdirSync(src, { recursive: true });
+    for (const [from, to] of [['sim/batch/BatchHost.cs', 'BatchHost.cs'], ['sim/batch/batch.csproj', 'batch.csproj'], ['sim/cli/Batch.cs', 'Batch.cs']] as const) writeFileSync(join(src, to), readFileSync(join(ROOT, from)));
+    const r = Bun.spawnSync(['dotnet', 'build', src, '-c', 'Release', '-o', out, '-v', 'q', '-nologo'], { cwd: ROOT, env, stdout: 'pipe', stderr: 'pipe' });
+    if (r.exitCode === 0 && existsSync(join(out, 'suborned-batch.dll'))) host = join(out, 'suborned-batch.dll');
+  } catch { /* played a process each */ }
+  hosts.set(e.dir, host);
+  return host;
+}/** SUBORNED_SIM_STATS=1: at exit, how many plays this process asked of the engine and how it played them. */
+let asked = 0;
+if (process.env.SUBORNED_SIM_STATS) process.on('exit', () => console.error(`engine: ${asked} plays (${process.env.SUBORNED_SIM_BATCH === '0' ? 'a process each' : 'batch server'})`));
+
+/** Play one script; `name` labels its temp file (out/missions/plays). `replay: false` leaves out the engine's second, self-checking run of the
+ *  game (half the sim cost; the line says "replayIdentical": null): for a search that plays thousands of probes and checks the one it keeps. */
+export async function play(script: Script, name: string, e?: EngineAt, o: { replay?: boolean } = {}): Promise<Play> {
+  const dll = build(e), at = e ?? engineAt(); asked++;
+  const bdll = batchDll(at, dll);
   mkdirSync(TMP, { recursive: true });
   const file = join(TMP, `${name.replace(/[^a-z0-9.-]+/gi, '_')}.json`);
   writeFileSync(file, JSON.stringify(script));
-  const p = Bun.spawn(['dotnet', dll, 'play', file, '--json'], { cwd: (e ?? engineAt()).dir, env, stdout: 'pipe', stderr: 'pipe' });
+  if (bdll) {
+    let srv = servers.get(bdll); if (!srv) servers.set(bdll, srv = new Server(bdll, at.dir));
+    const out = await srv.ask(file, o.replay !== false);
+    if (!out.startsWith('{')) throw new Error(`play ${name} failed: ${out}`);
+    const p = JSON.parse(out) as Play & { error?: string };
+    if (p.error !== undefined) throw new Error(`play ${name} failed: ${p.error}`);
+    rmSync(file, { force: true }); // the script is read; a failed play keeps its file for the error message (brief 050: 600,000 of them had piled up)
+    return p;
+  }
+  const p = Bun.spawn(['dotnet', dll, 'play', file, '--json'], { cwd: at.dir, env, stdout: 'pipe', stderr: 'pipe' });
   const [out, err, code] = await Promise.all([new Response(p.stdout).text(), new Response(p.stderr).text(), p.exited]);
   if (!out.trim().startsWith('{')) throw new Error(`play ${name} failed (exit ${code}): ${err || out}`);
+  rmSync(file, { force: true });
   return JSON.parse(out) as Play;
 }
 
-/** Play many, at most `n` at once, in input order. */
-export async function playAll(jobs: { script: Script; name: string }[], e?: EngineAt, n = 8): Promise<Play[]> {
-  const out: Play[] = new Array(jobs.length);
+/** Play many, in input order. With the batch server `n` is moot (the engine plays on every core); for an engine without it, at most `n` processes at once. */
+export async function playAll(jobs: { script: Script; name: string }[], e?: EngineAt, n = 8, o: { replay?: boolean } = {}): Promise<Play[]> {
+  const out: Play[] = new Array(jobs.length); e ??= engineAt();
+  if (batchDll(e, build(e))) { await Promise.all(jobs.map(async (j, i) => { out[i] = await play(j.script, j.name, e, o); })); return out; }
   let next = 0;
   await Promise.all(Array.from({ length: Math.min(n, jobs.length) }, async () => {
-    while (next < jobs.length) { const i = next++; out[i] = await play(jobs[i]!.script, jobs[i]!.name, e); }
+    while (next < jobs.length) { const i = next++; out[i] = await play(jobs[i]!.script, jobs[i]!.name, e, o); }
   }));
   return out;
 }

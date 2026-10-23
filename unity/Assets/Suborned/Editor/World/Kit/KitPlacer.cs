@@ -15,7 +15,7 @@ namespace Suborned.World
         public const string KitRoot = "Assets/Suborned/Kit/";
         /// <summary>The prefabs the builder places (KitLods writes them from the sources at kit import: colliders stripped, LODGroup from the catalogue).</summary>
         public const string BuiltRoot = KitRoot + "Prefabs/Built/";
-        readonly Dictionary<string, string> prefabs = new(), sources = new(), generated = new();
+        readonly Dictionary<string, string> prefabs = new(), sources = new(), generated = new(), categories_ = new();
         readonly Dictionary<string, List<(string file, float screen)>> lods = new();
         readonly List<(string, string)> uses = new();
         readonly Dictionary<string, GameObject> loaded = new();
@@ -53,6 +53,7 @@ namespace Suborned.World
                         l.Add((KitRoot + J.S(ls[i], "file"), screen));
                     }
                 lods[id] = l;
+                categories_[id] = J.S(a, "category") ?? "";
                 if (J.Get(a, "tags") is { } tags && J.Get(tags, "use") is List<object> use) foreach (var u in use) uses.Add(((string)u, id));
             }
         }
@@ -63,6 +64,8 @@ namespace Suborned.World
         public IReadOnlyDictionary<string, string> Sources => sources;
         /// <summary>id → LOD1, LOD2 files (asset paths) with their screen-relative switch heights (LOD0 = the source).</summary>
         public IReadOnlyDictionary<string, List<(string file, float screen)>> Lods => lods;
+        /// <summary>id → the catalogue's `category` (Street, Ground, Plants, ...; "" when it has none).</summary>
+        public IReadOnlyDictionary<string, string> Categories => categories_;
         /// <summary>Generated pieces: id → FBX asset path.</summary>
         public IReadOnlyDictionary<string, string> Generated => generated;
         /// <summary>Every adopted piece's `tags.use` entries (e.g. `site:harbour-hotel`, `landmark:skyport-tower`), in catalogue order.</summary>
@@ -158,10 +161,10 @@ namespace Suborned.World
         /// <summary>The piece r baked into `layer`'s tile batches by material instead of standing as an instance (its LOD0, placed as
         /// Place places it): many small pieces that never fade (bed tufts, paving bands, bollards) then draw as a few batches.
         /// slots: this piece's material slots drawn in another kit material (KitSlots).</summary>
-        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots)
+        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots, float elementYaw = 0f)
         {
             var root = Prefab(r.Id).transform; var used = new HashSet<string>(); int n = 0;
-            var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? 0f : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
+            var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? elementYaw : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
             int orbit = 0;
             foreach (var mr in KitLods.Lod0(root.gameObject))
             {

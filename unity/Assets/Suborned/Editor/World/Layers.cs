@@ -11,6 +11,8 @@ namespace Suborned.World
 
         /// <summary>The look surface the kerbs' gutter strip draws in (look.json; absent = no gutter).</summary>
         const string GutterSurface = "ground/gutter";
+        /// <summary>Brief 028 road finish (Vela): the enamel carriageway runs to the pearl kerb with no gutter strip.</summary>
+        static bool NoGutter(string roadSurface) => roadSurface == "road-enamel";
 
         public void Ground(Transform layer, GroundDto g)
         {
@@ -23,7 +25,7 @@ namespace Suborned.World
                 var (l, rr) = Poly.Ribbon(Poly.CleanLine(r.Line), r.Width + r.KerbWidth, false);
                 var drives = g.Drives.FindAll(d => d.Road == r.Id && d.Kerb is { Length: 2 });
                 var kerbs = new MeshKit(); var dropped = new MeshKit(); var gutters = new MeshKit(); bool anyDrop = false;
-                var roadLine = Poly.CleanLine(r.Line); bool gutter = nodes.Has(GutterSurface);
+                var roadLine = Poly.CleanLine(r.Line); bool gutter = nodes.Has(GutterSurface) && !NoGutter(r.Surface); // brief 028 road (Vela): no gutter on an enamel road
                 foreach (var side in new[] { l, rr }) // brief 023: the kerb is dropped where a drive crosses it (the drive's kerb segment)
                     foreach (var (piece, drop, h) in KerbPieces(side, drives, r.KerbWidth))
                     {   // brief 026 round 2: a stone (top, face, end caps) with UVs in metres, and the gutter along its foot

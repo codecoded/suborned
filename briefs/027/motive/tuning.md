@@ -1341,3 +1341,257 @@ The rulebook moves every inputs hash, so every recorded route re-records once ag
 ### §12 decision (Sky, 2026-10-21)
 - **§12.2: yes.** Sky: "1. Yes" to "should police fire back at everyone who has shot at them recently, not only the last one?" No longer awaiting Sky.
 - On the taught loud plan (wait by the car, lock as the doors open): "It's a way. But not sure how they can lock targets easily. Also what about rival gang? As long as player has to be present and adaptive then how they play is fine, and they're not just doing only a few actions."
+
+
+## 14. Syndicate fights: weapons free (Sky, brief 041, 2026-10-21)
+
+**Inputs:** brief 041, "Syndicate fights and squad-leave adopted" (Sky: "that feels syndicate like and more engaging"); `testbed/controls/fire.js` (`autoEngage`, `focusFire`, `FIGHT_S` 10); Sky via Aster: "definitely need officers / bots etc firing at you if you're on high alert, do something wrong etc - rivals especially"; Pulse's `briefs/027/pulse/hostile-initiative.md`.
+**Probes** (scratch tree `out/motive027/s14/tree/`, a copy of engine 0.18.0; `treewf/` is the same with the switch on by default, for `route-diff`; nothing in `sim/`, `contracts/` or `unity/` edited). Switch `WF=1`: attacker first, then nearest, and the target is kept. `WF=2`: nearest only. `WFAIM=1`: a hostile that is only aiming also counts as a fight. With `WF=0` the matrix and the sweep match `matrix-0.18.txt` and `sweep-0.18.txt` line for line.
+- `matrix-wf*.txt`, `sw/<preset>.<WF>.txt` (the 3,792 policies), `route-diff.txt`, `s11-wf*.txt` (the §11.3 probe plus a `wfree` policy: one opening shot, then nothing), `range0/`, `range1/` (all 67 range scenarios).
+
+**Kind: TODAY and LAB.** No new value.
+
+### 14.1 Weapons free is in, in `today` and the lab
+- **The rule:** while weapons free is on and a fight is on (14.2), a drawn cell agent picks its own target if its stance is `return` or `free` and it has no fire order, lock, trigger or follow.
+  - It takes whoever is attacking it first: a combatant whose gun aims at it, or its last shooter within `line-lapse-s` 3 s.
+  - If nobody is attacking it, it takes the nearest combatant (integer `D2`, ties in `CombatantIds` order), within its max ring and with a line.
+  - It keeps the target in hand while that target is still a combatant in reach and line. It changes only when an attacker appears and the current target is not one.
+- **What it never does:** fire on a non-combatant (a civilian, a calm guard, a car, a camera), fire while holding, draw a holstered gun, or walk.
+- **Precedence**, as the playground has it: a lock or fire order (portrait drag, focus click) comes first, then the trigger, then follow, then weapons free.
+- **X** (cease) stands the selected agents down from weapons free. They pick again only when they are shot at, when they get a new fire order or trigger, or when the fight ends.
+- **G** turns it on and off for the cell. Off, a draw is `return` again (0.18.0 exactly). It starts on, as in the playground.
+
+**Measured (`today`, WF=1 against 0.18.0):**
+
+| check | 0.18.0 | weapons free |
+|---|---|---|
+| sweep wins | 156 | 182 (89 new, 63 lost) |
+| sweep cheap (< 40 % lost) | 4 | 6 (5 newly cheap) |
+| cheapest | 11 % | 11 % |
+| matrix rows that change result | | 0 of 42 |
+| L1–L4 | all fail | all fail, the same codes (L3 T 28 → 30) |
+| P-A | 0 % | 0 % |
+| P-G | fails, 55 % | fails, 72 % |
+| P-B | 44 %, T 3 | 55 %, T 7, 20 s sooner |
+| recorded routes | | 0 of 38 outcomes move; 16 move health lost |
+| range 4 v 4 at 14 m | focus 5.6 s, 0 down, 44 % | wfree 5.6 s, 0 down, 44 % (10 m: 5.8 s, 55 %) |
+| range 4 v 6 | loses | loses (4 down, against focus's 2) |
+| the rush, 4 on 1 | 1.1 s, 1 hit | 1.1 s, 1 hit |
+
+- **It does not break the table.** What gets cheaper is *clicks*, not fights. One opening shot now buys what one focus order per target bought (4 v 4 is the same 5.6 s), and it never beats focus.
+- **The loud route:** no loud row and no loud recorded route changes its outcome. Weapons free alone doesn't make loud a win. Pulse's initiative (14.6) is what will move it.
+- **The rush** is unchanged. It was already four guns on one.
+- **The cheap-win families:**
+  - All 6 cheap `today` wins are the §12.1 strip family (L3 stand-off, margin ≤ 30 cm): T 15–20, Standing → −2 or −3. Three of the old four lose their cheapness: weapons free fires past the plan, so T goes 18 → 28 and agents go down.
+  - Lab: wins 111 → 114, cheap 12 → 13, the same family. Field-on and snap-off have no new cheap win.
+  - This is a modest edge, earned by drawing and standing in the fight. Reported, not tuned.
+- **P-B and P-G cost more, and it's a knife-edge, not a trend.** In P-B the Fixer aims a tick early, rival-3 switches onto him, and he loses the duel at 281 ‰. The downed Tech is captured (+4 T). A plan that needs an agent quiet gives it `hold`.
+- **`WF=2`** (nearest only) gives the same wins and cheap counts. Attacker first stays because it reads: whoever shoots you is shot back.
+
+### 14.2 When a fight is on: the existing fight (fight.public), not 10 s
+- **It starts** at the first shot by or at the cell (`OpenFight`), or at the final fight. The range is always on.
+- **It ends** `crowd-quiet-s` 30 s after the last such shot, and the final fight ends at fight.over. Then `auto-holster-s` 4 s runs as built.
+- **That makes one meaning of "a fight"** for Standing, auto-holster and weapons free. The playground's `FIGHT_S` 10 should be 30.
+- **An aiming hostile doesn't start it** (`WFAIM=1`: wins 181, cheap 6, the same). If it did, a guard who engages a seen draw would be shot first by a stance. That breaks "a stance can never start a loud run by itself" and Pulse's "drop it" beat.
+- **Hostile initiative still opens fights.** The hostile's first shot opens the fight, and the drawn cell answers after `aim-new` 1.0 s.
+
+### 14.3 Follow fire (§11): fold it in
+- **In a fight, follow does nothing.** A weapons-free agent with a combatant in line is engaged (`CanFollow` reads `StanceTarget`), so it never follows. Under WF=1, F11-NEAR, F11-LOCK, F11-RUSH, F11-REPLAY, F13-HOLD, F13-RELOCK and RK-LINES fail for exactly that reason.
+- **Keep follow (`follow-m` 8) for what weapons free can't do:** the opening shot from the driven agent (third person) before a fight is on, targets that are not combatants (a car, a camera, a calm guard), and weapons free off.
+- **The follow-on lock** (`Start.followLock`, the `follow` order) is the focus click by another key. Recommend it goes when the playground set is ported. Keel can keep it as a test setting until then.
+
+### 14.4 Determinism: confirmed
+- Weapons free is an input: `Start.weaponsFree`, and a logged `{"do":"free","op":"cell","on"}` on its tick.
+- The pick reads only hashed state: positions, lines, each hostile's `Target`, `ShotBy` and `ShotByTick`, the agent's own `Target`, and `OpenFight`. The ties go in a fixed id order.
+- The stand-down is one tick per agent (`StandDown`), hashed when set.
+- The engine derives every pick and logs it (`fire.free`). The host never issues them.
+- Every chunk of every sweep variant reported "every run replays identically from its order log".
+
+### 14.5 Handoffs
+- **Keel:**
+  - **Inputs:** 14.1 to 14.4. The rule text goes on `weapons` (the stance sentence) and `weapons.trigger` (follow is inert in a fight under weapons free). `Start.weaponsFree`, the `free` order, `fire.free` and `StandDown`.
+  - **Scenarios:**
+    - F14-OPEN: a drawn agent with a guard aiming and no shot fired doesn't fire;
+    - F14-ATTACKER: the attacker is taken before a nearer foe;
+    - F14-STICK: no change of target while the target is valid;
+    - F14-X: X holds the agent until it is shot at;
+    - F14-OFF: matches 0.18.0's hashes;
+    - F14-QUIET: weapons free ends 30 s after the last shot;
+    - F14-4V4: 5.6 s, 0 down, 44 %;
+    - F14-REPLAY: toggled mid-fight, hash-identical.
+    - Run F11-*, F13-* and RK-LINES with weapons free off. F12-ROT under weapons free fails only its time check (three guns at once drop the officer in 3.3 s); the officer still keeps one target, so §12.2 holds. Keep it off, and add F12-ROT-WF checking the target only.
+  - **Done-check:** `today` cheap ≤ 6, all of the strip family; no loud row and no recorded route outcome moves; `dotnet test` is green.
+  - **Next owner:** Suture.
+- **Waymark:** no route changes outcome. 16 of 38 move health lost: up 5–11 % on most of them (safe-branch ambushes and boards), down 6 % on four `-board` rows, and `careless-reporter-not-stopped` goes from Alert 1 to 2. Give `hold` to any agent the plan needs quiet. Re-record once, after Keel builds this *and* Pulse's initiative, which moves the loud and careless rows again.
+- **Latch, Glyph:** G and its icon, X as stand-down, the `fire.free` pick on the agent's line.
+
+### 14.6 With hostile initiative (Pulse)
+- **Weapons free is balanced against hostiles that start fights, not passive ones.** Their first shot is the cell's cue, and the 2 s react plus `aim-new` 1.0 s is the window to holster, break the line or draw.
+- **Weapons free spends Trail without a click** (the first shot at each target, each hit, each down, outside the final fight). That is the price of G, and it is the player's to switch off.
+- **The numbers Pulse's proposal needs from me, for its own ruling:**
+  - the `ai.intent` ladder per S level;
+  - the "face known" and Heat rungs (wanted 6, infamous 10, existing);
+  - the "drop it" warning in `today` (`lab-warn-ticks` 2 s, +1 T when heeded);
+  - when the rivals' cone comes on;
+  - Standing for a fight the hostiles start;
+  - whether an agent a hostile aims at draws by itself. **My view: no.** The draw is the player's commitment, and a seen draw raises Alert.
+
+### §14 note (Sky, 2026-10-21)
+On "is 30 s the right fight length?": "I mean fight lasts as long as energy / health is there, or player moves away - just timing is about weapon damage / player / enemy health balance really, not actual timed shooting (though time between shots is the baseline ofc)." So "fight on" ends on contact, not a clock: when no hostile is engaging the cell (all down, or contact broken by moving out of sight or range), with at most a short settle after the last shot. Fight length comes from damage, health and cadence. Motive to restate §14.2 this way.
+
+### 14.7 Keel: built, engine 0.19.0 (2026-10-21)
+**Kind: TODAY and LAB**, as Sky recorded: brief 041 "Syndicate fights adopted", the §14 note (a fight ends on contact, not a clock) and Sky's answers in `briefs/027/pulse/hostile-initiative.md` (per agent; no auto-draw; rivals see the street from 3:10; robots fire on known faces). Rulebook `weapons.free`, `ai.intent` (schema optional, engine required); host fields in `briefs/027/keel/host-interface.md` (0.19.0).
+- **Weapons free (§14.1–14.4)** as specified. Fight on/off per Sky's note: on at a shot by or at the cell, kept while a combatant aims at an operative inside its max ring on a line, off `weapons.free.settle` = `line-lapse-s` 3 s (an existing value) after the last contact or shot. fight.public's 30 s judging and auto-holster are unchanged. Focus = `fire` with `focus: true`, a lock (never walks in). X sets `Gun.StandDown`. Follow folded in (§14.3).
+- **Intent, per agent:** police and robots foe on drawn, fired, Vale, violence seen; a known face from Alert 2 (robots at any Alert at wanted/infamous Heat). Rivals: calm drawn or Vale; alerted (drawn, or Alert 2) also what they saw that agent do; the drawn crew presses for the Vale holder. Final fight and range: every operative, as before. A face is known from a seen draw, seen violence, a warning, or a landed witness report of violence or a draw (not loitering: with it, one loiter report got the Enforcer shot at 1:40 in S14). Police warn a drawn weapon at Alert 0–1 (the lab's numbers), not an agent already given a target. From Alert 3 at security level 1 and up, police close in on a sighting (fight.kite's close-in).
+- **New [S] values (Motive's to rule):** intent-face-alert 2, intent-warn-max-alert 1, intent-close-alert 3, intent-close-level 1, intent-rivals-alert 2. Not built: Pulse's full per-level dial, the Heat "rival hit", rival ambush on sight.
+- **Proof** (baseline `out/keel041/base`, built before the first edit): both rules off by temporary switches, 287/287 hashes and 67/67 range identical; switches removed, 294/294 + 77/77 identical to before removal. `dotnet test` 1365 pass. Matrix (`briefs/027/keel/matrix-0.19.txt`): no `today` row changes result; P-A 0 %, P-B success 44 → 55 %, P-G failure 55 → 72 % (weapons free, your numbers; intent moves none of them).
+- **Routes** (`briefs/027/keel/route-moves-0.19.json`): weapons free moves 16 routes' health and careless-reporter's Alert 1 → 2, no outcome (your §14.5). Intent: the 5 loud wins now fail enforcer-down (the press: the crew walks up on the Enforcer, who can't fire walking Vale; press off, they win as before). S11 wins once the three cover the walk.
+- **Sweep** (`briefs/027/keel/sweep-0.19.txt`): built, `today` wins 156 → 28, cheap 4 → 0, newly cheap 0; every lab preset cheap → 0. The press alone causes the drop. Hidden under it: weapons free alone gives `today` 163 wins, cheap 9, **7 newly cheap (cheapest 5 %)**, the norivals runkite family. If the press is softened, they come back.
+- F14-4V4 line missed: 6.7 s, 0 down, 44 % (yours 5.6 s), because the fight now starts at the first shot rather than at the spawn.
+- **For Motive:** the press strength (loud wins 156 → 28); the 5 new values; the final fight keeping "every operative" (Sky's per-agent answer may reach it); the 7 hidden cheap wins. **Waymark:** re-record the loud rows with cover for the walk. **Fable:** the placeholder lines for `free` and `free-not-cell` in text.json. **Latch, Glyph:** G, X, focus, the `UnderFireOf` under-fire cue, the crew's cone from 3:10.
+
+## 15. Rulings on engine 0.19.0 (2026-10-22)
+
+**Inputs:** §14.7 (Keel, engine 0.19.0); Pulse's `briefs/027/pulse/hostile-initiative.md` with Sky's answers; Sky on the press: "a clever player would protect their enforcer, by positioning his squad around him - or in cover"; Waymark's protective loud plan (`briefs/027/waymark/loud-robust-0.19.txt`: 5:09.6, 14 T, Alert 2, 11 %, 36 of 41 standable moves clean); Keel's `sweep-0.19.txt`, `matrix-0.19.txt`, `route-moves-0.19.json`.
+**Probes** (`out/motive027/s15/`; nothing in `sim/`, `contracts/` or `unity/` edited). `tree/` is a copy of the working tree at 0.19.0 with two env switches: `S15FINAL=agent` (the final fight per agent, 15.2) and `S15COVER=1` (a rejected candidate, 15.3). `rb/*.json` are the rulebook variants. Unswitched, the tree reproduces `matrix-0.19.txt` line for line, Keel's sweep B (`today` 28 wins, 0 cheap) and Waymark's mission check (37/38, the same MC-0 line). Results: `m/matrix-*.txt`, `m/sw/<preset>.<tag>.txt`, `m/routes-<tag>.txt` (all 38 route scripts), `m/mc-*.txt`, `m/robplan-*.txt`.
+
+**Kind: TODAY and LAB.** No new value.
+
+### 15.1 The five values and the press: confirmed as built
+Each value moved one step either way: the `today` sweep (3,792 policies) and all 38 route scripts.
+
+| value | built | one step down | one step up | ruling |
+|---|---|---|---|---|
+| `intent-face-alert` | 2 | 1: wins 28 → 56, none cheap (police engage a known face at Alert 1, so fights start earlier and split) | 3: wins 24 | **2.** A known face is a target from search, as Pulse's S1/S2 dial has it. |
+| `intent-warn-max-alert` | 1 | 0: wins 26 | 2: identical | **1.** A heeded warning is itself Alert 1, so a warning only makes sense while it can still keep things at 1. |
+| `intent-close-alert` | 3 | 2: wins 0, and `fail-district-seals` becomes `enforcer-down` at 3:10 (T 19): search turns into a hunt | 4: the rulebook rejects it (0..3) | **3.** Close-in is the lockdown's beat. |
+| `intent-close-level` | 1 | 0: identical at the Handover (S1) | 2: identical (close-in never moves a sweep row) | **1.** S0 (lax) never closes in; routine does. |
+| `intent-rivals-alert` | 2 | 1: identical | 3: identical | **2.** In every played run, gunfire draws the crew before the Alert does. |
+
+- No step of any value changes a route outcome, and no step makes a cheap win (< 40 % lost).
+- **The press: on, as built.** Off: `today` wins 28 → 159, cheap 0 → 9 (7 newly cheap against 0.18.0, cheapest 5 %), the loud rows 14 → 11 T. The press is what makes the loud route need the protective plan Sky described, and Waymark's plan shows it can be won (11 %). That is the intended result. The press is not a tuning knob: there is no softer setting. Any later change to it re-runs this sweep (15.3).
+
+### 15.2 The final fight follows per-agent intent (rule; Sky to confirm)
+- **The rule:** `ai.intent.final` takes `agent`. In the final fight a hostile fires on an operative only for that operative's own causes, the same list as before the fight:
+  - police and robots: drawn, fired, Vale, violence, or its own known face (the final fight is at Alert 2 or more);
+  - rivals: drawn, Vale, or seen.
+- **The range keeps `every`.** It has no history to read.
+- **No new value:** an existing key gets its second setting.
+- **Why:** Sky's rule ("each character has their own history… the Scout shouldn't be punished if the Enforcer goes in wild") has no exception for the final fight. "Every operative" was Pulse's §2.1 carry-over, a crew-made rule.
+
+**Measured (`S15FINAL=agent` against the built engine):**
+
+| check | result |
+|---|---|
+| matrix, 42 rows | identical, hashes too (L3 `f103ee2e4a95` both ways) |
+| sweep, 3,792 × `today`, `lab`, `lab-field-on`, `lab-snap-off` | every row identical |
+| quiet routes (all A, B, G variants, withdraw) | outcome, T, Alert, health and hash identical: 30 of 38 scripts hash-identical |
+| loud routes (`loud`, `-fast`, `-fight`, `-left-downed`, `-left-standing`) | outcome, T, Alert and hits identical; hashes move |
+| three failure rows | the same failure, but the agents who did nothing are no longer shot: `careless-takedown-seen-crowd` 3 down → 0 (18 → 6 hits); `fight-loud-enforcer-down` 3 down → 0 (T 9 → 8); `fight-safe-rivals-reach-vale` Tech down → none (10 → 6 hits) |
+| Waymark's protective plan, its 80 robustness variants (`m/robplan-loud-base.txt`; the 68 composed scripts in `m/robscripts/`, replayed both ways in `m/robreplay.txt`) | the base plan is identical (5:09.6, 14 T, 11 %). Flank waits stay 32/32. Car waits drop from 36 to 33 clean of 48: S 0,+1 m, S +1,+1 m and T +1,0 fail. Re-composed with the rule on, those three still don't board. |
+| mission check | identical (37/38, the same MC-0 line, 15.4) |
+
+- **It makes the loud route slightly harder, not easier.**
+  - In the three lost car waits, the response unit has joined the final fight and walks past the car at 2–3 m.
+  - It now shoots only the agent who drew first (the Fixer, drawn at 3:45.5, down at 3:49.6) instead of spreading its shots over the holstered agents.
+  - The counter is the player's: draw together.
+- **It opens no exploit.**
+  - A clean agent can't join the fight without becoming a foe: drawn in sight, fired, or its face known.
+  - Only the Enforcer takes people down, and in the final fight he holds Vale.
+  - What the player gains is what Sky asked for: an agent kept out of it stays out of it, at the cost of one gun fewer.
+- **Sky to confirm,** because it changes GDD §06's target priority. "… → nearest armed op → nearest op" becomes "… → nearest op it has cause to fire on". It also decides how T6 ("final fight reads as consequence") reads: per agent.
+
+### 15.3 The 7 hidden cheap wins: none survives the press
+- **With the press on** (and either final-fight rule), all 7 fail with `enforcer-down`, 38–66 % lost. Press off is `rb/nopress.json` with intent on, the same 7 as Keel's A:
+
+| policy (L3) | press off | press on |
+|---|---|---|
+| km10-fm5-step60-focus-norivals-enfgo-carfree-runkite | success 4:54.6, 11 % | enforcer-down 3:50.2, 38 % |
+| km20-fm20-step300-norivals-at220-runkite | success 5:01.0, 38 % | enforcer-down 3:55.2, 66 % |
+| tight-step200-focus-norivals-at212-runkite | success 4:55.0, 38 % | enforcer-down 3:57.0, 50 % |
+| tight-step300-focus-norivals-at224-runkite | success 4:44.8, 33 % | enforcer-down 3:59.2, 61 % |
+| tight-step300-focus-norivals-at228-runkite | success 4:44.7, 27 % | enforcer-down 4:03.2, 55 % |
+| tight-step300-focus-norivals-at232-runkite | success 4:48.3, 22 % | enforcer-down 4:07.2, 55 % |
+| tight-step300-focus-norivals-at236-runkite | success 4:52.3, 22 % | enforcer-down 4:11.2, 55 % |
+
+- **The mechanism** (`at228`, both logs): the policy never fires on the crew and fights the two officers at the edge of their ring.
+  - Press off, the drawn crew stands at the Office front and never acts, so the stand-off is free.
+  - Press on, the crew walks onto the Enforcer, who is walking Vale, and drops him from 9 m down to 3 m by 4:03.2.
+  - The press is the fix. No rule is needed.
+- **One candidate was tried and rejected:** a police body in cover re-plans only once each `kite.coverHold`, the officers' cover churn in that log (30 cover changes, 2 shots). It makes press-off cheaper (cheap 9 → 22), so the churn is not what makes them cheap.
+
+### 15.4 `careless-reporter-not-stopped`: Alert 2 is the expected cost; Waymark updates the expectation
+- **Under 0.19.0 the ambush fight lasts longer:** 7:28.0 to 7:42.6, against 7:36.9 on 0.18.0. Weapons free spreads the fire (the Tech takes rival-2 at 15 m, 150 ‰).
+- **The door guard finds the body:** he runs in against the rivals and passes it at 7:38.2. He radios it in, and the report lands at 7:43.2: Alert 2, before Go at 7:53.9. On 0.18.0 nobody passed the body before Go.
+- **This is what the twin exists to show:** a body left where it fell is found and reported. The route's own note already predicted Alert 2 (guard 64, landing at 7:40.2).
+- MC-7 still counts it worse than route B. The final-fight rule does not move it.
+
+### 15.5 Handoffs
+- **Keel (15.2, once Sky confirms):**
+  - **Inputs:** `ai.intent.final` takes `agent` (Rules: `OneOf` every, agent). With `agent`, `FoesInReach` reads `Provoked` in the final fight, and the range keeps every. Rule text on `ai.intent`.
+  - **Scenarios:**
+    - F15-CLEAN: a holstered Scout who was never seen, inside an officer's ring in the loud final fight, draws no fire;
+    - F15-DRAWN: the same Scout drawn in sight does;
+    - F15-FACE: a Scout whose face is known (a seen draw earlier) does;
+    - F15-RANGE: the 77 range hashes are unchanged;
+    - F15-SWEEP: matrix and sweep rows identical.
+  - **Done-check:** the 8 moved hashes above and no other; `dotnet test` green.
+  - **Next owner:** Suture.
+- **Keel (15.1):** drop `proposed` on the five values and the press; no number changes.
+- **Waymark:**
+  - `careless-reporter-not-stopped` expects Alert 2 (15.4).
+  - After 15.2 is built, re-record the hashes of the 5 loud rows and the 3 failure rows. Their expectations don't change.
+  - Check whether drawing the car waits on one tick wins back the three lost car waits (33 → 36 of 41 standable).
+- **Suture:** retest 15.2's no-exploit claim with a policy that keeps one agent holstered through the final fight.
+- **Aster → Sky:** confirm 15.2 (GDD §06 priority line).
+
+**Sky on 15.2, 2026-10-22:** "I am not sure...I think so - sounds right." Built as provisional: Keel builds `ai.intent.final = agent`; Sky confirms after playing the build. The GDD §06 priority line changes only when Sky confirms (folded into the GDD v0.25 review).
+
+### 15.6 Keel: built, engine 0.20.0 (2026-10-22), PROVISIONAL until Sky plays it
+**Kind: TODAY and LAB.** 15.2 as specified, as a rulebook value, not a switch: `ai.intent.final` is `"agent"` (schema and engine `OneOf` every, agent; `IntentRules.FinalEvery`). With `agent`, `FoesInReach` reads `Provoked` in the final fight; the range keeps `every`; the guard ally is unchanged. The probe's line, exactly: `(anyOp && (R.Intent.FinalEvery || Range)) || Provoked(id, op)`. The rule text on `ai.intent` and its `reason` say PROVISIONAL (Sky 2026-10-22, to confirm after play); GDD §06's priority line waits for Sky.
+- **15.1:** `proposed` dropped on the five intent values (src now ends "confirmed as built, Motive tuning.md §15.1"); no number changed. The press lives inside the `ai.intent` block, whose `proposed` stays because of `final: agent`; its reason says the press is confirmed.
+- **Scenarios** (`sim/Suborned.Sim/ScenariosFinalIntent.cs`): F15-CLEAN (the holstered Scout 6 m from police-1's stand, in an officer's effective ring on a line 30 of 30 s, draws no fire; its control with `every`, same orders, is shot 0.3 s after exposure), F15-DRAWN (weapons free off; he draws there and officer-1 and officer-2 fire on him first), F15-FACE (the guard's drop-it warning heeded at 0:49; in the final fight at Alert 2 security-1 fires on him holstered). F15-RANGE, F15-SWEEP and the route moves are both-ways tests (`sim/Suborned.Sim.Tests/FinalIntent.cs`, `Scenarios.WithFinal`: the same inputs read as `every`): all 77 range runs, the 8 matrix runs under today and the lab, and all 38 route scripts.
+- **Proof** (baseline `out/keel-s15/base`, built before the first edit; `hashes --start-text BASE`, `briefs/027/keel/hash-moves-0.20.json`): range 77/77 identical. Scenarios and routes: 285 of 294 identical, **9 move**: your 8 (5 loud rows, outcome, T, Alert and hits unchanged; `careless-takedown-seen-crowd` 3 down → 0, hits on the cell 18 → 6; `fight-loud-enforcer-down` 3 down → 0, T 9 → 8; `fight-safe-rivals-reach-vale` Tech down → none, 10 → 6) **and N36**, a scenario outside your measured set: in its lost safe fight rival-2 no longer shoots the Fixer (Pressure, loitering, never drawn); same failure, its checks pass. Plus 3 new (the F15 scenarios).
+- **Matrix** (`briefs/027/keel/matrix-0.20.txt`): 315 rows identical to 0.19.0 line for line; only the header (engine, inputs) differs. **Sweep** (`briefs/027/keel/sweep-0.20.txt`): 3,792 × today, lab, lab-field-on, lab-snap-off, every row identical (wins 28, 1, 29, 0); every chunk replays identically.
+- **Tests:** `dotnet test sim/Suborned.Sim.Tests` 1509/1509 (1m48). `bun test contracts/rules` 61/61; `bun run typecheck` clean. Full `bun test` 1467 pass, 2 fail, neither from this change: the mission check's MC-0 on the tree engine (`careless-reporter-not-stopped` expects Alert 1, gets 2: 15.4, Waymark's) and drift-auto's end-to-end (skyline r011, from `tools/missions/check/engine.ts`, not mine). `bun run verify`: r008 ACCEPTED, REPLAY OK. `bun run drift:auto`: people and dialogue declared (dialogue: `contracts/rules/rulebook.schema.ts`, `contracts/missions/handover/text.schema.ts`; people: `tools/missions/check/engine.ts`), skyline refused (r011, the same engine.ts; its owner declares it).
+- **Also:** `Fixtures/drive-session.script.json` re-recorded (orders identical; engine and inputs moved), DP1 passes. Host note in `briefs/027/keel/host-interface.md` (0.20.0): no new field; the host must not assume everyone is a target in the final fight.
+- **Run times:** the machine ran at load 100–190 from parallel batch plays (`out/missions/plays/bench-*`), so: full `bun test` 29 min (over 10: the mission-check and drift-auto suites replay every route and run on a scratch copy; CPU 41 min), the sweep 9 min (1m41 unloaded at baseline), the matrix 4m21, `verify` 4m26.
+- **Next:** Waymark (careless-reporter-not-stopped → Alert 2; re-record the 8 route hashes; N36 is a scenario, nothing to re-record), Suture (one agent holstered through the final fight), Latch (port the dll with the rulebook in one batch: a 0.19.0 dll rejects `final: agent`).
+
+## 16. Rulings on engine 0.21.0: the lasting fire order on the move (2026-10-22)
+**Input:** Sky's rule (brief 041, 2026-10-22: "Keep them firing until out of range I would say, same for running"), as Keel built it (`fight-lab.md` §16, `sweep-0.21.txt`, `matrix-0.21.txt`). **No value moves. The rule stands as Sky gave it.**
+
+**How I checked:** I re-ran the 48 sweep rows whose win moved, on both engines (`fight-lab --runs … --scripts`, about 3 s per preset), and played each script with its log (96 plays in 3.6 s per engine). Scratch is in `out/motive-s16/`.
+
+### 16.1 The lost wins: coin flips on the ring's edge, not a line the player loses
+- **One cause, the same in every row.** All 48 rows (today 12 lost and 3 new, lab 1 lost, lab-field-on 21 lost and 11 new) match 0.20.0 line for line until their first `fire.out-of-range`. Every one of those ends is a target 1 m outside the sidearm's 16 m max ring (effective ring 15 m).
+- **After that tick, the result is chaos.** Each preset gains wins as well as losing them, and every win on either side is heavy. The lost wins had lost 50–83 % health, the new ones 55–88 %. The cheapest win in the sweep is still 55 % (it was 55 % today and 50 % in lab-field-on). Cheap wins stay at 0. For example, `lab-field-on L1c:tight-step100-blk-aware-at208-runkite` won at 4:59.3 on 0.20.0 and seals at 5:00.4 on 0.21.0. That is 1.1 s inside a 5:00 clock.
+- **Only the kite scripts are hit.** They hold a stand-off band: they step away inside a foe's 15 m ring and fire from within 16 m. That keeps the shooter on the exact edge where the rule applies. The 0.20.0 chase walked them back in for free, so the engine was playing for them. Losing that is the rule doing its job.
+- **No human line loses its target.**
+  - The plain matrix player (L1–L4, P-A, P-B, P-G) is identical in every preset.
+  - The one exception is lab-cover L3, Trail 30 → 32. At 4:11.9 the patrol steps out to 16 m and the Tech's order on it ends. Weapons free takes police-1, so one more person is hit, at Trail per person. It is the same failure.
+  - No route script moves by behaviour (Keel, 38/38).
+- **Nobody is shot by a target they dropped.** Across 613 ends in the 48 runs, the dropped target never fired on that agent from beyond 16 m within 3 s. Both sides carry sidearms with the same ring.
+- **Re-engaging is already cheap.**
+  - In a fight, weapons free picks up 341 of the 613 ends (56 %) with no input: 188 on the same target once it is back in reach, 153 on another foe in reach.
+  - The agent's next shot comes a median 1.7 s after the end (p90 5.6 s).
+  - Otherwise, re-engaging takes one right hold. That is fine: the player stays present (Sky's "present and adaptive"), and the rule says exactly when to re-aim.
+- **The one need is to see why the agent stopped.** Keel's host note already sends `fire.out-of-range` to the pop `less.pop.fire-out-of-range` (placeholder "Too far", for Fable to word). Latch ports it. This is not a rule change.
+
+### 16.2 `P-G:reset` winning at 55 % in lab-field-on: acceptable, no fix
+- **What moved:**
+  - At 3:40.4, rival-2 steps out to 16 m and the Fixer's order ends.
+  - Weapons free picks rival-1, who is shooting the Enforcer from 9 m.
+  - The hit on the Enforcer at 3:41.3 no longer lands (on 0.20.0 it left him at 10 health), and the run wins at 4:34.5.
+- **The new rule wins it, not the reset.** It drops the far target and takes the near threat. At lab `acc-start` 0, the reset (cease and fire again after each shot) only slows the shooter.
+- **It still costs more than playing straight.** Plain P-G in the same preset wins at 33 %, inside its line. The reset row wins at 55 %, with 0 ops down, and stays FAIL on P-G's line (55 > 33). The §6.6.1 bar holds: no cheap loud win, and no exploit beats the honest line.
+
+### 16.3 Values: none
+- Sky's rule is the direction, and nothing measured asks for a number. The sidearm's 1 m band (effective 15 m, max 16 m, tuning.md §7.9) is where every end happens. Widening it would bring the free chase back by the side door, so it stays.
+
+### 16.4 Handoffs
+- **Fable:** word `less.pop.fire-out-of-range` (now the placeholder "Too far"; `text.json` has the refusal "Too far · {m} m"), following the plain-copy rules.
+- **Latch:** in the 0.21.0 port, show the pop on the agent's plate or pill when the order ends (`host-interface.md` 0.21.0, step 3).
+- **Keel, Waymark, Suture:** nothing new from this section.
+
+**Sky on running, 2026-10-22:** "I think running only in front of camera, patrol bots and guards get you noticed, anyone else fine, need to loosen that up." (Context: moving about on foot feels slow, which lowers exploration.) Ruling for Keel: only security notices a runner (cameras, robots, guards; police officers count as security, Sky confirmed "yep"); ordinary people no longer remember a run. The walk pace and Sky's three-speed idea (walk, jog drawn, sprint holstered) are not decided.

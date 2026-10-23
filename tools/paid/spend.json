@@ -1,0 +1,383 @@
+{
+ "blocked": 6,
+ "by_day": {
+  "2026-09-27": {
+   "calls": 17,
+   "usd": 1.50223
+  },
+  "2026-09-28": {
+   "calls": 8,
+   "usd": 0.7704
+  },
+  "2026-10-18": {
+   "calls": 5,
+   "usd": 0.4815
+  },
+  "2026-10-21": {
+   "calls": 14,
+   "usd": 1.1556
+  },
+  "2026-10-22": {
+   "calls": 31,
+   "usd": 3.30951
+  },
+  "2026-10-23": {
+   "calls": 161,
+   "usd": 55.10232
+  }
+ },
+ "by_model": {
+  "bfl:5@1": {
+   "calls": 1,
+   "usd": 0.045
+  },
+  "bytedance:seedance@2.0": {
+   "calls": 20,
+   "usd": 25.64824
+  },
+  "bytedance:seedream@5.0-pro": {
+   "calls": 170,
+   "usd": 16.80114
+  },
+  "codex:image_gen": {
+   "calls": 4,
+   "usd": 0.0
+  },
+  "google:4@2": {
+   "calls": 1,
+   "usd": 0.138
+  },
+  "minimax:4@1": {
+   "calls": 31,
+   "usd": 13.93
+  },
+  "minimax:h3@0": {
+   "calls": 7,
+   "usd": 5.59
+  },
+  "minimax:music@2.6": {
+   "calls": 1,
+   "usd": 0.15
+  },
+  "openai:gpt-image@2": {
+   "calls": 1,
+   "usd": 0.01918
+  }
+ },
+ "calls": 236,
+ "failed": 2,
+ "jobs": {
+  "007-concepts": {
+   "blocked": 0,
+   "by_day": {
+    "2026-09-27": {
+     "calls": 17,
+     "usd": 1.50223
+    },
+    "2026-09-28": {
+     "calls": 8,
+     "usd": 0.7704
+    }
+   },
+   "by_model": {
+    "bfl:5@1": {
+     "calls": 1,
+     "usd": 0.045
+    },
+    "bytedance:seedream@5.0-pro": {
+     "calls": 22,
+     "usd": 2.07045
+    },
+    "google:4@2": {
+     "calls": 1,
+     "usd": 0.138
+    },
+    "openai:gpt-image@2": {
+     "calls": 1,
+     "usd": 0.01918
+    }
+   },
+   "by_pass": {
+    "atomicage": {
+     "budget_usd": null,
+     "calls": 13,
+     "usd": 1.2519
+    },
+    "atomicage-bakeoff": {
+     "budget_usd": null,
+     "calls": 4,
+     "usd": 0.25033
+    },
+    "blocks": {
+     "budget_usd": null,
+     "calls": 8,
+     "usd": 0.7704
+    }
+   },
+   "calls": 25,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 25,
+   "total_usd": 2.27263,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "020-people-sheets": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-18": {
+     "calls": 5,
+     "usd": 0.4815
+    },
+    "2026-10-23": {
+     "calls": 10,
+     "usd": 0.7704
+    }
+   },
+   "by_model": {
+    "bytedance:seedream@5.0-pro": {
+     "calls": 13,
+     "usd": 1.2519
+    },
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": null,
+     "calls": 5,
+     "usd": 0.4815
+    },
+    "fixer-original": {
+     "budget_usd": 0.3,
+     "calls": 2,
+     "usd": 0.1926
+    },
+    "fixer-outfit": {
+     "budget_usd": 0.6,
+     "calls": 4,
+     "usd": 0.3852
+    },
+    "fixer-short": {
+     "budget_usd": 0.3,
+     "calls": 2,
+     "usd": 0.1926
+    },
+    "fixer-short-codex": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "calls": 15,
+   "cost_per_used": 0.25038,
+   "failed": 0,
+   "ok": 15,
+   "total_usd": 1.2519,
+   "unknown_cost_calls": 0,
+   "used": 5,
+   "used_usd": 0.4815
+  },
+  "033-portraits": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-21": {
+     "calls": 14,
+     "usd": 1.1556
+    }
+   },
+   "by_model": {
+    "bytedance:seedream@5.0-pro": {
+     "calls": 14,
+     "usd": 1.1556
+    }
+   },
+   "by_pass": {
+    "t1": {
+     "budget_usd": null,
+     "calls": 4,
+     "usd": 0.3852
+    },
+    "t2": {
+     "budget_usd": null,
+     "calls": 1,
+     "usd": 0.0963
+    },
+    "t3": {
+     "budget_usd": null,
+     "calls": 4,
+     "usd": 0.3852
+    },
+    "t4": {
+     "budget_usd": null,
+     "calls": 1,
+     "usd": 0.0963
+    },
+    "t5": {
+     "budget_usd": null,
+     "calls": 4,
+     "usd": 0.1926
+    }
+   },
+   "calls": 14,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 14,
+   "total_usd": 1.1556,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "047-loading-art": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-22": {
+     "calls": 31,
+     "usd": 3.30951
+    },
+    "2026-10-23": {
+     "calls": 36,
+     "usd": 3.54063
+    }
+   },
+   "by_model": {
+    "bytedance:seedream@5.0-pro": {
+     "calls": 67,
+     "usd": 6.85014
+    }
+   },
+   "by_pass": {
+    "fix": {
+     "budget_usd": null,
+     "calls": 36,
+     "usd": 3.54063
+    },
+    "takes": {
+     "budget_usd": null,
+     "calls": 31,
+     "usd": 3.30951
+    }
+   },
+   "calls": 67,
+   "cost_per_used": 0.38056,
+   "failed": 0,
+   "ok": 67,
+   "total_usd": 6.85014,
+   "unknown_cost_calls": 0,
+   "used": 18,
+   "used_usd": 1.8297
+  },
+  "052-teaser": {
+   "blocked": 6,
+   "by_day": {
+    "2026-10-23": {
+     "calls": 113,
+     "usd": 50.79129
+    }
+   },
+   "by_model": {
+    "bytedance:seedance@2.0": {
+     "calls": 20,
+     "usd": 25.64824
+    },
+    "bytedance:seedream@5.0-pro": {
+     "calls": 54,
+     "usd": 5.47305
+    },
+    "minimax:4@1": {
+     "calls": 31,
+     "usd": 13.93
+    },
+    "minimax:h3@0": {
+     "calls": 7,
+     "usd": 5.59
+    },
+    "minimax:music@2.6": {
+     "calls": 1,
+     "usd": 0.15
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": null,
+     "calls": 37,
+     "prior_budget_usd": 40,
+     "usd": 14.60455
+    },
+    "2": {
+     "budget_usd": null,
+     "calls": 32,
+     "prior_budget_usd": 30,
+     "usd": 8.959
+    },
+    "3": {
+     "budget_usd": null,
+     "calls": 5,
+     "usd": 5.53741
+    },
+    "4": {
+     "budget_usd": null,
+     "calls": 26,
+     "usd": 14.55304
+    },
+    "5": {
+     "budget_usd": null,
+     "calls": 11,
+     "prior_budget_usd": 35,
+     "usd": 4.5373
+    },
+    "6": {
+     "budget_usd": 5.0,
+     "calls": 2,
+     "usd": 2.6
+    }
+   },
+   "calls": 113,
+   "cost_per_used": 1.75142,
+   "failed": 2,
+   "ok": 105,
+   "total_usd": 50.79129,
+   "unknown_cost_calls": 0,
+   "used": 29,
+   "used_usd": 22.26026
+  },
+  "900-codexcheck": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-23": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "t1": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "t2": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 2,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 2,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  }
+ },
+ "schema": "suborned.paid-spend/1",
+ "total_usd": 62.32156,
+ "used": 52
+}

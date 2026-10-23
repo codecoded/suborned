@@ -118,6 +118,7 @@ namespace Suborned.Play
         public sealed class RingSeg
         {
             public int Way = -1; public PanelRow Row; public readonly List<OpId> By = new(); public string Word = "", Icon = "";
+            public string Named = "";
             public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1; // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
         }
         public sealed class RingState
@@ -127,6 +128,20 @@ namespace Suborned.Play
             /// <summary>A harmful wedge's hold under way (HostAim.RingHoldFrame): which wedge, since when, by what input (left, right, E); Ctrl: Ctrl + right's Fire.</summary>
             public int HoldSeg = -1; public float HoldStart = -1f; public string HoldSrc = ""; public bool HoldCtrl;
         }
+        /// <summary>The wedge the pointer is on (else the lit one) when its word names a target among same-verb wedges: the thing to show in
+        /// the world (Sky 2026-10-22: hovering a Loop wedge shows which camera). `view` is its view key ("camera/entrance", a person's key),
+        /// `watcher` its watcher id when it has sight ("camera:entrance"), else "".</summary>
+        public (string view, string watcher)? RingFocus
+        {
+            get
+            {
+                var rs = Ring; if (rs == null || Game == null) return null; int i = rs.Hover >= 0 ? rs.Hover : rs.Lit;
+                if (i < 0 || i >= rs.Segs.Count) return null; var s = rs.Segs[i]; if (s.More || s.Named.Length == 0 || s.Row?.I?.Order is not Order o || o.Target.Length == 0) return null;
+                bool cam = o.Do == "loop" || Game.S.Cameras.Exists(c => c.Id == o.Target);
+                return cam ? ("camera/" + o.Target, "camera:" + o.Target) : (o.Target, Game.WatcherKind(o.Target).Length > 0 ? o.Target : "");
+            }
+        }
+
         /// <summary>The open ring, else null (the HUD draws it; the host reads the pointer against it).</summary>
         public RingState Ring { get; private set; }
         public const float RingHoldS = 0.22f, RingMovePx = 6f, RingDeadPx = 18f, RingStickyS = 0.5f, RingOuter = 84f, RingInner = 30f;
@@ -152,6 +167,15 @@ namespace Suborned.Play
                 s.Key = r.Key >= 0 && Selected[(int)r.By] ? r.Key : -1;
                 rs.Segs.Add(s);
             }
+            // Sky on the cabinet's ring (2026-10-22: three "Loop · 66 s" wedges, "looping what?"): a word two wedges share names its target, in
+            // the intent's own words (text.json's target names: "Loop the entrance camera", "Loop the square's mast camera")
+            foreach (var s in rs.Segs)
+            {
+                if (rs.Segs.FindAll(x => x.Word == s.Word).Count < 2 || s.Row?.I == null) continue;
+                var it = s.Row.I; string tn = it.Order?.Target ?? "";
+                s.Named = it.Label.Length > 0 && it.Label != s.Word ? it.Label : tn.Length > 0 ? $"{s.Word} {(it.Order?.Do == "loop" ? CameraName(tn) : Name(tn))}" : s.Word;
+            }
+            foreach (var s in rs.Segs) if (s.Named.Length > 0) s.Word = s.Named;
             rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason
             rs.Lit = ch.Act == ContextRank.Act.Ring || ch.Act == ContextRank.Act.Default ? Math.Max(0, rs.Segs.FindIndex(x => x.Way == ch.Pick)) : controls.quickAction ? 0 : -1; // ring by default: nothing ranked (a passer-by's takedowns), nothing lit
             if (rs.Segs.Count == 1) rs.Lit = 0;

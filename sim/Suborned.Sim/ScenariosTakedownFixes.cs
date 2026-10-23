@@ -13,6 +13,16 @@ namespace Suborned.Sim
     public static partial class Scenarios
     {
         /// <summary>Orders at their ticks, as a route script gives them (the scenario then checks what it needs).</summary>
+        /// <summary>Engine 0.19.0: as Orders, but an order after the run is over is not given (N87, whose run can now end first).</summary>
+        static void OrdersWhileOn(Run r, params Order[] os)
+        {
+            foreach (var o in os)
+            {
+                r.To(o.Tick); if (r.G.Over) return; o.Tick = r.G.Tick;
+                var (ok, why) = r.G.Issue(o);
+                r.Is(ok, $"{o.Op} {o.Do} {o.Target}{o.To} taken at {Report.Clock(r.G.Tick)}{(ok ? "" : ": " + why)}");
+            }
+        }
         static void Orders(Run r, params Order[] os)
         {
             foreach (var o in os)

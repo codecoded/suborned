@@ -267,7 +267,7 @@ namespace Suborned.Play
         void FlLadder(Game g, Dictionary<string, int> exposedAll)
         {
             int a = m.Agent; float colW = 109 * RosterScale; bool left = m.Dock == RosterDock.Left;
-            float WinMid(int i) => left ? ColY + ColumnBezels[i].y * RosterScale : 14 + 92 + 14 + ChipH / 2 + i * (ChipH + 4);
+            float WinMid(int i) => left ? ColY + BezelAt(i).y * RosterScale : 14 + 92 + 14 + ChipH / 2 + i * (ChipH + 4);
             float plateX = ColX + colW + 4; bool folded = PlateFolded;
             float lastY = 0, lastX = 0;
             for (int k = 0; k < 4; k++)

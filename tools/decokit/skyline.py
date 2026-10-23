@@ -154,6 +154,20 @@ def wrap_cap(s, p, t, zs, zf, body, start):
         s.box((0.0, 0.0, zs) if start else (-0.06, 0.0, zs), (0.06, BACK_Y, zf) if start else (0.0, BACK_Y, zf), body)
 
 
+def flank_walls(s, path, back, z0, z1, body, t=0.3):
+    """Brief 048 (Vela): the two closing edges of a wrap block's plan (path end -> back, back -> path start) as thin walls of the body over the shop storey. The lobby
+    prism ran out to those edges, so the bay-joint flank of a run end or corner showed the dark brown shop interior from the street. Inward is the left of travel
+    (the building is on the left of the path); the slab stands 1 cm proud of the plan edge so it does not z-fight the lobby's own flank."""
+    for a, b in ((path[-1], back), (back, path[0])):
+        dx, dy = b[0] - a[0], b[1] - a[1]
+        L = math.hypot(dx, dy)
+        if L < 0.05:
+            continue
+        nx, ny = -dy / L, dx / L
+        o = -0.01
+        s.extrude([(a[0] + nx * o, a[1] + ny * o), (b[0] + nx * o, b[1] + ny * o), (b[0] + nx * t, b[1] + ny * t), (a[0] + nx * t, a[1] + ny * t)], z0, z1, body)
+
+
 def wrap_block(s, path, back, n, body):
     """Block whose facade follows a plan path (building on the left of travel) closed by `back`: solid piers on the
     first / last segments at ground, shop glazing round the rest, ribbons, eyebrows and trims wrapping the whole run."""
@@ -164,13 +178,17 @@ def wrap_block(s, path, back, n, body):
     curved_glazing(s, path[1:-1], 0.45, 4.0, a=GLASS_Y, step=1.5, dz=2.75, interior=False)
     s.extrude(offset(path, 2.6) + [back], 0.45, 4.0, pal.Lobby)
     s.extrude(offset(path, GLASS_Y) + [back], 0.3, 0.45, pal.Terrazzo_Ivory)
+    flank_walls(s, path, back, 0.45, 4.0, body)
     s.extrude(plan, 4.0, G, body)
     for k in range(n):
         zb = G + k * FH
         zs, zf = zb + SP, zb + FH
         s.extrude(plan, zb, zs, body)
         ribbon(s, offset(path, GLASS_Y), zs, zf, pal.GlassDark)
-        s.extrude(offset(path, BACK_Y) + [back], zs, zf, pal.Enamel_Charcoal)
+        # brief 048 (Vela): the core behind the ribbon is solid body, with the charcoal as a skin in front of it (as DecoCorner / DecoEnd). It was one charcoal
+        # prism, and its side wall on the bay-joint flank (path end -> back) was the building's wall there: flat black slabs from the street, no glass.
+        s.extrude(offset(path, BACK_Y + 0.02) + [back], zs, zf, body)
+        ribbon(s, offset(path, BACK_Y), zs, zf, pal.Enamel_Charcoal)
         wrap_cap(s, *ends[0], zs, zf, body, True)
         wrap_cap(s, *ends[-1], zs, zf, body, False)
         mullions(s, path, zs, zf, GLASS_Y)

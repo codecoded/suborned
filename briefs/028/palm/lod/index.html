@@ -1,0 +1,17 @@
+<!doctype html><meta charset=utf-8><title>Palm LODs, 2026-10-22 (brief 028, Vela)</title>
+<style>body{background:#182e2e;color:#f7f4ec;font:15px/1.45 Arial,sans-serif;max-width:2100px;margin:20px auto;padding:0 20px}img{max-width:100%;display:block;margin:12px 0}h2{margin-top:32px}td,th{padding:4px 12px;text-align:left;border-bottom:1px solid #3a5a58}.dim{color:#b0cdc7}</style>
+<h1>Palm LODs: distance levels for CoconutPalm and CoconutPalm_Street</h1>
+<p class=dim>Sky, 2026-10-22: "why not do a LoD for the trees?" Candidates only: nothing is adopted, FULL_DETAIL still holds both ids. Full text in brief 028, "Palm LODs".</p>
+<h2>Levels and switch distances</h2>
+<table><tr><th>Level<th>CoconutPalm<th>CoconutPalm_Street<th>What<th>Takes over (third person, scale 1)<th>LODGroup screen height (CoconutPalm | Street)</tr>
+<tr><td>L0<td>6,310<td>8,230<td>as built<td>inside 60 m; every palm at play zoom<td></tr>
+<tr><td>L1<td>1,330<td>1,330<td>all 22 fronds as shipped; plain 8-sided trunk, octahedra for coconuts<td>60 m<td>0.1271 | 0.1705</tr>
+<tr><td>L2<td>514<td>514<td>the same 22 fronds as cards (4 rows, one card a side); 6-sided trunk<td>140 m (haze 19 %)<td>0.0545 | 0.0731</tr>
+<tr><td>impostor<td colspan=2>6 (trial)<td>three crossed baked cards: 25 % silhouette error, 13 % fat, baked light<td>not proposed<td></tr></table>
+<p class=dim>District: 947 palms = 6.55 M triangles at L0 (all L1 1.26 M, all L2 0.49 M). A third-person frame on Market Street draws 1.34 M of palm at L0 and 0.20 M with levels; median palm-foot view 0.67 M to 0.09 M. Play view unchanged (every palm L0).</p>
+<h2>1. Each level at the distance it takes over</h2><img src=board-1-levels.png>
+<h2>2. The boulevard, third person: every palm L0 | with levels | difference x4 | plan</h2><img src=board-2-market.png><img src=board-2-market-w.png>
+<h2>3. Play zoom (all L0) and close</h2><img src=board-3-play.png>
+<h2>4. Does the switch show? (before | after | difference x6)</h2><img src=board-4-pop.png>
+<h2>5. L2 before and after: the 20 Oct collapse against the authored cards</h2><img src=board-5-l2-before-after.png>
+<p class=dim>Numbers: metrics-new.json, metrics-20oct-collapse.json, metrics-impostor-trial.json, district.json, street-stats.json. Generator: tools/decokit/palm_lod.py (+ palm_lod_*.py). Blender EEVEE, kit materials, one sun, the game's haze; not Unity URP.</p>

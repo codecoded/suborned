@@ -70,7 +70,7 @@ namespace Suborned.Sim
         public string Mode = "";               // an agent's fire on this target: trigger, trigger-held, lock, follow, follow-held, return, free
         public string Lead = "";               // the agent it follows, or whose press locked it
         public bool Answers;                   // police this agent fired on in the last line-lapse (3 s): it answers out to its max ring
-        public bool Bystander, Car;            // the target is a bystander (fired on only when forced: Ctrl) or a car
+        public bool Bystander, Car;            // the target is a bystander (fired on only when the order is forced: the host's hold sends it) or a car
         public string Text = "";               // all of it in one line of plain words, for the numbers overlay
     }
 
@@ -79,7 +79,7 @@ namespace Suborned.Sim
         /// <summary>This run is on a fight range site (brief 029): the mission's rules are off, the fight's are on.</summary>
         public readonly bool Range;
         /// <summary>The verbs the range takes; any other is refused unknown-verb.</summary>
-        public static readonly string[] RangeVerbs = { "move", "drive", "cancel", "draw", "holster", "cease", "stance", "fire", "volley", "field", "panic", "carry", "spawn", "withdraw", "trigger", "follow" };
+        public static readonly string[] RangeVerbs = { "move", "drive", "cancel", "draw", "holster", "cease", "stance", "fire", "volley", "field", "panic", "carry", "spawn", "withdraw", "trigger", "follow", "free" }; // engine 0.19.0: free (tuning.md §14)
         public static readonly string[] RangeSides = { "police", "rivals", "response" };
         public static readonly string[] RangePlacements = { "near", "eff", "beyond", "cover" };
         public const int RangeSlots = 6;
@@ -246,7 +246,7 @@ namespace Suborned.Sim
             else p.Add(Lab && LabPipsOn ? new string('●', Math.Min(4, f.Pips)) + new string('○', 4 - Math.Min(4, f.Pips)) : $"{f.Acc / 10}%");
             p.Add($"{f.DistanceCm / 100} m" + (f.Band == "point" ? " point blank" : f.Band == "long" ? " long shot" : ""));
             if (f.Car) { var c = CarOf(f.Target); p.Add(c == null ? "car" : c.BurningAt >= 0 ? "car burning" : c.DisabledAt >= 0 ? "car disabled" : "car"); }
-            if (f.Bystander) p.Add("bystander: hold Ctrl to fire");
+            if (f.Bystander) p.Add("bystander"); // brief 041 (Sky): the hold fires at anyone, no Ctrl; the host says how
             if (f.Cover != "none") p.Add(f.Cover == "full" ? "full cover" : "half cover");
             if (f.CoverLost) p.Add("moving: cover doesn't count");
             if (f.Line && f.Acc > 0) p.Add(f.ShotsToHit == 1 ? "hits next shot" : $"hits in {f.ShotsToHit} shots");

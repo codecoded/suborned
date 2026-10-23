@@ -1,0 +1,24 @@
+<!doctype html><meta charset=utf-8><style>
+@font-face{font-family:Jost;font-weight:700;src:url(file:///Users/sky/Projects/suborned/unity/Assets/Suborned/UI/Resources/Kit/fonts/Jost-Bold.ttf)}
+@font-face{font-family:Jost;font-weight:600;src:url(file:///Users/sky/Projects/suborned/unity/Assets/Suborned/UI/Resources/Kit/fonts/Jost-SemiBold.ttf)}
+@font-face{font-family:Barlow;font-weight:500;src:url(file:///Users/sky/Projects/suborned/unity/Assets/Suborned/UI/Resources/Kit/fonts/Barlow-Medium.ttf)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden;background:#000}
+.bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.ic{display:inline-block;flex:none;-webkit-mask-size:contain;-webkit-mask-repeat:no-repeat;-webkit-mask-position:center}
+.cam{display:inline-block;flex:none;border-radius:50%;background-size:cover;background-position:center;background-color:#244442}
+.fr{position:absolute;inset:0;border-style:solid;pointer-events:none}
+.abs{position:relative;display:inline-flex;align-items:center;font-family:Jost,sans-serif;font-weight:700;color:#f7f4ec;white-space:nowrap;line-height:1}
+.in{position:relative;display:flex;align-items:center;white-space:nowrap}
+.dim{color:#b0cdc7}
+@keyframes blink{from{opacity:1}to{opacity:.55}}</style><body><img class="bg" src="file:///Users/sky/Projects/suborned/briefs/044/src/clean/cancel-pop.png"><div style="position:absolute;left:960px;top:472px;transform:translate(-50%,-100%)"><div class="abs" style="height:26px;padding:0 11px 0 9px;gap:7px;font-size:13.5px"><div class="fr" style="border-width:10.4px 10.4px 10.4px 10.4px;border-image:url(file:///Users/sky/Projects/suborned/unity/Assets/Suborned/UI/Resources/Kit/markers/plate_dark@2x.png) 24 24 24 24 fill / 10.4px 10.4px 10.4px 10.4px stretch;"></div><span class="in" style="gap:7px"><i class="ic" style="width:14px;height:14px;background:#f7f4ec;-webkit-mask-image:url(file:///Users/sky/Projects/suborned/unity/Assets/Suborned/UI/Resources/Kit/icons/singles/close_x@2x.png);"></i>Watch cancelled · 5 s lost</span></div></div><pre id="qa" style="position:fixed;left:0;top:0;opacity:0"></pre><script>addEventListener("load",()=>setTimeout(()=>{
+const roots=[...document.querySelectorAll(".abs")].map(e=>e.getBoundingClientRect()), bad=[];
+const R=(r)=>[r.left|0,r.top|0,r.right|0,r.bottom|0].join(",");
+document.querySelectorAll(".abs").forEach((root,i)=>{const rr=root.getBoundingClientRect();
+ if(rr.left<0||rr.top<0||rr.right>1920||rr.bottom>1080) bad.push("offscreen "+R(rr));
+ root.querySelectorAll("*").forEach(el=>{ if(el.classList.contains("fr")||el.tagName=="svg"||el.tagName=="circle") return; const st=getComputedStyle(el); if(st.position=="absolute"&&!el.textContent.trim()&&!el.classList.contains("ic")&&!el.classList.contains("cam")) return;
+  const r=el.getBoundingClientRect(); if(r.width==0) return;
+  const tol=7; if(r.left<rr.left-tol||r.right>rr.right+tol||r.top<rr.top-tol-3||r.bottom>rr.bottom+tol+3) bad.push("outside "+(el.textContent.trim().slice(0,14)||el.className)+" "+R(r)+" in "+R(rr)); });
+ root.querySelectorAll(".in").forEach(el=>{const t=el.scrollWidth-el.clientWidth; if(t>1) bad.push("overflow-x "+t+" "+el.textContent.trim().slice(0,14));});
+ roots.forEach((o,j)=>{ if(j>i){const a=rr,b=o; if(a.left<b.right-1&&b.left<a.right-1&&a.top<b.bottom-1&&b.top<a.bottom-1) bad.push("roots overlap "+R(a)+" x "+R(b));}});});
+document.getElementById("qa").textContent="QA:"+JSON.stringify(bad)+":END";},400));</script></body>

@@ -1,0 +1,1836 @@
+{
+ "a": "suborned-sim.dll 7306ce41 on /Users/sky/Projects/suborned/out/keel041/base",
+ "b": "suborned-sim.dll 941f7da5 on the working tree's inputs",
+ "routes": [
+  {
+   "id": "careless-body-found",
+   "status": "moved",
+   "a": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2495,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "9890406f7823e4d2",
+    "scriptSha": "9ae1834ce36feffbd4104c85523be44576c2140a887a1e508bff8a7081704457"
+   },
+   "b": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2495,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "38a83f67064b024a",
+    "scriptSha": "9ae1834ce36feffbd4104c85523be44576c2140a887a1e508bff8a7081704457"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 50,
+    "a": "2096\tcrowd.startled\t7 on the street are startled and run.",
+    "b": "2096\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-enforcer-watches-guard",
+   "status": "moved",
+   "a": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2152,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "11f7ba4e40eea61f",
+    "scriptSha": "a5055ec5fc980a6a44ab98854bc9838e37b345ed0923a954fd3388340e26b879"
+   },
+   "b": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2152,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "d038f1a8eaf9d1a4",
+    "scriptSha": "a5055ec5fc980a6a44ab98854bc9838e37b345ed0923a954fd3388340e26b879"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 30,
+    "a": "2107\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "2107\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "status": "same",
+   "a": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "51cc62f0b477a2b0",
+    "scriptSha": "665b0647b750a7636d5ca1d08433e67a0155bef8f9f8a557559a9256401d9827"
+   },
+   "b": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "6c84479d7e794a45",
+    "scriptSha": "665b0647b750a7636d5ca1d08433e67a0155bef8f9f8a557559a9256401d9827"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "status": "moved",
+   "a": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "d312461705fb14e5",
+    "scriptSha": "85a68528137f5995e0be726cf0bc5adee53a7013a10faf32d68cc24b46ea0fcf"
+   },
+   "b": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "8e413d908e8deb1a",
+    "scriptSha": "85a68528137f5995e0be726cf0bc5adee53a7013a10faf32d68cc24b46ea0fcf"
+   },
+   "cols": [
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 49,
+    "a": "4480\tcrowd.startled\t12 on the street are startled and run.",
+    "b": "4480\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-scout-idles-pickup",
+   "status": "moved",
+   "a": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "e055497976270837",
+    "scriptSha": "10287f10fe744f845bbdec22c543fde73e8d768657c15395218408149c7afb3f"
+   },
+   "b": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "f7cfdd59c3fef29f",
+    "scriptSha": "10287f10fe744f845bbdec22c543fde73e8d768657c15395218408149c7afb3f"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 46,
+    "a": "4480\tcrowd.startled\t12 on the street are startled and run.",
+    "b": "4480\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "f1cad9e884b3418c",
+    "scriptSha": "4fd078ded200acc765f07a049c6ec5356cade475f847b74a86cf26ff89dec25c"
+   },
+   "b": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "421df1bac1d19415",
+    "scriptSha": "4fd078ded200acc765f07a049c6ec5356cade475f847b74a86cf26ff89dec25c"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "status": "moved",
+   "a": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 4139,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 0,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "105a4b1df390b7e6",
+    "scriptSha": "0a3ce0204c7764c693f93e78dfb06bfd207e161d6bca36766068442127ec7e07"
+   },
+   "b": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 4139,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 0,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "8eb7870f48891fe8",
+    "scriptSha": "0a3ce0204c7764c693f93e78dfb06bfd207e161d6bca36766068442127ec7e07"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 82,
+    "a": "3760\tcrowd.startled\t4 on the street are startled and run.",
+    "b": "3760\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-district-seals",
+   "status": "moved",
+   "a": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "e5142ca1a4933bc0",
+    "scriptSha": "4734c60ee85e70718fc8fbe5f94caf833310bae188ca3cb806a220d6071a8b36"
+   },
+   "b": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "d9f684881ff36284",
+    "scriptSha": "4734c60ee85e70718fc8fbe5f94caf833310bae188ca3cb806a220d6071a8b36"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 25,
+    "a": "1470\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1470\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 991,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "62e317b36c9e9184",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "b": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1067,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "96dcce19f97cb684",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "cols": [
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 9,
+    "a": "375\tdrawn.seen\tThe patrol sees the enforcer's weapon drawn. Alert 2.",
+    "b": "374\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "cae82ed32169c826",
+    "scriptSha": "4222fbf7bd177f5dde63f0f941941a94ff44f6ed7030adb5b65c36920275ea6c"
+   },
+   "b": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "c3a9a4cebeaf5733",
+    "scriptSha": "4222fbf7bd177f5dde63f0f941941a94ff44f6ed7030adb5b65c36920275ea6c"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "d16658bb28de03f6",
+    "scriptSha": "d1fea0b14670165068bad27e439b834115cfc4578e8a2d7c30c679bcb6979c61"
+   },
+   "b": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "076a4a048b1c2eff",
+    "scriptSha": "d1fea0b14670165068bad27e439b834115cfc4578e8a2d7c30c679bcb6979c61"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-patrol",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "eaa0dedb73752f2e",
+    "scriptSha": "691794cb22f7bfe6af0fa3b05d450710b18e998acdcf5ff8b46e64adc4d9495d"
+   },
+   "b": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "984874184cc390a1",
+    "scriptSha": "691794cb22f7bfe6af0fa3b05d450710b18e998acdcf5ff8b46e64adc4d9495d"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "7b183de478fd48ee",
+    "scriptSha": "c3be5d778f1256b439a5997cc31167c1e9a389023d0982550ecac01959bef970"
+   },
+   "b": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "2058a5dad4c5411d",
+    "scriptSha": "c3be5d778f1256b439a5997cc31167c1e9a389023d0982550ecac01959bef970"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "c563acae51b56e93",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "b": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "c2fd5ae20a6901f4",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-dead",
+   "status": "moved",
+   "a": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "b0fd20c23093ae85",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "b": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "dede39a90bf792e0",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 30,
+    "a": "3720\tfight.judged\tThe fight (6:12.0-6:12.0) is over: the street judges it none (0 Standing).",
+    "b": "3720\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-vale-leaves",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "1ca9528754293139",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "b": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "93e3cbe8439a0e20",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2517,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "87f87398a30d1933",
+    "scriptSha": "6183598e14278033c65203e613b1ba51564eb1899906b8ce86315dbad79d0f19"
+   },
+   "b": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2336,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 18,
+     "total": 18,
+     "pct": 100
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "c121e6340cf37282",
+    "scriptSha": "6183598e14278033c65203e613b1ba51564eb1899906b8ce86315dbad79d0f19"
+   },
+   "cols": [
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 13,
+    "a": "1256\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1256\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "status": "moved",
+   "a": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4490,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 10,
+     "total": 18,
+     "pct": 55
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "d3a58903fc796c6b",
+    "scriptSha": "30ae5c9c54945d71251823d181ee996eb0cb860bada0ca595a69264906a1007a"
+   },
+   "b": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4490,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 10,
+     "total": 18,
+     "pct": 55
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "7906a2010f074672",
+    "scriptSha": "30ae5c9c54945d71251823d181ee996eb0cb860bada0ca595a69264906a1007a"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 53,
+    "a": "4400\tcrowd.startled\t13 on the street are startled and run.",
+    "b": "4400\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud",
+   "status": "moved",
+   "a": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2769,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "44915b6b0a928626",
+    "scriptSha": "a07ea951aca304d5bddb353893fb7c0a1edac6256badcfb6f82f4073a6a53440"
+   },
+   "b": {
+    "id": "loud",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "c9eef29d6b57f4dc",
+    "scriptSha": "a07ea951aca304d5bddb353893fb7c0a1edac6256badcfb6f82f4073a6a53440"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1530\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1530\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fast",
+   "status": "moved",
+   "a": {
+    "id": "loud-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2769,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "44915b6b0a928626",
+    "scriptSha": "f302b440a619b96db7576aa0b8ca6b7017da0512d32c78ffaa1df03564f8d424"
+   },
+   "b": {
+    "id": "loud-fast",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "c9eef29d6b57f4dc",
+    "scriptSha": "f302b440a619b96db7576aa0b8ca6b7017da0512d32c78ffaa1df03564f8d424"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1530\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1530\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fight",
+   "status": "moved",
+   "a": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2746,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "3b9e1c7895503128",
+    "scriptSha": "d576f49ec3916380246c777857fbe0972b2a83831a4dca4dc0ac1b7dc1d73c89"
+   },
+   "b": {
+    "id": "loud-fight",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 10,
+     "total": 18,
+     "pct": 55
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "cb5a7d92b339db98",
+    "scriptSha": "d576f49ec3916380246c777857fbe0972b2a83831a4dca4dc0ac1b7dc1d73c89"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1530\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1530\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-downed",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2799,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "776d6c1fcaf7da63",
+    "scriptSha": "481cb10c3ebd1bc48fb0fdafd0e11217363b949ce56cdd5fae5f3f4e75e5d455"
+   },
+   "b": {
+    "id": "loud-left-downed",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 12,
+     "total": 18,
+     "pct": 66
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "1aac0c2030287069",
+    "scriptSha": "481cb10c3ebd1bc48fb0fdafd0e11217363b949ce56cdd5fae5f3f4e75e5d455"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1530\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1530\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-standing",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2799,
+    "trail": 10,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "2608cd62b3218c2a",
+    "scriptSha": "59472cfd4db62a13b557a4cd9705017ad87f09f2f6922383f44aa06d6403b2db"
+   },
+   "b": {
+    "id": "loud-left-standing",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -2,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "c9eef29d6b57f4dc",
+    "scriptSha": "59472cfd4db62a13b557a4cd9705017ad87f09f2f6922383f44aa06d6403b2db"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1530\tcrowd.startled\t1 on the street are startled and run.",
+    "b": "1530\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a",
+   "status": "moved",
+   "a": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2887,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "84699949405f6f1a",
+    "scriptSha": "f4d7557711c34e35b91d59d2ce0576945297dc85b7d3ba20a0f07767269958c6"
+   },
+   "b": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2887,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "6ff16d9d1f98dc43",
+    "scriptSha": "f4d7557711c34e35b91d59d2ce0576945297dc85b7d3ba20a0f07767269958c6"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 41,
+    "a": "2525\tcrowd.startled\t8 on the street are startled and run.",
+    "b": "2525\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2677,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "cb2f56890ed20e6c",
+    "scriptSha": "47e1b6ece7b8fbb59ad4558b4c17d7b1e26feee2317297440a7b66cbc093df45"
+   },
+   "b": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2677,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "a15bbe0d5ff87647",
+    "scriptSha": "47e1b6ece7b8fbb59ad4558b4c17d7b1e26feee2317297440a7b66cbc093df45"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2525\tcrowd.startled\t7 on the street are startled and run.",
+    "b": "2525\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2402,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "f9d5eb4b977932da",
+    "scriptSha": "984e16da481f5c192a2003d019882aae1f33e4a1bb5ffabb4b6936d2f9a25f31"
+   },
+   "b": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2402,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "40851598af03f167",
+    "scriptSha": "984e16da481f5c192a2003d019882aae1f33e4a1bb5ffabb4b6936d2f9a25f31"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 42,
+    "a": "2017\tcrowd.startled\t9 on the street are startled and run.",
+    "b": "2017\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2179,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "e17a3d7ee707e88f",
+    "scriptSha": "fd2375acbd8ec6ebb44f5b7969d6749d488fa2305bbfa4efaafd7427ef4b93b5"
+   },
+   "b": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2179,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "47de752bf8c9862b",
+    "scriptSha": "fd2375acbd8ec6ebb44f5b7969d6749d488fa2305bbfa4efaafd7427ef4b93b5"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 43,
+    "a": "2017\tcrowd.startled\t9 on the street are startled and run.",
+    "b": "2017\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b",
+   "status": "moved",
+   "a": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4807,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "6eed4dc4096f51a6",
+    "scriptSha": "377b3866360dc37133107261b67ce3791cb1ee9657ed87730bb68da95371baf5"
+   },
+   "b": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4807,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "2d4d05f6518a86a0",
+    "scriptSha": "377b3866360dc37133107261b67ce3791cb1ee9657ed87730bb68da95371baf5"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 37,
+    "a": "4480\tcrowd.startled\t11 on the street are startled and run.",
+    "b": "4480\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-block",
+   "status": "moved",
+   "a": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4807,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "87be4f9ee19b4da0",
+    "scriptSha": "692af858f670ffefec35959a831d8f88d327065d550bc85c7617e616c09b592c"
+   },
+   "b": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4807,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "1b29fec0582414dc",
+    "scriptSha": "692af858f670ffefec35959a831d8f88d327065d550bc85c7617e616c09b592c"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 40,
+    "a": "4480\tcrowd.startled\t11 on the street are startled and run.",
+    "b": "4480\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-block-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "ca2003b04bae862a",
+    "scriptSha": "42e9a32bc14382e5b467e2ac184b99fe1e561a0e6f375622e2234cf53143d01c"
+   },
+   "b": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "5c3a1bf49c6a9fe8",
+    "scriptSha": "42e9a32bc14382e5b467e2ac184b99fe1e561a0e6f375622e2234cf53143d01c"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 42,
+    "a": "4480\tcrowd.startled\t12 on the street are startled and run.",
+    "b": "4480\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "b1a1c171ed635d78",
+    "scriptSha": "6a1dd91da8e941e0ad7760affd164bc82b697f4cf0d750042d1ac3f6830f1c6a"
+   },
+   "b": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "d059541256f762fa",
+    "scriptSha": "6a1dd91da8e941e0ad7760affd164bc82b697f4cf0d750042d1ac3f6830f1c6a"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 39,
+    "a": "4480\tcrowd.startled\t12 on the street are startled and run.",
+    "b": "4480\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g",
+   "status": "moved",
+   "a": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2735,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "299bf6abf127709c",
+    "scriptSha": "7291d6db5173ba1543d67d3a7db7dd9c17a6a651d8d7ac159ad83e348ef9f8a6"
+   },
+   "b": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2735,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "4555812a15720c74",
+    "scriptSha": "7291d6db5173ba1543d67d3a7db7dd9c17a6a651d8d7ac159ad83e348ef9f8a6"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 44,
+    "a": "2350\tcrowd.startled\t9 on the street are startled and run.",
+    "b": "2350\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2512,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "ad343460eb14f6b9",
+    "scriptSha": "1a78f24cdfbbdeb027e435f772ae08afe05c14c9b92dd40db2a70bf127e48401"
+   },
+   "b": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2512,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "4ca94a8c10215e4a",
+    "scriptSha": "1a78f24cdfbbdeb027e435f772ae08afe05c14c9b92dd40db2a70bf127e48401"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2350\tcrowd.startled\t9 on the street are startled and run.",
+    "b": "2350\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2551,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "42ec168088dae871",
+    "scriptSha": "73cdbdf663abc77cfc3557e50a3ed47051fe51aa18a57c42380a178b7bb7d38c"
+   },
+   "b": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2551,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "6e5f9cbb0bad019b",
+    "scriptSha": "73cdbdf663abc77cfc3557e50a3ed47051fe51aa18a57c42380a178b7bb7d38c"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "2166\tcrowd.startled\t10 on the street are startled and run.",
+    "b": "2166\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "ae5c4bcf1b874b3c",
+    "scriptSha": "033ebcd7a05105a4bdb8e3bdb969f29fd257e8c11e65068e95c89cfd34c0f63d"
+   },
+   "b": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "a30ca25646a5e4cd",
+    "scriptSha": "033ebcd7a05105a4bdb8e3bdb969f29fd257e8c11e65068e95c89cfd34c0f63d"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 46,
+    "a": "2166\tcrowd.startled\t10 on the street are startled and run.",
+    "b": "2166\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3605,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 18,
+     "pct": 16
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "f8206ba4272693bd",
+    "scriptSha": "d3bca867492c0c34e8562fe96c5dd5daf2158ddce3ea443301a226009053903a"
+   },
+   "b": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3605,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "9c20aca2f3cd56e5",
+    "scriptSha": "d3bca867492c0c34e8562fe96c5dd5daf2158ddce3ea443301a226009053903a"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 45,
+    "a": "3220\tcrowd.startled\t5 on the street are startled and run.",
+    "b": "3220\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3382,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "57cad036c032e772",
+    "scriptSha": "dd640e99e1f4af9f4549055a4f8d390b3ac15c0cca21092232d4952bee2b5cc0"
+   },
+   "b": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3382,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "635532a7100eb8b4",
+    "scriptSha": "dd640e99e1f4af9f4549055a4f8d390b3ac15c0cca21092232d4952bee2b5cc0"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 46,
+    "a": "3220\tcrowd.startled\t4 on the street are startled and run.",
+    "b": "3220\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "withdraw",
+   "status": "same",
+   "a": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "57bfeced2710052e",
+    "finalHash": "764a5bb3d90b4219",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "b": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "12b34c022e740d24",
+    "finalHash": "d544ac4ee7968586",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  }
+ ]
+}

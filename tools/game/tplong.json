@@ -1,0 +1,9 @@
+{
+  "schema": "suborned.tplong/1",
+  "note": "The draw-distance rows of `bun run batch` (brief 048, Redline's proposed tp-long, Splice's tools side): the follow view behind the Scout at Sky's street and at the worst heading, and the play view at the opening for comparison, 2880x1864 (the Air's panel), -novsync, clock running, HUD on, 1.5 s settle and a 6 s window each. tools/game/tplong.ts has the gates; briefs/048-draw-distance.md has the player's contract (-tplong).",
+  "rows": [
+    { "name": "play-opening", "view": "overhead", "yaw": 30, "note": "the play view at the opening, zoom 14 at yaw 30" },
+    { "name": "tp-street", "view": "follow", "agent": "scout", "walk": [0, -20], "faceHeading": 180, "note": "Sky's screenshot: the cell walks 20 m south of the start and faces 180; the teal tower and the long palm street are in frame" },
+    { "name": "tp-worst", "view": "follow", "agent": "scout", "walk": [-10, -25], "faceHeading": 90, "note": "the worst of 32 headings searched (briefs/048/runs/cand1): start + (-10, -25) m facing 90, down the long avenue" }
+  ]
+}

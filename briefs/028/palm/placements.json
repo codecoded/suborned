@@ -1,0 +1,13 @@
+{
+ "note": "Palms the game places today, counted from out/world/harbour-district.world.json (street[] kit refs, civic[]), 2026-10-22. Unity prefab LODs read from unity/Assets/Suborned/Kit/Prefabs/Built.",
+ "street_trees_kind_tree": {
+  "WashingtoniaPalm_Street": {"placed": 803, "tris_each": 19190, "lods": "none (nolod in palms_avenue.py; Built prefab has no LODGroup)", "where": "every avenue/boulevard/court slot of the plan's washingtonia species: median 221, harbour-boulevard 56, harbour-court 54, crescent-court 40, sphere-gardens 36, foot 35, boulevard-west 32, docks-boulevard 29, avenue-court 27, rocket-west 25, harbour-east 24, orbit-gardens 22, and 25 more edges", "source": "generated, Vela brief 028 (20 Oct), Splice's slot fit"},
+  "CoconutPalm_Street": {"placed": 78, "tris_each": 8230, "lods": "L1 2056, L2 493 (LODGroup 0.08 / 0.025 / cull)", "where": "phoenix species: lawn 48, median 29, circus 1", "source": "generated, Vela brief 026 (palms026.py: the old CoconutPalm on an 8.6 m trunk)"},
+  "CoconutPalm": {"placed": 66, "tris_each": 6310, "lods": "L1 1576, L2 378 (LODGroup 0.08 / 0.025 / cull)", "where": "phoenix species: lawn 37, median 29", "source": "adopted from the old DecoKit city, FBX byte-identical to the old repo's"}
+ },
+ "tub_palms": {"FanPalm_Play": {"placed": 195, "tris_each": 4194, "lods": "L1 1048, L2 251", "where": "mega 187, foot 8 (tubs on the megastructure decks and the pier)"}, "PottedFern": {"placed": 3}},
+ "civic": {"PottedPalm_Small": {"placed": 6, "tris_each": 2396, "lods": "L1 598, L2 143", "where": "civic/cafe-palm-0..5: the Records Square café terrace; the old DecoKit potted palm", "source": "adopted from the old city"}},
+ "testbed_palm_placed_in_game": 0,
+ "old_city_street_scene_DecoKitStreet": {"CoconutPalm": 166, "FanPalm": 26, "PottedPalm_Small": 46},
+ "old_city_plaza_scene": {"CoconutPalm": 27, "FanPalm": 2}
+}

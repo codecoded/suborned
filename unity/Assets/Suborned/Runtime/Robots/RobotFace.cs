@@ -56,6 +56,7 @@ namespace Suborned.Robots
         // runtime caches: never serialized (a domain reload would bring them back as empty arrays, not null)
         [NonSerialized] Renderer[] screens;
         [NonSerialized] Color[] glow;  // each screen material's own LED colour
+        [NonSerialized] Vector4 lastKey; [NonSerialized] bool posed; // the face last set (PoseAt sets the block only on a change)
         [NonSerialized] MaterialPropertyBlock block;
         [NonSerialized] Atlas atlas;
         [NonSerialized] float[] blinkAt, moodAt, moodFor;
@@ -117,6 +118,11 @@ namespace Suborned.Robots
             Vector2 mouthAt = report ? Vector2.zero : mouth; // the pictogram sits on the display's centre
             Vector4 l = Place(e.left, new Vector2(-eye.x, eye.y), lid, gaze), r = Place(e.right, eye, lid, gaze), m = Place(e.mouth, mouthAt, 0f, 0);
             Shader.SetGlobalTexture(GlyphsId, atlas.texture);
+            // brief 045 F6 / 048 item 4: a property block set on a renderer every frame made the GPU Resident Drawer rebuild its draw lists every
+            // frame (CPUDrawInstanceData.RebuildDrawListsIfNeeded, MeshRendererProcessor.DestroyInstances): set it only when the face changes
+            var key = new Vector4(l.x + l.y * 31f + l.z * 977f + l.w * 7919f, r.x + r.y * 31f + r.z * 977f + r.w * 7919f, m.x + m.y * 31f + m.z * 977f + m.w * 7919f, report ? 1f + (Mathf.Repeat(seconds, .5f) < .3f ? 1f : 0f) : alarmed && !staged ? 10f + Mathf.Round(Mathf.Sin(2f * Mathf.PI * PulseHz * Mathf.Max(since - Flicker, 0f)) * 8f) : 0f);
+            if (posed && key == lastKey) return;
+            posed = true; lastKey = key;
             for (int i = 0; i < screens.Length; i++)
             {
                 var s = screens[i];
@@ -175,6 +181,7 @@ namespace Suborned.Robots
 
         bool Build()
         {
+            posed = false; // new screens: set the block again
             if (glyphs == null) return false;
             if (!Atlases.TryGetValue(glyphs, out atlas) || atlas.texture == null) Atlases[glyphs] = atlas = Atlas.Parse(glyphs.text);
             screens = Array.FindAll(GetComponentsInChildren<Renderer>(true), s => s.name.EndsWith("_Face"));

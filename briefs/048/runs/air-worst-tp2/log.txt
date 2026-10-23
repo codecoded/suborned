@@ -1,0 +1,14 @@
+screen 2880x1864 Windowed, renderScale 1, build Build 0.2.67 · c031 · sim 0.26.0 · 04a4fb75+
+inventory written
+walked (-10.00, -25.00) to (-184.30, 0.00, -253.40) at tick 218
+tp: drawn 6081 (10,521,287 tris), beyond 150 m 4377 (7,617,459 tris), casters 4392
+tp: 8.481 ms mean (117.906 fps), p99 11.46, gpu 7.491, main 8.601, render 4.568
+tp/grd-occlusion: 11.519 ms mean (86.816 fps), p99 12.864, gpu 7.809, main 11.519, render 7.711
+tp/small-mesh-1pct: 8.699 ms mean (114.958 fps), p99 10.906, gpu 7.935, main 8.615, render 4.665
+tp/small-mesh-3pct: 7.489 ms mean (133.522 fps), p99 8.659, gpu 5.821, main 7.485, render 3.94
+tp/lod-cull: drawn 3882 (9,172,792 tris), beyond 150 m 2285 (6,411,552 tris), casters 4093
+tp/lod-cull: 7.282 ms mean (137.323 fps), p99 8.8, gpu 5.902, main 7.432, render 4.221
+tp/lod-cull+occlusion+far300: drawn 2509 (5,283,623 tris), beyond 150 m 913 (2,523,078 tris), casters 4094
+tp/lod-cull+occlusion+far300: 7.957 ms mean (125.669 fps), p99 12.757, gpu 7.431, main 7.717, render 5.434
+tp/restored: drawn 6084 (10,539,386 tris), beyond 150 m 4380 (7,635,558 tris), casters 4395
+tp/restored: 8.23 ms mean (121.504 fps), p99 9.784, gpu 6.709, main 8.406, render 4.535

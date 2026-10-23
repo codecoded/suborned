@@ -72,6 +72,7 @@ namespace Suborned.Play
                 }
                 else if (lit) { p.strokeColor = TurqLight; p.lineWidth = 2f; p.BeginPath(); p.Arc(c, ro - 1f, Deg(a0), Deg(a1)); p.Stroke(); }
                 if (s.More) Dots(p, c + Dir(i * w) * ((ro + ri) / 2f), 3.2f, 2.4f, Cream);
+                else if (s.Row?.I?.Order is Order so && rs.Plan?.T != null && host.Fresh(rs.Plan.T, so)) Sparkle(p, c + Dir(i * w + w * 0.28f) * (ro - 9f), 6f, Cream); // brief 043: the act that just opened
             }
             p.fillColor = new Color(Plate.r, Plate.g, Plate.b, 0.6f); p.BeginPath(); p.Arc(c, ri - 5f, Deg(0), Deg(360)); p.Fill(); // the middle: release here to keep it open
         }
@@ -81,7 +82,7 @@ namespace Suborned.Play
         void RingFrame()
         {
             var rs = host.Ring; bool on = rs != null && !m.Ended; Show(ringRoot, on);
-            if (!on) { ringFor = null; return; }
+            if (!on) { ringFor = null; if (ringFocusEl != null) Show(ringFocusEl, false); RingFocusName = ""; return; }
             var c = RuntimePanelUtils.ScreenToPanel(root.panel, rs.Gui);
             ringRoot.style.left = c.x; ringRoot.style.top = c.y; ringRoot.BringToFront();
             int n = rs.Segs.Count; float step = 360f / n; float ro = HandoverHost.RingOuter, ri = HandoverHost.RingInner;
@@ -108,7 +109,7 @@ namespace Suborned.Play
                 if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
                 Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false);
                 Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);
-                Show(w.Key, s.Key >= 0); if (s.Key >= 0) Text(w.KeyText, host.VerbKey(s.Key));
+                Show(w.Key, false); // Sky: no key legends (Aster 2026-10-22: the ⇧1 / ⇧2 caps on the plates); the wedge is the click
                 w.Pill.style.unityBackgroundImageTintColor = lit ? new Color(0.75f, 1f, 1f) : Color.white;
                 float pw = w.Pill.resolvedStyle.width; if (float.IsNaN(pw) || pw <= 0) pw = 180;
                 var at = dir * (ro + 10f);
@@ -117,14 +118,53 @@ namespace Suborned.Play
                 w.Pill.style.left = x; w.Pill.style.top = y;
             }
             ringFor = rs; ringPaint.MarkDirtyRepaint();
+            RingFocusFrame();
         }
+
+        VisualElement ringFocusEl;
+        /// <summary>The thing a hovered wedge names, shown in the world (Sky 2026-10-22: "looping what?"): a pulsing turquoise-light ring round
+        /// the camera's head (or the person), and its cone when the cell knows its sight (HostSight). Drawn under the ring.</summary>
+        void RingFocusFrame()
+        {
+            if (ringFocusEl == null)
+            {
+                ringFocusEl = E(root, null, 0, 0, 44, 44); Round(ringFocusEl, 22); Border(ringFocusEl, 2.6f, LookLive); ringFocusEl.style.backgroundColor = new Color(LookLive.r, LookLive.g, LookLive.b, 0.12f);
+                var halo = E(ringFocusEl, null, -3.6f, -3.6f, 47.2f, 47.2f); Round(halo, 23.6f); Border(halo, 1f, new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.7f)); // reads on pale stone
+                manifest.Add((ringFocusEl, "image", () => "ring focus"));
+            }
+            var f = host.RingFocus; Transform t = f.HasValue && host.Views != null ? host.Views.Find(f.Value.view) : null;
+            bool camera = f.HasValue && f.Value.view.StartsWith("camera/");
+            // a camera's pole view stands 1.6 m up its 3.2 m pole; the head (HostViews.CamHeadFor) is 3.25 m up, the base on the ground
+            Vector2 q = default; bool on = t != null && t.gameObject.activeInHierarchy && Proj(t.position + Vector3.up * (camera ? 1.65f : 1.2f), out q);
+            Show(ringFocusEl, on); RingFocusName = on ? f.Value.view : "";
+            if (!on) return;
+            GroundRing(t.position - Vector3.up * (camera ? 1.6f : 0f), 0.8f, LookLive, 2.6f, false, 0.6f); // and on the ground at its foot, behind legs (brief 046)
+            float pulse = 1f + 0.08f * Mathf.Sin(Time.unscaledTime * Mathf.PI * 2f);
+            ringFocusEl.style.left = q.x - 22; ringFocusEl.style.top = q.y - 22; ringFocusEl.style.scale = new Scale(new Vector3(pulse, pulse, 1f));
+            if (ringRoot.parent == ringFocusEl.parent && ringFocusEl.parent.IndexOf(ringFocusEl) > ringFocusEl.parent.IndexOf(ringRoot)) ringFocusEl.PlaceBehind(ringRoot);
+        }
+        /// <summary>The proof reads it: the view key the ring's hovered wedge shows in the world ("" none).</summary>
+        public static string RingFocusName { get; private set; } = "";
 
         /// <summary>The cursor's mark beside the pointer: a crosshair where a press fires, three dots where other ways are one hold away.</summary>
         void CursorFrame()
         {
             var kind = m.Ended ? "" : host.CursorKind; Show(cursorMark, kind.Length > 0); if (kind.Length == 0) return;
             var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse);
-            cursorMark.style.left = p.x + 12; cursorMark.style.top = p.y + 12;
+            float cx = p.x + 12, cy = p.y + 12;
+            // Glyph 0.2.79 #4: over a target the mark stood on its ground ring and body (a red wedge showed past it): it goes beside the target,
+            // clear of the ring's outer edge and its ticks (hover ring 0.68 m + line + ticks 0.28 m: 1.05 m on the ground), at mid-figure height
+            if (kind == "aim" && host.Hover != null && host.TargetWorld(host.Hover) is Vector3 tw)
+            {
+                var (_, gr) = GroundAxes();
+                if (Proj(tw + gr * 1.05f, out var edge) && Proj(tw + Vector3.up * 0.9f, out var mid) && Proj(tw, out var foot))
+                {
+                    var pe = edge; var pm = mid; float half = 11f;
+                    cx = Mathf.Max(cx, pe.x + 6f); cy = pm.y - half;
+                    if (Mathf.Abs(p.x - foot.x) > 120f || Mathf.Abs(p.y - foot.y) > 160f) { cx = p.x + 12; cy = p.y + 12; } // the pointer is not on this target: as before
+                }
+            }
+            cursorMark.style.left = cx; cursorMark.style.top = cy;
             var g = cursorMark.Q("g"); Show(g, kind == "aim"); if (kind == "aim") Icon(g, "fire", Cream);
             Show(cursorDots, kind == "ring");
             cursorMark.style.backgroundColor = new Color(Plate.r, Plate.g, Plate.b, 0.85f); Round(cursorMark, 11);

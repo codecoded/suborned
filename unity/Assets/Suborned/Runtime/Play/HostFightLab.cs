@@ -92,14 +92,17 @@ namespace Suborned.Play
         /// <summary>The run's game: the drive switches (brief 025) and the fight preset's start part; with a checkpoint, its start and its orders
         /// played to its tick (no Finish: an open fight stays open), so the player takes over there. The orders are the session's own, so the saved
         /// session replays headless from tick 0.</summary>
+        /// <summary>A proof's Arms for the next Begin (item 13's done-check: Arms 1 arms the Scout and the Enforcer only); null: the mission's.</summary>
+        public static int? ArmsOverride;
         Game NewFightGame()
         {
+            if (ContinueGame() is Game cg) return cg; // brief 051: Continue (a saved session replayed)
             if (!fightLabLoaded) { fightLabLoaded = true; Fights.Load(Fights.preset); }
             var lab = new Suborned.Sim.Start(); if (Fights.Start != null) CopyLab(Suborned.Sim.Start.Parse(Fights.Start), lab);
             FightRunPreset = Fights.preset; FightRunCheckpoint = Fights.checkpoint;
             if (Fights.checkpoint.Length == 0 || rangeMode) // brief 029: the range has no checkpoints
             {
-                var s = Lab.ToStart(); CopyLab(lab, s);
+                var s = Lab.ToStart(); CopyLab(lab, s); if (ArmsOverride is int ar) s.Arms = ar;
                 return Engine.New(PlayInputs, s);
             }
             var sc = Script.Parse(File.ReadAllText(Path.Combine(FightLab.Dir("checkpoints"), Fights.checkpoint + ".script.json")));

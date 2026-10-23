@@ -998,19 +998,19 @@
         "park":     { "paths": 4.0, "edgeBand": 1.5, "why": "lamps and benches in the path edge band; palms free in the lawn" }
       },
       "trees": {
-        "spacing": 12, "spacingWhy": "2 facade bays (standards.buildings.bay 6) so palms line up with piers; Los Angeles palm avenues 9–12 m",
+        "spacing": 12, "spacingWhy": "2 facade bays (standards.buildings.bay 6) so palms line up with piers; Los Angeles palm avenues 9–12 m. Checked 2026-10-22 against the old city's 10 m (brief 028 Palm) and kept: with the coconut's 6 m crown, 12 m leaves 6 m of open sky between crowns along the kerb (10 m would leave 4 and roof 60 % of the kerb line, not 50 %), so people on the walk stay in view from the play camera (readable > rich); the lamps' rhythm (6 m from a pit, columns every 24 and 36 m) and the generator's 12 m steps stay whole. Sightlines are unchanged: a palm is `open` (slender trunk, crown above eye height 1.6)",
         "species": {
-          "washingtonia": { "use": "avenues on pavements and 4 m medians", "pit": [1.5, 1.5], "trunk": 0.5, "crownBase": 12, "top": 16, "spread": 4, "source": "Mexican fan palm (Washingtonia robusta), LA street planting 1930–60; mature 20–25 m, trimmed crown 4 m [S height]" },
+          "coconut": { "use": "avenues: pavement tree pits, walks, mall tree bands, the circus pavement; 4 m medians take the median cut below", "pit": [1.5, 1.5], "trunk": 0.5, "crownBase": 3.5, "top": 8, "spread": 6, "kit": "CoconutPalm", "median": { "crownBase": 6, "top": 10.6, "spread": 6.4, "kit": "CoconutPalm_Street", "why": "the same crown on the 8.6 m trunk: a 4 m median's crown overhangs both carriageways (and T2's inner track from 2.375 m off the line) by up to 1.2 m, so its fronds keep headroom.road 5.5 over traffic, as phoenix's crown base 6 does" }, "key": "renamed from `washingtonia` with the retag (Splice, 2026-10-22): the generator's item variants are `coconut` (the avenue) and `coconut-median` (this species with `median` laid over it), read through tools/plan/trees.ts by public.ts, roads.ts, kitrefs.ts, street-checks.ts, street-rules.ts and street-zones.ts; a plan pinned before the retag keeps `washingtonia` and is read as it was", "source": "Sky 2026-10-22 ('old palms', brief 028 Palm): the old city's boulevard palm (the flyby 'V · The Street'), the kit's CoconutPalm: 7.9 m, ringed leaning 6 m trunk, 22 feather fronds in four drooping tiers, crown 6.0 m; replaces the Washingtonia avenue (15.6 m, crown 3.6 m). crownBase 3.5 = trunk top 6.3 less the lowest tier's droop (about 2.3 m) and its hanging leaflets: over the walk ≥ headroom.walk 3; over the kerbside lane about 4 m (cars and vans: no tram runs beside a pavement palm; T2 runs only on primaries, which plant their median, and T1 in the Boulevard's reservation) [S]" },
           "phoenix":      { "use": "medians ≥ 6 m, the circus island, squares, parks, gate pairs", "pit": [2.4, 2.4], "trunk": 0.9, "crownBase": 6, "top": 11, "spread": 8, "source": "Canary Island date palm, spread 8–12 m; crown base 6 keeps fronds over a carriageway above headroom.road 5.5" },
           "tub":          { "use": "decks, concourse, roofs, piers, frontage zones", "tub": [1.5, 1.5, 0.9], "top": 4.5, "spread": 3, "source": "queen palm in a chrome-banded cream tub (§15 props)" }
         },
         "avenues": {
-          "primary": "washingtonia in the median",
-          "district": "washingtonia both pavements, pairs opposite; phoenix in medians ≥ 6 m. Exceptions: no median trees where the median is under the sky rail beam envelope (Circus Road) or within 6 m of a megastructure support (Market Street, Harbour Road)",
-          "boulevard": "washingtonia both pavements; the tram reservation is lawn track, never planted (SF-3)",
+          "primary": "coconut in the median (its median cut: species.coconut.median)",
+          "district": "coconut both pavements, pairs opposite; phoenix in medians ≥ 6 m. Exceptions: no median trees where the median is under the sky rail beam envelope (Circus Road) or within 6 m of a megastructure support (Market Street, Harbour Road)",
+          "boulevard": "coconut both pavements; the tram reservation is lawn track, never planted (SF-3)",
           "access": { "avenue": ["records", "lamplight", "gardens", "crescent", "harbour"], "cornersOnly": ["lantern"], "gatesOnly": ["docks"], "why": "residential, civic and shopping areas are tree-lined; the Lantern Quarter is lit by signs, one palm per corner; the Docks keep their edges for roller bays and cargo, a phoenix pair marks each gate" },
-          "mall": "washingtonia in both tree bands, 11 m off the line (canopy edge 9 m, clear of the beam envelope)",
-          "walk": "washingtonia in one edge band, alternate sides every 12 m",
+          "mall": "coconut in both tree bands, 11 m off the line (canopy edge 8 m, clear of the beam envelope)",
+          "walk": "coconut in one edge band, alternate sides every 12 m",
           "quay": "none on the edge band; tub palms on Skyport Pier every 24 m"
         },
         "keepClear": { "junctionCorner": 6, "lamp": 3, "hydrant": 2, "pylonFace": 3, "megaSupport": 6, "underDeckOrBridge": "never under a deck or bridge footprint (plan) unless top + 1.5 ≤ its underside", "beam": "canopy envelope ≥ 5 m (3D) from the sky rail beam envelope, and no pit inside the envelope's plan footprint (SF-4)" }
@@ -1141,10 +1141,11 @@
         "finish": {
           "byClass": { "primary": "enamel", "district": "enamel", "access": "enamel" },
           "keys": {
-            "enamel": { "material": "DK_Ground_RoadEnamel", "hex": "#AED0E6", "tile": 2.0, "why": "Sky's pick B of 20 Oct: the testbed's sealed powder-blue enamel; pale, even, slightly glossy, so the ribbon and the lozenges read on it" },
-            "asphalt": { "material": "DK_Ground_Asphalt", "why": "the old city's sheet (brief 026 round 1); no class takes it now, kept so a plan can name it" }
+            "enamel": { "material": "DK_Ground_RoadEnamel", "hex": "#AED0E6", "tile": 2.0, "surface": "road-enamel", "why": "Sky's pick B of 20 Oct, and 'can try' of 22 Oct (brief 028 Road): the testbed's sealed powder-blue enamel; pale, even, slightly glossy, so the ribbon and the lozenges read on it" },
+            "asphalt": { "material": "DK_Ground_Asphalt", "surface": "asphalt", "why": "the old city's sheet (brief 026 round 1); no class takes it now, kept so a plan can name it" }
           },
-          "kerb": { "pieces": ["Kerb_Pearl_0", "Kerb_Pearl_1"], "material": "DK_Ground_RoadPearl", "why": "the testbed's pearl kerb cap, brass crown hairline, no gutter: the ribbon takes the gutter's place" },
+          "kerb": { "pieces": ["Kerb_Pearl_0", "Kerb_Pearl_1"], "material": "DK_Ground_RoadPearl", "surface": "kerb", "why": "the testbed's pearl kerb cap, brass crown hairline, no gutter: the ribbon takes the gutter's place" },
+          "export": "the world export's surface look keys come from here: roads[].surface = keys[byClass[the road's class]].surface, circuses[].surface = its road's (Crown Circus is district: road-enamel), roads[].kerbSurface = kerb.surface. The look row road-enamel (DK_Ground_RoadEnamel, tile 2) is Latch's; build.ts reads these keys (Splice)",
           "also": "junction boxes, the circus ring and kerbed bays take their road's finish; a drive keeps the pavement's (it crosses the pavement at road level)",
           "paint": false,
           "note": "the §15 road role still says pale asphalt (#a5a2a8): Aster amends it to the enamel with Sky's decision (Vela's note)"
@@ -1160,6 +1161,59 @@
           "corners": "a rounded kerb return takes the arc piece nearest its lens radius (return radius ± offset), else the ribbon is swept along the kerb at offset from the pieces' section; a square kerb corner (today's plot slabs) is mitred",
           "light": "lens #FFE6B5 (DK_Road_Lens, emissive, drawn unlit); its state (off by day to a faint lens, on at evening and night: the testbed's auto) is the lighting rig's (Glint, Latch), not the plan's",
           "why": "offset = the lens centre from the kerb face: the testbed's lens is 0.064–0.12 (centre 0.092); with Vela's 0.16 section (0.02 brass + 0.12 lens + 0.02 brass) at 0.10 the outer hairline starts 0.02 m off the kerb, clear of the kerb's own brass crown. Every class: Sky chose the road, and the testbed traced every kerb it had; ≈ 24 pieces (16 tris) per side per 100 m (Vela)"
+        },
+        "shoulder": {
+          "piece": "RoadShoulder_Straight_6m",
+          "arcs": { "4": "RoadShoulder_Arc90_R4", "8": "RoadShoulder_Arc90_R8" },
+          "from": 0.36,
+          "to": 0.98,
+          "chrome": 0.035,
+          "classes": "as ribbon.classes: every carriageway kerb face the ribbon runs on, with the ribbon's breaks",
+          "corner": "through run (x-dominant) to the other run's outer edge (to + chrome from the kerb face), the other to the through run's inner edge (from); a reflex corner trims by the reverse",
+          "why": "Sky 2026-10-22 ('can try', brief 028 Road): the testbed's pearl streamline band beside every kerb (civic-road-finish.js bandStart 0.36, bandEnd 0.98, chromeWidth 0.035; civic-roads.js 'Pearl streamline bands', 'Chrome band borders'), the white-marble strip every testbed road frame shows between the kerb and the blue. Laid by the ribbon's rule (same kerb faces, same breaks, same corners), pivot on the lens centre line, so the band lies 0.26–0.88 m from it. Clears the narrowest middle line by metres (to + chrome = 1.015; the access carriageway's middle is 6 m out). Draft: Vela, briefs/028/road/plan-keys.json"
+        },
+        "pinstripe": {
+          "piece": "PaveEdge_Pinstripe_6m",
+          "offset": 0.5,
+          "width": 0.04,
+          "on": "the pavement top, 0.5 m in from every kerb face the ribbon runs on (0.48–0.52); stops at the ribbon's breaks; never on a drive (a drive keeps the pavement's finish but its kerb is dropped: the stripe stops stopShort before each end)",
+          "why": "Sky 2026-10-22 ('can try'): the testbed's pavement pinstripe (civic-roads.js 'Gold pavement edging', inlayParts −0.52 to −0.47 from the kerb face, #e3c775); brass here, a hairline (§15: gold or brass only as hairline, frame, bead, small metal; SF-21). 0.5 clears the kerb's own brass crown (0.02) by 0.46. Draft: Vela, briefs/028/road/plan-keys.json"
+        },
+        "kerbs": {
+          "rule": "The kerb faces the ribbon, shoulder and pinstripe run on are: (1) every plot edge on a road's carriageway edge (capstone.kerbRuns); (2) the circus's island and outer kerbs and every median edge; and (3) the faces below, which have no plot edge to run on. Each face lies on its road's carriageway edge; `toward` is the unit normal into the carriageway. A face meets a plot run or the ring at its ends as a square corner (mitred, ribbon.corners). Draft gap: Vela's RF-bay (brief 028 Road, 2026-10-22); checked by Datum against the plan's plots and road lines (no other kerb line in the district lacks a face, 2026-10-22).",
+          "circusMouths": {
+            "why": "the kerb of each radial road between the ring's outer kerb (circus.ring[1] 43) and the plot corner at the circus pavement (circus.pavement 51): the circus pavement band has no plot, so the loop was open at the three road mouths. Crown Parade's mouth is a mall at pavement level: the ring's outer kerb runs on across it",
+            "faces": [
+              { "id": "circus-mouth/crown-avenue/e", "road": "crown-avenue", "a": [9, 42.048], "b": [9, 50.2], "toward": [-1, 0] },
+              { "id": "circus-mouth/crown-avenue/w", "road": "crown-avenue", "a": [-9, 42.048], "b": [-9, 50.2], "toward": [1, 0] },
+              { "id": "circus-mouth/circus-road/n", "road": "circus-road", "a": [-42.048, 9], "b": [-50.2, 9], "toward": [0, -1] },
+              { "id": "circus-mouth/circus-road/s", "road": "circus-road", "a": [-42.048, -9], "b": [-50.2, -9], "toward": [0, 1] },
+              { "id": "circus-mouth/boulevard/e", "road": "boulevard", "a": [14, -40.657], "b": [14, -49.04], "toward": [-1, 0] },
+              { "id": "circus-mouth/boulevard/w", "road": "boulevard", "a": [-14, -40.657], "b": [-14, -49.04], "toward": [1, 0] }
+            ]
+          },
+          "footMouths": {
+            "why": "where a foot way (plan.foot) ends at a road, the footway is at pavement level and the road's kerb runs on across its mouth, plot corner to plot corner; the crossing the coverage rules put there is a break as anywhere",
+            "faces": [
+              { "id": "foot-mouth/crown-parade/harbour-road", "road": "harbour-road", "a": [288, -20], "b": [288, 20], "toward": [1, 0] },
+              { "id": "foot-mouth/garden-walk/circus-road", "road": "circus-road", "a": [-164, -9], "b": [-156, -9], "toward": [0, 1] },
+              { "id": "foot-mouth/garden-walk/lamplight-lane/n", "road": "lamplight-lane", "a": [-164, -114], "b": [-156, -114], "toward": [0, -1] },
+              { "id": "foot-mouth/garden-walk/lamplight-lane/s", "road": "lamplight-lane", "a": [-164, -126], "b": [-156, -126], "toward": [0, 1] },
+              { "id": "foot-mouth/garden-walk/starline-street", "road": "starline-street", "a": [-164, -192], "b": [-156, -192], "toward": [0, -1] }
+            ]
+          },
+          "bays": {
+            "kerbed": [
+              { "bay": "squareBay", "road": "rocket-lane", "why": "the Handover's pickup lay-by on Rocket Lane (the square's west kerb)" },
+              { "bay": "officeBay", "road": "apron-road", "why": "the Records Office's car bay on Apron Road" }
+            ],
+            "rule": "a kerbed bay (civic-block.json bays, plan frame by civic.blockToPlan; the block is the geometry's source, so the faces are read from it, never copied here): its edge on the road's carriageway edge is the mouth, and the plot run along that edge is cut there (stopShort before each end, as a break); its other edges (the back and the two ends) are kerb faces, `toward` into the bay. The bay takes the road's finish (finish.also). Plan frame today: squareBay mouth x −180, y −243..−234, back x −177; officeBay mouth y −310, x −168.2..−153.8, back y −307",
+            "notKerbed": { "serviceBay": "off the service drive, out of any road's carriageway: it keeps the pavement's finish and carries no ribbon; the drive's kerb segment is dropped (breaks.drive), so the loop is cut there by design, not open" }
+          },
+          "beyond": "a road's carriageway edges where they run in or along a beyond block (Sunset Way's west kerb, Crown Road's north kerb, Comet Row's south kerb, and the roads that run on to the sheet edge) are kerb faces to the sheet edge: the city beyond keeps its kerbs (about 2.6 km)",
+          "quay": "a quay edge on a road's carriageway edge (Harbour Road's east kerb, x 312, about 1.03 km) is a kerb face",
+          "reservation": "a road with a reservation (the Boulevard, 10 m of lawn track) has a kerb face each side of it at ± reservation / 2, cut at junction boxes, crossings and where a track crosses it, as a median's edges are; each of its two carriageways takes its own middle line for lozenges and seams (± (reservation / 2 + (w / 2 − reservation / 2) / 2): ± 9.5 on the Boulevard), never the road line, which lies in the reservation",
+          "checks": "RF-1 (Splice): every listed face lies on its road's carriageway edge (± 0.05), its ends on the ring or a plot corner, and `toward` points into the carriageway; every kerbed bay touches its road"
         },
         "breaks": {
           "stopShort": 0.3,
@@ -1185,7 +1239,7 @@
           "piece": "RoadMark_Seam",
           "length": 4.6,
           "spacing": 9.0,
-          "across": "square across the carriageway, from stopShort past one ribbon's brass to stopShort before the other's: n = ceil(span / length) pieces end to end, each stretched along its length to span / n (a plain 0.03 m chrome strip, nothing to distort; Splice may sweep the same section instead)",
+          "across": "square across the carriageway, from the shoulder's outer chrome (shoulder.to + shoulder.chrome, 1.015 m from the kerb face) on one side to the other's; without a shoulder, from stopShort past one ribbon's brass to stopShort before the other's (the testbed's 4.6 m joints across its 6.6 m road end 1.0 m from each kerb, at the band): n = ceil(span / length) pieces end to end, each stretched along its length to span / n (a plain 0.03 m chrome strip, nothing to distort; Splice may sweep the same section instead)",
           "phase": "per run: the first seam half a spacing (4.5) from the run's middle, then every spacing, so seams fall between lozenges; a seam within half a lozenge length + stopShort of a lozenge's centre is dropped, the lozenge stays",
           "never": "on a carriageway a tram runs in (the rails are its joints), in a junction box, on a crossing strip",
           "why": "the testbed's panelSpacing 9 (chrome joints 4.6 m across a 6.6 m road): the enamel reads as laid panels, not poured"

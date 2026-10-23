@@ -4,7 +4,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { appCurrent, frameLines, installRunner, judgeShots, logProblems, matchResult, pick, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { appCurrent, frameLines, installRunner, judgeShots, logProblems, matchResult, pick, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -12,9 +12,9 @@ const stub = (id: string, ok: boolean, log: string[]): Step => ({ id, title: `ti
 const tmp = () => mkdtempSync(join(tmpdir(), 'batch-'));
 
 describe('the steps are the ones Sky named, in order', () => {
-  test('sim, kit, world, Unity, build, check, shots, budget', () => {
+  test('sim, kit, world, Unity, build, check, shots, budget, late-fight, tp-long', () => {
     const ids = STEPS.map(s => s.id);
-    expect(ids).toEqual(['sim', 'compile', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget']);
+    expect(ids).toEqual(['sim', 'compile', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long']);
     expect(STEPS.find(s => s.id === 'sim')!.plan(ctx())).toEqual(['bun tools/sim/unity.ts --tree']);
     expect(STEPS.find(s => s.id === 'game-build')!.plan(ctx({ rebuild: true }))[0]).toContain('bun tools/game/cli.ts --build');
   });
@@ -147,4 +147,54 @@ test('frame times are labelled with the size they were taken at (the Air-sized r
   const proof = { screen: '1920x1080', framesAt: '2880x1864', framesNote: 'at 2880x1864: an Air-sized proxy on Mac14,13, not the Air\'s own GPU', frames: { fps: 96.2, p99Ms: 12.1 } };
   expect(frameLines(proof, undefined)[0]).toBe('play zoom 96.2 fps mean (p99 12.1 ms) at 2880x1864: an Air-sized proxy on Mac14,13, not the Air\'s own GPU');
   expect(frameLines({ screen: '1920x1080', frames: { fps: 150, p99Ms: 8 } }, undefined)[0]).toContain('at 1920x1080');
+});
+
+describe('tp-long (brief 048): skipped with the reason until the player has the hook', () => {
+  test('a player without the -tplong marker has no hook; with it, it has', () => {
+    const d = tmp(), dll = join(d, 'Suborned.Runtime.dll');
+    expect(playerHasTpLong(dll)).toBe(false); // no file
+    writeFileSync(dll, Buffer.from('plain code with suborned.late.report/1', 'utf16le')); expect(playerHasTpLong(dll)).toBe(false);
+    writeFileSync(dll, Buffer.concat([Buffer.from('MZ'), Buffer.from('suborned.tplong.report/1', 'utf16le')])); expect(playerHasTpLong(dll)).toBe(true);
+  });
+  test('a skipped step shows as skipped with its reason, does not stop the batch and is not a failure', async () => {
+    const log: string[] = [];
+    const skip: Step = { id: 's', title: 'ts', plan: () => [], run: async () => { log.push('s'); return { ok: true, skipped: true, detail: 'the built player has no -tplong mode yet' }; } };
+    const rows = await runSteps([skip, stub('b', true, log)], ctx(), ['s', 'b']);
+    expect(rows.map(r => r.status)).toEqual(['skipped', 'ok']); expect(rows[0]!.detail).toBe('skipped: the built player has no -tplong mode yet');
+    const text = screen(rows, { when: 'now', mode: 'batchmode', shotsOut: '/o' });
+    expect(text).toContain('skipped: the built player has no -tplong mode yet'); expect(text).toContain('BATCH OK');
+  });
+  test('its lines reach the screen', () => {
+    const text = screen([{ id: 'tp-long', title: 't', status: 'ok', seconds: 30, detail: 'x' }], { when: 'now', mode: 'batchmode', shotsOut: '/o', tplong: ['tp-worst: mean 6 / p99 9 ms'] });
+    expect(text).toContain('tp-long  tp-worst: mean 6 / p99 9 ms');
+  });
+});
+
+describe('Sky is playing (playing.ts): the batch asks before each step', () => {
+  test('a guard that holds back stops the batch at that step: nothing runs, the text is shown', async () => {
+    const log: string[] = [], held = 'Sky was playing (pid 7) for the whole 1200 s wait';
+    const rows = await runSteps([stub('a', true, log), stub('b', true, log), stub('c', true, log)], ctx({ guard: async id => (id === 'b' ? held : undefined) }), ['a', 'b', 'c']);
+    expect(log).toEqual(['a']); expect(rows.map(r => r.status)).toEqual(['ok', 'FAILED', 'not run']); expect(rows[1]!.detail).toBe(held);
+  });
+  test('the guard is asked for every step that runs, in order, and not on a dry run or for a step that is not run', async () => {
+    const asked: string[] = [], log: string[] = [], g = async (id: string) => { asked.push(id); return undefined; };
+    await runSteps([stub('a', true, log), stub('b', true, log), stub('c', true, log)], ctx({ guard: g }), ['a', 'c']);
+    expect(asked).toEqual(['a', 'c']);
+    await runSteps([stub('a', true, log)], ctx({ guard: g, dry: true }), ['a']); expect(asked).toEqual(['a', 'c']);
+  });
+});
+
+describe('the batch shots rotate in one place (brief 050)', () => {
+  const run = (root: string, n: number) => { const d = join(root, 'shots'); rotateShots(d, 2, root); mkdirSync(d, { recursive: true }); writeFileSync(join(d, 'shots.json'), String(n)); };
+  test('newest in shots, two older beside it, the third gone', () => {
+    const root = tmp();
+    for (const n of [1, 2, 3, 4]) run(root, n);
+    const at = (d: string) => (existsSync(join(root, d, 'shots.json')) ? readFileSync(join(root, d, 'shots.json'), 'utf8') : '-');
+    expect([at('shots'), at('shots-prev1'), at('shots-prev2'), at('shots-prev3')]).toEqual(['4', '3', '2', '-']);
+  });
+  test('a folder outside the batch\'s own is cleared, not kept', () => {
+    const root = tmp(), elsewhere = tmp(); writeFileSync(join(elsewhere, 'old.png'), 'x');
+    rotateShots(elsewhere, 2, root);
+    expect(existsSync(elsewhere)).toBe(false); expect(existsSync(elsewhere + '-prev1')).toBe(false);
+  });
 });

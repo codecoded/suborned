@@ -1,0 +1,35 @@
+screen 2880x1864 Windowed, renderScale 1, build Build 0.2.65 · c031 · sim 0.25.0 · 04a4fb75+
+inventory written
+overhead-open: drawn 370 (618,884 tris), beyond 150 m 226 (312,625 tris), casters 3842
+overhead-open: 4.669 ms mean (214.16 fps), p99 7.914, gpu 3.695, main 4.755, render 1.28
+overhead-open/no-sun-shadows: 4.614 ms mean (216.75 fps), p99 6.933, gpu 3.59, main 4.55, render 1.093
+overhead-open/no-ssao: 4.651 ms mean (215.014 fps), p99 7.272, gpu 3.435, main 4.594, render 1.224
+overhead-open/lodBias0.5: drawn 369 (613,702 tris), beyond 150 m 225 (310,647 tris), casters 3842
+overhead-open/lodBias0.5: 4.803 ms mean (208.185 fps), p99 8.483, gpu 3.697, main 4.815, render 1.318
+overhead-yaw0: drawn 370 (618,884 tris), beyond 150 m 226 (312,625 tris), casters 3842
+overhead-yaw30: 4.991 ms mean (200.377 fps), p99 7.918, gpu 3.879, main 5.006, render 1.334
+overhead-yaw1: drawn 362 (551,910 tris), beyond 150 m 196 (313,024 tris), casters 3635
+overhead-yaw120: 4.592 ms mean (217.759 fps), p99 7.1, gpu 3.525, main 4.614, render 1.271
+overhead-yaw2: drawn 364 (601,380 tris), beyond 150 m 219 (323,530 tris), casters 4188
+overhead-yaw210: 4.423 ms mean (226.087 fps), p99 7.03, gpu 3.399, main 4.442, render 1.25
+overhead-yaw3: drawn 349 (635,949 tris), beyond 150 m 217 (323,011 tris), casters 4501
+overhead-yaw300: 4.578 ms mean (218.454 fps), p99 6.848, gpu 3.558, main 4.601, render 1.154
+walked (-10.00, -25.00) to (-184.30, 0.00, -253.40) at tick 828
+tp: drawn 6081 (10,521,287 tris), beyond 150 m 4377 (7,617,459 tris), casters 4392
+tp: 8.14 ms mean (122.851 fps), p99 9.687, gpu 6.19, main 8.366, render 4.409
+tp/far300: drawn 3112 (5,653,631 tris), beyond 150 m 1408 (2,749,803 tris), casters 4392
+tp/far300: 5.564 ms mean (179.721 fps), p99 8.362, gpu 4.589, main 5.593, render 3.2
+tp/far150: drawn 1798 (3,199,222 tris), beyond 150 m 94 (295,394 tris), casters 4393
+tp/far150: 5.101 ms mean (196.033 fps), p99 18.579, gpu 4.389, main 4.929, render 2.098
+tp/shadow80-2c: drawn 6081 (10,521,287 tris), beyond 150 m 4377 (7,617,459 tris), casters 1467
+tp/shadow80-2c: 7.934 ms mean (126.047 fps), p99 14.084, gpu 5.781, main 7.838, render 3.92
+tp/no-sun-shadows: 7.531 ms mean (132.776 fps), p99 9.989, gpu 5.593, main 7.441, render 3.573
+tp/lodBias0.5: drawn 6068 (8,632,174 tris), beyond 150 m 4374 (6,289,764 tris), casters 4380
+tp/lodBias0.5: 7.987 ms mean (125.21 fps), p99 10.697, gpu 6.404, main 8.035, render 4.174
+tp/lodBias0.25: drawn 6054 (7,865,115 tris), beyond 150 m 4374 (5,828,568 tris), casters 4345
+tp/lodBias0.25: 8.166 ms mean (122.463 fps), p99 13.493, gpu 5.889, main 8.095, render 4.122
+tp/no-ssao: 8.318 ms mean (120.221 fps), p99 13.046, gpu 5.683, main 8.102, render 4.311
+tp/combo-far250-shadow80-lod0.5: drawn 2768 (3,986,189 tris), beyond 150 m 1073 (1,640,771 tris), casters 1466
+tp/combo-far250-shadow80-lod0.5: 5.328 ms mean (187.686 fps), p99 7.579, gpu 4.246, main 5.437, render 2.537
+tp/grd-off: 10.748 ms mean (93.043 fps), p99 15.079, gpu 7.881, main 10.775, render 6.523
+overhead/grd-off: 3.321 ms mean (301.135 fps), p99 4.557, gpu 2.866, main 3.313, render 1.334

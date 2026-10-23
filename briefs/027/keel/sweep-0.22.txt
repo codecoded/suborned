@@ -1,0 +1,6 @@
+Suture's retest3 policy set (briefs/027/suture/probe/retest3/policies.all.txt, 3,792 policies), engine 0.21.0 (baseline copy out/keel-runbase, the tree with the 0.22.0 run edits reversed) against 0.22.0 (Sky 2026-10-22: only security notices a run; crowd guards raise the found fault by the guard's sight rule, Sky via Aster), the tree's rulebook for both (--rulebook), one parallel fight-lab call per preset (out/keel-run/run.sh, 2:46 for both engines, matrix and four presets). Every preset's output is byte-identical between the two engines.
+
+today: n=3792/3792 rows differing 0, outcome moved 0, wins 19 -> 19 (new 0, lost 0), cheap(<40%) 0 -> 0 (newly cheap [])
+lab: n=3792/3792 rows differing 0, outcome moved 0, wins 0 -> 0 (new 0, lost 0), cheap(<40%) 0 -> 0 (newly cheap [])
+lab-field-on: n=3792/3792 rows differing 0, outcome moved 0, wins 19 -> 19 (new 0, lost 0), cheap(<40%) 0 -> 0 (newly cheap [])
+lab-snap-off: n=3792/3792 rows differing 0, outcome moved 0, wins 0 -> 0 (new 0, lost 0), cheap(<40%) 0 -> 0 (newly cheap [])

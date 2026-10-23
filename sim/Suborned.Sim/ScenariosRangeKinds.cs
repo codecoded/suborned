@@ -149,7 +149,7 @@ namespace Suborned.Sim
                 r.Eq(g.Tick - st, R.CrowdStartleTicks, "after crowd.startle ticks");
                 r.Is(r.Until(() => ByV(r, "bystander-1").Moving && g.RangeLines().Exists(l => l.Target == "bystander-1"), 5), "running, with a line on them");
                 var ln = g.RangeLines().Find(l => l.Shooter == "scout" && l.Target == "bystander-1");
-                r.Is(ln != null && ln.Bystander && ln.TargetRunning && ln.Text.Contains("target running") && ln.Text.Contains("hold Ctrl"), $"the line says so: {ln?.Text}");
+                r.Is(ln != null && ln.Bystander && ln.TargetRunning && ln.Text.Contains("target running") && ln.Text.Contains("bystander") && !ln.Text.Contains("Ctrl"), $"the line says so: {ln?.Text}");
                 r.Is(r.Until(() => ByV(r, "bystander-1").Saw.Length > 0, Game.T(5)), "they see who fires");
                 r.Eq(ByV(r, "bystander-1").Saw, "scout", "a witness of the Scout");
                 r.Is(r.Until(() => ByV(r, "bystander-1").State == "safe", Game.T(30)), "safe at the far end");

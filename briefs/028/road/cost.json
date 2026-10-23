@@ -1,0 +1,64 @@
+{
+ "district": {
+  "pieces": 14075,
+  "tris": 118506,
+  "materials": [
+   "DK_Brass_Civic",
+   "DK_Chrome",
+   "DK_Ground_RoadPearl",
+   "DK_Road_Lens",
+   "DK_Road_Pool"
+  ],
+  "tiles": 152,
+  "batchesAdded": 760,
+  "poolAreaM2": 20860.5
+ },
+ "perTile": {
+  "tiles": 152,
+  "busiestPieces": 196,
+  "busiestTris": 1700,
+  "meanTris": 780
+ },
+ "play zoom 14 at the Records Office front (49.8 x ~45 m of ground)": {
+  "pieces": 142,
+  "tris": 1120,
+  "materials": [
+   "DK_Brass_Civic",
+   "DK_Chrome",
+   "DK_Ground_RoadPearl",
+   "DK_Road_Lens",
+   "DK_Road_Pool"
+  ],
+  "tiles": 5,
+  "batchesAdded": 25,
+  "poolAreaM2": 198.4
+ },
+ "third person down Orbit Walk (far 450, 85 degrees)": {
+  "pieces": 2514,
+  "tris": 20938,
+  "materials": [
+   "DK_Brass_Civic",
+   "DK_Chrome",
+   "DK_Ground_RoadPearl",
+   "DK_Road_Lens",
+   "DK_Road_Pool"
+  ],
+  "tiles": 33,
+  "batchesAdded": 165,
+  "poolAreaM2": 3710.8
+ },
+ "third person down the Boulevard (far 450, 85 degrees)": {
+  "pieces": 3277,
+  "tris": 27380,
+  "materials": [
+   "DK_Brass_Civic",
+   "DK_Chrome",
+   "DK_Ground_RoadPearl",
+   "DK_Road_Lens",
+   "DK_Road_Pool"
+  ],
+  "tiles": 45,
+  "batchesAdded": 225,
+  "poolAreaM2": 4841.6
+ }
+}

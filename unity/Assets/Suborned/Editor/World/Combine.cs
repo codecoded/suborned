@@ -148,7 +148,11 @@ namespace Suborned.World
                 var mr = go.AddComponent<MeshRenderer>();
                 mr.sharedMaterial = acc.Mat;
                 // Flat ground (roads, kerbs 0.18 m, paving, water) shadows nothing readable: ~40% of the shadow-caster vertices at play zoom.
-                if (p[0] == "ground") mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                // brief 028 road finish: the baked ground pieces (ribbons, shoulders, flags, capstone kerbs: millimetres to 0.185 m) likewise, and
+                // a glow volume (Shaders/CrossGlow: additive light, the road pool) never casts
+                bool glow = acc.Mat && acc.Mat.shader && acc.Mat.shader.name == "Suborned/Cross Glow";
+                if (p[0] == "ground" || p[0] == "ground-pieces" || glow) mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                if (glow) mr.receiveShadows = false;
                 verts += acc.Kit.VertexCount;
             }
             return verts;

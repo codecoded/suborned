@@ -4,20 +4,21 @@ import * as THREE from './vendor/three.module.min.js';
 import { G } from './state.js';
 
 const SRC = [
-  { id: 'camera', color: 0xff5a4a, range: 13, half: 0.55, heading: (t) => { const a = G.noSweep ? 0 : Math.sin(t * 0.45) * 0.9; return [Math.sin(a), -Math.cos(a)]; }, on: (e) => !e.used.has('loop') },
-  { id: 'guard', color: 0xffb02e, range: 9, half: 0.9, heading: () => [-0.5, -1], on: (e) => e.state === 'ok' },
+  { id: 'camera', color: 0xff5a4a, range: 13, half: 0.55, heading: (t) => { const a = G.noSweep ? 0 : Math.sin(t * 0.45) * 0.9; return [Math.sin(a), -Math.cos(a)]; }, on: (e) => (G.done === 'built' ? !e.used.has('loop') : !e.dark) }, // brief 043: with the done moment on, a window (Loop, a call) switches it off and it comes back when the window closes
+  { id: 'guard', color: 0xffb02e, range: 9, half: 0.9, heading: () => [-0.5, -1], on: (e) => e.state === 'ok' && !(G.done !== 'built' && e.dark) },
 ];
 
 export function makeCones(world) {
   const cones = SRC.map((s) => {
     const g = new THREE.Group(), geo = new THREE.CircleGeometry(s.range, 28, -s.half, s.half * 2);
     const fan = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color: s.color, transparent: true, opacity: 0.26, depthTest: false, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
-    fan.rotation.x = -Math.PI / 2; fan.renderOrder = 4; g.add(fan); world.group.add(g); return { ...s, g, ent: world.byId[s.id], dir: [0, -1] };
+    fan.rotation.x = -Math.PI / 2; fan.renderOrder = 4; g.add(fan); world.group.add(g); return { ...s, g, fan, ent: world.byId[s.id], dir: [0, -1] };
   });
   return {
     update(t) {
       for (const c of cones) {
         c.dir = c.heading(t); const on = c.on(c.ent); c.g.visible = on; c.active = on;
+        c.fan.material.opacity = 0.26 + (G.done !== 'built' && (c.ent.pulse ?? 0) > performance.now() / 1000 ? 0.3 * (0.5 + 0.5 * Math.sin(performance.now() / 90)) : 0); // Watch lands: the cone pulses once, in the street
         c.g.position.set(c.ent.g.position.x, 0.05, c.ent.g.position.z); c.g.rotation.y = -Math.atan2(c.dir[1], c.dir[0]);
       }
     },

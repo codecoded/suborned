@@ -1,0 +1,16 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail \"district seals\" (Suture N3): the loop and reroute, two unseen shots drop the guard from beside the door, then the Enforcer waits behind the café without Vale until the district seals 2:25 after the response unit arrives (Keel S15, extended). Re-sited 2026-10-19 (Waymark, brief 023): the Enforcer shoots from by the service end of the west face, 5.6 m south of the door.",
+ "start": {},
+ "orders": [
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
+  {"tick": 0, "op": "enforcer", "do": "move", "to": [6950, -4250]},
+  {"tick": 380, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 1000, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 1450, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1510, "op": "enforcer", "do": "fire", "target": "guard"},
+  {"tick": 1520, "op": "enforcer", "do": "move", "to": "d:Behind café"}
+ ],
+ "until": 5100
+}

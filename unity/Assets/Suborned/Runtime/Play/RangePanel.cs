@@ -20,11 +20,16 @@ namespace Suborned.Play
         static readonly string[] Places = { "near", "eff", "beyond", "cover" }, PlaceWords = { "Near 8 m", "Effective 15 m", "Beyond 18 m", "Cover 20 m+" };
         static readonly string[] Withs = { "", "police", "rivals", "bystander" }, WithWords = { "Empty", "Police", "Rival", "Bystander" };
         static readonly string[] Layouts = { "open", "dense", "lane" }, LayoutWords = { "Open", "Dense", "Lane 90 m" };
-        int kind, place = 3, count = 3, carSlot, with = 1; bool numbers = true; string last = ""; float lastAt = -9f;
+        int kind, place = 3, count = 3, carSlot, with = 1; bool numbers = false; /* brief 049: Numbers starts off; the target rings carry reach */ string last = ""; float lastAt = -9f;
         readonly List<LineRenderer> pool = new(); Material mat;
         GUIStyle box, label, small, tag;
 
         void Awake() => h = GetComponent<HandoverHost>();
+        /// <summary>The Numbers toggle (brief 049: off by default): the range's lines, words, cover labels and the 15 m circle.</summary>
+        public static bool NumbersOn { get; private set; }
+        /// <summary>The toggle itself (RangeShots turns it on for its lines picture).</summary>
+        public bool Numbers { get => numbers; set => numbers = value; }
+        void LateUpdate() => NumbersOn = numbers && enabled;
 
         /// <summary>The panel's rect on screen (GUI space: origin top left, pixels) as last drawn, and the frame it was drawn on. Sky on 0.2.34: "when I
         /// select a menu option, it also registers as a place for the player to walk to underneath" (IMGUI hears its click after the host's Update
@@ -96,13 +101,13 @@ namespace Suborned.Play
             if (h == null || !h.rangeMode || h.Game == null) return;
             Styles(); var g = h.Game; var cam = UnityEngine.Camera.main;
             float k = Screen.height / 1080f; GUI.matrix = Matrix4x4.Scale(new Vector3(k, k, 1f)); float W = Screen.width / k;
-            var r = new Rect(W - 470, 120, 456, h.controls.HoldActs ? 445 : 420); // the panel, top right under the clock (the hold preset: one more setting row and the fire readout)
+            var r = new Rect(W - 470, 120, 456, h.controls.HoldActs ? 495 : 420); // the panel, top right under the clock (the hold preset: one more setting row and the fire readout)
             panelScreen = new Rect(r.x * k, r.y * k, r.width * k, r.height * k); panelFrame = Time.frameCount;
             // labels: each cover piece by kind, and each line of fire in the engine's plain words; placed clear of each other and of the panel
             // (Sky on 0.2.33/0.2.34: labels stacked where lines share a path): a label that would overlap steps up or down a row, with a hairline
             // back to its line; one with no room within three rows each way is left off (its line still shows)
             placed.Clear(); placed.Add(r); if (Event.current.type == EventType.Repaint) lp = lm = ld = 0;
-            if (cam)
+            if (cam && numbers) // brief 049: the cover labels live behind Numbers too
             {
                 foreach (var o in g.S.Occluders)
                 {
@@ -167,6 +172,12 @@ namespace Suborned.Play
                 GUILayout.BeginHorizontal(); GUILayout.Label("Third person", small, GUILayout.Width(80));
                 int tf = h.controls.tpRightFires ? 0 : 1, ntf = GUILayout.Toolbar(tf, new[] { "Right hold fires", "Right aims, left fires" }); GUILayout.EndHorizontal();
                 if (ntf != tf) { h.controls.tpRightFires = ntf == 0; h.controls.SaveSettings(); h.ControlsChanged(); }
+                // brief 041 / engine 0.19 (Syndicate fights): weapons free (G), and whether a fight is on (a right click focuses then)
+                GUILayout.BeginHorizontal(); GUILayout.Label("In a fight", small, GUILayout.Width(80));
+                int wf = g.WeaponsFree ? 0 : 1, nwf = GUILayout.Toolbar(wf, new[] { "Weapons free (G)", "Return fire only" }); GUILayout.EndHorizontal();
+                if (nwf != wf) h.ToggleFree();
+                FightLine = g.FreeFightOn ? $"Fight on: right click focuses · {Under(h)}" : "No fight: right hold, let go to fire";
+                GUILayout.Label(FightLine, small);
             }
             else
             {
@@ -198,6 +209,9 @@ namespace Suborned.Play
         /// <summary>The last repaint's labels: placed, stepped off their point, left off for room (the range proof reads them).</summary>
         public static int LabelsPlaced, LabelsMoved, LabelsDropped; int lp, lm, ld;
         /// <summary>The panel's fire readout as last drawn (the proof reads it): the pill's words.</summary>
+        /// <summary>The range's fight line (brief 041): whether a fight is on and who is under fire.</summary>
+        public static string FightLine { get; private set; } = "";
+        static string Under(HandoverHost h) { var l = new System.Collections.Generic.List<string>(); for (int k = 0; k < 4; k++) if (h.UnderFireNow[k].Count > 0) l.Add(Suborned.Sim.Op.Name((Suborned.Sim.OpId)k)); return l.Count > 0 ? "under fire: " + string.Join(", ", l) : "nobody under fire"; }
         public static string FireReadout = "";
 
         /// <summary>A control's rect on screen (GUI space, pixels) as GUILayout placed it in the area, on the repaint (the proof clicks it).</summary>

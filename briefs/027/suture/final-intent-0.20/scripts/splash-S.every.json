@@ -1,0 +1,30 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Suture 0.20 attempt splash-S: the Scout holstered on the Fixer's exact spot (cv-006, 11.75,-48.25) all fight, never draws; the Fixer fights beside him, the Tech takes the Scout's flank (derived from loud.plan.json).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750],"run":true},
+  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1236,"op":"enforcer","do":"move","to":[6950,-4250]},
+  {"tick":1510,"op":"enforcer","do":"fire","target":"guard"},
+  {"tick":1510,"op":"scout","do":"move","to":[1175,-4825],"run":true},
+  {"tick":1510,"op":"fixer","do":"move","to":[1175,-4825],"run":true},
+  {"tick":1550,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1575,"op":"enforcer","do":"enter"},
+  {"tick":1575,"op":"tech","do":"move","to":[725,-4625]},
+  {"tick":2255,"op":"fixer","do":"draw"},
+  {"tick":2255,"op":"fixer","do":"stance","stance":"free"},
+  {"tick":2255,"op":"fixer","do":"fire","target":"security-2"},
+  {"tick":2255,"op":"tech","do":"draw"},
+  {"tick":2255,"op":"tech","do":"stance","stance":"free"},
+  {"tick":2255,"op":"tech","do":"fire","target":"security-2"},
+  {"tick":2290,"op":"fixer","do":"fire","target":"security-1"},
+  {"tick":2290,"op":"tech","do":"fire","target":"security-1"},
+  {"tick":2365,"op":"tech","do":"fire","target":"rivals"},
+  {"tick":2365,"op":"tech","do":"move","to":[4300,-3100]}
+ ],
+ "until": 5100
+}

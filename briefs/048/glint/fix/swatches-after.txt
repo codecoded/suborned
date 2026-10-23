@@ -1,0 +1,18 @@
+sw-off
+  shade-paving #7c6c4e H39 S0.37 V0.49
+  shade-cream #b8a986 H42 S0.27 V0.72
+  lit-cream #d0c8b6 H42 S0.12 V0.82
+  turf #3c9000 H95 S1.00 V0.56
+  palm-green #13680b H115 S0.89 V0.41
+  seafoam #5ab89d H163 S0.51 V0.72
+  cobalt #0045ad H216 S1.00 V0.68
+  peach #d8ae8d H26 S0.35 V0.85
+sw-on
+  shade-paving #877354 H36 S0.38 V0.53
+  shade-cream #beac85 H41 S0.30 V0.75
+  lit-cream #d4cab6 H40 S0.14 V0.83
+  turf #449700 H93 S1.00 V0.59
+  palm-green #287312 H106 S0.84 V0.45
+  seafoam #57bd9f H162 S0.54 V0.74
+  cobalt #2251b7 H221 S0.81 V0.72
+  peach #deb08b H27 S0.37 V0.87

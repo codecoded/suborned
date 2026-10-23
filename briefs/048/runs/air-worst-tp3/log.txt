@@ -1,0 +1,17 @@
+screen 2880x1864 Windowed, renderScale 1, build Build 0.2.67 · c031 · sim 0.26.0 · 04a4fb75+
+inventory written
+walked (-10.00, -25.00) to (-184.30, 0.00, -253.40) at tick 218
+tp: drawn 6081 (10,521,287 tris), beyond 150 m 4377 (7,617,459 tris), casters 4392
+tp: 8.292 ms mean (120.598 fps), p99 11.399, gpu 6.853, main 8.405, render 4.34
+tp/far450: drawn 4959 (9,020,277 tris), beyond 150 m 3255 (6,116,449 tris), casters 4392
+tp/far450: 8.225 ms mean (121.575 fps), p99 11.041, gpu 6.134, main 8.314, render 4.048
+tp/far350: drawn 3743 (6,884,533 tris), beyond 150 m 2037 (3,977,002 tris), casters 4393
+tp/far350: 6.914 ms mean (144.636 fps), p99 8.577, gpu 5.406, main 7.058, render 3.619
+tp/far250: drawn 2781 (4,874,660 tris), beyond 150 m 1076 (1,970,137 tris), casters 4392
+tp/far250: 5.806 ms mean (172.226 fps), p99 7.234, gpu 4.709, main 5.926, render 3.085
+tp/far450+shadow80-2c: drawn 4960 (9,020,972 tris), beyond 150 m 3255 (6,116,449 tris), casters 1466
+tp/far450+shadow80-2c: 7.257 ms mean (137.795 fps), p99 8.292, gpu 5.41, main 7.393, render 3.575
+tp/far300+shadow80-2c: drawn 3112 (5,653,631 tris), beyond 150 m 1408 (2,749,803 tris), casters 1467
+tp/far300+shadow80-2c: 6.037 ms mean (165.659 fps), p99 16.584, gpu 4.901, main 5.907, render 2.848
+tp/again: drawn 6081 (10,521,287 tris), beyond 150 m 4377 (7,617,459 tris), casters 4392
+tp/again: 8.791 ms mean (113.749 fps), p99 18.325, gpu 7.224, main 8.533, render 4.458

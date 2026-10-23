@@ -1,0 +1,164 @@
+0:00.0 start Vale is inside. His official car will collect him later. The city is already moving.
+0:00.0 order.move tech runs for cabinet.
+0:00.0 order.move enforcer runs for (5650,-4750).
+0:16.6 order.loop tech loop entrance (62 s)
+1:18.6 loop.on One feed repeats. The Tech is tied to the cabinet.
+1:18.6 order.reroute tech reroute patrol (45 s)
+2:03.6 patrol.rerouted The patrol follows false orders and leaves the entrance sweep.
+2:03.6 order.move enforcer heads for (6950,-4250).
+2:31.0 fire.guard enforcer fires on guard until down.
+2:31.0 order.move scout runs for (975,-4625).
+2:31.0 order.move fixer runs for (1175,-4825).
+2:31.1 witness.weapon-drawn 1 see the enforcer's weapon drawn.
+2:33.0 round.ends gunfire: Inez Nikolaou walks back to her post and stays there.
+2:33.0 shot.hit enforcer fires on guard at 5 m (750 ‰): hit.
+2:33.0 rivals.drawn The rivals hear gunfire and head for the Office.
+2:33.0 security.called Shots are heard in the district. Security is coming from the north street.
+2:33.0 guard.hit The guard is hit. He cannot see the shooter yet.
+2:33.0 fire.free-on A fight is on: drawn agents fire on their own.
+2:33.0 crowd.startled 1 on the street are startled and run.
+2:35.0 shot.hit enforcer fires on guard at 5 m (750 ‰): hit.
+2:35.0 guard.down The guard falls. His missed check-in will draw more attention.
+2:35.0 order.move enforcer runs for d:Office entrance.
+2:35.1 fire.done enforcer: guard is down. The fire order ends.
+2:37.5 order.enter enforcer enter (68 s)
+2:37.5 enter.in The Enforcer is inside. The alarm is up: the staff are hiding Vale. Watch the service lane.
+2:37.5 order.move tech heads for (725,-4625).
+2:38.0 fire.free-off No contact: the fight is off. Drawn agents hold their fire.
+2:38.2 loop.ends The Tech leaves the cabinet. The camera feed returns.
+2:38.6 witness.react p-records-office-29 finds a body: radio.
+2:38.6 report.started p-records-office-29 radios it in.
+2:38.6 witness.camera The entrance camera records it; its watcher reads the screen at 2:54.6.
+2:43.6 report.landed p-records-office-29's report lands: dead (guard). Alert 2.
+2:43.6 security.called A body is found: a unit is sent to hold the scene (office-entrance). Security is coming.
+2:49.0 rivals.arrive The rival crew comes in from the east street, following the gunfire.
+2:53.6 report.confirmed police-1 confirms guard: dead.
+2:57.6 report.landed the camera entrance's report lands: dead (guard). Alert 2.
+3:05.0 fight.judged The fight (2:33.0-2:35.0) is over: the street judges it security (-1 Standing).
+3:09.0 holster.auto enforcer holsters: the fight is over.
+3:13.8 stash.opened police-1 opens the stash/office-service-door/door: nothing.
+3:23.8 stash.opened police-1 opens the stash/office-service-door/container: nothing.
+3:26.7 crowd.sheltered 1 reach shelter.
+3:43.1 attention.noticed security-1 notices the fixer standing still in its sight.
+3:43.8 attention.noticed security-2 notices the fixer standing still in its sight.
+3:45.5 enter.out Vale and the Enforcer come out at the service lane.
+3:45.5 fight.loud The final fight: 2 police officers come in from the north street. The seal clock is running.
+3:45.5 ai.join security-1 of the response unit joins the fight at police-3.
+3:45.5 ai.cover security-2 takes cover at cv-048 (wall civic/cafe/wall-arc-w, q 609).
+3:45.5 ai.join security-2 of the response unit joins the fight at cv-048.
+3:45.5 ai.kite The rivals see Vale taken and press for the Enforcer.
+3:45.5 ai.cover security-1 takes cover at cv-087 (planter-run civic/run-west-south/0, q 740).
+3:45.5 fight.blocker security-1 goes for the road (cover at cv-087).
+3:45.5 order.draw scout draws (1.0 s).
+3:45.5 order.stance scout: free.
+3:45.5 fire.security-2 scout fires on security-2 until down.
+3:45.5 order.draw fixer draws (1.0 s).
+3:45.5 order.stance fixer: free.
+3:45.5 fire.security-2 fixer fires on security-2 until down.
+3:45.5 order.draw tech draws (1.0 s).
+3:45.5 order.stance tech: free.
+3:45.5 fire.security-2 tech fires on security-2 until down.
+3:45.6 crowd.startled 1 on the street are startled and run.
+3:46.5 shot.hit security-1 fires on fixer at 3 m (500 ‰): hit.
+3:46.5 fixer.hit.fight security-1 hits the fixer. 3 health left.
+3:46.5 shot.hit security-2 fires on fixer at 2 m (1000 ‰): hit.
+3:46.5 fixer.hit.fight security-2 hits the fixer. 2 health left.
+3:46.5 fire.free-on A fight is on: drawn agents fire on their own.
+3:46.5 crowd.startled 3 on the street are startled and run.
+3:47.5 shot.hit scout fires on security-2 at 4 m (750 ‰): hit.
+3:47.5 security.hit security-2 is hit.
+3:47.5 shot.hit fixer fires on security-2 at 2 m (750 ‰): hit.
+3:47.5 security.hit security-2 is hit.
+3:47.5 shot.hit tech fires on security-2 at 6 m (562 ‰): hit.
+3:47.5 security.officer-down security-2 is down.
+3:47.5 crowd.startled 3 on the street are startled and run.
+3:47.5 fire.security-1 scout fires on security-1 until down.
+3:47.5 fire.security-1 fixer fires on security-1 until down.
+3:47.5 fire.security-1 tech fires on security-1 until down.
+3:48.0 ai.kite officer-1 is fired on by tech out of its reach and has no cover: first shot at 3:47.5, it closes to its ring (5 ticks).
+3:48.0 ai.kite officer-2 is fired on by tech out of its reach and has no cover: first shot at 3:47.5, it closes to its ring (5 ticks).
+3:48.0 shot.miss security-1 fires on fixer at 6 m (375 ‰): miss.
+3:49.0 shot.hit scout fires on security-1 at 10 m (562 ‰): hit.
+3:49.0 security.hit security-1 is hit.
+3:49.0 shot.hit fixer fires on security-1 at 7 m (562 ‰): hit.
+3:49.0 security.hit security-1 is hit.
+3:49.0 shot.hit tech fires on security-1 at 12 m (562 ‰): hit.
+3:49.0 security.down The response unit is down. The wider cordon is still closing.
+3:49.0 blocker.out security-1, on the road, is down: nobody blocks the lane now.
+3:49.0 car.free Nothing holds the getaway car: it can go.
+3:49.0 order.move scout runs for (5300,-2500).
+3:49.0 order.move fixer runs for (5200,-2500).
+3:49.1 fire.done scout: security-1 is down. The fire order ends.
+3:49.1 fire.done fixer: security-1 is down. The fire order ends.
+3:49.1 fire.done tech: security-1 is down. The fire order ends.
+3:49.6 crowd.sheltered 1 reach shelter.
+3:50.1 crowd.sheltered 2 reach shelter.
+3:50.2 crowd.sheltered 1 reach shelter.
+3:51.5 crowd.sheltered 1 reach shelter.
+3:52.0 fire.free-off No contact: the fight is off. Drawn agents hold their fire.
+3:56.0 response.reinforces Another unit is sent (2 of 3).
+4:00.0 guard.check-in The guard misses his check-in. Security now knows the post is empty.
+4:01.4 crowd.startled 1 on the street are startled and run.
+4:02.6 patrol.alarm The patrol leaves its sweep for the alarm.
+4:03.1 witness.patrol The patrol finds a body and rings the desk.
+4:04.2 crowd.sheltered 1 reach shelter.
+4:05.0 fire.rivals scout fires on rivals until down.
+4:05.0 fire.rivals fixer fires on rivals until down.
+4:05.6 crowd.sheltered 1 reach shelter.
+4:06.1 shot.miss scout fires on rivals at 3 m (187 ‰): miss.
+4:06.1 patrol.breaks The patrol breaks its route and turns toward the gunfire.
+4:06.1 shot.miss fixer fires on rivals at 1 m (187 ‰): miss.
+4:06.1 fire.free-on A fight is on: drawn agents fire on their own.
+4:07.1 report.landed patrol's report lands: dead (guard). Alert 2.
+4:07.5 shot.hit rivals fires on fixer at 0 m (750 ‰): hit.
+4:07.5 fixer.hit.rivals rivals hits the fixer. 1 health left.
+4:07.6 shot.miss scout fires on rivals at 0 m (93 ‰): miss.
+4:07.6 shot.hit fixer fires on rivals at 0 m (750 ‰): hit.
+4:07.6 rivals.hit The rival crew takes a hit.
+4:09.0 shot.hit rivals fires on fixer at 0 m (750 ‰): hit.
+4:09.0 fixer.hit.rivals rivals hits the fixer. 0 health left.
+4:09.0 fixer.down The fixer is down. Carry them into the car, or they are captured.
+4:09.1 shot.hit scout fires on rivals at 0 m (750 ‰): hit.
+4:09.1 rivals.hit The rival crew takes a hit.
+4:10.1 witness.react p-records-office-74 finds a body: radio.
+4:10.1 report.started p-records-office-74 radios it in.
+4:10.5 shot.hit rivals fires on scout at 0 m (750 ‰): hit.
+4:10.5 scout.hit.rivals rivals hits the scout. 3 health left.
+4:10.6 shot.hit scout fires on rivals at 0 m (750 ‰): hit.
+4:10.6 rivals.retreat The rivals retreat for now.
+4:10.6 order.move enforcer heads for d:Getaway bay.
+4:10.6 order.move scout heads for (975,-4625).
+4:10.7 fire.done scout: rivals is gone. The fire order ends.
+4:13.6 fire.free-off No contact: the fight is off. Drawn agents hold their fire.
+4:14.8 crowd.sheltered 1 reach shelter.
+4:15.1 report.landed p-records-office-74's report lands: dead (guard). Alert 2.
+4:15.1 witness.told p-records-office-74 tells p-cafe-11 (regular, by phone).
+4:16.2 stash.opened police-3 opens the stash/office-service-door/door: nothing.
+4:21.2 patrol.resumes No foe in reach: the patrol goes back to its sweep.
+4:26.2 stash.opened police-3 opens the stash/office-service-door/container: nothing.
+4:36.0 response.reinforces Another unit is sent (3 of 3).
+4:41.0 patrol.sweep The patrol is back on its sweep.
+4:44.4 crowd.back 1 are back on their way.
+4:45.4 crowd.back 1 are back on their way.
+4:50.0 crowd.startled 1 on the street are startled and run.
+4:55.6 crowd.sheltered 1 reach shelter.
+4:56.2 stash.opened police-5 opens the stash/office-service-door/door: nothing.
+4:57.4 shot.hit officer-1 fires on enforcer at 14 m (750 ‰): hit.
+4:57.4 enforcer.hit.fight officer-1 hits the enforcer. 5 health left.
+4:57.4 shot.hit officer-2 fires on enforcer at 14 m (750 ‰): hit.
+4:57.4 enforcer.hit.fight officer-2 hits the enforcer. 4 health left.
+4:57.4 fire.free-on A fight is on: drawn agents fire on their own.
+4:57.4 crowd.startled 4 on the street are startled and run.
+4:58.9 shot.hit officer-1 fires on enforcer at 14 m (750 ‰): hit.
+4:58.9 enforcer.hit.fight officer-1 hits the enforcer. 3 health left.
+4:58.9 shot.hit officer-2 fires on enforcer at 14 m (750 ‰): hit.
+4:58.9 enforcer.hit.fight officer-2 hits the enforcer. 2 health left.
+5:00.4 shot.miss officer-1 fires on enforcer at 14 m (750 ‰): miss.
+5:00.4 shot.miss officer-2 fires on enforcer at 14 m (750 ‰): miss.
+5:00.5 crowd.sheltered 1 reach shelter.
+5:01.9 shot.hit officer-1 fires on enforcer at 14 m (750 ‰): hit.
+5:01.9 enforcer.hit.fight officer-1 hits the enforcer. 1 health left.
+5:01.9 shot.hit officer-2 fires on enforcer at 14 m (750 ‰): hit.
+5:01.9 enforcer.hit.fight officer-2 hits the enforcer. 0 health left.
+5:01.9 fail.enforcer-down The Enforcer is down.
+5:01.9 fight.judged The fight (3:46.5-5:01.9, the final fight) is over: the street judges it security (-1 Standing).

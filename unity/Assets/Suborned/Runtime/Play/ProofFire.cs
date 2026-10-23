@@ -123,7 +123,7 @@ namespace Suborned.Play
             string want = Expect(plan);
             string Did(int from) { for (int i = from; i < g.Orders.Count; i++) { var o = g.Orders[i].order; if (o.Do is "drive" or "move" or "draw") continue; return o.Do; } return h.Ring != null ? "ring" : ""; }
             int n0 = g.Orders.Count; Keys(Key.E); yield return Frames(2); Keys(); yield return Frames(3);
-            string eDid = Did(n0); h.CloseRing(); parts.Add($"\"promptWay\": \"{want}\", \"eDid\": \"{eDid}\""); ok &= eDid == want;
+            string eDid = Did(n0); h.CloseRing(); parts.Add($"\"promptWay\": \"{want}\", \"eDid\": \"{eDid}\", \"promptWhy\": \"{(plan == null ? "no plan" : plan.Choice.Act + "/" + plan.Choice.Why + ": " + string.Join(";", plan.Pn.Rows.ConvertAll(r => $"{r.By}:{r.I?.Order?.Do}:{(r.Available ? "ok" : r.Lock.code + " " + r.Reason)}"))).Replace("\"", "'")}\", \"busy\": \"{g.Ops[0].Busy?.Do ?? ""}/{g.Ops[0].Act?.Do ?? ""}/{h.DoingOf(0).Phase}\""); ok &= eDid == want;
             yield return new WaitForSecondsRealtime(0.3f);
             if (h.DriveWalking || g.Ops[0].Busy != null) { h.CancelSelectedScripted(); yield return Frames(3); }
             plan = h.DriveFocus != null ? h.ContextFor(h.DriveFocus, IzScreen()) : null;
@@ -197,6 +197,7 @@ namespace Suborned.Play
             var parts = new List<string>(); bool ok = true;
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
             var g = h.Game; const int E = (int)OpId.Enforcer, S = (int)OpId.Scout, X = (int)OpId.Fixer; const string T = "car:official", TV = "car/official";
+            h.Issue(new Order { Op = "cell", Do = "free", On = false }); // engine 0.19: brief 024's trigger and follow are proved with weapons free off (Motive tuning.md §14.5: F11-*, F13-* run with it off); on, the Scout picks the patrol the draw brings and its body takes the Scout's line
             // a target that stands and takes many shots: Vale's car at the pickup (Vale is in the Office, so no fail); the Enforcer outside its
             // blast ring, the Scout 3 m beside him (inside the 8 m follow ring), the Fixer 5 m off
             var cp = g.CarAt(T); if (!cp.HasValue || g.Ops[E].Gun.W == null) { json[0] = "{\"ok\": null, \"why\": \"no official car or no armed enforcer\"}"; yield break; }
@@ -215,10 +216,11 @@ namespace Suborned.Play
             if (cd.Count > 10) { cd.Sort(); rows.Add($"{{\"spot\": \"fire-commander\", \"frames\": {cd.Count}, \"meanMs\": {F(cd.Average())}, \"fps\": {F(1000f / cd.Average())}, \"p99Ms\": {F(cd[(int)(cd.Count * 0.99f)])}, \"gpuMs\": -1}}"); }
             parts.Add($"\"commanderFixerFiring\": {B(cFiring)}"); ok &= cFiring;
             h.Issue(new Order { Op = "fixer", Do = "cease" }); h.SetPaused(true);
-            // no fire order survives taking control
+            // Sky after 0.2.56 (replaces brief 024's "no fire order survives taking control"): T keeps the fire order, the agent trailed; the
+            // trigger press below takes the stick back (DriveTakeBack)
             h.Issue(new Order { Op = "enforcer", Do = "fire", Target = T }); bool hadOrder = g.Ops[E].Gun.Order.Length > 0;
-            h.Select(OpId.Enforcer, false); h.DriveToggle(); bool dropped = g.Ops[E].Gun.Order.Length == 0;
-            parts.Add($"\"orderBeforeControl\": {B(hadOrder)}, \"orderDroppedOnControl\": {B(dropped)}"); ok &= h.Driving && dropped;
+            h.Select(OpId.Enforcer, false); h.DriveToggle(); bool kept = g.Ops[E].Gun.Order.Length > 0 && h.DriveTrailing;
+            parts.Add($"\"orderBeforeControl\": {B(hadOrder)}, \"orderKeptOnControl\": {B(kept)}"); ok &= h.Driving && kept;
             h.FollowFace(At(h, TV)); h.SetPaused(false);
             h.Views.AnimLog = new List<string>(); int shots0 = g.Log.Count;
             yield return new WaitForSecondsRealtime(0.8f);

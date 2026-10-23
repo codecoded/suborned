@@ -1,0 +1,1081 @@
+[agent] sw-0-0-0                           success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] replay true  [169.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:08.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-0-0-05                          success  5:10.1 T14 A2 hits 2/18 (11%) down[] left[] replay true  [168.2 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  2 (hit 0) first 5:09.4 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-0-0-1                           failure sealed 5:41.0 T13 A2 hits 4/18 (22%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2285 and 5100)  [131.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-0-0-2                           failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2290 and 5100)  [134.5 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:50.1 shot at  2 (hit 2) first 3:51.2 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-0-0-no                          failure enforcer-down 4:57.4 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2290 and 5100)  [123.2 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:46.9 by police-1; while clean 0
+[agent] sw-0-0-od                          failure enforcer-down 5:18.3 T19 A3 hits 16/18 (89%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2290 and 5100)  [136.4 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:49.0 fired 3:51.0 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.8 by police-1; while clean 0
+[agent] sw-0-05-0                          failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 33 (fixer move): not taken between 3038 and 5100)  [164.4 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  2 (hit 2) first 4:39.8 by officer-2; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 4:33.8 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-0-05-05                         success  5:10.1 T14 A2 hits 2/18 (11%) down[] left[] replay true  [168.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  2 (hit 0) first 5:09.4 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-0-05-1                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2285 and 5100)  [113.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-05-2                          failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2290 and 5100)  [113.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  2 (hit 2) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:50.1 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-05-no                         failure enforcer-down 5:03.5 T10 A2 hits 15/18 (83%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2290 and 5100)  [100.5 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  8 (hit 5) first 3:51.3 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-05-od                         failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 23 (scout fire rivals): not taken between 2290 and 5100)  [116.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  6 (hit 4) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:49.0 fired 3:51.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-1-0                           failure enforcer-down 4:56.7 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2592 and 5100)  [160.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:37.6 by officer-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:34.6 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:52.2 by officer-1; while clean 0
+[agent] sw-0-1-05                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2285 and 5100)  [113.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  8 (hit 4) first 4:07.7 by officer-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-1-1                           failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2285 and 5100)  [113.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-1-2                           failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2290 and 5100)  [113.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:50.1 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-1-no                          failure enforcer-down 5:03.5 T10 A2 hits 15/18 (83%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2290 and 5100)  [100.5 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  8 (hit 5) first 3:51.3 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-1-od                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 23 (scout fire rivals): not taken between 2290 and 5100)  [116.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  6 (hit 4) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:49.0 fired 3:51.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-2-0                           failure enforcer-down 4:59.9 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2623 and 5100)  [165.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:39.3 by officer-1; while clean 0
+    fixer    drew 3:47.5 fired 3:50.1 shot at  4 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:55.4 by officer-1; while clean 0
+[agent] sw-0-2-05                          failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2290 and 5100)  [114.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:50.1 shot at  2 (hit 2) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-2-1                           failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2290 and 5100)  [114.1 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:50.1 shot at  2 (hit 2) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-2-2                           failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2295 and 5100)  [113.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-2-no                          failure enforcer-down 5:03.5 T10 A2 hits 15/18 (83%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [100.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  8 (hit 5) first 3:51.3 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-2-od                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 23 (scout fire rivals): not taken between 2295 and 5100)  [116.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  6 (hit 4) first 3:51.3 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-no-0                          failure enforcer-down 5:04.9 T14 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2657 and 5100)  [156.2 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:51.1 by security-1; while clean 0
+    fixer    drew -      fired 4:21.2 shot at  5 (hit 4) first 4:42.8 by officer-2; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:00.4 by officer-1; while clean 0
+[agent] sw-0-no-05                         failure enforcer-down 5:03.5 T10 A2 hits 13/18 (72%) down[scout] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2290 and 5100)  [100.7 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 3) first 3:51.3 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-no-1                          failure enforcer-down 5:03.5 T10 A2 hits 13/18 (72%) down[scout] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2290 and 5100)  [100.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:51.3 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-no-2                          failure enforcer-down 5:03.5 T10 A2 hits 13/18 (72%) down[scout] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [100.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:51.3 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-no-no                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (scout fire security-1): not taken between 2255 and 5100)  [164.6 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-no-od                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [85.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-od-0                          failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [85.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-od-05                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [85.4 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-od-1                          failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [85.2 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-od-2                          failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [85.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-od-no                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [85.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-0-od-od                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [85.2 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.8 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-0-0                          failure enforcer-down 5:02.3 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2587 and 5100)  [158.9 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 4:37.1 by officer-2; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:53.3 by officer-2; while clean 0
+[agent] sw-05-0-05                         success  5:10.1 T14 A2 hits 2/18 (11%) down[] left[] replay true  [168.0 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  2 (hit 0) first 5:09.4 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-0-1                          failure sealed 5:41.0 T13 A2 hits 4/18 (22%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2285 and 5100)  [123.2 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-0-2                          failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2290 and 5100)  [127.4 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:50.1 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-0-no                         failure enforcer-down 4:57.1 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2290 and 5100)  [111.8 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:46.6 by police-1; while clean 0
+[agent] sw-05-0-od                         failure enforcer-down 5:18.2 T19 A3 hits 16/18 (89%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2290 and 5100)  [129.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:49.0 fired 3:51.0 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.7 by police-1; while clean 0
+[agent] sw-05-05-0                         failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 33 (fixer move): not taken between 3038 and 5100)  [161.2 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  2 (hit 2) first 4:39.8 by officer-2; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 4:33.8 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-05-05                        success  5:10.1 T14 A2 hits 2/18 (11%) down[] left[] replay true  [167.1 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  3 (hit 2) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  2 (hit 0) first 5:09.4 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-05-1                         success  5:10.6 T14 A2 hits 2/18 (11%) down[] left[] replay true  [167.4 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  3 (hit 2) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  2 (hit 0) first 5:09.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-05-2                         failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [119.1 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-05-no                        failure enforcer-down 4:58.0 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [103.9 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.5 by police-1; while clean 0
+[agent] sw-05-05-od                        failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2295 and 5100)  [121.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-1-0                          failure enforcer-down 4:56.7 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2592 and 5100)  [155.0 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 4:37.6 by officer-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:34.6 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:52.2 by officer-1; while clean 0
+[agent] sw-05-1-05                         failure enforcer-down 5:01.2 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2592 and 5100)  [148.8 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 4:34.6 by officer-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:52.2 by officer-2; while clean 0
+[agent] sw-05-1-1                          success  5:10.6 T14 A2 hits 2/18 (11%) down[] left[] replay true  [167.4 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  3 (hit 2) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  2 (hit 0) first 5:09.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-05-1-2                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2295 and 5100)  [104.0 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  6 (hit 4) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-1-no                         failure enforcer-down 5:03.5 T10 A2 hits 15/18 (83%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [90.2 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  8 (hit 5) first 3:51.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-1-od                         failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 23 (scout fire rivals): not taken between 2295 and 5100)  [106.5 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  6 (hit 4) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-2-0                          failure enforcer-down 5:00.5 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2632 and 5100)  [158.9 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 4:39.9 by officer-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:56.0 by officer-1; while clean 0
+[agent] sw-05-2-05                         failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2295 and 5100)  [104.1 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-2-1                          failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2295 and 5100)  [104.1 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.7 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-2-2                          failure enforcer-down 5:03.5 T10 A2 hits 12/18 (67%) down[scout] left[] replay true  PARTIAL (stopped at step 24 (scout fire rivals): not taken between 2295 and 5100)  [103.9 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-2-no                         failure enforcer-down 5:03.5 T10 A2 hits 15/18 (83%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [90.7 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  8 (hit 5) first 3:51.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-2-od                         failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 23 (scout fire rivals): not taken between 2295 and 5100)  [106.6 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  6 (hit 4) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-no-0                         failure enforcer-down 5:05.4 T14 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2662 and 5100)  [152.1 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:51.1 by security-1; while clean 0
+    fixer    drew -      fired 4:21.7 shot at  5 (hit 4) first 4:43.2 by officer-2; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  9 (hit 6) first 4:38.5 by police-1; while clean 0
+[agent] sw-05-no-05                        failure enforcer-down 5:03.5 T10 A2 hits 13/18 (72%) down[scout] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [90.4 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-no-1                         failure enforcer-down 5:03.5 T10 A2 hits 13/18 (72%) down[scout] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [90.6 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-no-2                         failure enforcer-down 5:03.5 T10 A2 hits 13/18 (72%) down[scout] left[] replay true  PARTIAL (stopped at step 20 (scout fire rivals): not taken between 2295 and 5100)  [90.5 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-no-no                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (scout fire security-1): not taken between 2260 and 5100)  [161.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-no-od                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [75.2 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-od-0                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-od-05                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.5 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-od-1                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.4 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-od-2                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-od-no                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-05-od-od                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.3 s]
+    scout    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-0-0                           failure enforcer-down 5:18.3 T18 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2285 and 5100)  [131.2 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.8 by police-1; while clean 0
+[agent] sw-1-0-05                          failure enforcer-down 5:18.3 T18 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2285 and 5100)  [123.5 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.8 by police-1; while clean 0
+[agent] sw-1-0-1                           failure sealed 5:41.0 T13 A2 hits 4/18 (22%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2285 and 5100)  [123.5 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-0-2                           failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2290 and 5100)  [127.7 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:50.1 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-0-no                          failure enforcer-down 4:57.1 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2290 and 5100)  [112.1 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:46.6 by police-1; while clean 0
+[agent] sw-1-0-od                          failure enforcer-down 5:18.2 T19 A3 hits 16/18 (89%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2290 and 5100)  [129.6 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:49.0 fired 3:51.0 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.7 by police-1; while clean 0
+[agent] sw-1-05-0                          failure enforcer-down 4:58.2 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2592 and 5100)  [155.0 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:39.1 by officer-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 4:36.1 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.7 by officer-1; while clean 0
+[agent] sw-1-05-05                         failure enforcer-down 5:03.5 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2592 and 5100)  [149.1 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 4:38.3 by officer-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:54.5 by officer-2; while clean 0
+[agent] sw-1-05-1                          success  5:10.6 T14 A2 hits 2/18 (11%) down[] left[] replay true  [167.5 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  3 (hit 2) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  2 (hit 0) first 5:09.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-05-2                          failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [119.4 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-05-no                         failure enforcer-down 4:57.7 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [101.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.2 by police-1; while clean 0
+[agent] sw-1-05-od                         failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2295 and 5100)  [121.7 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-1-0                           failure enforcer-down 4:56.7 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2592 and 5100)  [155.1 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:37.6 by officer-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:34.6 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:52.2 by officer-1; while clean 0
+[agent] sw-1-1-05                          failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 33 (fixer move): not taken between 3043 and 5100)  [157.9 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 4:40.6 by officer-2; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 4:34.6 by officer-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-1-1                           success  5:10.6 T14 A2 hits 2/18 (11%) down[] left[] replay true  [167.4 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  3 (hit 2) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  2 (hit 0) first 5:09.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-1-2                           failure sealed 5:41.0 T13 A2 hits 4/18 (22%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [114.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-1-no                          failure enforcer-down 4:58.4 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2300 and 5100)  [104.6 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:52.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.9 by police-1; while clean 0
+[agent] sw-1-1-od                          failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2300 and 5100)  [123.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:52.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:50.0 fired 3:52.0 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-2-0                           failure enforcer-down 5:02.1 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2628 and 5100)  [159.3 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 3:51.7 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:39.9 by officer-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:57.6 by officer-1; while clean 0
+[agent] sw-1-2-05                          failure enforcer-down 5:02.6 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2628 and 5100)  [153.7 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 3:51.7 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:40.5 by officer-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:58.1 by officer-1; while clean 0
+[agent] sw-1-2-1                           failure enforcer-down 5:02.1 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2602 and 5100)  [150.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:49.1 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:53.1 by officer-2; while clean 0
+[agent] sw-1-2-2                           success  5:11.6 T14 A2 hits 4/18 (22%) down[] left[] replay true  [167.6 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  3 (hit 2) first 3:47.6 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:49.1 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  2 (hit 0) first 5:10.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-2-no                          failure enforcer-down 5:00.7 T13 A2 hits 15/18 (83%) down[scout,fixer] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2633 and 5100)  [145.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  6 (hit 5) first 3:49.1 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:56.2 by officer-1; while clean 0
+[agent] sw-1-2-od                          success  5:12.6 T14 A2 hits 4/18 (22%) down[] left[] replay true  [168.0 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  3 (hit 2) first 3:47.6 by security-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:49.1 by security-1; while clean 0
+    tech     drew 3:50.0 fired 3:52.0 shot at  2 (hit 0) first 5:11.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-1-no-0                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,tech] left[] replay true  PARTIAL (stopped at step 19 (tech fire security-1): not taken between 2255 and 5100)  [167.2 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:51.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  6 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-no-05                         failure enforcer-down 5:06.5 T14 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2667 and 5100)  [147.5 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:51.6 by security-1; while clean 0
+    fixer    drew -      fired 4:22.2 shot at  5 (hit 4) first 4:44.4 by officer-2; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:02.0 by officer-1; while clean 0
+[agent] sw-1-no-1                          success  5:15.1 T14 A2 hits 5/18 (28%) down[] left[] replay true  [166.9 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  3 (hit 2) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired 4:19.2 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:49.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  2 (hit 0) first 5:13.8 by officer-1; while clean 0
+[agent] sw-1-no-2                          success  5:14.7 T14 A2 hits 5/18 (28%) down[] left[] replay true  [166.7 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  3 (hit 2) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired 4:18.8 shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:49.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  2 (hit 0) first 5:13.4 by officer-1; while clean 0
+[agent] sw-1-no-no                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (scout fire security-1): not taken between 2265 and 5100)  [161.4 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-no-od                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [75.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-od-0                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-od-05                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-od-1                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-od-2                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.7 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-od-no                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.7 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-1-od-od                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [75.8 s]
+    scout    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-0-0                           failure enforcer-down 5:18.3 T19 A3 hits 16/18 (89%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2290 and 5100)  [135.2 s]
+    scout    drew 3:47.5 fired 3:50.1 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.8 by police-1; while clean 0
+[agent] sw-2-0-05                          failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2290 and 5100)  [128.2 s]
+    scout    drew 3:47.5 fired 3:50.1 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-0-1                           failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2290 and 5100)  [128.1 s]
+    scout    drew 3:47.5 fired 3:50.1 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-0-2                           failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [128.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-0-no                          failure enforcer-down 4:57.7 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [115.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.2 by police-1; while clean 0
+[agent] sw-2-0-od                          failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2295 and 5100)  [130.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.1 by security-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-05-0                          failure enforcer-down 5:00.5 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2632 and 5100)  [159.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:39.9 by officer-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  4 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:56.0 by officer-1; while clean 0
+[agent] sw-2-05-05                         failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [119.9 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-05-1                          failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [119.9 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  2 (hit 2) first 3:51.7 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-05-2                          failure sealed 5:41.0 T13 A2 hits 6/18 (33%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [120.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-05-no                         failure enforcer-down 4:58.0 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [104.8 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.5 by police-1; while clean 0
+[agent] sw-2-05-od                         failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2295 and 5100)  [122.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:51.6 by security-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:49.5 fired 3:51.5 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-1-0                           failure enforcer-down 5:00.1 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2628 and 5100)  [159.3 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:39.5 by officer-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:55.6 by officer-1; while clean 0
+[agent] sw-2-1-05                          failure enforcer-down 5:00.4 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2628 and 5100)  [154.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:39.7 by officer-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:55.9 by officer-1; while clean 0
+[agent] sw-2-1-1                           failure enforcer-down 5:18.3 T18 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [115.3 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 4) first 4:11.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 5:07.8 by police-1; while clean 0
+[agent] sw-2-1-2                           failure sealed 5:41.0 T13 A2 hits 4/18 (22%) down[fixer] left[] replay true  PARTIAL (stopped at step 26 (fixer fire rivals): not taken between 2295 and 5100)  [115.5 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-1-no                          failure enforcer-down 4:58.2 T18 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2300 and 5100)  [102.4 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:52.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.7 by police-1; while clean 0
+[agent] sw-2-1-od                          failure sealed 5:41.0 T13 A2 hits 10/18 (56%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 25 (fixer fire rivals): not taken between 2300 and 5100)  [124.4 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:52.1 by security-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:50.0 fired 3:52.0 shot at  4 (hit 4) first 4:11.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-2-0                           failure enforcer-down 5:00.5 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2632 and 5100)  [159.3 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:39.9 by officer-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:56.0 by officer-1; while clean 0
+[agent] sw-2-2-05                          failure enforcer-down 5:00.5 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2632 and 5100)  [154.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:39.9 by officer-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:56.0 by officer-1; while clean 0
+[agent] sw-2-2-1                           failure enforcer-down 4:57.6 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 31 (enforcer board car): not taken between 2602 and 5100)  [151.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:38.5 by officer-1; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 4:35.5 by officer-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.1 by officer-1; while clean 0
+[agent] sw-2-2-2                           success  5:11.6 T14 A2 hits 3/18 (17%) down[] left[] replay true  [167.6 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  1 (hit 1) first 3:48.6 by security-2; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:48.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  2 (hit 0) first 5:10.9 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] sw-2-2-no                          failure enforcer-down 4:57.0 T18 A2 hits 12/18 (67%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2310 and 5100)  [107.6 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:48.6 by security-2; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:48.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:46.5 by police-1; while clean 0
+[agent] sw-2-2-od                          success  5:13.6 T14 A2 hits 4/18 (22%) down[] left[] replay true  [168.0 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  2 (hit 2) first 3:48.6 by security-2; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  3 (hit 2) first 3:48.6 by security-1; while clean 0
+    tech     drew 3:51.0 fired 3:53.0 shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  2 (hit 0) first 5:12.3 by officer-1; while clean 0
+[agent] sw-2-no-0                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,tech] left[] replay true  PARTIAL (stopped at step 19 (tech fire security-1): not taken between 2255 and 5100)  [167.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:51.1 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  6 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-no-05                         failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[scout,tech] left[] replay true  PARTIAL (stopped at step 19 (tech fire security-1): not taken between 2260 and 5100)  [165.4 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:51.6 by security-1; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  6 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-no-1                          failure enforcer-down 5:06.0 T14 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2664 and 5100)  [144.4 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:52.1 by security-1; while clean 0
+    fixer    drew -      fired 4:21.9 shot at  5 (hit 4) first 4:43.8 by officer-2; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  9 (hit 6) first 4:38.7 by police-1; while clean 0
+[agent] sw-2-no-2                          failure enforcer-down 5:04.4 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2647 and 5100)  [149.4 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired 4:20.2 shot at  5 (hit 4) first 4:42.2 by officer-2; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:49.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:59.9 by officer-1; while clean 0
+[agent] sw-2-no-no                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (scout fire security-1): not taken between 2275 and 5100)  [161.5 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-no-od                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [76.5 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-od-0                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [76.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-od-05                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [76.3 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-od-1                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [76.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-od-2                          failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [76.2 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-od-no                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [76.3 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-2-od-od                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[scout] left[] replay true  PARTIAL (stopped at step 15 (fixer draw): not taken between 1575 and 5100)  [76.3 s]
+    scout    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-2; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-0-0                          failure enforcer-down 4:57.7 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2290 and 5100)  [122.4 s]
+    scout    drew -      fired 4:23.0 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.2 by police-1; while clean 0
+[agent] sw-no-0-05                         failure enforcer-down 4:57.4 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2290 and 5100)  [113.2 s]
+    scout    drew -      fired 4:22.6 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:46.9 by police-1; while clean 0
+[agent] sw-no-0-1                          failure enforcer-down 4:57.4 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2290 and 5100)  [113.1 s]
+    scout    drew -      fired 4:22.6 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:46.9 by police-1; while clean 0
+[agent] sw-no-0-2                          failure enforcer-down 4:58.0 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [113.1 s]
+    scout    drew -      fired 4:23.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:51.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.5 by police-1; while clean 0
+[agent] sw-no-0-no                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (fixer fire security-1): not taken between 2255 and 5100)  [164.7 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-0-od                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [86.7 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  6 (hit 5) first 3:46.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-05-0                         failure enforcer-down 5:03.5 T14 A2 hits 19/18 (106%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2662 and 5100)  [152.6 s]
+    scout    drew -      fired 4:23.5 shot at  4 (hit 4) first 4:42.9 by officer-1; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  9 (hit 6) first 4:38.5 by police-1; while clean 0
+[agent] sw-no-05-05                        failure enforcer-down 4:58.0 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [102.8 s]
+    scout    drew -      fired 4:23.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.5 by police-1; while clean 0
+[agent] sw-no-05-1                         failure enforcer-down 4:57.7 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [102.7 s]
+    scout    drew -      fired 4:23.1 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.2 by police-1; while clean 0
+[agent] sw-no-05-2                         failure enforcer-down 4:58.0 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2295 and 5100)  [102.6 s]
+    scout    drew -      fired 4:23.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.5 by police-1; while clean 0
+[agent] sw-no-05-no                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (fixer fire security-1): not taken between 2260 and 5100)  [161.7 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-05-od                        failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [76.3 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.0 fired 3:48.0 shot at  6 (hit 5) first 3:47.1 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-1-0                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 19 (tech fire security-1): not taken between 2255 and 5100)  [167.2 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  6 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-1-05                         failure enforcer-down 5:04.3 T14 A2 hits 19/18 (106%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2667 and 5100)  [147.9 s]
+    scout    drew -      fired 4:24.0 shot at  4 (hit 4) first 4:43.7 by officer-1; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  6 (hit 5) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  5 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:59.8 by officer-1; while clean 0
+[agent] sw-no-1-1                          failure enforcer-down 4:58.4 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2300 and 5100)  [105.3 s]
+    scout    drew -      fired 4:24.0 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  4 (hit 3) first 3:52.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.9 by police-1; while clean 0
+[agent] sw-no-1-2                          failure enforcer-down 4:58.1 T14 A2 hits 13/18 (72%) down[fixer] left[] replay true  PARTIAL (stopped at step 22 (fixer fire rivals): not taken between 2300 and 5100)  [102.7 s]
+    scout    drew -      fired 4:23.6 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 3) first 3:52.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:47.6 by police-1; while clean 0
+[agent] sw-no-1-no                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (fixer fire security-1): not taken between 2265 and 5100)  [161.7 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  6 (hit 5) first 3:47.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-1-od                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [76.5 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:46.5 fired 3:48.5 shot at  6 (hit 5) first 3:47.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-2-0                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 19 (tech fire security-1): not taken between 2255 and 5100)  [167.2 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:51.1 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  6 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-2-05                         failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 19 (tech fire security-1): not taken between 2260 and 5100)  [165.4 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:51.6 by security-1; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  6 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-2-1                          failure enforcer-down 5:08.3 T14 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 27 (enforcer board car): not taken between 2663 and 5100)  [144.5 s]
+    scout    drew -      fired 4:23.6 shot at  5 (hit 4) first 4:43.2 by officer-2; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:52.1 by security-1; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  5 (hit 4) first 3:47.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:59.3 by officer-2; while clean 0
+[agent] sw-no-2-2                          failure enforcer-down 5:03.5 T10 A2 hits 14/18 (78%) down[fixer,tech] left[] replay true  PARTIAL (stopped at step 18 (fixer fire security-1): not taken between 2275 and 5100)  [164.1 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-1; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  5 (hit 4) first 3:51.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-2-no                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (fixer fire security-1): not taken between 2275 and 5100)  [161.8 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-2-od                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[fixer] left[] replay true  PARTIAL (stopped at step 15 (tech draw): not taken between 1575 and 5100)  [76.6 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-1; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-no-0                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[tech] left[] replay true  PARTIAL (stopped at step 15 (tech fire security-1): not taken between 2255 and 5100)  [164.8 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  6 (hit 4) first 3:46.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-no-05                        failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[tech] left[] replay true  PARTIAL (stopped at step 15 (tech fire security-1): not taken between 2260 and 5100)  [161.8 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.0 fired 3:48.0 shot at  6 (hit 4) first 3:47.1 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-no-1                         failure enforcer-down 5:03.5 T10 A2 hits 11/18 (61%) down[tech] left[] replay true  PARTIAL (stopped at step 15 (tech fire security-1): not taken between 2265 and 5100)  [161.6 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:46.5 fired 3:48.5 shot at  6 (hit 5) first 3:47.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-no-2                         failure enforcer-down 5:03.5 T10 A2 hits 10/18 (56%) down[tech] left[] replay true  PARTIAL (stopped at step 15 (tech fire security-1): not taken between 2275 and 5100)  [161.7 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew 3:47.5 fired 3:49.5 shot at  4 (hit 4) first 3:48.6 by security-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-no-no                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout fire rivals): not taken between 1510 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-no-od                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (tech draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-od-0                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (fixer draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-od-05                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (fixer draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-od-1                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (fixer draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-od-2                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (fixer draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-od-no                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (fixer draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-no-od-od                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (fixer draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-0-0                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-0-05                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-0-1                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-0-2                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-0-no                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-0-od                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-05-0                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-05-05                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-05-1                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.1 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-05-2                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-05-no                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-05-od                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-1-0                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-1-05                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-1-1                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-1-2                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-1-no                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-1-od                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-2-0                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-2-05                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-2-1                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-2-2                          failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [66.9 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-2-no                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-2-od                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.1 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-no-0                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-no-05                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-no-1                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-no-2                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-no-no                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-no-od                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-od-0                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-od-05                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-od-1                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-od-2                         failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.0 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-od-no                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.1 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+[agent] sw-od-od-od                        failure enforcer-down 5:03.5 T10 A2 hits 6/18 (33%) down[] left[] replay true  PARTIAL (stopped at step 12 (scout draw): not taken between 1575 and 5100)  [67.2 s]
+    scout    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    fixer    drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    tech     drew -      fired -      shot at  0 (hit 0) first -; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:53.0 by police-1; while clean 0
+# 216 attempts x 1 engines, 169.0 s wall

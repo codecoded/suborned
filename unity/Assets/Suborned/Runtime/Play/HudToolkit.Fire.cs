@@ -36,7 +36,7 @@ namespace Suborned.Play
 
         Paint fireLayer; readonly List<Action<Painter2D>> firePaints = new();
         VisualElement fireLine, fireIcon, fireHeldIcon, fireCapX, fireCapLmb; Label fireHead, fireDown, fireHeld, fireStop;
-        VisualElement tpStrip, chipCaps, chipMouse; bool fireBuilt;
+        bool fireBuilt;
         static readonly Color FlameA = new(1f, 0.62f, 0.18f), FlameB = new(1f, 0.86f, 0.42f), Smoke = new(0.42f, 0.45f, 0.45f);
 
         void BuildFire()
@@ -49,7 +49,7 @@ namespace Suborned.Play
             fireLine.pickingMode = PickingMode.Ignore;
             fireCapLmb = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireCapLmb.style.position = Position.Relative; fireCapLmb.style.left = StyleKeyword.Auto; fireCapLmb.style.top = StyleKeyword.Auto; fireCapLmb.style.marginRight = 6;
             fireIcon = E(fireLine, null, w: 16, h: 16); fireIcon.style.marginRight = 6; // 11 px inside a 38 px plate: the audit's rim plus 4 px Icon(fireIcon, "fire", TurqLight);
-            fireHead = L(fireLine, "verb-name"); fireHead.style.fontSize = 14f; fireHead.style.unityFontStyleAndWeight = FontStyle.Bold;
+            fireHead = L(fireLine, "verb-name"); fireHead.style.fontSize = 14f;
             fireDown = L(fireLine, "verb-name"); fireDown.style.fontSize = 13f; fireDown.style.marginLeft = 14;
             fireHeldIcon = P(fireLine, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); fireHeldIcon.style.position = Position.Relative; fireHeldIcon.style.left = StyleKeyword.Auto; fireHeldIcon.style.top = StyleKeyword.Auto; fireHeldIcon.style.marginLeft = 14;
             fireHeld = L(fireLine, "verb-name"); fireHeld.style.fontSize = 13f; fireHeld.style.marginLeft = 4; fireHeld.text = "held";
@@ -57,18 +57,9 @@ namespace Suborned.Play
             fireStop = L(fireCapX, "verb-name"); fireStop.style.fontSize = 13f; fireStop.style.marginLeft = 4; fireStop.text = "stop";
             manifest.Add((fireLine, "image", () => "fire line: who, how long, the stop key"));
             Show(fireLine, false);
-            // the third-person key strip (one row, one word per cap)
-            tpStrip = E(root, "s-plate_dark", 0, 0, float.NaN, 34); tpStrip.style.flexDirection = FlexDirection.Row; tpStrip.style.alignItems = Align.Center; tpStrip.style.paddingLeft = 18; tpStrip.style.paddingRight = 10; tpStrip.pickingMode = PickingMode.Ignore;
-            void Cap(string cap, string word) { KeyCapW(tpStrip, cap); var l = L(tpStrip, "verb-name"); l.text = word; l.style.fontSize = 12.5f; l.style.marginLeft = 5; l.style.marginRight = 10; }
-            Cap("WASD", "move"); Cap(host.controls.Label(PlayAction.AddToGroup), "run"); Cap(host.controls.Label(PlayAction.Act), "act"); Cap("hold " + host.controls.Label(PlayAction.Act), "options");
-            Cap("RMB", "aim"); Cap("LMB", "fire"); Cap(host.controls.Label(PlayAction.Draw), "draw");
-            manifest.Add((tpStrip, "image", () => "third person key strip"));
-            Show(tpStrip, false);
-            // the prompt's caps at the head of the price chip: E, and the mouse when a left click on the prompt acts
-            chipCaps = E(chip2); chipCaps.style.flexDirection = FlexDirection.Row; chipCaps.style.alignItems = Align.Center; chipCaps.style.marginRight = 8; chip2.Insert(0, chipCaps);
-            KeyCap(chipCaps, host.controls.Label(PlayAction.Act)); chipCaps[0].style.marginLeft = 0;
-            chipMouse = P(chipCaps, 0, 0, 14, 20, (p, r) => MouseGlyph(p, r.center, Cream, true)); chipMouse.style.position = Position.Relative; chipMouse.style.left = StyleKeyword.Auto; chipMouse.style.top = StyleKeyword.Auto; chipMouse.style.marginLeft = 5;
-            Show(chipCaps, false);
+            // Sky's rule (a key legend means the controls are wrong; Glyph's 0.2.65 review 8, Aster 2026-10-22 "make sure no key legend survives
+            // anywhere"): no third-person key strip, no keycaps on the prompt, no "held" / "X stop" caps on the fire line. Keys are taught by the
+            // hints at first use; the verbs are the pill, the act prompt and the plate.
         }
 
         /// <summary>A keycap that fits its label (the strip's "WASD", "hold E").</summary>
@@ -104,12 +95,6 @@ namespace Suborned.Play
             if (live && cam) { Tracers(now); ShotFx(now); FireMarks(now); Reticle(now); CarFx(now); }
             fireLayer.MarkDirtyRepaint(); if (fireLayer.parent.IndexOf(fireLayer) != fireLayer.parent.childCount - 1) fireLayer.BringToFront();
             FireLineFrame(W, H, live);
-            // the third person key strip: bottom centre, while driven
-            bool strip = live && host.Driving && !host.Exploring; Show(tpStrip, strip);
-            if (strip) { float sw = float.IsNaN(tpStrip.resolvedStyle.width) ? 560 : tpStrip.resolvedStyle.width; tpStrip.style.left = (W - sw) / 2; tpStrip.style.top = H - 14 - 34; }
-            // the prompt's caps: driven, the chip on the prompted target (not while aiming: the reticle has its own line)
-            bool caps = live && host.Driving && host.Hover != null && host.DriveFocus != null && host.Hover.Kind == host.DriveFocus.Kind && host.Hover.Key == host.DriveFocus.Key && !host.Aiming;
-            Show(chipCaps, caps); if (caps) Show(chipMouse, host.controls.clickActs);
             if (host.Aiming) Show(chip2, false);
             PortraitFire(live);
         }
@@ -124,15 +109,23 @@ namespace Suborned.Play
                     var w = set[i]; if (w?.Arm == null) continue;
                     if (w.Arm.Q<Paint>("firemark") is not Paint fm)
                     {
-                        int k = i; fm = P(w.Arm, -8, -8, 36, 36, (p, r) => FireMarkPaint(p, r, k)); fm.name = "firemark";
+                        int k = i; var wk = w; fm = P(w.Arm, -8, -8, 36, 36, (p, r) => FireMarkPaint(p, r, k, wk.Under)); fm.name = "firemark"; if (w.Under) { fm.style.left = -8; fm.style.top = -8; fm.style.width = w.Arm.style.width.value.value + 16; fm.style.height = w.Arm.style.height.value.value + 16; }
                     }
                     var fs = host.FireNow[i]; bool on = live && fs.Firing; Show(fm, on); if (on) fm.MarkDirtyRepaint();
                 }
         }
 
-        void FireMarkPaint(Painter2D p, Rect r, int k)
+        void FireMarkPaint(Painter2D p, Rect r, int k, bool under = false)
         {
             var fs = host.FireNow[k]; var c = r.center; float now = Time.unscaledTime;
+            if (under)
+            {   // brief 046: the weapon slot under the portrait sits 3 px from the status slot: a ring just outside the disc, no rays or arrow (return = dashed)
+                float rr = (r.width - 16f) / 2f * 0.75f + 2.5f, pl = 0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 2f * 1.5f);
+                p.lineCap = LineCap.Butt;
+                if (fs.Mode == "return") { p.strokeColor = Cream; p.lineWidth = 1.6f; for (int i = 0; i < 8; i++) { p.BeginPath(); p.Arc(c, rr, Deg(i * 45f), Deg(i * 45f + 26f)); p.Stroke(); } return; }
+                p.strokeColor = new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.55f + 0.45f * pl); p.lineWidth = 1.4f + 0.8f * pl; p.BeginPath(); p.Arc(c, rr, Deg(0), Deg(360)); p.Stroke();
+                return;
+            }
             if (fs.Mode == "return")
             {   // returning fire: a dashed ring and the back arrow
                 p.strokeColor = Cream; p.lineWidth = 2f; p.lineCap = LineCap.Butt;
@@ -162,16 +155,17 @@ namespace Suborned.Play
                 var fs = host.FireNow[k]; if (!fs.Firing || string.IsNullOrEmpty(fs.Target)) continue;
                 if (host.DrawnAt(fs.Target) is not Vector3 tw) continue;
                 if (!Proj(Muzzle(k), out var a) || !Proj(tw + Vector3.up * 1.2f, out var b)) continue;
-                bool thick = k == driven, thin = fs.Mode == "return";
-                float core = thick ? 3.2f : thin ? 1.3f : 2.1f, edge = thick ? 7.5f : thin ? 3.2f : 5f, dash = thick ? 14f : 10f, gap = thick ? 9f : 8f;
-                float phase = Mathf.Repeat(now * 260f, dash + gap);
+                // brief 049 (Glyph): one quiet line only while a shot is being fired: a cream dashed line (9 on, 5 off, marching) over an
+                // ink-deep underlay at 35 %; the driven agent 1.5 px, an agent returning fire 1 px; no glow, no turquoise pass, no text
+                bool thin = fs.Mode == "return"; float core = thin ? 1f : 1.5f, under = 3.4f, dash = 9f, gap = 5f;
+                float phase = Mathf.Repeat(now * 60f, dash + gap);
                 firePaints.Add(pp =>
                 {
                     var d = b - a; float len = d.magnitude; if (len < 4f) return; var u = d / len; pp.lineCap = LineCap.Butt;
-                    for (int pass = 0; pass < 3; pass++)
+                    for (int pass = 0; pass < 2; pass++)
                     {
-                        pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.55f) : pass == 1 ? new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.8f) : Cream;
-                        pp.lineWidth = pass == 0 ? edge + 2f : pass == 1 ? edge : core;
+                        pp.strokeColor = pass == 0 ? new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.35f) : Cream;
+                        pp.lineWidth = pass == 0 ? under : core;
                         pp.BeginPath();
                         for (float s = phase - (dash + gap); s < len; s += dash + gap) { float s0 = Mathf.Max(0f, s), s1 = Mathf.Min(len, s + dash); if (s1 <= s0) continue; pp.MoveTo(a + u * s0); pp.LineTo(a + u * s1); }
                         pp.Stroke();
@@ -276,25 +270,7 @@ namespace Suborned.Play
                 pp.fillColor = col; pp.BeginPath(); pp.Arc(c, 1.8f, Deg(0), Deg(360)); pp.Fill();
                 if (hold > 0f) RingArc(pp, c, r + 9f, hold, TurqLight, 3.4f); // the 0.5 s hold
             });
-            // the follow ring: 8 m round the driven agent on the ground, dashed; followers ringed solid
-            var me = host.Views?.Find("op/" + Op.Name((OpId)host.DriveAgent)); if (!me) return;
-            float rad = host.Game.FollowRingCm / 100f; var segs = new List<(Vector2 a, Vector2 b)>(); var camP = host.View.transform.position; var camF = host.View.transform.forward;
-            for (int i = 0; i < 96; i += 2) // dashed: every other 1/96 of the ring; only the arcs in front of the camera
-            {
-                float a0 = i * Mathf.PI * 2f / 96f, a1 = (i + 1) * Mathf.PI * 2f / 96f;
-                var w0 = me.position + new Vector3(Mathf.Cos(a0) * rad, 0.05f, Mathf.Sin(a0) * rad); var w1 = me.position + new Vector3(Mathf.Cos(a1) * rad, 0.05f, Mathf.Sin(a1) * rad);
-                if (Vector3.Dot(w0 - camP, camF) < 0.5f || Vector3.Dot(w1 - camP, camF) < 0.5f) continue;
-                if (Proj(w0, out var q0) && Proj(w1, out var q1)) segs.Add((q0, q1));
-            }
-            if (segs.Count > 0) firePaints.Add(pp =>
-            {
-                pp.lineCap = LineCap.Butt;
-                for (int pass = 0; pass < 2; pass++)
-                {
-                    pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.35f) : new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.8f); pp.lineWidth = pass == 0 ? 3.6f : 1.8f;
-                    foreach (var (sa, sb) in segs) { pp.BeginPath(); pp.MoveTo(sa); pp.LineTo(sb); pp.Stroke(); }
-                }
-            });
+            // brief 049 (Glyph): no 8 m follow ring (it read as the fight lab's range circle); the followers wear their own 0.6 m ring
             foreach (var f in host.Followers)
             {
                 var ft = host.Views?.Find("op/" + Op.Name(f)); if (!ft) continue; var ring = new List<Vector2>(); bool fo = true;
@@ -380,12 +356,12 @@ namespace Suborned.Play
                     if (aimChip)
                     {
                         Text(fireHead, host.AimHolding ? "Hold to fire" : "Fire"); Text(fireDown, host.AimDownS >= 0 ? $"{(host.AimPreview?.DownIs == "disabled" ? "disabled" : "down")} in {host.AimDownS} s" : host.AimPreview?.Line == false ? "no line" : "");
-                        Show(fireCapLmb, true); Show(fireIcon, true); Show(fireHeldIcon, false); Show(fireHeld, false); Show(fireCapX, false);
+                        Show(fireCapLmb, false); Show(fireIcon, true); Show(fireHeldIcon, false); Show(fireHeld, false); Show(fireCapX, false); // no key caps (no legends)
                     }
                     else
                     {
                         Text(fireHead, head); Text(fireDown, stopped ? (drawn ? "gun drawn" : "") : down);
-                        Show(fireCapLmb, false); Show(fireIcon, !stopped); Show(fireHeldIcon, trig && !stopped); Show(fireHeld, trig && !stopped); Show(fireCapX, !stopped && !trig);
+                        Show(fireCapLmb, false); Show(fireIcon, !stopped); Show(fireHeldIcon, false); Show(fireHeld, false); Show(fireCapX, false); // no key caps (no legends)
                     }
                     Show(fireDown, fireDown.text.Length > 0);
                     // where: above the target (the reticle while aiming), else above the agent

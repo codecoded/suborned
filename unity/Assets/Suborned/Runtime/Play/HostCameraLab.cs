@@ -60,7 +60,7 @@ namespace Suborned.Play
         {
             var o = Cam.overhead; var f = Cam.follow;
             zoomMin = Mathf.Max(0.5f, Mathf.Min(o.zoomMin, o.zoomMax)); zoomMax = Mathf.Max(zoomMin, o.zoomMax);
-            followFov = f.fov; followDistance = Mathf.Clamp(f.distance, f.distanceMin, f.distanceMax); followMin = Mathf.Min(f.distanceMin, f.distanceMax); followMax = Mathf.Max(f.distanceMin, f.distanceMax);
+            followFov = f.fov; followDistance = Mathf.Clamp(f.distance * FollowDistanceFactor, f.distanceMin, f.distanceMax); // brief 051: Options, Camera, Camera distance (Close 0.75, Default 1, Far 1.4 of the preset's) followMin = Mathf.Min(f.distanceMin, f.distanceMax); followMax = Mathf.Max(f.distanceMin, f.distanceMax);
             followHeight = f.height; followRise = f.rise; followAhead = f.lookAhead; followLookHeight = f.lookHeight; followSmooth = Mathf.Max(0f, f.smoothing);
             if (!cam) return;
             if (zoomToo) cam.orthographicSize = Mathf.Clamp(o.zoom, zoomMin, zoomMax); else cam.orthographicSize = Mathf.Clamp(cam.orthographicSize, zoomMin, zoomMax);

@@ -177,10 +177,10 @@ public class RulesTests
         Assert.True(refused > 10, $"the scenarios refuse orders ({refused})");
         Assert.Empty(bad);
         var a = New(); var b = New();
-        // a Listen (3 m) from the car: too far (brief 031: the Scout's Watch reaches 30 m, so Inez at 25 m is in its reach, behind a wall)
-        var x = a.Issue(new Order { Tick = 0, Op = "scout", Do = "listen", Target = "waitress" });
+        // a Watch on the entrance camera from the car: too far (engine 0.23.0: a person act out of reach walks in, a machine's Watch does not)
+        var x = a.Issue(new Order { Tick = 0, Op = "scout", Do = "watch", Target = "camera:entrance" });
         Assert.Equal(("too-far", false), (x.code, x.ok)); Assert.True(x.m > 0); // the number the line needs, as a field
-        var (ok2, code2, why2) = b.Issue(new Order { Tick = 0, Op = "scout", Do = "listen", Target = "waitress" });
+        var (ok2, code2, why2) = b.Issue(new Order { Tick = 0, Op = "scout", Do = "watch", Target = "camera:entrance" });
         Assert.Equal(x.code, code2);
         Assert.Equal(Hash.State(a), Hash.State(b));
         Assert.Equal(Answer.Codes.Length, Answer.Codes.Distinct().Count());

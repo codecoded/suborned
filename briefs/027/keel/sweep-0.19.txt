@@ -1,0 +1,52 @@
+Suture's retest3 policy set (briefs/027/suture/probe/retest3/policies.all.txt, 3,792 L3/L1c policies), engine 0.18.0 (baseline copy out/keel041/base, built before the first edit) against 0.19.0 (tuning.md §14 weapons free; Pulse hostile-initiative.md with Sky's answers: hostile intent per agent), all on this tree's contracts. Proof split per rule with temporary switches (removed; 294/294 + 77/77 hashes identical before and after removal): A = weapons free alone (intent off), B = both (shipped). Switch-off probes of B on today (KEEL_PROBE, removed): the rival press alone accounts for every win lost; press off gives A's numbers. Cheap = a win with < 40 % health lost. Every chunk: 'every run replays identically from its order log'.
+
+== B (0.19.0 as built) against 0.18.0
+today         n=3792/3792 wins 156->28 (+5 -133) cheap<40% 4->0 newly-cheap 0 cheapest 55%
+lab           n=3792/3792 wins 111->1 (+1 -111) cheap<40% 12->0 newly-cheap 0 cheapest 50%
+lab-field-on  n=3792/3792 wins 494->29 (+13 -478) cheap<40% 62->0 newly-cheap 0 cheapest 50%
+lab-snap-off  n=3792/3792 wins 65->0 (+0 -65) cheap<40% 12->0 newly-cheap 0 cheapest None%
+
+== A (weapons free alone, not shipped) against 0.18.0
+today         n=3792/3792 wins 156->163 (+47 -40) cheap<40% 4->9 newly-cheap 7 cheapest 5%
+   NEW CHEAP L3:km10-fm5-step60-focus-norivals-enfgo-carfree-runkite ('failure', 'enforcer-down', 61, 2) -> ('success', '', 11, 0)
+   NEW CHEAP L3:km20-fm20-step300-norivals-at220-runkite ('failure', 'enforcer-down', 88, 3) -> ('success', '', 38, 0)
+   NEW CHEAP L3:tight-step200-focus-norivals-at212-runkite ('failure', 'sealed', 50, 1) -> ('success', '', 38, 1)
+   NEW CHEAP L3:tight-step300-focus-norivals-at224-runkite ('failure', 'enforcer-down', 88, 3) -> ('success', '', 33, 0)
+   NEW CHEAP L3:tight-step300-focus-norivals-at228-runkite ('failure', 'enforcer-down', 83, 2) -> ('success', '', 27, 0)
+   NEW CHEAP L3:tight-step300-focus-norivals-at232-runkite ('failure', 'enforcer-down', 88, 3) -> ('success', '', 22, 0)
+   NEW CHEAP L3:tight-step300-focus-norivals-at236-runkite ('failure', 'sealed', 66, 3) -> ('success', '', 22, 0)
+lab           n=3792/3792 wins 111->114 (+26 -23) cheap<40% 12->13 newly-cheap 6 cheapest 22%
+   NEW CHEAP L3:km10-fm10-step300-blk-norivals-at208-runkite ('failure', 'enforcer-down', 100, 4) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km20-fm20-step200-norivals-enfgo-carfree-runkite ('failure', 'sealed', 66, 2) -> ('success', '', 38, 1)
+   NEW CHEAP L3:km20-fm20-step250-norivals-enfgo-carfree-runkite ('failure', 'enforcer-down', 83, 3) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km5-fm10-step300-blk-norivals-at208-runkite ('failure', 'enforcer-down', 72, 2) -> ('success', '', 38, 1)
+   NEW CHEAP L3:km5-fm5-step300-norivals-at196-runkite ('success', '', 61, 1) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km5-fm5-step300-norivals-enfgo-runkite ('success', '', 61, 1) -> ('success', '', 38, 0)
+lab-field-on  n=3792/3792 wins 494->490 (+91 -95) cheap<40% 62->57 newly-cheap 16 cheapest 22%
+   NEW CHEAP L3:km10-fm20-step250-blk-norivals-at208-runkite ('success', '', 44, 0) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km10-fm5-step300-blk-norivals-at208-runkite ('success', '', 50, 0) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km15-fm10-step300-focus-norivals-at208-runkite ('success', '', 55, 1) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km20-fm20-step200-norivals-enfgo-carfree-runkite ('success', '', 50, 0) -> ('success', '', 38, 1)
+   NEW CHEAP L3:km20-fm20-step250-norivals-at196-runkite ('success', '', 55, 0) -> ('success', '', 33, 0)
+   NEW CHEAP L3:km20-fm20-step250-norivals-at208-runkite ('success', '', 55, 0) -> ('success', '', 33, 0)
+   NEW CHEAP L3:km20-fm20-step250-norivals-at220-runkite ('failure', 'sealed', 50, 0) -> ('success', '', 33, 0)
+   NEW CHEAP L3:km20-fm20-step250-norivals-enfgo-runkite ('success', '', 55, 0) -> ('success', '', 33, 0)
+   NEW CHEAP L3:km30-fm20-step250-focus-norivals-at208-runkite ('failure', 'enforcer-down', 61, 1) -> ('success', '', 38, 0)
+   NEW CHEAP L3:km5-fm10-step300-blk-norivals-at208-runkite ('success', '', 44, 0) -> ('success', '', 33, 0)
+   NEW CHEAP L3:tight-step200-focus-norivals-carfree-runkite ('success', '', 44, 2) -> ('success', '', 38, 0)
+   NEW CHEAP L3:tight-step250-focus-norivals-at208-runkite ('failure', 'enforcer-down', 61, 1) -> ('success', '', 38, 0)
+   NEW CHEAP L3:tight-step250-focus-norivals-at212-runkite ('failure', 'enforcer-down', 66, 1) -> ('success', '', 38, 0)
+   NEW CHEAP L3:tight-step250-focus-norivals-at228-runkite ('failure', 'sealed', 61, 2) -> ('success', '', 38, 0)
+   NEW CHEAP L3:tight-step250-focus-norivals-at232-runkite ('failure', 'sealed', 66, 3) -> ('success', '', 38, 0)
+lab-snap-off  n=3792/3792 wins 65->67 (+13 -11) cheap<40% 12->9 newly-cheap 2 cheapest 22%
+   NEW CHEAP L3:km10-fm5-step300-norivals-enfgo-carfree-runkite ('success', '', 44, 1) -> ('success', '', 38, 1)
+   NEW CHEAP L3:km5-fm5-step300-norivals-enfgo-carfree-runkite ('success', '', 44, 1) -> ('success', '', 38, 1)
+
+== switch-off probes of B, today
+off press: n=3792/3792 wins 156->159 (+55 -52) cheap<40% 4->9 newly-cheap 7 cheapest 5%
+off street: n=3792/3792 wins 156->28 (+5 -133) cheap<40% 4->0 newly-cheap 0 cheapest 55%
+off face: n=3792/3792 wins 156->24 (+1 -133) cheap<40% 4->0 newly-cheap 0 cheapest 55%
+off close: n=3792/3792 wins 156->28 (+5 -133) cheap<40% 4->0 newly-cheap 0 cheapest 55%
+off warn: n=3792/3792 wins 156->26 (+3 -133) cheap<40% 4->0 newly-cheap 0 cheapest 44%
+off rivalfoes: n=3792/3792 wins 156->28 (+5 -133) cheap<40% 4->0 newly-cheap 0 cheapest 55%
+off press+street+face+close+warn+rivalfoes: n=3792/3792 wins 156->163 (+47 -40) cheap<40% 4->9 newly-cheap 7 cheapest 5%

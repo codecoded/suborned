@@ -1,0 +1,20 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless (brief 031 §7 Waymark 4): route-g-fast, but the Enforcer watches the guard from his side (3 m reach) before the knockout. The guard senses anyone within 3 m whatever his facing, so the 20 s Watch runs his attention clock to wary (Heat 0: 20 s), and a wary guard is aware at the takedown: armed, he beats it and draws (Alert at least 2). The careful twin is route-g-fast (the Scout watches him from beyond his cone, the Enforcer walks in and strikes at once). The plan ends at the blow: the run plays on to the fail it reaches.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[1175,-4825]},
+  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1236,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":1326,"op":"enforcer","do":"watch","target":"guard"},
+  {"tick":1526,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"}
+ ],
+ "until": 5100
+}

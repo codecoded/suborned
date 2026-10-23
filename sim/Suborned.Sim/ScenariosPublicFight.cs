@@ -57,7 +57,7 @@ namespace Suborned.Sim
             r.Do(Enf, "draw");
             r.Fire(Enf, "rivals");
             r.Is(r.Until(() => r.Shots().Exists(x => x.by == Enf && x.target == "rivals"), T(10)), "the Enforcer fires on the crew");
-            if (once) { r.Do(Enf, "cease"); return; }
+            if (once) { r.Do(Enf, "cease"); r.Is(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "stance", Stance = "hold" }).ok, "he holds his fire"); return; } // engine 0.19.0: the crew sees the street and fires back (Sky's answer 3); hold keeps him from answering (cease alone stands weapons free down only until he is shot at)
             r.Is(r.Until(() => g.RivalsDelayMethod == "fire", T(20)), $"the crew is driven back at {Report.Clock(g.Tick)}");
         }
 

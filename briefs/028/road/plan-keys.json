@@ -1,0 +1,26 @@
+{
+ "for": "Datum: standards.streetscape.roads (contracts/world/harbour-district.plan.json). Draft from Vela, brief 028 'Road, 2026-10-22'. Not applied: a plan edit is Datum's, and the new RF-1 clause waits for Sky to agree the road.",
+ "shoulder": {
+  "piece": "RoadShoulder_Straight_6m",
+  "arcs": {
+   "4": "RoadShoulder_Arc90_R4",
+   "8": "RoadShoulder_Arc90_R8"
+  },
+  "from": 0.36,
+  "to": 0.98,
+  "chrome": 0.035,
+  "why": "the testbed's pearl streamline band beside every kerb (civic-road-finish.js bandStart 0.36, bandEnd 0.98, chromeWidth 0.035; civic-roads.js `Pearl streamline bands` and `Chrome band borders`), the white-marble strip every testbed road frame shows between the kerb and the blue. Placed by the ribbon's own rule (same kerb runs, same breaks, same corner meeting), pivot at the lens centre line so the band lies 0.26..0.88 from it. The 20 Oct ribbon, lozenge and seam took the lens, the diamonds and the joints and left this out.",
+  "corner": "through run (x-dominant) to the other run's outer edge (to + chrome from the kerb face), the other to the through run's inner edge (from); a reflex corner trims by the reverse"
+ },
+ "pinstripe": {
+  "piece": "PaveEdge_Pinstripe_6m",
+  "offset": 0.5,
+  "width": 0.04,
+  "why": "the testbed's pavement pinstripe (civic-roads.js `Gold pavement edging`: inlayParts -0.52..-0.47 from the kerb face, #e3c775); brass here, a hairline (GDD 15: gold or brass only as hairline, frame, bead, small metal). Lies on the pavement top, stops short at the same breaks as the ribbon."
+ },
+ "rf1": "RF-1 additions: when roads.shoulder is present its piece and arcs are kit pieces tagged ground:road-shoulder and not rejected, from < to, to + chrome clears the carriageway's lozenge (half its width) and the seam's stopShort; when roads.pinstripe is present its piece is tagged ground:pave-pinstripe and offset > the kerb crown's brass (0.02) + width / 2. tools/world/roadfinish-kit.ts holds the same numbers as constants.",
+ "tags": "tools/kit/tags.ts carries the use tags (ground:road-shoulder, ground:pave-pinstripe) so `bun run kit` writes them into the new rows.",
+ "also": {
+  "circus mouths and bay kerbs": "the ribbon follows plot edges, the circus's two rings and the medians' edges; the kerb between r 43 and r 51 along each radial road, and the civic bays' and drives' kerbs, have no plot edge: the loop is open there (log gap RF-bay). Datum or Splice: put those kerb faces in the plan or the export (a `kerbs` list of faces with their road) and the same rule closes them."
+ }
+}

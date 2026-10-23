@@ -1,0 +1,42 @@
+{
+  "schema": "suborned.lens/1",
+  "note": "BUILT 2026-10-22 (Sky: 'try the atmosphere'): the runtime data is unity/Assets/Suborned/Resources/Atmosphere/haze.json and lens.json, read by Runtime/DistanceHaze.cs and Runtime/AtmosphereLens.cs; this file is the proposal as made, kept for history. Glint, brief 048 'Old city atmosphere' (2026-10-22). PROPOSAL. Look only: no rule, sight or replay reads it. Per-camera tiers: 'play' = the orthographic play camera and overlay cameras (nothing here applies except `grade`), 'follow' = third person and cutaways (perspective, far clip <= 900), 'long' = flyby, free fly, any perspective camera with far > 900. Values are the old DecoKit city's (DecoKitStreetDemo / DecoKitLens, scene DecoKitStreet.unity, 2026-09-27 to 10-13) where marked old; the rest is the compression of them into the 350 m far clip.",
+  "haze": {
+    "colour": "#ecd9b4",
+    "colourNote": "light.json light.haze today is #f3eee4 (S 0.07, near white); the contract palette_world.roles.haze is #f3e8d4. The old city's displayed haze reads #c0af87 to #e5d5aa (S 0.25 to 0.40). #ecd9b4 is one value for fog, sky horizon, sea edge and far band; Sky to confirm (palette is tuneable).",
+    "follow": { "mode": "linear", "start": 90, "end": 350, "note": "clear to 90 m, then a ramp that reaches the haze colour at the far clip: 0 % at 80 m, 23 % at 150, 62 % at 250, 81 % at 300, 100 % at 350. The exp2 in haze.json now is front-loaded: 17 % at 80 m, 47 % at 150, which greys the enamel accents the art bible says must stay saturated. The old city was 4 % at 80 m, 7 % at 150 (exp 0.0005)." },
+    "long": { "mode": "exp", "density": 0.0005, "note": "old, DecoKitStreetDemo -dkFogDensity default. 4 % at 80 m, 22 % at 500, 39 % at 1 km, 63 % at 2 km, 78 % at 3 km (the horizon cards)." },
+    "play": null
+  },
+  "sky": {
+    "hazeHeight": 0.12,
+    "hazeHeightNote": "sin(elevation) scale of the horizon haze, exp(-h / hazeHeight): the haze band lasts up to about 7 degrees and melts into the mid colour. Old: 0.10. Today: light.json skyGradient midHeight 0.16 and a hard lerp.",
+    "sunAureole": { "strength": 0.8, "power": 180, "hazeLift": 0.6, "broad": 0.15, "note": "old DK_SpaceSky _Aureole: the haze brightens toward the sun (hazeLift 0.6 at power 6). Today: glowWidth 40, glowStrength 0.22, disc 0." },
+    "palette": { "zenith": "#3f86de", "mid": "#8fc2ee", "optionB": { "zenith": "#2f93a8", "mid": "#6ec6c4", "note": "the old city's sea-green sky (Sky's 1970s reference, DecoKitSky.Apply: zenith 88,168,170, mid 127,218,208, both x1.5 sky gain). Contract concept palette has haze_teal #a7c2cb, sky_cerulean #719fb5, zenith_cobalt #296587. Sky decides." } },
+    "farBand": { "source": "bake", "note": "NOT the old painted DK_Skyline_Far.png. Latch's builder renders the existing horizon cards and ring (1.4 to 8 km) once into an equirect strip (8192 x 512, -1 to +9 degrees) at build time and the sky shader samples it, tinted by the horizon haze of its own azimuth: one texture sample, no renderers, visible to every perspective camera whatever its far clip. The cards stop being drawn for 'follow'." }
+  },
+  "lens": {
+    "bloom": {
+      "play": { "threshold": 1.1, "intensity": 0.22, "scatter": 0.6, "note": "as light.json post.bloom today" },
+      "follow": { "threshold": 0.86, "intensity": 0.35, "scatter": 0.7, "tint": "#fff0d6", "note": "old: 0.8 / 0.6 / 0.85, tint #fff5e6 (1, .96, .9). Halved intensity and a higher threshold: the old values bloomed lit cream stone." },
+      "long": { "threshold": 0.8, "intensity": 0.6, "scatter": 0.85, "tint": "#fff0d6", "note": "the old values, whole" }
+    },
+    "dof": {
+      "follow": null,
+      "long": { "mode": "gaussian", "start": 300, "end": 1800, "maxRadius": 1.2, "highQuality": true, "note": "old. 'follow' has none: the far clip is 350 m, so there is nothing past 300 m to blur." }
+    },
+    "sunFlare": {
+      "play": null, "follow": { "intensity": 0.6 }, "long": { "intensity": 1.0 },
+      "elements": "the old DK_SunFlare: 16-ray starburst (DK_Flare_Starburst.png, scale 16, intensity 2.5, rotation 8), haze glow circle (scale 7, 0.25), six hexagon ghosts (scale 1.4, 0.2, fall-off 0.6, spread 0.75), one far ghost (scale 3.2, 0.05). LensFlareComponentSRP on the scene sun, useOcclusion true, occlusionRadius 0.02, 32 samples, allowOffScreen false.",
+      "note": "the play camera looks 38 degrees down and never sees the sun; the flare only ever draws in third person and flybys, only while the sun is in frame."
+    }
+  },
+  "grade": {
+    "play": { "saturation": 18, "note": "UNCHANGED. Variant to shoot on the baseline stops before any decision: saturation 22 to 25 (old 25), contrast 6 (old 10), post-exposure +0.15 (old -0.8 under sun 3.0 and sky gain 1.5). Play-zoom stats: old iso frame mean luma 0.70, p5 0.46, mean saturation 0.34, mean rgb (192,179,133); today 0.68, p5 0.19, 0.23, (181,174,155)." }
+  },
+  "cost": {
+    "play": "0: no haze, no DoF, no flare, same bloom and grade.",
+    "follow": "bloom already runs (threshold and intensity only); sky shader: a few ALU more, drawn only where the sky shows; flare: one pass while the sun is in frame; linear fog instead of exp2: the same fixed-function fog, no cost change. Not measured: the editor is Latch's.",
+    "long": "Gaussian DoF is full-resolution CoC plus two half-resolution blurs: UNMEASURED on the Air, estimate 0.5 to 1.5 ms at 2880 x 1864. Flybys and free fly only; never in a gameplay view."
+  }
+}

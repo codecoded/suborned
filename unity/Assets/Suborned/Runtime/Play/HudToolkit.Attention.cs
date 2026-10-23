@@ -34,6 +34,7 @@ namespace Suborned.Play
 
         void WatchRing()
         {
+            if (host.controls.HoldActs) return; // brief 041: the hold preset draws the Watch's reach round its target only (HudToolkit.Hold); no agent-centred twin
             int k = WatchRingAgent(); if (k < 0) return;
             var g = host.Game; var op = g.Ops[k]; if (op.Inside || op.Down || op.InCar) return;
             var tr = host.Views?.Find("op/" + Op.Name((OpId)k)); if (!tr || !tr.gameObject.activeSelf) return;
@@ -49,11 +50,11 @@ namespace Suborned.Play
                 pp.lineJoin = LineJoin.Round;
                 for (int pass = 0; pass < 2; pass++)
                 {
-                    pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.6f) : Turq; pp.lineWidth = pass == 0 ? 5f : 3f;
+                    pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.6f) : TurqLight; pp.lineWidth = pass == 0 ? 5f : 3f;
                     pp.BeginPath(); pp.MoveTo(pts[0]); for (int i = 1; i < pts.Count; i++) pp.LineTo(pts[i]); pp.ClosePath(); pp.Stroke();
                 }
             });
-            var e = WorldEl(null, 20, 20); e.style.left = east.x - 10; e.style.top = east.y - 10; Round(e, 10); Border(e, 1.4f, Turq);
+            var e = WorldEl(null, 20, 20); e.style.left = east.x - 10; e.style.top = east.y - 10; Round(e, 10); Border(e, 1.4f, TurqLight);
             Bg(e, $"portraits/cameo_{Op.Name((OpId)k)}_normal", Color.white); Show(e.Q("g"), false);
         }
 

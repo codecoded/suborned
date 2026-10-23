@@ -27,6 +27,20 @@ export function lodCategoryOf(id: string, category: string): KitLodCategory {
   return BY_CATEGORY[category] ?? 'street';
 }
 
-/** The LOD records with the category's switch points (LOD1 at l1, LOD2 at l2). */
-export const lodScreens = <T extends { screen: number }>(lods: T[] | undefined, cat: KitLodCategory): T[] | undefined =>
-  lods?.map((l, i) => ({ ...l, screen: i === 0 ? LOD_CATEGORIES[cat].l1 : LOD_CATEGORIES[cat].l2 }));
+/** Per-id switch points that replace the category's (Vela, brief 028 "Palm LODs", Sky 2026-10-22 "yes"): the palms switch L0 to L1 at 60 m and L1 to L2 at 140 m of the third-person camera (far clip 350 m).
+ *  screen = size / (2 x tan 27.5 deg x distance), size = the largest side of the group's bounds (CoconutPalm 7.94 m, CoconutPalm_Street 10.65 m). The `trees` values (0.08 / 0.025) would put them at 108 m and 346 m.
+ *  The commander view never reaches them (an orthographic palm is never below 0.215 at zoom 18.5). */
+export const LOD_BY_ID: Readonly<Record<string, { l1: number; l2: number }>> = {
+  CoconutPalm: { l1: 0.1271, l2: 0.0545 },
+  CoconutPalm_Street: { l1: 0.1705, l2: 0.0731 },
+};
+
+/** The LOD records with the switch points (LOD1 at l1, LOD2 at l2): the id's own when it has them, else the category's. */
+export const lodScreens = <T extends { screen: number }>(lods: T[] | undefined, cat: KitLodCategory, id?: string): T[] | undefined => {
+  const s = (id && LOD_BY_ID[id]) || LOD_CATEGORIES[cat];
+  return lods?.map((l, i) => ({ ...l, screen: i === 0 ? s.l1 : s.l2 }));
+};
+
+/** Pieces that ship at full detail at every distance, whatever the generator exported (Sky, brief 028: no model compression without his sign-off). A listed id gets no `lods` and no LOD files in the catalogue, so the built prefab
+ *  carries no LODGroup and Unity draws L0 at every distance. Empty since 2026-10-22: CoconutPalm and CoconutPalm_Street were taken off after Sky approved Vela's palm levels. To hold a piece back: add its id here, then `bun run kit`. */
+export const FULL_DETAIL: ReadonlySet<string> = new Set<string>();

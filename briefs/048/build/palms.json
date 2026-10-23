@@ -1,0 +1,7 @@
+{
+ "schema": "suborned.tplong.palms/1", "palmGroups": 947, "lodBias": 1, "views": [
+  {"view": "commander-opening", "L0": {"count": 4, "nearM": 132.087, "farM": 156.115}, "L1": null, "L2": null, "culled": null},
+  {"view": "palms-east", "L0": {"count": 10, "nearM": 34.61, "farM": 61.396}, "L1": {"count": 20, "nearM": 68.075, "farM": 172.186}, "L2": {"count": 84, "nearM": 143.361, "farM": 347.161}, "culled": null},
+  {"view": "palms-west", "L0": {"count": 14, "nearM": 24.687, "farM": 78.672}, "L1": {"count": 29, "nearM": 60.595, "farM": 183.399}, "L2": {"count": 63, "nearM": 140.015, "farM": 347.509}, "culled": null}
+ ]
+}

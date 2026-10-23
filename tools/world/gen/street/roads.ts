@@ -4,6 +4,7 @@ import { type V, dist, lineDist } from '../../../plan/geom';
 import { type Ctx, hash32, rng } from '../common';
 import { idOf, kindOf, plotRing } from '../edges';
 import { edgeN } from '../geo';
+import { avenueVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
 
 const ROADS = ['primary', 'district', 'access'];
@@ -39,8 +40,8 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       // [w, depth], which ran the 4 m across the road)
       for (const s of [5, len - 5]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
       const s0 = 9, s1 = len - 9, nT = s1 > s0 ? Math.floor((s1 - s0) / S.trees.spacing) + 1 : 0, t0 = s0 + (s1 - s0 - (nT - 1) * S.trees.spacing) / 2, kerbMid = 0.45 + 0.75;
-      if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, S.trees.species.washingtonia.top], variant: 'washingtonia', r: 1.5 });
-      else if (kind === 'access' && corners.has(plot.area)) for (const s of [9, len - 9]) L.add('tree', at(s, kerbMid), 0, z, id, { size: [0.5, 0.5, S.trees.species.washingtonia.top], variant: 'washingtonia', r: 1.5 });
+      if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
+      else if (kind === 'access' && corners.has(plot.area)) for (const s of [9, len - 9]) L.add('tree', at(s, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
       // lamps: atom rings midway between trees (district 8 m high, every 48 per side; access 6 m, every 36)
       if (kind === 'district') for (let k = 0, s = s0 + 6 + (par ? 24 : 0); s < s1; k++, s += 48) L.add('lamp', at(s, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 8], variant: 'atom-ring', r: 0.6 });
       if (kind === 'access') for (let s = s0 + (par ? 18 : 0); s < s1; s += 36) L.add('lamp', at(s, 0.6), lampYaw, z, id, { size: [0.3, 0.3, 6], variant: 'atom-ring', r: 0.6 });

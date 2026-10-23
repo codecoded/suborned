@@ -2,9 +2,12 @@
 import * as THREE from './vendor/three.module.min.js';
 import { G, say } from './state.js';
 import { ACTS, WALK, RUN, ROLES, PRESETS, priceLine } from './data.js';
+import { landed, dropped, gateOpen, isFresh, fitRank, freshSeq } from './gains.js';
 // The Squad acts lab setting only counts outside the hold preset: there the best-placed agent does a calm act, always.
 export const squadAll = () => G.squadAct === 'all' && !PRESETS[G.preset]?.holdActs;
 
+// busy = on an act (walking to it, doing it) or holding a queued one; a walk alone is not busy
+export const busy = (a) => a.order?.kind === 'act' || G.plan.has(a.id);
 const HARM_ORDER = ['knock', 'kill', 'fire'];
 export const agentOf = () => G.world.agents[G.sel]; // the lead: first selected, the one driven in third person
 export const selected = () => G.world.agents.filter((_, i) => G.group[i]);
@@ -16,8 +19,8 @@ export const reachOf = (e, act, agent) => (act.noWalk ? Infinity : act.reachBy &
 export function waysFor(e, agent) {
   if (!e || !e.acts?.length || ['out', 'dead', 'down'].includes(e.state)) return [];
   const who = agent ? [agent] : crew(); // no agent given: any of the crew can give the way
-  const ids = e.acts.filter((id) => who.some((a) => ACTS[id].by.includes(a.role)) && (ACTS[id].again || !e.used.has(id)) && !(id === 'fire' && !e.hostile));
-  const calm = ids.filter((id) => ACTS[id].kind !== 'harm'), harm = ids.filter((id) => ACTS[id].kind === 'harm').sort((a, b) => HARM_ORDER.indexOf(a) - HARM_ORDER.indexOf(b));
+  const ids = e.acts.filter((id) => who.some((a) => ACTS[id].by.includes(a.role)) && (ACTS[id].again || !e.used.has(id)) && !(id === 'fire' && !e.hostile) && gateOpen(e, id));
+  const calm = ids.filter((id) => ACTS[id].kind !== 'harm').sort((a, b) => Number(isFresh(e, b)) - Number(isFresh(e, a)) || (isFresh(e, a) && isFresh(e, b) ? freshSeq(e, b) - freshSeq(e, a) || fitRank(e, a) - fitRank(e, b) : 0)), harm = ids.filter((id) => ACTS[id].kind === 'harm').sort((a, b) => HARM_ORDER.indexOf(a) - HARM_ORDER.indexOf(b));
   return [...calm, ...harm].map((id) => ({ id, ...ACTS[id] }));
 }
 // Harm is never the main action, except firing at someone who is shooting at you.
@@ -32,8 +35,9 @@ export function planFor(e, w, agents = crew(), run = false) {
   const able = agents.filter((a) => w.by.includes(a.role));
   if (!able.length) return { agents: [], walkS: 0, lead: null, running: false, holds: agents };
   const rf = () => run; // the order's gait: run only if it was given as a run (Shift or a double click)
-  let who = able;
-  if (!squadAll() && able.length > 1 && true) who = [able.reduce((b, a) => (walkSeconds(a, e, w, rf(a)) < walkSeconds(b, e, w, rf(b)) ? a : b))];
+  const pool = able.filter((a) => !busy(a)), free = pool.length ? pool : able; // best placed never takes an agent already on an act while an idle one can do it
+  let who = squadAll() ? able : free;
+  if (!squadAll() && free.length > 1) who = [free.reduce((b, a) => (walkSeconds(a, e, w, rf(a)) < walkSeconds(b, e, w, rf(b)) ? a : b))];
   const walks = who.map((a) => walkSeconds(a, e, w, rf(a))).filter(isFinite);
   const said = agents.length > 1 ? (who.length === agents.length ? `all ${who.length}` : names(who)) : '';
   return { agents: who, walkS: walks.length ? Math.max(...walks) : Infinity, lead: who[0], running: rf(who[0]), holds: agents.filter((a) => !who.includes(a)), who: said };
@@ -54,10 +58,14 @@ export function walkPath(agent, e, act) {
   const path = pathCache.get(key); return path?.length ? [[p.x, p.z], ...path] : null;
 }
 
-export function cancel(agent, quiet) {
+// An act, a stop or X replaces whatever the agent was doing, a lasting fire order included; a walk or run (keepFire) never ends the fire order.
+export function cancel(agent, quiet, keepFire = false) {
+  let fired = false;
+  if (!keepFire) for (const s of [...G.sessions]) if (s.agents.includes(agent)) { fired = true; G.stopped = { ent: s.ent, until: G.clock + 1 }; s.agents = s.agents.filter((a) => a !== agent); if (!s.agents.length) G.sessions.splice(G.sessions.indexOf(s), 1); }
   if (G.plan.delete(agent.id)) return true; // a queued (ghost) order
-  const o = agent.order; if (!o) return false;
+  const o = agent.order; if (!o) return fired;
   if (o.kind === 'act') G.stoppedInfo = { ent: o.ent, act: o.act, until: G.clock + 1 };
+  if (!quiet && o.kind === 'act') dropped(agent, o); // brief 043: a pop, the plate word and a history row, whatever dropped it
   if (!quiet && o.kind === 'act' && o.phase === 'act' && o.t > 0) say(`${o.act.verb} stopped · nothing done${o.act.cost ? ' · no cash spent' : ''}`, 'warn'); // an act under way: what it cost
   if (o.ent) o.ent.frozen = false;
   agent.order = null; agent.speed = 0; return true;
@@ -76,7 +84,7 @@ export function walkTo(agent, x, z, run = false, follow = false) {
   if (!path) { say('No way there', 'warn'); return null; }
   const len = G.world.nav.length(agent.g.position.x, agent.g.position.z, path);
   if (queueing()) { G.plan.set(agent.id, { agent, kind: 'walk', path, end: [x, z], label: `${run ? 'Run' : 'Walk'} · ${Math.round(len / (run ? RUN : WALK))} s`, icon: run ? 'run' : 'walk', exec: () => walkTo(agent, x, z, run, follow) }); return len / (run ? RUN : WALK); }
-  cancel(agent);
+  cancel(agent, false, true); // a walk or run never ends a lasting fire order
   agent.order = { kind: 'walk', path, run, follow, dest: new THREE.Vector3(x, 0, z), len0: len };
   return len / (run ? RUN : WALK);
 }
@@ -133,12 +141,13 @@ export function step(a, dt, tracer) {
 
 function finish(a, o) {
   const e = o.ent, act = o.act, w = G.world, tint = (c) => w.tint(e, c);
-  cancel(a, true); G.stoppedInfo = null; G.doneInfo = { ent: e, act, agents: [a], until: G.clock + 2.5 }; e.used.add(act.id);
+  cancel(a, true, true); say(`${a.name} is free`); G.stoppedInfo = null; G.doneInfo = { ent: e, act, agents: [a], until: G.clock + 2.5 }; e.used.add(act.id);
   if (act.cost) G.cash -= act.cost;
   if (act.trail) G.trail += act.trail;
   if (act.alert) G.alert = Math.min(3, Math.max(G.alert + (act.fire ? 0 : 1), act.fire ? 2 : 0));
   const done = { watch: () => tint(0x1b4a80), pay: () => tint(0x1d5a28), call: () => tint(0x1d5a28), press: () => tint(0x1d5a28), take: () => tint(0x6b6450), loop: () => tint(0x0d5c50), open: () => { e.open = true; },
     knock: () => { e.state = 'out'; w.raise(e, true); }, kill: () => { e.state = 'dead'; w.raise(e, true); tint(0x000000); }, fire: () => { e.state = 'down'; w.raise(e, true); } };
   done[act.id]?.();
+  landed(a, e, act); // brief 043: the done moment (chip, plate word, tick, history, newly open acts); nothing when G.done is 'built'
   say(`Done · ${act.fire ? 'Down' : act.verb}${act.bare ? '' : ' ' + e.name}`, 'ok');
 }

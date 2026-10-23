@@ -1,14 +1,20 @@
 """Live portrait state sheets (brief 033; Sky, 2026-10-21). python3 -I tools/figures/portraits_gen.py <scout|fixer|tech|enforcer> [--take 1]
 One 3x3 sheet per cell member: nine head-and-shoulders round portraits of the same person, one per state. Reference = the front view of the
-turnaround sheet (briefs/020/people/sheets). Seedream via the old store's Runware client. Logged in briefs/033/portraits/PROVENANCE.json."""
-import hashlib, io, json, os, sys, base64
+turnaround sheet (briefs/020/people/sheets). Seedream via Runware, through the shared paid helper (brief 053): add `--pass NAME --budget USD` (pass defaults to t<take>; the budget is explicit, once per pass).
+Images land in paid/033-portraits/takes/ and are symlinked into briefs/033/portraits/ where the export reads them; every call is a line of paid/033-portraits/ledger.jsonl
+(history before the helper: briefs/033/portraits/PROVENANCE.json, frozen, indexed in the ledger)."""
+import io, os, sys, base64
 from pathlib import Path
 from PIL import Image
-OLD = Path(os.environ.get('SUBORNED_OLD', '~/Projects/the-suborned')).expanduser() / 'workbench/Tools/Concept'
-sys.path.insert(0, str(OLD))
-from runware import infer  # noqa
 REPO = Path(__file__).resolve().parents[2]
-OUT = REPO / 'briefs/033/portraits'; PROV = OUT / 'PROVENANCE.json'
+sys.path.insert(0, str(REPO / 'tools/paid'))
+import paid  # noqa
+OUT = REPO / 'briefs/033/portraits'; JOB = '033-portraits'
+
+
+def _pass(a, take):
+    name = a[a.index('--pass') + 1] if '--pass' in a else f't{take}'
+    return paid.Pass(JOB, name, budget=float(a[a.index('--budget') + 1]) if '--budget' in a else None, allow_raise='--raise' in a)
 MODEL = 'bytedance:seedream@5.0-pro'
 STATES = ["calm, idle: relaxed neutral face, a soft steady gaze at the viewer",
  "focused: watching, listening, talking; attentive narrowed eyes, head tilted a little, lips slightly parted",
@@ -40,13 +46,9 @@ if __name__ == '__main__' and '--downed' not in sys.argv:
     a = sys.argv[1:]; who = a[0]; take = a[a.index('--take') + 1] if '--take' in a else '1'
     ref = Image.open(OUT / f'refs/{who}_front.png'); b = io.BytesIO(); ref.save(b, 'PNG')
     p = prompt(who, "--small" in a)
-    res = infer(MODEL, p, 2048, 2048, n=1, inputs={'referenceImages': ['data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()]})
-    for png, cost, seed in res:
-        name = f'{who}_states_t{take}.png'; (OUT / name).write_bytes(png)
-        old = json.loads(PROV.read_text()) if PROV.exists() else []
-        old.append({'file': name, 'service': 'Runware', 'model': MODEL, 'seed': seed, 'cost_usd': cost, 'size': '2048x2048', 'sha256': hashlib.sha256(png).hexdigest(),
-                    'reference': f'refs/{who}_front.png (crop 0,0,700,720 of briefs/020/people/sheets/{who}.png)', 'prompt': p})
-        PROV.write_text(json.dumps(old, indent=1)); print(name, cost)
+    paid_pass = _pass(a, take); name = f'{who}_states_t{take}.png'
+    paid_pass.image(MODEL, p, 2048, 2048, name=name, est=0.12, subdir='takes', inputs={'referenceImages': ['data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()]},
+                    refs_log=[f'refs/{who}_front.png (crop 0,0,700,720 of briefs/020/people/sheets/{who}.png)'], link=OUT / name)
 
 
 # ---- downed options (brief 033, Sky 2026-10-21: "not into the downed ones"): python3 -I tools/figures/portraits_gen.py <agent> --downed [--take 5]
@@ -64,9 +66,6 @@ def downed_prompt(who):
 if __name__ == '__main__' and '--downed' in sys.argv:
     a = sys.argv[1:]; who = a[0]; take = a[a.index('--take') + 1] if '--take' in a else '5'
     ref = Image.open(OUT / f'refs/{who}_front.png'); b = io.BytesIO(); ref.save(b, 'PNG'); p = downed_prompt(who)
-    res = infer(MODEL, p, 2048, 704, n=1, inputs={'referenceImages': ['data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()]})
-    for png, cost, seed in res:
-        name = f'{who}_downed_options_t{take}.png'; (OUT / name).write_bytes(png)
-        import time; old = json.loads(PROV.read_text()) if PROV.exists() else []
-        old.append({'file': name, 'service': 'Runware', 'model': MODEL, 'seed': seed, 'cost_usd': cost, 'size': '2048x704', 'sha256': hashlib.sha256(png).hexdigest(),
-                    'reference': f'refs/{who}_front.png', 'prompt': p}); PROV.write_text(json.dumps(old, indent=1)); print(name, cost)
+    paid_pass = _pass(a, take); name = f'{who}_downed_options_t{take}.png'
+    paid_pass.image(MODEL, p, 2048, 704, name=name, est=0.12, subdir='takes', inputs={'referenceImages': ['data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()]},
+                    refs_log=[f'refs/{who}_front.png'], link=OUT / name)

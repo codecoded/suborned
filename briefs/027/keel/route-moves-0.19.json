@@ -1,0 +1,508 @@
+{
+ "schema": "keel.route-moves/1",
+ "from": "Keel, 2026-10-21",
+ "engine": "suborned.sim/0.19.0 (tuning.md §14 weapons free with Sky's §14 note; Pulse hostile-initiative.md with Sky's answers: hostile intent per agent)",
+ "note": "before = engine 0.18.0 (out/keel041/base, built before the first edit, its own contracts copy); now = 0.19.0 on this tree's contracts, both playing this tree's route scripts (--scripts tree). Proof split per rule: route-diff with hostile intent off (a temporary switch, removed) moves the same 16 routes' health lost and Alert and no outcome; hostile intent adds the 7 rows named below (5 outcomes). Every inputs hash moves with the rulebook, so every recorded route re-records once against 0.19.0. 'unchanged' = same outcome, fail, end, Trail, Alert and health (their checkpoint hashes may still move: the fight-on log lines). Played by bun run route-diff (briefs/027/keel/route-diff-0.19.json).",
+ "unchanged": [
+  "careless-body-found",
+  "careless-enforcer-watches-guard",
+  "careless-guard-left-door-held",
+  "careless-takedown-seen-camera",
+  "careless-takedown-seen-crowd",
+  "fail-district-seals",
+  "fail-entry-seen-camera",
+  "fail-entry-seen-guard",
+  "fail-entry-seen-patrol",
+  "fail-rivals-reach-vale",
+  "fail-take-seen-camera",
+  "fail-vale-dead",
+  "fail-vale-leaves",
+  "fight-safe-rivals-reach-vale",
+  "route-a",
+  "route-b",
+  "route-b-block",
+  "withdraw"
+ ],
+ "moves": [
+  {
+   "route": "careless-reporter-not-stopped",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 2,
+    "healthLostPct": 33
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 22 → 33 %, Alert 1 → 2"
+  },
+  {
+   "route": "careless-scout-idles-pickup",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4739,
+    "trail": 3,
+    "alert": 1,
+    "healthLostPct": 33
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 22 → 33 %"
+  },
+  {
+   "route": "fail-enforcer-down",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 991,
+    "trail": 12,
+    "alert": 2,
+    "healthLostPct": 33
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1067,
+    "trail": 12,
+    "alert": 2,
+    "healthLostPct": 33
+   },
+   "why": "ai.intent per agent: the drawn rival crew no longer fires on an Enforcer it never saw act (its foes are drawn, Vale, what it saw; was: fired anywhere, or security saw violence), so he falls to the police 7.6 s later (probe: the 0.18.0 rival foes, 1:39.1 as before)"
+  },
+  {
+   "route": "fight-loud-enforcer-down",
+   "expects": {
+    "outcome": "failure",
+    "fail": "enforcer-down"
+   },
+   "before": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2517,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 100
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2336,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 100
+   },
+   "why": "ai.intent.rivals.press: the drawn crew presses for the Vale holder: down 18 s sooner (probe: press off, 4:11.7 as before)"
+  },
+  {
+   "route": "loud",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2769,
+    "trail": 10,
+    "alert": 2,
+    "healthLostPct": 11
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 44
+   },
+   "why": "ai.intent.rivals.press: the rivals drawn by the gunfire press for the Vale holder (their stop point of him, re-planned each kite.replan); walking Vale he can't fire and the script gives the others no cover, so the crew downs him at 4:11.9 (probe: press off, the route wins as before). Re-record with cover for the walk (S11 now does: the three fight off the crew, win at 5:10.8)"
+  },
+  {
+   "route": "loud-fast",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2769,
+    "trail": 10,
+    "alert": 2,
+    "healthLostPct": 11
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 44
+   },
+   "why": "ai.intent.rivals.press: the rivals drawn by the gunfire press for the Vale holder (their stop point of him, re-planned each kite.replan); walking Vale he can't fire and the script gives the others no cover, so the crew downs him at 4:11.9 (probe: press off, the route wins as before). Re-record with cover for the walk (S11 now does: the three fight off the crew, win at 5:10.8)"
+  },
+  {
+   "route": "loud-fight",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2746,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 27
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 55
+   },
+   "why": "ai.intent.rivals.press: the rivals drawn by the gunfire press for the Vale holder (their stop point of him, re-planned each kite.replan); walking Vale he can't fire and the script gives the others no cover, so the crew downs him at 4:11.9 (probe: press off, the route wins as before). Re-record with cover for the walk (S11 now does: the three fight off the crew, win at 5:10.8)"
+  },
+  {
+   "route": "loud-left-downed",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2799,
+    "trail": 10,
+    "alert": 2,
+    "healthLostPct": 44
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 66
+   },
+   "why": "ai.intent.rivals.press: the rivals drawn by the gunfire press for the Vale holder (their stop point of him, re-planned each kite.replan); walking Vale he can't fire and the script gives the others no cover, so the crew downs him at 4:11.9 (probe: press off, the route wins as before). Re-record with cover for the walk (S11 now does: the three fight off the crew, win at 5:10.8)"
+  },
+  {
+   "route": "loud-left-standing",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2799,
+    "trail": 10,
+    "alert": 2,
+    "healthLostPct": 22
+   },
+   "now": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2519,
+    "trail": 9,
+    "alert": 2,
+    "healthLostPct": 44
+   },
+   "why": "ai.intent.rivals.press: the rivals drawn by the gunfire press for the Vale holder (their stop point of him, re-planned each kite.replan); walking Vale he can't fire and the script gives the others no cover, so the crew downs him at 4:11.9 (probe: press off, the route wins as before). Re-record with cover for the walk (S11 now does: the three fight off the crew, win at 5:10.8)"
+  },
+  {
+   "route": "route-a-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2677,
+    "trail": 5,
+    "alert": 1,
+    "healthLostPct": 0
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2677,
+    "trail": 5,
+    "alert": 1,
+    "healthLostPct": 11
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 0 → 11 %"
+  },
+  {
+   "route": "route-a-pressure",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2402,
+    "trail": 7,
+    "alert": 1,
+    "healthLostPct": 16
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2402,
+    "trail": 7,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 16 → 22 %"
+  },
+  {
+   "route": "route-a-pressure-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2179,
+    "trail": 7,
+    "alert": 1,
+    "healthLostPct": 33
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2179,
+    "trail": 7,
+    "alert": 1,
+    "healthLostPct": 27
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 33 → 27 %"
+  },
+  {
+   "route": "route-b-block-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 4,
+    "alert": 0,
+    "healthLostPct": 11
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 4,
+    "alert": 0,
+    "healthLostPct": 16
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 11 → 16 %"
+  },
+  {
+   "route": "route-b-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 3,
+    "alert": 0,
+    "healthLostPct": 11
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4642,
+    "trail": 3,
+    "alert": 0,
+    "healthLostPct": 16
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 11 → 16 %"
+  },
+  {
+   "route": "route-g",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2735,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 16
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2735,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 16 → 22 %"
+  },
+  {
+   "route": "route-g-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2512,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 33
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2512,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 27
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 33 → 27 %"
+  },
+  {
+   "route": "route-g-fast",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2551,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 16
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2551,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 16 → 22 %"
+  },
+  {
+   "route": "route-g-fast-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 33
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2328,
+    "trail": 6,
+    "alert": 1,
+    "healthLostPct": 27
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 33 → 27 %"
+  },
+  {
+   "route": "route-g-kill",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3605,
+    "trail": 2,
+    "alert": 1,
+    "healthLostPct": 16
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3605,
+    "trail": 2,
+    "alert": 1,
+    "healthLostPct": 22
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 16 → 22 %"
+  },
+  {
+   "route": "route-g-kill-board",
+   "expects": {
+    "outcome": "success",
+    "fail": ""
+   },
+   "before": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3382,
+    "trail": 2,
+    "alert": 1,
+    "healthLostPct": 33
+   },
+   "now": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3382,
+    "trail": 2,
+    "alert": 1,
+    "healthLostPct": 27
+   },
+   "why": "tuning.md §14 weapons free (moves the same with hostile intent off): in a fight a drawn agent at return picks its attacker, else the nearest combatant, without a click; health lost 33 → 27 %"
+  }
+ ]
+}

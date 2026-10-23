@@ -1,0 +1,16 @@
+screen 1920x1080 Windowed, renderScale 1, build Build 0.2.65 · c031 · sim 0.25.0 · 04a4fb75+
+inventory written
+walked (0.00, -20.00) to (-174.30, 0.18, -248.40) at tick 179
+c-0_-20-h90: drawn 6316 (11,098,312 tris), beyond 150 m 4654 (7,994,242 tris), casters 4462
+c-0_-20-h135: drawn 5549 (8,824,731 tris), beyond 150 m 4228 (6,616,564 tris), casters 4484
+c-0_-20-h180: drawn 3784 (5,982,141 tris), beyond 150 m 2867 (4,611,874 tris), casters 4494
+walked (15.00, 0.00) to (-159.30, 0.18, -248.40) at tick 312
+c-15_-20-h90: drawn 5727 (10,576,001 tris), beyond 150 m 4393 (7,602,723 tris), casters 4524
+c-15_-20-h135: drawn 5431 (8,768,515 tris), beyond 150 m 4171 (6,504,193 tris), casters 4538
+c-15_-20-h180: drawn 3899 (6,307,463 tris), beyond 150 m 2868 (4,672,059 tris), casters 4559
+walked (5.00, 15.00) to (-159.30, 0.18, -248.40) at tick 436
+c-20_-5-h135: drawn 5430 (8,739,719 tris), beyond 150 m 4171 (6,504,193 tris), casters 4538
+c-20_-5-h180: drawn 3898 (6,278,667 tris), beyond 150 m 2868 (4,672,059 tris), casters 4559
+walked (-30.00, -20.00) to (-189.30, 0.00, -268.40) at tick 696
+c--10_-25-h90: drawn 6628 (11,170,067 tris), beyond 150 m 4878 (8,285,572 tris), casters 4341
+c--10_-25-h135: drawn 5204 (8,183,259 tris), beyond 150 m 4107 (6,334,322 tris), casters 4354

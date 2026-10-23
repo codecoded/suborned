@@ -43,7 +43,7 @@ export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
   'board', 'go', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
-export const CONTROL_VERBS = ['drive', 'trigger', 'follow'] as const;
+export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
 /** `extract` is brief 018's retired order, kept as a dialogue verb only so the texts pinned in recorded dialogue runs (r017 to r019, which predate Board and Go) still parse on replay; no live text uses it. */
 export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'extract'] as const;
@@ -94,8 +94,8 @@ export const Lock = z.strictObject({
   line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
   short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
   verbs: z.array(z.union([Verb, z.enum(CONTROL_VERBS), z.literal('*')])).min(1).describe('the verbs that can return it'),
-  byTarget: z.partialRecord(z.enum(['machine', 'serving']), z.strictObject({ line: Line, short: Short() })).optional()
-    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 022: `serving` on too-far, for a Listen or Ask on a server out at a table: {who} {s} (seconds until she is back at her post). Additive: a host that does not read it shows the base line and short'),
+  byTarget: z.partialRecord(z.enum(['machine']), z.strictObject({ line: Line, short: Short() })).optional()
+    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table)'),
 });
 
 /** What an agent is doing now (sim Game.ActivityOf): the roster and verb plate words. `{who}` is the activity's target. */
@@ -297,6 +297,22 @@ export const Less = z.strictObject({
     secret: z.record(code, Fragment).describe('one fragment per secret value (people.rules.json secrets), `affair-named` with {name} (the lover, cast) and `none` (nothing hidden)'),
     verb: z.record(code, Fragment).describe('the chip word and the unknown-slot word: watch, listen, turn'),
   }),
+  done: z.strictObject({
+    rule: z.string().min(1),
+    plate: z.record(code, Short(12)).describe('brief 043: the portrait plate\'s word after a landing, by the engine\'s outcome (turned, kept, not-yet, refused, suspicious) or done, or cancelled; at most two words'),
+    gain: z.record(code, Short(16)).describe('brief 043: the gain chip\'s new words, one icon-plus-label fact each; a Watch or Listen\'s facts are less.intel; {s} is seconds'),
+    close: z.record(code, Short(16)).describe('brief 043: the pop when a window ends, by the marker\'s kind (guard, camera, patrol, rivals)'),
+    cancel: z.strictObject({
+      tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36),
+      cost: z.record(code, Short(16)).describe('the cost word by the engine\'s cancel cost; a cancel cost with no entry is free'),
+    }).describe('brief 043: the warning before a cancelling order and the pop after it; {verb} the ring label, {cost} one of cost, {s} seconds spent'),
+    fire: z.record(code, Short(12)).describe('engine 0.26.0 (Game.FireQuery): the portrait plate\'s two words when a squad fire order skips this agent, by the refusal code; no punctuation, a name may keep its capital (has Vale)'),
+    walk: z.strictObject({
+      plate: Short(16).describe('the plate while an agent walks to act: {who} from `who`'),
+      line: Short(36).describe('the pill and Alt while walking to act: {target} is names.targets, {verb} the ring label'),
+      who: z.record(code, Short(12)).describe('a target\'s name for the plate, one short word, by names.targets key'),
+    }),
+  }),
 });
 export type Less = z.infer<typeof Less>;
 
@@ -404,13 +420,13 @@ export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
 }
 /** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss.
  *  {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission clock. Unknown code = undefined. */
-export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string; variant?: 'machine' | 'serving'; s?: number } = {}): string | undefined {
+export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string; variant?: 'machine' } = {}): string | undefined {
   const l = t.locks[a.code];
   if (!l) return undefined;
   const line = (ctx.variant && l.byTarget?.[ctx.variant]?.line) || l.line;
   const m = a.m !== undefined && a.m >= 0 ? a.m : a.cm !== undefined && a.cm >= 0 ? Math.round(a.cm / 100) : undefined;
   return line
-    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{s\}/g, ctx.s === undefined ? '?' : String(ctx.s)).replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
+    .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
     .replace(/\{m\}/g, m === undefined ? '?' : String(m))
     .replace(/\{usd\}/g, a.usd !== undefined && a.usd >= 0 ? '$' + a.usd.toLocaleString('en-US') : '?')
     .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? (ctx.clock ?? String)(a.tick) : '?');

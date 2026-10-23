@@ -5,12 +5,14 @@ import { PRESETS, ACTS, WALK, RUN, ROLES, RIGHT_TAP_S, priceLine, phrase } from 
 import { buildWorld } from './world.js';
 import { Rig } from './camera.js';
 import { Marker, groundRing, facesHtml } from './markers.js';
+import { icon } from './icons.js';
 import { initRing, openRing, closeRing, ringPointer, placeRing, ringCharge, draw as drawRing } from './ring.js';
-import { agentOf, crew, selected, names, waysFor, defaultFor, planFor, walkPath, walkTo, groupWalk, giveAct, cancel, step, reachOf, flushPlan } from './orders.js';
+import { agentOf, crew, selected, names, waysFor, defaultFor, planFor, walkSeconds, walkPath, walkTo, groupWalk, giveAct, cancel, step, reachOf, flushPlan } from './orders.js';
 import { buildChrome, refresh, setHint, setFps } from './ui.js';
 import { makeCones } from './cones.js';
-import { holdFor, startCharge, beginFire, releaseHold, stopAll, stepFire, shooters, isDrawn, FOLLOW_M } from './fire.js';
+import { commitsOnRelease, holdFor, startCharge, beginFire, releaseHold, stopAll, stepFire, shooters, isDrawn, FOLLOW_M, fightOn, syndicate, focusFire, underFire } from './fire.js';
 import { liveStatus } from './status.js';
+import { gainsFrame, resetGains, cancelsOf, cancelHtml, isFresh, on as doneOn } from './gains.js';
 
 const $ = (id) => document.getElementById(id);
 window.addEventListener('error', (e) => { $('errors').textContent += `${e.message} (${e.filename?.split('/').pop()}:${e.lineno})\n`; });
@@ -25,10 +27,14 @@ const marker = new Marker(scene, $('marker')), moveRings = [0, 1, 2, 3].map(() =
 runRings.forEach((m, i) => m.material.color.set(ROLES[i].color)); runCores.forEach((m, i) => m.material.color.set(ROLES[i].color));
 moveRings.forEach((m, i) => m.material.color.set(ROLES[i].color)); selRings.forEach((m, i) => m.material.color.set(ROLES[i].color));
 const breakLines = [0, 1, 2, 3].map(() => { const l = new THREE.Line(new THREE.BufferGeometry(), new THREE.LineDashedMaterial({ dashSize: 0.5, gapSize: 0.25, depthTest: false, transparent: true })); l.renderOrder = 11; l.frustumCulled = false; l.visible = false; scene.add(l); return l; });
+// Under fire, on the ground: two chevrons at the agent's feet pointing at whoever is shooting, marching toward them and popping on each incoming shot.
+const chevShape = new THREE.Shape(); chevShape.moveTo(0.55, 0); chevShape.lineTo(-0.15, 0.5); chevShape.lineTo(0, 0); chevShape.lineTo(-0.15, -0.5); chevShape.closePath();
+const ufCues = [0, 1, 2, 3].map(() => [0, 1].map(() => { const grp = new THREE.Group(), m = new THREE.Mesh(new THREE.ShapeGeometry(chevShape), new THREE.MeshBasicMaterial({ color: 0xff6a3d, transparent: true, depthTest: false, depthWrite: false, toneMapped: false, side: THREE.DoubleSide })); m.rotation.x = -Math.PI / 2; m.renderOrder = 11; grp.add(m); grp.visible = false; scene.add(grp); return grp; }));
+const hoverRing = groundRing(scene, true);
 const V = new THREE.Vector3(), ray = new THREE.Raycaster(), tracers = [];
 const preset = () => PRESETS[G.preset];
 
-function newWorld() { G.world?.dispose(); G.world = buildWorld(scene); G.trail = 0; G.alert = 0; G.cash = 100000; G.selTarget = null; G.group = [true, false, false, false]; G.sel = 0; G.carry = null; G.world.picks = G.world.ents.flatMap((e) => e.pick.map((m) => (m.userData.ent = e, m))); G.world.cones = makeCones(G.world); setCrowd(G.crowd); if (rig.mode === 'cmd') rig.focus.set(2, 0, 4.5); G.plan.clear(); G.paused = false; G.vale = null; G.sessions = []; G.charge = null; G.beat = G.stopped = G.ordered = G.doneInfo = G.stoppedInfo = null; closeRing(); }
+function newWorld() { G.world?.dispose(); G.world = buildWorld(scene); G.trail = 0; G.alert = 0; G.cash = 100000; G.selTarget = null; G.group = [true, false, false, false]; G.sel = 0; G.carry = null; G.world.picks = G.world.ents.flatMap((e) => e.pick.map((m) => (m.userData.ent = e, m))); G.world.cones = makeCones(G.world); setCrowd(G.crowd); if (rig.mode === 'cmd') rig.focus.set(2, 0, 4.5); G.plan.clear(); G.paused = false; G.vale = null; G.sessions = []; G.fightUntil = 0; G.charge = null; G.beat = G.stopped = G.tooFar = G.ordered = G.doneInfo = G.stoppedInfo = null; resetGains(); closeRing(); }
 newWorld();
 function resize() { renderer.setSize(innerWidth, innerHeight); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); }
 addEventListener('resize', resize); resize();
@@ -39,9 +45,22 @@ function entsAt(cx, cy) {
   ray.setFromCamera({ x: cx / innerWidth * 2 - 1, y: -(cy / innerHeight) * 2 + 1 }, camera);
   const out = []; for (const h of ray.intersectObjects(G.world.picks, false)) { const e = h.object.userData.ent; if (!out.includes(e)) out.push(e); } return out;
 }
+// Your own agent under the cursor always wins: within AGENT_PX of its body (feet to head) on screen, whatever stands behind or beside it.
+const AGENT_PX = 26;
+function agentNear(cx, cy) {
+  let best = null, bd = AGENT_PX;
+  for (const a of G.world.agents) {
+    if (G.view === 'tp' && a === agentOf()) continue; // in third person the camera sits on the one you drive
+    const f = project(a.g.position.x, 0, a.g.position.z), h = project(a.g.position.x, 1.9, a.g.position.z); if (!f || !h) continue;
+    const vx = h.x - f.x, vy = h.y - f.y, l2 = vx * vx + vy * vy || 1, t = Math.max(0, Math.min(1, ((cx - f.x) * vx + (cy - f.y) * vy) / l2)), d = Math.hypot(cx - (f.x + vx * t), cy - (f.y + vy * t));
+    if (d < bd) { bd = d; best = a; }
+  }
+  return best;
+}
 function pick(cx, cy) {
   const hits = entsAt(cx, cy), g = new THREE.Vector3();
   ray.ray.intersectPlane(new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), g);
+  const own = agentNear(cx, cy); if (own) return { ent: own, point: g, hits: [own, ...hits.filter((e) => e !== own)] };
   const keep = [G.tabEnt, G.stick].find((e) => e && hits.includes(e));
   return { ent: keep ?? hits[0] ?? null, point: g, hits };
 }
@@ -64,8 +83,11 @@ function standSpot(e) {
 
 // ---- what a click does ------------------------------------------------------------------
 const runHeld = () => G.keys.has('ShiftLeft') || G.keys.has('ShiftRight');
-function doAct(e, w, how, run = false, agents = crew()) {
-  const plan = planFor(e, w, agents, run);
+function doAct(e, w, how, run = false, given = null, only = null) {
+  const agents = given ?? crew(), fromSel = !given && !G.carry; // an order from the selection: whoever goes leaves it
+  let plan = planFor(e, w, agents, run);
+  const fixed = only?.filter((a) => agents.includes(a) && w.by.includes(a.role)); // a hold chose its doer at the press and keeps it
+  if (fixed?.length) plan = { ...plan, agents: fixed, lead: fixed[0], holds: agents.filter((a) => !fixed.includes(a)), walkS: Math.max(...fixed.map((a) => walkSeconds(a, e, w, run))) };
   if (!plan.agents.length) return say(`${how} · nobody can ${w.verb.toLowerCase()} ${e.name}`, 'warn');
   if (!isFinite(plan.walkS)) return say(`${how} · no way to ${e.name}`, 'warn');
   const doing = plan.agents.filter((a) => giveAct(a, e, w, run));
@@ -76,6 +98,7 @@ function doAct(e, w, how, run = false, agents = crew()) {
   if (squad) G.peel = { until: G.clock + 1.2, lead: doing, holds: plan.holds };
   const head = runs ? `${subj} ${many || (squad && all) ? 'run' : 'runs'} to ${phrase(w, e)}` : squad ? `${all ? 'The squad' : subj + (many ? ' break' : ' breaks') + ' away to'} ${phrase(w, e)}` : `${subj}: ${priceLine(w, e, plan.walkS, true, '', rn)[0]}`;
   const q = G.paused && G.planMode === 'sync' ? ' · waits for Space' : '';
+  if (fromSel && squad && plan.holds.length) { setGroup(G.world.agents.map((a, i) => G.group[i] && !doing.includes(a)), false); say(`${names(doing)} ${doing.length > 1 ? 'leave' : 'leaves'} the squad to ${phrase(w, e)}`); } // a squad act takes its doer out of the squad; the next one picks from who is left
   say(`${how} · ${head} · ${line}${plan.holds.length ? ` · ${names(plan.holds)} hold` : ''}${q}`, 'act');
 }
 // A second double click on what an agent is already walking to turns the walk into a run (the act is not restarted).
@@ -113,7 +136,7 @@ function groundGo(p, how, run, agents = crew()) {
   const secs = groupWalk(agents, p, run).filter((s) => s !== null);
   if (secs.length) say(`${how} · ${names(agents)} ${run ? 'run' : 'walk'} · ${Math.round(Math.max(...secs))} s${nearMiss(p)}`, nearMiss(p) ? 'warn' : '');
 }
-function leftClick(hit, dbl, shift) {
+function leftClick(hit, dbl, shift, ctrl = false) {
   const P = preset(), e = hit.ent;
   const how = dbl ? 'Double click' : 'Left click';
   if (G.ring) { closeRing(); return say(`${how} · closed the ring`); }
@@ -124,7 +147,7 @@ function leftClick(hit, dbl, shift) {
     const pt = { x: spot[0], z: spot[1] }; if (dbl && upgradeRun(null, pt, how)) return;
     return groundGo(pt, how, dbl || shift);
   }
-  if (e?.agent) { if (P.agentClick === 'none') return say(`${how} · pick agents on the portraits or with 1 to 4`); G.selTarget = null; return selectAgent(G.world.agents.indexOf(e), shift); }
+  if (e?.agent) { G.selTarget = null; return selectAgent(G.world.agents.indexOf(e), shift || ctrl); } // your own agent: a click always selects it, busy or out of the squad; the next order replaces its act
   if (e) {
     const w = defaultFor(e);
     if (w?.id === 'fire') return say(`${how} · hold the left button to fire`, 'warn');
@@ -144,6 +167,7 @@ function rightTap(hit) {
     if (P.right === 'press' && !(e && e !== G.ring.ent)) return takeWay(G.ring.shown[G.ring.lit]);
     closeRing(); if (!e) return say('Right click · closed the ring');
   }
+  if (e?.agent) return; // right click on your own agent does nothing (it never opens a ring on someone behind it)
   if (e && !e.agent && waysFor(e).length) return openRing(e, waysFor(e), P.ring);
   if (crew().map((a) => cancel(a)).some(Boolean)) say('Right click · stopped'); else say('Right click · nothing there');
 }
@@ -154,6 +178,11 @@ function takeWay(w, m = {}) {
 initRing($('ring'), takeWay);
 
 // ---- the pointer --------------------------------------------------------------------------
+// A hold latches to what you pressed on: the charge and the pill follow it as it moves, and letting go commits on it wherever the cursor is.
+// Moving the cursor more than CANCEL_PX from the press, letting go early, a right click or Esc cancels; the pill dims as you near the edge.
+const CANCEL_PX = 80, DIM_FROM = 0.55;
+const travel = () => (down ? Math.hypot(G.ptr.x - down.x, G.ptr.y - down.y) : 0);
+function cancelHold() { const c = G.charge; if (!c || c.done) return; G.charge = null; if (down) down.cancelled = true; say(`${c.way.id === 'fire' ? 'Fire' : c.way.verb} cancelled`, 'warn'); }
 let down = null, lastClick = { t: 0, x: 0, y: 0, ent: null };
 canvas.addEventListener('contextmenu', (e) => e.preventDefault());
 canvas.addEventListener('pointerdown', (e) => {
@@ -161,11 +190,12 @@ canvas.addEventListener('pointerdown', (e) => {
   down = { b: e.button, x: e.clientX, y: e.clientY, t: performance.now(), hit: pick(e.clientX, e.clientY), drag: false, ring: false };
   if (e.button === 0 && !G.ring) { // hold the left button on a person to fire; a quick click is still a click
     const P = preset(), t = P.holdActs ? down.hit.ent : holdFor(down.hit.ent) ? down.hit.ent : G.aim ? G.aimT : null, way = P.holdActs ? (t && !t.agent ? mainFor(t) : null) : holdFor(t); // "hold acts": the hold is the main calm act
-    if (way) { down.charge = true; startCharge(t, way, false, e.shiftKey); }
+    if (way) { down.charge = true; startCharge(t, way, false, e.shiftKey); if (way.id !== 'fire' && crew().length > 1) G.charge.only = planFor(t, way, crew(), e.shiftKey).agents; } // best placed is chosen now and stays
   }
   if (e.button === 2 && preset().rightFires && !G.ring && !(G.view === 'tp' && G.tpAim === 'aim')) { // right hold fires: same charge, the pill says so
     const t = forceWay(down.hit.ent) ? down.hit.ent : G.view === 'tp' ? hostileAhead() : null, way = forceWay(t);
-    if (way) { down.rcharge = true; startCharge(t, way); G.charge.right = true; G.charge.extra = `down in ${ACTS.fire.t} s`; }
+    if (way && t.hostile && fightOn()) { down.rfocus = true; focusFire(t, shooters(t, true)); } // Syndicate: once a fight is on, a right click on a hostile focuses fire at once, no hold
+    else if (way) { down.rcharge = true; startCharge(t, way); G.charge.right = true; G.charge.extra = `down in ${ACTS.fire.t} s`; }
   }
   if (e.button === 2 && preset().right === 'press') { // 0.2.34: the ring opens on press
     const h = down.hit; down.ring = true;
@@ -174,23 +204,28 @@ canvas.addEventListener('pointerdown', (e) => {
 });
 // Aim (right button held, third person) then the left button: the browser sends the second button as a mouse event, not a pointer event.
 let chord = false;
-canvas.addEventListener('mousedown', (e) => { if (e.button === 0 && G.aim && !G.charge && !(preset().rightFires && G.tpAim === 'fire')) { const way = holdFor(G.aimT); if (way) { startCharge(G.aimT, way); chord = true; } } });
+canvas.addEventListener('mousedown', (e) => { if (e.button === 2 && down?.b === 0 && down.charge && G.charge && !G.charge.done) return cancelHold(); /* a chorded right click (the browser sends no second pointerdown) */ if (e.button === 0 && G.aim && !G.charge && !(preset().rightFires && G.tpAim === 'fire')) { const way = holdFor(G.aimT); if (way) { startCharge(G.aimT, way); chord = true; } } });
 canvas.addEventListener('mouseup', (e) => { if (e.button === 0 && chord) { chord = false; releaseHold(); } });
 canvas.addEventListener('pointermove', (e) => {
   G.ptr.x = e.clientX; G.ptr.y = e.clientY; if (!down) return;
   if (!down.drag && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 6) down.drag = true;
-  if (down.drag && (down.b === 0 || down.b === 1) && G.view === 'tp') rig.orbit(e.movementX, e.movementY);
+  if (down.drag && (down.b === 0 || down.b === 1) && G.view === 'tp' && !down.charge) rig.orbit(e.movementX, e.movementY);
   if (down.b === 1 && G.view === 'cmd') rig.pan(e.movementX, e.movementY);
-  if (down.drag && down.b === 0 && G.view === 'cmd') { // a drag box on the ground picks agents
+  if (down.drag && down.b === 0 && G.view === 'cmd' && !down.charge) { // a drag box on the ground picks agents
     const r = { x0: Math.min(down.x, e.clientX), x1: Math.max(down.x, e.clientX), y0: Math.min(down.y, e.clientY), y1: Math.max(down.y, e.clientY) }; G.box = r;
     Object.assign($('box').style, { display: 'block', left: r.x0 + 'px', top: r.y0 + 'px', width: r.x1 - r.x0 + 'px', height: r.y1 - r.y0 + 'px' });
   }
 });
 canvas.addEventListener('pointerup', (e) => {
+  if (down && e.button !== down.b) return; // another button came up: not this hold
   const d = down; down = null; G.holdEnt = null; if (!d) return;
   const now = performance.now(), hold = (now - d.t) / 1000;
-  if (d.rcharge) { const c = G.charge; if (c && !c.done && (performance.now() - d.t) / 1000 < RIGHT_TAP_S) G.charge = null; /* a tap: the ring, silently */ else return releaseHold(); }
-  if (d.charge) { const c = G.charge; if (c && !c.done && c.t < 0.2 && !c.ent.hostile) G.charge = null; /* a quick click on a bystander is its normal click */ else return releaseHold(); }
+  if (d.rfocus) return; // the focus was given on the press; it lasts until the target is down
+  if (d.rcharge) { const c = G.charge;
+    if (c?.ready && !c.done && !d.cancelled) { G.charge = null; beginFire(c.ent, shooters(c.ent, true), { lock: true }); return; } // let go after full: a lasting fire order
+    if (c && !c.done && (performance.now() - d.t) / 1000 < RIGHT_TAP_S) G.charge = null; /* a tap: the ring, silently */ else return releaseHold(); }
+  if (d.charge) { const c = G.charge; if (c?.ready && !c.done) { G.charge = null; if (d.cancelled || !c.ent) return; doAct(c.ent, c.way, 'Hold', c.run || runHeld(), null, c.only); return; } /* let go after full: the order */
+    if (c && !c.done && c.t < 0.2 && !c.ent.hostile) G.charge = null; /* a quick click on a bystander is its normal click */ else return releaseHold(); }
   if (G.aim && d.b === 2) { G.aim = false; return; }
   if (d.drag && d.b === 0 && G.box) { boxSelect(G.box, e.shiftKey || e.ctrlKey || e.metaKey); G.box = null; $('box').style.display = 'none'; }
   if (d.drag || d.ring) return;
@@ -198,7 +233,7 @@ canvas.addEventListener('pointerup', (e) => {
   if (d.b === 0) {
     const dbl = now - lastClick.t < 350 && (hit.ent ? lastClick.ent === hit.ent : !lastClick.ent && Math.hypot(e.clientX - lastClick.x, e.clientY - lastClick.y) < 24);
     lastClick = dbl ? { t: 0, x: 0, y: 0, ent: null } : { t: now, x: e.clientX, y: e.clientY, ent: hit.ent };
-    leftClick(hit, dbl, e.shiftKey);
+    leftClick(hit, dbl, e.shiftKey, e.ctrlKey || e.metaKey);
   } else if (d.b === 2) {
     if (hold >= RIGHT_TAP_S && G.view === 'tp') return; else if (hold >= RIGHT_TAP_S) say('Right hold · nothing happens', 'warn'); else rightTap(hit);
   }
@@ -229,7 +264,7 @@ addEventListener('pointerup', (e) => {
   const hit = pick(e.clientX, e.clientY), who = names(carried), x = hit.ent;
   if (!x) return groundGo(hit.point, 'Portrait drop', e.shiftKey, carried);
   if (x.agent) return say('Portrait drop · cancelled');
-  if (x.hostile) return beginFire(x, carried, { lock: true });
+  if (x.hostile) return beginFire(x, carried, { lock: true, pin: syndicate() }); // a portrait lock holds against weapons free and focus clicks
   G.carry = carried; const w = defaultFor(x), any = waysFor(x).length; G.carry = null;
   if (w) return doAct(x, w, 'Portrait drop', e.shiftKey, carried);
   if (any) { setGroup(G.world.agents.map((a) => carried.includes(a)), false); openRing(x, waysFor(x), preset().ring); return say(`Portrait drop · ring for ${who}`); }
@@ -238,6 +273,7 @@ addEventListener('pointerup', (e) => {
 
 // ---- keys ---------------------------------------------------------------------------------
 let eDown = null;
+function toggleFree() { G.free = !G.free; say(G.free ? 'Weapons free' : 'Return fire only', G.free ? 'act' : 'warn'); }
 function promptTarget() { return G.hover ?? G.prompt; }
 function eAct() { const e = promptTarget(); if (!e) return; const w = defaultFor(e); if (w?.id === 'fire') return say('E · hold the left button to fire', 'warn'); if (w) doAct(e, w, 'E', runHeld()); }
 function setView(v) {
@@ -258,9 +294,11 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Tab') { // step through the people under the cursor
     e.preventDefault(); const hits = entsAt(G.ptr.x, G.ptr.y).filter(actionable); if (hits.length > 1) { const i = hits.indexOf(G.stick); G.tabEnt = hits[(i + 1) % hits.length]; G.tabAt = { x: G.ptr.x, y: G.ptr.y }; say(`Target · ${G.tabEnt.name}`); } return;
   }
+  if (e.code === 'KeyL') { G.histOpen = !G.histOpen; return; }
+  if (e.code === 'KeyG' && syndicate()) return toggleFree();
   if (e.code === 'KeyF') { const on = !selected().every(isDrawn); selected().forEach((a) => { a.drawnUntil = on ? G.clock + 1e9 : 0; }); return say(`${names(selected())} ${on ? 'draw' : 'holster'}`); }
   if (e.code === 'KeyX') { const s = crew().filter((a) => cancel(a)); stopAll(); if (s.length) say(`X · stopped ${names(s)}`); return; }
-  if (e.code === 'Escape') { if (G.ring) closeRing(); else if (G.view === 'tp') setView('cmd'); G.selTarget = null; return; }
+  if (e.code === 'Escape') { if (G.charge && !G.charge.done && down) { cancelHold(); return; } if (G.ring) closeRing(); else if (G.view === 'tp') setView('cmd'); G.selTarget = null; return; }
   if (G.ring && (e.code === 'KeyE' || e.code === 'Enter')) return takeWay(G.ring.shown[G.ring.lit]);
   if (G.view === 'cmd') { if (e.code === 'KeyQ') rig.turn(-1); if (e.code === 'KeyE') rig.turn(1); }
   else if (e.code === 'KeyE') { if (preset().eHold) eDown = { t: performance.now(), ring: false }; else eAct(); }
@@ -275,7 +313,8 @@ addEventListener('blur', () => G.keys.clear());
 let drawChrome;
 drawChrome = buildChrome({
   preset(k) { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; G.selTarget = null; closeRing(); say(`Preset · ${PRESETS[k].label}`); },
-  option(key, v) { if (key === 'view') return setView(v); if (key === 'crowd') return setCrowd(v); if (key === 'camFollow') { G.camFollow = v === 'true'; rig.focusGoal = null; return; } G[key] = key === 'actScale' ? +v : v; },
+  free: toggleFree,
+  option(key, v) { if (key === 'fights') calmFight(v); if (key === 'view') return setView(v); if (key === 'crowd') return setCrowd(v); if (key === 'camFollow') { G.camFollow = v === 'true'; rig.focusGoal = null; return; } G[key] = key === 'actScale' ? +v : v; },
   reset() { newWorld(); G.view === 'tp' && setView('cmd'); say('Scene reset'); },
   select: selectAgent, squad: selectAll, pause: togglePause,
   // Vale comes out of the door with two officers: three agents, two officers, half a second of game time
@@ -293,16 +332,39 @@ drawChrome = buildChrome({
   stop(i) { const a = G.world.agents[i]; if (cancel(a)) say(`${a.name} stopped`); },
 });
 
+function calmFight(v) { G.fightUntil = 0; G.sessions = G.sessions.filter((s) => !s.auto); for (const e of G.world.ents) e.alerted = false; say(`Fights · ${v === 'syndicate' ? 'Syndicate' : 'current'}`); }
 // ---- the frame ----------------------------------------------------------------------------
-function tracer(a, e, miss = false) { // a miss ends a little beside the target
-  const dx = e.g.position.x - a.g.position.x, dz = e.g.position.z - a.g.position.z, len = Math.hypot(dx, dz) || 1, o = miss ? 1.3 : 0;
-  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a.g.position.x, 1.2, a.g.position.z), new THREE.Vector3(e.g.position.x - dz / len * o, 1.1, e.g.position.z + dx / len * o)]);
-  const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: 0xfff6d8 })); scene.add(l); tracers.push({ l, at: G.clock });
+// Hits and misses read on the tracer, the flash and the sparks: a hit is a bright tracer, a flash and sparks on the target; a miss is a pale tracer that ends beside it and kicks up a puff on the ground.
+// Cell shots are cream and gold; the fakes' return fire is orange. Colours are free (signals own none).
+const fx = [], flashGeo = new THREE.SphereGeometry(0.16, 8, 6), shardGeo = new THREE.BoxGeometry(0.07, 0.07, 0.07), puffGeo = new THREE.SphereGeometry(0.3, 8, 6);
+function addFx(kind, x, y, z, color, life, v = null) {
+  const m = new THREE.Mesh(kind === 'puff' ? puffGeo : kind === 'shard' ? shardGeo : flashGeo, new THREE.MeshBasicMaterial({ color, transparent: true, depthTest: false, depthWrite: false, toneMapped: false }));
+  m.position.set(x, y, z); m.renderOrder = 12; scene.add(m); fx.push({ m, kind, at: G.clock, life, v });
 }
+function stepFx(dt) {
+  for (let i = fx.length - 1; i >= 0; i--) {
+    const f = fx[i], k = (G.clock - f.at) / f.life;
+    if (k >= 1) { scene.remove(f.m); f.m.material.dispose(); fx.splice(i, 1); continue; }
+    f.m.material.opacity = (1 - k) * (f.kind === 'puff' ? 0.6 : 1);
+    if (f.kind === 'flash') f.m.scale.setScalar(1 + k * 1.8); else if (f.kind === 'puff') f.m.scale.setScalar(0.6 + k * 1.1);
+    else if (f.v) { f.m.position.x += f.v[0] * dt; f.m.position.y += f.v[1] * dt; f.m.position.z += f.v[2] * dt; f.v[1] -= 9 * dt; }
+  }
+}
+function tracer(a, e, miss = false) { // a miss ends a little beside the target
+  const dx = e.g.position.x - a.g.position.x, dz = e.g.position.z - a.g.position.z, len = Math.hypot(dx, dz) || 1, o = miss ? 1.3 : 0, theirs = !!a.hostile;
+  const ex = e.g.position.x - dz / len * o, ez = e.g.position.z + dx / len * o;
+  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(a.g.position.x, 1.2, a.g.position.z), new THREE.Vector3(ex, 1.1, ez)]);
+  const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: theirs ? (miss ? 0xc99a80 : 0xff8a45) : miss ? 0xa9c6d0 : 0xfff0a8, transparent: miss, opacity: miss ? 0.6 : 1 })); scene.add(l); tracers.push({ l, at: G.clock });
+  addFx('flash', a.g.position.x + dx / len * 0.45, 1.2, a.g.position.z + dz / len * 0.45, 0xfff6d8, 0.09); // muzzle
+  if (miss) addFx('puff', ex, 0.2, ez, 0xd9d2c0, 0.45);
+  else { addFx('flash', ex, 1.1, ez, theirs ? 0xff9a55 : 0xffc860, 0.22); for (let i = 0; i < 5; i++) { const an = i * 1.26 + G.clock * 7, sp = 2 + (i % 3); addFx('shard', ex, 1.1, ez, theirs ? 0xffb070 : 0xffe9a0, 0.32, [Math.cos(an) * sp, 2.5 + i % 2, Math.sin(an) * sp]); } }
+}
+// the fakes' return fire: cosmetic, nobody is hurt; a hit flashes the agent
+function hostileShot(e, a, hit) { tracer(e, a, !hit); if (hit) a.hurtUntil = G.clock + 0.25; }
 function driveAgent(a, dt) { // third person: the keys walk the agent
   const k = G.keys, fa = k.has('KeyW') - k.has('KeyS'), sa = k.has('KeyD') - k.has('KeyA');
   if (!fa && !sa) { rig.moveYaw(false); return false; }
-  cancel(a);
+  cancel(a, true, true);
   const y = rig.moveYaw(true); let dx = Math.sin(y) * fa - Math.cos(y) * sa, dz = Math.cos(y) * fa + Math.sin(y) * sa; const l = Math.hypot(dx, dz); dx /= l; dz /= l;
   const sp = k.has('ShiftLeft') || k.has('ShiftRight') ? RUN : WALK, p = a.g.position, nav = G.world.nav;
   if (nav.free(p.x + dx * sp * dt, p.z + dz * sp * dt)) { p.x += dx * sp * dt; p.z += dz * sp * dt; } else if (nav.free(p.x + dx * sp * dt, p.z)) p.x += dx * sp * dt; else if (nav.free(p.x, p.z + dz * sp * dt)) p.z += dz * sp * dt;
@@ -376,8 +438,9 @@ function frame(now) {
     if (e !== G.stick && G.stick && !h.hits.includes(G.stick) && performance.now() - (G.stickLost ??= performance.now()) < 150) e = G.stick; // someone walks across: keep the one you were on a moment
     else G.stickLost = null;
     G.stick = e && actionable(e) ? e : null; if (G.stick) G.hover = G.stick;
-    canvas.style.cursor = G.hover ? 'pointer' : 'default';
-  } else G.stick = null;
+    G.hoverAgent = e?.agent ? e : null; // over your own agent: the selection cue, never an act pill
+    canvas.style.cursor = G.hoverAgent ? 'pointer' : G.hover ? (G.hover.hostile && fightOn() ? 'crosshair' : 'pointer') : 'default';
+  } else { G.stick = null; G.hoverAgent = null; }
   if (G.view === 'tp' && !G.hover) { let best = 8; for (const e of w.ents) { if (e.agent || !actionable(e)) continue; const dx = e.g.position.x - me.g.position.x, dz = e.g.position.z - me.g.position.z, d = Math.hypot(dx, dz); if (d < best && Math.abs(((Math.atan2(dx, dz) - rig.f + 3 * Math.PI) % (2 * Math.PI)) - Math.PI) < 1.2) { best = d; G.prompt = e; } } }
   // in third person the rest of the squad follows the lead, a little behind and to the sides
   followT -= real;
@@ -394,33 +457,39 @@ function frame(now) {
   G.aim = G.view === 'tp' && !G.ring && down?.b === 2 && performance.now() - down.t >= RIGHT_TAP_S * 1000; G.aimT = null;
   if (G.aim) { G.aimT = hostileAhead(); if (!G.hover) G.prompt = G.aimT; if (preset().rightFires && G.tpAim === 'fire') me.drawnUntil = G.clock + 1; } // the gun is up while right is held
   $('reticle').style.display = G.aim ? 'block' : 'none'; if (G.aim) $('reticle').style.transform = `translate(${G.ptr.x}px,${G.ptr.y}px)`;
-  if (dt > 0) stepFire(dt, { tracer, charged: (c) => {
+  if (dt > 0) stepFire(dt, { tracer, hostileShot, charged: (c) => {
     if (c.ring) closeRing();
     if (c.way.id === 'fire') { beginFire(c.ent, shooters(c.ent, !!c.right), { held: true, follow: G.view === 'tp' });
       if (G.view === 'tp' && G.followFire === 'lock') { const near = w.agents.filter((a) => a !== me && isDrawn(a) && Math.hypot(a.g.position.x - me.g.position.x, a.g.position.z - me.g.position.z) <= FOLLOW_M); if (near.length) beginFire(c.ent, near, { lock: true }); } }
-    else { G.charge = null; G.holdEnt = c.ent; doAct(c.ent, c.way, 'Hold', c.run || runHeld()); }
+    else { G.charge = null; G.holdEnt = c.ent; doAct(c.ent, c.way, 'Hold', c.run || runHeld(), null, c.only); }
   } });
   // hold-to-ring (0.2.34): a held left click or a held E
   const nowMs = performance.now();
   if (down && down.b === 0 && !down.drag && !down.ring && P.leftHold && (P.leftHold === true || G.view === 'tp') && nowMs - down.t >= 220 && actionable(down.hit.ent)) { down.ring = true; openRing(down.hit.ent, waysFor(down.hit.ent), P.ring); }
   if (eDown && !eDown.ring && nowMs - eDown.t >= 220) { const e = promptTarget(); eDown.ring = true; if (e) openRing(e, waysFor(e), P.ring); }
   if (G.ring && !waysFor(G.ring.ent).length) closeRing();
+  // a hold is cancelled by cursor travel (not by what is under the cursor); the pill dims as the cursor nears the edge
+  { const c = G.charge, tr = travel(), holding = c && !c.done && !c.ring && down && (down.charge || down.rcharge);
+    if (holding && tr > CANCEL_PX) cancelHold();
+    $('marker').style.opacity = holding && G.charge && tr > CANCEL_PX * DIM_FROM ? String(1 - 0.65 * Math.min(1, (tr - CANCEL_PX * DIM_FROM) / (CANCEL_PX * (1 - DIM_FROM)))) : ''; }
   // the marker: the main action on one thing
   const ch = G.charge && !G.charge.done && !G.charge.ring && (G.charge.right ? G.charge.t > RIGHT_TAP_S : G.charge.ent.hostile && !PRESETS[G.preset].holdActs || G.charge.t > 0.2) ? G.charge : null;
   let tgt = G.ring ? null : ch?.ent ?? G.holdEnt ?? G.hover ?? G.selTarget ?? G.prompt;
   const st = ch || G.ring ? null : liveStatus(tgt); if (st) tgt = st.ent; // the live words win over the first offer
-  const act = ch ? ch.way : st ? (st.fire ? { id: 'fire', ...ACTS.fire } : st.act) : tgt && mainFor(tgt);
+  const inFight = !!tgt?.hostile && fightOn() && !['out', 'dead', 'down'].includes(tgt.state), act = ch ? ch.way : st ? (st.fire ? { id: 'fire', ...ACTS.fire } : st.act) : inFight ? { id: 'fire', ...ACTS.fire } : tgt && mainFor(tgt);
   const plan = act ? planFor(tgt, act, crew(), runHeld()) : null, ws = plan?.walkS ?? 0;
   let extra = null; // where the agent would stand: is it in a cone, and (for Watch) how far it can see from
   if (plan?.lead && !act.noWalk) { const pth = walkPath(plan.lead, tgt, act), sp = pth?.length ? pth[pth.length - 1] : [plan.lead.g.position.x, plan.lead.g.position.z]; extra = { seen: !!w.cones.seenAt(sp[0], sp[1]), reach: act.id === 'watch' && G.view === 'cmd' ? reachOf(tgt, act, plan.lead) : 0 }; }
+  if (doneOn() && act && tgt && !st && !act.fire) extra = { ...(extra ?? {}), fresh: isFresh(tgt, act.id), cx: cancelHtml(cancelsOf(plan?.agents ?? [])) }; // brief 043: a lit pip on a newly opened act; what this order would drop
   marker.update(real, tgt, act, isFinite(ws) ? ws : 0, project, plan?.lead && !act.noWalk ? walkPath(plan.lead, tgt, act) : null, plan?.agents, plan?.running, ch, extra, st);
   if (G.charge?.ring && !G.charge.done) ringCharge(G.charge);
+  G.readyIdx = ch?.ready && plan ? plan.agents.map((a) => w.agents.indexOf(a)) : []; if (ch?.ready) canvas.style.cursor = 'grabbing'; // the "Let go" cue: pill pop, the doer's portrait, the cursor
   // breakaway: while hovering, light the agent who would go, dim the ones who hold; for a moment after the order too
   const live = tgt && plan?.agents.length && crew().length > 1 ? { lead: plan.agents, holds: plan.holds } : null, pv = live ?? (G.clock < (G.peel?.until ?? 0) ? G.peel : null);
   G.pv = pv ? { lead: pv.lead.map((a) => w.agents.indexOf(a)), holds: pv.holds.map((a) => w.agents.indexOf(a)) } : null;
   w.agents.forEach((a, i) => {
     const lead = G.pv?.lead.includes(i), hold = G.pv?.holds.includes(i), m = a.body.material; m.transparent = true;
-    m.opacity += ((hold ? 0.4 : 1) - m.opacity) * 0.3; m.emissive.setHex(lead ? 0x777777 : 0); const running = a.speed > 2; a.g.pose.rotation.x += ((running ? 0.28 : 0) - a.g.pose.rotation.x) * 0.3;
+    m.opacity += ((hold ? 0.4 : 1) - m.opacity) * 0.3; m.emissive.setHex(G.clock < (a.hurtUntil ?? 0) ? 0xcc3333 : lead ? 0x777777 : 0); const running = a.speed > 2; a.g.pose.rotation.x += ((running ? 0.28 : 0) - a.g.pose.rotation.x) * 0.3;
     if (running && !a.wasRun && G.clock - (G.noticeAt ?? -99) > 6) { say('Running: people notice', 'warn'); G.noticeAt = G.clock; } a.wasRun = running;
   });
   breakLines.forEach((l, i) => { // a path from each breaking-away agent to the target (not while it is already walking)
@@ -429,17 +498,30 @@ function frame(now) {
     const pts = (walkPath(a, tgt, act) ?? [[a.g.position.x, a.g.position.z], [tgt.g.position.x, tgt.g.position.z]]).map(([x, z]) => new THREE.Vector3(x, 0.12, z));
     l.geometry.dispose(); l.geometry = new THREE.BufferGeometry().setFromPoints(pts); l.computeLineDistances(); l.material.color.set(ROLES.find((r) => r.key === a.role).color);
   });
+  { const a = G.hoverAgent, i = a ? w.agents.indexOf(a) : -1; hoverRing.visible = !!a; if (a) { hoverRing.position.set(a.g.position.x, 0.035, a.g.position.z); hoverRing.scale.setScalar(2.1); hoverRing.material.color.set(ROLES[i].color); } }
   w.agents.forEach((a, i) => { const m = selRings[i]; m.visible = G.group[i]; if (m.visible) { m.position.set(a.g.position.x, 0.03, a.g.position.z); m.scale.setScalar(G.pv?.lead.includes(i) ? 2.1 : i === G.sel && selected().length > 1 ? 1.9 : 1.5); } });
   w.agents.forEach((a, i) => { // the destination: a ring for a walk; a doubled, dashed ring for a run
     const m = moveRings[i], d = runRings[i], c = runCores[i], o = a.order, on = !!o && o.kind === 'walk';
     m.visible = on && !o.run; d.visible = c.visible = on && !!o.run;
     if (on) for (const r of o.run ? [d, c] : [m]) { r.position.set(o.dest.x, 0.04, o.dest.z); r.scale.setScalar(r === c ? 0.5 : r === d ? 1.15 : 0.9); }
   });
+  stepFx(dt);
   for (let i = tracers.length - 1; i >= 0; i--) if (G.clock - tracers[i].at > 0.35) { scene.remove(tracers[i].l); tracers.splice(i, 1); }
+  w.agents.forEach((a, i) => { // the under-fire cue on the ground
+    const on = underFire(a), pair = ufCues[i]; pair.forEach((g) => (g.visible = on)); if (!on) return;
+    const dx = a.fireFrom.g.position.x - a.g.position.x, dz = a.fireFrom.g.position.z - a.g.position.z, l = Math.hypot(dx, dz) || 1, ph = (performance.now() / 450) % 1, pop = Math.max(0, 1 - (G.clock - (a.incomingAt ?? -9)) / 0.35);
+    pair.forEach((g, k) => { const f = (ph + k * 0.5) % 1, r = 1.1 + f * 1; g.position.set(a.g.position.x + dx / l * r, 0.07, a.g.position.z + dz / l * r); g.rotation.y = -Math.atan2(dz, dx); g.scale.setScalar(1 + pop * 0.5); g.children[0].material.opacity = Math.min(1, (1 - f) * 1.3) * (0.7 + 0.3 * pop); });
+  });
   fadeBuildings(real); drawGhosts(); document.body.classList.toggle('paused', G.paused);
   if (G.vale && !G.vale.done) { const v = G.vale, locked = new Set(G.sessions.filter((s) => s.lock && s.ent.id.startsWith('officer')).flatMap((s) => s.agents.map((a) => a.id))); v.n = locked.size; v.sim = G.clock - v.t0s; v.real = (performance.now() - v.t0r) / 1000; if (v.n >= 3) v.done = true; }
   placeRing(project);
-  const hint = G.paused ? (G.planMode === 'sync' ? 'Paused · Space starts every order together' : 'Paused · Space to go') : G.ring ? (crew().length > 1 ? preset().holdActs ? 'Shift runs there' : 'Shift runs there · Alt: everyone or the best placed' : P.right === 'press' ? 'Right click again takes the lit way' : 'Click away to close') : G.view === 'tp' && G.prompt ? 'E does it' : G.view === 'tp' && G.clock - (G.tpAt ?? -99) < 5 ? 'T lets go of the agent' : preset().holdActs && G.hover ? 'Hold the left button to do it · right hold fires' : G.hover?.hostile ? 'Hold the left button to fire' : P.dbl.thing && (G.hover || G.selTarget) ? (P.dbl.thing === 'run' ? 'Double click runs there' : 'Double click to do it') : '';
+  { // brief 043: the done moment, and the warning on open ground when a click would drop an act in progress (after the pointer has rested a moment)
+    gainsFrame(project);
+    const moved = Math.hypot(G.ptr.x - (G.pl?.x ?? -1), G.ptr.y - (G.pl?.y ?? -1)) > 3; if (moved) G.pl = { x: G.ptr.x, y: G.ptr.y, at: now };
+    const gx = doneOn() && !G.hover && !ch && !G.ring && !G.hoverAgent && G.ptr.over && !down && now - (G.pl?.at ?? now) > 300 ? cancelHtml(cancelsOf(crew())) : '', el = $('cxg');
+    el.style.display = gx ? 'block' : 'none'; if (gx) { if (el.dataset.h !== gx) { el.dataset.h = gx; el.innerHTML = gx; } el.style.transform = `translate(${G.ptr.x + 18}px,${G.ptr.y + 20}px)`; }
+  }
+  const hint = G.paused ? (G.planMode === 'sync' ? 'Paused · Space starts every order together' : 'Paused · Space to go') : G.ring ? (crew().length > 1 ? preset().holdActs ? 'Shift runs there' : 'Shift runs there · Alt: everyone or the best placed' : P.right === 'press' ? 'Right click again takes the lit way' : 'Click away to close') : G.view === 'tp' && G.prompt ? 'E does it' : G.view === 'tp' && G.clock - (G.tpAt ?? -99) < 5 ? 'T lets go of the agent' : preset().holdActs && G.hover ? 'Hold the left button to do it · right hold, then let go, fires' : G.hover?.hostile ? 'Hold the left button to fire' : P.dbl.thing && (G.hover || G.selTarget) ? (P.dbl.thing === 'run' ? 'Double click runs there' : 'Double click to do it') : '';
   setHint(hint); refresh(project);
   renderer.render(scene, camera);
   frames++; if (now - fpsAt > 1000) { setFps(Math.round(frames * 1000 / (now - fpsAt))); frames = 0; fpsAt = now; }
@@ -447,4 +529,5 @@ function frame(now) {
 requestAnimationFrame(frame);
 
 // for the headless check
-window.__ctl = { setCrowd, entsAt, marker, defaultsOk: () => G.world.ents.every((e) => G.world.agents.every((a) => !['knock', 'kill'].includes(defaultFor(e, a)?.id))), select: (i) => setGroup(G.group.map((_, k) => k === i), false), squad: selectAll, G, screenOf: (id) => { const e = G.world.byId[id]; return project(e.g.position.x, e.h * 0.5, e.g.position.z); }, setView, preset: (k) => { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; closeRing(); G.selTarget = null; drawChrome(); } };
+$('histkey').innerHTML = icon('talk', 20); $('histkey').addEventListener('click', () => { G.histOpen = !G.histOpen; });
+window.__ctl = { project, ways: (id, ai) => waysFor(G.world.byId[id], G.world.agents[ai]).map((w) => w.id), planFor, setCrowd, entsAt, marker, defaultsOk: () => G.world.ents.every((e) => G.world.agents.every((a) => !['knock', 'kill'].includes(defaultFor(e, a)?.id))), select: (i) => setGroup(G.group.map((_, k) => k === i), false), squad: selectAll, G, screenOf: (id) => { const e = G.world.byId[id]; return project(e.g.position.x, e.h * 0.5, e.g.position.z); }, setView, preset: (k) => { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; closeRing(); G.selTarget = null; drawChrome(); } };

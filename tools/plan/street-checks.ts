@@ -7,6 +7,7 @@ import { landingsOf } from '../world/gen/street/crossings';
 import { PART_KINDS } from '../world/gen/street/parts';
 import type { Check } from './checks';
 import { type V, inPoly } from './geom';
+import { speciesOf } from './trees';
 import { FLAT, Grid, type Spot, WATCHERS, indexes, roadAt, spotsOf, tramBlock, walkBlock } from './street-geo';
 import { type WCtx, TOL, bb, boxRing, f1, ringGap, rule } from './world-ctx';
 
@@ -56,7 +57,7 @@ export function streetChecks(c: WCtx): Check[] {
   // SF-4 trees clear the beam: canopy ≥ 5 m (3D) from the envelope (3.75 m each side, underside to the platform level); no pit in the envelope's plan footprint
   const bad4: string[] = [], trees = gnd.filter(x => x.s.kind === 'tree'), clear4 = S.trees.keepClear.beam ? 5 : 5, top = plan.standards.skyrail.height;
   for (const t of trees) {
-    const sp = S.trees.species[t.s.variant ?? 'washingtonia'] as { crownBase: number; top: number; spread: number; pit: V };
+    const sp = speciesOf(S, t.s.variant) as { crownBase: number; top: number; spread: number; pit: V };
     const gap = ix.sky.dist(t.s.at, 60);
     if (t.pts.some(p => ix.sky.dist(p, half + 1) < half - TOL)) { bad4.push(`${t.s.id}: pit inside the beam envelope`); continue; }
     const h = Math.max(0, gap - half - sp.spread / 2), v = Math.max(0, env.underside - (t.s.z + sp.top), t.s.z + sp.crownBase - top), d3 = Math.hypot(h, v);

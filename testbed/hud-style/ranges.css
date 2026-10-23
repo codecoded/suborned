@@ -1,0 +1,16 @@
+/* Brief 049: range and fire cues at play zoom (ranges.js). Added beside hud.css; nothing there changed. */
+.hud .rzl{position:absolute;inset:0;pointer-events:none}
+.hud .rsvg{position:absolute;left:0;top:0;overflow:visible}
+.hud .oldlbl{position:absolute;padding:2px 5px;background:rgba(15,41,41,.92);color:#f5eed9;font:13px/15px Helvetica,Arial,sans-serif;white-space:nowrap}
+.hud .march{animation:rmarch .5s linear infinite}
+@keyframes rmarch{to{stroke-dashoffset:-14}}
+.hud .srow{position:absolute;left:24px;display:flex;gap:6px}
+.hud .stile{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.hud .rcap2{font:600 12px Jost,sans-serif;color:#fff;text-shadow:0 1px 3px #000c,0 0 2px #000a;white-space:nowrap;position:relative;top:0}
+/* target rings (brief 049, Sky 2026-10-22): the ticks of a hostile that is aiming close in on the ring; at a shot they kick in and one thin ring leaves */
+.hud .rtk-aim{animation:rtkaim 1000ms cubic-bezier(.5,0,.9,.6) infinite}
+@keyframes rtkaim{0%{transform:translate(var(--tx),var(--ty));opacity:.5}78%,100%{transform:none;opacity:1}}
+.hud .rtk-fire{animation:rtkfire 1000ms ease-out infinite}
+@keyframes rtkfire{0%{transform:translate(var(--kx),var(--ky))}30%,100%{transform:none}}
+.hud .rpulse{transform-origin:0 0;animation:rpulse 1000ms ease-out infinite;opacity:0}
+@keyframes rpulse{0%{transform:scale(1);opacity:.9}30%{transform:scale(1.8);opacity:0}100%{transform:scale(1.8);opacity:0}}

@@ -19,7 +19,6 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         static readonly Color Amber = new(0.941f, 0.627f, 0.125f), Violet = new(0.541f, 0.31f, 0.816f), VioletText = new(0.722f, 0.580f, 0.925f), Red = new(0.878f, 0.227f, 0.184f), Plate = new(0.059f, 0.153f, 0.157f, 0.92f);
-        const float RosterScale = 0.8f;
 
         /// <summary>A painted element (UI Toolkit Painter2D): rings, wedges, arrows, dotted lines.</summary>
         sealed class Paint : VisualElement
@@ -121,7 +120,7 @@ namespace Suborned.Play
                 var fill = E(bar, null, 0, 0, 0, 6); fill.style.backgroundColor = TurqLight; Round(fill, 3);
                 var tx = L(r, "verb-name"); tx.style.marginLeft = 8; tx.style.width = ValueW; tx.style.flexShrink = 0; tx.style.unityTextAlign = TextAnchor.MiddleRight; tx.style.whiteSpace = WhiteSpace.NoWrap;
                 var x = E(r, "s-btn_close_normal btn_close", ChipW + 4, (ChipH - 16) / 2, 16, 16, pick: true);
-                x.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.CancelAgent(k, null); e.StopPropagation(); } });
+                x.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.PlateStop(k); e.StopPropagation(); } });
                 x.RegisterCallback<PointerEnterEvent>(_ => TipFor(k, true)); x.RegisterCallback<PointerLeaveEvent>(_ => TipFor(k, false));
                 r.RegisterCallback<PointerEnterEvent>(_ => busyHover = k); r.RegisterCallback<PointerLeaveEvent>(_ => { if (busyHover == k) busyHover = -1; });
                 // Sky: the pace is the chip's lead glyph (footprints walk, runner run); a click on it switches a moving agent's pace (G does the same)
@@ -228,7 +227,7 @@ namespace Suborned.Play
             if (m.Dock == RosterDock.Left)
             {
                 int a = m.Agent; float colW = 109 * RosterScale;
-                float WinMid(int i) => ColY + ColumnBezels[i].y * RosterScale; // the bezel's measured centre
+                float WinMid(int i) => ColY + BezelAt(i).y * RosterScale; // the bezel's measured centre
                 float plateX = ColX + colW + 4, plateY = WinMid(a) - PlateH / 2; // brief 014: chips and the plate share one line, 4 off the column
                 verbPlate.style.left = plateX; verbPlate.style.top = plateY;
                 PlateFold(plateX, WinMid(a)); bool folded = PlateFolded && PlateOn; // brief 030 (no plate): LiveFrame hides the plate and its stub
@@ -254,23 +253,23 @@ namespace Suborned.Play
                 for (int i = 0; i < 4; i++)
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
-                    string hw = host.controls.HoldActs && !s.Down ? host.PlateWords(i) : ""; // brief 041: the plate says the pill's words (walking 9 s, watching 12 s, aiming, queued)
+                    string hw = host.controls.HoldActs ? host.PlateWords(i) : ""; // item 13 (d): a down agent's plate says "down" (it was the grey glyph alone) // brief 041: the plate says the pill's words (walking 9 s, watching 12 s, aiming, queued)
                     bool on = (s.Busy || s.Down || s.Pace.Length > 0 || hw.Length > 0) && !ended && !s.InCar; Show(r, on); if (!on) continue; // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
                     float bx = i == a ? SelectedChipX(plateX, folded) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
-                    Icon(ic, s.Down ? "s_downed" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" ? "fire" : s.Icon, running ? TurqLight : Cream);
+                    Icon(ic, s.Down ? "s_downed" : host.FireRefusalWord(i).Length > 0 ? "refused" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" or "holding" ? "fire" : hw == "under fire" ? "bang" : host.controls.HoldActs && host.PlateDoneTone(i) is { Length: > 0 } dtn ? (dtn == "ok" ? "check" : dtn == "soft" ? "asked" : dtn == "cancel" ? "close_x" : "refused") : s.Icon, running ? TurqLight : Cream); // brief 043: the plate's word after a landing or a cancel
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
                     string eye = running ? host.RunEye(i) : ""; var eb = busyEyes[i]; Show(eb, eye.Length > 0); // a run is noticed: who could see it, as on the price line
                     if (eye.Length > 0) Icon(eb[0], "eye_" + eye, eye == "open" ? new Color(0.878f, 0.227f, 0.184f) : Cream);
                     bool carry = s.Pace.Length > 0 && s.Progress < 0;
                     bar.style.visibility = s.Progress >= 0 && !s.Down ? Visibility.Visible : Visibility.Hidden; fill.style.width = Length.Percent(100f * Mathf.Clamp01(s.Progress / 1000f)); // the slot keeps its place
-                    Text(tx, s.Down ? "" : hw.Length > 0 ? hw : carry ? System.Text.RegularExpressions.Regex.Match(s.Pace, @"[\d.]+ m/s").Value : s.Left);
+                    Text(tx, s.Down && hw.Length == 0 ? "" : hw.Length > 0 ? hw : carry ? System.Text.RegularExpressions.Regex.Match(s.Pace, @"[\d.]+ m/s").Value : s.Left);
                     tx.style.width = hw.Length > 0 ? StyleKeyword.Auto : ValueW;
                     if (Stress && tx.text.Length > 0) Text(tx, carry ? "1.4 m/s" : "88 s");
                     bool iconOnly = (s.Progress < 0 || s.Down) && tx.text.Length == 0 && hw.Length == 0; // no end ("holding the loop"), or down: the icon alone (Glyph §1)
                     float cw = iconOnly ? IconOnlyW : ChipW; if (hw.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
                     float isz = iconOnly ? 13 : Glyph; ic.style.width = isz; ic.style.height = isz; r.style.paddingLeft = iconOnly ? (IconOnlyW - isz) / 2 : ChipPad; r.style.paddingRight = iconOnly ? (IconOnlyW - isz) / 2 : ChipPad; /* Glyph round 3: the loop glyph centred at ~75% in the small chip */
-                    bool canX = s.CanCancel && (busyHover == i || tipFor == i); x.style.left = cw + 4;
+                    bool canX = (s.CanCancel || hw is "firing" or "aiming" or "drawing" or "too far" or "no line") && (busyHover == i || tipFor == i); // brief 041: × also stops a lasting fire order x.style.left = cw + 4;
                     Show(x, canX);
                     if (canX) { bool costly = !(s.CancelTitle.Length == 0) && host.DoingOf(i) is var d && !(d.Phase is "walking" or "running") && !IsFree(d.CancelCode); x.style.unityBackgroundImageTintColor = costly ? TurqLight : Color.white; }
                 }
@@ -529,12 +528,15 @@ namespace Suborned.Play
                 var (r, t, tail) = bubbleEls[i]; bool has = i < live.Count && !m.Ended; Show(r, has); Show(tail, has); if (!has) continue;
                 var (b, p, head) = live[i]; Text(t, b.Text);
                 t.style.whiteSpace = WhiteSpace.NoWrap; r.style.maxWidth = StyleKeyword.None; // one line (Glyph §6: a cream plate, one line, a tail to the head)
-                Color rim = Cell.Contains(b.Speaker) ? Turq : b.Speaker is "guard" or "patrol" or "security" ? Amber : b.Speaker == "rivals" ? Violet : Color.clear;
-                var who = r.Q("who"); Show(who, rim.a > 0); who.style.backgroundColor = rim;
-                bool cellSpeaks = Cell.Contains(b.Speaker); float dw = cellSpeaks ? 16 : 7; who.style.width = who.style.height = dw; Round(who, dw / 2); Text(who.Q<Label>("ini"), cellSpeaks ? b.Speaker.Substring(0, 1).ToUpperInvariant() : ""); Show(who.Q<Label>("ini"), cellSpeaks);
+                // Glyph 0.2.65 review 6: the speaker dot was the dropped #1cb9c6 (HudToolkit.cs Turq, removed) for the cell and amber or violet for the others,
+                // a role colour by the back door. One source now: the cell's initial (S F T E) in ink on a cream disc with an ink ring (kit.uss
+                // --cream, --ink); anyone else has no dot (the bubble's tail and leader say who speaks)
+                bool cellSpeaks = Cell.Contains(b.Speaker);
+                var who = r.Q("who"); Show(who, cellSpeaks); who.style.backgroundColor = Cream; Border(who, 1.2f, Ink);
+                float dw = 16; who.style.width = who.style.height = dw; Round(who, dw / 2); Text(who.Q<Label>("ini"), cellSpeaks ? b.Speaker.Substring(0, 1).ToUpperInvariant() : ""); Show(who.Q<Label>("ini"), cellSpeaks);
                 float w = r.resolvedStyle.width, h = r.resolvedStyle.height; if (float.IsNaN(w)) w = 160; if (float.IsNaN(h)) h = 26;
                 int ri = Array.IndexOf(CellOrder, b.Speaker); bool ringed = ri >= 0 && m.Rings[ri].Show; // techwatch fix 3: over an activity ring the tail clears it by 8 px more
-                float y = p.y - h - 34 - (ringed ? 8 : 0), x = p.x - w / 2;
+                float y = p.y - h - 34 - (ringed ? 16 : 0), x = p.x - w / 2; // review 12: 8 more px over the ring (the "Watching." bubble sat 6 px on it)
                 const float BubbleGap = 14; // 2026-10-18: at least 10 px between stacked bubbles as drawn (the plate art's rim eats ~4), so each reads, and is counted, as its own; the newest nearest the speaker
                 for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var pr in bubbleRects) if (pr.Overlaps(new Rect(x - BubbleGap / 2, y - BubbleGap / 2, w + BubbleGap, h + BubbleGap))) { y = pr.y - h - BubbleGap; hit = true; } if (!hit) break; }
                 bubbleRects.Add(new Rect(x, y, w, h));
@@ -572,10 +574,10 @@ namespace Suborned.Play
             while (popEls.Count < 3)
             {
                 var r = E(marks, "s-plate_dark"); r.style.position = Position.Absolute; r.style.height = ChipH; r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.paddingLeft = ChipPad; r.style.paddingRight = ChipPad; // the chips' rule
-                var ic = E(r, null, w: Glyph, h: Glyph); ic.style.marginRight = 8; var t = L(r, "verb-name"); t.style.fontSize = 13; t.style.whiteSpace = WhiteSpace.Normal; t.style.maxWidth = 320;
+                var ic = E(r, null, w: Glyph, h: Glyph); ic.style.marginRight = 8; var t = L(r, "verb-name"); t.style.fontSize = 13.5f; t.style.whiteSpace = WhiteSpace.Normal; t.style.maxWidth = 320; // brief 044 A: Jost Bold 13.5
                 popEls.Add((r, ic, t));
             }
-            float stack = 0;
+            float stack = 0; List<Rect> speech = null;
             for (int i = 0; i < popEls.Count; i++)
             {
                 var (r, ic, t) = popEls[i]; bool has = i < list.Count; Show(r, has); if (!has) continue;
@@ -586,9 +588,11 @@ namespace Suborned.Play
                 Art(ic, pp.Icon.Length > 0 ? pp.Icon : "badges/mark_no", pp.Icon.StartsWith("icons/") ? Cream : (Color?)null);
                 Text(t, alt && pp.Long.Length > 0 ? pp.Long : pp.Text); r.style.height = alt ? StyleKeyword.Auto : ChipH;
                 float w = r.resolvedStyle.width; if (float.IsNaN(w)) w = 120;
-                r.style.left = pp.Screen.HasValue && !pp.World.HasValue ? at.x : at.x - w / 2; r.style.top = at.y;
+                float ph = r.resolvedStyle.height; if (float.IsNaN(ph)) ph = ChipH;
+                float py = pp.World.HasValue ? ClearOfSpeech(speech ??= SpeechRects(), at.x - w / 2, w, at.y + ph, ph) - ph : at.y; // brief 044: a pop on a thing sits above its speech, never under the leader
+                r.style.left = pp.Screen.HasValue && !pp.World.HasValue ? at.x : at.x - w / 2; r.style.top = py;
                 r.style.opacity = Mathf.Clamp01((pp.Until - now) / 0.3f);
-                r.style.unityBackgroundImageTintColor = pp.Kind == HandoverHost.Feedback.Refused ? new Color(1f, 0.86f, 0.84f) : Color.white;
+                r.style.unityBackgroundImageTintColor = Color.white; // brief 044 §6: the plate as drawn (no pink tint for a refusal: its icon says it)
                 if (r.parent.IndexOf(r) < r.parent.childCount - popEls.Count) r.BringToFront(); // above every world mark (the pool grows after the pops were made)
             }
         }
@@ -602,7 +606,7 @@ namespace Suborned.Play
         float Measure(string text, string style, float size)
         {
             if (probe == null) { probe = L(root, style); probe.style.position = Position.Absolute; probe.style.visibility = Visibility.Hidden; probe.style.left = -2000; }
-            probe.ClearClassList(); probe.AddToClassList("t-" + style); probe.style.fontSize = size; probe.style.unityFontStyleAndWeight = FontStyle.Bold;
+            probe.ClearClassList(); probe.AddToClassList("t-" + style); probe.style.fontSize = size; probe.style.unityFontStyleAndWeight = FontStyle.Bold; probe.style.unityFontDefinition = StyleKeyword.Null; TypeOf(probe, style); // measured in the face the label draws (brief 046: the type token; drawn as cut)
             return probe.MeasureTextSize(text ?? "", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).x;
         }
 
@@ -650,7 +654,6 @@ namespace Suborned.Play
                 {   // Glyph fight r1 #4: a refused row never shows the "works" tick beside its lock
                     var pl = HudModel.PriceLine(host, r0.I);
                     if (!r0.Available) pl = pl.ConvertAll(f => f.Kind == "mark" ? new HudModel.PField { Kind = "mark", Mark = "no" } : f);
-                    if (!r0.Available && r0.Lock.code == "too-far" && host.ServingBackS(r0.I.Order?.Target) is int back && back > 0) pl = new List<HudModel.PField> { new() { Kind = "time", Icon = "p_time", Text = $"{back} s" } }; // brief 022: she is serving: when she is back, not the price
                     lines.Add(pl);
                 }
                 sheetCols.Clear(); foreach (var fl in lines) foreach (var f in fl) { float wv = FieldWidth(f); if (!sheetCols.TryGetValue(f.Kind, out var cw0) || wv > cw0) sheetCols[f.Kind] = wv; }
@@ -669,7 +672,7 @@ namespace Suborned.Play
                     Show(u.TagIcon, anyTag); u.TagIcon.style.visibility = tag.Length > 0 ? Visibility.Visible : Visibility.Hidden; // the cabinet's loops: which camera, as a glyph (Glyph: no word)
                     if (tag.Length > 0) Art(u.TagIcon, tag == "entrance" ? "icons/singles/enter" : tag == "pickup" ? "icons/singles/car" : "badges/signal_camera", Ink);
                     u.FieldsKey = ""; Fields(u.Fields, lines[i], Ink, ref u.FieldsKey, false, cols: sheetCols);
-                    bool key = r.Key >= 0 && host.Selected[(int)r.By]; u.Key.style.visibility = key ? Visibility.Visible : Visibility.Hidden; Text(u.KeyText, key ? host.VerbKey(r.Key) : "0"); // the slot is kept, so every row's columns align
+                    bool key = KeyLegends && r.Key >= 0 && host.Selected[(int)r.By]; Show(u.Key, KeyLegends); u.Key.style.visibility = key ? Visibility.Visible : Visibility.Hidden; Text(u.KeyText, key ? host.VerbKey(r.Key) : "0"); // the slot is kept, so every row's columns align
                     bool goBlocked = !r.Available && it.Order?.Do == "go"; u.Root.style.opacity = r.Available || goBlocked ? 1f : 0.45f; u.Glyph.style.opacity = u.Name.style.opacity = goBlocked ? 0.45f : 1f; // Glyph r3: a blocked Go dims only its lock and name; the cameos and red cuffs stay full
                 }
             }
@@ -767,7 +770,7 @@ namespace Suborned.Play
                 }
                 if (f.Kind == "learns") { foreach (var li in f.Icons) { var d = E(part, "s-disc_dark_24", w: ic + 4, h: ic + 4); d.style.marginRight = 2; Icon(E(d, null, 2, 2, ic, ic), li, Cream); } continue; }
                 if (f.Icon.Length > 0) { var e = E(part, null, w: ic, h: ic); Icon(e, f.Icon, ink); e.style.marginRight = 3; }
-                var l = L(part, chip ? "chip-value" : "card-price"); l.text = f.Text; l.style.color = ink; if (!chip) l.style.fontSize = small ? 11.5f : 13f; l.style.unityFontStyleAndWeight = FontStyle.Bold;
+                var l = L(part, chip ? "chip-value" : "card-price"); l.text = f.Text; l.style.color = ink; if (!chip) { l.style.fontSize = small ? 11.5f : 13f; l.style.unityFontStyleAndWeight = FontStyle.Bold; } // the chip's Jost is the type token's, drawn as cut (brief 046)
             }
         }
 
@@ -882,15 +885,7 @@ namespace Suborned.Play
 
         void DrawWorld(Painter2D p, Rect r)
         {
-            if (host.Following) // the follow view keeps one world mark, the ring under its agent; the rest are sized for the orthographic camera
-            {
-                foreach (var ring in new[] { followRing, followHoverRing }) // the agent's ring, and the hover target's (the marker's disc sits on its front)
-                {
-                    if (ring.Count < 3) continue;
-                    for (int pass = 0; pass < 2; pass++) { p.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.5f) : Cream; p.lineWidth = pass == 0 ? 3.6f : 2f; p.BeginPath(); p.MoveTo(ring[0]); for (int i = 1; i < ring.Count; i++) p.LineTo(ring[i]); p.Stroke(); }
-                }
-                return;
-            }
+            if (host.Following) return; // the follow view's rings (its agent's, the hover target's) are on the ground now (brief 046, HudToolkit.Ground); the rest are sized for the orthographic camera
             foreach (var f in paints) f(p);
         }
 
@@ -899,20 +894,7 @@ namespace Suborned.Play
             paints.Clear(); eyesAt.Clear(); var g = host.Game; if (g == null || !cam) return;
             float px = 14f / cam.orthographicSize; float now = Time.unscaledTime;
             // the hover ring and the hint's ring at the feet; pulses where an order lands
-            void Ground(Vector3 w, float d, Color c, float width, bool dashed = false)
-            {
-                if (!Proj(w, out var q)) return; float rx = d * px / 2, ry = rx * 0.62f;
-                paints.Add(pp =>
-                {
-                    pp.strokeColor = c; pp.lineWidth = width; int n = dashed ? 16 : 1;
-                    for (int i = 0; i < n; i++)
-                    {
-                        pp.BeginPath(); float a0 = dashed ? i * 360f / n : 0, a1 = dashed ? a0 + 180f / n : 360;
-                        for (int s = 0; s <= 24; s++) { float a = Mathf.Deg2Rad * Mathf.Lerp(a0, a1, s / 24f); var v = q + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (s == 0) pp.MoveTo(v); else pp.LineTo(v); }
-                        pp.Stroke();
-                    }
-                });
-            }
+            void Ground(Vector3 w, float d, Color c, float width, bool dashed = false) { if (!host.Following) GroundRing(w, d * px / 2f * GroundPxM, c, width, dashed); } // the follow view keeps its own two rings only // brief 046: on the ground, depth-tested (HudToolkit.Ground)
             bool carMarked = host.Hover?.Kind == "car" && host.Hover.Key == "getaway" && (carMark?.resolvedStyle.display == DisplayStyle.Flex || heldMark?.resolvedStyle.display == DisplayStyle.Flex);
             if (m.HoverRing.HasValue && !carMarked && !host.controls.Modern) Ground(m.HoverRing.Value, 64, Cream, 2.2f); // brief 041: the pill alone // Glyph fight r1 B: the car's marker is its one mark
             // the Next Step's ring: only while its line shows, fading with it, in its noun's colour, with the verb's glyph at the centre ("do this here")
@@ -921,14 +903,16 @@ namespace Suborned.Play
                 var rc = hintNounColour; rc.a = hintAlpha; Ground(hr, 90 * (1f + 0.12f * Mathf.Sin(now * 4f)), rc, 2.6f, true);
                 if (host.HintNow.Cause != "door" && Proj(hr, out var hq)) { var he = WorldEl("s-disc_dark_24", 24, 24); /* H13's door cause: the door marker and its turn glyph stand there; the ring alone */ he.style.left = hq.x - 12; he.style.top = hq.y - 12; he.style.opacity = hintAlpha; Icon(he.Q("g"), hintVerbGlyph, rc); }
             }
-            foreach (var (w, kind, born) in m.Pulses) { float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue; Ground(w, 50 + 90 * a, kind == HandoverHost.Feedback.Refused ? new Color(1f, 0.6f, 0.55f, 1 - a) : new Color(0.85f, 1f, 0.9f, 1 - a), 2f); }
+            foreach (var (w, kind, born) in m.Pulses) { float a = (now - born) / 0.7f; if (a < 0 || a > 1) continue; { bool refused = kind == HandoverHost.Feedback.Refused; var pc = refused ? Cream : TurqLight; pc.a = 1 - a; Ground(w, 50 + 90 * a, pc, 2f, refused); } } // sourced colours (the old coral and mint were the lab colours): refused = a dashed cream pulse, taken = turquoise-light (Glyph 0.2.79: the faint pink circle)
             if (m.Box is Rect box) { var bp = RuntimePanelUtils.ScreenToPanel(root.panel, box.min); var bq = RuntimePanelUtils.ScreenToPanel(root.panel, box.max); paints.Add(pp => { pp.strokeColor = Cream; pp.lineWidth = 1.5f; pp.BeginPath(); pp.MoveTo(bp); pp.LineTo(new Vector2(bq.x, bp.y)); pp.LineTo(bq); pp.LineTo(new Vector2(bp.x, bq.y)); pp.ClosePath(); pp.Stroke(); }); }
             // activity rings over busy agents: the act's glyph in a disc, a ring that fills (Glyph's 05: the ring fills round the Enforcer)
             for (int i = 0; i < 4; i++)
             {
-                var rg = m.Rings[i]; if (!rg.Show || !Proj(rg.World + Vector3.up * 2.35f, out var q)) continue;
+                var rg = m.Rings[i]; if (!rg.Show || !Proj(rg.World + Vector3.up * 2.6f, out var q)) continue; // review 12: 2.6 m (at 2.35 a running pip sat on a neighbour's elbow in a formation)
+                { var pr = PillRect(); if (pr.width > 0 && q.x + 16 > pr.xMin && q.x - 16 < pr.xMax && q.y + 16 > pr.yMin && q.y - 16 < pr.yMax + 10) q = new Vector2(q.x, pr.yMin - 20f); } // review 12: above the pill (beside it, it sat on the figure's body line over an elbow) // brief 043: the agent's ring never sits over the pill's words (the playground shot: the tick over "Hold")
                 var e = WorldEl("s-disc_dark_24", 24, 24); e.style.left = q.x - 12; e.style.top = q.y - 12;
-                if (rg.Done) { Icon(e.Q("g"), "check", TurqLight); var dq = q; paints.Add(pp => RingArc(pp, dq, 15, 1f, TurqLight, 2.6f)); continue; } // techwatch fix 3: the act ran out: the ring stays a beat, full, with a tick
+                string tone = host.DoneTickAge(i) < HandoverHost.DoneTickS + 0.3f ? host.DoneTone(i) : "";
+                if (rg.Done || tone is "soft" or "bad") { Icon(e.Q("g"), tone == "soft" ? "asked" : tone == "bad" ? "refused" : "check", TurqLight); var dq = q; paints.Add(pp => RingArc(pp, dq, 15, 1f, TurqLight, 2.6f)); continue; } // techwatch fix 3: the act ran out: the ring stays a beat, full, with a tick
                 Icon(e.Q("g"), HudModel.AtlasIcon(host.Game.Ops[i].Busy?.Do ?? (host.DoingOf(i).Phase is "walking" or "running" ? "move" : host.DoingOf(i).Verb), host.Game.Ops[i].Busy?.Approach ?? "", host.DoingOf(i).Phase), Cream);
                 float frac = rg.Progress < 0 ? 1f : rg.Progress / 1000f; bool open = rg.Progress < 0;
                 paints.Add(pp => { if (open) Dashed(pp, q, 15, new Color(1, 1, 1, 0.5f), 2.4f, 10); else { RingArc(pp, q, 15, 1f, new Color(1, 1, 1, 0.22f), 2.6f); RingArc(pp, q, 15, frac, TurqLight, 2.6f); } });
@@ -961,7 +945,7 @@ namespace Suborned.Play
                 var rect = new Rect(dq.x - 9, dq.y - 24, 18, 18);
                 for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var pr in pinRects) if (pr.Overlaps(rect)) { rect.x = pr.xMax + 2; hit = true; } if (!hit) break; }
                 pinRects.Add(rect);
-                var pe = WorldEl(null, 18, 18); pe.style.left = rect.x; pe.style.top = rect.y; Round(pe, 9); pe.style.backgroundColor = Cream; Border(pe, sel ? 1.6f : 0.8f, sel ? Turq : Ink);
+                var pe = WorldEl(null, 18, 18); pe.style.left = rect.x; pe.style.top = rect.y; Round(pe, 9); pe.style.backgroundColor = Cream; Border(pe, sel ? 1.6f : 0.8f, sel ? TurqLight : Ink);
                 var gl = pe.Q("g"); Show(gl, false);
                 var lab = pe.Q<Label>("num"); if (lab == null) { lab = L(pe, "numplate", 0, 0, 18, 18); lab.name = "num"; lab.style.unityTextAlign = TextAnchor.MiddleCenter; lab.style.color = Ink; lab.style.fontSize = 10; }
                 Show(lab, true); Text(lab, (k + 1).ToString());
@@ -1044,39 +1028,31 @@ namespace Suborned.Play
             ringOn = false; var mv = host.MoveNow;
             if (m.Mouse != lastMouse) { lastMouse = m.Mouse; mouseRestAt = now; }
             if (mv == null || mv.Refused.Length > 0 || mv.WalkS < 0 || host.Hover != null || host.Panel != null || m.Ended || !Proj(mv.At, out var q)) return;
-            ringOn = true; ringAt = q; float rx = 32f * px, ry = rx * 0.616f; ringRx = rx;
+            ringOn = true; ringAt = q; float rx = 32f * px; ringRx = rx;
             Color Kind(string k) => k == "camera" ? Red : k == "rivals" ? Violet : k == "guard" ? Amber : TurqLight;
             Color ink = new(0.071f, 0.188f, 0.18f), cream = new(0.969f, 0.957f, 0.925f);
             string state = mv.State; Color rim = state == "seen" ? Kind(mv.SeenKind) : state == "unk" ? cream : state == "alert" ? ink : TurqLight;
             float frac = Mathf.Clamp01((mv.CarryS >= 0 ? mv.CarryS : mv.WalkS) / 60f);
-            Vector2 E(float deg, float sx, float sy) { float a = Mathf.Deg2Rad * deg; return q + new Vector2(Mathf.Sin(a) * sx, -Mathf.Cos(a) * sy); } // 0 = 12 o'clock, clockwise
-            void Ellipse(Painter2D p, float sx, float sy, float from, float to, Color c, float w, bool butt = false)
-            { p.strokeColor = c; p.lineWidth = w; p.lineCap = butt ? LineCap.Butt : LineCap.Round; p.BeginPath(); int n = Mathf.Max(2, (int)((to - from) / 6)); for (int i = 0; i <= n; i++) { var v = E(Mathf.Lerp(from, to, i / (float)n), sx, sy); if (i == 0) p.MoveTo(v); else p.LineTo(v); } p.Stroke(); }
             // the glow first (under the ring), after a 0.25 s rest: the seen stretch only, in the watcher's colour, a solid core on an ink
             // under-stroke (it must hold over the watcher's own translucent cone) and a soft halo that breathes once a second
             if (now - mouseRestAt >= 0.25f)
                 foreach (var (a, b, kind) in mv.Glow)
-                    if (Proj(a, out var pa) && Proj(b, out var pb))
-                    {
-                        var gc = Kind(kind); float al = 0.45f + 0.2f * Mathf.Sin(now * Mathf.PI * 2f);
-                        paints.Add(p =>
-                        {
-                            void Seg(Color c, float w) { p.strokeColor = c; p.lineWidth = w; p.lineCap = LineCap.Round; p.BeginPath(); p.MoveTo(pa); p.LineTo(pb); p.Stroke(); }
-                            Seg(new Color(gc.r, gc.g, gc.b, al), 13f * px); Seg(new Color(ink.r, ink.g, ink.b, 0.9f), 7f * px); Seg(gc, 4f * px);
-                        });
-                    }
-            paints.Add(p =>
+                {   // on the ground too (brief 046), under the ring
+                    var gk = Kind(kind); float al = 0.45f + 0.2f * Mathf.Sin(now * Mathf.PI * 2f); var seg = new List<Vector3> { a, b };
+                    GroundPath(seg, new Color(gk.r, gk.g, gk.b, al), 13f * px, false); GroundPath(seg, new Color(ink.r, ink.g, ink.b, 0.9f), 7f * px, false); GroundPath(seg, gk, 4f * px, false);
+                }
+            // brief 046 and Glyph's leftover: the ellipse lies on the ground (depth-tested: legs in front hide it), the same rings in metres
             {
-                p.fillColor = new Color(ink.r, ink.g, ink.b, 0.95f); p.BeginPath(); for (int i = 0; i <= 40; i++) { var v = E(i * 9f, rx - 3.5f, ry - 3.5f); /* the panel blends in linear: 0.95 reads dark on pale stone; it meets the under-stroke */ if (i == 0) p.MoveTo(v); else p.LineTo(v); } p.ClosePath(); p.Fill(); // the dark inner disc
-                Ellipse(p, rx, ry, 0, 360, ink, 8f);                                                                                   // the under-stroke: it holds on pale stone
-                if (state == "alert") Ellipse(p, rx + 5.5f, ry + 5.5f * 0.616f, 0, 360, cream, 2.4f);                                  // Alert: a second, cream rim outside
-                Color.RGBToHSV(rim, out var th, out var ts, out _);
-                var track = state == "seen" ? Color.HSVToRGB(th, ts, 0.42f) : Color.Lerp(ink, rim, 0.32f);                              // opaque (an alpha track washes out in the linear blend); seen: the watcher's colour darkened in place, never blended with ink (Glyph: amber #6b4609, not olive)
-                if (state == "unk") for (int i = 0; i < 16; i++) Ellipse(p, rx, ry, i * 22.5f, i * 22.5f + 11f, Color.Lerp(ink, rim, 0.55f), 4.6f, butt: true); // unknown: a dashed track
-                else Ellipse(p, rx, ry, 0, 360, state == "alert" ? rim : track, 4.6f);                                                  // the faint track
-                if (frac > 0 && state != "alert") Ellipse(p, rx, ry, 0, 360 * frac, rim, 4.6f);                                        // the clock: the walk time, a full ring = 60 s
-                else if (frac > 0) Ellipse(p, rx, ry, 0, 360 * frac, cream, 2f);
-            });
+                var gc = mv.At; float gm = GroundPxM, grx = rx * gm; Color.RGBToHSV(rim, out var th0, out var ts0, out _);
+                Color track0 = state == "seen" ? Color.HSVToRGB(th0, ts0, 0.42f) : Color.Lerp(ink, rim, 0.32f); // opaque; seen: the watcher's colour darkened in place
+                GroundDisc(gc, grx - 3.5f * gm, new Color(ink.r, ink.g, ink.b, 0.95f));
+                GroundRing(gc, grx, ink, 8f, false);
+                if (state == "alert") GroundRing(gc, grx + 5.5f * gm, cream, 2.4f, false);
+                if (state == "unk") for (int i = 0; i < 16; i++) GroundArc(gc, grx, Color.Lerp(ink, rim, 0.55f), 4.6f, i * 22.5f, i * 22.5f + 11f);
+                else GroundArc(gc, grx, state == "alert" ? rim : track0, 4.6f, 0f, 360f);
+                if (frac > 0 && state != "alert") GroundArc(gc, grx, rim, 4.6f, 0f, 360f * frac);
+                else if (frac > 0) GroundArc(gc, grx, cream, 2f, 0f, 360f * frac);
+            }
             string glyph = state == "seen" ? "eye_open" : state == "unk" ? "eye_unk" : state == "alert" ? "p_alert" : mv.CarryS >= 0 ? "s_carrying" : "s_moving";
             float gs = Mathf.Min(25f, 25f * px); var se = WorldEl(null, gs, gs); se.style.left = q.x - gs / 2; se.style.top = q.y - gs / 2;
             var sg = se.Q("g"); sg.style.left = 0; sg.style.top = 0; sg.style.width = gs; sg.style.height = gs; Icon(sg, glyph, state == "seen" ? rim : state == "alert" ? cream : state == "unk" ? cream : TurqLight);
@@ -1168,7 +1144,11 @@ namespace Suborned.Play
                     bool Free(Rect t) { foreach (var mr in OtherMarks()) if (mr.Overlaps(t)) return false; foreach (var pr in placed) if (pr != rect && pr.Overlaps(t)) return false; return true; }
                     var right = new Rect(rect.x + 28, rect.y + 3, tw, 20); var left = new Rect(rect.x - 2 - tw, rect.y + 3, tw, 20); var above = new Rect(rect.center.x - tw / 2, rect.y - 22, tw, 20);
                     var tag = Free(above) ? above : Free(right) ? right : left; // Glyph 016 r2 A: above the pips first; an eye pip covered the guard's tag ("ard")
-                    nm.style.left = tag.x; nm.style.top = tag.y; placed.Add(tag);
+                    // Glyph 0.2.65 review 5: a bubble covered "Inez" (its leader landed on the tag): while speech sits on the tag, the tag goes (the
+                    // bubble's leader says who speaks)
+                    bool spoken = false; var tg = new Rect(tag.x - 6, tag.y - 6, tag.width + 12, tag.height + 12); foreach (var br in bubbleRects) if (br.Overlaps(tg)) spoken = true;
+                    foreach (var (_, bx, bh) in bubbleLeads) if (Rect.MinMaxRect(Mathf.Min(bh.x, bx.center.x) - 6, bx.yMax, Mathf.Max(bh.x, bx.center.x) + 6, bh.y).Overlaps(tg)) spoken = true;
+                    if (spoken) Show(nm, false); else { nm.style.left = tag.x; nm.style.top = tag.y; placed.Add(tag); }
                 }
             }
         }
@@ -1405,7 +1385,7 @@ namespace Suborned.Play
                 // underlay (the 018 tethers' grammar), and the unknown eye 2 px smaller, so its "?" sits inside the bezel, not on it
                 var gl = e.Q("g"); bool small = icon == "eye_unk"; Show(gl, !small); Show(e.Q("flat"), small); if (e.Q("unk") is VisualElement uk) Show(uk, small); // flat ink under the unknown eye (the disc art's gloss ate the "?"); the eye and its "?" drawn as strokes (UnknownEye)
                 { var hq = q; paints.Add(pp => { pp.fillColor = Ink; pp.BeginPath(); pp.Arc(hq, 18f, Deg(0), Deg(360)); pp.Fill(); }); } // Glyph r2-3: the marker on an opaque ink halo (the dither and the crossing's brass rail showed through)
-                if (ringIt) { float rx = 46 * px / 2, ry = rx * 0.62f; paints.Add(pp => { for (int pass = 0; pass < 2; pass++) { pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.6f) : col; pp.lineWidth = pass == 0 ? 3.8f : 2f; for (int i = 0; i < 14; i++) { pp.BeginPath(); float a0 = i * 360f / 14, a1 = a0 + 180f / 14; for (int s2 = 0; s2 <= 8; s2++) { float a = Mathf.Deg2Rad * Mathf.Lerp(a0, a1, s2 / 8f); var v = q + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (s2 == 0) pp.MoveTo(v); else pp.LineTo(v); } pp.Stroke(); } } }); }
+                if (ringIt) GroundRing(w, 46f * px / 2f * GroundPxM, col, 2f, true, 0.6f); // the dashed ring on the ground round the marker's foot (Glyph's leftover: depth-tested, behind legs; brief 046)
                 if (progress >= 0) { var c = q; float f = progress / 1000f; paints.Add(pp => { RingArc(pp, c, 16, 1f, new Color(1, 1, 1, 0.22f), 2.6f); RingArc(pp, c, 16, f, TurqLight, 2.6f); }); }
             }
             bool hintHere(string id) => host.HintNow?.Id == id && hintAlpha > 0f; // the hint's own ring stands there: no second ring
@@ -1446,7 +1426,7 @@ namespace Suborned.Play
                     {
                         bool sel = host.Selected[(int)dn.by] && host.Agent == dn.by;
                         doorNext.style.left = doorMark.style.left.value.value + 26 + 6; doorNext.style.top = doorMark.style.top.value.value;
-                        Bg(doorNext.Q("cameo"), $"portraits/cameo_{Op.Name(dn.by)}_normal", Color.white); Border(doorNext, 1.3f, sel ? Turq : Cream); Icon(doorNext.Q("g"), "watch", sel ? TurqLight : Cream);
+                        Bg(doorNext.Q("cameo"), $"portraits/cameo_{Op.Name(dn.by)}_normal", Color.white); Border(doorNext, 1.3f, sel ? TurqLight : Chrome); /* art bible: a face in a chrome ring; the live accent when selected */ Icon(doorNext.Q("g"), "watch", sel ? TurqLight : Cream);
                     }
                 }
                 // brief 018 grammar (Glyph fight r1 A-C): one car marker whose shape is its state. In the final fight the hold reach is a ring on
@@ -1655,7 +1635,7 @@ namespace Suborned.Play
                     if (!matters || host.Views?.Find("op/" + Op.Name((OpId)k)) is not Transform t || !t.gameObject.activeSelf) continue;
                     if (Spot(t.position + Vector3.up, 13) is not { } spa) continue; var (at, dir) = spa;
                     var ec = CamEl(); ec.Agent = k; ec.Role = null; ec.Target = null; ec.Root.style.left = at.x - 12; ec.Root.style.top = at.y - 12;
-                    Bg(ec.Root, $"portraits/cameo_{Op.Name((OpId)k)}_normal"); Border(ec.Root, 1.6f, sel ? Turq : Cream); Show(ec.Key, true); Text(ec.KeyText, host.AgentKeyLabel(k)); if (ec.Root.Q("pin") is VisualElement pn) Show(pn, false);
+                    Bg(ec.Root, $"portraits/cameo_{Op.Name((OpId)k)}_normal"); Border(ec.Root, 1.6f, sel ? TurqLight : Chrome); /* art bible: a face in a chrome ring */ Show(ec.Key, KeyLegends); Text(ec.KeyText, host.AgentKeyLabel(k)); if (ec.Root.Q("pin") is VisualElement pn) Show(pn, false);
                     Wedge(at, dir, Cream); budget--;
                 }
                 // key people: a pin only in the 10 s before the next plan mark that hangs on them (the goal, Vale, keeps his own arrow)

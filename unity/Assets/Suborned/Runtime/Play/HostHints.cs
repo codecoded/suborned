@@ -19,7 +19,7 @@ namespace Suborned.Play
         const string H13Door = "H13:door";
         /// <summary>The hint on screen now, else null.</summary>
         public HintShown HintNow { get; private set; }
-        public bool HintsOn { get => PlayerPrefs.GetInt(HintsPref, 1) == 1; set { PlayerPrefs.SetInt(HintsPref, value ? 1 : 0); PlayerPrefs.Save(); } }
+        public bool HintsOn { get => Settings.Current.gameplay.hints; set { var s = Settings.Current; if (s.gameplay.hints == value) return; s.gameplay.hints = value; s.Save(); } } // brief 051: settings.json (migrated once from the Suborned.Play.Hints key)
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
@@ -184,7 +184,7 @@ namespace Suborned.Play
                     ring = At("councillor"); portrait = (int)OpId.Enforcer; return true;
                 case "H17": // Sky 2026-10-18: a fight is on and an armed agent other than the Enforcer has not fired yet: everyone armed can fire
                     {
-                        if (!g.FightOn) return false;
+                        if (!g.FightOn || HoldOn && !FightOnNow) return false; // brief 041: the right click focuses only while the engine's fight is on (FreeFightOn); the first shot is the right hold
                         for (int k = 0; k < 3; k++) if (Armed(k) && !g.Ops[k].Down && !g.Ops[k].Inside) { foreach (var h in g.Hostiles) if (!h.Down && h.Present) { ring = frame.World(h.Pos(g.Tick)); portrait = k; trigWho = h.Id.StartsWith("rival") ? "rival" : "officer"; return true; } } // Fable: {who} the hostile, "rival" or "officer" (they carry no names)
                         return false;
                     }
@@ -237,7 +237,7 @@ namespace Suborned.Play
                 case "H11": return Given(o => o.Do is "carry" or "board", from);
                 case "H12": return Given(o => o.Do == "move" && o.Run, 0); // a walk ending only hides it (its trigger stops holding); a run given retires it
                 case "H13": return HintNow?.Cause != "door" && TurnedThisRun; // the door cause is spent by the door in clear view (DoorViewFrame)
-                case "H17": return Given(o => o.Do == "fire" && o.Op != "enforcer", from) || !g.FightOn;
+                case "H17": return Given(o => o.Do == "fire" && o.Op != "enforcer", from) || !g.FightOn || HoldOn && !FightOnNow;
                 case "H14": return Given(o => o.Do == "enter", from);
                 case "H15": return Given(o => o.Do == "board" && o.Op == "enforcer", from);
                 case "H18": return Given(o => o.Do == "go", from) || Game.Over;

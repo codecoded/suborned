@@ -23,7 +23,8 @@ export function orderStatus(e) {
     if (ags.length === 1) return { ent: e, act, text: long(ags[0]), agents: ags };
     return { ent: e, act, text: '', items: ags.map((a) => ({ a, text: orderWords(a) })), agents: ags };
   }
-  const d = G.doneInfo; if (d?.ent === e && now < d.until) return { ent: e, act: d.act, text: `Done · ${d.act.doneText ?? 'done'}`, agents: d.agents };
+  const d = G.doneInfo; if (G.done === 'built' && d?.ent === e && now < d.until) // brief 043: the gain chip replaces this line unless Done moment is 'As built'
+    return { ent: e, act: d.act, text: `Done · ${d.act.doneText ?? 'done'}`, agents: d.agents };
   const s = G.stoppedInfo; if (s?.ent === e && now < s.until) return { ent: e, act: s.act, text: 'Stopped', agents: [] };
   return null;
 }

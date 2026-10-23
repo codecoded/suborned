@@ -11,18 +11,18 @@
   {"tick":760,"op":"fixer","do":"move","to":"d:Boarding pavilion"},
   {"tick":820,"op":"scout","do":"move","to":"d:Meet driver"},
   {"tick":820,"op":"fixer","do":"turn","target":"driver","approach":"pay"},
-  {"tick":838,"op":"scout","do":"listen","target":"driver"},
-  {"tick":1258,"op":"scout","do":"move","to":[8250,-3100]},
+  {"tick":870,"op":"scout","do":"listen","target":"driver"},
   {"tick":1320,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":1390,"op":"scout","do":"move","to":[8250,-3100]},
   {"tick":1900,"op":"scout","do":"mislead","target":"rivals"},
   {"tick":2340,"op":"scout","do":"move","to":[1175,-4825]},
   {"tick":2340,"op":"tech","do":"move","to":[675,-4625]},
   {"tick":3700,"op":"enforcer","do":"take"},
   {"tick":4080,"op":"enforcer","do":"move","to":[2400,-6000]},
   {"tick":4470,"op":"cell","do":"panic"},
-  {"tick":4570,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":4699,"op":"enforcer","do":"board","target":"car"},
-  {"tick":4739,"op":"cell","do":"go"}
+  {"tick":4627,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":4756,"op":"enforcer","do":"board","target":"car"},
+  {"tick":4796,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

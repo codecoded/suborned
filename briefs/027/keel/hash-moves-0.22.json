@@ -1,0 +1,119 @@
+{
+ "schema": "keel.hash-moves/1",
+ "what": "engine 0.21.0 (baseline copy out/keel-runbase: the tree with the 0.22.0 run edits reversed) against 0.22.0 (Sky 2026-10-22: only security notices a run; police are security, and a crowd guard raises the found fault by the door guard's sight rule, Sky via Aster: 'a guard is a guard'), every scenario's and route script's checkpoints with the inputs hash replaced (hashes --start-text keel-run; range hashes --start-text keel-run). Each moved item was also played on both engines (batch --no-replay) and compared on outcome, fail code, end tick, cash, Trail, Alert, Standing, gunfire, the ledger, the event log, the checks and the debrief.",
+ "scenariosAndRoutes": {
+  "compared": 303,
+  "identical": 236,
+  "moved": 67,
+  "behaviour": {
+   "route-a family": {
+    "items": [
+     "contracts/missions/handover/routes/route-a.json",
+     "contracts/missions/handover/routes/route-a-board.json",
+     "contracts/missions/handover/routes/route-a-pressure.json",
+     "contracts/missions/handover/routes/route-a-pressure-board.json"
+    ],
+    "why": "crowd guard p-records-office-73 (Astrid Chaudhry), walking her leg, has the Scout's opening run (0:00 to the courtyard) in her facing cone at 0:05.8: Alert 1 (runner-seen:p-records-office-73:scout) at 0:05.8 instead of 2:52.7 (runner-seen:guard:enforcer, the door guard seeing the Enforcer's run, which is now the same Alert). Outcome success, end tick, cash, Trail (5 or 7), final Alert 1 and Standing unchanged; the mission check's slack rows for route-a-board are unchanged"
+   },
+   "DP1": {
+    "why": "the drive session fixture: re-recorded (orders identical) because the inputs hash moved; Alert 0, no run.seen"
+   }
+  },
+  "memoryOnly": {
+   "items": [
+    "N19",
+    "N20",
+    "N36",
+    "N27",
+    "N46",
+    "N47",
+    "N52",
+    "N53",
+    "N54",
+    "N55",
+    "N65",
+    "N59",
+    "N60",
+    "N61",
+    "N62",
+    "N63",
+    "N64",
+    "N68",
+    "N71",
+    "N74",
+    "N74b",
+    "N75",
+    "N76",
+    "N79",
+    "N80",
+    "N81",
+    "N82",
+    "N84",
+    "N85",
+    "N86",
+    "N87",
+    "N90",
+    "N115",
+    "F8-O9",
+    "S9-KO",
+    "N128",
+    "D07",
+    "briefs/011/motive-fights/loud-carry.script.json",
+    "briefs/011/motive-fights/route-a-lone.script.json",
+    "briefs/011/motive-fights/route-a-pressure-lone.script.json",
+    "contracts/missions/handover/routes/careless-body-found.json",
+    "contracts/missions/handover/routes/careless-enforcer-watches-guard.json",
+    "contracts/missions/handover/routes/careless-guard-left-door-held.json",
+    "contracts/missions/handover/routes/careless-takedown-seen-camera.json",
+    "contracts/missions/handover/routes/careless-takedown-seen-crowd.json",
+    "contracts/missions/handover/routes/fight-loud-enforcer-down.json",
+    "contracts/missions/handover/routes/loud-fast.json",
+    "contracts/missions/handover/routes/loud-fight.json",
+    "contracts/missions/handover/routes/loud-left-downed.json",
+    "contracts/missions/handover/routes/loud-left-standing.json",
+    "contracts/missions/handover/routes/loud.json",
+    "contracts/missions/handover/routes/route-g-board.json",
+    "contracts/missions/handover/routes/route-g-fast-board.json",
+    "contracts/missions/handover/routes/route-g-fast.json",
+    "contracts/missions/handover/routes/route-g-kill-board.json",
+    "contracts/missions/handover/routes/route-g-kill.json",
+    "contracts/missions/handover/routes/route-g.json"
+   ],
+   "why": "ordinary people within witness range of a run no longer write a saw-runner memory entry (memory is hashed); outcome, fail code, end tick, cash, Trail, Alert, Standing, gunfire, ledger, event log and every check are identical on both engines"
+  },
+  "newScenarios": {
+   "items": [
+    "N20c",
+    "N20d",
+    "N20e",
+    "N20f",
+    "N20g"
+   ],
+   "why": "added for 0.22.0 (ScenariosFights.cs; N20e with the crowd off, so only a camera is on the route); on the 0.21.0 engine their 0.22.0 checks fail (ordinary people remember the run and hold the Fixer's face, the ordinary walker hears the run, no crowd guard raises Alert), as intended"
+  },
+  "debrief": {
+   "items": {
+    "loud-fast.json": "word lines 9 -> 6",
+    "loud-fight.json": "word lines 9 -> 6",
+    "loud-left-downed.json": "word lines 9 -> 6",
+    "loud-left-standing.json": "word lines 9 -> 6",
+    "loud.json": "word lines 9 -> 6",
+    "route-a-board.json": "word lines 12 -> 2",
+    "route-a.json": "word lines 12 -> 2",
+    "route-g-board.json": "word lines 1 -> 0",
+    "route-g-fast-board.json": "word lines 1 -> 0",
+    "route-g-fast.json": "word lines 1 -> 0",
+    "route-g-kill-board.json": "word lines 1 -> 0",
+    "route-g-kill.json": "word lines 1 -> 0",
+    "route-g.json": "word lines 1 -> 0"
+   },
+   "why": "between missions, word of mouth carries only what people remember: the ordinary people who saw a run no longer pass on place-time (and the Fixer's face). Every other debrief line is identical"
+  }
+ },
+ "range": {
+  "compared": 85,
+  "identical": 85
+ },
+ "routes": "no route's result moves (outcome, fail code, end tick, Trail, final Alert, Standing); route-a, route-a-board, route-a-pressure, route-a-pressure-board reach Alert 1 at 0:05.8 by a crowd guard instead of 2:52.7 by the door guard; 13 handover routes carry fewer word lines into the next mission; the mission check (tree engine, tree inputs) SHIPS, 2336 plays, slack rows unchanged",
+ "fightLab": "matrix (briefs/027/keel/matrix-0.22.txt) identical to 0.21.0 row for row; sweep (sweep-0.22.txt) byte-identical in all four presets"
+}

@@ -10,7 +10,7 @@ namespace Suborned.World
     /// <summary>Kit import, second step (brief 007 round 3): every adopted piece's placed prefab under Prefabs/Built/, written from its
     /// source prefab on every build. Colliders are stripped (the sim never queries Unity physics). A piece with distance versions gets
     /// one LODGroup: LOD0 = the source's renderers, LOD1 and LOD2 = children `__LOD1`, `__LOD2` carrying the catalogue's `lods[i].file`
-    /// meshes, switching at `lods[i].screen` (else the piece's `lodCategory` switch point), the last level never culled. Every LOD
+    /// meshes, switching at `lods[i].screen` (else the piece's `lodCategory` switch point), the last level culled (brief 048: below 1 % of the screen under 8 m, 0.4 % above). Every LOD
     /// material is the library material of its slot's name (Kit/Materials); an unmapped slot = reject, and a LOD slot the LOD0 does not
     /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted. A multi-part piece (the SignalEye)
     /// puts each level's parts under one `__LOD<i>` child, each named as the LOD0 part it stands for.</summary>
@@ -34,7 +34,7 @@ namespace Suborned.World
 
         public static void Build(KitPlacer kit)
         {
-            RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
+            CullSmallCount = CullOnly = LevelsBelowCull = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
             Folder(KitPlacer.BuiltRoot.TrimEnd('/'));
             var written = new Dictionary<string, string>(System.StringComparer.Ordinal); // built path → id
             foreach (var id in kit.Prefabs.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
@@ -52,7 +52,7 @@ namespace Suborned.World
                 try
                 {
                     Strip(go);
-                    Lod(id, go, kit.Lods[id]);
+                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id]);
                     if (RobotKit.Rig(go, id)) RobotFaces++; // brief 026: a service robot's face and head, from robots.json (view only)
                     if (!PrefabUtility.SaveAsPrefabAsset(go, path)) throw new IOException($"World: could not save {path}");
                 }
@@ -65,7 +65,7 @@ namespace Suborned.World
                 if (!written.ContainsKey(p)) AssetDatabase.DeleteAsset(p);
             }
             AssetDatabase.SaveAssets();
-            Debug.Log($"World: kit built {written.Count} prefabs: {Groups} LODGroups ({Levels} LOD levels beyond LOD0, no cull level); colliders stripped {Colliders} " +
+            Debug.Log($"World: kit built {written.Count} prefabs: {Groups} LODGroups ({Levels} LOD levels beyond LOD0; a cull level on each: {CullSmallCount} small pieces below {CullSmall:P0} of the screen or half their commander-view height, the rest below {CullLarge:P1}; {CullOnly} cull-only, {LevelsBelowCull} levels below their cull dropped); colliders stripped {Colliders} " +
                 $"(concave mesh {ConcaveMesh}, convex mesh {ConvexMesh}, box {Boxes}, other {OtherColliders}); LOD slots the LOD0 does not list {ExtraSlots} " +
                 $"({string.Join(", ", ExtraSlotPieces)}), all mapped; " +
                 $"removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts; robot faces rigged {RobotFaces}");
@@ -100,12 +100,26 @@ namespace Suborned.World
             }
         }
 
-        public static int DroppedParts;
-        static void Lod(string id, GameObject go, List<(string file, float screen)> lods)
+        public static int DroppedParts, CullSmallCount, CullOnly, LevelsBelowCull;
+        /// <summary>Brief 048: the cull level (screen-relative height) for a piece under CullSmallM metres, and for a larger one.
+        /// CommanderHalfMax is the widest play zoom (HostCameraLab.zoomMax, the orthographic half-height): no cull may come within half
+        /// of the smallest height a piece has there, so the commander view never loses a piece.</summary>
+        const float CullSmallM = 8f, CullSmall = 0.01f, CullLarge = 0.004f, CommanderHalfMax = 18.5f;
+        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods)
         {
-            if (lods.Count == 0) return;
             var r0 = Lod0(go).ToArray();
-            if (r0.Length == 0) throw new InvalidDataException($"World: kit `{id}` has no renderers for LOD0");
+            if (r0.Length == 0) { if (lods.Count == 0) return; throw new InvalidDataException($"World: kit `{id}` has no renderers for LOD0"); }
+            var bounds = new Bounds(go.transform.position, Vector3.zero); foreach (var r in r0) bounds.Encapsulate(r.bounds);
+            float size = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
+            bool small = size < CullSmallM;
+            // brief 048 (Redline's plan item 3): a small piece with no distance versions (planters, pots, robots, bike racks, kiosks' parts)
+            // gets a cull-only group too; ground pieces never (a culled tile is a hole), nor a large piece (it would cull past the clip anyway)
+            if (lods.Count == 0 && (!small || category == "Ground")) return;
+            float cull = Mathf.Min(small ? CullSmall : CullLarge, 0.5f * size / (2f * CommanderHalfMax));
+            // a level that would only switch in below the cull never shows: it goes (the street category's L2 at 0.003 had pulled the cull
+            // down to 0.15 %, about 500 m for a bollard, so small pieces still drew to the 350 m clip)
+            var kept = lods.Where(l => l.screen > cull).ToList(); LevelsBelowCull += lods.Count - kept.Count; lods = kept;
+            if (lods.Count == 0) CullOnly++;
             // a multi-part piece (brief 009: the SignalEye's body, Walk, Stop, Beam and Halo are sibling objects Unity switches and
             // lights apart) matches each LOD file renderer to its LOD0 part by name (its `_L1` tag and Blender's `.001` suffix dropped)
             bool parts = r0.Length > 1;
@@ -141,12 +155,15 @@ namespace Suborned.World
                 previous = level.ToArray(); prevScreen = screen;
                 Levels++;
             }
-            levels.Add(new LOD(0f, previous)); // the last level is never culled
+            // brief 048 (Redline's plan item 3, measured 6,081 to 3,882 renderers drawn in tp-worst, 14 % faster): the last level culls instead of
+            // drawing to the horizon. A piece under 8 m (crossings, bollards, benches, signs) culls below 1 % of the screen's height (a 0.8 m
+            // bollard at about 80 m in third person, a 2 m bench at about 190 m), a larger one below 0.4 %; the commander view is untouched (above).
+            levels.Add(new LOD(cull, previous));
             var lg = go.AddComponent<LODGroup>();
             lg.fadeMode = LODFadeMode.None;
             lg.SetLODs(levels.ToArray());
             lg.RecalculateBounds();
-            Groups++;
+            Groups++; if (small) CullSmallCount++;
         }
 
         /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalEye_L1_Beam`, `DK_SignalEye_Beam.001` → `DK_SignalEye_Beam`).</summary>

@@ -12,8 +12,17 @@
       "palette": "harbour.kerb",
       "value": 0.92,
       "smoothness": 0.1,
-      "material": "DK_Ground_Kerb",
-      "tile": 1
+      "material": "DK_Ground_RoadPearl",
+      "tile": 1,
+      "note": "brief 028 road finish (Vela, Aster 2026-10-22): the kerb in the pearl of the capstone's Kerb_Pearl stones"
+    },
+    "road-enamel": {
+      "palette": "harbour.road-enamel",
+      "value": 1,
+      "smoothness": 0.35,
+      "material": "DK_Ground_RoadEnamel",
+      "tile": 2,
+      "note": "brief 028 road finish (Vela; Splice's export: every road and the circus): the enamel carriageway, tinted white in the material"
     },
     "pavement": {
       "palette": "harbour.pavement",
@@ -408,11 +417,6 @@
       "smoothness": 0.2,
       "material": "DK_Ground_Gutter",
       "tile": 1
-    },
-    "ground/paint": {
-      "palette": "road.paint",
-      "value": 1,
-      "smoothness": 0.3
     }
   },
   "sky": {
@@ -444,6 +448,9 @@
     },
     "harbour.kerb": {
       "hex": "#ddd4c5"
+    },
+    "harbour.road-enamel": {
+      "hex": "#aed0e6"
     },
     "harbour.pavement": {
       "hex": "#f9efdc"

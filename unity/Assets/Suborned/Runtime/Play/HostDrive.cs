@@ -87,13 +87,35 @@ namespace Suborned.Play
             DriveTake(k);
             if (!Following) FollowEnter();
             Driving = true; intentKey = "";
+            DriveTrailIfBusy(k);
             PopKey("let-go", null, views.Find("op/" + Op.Name((OpId)k)) is Transform t ? t.position : (Vector3?)null, Feedback.Info);
             Status = $"Driving the {Op.Name((OpId)k)} ({controls.Label(PlayAction.FollowView)} lets go)";
         }
 
+        /// <summary>Sky after 0.2.56: "when I go third person, it shouldn't stop the character walking / running or doing whatever action they were
+        /// until I intervene." The switch takes the view, not the agent's work: an agent walking or running, walking in to an act, in an act or
+        /// holding a fire order is trailed (no drive sample, no cease: the engine carries on) until movement input or a new order takes the stick
+        /// (DriveFrame's dAuto); the work done, the stick comes back by itself.</summary>
+        public bool DriveTrailing => Driving && dAuto;
+        bool DriveHasWork(int k) { var op = Game.Ops[k]; return op.Walk != null || op.Busy != null || op.Act != null || pending[k] != null || op.Gun.Order.Length > 0; }
+        void DriveTrailIfBusy(int k) { if (Driving && !Lab.explore && DriveHasWork(k)) { dAuto = true; dSent = null; dVel = Vector2.zero; if (views != null) views.DriveKey = null; } }
+
+        /// <summary>The player intervenes on a trailed agent (the trigger; movement input does the same in DriveFrame): the stick is taken back
+        /// now, one drive sample at the agent's place (the engine's drive rule: the first sample takes control and ends a walk in progress).</summary>
+        bool DriveTakeBack()
+        {
+            if (!Driving || !dAuto || Game == null || dAgent < 0) return Driving;
+            var op = Game.Ops[dAgent]; dAuto = false; pending[dAgent] = null; dCm = new Vector2(op.Pos.X, op.Pos.Y); dVel = Vector2.zero; dSent = null;
+            if (views != null) { views.DriveKey = "op/" + Op.Name((OpId)dAgent); views.DrivePos = CmWorld(dCm); }
+            int face = Mathf.RoundToInt(Mathf.Repeat(dYaw, 360f)) % 360; var at = new Pt(op.Pos.X, op.Pos.Y);
+            Answer a = default; if (!Guard("drive", () => a = Game.Issue(Game.DriveSample((OpId)dAgent, at, false, face)))) return false;
+            if (a.ok) { dSent = at; dSentRun = false; dSentFace = face; }
+            return a.ok;
+        }
+
         void DriveTake(int k)
         {
-            if (Game.Ops[k].Gun.Order.Length > 0) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)k), Do = "cease" })); // brief 024 Firing: taking control drops the agent's standing fire order (the trigger is the player's now)
+            // brief 024 dropped the standing fire order here ("the trigger is the player's now"); Sky after 0.2.56: the switch never ends work (DriveTrailIfBusy)
             var op = Game.Ops[k]; dAgent = k; dCm = new Vector2(op.Pos.X, op.Pos.Y); dVel = Vector2.zero; dSent = null; dSentFace = -1; dMoving = false; DriveCorrections = 0;
             dYaw = Following ? fYaw : yawNow;
             if (views != null) { views.DriveKey = "op/" + Op.Name((OpId)k); views.DrivePos = CmWorld(dCm); views.DriveYaw = dYaw; views.DriveSpeed = 0f; }
@@ -138,7 +160,7 @@ namespace Suborned.Play
             if (!Driving || Game == null) { DriveResume(kb); return; }
             if (Game.Over) { DriveExit(false); return; }
             int who = FollowWho();
-            if (who != dAgent) { DriveRelease(dAgent); var op2 = Game.Ops[who]; if (op2.Down || op2.Inside || op2.InCar) { DriveExit(false); return; } DriveTake(who); } // Tab, F1-F4, a click on an agent: control moves at once
+            if (who != dAgent) { DriveRelease(dAgent); var op2 = Game.Ops[who]; if (op2.Down || op2.Inside || op2.InCar) { DriveExit(false); return; } DriveTake(who); dAuto = false; DriveTrailIfBusy(who); } // Tab, F1-F4, a click on an agent: control moves at once (an agent at work is trailed, as on T)
             if (Exploring) { Paused = true; Speed = 1; }
             var op = Game.Ops[dAgent];
             float dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f);
@@ -159,7 +181,7 @@ namespace Suborned.Play
                 if (controls.Held(kb, PlayAction.PanUp)) input.y += 1; if (controls.Held(kb, PlayAction.PanDown)) input.y -= 1;
                 if (controls.Held(kb, PlayAction.PanRight)) input.x += 1; if (controls.Held(kb, PlayAction.PanLeft)) input.x -= 1;
                 run |= controls.Held(kb, PlayAction.AddToGroup);
-                if (controls.Down(kb, PlayAction.Gait)) dRunLatch = !dRunLatch;
+                if (controls.Down(kb, PlayAction.Gait) && !HoldOn) dRunLatch = !dRunLatch; // brief 041 (hold): G is weapons free; Shift runs
                 TpE(kb); // brief 024 revision: E taps act on the prompt, held 0.22 s the ring (HostAim)
             }
             if (dAuto)
@@ -169,7 +191,7 @@ namespace Suborned.Play
                 {
                     dCm = new Vector2(op.Pos.X, op.Pos.Y); dMoving = op.Walk != null;
                     if (views != null) views.DriveKey = null; // the engine's walk draws the agent
-                    if (pending[dAgent] == null && op.Walk == null && op.Busy == null && op.Gun.Order.Length == 0) dAuto = false; // the act done: the stick comes back
+                    if (!DriveHasWork(dAgent)) dAuto = false; // the act done: the stick comes back (a walk-in between its walk and its act included)
                     DriveFocusFrame(); return;
                 }
             }
@@ -351,7 +373,7 @@ namespace Suborned.Play
             // priced on a change of focus, and once a second (Preview is costly; every drive sample is an order, so the order count moves each tick)
             var ik = $"drive:{key}:{Agent}:{Picked}:{(int)Time.unscaledTime}";
             if (ik == intentKey) return;
-            intentKey = ik; dFocusKey = key; Hover = best; HoverFeedback(best); HoverIntent = IntentFor(best); MoveChip = null; UpdateAim();
+            intentKey = ik; dFocusKey = key; Hover = best; HoverFeedback(best); HoverIntent = HoldOn ? HoldIntent(best) : IntentFor(best); // item 7 (Keel 2026-10-22): the pill offers what the holds give, as PointerHover does MoveChip = null; UpdateAim();
         }
 
         /// <summary>E: act on the focus, as a quick right click on it (brief 030).</summary>

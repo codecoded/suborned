@@ -1,0 +1,76 @@
+{
+  "schema": "suborned.loading/1",
+  "note": "Proposed by Glyph for Latch (brief 047). Move to unity/Assets/Suborned/Resources/Loading/loading.json; the picture sits beside it as Resources/Loading/<image.name>.png. Swapping the picture = drop in a new png, change image.name and, if the sky or faces are elsewhere, title.rect. No code change. All sizes are 'ref px' at 1080p height: device px = ref x (screen height / 1080).",
+  "refHeight": 1080,
+
+  "image": {
+    "name": "loading_bg",
+    "note": "B_after.png (briefs/047/fix/), 2560x1440, Forma's fixed take. Copy to Resources/Loading/loading_bg.png (import: sRGB, no mips, bilinear, no compression, max size 4096; it is 3.7 MP, 15 MB as RGBA, keep it out of the atlas).",
+    "fit": "cover",
+    "focus": [0.5, 0.5],
+    "pushIn": { "scale": 0.02, "seconds": 24, "note": "optional slow push toward focus; 0 = still. Layout is measured at scale 1; the push moves nothing by more than 2 %." }
+  },
+
+  "frame": {
+    "safeMarginRef": 64,
+    "note": "Nothing but the picture and the scrims goes outside this frame."
+  },
+
+  "scrims": [
+    { "edge": "bottom", "heightFrac": 0.28, "color": "#0b1615", "alphaAtEdge": 0.68, "curve": "smoothstep", "note": "carries the bar, the loading line and the build line over any paving" },
+    { "edge": "top",    "heightFrac": 0.34, "color": "#0b1615", "alphaAtEdge": 0.50, "curve": "smoothstep", "note": "gives the title cream-on-ink contrast over a mid-blue sky (about 4.9:1 at the title); a different picture with a dark top can set alphaAtEdge to 0" }
+  ],
+
+  "title": {
+    "rect": { "x": 0.570, "y": 0.040, "w": 0.215, "h": 0.150, "space": "image", "note": "image-normalised (0..1 of the picture, so it follows the crop). B: the open sky right of the Enforcer's head (head spans x 0.49-0.54, shoulder tops reach x 0.60 at y 0.20), left of the right-hand tower (x 0.78 at y 0.08). The lockup is fitted inside it, never outside." },
+    "align": ["left", "top"],
+    "maxScale": 1.25,
+    "lines": [
+      { "text": "THE",      "font": "Jost-Regular", "sizeRef": 21, "trackingEm": 0.62, "color": "#f7f4ec", "opacity": 0.92 },
+      { "text": "SUBORNED", "font": "Jost-Medium",  "sizeRef": 64, "trackingEm": 0.12, "color": "#f7f4ec", "opacity": 1.0, "gapAboveRef": 6 }
+    ],
+    "rule": { "color": "#99784d", "heightRef": 1, "widthOf": "SUBORNED", "gapAboveRef": 12, "note": "brass hairline, the one brass use (thin line only, art bible)" },
+    "shadow": { "color": "#0b1615", "alpha": 0.35, "offsetRef": [0, 2], "blurRef": 14 }
+  },
+
+  "bar": {
+    "leftRef": 64, "rightRef": 64, "bottomRef": 66, "heightRef": 5,
+    "radiusRef": 2.5,
+    "track":  { "color": "#0b1615", "alpha": 0.55 },
+    "rim":    { "color": "#cbc6c3", "alpha": 0.40, "widthRef": 1 },
+    "fill":   { "color": "#60e0ea" },
+    "cap":    { "color": "#f7f4ec", "widthRef": 3 },
+    "shimmer": { "color": "#f7f4ec", "alpha": 0.35, "widthRef": 120, "seconds": 1.6 }
+  },
+
+  "loadingLine": {
+    "enabled": true,
+    "head": "Loading",
+    "separator": "·",
+    "font": "Jost-Regular-Tab", "sizeRef": 15.5, "trackingEm": 0.1, "uppercase": true,
+    "headColor": "#b0cdc7", "textColor": "#f7f4ec",
+    "gapAboveBarRef": 16,
+    "percent": { "enabled": true, "font": "Jost-Regular-Tab", "sizeRef": 14.5, "color": "#f7f4ec", "note": "tabular, right end of the bar, whole numbers, 0-100" },
+    "note": "left, above the bar. The stage text comes from the loader (a short noun: 'Harbour District', 'People', 'Plan'); empty = the line shows the head only. No sentences."
+  },
+
+  "build": {
+    "enabled": true,
+    "source": "BuildStamp.Line",
+    "font": "Jost-Regular-Tab", "sizeRef": 12.5, "color": "#b0cdc7", "alpha": 0.85,
+    "align": "right", "bottomRef": 30, "rightRef": 64
+  },
+
+  "timing": {
+    "fadeInSeconds": 0.5,
+    "fadeInFrom": "#0b1615",
+    "titleDelaySeconds": 0.25, "titleFadeSeconds": 0.6, "titleRiseRef": 8,
+    "barDelaySeconds": 0.5, "barFadeSeconds": 0.4,
+    "minShowSeconds": 1.5,
+    "barSmoothSeconds": 0.25,
+    "completeHoldSeconds": 0.25,
+    "uiFadeOutSeconds": 0.25,
+    "pictureFadeOutSeconds": 0.6,
+    "ease": "ease-out-in-out"
+  }
+}

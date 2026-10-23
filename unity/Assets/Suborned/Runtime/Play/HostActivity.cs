@@ -36,7 +36,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 Activity a = null; if (!Guard("activity", () => a = Game.ActivityOf((OpId)k))) return;
-                var d = doing[k]; var op = Game.Ops[k]; var q = pending[k];
+                var d = doing[k]; var op = Game.Ops[k]; var q = pending[k] ?? (op.Busy == null ? op.Act : null); // engine 0.23: the act a walk-in walks to, as the host's own queue
                 d.Verb = a.Verb; d.Phase = a.Phase; d.OnDone = a.OnDone; d.CanCancel = a.CanCancel || q != null;
                 d.CancelCode = a.CancelCost ?? "";
                 d.CancelText = Text != null && Text.CancelCosts.TryGetValue(a.CancelCost, out var cct) ? cct : a.CancelText;
@@ -130,6 +130,7 @@ namespace Suborned.Play
         public void CancelAgent(int k, Vector2? screen)
         {
             if (Game == null || Fault != null || Game.Over) return;
+            ActCancelled(k); // brief 043: an act or a walk-in dropped never goes unseen (a pop on the agent, the plate's word, a row in the notes)
             var d = doing[k]; string cost = d.CancelText, what = d.CancelVerb.Length > 0 ? d.CancelVerb : "it";
             bool walking = d.Phase is "walking" or "running", costly = !walking && !CancelFree.Contains(d.CancelCode);
             pending[k] = null; pendingAt[k] = null; HoldCancelled(k); // brief 041: the pill says Stopped
@@ -245,7 +246,7 @@ namespace Suborned.Play
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
             string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
-            line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)).Replace("{s}", Mathf.Max(1, ServingBackS(o.Target)).ToString()); // brief 022: back in {s} s // brief 018: car-held names what blocks the car (Answer.ids)
+            line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)); // brief 018: car-held names what blocks the car (Answer.ids)
             return line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
         }
 
@@ -273,16 +274,12 @@ namespace Suborned.Play
                 var mm = System.Text.RegularExpressions.Regex.Match(l.Text, @"watched the (\w+)( camera)?");
                 string about = !mm.Success ? null : mm.Groups[2].Success ? "camera-" + mm.Groups[1].Value : mm.Groups[1].Value;
                 string outcome = about == "patrol" ? (l.Text.Contains(", and its routine") ? "routine" : "sight") : null;
-                if (about == null || !Beat("read", "watch", speaker, outcome, null, about, "", Feedback.Ok)) Say(speaker, l.Text, Feedback.Ok);
-                return;
+                return; // brief 044 (Sky: no sentences in play except speech): the done chip over the machine says what was learned (Cone, Rounds)
             }
             if ((code.StartsWith("scout.") || code.EndsWith(".watch.watched")) && role != null)
             {   // brief 031: a person watched by any agent speaks in that agent's voice (fixer.watch.watched, enforcer.watch.watched, ...)
-                bool listen = code.StartsWith("scout.listen");
-                string speaker = listen ? "scout" : code[..code.IndexOf('.')];
-                var p = Game.PersonByRole(role);
-                if (!Beat("read", listen ? "listen" : "watch", speaker, null, listen ? p.Temperament : null, role, Name(role), Feedback.Ok))
-                    Say(speaker, listen ? $"{Cap(Name(role))} {NeedWords(p.Need)}. {Cap(TemperWords(p.Temperament))}." : $"I have {Name(role)}'s routine.", Feedback.Ok);
+                // brief 044 (Sky on the Scout's "Debt. The guard visits her quietly. She startles." under the pill): no sentences in play except
+                // speech, and this read only repeats the done chip over the person (need, temperament, tie; or Rounds and Cone): it is not said
                 return;
             }
             if (code == "attention.reporting" && l.Text.StartsWith("guard "))

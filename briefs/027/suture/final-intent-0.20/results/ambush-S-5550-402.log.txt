@@ -1,0 +1,117 @@
+0:00.0 start Vale is inside. His official car will collect him later. The city is already moving.
+0:00.0 order.move tech runs for cabinet.
+0:00.0 order.move enforcer runs for (5650,-4750).
+0:16.6 order.loop tech loop entrance (62 s)
+1:18.6 loop.on One feed repeats. The Tech is tied to the cabinet.
+1:18.6 order.reroute tech reroute patrol (45 s)
+2:03.6 patrol.rerouted The patrol follows false orders and leaves the entrance sweep.
+2:03.6 order.move enforcer heads for (6950,-4250).
+2:31.0 fire.guard enforcer fires on guard until down.
+2:31.1 witness.weapon-drawn 1 see the enforcer's weapon drawn.
+2:33.0 round.ends gunfire: Inez Nikolaou walks back to her post and stays there.
+2:33.0 shot.hit enforcer fires on guard at 5 m (750 ‰): hit.
+2:33.0 rivals.drawn The rivals hear gunfire and head for the Office.
+2:33.0 security.called Shots are heard in the district. Security is coming from the north street.
+2:33.0 guard.hit The guard is hit. He cannot see the shooter yet.
+2:33.0 fire.free-on A fight is on: drawn agents fire on their own.
+2:33.0 crowd.startled 1 on the street are startled and run.
+2:35.0 shot.hit enforcer fires on guard at 5 m (750 ‰): hit.
+2:35.0 guard.down The guard falls. His missed check-in will draw more attention.
+2:35.1 fire.done enforcer: guard is down. The fire order ends.
+2:38.0 fire.free-off No contact: the fight is off. Drawn agents hold their fire.
+2:38.6 witness.react p-records-office-29 finds a body: radio.
+2:38.6 report.started p-records-office-29 radios it in.
+2:43.6 report.landed p-records-office-29's report lands: dead (guard). Alert 2.
+2:43.6 security.called A body is found: a unit is sent to hold the scene (office-entrance). Security is coming.
+2:49.0 rivals.arrive The rival crew comes in from the east street, following the gunfire.
+2:53.6 report.confirmed police-1 confirms guard: dead.
+3:01.6 attention.noticed police-1 notices the tech standing still in its sight.
+3:03.1 attention.noticed police-2 notices the tech standing still in its sight.
+3:05.0 fight.judged The fight (2:33.0-2:35.0) is over: the street judges it security (-1 Standing).
+3:09.0 holster.auto enforcer holsters: the fight is over.
+3:13.6 attention.wary police-1 is wary of the tech for the rest of the mission.
+3:13.8 stash.opened police-1 opens the stash/office-service-door/door: nothing.
+3:15.1 attention.wary police-2 is wary of the tech for the rest of the mission.
+3:23.8 stash.opened police-1 opens the stash/office-service-door/container: nothing.
+3:26.7 crowd.sheltered 1 reach shelter.
+3:38.4 attention.noticed security-1 notices the fixer standing still in its sight.
+3:38.6 attention.reporting police-1 reports the tech loitering (lands 3:41.6).
+3:38.9 attention.noticed security-2 notices the fixer standing still in its sight.
+3:40.1 attention.reporting police-2 reports the tech loitering (lands 3:43.1).
+3:41.6 attention.landed police-1's report lands: the tech loitering. Alert 2.
+3:41.6 alarm.dispatches The desk sends the response (level 2, watchful): 0 robots, 1 unit, on the street 3:51.6.
+3:43.1 attention.landed police-2's report lands: the tech loitering. Alert 2.
+3:43.1 alarm.dispatches The desk sends the response (level 2, watchful): 0 robots, 1 unit, on the street 3:53.1.
+3:56.0 response.reinforces Another unit is sent (2 of 3).
+4:00.0 guard.check-in The guard misses his check-in. Security now knows the post is empty.
+4:02.6 patrol.alarm The patrol leaves its sweep for the alarm.
+4:04.0 attention.noticed police-3 notices the tech standing still in its sight.
+4:05.5 attention.noticed police-4 notices the tech standing still in its sight.
+4:05.9 shot.miss security-1 fires on enforcer at 10 m (375 ‰): miss.
+4:05.9 fire.free-on A fight is on: drawn agents fire on their own.
+4:05.9 crowd.startled 1 on the street are startled and run.
+4:06.6 shot.miss security-2 fires on enforcer at 10 m (375 ‰): miss.
+4:07.4 shot.hit security-1 fires on enforcer at 7 m (375 ‰): hit.
+4:07.4 enforcer.hit.security-1 security-1 hits the enforcer. 5 health left.
+4:08.1 shot.hit security-2 fires on enforcer at 7 m (375 ‰): hit.
+4:08.1 enforcer.hit.security-2 security-2 hits the enforcer. 4 health left.
+4:10.6 attention.noticed patrol notices the tech standing still in its sight.
+4:11.8 fire.free-off No contact: the fight is off. Drawn agents hold their fire.
+4:16.0 attention.wary police-3 is wary of the tech for the rest of the mission.
+4:17.5 attention.wary police-4 is wary of the tech for the rest of the mission.
+4:19.6 crowd.sheltered 1 reach shelter.
+4:22.6 attention.wary patrol is wary of the tech for the rest of the mission.
+4:36.0 response.reinforces Another unit is sent (3 of 3).
+4:38.1 fight.judged The fight (4:05.9-4:08.1) is over: the street judges it none (0 Standing).
+4:41.0 attention.reporting police-3 reports the tech loitering (lands 4:44.0).
+4:42.5 attention.reporting police-4 reports the tech loitering (lands 4:45.5).
+4:44.0 attention.noticed police-5 notices the tech standing still in its sight.
+4:44.0 attention.landed police-3's report lands: the tech loitering. Alert 2.
+4:44.0 alarm.dispatches The desk sends the response (level 2, watchful): 1 robot, 3 units, on the street 4:54.0.
+4:45.5 attention.noticed police-6 notices the tech standing still in its sight.
+4:45.5 attention.landed police-4's report lands: the tech loitering. Alert 2.
+4:45.5 alarm.dispatches The desk sends the response (level 2, watchful): 1 robot, 3 units, on the street 4:55.5.
+4:47.6 attention.reporting patrol reports the tech loitering (lands 4:50.6).
+4:50.6 attention.landed patrol's report lands: the tech loitering. Alert 2.
+4:50.6 alarm.dispatches The desk sends the response (level 2, watchful): 1 robot, 3 units, on the street 5:00.6.
+4:56.0 attention.wary police-5 is wary of the tech for the rest of the mission.
+4:57.1 witness.react p-records-office-73 finds a body: radio.
+4:57.1 report.started p-records-office-73 radios it in.
+4:57.5 attention.wary police-6 is wary of the tech for the rest of the mission.
+5:02.1 report.landed p-records-office-73's report lands: dead (guard). Alert 2.
+5:21.0 attention.reporting police-5 reports the tech loitering (lands 5:24.0).
+5:22.5 attention.reporting police-6 reports the tech loitering (lands 5:25.5).
+5:24.0 attention.landed police-5's report lands: the tech loitering. Alert 2.
+5:24.0 alarm.dispatches The desk sends the response (level 2, watchful): 1 robot, 3 units, on the street 5:34.0.
+5:24.6 crowd.back 1 are back on their way.
+5:25.5 attention.landed police-6's report lands: the tech loitering. Alert 2.
+5:25.5 alarm.dispatches The desk sends the response (level 2, watchful): 1 robot, 3 units, on the street 5:35.5.
+5:30.1 witness.react p-records-office-05 finds a body: report.
+5:30.1 report.started p-records-office-05 walks to door:office-entrance to report it (lands 5:38.2).
+5:30.1 witness.react p-records-office-09 finds a body: check.
+5:30.1 report.started p-records-office-09 goes to look.
+5:30.1 witness.react p-records-office-12 finds a body: report.
+5:30.1 report.started p-records-office-12 walks to door:office-entrance to report it (lands 5:38.2).
+5:30.1 witness.react p-records-office-17 finds a body: avoid.
+5:30.1 witness.told p-records-office-17 tells p-records-office-43 (workmate, by phone).
+5:30.1 witness.react p-records-office-18 finds a body: report.
+5:30.1 report.started p-records-office-18 walks to door:office-entrance to report it (lands 5:38.2).
+5:30.1 witness.react p-records-office-26 finds a body: report.
+5:30.1 witness.react p-records-office-34 finds a body: report.
+5:30.1 witness.react p-records-office-45 finds a body: report.
+5:30.1 witness.react p-records-office-55 finds a body: avoid.
+5:30.1 witness.told p-records-office-55 tells p-records-office-46 (family, by phone).
+5:30.1 witness.react p-records-office-56 finds a body: avoid.
+5:30.1 witness.told p-records-office-56 tells p-records-office-54 (workmate, by phone).
+5:30.1 witness.react p-records-office-58 finds a body: check.
+5:30.1 witness.react p-records-office-69 finds a body: report.
+5:33.6 crowd.back 1 are back on their way.
+5:34.1 report.started p-records-office-09 walks to door:office-entrance to report it (lands 5:40.1).
+5:38.2 report.landed p-records-office-05's report lands: down (guard). Alert 2.
+5:38.2 witness.told p-records-office-05 tells p-records-office-51 (workmate, by phone).
+5:38.2 report.landed p-records-office-12's report lands: down (guard). Alert 2.
+5:38.2 witness.told p-records-office-12 tells p-records-office-48 (workmate, by phone).
+5:38.2 report.landed p-records-office-18's report lands: down (guard). Alert 2.
+5:40.1 report.landed p-records-office-09's report lands: dead (guard). Alert 2.
+5:40.2 crowd.back 1 are back on their way.
+5:41.0 fail.sealed Security seals the district before the getaway car leaves.

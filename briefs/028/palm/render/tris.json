@@ -1,0 +1,52 @@
+{
+ "old0": {
+  "label": "CoconutPalm (old city, L0)",
+  "tris": 6310,
+  "h": 7.94
+ },
+ "old1": {
+  "label": "CoconutPalm L1",
+  "tris": 1576,
+  "h": 7.92
+ },
+ "old2": {
+  "label": "CoconutPalm L2",
+  "tris": 370,
+  "h": 7.77
+ },
+ "st0": {
+  "label": "CoconutPalm_Street L0",
+  "tris": 8230,
+  "h": 10.65
+ },
+ "st1": {
+  "label": "CoconutPalm_Street L1",
+  "tris": 2056,
+  "h": 10.64
+ },
+ "st2": {
+  "label": "CoconutPalm_Street L2",
+  "tris": 485,
+  "h": 10.57
+ },
+ "ave0": {
+  "label": "WashingtoniaPalm_Street (no LOD)",
+  "tris": 19190,
+  "h": 15.6
+ },
+ "tb2": {
+  "label": "palm-gameplay-v1.glb",
+  "tris": 1880,
+  "h": 5.7
+ },
+ "tb1": {
+  "label": "palm-near-v1.glb",
+  "tris": 6102,
+  "h": 5.72
+ },
+ "tb0": {
+  "label": "palm-close-v1.glb",
+  "tris": 19330,
+  "h": 5.72
+ }
+}

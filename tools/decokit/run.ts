@@ -17,6 +17,7 @@ const blender = process.env.BLENDER ?? '/Applications/Blender.app/Contents/MacOS
 const run = (args: string[]) => Bun.spawnSync([blender, '-b', '-t', '1', '-P', resolve(import.meta.dir, 'export_kit.py'), '--', ...args, '--orders', orders], { env: { ...process.env, DECOKIT_OUT: out, PYTHONHASHSEED: '0' }, stdout: 'inherit', stderr: 'inherit' }).exitCode;
 // The budgeted ground textures (brief 026): numpy and Pillow, no Blender; export_kit copies them with the pieces.
 const gt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'ground_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (gt.exitCode) process.exit(gt.exitCode);
+const rd = Bun.spawnSync(['python3', resolve(import.meta.dir, 'road_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rd.exitCode) process.exit(rd.exitCode); // brief 028: the road enamel and pearl maps (the testbed's, full size), beside the ground set
 const ct = Bun.spawnSync(['python3', resolve(import.meta.dir, 'cabinet_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ct.exitCode) process.exit(ct.exitCode);
 const pt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'pavilion_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (pt.exitCode) process.exit(pt.exitCode);
 const ft = Bun.spawnSync(['python3', resolve(import.meta.dir, 'fountain_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ft.exitCode) process.exit(ft.exitCode);

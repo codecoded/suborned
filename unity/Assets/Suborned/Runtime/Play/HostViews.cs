@@ -367,7 +367,7 @@ namespace Suborned.Play
         {
             var go = new GameObject(key); go.transform.SetParent(root, false);
             Part(go.transform, "body", cylinder, Lit(c), new Vector3(0, 0.6f, 0), new Vector3(0.75f, 0.6f, 0.75f));
-            var lamp = Part(go.transform, "head", sphere, Unlit(host.coneColour), new Vector3(0, 1.28f, 0), Vector3.one * 0.22f); // the lamp: a signal, unlit
+            var lamp = Part(go.transform, "head", sphere, host.SignalMat(host.coneColour, false), new Vector3(0, 1.28f, 0), Vector3.one * 0.22f); // the lamp: a signal, unlit, no fog
             var col = go.AddComponent<CapsuleCollider>(); col.height = 1.4f; col.radius = 0.45f; col.center = new Vector3(0, 0.7f, 0);
             go.SetActive(false);
             things[key] = (go.transform, Vector3.zero, Vector3.zero, false);
@@ -549,8 +549,7 @@ namespace Suborned.Play
         Material FanMat(Color c, float alpha)
         {
             if (fanMats.TryGetValue((c, alpha), out var m)) return m;
-            var tpl = alpha < 1f && host.fanTemplate ? host.fanTemplate : host.unlitTemplate;
-            m = new Material(tpl); m.SetColor("_BaseColor", new Color(c.r, c.g, c.b, alpha)); if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f);
+            m = host.SignalMat(new Color(c.r, c.g, c.b, alpha), alpha < 1f); if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f); // Glint 2026-10-23: no fog on a signal
             return fanMats[(c, alpha)] = m;
         }
 
@@ -560,7 +559,8 @@ namespace Suborned.Play
         {
             d.For = f; d.Live = f.Live; d.Kind = f.Kind;
             var c = f.Live ? KindColour(f.Kind) : Grey;
-            d.FillR.sharedMaterial = FanMat(c, FillAlpha); d.RimR.sharedMaterial = FanMat(c, 1f);
+            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
+            Mat(d.FillR, FanMat(c, FillAlpha)); Mat(d.RimR, FanMat(c, 1f));
             d.Scan[0].sharedMaterial = FanMat(c, 1f); d.Scan[1].sharedMaterial = FanMat(c, 0.45f); d.Scan[2].sharedMaterial = FanMat(c, 0.22f);
             var pts = f.Points; int n = pts.Length;
             d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));

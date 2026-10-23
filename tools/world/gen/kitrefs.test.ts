@@ -55,12 +55,13 @@ test('the nearest earlier tree or lamp differs where fitting alternatives exist'
   const covered: string[] = [];
   // tub palms are left out: 186 of 198 stand in a planter's bed and take the one bare palm (FanPalm; brief 020), so there is nothing to contrast
   for (const [kind, reach] of [['tree', 15], ['lamp', 45]] as [string, number][]) {
-    const choices = (s: typeof w.street[number]) => kit.assets.filter(a => a.status === 'adopted' && a.tags.use.includes(kind) && fit(a, slotOf(ctx, s)!)).length;
+    const useOf = (s: typeof w.street[number]) => (kind === 'tree' && s.variant && s.variant !== 'phoenix' ? `tree:${s.variant}` : kind); // an avenue palm's slot names its species (tree:coconut, tree:coconut-median): one piece each; the phoenix slots take any `tree` piece
+    const choices = (s: typeof w.street[number]) => kit.assets.filter(a => a.status === 'adopted' && a.tags.use.includes(useOf(s)) && fit(a, slotOf(ctx, s)!)).length;
     const xs = w.street.filter(s => s.kind === kind && s.kit); // pairs count only where more than one piece fits (else nothing to contrast)
     let same = 0, pairs = 0;
     xs.forEach((a, i) => {
       let best: typeof a | undefined, bd = reach;
-      for (let j = 0; j < i; j++) { const dd = Math.hypot(a.at[0] - xs[j]!.at[0], a.at[1] - xs[j]!.at[1]); if (dd < bd) { bd = dd; best = xs[j]; } }
+      for (let j = 0; j < i; j++) { if (useOf(xs[j]!) !== useOf(a)) continue; const dd = Math.hypot(a.at[0] - xs[j]!.at[0], a.at[1] - xs[j]!.at[1]); if (dd < bd) { bd = dd; best = xs[j]; } } // the choice contrasts within one slot (a grid per use)
       if (best && choices(a) > 1) { pairs++; if (best.kit!.id === a.kit!.id) same++; }
     });
     if (!xs.length) continue; // a kind with no fitting adopted piece stays procedural, so has no kit pair to compare

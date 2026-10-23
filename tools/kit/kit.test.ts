@@ -10,7 +10,7 @@ import { copyAdopted } from './copy';
 import { fit } from './fit';
 import { GEN_ROOT, kitRoot } from './store';
 import { WAVE1 } from './tags';
-import { LOD_CATEGORIES } from './lod';
+import { LOD_BY_ID, LOD_CATEGORIES } from './lod';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const root = kitRoot();
@@ -51,7 +51,15 @@ test('LOD categories (Vela, brief 007 round 3): every piece names one; its LOD s
   expect(kit.lodCategories.street).toEqual({ l1: 0.008, l2: 0.003 }); expect(kit.lodCategories.towers).toEqual({ l1: 0.3, l2: 0.1 });
   for (const a of kit.assets) {
     expect(Object.keys(kit.lodCategories), a.id).toContain(a.lodCategory);
-    (a.lods ?? []).forEach((l, i) => expect(l.screen, `${a.id} LOD${i + 1}`).toBe(i === 0 ? kit.lodCategories[a.lodCategory].l1 : kit.lodCategories[a.lodCategory].l2));
+    const sw = LOD_BY_ID[a.id] ?? kit.lodCategories[a.lodCategory]; // an id's own switch points (the palms) win over the category's
+    (a.lods ?? []).forEach((l, i) => expect(l.screen, `${a.id} LOD${i + 1}`).toBe(i === 0 ? sw.l1 : sw.l2));
+  }
+  // Sky approved the palm levels (brief 028 "Palm LODs", 2026-10-22): both ids carry L1 1,330 tris at 60 m and L2 514 tris at 140 m of the third-person camera, with LOD files hashed
+  for (const [id, s1, s2] of [['CoconutPalm', 0.1271, 0.0545], ['CoconutPalm_Street', 0.1705, 0.0731]] as const) {
+    const a = kit.assets.find(x => x.id === id)!;
+    expect(a.lods?.map(l => [l.tris, l.screen]), id).toEqual([[1330, s1], [514, s2]]);
+    expect(a.files.filter(f => f.role === 'lod').map(f => f.path), id).toEqual(a.lods!.map(l => l.file));
+    expect(a.files.filter(f => f.role === 'lod').every(f => /^[0-9a-f]{64}$/.test(f.sha256)), id).toBe(true);
   }
   const cat = (id: string) => kit.assets.find(a => a.id === id)!.lodCategory;
   expect([cat('Bollard'), cat('CafeSet_Tulip'), cat('Cypress'), cat('StreamBay_6'), cat('StreamCorner_4'), cat('Tower_Saucer@harbour-hotel'), cat('Crown_Atom'), cat('SpaceHQ_Portal'), cat('DiscTower@avenue-gate-w'), cat('Horizon_RocketPad')])

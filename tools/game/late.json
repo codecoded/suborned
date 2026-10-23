@@ -1,0 +1,8 @@
+{
+  "schema": "suborned.late/1",
+  "note": "The late-fight frame-time rows of `bun run batch` (brief 045, Splice): each script is played in the built player to the start of its last `seconds` of mission, then on at real time with its orders given at their ticks, as play gives them, 1920x1080, -novsync, HUD on. tools/game/late.ts says what the rows mean and what fails; briefs/045-late-lag.md is the player's contract (-late).",
+  "rows": [
+    { "name": "loud-fight", "script": "loud-fight", "note": "the engine's own loud twin: the public fight at the getaway, ends on the board at tick 3124" },
+    { "name": "sky-session1", "script": "briefs/045/runs/sky-0.2.58-session1.script.json", "note": "Sky's session on the Mac Studio that lagged: the getaway fight, failed at 7:03.2 (rivals-reach-vale)" }
+  ]
+}

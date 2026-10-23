@@ -18,6 +18,9 @@
 //           the extract; withdraw.car: the car does not leave before Vale is in, brief 031);
 //   every   seconds between the search's coarse tries (default 5): a step whose window is shorter (a takedown on a passer-by is taken only
 //           while he is within reach, about 2 s) sets it under that window, so the search can't step over it (brief 023).
+// A step is never taken where its order would end its op's walk in (engine 0.23.0: a person act given out of reach walks in, and any
+// other order to that agent ends the walk, so the act silently never happens); it waits until the act has started and ended, as a busy
+// agent's next order always did.
 // The search: from the earliest tick, every `every` s until taken, then back tick by tick to the first tick taken. Deterministic: the same
 // plan on the same engine gives the same script.
 import { readFileSync, writeFileSync } from 'node:fs';
@@ -60,9 +63,10 @@ export async function compose(plan: Plan, e: EngineAt, name: string, log: (m: st
     lo += Math.round((s.gap ?? 0) * 10);
     const hi = s.by ? ticks(s.by) : plan.until, clearT = Math.round((s.clear ?? 0) * 10);
     /** Is the order taken at tick t (and, with `clear`, the run not failed `clear` s later)? The last match is this step's: a repeated order (Help twice) placed at a tick an earlier one holds sorts after it. */
-    const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12)).map((p, k) => {
+    const tryAt = async (ts: number[]) => (await playAll(ts.map(t => ({ name: `${name}-s${i + 1}-${t}`, script: scriptWith(orderOf(s, t), t + Math.max(1, clearT)) })), e, 12, { replay: false })).map((p, k) => {
       const t = ts[k]!, mine = p.orders.findLast(x => x.order.tick === t && x.order.op === s.op && x.order.do === s.do && (x.order.target ?? '') === (s.target ?? ''));
-      return !!mine?.ok && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => (typeof s.unless === 'string' ? [s.unless] : s.unless!).includes(l.code)));
+      const cuts = !!s.op && p.log.some(l => l.code === 'order.walk-in-ends' && l.tick === t && l.text.startsWith(`${s.op}:`));
+      return !!mine?.ok && !cuts && !(clearT && p.outcome === 'failure') && (!s.when || logged(p.log, s.when, t)) && (!s.unless || !p.log.some(l => (typeof s.unless === 'string' ? [s.unless] : s.unless!).includes(l.code)));
     });
     let found = -1;
     const every = Math.round((s.every ?? 5) * 10);

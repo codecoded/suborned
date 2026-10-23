@@ -1,0 +1,376 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Suture 0.20 attempt close-D-walk-g30: once the response unit is down the scout, fixer walk drawn to 3-4 m of the crew's press stop, then lock it 30 s after setting off (derived from loud.plan.json).",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone and the patrol's sweep, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "reroute"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6950,
+    -4250
+   ],
+   "after": [
+    "reroute"
+   ],
+   "when": "patrol.rerouted",
+   "why": "brief 031: once the patrol has left its sweep (the entrance camera is looped by then), from the forecourt to wait by the service end of the west face, 5.6 m south of the public door, out of the guard's cone and more than 3 m from him: nobody who keeps a clock sees him there"
+  },
+  {
+   "op": "enforcer",
+   "do": "fire",
+   "target": "guard",
+   "after": [
+    "reroute",
+    "enforcer"
+   ],
+   "at": "2:31",
+   "label": "shot",
+   "why": "once the patrol has gone and just after the guard's 2:30 check-in mark (brief 013: his marks are 1:00, 2:30, 4:00; a shot before a mark lets the missed mark call the response unit early, to the car before the Enforcer is out): fire until the guard is down"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    975,
+    -4625
+   ],
+   "run": true,
+   "after": [
+    "shot"
+   ],
+   "why": "the run is loud now, so running is free: to the getaway car's north side, east end (cover point cv-005), shielded from the lane the response unit walks along"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "run": true,
+   "after": [
+    "shot"
+   ],
+   "why": "brief 027: to the getaway car's east end (cover point cv-006), the car between him and the café wall's police stands"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "after": [
+    "shot"
+   ],
+   "gap": 4,
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter",
+   "why": "Alert 2: the entry takes 68 s"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "after": [
+    "enter"
+   ],
+   "why": "once the Enforcer is inside the loop can go: the Tech walks (no run while his loop holds) to the getaway car's north side, west end (cover point cv-003)"
+  },
+  {
+   "op": "scout",
+   "do": "draw",
+   "when": "fight.loud",
+   "after": [
+    "enter"
+   ],
+   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident)"
+  },
+  {
+   "op": "scout",
+   "do": "stance",
+   "stance": "free",
+   "why": "the final fight is on: once his locks are spent, fire at will (its shots are untraced)"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "security-2",
+   "label": "scout-lock1",
+   "why": "brief 027 (tuning.md §11.3, focus): as the doors open all three lock the same officer, the response unit's nearest (security-2, 2-4 m from the car as it passes): three fresh guns put three hits on its 3 health in one volley. Given late (1.0 s after the doors open), the Scout and the Fixer are downed"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "when": "fight.loud",
+   "after": [
+    "enter"
+   ],
+   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident)"
+  },
+  {
+   "op": "fixer",
+   "do": "stance",
+   "stance": "free",
+   "why": "the final fight is on: once his locks are spent, fire at will (its shots are untraced)"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-2",
+   "label": "fixer-lock1",
+   "why": "brief 027 (tuning.md §11.3, focus): as the doors open all three lock the same officer, the response unit's nearest (security-2, 2-4 m from the car as it passes): three fresh guns put three hits on its 3 health in one volley. Given late (1.0 s after the doors open), the Scout and the Fixer are downed"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "when": "fight.loud",
+   "after": [
+    "enter"
+   ],
+   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident)"
+  },
+  {
+   "op": "tech",
+   "do": "stance",
+   "stance": "free",
+   "why": "the final fight is on: once his locks are spent, fire at will (its shots are untraced)"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "security-2",
+   "label": "tech-lock1",
+   "why": "brief 027 (tuning.md §11.3, focus): as the doors open all three lock the same officer, the response unit's nearest (security-2, 2-4 m from the car as it passes): three fresh guns put three hits on its 3 health in one volley. Given late (1.0 s after the doors open), the Scout and the Fixer are downed"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "security-1",
+   "after": [
+    "scout-lock1"
+   ],
+   "when": "security.officer-down",
+   "every": 0.5,
+   "why": "the first officer down: lock the blocker (security-1, going for the road at the planter run 11 m east of the car), the one that would shoot the Enforcer as he walks Vale in (a window of about 1.5 s before the at-will fire downs it: every 0.5 s)"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-1",
+   "after": [
+    "fixer-lock1"
+   ],
+   "when": "security.officer-down",
+   "every": 0.5,
+   "why": "the first officer down: lock the blocker (security-1, going for the road at the planter run 11 m east of the car), the one that would shoot the Enforcer as he walks Vale in (a window of about 1.5 s before the at-will fire downs it: every 0.5 s)"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "security-1",
+   "after": [
+    "tech-lock1"
+   ],
+   "when": "security.officer-down",
+   "every": 0.5,
+   "why": "the first officer down: lock the blocker (security-1, going for the road at the planter run 11 m east of the car), the one that would shoot the Enforcer as he walks Vale in (a window of about 1.5 s before the at-will fire downs it: every 0.5 s)"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    4960,
+    -2700
+   ],
+   "run": false,
+   "after": [
+    "scout"
+   ],
+   "when": "security.down",
+   "label": "scout-flank",
+   "why": "to point blank of the crew's press stop"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rivals",
+   "after": [
+    "scout-flank"
+   ],
+   "gap": 30,
+   "label": "scout-rivals",
+   "why": "draw and lock the crew from point blank"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    5050,
+    -2900
+   ],
+   "run": false,
+   "after": [
+    "fixer"
+   ],
+   "when": "security.down",
+   "label": "fixer-flank",
+   "why": "to point blank of the crew's press stop"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rivals",
+   "after": [
+    "fixer-flank"
+   ],
+   "gap": 30,
+   "label": "fixer-rivals",
+   "why": "draw and lock the crew from point blank"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "label": "out",
+   "after": [
+    "enter"
+   ],
+   "when": "rivals.retreat",
+   "why": "held at the service door with Vale since the doors opened: the crew driven back (175 s), he walks Vale to the car"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    975,
+    -4625
+   ],
+   "after": [
+    "scout-flank"
+   ],
+   "when": "rivals.retreat",
+   "why": "the crew gone: back to his wait behind the car (cv-005), ahead of the Enforcer"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "after": [
+    "fixer-flank"
+   ],
+   "when": "rivals.retreat",
+   "why": "back to his wait at the car's east end (cv-006)"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in",
+   "why": "Vale in first (Board, 4 s carrying; brief 018 §2)"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "board.in",
+   "why": "the blocker down and the Enforcer in with Vale (board.in): to the car (the officers at their stands do not hold it). Walking to the bay while he boards, the three stand in the café wall officers' reach for 4 s and are downed"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "board.in"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "board.in"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5,
+   "why": "boarded the moment he stands within 1.5 m of the car (every 0.5 s: stood beside it longer, he is in the café wall officers' line)"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in",
+    "tech-in"
+   ],
+   "gap": 1,
+   "unless": "captured",
+   "why": "once the last board lands (1 s): the seal clock runs, so anyone left standing is captured (brief 018 §3); the whole cell leaves"
+  }
+ ]
+}

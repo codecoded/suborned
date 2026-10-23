@@ -399,6 +399,37 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect(num(rb, people, rb.weapons.follow!)).toBe(8);
     expect(num(rb, people, rb.weapons.pistol.every)).toBe(15);
   });
+  test('engine 0.23.0 (Sky 2026-10-22): a person act out of reach walks in, re-aimed once a second, and has its rule', () => {
+    expect(rb.cell.approach).toBeDefined(); // the live rulebook has it (the schema lets runs pinned before it parse)
+    expect(rb.cell.approach!.walkIn).toBe(true);
+    expect(num(rb, people, rb.cell.approach!.repath)).toBe(1);
+    expect(rb.cell.approach!.rule).toMatch(/too-far/);
+    const bad = structuredClone(raw); bad.cell.approach.walkIn = 'yes'; expect(Rulebook.safeParse(bad).success).toBe(false); // unknown = reject
+  });
+  test('tuning.md §14 (engine 0.19.0): weapons free starts on, settles line-lapse-s (3 s) after the last contact, and has its rule', () => {
+    expect(rb.weapons.free).toBeDefined(); // the live rulebook has it (the schema lets runs pinned before it parse)
+    expect(rb.weapons.free!.start).toBe(true);
+    expect(rb.weapons.free!.settle).toBe(rb.weapons.lineLapse); // an existing value: Sky's §14 note, no new clock
+    expect(num(rb, people, rb.weapons.free!.settle)).toBe(3);
+    expect(rb.weapons.free!.rule.length).toBeGreaterThan(0);
+  });
+  test('hostile intent (Pulse hostile-initiative.md, Sky\'s answers 2026-10-21; engine 0.19.0): per agent, faces from Alert 2, never anyone at Alert 3', () => {
+    const it = rb.ai.intent!, n = (r: string) => num(rb, people, r);
+    expect(it.police.foes).toEqual(['drawn', 'fired', 'vale', 'violence']);
+    expect(it.robots.foes).toEqual(['drawn', 'fired', 'vale', 'violence']);
+    expect([n(it.police.face), n(it.robots.face), n(it.police.closeIn), n(it.police.closeLevel), n(it.rivals.alertedAt), n(it.police.warn.maxAlert)]).toEqual([2, 2, 3, 1, 2, 1]);
+    expect(it.robots.faceHeat).toEqual(['wanted', 'infamous']);
+    expect([it.police.warn.ticks, it.police.warn.alert, it.police.warn.perWatcher, it.police.warn.trail]).toEqual(['v:lab-warn-ticks', 'v:lab-warn-alert', 'v:lab-warn-per-watcher', 'v:lab-warn-trail']); // the lab's warning, its numbers
+    expect(it.rivals.calm).toEqual(['drawn', 'vale']);
+    expect(it.rivals.alerted).toEqual(['drawn', 'vale', 'seen']);
+    expect(it.rivals.street && it.rivals.press).toBe(true);
+    expect(it.final).toBe('agent'); // tuning.md §15.2 (engine 0.20.0): PROVISIONAL, Sky to confirm after play
+    expect(rb.ai.intent!.reason).toMatch(/provisional/);
+    for (const v of ['intent-face-alert', 'intent-warn-max-alert', 'intent-close-alert', 'intent-close-level', 'intent-rivals-alert']) expect(rb.values[v]!.proposed, v).toBeUndefined(); // tuning.md §15.1: confirmed as built
+    for (const f of ['every', 'agent']) { const ok = structuredClone(raw); ok.ai.intent.final = f; expect(Rulebook.safeParse(ok).success, f).toBe(true); }
+    const bad = structuredClone(raw); bad.ai.intent.final = 'some'; expect(Rulebook.safeParse(bad).success).toBe(false); // unknown = reject
+    for (const k of [it.police.foes, it.robots.foes, it.rivals.calm, it.rivals.alerted]) expect(k).not.toContain('face'); // the face is its own rung, by Alert
+  });
   test('tuning.md §7.9 (Sky 2026-10-20): the kite response and the 16 m sidearm are today\'s; the lab keeps the same kite', () => {
     const n = (r: string) => num(rb, people, r);
     const k = rb.fight.kite!, lk = rb.fight.lab!.kite;

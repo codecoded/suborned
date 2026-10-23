@@ -146,7 +146,7 @@ namespace Suborned.Sim
                     }
                 case "rivals":
                     {
-                        if (!RivalsDrawn) return null; // before gunfire the rival crew watches the building, not the street (RivalsWatching)
+                        if (!RivalsDrawn && !R.Intent.RivalsStreet) return null; // engine 0.19.0 (Sky's answer 3): the crew watches the street from its arrival (ai.intent.rivals.street)
                         var r = RivalsPose(); if (!r.HasValue) return null;
                         return new Shape { At = r.Value.pos, F = r.Value.facing, Reach = R.RivReachCm, Half = R.RivHalfCm, Near = near, Live = true };
                     }

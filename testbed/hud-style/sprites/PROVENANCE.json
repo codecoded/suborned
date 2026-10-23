@@ -1,0 +1,101 @@
+{
+ "source": "briefs/011/ui/kit/roster/roster_column@2x.png",
+ "source_sha256": "3aac40667ee7318263a567ced7c32aaf92a4e0324ec2b318182285f64be7116b",
+ "tool": "testbed/hud-style/prep/roster_column.py (opencv inpaint + procedural inlay from the sprite's own stripe profile); no image generation, cost 0",
+ "rivets_found": {
+  "corner": [
+   [
+    25,
+    51
+   ],
+   [
+    193,
+    51
+   ],
+   [
+    25,
+    233
+   ],
+   [
+    193,
+    233
+   ],
+   [
+    193,
+    423
+   ],
+   [
+    25,
+    424
+   ],
+   [
+    25,
+    777
+   ],
+   [
+    193,
+    777
+   ]
+  ],
+  "bezel": [
+   [
+    26,
+    131
+   ],
+   [
+    26,
+    318
+   ],
+   [
+    26,
+    509
+   ],
+   [
+    26,
+    698
+   ],
+   [
+    191,
+    131
+   ],
+   [
+    191,
+    318
+   ],
+   [
+    191,
+    509
+   ],
+   [
+    191,
+    698
+   ]
+  ]
+ },
+ "variants": {
+  "inlay": {
+   "rivets": 4,
+   "lime_fringe_px_fixed": 3272,
+   "magenta_px_fixed": 1248,
+   "sha256_2x": "7d75da338b8e023cef9b7baa8ba37e5a2fda478e1d3e377f9ffd2f967d24ece8"
+  },
+  "bare": {
+   "rivets": 4,
+   "lime_fringe_px_fixed": 3272,
+   "magenta_px_fixed": 1248,
+   "sha256_2x": "13ead915df1c49d3deaa93ba8b6d0e66a40d08ac876f02a6962ca4cd743f4619"
+  },
+  "rivetless": {
+   "rivets": 0,
+   "lime_fringe_px_fixed": 3272,
+   "magenta_px_fixed": 1248,
+   "sha256_2x": "3145f68145edf6b0b598b09f109857063016ccbe9a416d685b24315dad089f8e"
+  }
+ },
+ "rivets_before": {
+  "corner": 8,
+  "bezel": 8,
+  "total": 16,
+  "by_gap": "rings 1-2: 2, rings 2-3: 2, rings 3-4: 0, foot 2, top 2"
+ }
+}

@@ -1,0 +1,22 @@
+== ../runs/sky-0.2.58-session1.script.json
+Failure at tick 4232; Save calls that replay the whole run (public fight open): 8
+  ticks  3900- 4199:   8 replays (7 on orders), each    150 ms mean,    273 ms max;   1.2 s stalled
+last 60 s of the run: 8 replays, 1.2 s of main-thread stall in 60 s
+== ../runs/sky-0.2.58-session2.script.json
+Failure at tick 2089; Save calls that replay the whole run (public fight open): 79
+  ticks   300-  599:   1 replays (0 on orders), each     35 ms mean,     35 ms max;   0.0 s stalled
+  ticks   600-  899:  14 replays (10 on orders), each     45 ms mean,     60 ms max;   0.6 s stalled
+  ticks   900- 1199:  11 replays (8 on orders), each     57 ms mean,     78 ms max;   0.6 s stalled
+  ticks  1200- 1499:  14 replays (10 on orders), each     42 ms mean,     56 ms max;   0.6 s stalled
+  ticks  1500- 1799:  25 replays (23 on orders), each     42 ms mean,     48 ms max;   1.0 s stalled
+  ticks  1800- 2099:  14 replays (10 on orders), each     48 ms mean,     51 ms max;   0.7 s stalled
+last 60 s of the run: 39 replays, 1.7 s of main-thread stall in 60 s
+== ../../../contracts/missions/handover/routes/loud-fight.json
+Success at tick 3124; Save calls that replay the whole run (public fight open): 36
+  ticks  1500- 1799:   7 replays (3 on orders), each     68 ms mean,     78 ms max;   0.5 s stalled
+  ticks  1800- 2099:   1 replays (0 on orders), each     68 ms mean,     68 ms max;   0.1 s stalled
+  ticks  2100- 2399:   9 replays (7 on orders), each     86 ms mean,    116 ms max;   0.8 s stalled
+  ticks  2400- 2699:   8 replays (3 on orders), each     72 ms mean,     85 ms max;   0.6 s stalled
+  ticks  2700- 2999:   6 replays (0 on orders), each     67 ms mean,     69 ms max;   0.4 s stalled
+  ticks  3000- 3299:   5 replays (4 on orders), each     66 ms mean,     73 ms max;   0.3 s stalled
+last 60 s of the run: 17 replays, 1.2 s of main-thread stall in 60 s

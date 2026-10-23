@@ -210,7 +210,7 @@ export function check(plan: Plan, d: Derived, civic: Civic, strict = false, over
   const stray = civ.walkFrom.filter(o => !footprints(civ).some(f => lineDist(o.p, ring(f)) <= DOOR));
   add({ id: 'W-4', group: 'Walking', rule: 'Every walk starts at a building entrance (doors are world)', value: `${civ.walkFrom.length - stray.length}/${civ.walkFrom.length}`, limit: `all, within ${DOOR} m of a building edge`, ok: !stray.length && civ.walkFrom.length > 0, detail: stray.map(o => o.name).join(', ') || undefined, source: 'plan.standards.walking · GDD §01 exteriors only: the player starts at a door' });
   C.push(...entranceChecks(plan, d, civ));
-  C.push(...roadFinishChecks(plan)); // RF-1, RF-2: opt-in on standards.streetscape.roads / .inlays (brief 026/028)
+  C.push(...roadFinishChecks(plan, undefined, { d, civ })); // RF-1, RF-2: opt-in on standards.streetscape.roads / .inlays (brief 026/028)
   const waived = (std.transit?.waived ?? {}) as Record<string, string>;
   if (!strict) for (const c of C) if (!c.ok && waived[c.id]) { c.ok = true; c.waived = waived[c.id]; c.detail = `WAIVED (${waived[c.id]})${c.detail ? '; ' + c.detail : ''}`; }
   return { checks: C, routes, crossings, stops, stations, walks };

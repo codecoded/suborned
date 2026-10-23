@@ -1,0 +1,103 @@
+{
+  "schema": "suborned.frontend/1",
+  "note": "Proposed by Glyph for Latch (brief 051). Move to unity/Assets/Suborned/Resources/Loading/frontend.json beside loading.json. The picture, the title and the cover/crop maths are loading.json's (brief 047): one swap changes the whole front end. All sizes are ref px at 1080p height (device px = ref x H / 1080). Every colour is a kit.uss token; every frame is a kit sprite.",
+  "refHeight": 1080,
+
+  "colors": {
+    "ink": "#17302f", "inkDeep": "#0b1615", "cream": "#f7f4ec", "textDim": "#b0cdc7",
+    "chrome": "#cbc6c3", "panelLine": "#d2e6e2", "live": "#60e0ea", "brass": "#99784d", "pipEmpty": "#142c2c"
+  },
+
+  "type": {
+    "button":      { "font": "Jost-Medium",      "sizeRef": 16.5, "trackingEm": 0.12, "uppercase": true,  "color": "ink" },
+    "menuButton":  { "font": "Jost-Medium",      "sizeRef": 19,   "trackingEm": 0.14, "uppercase": true,  "color": "ink" },
+    "panelTitle":  { "font": "Jost-Medium",      "sizeRef": 26,   "trackingEm": 0.20, "uppercase": true,  "color": "cream" },
+    "tab":         { "font": "Jost-Regular",     "sizeRef": 15.5, "trackingEm": 0.06, "uppercase": false, "color": "cream", "activeColor": "ink" },
+    "group":       { "font": "Jost-Regular",     "sizeRef": 12.5, "trackingEm": 0.16, "uppercase": true,  "color": "textDim" },
+    "rowLabel":    { "font": "Jost-Regular",     "sizeRef": 17,   "trackingEm": 0.0,  "uppercase": false, "color": "cream" },
+    "rowValue":    { "font": "Jost-Regular-Tab", "sizeRef": 17,   "trackingEm": 0.0,  "uppercase": false, "color": "cream", "dimColor": "textDim" },
+    "keycap":      { "font": "Jost-Medium",      "sizeRef": 15,   "trackingEm": 0.02, "uppercase": false, "color": "ink" },
+    "briefTitle":  { "font": "Jost-Medium",      "sizeRef": 42,   "trackingEm": 0.10, "uppercase": true,  "color": "cream" },
+    "briefHead":   { "font": "Jost-Medium",      "sizeRef": 14.5, "trackingEm": 0.14, "uppercase": true,  "color": "textDim", "valueColor": "cream" },
+    "briefBody":   { "font": "Jost-Regular",     "sizeRef": 20,   "lineRef": 30, "color": "cream", "paragraphGapRef": 14 },
+    "build":       { "font": "Jost-Regular-Tab", "sizeRef": 12.5, "color": "textDim", "alpha": 0.85 }
+  },
+
+  "scrims": {
+    "menu": [
+      { "edge": "left",   "heightFrac": 0.36, "holdFrac": 0.45, "color": "#0b1615", "alphaAtEdge": 0.62, "curve": "smoothstep", "note": "heightFrac of the width for left/right" },
+      { "edge": "top",    "heightFrac": 0.34, "color": "#0b1615", "alphaAtEdge": 0.50, "curve": "smoothstep", "note": "= loading.json top scrim (the title)" },
+      { "edge": "bottom", "heightFrac": 0.28, "color": "#0b1615", "alphaAtEdge": 0.68, "curve": "smoothstep", "note": "= loading.json bottom scrim (the build line)" }
+    ],
+    "panel": [
+      { "edge": "full", "alphaAtEdge": 0.52, "color": "#0b1615", "note": "an even veil: the picture stays visible round the panel but does not compete" }
+    ],
+    "brief": [
+      { "edge": "right",  "heightFrac": 0.425, "holdFrac": 0.705, "color": "#0b1615", "alphaAtEdge": 0.92, "curve": "smoothstep", "note": "the text column sits on the held part; the cell (left two thirds) stays clear" },
+      { "edge": "bottom", "heightFrac": 0.20, "color": "#0b1615", "alphaAtEdge": 0.50, "curve": "smoothstep" }
+    ]
+  },
+
+  "button": {
+    "sprites": { "normal": "buttons/btn_text_normal", "hover": "buttons/btn_text_hover", "pressed": "buttons/btn_text_pressed", "disabled": "buttons/btn_text_disabled" },
+    "slice2x": 30,
+    "focus": { "ringRef": 2, "color": "live", "glowAlpha": 0.40, "glowRef": 10, "note": "keyboard or controller focus; the mouse hover is the hover sprite alone. Same as the HUD's 'ready' ring." },
+    "disabledLabelAlpha": 0.55
+  },
+
+  "menu": {
+    "leftRef": 72, "bottomRef": 96, "widthRef": 300, "heightRef": 56, "gapRef": 14,
+    "items": ["continue", "new", "options", "controls", "quit"],
+    "continueOnlyWhenSaved": true,
+    "defaultFocus": "continue-or-new",
+    "build": "bottom right, same as the loading screen (loading.json build)"
+  },
+
+  "panel": {
+    "sprite": "panels/panel_dark_modal", "slice2x": 44,
+    "widthRef": 960, "heightRef": 780, "topFrac": 0.5, "note": "centred; heightRef is the height at 1080p, clamp to screen height - 2 x 48",
+    "padRef": [44, 40, 44, 28], "titleY": 40, "closeRef": 29, "closeInset": 26,
+    "tabsY": 100, "tabH": 34, "tabGap": 10, "tabPadX": 26, "tabSprites": { "active": "markers/plate_light", "idle": "markers/plate_dark", "slice2x": 24 },
+    "bodyTop": 158, "bodyBottomInset": 100,
+    "rowH": 44, "groupH": 38, "rowGapLine": { "color": "panelLine", "alpha": 0.14, "widthRef": 1 },
+    "rowFocus": { "fill": "inkDeep", "alpha": 0.38, "tick": "live", "tickRef": 3, "radiusRef": 6 },
+    "labelX": 10, "controlRight": 10, "controlW": 380,
+    "footer": { "lineY": 100, "resetW": 168, "resetH": 34, "backW": 170, "backH": 48, "bottomInset": 24 },
+    "scrollbar": { "widthRef": 4, "color": "chrome", "alpha": 0.5 }
+  },
+
+  "controls": {
+    "slider":  { "trackH": 6, "trackColor": "inkDeep", "trackAlpha": 0.7, "rim": "chrome", "rimAlpha": 0.35, "fill": "live", "knob": "markers/disc_light_24", "knobRef": 22, "width": 250, "valueW": 56 },
+    "switch":  { "w": 46, "h": 24, "knob": "markers/disc_light_24", "knobRef": 20, "onFill": "live", "onFillAlpha": 0.40, "offFill": "inkDeep", "offFillAlpha": 0.65, "rim": "chrome", "rimAlpha": 0.55, "wordW": 44 },
+    "choice":  { "w": 300, "chevron": "icons/singles/chev_down", "chevRotate": [90, -90], "chevRef": 16, "chevGapRef": 16, "note": "the same chev_down glyph turned a quarter each way (USS rotate, clockwise: left chevron 90deg, right -90deg); no new icon. Chevrons sit 16 ref px either side of the value, centred in the 300 ref zone" },
+    "keycap":  { "sprite": "markers/plate_light", "slice2x": 24, "h": 30, "minW": 52, "padX": 14, "alt": "markers/plate_dark", "altH": 24, "altTextColor": "textDim", "listening": { "ring": "live", "ringRef": 2, "label": "Press a key" } }
+  },
+
+  "controlsPage": {
+    "tabs": ["Command", "Camera", "Fights", "Third person"],
+    "columns": 2, "columnGapRef": 40, "rowH": 36, "labelX": 6,
+    "clashStrip": { "sprite": "panels/panel_strip", "slice2x": 25, "h": 52, "mark": "badges/mark_half", "markRef": 26, "keyBadgeRef": 24, "verbs": ["Swap", "Cancel"], "verbSprite": "markers/plate_dark" }
+  },
+
+  "pause": {
+    "panel": "panels/panel_dark_modal", "widthRef": 360, "padRef": [34, 28, 34, 26], "topFrac": 0.12,
+    "buttonW": 292, "buttonH": 46, "gapRef": 10, "titleGapRef": 20,
+    "items": ["resume", "options", "controls", "restart", "range", "menu", "quit"],
+    "veil": { "color": "inkDeep", "alpha": 0.0, "note": "clear as built; the HUD budget counts a dim. A 0.25 veil is one line of data if Sky wants it." }
+  },
+
+  "brief": {
+    "imageFocus": [1.0, 0.5],
+    "imageFocusNote": "this screen only: on a screen narrower than 16:9 the picture crops at the sides; keeping the picture's right edge (the 434 px crop all comes off the left) moves the cell 217 px left at 2880x1864, so the Enforcer's sleeve and the Tech's head clear the text column (centred, the sleeve ran under the first lines). No effect at 16:9.",
+    "column": { "rightRef": 64, "widthRef": 504, "topRef": 84, "bottomRef": 64 },
+    "headRule": { "color": "brass", "heightRef": 1, "gapAboveRef": 16, "gapBelowRef": 20 },
+    "button": { "w": 220, "h": 52, "label": "Continue", "align": "right" },
+    "wordBudget": "120-200 words at 20/30 ref px in a 568 ref column is 14-22 lines plus paragraph gaps, about 560-850 ref px of the 880 available (text starts at 270, the button at 964); scroll past that (never expected)"
+  },
+
+  "timing": {
+    "screenFadeSeconds": 0.30, "buttonStaggerSeconds": 0.05, "buttonRiseRef": 6,
+    "menuFadeInAfterLoading": 0.40, "pageSwitchSeconds": 0.12, "pressSeconds": 0.08,
+    "ease": "ease-out"
+  }
+}

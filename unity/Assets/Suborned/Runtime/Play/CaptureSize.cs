@@ -47,7 +47,7 @@ namespace Suborned.Play
 
         /// <summary>This run takes pictures (and is sized here): GameBoot's full-screen request is not made, so it cannot land after the window is
         /// sized (Latch 2026-10-21: a -shots033 run came out 6016x3384, the full screen arriving after Apply had found the window already 1920x1080).</summary>
-        public static bool Captures => !GameBoot.Arg("-capture-native") && (GameBoot.Arg("-gameProof") || GameBoot.Arg("-shots") || GameBoot.Arg("-shots031") || GameBoot.Arg("-shots033") || GameBoot.Arg("-rangeShots") || GameBoot.ArgValue("-capture-size") != null);
+        public static bool Captures => !GameBoot.Arg("-capture-native") && (GameBoot.Arg("-gameProof") || GameBoot.Arg("-shots") || GameBoot.Arg("-shots031") || GameBoot.Arg("-shots033") || GameBoot.Arg("-rangeShots") || GameBoot.Arg("-late") || GameBoot.Arg("-tplong") || GameBoot.ArgValue("-capture-size") != null); // brief 045: the late-fight check (LateRun)
 
         static Vector2Int? Parse(string s)
         {

@@ -120,8 +120,8 @@ namespace Suborned.Sim
         public void To(int tick) => G.RunTo(tick);
         public void Wait(int ticks) => G.Advance(ticks);
         /// <summary>Run until the operative's action in progress lands.</summary>
-        public void Done(string op) { var o = G.OpOf(Sim.Op.Parse(op)); if (o.Busy != null) G.RunTo(o.BusyEnd); }
-        /// <summary>Give a fire order now (until the target is down); force for a civilian or a contact (the Ctrl case).</summary>
+        public void Done(string op) { var o = G.OpOf(Sim.Op.Parse(op)); while (o.Act != null && !G.Over) G.Step(); if (o.Busy != null) G.RunTo(o.BusyEnd); } // engine 0.23.0: a walk in first
+        /// <summary>Give a fire order now (until the target is down); force for a civilian or a contact (the host's hold sends it).</summary>
         public bool Fire(string op, string target, bool force = false)
         {
             var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "fire", Target = target, Force = force });

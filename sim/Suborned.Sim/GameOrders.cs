@@ -19,8 +19,9 @@ namespace Suborned.Sim
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }
             bool ok = why.Length == 0;
             var a = AnswerOf(why);
+            if (ok) EndWalkInFor(o); // engine 0.23.0: any other order to an operative walking in to a person act ends that walk in (GameApproach.cs)
             if (!ok && a.code == "uncoded") throw new InvalidOperationException($"a refusal without a code: {why}"); // every refusal says its code (Fable)
-            Orders.Add((o, ok, a.code, why));
+            Orders.Add((o, ok, a.code, why)); orderText.Add(o.ToString()); // engine 0.25.0 (brief 045): its canonical words, once, for the hash
             if (!ok) Note("order.rejected", $"{o.Op} {o.Do} {o.Target}{o.To}: {why}");
             return a;
         }
@@ -63,6 +64,7 @@ namespace Suborned.Sim
             if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
+            if (o.Do == "free") return FreeSet(o); // tuning.md §14 (engine 0.19.0): weapons free, op "cell"
             if (o.Do == "go") return Go(o); // brief 018: anyone, from the car's card (GameGetaway.cs)
             var op = OpOf(Sim.Op.Parse(o.Op));
             if (op.Down) return No("agent-down", $"the {o.Op} is down");
@@ -109,6 +111,7 @@ namespace Suborned.Sim
             if (seconds < 1) seconds = 1; // the rulebook bounds every duration to 1 s or more at load (Redline E3); a 1 s floor is the belt
 
             op.Walk = null; op.WalkMm = 0; // engaging stops the approach walk
+            if (op.Gun.Order.Length > 0) { Note("fire.cancelled", $"{Sim.Op.Name(op.Id)} stops firing on {op.Gun.Order} for the {o.Do}."); OrderEnd(op, false); } // engine 0.21.0 (Sky 2026-10-22, brief 041): a new act ends a lasting fire order (a walk or a run keeps it)
             op.Busy = o; op.BusyStart = Tick; op.BusyEnd = Tick + T(seconds);
             Note("order." + o.Do, $"{Sim.Op.Name(op.Id)} {o.Do}{(o.Target.Length > 0 ? " " + o.Target : "")} ({seconds} s)");
         }
@@ -173,8 +176,18 @@ namespace Suborned.Sim
             // only asking (ScoutQuery, target mode; Latch 2026-10-18): a need the order lacks outranks its reach, since walking closer won't
             // cure it. Issue keeps its order (reach, then needs), so every recorded run replays as before.
             if (!engage) foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
-            if (!G.Within(op.Pos, pos, reach)) return No("too-far", $"stand within {reach / 100} m of {p.Role}", m: reach / 100);
-            if (o.Do == "watch" && !(Sees(op.Pos, pos) && !CrowdBlocks(op.Pos, pos))) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see {p.Role}"); // brief 031: a person's Watch needs a clear line too
+            if (!InPlace(op, o.Do, pos, reach))
+            {
+                // engine 0.23.0 (rulebook cell.approach, Sky 2026-10-22): out of reach (or, for a Watch, out of line) the order is taken and the
+                // operative walks in; checked as if in place first, so only real refusals refuse. Off (or driven): as before, reach then line.
+                if (!WalksIn(op))
+                {
+                    if (!G.Within(op.Pos, pos, reach)) return No("too-far", $"stand within {reach / 100} m of {p.Role}", m: reach / 100);
+                    return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see {p.Role}"); // brief 031: a person's Watch needs a clear line too
+                }
+                foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
+                return WalkIn(op, o, p, engage);
+            }
             foreach (var c in ev.Needs) if (c.K != "reach" && !Holds(c, x)) return NeedsNo(c, x);
             if (!engage) return "";
             var q = Quote(ev, p);
@@ -234,9 +247,13 @@ namespace Suborned.Sim
             if (p == ValeP) return No("vale-not-contact", "Vale is the target, not a contact");
             var x = Ctx(p, ev);
             x.Reach = G.Within(op.Pos, pos, approachReach);
+            bool walk = !x.Reach && WalksIn(op); // engine 0.23.0 (rulebook cell.approach): out of reach, checked as if in reach, then walked in
+            if (walk) x.Reach = true;
             foreach (var c in ev.Needs) if (!Holds(c, x)) return c.K == "reach" ? No("too-far", $"stand within {approachReach / 100} m of {p.Role}", m: approachReach / 100) : NeedsNo(c, x);
             var q = Quote(ev, p);
-            if (p == Driver && Tick + T((int)q.S) > T(driverLastS)) return No("driver-too-late", "the driver can be turned only until 5:40 (§07 last chance to turn driver)", tick: T(driverLastS));
+            int walkT = walk ? Math.Max(0, WalkInTicks(op, "turn", p)) : 0; // the driver's last chance counts the walk in
+            if (p == Driver && Tick + walkT + T((int)q.S) > T(driverLastS)) return No("driver-too-late", "the driver can be turned only until 5:40 (§07 last chance to turn driver)", tick: T(driverLastS));
+            if (walk) return WalkIn(op, o, p, true);
             Cash -= q.Usd; // the price is paid when the order is given; a refusal gives back exactly this (Redline E2)
             Engage(op, o, (int)q.S);
             op.BusyQuote = q; op.BusyPaid = q.Usd;

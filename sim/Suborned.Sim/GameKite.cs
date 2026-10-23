@@ -38,7 +38,7 @@ using System.Collections.Generic;
 namespace Suborned.Sim
 {
     /// <summary>A body walked off its scripted path by the kite answer (the pre-fight response unit, the pre-fight rival crew): out, hold, back.</summary>
-    public sealed class KiteDisp { public Path P = null!; public int Start, Phase, BackStart; public Pt Face; }
+    public sealed class KiteDisp { public Path P = null!; public int Start, Phase, BackStart; public Pt Face; public bool Press; } // Press: engine 0.19.0, the drawn crew pressing for the Vale holder (ai.intent.rivals.press)
 
     /// <summary>What a hostile would do if the agent fired on it now (brief 027 F2, Pulse §3 the chip): its side ("police" or "rivals"), where it
     /// goes (police: the stop point inside its ring of the agent; rivals: the cover or blind point), and the ticks until it is there. Read-only.</summary>
@@ -112,6 +112,7 @@ namespace Suborned.Sim
             {
                 var g = SecGuns[k]; if (g.Down || secJoined[k]) continue;
                 var pose = SecOfficerPose(k); if (!pose.HasValue) continue;
+                { int kk = k; IntentSight(g, pose.Value.pos, p => SecOfficerWatching(kk, p, false)); } // engine 0.19.0: from intent-close-alert, close in on a sighting
                 KiteBody(g, pose.Value.pos, null, k);
             }
             foreach (var h in Hostiles)
@@ -124,6 +125,7 @@ namespace Suborned.Sim
             {
                 if (u.Legacy || u.Patrol || u.Robot || u.Gun.Down || !u.OnStreet(Tick)) continue;
                 var up = UnitPose(u); if (!up.HasValue) continue;
+                { var uu = u; if (UnitStill(u)) IntentSight(u.Gun, up.Value.pos, p => UnitSees(uu, p, false)); } // engine 0.19.0: a unit at its scene closes in on a sighting
                 KiteBody(u.Gun, up.Value.pos, null, -1, u);
             }
         }
@@ -309,6 +311,7 @@ namespace Suborned.Sim
         void KiteRivals()
         {
             var g = RivalsGun; if (!RivalsDrawn || !RivalsPresent || g.Down) { rivalsDisp = null; return; }
+            if (IntentPress()) return; // engine 0.19.0 (ai.intent.rivals.press): the press owns the crew's walk
             if (rivalsDisp != null)
             {
                 var d = rivalsDisp; long len = d.P.Length;
@@ -474,7 +477,7 @@ namespace Suborned.Sim
             foreach (var x in Hostiles) G1(x.Gun);
             G1(RivalsGun);
             foreach (var u in Units) if (!u.Legacy && !u.Patrol && !u.Robot) G1(u.Gun); // retest R3
-            void D(KiteDisp d) { h.I(d.Start).I(d.Phase).I(d.BackStart).P(d.Face).I(d.P.Points.Length); foreach (var p in d.P.Points) h.P(p); }
+            void D(KiteDisp d) { h.I(d.Start).I(d.Phase).I(d.BackStart).P(d.Face).I(d.P.Points.Length); foreach (var p in d.P.Points) h.P(p); if (d.Press) h.S("press"); }
             foreach (var kv in secDisp) { h.I(kv.Key); D(kv.Value); }
             foreach (var kv in unitDisp) { h.S(kv.Key); D(kv.Value); }
             h.Z(rivalsDisp != null); if (rivalsDisp != null) D(rivalsDisp);

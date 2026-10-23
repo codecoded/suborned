@@ -1,0 +1,65 @@
+camera play: ortho True size 14 fov 60 near 0.3 far 1682.97 occlusionCulling True layerCullDistances>0: 0 pos (-233.54, 98.51, -336.69) rot (38.00, 30.00, 0.00)
+camera data: AA SubpixelMorphologicalAntiAliasing renderShadows True postFX True depthTex True
+cameras enabled: signals camera far 1682.97, play far 1682.97
+urp PC_RPAsset: shadowDistance 260 cascades 1 mainShadowRes 4096 renderScale 1 msaa 1 hdr True GRD InstancedDrawing GRDocclusion False smallMesh% 0 lodCrossFade True softShadows True
+quality PC: lodBias 1 maxLOD 0 shadowDistance(q) 40 vSync 0
+fog True mode Linear start 1100 end 7500 density 0 colour RGBA(0.953, 0.933, 0.894, 1.000)
+sun sun shadows Soft; lights with shadows: 1; lights: 1
+renderers (mesh+skinned, active+enabled): 29803, skinned 48, in LODGroups 23260, static-batched 5745 (in LODGroups 1487); triangles all levels 47,543,273, at LOD0/no-LOD 40,900,878
+LODGroups 9049 (enabled 9049): levels 2→5255, 3→3794; last level never culls 9030, culls 19
+last-LOD cull heights: min 0 median 0 max 0.012
+  cat HarbourDistrict/street/street: renderers 7874, inLOD 6939, static 9, tris 30,942,895, casters 7874
+  cat HarbourDistrict/facades/bld: renderers 2908, inLOD 2908, static 1473, tris 10,388,464, casters 2908
+  cat HarbourDistrict/ground-pieces/street: renderers 1400, inLOD 0, static 120, tris 777,694, casters 1400
+  cat HarbourDistrict/roofs/bld: renderers 782, inLOD 782, static 0, tris 661,808, casters 782
+  cat HarbourDistrict/frontages/bld: renderers 420, inLOD 420, static 0, tris 612,451, casters 420
+  cat HarbourDistrict/street/crossing: renderers 11434, inLOD 11434, static 0, tris 435,002, casters 414
+  cat HarbourDistrict/horizon/horizon: renderers 523, inLOD 523, static 0, tris 381,392, casters 0
+  cat batches/skins/facade@-5,: renderers 63, inLOD 0, static 63, tris 161,486, casters 63
+  cat HarbourDistrict/civic/civic: renderers 55, inLOD 51, static 0, tris 152,002, casters 55
+  cat batches/skins/facade@-4,: renderers 62, inLOD 0, static 62, tris 150,666, casters 62
+  cat handover/engine/op: renderers 10, inLOD 9, static 0, tris 148,062, casters 10
+  cat HarbourDistrict/signatures/tower: renderers 30, inLOD 30, static 0, tris 143,322, casters 30
+  cat HarbourDistrict/frontages/mega: renderers 81, inLOD 81, static 0, tris 120,202, casters 81
+  cat batches/buildings/facade@1,: renderers 37, inLOD 0, static 37, tris 118,571, casters 37
+  cat batches/buildings/facade@2,: renderers 41, inLOD 0, static 41, tris 105,456, casters 41
+  cat HarbourDistrict/signatures/signature: renderers 6, inLOD 6, static 0, tris 103,556, casters 6
+  cat batches/buildings/facade@3,: renderers 35, inLOD 0, static 35, tris 101,376, casters 35
+  cat batches/buildings/facade@-5,: renderers 56, inLOD 0, static 56, tris 99,738, casters 56
+  cat handover/engine/crowd: renderers 29, inLOD 29, static 0, tris 97,179, casters 29
+  cat batches/buildings/facade@-1,: renderers 32, inLOD 0, static 32, tris 96,918, casters 32
+  cat batches/buildings/facade@0,: renderers 29, inLOD 0, static 29, tris 91,610, casters 29
+  cat batches/buildings/facade@-4,: renderers 52, inLOD 0, static 52, tris 90,386, casters 52
+  cat HarbourDistrict/landmarks/landmark: renderers 19, inLOD 18, static 2, tris 87,866, casters 19
+  cat batches/civic/DK_Chrome@-3,: renderers 18, inLOD 0, static 17, tris 71,968, casters 18
+  cat HarbourDistrict/signatures/station: renderers 12, inLOD 12, static 0, tris 70,950, casters 12
+  cat batches/skins/facade@1,: renderers 52, inLOD 0, static 52, tris 57,710, casters 52
+  cat HarbourDistrict/megastructures/mega: renderers 6, inLOD 6, static 3, tris 45,946, casters 6
+  cat batches/skins/facade@3,: renderers 47, inLOD 0, static 47, tris 45,386, casters 47
+  cat batches/skins/facade@2,: renderers 50, inLOD 0, static 50, tris 42,226, casters 50
+  cat batches/skins/facade@0,: renderers 38, inLOD 0, static 38, tris 40,666, casters 38
+  no-LOD mesh DK_WashingtoniaPalm_Street: n 803 × 19190 = 15,409,570
+  no-LOD mesh static:DK_Tile_Tactile: n 21 × 14812 = 311,052
+  no-LOD mesh static:DK_DrainGrate: n 47 × 4068 = 191,196
+  no-LOD mesh DK_WindowBox: n 50 × 2298 = 114,900
+  no-LOD mesh DK_Kerb_Pearl_1: n 228 × 336 = 76,608
+  no-LOD mesh DK_BikeRack: n 10 × 7572 = 75,720
+  no-LOD mesh static:DK_ManholeCover: n 13 × 5388 = 70,044
+  no-LOD mesh DK_Kerb_Pearl_0: n 237 × 228 = 54,036
+  no-LOD mesh DK_PottedTopiary: n 9 × 4720 = 42,480
+  no-LOD mesh static:DK_Tile_Terrazzo: n 39 × 918 = 35,802
+  no-LOD mesh DK_VendingMachine_Cola: n 9 × 3955 = 35,595
+  no-LOD mesh DK_RobotNanny: n 2 × 17168 = 34,336
+  no-LOD mesh enforcer_LOD0: n 1 × 28796 = 28,796
+  no-LOD mesh DK_BoardingPavilion_TB_Square: n 1 × 28766 = 28,766
+  no-LOD mesh DK_ShrubMound: n 11 × 2526 = 27,786
+  no-LOD mesh DK_RobotButler: n 2 × 12720 = 25,440
+  no-LOD mesh DK_TopiaryCone: n 10 × 2484 = 24,840
+  no-LOD mesh DK_Lockers: n 2 × 10712 = 21,424
+  no-LOD mesh DK_TreePit_Pearl: n 67 × 244 = 16,348
+  no-LOD mesh static:track@-1,-4: n 1 × 16340 = 16,340
+  no-LOD mesh DK_Tile_Tactile: n 1 × 14812 = 14,812
+  no-LOD mesh static:DK_Chrome@-3,-5#-12,-19: n 1 × 14176 = 14,176
+  no-LOD mesh static:facade@1,-11#5,-43: n 3 × 8286 = 13,078
+  no-LOD mesh static:DK_Chrome@-3,-4#-10,-16: n 1 × 12596 = 12,596
+  no-LOD mesh static:facade@1,0#4,3: n 3 × 1910 = 12,560

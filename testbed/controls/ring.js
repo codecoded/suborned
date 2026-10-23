@@ -5,6 +5,7 @@ import { KINDS, priceLine } from './data.js';
 import { icon } from './icons.js';
 import { planFor, crew } from './orders.js';
 import { facesHtml } from './markers.js';
+import { isFresh, cancelsOf, cancelHtml } from './gains.js';
 
 const R1 = 34, R2 = 78, SZ = 330, C = SZ / 2;
 const pt = (r, a) => [C + r * Math.sin(a * Math.PI / 180), C - r * Math.cos(a * Math.PI / 180)];
@@ -36,7 +37,8 @@ function wedgeHtml(w, i, n, style, lit, hover) {
   const col = isDef ? '#10201f' : k.color;
   const d = arc(R1, R2 + (isDef ? 12 : 0), a0, a1);
   const [tx, ty] = pt(R2 + 12, mid), tab = isDef ? `<path d="M${tx - 14} ${ty + 4}L${tx} ${ty - 18}L${tx + 14} ${ty + 4}Z" fill="${k.color}" stroke="#10201f" stroke-width="3" stroke-linejoin="round"/>` : '';
-  return `<g data-w="${i}" class="wedge${hover ? ' on' : ''}"><path d="${d}" fill="${fill}" stroke="${hover ? '#fff' : k.color}" stroke-width="${hover ? 3 : 2}" ${w.kind === 'harm' ? 'stroke-dasharray="7 5"' : ''}/>${tab}
+  const nw = G.ring && isFresh(G.ring.ent, w.id), [nx, ny] = pt(R2 + (isDef ? 12 : 0) - 2, mid + 32); // brief 043: an act that just opened has a lit pip on its wedge
+  return `<g data-w="${i}" class="wedge${hover ? ' on' : ''}"><path d="${d}" fill="${fill}" stroke="${hover ? '#fff' : k.color}" stroke-width="${hover ? 3 : 2}" ${w.kind === 'harm' ? 'stroke-dasharray="7 5"' : ''}/>${tab}${nw ? `<circle cx="${nx}" cy="${ny}" r="7" fill="#fff" stroke="${k.color}" stroke-width="3" class="newring"/>` : ''}
     <foreignObject x="${ix - 16}" y="${iy - 16}" width="32" height="32" style="color:${col};pointer-events:none"><div class="wi">${icon(w.icon, isDef ? 30 : 24)}</div></foreignObject></g>`;
 }
 
@@ -62,7 +64,7 @@ function plate() {
   const h = r.hover, w = h === 'dots' ? null : typeof h === 'string' && h[0] === 'r' ? r.rest[+h.slice(1)] : r.shown[h >= 0 ? h : 0];
   if (!w) { p.innerHTML = 'More ways'; p.style.setProperty('--c', '#f1ead8'); return; }
   p.style.setProperty('--c', KINDS[w.kind].color); p.classList.toggle('harm', w.kind === 'harm');
-  p.innerHTML = icon(w.icon, 18) + (() => { const pl = planFor(r.ent, w, crew(), runNow()); return priceLine(w, r.ent, pl.walkS, true, '', pl.running).join('<i>·</i>') + facesHtml(pl.agents); })();
+  p.innerHTML = icon(w.icon, 18) + (isFresh(r.ent, w.id) ? '<em class="new"></em>' : '') + (() => { const pl = planFor(r.ent, w, crew(), runNow()); return priceLine(w, r.ent, pl.walkS, true, '', pl.running).join('<i>·</i>') + facesHtml(pl.agents) + cancelHtml(cancelsOf(pl.agents)); })();
 }
 
 export function ringPointer(e, down) {

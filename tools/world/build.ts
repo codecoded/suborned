@@ -6,7 +6,7 @@ import type { Derived, Plan } from '../plan/plan';
 import { type Civic, toPlanFn } from '../plan/civic';
 import { placements, modeOf } from '../plan/transit';
 import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, World } from '../../contracts/world/world.schema';
-import { ctxOf, rng } from './gen/common';
+import { FLAT_FOOT, LAND, ctxOf, rng } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
 import { adoptedBy, landmarkKit } from './gen/kitrefs';
@@ -26,7 +26,7 @@ export const PROV = {
   // standing height is unchanged (pavement above). TODO standards.roads.kerb
   kerb: { width: 0.3, height: 0.168 },
   water: WATER_LEVEL, quayBase: -2.5, // TODO standards.harbour
-  foot: 0.02, ground: -0.03, beyond: -0.02, // flat layers kept apart in height so they never z-fight
+  foot: FLAT_FOOT, ground: LAND, beyond: -0.02, // flat layers kept apart in height so they never z-fight
   track: { width: 1.6, level: 0.04, depth: 0.04 }, // TODO standards.tram.track
   beam: { width: 1.5, depth: 1.6, pylon: 1.6, cap: 1 }, // beam half-width 0.75 is standards.transit's; TODO standards.skyrail.beam
   platform: { tram: { width: 3, height: 0.3 }, sky: { width: 4, length: 50 } }, // sky 4 m from standards.levels.station; TODO standards.tram.platformHeight
@@ -38,16 +38,27 @@ const r3 = (n: number) => Math.round(n * 1000) / 1000, r4 = (n: number) => Math.
 const rv = (p: V): V => [r3(p[0]), r3(p[1])];
 const ring = (poly: V[]) => poly.map(rv);
 
+/** The look keys of the carriageway and its kerb cap (standards.streetscape.roads.finish; brief 028 Road, Sky 2026-10-22 "can try"): a road's surface is `keys[byClass[its class]].surface`, the circus ring's
+ *  is its gyratory road's, a kerbed bay's is its road's (finish.also), the kerb's is `finish.kerb.surface`. A plan without the finish standard (a pinned plan) keeps the old city's `asphalt` and `kerb`. */
+export function roadSurfaces(plan: Plan): { of: (cls: string) => string; kerb: string; keyed: boolean } {
+  const fin = (plan.standards as any).streetscape?.roads?.finish, keys = fin?.keys ?? {}, by = fin?.byClass ?? {};
+  const of = (cls: string): string => { const k = keys[by[cls]]; if (fin && !k?.surface) throw new Error(`finish: class ${cls} names ${JSON.stringify(by[cls])}, which has no surface key (standards.streetscape.roads.finish.keys)`); return k?.surface ?? 'asphalt'; };
+  return { of, kerb: fin?.kerb?.surface ?? 'kerb', keyed: !!fin };
+}
+
 function ground(plan: Plan, d: Derived, civ: Civic): World['ground'] {
-  const wide = (r: Derived['roads'][number]): Road => ({ id: `road/${r.id}`, surface: 'asphalt', kerbSurface: 'kerb', line: ring(r.line), width: r.w, level: 0, kerbWidth: PROV.kerb.width, kerbHeight: PROV.kerb.height });
+  const fin = roadSurfaces(plan);
+  const wide = (r: Derived['roads'][number]): Road => ({ id: `road/${r.id}`, surface: fin.of(r.class), kerbSurface: fin.kerb, line: ring(r.line), width: r.w, level: 0, kerbWidth: PROV.kerb.width, kerbHeight: PROV.kerb.height });
   const c = plan.circus;
+  // a kerbed bay takes its road's finish (finish.also); the others (the service bay off its drive) keep the pavement's
+  const kerbedBay = new Map<string, string>(((plan.standards as any).streetscape?.roads?.kerbs?.bays?.kerbed ?? []).map((k: { bay: string; road: string }) => [k.bay, k.road]));
   const quayX = Math.min(...plan.quay.flat().map(p => p[0]));
   const flats: Flat[] = [
     { id: 'ground/land', surface: 'pavement', ring: rectPoly([plan.sheet.x[0], quayX, plan.sheet.y[0], plan.sheet.y[1]]), level: PROV.ground },
     ...plan.beyond.map((b, i): Flat => ({ id: `ground/beyond-${i}`, surface: 'beyond', ring: ring(b), level: PROV.beyond })),
-    ...civ.bays.map((b): Flat => ({ id: `civic/bay/${b.id}`, surface: 'bay', ring: ring(b.poly), level: PROV.foot })),
+    ...civ.bays.map((b): Flat => ({ id: `civic/bay/${b.id}`, surface: kerbedBay.has(b.id) ? fin.of(d.roads.find(r => r.id === kerbedBay.get(b.id))?.class ?? 'access') : 'bay', ring: ring(b.poly), level: PROV.foot })),
   ];
-  const circus: Circus = { id: 'circus/crown', surface: 'asphalt', islandSurface: 'circus/island', centre: rv(c.c), radius: c.ring[1], islandRadius: c.ring[0], level: 0, islandHeight: PROV.pavement };
+  const circus: Circus = { id: 'circus/crown', surface: fin.of(d.roads.find(r => r.gyratory)?.class ?? 'district'), islandSurface: 'circus/island', centre: rv(c.c), radius: c.ring[1], islandRadius: c.ring[0], level: 0, islandHeight: PROV.pavement };
   return {
     roads: d.roads.filter(r => !r.gyratory).map(wide), // the gyratory is the circus ring
     foot: plan.foot.map((f): Road => ({ id: `foot/${f.id}`, surface: 'foot', kerbSurface: 'kerb', line: f.pts.map(rv), width: f.w, level: PROV.foot, kerbWidth: 0, kerbHeight: 0 })),

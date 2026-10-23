@@ -1,0 +1,11 @@
+scout-take-vale                    failure enforcer-down 4:33.4 T13 A2 hits 11/18 (61%) down[fixer] left[] replay true
+    3:45.7 scout move : TAKEN
+    4:30.0 scout take councillor: refused: only the Enforcer takes Vale (§03)
+scout-carry-vale                   failure enforcer-down 4:33.4 T13 A2 hits 11/18 (61%) down[fixer] left[] replay true
+    3:45.7 scout move : TAKEN
+    4:30.0 scout carry councillor: refused: there is no body of councillor to carry
+scout-carry-enforcer               failure enforcer-down 4:33.4 T13 A2 hits 11/18 (61%) down[fixer] left[] replay true
+    3:45.7 scout move : TAKEN
+    4:30.0 scout carry enforcer: refused: enforcer is not down
+tech-go                            success  5:08.0 T14 A2 hits 2/18 (11%) down[] left[scout,fixer,tech] replay true
+    5:08.0 tech go : TAKEN

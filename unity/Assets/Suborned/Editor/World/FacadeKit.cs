@@ -167,6 +167,10 @@ namespace Suborned.World
                 foreach (var (a, b) in Complement(Hidden(w, m, peers), w.Len))
                     if (b - a >= 0.2f) Edge(kitM, kitG, w.Sub(a, b), c);
             }
+            // brief 048 (Vela): the fallback path painted its window glass as class 0 (matte), so a civic tower's windows read as flat dark teal
+            // (tp-street). Glass is surface class 3 (FacadeSurface.hlsl: the fake-sky pane), as the procedural facade's, vertex alpha = 1 - class / 8.
+            var glassCol = new Color32(235, 255, 255, (byte)Mathf.RoundToInt(255f * (1f - 3f / 8f)));
+            for (int i = 0; i < kitG.VertexCount; i++) kitG.Colour(i, glassCol);
             nodes.Part(el, m.Id + "/walls", kitM, spec.Atlas.Matte);
             nodes.Part(el, m.Id + "/glass", kitG, spec.Atlas.Glossy);
         }

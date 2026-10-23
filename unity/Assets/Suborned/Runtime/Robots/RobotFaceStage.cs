@@ -18,6 +18,7 @@ namespace Suborned.Robots
         const int Blinks = 24; const float Half = .04f, Shut = .07f;
         static readonly int StageId = Shader.PropertyToID("_Stage"), GazeId = Shader.PropertyToID("_Gaze"), BlinkId = Shader.PropertyToID("_Blink");
 
+        [System.NonSerialized] Vector3 lastKey; [System.NonSerialized] bool posed;
         [NonSerialized] Renderer[] screens; [NonSerialized] MaterialPropertyBlock block; [NonSerialized] float[] blinkAt; [NonSerialized] float blinkLoop;
         [NonSerialized] int stage, gaze;
 
@@ -36,6 +37,8 @@ namespace Suborned.Robots
             if (screens == null || blinkAt == null) Build();
             if (screens.Length == 0) return;
             float lid = stage == 0 ? Lid(seconds) : 0f;
+            var key = new Vector3(stage, stage is 1 or 2 ? gaze : 0, lid); // brief 045 F6: set the block only on a change (the GPU Resident Drawer's per-frame rebuild)
+            if (posed && key == lastKey) return; posed = true; lastKey = key;
             for (int i = 0; i < screens.Length; i++)
             {
                 var s = screens[i]; if (!s) continue;
@@ -56,6 +59,7 @@ namespace Suborned.Robots
 
         void Build()
         {
+            posed = false;
             screens = Array.FindAll(GetComponentsInChildren<Renderer>(true), r => r.sharedMaterial && r.sharedMaterial.HasProperty(StageId));
             block ??= new MaterialPropertyBlock();
             var rng = new System.Random(RobotFace.SeedOf(seed, transform.position, 3, 41.3f, 23.9f, 4567));

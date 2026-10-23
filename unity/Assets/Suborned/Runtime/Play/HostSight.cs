@@ -80,6 +80,8 @@ namespace Suborned.Play
             Guard("sight", () =>
             {
                 if (Peeking || HoldOn && WatchReach.HasValue && Hover != null) { shownFans.AddRange(Game.KnownFans()); return; } // brief 041: hovering a Watch shows the cones the cell has learned
+                if (RingFocus is (string _, string rw) && rw.Length > 0) // a ring wedge naming a camera: its cone, when the cell knows its sight (sight.unknown: never more)
+                { if (Game.Known(rw) is { Sight: true }) { FocusWatcher = rw; var rf = Game.ConeFan(rw); if (rf != null) shownFans.Add(rf); } return; }
                 var w = WatcherOf(Hover) ?? WatcherOf(Panel?.T) ?? ScoutWatch();
                 if (w == null || Game.Known(w) is not { Sight: true }) return;
                 FocusWatcher = w; var f = Game.ConeFan(w); if (f != null) shownFans.Add(f);

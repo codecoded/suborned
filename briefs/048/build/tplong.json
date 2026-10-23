@@ -1,0 +1,10 @@
+{
+ "schema": "suborned.tplong.report/1",
+ "status": "ok",
+ "build": "Build 0.2.93 · c031 · sim 0.26.0 · 04a4fb75+",
+ "rows": [
+  {"name": "play-opening", "status": "ok", "screen": [2880, 1864], "frames": {"count": 1788, "meanMs": 3.357, "p99Ms": 4.137, "maxMs": 5.496}, "gpuMs": 3.037, "mainMs": 3.357, "renderMs": 1.08, "counters": {"triangles": 1641053.939, "setPass": 106, "shadowCasters": 539}, "drawn": {"renderers": 325, "beyond150": 200}, "grdRebuildMs": -1},
+  {"name": "tp-street", "status": "ok", "screen": [2880, 1864], "faceHeading": 180, "frames": {"count": 1634, "meanMs": 3.674, "p99Ms": 4.097, "maxMs": 12.34}, "gpuMs": 3.342, "mainMs": 3.673, "renderMs": 1.824, "counters": {"triangles": 3216498.234, "setPass": 214.001, "shadowCasters": 774}, "drawn": {"renderers": 1579, "beyond150": 1107}, "grdRebuildMs": -1},
+  {"name": "tp-worst", "status": "ok", "screen": [2880, 1864], "faceHeading": 89.956, "frames": {"count": 1495, "meanMs": 4.016, "p99Ms": 4.628, "maxMs": 6.577}, "gpuMs": 3.52, "mainMs": 4.015, "renderMs": 2.456, "counters": {"triangles": 5508304.666, "setPass": 350.001, "shadowCasters": 898}, "drawn": {"renderers": 2396, "beyond150": 1374}, "grdRebuildMs": -1}
+ ]
+}

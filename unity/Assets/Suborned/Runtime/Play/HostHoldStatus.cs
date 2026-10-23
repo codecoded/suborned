@@ -53,7 +53,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 ref var a = ref acts[k]; if (!a.Active) continue;
-                var op = Game.Ops[k]; bool walking = pending[k] != null && pending[k].Do == a.O.Do, doingIt = op.Busy != null && op.Busy.Do == a.O.Do;
+                var op = Game.Ops[k]; bool walking = pending[k] != null && pending[k].Do == a.O.Do || op.Act != null && op.Act.Do == a.O.Do, doingIt = op.Busy != null && op.Busy.Do == a.O.Do;
                 if (walking || doingIt) { a.Begun = true; continue; }
                 if (now - a.At < 0.3f && !a.Begun && a.O.Do != "call") continue; // the order is a tick from showing
                 a.Active = false; a.EndAt = now; a.Stopped = a.Cancelled;
@@ -62,7 +62,7 @@ namespace Suborned.Play
             // fire: the target down ends the hold's words with a beat; a lock lapses with its order
             void Down(FireSession s) { var tg = Game.GunOf(s.Id); var car = Game.CarOf(s.Id); bool down = car != null ? car.DisabledAt >= 0 : tg != null && tg.Down; if (down && fireBeatOn != s.Id) { fireBeatOn = s.Id; fireBeatAt = now; fireBeatName = s.Name; fireBeatIs = car != null ? "disabled" : "down"; } }
             if (FireHold != null) Down(FireHold);
-            for (int i = FireLocks.Count - 1; i >= 0; i--) { var s = FireLocks[i]; Down(s); if (!s.Agents.Exists(k => Game.Ops[k].Gun.Order == s.Id)) FireLocks.RemoveAt(i); }
+            for (int i = FireLocks.Count - 1; i >= 0; i--) { var s = FireLocks[i]; Down(s); if (now - s.Start > 0.5f && !s.Agents.Exists(k => Game.Ops[k].Gun.Order == s.Id)) FireLocks.RemoveAt(i); }
         }
         /// <summary>CancelAgent's hook: what agent k was doing is stopped (the pill says "Stopped").</summary>
         void HoldCancelled(int k) { if (k >= 0 && k < 4 && acts[k].Active) acts[k].Cancelled = true; }
@@ -91,16 +91,10 @@ namespace Suborned.Play
             {
                 var a = acts[w.Agents[0]]; w.O = a.O;
                 if (now - a.At < 0.8f) { w.Text = $"{a.Head} · ordered"; return w; }
-                if (w.Agents.Count == 1) { int k = w.Agents[0]; w.Text = Game.Ops[k].Busy == null ? $"{(Game.Ops[k].Running ? "Running" : "Walking")} there · {WalkLeftS(k)} s" : $"{a.Ing} · {ActLeftS(k)} s left"; return w; }
+                if (w.Agents.Count == 1) { int k = w.Agents[0]; w.Text = Game.Ops[k].Busy == null ? (Game.Ops[k].Act != null ? WalkLine(Game.Ops[k].Act) + $" · {WalkLeftS(k)} s" : $"{(Game.Ops[k].Running ? "Running" : "Walking")} · {WalkLeftS(k)} s") : $"{a.Ing} · {ActLeftS(k)} s left"; return w; }
                 foreach (var k in w.Agents) w.Items.Add((k, PlateWords(k))); return w;
             }
-            for (int k = 0; k < 4; k++)
-            {
-                var a = acts[k]; if (!SameTarget(a.T, t) || a.EndAt < 0f) continue;
-                if (a.Stopped && now - a.EndAt < 1f) { w.Text = "Stopped"; w.O = a.O; return w; }
-                if (!a.Stopped && now - a.EndAt < 2.5f) { w.Text = $"Done · {a.Done}"; w.O = a.O; w.Agents.Add(k); return w; }
-            }
-            return null;
+            return null; // brief 043: the old "Done · …" and "Stopped" lines are the gain chip and the cancel pop now (shown without hover)
         }
 
         /// <summary>One agent's fire on `id` now: draw, aim, fire, or why it waits.</summary>
@@ -108,37 +102,53 @@ namespace Suborned.Play
         {
             var g = Game; var op = g.Ops[k]; var gun = op.Gun;
             if (!(gun.Drawn && gun.HolsterAt < 0) || g.Tick < gun.DrawReady) return ("draw", "drawing");
-            var at = g.PosOf(id); if (!at.HasValue) return ("blocked", "No clear shot");
-            if (gun.W != null && G.Isqrt(G.D2(op.Pos, at.Value)) > gun.W.MaxCm) return ("blocked", "Out of range");
-            if (!g.S.Sight(op.Pos, at.Value, g.R.Eye)) return ("blocked", "No clear shot");
+            if (op.CloseWalk && op.Walk != null) return ("walk", (Text?.DoneWord("walk.plate", "→ {who}") ?? "→ {who}").Replace("{who}", Bare(FireName(id)))); // item 13: walking in for the shot, not "too far"
+            var at = g.PosOf(id); if (!at.HasValue) return ("blocked", "No clear line");
+            if (gun.W != null && G.Isqrt(G.D2(op.Pos, at.Value)) > gun.W.MaxCm) return ("blocked", "Too far");
+            if (!g.S.Sight(op.Pos, at.Value, g.R.Eye)) return ("blocked", "No clear line");
             bool shot = lastHit.TryGetValue(Op.Name((OpId)k), out var lh) && lh.target == id && Time.unscaledTime - lh.at < 6f;
             if (FireNow[k].Firing && shot) return ("fire", "firing");
             return ("aim", "aiming");
         }
 
-        /// <summary>Fire.js fireStatus: the hold's (or a lock's) words: "Drawing…", "Aiming · 1 s", "Firing at an officer · hit · 1 of 3 · down
-        /// in 3 s", "Officer down", "Out of range", "No clear shot", "Stopped". Null when no hold or lock is on.</summary>
-        public LiveWords FireStatus()
+        /// <summary>Fire.js fireStatus, one quiet line (Sky: "I worry we've lost the Syndicate simplicity"; Fable's wording row 17): "Drawing",
+        /// "Aiming · 1 s", "Firing at an officer · down in 3 s", "Officer down", "Too far", "No clear line", "Stopped". The newest lasting fire
+        /// order the host gave first; else, in a fight, the weapons-free picks (the engine's, FireStateOf mode weapons-free), the biggest group.
+        /// Null when nothing fires. Hits and misses show on the tracer and the bar, not in words.</summary>
+        public LiveWords FireStatus(Target autoOn = null, bool anyAuto = false)
         {
             if (Game == null) return null; float now = Time.unscaledTime;
             if (now - fireBeatAt < 1f) return new LiveWords { Id = fireBeatOn, Fire = true, Text = $"{Cap1(Bare(fireBeatName))} {fireBeatIs}" };
-            var s = FireHold; if (s == null) foreach (var l in FireLocks) { s = l; break; }
-            if (s == null) return now - fireStoppedAt < StoppedS ? new LiveWords { Id = fireStoppedOn, Fire = true, Text = "Stopped" } : null;
-            var w = new LiveWords { Id = s.Id, Fire = true }; var tg = Game.GunOf(s.Id);
-            var on = s.Agents.FindAll(k => Armed(k) && (s.Trigger ? TriggerDown && k == dAgent : Game.Ops[k].Gun.Order == s.Id || Game.Ops[k].Gun.Order.Length == 0 && now - s.Start < 0.5f));
+            FireSession s = null; for (int i = FireLocks.Count - 1; i >= 0 && s == null; i--) if (FireLocks[i].Agents.Count > 0) s = FireLocks[i];
+            List<int> on;
+            if (s != null) on = s.Agents.FindAll(k => Armed(k) && (Game.Ops[k].Gun.Order == s.Id || Game.Ops[k].Gun.Order.Length == 0 && now - s.Start < 0.5f));
+            else
+            {
+                on = new List<int>(); string best = "";
+                string want = ""; if (autoOn != null && !anyAuto) want = FireIdOf(autoOn, out _);
+                if (FightOnNow && (anyAuto || want.Length > 0))
+                {
+                    var groups = new Dictionary<string, List<int>>();
+                    for (int k = 0; k < 4; k++) { var fs = FireNow[k]; if (fs.Mode == "weapons-free" && fs.Target is { Length: > 0 } ft && (anyAuto || ft == want)) { if (!groups.TryGetValue(ft, out var l)) groups[ft] = l = new List<int>(); l.Add(k); } }
+                    foreach (var kv in groups) if (kv.Value.Count > on.Count || kv.Value.Count == on.Count && string.CompareOrdinal(kv.Key, best) < 0) { on = kv.Value; best = kv.Key; }
+                }
+                if (on.Count == 0) return now - fireStoppedAt < StoppedS ? new LiveWords { Id = fireStoppedOn, Fire = true, Text = "Stopped" } : null;
+                s = new FireSession { Agents = on, Id = best, Name = FireName(best), Start = now - 1f };
+            }
+            var w = new LiveWords { Id = s.Id, Fire = true };
             if (on.Count == 0) { w.Text = "Stopped"; return w; }
             var ph = on.ConvertAll(k => (k, FireOne(k, s.Id)));
             var firing = ph.FindAll(x => x.Item2.phase == "fire"); var aiming = ph.FindAll(x => x.Item2.phase == "aim"); var blocked = ph.FindAll(x => x.Item2.phase == "blocked");
             if (firing.Count > 0)
             {
-                int k0 = firing[0].k; var wpn = Game.Ops[k0].Gun.W; string hm = lastHit.TryGetValue(Op.Name((OpId)k0), out var lh) && lh.target == s.Id ? (lh.hit ? " · hit" : " · miss") : "";
-                string count = ""; if (tg != null && wpn != null && wpn.Damage > 0) { int m = (tg.Max + wpn.Damage - 1) / wpn.Damage, n = m - (Math.Max(0, tg.Health) + wpn.Damage - 1) / wpn.Damage; count = $" · {n} of {m}"; }
                 int down = -1; foreach (var (k, _) in firing) { int d = FireDownS(k); if (d >= 0 && (down < 0 || d < down)) down = d; }
-                w.Text = $"Firing at {s.Name}{hm}{count}{(down >= 0 ? $" · {(Game.CarOf(s.Id) is { } c && c.DisabledAt < 0 ? "disabled" : "down")} in {down} s" : "")}"; foreach (var (k, _) in firing) w.Agents.Add(k); return w;
+                w.Text = $"Firing at {s.Name}{(down >= 0 ? $" · {(Game.CarOf(s.Id) is { } c && c.DisabledAt < 0 ? "disabled" : "down")} in {down} s" : "")}"; foreach (var (k, _) in firing) w.Agents.Add(k); return w;
             }
             if (aiming.Count > 0) { int left = int.MaxValue; foreach (var (k, _) in aiming) left = Math.Min(left, Math.Max(0, Game.Ops[k].Gun.NextShot - Game.Tick)); w.Text = $"Aiming · {Math.Max(1, (left + Game.Hz - 1) / Game.Hz)} s"; foreach (var (k, _) in aiming) w.Agents.Add(k); return w; }
+            var walking = ph.FindAll(x => x.Item2.phase == "walk");
+            if (walking.Count > 0 && walking.Count + blocked.Count == ph.Count) { w.Text = walking[0].Item2.words; foreach (var (k, _) in walking) w.Agents.Add(k); return w; } // item 13: "→ officer" while they walk in
             if (blocked.Count == ph.Count) { w.Text = blocked[0].Item2.words; foreach (var (k, _) in blocked) w.Agents.Add(k); return w; }
-            w.Text = "Drawing…"; foreach (var (k, _) in ph) w.Agents.Add(k); return w;
+            w.Text = "Drawing"; foreach (var (k, _) in ph) w.Agents.Add(k); return w;
         }
 
         /// <summary>The words on agent k's plate (ui.js orderWords): "queued", "drawing", "aiming", "firing", "walking 9 s", "watching 12 s"; "" idle.</summary>
@@ -146,21 +156,34 @@ namespace Suborned.Play
         {
             if (Game == null || k < 0 || k > 3) return "";
             if (Plan.Exists(x => x.K == k)) return "queued";
+            if (DoneTone(k) == "cancel" && DonePlate(k) is { Length: > 0 } cw) return cw; // brief 043: a dropped act says "cancelled" on the plate first, even as the new order starts
             var op = Game.Ops[k];
+            if (op.Down) return Text?.DoneWord("plate.down", null) ?? Text?.DoneWord("fire.agent-down", "down") ?? "down"; // item 13 (d): down is said, not only drawn grey
+            if (FireRefusalWord(k) is { Length: > 0 } fr) return fr; // item 13: why this agent took no part in the squad's fire order (two words)
             string fid = op.Gun.Order.Length > 0 ? op.Gun.Order : Driving && k == dAgent && TriggerDown ? TriggerTarget : FireNow[k].Firing ? FireNow[k].Target : "";
             // at most two words (the HUD budget: three are running text): the plate's icon says walk, run or the act, the words its time
-            if (fid.Length > 0 && op.Busy == null) { var (ph, wd) = FireOne(k, fid); return ph == "blocked" ? (wd == "Out of range" ? "too far" : "no line") : wd; }
+            if (fid.Length > 0 && op.Busy == null) { var (ph, wd) = FireOne(k, fid); return ph == "blocked" ? (wd == "Too far" ? Text?.DoneWord("fire.out-of-range", "too far") ?? "too far" : Text?.DoneWord("fire.no-clear-line", "no line") ?? "no line") : wd; }
             if (op.Busy != null) return $"{ActLeftS(k)} s";
+            if (op.Act != null) return WalkPlate(op.Act); // engine 0.23 walk-in (Fable less.done.walk.plate): "→ Inez"; the seconds stay on the pill
             if (op.Walk != null) return $"{WalkLeftS(k)} s";
+            if (DonePlate(k) is { Length: > 0 } dw) return dw; // brief 043: done, turned, not yet, refused, reported, cancelled (2.2 s)
+            // brief 049 row 10: no "under fire" plate: the portrait's pulse ring, the status slot's cause and the ground arc say it
+            if (op.Gun.StandDown >= 0 && FightOnNow && Drawn(k)) return "holding"; // X under weapons free: stood down until shot at
             return "";
         }
+
+        /// <summary>Fable's walk-in words (less.done.walk): the plate "→ Inez", the pill "to Inez · Listen".</summary>
+        string WalkPlate(Order act) => (Text?.DoneWord("walk.plate", "→ {who}") ?? "→ {who}").Replace("{who}", Text?.DoneWord("walk.who." + act.Target, Bare(Name(act.Target))) ?? Bare(Name(act.Target)));
+        public string WalkLine(Order act) => (Text?.DoneWord("walk.line", "to {target} · {verb}") ?? "to {target} · {verb}").Replace("{target}", Name(act.Target)).Replace("{verb}", VerbWord(act));
+        /// <summary>The plate's done word for agent k now (the plate's icon reads its tone), "" none.</summary>
+        public string PlateDoneTone(int k) => DonePlate(k).Length > 0 && Game != null && Game.Ops[k].Busy == null && Game.Ops[k].Walk == null ? DoneTone(k) : "";
 
         /// <summary>For the range panel's readout: the fire words now (the hold's, else agent k's own fire), "" none.</summary>
         public string FireWords(int k)
         {
-            var s = FireStatus(); if (s != null && s.Text.Length > 0) return s.Text;
+            var s = FireStatus(null, true); if (s != null && s.Text.Length > 0) return s.Text;
             if (Game == null || k < 0) return ""; var fs = FireNow[k]; if (!fs.Firing || fs.Target.Length == 0) return "";
-            var (ph, wd) = FireOne(k, fs.Target); return ph == "fire" ? $"Firing at {FireName(fs.Target)}{(FireDownS(k) is int d && d >= 0 ? $" · down in {d} s" : "")}" : ph == "aim" ? "Aiming" : ph == "draw" ? "Drawing…" : wd;
+            var (ph, wd) = FireOne(k, fs.Target); return ph == "fire" ? $"Firing at {FireName(fs.Target)}{(FireDownS(k) is int d && d >= 0 ? $" · down in {d} s" : "")}" : ph == "aim" ? "Aiming" : ph == "draw" ? "Drawing" : wd;
         }
 
         // ---------------------------------------------------------------- pause and plan
@@ -178,7 +201,7 @@ namespace Suborned.Play
             Plan.RemoveAll(x => x.K == k);
             if (path.Count == 0 || (path[0] - (frame.World(Game.Ops[k].Pos) + Vector3.up * 0.1f)).sqrMagnitude > 0.25f) path.Insert(0, frame.World(Game.Ops[k].Pos) + Vector3.up * 0.1f);
             Plan.Add(new PlanItem { K = k, Label = label, Icon = icon, Path = path, Exec = exec });
-            Status = "Paused: the orders start together";
+            Status = "Paused · orders queue";
         }
 
         string PlanLabel(Intent i, Target t) { var parts = HudToolkit.PillLine(this, i).Split(new[] { " · " }, StringSplitOptions.None); return parts.Length > 1 ? parts[0] + " · " + parts[1] : parts[0]; }
@@ -188,7 +211,7 @@ namespace Suborned.Play
         {
             if (Plan.Count == 0) return; var items = new List<PlanItem>(Plan); Plan.Clear(); flushing = true;
             try { foreach (var it in items) it.Exec(); } finally { flushing = false; }
-            PlanFlushed += items.Count; PlanFlushTick = Game.Tick; Status = $"Go: {items.Count} order{(items.Count > 1 ? "s" : "")} start together";
+            PlanFlushed += items.Count; PlanFlushTick = Game.Tick; Status = $"Started · {items.Count} order{(items.Count > 1 ? "s" : "")}";
         }
         /// <summary>Per frame, after the keys: the pause lifted gives the plan.</summary>
         void PlanFrame() { if (HoldOn && wasPaused && !Paused) FlushPlan(); wasPaused = Paused; }
@@ -233,22 +256,22 @@ namespace Suborned.Play
         void PortraitDrop(List<int> carry, Vector2 p, bool run)
         {
             if (carry == null || carry.Count == 0 || Game == null) return;
-            if (OverHud(p)) { Status = "Portrait drop: cancelled"; return; }
+            if (OverHud(p)) { Status = "Nothing there"; return; }
             PortraitDrops++; var t = TargetAt(p);
-            if (t != null && t.Kind == "op") { Status = "Portrait drop: cancelled"; return; }
+            if (t != null && t.Kind == "op") { Status = "Nothing there"; return; }
             if (t != null && (t.Kind == "hostile" || Combatant(t)))
             {
                 var id = FireIdOf(t, out var force); var who = carry.FindAll(Armed); if (id.Length == 0 || who.Count == 0) return;
                 var list = new List<Order>(); foreach (var k in who) list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force });
-                holdCommits = true; try { Fight(list, "left", p, TargetWorld(t), $"fire on {Name(id)}"); } finally { holdCommits = false; }
-                FireLocks.RemoveAll(x => x.Id == id); FireLocks.Add(new FireSession { Agents = who, Id = id, Name = FireName(id), Force = force, Start = Time.unscaledTime }); return;
+                holdCommits = true; try { Fight(list, "left", p, TargetWorld(t), $"fire at {Name(id)}"); } finally { holdCommits = false; }
+                LocksDrop(who); FireLocks.Add(new FireSession { Agents = who, Id = id, Name = FireName(id), Force = force, Start = Time.unscaledTime, Pin = true }); return; // a portrait lock holds against focus clicks and weapons free
             }
             if (t != null && t.Kind != "crowd")
             {
                 var keep = (bool[])Selected.Clone(); var keepAgent = Agent;
                 Array.Clear(Selected, 0, 4); foreach (var k in carry) Selected[k] = true; Agent = (OpId)carry[0];
                 ContextPlan plan = null; Guard("panel", () => plan = ContextFor(t, p)); int way = MainWay(plan);
-                if (way >= 0) { HoldGive(plan, way, t, p, run, "left"); Array.Copy(keep, Selected, 4); Agent = keepAgent; intentKey = ""; return; }
+                if (way >= 0) { HoldGive(plan, way, t, p, run, "left", false); Array.Copy(keep, Selected, 4); Agent = keepAgent; intentKey = ""; return; }
                 if (plan != null && plan.Choice.Order.Count > 0) { OpenRing(plan, p, false); if (Ring != null) { Ring.Sticky = true; Ring.Always = false; } intentKey = ""; return; } // the ring for the agents carried (they stay selected)
                 Array.Copy(keep, Selected, 4); Agent = keepAgent; intentKey = "";
                 PopKey("nothing-here", p, TargetWorld(t), Feedback.Info); return;
@@ -260,7 +283,7 @@ namespace Suborned.Play
 
         bool camFollow; Vector3? centreGoal;
         public bool CamFollowing => camFollow;
-        void HandMoved() { centreGoal = null; if (camFollow) { camFollow = false; Status = "Follow off"; } }
+        void HandMoved() { centreGoal = null; if (camFollow) { camFollow = false; Status = "Camera free"; } }
         void CamFollowFrame()
         {
             if (!HoldOn || Following || !cam || Game == null) return;
@@ -281,9 +304,11 @@ namespace Suborned.Play
             if (kb == null) return; var c = controls; bool mod = c.Held(kb, PlayAction.Force) || kb.leftCommandKey.isPressed || kb.rightCommandKey.isPressed;
             for (int i = 0; i < 4; i++) if (c.Down(kb, PlayAction.Agent1 + i) && Ring == null) { if (Driving) Select((OpId)i, false); else AgentKey(i, shift || mod); }
             if ((c.Down(kb, PlayAction.SelectAll) || mod && kb.aKey.wasPressedThisFrame) && Ring == null && !Driving) SelectAll();
-            if (c.Down(kb, PlayAction.Cancel)) { camFollow = !camFollow; centreGoal = null; Status = camFollow ? "Camera follows" : "Follow off"; }
+            if (c.Down(kb, PlayAction.Cancel)) { camFollow = !camFollow; centreGoal = null; Status = camFollow ? "Camera follows" : "Camera free"; }
             if (c.Down(kb, PlayAction.Cease)) HoldStop();
             if (c.Down(kb, PlayAction.CycleAgent) && Ring == null) HoldTab();
+            if (c.Down(kb, PlayAction.Gait)) ToggleFree(); // brief 041 (Sky): G toggles weapons free (a run is a double click or Shift)
+            if (kb.escapeKey.wasPressedThisFrame && Charge is { Done: false }) { CancelHold(); escTaken = true; } // Esc cancels a hold (and does nothing else this frame)
         }
 
         public void SelectAll() { for (int k = 0; k < 4; k++) Selected[k] = !Game.Ops[k].Down; if (Array.IndexOf(Selected, true) < 0) Selected[0] = true; Agent = (OpId)Array.IndexOf(Selected, true); Picked = -1; intentKey = ""; Status = "Squad: all four"; }
@@ -294,11 +319,26 @@ namespace Suborned.Play
             if (Game == null) return;
             for (int k = 0; k < 4; k++) if (Selected[k] && (doing[k].CanCancel || pending[k] != null)) CancelAgent(k, null);
             Plan.RemoveAll(x => Selected[x.K]);
-            if (FireHold != null) EndFireHold();
-            var list = new List<Order>(); for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Game.Ops[k].Gun.Order.Length > 0) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
-            if (list.Count > 0) { Send(list, null, null); fireStoppedAt = Time.unscaledTime; }
-            FireLocks.RemoveAll(s => s.Agents.TrueForAll(k => Selected[k]));
+            // the fire: a lasting order ceases; under weapons free a drawn agent stands down (it picks again once shot at: engine 0.19 cease)
+            var list = new List<Order>(); var who = new List<int>();
+            for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && (Game.Ops[k].Gun.Order.Length > 0 || Game.WeaponsFree && Drawn(k))) { list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" }); who.Add(k); }
+            if (list.Count > 0) { Send(list, null, null); fireStoppedAt = Time.unscaledTime; HoldStops++; }
+            LocksDrop(who);
         }
+
+        public int HoldStops { get; private set; }
+        public int FreeToggles { get; private set; }
+        bool escTaken;
+
+        /// <summary>G (brief 041, tuning.md §14): weapons free on or off for the cell, a logged order ({do: free, op: cell, on}). On, drawn agents
+        /// pick their own targets in a fight; off, they only return fire (Fable: "Return fire only").</summary>
+        public void ToggleFree()
+        {
+            if (Game == null || Game.Over || Fault != null) return; bool on = !Game.WeaponsFree;
+            if (Issue(new Order { Op = "cell", Do = "free", On = on }, null, null)) { FreeToggles++; Status = on ? "Weapons free" : "Return fire only"; FreeSaidAt = Time.unscaledTime; FireLogAdd($"free\t{on}"); }
+        }
+        /// <summary>When G was last pressed (the toggle's word shows for a moment).</summary>
+        public float FreeSaidAt { get; private set; } = -9f;
 
         /// <summary>Third person, Shift+T: the next agent (the camera glides to it).</summary>
         void DriveNextAgent()
@@ -339,20 +379,26 @@ namespace Suborned.Play
         public (Target t, int k)? WatchReach { get; private set; }
         float hoverPlanAt = -9f;
 
+        /// <summary>The right hold's offer on t: "Fire at …" with its price (down in n s, Trail a hit, Alert); null when nobody selected can fire on it.</summary>
+        public Intent FireOfferFor(Target t)
+        {
+            var (id, force) = HoldFireId(t); if (id.Length == 0) return null;
+            int fk = Driving ? dAgent : Array.FindIndex(Selected, s => s); var R = Game.R;
+            var ex = FireExtra(id, force); var m = System.Text.RegularExpressions.Regex.Match(ex, @"(\d+) s");
+            return new Intent { Label = force ? $"Fire at {t.Label}" : "Fire", Order = new Order { Op = Op.Name((OpId)Math.Max(0, fk)), Do = "fire", Target = id, Force = force }, Time = m.Success ? m.Groups[1].Value + " s" : "", Trail = $"T +{R.HitTrail}", Alert = $"A ≥{R.GunfireAlert}" }; // brief 049 row 3: a combatant wears its ring and the tail points at it: no noun; a civilian keeps it (the warning)
+        }
+
         Intent HoldIntent(Target t)
         {
             HoverPlan = null; HoverWay = -1; HoverDoers.Clear(); HoverSeen = false; HoverFire = false; WatchReach = null;
             if (t == null || t.Kind == "op" || Game == null) { views?.ShowPath(null); return null; }
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, lastHover)) || plan == null) return null;
             HoverPlan = plan; hoverPlanAt = Time.unscaledTime; int way = MainWay(plan); HoverWay = way;
-            if (way < 0)
+            if (way < 0 || FightOnNow && (t.Kind == "hostile" || Combatant(t))) // in a fight a hostile's offer is fire (the playground's inFight)
             {
                 views?.ShowPath(null);
-                var (id, force) = HoldFireId(t); if (id.Length == 0) return null;
-                if (!(t.Kind == "hostile" || Combatant(t) || Game.Range && t.Kind is "bystander" or "car")) return null; // a fire offer only where fire is the thing to do: never on a passer-by, a contact or the guard at rest
-                HoverFire = true; int fk = Driving ? dAgent : Array.FindIndex(Selected, s => s); var R = Game.R;
-                var ex = FireExtra(id, force); var m = System.Text.RegularExpressions.Regex.Match(ex, @"(\d+) s");
-                return new Intent { Label = $"Fire at {t.Label}", Order = new Order { Op = Op.Name((OpId)Math.Max(0, fk)), Do = "fire", Target = id, Force = force }, Time = m.Success ? m.Groups[1].Value + " s" : "", Trail = $"T +{R.HitTrail}", Alert = $"A ≥{R.GunfireAlert}" };
+                if (!FireOffered(t)) return null; // a fire offer where fire is the thing to do (Aster 2026-10-22: security too, with its price); never a passer-by or a contact
+                var fi = FireOfferFor(t); if (fi != null) HoverFire = true; return fi;
             }
             var doers = DoersOf(plan, way); HoverDoers.AddRange(doers); int k0 = doers.Count > 0 ? doers[0] : (int)Agent;
             var r = RowFor(plan, way, k0) ?? plan.Row(way); var i = r.I;

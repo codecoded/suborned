@@ -20,6 +20,12 @@ namespace Suborned.Play
         public static bool Arg(string name) => Environment.GetCommandLineArgs().Contains(name);
         public static string ArgValue(string name) { var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, name); return i >= 0 && i + 1 < a.Length ? a[i + 1] : null; }
 
+        /// <summary>A proof, a batch row or a probe launched this player (the same rule as tools/game/playing.ts: any flag but a person's launch
+        /// flags: -windowed, -popupwindow, -screen-*, -window-mode, -monitor, -psn_, -NS*, -Apple*). Batchmode always.</summary>
+        public static bool Automation => automation ??= Application.isBatchMode || Environment.GetCommandLineArgs().Skip(1).Any(x => x.StartsWith("-") && !PersonFlag(x));
+        static bool? automation;
+        static bool PersonFlag(string x) => x is "-windowed" or "-popupwindow" or "-window-mode" or "-monitor" or "-ApplePersistenceIgnoreState" || x.StartsWith("-screen-") || x.StartsWith("-psn_") || x.StartsWith("-NS") || x.StartsWith("-Apple");
+
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
         static void Screen0()
         {
@@ -137,6 +143,8 @@ namespace Suborned.Play
             // brief 041's port: Click walks, hold acts (the default) from here on: its Handover proofs, then fire, cars and the click-through under it
             h.controls.preset = ControlPreset.HoldActs; h.ControlsChanged(); yield return null;
             var holdActs = new string[] { "null" }; yield return ProofHold.Handover(h, Dir, log, holdActs);
+            var done = new string[] { "null" }; yield return ProofDone.Handover(h, Dir, log, done);
+            var rings = new string[] { "null" }; yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
             var fire = new string[] { "null" }; var fireSession = new string[1]; yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
             var cars = new string[] { "null" }; yield return ProofFire.Cars(h, Dir, log, cars);
             var hudClick = new string[] { "null" }; yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
@@ -144,7 +152,7 @@ namespace Suborned.Play
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
             yield return PeopleCost(h, log, people, 6f, Dir);
-            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
+            var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
             yield return Shot("menu", "active");
@@ -242,9 +250,9 @@ namespace Suborned.Play
                 yield return null; while (HudToolkit.ShotBusy) yield return null;
                 if (h.Following) h.FollowToggle();
             }
-            // an avenue: play zoom over the densest stretch of avenue palms (803 WashingtoniaPalm_Street, 19.2k tris, no LODs: the district's
+            // an avenue: play zoom over the densest stretch of avenue palms (the old CoconutPalm, Splice 2026-10-22: 947 palms at L0 only, ~6.9k tris each: the district's
             // biggest frame-time risk), the clock running, 6 s of frames and a shot (overhead-avenue)
-            var palms = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude).Where(t => t.name == "DK_WashingtoniaPalm_Street").Select(t => t.position).ToList();
+            var palms = UnityEngine.Object.FindObjectsByType<Transform>(FindObjectsInactive.Exclude).Where(t => t.name.StartsWith("DK_CoconutPalm")).Select(t => t.position).ToList();
             if (palms.Count > 0)
             {
                 Vector3 best = palms[0]; int bn = -1;

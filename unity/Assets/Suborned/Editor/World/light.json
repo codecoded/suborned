@@ -237,7 +237,8 @@
       "hex": "#ffe0b0"
     },
     "light.haze": {
-      "hex": "#f3eee4"
+      "hex": "#f4e3c3",
+      "note": "Glint, brief 048 (2026-10-22, 'try the atmosphere'): sand-cream, was #f3eee4 (near white, S 0.07). The old city's displayed haze read #c0af87 to #e5d5aa (S 0.25 to 0.40). The same value is Resources/Atmosphere/haze.json `colour`, which DistanceHaze (fog) and AtmosphereLens (sky horizon) apply at runtime without a scene rebuild, so a rebuilt scene and the runtime agree. Sky and city share this one haze. Sky to confirm."
     },
     "light.skyMid": {
       "hex": "#8fc2ee"

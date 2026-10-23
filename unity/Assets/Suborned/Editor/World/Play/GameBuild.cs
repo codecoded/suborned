@@ -94,18 +94,19 @@ namespace Suborned.World.Play
                 PlayerSettings.bundleVersion = ver.Full; PlayerSettings.macOS.buildNumber = ver.Build.ToString(); // CFBundleShortVersionString, CFBundleVersion
                 ver.WriteStamp(b); // StreamingAssets/build.json for this build only (BuildStamp reads it in the player)
                 Version.CopyPresets(); // brief 025: briefs/025/presets ride along (StreamingAssets/presets, this build only)
+                FrontEndBuild.CopyBriefs(); FrontEndBuild.EnsureScene(); // brief 051: the missions' briefs (StreamingAssets/missions, this build only) and the boot scene
                 PlayerSettings.enableFrameTimingStats = true; // brief 020: the proof reads the GPU's frame time (FrameTimingManager); the project's setting comes back after
                 PlayerSettings.productName = AppName; // the binary, the menu bar and the player's data folder; the project's own name comes back after
                 report = BuildPipeline.BuildPlayer(new BuildPlayerOptions
                 {
-                    scenes = File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { HarbourWorldBuilder.ScenePath, RangeScene.ScenePath } : new[] { HarbourWorldBuilder.ScenePath }, // brief 029: the fight range, from the menu
+                    scenes = new[] { FrontEndBuild.ScenePath, HarbourWorldBuilder.ScenePath }.Concat(File.Exists(Path.Combine(Application.dataPath, "..", RangeScene.ScenePath)) ? new[] { RangeScene.ScenePath } : new string[0]).ToArray(), // brief 051: the front end's boot scene first (a proof skips straight to the Handover); brief 029: the fight range, from the menu
                     target = BuildTarget.StandaloneOSX,
                     targetGroup = BuildTargetGroup.Standalone,
                     locationPathName = AppPath,
                     options = BuildOptions.None, // release
                 });
             }
-            finally { PlayerSettings.productName = product; PlayerSettings.enableFrameTimingStats = timing; PlayerSettings.bundleVersion = bundleVersion; PlayerSettings.macOS.buildNumber = buildNumber; Version.RemoveStamp(); Version.RemovePresets(); }
+            finally { PlayerSettings.productName = product; PlayerSettings.enableFrameTimingStats = timing; PlayerSettings.bundleVersion = bundleVersion; PlayerSettings.macOS.buildNumber = buildNumber; Version.RemoveStamp(); Version.RemovePresets(); FrontEndBuild.RemoveBriefs(); }
             // as PerfBuild: the Input System's preload round trip leaves PlayerSettings dirty; save it so the file is the project as it is
             EditorUtility.SetDirty(Unsupported.GetSerializedAssetInterfaceSingleton("PlayerSettings"));
             AssetDatabase.SaveAssets();

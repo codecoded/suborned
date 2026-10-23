@@ -45,6 +45,19 @@ static class FightLabCli
         var want = Arg("--presets")?.Split(',');
         if (want != null) presets = presets.Where(p => want.Contains(p.name)).ToList();
 
+        // Every (preset, run) is an independent game: play them all on every core first (--jobs n, env SUBORNED_SIM_JOBS; 1 = in order as before), then
+        // print and write in the old order. A run that throws (an unknown id) throws where its turn comes, after the rows before it are printed.
+        _ = Scenarios.All.Count; // the scenario list builds lazily, not thread safely
+        bool wantScripts = Arg("--scripts") != null;
+        var cells = Par.Map(presets.Count * runs.Length, BatchCli.Jobs(args), k =>
+        {
+            var (name, mk) = presets[k / runs.Length]; var id = runs[k % runs.Length];
+            var r = Scenarios.PlayLabRun(inputs, id, mk(), routes, coverPlayer.Contains(name));
+            var replay = Engine.Replay(inputs, r.G);
+            bool same = replay.Checkpoints.Count == r.G.Checkpoints.Count && replay.Checkpoints.SequenceEqual(r.G.Checkpoints) && replay.Result == r.G.Result;
+            return (row: Scenarios.Row(id, name, r.G), same, script: wantScripts ? Script.Write(r.G, inputs.Hash) + "\n" : null);
+        });
+        int cell = 0;
         var all = new Dictionary<string, List<LabRow>>(); bool replayOk = true;
         var w = new JWriter().Obj().Prop("schema", "suborned.fightlab.matrix/1").Prop("engine", Engine.Version).Prop("inputs", Hash.Hex(inputs.Hash)).OpenArr("presets");
         Console.WriteLine($"brief 027 fight-lab matrix · {Engine.Version} · inputs {Hash.Hex(inputs.Hash)}");
@@ -55,12 +68,11 @@ static class FightLabCli
             w.Obj().Prop("name", name).OpenArr("rows");
             foreach (var id in runs)
             {
-                var r = Scenarios.PlayLabRun(inputs, id, mk(), routes, coverPlayer.Contains(name));
-                var replay = Engine.Replay(inputs, r.G);
-                bool same = replay.Checkpoints.Count == r.G.Checkpoints.Count && replay.Checkpoints.SequenceEqual(r.G.Checkpoints) && replay.Result == r.G.Result;
+                var (cv, err) = cells[cell++]; if (err != null) System.Runtime.ExceptionServices.ExceptionDispatchInfo.Capture(err).Throw();
+                var (row, same, script) = cv;
                 replayOk &= same;
-                var row = Scenarios.Row(id, name, r.G); rows.Add(row);
-                if (Arg("--scripts") is string dir) { Directory.CreateDirectory(dir); File.WriteAllText(Path.Combine(dir, $"{name}.{id}.script.json"), Script.Write(r.G, inputs.Hash) + "\n"); } // each run as a replayable script (bun run sim play <file>)
+                rows.Add(row);
+                if (Arg("--scripts") is string dir) { Directory.CreateDirectory(dir); File.WriteAllText(Path.Combine(dir, $"{name}.{id}.script.json"), script!); } // each run as a replayable script (bun run sim play <file>)
                 string res = row.Result + (row.Fail.Length > 0 ? " " + row.Fail : "");
                 Console.WriteLine(FormattableString.Invariant($"{name,-15} {id,-4} {res,-17} {Report.Clock(row.EndTick),-8} {row.TrailMission,2}/{row.TrailTotal,-3}   {row.Alert} {row.StandingStart,2}→{row.StandingEnd,-3} {row.PublicSecurity,-7} {row.Investigation,-7} {row.OpenCases,5} {row.OpsDown,4} {row.OpsCaptured,4} {row.HealthLostPct,5} % {row.CellHits,4} {row.FoesDown,4} {row.CellShots,5} {row.FreeDowns,4}/{row.FreeSide,-4} c{row.ContactHad}/{row.ContactSeen} s{row.ShotsAtCellAfterVale,-3} {row.Verdict}{(row.Why.Count > 0 ? " — " + string.Join("; ", row.Why) : "")}{(same ? "" : "  REPLAY DIFFERS")}"));
                 w.Obj().Prop("run", id).Prop("result", row.Result).Prop("fail", row.Fail).Prop("end", Report.Clock(row.EndTick)).Prop("endTick", row.EndTick)

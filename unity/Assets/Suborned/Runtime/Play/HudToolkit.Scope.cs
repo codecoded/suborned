@@ -189,7 +189,7 @@ namespace Suborned.Play
             {
                 var op = g.Ops[k]; if (ScopeOf(host.frame.World(op.Pos)) is not Vector2 q) continue;
                 var b = Blip(null, 11); Place(b, q, 11, 11); Round(b, 5.5f); b.style.backgroundColor = op.Down ? new Color(0.5f, 0.52f, 0.52f) : Cream;
-                Border(b, host.Selected[k] ? 1.6f : 0.6f, host.Selected[k] ? Turq : Ink); var n = b.Q<Label>("n"); n.text = (k + 1).ToString(); n.style.color = Ink;
+                Border(b, host.Selected[k] ? 1.6f : 0.6f, host.Selected[k] ? TurqLight : Ink); var n = b.Q<Label>("n"); n.text = (k + 1).ToString(); n.style.color = Ink;
             }
             // the levels: street, deck, sky concourse; the scope draws the street (every Handover act is on it)
             scopeOps.Add(pp => { for (int i = 0; i < 3; i++) { pp.fillColor = i == 0 ? Cream : new Color(1, 1, 1, 0.25f); pp.BeginPath(); pp.Arc(new Vector2(gw - 8, gh - 9 - i * 7), 1.8f, Deg(0), Deg(360)); /* Glyph round 2: 7 px in from the glass edge */ pp.Fill(); } });

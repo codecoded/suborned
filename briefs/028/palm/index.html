@@ -1,0 +1,16 @@
+<!doctype html><meta charset=utf-8><title>Palm, 2026-10-22 (brief 028, Vela)</title>
+<style>body{background:#182e2e;color:#f7f4ec;font:15px/1.45 Arial,sans-serif;max-width:2100px;margin:20px auto;padding:0 20px}img{max-width:100%;display:block;margin:12px 0}h2{margin-top:32px}td,th{padding:4px 12px;text-align:left;border-bottom:1px solid #3a5a58}.dim{color:#b0cdc7}</style>
+<h1>Palm: which one the game places, and which one the old city had</h1>
+<p class=dim>Sky, 2026-10-22: "those palm trees aren't the ones used in the old city we built I believe." Right: the boulevard palm in the old city's flyby is the kit's <b>CoconutPalm</b> (DK_CoconutPalm, 166 in the old street scene, in tree pits). The game's avenue today is a different palm, <b>WashingtoniaPalm_Street</b> (Vela, brief 028, 20 Oct).</p>
+<h2>1. The flyby still against the game</h2><img src=board-3-flyby-vs-game.png>
+<h2>2. Old city | testbed | game, play zoom and close</h2><img src=board-1-palms-play-and-close.png>
+<h2>3. Distance levels and where each comes from</h2><img src=board-2-levels.png>
+<h2>4. What the game places today</h2>
+<table><tr><th>Piece<th>Placed<th>Tris each<th>Levels<th>Where<th>Source</tr>
+<tr><td>WashingtoniaPalm_Street<td>803<td>19,190<td>none, L0 everywhere<td>every avenue, boulevard and court slot (median 221, harbour-boulevard 56, ...)<td>Vela, Oct 20</tr>
+<tr><td>CoconutPalm_Street<td>78<td>8,230<td>L1 2,056, L2 493<td>phoenix: lawns 48, median 29, circus 1<td>Vela, Oct 20 (old palm, 8.6 m trunk)</tr>
+<tr><td>CoconutPalm<td>66<td>6,310<td>L1 1,576, L2 378<td>phoenix: lawns 37, median 29<td>old city, byte-identical</tr>
+<tr><td>FanPalm_Play<td>195<td>4,194<td>L1 1,048, L2 251<td>tubs: megastructure decks 187, pier 8<td>old FanPalm copy</tr>
+<tr><td>PottedPalm_Small<td>6<td>2,396<td>L1 598, L2 143<td>café terrace<td>old city</tr>
+<tr><td>testbed palm (palm-*-v1.glb)<td>0<td>1,880 / 6,102 / 19,330<td>3 authored<td>not placed anywhere in the game<td>testbed Oct 1</tr></table>
+<p class=dim>Data: placements.json, render/tris.json. Renders: tools/decokit/review028_palm.py (Blender, one sun, one camera). Blender shows geometry and kit materials; the game adds its grade and haze.</p>

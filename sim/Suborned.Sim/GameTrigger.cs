@@ -70,7 +70,7 @@ namespace Suborned.Sim
             if (IsCameraId(t)) EnsureCameraGun(t);
             if (IsCarId(t)) EnsureCar(t);
             var tg = GunOf(t); if (tg == null) return No("target-unknown", $"target '{o.Target}' is unknown (unknown = reject)");
-            if (IsCivilian(t) && !o.Force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when forced (Ctrl)");
+            if (IsCivilian(t) && !o.Force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when the order is forced");
             if (!PosOf(t).HasValue || tg.Down) return No("no-target", $"no {o.Target} to fire at");
             // out of reach or line it is taken all the same: it fires once it has both (the driven agent is never walked: brief 030)
             bool fresh = !g.Trig || g.TrigT != t; // a press, or a change of target while pressed (§11.2 rule 3)
@@ -81,7 +81,7 @@ namespace Suborned.Sim
             }
             bool aimNew = g.TrigT != t;
             if (aimNew) g.TrigTap = false; // a press waiting on another target loses its shot (§11.4)
-            g.TrigT = t; g.Trig = true; g.TrigTap = true; g.TrigForce = o.Force;
+            g.TrigT = t; g.Trig = true; g.TrigTap = true; g.TrigForce = o.Force; g.StandDown = -1; // tuning.md §14: a trigger ends a stand-down
             if (aimNew) { Actions.Add("fire:" + t); Note("fire.trigger", $"{name} fires on {t}."); } // a new target: logged once (a press again on it is a press)
             if (fresh && FollowLock) LockFollowers(op, t, o.Force);
             return "";
@@ -107,7 +107,7 @@ namespace Suborned.Sim
             var g = o.Gun;
             if (g.Order.Length > 0) OrderEnd(o, true); // its lock's target is down: that order ends here
             if (g.FollowBy.Length > 0) { g.FollowBy = ""; }
-            g.Order = t; g.Force = force; g.LostAt = -1; g.OrderTick = Tick;
+            g.Order = t; g.Force = force; g.LostAt = -1; g.OrderTick = Tick; g.Reached = false;
             o.CloseSpent = true; o.CloseWalk = false; // its walk-in is spent: out of line it holds lineLapse and lapses, and never walks
             if (Lab) g.Then = ""; // the lab: a lock returns to its stance (a holding agent is never locked: §13.2)
             lockLead[(int)o.Id] = ln;
@@ -144,6 +144,11 @@ namespace Suborned.Sim
             if (locked) return G.Within(o.Pos, lead.Pos, R.FollowCm); // LockFollowers' ask: everything but the lock (its stance doesn't fire while locked)
             if (LiveLock(g)) return false; // locked: engaged
             if (!G.Within(o.Pos, lead.Pos, R.FollowCm)) return false;
+            if (FreeApplies) // tuning.md §14.3: in a fight under weapons free, follow takes only a target that is no combatant; else weapons free picks
+            {
+                if (lead.Gun.TrigT.Length > 0 && Combatant(lead.Gun.TrigT)) return false;
+                return BaseStanceTarget(o).Length == 0;
+            }
             return StanceTarget(o).Length == 0; // returning fire on its own shooter (or at will on its own target): engaged
         }
 
@@ -188,7 +193,7 @@ namespace Suborned.Sim
             {
                 var l = OpOf(Sim.Op.Parse(g.FollowBy)); t = l.Gun.TrigT; fires = l.Gun.Trig; s.Mode = fires ? "follow" : "follow-held"; s.Lead = g.FollowBy;
             }
-            else { t = StanceTarget(op); if (t.Length > 0) s.Mode = g.Stance == "return" ? "return" : "free"; }
+            else { t = StanceTarget(op); if (t.Length > 0) s.Mode = FreeApplies ? "weapons-free" : g.Stance == "return" ? "return" : "free"; } // tuning.md §14: weapons-free, its own pick
             s.Target = t;
             if (t.Length == 0) return s;
             var at = PosOf(t); var tg = GunOf(t);

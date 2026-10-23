@@ -1,0 +1,8 @@
+Suture's retest3 policy set (briefs/027/suture/probe/retest3/policies.all.txt, 3,792 policies), engine 0.19.0 (baseline copy out/keel-s15/base, built before the first edit) against 0.20.0 (tuning.md §15.2: ai.intent.final agent, PROVISIONAL), each preset run as 16 chunks of fight-lab --runs (out/keel-s15/bin/sweep.sh). Rows compared sorted, line for line.
+
+today         n=3792/3792 rows differing 0, wins 28 -> 28; replay: 16 every run replays identically from its order log
+lab           n=3792/3792 rows differing 0, wins 1 -> 1; replay: 16 every run replays identically from its order log
+lab-field-on  n=3792/3792 rows differing 0, wins 29 -> 29; replay: 16 every run replays identically from its order log
+lab-snap-off  n=3792/3792 rows differing 0, wins 0 -> 0; replay: 16 every run replays identically from its order log
+
+Matrix (briefs/027/keel/matrix-0.20.txt, fight-lab default: 45 rows x 7 presets, 315 rows): identical to 0.19.0 line for line but the header (engine, inputs hash); fight-lab.json identical apart from engine and inputs.

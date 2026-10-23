@@ -48,4 +48,20 @@ describe('GDD crew in both clients', () => {
     expect(result.exitCode).toBe(0);
     expect(result.stdout.toString()).toContain('17 Claude + 17 Codex');
   });
+
+  test('the agent art bible is embedded in the five visual cards, in both clients, and nowhere else', () => {
+    const bible = read('contracts/style/art-bible.agent.md').trim();
+    const visual = ['interface-artist', 'environment-artist', 'character-artist-animator', 'lighting-artist', 'unity-engineer'];
+    for (const name of names) {
+      for (const text of [read(`.claude/agents/${name}.md`), role(name).developer_instructions]) {
+        if (visual.includes(name)) {
+          expect(text).toContain('## Art bible (agent)');
+          expect(text).toContain(bible);
+        } else {
+          expect(text).not.toContain('## Art bible (agent)');
+          expect(text).not.toContain(bible);
+        }
+      }
+    }
+  });
 });

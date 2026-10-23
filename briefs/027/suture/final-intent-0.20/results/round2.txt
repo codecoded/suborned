@@ -1,0 +1,141 @@
+[agent] close-D-run-g14                    success  4:59.3 T14 A2 hits 2/18 (11%) down[] left[] replay true  [49.1 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 4:58.6 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-D-run-g14.every              success  4:59.3 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 4:58.6 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-D-run-g17-T                  failure enforcer-down 4:44.0 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 34 (enforcer board car): not taken between 2476 and 5100)  [38.7 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:27.7 by officer-2; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:21.7 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:35.0 by officer-2; while clean 0
+[every] close-D-run-g17-T.every            failure enforcer-down 4:44.0 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 34 (enforcer board car): not taken between 2476 and 5100)  [39.6 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:27.7 by officer-2; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:21.7 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  7 (hit 6) first 4:35.0 by officer-2; while clean 0
+[agent] close-D-run-g17                    success  5:00.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 4:59.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-D-run-g17.every              success  5:00.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 4:59.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-D-run-g20                    success  5:03.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:02.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-D-run-g20.every              success  5:03.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:02.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-D-run-g24                    success  5:07.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.1 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:06.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-D-run-g24.every              success  5:07.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.7 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:06.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-D-walk-g30                   success  5:14.5 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:13.8 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-D-walk-g30.every             success  5:14.5 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.7 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:13.8 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-D-walk-g36                   success  5:19.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.3 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:18.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-D-walk-g36.every             success  5:19.0 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:18.3 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-H-run-g14                    success  4:59.4 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.7 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 4:58.7 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-H-run-g14.every              success  4:59.4 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 4:58.7 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-H-run-g17-T                  failure enforcer-down 4:39.9 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 37 (enforcer board car): not taken between 2480 and 5100)  [43.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:26.6 by officer-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:22.1 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:35.4 by officer-1; while clean 0
+[every] close-H-run-g17-T.every            failure enforcer-down 4:39.9 T13 A2 hits 18/18 (100%) down[scout,fixer,tech] left[] replay true  PARTIAL (stopped at step 37 (enforcer board car): not taken between 2480 and 5100)  [44.6 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:26.6 by officer-1; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  5 (hit 4) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  4 (hit 4) first 4:22.1 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  8 (hit 6) first 4:35.4 by officer-1; while clean 0
+[agent] close-H-run-g17                    success  5:00.9 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.1 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:00.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-H-run-g17.every              success  5:00.9 T14 A2 hits 2/18 (11%) down[] left[] replay true  [47.2 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:00.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-H-run-g20                    success  5:03.9 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:03.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-H-run-g20.every              success  5:03.9 T14 A2 hits 2/18 (11%) down[] left[] replay true  [49.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:03.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-H-run-g24                    success  5:07.9 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.7 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:07.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-H-run-g24.every              success  5:07.9 T14 A2 hits 2/18 (11%) down[] left[] replay true  [49.0 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:07.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-H-walk-g30                   success  5:15.4 T14 A2 hits 2/18 (11%) down[] left[] replay true  [48.8 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:14.7 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[every] close-H-walk-g30.every             success  5:15.4 T14 A2 hits 2/18 (11%) down[] left[] replay true  [49.1 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:14.7 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  0 (hit 0) first -; while clean 0
+[agent] close-H-walk-g36                   success  5:19.9 T15 A2 hits 2/18 (11%) down[] left[] replay true  [48.6 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.6 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:19.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  1 (hit 0) first 4:40.9 by police-1; while clean 0
+[every] close-H-walk-g36.every             success  5:19.9 T15 A2 hits 2/18 (11%) down[] left[] replay true  [48.9 s]
+    scout    drew 3:45.5 fired 3:47.5 shot at  0 (hit 0) first -; while clean 0
+    fixer    drew 3:45.5 fired 3:47.5 shot at  3 (hit 2) first 3:46.5 by security-1; while clean 0
+    tech     drew 3:45.5 fired 3:47.5 shot at  2 (hit 0) first 5:19.2 by officer-1; while clean 0
+    enforcer drew -      fired 2:33.0 shot at  1 (hit 0) first 4:40.9 by police-1; while clean 0
+# 14 attempts x 2 engines, 50.3 s wall

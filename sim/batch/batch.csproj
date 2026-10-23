@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- tools/missions/check/engine.ts copies this, BatchHost.cs and ../cli/Batch.cs to <engine>/batch/ and builds it against <engine>/sim/Suborned.Sim. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AssemblyName>suborned-batch</AssemblyName>
+    <RootNamespace>Suborned.Sim.Batch</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="BatchHost.cs" />
+    <Compile Include="Batch.cs" />
+    <ProjectReference Include="../sim/Suborned.Sim/Suborned.Sim.csproj" />
+  </ItemGroup>
+</Project>

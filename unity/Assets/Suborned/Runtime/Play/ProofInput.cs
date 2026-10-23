@@ -213,19 +213,21 @@ namespace Suborned.Play
                 int heard = -1; var gp = Ground(h, OpId.Scout);
                 if (gp.HasValue) { yield return ClickAt(h, gp.Value, got); heard = got[0].Item1; }
                 h.CloseRing(); h.ClearHover();
-                var pts = HudToolkit.ClickPoints(40); int clicked = 0, through = 0, moves = 0, rings = 0, boxes = 0; var bad = new List<string>(); var movedBy = new List<string>();
+                var pts = HudToolkit.ClickPoints(40); int clicked = 0, through = 0, moves = 0, rings = 0, boxes = 0; var bad = new List<string>(); var movedBy = new List<string>(); var gaveWay = new List<string>();
                 foreach (var (what, sp) in pts)
                 {
                     if (!HandoverHost.OverHud(sp) || h.MenuOpen || h.Modal != ModalGate.Modal.None) continue; // the layout moved under an earlier click (a sheet opened): skip
+                    MouseAt(sp, false); yield return null; yield return null; // the pointer rests there first: a piece that gives way to the pointer (it hides under the cursor) is not one a player can click
+                    if (!HandoverHost.OverHud(sp)) { gaveWay.Add(what + "@" + (int)sp.x + "," + (int)sp.y + ">" + HudToolkit.PickedName(sp)); continue; }
                     yield return ClickAt(h, sp, got); clicked++;
                     var (pr, mv, rg, bx) = got[0]; through += pr; moves += mv; if (rg) rings++; if (bx) boxes++;
-                    if (pr > 0 || rg || bx) bad.Add(what); else if (mv > 0) movedBy.Add(what + "@" + (int)sp.x + "," + (int)sp.y);
+                    if (pr > 0 || rg || bx) bad.Add(what + "@" + (int)sp.x + "," + (int)sp.y); else if (mv > 0) movedBy.Add(what + "@" + (int)sp.x + "," + (int)sp.y);
                     h.CloseRing(); if (h.MenuOpen) h.ResumeFromMenu();
                 }
                 bool vok = heard == 1 && clicked >= 3 && through == 0 && rings == 0 && boxes == 0; // a move given by a HUD button's own act (the door or car step mark sends the Enforcer) is the HUD's, not a click through: the gate is pressesThrough
                 ok &= vok;
-                parts.Add($"\"{view}\": {{\"ok\": {B(vok)}, \"groundHeard\": {heard}, \"hudPieces\": {pts.Count}, \"clicked\": {clicked}, \"pressesThrough\": {through}, \"moves\": {moves}, \"rings\": {rings}, \"boxes\": {boxes}, \"failedOn\": \"{J(string.Join(" ", bad))}\", \"movesByHudButtons\": \"{J(string.Join(" ", movedBy))}\"}}");
-                log.Add($"hudClick {view}: {(vok ? "ok" : "FAILED")}: ground click heard {heard}; {clicked} of {pts.Count} HUD pieces clicked: {through} presses through, {moves} moves, {rings} rings, {boxes} boxes{(bad.Count > 0 ? " on " + string.Join(" ", bad) : "")}{(movedBy.Count > 0 ? "; moves given by HUD buttons " + string.Join(" ", movedBy) : "")}");
+                parts.Add($"\"{view}\": {{\"ok\": {B(vok)}, \"groundHeard\": {heard}, \"hudPieces\": {pts.Count}, \"clicked\": {clicked}, \"pressesThrough\": {through}, \"moves\": {moves}, \"rings\": {rings}, \"boxes\": {boxes}, \"failedOn\": \"{J(string.Join(" ", bad))}\", \"movesByHudButtons\": \"{J(string.Join(" ", movedBy))}\", \"gaveWay\": \"{J(string.Join(" ", gaveWay))}\"}}");
+                log.Add($"hudClick {view}: {(vok ? "ok" : "FAILED")}: ground click heard {heard}; {clicked} of {pts.Count} HUD pieces clicked: {through} presses through, {moves} moves, {rings} rings, {boxes} boxes{(bad.Count > 0 ? " on " + string.Join(" ", bad) : "")}{(movedBy.Count > 0 ? "; moves given by HUD buttons " + string.Join(" ", movedBy) : "")}{(gaveWay.Count > 0 ? "; gave way to the pointer " + string.Join(" ", gaveWay) : "")}");
                 if (h.Following) h.FollowToggle();
             }
             h.Begin(); MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f), false);

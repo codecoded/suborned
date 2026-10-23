@@ -1,0 +1,107 @@
+# Waymark, brief 027, engine suborned.sim/0.19.0 (tree, 2026-10-22; rival crew watches the street from 3:10 and, drawn, presses for the Vale holder).
+# The protective loud route (contracts/missions/handover/routes/plans/loud.plan.json, written by briefs/027/waymark/loud-plans-0.19.ts; composed to routes/loud.json).
+# Base (engine CLI): success 5:09.6, 14 T (+3 the open case), Alert 2, 2 of 18 cell health lost (11 %: the Fixer, in the opening volley), nobody downed or left. Routine security (site level 1).
+#
+# Robustness (briefs/027/waymark/robust-plan.ts): each wait moved 0.5 m and 1 m in 8 directions, the plan RE-COMPOSED for each (its conditional steps re-timed) and played.
+#   car waits (S cv-005, F cv-006, T cv-003): 36/48 clean (S 11/16, F 13/16, T 12/16).
+#     7 of the 12 misses are clicks inside the getaway car or the west pier (the engine refuses the move): 36 of the 41 standable moves win clean.
+#     The 5 real misses (S 0,-1 m; S -1,+-1 m; T 0,-1 m; T +1,-1 m): the café-wall officers (officer-1, officer-2, final fight) reach their stands at ~4:05;
+#     a wait moved 1 m west or south is 14-15 m from them on a line past the west pier, so they down that agent and then press the Enforcer at the car.
+#   flank waits (the Scout's and the Fixer's spots 10-11 m from the crew): 32/32 clean.
+#   clean wins: 14 T, Alert 2, 11 % (62 plays) or 22 % (6 plays) health lost.
+# The same plan's old twin with the Tech stepping to the west pier's east face once the unit is down: car waits 39/48, but the pier spot itself 4/16 (dropped).
+#
+# Plans tried first (scripted player briefs/027/waymark/player, engine 0.19.0; raw sweeps in out/waymark027/w19/, git-ignored):
+#   - the old loud (the Enforcer walks Vale straight out): the crew, drawn at 3:30 to the Office front, follows him round the west corner and hits him 6 times from 11-14 m (4:11.9 down).
+#   - Scout alone in cover at the control cabinet on the crew's lane + Fixer and Tech at the car: the Scout drives the crew back unhurt, but two guns lose the opening volley
+#     on the response unit walking past the car at 2-6 m: 0/1584 clean (12 car waits x 3 relock rules x locks/at will x 2 Scout spots).
+#   - all three escort the Enforcer from the service door: walking fire is 281 per mille, the door police holding the guard's body join the final fight at 8 m, the car is empty
+#     and the blocker plus both café officers press him: all four down.
+#   - strike the crew before the doors open (3:31, two or three agents from the service cabinets): the crew is driven back in 4 s, but the strikers have fired, so the door police
+#     engage them, and the car end has no volley for the response unit: all down.
+#   - the volley at the car, then two run to intercept while the Enforcer walks: the crew lands 3-4 hits on him first; 10/432 clean, all with him holding at the door.
+#   - with the hold: the Scout and Fixer walking (not running) to any of 16 flank spots 10-14 m from the crew: 16/16 clean; running works too; Scout+Tech or Fixer+Tech flanks fail
+#     (one gun left at the car with a hit Fixer).
+#   - rejected as an exploit: the Scout alone firing on the held crew from 15.7 m (inside his 16 m ring, outside its 15 m reach; it never answered).
+#
+# Raw robustness lines (result | group | move):
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S 50,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S -50,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S 0,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S 0,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S 50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S 50,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S -50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S -50,-50
+NOT COMPOSED rob-loud-8 step 7 (scout move): not taken between 1510 and 5100 | S | S 100,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S | S -100,0
+success  5:08.4 T14 A2 hits 2/18 (11%) down[] left[] | S | S 0,100
+NOT COMPOSED rob-loud-11 step 31 (enforcer board car): not taken between 2582 and 5100 | S | S 0,-100
+success  5:08.8 T14 A2 hits 2/18 (11%) down[] left[] | S | S 100,100
+NOT COMPOSED rob-loud-13 step 7 (scout move): not taken between 1510 and 5100 | S | S 100,-100
+NOT COMPOSED rob-loud-14 step 32 (scout move): not taken between 3033 and 5100 | S | S -100,100
+NOT COMPOSED rob-loud-15 step 32 (scout move): not taken between 3033 and 5100 | S | S -100,-100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F | F 50,0
+success  5:09.5 T14 A2 hits 2/18 (11%) down[] left[] | F | F -50,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F | F 0,50
+success  5:09.4 T14 A2 hits 2/18 (11%) down[] left[] | F | F 0,-50
+success  5:09.7 T14 A2 hits 2/18 (11%) down[] left[] | F | F 50,50
+success  5:09.5 T14 A2 hits 2/18 (11%) down[] left[] | F | F 50,-50
+success  5:09.7 T14 A2 hits 2/18 (11%) down[] left[] | F | F -50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F | F -50,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F | F 100,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F | F -100,0
+NOT COMPOSED rob-loud-26 step 8 (fixer move): not taken between 1510 and 5100 | F | F 0,100
+success  5:09.5 T14 A2 hits 2/18 (11%) down[] left[] | F | F 0,-100
+NOT COMPOSED rob-loud-28 step 8 (fixer move): not taken between 1510 and 5100 | F | F 100,100
+success  5:09.4 T14 A2 hits 4/18 (22%) down[] left[] | F | F 100,-100
+NOT COMPOSED rob-loud-30 step 8 (fixer move): not taken between 1510 and 5100 | F | F -100,100
+success  5:09.7 T14 A2 hits 2/18 (11%) down[] left[] | F | F -100,-100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 50,0
+success  5:09.6 T14 A2 hits 4/18 (22%) down[] left[] | T | T -50,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 0,50
+success  5:09.6 T14 A2 hits 4/18 (22%) down[] left[] | T | T 0,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 50,-50
+success  5:09.6 T14 A2 hits 4/18 (22%) down[] left[] | T | T -50,50
+success  5:09.6 T14 A2 hits 4/18 (22%) down[] left[] | T | T -50,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 100,0
+NOT COMPOSED rob-loud-41 step 11 (tech move): not taken between 1575 and 5100 | T | T -100,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 0,100
+NOT COMPOSED rob-loud-43 step 34 (tech move): not taken between 3033 and 5100 | T | T 0,-100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | T | T 100,100
+NOT COMPOSED rob-loud-45 step 33 (fixer move): not taken between 3033 and 5100 | T | T 100,-100
+success  5:09.6 T14 A2 hits 4/18 (22%) down[] left[] | T | T -100,100
+NOT COMPOSED rob-loud-47 step 11 (tech move): not taken between 1575 and 5100 | T | T -100,-100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 50,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank -50,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 0,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 0,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 50,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank -50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank -50,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 100,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank -100,0
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 0,100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 0,-100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 100,100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank 100,-100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank -100,100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | S2 | Sflank -100,-100
+success  5:09.7 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 50,0
+success  5:09.5 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank -50,0
+success  5:09.5 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 0,50
+success  5:09.7 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 0,-50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 50,50
+success  5:09.8 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 50,-50
+success  5:09.4 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank -50,50
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank -50,-50
+success  5:09.8 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 100,0
+success  5:09.4 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank -100,0
+success  5:09.4 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 0,100
+success  5:09.8 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 0,-100
+success  5:11.0 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 100,100
+success  5:09.9 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank 100,-100
+success  5:09.3 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank -100,100
+success  5:09.6 T14 A2 hits 2/18 (11%) down[] left[] | F2 | Fflank -100,-100

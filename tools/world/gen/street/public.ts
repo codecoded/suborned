@@ -6,9 +6,10 @@ import { rng } from '../common';
 import { type Rect, areaOf, bbox, pointInRing } from '../geo';
 import type { DeckRec } from '../types';
 import { boxRing, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
+import { avenueVariant, medianVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
 
-const WASH = (S: any) => S.trees.species.washingtonia, PHX = (S: any) => S.trees.species.phoenix;
+const AVE = (S: any) => speciesOf(S, avenueVariant(S))!, MED = (S: any) => speciesOf(S, medianVariant(S))!, PHX = (S: any) => S.trees.species.phoenix; // the avenue palm and its median cut (brief 028 Palm)
 
 export function dressMedians(ctx: Ctx, L: Layer): void {
   const S = ctx.S, z = ctx.pav, sky = ctx.d.sky.map(p => polyline(p.segs, 4));
@@ -21,7 +22,7 @@ export function dressMedians(ctx: Ctx, L: Layer): void {
     const u: V = [(b[0] - a[0]) / len, (b[1] - a[1]) / len], at = (s: number): V => [a[0] + u[0] * s, a[1] + u[1] * s], id = `median/${zi}`, wide = w >= 6;
     const ok = (q: V, tram: boolean) => !(tram && w < 6 && t2.some(s => dist(s.at, q) < 22)) && !slews.some(r => q[0] >= r[0] && q[0] <= r[1] && q[1] >= r[2] && q[1] <= r[3]);
     const nT = Math.floor((len - 12) / 12) + 1, t0 = (len - (nT - 1) * 12) / 2;
-    for (let k = 0; k < nT; k++) { const q = at(t0 + k * 12); if (ok(q, true) && !sky.some(l => lineDist(q, l) < 4.5)) L.add('tree', q, 0, z, id, { size: wide ? [0.9, 0.9, PHX(S).top] : [0.5, 0.5, WASH(S).top], variant: wide ? 'phoenix' : 'washingtonia', r: wide ? 2.4 : 1.5 }); }
+    for (let k = 0; k < nT; k++) { const q = at(t0 + k * 12); if (ok(q, true) && !sky.some(l => lineDist(q, l) < 4.5)) L.add('tree', q, 0, z, id, { size: wide ? [0.9, 0.9, PHX(S).top] : [0.5, 0.5, MED(S).top], variant: wide ? 'phoenix' : medianVariant(S), r: wide ? 2.4 : 1.5 }); }
     for (let s = t0 + 6; s < len - 4; s += 36) { const q = at(s); if (ok(q, true)) L.add('lamp', q, 0, z, id, { size: [0.4, 0.4, 10], variant: 'twin-boomerang', r: 1 }); }
   });
 }
@@ -35,7 +36,7 @@ export function dressFoot(ctx: Ctx, L: Layer): void {
       for (const side of [1, -1]) {
         const off = side * 11;
         for (let s = 12, k = 0; s < len - 6; s += 12, k++) {
-          L.add('tree', at(s, off), 0, z, id, { size: [0.5, 0.5, WASH(S).top], variant: 'washingtonia', r: 1.5 });
+          L.add('tree', at(s, off), 0, z, id, { size: [0.5, 0.5, AVE(S).top], variant: avenueVariant(S), r: 1.5 });
           L.add('bench', at(s + 3, off), yaw, z, id, { r: 1 }); L.add('lamp', at(s + 6, off), 0, z, id, { size: [0.25, 0.25, 4.5], variant: 'sputnik', r: 0.5 });
           if (k % 4 === 1) L.add('bin', at(s + 4.5, off), 0, z, id, { r: 0.4 });
         }
@@ -52,7 +53,7 @@ export function dressFoot(ctx: Ctx, L: Layer): void {
       for (let s = 24; s < len - 6; s += 24) for (const side of [1, -1]) L.add('lamp', at(s, side * 5.2), 0, z, id, { size: [0.25, 0.25, 4.5], variant: 'sputnik', r: 0.5, force: true });
       for (let s = 60; s < len - 20; s += 120) L.add('kiosk-food', at(s, 4.5), yaw, z, id);
     } else {
-      for (let s = 12, k = 0; s < len - 6; s += 12, k++) L.add('tree', at(s, k % 2 ? 3 : -3), 0, z, id, { size: [0.5, 0.5, WASH(S).top], variant: 'washingtonia', r: 1.5 });
+      for (let s = 12, k = 0; s < len - 6; s += 12, k++) L.add('tree', at(s, k % 2 ? 3 : -3), 0, z, id, { size: [0.5, 0.5, AVE(S).top], variant: avenueVariant(S), r: 1.5 });
       for (let s = 18, k = 0; s < len - 6; s += 18, k++) L.add('lamp', at(s, k % 2 ? -3.4 : 3.4), 0, z, id, { size: [0.25, 0.25, 4.5], variant: 'sputnik', r: 0.5 });
       for (let s = 24, k = 0; s < len - 6; s += 24, k++) { L.add('bench', at(s, k % 2 ? 3 : -3), yaw, z, id, { r: 1 }); L.add('bin', at(s + 1.8, k % 2 ? 3 : -3), 0, z, id, { r: 0.4 }); }
     }
@@ -72,7 +73,7 @@ export function dressCircus(ctx: Ctx, L: Layer): void {
   ring(rm, 12, (a, p, k) => { if (k % 2 === 0) L.add('tree', p, 0, z, id, { size: [0.9, 0.9, PHX(S).top], variant: 'phoenix', r: 2.4 }); else L.add('lamp', p, 0, z, id, { size: [0.25, 0.25, 4.5], variant: 'sputnik', r: 0.5 }); }, 0.05);
   // the pavement ring: palms at the kerb every 12 m clear of the arms that meet the circus
   const rk = c.ring[1] + 1.2, arms = ctx.d.roads.filter(r => !r.gyratory);
-  ring(rk, S.trees.spacing, (a, p) => { if (arms.some(r => lineDist(p, r.line) < r.w / 2 + 5)) return; L.add('tree', p, a, z, id, { size: [0.5, 0.5, WASH(S).top], variant: 'washingtonia', r: 1.5 }); }, 0.03);
+  ring(rk, S.trees.spacing, (a, p) => { if (arms.some(r => lineDist(p, r.line) < r.w / 2 + 5)) return; L.add('tree', p, a, z, id, { size: [0.5, 0.5, AVE(S).top], variant: avenueVariant(S), r: 1.5 }); }, 0.03);
   ring(c.ring[1] + 0.9, 48, (a, p) => { if (!arms.some(r => lineDist(p, r.line) < r.w / 2 + 5)) L.add('lamp', p, 0, z, id, { size: [0.3, 0.3, 8], variant: 'atom-ring', r: 0.6 }); }, 0.2);
 }
 

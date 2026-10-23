@@ -1,0 +1,4 @@
+Failure (rivals-reach-vale) at 7:03.2 · final eb58ffe9c67d · replay identical
+The Enforcer is down and the rival crew takes Vale off him.
+engine working tree on 04a4fb757ef6 (uncommitted engine or input changes) dll 1547b5ed4b66f69ccbe60ddbd32d906bc3815b2eb374af26d6ca2f2f07418abe
+step mean 0.1269 ms, max 6.702 ms over 4232 steps; engine per frame 0.0495 ms over 24895 frames

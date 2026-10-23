@@ -112,6 +112,23 @@ def clear_text(row, legacy):
     return re.sub(r"(- _Smoothness: )[0-9.]+", rf"\g<1>{_f(row['smoothness'])}", t)
 
 
+def film_text(row):
+    """DK_GlassDark (brief 048): the window film on Suborned/DecoKit/GlassSky (a fake sky, no probe). Properties come from mats.GLASS_FILM through the row's `film`; the guid stays the
+    legacy one (the FBXs and prefabs bind by it), only the shader and the values change."""
+    f, name = row["film"], row["name"]
+    lin = lambda h: tuple(_lin(int(h.lstrip("#")[i:i + 2], 16) / 255) for i in (0, 2, 4))  # noqa: E731
+    col = lambda c, a=1.0: f"{{r: {_f(c[0])}, g: {_f(c[1])}, b: {_f(c[2])}, a: {_f(a)}}}"  # noqa: E731
+    r, g, b = lin(f.get("glaze") or "#%02x%02x%02x" % tuple(round(c * 255) for c in row["color"]))
+    colors = [("_BaseColor", col((r, g, b), f["alpha"])), ("_SkyHorizon", col(lin(f["horizon"]))), ("_SkyZenith", col(lin(f["zenith"]))), ("_Street", col(lin(f["street"])))]
+    floats = [("_Cull", 2), ("_Edge", f["edge"]), ("_Fresnel", f["fresnel"]), ("_Sheen", f["sheen"]), ("_Glow", f.get("glow", 0.85))]
+    return ("%YAML 1.1\n%TAG !u! tag:unity3d.com,2011:\n--- !u!21 &2100000\nMaterial:\n  serializedVersion: 8\n  m_ObjectHideFlags: 0\n  m_CorrespondingSourceObject: {fileID: 0}\n"
+            f"  m_PrefabInstance: {{fileID: 0}}\n  m_PrefabAsset: {{fileID: 0}}\n  m_Name: {name}\n  m_Shader: {{fileID: 4800000, guid: {f['shader']}, type: 3}}\n"
+            "  m_Parent: {fileID: 0}\n  m_ModifiedSerializedProperties: 0\n  m_ValidKeywords: []\n  m_InvalidKeywords: []\n  m_LightmapFlags: 4\n  m_EnableInstancingVariants: 0\n"
+            "  m_DoubleSidedGI: 0\n  m_CustomRenderQueue: 3000\n  stringTagMap:\n    RenderType: Transparent\n  disabledShaderPasses:\n  - SHADOWCASTER\n  - DepthOnly\n"
+            "  m_LockedProperties: \n  m_SavedProperties:\n    serializedVersion: 3\n    m_TexEnvs: []\n    m_Ints: []\n    m_Floats:\n"
+            + "".join(f"    - {k}: {_f(v)}\n" for k, v in floats) + "    m_Colors:\n" + "".join(f"    - {k}: {v}\n" for k, v in colors) + "  m_BuildTextureStacks: []\n  m_AllowLocking: 1\n")
+
+
 def lit_art_text(row, legacy, tex_guid):
     """A textured lit-from-within .mat (`emit` kind with a texture and no legacy .mat: the café's floor and paintings, brief 020): the legacy DK_Lightbox_Travel.mat with its
     texture swapped, the emission strength and the metric tiling (m_Scale = 1 / tileMetres, where the row has one)."""
@@ -176,6 +193,12 @@ def write(table_path, dst, retuned):
     for row in rows:
         n = row["name"]
         d = Path(dst) / "Materials"
+        if row.get("film"):  # a window film on its own shader (mats.GLASS_FILM): written whether or not the legacy kit has the name (it has: the guid is kept)
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(film_text(row))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
         if row["kind"] in ("clear", "sheen") and not (legacy / f"{n}.mat").exists():  # window panes
             d.mkdir(parents=True, exist_ok=True)
             (d / f"{n}.mat").write_text(clear_text(row, legacy))

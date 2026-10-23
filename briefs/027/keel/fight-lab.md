@@ -349,3 +349,41 @@ F8-BREAK: the range floor is 45 m, so the 20 s break runs straight away to the f
 2. Cars as targets (Sky §9.7): not built; needs Motive's numbers (health, disabled/burning/explodes, blast harm, occupants, the getaway car's fail or change).
 3. Fable: `fire-running` and `fight-over` stay in `Answer.Codes` until their lines go; new silent codes `fire.camera-dark`, `fire.camera-hit`; the hold card's fail line.
 4. Rule reading to confirm (Motive): the shot-dead person's act starts landed (one incident, one dispatch: the shooting already called the response), its Trail is the gunfire's (no extra kill Trail), and the guard shot keeps his own missed check-in path.
+
+## 15. Update (2026-10-21): engine 0.19.0, weapons free and hostile intent per agent (TODAY and LAB)
+Inputs: Motive `motive/tuning.md` §14 and the §14 note; Pulse `pulse/hostile-initiative.md` with Sky's answers; brief 041. Built and measured in `motive/tuning.md` §14.7. Evidence: `matrix-0.19.txt`, `sweep-0.19.txt`, `route-diff-0.19.json`, `route-moves-0.19.json`, `missions-check-0.19-tree.txt` (and `-base`). Baseline `out/keel041/base`. The rule split: weapons free alone (A) and both (B), by temporary switches since removed (removal byte-identical, 294/294 + 77/77). N87's reassignment path no longer happens (the reported face gets the Enforcer shot at 6:38.6 first): the fixture holds to no engine error and needs new orders for the 6:56.1 search.
+
+## 16. Update (2026-10-22): engine 0.21.0, the lasting fire order on the move (TODAY and LAB)
+Input: Sky on 0.2.48, brief 041's last line ("Keep them firing until out of range I would say, same for running"). No Motive section: Sky's rule, built as stated. Baseline `out/keel-s16/base` (built before the first edit).
+- **Before (0.20.0):** a walk or a run already kept the order and fired at the gait's chance (§8.2 rule 4). The order never ended for range: unspent, it walked back in after a target that left reach; after a player move it held while moving and lapsed 3 s after the move ended. An act paused it and the agent fired again after the act.
+- **Built:** `Gun.Reached` (set the first tick the order has reach and line; cleared by every new order; hashed only while an order stands and has it). A reached order whose target is beyond the weapon's max ring ends that tick (`fire.out-of-range`), walking, running, driven or standing. `Engage` (every act) ends a standing order (`fire.cancelled`). Before reach, the walk-in and the lapse are unchanged. Rule text on `weapons.rule`.
+- **Scenarios** (`ScenariosLastingFire.cs`): LF-WALK, LF-RUN, LF-OUT, LF-RUN-OUT on the range (each also -LAB), LF-ACT in the Handover. All pass.
+- **Hashes** (`hash-moves-0.21.json`): behaviour moves 3 scenarios (N10, N159, N161) and 3 range scenarios (R07, F8-BREAK, F8-BREAK-LAB), every check still passing, no outcome moved; 53 + 34 more move only by the `reached` byte; the act rule moves nothing. No route script moves by behaviour; the mission check is 38/38.
+- **Matrix** (`matrix-0.21.txt`): L1–L4, P-A, P-B, P-G identical in every preset but lab-cover L3 (same failure, T 30 → 32). The adversarial kite rows move in their numbers; lab-field-on moves 4 outcomes (P-G:reset now a success at 55 % lost, still over its line). **Sweep** (`sweep-0.21.txt`): `today` wins 28 → 19, lab 1 → 0, lab-field-on 29 → 19, snap-off 0 → 0; cheap 0 → 0 in every preset; every chunk replays identically. The kite family loses the free chase: an order no longer walks back in after a target that stepped out of the ring.
+
+## 17. Update (2026-10-22): engine 0.22.0, only security notices a run (TODAY and LAB)
+Input: Sky, 2026-10-22: "I think running only in front of camera, patrol bots and guards get you noticed, anyone else fine, need to loosen that up." The ruling is at the end of `motive/tuning.md`. Police officers count as security, and a crowd guard is a guard (both Sky via Aster). Baseline `out/keel-runbase`, the tree with the run edits reversed.
+- **Before (0.21.0):** every person within witness range on a clear line remembered a run (`saw-runner`: place, time, the Fixer's face), and a running Enforcer within witness range was heard by any takedown target. Only the watchers (cameras, the door guard's cone, the patrol, robots, police) raised the found fault.
+- **Built:**
+  - Only security staff (the door guard, a job in `witness.staff`) remember a run or hear a running Enforcer.
+  - The found fault (`runAlert`, once a run) also comes from a crowd guard, not turned. He sees a run by the door guard's sight rule on his rounds (`StaffSees`): the facing cone (perception.facing, the way he walks) with the near sense, a clear line, people blocking. At a stop he has only the near sense.
+  - The ledger cause is `runner-seen:<person id>:<agent>`, and the log line is `run.seen`, "The guard <name> sees the <agent> running".
+  - `MoveQuote.RunSeenBy` lists such a guard by id.
+- **Rivals:** the engine never had them notice a run, and Sky's list leaves them out, so they still don't. This differs from GDD §05, which lists the rivals' cones; that goes to Aster.
+- **Rule text:** `cell.rule`, `run-alert` and the takedown preview line.
+- **Scenarios:** all pass on 0.22.0. On 0.21.0 each fails on its new check.
+  - N20 now asserts that nobody else remembers the run.
+  - N20c: civilians see the Fixer run. No memory, no face, no Alert.
+  - N20d: the door guard sees a run. Alert 1, once, by the guard.
+  - N20e: a camera only, with the crowd off. Alert 1.
+  - N20f: a running Enforcer behind a walker. An ordinary walker is surprised; a staff guard is aware.
+  - N20g: a crowd guard sees a run. Alert 1, once, by her, and she remembers it.
+- **Hashes** (`hash-moves-0.22.json`): 67 of 303 move.
+  - 57 move by memory bytes only.
+  - Five are the new scenarios.
+  - DP1 is re-recorded.
+  - Four routes, the route-a family, reach Alert 1 at 0:05.8: crowd guard 73 sees the Scout's opening run. It used to come at 2:52.7, from the door guard seeing the Enforcer run. Outcome, end tick, T, final A and Standing are unchanged.
+  - 13 handover routes carry fewer `word` lines into the next mission.
+  - Range: 85/85 identical.
+- **Matrix** (`matrix-0.22.txt`): identical to 0.21.0 row for row. **Sweep** (`sweep-0.22.txt`): byte-identical in all four presets.
+- **Mission check:** SHIPS, with the slack rows unchanged.

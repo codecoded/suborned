@@ -61,10 +61,32 @@ void FacadeSurface(float3 p, float3 n, half4 col, inout SurfaceData s, inout flo
     }
     else if (cls == 3)
     {
-        // glass: dark, mirror-ish, a faint diagonal sheen
+        // glass (Vela, brief 048): never a black void. The pane is lit by what it would show, not by the reflection probe (which is the dark street canyon at the horizon
+        // and read black from third person): a fake sky gradient in the mirror term (R.y up = sky, down = the warm street), a per-pane room behind it (dark teal glazing from the
+        // swatch, or a warm lit room, or a pale blind) and a fresnel weight that grows as the view grazes. No probe, no extra pass: the sky is the scene's trilight ambient
+        // (light.json ambient, so night follows), tinted blue; a few warm rooms glow as the ambient falls.
+        float3 V = GetWorldSpaceNormalizeViewDir(p);
+        float ndv = saturate(dot(n, V));
+        float3 R = reflect(-V, n);
+        float lum = dot(unity_AmbientEquator.rgb, float3(0.3, 0.59, 0.11));
+        float day = saturate(lum * 1.45);                                   // 1 by day (ambient 0.7), ~0.25 at night
+        float up = smoothstep(-0.2, 0.7, R.y);
+        float3 skyHorizon = float3(0.60, 0.74, 0.77), skyZenith = float3(0.18, 0.43, 0.70), street = float3(0.30, 0.24, 0.19);
+        float3 sky = lerp(skyHorizon, skyZenith, smoothstep(0.1, 0.9, R.y));
+        // eye-height view along a street (brief 048 fix 2): the reflection runs near the horizon (R.y about -0.1), so a band of the hazy horizon is mixed in; under 1 percent at the play camera
+        float glow = exp(-(R.y + 0.1) * (R.y + 0.1) / 0.045) * 0.85;
+        float3 mirror = lerp(lerp(street, sky, up), skyHorizon * 1.2, glow) * day;
+        // the room behind the pane: one per 2 m x 3.6 m cell of the wall plane
+        float h = FcHash(floor(float2(uv.x / 2.0, uv.y / 3.6)) + 7.0);
+        float3 teal = s.albedo;                                             // the swatch: the kit window's dark teal
+        float3 warm = float3(0.50, 0.33, 0.20), blind = float3(0.34, 0.36, 0.32);
+        float3 room = h > 0.68 ? warm : (h < 0.16 ? blind : teal * 1.25);
+        float fres = 0.30 + 0.62 * pow(1 - ndv, 3.0);
         float sheen = smoothstep(0.35, 0.5, frac((p.x + p.z) * 0.07 + p.y * 0.05)) * 0.18;
-        s.albedo = s.albedo * 0.75 + sheen * float3(0.55, 0.75, 0.85);
-        s.smoothness = 0.95; s.metallic = 0.35;
+        s.albedo = room;
+        s.metallic = 0.0; s.smoothness = 0.9;
+        s.emission = (mirror * fres * 0.9 + room * 0.55 * day + sheen * float3(0.55, 0.75, 0.85) * day * 0.25) * lerp(0.6, 1.0, ao)
+                   + (h > 0.68 ? warm * (0.10 + 0.9 * (1 - day)) * (1 - fres) : 0.0);
     }
     else if (cls == 4) { s.metallic = 1.0; s.smoothness = 0.82; s.albedo *= 0.95; }
     else if (cls == 6) { s.metallic = 1.0; s.smoothness = 0.7; }

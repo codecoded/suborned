@@ -1,0 +1,85 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>The Suborned · HUD style lab · research board (brief 046, round 5)</title>
+<!-- Two 1920 x 1080 pages: (1) how strong squad and party games draw character plates, (2) the principles we take for our roster.
+     The captures live in briefs/046/research/crops (git-ignored images; served here through the research-crops link). Sources and links: briefs/046/research/sources.md. -->
+<style>
+@font-face{font-family:JostT;font-weight:400;src:url(/fonts/Jost-Regular-Tab.ttf)}
+@font-face{font-family:JostT;font-weight:500;src:url(/fonts/Jost-Medium-Tab.ttf)}
+@font-face{font-family:JostT;font-weight:600;src:url(/fonts/Jost-SemiBold-Tab.ttf)}
+*{box-sizing:border-box}
+html,body{margin:0;background:#0b1615;color:#f7f4ec;font:400 14px/1.4 JostT,sans-serif}
+.page{position:relative;width:1920px;height:1080px;overflow:hidden;background:#0f1d1c;padding:26px 30px}
+h1{margin:0 0 4px;font:600 26px/1.1 JostT;letter-spacing:.2px}
+.sub{color:#b0cdc7;font-size:14px;margin:0 0 16px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);grid-auto-rows:302px;gap:14px}
+.card{background:#14282a;border:1px solid #2a4a47;border-radius:7px;overflow:hidden;display:flex;flex-direction:column}
+.card .im{height:158px;background:#0b1615;position:relative;flex:none}
+.card .im img{width:100%;height:100%;object-fit:cover;object-position:left top;display:block}
+.card .im img.bl{object-position:left bottom}
+.card.tall{flex-direction:row}
+.card.tall .im{width:172px;height:auto;flex:none}
+.card.tall .im img{object-fit:cover;object-position:center top}
+.card.tall.fit .im{width:228px}
+.card.tall.fit .im img{object-fit:contain;object-position:center top}
+.card .tx{padding:9px 12px 8px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.card b{font:600 17px/1.15 JostT}
+.card i{font:500 12px/1.2 JostT;color:#b0cdc7;font-style:normal}
+.card p{margin:3px 0 0;font-size:13.5px;line-height:1.38;color:#e9efec}
+.card p em{color:#60e0ea;font-style:normal;font-weight:500}
+.src{position:absolute;left:30px;bottom:8px;color:#7e948e;font-size:12px}
+/* page 2 */
+.p2{display:grid;grid-template-columns:1fr 520px;gap:30px}
+.pr{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:14px 20px;margin-top:8px;height:940px}
+.pri{display:flex;gap:14px;background:#14282a;border:1px solid #2a4a47;border-radius:7px;padding:16px 18px;min-height:0}
+.pri .n{flex:none;width:34px;height:34px;border-radius:50%;background:#f7f4ec;color:#17302f;font:600 18px/34px JostT;text-align:center}
+.pri h3{margin:0 0 5px;font:600 19px/1.2 JostT}
+.pri p{margin:0;font-size:15.5px;line-height:1.4;color:#dfe8e5}
+.pri .ours{margin-top:6px;color:#60e0ea;font-weight:500}
+.pri .seen{color:#b0cdc7;font-size:13.5px;margin-top:5px}
+.side{background:#14282a;border:1px solid #2a4a47;border-radius:7px;padding:14px 16px}
+.side h3{margin:0 0 8px;font:600 16px JostT}
+.side img{display:block;margin:6px auto;max-height:800px;width:auto;max-width:100%}
+.side p{font-size:13px;color:#dfe8e5;margin:6px 0 0}
+</style>
+<body>
+<section class="page" id="p1">
+  <h1>How strong games draw a small squad's character plates</h1>
+  <p class="sub">Real-time tactics and squad games first, then party frames. Every crop is a publisher's store screenshot or a Wikipedia screenshot, used as a study and kept on disk only (not committed). What works, in a line or two each.</p>
+  <div class="grid" id="g1"></div>
+  <span class="src">Links and notes for every study: briefs/046/research/sources.md. Not used: Diablo IV and Dragon Age: The Veilguard party frames (no reachable source showed them).</span>
+</section>
+<section class="page" id="p2">
+  <h1>Eight principles for our roster</h1>
+  <p class="sub">Drawn from the studies; each line says where it was seen and what it means for the column of four.</p>
+  <div class="p2"><div class="pr" id="pr"></div>
+  <div class="side"><h3>Ours: icons under the portrait, with a divider</h3><img src="/research-crops/ours-div.png" alt="our roster"><p>Revised A: the kit's own column, one row under each face (weapon, status, four pips), one seafoam rung between characters. Jost Regular. Dividers compared in <b>Roster: dividers</b> (#s=roster-div).</p></div></div>
+</section>
+<script>
+const C = [
+ ["desperados3", "Desperados III", "real-time tactics · 2020", "wide", "Stacked small portraits, each on a numbered tab with a red health strip down its left edge. The <em>selected</em> character becomes one big round portrait with a name. Notched slot dividers. Text only for the selected name."],
+ ["shadowtactics", "Shadow Tactics", "real-time tactics · 2016", "wide", "Selected = a large round portrait; the rest are small numbered slots in one row, a greyed cross for unavailable. Portrait and health bar per agent; abilities in a hover summary only."],
+ ["commandos", "Commandos: Origins", "real-time tactics · 2025", "wide", "Equal cards divided by <em>space only</em>. Unselected go grey, the selected is colour, a chipped white edge and a small notch tab on top. Four ticks under each card = health. No words."],
+ ["satellitereign", "Satellite Reign", "real-time squad · 2015", "wide", "Per-agent blocks: number tab, weapon plate, ammo, two bars, ability icons, a status stack. State by frame colour. The busiest roster found: 20+ marks each. A study in what to avoid."],
+ ["syndicate", "Syndicate 1993 / Wars", "the ancestors", "tall", "Four identical agent boxes in a left column (1993) and four identical panels across the top (Wars). The heavy frame is the divider; bars sit in the same place for every agent."],
+ ["jagged3", "Jagged Alliance 3", "turn-based squad · 2023", "tall", "Face, <em>ticks directly under it</em>, name plate. Selected = card turns cream. Hurt = red tick and a red \"!\" on the face. A red eye with a number at the side. Generous space between members."],
+ ["phantom", "Phantom Doctrine", "turn-based squad · 2018", "wide", "A row of faces. The selected agent is simply bigger, with a name and two bars; the others compact with a thin bar and chevron pips. Selection = scale."],
+ ["mutant", "Mutant Year Zero", "turn-based squad · 2018", "wide", "Big portrait cards; the selected card gets an orange frame. Green segmented health under each card and action chevrons under that: a fixed order, same for every card."],
+ ["gears", "Gears Tactics", "turn-based squad · 2020", "wide", "Portrait with a class icon, a segmented bar and a number; the selected one expands with its name. Hurt or exposed: the bar turns yellow with a red glow, the state is on the bar itself."],
+ ["xcom2", "XCOM 2", "turn-based squad · 2016", "wide", "No portrait roster: a flag over each soldier's head (segmented health, chevron action points, cover). Bottom-left a name plate with a class diamond; ability icons with their key digit beneath."],
+ ["bg3", "Baldur's Gate 3", "party frames · 2023", "tall fit", "Tall portrait cards that touch; hit points printed under the face; weapon icon beside; selected = bronze frame. <em>Hurt = a red fill rising from the bottom of the portrait</em> (right card): state on the picture."],
+ ["masseffect", "Mass Effect", "squad HUD · 2007 / 2010", "wide", "Names stacked bottom-left with a shield bar and a health bar. In ME2 (from guides) a portrait turns red when shields are gone and under attack, grey when fallen."],
+];
+document.getElementById("g1").innerHTML = C.map(([id, n, t, k, p]) => `<div class="card ${k.startsWith("tall") ? k : ""}"><div class="im"><img class="${id === "desperados3" ? "bl" : ""}" src="/research-crops/${id}.png"></div><div class="tx"><b>${n}</b><i>${t}</i><p>${p}</p></div></div>`).join("");
+const P = [
+ ["The block is one portrait and one thin state line", "Nothing else sits on a character: HP or ticks directly under the face is the strongest pattern.", "BG3, Jagged Alliance 3, Mutant Year Zero, Commandos", "Ours: the icon row under each face (weapon, status, four pips)."],
+ ["Separate characters with space or one quiet mark", "Never a frame around every block; the busy rosters that frame everything read worst.", "BG3, JA3, Commandos use space; Desperados III a recessed slot; Satellite Reign and Syndicate heavy frames", "Ours: one seafoam rung between characters (3 px) and a few px of air."],
+ ["The state row hugs its own portrait", "The air goes after the row, so proximity says whose icons they are.", "JA3, Mutant Year Zero, Gears Tactics", "Ours: the row sits 2.5 px under its rim; the 8.6 px below it holds the rung (it was centred, 3.4 / 3.4)."],
+ ["Selected is promoted, never recoloured by role", "Scale, colour against grey, or one frame; no colour per class.", "Commandos, JA3 (cream card), Phantom Doctrine, Desperados III", "Ours: the turquoise ring on the portrait; nothing else changes."],
+ ["Hurt and down change the picture first", "The portrait goes red, filled or grey; the bar follows.", "BG3 red fill, Mass Effect 2 red and grey, JA3 red \"!\"", "Ours: portrait_hurt and portrait_down art, pips second."],
+ ["One status glyph, fixed slot, fixed priority", "An empty slot stays empty. Being shot at or seen is one glyph or one pulse on the portrait, not a new element.", "JA3 \"!\" and eye, Gears red glow, ME2 red portrait", "Ours: status slot (down, fired on, seen, watched, busy) and the rim pulse."],
+ ["Words only for the selected one", "A name beside the big portrait; the others stay faces.", "Desperados III, Gears Tactics, Phantom Doctrine", "Ours: no words on the roster at all."],
+ ["Digits only where the game is numeric", "HP and levels are numbers in BG3, Gears and JA3. Ours is time and chance: pips, no digits, no key numbers.", "Desperados III and Satellite Reign keep key numbers on a tab (Sky removed ours)", "Ours: four pips; keys 1-4 unprinted."],
+];
+document.getElementById("pr").innerHTML = P.map(([h, p, s, o], i) => `<div class="pri"><span class="n">${i + 1}</span><div><h3>${h}</h3><p>${p}</p><div class="seen">Seen in: ${s}</div><p class="ours">${o}</p></div></div>`).join("");
+</script>

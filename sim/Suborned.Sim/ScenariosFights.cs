@@ -1,5 +1,5 @@
 // Running and real-time shoot-outs (Sky 2026-10-15: Motive's briefs/011/motive-fights.md approved, all five answers as recommended):
-// a run seen by people and by security, runs refused, hits counted not rolled, a drawn weapon as an act, the going-loud card, panic,
+// a run seen by security (engine 0.22.0: only security notices a run), runs refused, hits counted not rolled, a drawn weapon as an act, the going-loud card, panic,
 // and carrying a downed operative.
 using System;
 using System.Collections.Generic;
@@ -15,6 +15,30 @@ namespace Suborned.Sim
             foreach (var w in g.Walkers) n += w.P.Count("saw-runner");
             return n;
         }
+        /// <summary>Engine 0.22.0 (Sky 2026-10-22: only security notices a run): security staff are the door guard and the jobs in witness.staff.</summary>
+        static bool StaffP(Game g, Person p) => p == g.GuardP || g.R.StaffJobs.Contains(p.Job);
+        /// <summary>Everyone on the street now, cast then crowd, with where they stand.</summary>
+        static IEnumerable<(Person p, Pt at)> StreetNow(Game g)
+        {
+            foreach (var p in g.People) if (g.PersonPos(p) is Pt a) yield return (p, a);
+            foreach (var w in g.Walkers) if (!w.P.Down && g.CrowdPos(w) is Pt b) yield return (w.P, b);
+        }
+        /// <summary>Ordinary people (not security staff) who remember a run.</summary>
+        static int SawRunnerOrdinary(Game g)
+        {
+            int n = 0;
+            foreach (var p in g.People) if (!StaffP(g, p)) n += p.Count("saw-runner");
+            foreach (var w in g.Walkers) if (!StaffP(g, w.P)) n += w.P.Count("saw-runner");
+            return n;
+        }
+        /// <summary>Ordinary people within witness range of `at` on a clear line now (the run's would-be witnesses before 0.22.0).</summary>
+        static HashSet<string> OrdinaryInRange(Game g, Pt at)
+        {
+            var ids = new HashSet<string>(StringComparer.Ordinal);
+            foreach (var (p, wp) in StreetNow(g)) if (!StaffP(g, p) && G.Within(wp, at, g.R.WitnessRangeCm) && g.S.Sight(wp, at, g.R.Eye)) ids.Add(p.Id);
+            return ids;
+        }
+        static readonly string[] RunPlaces = { "d:Courtyard", "d:Office approach", "d:Plaza east", "d:Plaza west", "d:Fountain", "d:East side", "d:West side", "d:South walkway", "d:Service lane", "d:Behind café", "d:Terrace gate", "d:Boarding pavilion", "d:Getaway bay", "d:Official drop-off", "d:Meet driver", "d:Under parasol", "d:Between tables", "d:Café door" };
         /// <summary>A point in front of the guard at his door, within point blank (3 m along his facing), on free ground.</summary>
         static Pt FrontOfGuard(Run r) => r.Stand("d:Office entrance") + Along(r.G.S.GuardFacing, 300); // along his facing from the site (2026-10-19: west, the door on the west face; was a fixed 3 m north)
         /// <summary>`cm` along a facing (any length), in integer centimetres.</summary>
@@ -24,7 +48,7 @@ namespace Suborned.Sim
 
         static void FightCases()
         {
-            Add("N20", "—", "A running witness (motive-fights.md §1.1): the Scout runs past the Office; people in range remember where and when (no Trail); security that sees the run counts one found fault, Alert 1, once a run; the guard who saw it is no ally in a safe fight.", r =>
+            Add("N20", "—", "A running witness (motive-fights.md §1.1; engine 0.22.0, Sky 2026-10-22: only security notices a run): the Scout runs past the Office; the guard remembers where and when (no Trail) and nobody else on the street does; security that sees the run counts one found fault, Alert 1, once a run; the guard who saw it is no ally in a safe fight.", r =>
             {
                 var g = r.G;
                 int trail = g.Trail;
@@ -35,7 +59,8 @@ namespace Suborned.Sim
                 r.Eq(g.Trail, trail, "running is no traceable act: no Trail");
                 r.Eq(g.Alert, 1, "security saw a runner: a found fault, Alert 1");
                 r.Eq(g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)).Count, 1, "once a run, however many watchers saw it");
-                r.Is(SawRunner(g) > 0, $"people remember the runner, place and time ({SawRunner(g)})");
+                r.Is(SawRunner(g) > 0, $"security staff remember the runner, place and time ({SawRunner(g)})");
+                r.Eq(SawRunnerOrdinary(g), 0, "nobody else remembers the run (engine 0.22.0)");
                 r.Is(g.GuardP.Has("saw-runner"), "the guard saw him: he holds a memory, so he won't fight at the cell's side (§07 never saw you)");
             });
 
@@ -50,6 +75,139 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "d:Office approach", run: true));
                 r.Eq(SawRunner(g), seen, "no one counts the runner");
                 r.Is(!g.Ledger.GetRange(ledger, g.Ledger.Count - ledger).Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "and no found fault");
+            });
+
+            Add("N20c", "—", "Ordinary people don't notice a run (engine 0.22.0, Sky 2026-10-22: \"running only in front of camera, patrol bots and guards get you noticed, anyone else fine\"): the Fixer runs where no security watcher sees him, past people on the street. Nobody remembers it, nobody holds the Fixer's face, no Alert, no Trail, no found fault.", r =>
+            {
+                var g = r.G;
+                string to = "";
+                foreach (var pl in RunPlaces) { var q = g.QuoteMove(Fixer, r.Stand(pl)); if (q.RunRefused.Length == 0 && q.RunSeenBy.Count == 0 && q.RunS > 5) { to = pl; break; } }
+                if (!r.Is(to.Length > 0, $"a run no security watcher sees on the chip ({to})")) return;
+                var q0 = g.QuoteMove(Fixer, r.Stand(to));
+                r.Eq(q0.AlertIfRun, g.Alert, "the chip: no Alert from this run");
+                int trail = g.Trail, ledger = g.Ledger.Count;
+                r.Send(Fixer, to, run: true);
+                var saw = new HashSet<string>(StringComparer.Ordinal);
+                while (r.Op(Fixer).Walk != null && !g.Over) { g.Step(); foreach (var id in OrdinaryInRange(g, r.Op(Fixer).Pos)) saw.Add(id); }
+                r.Is(saw.Count > 0, $"people on the street saw the Fixer run past ({saw.Count} within witness range on a clear line)");
+                r.Eq(SawRunnerOrdinary(g), 0, "none of them remembers the run");
+                int faces = 0; foreach (var p in g.People) if (!StaffP(g, p) && g.HoldsFace(p)) faces++;
+                foreach (var w in g.Walkers) if (!StaffP(g, w.P) && g.HoldsFace(w.P)) faces++;
+                r.Eq(faces, 0, "nobody holds the Fixer's face");
+                r.Eq(g.Trail, trail, "no Trail");
+                r.Eq(g.Alert, 0, "no Alert");
+                r.Is(!g.Ledger.GetRange(ledger, g.Ledger.Count - ledger).Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault");
+            });
+
+            Add("N20d", "—", "The guard notices a run (engine 0.22.0: security still does): the Fixer runs up in front of the guard at his door. A found fault: Alert 1, once, by the guard; he remembers where and when and the Fixer's face; no Trail.", r =>
+            {
+                var g = r.G;
+                int trail = g.Trail;
+                var q = g.QuoteMove(Fixer, FrontOfGuard(r));
+                r.Is(q.RunSeenBy.Contains("guard") && q.AlertIfRun >= 1, $"the chip: the guard would see the run ({string.Join(", ", q.RunSeenBy)}), Alert → {q.AlertIfRun}");
+                var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", Point = FrontOfGuard(r), Run = true });
+                if (!r.Is(ok, $"the Fixer runs to the guard ({why})")) return;
+                r.To(r.Arrival(Fixer));
+                r.Is(g.Alert >= 1, $"Alert {g.Alert} (≥ 1): a found fault");
+                var faults = g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal));
+                r.Is(faults.Count == 1 && faults[0].cause == "runner-seen:guard:fixer", $"once, by the guard ({string.Join(", ", faults.ConvertAll(l => l.cause))})");
+                r.Is(g.GuardP.Memory.Exists(m => m.Act == "saw-runner" && m.By == "fixer") && g.HoldsFace(g.GuardP), "the guard remembers the run and the Fixer's face");
+                r.Eq(SawRunnerOrdinary(g), 0, "nobody else remembers it");
+                r.Eq(g.Trail, trail, "no Trail");
+            });
+
+            Add("N20e", "—", "A live camera notices a run (engine 0.22.0: security still does): with the crowd off (so no crowd guard is on the street), an operative runs where a camera sees him and the guard and the patrol don't. A found fault: Alert 1, once, by the camera; nobody on the street remembers it; no Trail.", r =>
+            {
+                var g = r.G;
+                string op = "", to = "";
+                for (int tries = 0; tries < 40 && to.Length == 0 && !g.Over; tries++) // 0.22.0: a crowd guard on the route counts too, so wait for a clear one
+                {
+                    foreach (var o in new[] { Scout, Fixer, Tech })
+                    {
+                        foreach (var pl in RunPlaces)
+                        {
+                            var q = g.QuoteMove(o, r.Stand(pl));
+                            if (q.RunRefused.Length == 0 && q.RunSeenBy.Count > 0 && q.RunSeenBy.TrueForAll(w => w.StartsWith("camera:", StringComparison.Ordinal))) { op = o; to = pl; break; }
+                        }
+                        if (to.Length > 0) break;
+                    }
+                    if (to.Length == 0) r.Wait(T(5));
+                }
+                if (!r.Is(to.Length > 0, $"a run only a camera sees on the chip ({op} to {to})")) return;
+                int trail = g.Trail;
+                r.To(r.Send(op, to, run: true));
+                var faults = g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal));
+                r.Is(faults.Count == 1 && faults[0].cause.StartsWith("runner-seen:camera:", StringComparison.Ordinal), $"once, by a camera ({string.Join(", ", faults.ConvertAll(l => l.cause))})");
+                r.Eq(g.Alert, 1, "Alert 1: a found fault");
+                r.Eq(SawRunnerOrdinary(g), 0, "nobody on the street remembers it");
+                r.Eq(g.Trail, trail, "no Trail");
+            }, new Start { Crowd = false });
+
+            Add("N20f", "—", "Heard running (engine 0.22.0; rulebook takedown preview aware): a running Enforcer within witness range is heard only by security staff. The Enforcer falls in behind a person walking the street, out of their facing cone: walking, neither is aware; running, an ordinary person still isn't (surprised), a staff guard hears him coming.", r =>
+            {
+                var g = r.G;
+                int walk = g.R.CellSpeed;
+                foreach (bool staff in new[] { false, true })
+                {
+                    // a person of the kind walking a straight-enough leg for 25 s, with a spot on their way the Enforcer can reach in time
+                    Walker? w = null; int t0 = 0; Pt spot = default;
+                    for (int t = g.Tick + T(30); t < g.Tick + T(300) && w == null; t += T(5))
+                        foreach (var c in g.Walkers)
+                        {
+                            if (StaffP(g, c.P) != staff || c.P.Down || c.St.Length > 0) continue;
+                            bool moving = true; Pt? last = null;
+                            for (int k = 0; k <= T(25) && moving; k += T(1)) { var a = g.CrowdPos(c, t + k); moving = a.HasValue && (!last.HasValue || a.Value != last.Value); last = a; }
+                            if (!moving) continue;
+                            var at = g.CrowdPos(c, t)!.Value; if (!g.S.Grid.Free(at)) continue;
+                            var route = g.S.Grid.Route(r.Op(Enf).Pos, at); if (route == null) continue;
+                            if (new Path(route).Length / walk + T(5) > t - g.Tick) continue;
+                            var ahead = g.CrowdPos(c, t + T(7))!.Value; var h = g.CrowdPos(c, t + T(8))!.Value - ahead;
+                            long dot = (long)(at.X - ahead.X) * h.X + (long)(at.Y - ahead.Y) * h.Y;
+                            if (dot >= 0 || !G.Within(at, ahead, g.R.WitnessRangeCm - 200) || !g.S.Sight(ahead, at, g.R.Eye)) continue;
+                            w = c; t0 = t; spot = at; break;
+                        }
+                    if (!r.Is(w != null, $"{(staff ? "a staff guard" : "an ordinary person")} walking the street, with a spot on their way the Enforcer reaches in time")) return;
+                    r.SendTo(Enf, spot); r.To(t0 + T(7));
+                    r.Is(r.Op(Enf).Pos == spot && r.Op(Enf).Walk == null, $"the Enforcer stands where {w!.P.Id} passed, {G.Isqrt(G.D2(spot, g.CrowdPos(w)!.Value)) / 100} m behind them");
+                    var on = g.CrowdPos(w, t0 + T(25))!.Value;
+                    g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = on }); g.Step();
+                    r.Eq(g.QuoteTakedown(w.P.Id, "knockout").Aware, "no", $"walking up behind {w.P.Id} ({w.P.Job}): not aware");
+                    var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = on, Run = true }); g.Step();
+                    r.Is(ok && g.Enforcer.Running && g.Enforcer.Walk != null && G.Within(g.Enforcer.Pos, g.CrowdPos(w)!.Value, g.R.WitnessRangeCm), $"running up behind them, within witness range{(ok ? "" : ": " + why)}");
+                    r.Eq(g.QuoteTakedown(w.P.Id, "knockout").Aware, staff ? "yes" : "no", staff ? $"{w.P.Id} ({w.P.Job}, staff) hears him running: aware" : $"{w.P.Id} ({w.P.Job}) doesn't notice a run: surprised");
+                    g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "move", Point = r.Op(Enf).Pos }); g.Step();
+                }
+            });
+
+            Add("N20g", "—", "A crowd guard notices a run (engine 0.22.0; Sky via Aster 2026-10-22: \"a guard is a guard\"): an operative runs past an Office guard on the street, where no camera, the door guard or the patrol sees him. A found fault: Alert 1, once, by that guard; he remembers the run; nobody else on the street does; no Trail.", r =>
+            {
+                var g = r.G;
+                string op = "", to = "", who = "";
+                for (int tries = 0; tries < 40 && to.Length == 0 && !g.Over; tries++)
+                {
+                    foreach (var o in new[] { Scout, Fixer, Tech })
+                    {
+                        foreach (var pl in RunPlaces)
+                        {
+                            var q = g.QuoteMove(o, r.Stand(pl));
+                            if (q.RunRefused.Length == 0 && q.RunSeenBy.Count > 0 && q.RunSeenBy.TrueForAll(w => w.StartsWith("p-", StringComparison.Ordinal))) { op = o; to = pl; who = q.RunSeenBy[0]; break; }
+                        }
+                        if (to.Length > 0) break;
+                    }
+                    if (to.Length == 0) r.Wait(T(5));
+                }
+                if (!r.Is(to.Length > 0, $"a run on the chip that only a crowd guard would notice ({op} to {to} at {Report.Clock(g.Tick)}, {who})")) return;
+                int trail = g.Trail;
+                r.To(r.Send(op, to, run: true));
+                var faults = g.Ledger.FindAll(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal));
+                var by = faults.Count == 1 ? faults[0].cause.Split(':')[1] : "";
+                var guard = g.PersonById(by);
+                r.Is(faults.Count == 1 && guard != null && guard != g.GuardP && g.R.StaffJobs.Contains(guard.Job), $"once, by a crowd guard ({string.Join(", ", faults.ConvertAll(l => l.cause))})");
+                r.Eq(g.Alert, 1, "Alert 1: a found fault");
+                r.Is(guard != null && guard.Memory.Exists(m => m.Act == "saw-runner" && m.By == op), "he remembers the run");
+                r.Is(g.Log.Exists(l => l.Code == "run.seen" && l.Text.StartsWith("The " + (guard?.Job ?? "?") + " ", StringComparison.Ordinal)), "the log names him");
+                r.Eq(SawRunnerOrdinary(g), 0, "nobody else on the street remembers it");
+                r.Eq(g.Trail, trail, "no Trail");
             });
 
             Add("N21", "—", "Runs refused, each with its reason (motive-fights.md §1.1): the Tech tethered to a loop, an operative in the middle of an action; walking stays open.", r =>

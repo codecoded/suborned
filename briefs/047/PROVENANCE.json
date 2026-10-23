@@ -1,0 +1,1167 @@
+[
+ {
+  "file": "takes/A_t1.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1044494969,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "6ac090dddabb001846ebbaefffc13f91f7fd3429f70ee05fa26a80f7d9555898",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a closed-circuit camera on a slim chrome post, a clockwork patrol robot on one wheel with a dot-matrix face, a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open soft sky and haze; the bottom strip is a quiet band of paving."
+ },
+ {
+  "file": "takes/D_t1.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 652830532,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "989459707a9d67b38857d983872e44a0e653c967be657bfe39961b051719ae95",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open soft sky; the bottom band is quiet paving."
+ },
+ {
+  "file": "takes/D_t3.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 413799298,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "3653d6122af05eeb1bec89ffa33b529702e89b337c3b8a7e57548f819fd772af",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open soft sky; the bottom band is quiet paving."
+ },
+ {
+  "file": "takes/C_t3.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1848469264,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "8aaa331d9fa8ec6e9972b6b14b085d124c1a44ab1bee1535616314b9748c433d",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open hazy sky; the bottom band is quiet."
+ },
+ {
+  "file": "takes/C_t1.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1070304209,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "551295ce7bbd0aedb0e7f55b6b4969c32976f30e7f3579dfdc083502caa3979d",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open hazy sky; the bottom band is quiet."
+ },
+ {
+  "file": "takes/B_t1.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 29993340,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "8e8759d323b7e0cd7ebd4baa1e5d90ad2852592be4e040846ef39bacaaaee907",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper right is open pale sky and soft facade; the bottom band is quiet."
+ },
+ {
+  "file": "takes/C_t2.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1260854235,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "6b07fbbe836eee894723244b846f5d96d4c815430bf787f0fc4d033d6afb3dbc",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open hazy sky; the bottom band is quiet."
+ },
+ {
+  "file": "takes/B_t2.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1019501196,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "9b96ebcc0bdaa6c7189d90178f5fb4f99d69cbda515d85e9b765f04619084d46",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper right is open pale sky and soft facade; the bottom band is quiet."
+ },
+ {
+  "file": "takes/A_t2.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 310892191,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "ad1b8ced429bd7d401083041b681f9e6d2917709b493bbccd4c58356b6f7e9e3",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open soft sky and haze; the bottom strip is a quiet band of paving."
+ },
+ {
+  "file": "takes/A_t3.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 887449162,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "0bb33b873c620adc9a55ebd798c47114d13e5940dd560703940ed0212232f14a",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open soft sky and haze; the bottom strip is a quiet band of paving."
+ },
+ {
+  "file": "takes/D_t2.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1653937469,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "393e7cdf42768f2c9a3fd7c03cdfff2c44f0c121a1afdd0ad4a14c755bd46a12",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper left is open soft sky; the bottom band is quiet paving."
+ },
+ {
+  "file": "takes/B_t3.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 264651563,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "50f961e0d786cc53b4a4aabffe54e011c905c5b69f7328426dfcb58fe1ca2778",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. Distant citizens wear tailored space-age couture in seafoam, coral, navy and white; no hats, no period dress. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a small panel of round dot-matrix bulbs, no eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface, no bars, no frames, no progress bar. No gold surfaces, no glass curtain walls, no grime. Calm negative space for a title and slim progress bar: upper right is open pale sky and soft facade; the bottom band is quiet."
+ },
+ {
+  "file": "takes/C_t4.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1624167979,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "caad89bc76debbe627413c1039348b4bb2e1a77b0c59d7746abd39d14c06efea",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open hazy sky; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/C_t5.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 594684608,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "88b61a6a27050d106bfdfe77abeabe226224c667fb47abeae552d9ff8d6c5d06",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open hazy sky; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/B_t4.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1478614543,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "7434345878e4a33567d83ced8941db768d23b85d47ccdffe03ab3a7335b4a07d",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper right is open pale sky and soft facade; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/B_t6.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1014556477,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "0aab53b8b77e7d11cad6772c920a0ee7116adc51dece28dbba69b89e4744abc3",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper right is open pale sky and soft facade; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/D_t6.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1095761087,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "bcb534cef9f4c27f6816f2e989dc0b38651aff3d62e83719cbe0c15cf8460fc5",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/B_t5.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1356647389,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "4f8dd4e1c25843236049c7780f335d2c7cbe0f5956c6cd51fa0b6c9797da27ea",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper right is open pale sky and soft facade; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/A_t5.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 330945601,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "b6ee8ead1f1420f4503cc59541521fc4ba80c6469d949423fbf82c13beb02811",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky and haze; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/C_t6.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1853965163,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "b2f17b03d61dc1e066ee1e9615625f5d4d7723a4fbf154668d611af61f16b3f4",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open hazy sky; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/D_t5.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 209422996,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "80de3255751ff0f466da7cbb066e40d8dfbe7fe53259640417ac97baad121236",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/A_t4.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 380015782,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "2d061c49bda3012cc58471262d15061b6c1a7105b379e581365f61b3912e630b",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky and haze; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/D_t4.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1205685199,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "bffc019c9e3e326bda6541fc663d70b51cefac7dedb3436c8805c13274f16744",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "round 2: prompt without progress-bar wording, bareheaded couture crowd",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/C_t7.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1842980866,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "b7fda1033590009c0159164a1276c7bcf82d0ce94efecd7113a74f69efe7e912",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 3: same prompt, new seed",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails.  The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open hazy sky; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/B_t8.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1728375468,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "2040f5a8fe5457c23a0b55ffed30938756a571fd2cf3a61639f340fa3e50d642",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "round 3: same prompt, new seed",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background.  The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper right is open pale sky and soft facade; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/C_t8.png",
+  "composition": "C",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1425083681,
+  "cost_usd": 0.10914,
+  "size": "2560x1440",
+  "sha256": "3f367fbf1ecb8cf611b12128dc642b9f7e4de4d7f32c0c013f5b66eab6018071",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/mission_block.jpg",
+   "refs/blocks_saucer_spires.jpg",
+   "refs/city_hero.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 3: same prompt, new seed",
+  "prompt": "Wide aerial establishing shot of the Harbour District from high above the quay, looking inland at dusk. Terraced cream-and-seafoam blocks, a skyport, a coral sky rail threading between towers, lagoon harbour with a white atomic liner, fluted towers, saucer spires, SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre. In the lower right foreground, on a cream rooftop corner with chrome railing, the four of the cell stand tiny, each a twentieth of the frame tall, a readable cluster of black, ivory and chrome figures looking down at the Records Office far below. Low golden sun raking the towers, long soft shadows, warm haze layers, peach and lilac sky, distant faint rocket trails.  The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open hazy sky; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/B_t7.png",
+  "composition": "B",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 280003786,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "1f387c5e4418ba9ad104827ab97181220c9deb153a56d03355b6361859a63060",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/inez_cutaway.jpg",
+   "refs/records_office.jpg",
+   "refs/power_spire.jpg"
+  ],
+  "note": "round 3: same prompt, new seed",
+  "prompt": "Low street-level hero shot at the corner caf\u00e9 beside the Records Office. Camera near the ground looking slightly up; the four of the cell walk toward the camera in an arrow formation, knees up, large and sharp, the Enforcer a step ahead, the Scout a step behind, calm and purposeful. Behind them in soft focus: the caf\u00e9's curved glass front with seafoam striped parasols and seated citizens, the Records Office entrance and banner, a coral tram, chrome bollards, red flower planters, palms. Golden hour, low sun from behind the camera warming cream stone, long soft shadows toward the camera, haze and bloom. The camera post, robot and car are small in the background.  The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper right is open pale sky and soft facade; the lowest tenth of the image is plain ground."
+ },
+ {
+  "file": "takes/A_t8.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1693456184,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "568e831dd2ddc3bbf7bb6257e2ef6e7688bed6d8f3af3651e377080398bfde41",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 3: faces turned to viewer",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The Enforcer and the Fixer have turned their heads and glance back toward the viewer over their shoulders, faces clearly visible and on-model. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky and haze; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/D_t8.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 358578784,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "dbf41c944b7e3ad955f2c0d7f1a38ca5a0f17960a405f13613e07686a912b74b",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "round 3: same prompt, new seed",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind.  The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/D_t7.png",
+  "composition": "D",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 940968324,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "fb8596ca411e891a92f8576f489caf00e682f0fcf296beb350332c2e13301129",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/records_office.jpg",
+   "refs/inez_cutaway.jpg",
+   "refs/mission_block.jpg"
+  ],
+  "note": "round 3: same prompt, new seed",
+  "prompt": "The moment before the Handover, outside the Civic Records Office, wide across the civic square. The Records Office at centre right: cream limestone, seafoam bands, tall fluted entrance with a chrome globe, teal banners, a canopy, a pale slate-blue uniformed guard at the door. A waitress in a coral dress with a tray and cup stands by the kerb about to stumble; the councillor's car waits with its driver. The four of the cell are spread in the left foreground waiting unnoticed: the Scout leaning on a chrome bollard, the Fixer at a caf\u00e9 parasol table, the Tech crouched by a planter, the Enforcer still in the shade of a cypress; each a fifth of the frame tall, faces clear. Late afternoon shift-change light from the left, long soft shadows on pale paving, thin haze, tense hush under the pastel calm, SpaceHQ's chrome atom crown behind.  The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "takes/A_t7.png",
+  "composition": "A",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1343806603,
+  "cost_usd": 0.10593,
+  "size": "2560x1440",
+  "sha256": "21e5fc95a1e231cccaaaf56d3415524e24ef5c003e821964c61ef8ab5c2b97ad",
+  "refs": [
+   "refs/cell_lineup.png",
+   "refs/city_hero.jpg",
+   "refs/records_office.jpg",
+   "refs/exposition_palace.jpg"
+  ],
+  "note": "round 3: faces turned to viewer",
+  "prompt": "Wide cinematic hero shot. The four of the cell stand together on a high terraced deck above a great plaza, in three-quarter back view looking out over the Harbour District, in the lower left third, each a third of the frame tall, faces turned so profiles read. The district falls away in cream terraces with seafoam bands: the Records Office with its chrome globe below, a coral sky rail tram on slim arches, lagoon-blue harbour, fluted cream towers, saucer-topped spires, and SpaceHQ crowned with a chrome atom over a needle mast, tallest at centre right. Shift-change dusk: low warm sun, peach and lilac sky, cream haze, long soft shadows, first lamps glowing. The Enforcer and the Fixer have turned their heads and glance back toward the viewer over their shoulders, faces clearly visible and on-model. The four people in reference image 1 are the player's cell, left to right: the Scout (lean young person, black undercut, earpiece, ivory hooded jacket, black harness straps, black shorts, white sneakers), the Fixer (woman, black ponytail, ivory and black pinstripe halter dress, long ivory gloves, ivory boots), the Tech (muscular man, tied dreadlocks, chrome goggles pushed up on his forehead, short beard, black wrap top with ivory sash and cyan piping, wide black trousers, chrome bracers), the Enforcer (big older man, short grey hair, full grey beard, tinted sunglasses, black and ivory panelled coat, chrome collar, white boots). Keep their faces, hair, skin tones, outfits and colours exactly as in the reference. Sharp matte black, ivory and chrome, standing out against the pastel city. Streamline Moderne and Googie city: cream limestone, seafoam-teal enamel bands, chrome spheres, banners, cypress and palms, coral accents, pale paving with seafoam inlays. An alternate 1950s world with atomic power centuries ahead: 1950s-styled trams and robots, no screens. All citizens are bareheaded and wear sleek tailored space-age couture (cropped jackets, tunics, shift dresses with chrome belts) in seafoam, coral, navy and white; no hats, no suits, no 1950s dresses. Quiet undertone: a 1950s-styled closed-circuit camera in a chrome hood on a slim chrome post, a clockwork patrol robot (barrel body of riveted chrome on one wheel, its face a flat panel of tiny round dot-matrix lamps, no round eyes, no mouth, nothing cartoonish), a councillor's long black-and-ivory streamlined car at the kerb. Cinematic painted concept art, photographic material realism, gouache softness, premium video game key art, breathtaking atmosphere. No text, no lettering, no logos, no watermark, no interface elements. No gold surfaces, no glass curtain walls, no grime. Composition keeps a calm, empty, uncluttered area free for later overlay: upper left is open soft sky and haze; the lowest tenth of the image is plain paving."
+ },
+ {
+  "file": "fixes/A_face_f1.png",
+  "phase": "fix",
+  "composition": "A",
+  "variant": "face",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1343806603,
+  "cost_usd": 0.10272,
+  "size": "2560x1440",
+  "sha256": "66690114a99db2bbcf15a50b867cb54e26c84765815898b2a6650f404c31f506",
+  "refs": [
+   "picks/A_pick_A_t7.png",
+   "refs/cell_lineup.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "fix round 1: faces to viewer + patrol robot + hooded camera + couture crowd",
+  "prompt": "Revise reference image 1, a finished piece of key art. Keep it exactly as it is: the same composition and framing, camera angle, lighting, sky, architecture, palette, painted cinematic style and image sharpness, and the same four people in the same places, with the same faces, hair, skin tones and costumes (reference image 2 shows the four on a plain ground: Scout, Fixer, Tech, Enforcer, left to right in the lineup). Change ONLY the following. The four of the cell all turn to face the viewer: each looks straight into the camera with a calm, confident, steady gaze, heads turned toward the lens (the Scout, the Fixer and the Tech turn their heads and shoulders three-quarters toward the viewer, the Enforcer turns to face the camera squarely, shoulders open), standing balanced and relaxed on the deck. Their positions on the deck stay the same. The clockwork patrol robot must match reference image 3 exactly in design: an ivory box head with a seafoam brow plate, a row of five small amber lamps on its roof and a thin aerial, a flat dot-matrix display face of tiny round lamps (no round eyes, no mouth lips, nothing cartoonish), a cream barrel body with a charcoal chest plate with a small brass badge and a coral sash, short jointed chrome arms, and underneath a seafoam deck on two rubber tracked treads (a caterpillar track each side with three chrome-hubbed wheels), not a single wheel and not a unicycle. Every security camera must be a 1950s-styled closed-circuit camera, not a modern box CCTV: a round streamlined chrome barrel with a deep sunshade hood over the lens and a chrome collar, mounted on a slim chrome post with a curved bracket, like a vintage studio television camera in polished chrome, no white plastic, no box housing. Every bystander in the street wears sleek space-age couture and is bareheaded: cropped jackets, tunics, shift dresses with chrome belts and white boots in seafoam, coral, navy and white; no hats, no suits, no ties, no 1950s dresses, no trench coats. Do not add text, lettering, logos or interface. No other changes."
+ },
+ {
+  "file": "fixes/D_stand_f2.png",
+  "phase": "fix",
+  "composition": "D",
+  "variant": "stand",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1645328648,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "354cde80c842796d93a9f1296da39d98017e230cec8a254cc44c6683ebbee84b",
+  "refs": [
+   "picks/D_pick_D_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: pick + robot ref only (no lineup), targeted edit",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Remove the cafe table and chair completely: nothing is left there but planter wall, flowers and paving. The Scout (far left) stands upright with his back and shoulder resting firmly against the solid chrome lamp post and cream stone planter wall beside him, arms folded, looking toward the Records Office door; he is clearly supported by it. The Fixer (woman in the pinstripe dress) now stands on her feet next to the Tech and the Enforcer, joining the group, upright and poised, holding a small coffee cup, looking at the door. The Tech still crouches on the planter edge and the Enforcer still stands at the lamp post. The four read as a team waiting together. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk_f2.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 551819881,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "14b33574b6315127d5cf1316e7ab0d956edfd131c72bfce192a125b3f156730f",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: pick + robot ref only (no lineup), targeted edit",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. The four walk toward the camera in a natural, confident stride, as in a film walk cycle: heads up, looking at the camera, relaxed shoulders, arms swinging loosely and opposite to the legs, hands open and easy, one heel landing in front with the weight rolling forward, the back leg pushing off, knees bending naturally; different leg phases for each person; the Enforcer a half step ahead with a broad easy swagger. Same arrow formation, same positions and scale. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_face_f2.png",
+  "phase": "fix",
+  "composition": "A",
+  "variant": "face",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1829134937,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "c4d581b7387920a019e6ce56d93da9abc47810b6697154985a38d98c06c322b2",
+  "refs": [
+   "picks/A_pick_A_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: pick + robot ref only (no lineup), targeted edit",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. The four people in the foreground all turn their heads and shoulders toward the viewer and look straight into the camera with a calm, confident, steady gaze, standing relaxed and balanced on the deck where they are now, bodies in three-quarter view from behind-left to front, the Enforcer turned most squarely to the lens. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/C_stance_f2.png",
+  "phase": "fix",
+  "composition": "C",
+  "variant": "stance",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 552892924,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "db723548385142049b8ebd425d3bd8affa94b6d3666a31c96157e28f7046446d",
+  "refs": [
+   "picks/C_pick_C_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: pick + robot ref only (no lineup), targeted edit",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. The Enforcer (the grey-bearded man at the far right) stands upright and grounded: feet flat and about shoulder width apart, weight even on both legs, hips and shoulders square and relaxed, chest open, one arm hanging at his side and the other hand resting on the chrome railing, head level, looking out over the district with calm authority. No hunch, no twist, no crossed or locked legs. The other three keep their places and poses. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/C_rest_f3.png",
+  "phase": "fix",
+  "composition": "C",
+  "variant": "rest",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1509892456,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "f66963bed43cec459b3fd29c901c6bba354bcd098c734582cc3840e6186a65ab",
+  "refs": [
+   "picks/C_pick_C_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: parade rest",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. The Enforcer (the grey-bearded man at the far right) now stands in a grounded parade-rest stance: feet planted flat about shoulder width apart, weight even on both legs, legs straight and square, hands clasped behind his back, chest open, shoulders level and relaxed, head level, looking out over the city with calm authority; he turns his body three-quarters toward the city (to the left of the picture). No hunch, no twist, no crossed legs, no hands spread. The other three keep their places and poses. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_stand_f3.png",
+  "phase": "fix",
+  "composition": "D",
+  "variant": "stand",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 719368895,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "f2da9201c9378b03586c3f70187f7ac54cbd2bfa5f1e841f72fe1c6bbdfd21b2",
+  "refs": [
+   "picks/D_pick_D_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: keep rule (no added objects)",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Remove the cafe table and chair completely: nothing is left there but planter wall, flowers and paving. The Scout (far left) stands upright with his back and shoulder resting firmly against the solid chrome lamp post and cream stone planter wall beside him, arms folded, looking toward the Records Office door; he is clearly supported by it. The Fixer (woman in the pinstripe dress) now stands on her feet next to the Tech and the Enforcer, joining the group, upright and poised, holding a small coffee cup, looking at the door. The Tech still crouches on the planter edge and the Enforcer still stands at the lamp post. The four read as a team waiting together. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_face_f3.png",
+  "phase": "fix",
+  "composition": "A",
+  "variant": "face",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 2014925723,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "f314d72bb003dbcca82f8252929adf23499e2da3e9d378c87fb717db5739b765",
+  "refs": [
+   "picks/A_pick_A_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: keep rule (no added objects)",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. The four people in the foreground all turn their heads and shoulders toward the viewer and look straight into the camera with a calm, confident, steady gaze, standing relaxed and balanced on the deck where they are now, bodies in three-quarter view from behind-left to front, the Enforcer turned most squarely to the lens. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk2_f3.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk2",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1003,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "01fa52eebf9f160db349589a8fa41d0b1d67c2e5389839f9202dad9adee6c933",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: stronger walk cycle, seed 1003",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Redraw the four mid-stride as a natural, confident walk, clearly different from the stiff marching of image 1. Every person's elbows are bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swings opposite to its leg: when the right leg steps forward the left arm swings forward and the right arm back. Shoulders relaxed and slightly rotating with each step, heads up and looking at the camera, weight rolling heel to toe, a slightly longer stride, the front knee soft, the back heel lifting. Each of the four is at a different point of the stride, so the group looks alive; the Enforcer a half step ahead with a broad, loose, easy swagger, his hands hanging relaxed at his thighs. Same arrow formation, same positions, scale, faces and costumes. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/C_rest_f4.png",
+  "phase": "fix",
+  "composition": "C",
+  "variant": "rest",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 77,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "46691ca6293244cc542cc3c841cd3ab835550590741ef1854025761c6279ee4e",
+  "refs": [
+   "picks/C_pick_C_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: parade rest seed 77",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. The Enforcer (the grey-bearded man at the far right) now stands in a grounded parade-rest stance: feet planted flat about shoulder width apart, weight even on both legs, legs straight and square, hands clasped behind his back, chest open, shoulders level and relaxed, head level, looking out over the city with calm authority; he turns his body three-quarters toward the city (to the left of the picture). No hunch, no twist, no crossed legs, no hands spread. The other three keep their places and poses. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk2_f4.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk2",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1004,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "cd9567dded6ba1ad78a4b50a97853391df30432a91076e1a7973877d817a84b0",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: stronger walk cycle, seed 1004",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Redraw the four mid-stride as a natural, confident walk, clearly different from the stiff marching of image 1. Every person's elbows are bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swings opposite to its leg: when the right leg steps forward the left arm swings forward and the right arm back. Shoulders relaxed and slightly rotating with each step, heads up and looking at the camera, weight rolling heel to toe, a slightly longer stride, the front knee soft, the back heel lifting. Each of the four is at a different point of the stride, so the group looks alive; the Enforcer a half step ahead with a broad, loose, easy swagger, his hands hanging relaxed at his thighs. Same arrow formation, same positions, scale, faces and costumes. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk2_f5.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk2",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1005,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "3405138a94e4a6067a380c09c145eae338cafa462e916c795ce5e4aad081a263",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: stronger walk cycle, seed 1005",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Redraw the four mid-stride as a natural, confident walk, clearly different from the stiff marching of image 1. Every person's elbows are bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swings opposite to its leg: when the right leg steps forward the left arm swings forward and the right arm back. Shoulders relaxed and slightly rotating with each step, heads up and looking at the camera, weight rolling heel to toe, a slightly longer stride, the front knee soft, the back heel lifting. Each of the four is at a different point of the stride, so the group looks alive; the Enforcer a half step ahead with a broad, loose, easy swagger, his hands hanging relaxed at his thighs. Same arrow formation, same positions, scale, faces and costumes. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk2_f8.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk2",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 2008,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "e5be33c58dbe385e39ed6bce365b40a828b65c41da6d69f20baec4f05de0d22e",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: walk, framing locked, seed 2008",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Redraw the four mid-stride as a natural, confident walk, clearly different from the stiff marching of image 1. Every person's elbows are bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swings opposite to its leg: when the right leg steps forward the left arm swings forward and the right arm back. Shoulders relaxed and slightly rotating with each step, heads up and looking at the camera, weight rolling heel to toe, a slightly longer stride, the front knee soft, the back heel lifting. Each of the four is at a different point of the stride, so the group looks alive; the Enforcer a half step ahead with a broad, loose, easy swagger, his hands hanging relaxed at his thighs. Same arrow formation, same positions, scale, faces and costumes. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. Keep the camera framing of image 1 exactly: the same low camera angle and the same crop, the four figures just as large, the Enforcer's head in the upper quarter of the frame and his boots near the bottom edge, the same background crop. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_stand_f5.png",
+  "phase": "fix",
+  "composition": "D",
+  "variant": "stand",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 3005,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "81f3e96583bd59b70fa7de09ae263897a97a541ee71be41265c0cd76bca1ede6",
+  "refs": [
+   "picks/D_pick_D_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: stand, camera small, seed 3005",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Remove the cafe table and chair completely: nothing is left there but planter wall, flowers and paving. The Scout (far left) stands upright with his back and shoulder resting firmly against the solid chrome lamp post and cream stone planter wall beside him, arms folded, looking toward the Records Office door; he is clearly supported by it. The Fixer (woman in the pinstripe dress) now stands on her feet next to the Tech and the Enforcer, joining the group, upright and poised, holding a small coffee cup, looking at the door. The Tech still crouches on the planter edge and the Enforcer still stands at the lamp post. The four read as a team waiting together. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. The cameras stay small, no bigger than the camera in image 1; the ball-topped chrome lamp posts stay ball-topped lamp posts (not cameras); the waitress keeps her tray and cup; the grey sculpture by the planter at far right stays. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk2_f6.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk2",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 2006,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "d004c47633a191643ea81625e88afb8c57f687343eded728edf3e1a0f5b1fd3a",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: walk, framing locked, seed 2006",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Redraw the four mid-stride as a natural, confident walk, clearly different from the stiff marching of image 1. Every person's elbows are bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swings opposite to its leg: when the right leg steps forward the left arm swings forward and the right arm back. Shoulders relaxed and slightly rotating with each step, heads up and looking at the camera, weight rolling heel to toe, a slightly longer stride, the front knee soft, the back heel lifting. Each of the four is at a different point of the stride, so the group looks alive; the Enforcer a half step ahead with a broad, loose, easy swagger, his hands hanging relaxed at his thighs. Same arrow formation, same positions, scale, faces and costumes. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. Keep the camera framing of image 1 exactly: the same low camera angle and the same crop, the four figures just as large, the Enforcer's head in the upper quarter of the frame and his boots near the bottom edge, the same background crop. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_cam_f1.png",
+  "phase": "fix",
+  "composition": "D",
+  "variant": "cam",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 77586153,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "32ba4e7d1203cc07c010f6371db37bdedfcf3d31ee86a4f1fba970759277d094",
+  "refs": [
+   "picks/D_pick_D_t7.png"
+  ],
+  "note": "round 2: camera-only edit, to composite",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Only one change: the security camera on the tall lamp post at the far left. Redesign that camera only, at exactly the same small size, position and angle as now. Nothing else in the picture changes at all. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_stand_f4.png",
+  "phase": "fix",
+  "composition": "D",
+  "variant": "stand",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 3004,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "f3598d7ac599d997a9b98e611eadc34ac73fb4540601c96aeb48a6b00ba6136d",
+  "refs": [
+   "picks/D_pick_D_t7.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: stand, camera small, seed 3004",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Remove the cafe table and chair completely: nothing is left there but planter wall, flowers and paving. The Scout (far left) stands upright with his back and shoulder resting firmly against the solid chrome lamp post and cream stone planter wall beside him, arms folded, looking toward the Records Office door; he is clearly supported by it. The Fixer (woman in the pinstripe dress) now stands on her feet next to the Tech and the Enforcer, joining the group, upright and poised, holding a small coffee cup, looking at the door. The Tech still crouches on the planter edge and the Enforcer still stands at the lamp post. The four read as a team waiting together. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. The cameras stay small, no bigger than the camera in image 1; the ball-topped chrome lamp posts stay ball-topped lamp posts (not cameras); the waitress keeps her tray and cup; the grey sculpture by the planter at far right stays. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_walk2_f7.png",
+  "phase": "fix",
+  "composition": "B",
+  "variant": "walk2",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 2007,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "18a92e6aa1119d9b6ee8c1b02ea21e630fa0e4ee1e0ba5874b2742f87c7cceb9",
+  "refs": [
+   "picks/B_pick_B_t5.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "round 2: walk, framing locked, seed 2007",
+  "prompt": "Edit image 1, a finished piece of key art. Keep everything not mentioned below exactly as it is: composition, framing, camera angle, light, sky, architecture, palette, painted style, sharpness, and the four people's faces, hair, skin tones and costumes. Make only these changes. Redraw the four mid-stride as a natural, confident walk, clearly different from the stiff marching of image 1. Every person's elbows are bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swings opposite to its leg: when the right leg steps forward the left arm swings forward and the right arm back. Shoulders relaxed and slightly rotating with each step, heads up and looking at the camera, weight rolling heel to toe, a slightly longer stride, the front knee soft, the back heel lifting. Each of the four is at a different point of the stride, so the group looks alive; the Enforcer a half step ahead with a broad, loose, easy swagger, his hands hanging relaxed at his thighs. Same arrow formation, same positions, scale, faces and costumes. The small patrol robot must be rebuilt to match image 2 (the game's robot): a cream barrel body with a charcoal chest plate and a coral band, an ivory box head with a seafoam top and a dot-matrix lamp face, and underneath a seafoam deck on two black rubber caterpillar treads, each with three chrome-hubbed wheels, in place of its single wheel; the same size and place in the picture. Replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a deep flared sunshade hood and a finned chrome collar, on a swan-neck bracket on a slim chrome post, like a vintage studio television camera; no white or grey plastic box housing, no modern bullet-shaped CCTV. Every bystander wears sleek space-age couture and is bareheaded (cropped jackets, tunics, shift dresses with chrome belts, white boots, in seafoam, coral, navy and white); replace any hats, suits, ties, trench coats or 1950s dresses with that. Do not add any object that is not in image 1: the number, size and position of the cameras, robots, cars and people stay exactly as in image 1; only their design changes. Keep the camera framing of image 1 exactly: the same low camera angle and the same crop, the four figures just as large, the Enforcer's head in the upper quarter of the frame and his boots near the bottom edge, the same background crop. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_s1_walkB.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 12,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "d6002d265b025172458a036c7491cce139a989dd6fa6486890245ddf3158a1a9",
+  "refs": [
+   "picks/B_pick_B_t5.png"
+  ],
+  "note": "r3 B walk only",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: the four people walk with a natural, confident stride, as in a film walk cycle: heads up and looking at the camera, relaxed shoulders, elbows bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swinging opposite to its leg, heel-to-toe weight rolling, the front knee soft; each person at a different point of the stride; the Enforcer a half step ahead with a broad, loose, easy swagger, hands hanging relaxed at his thighs. The figures stay exactly as large as in image 1 and in the same places. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_s1_walkA.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 11,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "9d37c65d677ce967126f202a844e5e15fc00d98a2594b9bc2a5c84ff4a616341",
+  "refs": [
+   "picks/B_pick_B_t5.png"
+  ],
+  "note": "r3 B walk only",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: the four people walk with a natural, confident stride, as in a film walk cycle: heads up and looking at the camera, relaxed shoulders, elbows bent about 25 degrees, hands loose and softly curled (no splayed fingers, no stiff straight arms), each arm swinging opposite to its leg, heel-to-toe weight rolling, the front knee soft; each person at a different point of the stride; the Enforcer a half step ahead with a broad, loose, easy swagger, hands hanging relaxed at his thighs. The figures stay exactly as large as in image 1 and in the same places. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_s2_people.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 21,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "9985db561b249fffb54542964e61fa6dbd36b86324c4583571391eb17551cde4",
+  "refs": [
+   "fixes/D_cam_f1.png"
+  ],
+  "note": "r3 D people (source: camera-fixed D)",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: remove the cafe table, its chair and the parasol over it completely, leaving only planter wall, flowers and paving. The Scout (far left) leans his back and shoulder against the solid chrome lamp post beside the planter, arms folded, looking toward the Records Office door. The Fixer (woman in the short black-and-ivory halter dress with long ivory gloves and a ponytail; keep her dress exactly as it is) now stands on her feet next to the Tech and the Enforcer, joining the group, upright and poised, holding a small coffee cup, looking at the door. The Tech still crouches on the planter edge, the Enforcer still stands by the second lamp post. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_s2_cam.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1455739262,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "56b01c0ab82c915a6471e85cc9936b5b1f9ce12af458181694a28efabc622996",
+  "refs": [
+   "fixes/B_s1_walkB.png"
+  ],
+  "note": "r3 B camera",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a vented, finned collar and a deep flared sunshade hood over the lens, on a swan-neck bracket on the same slim post, like a vintage studio television camera; the same number of cameras, each the same size and in the same place as now; no white or grey box housing; do not turn any ball-topped lamp or bollard into a camera. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_s3_robot.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1830061466,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "27251d8983024cc4cc36a01f0d284d149570ecc343313321727c98608603b4ab",
+  "refs": [
+   "fixes/D_s2_people.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "r3 D robot",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: rebuild the small clockwork patrol robot to match image 2 (the game's robot) in design: a cream barrel body with a charcoal chest plate with a small badge and a coral band, short jointed chrome arms, an ivory box head with a seafoam top plate and a dot-matrix lamp face (tiny round lamps, no cartoon eyes), and underneath a seafoam deck on two black rubber caterpillar treads each with three chrome-hubbed wheels, instead of the single wheel; same size, place and facing as now. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_s1_face.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1704368379,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "83870adc86ddf31fd87c2fa5390bd8e4511e4a2886ffa00c67f495a5f65b724a",
+  "refs": [
+   "picks/A_pick_A_t7.png"
+  ],
+  "note": "r3 A face",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: the four people in the foreground all turn their heads and shoulders toward the viewer and look straight into the camera with a calm, confident, steady gaze, standing relaxed and balanced where they are now, the Enforcer turned most squarely to the lens; their faces, hair and costumes stay the same. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/D_s4_crowd.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 244196709,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "28813f6236109fdacdf75210a735e95b1f69e9e721740b2c0a632318012d513a",
+  "refs": [
+   "fixes/D_s3_robot.png"
+  ],
+  "note": "r3 D crowd",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: change the clothes of every small bystander in the street and plaza (citizens at the cafe, by the car, on the plaza) into sleek space-age couture, all bareheaded: cropped jackets, tunics, short shift dresses with chrome belts, white boots, in seafoam, coral, navy and white. No hats, no suits, no ties, no trench coats, no 1950s dresses or skirts. The same people in the same places and poses; the four main figures are unchanged. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_s3_robot.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 835161887,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "32efe7f5a998e6fa4f4184487e824762abcd694970816995d4f0a7a08c4ebdf4",
+  "refs": [
+   "fixes/B_s2_cam.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "r3 B robot",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: rebuild the small clockwork patrol robot to match image 2 (the game's robot) in design: a cream barrel body with a charcoal chest plate with a small badge and a coral band, short jointed chrome arms, an ivory box head with a seafoam top plate and a dot-matrix lamp face (tiny round lamps, no cartoon eyes), and underneath a seafoam deck on two black rubber caterpillar treads each with three chrome-hubbed wheels, instead of the single wheel; same size, place and facing as now. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_s2_cam.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1132150181,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "a230f756112fc02bb18c8c32f4591ce624a200c676f595e4adb5e1b46e6ffacc",
+  "refs": [
+   "fixes/A_s1_face.png"
+  ],
+  "note": "r3 A camera",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: replace every security camera with a 1950s chrome closed-circuit camera: a polished streamlined chrome barrel with a vented, finned collar and a deep flared sunshade hood over the lens, on a swan-neck bracket on the same slim post, like a vintage studio television camera; the same number of cameras, each the same size and in the same place as now; no white or grey box housing; do not turn any ball-topped lamp or bollard into a camera. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_s3_robot.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1796861514,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "d10e3e21d298a61fed38c7211af261ef861903473fc2495b462e2cf34646c474",
+  "refs": [
+   "fixes/A_s2_cam.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "r3 A robot",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: rebuild the small clockwork patrol robot to match image 2 (the game's robot) in design: a cream barrel body with a charcoal chest plate with a small badge and a coral band, short jointed chrome arms, an ivory box head with a seafoam top plate and a dot-matrix lamp face (tiny round lamps, no cartoon eyes), and underneath a seafoam deck on two black rubber caterpillar treads each with three chrome-hubbed wheels, instead of the single wheel; same size, place and facing as now. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_s4_crowd.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1177229485,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "ffcb201e3595124187a4f6c8ea12583acf865134feb4799eac984e517dae562d",
+  "refs": [
+   "fixes/B_s3_robot.png"
+  ],
+  "note": "r3 B crowd",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: change the clothes of every small bystander in the street and plaza (citizens at the cafe, by the car, on the plaza) into sleek space-age couture, all bareheaded: cropped jackets, tunics, short shift dresses with chrome belts, white boots, in seafoam, coral, navy and white. No hats, no suits, no ties, no trench coats, no 1950s dresses or skirts. The same people in the same places and poses; the four main figures are unchanged. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_s4_crowd.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1861149412,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "c632b2e8175a2823db0986fbbb757543622b23e04842b1de19de6ce11b4e19f6",
+  "refs": [
+   "fixes/A_s3_robot.png"
+  ],
+  "note": "r3 A crowd",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: change the clothes of every small bystander in the street and plaza (citizens at the cafe, by the car, on the plaza) into sleek space-age couture, all bareheaded: cropped jackets, tunics, short shift dresses with chrome belts, white boots, in seafoam, coral, navy and white. No hats, no suits, no ties, no trench coats, no 1950s dresses or skirts. The same people in the same places and poses; the four main figures are unchanged. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_t2_cam.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 173324812,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "3ec73292cd5ac7db05c71d632fae601c72ee3f14cf8208bcd110bf11c4b58dd4",
+  "refs": [
+   "fixes/A_s1_face.png"
+  ],
+  "note": "r3b A camera, location-specific",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: Only one thing changes: the one security camera on the slim chrome post in the lower middle, just right of the Enforcer, in front of the balustrade (about half way across the picture and two thirds down). Redesign that camera only, at exactly the same size, position and angle: a polished streamlined chrome barrel with a vented finned collar and a deep flared sunshade hood over the lens, on a swan-neck bracket, like a vintage studio television camera, no box housing. Add no other camera and change no bollard or lamp; the ball-topped chrome post at the far right stays a ball-topped post. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_t2_cam.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 184870391,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "ff06154464f9ce3c10b204f9f2469291807fb0ec79784c9b2b8277b93067fed0",
+  "refs": [
+   "fixes/B_s1_walkB.png"
+  ],
+  "note": "r3b B camera, location-specific",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: Only one thing changes: the one security camera on the slim chrome post at the left, in front of the curved cafe. Redesign that camera only, at exactly the same size, position and angle: a polished streamlined chrome barrel with a vented finned collar and a deep flared sunshade hood over the lens, on a swan-neck bracket, like a vintage studio television camera, no box housing. Add no other camera anywhere: the facade and the lamp posts have no cameras. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_t3_robot.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 379180134,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "f4e95920a2e8901c1f768d68c5c6ccfaf49f559f9dba298c4670cf6246e2c0ba",
+  "refs": [
+   "fixes/A_t2_cam.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "r3b A robot",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: rebuild the small clockwork patrol robot to match image 2 (the game's robot) in design: a cream barrel body with a charcoal chest plate with a small badge and a coral band, short jointed chrome arms, an ivory box head with a seafoam top plate and a dot-matrix lamp face (tiny round lamps, no cartoon eyes), and underneath a seafoam deck on two black rubber caterpillar treads each with three chrome-hubbed wheels, instead of the single wheel; same size, place and facing as now. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_t3_robot.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 544399707,
+  "cost_usd": 0.09951,
+  "size": "2560x1440",
+  "sha256": "9a7c892e8b1374e1612346ad1ebe5f515cf858c7b88be0034b503d38b442e80c",
+  "refs": [
+   "fixes/B_t2_cam.png",
+   "refs/patrol_robot_game.png"
+  ],
+  "note": "r3b B robot",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: rebuild the small clockwork patrol robot to match image 2 (the game's robot) in design: a cream barrel body with a charcoal chest plate with a small badge and a coral band, short jointed chrome arms, an ivory box head with a seafoam top plate and a dot-matrix lamp face (tiny round lamps, no cartoon eyes), and underneath a seafoam deck on two black rubber caterpillar treads each with three chrome-hubbed wheels, instead of the single wheel; same size, place and facing as now. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/A_t4_crowd.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 149652254,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "4ab78c3b3e16cc3b62cc1a3894435ba2c2942a1be80bf75bd06e962a5fb03c4b",
+  "refs": [
+   "fixes/A_t3_robot.png"
+  ],
+  "note": "r3b A crowd",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: change the clothes of the small bystanders in the street and plaza (citizens by the car and on the plaza, far below) into sleek space-age couture, all bareheaded: cropped jackets, tunics, short shift dresses with chrome belts, white boots, in seafoam, coral, navy and white. No hats, no suits, no ties, no trench coats, no 1950s dresses or skirts. The same people in the same places and poses. The four large foreground figures are not touched at all: the Fixer's dress stays black-and-ivory pinstripe, the Enforcer's coat stays black and ivory. No text, lettering, logos or interface."
+ },
+ {
+  "file": "fixes/B_t4_crowd.png",
+  "phase": "fix",
+  "service": "Runware",
+  "model": "bytedance:seedream@5.0-pro",
+  "seed": 1281060458,
+  "cost_usd": 0.0963,
+  "size": "2560x1440",
+  "sha256": "e652eb9a24313328c15fd1d6aa476d9a2096883233e9d1568d068ace61e125ec",
+  "refs": [
+   "fixes/B_t3_robot.png"
+  ],
+  "note": "r3b B crowd",
+  "prompt": "Edit image 1, a finished piece of key art. Make exactly one change, described below, and keep everything else identical: same composition, framing, camera angle, light, sky, architecture, props, the people's faces, hair, skin tones and costumes, and the same image sharpness. Add no new object, and change no object's size or place unless told. The change: change the clothes of the small bystanders (citizens seated and standing at the cafe on the left, the man in a hat by the robot on the right, people by the car) into sleek space-age couture, all bareheaded: cropped jackets, tunics, short shift dresses with chrome belts, white boots, in seafoam, coral, navy and white. No hats, no suits, no ties, no 1950s dresses or skirts. The same people in the same places and poses. The four large walking figures are not touched at all: costumes stay black and ivory. No text, lettering, logos or interface."
+ }
+]

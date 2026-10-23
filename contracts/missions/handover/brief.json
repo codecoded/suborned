@@ -1,0 +1,195 @@
+{
+  "schema": "suborned.mission-brief/2",
+  "mission": "handover",
+  "title": "The Handover",
+  "place": "Civic Records Office, the civic block",
+  "time": "Evening, 5:30: shift handover",
+  "pick": "A",
+  "order": [
+    "hook",
+    "handler",
+    "dossier",
+    "intel",
+    "signoff"
+  ],
+  "note": "Fable, 2026-10-23, third pass: the file is the motive (Sky); Vale carries it out of the Office at shift change and delivers it to Security tonight, so the take lands before the hand-off. variants.A/B/C each complete; the screen reads variants[pick]. 'short' is the one-line summary. Empty arrays/strings are omitted by the layout. The file is story only: no file objective, the game does not model it yet.",
+  "variants": {
+    "A": {
+      "hook": "Vale has a file on you. Tonight he carries it to Security.",
+      "handler": [
+        "The cameras caught your cell. Councillor Vale put it on paper.",
+        "No networks here. The file lives in a folder and in his head.",
+        "Reach him first. Then we learn who else has read it."
+      ],
+      "dossier": {
+        "target": "Councillor Vale. Holds the file on you.",
+        "location": "Civic Records Office, the civic block.",
+        "window": "Shift change, 5:30 pm. He leaves soon after.",
+        "objective": "Take him alive. Deliver him to the getaway car."
+      },
+      "intel": [
+        "Inez, café waitress. She knows the door guard.",
+        "Vale's driver needs cash.",
+        "A rival crew wants him too.",
+        "Cameras are watched by people. People can be turned."
+      ],
+      "signoff": "Quiet hands. Go.",
+      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "sources": [
+        {
+          "field": "target.role",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order): Vale pulled the cameras' footage of the cell into a paper file; it exists only on paper and in his head (no networks, GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §01)"
+        },
+        {
+          "field": "location",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 160 (Civic Records Office); CLAUDE.md (the civic block)"
+        },
+        {
+          "field": "window",
+          "src": "contracts/missions/handover/mission.json clock (startsAt 17:24:30: the 5:30 chime is the shift change; Vale exits at 5:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
+        },
+        {
+          "field": "objective",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23)"
+        },
+        {
+          "field": "intel.waitress",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 161, 165 (Inez, café waitress, in debt; secretly the door guard's lover)"
+        },
+        {
+          "field": "intel.driver",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 161, 166 (official driver needs cash)"
+        },
+        {
+          "field": "intel.rivals",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 161, 164 (rival crew; rival car at 3:10; rivals take Vale = fail)"
+        },
+        {
+          "field": "intel.people",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §01 world (cameras are closed-circuit and watched by people; information moves through people)"
+        },
+        {
+          "field": "tone",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §01 (optimistic surface, coercive underneath; no thinking machines, paper records); no mechanic words"
+        },
+        {
+          "field": "hook",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+        },
+        {
+          "field": "handler.1",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+        },
+        {
+          "field": "handler.2",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+        },
+        {
+          "field": "handler.3",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+        }
+      ]
+    },
+    "B": {
+      "hook": "Vale leaves work with a file on you. Security gets it tonight.",
+      "handler": [],
+      "dossier": {
+        "target": "Councillor Vale. He built the file on your cell.",
+        "location": "Civic Records Office, the civic block.",
+        "window": "Shift change, 5:30 pm. He leaves soon after.",
+        "objective": "Take him alive. Deliver him to the getaway car."
+      },
+      "intel": [
+        "Inez, café waitress. She knows the door guard.",
+        "Vale's driver needs cash.",
+        "A rival crew wants him too.",
+        "Cameras are watched by people. People can be turned."
+      ],
+      "signoff": "Quiet hands. Go.",
+      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "sources": [
+        {
+          "field": "target.role",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order): Vale pulled the cameras' footage of the cell into a paper file; it exists only on paper and in his head (no networks, GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §01)"
+        },
+        {
+          "field": "location",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 160 (Civic Records Office); CLAUDE.md (the civic block)"
+        },
+        {
+          "field": "window",
+          "src": "contracts/missions/handover/mission.json clock (startsAt 17:24:30: the 5:30 chime is the shift change; Vale exits at 5:50, soon after); GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 164. Sky 2026-10-23: the file (replaces the clearance order), coordinator 2026-10-23: Vale leaves the Office at shift change carrying the file and takes it to Security tonight, so the take always lands before the hand-off"
+        },
+        {
+          "field": "objective",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23)"
+        },
+        {
+          "field": "intel.waitress",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 161, 165 (Inez, café waitress, in debt; secretly the door guard's lover)"
+        },
+        {
+          "field": "intel.driver",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 161, 166 (official driver needs cash)"
+        },
+        {
+          "field": "intel.rivals",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 161, 164 (rival crew; rival car at 3:10; rivals take Vale = fail)"
+        },
+        {
+          "field": "intel.people",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §01 world (cameras are closed-circuit and watched by people; information moves through people)"
+        },
+        {
+          "field": "tone",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §01 (optimistic surface, coercive underneath; no thinking machines, paper records); no mechanic words"
+        },
+        {
+          "field": "hook",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+        }
+      ]
+    },
+    "C": {
+      "hook": "Vale has a file on you. Reach him before Security does.",
+      "handler": [
+        "Take Councillor Vale alive.",
+        "Outside the Records Office, before he delivers it.",
+        "Deliver him to the getaway car."
+      ],
+      "dossier": {
+        "target": "Councillor Vale",
+        "location": "Civic Records Office",
+        "window": "5:30 pm shift change",
+        "objective": "Vale alive, in the getaway car."
+      },
+      "intel": [],
+      "signoff": "",
+      "short": "Take Councillor Vale alive before he delivers the file. Deliver him to the getaway car.",
+      "sources": [
+        {
+          "field": "hook",
+          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+        },
+        {
+          "field": "handler",
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 line 160 (outside the Records Office, take him alive to the getaway car); Sky 2026-10-23: the file (replaces the clearance order): he carries the file out and delivers it to Security tonight"
+        },
+        {
+          "field": "dossier",
+          "src": "same as A, compact; window as A, shortened"
+        },
+        {
+          "field": "tone",
+          "src": "no mechanic words; intel and signoff empty on purpose (for players who skip)"
+        }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "field": "schema",
+      "src": "briefs/051/layout/SPEC.md line 87 read title/place/time/paragraphs; paragraphs[] is replaced by hook/handler/dossier/intel/signoff (Glyph re-lays)"
+    }
+  ]
+}

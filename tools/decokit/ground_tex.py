@@ -11,7 +11,7 @@ Maps (Unity URP Lit, as the old kit): albedo sRGB; _normal OpenGL tangent (green
 
 Colour: the sources were graded for the old city's HDRI. Each is moved (power curve per channel, so contrast and hue structure stay) to the mean of
 the painting it must match: the 26 Sep mission block's road #797374 / #696970, its paving #D3CAB5..#E2D4C0, kerb and gutter paler and warmer than the
-old blue-grey granite (the paintings' kerb is the pavement stone), lawn the painted foliage's olive-leaning green. TARGET below holds each hex and why.
+old blue-grey granite (the paintings' kerb is the pavement stone), lawn a green in the palms-and-hedges family (hue 108, brief 048). TARGET below holds each hex and why.
 """
 
 import hashlib
@@ -38,7 +38,7 @@ TARGET = {
     "kerb": ("#D0C9BB", "the paintings' kerb is the pavement stone, a touch greyer for form; the old granite was blue-grey #A2A9B7"),
     "gutter": ("#8D8A88", "darker than the kerb, a trace of the old setts' blue (#738497) kept so the kerb line reads"),
     "pavement": ("#D5CBB8", "painting paving #D3CAB5 / #CCBEAC / #E2D4C0; the old flags were #DFD5C7"),
-    "lawn": ("#74875A", "painted foliage olive, now less saturated (round 2): the old #638449 and round 1 #6D8A4B read loud; stripes softened to 45 percent in lawn_soften"),
+    "lawn": ("#64875A", "hue 108 (brief 048, Glint: the long view sampled hue 71, olive; the old #74875A sat at hue 85): same value and saturation, hue turned toward the palms and hedges. Before: painted foliage olive, less saturated (round 2): the old #638449 and round 1 #6D8A4B read loud; stripes softened to 45 percent in lawn_soften"),
     "path": ("#D8CAAB", "warm sand hoggin, one step darker than the paving so a path reads against it"),
 }
 
@@ -92,7 +92,7 @@ def recolour(a, target_hex):
     return lin_to_srgb(out)
 
 
-KEEP = {"asphalt": .3}  # chroma kept from the sheet (granite default .25): the road sheet's warm stains and patches read pink-brown in sun, so its chroma varies less; the mean stays #79757A
+KEEP = {"asphalt": .3, "pavement": .5}  # chroma kept from the sheet (granite default .25): the road sheet's warm stains and patches read pink-brown in sun, so its chroma varies less; the mean stays #79757A
 
 
 def recolour_grey(a, target_hex, keep=.25):
@@ -274,7 +274,9 @@ def build():
             if role == "pavement":  # the slab tone drift repeats every 4 m and reads as a motif from the air: keep 70 percent of it (Latch also offsets / mirrors the UV per patch)
                 mu = alb_src.reshape(-1, 3).mean(0)
                 alb_src = np.clip(mu + (alb_src - mu) * .7, 0, 1)
-            alb = alb_src if role == "asphalt_detail" else (recolour_grey if key in ("kerb", "gutter", "asphalt") else recolour)(alb_src, TARGET[key][0])
+            # pavement (brief 048, Vela): the per-channel power curve drove the flags' darkest 5 percent to hue 52 (olive grey #8A8879) while the mean sat at hue 39; in shade that
+            # multiplied into the dark olive-brown Glint measured. One luminance curve with the target's hue and half the sheet's own chroma holds every tone at the cream hue.
+            alb = alb_src if role == "asphalt_detail" else (recolour_grey if key in ("kerb", "gutter", "asphalt", "pavement") else recolour)(alb_src, TARGET[key][0])
             srcs = {"a": alb, "n": nrm_src, "m": mask_src}
         files = []
         for suffix, size, kind in p["maps"]:

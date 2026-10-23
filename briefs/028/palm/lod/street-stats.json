@@ -1,0 +1,28 @@
+[
+ {
+  "view": "market",
+  "palms": 205,
+  "levels": {
+   "0": 12,
+   "1": 25,
+   "2": 168
+  },
+  "tris_L0": 1339630,
+  "tris_levels": 199162,
+  "pix_diff_over_12": 0.0,
+  "mean_abs_diff": 0.009
+ },
+ {
+  "view": "market-w",
+  "palms": 182,
+  "levels": {
+   "0": 7,
+   "1": 21,
+   "2": 154
+  },
+  "tris_L0": 1182980,
+  "tris_levels": 155096,
+  "pix_diff_over_12": 0.0,
+  "mean_abs_diff": 0.007
+ }
+]

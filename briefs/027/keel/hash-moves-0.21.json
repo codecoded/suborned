@@ -1,0 +1,163 @@
+{
+ "schema": "keel.hash-moves/1",
+ "what": "engine 0.20.0 (baseline copy out/keel-s16/base, built before the first edit) against 0.21.0 (Sky 2026-10-22: a lasting fire order keeps firing on a walk or a run; leaving the weapon's max ring after it has had reach and line ends it, fire.out-of-range; a new act ends it, fire.cancelled), every scenario's and route script's checkpoints with the inputs hash replaced (hashes --start-text BASE; range hashes --start-text BASE). 'behaviour' = moved with the new Gun.Reached byte left out of the hash (a temporary switch, since removed); 'byte only' = identical behaviour, moved only because a standing order that has had reach now hashes 'reached'. The act rule moved nothing on its own (0/297, 0/77).",
+ "scenariosAndRoutes": {
+  "compared": 297,
+  "identical": 241,
+  "behaviour": {
+   "N10": {
+    "result": [
+     "result:Success:",
+     "result:Success:"
+    ],
+    "why": "a scripted loud run: at 3:57.8 the Fixer's order on security-2 ends as security-2 leaves the 16 m ring (was: held, lapsed at 4:00.8); weapons free picks security-1 at once; outcome success, T 14, Alert 2 unchanged, end 4:58.6 -> 4:57.8"
+   },
+   "N159": {
+    "result": [
+     "result:None:",
+     "result:None:"
+    ],
+    "why": "kite close-in (Tech firing from 15.5-17.5 m): its order ends each time security-1 steps past 16 m (fire.out-of-range x4) and weapons free re-picks; every check passes; T 12 -> 14, shots 16 -> 14, outcome none"
+   },
+   "N161": {
+    "result": [
+     "result:Failure:sealed",
+     "result:Failure:sealed"
+    ],
+    "why": "as N10 (the Fixer on security-2 at 3:57.6); the old cover/walk jitter of the Fixer no longer happens; outcome failure sealed unchanged"
+   }
+  },
+  "byteOnly": [
+   "S03",
+   "S04",
+   "S06",
+   "S07",
+   "S08",
+   "S09",
+   "S11",
+   "S12",
+   "S16",
+   "S18",
+   "S19",
+   "N11",
+   "N11b",
+   "N18",
+   "N22",
+   "N24",
+   "N38",
+   "N38b",
+   "N95",
+   "N137",
+   "N177",
+   "N111",
+   "N113",
+   "N114",
+   "N116",
+   "S9-VALE",
+   "S9-INEZ",
+   "S9-CAM",
+   "S9-AFTER",
+   "S9-KO",
+   "CAR-BLAST",
+   "CAR-BLAST-LAB",
+   "CAR-PREVIEW",
+   "CAR-PREVIEW-HOLSTERED",
+   "CAR-PREVIEW-LAB",
+   "CAR-VALE",
+   "CAR-GETAWAY",
+   "N126",
+   "N149",
+   "N151",
+   "N155",
+   "N156",
+   "N157",
+   "N158",
+   "N162",
+   "N163",
+   "N164",
+   "N144",
+   "F15-CLEAN",
+   "F15-DRAWN",
+   "F15-FACE",
+   "briefs/011/motive-fights/loud-carry.script.json",
+   "contracts/missions/handover/routes/fail-vale-dead.json"
+  ],
+  "new": [
+   "LF-ACT"
+  ]
+ },
+ "range": {
+  "compared": 77,
+  "identical": 40,
+  "behaviour": {
+   "R07": {
+    "result": [
+     "result:None:",
+     "result:None:"
+    ],
+    "why": "the scout's 15 m walk to cover cv-027 crosses the 16 m ring at 0:06.4: the order ends (shots 4 -> 2); every check passes"
+   },
+   "F8-BREAK": {
+    "result": [
+     "result:None:",
+     "result:None:"
+    ],
+    "why": "variant A runs away with its fire orders: each ends as its officer passes 16 m (30 m for the Enforcer's carbine); every Motive line met as before (A: 0 down, 0 % lost, 0 hostiles down; B: <= 1 down; standing loses 4; firing takes no fewer hits than ceasing)"
+   },
+   "F8-BREAK-LAB": {
+    "result": [
+     "result:None:",
+     "result:None:"
+    ],
+    "why": "as F8-BREAK, lab preset"
+   }
+  },
+  "byteOnly": [
+   "R12",
+   "F8-O3",
+   "F8-O4",
+   "F8-O5",
+   "F8-SETTLE",
+   "F8-O7",
+   "F8-O8",
+   "F8-RUSH",
+   "F8-RUSH-B",
+   "F8-CIRCLE",
+   "F8-O3-LAB",
+   "F8-O4-LAB",
+   "F8-O5-LAB",
+   "F8-SETTLE-LAB",
+   "F8-O7-LAB",
+   "F8-O8-LAB",
+   "F8-RUSH-LAB",
+   "F8-RUSH-B-LAB",
+   "F8-CIRCLE-LAB",
+   "F12-ROT",
+   "F12-NONE",
+   "RK-CAR",
+   "RK-CAR-OUT",
+   "RK-CAR-LAB",
+   "RK-BY-FLEE",
+   "RK-BY-SHOT",
+   "RK-LANE",
+   "F14-STICK",
+   "F14-X",
+   "F14-OFF",
+   "F14-CONTACT",
+   "F14-4V4",
+   "F14-FOCUS",
+   "F12-ROT-WF"
+  ],
+  "new": [
+   "LF-WALK",
+   "LF-RUN",
+   "LF-OUT",
+   "LF-RUN-OUT",
+   "LF-WALK-LAB",
+   "LF-RUN-LAB",
+   "LF-OUT-LAB",
+   "LF-RUN-OUT-LAB"
+  ]
+ },
+ "routes": "no route script moves by behaviour; 2 move by the byte only (briefs/011/motive-fights/loud-carry.script.json, contracts/missions/handover/routes/fail-vale-dead.json), outcomes unchanged; the mission check (tree engine, tree inputs) is 38/38"
+}

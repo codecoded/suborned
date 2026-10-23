@@ -1,24 +1,23 @@
 """Multi-view model sheets for the cell (brief 020; Sky, 2026-10-18: "do multi view character sheet for each cell player - without props").
-python3 -I tools/figures/sheets_gen.py turn <scout|fixer|tech|enforcer> [--take 1] [--variant coat_mid] [--n 1] [--size 2304x1536]
+python3 -I tools/figures/sheets_gen.py turn <scout|fixer|tech|enforcer> --pass NAME [--budget USD] [--take 1] [--variant coat_mid] [--n 1] [--size 2304x1536]
+  fixer variants (new outfits; Sky 2026-10-23): suit · coat · jumpsuit · layers
 One person, four views on one sheet (front, three-quarter front, side, back; the style contract's `character` type), the person cropped from
-the latest cell lineup (briefs/020/people/cell-lineup-latest.png) as the reference, no props, a plain light ground. Seedream through the
-store's Runware client. Images go to the store (concepts/Cell/sheets/) and are logged with service, prompt, cost and sha256 in
-concepts/Cell/PROVENANCE.json; spend adds to characters/cell_sheets/spend.json."""
-import hashlib, io, json, os, sys, time, base64
+the latest cell lineup (briefs/020/people/cell-lineup-latest.png) as the reference, no props, a plain light ground. Seedream through Runware and the
+shared paid helper (brief 053): the budget is explicit (--budget USD the first time a pass is used; raising it needs --raise and Sky's OK). Sheets are
+saved in paid/020-people-sheets/sheets/ (ledger.jsonl there has the call, prompt, cost, sha256) and symlinked into the store's concepts/Cell/sheets/ as before;
+the committed copy in briefs/020/people/sheets/ is still made by hand from there."""
+import hashlib, io, os, sys, time, base64
 from pathlib import Path
 from PIL import Image
 
-OLD = Path(os.environ.get('SUBORNED_OLD', '~/Projects/the-suborned')).expanduser() / 'workbench/Tools/Concept'
-sys.path.insert(0, str(OLD))
-from runware import infer   # noqa: E402
-
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / 'tools/paid'))
+import paid  # noqa: E402
+JOB = '020-people-sheets'
 STORE = Path(os.environ.get('SUBORNED_STORE', '~/Projects/the-suborned-store')).expanduser()
 LINEUP = REPO / 'briefs/020/people/cell-lineup-latest.png'
 OUT = STORE / 'concepts/Cell/sheets'
 REFS = STORE / 'concepts/Cell/refs'
-PROV = STORE / 'concepts/Cell/PROVENANCE.json'
-SPEND = STORE / 'characters/cell_sheets/spend.json'
 MODEL = 'bytedance:seedream@5.0-pro'
 BOX = {'scout': (80, 80, 440, 1024), 'fixer': (440, 90, 705, 1024), 'tech': (660, 15, 1020, 1024), 'enforcer': (1000, 5, 1470, 1024)}
 sha = lambda b: hashlib.sha256(b).hexdigest()
@@ -48,6 +47,19 @@ WHO = {
                  "trousers with ivory and chrome knee panels; white knee-high boots with black soles. The big chrome rifle of the reference is removed: nothing is held "
                  "and nothing leans on him. {coat}"),
 }
+# Fixer outfit directions (Sky, 2026-10-23, on the turnaround's short halter dress: "not into this dress style"). The reference gives only her face and hair.
+FIXER_NEW = ("The person: the same woman as the reference image, with the same face and the same long straight black hair in a high ponytail, but dressed in a NEW "
+             "outfit, described next; ignore the clothes and shoes in the reference completely. The outfit belongs to a visitor from a nearby timeline: sharp, "
+             "modern and precise, ivory and black panels with thin chrome details, no retro or period tailoring, no dress. ")
+FIXER = {
+    # the design she already had (Sky, 2026-10-23: "she had an original design from before"): the lineup's dress, which the first sheet shortened and straightened
+    'original': None,
+    'original_short': None,   # Sky, 2026-10-23: "just shorten her dress in it" (an edit of the picked original sheet, take 1_1)
+    'suit': "A sharp tailored trouser suit: a cropped ivory jacket with an asymmetric black front panel, a high standing collar and long fitted sleeves; a black fitted top under it; high-waisted wide-leg black trousers with a thin ivory stripe down the outer seam; black ankle boots with a low block heel and a chrome toe cap.",
+    'coat': "A long fitted ivory coat to mid-calf with one black vertical panel down the front, a high standing collar, long sleeves and a slim black belt with a chrome buckle, worn open at the hem over slim black trousers and black low-heeled ankle boots.",
+    'jumpsuit': "A structured long-sleeved jumpsuit in black with ivory panels at the shoulders and down the sides, a high collar, a slim chrome-buckled belt at the waist and wide straight legs to the ankle; black low-heeled ankle boots.",
+    'layers': "A long-sleeved black high-neck fitted top under a cropped structured ivory waistcoat with chrome fastenings; slim black trousers under a long open ivory panel skirt split at the front, falling to the calf; black flat ankle boots with chrome heel caps.",
+}
 COAT = {'': "The coat ends at the knee, as in the reference.", 'coat_mid': "The coat is shortened to end at mid-thigh; everything else is exactly the same."}
 
 
@@ -55,30 +67,45 @@ def uri(img):
     b = io.BytesIO(); img.save(b, 'PNG'); return 'data:image/png;base64,' + base64.b64encode(b.getvalue()).decode()
 
 
-def log(row):
-    old = json.loads(PROV.read_text()) if PROV.exists() else []
-    PROV.write_text(json.dumps([r for r in old if r['file'] != row['file']] + [row], indent=1))
-
-
-def turn(who, take, variant, n, size):
+def turn(who, take, variant, n, size, paid_pass):
     w, h = (int(x) for x in size.split('x'))
-    box = BOX[who]; REFS.mkdir(parents=True, exist_ok=True); OUT.mkdir(parents=True, exist_ok=True)
-    ref = Image.open(LINEUP).convert('RGB').crop(box)
-    rp = REFS / f'{who}_lineup.png'; ref.save(rp)
-    prompt = f"{TURN} {WHO[who].format(coat=COAT[variant]) if who == 'enforcer' else WHO[who]}"
-    res = infer(MODEL, prompt, w, h, n=n, inputs={'referenceImages': [uri(ref)]})
-    SPEND.parent.mkdir(parents=True, exist_ok=True)
-    for i, (png, cost, seed) in enumerate(res):
-        name = f"{who}{'_' + variant if variant else ''}_turnaround_{take}_{i}.png"; (OUT / name).write_bytes(png)
-        im = Image.open(OUT / name)
-        log({'file': f'sheets/{name}', 'model': MODEL, 'seed': seed, 'cost': cost, 'size': f'{im.size[0]}x{im.size[1]}', 'sha256': sha(png),
-             'reference': f'refs/{who}_lineup.png (crop {box} of briefs/020/people/cell-lineup-latest.png, sha256 {sha(rp.read_bytes())[:12]})', 'prompt': prompt})
-        rows = json.loads(SPEND.read_text()) if SPEND.exists() else []
-        rows.append({'at': time.strftime('%Y-%m-%d %H:%M'), 'what': name, 'usd': cost}); SPEND.write_text(json.dumps(rows, indent=1))
-        print(f'[sheets] {name} ${cost}  total ${sum(r["usd"] or 0 for r in rows):.4f}')
+    box = BOX[who]; REFS.mkdir(parents=True, exist_ok=True)
+    if who == 'fixer' and variant == 'original_short':
+        src = paid.job_dir(JOB) / 'sheets/fixer_original_turnaround_1_1.png'
+        ref = Image.open(src).convert('RGB'); rp = REFS / 'fixer_original_turnaround_1_1.png'; ref.save(rp); box = 'whole sheet'
+    else:
+        ref = Image.open(LINEUP).convert('RGB').crop(box)
+        rp = REFS / f'{who}_lineup.png'; ref.save(rp)
+    if who == 'fixer' and variant == 'original_short':
+        prompt = ("Edit this character turnaround sheet with exactly one change: the dress is shorter. In all four views, raise the dress's hem so that its "
+                  "longest point now ends at the knee and its angled hem rises to the lower thigh on the short side; keep the same asymmetric diagonal wrap, "
+                  "the front slit with the black pleated pinstripe underpanel showing, and every panel, band and strap. Everything else stays exactly the same: "
+                  "the same woman, face, hair, sleeves, boots, pose, scale, layout, backdrop, light and rendering style. "
+                  "No text, no letters, no numbers, no logos, no watermark.")
+        reflog = f'refs/fixer_original_turnaround_1_1.png (paid/{JOB}/sheets, sha256 {sha(rp.read_bytes())[:12]})'
+    elif who == 'fixer' and variant == 'original':
+        prompt = (f"{TURN} The person: a woman with long straight black hair in a high ponytail with a small knot at the crown, and small drop earrings. She wears EXACTLY the "
+                  "dress of the reference image, faithfully: an asymmetric wrapped dress whose long ivory outer panels cross the body on a diagonal and fall in an uneven, "
+                  "angled hem to mid-calf, open at the front in a long slit over a black finely pleated pinstripe underpanel that shows in a long vertical strip down the side "
+                  "and the front; a high halter collar, bare shoulders and an open back crossed by fine straps; long fitted ivory sleeves worn as separate sleeves from the upper arm "
+                  "to the wrist; ivory and black heeled ankle boots with a chrome heel. Keep the dress's length, its asymmetric wrap, the diagonal hem and the slit exactly as in the "
+                  "reference: do not shorten it, do not straighten it into a pencil dress, no vertical stripes. The briefcase of the reference is removed: nothing is held.")
+    elif who == 'fixer' and variant:
+        prompt = f"{TURN} {FIXER_NEW}{FIXER[variant]} The briefcase of the reference is removed: nothing is held."
+    else:
+        prompt = f"{TURN} {WHO[who].format(coat=COAT[variant]) if who == 'enforcer' else WHO[who]}"
+    if variant != 'original_short':
+        reflog = f'refs/{who}_lineup.png (crop {box} of briefs/020/people/cell-lineup-latest.png, sha256 {sha(rp.read_bytes())[:12]})'
+    for i in range(n):
+        name = f"{who}{'_' + variant if variant else ''}_turnaround_{take}_{i}.png"
+        paid_pass.image(MODEL, prompt, w, h, name=name, est=0.12, subdir='sheets', inputs={'referenceImages': [uri(ref)]}, refs_log=[reflog], link=OUT / name)
 
 
 if __name__ == '__main__':
     a = sys.argv[1:]
     arg = lambda k, d: a[a.index(k) + 1] if k in a else d
-    if a[0] == 'turn': turn(a[1], arg('--take', '1'), arg('--variant', ''), int(arg('--n', '1')), arg('--size', '2304x1536'))
+    if a[0] == 'turn':
+        pn = arg('--pass', None)
+        if not pn: raise SystemExit('paid: --pass NAME is required (and --budget USD the first time a pass is used)')
+        turn(a[1], arg('--take', '1'), arg('--variant', ''), int(arg('--n', '1')), arg('--size', '2304x1536'),
+             paid.Pass(JOB, pn, budget=float(arg('--budget', 0)) or None, allow_raise='--raise' in a))

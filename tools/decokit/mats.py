@@ -101,6 +101,14 @@ LIB.setdefault("DK_Faience_Teal", ("ceramic", look_hex("accent_teal")))   # teal
 # 14 Oct (Sky, brass over gold): Gold #E3D681 20.6 -> BRASS #99784D 21.3 (the crowns keep #E3D681 as DK_Crown_Gold).
 WORLD_RETUNE = ("DK_Enamel_Mustard", "DK_Gold", "DK_Enamel_Red", "DK_Signal_Red")
 LIB["DK_Signal_Red"] = ("emit", ACCENT["flamingo"], 4.0)
+
+# Window film (brief 048, Vela): DK_GlassDark is the glass in front of every facade bay (ribbons, deco columns, portholes, shop transoms). As URP Lit at smoothness 0.98 and alpha 0.3 over a
+# charcoal back wall it mirrored the dark street-canyon cube and read as a black void in third person. Unity draws it with Suborned/DecoKit/GlassSky (a fake sky, no probe: see the shader):
+# the glaze is the old colour at alpha 0.72 (the 1.1 m cavity behind it is the adopted store pieces', charcoal and unreachable from here), the mirror a pale warm horizon to a soft blue zenith (the paintings' windows: dark teal glass with sky glints). Blender keeps the same alpha.
+# GLASS_SHADER_GUID is the .shader.meta guid (unity/Assets/Suborned/Shaders/DecoKit/DK_GlassSky.shader.meta).
+GLASS_SHADER_GUID = "0a6625b81c13d56024a16fdc589a1954"
+GLASS_FILM = {"DK_GlassDark": dict(alpha=0.72, glaze="#4A8588", edge=0.92, fresnel=3.0, sheen=0.12, glow=0.85, horizon="#D8E6E4", zenith="#86B8E0", street="#A78F78")}
+
 LIB.setdefault("DK_Beacon_Rose", ("emit", ACCENT["flamingo"], 4.0))  # obstruction / status lamps: pink, never signal red
 ALIAS = {"Signal_Red": "DK_Beacon_Rose"}  # generated pieces never use DK_Signal_Red on a world surface
 
@@ -251,6 +259,7 @@ def get(name):
         return m
     kind, hexstr, *extra = LIB[name]
     rough, metal, coat, coat_rough, alpha = KIND[kind]
+    alpha = GLASS_FILM[name]["alpha"] if name in GLASS_FILM else alpha
     col = (*linear(srgb(hexstr)), 1.0)
     m = bpy.data.materials.new(name)
     b = m.node_tree.nodes["Principled BSDF"]
@@ -379,11 +388,13 @@ def export_json(path):
     for name, (kind, hexstr, *extra) in LIB.items():
         rough, metal, coat, coat_rough, alpha = KIND[kind]
         alpha = extra[1] if kind == "glow" else alpha
+        film = GLASS_FILM.get(name)
+        alpha = film["alpha"] if film else alpha
         tex = TEXTURES.get(name)
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
                          emission=extra[0] if extra else 0.0, texture=tex[0] if tex else "",
-                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"robotDetail": ROBOT_DETAIL} if name.startswith("DK_RobotEnamel_") else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
+                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": ROBOT_DETAIL} if name.startswith("DK_RobotEnamel_") else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
 

@@ -24,7 +24,7 @@ namespace Suborned.Sim
                 var pv = g.PreviewFire(OpId.Scout, "car:official");
                 r.Eq((pv.Refused, pv.TrailHit, pv.TrailDown), ("", 0, 0), "the chip: a target, no hit or down Trail");
                 r.Eq(g.GoingLoud(new Order { Tick = g.Tick, Op = Scout, Do = "fire", Target = "car:official" }).Fails, "", "Vale is inside the Office: no fail on the card");
-                r.Is(r.Fire(Scout, "car:official"), "fire on the official car taken (no Ctrl needed: the host offers it in the ring or on Ctrl)");
+                r.Is(r.Fire(Scout, "car:official"), "fire on the official car taken (no force needed: a car is no civilian)");
                 r.Is(r.Until(() => g.CarOf("car:official")!.Gun.Hit, T(15)), "the car is hit");
                 g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "cease" });
                 r.Is(g.Alert >= 2, $"gunfire: Alert ≥ 2 ({g.Alert})");

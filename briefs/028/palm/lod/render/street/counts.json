@@ -1,0 +1,70 @@
+{
+ "screen_relative_switch": {
+  "CoconutPalm": [
+   0.1271,
+   0.0545
+  ],
+  "CoconutPalm_Street": [
+   0.1705,
+   0.0731
+  ]
+ },
+ "size_m": {
+  "CoconutPalm": 7.94,
+  "CoconutPalm_Street": 10.65
+ },
+ "market_L0": {
+  "palms": 205,
+  "levels": {
+   "0": 205,
+   "1": 0,
+   "2": 0
+  },
+  "tris": 1339630
+ },
+ "market_LOD": {
+  "palms": 205,
+  "levels": {
+   "0": 12,
+   "1": 25,
+   "2": 168
+  },
+  "tris": 199162
+ },
+ "market-w_L0": {
+  "palms": 182,
+  "levels": {
+   "0": 182,
+   "1": 0,
+   "2": 0
+  },
+  "tris": 1182980
+ },
+ "market-w_LOD": {
+  "palms": 182,
+  "levels": {
+   "0": 7,
+   "1": 21,
+   "2": 154
+  },
+  "tris": 155096
+ },
+ "play-market_L0": {
+  "palms": 14,
+  "levels": {
+   "0": 14,
+   "1": 0,
+   "2": 0
+  },
+  "tris": 94100
+ },
+ "play-market_LOD": {
+  "palms": 14,
+  "levels": {
+   "0": 14,
+   "1": 0,
+   "2": 0
+  },
+  "tris": 94100
+ }
+}

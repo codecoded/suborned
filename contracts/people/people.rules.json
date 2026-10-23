@@ -125,9 +125,9 @@
       "housing": {
         "metBy": ["help", "pressure"], "help": "favour",
         "requires": "home",
-        "src": "§07 brief: Vale signed the clearance order for the marked block",
+        "src": "§01 world: an orderly city runs on routine and paperwork; briefs/017 examples (Clearance order). No longer the Handover's cause since its motive became the file (Sky, 2026-10-23)",
         "proposed": true,
-        "reason": "a home under a clearance order or a waiting list: the Handover's own cause, and a need only the civic order can meet or threaten. Needs a home in the district."
+        "reason": "a home under a clearance order or on a waiting list: a stamp decides who stays, so it is a need only the civic order can meet or threaten. Needs a home in the district."
       },
       "papers": {
         "metBy": ["help", "pressure"], "help": "favour",
@@ -385,9 +385,9 @@
       },
       "councillor": {
         "employer": "records-office", "allow": ["loyal", "mercenary", "fearful"],
-        "src": "§07 Councillor Vale signed the clearance order",
+        "src": "§07 the file (Sky, 2026-10-23; GDD §07 to follow in v0.25): Vale keeps the cameras' catch of the cell in a paper file and hands it to Security at shift change",
         "proposed": true,
-        "reason": "the one who signs clearance orders. Never Idealist, for the same reason creditors are not: the order is the harm."
+        "reason": "a careerist building a file for his own advancement: what it earns him moves him, as with the city's creditors, not a belief in order, so never Idealist. The allow list is kept from the clearance-order story so the cast and every replay stand; an Idealist Vale is Sky's call."
       },
       "watcher": {
         "employer": "civic", "allow": ["loyal", "mercenary", "fearful"],

@@ -14,6 +14,18 @@ const P = {
   run: '<path d="M5 5l7 7-7 7M12 5l7 7-7 7"/>',
   dots: '<circle cx="5.5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="18.5" cy="12" r="1.6"/>',
   finger: '<path d="M12 4a6 6 0 0 0-6 6v3M12 8a2.5 2.5 0 0 0-2.5 2.5V16M12 8a2.5 2.5 0 0 1 2.5 2.5V19M18 11a6 6 0 0 0-6-6M12 12v6"/>',
+  ear: '<path d="M6 10a6 6 0 0 1 12 0c0 3-2 4-3 6s-1 4-3.5 4-3-2-3-3"/><path d="M9.5 10a2.5 2.5 0 0 1 5 0"/>',
+  car: '<path d="M3 15v-3l2.2-5h13.6L21 12v3M3 15h18M3 15v2.5M21 15v2.5"/><circle cx="7.5" cy="15.5" r="1.4"/><circle cx="16.5" cy="15.5" r="1.4"/>',
+  check: '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
+  cross: '<path d="M6 6l12 12M18 6L6 18"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5.5l3.5 2"/>',
+  person: '<circle cx="12" cy="8" r="3.6"/><path d="M5 20c.7-4 3.4-6 7-6s6.3 2 7 6"/>',
+  eyeoff: '<path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/><path d="M4 4l16 16"/>',
+  heart: '<path d="M12 20s-7-4.4-7-10a4 4 0 0 1 7-2.4A4 4 0 0 1 19 10c0 5.6-7 10-7 10z"/>',
+  arrow: '<path d="M4 12h15M13 6l6 6-6 6"/>',
+  body: '<path d="M3 16h18M5 16c0-3 2-5 5-5h5c3 0 4 2 4 5M7.5 8.5a1.8 1.8 0 1 0 0-.01"/>',
+  half: '<circle cx="12" cy="12" r="9"/><path d="M12 3v18" /><path d="M12 3a9 9 0 0 1 0 18z" fill="currentColor"/>',
+  lock: '<rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/>',
   siren: '<path d="M7 19v-6a5 5 0 0 1 10 0v6M5 19h14M12 3v2M4.5 7l1.5 1.2M19.5 7L18 8.2"/>',
 };
 export const icon = (n, size = 20) =>

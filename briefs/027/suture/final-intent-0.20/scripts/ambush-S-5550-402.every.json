@@ -1,0 +1,15 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Suture 0.20 attempt ambush-S-5550-402: the scout kept out of the response-unit fight, waits holstered at (55.5,-27) by the crew's press stop, then locks the crew from point blank at 4:02; the fixer and tech drop the unit and the Fixer flanks as before (derived from loud.plan.json).",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750],"run":true},
+  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1236,"op":"enforcer","do":"move","to":[6950,-4250]},
+  {"tick":1510,"op":"enforcer","do":"fire","target":"guard"}
+ ],
+ "until": 5100
+}

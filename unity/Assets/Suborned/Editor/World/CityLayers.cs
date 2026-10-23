@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Suborned.World
@@ -41,15 +42,36 @@ namespace Suborned.World
         /// <summary>Brief 026 (Splice): the export's flat ground pieces (ground.pieces: tactile and terrazzo tiles, drains, manholes; kerb stones,
         /// flags and tree pits when adopted), each its kit piece at its pivot, under their own root (`ground-pieces`: the export's counts.ground
         /// leaves them out, so the ground layer's count stays the export's). A piece without a kit ref = reject.</summary>
+        /// <summary>Brief 028 road finish (Vela; Aster 2026-10-22): the export's ground pieces (the road finish's ribbon, shoulder, pinstripe,
+        /// lozenge and seam, the capstone's flags, kerbs, pits, drains, tiles) baked into the layer's tile batches by material (KitPlacer.Bake),
+        /// not ~17k prefab instances: flat pieces that never fade draw as a few batches a tile. A flat piece (catalogue height 0) whose mesh sits
+        /// above its footprint pivot (Pave_Slab: modelled at z 0.15, so placed at 0.181 its top stood at 0.331) is laid on its footprint, counted
+        /// and named in the log for Vela.</summary>
+        public static readonly Dictionary<string, float> Lifted = new(System.StringComparer.Ordinal);
         public int GroundPieces(Transform layer, List<StreetItemDto> items)
         {
+            Lifted.Clear(); var none = new Dictionary<string, string>();
             foreach (var s in items)
             {
                 if (s.Kit == null) throw new System.IO.InvalidDataException($"World: ground piece {s.Id} ({s.Kind}) has no kit ref");
-                placer.Place(Nodes.Element(layer, s.Id), layer.name, s.Kit, s.At, s.Z, s.Yaw);
+                float lift = FootLift(s.Kit.Id);
+                placer.Bake(Nodes.Element(layer, s.Id), layer.name, s.Id, s.Kit, s.At, s.Z - lift, none, s.Yaw);
             }
+            if (Lifted.Count > 0) Debug.LogWarning($"World: ground pieces laid on their footprint (mesh above the pivot; the catalogue says footprint-centre-ground): {string.Join(", ", Lifted.Select(kv => $"{kv.Key} {kv.Value:0.###} m"))} (Vela: re-export at z 0)");
             return items.Count;
         }
+        readonly Dictionary<string, float> footLift = new(System.StringComparer.Ordinal);
+        /// <summary>How far a flat piece's mesh stands above its pivot (its LOD0's lowest point, when above 1 cm and the piece is under 5 cm thick).</summary>
+        float FootLift(string id)
+        {
+            if (footLift.TryGetValue(id, out var v)) return v;
+            var go = placer.Prefab(id); Bounds? b = null;
+            foreach (var mr in KitLods.Lod0(go)) { var mb = mr.GetComponent<MeshFilter>().sharedMesh.bounds; var w = mr.transform.localToWorldMatrix; var lo = w.MultiplyPoint3x4(mb.min); var hi = w.MultiplyPoint3x4(mb.max); var bb = new Bounds(lo, Vector3.zero); bb.Encapsulate(hi); b = b is { } h ? Union(h, bb) : bb; }
+            v = b is { } x && x.min.y > 0.01f && x.size.y < 0.05f ? x.min.y : 0f;
+            if (v > 0f) Lifted[id] = v;
+            return footLift[id] = v;
+        }
+        static Bounds Union(Bounds a, Bounds b) { a.Encapsulate(b); return a; }
 
         public void Street(Transform layer, List<StreetItemDto> items)
         {

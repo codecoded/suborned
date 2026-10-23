@@ -93,14 +93,14 @@ namespace Suborned.Sim
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Is(g.Quote(g.R.Ev("scout.listen"), g.Inez).Refused == "", "Listen is still open: her need and temperament unknown");
             });
-            Add("N106", "—", "The query asks needs before reach (Latch 2026-10-18): at 0:02 the Scout stands far from Inez and her routine is unknown. ScoutQuery says needs-routine (walking closer won't cure it); the order itself, given there, still answers too-far (Issue checks reach first, so replays don't move). Within reach, both say needs-routine.", r =>
+            Add("N106", "—", "The query asks needs before reach (Latch 2026-10-18): at 0:02 the Scout stands far from Inez and her routine is unknown. ScoutQuery says needs-routine (walking closer won't cure it); the order itself, given there, says the same since engine 0.23.0 (rulebook cell.approach: out of reach it would walk in, so the needs are checked first; before it, Issue answered too-far). Within reach, both say needs-routine.", r =>
             {
                 var g = r.G;
                 r.To(T(2));
                 var at = g.PersonPos(g.Inez)!.Value;
                 r.Is(!G.Within(r.Op(Scout).Pos, at, g.R.ListenReachCm), "the Scout stands out of Listen's reach");
                 r.Eq(g.ScoutQuery("listen", Inez).code, "needs-routine", "at a distance the query gives the missing need, not too-far");
-                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }).code, "too-far", "the order itself keeps Issue's order: too-far");
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }).code, "needs-routine", "the order itself: needs-routine (engine 0.23.0: no walk in for a need walking won't cure)");
                 r.To(r.Send(Scout, "beside-inez"));
                 r.Eq(g.ScoutQuery("listen", Inez).code, "needs-routine", "within reach, the query: needs-routine");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }).code, "needs-routine", "within reach, the order: needs-routine");

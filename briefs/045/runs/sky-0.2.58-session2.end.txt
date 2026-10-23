@@ -1,0 +1,4 @@
+Failure (enforcer-down) at 3:28.9 · final d01f443ba25c · replay identical
+The Enforcer is down.
+engine working tree on 04a4fb757ef6 (uncommitted engine or input changes) dll 1547b5ed4b66f69ccbe60ddbd32d906bc3815b2eb374af26d6ca2f2f07418abe
+step mean 0.1191 ms, max 3.099 ms over 2089 steps; engine per frame 0.0481 ms over 10827 frames

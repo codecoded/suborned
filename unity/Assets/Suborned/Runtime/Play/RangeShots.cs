@@ -147,7 +147,7 @@ namespace Suborned.Play
             yield return Shot("range-bystanders-flee");
             HandoverHost.PointerOverride = null; h.ClearHover();
             Check("bystanders", s1 && s2 && fleeing >= 2 && saw >= 1, $"spawned {s1}/{s2}; at the shot {fleeing} fleeing, {saw} saw an agent fire ({string.Join(", ", bs.Where(b => b.Saw.Length > 0).Select(b => b.Id + " saw " + b.Saw))}); states {string.Join(" ", bs.Select(b => b.State))}");
-            Check("bystanderHint", h.controls.HoldActs ? hint.Contains("right button") && !hint.Contains("Ctrl") : hint.Contains("Ctrl"), $"over {run?.Id}: \"{hint}\" (brief 041: the same right hold, no Ctrl)");
+            Check("bystanderHint", h.controls.HoldActs ? hint.Length == 0 && (HudToolkit.PillWords.Contains("passer-by") || HudToolkit.PillWords.Length == 0) : hint.Contains("Ctrl"), $"over {run?.Id}: hint \"{hint}\", pill \"{HudToolkit.PillWords}\" (brief 041: the pill says it, no Ctrl, no goal-line tag)");
             // they come back: the clock runs on after the cell ceases; quiet 30 s after the last shot, they walk back to their slots
             foreach (var a in new[] { "enforcer", "tech" }) h.Issue(new Order { Op = a, Do = "cease" });
             foreach (var a in new[] { "scout", "fixer", "tech", "enforcer" }) h.Issue(new Order { Op = a, Do = "holster" });
@@ -160,7 +160,7 @@ namespace Suborned.Play
         IEnumerator Lines(HandoverHost h)
         {
             yield return Fresh(h, "open");
-            var g = h.Game;
+            var g = h.Game; var np = h.GetComponent<RangePanel>(); if (np != null) np.Numbers = true; // brief 049: Numbers is off by default; this picture is the numbers'
             bool sp = Spawn(h, "police", "eff", 2); h.RunTo(g.Tick + 1); // two at 15 m: they answer, and nobody is down within the 2.4 s
             var target = g.RangeHostiles().FirstOrDefault()?.Id ?? "";
             h.Issue(new Order { Op = "enforcer", Do = "fire", Target = target });
@@ -173,6 +173,7 @@ namespace Suborned.Play
             yield return Shot("range-line-under-fire");
             bool plain = shown.Count > 0 && shown.All(l => l.Text.Length > 0) && shown.Exists(l => l.Text.Contains("%") || l.Text.Contains("●"));
             parts.Add($"\"lineTexts\": [{string.Join(", ", texts.Take(12).Select(t => "\"" + Esc(t) + "\""))}]");
+            if (np != null) np.Numbers = false;
             Check("lines", sp && plain, $"{shown.Count} lines shown, every one with the engine's plain words: {plain}; e.g. {(texts.Count > 0 ? texts[0] : "none")}");
         }
 
@@ -182,7 +183,7 @@ namespace Suborned.Play
         IEnumerator Fixes(HandoverHost h)
         {
             h.Fights.Load("lab"); h.Fights.fightMode = "realtime"; yield return Fresh(h, "open");
-            var g = h.Game;
+            var g = h.Game; var np = h.GetComponent<RangePanel>(); if (np != null) np.Numbers = true; // brief 049: these checks are the numbers overlay's (off by default)
             bool s1 = Spawn(h, "car", "car:1", 1, "police"), s2 = Spawn(h, "bystanders", "near", 4), s3 = Spawn(h, "police", "eff", 3); h.RunTo(g.Tick + 1);
             var target = g.RangeHostiles().FirstOrDefault(x => !x.Gone)?.Id ?? "";
             foreach (var a in new[] { "enforcer", "scout" }) h.Issue(new Order { Op = a, Do = "fire", Target = target });
@@ -193,6 +194,7 @@ namespace Suborned.Play
             int bystandersUp = g.RangeBystanders().Count(b => !b.Down && b.State != "safe"), carsUp = g.RangeCars().Count(c => c.State != "wrecked");
             yield return Shot("range-fixes-labels-bars");
             int placed = RangePanel.LabelsPlaced, moved = RangePanel.LabelsMoved, dropped = RangePanel.LabelsDropped, bars = HudToolkit.RangeBarsDrawn; string goal = HudToolkit.GoalNow ?? "";
+            if (np != null) np.Numbers = false;
             Check("labels", placed > 0, $"labels placed {placed}, stepped clear {moved}, left off for room {dropped} (each placed clear of the others and the panel by construction)");
             Check("goalLine", !goal.Contains("Vale"), $"the goal line in the range: \"{goal}\"");
             Check("bars", s1 && s2 && s3 && bars >= Mathf.Min(1, carsUp) + 1, $"bars over range cars and bystanders {bars} (on the floor: cars {carsUp}, bystanders {bystandersUp}); spawns {s1} {s2} {s3}; lab {g.Lab}");

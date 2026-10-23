@@ -78,22 +78,47 @@ namespace Suborned.Play
         }
 
         /// <summary>The end card's "Show me again", or the start after a failure.</summary>
+        /// <summary>Brief 045 F2: the two replays the fail camera needs (the run to a few seconds before the deciding tick, which it then plays;
+        /// and the deciding tick, for where the pair stand) are built on workers, in parallel; the camera starts when both land (FailPrepPoll),
+        /// a frame or a few later, instead of freezing the frame the mission ends in.</summary>
+        System.Threading.Tasks.Task<(Suborned.Sim.Game g, int next, Pt? opAt)> failPrep;
         public void FailCamStart()
         {
-            if (endGame?.Cause is not FailCause c || FailTarget(c) is not { } tgt || !cam || FailCamOn) return;
+            if (endGame?.Cause is not FailCause c || FailTarget(c) is null || !cam || FailCamOn || failPrep != null) return;
             // Sky 2026-10-20: the fail camera plays in the view the player is in (the follow view keeps its agent; no swing to the map)
             var orders = new List<(int idx, Order o)>(); for (int k = 0; k < endGame.Orders.Count; k++) orders.Add((k, endGame.Orders[k].order));
             orders.Sort((a, b) => a.o.Tick != b.o.Tick ? a.o.Tick.CompareTo(b.o.Tick) : a.idx.CompareTo(b.idx));
             failOrders.Clear(); foreach (var (_, o) in orders) failOrders.Add(o);
             failTo = !c.Single && c.Origin != null && c.Origin.Tick > 0 ? c.Origin.Tick : c.Tick; // no single culprit (the seal): the moment it began, the report that raised it
-            int from = Mathf.Max(0, failTo - Mathf.RoundToInt(failRewindS * Game.Hz));
-            Suborned.Sim.Game g = null; bool ok = Guard("fail camera", () =>
+            int from = Mathf.Max(0, failTo - Mathf.RoundToInt(failRewindS * Game.Hz)), to = failTo;
+            var inputs = Bundle.Inputs; var start = endGame.Start; var list = new List<Order>(failOrders);
+            int opIdx = c.Ops.Count > 0 && IsOpName(c.Ops[0]) ? (int)Op.Parse(c.Ops[0]) : -1;
+            var first = System.Threading.Tasks.Task.Run(() =>
             {
-                g = Engine.New(Bundle.Inputs, endGame.Start); failNext = 0;
-                while (failNext < failOrders.Count && failOrders[failNext].Tick < from) { var o = failOrders[failNext++]; g.RunTo(o.Tick); if (g.Over) break; if (g.Tick == o.Tick) g.Issue(o); }
-                g.RunTo(from);
+                var g = Engine.New(inputs, start); int nx = 0;
+                while (nx < list.Count && list[nx].Tick < from) { var o = list[nx++]; g.RunTo(o.Tick); if (g.Over) break; if (g.Tick == o.Tick) g.Issue(o); }
+                g.RunTo(from); return (g, nx);
             });
-            if (!ok || g == null) { Fault = null; return; }
+            var second = System.Threading.Tasks.Task.Run(() =>
+            {
+                if (opIdx < 0) return (Pt?)null;
+                // Glyph round 3 (N119): where the pair stand at the deciding moment the replay holds on, not at the run's end (the Enforcer had
+                // walked on): a second copy of the run, replayed to that tick, off screen and thrown away
+                var g2 = Engine.New(inputs, start); int nx = 0;
+                while (nx < list.Count && list[nx].Tick < to) { var o = list[nx++]; g2.RunTo(o.Tick); if (g2.Over) break; if (g2.Tick == o.Tick) g2.Issue(o); }
+                if (!g2.Over) g2.RunTo(to); return g2.Ops[opIdx].Pos;
+            });
+            failPrep = System.Threading.Tasks.Task.WhenAll(first, second).ContinueWith(_ => (first.Result.g, first.Result.nx, second.Result));
+        }
+
+        /// <summary>Per frame: the fail camera's replays landed: it starts (unless the run was left or restarted meanwhile).</summary>
+        void FailPrepPoll()
+        {
+            if (failPrep == null || !failPrep.IsCompleted) return;
+            var t = failPrep; failPrep = null;
+            if (t.Status != System.Threading.Tasks.TaskStatus.RanToCompletion || endGame == null || Game != endGame || FailCamOn) { if (t.Exception != null) Debug.LogWarning($"Play: fail camera replay failed: {t.Exception.GetBaseException().Message}"); return; }
+            if (endGame.Cause is not FailCause c || FailTarget(c) is not { } tgt || !cam) return;
+            var (g, next, opAtTo) = t.Result; failNext = next;
             failGame = g; Game = g; views.Tick(); views.Tick(); views.Frame(1f);
             // the camera: the culprit at the centre, a little lower than play pitch, turning slowly round it
             camPos0 = cam.transform.position; camRot0 = cam.transform.rotation; camSize0 = cam.orthographicSize; camOrtho0 = cam.orthographic; focus0 = focus; yaw0 = yawNow;
@@ -111,15 +136,7 @@ namespace Suborned.Play
             failClose = false;
             if (c.Ops.Count > 0 && IsOpName(c.Ops[0]))
             {
-                // Glyph round 3 (N119): where the pair stand at the deciding moment the replay holds on, not at the run's end (the Enforcer had
-                // walked on): a second copy of the run, replayed to that tick, off screen and thrown away
-                var opAt = endGame.Ops[(int)Op.Parse(c.Ops[0])].Pos;
-                Guard("fail camera", () =>
-                {
-                    var g2 = Engine.New(Bundle.Inputs, endGame.Start); int nx = 0;
-                    while (nx < failOrders.Count && failOrders[nx].Tick < failTo) { var o = failOrders[nx++]; g2.RunTo(o.Tick); if (g2.Over) break; if (g2.Tick == o.Tick) g2.Issue(o); }
-                    if (!g2.Over) g2.RunTo(failTo); opAt = g2.Ops[(int)Op.Parse(c.Ops[0])].Pos;
-                });
+                var opAt = opAtTo ?? endGame.Ops[(int)Op.Parse(c.Ops[0])].Pos;
                 var oe = frame.World(opAt); var de = failCulprit - oe; de.y = 0f;
                 if (de.magnitude < 2.5f)
                 {
@@ -317,12 +334,12 @@ namespace Suborned.Play
             {
                 coneGo = new GameObject("fail-cone"); coneGo.transform.SetParent(transform, false);
                 coneMesh = new Mesh { name = "fail-cone" }; coneMesh.MarkDynamic(); coneGo.AddComponent<MeshFilter>().sharedMesh = coneMesh;
-                var mat = new Material(fanTemplate ? fanTemplate : unlitTemplate); mat.SetColor("_BaseColor", new Color(coneColour.r, coneColour.g, coneColour.b, 0.42f)); if (mat.HasProperty("_Cull")) mat.SetFloat("_Cull", 0f);
+                var mat = SignalMat(new Color(coneColour.r, coneColour.g, coneColour.b, 0.42f), true); if (mat.HasProperty("_Cull")) mat.SetFloat("_Cull", 0f);
                 var mr = coneGo.AddComponent<MeshRenderer>(); mr.sharedMaterial = mat; mr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
                 LineRenderer Line(string n, float w)
                 {
                     var g = new GameObject(n); g.transform.SetParent(coneGo.transform, false); var lr = g.AddComponent<LineRenderer>();
-                    var lm = new Material(unlitTemplate); lm.SetColor("_BaseColor", coneColour); lr.sharedMaterial = lm; lr.widthMultiplier = w; lr.useWorldSpace = true; lr.numCapVertices = 2; lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; return lr;
+                    var lm = SignalMat(coneColour, false); lr.sharedMaterial = lm; lr.widthMultiplier = w; lr.useWorldSpace = true; lr.numCapVertices = 2; lr.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off; return lr;
                 }
                 coneRim = Line("rim", 0.12f); coneRim.loop = true; coneSweep = Line("sweep", 0.04f); { var sm = coneSweep.sharedMaterial; sm.SetColor("_BaseColor", new Color(coneColour.r, coneColour.g, coneColour.b, 1f)); }
                 coneSweep.widthCurve = new AnimationCurve(new Keyframe(0f, 1f), new Keyframe(1f, 0.35f)); // tapering: a scan, never a second rim

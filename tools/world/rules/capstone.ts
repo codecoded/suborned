@@ -27,7 +27,7 @@ const USE_OF: Record<string, string> = { kerb: 'ground:kerb', 'pave-flags': 'gro
 const ringDist = (p: V, r: V[]) => (inPoly(p, r) ? 0 : Math.min(...r.map((q, i) => segDist(p, q, r[(i + 1) % r.length]!))));
 
 export function capstoneRules(c: WCtx): Check[] {
-  const mine = [...(c.w.ground.pieces ?? []), ...c.w.street.filter(s => CAPSTONE_KINDS.has(s.kind))];
+  const mine = [...(c.w.ground.pieces ?? []).filter(s => CAPSTONE_KINDS.has(s.kind)), ...c.w.street.filter(s => CAPSTONE_KINDS.has(s.kind))]; // the road finish (road-ribbon ... road-seam) is ground.pieces too but not the capstone's: SF-22 judges it
   if (!mine.length && !c.gen.capstone) return [];
   const by = new Map(adopted().map(a => [a.id, a])), gc = genCtx(c.plan, c.d, c.civ, 0.18), zone = zoneOf(gc), toPlan = toPlanFn(c.plan.civic), points = handoverPoints(toPlan);
   const strips = (c.w.crossings ?? []).map(x => x.strip as V[]), drives = (c.w.ground.drives ?? []).map(d => d.ring as V[]);

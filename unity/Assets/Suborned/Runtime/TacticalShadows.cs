@@ -29,6 +29,13 @@ namespace Suborned
         [Tooltip("Metres over which shadows fade out at the shadow distance. URP fades by distance from the camera from (1 - border) of the " +
             "shadow distance, so a share would fade the street itself at 400 m; this keeps the fade past the frame's far ground edge.")]
         public float fade = 8f;
+        [Header("Perspective (the third-person follow view; brief 048, Glint's sign-off)")]
+        [Tooltip("Shadow distance (m) for a perspective camera: 100 to 120 m (80 showed a hard line; 120 if far-tower shadows are lost).")]
+        public float perspectiveDistance = 110f;
+        [Tooltip("Where the first of two cascades ends (m): about 20 to 25 m, the near street sharp.")]
+        public float perspectiveSplit = 22f;
+        [Tooltip("Share of the shadow distance the last cascade fades over (about 30 %).")]
+        public float perspectiveFade = 0.3f;
 
         Camera cam;
         State saved;
@@ -75,7 +82,21 @@ namespace Suborned
             return s;
         }
 
-        void Apply(UniversalRenderPipelineAsset urp) => Fit(urp, focusDepth, nearBand, farBand, cascades, airSplits, fade);
+        void Apply(UniversalRenderPipelineAsset urp)
+        {
+            if (cam && !cam.orthographic) { FitPerspective(urp, perspectiveDistance, perspectiveSplit, perspectiveFade); return; } // brief 048: the follow view's own fit, not the asset's 260 m single cascade
+            Fit(urp, focusDepth, nearBand, farBand, cascades, airSplits, fade);
+        }
+
+        /// <summary>Brief 048 (Redline's plan item 2, Glint's conditions): a perspective camera's shadows over `distance` m in two cascades, the
+        /// first ending at `split` m, the last `fadeShare` of the distance faded (casters 3,446 to about 1,000 in tp-worst).</summary>
+        public static void FitPerspective(UniversalRenderPipelineAsset urp, float distance, float split, float fadeShare)
+        {
+            float dist = Mathf.Max(distance, 1f);
+            urp.shadowDistance = dist; urp.shadowCascadeCount = 2;
+            urp.cascade2Split = Mathf.Clamp(split / dist, 0.05f, 0.95f);
+            urp.cascadeBorder = Mathf.Clamp(fadeShare, 0.0002f, 1f);
+        }
 
         /// <summary>Fits the asset's shadow distance and cascades to a camera whose street focus lies focusDepth m along its view
         /// (see the class note). Callers that render without this component (the flyby's play stop) use it with this camera's bands

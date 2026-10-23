@@ -1,0 +1,5 @@
+{
+ "schema": "suborned.tplong.signals/2", "guardSightKnown": true, "cameraSightKnown": false, "fansDrawn": 1, "fanWatchers": "guard",
+ "shots": [{"distanceM": 150, "headingDeg": 180, "fanVisibleShare": 0.604, "tried": "30m/210:0.00", "cameraHeightM": 30, "pitchDeg": 25, "guardInFrame": true, "slantM": 150}, {"distanceM": 250, "headingDeg": 210, "fanVisibleShare": 0, "tried": "30m/210:0.00 30m/240:0.00 30m/270:0.00 30m/300:0.00 30m/330:0.00 30m/360:0.00 60m/210:0.00 60m/240:0.00 60m/270:0.00 60m/300:0.00 60m/330:0.00 60m/360:0.00 90m/210:0.00 90m/240:0.00 90m/270:0.00 90m/300:0.00 90m/330:0.00 90m/360:0.00", "cameraHeightM": 30, "pitchDeg": 25, "guardInFrame": true, "slantM": 250}],
+ "note": "base camera tier Follow; fans on layer(s) 0; fan shader(s) Suborned/SignalUnlit; control materials 4"
+}

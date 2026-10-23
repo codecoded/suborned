@@ -4,6 +4,7 @@
 import type { Ctx } from '../world/gen/common';
 import { plotRing } from '../world/gen/edges';
 import { type V, lineDist, polyline, segDist } from './geom';
+import { speciesOf } from './trees';
 
 export type Sec = { cls: 'primary' | 'district' | 'access'; kerb: number; walk: number; frontage: number; pavement: number };
 export const TOL = 0.011;
@@ -30,7 +31,7 @@ export function ringGap(a: V[], b: V[]): number {
 
 /** Footprint of an item: a tree stands in its pit (the species' pit size), everything else in its size. */
 export function footprintOf(S: any, kind: string, variant: string | undefined, at: V, size: [number, number, number], yaw: number): V[] {
-  if (kind === 'tree') { const pit = S.trees.species[variant ?? 'washingtonia']?.pit as V | undefined; if (pit) return boxRing(at, pit[0], pit[1], yaw); }
+  if (kind === 'tree') { const pit = speciesOf(S, variant)?.pit as V | undefined; if (pit) return boxRing(at, pit[0], pit[1], yaw); }
   return boxRing(at, size[0], size[1], yaw);
 }
 
@@ -127,7 +128,7 @@ export function tramBlock(c: Ctx, pts: V[]): string {
 
 /** Why a tree stands too near the sky rail beam (SF-4): its pit inside the envelope's plan footprint, or its canopy within 5 m (3D) of the envelope. */
 export function beamBlock(c: Ctx, at: V, pit: V[], variant: string | undefined, z: number): string {
-  const env = c.S.skyrailEnvelope as { half: number; underside: number }, sp = c.S.trees.species[variant ?? 'washingtonia'] as { crownBase: number; top: number; spread: number }, x = indexes(c);
+  const env = c.S.skyrailEnvelope as { half: number; underside: number }, sp = speciesOf(c.S, variant) as { crownBase: number; top: number; spread: number }, x = indexes(c);
   if (pit.some(p => x.sky.dist(p, env.half + 1) < env.half - TOL)) return 'its pit inside the beam envelope';
   const gap = x.sky.dist(at, 60), h = Math.max(0, gap - env.half - sp.spread / 2), v = Math.max(0, env.underside - (z + sp.top), z + sp.crownBase - c.plan.standards.skyrail.height), d3 = Math.hypot(h, v);
   return d3 < 5 - TOL ? `canopy ${d3.toFixed(1)} m from the beam` : '';

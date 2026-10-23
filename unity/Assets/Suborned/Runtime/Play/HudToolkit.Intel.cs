@@ -42,16 +42,16 @@ namespace Suborned.Play
         void BuildIntel()
         {
             intelPanel = E(intel, "s-panel_dark", pick: true); intelPanel.style.width = IntelW; intelPanel.style.marginTop = 0;
-            var head = L(intelPanel, "section-label", 28, 14); head.text = "INTEL";
+            var head = L(intelPanel, "section-label", 28, 14); head.text = ""; Show(head, false); // brief 049 row 21: no section label
             var fold = E(intelPanel, null, IntelW - 28 - 14, 13, 14, 14, pick: true); Icon(fold, "chev_up", Cream);
             fold.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { host.IntelOpen = false; e.StopPropagation(); } });
             for (int i = 0; i < IntelRoles.Length; i++)
             {
                 var c = new ICard(); int ci = i;
                 c.Root = E(intelPanel, null, IntelPad, IntelHead + i * (CardH + CardGap), CardW, CardH, pick: true); Round(c.Root, 9); Border(c.Root, 1f, CardRim);
-                c.Bar = E(c.Root, null, 0, 6, 3.4f, CardH - 12); c.Bar.style.backgroundColor = Turq; Round(c.Bar, 1.7f);
+                c.Bar = E(c.Root, null, 0, 6, 3.4f, CardH - 12); c.Bar.style.backgroundColor = TurqLight; Round(c.Bar, 1.7f);
                 c.Badge = E(c.Root, null, 26 - 18, 31 - 18, 36, 36, pick: true);
-                c.BadgeRing = E(c.Root, null, 26 - 20, 31 - 20, 40, 40); Round(c.BadgeRing, 20); Border(c.BadgeRing, 2f, Turq);
+                c.BadgeRing = E(c.Root, null, 26 - 20, 31 - 20, 40, 40); Round(c.BadgeRing, 20); Border(c.BadgeRing, 2f, TurqLight);
                 c.BadgeTick = E(c.Root, null, 26 + 7, 31 + 7, 14, 14); Round(c.BadgeTick, 7); c.BadgeTick.style.backgroundColor = SlotInk; Icon(E(c.BadgeTick, null, 1, 1, 12, 12), "check", TickTurq); // Glyph r2: 12 px, brighter turquoise, a 1 px ink outline
                 c.Badge.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0) { FindPerson(icards[ci].Who); e.StopPropagation(); } });
                 c.Name = L(c.Root, "verb-name", 52, 21 - 15); c.Name.style.fontSize = 13.5f; c.Name.pickingMode = PickingMode.Position;
@@ -209,7 +209,7 @@ namespace Suborned.Play
                 if (nx is { } nxv)
                 {
                     var (by, verb) = nxv; bool sel = host.Selected[(int)by] && host.Agent == by;
-                    Bg(c.ChipCameo, $"portraits/cameo_{Op.Name(by)}_normal", Color.white); Border(c.Chip, 1.3f, sel ? Turq : Cream);
+                    Bg(c.ChipCameo, $"portraits/cameo_{Op.Name(by)}_normal", Color.white); Border(c.Chip, 1.3f, sel ? TurqLight : Cream);
                     Icon(c.ChipGlyph, verb == "turn" ? "turn_person" : verb, sel ? TurqLight : Cream);
                 }
                 foreach (var sl in c.Slots) sl.Rim.MarkDirtyRepaint();

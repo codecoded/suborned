@@ -1,0 +1,47 @@
+{
+ "switch_m": [
+  60.0,
+  140.0
+ ],
+ "palms": 947,
+ "district_tris_all_L0": 6549650,
+ "district_tris_all_L1": 1259510,
+ "district_tris_all_L2": 486758,
+ "views": {
+  "tp-street": {
+   "palms": 138,
+   "L0": 2,
+   "L1": 34,
+   "L2": 102,
+   "tris_all_L0": 936060,
+   "tris_levels": 110268
+  },
+  "tp-worst": {
+   "palms": 155,
+   "L0": 4,
+   "L1": 35,
+   "L2": 116,
+   "tris_all_L0": 987650,
+   "tris_levels": 131414
+  }
+ },
+ "spots_palms": {
+  "median": 99,
+  "p90": 155,
+  "max": 204
+ },
+ "spots_tris_all_L0": {
+  "median": 667210,
+  "p90": 1015352,
+  "max": 1319880
+ },
+ "spots_tris_levels": {
+  "median": 93916,
+  "p90": 139402,
+  "max": 214576
+ },
+ "spots_ratio": {
+  "median": 0.144,
+  "p90": 0.266
+ }
+}

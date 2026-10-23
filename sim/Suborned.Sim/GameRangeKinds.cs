@@ -18,7 +18,7 @@
 //    crowd.fleeMax, ending farther from the shooter, nearest; else the farthest), are safe there (off the floor), and walk back to their
 //    slot crowd.quiet after the last shot. One hit and they run at once. An agent's shot they see (within witness range, a clear line) makes
 //    them a witness of that agent (Saw), which the street would carry to a phone: the range has no reports, Alert or Trail, so it is
-//    shown, never charged. A fire order on a bystander is a civilian's: taken only when forced (Ctrl), refused civilian-target otherwise.
+//    shown, never charged. A fire order on a bystander is a civilian's: taken only when forced (the host sends it), refused civilian-target otherwise.
 //  · Nothing in the range is traced (the shots, the blast, a bystander down): it stays a fight with nothing of the mission in it.
 // Host reads (read-only, never hashed): RangeCars, RangeBystanders, RangeSlotList, CoverNow, RangeKinds, RangeCarWith, RangeLayouts.
 using System;

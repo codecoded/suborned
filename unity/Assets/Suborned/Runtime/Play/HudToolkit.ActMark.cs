@@ -21,21 +21,28 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- brief 041: the verb pill (Sky's pick, testbed/controls/markers.js 'pill')
 
-        VisualElement vpill, vpillIcon; Label vpillText; Paint vpillTail; string vpillKey = "";
-        static readonly Color PillInk = new(0x10 / 255f, 0x20 / 255f, 0x1f / 255f);
-        /// <summary>The act's kind colour (data.js KINDS): look blue, talk green, tech teal, take cream, harm pink (harm also has square corners).</summary>
-        public static (Color c, bool harm) KindOf(Suborned.Sim.Order o)
-        {
-            static Color H(int rgb) => new(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
-            switch (o?.Do ?? "")
-            {
-                case "watch": case "listen": case "read": return (H(0x4aa8ff), false);
-                case "turn": case "call": case "ask": case "pay": case "mislead": return (H(0x4cc35f), false);
-                case "loop": case "reroute": case "open": case "enter": case "act": return (H(0x1fd1b5), false);
-                case "takedown": case "fire": return (H(0xff4d7d), true);
-                default: return (H(0xf1ead8), false);
-            }
-        }
+        VisualElement vpill, vpillDisc, vpillClip, vpillFill, vpillFaces, vpillSeen, vpillStripeL, vpillStripeR; Label vpillHead, vpillDot, vpillText; Paint vpillTail, vpillGlow, vpillPip;
+        string vpillKey = "", vpillLine = ""; bool vpillHarm, vpillReady;
+        readonly List<VisualElement> faceEls = new();
+        /// <summary>The pill's height and its tail (brief 044 A: `pill_status` 38 px at slice 0.43; harm `panel_strip` at 0.3).</summary>
+        const float PillH = 38f, TailW = 18f, TailH = 13f;
+        /// <summary>Glyph's 0.2.65 review 3: the disc and the cameo sit inside the body, clear of the end caps. `pill_status` at slice 0.43 has its
+        /// inner chrome line 17 px in from each end; the drawn disc (DiscSize's box less its 12.5 % margin) and the cameo stand 3 px inside it.
+        /// The harm strip (`panel_strip` at 0.3) has its screws about 9 px in: the stripe blocks start 8 px past them (review 2).</summary>
+        static float PillPadL => 20f - (DiscSize - DiscVisible) / 2f;
+        const float PillPadR = 20f, HarmPad = 22f;
+        /// <summary>9 px from the drawn disc to the first word (the disc's box carries its own transparent margin).</summary>
+        static float DiscGap => 9f - (DiscSize - DiscVisible) / 2f;
+        /// <summary>The hold's "cancel" token (hold.cancel): "drain" runs the sweep back to empty over DrainS × its fill when a hold is let go
+        /// early; "snap" drops it at once.</summary>
+        const float DrainS = 0.3f;
+        float sweepShown = -1f, drainFrom = -1f, drainAt; string sweepState = "";
+        /// <summary>The proof reads it: the sweep's drawn fraction now (-1 none), the hold's fill or its drain.</summary>
+        public static float SweepShownNow { get; private set; } = -1f;
+
+        /// <summary>Harm reads by shape, never by colour (brief 044 §6): a takedown or fire is drawn on the chamfered strip with stripes and the
+        /// light disc.</summary>
+        public static bool Harmful(Suborned.Sim.Order o) => o?.Do is "takedown" or "fire";
 
         /// <summary>The words on the pill (data.js priceLine, time Total): the act and its target, the whole time (walk and act), the cash, the Trail, the Alert.</summary>
         public static string PillLine(HandoverHost h, HandoverHost.Intent i)
@@ -61,37 +68,116 @@ namespace Suborned.Play
             if (host.SelTarget != null && host.SelIntent is { Actionable: true } si) return (host.SelTarget, si);
             return null;
         }
-        /// <summary>The proof reads it: the pill's words now ("" hidden).</summary>
-        public static string PillWords => live != null && live.vpill != null && live.vpill.resolvedStyle.display != DisplayStyle.None ? live.vpillText.text : "";
+        /// <summary>The proof reads it: the pill's words now ("" hidden), the head word included ("Hold · Watch the guard · 26 s").</summary>
+        public static string PillWords => live != null && live.vpill != null && live.vpill.resolvedStyle.display != DisplayStyle.None ? live.vpillLine : "";
 
         void BuildPill()
         {
-            vpill = E(marks, null, 0, 0, float.NaN, 34); vpill.style.flexDirection = FlexDirection.Row; vpill.style.alignItems = Align.Center; vpill.pickingMode = PickingMode.Ignore;
-            vpill.style.paddingLeft = 11; vpill.style.paddingRight = 15; Border(vpill, 2f, Color.white);
-            vpillIcon = E(vpill, null, w: 20, h: 20); vpillIcon.style.marginRight = 8; vpillIcon.style.flexShrink = 0;
-            vpillText = L(vpill, "chip-value"); vpillText.style.fontSize = 16; vpillText.style.unityFontStyleAndWeight = FontStyle.Bold; vpillText.style.color = PillInk; vpillText.style.whiteSpace = WhiteSpace.NoWrap;
-            vpillTail = P(marks, 0, 0, 14, 9, (p, r) => { p.fillColor = Color.white; p.BeginPath(); p.MoveTo(new Vector2(0, 0)); p.LineTo(new Vector2(14, 0)); p.LineTo(new Vector2(7, 9)); p.ClosePath(); p.Fill(); });
-            manifest.Add((vpill, "line", () => vpillText.text));
+            vpill = E(marks, "s-pill_status", 0, 0, float.NaN, PillH); vpill.style.unitySliceScale = PillH / 88f; vpill.style.flexDirection = FlexDirection.Row; vpill.style.alignItems = Align.Center; vpill.pickingMode = PickingMode.Ignore;
+            vpill.style.overflow = Overflow.Visible; vpill.style.transformOrigin = new TransformOrigin(Length.Percent(50), Length.Percent(100));
+            vpill.style.paddingLeft = PillPadL; vpill.style.paddingRight = PillPadR; // 0.2.65 drew the first plain pill with no padding at all (the harm toggle set it, and a plain pill never toggled)
+            // "Let go": a 2 px turquoise-light ring and a soft glow round the frame (painted, behind the content)
+            vpillGlow = P(vpill, -12, -12, 0, 0, (p, r) =>
+            {
+                var box = new Rect(r.x + 12f, r.y + 12f, r.width - 24f, r.height - 24f); float rad = vpillHarm ? 6f : 19f;
+                static Rect Grow(Rect b, float d) => new(b.x - d, b.y - d, b.width + 2f * d, b.height + 2f * d);
+                for (int i = 4; i >= 1; i--) { float lw = 2.5f * i, d = 2f + lw / 2f; p.strokeColor = new Color(LookLive.r, LookLive.g, LookLive.b, ReadyGlowAlpha); p.lineWidth = lw; p.BeginPath(); RoundRect(p, Grow(box, d), rad + d); p.Stroke(); } // the glow, outside the ring
+                p.strokeColor = LookLive; p.lineWidth = ReadyRingW; p.BeginPath(); RoundRect(p, Grow(box, ReadyRingW / 2f), rad + ReadyRingW / 2f); p.Stroke(); // the 2 px ring, just outside the frame
+            });
+            vpillGlow.style.right = -12; vpillGlow.style.bottom = -12; vpillGlow.style.width = StyleKeyword.Auto; vpillGlow.style.height = StyleKeyword.Auto;
+            // the hold: a turquoise-light sweep at 40 % inside the frame's window
+            vpillClip = E(vpill, null, 15, 6, float.NaN, float.NaN); vpillClip.style.right = 15; vpillClip.style.bottom = 6; Round(vpillClip, 13); vpillClip.style.overflow = Overflow.Hidden;
+            vpillFill = E(vpillClip, null, 0, 0, 0, float.NaN); vpillFill.style.bottom = 0; vpillFill.style.backgroundColor = new Color(HoldFill.r, HoldFill.g, HoldFill.b, HoldSweepAlpha);
+            vpillStripeL = Stripes(vpill, 10, 24); vpillStripeL.style.marginRight = 9;
+            vpillDisc = ActDiscEl(vpill);
+            vpillHead = Words(vpill, 15.5f, LookHead); vpillHead.style.marginLeft = DiscGap;
+            vpillDot = Words(vpill, 15.5f, new Color(LookHead.r, LookHead.g, LookHead.b, HeadDotAlpha)); vpillDot.text = "·"; vpillDot.style.marginLeft = 5; vpillDot.style.marginRight = 5;
+            vpillText = Words(vpill, 15.5f); vpillText.style.marginLeft = 9;
+            vpillFaces = E(vpill); vpillFaces.style.flexDirection = FlexDirection.Row; vpillFaces.style.marginLeft = 10; vpillFaces.style.flexShrink = 0;
+            for (int i = 0; i < 4; i++) { var f = Cameo(vpillFaces, FaceSize); f.style.marginLeft = i == 0 ? 0 : -7; faceEls.Add(f); }
+            // "Watched spot": an ink-deep plate, a 1.5 px panel-line edge, the kit's warning stripes, the sawyou icon (Fable row 8)
+            vpillSeen = E(vpill, null, w: float.NaN, h: 22); vpillSeen.style.flexDirection = FlexDirection.Row; vpillSeen.style.alignItems = Align.Center; vpillSeen.style.flexShrink = 0; vpillSeen.style.marginLeft = 9; vpillSeen.style.paddingRight = 9;
+            vpillSeen.style.backgroundColor = InkDeep; Round(vpillSeen, 5); Border(vpillSeen, 1.5f, new Color(PanelLine.r, PanelLine.g, PanelLine.b, 0.66f)); vpillSeen.style.overflow = Overflow.Hidden;
+            Stripes(vpillSeen, 7, 19); var seenIcon = E(vpillSeen, null, w: 13, h: 13); seenIcon.style.flexShrink = 0; seenIcon.style.marginLeft = 5; Icon(seenIcon, "sawyou", Cream);
+            var seenWord = Words(vpillSeen, 12.5f); seenWord.text = "Watched spot"; seenWord.style.marginLeft = 5;
+            vpillStripeR = Stripes(vpill, 10, 24); vpillStripeR.style.marginLeft = 9;
+            // the tail: a chrome triangle with the pill's body inside it, its tip at the thing
+            vpillTail = P(marks, 0, 0, TailW, TailH, (p, r) =>
+            {
+                p.fillColor = Chrome; p.BeginPath(); p.MoveTo(new Vector2(0, 2)); p.LineTo(new Vector2(TailW, 2)); p.LineTo(new Vector2(TailW / 2f, TailH)); p.ClosePath(); p.Fill();
+                p.fillColor = LookTail; p.BeginPath(); p.MoveTo(new Vector2(3, 0)); p.LineTo(new Vector2(TailW - 3, 0)); p.LineTo(new Vector2(TailW / 2f, 7.5f)); p.ClosePath(); p.Fill();
+            });
+            // the lit pip of an act that just opened (brief 043): a cream sparkle on the frame's top-right chrome corner, over the frame
+            vpillPip = P(vpillFaces, 0, -5, 18, 18, (p, r) => Sparkle(p, r.center, 7.5f, Cream)); vpillPip.style.left = StyleKeyword.Auto; vpillPip.style.right = -5; Show(vpillPip, false); // review 3: on the cameo's top-right (the frame's corner clipped it)
+            vpillFaces.style.overflow = Overflow.Visible;
+            manifest.Add((vpill, "line", () => vpillLine));
             Show(vpill, false); Show(vpillTail, false);
+        }
+
+        static readonly string[] PillHeads = { "Let go", "Right hold", "Hold" };
+
+        /// <summary>The pill's look for one frame (both presets): the words (the head word "Hold", "Right hold", "Let go" split off in dim, "Let
+        /// go" in turquoise-light), the act's disc, the faces, "Watched spot", the hold's sweep, harm's strip and stripes, the "Let go" ring.</summary>
+        void PillLook(string text, string icon, bool harm, IReadOnlyList<int> faces, bool seen, float fill, string state)
+        {
+            bool ready = state == "ready";
+            string key = text + "|" + icon + "|" + harm + "|" + seen + "|" + (faces == null ? "" : string.Join(",", faces)) + "|" + ready;
+            if (key != vpillKey)
+            {
+                vpillKey = key; vpillLine = text; string head = "", rest = text;
+                foreach (var hw in PillHeads) if (text.StartsWith(hw + " · ")) { head = hw; rest = text[(hw.Length + 3)..]; break; }
+                if (head.Length == 0 && text.StartsWith("to ") && text.IndexOf(" · ", System.StringComparison.Ordinal) is int wi and > 3) { head = text[..wi]; rest = text[(wi + 3)..]; } // review 4: the walk-in's "to Inez" is a head word, dim like "Hold"
+                Text(vpillHead, head); Show(vpillHead, head.Length > 0); Show(vpillDot, head.Length > 0); Text(vpillText, rest); vpillText.style.marginLeft = head.Length > 0 ? 0 : DiscGap;
+                vpillHead.style.color = ready ? LookLive : LookHead;
+                Show(vpillDisc, icon.Length > 0); if (icon.Length > 0) ActDiscOf(vpillDisc, icon, harm);
+                int n = faces?.Count ?? 0; Show(vpillFaces, n > 0);
+                for (int i = 0; i < 4; i++) { bool on = i < n; Show(faceEls[i], on); if (on) CameoOf(faceEls[i], faces[i]); }
+                Show(vpillSeen, seen);
+                if (harm != vpillHarm || vpill.ClassListContains("s-pill_status") == harm)
+                {
+                    vpillHarm = harm; Class(vpill, "s-pill_status", !harm); Class(vpill, "s-panel_strip", harm); vpill.style.unitySliceScale = harm ? 0.3f : PillH / 88f;
+                    vpill.style.paddingLeft = harm ? HarmPad : PillPadL; vpill.style.paddingRight = harm ? HarmPad : PillPadR;
+                    vpillClip.style.left = vpillClip.style.right = harm ? 8 : 15; Round(vpillClip, harm ? 3 : 13);
+                    vpillGlow.MarkDirtyRepaint();
+                }
+                Show(vpillStripeL, harm); Show(vpillStripeR, harm);
+                if (ready != vpillReady) { vpillReady = ready; vpillGlow.MarkDirtyRepaint(); }
+            }
+            Show(vpillGlow, ready);
+            // the sweep; a hold let go early (charge, then no charge, never ready) drains back when hold.cancel is "drain"
+            float now = Time.unscaledTime, sw = fill >= 0f ? HoldSweep(fill) : -1f;
+            if (sw < 0f && sweepState == "charge" && sweepShown > 0f && Tok.hold.cancel == "drain") { drainFrom = sweepShown; drainAt = now; }
+            if (sw >= 0f) drainFrom = -1f;
+            float shown = sw;
+            if (sw < 0f && drainFrom > 0f) { float t = (now - drainAt) / Mathf.Max(0.05f, DrainS * drainFrom); if (t < 1f) shown = drainFrom * (1f - t); else drainFrom = -1f; }
+            sweepShown = sw; sweepState = sw >= 0f ? state : "";
+            Show(vpillClip, shown >= 0f); if (shown >= 0f) vpillFill.style.width = Length.Percent(shown * 100f); SweepShownNow = shown;
+        }
+
+        /// <summary>Places the pill above the screen point q (centred, clamped to the screen), the tail's tip just above q.</summary>
+        float PillPlace(Vector2 q, out float x)
+        {
+            float pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, W = root.layout.width > 0 ? root.layout.width : 1920f;
+            x = Mathf.Clamp(q.x - pw / 2f, 14f, Mathf.Max(14f, W - pw - 14f)); float top = q.y - 10f - PillH - 11f;
+            top = ClearOfSpeech(SpeechRects(), x, pw, top + PillH, PillH) - PillH; // brief 044: above the thing's speech and its leader, never over it
+            vpill.style.left = x; vpill.style.top = top; vpillTail.style.left = q.x - TailW / 2f; vpillTail.style.top = top + PillH - 4f;
+            vpill.BringToFront(); vpillTail.BringToFront(); return pw;
         }
 
         /// <summary>Per frame: the pill above the thing (centred, clamped to the screen), its tail pointing down at it.</summary>
         void PillFrame()
         {
             if (marks == null) return; if (vpill == null) BuildPill();
-            if (host.controls.HoldActs) { HoldPillFrame(); HoldMarks(); world?.MarkDirtyRepaint(); return; } // brief 041: the hold preset's pill and marks (HudToolkit.Hold)
+            if (host.controls.HoldActs) { HoldPillFrame(); HoldMarks(); DoneMarks(); world?.MarkDirtyRepaint(); return; } // brief 041: the hold preset's pill and marks (HudToolkit.Hold)
             if (squadBtn != null) HoldMarks();
+            DoneMarks(); // brief 043: the gain chips and window markers in every preset
             var now = PillNow(); var cam = host.View;
             Vector2 q = default; bool on = now.HasValue && cam && host.TargetWorld(now.Value.t) is Vector3 w && Proj(w + Vector3.up * (now.Value.t.Kind is "person" or "crowd" or "hostile" or "bystander" or "patrol" or "rivals" or "security" ? 2.25f : 1.5f), out q);
             Show(vpill, on); Show(vpillTail, on); if (!on) return;
-            var (t, i) = now.Value; var (c, harm) = KindOf(i.Order);
-            string key = (t.Kind + t.Key + i.Label + i.Usd + i.Time + i.Trail + i.Alert + i.WalkS);
-            if (key != vpillKey) { vpillKey = key; Text(vpillText, PillLine(host, i)); Art(vpillIcon, "icons/singles/" + (i.Lead.Length > 0 ? i.Lead : HudModel.AtlasIcon(i.Order.Do, i.Order.Approach, "")), PillInk); }
-            vpill.style.backgroundColor = c; Round(vpill, harm ? 6f : 17f);
-            float pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, W = root.layout.width > 0 ? root.layout.width : 1920f;
-            float x = Mathf.Clamp(q.x - pw / 2f, 14f, Mathf.Max(14f, W - pw - 14f));
-            vpill.style.left = x; vpill.style.top = q.y - 10f - 34f - 9f; vpillTail.style.left = q.x - 7f; vpillTail.style.top = q.y - 10f - 9f - 1f;
-            vpill.BringToFront(); vpillTail.BringToFront();
+            var (t, i) = now.Value;
+            PillLook(PillLine(host, i), i.Lead.Length > 0 ? i.Lead : HudModel.AtlasIcon(i.Order.Do, i.Order.Approach, ""), Harmful(i.Order), null, false, -1f, "offer");
+            vpill.style.opacity = 1f; vpillTail.style.opacity = 1f; vpill.style.scale = new Scale(Vector3.one);
+            PillPlace(q, out _);
         }
 
         void BuildActMark()
@@ -124,6 +210,7 @@ namespace Suborned.Play
                     float a = i * Mathf.PI * 2f / 40f;
                     if (!Proj(hr.Value + new Vector3(Mathf.Cos(a) * 0.6f, 0.03f, Mathf.Sin(a) * 0.6f), out var q)) { followHoverRing.Clear(); have = false; break; }
                     followHoverRing.Add(q); if (q.y > best) { best = q.y; front = q; }
+                    if (i == 40) GroundRing(hr.Value, 0.6f, Cream, 2f, false, 0.5f); // brief 046: the ring itself on the ground (the points place the disc)
                 }
             }
             else

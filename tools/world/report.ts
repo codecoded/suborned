@@ -13,6 +13,12 @@ export function report(w: World, gen: Generated, d: Derived): void {
   console.log(`connectors ${w.connectors.length}: ${by(w.connectors.map(c => c.kind))}; decks ${gen.decks.length}, columns ${gen.decks.reduce((n, x) => n + x.columns.length, 0)}`);
   console.log(`street items ${w.street.length}: ${by(w.street.map(s => s.kind))}`);
   if (gen.capstone) { const c = gen.capstone; console.log(`capstone programme (zone ${c.zone.join(', ')}): ${Object.entries(c.counts).map(([k, v]) => `${k} ${v}`).join(', ')}; ${c.gaps.length} places no rule could fill: ${by(c.gaps.map(g => g.rule))}`); }
+  if (gen.roadFinish) {
+    const r = gen.roadFinish, k = r.kerb, sw = (o: Record<string, number>) => Object.entries(o).map(([a, b]) => `${a} ${typeof b === 'number' ? Math.round(b) : b}`).join(', ');
+    console.log(`road finish (brief 028 Road): ${Object.values(r.counts).reduce((a, b) => a + b, 0)} ground pieces: ${sw(r.counts)}; by kit piece: ${sw(r.pieces)}`);
+    console.log(`  kerb face ${Math.round(k.edgeM)} m (${Math.round(k.laidM)} m laid, ribbon): by source ${sw(k.faceM)}; cut ${sw(k.cutM)}; uncovered road edge ${k.uncoveredM} m${k.uncovered.length ? ` (${k.uncovered.join('; ')})` : ''}`);
+    console.log(`  lozenges ${r.lozenges.placed} on ${r.lozenges.runs} runs of ${r.lozenges.lines} carriageways; seams ${r.seams.placed} (dropped ${sw(r.seams.dropped)}); ${r.gaps.length} gaps: ${r.gaps.map(g => `${g.rule} ${g.where}`).join('; ')}`);
+  }
   if (w.crossings && gen.crossingLog) {
     const k = (kind: string) => w.crossings!.filter(c => c.kind === kind), g = gen.crossingLog;
     console.log(`crossings ${w.crossings.length}: kerb ${k('kerb').length} (${g.landings} landings found, ${g.paired} pairs standing, ${g.added} partners added, ${g.dropped.length} landings dropped), stop ${k('stop').length}, bank ${k('bank').length}; refuges ${w.crossings.reduce((n, c) => n + c.refuges.length, 0)}; signal crossings ${w.crossings.filter(c => c.control === 'signal').length}`);

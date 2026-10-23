@@ -1,0 +1,49 @@
+{
+  "schema": "suborned.lens/1",
+  "note": "Glint, brief 048 'Old city atmosphere' (2026-10-22; Sky: 'try the atmosphere'). The lens, the grade and the sky, by camera tier, read by AtmosphereLens (Runtime/AtmosphereLens.cs). LOOK ONLY: no rule, sight or replay reads it. Tiers (DistanceHaze.TierOf): play = the orthographic play camera and every overlay camera; follow = a perspective camera with far <= 900 m (third person, cutaways); long = a perspective camera with a longer far plane (flyby, free fly). Play gets the grade only (gradePlay): no haze, blur or flare, and the signals draw on their overlay camera outside the grade as built. Follow: bloom, the sky's horizon haze band and sun aureole, the flare at flare.follow. Long: the old look whole (bloomLong, dofLong, flare.long, the exponential haze in haze.json). Values marked old are the old DecoKit city's (DecoKitLens, DK_SpaceSky, scene DecoKitStreet, 2026-09-27 to 10-13). Night (LightPhase) and AtmosphereSettings.Enabled false: none of it applies. Colours are #rrggbb; the haze colour itself is haze.json colour (one haze for fog and sky). Unknown schema or out-of-range values are rejected with an error and nothing changes.",
+  "sky": {
+    "hazeHeight": 0.12,
+    "aureole": 0.8,
+    "aureolePower": 180,
+    "hazeLift": 0.6,
+    "broad": 0.15,
+    "broadPower": 8,
+    "note": "Shader inputs of Suborned/SkyGradient. hazeHeight: haze weight exp(-sin(elevation) / hazeHeight), a wide band that lasts about 7 degrees (old 0.10; today a smoothstep over 0.16). aureole / aureolePower: the sun's glare lobe added in the sun glow colour (old 0.8 at power 180). hazeLift: the horizon haze brightens toward the sun, haze x (1 + hazeLift x cos^6) (old 0.6, so above 1 and bloom catches it). broad / broadPower: a wide soft lobe (old 0.15 at power 8). Cobalt (the scene's own zenith and mid) is the default; teal is the old city's sea-green."
+  },
+  "teal": { "zenith": "#2f93a8", "mid": "#7fcfc6", "hazeHeight": 0.18, "note": "hazeHeight (Glint 2026-10-23): the teal sky's own haze band, wider than sky.hazeHeight 0.12 so teal eases into the cream haze; cobalt keeps sky.hazeHeight; 0 = use sky.hazeHeight. Sky's 1970s reference as the old DecoKitSky.Apply set it: zenith 88,168,170 and mid 127,218,208, both x 1.5 sky gain, shown here after the gain. Switch: Shift+F9 or -sky teal (AtmosphereSettings)." },
+  "bloomFollow": { "threshold": 0.86, "intensity": 0.35, "scatter": 0.7, "tint": "#fff0d6", "note": "old 0.8 / 0.6 / 0.85; half the intensity and a higher threshold, the old values bloomed lit cream stone. Scatter costs nothing (URP's bloom iteration count follows resolution only)." },
+  "bloomLong": { "threshold": 0.8, "intensity": 0.6, "scatter": 0.85, "tint": "#fff0d6", "note": "the old values, whole" },
+  "dofLong": { "enabled": true, "start": 300, "end": 1800, "maxRadius": 1.2, "highQuality": true, "note": "old Gaussian far blur ('the distance goes soft'). Long views only; follow has none (nothing past its 350 m clip). Cost: +0.40 ms GPU measured on 0.2.87 (tp-long long view, 2880 x 1864, Studio; 4.83 -> 5.24 ms), so highQuality stays on; the Air is not measured." },
+  "flare": {
+    "follow": 0.6,
+    "long": 1.0,
+    "occlusionRadius": 0.02,
+    "samples": 32,
+    "starburst": "Atmosphere/flare_starburst",
+    "elements": [
+      { "type": "image",   "position": 0.0,  "scale": 16.0, "intensity": 2.5,  "tint": "#fff5e0", "rotation": 8.0, "note": "16-ray starburst" },
+      { "type": "circle",  "position": 0.0,  "scale": 7.0,  "intensity": 0.25, "tint": "#ffe6bf", "fallOff": 0.08, "note": "haze glow. In a scratch render it reads as a faint disc with a defined edge, and fallOff 0.08 and 0.5 looked the same; if it reads as a coin in the game, set its intensity to 0" },
+      { "type": "polygon", "position": 0.16, "scale": 1.4,  "intensity": 0.2,  "tint": "#d9f2ff", "sides": 6, "fallOff": 0.6, "roundness": 0.35, "count": 6, "spread": 0.75, "note": "hexagon ghost chain to the centre" },
+      { "type": "circle",  "position": 0.9,  "scale": 3.2,  "intensity": 0.05, "tint": "#ffd9b3", "fallOff": 0.4, "note": "far ghost" }
+    ],
+    "note": "The old DK_SunFlare on a LensFlareComponentSRP added to the scene's sun at runtime (occlusion on: towers cut it as they pass the sun). Intensity per tier: follow, long; play none (the 38 degree down view never sees the sun). One extra pass only while the sun is in frame."
+  },
+  "gradePlay": {
+    "saturationPercent": 14,
+    "liftOffset": 0.03,
+    "liftWarmth": 0.15,
+    "liftTint": "#f2cfc2",
+    "fallbackSaturation": 18,
+    "greens": { "hueDeg": 8, "fromDeg": 70, "fullFromDeg": 95, "fullToDeg": 140, "toDeg": 170, "note": "Glint 2026-10-23: greens protection, a hue-vs-hue ColorCurves on the play volume: hues 95 to 140 degrees (palm and lawn greens; palm green read hue 106) shift +8 degrees toward blue-green, eased to none at 70 (yellow) and 170 (cyan); hueDeg 0 turns it off." },
+    "retune": "2026-10-23 (Glint, verdict on build 0.2.79): the old warm lift (liftWarmth 0.6, #e9d9b8) drove the blue channel to 0 in the darkest tones (chart cube, play camera: black rendered 59,46,0) and turned greens toward olive (palm green hue 115 to 97, shaded paving S 0.37 to 0.50). Now sat 14, liftWarmth 0.15, tint #f2cfc2 (peach, not sand): black 56,46,42, palm green hue 106, shaded paving S 0.38, lit cream S 0.14 (was 0.17), cobalt S 0.81. Proof: briefs/048/glint/fix/.",
+    "note": "The play camera's only change (briefs/048 board-playzoom.png mock). saturationPercent: the scene grade's own saturation x 1.16 (its multiplier 1.18 becomes 1.37, ColorAdjustments saturation 36.9), read from the day grade volume, fallbackSaturation if none is found. liftOffset / liftTint / liftWarmth: a LiftGammaGain lift in linear before the tonemap, c x (1 - liftOffset) + liftOffset (white stays white, the highlights do not move): liftOffset 0.03 raises the shadows, and the warm hue of liftTint at liftWarmth warms them (the old iso frame's p5 was 0.46 against today's 0.19). START VALUES, tune in game by the Shift+F10 A/B: saturation 36.9 is strong against the 'too bright' calls of the 026 rounds and may turn lit cream toward mustard; 8 to 10 percent is the fallback. Both live in the grading LUT: no per-pixel cost."
+  },
+  "farBand": {
+    "resource": "Atmosphere/farband",
+    "minDeg": -1,
+    "maxDeg": 9,
+    "gain": 1.0,
+    "opacity": 1.0,
+    "note": "NEXT, not built: the strip the builder renders from the existing horizon cards and ring (1.4 to 8 km) once at build time, equirect 8192 x 512 covering -1 to +9 degrees of elevation, RGB = the cards' colour as a ratio to the horizon haze, A = cover (the old sky_sheet.py convention). The sky shader already samples it (tinted by the horizon haze of its own azimuth) when this resource exists; until then nothing is drawn. Import as Texture2D, linear (sRGB off), clamp, bilinear, mips on."
+  }
+}

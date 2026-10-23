@@ -236,12 +236,19 @@ namespace Suborned.Play
                 }
         }
 
+        /// <summary>Brief 043's done-moment words (text.json less.done), flattened "group.key" ("plate.done", "cancel.cost.lost", "walk.who.waitress").</summary>
+        public readonly Dictionary<string, string> Done = new();
+        void DoneFlat(JNode n, string pre) { foreach (var kv in n.Entries) { if (kv.Value.Kind == JKind.Obj) DoneFlat(kv.Value, pre + kv.Key + "."); else if (kv.Value.Kind == JKind.Str) Done[pre + kv.Key] = kv.Value.Str(); } }
+        /// <summary>A done-moment word by key, else the fallback (Glyph's proposal).</summary>
+        public string DoneWord(string key, string fallback) => Done.TryGetValue(key, out var v) && v.Length > 0 ? v : fallback;
+
         void ReadLess(JNode l)
         {
             static float F(JNode n, string k, float d) => n?.Opt(k) is JNode x && x.Kind == JKind.Num && float.TryParse(x.NumberText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : d;
             if (l.Opt("pop") is JNode p) foreach (var kv in p.Entries) Pops[kv.Key] = kv.Value.Str();
             if (l.Opt("intel") is JNode inl) foreach (var grp in inl.Entries) if (grp.Value.Kind == JKind.Obj) foreach (var kv in grp.Value.Entries) if (kv.Value.Kind == JKind.Str) Intel[grp.Key + "." + kv.Key] = kv.Value.Str(); // Fable's Intel fragments: need.debt, secret.affair-named, verb.watch
             if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
+            if (l.Opt("done") is JNode dn) DoneFlat(dn, ""); // brief 043 §6b (Fable): plate.<outcome>, gain.<id>, close.<kind>, cancel.*, walk.*
             if (l.Opt("alt")?.Opt("outcome") is JNode ao) foreach (var kv in ao.Entries) AltOutcome[kv.Key] = kv.Value.Str();
             if (l.Opt("objective") is JNode ob) { ObjTake = S(ob, "take") ?? ObjTake; ObjBring = S(ob, "bring") ?? ObjBring; ObjCarry = S(ob, "carry") ?? ObjCarry; ObjGo = S(ob, "go") ?? ObjGo; ObjShowS = F(ob, "showSeconds", ObjShowS); }
             if (l.Opt("failcam") is JNode fc)

@@ -16,7 +16,7 @@ from kit import asset
 from mats import pal
 from mega_parts import lens
 from plaza_parts import curved_glazing, lift, offset, ribbon
-from skyline import BACK_Y, FH, G, GLASS_Y, SP, ground_trims, mullions, spire, top_of, wrap_cap
+from skyline import BACK_Y, FH, G, GLASS_Y, SP, flank_walls, ground_trims, mullions, spire, top_of, wrap_cap
 from structures import along, ccw, sec, tube
 from facades_parts import FRONT, lamps, letters, mast, parapet_trims, rail_ring, vent_bank
 
@@ -50,6 +50,7 @@ def tower_base(s, body):
         tube(s, lift(seg), sec(0, 0.8, 0.45, 4.0), body)
     curved_glazing(s, BASE[1:-1], 0.45, 4.0, a=GLASS_Y, step=1.5, dz=2.75, interior=False)
     s.extrude(offset(BASE, 2.6) + [BK], 0.45, 4.0, pal.Lobby)
+    flank_walls(s, BASE, BK, 0.45, 4.0, body)
     s.extrude(offset(BASE, GLASS_Y) + [BK], 0.3, 0.45, pal.Terrazzo_Ivory)
     s.extrude(plan, 4.0, G, body)
     for k in range(NB):
@@ -57,7 +58,8 @@ def tower_base(s, body):
         zs, zf = zb + SP, zb + FH
         s.extrude(plan, zb, zs, body)
         ribbon(s, offset(BASE, GLASS_Y), zs, zf, pal.GlassDark)
-        s.extrude(offset(BASE, BACK_Y) + [BK], zs, zf, pal.Enamel_Charcoal)
+        s.extrude(offset(BASE, BACK_Y + 0.02) + [BK], zs, zf, body)  # brief 048: solid core, charcoal skin in front (as skyline.wrap_block), no black flank
+        ribbon(s, offset(BASE, BACK_Y), zs, zf, pal.Enamel_Charcoal)
         wrap_cap(s, *ends[0], zs, zf, body, True)
         wrap_cap(s, *ends[-1], zs, zf, body, False)
         mullions(s, BASE, zs, zf, GLASS_Y)

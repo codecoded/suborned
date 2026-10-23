@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// (followMin to followMax); left click moves, right click acts, as overhead (picking and ground rays are perspective-safe). WASD, the
     /// middle-drag pan and the edge pan do nothing. The HUD's world marks are sized for the orthographic camera and hide (speech and pops stay);
     /// the screen-edge HUD stays. The architecture fade makes no cut for a perspective camera (ArchitectureFade.Cuts), so buildings draw whole;
-    /// the tactical shadow fit (TacticalShadows, built for the overhead stand-off) is off, so the URP asset's own shadow distance applies.</summary>
+    /// the tactical shadow fit (TacticalShadows) fits the perspective camera on its own (brief 048: 110 m, two cascades).</summary>
     public sealed partial class HandoverHost
     {
         [Header("Test: the third-person follow view (T)")]
@@ -26,7 +26,7 @@ namespace Suborned.Play
         [Tooltip("The camera looks at a point this far ahead of the agent (m), at this height (m): down the street at about shoulder height.")]
         public float followAhead = 8f, followLookHeight = 1.35f;
         [Tooltip("Far clip (m) in the follow view.")]
-        public float followFar = 600f;
+        public float followFar = 350f; // brief 048 (Aster's call on Redline's plan): 350 m, equal to DistanceHaze.FarClip (haze.json farClip)
         [Tooltip("Q / E in the follow view: degrees a press.")]
         public float followTurnStep = 45f;
         [Tooltip("Seconds the camera takes to catch up with the agent (smooth follow), and to swing in.")]
@@ -61,8 +61,8 @@ namespace Suborned.Play
             fAgent = FollowWho(); fPivot = FollowPoint(fAgent) ?? focus; fPivotVel = Vector3.zero;
             fYaw = fYawFrom = fYawTo = yawNow; fTurnStart = -1f; fDist = fDist > 0f ? fDist : followDistance; fDistNow = fDist; fDragging = false; fHasLast = false; fHeadVel = Vector3.zero; fChaseVel = 0f; fLookUntil = -1f; // Sky: the zoom is the player's setting, kept between visits // behind the agent, looking the way the overhead view looked
             fSwingFromPos = cam.transform.position; fSwingFromRot = cam.transform.rotation; fSwingStart = Time.unscaledTime;
-            cam.orthographic = false; cam.fieldOfView = followFov; cam.nearClipPlane = 0.2f; cam.farClipPlane = followFar;
-            if (shadows) shadows.enabled = false;
+            cam.orthographic = false; cam.fieldOfView = followFov; cam.nearClipPlane = 0.2f; cam.farClipPlane = Mathf.Min(followFar, DistanceHaze.FarClip > 0f ? DistanceHaze.FarClip : followFar); // brief 048: the clip is the haze's far (350 m)
+            if (shadows) shadows.enabled = true; // brief 048: TacticalShadows fits a perspective camera itself (110 m, 2 cascades, split 22 m, last 30 % faded)
             Following = true; intentKey = "";
             fSwingFromPos = fPivot + (fSwingFromPos - focus).normalized * 60f; // the swing starts high on the overhead view's line through the agent
             FollowPlace(true);
@@ -105,7 +105,7 @@ namespace Suborned.Play
             if (fDragging)
             {
                 if (!mouse.middleButton.isPressed) { fDragging = false; fLookUntil = Time.unscaledTime + followLookHold; } // a look-around: eases back behind the agent after followLookHold
-                else { fYaw += (x - fDragX) * turnDragDegPerPixel * 1080f / Mathf.Max(1f, Screen.height); fYawFrom = fYawTo = fYaw; fDragX = x; }
+                else { fYaw += (x - fDragX) * turnDragDegPerPixel * OrbitScale * 1080f / Mathf.Max(1f, Screen.height); fYawFrom = fYawTo = fYaw; fDragX = x; }
             }
             float wheel = mouse.scroll.ReadValue().y;
             if (wheel != 0f && !overHud) fDist = FollowWheel(fDist, wheel); // stepped or proportional (brief 025)
