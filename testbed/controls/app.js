@@ -61,7 +61,7 @@ const FAT_RING = [[0, -1], [0, 1], [-1, 0], [1, 0], [-0.7, -0.7], [0.7, -0.7], [
 // Your own agent under the cursor always wins: within AGENT_PX of its body (feet to head) on screen, whatever stands behind or beside it.
 const AGENT_PX = 26;
 function agentNear(cx, cy, fat = false) {
-  let best = null, bd = fat ? 38 : AGENT_PX;
+  let best = null, bd = fat ? 30 : AGENT_PX;
   for (const a of G.world.agents) {
     if (G.view === 'tp' && a === agentOf()) continue; // in third person the camera sits on the one you drive
     const f = project(a.g.position.x, 0, a.g.position.z), h = project(a.g.position.x, 1.9, a.g.position.z); if (!f || !h) continue;
@@ -443,6 +443,7 @@ occBar.addEventListener('click', (e) => {
   if (b.dataset.occ) setOcc(b.dataset.occ); if (b.dataset.sil) G.sil = b.dataset.sil;
   occBar.classList.remove('open'); drawOcc(); // a pick folds the panel so the scene shows
 });
+new MutationObserver(() => document.body.classList.toggle('occ-open', occBar.classList.contains('open'))).observe(occBar, { attributes: true, attributeFilter: ['class'] });
 occBar.addEventListener('pointerdown', (e) => e.stopPropagation()); occBar.addEventListener('mousedown', (e) => e.stopPropagation());
 { const q = new URLSearchParams(location.search); if (q.get('occ')) G.occ = q.get('occ'); if (q.get('sil')) G.sil = q.get('sil'); if (q.get('yaw')) { rig.yaw = rig.yawTarget = Number(q.get('yaw')) * Math.PI / 180; } setOcc(G.occ); drawOcc(); }
 // ---- pause and plan
@@ -581,7 +582,7 @@ function frame(now) {
   frames++; if (now - fpsAt > 1000) {
     const f = Math.round(frames * 1000 / (now - fpsAt)); frames = 0; fpsAt = now;
     if (mobile.touch && !prLock && f < 40 && pr > 1 && now - prAt > 3000 && !document.hidden) { pr = Math.max(1, pr - 0.5); renderer.setPixelRatio(pr); renderer.setSize(innerWidth, innerHeight); G.dpr = pr; prAt = now; } // frames dropped: draw fewer pixels
-    setFps(f, mobile.touch ? ` · ${pr}x` : '');
+    setFps(f, mobile.touch ? ` ${pr}x` : '');
   }
   syncMobile();
 }

@@ -25,7 +25,7 @@ export const Hz = 10;
 type PeopleStop = [string, number, number, number];
 export type SimPerson = { id: string; name: string; job: string; ties: [string, string][]; stops: PeopleStop[] };
 export type PeopleIn = { startsAt: number; places: Record<string, Pt>; people: SimPerson[] };
-export type SiteIn = { grid: ConstructorParameters<typeof Grid>[0]; cast: Record<string, { id: string }>; places: Record<string, { at: Pt }>; guard: { post: string } };
+export type SiteIn = { grid: ConstructorParameters<typeof Grid>[0]; cast: Record<string, { id: string }>; places: Record<string, { at: Pt; stand?: Pt }>; guard: { post: string } };
 export type Inputs = { rules: RoutinesRules; rulesText: string; people: PeopleIn; site: SiteIn; tables: Record<string, Pt>; siteText: string; peopleText: string; blockText: string; clear?: Clear };
 
 export function readInputs(): Inputs {
@@ -136,6 +136,9 @@ const secs = (cm: number, pace: number) => Math.max(1, Math.ceil(cm / pace - 1e-
 // ---------------------------------------------------------------- service points
 
 type Service = { table: string; at: Pt; face: Pt; path: Path; m: number; out: number; short: number };
+
+/** Where a person who is placed at `at` stands: the site's stand for that place (Site.Stand: the point itself, or the free ground 0.6 m or so out when the point is on a building's face margin), else the point. */
+export const standOf = (site: SiteIn, at: Pt): Pt => Object.values(site.places).find((q) => q.at[0] === at[0] && q.at[1] === at[1])?.stand ?? at;
 
 /** Where a server stands at a table: the first ring on which a gap between two chairs is free ground on the walk grid, clear of every chair and of the set's own collision (a point closer than a body is pushed
  *  out along the ring's ray, outStepCm at a time, up to outToCm), the gap that is the shortest walk from her post (a walk that keeps clear of the drawn solids before one that does not). */
@@ -371,13 +374,13 @@ export function build(inp: Inputs = readInputs()): { rounds: Rounds; text: strin
     p.stops.forEach(([pl, from, to, out], i) => {
       const prefix = r.who.terraces[pl];
       if (!prefix || out !== 1 || to <= 0 || from >= r.horizonS.v) return; // a stop out at a door with a terrace, going on at the mission's start or beginning inside the round's horizon
-      const post = people.places[pl]!, svc = servicePoints(g, post, tables, seats, r, prefix, walker);
+      const post = standOf(site, people.places[pl]!), svc = servicePoints(g, post, tables, seats, r, prefix, walker);
       const origin = Math.max(0, from);
       const exc = bakeSpan(p.id, i, post, origin, svc, occupancy(people, cast, prefix), r);
       spans.push({ place: pl, from, to, origin, excursions: exc });
     });
     if (!spans.length) continue;
-    const post = people.places[spans[0]!.place]!;
+    const post = standOf(site, people.places[spans[0]!.place]!);
     const court = site.places['d:Courtyard']?.at ?? [post[0] + 350, post[1]];
     servers[p.id] = { name: p.name, post: spans[0]!.place, at: post, face: unit([court[0] - post[0], court[1] - post[1]]), spans };
   }

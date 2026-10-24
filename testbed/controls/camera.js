@@ -28,9 +28,9 @@ export class Rig {
     this.idle = 99; this.steady = 0; this.lastH = 0; this.side = 1; this.frame = null; this.lastTgt = new THREE.Vector3();
     this.distMin = 30; this.distMax = 46; // the desktop range; a phone in portrait needs to stand further back (fit)
   }
-  // A narrow screen (a phone upright) sees a thin slice of the street at 38 m. Stand back until about 26 m of street fits across; desktop and landscape stay as they were.
+  // A narrow screen (a phone upright) sees a thin slice of the street at 38 m. Stand back until about 20 m of street fits across; desktop and landscape stay as they were.
   fit(aspect, touch) {
-    const narrow = aspect < 1.5, want = narrow ? clamp(26 / (2 * Math.tan(rad(15)) * aspect), 38, 105) : 38;
+    const narrow = aspect < 1.5, want = narrow ? clamp(20 / (2 * Math.tan(rad(15)) * aspect), 38, 90) : 38;
     this.distMin = touch || narrow ? 22 : 30; this.distMax = touch || narrow ? 120 : 46;
     this.distGoal = want; if (this.mode === 'cmd') this.dist = want;
   }

@@ -26,7 +26,7 @@
    "usd": 55.10232
   },
   "2026-10-24": {
-   "calls": 18,
+   "calls": 19,
    "usd": 0.35277
   }
  },
@@ -44,7 +44,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 25,
+   "calls": 26,
    "usd": 0.0
   },
   "google:4@2": {
@@ -68,8 +68,8 @@
    "usd": 0.37195
   }
  },
- "calls": 266,
- "failed": 11,
+ "calls": 267,
+ "failed": 12,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -467,13 +467,13 @@
    "blocked": 0,
    "by_day": {
     "2026-10-24": {
-     "calls": 10,
+     "calls": 11,
      "usd": 0.35277
     }
    },
    "by_model": {
     "codex:image_gen": {
-     "calls": 1,
+     "calls": 2,
      "usd": 0.0
     },
     "openai:gpt-image@2": {
@@ -490,11 +490,15 @@
     "probe": {
      "calls": 1,
      "usd": 0.0
+    },
+    "vale-sheet": {
+     "calls": 1,
+     "usd": 0.0
     }
    },
-   "calls": 10,
+   "calls": 11,
    "cost_per_used": 0.0392,
-   "failed": 1,
+   "failed": 2,
    "ok": 9,
    "total_usd": 0.35277,
    "unknown_cost_calls": 0,

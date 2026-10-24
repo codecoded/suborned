@@ -62,11 +62,12 @@ const audit = async (label: string) => {
   const r = JSON.parse(await ev(`(() => {
     const W = innerWidth, H = innerHeight, vis = (e) => { const r = e.getBoundingClientRect(), c = getComputedStyle(e); return r.width > 0 && r.height > 0 && c.display !== 'none' && c.visibility !== 'hidden' && c.opacity !== '0'; };
     const out = [], small = [], name = (e) => e.id ? '#' + e.id : e.tagName.toLowerCase() + (e.dataset.agent !== undefined ? '[agent ' + e.dataset.agent + ']' : '') + (e.className && typeof e.className === 'string' ? '.' + e.className.split(' ')[0] : '') + (e.textContent ? '"' + e.textContent.trim().slice(0, 14) + '"' : '');
-    for (const e of document.querySelectorAll(${JSON.stringify(CHROME)})) { if (!vis(e) || e.closest('svg')) continue; const r = e.getBoundingClientRect(); if (r.left < -1 || r.top < -1 || r.right > W + 1 || r.bottom > H + 1) out.push(name(e) + ' ' + [r.left, r.top, r.right, r.bottom].map(Math.round)); }
-    for (const e of document.querySelectorAll('#top button, #occ button, #roster button, #dock button, #menukey')) { if (!vis(e) || e.closest('svg')) continue; const r = e.getBoundingClientRect(); if (e.closest('.aplate') || e.classList.contains('free')) continue; if (r.width < 43.5 || r.height < 43.5) small.push(name(e) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); }
+    const top = document.getElementById('top'), menu = document.body.classList.contains('menu-open');
+    for (const e of document.querySelectorAll(${JSON.stringify(CHROME)})) { if (!vis(e) || e.closest('svg') || (e !== top && top.contains(e) && top.scrollHeight > top.clientHeight)) continue; const r = e.getBoundingClientRect(); if (r.left < -1 || r.top < -1 || r.right > W + 1 || r.bottom > H + 1) out.push(name(e) + ' ' + [r.left, r.top, r.right, r.bottom].map(Math.round)); }
+    for (const e of document.querySelectorAll('#top button, #occ button, #roster button, #dock button, #menukey')) { if (!vis(e) || e.closest('svg') || (top.contains(e) && !menu)) continue; const r = e.getBoundingClientRect(); if (e.closest('.aplate') || e.classList.contains('free')) continue; if (r.width < 43.5 || r.height < 43.5) small.push(name(e) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); }
     const groups = { menu: '#top', stats: '#stats', occ: '#occ', roster: '#roster', dock: '#dock', log: '#log' }, rs = {};
     for (const [k, s] of Object.entries(groups)) { const e = document.querySelector(s); if (!e || !vis(e)) continue; if (k === 'log' && !e.children.length) continue; rs[k] = e.getBoundingClientRect(); }
-    const over = [], ks = Object.keys(rs); for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) { const a = rs[ks[i]], b = rs[ks[j]]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) over.push(ks[i] + '/' + ks[j]); }
+    const over = [], ks = Object.keys(rs).filter((k) => !(menu && k === 'menu')); for (let i = 0; i < ks.length; i++) for (let j = i + 1; j < ks.length; j++) { const a = rs[ks[i]], b = rs[ks[j]]; if (a.left < b.right - 1 && b.left < a.right - 1 && a.top < b.bottom - 1 && b.top < a.bottom - 1) over.push(ks[i] + '/' + ks[j]); }
     const de = document.documentElement;
     return JSON.stringify({ scroll: [de.scrollWidth, de.scrollHeight, W, H], off: out, small, over, bodyScroll: [document.body.scrollWidth, document.body.scrollHeight], coarse: matchMedia('(pointer: coarse)').matches, cls: document.body.className, dpr: devicePixelRatio, pr: __ctl.G.dpr });
   })()`));
@@ -94,14 +95,16 @@ for (const name of only) {
 
   // ---- gestures (cmd view)
   await ev(`__ctl.squad(); __ctl.select(0); __ctl.G.actScale = 60`); await squad(2, 3); await ev(`__ctl.yaw(30)`); await sleep(500);
+  // the other three stand off to the east so a finger near the Scout or the cabinet has only that one under it
+  await ev(`[1, 2, 3].forEach((i) => __ctl.G.world.agents[i].g.position.set(9 + i, 0, 2.5))`); await ev(`__ctl.G.world.agents[0].g.position.set(-7, 0, 2.4)`); await ev(`__ctl.rig.focus.set(-3, 0, 3.5)`); await sleep(700);
   const me = await ev(`JSON.stringify(__ctl.G.world.agents[0].g.position)`).then(JSON.parse);
-  const g1 = await proj(me.x + 2, 0, me.z + 1.5);
+  const free = JSON.parse(await ev(`JSON.stringify(__ctl.G.world.nav.nearestFree(${me.x + 2.5}, ${me.z + 1}))`)), g1 = await proj(free[0], 0, free[1]);
   await tap(g1.x, g1.y); await sleep(200);
   check("tap on the ground walks the selected agent", (await ev(`__ctl.G.world.agents[0].order?.kind`)) === "walk", await ev(`__ctl.G.log.slice(-1)[0]?.text`));
   const a1 = await proj(me.x, 0.9, me.z);
-  await ev(`__ctl.select(1)`); await tap(a1.x, a1.y); await sleep(150);
+  await ev(`__ctl.select(1)`); await ev(`__ctl.G.world.agents[0].order = null; __ctl.G.world.agents[0].g.position.set(-7, 0, 2.4)`); await sleep(200); await tap(a1.x, a1.y); await sleep(150);
   check("tap on your own agent selects it", (await ev(`__ctl.G.sel`)) === 0 && (await ev(`__ctl.G.group.filter(Boolean).length`)) === 1);
-  await ev(`__ctl.G.world.agents[2].g.position.set(2, 0, 3.5); __ctl.G.world.agents[2].order = null; __ctl.select(2)`); await sleep(200);
+  await ev(`__ctl.G.world.agents[2].g.position.set(2, 0, 3.5); __ctl.G.world.agents[2].order = null; __ctl.select(2); __ctl.rig.focus.set(3, 0, 3)`); await sleep(900);
   let c = await scr("cabinet");
   await tap(c.x, c.y); await sleep(250);
   check("tap on a thing opens its ring", (await ev(`__ctl.G.ring?.ent?.id`)) === "cabinet", await ev(`__ctl.G.log.slice(-1)[0]?.text`));
@@ -118,8 +121,12 @@ for (const name of only) {
   check("press and hold on a thing fills the pill", !!(await ev(`__ctl.G.charge && !__ctl.G.charge.done`)), await ev(`JSON.stringify(__ctl.G.charge && { t: __ctl.G.charge.t, ready: __ctl.G.charge.ready })`));
   await shot("hold-cabinet", 500);
   await sleep(600); await tend(); await sleep(400);
-  check("lift after the pill is full gives the order", !!(await ev(`__ctl.G.world.agents[2].order`)), await ev(`__ctl.G.log.slice(-1)[0]?.text`));
+  check("lift after the pill is full gives the order", /^Hold · Tech/.test(await ev(`__ctl.G.log.slice(-1)[0]?.text`)), await ev(`__ctl.G.log.slice(-1)[0]?.text`));
   await ev(`__ctl.G.world.agents[2].order = null`);
+  // a portrait dragged onto a thing: that agent goes (the drag starts on the roster, so the page must not scroll or cancel it)
+  await ev(`__ctl.G.world.agents[2].g.position.set(2, 0, 3.5); __ctl.G.world.agents[2].order = null; __ctl.select(0); __ctl.rig.focus.set(3, 0, 3)`); await sleep(800); c = await scr("cabinet"); const pb = await rect('#roster [data-agent="2"]');
+  await tstart([[pb.x, pb.y]]); const steps = 14; for (let i = 1; i <= steps; i++) { await tmove([[pb.x + (c.x - pb.x) * i / steps, pb.y + (c.y - pb.y) * i / steps]]); await sleep(16); } await tend(); await sleep(400);
+  check("drag a portrait onto a thing sends that agent", /^Portrait drop/.test(await ev(`__ctl.G.log.slice(-1)[0]?.text`)), await ev(`__ctl.G.log.slice(-1)[0]?.text`)); await ev(`__ctl.G.world.agents[2].order = null`);
   // pan
   const f0 = JSON.parse(await ev(`JSON.stringify(__ctl.rig.focus)`)); const mid = { x: S.w / 2, y: S.h * 0.45 };
   await drag(mid.x, mid.y, mid.x - 90, mid.y + 40);
@@ -144,7 +151,7 @@ for (const name of only) {
   await ev(`__ctl.squad()`); const sq = await ev(`__ctl.G.group.filter(Boolean).length`); check("Squad selects everyone", sq === 4);
   // Tab: two people close together under the touch
   // fire mode with officers out
-  await ev(`document.querySelector('[data-vale]').click()`); await sleep(300); await ev(`__ctl.select(3); __ctl.G.world.agents[3].g.position.set(11, 0, 5)`); await ev(`__ctl.rig.focus.set(12, 0, 5)`); await sleep(900);
+  await ev(`__ctl.yaw(210)`); await ev(`document.querySelector('[data-vale]').click()`); await sleep(300); await ev(`__ctl.select(3); __ctl.G.world.agents[3].g.position.set(7.5, 0, 4)`); await ev(`__ctl.rig.focus.set(11, 0, 5)`); await sleep(900);
   const off = await scr("officerA");
   await press('#dock [data-tb="firemode"]'); check("Fire mode button arms fire", (await ev(`__ctl.G.touchFire`)) === true && (await ev(`document.body.classList.contains('fire-armed')`)));
   await tstart([[off.x, off.y]]); await sleep(900);

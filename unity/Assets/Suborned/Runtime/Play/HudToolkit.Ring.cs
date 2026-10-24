@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// cursor's mark (a crosshair where a press fires, three dots where a hold opens a ring) and the chip's ⋯.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud, Obj, Held; public Label Word, KeyText; public VisualElement Fields; public string FieldsKey = ""; }
+        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud, Obj, Held; public Label Word, KeyText; public VisualElement Fields; public string FieldsKey = "", HeldKey = null; public readonly System.Collections.Generic.List<string> HeldIds = new(); }
         VisualElement ringRoot; Paint ringPaint; readonly List<Wedge> wedges = new(); HandoverHost.RingState ringFor; VisualElement cursorMark; Paint cursorDots;
 
         void BuildRing()
@@ -117,7 +117,7 @@ namespace Suborned.Play
                 w.Pill.style.opacity = s.Shut ? 0.75f : 1f; w.Icon.style.opacity = s.Shut ? 0.45f : 1f;
                 if (s.Shut)
                 {   // the lock, then one police badge a holder (brief 057 §4.2): the same holders the world marks
-                    var ids = new System.Collections.Generic.List<string>(); foreach (var hx in s.Holders.Split(",")) if (hx.Trim().Length > 0) ids.Add(hx.Trim());
+                    if (w.HeldKey != s.Holders) { w.HeldKey = s.Holders; w.HeldIds.Clear(); foreach (var hx in s.Holders.Split(",")) if (hx.Trim().Length > 0) w.HeldIds.Add(hx.Trim()); } var ids = w.HeldIds; /* Redline 064 #6: split once a ring, not a frame */
                     while (w.Held.childCount < 1 + Mathf.Max(1, ids.Count)) { var c0 = w.Held.childCount == 0 ? E(w.Held, null, w: 14, h: 14) : Cameo(w.Held, 12f, 2f); c0.style.marginRight = 2; }
                     Icon(w.Held[0], "lock", Cream);
                     for (int k = 1; k < w.Held.childCount; k++) { bool has = k - 1 < ids.Count; Show(w.Held[k], has); if (has) Bg(w.Held[k].Q("face"), "badges/" + (PlayText.RoleOfId(ids[k - 1]) == "rival" ? "signal_rival" : "signal_police"), Color.white); }

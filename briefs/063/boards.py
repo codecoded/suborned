@@ -59,9 +59,9 @@ def board_driver():
        ('driver_C', 'C  Deep teal, white band, pillbox', 'A woman of forty, hair in a low bun, alert glance. Deep teal short jacket with a white chest band and a peaked chrome-badged pillbox cap. Distinct from every other block in the scene; changes the cast (the figure is male today).')],
       'The driver\'s block should not be ivory (Vale) or black (Enforcer, security). A keeps the mint the game already shows; C takes deep teal. B collides with black.', B + 'board-03-driver.png')
 def board_models():
-    W, H = 2480, 1560; im = Image.new('RGBA', (W, H), INK + (255,)); d = ImageDraw.Draw(im)
+    W, H = 2480, 1520; im = Image.new('RGBA', (W, H), INK + (255,)); d = ImageDraw.Draw(im)
     head(im, d, 'Portrait renders of the in-game models', 'Blender, the real FBX and its 2048 albedo, 85 mm, framed like the roster cameos (round, head at 6 % to 70 % of the disc, neutral grey ground, thin dark ring). Not the concepts.')
-    items = [('model_waitress', 'Inez (waitress W6)', 'ready'), ('model_driver', 'Driver, face repaired', 'ready, see the defect'), ('model_driver_as_shipped', 'Driver as shipped', 'teal skin: the tint caught his face'), ('model_councillor', 'Councillor stand-in', 'young commuter D4; not Vale'), ('model_security', 'Security / patrol officer', 'the in-game patrol is this figure')]
+    items = [('model_waitress', 'Inez (waitress W6)', 'ready'), ('model_driver', 'Driver, tint fixed', 'figures.json keep mask: skin stays skin'), ('model_driver_as_shipped', 'Driver before the fix', 'teal lips, nose, cheeks, hands'), ('model_councillor', 'Councillor stand-in', 'young commuter D4; not Vale'), ('model_security', 'Security officer', 'posted and response officers; not the patrol')]
     cw = (W - 120) // 5
     for i, (k, lab, st) in enumerate(items):
         x = 60 + i * cw; y = 190; c = rgba(B + f'cameos/{k}.png').resize((cw - 30, cw - 30), Image.LANCZOS); im.alpha_composite(c, (x, y))
@@ -71,19 +71,19 @@ def board_models():
         for s in (128, 64):
             im.alpha_composite(cc.resize((s, s), Image.LANCZOS), (cx, cy + 128 - s)); cx += s + 20
     y0 = 190 + cw + 78 + 170
-    for i, k in enumerate(['councillor', 'el1', 'waitress', 'driver']):
-        fg = rgba(B + f'models/fig_{k}.png'); fg = fg.resize((int(fg.width * 0.62), int(fg.height * 0.62)), Image.LANCZOS)
+    for i, k in enumerate(['councillor', 'el1', 'waitress', 'driver', 'driver_fixed']):
+        fg = rgba(B + f'models/fig_{k}.png'); fg = fg.resize((int(fg.width * 0.5), int(fg.height * 0.5)), Image.LANCZOS)
         bg = Image.new('RGBA', fg.size, (178, 174, 171, 255)); bg.alpha_composite(fg)
         im.alpha_composite(bg, (60 + i * (bg.width + 30), y0))
-    xx = 60 + 4 * (bg.width + 30)
+    xx = 60 + 5 * (bg.width + 30)
     text(d, (xx, y0 + 6), 'In the game today (full figure, same renderer)', 22)
-    yy = wrap(d, (xx, y0 + 46), 'Left to right: councillor stand-in (young, blond, camel trousers), el1 (the only elder in the library: a woman in orange, not usable for Vale), the waitress, the driver as shipped (teal face and hands).', 18, W - xx - 60, DIM, False)
-    yy = wrap(d, (xx, yy + 14), 'The driver\'s teal skin is a build defect: figures.json tints hue 2 to 20 deg (the coral uniform); his lips, nose and the shadow side of his face sit in that hue window too. The repaired cameo restores the head from the untinted source above the chin.', 18, W - xx - 60, DIM, False)
+    yy = wrap(d, (xx, y0 + 46), 'Left to right: councillor stand-in (young, blond, camel trousers), el1 (the only elder in the library: a woman in orange, not usable for Vale), the waitress, the driver before and after the tint fix.', 18, W - xx - 60, DIM, False)
+    yy = wrap(d, (xx, yy + 14), 'The driver\'s teal skin was a build defect: figures.json tinted hue 2 to 20 deg (the coral uniform) and his lips, nose, cheeks and hands sit in that window. Fixed in the tint (tools/figures/build.py keep mask), not in the render.', 18, W - xx - 60, DIM, False)
     im.convert('RGB').save(B + 'board-04-models.png')
 def board_patrol():
     W, H = 2480, 1000; im = Image.new('RGBA', (W, H), INK + (255,)); d = ImageDraw.Draw(im)
     head(im, d, 'Patrol cameo: three faces for badges/npc_patrol', 'Ink on the kit\'s cream enamel disc, the same treatment as the other npc_* badges. Built with Glyph\'s briefs/057/patrol/disc.py (preview only, nothing installed).')
-    opts = [('A', 'A  Stern screen', 'Ink head, mast lamp, side ear caps, two dot-bar eyes, a short flat mouth. A machine that watches and does not smile (the stand-in smiles).'), ('B', 'B  Scan line', 'Same head; one row of dots with a larger middle dot, like a scan sweep. Reads as "watching", not as a face. The least cartoon.'), ('C', 'C  Cap and brim', 'A peaked brim over the screen, eyes lifted a little, mouth flat. Ties the robot to the officer the game shows as the patrol; the brim shows even at 24 px.')]
+    opts = [('A', 'A  Stern screen', 'Ink head, mast lamp, side ear caps, two dot-bar eyes, a short flat mouth. A machine that watches and does not smile (the stand-in smiles).'), ('B', 'B  Scan line', 'Same head; one row of dots with a larger middle dot, like a scan sweep. Reads as "watching", not as a face. The least cartoon.'), ('C', 'C  Cap and brim', 'A peaked brim over the screen, eyes lifted a little, mouth flat. The brim is the one cue that still shows at 24 px and sets it apart from the other npc_* discs.')]
     kit = rgba(R + 'unity/Assets/Suborned/UI/Resources/Kit/badges/npc_driver@2x.png')
     colw = (W - 120) // 3
     for i, (k, lab, line) in enumerate(opts):

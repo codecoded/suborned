@@ -266,8 +266,8 @@ namespace Suborned.Play
                     bar.style.visibility = s.Progress >= 0 && !s.Down ? Visibility.Visible : Visibility.Hidden; fill.style.width = Length.Percent(100f * Mathf.Clamp01(s.Progress / 1000f)); // the slot keeps its place
                     // brief 049 row 9 (Glyph's 0.2.94 review #5c): the plate keeps a number ("9 s"); a word alone ("aiming", "refused", "not yet")
                     // is the icon alone, on the small plate, never a bar-wide plate with a word at its far end
-                    bool hwWord = hw.Length > 0 && !System.Linq.Enumerable.Any(hw, char.IsDigit); string hwShown = hwWord ? "" : hw;
-                    Text(tx, s.Down && hw.Length == 0 || hwWord ? "" : hw.Length > 0 ? hw : carry ? System.Text.RegularExpressions.Regex.Match(s.Pace, @"[\d.]+ m/s").Value : s.Left);
+                    bool hwDigit = false; for (int ci = 0; ci < hw.Length && !hwDigit; ci++) hwDigit = char.IsDigit(hw[ci]); bool hwWord = hw.Length > 0 && !hwDigit; /* Redline 064 #6: no LINQ a row a frame */ string hwShown = hwWord ? "" : hw;
+                    Text(tx, s.Down && hw.Length == 0 || hwWord ? "" : hw.Length > 0 ? hw : carry ? PaceWords(s.Pace) : s.Left);
                     tx.style.width = hwShown.Length > 0 ? StyleKeyword.Auto : ValueW;
                     if (Stress && tx.text.Length > 0) Text(tx, carry ? "1.4 m/s" : "88 s");
                     bool iconOnly = (s.Progress < 0 || s.Down || hwWord) && tx.text.Length == 0 && hwShown.Length == 0; // no end ("holding the loop"), down, or a word: the icon alone (Glyph §1)
@@ -1768,5 +1768,9 @@ namespace Suborned.Play
             if (hasSt) { var st = stl[0]; endStandDir = st.dir; Text(endStand, $"{st.band} {(st.to > 0 ? "+" : st.to < 0 ? "\u2212" : "")}{Mathf.Abs(st.to)}"); endStandArrow.MarkDirtyRepaint(); }
             float ew = Mathf.Max(endDetailOpen ? 560 : EndCardW, EndButtonsW); end.style.width = ew; var esz = root.panel.visualTree.layout.size; end.style.left = ((float.IsNaN(esz.x) ? 1920 : esz.x) - ew) / 2;
         }
-    }
+    
+        // Redline 064 #6: the carry pace's "n m/s" taken once per pace string, not a Regex a row a frame
+        string paceIn = "", paceOut = "";
+        string PaceWords(string pace) { if (pace != paceIn) { paceIn = pace; paceOut = System.Text.RegularExpressions.Regex.Match(pace ?? "", @"[\d.]+ m/s").Value; } return paceOut; }
+}
 }

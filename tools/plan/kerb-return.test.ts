@@ -11,8 +11,8 @@ const plan: Plan = read('contracts/world/harbour-district.plan.json'), block = r
 const run = (mutate: (p: any) => void = () => {}) => { const p: Plan = structuredClone(plan); mutate(p); return kerbReturnChecks(p, derive(p), civic(p.civic, block)); };
 
 describe('KR-1', () => {
-  test('the committed plan passes: 153 returns (76 junction corners, 1 concave, 8 lay-by arcs, 6 circus mouths, 12 bend outsides, 50 median ends), the radii Datum set, the pavement holds its walk at every square building corner', () => {
-    const c = run(); expect(c.length).toBe(1); expect(c[0]!.id).toBe('KR-1'); expect(c[0]!.ok).toBe(true); expect(c[0]!.value).toBe('153 returns');
+  test('the committed plan passes: 160 returns (76 junction corners, 7 sheet-edge corners, 1 concave, 8 lay-by arcs, 6 circus mouths, 12 bend outsides, 50 median ends), the radii Datum set, the pavement holds its walk at every square building corner', () => {
+    const c = run(); expect(c.length).toBe(1); expect(c[0]!.id).toBe('KR-1'); expect(c[0]!.ok).toBe(true); expect(c[0]!.value).toBe('160 returns');
   });
   test('a plan without the key has no check (a pinned plan replays square)', () => { expect(run(p => { delete p.standards.streetscape.kerbReturn; })).toEqual([]); });
   test('a district return of 12 m takes the walk away at the building corner: it fails and names the corner', () => {

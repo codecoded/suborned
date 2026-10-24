@@ -75,6 +75,32 @@ namespace Suborned.Sim
             return (d1 == 0 && OnSegment(a, c, d)) || (d2 == 0 && OnSegment(b, c, d)) || (d3 == 0 && OnSegment(c, a, b)) || (d4 == 0 && OnSegment(d, a, b));
         }
 
+        /// <summary>A point scaled by D, overflow-checked (Occluder.Blocks3's lifted frame).</summary>
+        public static Pt Scaled(Pt p, long D) => new Pt(checked((int)(p.X * D)), checked((int)(p.Y * D)));
+        /// <summary>SegHitsPoly(a, b, poly scaled by D) without building the scaled polygon (engine 0.30.0, Redline 064 #3: no allocation on the step's
+        /// sight tests). The same tests in the same order as InPoly and SegHitsPoly on the scaled points, so the same answer.</summary>
+        public static bool SegHitsPolyScaled(Pt a, Pt b, Pt[] poly, long D)
+        {
+            if (InPolyScaled(a, poly, D) || InPolyScaled(b, poly, D)) return true;
+            for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++) if (SegHit(a, b, Scaled(poly[j], D), Scaled(poly[i], D))) return true;
+            return false;
+        }
+        static bool InPolyScaled(Pt p, Pt[] poly, long D)
+        {
+            bool inside = false;
+            for (int i = 0, j = poly.Length - 1; i < poly.Length; j = i++)
+            {
+                Pt a = Scaled(poly[i], D), b = Scaled(poly[j], D);
+                if (OnSegment(p, a, b)) return true;
+                if ((a.Y > p.Y) != (b.Y > p.Y))
+                {
+                    long c = Cross(a, b, p);
+                    if ((b.Y > a.Y) ? c < 0 : c > 0) inside = !inside;
+                }
+            }
+            return inside;
+        }
+
         /// <summary>True if segment ab enters polygon poly (crosses or touches an edge, or starts inside).</summary>
         public static bool SegHitsPoly(Pt a, Pt b, Pt[] poly)
         {
@@ -141,9 +167,8 @@ namespace Suborned.Sim
             var A = new Pt(checked((int)(a.X * D + dx * tl)), checked((int)(a.Y * D + dy * tl)));
             var B = new Pt(checked((int)(a.X * D + dx * th)), checked((int)(a.Y * D + dy * th)));
             if (Math.Max(A.X, B.X) < x0 * D || Math.Min(A.X, B.X) > x1 * D || Math.Max(A.Y, B.Y) < y0 * D || Math.Min(A.Y, B.Y) > y1 * D) return false;
-            var poly = new Pt[Poly.Length];
-            for (int i = 0; i < Poly.Length; i++) poly[i] = new Pt(checked((int)(Poly[i].X * D)), checked((int)(Poly[i].Y * D)));
-            return G.SegHitsPoly(A, B, poly);
+            for (int i = 0; i < Poly.Length; i++) G.Scaled(Poly[i], D); // engine 0.30.0 (Redline 064 #3): the same overflow checks, up front, with no Pt[] per test
+            return G.SegHitsPolyScaled(A, B, Poly, D);
         }
         /// <summary>The footprint's box meets the box [minX, maxX] × [minY, maxY] (a cheap first test).</summary>
         public bool BoxMeets(int minX, int minY, int maxX, int maxY) => !(maxX < x0 || minX > x1 || maxY < y0 || minY > y1);

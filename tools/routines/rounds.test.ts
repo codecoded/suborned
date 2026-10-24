@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { peopleFiles } from '../levels/people/hash';
 import { Grid, d2, leg, type Pt } from './walk';
 import { parseRules } from './rules';
-import { Hz, ROUNDS_CANDIDATE, ROUNDS_ENGINE, build, findMeetings, occupancy, pickStop, poseAt, readInputs, servicePoints, stopsOf, summary, type Events, type PeopleIn, type Rounds } from './rounds';
+import { Hz, ROUNDS_CANDIDATE, ROUNDS_ENGINE, build, findMeetings, occupancy, pickStop, poseAt, readInputs, servicePoints, standOf, stopsOf, summary, type Events, type PeopleIn, type Rounds } from './rounds';
 
 const root = join(import.meta.dir, '..', '..');
 const read = (f: string) => readFileSync(join(root, f), 'utf8');
@@ -63,7 +63,8 @@ describe('the bake', () => {
   test('finds the Handover\'s waitress, at the café door, and no one else in the mission window', () => {
     expect(Object.keys(R.servers)).toEqual([inp.site.cast['waitress']!.id]);
     expect(sv.post).toBe('cafe-entrance');
-    expect(sv.at).toEqual(P('d:Café door')); // her post is the mission's Café door point: the summons, M-2 and every window keep their ground
+    expect(sv.at).toEqual(inp.site.places['d:Café door']!.stand ?? P('d:Café door')); // her post is the mission's Café door point, where the site stands it (Site.Stand: 0.6 m out when the point is on the face margin): the summons, M-2 and every window keep their ground
+    expect(sv.at).toEqual(standOf(inp.site, inp.people.places['cafe-entrance']!)); // and it is where the people file places her, stood
     expect(sp.excursions.length).toBeGreaterThanOrEqual(6);
   });
   test('every service point is free ground, clear of the chairs, facing the table, and the walk to it is the grid\'s', () => {
@@ -180,8 +181,8 @@ describe('where the summoned partner stands (partners.summoned.side; brief 022 a
     expect(stops[0]!.deg).toBeGreaterThan(0); // her left: east of a south-facing post
     expect(stops[0]!.at[1]).toBeGreaterThan(sv.at[1]);
   });
-  test('the alcove is two metres wide, so only the front quarter is free at 1.2 m; the list is rebuilt from the grid, never typed', () => {
-    for (const st of stops) expect(Math.abs(st.deg)).toBeLessThanOrEqual(45);
+  test('his stops are the free ground of the ring in front of and beside her, never behind her; the list is rebuilt from the grid, never typed', () => {
+    for (const st of stops) expect(Math.abs(st.deg)).toBeLessThanOrEqual(90);
     expect(stopsOf(g, P(inp.site.guard.post), sv.at, sv.face, R.rules.closeCm, rules.partners.summoned.side.stepDeg)).toEqual(stops);
   });
   test('Waymark\'s play note: with the Scout at beside-inez (2.1 m from her) he no longer stops on top of the Scout', () => {
@@ -193,10 +194,13 @@ describe('where the summoned partner stands (partners.summoned.side; brief 022 a
   });
   test('the pick: the first stop nobody stands near; her other hand if someone does; the farthest if all are taken; nothing if the file has none', () => {
     const at = (i: number): Pt => stops[i]!.at, nudge = (p: Pt, d: number): Pt => [p[0] + d, p[1]];
+    const far = (p: Pt[]) => stops.find((s) => p.every((q) => Math.hypot(q[0] - s.at[0], q[1] - s.at[1]) >= 100));
     expect(pickStop(stops, [], 100)).toBe(stops[0]);
-    expect(pickStop(stops, [nudge(at(0), 40)], 100)).toBe(stops[1]); // a person on the first stop: the other side
-    expect(pickStop(stops, [at(0), at(1)], 100)).toBe(stops[stops.length - 1]); // both sides taken: every stop of a 1.2 m ring is within a metre of one of them, so the farthest from both: dead ahead
-    expect(pickStop(stops, [at(0)], 100)).toBe(stops[1]); // one side taken: the other
+    expect(pickStop(stops, [nudge(at(0), 40)], 100)).toBe(far([nudge(at(0), 40)])); // a person on the first stop: the first stop a metre clear of them
+    expect(far([nudge(at(0), 40)])).not.toBe(stops[0]);
+    expect(pickStop(stops, [at(0), at(1)], 100)).toBe(far([at(0), at(1)])); // two taken: the first stop a metre clear of both, in the file's order
+    expect(far([at(0), at(1)])).toBeDefined(); expect(far([at(0), at(1)])).not.toBe(stops[0]);
+    expect(pickStop(stops, [at(0)], 100)).toBe(far([at(0)])); // one stop taken: the first clear of it
     const all = stops.map((s, i) => nudge(s.at, 10 + i)); // everyone taken: the stop whose nearest person is farthest, the earlier on a tie
     const nearest = (s: (typeof stops)[number]) => Math.min(...all.map((p) => Math.hypot(p[0] - s.at[0], p[1] - s.at[1])));
     const best = Math.max(...stops.map((s) => Math.floor(nearest(s))));

@@ -51,7 +51,7 @@ namespace Suborned.Play
         /// <summary>The watcher the Scout is watching now, or the one the Scout's last order watched (until the Scout's next order).</summary>
         string ScoutWatch()
         {
-            foreach (var w in new[] { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer }) // brief 031: every agent watches machines
+            foreach (var w in CellOrder) // brief 031: every agent watches machines
             { var sc = Game.Ops[(int)w]; if (sc.Busy != null && sc.Busy.Do == "watch" && Game.WatcherKind(sc.Busy.Target).Length > 0) return sc.Busy.Target; }
             if (lastWatchOrders != Game.Orders.Count)
             {
@@ -89,7 +89,7 @@ namespace Suborned.Play
                 var g = Game;
                 foreach (var f in g.KnownFans())
                 {
-                    bool strong = Peeking || f.Watcher == FocusWatcher || HoldOn && WatchReach.HasValue && Hover != null || g.Alert >= 2 || noticingNow.Contains(f.Watcher) || FanMatters(f);
+                    bool strong = Peeking || f.Watcher == FocusWatcher || HoldOn && WatchReach.HasValue && Hover != null || g.Alert >= 2 || noticingNow.Contains(f.Watcher) || FanMattersNow(f);
                     shownFans.Add(f); fanStrong.Add(strong);
                 }
             });
@@ -103,12 +103,22 @@ namespace Suborned.Play
             }
         }
         readonly List<bool> fanStrong = new();
+        /// <summary>Redline 064 #2: FanMatters once an engine tick a watcher (agents and walks move only on a tick), not every frame.</summary>
+        readonly Dictionary<string, bool> fanMatters = new(); int fanMattersTick = -1;
+        bool FanMattersNow(Fan f)
+        {
+            if (HandoverHost.PerfLegacy) return FanMatters(f);
+            if (Game.Tick != fanMattersTick) { fanMatters.Clear(); fanMattersTick = Game.Tick; }
+            if (fanMatters.TryGetValue(f.Watcher, out var m)) return m;
+            return fanMatters[f.Watcher] = FanMatters(f);
+        }
         readonly HashSet<string> noticingNow = new();
 
         /// <summary>The watcher a cell agent is watching now (the busy Watch), else null: brief 057 §3, no fallback to a finished Watch.</summary>
+        static readonly OpId[] CellOrder = { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer };
         string ScoutWatchingNow()
         {
-            foreach (var w in new[] { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer })
+            foreach (var w in CellOrder)
             { var sc = Game.Ops[(int)w]; if (sc.Busy != null && sc.Busy.Do == "watch" && Game.WatcherKind(sc.Busy.Target).Length > 0) return sc.Busy.Target; }
             return null;
         }
@@ -123,7 +133,16 @@ namespace Suborned.Play
                 if (InFan(f, op.Pos)) return true;
                 var w = op.Walk; if (w == null || w.Points.Length < 2) continue;
                 if (NearFan(f, op.Pos, 300) && InFan(f, w.End)) return true;
-                for (int i = 1; i < w.Points.Length; i++) { var a = w.Points[i - 1]; var b = w.Points[i]; long d = Math.Max(1, (long)Math.Sqrt(G.D2(a, b))); int n = (int)Math.Min(40, d / 100 + 1); for (int s = 1; s <= n; s++) if (InFan(f, new Pt(a.X + (int)((b.X - a.X) * (long)s / n), a.Y + (int)((b.Y - a.Y) * (long)s / n)))) return true; }
+                // Redline 064 #4: the walk still ahead only (from WalkMm; PerfLegacy samples the whole walk, as the round did)
+                long walked = HandoverHost.PerfLegacy ? 0 : op.WalkMm, run = 0; bool started = walked <= 0;
+                for (int i = 1; i < w.Points.Length; i++)
+                {
+                    var a = w.Points[i - 1]; var b = w.Points[i]; long seg = (long)Math.Sqrt(G.D2(a, b)) * 10; // cm to mm
+                    if (!started) { if (run + seg <= walked) { run += seg; continue; } a = w.At(walked); started = true; }
+                    run += seg;
+                    long d = Math.Max(1, (long)Math.Sqrt(G.D2(a, b))); int n = (int)Math.Min(40, d / 100 + 1);
+                    for (int s = 1; s <= n; s++) if (InFan(f, new Pt(a.X + (int)((b.X - a.X) * (long)s / n), a.Y + (int)((b.Y - a.Y) * (long)s / n)))) return true;
+                }
             }
             return false;
         }

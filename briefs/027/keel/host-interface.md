@@ -374,3 +374,8 @@ All in `sim/Suborned.Sim`; the Unity plugin copy (`unity/Assets/Suborned/Sim/Plu
 **Refusals.** A call or turn on someone who is no cast role (a crowd id such as `p-records-office-73`) is now refused with `not-a-contact` or `target-unknown` instead of throwing. `CanCall` returns false for them.
 
 **The grid.** The mission cameras' poles (entrance (53, -44.5), pickup (74, -40), r 0.48 m) are walk solids, so routes keep the body clear: the crew's route to the driver passes 0.77 m from the pickup pole (it was -0.28 m, through it).
+
+### Engine 0.30.0, also: the batch notice read (Redline 064 #1)
+- `NoticeProbe? Game.NoticeProbeOf(string id)`: the person resolved once a tick (where they stand on the street, how they face). It is null when they are not on the street. `NoticeProbe.At` is their position and `NoticeProbe.Id` their id.
+- `bool Game.NoticesAt(NoticeProbe probe, string act, Pt at)`: exactly `NoticesNow(id, act, at)` (scenario NQ-1: 123,627 reads, 0 differ), without re-scanning the street for each point. A probe from another tick throws, so make one per tick.
+- `Occluder.Blocks3` no longer allocates a `Pt[]` for each test (#3). Every scenario hash and every range hash is identical to the baseline's.

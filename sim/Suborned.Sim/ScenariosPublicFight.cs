@@ -236,9 +236,12 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 PatrolThenRivals(r, true);
-                r.Eq(string.Join(", ", g.Fights.Select(f => $"{f.Public} {f.Outcome}")), "True security, True rivals", "two fights: the patrol's, then the rivals' (won)");
-                r.Eq(Moves(g), "-1 seen-fight-security patrol, 1 seen-fight-rivals rivals", "two moves");
-                r.Eq(g.Standing, g.R.StandingStart, "+2 → +1 → +2");
+                // engine 0.30.0: on the face-margin grid the response unit (on the street from 4:58) holds within 30 m of the Enforcer's spot and sees his
+                // weapon at 5:33.7, so the second fight is on security too (authority outranks): still two fights 30 s apart, two moves, which is this
+                // case's rule; the rivals-won +1 is N95's (feared rivals driven off)
+                r.Eq(string.Join(", ", g.Fights.Select(f => $"{f.Public} {f.Outcome}")), "True security, True security", "two fights: the patrol's, then the rivals' with the response unit in it");
+                r.Eq(Moves(g), "-1 seen-fight-security patrol, -1 seen-fight-security security-1", "two moves, one a fight each");
+                r.Eq(g.Standing, g.R.StandingStart - 2, "+2 → +1 → 0");
             }, new Start { FinalFight = false, Security = 0 });
         }
     }

@@ -18,7 +18,8 @@ namespace Suborned.Play
         const float NearRim = 0.07f, NearEdge = 0.14f, NearEdgeA = 0.6f, NearOn = 0.56f; const int NearDashes = 36;
 
         /// <summary>The proof reads it: the cones drawn this frame ("id:kind[+near]" joined).</summary>
-        public static string ConesShown { get; private set; } = "";
+        public static string ConesShown => live?.host?.PersonCones is { Count: > 0 } pc ? ConesWords(pc) : ""; // Redline 064 #6: built when a proof reads it, not every frame
+        static string ConesWords(List<HandoverHost.ConeMark> pc) { var said = new List<string>(); foreach (var c in pc) said.Add(c.Id + ":" + c.Kind + (c.Near ? "+near" : "")); return string.Join(" ", said); }
 
         void LineM(GroundBatch b, Vector3 a, Vector3 e, float w)
         {
@@ -53,12 +54,10 @@ namespace Suborned.Play
         /// <summary>Per frame (between GroundBegin and GroundFlush): the people's cones HostNotice chose.</summary>
         void ConesDraw()
         {
-            var list = host.PersonCones; if (list.Count == 0) { ConesShown = ""; return; }
-            var said = new List<string>();
+            var list = host.PersonCones; if (list.Count == 0) return;
             foreach (var c in list)
             {
                 float al = c.Alpha; bool ring = c.Kind == "ring";
-                said.Add(c.Id + ":" + c.Kind + (c.Near ? "+near" : ""));
                 for (int j = 0; j + 1 < c.Outline.Count; j++)
                 {
                     var a = c.Outline[j]; var e = c.Outline[j + 1];
@@ -87,7 +86,6 @@ namespace Suborned.Play
                     }
                 }
             }
-            ConesShown = string.Join(" ", said);
         }
     }
 }

@@ -51,11 +51,15 @@ namespace Suborned.World
         public int GroundPieces(Transform layer, List<StreetItemDto> items, System.Func<StreetItemDto, string> batchOf = null)
         {
             var none = new Dictionary<string, string>(); RoadPoolJoints.Clear();
-            foreach (var s in items)
+            try
             {
-                if (s.Kit == null) throw new System.IO.InvalidDataException($"World: ground piece {s.Id} ({s.Kind}) has no kit ref");
-                placer.Bake(Nodes.Element(layer, s.Id), batchOf?.Invoke(s) ?? layer.name, s.Id, s.Kit, s.At, s.Z, none, s.Yaw);
+                foreach (var s in items)
+                {
+                    if (s.Kit == null) throw new System.IO.InvalidDataException($"World: ground piece {s.Id} ({s.Kind}) has no kit ref");
+                    placer.Bake(Nodes.Element(layer, s.Id), batchOf?.Invoke(s) ?? layer.name, s.Id, s.Kit, s.At, s.Z, none, s.Yaw);
+                }
             }
+            catch { RoadPoolJoints.Abort(); throw; } // Redline 064 #7: a throw never leaves the pool bands held for a later bake
             Debug.Log($"World: strip light pool joints closed {RoadPoolJoints.Fill()} (Glyph's 0.2.104 review #4: no wedge or doubled overlap between the chords of a curve)");
             return items.Count;
         }

@@ -39,11 +39,14 @@ export function kerbReturnRules(c: WCtx): Check[] {
   for (const s of c.w.street) if (s.kind.startsWith('crossing-') && s.kind !== 'crossing-arc') { const r = cutHits(gc, itemRing(s), 0); if (r) bad2.push(`${s.id} (${s.kind}) lies in the carriageway of ${r.id}`); }
   // KR-2: the arc carries a kerb stone all the way round (what crossings and drives drop aside)
   const stones = (c.w.ground.pieces ?? []).filter(s => s.kind === 'kerb-return');
+  const cutters: V[][] = [...(c.w.crossings ?? []).map(x => x.strip as V[]), ...(c.w.ground.drives ?? []).map(x => x.ring as V[])];
   let arcM = 0, stoneM = 0;
   for (const r of returnsOf(gc).filter(x => !x.nose)) {
     const len = r.r * r.theta; arcM += len;
     const mine = stones.filter(s => s.edge === `kerbreturn/${r.id}`); const m = mine.reduce((t, s) => t + s.size[0], 0); stoneM += m;
-    if (m < len * 0.5) bad2.push(`${r.id}: ${m.toFixed(1)} m of kerb stone on an arc of ${len.toFixed(1)} m`);
+    // to within a stone, less what crossings and drives drop: an arc with no strip or drive beside it (within a metre of its stones) may miss one stone's length; one that has may drop what they cover (no more than half)
+    const one = Math.max(0.9, ...mine.map(x => x.size[0])), beside = r.arc.some(q => cutters.some(ring => inPoly(q, ring) || ring.some((p, i) => segDist(q, p, ring[(i + 1) % ring.length]!) < 1)));
+    if (m < (beside ? len * 0.5 : len - one)) bad2.push(`${r.id}: ${m.toFixed(1)} m of kerb stone on an arc of ${len.toFixed(1)} m${beside ? ' (beside a crossing or a drive)' : ''}`);
   }
   // KR-3: no kerb across a lay-by's mouth, and the lay-by's own stones lie on its outline
   const bays = c.w.ground.flats.filter(f => f.id.startsWith('civic/bay/') && c.gen.roadFinish && (c.S.roads?.kerbs?.bays?.kerbed ?? []).some((k: { bay: string }) => `civic/bay/${k.bay}` === f.id));

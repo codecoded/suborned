@@ -229,6 +229,29 @@ namespace Suborned.Sim
                 r.Eq(okRuns, period / T(5) + 1, $"every landing walks, stays blind and lands on its sweep at PatrolAwayUntil (worst step {worstStep} cm a tick; {turned} turned back short of the wait spot; the shortest wait {(minWait == int.MaxValue ? 0 : minWait / Game.Hz)} s){bad}");
                 g.Step(); // the scenario's own run moves a tick, so its replay is its own
             });
+            Add("NQ-1", "—", "The batch notice read (Redline 064 #1, engine 0.30.0): NoticeProbeOf resolves a person once a tick and NoticesAt answers exactly what NoticesNow does, for every walker on the street and the cast, at 0:30, 2:00 and 4:00, over a 1 m grid 14 m round each, for a takedown, a body and a drawn weapon. A probe from another tick is refused.", r =>
+            {
+                var g = r.G; int asked = 0, off = 0; string first = ""; var acts = new[] { "takedown", "body", "weapon-drawn" };
+                foreach (int t in new[] { T(30), T(120), T(240) })
+                {
+                    r.To(t);
+                    var ids = g.Walkers.Select(w => w.P.Id).Concat(new[] { Inez, Driver, GuardR }).Distinct().ToList();
+                    foreach (var id in ids)
+                    {
+                        var pr = g.NoticeProbeOf(id); var p = g.PersonById(id);
+                        if (pr == null) { foreach (var act in acts) if (g.NoticesNow(id, act, new Pt(0, 0))) { off++; if (first.Length == 0) first = $"{id}: no probe, but NoticesNow true"; } continue; }
+                        for (int dx = -1400; dx <= 1400; dx += 100) for (int dy = -1400; dy <= 1400; dy += 100)
+                        {
+                            var q = pr.At + new Pt(dx, dy);
+                            foreach (var act in acts) { asked++; if (g.NoticesAt(pr, act, q) != g.NoticesNow(id, act, q)) { off++; if (first.Length == 0) first = $"{Report.Clock(g.Tick)} {id} {act} at {q}"; } }
+                        }
+                    }
+                }
+                r.Is(asked > 10000 && off == 0, $"NoticesAt equals NoticesNow on {asked} reads ({off} differ) {first}");
+                var stale = g.NoticeProbeOf(Inez); g.Step();
+                bool threw = false; try { if (stale != null) g.NoticesAt(stale, "body", stale.At); } catch (InvalidOperationException) { threw = true; }
+                r.Is(stale == null || threw, "a probe from another tick is refused");
+            });
         }
 
         static Pt SweepAt(Game g, int t) { int period = T(g.R.PatrolPeriodS), half = period / 2, ph = t % period; return G.Lerp(g.S.Stand(g.S.PatrolA), g.S.Stand(g.S.PatrolB), ph <= half ? ph : period - ph, half); }

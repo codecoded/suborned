@@ -71,7 +71,7 @@ describe('the corners', () => {
   });
   test('the sheet-edge corners (Datum: the beyond blocks\' corners where a road runs on to the sheet edge) are rounded: 7 junction-box corners, the minor road\'s radius, none of them a plot, bay, mouth or bend', () => {
     const E = returnsOf(live.ctx).filter(r => r.edge);
-    expect(E.length).toBe(7); expect(E.every(r => r.convex && !r.plot && Math.abs(r.r - r.want) < 0.01 && !r.bay && !r.mouth && !r.bend)).toBe(true);
+    expect(E.length).toBe(7); expect(E.every(r => r.convex && r.plot === 'edge' && Math.abs(r.r - r.want) < 0.01 && !r.bay && !r.mouth && !r.bend)).toBe(true);
     for (const r of E) { expect(r.want).toBe(r.cls === 'district' ? 8 : 6); expect(Math.abs(dist(r.a, r.c) - r.r)).toBeLessThan(1e-6); expect(dist(r.a, r.at)).toBeCloseTo(r.t, 6); }
     expect(E.map(r => r.at.map(Math.round).join(',')).sort()).toEqual(['-14,-732', '-328,-732', '-352,-9', '-352,268', '-352,9', '14,-732', '288,292'].sort());
   });
@@ -79,6 +79,10 @@ describe('the corners', () => {
     const H = returnsOf(live.ctx).filter(r => r.hole);
     expect(H.length).toBe(2);
     for (const r of H) { expect(dist(r.hole![0]!, r.a)).toBeCloseTo(dist(r.hole![0]!, r.b), 6); expect(r.hole!.length).toBe(r.n + 2); expect(r.bend).toBeDefined(); }
+  });
+  test('the returns are cached on the plan, the standards and the civic block together: another standard on the same derived plan is another list (Redline brief 064 #10)', () => {
+    const n = returnsOf(live.ctx).length, off = { ...live.ctx, S: { ...live.ctx.S, kerbReturn: { ...(live.ctx.S as any).kerbReturn, off: true } } } as typeof live.ctx;
+    expect(returnsOf(off).length).toBe(0); expect(returnsOf(live.ctx).length).toBe(n); expect(returnsOf({ ...live.ctx, S: undefined } as any).length).toBe(0); expect(returnsOf(live.ctx).length).toBe(n);
   });
   test('tangentAt reads a vertex of a plot, 0 where the corner is square', () => {
     const r = returnsOf(live.ctx).find(x => x.convex && !x.bay && !x.mouth)!;

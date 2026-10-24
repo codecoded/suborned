@@ -131,7 +131,10 @@ namespace Suborned.Sim
                 r.To(g.LureTick + g.VisitWalkTicks + 1);
                 var gp = g.GuardPose()!.Value;
                 r.Is(G.Within(r.Op(Scout).Pos, stops[0], 30), "the Scout is on the first stop");
-                r.Is(G.Within(gp.pos, stops[1], 5), $"he takes the second stop {stops[1]} (at {gp.pos})");
+                // engine 0.30.0 (Pulse's re-bake on the face-margin grid): the file now holds stops every 15° (90°, 75°, 60°, 45° ...), the next three within
+                // a metre of the first; he takes the first in the file clear of the Scout by partners-clear-cm, (-883, -3003) on her right (was stops[1], (-953, -2807))
+                var clear = stops.FirstOrDefault(q => G.Dist(q, r.Op(Scout).Pos) >= g.R.PartnersClearCm);
+                r.Is(G.Within(gp.pos, clear, 5) && clear != stops[0], $"he takes the first stop clear of the Scout, {clear} (at {gp.pos})");
                 r.Is(G.Dist(gp.pos, r.Op(Scout).Pos) >= g.R.PartnersClearCm, "a metre or more from the Scout");
             }, Turned(Inez));
 

@@ -1,0 +1,1 @@
+{"schema": "suborned.shots/1", "defaults": {"hud": false}, "shots": [{"name": "boulevard-30", "tick": 0, "at": [214, 136], "yaw": 0}, {"name": "boulevard-210", "tick": 0, "at": [214, 136], "yaw": 2}, {"name": "market-30", "tick": 0, "at": [224, -170], "yaw": 0}, {"name": "circus-30", "tick": 0, "at": [224, 194], "yaw": 0}]}

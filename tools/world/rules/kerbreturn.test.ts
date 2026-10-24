@@ -24,7 +24,7 @@ const piece = (w: World, kind: string): StreetItem => w.ground.pieces!.find(s =>
 describe('KR-2 and KR-3', () => {
   test('the live world passes: fills, cut slabs, stones round every arc, nothing in the carriageway a return takes, no kerb across a lay-by', () => {
     const r = run(); expect(r['KR-2']).toBe(''); expect(r['KR-3']).toBe('');
-    expect(base.w.ground.flats.filter(f => f.id.startsWith('ground/return/')).length).toBe(returnsOf(gc).filter(x => x.convex && !x.nose).length);
+    expect(base.w.ground.flats.filter(f => f.id.startsWith('ground/return/') && !f.id.endsWith('/hole')).length).toBe(returnsOf(gc).filter(x => x.convex && !x.nose).length);
     expect(base.w.ground.pieces!.filter(s => s.kind === 'kerb-return').length).toBeGreaterThan(800);
   });
   test('KR-2 fails on a tree put in the cut, a flag laid over it and a crossing strip across it', () => {
@@ -38,6 +38,11 @@ describe('KR-2 and KR-3', () => {
     expect(run(w => { w.ground.flats = w.ground.flats.filter(f => f.id !== `ground/return/${r.id}`); })['KR-2']).toMatch(/no carriageway fill/);
     expect(run(w => { w.ground.flats.find(f => f.id === `ground/return/${r.id}`)!.level = 0.1; })['KR-2']).toMatch(/its fill lies at 0\.1/);
     expect(run(w => { w.ground.pieces = w.ground.pieces!.filter(s => s.edge !== `kerbreturn/${r.id}`); })['KR-2']).toMatch(/m of kerb stone on an arc of/);
+  });
+  test('KR-2 holds an arc to within a stone: one stone missing passes, two or three fail (Redline brief 064 #10: half an arc used to pass)', () => {
+    const r = convex(), mine = (w: World) => w.ground.pieces!.filter(s => s.edge === `kerbreturn/${r.id}`);
+    const without = (n: number) => run(w => { const ids = new Set(mine(w).slice(0, n).map(s => s.id)); w.ground.pieces = w.ground.pieces!.filter(s => !ids.has(s.id)); })['KR-2'];
+    expect(without(1)).toBe(''); expect(without(4)).toMatch(/m of kerb stone on an arc of/);
   });
   test('KR-2 fails on a plot slab that still covers the old corner', () => {
     const r = convex();

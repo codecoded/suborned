@@ -171,6 +171,8 @@ namespace Suborned.Play
         /// <summary>Captures only (briefs' screenshots, set from eval): the pointer's screen position in place of the mouse's for hover and
         /// the price chip. Null in play; never saved; clicks still come from the mouse.</summary>
         public static Vector2? PointerOverride;
+        /// <summary>The perf probe (-perf064, Redline 064): time ShowSight (fans), PersonConesFrame and RerouteFrame each frame (Stopwatch ticks).</summary>
+        public static bool PerfTiming; public static long PerfSightTicks, PerfConesTicks, PerfRerouteTicks;
         /// <summary>For the proof: the pointer held on a world point (its screen position each frame, so a window resize never moves it off).</summary>
         public static Vector3? PointerWorld;
         string intentKey = ""; float hoverAt; GameObject background; Vector2 lastMouse = new(-1, -1), lastHover; readonly List<Camera> covered = new();
@@ -225,6 +227,7 @@ namespace Suborned.Play
             TriggerDown = false; AimEnd(); FireLog.Clear(); ShotFx.Clear(); CarBlownAt.Clear(); holdFireOn = false; for (int k = 0; k < 4; k++) { FireNow[k] = NoFire; FireStoppedAt[k] = -10f; FireStoppedOn[k] = ""; } // brief 024 Firing
             Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); ResetFeed(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
             ResetLess(); ResetAttention(); ResetConvo(); Track(); Notice(); lastWatchOrders = -1;
+            ResetRound24(); // Redline 064 #9: the 2026-10-24 round's host state (rewalks, noticing, cones, reroute, seal span, the no-walk cell)
             // open on the cell (Waymark 2026-10-16: the four stand by the getaway car's boarding pavilion): centred on block (-2.5, -40.5), play zoom 14,
             // so the cell sits below the briefing card at any resolution; Replay opens the same way
             TurnReset(); if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); CamProjection(); } LookAt(frame.World(OpeningFocus)); // the preset's zoom (brief 025; built-in 14)
@@ -288,7 +291,8 @@ namespace Suborned.Play
             Guard("fight lab", FightLabFrame); // brief 027: queued ghost lines and the hostiles' focus in a freeze
             FadePoints();
             DoorViewFrame(); // GDD v0.24: the Office door's clear-view clock (H13's door cause)
-            ShowSight(); PersonConesFrame(); RerouteFrame(); // engine 0.28: a civilian's cone on hover, only where it matters (HostNotice)
+            if (PerfTiming) { long t0 = System.Diagnostics.Stopwatch.GetTimestamp(); ShowSight(); long t1 = System.Diagnostics.Stopwatch.GetTimestamp(); PersonConesFrame(); long t2 = System.Diagnostics.Stopwatch.GetTimestamp(); RerouteFrame(); long t3 = System.Diagnostics.Stopwatch.GetTimestamp(); PerfSightTicks = t1 - t0; PerfConesTicks = t2 - t1; PerfRerouteTicks = t3 - t2; } // the perf probe (-perf064): this frame's host-side cost
+            else { ShowSight(); PersonConesFrame(); RerouteFrame(); } // engine 0.28: a civilian's cone on hover, only where it matters (HostNotice)
             Guard("street marks", StreetMarks);
             for (int k = 0; k < 4; k++)
             {

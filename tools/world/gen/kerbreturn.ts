@@ -73,7 +73,8 @@ function civicCorners(ctx: Pick<Ctx, 'plan' | 'd' | 'civ'>, ring: (plot: string)
   return out;
 }
 type Idx = { list: Return[]; byVertex: Map<string, Return>; grid: Map<string, Return[]>; std: KerbReturnStd; bays: BayShape[] };
-const cache = new WeakMap<object, Idx>();
+/** Keyed on the derived plan, then the streetscape standards, then the civic block: the result reads all three (Redline brief 064 #10); a missing one stands as a shared empty key. */
+const cache = new WeakMap<object, WeakMap<object, WeakMap<object, Idx>>>(), NONE = {};
 
 const CELL = 32;
 const cellsOf = (r: Return): string[] => {
@@ -225,10 +226,11 @@ function edgeReturns(ctx: Pick<Ctx, 'plan' | 'd'>, std: KerbReturnStd, have: Ret
 /** The kerbed bays, with their rounded outlines. */
 export const baysOf = (ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): BayShape[] => indexOf(ctx).bays;
 
-/** Every kerb return of the district, once. Cached per derived plan. */
+/** Every kerb return of the district, once. Cached per derived plan, standards and civic block. */
 export function returnsOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Return[] { return indexOf(ctx).list; }
 function indexOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Idx {
-  const hit = cache.get(ctx.d); if (hit) return hit;
+  const bySd = cache.get(ctx.d) ?? cache.set(ctx.d, new WeakMap()).get(ctx.d)!, byCiv = bySd.get((ctx.S as object | undefined) ?? NONE) ?? bySd.set((ctx.S as object | undefined) ?? NONE, new WeakMap()).get((ctx.S as object | undefined) ?? NONE)!;
+  const hit = byCiv.get((ctx.civ as object | undefined) ?? NONE); if (hit) return hit;
   const std = kerbReturnStd(ctx.S), list: Return[] = [], bays: BayShape[] = [];
   if (!std.off && ctx.S?.sections) {
     const civicKeys = civicCorners(ctx as Pick<Ctx, 'plan' | 'd' | 'civ'>, id => plotRing(ctx as Ctx, ctx.d.plots.find(p => p.id === id)!).p);
@@ -270,7 +272,7 @@ function indexOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Idx {
   const byVertex = new Map<string, Return>(), grid = new Map<string, Return[]>();
   for (const r of list) { if (!r.bay && !r.bend) byVertex.set(`${r.plot}|${key(r.at)}`, r); for (const k of cellsOf(r)) (grid.get(k) ?? grid.set(k, []).get(k)!).push(r); }
   const out: Idx = { list, byVertex, grid, std, bays };
-  cache.set(ctx.d, out);
+  byCiv.set((ctx.civ as object | undefined) ?? NONE, out);
   return out;
 }
 

@@ -199,9 +199,9 @@ namespace Suborned.Sim
                 var g = r.G;
                 OrdersWhileOn(r, DriverOpening().Concat(new[] {
                     MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
-                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1815, Enf, "stash", ServiceDoorId), Act(1900, Scout, "mislead", "rivals"), Act(1900, Tech, "reroute", "patrol"),
-                    new Order { Tick = 1915, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, Act(1973, Enf, "carry", Guard29), MvTo(2003, Enf, ServiceDoor), Act(2119, Enf, "stash", ServiceDoorId),
-                    MvTo(2219, Enf, new Pt(7625, -2880)), Mv(2340, Scout, "crew:scout"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
+                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), Act(1960, Scout, "mislead", "rivals"), Act(1960, Tech, "reroute", "patrol"), // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
+                    new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 now sees the driver's takedown and radios it (the face margin moved his walk), so he lies where he fell: no second carry
+                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
                     MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
                 const int opens = 4161; // 6:56.1 (Waymark 2026-10-19; was 7:58.5, tick 4785, before the east-face door)
                 r.To(opens);
@@ -218,6 +218,10 @@ namespace Suborned.Sim
                     if (open >= 0) r.Is(g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == g.Log[open].Tick), $"an officer opens the service door at {Report.Clock(g.Log[open].Tick)}, finds the driver and is sent on to the scene it found");
                     else r.Is(g.Over && g.FailCode == "enforcer-down", "no search opens the service door before the Enforcer is down (the path to the reassignment needs new orders)");
                 }
+                // engine 0.30.0: on the face-margin grid guard 29 radios the driver's takedown (Alert 2) and police-1's search opens the service door at
+                // 5:07, finds the driver and is sent on to that scene: the path this fixture was written for, reached again
+                int op0 = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Text.Contains("driver"));
+                r.Is(op0 >= 0 && g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == g.Log[op0].Tick), $"an officer opens the service door, finds the driver and is sent on to the scene it found{(op0 >= 0 ? " (" + Report.Clock(g.Log[op0].Tick) + ")" : "")}");
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.To(T(500));
                 r.Is(g.FailCode != "engine-error", "the run goes on");

@@ -505,12 +505,14 @@ namespace Suborned.Play
 
         sealed class FanDraw
         {
-            public GameObject Go; public Mesh Fill, Rim, Under; public MeshRenderer FillR, RimR, UnderR; public Fan For; public bool Live; public string Kind = "", Watcher = "";
+            public GameObject Go; public Mesh Fill, Rim, Under, RimS; public MeshRenderer FillR, RimR, UnderR, RimSR; public Fan For; public bool Live; public string Kind = "", Watcher = "";
+            /// <summary>Redline 064 #2: each fill vertex's place from the lens to the far edge (0..1), so a fade rewrites colours only; Rim is the rest rim, RimS the strong.</summary>
+            public readonly List<float> FillT = new();
             public Vector3 Hub; public readonly List<Vector3> Ring = new();
             /// <summary>Brief 057 §3: how strong it draws now (0 rest .. 1 strong), eased toward Want; the strength the meshes were last built at.</summary>
             public float Strength = -1f, Want, BuiltAt = -9f; public float Reach = 1f; public int Seen;
         }
-        readonly Dictionary<string, FanDraw> fanBy = new();
+        readonly Dictionary<string, FanDraw> fanBy = new(); readonly HashSet<string> fanSeen = new();
         readonly Dictionary<(Color, float), Material> fanMats = new();
         readonly Dictionary<Color, Material> fillMats = new();
         readonly List<Vector3> verts = new(); readonly List<int> tris = new(); readonly List<Color> cols = new();
@@ -528,7 +530,7 @@ namespace Suborned.Play
         /// when the engine hands back a different Fan (its cache keeps one per pose), its Live flag flips, or its strength moves.</summary>
         public void ShowFans(IReadOnlyList<Fan> list, IReadOnlyList<bool> strong = null)
         {
-            var seen = new HashSet<string>(); int n = list?.Count ?? 0; float dt = Time.unscaledDeltaTime;
+            var seen = fanSeen; seen.Clear(); int n = list?.Count ?? 0; float dt = Time.unscaledDeltaTime; // Redline 064 #2: one set, reused
             for (int i = 0; i < n; i++)
             {
                 var f = list[i]; string key = f.Watcher.Length > 0 ? f.Watcher : "fan/" + i; if (!seen.Add(key)) continue;
@@ -545,7 +547,7 @@ namespace Suborned.Play
         FanDraw NewFan(string key)
         {
             var d = new FanDraw { Go = new GameObject("fan/" + key), Watcher = key }; d.Go.transform.SetParent(root, false);
-            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim"); (d.Under, d.UnderR) = MeshPart(d.Go.transform, "shadow-edge"); // engine 0.28: the ink under a shadow cut's rim
+            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim"); (d.RimS, d.RimSR) = MeshPart(d.Go.transform, "rim-strong"); (d.Under, d.UnderR) = MeshPart(d.Go.transform, "shadow-edge"); // engine 0.28: the ink under a shadow cut's rim
             return d;
         }
 
@@ -583,23 +585,30 @@ namespace Suborned.Play
             var pts = f.Points; int n = pts.Length;
             d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));
             d.Hub = frame.World(f.At); d.Reach = 1f; foreach (var r in d.Ring) d.Reach = Mathf.Max(d.Reach, Flat(r - d.Hub).magnitude);
-            Restrength(d);
+            Geometry(d); ApplyStrength(d);
         }
 
-        /// <summary>The fill (vertex alpha by distance from the lens) and the rim (width and alpha) at the fan's strength now.</summary>
+        /// <summary>A strength step. Redline 064 #2: colours and which rim shows only; the clipped geometry stays (PerfLegacy rebuilds it all, as
+        /// the round did, for the perf probe).</summary>
         void Restrength(FanDraw d)
         {
-            var f = d.For; if (f == null) return; float s = Mathf.Clamp01(d.Strength < 0f ? 1f : d.Strength); d.BuiltAt = s;
-            var c = f.Live ? KindColour(f.Kind) : Grey;
-            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
-            float aHub = Mathf.Lerp(RestHub, StrongHub, s), aFar = Mathf.Lerp(RestFar, StrongFar, s);
-            float rimA = s > 0.5f ? 1f : RestRimA; // two rim materials (opaque strong, 55 % at rest): no per-frame material
-            Mat(d.FillR, FillMat(c)); Mat(d.RimR, FanMat(c, rimA));
+            if (d.For == null) return;
+            if (HandoverHost.PerfLegacy) Geometry(d);
+            ApplyStrength(d);
+        }
+
+        /// <summary>The fan's meshes from its polygons, once a pose: the fill (shadows cut out; each vertex's place from the lens kept for its
+        /// alpha), the rest rim and the strong rim (their widths), the shadow cuts' ink.</summary>
+        /// <summary>The perf probe reads it: fan geometry builds since the last read.</summary>
+        public static int FanGeometries;
+        void Geometry(FanDraw d)
+        {
+            var f = d.For; if (f == null) return; FanGeometries++;
             // a mast (brief 013): one polygon a head; heads 2 and 3 are the fan's More, drawn the same way from the same pole
             var polys = new List<(List<Vector3> ring, string[] stop)> { (d.Ring, f.Stop) };
             for (int h = 0; h < f.More.Length; h++) { var r2 = new List<Vector3>(); foreach (var q in f.More[h]) r2.Add(frame.World(q)); polys.Add((r2, h < f.MoreStop.Length ? f.MoreStop[h] : System.Array.Empty<string>())); }
             // the fill: a fan of triangles from the watcher (the engine's polygon is star-shaped round it: its rays start there)
-            verts.Clear(); tris.Clear(); cols.Clear();
+            verts.Clear(); tris.Clear();
             foreach (var (ring, _) in polys)
             {
                 int m = ring.Count; if (m < 3) continue; int b0 = verts.Count;
@@ -608,15 +617,33 @@ namespace Suborned.Play
                 for (int i = 0; i < m; i++) { tris.Add(b0); tris.Add(b0 + 1 + i); tris.Add(b0 + 1 + (i + 1) % m); }
             }
             ShadowsOf(f); CutFill(); // engine 0.28 (hud29 securityFan.shadows): Fan.Shadows cut out of the fill
-            foreach (var v in verts) { float t = Mathf.Clamp01(Flat(v - d.Hub).magnitude / d.Reach); cols.Add(new Color(1f, 1f, 1f, Mathf.Lerp(aHub, aFar, t))); }
-            d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetColors(cols); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
-            // the rim: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue
-            rimW = Mathf.Lerp(RestRimW, StrongRimW, s);
-            verts.Clear(); tris.Clear(); float dash = 0f;
-            foreach (var (ring, stop) in polys) { int m = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && m >= 3) Hatch(ring); }
-            ShadowRims(polys, c, d); // each cut gets a thin rim of the fan's colour over ink-deep (the ink in its own mesh)
-            d.Rim.Clear(); d.Rim.SetVertices(verts); d.Rim.SetTriangles(tris, 0); d.Rim.RecalculateBounds();
-            rimW = RimW;
+            d.FillT.Clear(); foreach (var v in verts) d.FillT.Add(Mathf.Clamp01(Flat(v - d.Hub).magnitude / d.Reach));
+            d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
+            var c = f.Live ? KindColour(f.Kind) : Grey;
+            // the rims: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue; rest and strong widths
+            for (int pass = 0; pass < 2; pass++)
+            {
+                rimW = pass == 0 ? RestRimW : StrongRimW;
+                verts.Clear(); tris.Clear(); float dash = 0f;
+                foreach (var (ring, stop) in polys) { int m = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && m >= 3) Hatch(ring); }
+                ShadowRims(polys, c, d); // each cut gets a thin rim of the fan's colour over ink-deep (the ink in its own mesh)
+                var mesh = pass == 0 ? d.Rim : d.RimS; mesh.Clear(); mesh.SetVertices(verts); mesh.SetTriangles(tris, 0); mesh.RecalculateBounds();
+            }
+            rimW = RimW; d.BuiltAt = -9f;
+        }
+
+        /// <summary>The fan at its strength now: the fill's vertex alphas (rest 13 % to 1 %, strong 34 % to 14 %, lerped) and the rest or the strong
+        /// rim (the switch at half way, as the rim's two materials were).</summary>
+        void ApplyStrength(FanDraw d)
+        {
+            var f = d.For; if (f == null) return; float s = Mathf.Clamp01(d.Strength < 0f ? 1f : d.Strength); d.BuiltAt = s;
+            var c = f.Live ? KindColour(f.Kind) : Grey;
+            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
+            float aHub = Mathf.Lerp(RestHub, StrongHub, s), aFar = Mathf.Lerp(RestFar, StrongFar, s);
+            cols.Clear(); foreach (var t in d.FillT) cols.Add(new Color(1f, 1f, 1f, Mathf.Lerp(aHub, aFar, t)));
+            if (cols.Count == d.Fill.vertexCount) d.Fill.SetColors(cols);
+            Mat(d.FillR, FillMat(c)); Mat(d.RimR, FanMat(c, RestRimA)); Mat(d.RimSR, FanMat(c, 1f));
+            bool strong = s > 0.5f; if (d.RimR.enabled == strong) d.RimR.enabled = !strong; if (d.RimSR.enabled != strong) d.RimSR.enabled = strong;
         }
 
         void RimOf(FanDraw d, Fan f, List<Vector3> Ring, string[] Stop, ref float dash)

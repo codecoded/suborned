@@ -97,7 +97,7 @@ namespace Suborned
         /// <summary>The evening phase's data (lens.json `evening`), or null when the file has none or was rejected: LightPhase reads it for the sun, the ambient and the reflections.</summary>
         public static Evening EveningData { get; private set; }
         /// <summary>A hex colour with its HSV value scaled, as the builder makes the ambient colours (Look.Palette).</summary>
-        public static Color Scaled(string hex, float value) { var c = Hex(hex); Color.RGBToHSV(c, out var h, out var s, out var v); return Color.HSVToRGB(h, s, Mathf.Clamp01(v * value)); }
+        public static Color Scaled(string hex, float value) { var c = HexC(hex); Color.RGBToHSV(c, out var h, out var s, out var v); return Color.HSVToRGB(h, s, Mathf.Clamp01(v * value)); }
 
         public static AtmosphereLens Instance { get; private set; }
 
@@ -196,6 +196,11 @@ namespace Suborned
         }
 
         static Color Hex(string s) { ColorUtility.TryParseHtmlString(s, out var c); return c; }
+        /// <summary>Redline 064 #6: the evening's colours parsed once per string, not every frame at dusk and night.</summary>
+        static readonly System.Collections.Generic.Dictionary<string, Color> hexSeen = new();
+        /// <summary>A #rrggbb colour parsed once per string (the evening code asks every frame it eases).</summary>
+        public static Color Colour(string s) => HexC(s);
+        static Color HexC(string s) { if (s == null) return default; if (!hexSeen.TryGetValue(s, out var c)) hexSeen[s] = c = Hex(s); return c; }
         /// <summary>A shader global is raw: material colours are converted to linear by Unity, so a colour given as a vector is converted here.</summary>
         static Color Lin(Color c) => QualitySettings.activeColorSpace == ColorSpace.Linear ? c.linear : c;
 
@@ -317,7 +322,7 @@ namespace Suborned
             Vector4 s0 = new Vector4(1f, 1f, 1f, 0f), h0 = s0; float v0 = 0.1f;
             if (prof && prof.TryGet<ShadowsMidtonesHighlights>(out var sm)) { if (sm.shadows.overrideState) s0 = sm.shadows.value; if (sm.highlights.overrideState) h0 = sm.highlights.value; }
             if (prof && prof.TryGet<Vignette>(out var vg) && vg.intensity.overrideState) v0 = vg.intensity.value;
-            Color fil = Color.Lerp(Color.white, Hex(g.filter), k), shT = Color.Lerp(Color.white, Hex(g.shadows), k), hiT = Color.Lerp(Color.white, Hex(g.highlights), k);
+            Color fil = Color.Lerp(Color.white, HexC(g.filter), k), shT = Color.Lerp(Color.white, HexC(g.shadows), k), hiT = Color.Lerp(Color.white, HexC(g.highlights), k);
             float expBase = BaseExposure(), satBase = BaseSaturation();
             Rig[] rigs = { rigPlay, rigFollow, rigLong };
             for (int i = 0; i < 3; i++)
@@ -439,13 +444,13 @@ namespace Suborned
             if (AtmosphereSettings.SkyTeal)
             {
                 var z = Lin(tealZenith); var m = Lin(tealMid);
-                if (ev != null) { z = Color.Lerp(z, Lin(Hex(ev.sky.zenith)), k); m = Color.Lerp(m, Lin(Hex(ev.sky.mid)), k); }
+                if (ev != null) { z = Color.Lerp(z, Lin(HexC(ev.sky.zenith)), k); m = Color.Lerp(m, Lin(HexC(ev.sky.mid)), k); }
                 Shader.SetGlobalVector(idZenith, new Vector4(z.r, z.g, z.b, 1f));
                 Shader.SetGlobalVector(idMid, new Vector4(m.r, m.g, m.b, 1f));
             }
             else if (ev != null && skyRead)
             {   // cobalt by day is the scene sky material's own; at dusk it is blended (in linear) toward the evening zenith and mid
-                var z = Color.Lerp(dayZenith, Lin(Hex(ev.sky.zenith)), k); var m = Color.Lerp(dayMid, Lin(Hex(ev.sky.mid)), k);
+                var z = Color.Lerp(dayZenith, Lin(HexC(ev.sky.zenith)), k); var m = Color.Lerp(dayMid, Lin(HexC(ev.sky.mid)), k);
                 Shader.SetGlobalVector(idZenith, new Vector4(z.r, z.g, z.b, 1f));
                 Shader.SetGlobalVector(idMid, new Vector4(m.r, m.g, m.b, 1f));
             }
@@ -459,7 +464,7 @@ namespace Suborned
                 var ph = Suborned.Play.LightPhase.Instance; var sun = ph ? ph.sun : null;
                 if (sun)
                 {   // the sky's glare follows the real sun: its direction and a glow colour that leans from the scene's to the dusk orange
-                    var to = -sun.transform.forward; var gc = Color.Lerp(skyRead ? daySunGlow : Lin(Hex(ev.sky.sunGlow)), Lin(Hex(ev.sky.sunGlow)), k);
+                    var to = -sun.transform.forward; var gc = Color.Lerp(skyRead ? daySunGlow : Lin(HexC(ev.sky.sunGlow)), Lin(HexC(ev.sky.sunGlow)), k);
                     Shader.SetGlobalVector(idSunDir, new Vector4(to.x, to.y, to.z, 1f)); Shader.SetGlobalVector(idSunCol, new Vector4(gc.r, gc.g, gc.b, 1f));
                 }
             }

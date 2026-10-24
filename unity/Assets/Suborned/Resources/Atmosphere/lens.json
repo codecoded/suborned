@@ -52,7 +52,7 @@
   "evening": {
     "easeSeconds": 1.5,
     "note": "Glint 2026-10-24 (evening looked like day: only RoadLight's strip lifted). The evening phase, LightPhase.SetEvening / -evening / TpLongRun.RoadTest: a state between day and night, eased in by LightPhase.Dusk (0 day .. 1 this) over easeSeconds (95 percent), look only (nothing a rule, sight or replay reads). sun: a low warm sun, pitch 19 (day 38) so shadows run 2.9 times the height, from the west-south-west (yaw 62; day 330) so the sunlit faces are the ones the opening heading (yaw 30) looks at; the colour is a deeper peach, the intensity pays back the lower angle (ground irradiance I x sin pitch: 1.8 x 0.62 = 1.11 by day, 2.1 x 0.33 = 0.68 now, the walls facing it get 1.99 against 1.42), shadowStrength the low sun's own (the shade stays filled). ambient: HSV value-scaled hexes as light.json builds them, a lilac-blue skylight, a peach equator, a warm ground, about 0.85 of day. reflection: the baked cubes and probes stay the day's, so they are turned down (intensity 0.66 of 0.8, probes x 0.8). sky (perspective tiers): zenith and mid blend in linear toward a deeper cobalt and a coral-lilac, the glow colour and the haze band follow the real sun (low and orange); haze colour, gain and density are haze.json evening. grade: deltas on each tier's own grade by Dusk (exposure EV, contrast, saturation), a warm colour filter and white balance, a cool tint in the shadows and a warm one in the highlights, and a stronger vignette; no new pass and no per-pixel cost (the grade is the LUT). Signals draw on their own camera outside all of it. Lit windows and signs are roadlight.json glow.",
-    "sun": { "colour": "#ffcfae", "intensity": 2.8, "pitch": 16, "yaw": 62, "shadowStrength": 0.75 },
+    "sun": { "colour": "#ffdac0", "intensity": 3.0, "pitch": 17, "yaw": 120, "shadowStrength": 0.75 },
     "ambient": {
       "sky": { "hex": "#d6d0ee", "value": 0.78 },
       "equator": { "hex": "#f8dcc8", "value": 0.76 },
@@ -60,7 +60,7 @@
     },
     "reflection": { "intensity": 0.70, "probeScale": 0.85 },
     "sky": { "zenith": "#4a78d2", "mid": "#e6a79a", "sunGlow": "#ff9a58", "hazeHeight": 0.16, "aureole": 1.1, "aureolePower": 90, "hazeLift": 0.9, "peach": 1.2 },
-    "grade": { "exposure": 0.12, "contrast": 4, "saturation": 5, "temperature": 4, "tint": 2, "filter": "#fff5ec", "shadows": "#e4e4f6", "highlights": "#fff2e6", "vignette": 0.16 }
+    "grade": { "exposure": 0.15, "contrast": 4, "saturation": 2, "temperature": 3, "tint": 1, "filter": "#fffaf4", "shadows": "#e4e4f6", "highlights": "#fff8f0", "vignette": 0.16 }
   },
   "farBand": {
     "resource": "Atmosphere/farband",

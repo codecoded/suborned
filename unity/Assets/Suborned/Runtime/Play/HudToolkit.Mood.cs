@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -27,12 +28,14 @@ namespace Suborned.Play
         }
 
         /// <summary>Per pip, per frame: the mood the cell knows for the role ("" and neutral: no disc).</summary>
+        readonly Dictionary<VisualElement, string> moodShown = new();
         void MoodFrame(VisualElement pipRoot, string role)
         {
             var d = MoodDiscOf(pipRoot); string mood = "";
             if (role != "councillor" && host.Game != null) try { mood = host.Game.MoodOf(role); } catch (System.Exception) { mood = ""; }
             bool on = mood is "friendly" or "uneasy" or "scared";
-            Show(d, on); if (!on) return;
+            Show(d, on); if (!on) { moodShown.Remove(d); return; }
+            if (moodShown.TryGetValue(d, out var was) && was == mood) return; moodShown[d] = mood; // Redline 064 #6: set when it changes, not every frame
             Bg(d, "markers/disc_dark_24", Color.white); Icon(d.Q("face"), "mood_" + mood, Cream);
         }
 

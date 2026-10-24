@@ -158,6 +158,22 @@ namespace Suborned.Sim
             foreach (var (q, wp) in OnTheStreet()) if (q == p) return Notices(p, wp, at, act);
             return false;
         }
+        /// <summary>Engine 0.30.0 (Redline 064 #1): person `id` resolved once for many NoticesAt reads this tick: where they stand on the street and how
+        /// they face, so a host building a civilian's cone asks hundreds of points without re-scanning the street per point. Null when the person is
+        /// not on the street now (NoticesNow would answer false everywhere). Valid for the tick it was made at (Tick); read-only, nothing hashed.</summary>
+        public NoticeProbe? NoticeProbeOf(string id)
+        {
+            var p = PersonById(id); if (p == null) return null;
+            foreach (var (q, wp) in OnTheStreet()) if (q == p) return new NoticeProbe(p, wp, R.PeopleCone && !SecurityPerson(p) ? PersonFacing(p, wp) : null, Tick);
+            return null;
+        }
+        /// <summary>Would the probed person notice `act` at `at` now? Exactly NoticesNow(probe's id, act, at) at the probe's tick (scenario NQ-1). Read-only.</summary>
+        public bool NoticesAt(NoticeProbe probe, string act, Pt at)
+        {
+            if (probe.Tick != Tick) throw new InvalidOperationException($"NoticesAt: the probe was made at tick {probe.Tick}, the game is at {Tick}: make one a tick (NoticeProbeOf)");
+            return NoticesAt(probe.P, probe.At, at, act, Alert, probe.Facing);
+        }
+
         /// <summary>Would person `id` notice `act` at all at the Alert now, wherever it happened in their shape (brief 054 §3.1: draw their cone
         /// on hover only when it matters)? False for a civilian and an odd act below people-care-alert, or a never act.</summary>
         public bool CaresAbout(string id, string act)
@@ -167,5 +183,15 @@ namespace Suborned.Sim
             if (R.NoticeNever.Contains(act)) return false;
             return !(R.NoticeOdd.Contains(act) && Alert < R.PeopleCareAlert);
         }
+    }
+
+    /// <summary>A person resolved for many notice reads in one tick (Game.NoticeProbeOf, Game.NoticesAt): engine 0.30.0, Redline 064 #1.</summary>
+    public sealed class NoticeProbe
+    {
+        internal readonly Person P; internal readonly Pt? Facing; internal readonly int Tick;
+        /// <summary>Where the person stands on the street at the probe's tick, block cm.</summary>
+        public readonly Pt At;
+        public string Id => P.Id;
+        internal NoticeProbe(Person p, Pt at, Pt? facing, int tick) { P = p; At = at; Facing = facing; Tick = tick; }
     }
 }

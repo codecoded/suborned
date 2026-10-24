@@ -11,6 +11,7 @@ namespace Suborned.Play
     /// seal, as one icon. On first showing it pops once. Colours: the kit's own (accent.live, accent.warn, cream). It reads the host only.</summary>
     public sealed partial class HudToolkit
     {
+        int sealLeftShown = -1;
         VisualElement sealEl, sealIcon, sealTrack, sealFill, sealCause, sealCauseIcon; Label sealText; bool sealHover; float sealShownAt = -9f;
         /// <summary>The proof reads it: the marker's words now ("" hidden).</summary>
         public static string SealWords { get; private set; } = "";
@@ -37,9 +38,9 @@ namespace Suborned.Play
         {
             if (root == null) return; if (sealEl == null) BuildSeal();
             var h = host; bool on = h.SealOn && !m.Ended && !m.BriefingOpen;
-            Show(sealEl, on); if (!on) { Show(sealCause, false); SealWords = ""; sealShownAt = -9f; return; }
+            Show(sealEl, on); if (!on) { Show(sealCause, false); SealWords = ""; sealShownAt = -9f; sealLeftShown = -1; return; }
             float now = Time.unscaledTime; if (sealShownAt < 0f) sealShownAt = now;
-            int left = h.SealLeftS, span = h.SealSpanS; string t = $"{left / 60}:{left % 60:00}"; Text(sealText, t); SealWords = t;
+            int left = h.SealLeftS, span = h.SealSpanS; if (left != sealLeftShown) { sealLeftShown = left; SealWords = $"{left / 60}:{left % 60:00}"; Text(sealText, SealWords); } /* Redline 064 #6: the words only when the second changes */
             bool low = left <= 10; float blink = low ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 4f)) : 1f;
             sealEl.style.opacity = blink; sealText.style.color = low ? LookSoon : LookText;
             sealFill.style.width = Length.Percent(Mathf.Clamp01(span > 0 ? left / (float)span : 0f) * 100f); sealFill.style.backgroundColor = low ? LookSoon : LookLive;

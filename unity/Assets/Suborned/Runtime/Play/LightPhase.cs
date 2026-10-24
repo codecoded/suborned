@@ -87,7 +87,7 @@ namespace Suborned.Play
             var s = day;
             if (sun)
             {
-                sun.color = Color.Lerp(s.sunColour, Hex(e.sun.colour), k); sun.intensity = Mathf.Lerp(s.sunIntensity, e.sun.intensity, k);
+                sun.color = Color.Lerp(s.sunColour, AtmosphereLens.Colour(e.sun.colour), k); sun.intensity = Mathf.Lerp(s.sunIntensity, e.sun.intensity, k);
                 sun.transform.rotation = Quaternion.Slerp(s.sunRotation, Quaternion.Euler(e.sun.pitch, e.sun.yaw, 0f), k);
             }
             RenderSettings.ambientSkyColor = Color.Lerp(s.ambientSky, AtmosphereLens.Scaled(e.ambient.sky.hex, e.ambient.sky.value), k);
@@ -99,7 +99,6 @@ namespace Suborned.Play
             if (k <= 0f || k >= 1f) { DynamicGI.UpdateEnvironment(); if (k <= 0f) duskGi = false; } // the ambient probe is recomputed at the ends of the ease, not on every step
         }
 
-        static Color Hex(string s) { ColorUtility.TryParseHtmlString(s, out var c); return c; }
 
         float nextCap;
         void Update()

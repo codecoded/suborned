@@ -186,12 +186,17 @@ def apply_tint(img, t):
     sel = (dh <= t.get('width', 30)) & (s_ >= t.get('minSat', 0.2)) & (s_ <= t.get('maxSat', 1.0)) & (v_ >= t.get('minVal', 0.0)) & (v_ <= t.get('maxVal', 1.0))
     if t.get('keep'):
         # keep: regions of the map (fractions of its width and height, origin top-left as an image viewer shows it) where the tint never applies, for skin that
-        # shares the garment's hue (brief 063: the driver's lips, nose and hands went mint). {"ellipse": [cx, cy, rx, ry]} protects every pixel inside it;
+        # shares the garment's hue (brief 063: the driver's lips, nose and hands went mint). {"mask": "masks/x.png"} protects the white pixels of a map in UV space (the best: atlases are fragmented); {"ellipse": [cx, cy, rx, ry]} protects every pixel inside it;
         # {"box": [x0, y0, x1, y1], "hueAbove": deg} protects the pixels in the box whose hue is above `hueAbove` (skin is more orange than coral).
         idx = np.arange(w * h); xf = (idx % w + 0.5) / w; yf = 1.0 - (idx // w + 0.5) / h
         hs = ((hdeg + 180.0) % 360.0) - 180.0
         for k in t['keep']:
-            if 'ellipse' in k:
+            if 'mask' in k:
+                # a white-on-black map in the figure's UV space (tools/figures/keepmask.py makes it from the mesh); resized to this albedo
+                mi = bpy.data.images.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), k['mask'])); mi.scale(w, h)
+                mp = np.empty(w * h * 4, dtype=np.float32); mi.pixels.foreach_get(mp); bpy.data.images.remove(mi)
+                sel &= ~(mp.reshape(-1, 4)[:, 0] > 0.5)
+            elif 'ellipse' in k:
                 cx, cy, rx, ry = k['ellipse']; sel &= ~((((xf - cx) / rx) ** 2 + ((yf - cy) / ry) ** 2) <= 1.0)
             elif 'box' in k:
                 x0, y0, x1, y1 = k['box']; inbox = (xf >= x0) & (xf <= x1) & (yf >= y0) & (yf <= y1)

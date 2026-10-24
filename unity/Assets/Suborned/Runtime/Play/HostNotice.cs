@@ -13,7 +13,8 @@ namespace Suborned.Play
     /// civilian's wedge while the armed order leaves or drops a body.
     /// The shape is the engine's: Game.PersonCone gives the wedge (At, Facing, Reach, HalfCm) and every sample inside it is the engine's own
     /// point test (Game.NoticesNow for the act), so walls cut it and the stretches behind solids it sees over are its shadows (hatched). Nothing
-    /// here computes a sight rule; all reads are read-only (no hash moves). Cost: one cone rebuilt a frame, round-robin, the hovered one first.</summary>
+    /// here computes a sight rule; all reads are read-only (no hash moves). Cost (Redline 064 #1): at most one cone built a frame, the hovered one
+    /// first, each build one NoticeProbeOf and its NoticesAt reads; the key quantised to 25 cm and 5 degrees.</summary>
     public sealed partial class HandoverHost
     {
         /// <summary>One person's sight as the HUD draws it (world space).</summary>
@@ -26,6 +27,17 @@ namespace Suborned.Play
             /// <summary>Dead ground (seen over, not into): cells as quads, hatched; and the edges where a dead cell meets seen ground.</summary>
             public readonly List<Vector3[]> Dead = new(); public readonly List<(Vector3 a, Vector3 b)> DeadEdges = new();
             public string Key = ""; public int BuiltTick = -1;
+            /// <summary>Redline 064 #1: the key it was built for and the key it wants now (quantised), its shape and act this frame.</summary>
+            public ConeKey KeyQ, Want; public bool Built; public PersonSight Ps; public string Act = "";
+        }
+        /// <summary>A cone's cache key (no string built a frame).</summary>
+        public readonly struct ConeKey : IEquatable<ConeKey>
+        {
+            public readonly string Kind, Act; public readonly int X, Y, A, Reach, Alert;
+            public ConeKey(string kind, int x, int y, int a, int reach, string act, int alert) { Kind = kind; X = x; Y = y; A = a; Reach = reach; Act = act; Alert = alert; }
+            public bool Equals(ConeKey o) => X == o.X && Y == o.Y && A == o.A && Reach == o.Reach && Alert == o.Alert && string.Equals(Kind, o.Kind) && string.Equals(Act, o.Act);
+            public override bool Equals(object o) => o is ConeKey k && Equals(k);
+            public override int GetHashCode() => HashCode.Combine(X, Y, A, Reach, Alert);
         }
         /// <summary>The cones to draw this frame (empty: none).</summary>
         public readonly List<ConeMark> PersonCones = new();
@@ -96,48 +108,120 @@ namespace Suborned.Play
             return "";
         }
 
-        /// <summary>Per frame (after ShowSight): which people's cones show, and their shapes (one rebuilt a frame).</summary>
+        /// <summary>Brief 064 (Redline): measuring only. True puts back the round's first cone and fan costs (an exact cone key, every new cone built
+        /// the frame it shows, a point test that finds the person again per sample; fans rebuilt on every fade step, FanMatters every frame), so
+        /// the perf probe (-perf064) can time before and after in one build. Never set in play.</summary>
+        public static bool PerfLegacy;
+        /// <summary>For the perf probe: cones built (BuildCone) and point tests made since the last read.</summary>
+        public static int ConeBuilds, ConeQueries;
+
+        readonly List<(string id, string act, float alpha, bool body)> coneWant = new();
+        readonly List<(long d, string id)> coneNear = new();
+        static readonly string[] ConeCast = { "waitress", "driver" };
+        Action conesCore;
+
+        /// <summary>Per frame (after ShowSight): which people's cones show, and their shapes. Redline 064 #1: at most one cone is built a frame
+        /// (the hovered one first when its key moved, then round-robin among the rest that need it; a new cone shows as its plain wedge until
+        /// its turn), and the key is quantised (25 cm, 5 degrees) so a walker does not rebuild every tick.</summary>
         void PersonConesFrame()
         {
             PersonCones.Clear(); ConeAct = "";
             var g = Game; if (g == null || views == null || Ending.Length > 0 || Following) return;
-            Guard("cones", () =>
+            Guard("cones", conesCore ??= ConesCore);
+        }
+
+        void ConesCore()
+        {
+            var g = Game;
+            var armed = ArmedNotice(); string hid = HoverPersonId();
+            var want = coneWant; want.Clear();
+            if (hid.Length > 0)
             {
-                var armed = ArmedNotice(); string hid = HoverPersonId();
-                var want = new List<(string id, string act, float alpha, bool body)>();
-                if (hid.Length > 0)
+                string act = "";
+                if (armed is { } a && (g.CaresAbout(hid, a.act) || a.eyes.Contains(hid))) act = a.act;
+                else foreach (var (la, lp) in LiveActs()) if (g.NoticesNow(hid, la, lp)) { act = la; break; }
+                if (act.Length > 0) want.Add((hid, act, 1f, armed is { } ab && ab.act == act && ab.body));
+            }
+            if (Peeking && armed is { } aa)
+            {   // Alt: the armed act's people, the 6 nearest (its card's eye first)
+                var near = coneNear; near.Clear();
+                foreach (var w in g.Walkers) ConeConsider(g, aa, hid, w.P, g.PosOfPerson(w.P));
+                foreach (var role in ConeCast) { var p = CastOf(role); if (p != null) ConeConsider(g, aa, hid, p, g.PersonPos(p)); }
+                near.Sort((x, y) => x.d.CompareTo(y.d));
+                for (int i = 0; i < near.Count && want.Count < (hid.Length > 0 ? 7 : 6); i++) want.Add((near[i].id, aa.act, 0.9f, aa.body));
+            }
+            if (want.Count == 0) return;
+            ConeAct = want[0].act;
+            int built = 0, needing = 0; bool hovered = hid.Length > 0;
+            for (int i = 0; i < want.Count; i++)
+            {
+                var (id, act, alpha, body) = want[i];
+                var ps = g.PersonCone(id); if (ps.Kind is not ("wedge" or "ring")) continue;
+                if (!coneCache.TryGetValue(id, out var cm)) coneCache[id] = cm = new ConeMark { Id = id };
+                var key = ConeKeyOf(ps, act, g.Alert);
+                bool stale = !cm.Built || !cm.KeyQ.Equals(key);
+                if (PerfLegacy)
+                {   // the round's first rule: the hovered one, one round-robin, and any never built, all this frame
+                    if (stale && (i == 0 || cm.BuiltTick < 0 || i == 1 + coneRobin % Math.Max(1, want.Count - 1))) { BuildCone(cm, ps, act, key); built++; }
+                }
+                else if (stale)
                 {
-                    string act = "";
-                    if (armed is { } a && (g.CaresAbout(hid, a.act) || a.eyes.Contains(hid))) act = a.act;
-                    else foreach (var (la, lp) in LiveActs()) if (g.NoticesNow(hid, la, lp)) { act = la; break; }
-                    if (act.Length > 0) want.Add((hid, act, 1f, armed is { } ab && ab.act == act && ab.body));
+                    if (i == 0 && hovered && built == 0) { BuildCone(cm, ps, act, key); built++; }
+                    else { if (!cm.Built && cm.Outline.Count < 2) PlainCone(cm, ps); needing++; }
                 }
-                if (Peeking && armed is { } aa)
-                {   // Alt: the armed act's people, the 6 nearest (its card's eye first)
-                    var near = new List<(long d, string id)>();
-                    void Consider(Person p, Pt? at) { if (p == null || !at.HasValue || p.Down || p.Id == hid || p == g.GuardP || p == g.ValeP) return; if (!(aa.eyes.Contains(p.Id) || g.CaresAbout(p.Id, aa.act))) return; long d = G.D2(at.Value, aa.at); if (d > 2000L * 2000L) return; near.Add((aa.eyes.Contains(p.Id) ? -1 : d, p.Id)); }
-                    foreach (var w in g.Walkers) Consider(w.P, g.PosOfPerson(w.P));
-                    foreach (var role in new[] { "waitress", "driver" }) { var p = CastOf(role); if (p != null) Consider(p, g.PersonPos(p)); }
-                    near.Sort((x, y) => x.d.CompareTo(y.d));
-                    for (int i = 0; i < near.Count && want.Count < (hid.Length > 0 ? 7 : 6); i++) want.Add((near[i].id, aa.act, 0.9f, aa.body));
-                }
-                if (want.Count == 0) return;
-                ConeAct = want[0].act;
-                // rebuild: the hovered one whenever its key moves, then one other a frame, round-robin
-                int robin = want.Count > 1 ? 1 + coneRobin++ % (want.Count - 1) : -1;
-                for (int i = 0; i < want.Count; i++)
+                cm.Alpha = alpha; cm.Near = body && ps.Kind == "wedge" && ps.NearCm > 0; cm.NearM = ps.NearCm / 100f;
+                cm.Ps = ps; cm.Act = act; cm.Want = key;
+                if (cm.Outline.Count >= 2) PersonCones.Add(cm);
+            }
+            if (PerfLegacy) coneRobin++;
+            else if (built == 0 && needing > 0)
+            {   // one of the others, round-robin
+                int n = PersonCones.Count;
+                for (int t = 0; t < n; t++)
                 {
-                    var (id, act, alpha, body) = want[i];
-                    var ps = g.PersonCone(id); if (ps.Kind is not ("wedge" or "ring")) continue;
-                    string key = $"{ps.Kind}|{ps.At.X},{ps.At.Y}|{ps.Facing.X},{ps.Facing.Y}|{ps.Reach}|{act}|{g.Alert}";
-                    if (!coneCache.TryGetValue(id, out var cm)) coneCache[id] = cm = new ConeMark { Id = id };
-                    if (cm.Key != key && (i == 0 || i == robin || cm.BuiltTick < 0)) BuildCone(cm, ps, act, key);
-                    if (cm.Outline.Count < 2) continue;
-                    cm.Alpha = alpha; cm.Near = body && ps.Kind == "wedge" && ps.NearCm > 0; cm.NearM = ps.NearCm / 100f;
-                    PersonCones.Add(cm);
+                    var cm = PersonCones[(coneRobin + t) % n];
+                    if (cm.Built && cm.KeyQ.Equals(cm.Want)) continue;
+                    BuildCone(cm, cm.Ps, cm.Act, cm.Want); coneRobin = (coneRobin + t + 1) % Math.Max(1, n); break;
                 }
-                if (coneCache.Count > 64) { var keep = new HashSet<string>(); foreach (var c in PersonCones) keep.Add(c.Id); var drop = new List<string>(); foreach (var k in coneCache.Keys) if (!keep.Contains(k)) drop.Add(k); foreach (var k in drop) coneCache.Remove(k); }
-            });
+            }
+            if (coneCache.Count > 64) { var keep = new HashSet<string>(); foreach (var c in PersonCones) keep.Add(c.Id); var drop = new List<string>(); foreach (var k in coneCache.Keys) if (!keep.Contains(k)) drop.Add(k); foreach (var k in drop) coneCache.Remove(k); }
+        }
+
+        /// <summary>Redline 064 #9: Begin's reset of the state this round added (view-only: a restart or Replay starts clean).</summary>
+        void ResetRound24()
+        {
+            Array.Clear(rewalks, 0, rewalks.Length); noticingNow.Clear(); coneCache.Clear(); coneRobin = 0; PersonCones.Clear();
+            RerouteReset(); sealSpanFrom = sealSpanLock = -1; noWalkCell = new Pt(int.MinValue, 0); noWalkWas = false; fanMatters.Clear(); fanMattersTick = -1;
+        }
+
+        void ConeConsider(Game g, (string act, bool body, Pt at, List<string> eyes) aa, string hid, Person p, Pt? at)
+        {
+            if (p == null || !at.HasValue || p.Down || p.Id == hid || p == g.GuardP || p == g.ValeP) return;
+            if (!(aa.eyes.Contains(p.Id) || g.CaresAbout(p.Id, aa.act))) return;
+            long d = G.D2(at.Value, aa.at); if (d > 2000L * 2000L) return;
+            coneNear.Add((aa.eyes.Contains(p.Id) ? -1 : d, p.Id));
+        }
+
+        /// <summary>A cone's key: its kind, where it stands to 25 cm, its facing to the 5 degree ray step, its reach, the act and the Alert
+        /// (Redline 064 #1). PerfLegacy keys it exactly, as the round did.</summary>
+        static ConeKey ConeKeyOf(PersonSight ps, string act, int alert)
+        {
+            if (PerfLegacy) return new ConeKey(ps.Kind, ps.At.X, ps.At.Y, ps.Facing.X * 100000 + ps.Facing.Y, ps.Reach, act, alert);
+            int deg = ps.Kind == "ring" ? 0 : Mathf.RoundToInt(Mathf.Atan2(ps.Facing.Y, ps.Facing.X) * Mathf.Rad2Deg / ConeWedgeDeg);
+            return new ConeKey(ps.Kind, Mathf.RoundToInt(ps.At.X / 25f), Mathf.RoundToInt(ps.At.Y / 25f), deg, ps.Reach, act, alert);
+        }
+
+        /// <summary>A new cone's plain wedge (or ring) at its reach, no engine reads: shown until its build comes round.</summary>
+        void PlainCone(ConeMark cm, PersonSight ps)
+        {
+            cm.Kind = ps.Kind; cm.Outline.Clear(); cm.Cut.Clear(); cm.Dead.Clear(); cm.DeadEdges.Clear();
+            bool ring = ps.Kind == "ring"; float reach = Mathf.Max(100f, ps.Reach);
+            float a0 = Mathf.Atan2(ps.Facing.Y, ps.Facing.X), half = ring ? Mathf.PI : Mathf.Atan2(ps.HalfCm, reach);
+            int n = ring ? 48 : 13; var hub = frame.World(ps.At); cm.At = hub;
+            if (!ring) cm.Outline.Add(hub);
+            for (int i = 0; i < n; i++) { float ang = ring ? a0 + i * 2f * Mathf.PI / n : a0 - half + 2f * half * i / (n - 1); cm.Outline.Add(frame.World(new Pt(ps.At.X + Mathf.RoundToInt(Mathf.Cos(ang) * reach), ps.At.Y + Mathf.RoundToInt(Mathf.Sin(ang) * reach)))); }
+            if (!ring) cm.Outline.Add(hub); else cm.Outline.Add(cm.Outline[0]);
+            for (int j = 0; j + 1 < cm.Outline.Count; j++) cm.Cut.Add(false);
         }
 
         const float ConeStepCm = 50f, ConeWedgeDeg = 5f, ConeRingDeg = 7.5f;
@@ -145,9 +229,11 @@ namespace Suborned.Play
         /// <summary>The cone's shape from the engine's point test: rays from the person at a few degrees apart, sampled every 0.5 m to the reach.
         /// Along a ray the sight ends at the last seen sample (a wall: the outline is cut there, no hatch); an unseen stretch before it is dead
         /// ground behind a solid the eye sees over (hatched, with its own edge).</summary>
-        void BuildCone(ConeMark cm, PersonSight ps, string act, string key)
+        void BuildCone(ConeMark cm, PersonSight ps, string act, ConeKey key)
         {
-            var g = Game; cm.Key = key; cm.BuiltTick = g.Tick; cm.Kind = ps.Kind; cm.Outline.Clear(); cm.Cut.Clear(); cm.Dead.Clear(); cm.DeadEdges.Clear();
+            var g = Game; cm.KeyQ = key; cm.Built = true; cm.BuiltTick = g.Tick; ConeBuilds++;
+            var probe = PerfLegacy ? null : g.NoticeProbeOf(ps.Person); /* Keel's batch read (engine 0.30.0, Redline 064 #1): the person found once for every sample */
+            cm.Kind = ps.Kind; cm.Outline.Clear(); cm.Cut.Clear(); cm.Dead.Clear(); cm.DeadEdges.Clear();
             bool ring = ps.Kind == "ring"; float reach = Mathf.Max(100f, ps.Reach);
             float a0 = Mathf.Atan2(ps.Facing.Y, ps.Facing.X), half = ring ? Mathf.PI : Mathf.Atan2(ps.HalfCm, reach) - 0.5f * Mathf.Deg2Rad;
             float stepA = (ring ? ConeRingDeg : ConeWedgeDeg) * Mathf.Deg2Rad;
@@ -159,7 +245,7 @@ namespace Suborned.Play
             for (int i = 0; i < nRays; i++)
             {
                 float ang = ring ? a0 + i * stepA : a0 - half + 2f * half * i / (nRays - 1); angs[i] = ang; last[i] = -1;
-                for (int s = 0; s < nS; s++) { bool v = g.NoticesNow(ps.Person, act, P(ang, Rs(s))); vis[i, s] = v; if (v) last[i] = s; }
+                for (int s = 0; s < nS; s++) { var pt = P(ang, Rs(s)); bool v = PerfLegacy ? g.NoticesNow(ps.Person, act, pt) : probe != null && g.NoticesAt(probe, act, pt); ConeQueries++; vis[i, s] = v; if (v) last[i] = s; }
             }
             var hub = frame.World(ps.At); cm.At = hub;
             Vector3 W(float ang, float r) => frame.World(P(ang, Mathf.Max(30f, r)));

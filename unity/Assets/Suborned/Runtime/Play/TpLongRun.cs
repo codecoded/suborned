@@ -175,6 +175,7 @@ namespace Suborned.Play
             string fin = Suborned.RoadFinish.Current.Length > 0 ? Suborned.RoadFinish.Current : "enamel"; var rows = new List<string>();
             var go = new GameObject("tplong-road-cam"); var pc = go.AddComponent<Camera>(); pc.CopyFrom(view); pc.enabled = false;
             go.AddComponent<UniversalAdditionalCameraData>().renderPostProcessing = true;
+            var tsrc = view.GetComponent<TacticalShadows>(); TacticalShadows tsn = null; if (tsrc) { tsn = go.AddComponent<TacticalShadows>(); JsonUtility.FromJsonOverwrite(JsonUtility.ToJson(tsrc), tsn); } // Glint (brief 048 evening): the road test's camera keeps the play camera's shadows, so its frames show them
             var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>(); var phase0 = lp ? lp.Current : LightPhase.Phase.Day;
             foreach (var ph in lp ? new[] { LightPhase.Phase.Day, LightPhase.Phase.Evening, LightPhase.Phase.Night } : new[] { LightPhase.Phase.Day }) // item 21 (Glint, brief 048): the strip light by phase; day keeps its old names
             {
@@ -187,6 +188,7 @@ namespace Suborned.Play
                 {
                     pc.orthographic = true; pc.orthographicSize = 14f; pc.nearClipPlane = 0.3f; pc.farClipPlane = 1500f;
                     rot = Quaternion.Euler(38f, name == "office-30" ? 30f : 210f, 0f); var focus = new Vector3(-160f, 0f, -281f); at = focus - rot * Vector3.forward * 400f;
+                    if (tsn) tsn.focusDepth = 400f; // the street 400 m along the view (TacticalShadows fits its cascades there)
                 }
                 else
                 {

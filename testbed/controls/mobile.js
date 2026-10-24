@@ -19,7 +19,8 @@ const DOCK = [
 
 export function initMobile() {
   const q = new URLSearchParams(location.search), b = document.body;
-  const coarse = matchMedia('(pointer: coarse)'), touch = q.get('touch') === '1' || (q.get('touch') !== '0' && coarse.matches);
+  // a phone or tablet: a coarse primary pointer, or an Apple or Android device with several touch points (an iPad with a keyboard says it has a fine pointer)
+  const coarse = matchMedia('(pointer: coarse)'), device = navigator.maxTouchPoints > 1 && /Mac|iPhone|iPad|Android/.test(navigator.userAgent), touch = q.get('touch') === '1' || (q.get('touch') !== '0' && (coarse.matches || device));
   const apply = () => { b.classList.toggle('touch', touch); b.classList.toggle('m', touch || q.get('m') === '1' || innerWidth < 820); };
   apply(); addEventListener('resize', apply); addEventListener('orientationchange', apply);
 

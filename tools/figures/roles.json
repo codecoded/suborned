@@ -1,5 +1,5 @@
 {
- "note": "Which figure stands in for which thing the play scene draws today as a capsule. Keys are HostViews keys (Runtime/Play/HostViews.cs) and the people layer's job blocks (Editor/World/People/people.json). A list is a pool: pick by the person's id so the same person always looks the same. Capsules stay the fallback for any key not listed.",
+ "note": "Which figure stands in for which thing the play scene draws today as a capsule. Keys are HostViews keys (Runtime/Play/HostViews.cs) and the people layer's job blocks (Editor/World/People/people.json). A list is a pool: pick by the person's id so the same person always looks the same. Capsules stay the fallback for any key not listed. 'patrol' is deliberately not listed: the patrol is a robot, Vela's PatrolRobot prefab (HostViews.cs, host.patrolRobot), and RoleFigure('patrol') returns null so no human figure is ever picked for it; the 'security' figure is the posted and response officer (security/*, unit/*, hostile officers), brief 063.",
  "playViews": {
   "op/scout": [
    "scout"
@@ -24,9 +24,6 @@
   ],
   "councillor": [
    "councillor"
-  ],
-  "patrol": [
-   "security"
   ],
   "security/0..1": [
    "security"

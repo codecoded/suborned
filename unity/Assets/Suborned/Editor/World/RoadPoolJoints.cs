@@ -22,6 +22,8 @@ namespace Suborned.World
         public static int Mitred { get; private set; }
 
         public static void Clear() { bands.Clear(); Filled = 0; Mitred = 0; Collecting = true; }
+        /// <summary>Redline 064 #7: a ground bake that threw: drop the held bands and stop collecting, so no later bake is held and lost.</summary>
+        public static void Abort() { bands.Clear(); Collecting = false; }
 
         /// <summary>A pool band as placed (world vertices and UVs), held until Fill bakes it.</summary>
         public static void Add(Transform el, string layer, MeshKit kit, Material mat)

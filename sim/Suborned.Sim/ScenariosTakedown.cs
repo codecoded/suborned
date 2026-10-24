@@ -440,9 +440,11 @@ namespace Suborned.Sim
                 r.Is(rep.Phase == "stopped" && g.Tick < rep.LandAt, "taken down before his report lands: it is dropped");
                 var a34 = ActOn(r, "p-records-office-34");
                 r.Is(a34.Aware && g.Log.Exists(l => l.Code == "witness.scream" && l.Text.StartsWith("p-records-office-34")), "he saw the Enforcer coming: he struggles (+3 s) and screams");
-                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.Phase == "landed"), T(150)), "the next finder's report lands");
-                var next = g.Reps.First(x => x.Act == a.Id && x.Phase == "landed");
-                r.Is(next.By != "p-records-office-34", "by someone else, later");
+                // engine 0.30.0 (the face margin's walks): clerk 26 now sees the knockout and radios it (Alert 3), so the response comes and police-1 finds and
+                // confirms the dead guard at 7:25 before any other walker's report lands: the body is still found by someone else, later
+                r.Is(r.Until(() => a.Confirmed || g.Reps.Exists(x => x.Act == a.Id && x.Phase == "landed"), T(150)), $"the body is found by the next finder or a unit ({Report.Clock(g.Tick)})");
+                var next = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.Phase == "landed");
+                r.Is(a.Confirmed || (next != null && next.By != "p-records-office-34"), $"by someone else, later ({(next != null ? next.By : "a unit's confirmation")})");
                 // the Mercenary check (Sky merged call 4) moved to N68 on 2026-10-19 (Keel, brief 023): with Pulse's leave stagger no Mercenary passes this body
                 r.Is(g.PersonById("p-records-office-34")!.Has("attacked-aware") && g.FactsOf(g.PersonById("p-records-office-34")!).Contains("enforcer-face"), "clerk 34 holds the Enforcer's face");
             });

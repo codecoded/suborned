@@ -19,10 +19,14 @@ namespace Suborned.Play
             public bool On, Hover, Live, FromEngine; public Vector3 A, B, Wait, Patrol; public readonly List<Vector3> Route = new();
         }
         public readonly RerouteMarks Reroute = new();
-        Pt lastSweepAt; bool haveSweep; int rerouteKeyTick = -1; string rerouteKey = "";
+        Pt lastSweepAt; bool haveSweep; int rerouteKeyTick = -1; (bool live, int until, Pt from, Pt to) rerouteKey; bool rerouteHaveKey, rerouteFromEngine;
+        readonly List<Vector3> rerouteFull = new();
 
-        /// <summary>The engine's reroute path (engine 0.30.0, Keel: Game.PatrolLegs, read by name so this compiles on 0.29): while the patrol is on
-        /// false orders, the points of its legs out (the walk to the wait spot), wait and back (the walk to its sweep), in walk order; else null.</summary>
+        /// <summary>Begin's reset (Redline 064 #9).</summary>
+        void RerouteReset() { haveSweep = false; rerouteKeyTick = -1; rerouteHaveKey = false; rerouteFromEngine = false; rerouteFull.Clear(); Reroute.Route.Clear(); }
+
+        /// <summary>The engine's reroute path (engine 0.30.0, Keel: Game.PatrolLegs): while the patrol is on false orders, the points of its legs
+        /// out (the walk to the wait spot), wait and back (the walk to its sweep), in walk order; else null.</summary>
         Pt[] EngineRoute()
         {
             if (Game == null) return null; PatrolPlan plan = null;
@@ -32,32 +36,57 @@ namespace Suborned.Play
             return pts.Count >= 2 ? pts.ToArray() : null;
         }
 
-        /// <summary>Per tick-frame: whether a Reroute is being looked at (its ring wedge, panel row, the hold's offer or charge) or is in play.</summary>
+        /// <summary>Per tick-frame: whether a Reroute is being looked at (its ring wedge, panel row, the hold's offer or charge) or is in play.
+        /// Redline 064 #5: the route is fetched (PatrolLegs, or the grid's preview) only when what it depends on changes (in play or not, the
+        /// reroute's end, the preview's ends) or 30 ticks on, never every frame; drawn from where the robot is now (its live position, then
+        /// the route ahead of it), so the line never trails it.</summary>
         void RerouteFrame()
         {
             var m = Reroute; m.On = m.Hover = m.Live = m.FromEngine = false; var g = Game; if (g == null || Ending.Length > 0) return;
-            Guard("reroute", () =>
-            {
-                var pose = g.PatrolPose(); bool away = g.PatrolAwayUntil > g.Tick && !g.PatrolDown;
-                if (pose.HasValue && !away && !g.PatrolChasing) { lastSweepAt = pose.Value.pos; haveSweep = true; }
-                bool Is(Intent i) => i?.Order?.Do == "reroute";
-                m.Hover = Ring is { } rs && (rs.Hover >= 0 ? rs.Hover : rs.Lit) is int ri && ri >= 0 && ri < rs.Segs.Count && Is(rs.Segs[ri].Row?.I)
-                    || Panel != null && PanelHover >= 0 && PanelHover < Panel.Rows.Count && Is(Panel.Rows[PanelHover].I)
-                    || Ring == null && Panel == null && Is(HoverIntent) || Charge is { Fire: false, Plan: not null } ch && Is(ch.Plan.Row(ch.Way)?.I);
-                m.Live = away; m.On = (m.Hover || m.Live) && pose.HasValue && !g.PatrolDown;
-                if (!m.On) return;
-                var S = g.S; m.A = frame.World(S.Stand(S.PatrolA)); m.B = frame.World(S.Stand(S.PatrolB)); m.Wait = frame.World(S.Stand(S.PatrolReroute));
-                m.Patrol = Views?.Find("patrol") is Transform pt && pt.gameObject.activeInHierarchy ? pt.position : frame.World(pose.Value.pos);
-                var er = EngineRoute(); m.FromEngine = er != null && er.Length >= 2;
-                Pt from = m.Live && haveSweep ? lastSweepAt : pose.Value.pos, to = S.Stand(S.PatrolReroute);
-                string key = m.FromEngine ? "e" + er.Length + ":" + er[0].X + "," + er[0].Y + ":" + er[^1].X : $"g{from.X},{from.Y}>{to.X},{to.Y}";
-                if (key == rerouteKey && Math.Abs(g.Tick - rerouteKeyTick) < 30) return;
-                rerouteKey = key; rerouteKeyTick = g.Tick; m.Route.Clear();
-                var pts = m.FromEngine ? er : S.Grid.Route(from, to);
-                if (pts == null || pts.Length < 2) pts = new[] { from, to };
-                foreach (var q in pts) m.Route.Add(frame.World(q));
-            });
+            Guard("reroute", rerouteCore ??= RerouteCore);
         }
+        Action rerouteCore;
+
+        void RerouteCore()
+        {
+            var m = Reroute; var g = Game;
+            var pose = g.PatrolPose(); bool away = g.PatrolAwayUntil > g.Tick && !g.PatrolDown;
+            if (pose.HasValue && !away && !g.PatrolChasing) { lastSweepAt = pose.Value.pos; haveSweep = true; }
+            m.Hover = Ring is { } rs && (rs.Hover >= 0 ? rs.Hover : rs.Lit) is int ri && ri >= 0 && ri < rs.Segs.Count && IsReroute(rs.Segs[ri].Row?.I)
+                || Panel != null && PanelHover >= 0 && PanelHover < Panel.Rows.Count && IsReroute(Panel.Rows[PanelHover].I)
+                || Ring == null && Panel == null && IsReroute(HoverIntent) || Charge is { Fire: false, Plan: not null } ch && IsReroute(ch.Plan.Row(ch.Way)?.I);
+            m.Live = away; m.On = (m.Hover || m.Live) && pose.HasValue && !g.PatrolDown;
+            if (!m.On) return;
+            var S = g.S; m.A = frame.World(S.Stand(S.PatrolA)); m.B = frame.World(S.Stand(S.PatrolB)); m.Wait = frame.World(S.Stand(S.PatrolReroute));
+            m.Patrol = Views?.Find("patrol") is Transform pt && pt.gameObject.activeInHierarchy ? pt.position : frame.World(pose.Value.pos);
+            Pt from = m.Live && haveSweep ? lastSweepAt : pose.Value.pos, to = S.Stand(S.PatrolReroute);
+            if (m.Live) from = default; // in play the engine's route stands for itself: its start moves with the robot, the key must not
+            else from = new Pt(from.X / 50 * 50, from.Y / 50 * 50); // the preview: its start to 50 cm
+            var key = (m.Live, m.Live ? g.PatrolAwayUntil : 0, from, to);
+            bool fetch = !rerouteHaveKey || !key.Equals(rerouteKey) || Math.Abs(g.Tick - rerouteKeyTick) >= 30;
+            if (fetch)
+            {
+                rerouteKey = key; rerouteHaveKey = true; rerouteKeyTick = g.Tick; rerouteFull.Clear();
+                var er = EngineRoute(); rerouteFromEngine = er != null && er.Length >= 2;
+                Pt start = m.Live && haveSweep ? lastSweepAt : pose.Value.pos;
+                var pts = rerouteFromEngine ? er : S.Grid.Route(start, to);
+                if (pts == null || pts.Length < 2) pts = new[] { start, to };
+                foreach (var q in pts) rerouteFull.Add(frame.World(q));
+            }
+            m.FromEngine = rerouteFromEngine;
+            // drawn from the robot now: its position, then the route past the nearest point on it
+            m.Route.Clear(); m.Route.Add(m.Patrol);
+            int seg = 1; float best = float.MaxValue; var pq = new Vector2(m.Patrol.x, m.Patrol.z);
+            for (int i = 1; i < rerouteFull.Count; i++)
+            {
+                var a = new Vector2(rerouteFull[i - 1].x, rerouteFull[i - 1].z); var b = new Vector2(rerouteFull[i].x, rerouteFull[i].z); var ab = b - a;
+                float t = ab.sqrMagnitude < 1e-6f ? 0f : Mathf.Clamp01(Vector2.Dot(pq - a, ab) / ab.sqrMagnitude); float d = (a + ab * t - pq).sqrMagnitude;
+                if (d < best) { best = d; seg = i; }
+            }
+            for (int i = seg; i < rerouteFull.Count; i++) m.Route.Add(rerouteFull[i]);
+            if (m.Route.Count < 2 && rerouteFull.Count > 0) m.Route.Add(rerouteFull[^1]);
+        }
+        static bool IsReroute(Intent i) => i?.Order?.Do == "reroute";
 
         /// <summary>The proof's measure: how far a world point lies from the drawn route (m, on the ground), or -1 with no route.</summary>
         public float OffRoute(Vector3 p) => OffRoute(p, Reroute.Route);

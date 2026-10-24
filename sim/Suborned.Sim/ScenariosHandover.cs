@@ -573,9 +573,12 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "d:Courtyard"));
                 r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.Refused(Fixer, "turn", Inez, "Help needs her need first (a Listen): refused wherever the Fixer stands, walking closer won't cure it", "help");
+                // engine 0.30.0: Inez's post is the site's stand (-975, -2925; Pulse's re-bake), 2.96 m from the Courtyard, inside Listen's 3 m: the Scout steps
+                // back to 6 m from her first, so the Listen is given out of reach as this case means
+                { var ip = g.PersonPos(g.Inez)!.Value; var d = r.Op(Scout).Pos - ip; long len = Math.Max(1, G.Isqrt((long)d.X * d.X + (long)d.Y * d.Y)); var back = ip + new Pt((int)(d.X * 600 / len), (int)(d.Y * 600 / len)); r.To(r.SendTo(Scout, g.S.Grid.NearestFree(back) ?? back)); }
                 r.ForHer("listen", Inez);
                 var l = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez }); int given = g.Tick;
-                r.Is(l.ok && r.Op(Scout).Busy == null, $"the Scout's Listen from the Courtyard is taken, and walks him in first ({l.code})");
+                r.Is(l.ok && r.Op(Scout).Busy == null, $"the Scout's Listen from 6 m is taken, and walks him in first ({l.code})");
                 r.Is(r.Until(() => r.Op(Scout).Busy != null, T(30)) && G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ListenReachCm), $"the Scout must stand beside Inez to hear the debt (3 m): it starts there, {(g.Tick - given) / Game.Hz} s later");
                 r.Done(Scout);
                 r.To(r.Send(Fixer, "d:Courtyard"));

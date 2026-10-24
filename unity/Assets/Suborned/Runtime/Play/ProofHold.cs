@@ -393,7 +393,7 @@ namespace Suborned.Play
             // on the range's car (QF-ALL's target: it takes the four of them for seconds; no police, so nobody is shot first)
             HandoverHost.PointerWorld = null; h.ClearHover(); h.rangeLayout = "open"; h.Begin(); yield return null; yield return null; h.StartClock(); h.SetPaused(true); if (h.View) h.View.orthographicSize = 14f; g = h.Game;
             h.Issue(new Order { Do = "spawn", Target = "car", To = "car", Count = 1 }); h.RunTo(g.Tick + 1); h.SelectAll();
-            hid = g.RangeCars().Count > 0 ? g.RangeCars()[0].Id : ""; // "car:range-1" hw = hid.Length > 0 ? h.DrawnAt(hid) : null;
+            hid = g.RangeCars().Count > 0 ? g.RangeCars()[0].Id : ""; /* "car:range-1" */ hw = hid.Length > 0 ? h.DrawnAt(hid) : null;
             var allFire = new List<string>(); var allCease = new List<string>(); var fired = new HashSet<int>(); string allHold = ""; string techM = ""; double techD = 0; bool targetDown = false;
             if (hw.HasValue && (g.PosOf(hid) ?? g.CarAt(hid)) is Pt op1)
             {
