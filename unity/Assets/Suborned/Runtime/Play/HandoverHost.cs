@@ -291,8 +291,8 @@ namespace Suborned.Play
             Guard("fight lab", FightLabFrame); // brief 027: queued ghost lines and the hostiles' focus in a freeze
             FadePoints();
             DoorViewFrame(); // GDD v0.24: the Office door's clear-view clock (H13's door cause)
-            if (PerfTiming) { long t0 = System.Diagnostics.Stopwatch.GetTimestamp(); ShowSight(); long t1 = System.Diagnostics.Stopwatch.GetTimestamp(); PersonConesFrame(); long t2 = System.Diagnostics.Stopwatch.GetTimestamp(); RerouteFrame(); long t3 = System.Diagnostics.Stopwatch.GetTimestamp(); PerfSightTicks = t1 - t0; PerfConesTicks = t2 - t1; PerfRerouteTicks = t3 - t2; } // the perf probe (-perf064): this frame's host-side cost
-            else { ShowSight(); PersonConesFrame(); RerouteFrame(); } // engine 0.28: a civilian's cone on hover, only where it matters (HostNotice)
+            if (PerfTiming) { long t0 = System.Diagnostics.Stopwatch.GetTimestamp(); ShowSight(); long t1 = System.Diagnostics.Stopwatch.GetTimestamp(); PersonConesFrame(); long t2 = System.Diagnostics.Stopwatch.GetTimestamp(); RerouteFrame(); RingGiversFrame(); long t3 = System.Diagnostics.Stopwatch.GetTimestamp(); PerfSightTicks = t1 - t0; PerfConesTicks = t2 - t1; PerfRerouteTicks = t3 - t2; } // the perf probe (-perf064): this frame's host-side cost
+            else { ShowSight(); PersonConesFrame(); RerouteFrame(); RingGiversFrame(); } // engine 0.28: a civilian's cone on hover, only where it matters (HostNotice)
             Guard("street marks", StreetMarks);
             for (int k = 0; k < 4; k++)
             {

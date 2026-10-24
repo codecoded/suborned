@@ -172,9 +172,14 @@ namespace Suborned.Play
             if (g.GuardPose() is { } gp && (gp.facing.X != 0 || gp.facing.Y != 0)) faces["guard"] = frame.Dir(gp.facing);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
             var rp = g.RivalsPose();
-            for (int i = 0; i < 3; i++) Set("rivals/" + i, rp.HasValue ? rp.Value.pos + new Pt(i == 1 ? 90 : 0, i == 2 ? 90 : 0) : (Pt?)null);
+            // Suture's bot triage (0.2.115, Q-SOLID x19): the engine gives a group one pose; its followers were drawn at a fixed 0.9 m offset and
+            // walked through supports, cypresses, the terrace wall and the Office steps. Each follower is drawn on free ground: 0.9 m (then 1.8 m)
+            // back along the leader's own path while it walks, else beside it, and always on a free walk cell (the nearest one when not)
+            for (int i = 0; i < 3; i++) Set("rivals/" + i, rp.HasValue ? (i == 0 ? rp.Value.pos : Follower(g, "rivals", rp.Value.pos, i, new Pt(i == 1 ? 90 : 0, i == 2 ? 90 : 0))) : (Pt?)null);
+            if (!rp.HasValue) trails.Remove("rivals");
             var sp = g.SecurityPose();
-            for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? sp.Value.pos + new Pt(0, i * 90) : (Pt?)null);
+            for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? (i == 0 ? sp.Value.pos : Follower(g, "security", sp.Value.pos, i, new Pt(0, i * 90))) : (Pt?)null);
+            if (!sp.HasValue) trails.Remove("security");
             Set("car/official", g.Vale == ValeAt.Car && g.Result != Outcome.Success ? (Pt?)null : g.CarPos());
             Set("car/getaway", s.At(s.GetawayCar));
             // the crowd: people the engine puts on one point are spread for the eye only (HostCrowdSpread: hash-seeded spots 0.7 m apart, a
@@ -512,6 +517,33 @@ namespace Suborned.Play
             var t = Part(root, key, cylinder, select, Vector3.zero, new Vector3(1.1f, 0.01f, 1.1f));
             t.gameObject.SetActive(false);
             things[key] = (t, Vector3.zero, Vector3.zero, false);
+        }
+
+        // ---------------------------------------------------------------- group followers (Suture's bot triage, 0.2.115)
+
+        readonly Dictionary<string, List<Pt>> trails = new();
+        /// <summary>For checks: followers drawn this build that had to be moved onto free ground.</summary>
+        public static int FollowerSnaps;
+
+        /// <summary>Follower `idx` of a group whose leader the engine places at `lead`: on the leader's recent path 0.9 m x idx back while it walks
+        /// (the path is free ground: the engine walked it), else `offset` beside it; then on a free walk cell (the nearest free cell within 2 m),
+        /// else on the leader. View only.</summary>
+        Pt Follower(Game g, string group, Pt lead, int idx, Pt offset)
+        {
+            if (!trails.TryGetValue(group, out var tr)) trails[group] = tr = new List<Pt>();
+            if (tr.Count == 0 || G.Dist(tr[^1], lead) >= 10) { tr.Add(lead); if (tr.Count > 64) tr.RemoveAt(0); }
+            long want = 90L * idx; Pt at = lead + offset; long run = 0; bool onPath = false;
+            for (int k = tr.Count - 1; k > 0; k--)
+            {
+                long seg = G.Dist(tr[k], tr[k - 1]); if (seg <= 0) continue;
+                if (run + seg >= want) { long t = want - run; at = new Pt(tr[k].X + (int)((tr[k - 1].X - tr[k].X) * t / seg), tr[k].Y + (int)((tr[k - 1].Y - tr[k].Y) * t / seg)); onPath = true; break; }
+                run += seg;
+            }
+            if (onPath && G.Dist(lead, tr[^1]) > 300) onPath = false; // the leader jumped (a respawn): the old trail is not its path
+            if (!onPath) at = lead + offset;
+            var grid = g.S.Grid; if (grid.Free(at)) return at;
+            FollowerSnaps++; var nf = grid.NearestFree(at);
+            return nf.HasValue && G.Dist(nf.Value, at) <= 200 ? nf.Value : lead;
         }
 
         // ---------------------------------------------------------------- sight fans (the Scout's skill)

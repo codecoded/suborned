@@ -257,6 +257,24 @@ namespace Suborned.Play
 
         public void CloseRing() { if (Ring != null) { Ring = null; views?.ShowPath(null); } }
 
+        /// <summary>Suture's bot triage (0.2.115): an open ring was never rechecked, so a wedge whose giver went down (carried, inside, in the car) a
+        /// second before the click still looked open. Each frame the open ring's givers are checked; when one is no longer able the ring is built
+        /// again on the same thing at the same place (the panel never offers an unable agent, so the way re-ranks to another giver or goes), its
+        /// state kept (sticky, by click, by hold). Counted for checks.</summary>
+        public int RingRebuilds { get; private set; }
+        void RingGiversFrame()
+        {
+            var rs = Ring; if (rs == null || Game == null || rs.Plan?.T == null) return;
+            bool stale = false;
+            foreach (var sg in rs.Segs) { if (sg.More || sg.Shut) continue; foreach (var k in sg.By) if (!Able((int)k)) { stale = true; break; } if (stale) break; }
+            if (!stale) return;
+            ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(rs.Plan.T, rs.Screen)) || plan == null) { CloseRing(); return; }
+            var keep = (rs.Sticky, rs.Always, rs.ByClick, rs.FromHold, rs.ByE, rs.PointerAtOpen, rs.OpenedAt);
+            OpenRing(plan, rs.Screen, keep.ByE); RingRebuilds++;
+            var nr = Ring; if (nr == null) return;
+            (nr.Sticky, nr.Always, nr.ByClick, nr.FromHold) = (keep.Sticky, keep.Always, keep.ByClick, keep.FromHold); nr.PointerAtOpen = keep.PointerAtOpen; nr.OpenedAt = keep.OpenedAt;
+        }
+
         /// <summary>The wedge under a screen point, -1 in the dead zone or off the ring's reach.</summary>
         int RingSegAt(Vector2 screen)
         {
