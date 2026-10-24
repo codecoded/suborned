@@ -96,6 +96,11 @@ describe('order checks', () => {
     expect(qOffer(refused, item(seed('s-1', 'session', route.script, 'session')))[0]!.key).toBe('Q-OFFER:session:turn:too-far:replay-differs');
     expect(qOffer(refused, item(seed('s-1', 'session', route.script, 'session')))[0]!.severity).toBe('info');
     expect(qOffer({ ...refused, qa: { ...refused.qa, record: '' } }, item(seed('s-1', 'session', route.script, 'session')))[0]!.severity).toBe('S2');
+    // only a session Sky played himself says "Sky"; automation saved beside his (a proof, a late row) says what it is (Aster 2026-10-25)
+    const faithful = { ...refused, qa: { ...refused.qa, record: '' } };
+    expect(qOffer(faithful, item({ ...seed('s-2', 'session', route.script, 'session'), by: 'sky' }))[0]!.title).toContain('An order Sky gave');
+    const auto = qOffer(refused, item({ ...seed('s-3', 'session', route.script, 'session'), by: 'automation' }))[0]!;
+    expect(auto.title).toContain('a saved proof session'); expect(auto.observed).not.toContain('Sky'); expect(auto.key).toBe('Q-OFFER:automation:turn:too-far:replay-differs');
   });
   test('a dropped order and a repeat Watch that lands twice', () => {
     expect(qDrop(play({ log: [{ tick: 9, code: 'order.dropped', text: 'fixer watch waitress: too-far: out of reach' }] }), item(route)).map(f => f.key)).toEqual(['Q-DROP:too-far']);

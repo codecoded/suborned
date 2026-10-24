@@ -24,6 +24,7 @@ test('Q-CANCEL: the host cancelling an act for a new order, a walk-in ended, a t
   expect(f.map(x => x.key)).toEqual(['Q-CANCEL:replace:watch', 'Q-CANCEL:walk-in:unmeant', 'Q-CANCEL:drive:loop']);
   expect(f.map(x => x.severity)).toEqual(['S3', 'S3', 'S2']);
   expect(qCancel(p, { ...session, mutated: true })).toEqual([]); // a mutant makes these on purpose
+  expect(f[0]!.observed).toContain('a saved proof session'); expect(qCancel(p, { ...session, sky: true })[0]!.observed).toContain('(Sky)'); // only Sky's own sessions say Sky
   // a human row: the cancel it meant is info, the one it did not mean is S2
   const meant = qCancel(p, { seed: 'bot', mutated: false, events: [{ tick: 148, kind: 'cancel', op: 'scout', act: 'watch', target: 'waitress' }] });
   expect(meant.find(x => x.key.startsWith('Q-CANCEL:replace'))!.severity).toBe('info'); expect(meant.find(x => x.key.startsWith('Q-CANCEL:walk-in'))!.severity).toBe('S2');

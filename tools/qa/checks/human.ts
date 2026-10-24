@@ -19,7 +19,7 @@
 //                 with no new order of it in between.
 // Mutants are exempt from Q-CANCEL, Q-LOOP-LEFT and Q-PILE (a mutation makes them on purpose); Q-STALE-RING needs a ring, so seeds and bot rows
 // only; Q-LEAK holds for every play.
-import type { Finding, Item, Play, Severity } from '../types';
+import { bySky, type Finding, type Item, type Play, type Severity } from '../types';
 import { clock } from './warn';
 
 export const HUMAN_CHECKS = ['Q-CANCEL', 'Q-LOOP-LEFT', 'Q-INTENT', 'Q-PILE', 'Q-STALE-RING', 'Q-LEAK'] as const;
@@ -31,7 +31,7 @@ export type HumanEventLike = { tick: number; kind: string; op: string; act: stri
 export const MEANT = new Set(['cancel', 'reorder', 'abandon', 'wander', 'switch', 'misclick', 'wrong', 'wrong-wedge', 'peek', 'third-person']);
 const kindOf = (k: string) => k.toLowerCase().replace(/_/g, '-');
 
-type Src = { seed: 'route' | 'session' | 'bot'; mutated: boolean; events?: HumanEventLike[] };
+type Src = { seed: 'route' | 'session' | 'bot'; mutated: boolean; events?: HumanEventLike[]; /** a session Sky played himself (seeds.ts `by`) */ sky?: boolean };
 const OPS = new Set(['scout', 'fixer', 'tech', 'enforcer']);
 const ACT = new Set(['watch', 'listen', 'turn', 'loop', 'reroute', 'mislead', 'call', 'enter', 'takedown', 'take', 'carry', 'restrain', 'stash', 'board']);
 
@@ -47,7 +47,7 @@ function meantBy(src: Src, op: string, tick: number): HumanEventLike | undefined
   return src.events?.filter(e => MEANT.has(kindOf(e.kind)) && (e.op === op || kindOf(e.kind) === 'switch') && e.tick <= tick + HUMAN_RULES.gestureTicks && tick - e.tick <= HUMAN_RULES.meantS * 10).pop();
 }
 const sevFor = (src: Src, meant: HumanEventLike | undefined, seedSev: Severity): Severity => src.seed === 'bot' ? (meant ? 'info' : 'S2') : seedSev;
-const who = (src: Src) => src.seed === 'route' ? 'a route step' : src.seed === 'bot' ? (src.events ? 'the human bot' : 'the bot') : 'Sky';
+const who = (src: Src) => src.seed === 'route' ? 'a route step' : src.seed === 'bot' ? (src.events ? 'the human bot' : 'the bot') : src.sky ? 'Sky' : 'a saved proof session';
 
 export function qCancel(p: Play, src: Src): Finding[] {
   if (p.error || src.mutated) return [];
@@ -70,9 +70,9 @@ export function qCancel(p: Play, src: Src): Finding[] {
     if (!drive && !(other && at.some(o => o.do === 'cancel'))) continue;
     const m = meantBy(src, s.op, l.tick), cost = l.text.match(/\(([a-z-]+):/)?.[1] ?? '';
     const how = drive ? 'drive' : 'replace';
-    out.push({ check: 'Q-CANCEL', severity: drive ? (src.seed === 'bot' && m ? 'info' : 'S2') : sevFor(src, m, 'S3'), key: `Q-CANCEL:${how}:${s.verb}${m ? ':meant' : ''}`, owner: drive ? 'Latch / Keel (cell.drive.onBusy)' : 'Latch (the pill says "Cancels ..." before the new order lands)',
+    out.push({ check: 'Q-CANCEL', severity: drive ? 'S2' : sevFor(src, m, 'S3'), key: `Q-CANCEL:${how}:${s.verb}${m ? ':meant' : ''}`, owner: drive ? 'Latch (Sky 2026-10-25: going third person never stops the current act)' : 'Latch (the pill says "Cancels ..." before the new order lands)',
       title: drive ? `Taking an agent in third person stopped their ${s.verb}` : `A new order stopped the ${s.verb} the agent was doing${m ? ' (meant)' : ''}`,
-      expected: drive ? 'driving an agent who is acting either keeps the act or says before the first step that it ends it' : 'a new order on a busy agent never cancels its act unseen: the pill says "Cancels ..." before you let go, the plate and a pop after (next-batch 10-11)',
+      expected: drive ? 'going third person never stops the current act (Sky 2026-10-25): the act runs on while you drive' : 'a new order on a busy agent never cancels its act unseen: the pill says "Cancels ..." before you let go, the plate and a pop after (next-batch 10-11)',
       observed: `${s.op} ${s.verb}${s.target ? ' ' + s.target : ''} stopped at ${clock(l.tick)} by ${drive ? 'a third-person drive' : `a ${other!.do}`}${cost ? ` (${cost}: the time is spent)` : ''} (${who(src)}${m ? `; meant: ${m.kind}` : ''})`, tick: l.tick });
   }
   return out;
@@ -210,8 +210,8 @@ export function humanChecks(p: Play, src: Src): Finding[] {
 }
 /** The same for a tier-1 item (a seed or its mutant). */
 export function qHuman(p: Play, it: Item): Finding[] {
-  const f = humanChecks(p, { seed: it.seed.kind, mutated: it.mutations.length > 0 });
+  const sky = bySky(it.seed), f = humanChecks(p, { seed: it.seed.kind, mutated: it.mutations.length > 0, sky });
   // a saved session the engine no longer replays as Sky saw it (as Q-OFFER): what the game did differs, so only the engine's own invariant stands
   if (it.seed.kind !== 'session' || p.qa?.record === '') return f;
-  return f.map(x => x.check === 'Q-LEAK' ? x : { ...x, severity: 'info', key: `${x.key}:replay-differs`, observed: `${x.observed} (replay differs from what Sky saw)` });
+  return f.map(x => x.check === 'Q-LEAK' ? x : { ...x, severity: 'info', key: `${x.key}:replay-differs`, observed: `${x.observed} (replay differs from ${sky ? 'what Sky saw' : 'the recording'})` });
 }

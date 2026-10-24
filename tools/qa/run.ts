@@ -73,7 +73,7 @@ export async function runPass(opts: Partial<PassOpts> = {}): Promise<{ pass: Pas
     const host = await playStream(l, join(work, 'list.txt'), (p, i) => {
       const it = items[i]!;
       if (p.error) errors++;
-      if (!it.mutations.length && !it.twin && it.seed.kind === 'session' && p.qa?.record === '') faithful++;
+      if (!it.mutations.length && !it.twin && it.seed.kind === 'session' && it.seed.by === 'sky' && p.qa?.record === '') faithful++;
       if (p.replayIdentical !== null && p.replayIdentical !== undefined) replayChecked++;
       const fs = checkPlay(p, it, ctx);
       const twin = firstOf.get(it.seed.id);
@@ -84,7 +84,7 @@ export async function runPass(opts: Partial<PassOpts> = {}): Promise<{ pass: Pas
     }, { jobs: o.jobs, replay: o.replay });
     for (const [c, s] of flagged) (checks[c] ??= {})[l.name] = s.size;
     playsPerLane[l.name] = items.length;
-    stats.push({ lane: l, faithful, seeds: items.filter(i => !i.mutations.length && !i.twin).length, mutants: items.filter(i => i.mutations.length).length, plays: items.length, errors, replayChecked, seconds: (performance.now() - tl) / 1000, host });
+    stats.push({ lane: l, faithful, skySeeds: items.filter(i => !i.mutations.length && !i.twin && i.seed.by === 'sky').length, seeds: items.filter(i => !i.mutations.length && !i.twin).length, mutants: items.filter(i => i.mutations.length).length, plays: items.length, errors, replayChecked, seconds: (performance.now() - tl) / 1000, host });
     // keep the exemplars' scripts; drop the rest of the work folder
     const keep = join(dir, 'scripts', l.name); mkdirSync(keep, { recursive: true });
     for (const is of book.ranked(playsPerLane)) for (const ex of is.exemplars) if (ex.lane === l.name && !ex.script) {

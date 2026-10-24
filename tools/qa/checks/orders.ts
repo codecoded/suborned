@@ -7,7 +7,7 @@
 //                        act never happened. Seeds only, for the same reason.
 //   Q-LEARN (sim proxy)  a completed Watch or Listen of the same person by the same agent lands twice with the same words: the repeat was
 //                        taken and "learned" again (Sky #1). The trace's knowledge diff (Keel) will make this exact.
-import type { Finding, Item, Play } from '../types';
+import { bySky, type Finding, type Item, type Play } from '../types';
 import { clock } from './warn';
 
 export function qOffer(p: Play, it: Item): Finding[] {
@@ -18,10 +18,10 @@ export function qOffer(p: Play, it: Item): Finding[] {
   for (const o of p.orders) {
     if (o.ok || o.code === 'mission-over' || o.order.do === 'drive') continue;
     out.push({
-      check: 'Q-OFFER', severity: faithful && !planned ? 'S2' : 'info', key: `Q-OFFER:${it.seed.kind}:${o.order.do}:${o.code}${faithful ? '' : ':replay-differs'}${planned ? ':planned' : ''}`,
-      title: `${it.seed.kind === 'route' ? 'A route step' : 'An order Sky gave'} was refused: ${o.order.do} (${o.code})${planned ? ', as the route plans' : faithful ? '' : ', on a replay that differs from his'}`,
+      check: 'Q-OFFER', severity: faithful && !planned ? 'S2' : 'info', key: `Q-OFFER:${it.seed.kind === 'session' && it.seed.by === 'automation' ? 'automation' : it.seed.kind}:${o.order.do}:${o.code}${faithful ? '' : ':replay-differs'}${planned ? ':planned' : ''}`,
+      title: `${it.seed.kind === 'route' ? 'A route step' : bySky(it.seed) ? 'An order Sky gave' : 'An order a saved proof session gave'} was refused: ${o.order.do} (${o.code})${planned ? ', as the route plans' : faithful ? '' : bySky(it.seed) ? ', on a replay that differs from his' : ', on a replay that differs from the recording'}`,
       expected: it.seed.kind === 'route' ? 'every step of the plan is taken' : 'what the host offers, the engine takes (or the pill showed the refusal first)',
-      observed: `${o.order.op ?? 'cell'} ${o.order.do}${o.order.target ? ' ' + o.order.target : ''} at ${clock(o.order.tick)}: ${o.code}: ${(o.why ?? '').slice(0, 120)}${faithful ? '' : ' (replay differs from what Sky saw)'}`,
+      observed: `${o.order.op ?? 'cell'} ${o.order.do}${o.order.target ? ' ' + o.order.target : ''} at ${clock(o.order.tick)}: ${o.code}: ${(o.why ?? '').slice(0, 120)}${faithful ? '' : bySky(it.seed) ? ' (replay differs from what Sky saw)' : ' (replay differs from the recording)'}`,
       tick: o.order.tick, owner: it.seed.kind === 'route' ? 'Waymark' : 'Latch',
     });
   }

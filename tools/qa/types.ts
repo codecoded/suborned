@@ -26,7 +26,11 @@ export type Play = {
 
 /** Where a script came from: a route (Waymark's), a saved session (Sky's), or a mutant of one. */
 export type SeedKind = 'route' | 'session';
-export type Seed = { id: string; kind: SeedKind; file: string; script: Script; expects?: { outcome?: string; alert?: number }; routeKind?: string };
+/** `by` (sessions only): Sky's own play, or automation saved in the same folder (a proof, a late row, a replay), by the real-time test of
+ *  tools/qa/human-measure.ts skySessions. Both are mutation seeds; only Sky's count as "an order Sky gave" (Aster 2026-10-25). */
+export type Seed = { id: string; kind: SeedKind; file: string; script: Script; expects?: { outcome?: string; alert?: number }; routeKind?: string; by?: 'sky' | 'automation' };
+/** A saved session Sky played himself. */
+export const bySky = (s: Pick<Seed, 'kind' | 'by'>) => s.kind === 'session' && s.by === 'sky';
 export type Family = 'shift' | 'drop' | 'repeat' | 'reassign' | 'swap-target' | 'insert';
 export const FAMILIES: Family[] = ['shift', 'drop', 'repeat', 'reassign', 'swap-target', 'insert'];
 export type Mutation = { family: Family; index: number; what: string };

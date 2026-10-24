@@ -4,7 +4,7 @@
 import type { Finding, Item, Severity } from './types';
 
 export const WEIGHT: Record<Severity, number> = { S1: 8, S2: 4, S3: 2, S4: 1, info: 0 };
-export type Exemplar = { lane: string; item: string; seed: string; seedKind: string; mutations: string[]; finding: Finding; script?: string; /** the bot lane's shot of it */ shot?: string };
+export type Exemplar = { lane: string; item: string; seed: string; seedKind: string; /** a session's: sky or automation */ seedBy?: string; mutations: string[]; finding: Finding; script?: string; /** the bot lane's shot of it */ shot?: string };
 export type Issue = {
   key: string; check: string; severity: Severity; title: string; owner: string;
   plays: Record<string, number>; share: Record<string, number>; score: number; exemplars: Exemplar[];
@@ -22,7 +22,7 @@ export class IssueBook {
       if (WEIGHT[f.severity] > WEIGHT[is.severity]) { is.severity = f.severity; is.title = f.title; }
       const id = `${lane}:${it.id}`, s = this.seenIn.get(f.key) ?? new Set(); this.seenIn.set(f.key, s);
       if (!s.has(id)) { s.add(id); is.plays[lane] = (is.plays[lane] ?? 0) + 1; }
-      const ex: Exemplar = { lane, item: it.id, seed: it.seed.id, seedKind: it.seed.kind, mutations: it.mutations.map(m => `${m.family}: ${m.what}`), finding: f, ...(f.script ? { script: f.script } : {}), ...(f.shot ? { shot: f.shot } : {}) };
+      const ex: Exemplar = { lane, item: it.id, seed: it.seed.id, seedKind: it.seed.kind, ...(it.seed.by ? { seedBy: it.seed.by } : {}), mutations: it.mutations.map(m => `${m.family}: ${m.what}`), finding: f, ...(f.script ? { script: f.script } : {}), ...(f.shot ? { shot: f.shot } : {}) };
       if (is.exemplars.some(e => e.lane === lane && e.item === it.id)) continue;
       is.exemplars.push(ex);
       is.exemplars.sort((a, b) => a.mutations.length - b.mutations.length || (a.seedKind === 'session' ? 0 : 1) - (b.seedKind === 'session' ? 0 : 1) || (a.finding.tick ?? 0) - (b.finding.tick ?? 0));

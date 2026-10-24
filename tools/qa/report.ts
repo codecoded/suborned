@@ -8,7 +8,7 @@ import type { Agg, Tables } from './tables';
 import type { Lane } from './sim';
 import type { Statics } from './statics';
 
-export type LaneStat = { lane: Lane; faithful: number; seeds: number; mutants: number; plays: number; errors: number; replayChecked: number; seconds: number; host: string };
+export type LaneStat = { lane: Lane; faithful: number; /** Sky's own sessions among the seeds (the rest are automation) */ skySeeds?: number; seeds: number; mutants: number; plays: number; errors: number; replayChecked: number; seconds: number; host: string };
 export type Pass = { run: string; at: string; seconds: number; lanes: LaneStat[]; issues: Issue[]; tables: Tables; checks: Record<string, Record<string, number>>; previous?: string; fixed: string[]; root: string; /** the static checks beside the plays (statics.ts); absent when the pass ran without them */ statics?: Statics; staticsNew?: string[]; staticsFixed?: string[] };
 
 const esc = (s: unknown) => String(s ?? '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]!);
@@ -32,7 +32,7 @@ export function thumb(file: string, root: string): string {
 export function summary(p: Pass) {
   return {
     schema: 'suborned.qa.summary/1', run: p.run, at: p.at, seconds: Math.round(p.seconds), previous: p.previous ?? null,
-    lanes: p.lanes.map(l => ({ name: l.lane.name, label: l.lane.label, engine: l.lane.engine, inputs: l.lane.inputs, build: l.lane.build ?? null, seeds: l.seeds, sessionsExact: l.faithful, mutants: l.mutants, plays: l.plays, errors: l.errors, replayChecked: l.replayChecked, seconds: Math.round(l.seconds) })),
+    lanes: p.lanes.map(l => ({ name: l.lane.name, label: l.lane.label, engine: l.lane.engine, inputs: l.lane.inputs, build: l.lane.build ?? null, seeds: l.seeds, skySessions: l.skySeeds ?? 0, sessionsExact: l.faithful, mutants: l.mutants, plays: l.plays, errors: l.errors, replayChecked: l.replayChecked, seconds: Math.round(l.seconds) })),
     checks: p.checks,
     issues: p.issues.filter(i => i.severity !== 'info').map(i => ({ key: i.key, check: i.check, severity: i.severity, owner: i.owner, title: i.title, plays: i.plays, share: Object.fromEntries(Object.entries(i.share).map(([k, v]) => [k, Number(v.toFixed(4))])), score: Number(i.score.toFixed(4)), change: i.change ?? null, firstSeen: i.firstSeen ?? null })),
     fixed: p.fixed,
@@ -47,13 +47,13 @@ export function summary(p: Pass) {
 
 export function html(p: Pass): string {
   const sky = p.issues.filter(i => i.severity !== 'info').slice(0, 10);
-  const lanesLine = p.lanes.map(l => `<b>${esc(l.lane.name)}</b>: ${esc(l.lane.label)}, ${esc(l.lane.engine)}, inputs ${esc(l.lane.inputs)} · ${l.seeds} seeds (${l.faithful} of Sky's sessions replay exactly as he played them), ${l.mutants} mutants, ${l.plays} plays in ${l.seconds.toFixed(0)} s (${esc(l.host)})`).join('<br>');
+  const lanesLine = p.lanes.map(l => `<b>${esc(l.lane.name)}</b>: ${esc(l.lane.label)}, ${esc(l.lane.engine)}, inputs ${esc(l.lane.inputs)} · ${l.seeds} seeds (${l.skySeeds ?? 0} of them Sky's own sessions, ${l.faithful} of which replay exactly as he played them), ${l.mutants} mutants, ${l.plays} plays in ${l.seconds.toFixed(0)} s (${esc(l.host)})`).join('<br>');
   const issueCard = (i: Issue, n: number) => {
     const ex = i.exemplars[0];
     const rows = i.exemplars.map(e => `<li><code>${esc(e.lane)}</code> ${esc(e.item)}${e.mutations.length ? ' — ' + esc(e.mutations.join('; ')) : ' (unmutated)'}<br><span class="dim">expected:</span> ${esc(e.finding.expected)}<br><span class="dim">observed:</span> ${esc(e.finding.observed)}${e.script ? `<br><code class="cmd">${esc(replayCommand(e.script, e.lane))}</code>` : ''}</li>`).join('');
     return `<section class="issue ${i.severity}"><h3>${n}. <span class="sev">${i.severity}</span> ${esc(i.title)}</h3>
 <p class="meta">${esc(i.check)} · owner <b>${esc(i.owner)}</b> · ${Object.entries(i.plays).map(([l, k]) => `${esc(l)}: ${k} plays (${pct(i.share[l] ?? 0)})`).join(' · ')} · ${i.change ? esc(i.change) : 'new'}${i.firstSeen ? ' · first seen ' + esc(i.firstSeen) : ''} · <code>${esc(i.key)}</code></p>
-${ex ? `<p><b>Steps:</b> ${ex.lane === 'bot' ? `the built player played itself (${esc(ex.seed.replace(/^bot /, ''))}); at ${esc(ex.finding.observed.match(/, (\d+:\d\d)\)$/)?.[1] ?? 'the end')} of the mission clock the check saw it. Replay the session to that moment with the command below, or look at the shot.` : `play ${ex.seedKind === 'session' ? "Sky's saved session" : 'the route'} <code>${esc(ex.seed)}</code>${ex.mutations.length ? ', changed: ' + esc(ex.mutations.join('; ')) : ' as recorded'}, then read the log at ${esc(ex.finding.observed.match(/\d+:\d\d\.\d/)?.[0] ?? 'the end')}.`}</p>` : ''}
+${ex ? `<p><b>Steps:</b> ${ex.lane === 'bot' ? `the built player played itself (${esc(ex.seed.replace(/^bot /, ''))}); at ${esc(ex.finding.observed.match(/, (\d+:\d\d)\)$/)?.[1] ?? 'the end')} of the mission clock the check saw it. Replay the session to that moment with the command below, or look at the shot.` : `play ${ex.seedKind === 'session' ? (ex.seedBy === 'sky' ? "Sky's saved session" : 'the saved proof session') : 'the route'} <code>${esc(ex.seed)}</code>${ex.mutations.length ? ', changed: ' + esc(ex.mutations.join('; ')) : ' as recorded'}, then read the log at ${esc(ex.finding.observed.match(/\d+:\d\d\.\d/)?.[0] ?? 'the end')}.`}</p>` : ''}
 <ul>${rows}</ul>${(() => { const sh = i.exemplars.find(e => e.shot)?.shot; const src = sh ? thumb(sh, p.root) : ''; return src ? `<p><img src="${src}" alt="${esc(i.title)}" style="max-width:720px;width:100%;border-radius:4px"><br><span class="dim">${esc(sh)}</span></p>` : '<p class="dim">Shot: none (tier 1 plays the engine headless; the bot lane keeps one at each anomaly).</p>'; })()}</section>`;
   };
   const table = (head: string[], body: string[][]) => `<table><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr>${body.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
