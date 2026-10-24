@@ -193,6 +193,8 @@ namespace Suborned.World.Play
             var bytes = System.Convert.FromBase64String(J.S(w, "floor")); if (bytes.Length != nx * ny * 2) throw new InvalidDataException($"Play: walk floor is {bytes.Length} bytes, {nx}x{ny} cells want {nx * ny * 2}");
             var h = new float[nx * ny]; for (int k = 0; k < h.Length; k++) h[k] = (short)(bytes[2 * k] | bytes[2 * k + 1] << 8) / 100f;
             f.x0 = J.F(win, "x0"); f.y0 = J.F(win, "y0"); f.cell = cell; f.nx = nx; f.ny = ny; f.heights = h;
+            // Suture's bot triage: the walk file's kind per cell (2, 4 solid) beside the heights, so the player's checks judge against what is drawn
+            var kb = J.S(w, "kind"); f.kinds = string.IsNullOrEmpty(kb) ? System.Array.Empty<byte>() : System.Convert.FromBase64String(kb); if (f.kinds.Length != nx * ny) f.kinds = System.Array.Empty<byte>();
             Debug.Log($"Play: ground from the walk file ({nx}x{ny} at {cell} m, world {want[..Mathf.Min(12, want.Length)]}; floor {h.Min():F2} to {h.Max():F2} m)");
             return true;
         }

@@ -1229,7 +1229,13 @@ namespace Suborned.Play
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
                 case "take": return g.Vale == ValeAt.Pickup ? yes : No("vale-not-at-car", "Vale is not at his car yet");
                 case "fire" when by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer: return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him");
-                case "fire": return op.Gun.W == null ? No("no-weapon", "has no weapon") : yes; // engine 0.15.0: fire-running and fight-over are no longer given (a runner fires at its penalty; a fire after the fight is taken and traced); a person is fired on forced, through the ring's hold
+                case "fire":
+                    {   // the 0.2.116 bot row (Q-OFFER: fire-carrying x14, no-target x2): the wedge shows the engine's own refusal (FireQuery) as its lock;
+                        // agent-busy is the host's to settle (Playable waits for the act or cancels it), so it never locks Fire
+                        if (op.Gun.W == null) return No("no-weapon", "has no weapon");
+                        Answer fq = default; if (Guard("fire-query", () => fq = g.FireQuery(by, o.Target, o.Force)) && !fq.ok && fq.code != "agent-busy") return fq;
+                        return yes;
+                    }
             }
             return yes;
         }

@@ -39,7 +39,10 @@ namespace Suborned.Play
     {
         public const string Schema = "suborned.bot.report/1";
         // [S] starting thresholds (Suture tunes them, brief 060 §2)
-        public const float FeetTolM = 0.15f, FeetRunS = 0.5f, SolidFreeM = 0.3f, SolidRunS = 0.5f, FrameSpikeMs = 50f, WarmS = 20f, MemSlopeMBMin = 5f, MemWarmS = 60f;
+        public const float FeetTolM = 0.15f, FeetRunS = 0.5f, SolidFreeM = 0.3f, SolidRunS = 0.5f, FrameSpikeMs = 50f, WarmS = 20f, MemSlopeMBMin = 5f;
+        // Suture's smoke triage (briefs/060 "Smoke triage", 2026-10-24): the café-seat skip, Q-SOLID against what is drawn, Q-MEM by thirds, the offer race, the open ring's grace
+        public const float SeatSkipM = 1.5f, SolidBodyR = 0.25f, SolidOverlapM = 0.05f, MemWarmS = 120f, MemThirdMinS = 60f, MemTotalMBMin = 3f, MemManagedMBMin = 1f;
+        public const int OfferRaceTicks = 1, GiverGraceTicks = 2;
         public const float DedupeCellM = 2f, DedupeS = 30f; public const int MaxShots = 60;
 
         [Serializable] public class BotRow { public string name = "", policy = "random"; public int seed = 1, w = 1920, h = 1080; public float seconds = 660f, decideS = 0f; }
@@ -51,12 +54,13 @@ namespace Suborned.Play
             public string Name = "", Policy = "", Status = "running", Error = "", Outcome = "", FailCode = "", Preset = ""; public int Seed, EndTick;
             public int Decisions, Clicks, Rings, RingMisses, Taken, Moves, Pans, Turns, Runs, Given, Refused, Errors, Shots, FeetSamples, Figures;
             public float Seconds; public readonly List<Anomaly> Anomalies = new(); public readonly Dictionary<string, int> Counts = new(); public readonly Dictionary<string, int> Refusals = new();
-            public readonly List<double> Frames = new(); public double MemStart, MemEnd, MemSlope; public string CardHead = "";
+            public readonly int[] Hist = new int[2001]; public int FrameN, Races, ShutClicks; public double FrameSum, FrameMax; public double MemStart, MemEnd, MemSlope, MemThirdTotal, MemThirdManaged; public string MemJudged = "", CardHead = ""; // frame times as a 0.1 ms histogram (Suture: no list held all run)
         }
 
         string path, dir; readonly List<Res> results = new(); Res cur; HandoverHost h; System.Random rng; string rowDir;
         readonly Dictionary<string, float> lastCapture = new(); readonly List<string> consoleErrors = new();
-        int ordersSeen; (string op, string act, string target, float at)? offered;
+        int ordersSeen; (string op, string act, string target, float at, bool shut)? offered;
+        readonly int[] ableTick = new int[4], unableSince = new int[4]; List<Vector3> chairs;
         readonly Dictionary<string, float> feetOff = new(), solidIn = new();
         bool capturing, skipFrame; object lastRing, lastPanel;
 
@@ -113,17 +117,19 @@ namespace Suborned.Play
 
         IEnumerator PlayRow(BotRow row)
         {
-            rng = new System.Random(row.seed); lastCapture.Clear(); feetOff.Clear(); solidIn.Clear(); lock (consoleErrors) consoleErrors.Clear(); offered = null;
+            rng = new System.Random(row.seed); lastCapture.Clear(); feetOff.Clear(); solidIn.Clear(); lock (consoleErrors) consoleErrors.Clear(); offered = null; for (int k = 0; k < 4; k++) { ableTick[k] = 0; unableSince[k] = -1; }
             string err = Guard(() => { h.Begin(); h.IntelOpen = false; });
             if (err != null) { Fail(err); yield break; }
             yield return null; yield return null;
             err = Guard(() => { h.StartClock(); h.SetPaused(false); });
             if (err != null) { Fail(err); yield break; }
             ordersSeen = h.Game.Orders.Count;
+            chairs = new List<Vector3>(); if (h.CafeSeats?.Chairs != null) foreach (var c in h.CafeSeats.Chairs.Values) chairs.Add(h.frame.World(c.at));
             float start = Time.realtimeSinceStartup, nextDecide = start + 1.5f, nextFeet = start, nextHud = start, nextMem = start, overAt = -1f;
             float decide = row.decideS > 0f ? row.decideS : row.policy == "cautious" ? 4f : row.policy == "greedy" ? 3f : 2.5f;
             var mem = new List<(float t, double managed, double total)>();
-            var frames = new StringBuilder("ms,tick,what\n"); var feet = new StringBuilder("t,tick,key,x,y,z,floor,free\n");
+            using var frames = new StreamWriter(Path.Combine(rowDir, "frames.csv")); using var feet = new StreamWriter(Path.Combine(rowDir, "feet.csv")); // streamed (Suture: no buffers held all run)
+            frames.WriteLine("ms,tick,what"); feet.WriteLine("t,tick,key,x,y,z,floor,free,skip");
             using var hud = new StreamWriter(Path.Combine(rowDir, "hud.jsonl"));
             double last = Time.realtimeSinceStartupAsDouble; float sealHiddenSince = -1f; bool sealSeen = false, sealMissed = false; int sealFrames = 0, sealHidden = 0;
             var act = new Stack<IEnumerator>(); // an input sequence in progress, stepped a frame at a time (nested sequences pushed)
@@ -134,7 +140,8 @@ namespace Suborned.Play
                 var g = h.Game; if (g == null) { Fail("the run went away"); break; }
                 string what = HandoverHost.FrameCost; HandoverHost.FrameCost = "";
                 if (skipFrame) { skipFrame = false; HandoverHost.FrameCost = ""; what = "shot"; } // the frame after a capture carries its wait: not a frame of play
-                if (!capturing && what != "shot") { cur.Frames.Add(ms); frames.Append(F(ms)).Append(',').Append(g.Tick).Append(',').Append(string.IsNullOrEmpty(what) ? "none" : what.Replace(",", "+")).Append('\n'); }
+                if (!capturing && what != "shot") { cur.Hist[Math.Min(2000, (int)(ms * 10.0))]++; cur.FrameN++; cur.FrameSum += ms; cur.FrameMax = Math.Max(cur.FrameMax, ms); frames.Write(F(ms)); frames.Write(','); frames.Write(g.Tick); frames.Write(','); frames.WriteLine(string.IsNullOrEmpty(what) ? "none" : what.Replace(",", "+")); }
+                for (int k = 0; k < 4; k++) { if (Able(k)) { ableTick[k] = g.Tick; unableSince[k] = -1; } else if (unableSince[k] < 0) unableSince[k] = g.Tick; } // each agent's ability by tick: the offer race and the open ring's grace
                 if (!capturing && t > WarmS && ms > FrameSpikeMs && string.IsNullOrEmpty(what) && overAt < 0f) yield return Hit("Q-FRAME", "frame", "A frame over 50 ms with no save, order or end in it", $"every frame under {FrameSpikeMs} ms after the first {WarmS} s", $"{F(ms)} ms at {HandoverHost.MissionClock(g.Tick)}", Focus());
                 // the console
                 string[] errs; lock (consoleErrors) { errs = consoleErrors.ToArray(); consoleErrors.Clear(); }
@@ -145,10 +152,15 @@ namespace Suborned.Play
                     var (o, ok, code, why) = g.Orders[ordersSeen]; cur.Given++;
                     if (ok) continue; cur.Refused++; cur.Refusals[code ?? ""] = (cur.Refusals.TryGetValue(code ?? "", out var rn) ? rn : 0) + 1;
                     if (offered is { } of && now - of.at < 5f && o.Do == of.act && (of.target.Length == 0 || o.Target == of.target) && (of.op.Length == 0 || o.Op == of.op))
+                    {
+                        if (of.shut) { cur.ShutClicks++; continue; } // the wedge showed its lock at the click: an honest refusal ("wedge shut"), not Q-OFFER
+                        int dk = o.Op is "scout" or "fixer" or "tech" or "enforcer" ? (int)Op.Parse(o.Op) : -1;
+                        if (code is "agent-down" or "enforcer-inside" or "in-car" && dk >= 0 && ableTick[dk] >= o.Tick - OfferRaceTicks) { cur.Races++; continue; } // the doer went down in the order's tick: a race nothing on screen could show
                         yield return Hit("Q-OFFER", $"{o.Do}:{code}", $"Offered on the ring, then refused: {o.Do} ({code})", "a way the ring offers is taken, or its lock shows on the wedge before the click", $"{o.Op} {o.Do} {o.Target}: {code} {why}", Focus());
+                    }
                 }
                 // Q-WARN-HUD: the seal running shows its marker (the briefing, menu or end card aside)
-                if (h.SealOn && h.Modal == ModalGate.Modal.None)
+                if (h.SealOn && h.Modal == ModalGate.Modal.None && !capturing) // not while a shot holds the frame
                 {
                     sealFrames++; sealSeen = true;
                     if (string.IsNullOrEmpty(HudToolkit.SealWords)) { sealHidden++; if (sealHiddenSince < 0f) sealHiddenSince = t; } else sealHiddenSince = -1f;
@@ -158,7 +170,8 @@ namespace Suborned.Play
                 if (!capturing && now >= nextHud) { nextHud = now + 2f; var mj = HudToolkit.ManifestNow(); if (mj != null) hud.WriteLine($"{{\"t\": {F(t)}, \"tick\": {g.Tick}, \"manifest\": {mj.Trim()}}}"); }
                 if (now >= nextMem) { nextMem = now + 1f; mem.Add((t, GC.GetTotalMemory(false) / 1048576.0, Profiler.GetTotalAllocatedMemoryLong() / 1048576.0)); }
                 // Q-GIVER: every ring and panel the host builds
-                string giverWhy = null; if (!ReferenceEquals(h.Ring, lastRing) || !ReferenceEquals(h.Panel, lastPanel)) { lastRing = h.Ring; lastPanel = h.Panel; GiverCheck(out giverWhy); } // each ring and panel once, as built
+                string giverWhy = null; if (!ReferenceEquals(h.Ring, lastRing) || !ReferenceEquals(h.Panel, lastPanel)) { lastRing = h.Ring; lastPanel = h.Panel; GiverCheck(out giverWhy); } // each ring and panel as built
+                if (giverWhy == null && h.Ring != null) OpenRingGivers(g, out giverWhy); // and the open ring every tick (Suture: a giver down longer than GiverGraceTicks still offered)
                 if (giverWhy != null) yield return Hit("Q-GIVER", giverWhy.Split(':')[0], "A downed or unable agent offered as the doer", "no giver who is down, carried, inside or in the car", giverWhy, Focus());
                 // the end
                 bool over = g.Over || h.Ending.Length > 0;
@@ -179,16 +192,29 @@ namespace Suborned.Play
             }
             HandoverHost.BeforeStep = null;
             cur.Seconds = Time.realtimeSinceStartup - start;
-            try { File.WriteAllText(Path.Combine(rowDir, "frames.csv"), frames.ToString()); File.WriteAllText(Path.Combine(rowDir, "feet.csv"), feet.ToString()); } catch { }
             try { File.WriteAllText(Path.Combine(rowDir, "mem.csv"), "t,managedMB,totalMB\n" + string.Join("\n", mem.Select(m => $"{F(m.t)},{F(m.managed)},{F(m.total)}")) + "\n"); } catch { }
-            // Q-MEM: the slope after the warm-up (least squares over the samples)
+            // Q-MEM (Suture's rule): after a 120 s warm-up the rest is cut in thirds, each third's floor its lowest sample (transients drop out); a leak
+            // only when the floor rises on both steps by more than 3 MB/min total or 1 MB/min managed; judged only when each third lasts 60 s. The OLS
+            // slope stays in the report as information
             var w = mem.Where(m => m.t > MemWarmS).ToList();
             if (mem.Count > 0) { cur.MemStart = mem[0].total; cur.MemEnd = mem[^1].total; }
             if (w.Count > 30)
             {
                 double Slope(Func<(float t, double managed, double total), double> v) { double mt = w.Average(m => m.t), mv = w.Average(v), num = w.Sum(m => (m.t - mt) * (v(m) - mv)), den = w.Sum(m => (m.t - mt) * (m.t - mt)); return den > 0 ? num / den * 60.0 : 0; }
-                double sm = Slope(m => m.managed), st = Slope(m => m.total); cur.MemSlope = Math.Max(sm, st);
-                if (cur.MemSlope > MemSlopeMBMin) yield return Hit("Q-MEM", "slope", "Memory grows through the run", $"under {MemSlopeMBMin} MB a minute after the first minute", $"managed {F(sm)} MB/min, total {F(st)} MB/min over {F(w[^1].t - w[0].t)} s", Focus(), shot: false);
+                cur.MemSlope = Math.Max(Slope(m => m.managed), Slope(m => m.total));
+            }
+            float span = w.Count > 1 ? w[^1].t - w[0].t : 0f;
+            if (span / 3f < MemThirdMinS) cur.MemJudged = $"not judged: {F(span)} s after the warm-up (thirds of {MemThirdMinS} s needed)";
+            else
+            {
+                float third = span / 3f, t0m = w[0].t;
+                (double tot, double man) Floor(int k) { var part = w.Where(m => m.t >= t0m + k * third && m.t < t0m + (k + 1) * third + 1e-3f).ToList(); return (part.Min(m => m.total), part.Min(m => m.managed)); }
+                var f0 = Floor(0); var f1 = Floor(1); var f2 = Floor(2); double perMin = 60.0 / third;
+                double t1 = (f1.tot - f0.tot) * perMin, t2 = (f2.tot - f1.tot) * perMin, m1 = (f1.man - f0.man) * perMin, m2 = (f2.man - f1.man) * perMin;
+                cur.MemThirdTotal = Math.Min(t1, t2); cur.MemThirdManaged = Math.Min(m1, m2);
+                bool leak = t1 > MemTotalMBMin && t2 > MemTotalMBMin || m1 > MemManagedMBMin && m2 > MemManagedMBMin;
+                cur.MemJudged = leak ? "leak" : "ok";
+                if (leak) yield return Hit("Q-MEM", "thirds", "Memory grows through the run", $"the floor of each third after {MemWarmS} s rising no more than {MemTotalMBMin} MB/min total or {MemManagedMBMin} MB/min managed on both steps", $"total {F(t1)} then {F(t2)} MB/min, managed {F(m1)} then {F(m2)} MB/min (thirds of {F(third)} s)", Focus(), shot: false);
             }
             try { if (h.Game != null) h.SaveSessionTo(Path.Combine(rowDir, "session.script.json")); } catch (Exception e) { Debug.LogWarning("BotRun: session not copied: " + e.Message); }
         }
@@ -257,7 +283,7 @@ namespace Suborned.Play
             else if (policy == "random") seg = segs[rng.Next(segs.Count)];
             else { var open = segs.Where(i => !rs.Segs[i].Shut && rs.Segs[i].Row?.Available == true).ToList(); if (open.Count == 0) { yield return Keys(new[] { Key.Escape }, 2); yield break; } seg = open[0]; }
             var s = rs.Segs[seg]; var od = s.Row?.I?.Order;
-            offered = od == null ? null : (s.By.Count == 1 ? Op.Name(s.By[0]) : "", od.Do ?? "", od.Target ?? "", Time.realtimeSinceStartup);
+            offered = od == null ? null : (s.By.Count == 1 ? Op.Name(s.By[0]) : "", od.Do ?? "", od.Target ?? "", Time.realtimeSinceStartup, s.Shut || s.Row?.Available == false); // a wedge shown shut (or a locked row) at the click
             cur.Taken++;
             var at = WedgeAt(rs, seg, rs.Segs.Count);
             bool hold = s.HoldWedge || s.Harmful || od?.Do == "fire";
@@ -352,20 +378,37 @@ namespace Suborned.Play
             var pn = h.Panel; if (pn != null) foreach (var r in pn.Rows) if (r.Available && Bad(r.By) is string b) { why = $"panel:{Op.Name(r.By)} {b}: offered {r.Verb} on {pn.T?.Kind}/{pn.T?.Key}"; return; }
         }
 
-        IEnumerable FeetFrame(float t, Game g, StringBuilder csv)
+        /// <summary>Q-GIVER on the open ring, every frame (Suture): a wedge still offered by a giver who has been unable longer than GiverGraceTicks.</summary>
+        void OpenRingGivers(Game g, out string why)
+        {
+            why = null; var rs = h.Ring; if (rs == null) return;
+            foreach (var sg in rs.Segs)
+            {
+                if (sg.More || sg.Shut) continue;
+                foreach (var k in sg.By) { int i = (int)k; if (unableSince[i] >= 0 && g.Tick - unableSince[i] > GiverGraceTicks) { var op = g.Ops[i]; why = $"open-ring:{Op.Name(k)} {(op.Down ? "down" : op.CarriedBy != null ? "carried" : op.Inside ? "inside" : "in the car")} {(g.Tick - unableSince[i]) / 10f:0.0} s: still offered for {sg.Word} on {rs.Plan?.T?.Kind}/{rs.Plan?.T?.Key}"; return; } }
+            }
+        }
+
+        IEnumerable FeetFrame(float t, Game g, StreamWriter csv)
         {
             var grid = g.S.Grid; int n = 0;
-            foreach (var (key, p, skip) in h.Views.FigureFeet())
+            foreach (var (key, p, skip0) in h.Views.FigureFeet())
             {
+                bool skip = skip0;
                 n++; var b = h.frame.ToBlock(new Vector2(p.x, p.z)); float floor = h.frame.Height(b.x, b.y); var ep = h.frame.Engine(p); bool free = grid.Free(ep);
-                csv.Append(F(t)).Append(',').Append(g.Tick).Append(',').Append(key).Append(',').Append(F(p.x)).Append(',').Append(F(p.y)).Append(',').Append(F(p.z)).Append(',').Append(F(floor)).Append(',').Append(free ? 1 : 0).Append('\n');
+                // Suture: a crowd figure within SeatSkipM of a café chair is not judged (the last metre to a chair lies inside the grid's clearance, by design)
+                if (!skip && key.StartsWith("crowd/") && chairs != null) foreach (var c in chairs) { var d = c - p; d.y = 0f; if (d.sqrMagnitude < SeatSkipM * SeatSkipM) { skip = true; break; } }
+                csv.Write(F(t)); csv.Write(','); csv.Write(g.Tick); csv.Write(','); csv.Write(key); csv.Write(','); csv.Write(F(p.x)); csv.Write(','); csv.Write(F(p.y)); csv.Write(','); csv.Write(F(p.z)); csv.Write(','); csv.Write(F(floor)); csv.Write(','); csv.Write(free ? 1 : 0); csv.Write(','); csv.WriteLine(skip ? 1 : 0);
                 cur.FeetSamples++;
                 if (skip) { feetOff.Remove(key); solidIn.Remove(key); continue; }
                 float dy = Mathf.Abs(p.y - floor);
                 if (dy > FeetTolM) { if (!feetOff.TryGetValue(key, out var since)) feetOff[key] = t; else if (t - since >= FeetRunS) { feetOff[key] = float.MaxValue; yield return Hit("Q-FEET", key, $"Feet off the floor: {key}", $"feet within {FeetTolM * 100:0} cm of the drawn floor", $"feet {F(p.y)} m, floor {F(floor)} m ({F(dy * 100f)} cm) for over {FeetRunS} s", p); } }
                 else feetOff.Remove(key);
                 bool inGrid = ep.X >= grid.X0 && ep.Y >= grid.Y0 && ep.X < grid.X0 + grid.Nx * grid.Cell && ep.Y < grid.Y0 + grid.Ny * grid.Cell; // the walk grid covers the site only: outside it nothing is free (smoke row 0.2.113: crowd beyond the block flagged)
-                bool inSolid = inGrid && !free && (grid.NearestFree(ep) is not Pt nf || G.Dist(nf, ep) >= SolidFreeM * 100f);
+                // Suture: against what is drawn: the body (SolidBodyR) overlapping a walk-file solid cell (kind 2, 4) by more than SolidOverlapM; without the
+                // baked kinds, off a free walk cell by SolidFreeM measured to the free cell's edge (the grid's blocked cells carry the 0.65 m body clearance)
+                bool inSolid = h.frame.HasKinds ? h.frame.SolidNear(b.x, b.y, SolidBodyR - SolidOverlapM)
+                    : inGrid && !free && (grid.NearestFree(ep) is not Pt nf || G.Dist(nf, ep) - grid.Cell / 2 >= SolidFreeM * 100f);
                 if (inSolid) { if (!solidIn.TryGetValue(key, out var since)) solidIn[key] = t; else if (t - since >= SolidRunS) { solidIn[key] = float.MaxValue; yield return Hit("Q-SOLID", key, $"A figure inside a solid: {key}", "every figure on a cell the engine can walk, or within 0.3 m of one", $"{key} at ({F(p.x)}, {F(p.z)}) for over {SolidRunS} s", p); } }
                 else solidIn.Remove(key);
             }
@@ -451,19 +494,20 @@ namespace Suborned.Play
             var sb = new StringBuilder();
             sb.Append("{\n \"schema\": \"").Append(Schema).Append("\",\n \"status\": \"").Append(Esc(status)).Append("\",\n \"screen\": \"").Append(Screen.width).Append('x').Append(Screen.height)
               .Append("\",\n \"build\": \"").Append(Esc(BuildStamp.Line)).Append("\",\n \"thresholds\": {\"feetTolM\": ").Append(F(FeetTolM)).Append(", \"feetRunS\": ").Append(F(FeetRunS)).Append(", \"solidFreeM\": ").Append(F(SolidFreeM))
-              .Append(", \"frameSpikeMs\": ").Append(F(FrameSpikeMs)).Append(", \"warmS\": ").Append(F(WarmS)).Append(", \"memSlopeMBMin\": ").Append(F(MemSlopeMBMin)).Append(", \"dedupeCellM\": ").Append(F(DedupeCellM)).Append(", \"dedupeS\": ").Append(F(DedupeS)).Append(", \"maxShots\": ").Append(MaxShots).Append("},\n \"rows\": [");
+              .Append(", \"frameSpikeMs\": ").Append(F(FrameSpikeMs)).Append(", \"warmS\": ").Append(F(WarmS)).Append(", \"memWarmS\": ").Append(F(MemWarmS)).Append(", \"memThirdMinS\": ").Append(F(MemThirdMinS)).Append(", \"memTotalMBMin\": ").Append(F(MemTotalMBMin)).Append(", \"memManagedMBMin\": ").Append(F(MemManagedMBMin)).Append(", \"seatSkipM\": ").Append(F(SeatSkipM)).Append(", \"solidBodyR\": ").Append(F(SolidBodyR)).Append(", \"solidOverlapM\": ").Append(F(SolidOverlapM)).Append(", \"offerRaceTicks\": ").Append(OfferRaceTicks).Append(", \"giverGraceTicks\": ").Append(GiverGraceTicks).Append(", \"dedupeCellM\": ").Append(F(DedupeCellM)).Append(", \"dedupeS\": ").Append(F(DedupeS)).Append(", \"maxShots\": ").Append(MaxShots).Append("},\n \"rows\": [");
             for (int i = 0; i < results.Count; i++)
             {
-                var r = results[i]; var fr = r.Frames.OrderBy(x => x).ToList();
-                double p99 = fr.Count > 0 ? fr[Math.Max(0, (int)Math.Ceiling(0.99 * fr.Count) - 1)] : 0, mean = fr.Count > 0 ? fr.Average() : 0, max = fr.Count > 0 ? fr[^1] : 0;
+                var r = results[i]; double mean = r.FrameN > 0 ? r.FrameSum / r.FrameN : 0, max = r.FrameMax, p99 = 0; int over50 = 0;
+                { long want = (long)Math.Ceiling(0.99 * r.FrameN), run = 0; for (int b = 0; b < r.Hist.Length; b++) { run += r.Hist[b]; if (b >= 500) over50 += r.Hist[b]; if (p99 == 0 && run >= want && r.FrameN > 0) p99 = (b + 1) / 10.0; } } // the 0.1 ms histogram's p99 (bin top)
                 sb.Append(i == 0 ? "\n" : ",\n").Append("  {\"name\": \"").Append(Esc(r.Name)).Append("\", \"policy\": \"").Append(Esc(r.Policy)).Append("\", \"seed\": ").Append(r.Seed).Append(", \"status\": \"").Append(Esc(r.Status)).Append('"');
                 if (r.Error.Length > 0) sb.Append(", \"error\": \"").Append(Esc(r.Error)).Append('"');
                 sb.Append(", \"preset\": \"").Append(r.Preset).Append("\", \"seconds\": ").Append(F(r.Seconds)).Append(", \"endTick\": ").Append(r.EndTick).Append(", \"outcome\": \"").Append(Esc(r.Outcome)).Append("\", \"failCode\": \"").Append(Esc(r.FailCode)).Append("\", \"cardHead\": \"").Append(Esc(r.CardHead)).Append('"')
                   .Append(", \"input\": {\"decisions\": ").Append(r.Decisions).Append(", \"clicks\": ").Append(r.Clicks).Append(", \"rings\": ").Append(r.Rings).Append(", \"ringMisses\": ").Append(r.RingMisses).Append(", \"taken\": ").Append(r.Taken)
                   .Append(", \"moves\": ").Append(r.Moves).Append(", \"runs\": ").Append(r.Runs).Append(", \"pans\": ").Append(r.Pans).Append(", \"turns\": ").Append(r.Turns).Append('}')
                   .Append(", \"orders\": {\"given\": ").Append(r.Given).Append(", \"refused\": ").Append(r.Refused).Append(", \"codes\": {").Append(string.Join(", ", r.Refusals.Select(kv => $"\"{Esc(kv.Key)}\": {kv.Value}"))).Append("}}")
-                  .Append(", \"frames\": {\"count\": ").Append(fr.Count).Append(", \"meanMs\": ").Append(F(mean)).Append(", \"p99Ms\": ").Append(F(p99)).Append(", \"maxMs\": ").Append(F(max)).Append(", \"over50\": ").Append(fr.Count(x => x > 50.0)).Append('}')
-                  .Append(", \"memory\": {\"startMB\": ").Append(F(r.MemStart)).Append(", \"endMB\": ").Append(F(r.MemEnd)).Append(", \"slopeMBPerMin\": ").Append(F(r.MemSlope)).Append('}')
+                  .Append(", \"frames\": {\"count\": ").Append(r.FrameN).Append(", \"meanMs\": ").Append(F(mean)).Append(", \"p99Ms\": ").Append(F(p99)).Append(", \"maxMs\": ").Append(F(max)).Append(", \"over50\": ").Append(over50).Append('}')
+                  .Append(", \"memory\": {\"startMB\": ").Append(F(r.MemStart)).Append(", \"endMB\": ").Append(F(r.MemEnd)).Append(", \"slopeMBPerMin\": ").Append(F(r.MemSlope)).Append(", \"thirdTotalMBPerMin\": ").Append(F(r.MemThirdTotal)).Append(", \"thirdManagedMBPerMin\": ").Append(F(r.MemThirdManaged)).Append(", \"judged\": \"").Append(Esc(r.MemJudged)).Append("\"}")
+                  .Append(", \"races\": ").Append(r.Races).Append(", \"shutClicks\": ").Append(r.ShutClicks)
                   .Append(", \"consoleErrors\": ").Append(r.Errors).Append(", \"feetSamples\": ").Append(r.FeetSamples).Append(", \"figures\": ").Append(r.Figures).Append(", \"shots\": ").Append(r.Shots)
                   .Append(", \"counts\": {").Append(string.Join(", ", r.Counts.Select(kv => $"\"{kv.Key}\": {kv.Value}"))).Append('}')
                   .Append(", \"anomalies\": [");

@@ -11,7 +11,7 @@ namespace Suborned.Play
     /// and draws its weapon in a fight. View only: nothing here is read by the engine. Keys with no figure keep their capsule.</summary>
     public sealed partial class HostViews
     {
-        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; }
+        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; }
         /// <summary>Brief 060 (-bot): each figure drawn now: its key, the model's feet, and whether the feet checks skip it (seated, lifted, laid down
         /// or carried: the feet are not on the floor by design).</summary>
         public IEnumerable<(string key, Vector3 feet, bool skip)> FigureFeet()
@@ -20,7 +20,7 @@ namespace Suborned.Play
             {
                 if (!things.TryGetValue(kv.Key, out var th) || !th.shown || !th.t || !th.t.gameObject.activeInHierarchy || kv.Value.model == null) continue;
                 bool lifted = this.lifted.TryGetValue(kv.Key, out var l) && l > 0.01f, carriedVale = kv.Key == "councillor" && host.Game != null && host.Game.Vale == ValeAt.WithEnforcer;
-                yield return (kv.Key, kv.Value.model.position, kv.Value.sitTick >= 0 || lifted || carriedVale);
+                yield return (kv.Key, kv.Value.model.position, kv.Value.seated || lifted || carriedVale);
             }
         }
         readonly Dictionary<string, Fig> figs = new(); readonly Dictionary<string, Vector3> faces = new(); // brief 022: a pose's facing, while standing
@@ -150,7 +150,7 @@ namespace Suborned.Play
                 if (opIdx >= 0 && aimPose && key == DriveKey && host.Aiming && host.AimFaceOn && speed < 0.15f) f.yaw = Mathf.MoveTowardsAngle(f.yaw, host.AimFace, 900f * Time.unscaledDeltaTime); // the driven agent faces the reticle
                 // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit)
                 var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null;
-                if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
+                f.seated = seat is { }; /* Suture's triage: the feet checks read this, not sitTick (negative for 2.3 s for those seated at the opening) */ if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
                 string state; float natural = 0f;
                 if (carried) state = Has(f, "carried_drape") ? "carried_drape" : "carried"; // Forma: never the flat "carried" when the drape is there
                 else if (carrying.Contains(key) && Has(f, "carry_shoulder")) state = speed > 0.15f ? "carry_shoulder" : "carry_shoulder_idle"; // nobody runs carrying
