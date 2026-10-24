@@ -261,3 +261,20 @@ No handoff to Aster is needed.
 | 3 | Stray white glow at the café door | Name the source or drop | Glint |
 | 4 | Taupe-olive guideway (carried) | Colour call | Vela |
 | 5 | Fight Range, pause menu and replay tag off-kit | Restyle before reachable | Glyph (after Latch gives the elements) |
+
+## 0.2.117 check (Glyph, 2026-10-25)
+Opened at full size, with 2x crops of the junction and café: `041/build/0306/seams/seam-bm-210.jpg` and `seam-bm-30.jpg`, `028/corners/game-0306` (r29-boulevard-market-play, officebay, circus-mouth-210, junction-ne, squarebay-210), `041/build/0306/night/` (both), and six of `049/build/2160-0306` (done-turn-chip, hold-act-ready, overhead-fight, menu, fail-getaway-lost, done-call-window).
+
+**Verdict: SHIP.** Nothing blocks. Two nits.
+
+- Road seam X: gone. No soft-edged X, tone step or one-sided shade in the junction at yaw 30 or 210; the road reads as one sheet with fine grain. At 2x, a few 1 px dark hairlines remain, 40-100 px long, loose in the junction (they look like clip-piece edges). They are far fainter than the old X and read as paving joints. Splice may drop them; not a blocker.
+- Corners: no L step at any of the five corner views opened. The returns are smooth arcs with the kerb foot on the curve, and the planted island and kerb lines meet cleanly.
+- Guideway: pale silver, neutral and light against the blue-grey road. The taupe-olive is gone. The silver looks flat and slightly paper-grey, with no chrome highlight. A colour call for Vela if wanted, not a fix.
+- Night: the café floor checks are one clear step down, sitting under the interior dither and no longer the brightest thing in frame (cafe-front-night). The door glow is reduced to a small pale smudge left of the door, at about 20 % of its old size. Pools, lamps and table glows read warm and fine. Start-overhead-night is clean.
+- 2160 set: no regressions in the 6 shots opened (roster, clock bar, feed card, hold pill, chip plates, scenes bar). No clipping, overlap or off-kit colour. The pause menu is now the dark kit panel with chrome rule and the build line, and the Fight Range is gone from it.
+
+### Fix list
+| # | Item | Owner |
+|---|---|---|
+| 1 | The "replay 0.6x" tag at top left in `fail-getaway-lost.png` is still a flat web pill (carried from the 0.2.105 review item 5). Put it on `plate_dark` in the kit | Latch gives the element, then Glyph |
+| 2 | The 1 px hairlines in junctions (optional) | Splice |

@@ -95,3 +95,5 @@ Site regenerated again (Splice, kerb strips out of junction boxes): c035's input
 
 0.2.115: Glyph "ship the build; night not ready to offer" (2026-10-24). Night round 2 (Glint, Latch): lift ground/furniture, people rim, night-grade the café cutaway, dim the kerb hairline, warm the violet lamp pool. Road seams (Splice + Latch): depth bias or render order instead of the 3 mm sink, SSAO test; sheet tone (Vela). Bot findings for Suture: Carry by an agent that went down before the click; Q-SOLID crowd near the café at start and officers/rivals on paths; Q-MEM 12 MB/min over 3 min.
 Next build: Keel's LearnQuery fix (NQ-2): host asks LearnQuery for the actual giver (Listen = Scout). Rebuild and rerun the bot row.
+
+0.2.117: Glyph SHIP (2026-10-25). Next round (small): the 'replay 0.6x' tag is a flat web pill (fail-getaway-lost.png): Latch restyles on plate_dark; faint 1 px hairlines at junctions (Splice, optional); guideway reads flat paper-grey, maybe a touch of chrome (Vela, optional).

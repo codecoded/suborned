@@ -29,6 +29,22 @@ namespace Suborned.Play
             var p = RuntimePanelUtils.ScreenToPanel(live.root.panel, new Vector2(screen.x, Screen.height - screen.y));
             return live.root.panel.Pick(p) != null;
         }
+        /// <summary>The bot's probe (BotRun.Human): the screen point (origin bottom left) of the open action panel's row `row` (the sheet's row, else the
+        /// card), null when the kit draws no such row on screen (the IMGUI view, or a row scrolled out). Read-only.</summary>
+        public static Vector2? PanelRowScreen(int row)
+        {
+            if (!Active || live.root?.panel == null || row < 0) return null;
+            VisualElement el = null;
+            foreach (var u in live.rows) if (u.Index == row && u.Root != null && u.Root.resolvedStyle.display != DisplayStyle.None && u.Root.worldBound.width > 1f) { el = u.Root; break; }
+            if (el == null) foreach (var c in live.actCards) if (c.Index == row && c.Root != null && c.Root.resolvedStyle.display != DisplayStyle.None && c.Root.worldBound.width > 1f) { el = c.Root; break; }
+            if (el == null) return null;
+            for (var x = el; x != null; x = x.parent) if (x.resolvedStyle.display == DisplayStyle.None || x.resolvedStyle.visibility == Visibility.Hidden) return null;
+            var pn = live.root.panel; Vector2 a = RuntimePanelUtils.ScreenToPanel(pn, Vector2.zero), b = RuntimePanelUtils.ScreenToPanel(pn, new Vector2(100f, 100f));
+            if (Mathf.Abs(b.x - a.x) < 1e-3f || Mathf.Abs(b.y - a.y) < 1e-3f) return null;
+            var c0 = el.worldBound.center; float sx = (c0.x - a.x) * 100f / (b.x - a.x), sy = (c0.y - a.y) * 100f / (b.y - a.y); // panel to screen (origin top left)
+            var sp = new Vector2(sx, Screen.height - sy);
+            return sp.x >= 0f && sp.y >= 0f && sp.x <= Screen.width && sp.y <= Screen.height ? sp : null;
+        }
         /// <summary>The proof's probe: the kit element on top at a screen point (its name, else its classes, else its parent's), "" none.</summary>
         public static string PickedName(Vector2 screen)
         {

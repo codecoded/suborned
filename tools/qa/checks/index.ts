@@ -7,14 +7,15 @@ import { qDebrief, qDet, qErr, qFail } from './outcome';
 import { qDrop, qLearn, qOffer } from './orders';
 import { qSpawn, qStuck } from './stuck';
 import { qWarn } from './warn';
+import { HUMAN_CHECKS, qHuman } from './human';
 
 export { CLAIMS } from './outcome';
-export const CHECKS = ['Q-ERR', 'Q-DET', 'Q-FAIL', 'Q-DEBRIEF', 'Q-WARN', 'Q-STUCK', 'Q-SPAWN', 'Q-OFFER', 'Q-DROP', 'Q-LEARN', 'Q-ROUTE'] as const;
+export const CHECKS = ['Q-ERR', 'Q-DET', 'Q-FAIL', 'Q-DEBRIEF', 'Q-WARN', 'Q-STUCK', 'Q-SPAWN', 'Q-OFFER', 'Q-DROP', 'Q-LEARN', 'Q-ROUTE', ...HUMAN_CHECKS] as const;
 
 export function checkPlay(p: Play, it: Item, ctx: Ctx): Finding[] {
   const err = qErr(p); if (p.error) return err;
   if (it.twin) return [...err, ...qDet(p)]; // a twin is there for Q-DET (checkTwins); its other findings are its seed's
-  return [...err, ...qDet(p), ...qFail(p, ctx), ...qDebrief(p), ...qWarn(p, ctx), ...qStuck(p, ctx), ...qSpawn(p), ...qOffer(p, it), ...qDrop(p, it), ...qLearn(p), ...checkRoute(p, it)];
+  return [...err, ...qDet(p), ...qFail(p, ctx), ...qDebrief(p), ...qWarn(p, ctx), ...qStuck(p, ctx), ...qSpawn(p), ...qOffer(p, it), ...qDrop(p, it), ...qLearn(p), ...checkRoute(p, it), ...qHuman(p, it)];
 }
 
 export function checkTwins(a: Play, b: Play): Finding[] {

@@ -16,8 +16,8 @@ using Key = UnityEngine.InputSystem.Key;
 namespace Suborned.Play
 {
     /// <summary>`-bot &lt;plan.json&gt; &lt;outDir&gt;` (brief 060 tier 2, Sky approved 2026-10-24): the built player plays itself through real input, at
-    /// real time, as LateRun and TpLongRun run rows. Each row is a fresh Handover played by a seeded policy (random, greedy, cautious) that chooses
-    /// only from the game's own offers: it selects an agent with F1-F4, clicks a target on screen (a left click opens the ring), reads the ring the
+    /// real time, as LateRun and TpLongRun run rows. Each row is a fresh Handover played by a seeded policy (random, greedy, cautious; or human, which
+    /// plays toward a recorded winning route with a person's indecision on top: BotRun.Human.cs) that chooses only from the game's own offers: it selects an agent with F1-F4, clicks a target on screen (a left click opens the ring), reads the ring the
     /// host built (HandoverHost.Ring, from ContextFor) and clicks a wedge, holding it when the wedge is held; it also walks (a ground click), runs
     /// (a double click), pans (WASD) and turns (Q/E). Every input goes through the Input System devices, as ProofInput's do.
     ///
@@ -35,7 +35,7 @@ namespace Suborned.Play
     /// hud.jsonl (the HUD manifest every 2 s), card.json (the end card's lines and the engine's word), anomalies/*. The report, bot.json
     /// (suborned.bot.report/1), is written after every row and every anomaly. Exits 0 when every row ran, 1 when a row broke, 2 on a bad file.
     /// The sessions go to the row's folder, never to the player's play folder (Sky's saved sessions are QA seeds).</summary>
-    public sealed class BotRun : MonoBehaviour
+    public sealed partial class BotRun : MonoBehaviour
     {
         public const string Schema = "suborned.bot.report/1";
         // [S] starting thresholds (Suture tunes them, brief 060 §2)
@@ -45,15 +45,15 @@ namespace Suborned.Play
         public const int OfferRaceTicks = 1, GiverGraceTicks = 2;
         public const float DedupeCellM = 2f, DedupeS = 30f; public const int MaxShots = 60;
 
-        [Serializable] public class BotRow { public string name = "", policy = "random"; public int seed = 1, w = 1920, h = 1080; public float seconds = 660f, decideS = 0f; }
+        [Serializable] public class BotRow { public string name = "", policy = "random"; public int seed = 1, w = 1920, h = 1080; public float seconds = 660f, decideS = 0f; public HumanTape human; /* the human policy's tape (tools/qa/human.ts; BotRun.Human.cs) */ }
         [Serializable] public class BotFile { public string schema = "", outDir = ""; public BotRow[] rows; }
 
-        sealed class Anomaly { public string Check = "", Key = "", Title = "", Expected = "", Observed = "", Shot = "", Script = "", Clock = ""; public int Tick; public Vector3 At; }
+        sealed class Anomaly { public string Check = "", Key = "", Title = "", Expected = "", Observed = "", Shot = "", Script = "", Clock = "", Noise = ""; public int Tick; public Vector3 At; }
         sealed class Res
         {
             public string Name = "", Policy = "", Status = "running", Error = "", Outcome = "", FailCode = "", Preset = ""; public int Seed, EndTick;
             public int Decisions, Clicks, Rings, RingMisses, Taken, Moves, Pans, Turns, Runs, Given, Refused, Errors, Shots, FeetSamples, Figures;
-            public float Seconds; public readonly List<Anomaly> Anomalies = new(); public readonly Dictionary<string, int> Counts = new(); public readonly Dictionary<string, int> Refusals = new();
+            public float Seconds; public HumanRes Human; public readonly List<Anomaly> Anomalies = new(); public readonly Dictionary<string, int> Counts = new(); public readonly Dictionary<string, int> Refusals = new();
             public readonly int[] Hist = new int[2001]; public int FrameN, Races, ShutClicks; public double FrameSum, FrameMax; public double MemStart, MemEnd, MemSlope, MemThirdTotal, MemThirdManaged; public string MemJudged = "", CardHead = ""; // frame times as a 0.1 ms histogram (Suture: no list held all run)
         }
 
@@ -62,7 +62,7 @@ namespace Suborned.Play
         int ordersSeen; (string op, string act, string target, float at, bool shut)? offered;
         readonly int[] ableTick = new int[4], unableSince = new int[4]; List<Vector3> chairs;
         readonly Dictionary<string, float> feetOff = new(), solidIn = new();
-        bool capturing, skipFrame; object lastRing, lastPanel;
+        bool capturing, skipFrame; object lastRing, lastPanel; float rowStart;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -125,7 +125,7 @@ namespace Suborned.Play
             if (err != null) { Fail(err); yield break; }
             ordersSeen = h.Game.Orders.Count;
             chairs = new List<Vector3>(); if (h.CafeSeats?.Chairs != null) foreach (var c in h.CafeSeats.Chairs.Values) chairs.Add(h.frame.World(c.at));
-            float start = Time.realtimeSinceStartup, nextDecide = start + 1.5f, nextFeet = start, nextHud = start, nextMem = start, overAt = -1f;
+            float start = Time.realtimeSinceStartup, nextDecide = start + 1.5f; rowStart = start; bool humanOn = false; float nextFeet = start, nextHud = start, nextMem = start, overAt = -1f;
             float decide = row.decideS > 0f ? row.decideS : row.policy == "cautious" ? 4f : row.policy == "greedy" ? 3f : 2.5f;
             var mem = new List<(float t, double managed, double total)>();
             using var frames = new StreamWriter(Path.Combine(rowDir, "frames.csv")); using var feet = new StreamWriter(Path.Combine(rowDir, "feet.csv")); // streamed (Suture: no buffers held all run)
@@ -184,6 +184,12 @@ namespace Suborned.Play
                 if (t > row.seconds) { cur.Status = "timeout"; cur.Error = $"no end after {row.seconds:0} s of real time (mission clock {HandoverHost.MissionClock(g.Tick)})"; cur.EndTick = g.Tick; yield return Hit("Q-STUCK", "timeout", "The run did not end", $"an ending within {row.seconds:0} s of real time", cur.Error, Focus()); break; }
                 if (h.Paused && h.Modal == ModalGate.Modal.None && !capturing) h.SetPaused(false); // nothing the bot does pauses; a scene or a pop that did: play on
                 if (act.Count > 0) { Step(act); continue; }
+                if (row.policy == "human") // one plan for the whole row (BotRun.Human.cs): pushed once; empty again only when it broke
+                {
+                    if (humanOn) { if (cur.Status == "running") Fail("the human policy broke (see player.log: BotRun: a step broke)"); continue; }
+                    if (row.human?.steps == null || row.human.steps.Length == 0) { Fail("a human row without its tape (tools/qa/human.ts)"); break; }
+                    humanOn = true; act.Push(Human(row)); continue;
+                }
                 if (now >= nextDecide && h.Modal == ModalGate.Modal.None)
                 {
                     nextDecide = now + decide * (0.7f + 0.6f * (float)rng.NextDouble()); cur.Decisions++;
@@ -452,7 +458,7 @@ namespace Suborned.Play
             float now = Time.realtimeSinceStartup; string cell = $"{check}|{Mathf.FloorToInt(at.x / DedupeCellM)}|{Mathf.FloorToInt(at.z / DedupeCellM)}|{key}";
             if (dedupe && lastCapture.TryGetValue(cell, out var was) && now - was < DedupeS) yield break;
             lastCapture[cell] = now;
-            var g = h.Game; var a = new Anomaly { Check = check, Key = key, Title = title, Expected = expected, Observed = observed, Tick = g?.Tick ?? 0, Clock = g != null ? HandoverHost.MissionClock(g.Tick) : "", At = at };
+            var g = h.Game; var a = new Anomaly { Check = check, Key = key, Title = title, Expected = expected, Observed = observed, Tick = g?.Tick ?? 0, Clock = g != null ? HandoverHost.MissionClock(g.Tick) : "", At = at, Noise = cur.Human != null ? NoiseNow() : "" };
             cur.Anomalies.Add(a);
             if (cur.Anomalies.Count > 400) cur.Anomalies.RemoveAt(0);
             string stem = $"{cur.Anomalies.Count:000}-{check}-{a.Tick}";
@@ -516,9 +522,13 @@ namespace Suborned.Play
                     var a = r.Anomalies[j];
                     sb.Append(j == 0 ? "\n    " : ",\n    ").Append("{\"check\": \"").Append(a.Check).Append("\", \"key\": \"").Append(Esc(a.Key)).Append("\", \"title\": \"").Append(Esc(a.Title)).Append("\", \"expected\": \"").Append(Esc(a.Expected))
                       .Append("\", \"observed\": \"").Append(Esc(a.Observed)).Append("\", \"tick\": ").Append(a.Tick).Append(", \"clock\": \"").Append(a.Clock).Append("\", \"at\": [").Append(F(a.At.x)).Append(", ").Append(F(a.At.z))
-                      .Append("], \"shot\": \"").Append(Esc(a.Shot)).Append("\", \"script\": \"").Append(Esc(a.Script)).Append("\"}");
+                      .Append("], \"shot\": \"").Append(Esc(a.Shot)).Append("\", \"script\": \"").Append(Esc(a.Script)).Append('"');
+                    if (a.Noise.Length > 0) sb.Append(", \"noise\": \"").Append(Esc(a.Noise)).Append('"');
+                    sb.Append('}');
                 }
-                sb.Append(r.Anomalies.Count > 0 ? "\n  ]}" : "]}");
+                sb.Append(r.Anomalies.Count > 0 ? "\n  ]" : "]");
+                if (r.Human != null) WriteHuman(sb, r.Human);
+                sb.Append('}');
             }
             sb.Append("\n ]\n}\n");
             try { File.WriteAllText(Path.Combine(dir, "bot.json"), sb.ToString()); } catch (Exception e) { Debug.LogWarning("BotRun: bot.json not written: " + e.Message); }

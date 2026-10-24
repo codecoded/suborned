@@ -1,6 +1,7 @@
 // Brief 060 tier 2 (Latch; Sky approved 2026-10-24): the `bot` lane of a QA pass. The built player plays itself through real input (`-bot`,
 // unity/Assets/Suborned/Runtime/Play/BotRun.cs): each row is one whole Handover at real time (~10 minutes with boot), chosen by a seeded policy
-// (random, greedy, cautious) from the game's own ring offers. The player checks every frame (Q-GIVER, Q-OFFER, Q-WARN-HUD, Q-CARD, Q-FEET,
+// (random, greedy, cautious) from the game's own ring offers, or played toward a recorded winning route with a person's indecision on top
+// (human: tools/qa/human.ts draws the route and every noise from the row's seed; the row's tape rides in the plan file). The player checks every frame (Q-GIVER, Q-OFFER, Q-WARN-HUD, Q-CARD, Q-FEET,
 // Q-SOLID, Q-ERR, Q-FRAME, Q-MEM, and Q-STUCK when a row never ends) and keeps a JPEG shot, its HUD manifest and the replay at each anomaly.
 // This file plans the rows (tools/qa/bot.json; the seeds move with the night, so each night plays new games and every row says its seed),
 // runs one player per row through the guard (it rechecks before each row: a game Sky opens stops the next row from starting), and turns the
@@ -20,14 +21,16 @@ import { whoIsPlaying } from '../game/playing';
 import { BUILD_APP, lane, playStream } from './sim';
 import { feetShare, gradeMem, gradeSolid, isRace, loadChairs, loadWalk, offerOf, plainRefusal, readFeet, readMem, SEATS_FILES, GRADE, type Grade } from './grade';
 import type { Finding, Play, Severity } from './types';
+import { humanTape, loadProfile, winningRoutes, type HumanProfile, type HumanTape, type ProfileSource, type RouteScript } from './human';
 
-export const POLICIES = ['random', 'greedy', 'cautious'] as const;
+export const POLICIES = ['random', 'greedy', 'cautious', 'human'] as const;
 export const BotRow = z.object({
   name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/), policy: z.enum(POLICIES), seed: z.number().int().min(0).optional(),
   minutes: z.number().min(1).max(30).optional(), decideS: z.number().min(0.5).max(30).optional(), note: z.string().optional(),
+  /** human only: pin the row's route to one winning script id (else the seed picks it) */ route: z.string().optional(),
 }).strict();
 export const BotFile = z.object({ schema: z.literal('suborned.bot/1'), note: z.string().optional(), rows: z.array(BotRow).min(1) }).strict();
-export type BotPlanRow = { name: string; policy: string; seed: number; seconds: number; decideS: number; w: number; h: number };
+export type BotPlanRow = { name: string; policy: string; seed: number; seconds: number; decideS: number; w: number; h: number; /** the human policy's plan and noise (tools/qa/human.ts), drawn from the row's seed */ human?: HumanTape };
 export type BotPlan = { schema: 'suborned.bot.plan/1'; outDir: string; rows: BotPlanRow[] };
 
 /** A night's seed for a row: the row's own seed (or its index) mixed with the date, so each night plays new games, reproducibly. */
@@ -37,18 +40,27 @@ export function nightSeed(night: string, base: number): number {
 }
 
 /** The rows of a night: tools/qa/bot.json, the seeds moved by the date unless `fixed`; `rows` cuts the list, `minutes` overrides each row's cap. */
-export function planRows(raw: unknown, night: string, o: { rows?: number; minutes?: number; fixed?: boolean } = {}): BotPlanRow[] {
+export function planRows(raw: unknown, night: string, o: { rows?: number; minutes?: number; fixed?: boolean; routes?: RouteScript[]; profile?: { profile: HumanProfile; source: ProfileSource } } = {}): BotPlanRow[] {
   const f = BotFile.parse(raw);
   const rows = f.rows.slice(0, o.rows ?? f.rows.length);
-  return rows.map((r, i) => ({
-    name: r.name, policy: r.policy, seed: o.fixed ? r.seed ?? i + 1 : nightSeed(night, r.seed ?? i + 1),
-    seconds: Math.round((o.minutes ?? r.minutes ?? 11) * 60), decideS: r.decideS ?? 0, w: 1920, h: 1080,
-  }));
+  let routes = o.routes, profile = o.profile; // read once, only when a human row plays
+  return rows.map((r, i) => {
+    const seed = o.fixed ? r.seed ?? i + 1 : nightSeed(night, r.seed ?? i + 1);
+    const row: BotPlanRow = { name: r.name, policy: r.policy, seed, seconds: Math.round((o.minutes ?? r.minutes ?? 11) * 60), decideS: r.decideS ?? 0, w: 1920, h: 1080 };
+    if (r.policy === 'human') { routes ??= winningRoutes(); profile ??= loadProfile(); row.human = humanTape(seed, routes, profile, r.route); }
+    else if (r.route) throw new Error(`bot row ${r.name}: route is the human policy's (policy ${r.policy})`);
+    return row;
+  });
 }
 
 // ---------------------------------------------------------------- the player's report
 
-export type BotAnomaly = { check: string; key: string; title: string; expected: string; observed: string; tick: number; clock: string; at: [number, number]; shot: string; script: string; /** Suture's offline regrade (grade.ts): its cause, severity and plain words win over the player's */ grade?: Grade };
+export type BotAnomaly = { check: string; key: string; title: string; expected: string; observed: string; tick: number; clock: string; at: [number, number]; shot: string; script: string; /** Suture's offline regrade (grade.ts): its cause, severity and plain words win over the player's */ grade?: Grade;
+  /** human rows: the indecision just before it (the latest cancel, abandon, misclick, re-order, wrong wedge ... within HUMAN_NOISE_S), e.g. "misclick 2.1 s before: step 7 scout listen waitress" */ noise?: string };
+/** One indecision the human row acted out (BotRun.Human), in the row's report: when, which step of which route, what. */
+export type HumanEvent = { t: number; tick: number; clock: string; kind: string; route: string; step: number; op: string; act: string; target: string; detail: string };
+export type HumanReport = { route: string; group: string; routes: string[]; profile: string; steps: number; done: number; skipped: number; counts: Record<string, number>; events: HumanEvent[];
+  /** each step as it ended: d done (given), s skipped (refused or blocked too long), - never reached; with its tries */ trace: string };
 export type BotReportRow = {
   name: string; policy: string; seed: number; status: string; error?: string; preset: string; seconds: number; endTick: number; outcome: string; failCode: string; cardHead: string;
   input: { decisions: number; clicks: number; rings: number; ringMisses: number; taken: number; moves: number; runs: number; pans: number; turns: number };
@@ -56,6 +68,7 @@ export type BotReportRow = {
   frames: { count: number; meanMs: number; p99Ms: number; maxMs: number; over50: number };
   memory: { startMB: number; endMB: number; slopeMBPerMin: number };
   consoleErrors: number; feetSamples: number; figures: number; shots: number; counts: Record<string, number>; anomalies: BotAnomaly[];
+  /** the human policy's plan, progress and indecision (absent on the other policies) */ human?: HumanReport;
 };
 export type BotReport = { schema: 'suborned.bot.report/1'; status: string; screen: string; build: string; thresholds: Record<string, number>; rows: BotReportRow[] };
 
@@ -77,7 +90,7 @@ export function findingsOf(row: BotReportRow | undefined, name: string, base: st
     const m = CHECK_META[a.check] ?? { severity: 'S3' as Severity, owner: 'Suture' }, g = a.grade;
     out.push({
       check: a.check, severity: g?.severity ?? m.severity, owner: g?.owner ?? m.owner, key: g ? `${a.check}:${g.cause}` : `${a.check}:${a.key.replace(/[0-9]+/g, '#').slice(0, 80)}`, title: g?.title ?? a.title,
-      expected: g?.expected ?? a.expected, observed: `${a.observed}${g?.note ? `; ${g.note}` : ''} (${row.policy} seed ${row.seed}, ${a.clock})`, tick: a.tick,
+      expected: g?.expected ?? a.expected, observed: `${a.observed}${g?.note ? `; ${g.note}` : ''} (${row.policy} seed ${row.seed}${row.human ? ` on ${row.human.routes.join(' > ')}` : ''}, ${a.clock}${a.noise ? `; human: ${a.noise}` : ''})`, tick: a.tick,
       shot: a.shot ? join(base, a.shot) : undefined, script: a.script ? join(base, a.script) : undefined,
     });
   }
@@ -171,7 +184,7 @@ export async function runBotLane(outDir: string, o: RunOpts = {}): Promise<BotLa
     const planFile = join(outDir, `${row.name}.plan.json`), plan: BotPlan = { schema: 'suborned.bot.plan/1', outDir, rows: [row] }; // the player writes <outDir>/bot.json and <outDir>/<row>/..., so its paths are relative to the lane folder
     const repFile = join(outDir, 'bot.json'); rmSync(repFile, { force: true });
     writeFileSync(planFile, JSON.stringify(plan, null, 1));
-    say(`qa bot: ${row.name} (${row.policy}, seed ${row.seed}, up to ${Math.round(row.seconds / 60)} min) on ${build}`);
+    say(`qa bot: ${row.name} (${row.policy}, seed ${row.seed}${row.human ? `, route ${row.human.route}` : ''}, up to ${Math.round(row.seconds / 60)} min) on ${build}`);
     const proc = Bun.spawn([exe(app), '-bot', planFile, outDir, '-capture-size', `${row.w}x${row.h}`, '-novsync', '-logFile', join(dir, 'player.log')], { stdout: 'ignore', stderr: 'ignore' });
     const limit = (row.seconds + 150) * 1000; let killed = false;
     const timer = setTimeout(() => { killed = true; try { process.kill(proc.pid); } catch { /* gone */ } }, limit); // by PID only
