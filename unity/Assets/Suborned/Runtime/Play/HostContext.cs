@@ -267,6 +267,8 @@ namespace Suborned.Play
             var rs = Ring; if (rs == null || Game == null || rs.Plan?.T == null) return;
             bool stale = false;
             foreach (var sg in rs.Segs) { if (sg.More || sg.Shut) continue; foreach (var k in sg.By) if (!Able((int)k)) { stale = true; break; } if (stale) break; }
+            // the 0.2.117 bot row (Q-OFFER no-target x2): a Fire wedge on a camera or car another agent has just shot out; the ring is built again (Locked then shows the engine's no-target)
+            if (!stale && Time.frameCount % 5 == 0) foreach (var sg in rs.Segs) { var fo = sg.Row?.I?.Order; if (sg.More || sg.Shut || fo?.Do != "fire" || sg.Row?.Available != true || !(fo.Target.StartsWith("camera:") || fo.Target.StartsWith("car:"))) continue; if (NoFireTarget(sg.Row.By, fo.Target)) { stale = true; break; } }
             if (!stale) return;
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(rs.Plan.T, rs.Screen)) || plan == null) { CloseRing(); return; }
             var keep = (rs.Sticky, rs.Always, rs.ByClick, rs.FromHold, rs.ByE, rs.PointerAtOpen, rs.OpenedAt);

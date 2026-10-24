@@ -1233,7 +1233,7 @@ namespace Suborned.Play
                     {   // the 0.2.116 bot row (Q-OFFER: fire-carrying x14, no-target x2): the wedge shows the engine's own refusal (FireQuery) as its lock;
                         // agent-busy is the host's to settle (Playable waits for the act or cancels it), so it never locks Fire
                         if (op.Gun.W == null) return No("no-weapon", "has no weapon");
-                        Answer fq = default; if (Guard("fire-query", () => fq = g.FireQuery(by, o.Target, o.Force)) && !fq.ok && fq.code != "agent-busy") return fq;
+                        Answer fq = default; if (Guard("fire-query", () => fq = g.FireQuery(by, o.Target, o.Force)) && !fq.ok && fq.code != "agent-busy" && !(fq.code == "target-unknown" && (o.Target.StartsWith("camera:") || o.Target.StartsWith("car:")))) return fq; // a camera or car not yet shot has no gun until the order makes one (GameCombat.Fire EnsureCameraGun): FireQuery says target-unknown, the order is taken
                         return yes;
                     }
             }
