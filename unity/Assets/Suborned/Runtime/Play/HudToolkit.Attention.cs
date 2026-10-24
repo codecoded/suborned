@@ -73,7 +73,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the callouts
 
-        sealed class Medal { public VisualElement Root, Disc, Img, Badge, Plus; public Label PlusText; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
+        sealed class Medal { public VisualElement Root, Disc, Img, Kit, KitIcon, Badge, Plus; public Label PlusText; public Paint Ring; public HandoverHost.Callout For; public Vector2 At; public bool Placed, Docked; public int Spot = -1; public Vector2 Toward; public int Stage; }
         readonly Medal[] medals = new Medal[4];
         const float MedalD = 72f, DockD = 56f, MedalLift = 70f, ScreenPad = 12f;
 
@@ -84,6 +84,9 @@ namespace Suborned.Play
             md.Root.RegisterCallback<PointerDownEvent>(e => { if (e.button == 0 && md.For != null) { host.CalloutClick(md.For); e.StopPropagation(); } });
             md.Disc = E(md.Root, null, 0, 0, MedalD, MedalD); Round(md.Disc, MedalD / 2); md.Disc.style.overflow = Overflow.Hidden; md.Disc.style.backgroundColor = Cream;
             md.Img = E(md.Disc, null, 0, 0, MedalD, MedalD);
+            // Glyph's 0.2.97 review #2: a camera's close-up is an empty pole on the sky (a milky ghost disc), so a camera's medallion is the kit's
+            // opaque disc_dark_24 (it draws 48 of its 64 px: 96 px across gives the 72 px disc) with the eye the door marker gives a camera
+            md.Kit = E(md.Root, "s-disc_dark_24", -MedalD / 6f, -MedalD / 6f, MedalD * 4f / 3f, MedalD * 4f / 3f); md.KitIcon = E(md.Kit, null, MedalD * 4f / 6f - 22f, MedalD * 4f / 6f - 22f, 44f, 44f); Show(md.Kit, false);
             md.Ring = P(md.Root, -8, -8, MedalD + 16, MedalD + 16, (p, r) => MedalRing(p, md));
             md.Badge = E(md.Root, null, MedalD - 24, MedalD - 22, 24, 24); Round(md.Badge, 12); Border(md.Badge, 1.4f, Cream);
             md.Plus = E(md.Root, "s-plate_dark", MedalD - 14, -8, 26, 16); md.PlusText = L(md.Plus, "chip-value", 0, 0, 26, 16); md.PlusText.style.fontSize = 10; md.PlusText.style.unityTextAlign = TextAnchor.MiddleCenter; md.PlusText.style.color = Cream;
@@ -165,7 +168,7 @@ namespace Suborned.Play
             return new Rect(Mathf.Min(a.x, b.x) - halfW, Mathf.Min(a.y, b.y), Mathf.Abs(a.x - b.x) + 2 * halfW, Mathf.Abs(a.y - b.y));
         }
 
-        float WatcherTall(string view) => view.StartsWith("camera/") ? 3.4f : view == "patrol" || view.Contains("robot") ? 1.45f : 1.85f;
+        float WatcherTall(string view) => view.StartsWith("camera/") ? (host.Views != null ? host.Views.CameraTall : 3.4f) : view == "patrol" || view.Contains("robot") ? 1.45f : 1.85f;
 
         void Callouts(float W, float H)
         {
@@ -218,9 +221,11 @@ namespace Suborned.Play
                 float d = dock ? DockD : MedalD; md.Root.style.scale = new Scale(new Vector3(d / MedalD, d / MedalD, 1f));
                 md.Root.style.left = md.At.x - MedalD / 2f; md.Root.style.top = md.At.y - MedalD / 2f;
                 md.Root.style.opacity = Mathf.Clamp01((now - c.Born) / 0.15f);
-                if (md.Img.style.backgroundImage.value.renderTexture != rt) md.Img.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt));
+                bool cam = c.View.StartsWith("camera/"); Show(md.Disc, !cam); Show(md.Kit, cam);
+                if (cam) Icon(md.KitIcon, "eye_open", Red);
+                else if (md.Img.style.backgroundImage.value.renderTexture != rt) md.Img.style.backgroundImage = new StyleBackground(Background.FromRenderTexture(rt));
                 if (ak >= 0) Bg(md.Badge, $"portraits/cameo_{c.Op}_normal", Color.white);
-                Border(md.Badge, 1.4f, c.Stage == 3 ? Red : Cream);
+                Border(md.Badge, 2f, Chrome); // art bible: a face in the chrome cameo ring, never a stage or role colour (the stage reads by the ring and the ticks)
                 int plus = host.QueuedBehind(c); Show(md.Plus, plus > 0); if (plus > 0) Text(md.PlusText, $"+{plus}");
                 md.Ring.MarkDirtyRepaint();
                 // the stem: a 14 px notch on the rim, aimed at the head, never longer than 48 px

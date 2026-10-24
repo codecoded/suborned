@@ -75,6 +75,9 @@ namespace Suborned.Play
         /// <summary>The pill's live words: what it is on (a target the HUD anchors to), the line, and the faces of those it is about.</summary>
         public sealed class LiveWords { public Target T; public string Id = "", Text = ""; public readonly List<int> Agents = new(); public readonly List<(int k, string words)> Items = new(); public bool Fire; public Order O; }
 
+        /// <summary>Leads a pill's words that are seconds to down: the pill draws the kit's `s_downed` icon in its place (HudToolkit.PillLook).</summary>
+        public const string DownMark = "\u2193";
+
         static string Cap1(string s) => string.IsNullOrEmpty(s) ? s : char.ToUpperInvariant(s[0]) + s[1..];
         static string Bare(string name) { foreach (var a in new[] { "the ", "an ", "a " }) if (name.StartsWith(a)) return name[a.Length..]; return name; }
 
@@ -112,7 +115,7 @@ namespace Suborned.Play
         }
 
         /// <summary>Fire.js fireStatus, one quiet line (Sky: "I worry we've lost the Syndicate simplicity"; Fable's wording row 17): "Drawing",
-        /// "Aiming · 1 s", "Firing at an officer · down in 3 s", "Officer down", "Too far", "No clear line", "Stopped". The newest lasting fire
+        /// "Aiming · 1 s", "↓3 s" (the pill draws the downed icon for DownMark), "Officer down", "Too far", "No clear line", "Stopped". The newest lasting fire
         /// order the host gave first; else, in a fight, the weapons-free picks (the engine's, FireStateOf mode weapons-free), the biggest group.
         /// Null when nothing fires. Hits and misses show on the tracer and the bar, not in words.</summary>
         public LiveWords FireStatus(Target autoOn = null, bool anyAuto = false)
@@ -142,7 +145,7 @@ namespace Suborned.Play
             if (firing.Count > 0)
             {
                 int down = -1; foreach (var (k, _) in firing) { int d = FireDownS(k); if (d >= 0 && (down < 0 || d < down)) down = d; }
-                w.Text = $"Firing at {s.Name}{(down >= 0 ? $" · {(Game.CarOf(s.Id) is { } c && c.DisabledAt < 0 ? "disabled" : "down")} in {down} s" : "")}"; foreach (var (k, _) in firing) w.Agents.Add(k); return w;
+                w.Text = down >= 0 ? $"{DownMark}{down} s" : "Firing"; foreach (var (k, _) in firing) w.Agents.Add(k); return w; // brief 049 row 4 (Glyph's 0.2.94 review #3): the gun disc, the downed mark and the number, never "Firing at … · down in …"
             }
             if (aiming.Count > 0) { int left = int.MaxValue; foreach (var (k, _) in aiming) left = Math.Min(left, Math.Max(0, Game.Ops[k].Gun.NextShot - Game.Tick)); w.Text = $"Aiming · {Math.Max(1, (left + Game.Hz - 1) / Game.Hz)} s"; foreach (var (k, _) in aiming) w.Agents.Add(k); return w; }
             var walking = ph.FindAll(x => x.Item2.phase == "walk");
@@ -181,7 +184,7 @@ namespace Suborned.Play
         /// <summary>For the range panel's readout: the fire words now (the hold's, else agent k's own fire), "" none.</summary>
         public string FireWords(int k)
         {
-            var s = FireStatus(null, true); if (s != null && s.Text.Length > 0) return s.Text;
+            var s = FireStatus(null, true); if (s != null && s.Text.Length > 0) return s.Text.Replace(DownMark, "down in ");
             if (Game == null || k < 0) return ""; var fs = FireNow[k]; if (!fs.Firing || fs.Target.Length == 0) return "";
             var (ph, wd) = FireOne(k, fs.Target); return ph == "fire" ? $"Firing at {FireName(fs.Target)}{(FireDownS(k) is int d && d >= 0 ? $" · down in {d} s" : "")}" : ph == "aim" ? "Aiming" : ph == "draw" ? "Drawing" : wd;
         }
@@ -391,7 +394,7 @@ namespace Suborned.Play
         Intent HoldIntent(Target t)
         {
             HoverPlan = null; HoverWay = -1; HoverDoers.Clear(); HoverSeen = false; HoverFire = false; WatchReach = null;
-            if (t == null || t.Kind == "op" || Game == null) { views?.ShowPath(null); return null; }
+            if (t == null || t.Kind == "op" && !DownedOp(t) || Game == null) { views?.ShowPath(null); return null; } // item 31: hovering a downed agent offers "Hold · Carry …" (the explicit way)
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, lastHover)) || plan == null) return null;
             HoverPlan = plan; hoverPlanAt = Time.unscaledTime; int way = MainWay(plan); HoverWay = way;
             if (way < 0 || FightOnNow && (t.Kind == "hostile" || Combatant(t))) // in a fight a hostile's offer is fire (the playground's inFight)

@@ -172,17 +172,84 @@ def marquee(s, hw, d, z0=ZC0, z1=ZC1):
         sphere(s, (x, -0.6, z1 + 0.84), 0.2, pal.Chrome, seg=14, n=7)
 
 
-def stairs(s):
-    """Landing box, five treads, cheek walls with sloped coping, two chrome handrails on posts (gooseneck at both ends)."""
-    s.box((-SW, -LAND, 0.0), (SW, 0.0, ZL), pal.Limestone)
-    for k in range(1, NR):
-        s.box((-SW, -(LAND + k * GO), 0.0), (SW, -(LAND + (k - 1) * GO), ZL - k * RISE), pal.Limestone)
+def stair_block(s, mat):
+    """Brief 055 (K-1, collide): the landing, the five treads and the two cheek walls as ONE closed solid. They were six boxes and two extrusions that touched face to face, so every
+    shared face was an inner wall and the stair read from outside as thin treads with open risers: a ray, a collider or a voxeliser could not tell it was solid.
+    The footprint is cut on the lines of the landing, the treads and the cheeks; each cell is a column from z 0 to its top; a face is made only where a column meets air or a lower
+    column (top, riser, cheek wall, foot, back, underside), every vertex shared. The same shape, material and numbers as before."""
     L1 = LAND + (NR - 1) * GO
+    run = L1 + 0.1 - LAND
+    xs = [-(SW + 0.26), -SW, SW, SW + 0.26]
+    ys = [0.0, -LAND] + [-(LAND + k * GO) for k in range(1, NR)] + [-(L1 + 0.1)]    # from the tower face out (y falls)
+
+    def cheek(y):                                                                   # the coping: level over the landing, then falling to 0.5 at the foot
+        u = -y
+        return ZL + 0.5 if u <= LAND + 1e-9 else ZL + 0.5 - (u - LAND) * (ZL / run)
+
+    def tread(ym):
+        u = -ym
+        if u < LAND:
+            return ZL                                                               # the landing
+        k = int((u - LAND) / GO) + 1
+        return ZL - k * RISE if k < NR else None                                    # past the last tread: air between the cheeks
+
+    cell = {}
+    for ix in range(3):
+        for iy in range(len(ys) - 1):
+            ya, yb = ys[iy], ys[iy + 1]
+            if ix == 1:
+                h = tread((ya + yb) / 2)
+                cell[ix, iy] = None if h is None else (h, h)
+            else:
+                cell[ix, iy] = (cheek(ya), cheek(yb))
+    verts, index, faces = [], {}, []
+
+    def vid(p):
+        k = tuple(round(c, 5) for c in p)
+        if k not in index:
+            index[k] = len(verts)
+            verts.append(k)
+        return index[k]
+
+    def face(pts, out):                                                             # wound so that the normal points out; coincident corners (a triangle wall) are dropped
+        pts = [p for i, p in enumerate(pts) if tuple(round(c, 5) for c in p) != tuple(round(c, 5) for c in pts[i - 1])]
+        n = [0.0, 0.0, 0.0]
+        for i, p in enumerate(pts):
+            q = pts[(i + 1) % len(pts)]
+            n[0] += (p[1] - q[1]) * (p[2] + q[2]); n[1] += (p[2] - q[2]) * (p[0] + q[0]); n[2] += (p[0] - q[0]) * (p[1] + q[1])
+        faces.append([vid(p) for p in (pts[::-1] if sum(a * b for a, b in zip(n, out)) < 0 else pts)])
+    for (ix, iy), c in sorted(cell.items()):
+        if c is None:
+            continue
+        x0, x1, ya, yb = xs[ix], xs[ix + 1], ys[iy], ys[iy + 1]
+        ta, tb = c
+        face([(x0, ya, ta), (x1, ya, ta), (x1, yb, tb), (x0, yb, tb)], (0, 0, 1))
+        face([(x0, ya, 0.0), (x1, ya, 0.0), (x1, yb, 0.0), (x0, yb, 0.0)], (0, 0, -1))
+        side = lambda n: cell.get(n)  # noqa: E731
+        for nb, ends, out in ((side((ix - 1, iy)), (x0, x0), (-1, 0, 0)), (side((ix + 1, iy)), (x1, x1), (1, 0, 0))):
+            na, nbb = (0.0, 0.0) if nb is None else nb  # the neighbour's tops at ya and yb
+            if (ta - na > 1e-9 or tb - nbb > 1e-9) and ta >= na - 1e-9 and tb >= nbb - 1e-9:
+                face([(ends[0], ya, ta), (ends[1], yb, tb), (ends[1], yb, nbb), (ends[0], ya, na)], out)
+        for nb, y, top_here, top_there, out in ((side((ix, iy - 1)), ya, ta, None, (0, 1, 0)), (side((ix, iy + 1)), yb, tb, None, (0, -1, 0))):
+            there = 0.0 if nb is None else (nb[1] if out[1] > 0 else nb[0])         # the neighbour's top on the shared line
+            if top_here - there > 1e-9:
+                face([(x0, y, top_here), (x1, y, top_here), (x1, y, there), (x0, y, there)], out)
+    s._add(verts, faces, mat, False)
+
+
+def stairs(s):
+    """Landing, five treads and cheek walls (one closed solid, see stair_block), two chrome handrails on posts (gooseneck at both ends)."""
+    stair_block(s, pal.Limestone)
+    L1 = LAND + (NR - 1) * GO
+    # the solids the flight is made of, declared from the same numbers (brief 055): landing and treads to stand on, the cheek walls at the height of their coping where each span starts
+    s.solid((-SW, -LAND, 0.0), (SW, 0.0, ZL), stand=True)
+    for k in range(1, NR):
+        s.solid((-SW, -(LAND + k * GO), 0.0), (SW, -(LAND + (k - 1) * GO), ZL - k * RISE), stand=True)
+    spans = [(0.0, LAND)] + [(LAND + (k - 1) * GO, LAND + k * GO) for k in range(1, NR)] + [(L1, L1 + 0.1)]
     for sx in (-1, 1):
         x0, x1 = sorted((sx * SW, sx * (SW + 0.26)))
-        poly = ccw([(0, 0), (-L1 - 0.1, 0), (-L1 - 0.1, 0.5), (-LAND, ZL + 0.5), (0, ZL + 0.5)])
-        with s.at((x0, 0, 0), SIDE_R):
-            s.extrude(poly, 0.0, x1 - x0, pal.Limestone)
+        for u0, u1 in spans:
+            s.solid((x0, -u1, 0.0), (x1, -u0, ZL + 0.5 if u0 < LAND else ZL + 0.5 - (u0 - LAND) * (ZL / (L1 + 0.1 - LAND))))
     slope = RISE / GO
     zl = lambda u: ZL - (u - LAND) * slope  # noqa: E731 (tread nosing line, u = distance out of the face)
     posts = [(LAND - 0.25, ZL, ZL + 0.9)] + [(LAND + (k - 0.5) * GO, ZL - k * RISE, zl(LAND + (k - 0.5) * GO) + 0.9) for k in (2, 5)]
@@ -200,6 +267,7 @@ def pier(s, x, h, ball):
     """Cream flank pier inside its plinth footprint (x +-0.48, y -1.03..0.23): mint band, seafoam cap, chrome ball on a stand."""
     s.rbox((x - 0.41, -0.96, 0.0), (x + 0.41, 0.16, h), 0.04, pal.Limestone, seg=1)
     s.box((x - PW, PD0, 0.0), (x + PW, PD1, 0.35), pal.Limestone)
+    s.solid((x - PW, PD0, 0.0), (x + PW, PD1, h + 0.28))  # brief 055: the plinth footprint, to the cap
     s.box((x - 0.45, PD0 + 0.03, h - 0.5), (x + 0.45, PD1 - 0.03, h - 0.28), pal.Enamel_Mint)
     s.box((x - PW, PD0, h), (x + PW, PD1, h + 0.28), pal.Enamel_Seafoam)
     hair(s, [(x - 0.45, PD0 + 0.015), (x + 0.45, PD0 + 0.015)], 0.0, h + 0.03, 0.03, pal.Brass_Civic)
@@ -213,6 +281,7 @@ def pilaster(s, x, h):
     """Official front: a 0.3 m pilaster on the tower face (x +-0.35, y -0.30..+0.20): plinth, shaft, mint band, seafoam cap."""
     s.box((x - 0.35, -0.30, 0.0), (x + 0.35, 0.2, 0.3), pal.Limestone)
     s.box((x - 0.31, -0.26, 0.3), (x + 0.31, 0.2, h), pal.Limestone)
+    s.solid((x - 0.35, -0.30, 0.0), (x + 0.35, 0.2, h + 0.25))  # brief 055: plinth to cap
     s.box((x - 0.33, -0.29, h - 0.5), (x + 0.33, 0.2, h - 0.28), pal.Enamel_Mint)
     s.box((x - 0.35, -0.30, h), (x + 0.35, 0.2, h + 0.25), pal.Enamel_Seafoam)
     hair(s, [(x - 0.33, -0.285), (x + 0.33, -0.285)], 0.0, h + 0.03, 0.03, pal.Brass_Civic)

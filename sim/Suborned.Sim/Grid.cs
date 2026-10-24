@@ -33,7 +33,30 @@ namespace Suborned.Sim
             }
             if (dots && marks) throw new FormatException("grid: a free cell is '.' (walk grid) or names its surface 'r'/'y' (drive grid), never both in one grid");
             Surfaces = marks;
+            // brief 055 (engine 0.27.0): the floor of every cell, block z cm (the pavement 0, the carriageway -18, the Office landing 75), per row as run-length
+            // pairs [cm, cells] (tools/sim/solids.ts floorRows). Absent (a drive grid, a range site): every cell is the pavement.
+            floor = new short[Nx * Ny];
+            if (g.Opt("floor") is JNode fl)
+            {
+                var fr = fl.Items; if (fr.Count != Nx) throw new FormatException("grid floor rows != nx");
+                for (int i = 0; i < Nx; i++)
+                {
+                    var run = fr[i].Items; if (run.Count % 2 != 0) throw new FormatException($"grid floor row {i}: [cm, cells] pairs");
+                    int j = 0;
+                    for (int k = 0; k < run.Count; k += 2)
+                    {
+                        int cm = run[k].Int(), n = run[k + 1].Int();
+                        if (cm < -1000 || cm > 10000 || n < 1 || j + n > Ny) throw new FormatException($"grid floor row {i}: a run of {n} at {cm} cm is out of range");
+                        for (int m = 0; m < n; m++) floor[i * Ny + j + m] = (short)cm;
+                        j += n;
+                    }
+                    if (j != Ny) throw new FormatException($"grid floor row {i} covers {j} cells, not ny {Ny}");
+                }
+            }
         }
+        readonly short[] floor;
+        /// <summary>Brief 055: the floor under p, block z cm (0 off the grid: the pavement datum). Read by the host and the tools; no rule reads it yet (sight stays at eye-cm above the pavement).</summary>
+        public int FloorAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return i >= 0 && j >= 0 && i < Nx && j < Ny ? floor[i * Ny + j] : 0; }
         /// <summary>The surface of the cell at p ('r', 'y', '.'), or '#' off free ground.</summary>
         public char SurfaceAt(Pt p) { int i = CI(p.X), j = CJ(p.Y); return FreeCell(i, j) ? surface[i * Ny + j] : '#'; }
 

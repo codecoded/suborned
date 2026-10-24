@@ -13,7 +13,7 @@ def _register():
         spec = REGISTRY.get(base)
         if spec is None:  # the family of the base failed to import: reported by kit.load, nothing to alias
             continue
-        asset(base + "_Play", spec["cat"], bevel=spec["bevel"], cap=cap)(spec["fn"])
+        asset(base + "_Play", spec["cat"], bevel=spec["bevel"], cap=cap, floor=spec.get("floor"))(spec["fn"])
 
 
 _register()

@@ -21,7 +21,7 @@ namespace Suborned.Sim
         /// patrol's sweep is 23 m off and a person of the city crossing from the square is within 30 m. Re-sited 2026-10-19 (Keel, brief 023:
         /// the door on the west face, the sweep along the forecourt): was a corner of the square at (2000, -1000) firing on arrival at 0:30, but
         /// the sweep is 60 m from the square now and nobody of the city is near the forecourt before 3:30.</summary>
-        static readonly Pt ShotCorner = new Pt(4300, -2600);
+        static readonly Pt ShotCorner = new Pt(3675, -3300); // engine 0.28.0 (brief 055 §7): was (4300, -2600), from which the drawn 6.2 m cypress cyp-office-e hides the patrol from 4:30.3 to 4:33.5 (out/scratch/keel/b056/py): 6.25 m north and 7 m west, where the 3D line to the patrol stays clear from 4:30 to 4:35 and the people crossing from the square at 4:34 stay within 30 m
         const int ShotAt = 2700;
 
         static string Moves(Game g) => string.Join(", ", FightMoves(g).Select(m => $"{m.delta.ToString(System.Globalization.CultureInfo.InvariantCulture)} {m.cause} {m.who}"));

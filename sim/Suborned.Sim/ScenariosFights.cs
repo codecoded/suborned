@@ -81,7 +81,15 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 string to = "";
-                foreach (var pl in RunPlaces) { var q = g.QuoteMove(Fixer, r.Stand(pl)); if (q.RunRefused.Length == 0 && q.RunSeenBy.Count == 0 && q.RunS > 5) { to = pl; break; } }
+                // engine 0.28.0 (brief 054 §3.3): the off-duty guards at the café tables see a run by their seat's facing cone now, not by the 3 m near
+                // sense alone; the Fixer waits to 3:00, when they have left the tables (from 2:30 the chip's run to the Courtyard meets a guard walking
+                // into his cone: the chip reads people where they stand now, "~"), then half a minute at a time, for a run no security watcher would see
+                r.To(T(180));
+                for (int k = 0; k < 6 && to.Length == 0; k++)
+                {
+                    if (k > 0) r.To(g.Tick + T(30));
+                    foreach (var pl in RunPlaces) { var q = g.QuoteMove(Fixer, r.Stand(pl)); if (q.RunRefused.Length == 0 && q.RunSeenBy.Count == 0 && q.RunS > 5) { to = pl; break; } }
+                }
                 if (!r.Is(to.Length > 0, $"a run no security watcher sees on the chip ({to})")) return;
                 var q0 = g.QuoteMove(Fixer, r.Stand(to));
                 r.Eq(q0.AlertIfRun, g.Alert, "the chip: no Alert from this run");
@@ -343,15 +351,18 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 var at = r.Op(Fixer).Pos;
-                var near = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && G.Within(p.Value, at, g.R.WitnessRangeCm) && g.S.Sight(at, p.Value, g.R.Eye); });
-                r.Is(near.Count > 0, $"people in sight of the Fixer ({near.Count})");
+                // engine 0.28.0 (brief 054 §3.2): those who would see the draw by the engine's own rule (a civilian in their cone, security all round)
+                var near = g.Walkers.FindAll(w => g.CrowdPos(w).HasValue && g.NoticesNow(w.P.Id, "weapon-drawn", at));
+                var away = g.Walkers.FindAll(w => { var p = g.CrowdPos(w); return p.HasValue && !near.Contains(w) && G.Within(p.Value, at, g.R.WitnessRangeCm) && g.S.Sight(at, p.Value, g.R.Eye); });
+                r.Is(near.Count > 0, $"people who would see the Fixer's weapon ({near.Count}; {away.Count} more in range face away)");
                 r.Do(Fixer, "draw"); r.Wait(1);
                 r.Is(near.TrueForAll(w => w.St == "startled"), "each of them is startled");
+                r.Is(away.TrueForAll(w => w.St != "startled"), "those facing away are not (no shot: a draw is seen, not heard)");
                 var stood = new Dictionary<string, long>(); foreach (var w in near) stood[w.P.Id] = G.D2(w.At, at);
                 r.Wait(g.R.CrowdStartleTicks + 1);
                 r.Is(near.TrueForAll(w => w.St == "fleeing"), "after the startle they run");
-                bool away = true; foreach (var w in near) { var rf = g.S.Refuges.Find(x => x.id == w.Refuge); if (G.D2(rf.at, at) <= stood[w.P.Id] && g.S.Refuges.Exists(x => G.D2(x.at, at) > stood[w.P.Id] && G.Within(x.at, w.At, g.R.CrowdFleeMaxCm))) away = false; }
-                r.Is(away, "each to a refuge farther from the weapon than they stood");
+                bool farther = true; foreach (var w in near) { var rf = g.S.Refuges.Find(x => x.id == w.Refuge); if (G.D2(rf.at, at) <= stood[w.P.Id] && g.S.Refuges.Exists(x => G.D2(x.at, at) > stood[w.P.Id] && G.Within(x.at, w.At, g.R.CrowdFleeMaxCm))) farther = false; }
+                r.Is(farther, "each to a refuge farther from the weapon than they stood");
                 r.Is(r.Until(() => near.TrueForAll(w => w.St == "sheltered"), T(60)), "they reach shelter");
                 r.Is(near.TrueForAll(w => !g.CrowdPos(w).HasValue), "off the street");
                 r.Do(Fixer, "holster");
@@ -455,7 +466,7 @@ namespace Suborned.Sim
             // the Loyal guard's exposure rule is under test (§2.2: a Loyal man pressed by exposure doesn't report it), so the start state makes the
             // guard Loyal whoever the cast is (§04 restricted: a guard is Loyal or Mercenary; the r016 cast's guard is a Mercenary)
             var known = new Start(); known.Known[Inez] = new List<string> { "routine", "need", "temperament" }; known.Temperament[GuardR] = "loyal";
-            Add("N40", "—", "Watching the lovers together teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
+            Add("N40", "—", "Engine 0.29.0 (brief 054 §9.2: a Watch never teaches a secret, only Listen does): with the lovers together during the summons visit, a Watch on Inez is refused already-watched and teaches nothing; Listen on her teaches the affair on both (Motive, motive-lovers.md §1.2); with the guard's secret known, Pressure on the Loyal guard is at its proper step, needs no pressable need, and he doesn't report it (§2.2).", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Scout, "d:Courtyard")));
@@ -464,8 +475,11 @@ namespace Suborned.Sim
                 r.Eq(g.Preview("pressure", GuardR).Outcome == "?" || !g.Preview("pressure", GuardR).Leverage, true, "no leverage on the guard yet");
                 r.Do(Fixer, "call", Inez);
                 r.To(g.LureTick + g.VisitWalkTicks);
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.Is(g.Inez.KSecret && g.GuardP.KSecret, "a Watch that ends with them together teaches the affair, on both");
+                r.Is(G.Within(g.PersonPos(g.Inez)!.Value, g.GuardPose()!.Value.pos, 400), "the lovers stand together");
+                RefusedFree(r, "watch", Inez, "already-watched", g.Inez); // brief 054 §9.2: offered only for her mood, and she is turned; no Watch shows the affair
+                r.Is(!g.WatchOffered(Inez) && !g.Inez.KSecret && !g.GuardP.KSecret, "with the lovers together no Watch is offered and the affair is still unknown");
+                r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.Is(g.Inez.KSecret && g.GuardP.KSecret, "Listen on her teaches the affair, on both");
                 { // c025 (brief 031): the Scout steps more than 3 m from the guard (a person senses anyone within 3 m), so his clock on her never runs
                     var gp0 = g.GuardPose()!.Value.pos; var me = r.Op(Scout).Pos; var dir = me - gp0;
                     var away = g.S.Grid.NearestFree(gp0 + Along(dir == new Pt(0, 0) ? new Pt(100, 0) : dir, 600));

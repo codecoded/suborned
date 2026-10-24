@@ -127,7 +127,7 @@ namespace Suborned.Sim
             Note("car.exploded", $"The {CarName(c.Id)} explodes.");
             var of = Range ? RangeCarCover(c.Id) : CarCover(c.Id); liveCover = new List<CoverPoint>(LiveCover.FindAll(p => p.Of != of)); // its cover points are gone
             // violence seen by a civilian (§05; rulebook car.target): Alert to alert.violenceSeen and a Menace step, once a car
-            bool civSees = false; foreach (var p in WitnessesOf(at, null)) if (p.Civilian) { civSees = true; break; }
+            bool civSees = false; foreach (var p in WitnessesOf(at, null, "gunfire")) if (p.Civilian) { civSees = true; break; }
             if (civSees)
             {
                 RaiseAlert(R.ViolenceSeen, "violence-seen:blast:" + c.Id);

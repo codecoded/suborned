@@ -122,6 +122,7 @@ namespace Suborned.Play
             }
             c.NextBeatAt = Game.Tick; // the remaining beats follow one by one
             c.Footer = c.Scene != null ? Result(c.Scene.Result, c) : FooterOf(c);
+            if (c.Verb == "watch" && IsRole(c.Target) && Game.WatcherKind(c.Target).Length == 0) c.Footer = MoodFooter(c.Target); // item 23 (brief 054 §7): a person's Watch reads their mood: "Inez · uneasy · pressure likely"; nothing new, no footer
             if (c.Verb is "watch" or "listen" && c.Footer.Length > 0) c.Tone = Feedback.Ok;
         }
 
@@ -148,6 +149,19 @@ namespace Suborned.Play
             string temper = p == null || p.Temperament.Length == 0 ? "?" : char.ToUpperInvariant(p.Temperament[0]) + p.Temperament[1..];
             return line.Replace("{who}", c.Target.Length > 0 ? Name(c.Target) : "them").Replace("{need}", p?.Need ?? "?").Replace("{temperament}", temper)
                 .Replace("{usd}", c.Paid > 0 ? $"${c.Paid:N0}" : "$0").Replace("{alert}", Game.Alert.ToString());
+        }
+
+        /// <summary>Item 23 (brief 054 §7, Fable's feed "Watch · Inez · uneasy · pressure likely"): what a Watch on a person taught, the mood the
+        /// cell now knows and the approach the card marks likely (the engine's Quote.Likely); "" when it taught nothing (neutral, or no mood on).</summary>
+        string MoodFooter(string role)
+        {
+            string mood = ""; Guard("mood", () => mood = Game.MoodOf(role));
+            if (mood.Length == 0 || mood == "neutral" || CastOf(role) is { KTemperament: true }) return ""; // Fable (less.mood): neutral says nothing; after Listen the card is exact, no footer
+            var t = Text; string W(Dictionary<string, string> d, string k) => d != null && d.TryGetValue(k, out var v) ? v : k;
+            string likely = "", hurt = "";
+            if (role != "councillor") foreach (var ap in new[] { "pressure", "help", "pay" }) { Quote q = null; Guard("mood", () => q = Game.Preview(ap, role, OpId.Fixer)); if (q == null) continue; if (q.Likely && likely.Length == 0) likely = ap; if (q.Hurt && hurt.Length == 0) hurt = ap; }
+            string form = likely.Length > 0 ? t?.MoodFooter ?? "{who} · {mood} · {lever} likely" : hurt.Length > 0 ? t?.MoodFooterHurt ?? "{who} · {mood} · {lever} harder" : t?.MoodFooterBare ?? "{who} · {mood}";
+            return form.Replace("{who}", Cap(Name(role))).Replace("{mood}", W(t?.MoodWord, mood)).Replace("{lever}", W(t?.MoodLever, likely.Length > 0 ? likely : hurt));
         }
 
         /// <summary>What came of an act with no scene, from the engine's state when it ends.</summary>

@@ -279,7 +279,7 @@ namespace Suborned.Sim
 
             Add("HI-A3", "—", "Sky 2026-10-21 (answer 2): Alert 3 is not anyone in a cone: at lockdown (a seen takedown reported), an officer or robot that has the unknown, holstered Scout in its sight does not fire on him", r =>
             {
-                var g = r.G; TerraceTakedown(r); r.Done(Enf); r.Send(Enf, "crew:enforcer"); // his face will be on the report: he leaves the block
+                var g = r.G; TerraceTakedown(r); r.Done(Enf); r.Send(Enf, "d:South walkway"); // his face will be on the report: he leaves the block (brief 055: by the south walkway, was crew:enforcer: the units now cross the square by its south side and pass the getaway car)
                 r.Is(r.Until(() => g.Alert >= 3, T(60)), "the report lands: Alert 3");
                 r.Is(r.Until(() => g.Units.Exists(u => !u.Legacy && !u.Gun.Down && u.OnStreet(g.Tick)) || g.Over, T(60)), "the response's units are on the street");
                 var unit = g.Units.First(u => !u.Legacy && !u.Gun.Down && u.OnStreet(g.Tick)); int t0 = g.Tick; bool seen = false;

@@ -43,6 +43,7 @@ namespace Suborned.Play
 
         static int Sub(Way w) => w.Do switch
         {
+            "go" => -1, // brief 057 §4.2: once Vale is aboard, Go is the car's first way (before another agent's Board)
             "watch" => 0, "listen" => 1,
             "carry" => 0, "stash" => 1, "restrain" => 2, "drop" => 3,
             "takedown" => w.How == "kill" ? 1 : 0,

@@ -8,7 +8,7 @@
   {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
   {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
   {"tick":0,"op":"fixer","do":"move","to":[725,-5025]},
-  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":165,"op":"tech","do":"loop","target":"entrance"},
   {"tick":310,"op":"scout","do":"watch","target":"guard"},
   {"tick":510,"op":"scout","do":"move","to":[725,-4625]},
   {"tick":1060,"op":"tech","do":"reroute","target":"patrol"},
@@ -16,15 +16,15 @@
   {"tick":1510,"op":"enforcer","do":"takedown","target":"guard","how":"kill"},
   {"tick":1540,"op":"enforcer","do":"carry","target":"guard"},
   {"tick":1570,"op":"enforcer","do":"move","to":[6275,-1875]},
-  {"tick":1864,"op":"enforcer","do":"stash","target":"stash/office-service-door/door"},
-  {"tick":1964,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1885,"op":"enforcer","do":"stash","target":"stash/office-service-door/door"},
+  {"tick":1985,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
   {"tick":2440,"op":"enforcer","do":"enter"},
   {"tick":2440,"op":"tech","do":"move","to":[675,-4625]},
   {"tick":2820,"op":"enforcer","do":"move","to":[2400,-6000]},
-  {"tick":3210,"op":"cell","do":"panic"},
-  {"tick":3441,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":3570,"op":"enforcer","do":"board","target":"car"},
-  {"tick":3610,"op":"cell","do":"go"}
+  {"tick":3212,"op":"cell","do":"panic"},
+  {"tick":3548,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":3677,"op":"enforcer","do":"board","target":"car"},
+  {"tick":3717,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

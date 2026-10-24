@@ -22,8 +22,12 @@
    "usd": 3.30951
   },
   "2026-10-23": {
-   "calls": 161,
+   "calls": 173,
    "usd": 55.10232
+  },
+  "2026-10-24": {
+   "calls": 17,
+   "usd": 0.34101
   }
  },
  "by_model": {
@@ -40,7 +44,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 4,
+   "calls": 25,
    "usd": 0.0
   },
   "google:4@2": {
@@ -60,12 +64,12 @@
    "usd": 0.15
   },
   "openai:gpt-image@2": {
-   "calls": 1,
-   "usd": 0.01918
+   "calls": 9,
+   "usd": 0.36019
   }
  },
- "calls": 236,
- "failed": 2,
+ "calls": 265,
+ "failed": 11,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -269,6 +273,35 @@
    "used": 18,
    "used_usd": 1.8297
   },
+  "051-frontend": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-23": {
+     "calls": 8,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 8,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "menu-concepts": {
+     "calls": 8,
+     "usd": 0.0
+    }
+   },
+   "calls": 8,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 8,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
   "052-teaser": {
    "blocked": 6,
    "by_day": {
@@ -343,6 +376,131 @@
    "used": 29,
    "used_usd": 22.26026
   },
+  "055-road": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-23": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "road-options": {
+     "calls": 4,
+     "usd": 0.0
+    }
+   },
+   "calls": 4,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 4,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "061-crossings": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-24": {
+     "calls": 6,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 6,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 6,
+     "usd": 0.0
+    }
+   },
+   "calls": 6,
+   "cost_per_used": null,
+   "failed": 6,
+   "ok": 0,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "062-briefing": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-24": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "faces": {
+     "calls": 2,
+     "usd": 0.0
+    }
+   },
+   "calls": 2,
+   "cost_per_used": null,
+   "failed": 2,
+   "ok": 0,
+   "total_usd": 0.0,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "063-portraits": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-24": {
+     "calls": 9,
+     "usd": 0.34101
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    },
+    "openai:gpt-image@2": {
+     "calls": 8,
+     "usd": 0.34101
+    }
+   },
+   "by_pass": {
+    "concepts": {
+     "budget_usd": 2.0,
+     "calls": 8,
+     "usd": 0.34101
+    },
+    "probe": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 9,
+   "cost_per_used": 0.04263,
+   "failed": 1,
+   "ok": 8,
+   "total_usd": 0.34101,
+   "unknown_cost_calls": 0,
+   "used": 8,
+   "used_usd": 0.34101
+  },
   "900-codexcheck": {
    "blocked": 0,
    "by_day": {
@@ -378,6 +536,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 62.32156,
- "used": 52
+ "total_usd": 62.66257,
+ "used": 60
 }

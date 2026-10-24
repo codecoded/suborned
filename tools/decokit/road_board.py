@@ -1,10 +1,11 @@
 """The road board's renders (brief 028, Vela, 2026-10-22): a slice of the real world export, now vs proposed, at the game's cameras.
 
-blender -b -P tools/decokit/road_board.py -- <out_dir> <view> <variant> <time> [--res 1920x1080] [--placements out/vela028-road/placements.json]
+blender -b -P tools/decokit/road_board.py -- <out_dir> <view> <variant> <time> [--res 1920x1080] [--placements out/vela028-road/placements.json] [--world out/world/harbour-district.world.json]
   view     office-210 | office-30   the play camera (orthographic, size 14, pitch 38) at the Records Office front (baseline stop focus -160,-281), yaw 210 / 30
            orbit-third              third person (perspective, vertical fov 55, eye 3.24 m) down Orbit Walk, 124 m, the Handover's road, looking east from its west end
            boulevard-third          third person down the Boulevard (28 m, T1 tram in the middle), 700 m, looking south
   variant  now (the build as played: asphalt, gutter, painted dashes, pearl kerb in the capstone zone) | proposed (enamel, ribbon, pearl shoulder, pinstripe, lozenges, seams, no gutter, no dashes)
+           enamel | asphalt (brief 055 road test: the two finish sets of the world export, same ribbon, shoulder and pinstripe; asphalt = dark carriageway, white edge lines, dashes; read from --world)
   time     day | night
 Writes <view>-<variant>-<time>.png (beauty, display sRGB, no haze) and <view>-<variant>-<time>.depth.npy (distance from the camera, m) for road_board_post.py (haze, bloom, board).
 Everything is read from out/world/harbour-district.world.json (the export the game builds from) and the placements.json of tools/world/roadfinish-dev.ts (the proposed road, same generator rules as the
@@ -32,10 +33,22 @@ OUT, VIEW, VARIANT, TIME = Path(A[0]), A[1], A[2], A[3]
 RES = tuple(int(x) for x in (A[A.index("--res") + 1] if "--res" in A else "1920x1080").split("x"))
 PLACE = Path(A[A.index("--placements") + 1] if "--placements" in A else REPO / "out/vela028-road/placements.json")
 NIGHT = TIME == "night"
-PROPOSED = VARIANT == "proposed"
+EVENING = TIME == "evening"                                                              # brief 048: the testbed's evening (low warm sun, the strip light on)
+NOBRASS = "--nobrass" in A                                                              # brief 061: the road edge without its brass (no pavement pinstripe, no kerb crown, no ribbon hairlines); the strip-light lens stays
+X061 = A[A.index("--x061") + 1] if "--x061" in A else None                              # brief 061: crossing mock-up direction A | B | C (tools/decokit/crossing061.py); the built crossing parts are replaced
+STATE = A[A.index("--state") + 1] if "--state" in A else "walk"                          # walk | clear | stop
+CAM = [float(v) for v in A[A.index("--cam") + 1].split(",")] if "--cam" in A else None  # eye_x,eye_y,yaw_deg,fov,eye_height[,pitch_deg]: a custom third-person view
+PLAYAT = [float(v) for v in A[A.index("--play") + 1].split(",")] if "--play" in A else None  # focus_x,focus_y,yaw_deg,r[,z]: a custom play-camera view
+BILLBOARD = float(A[A.index("--billboard") + 1]) if "--billboard" in A else None         # brief 061: draw the built SignalEye as Unity's CrossingKit.Dress leaves it: turned about the vertical to the export view's yaw (30), whatever the camera does
+FOOT = "--footway" in A                                                                    # brief 061 (Datum's question): Satellite Street's mouth at Market Street as a continuous footway, a sketch
+ROOFS = "--roofs" in A                                                                # draw the export's roof items (prims and the programme's kit piece)
+TRACK_COL = A[A.index("--track") + 1] if "--track" in A else None                     # a track colour to try instead of look.json `track` (harbour.track #96979c, metallic .5)
+CIVIC_ROOF = A[A.index("--civic-roof") + 1] if "--civic-roof" in A else None            # the top colour of the civic buildings (facade.json roof_e)
+PROPOSED = VARIANT in ("proposed", "enamel", "asphalt")  # every variant but "now": no gutter, no painted dashes (the road finish is in the export's ground pieces)
 OUT.mkdir(parents=True, exist_ok=True)
 
-W = json.loads((REPO / "out/world/harbour-district.world.json").read_text())
+WORLD = Path(A[A.index("--world") + 1] if "--world" in A else REPO / "out/world/harbour-district.world.json")
+W = json.loads(WORLD.read_text())
 LOOK = json.loads((REPO / "unity/Assets/Suborned/Editor/World/look.json").read_text())
 LIGHT = json.loads((REPO / "unity/Assets/Suborned/Editor/World/light.json").read_text())
 P = json.loads(PLACE.read_text()) if PLACE.exists() else {"items": [], "runs": []}
@@ -44,9 +57,15 @@ PAV = 0.18
 VIEWS = {
     "office-210": dict(kind="play", focus=(-160, -281), yaw=210, r=95),
     "office-30": dict(kind="play", focus=(-160, -281), yaw=30, r=95),
+    "wing-30": dict(kind="play", focus=(-160, -294), z=9, yaw=30, r=70),      # brief 048 roof board (Vela): the Records Office wing's 15.68 m roof at the play camera, roof items drawn (--roofs)
+    "wing-210": dict(kind="play", focus=(-160, -294), z=9, yaw=210, r=70),
     "orbit-third": dict(kind="third", eye=(-184.0, -265.0), yaw=90, far=450, fov=55),
     "boulevard-third": dict(kind="third", eye=(-9.5, -104.0), yaw=180, far=450, fov=55),
 }
+if CAM:
+    VIEWS[VIEW] = dict(kind="third", eye=(CAM[0], CAM[1]), yaw=CAM[2], far=160, fov=CAM[3], eyez=CAM[4], pitch=CAM[5] if len(CAM) > 5 else 3.0)
+if PLAYAT:
+    VIEWS[VIEW] = dict(kind="play", focus=(PLAYAT[0], PLAYAT[1]), yaw=PLAYAT[2], r=PLAYAT[3], z=PLAYAT[4] if len(PLAYAT) > 4 else 0)
 V = VIEWS[VIEW]
 
 
@@ -228,6 +247,8 @@ def proto(name):
     if name not in _PROTO:
         try:
             o = kit.build(name)
+            if NOBRASS and (name.startswith("Kerb_Pearl") or name.startswith("RoadRibbon")):
+                drop_brass(o)
             for k in [o, *o.children_recursive]:
                 for c in list(k.users_collection):
                     c.objects.unlink(k)
@@ -237,6 +258,22 @@ def proto(name):
             _BAD.add(name)
             return None
     return _PROTO[name]
+
+
+def drop_brass(o):
+    """Brief 061: delete every face in the brass slot of a kerb or ribbon piece (the kerb's crown, the ribbon's two hairlines)."""
+    for k in [o, *o.children_recursive]:
+        if k.type != "MESH":
+            continue
+        idx = [i for i, m in enumerate(k.data.materials) if m and m.name.startswith("DK_Brass")]
+        if not idx:
+            continue
+        bm = bmesh.new()
+        bm.from_mesh(k.data)
+        bm.faces.ensure_lookup_table()
+        bmesh.ops.delete(bm, geom=[f for f in bm.faces if f.material_index in idx], context="FACES")
+        bm.to_mesh(k.data)
+        bm.free()
 
 
 def bbox_centre(o):
@@ -284,7 +321,7 @@ def build_world():
     G = W["ground"]
     land = surf("pavement")
     land_o = mesh_obj("land", [(-3000, -3000, -0.03), (3000, -3000, -0.03), (3000, 3000, -0.03), (-3000, 3000, -0.03)], [[0, 1, 2, 3]], flat("land", hexrgb("#d9cdb4"), 0.9))
-    road_mat = mats.get("DK_Ground_RoadEnamel") if PROPOSED else mats.get("DK_Ground_Asphalt")
+    road_mat = mats.get("DK_Ground_RoadAsphalt") if VARIANT == "asphalt" else mats.get("DK_Ground_RoadEnamel") if PROPOSED else mats.get("DK_Ground_Asphalt")
     kerb = mats.get("DK_Ground_Kerb")
     # roads
     for r in G["roads"]:
@@ -304,7 +341,7 @@ def build_world():
             mesh_obj("circus", verts, faces, road_mat)
             slab("island", ring_in, 0.0, c["islandHeight"], surf("circus/island"), kerb)
     # T1's rails down the Boulevard (two tracks 1.6 m wide, 3.6 m apart, 4 cm proud): the carriageway's own furniture, the same in both variants
-    track = surf("track")
+    track = flat("track-try", hexrgb(TRACK_COL), 0.8, 0.1) if TRACK_COL else surf("track")
     for t in W["transit"]["tram"]:
         if not any(inside(p, 20) for p in t["line"][::8]):
             continue
@@ -320,6 +357,9 @@ def build_world():
     for p in G["plots"]:
         if ring_inside(p["ring"], 20):
             slab(p["id"], p["ring"], 0.0, p["height"], mats.get("DK_Ground_PaveLimestone"), kerb)
+    for f in G["flats"]:  # brief 028 (Vela): the tram reservation's lawn track (export flats `reservation/*`, surface park), under the rails
+        if f["id"].startswith("reservation/") and ring_inside(f["ring"], 20):
+            flat_poly(f["id"], f["ring"], f["level"], flat("lawn", hexrgb("#64875A"), 0.85))  # look.json ground/median = DK_Ground_Lawn (mean #64875A)
     for m in G["medians"]:
         if ring_inside(m["ring"], 20):
             slab(m["id"], m["ring"], 0.0, m["height"], mats.get("DK_Ground_PaveLimestone"), kerb)
@@ -393,7 +433,8 @@ def build_masses():
             slab(b["id"], b["ring"], b["base"], b["base"] + b["height"], surf("roof"), wall_mat(b["surface"]))
     for c in W["civic"]:
         if c["ring"] and ring_inside(c["ring"], 10) and c.get("height", 0) > 0.05 and not c.get("kit"):
-            slab(c["id"], c["ring"], c["base"], c["base"] + c["height"], surf("roof") if c["height"] > 4 else surf(c["surface"]), wall_mat(c["surface"]) if c["height"] > 4 else surf(c["surface"]))
+            top = flat("civic-roof", hexrgb(CIVIC_ROOF), 0.55) if (CIVIC_ROOF and c["height"] > 4 and c["surface"] == "limestone") else (surf("roof") if c["height"] > 4 else surf(c["surface"]))
+            slab(c["id"], c["ring"], c["base"], c["base"] + c["height"], top, wall_mat(c["surface"]) if c["height"] > 4 else surf(c["surface"]))
     for f in W["facades"]:
         k = f.get("kit")
         if k and inside(k["at"], 10):
@@ -404,8 +445,50 @@ def build_masses():
             put(k["id"], k["at"], k.get("yaw", 0), k.get("base", c["base"]), tuple(k["scale"]), centre=True)
 
 
+ROOF_ITEM = {"column": ("#dfe3e5", 0.35, 0.9), "roof": ("#f3eadb", 0.0, 0.6), "deck": ("#efe3c8", 0.0, 0.6), "park": ("#5faa66", 0.0, 0.8), "pool": ("#6cc9d4", 0.0, 0.2),
+             "sign": ("#e8609a", 0.0, 0.5), "awning": ("#e8609a", 0.0, 0.5), "landmark": ("#2f84e8", 0.0, 0.5), "water": ("#6cc9d4", 0.0, 0.2)}
+ACCENTS = ["#f08a3c", "#f2c93a", "#1cb9c6", "#e8609a", "#2f84e8", "#8fe3c2"]  # facade.json: the host building's enamel pair (@A): any of the area's e_* swatches
+
+
+def build_roofs():
+    """facade.json roofItems: trim = the host's enamel (@A; the civic block's is seafoam), column = chrome, roof/deck = paper, park = a leaf green; kit pieces as the builder places them."""
+    import hashlib
+    for r in W["roofs"]:
+        if not ring_inside([(r["c"][0] - 8, r["c"][1] - 8), (r["c"][0] + 8, r["c"][1] + 8)], 6):
+            continue
+        civic = r["building"].startswith("civic")
+        acc = "#2a9d96" if civic else ACCENTS[int(hashlib.md5(r["id"].encode()).hexdigest(), 16) % len(ACCENTS)]
+        for p in r["parts"]:
+            if p["shape"] not in ("box", "cyl", "sphere"):
+                continue
+            col, met, rough = ROOF_ITEM.get(p["surface"], (acc, 0.0, 0.5)) if p["surface"] != "trim" else (acc, 0.0, 0.5)
+            m = flat("ri_" + p["surface"] + (acc if p["surface"] == "trim" else ""), hexrgb(col), rough, met)
+            a, b, h = p["size"]
+            if p["shape"] == "box":
+                bpy.ops.mesh.primitive_cube_add(size=1)
+            elif p["shape"] == "cyl":
+                bpy.ops.mesh.primitive_cylinder_add(vertices=24, radius=0.5, depth=1)
+            else:
+                bpy.ops.mesh.primitive_uv_sphere_add(segments=24, ring_count=12, radius=0.5)
+            o = bpy.context.active_object
+            o.scale = (a, b, h)
+            o.location = (p["c"][0], p["c"][1], p["base"] + h / 2)
+            o.rotation_euler = Euler((0, 0, p["yaw"]))
+            o.data.materials.append(m)
+        k = r.get("kit")
+        if k and k.get("at"):
+            put(k["id"], k["at"], k.get("yaw", r["yaw"]), r["z"], tuple(k["scale"]))
+        k = r.get("crown")
+        if k and k.get("at"):
+            put(k["id"], k["at"], k.get("yaw", 0), r["z"], tuple(k["scale"]))
+
+
 def build_pieces():
     for s in W["ground"]["pieces"]:
+        if NOBRASS and s["kind"] == "road-pinstripe":
+            continue
+        if FOOT and s["kind"] in ("kerb-return", "road-ribbon", "road-pinstripe") and -72.4 <= s["at"][0] <= -47.6 and -401.7 <= s["at"][1] <= -395.2:
+            continue                                                                 # the mouth's kerb returns, and the ribbon and pinstripe that follow them, give way to the table
         if inside(s["at"], 6):
             put(s["kit"]["id"], s["at"], s["yaw"], s["z"], tuple(s["kit"]["scale"]))
     skip = {"flag-mast", "crossing"}
@@ -415,10 +498,104 @@ def build_pieces():
         if not k or not inside(s["at"], 6) or s["kind"] in skip:
             continue
         yaw = k.get("yaw", s["yaw"])
+        if FOOT and s.get("crossing") and -76 <= s["at"][0] <= -44 and -406 <= s["at"][1] <= -386:
+            continue                                                                 # Datum's proposal: the lane mouth carries no crossing
+        if BILLBOARD is not None and s["kind"] == "signal-orb":
+            walk = s["signal"]["faces"][0]                                  # plan angle of face A's outward line (the walk)
+            tgt = math.radians(90 - BILLBOARD)                              # the camera heading (sin yaw, cos yaw) as a plan angle
+            d = (tgt - walk + math.pi / 2) % math.pi - math.pi / 2          # folded to (-90, 90]: either face may be the near one
+            yaw = walk + d - math.pi / 2
+        if X061 and s.get("crossing"):  # brief 061: the built crossing's studs, arcs, brass edges, field, dots and eyes give way to the candidate (heads only here; the road light is build_cross061)
+            if s["kind"] == "signal-orb":
+                put(f"X61{X061}_{STATE}", s["at"], yaw, s["z"], (1, 1, 1))
+            continue
         put(k["id"], s["at"], yaw, s["z"], tuple(k["scale"]))
         if s["kind"] == "lamp":
             lamps.append(s)
     return lamps
+
+
+def build_cross061():
+    """Brief 061: the candidate's road light, laid along each crossing's walk (the same two lines at +-1.75 m, 0.5 m short of each kerb, as crossings.strip.lights; the clock drains from both kerbs toward the middle)."""
+    import crossing061 as x
+    st_ = "stop" if STATE == "arrive" else STATE
+    on = {"walk": mats.get("DK_X61_Walk"), "clear": mats.get("DK_X61_Clear"), "stop": mats.get("DK_X61_Stop")}[st_]
+    char = mats.get("DK_Enamel_Charcoal")
+    frac = {"walk": 1.0, "clear": x.CLEAR_FRAC, "stop": 1.0}[st_]
+    glow = {"walk": mats.get("DK_X61_HaloWalk"), "clear": mats.get("DK_X61_HaloClear"), "stop": mats.get("DK_X61_HaloStop")}[st_]
+    def on_glow(a):
+        key = f"X61F_{STATE}_{a:.2f}"
+        if key not in _MAT:
+            m = bpy.data.materials.new(key)
+            b = m.node_tree.nodes["Principled BSDF"]
+            col = {"walk": "#55E6B0", "clear": "#FFB624", "stop": "#F2432E"}[STATE]
+            b.inputs["Base Color"].default_value = (*lin(hexrgb(col)), 1)
+            b.inputs["Emission Color"].default_value = (*lin(hexrgb(col)), 1)
+            b.inputs["Emission Strength"].default_value = 1.6 if STATE != "stop" else 1.1
+            b.inputs["Alpha"].default_value = 0.52 * a * (0.8 if STATE == "stop" else 1.0)
+            blended(m)
+            _MAT[key] = m
+        return _MAT[key]
+    for c in W["crossings"]:
+        a, b = c["line"]
+        m = ((a[0] + b[0]) / 2, (a[1] + b[1]) / 2)
+        if not inside(m, 4):
+            continue
+        L = math.hypot(b[0] - a[0], b[1] - a[1])
+        u = ((b[0] - a[0]) / L, (b[1] - a[1]) / L)
+        n = (-u[1], u[0])
+        z = 0.006
+        s0, s1 = 0.5, L - 0.5
+        span = s1 - s0
+        lo, hi = s0 + span * (1 - frac) / 2, s1 - span * (1 - frac) / 2     # the lit stretch
+        def P(sv, off):
+            return (a[0] + u[0] * sv + n[0] * off, a[1] + u[1] * sv + n[1] * off)
+        if X061 == "A":                                                       # dots d 0.22, pitch 0.5, a charcoal seat ring round each
+            for off in (-1.75, 1.75):
+                k = 0
+                sv = s0 + 0.25
+                while sv < s1:
+                    lit = lo <= sv <= hi
+                    cx, cy = P(sv, off)
+                    for r_, mt, zz in ((0.15, char, z), (0.11, on if lit else char, z + 0.002)):
+                        pts = [(cx + r_ * math.cos(t), cy + r_ * math.sin(t), zz) for t in [2 * math.pi * i / 14 for i in range(14)]]
+                        mesh_obj("dot", pts, [list(range(14))], mt)
+                    sv += 0.5
+        elif X061 == "B":                                                     # continuous strip lights 0.14 wide, like the road ribbon's lens
+            for off in (-1.75, 1.75):
+                for (q0, q1, lit) in ((s0, lo, False), (lo, hi, True), (hi, s1, False)):
+                    if q1 - q0 < 0.02:
+                        continue
+                    hw = 0.07 if lit else 0.03
+                    pts = [(*P(q0, off - hw), z), (*P(q1, off - hw), z), (*P(q1, off + hw), z), (*P(q0, off + hw), z)]
+                    mesh_obj("strip", pts, [[0, 1, 2, 3]], on if lit else char)
+        elif X061 == "C":                                                     # one broad band of soft light across the road, 3.9 m wide, in 0.5 m cross-fade steps at the kerb ends and the lit front
+            steps = 6
+            for i in range(steps):
+                f0, f1 = i / steps, (i + 1) / steps
+                off0, off1 = -1.95 + 3.9 * f0, -1.95 + 3.9 * f1
+                al = 1.0 - abs((f0 + f1) - 1.0) * 0.55                           # brighter along the middle of the band, softer toward its edges
+                m_ = on_glow(al)
+                pts = [(*P(lo, off0), z), (*P(hi, off0), z), (*P(hi, off1), z), (*P(lo, off1), z)]
+                mesh_obj("field", pts, [[0, 1, 2, 3]], m_)
+
+
+def build_footway():
+    """Brief 061 sketch: Satellite Street's mouth on Market Street's north kerb (x -72 to -48 at the kerb line, 6 m returns, the lane 12 m wide) carried over as one raised table
+    at pavement height (0.18), flush with the plots, in the plots' paving; the lane's traffic rides up a 2.4 m ramp (1:13) and down a 0.35 m pearl lip to Market Street; two pearl threshold bands; the
+    road ribbon runs straight on along Market's kerb. No signal, no light, no crossing."""
+    R, yk, yc = 6.0, -401.0, -395.0
+    n = 14
+    west = [(-72 + R * math.sin(math.pi / 2 * i / n), yc - R * math.cos(math.pi / 2 * i / n)) for i in range(n + 1)]
+    east = [(-48 - R * math.sin(math.pi / 2 * i / n), yc - R * math.cos(math.pi / 2 * i / n)) for i in range(n + 1)]
+    ring = (west + east[::-1])[::-1]
+    pave, kerb, pearl, roadm = mats.get("DK_Ground_PaveLimestone"), mats.get("DK_Ground_Kerb"), mats.get("DK_Ground_RoadPearl"), mats.get("DK_Ground_RoadEnamel")
+    slab("footway", ring, 0.0, PAV, pave, kerb)
+    mesh_obj("ramp", [(-66, yc, PAV), (-54, yc, PAV), (-54, yc + 2.4, 0.0), (-66, yc + 2.4, 0.0)], [[0, 3, 2, 1]], pave)     # up from the lane (north) onto the table
+    mesh_obj("lip", [(-72, yk, PAV), (-48, yk, PAV), (-48, yk - 0.38, 0.004), (-72, yk - 0.38, 0.004)], [[0, 1, 2, 3]], pearl)   # down to Market Street
+    for y0, y1, zz in ((yc + 2.4 - 0.34, yc + 2.4, 0.004), (yc - 0.34, yc, PAV + 0.003)):
+        mesh_obj("threshold", [(-66, y0, zz), (-54, y0, zz), (-54, y1, zz), (-66, y1, zz)], [[0, 1, 2, 3]], pearl)
+    put("RoadRibbon_Straight_6m", (-60, yk - 0.5), 0.0, 0.0, (24.8 / 6, 1, 1))
 
 
 def build_road_finish():
@@ -436,7 +613,7 @@ def make_world():
         nt.nodes.remove(n)
     tc, sep, ramp, bg, out = (nt.nodes.new(t) for t in ("ShaderNodeTexCoord", "ShaderNodeSeparateXYZ", "ShaderNodeValToRGB", "ShaderNodeBackground", "ShaderNodeOutputWorld"))
     nt.links.new(tc.outputs["Generated"], sep.inputs["Vector"])
-    haze = pal("night.haze") if NIGHT else pal("light.haze")
+    haze = hexrgb("#f1c9a2") if EVENING else pal("night.haze") if NIGHT else pal("light.haze")
     mid = pal("night.skyMid") if NIGHT else pal("light.skyMid")
     zen = pal("night.zenith") if NIGHT else pal("light.zenith")
     # Generated coordinates of the world run 0..1 over the direction cube: z is (dir.z + 1) / 2
@@ -450,7 +627,7 @@ def make_world():
     amb, lp, mix = nt.nodes.new("ShaderNodeBackground"), nt.nodes.new("ShaderNodeLightPath"), nt.nodes.new("ShaderNodeMixShader")
     a = pal("night.ambientEquator") if NIGHT else pal("light.ambientEquator")
     amb.inputs["Color"].default_value = (*lin(a), 1)
-    amb.inputs["Strength"].default_value = 0.055 if NIGHT else 0.34
+    amb.inputs["Strength"].default_value = 0.055 if NIGHT else 0.2 if EVENING else 0.34
     nt.links.new(lp.outputs["Is Camera Ray"], mix.inputs["Fac"])
     nt.links.new(amb.outputs["Background"], mix.inputs[1])
     nt.links.new(bg.outputs["Background"], mix.inputs[2])
@@ -463,6 +640,9 @@ def sun():
     if NIGHT:
         s.energy, s.color = 0.5, pal("night.moon")
         pitch, yaw = 52, 40
+    elif EVENING:
+        s.energy, s.color = 2.0, hexrgb("#ffae72")
+        pitch, yaw = 16, LIGHT["sun"]["yaw"]
     else:
         s.energy, s.color = 2.3, pal("light.sun")
         pitch, yaw = LIGHT["sun"]["pitch"], LIGHT["sun"]["yaw"]
@@ -484,16 +664,16 @@ def camera():
         fx, fy = V["focus"]
         p, y = math.radians(38), math.radians(V["yaw"])
         fwd = Vector((math.sin(y) * math.cos(p), math.cos(y) * math.cos(p), -math.sin(p)))
-        co.location = Vector((fx, fy, 0)) - fwd * 160
+        co.location = Vector((fx, fy, V.get("z", 0))) - fwd * 160
         cd.type = "ORTHO"
         cd.ortho_scale = 2 * 14 * RES[0] / RES[1]
         cd.clip_end = 400
     else:
         ex, ey = V["eye"]
-        pitch = math.radians(7.2)
+        pitch = math.radians(V.get("pitch", 7.2))
         y = math.radians(V["yaw"])
         fwd = Vector((math.sin(y) * math.cos(pitch), math.cos(y) * math.cos(pitch), -math.sin(pitch)))
-        co.location = Vector((ex, ey, PAV + 3.24 - 0.0))
+        co.location = Vector((ex, ey, PAV + V.get("eyez", 3.24)))
         cd.type = "PERSP"
         cd.sensor_fit = "VERTICAL"
         cd.angle_y = math.radians(V["fov"])
@@ -519,10 +699,10 @@ def tune_road_materials():
     lens = bpy.data.materials.get("DK_Road_Lens")
     if lens:
         b = lens.node_tree.nodes["Principled BSDF"]
-        b.inputs["Emission Strength"].default_value = 6.0 if NIGHT else 0.25  # testbed auto: off by day (a faint lens), warm at night; the lighting rig's state in the game
+        b.inputs["Emission Strength"].default_value = 5.0 if NIGHT else 3.0 if EVENING else 1.4  # road_ribbon.LENS_EMISSION: the .mat is the day value; the lighting rig raises it at evening and night (light.json emissive.night.roadLens)
     pool = bpy.data.materials.get("DK_Road_Pool")
     if pool:
-        pool_gradient(pool, 0.75 if NIGHT else 0.0)
+        pool_gradient(pool, 0.75 if NIGHT else 0.45 if EVENING else 0.0)
     for n, a in (("DK_Cross_Beam", 0.28), ("DK_Cross_Halo", 0.4), ("DK_Cross_Pool", 0.4)):
         g = bpy.data.materials.get(n)
         if g:
@@ -602,6 +782,8 @@ def main():
     bpy.ops.wm.read_factory_settings(use_empty=True)
     SC = bpy.context.scene
     kit.load()
+    if X061:
+        import crossing061  # noqa: F401  (brief 061: registers the candidate signal pieces and their light materials)
     mats.register_robot_enamels()
     SC.render.engine = "BLENDER_EEVEE"
     SC.render.resolution_x, SC.render.resolution_y = RES
@@ -610,9 +792,15 @@ def main():
     sun()
     build_world()
     build_masses()
+    if ROOFS:
+        build_roofs()
     lamps = build_pieces()
     if PROPOSED:
         build_road_finish()
+    if X061:
+        build_cross061()
+    if FOOT:
+        build_footway()
     tune_road_materials()
     if NIGHT:
         night_lights(lamps)

@@ -7,7 +7,7 @@
 //  · called: the summons; she walks back to her post the way she came, waits, stands together with him from his arrival to his turn plus
 //    rounds.part, and the round resumes at the start of its next rest
 //  · ended: at the first of rounds.ends she walks back and stands her post for the rest of the mission
-// Every reader of her position (reach, witnesses, sight, the summons' lover-within) reads PersonPos, which is the round's.
+// Every reader of her position (reach, witnesses, sight, the summons) reads PersonPos, which is the round's.
 using System;
 using System.Collections.Generic;
 

@@ -2,6 +2,7 @@
 import { ARROWS, FONTS, DIVIDERS, divGeom, COLUMNS } from "./tokens.js";
 import { rosterCost, colH, RS } from "./parts.js";
 import { rangeItems, rangeStates, rangeRed, rangeArc } from "./ranges.js";
+import { W29_SCENES } from "./world29.js";
 import { pill, chip, marker, tag, pop, rings, whyHead, groundTile, whyBoard, roster, rosterStates, doneStrip, squadPlate, clockBar, miniPlate, minimap, feedCard, intel, goalLine } from "./parts.js";
 
 const at = (html, x, y, cls = "") => `<div class="at ${cls}" style="left:${x}px;top:${y}px">${html}</div>`;
@@ -72,6 +73,8 @@ export const SCENES = [
     return out;
   } },
 ];
+
+SCENES.push(...W29_SCENES);
 
 export const GROUNDS = [["help-pip", "Cafe pavement"], ["cancel-pop", "Asphalt"], ["tp-fire", "Teal wall and steps"], ["guard-back", "Records front"]];
 

@@ -6,7 +6,7 @@ Sources (read-only, ~/Projects/the-suborned-store/testbed-art/district-road/, pr
 multiplied the enamel by #aed0e6 after dividing by the sheet's own mean (civic-road-finish.js `richMaterial`); the same is done here: the albedo is re-centred on the target hex, so the
 grain and the two-tone drift stay and the mean is exactly the hex. Writes ground_<role>_v1[_normal|_mask].png in the ground set's packing (R metallic 0, G occlusion, A smoothness),
 every map at the source's own size (no downscale: Sky, 20 Oct, compression goes through Sky): enamel 1024 / 1024 / 512, pearl 1024 / 512 / 256, limestone 2048 all three.
-Roles: roadenamel (#AED0E6, the testbed's: the carriageway, Sky's pick 20 Oct), roadpearl (#F1EEE6: kerb cap, lozenges, tree-pit surround), pavelimestone (the testbed's terrace and plaza
+Roles: roadenamel is now #8FAFC1 (0.83 x the testbed's #AED0E6: the game's lit road matches the testbed's, brief 028 enamel fix), roadasphalt (#505359, brief 055 road test: the asphalt option's carriageway, generated here: slate binder, three sizes of aggregate, worn and sealed patches, 4 m tile; see asphalt()), roadenamel (#AED0E6, the testbed's: the carriageway, Sky's pick 20 Oct), roadpearl (#F1EEE6: kerb cap, lozenges, tree-pit surround), pavelimestone (the testbed's terrace and plaza
 limestone, cafe-terrace/limestone-*.png, re-centred on #E6D8BE: 1 m slabs, 6 mm joints, 2 m tile), tileteal (made here: the testbed's glazed blue inlay tile, #669FAB, 0.72 m pitch, 14 mm pale grout #D7D9CF,
 per-tile shade 0.94 to 1.06, bevelled edge: civic-paving-material.js `createCivicBlueTileMaterial`, fountain-plaza.js `tile`; 1.44 m tile = 2 x 2 tiles).
 """
@@ -27,7 +27,7 @@ STORE = Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).
 OUT = Path(sys.argv[1] if len(sys.argv) > 1 else REPO / "out/decokit-ground")
 
 ROLES = {  # role -> (source stem, version, albedo px, normal px, mask px, target hex)
-    "roadenamel": ("enamel", "v1", 1024, 1024, 512, "#AED0E6"),
+    "roadenamel": ("enamel", "v1", 1024, 1024, 512, "#8FAFC1"),  # was #AED0E6, the testbed's nominal tint: the testbed's three.js lit road read #9FADAA, the game's lit road #C0CAD0 (45% brighter); 0.83 of it, hue kept (brief 028, Sky 2026-10-24)
     "roadpearl": ("marble", "v2", 1024, 512, 256, "#F1EEE6"),
 }
 
@@ -71,8 +71,79 @@ def main():
         texels = a_px * a_px + n_px * n_px + m_px * m_px
         report[role] = dict(source=f"{stem}-*-{ver}.webp", target=target, tile=[2.0, 2.0], texels=texels, bc7MiBWithMips=round(texels * 4 / 3 / 2 ** 20, 2))
     report.update(extra())
+    report.update(asphalt())
     (OUT / "road.json").write_text(json.dumps(report, indent=1))
     print("[road_tex]", OUT, {k: v["bc7MiBWithMips"] for k, v in report.items()}, "MiB")
+
+
+ASPHALT_HEX = "#505359"  # the mean of the albedo: a cool slate with a warm lean, light enough to read as stone and dark enough to carry white lines (brief 055 road test)
+ASPHALT_TILE = 4.0       # metres; 1024 px = 4 mm a texel
+
+
+def _blur(a, sigma):
+    """Periodic gaussian blur by FFT (the sheet tiles seamlessly)."""
+    n = a.shape[0]
+    f = np.fft.fftfreq(n)
+    k = np.exp(-2 * (np.pi * sigma) ** 2 * (f[:, None] ** 2 + f[None, :] ** 2))
+    return np.fft.ifft2(np.fft.fft2(a) * k).real
+
+
+def _norm(a):
+    return (a - a.mean()) / (a.std() + 1e-9)
+
+
+def asphalt():
+    """roadasphalt (brief 055 road test, Vela): the dark carriageway of the asphalt option, made here (no source sheet: the old city's sheet is a flat grey with one crack).
+    Character at play zoom, not noise: a slate binder under three sizes of aggregate (pale cream, warm peach-grey, teal-grey and dark chips: the city's stone, the palette's family), tonal drift
+    over a few metres (worn patches lighter and rougher, polished tyre lanes darker and glossier), two tar-sealed patches. Periodic, 4 m tile at 1024 px (a texel is 4 mm), re-centred on ASPHALT_HEX
+    like the enamel. Normal from the aggregate's height; mask R metallic 0, G occlusion in the crevices, A smoothness 0.18 (worn) to 0.34 (polished)."""
+    N = 1024
+    rng = np.random.default_rng(55)
+    white = lambda: rng.standard_normal((N, N))
+    fine, mid, big = _norm(_blur(white(), 0.9)), _norm(_blur(white(), 2.2)), _norm(_blur(white(), 6.0))
+    drift = _norm(_blur(white(), 70.0)) * 0.6 + _norm(_blur(white(), 22.0)) * 0.4        # tone over metres
+    wear = np.clip(0.5 + _norm(_blur(white(), 60.0)) * 0.35, 0, 1)                      # 0 sealed and dark .. 1 worn, aggregate showing
+    # aggregate: chips are where the band-passed noise is high; their class (colour) comes from a second field, so a chip is one colour
+    band = _norm(_blur(white(), 1.6)) + 0.5 * fine
+    chip = np.clip((band - 0.45) / 0.8, 0, 1)
+    cls = _norm(_blur(white(), 1.8))
+    lin_base = s2l(hexrgb("#3D4045"))
+    lin = np.broadcast_to(lin_base, (N, N, 3)).copy()
+    lin *= (1 + 0.05 * fine + 0.04 * mid + 0.045 * drift)[..., None]
+    lin *= (1 + 0.10 * wear)[..., None]                                                    # worn tone is paler
+    chip_cols = [(cls < -1.4, "#E9D8BE", 0.5), ((cls >= -1.4) & (cls < -0.1), "#8E847E", 0.55), ((cls >= -0.1) & (cls < 0.9), "#7C8889", 0.5), (cls >= 0.9, "#26292E", 0.6)]
+    for sel, hx, k in chip_cols:
+        w = (chip * sel * (0.7 + 0.3 * wear) * k)[..., None]                             # chips show most where it is worn
+        lin = lin * (1 - w) + s2l(hexrgb(hx)) * w
+    # two sealed patches (tar-seal rectangles: a little darker and smoother, a hairline darker edge); where they lie is fixed by the seed
+    seal = np.zeros((N, N))
+    for (x0, y0, w, h) in ((140, 610, 230, 150), (690, 120, 150, 260)):
+        seal[y0:y0 + h, x0:x0 + w] = 1
+    edge = np.clip(seal - _blur(seal, 1.5) * 1.0, 0, 1) + np.clip(_blur(seal, 1.5) - seal, 0, 1) * 0
+    seal_s = _blur(seal, 1.2)
+    lin *= (1 - 0.07 * seal_s - 0.04 * np.clip(edge * 4, 0, 1))[..., None]
+    out = lin / lin.reshape(-1, 3).mean(0) * s2l(hexrgb(ASPHALT_HEX))
+    Image.fromarray((l2s(out) * 255 + 0.5).astype(np.uint8)).save(OUT / "ground_roadasphalt_v1.png")
+    # height: aggregate stands proud of the binder; the seal is flat
+    h = (0.55 * chip * (1 - 0.7 * seal_s) + 0.18 * fine + 0.10 * mid + 0.04 * big) * 1.0
+    gx = (np.roll(h, -1, 1) - np.roll(h, 1, 1)) * 0.5
+    gy = (np.roll(h, -1, 0) - np.roll(h, 1, 0)) * 0.5
+    k = 2.2
+    nrm = np.dstack([-gx * k, gy * k, np.ones_like(h)])
+    nrm /= np.linalg.norm(nrm, axis=2, keepdims=True)
+    nrm_img = ((nrm * 0.5 + 0.5) * 255 + 0.5).astype(np.uint8)
+    Image.fromarray(nrm_img).save(OUT / "ground_roadasphalt_v1_normal.png")
+    M = 512
+    sm = lambda a: np.asarray(Image.fromarray(a.astype(np.float32), "F").resize((M, M), Image.BILINEAR))
+    mask = np.zeros((M, M, 4), np.uint8)
+    mask[..., 1] = (np.clip(1 - 0.35 * sm(chip), 0, 1) * 255).astype(np.uint8)
+    smooth = 0.26 - 0.08 * sm(wear) + 0.07 * sm(seal_s) - 0.02 * sm(chip)
+    mask[..., 3] = (np.clip(smooth, 0, 1) * 255).astype(np.uint8)
+    Image.fromarray(mask, "RGBA").save(OUT / "ground_roadasphalt_v1_mask.png")
+    for suffix, kind, px in (("", "a", N), ("_normal", "n", N), ("_mask", "m", M)):
+        (OUT / f"ground_roadasphalt_v1{suffix}.png.meta").write_text(meta_text(f"ground_roadasphalt_v1{suffix}.png", kind, (px, px)))
+    t = N * N + N * N + M * M
+    return {"roadasphalt": dict(source="generated (seed 55)", target=ASPHALT_HEX, tile=[ASPHALT_TILE, ASPHALT_TILE], texels=t, bc7MiBWithMips=round(t * 4 / 3 / 2 ** 20, 2))}
 
 
 def extra():

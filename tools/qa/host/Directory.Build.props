@@ -1,0 +1,7 @@
+<Project>
+  <!-- one intermediate folder per engine the host is built against (tools/qa/sim.ts passes -p:QaKey=<lane>), under out/, never beside the source -->
+  <PropertyGroup>
+    <QaKey Condition="'$(QaKey)' == ''">default</QaKey>
+    <BaseIntermediateOutputPath>$(MSBuildThisFileDirectory)../../../out/qa/host/obj-$(QaKey)/</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

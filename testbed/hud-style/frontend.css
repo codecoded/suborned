@@ -1,0 +1,124 @@
+/* Front end, direction A "light line" (brief 051). Draws only what Unity UI Toolkit can: solid and translucent fills, borders, rotated squares,
+   masked kit icons, text-shadow, opacity / width / top transitions. No backdrop blur, no box-shadow glow. */
+@font-face{font-family:JostT;font-weight:400;src:url(/fonts/Jost-Regular-Tab.ttf)}
+@font-face{font-family:JostT;font-weight:500;src:url(/fonts/Jost-Medium-Tab.ttf)}
+@font-face{font-family:Jost;font-weight:400;src:url(/fonts/Jost-Regular-Tab.ttf)}
+@font-face{font-family:Jost;font-weight:500;src:url(/fonts/Jost-Medium-Tab.ttf)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{background:#000;overflow:hidden}
+#stage{position:relative;height:1080px;overflow:hidden;font-family:Jost,sans-serif;font-weight:400;line-height:1;color:var(--cream);
+  --cream:#f7f4ec;--ink:#17302f;--deep:#0b1615;--dim:#b0cdc7;--chrome:#cbc6c3;--line:#d2e6e2;--live:#60e0ea;--brass:#99784d;
+  --ease:cubic-bezier(.215,.61,.355,1);--ease-in:cubic-bezier(.55,.055,.675,.19)}
+#stage.static *{transition:none!important;animation:none!important}
+#stage.bare .t,#stage.bare .mk,#stage.bare .ul,#stage.bare .tick,#stage.bare .gl{visibility:hidden}
+.abs{position:absolute}
+.bg{position:absolute;inset:0;background-repeat:no-repeat;background-size:cover}
+.scrim{position:absolute}
+.t{white-space:nowrap}
+.up{text-transform:uppercase}
+.shadow{text-shadow:0 1px 6px rgba(11,22,21,.55)}
+/* title lockup (unchanged from loading) */
+.lock{position:absolute}
+.lock .a{font-size:21px;letter-spacing:.62em;opacity:.92;white-space:nowrap}
+.lock .b{font-size:64px;font-weight:500;letter-spacing:.12em;margin-top:6px;white-space:nowrap;display:inline-block}
+.lock .r{height:1px;background:var(--brass);margin-top:12px}
+.lock{text-shadow:0 2px 14px rgba(11,22,21,.35)}
+.build{position:absolute;right:64px;bottom:30px;font-family:JostT;font-size:12.5px;color:var(--dim);opacity:.85;text-shadow:0 1px 5px rgba(11,22,21,.6)}
+/* words: an item is text; the line and the marker are the only furniture */
+.wl{position:absolute}
+.w{position:absolute;left:0;display:block;cursor:default}
+.w .lab{position:absolute;top:0;bottom:0;display:flex;align-items:center;opacity:var(--idle);transition:opacity .12s ease-out;white-space:nowrap}
+.w .ul{position:absolute;height:2px;width:0;background:var(--live);transition:width .10s var(--ease-in),background-color .08s}
+.w.f .lab{opacity:1}
+.w.f .ul{width:var(--lw);transition:width .22s var(--ease) .04s}
+.w.p .lab{opacity:1}
+.w.p .ul{background:var(--cream);width:var(--lw);transition:background-color .08s}
+.w.d .lab{opacity:.4}
+.w.d .ul{width:0}
+.mk{position:absolute;width:var(--ms);height:var(--ms);background:var(--live);transform:translate(-50%,-50%) rotate(45deg) scale(var(--sc,1));opacity:1;transition:top .18s var(--ease),transform .08s,opacity .12s}
+.mk.hide{opacity:0}
+.mk.p{--sc:.7}
+.w .mk{transition:transform .08s,opacity .12s}
+/* sheet: smoked glass (a translucent fill and a hairline; Unity has no backdrop blur) */
+.sheet{position:absolute;background:var(--sheetfill);border:1px solid var(--sheetborder);border-radius:2px}
+.glass{position:absolute;inset:0;overflow:hidden}
+.glass i{position:absolute;height:1080px;background-size:cover;background-position:50% 50%;filter:blur(18px) saturate(.9)}
+.glass b{position:absolute;inset:0}
+.sheet .title{position:absolute;left:48px}
+.tabs{position:absolute;left:48px;right:48px;height:37px;border-bottom:1px solid rgba(210,230,226,.22)}
+.tab{position:absolute;top:0;height:36px;display:flex;align-items:center;justify-content:center;opacity:.74;transition:opacity .12s}
+.tab.on{opacity:1}
+.tab.hov{opacity:.92}
+.tabul{position:absolute;bottom:-1px;height:2px;background:var(--live);transition:left .18s var(--ease),width .18s var(--ease),height .08s}
+.tabul.big{height:3px;bottom:-1.5px}
+.tabhov{position:absolute;bottom:-1px;height:1px;background:rgba(247,244,236,.4)}
+.rule{position:absolute;height:1px;background:rgba(210,230,226,.22)}
+.rows{position:absolute;left:48px;right:48px}
+.r{position:absolute;left:0;right:0;border-bottom:1px solid rgba(210,230,226,.16)}
+.r .rlab{position:absolute;left:14px;top:0;bottom:0;display:flex;align-items:center;opacity:.9;transition:opacity .12s}
+.r .rc{position:absolute;right:14px;top:0;bottom:0;display:flex;align-items:center;justify-content:flex-end}
+.r .ul{position:absolute;left:0;bottom:-1px;height:2px;width:0;background:var(--live);transition:width .10s var(--ease-in)}
+.r.f .rlab{opacity:1}
+.r.f .ul{width:100%;transition:width .22s var(--ease) .04s}
+.r.d .rlab,.r.d .rc{opacity:.4}
+.r.f{border-bottom-color:transparent}
+.tick{position:absolute;left:0;width:3px;background:var(--live);transition:top .16s var(--ease)}
+.gh{position:absolute;left:0;right:0;display:flex;align-items:center;color:var(--dim)}
+.gh i{flex:1;height:1px;background:rgba(210,230,226,.16);margin-left:14px;margin-top:1px}
+.gh span{margin-left:14px}
+/* controls */
+.ch{display:flex;align-items:center;justify-content:space-between;width:286px;font-family:JostT}
+.ch .v{flex:1;text-align:center;opacity:1}
+.chev{width:28px;height:28px;position:relative;opacity:.5;transition:opacity .12s,transform .1s}
+.chev::after{content:"";position:absolute;left:7px;top:7px;width:14px;height:14px;background:var(--cream);-webkit-mask:url(/kit/icons/singles/chev_down@2x.png) center/contain no-repeat}
+.chev.cl::after{transform:rotate(90deg)}
+.chev.cr::after{transform:rotate(-90deg)}
+.r.f .chev{opacity:1}
+.r.d .chev{opacity:.25}
+.chev.p::after{background:var(--live)}
+.chev.p.cl{transform:translateX(-3px)}
+.chev.p.cr{transform:translateX(3px)}
+.sl{display:flex;align-items:center;font-family:JostT}
+.sl .rail{position:relative;width:220px;height:2px;background:rgba(203,198,195,.38);margin-right:16px}
+.sl .fill{position:absolute;left:0;top:0;bottom:0;background:var(--live)}
+.sl .kn{position:absolute;top:50%;width:11px;height:11px;background:var(--cream);border:1.5px solid var(--deep);transform:translate(-50%,-50%) rotate(45deg);transition:width .12s var(--ease),height .12s var(--ease)}
+.r.f .kn{width:15px;height:15px}
+.sl.drag .kn{width:17px;height:17px}
+.sl .val{width:54px;text-align:right}
+.sw{display:flex;align-items:center;font-family:JostT}
+.sw .box{width:20px;height:20px;border:1.5px solid rgba(203,198,195,.6);border-radius:2px;position:relative;margin-right:14px;transition:border-color .1s}
+.sw .box i{position:absolute;left:50%;top:50%;width:9px;height:9px;background:var(--live);transform:translate(-50%,-50%) rotate(45deg) scale(var(--on,0));transition:transform .12s var(--ease)}
+.sw.on .box{--on:1}
+.sw.p .box{border-color:var(--live);border-width:2px}
+.sw.p.on .box{--on:.6}
+.sw .word{width:38px}
+.sw.off .word{color:var(--dim)}
+.cap{display:inline-flex;align-items:center;justify-content:center;height:28px;min-width:48px;padding:0 12px;border:1.5px solid rgba(203,198,195,.85);background:rgba(11,22,21,.45);border-radius:3px;font-family:JostT;font-size:14.5px;margin-left:8px;position:relative}
+.cap.alt{height:22px;min-width:0;padding:0 8px;border-color:rgba(203,198,195,.35);background:transparent;color:var(--dim);font-size:12px}
+.cap.f{}
+.cap.p{border-color:var(--cream);border-width:2px}
+.cap.listen{border-color:var(--live);border-width:2px;background:rgba(11,22,21,.6);animation:blink 1s ease-in-out infinite;color:rgba(247,244,236,.78);min-width:110px;font-size:13.5px}
+@keyframes blink{50%{border-color:rgba(96,224,234,.45)}}
+.cap.clash{border-color:var(--cream);border-width:2px}
+.cap .bd{position:absolute;right:-7px;top:-9px;width:18px;height:18px;background:var(--cream)}
+.cap .bd2{position:absolute;right:-8px;top:-10px;width:18px;height:18px;background:url(/kit/badges/mark_half@2x.png) center/contain no-repeat}
+.strip{position:absolute;left:48px;right:48px;height:56px;border-top:1px solid rgba(203,198,195,.5);background:rgba(11,22,21,.35)}
+.strip .bdg{position:absolute;left:14px;top:15px;width:26px;height:26px;background:url(/kit/badges/mark_half@2x.png) center/contain no-repeat}
+.strip .msg{position:absolute;left:56px;top:0;bottom:0;display:flex;align-items:center}
+.brief{position:absolute}
+.brief .h{font-size:42px;font-weight:500;letter-spacing:.10em;text-transform:uppercase}
+.brief .hr{height:1px;background:var(--brass);margin:16px 0 20px}
+.brief .hook{font-size:21px;font-weight:500;line-height:28px;margin-bottom:14px}
+.brief p{font-size:18.5px;line-height:28px;margin-bottom:11px;opacity:.95}
+.brief .fact{display:flex;font-size:15.5px;line-height:26px}
+.brief .fact b{font-weight:400;width:104px;font-size:12.5px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;padding-top:1px}
+.brief .sub{font-size:12.5px;letter-spacing:.16em;color:var(--dim);text-transform:uppercase;margin:18px 0 8px}
+.brief li{list-style:none;font-size:15.5px;line-height:25px;padding-left:16px;position:relative}
+.brief li::before{content:"";position:absolute;left:2px;top:10px;width:5px;height:5px;background:var(--live);transform:rotate(45deg)}
+.brief .go{font-size:18.5px;font-weight:500;margin-top:14px}
+/* boards */
+.cell{position:absolute}
+.cap2{position:absolute;font-family:JostT;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--dim)}
+.cap2.k{color:var(--cream)}
+.note{position:absolute;font-family:JostT;font-size:13px;line-height:18px;color:var(--cream);opacity:.85}
+.pnl{position:absolute;overflow:hidden;border:1px solid rgba(203,198,195,.22)}

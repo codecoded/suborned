@@ -21,13 +21,13 @@ namespace Suborned.Sim
         /// longer; was to the rivals' park, watching at 0:56.0), then steps back to where she stood.</summary>
         static Order[] DriverOpening() => new[] {
             new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, new Pt(7625, -2880)), Mv(0, Scout, "d:Meet driver"), Mv(0, Fixer, "crew:fixer"),
-            Act(166, Tech, "loop", "pickup"), Act(576, Scout, "watch", Driver), MvTo(776, Scout, new Pt(8250, -3100)) };
+            Act(166, Tech, "loop", "pickup"), MvTo(776, Scout, new Pt(8250, -3100)) }; // engine 0.28.0: the driver's Watch (0:57.6) dropped: no Watch to give on him (brief 054 §2.1)
         const string Guard29 = "p-records-office-29", Guard74 = "p-records-office-74", Guard65 = "p-records-office-65", Clerk39 = "p-records-office-39";
         static bool ToldBy(Person q, Person by) => q.Memory.Exists(m => m.Act == "told" && m.By == by.Id);
 
         static void TakedownE()
         {
-            Add("N79", "—", "Telling a tie needs a phone (Aster 2026-10-16, brief 013 E1; GDD §01: calls are voice, no networks). Waymark's early driver route: guard 29 killed beside the car at 2:31; the driver sees it and, a Mercenary at Alert 0, keeps quiet. His workmate (clerk 39) is indoors and nobody of his is within speaking range, so he must reach a phone first: the same walk as a report (the official entrance's desk), and the same stop. The Enforcer kills him at 2:37, before the call: nobody is told.", r =>
+            Add("N79", "—", "Telling a tie needs a phone (Aster 2026-10-16, brief 013 E1; GDD §01: calls are voice, no networks). Waymark's early driver route: guard 29 killed beside the car at 2:31 (he sees it coming and struggles: brief 054 §3.3); the driver sees it and, a Mercenary at Alert 0, keeps quiet. His workmate (clerk 39) is indoors and nobody of his is within speaking range, so he must reach a phone first: the same walk as a report (the official entrance's desk), and the same stop. The Enforcer kills him at 2:40, before the call: nobody is told.", r =>
             {
                 var g = r.G;
                 Orders(r, DriverOpening().Concat(new[] { Act(1510, Enf, "takedown", Guard29, "kill") }).ToArray());
@@ -37,7 +37,7 @@ namespace Suborned.Sim
                 r.Is(tell != null && tell.Phase == "walk" && tell.LandAt == T(162), $"he goes to the official entrance's phone: react, the walk, the call at 2:42 ({(tell == null ? "none" : Report.Clock(tell.LandAt))})");
                 var c39 = g.PersonById(Clerk39)!;
                 r.Is(!ToldBy(c39, g.Driver) && !g.Log.Exists(l => l.Code == "witness.told"), "nobody is told at the sight");
-                Orders(r, MvTo(1540, Enf, new Pt(7690, -3370)), Act(1570, Enf, "takedown", Driver, "kill"));
+                Orders(r, MvTo(1570, Enf, new Pt(7690, -3370)), Act(1600, Enf, "takedown", Driver, "kill")); // engine 0.28.0 (brief 054 §3.3): guard 29, facing his post's way, sees him coming and struggles (+3 s): the driver's kill 3 s later
                 r.Is(tell != null && tell.Phase == "stopped", "taken down before the call: the tell is stopped, as a report is");
                 r.To(T(180));
                 r.Is(!ToldBy(c39, g.Driver) && !g.Log.Exists(l => l.Code == "witness.told"), "clerk 39 is never told");
@@ -69,11 +69,11 @@ namespace Suborned.Sim
                 r.Is(!g.Reps.Exists(x => x.P == g.Driver), "no walk to a phone");
             });
 
-            Add("N82", "—", "One hop (Pulse §3.4; rulebook memory: a told entry is never retold): the late driver route on to 6:30. Vale sees the driver knocked out at 6:04 and tells guard 65 face to face; 65, Loyal, walks to report it and it lands at 6:27. At his phone he calls nobody: what he was told is not his to tell. (Before brief 013 E1 a told reporter told again from the phone.)", r =>
+            Add("N82", "—", "One hop (Pulse §3.4; rulebook memory: a told entry is never retold): the late driver route on to 6:30. Vale sees the driver knocked out at 6:07 (engine 0.28.0: guard 74 struggles first, +3 s) and tells guard 65, by phone; 65, Loyal, walks to report it and it lands at 6:19. At his phone he calls nobody: what he was told is not his to tell. (Before brief 013 E1 a told reporter told again from the phone.)", r =>
             {
                 var g = r.G;
                 Orders(r, DriverOpening().Concat(new[] { Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"), Act(3550, Enf, "takedown", Guard74, "knockout"),
-                    MvTo(3610, Enf, new Pt(7690, -3370)), Act(3640, Enf, "takedown", Driver, "knockout") }).ToArray());
+                    MvTo(3640, Enf, new Pt(7690, -3370)), Act(3670, Enf, "takedown", Driver, "knockout") }).ToArray()); // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the driver 3 s later
                 var a = ActOn(r, Driver);
                 var g65 = g.PersonById(Guard65)!;
                 r.Is(a.Told.Contains(Guard65) && ToldBy(g65, g.ValeP), "Vale tells guard 65 of the driver's takedown");
@@ -89,11 +89,11 @@ namespace Suborned.Sim
             // past the close and sends 42 out alone at 6:30, so the pair no longer walks. The intent is the same with the 5:30 group bound for
             // Rocket West: clerk 56 (Fearful) walks beside clerk 58, a stranger to her; her one tie, workmate 54, is inside the Office until after
             // the close, so nobody of hers is within speaking range and she can tell only from a phone.
-            Add("N83", "—", "A fleeing teller (brief 013 E1; Pulse §3.4: 'tells if they reach a phone'): clerks 56 (Fearful) and 58 walk the forecourt with the 5:30 group bound for Rocket West; the Enforcer knocks out 58 beside her. She flees (startled, then a run to a refuge). Nobody of hers is within speaking range: her one tie, workmate 54, is inside the Office until after the close, so she tells only if the refuge she reaches is a staffed door with its desk phone: no walk to a phone beyond her flight.", r =>
+            Add("N83", "—", "A fleeing teller (brief 013 E1; Pulse §3.4: 'tells if they reach a phone'): clerks 56 (Fearful) and 58 walk the forecourt with the 5:30 group bound for Rocket West; the Enforcer meets 58 head on and knocks her out beside 56 (58 screams; 56 turns and sees it: brief 054 §3.2). She flees (startled, then a run to a refuge). Nobody of hers is within speaking range: her one tie, workmate 54, is inside the Office until after the close, so she tells only if the refuge she reaches is a staffed door with its desk phone: no walk to a phone beyond her flight.", r =>
             {
                 var g = r.G;
                 var v = WalkerById(r, "p-records-office-58"); var w = WalkerById(r, "p-records-office-56");
-                r.To(T(340)); r.To(MeetFromBehind(r, v, T(380)));
+                r.To(T(340)); r.To(MeetFromFront(r, v, T(380))); // engine 0.28.0 (brief 054 §3.3): from the front, so 58 sees him, struggles and screams, and 56 beside her turns and sees it (from behind, 56 faced away: unseen)
                 r.Is(r.Until(() => g.CrowdPos(v) is Pt p && G.Within(p, r.Op(Enf).Pos, g.R.TakedownReachCm), T(40)), $"clerk 58 walks into reach ({Report.Clock(g.Tick)})");
                 r.Takedown("p-records-office-58", "knockout");
                 var a = ActOn(r, "p-records-office-58");
@@ -118,16 +118,16 @@ namespace Suborned.Sim
                 }
             });
 
-            Add("N84", "—", "A cancelled Enter comes out by a door no unit holds (Aster 2026-10-16, brief 013 E3; rulebook response: no exit through a held door). Waymark's orders (2026-10-19, the west-face door): the guard knocked out unseen at his post at 4:00.1 and left; guard 73 finds him and radios it (4:57.1, landing 5:02.1); the Enforcer goes in at the landing, before the scene unit arrives. The unit holds the public door from 5:12.1. The player cancels the Enter: the Enforcer comes out at the service lane, not through the held public door.", r =>
+            Add("N84", "—", "A cancelled Enter comes out by a door no unit holds (Aster 2026-10-16, brief 013 E3; rulebook response: no exit through a held door). Waymark's orders (2026-10-19, the west-face door): the guard knocked out unseen at his post at 4:25.0 (brief 055; was 4:00.1, before guard 74 walked the forecourt) and left; guard 73 finds him and radios it (5:01.1, landing 5:06.1: the door planting cuts her first look, brief 055 §7); the Enforcer goes in at the landing, before the scene unit arrives. The unit holds the public door from 5:12.1. The player cancels the Enter: the Enforcer comes out at the service lane, not through the held public door.", r =>
             {
                 var g = r.G;
                 Orders(r, Mv(0, Tech, "cabinet", run: true), MvTo(0, Enf, BesideDoor), Act(166, Tech, "loop", "entrance"), Act(1900, Tech, "reroute", "patrol"),
-                    MvTo(2300, Enf, new Pt(6520, -4110)), Act(2401, Enf, "takedown", "guard", "knockout"), Mv(2461, Enf, "d:Office entrance"));
+                    MvTo(2600, Enf, new Pt(6520, -4110)), Act(2650, Enf, "takedown", "guard", "knockout"), Mv(2710, Enf, "d:Office entrance")); // engine 0.28.0: he steps beside the guard at 4:20, not 3:50 (standing 35 s in the guard's near sense, the guard grew wary and drew); brief 055: the knockout at 4:25.0, was 4:00.1: guard 74 now walks the forecourt and passes the door at 4:23, so after him; 73 still finds him at 4:57
                 var a = ActOn(r, GuardId);
                 r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio"), T(200)), $"a passer-by finds him and radios it ({Report.Clock(g.Tick)})");
                 var rep = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio");
                 if (rep == null) return; // the check above has failed: a clear failure, not a LINQ throw (the suite's whole-scenario tests read every run)
-                r.Eq((rep.P!.Id, Report.Clock(rep.LandAt)), ("p-records-office-73", "5:02.1"), "guard 73 radios it, landing at 5:02.1 (Waymark 2026-10-19)");
+                r.Eq((rep.P!.Id, Report.Clock(rep.LandAt)), ("p-records-office-73", "5:06.1"), "guard 73 radios it, landing at 5:06.1 (engine 0.28.0, brief 055 §7: the drawn door planting cuts her first look at the landing; was 5:02.1, Waymark 2026-10-19)");
                 r.To(rep.LandAt);
                 r.Is(!g.DoorHeld(g.EnterDoor), "the unit is not there yet");
                 Orders(r, Act(3021, Enf, "enter"));
@@ -163,7 +163,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => !r.Op(Enf).Inside, T(400)), $"he comes out once a door is free ({Report.Clock(g.Tick)})");
                 r.Is(G.Within(r.Op(Enf).Pos, r.Stand(g.S.ValeService), 100) && g.Log.Exists(l => l.Code == "cancel.enter-out"), "by the free door (the service door)");
                 r.Is(Math.Abs(g.Tick - until) <= T(2), $"when the HUD said ({Report.Clock(until)})");
-            }, new Start { Holds = { ("office-entrance", 303, 360), ("office-service-door", 303, 340) } });
+            }, new Start { Crowd = false, Holds = { ("office-entrance", 303, 360), ("office-service-door", 303, 340) } }); // brief 055: no crowd, so no passer-by finds the guard before the start's scenes (guard 74 now walks the forecourt and would, at 4:23); the doors are the point here
 
             Add("N86", "—", "The HUD's read-only accessors (Glyph's ask 1; Aster 2026-10-16): HeldUntil (a held door's stand-down, -1 when not held), StashRoom (bodies and room), NextRound (a container's next round, unknown to the cell), CarryPathSight (who sees which stretch of a carry, SeenQuote's test a second at a time). Calling them changes nothing: the state hash is the same before and after.", r =>
             {
@@ -201,7 +201,7 @@ namespace Suborned.Sim
                     MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
                     Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1815, Enf, "stash", ServiceDoorId), Act(1900, Scout, "mislead", "rivals"), Act(1900, Tech, "reroute", "patrol"),
                     new Order { Tick = 1915, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, Act(1973, Enf, "carry", Guard29), MvTo(2003, Enf, ServiceDoor), Act(2119, Enf, "stash", ServiceDoorId),
-                    MvTo(2219, Enf, new Pt(7625, -2880)), Mv(2340, Scout, "crew:scout"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3460, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"),
+                    MvTo(2219, Enf, new Pt(7625, -2880)), Mv(2340, Scout, "crew:scout"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
                     MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
                 const int opens = 4161; // 6:56.1 (Waymark 2026-10-19; was 7:58.5, tick 4785, before the east-face door)
                 r.To(opens);
@@ -211,9 +211,12 @@ namespace Suborned.Sim
                 if (g.Over) r.Is(g.FailCode == "enforcer-down" && g.KnownFaces.Contains(Enf), "0.19.0: his reported face gets him shot before the search");
                 else
                 {
-                    var open = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Tick == opens && l.Text.Contains("driver"));
-                    r.Is(open >= 0, "at 6:56.1 an officer opens the service door and finds the driver");
-                    r.Is(g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == opens), "and is sent on to the scene it found");
+                    // engine 0.28.0 (brief 054 §3.3: guard 74 struggles, the carry is seen at 6:48 and the response comes for Vale's holder): the run is
+                    // still on at 6:56.1 but no search reaches the service door before he is down; where one opens it, the reassignment must follow
+                    r.To(T(430));
+                    int open = g.Log.FindIndex(l => l.Code == "stash.opened" && l.Text.Contains("driver"));
+                    if (open >= 0) r.Is(g.Log.Exists(l => l.Code == "alarm.reassigns" && l.Tick == g.Log[open].Tick), $"an officer opens the service door at {Report.Clock(g.Log[open].Tick)}, finds the driver and is sent on to the scene it found");
+                    else r.Is(g.Over && g.FailCode == "enforcer-down", "no search opens the service door before the Enforcer is down (the path to the reassignment needs new orders)");
                 }
                 r.Is(g.FailCode != "engine-error", $"no engine error{(g.FailCode == "engine-error" ? ": " + g.FailText : "")}");
                 r.To(T(500));

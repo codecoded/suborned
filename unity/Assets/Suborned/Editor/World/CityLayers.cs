@@ -44,40 +44,42 @@ namespace Suborned.World
         /// leaves them out, so the ground layer's count stays the export's). A piece without a kit ref = reject.</summary>
         /// <summary>Brief 028 road finish (Vela; Aster 2026-10-22): the export's ground pieces (the road finish's ribbon, shoulder, pinstripe,
         /// lozenge and seam, the capstone's flags, kerbs, pits, drains, tiles) baked into the layer's tile batches by material (KitPlacer.Bake),
-        /// not ~17k prefab instances: flat pieces that never fade draw as a few batches a tile. A flat piece (catalogue height 0) whose mesh sits
-        /// above its footprint pivot (Pave_Slab: modelled at z 0.15, so placed at 0.181 its top stood at 0.331) is laid on its footprint, counted
-        /// and named in the log for Vela.</summary>
-        public static readonly Dictionary<string, float> Lifted = new(System.StringComparer.Ordinal);
-        public int GroundPieces(Transform layer, List<StreetItemDto> items)
+        /// not ~17k prefab instances: flat pieces that never fade draw as a few batches a tile. Each at the export's z as is: the flat pieces are
+        /// modelled at z 0 (Vela's re-export, 2026-10-23, of Pave_Slab, Pave_Flags_0..3, InlayArc_R*, PaveInlay_*), so none is laid down here.</summary>
+        /// <param name="batchOf">brief 055 road test: the batch layer a piece bakes into (null = the layer's own): the pieces one road finish
+        /// lays and the other does not bake apart (RoadFinish turns them).</param>
+        public int GroundPieces(Transform layer, List<StreetItemDto> items, System.Func<StreetItemDto, string> batchOf = null)
         {
-            Lifted.Clear(); var none = new Dictionary<string, string>();
+            var none = new Dictionary<string, string>(); RoadPoolJoints.Clear();
             foreach (var s in items)
             {
                 if (s.Kit == null) throw new System.IO.InvalidDataException($"World: ground piece {s.Id} ({s.Kind}) has no kit ref");
-                float lift = FootLift(s.Kit.Id);
-                placer.Bake(Nodes.Element(layer, s.Id), layer.name, s.Id, s.Kit, s.At, s.Z - lift, none, s.Yaw);
+                placer.Bake(Nodes.Element(layer, s.Id), batchOf?.Invoke(s) ?? layer.name, s.Id, s.Kit, s.At, s.Z, none, s.Yaw);
             }
-            if (Lifted.Count > 0) Debug.LogWarning($"World: ground pieces laid on their footprint (mesh above the pivot; the catalogue says footprint-centre-ground): {string.Join(", ", Lifted.Select(kv => $"{kv.Key} {kv.Value:0.###} m"))} (Vela: re-export at z 0)");
+            Debug.Log($"World: strip light pool joints closed {RoadPoolJoints.Fill()} (Glyph's 0.2.104 review #4: no wedge or doubled overlap between the chords of a curve)");
             return items.Count;
         }
-        readonly Dictionary<string, float> footLift = new(System.StringComparer.Ordinal);
-        /// <summary>How far a flat piece's mesh stands above its pivot (its LOD0's lowest point, when above 1 cm and the piece is under 5 cm thick).</summary>
-        float FootLift(string id)
-        {
-            if (footLift.TryGetValue(id, out var v)) return v;
-            var go = placer.Prefab(id); Bounds? b = null;
-            foreach (var mr in KitLods.Lod0(go)) { var mb = mr.GetComponent<MeshFilter>().sharedMesh.bounds; var w = mr.transform.localToWorldMatrix; var lo = w.MultiplyPoint3x4(mb.min); var hi = w.MultiplyPoint3x4(mb.max); var bb = new Bounds(lo, Vector3.zero); bb.Encapsulate(hi); b = b is { } h ? Union(h, bb) : bb; }
-            v = b is { } x && x.min.y > 0.01f && x.size.y < 0.05f ? x.min.y : 0f;
-            if (v > 0f) Lifted[id] = v;
-            return footLift[id] = v;
-        }
-        static Bounds Union(Bounds a, Bounds b) { a.Encapsulate(b); return a; }
+
+        /// <summary>Brief 048 (Splice, the tp-long renderer budget): a crossing's flush parts (dots, bars, edge lines, studs, inlay arcs, the
+        /// lit strip's pool) are baked into the non-fade `crossing-parts` batches by material and tile, as the ground pieces are, not one prefab
+        /// instance each (~600 renderers in the worst third-person view); the signal orbs stay instances (they turn to the camera, show a state
+        /// and cast). Their light is drawn as emission only (CrossingKit.LightMaterial); no shadows (Combine.Flush).</summary>
+        public const string CrossingParts = "crossing-parts";
+        public static bool BakedCrossingPart(StreetItemDto s) => s.Crossing != null && s.Kind is "crossing-dots" or "crossing-bar" or "crossing-edge" or "crossing-stud" or "crossing-arc" or "crossing-field";
+        public int CrossingsBaked { get; private set; }
 
         public void Street(Transform layer, List<StreetItemDto> items)
         {
+            var none = new Dictionary<string, string>(); Material kitLight = null, glowLight = null;
             foreach (var s in items)
             {
                 var el = Nodes.Element(layer, s.Id);
+                if (s.Kit != null && BakedCrossingPart(s))
+                {
+                    if (glowLight == null) { kitLight = KitImport.Library(CrossingKit.Light); glowLight = CrossingKit.LightMaterial(); }
+                    placer.Bake(el, CrossingParts, s.Id, s.Kit, s.At, s.Z, none, s.Yaw, m => kitLight != null && m == kitLight ? glowLight : m); CrossingsBaked++;
+                    continue;
+                }
                 if (s.Kit != null) { placer.Place(el, layer.name, s.Kit, s.At, s.Z, s.Yaw); continue; }
                 var u = new Vector2(Mathf.Cos(s.Yaw), Mathf.Sin(s.Yaw)); var v = new Vector2(-u.y, u.x);
                 foreach (var p in kit.Street(s.Kind, s.Variant))

@@ -25,6 +25,10 @@ namespace Suborned.World
         public int Vert(Vector3 p) { v.Add(p); return v.Count - 1; }
 
         public Vector3 At(int i) => v[i];
+        /// <summary>Low-level: moves vertex i (RoadPoolJoints mitres a pool band's far corner before it is baked).</summary>
+        public void SetAt(int i, Vector3 p) => v[i] = p;
+        /// <summary>The UV of vertex i (zero where none).</summary>
+        public Vector2 UvAt(int i) => uv != null && i < uv.Count ? uv[i] : default;
 
         /// <summary>A vertex with its own UV (brief 026: the kerb stone and gutter strip, UV in metres along and across the kerb).</summary>
         public int Vert(Vector3 p, Vector2 uv0) { PadUv(); v.Add(p); uv.Add(uv0); return v.Count - 1; }

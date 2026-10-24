@@ -67,8 +67,8 @@ describe('SF-21 on the live world', () => {
     expect(all.check.detail).toContain('220 fail: mega/parade-galleries/range-0-0/canopy (megastructure prim box 121.4 x 2.5 x 0.3 m, face 2.5 x 121 m)'); // the first six are named, the rest counted
   });
 
-  test('brief 009: a crossing\'s arcs (322), eyes (207) and lit strip modules (747, 3.9 m across) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
-    for (const [key, n] of [[GLOW, 747], [INLAY, 322], [ORB, 207]] as const) {
+  test('brief 009: a crossing\'s arcs (370), eyes (228) and lit strip modules (799, 3.9 m across) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
+    for (const [key, n] of [[GLOW, 799], [INLAY, 370], [ORB, 228]] as const) {
       const { w, check } = sf21(w => { for (const x of owned(w, [key])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } }); // unbound: a part with its kit piece carries the piece's own materials
       expect(broadParts(w).length, key).toBe(n);
       expect(check.ok, key).toBe(false);

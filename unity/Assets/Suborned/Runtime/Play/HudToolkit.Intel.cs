@@ -151,9 +151,9 @@ namespace Suborned.Play
             bool Ok(string verb) { Answer a = default; try { a = g.ScoutQuery(verb, role); } catch { return false; } return a.ok || a.code is "too-far" or "agent-busy"; }
             // brief 031: a Watch names its agent (the selected one if it can, else who'd learn soonest); Listen stays the Scout's
             if (!p.KRoutine && host.WatchBy(role) is OpId wb) return (wb, "watch");
-            if ((needOpen || tempOpen || tiesOpen) && Ok("listen")) return (OpId.Scout, "listen");
+            if ((needOpen || tempOpen || tiesOpen) && host.Able((int)OpId.Scout) && Ok("listen")) return (OpId.Scout, "listen"); // item 29: never a downed agent
             if ((needOpen || tempOpen || tiesOpen) && host.WatchBy(role) is OpId wb2) return (wb2, "watch");
-            if (!needOpen && !tempOpen && role != "councillor") return (OpId.Fixer, "turn");
+            if (!needOpen && !tempOpen && role != "councillor" && host.Able((int)OpId.Fixer)) return (OpId.Fixer, "turn");
             return null;
         }
 

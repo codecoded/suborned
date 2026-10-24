@@ -1,0 +1,57 @@
+// KR-2, KR-3 on the live world (brief 028): they pass on the world the generator makes and fail on one thing put wrong, on a copy of it.
+import { describe, expect, setDefaultTimeout, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
+import type { StreetItem, World } from '../../../contracts/world/world.schema';
+import { civic } from '../../plan/civic';
+import { derive, type Plan } from '../../plan/plan';
+import { ctxOf, generated } from '../../plan/world-ctx';
+import { ctxOf as genCtx } from '../gen/common';
+import { returnsOf } from '../gen/kerbreturn';
+import { kerbReturnRules } from './kerbreturn';
+
+setDefaultTimeout(120000);
+const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
+const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block)), base = generated(plan, d, civ), gc = genCtx(plan, d, civ, 0.18);
+const run = (mutate: (w: World) => void = () => {}) => {
+  const w = structuredClone(base.w) as World; mutate(w);
+  const out = Object.fromEntries(kerbReturnRules(ctxOf(plan, d, civ, { w, gen: base.gen })).map(c => [c.id, c.ok ? '' : (c.detail ?? 'fail')]));
+  return out as { 'KR-2': string; 'KR-3': string };
+};
+const convex = () => returnsOf(gc).find(r => r.convex && !r.bay && !r.mouth && !r.civic && r.want === 6)!;
+const piece = (w: World, kind: string): StreetItem => w.ground.pieces!.find(s => s.kind === kind)!;
+
+describe('KR-2 and KR-3', () => {
+  test('the live world passes: fills, cut slabs, stones round every arc, nothing in the carriageway a return takes, no kerb across a lay-by', () => {
+    const r = run(); expect(r['KR-2']).toBe(''); expect(r['KR-3']).toBe('');
+    expect(base.w.ground.flats.filter(f => f.id.startsWith('ground/return/')).length).toBe(returnsOf(gc).filter(x => x.convex && !x.nose).length);
+    expect(base.w.ground.pieces!.filter(s => s.kind === 'kerb-return').length).toBeGreaterThan(800);
+  });
+  test('KR-2 fails on a tree put in the cut, a flag laid over it and a crossing strip across it', () => {
+    const c = convex().cut, mid: [number, number] = [(c[0]![0] * 2 + c[8]![0]) / 3, (c[0]![1] * 2 + c[8]![1]) / 3];
+    expect(run(w => { const t = w.street.find(s => s.kind === 'tree')!; t.at = mid; })['KR-2']).toMatch(/\(tree\) stands in or within 0\.45 m of the kerb return/);
+    expect(run(w => { const f = piece(w, 'pave-flags'); f.at = mid; })['KR-2']).toMatch(/\(pave-flags\) stands in or within/);
+    expect(run(w => { const x = w.crossings![0]!; x.strip = [[mid[0] - 2, mid[1] - 2], [mid[0] + 2, mid[1] - 2], [mid[0] + 2, mid[1] + 2], [mid[0] - 2, mid[1] + 2]]; })['KR-2']).toMatch(/strip lies in the carriageway of/);
+  });
+  test('KR-2 fails on a return with no fill, a fill at the wrong level and an arc with no kerb stones', () => {
+    const r = convex();
+    expect(run(w => { w.ground.flats = w.ground.flats.filter(f => f.id !== `ground/return/${r.id}`); })['KR-2']).toMatch(/no carriageway fill/);
+    expect(run(w => { w.ground.flats.find(f => f.id === `ground/return/${r.id}`)!.level = 0.1; })['KR-2']).toMatch(/its fill lies at 0\.1/);
+    expect(run(w => { w.ground.pieces = w.ground.pieces!.filter(s => s.edge !== `kerbreturn/${r.id}`); })['KR-2']).toMatch(/m of kerb stone on an arc of/);
+  });
+  test('KR-2 fails on a plot slab that still covers the old corner', () => {
+    const r = convex();
+    expect(run(w => { const p = w.ground.plots.find(q => q.id === `plot/${r.plot}`)!; p.ring = d.plots.find(q => q.id === r.plot)!.polyV; })['KR-2']).toMatch(/the plot slab still covers the old corner/);
+  });
+  test('KR-4 fails on a kerb stone lying out on the carriageway, the junction box of the civic block', () => {
+  const r = run(w => { const k = piece(w, 'kerb'); k.at = [-186, -198]; });
+  expect(r['KR-4' as 'KR-2']).toMatch(/\(kerb\) lies at -186\.0,-198\.0, on no pavement edge/);
+  expect(run()['KR-4' as 'KR-2']).toBe('');
+});
+test('KR-3 fails on a kerb stone across the mouth of the square bay, whichever kind it is', () => {
+    const bay = (w: World) => w.ground.flats.find((f: { id: string }) => f.id === 'civic/bay/squareBay')!;
+    const at = (w: World): [number, number] => { const r = bay(w).ring as [number, number][]; return [(r[0]![0] + r[1]![0]) / 2, (r[0]![1] + r[1]![1]) / 2]; };
+    expect(run(w => { const k = piece(w, 'kerb'); k.at = at(w); k.yaw = 1.5708; })['KR-3']).toMatch(/lies across the mouth of civic\/bay\/squareBay: a lay-by is open to the road/);
+    expect(run(w => { const k = piece(w, 'kerb-return'); k.at = at(w); k.yaw = 1.5708; k.edge = 'kerbreturn/records-square/v0'; })['KR-3']).toMatch(/\(kerb-return\) lies across the mouth/);
+  });
+});

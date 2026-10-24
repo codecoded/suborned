@@ -27,7 +27,7 @@ BT_HEAD = [(0.14 * math.cos(t), 1.56 + (0.13 if t < 0 else 0.175) * math.sin(t))
            for t in (math.pi * (k / 20 - 0.5) for k in range(21))]  # an egg: fuller below the brow
 
 
-@asset("RobotButler", "Robots", bevel=0, lod=4000)
+@asset("RobotButler", "Robots", bevel=0, lod=4000, floor="seat")  # brief 055 K-1: the saucer's underside was modelled 6 cm up; the pivot is the foot
 def robot_butler(s):
     """Tall butler on a hover saucer: seafoam skirt, an ivory shirt front under a black enamel tailcoat with tails,
     bow tie, gold buttons and watch chain, a coral pocket square; an egg head with a display of calm half-lidded

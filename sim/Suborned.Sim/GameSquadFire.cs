@@ -52,7 +52,7 @@ namespace Suborned.Sim
             if (IsCivilian(t) && !force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when the order is forced");
             var at = PosOf(t);
             if (!at.HasValue || tg.Down) return No("no-target", $"no {target} to fire at");
-            bool far = !G.Within(op.Pos, at.Value, g.W.MaxCm), blind = !far && !Sees(op.Pos, at.Value);
+            bool far = !G.Within(op.Pos, at.Value, g.W.MaxCm), blind = !far && !SeesId(op.Pos, t, at.Value);
             if (focus) return ""; // tuning.md §14: a focus is a lock, taken out of reach too (it never walks in; it lapses)
             if ((far || blind) && !CloseOn) return far ? No("out-of-range", $"out of range ({g.W.MaxCm / 100} m)", m: g.W.MaxCm / 100) : No("no-clear-line", "no clear line");
             if ((far || blind) && !op.Driven)

@@ -197,7 +197,7 @@ namespace Suborned.Sim
             s.Target = t;
             if (t.Length == 0) return s;
             var at = PosOf(t); var tg = GunOf(t);
-            bool line = at.HasValue && tg != null && !tg.Down && G.Within(op.Pos, at.Value, g.W.MaxCm) && Sees(op.Pos, at.Value);
+            bool line = at.HasValue && tg != null && !tg.Down && G.Within(op.Pos, at.Value, g.W.MaxCm) && SeesId(op.Pos, t, at.Value);
             s.Hollow = !line && (s.Mode == "follow" || s.Mode == "follow-held" || s.Mode == "lock");
             s.Firing = fires && line && Ready(g) && op.Busy == null && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !CarriesVale(op);
             return s;

@@ -33,8 +33,13 @@ namespace Suborned.Play
         public float[] lampIntensity = Array.Empty<float>();
         public int liveCap = 32; public float liveRadius = 60f;
 
+        /// <summary>The phase of the day the look is in (Glint, brief 048). Day and Night are full looks (the two States above). Evening is the day look plus the
+        /// lights that come on at dusk (the road's strip light, RoadLight): its own sun and grade are not built, so SetEvening() keeps the day State. Look only.</summary>
+        public enum Phase { Day, Evening, Night }
+
         public static LightPhase Instance { get; private set; }
         public bool Night { get; private set; }
+        public Phase Current { get; private set; } = Phase.Day;
         /// <summary>Where the lamp cap measures from (the play camera's focus on the ground); null: the main camera's ground point.</summary>
         public Func<Vector3?> Focus;
         public int LiveLamps { get; private set; }
@@ -43,7 +48,12 @@ namespace Suborned.Play
         void OnDisable() { if (Instance == this) Instance = null; }
 
         /// <summary>Day or night, now. Same mission, same replay: only the look changes.</summary>
-        public void Set(bool toNight)
+        public void Set(bool toNight) { Apply(toNight); Current = toNight ? Phase.Night : Phase.Day; } // RoadLight reads Current
+
+        /// <summary>Evening: the day look with the dusk lights on (the road's strip light at its evening level). The street lamps stay off: they are night lamps.</summary>
+        public void SetEvening() { Apply(false); Current = Phase.Evening; }
+
+        void Apply(bool toNight)
         {
             Night = toNight; var s = toNight ? night : day;
             if (sun) { sun.color = s.sunColour; sun.intensity = s.sunIntensity; sun.transform.rotation = s.sunRotation; }

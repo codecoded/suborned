@@ -177,7 +177,7 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
   test('a keeper tip gives the need, not the temperament: Help shows its base, "?" lines and outcome', () => {
     const q = card('help', person('mercenary'), 'neutral', new Set<R.Know>(['need']));
     expect(q.outcome).toBe('?');
-    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['trust-over-time', '?']]);
+    expect(q.lines.map((l) => [l.line, l.holds])).toEqual([['base', true], ['refused-before', false], ['one-more-help', '?'], ['trust-over-time', '?'], ['ready', false], ['ready-at-one', false]]); // brief 054 §4.2: ready reads a mood, which a card with none never has
     expect(q.worst.usd).toBe(40000);
   });
 
@@ -213,6 +213,17 @@ describe('Sky Q3 and K8: the card shows the price always, "?" for what reads the
     expect(R.quote(rb, people, turn('help'), { subject: person('idealist'), band: 'neutral', knows: new Set<R.Know>(['routine', 'need']), refusedKnown: new Set(['pay']) }).outcome).toBe('?'); // her temperament is still unknown
     expect(rb.preview.knownBy).toEqual(['scout.listen']); // Sky 2026-10-15: Listen reveals the temperament, Watch only the routine
     expect(R.event(rb, 'cell.watch').outcomes[0]!.changes).toEqual([{ do: 'learn', what: ['routine'], of: 'subject' }]);
+    // brief 054 §9.2 (engine 0.29.0): a Watch never teaches a secret; only Listen does. The retired lover-within and summon.together parse only in pinned runs
+    expect(R.event(rb, 'cell.watch').also ?? []).toEqual([]);
+    expect(JSON.stringify(rb.events)).not.toContain('lover-within');
+    expect(rb.summon.together).toBeUndefined();
+    expect((rb.values as Record<string, unknown>)['together-m']).toBeUndefined();
+  });
+  test('a body at your feet: a civilian finds an open body within people-near-body-cm whatever the facing (brief 054 §9.1, engine 0.29.0)', () => {
+    const no = rb.witness!.notice!;
+    expect(no.near).toEqual({ acts: ['body'], cm: 'v:people-near-body-cm' });
+    for (const a of no.near!.acts) expect(no.always).toContain(a);
+    expect(num(rb, people, 'v:people-near-body-cm')).toBe(150);
   });
 });
 

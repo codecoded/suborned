@@ -85,10 +85,11 @@ const objects: Item[] = nav.solids
 
 // ---- adjustments ----
 type Adj = {
-  op: 'addBay' | 'addDrive' | 'addStructure' | 'edit' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing'; reason: string;
+  op: 'addBay' | 'addDrive' | 'addStructure' | 'edit' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing' | 'floor'; reason: string;
   id?: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number;
   building?: string; tower?: string; to?: P | string; on?: string; face?: string; // towerFootprint, moveEntrance, addEntrance; addDrive: `to` = the bay it reaches
   road?: string; kerb?: [P, P]; // addDrive: the plan road it leaves and the segment of that road's kerb it crosses (block frame)
+  kind?: string; level?: string; top?: number; rise?: number; risers?: number; tread?: number; // floor: what the floor is, its level and height, and a flight's steps
 };
 const adjFile = readFileSync(ADJUST, 'utf8');
 const adj: { schema: string; owner: string; adjustments: Adj[]; dressing?: Record<string, unknown> } = JSON.parse(adjFile);
@@ -97,6 +98,12 @@ const bays: { id: string; polygon: P[] }[] = [];
 // A drive (brief 023; Sky 2026-10-19, service door east face): the vehicle crossing from a road's carriageway across the pavement of the plot to a bay that touches no road. Block frame, like the bays.
 // `kerb` is the segment of the road's kerb the drive crosses (the world drops that kerb flush); `to` is the bay it reaches. tools/sim/drive.ts reads {id, polygon}; the plan checker's DR-1..DR-3 hold the rest.
 const drives: { id: string; polygon: P[]; road: string; kerb: [P, P]; to: string; reason: string }[] = [];
+// A floor (brief 055, Datum): a surface above the pavement that a person stands or walks on (a door landing, a flight of steps, a terrace), stated here, never
+// found in the kit. It names the structure that is drawn there; its polygon is that structure's as the adjustments leave it. `top` is the floor's height above the
+// pavement (block z); a flight states its risers, rise and tread (going) and runs from `foot` (pavement) to `head` (its landing), read from the structure when it
+// carries them. The plan checker's C-5 holds the numbers to each other, to the structure and to the entrances that stand on them.
+const FLOOR_KINDS = ['landing', 'steps', 'terrace'];
+const floorOps: Adj[] = [];
 const all = new Map<string, Item>([...structures, ...objects].map(i => [i.id, i]));
 const building = (a: Adj) => { const b = buildings.find(x => x.id === a.building); if (!b) throw new Error(`adjustment ${a.op}: no building ${a.building}`); return b; };
 let dressing: Record<string, unknown> | undefined;
@@ -132,6 +139,10 @@ for (const a of adj.adjustments) {
     if ((b.entrances as { id: string }[]).some(x => x.id === e.id)) throw new Error(`adjustment addEntrance: ${e.id} exists`);
     if (e.kind !== undefined && !ENTRANCE_KINDS.includes(e.kind)) throw new Error(`adjustment addEntrance ${e.id}: kind ${e.kind} is none of ${ENTRANCE_KINDS.join(', ')}`);
     (b.entrances as unknown[]).push(a.item);
+  } else if (a.op === 'floor') {
+    if (!a.id || !a.kind || !FLOOR_KINDS.includes(a.kind) || !a.level || typeof a.top !== 'number') throw new Error(`adjustment floor ${a.id ?? ''}: needs id (a structure), kind (${FLOOR_KINDS.join(', ')}), level and top`);
+    if (floorOps.some(x => x.id === a.id)) throw new Error(`adjustment floor: ${a.id} is a floor already`);
+    floorOps.push(a);
   } else if (a.op === 'dressing') {
     if (!adj.dressing) throw new Error('adjustment dressing: the adjust file has no `dressing` key');
     dressing = adj.dressing; // passed through unchanged; nothing in the world reads it yet
@@ -139,6 +150,14 @@ for (const a of adj.adjustments) {
 }
 
 for (const x of drives) if (!bays.some(b => b.id === x.to)) throw new Error(`adjustment addDrive ${x.id}: no bay ${x.to} (add it with addBay)`);
+const floors = floorOps.map(a => {
+  const s = structures.find(x => x.id === a.id); if (!s) throw new Error(`adjustment floor ${a.id}: no such structure (add it with addStructure first; stale adjustment?)`);
+  const flight = a.kind === 'steps' ? {
+    risers: a.risers ?? s.risers, rise: a.rise ?? s.rise, tread: a.tread ?? s.going, foot: s.foot, head: s.top, landing: s.landing,
+  } as Record<string, unknown> : {};
+  if (a.kind === 'steps' && Object.values(flight).some(v => v === undefined)) throw new Error(`adjustment floor ${a.id}: a flight needs risers, rise, tread (going), foot, top and landing, on the op or its structure`);
+  return { id: a.id!, name: s.name ?? a.id!, kind: a.kind!, level: a.level!, top: a.top!, ...flight, polygon: s.polygon };
+});
 const out = {
   schema: 'suborned.block/4', id: 'civic',
   frame: {
@@ -150,6 +169,7 @@ const out = {
   sources,
   adjustments: { file: 'contracts/world/civic-block.adjust.json', sha256: createHash('sha256').update(adjFile).digest('hex'), owner: adj.owner, applied: adj.adjustments },
   buildings, structures, objects, bays, drives,
+  ...(floors.length ? { floors } : {}),
   ...(dressing ? { dressing } : {}),
 };
 
@@ -159,6 +179,6 @@ writeFileSync(OUT, text);
 const kinds = (a: Item[]) => Object.entries(a.reduce<Record<string, number>>((m, i) => ((m[i.kind ?? i.category ?? '?'] = (m[i.kind ?? i.category ?? '?'] ?? 0) + 1), m), {})).map(([k, n]) => `${k} ${n}`).join(', ');
 console.log(`block → ${OUT} (${Buffer.byteLength(text)} bytes)`);
 console.log(`sources: ${sources.map(s => `${s.path} ${s.sha256.slice(0, 12)}`).join('; ')}`);
-console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, drives ${drives.length}, entrances ${buildings.flatMap(b => b.entrances).length}`);
+console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, drives ${drives.length}, floors ${floors.length}, entrances ${buildings.flatMap(b => b.entrances).length}`);
 console.log(`omitted from ${nav.solids.length} nav solids: cars, sentries, globes, lamps, chairs, parasols, street props, access ramps (not exported before; add when a consumer needs them)`);
 console.log(`adjustments applied: ${adj.adjustments.length} (${adj.owner})`);

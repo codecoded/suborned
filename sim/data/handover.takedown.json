@@ -116,59 +116,59 @@
    "door": "official-entrance"
   },
   {
-   "id": "street/orbit-gardens/e2/phone-booth-472",
+   "id": "street/orbit-gardens/e2/phone-booth-462",
    "kind": "call-box",
    "at": [9315,400],
-   "stand": [9325,425],
-   "item": "street/orbit-gardens/e2/phone-booth-472"
+   "stand": [9175,425],
+   "item": "street/orbit-gardens/e2/phone-booth-462"
   },
   {
-   "id": "street/rocket-west/e1/phone-booth-548",
+   "id": "street/rocket-west/e1/phone-booth-534",
    "kind": "call-box",
    "at": [11100,-6300],
-   "stand": [11125,-6275],
-   "item": "street/rocket-west/e1/phone-booth-548"
+   "stand": [11175,-6175],
+   "item": "street/rocket-west/e1/phone-booth-534"
   },
   {
    "id": "street/civic/call-box-0",
    "kind": "call-box",
    "at": [3015,-1400],
-   "stand": [3025,-1375],
+   "stand": [2875,-1375],
    "item": "street/civic/call-box-0"
   },
   {
    "id": "street/civic/call-box-1",
    "kind": "call-box",
    "at": [-2500,-2600],
-   "stand": [-2475,-2575],
+   "stand": [-2425,-2475],
    "item": "street/civic/call-box-1"
   },
   {
    "id": "street/civic/call-box-2",
    "kind": "call-box",
    "at": [-200,-4915],
-   "stand": [-175,-4875],
+   "stand": [-175,-4775],
    "item": "street/civic/call-box-2"
   },
   {
    "id": "street/civic/call-box-3",
    "kind": "call-box",
    "at": [-2500,1400],
-   "stand": [-2475,1425],
+   "stand": [-2425,1525],
    "item": "street/civic/call-box-3"
   },
   {
    "id": "street/civic/call-box-4",
    "kind": "call-box",
    "at": [-2500,-4400],
-   "stand": [-2475,-4375],
+   "stand": [-2425,-4275],
    "item": "street/civic/call-box-4"
   },
   {
    "id": "street/civic/call-box-5",
    "kind": "call-box",
    "at": [5000,-4915],
-   "stand": [5025,-4875],
+   "stand": [5025,-4775],
    "item": "street/civic/call-box-5"
   }
  ],
@@ -177,7 +177,7 @@
    "id": "street/records-square/civic-robot-dock-315",
    "kind": "dock",
    "at": [-1850,-1750],
-   "stand": [-1825,-1725],
+   "stand": [-1725,-1725],
    "item": "street/records-square/civic-robot-dock-315"
   },
   {
@@ -198,67 +198,67 @@
    "id": "street/civic/police-post-0",
    "kind": "post",
    "at": [3000,-2200],
-   "stand": [3025,-2175],
+   "stand": [3025,-2075],
    "item": "street/civic/police-post-0"
   },
   {
    "id": "street/civic/police-post-1",
    "kind": "post",
    "at": [7900,-200],
-   "stand": [7925,-175],
+   "stand": [7925,-75],
    "item": "street/civic/police-post-1"
   },
   {
    "id": "street/civic/police-post-2",
    "kind": "post",
    "at": [-2500,-3400],
-   "stand": [-2475,-3375],
+   "stand": [-2475,-3275],
    "item": "street/civic/police-post-2"
   },
   {
    "id": "street/civic/police-post-3",
    "kind": "post",
    "at": [3000,-4400],
-   "stand": [3025,-4375],
+   "stand": [3025,-4275],
    "item": "street/civic/police-post-3"
   },
   {
    "id": "street/civic/police-post-4",
    "kind": "post",
-   "at": [10200,-4900],
-   "stand": [10225,-4875],
+   "at": [10800,-4900],
+   "stand": [10825,-4775],
    "item": "street/civic/police-post-4"
   },
   {
    "id": "street/civic/police-post-5",
    "kind": "post",
    "at": [-1200,500],
-   "stand": [-1175,525],
+   "stand": [-1175,625],
    "item": "street/civic/police-post-5"
   },
   {
    "id": "street/civic/police-post-6",
    "kind": "post",
    "at": [4500,-200],
-   "stand": [4525,-175],
+   "stand": [4525,-75],
    "item": "street/civic/police-post-6"
   }
  ],
  "coverage": {
   "report": {
-   "samples": 2856,
+   "samples": 2850,
    "worstM": 39.8,
    "medianM": 17.6,
    "within": 1000,
-   "baselineWithin": 652,
+   "baselineWithin": 650,
    "baselineWorstM": 67.2
   },
   "origin": {
-   "samples": 2856,
+   "samples": 2850,
    "worstM": 39.8,
-   "medianM": 17,
+   "medianM": 17.4,
    "within": 1000,
-   "baselineWithin": 636,
+   "baselineWithin": 634,
    "baselineWorstM": 68
   }
  },
@@ -315,7 +315,7 @@
   },
   {
    "id": "street/civic/police-post-4",
-   "poly": [[10150,-4950],[10250,-4950],[10250,-4850],[10150,-4850]],
+   "poly": [[10750,-4950],[10850,-4950],[10850,-4850],[10750,-4850]],
    "h": 280
   },
   {
@@ -334,7 +334,7 @@
    "h": 151
   }
  ],
- "solidsSrc": "the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid does not hold them: holding them would change the grid, and with it every walk and every replay",
+ "solidsSrc": "the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid holds them too, as drawn (brief 055, tools/sim/solids.ts), so a stand inside one's body clearance stands at the nearest free cell",
  "watchers": [
   {
    "id": "street/records-square/mast-camera-314",

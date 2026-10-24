@@ -222,6 +222,9 @@ def main():
                    bounds=[round(-max(v.x for v in box), 3), round(-min(v.x for v in box), 3),  # footprint about the pivot in kit axes
                            round(-max(v.y for v in box), 3), round(-min(v.y for v in box), 3)],  # [x0, x1, z0, z1]; the FBX import mirrors X (kit x = -Blender x) and kit z = -Blender y
                    materials=list(dict.fromkeys(m.name for o in objs for m in o.data.materials)))
+        if src.get("dk_volumes"):  # volumes the builder declared (geo.Shape.solid), builder frame -> kit frame
+            row["collide"] = [dict(shape="box", min=[round(-v["max"][0], 4), round(v["min"][2], 4), round(-v["max"][1], 4)], max=[round(-v["min"][0], 4), round(v["max"][2], 4), round(-v["min"][1], 4)],
+                                   **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]
         if n in regen.ORDERS:  # a regen order's piece: which order, and what was built (fit table)
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
         if len(objs) > 1:

@@ -34,7 +34,12 @@ namespace Suborned.Sim
     {
         /// <summary>The hostiles that went for the road (brief 018 §1), in the order picked.</summary>
         public readonly List<string> Blockers = new List<string>();
-        bool blockersPicked; string pickFrom = ""; bool carWasHeld, blockerOut; // the pick due this tick (rivals, police); the hold's last state; blocker.out logged
+        bool blockersPicked; string pickFrom = ""; bool carWasHeld, blockerOut;
+        int valeAboardAt = -1, goRefusedAt = -1; string goRefused = "";
+        /// <summary>Engine 0.30.0 (brief 060 #8): Vale boarded the getaway car this run (his board.in, chain vale-in-getaway-car). Output only.</summary>
+        public bool ValeBoarded => valeAboardAt >= 0;
+        /// <summary>Engine 0.30.0: the Take outside landed (chain vale-taken-outside). Output only.</summary>
+        public bool ValeTakenOutside => Chain.Contains("vale-taken-outside"); // brief 057 §4 (engine 0.30.0): output only, read by FailCause.Car; never hashed, never read by a rule // the pick due this tick (rivals, police); the hold's last state; blocker.out logged
 
         /// <summary>End of the tick's fire (Waymark, c018): a pick due this tick is made among the candidates still standing after it (a
         /// candidate downed by this tick's shots is no candidate); the blocker's fall and the hold coming free are logged by code.</summary>
@@ -138,7 +143,7 @@ namespace Suborned.Sim
                 var c = OpOf(op.Carrying.Value); op.Carrying = null; c.CarriedBy = null; c.InCar = true; c.Pos = seat;
                 with = " with the " + Sim.Op.Name(c.Id); Chain.Add(Sim.Op.Name(c.Id) + "-in-getaway-car");
             }
-            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Car; with = " with Vale"; Chain.Add("vale-in-getaway-car"); }
+            if (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer) { Vale = ValeAt.Car; valeAboardAt = Tick; with = " with Vale"; Chain.Add("vale-in-getaway-car"); }
             Note("board.in", $"The {name} is in the car{with}.");
         }
 
@@ -168,9 +173,9 @@ namespace Suborned.Sim
         string Go(Order o)
         {
             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
-            if (!AnyInCar) return No("car-empty", "nobody is in the car");
+            if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
             var hs = CarHolders();
-            if (hs.Count > 0) return No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
+            if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; return No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs)); }
             Leave();
             return "";
         }

@@ -1,6 +1,6 @@
 // The world generator: one deterministic pass from the plan to every generated layer. Seeded by element id throughout.
 import type { Connector, Crossing, Deck, Fabric, Facade, Frontage, Skin, SignatureOut, KitRef, Mass, Prim, Roof, StreetItem, Takedown } from '../../../contracts/world/world.schema';
-import type { V } from '../../plan/geom';
+import { type V, inPoly as inPolyV } from '../../plan/geom';
 import { type Ctx, rv } from './common';
 import { type Travel, generateConnectors } from './connectors';
 import { buildingHost, generateFrontages } from './frontage';
@@ -13,9 +13,11 @@ import { generateStreet } from './street';
 import type { CrossingLog } from './street/crossings';
 import type { CapLog } from './street/capstone';
 import { type RoadFinishLog, dressRoadFinish } from './street/roadfinish';
+import { type KerbArcLog, dressKerbArcs } from './street/kerbarcs';
 import { dressConnectors } from './dress';
 import { generateSkins } from './skins';
 import { adjacent } from './facades';
+import { returnsOf, slabRing } from './kerbreturn';
 import { colourLife } from './colour';
 import type { DeckRec, Host, MegaOut } from './types';
 
@@ -26,6 +28,7 @@ export type Generated = {
   takedown?: Takedown; // brief 013: present when the civic block has a service door
   groundPieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces (world.ground.pieces), kept out of the street layer so the street rules (SF-1..SF-8) never judge paving
   capstone?: CapLog; // brief 026: what the capstone programme placed and the places no rule could fill
+  kerbArcs?: KerbArcLog; // brief 028: the pearl kerb laid round every kerb return (kind kerb-return)
   roadFinish?: RoadFinishLog; // brief 028 Road: what the road finish laid (its pieces are in groundPieces, kinds road-ribbon, road-shoulder, road-pinstripe, road-lozenge, road-seam) and what it left
 };
 
@@ -48,9 +51,12 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const { items: street, flags, crossings, crossingLog, takedown, capstone, groundPieces } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
   // brief 028 Road (Sky 2026-10-22 "can try"): the testbed's road finish, laid by rule on every kerb face; opt-in on standards.streetscape.roads and the pieces adopted in the kit (a pinned plan or kit gets none)
   const rf = dressRoadFinish(ctx, { crossings: crossings ?? [], platforms: stops.map(s => s.ring) });
-  const flat = [...(groundPieces ?? []), ...(rf?.items ?? [])];
-  const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: p.polyV.map(rv), base: 0, height: ctx.pav }));
-  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone } : {}), ...(flat.length ? { groundPieces: flat } : {}), ...(rf ? { roadFinish: rf.log } : {}) };
+  const ka = dressKerbArcs(ctx, { strips: (crossings ?? []).map(c => c.strip as V[]), drives: (ctx.civ.drives ?? []).map(d => d.poly as V[]) }); // brief 028: after the crossings, so a stone never lies across a crossing strip
+  const flat = [...(groundPieces ?? []), ...(ka?.items ?? []), ...(rf?.items ?? [])];
+  const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: slabRing(ctx, p).map(rv), base: 0, height: ctx.pav })); // brief 028: the kerb side's corners are rounded (kerbreturn.ts); the building side and the building line are as the plan has them
+  // brief 028 (kerbReturn.bend): the outside of a road's bend is concentric with the inside corner's return; the fillet is pavement laid into the road's corner (a slab of its own, in the use of the plot it meets), never a change to a plot
+  for (const r of returnsOf(ctx)) if (r.bend) { const probe: V = [r.at[0] + (r.n1[0] + r.n2[0]) * 0.4, r.at[1] + (r.n1[1] + r.n2[1]) * 0.4]; slabs.push({ id: `plot/${r.id}`, surface: ctx.d.plots.find(p => !p.civic && inPolyV(probe, p.polyV))?.use ?? ctx.d.plots.find(p => p.id === r.plot)!.use, ring: r.cut.map(rv), base: 0, height: ctx.pav }); }
+  return { signatures: [...generateSignatures(ctx), ...generateStructures(ctx)], skins, fabric: { awnings: life.awnings, banners: life.banners, flags }, facades: fac.facades, facadeWhy: fac.why, faceMetres: fac.metres, buildings: masses, slabs, roofs, frontages, connectors: conn.connectors, street, decks, megas: megaOut.map(m => ({ id: m.id, parts: m.parts, prims: m.prims, ...(m.gateway ? { gateway: m.gateway } : {}) })), blds, megaOut, issues: conn.issues, travel: conn.travel, ...(crossings ? { crossings, crossingLog } : {}), ...(takedown ? { takedown } : {}), ...(capstone ? { capstone } : {}), ...(flat.length ? { groundPieces: flat } : {}), ...(rf ? { roadFinish: rf.log } : {}), ...(ka ? { kerbArcs: ka.log } : {}) };
 }
 
 /** A DeckRec as the export's Deck. */

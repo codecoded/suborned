@@ -17,6 +17,7 @@ import { handoverPoints } from '../../civic/handover';
 import { type Corner, junctionCorners } from '../../civic/siting';
 import { type Ctx, r3, r4, rng } from '../common';
 import { plotRing, kindOf, idOf } from '../edges';
+import { baysOf, cutHits, returnsOf, tangentAt } from '../kerbreturn';
 import { areaOf, bbox, edgeN, pointInRing } from '../geo';
 import { adoptedBy, forUse } from '../kitrefs';
 import { overlaps } from './crossings';
@@ -25,8 +26,9 @@ import type { Layer } from './kit';
 import { FLAT_SET as FLAT_KINDS_SET, LAYER, MARGIN, PAVE, RULES, type Rect4, inRect4 } from './capstone-rules';
 
 export type CapGap = { rule: string; where: string; why: string };
-export type CapLog = { zone: Rect4; counts: Record<string, number>; pieces: Record<string, number>; gaps: CapGap[]; kerb: { edgeM: number; stoneM: number; droppedM: number } };
+export type CapLog = { zone: Rect4; counts: Record<string, number>; pieces: Record<string, number>; gaps: CapGap[]; kerb: { edgeM: number; stoneM: number; droppedM: number }; /** flat pieces left out because they lay over a kerb return's carriageway (brief 028), by kind */ returnDropped: Record<string, number> };
 
+const add2 = (p: V, u: V, s: number): V => [p[0] + u[0] * s, p[1] + u[1] * s];
 const norm2 = (a: V): V => { const l = Math.hypot(a[0], a[1]) || 1; return [a[0] / l, a[1] / l]; };
 const perp = (a: V): V => [-a[1], a[0]];
 const ang = (a: V) => Math.atan2(a[1], a[0]);
@@ -44,7 +46,7 @@ export function zoneOf(ctx: Ctx): Rect4 {
   return [r3(b[0]), r3(b[1]), r3(b[2]), r3(b[3])];
 }
 
-type Run = { a: V; b: V; len: number; u: V; n: V; road: string; cls: string; plot: string; use: string; trimA: boolean; trimB: boolean };
+type Run = { a: V; b: V; len: number; u: V; n: V; road: string; cls: string; plot: string; use: string; trimA: boolean; trimB: boolean; /** brief 028: the tangent length (m) a rounded kerb return takes off each end (0: a square corner) */ tA: number; tB: number };
 
 /** The kerbed runs of the plots in the zone: each maximal collinear stretch of plot edges facing one road (edges.ts plotRing classes), with its outward (road-ward) normal. */
 export function kerbRuns(ctx: Ctx, zone: Rect4): Run[] {
@@ -71,7 +73,25 @@ export function kerbRuns(ctx: Ctx, zone: Rect4): Run[] {
       const len = dist(q.a, q.b), u = norm2([q.b[0] - q.a[0], q.b[1] - q.a[1]]), nn = edgeN(q.a, q.b);
       const prev = edges[(q.i0 + n - 1) % n]!, next = edges[(q.i1 + 1) % n]!;
       const turn = (e: { a: V; b: V }) => { const v = norm2([e.b[0] - e.a[0], e.b[1] - e.a[1]]); return Math.abs(u[0] * v[0] + u[1] * v[1]) < 0.1; }; // a right-angled neighbour
-      out.push({ a: q.a, b: q.b, len, u, n: nn, road: idOf(q.c), cls: kindOf(q.c), plot: pl.id, use: pl.use, trimA: kerbed(prev.c) && turn(prev), trimB: kerbed(next.c) && turn(next) });
+      const whole: Run = { a: q.a, b: q.b, len, u, n: nn, road: idOf(q.c), cls: kindOf(q.c), plot: pl.id, use: pl.use, trimA: kerbed(prev.c) && turn(prev), trimB: kerbed(next.c) && turn(next), tA: tangentAt(ctx, pl.id, q.a), tB: tangentAt(ctx, pl.id, q.b) };
+      // brief 028: a kerbed bay's mouth is open carriageway, no kerb across it: the run stops at the tangent point of the bay's mouth corner and starts again past the other (the bay outline carries the kerb round, kerbarcs.ts)
+      const mouths = baysOf(ctx).filter(b => b.plot === pl.id && b.road === whole.road && b.M.every(m => segDist(m, q.a, q.b) < 0.05)).map(b => ({ b, s: b.M.map(m => (m[0] - q.a[0]) * u[0] + (m[1] - q.a[1]) * u[1]).sort((x, y) => x - y) as [number, number] })).sort((x, y) => x.s[0] - y.s[0]);
+      let from = 0, tFrom = whole.tA, trimFrom = whole.trimA;
+      for (const m of mouths) {
+        const cut = m.s[0] - m.b.r;
+        if (cut - from > 0.01) out.push({ ...whole, a: add2(q.a, u, from), b: add2(q.a, u, cut), len: cut - from, trimA: trimFrom, trimB: false, tA: tFrom, tB: 0 }); // the run already ends on the tangent point
+        from = m.s[1] + m.b.r; tFrom = 0; trimFrom = false;
+      }
+      for (const x of mouths.length ? (len - from > 0.01 ? [{ ...whole, a: add2(q.a, u, from), len: len - from, tA: tFrom, trimA: trimFrom }] : []) : [whole]) out.push(x);
+    }
+    // brief 028 (kerbReturn.bend): the outside kerb of a road's bend turns on an arc concentric with the inside corner's; a plot's run along either outer line stops at the arc's tangent point (it runs on past the old corner, to the party line)
+    for (let k = out.length - 1; k >= 0; k--) {
+      const q = out[k]!; if (q.plot !== pl.id) continue;
+      for (const rt of returnsOf(ctx).filter(x => x.bend && x.roads.includes(q.road))) for (const T of [rt.a, rt.b]) {
+        const sT = (T[0] - q.a[0]) * q.u[0] + (T[1] - q.a[1]) * q.u[1], sV = (rt.at[0] - q.a[0]) * q.u[0] + (rt.at[1] - q.a[1]) * q.u[1], off = (p: V) => Math.abs((p[0] - q.a[0]) * q.u[1] - (p[1] - q.a[1]) * q.u[0]);
+        if (off(T) > 0.1 || off(rt.at) > 0.1 || sT < 0.01 || sT > q.len - 0.01) continue;
+        out[k] = sV > sT ? { ...q, b: add2(q.a, q.u, sT), len: sT, trimB: false, tB: 0 } : { ...q, a: add2(q.a, q.u, sT), len: q.len - sT, trimA: false, tA: 0 };
+      }
     }
   }
   return out;
@@ -98,7 +118,10 @@ export function pivotFor(a: KitAsset, at: V, yaw: number, scale: [number, number
 function flatPiece(c: Ctx2, kind: string, a: KitAsset, at: V, yaw: number, z: number, scale: [number, number, number], edge: string, ring?: V[]): StreetItem {
   const piv = pivotFor(a, at, yaw, scale), size: [number, number, number] = [r3(a.size[0] * scale[0]), r3(a.size[2] * scale[2]), r3(a.size[1] * scale[1])];
   const it: StreetItem = { id: nextId(c, kind), kind, at: piv, yaw: r4(yaw), z: r3(z), size, surface: 'trim', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale } as KitRef };
-  void ring; c.items.push(it); c.flat.push(it); bump(c, kind, a.id);
+  void ring;
+  // brief 028: a flat piece never lies over a kerb return's carriageway (a flag, a pit, a tile at the old square corner): dropped, counted, the slab's own pavement shows
+  if (kind !== 'kerb' && cutHits(c.ctx, boxRing(at, size[0], size[1], yaw), 0)) { c.log.returnDropped[kind] = (c.log.returnDropped[kind] ?? 0) + 1; return it; }
+  c.items.push(it); c.flat.push(it); bump(c, kind, a.id);
   return it;
 }
 
@@ -145,7 +168,8 @@ function kerbs(c: Ctx2, runs: Run[]): void {
   for (const r of runs) {
     if (!inZone(c, [(r.a[0] + r.b[0]) / 2, (r.a[1] + r.b[1]) / 2])) continue;
     const road = c.ctx.d.roads.find(x => x.id === r.road); if (!road) continue;
-    const t0 = r.trimA && Math.abs(r.u[0]) < Math.abs(r.u[1]) ? R.halfDepth : 0, t1 = r.trimB && Math.abs(r.u[0]) < Math.abs(r.u[1]) ? R.halfDepth : 0; // x-dominant runs run through the corner, y-dominant stop at the other's face
+    // x-dominant runs run through a square corner, y-dominant stop at the other's face; at a rounded return the straight stone stops at the arc's tangent point (kerbarcs.ts lays the arc)
+    const t0 = r.tA > 0 ? r.tA : r.trimA && Math.abs(r.u[0]) < Math.abs(r.u[1]) ? R.halfDepth : 0, t1 = r.tB > 0 ? r.tB : r.trimB && Math.abs(r.u[0]) < Math.abs(r.u[1]) ? R.halfDepth : 0;
     const eff = r.len - t0 - t1; if (eff < R.minEdge) continue;
     const m = Math.max(1, Math.round(eff / R.module)), sx = r3(eff / m / ground.size[0]), yaw = facing(r.n);
     for (let k = 0; k < m; k++) {
@@ -549,7 +573,7 @@ export function dressCapstone(ctx: Ctx, L: Layer, o: { frontages: Frontage[]; cr
   const zone = zoneOf(ctx), toPlan = toPlanFn(ctx.plan.civic);
   const c: Ctx2 = {
     ctx, L, zone, items: [], n: {}, tiles: [], flat: [],
-    log: { zone, counts: {}, pieces: {}, gaps: [], kerb: { edgeM: 0, stoneM: 0, droppedM: 0 } },
+    log: { zone, counts: {}, pieces: {}, gaps: [], kerb: { edgeM: 0, stoneM: 0, droppedM: 0 }, returnDropped: {} },
     points: handoverPoints(toPlan),
     strips: o.crossings.flatMap(x => [x.strip as V[], ...x.landings.map(l => boxRing(l.at, l.size[0], l.size[1], l.yaw))]).filter(p => p.length >= 3),
     drives: (ctx.civ.drives ?? []).map(d => d.poly as V[]),
@@ -564,7 +588,7 @@ export function dressCapstone(ctx: Ctx, L: Layer, o: { frontages: Frontage[]; cr
   // the pieces no rule here can place: said, not forced
   if (!walls.some(w => w.f.trade === 'cinema')) gap(c, 'S-marquee', 'Marquee_Cinema', 'no cinema tenancy in the zone: a marquee is a cinema canopy');
   gap(c, 'S-billboard', 'Billboard_Wall/Pylon/Rooftop', 'the plan states no blank flank wall, pylon plot or roof billboard programme (a billboard stands where the plan says the city\'s lit signs go); Datum to say, or Sky');
-  gap(c, 'G-corner', 'Kerb_GraniteCorner_*, Kerb_GraniteNose', 'the plot slabs have square corners; a corner piece needs a slab rounded to its 2 m return and its orientation verified in Unity. Latch draws the extruded kerb at junction corners only (within 2.4 m of a plot corner); the straight runs are kit stone');
+  gap(c, 'G-corner', 'Kerb_GraniteCorner_*, Kerb_GraniteNose', 'no corner piece is needed: the plot slabs are rounded (brief 028, tools/world/gen/kerbreturn.ts) and the arc is a chain of straight Kerb_Pearl stones (street/kerbarcs.ts, kind kerb-return); the straight runs stop at its tangent points');
   for (const k of Object.keys(c.log.counts)) c.log.counts[k] = c.items.filter(i => i.kind === k).length;
   c.log.kerb = { edgeM: r3(c.log.kerb.stoneM + c.log.kerb.droppedM), stoneM: r3(c.log.kerb.stoneM), droppedM: r3(c.log.kerb.droppedM) };
   void walkBlock; void samples9;

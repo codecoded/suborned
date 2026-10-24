@@ -271,8 +271,12 @@ namespace Suborned.Sim
         bool UnitSees(Unit u, Pt p, bool crowd = true)
         {
             var s = UnitPose(u); if (!s.HasValue) return false;
-            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, u.Robot ? 0 : near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p)); // brief 031 L2: a robot by its cone only, an officer also within near
+            return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, u.Robot ? 0 : near, p) && UnitEyeSees(u, s.Value.pos, p) && !(crowd && UnitEyeCrowd(u, s.Value.pos, p)); // brief 031 L2: a robot by its cone only, an officer also within near
         }
+        /// <summary>Brief 055 §7: a unit's eye above its floor (perception.mount): the patrol robot's face, a response robot's lamp, an officer's eye.</summary>
+        int UnitMount(Unit u) => u.Patrol ? R.MountPatrolCm : u.Robot ? R.MountRobotCm : eye;
+        bool UnitEyeSees(Unit u, Pt pos, Pt p) => u.Patrol || u.Robot ? EyeSees(pos, UnitMount(u), p) : Sees(pos, p);
+        bool UnitEyeCrowd(Unit u, Pt pos, Pt p) => u.Patrol || u.Robot ? EyeCrowd(pos, UnitMount(u), p) : CrowdBlocks(pos, p);
 
         void UnitsStep()
         {
@@ -427,7 +431,7 @@ namespace Suborned.Sim
         {
             if (at >= INF) { sealOnArrival = true; if (origin != null) { try { pendingSealOrigin = origin(); } catch (Exception e) when (!(e is OutOfMemoryException)) { } } return; }
             int seal = at + T(SealS);
-            if (seal < Lockdown) { int lockBefore = Lockdown; Lockdown = seal; if (origin != null) SealOrigin(lockBefore, origin); Note("seal.starts", $"Confirmed at Alert {Alert}: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)})."); }
+            if (seal < Lockdown) { int lockBefore = Lockdown; Lockdown = seal; SealMoved(lockBefore); if (origin != null) NoteSealOrigin(lockBefore, origin); Note("seal.starts", $"Confirmed at Alert {Alert}: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(at)})."); }
         }
 
         // ---------------------------------------------------------------- the scene held (Motive rev 4 R4.1; Sky 2026-10-16)

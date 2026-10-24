@@ -10,7 +10,8 @@ import { levelAt } from './ground';
 import { axisClears } from '../connectors';
 import { type Rect, bbox, edgeN, inRect } from '../geo';
 import type { DeckRec } from '../types';
-import type { Layer } from './kit';
+import { KERB_ARC_CLEAR, type Layer } from './kit';
+import { cutHits } from '../kerbreturn';
 
 type Seg = { a: V; b: V; n: V; kind: string };
 function roadEdges(ctx: Ctx): Seg[] {
@@ -112,7 +113,9 @@ export function dressTransit(ctx: Ctx, L: Layer, stops: Mass[], stations: Mass[]
     const node = ctx.plan.nodes[g.node]!, road = ctx.d.roads.find(r => r.id === g.road)!, area = ctx.plan.areas.find(a => a.id === g.area)!, ac: V = [(area.rect[0] + area.rect[1]) / 2, (area.rect[2] + area.rect[3]) / 2];
     const nearest = road.line.reduce((b, q) => (dist(q, node) < dist(b, node) ? q : b)), idx = road.line.indexOf(nearest), nb = road.line[Math.min(road.line.length - 1, idx + 1)]!, pr = road.line[Math.max(0, idx - 1)]!;
     const dir = norm(sub(nb, pr)), toArea = (ac[0] - node[0]) * dir[0] + (ac[1] - node[1]) * dir[1] >= 0 ? 1 : -1;
-    const p: V = [node[0] + dir[0] * 10 * toArea - dir[1] * (road.w / 2 + 1), node[1] + dir[1] * 10 * toArea + dir[0] * (road.w / 2 + 1)];
+    // brief 028: 10 m in from the node; where a rounded kerb return takes that spot the camera stands further in, the first metre past the arc's 0.45 m
+    let p: V = [0, 0];
+    for (let k = 0; k <= 30; k++) { const d = 10 + k; p = [node[0] + dir[0] * d * toArea - dir[1] * (road.w / 2 + 1), node[1] + dir[1] * d * toArea + dir[0] * (road.w / 2 + 1)]; if (!cutHits(ctx, boxRing(p, 0.25, 0.25, 0), KERB_ARC_CLEAR)) break; }
     L.add('pole-camera', p, Math.atan2(-dir[1] * toArea, -dir[0] * toArea), z, g.id, { size: [0.25, 0.25, S.watchers.types['pole-camera'].mount], variant: 'pole-camera', force: true });
   }
   const sq = ctx.d.plots.find(p => p.civic === 'square');

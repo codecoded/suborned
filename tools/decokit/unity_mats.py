@@ -14,7 +14,7 @@ from pathlib import Path
 
 LIT = "2529b42165e1d45a8bcfb0013bb5aba3"       # the shader guid every kit .mat uses (Complex Lit for enamel: 206122...)
 COMPLEX = "206122040e60d470e92cddeccf1aacf6"
-SUPPORTED = ("enamel", "metal", "brass", "emit", "ceramic", "stone", "chrome", "rubber")
+SUPPORTED = ("enamel", "metal", "brass", "emit", "ceramic", "stone", "chrome", "rubber", "roadmetal")
 
 
 def legacy_roots():
@@ -144,6 +144,13 @@ def lit_art_text(row, legacy, tex_guid):
     return t
 
 
+# Brief 028 enamel fix (Glint, 2026-10-24): environment-reflection scale per material (1 = the scene's reflection as it is; the testbed's road used envMapIntensity 0.35).
+# URP Lit has no such control, so the Lit shaders that opt in (DK_LitCutaway's ForwardLit, once Glint's patch is in: out/scratch/glint/road-envscale/) read it from the field
+# they do not otherwise use, _ClearCoatMask, as scale = 1 - _ClearCoatMask (0 = untouched, so every other material stays as it is). Inert until that shader patch lands.
+# Scope: the road's own materials only; chrome, glass and the rest of the kit keep the scene's reflection (light.json reflection.intensity 0.8).
+ENV_SCALE = {"DK_Ground_RoadEnamel": 0.35, "DK_Ground_RoadPearl": 0.35}
+
+
 def pbr_text(row, legacy):
     """A textured ground .mat (brief 026): URP Lit, albedo + normal + mask (R metallic, G occlusion, A smoothness, the old pave sheets' packing), optional detail
     pair, the tile as m_Scale = 1 / metres per UV unit (so a mesh with UV = world metres tiles at its real size). row['pbr'] is mats.GROUND's entry."""
@@ -167,6 +174,8 @@ def pbr_text(row, legacy):
         + (["_OCCLUSIONMAP"] if g.get("mask") else [])
     base = base.replace("  m_ValidKeywords: []", "  m_ValidKeywords:" + "".join(f"\n  - {k}" for k in kws) if kws else "  m_ValidKeywords: []")
     base = re.sub(r"(- _BumpScale: )[0-9.]+", rf"\g<1>{_f(g.get('bump', 1.0))}", base)
+    if row["name"] in ENV_SCALE:  # see ENV_SCALE: the field is 1 - the reflection scale
+        base = re.sub(r"(- _ClearCoatMask: )[0-9.]+", rf"\g<1>{_f(1.0 - ENV_SCALE[row['name']])}", base)
     if g.get("detail"):
         base = re.sub(r"(- _DetailNormalMapScale: )[0-9.]+", rf"\g<1>{_f(g.get('detailBump', 1.0))}", base)
     return base

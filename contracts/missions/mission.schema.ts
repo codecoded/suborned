@@ -22,6 +22,9 @@
 // `points` and `cameras`: `yaw` (30 | 120 | 210 | 300, default 30), the heading the point is played at, which rule V-1 measures it from
 // (the Records Office front is played at 210), and `hidden` (a reason, on destinations, crew and `points`): the point is out of the camera's
 // view by design; V-1 lists it and does not fail it. Neither is read by the engine's site extract (tools/sim/site.ts picks its own fields).
+// Later still (2026-10-23, brief 055, Datum): optional and additive, on destinations, crew and `points`: `level` (a standards.levels id) and, off the
+// walk of that level, `on` and `floor` (what the point stands on and how high, block z), which rule M-3 holds to the civic block's floors and bays
+// and to the world's decks; V-1 stands the figure at that height. Like `yaw`, the places lock leaves them out and the site extract does not read them.
 // A recorded run's pinned block carries its own /1 layer and is not read through this schema.
 // Times: every `at` is a mission-clock offset m:ss (GDD §01 units). The one day time is clock.startsAt; a day time is
 // startsAt + offset (1 mission s = 1 day s, life.clock.scale), never stored. Every entry cites its source in `src`;
@@ -41,6 +44,13 @@ const note = z.string().min(1).optional();
 /** The heading a point is played at (GDD §10: Q/E turn the view in quarter steps from the opening yaw 30). Rule V-1 measures the point from it. */
 const yaw = z.union([z.literal(30), z.literal(120), z.literal(210), z.literal(300)]).optional().describe('compass heading the point is played at; default 30');
 const hidden = z.string().min(1).optional().describe('why the point is out of the camera\'s view by design (a hiding place): V-1 lists it and does not fail it');
+/** The level a point stands on (standards.levels.list: street, deck, concourse) and, off its level's walk (the pavement on the street), the floor it stands on:
+ *  `on` a civic-block floor, bay or drive, `floor` its height above the walk in m (block z: the Office landing 0.75, a lay-by -0.18). Rule M-3 holds them to the
+ *  block and the world (brief 055). Optional and additive, like `yaw`: a pinned mission is read without them, and the places lock leaves them out. */
+const level = z.string().regex(/^[a-z][a-z0-9-]*$/).optional().describe('standards.levels.list id; M-3 requires it on every point of the current mission');
+const on = z.string().min(1).optional().describe('civic-block.json floors, bays or drives id: what the point stands on, off the walk of its level');
+const floor = z.number().optional().describe('m above the walk of its level (block z): the floor the block declares at the point; with `on`');
+const together = (p: { on?: string; floor?: number }) => (p.on === undefined) === (p.floor === undefined);
 /** A named point in the block frame [x, y] on a walk surface. */
 /** A generated person's id (contracts/people/people.schema.ts). */
 const personId = z.string().regex(/^p-[a-z0-9-]+-\d{2,3}$/);
@@ -70,10 +80,12 @@ const role = z.strictObject({
 /** A place the engine plays on that the mission owns (block frame, m): at a point, or at the centre of a civic-block structure. */
 const sitePoint = z.strictObject({
   id, at: z.tuple([z.number(), z.number()]).optional(), structure: id.optional().describe('civic-block.json structures id: the point is its centre'),
-  src, reason: z.string().min(1), yaw, hidden,
-}).refine(p => (p.at === undefined) !== (p.structure === undefined), { error: 'exactly one of at and structure' });
-/** A camera (§05 fixed visible cones): mount, the destination it looks at, reach and cone half-width at the reach, m. */
-const camera = z.strictObject({ id, at: z.tuple([z.number(), z.number()]), looksAt: z.string().min(1), reachM: z.number().positive(), halfM: z.number().positive(), src, reason: z.string().min(1), yaw });
+  src, reason: z.string().min(1), yaw, hidden, level, on, floor,
+}).refine(p => (p.at === undefined) !== (p.structure === undefined), { error: 'exactly one of at and structure' })
+  .refine(together, { error: 'on and floor come together' });
+/** A camera (§05 fixed visible cones): its kind, mount, the destination it looks at, reach and cone half-width at the reach, m. The kind
+ *  names its lens height in the rulebook (perception.mount.cameras, brief 055 §7; the engine rejects a kind with no lens at the start). */
+const camera = z.strictObject({ id, kind: z.enum(['pole-camera', 'mast-camera', 'canopy-camera']), at: z.tuple([z.number(), z.number()]), looksAt: z.string().min(1), reachM: z.number().positive(), halfM: z.number().positive(), src, reason: z.string().min(1), yaw });
 
 /** A route's timed window, read from the rules: the lover summons (rulebook `summon`: his walk on the grid at walking pace, his stay
  *  `stay`, the walk at most `walkMax`). The mission names who walks between which destinations; it restates no number the rules hold. */
@@ -86,7 +98,8 @@ const window = z.strictObject({
   src, note: z.string().min(1).describe('why the window reads as it does'),
 });
 
-const point = z.strictObject({ name: z.string().min(1), at: z.tuple([z.number(), z.number()]), surface: z.string().min(1), yaw, hidden });
+const point = z.strictObject({ name: z.string().min(1), at: z.tuple([z.number(), z.number()]), surface: z.string().min(1), yaw, hidden, level, on, floor })
+  .refine(together, { error: 'on and floor come together' });
 
 export const Mission = z.strictObject({
   schema: z.literal('suborned.mission/3'),

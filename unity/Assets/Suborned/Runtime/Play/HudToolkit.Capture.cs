@@ -213,7 +213,7 @@ namespace Suborned.Play
             float one = l.MeasureTextSize("Vale", 0, VisualElement.MeasureMode.Undefined, 0, VisualElement.MeasureMode.Undefined).y;
             var lines = new List<(string key, string text)> { ("win", t.EndWin), ("withdraw", t.EndWithdraw) };
             foreach (var kv in t.EndFail) lines.Add(("fail." + kv.Key, kv.Value));
-            foreach (var (code, fl) in t.Fails) lines.Add(("briefing.fails." + code, fl.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))); // the fallback head (HudModel.EndCard) when less.end has no line for the code
+            foreach (var (code, fl) in t.Fails) if (!t.EndFail.ContainsKey(code)) lines.Add(("briefing.fails." + code, fl.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.'))); // the fallback head (HudModel.EndCard) when less.end has no line for the code
             lines.Add(("fallback", "The attempt failed"));
             foreach (var (key, text) in lines)
             {

@@ -73,8 +73,8 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
-                r.Is(g.Preview("pressure", Inez).Witnesses > 0, "customers are in sight");
+                r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
+                r.Is(g.Preview("pressure", Inez).Witnesses > 0, "someone who minds a threat is in sight (security, at Alert 0)");
                 r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
                 r.Eq(g.Standing, g.R.StandingStart - g.R.StandingStep, "the threat seen: one step toward Menace at once");
                 r.Is(g.StandingMoves.Count == 1 && g.StandingMoves[0].cause == "seen-threat" && g.StandingMoves[0].who == Inez, "its cause: a threat seen, done to Inez");

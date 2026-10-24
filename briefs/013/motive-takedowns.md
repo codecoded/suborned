@@ -14,6 +14,8 @@ Brief: `briefs/013-takedowns.md`, part A, including "Sky's answers to Motive's c
 
 Nothing in `contracts/`, `sim/` or the GDD is edited. Every value is **proposed**, for Keel next.
 
+**Brief 054 rev 4 (2026-10-24):** civilians now see by a facing cone (±60° to 13 m, no near sense) and, below Alert 2, notice only violence; security unchanged; a shot and a scream turn heads. Prices, Alert per report, Trail and Standing in this file are unchanged; only who notices moves. See `briefs/054-watch-insight.md` §3 (rule, table, Handover measurement); §1.3 and §1.4 below are marked where they read differently.
+
 **The design in one line:** the player decides what the city learns (faces, leads, a body or a missing person) and when it learns it (the report window, the check-in mark). People carry every fact to security, so a takedown nobody reports never raises Alert.
 
 ---
@@ -201,7 +203,7 @@ Rule text changes:
 
 **Aware** means: in the react-s (2 s) before the takedown starts, the target had the Enforcer in its cone, outside the near circle.
 - Security uses its existing cones: the door cone (26 m reach, 19 m half), the facing cone, the security cone.
-- Anyone else uses the facing cone along their facing. Pulse owns facing at a stop.
+- Anyone else uses the facing cone along their facing. Pulse owns facing at a stop. *(054 rev 4)* A civilian target uses the people cone (±60° to 13 m); every stop now has a facing (054 §3.3), so a stopped target facing the Enforcer is aware.
 - A runner within 13 m of the target also makes him aware: he hears them.
 - **A witness stays aware** (rev 3). Someone who saw a takedown, a carry or a drawn weapon by the cell this mission is aware of the Enforcer whatever their facing, for the rest of the mission. This is needed now: until facing at a stop exists, anyone standing still is always surprised, even the driver who just watched guard 29 go down 4 m away.
 
@@ -222,7 +224,7 @@ The test is Vantage's `seenBy`, the same watchers Pulse's discovery uses.
 
 | | at sight | when the report lands (Pulse's chain) |
 |---|---|---|
-| a civilian or staff member sees the takedown | +1 witness Trail; Standing −1 (traceable violence); witnesses hold `saw-takedown` and **`enforcer-face`**; a contact who sees it takes the saw-violence move | **Alert 3**; the response, by the dial (§5.3) |
+| a civilian (in their cone, 054 rev 4) or staff member sees the takedown | +1 witness Trail; Standing −1 (traceable violence); witnesses hold `saw-takedown` and **`enforcer-face`**; a contact who sees it takes the saw-violence move | **Alert 3**; the response, by the dial (§5.3) |
 | a live camera sees it | — | its next scan + 3 s (Pulse), then as above |
 | armed security sees it | it engages; Alert ≥ 2 at sight (drawn weapons and shots are heard) | — |
 | only the rivals see it | nothing (they never report to the city) | — |

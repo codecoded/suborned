@@ -26,7 +26,7 @@ export function pill(p, tk) {
   const hold = fire ? "" : `<span class="hl"><i class="hl-fill"></i><span class="hl-ticks">${ticks}</span><i class="hl-line"></i></span>`;
   return `<div class="pill${fire ? " fire" : ""}" data-cmp="${p.cmp || "pill"}" data-state="${p.st}" data-kind="${p.kind}" ${p.live ? 'data-live="1"' : ""} data-head="${p.head || ""}" style="--p:${p.p ?? (p.st === "ready" ? 1 : 0)}">
     ${frame}<i class="pglow"></i>${hold}<svg class="rim"><rect pathLength="1"/></svg><i class="pflash"></i>
-    <span class="pin">${fire ? tile(10, 24) : ""}${disc(p.icon, fire)}<span class="ptxt">${txt}</span>${faces}${seen}${fire ? tile(10, 24) : ""}</span>
+    <span class="pin">${fire ? tile(10, 24) : ""}${disc(p.icon, fire)}<span class="ptxt">${txt}</span>${p.after || ""}${faces}${seen}${fire ? tile(10, 24) : ""}</span>
     <span class="tail"><i></i><i></i></span></div>`;
 }
 

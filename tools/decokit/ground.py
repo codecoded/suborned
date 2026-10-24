@@ -399,4 +399,4 @@ def _inlay_arc(radius):
 
 
 for _r in (6, 10, 16):  # no bevel: on a 3 mm lip it only doubles the tris
-    asset(f"InlayArc_R{_r}", "Ground", bevel=0.0)(_inlay_arc(_r))
+    asset(f"InlayArc_R{_r}", "Ground", bevel=0.0, floor="seat")(_inlay_arc(_r))  # brief 055 K-1: the 3 mm inlay lies on its pivot (z 0), not at the 0.15 walk surface

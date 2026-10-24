@@ -4,7 +4,7 @@
 // What is in the file:
 //   briefing   the brief card, objective, win, each fail in plain words, clock and close, purse, two hints, the objective tracker,
 //              the timeline as the status pill words it, one line per agent
-//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view), H14–H16 (the end steps: Enter, Extract, Take at the pickup) and H17 (the fight hint: right click a hostile to fire), the first-run toasts, the going-loud card's words
+//   hints · toasts · goingLoud   the training hints H1–H11 (Motive's triggers, copied), H12 (the run toggle), H13 (turn the view), H14–H16 (the end steps: Enter, Extract, Take at the pickup) and H17 (the fight hint: hold right click on a hostile to fire; controls trial 2026-10-24: a left click on a thing opens its ring, a left hold does the best way, a right tap does nothing), the first-run toasts, the going-loud card's words
 //   targets    each thing the cell can right click, in tiers of knowledge: `about` is what the cell was TOLD at the start (always shown);
 //              `watched` what a Scout Watch teaches (a person's routine, a camera's or the patrol's sight), `routine` the patrol's rounds,
 //              `heard` what a Scout Listen teaches (need, temperament); a tier shows only once the cell has learned it (GDD §04)
@@ -266,6 +266,23 @@ export const Less = z.strictObject({
   alt: z.strictObject({
     rule: z.string().min(1),
     outcome: z.record(code, Line).describe('the outcome marks in words, for Alt: ok works, worse works one step worse, no refuses, half not yet, unk unknown until the Scout learns who they are'),
+    mood: z.strictObject({ friendly: Line, uneasy: Line, scared: Line }).describe('brief 054 (rulebook mood.shift): what each mood does to the prices, for Alt on the mood disc over a person: which approaches come easier or harder. Ask never moves'),
+  }),
+  mood: z.strictObject({
+    rule: z.string().min(1),
+    word: z.strictObject({ friendly: Short(10), uneasy: Short(10), scared: Short(10) }).describe('the mood as one lowercase word, for {mood} in a footer; the done chip\'s capitalised form is done.gain.mood-<mood>'),
+    lever: z.strictObject({ pay: Short(10), help: Short(10), pressure: Short(10) }).describe('the approach as one lowercase word, for {lever} in a footer'),
+    likely: Short(10).describe('the word on the dashed tick of the price pill (Quote.Likely)'),
+    hurt: Short(10).describe('the word after {lever} in footerHurt (Quote.Hurt)'),
+    footer: Short(44).describe('item 23 (brief 054 section 7): the Watch card\'s footer when the mood favours an approach (Quote.Likely): {who} {mood} {lever}'),
+    footerHurt: Short(44).describe('the footer when the mood hurts an approach and favours none (Quote.Hurt): {who} {mood} {lever}'),
+    footerBare: Short(44).describe('the footer when the mood moves no price: {who} {mood}'),
+  }).describe('brief 054 (the Watch teaches a mood): the words of the Watch card\'s footer and the price pill\'s tag. Neutral says nothing, so a Watch that taught nothing has no footer'),
+  sealed: z.strictObject({
+    rule: z.string().min(1),
+    line: z.strictObject({ held: Line, ready: Line, empty: Line, unknown: Line }).describe('brief 057 section 4: the fail card\'s sub-line when the district seals, by FailCause.Car (held, ready, empty), and `unknown` when the engine gave none; {holders} is names.holders as holdersPhrase says it'),
+    tip: z.strictObject({ held: Short(36), ready: Short(36), empty: Short(36) }).describe('what to do next time, by FailCause.Car; at most six words, the fail camera\'s tip form'),
+    story: z.strictObject({ held: Line, ready: Line }).describe('the debrief\'s extra route line after "Vale reached the getaway car.", by FailCause.Car; none when the car was empty'),
   }),
   fates: z.record(z.string(), z.enum(FATES)).describe('every player-facing group of this file by its path, with where it goes (the inventory in briefs/014/fable-less.md, as data)'),
   hint: z.strictObject({
@@ -273,7 +290,7 @@ export const Less = z.strictObject({
     showSeconds: z.number().int().min(2).max(10),
     returnSeconds: z.number().int().min(5),
     maxShows: z.number().int().min(1).max(3),
-    firstAct: Short().describe('brief 030: the goal line\'s first-time hint, shown until the player\'s first right click'),
+    firstAct: Short().describe('brief 030: the goal line\'s first-time hint, shown until the player\'s first click on a thing (the click that opens its ring; controls trial 2026-10-24)'),
   }),
   go: z.strictObject({
     rule: z.string().min(1),
@@ -360,7 +377,7 @@ export const TextFile = z.strictObject({
   hints: z.strictObject({ rules: z.record(z.string(), z.string()), items: z.record(z.string().regex(/^H\d+$/), Hint) }),
   toasts: z.record(code, z.strictObject({ trigger: z.string().min(1), line: HintLine })),
   goingLoud: z.strictObject({ captured: Line, fails: z.record(code, Line).describe('the hold card\'s line when the shot would fail the mission, by fail code (vale-dead, driver-shot, getaway-lost): what dies, then "The mission fails."') }).describe('lines on the going-loud card beyond its numbers'),
-  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the right-click ring (label, at most 8 characters)'),
+  actions: z.record(z.union([z.enum([...VERBS, ...CONTROL_VERBS]), z.string().regex(/^ring-[a-z]+$/)]), Action).describe('the verbs, and brief 030\'s `ring-<verb>` entries: the one word on a wedge of the action ring (opened by a left click on a thing) (label, at most 8 characters)'),
   cancelCosts: z.record(code, Line).describe('what a cancel order costs or keeps, by the rulebook `cancel` line id (and the engine\'s: quiet, keeps-vale, nothing, down, none)'),
   activity: Activity,
   locks: z.record(code, Lock).describe('keyed by the engine\'s refusal code (Answer.Codes, `suborned-sim codes`)'),

@@ -24,6 +24,14 @@
       "tile": 2,
       "note": "brief 028 road finish (Vela; Splice's export: every road and the circus): the enamel carriageway, tinted white in the material"
     },
+    "road-asphalt": {
+      "palette": "harbour.road-asphalt",
+      "value": 1,
+      "smoothness": 0.3,
+      "material": "DK_Ground_RoadAsphalt",
+      "tile": 4,
+      "note": "brief 055 road test (Vela): the asphalt option's carriageway (plan roads.finish.set = asphalt, or the export's --road-finish asphalt); a kit material as it is, like road-enamel. No gutter strip, like the enamel (Layers.NoGutter)"
+    },
     "pavement": {
       "palette": "harbour.pavement",
       "value": 1,
@@ -107,7 +115,7 @@
       "palette": "harbour.track",
       "value": 1,
       "smoothness": 0.3,
-      "metallic": 0.5
+      "metallic": 0.1
     },
     "pylon": {
       "palette": "harbour.pylon",
@@ -450,7 +458,10 @@
       "hex": "#ddd4c5"
     },
     "harbour.road-enamel": {
-      "hex": "#aed0e6"
+      "hex": "#8fafc1"
+    },
+    "harbour.road-asphalt": {
+      "hex": "#505359"
     },
     "harbour.pavement": {
       "hex": "#f9efdc"
@@ -483,7 +494,7 @@
       "hex": "#ddd4c5"
     },
     "harbour.track": {
-      "hex": "#96979c"
+      "hex": "#6f7a72"
     },
     "harbour.pylon": {
       "hex": "#eceded"

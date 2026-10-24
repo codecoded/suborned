@@ -92,7 +92,7 @@ namespace Suborned.Sim
                 foreach (var l in cover)
                 {
                     string id = l.Text.Substring(0, l.Text.IndexOf(' ')); int at = l.Text.IndexOf("takes cover at ", StringComparison.Ordinal); string cid = l.Text.Substring(at + 15, l.Text.IndexOf(' ', at + 15) - at - 15);
-                    var cv = g.S.Cover.First(c => c.Id == cid); var h = police.First(x => x.Id == id);
+                    var cv = g.CoverNow().FirstOrDefault(c => c.Id == cid) ?? g.S.Cover.FirstOrDefault(c => c.Id == cid); if (cv == null) { r.Is(false, $"{id} takes a cover point the site or a car holds ({cid})"); continue; } var h = police.FirstOrDefault(x => x.Id == id); if (h == null) continue; // a rival's answer: the rule is the police bodies'
                     int k = int.Parse(id.Substring(id.IndexOf('-') + 1)) - 1; var stand = id.StartsWith("officer-", StringComparison.Ordinal) && k < g.S.FightPolice.Length ? g.S.Stand(g.S.FightPolice[k]) : (Pt?)null;
                     if (stand.HasValue && k >= g.Labr!.PoliceContest) r.Is(G.Dist(cv.At, car) <= G.Dist(stand.Value, car), $"{id} takes {cid}, {G.Dist(cv.At, car) / 100} m from the car (its stand {G.Dist(stand.Value, car) / 100} m)");
                     else if (stand.HasValue) r.Is(cv.Q >= g.R.CoverQPartial, $"{id}, the contest officer, answers as any police body (tuning.md §7.11.1, no longer held to the car): it takes {cid}, real cover ({G.Dist(cv.At, car) / 100} m from the car)");

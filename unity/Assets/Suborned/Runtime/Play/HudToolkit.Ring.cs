@@ -13,13 +13,13 @@ namespace Suborned.Play
     /// cursor's mark (a crosshair where a press fires, three dots where a hold opens a ring) and the chip's ⋯.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud; public Label Word, KeyText; public VisualElement Fields; public string FieldsKey = ""; }
+        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud, Obj, Held; public Label Word, KeyText; public VisualElement Fields; public string FieldsKey = ""; }
         VisualElement ringRoot; Paint ringPaint; readonly List<Wedge> wedges = new(); HandoverHost.RingState ringFor; VisualElement cursorMark; Paint cursorDots;
 
         void BuildRing()
         {
             ringRoot = E(root, null, 0, 0, 0, 0); ringRoot.style.overflow = Overflow.Visible;
-            ringPaint = P(ringRoot, -HandoverHost.RingOuter - 4, -HandoverHost.RingOuter - 4, 2 * HandoverHost.RingOuter + 8, 2 * HandoverHost.RingOuter + 8, RingPaint);
+            ringPaint = P(ringRoot, -HandoverHost.RingOuter - 8, -HandoverHost.RingOuter - 8, 2 * HandoverHost.RingOuter + 16, 2 * HandoverHost.RingOuter + 16, RingPaint);
             Show(ringRoot, false);
             cursorMark = E(root, null, 0, 0, 22, 22); var g = E(cursorMark, null, 3, 3, 16, 16); g.name = "g";
             cursorDots = P(cursorMark, 0, 0, 22, 22, (p, r) => Dots(p, r.center, 3.2f, 2.2f, Cream)); Show(cursorMark, false);
@@ -40,6 +40,8 @@ namespace Suborned.Play
             w.Pill = E(ringRoot, "s-plate_dark", 0, 0, float.NaN, 30); w.Pill.style.flexDirection = FlexDirection.Row; w.Pill.style.alignItems = Align.Center; w.Pill.style.paddingLeft = 10; w.Pill.style.paddingRight = 12;
             w.Draw = E(w.Pill, null, w: 18, h: 18); Round(w.Draw, 9); Border(w.Draw, 1.4f, Cream); w.Draw.style.marginRight = 5; Icon(E(w.Draw, null, 2.5f, 2.5f, 11, 11), "fire", Cream);
             w.Word = L(w.Pill, "verb-name"); w.Word.style.fontSize = 13.5f; w.Word.style.color = Cream;
+            w.Obj = Cameo(w.Pill, 12f, 2f); w.Obj.style.marginLeft = 6; w.Obj.style.marginRight = 2; // brief 057 §2: the thing the way moves, 18 px in the chrome ring
+            w.Held = E(w.Pill); w.Held.style.flexDirection = FlexDirection.Row; w.Held.style.alignItems = Align.Center; w.Held.style.marginLeft = 8; // brief 057 §4.2: a shut Go's lock and holders
             w.Fields = E(w.Pill); w.Fields.style.flexDirection = FlexDirection.Row; w.Fields.style.alignItems = Align.Center;
             w.Loud = E(w.Pill, null, w: 14, h: 14); w.Loud.style.marginLeft = 8;
             w.Key = E(w.Pill, "s-plate_light", w: float.NaN, h: 18); w.Key.style.marginLeft = 8; w.Key.style.minWidth = 22; w.KeyText = L(w.Key, "keycap"); w.KeyText.style.paddingLeft = 4; w.KeyText.style.paddingRight = 4; w.KeyText.style.unityTextAlign = TextAnchor.MiddleCenter;
@@ -71,10 +73,14 @@ namespace Suborned.Play
                     for (int d = 0; d < dashes; d++) { p.BeginPath(); p.Arc(c, ro - 1f, Deg(a0 + d * step), Deg(a0 + d * step + step * 0.55f)); p.Stroke(); }
                 }
                 else if (lit) { p.strokeColor = TurqLight; p.lineWidth = 2f; p.BeginPath(); p.Arc(c, ro - 1f, Deg(a0), Deg(a1)); p.Stroke(); }
+                if (s.Shut) { var a = c + Dir(i * w - w * 0.3f) * ((ro + ri) / 2f); var b = c + Dir(i * w + w * 0.3f) * ((ro + ri) / 2f); p.strokeColor = Cream; p.lineWidth = 1.6f; p.BeginPath(); p.MoveTo(a); p.LineTo(b); p.Stroke(); } // brief 057 §4.2: shut, struck (no colour)
                 if (s.More) Dots(p, c + Dir(i * w) * ((ro + ri) / 2f), 3.2f, 2.4f, Cream);
                 else if (s.Row?.I?.Order is Order so && rs.Plan?.T != null && host.Fresh(rs.Plan.T, so)) Sparkle(p, c + Dir(i * w + w * 0.28f) * (ro - 9f), 6f, Cream); // brief 043: the act that just opened
             }
             p.fillColor = new Color(Plate.r, Plate.g, Plate.b, 0.6f); p.BeginPath(); p.Arc(c, ri - 5f, Deg(0), Deg(360)); p.Fill(); // the middle: release here to keep it open
+            // Glyph's 0.2.94 review #12: the wheel's chrome rim (the cameo's ring: 2 px chrome on a 1 px ink-deep line), a notch outside the wedges
+            p.lineCap = LineCap.Butt; p.strokeColor = InkDeep; p.lineWidth = 4f; p.BeginPath(); p.Arc(c, ro + 3f, Deg(0), Deg(360)); p.Stroke();
+            p.strokeColor = Chrome; p.lineWidth = 2f; p.BeginPath(); p.Arc(c, ro + 3f, Deg(0), Deg(360)); p.Stroke();
         }
 
         static Vector2 Dir(float deg) { float a = deg * Mathf.Deg2Rad; return new Vector2(Mathf.Sin(a), -Mathf.Cos(a)); } // 0 at 12 o'clock, clockwise, y down
@@ -105,6 +111,17 @@ namespace Suborned.Play
                 }
                 // the pill: one word, then the price (the panel's order), outside the wedge on its side
                 Text(w.Word, s.Word); Show(w.Draw, s.Draws);
+                Show(w.Obj, s.Obj.Length > 0);
+                if (s.Obj.Length > 0) { var fc = w.Obj.Q("face"); if (s.Obj.StartsWith("icon:")) { fc.style.backgroundImage = StyleKeyword.None; if (fc.childCount == 0) E(fc, null, 1.5f, 1.5f, 9, 9); Icon(fc[0], s.Obj[5..], Cream); } else { if (fc.childCount > 0) Show(fc[0], false); Bg(fc, s.Obj, Color.white); } }
+                Show(w.Held, s.Shut); Show(w.Fields, !s.Shut);
+                w.Pill.style.opacity = s.Shut ? 0.75f : 1f; w.Icon.style.opacity = s.Shut ? 0.45f : 1f;
+                if (s.Shut)
+                {   // the lock, then one police badge a holder (brief 057 §4.2): the same holders the world marks
+                    var ids = new System.Collections.Generic.List<string>(); foreach (var hx in s.Holders.Split(",")) if (hx.Trim().Length > 0) ids.Add(hx.Trim());
+                    while (w.Held.childCount < 1 + Mathf.Max(1, ids.Count)) { var c0 = w.Held.childCount == 0 ? E(w.Held, null, w: 14, h: 14) : Cameo(w.Held, 12f, 2f); c0.style.marginRight = 2; }
+                    Icon(w.Held[0], "lock", Cream);
+                    for (int k = 1; k < w.Held.childCount; k++) { bool has = k - 1 < ids.Count; Show(w.Held[k], has); if (has) Bg(w.Held[k].Q("face"), "badges/" + (PlayText.RoleOfId(ids[k - 1]) == "rival" ? "signal_rival" : "signal_police"), Color.white); }
+                }
                 var fs = HudModel.PriceLine(host, s.Row.I);
                 if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
                 Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false);
@@ -134,8 +151,8 @@ namespace Suborned.Play
             }
             var f = host.RingFocus; Transform t = f.HasValue && host.Views != null ? host.Views.Find(f.Value.view) : null;
             bool camera = f.HasValue && f.Value.view.StartsWith("camera/");
-            // a camera's pole view stands 1.6 m up its 3.2 m pole; the head (HostViews.CamHeadFor) is 3.25 m up, the base on the ground
-            Vector2 q = default; bool on = t != null && t.gameObject.activeInHierarchy && Proj(t.position + Vector3.up * (camera ? 1.65f : 1.2f), out q);
+            // a camera's pole view stands 1.6 m up its pole; the head (HostViews.CamHeadUp) is 3.25 m up on the stand-in, 4.78 m on the kit pole
+            Vector2 q = default; bool on = t != null && t.gameObject.activeInHierarchy && Proj(t.position + Vector3.up * (camera ? host.Views.CamHeadUp - 1.6f : 1.2f), out q);
             Show(ringFocusEl, on); RingFocusName = on ? f.Value.view : "";
             if (!on) return;
             GroundRing(t.position - Vector3.up * (camera ? 1.6f : 0f), 0.8f, LookLive, 2.6f, false, 0.6f); // and on the ground at its foot, behind legs (brief 046)
@@ -165,7 +182,8 @@ namespace Suborned.Play
                 }
             }
             cursorMark.style.left = cx; cursorMark.style.top = cy;
-            var g = cursorMark.Q("g"); Show(g, kind == "aim"); if (kind == "aim") Icon(g, "fire", Cream);
+            var g = cursorMark.Q("g"); Show(g, kind is "aim" or "nowalk"); if (kind == "aim") Icon(g, "fire", Cream); else if (kind == "nowalk") Icon(g, "s_moving", Cream);
+            var nw = cursorMark.Q("nowalk"); if (nw == null) { nw = P(cursorMark, 0, 0, 22, 22, (p, r) => { p.strokeColor = Cream; p.lineWidth = 2f; p.lineCap = LineCap.Round; p.BeginPath(); p.MoveTo(new Vector2(4, 18)); p.LineTo(new Vector2(18, 4)); p.Stroke(); }); nw.name = "nowalk"; } Show(nw, kind == "nowalk"); // struck footprints: no walk there
             Show(cursorDots, kind == "ring");
             cursorMark.style.backgroundColor = new Color(Plate.r, Plate.g, Plate.b, 0.85f); Round(cursorMark, 11);
         }

@@ -90,7 +90,7 @@ namespace Suborned.Play
 
         (ContextPlan plan, int way) MainOf(Target t, Vector2 screen)
         {
-            if (t == null || t.Kind == "op" || Game == null) return (null, -1);
+            if (t == null || t.Kind == "op" && !DownedOp(t) || Game == null) return (null, -1); // item 31: a downed agent's main way is Carry (a hold)
             if (HoverPlan != null && SameTarget(HoverPlan.T, t) && Time.unscaledTime - hoverPlanAt < 0.5f) return (HoverPlan, HoverWay);
             ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, screen)) || plan == null) return (null, -1);
             return (plan, MainWay(plan));
@@ -111,6 +111,23 @@ namespace Suborned.Play
         }
 
         /// <summary>On an act (walking to it, doing it) or holding a queued one; a walk alone is not busy (orders.js busy).</summary>
+        /// <summary>Item 31: a downed agent of the cell (a thing with ways: Carry), not one standing.</summary>
+        bool DownedOp(Target t) => t != null && t.Kind == "op" && IsOpName(t.Key) && Game != null && Game.Ops[(int)Op.Parse(t.Key)].Down;
+        /// <summary>Item 33: the ring at a clicked thing, sticky, nothing taken (ContextRank's quick take is never used for a click). False when
+        /// the thing has no ways (the click then walks as before).</summary>
+        public int ClickRings { get; private set; }
+        public int RightTaps { get; private set; }
+        /// <summary>Proofs: a left click as the hold preset reads one (HoldClick) at a screen point.</summary>
+        public void LeftClickScripted(Vector2 p) => HoldClick(p, false);
+        bool ClickRing(Target t, Vector2 p)
+        {
+            if (t == null || Game == null) return false;
+            ContextPlan plan = null; if (!Guard("panel", () => plan = ContextFor(t, p)) || plan == null) return false;
+            if (plan.Choice.Order.Count == 0 && !plan.Pn.Rows.Exists(r => r.I?.Order?.Do == "go" && r.Lock.code == "car-held")) return false; // a held Go still rings (shut, with its holders: brief 057 §4.2)
+            OpenRing(plan, p, false); if (Ring == null) return false;
+            Ring.Sticky = true; Ring.Always = false; Ring.FromHold = false; Ring.ByClick = true; ClickRings++; RightClickUsed = true; return true; // brief 057 (Aster): the first-act hint retires on the first ring a left click opens (item 33: the right tap does nothing now)
+        }
+
         bool BusyAgent(int k) => Game != null && (Game.Ops[k].Busy != null || Game.Ops[k].Act != null || pending[k] != null || Plan.Exists(x => x.K == k));
 
         /// <summary>Agent k's own row for a way (the same order), else null.</summary>
@@ -252,6 +269,7 @@ namespace Suborned.Play
             if (mouse.leftButton.wasPressedThisFrame && !onHud && !rp.On && !TrackpadOrbitHeld(kb)) // brief 051: Alt + left drag turns the view when Trackpad drag orbit is on
             {
                 var own = AgentNear(p); // your own agent under the cursor always wins (Sky: "couldn't click the enforcer")
+                if (own != null && Game.Ops[(int)Op.Parse(own.Key)].Down) own = null; // item 31: a downed agent is a thing: a hold carries it (priced, on the pill), a click walks
                 lp = new Press { On = true, At = p, T0 = now, T = own ?? PressTarget(p) }; if (Panel != null) ClosePanel();
                 if (own == null) { var (plan, way) = MainOf(lp.T, p); if (way >= 0) Charge = new HoldCharge { T = lp.T, Button = 0, Start = now, Plan = plan, Way = way, Run = shift, Verb = plan.Row(way).I.Label, Doers = DoersOf(plan, way) }; } // best placed is chosen at the press and stays
                 return true;
@@ -275,14 +293,14 @@ namespace Suborned.Play
                     HoldClick(p, shift);
                     return true;
                 }
-                if (c == null && !lp.Drag && (p - lp.At).magnitude > RingMovePx * KitScale) lp.Drag = true; // no hold under way: a drag is the box
+                if (c == null && !lp.Drag && !lp.Cancelled && (p - lp.At).magnitude > RingMovePx * KitScale) lp.Drag = true; // no hold under way: a drag is the box (Glyph's 0.2.94 review #12: never after a right click cancelled this hold; the left button still down drew a flat box, the stray cream line)
                 if (lp.Drag) BoxScreen = GuiRect(lp.At, p);
                 return true;
             }
             // ---- the right button
             if (mouse.rightButton.wasPressedThisFrame && !onHud)
             {
-                RightClickUsed = true; var own = AgentNear(p); rp = new Press { On = true, At = p, T0 = now, T = own ?? PressTarget(p) }; if (Panel != null) ClosePanel();
+                var own = AgentNear(p); rp = new Press { On = true, At = p, T0 = now, T = own ?? PressTarget(p) }; if (Panel != null) ClosePanel();
                 if (own == null && FocusTarget(rp.T, out var fid, out var fforce)) { rp.Used = true; FocusFire(rp.T, fid, fforce, p, null); } // Syndicate: once a fight is on a right click on a hostile focuses fire, no hold
                 return true; // under 0.2 s it is a tap: no charge, no pill, no draw (the charge begins below at 0.2 s)
             }
@@ -297,8 +315,7 @@ namespace Suborned.Play
                     if (c != null) { Charge = null; if (c.Ready) { BeginFireLock(c, was.At); return true; } HoldCancels++; Status = "Fire cancelled"; return true; } // full: a lasting fire order; early: nothing
                     if (held < RightTapS && (p - was.At).magnitude < RingMovePx * KitScale && Ring == null)
                     {
-                        if (was.T != null && was.T.Kind == "op") { CarryDowned(was.T, was.At); return true; } // your own agent: nothing (a downed one is carried), never a ring on someone behind it
-                        if (was.T == null) ActContext(null, was.At); else TapRing(was.T, was.At);
+                        RightTaps++; // item 33 (Sky 2026-10-24: "Right click then doesn't do anything"): a right tap does nothing, on a target or the ground (the walk stop it gave on the ground is S, Esc or a new click); the right button fires (its hold)
                     }
                     return true;
                 }
@@ -330,7 +347,7 @@ namespace Suborned.Play
                 var op = Game.Ops[k]; if (op.Inside || op.InCar || Driving && k == dAgent && Following) continue;
                 var tr = views.Find("op/" + Op.Name((OpId)k)); if (!tr || !tr.gameObject.activeInHierarchy) continue;
                 var f = cam.WorldToScreenPoint(tr.position); var hd = cam.WorldToScreenPoint(tr.position + Vector3.up * 1.9f); if (f.z <= 0f || hd.z <= 0f) continue;
-                Vector2 a = f, v = (Vector2)hd - a; float t = Mathf.Clamp01(Vector2.Dot(screen - a, v) / Mathf.Max(1e-3f, v.sqrMagnitude)); float d = (screen - (a + v * t)).magnitude;
+                Vector2 a = f, v = (Vector2)hd - a; float t = Mathf.Clamp01(Vector2.Dot(screen - a, v) / Mathf.Max(1e-3f, v.sqrMagnitude)); float d = (screen - (a + v * t)).magnitude; if (op.Down) d = ((Vector2)f - screen).magnitude * 1.25f; // item 31: a downed agent lies down: near its body only, never the column of air above it
                 if (d < best) { best = d; bk = k; }
             }
             if (bk < 0) return null; var n = Op.Name((OpId)bk);
@@ -347,7 +364,10 @@ namespace Suborned.Play
             float now = Time.unscaledTime; var t = AgentNear(p) ?? TargetAt(p); // your own agent first: a click on it always selects it (even out of the squad, even busy)
             bool dbl = now - lastClickAt < controls.doubleSeconds && (t != null ? SameTarget(t, lastClickT) : lastClickT == null && (p - lastClickP).magnitude < 24f * KitScale);
             if (dbl) { lastClickAt = -9f; lastClickT = null; } else { lastClickAt = now; lastClickP = p; lastClickT = t; }
-            if (t != null && t.Kind == "op") { if (CarryDowned(t, p)) return; Select(Op.Parse(t.Key), shift); return; }
+            if (t != null && t.Kind == "op" && DownedOp(t)) { ClickRing(t, p); return; } // items 31 + 33: a click on a downed agent opens its ring (Carry is a way you take, never the click); beside it the ground walks
+            if (t != null && t.Kind == "op") { Select(Op.Parse(t.Key), shift); return; }
+            if (t != null && !dbl && ClickRing(t, p)) return; // a passer-by too when the selection has a way on them (the Enforcer's takedown); none: the click walks // item 33 (Sky 2026-10-24: "left click brings up the action ring"): a left click on a thing opens its ring, nothing taken
+            if (t != null && dbl && Ring == null && ClickRing(t, p)) return;
             if (t != null && t.Kind != "crowd")
             {
                 var (plan, way) = MainOf(t, p);

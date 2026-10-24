@@ -18,7 +18,11 @@ namespace Suborned.Sim
         // Re-sited 2026-10-19 with the door (Sky's option (b): the public door on the Office's west face): 5.6 m south of the door on the
         // forecourt, where Waymark's c022 routes park him (route G, loud); was (4850, -2300) beside the old north door. The entrance
         // camera, which now looks south along the face, sees it unless looped; the patrol's sweep crosses it.
-        static readonly Pt BesideDoor = new Pt(6950, -4250);
+        // Brief 055: (6925, -4250) in engine 0.27.0, 25 cm north of the old (6950, -4250), since Vantage's cypress cyp-office-w became a walk solid;
+        // engine 0.28.0 (perception.mount, the drawn occluders): 50 cm north and 50 cm west to (6875, -4300), the nearest free point (with the Fixer's
+        // spot 1.5 m west of it, N52, F8-O9, S9-KO) whose line to the guard on the landing clears the 2 m topiary top-office-w (out/scratch/keel/b056/py).
+        // Waymark's routes still stand at the old point: his to re-site.
+        static readonly Pt BesideDoor = new Pt(6875, -4300);
         /// <summary>Waymark's c025 Enforcer wait on the forecourt (brief 031: out of every clock-keeping watcher's sight, more than 3 m from the guard).</summary>
         static readonly Pt Forecourt = new Pt(5650, -4750);
         // posts covering the service lane exit, 10 m down the lane from where the response unit stops (motive-fights.md §2.9: the cell covers the exit).
@@ -62,6 +66,13 @@ namespace Suborned.Sim
         }
 
         /// <summary>Route A as S10 plays it, to the moment the Enforcer comes out with Vale.</summary>
+        /// <summary>Engine 0.28.0 (brief 054 §3.2): below Alert 2 a threat is minded by security only; wait (up to 2 min, a second at a time)
+        /// for a moment someone would see a Pressure on Inez (the off-duty guards at the café, a passing guard).</summary>
+        static void InSightOfSecurity(Run r)
+        {
+            var g = r.G;
+            for (int k = 0; k < 120 && g.Preview("pressure", Inez).Witnesses == 0 && !g.Over; k++) r.To(g.Tick + T(1));
+        }
         static void RouteA(Run r, bool reroute = false)
         {
             var g = r.G;
@@ -70,7 +81,10 @@ namespace Suborned.Sim
             r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
             r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
             r.Done(Scout); HelpUntilTurned(r, Inez);
-            while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+            // engine 0.28.0 (brief 055, the drawn walk): the Fixer's walks are shorter round the drawn solids and Inez is turned at 3:27, not 3:48; the
+            // route still calls at the first sweep opening from 3:48, as it did, so Vale comes out at 5:53 and not at 4:32, when guard 74 crosses the
+            // service lane on his new way round the police post (he would see the carry and radio it: Alert 2, the patrol's fight)
+            while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick)) g.Step();
             r.Do(Fixer, "call", Inez);
             r.To(r.Send(Enf, "d:Office entrance"));
             while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
@@ -260,7 +274,7 @@ namespace Suborned.Sim
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700)); // the Enforcer waits east of the door, out of the guard's cone
                 r.Done(Scout);
                 HelpUntilTurned(r, Inez); // as many Helps as the card asks (the cast's temperament, §04)
-                while (g.SweepSeesEntrance(g.Tick) == false) g.Step(); // call when the patrol's sweep covers the door
+                while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick) || g.SweepSeesEntrance(g.Tick - 1)) g.Step(); // call as the patrol's sweep comes onto the door, from 3:48, so the Enforcer arrives under it and waits it out (engine 0.30.0: Pulse's sweep of 2026-10-24 covers the door 0-29.2 s and 70.9-100 s of its period, 6.4 s more than the old line's 0-26 and 74.1-100; at 3:48, phase 28.0, the old "covers now" call left 1.2 s, so he arrived into the opening)
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
                 r.Is(g.PatrolWatching(r.At("d:Office entrance")), "the patrol covers the entrance at the first opening");
@@ -338,7 +352,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                while (!g.PatrolWatching(r.Op(Enf).Pos)) g.Step();
+                if (!r.Until(() => g.PatrolWatching(r.Op(Enf).Pos), T(300))) { r.Is(false, "the patrol's cone reaches the Enforcer beside the door within 5 min"); return; } // bounded (brief 055: an unbounded wait hung `hashes` when the grid moved him)
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos), "out of the guard's cone");
                 r.Is(g.PatrolWatching(r.Op(Enf).Pos), "in the patrol's cone");
                 r.Fire(Enf, GuardR);
@@ -416,7 +430,7 @@ namespace Suborned.Sim
                 r.Eq(g.RivalAt, g.Tick + T(16), "the rivals still hear the gunfire");
                 r.Until(() => g.GuardDown, T(30));
                 // FIX → orders: the prototype moved the Enforcer to the service lane by hand; here he walks onto the rivals' way in
-                r.SendTo(Enf, new Pt(4200, -1000));
+                r.SendTo(Enf, new Pt(4300, -1000)); // brief 055: 1 m east of (4200, -1000): the drawn solids bend his walk west, and at the rivals' react he stood 18 cm past their reach
                 int limit = g.RivalAt + T(60);
                 while (!g.RivalsTracking && g.Tick < limit && !g.Over) g.Step();
                 r.Is(g.RivalsPose().HasValue, "the rivals come in visibly from the east street");
@@ -482,12 +496,12 @@ namespace Suborned.Sim
                 r.Is(g.Lockdown > g.Tick, "the wider cordon is still closing");
             }, Turned(Inez));
 
-            Add("S20", "327", "Route B, quiet: Watch and Listen at the car; turn the driver before 5:40; false tip on the rivals; 6:10 the service lane; take Vale; to the car. No shots.", r =>
+            Add("S20", "327", "Route B, quiet: Listen at the car (engine 0.28.0: no Watch to give on the driver, brief 054 §2.1); turn the driver before 5:40; false tip on the rivals; 6:10 the service lane; take Vale; to the car. No shots.", r =>
             {
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout);
+                r.Is(!g.WatchOffered(Driver), "no Watch to give on the driver (a Mercenary, neutral: brief 054 §2.1): Listen needs none");
                 r.Do(Scout, "listen", Driver); r.Done(Scout); // Sky 2026-10-15: Listen, not Watch, gives the need (the prototype's watch did)
                 TurnDriver(r);
                 r.Is(g.Driver.Turned, "the driver is turned");
@@ -605,11 +619,12 @@ namespace Suborned.Sim
             });
 
             var idealist = new Start(); idealist.Temperament[Inez] = "idealist";
-            Add("S24", "421", "Watch unlocks Pay, shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is.", r =>
+            Add("S24", "421", "Pay is open with no Watch to give (engine 0.28.0, brief 054 §2.2: an Idealist Inez reads neutral; it was the Watch that unlocked it), shown at $70,000 with \"?\"; Help stays locked; an Idealist Inez refuses Pay, and it is remembered (Sky 2026-10-15). The refusal is the rule under test, so the start state makes her an Idealist whoever the cast is.", r =>
             {
                 var g = r.G;
+                // engine 0.28.0 (brief 054 §2.2): an Idealist Inez has fear 0 and reads neutral, so there is no Watch to give and Pay needs none
                 r.To(r.Send(Scout, "d:Courtyard"));
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.Is(!g.WatchOffered(Inez) && g.ScoutQuery("watch", Inez).code == "nothing-to-see", "no Watch to give on a neutral Inez: nothing-to-see");
                 r.To(r.Send(Fixer, "d:Courtyard"));
                 var q = g.Preview("pay", Inez);
                 r.Eq(q.Lines[0].Usd, 70000L, "routine unlocks an expensive offer: $70,000");
@@ -753,7 +768,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
                 r.Send(Fixer, "d:Getaway bay"); // the support waits at the car (motive-fights.md §2.9)
                 r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals"); r.Done(Scout);
@@ -818,7 +833,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
                 int onlookers = g.Preview("pressure", Inez).Witnesses; // the same people, for a visible act (N12c)
                 r.Is(onlookers > 0, $"people stand within witness range of Inez, on a clear line: a threat here would be seen by {onlookers}");
                 int trail = g.Trail, standing = g.Standing, incidents = g.Incidents.Count;
@@ -841,7 +856,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
-                r.To(r.Send(Fixer, "d:Courtyard"));
+                r.To(r.Send(Fixer, "d:Courtyard")); InSightOfSecurity(r); // engine 0.28.0: at Alert 0 only security minds a threat
                 int trail = g.Trail, standing = g.Standing;
                 var q = g.Preview("pressure", Inez);
                 r.Is(q.Witnesses > 0, $"the card counts who would see it ({q.Witnesses})");
@@ -909,8 +924,7 @@ namespace Suborned.Sim
             Add("N17c", "—", "The lie itself (people.rules talker.lie), whoever the cast is: the start state makes Inez an Idealist (bravery helper from the start, §04); helped, she is no Talker, covers for the cell, and in a neutral district her lie gives the investigators nothing.", r =>
             {
                 var g = r.G;
-                r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez); r.Done(Scout); // engine 0.28.0: an Idealist Inez reads neutral: no Watch to give, Listen needs none
                 r.To(r.Send(Fixer, "d:Courtyard")); HelpUntilTurned(r, Inez);
                 var q = g.Question(g.Inez);
                 r.Is(q.Outcome == "lies" && q.Facts.Count == 1 && q.Facts[0] == "nothing", $"questioned, Inez lies: nothing ({q.Outcome} {string.Join(",", q.Facts)})");
@@ -965,7 +979,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
-                r.Do(Scout, "watch", Driver); r.Done(Scout); r.Do(Scout, "listen", Driver); r.Done(Scout);
+                r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
                 r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
                 r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
@@ -1024,7 +1038,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 var q = g.Preview("help", Inez);
-                r.Eq(q.Lines.Count, 4, "four line items: base, refused before, one more Help, trust over time");
+                r.Eq(q.Lines.Count, 6, "six line items: base, refused before, one more Help, trust over time, and the mood's ready and ready-at-one (brief 054 §4.2)");
                 r.Eq(q.Lines[0].Line, "base", "the first is the base");
                 r.To(r.Send(Fixer, "d:Courtyard")); r.Do(Fixer, "turn", Inez, "help"); r.Done(Fixer);
                 var m = g.Inez.Memory.Find(x => x.Act == "help");
@@ -1056,8 +1070,10 @@ namespace Suborned.Sim
             IntentCases(); // engine 0.19.0: hostile intent per agent (Pulse hostile-initiative.md, Sky's answers) and weapons free on the block (ScenariosWeaponsFree.cs)
             FireLineCases(); // Sky 2026-10-22 (build 0.2.48): the driven Scout at the kerb fires on the patrol (ScenariosFireLine.cs)
             FinalIntentCases(); // engine 0.20.0 (tuning.md §15.2, PROVISIONAL): the final fight per agent (ScenariosFinalIntent.cs)
+            SealCarCases(); // engine 0.30.0 (briefs 057 §2 and §4, 060 #8): FailCause.Car, the debrief true to the run, the seal window, the reroute walk and PatrolLegs (ScenariosSealCar.cs)
             WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
             FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
+            NoticeCases(); // engine 0.28.0 (briefs 054, 055): sight from real heights, civilian notice by cone and Alert, the Watch that shows something (ScenariosNotice.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
         }
     }

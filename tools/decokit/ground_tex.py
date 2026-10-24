@@ -135,6 +135,22 @@ def lawn_soften(a, stripes=.45, sat=.78, sigma_px=28):
     return lin_to_srgb(lin)
 
 
+def lawn_bands(a, amp=.16, bands=2, edge=.12, tilt=.0):
+    """Mowing bands for the long view (brief 048, Vela, 2026-10-24; Glint: the lawn was one flat albedo from the air). lawn_soften pulled the sheet's 1 m stripes down to 45 percent so they do not
+    read as hard stripes at play zoom, and at 300 m they average out. This adds `bands` broad bands across the 8 m tile (4 m each: a stripe of a mower pass pair) with soft edges `edge` of a band,
+    +-`amp` in linear luminance (the light band a touch yellower, the dark a touch bluer, as turf lies against the light), seamless because the profile is periodic in the tile."""
+    h, w = a.shape[:2]
+    y = (np.arange(h) + .5) / h
+    sq = np.tanh(np.sin(2 * np.pi * y * bands) / max(edge, 1e-3) * .5)  # soft square wave -1..1, period tile/bands
+    prof = sq[:, None]                                         # parallel to the sheet's own 1 m stripes (rows), so the two do not plait
+    lin = srgb_to_lin(a)
+    gain = 1 + amp * prof
+    out = lin * gain[..., None]
+    out[..., 0] *= (1 + .03 * prof)
+    out[..., 2] *= (1 - .05 * prof)
+    return lin_to_srgb(out)
+
+
 def load_rgb(name):
     return np.asarray(Image.open(DER / f"{name}.png").convert("RGB")).astype(np.float32) / 255
 
@@ -277,6 +293,8 @@ def build():
             # pavement (brief 048, Vela): the per-channel power curve drove the flags' darkest 5 percent to hue 52 (olive grey #8A8879) while the mean sat at hue 39; in shade that
             # multiplied into the dark olive-brown Glint measured. One luminance curve with the target's hue and half the sheet's own chroma holds every tone at the cream hue.
             alb = alb_src if role == "asphalt_detail" else (recolour_grey if key in ("kerb", "gutter", "asphalt", "pavement") else recolour)(alb_src, TARGET[key][0])
+            if role == "lawn":
+                alb = lawn_bands(alb)
             srcs = {"a": alb, "n": nrm_src, "m": mask_src}
         files = []
         for suffix, size, kind in p["maps"]:

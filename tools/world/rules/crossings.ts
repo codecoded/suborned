@@ -10,6 +10,7 @@ import { dist, inPoly } from '../../plan/geom';
 import { samples9 } from '../../plan/street-zones';
 import { TOL, type WCtx, itemRing, lineDist, rule } from '../../plan/world-ctx';
 import { ctxOf } from '../gen/common';
+import { ringWidth } from '../gen/kerbreturn';
 import { areaOf, clipConvex, landingsOf, mayCross, overlaps, stripBlock } from '../gen/street/crossings';
 import { type Pair, armSeeds, dedupe, islandSeeds, mallSeeds, rulesOf } from '../gen/street/coverage';
 import { lawn, levelAt } from '../gen/street/ground';
@@ -62,7 +63,7 @@ function stripRule(c: WCtx): Check[] {
     if (on) bad.push(`${s.id} stands on the lawn at (${on[0].toFixed(1)}, ${on[1].toFixed(1)}): a landing stands on pavement, a path or a platform`);
   }
   const envelope = c.plan.standards.tram.trackCentres / 2 + 0.5, tracks = c.w.transit.tram.map(t => t.line), bays = c.w.ground.flats.filter(f => f.surface === 'bay').map(f => f.ring), drives = (c.w.ground.drives ?? []).map(f => f.ring);
-  const medians = c.w.ground.medians.filter(m => dist(m.ring[1]!, m.ring[2]!) >= std.refuge - TOL);
+  const medians = c.w.ground.medians.filter(m => ringWidth(m.ring as V[]) >= std.refuge - TOL); // brief 028: a median's ends are bullnoses, so its width is read across its length
   for (const x of crossings) {
     const its = x.landings, why = ((): string => {
       if (x.kind === 'kerb') {

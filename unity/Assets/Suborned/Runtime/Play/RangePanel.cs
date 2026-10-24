@@ -99,6 +99,7 @@ namespace Suborned.Play
         void OnGUI()
         {
             if (h == null || !h.rangeMode || h.Game == null) return;
+            if (!(FrontEnd.DebugOptions || GameBoot.Arg("-gameProof") || GameBoot.Arg("-shots"))) return; // Glyph's 0.2.104 review #6: the lab's panel, in a development player, `-debug` or a proof only
             Styles(); var g = h.Game; var cam = UnityEngine.Camera.main;
             float k = Screen.height / 1080f; GUI.matrix = Matrix4x4.Scale(new Vector3(k, k, 1f)); float W = Screen.width / k;
             var r = new Rect(W - 470, 120, 456, h.controls.HoldActs ? 495 : 420); // the panel, top right under the clock (the hold preset: one more setting row and the fire readout)

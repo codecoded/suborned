@@ -60,7 +60,7 @@ namespace Suborned
         // ---- data (suborned.lens/1) ----
         [Serializable] public sealed class Bloomp { public float threshold, intensity, scatter; public string tint; }
         [Serializable] public sealed class Dofp { public bool enabled; public float start, end, maxRadius; public bool highQuality; }
-        [Serializable] public sealed class Skyp { public float hazeHeight, aureole, aureolePower, hazeLift, broad, broadPower; }
+        [Serializable] public sealed class Skyp { public float hazeHeight, hazeHeightLong, aureole, aureolePower, hazeLift, broad, broadPower, peach; } // peach (Glint 2026-10-24, optional, 0 = none): a warm peach cast on the blue-to-haze blend, so the band between sky and horizon does not pass through grey
         [Serializable] public sealed class Palp { public string zenith, mid; public float hazeHeight; } // hazeHeight: the teal sky's own band (Glint 2026-10-23); 0 = sky.hazeHeight
         [Serializable] public sealed class FlareEl
         {
@@ -71,22 +71,48 @@ namespace Suborned
         [Serializable] public sealed class Gradep { public float saturationPercent, liftOffset, liftWarmth; public string liftTint; public float fallbackSaturation; public Greensp greens; }
         /// <summary>Greens protection (Glint 2026-10-23): a hue-vs-hue shift of hueDeg on hues fromDeg..toDeg, full between fullFromDeg and fullToDeg, eased to 0 at the ends; hueDeg 0 = none.</summary>
         [Serializable] public sealed class Greensp { public float hueDeg, fromDeg, fullFromDeg, fullToDeg, toDeg; }
+        /// <summary>Glint 2026-10-24 (Glyph's review of 0.2.99): the sun's SHADOW STRENGTH by day (1 = a shadow takes the whole sun out; below 1 the sun still fills the shade in its own warm colour, so shaded cream stays cream and shaded enamel stays powder blue; the sunlit side does not change). 0 or absent = the scene's own.</summary>
+        [Serializable] public sealed class Sunp { public float shadowStrength; }
+        /// <summary>Glint 2026-10-24: the long tier's exposure as a DELTA in EV on the scene grade's own post exposure (0 = none): the plaza and the pale roofs blow out in the flyby.</summary>
+        [Serializable] public sealed class Longp { public float exposureDelta; }
         [Serializable] public sealed class Bandp { public string resource; public float minDeg, maxDeg, gain, opacity; }
+        // ---- the evening phase (Glint 2026-10-24; LightPhase.SetEvening). All optional: a lens.json with no `evening` leaves SetEvening as it was (the day look with the dusk lights) ----
+        /// <summary>The evening sun: a low warm sun with long shadows. pitch/yaw are the light's own Euler angles (as light.json sun: pitch 38 yaw 330 by day); shadowStrength is the Light's, replacing sun.shadowStrength.</summary>
+        [Serializable] public sealed class EveSun { public string colour; public float intensity, pitch, yaw, shadowStrength; }
+        /// <summary>An ambient colour as the builder makes it: the hex with its HSV value scaled (light.json ambient.sky.value).</summary>
+        [Serializable] public sealed class EveAmb { public string hex; public float value; }
+        [Serializable] public sealed class EveAmbient { public EveAmb sky, equator, ground; }
+        [Serializable] public sealed class EveReflection { public float intensity, probeScale; }
+        /// <summary>The sky at dusk, perspective tiers: zenith and mid colours, the sun glow colour, the haze band and the aureole.</summary>
+        [Serializable] public sealed class EveSky { public string zenith, mid, sunGlow; public float hazeHeight, aureole, aureolePower, hazeLift, peach; }
+        /// <summary>The grade between day and night, ADDED to the tier's own grade by k (0 = day, 1 = evening). exposure EV and contrast/saturation are deltas on the scene grade; filter, shadows, highlights are multipliers on the scene's own; temperature, tint on the scene's 0; vignette is the absolute intensity.</summary>
+        [Serializable] public sealed class EveGrade { public float exposure, contrast, saturation, temperature, tint, vignette; public string filter, shadows, highlights; }
+        [Serializable] public sealed class Evening { public float easeSeconds; public EveSun sun; public EveAmbient ambient; public EveReflection reflection; public EveSky sky; public EveGrade grade; }
         [Serializable] public sealed class Lens
         {
             public string schema; public Skyp sky; public Palp teal; public Bloomp bloomFollow, bloomLong; public Dofp dofLong;
-            public Flarep flare; public Gradep gradePlay; public Bandp farBand;
+            public Flarep flare; public Gradep gradePlay; public Bandp farBand; public Sunp sun; public Longp gradeLong; public Evening evening;
         }
+
+        /// <summary>The evening phase's data (lens.json `evening`), or null when the file has none or was rejected: LightPhase reads it for the sun, the ambient and the reflections.</summary>
+        public static Evening EveningData { get; private set; }
+        /// <summary>A hex colour with its HSV value scaled, as the builder makes the ambient colours (Look.Palette).</summary>
+        public static Color Scaled(string hex, float value) { var c = Hex(hex); Color.RGBToHSV(c, out var h, out var s, out var v); return Color.HSVToRGB(h, s, Mathf.Clamp01(v * value)); }
 
         public static AtmosphereLens Instance { get; private set; }
 
         Lens data;
         Color tealZenith, tealMid;
         Volume vPlay, vFollow, vLong;
-        ColorAdjustments playSat; LiftGammaGain playLift; ColorCurves playCurves, followCurves, longCurves; DepthOfField longDof;
+        ColorAdjustments playSat, longAdj; LiftGammaGain playLift; ColorCurves playCurves, followCurves, longCurves; DepthOfField longDof;
         /// <summary>The long tier's far blur on or off (TpLongRun times the long view both ways, Glint 2026-10-23); the data's dofLong.enabled at start.</summary>
         public static bool LongDof { get => Instance && Instance.longDof && Instance.longDof.active; set { if (Instance && Instance.longDof) Instance.longDof.active = value; } }
         float baseSaturation = -999f;
+        /// <summary>The evening grade's parts on one tier's volume (a tier volume holds the tier's own grade; the evening is pushed onto it by k, so a tier is never stacked on another).</summary>
+        sealed class Rig { public ColorAdjustments adj; public WhiteBalance wb; public ShadowsMidtonesHighlights smh; public Vignette vig; }
+        Rig rigPlay, rigFollow, rigLong;
+        float duskK = -1f, playSatValue, longExposureDelta;
+        Light sunLight; float sunStrength0 = -1f; int sunSearched;
         LensFlareComponentSRP flare; LensFlareDataSRP flareData; Texture flareStarburst;
         Texture2D farBand; bool farBandTried;
         readonly HashSet<Camera> forcedPost = new();
@@ -104,6 +130,7 @@ namespace Suborned
             try { d = JsonUtility.FromJson<Lens>(text.text); } catch (Exception e) { Debug.LogError($"AtmosphereLens: lens.json: {e.Message}"); return; }
             string why = Check(d);
             if (why != null) { Debug.LogError($"AtmosphereLens: lens.json rejected ({why}); no lens, grade or sky change"); return; }
+            EveningData = d.evening;
             var go = new GameObject("atmosphere lens");
             go.SetActive(false); // OnEnable runs on AddComponent: fill in the data first, then switch on
             DontDestroyOnLoad(go);
@@ -118,6 +145,7 @@ namespace Suborned
             if (d == null) return "empty";
             if (d.schema != "suborned.lens/1") return "schema suborned.lens/1 expected";
             if (d.sky == null || d.sky.hazeHeight <= 0f || d.sky.hazeHeight > 1f) return "sky.hazeHeight in (0, 1]";
+            if (d.sky.hazeHeightLong < 0f || d.sky.hazeHeightLong > 1f) return "sky.hazeHeightLong in [0, 1] (0 = sky.hazeHeight)";
             if (d.teal == null || !ColorUtility.TryParseHtmlString(d.teal.zenith, out _) || !ColorUtility.TryParseHtmlString(d.teal.mid, out _)) return "teal.zenith / teal.mid are not #rrggbb";
             foreach (var b in new[] { d.bloomFollow, d.bloomLong })
                 if (b == null || b.threshold < 0f || b.intensity < 0f || b.scatter < 0f || b.scatter > 1f || !ColorUtility.TryParseHtmlString(b.tint, out _)) return "bloom: threshold >= 0, intensity >= 0, scatter 0..1, tint #rrggbb";
@@ -132,6 +160,28 @@ namespace Suborned
             if (gg != null && Mathf.Abs(gg.hueDeg) > 0.01f && (Mathf.Abs(gg.hueDeg) > 30f || !(0f <= gg.fromDeg && gg.fromDeg < gg.fullFromDeg && gg.fullFromDeg <= gg.fullToDeg && gg.fullToDeg < gg.toDeg && gg.toDeg <= 360f)))
                 return "gradePlay.greens: |hueDeg| <= 30, 0 <= fromDeg < fullFromDeg <= fullToDeg < toDeg <= 360";
             if (d.farBand == null || string.IsNullOrEmpty(d.farBand.resource) || d.farBand.maxDeg <= d.farBand.minDeg) return "farBand: resource, minDeg < maxDeg";
+            if (d.sky.peach < 0f || d.sky.peach > 2f) return "sky.peach in [0, 2] (0 = none)";
+            if (d.sun != null && d.sun.shadowStrength != 0f && (d.sun.shadowStrength < 0.2f || d.sun.shadowStrength > 1f)) return "sun.shadowStrength 0 (the scene's own) or 0.2..1";
+            if (d.gradeLong != null && Mathf.Abs(d.gradeLong.exposureDelta) > 1.5f) return "gradeLong.exposureDelta within +-1.5 EV";
+            return CheckEvening(d.evening);
+        }
+
+        static string CheckEvening(Evening e)
+        {
+            if (e == null) return null; // optional
+            bool Ok(string h) => ColorUtility.TryParseHtmlString(h, out _);
+            if (e.easeSeconds < 0f || e.easeSeconds > 10f) return "evening.easeSeconds 0..10";
+            if (e.sun == null || !Ok(e.sun.colour) || e.sun.intensity < 0f || e.sun.intensity > 8f || e.sun.pitch < 3f || e.sun.pitch > 80f || e.sun.yaw < 0f || e.sun.yaw > 360f || e.sun.shadowStrength < 0.2f || e.sun.shadowStrength > 1f)
+                return "evening.sun: colour #rrggbb, intensity 0..8, pitch 3..80, yaw 0..360, shadowStrength 0.2..1";
+            if (e.ambient == null || e.ambient.sky == null || e.ambient.equator == null || e.ambient.ground == null) return "evening.ambient: sky, equator, ground";
+            foreach (var a in new[] { e.ambient.sky, e.ambient.equator, e.ambient.ground }) if (!Ok(a.hex) || a.value < 0f || a.value > 2f) return "evening.ambient: hex #rrggbb, value 0..2";
+            if (e.reflection == null || e.reflection.intensity < 0f || e.reflection.intensity > 2f || e.reflection.probeScale < 0f || e.reflection.probeScale > 2f) return "evening.reflection: intensity 0..2, probeScale 0..2";
+            var s = e.sky;
+            if (s == null || !Ok(s.zenith) || !Ok(s.mid) || !Ok(s.sunGlow) || s.hazeHeight <= 0f || s.hazeHeight > 1f || s.aureole < 0f || s.aureolePower < 1f || s.hazeLift < 0f || s.peach < 0f || s.peach > 2f)
+                return "evening.sky: zenith, mid, sunGlow #rrggbb, hazeHeight (0, 1], aureole >= 0, aureolePower >= 1, hazeLift >= 0, peach 0..2";
+            var g = e.grade;
+            if (g == null || !Ok(g.filter) || !Ok(g.shadows) || !Ok(g.highlights) || Mathf.Abs(g.exposure) > 1.5f || Mathf.Abs(g.contrast) > 40f || Mathf.Abs(g.saturation) > 40f || Mathf.Abs(g.temperature) > 40f || Mathf.Abs(g.tint) > 40f || g.vignette < 0f || g.vignette > 0.6f)
+                return "evening.grade: filter, shadows, highlights #rrggbb, exposure within 1.5 EV, contrast/saturation/temperature/tint within 40, vignette 0..0.6";
             return null;
         }
 
@@ -150,6 +200,12 @@ namespace Suborned
             Bloom(pf, data.bloomFollow); followCurves = pf.Add<ColorCurves>(false); // Glint 2026-10-23 (optional): the greens protection on the follow and long tiers too
             vLong = NewVolume("lens/long", out var pl);
             Bloom(pl, data.bloomLong); longCurves = pl.Add<ColorCurves>(false);
+            longExposureDelta = data.gradeLong != null ? data.gradeLong.exposureDelta : 0f;
+            if (Mathf.Abs(longExposureDelta) > 0.001f) longAdj = pl.Add<ColorAdjustments>(false);
+            if (data.evening != null)
+            {   // the evening phase's grade parts, on each tier's own volume (inert until LightPhase.Dusk > 0: no override is set)
+                rigPlay = MakeRig(pp, playSat); rigFollow = MakeRig(pf, null); rigLong = MakeRig(pl, longAdj); longAdj = rigLong.adj;
+            }
             if (data.dofLong.enabled)
             {
                 var dof = longDof = pl.Add<DepthOfField>(false);
@@ -160,6 +216,11 @@ namespace Suborned
             ApplyPlayGrade();
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += (_, _) => { baseSaturation = -999f; };
         }
+
+        static Rig MakeRig(VolumeProfile p, ColorAdjustments adj) => new Rig
+        {
+            adj = adj ? adj : p.Add<ColorAdjustments>(false), wb = p.Add<WhiteBalance>(false), smh = p.Add<ShadowsMidtonesHighlights>(false), vig = p.Add<Vignette>(false),
+        };
 
         Volume NewVolume(string name, out VolumeProfile profile)
         {
@@ -184,7 +245,8 @@ namespace Suborned
             var g = data.gradePlay;
             float s0 = BaseSaturation();
             float mult = (1f + s0 / 100f) * (1f + g.saturationPercent / 100f);
-            playSat.saturation.Override(Mathf.Clamp((mult - 1f) * 100f, -100f, 100f));
+            playSatValue = Mathf.Clamp((mult - 1f) * 100f, -100f, 100f);
+            playSat.saturation.Override(playSatValue);
             var tint = Color.Lerp(Color.white, Hex(g.liftTint), g.liftWarmth);
             playLift.lift.Override(new Vector4(tint.r, tint.g, tint.b, g.liftOffset));
             playLift.gain.Override(new Vector4(1f, 1f, 1f, -g.liftOffset)); // white stays white: c x (1 - L) + L raises the shadows and leaves the highlights
@@ -197,7 +259,33 @@ namespace Suborned
                 var keys = new[] { new Keyframe(gr.fromDeg / 360f, 0.5f, 0f, 0f), new Keyframe(gr.fullFromDeg / 360f, y, 0f, 0f), new Keyframe(gr.fullToDeg / 360f, y, 0f, 0f), new Keyframe(gr.toDeg / 360f, 0.5f, 0f, 0f) };
                 foreach (var cc in new[] { playCurves, followCurves, longCurves }) if (cc) cc.hueVsHue.Override(new TextureCurve(keys, 0.5f, true, new Vector2(0f, 1f)));
             }
+            if (longAdj && Mathf.Abs(longExposureDelta) > 0.001f) longAdj.postExposure.Override(BaseExposure() + longExposureDelta); // only the exposure is overridden; contrast, saturation and filter stay the scene grade's
             baseSaturation = s0;
+            duskK = -1f; // the evening grade is pushed again on the next Update (a scene load re-reads the scene grade)
+        }
+
+        float BaseExposure()
+        {
+            var ph = Suborned.Play.LightPhase.Instance;
+            var vol = ph ? ph.day.grade : null;
+            if (vol && vol.sharedProfile && vol.sharedProfile.TryGet<ColorAdjustments>(out var ca) && ca.postExposure.overrideState) return ca.postExposure.value;
+            return 0.15f; // light.json post.colour.postExposure, when the day grade cannot be found
+        }
+
+        /// <summary>The sun's shadow strength (lens.json sun.shadowStrength) by day on the perspective and play cameras, the scene's own when the atmosphere is off or at night.</summary>
+        void SunShade(bool on)
+        {
+            if (!sunLight)
+            {
+                if (Time.frameCount - sunSearched < 120 && sunSearched > 0) return; // a scene without a sun (a menu): look again every two seconds, not every camera
+                sunSearched = Time.frameCount;
+                sunLight = RenderSettings.sun;
+                if (!sunLight) foreach (var l in FindObjectsByType<Light>()) if (l && l.type == LightType.Directional && l.enabled) { sunLight = l; break; }
+                if (!sunLight) return;
+                sunStrength0 = sunLight.shadowStrength;
+            }
+            float want = on && data.sun != null && data.sun.shadowStrength > 0f ? data.sun.shadowStrength : sunStrength0;
+            if (!Mathf.Approximately(sunLight.shadowStrength, want)) sunLight.shadowStrength = want;
         }
 
         float BaseSaturation()
@@ -249,13 +337,14 @@ namespace Suborned
             }
             bool post = on && hasUd && ud.renderPostProcessing && !overlay;
             if (baseSaturation < -990f && on) ApplyPlayGrade();
+            if (!overlay) SunShade(on);
             vPlay.weight = post && tier == DistanceHaze.Tier.Play ? 1f : 0f;
             vFollow.weight = post && tier == DistanceHaze.Tier.Follow ? 1f : 0f;
             vLong.weight = post && tier == DistanceHaze.Tier.Long ? 1f : 0f;
             float fl = !post ? 0f : tier == DistanceHaze.Tier.Follow ? data.flare.follow : tier == DistanceHaze.Tier.Long ? data.flare.@long : 0f;
             if (fl > 0f) EnsureFlare();
             if (flare) flare.intensity = fl;
-            Sky(on && tier != DistanceHaze.Tier.Play && !overlay);
+            Sky(on && tier != DistanceHaze.Tier.Play && !overlay, tier);
         }
 
         void End(ScriptableRenderContext _, Camera c)
@@ -271,11 +360,11 @@ namespace Suborned
         {
             if (vPlay) vPlay.weight = 0f; if (vFollow) vFollow.weight = 0f; if (vLong) vLong.weight = 0f;
             if (flare) flare.intensity = 0f;
-            if (sky) Sky(false);
+            if (sky) { Sky(false, DistanceHaze.Tier.Play); SunShade(false); }
         }
 
         // ---- sky: shader globals read by Suborned/SkyGradient (all zero = the sky as built) ----
-        void Sky(bool on)
+        void Sky(bool on, DistanceHaze.Tier tier)
         {
             if (!on)
             {
@@ -284,7 +373,7 @@ namespace Suborned
                 return;
             }
             var s = data.sky;
-            var h = Lin(DistanceHaze.Colour); // the sky's horizon and below-horizon colour: the fog's colour
+            var h = DistanceHaze.LinearHaze(tier); // the sky's horizon and below-horizon colour: the fog's colour (already linear; the long tier's HDR gain included)
             Shader.SetGlobalVector(idHaze, new Vector4(h.r, h.g, h.b, 1f));
             if (AtmosphereSettings.SkyTeal)
             {
@@ -294,8 +383,9 @@ namespace Suborned
             }
             else { Shader.SetGlobalVector(idZenith, Vector4.zero); Shader.SetGlobalVector(idMid, Vector4.zero); } // cobalt: the scene sky material's own
             float hh = AtmosphereSettings.SkyTeal && data.teal.hazeHeight > 0f ? data.teal.hazeHeight : s.hazeHeight; // the teal sky's gentler band into cream; cobalt keeps sky.hazeHeight
+            if (!AtmosphereSettings.SkyTeal && tier == DistanceHaze.Tier.Long && s.hazeHeightLong > 0f) hh = s.hazeHeightLong; // the long tier's own, lower band: the sky stays blue overhead
             Shader.SetGlobalVector(idShape, new Vector4(hh, s.aureole, s.aureolePower, s.hazeLift));
-            Shader.SetGlobalVector(idExtra, new Vector4(s.broad, s.broadPower, 0f, 0f));
+            Shader.SetGlobalVector(idExtra, new Vector4(s.broad, s.broadPower, s.peach, 0f));
             FarBand();
         }
 

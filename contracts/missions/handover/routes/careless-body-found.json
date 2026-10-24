@@ -5,7 +5,7 @@
  "start": {},
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
-  {"tick":0,"op":"enforcer","do":"move","to":[6950,-4250]},
+  {"tick":0,"op":"enforcer","do":"move","to":[6925,-4250]},
   {"tick":0,"op":"scout","do":"move","to":"d:Office approach"},
   {"tick":0,"op":"fixer","do":"move","to":"crew:fixer"},
   {"tick":166,"op":"tech","do":"loop","target":"entrance"},

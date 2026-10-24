@@ -122,7 +122,9 @@ namespace Suborned.World
             city.Connectors(Nodes.Group(root, "connectors"), world.Connectors);
             var street = Nodes.Group(root, "street");
             city.Street(street, world.Street);
-            if (world.Ground.Pieces.Count > 0) { int gp = city.GroundPieces(Nodes.Group(root, "ground-pieces"), world.Ground.Pieces); Debug.Log($"World: ground pieces {gp} (export ground.pieces: tiles, drains, manholes)"); }
+            var roadAlt = RoadFinishTwin.Load(path, world); // brief 055 road test: the asphalt finish beside the enamel, switched at run time
+            if (world.Ground.Pieces.Count > 0) { int gp = city.GroundPieces(Nodes.Group(root, "ground-pieces"), world.Ground.Pieces, roadAlt == null ? null : (System.Func<StreetItemDto, string>)(gpc => roadAlt.EnamelOnly.Contains(RoadFinishTwin.Key(gpc)) ? RoadFinishTwin.EnamelLayer : null)); Debug.Log($"World: ground pieces {gp} (export ground.pieces: tiles, drains, manholes)"); }
+            if (roadAlt != null) { int ap = city.GroundPieces(Nodes.Group(root, RoadFinishTwin.AsphaltLayer), roadAlt.AsphaltOnly); Debug.Log($"World: road finish twin: {roadAlt.EnamelOnly.Count} enamel-only pieces baked apart, {ap} asphalt-only pieces built off ({roadAlt.Path})"); }
             if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), street, world);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
@@ -135,6 +137,7 @@ namespace Suborned.World
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
+            if (roadAlt != null) RoadFinishTwin.Install(root, batches);
             int renderers = batches.GetComponentsInChildren<MeshRenderer>().Length;
             Debug.Log($"World: tangents for {Combine.TangentMeshes} normal-mapped batches (brief 026: textured ground)");
             var cameras = Nodes.Group(null, "cameras");
@@ -153,6 +156,7 @@ namespace Suborned.World
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));
             Play.PlayInstall.Install(world); // the live Handover host (brief 011 D): its own root, `play`
             Debug.Log($"World: kit parts spinning {KitParts.Spin(root)} (kit.json `parts`; view only)");
+            RobotKit.EnsureStageAtlas(); // item 24: the patrol face atlas at its own 16 x 60 (no power-of-two scaling)
             Debug.Log($"World: robots alive: {RobotKit.Seeds(root)} placed robots rigged (face + head), seeded by their export path (brief 026; view only)");
 
             // Verify before saving: a scene that disagrees with the export is never written.

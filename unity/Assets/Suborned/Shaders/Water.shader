@@ -32,6 +32,8 @@ Shader "Suborned/Water"
             #include_with_pragmas "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Fog.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
+            // global set by AtmosphereLens / DistanceHaze (brief 048): the day haze of a perspective camera, linear; zero (alpha 0) = the material's own _Haze and the scene fog
+            float4 _AtmHaze;
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor, _Horizon, _Haze;
                 half _Smoothness, _Fresnel, _Sheen;
@@ -66,10 +68,13 @@ Shader "Suborned/Water"
                 half rl = saturate(dot(r, sun.direction));
                 half spec = pow(rl, lerp(8, 512, _Smoothness)) * 4 + pow(rl, 12) * 0.25;
                 col += sun.color * spec * _Sheen * shadow;
-                col = MixFog(col, v.fog);
+                // Glint 2026-10-24 (Glyph, 0.2.99: the horizon band reads sand yellow): the sea's fog and its far-shore haze take the sky's horizon haze when the
+                // atmosphere is on, so the far plain and the sky end on one colour (the baked _Haze is the plain light.haze, without the long tier's gain)
+                bool atm = _AtmHaze.a > 0.5;
+                col = MixFogColor(col, atm ? _AtmHaze.rgb : unity_FogColor.rgb, v.fog);
                 // the sea dissolves into the haze toward the far shore
                 float d = distance(v.wpos.xz, _FadeCentre.xy);
-                col = lerp(col, _Haze.rgb, smoothstep(_FadeFrom, _FadeTo, d));
+                col = lerp(col, atm ? _AtmHaze.rgb : _Haze.rgb, smoothstep(_FadeFrom, _FadeTo, d));
                 return half4(col, 1);
             }
             ENDHLSL

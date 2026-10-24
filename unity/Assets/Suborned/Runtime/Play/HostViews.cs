@@ -47,6 +47,7 @@ namespace Suborned.Play
                 var pole = Part(root, "camera/" + c.Id, cylinder, Lit(host.carColour), at + Vector3.up * 1.6f, new Vector3(0.25f, 1.6f, 0.25f));
                 var col = pole.gameObject.AddComponent<CapsuleCollider>(); col.radius = 2.5f; col.height = 2f; // a fat target, pole scale makes it ~1.2 m
                 things["camera/" + c.Id] = (pole, pole.position, pole.position, true);
+                if (!c.World && host.cctvPole) KitPole(c, pole); // brief 055: Vela's CCTVPole at the plan's 5.5 m mount
                 CamHeadFor(c, at); // brief 031: the lens that shows the camera's attention
             }
             // brief 013: the stashes (a bin, a service door) are click targets: a box round each, named stash/<id>
@@ -387,7 +388,7 @@ namespace Suborned.Play
 
         /// <summary>Brief 025 (take control): the driven agent's view key, drawn from the host's controller (position, facing, ground speed), not
         /// from the engine's eased 10 Hz pose, so input feels immediate. Null when nobody is driven.</summary>
-        public string DriveKey; public Vector3 DrivePos; public float DriveYaw, DriveSpeed;
+        public string DriveKey; public Vector3 DrivePos; public float DriveYaw, DriveSpeed; float driveY; string driveKeyWas;
         /// <summary>Every shooter's target this frame (view key → the target's drawn position) and who fired within 0.4 s: the figure, robot or
         /// vehicle turns to face it, whatever it is (Sky 2026-10-20: "anything shooting at a target - must turn to face it").</summary>
         public readonly Dictionary<string, Vector3> Aim = new(); public readonly HashSet<string> FiredNow = new();
@@ -401,7 +402,11 @@ namespace Suborned.Play
             {
                 var (t, from, to, shown) = kv.Value;
                 if (t.gameObject.activeSelf != shown) t.gameObject.SetActive(shown);
-                if (shown && kv.Key == DriveKey) t.position = DrivePos; // the controller's (brief 025)
+                if (shown && kv.Key == DriveKey)
+                {   // the controller's (brief 025); brief 055: the floor comes in 0.25 m cells (a stair steps about 0.1 m a cell), so its height eases over ~0.1 s
+                    float k = 1f - Mathf.Exp(-Time.unscaledDeltaTime / 0.05f); driveY = driveKeyWas == DriveKey && Mathf.Abs(DrivePos.y - driveY) < 1.5f ? Mathf.Lerp(driveY, DrivePos.y, k) : DrivePos.y; driveKeyWas = DriveKey;
+                    t.position = new Vector3(DrivePos.x, driveY, DrivePos.z);
+                }
                 else if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/")) t.position = Vector3.Lerp(from, to, alpha);
             }
             var g = host.Game;
@@ -455,6 +460,7 @@ namespace Suborned.Play
             var w = frame.World(at.Value) + Vector3.up * lift;
             if (down) lifted[key] = lift; else lifted.Remove(key); // brief 020: a figure lies (or rides a shoulder) instead of the capsule laid flat
             bool wasShown = x.shown;
+            if (wasShown && key == "patrol" && (w - x.to).magnitude > 2.5f) wasShown = false; // brief 057 §2: a jump (the engine's reroute before it walks one) snaps, never a 40 m slide in a tick
             things[key] = (x.t, wasShown ? x.to : w, w, true);
             if (down) x.t.localRotation = Quaternion.Euler(90f, 0f, 0f); else if (x.t.localRotation != Quaternion.identity) x.t.localRotation = Quaternion.identity; // down: laid flat
         }
@@ -499,40 +505,47 @@ namespace Suborned.Play
 
         sealed class FanDraw
         {
-            public GameObject Go; public Mesh Fill, Rim; public MeshRenderer FillR, RimR; public Fan For; public bool Live; public string Kind = "";
-            public readonly LineRenderer[] Scan = new LineRenderer[3]; public float A0, A1; public Vector3 Hub; public readonly List<Vector3> Ring = new();
+            public GameObject Go; public Mesh Fill, Rim, Under; public MeshRenderer FillR, RimR, UnderR; public Fan For; public bool Live; public string Kind = "", Watcher = "";
+            public Vector3 Hub; public readonly List<Vector3> Ring = new();
+            /// <summary>Brief 057 §3: how strong it draws now (0 rest .. 1 strong), eased toward Want; the strength the meshes were last built at.</summary>
+            public float Strength = -1f, Want, BuiltAt = -9f; public float Reach = 1f; public int Seen;
         }
-        readonly List<FanDraw> fans = new();
+        readonly Dictionary<string, FanDraw> fanBy = new();
         readonly Dictionary<(Color, float), Material> fanMats = new();
-        readonly List<Vector3> verts = new(); readonly List<int> tris = new();
-        const float FillAlpha = 0.38f, RimW = 0.085f, FillY = 0.05f, RimY = 0.07f; // Glyph techwatch r2 C: the rim 2 px or more at play zoom where it runs across the view (0.085 m x 38.6 px/m x sin 38), the fill a little up, so a cone under a ghosted tower's dither still reads
+        readonly Dictionary<Color, Material> fillMats = new();
+        readonly List<Vector3> verts = new(); readonly List<int> tris = new(); readonly List<Color> cols = new();
+        // brief 057 §3 (Sky 2026-10-24: "once watched its cone now permanently appears but we need to make it softer, kinda dominates"): two strengths
+        // of one cone. Rest: fill 13 % at the lens fading to 1 % at the far edge, rim 0.05 m at 55 %. Strong (hovered, named, an agent in or near
+        // it, a path through it, Alert 2, the watcher noticing): fill 34 % fading to 14 %, rim 0.085 m at 100 %. In over 0.25 s, out over 0.6 s.
+        const float RestHub = 0.13f, RestFar = 0.01f, StrongHub = 0.34f, StrongFar = 0.14f, RestRimW = 0.05f, RestRimA = 0.55f, StrongRimW = 0.085f, InS = 0.25f, OutS = 0.6f;
+        const float RimW = 0.085f, FillY = 0.05f, RimY = 0.07f; // Glyph techwatch r2 C: the rim 2 px or more at play zoom where it runs across the view (0.085 m x 38.6 px/m x sin 38), the fill a little up, so a cone under a ghosted tower's dither still reads
+        float rimW = RimW;
         static readonly Color Grey = new(0.55f, 0.55f, 0.55f);
+        /// <summary>The proof reads it: each drawn fan's watcher and strength now ("camera:entrance=0.00").</summary>
+        public string FanStrengths { get { var l = new List<string>(); foreach (var kv in fanBy) if (kv.Value.Go.activeSelf) l.Add($"{kv.Key}={kv.Value.Strength:0.00}"); return string.Join(" ", l); } }
 
-        /// <summary>The fans to draw this frame (the host's choice: the focused watcher's, or every learned one while Alt is held); the rest hide.
-        /// Each mesh is rebuilt only when the engine hands back a different Fan (its cache keeps one per pose) or its Live flag flips.</summary>
-        public void ShowFans(IReadOnlyList<Fan> list)
+        /// <summary>The fans to draw this frame (every learned one at rest, the ones that matter strong); the rest hide. Each mesh is rebuilt
+        /// when the engine hands back a different Fan (its cache keeps one per pose), its Live flag flips, or its strength moves.</summary>
+        public void ShowFans(IReadOnlyList<Fan> list, IReadOnlyList<bool> strong = null)
         {
-            int n = list?.Count ?? 0;
+            var seen = new HashSet<string>(); int n = list?.Count ?? 0; float dt = Time.unscaledDeltaTime;
             for (int i = 0; i < n; i++)
             {
-                var f = list[i]; if (fans.Count <= i) fans.Add(NewFan(i));
-                var d = fans[i];
-                if (!d.Go.activeSelf) d.Go.SetActive(true);
+                var f = list[i]; string key = f.Watcher.Length > 0 ? f.Watcher : "fan/" + i; if (!seen.Add(key)) continue;
+                if (!fanBy.TryGetValue(key, out var d)) fanBy[key] = d = NewFan(key);
+                if (!d.Go.activeSelf) { d.Go.SetActive(true); d.Strength = -1f; }
+                d.Want = strong == null ? 1f : i < strong.Count && strong[i] ? 1f : 0f;
+                d.Strength = d.Strength < 0f ? d.Want : Mathf.MoveTowards(d.Strength, d.Want, dt / (d.Want > d.Strength ? InS : OutS));
                 if (!ReferenceEquals(d.For, f) || d.Live != f.Live) Build(d, f);
-                Scan(d);
+                else if (Mathf.Abs(d.Strength - d.BuiltAt) > 0.02f || (d.Strength == d.Want && d.BuiltAt != d.Strength)) Restrength(d);
             }
-            for (int i = n; i < fans.Count; i++) if (fans[i].Go.activeSelf) { fans[i].Go.SetActive(false); fans[i].For = null; }
+            foreach (var kv in fanBy) if (!seen.Contains(kv.Key) && kv.Value.Go.activeSelf) { kv.Value.Go.SetActive(false); kv.Value.For = null; }
         }
 
-        FanDraw NewFan(int i)
+        FanDraw NewFan(string key)
         {
-            var d = new FanDraw { Go = new GameObject("fan/" + i) }; d.Go.transform.SetParent(root, false);
-            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim");
-            for (int k = 0; k < 3; k++)
-            {
-                var lr = d.Scan[k] = NewLine("scan" + k, select, k == 0 ? RimW * 0.8f : RimW * 1.6f); lr.transform.SetParent(d.Go.transform, false);
-                lr.alignment = LineAlignment.TransformZ; lr.transform.rotation = Quaternion.Euler(90f, 0f, 0f);
-            }
+            var d = new FanDraw { Go = new GameObject("fan/" + key), Watcher = key }; d.Go.transform.SetParent(root, false);
+            (d.Fill, d.FillR) = MeshPart(d.Go.transform, "fill"); (d.Rim, d.RimR) = MeshPart(d.Go.transform, "rim"); (d.Under, d.UnderR) = MeshPart(d.Go.transform, "shadow-edge"); // engine 0.28: the ink under a shadow cut's rim
             return d;
         }
 
@@ -550,7 +563,16 @@ namespace Suborned.Play
         {
             if (fanMats.TryGetValue((c, alpha), out var m)) return m;
             m = host.SignalMat(new Color(c.r, c.g, c.b, alpha), alpha < 1f); if (m.HasProperty("_Cull")) m.SetFloat("_Cull", 0f); // Glint 2026-10-23: no fog on a signal
+            if (m.HasProperty("_OffsetFactor")) { m.SetFloat("_OffsetFactor", -2f); m.SetFloat("_OffsetUnits", -2f); } // Aster 2026-10-23 (Glint's 150 m control): the flat fan wins its depth ties with kerbs and paving (0.64 -> 0.75 in view); no cost
             return fanMats[(c, alpha)] = m;
+        }
+        /// <summary>Brief 057 §3: the fill's material: transparent, its alpha from the mesh's vertex colour (SignalUnlit _VertexAlpha), so the fill
+        /// fades from the lens to the far edge.</summary>
+        Material FillMat(Color c)
+        {
+            if (fillMats.TryGetValue(c, out var m)) return m;
+            m = FanMat(c, 0.999f); m = new Material(m) { name = "signal-fill" }; if (m.HasProperty("_VertexAlpha")) m.SetFloat("_VertexAlpha", 1f);
+            return fillMats[c] = m;
         }
 
         Color KindColour(string kind) => kind switch { "guard" => host.guardColour, "rivals" => host.rivalColour, _ => host.coneColour }; // §10: cones red, guard amber, rivals violet
@@ -558,18 +580,26 @@ namespace Suborned.Play
         void Build(FanDraw d, Fan f)
         {
             d.For = f; d.Live = f.Live; d.Kind = f.Kind;
-            var c = f.Live ? KindColour(f.Kind) : Grey;
-            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
-            Mat(d.FillR, FanMat(c, FillAlpha)); Mat(d.RimR, FanMat(c, 1f));
-            d.Scan[0].sharedMaterial = FanMat(c, 1f); d.Scan[1].sharedMaterial = FanMat(c, 0.45f); d.Scan[2].sharedMaterial = FanMat(c, 0.22f);
             var pts = f.Points; int n = pts.Length;
             d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));
-            d.Hub = frame.World(f.At);
+            d.Hub = frame.World(f.At); d.Reach = 1f; foreach (var r in d.Ring) d.Reach = Mathf.Max(d.Reach, Flat(r - d.Hub).magnitude);
+            Restrength(d);
+        }
+
+        /// <summary>The fill (vertex alpha by distance from the lens) and the rim (width and alpha) at the fan's strength now.</summary>
+        void Restrength(FanDraw d)
+        {
+            var f = d.For; if (f == null) return; float s = Mathf.Clamp01(d.Strength < 0f ? 1f : d.Strength); d.BuiltAt = s;
+            var c = f.Live ? KindColour(f.Kind) : Grey;
+            void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
+            float aHub = Mathf.Lerp(RestHub, StrongHub, s), aFar = Mathf.Lerp(RestFar, StrongFar, s);
+            float rimA = s > 0.5f ? 1f : RestRimA; // two rim materials (opaque strong, 55 % at rest): no per-frame material
+            Mat(d.FillR, FillMat(c)); Mat(d.RimR, FanMat(c, rimA));
             // a mast (brief 013): one polygon a head; heads 2 and 3 are the fan's More, drawn the same way from the same pole
             var polys = new List<(List<Vector3> ring, string[] stop)> { (d.Ring, f.Stop) };
             for (int h = 0; h < f.More.Length; h++) { var r2 = new List<Vector3>(); foreach (var q in f.More[h]) r2.Add(frame.World(q)); polys.Add((r2, h < f.MoreStop.Length ? f.MoreStop[h] : System.Array.Empty<string>())); }
             // the fill: a fan of triangles from the watcher (the engine's polygon is star-shaped round it: its rays start there)
-            verts.Clear(); tris.Clear();
+            verts.Clear(); tris.Clear(); cols.Clear();
             foreach (var (ring, _) in polys)
             {
                 int m = ring.Count; if (m < 3) continue; int b0 = verts.Count;
@@ -577,82 +607,46 @@ namespace Suborned.Play
                 for (int i = 0; i < m; i++) verts.Add(ring[i] + Vector3.up * FillY);
                 for (int i = 0; i < m; i++) { tris.Add(b0); tris.Add(b0 + 1 + i); tris.Add(b0 + 1 + (i + 1) % m); }
             }
-            d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
+            ShadowsOf(f); CutFill(); // engine 0.28 (hud29 securityFan.shadows): Fan.Shadows cut out of the fill
+            foreach (var v in verts) { float t = Mathf.Clamp01(Flat(v - d.Hub).magnitude / d.Reach); cols.Add(new Color(1f, 1f, 1f, Mathf.Lerp(aHub, aFar, t))); }
+            d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetColors(cols); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
             // the rim: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue
+            rimW = Mathf.Lerp(RestRimW, StrongRimW, s);
             verts.Clear(); tris.Clear(); float dash = 0f;
-            foreach (var (ring, stop) in polys) { n = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && n >= 3) Hatch(ring); }
+            foreach (var (ring, stop) in polys) { int m = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && m >= 3) Hatch(ring); }
+            ShadowRims(polys, c, d); // each cut gets a thin rim of the fan's colour over ink-deep (the ink in its own mesh)
             d.Rim.Clear(); d.Rim.SetVertices(verts); d.Rim.SetTriangles(tris, 0); d.Rim.RecalculateBounds();
-            n = d.Ring.Count;
-            ScanEdges(d, f, n);
+            rimW = RimW;
         }
 
         void RimOf(FanDraw d, Fan f, List<Vector3> Ring, string[] Stop, ref float dash)
         {
-            int n = Ring.Count;
+            int n = Ring.Count; float w = rimW;
             for (int i = 0; i < n && n >= 3; i++)
             {
                 int j = (i + 1) % n; Vector3 a = Ring[i] + Vector3.up * RimY, b = Ring[j] + Vector3.up * RimY;
                 bool far = Stop.Length == n && Stop[i] == "reach" && Stop[j] == "reach";
-                if (!far) { Quad(a, b, RimW); continue; }
+                if (!far) { QuadCut(a, b, w); continue; }
                 var outward = Flat((a + b) * 0.5f - d.Hub).normalized;
                 float len = Vector3.Distance(a, b);
                 switch (f.Kind)
                 {
                     case "guard":   // chevrons marching the way he faces, on a crisp rim (Glyph 020: the hairline left a flat amber wash)
-                        Quad(a, b, RimW);
-                        for (; dash < len; dash += 0.7f) Chevron(Vector3.Lerp(a, b, dash / len), outward, 0.32f);
+                        QuadCut(a, b, w);
+                        for (; dash < len; dash += 0.7f) if (!InShadow(Vector3.Lerp(a, b, dash / len))) Chevron(Vector3.Lerp(a, b, dash / len), outward, 0.32f, w);
                         dash -= len; break;
                     case "rivals":  // diamond ticks
-                        Quad(a, b, RimW * 0.5f);
-                        for (; dash < len; dash += 0.8f) Diamond(Vector3.Lerp(a, b, dash / len), outward, 0.3f);
+                        QuadCut(a, b, w * 0.5f);
+                        for (; dash < len; dash += 0.8f) if (!InShadow(Vector3.Lerp(a, b, dash / len))) Diamond(Vector3.Lerp(a, b, dash / len), outward, 0.3f);
                         dash -= len; break;
                     default:        // camera, patrol, officers: a dashed far edge (0.4 m on, 0.3 m off), the phase carried along the arc
-                        for (float t = -dash; t < len; t += 0.7f) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + 0.4f); if (s1 > s0) Quad(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), RimW); }
+                        for (float t = -dash; t < len; t += 0.7f) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + 0.4f); if (s1 > s0) QuadCut(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), w); }
                         dash = (dash + len) % 0.7f; break;
                 }
             }
         }
-
-        /// <summary>The camera's scan sweeps between its outermost reach points (head 1's).</summary>
-        void ScanEdges(FanDraw d, Fan f, int n)
-        {
-            d.A0 = d.A1 = 0f;
-            if (f.Kind is "camera" or "guard" && n >= 3) // brief 020 (Glyph): the guard's cone sweeps as the camera's does
-            {
-                var fwd = Flat(frame.Dir(f.Facing)); float lo = float.MaxValue, hi = float.MinValue;
-                for (int i = 0; i < n; i++) if (f.Stop.Length == n && f.Stop[i] == "reach") { float a = Vector3.SignedAngle(fwd, Flat(d.Ring[i] - d.Hub), Vector3.up); lo = Mathf.Min(lo, a); hi = Mathf.Max(hi, a); }
-                if (lo < hi) { d.A0 = lo; d.A1 = hi; }
-            }
-        }
-
-        /// <summary>The camera's scan edge and its two fading ghosts: from the lens to where the fan ends along a sweeping bearing.</summary>
-        void Scan(FanDraw d)
-        {
-            bool on = d.Kind is "camera" or "guard" && d.Live && d.A1 > d.A0;
-            for (int k = 0; k < 3; k++)
-            {
-                var lr = d.Scan[k];
-                if (!on) { if (lr.enabled) lr.enabled = false; continue; }
-                float t = Time.unscaledTime * 0.9f - k * 0.18f, s = 0.5f + 0.5f * Mathf.Sin(t);
-                var fwd = Flat(frame.Dir(d.For.Facing)); var dir = Quaternion.AngleAxis(Mathf.Lerp(d.A0, d.A1, s), Vector3.up) * fwd;
-                if (!Exit(d, dir, out var end)) { lr.enabled = false; continue; }
-                lr.positionCount = 2; lr.SetPosition(0, d.Hub + Vector3.up * (RimY + 0.005f)); lr.SetPosition(1, end + Vector3.up * (RimY + 0.005f)); lr.enabled = true;
-            }
-        }
-
-        /// <summary>Where a ray from the watcher leaves its fan (the farthest crossing of the polygon's edges, on the ground plane).</summary>
-        static bool Exit(FanDraw d, Vector3 dir, out Vector3 end)
-        {
-            float best = -1f; end = d.Hub; var o = new Vector2(d.Hub.x, d.Hub.z); var r = new Vector2(dir.x, dir.z); int n = d.Ring.Count;
-            for (int i = 0; i < n; i++)
-            {
-                var a = new Vector2(d.Ring[i].x, d.Ring[i].z); var b = new Vector2(d.Ring[(i + 1) % n].x, d.Ring[(i + 1) % n].z); var e = b - a;
-                float den = r.x * e.y - r.y * e.x; if (Mathf.Abs(den) < 1e-6f) continue;
-                var w = a - o; float t = (w.x * e.y - w.y * e.x) / den, u = (w.x * r.y - w.y * r.x) / den;
-                if (t > 0.05f && u >= 0f && u <= 1f && t > best) { best = t; end = Vector3.Lerp(d.Ring[i], d.Ring[(i + 1) % n], u); }
-            }
-            return best > 0f;
-        }
+        // brief 057 §3: the sweeping scan line (brief 020's Scan, ScanEdges and its three line renderers) is gone: a fixed camera does not pan,
+        // and the desk's 20 s scan already shows as the "reported" tag's draining underline
 
         static Vector3 Flat(Vector3 v) { v.y = 0f; return v; }
 
@@ -689,10 +683,10 @@ namespace Suborned.Play
             tris.Add(k); tris.Add(k + 1); tris.Add(k + 2); tris.Add(k); tris.Add(k + 2); tris.Add(k + 3);
         }
 
-        void Chevron(Vector3 p, Vector3 o, float s)
+        void Chevron(Vector3 p, Vector3 o, float s, float w = RimW)
         {
             var side = Vector3.Cross(Vector3.up, o) * (s * 0.6f); var tip = p + o * (s * 0.5f); var back = p - o * (s * 0.3f);
-            Quad(back + side, tip, RimW); Quad(back - side, tip, RimW);
+            Quad(back + side, tip, w); Quad(back - side, tip, w);
         }
 
         void Diamond(Vector3 p, Vector3 o, float s)

@@ -80,6 +80,9 @@ namespace Suborned.Sim
                     var g = r.G; const string C = "car:official"; int k = g.HealthScale;
                     var car = g.CarAt(C)!.Value;
                     var spot = SpotFor(r, r.Op(Scout).Pos, car, 800, 1200); if (!r.Is(spot.HasValue, "a spot 8–12 m from the official car with a line")) return;
+                    // engine 0.30.0: with Pulse's 2026-10-24 sweep (patrol-a (67.75, -46.25)) the patrol sees the Scout at her spot and downs her before the lab's
+                    // car burns (healthScale): the Tech reroutes it first, so its false orders cover the shooting
+                    if (lab) { r.To(r.Send(Tech, "cabinet", run: true)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); }
                     r.To(r.SendTo(Scout, spot!.Value));
                     if (drawn) { r.Do(Scout, "draw"); r.Wait(g.DrawT + 1); }
                     r.Is(g.CarOf(C) == null, "not yet shot: the car has no record (the preview reads a fresh one)");

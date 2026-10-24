@@ -45,6 +45,8 @@ namespace Suborned.Sim
     {
         public int WalkS, RunS; public string RunRefused = "";
         public readonly List<string> RunSeenBy = new List<string>(); // watchers whose cone the route crosses now
+        /// <summary>Brief 054 §3.2: civilians who would see the run in their cone now and remember the face (from people-care-alert; no Alert, no found fault).</summary>
+        public readonly List<string> RunRememberedBy = new List<string>();
         public int RunPeople;             // security staff (door guard, witness.staff jobs) within witness range of the route now ("~": people move); engine 0.22.0: nobody else notices a run
         public int AlertIfRun;            // Alert after the run if security sees it
         public bool RunFree;              // a fight is on or the run is loud: nobody counts a runner
@@ -242,7 +244,7 @@ namespace Suborned.Sim
                     OrderEnd(op, false);
                 }
             }
-            if (op.CloseWalk && g.Order.Length > 0 && PosOf(g.Order) is Pt cp && G.Within(op.Pos, cp, g.W.EffCm) && Sees(op.Pos, cp)) { op.Walk = null; op.WalkMm = 0; op.CloseWalk = false; } // brief 027 fire.close: in the ring with a line, stand (even while still drawing: PreviewFire.StopAt)
+            if (op.CloseWalk && g.Order.Length > 0 && PosOf(g.Order) is Pt cp && G.Within(op.Pos, cp, g.W.EffCm) && SeesId(op.Pos, g.Order, cp)) { op.Walk = null; op.WalkMm = 0; op.CloseWalk = false; } // brief 027 fire.close: in the ring with a line, stand (even while still drawing: PreviewFire.StopAt)
             if (op.Busy != null || op.Carrying.HasValue || op.CarryBody.Length > 0 || CarriesVale(op) || !Ready(g)) return; // brief 018: walking Vale, the Enforcer doesn't fire; tuning.md §8.2 (engine 0.15.0): a runner fires, at its gait
             if (Lab && op.FieldUntil > Tick) return; // brief 027: the field holds, nothing fires
             if (!R.CoverStepFires && op.Walk != null && op.Gun.Cover.Length > 0 && CoverById(op.Gun.Cover) is CoverPoint sc && G.Within(op.Walk.End, sc.At, R.CoverSnapCm)) return; // tuning.md §8.3 fallback: a cover-snap walk fires nothing (the lab's snap)
@@ -260,7 +262,7 @@ namespace Suborned.Sim
             if (t.Length == 0) { g.Target = ""; return; }
             if (trig || follow) { var tgn = GunOf(t); if (tgn == null || tgn.Down || !PosOf(t).HasValue) { if (trig) g.TrigTap = false; return; } } // the target goes: a waiting press is lost
             var at = PosOf(t)!.Value; long d = Dist(op.Pos, at);
-            if (d > g.W.MaxCm || !Sees(op.Pos, at))
+            if (d > g.W.MaxCm || !SeesId(op.Pos, t, at))
             {
                 if (trig && g.TrigTap && Tick >= g.NextShot) { g.TrigTap = false; Note("fire.tap-lost", $"{name} has no line on {t}: the shot is not fired."); } // §11.4: ready, nothing to fire at
                 if (trig || follow) return; // never walked to join, never lapses: it fires once it has reach and a line
@@ -297,7 +299,7 @@ namespace Suborned.Sim
             if (FreeApplies) return FreeTarget(op); // tuning.md §14 (engine 0.19.0): weapons free in a fight
             return BaseStanceTarget(op);
         }
-        bool InLine(Pt from, string id, int maxCm) { var at = PosOf(id); return at.HasValue && G.Within(from, at.Value, maxCm) && Sees(from, at.Value); }
+        bool InLine(Pt from, string id, int maxCm) { var at = PosOf(id); return at.HasValue && G.Within(from, at.Value, maxCm) && SeesId(from, id, at.Value); }
         IEnumerable<string> CombatantIds()
         {
             yield return "guard"; yield return "patrol";
@@ -387,8 +389,8 @@ namespace Suborned.Sim
                 inc = AddIncident(IsCivilian(t) ? "violence" : "gunfire", (IsCivilian(t) ? "violence:" : "gunfire:") + t, IsPersonTarget(t) ? at : op.Pos);
                 fireIncident[t] = inc;
             }
-            var seen = WitnessesWithPos(op.Pos, victim);
-            if (IsPersonTarget(t)) foreach (var w in WitnessesWithPos(at, victim)) if (!seen.Exists(x => x.p == w.p)) seen.Add(w);
+            var seen = WitnessesWithPos(op.Pos, victim, "gunfire");
+            if (IsPersonTarget(t)) foreach (var w in WitnessesWithPos(at, victim, "gunfire")) if (!seen.Exists(x => x.p == w.p)) seen.Add(w);
             foreach (var (p, wp) in seen)
             {
                 if (inc.Witnesses.Exists(x => x.p == p)) continue;
@@ -396,7 +398,7 @@ namespace Suborned.Sim
             }
             int civSees = 0; string firstCiv = "";
             if (IsPersonTarget(t))
-                foreach (var c in WitnessesOf(at, victim))
+                foreach (var c in WitnessesOf(at, victim, "gunfire"))
                 {
                     if (!c.Civilian) continue;
                     civSees++; if (firstCiv.Length == 0) firstCiv = Who(c);
@@ -581,7 +583,7 @@ namespace Suborned.Sim
                     if (!drawSeen.Contains($"{w}/{name}/{g.DrawTick}") && WatcherSees(w, op.Pos)) { drawSeen.Add($"{w}/{name}/{g.DrawTick}"); if (Lab || TodayWarns(w, op)) SawDraw(w, op); else SecuritySawDraw(w, op); if (Over) return; }
                 string pk = $"people/{name}/{g.DrawTick}";
                 if (drawSeen.Contains(pk)) continue;
-                var ws = WitnessesWithPos(op.Pos, null).FindAll(x => x.p.Civilian);
+                var ws = WitnessesWithPos(op.Pos, null, "weapon-drawn").FindAll(x => x.p.Civilian);
                 if (ws.Count == 0) continue;
                 drawSeen.Add(pk);
                 // drawings at one place and time are one incident (Motive addendum Q1): within weapons.costs.drawWindow and witness range of the last
@@ -649,7 +651,8 @@ namespace Suborned.Sim
         {
             if (RunFree(op)) return;
             string name = Sim.Op.Name(op.Id);
-            foreach (var (p, _) in WitnessesWithPos(op.Pos, null)) if (IsStaff(p) && op.RunSeen.Add(p.Id)) Remember(p, "saw-runner", name, true);
+            // brief 054 §3.2 (cone): from people-care-alert a civilian who sees the run in their cone remembers the face too, and raises nothing
+            foreach (var (p, _) in WitnessesWithPos(op.Pos, null, "run")) if ((IsStaff(p) || R.PeopleCone) && op.RunSeen.Add(p.Id)) Remember(p, "saw-runner", name, true);
             Person? staffSaw = null; // engine 0.22.0 (Sky via Aster 2026-10-22: "a guard is a guard"): a crowd guard who sees the run by the guard's sight rule
             foreach (var (p, wp) in OnTheStreet())
             {
@@ -817,7 +820,7 @@ namespace Suborned.Sim
             if (IsCivilian(t) && !o.Force) return No("civilian-target", $"{t} is a civilian or a contact: a target only when the order is forced");
             var at = PosOf(t);
             if (!at.HasValue || tg.Down) return No("no-target", $"no {o.Target} to fire at");
-            bool far = !G.Within(op.Pos, at.Value, g.W.MaxCm), blind = !far && !Sees(op.Pos, at.Value);
+            bool far = !G.Within(op.Pos, at.Value, g.W.MaxCm), blind = !far && !SeesId(op.Pos, t, at.Value);
             if (o.Focus && !volley) return Focus(op, o, t); // tuning.md §14: a focus is a lock (never walks in)
             if ((far || blind) && !CloseOn)
             {
@@ -914,7 +917,7 @@ namespace Suborned.Sim
             if (o.Do == "draw")
             {
                 var w = SecurityWatcherOf(op.Pos);
-                if (w == null) { c.Why = "unseen-draw"; c.AlertTo = WitnessesWithPos(op.Pos, null).Exists(x => x.p.Civilian) ? Math.Max(Alert, R.DrawSeenPeople) : Alert; return c; }
+                if (w == null) { c.Why = "unseen-draw"; c.AlertTo = WitnessesWithPos(op.Pos, null, "weapon-drawn").Exists(x => x.p.Civilian) ? Math.Max(Alert, R.DrawSeenPeople) : Alert; return c; }
                 c.Why = "draw-seen"; reported = w == "security" ? "none" : "seen"; delay = w == "security" ? -1 : R.RespSeenS;
                 c.AlertTo = Math.Max(Alert, R.DrawSeenSecurity);
             }
@@ -925,7 +928,7 @@ namespace Suborned.Sim
                 if (IsCivilian(t) && !o.Force) { c.Refused = $"{t} is a civilian or a contact: a target only when the order is forced"; return c; }
                 c.Why = "fire";
                 Person? victim = CivilianOf(t) ?? (t == "guard" ? GuardP : null);
-                if (IsPersonTarget(t)) foreach (var p in WitnessesOf(at.Value, victim)) if (p.Civilian) civ++;
+                if (IsPersonTarget(t)) foreach (var p in WitnessesOf(at.Value, victim, "gunfire")) if (p.Civilian) civ++;
                 var (d, _, _) = Reporter(t, op.Pos, civ > 0); delay = d;
                 reported = IsCivilian(t) ? "civilian" : t == "rivals" ? (d == R.RespRivalsUnseenS ? "rivals-unseen" : "seen") : d < 0 ? "none" : d == R.RespWitnessS && civ > 0 ? "witness" : d == R.RespUnseenS ? "unseen" : "seen";
                 c.AlertTo = Math.Max(Alert, civ > 0 || IsCivilian(t) ? R.ViolenceSeen : R.GunfireAlert);
@@ -966,7 +969,7 @@ namespace Suborned.Sim
                 foreach (var w in SecurityWatchers) if (!q.RunSeenBy.Contains(w) && WatcherSees(w, p)) q.RunSeenBy.Add(w);
                 foreach (var (pp, wp) in OnTheStreet())
                 {
-                    if (!IsStaff(pp)) continue; // engine 0.22.0: only security staff notice a run
+                    if (!IsStaff(pp)) { if (R.PeopleCone && !q.RunRememberedBy.Contains(pp.Id) && Notices(pp, wp, p, "run")) q.RunRememberedBy.Add(pp.Id); continue; } // engine 0.22.0: only security staff notice a run; brief 054 §3.2: from people-care-alert a civilian remembers it
                     if (G.Within(wp, p, witnessRange)) people.Add(pp.Id);
                     if (pp != GuardP && !pp.Turned && !q.RunSeenBy.Contains(pp.Id) && StaffSees(pp, wp, p)) q.RunSeenBy.Add(pp.Id); // a crowd guard who would see it now ("~": people move)
                 }

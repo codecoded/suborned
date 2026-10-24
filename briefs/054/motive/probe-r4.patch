@@ -1,0 +1,273 @@
+diff -ruN -x b base/sim/Suborned.Sim/GameCars.cs cone/sim/Suborned.Sim/GameCars.cs
+--- base/sim/Suborned.Sim/GameCars.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameCars.cs	2026-10-24 00:24:11
+@@ -127,7 +127,7 @@
+             Note("car.exploded", $"The {CarName(c.Id)} explodes.");
+             var of = Range ? RangeCarCover(c.Id) : CarCover(c.Id); liveCover = new List<CoverPoint>(LiveCover.FindAll(p => p.Of != of)); // its cover points are gone
+             // violence seen by a civilian (§05; rulebook car.target): Alert to alert.violenceSeen and a Menace step, once a car
+-            bool civSees = false; foreach (var p in WitnessesOf(at, null)) if (p.Civilian) { civSees = true; break; }
++            bool civSees = false; heardNow = true; foreach (var p in WitnessesOf(at, null)) if (p.Civilian) { civSees = true; break; } heardNow = false;
+             if (civSees)
+             {
+                 RaiseAlert(R.ViolenceSeen, "violence-seen:blast:" + c.Id);
+diff -ruN -x b base/sim/Suborned.Sim/GameCivSight.cs cone/sim/Suborned.Sim/GameCivSight.cs
+--- base/sim/Suborned.Sim/GameCivSight.cs	1970-01-01 07:00:00
++++ cone/sim/Suborned.Sim/GameCivSight.cs	2026-10-24 00:24:11
+@@ -0,0 +1,77 @@
++// Motive probe, brief 054 rev 4 (scratch only, never the engine): civilians see by a facing cone, and odd acts only at high Alert.
++using System;
++using System.Collections.Generic;
++namespace Suborned.Sim
++{
++    public sealed partial class Game
++    {
++        /// <summary>0 today; 1 cone + gate, unknown stops by a hashed facing; 2 unknown stops face the act (worst); 3 unknown stops see nothing (best).</summary>
++        public static int CivMode = int.Parse(Environment.GetEnvironmentVariable("CIV_MODE") ?? "1");
++        public static int CivGateAlert = int.Parse(Environment.GetEnvironmentVariable("CIV_GATE") ?? "2");
++        public static int CivReachCm = 1300, CivHalfCm = 2250; // ±60° to 13 m
++        public static bool CivStaffFacing = (Environment.GetEnvironmentVariable("CIV_STAFF") ?? "1") == "1"; // stop facings also feed staff (run noticing) and takedown awareness
++        public static int CivStaffConeMode = int.Parse(Environment.GetEnvironmentVariable("CIV_STAFFCONE") ?? "0"); static bool CivStaffCone => CivStaffConeMode > 0;
++        public static bool CivShotTurns = (Environment.GetEnvironmentVariable("CIV_SHOT") ?? "1") == "1";
++        bool heardNow;
++        public static bool CivShoutTurns = (Environment.GetEnvironmentVariable("CIV_SHOUT") ?? "1") == "1";  // a scream turns heads within witness range on a line
++        static Dictionary<string, Pt>? seatFace;
++        static readonly Pt[] Dirs8 = { new Pt(1000, 0), new Pt(707, 707), new Pt(0, 1000), new Pt(-707, 707), new Pt(-1000, 0), new Pt(-707, -707), new Pt(0, -1000), new Pt(707, -707) };
++        public static int CivUnknownStops, CivKnownStops;
++
++        static Dictionary<string, Pt> SeatFaces()
++        {
++            if (seatFace != null) return seatFace;
++            seatFace = new Dictionary<string, Pt>(StringComparer.Ordinal);
++            var root = Engine.FindRoot(System.IO.Directory.GetCurrentDirectory());
++            var f = System.IO.Path.Combine(root, "contracts/people/handover.seats.json");
++            if (!System.IO.File.Exists(f)) return seatFace;
++            var j = JNode.Parse(System.IO.File.ReadAllText(f));
++            foreach (var kv in j["tables"].Entries)
++            {
++                string tid = kv.Key; var t = kv.Value;
++                foreach (var c in t["chairs"].Items) seatFace[$"{tid}-seat-{c["chair"].Int()}"] = Pt.Of(c["face"]);
++            }
++            return seatFace;
++        }
++
++        /// <summary>The facing a stopped person has at their stop (Pulse's stop facings, proxied): a chair's face; a door stop faces out
++        /// of the door; a café stand faces the café door; anything else unknown (null).</summary>
++        Pt? StopFacing(string place, Pt at)
++        {
++            if (SeatFaces().TryGetValue(place, out var sf)) { CivKnownStops++; return sf; }
++            foreach (var e in S.Entrances)
++                if (G.Within(e.stand, at, 300) || G.Within(e.at, at, 300)) { var d = e.stand - e.at; if (d != new Pt(0, 0)) { CivKnownStops++; return d; } }
++            if (place.StartsWith("cafe-stand-", StringComparison.Ordinal) && People2 != null && People2.Places.TryGetValue("cafe-entrance", out var door)) { var d = door - at; if (d != new Pt(0, 0)) { CivKnownStops++; return d; } }
++            CivUnknownStops++;
++            return null;
++        }
++        Pt? CastFacing(Person p, Pt at)
++        {
++            if (ServerOf(p) is RoundsData.Server sv) { var q = RoundPoseAt(sv, EvRead(sv), Tick); return q.Face == new Pt(0, 0) ? (Pt?)null : q.Face; }
++            if (p == GuardP) { var gp = GuardPose(); return gp.HasValue && gp.Value.facing != new Pt(0, 0) ? gp.Value.facing : (Pt?)null; }
++            if (p == Driver) { var c = CarPos(); var d = c - at; return d == new Pt(0, 0) ? (Pt?)null : d; }
++            if (p == ValeP && Vale == ValeAt.Leaving) { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.Heading(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
++            if (p == ValeP) { var c = CarPos(); var d = c - at; return d == new Pt(0, 0) ? (Pt?)null : d; }
++            return null;
++        }
++        Pt HashFacing(Person p) => Dirs8[Streams.Fnv1a32(p.Id + "/face") % 8];
++
++        /// <summary>Does person p at wp see point `at` (minor: an odd act, seen by civilians only from CivGateAlert)?</summary>
++        bool PSees(Person p, Pt wp, Pt at, bool minor = false)
++        {
++            if (CivMode == 0 || heardNow && CivShotTurns || !p.Civilian && !CivStaffCone) return G.Within(wp, at, witnessRange) && Sees(wp, at);
++            if (p.Civilian && minor && Alert < CivGateAlert) return false;
++            if (!p.Civilian && G.Within(wp, at, near)) return Sees(wp, at);
++            if (!G.Within(wp, at, !p.Civilian && CivStaffConeMode == 2 ? R.FacingReachCm * 1415 / 1000 : witnessRange)) return false;
++            var f = FacingOf(p) ?? (WalkerOf(p) == null ? CastFacing(p, wp) : null);
++            if (!f.HasValue)
++            {
++                if (CivMode == 2) return Sees(wp, at);
++                if (CivMode == 3) return false;
++                f = HashFacing(p);
++            }
++            if (!p.Civilian && CivStaffConeMode == 2) return (G.InCone(wp, f.Value, R.FacingReachCm, R.FacingHalfCm, 0, at)) && Sees(wp, at);
++            return G.InCone(wp, f.Value, CivReachCm, CivHalfCm, 0, at) && Sees(wp, at);
++        }
++    }
++}
+diff -ruN -x b base/sim/Suborned.Sim/GameCombat.cs cone/sim/Suborned.Sim/GameCombat.cs
+--- base/sim/Suborned.Sim/GameCombat.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameCombat.cs	2026-10-24 00:24:11
+@@ -387,8 +387,11 @@
+                 inc = AddIncident(IsCivilian(t) ? "violence" : "gunfire", (IsCivilian(t) ? "violence:" : "gunfire:") + t, IsPersonTarget(t) ? at : op.Pos);
+                 fireIncident[t] = inc;
+             }
++            heardNow = true;
+             var seen = WitnessesWithPos(op.Pos, victim);
+             if (IsPersonTarget(t)) foreach (var w in WitnessesWithPos(at, victim)) if (!seen.Exists(x => x.p == w.p)) seen.Add(w);
++            var civSeen = IsPersonTarget(t) ? WitnessesOf(at, victim) : new List<Person>();
++            heardNow = false;
+             foreach (var (p, wp) in seen)
+             {
+                 if (inc.Witnesses.Exists(x => x.p == p)) continue;
+@@ -396,7 +399,7 @@
+             }
+             int civSees = 0; string firstCiv = "";
+             if (IsPersonTarget(t))
+-                foreach (var c in WitnessesOf(at, victim))
++                foreach (var c in civSeen)
+                 {
+                     if (!c.Civilian) continue;
+                     civSees++; if (firstCiv.Length == 0) firstCiv = Who(c);
+@@ -925,7 +928,7 @@
+                 if (IsCivilian(t) && !o.Force) { c.Refused = $"{t} is a civilian or a contact: a target only when the order is forced"; return c; }
+                 c.Why = "fire";
+                 Person? victim = CivilianOf(t) ?? (t == "guard" ? GuardP : null);
+-                if (IsPersonTarget(t)) foreach (var p in WitnessesOf(at.Value, victim)) if (p.Civilian) civ++;
++                heardNow = true; if (IsPersonTarget(t)) foreach (var p in WitnessesOf(at.Value, victim)) if (p.Civilian) civ++; heardNow = false;
+                 var (d, _, _) = Reporter(t, op.Pos, civ > 0); delay = d;
+                 reported = IsCivilian(t) ? "civilian" : t == "rivals" ? (d == R.RespRivalsUnseenS ? "rivals-unseen" : "seen") : d < 0 ? "none" : d == R.RespWitnessS && civ > 0 ? "witness" : d == R.RespUnseenS ? "unseen" : "seen";
+                 c.AlertTo = Math.Max(Alert, civ > 0 || IsCivilian(t) ? R.ViolenceSeen : R.GunfireAlert);
+diff -ruN -x b base/sim/Suborned.Sim/GameCrowd.cs cone/sim/Suborned.Sim/GameCrowd.cs
+--- base/sim/Suborned.Sim/GameCrowd.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameCrowd.cs	2026-10-24 00:15:03
+@@ -183,7 +183,7 @@
+             foreach (var (p, wp) in OnTheStreet())
+             {
+                 if (p == except || p == also) continue;
+-                if (G.Within(wp, at, witnessRange) && Sees(wp, at)) seen.Add(p);
++                if (PSees(p, wp, at)) seen.Add(p);
+             }
+             return seen;
+         }
+diff -ruN -x b base/sim/Suborned.Sim/GameInvestigation.cs cone/sim/Suborned.Sim/GameInvestigation.cs
+--- base/sim/Suborned.Sim/GameInvestigation.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameInvestigation.cs	2026-10-24 00:15:03
+@@ -88,10 +88,10 @@
+             if (witnesses != null) i.Witnesses.AddRange(witnesses);
+             Incidents.Add(i); return i;
+         }
+-        List<(Person p, Pt at)> WitnessesWithPos(Pt at, Person? except)
++        List<(Person p, Pt at)> WitnessesWithPos(Pt at, Person? except, bool minor = false)
+         {
+             var seen = new List<(Person, Pt)>();
+-            foreach (var (p, wp) in OnTheStreet()) { if (p == except) continue; if (G.Within(wp, at, witnessRange) && Sees(wp, at)) seen.Add((p, wp)); }
++            foreach (var (p, wp) in OnTheStreet()) { if (p == except) continue; if (PSees(p, wp, at, minor)) seen.Add((p, wp)); }
+             return seen;
+         }
+ 
+diff -ruN -x b base/sim/Suborned.Sim/GameOrders.cs cone/sim/Suborned.Sim/GameOrders.cs
+--- base/sim/Suborned.Sim/GameOrders.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameOrders.cs	2026-10-24 00:15:53
+@@ -407,7 +407,7 @@
+         bool WitnessAct(string act, Person subject, string by)
+         {
+             var at = PersonPos(subject); if (!at.HasValue) return false;
+-            var seenAt = WitnessesWithPos(at.Value, subject);
++            var seenAt = WitnessesWithPos(at.Value, subject, act == "threat");
+             var seen = seenAt.ConvertAll(x => x.p);
+             if (seen.Count == 0) return false;
+             var inc = AddIncident(act, act + ":" + subject.Role, at.Value, seenAt);
+@@ -418,7 +418,7 @@
+                 MoveStanding(R.Traceable[act] * R.StandingStep, $"witnessed:{act}", "seen-" + act, subject.Role.Length > 0 ? subject.Role : subject.Id);
+             }
+             foreach (var w in seen) Remember(w, "saw-act", by, true);
+-            Note("witness." + act, $"{seen.Count} saw the {act}.");
++            Note("witness." + act, $"{seen.Count} saw the {act}: " + string.Join(",", seenAt.ConvertAll(x => x.p.Id + "/" + x.p.Job + "@" + x.at)));
+             return true;
+         }
+ 
+diff -ruN -x b base/sim/Suborned.Sim/GameScatter.cs cone/sim/Suborned.Sim/GameScatter.cs
+--- base/sim/Suborned.Sim/GameScatter.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameScatter.cs	2026-10-24 00:15:03
+@@ -47,7 +47,7 @@
+                             var pos = CrowdPos(w); if (!pos.HasValue) break;
+                             Pt? from = null;
+                             foreach (var s in shotsThisTick) if (G.D2(s, pos.Value) <= scatter2) { from = s; break; }
+-                            if (!from.HasValue) foreach (var d in drawn) if (G.Within(d, pos.Value, witnessRange) && Sees(d, pos.Value)) { from = d; break; }
++                            if (!from.HasValue) foreach (var d in drawn) if (PSees(w.P, pos.Value, d)) { from = d; break; }
+                             if (!from.HasValue) break;
+                             w.St = "startled"; w.At = pos.Value; w.Run = null; w.RunStart = Tick; lastShooterFor[w.P.Id] = from.Value;
+                             w.Until = Tick + (w.P.Temperament == "fearful" ? R.CrowdStartleFearfulTicks : R.CrowdStartleTicks); startled++;
+diff -ruN -x b base/sim/Suborned.Sim/GameTakedown.cs cone/sim/Suborned.Sim/GameTakedown.cs
+--- base/sim/Suborned.Sim/GameTakedown.cs	2026-10-24 00:11:24
++++ cone/sim/Suborned.Sim/GameTakedown.cs	2026-10-24 00:21:22
+@@ -141,6 +141,7 @@
+             {
+                 if (w.Run != null && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking") && Tick >= w.RunStart)
+                 { long mm = (long)(Tick - w.RunStart) * (w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : opSpeed); if (mm < w.Run.Length) return w.Run.Heading(mm); }
++                if (CivMode != 0 && w.St == "startled" && lastShooterFor.TryGetValue(w.P.Id, out var src)) { var d = src - w.At; if (d != new Pt(0, 0)) return d; }
+                 return null;
+             }
+             var c = People2!;
+@@ -148,8 +149,12 @@
+                 if (Tick >= w.To[i] && Tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
+                 {
+                     var path = CrowdPath(w.Place[i], w.Place[i + 1]); int span = w.From[i + 1] - w.To[i];
++                    if (CivMode != 0 && LegMm(w, path, Tick - w.To[i], span) >= path.Length && c.Places.TryGetValue(w.Place[i + 1], out var endAt)) { var sf = StopFacing(w.Place[i + 1], endAt); if (sf.HasValue) return sf; }
+                     return span <= 0 ? (Pt?)null : path.Heading(LegMm(w, path, Tick - w.To[i], span));
+                 }
++            if (CivMode != 0 && CivStaffFacing || CivMode != 0 && w.P.Civilian)
++                for (int i = 0; i < w.Place.Length; i++)
++                    if (Tick >= w.From[i] && Tick < w.To[i] && w.Out[i] && c.Places.TryGetValue(w.Place[i], out var stopAt)) return StopFacing(w.Place[i], stopAt);
+             return null;
+         }
+ 
+@@ -177,7 +182,7 @@
+             int secs = (a.Kill ? R.KillS : R.KoS) + (aware ? R.StruggleS : 0);
+             Engage(op, o, secs);
+             Note("takedown.starts", $"The Enforcer takes {Who(p)} down ({o.How}, {secs} s){(aware ? ": he sees it coming and struggles" : "")}.");
+-            if (aware) Shout(a, at.Value, p);
++            if (aware) { shoutWhat = "act"; shoutBody = BodyOf(p); Shout(a, at.Value, p); }
+             ScanAct(a, at.Value, "act", b);
+             return "";
+         }
+@@ -313,7 +318,7 @@
+             foreach (var (p, wp) in OnTheStreet())
+             {
+                 if (p == a.P || a.Noticed.Contains(p.Id) || Accomplice(a, p)) continue; // rev 4: an accomplice is never a witness
+-                if (!G.Within(wp, at, witnessRange) || !Sees(wp, at)) continue;
++                if (!PSees(p, wp, at)) continue;
+                 if (dry) return true;
+                 a.Noticed.Add(p.Id);
+                 PersonNotices(a, p, wp, what, b);
+@@ -405,7 +410,7 @@
+             bool kin = IsKin(p, a.P);
+             bool shout = kin || (what != "body" && ((verb == "report" && p.Temperament == "idealist") || (verb == "flee" && p.Sc[Rules.Fear] >= R.ScreamFear)));
+             Note("witness.react", $"{Who(p)} {(what == "act" ? "sees the takedown" : what == "carry" ? "sees a body carried" : "finds a body")}: {verb}.");
+-            if (shout) Shout(a, ActAt(a, b), p);
++            if (shout) { shoutWhat = what; shoutBody = b; Shout(a, ActAt(a, b), p); }
+             var w = WalkerOf(p);
+             switch (verb)
+             {
+@@ -432,13 +437,15 @@
+ 
+         /// <summary>A scream (Pulse §2.1 shout): heard within witness.scream with no line. A hearer with a line within witness range has
+         /// seen it already; the rest hold heard-alarm (a lead: place and time).</summary>
++        string shoutWhat = "act"; Body? shoutBody;
+         void Shout(TdAct a, Pt at, Person by)
+         {
+             Note("witness.scream", $"{Who(by)} screams.");
+-            foreach (var (p, wp) in OnTheStreet())
++            foreach (var (p, wp) in new List<(Person, Pt)>(OnTheStreet()))
+             {
+                 if (p == by || p == a.P || a.Noticed.Contains(p.Id) || a.Heard.Contains(p.Id)) continue;
+                 if (!G.Within(wp, at, R.ScreamCm)) continue;
++                if (CivMode != 0 && CivShoutTurns && G.Within(wp, at, witnessRange) && Sees(wp, at) && !Accomplice(a, p)) { a.Noticed.Add(p.Id); PersonNotices(a, p, wp, shoutWhat, shoutBody); if (Over) return; continue; }
+                 a.Heard.Add(p.Id); Remember(p, "heard-alarm", "", false);
+             }
+         }
+@@ -769,7 +776,7 @@
+             foreach (var (p, wp) in OnTheStreet())
+             {
+                 if (p == a.P || a.Noticed.Contains(p.Id) || Accomplice(a, p)) continue;
+-                if (!(G.Within(wp, at, near) || (G.Within(wp, at, witnessRange) && IsKin(p, a.P))) || !Sees(wp, at)) continue;
++                if (CivMode == 0 ? (!(G.Within(wp, at, near) || (G.Within(wp, at, witnessRange) && IsKin(p, a.P))) || !Sees(wp, at)) : !(IsKin(p, a.P) ? PSees(p, wp, at) : (G.Within(wp, at, near) && PSees(p, wp, at, true)))) continue;
+                 if (dry) return true;
+                 a.Noticed.Add(p.Id);
+                 PersonNotices(a, p, wp, "carry", null);
+@@ -876,7 +883,7 @@
+             var probe = new TdAct { P = p, Kill = kill };
+             foreach (var (w, wp) in OnTheStreet())
+             {
+-                if (w == p || !G.Within(wp, at.Value, witnessRange) || !Sees(wp, at.Value)) continue;
++                if (w == p || !PSees(w, wp, at.Value)) continue;
+                 string verb = VerbShown(probe, w, "act");
+                 int land = -1;
+                 if (verb == "radio") land = R.WitnessReactS + R.PostCallS;

@@ -225,6 +225,9 @@ namespace Suborned.Sim
         // the debrief's facts
         public bool InezWitnessedShooting; public string InezMethod = "";
         public string RouteKind = "", RouteGuard = "", RouteBot = "", RouteRival = "";
+        /// <summary>Engine 0.30.0 (brief 060 #8): what held at the Enter (AtEntry) and at the Take (AtTake) that the debrief's route lines claim;
+        /// null until then. Output only: never hashed, never read by a rule.</summary>
+        public RouteFacts? AtEntry, AtTake;
 
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
@@ -239,6 +242,8 @@ namespace Suborned.Sim
             if (crowd != null) foreach (var w in crowd.Walkers) Walkers.Add(w.Fresh());
             StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical());
             eye = R.Eye; near = R.NearCm;
+            if (R.MountOn && !Range) foreach (var c in S.Cameras) if (!R.MountCameraCm.ContainsKey(c.Kind)) throw new FormatException($"site camera {c.Id}: kind '{c.Kind}' has no lens height in perception.mount.cameras (brief 055 §7: unknown = reject)");
+            ResolveStopFaces(); // brief 054 §3.3: every on-street stop's facing, or the start is rejected
             actReach = R.ActReachCm; approachReach = R.ApproachReachCm; listenReach = R.ListenReachCm;
             witnessRange = R.WitnessRangeCm;
             opSpeed = R.CellSpeed; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
@@ -561,7 +566,7 @@ namespace Suborned.Sim
         {
             if (PatrolDown) return (patrolDownAt, new Pt(0, 0));
             if (PatrolUnit() is Unit pu && UnitPose(pu) is var up && up.HasValue) return up.Value; // brief 013: answering an alarm
-            if (PatrolAwayUntil > Tick) return (S.Stand(S.PatrolReroute), S.PatrolRerouteFacing);
+            if (PatrolAwayUntil > Tick) return RerouteWalkPose() ?? (S.Stand(S.PatrolReroute), S.PatrolRerouteFacing); // engine 0.30.0: its walk out, wait and walk back (GameRerouteWalk.cs), else placed at the wait spot
             if (PatrolChasing) { var fc = OpOf(chaseOp).Pos - chasePos; return (chasePos, fc == new Pt(0, 0) ? Enforcer.Pos - chasePos : fc); } // brief 031 L2: with no all-round sense, the chasing patrol faces the operative it chases (was: always the Enforcer)
             return (SweepPos(Tick), S.PatrolFacing);
         }
@@ -612,13 +617,43 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- who sees what (rulebook perception)
 
-        bool Sees(Pt from, Pt to) => S.Sight(from, to, eye);
+        /// <summary>A person's sight from `from` to `to` (rulebook perception; brief 055 §7 perception.mount: from the eye above its floor to the
+        /// target's head or chest above its own, in 3D; off: one eye height over a flat datum). Fire lines read it too.</summary>
+        bool Sees(Pt from, Pt to) => R.MountOn ? SeesFrom(from, FloorAt(from) + eye, to) : S.Sight(from, to, eye);
+        /// <summary>The floor under p, block z cm (site grid.floor; brief 055).</summary>
+        int FloorAt(Pt p) => S.Grid.FloorAt(p);
+        /// <summary>Brief 055 §7: from an eye at height z (block cm) at `from`, the line to the target's head (its floor + eye) or its chest (its
+        /// floor + chest) is clear: either is enough. own: the eye is a camera's lens, whose own piece never blocks it.</summary>
+        bool SeesFrom(Pt from, int z, Pt to, bool own = false)
+        {
+            int f = FloorAt(to);
+            return S.Sight3(from, z, to, f + eye, own) || S.Sight3(from, z, to, f + R.MountChestCm, own);
+        }
+        /// <summary>Brief 055 §7: a camera's lens, block z cm: its floor plus its kind's mount (perception.mount.cameras).</summary>
+        int LensZ(Camera c) => FloorAt(c.At) + (R.MountCameraCm.TryGetValue(c.Kind, out var m) ? m : throw new FormatException($"camera {c.Id}: kind '{c.Kind}' has no lens height in perception.mount.cameras"));
+        /// <summary>Brief 055 §7: a line to a target by its id: a camera (Watch, shooting it out) is its lens point, whose own piece never blocks it;
+        /// anything else is a person's head or chest (Sees).</summary>
+        bool SeesId(Pt from, string id, Pt at)
+        {
+            if (R.MountOn && id.StartsWith("camera:", StringComparison.Ordinal)) { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return S.Sight3(from, FloorAt(from) + eye, c.At, LensZ(c), false, true); }
+            return Sees(from, at);
+        }
+        bool CrowdId(Pt from, string id, Pt at)
+        {
+            if (R.MountOn && id.StartsWith("camera:", StringComparison.Ordinal)) { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return CrowdBlocksZ(from, FloorAt(from) + eye, c.At, LensZ(c)); }
+            return CrowdBlocks(from, at);
+        }
+        bool CamSees(Camera c, Pt p) => R.MountOn ? SeesFrom(c.At, LensZ(c), p, true) : Sees(c.At, p);
+        bool CamCrowd(Camera c, Pt p) => R.MountOn ? CrowdBlocksZ(c.At, LensZ(c), p, FloorAt(p) + eye) : CrowdBlocks(c.At, p);
+        /// <summary>Brief 055 §7: a machine's own eye (the patrol robot's face, the response robots' lamp) above its floor, and its crowd test.</summary>
+        bool EyeSees(Pt from, int mount, Pt to) => R.MountOn ? SeesFrom(from, FloorAt(from) + mount, to) : Sees(from, to);
+        bool EyeCrowd(Pt from, int mount, Pt to) => R.MountOn ? CrowdBlocksZ(from, FloorAt(from) + mount, to, FloorAt(to) + eye) : CrowdBlocks(from, to);
         public bool CameraWatching(string id, Pt p, bool crowd = true)
         {
             if (CameraDark(id)) return false; // tuning.md §9.2 gap 2: shot out, it watches nothing
             if (id == LoopCam && LoopOn) return false;
             if (id == "pickup" && !PickupCameraLive()) return false;
-            foreach (var c in S.Cameras) if (c.Id == id) return InHeads(c, p) && Sees(c.At, p) && !(crowd && CrowdBlocks(c.At, p));
+            foreach (var c in S.Cameras) if (c.Id == id) return InHeads(c, p) && CamSees(c, p) && !(crowd && CamCrowd(c, p));
             throw new FormatException($"site has no camera '{id}'");
         }
         /// <summary>In any head's cone of the camera (a mast carries several).</summary>
@@ -637,8 +672,8 @@ namespace Suborned.Sim
             if (PatrolDown || PatrolAwayUntil > Tick) return false;
             if (PatrolUnit() is Unit pu) return UnitSees(pu, p, crowd); // brief 013: on an alarm it looks where it walks and holds
             var (pos, f) = PatrolPose()!.Value;
-            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, 0, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p)); // brief 031 L2: a machine sees by its cone only
-            return InSweepCone(pos, f, p) && Sees(pos, p) && !(crowd && CrowdBlocks(pos, p));
+            if (PatrolChasing) return G.InCone(pos, f, R.FacingReachCm, R.FacingHalfCm, 0, p) && EyeSees(pos, R.MountPatrolCm, p) && !(crowd && EyeCrowd(pos, R.MountPatrolCm, p)); // brief 031 L2: a machine sees by its cone only
+            return InSweepCone(pos, f, p) && EyeSees(pos, R.MountPatrolCm, p) && !(crowd && EyeCrowd(pos, R.MountPatrolCm, p));
         }
         bool InSweepCone(Pt pos, Pt f, Pt p)
         {
@@ -652,7 +687,7 @@ namespace Suborned.Sim
         public bool SweepSeesEntrance(int t)
         {
             var pos = SweepPos(t); var door = S.At(S.GuardPost);
-            return InSweepCone(pos, S.PatrolFacing, door) && Sees(pos, door);
+            return InSweepCone(pos, S.PatrolFacing, door) && EyeSees(pos, R.MountPatrolCm, door);
         }
         public bool SecurityWatching(Pt p)
         {
@@ -682,9 +717,14 @@ namespace Suborned.Sim
             if (arrival >= SecurityArrives) return;
             bool first = SecurityArrives == INF;
             int lockBefore = Lockdown;
-            SecurityArrives = arrival; Lockdown = arrival + T(SealS);
-            if (origin != null) SealOrigin(lockBefore, origin); // what the seal clock began from (FailCause.cs, output only)
+            SecurityArrives = arrival; Lockdown = arrival + T(SealS); SealMoved(lockBefore);
+            if (origin != null) NoteSealOrigin(lockBefore, origin); // what the seal clock began from (FailCause.cs, output only)
             Note("security.called", $"{text} Security is coming from the north street.");
+            if (R.SealWarns && Lockdown != lockBefore) // engine 0.30.0 (Suture's bot pass: the district sealed with no warning): every path that sets the seal clock says so
+            {
+                var so = SealOrigin; string why = so == null ? "" : $", from {so.Report}" + (so.Reporter != null ? $" (reported by {so.Reporter.Id})" : "");
+                Note("seal.starts", $"The response is called: the district seals {SealS} s after the unit is on the street ({Sim.Report.Clock(arrival)}), at {Sim.Report.Clock(Lockdown)}{why}.");
+            }
             if (first) GunfireAlarm(arrival, scene ?? S.Stand(S.SecTo));
         }
         void DrawRivals()

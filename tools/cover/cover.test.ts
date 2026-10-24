@@ -110,9 +110,10 @@ describe('the Handover\'s cover file', () => {
   });
   const rules = () => checkCover(JSON.parse(read(COVER_FILE)), { free: freeCm, placeAt, inputs: today() });
   test('CV-1 holds', () => { expect(rules().find(c => c.id === 'CV-1')!.ok).toBe(true); });
-  test('the points are beside what the world draws: planter runs, the café wall, the fountain, the pavilion piers, the cabinets, the cars', () => {
+  test('the points are beside what the world draws: planter runs, the café wall, the pavilion piers, the cabinets, the cars', () => {
     const kinds = new Set(made.cover.points.map(p => p.kind));
-    expect([...kinds].sort()).toEqual(['cabinet', 'car', 'fountain', 'pier', 'planter-run', 'wall']);
+    expect([...kinds].sort()).toEqual(['cabinet', 'car', 'pier', 'planter-run', 'wall']);
+    expect(made.cover.points.some(p => p.of === 'civic/atom-fountain')).toBe(false); // the basin's rim is 0.5 m (Vantage, brief 055): under the 0.9 m a body crouches behind, so no point
     expect(made.cover.points.filter(p => p.kind === 'planter-run').every(p => p.of.startsWith('civic/run-'))).toBe(true);
     expect(made.cover.points.filter(p => p.of === 'car/getaway').every(p => p.present![0] === 0 && p.present![1] === site.schedule.over)).toBe(true);
     expect(made.cover.points.filter(p => p.of === 'car/rivals').every(p => p.present![0] === site.schedule.rivalsArrive)).toBe(true);
@@ -138,8 +139,8 @@ describe('the Handover\'s cover file', () => {
     expect(fs[0]!.nearest).toBeDefined();
     if (fs[0]!.proposal) expect(fs[0]!.proposal.thenShielded).toBe(true);
   });
-  test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the fountain, the robot, the pavilion piers', () => {
-    expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/atom-fountain', 'civic/foreground-civic-robot', 'civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
+  test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the robot, the pavilion piers (not the fountain: its basin is 0.5 m)', () => {
+    expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/foreground-civic-robot', 'civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
     expect(made.cover.blockers.every(b => b.h >= made.cover.rules.eyeCm && b.poly.length >= 3)).toBe(true);
     expect(made.cover.points.filter(p => p.against === 'fire+sight').every(p => made.cover.blockers.some(b => b.id === p.of) || /wall|car/.test(p.kind))).toBe(true);
   });
@@ -147,11 +148,15 @@ describe('the Handover\'s cover file', () => {
     const pts = made.cover.points, car = placeAt('d:Getaway bay')!, pick = (id: string, foe: boolean) => selectCover(pts, { at: placeAt(id)!, objective: car, ...(foe ? { foe: car } : {}) }, new Set())?.id ?? null;
     const got = Object.fromEntries(['ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally'].map(id => [id, [pick(id, true), pick(id, false)]]));
     expect(got).toEqual({
+      // 2026-10-23 (brief 055, fountain 4.2 -> 0.5 m): the same picks, every id eleven lower from cv-015: the fountain's 11 points were fake cover and went
       // 2026-10-19 (door option b): the same picks, numbered one lower from cv-078 up: the cover points are numbered in order and one earlier point went (civic-service-cabinet-1's: the block's cabinets changed with the doors, Vantage)
-      'ambush-1': ['cv-078', 'cv-078'], 'ambush-2': ['cv-046', 'cv-046'], 'ambush-3': ['cv-080', 'cv-080'], 'ambush-4': ['cv-043', 'cv-045'], 'ambush-5': ['cv-081', 'cv-081'],
-      'police-1': ['cv-043', 'cv-043'], 'police-2': ['cv-041', 'cv-041'], 'police-3': ['cv-046', 'cv-097'], 'police-4': ['cv-041', 'cv-042'], 'guard-ally': ['cv-078', 'cv-077'],
+      // 2026-10-24 (engine 0.28.0, the drawn walk adopted, Keel): 89 -> 83 points (six stood on cells the drawn solids now block); the same picks
+      // renumbered, but for the café wall arc: ambush-2 takes the arc's point 2 m east of its old one (cv-032), police-3 with the car as foe the arc's
+      // north end (cv-029, the old cv-032), police-4 advancing the arc's point by the south end (cv-026)
+      'ambush-1': ['cv-063', 'cv-063'], 'ambush-2': ['cv-032', 'cv-032'], 'ambush-3': ['cv-065', 'cv-065'], 'ambush-4': ['cv-029', 'cv-031'], 'ambush-5': ['cv-066', 'cv-066'],
+      'police-1': ['cv-029', 'cv-029'], 'police-2': ['cv-027', 'cv-027'], 'police-3': ['cv-029', 'cv-081'], 'police-4': ['cv-027', 'cv-026'], 'guard-ally': ['cv-063', 'cv-062'],
     });
-    expect(selectCover(pts, { at: placeAt('ambush-2')!, objective: car, foe: car }, new Set(['cv-046']))?.id).not.toBe('cv-046'); // two bodies never take one point
+    expect(selectCover(pts, { at: placeAt('ambush-2')!, objective: car, foe: car }, new Set(['cv-032']))?.id).not.toBe('cv-032'); // two bodies never take one point
     expect(pts.filter(p => p.of === 'car/getaway').map(p => p.id)).toEqual(['cv-001', 'cv-002', 'cv-003', 'cv-004', 'cv-005', 'cv-006']);
   });
   test('a hostile at ambush-4 runs to the café wall, and two of them take two points', () => {

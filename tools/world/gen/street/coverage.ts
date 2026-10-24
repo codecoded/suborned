@@ -12,13 +12,16 @@
 // A site is two landings on the pavement and the strip between their kerbs (a signal crossing like any other: orbs at the kerb ends, a refuge where it crosses a median); it is placed after the
 // furniture, so no existing id moves, and left out where either landing has no free spot (named in the log). A strip across a tram track stands where the plan lets a kerb crossing cross
 // one (strip.across.track names `kerb`): the signal stops the tram.
-import { type V, add, dist, dot, lineDist, mul, norm, segDist, sub } from '../../../plan/geom';
+import { type V, add, dist, dot, inPoly, lineDist, mul, norm, segDist, sub } from '../../../plan/geom';
 import { boxRing, quayBlock, ringGap, samples9 } from '../../../plan/street-zones';
 import type { Ctx } from '../common';
 import { rv } from '../common';
 import { idOf, kindOf, plotRing } from '../edges';
 import type { Landing, Layer } from './kit';
 import { landing } from './roads';
+import { kerbReturnStd, returnsOf } from '../kerbreturn';
+import { discRing } from '../box';
+import { lookOf } from './parts';
 
 const QUARTER = Math.PI / 2;
 
@@ -88,7 +91,9 @@ export function armSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
     P.path.forEach((node, i) => {
       if (i === 0 || i === P.path.length - 1) return; // a road that ends at a node has no arm beyond it
       const sides = ctx.d.roads.filter(q => q !== P && q.path.includes(node)); if (!sides.length) return;
-      const reach = Math.max(...sides.map(q => q.w)) / 2 + offset, s0 = project(P.line, ctx.plan.nodes[node]!).s;
+      // brief 028: a rounded kerb return of this junction takes `t` m of the kerb past the side road's mouth: the crossing's near edge stands kerbReturn.landings.clear (3) m beyond it (centre = t + 3 + w/2), where the rule's own offset is not already past it
+      const nodeAt = ctx.plan.nodes[node]!, t = Math.max(0, ...returnsOf(ctx).filter(r => r.convex && r.roads.includes(P.id) && dist(r.at, nodeAt) < 40).map(r => r.t));
+      const reach = Math.max(...sides.map(q => q.w)) / 2 + Math.max(offset, t ? t + kerbReturnStd(ctx.S).clear + (ctx.S.crossings.w as number) / 2 : 0), s0 = project(P.line, ctx.plan.nodes[node]!).s;
       for (const sg of [-1, 1]) {
         const seed = acrossRoad(ctx, 'arm', `arm/${P.id}/${node}/${sg < 0 ? 'before' : 'after'}`, P.id, s0 + sg * reach, `${P.name}, past ${sides.map(q => q.name).join(' and ')} (${reach.toFixed(0)} m from the junction)`);
         if (seed && (plotBeside(ctx, seed.ka, P.id) || plotBeside(ctx, seed.kb, P.id))) out.push(seed);
@@ -103,14 +108,22 @@ export function islandSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
   if (!rules.island) return [];
   const road = ctx.d.roads.find(r => r.id === rules.island!.ring), c = ctx.plan.circus, [r0, r1] = c.ring, S = ctx.S, mid = (r0 + r1) / 2;
   if (!road) return [];
-  const out: Seed[] = [], line = (id: string, o: number, u: V, why: string) => { // the footway line `o` m left of the way out `u` through the mouth meets the ring's outer edge at one point
-    const nl = left(u), t = Math.sqrt(r1 * r1 - o * o), pOut = add(add(c.c, mul(nl, o)), mul(u, t)), e = norm(sub(pOut, c.c));
+  const out: Seed[] = [], mouths = returnsOf(ctx).filter(r => r.mouth), wrapA = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
+  const line = (id: string, o: number, u: V, why: string, roadId = '') => { // the footway line `o` m left of the way out `u` through the mouth meets the ring's outer edge at one point
+    const nl = left(u), t = Math.sqrt(r1 * r1 - o * o), pOut = add(add(c.c, mul(nl, o)), mul(u, t));
+    let e = norm(sub(pOut, c.c));
+    // brief 028 (kerbReturn.landings): the mouth's kerb return takes the ring's kerb up to its tangent point; the crossing's near edge stands `clear` m past it, round the ring and away from the road: the seed's base position steps round the ring to there (7 to 10 m), not by coverage.rules.reach
+    const ret = mouths.filter(r => r.roads[0] === roadId).map(r => ({ r, aT: Math.atan2(r.a[1] - c.c[1], r.a[0] - c.c[0]) })).sort((x, y) => Math.abs(wrapA(Math.atan2(e[1], e[0]) - x.aT)) - Math.abs(wrapA(Math.atan2(e[1], e[0]) - y.aT)))[0];
+    if (ret) {
+      const mine = mouths.filter(r => r.roads[0] === roadId), axis = Math.atan2(mine.reduce((t, r) => t + r.at[1] - c.c[1], 0), mine.reduce((t, r) => t + r.at[0] - c.c[0], 0)), side = Math.sign(wrapA(ret.aT - axis)) || 1, need = (kerbReturnStd(ctx.S).clear + (ctx.S.crossings.w as number) / 2) / r1, ae = Math.atan2(e[1], e[0]);
+      if (side * wrapA(ae - ret.aT) < need) e = [Math.cos(ret.aT + side * need), Math.sin(ret.aT + side * need)];
+    }
     out.push({ id, rule: 'island', road: road.id, cls: road.class, ka: rv(add(c.c, mul(e, r1))), kb: rv(add(c.c, mul(e, r0))), why, via: { ring: c.c, r0, r1, angle: Math.atan2(e[1], e[0]) } });
   };
   for (const q of ctx.d.roads.filter(x => x !== road && !x.gyratory)) { // a road with a node on the ring's middle line
     const node = q.path.find(n => Math.abs(dist(ctx.plan.nodes[n]!, c.c) - mid) < 1); if (!node) continue;
     const j = project(q.line, ctx.plan.nodes[node]!).s, u = norm(sub(atChainage(q.line, j < lengthOf(q.line) / 2 ? j + 10 : j - 10).p, ctx.plan.nodes[node]!)), off = q.w / 2 + S.sections[q.class].pavement / 2;
-    for (const sg of [-1, 1]) line(`island/${q.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${q.name}'s footway, ${off.toFixed(1)} m off its axis, to the island`);
+    for (const sg of [-1, 1]) line(`island/${q.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${q.name}'s footway, ${off.toFixed(1)} m off its axis, to the island`, q.id);
   }
   for (const f of ctx.plan.foot.filter(x => x.kind === 'mall')) {
     for (const end of [f.pts[0]!, f.pts[f.pts.length - 1]!]) {
@@ -149,12 +162,37 @@ export function variants(ctx: Ctx, seed: Seed, reach: number): Seed[] {
 /** The furniture a coverage site may move: street furniture of the pavement. Kiosks, transit kits and watchers stay where they are. */
 export const MOVABLE: ReadonlySet<string> = new Set(['tree', 'lamp', 'bench', 'bin', 'hydrant', 'phone-booth', 'mailbox', 'tub-palm', 'planter', 'advertising-column']);
 
+/** The refuge a kerb-to-kerb strip makes where it crosses a median wide enough for one (std.refuge): where the orb's halo may stand (partsOf's candidates: from the refuge's middle out, every 0.5 m, the whole disc inside the strip and the median), the disc's radius, the refuge's middle and length along the strip. Undefined: no refuge, or a road with no signal. */
+function refugeOf(ctx: Ctx, ka: V, kb: V, W: number): { cands: V[]; r: number; c: V; span: number } | undefined {
+  const strip = ctx.S.crossings.strip as { refuge: number; control?: Record<string, string> };
+  const road = ctx.d.roads.find(r => !r.gyratory && Math.abs(lineDist(ka, r.line) - r.w / 2) < 1.5 && Math.abs(lineDist(kb, r.line) - r.w / 2) < 1.5);
+  if (!road || strip.control?.[road.class] !== 'signal') return undefined;
+  const len = dist(ka, kb), u = norm(sub(kb, ka)), nrm = left(u), look = lookOf(ctx.S.crossings.strip), halo = look.signal.halo + 0.1;
+  for (const z of ctx.d.zones.filter(q => q.kind === 'median' && q.poly)) {
+    const P = z.poly as V[]; if (dist(P[1]!, P[2]!) < strip.refuge - 1e-9) continue;
+    let lo = Infinity, hi = -Infinity;
+    for (let s = 0; s <= len + 1e-9; s += 0.05) if (inPoly(add(ka, mul(u, s)), P)) { lo = Math.min(lo, s); hi = Math.max(hi, s); }
+    if (!(hi - lo > 0.3)) continue;
+    const mid = (lo + hi) / 2, along = Math.max(0, (hi - lo) / 2 - halo), across = W / 2 - halo, cands: V[] = [];
+    for (let ds = 0; ds <= along + 1e-9; ds += 0.5) for (const sg of ds ? [1, -1] : [1]) for (let dl = 0; dl <= across + 1e-9; dl += 0.5) for (const lg of dl ? [1, -1] : [1]) cands.push(add(add(ka, mul(u, mid + sg * ds)), mul(nrm, lg * dl)));
+    return { cands, r: halo, c: add(ka, mul(u, mid)), span: hi - lo };
+  }
+  return undefined;
+}
+
 /** Both landings of a seed, or why not: each kerb end stands on pavement 0.9 m beyond the kerb with SF-2's 2 m clear, the quay edge and the fixed things kept off (the same tests pairCrossings step 2 makes).
  *  With `claim`, furniture in the way (MOVABLE) is taken out of the street to make room (its ids are listed in `moved`); without it a landing needs ground the furniture left free. */
 export function place(ctx: Ctx, L: Layer, seed: Seed, W: number, claim = false): { pair: Pair; moved: string[] } | { why: string } {
   const t = norm(sub(seed.kb, seed.ka)), along = left(t), yaw = Math.atan2(along[1], along[0]);
   const ends = [{ k: seed.ka, inward: mul(t, -1) as V, who: 'a' }, { k: seed.kb, inward: t, who: 'b' }].map(e => ({ ...e, at: (s: number, d: number): V => add(add(e.k, mul(along, s)), mul(e.inward, d)) }));
   const moved: string[] = [];
+  // a signal crossing needs ground for the orb's halo on the refuge where its strip crosses a median of refuge width (parts.ts: an orb left out fails SF-20): the site is refused where none stands free, and with `claim` the movable furniture on the refuge goes
+  const refuge = refugeOf(ctx, seed.ka, seed.kb, W);
+  if (refuge && !refuge.cands.some(p => L.clearGround(discRing(p, refuge.r), p, 0.001))) {
+    const b = claim ? L.blockers(boxRing(refuge.c, W, refuge.span, yaw), refuge.c, 0.1, MOVABLE) : undefined;
+    if (!b) return { why: `no clear ground for the orb's halo on the refuge${claim ? ' (something that stays is in the way)' : ''}` };
+    moved.push(...b);
+  }
   for (const e of ends) {
     const c = e.at(0, 0.9), ring = boxRing(c, 1.8, W, yaw + QUARTER), near = (m: string) => { const x = L.items.filter(it => dist(it.at, c) < 4.5 && !['crossing', 'bollard', 'beacon'].includes(it.kind)).map(it => `${it.kind} ${dist(it.at, c).toFixed(1)} m`); return `no free spot for the landing at kerb ${e.who} (${e.k.join(', ')})${m}${x.length ? `: ${x.slice(0, 3).join(', ')}` : ''}`; };
     if (!L.fixed(c, 2.2) || quayBlock(ctx, samples9(ring))) return { why: near('') };

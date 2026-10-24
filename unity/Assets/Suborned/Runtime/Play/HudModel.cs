@@ -114,7 +114,7 @@ namespace Suborned.Play
                 // the secret, and the lover tie it reveals, only once the cell knows it (Listen, or a Watch of the pair together)
                 r.Secret = p.Knows("secret") ? (p.Secret == "affair" && p.Lover != null ? $"Secret: seeing {h.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name}" : p.Secret == "record" ? "Secret: a record" : $"Secret: {p.Secret}") : "";
                 (r.Next, r.NextIcon) = Roles[i] == "councillor" ? (g.Vale == ValeAt.WithEnforcer ? ("with the Enforcer", "take") : ("Take him at his car", "take"))
-                    : p.Turned ? ("Call them when it counts", "call") : !p.KRoutine ? ("Watch: learn the routine", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
+                    : p.Turned ? ("Call them when it counts", "call") : !p.KRoutine && g.WatchOffered(Roles[i]) ? (Roles[i] == "guard" ? "Watch: his sight" : "Watch: their mood", "watch") : !p.KNeed ? ("Listen: learn the need", "listen") : ("Turn: Ask, Pay, Help or Pressure", "help");
             }
             if (h.Ending.Length > 0) EndCard(h); else Ended = false;
         }
@@ -145,9 +145,10 @@ namespace Suborned.Play
                 s.InCar = op.InCar && !ended; s.LeftFate = "";
                 if (!ended && !op.InCar && h.GoCardOpen) foreach (var (who, fate, _) in goLeft) if (who == s.Role) s.LeftFate = fate;
                 s.Icon = AtlasIcon(op.Busy?.Do ?? (d.Phase is "walking" or "running" ? "move" : d.Verb), op.Busy?.Approach ?? "", d.Phase);
-                s.StateTag = op.Down ? "DOWN" : op.CarryBody.Length > 0 && d.Phase != "walking" && d.Phase != "acting" ? "CARRYING" : op.CarryBody.Length > 0 ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
-                s.Pace = op.CarryBody.Length > 0 ? (i == (int)OpId.Enforcer ? $"walk only · {g.R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {g.R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s") : "";
-                if (op.CarryBody.Length > 0) s.Icon = "s_carrying";
+                bool carries = op.CarryBody.Length > 0 || op.Carrying.HasValue; // item 31: a downed agent carried reads as carrying too
+                s.StateTag = op.Down ? "DOWN" : carries ? "CARRYING" : d.Phase == "running" ? "RUNNING" : d.Busy ? "BUSY" : s.Hurt ? "HURT" : "READY";
+                s.Pace = carries ? (i == (int)OpId.Enforcer ? $"walk only · {g.R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {g.R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s") : "";
+                if (carries) s.Icon = "s_carrying";
                 s.Queued = d.Queued.StartsWith("then: ") ? "then " + d.Queued[6..] : d.Queued;
                 // state, never a control (Fable C2, C4; the controls are taught once, by the hints)
                 s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
@@ -175,7 +176,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]); VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]) && h.Able((int)h.Agent); /* item 29: a downed agent's knobs are empty sockets */ VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -342,7 +343,9 @@ namespace Suborned.Play
             RestartKey = h.controls.Label(PlayAction.Restart);
             var g = h.Game; var d = h.EndDebrief; Ended = true; EndLines.Clear();
             string failLine = h.Text?.Fails.Find(f => f.code == g.FailCode).line ?? "";
-            string head = failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : "";
+            string head = h.Text != null && h.Text.EndFail.TryGetValue(g.FailCode ?? "", out var ft) && ft.Length > 0 ? ft.TrimEnd('.') : failLine.Length > 0 ? failLine.Split(new[] { ". " }, System.StringSplitOptions.None)[0].TrimEnd('.') : ""; // Glyph's 0.2.104 review: the title is less.end.fail's ("District sealed"), so the line under it is the only one about the car
+            string sealStory = null;
+            if (g.FailCode == "sealed" && g.Cause is Suborned.Sim.FailCause sc) { var (sl, _, ss) = h.SealedWords(sc); if (!string.IsNullOrEmpty(sl)) failLine = sl; sealStory = ss; } // brief 057 §4: the line says which of held, ready, empty it was (FailCause.Car), so the card and the story agree
             EndLines.Add(g.Result == Outcome.Success ? "Vale is in the car" : g.Result == Outcome.Withdrawn ? "You withdrew" : head.Length > 0 ? head : "The attempt failed");
             EndLines.Add(g.Result == Outcome.Success ? "The crew escapes with Vale alive." : failLine.Length > 0 ? failLine : g.FailText);
             EndLines.Add($"Done at {HandoverHost.MissionClock(g.Tick)}   ·   ${g.S.Purse - g.Cash:N0} spent   ·   Trail {g.Trail}");
@@ -352,7 +355,10 @@ namespace Suborned.Play
                 string inv = d.InvestigationState switch { "little" => "Investigators: none yet.", "early" => "Investigators have a few leads.", "active" => "An investigation is open" + (Cause(d.InvestigationCause) is string cz ? $": {cz}." : "."), _ => "" };
                 EndLines.Add($"{sec} {inv}".Trim());
                 foreach (var st in h.StandingLines()) EndLines.Add(st.line); // brief 014: one Standing line per district (the debrief)
-                var route = d.Route.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null); if (route.Count > 0) EndLines.Add(string.Join(" ", route));
+                var ids = new List<string>(d.Route); if (h.SealedCar == "empty") ids.Remove("vale-reaches-getaway-car"); // brief 057 §4 (Suture: Debrief.cs claims it on every route; Keel's fix comes): never say Vale reached the car when the fail says he had not
+                var route = ids.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null);
+                if (!string.IsNullOrEmpty(sealStory)) route.Add(sealStory); // "Police held the car." / "Go was never given." after "Vale reached the getaway car."
+                if (route.Count > 0) EndLines.Add(string.Join(" ", route));
                 if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
                 Getaway(h, d);
@@ -423,7 +429,7 @@ namespace Suborned.Play
                         "turned" => i.Orders > 1 ? "Works, one step worse" : "Works", "kept" => "Works", "refused" => "They would refuse", "not-yet" => "Not yet: one more try",
                         _ => "? until the Scout learns who they are",
                     };
-                case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Learns their routine";
+                case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
                 case "listen": return "Learns their need and temperament";
                 case "loop": return "Loops the camera; the Tech stays at the cabinet";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";

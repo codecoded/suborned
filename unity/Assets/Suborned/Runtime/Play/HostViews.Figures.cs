@@ -274,6 +274,11 @@ namespace Suborned.Play
                 var (t, from, to, shown) = things[kv.Key]; if (!shown) continue;
                 if (Aim.TryGetValue(kv.Key, out var aimAt)) { var ad = aimAt - t.position; ad.y = 0f; if (ad.sqrMagnitude > 0.04f) { kv.Value.rotation = Quaternion.RotateTowards(kv.Value.rotation, Quaternion.LookRotation(ad.normalized, Vector3.up) * carNose, 900f * Time.unscaledDeltaTime); continue; } } // a robot or vehicle that shoots faces its target (the shared rule)
                 if (kv.Key == "car/official" && CarFacing() is Vector3 h) { kv.Value.localRotation = Quaternion.LookRotation(h, Vector3.up) * carNose; continue; }
+                if (kv.Key == "patrol") // brief 057 §2 (Sky: "make sure robot moves smoothly"): walking its route (faster than its sweep's 0.32 m/s) it turns, eased, to face where it goes
+                {
+                    var mv = to - from; mv.y = 0f; float mps = mv.magnitude * Suborned.Sim.Game.Hz;
+                    if (mps > 0.6f) { kv.Value.rotation = Quaternion.RotateTowards(kv.Value.rotation, Quaternion.LookRotation(mv.normalized, Vector3.up), 240f * Time.unscaledDeltaTime); continue; }
+                }
                 if (kv.Key == "patrol" && host.Game?.PatrolPose() is { } pp && (pp.facing.X != 0 || pp.facing.Y != 0)) // brief 031: a robot looks the way its face points: the patrol faces its sweep's facing (the cone), not its walk
                 { var pf = frame.Dir(pp.facing); kv.Value.rotation = Quaternion.RotateTowards(kv.Value.rotation, Quaternion.LookRotation(pf, Vector3.up), 360f * Time.unscaledDeltaTime); continue; }
                 var d = to - from; d.y = 0f; if (d.sqrMagnitude > 0.0025f) kv.Value.localRotation = Quaternion.LookRotation(d.normalized, Vector3.up) * carNose;

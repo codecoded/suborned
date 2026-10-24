@@ -315,3 +315,117 @@ Night (`LightPhase.Night`) and the toggle off: nothing here applies (the scene's
 
 ### Open for Sky (via Aster)
 (a) haze `#ecd9b4` is live (the sky and the far street share it); (b) sky: cobalt is the default and teal is Shift+F9; say which stays; (c) the play grade (+16 % saturation, warm shadow lift) is a start value to judge on the A/B (Shift+F10) in the commander view; (d) the flare in third person and free fly is on (0.6 and 1.0); say if free fly should keep it.
+
+## Long tier retune: blue sky overhead, warm distance (Glint, 2026-10-23; Glyph's review of 0.2.94)
+**Verdict from Glyph:** the flyby haze (`tp-street-long`) is an ochre dust, a sandstorm with no blue sky. Third person and play zoom read right and are not touched.
+
+**What I measured on `briefs/048/build/0294/tp-street-long.jpg` (and `-nodof`, identical sky, so it is not the blur) against Sky's old harbour still (`briefs/048/glint/old/sky-still-2-harbour.png`):**
+| | 0.2.94 long | follow (`tp-street`) | old harbour still |
+|---|---|---|---|
+| sky at the top of the frame | `#aec4d7` S 0.19 | `#90b4d4` S 0.32 | `#5aa8ad` S 0.48 (teal) |
+| sky 10 percent down | `#becbd3` S 0.10 | | `#69afb0` S 0.40 |
+| sky 15 to 20 percent down | grey (S 0.03 to 0.06), then ochre at hue 40 | | `#89b8b3`, a clear band, then cream |
+| far plain / horizon haze | `#d4c8a4` to `#dccdb0`, V 0.83 to 0.86, S 0.20 to 0.25 | | `#dacbab` far city, `#efe0c3` the bright band (V 0.94) |
+
+Three causes, all in look data:
+1. **The sky is washed before it is hazed.** Long's top is 13 points less saturated than follow's with the same sky shape. The long bloom (0.8 / 0.6 / 0.85, from the old city) fills the frame with a veil from the white roofs and plaza.
+2. **The haze band is too tall.** `sky.hazeHeight` 0.12 is 65 percent haze at 3 degrees and still 36 percent at 7. The sky goes blue to grey to ochre across the top fifth of the frame, and the blue to cream blend passes through grey (S 0.03), which reads as dust. The old still crosses a teal that stays saturated down to the horizon.
+3. **The haze is dull, not luminous.** Same colour as the old city on paper, but the old fog was pushed past 1, so the tonemap bleached it to V 0.94 and bloom caught it. Ours is `#f4e3c3` at most 1.0 and renders V 0.86, S 0.23: mid-tone sand over the whole far plain, which is most of the lower frame.
+
+**Changed (data; two runtime files get a small optional field each, all defaults keep the old behaviour):**
+| file | change |
+|---|---|
+| `Resources/Atmosphere/haze.json` | `long.colour` `#f1e5cc` (paler peach cream, S 0.15) and `long.gain` 1.3 (a LINEAR multiplier, the old HDR fog); density stays 0.0005 (the old city's); follow untouched; `longNote` explains |
+| `Resources/Atmosphere/lens.json` | `sky.hazeHeightLong` 0.075 (haze weight 50 percent at 3 degrees, 20 at 7, 6 at 12) for the cobalt sky in the long tier only; `bloomLong` 0.8 / 0.6 / 0.85 to threshold 1.0, intensity 0.35, scatter 0.8, tint `#fff4e2`; follow, play grade, teal, DoF, flare untouched |
+| `Runtime/DistanceHaze.cs` | `Profile.colour`, `Profile.gain` (optional; gain 0 or 1..3; colour #rrggbb), `LinearHaze(tier)`: the one linear haze value, fog colour = its gamma form; long only, by day |
+| `Runtime/AtmosphereLens.cs` | `Skyp.hazeHeightLong` (optional, 0 = none), `Sky(on, tier)` takes the tier and uses `DistanceHaze.LinearHaze(tier)` for the sky horizon, so sky and fog stay one haze with no step |
+
+Nothing else moved: play tier (grade only), follow (fog `#f4e3c3` linear 90 to 350, hazeHeight 0.12, bloom 0.86 / 0.35 / 0.7), teal (own band 0.18), flare, DoF. **Night:** `on` is false at night, so the lens, the sky shape and the bloom do not run; the fog colour guard `!Night` is unchanged, so the long gain and colour never apply at night (the scene's `night.haze` `#102b36` stays and matches the night sky's horizon); the long exp density 0.0005 at night is as 0.2.94. Not changed at night, so nothing to retune there; Latch to look once (below).
+
+**Compile:** `dotnet build --no-incremental` of `DistanceHaze.cs`, `AtmosphereLens.cs`, `LightPhase.cs` against the Unity 6000.6.2f1 assemblies (`out/glint048/check/Check.csproj`): 0 errors, 0 warnings. Both json files parse. The shader is unchanged (it already reads `_AtmHaze` linear, `_AtmSkyShape.x`).
+
+**Mock:** `briefs/048/glint/long-before-after.png` (as built, mock, Sky's harbour still), made by `briefs/048/glint/long_mock.py` from the 0.2.94 long shot. It is a mock: sky pixels are moved along their own blue-to-haze blend with the new band height (w_new = w_old ^ (0.12 / 0.075)), the new body colour (`#8db4dc`, follow's) and a lighter haze (`#f1e6d0`, V 0.94); hazed far pixels are shifted by the change in haze colour in proportion to how hazy they are. There is no depth, no engine bloom and no real ACES, so read it for the amounts and direction, not as a measurement. It shows a blue sky overhead that turns cream only in the last quarter above the horizon, pale peach distance, ghosts kept. The predicted real render of the haze (`#f1e5cc` x 1.3 linear) is near `#eee3cb` to `#f0e4cc` from the 0.2.94 calibration (authored `#f4e3c3` rendered `#dccdb0`, about 0.795 in linear across channels); that is a prediction.
+
+**What it still will not do (not a lighting fix):** the old still's blue is the SEA and a teal sky; ours at the far end is a flat pale plain (`sea` drawn 4 beyond 150 m in `census-tp-street.json`). If the plain stays the biggest pale shape in the long frame, sea colour or a far-sea card (Vela, Datum) is the next lever, not haze.
+
+### For Latch: verify in the game (next batch; nothing here edits a scene)
+1. **Compile and console:** no `DistanceHaze:` or `AtmosphereLens:` rejection line (a bad `long.gain` or `long.colour` or `hazeHeightLong` logs one and the whole file is ignored, so the fog stays as built).
+2. **Re-shoot `tp-street-long` (flyby) and `tp-street-long-nodof`** with the same rows as 0.2.94 and sample the same points. Expected: sky at the top about S 0.30 or more (`#90b4d4` like follow, was `#aec4d7` S 0.19); blue holds to about 20 percent of the frame above the horizon, then warms to cream; far plain rendered about `#eee3cb`, V >= 0.92, S <= 0.17 (was `#d4c8a4` to `#dccdb0`); no grey band (S < 0.05) in the sky.
+3. **If the long haze did not change at all:** `RenderSettings.fogColor` is clamped to 1 on this path (the gain does nothing, no error). Then set `long.gain` to 1 and instead lighten `long.colour` to `#fbf1dc`; tell me.
+4. **If the horizon blooms too hard or the sky is veiled again:** `bloomLong.threshold` 1.0 to 1.1, or intensity 0.35 to 0.25. If the far haze looks flat and grey, intensity 0.35 to 0.5.
+5. **Teal (Shift+F9) in a flyby:** must be as 0.2.94 (the long band applies to cobalt only).
+6. **Follow tier (`tp-street`, `tp-worst`) and play (`play-opening`):** pixel-compare with the 0.2.94 shots; they must not move (long-only fields).
+7. **Night, flyby and free fly:** look once; expect the dark teal fog and night sky as in 0.2.94 (no gain, no bloom, no long band). Report if the night far plain looks muddy; that would be the exp 0.0005 density (it applies at night), and the fix is `long.density` 0.0004 or a night profile.
+8. **Frame time:** long only; bloom is cheaper not dearer (same pass count), no new pass.
+
+## Shade, long view and haze: Glyph's review of 0.2.99 (Glint, 2026-10-24)
+**Pictures (mocks on the 0.2.99 shots, not renders; read for amount and direction):** `briefs/048/glint/shade/shade-before-after.png` (play zoom, `ring-loop-names`), `briefs/048/glint/shade/long-before-after.png` (`tp-street-long`), full-size `ring-loop-names-after.png`, `tp-street-long-after.png`; scripts `shade_mock.py`, `long_mock.py`, `aces.py` beside them (an ACES stand-in calibrated on the 0.2.99 horizon pixel to within 2 levels).
+
+**1. Shade (the office wing's roof slab, the navy road).** Cause measured on `ring-loop-names`: a shaded surface sees only the ambient, and the ambient is a neutral sky (#dedce0 x 0.69), so a near-white roof (`roof_a` #faf6ea and kin) shades to a pure neutral grey (#8c8b8c, S 0.01) and a powder-blue road to #455668 (V 0.41, S 0.33: the warm sun desaturates the lit road, the shade has no sun to do it). The lit side is right; the shade has no warm light.
+- **Change (live, no scene rebuild): `lens.json` `sun.shadowStrength` 0.62.** AtmosphereLens sets `Light.shadowStrength` on the sun by day (the scene's own value restored at night, with the atmosphere off, and when the component goes). A shadow now takes 62 percent of the sun out, so the sun fills the shade in its own warm colour. The sun term on lit surfaces is unchanged, so **the sunlit side and the signals do not move**. Shade irradiance on up-facing surfaces x1.84 R, x1.64 G, x1.52 B. I chose this over raising `ambient` in light.json because it needs no scene rebuild and cannot lift the sun side.
+- Also: `gradePlay.liftOffset` 0.03 to 0.04 and `liftWarmth` 0.15 to 0.25 (small).
+- **Predicted (mock, same frame):** road shade #455668 (V 0.41, S 0.33) to #6f7a88 (V 0.53, S 0.18, hue 214: powder blue-grey); roof slab shade #8c8b8c to #b4aca9 (S 0.06, hue 20: warm); paving shade #7e726b (V 0.50) to #a8968b (V 0.66, S 0.17); lit road, paving and cream unchanged (k_lit 1.00). The shade/lit ratio of the road goes from 0.31 to about 0.5 in light; the testbed's is 0.74 but it has no real sun, so I stopped at the crisp-shadow end.
+- **Not lighting, said plainly:** the slab's **lit** side is #e2dedc, also neutral: the bare roof albedo is a flat near-white. The shade now reads warm and lighter, but the slab will still look like a plain slab until the roof has a cream albedo and a trim or cap line (Vela; `facade.json` roof_a to roof_e are #faf6ea, #e6f5ee, #fbe9dc, #e8f2f8, #f2ead6: only roof_a, roof_c and roof_e are warm).
+
+**2. Long view.**
+- **Horizon band, sand yellow.** Cause: two colours. The far plain is the sea material's own baked haze (`_Haze` #f4e3c3, no gain, built into the scene: it renders #d9cbaf, S 0.19, hue 40) while the sky's horizon is #f1e5cc x 1.3 (renders #dddbce, S 0.07), and my 0.2.97 retune only moved the second. Change: `Shaders/Water.shader` now takes the global `_AtmHaze` (the sky's own haze, unclamped) for the sea's fog colour and its far-shore fade when the atmosphere is on (perspective cameras by day; zero in play, so the play tier and the scene as built are unchanged). The far plain and the sky now end on one colour. `haze.json` long: colour `#fad9bd` (peach-cream, hue 27, was `#f1e5cc`), gain 1.2 (was 1.3, less bleach), density 0.0006 (was 0.0005). Predicted horizon and plain #ddd5c9, S 0.09, hue 34, V 0.87 (was S 0.07 and S 0.19, two different colours).
+- **Grey sky band** (S 0.00 at 20 percent down in 0.2.99, the blue to cream blend passing through grey). `lens.json` `sky.peach` 1.0 and `SubornedSky.shader`: a peach multiplier (1.12, 0.96, 0.80) on the middle of the blend, zero at both ends. Predicted S 0.06, hue 30 there.
+- **Lawn.** Flat olive (#768447, H 73, S 0.46) because the greens hue protection began at 70 degrees. Widened: from 55, full from 72, to 135, shift 10 (was 70, 95, 140, 8). Predicted lawn H 82. Yellows (roof boxes H 50 to 52), sand (H 40 to 45) and cream stay out of it; palm greens move +2 more (106 to about 108). **It stays flat**: the lawn is one albedo with no mowing bands or paths; that is Vela's or Datum's (lighting cannot make a flat texture). I have not added a fake light pattern.
+- **Plaza blown out.** I could not fix this by exposure and say so. The ACES shoulder is flat above about 200: 0.2 EV off moves the plaza paving only from 220 to 214, and 0.45 EV to 212. The cause is a near-white, neutral plaza albedo at about 1.2 scene-linear (S 0.01 in the long view, buff at play zoom): paver contrast is lost in the shoulder. Done: `gradeLong.exposureDelta` -0.2 (the long tier only: the scene grade's postExposure plus the delta, new optional field, ColorAdjustments on the long Volume, only exposure overridden) and `bloomLong.threshold` 1.0 to 1.2 (the plaza at 1.18 no longer feeds the bloom veil). **The real lever is Vela's plaza paving albedo about 15 to 20 percent lower and warm buff** (the paving at play zoom already reads buff).
+- **Roof boxes** (orange and yellow): not lighting; Vela's.
+
+**3. Road reflection cut (`_ClearCoatMask`).** Waits for Vela's material regen and Latch's re-shoot. When it lands I will judge the Boulevard on three numbers: lit enamel V against the testbed (0.68 to 0.71), the shade/lit ratio of the same enamel (now about 0.5), and whether any pale sheen remains at grazing angles in `road-enamel-boulevard-third` (that is the reflection probe, not exposure; its cut is in `light.json` `reflection.street`). If the road is still pale after the shade change, the remaining lever is the road albedo, not exposure, because lowering exposure would also crush the shade I just lifted.
+
+### Files changed
+`unity/Assets/Suborned/Resources/Atmosphere/lens.json` (sun.shadowStrength, gradeLong, sky.peach, bloomLong.threshold, lift, greens), `.../haze.json` (long colour, gain, density, notes), `unity/Assets/Suborned/Runtime/AtmosphereLens.cs` (Sunp, Longp, SunShade, long exposure, sky.peach to `_AtmSkyExtra.z`; `Check` ranges), `unity/Assets/Suborned/Shaders/SubornedSky.shader` (peach band), `.../Water.shader` (`_AtmHaze` hook). No scene, no light.json edit (the ambient is untouched on purpose: no rebuild needed).
+
+### Checked here
+1. `dotnet build --no-incremental` of `DistanceHaze.cs`, `AtmosphereLens.cs`, `LightPhase.cs` against the Unity 6000.6.2f1 assemblies (`out/glint048/check`): 0 errors, 0 warnings; an injected undefined identifier gave 2 errors (so the check discriminates), then removed.
+2. The Unity shader compiler, batchmode, in the scratch project `out/glint048/shaderproj` (not the game project): `Suborned/SkyGradient` and `Suborned/Water`, supported, 0 messages.
+3. `lens.json` and `haze.json` parse (python json); values are inside the C# `Check` ranges (shadowStrength 0.62 in 0.2..1, peach 1.0 in 0..2, exposureDelta -0.2 within 1.5, greens 55 < 72 <= 135 < 170).
+4. Not checked (needs the game): any real render, the Deferred path's use of `Light.shadowStrength`, `unity_FogColor` clamping, frame time.
+
+### For Latch: verify in the game (no scene edit; nothing needs a rebuild)
+1. **Compile and console:** no `AtmosphereLens:` or `DistanceHaze:` rejection line; both shaders import with no message.
+2. **Shade, play zoom, yaws 30 and 210** (`ring-loop-names`, `done-turn-chip`, `office-front-yaw210`): sample (a) the shaded road: expect about #6f7a88 (V 0.50 to 0.58, S 0.15 to 0.22), no longer #455668; (b) the roof slab shade: warm, V about 0.7, S 0.04 to 0.08; (c) **sun side must not move**: lit road about #aabfbf, lit paving, lit cream within 3 levels of 0.2.99; (d) cones, guard, rivals: pixel-identical (they draw on the overlay camera, no grade; the sun strength is not read by an unlit shader). Then Shift+F10 off: the scene as built (strength 1.0) must come back.
+3. **If Deferred ignores `shadowStrength`** (no change in shade at all): tell me; the fallback is light.json `ambient` x1.35 with sun 1.8 to 1.55 and a scene rebuild (mock numbers in `shade_mock.py` args `#dedce0 0.9 1.55`), or `liftOffset` 0.05.
+4. **If shade is too flat** (crisp-shadow look lost): `sun.shadowStrength` 0.62 to 0.7 (shade lift then about 70 percent of this one).
+5. **Long view** (`tp-street-long`, `-nodof`): expect the far plain and the horizon within 6 levels of each other, about #dcd3c8 to #e0d5c9 (S 0.08 to 0.13, hue 30 to 38; was #d9cbaf S 0.19 vs #dddbce S 0.07), no grey band in the sky (S >= 0.05 at 20 percent down), lawn hue 78 to 86. **If the plain is still sand**: fog colour is clamped at 1 and the sea's `_FadeFrom` 4000 m is beyond the visible plain; then tell me and I will set `haze.long.gain` 1.0 and lighten the colour. **If the towers go yellow** against a pinker plain: same cause (clamped `unity_FogColor` on the city shaders); same fix.
+6. **Night, flyby, free fly:** `on` is false at night (strength, exposure, peach and the Water hook are all off); look once. Follow tier (`tp-street`, `tp-worst`): expect only the shade change and the Water hook (follow's haze is `#f4e3c3` gain 1, as the baked `_Haze`, so the sea there does not move).
+7. **Frame time:** no new pass; a shadow-strength float and one global read in Water; nothing to measure beyond the Studio's noise.
+
+### Open (not mine)
+Vela: bare roof albedo (cream, with a cap or trim line), plaza paving albedo about 15 to 20 percent darker and warm, lawn variation (mowing bands or paths), roof boxes. Next owner: Latch (verify above, re-shoot `ring-loop-names`, `tp-street-long`, `road-enamel-boulevard-third`), then Glint again for the Boulevard; Glyph re-checks the same three frames.
+
+## Road strip light by phase, and the calm rails (Glint, 2026-10-24)
+**Ask (Sky, via Vela):** the road edge is modern strip lighting, not white edges. Vela shipped the light ribbon at the kerb face (DK_Road_Lens at the day value 1.4, pearl band dropped, `light.json` `emissive` `roadLens` 5.0 night / 1.4 day). Nothing raised it. Now the rig does.
+
+**What was there:** no emissive in the game was driven by any phase (`light.json` `night.emissive` was data only; `LightPhase` held day and night States and the night lamps, nothing else). There was no evening. So this is the first phase-driven emissive, and evening is new.
+
+**Changes (no scene edit, nothing rebuilt):**
+| File | Change |
+|---|---|
+| `unity/Assets/Suborned/Runtime/RoadLight.cs` (new) | Self-installing (`RuntimeInitializeOnLoadMethod`, like AtmosphereLens). Each frame reads `LightPhase.Current`; eases (1.5 s, unscaled time) the lens emission and the road pool alpha to the level. **Day is untouched:** nothing is scanned or swapped until the look first leaves day, so day frames are byte-identical. On first leaving day it copies `DK_Road_Lens` and `DK_Road_Pool` once and gives the copies to the renderers that draw them (one `FindObjectsByType<Renderer>` scan, again after a scene load). **The shared .mat assets are never written** (a play-mode edit of a shared material sticks to the asset in the Editor and would break the kit's hash check). Validates its json (`suborned.roadlight/1`); a bad file logs one `RoadLight:` error and the strip stays at day. |
+| `unity/Assets/Suborned/Resources/Atmosphere/roadlight.json` (new) | lens day 1.4 / evening 3.0 / night 5.0 (the .mat's own scale: the kit writes rgb as `(linear x level)^(1/2.2)`, level in alpha; RoadLight scales the day rgb by `(L / 1.4)^(1/2.2)`, so evening is x1.41 and night x1.97 in the shader's raw colour, which is what the Blender board's 3.0 and 5.0 map to); pool alpha 0 / 0.14 / 0.22 (0.22 is the kit's own value); ease 1.5 s. |
+| `unity/Assets/Suborned/Runtime/Play/LightPhase.cs` | `enum Phase { Day, Evening, Night }`, `Current`, `SetEvening()`. `Set(bool)` as before (sets Day or Night). **Evening has no sun or grade of its own** (not built, not asked for): `SetEvening()` applies the day State and sets the phase, so only the dusk lights change. Street lamps stay a night thing. |
+| `unity/Assets/Suborned/Editor/World/light.json` | `emissive.evening` (roadLens 3.0, roadPoolAlpha 0.14, note). Data for Vela and Latch; the runtime reads `roadlight.json`, so change both together. |
+
+**The pool (soft light on the road, "only if cheap"):** it was already in the kit and the builder: `DK_Road_Pool` (Materials/Glow, `Suborned/Cross Glow` mode 3, additive, no shadow, alpha 0 by day), a 1 m band beside each ribbon, batched by `Combine`. It costs no light and no extra pass, only a little additive overdraw on a strip of road. So the answer is emission + the pool alpha + the night bloom (0.9 / 0.35) and nothing else; no real lights, no decal, no lightmap. At evening the day bloom (threshold 1.1, 0.22) catches the lens (raw R about 1.64), at night the night bloom does.
+
+**Checked here:**
+1. `dotnet build --no-incremental` of `RoadLight.cs`, `LightPhase.cs`, `AtmosphereLens.cs`, `DistanceHaze.cs` against the Unity 6000.6.2f1 assemblies (`out/glint048/check`): 0 errors, 0 warnings; an injected undefined member gave 2 errors (the check discriminates), then restored.
+2. `roadlight.json` and `light.json` parse; `roadlight.json` values pass `RoadLight.Check`'s ranges by reading.
+3. Not checked (needs the game): any render, the renderer scan count and time, the pool's look, frame time.
+
+**Calm rails (`look.json` `track` #6f7a72, smoothness 0.3, metallic 0.1), under the grade:** a rough stand-in (the `aces.py` curve, sun 1.8 at 38 degrees, trilight ambient, exposure +0.15; it is a model, not a render) puts a flat rail at about (166, 165, 148) in sun, (148, 148, 131) in shadow at the sun's 0.62 shadow strength (96, 103, 90 with no sun fill), metallic 0.1 about 6 levels lower. Two things: (a) the warm sun turns the green-grey into a khaki grey, a quiet line, good; (b) **its luma matches the lawn track's** (lawn about (174, 175, 83), luma 164, rail 164) so on the lawn it separates by chroma only, and may read as a faint ghost line rather than a rail. Metallic 0.1 is fine (no sky streak; the reflection cube is dark at low angles). **Recommendation, not applied** (look.json is a rebuild and Vela's colour): if a play-zoom shot shows the rail within about 20 levels of the lawn in luma, set `look.json` `track.value` 1 to 0.82 (rail about 135 in sun, 120 in shade, still calm, a dark thin line on green). Latch to sample; Vela to decide.
+
+### For Latch: verify in the game (no scene edit; the two new files need Unity to make their .meta on import)
+1. **Compile and console:** no `RoadLight:` error. At the first non-day phase one line `RoadLight: N renderers on DK_Road_Lens / DK_Road_Pool (runtime copies)`; N more than 0 on the Handover block (the ribbons are laid on enamel; the asphalt option drops them, so 0 and the "not laid" line there is right).
+2. **Day (default):** pixel-identical to 0.2.99+ shots (nothing scanned). Strip is a pale cream line (lens 1.4), no pool.
+3. **Evening:** nothing calls it yet. In a debug console or a one-line `-evening` arg beside `-night` in `HostNight.cs` (Latch's file, I did not touch it): `LightPhase.Instance.SetEvening()`. Expect the strip clearly lit, a soft pool 1 m wide on the carriageway beside it, the day sun and grade unchanged, lamps off. Compare `briefs/048/vela/road-strip-light.png` bottom right "evening".
+4. **Night (`-night`):** strip at 5.0 with the night bloom, pool 0.22; the road should read as a line of light with a soft wash, not a white band; if bloom swells the line past about 0.4 m at zoom 14, lower `night.lens` to 4.0 in `roadlight.json` (no rebuild).
+5. **Ease:** switch day to night in play (the briefing choice): the strip fades over about 1.5 s. A night launch opens lit.
+6. **No asset writes:** `git status unity/Assets/Suborned/Kit/Materials/DK_Road_Lens.mat` and `Materials/Glow/DK_Road_Pool.mat` unchanged after a play session.
+7. **Frame time:** one scan at the first phase change (look for a hitch there; if over a frame at the Air, tell me and I will move it to the scene load); then two material writes only when the value moves. No light, no pass.
+8. **Signals:** cones, guard, rivals pixel-identical at day, evening and night (they draw on their own camera).
+9. **Calm rails:** sample the rail and the lawn at play zoom, yaws 30 and 210; see the rail note above.

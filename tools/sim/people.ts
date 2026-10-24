@@ -18,6 +18,7 @@ export const PEOPLE_OUT = 'sim/data/handover.people.json';
 export const PEOPLE_IN = 'out/people/harbour-district.people.json';
 const PLAN = 'contracts/world/harbour-district.plan.json';
 const MISSION = 'contracts/missions/handover/mission.json';
+export const SEATS_FILE = 'contracts/people/handover.seats.json';
 
 type V = [number, number];
 type InPerson = {
@@ -49,6 +50,30 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
   const startsAt = h! * 3600 + m! * 60 + (s ?? 0);
   const places: Record<string, number[]> = {};
   for (const p of [...people.places].sort((a, b) => (a.id < b.id ? -1 : 1))) places[p.id] = toBlockCm(p.at);
+  // brief 054 §3.3 (engine 0.28.0, perception.people cone): how a person faces at a stop, by the place's kind in the people file. A seat faces as
+  // its chair (contracts/people/handover.seats.json, Pulse's seats: now an engine input); a door out of the door ("door": the engine reads its
+  // entrance); a stand on a plot with one door toward that door (the café's stands: "to:<door>"); a stand off a plot, a stop and a bay the kerb
+  // ("kerb": the engine reads the nearest carriageway); a home is inside (no facing). A place of any other kind, or a seat the seats file lacks,
+  // is an error here: unknown = reject. Pulse owns these rules (pulse-witnesses.md §2.2); this writes them as the engine reads them.
+  const kindsIn = people.places as unknown as { id: string; kind: string; plot?: string }[];
+  const seats = JSON.parse(readFileSync(join(root, SEATS_FILE), 'utf8')) as { tables: Record<string, { chairs: { chair: number; face: V }[] }> };
+  const faces: Record<string, number[] | string> = {};
+  for (const p of [...kindsIn].sort((a, b) => (a.id < b.id ? -1 : 1))) {
+    if (p.kind === 'home') continue;
+    if (p.kind === 'seat') {
+      const m = p.id.match(/^(.*)-seat-(\d+)$/); const chair = m ? seats.tables[m[1]!]?.chairs.find((c) => c.chair === Number(m[2])) : undefined;
+      if (!chair) throw new Error(`${p.id}: a seat ${SEATS_FILE} has no chair for`);
+      faces[p.id] = chair.face; continue;
+    }
+    if (p.kind === 'door') { faces[p.id] = 'door'; continue; }
+    if (p.kind === 'stand' && p.plot) {
+      const doors = kindsIn.filter((q) => q.kind === 'door' && q.plot === p.plot);
+      if (doors.length !== 1) throw new Error(`${p.id}: a stand on ${p.plot} faces its unit's door, and the plot has ${doors.length} doors`);
+      faces[p.id] = `to:${doors[0]!.id}`; continue;
+    }
+    if (p.kind === 'stand' || p.kind === 'stop' || p.kind === 'bay') { faces[p.id] = 'kerb'; continue; }
+    throw new Error(`${p.id}: a place of kind ${p.kind} has no facing rule (brief 054 §3.3; unknown = reject)`);
+  }
   const persons = [...people.persons].filter((p) => p.tier === 'simulated').sort((a, b) => (a.id < b.id ? -1 : 1)).map((p) => {
     const stops = p.routine.stops.map((st) => {
       if (st.place !== 'beyond' && !places[st.place]) throw new Error(`${p.id}: place ${st.place} is not in the people file`);
@@ -69,11 +94,14 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
   });
   const out = {
     schema: 'suborned.sim.people/2',
-    from: [src.people, src.fixture ? `FIXTURE: ${src.fixture}` : `written by bun run people from contracts/people/${plan.id}.cast.json (the promoted cast)`, PLAN, MISSION, ...needsFiles],
+    from: [src.people, src.fixture ? `FIXTURE: ${src.fixture}` : `written by bun run people from contracts/people/${plan.id}.cast.json (the promoted cast)`, PLAN, MISSION, ...needsFiles, SEATS_FILE],
     scope: people.scope,
     frame: 'block frame, integer centimetres; stop = [place, from, to, out]: from and to in mission seconds (0 = mission.json clock.startsAt), out 1 = on the street, 0 = at home, working inside, or beyond the sheet',
     startsAt,
     places,
+    faces,
+    facesFrame: 'face = how a person stands at the place (brief 054 §3.3): [x, y] a direction (a seat, its chair\'s face), "door" out of the place\'s entrance, "to:<place>" toward that place, "kerb" toward the nearest carriageway; a home has none (inside)',
+
     needs: {
       sizes: Object.keys(needs.rules.sizes).sort(),
       records: Object.fromEntries([...needs.catalogue.needs].sort((a, b) => (a.id < b.id ? -1 : 1)).map((r) => [r.id, [r.kind, r.label, r.size]])),

@@ -1,0 +1,16 @@
+/* Engine 0.28 / 0.29 HUD pieces (world29.js). Kit sprites and kit colours only. */
+.hud .w29{pointer-events:none}
+.hud .ohead{display:flex;align-items:center;gap:3px}
+.hud .rd.mood{box-shadow:none}
+.hud .dm{position:relative;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.hud .dm svg{position:absolute;left:0;top:0}
+.hud .uplate.lk>span{gap:6px}
+.hud .mk0{display:block;flex:none}
+.hud .vplate{position:relative;width:229px;height:54px}
+.hud .vplate .fr{position:absolute;inset:0;width:229px;height:54px;filter:drop-shadow(0 2px 3px rgba(0,0,0,.28))}
+.hud .vplate .vk{position:absolute;top:7px;width:40px;height:40px}
+.hud .vplate .vi{position:absolute;top:7px;width:40px;height:40px;display:flex;align-items:center;justify-content:center}
+.hud .vplate .vm{position:absolute;top:29px;display:flex}
+
+.hud .hudlayer{z-index:1}
+.hud .at{z-index:2}

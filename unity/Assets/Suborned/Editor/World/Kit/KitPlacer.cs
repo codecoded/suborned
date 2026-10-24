@@ -161,7 +161,7 @@ namespace Suborned.World
         /// <summary>The piece r baked into `layer`'s tile batches by material instead of standing as an instance (its LOD0, placed as
         /// Place places it): many small pieces that never fade (bed tufts, paving bands, bollards) then draw as a few batches.
         /// slots: this piece's material slots drawn in another kit material (KitSlots).</summary>
-        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots, float elementYaw = 0f)
+        public void Bake(Transform el, string layer, string id, KitRefDto r, Vector2 at, float z, IReadOnlyDictionary<string, string> slots, float elementYaw = 0f, System.Func<Material, Material> remap = null)
         {
             var root = Prefab(r.Id).transform; var used = new HashSet<string>(); int n = 0;
             var trs = Matrix4x4.TRS(new Vector3(at.x, z, at.y), Quaternion.Euler(0f, -(float.IsNaN(r.Yaw) ? elementYaw : r.Yaw) * Mathf.Rad2Deg, 0f), r.Scale) * root.worldToLocalMatrix;
@@ -183,7 +183,10 @@ namespace Suborned.World
                 {
                     var kit = new MeshKit().Mesh(mesh, s, trs * mr.transform.localToWorldMatrix);
                     if (kit.Empty) continue;
-                    Combine.Baked(el, layer, kit, KitSlots.For(mats[Mathf.Min(s, mats.Length - 1)], slots, used)); n += kit.TriangleCount;
+                    var bm = KitSlots.For(mats[Mathf.Min(s, mats.Length - 1)], slots, used); if (remap != null) bm = remap(bm); // brief 048 (Splice): the crossing parts' light drawn as emission only, at bake time
+                    // the strip light's pool: held, its chords' joints mitred, then baked by RoadPoolJoints.Fill (no fan gaps, no doubled overlaps)
+                    if (bm && RoadPoolJoints.Collecting && bm.name.StartsWith(RoadPoolJoints.Pool, System.StringComparison.Ordinal)) { RoadPoolJoints.Add(el, layer, kit, bm); n += kit.TriangleCount; continue; }
+                    Combine.Baked(el, layer, kit, bm); n += kit.TriangleCount;
                 }
             }
             if (n == 0) throw new InvalidDataException($"World: kit `{r.Id}` has no meshes");

@@ -24,16 +24,13 @@
   },
 
   "scrims": {
-    "menu": [
-      { "edge": "left",   "heightFrac": 0.36, "holdFrac": 0.45, "color": "#0b1615", "alphaAtEdge": 0.62, "curve": "smoothstep", "note": "heightFrac of the width for left/right" },
-      { "edge": "top",    "heightFrac": 0.34, "color": "#0b1615", "alphaAtEdge": 0.50, "curve": "smoothstep", "note": "= loading.json top scrim (the title)" },
-      { "edge": "bottom", "heightFrac": 0.28, "color": "#0b1615", "alphaAtEdge": 0.68, "curve": "smoothstep", "note": "= loading.json bottom scrim (the build line)" }
-    ],
+    "menu": [{"edge": "left", "heightFrac": 0.4, "holdFrac": 0.5, "color": "#0b1615", "alphaAtEdge": 0.66, "curve": "smoothstep", "note": "heightFrac of the width for left/right; light line (Glyph 2026-10-23): 66 % held over the first half of 40 % (was 62 % over 36 %), the words sit straight on it", "noteMenu": "Glyph 0.2.97 #3: the menu shows only this left scrim of its own; the top (title) and bottom (build line) scrims are the loading screen's, shown on the menu too (they were drawn twice, so the sky and the paving read darker than the mock)"}],
     "panel": [
-      { "edge": "full", "alphaAtEdge": 0.52, "color": "#0b1615", "note": "an even veil: the picture stays visible round the panel but does not compete" }
+      { "edge": "full", "alphaAtEdge": 0.52, "color": "#0b1615", "note": "an even veil: the picture stays visible round the panel but does not compete" },
+      { "edge": "bottom", "heightFrac": 0.28, "color": "#0b1615", "alphaAtEdge": 0.68, "curve": "smoothstep", "note": "light line: the loading screen's bottom scrim, so the build line stays readable under the sheet at 16:10 (not from the pause menu)" }
     ],
     "brief": [
-      { "edge": "right",  "heightFrac": 0.425, "holdFrac": 0.705, "color": "#0b1615", "alphaAtEdge": 0.92, "curve": "smoothstep", "note": "the text column sits on the held part; the cell (left two thirds) stays clear" },
+      { "edge": "right",  "heightFrac": 0.425, "holdFrac": 0.705, "holdRef": 656, "color": "#0b1615", "alphaAtEdge": 0.92, "curve": "smoothstep", "note": "the text column sits on the held part; the cell (left two thirds) stays clear. holdRef (light line): the hold in ref px (column 568 + margin 64 + 24), in place of holdFrac; at 2880x1864 the old 0.705 left the dossier heads at 1.7:1" },
       { "edge": "bottom", "heightFrac": 0.20, "color": "#0b1615", "alphaAtEdge": 0.50, "curve": "smoothstep" }
     ]
   },
@@ -89,10 +86,45 @@
   "brief": {
     "imageFocus": [1.0, 0.5],
     "imageFocusNote": "this screen only: on a screen narrower than 16:9 the picture crops at the sides; keeping the picture's right edge (the 434 px crop all comes off the left) moves the cell 217 px left at 2880x1864, so the Enforcer's sleeve and the Tech's head clear the text column (centred, the sleeve ran under the first lines). No effect at 16:9.",
-    "column": { "rightRef": 64, "widthRef": 504, "topRef": 84, "bottomRef": 64 },
+    "column": { "rightRef": 64, "widthRef": 536, "widthNote": "Glyph 0.2.97 #4: 504 wrapped the hook (\"...to Security.\") and orphaned \"paper.\"; 536 (with the hook at 22) keeps both on one line and stays inside the right scrim's 656 ref hold (536 + 64 = 600) at 2880x1864", "topRef": 84, "bottomRef": 64 },
     "headRule": { "color": "brass", "heightRef": 1, "gapAboveRef": 16, "gapBelowRef": 20 },
     "button": { "w": 220, "h": 52, "label": "Continue", "align": "right" },
     "wordBudget": "120-200 words at 20/30 ref px in a 568 ref column is 14-22 lines plus paragraph gaps, about 560-850 ref px of the 880 available (text starts at 270, the button at 964); scroll past that (never expected)"
+  },
+
+  "lightline": {
+    "note": "Brief 051 direction A 'light line' (Glyph, briefs/051/lightline/SPEC.md and frontend.a.json; Sky 2026-10-23 'A seems ok'). Replaces the cream plates and the cyan ring on the main menu, Options, Controls, the brief's Continue and the pause menu: text on the dark, and only three marks move: the marker (a square turned 45 degrees), the line (turquoise-light, under the focused item) and the tick (a 3 ref bar at a row's left edge). Hover = focus. Supersedes button.focus, panel.rowFocus, the plate tabs, keycaps, slider, switch and the pause card above; their entries stay for history and are not read.",
+    "alpha": { "idleWord": 0.74, "idleRow": 0.90, "focus": 1.0, "disabled": 0.40, "chevIdle": 0.50, "chevDisabled": 0.25, "tabHover": 0.92 },
+    "type": {
+      "word":       { "font": "Jost-Regular", "sizeRef": 22,   "trackingEm": 0.22, "uppercase": true,  "color": "cream" },
+      "wordSmall":  { "font": "Jost-Regular", "sizeRef": 18,   "trackingEm": 0.20, "uppercase": true,  "color": "cream" },
+      "action":     { "font": "Jost-Regular", "sizeRef": 15.5, "trackingEm": 0.24, "uppercase": true,  "color": "cream" },
+      "title":      { "font": "Jost-Regular", "sizeRef": 32,   "trackingEm": 0.30, "uppercase": true,  "color": "cream" },
+      "pauseTitle": { "font": "Jost-Regular", "sizeRef": 22,   "trackingEm": 0.30, "uppercase": true,  "color": "cream" },
+      "tab":        { "font": "Jost-Regular", "sizeRef": 15.5, "trackingEm": 0.20, "uppercase": true,  "color": "cream" },
+      "group":      { "font": "Jost-Regular", "sizeRef": 12.5, "trackingEm": 0.20, "uppercase": true,  "color": "textDim" },
+      "rowLabel":   { "font": "Jost-Regular", "sizeRef": 17,   "trackingEm": 0.02, "uppercase": false, "color": "cream" },
+      "rowValue":   { "font": "Jost-Regular-Tab", "sizeRef": 17, "trackingEm": 0, "uppercase": false, "color": "cream" },
+      "keycap":     { "font": "Jost-Regular-Tab", "sizeRef": 14.5, "trackingEm": 0.02, "uppercase": false, "color": "cream" },
+      "keycapAlt":  { "font": "Jost-Regular-Tab", "sizeRef": 12, "trackingEm": 0.02, "uppercase": false, "color": "textDim" },
+      "clash":      { "font": "Jost-Regular", "sizeRef": 16.5, "trackingEm": 0, "uppercase": false, "color": "cream" },
+      "pauseBuild": { "font": "Jost-Regular-Tab", "sizeRef": 11.5, "color": "textDim", "alpha": 0.85 }
+    },
+    "shadow": { "color": "#0b1615", "alpha": 0.55, "blurRef": 6, "yRef": 1, "note": "under words on the picture only (menu, brief)" },
+    "marker": { "sizeRef": 9, "gutterRef": 30 },
+    "line": { "wordHRef": 2, "rowHRef": 2, "idleHairAlpha": 0.16, "tickWRef": 3, "tickInsetRef": 7, "ruleAlpha": 0.22 },
+    "menu": { "leftRef": 72, "bottomRef": 100, "itemW": 300, "itemH": 48, "gapRef": 12, "textInsetRef": 52, "lineWRef": 232, "lineYRef": 37 },
+    "sheet": { "glassTint": 0.72, "glassBlurRef": 18, "wRef": 960, "hRef": 780, "flatAlpha": 0.90, "borderAlpha": 0.34, "borderRef": 1, "radiusRef": 2, "padX": 48,
+               "titleTop": 42, "tabsTop": 116, "tabH": 36, "tabPadX": 14, "tabGap": 22, "bodyTop": 172, "footerRuleFromBottom": 92, "footerItemH": 40,
+               "footerInset": 30, "footerGutter": 20, "footerLineY": 29, "rowH": 44, "groupH": 40, "rowLabelX": 14, "rowControlRight": 14, "colGap": 44, "controlsRowH": 34, "pauseVeil": 0.40 },
+    "choice": { "chevRef": 14, "chevHit": 28, "zoneW": 286, "valueW": 190, "nudgeRef": 3 },
+    "slider": { "railW": 220, "railH": 2, "railAlpha": 0.38, "knobRef": 11, "knobBorderRef": 1.5, "knobFocusRef": 15, "knobDragRef": 17, "valueW": 54, "valueGap": 16 },
+    "switch": { "boxRef": 20, "boxBorderRef": 1.5, "boxBorderAlpha": 0.60, "diamondRef": 9, "wordW": 38, "gapRef": 14 },
+    "keycap": { "hRef": 28, "minW": 48, "padX": 12, "altH": 22, "altPadX": 8, "borderRef": 1.5, "borderAlpha": 0.85, "altBorderAlpha": 0.35, "fillAlpha": 0.45, "radiusRef": 3, "gapRef": 8, "listenFillAlpha": 0.60, "listenMinW": 110, "listenSizeRef": 13.5 },
+    "clash": { "badgeRef": 18, "stripH": 56, "stripBadgeRef": 26, "gapAbove": 8, "ruleAlpha": 0.50, "fillAlpha": 0.35 },
+    "pause": { "wRef": 360, "topFrac": 0.12, "padX": 32, "padTop": 30, "padBottom": 24, "fillAlpha": 0.90, "itemH": 44, "titleH": 52, "gutterRef": 30, "insetRef": 34, "lineWRef": 266, "lineYRef": 33, "endGapRef": 14, "buildH": 34 },
+    "brief": { "continueW": 232, "continueH": 48, "continueInset": 40, "continueGutter": 24, "continueLineW": 192, "continueLineY": 37, "continueRightRef": 64, "continueBottomRef": 64 },
+    "timing": { "markerSlide": 0.18, "lineDraw": 0.22, "lineDelay": 0.04, "lineRetract": 0.10, "tickSlide": 0.16, "tabSlide": 0.18, "labelFade": 0.12, "pressIn": 0.08, "pressOut": 0.12, "valueNudge": 0.10, "switchFlip": 0.12, "markerAppearDelay": 0.30, "markerAppear": 0.12, "listenBlink": 1.0 }
   },
 
   "timing": {

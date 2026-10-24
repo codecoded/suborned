@@ -31,6 +31,8 @@ namespace Suborned.Play
         public Slot[] PlateOf(OpId by)
         {
             var own = Slots[(int)by];
+            if (Game != null && Game.Ops[(int)by].Carrying.HasValue && Game.Ops[(int)by].CarryBody.Length == 0) // item 31: carrying a downed agent, Put down is knob 1 (the rest dim; no Hide for an agent)
+            { var pa = new Slot[Math.Max(1, own.Length)]; pa[0] = DropSlot; for (int i = 1; i < own.Length; i++) pa[i] = new Slot(own[i].Id, own[i].Label, own[i].Glyph, true); return pa; }
             if (by == OpId.Enforcer && Game != null && Game.Vale == ValeAt.WithEnforcer) // the end steps: out with Vale, the first knob is the car
             { var v = (Slot[])own.Clone(); v[0] = new Slot("act", Text?.Actions.TryGetValue("board", out var ex) == true && ex.Label.Length > 0 ? ex.Label : "Board", "car"); for (int i = 1; i < v.Length; i++) if (v[i].Id == "fire") v[i] = new Slot("fire", v[i].Label, v[i].Glyph, true); return v; } // Keel c018: walking Vale he doesn't fire (fire-carrying-vale): the knob greys // brief 018: Board (with Vale), then Go from the car
             if (Game == null || Game.Ops[(int)by].CarryBody.Length == 0) return own;
@@ -43,6 +45,7 @@ namespace Suborned.Play
         void PlateAct(string id)
         {
             var op = Game.Ops[(int)Agent];
+            if (id == "drop" && op.Carrying.HasValue && op.CarryBody.Length == 0) { CancelAgent((int)Agent, null); return; } // item 31: an agent is laid down by the cancel (the engine's cancel.carry)
             if (id == "drop") { var o = new Order { Op = Op.Name(Agent), Do = "drop" }; if (Issue(o, null, null)) SayOrder(Agent, o, null); return; }
             var st = NearestStash(op.Pos);
             if (st == null) { PopKey("no-room", null, SelectedWorld(), Feedback.Refused, "No hiding place with room."); return; }
@@ -165,6 +168,18 @@ namespace Suborned.Play
             var l = new List<Intent>(); var g = Game; var R = g.R; var op = g.Ops[(int)by]; string who = Op.Name(by);
             Intent I(string verb, string target, string label, int s) { var i = new Intent { Slot = -1, Label = label, Order = new Order { Op = who, Do = verb, Target = target } }; i.Time = $"{s} s"; i.Usd = "$0"; i.Trail = "T +0"; i.Alert = "A ?"; return i; }
             bool carrying = op.CarryBody.Length > 0;
+            if (t.Kind == "op" && IsOpName(t.Key))
+            {   // item 31 (Sky 0.2.99: "I've asked tec to move but he's dragging the downed scout"): carrying a downed agent is an explicit, priced way
+                // on the downed agent's ring and hold, never a click; on the carrier itself, Put down
+                var dn = g.Ops[(int)Op.Parse(t.Key)];
+                if (dn.Id != by && dn.Down && !dn.CarriedBy.HasValue && !op.Down && !op.Inside && !op.InCar && !carrying && !op.Carrying.HasValue && !(by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer) && (only == null || only == "carry"))
+                {
+                    var c = I("carry", t.Key, $"Carry the {Cap(t.Key)}", R.CarryS); c.Alert = "A 0";
+                    c.Rows.Add(("s_carrying", by == OpId.Enforcer ? $"walk only · {R.CellSpeed * Game.Hz / 1000f:0.0} m/s" : $"slow · {R.CarryUntrainedSpeed * Game.Hz / 1000f:0.0} m/s"));
+                    l.Add(c);
+                }
+                if (dn.Id == by && op.Carrying.HasValue && (only == null || only == "drop")) { var d = I("drop", "", $"Put down the {Cap(Op.Name(op.Carrying.Value))}", 0); d.Alert = "A 0"; l.Add(d); }
+            }
             if (t.Kind == "body")
             {
                 var b = g.BodyById(t.Key); if (b == null || b.Seizing || !b.Open) return l;

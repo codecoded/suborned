@@ -8,6 +8,7 @@ Shader "Suborned/SignalUnlit"
     Properties
     {
         _BaseColor("Colour", Color) = (1, 1, 1, 1)
+        [HideInInspector] _VertexAlpha("__va", Float) = 0
         [HideInInspector] _SrcBlend("__src", Float) = 5
         [HideInInspector] _DstBlend("__dst", Float) = 10
         [HideInInspector] _ZWrite("__zw", Float) = 0
@@ -37,19 +38,20 @@ Shader "Suborned/SignalUnlit"
 
             CBUFFER_START(UnityPerMaterial)
                 half4 _BaseColor;
+                half _VertexAlpha; // brief 057 §3: 1 = the mesh's vertex colour multiplies (a cone's fill fading from the lens); 0 = one colour
             CBUFFER_END
 
-            struct A { float4 pos : POSITION; UNITY_VERTEX_INPUT_INSTANCE_ID };
-            struct V { float4 pos : SV_POSITION; UNITY_VERTEX_OUTPUT_STEREO };
+            struct A { float4 pos : POSITION; half4 col : COLOR; UNITY_VERTEX_INPUT_INSTANCE_ID };
+            struct V { float4 pos : SV_POSITION; half4 col : COLOR; UNITY_VERTEX_OUTPUT_STEREO };
 
             V vert(A i)
             {
                 V o; UNITY_SETUP_INSTANCE_ID(i); UNITY_INITIALIZE_VERTEX_OUTPUT_STEREO(o);
-                o.pos = TransformObjectToHClip(i.pos.xyz);
+                o.pos = TransformObjectToHClip(i.pos.xyz); o.col = lerp(half4(1, 1, 1, 1), i.col, _VertexAlpha);
                 return o;
             }
 
-            half4 frag(V i) : SV_Target { return _BaseColor; }
+            half4 frag(V i) : SV_Target { return _BaseColor * i.col; }
             ENDHLSL
         }
     }

@@ -10,9 +10,9 @@ import { adopted } from '../gen/kitrefs';
 
 const G = 'Streetscape';
 const SRC = 'streetscape.roads (breaks, lozenges, shoulder, pinstripe) · brief 026/028 Road, Sky 2026-10-22 · tools/world/gen/street/roadfinish.ts';
-export const ROAD_FINISH_USE: Record<string, string> = { 'road-ribbon': 'ground:road-ribbon', 'road-shoulder': 'ground:road-shoulder', 'road-pinstripe': 'ground:pave-pinstripe', 'road-lozenge': 'ground:road-lozenge', 'road-seam': 'ground:road-seam' };
+export const ROAD_FINISH_USE: Record<string, string> = { 'road-ribbon': 'ground:road-ribbon', 'road-shoulder': 'ground:road-shoulder', 'road-pinstripe': 'ground:pave-pinstripe', 'road-lozenge': 'ground:road-lozenge', 'road-seam': 'ground:road-seam', 'road-lane-dash': 'ground:road-lane-dash', 'road-edge-line': 'ground:road-edge-line' }; // the last two: the asphalt set's white marks (brief 055 road test)
 /** The levels a piece lies at: the carriageway, a kerbed bay's floor (FLAT_FOOT); a pinstripe at the pavement top, a foot way or the land under a circus band. */
-const LEVEL: Record<string, number[]> = { 'road-ribbon': [0, 0.02], 'road-shoulder': [0, 0.02], 'road-lozenge': [0], 'road-seam': [0], 'road-pinstripe': [0.18, 0.02, -0.03] };
+const LEVEL: Record<string, number[]> = { 'road-ribbon': [0, 0.02], 'road-shoulder': [0, 0.02], 'road-lozenge': [0], 'road-seam': [0], 'road-lane-dash': [0], 'road-edge-line': [0, 0.02], 'road-pinstripe': [0.18, 0.02, -0.03] };
 
 const near = (p: V, ring: V[], g: number) => inPoly(p, ring) || ring.some((q, i) => segDist(p, q, ring[(i + 1) % ring.length]!) < g);
 /** The points of a piece that must stand clear of a break: its centre and the two ends of its length. */
@@ -24,7 +24,7 @@ export function endsOf(i: Pick<StreetItem, 'at' | 'yaw' | 'size' | 'kind'>): V[]
 export function roadFinishRules(c: WCtx): Check[] {
   const R = (c.plan.standards as any).streetscape?.roads, mine = (c.w.ground.pieces ?? []).filter(s => ROAD_FINISH_USE[s.kind]);
   if (!R?.breaks || (!mine.length && !c.gen.roadFinish)) return [];
-  const by = new Map(adopted().map(a => [a.id, a])), stop: number = R.breaks.stopShort, lz = R.lozenges;
+  const by = new Map(adopted().map(a => [a.id, a])), stop: number = R.breaks.stopShort, lz = R.lozenges, mark = R.marks, markStop: number = mark?.stopShort ?? stop; // white marks stop further short (roads.marks.stopShort)
   const rings: { what: string; ring: V[] }[] = [
     ...(c.w.crossings ?? []).map(x => ({ what: 'crossing strip', ring: x.strip as V[] })), ...(c.w.ground.drives ?? []).map(x => ({ what: 'drive', ring: x.ring as V[] })), ...c.w.transit.stops.map(x => ({ what: 'tram platform', ring: x.ring as V[] })),
   ];
@@ -34,11 +34,17 @@ export function roadFinishRules(c: WCtx): Check[] {
     if (!a || !a.tags.use.includes(ROAD_FINISH_USE[s.kind]!)) bad.push(`${s.id}: ${s.kit?.id ?? 'no piece'} is not an adopted ${ROAD_FINISH_USE[s.kind]} piece`);
     if (!LEVEL[s.kind]!.some(z => Math.abs(z - s.z) < 0.001)) badLevel.push(`${s.id}: ${s.kind} at z ${s.z}, not ${LEVEL[s.kind]!.join(' or ')}`);
     const pts = endsOf(s);
-    for (const r of rings) if (pts.some(p => near(p, r.ring, stop - 0.25))) { badBreak.push(`${s.id} lies on or within ${stop} m of a ${r.what}`); break; } // 0.25: the generator's 0.2 m sampling step
+    const gs = s.kind === 'road-lane-dash' || s.kind === 'road-edge-line' ? markStop : stop;
+    for (const r of rings) if (pts.some(p => near(p, r.ring, gs - 0.25))) { badBreak.push(`${s.id} lies on or within ${gs} m of a ${r.what}`); break; } // 0.25: the generator's 0.2 m sampling step
   }
   const lines = new Map<string, V[]>();
   for (const s of mine.filter(x => x.kind === 'road-lozenge')) (lines.get(s.edge) ?? lines.set(s.edge, []).get(s.edge)!).push(s.at);
   for (const [edge, pts] of lines) for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) if (Math.hypot(pts[i]![0] - pts[j]![0], pts[i]![1] - pts[j]![1]) < lz.length + 2 * stop - 0.01) badSpace.push(`${edge}: two lozenges ${Math.hypot(pts[i]![0] - pts[j]![0], pts[i]![1] - pts[j]![1]).toFixed(2)} m apart (< ${lz.length} + 2 × ${stop})`);
+  if (mark) { // dashes on one line keep their length and stopShort apart
+    const dl = new Map<string, V[]>();
+    for (const s of mine.filter(x => x.kind === 'road-lane-dash')) (dl.get(s.edge) ?? dl.set(s.edge, []).get(s.edge)!).push(s.at);
+    for (const [edge, pts] of dl) for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) if (Math.hypot(pts[i]![0] - pts[j]![0], pts[i]![1] - pts[j]![1]) < mark.dash.length + 2 * markStop - 0.01) badSpace.push(`${edge}: two dashes ${Math.hypot(pts[i]![0] - pts[j]![0], pts[i]![1] - pts[j]![1]).toFixed(2)} m apart (< ${mark.dash.length} + 2 × ${markStop})`);
+  }
   const log = c.gen.roadFinish, counts = Object.entries(log?.counts ?? {}).map(([k, n]) => `${k} ${n}`).join(', ');
   return [
     rule('RF-3', G, 'Every road finish piece is an adopted kit piece of its own kind at the level of the surface it lies on; nothing of it lies in a crossing strip, a drive or a tram platform or within stopShort of one; lozenges on one carriageway keep their length and stopShort apart', mine.length, [...bad, ...badLevel, ...badBreak, ...badSpace], 'none', SRC),

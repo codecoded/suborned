@@ -88,10 +88,11 @@ namespace Suborned.Sim
             if (witnesses != null) i.Witnesses.AddRange(witnesses);
             Incidents.Add(i); return i;
         }
-        List<(Person p, Pt at)> WitnessesWithPos(Pt at, Person? except)
+        /// <summary>Brief 054 §3.2: who notices `act` at `at` now, with where they stand (the notice rule; around: within reach on a line).</summary>
+        List<(Person p, Pt at)> WitnessesWithPos(Pt at, Person? except, string act)
         {
             var seen = new List<(Person, Pt)>();
-            foreach (var (p, wp) in OnTheStreet()) { if (p == except) continue; if (G.Within(wp, at, witnessRange) && Sees(wp, at)) seen.Add((p, wp)); }
+            foreach (var (p, wp) in OnTheStreet()) { if (p == except) continue; if (Notices(p, wp, at, act)) seen.Add((p, wp)); }
             return seen;
         }
 
@@ -217,7 +218,14 @@ namespace Suborned.Sim
         {
             var o = new List<(Person, Pt)>();
             foreach (var p in People) { var pp = PersonPos(p); if (pp.HasValue && G.Within(pp.Value, at, witnessRange) && Sees(pp.Value, at)) o.Add((p, pp.Value)); }
-            if (People2 != null && Start.Crowd) foreach (var w in Walkers) { var wp = CrowdPos(w, t); if (wp.HasValue && G.Within(wp.Value, at, witnessRange) && Sees(wp.Value, at)) o.Add((w.P, wp.Value)); }
+            // brief 054 §3.5: a walker had a sightline at tick t by the notice rule: security all round, a civilian by the cone they faced then
+            // (FacingAt: their routine at t; a lead is a sighting of the cell, read as the always row)
+            if (People2 != null && Start.Crowd) foreach (var w in Walkers)
+                {
+                    var wp = CrowdPos(w, t); if (!wp.HasValue || !G.Within(wp.Value, at, witnessRange) || !Sees(wp.Value, at)) continue;
+                    if (R.PeopleCone && !IsStaff(w.P) && !(FacingAt(w, t) is Pt f && G.InCone(wp.Value, f, R.PeopleReachCm, R.PeopleHalfCm, 0, at))) continue;
+                    o.Add((w.P, wp.Value));
+                }
             return o;
         }
 
@@ -230,7 +238,7 @@ namespace Suborned.Sim
             Person C(Person p)
             {
                 if (copies.TryGetValue(p, out var c)) return c;
-                c = new Person { Role = p.Role, Id = p.Id, Name = p.Name, Temperament = p.Temperament, Need = p.Need, Job = p.Job, Turned = p.Turned, NeedMet = p.NeedMet, Down = p.Down, KRoutine = p.KRoutine, KNeed = p.KNeed, KTemperament = p.KTemperament, Place = p.Place, Suspected = p.Suspected, Record = p.Record, Size = p.Size, Holder = p.Holder };
+                c = new Person { Role = p.Role, Id = p.Id, Name = p.Name, Temperament = p.Temperament, Need = p.Need, Job = p.Job, Turned = p.Turned, NeedMet = p.NeedMet, Down = p.Down, KRoutine = p.KRoutine, KNeed = p.KNeed, KTemperament = p.KTemperament, Place = p.Place, Suspected = p.Suspected, Record = p.Record, Size = p.Size, Holder = p.Holder, KMood = p.KMood };
                 Array.Copy(p.Sc, c.Sc, 4); c.Memory.AddRange(p.Memory); foreach (var a in p.KnownRefused) c.KnownRefused.Add(a);
                 copies[p] = c; return c;
             }

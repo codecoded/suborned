@@ -28,6 +28,9 @@ namespace Suborned.Play
             public int Agent, Id; public string Do = "", Approach = "", Tone = "ok", AnchorKey = ""; public Vector3? At; public float Born;
             public readonly List<GainLine> Lines = new(); public readonly List<UnlockPill> Unlocks = new(); public string Role = "";
         }
+        /// <summary>Glyph's 0.2.104 review #2: gates that opened on a landing with no chip of their person ("m:ss role|verb (chips: do:role,...)"), for the proof: why they opened then.</summary>
+        public readonly List<string> UnattachedGates = new();
+        public int RolelessUnlockFrames { get; private set; }
         public readonly List<DoneChip> DoneChips = new();
         /// <summary>An open window's marker: what it is on (a view key), its seconds left (-1 held), the face that holds it (-1 none).</summary>
         public sealed class WindowMark { public string Kind = "", Thing = "", Key = ""; public int Until = -1, Face = -1, Left = -1, Total = -1; }
@@ -176,7 +179,9 @@ namespace Suborned.Play
             if (made.Count == 0 && g.Tick == gateTick && g.Log.Count == gateLog && g.Orders.Count == gateOrders)
             {
                 for (int k = 0; k < 4; k++) actSeen[k] = g.Ops[k].Busy ?? g.Ops[k].Act ?? pending[k];
-                DoneChips.RemoveAll(x => now - x.Born > DoneChipS); return;
+                DoneChips.RemoveAll(x => now - x.Born > DoneChipS);
+                foreach (var dc in DoneChips) if (dc.Role.Length == 0 && dc.Unlocks.Count > 0) RolelessUnlockFrames++; // Glyph's 0.2.104 review #2: the proofs assert it stays 0
+                return;
             }
             gateTick = g.Tick; gateLog = g.Log.Count; gateOrders = g.Orders.Count;
             // the unlock row: the gates now against the last frame's
@@ -189,12 +194,13 @@ namespace Suborned.Play
                 foreach (var key in open)
                 {
                     if (openBefore.Contains(key)) continue;
-                    var parts = key.Split('|'); var chip = made.Find(x => x.Role == parts[0]) ?? made[^1];
+                    var parts = key.Split('|'); var chip = made.Find(x => x.Role.Length > 0 && x.Role == parts[0]); // Glyph's 0.2.104 review #2: an unlock belongs to the person's own chip only (a Reroute chip has no Role: the "Patrol away" chip wore Pay, Help, Pressure)
+                    if (chip == null) { UnattachedGates.Add($"{MissionClock(g.Tick)} {key} (chips: {string.Join(",", made.ConvertAll(x => x.Do + ":" + (x.Role.Length > 0 ? x.Role : "-")))})"); if (UnattachedGates.Count > 40) UnattachedGates.RemoveAt(0); continue; }
                     if (chip.Unlocks.Count < 3 && !chip.Unlocks.Exists(u => u.Word == VerbWord(parts[1]))) chip.Unlocks.Add(new UnlockPill { Icon = HudModel.AtlasIcon(parts[1] is "ask" or "pay" or "help" or "pressure" ? "turn" : parts[1], parts[1], ""), Word = VerbWord(parts[1]) });
                 }
                 foreach (var key in shut)
                 {
-                    if (shutBefore.Contains(key)) continue; var parts = key.Split('|'); var chip = made.Find(x => x.Role == parts[0]) ?? made[^1];
+                    if (shutBefore.Contains(key)) continue; var parts = key.Split('|'); var chip = made.Find(x => x.Role.Length > 0 && x.Role == parts[0]); if (chip == null) continue;
                     if (chip.Unlocks.Count < 3) chip.Unlocks.Add(new UnlockPill { Icon = HudModel.AtlasIcon("turn", parts[1], ""), Word = VerbWord(parts[1]), Shut = true });
                 }
             }
@@ -236,7 +242,9 @@ namespace Suborned.Play
                     if (p != null)
                     {
                         chip.AnchorKey = land.Role; bool hadRoutine = knownBefore.TryGetValue("p:" + land.Role, out var kb) && kb.sight;
-                        if (p.KRoutine && !hadRoutine) Line("routine", DW("gain.rounds", "Rounds"));
+                        string md = ""; if (land.Role != "guard") Guard("mood", () => md = g.MoodOf(land.Role)); // brief 054: a person's Watch shows their mood (a face, one word)
+                        if (land.Role != "guard" && md.Length > 0 && md != "neutral") Line("mood_" + md, DW("gain.mood-" + md, Cap(md)));
+                        else if (land.Role == "guard" && p.KRoutine && !hadRoutine) Line("routine", DW("gain.rounds", "Rounds"));
                         if (land.Role == "guard" && Game.Known("guard") is { Sight: true } gk && !(knownBefore.TryGetValue("guard", out var gb) && gb.sight)) Line("cone", DW("gain.cone", "Cone"));
                         if (chip.Lines.Count == 0) Line("dot", DW("gain.nothing-new", "Nothing new"));
                     }
@@ -276,7 +284,7 @@ namespace Suborned.Play
                     else if (l.Code == "call.waitress") { chip.AnchorKey = "guard"; Line("eye_shut", DW("gain.guard-away", "Guard away")); }
                     else { chip.AnchorKey = l.Code[5..]; Line("call", VerbWord("call")); }
                     break;
-                case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("eye_shut", DW("gain.camera-dark", "Camera dark")); break;
+                case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("loop", DW("gain.camera-looped", "Camera looped")); break; // brief 058 (Motive): a looped camera shows the desk a clean picture; "Camera dark" is a camera shot out (Fable: gain.camera-looped, placeholder until text.json has it)
                 case "reroute": chip.AnchorKey = "patrol"; Line("reroute", DW("gain.patrol-away", "Patrol away")); break;
                 case "mislead": chip.AnchorKey = "rivals/0"; Line("mislead", DW("gain.rivals-away", "Rivals away")); break;
                 case "enter":
@@ -349,6 +357,7 @@ namespace Suborned.Play
             var now = new Dictionary<string, int>();
             foreach (var w in ws)
             {
+                if (w.Kind == "seal") continue; // engine 0.30: the seal's window is HostSeal's marker under the clock pill, never a world mark or a close pop
                 var m = new WindowMark { Kind = w.Kind, Thing = w.Thing, Until = w.Until, Key = WindowKey(w.Kind, w.Thing) };
                 m.Left = w.Until < 0 ? -1 : Math.Max(0, (w.Until - g.Tick + Game.Hz - 1) / Game.Hz); if (w.Kind == "loop") m.Face = (int)OpId.Tech;
                 string sk = w.Kind + "|" + w.Thing; if (w.Until >= 0 && (!windowSpan.TryGetValue(sk, out var sp) || sp.until != w.Until)) windowSpan[sk] = sp = (w.Until, Math.Max(1, w.Until - g.Tick));

@@ -29,7 +29,7 @@ namespace Suborned.Play
         void HoldPillFrame()
         {
             var h = host; var cam = h.View; bool modal = m.Ended || h.Modal != ModalGate.Modal.None || h.Ring != null || h.Panel != null || h.Loud != null || cam == null;
-            Target t = null; string anchorId = "", text = "", icon = ""; bool harm = false, seen = false; float fill = -1f; var faces = new List<int>(); string state = "";
+            Target t = null; string anchorId = "", text = "", icon = ""; pillPredNow = ""; bool harm = false, seen = false; float fill = -1f; var faces = new List<int>(); string state = "";
             if (!modal)
             {
                 var ch = h.Charge;
@@ -38,7 +38,7 @@ namespace Suborned.Play
                     // Fable's wording row 3-6 (decision 1: the price stays while you hold): one line, its first word swaps: "Hold · …" filling, "Let go · …" full
                     t = ch.T; fill = ch.Progress; state = ch.Ready ? "ready" : "charge"; string head = ch.Ready ? "Let go · " : ch.Fire ? "Right hold · " : "Hold · ";
                     if (ch.Fire) { var fo = t != null ? h.FireOfferFor(t) : null; text = head + (fo != null ? PillLine(h, fo) : $"Fire at {(t?.Label ?? "")}" + (ch.Extra.Length > 0 ? " · " + ch.Extra : "")); harm = true; icon = "fire"; faces.AddRange(h.FireShooters(t)); } // item 8: the price on the charge too (Trail a hit, Alert)
-                    else { var r = ch.Plan.Row(ch.Way); var o = r.I.Order; text = head + PillLine(h, r.I); harm = Harmful(o); icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""); faces.AddRange(ch.Doers ?? h.DoersOf(ch.Plan, ch.Way)); }
+                    else { var r = ch.Plan.Row(ch.Way); var o = r.I.Order; text = head + PillLine(h, r.I); pillPredNow = r.I.PredMark; harm = Harmful(o); icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""); faces.AddRange(ch.Doers ?? h.DoersOf(ch.Plan, ch.Way)); }
                 }
                 else
                 {
@@ -55,7 +55,7 @@ namespace Suborned.Play
                     else if (on != null && h.HoverIntent is { Actionable: true } hi && on.Kind != "op")
                     {
                         state = "offer"; t = on; harm = Harmful(hi.Order); icon = hi.Order.Do == "fire" ? "fire" : hi.Lead.Length > 0 ? hi.Lead : HudModel.AtlasIcon(hi.Order.Do, hi.Order.Approach, "");
-                        text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
+                        text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); if (!h.HoverFire) pillPredNow = hi.PredMark; faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
                     }
                 }
             }

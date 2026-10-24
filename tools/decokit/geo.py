@@ -105,6 +105,7 @@ class Shape:
         self.mats = []
         self._stack = [Matrix.Identity(4)]
         self.parts = {}
+        self.volumes = []  # declared collision volumes (brief 055), in the builder's own frame; see solid()
         self.lean = 1.0  # segment scale for small street props (kit.asset lean=; brief 007 round 3, Redline's per-pixel caps)
 
     def _seg(self, seg, lo):
@@ -157,6 +158,12 @@ class Shape:
             bf.material_index = mi
             bf.smooth = smooth
         return bv
+
+    def solid(self, mn, mx, stand=False):
+        """Declare a collision volume the piece knows it has (brief 055, Vela): an axis-aligned box in the builder's own frame (x, y, z up; outside s.at()), the same numbers the
+        geometry was built from. export_kit writes them into the manifest in the kit frame (x -> -x, z -> y, y -> -z). They replace the volumes bun run collide would measure from the
+        mesh for this piece: use them where the builder knows the exact solid (a flight of steps, a plinth) and the measure would only approximate it. stand = its top is a surface to stand on."""
+        self.volumes.append(dict(min=[round(float(c), 4) for c in mn], max=[round(float(c), 4) for c in mx], stand=bool(stand)))
 
     # primitives -----------------------------------------------------------
     def lathe(self, profile, mat, seg=32, smooth=True, cap_bottom=True, cap_top=True):
@@ -330,4 +337,7 @@ class Shape:
         wn.weight = 50
         for p in self.parts.values():
             p.build(col, bevel, sharp, seg, parent=obj)
+        if self.volumes:
+            import json
+            obj["dk_volumes"] = json.dumps(self.volumes)
         return obj

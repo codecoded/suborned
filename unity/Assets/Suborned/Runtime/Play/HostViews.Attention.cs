@@ -22,12 +22,46 @@ namespace Suborned.Play
         readonly Dictionary<string, CamHead> camHeads = new();
         static readonly Color LensDim = new(0.09f, 0.12f, 0.13f), Phosphor = new(0.75f, 0.95f, 0.9f), AlarmLens = new(1f, 0.35f, 0.24f);
 
-        /// <summary>The pole's head (housing, hood and lens) at 3.25 m, looking along the camera's facing, tilted down to its ground.</summary>
+        /// <summary>The world's pole-camera scale (tools/world/gen/kitrefs.ts: CCTVPole's 3.18 m to the plan's 5.5 m mount, GDD §05 pole-camera).</summary>
+        static readonly Vector3 PoleScale = new(1.182f, 1.728f, 1.23f);
+        /// <summary>The kit pole's lens at that scale (tools/decokit/signals.py cctv_pole: the glass at 2.767 m up, 0.724 m out, 12 deg
+        /// nose-down, so 4.78 m up, 0.89 m out and ~17 deg down once scaled): the rulebook's pole lens is 4.79 m (brief 055).</summary>
+        const float LensUp = 4.78f, LensOut = 0.89f, LensDown = 16.7f;
+        /// <summary>How high a mission camera's head stands above the ground (the kit pole's lens, or the 3.2 m stand-in's head).</summary>
+        public float CamHeadUp => host.cctvPole ? LensUp : 3.25f;
+        /// <summary>A mission camera's drawn height (for the callouts' figure box).</summary>
+        public float CameraTall => host.cctvPole ? 5.5f : 3.4f;
+
+        /// <summary>The kit pole under the stand-in's transform (kept as the click target and the view's anchor, 1.6 m up): the stand-in's
+        /// cylinder is hidden and its collider runs the pole's 5.5 m; the model faces the camera's facing. The parent's scale is equal in x
+        /// and z, so the yaw does not shear.</summary>
+        void KitPole(Suborned.Sim.Camera c, Transform pole)
+        {
+            if (pole.GetComponent<MeshRenderer>() is MeshRenderer mr) mr.enabled = false;
+            var col = pole.GetComponent<CapsuleCollider>(); col.height = 5.5f / 1.6f; col.center = new Vector3(0f, (2.75f - 1.6f) / 1.6f, 0f);
+            var fwd = frame.Dir(c.Facing); fwd.y = 0f; if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
+            var m = Object.Instantiate(host.cctvPole, pole, false).transform; m.name = "model";
+            m.localPosition = new Vector3(0f, -1f, 0f); m.rotation = Quaternion.LookRotation(fwd.normalized, Vector3.up);
+            m.localScale = new Vector3(PoleScale.x / 0.25f, PoleScale.y / 1.6f, PoleScale.z / 0.25f);
+        }
+
+        /// <summary>The pole's head (housing, hood and lens) at 3.25 m, looking along the camera's facing, tilted down to its ground; on the
+        /// kit pole only the cue lens, set over the model's glass.</summary>
         void CamHeadFor(Suborned.Sim.Camera c, Vector3 at)
         {
             if (c.World) return; // the world's own masts draw themselves
             var fwd = frame.Dir(c.Facing); if (fwd.sqrMagnitude < 1e-6f) fwd = Vector3.forward;
             var head = new GameObject("camera/" + c.Id + "/head").transform; head.SetParent(root, false);
+            if (host.cctvPole)
+            {
+                var f = fwd; f.y = 0f; f.Normalize();
+                head.position = at + Vector3.up * LensUp + f * LensOut; head.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(LensDown, Vector3.Cross(Vector3.up, f)) * f, Vector3.up);
+                var kl = Unlit(LensDim);
+                var k = Part(head, "lens", sphere, kl, new Vector3(0f, 0f, 0.07f), new Vector3(0.26f, 0.32f, 0.04f));
+                k.GetComponent<Renderer>().shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+                camHeads["camera/" + c.Id] = new CamHead { Head = head, Lens = kl, Rest = head.rotation, Scale = k.localScale };
+                return;
+            }
             head.position = at + Vector3.up * 3.25f; head.rotation = Quaternion.LookRotation((fwd + Vector3.down * 0.3f).normalized, Vector3.up);
             Part(head, "housing", cube, Lit(host.carColour), new Vector3(0f, 0f, 0.02f), new Vector3(0.24f, 0.22f, 0.5f));
             Part(head, "hood", cube, Lit(new Color(0.42f, 0.45f, 0.48f)), new Vector3(0f, 0.13f, 0.08f), new Vector3(0.3f, 0.035f, 0.62f));

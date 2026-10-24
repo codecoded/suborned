@@ -19,17 +19,18 @@ const failing = (mutate: (w: World) => void = () => {}): string => {
 const first = (w: World, kind: string): StreetItem => w.ground.pieces!.find(s => s.kind === kind)!;
 
 describe('the road finish rule RF-3', () => {
-  test('the live world passes, and the finish is there: five kinds, thousands of pieces', () => {
+  test('the live world passes, and the finish is there: four kinds, thousands of pieces (the enamel set drops the pearl shoulder: brief 048)', () => {
     expect(failing()).toBe('');
     const n = (k: string) => base.w.ground.pieces!.filter(s => s.kind === k).length;
-    for (const k of ['road-ribbon', 'road-shoulder', 'road-pinstripe', 'road-lozenge', 'road-seam']) expect(n(k), k).toBeGreaterThan(1000);
+    for (const k of ['road-ribbon', 'road-pinstripe', 'road-lozenge', 'road-seam']) expect(n(k), k).toBeGreaterThan(1000);
+    expect(n('road-shoulder')).toBe(0);
     expect(base.gen.roadFinish!.gaps.every(g => g.rule && g.where && g.why)).toBe(true);
   });
   test('it fails on a ribbon piece laid in the middle of a crossing strip', () => {
     expect(failing(w => { const x = w.crossings![0]!; first(w, 'road-ribbon').at = [(x.strip[0]![0] + x.strip[2]![0]) / 2, (x.strip[0]![1] + x.strip[2]![1]) / 2]; })).toMatch(/lies on or within 0\.3 m of a crossing strip/);
   });
-  test('it fails on a shoulder in a tram platform and on a seam in a drive', () => {
-    expect(failing(w => { const r = w.transit.stops[0]!.ring, s = first(w, 'road-shoulder'); s.at = [(r[0]![0] + r[2]![0]) / 2, (r[0]![1] + r[2]![1]) / 2]; })).toMatch(/tram platform/); // the platform's middle
+  test('it fails on a ribbon in a tram platform and on a seam in a drive', () => {
+    expect(failing(w => { const r = w.transit.stops[0]!.ring, s = first(w, 'road-ribbon'); s.at = [(r[0]![0] + r[2]![0]) / 2, (r[0]![1] + r[2]![1]) / 2]; })).toMatch(/tram platform/); // the platform's middle
     expect(failing(w => { const r = w.ground.drives![0]!.ring; first(w, 'road-seam').at = [(r[0]![0] + r[2]![0]) / 2, (r[0]![1] + r[2]![1]) / 2]; })).toMatch(/a drive/);
   });
   test('it fails on a piece that is not the family\'s kit piece, one that is not adopted, and one at the wrong level', () => {

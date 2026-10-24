@@ -86,7 +86,7 @@ namespace Suborned.Play
             }
             Want(HandoverHost.TpIn.ETap, HandoverHost.TpState.Free, HandoverHost.TpDo.Act); Want(HandoverHost.TpIn.EHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act); // brief 041: the Double click scheme opens nothing on a hold
             Want(HandoverHost.TpIn.LeftHold, HandoverHost.TpState.Free, HandoverHost.HoldRing ? HandoverHost.TpDo.Ring : HandoverHost.TpDo.Act);
-            Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.RingAtTarget); Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
+            Want(HandoverHost.TpIn.RightTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftTap, HandoverHost.TpState.Free, HandoverHost.TpDo.Ring); /* item 33: a left click rings, a right tap does nothing */ Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.Free, HandoverHost.TpDo.Aim);
             Want(HandoverHost.TpIn.RightHold, HandoverHost.TpState.CarryingVale, HandoverHost.TpDo.Nothing); Want(HandoverHost.TpIn.LeftDrag, HandoverHost.TpState.Walking, HandoverHost.TpDo.Orbit);
             int n = System.Enum.GetValues(typeof(HandoverHost.TpIn)).Length * System.Enum.GetValues(typeof(HandoverHost.TpState)).Length;
             log.Add("inputMap: " + HandoverHost.TpTable().Replace("\n", " | "));
@@ -113,6 +113,7 @@ namespace Suborned.Play
             parts.Add($"\"focus\": \"{focus}\""); ok &= focus == "person/waitress";
             yield return Shoot(dir, "tp-prompt", "rest", log);
             // E held 0.3 s opens the ring (the options); Esc closes it
+            for (int w = 0; w < 60 && !(h.DriveFocus is { Kind: "person", Key: "waitress" }); w++) { MouseAt(IzScreen()); yield return null; } // a passer-by can cross between: wait (up to 1 s) for the prompt to be Inez's again
             Keys(Key.E); yield return new WaitForSecondsRealtime(0.32f); bool ringByHold = h.Ring != null; yield return Shoot(dir, "tp-options", "active", log); Keys(); yield return Frames(3);
             Keys(Key.Escape); yield return Frames(2); Keys(); yield return Frames(2); parts.Add($"\"eHoldRing\": {B(ringByHold)}, \"escClosed\": {B(h.Ring == null)}"); ok &= ringByHold && h.Ring == null;
             if (h.MenuOpen) h.ResumeFromMenu();
@@ -129,7 +130,7 @@ namespace Suborned.Play
             plan = h.DriveFocus != null ? h.ContextFor(h.DriveFocus, IzScreen()) : null;
             string want2 = Expect(plan);
             n0 = g.Orders.Count; var sp = IzScreen(); MouseAt(sp); yield return null; MouseAt(sp, left: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
-            string cDid = Did(n0); h.CloseRing(); parts.Add($"\"clickWay\": \"{want2}\", \"clickDid\": \"{cDid}\""); ok &= cDid == want2;
+            string cDid = Did(n0); h.CloseRing(); parts.Add($"\"clickWay\": \"ring\", \"clickDid\": \"{cDid}\", \"eWay\": \"{want2}\""); ok &= cDid == "ring"; // item 33: a left click on the prompt opens its ring (E still acts)
             // 8 · clickActs off: a left tap on the prompt does nothing; the prompt shows only the E cap (HudToolkit hides the mouse)
             h.controls.clickActs = false; n0 = g.Orders.Count; MouseAt(sp); yield return null; MouseAt(sp, left: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
             string offDid = Did(n0); h.CloseRing(); parts.Add($"\"clickOffDid\": \"{offDid}\""); ok &= offDid == ""; h.controls.clickActs = true;
@@ -169,21 +170,21 @@ namespace Suborned.Play
             Keys(Key.Escape); yield return Frames(2); Keys(); if (h.MenuOpen) h.ResumeFromMenu(); yield return Frames(2); yield return WMoves("esc");
             parts.Add($"\"wasdAfter\": \"{string.Join(" ", after)}\"");
             if (h.Driving) h.DriveLetGoToMap(); yield return null;
-            // 6 · the right tap on a target out of reach (a fresh run: the Fixer 9 m from Inez): the ring at the target; a way that walks is
+            // 6 · (item 33: a left click, the right tap does nothing) on a target out of reach (a fresh run: the Fixer 9 m from Inez): the ring at the target; a way that walks is
             // taken; the agent walks in without a stop; W takes the stick back and drops the walk and its act
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; g = h.Game;
             Approach(h, 1, iz.Value, 900); Arrive(h, 1200);
             h.Select(OpId.Fixer, false); h.DriveToggle(); h.SetPaused(false); h.FollowFace(At(h, "waitress")); yield return new WaitForSecondsRealtime(0.8f);
-            sp = IzScreen(); MouseAt(sp); yield return Frames(2); MouseAt(sp, right: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
+            sp = IzScreen(); MouseAt(sp); yield return Frames(2); MouseAt(sp, left: true); yield return Frames(2); MouseAt(sp); yield return Frames(3);
             var rr = h.Ring; bool rRing = rr != null; int take = -1; string way = "";
             if (rRing) for (int i = 0; i < rr.Segs.Count && take < 0; i++) { var sg = rr.Segs[i]; if (!sg.More && !sg.Harmful && sg.Row?.I != null && (sg.Row.I.WalkS > 0 || sg.Row.I.Walk.Length > 0) && sg.Row.Available) { take = i; way = sg.Row.I.Order.Do + ":" + sg.Row.I.Order.Approach; } }
-            if (rRing) yield return Shoot(dir, "tp-right-ring", "active", log);
+            if (rRing) yield return Shoot(dir, "tp-click-ring", "active", log);
             if (take >= 0) h.RingTakeScripted(take); yield return Frames(3);
             bool walking = h.DriveWalking && g.Ops[1].Walk != null; float stillS = 0f;
             for (int f = 0; f < 40 && walking; f++) { var a = h.Views.Find("op/fixer").position; yield return null; if ((h.Views.Find("op/fixer").position - a).sqrMagnitude < 1e-8f) stillS += Time.unscaledDeltaTime; }
             Keys(Key.W); yield return new WaitForSecondsRealtime(0.3f); Keys(); yield return Frames(2); // the stick goes back at once; the engine drops its walk at the next tick's drive sample
             bool back = h.Driving && !h.DriveWalking && g.Ops[1].Walk == null && h.PendingOf(1).verb.Length == 0;
-            parts.Add($"\"rightTapRing\": {B(rRing)}, \"walkWay\": \"{way}\", \"walksIn\": {B(walking)}, \"stillS\": {F(stillS)}, \"wCancels\": {B(back)}"); ok &= rRing && take >= 0 && walking && stillS <= 0.12f && back; // no pause: at most one tick's hand-over
+            parts.Add($"\"clickRing\": {B(rRing)}, \"walkWay\": \"{way}\", \"walksIn\": {B(walking)}, \"stillS\": {F(stillS)}, \"wCancels\": {B(back)}"); ok &= rRing && take >= 0 && walking && stillS <= 0.12f && back; // no pause: at most one tick's hand-over
             h.controls.clickActs = keepClick; MouseAt(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));
             log.Add($"act: {(ok ? "ok" : "FAILED")}: {string.Join(", ", parts).Replace("\"", "")}");
             if (h.Driving) h.DriveLetGoToMap(); yield return null; h.Begin();

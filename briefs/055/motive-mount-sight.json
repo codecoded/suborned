@@ -1,0 +1,29 @@
+{
+ "schema": "suborned.evidence/1",
+ "by": "Motive, 2026-10-24, brief 055 §7 (camera mount height and 3D sightlines)",
+ "how": "A prototype of the rule in a scratch copy of the engine (out/scratch/motive/b055/sight3d-prototype.patch; MOTIVE_SIGHT unset = today, cam = cameras from their lens, full = the whole rule), played on two scratch roots: the committed site (occluders off) and the site with Keel's option drawnOccluders (198 drawn solids). 275 scenarios (out/scratch/keel/b055/scen.txt), every one through `bun run guard`, about 25 s a variant; the Handover mission check through tools/missions/check (check()) on the same roots, about 26 s a variant.",
+ "lens": {
+  "pole-camera": { "cm": 479, "from": "CCTVPole glass (DK_GlassDark) z 2.642..2.900 m, centre 2.771, x the world's height scale 1.728 (plan mount 5.5 m / piece 3.182 m)" },
+  "mission poles today": { "cm": 325, "from": "HostViews.Attention.cs CamHeadFor: the host's stand-in head at 3.25 m on a 3.2 m pole; same scenario and check results as 479" },
+  "mast-camera": { "cm": 768, "from": "Unity kit.json mast-camera stand-in head box 0.94..0.98 x mast 8.0 m (no kit piece)" },
+  "patrol-robot": { "cm": 95, "from": "PatrolRobot M_RobotFace z 0.804..1.092 m" },
+  "response-robot": { "cm": 128, "from": "HostViews.cs Drum: the head lamp at 1.28 m (no kit piece); RobotButler_Play's face is 1.51..1.58 m, the plan's civic-robot eye 1.7" },
+  "person": { "cm": 160, "from": "rulebook eye-cm, now above the floor under the feet (grid.floor): the guard at his post on the landing 75 + 160 = 235" }
+ },
+ "scenarios": {
+  "occluders off, today": { "fail": [], "threw": [] },
+  "occluders on, today": { "fail": ["N101", "N115", "N128", "N20e", "N25", "N30", "N66", "N67", "N68", "N72", "N84", "S01", "S13", "S26"], "threw": ["N49", "N69", "N69b", "N74", "N98"], "fixture": ["DP1"] },
+  "occluders on, cameras from the lens (479 or 325)": { "fail": ["N101", "N25", "N68", "N84", "S13"], "threw": ["N49", "N98"], "fixture": ["DP1"] },
+  "occluders on, the whole rule": { "fail": ["N101", "N25", "N84", "S13"], "threw": ["N49", "N98"], "fixture": ["DP1"] },
+  "occluders off, cameras from the lens": { "fail": [], "threw": [], "logsMoved": ["S9-CROWD"] },
+  "occluders off, the whole rule": { "fail": [], "threw": [], "logsMoved": ["N163", "N55", "N63", "N75", "N78", "N90", "S9-CROWD"] }
+ },
+ "missionCheck": {
+  "occluders off, today": "SHIPS, 2336 plays",
+  "occluders on, today": "HOLDS: MC-0 29/38, MC-2, MC-6, MC-10; 12 scripts move (loud, loud-fight, loud-fast, loud-left-downed, loud-left-standing: enforcer-down; fail-entry-seen-camera: seen by the patrol, not the camera; careless-takedown-seen-camera and careless-body-found: rivals-reach-vale; careless-guard-left-door-held: Alert 2; route-g-board, route-g-fast, route-g-fast-board: mission Trail 6 -> 2)",
+  "occluders on, cameras from the lens": "HOLDS: MC-0 33/38 (the five loud scripts: enforcer-down), MC-2, MC-6, MC-10; the route-g family's campaign Trail +4..+12 (the Scout's Watch of the guard on the landing walks in, the final fight runs differently)",
+  "occluders on, the whole rule": "HOLDS: MC-0 33/38 (the five loud scripts: enforcer-down), MC-2, MC-6, MC-10 (no loud win left); every quiet route as today",
+  "occluders off, cameras from the lens": "SHIPS, nothing moves",
+  "occluders off, the whole rule": "SHIPS, nothing moves"
+ }
+}

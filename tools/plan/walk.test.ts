@@ -17,9 +17,11 @@ const live = civic(plan.civic, block), { dressing: _d, ...bareBlock } = block, b
 const d = derive(plan);
 const crewLine = toPlan([2.968, -49.666]); // the middle of the four crew marks (mission.json crew: x 1.168 … 4.768, y -49.666)
 
-test('the solids are the dressing\'s wall, cheeks and pilasters, the objects and the pillars, cabinets and monument, and its planter runs, pots, bollards and lamp bases; the overhead marquee and the steps are not', () => {
-  expect(live.solids!.length).toBe(83); // 10 of the pieces (4 wall, 4 cheeks and piers, 2 pilasters; not the overhead marquee) + 26 objects + 6 pillars, cabinets and the monument + 41 ground furniture (was 85 with 28 objects: the two beds either side of the old north door are gone since the public door moved to the west face, 2026-10-19)
-  expect(live.solidIds!.length).toBe(83);
+test('the solids are the dressing\'s wall, cheeks and pilasters, the objects and the pillars, cabinets and monument, and its planter runs, pots, bollards, lamp bases and ground cypresses; the overhead marquee and the steps are not', () => {
+  expect(live.solids!.length).toBe(87); // 10 of the pieces (4 wall, 4 cheeks and piers, 2 pilasters; not the overhead marquee) + 26 objects + 6 pillars, cabinets and the monument + 41 ground furniture + 4 cypresses on the ground (brief 055 step 5; the two in facade beds stand in the beds' solids) (was 85 with 28 objects: the two beds either side of the old north door are gone since the public door moved to the west face, 2026-10-19)
+  expect(live.solidIds!.length).toBe(87);
+  for (const id of ['cyp-office-w', 'cyp-office-e', 'cyp-sq-nw', 'cyp-sq-ne']) expect(live.solidIds).toContain(id);
+  expect(live.solidIds).not.toContain('cyp-facade-w'); // planted on civic-facade-southeast, which is a solid already
   expect(live.solidIds).not.toContain('civic-entrance-west'); // the north door's beds went with the door
   expect(live.solidIds).not.toContain('civic-entrance-east');
   expect(bare.solids).toBeUndefined();

@@ -5799,7 +5799,11 @@
     0.0045,
     1.6532
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -5.976,
+    0
+   ],
    "front": "+Z",
    "tris": 342,
    "materials": [
@@ -5809,10 +5813,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R6.fbx",
-     "sha256": "bfe40d4ce2ac718a6fd36a5b3b48847e37386b72b81a8a467a0a784681625f29",
-     "bytes": 25628
+     "sha256": "7ac5b7ff243d4df411c9e7f67f163ec2dfe13ef565b371a6ac2a60d919f1ccf0",
+     "bytes": 25324
     },
     {
      "role": "fbx-meta",
@@ -5904,7 +5909,11 @@
     0.0045,
     2.6974
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -9.959,
+    0
+   ],
    "front": "+Z",
    "tris": 342,
    "materials": [
@@ -5914,10 +5923,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R10.fbx",
-     "sha256": "59a00546c168704a576c493d5613698710530977cb4b13e8c983658843f777bc",
-     "bytes": 25564
+     "sha256": "1e061b0ca3a7b7d7b782865d42c90037fa0d6560a1efbccd9841458f528e0a48",
+     "bytes": 25484
     },
     {
      "role": "fbx-meta",
@@ -6009,7 +6019,11 @@
     0.0045,
     4.2637
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    -15.933,
+    0
+   ],
    "front": "+Z",
    "tris": 342,
    "materials": [
@@ -6019,10 +6033,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_InlayArc_R16.fbx",
-     "sha256": "21054c4bd185e47aa420a558dd415f3d90aee076705604fe04f5b4a2d25a4360",
-     "bytes": 25852
+     "sha256": "577375ae3264b8bace1ed6c94855ffadd7c2598c7c07ea51b1868867dd50ce74",
+     "bytes": 25356
     },
     {
      "role": "fbx-meta",
@@ -6654,7 +6669,7 @@
    "category": "Plants",
    "size": [
     0.9524,
-    0.789,
+    0.7281,
     0.9874
    ],
    "pivot": "footprint-centre-ground",
@@ -6667,10 +6682,11 @@
    "lodCategory": "trees",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Plants/DK_ShrubMound.fbx",
-     "sha256": "857103fb43ccaf9710bf590f5bde28187e2b0239ef3f8bfb0fd887051b32aec1",
-     "bytes": 161004
+     "sha256": "f956fdd82a7e077e2411660d685254498c88d72e47bdb911ceb0882089acccb7",
+     "bytes": 160732
     },
     {
      "role": "fbx-meta",
@@ -6745,7 +6761,7 @@
    "category": "Plants",
    "size": [
     1.9806,
-    0.4613,
+    0.3743,
     0.6174
    ],
    "pivot": "footprint-centre-ground",
@@ -6759,10 +6775,11 @@
    "lodCategory": "trees",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Plants/DK_FlowerBed.fbx",
-     "sha256": "77dfd48e9ef1a857ffb008e509a7235e8d7ba2949b661f655f05968e059617c4",
-     "bytes": 176028
+     "sha256": "d604de5b82e2155d4611a7b31b42a1b37335f8b92a20fb8c8bd5faa34d1df199",
+     "bytes": 175388
     },
     {
      "role": "fbx-meta",
@@ -8412,10 +8429,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Pave_Flags_0.fbx",
-     "sha256": "47cca736b2a6b7106be690e999e771e2d2289ff116875083d1b7f33f44e6f0a9",
-     "bytes": 19340
+     "sha256": "5e71276c72bd9009144a2d05e9cddbb8995c679ce72a1c3953b466725486e133",
+     "bytes": 19004
     },
     {
      "role": "fbx-meta",
@@ -8522,10 +8540,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Pave_Flags_1.fbx",
-     "sha256": "2a613d7dcae550334fdf0b06610cfcbac8323a3b6acec691eee1518accfb9d65",
-     "bytes": 19340
+     "sha256": "6a166511867eb28a3a71a13661a60c1341bf0f34225a33c27e2751bc28ff2223",
+     "bytes": 19004
     },
     {
      "role": "fbx-meta",
@@ -8632,10 +8651,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Pave_Flags_2.fbx",
-     "sha256": "30ed6f2c64d676bbbf86eb27545fed9676906ff6184e4ba64f38063eabdcb650",
-     "bytes": 19340
+     "sha256": "87c65ab9ae56d74f9ebf70d625a6b1c8dc952d370803a583c5768304e8f8aa40",
+     "bytes": 19004
     },
     {
      "role": "fbx-meta",
@@ -8742,10 +8762,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Pave_Flags_3.fbx",
-     "sha256": "8722fe7b035e2670435bb06d9cd5a0932ca7caf3a9ba2dc0b4ed9f9b9ffe2e6b",
-     "bytes": 19340
+     "sha256": "759137e5b7d1ab4ffeb6018b7e7269e4c5144d7899a9620b4bf80bccaebfc54d",
+     "bytes": 19004
     },
     {
      "role": "fbx-meta",
@@ -10202,10 +10223,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_TreePit_Flags_0.fbx",
-     "sha256": "dad0c7edad613ff8aec5723c0e7ac4c36bc759568c1a76650b54fbae496a12c2",
-     "bytes": 36268
+     "sha256": "79a2964a2127a0895cf85cac975844f810d9cfa6c9dfd2ca934b3b186327e233",
+     "bytes": 35468
     },
     {
      "role": "fbx-meta",
@@ -10410,10 +10432,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_TreePit_Flags_1.fbx",
-     "sha256": "3818131845309e2350500b950b6b77fe795467c681790d2943e94ee37f91c0b2",
-     "bytes": 36284
+     "sha256": "5f6618fb1b0ceeda65d4a8bc56a94f4032bb0c1a2d950f406166a40052a926a2",
+     "bytes": 35468
     },
     {
      "role": "fbx-meta",
@@ -10618,10 +10641,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_TreePit_Flags_2.fbx",
-     "sha256": "d9ed29af57c7848c3eb9b141bd1c85d112797fa6f8bc31712e616d5dd143ebf1",
-     "bytes": 36284
+     "sha256": "34f606f8b7924fd6a9c740d61305f412b8ae352e8ed5a4026c64dc747133dc50",
+     "bytes": 35468
     },
     {
      "role": "fbx-meta",
@@ -10826,10 +10850,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_TreePit_Flags_3.fbx",
-     "sha256": "be401d5dd5f6b37adb2c59f38a79d1cc42f952b3566d10fb18ba6add6615a6f8",
-     "bytes": 36268
+     "sha256": "f68bb9ed6c22777bd83a27a2ca1b7cf0fa50fbcdd5cffc98a97fc9960aacb061",
+     "bytes": 35468
     },
     {
      "role": "fbx-meta",
@@ -29833,7 +29858,7 @@
    "category": "Furnish",
    "size": [
     1.539,
-    0.5344,
+    0.4963,
     0.4082
    ],
    "pivot": "footprint-centre-ground",
@@ -29852,10 +29877,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Furnish/DK_WindowBox.fbx",
-     "sha256": "277156b82f586333026571ce41132ab3627c3ac34ebc2dc58c1d3e28602d3458",
-     "bytes": 135308
+     "sha256": "0c63d6ee0fabe9104a88e7d780dc3291f8d2621dcd147c29e87677ab27620dc9",
+     "bytes": 134076
     },
     {
      "role": "fbx-meta",
@@ -31649,24 +31675,28 @@
     1.796,
     1.056
    ],
-   "pivot": "footprint-centre-ground",
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    0.128
+   ],
    "front": "+Z",
    "tris": 16216,
    "materials": [
     "DK_Glow_Seafoam",
     "DK_Chrome",
-    "DK_Enamel_Ivory",
+    "DK_RobotEnamel_Ivory",
     "DK_Signal_Amber",
-    "DK_Enamel_Seafoam",
+    "DK_RobotEnamel_Seafoam",
     "DK_Iron",
     "DK_Bakelite",
     "DK_Gold",
-    "DK_Enamel_Coral",
+    "DK_RobotEnamel_Coral",
     "DK_Steel",
     "DK_Rubber",
-    "DK_Enamel_Cream",
+    "DK_RobotEnamel_Cream",
     "DK_Fabric_Ivory",
-    "DK_Signal_Red",
+    "DK_Beacon_Rose",
     "DK_Face_Amber"
    ],
    "parts": [
@@ -31677,10 +31707,11 @@
    "lodCategory": "street",
    "files": [
     {
+     "root": "generated",
      "role": "fbx",
      "path": "Models/Robots/DK_RobotButler.fbx",
-     "sha256": "4b0246d4c98e64f5fb0634d80c45179cbe71acc1cf2db5c5de01a7721b165442",
-     "bytes": 446332
+     "sha256": "47b36e6c57eaf2eecfdb2718ebe0e2c920cd37931767859ae927c5e755f105fb",
+     "bytes": 452508
     },
     {
      "role": "fbx-meta",
@@ -31725,15 +31756,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Ivory.mat",
-     "sha256": "f70e90e05d1a0953f72c0ff4dc3ccad28199f00b28d5370bc5cc2afda0629b03",
-     "bytes": 3852
+     "path": "Materials/DK_RobotEnamel_Ivory.mat",
+     "sha256": "d0f717d3b46c000b05357de45b2fa2a3470d8e23d1fbbefbefb45671e48912c7",
+     "bytes": 3972
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Ivory.mat.meta",
-     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "path": "Materials/DK_RobotEnamel_Ivory.mat.meta",
+     "sha256": "1585704005afa22e0b7ad8a00268f1b93e1cdd1e864cf6c76abfb063fb6985a9",
      "bytes": 188
     },
     {
@@ -31749,15 +31782,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Seafoam.mat",
-     "sha256": "0a8d923eaefc10e2bf6b7d2097f7397e9f289a1e10b6ab17d795f0434d8f6b43",
-     "bytes": 3854
+     "path": "Materials/DK_RobotEnamel_Seafoam.mat",
+     "sha256": "b0e4e69ac094f07e4aae6dd0039d2eb98498246d4c14094afb9b2ee490d40405",
+     "bytes": 3975
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
-     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "path": "Materials/DK_RobotEnamel_Seafoam.mat.meta",
+     "sha256": "b5722b56b94a90cf13b5e7e3336a79f5f928158dbbd60cda4b5e384ed7334811",
      "bytes": 188
     },
     {
@@ -31799,15 +31834,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Coral.mat",
-     "sha256": "35e8848bf5125fbd6c7b4f1730c48be9367d7e80528f5c597b21f1b55c93e74b",
-     "bytes": 3852
+     "path": "Materials/DK_RobotEnamel_Coral.mat",
+     "sha256": "856f275045433021d31fa407e8138a1944e4927ee9fbc0e32d88cde85624a045",
+     "bytes": 3973
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Coral.mat.meta",
-     "sha256": "3aa2ca5abab73eec452837aa9f4a885318f53f051b838d1db69b1fb2d626807f",
+     "path": "Materials/DK_RobotEnamel_Coral.mat.meta",
+     "sha256": "20cb503b96d54e27aa9bfa5777c3f437acf52510af17283fbc622a6349118653",
      "bytes": 188
     },
     {
@@ -31835,15 +31872,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Cream.mat",
-     "sha256": "c0fca3e17d07632464b6b17aff6ef376cce155ea2fbee436e13fdeaaff283ca6",
-     "bytes": 3851
+     "path": "Materials/DK_RobotEnamel_Cream.mat",
+     "sha256": "b550e05f495f834b3c93e31c602558fd8f9516449a7d5c30b5de3fde60e9b610",
+     "bytes": 3973
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Cream.mat.meta",
-     "sha256": "05c33d8da2f48e67998bd39007e5f0486ee0a03f6e10643ebac35b03c9abf066",
+     "path": "Materials/DK_RobotEnamel_Cream.mat.meta",
+     "sha256": "c7d479f4ea91f9ae322f92070d66be2d072644d9f87081b5ed7d17bc490a3e01",
      "bytes": 188
     },
     {
@@ -31861,15 +31900,15 @@
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Signal_Red.mat",
-     "sha256": "2ae898b62b0426a50a6a930bfe654b1c83876de08af58d5d94007992cccd3cbc",
-     "bytes": 3946
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Signal_Red.mat.meta",
-     "sha256": "fd6388893e0ded49c829db67d88226e839f93935e7f4804924ef659320ce33a0",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
      "bytes": 188
     },
     {
@@ -31883,6 +31922,34 @@
      "path": "Materials/DK_Face_Amber.mat.meta",
      "sha256": "f69989dfca96ff6a3839b4627a84c5daa5e5144f0b3c009ecde1e8b02d5b29b8",
      "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/robot_enamel_detail_v1.png",
+     "sha256": "8bf9434fa92d1cb8528b58442990daf5fe78d8ec7aabcbbb1341c1a3d5aef201",
+     "bytes": 129049
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/robot_enamel_detail_v1.png.meta",
+     "sha256": "36f8a6348f197359fb557cdc302acd7a7b35921d75e77d56bb3b97dfb567c2cf",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/robot_enamel_detail_v1_normal.png",
+     "sha256": "9a79cc7406bad926ae68bf20a750bd388e3454a7f9511c93d3bf2152d12114c1",
+     "bytes": 203685
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/robot_enamel_detail_v1_normal.png.meta",
+     "sha256": "df1f2041dfd71e52f46f28558146818b7a9ef973cf38f9563ea06629b1457d21",
+     "bytes": 2718
     },
     {
      "role": "fbx",
@@ -47737,6 +47804,115 @@
    "source": "generated"
   },
   {
+   "id": "Ground_RoadAsphaltSwatch",
+   "category": "Ground",
+   "size": [
+    4,
+    0.005,
+    4
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 4,
+   "materials": [
+    "DK_Ground_RoadAsphalt",
+    "DK_Road_Mark"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Ground/DK_Ground_RoadAsphaltSwatch.fbx",
+     "sha256": "ef09f6970e05f806ab060db6a779e02b1fc6bd451a9fd9acb8bde2df49190f54",
+     "bytes": 20428
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Ground_RoadAsphalt.mat",
+     "sha256": "53a8f36fb82fc31afb762697cd80605e8580dc1e5d87251981883204fc8c0d82",
+     "bytes": 4225
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Ground_RoadAsphalt.mat.meta",
+     "sha256": "f99a6d595f762bed1695dfca3b636fe97cfae9881b3ad468e6b1040edc6ce5f3",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Road_Mark.mat",
+     "sha256": "d5d8cebf2302612acf594c64385a2d6f67d1fb160c6a789b4540c4ebd01ceada",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Road_Mark.mat.meta",
+     "sha256": "3ee76f7a4afef9a4d10f5a5170e45adda132e2e3c82f38e1b4da164772bc7a98",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_roadasphalt_v1.png",
+     "sha256": "c4755bc0570c70ea0318ce64f992bba66e1ed5e3905dc98e85a56ef91f44f506",
+     "bytes": 1617920
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_roadasphalt_v1.png.meta",
+     "sha256": "70859a1793129e3334183495db9a72ede8ee4cc9a4d32ab7bad256c11a76fd29",
+     "bytes": 2718
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_roadasphalt_v1_mask.png",
+     "sha256": "b3be423a9bf6d78af88aca37354b5a5dd12e84d65d0f8e6256cd33ff8a8992a9",
+     "bytes": 343707
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_roadasphalt_v1_mask.png.meta",
+     "sha256": "e1c22d2f01f36803546823bbe62a1356463ee4bf226a497d720a588513222fbd",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/ground_roadasphalt_v1_normal.png",
+     "sha256": "87f7053543bd91e28852ec1d931d84cc35d3c7318c4b3666086df6757aab0af5",
+     "bytes": 2596246
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/ground_roadasphalt_v1_normal.png.meta",
+     "sha256": "00e5774aa803e0d08be66cb4ca08be2e606bb0438a08a4fb9f2c62d757e4528c",
+     "bytes": 2718
+    }
+   ],
+   "tags": {
+    "use": [
+     "ground:swatch"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
    "id": "Ground_RoadSwatch",
    "category": "Ground",
    "size": [
@@ -47764,8 +47940,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadEnamel.mat",
-     "sha256": "4e1fc2a32d28ea2e4ce784dfc060491fbe6ae3472a67285d7d97a02b91666c4c",
-     "bytes": 4214
+     "sha256": "530f415284821a10fc3dc4a925d30be8d43c4393a37eabbb8e21cdbdabb64f71",
+     "bytes": 4220
     },
     {
      "root": "generated",
@@ -47778,8 +47954,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -47792,8 +47968,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_roadenamel_v1.png",
-     "sha256": "53e563f6039ee2b768de068f28b5ee38090b3bf5b76a6b7b24a6f4acb39dd039",
-     "bytes": 1906208
+     "sha256": "d97f161515e3cd6168335b533fe314d554afed0ecc3cce3d7610952901eefb90",
+     "bytes": 1812794
     },
     {
      "root": "generated",
@@ -48187,8 +48363,8 @@
      "root": "generated",
      "role": "texture",
      "path": "Textures/ground_lawn_v1.png",
-     "sha256": "a468a199bed4c4deb810c2e43f6c00647de16895bd46cab579c0cab6f4c48f92",
-     "bytes": 5663841
+     "sha256": "2787f37ce7898b603f67e8b42b2ce102815c716195149e288227417787907f7c",
+     "bytes": 5659937
     },
     {
      "root": "generated",
@@ -49787,8 +49963,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Pave_Civic.mat",
-     "sha256": "02b3de4c779a6a3b6fce4be90691fc66c7239c95c1bf714edfa74e3ae2f11737",
-     "bytes": 4207
+     "sha256": "ecca13cb5eb7e361ba21c5ea0269f1b0ed0a8e5317f4d95fde93b1ff27697d7c",
+     "bytes": 4241
     },
     {
      "root": "generated",
@@ -49969,8 +50145,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -50082,8 +50258,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -52270,7 +52446,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Pave_Slab.fbx",
-     "sha256": "5ccf4f38d4b856cc51ee9a86eec46c10e0a52b6c199eb5225c6505a9edde82d2",
+     "sha256": "8b54e2bde07a6611c05f6d489f026b230c290886bbae25cbcf9dc6bb7c76d453",
      "bytes": 19244
     },
     {
@@ -52417,8 +52593,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_PaveInlay_Band_6m.fbx",
-     "sha256": "0faa2a85bd574e4969f187ff586802ab93b3ff5adf7e8b2bebe6bcc742bb14e0",
-     "bytes": 20748
+     "sha256": "e09b7f978920694a46a4927846b40060cff942a13ac70697d7c631531ac0ea49",
+     "bytes": 20732
     },
     {
      "root": "generated",
@@ -52530,8 +52706,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_PaveInlay_Ring_Q.fbx",
-     "sha256": "45b70b0a05c51bcfe8b58338fdff9bad156d15b7133e5c6b7f7dea3d47e08998",
-     "bytes": 23020
+     "sha256": "dd32c4aad6768a48c4136e08b22045e825425fdce03716c785e8417481e72a0e",
+     "bytes": 22956
     },
     {
      "root": "generated",
@@ -55625,7 +55801,7 @@
     1.55
    ],
    "front": "+Z",
-   "tris": 7294,
+   "tris": 7348,
    "materials": [
     "DK_Enamel_Ivory",
     "DK_Enamel_Seafoam",
@@ -55644,12 +55820,12 @@
    "lods": [
     {
      "file": "Models/Plaza/DK_RecordsEntrance_L1.fbx",
-     "tris": 1797,
+     "tris": 1815,
      "screen": 0.008
     },
     {
      "file": "Models/Plaza/DK_RecordsEntrance_L2.fbx",
-     "tris": 424,
+     "tris": 430,
      "screen": 0.003
     }
    ],
@@ -55659,8 +55835,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Plaza/DK_RecordsEntrance.fbx",
-     "sha256": "04c41fd1bbe7a69eff18524b3718bbcc50e0d0a7d230e9890166c7f38cfa70f3",
-     "bytes": 194860
+     "sha256": "c0bac4f96a01c7da6d65fe1a6a25d5ba9ff8b1eef53af2c3727954653dc0a9a4",
+     "bytes": 195772
     },
     {
      "role": "material",
@@ -55846,15 +56022,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_L1.fbx",
-     "sha256": "c9b7b4932ab7bcc300b57ed48e9708a98b36501748dc1781cd4f8fd439ca12ba",
-     "bytes": 91708
+     "sha256": "7498dc5dc99dfe5520de879dd819e01b2fc38ca4800a3a08f3803df03cb0df6c",
+     "bytes": 92908
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_L2.fbx",
-     "sha256": "f7112c8de7e6d3ca34caf19678cb133017e11969a430263880d041816c56caf5",
-     "bytes": 47452
+     "sha256": "8b2f95324c8e43df5d45bdbb363cafdd826a9f31d4b85752ded4d85be2ad2058",
+     "bytes": 46924
     }
    ],
    "tags": {
@@ -55917,8 +56093,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Plaza/DK_RecordsEntrance_Official.fbx",
-     "sha256": "68f3fc3805af5343a82e785559857461548a11cc4989db5e4008496c5720f789",
-     "bytes": 69580
+     "sha256": "569ca818367c689635e08d184bbb4a145c046ba987d2582a88f17dbaee8e49be",
+     "bytes": 66316
     },
     {
      "role": "material",
@@ -56080,15 +56256,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_Official_L1.fbx",
-     "sha256": "e660130ff48833d502a6e4327d4798b2ecf662c938d162d0af5c6628877e91e6",
-     "bytes": 46556
+     "sha256": "37891368d436871f4d3eddfb26d5b73e75ed6c7d38499c062adf8d09c3975e59",
+     "bytes": 43292
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Plaza/DK_RecordsEntrance_Official_L2.fbx",
-     "sha256": "d971e757a8dded3e3f6d0b129f47f5424fda93b52bebed5e59aba3356602d0cf",
-     "bytes": 34556
+     "sha256": "f36f0a08d1b454b92f028ee7057c090bb0e0907db3c4f3be1a7d134b3f48181f",
+     "bytes": 31276
     }
    ],
    "tags": {
@@ -56106,18 +56282,121 @@
    "source": "generated"
   },
   {
-   "id": "RoadMark_Lozenge",
+   "id": "RoadMark_Dash_2m",
    "category": "Ground",
    "size": [
-    1.8,
-    0.0005,
-    0.54
+    2,
+    0,
+    0.2
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 4,
+   "tris": 2,
    "materials": [
-    "DK_Brass_Civic",
+    "DK_Road_Mark"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Ground/DK_RoadMark_Dash_2m.fbx",
+     "sha256": "87b21d6f6affc3c4704d9aff94ce0a03239519d5a1a7fac185861dc529654b3f",
+     "bytes": 14828
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Road_Mark.mat",
+     "sha256": "d5d8cebf2302612acf594c64385a2d6f67d1fb160c6a789b4540c4ebd01ceada",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Road_Mark.mat.meta",
+     "sha256": "3ee76f7a4afef9a4d10f5a5170e45adda132e2e3c82f38e1b4da164772bc7a98",
+     "bytes": 188
+    }
+   ],
+   "tags": {
+    "use": [
+     "ground:road-lane-dash"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "RoadMark_EdgeLine_6m",
+   "category": "Ground",
+   "size": [
+    6,
+    0,
+    0.2
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 2,
+   "materials": [
+    "DK_Road_Mark"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Ground/DK_RoadMark_EdgeLine_6m.fbx",
+     "sha256": "56622be4cdde80d153aef8eec539a87932dc22e2f1b1942b8b00648fe0cde643",
+     "bytes": 14828
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Road_Mark.mat",
+     "sha256": "d5d8cebf2302612acf594c64385a2d6f67d1fb160c6a789b4540c4ebd01ceada",
+     "bytes": 3830
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Road_Mark.mat.meta",
+     "sha256": "3ee76f7a4afef9a4d10f5a5170e45adda132e2e3c82f38e1b4da164772bc7a98",
+     "bytes": 188
+    }
+   ],
+   "tags": {
+    "use": [
+     "ground:road-edge-line"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
+   "id": "RoadMark_Lozenge",
+   "category": "Ground",
+   "size": [
+    1.7,
+    0,
+    0.48
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 2,
+   "materials": [
     "DK_Ground_RoadPearl"
    ],
    "lodCategory": "street",
@@ -56126,29 +56405,15 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadMark_Lozenge.fbx",
-     "sha256": "b8eb90fc90ba21aad4121062be009cb051b9e101aedf794345fd3f240af2c3b3",
-     "bytes": 20396
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
-     "bytes": 188
+     "sha256": "f538a237c769599e9dc9172e686fd5c47b550fc73c0de8ed8e5b87a8522b7390",
+     "bytes": 19196
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -56226,7 +56491,7 @@
    "front": "+Z",
    "tris": 2,
    "materials": [
-    "DK_Chrome"
+    "DK_Road_Chrome"
    ],
    "lodCategory": "street",
    "files": [
@@ -56234,19 +56499,21 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadMark_Seam.fbx",
-     "sha256": "fee6cbcd20ba03245dc2bf9b4fd973f6ca574cbb2b6bc69fb7028e57bf6603fb",
-     "bytes": 14748
+     "sha256": "871564218bfd5ee709be121421d818f79190cddf7d977ee75f1017ec8c6a84e4",
+     "bytes": 14812
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
-     "bytes": 3929
+     "path": "Materials/DK_Road_Chrome.mat",
+     "sha256": "23364281837374afc0bd6370bef48cdcd5949bb8ad72ee85ac59f8bac534ef83",
+     "bytes": 3915
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Road_Chrome.mat.meta",
+     "sha256": "464c6eaaf6eb47543e35c7d3ad5cc8302d2d2d415b1f61670f8697c3ecd1a289",
      "bytes": 188
     }
    ],
@@ -56290,7 +56557,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadRibbon_Arc90_R4.fbx",
-     "sha256": "6723e298a883b1a113db7c3c8573bc161ab1aa69e46d14084d4ed27b8ae6cc74",
+     "sha256": "d4904a673208cf46ca99488c8f21609ed4b84c266150d368e06e837b79618d4e",
      "bytes": 19740
     },
     {
@@ -56311,8 +56578,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Road_Lens.mat",
-     "sha256": "ac7ea18d37c3c4f82329a5bfea0e883de2fdcaac968e345f2279fbdad2d60866",
-     "bytes": 3928
+     "sha256": "37b1bc995e0842e544c8bf36194f3904ef0bb5f16c65b1999f2fec1f51343799",
+     "bytes": 3931
     },
     {
      "root": "generated",
@@ -56362,7 +56629,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadRibbon_Arc90_R8.fbx",
-     "sha256": "ac2bc38456dcd6bf78bf2bfb80ec7d86b4936039a8208b48abb31b430003cc4f",
+     "sha256": "094b0b33fb79c5eabd28e275fc6647ed22e7618dbc77ad41ae4d1cadd5dccb97",
      "bytes": 20668
     },
     {
@@ -56383,8 +56650,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Road_Lens.mat",
-     "sha256": "ac7ea18d37c3c4f82329a5bfea0e883de2fdcaac968e345f2279fbdad2d60866",
-     "bytes": 3928
+     "sha256": "37b1bc995e0842e544c8bf36194f3904ef0bb5f16c65b1999f2fec1f51343799",
+     "bytes": 3931
     },
     {
      "root": "generated",
@@ -56434,7 +56701,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadRibbon_Straight_6m.fbx",
-     "sha256": "1053b48de65df3df8e32b768df09d4642ca040e0a00e2e5f3edcb5bf18f7467f",
+     "sha256": "e8629520acea9263fc5bc37e2357db13c64a101c1177141a44ead1deee2170f8",
      "bytes": 17820
     },
     {
@@ -56455,8 +56722,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Road_Lens.mat",
-     "sha256": "ac7ea18d37c3c4f82329a5bfea0e883de2fdcaac968e345f2279fbdad2d60866",
-     "bytes": 3928
+     "sha256": "37b1bc995e0842e544c8bf36194f3904ef0bb5f16c65b1999f2fec1f51343799",
+     "bytes": 3931
     },
     {
      "root": "generated",
@@ -56497,7 +56764,7 @@
    "tris": 60,
    "materials": [
     "DK_Ground_RoadPearl",
-    "DK_Chrome"
+    "DK_Road_Chrome"
    ],
    "lodCategory": "street",
    "files": [
@@ -56505,15 +56772,15 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadShoulder_Arc90_R4.fbx",
-     "sha256": "8d32aff19dc2a5f410466d4e6a665fdb0170aaa341417e8c82042516dd899666",
-     "bytes": 22268
+     "sha256": "aed6a83d25467f1817e922b9537b6e9123fb24da0a155e6fc2fe3f6cf750fe65",
+     "bytes": 22332
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -56523,15 +56790,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
-     "bytes": 3929
+     "path": "Materials/DK_Road_Chrome.mat",
+     "sha256": "23364281837374afc0bd6370bef48cdcd5949bb8ad72ee85ac59f8bac534ef83",
+     "bytes": 3915
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Road_Chrome.mat.meta",
+     "sha256": "464c6eaaf6eb47543e35c7d3ad5cc8302d2d2d415b1f61670f8697c3ecd1a289",
      "bytes": 188
     },
     {
@@ -56608,7 +56877,7 @@
    "tris": 84,
    "materials": [
     "DK_Ground_RoadPearl",
-    "DK_Chrome"
+    "DK_Road_Chrome"
    ],
    "lodCategory": "street",
    "files": [
@@ -56616,15 +56885,15 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadShoulder_Arc90_R8.fbx",
-     "sha256": "048a9ba4325df78a2ba6461bc57733b2473fc23d195d73d54eeb4e16ef8ebdf9",
-     "bytes": 22924
+     "sha256": "f0e368d211040c6db6d4c27557ac445db8567f97e5145a7fd8a7a06e1ed44f19",
+     "bytes": 23004
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -56634,15 +56903,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
-     "bytes": 3929
+     "path": "Materials/DK_Road_Chrome.mat",
+     "sha256": "23364281837374afc0bd6370bef48cdcd5949bb8ad72ee85ac59f8bac534ef83",
+     "bytes": 3915
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Road_Chrome.mat.meta",
+     "sha256": "464c6eaaf6eb47543e35c7d3ad5cc8302d2d2d415b1f61670f8697c3ecd1a289",
      "bytes": 188
     },
     {
@@ -56719,7 +56990,7 @@
    "tris": 12,
    "materials": [
     "DK_Ground_RoadPearl",
-    "DK_Chrome"
+    "DK_Road_Chrome"
    ],
    "lodCategory": "street",
    "files": [
@@ -56727,15 +56998,15 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadShoulder_Straight_6m.fbx",
-     "sha256": "1cff73fad4de3480e00e7a80d966f8a94b96bfd9d0db5b852df12514be51ab42",
-     "bytes": 20636
+     "sha256": "12795deaf7736eb7c79682047d3b83806b94f1736a1219f66aebc892bc234667",
+     "bytes": 20700
     },
     {
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",
@@ -56745,15 +57016,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Chrome.mat",
-     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
-     "bytes": 3929
+     "path": "Materials/DK_Road_Chrome.mat",
+     "sha256": "23364281837374afc0bd6370bef48cdcd5949bb8ad72ee85ac59f8bac534ef83",
+     "bytes": 3915
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Chrome.mat.meta",
-     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "path": "Materials/DK_Road_Chrome.mat.meta",
+     "sha256": "464c6eaaf6eb47543e35c7d3ad5cc8302d2d2d415b1f61670f8697c3ecd1a289",
      "bytes": 188
     },
     {
@@ -56852,7 +57125,7 @@
    "lods": [
     {
      "file": "Models/Robots/DK_RobotButler_Play_L1.fbx",
-     "tris": 4044,
+     "tris": 4045,
      "screen": 0.008
     },
     {
@@ -56867,8 +57140,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Robots/DK_RobotButler_Play.fbx",
-     "sha256": "317dc540762d9df5ba9aee3e5afefc048a50311f70a0ea1c6901dd72304be945",
-     "bytes": 453548
+     "sha256": "475eb36758f6c303b51d9cbd988e272dca1b6d52105833fd335c91ed282ad92b",
+     "bytes": 452540
     },
     {
      "role": "material",
@@ -57094,15 +57367,15 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Robots/DK_RobotButler_Play_L1.fbx",
-     "sha256": "f2710773e41dcaf242cff0e1dae19f904126e7966a1e755fa44b5a6582421c5f",
-     "bytes": 182780
+     "sha256": "945d41f3815033cde5c864bf081f28fa3aedb0479f326fae688f872760bc576b",
+     "bytes": 182172
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Robots/DK_RobotButler_Play_L2.fbx",
-     "sha256": "df4bad7dc918da55dbc3dc44df75b583d608500cbf6a4217108b194ebe22510e",
-     "bytes": 83596
+     "sha256": "eadd10662b9cefd4a93e054552f7f8cb08f9c04ac5c2f90ba23b67c68dfdc534",
+     "bytes": 83148
     }
    ],
    "tags": {
@@ -63175,8 +63448,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_TreePit_Pearl.fbx",
-     "sha256": "b0f578ad717f5b7b0b94e4107dde9175162f16f8e3af02d62fd1126312219a4c",
-     "bytes": 29244
+     "sha256": "cca2bdee133a0d89916c798ac36d6adc382d30c4c61424195f71e12463ae01fb",
+     "bytes": 29052
     },
     {
      "root": "generated",
@@ -63196,8 +63469,8 @@
      "root": "generated",
      "role": "material",
      "path": "Materials/DK_Ground_RoadPearl.mat",
-     "sha256": "1a81b30965733b4f84b60d5f859354b970b32fb347d28c723657f38d7e77f16c",
-     "bytes": 4213
+     "sha256": "c82f0e0892854d9c4b62afb9228a9321e7f696dbe0412731c56b274267b61b33",
+     "bytes": 4216
     },
     {
      "root": "generated",

@@ -23,7 +23,9 @@ public class FinalIntentTests
     static readonly HashSet<string> Moves = new HashSet<string>(StringComparer.Ordinal)
     {
         "loud", "loud-fast", "loud-fight", "loud-left-downed", "loud-left-standing",
-        "careless-takedown-seen-crowd", "fight-loud-enforcer-down", "fight-safe-rivals-reach-vale",
+        "fight-loud-enforcer-down", "fight-safe-rivals-reach-vale",
+        // careless-takedown-seen-crowd left the set with engine 0.28.0: guard 73's radio locks the doors before the Enter, so the run has no
+        // final fight and the agent and every rules cannot differ (Aster via Waymark, 2026-10-24)
     };
 
     [Fact]

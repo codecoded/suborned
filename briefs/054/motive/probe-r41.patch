@@ -1,0 +1,58 @@
+--- sim/Suborned.Sim/GameNotice.cs	2026-10-24 02:30:16
++++ sim/Suborned.Sim/GameNotice.cs	2026-10-24 03:25:38
+@@ -112,6 +112,8 @@
+ 
+         /// <summary>Security for sight (brief 054 §3.4): the door guard and a job in witness.staff, on shift or off.</summary>
+         bool SecurityPerson(Person p) => IsStaff(p);
++        static readonly int MotiveNear = int.TryParse(Environment.GetEnvironmentVariable("MOTIVE_BODY_NEAR"), out var v) ? v : 0;
++        static readonly int MotiveNearMode = int.TryParse(Environment.GetEnvironmentVariable("MOTIVE_NEAR_MODE"), out var v2) ? v2 : 1;
+ 
+         /// <summary>Brief 054 §3.2: would person p, standing at wp, notice `act` at `at` now? The engine's one test (cards read it too).</summary>
+         bool Notices(Person p, Pt wp, Pt at, string act) => NoticesAt(p, wp, at, act, Alert, null);
+@@ -122,6 +124,7 @@
+             if (R.NoticeHeard.Contains(act) || SecurityPerson(p)) return G.Within(wp, at, witnessRange) && Sees(wp, at);
+             if (R.NoticeNever.Contains(act)) return false;
+             if (R.NoticeOdd.Contains(act) && alert < R.PeopleCareAlert) return false;
++            if (MotiveNear > 0 && (act == "body" || (MotiveNearMode == 2 && (act == "takedown" || act == "carry"))) && G.Within(wp, at, MotiveNear) && Sees(wp, at)) return true; // PROBE: a near sense for bodies
+             return InPeopleCone(p, wp, at, facing) && Sees(wp, at);
+         }
+         /// <summary>The civilian cone: within perception.people.reach and ±60° (half at the reach) of the facing; no facing, no sight.</summary>
+--- sim/Suborned.Sim/GameMood.cs	2026-10-24 02:24:23
++++ sim/Suborned.Sim/GameMood.cs	2026-10-24 03:29:29
+@@ -13,6 +13,7 @@
+     public sealed partial class Game
+     {
+         /// <summary>A person's mood now (rulebook mood; "neutral" with the mood off).</summary>
++        internal static readonly bool MotiveNoAffair = Environment.GetEnvironmentVariable("MOTIVE_NO_AFFAIR_WATCH") == "1";
+         string MoodNow(Person p)
+         {
+             if (!R.MoodOn) return "neutral";
+@@ -30,7 +31,7 @@
+             if (p.Down) return false;
+             // the affair (rulebook cell.watch also, motive-lovers.md §1.2): a Watch ending with two lovers together teaches it, so it is offered
+             // while they are together and the secret is unknown, turned or not (it is the leverage on the other one; brief 054 is silent: OPEN, Motive)
+-            if (p.Secret.Length > 0 && !p.KSecret && p.Lover != null) { var ev = R.Ev("cell.watch"); var x = Ctx(p, ev); foreach (var a in ev.Also) if (a.When.Exists(c => c.K == "lover-within") && AllHold(a.When, x)) return true; }
++            if (!MotiveNoAffair && p.Secret.Length > 0 && !p.KSecret && p.Lover != null) { var ev = R.Ev("cell.watch"); var x = Ctx(p, ev); foreach (var a in ev.Also) if (a.When.Exists(c => c.K == "lover-within") && AllHold(a.When, x)) return true; }
+             if (p == GuardP && !(Known("guard")?.Sight ?? true)) return true; // the door guard's sight, until known
+             if (p.Turned) return false;
+             if (IsStaff(p)) return !p.KRoutine; // security: their sight and check-in marks, until watched
+--- sim/Suborned.Sim/GameOrders.cs	2026-10-24 02:23:05
++++ sim/Suborned.Sim/GameOrders.cs	2026-10-24 03:29:29
+@@ -209,7 +209,7 @@
+             bool Open(string what) => what == "secret" ? p.Secret.Length > 0 && !p.KSecret : what != "refused" && !p.Knows(what);
+             bool Learns(List<Eff> changes) { foreach (var c in changes) if (c.Do == "learn" && c.S("of") == "subject") foreach (var w in c.L("what")) if (Open(w)) return true; return false; }
+             foreach (var oc in ev.Outcomes) if (Learns(oc.Changes)) return true;
+-            foreach (var a in ev.Also) if (!a.When.Exists(c => c.K == "lover-within") || p.Lover != null) if (Learns(a.Changes)) return true;
++            foreach (var a in ev.Also) if (!(MotiveNoAffair && a.When.Exists(c => c.K == "lover-within"))) if (!a.When.Exists(c => c.K == "lover-within") || p.Lover != null) if (Learns(a.Changes)) return true;
+             if (R.KnownBy.Contains(ev.Id) && !p.KTemperament) return true;
+             if (ev.Id == "cell.watch" && p == GuardP && !(Known("guard")?.Sight ?? true)) return true;
+             return false;
+@@ -330,7 +330,7 @@
+             var outcome = FirstOutcome(ev, x);
+             x.Outcome = outcome.Id;
+             var changes = new List<Eff>(outcome.Changes);
+-            foreach (var a in ev.Also) if (AllHold(a.When, x)) changes.AddRange(a.Changes);
++            foreach (var a in ev.Also) if (!(MotiveNoAffair && a.When.Exists(c => c.K == "lover-within")) && AllHold(a.When, x)) changes.AddRange(a.Changes);
+             var acts = new List<string>();
+             if (!ev.Private) foreach (var w in ev.Witnesses) if (AllHold(w.When, x)) acts.Add(w.Act); // rulebook privacy: a private conversation has no onlookers
+             bool witnessed = false;

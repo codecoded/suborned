@@ -63,6 +63,11 @@ namespace Suborned.Play
             var c = RS.column; int W = src.width, H = src.height, d2x = Mathf.RoundToInt(Divider.d2x), ease = Mathf.Max(1, c.ease);
             if (W != c.w || H != c.h || c.cuts == null || c.cuts.Length != 4) { Debug.LogWarning($"HUD: roster column {W}x{H} is not the spec's {c.w}x{c.h}; the kit column is drawn"); return null; }
             var px = src.GetPixels32(); // bottom-up rows
+            // Glyph's 0.2.94 review #5a: the bare column's two bottom rivets (rows 770..787 at x 16..34 and 184..202 of the 218 x 833 sprite)
+            // sat 8 px (2x) from slot 4's weapon disc: painted out with the plain body row just above them, so the icon row clears them
+            if (file.EndsWith("_bare") && W == 218 && H == 833)
+                for (int y = 770; y <= 787; y++) foreach (var (x0, x1) in new[] { (16, 34), (184, 202) })
+                    for (int x = x0; x <= x1; x++) px[(H - 1 - y) * W + x] = px[(H - 1 - 769) * W + x];
             float[] Row(int y) { var r = new float[W * 4]; int o = (H - 1 - y) * W; for (int x = 0; x < W; x++) { var p = px[o + x]; r[x * 4] = p.r; r[x * 4 + 1] = p.g; r[x * 4 + 2] = p.b; r[x * 4 + 3] = p.a; } return r; }
             int b0 = c.body[0], b1 = c.body[1];
             float[] Smooth(float[] r) { var o = (float[])r.Clone(); for (int x = b0; x <= b1; x++) for (int k = 0; k < 4; k++) { float sum = 0; int n = 0; for (int j = -5; j <= 5; j++) { int q = x + j; if (q < b0 || q > b1) continue; sum += r[q * 4 + k]; n++; } o[x * 4 + k] = sum / n; } return o; }

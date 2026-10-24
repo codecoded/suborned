@@ -389,6 +389,7 @@ namespace Suborned.Play
             if (c.Fail == "sealed") why = c.Origin?.Reporter?.Kind is "desk" or "heard" ? c.Origin.Reporter.Kind : c.Origin?.Because ?? why;
             string cap = t != null && t.FailCaption.TryGetValue(c.Fail + "|" + why, out var cp) ? cp : (Text?.EndFail.TryGetValue(c.Fail, out var ef) == true ? ef : c.Fail);
             string tip = t != null && t.FailTip.TryGetValue(c.Fail + "|" + why, out var tp) ? tp : "";
+            if (c.Fail == "sealed" && SealedWords(c).tip is string st && st.Length > 0) tip = st; // brief 057 §4 (Fable's less.sealed.tip): what to do next time, by the car's state
             var by = who ?? (c.Culprits.Count > 0 ? c.Culprits[0] : null);
             string byWords = by == null ? "Someone" : by.Kind switch
             {

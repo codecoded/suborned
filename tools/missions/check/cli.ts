@@ -12,6 +12,9 @@ import { check, html, load, record, replay, runsDir } from './run';
 import { compose, loadPlan, writeScript } from './compose';
 
 const args = process.argv.slice(2), flag = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args.splice(i, 2)[1] : undefined; };
+// `--record` takes the note that goes in the run's record (what changed and why): a bare one used to record nothing and say nothing (Keel, 2026-10-24: `bun run missions:rerecord` with no note). It is refused now, before any play.
+const ri = args.indexOf('--record'), bare = ri >= 0 && (args[ri + 1] === undefined || args[ri + 1]!.startsWith('--') || !args[ri + 1]!.trim());
+if (bare) { console.error('missions:check: --record needs a note: bun run missions:rerecord "what moved and why" (or --record "<note>"); nothing was played or recorded'); process.exit(2); }
 const note = flag('--record'), rev = flag('--engine') ?? 'HEAD', inputs = flag('--inputs') === 'tree' ? 'tree' : 'commit', composeJobs = Math.max(1, Number(flag('--jobs') ?? 4));
 const cmd = ['replay', 'check', 'compose'].includes(args[0] ?? '') ? args.shift()! : 'check';
 if (!hasDotnet()) { console.error('the mission checker needs the .NET SDK (dotnet on PATH; DOTNET_ROOT=/opt/homebrew/opt/dotnet/libexec on the Studio)'); process.exit(2); }

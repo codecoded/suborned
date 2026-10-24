@@ -64,6 +64,7 @@ namespace Suborned.Play
         /// <summary>Per frame after the pill (the commander view and third person alike; none while the end card or the briefing is up).</summary>
         void DoneMarks()
         {
+            SealFrame(); // brief 057 §4.1: the seal clock under the clock pill
             var h = host; var g = h.Game; float now = Time.unscaledTime; bool on = g != null && !m.Ended && !m.BriefingOpen && h.View != null && h.Modal == ModalGate.Modal.None;
             int used = 0; var words = new List<string>(); var stackTop = new Dictionary<string, float>();
             Rect pill = PillRect(); var bubbles = SpeechRects(); var markTop = new Dictionary<string, float>();

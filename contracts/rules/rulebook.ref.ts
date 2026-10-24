@@ -114,6 +114,15 @@ export function holds(rb: Rulebook, people: PeopleRules, c: Cond, x: Ctx, ev?: E
       return cmp(s.scales[c.scale as keyof Scales], c.op, b);
     }
     case 'trail': return (x.trail ?? 0) >= num(rb, people, c.atLeast);
+    case 'orders-base': { // brief 054 §4.2 (engine 0.28.0): a Help's orders from the lines that hold, before a ready step (lines taking orders away left out)
+      if (!ev) throw new Error('orders-base outside an event');
+      const n = (ev.price ?? []).reduce((acc, l, i) => {
+        const o = l.orders ? num(rb, people, l.orders) : i === 0 ? 1 : 0;
+        if (o < 0 || (l.when ?? []).some((w) => w.k === 'orders-base') || !(l.when ?? []).every((w) => holds(rb, people, w, x, ev))) return acc;
+        return acc + o;
+      }, 0) || 1;
+      return (c.above === undefined || n > num(rb, people, c.above)) && (c.atMost === undefined || n <= num(rb, people, c.atMost));
+    }
     default: break;
   }
   const g = x.given?.[c.k];

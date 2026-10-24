@@ -6,6 +6,7 @@ import { idOf, kindOf, plotRing } from '../edges';
 import { edgeN } from '../geo';
 import { avenueVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
+import { kerbReturnStd, returnAt } from '../kerbreturn';
 
 const ROADS = ['primary', 'district', 'access'];
 
@@ -38,7 +39,12 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       // crossings at both ends of district and access edges, flanked by bollards; beacons on district crossings.
       // A crossing's size is [depth from the kerb, width along the road] and its yaw across the road (SF-19: it was
       // [w, depth], which ran the 4 m across the road)
-      for (const s of [5, len - 5]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
+      // brief 028 (kerbReturn.landings): a crossing landing next to a rounded kerb return stands on the straight, its near edge `clear` (3) m past the arc's tangent point: centre = tangent + 3 + w / 2 (R + 5 on a 6 m return); a square corner keeps the old 5 m centre.
+      // Where the edge cannot hold two landings, one stands in the middle.
+      const W: number = S.crossings.w, clear = kerbReturnStd(S).clear, rA = returnAt(ctx, plot.id, a), rB = returnAt(ctx, plot.id, b), tA = rA?.t ?? 0, tB = rB?.t ?? 0;
+      const sA = Math.max(5, rA && !rA.civic ? tA + clear + W / 2 : 0), sB = len - Math.max(5, rB && !rB.civic ? tB + clear + W / 2 : 0); // a civic corner's landings stay where the block puts its own (5 m off the corner)
+      for (const s of sB - sA >= W + 0.5 ? [sA, sB] : [len / 2]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
+      // the tree grid keeps its rhythm (hydrants and benches are set against it); the first tree a rounded corner's kerb, or SF-8's 6 m from its tangent point, crowds out is skipped, never squeezed
       const s0 = 9, s1 = len - 9, nT = s1 > s0 ? Math.floor((s1 - s0) / S.trees.spacing) + 1 : 0, t0 = s0 + (s1 - s0 - (nT - 1) * S.trees.spacing) / 2, kerbMid = 0.45 + 0.75;
       if (tree) for (let k = 0; k < nT; k++) L.add('tree', at(t0 + k * S.trees.spacing, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
       else if (kind === 'access' && corners.has(plot.area)) for (const s of [9, len - 9]) L.add('tree', at(s, kerbMid), 0, z, id, { size: [0.5, 0.5, speciesOf(S, avenueVariant(S))!.top], variant: avenueVariant(S), r: 1.5 });
@@ -52,7 +58,7 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       for (let s = 100 + par * 50; s < len - 9; s += 250) L.add('mailbox', at(s, 0.75), yaw, z, id);
       for (let s = 25 + par * 10; s < len - 9; s += kind === 'district' ? 50 : 100) if (L.free(at(s, 0.8), 0.4)) L.add('bin', at(s, 0.8), 0, z, id, { r: 0.4 });
       // corner furniture (staffed kiosks, advertising columns), sparse and chosen by seed, 8 m clear of the junction
-      if (kind === 'district' && len > 30) for (const s of [8.5, len - 8.5]) {
+      if (kind === 'district' && len > 30) for (const s of [8.5 + tA, len - 8.5 - tB]) { // kerbReturn.dressing: measured from the arc's tangent point
         const p = at(s, 0.75);
         if (r.chance(0.3) && far('newsstand', p, 120) && L.add('newsstand', p, yaw, z, id)) sparse.newsstand!.push(p);
         else if (r.chance(0.3) && far('advertising-column', p, 60) && L.add('advertising-column', at(s, 1.0), 0, z, id)) sparse['advertising-column']!.push(p);

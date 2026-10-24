@@ -5,7 +5,7 @@
  "start": {},
  "orders": [
   {"tick": 0, "op": "tech", "do": "move", "to": "cabinet"},
-  {"tick": 0, "op": "enforcer", "do": "move", "to": [6950, -4250]},
+  {"tick": 0, "op": "enforcer", "do": "move", "to":[6925,-4250]},
   {"tick": 380, "op": "tech", "do": "loop", "target": "entrance"},
   {"tick": 1000, "op": "tech", "do": "reroute", "target": "patrol"},
   {"tick": 1450, "op": "enforcer", "do": "fire", "target": "guard"},

@@ -11,7 +11,8 @@ import { join } from 'node:path';
 import { derive } from '../plan/plan';
 import { civic, toPlanFn } from '../plan/civic';
 import { blockersOf } from '../plan/walk';
-import { CELL, WINDOW, walkGrid } from '../plan/walk-grid';
+import { CELL, WINDOW } from '../plan/walk-grid';
+import { COLLIDE_FILE, floorRows, simGrid } from './solids';
 import { inPoly, type V } from '../plan/geom';
 import { castRoles } from '../missions/handover/cast';
 import { castRules } from '../missions/handover/overlay';
@@ -37,14 +38,31 @@ const P = (p: V) => [cm(p[0]), cm(p[1])];
 
 type Place = { at: number[]; src: string; reason?: string };
 
-export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: string; site: unknown } {
+/** Brief 055 (Keel 2026-10-23): what of the drawn solids (tools/sim/solids.ts) the site holds. Both are built and measured; both are held off until their adoption:
+ *  `drawnWalk`: the drawn solids block the walk grid. Off: the grid is the block-only grid (buildings, plots, the block's own ground solids), with the floor per cell.
+ *    Held for (kit.collide.json v7, 2026-10-23): PottedPalm_Small is measured as a solid of r 0.81 m from the pavement up and its fronds as boxes to 1.73 m, so the
+ *    café's palms close Inez's way to tables 3 and 6 and put 23 to 44 m on her walks to 0, 1 and 5 (her rounds are walked on the block-only grid). With the palm
+ *    as its pot only (r 0.35, probe out/scratch/keel/b055/palmfix.ts) every table stays open and her walks grow 0.3 to 6 m: Vela's piece to fix, not the grid.
+ *  `drawnOccluders`: the drawn volumes that span eye height are sight occluders. Held for: under the rulebook's one eye height (eye-cm) a camera on a pole or a mast
+ *    sees at 1.6 m like a person, so the two 2 m topiaries at the Office door cut the entrance camera's line to the door and the café's planting cuts the Records
+ *    Square mast; 10 scenarios move.
+ *  On: `bun run sim:site --drawn-walk --drawn-occluders` (then `bun run cover`, `bun run sim:site` with the same flags, re-record). The site records which (grid.drawn). */
+export type SiteOptions = { drawnWalk?: boolean; drawnOccluders?: boolean };
+/** The options the committed site was built with (grid.drawn), so a check rebuilds it the same way. */
+export const optionsOfSite = (): SiteOptions => {
+  const d = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')).grid?.drawn;
+  return { drawnWalk: !!d?.walk, drawnOccluders: !!d?.sight };
+};
+export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteOptions = {}): { json: string; site: unknown } {
   const read = (f: string) => readFileSync(join(root, f), 'utf8');
   const planText = read(PLAN), plan = JSON.parse(planText);
   const blockText = read(plan.civic.block), block = JSON.parse(blockText);
   const missionText = read(MISSION), mission = JSON.parse(missionText);
   const d = derive(plan), civ = civic(plan.civic, block), toPlan = toPlanFn(plan.civic);
   const { polys } = blockersOf(plan, d, civ);
-  const G = walkGrid(plan, d, civ, WINDOW, CELL), { solids, nx, ny, rows, free, nearestFree } = G;
+  const rulebook = JSON.parse(read('contracts/rules/rulebook.json')), eyeCm: number = rulebook.values['eye-cm'].v;
+  // brief 055: the walk grid with the drawn solids (tools/sim/solids.ts), a floor per cell and the drawn occluders
+  const G = simGrid(plan, d, civ, eyeCm / 100, WINDOW, CELL, !!opts.drawnWalk), { solids, nx, ny, rows, free, nearestFree } = G;
 
   // ---- sight: the civic buildings and their towers at their heights, and the built plots around the square (each behind its building line: the pavement is not a wall)
   const toBlock = (p: V): V => { // invert plan = o + bx·ax + by·ay
@@ -67,6 +85,13 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     occluders.push({ id: `plot-${String(++plotN).padStart(2, '0')}`, z: 0, h: 1500, poly: bp.map(P), src: 'plan built plot behind its building line (tools/plan/walk.ts blockersOf); no height in the plan, stood at 15 m: any built plot blocks an eye-level sightline' });
   }
 
+  // the drawn solids at eye height on pieces that stop sight (brief 055 step 2): a building's own footprint is already above, so its drawn copy is not repeated
+  const civicIds = new Set(occluders.map((o) => `civic/${o.id}`));
+  for (const o of opts.drawnOccluders ? G.occluders : []) {
+    if (civicIds.has(o.id)) continue;
+    occluders.push({ id: `solid:${o.id}`, z: cm(o.z), h: cm(o.h), poly: o.poly.map(P), src: `${COLLIDE_FILE} volumes spanning eye height (rulebook eye-cm ${eyeCm}), placed as the world places the piece` });
+  }
+
   // ---- places: the mission's points as they stand, then the engine's own (O-6, for Waymark)
   const dest = (name: string): V => { const x = mission.destinations.find((d: { name: string }) => d.name === name); if (!x) throw new Error(`mission.json has no destination ${name}`); return x.at; };
   const places: Record<string, Place> = {};
@@ -86,9 +111,11 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
 
   // ---- cameras (O-6): mount, facing, reach and half-width, all cm; a point is watched inside the cone on a clear sightline
   // mission.json `cameras`: each faces the destination it looks at
-  const cameras = (mission.cameras as { id: string; at: V; looksAt: string; reachM: number; halfM: number; src: string; reason: string }[]).map((c) => {
+  // brief 055 §7: each camera's kind sets its lens height (rulebook perception.mount.cameras); the mission's cameras are pole cameras (the plan's
+  // watchers.types.pole-camera) until mission.json names a kind on each (Waymark)
+  const cameras = (mission.cameras as { id: string; kind?: string; at: V; looksAt: string; reachM: number; halfM: number; src: string; reason: string }[]).map((c) => {
     const to = dest(c.looksAt);
-    return { id: c.id, at: P(c.at), facing: P([to[0] - c.at[0], to[1] - c.at[1]]), reach: cm(c.reachM), half: cm(c.halfM), src: c.src, reason: c.reason };
+    return { id: c.id, kind: c.kind ?? 'pole-camera', at: P(c.at), facing: P([to[0] - c.at[0], to[1] - c.at[1]]), reach: cm(c.reachM), half: cm(c.halfM), src: c.src, reason: c.reason };
   });
 
   // ---- the mission's schedule, read from mission.json by its words, so a retimed entry (Waymark's close, 8:00 → 8:30) moves the engine
@@ -132,7 +159,6 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
   cast.src = 'tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks';
 
   // ---- the car's exit lane (brief 018 §1): derived from routes.getaway and the plan road, checked here (SX-1) so a lane off the carriageway never ships
-  const rulebook = JSON.parse(read('contracts/rules/rulebook.json'));
   const exitLane = buildExit(plan, d, mission, 'Getaway bay', rulebook);
   const exitBad = checkExit(exitLane, plan, d, toPlan(dest('Getaway bay')), blockM(rulebook).m);
   if (exitBad.length) throw new Error(`getaway.exit (SX-1): ${exitBad.join('; ')}`);
@@ -171,12 +197,18 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }): { json: st
     schema: 'suborned.sim.site/1',
     mission: 'handover',
     frame: 'civic-block.json block frame in integer centimetres: x south, y east. Mission clock in seconds from 0:00 (the engine ticks at 10 Hz).',
-    from: [PLAN, plan.civic.block, MISSION, 'tools/plan/walk.ts blockersOf', 'tools/plan/walk-solids.ts'],
-    grid: { x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(solids.r), rows, src: 'tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block\'s ground solids, BODY clearance): a cell is free when its centre is' },
+    from: [PLAN, plan.civic.block, MISSION, 'tools/plan/walk.ts blockersOf', 'tools/plan/walk-solids.ts', COLLIDE_FILE, 'tools/sim/solids.ts'],
+    grid: {
+      x0: cm(WINDOW.x0), y0: cm(WINDOW.y0), cell: cm(CELL), nx, ny, body: cm(solids.r), rows,
+      floor: floorRows(G.floor, nx, ny),
+      collide: G.drawn.collideSha,
+      drawn: { walk: !!opts.drawnWalk, sight: !!opts.drawnOccluders, walkCells: G.added.size, sightOccluders: G.occluders.length },
+      src: 'tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block\'s ground solids, BODY clearance), and, with drawn.walk, the drawn solids (tools/sim/solids.ts: every piece the world places, with its kit.collide.json volumes; a building\'s face by the cell centre, every other solid BODY clear, where it blocks a walker at the cell\'s floor; drawn.walkCells counts the cells they block, held or not), and the mission cameras\' poles the host stands (tools/missions/handover/legs.ts cameraPoles, kit.collide.json CCTVPole at the host\'s scale; engine 0.30.0): a cell is free when its centre is. floor: per row, run-length pairs [cm, cells], block z (the pavement 0, the carriageway -18): the ground drawn there or the floor civic-block.json declares (tools/plan/civic.ts floorAt)',
+    },
     occluders,
     places,
     cameras,
-    patrol: { a: 'patrol-a', b: 'patrol-b', facing: [0, 100], reroute: 'patrol-reroute', rerouteFacing: [0, -100], src: 'the top-down test: the patrol faces the building it guards; the public door is on the Office\'s west face (Sky 2026-10-19, option b), the sweep runs along the forecourt (x 52..68, y -44.8) and the patrol faces east, toward the door' },
+    patrol: { a: 'patrol-a', b: 'patrol-b', facing: [0, 100], reroute: 'patrol-reroute', rerouteFacing: [0, -100], src: 'the top-down test: the patrol faces the building it guards; the public door is on the Office\'s west face (Sky 2026-10-19, option b), the sweep runs along the forecourt in a straight line between patrol-a and patrol-b (mission.json points, read there: Game.SweepPos walks the line between them) and the patrol faces east, toward the door' },
     guard: { post: 'd:Office entrance', facing: [0, -100], cafe: 'd:Café door', cafeFacing: [-100, 0], src: 'GDD §05 guard on door routine (café stop pre-shift); mission.json windows.front-door; he faces out over the forecourt from the door, which is on the Office\'s west face (Sky 2026-10-19, option b), so west; at the café he faces the café' },
     vale: { exit: 'd:Official entrance', car: 'd:Official drop-off', service: 'd:Service lane', src: 'GDD §07 5:50 Vale exits, 6:10 at car (service lane if the driver is turned); mission.json roles.councillor leavesTo' },
     car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'service-bay', block: 'block-spot', serviceFacing: serviceFacing, blockFacing: blockFacing, src: 'GDD §07; mission.json roles.driver; blockFacing: parked at block-spot the car lies along its bay\'s long axis (the official bay\'s kerb), nose the way it pulled out from the pickup (tools/sim/site.ts); the turned driver parks in the Office\'s east yard bay (mission.json point service-bay, brief 023), nose in: serviceFacing is the bay\'s long axis pointing away from the drive it is entered by (tools/sim/site.ts)' },
@@ -267,7 +299,7 @@ if (import.meta.main) {
   const a = process.argv.slice(2), at = (k: string) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : undefined; };
   const src: Source = { people: at('--people') ?? PROMOTED_PEOPLE, ...(at('--fixture') ? { fixture: at('--fixture')! } : {}) };
   if (src.people !== PROMOTED_PEOPLE && !src.fixture) throw new Error('a people file other than the promoted one is a fixture: say why with --fixture');
-  const { json } = buildSite(src);
+  const { json } = buildSite(src, { drawnWalk: a.includes('--drawn-walk'), drawnOccluders: a.includes('--drawn-occluders') });
   writeFileSync(join(root, SITE_FILE), json);
   const people = buildPeople(src);
   writeFileSync(join(root, PEOPLE_OUT), people);

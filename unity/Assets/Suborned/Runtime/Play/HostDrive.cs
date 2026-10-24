@@ -373,7 +373,7 @@ namespace Suborned.Play
             // priced on a change of focus, and once a second (Preview is costly; every drive sample is an order, so the order count moves each tick)
             var ik = $"drive:{key}:{Agent}:{Picked}:{(int)Time.unscaledTime}";
             if (ik == intentKey) return;
-            intentKey = ik; dFocusKey = key; Hover = best; HoverFeedback(best); HoverIntent = HoldOn ? HoldIntent(best) : IntentFor(best); // item 7 (Keel 2026-10-22): the pill offers what the holds give, as PointerHover does MoveChip = null; UpdateAim();
+            intentKey = ik; dFocusKey = key; Hover = best; HoverFeedback(best); HoverIntent = HoldOn ? HoldIntent(best) : IntentFor(best); /* item 7 (Keel 2026-10-22): the pill offers what the holds give, as PointerHover does */ MoveChip = null; UpdateAim();
         }
 
         /// <summary>E: act on the focus, as a quick right click on it (brief 030).</summary>

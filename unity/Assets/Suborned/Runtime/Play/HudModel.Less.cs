@@ -85,7 +85,7 @@ namespace Suborned.Play
                         }
                     case "trail":
                         {
-                            if (o.Do == "fire") { F("trail", "p_trail", $"+{h.Game.R.HitTrail}/hit"); break; }
+                            if (o.Do == "fire") { F("trail", "p_trail", HandoverHost.PropertyId(o.Target) ? $"+{h.Game.R.GunfireTrail}" : $"+{h.Game.R.HitTrail}/hit"); break; } // brief 058 (Motive): a camera or a car costs the shooting's Trail once, hit or miss; no hit Trail on property
                             int n = td ? i.Td.TrailIfFound : Plus.Match(i.Trail ?? "") is var pm && pm.Success ? int.Parse(pm.Groups[1].Value) : 0;
                             if (n <= 0) break;
                             var f = F("trail", "p_trail", $"+{n}");
@@ -113,7 +113,7 @@ namespace Suborned.Play
                     case "learns":
                         {
                             var f = F("learns", "", "");
-                            if (o.Do == "watch") f.Icons.Add(i.Outcome == "its sight" ? "cone" : "routine");
+                            if (o.Do == "watch") f.Icons.Add(i.Outcome == "its sight" ? "cone" : i.Outcome == "mood" ? "mood_uneasy" : "routine"); // brief 054: a mood Watch learns a face
                             else if (o.Do == "listen") { f.Icons.Add("p_unknown"); f.Icons.Add("p_unknown"); } // need and temperament, unknown until heard (as Intel draws them)
                             if (f.Icons.Count == 0) l.Remove(f);
                             break;

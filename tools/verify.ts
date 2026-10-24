@@ -1,4 +1,4 @@
-// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast and any promoted dialogue tables held to their runs, the HUD budget of every committed 1x play shot. Exit 0 only if all hold.
+// usage: bun run verify. Offline (no Docker, no model): typecheck, replay of every recorded run, plan checker, the promoted cast and any promoted dialogue tables held to their runs, the HUD budget of every committed 1x play shot, the geometry ratchet. Exit 0 only if all hold.
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { inProcess } from './levels/checker';
@@ -6,6 +6,7 @@ import { runDirs, runsRoot } from './gen/paths';
 import { checkPromotion as checkVoices } from './dialogue/promoted';
 import { checkPromotion } from './people/promoted';
 import { root } from './rag/config';
+import { BLENDER } from './geometry/pieces';
 
 const PLAN = 'harbour-district', SUBMITTED = 'r008', bad: string[] = [];
 const tsc = Bun.spawn(['bun', 'run', 'typecheck'], { cwd: root, stdout: 'pipe', stderr: 'pipe' }); // runs while the replays use this thread
@@ -127,6 +128,19 @@ for (const [d, o, e, c] of await Promise.all(budgetJobs)) {
 }
 console.log(`HUD budget: ${shotsChecked} 1x play shots, ${shotsOver ? `${shotsOver} OVER BUDGET` : 'all within budget'}`);
 if (!shotsChecked) bad.push('HUD budget: no play shots found');
+
+// Geometry ratchet (brief 055, Splice): the rules of tools/geometry/rules.ts may not count more than contracts/world/geometry.ratchet.json allows (their target is 0).
+// Needs the world export (bun run world) and Blender for the kit meshes (cached by hash); skipped, and said so, where either is missing.
+{
+  const ratchet = resolve(root, 'contracts/world/geometry.ratchet.json'), world = resolve(root, 'out/world/harbour-district.world.json');
+  if (!existsSync(ratchet) || !existsSync(world) || !existsSync(BLENDER)) console.log('geometry ratchet: skipped (needs contracts/world/geometry.ratchet.json, out/world/harbour-district.world.json and Blender)');
+  else {
+    const g = Bun.spawn(['bun', 'tools/geometry/cli.ts', '--check'], { cwd: root, stdout: 'pipe', stderr: 'pipe' }), [go, ge, gc] = await Promise.all([new Response(g.stdout).text(), new Response(g.stderr).text(), g.exited]);
+    const rows = go.split('\n').filter(l => /^(ok  |FAIL)/.test(l));
+    console.log(`geometry ratchet: ${gc === 0 ? 'no rule above its ratchet' : 'A RULE IS ABOVE ITS RATCHET'} (${rows.filter(l => l.startsWith('ok')).length}/${rows.length}; \`bun run geometry\` for the report)`);
+    if (gc !== 0) { bad.push('geometry ratchet'); for (const l of (go + ge).split('\n').filter(l => /^(FAIL|\s+e\.g\.)|rror/.test(l))) console.log('      ' + l.slice(0, 220)); }
+  }
+}
 
 const [out, err, code] = await tscOut;
 console.log(`typecheck: ${code === 0 ? 'clean' : 'FAILED'}`);

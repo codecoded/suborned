@@ -1,0 +1,369 @@
+== menu&f=2 1920x1080
+text                                  px alpha  cr p50  cr p95
+THE                                 21.0  0.92    4.97    4.63
+SUBORNED                            64.0  1.00    4.50    3.87
+Build 0.2.87 · c031 · sim 0.26.0 ·  12.5  0.85    6.48    5.87
+New game                            22.0  0.74    7.98    5.06
+Continue                            22.0  0.74    8.14    5.74
+Options                             22.0  1.00   14.75   10.97
+Controls                            22.0  0.74    8.02    5.12
+Quit                                22.0  0.74    7.19    6.20
+min p95 3.867718465580874
+== menu&f=2 2880x1864
+text                                  px alpha  cr p50  cr p95
+THE                                 36.2  0.92    4.96    4.63
+SUBORNED                           110.5  1.00    4.49    3.86
+Build 0.2.87 · c031 · sim 0.26.0 ·  21.6  0.85    5.63    4.08
+New game                            38.0  0.74    7.26    5.04
+Continue                            38.0  0.74    7.58    5.51
+Options                             38.0  1.00   12.89    8.61
+Controls                            38.0  0.74    7.03    4.85
+Quit                                38.0  0.74    6.37    5.85
+min p95 3.863166751200612
+== options&tab=Display&f=3 1920x1080
+text                                  px alpha  cr p50  cr p95
+Build 0.2.87 · c031 · sim 0.26.0 ·  12.5  0.85    7.42    7.10
+Options                             32.0  1.00    9.37    9.35
+Display                             15.5  1.00    9.37    9.37
+Audio                               15.5  0.74    6.05    5.99
+Camera                              15.5  0.74    6.14    6.06
+Gameplay                            15.5  0.74    7.96    7.54
+Window mode                         17.0  0.90    9.30    8.05
+Borderless                          17.0  1.00   10.93    9.85
+Resolution                          17.0  0.90   10.05    9.04
+Native                              17.0  1.00   10.75    9.54
+Render scale                        17.0  0.90   10.63    9.68
+100%                                17.0  1.00    9.83    9.67
+Quality                             17.0  1.00   12.44   12.24
+Balanced                            17.0  1.00   12.61   10.42
+V-sync                              17.0  0.90   10.66   10.48
+On                                  17.0  1.00   11.27   11.10
+Frame cap                           17.0  0.40    3.40    3.34
+60                                  17.0  0.40    3.29    3.16
+HUD scale                           17.0  0.90   11.45   10.92
+100%                                17.0  1.00   12.47   12.27
+Reset page                          15.5  0.74    6.76    6.21
+Back                                15.5  0.74    7.18    6.85
+min p95 5.993700962551389
+== options&tab=Display&f=3 2880x1864
+text                                  px alpha  cr p50  cr p95
+Build 0.2.87 · c031 · sim 0.26.0 ·  21.6  0.85    7.02    6.14
+Options                             55.2  1.00    9.37    9.35
+Display                             26.8  1.00    9.37    9.37
+Audio                               26.8  0.74    6.05    5.99
+Camera                              26.8  0.74    6.14    6.06
+Gameplay                            26.8  0.74    7.96    7.54
+Window mode                         29.3  0.90    9.30    8.05
+Borderless                          29.3  1.00   10.91    9.85
+Resolution                          29.3  0.90   10.05    9.04
+Native                              29.3  1.00   10.75    9.54
+Render scale                        29.3  0.90   10.63    9.68
+100%                                29.3  1.00    9.83    9.67
+Quality                             29.3  1.00   12.44   12.13
+Balanced                            29.3  1.00   12.61   10.42
+V-sync                              29.3  0.90   10.77   10.50
+On                                  29.3  1.00   11.28   11.10
+Frame cap                           29.3  0.40    3.40    3.32
+60                                  29.3  0.40    3.29    3.16
+HUD scale                           29.3  0.90   11.45   10.92
+100%                                29.3  1.00   12.48   12.27
+Reset page                          26.8  0.74    6.76    6.21
+Back                                26.8  0.74    7.19    6.86
+min p95 5.993700962551389
+== options&tab=Gameplay&f=1 1920x1080
+text                                  px alpha  cr p50  cr p95
+Build 0.2.87 · c031 · sim 0.26.0 ·  12.5  0.85    7.42    7.10
+Options                             32.0  1.00    9.37    9.35
+Display                             15.5  0.74    5.98    5.98
+Audio                               15.5  0.74    6.05    5.99
+Camera                              15.5  0.74    6.14    6.06
+Gameplay                            15.5  1.00   13.33   12.45
+Orders                              12.5  1.00    7.62    6.88
+Click scheme                        17.0  0.90    9.80    8.54
+Click walks, hold acts              17.0  1.00   10.75    9.66
+Orders while paused                 17.0  1.00   11.91    9.23
+Start together                      17.0  1.00   11.86    9.68
+Hints                               17.0  0.90   10.38   10.22
+On                                  17.0  1.00   10.43   10.41
+Default game speed                  17.0  0.90   10.63    8.93
+x1                                  17.0  1.00   12.62   10.60
+Conversations                       17.0  0.90   10.93    9.84
+First time                          17.0  1.00   12.28   11.24
+Fights                              12.5  1.00    8.99    8.52
+Agents near you                     17.0  0.90   11.19    9.30
+Fire with you                       17.0  1.00   12.44   11.09
+Playground                          12.5  1.00    8.29    7.97
+Third person: right button          17.0  0.90    9.68    8.67
+Right hold fires                    17.0  1.00   12.99   10.94
+Third person: aim                   17.0  0.90    9.91    9.66
+Hold                                17.0  1.00   12.82   11.24
+Reset page                          15.5  0.74    6.76    6.21
+Back                                15.5  0.74    7.18    6.85
+min p95 5.982648080390734
+== options&tab=Gameplay&f=1 2880x1864
+text                                  px alpha  cr p50  cr p95
+Build 0.2.87 · c031 · sim 0.26.0 ·  21.6  0.85    7.02    6.14
+Options                             55.2  1.00    9.37    9.35
+Display                             26.8  0.74    5.98    5.98
+Audio                               26.8  0.74    6.05    5.99
+Camera                              26.8  0.74    6.14    6.06
+Gameplay                            26.8  1.00   13.33   12.45
+Orders                              21.6  1.00    7.62    6.88
+Click scheme                        29.3  0.90    9.80    8.53
+Click walks, hold acts              29.3  1.00   10.74    9.66
+Orders while paused                 29.3  1.00   11.91    9.23
+Start together                      29.3  1.00   11.86    9.68
+Hints                               29.3  0.90   10.38   10.13
+On                                  29.3  1.00   10.43   10.30
+Default game speed                  29.3  0.90   10.63    8.93
+x1                                  29.3  1.00   12.62   10.63
+Conversations                       29.3  0.90   10.92    9.82
+First time                          29.3  1.00   12.27   11.24
+Fights                              21.6  1.00    8.99    8.52
+Agents near you                     29.3  0.90   11.19    9.30
+Fire with you                       29.3  1.00   12.44   11.08
+Playground                          21.6  1.00    8.29    7.97
+Third person: right button          29.3  0.90    9.67    8.67
+Right hold fires                    29.3  1.00   12.99   10.94
+Third person: aim                   29.3  0.90    9.91    9.67
+Hold                                29.3  1.00   12.80   11.24
+Reset page                          26.8  0.74    6.76    6.21
+Back                                26.8  0.74    7.19    6.86
+min p95 5.982648080390734
+== controls&mode=clash&f=11 1920x1080
+text                                  px alpha  cr p50  cr p95
+Build 0.2.87 · c031 · sim 0.26.0 ·  12.5  0.85    7.42    7.10
+Controls                            32.0  1.00    9.40    9.35
+Command                             15.5  1.00    9.37    9.37
+Camera                              15.5  0.74    6.05    6.05
+Fights                              15.5  0.74    6.88    6.14
+Third person                        15.5  0.74    7.87    7.13
+Select agent 1                      17.0  0.90    9.17    8.07
+F1                                  12.0  1.00    7.30    7.19
+Num 1                               12.0  1.00    6.79    6.66
+1                                   14.5  1.00   14.81   14.77
+Select agent 2                      17.0  0.90    9.78    8.17
+F2                                  12.0  1.00    7.92    7.82
+Num 2                               12.0  1.00    7.09    6.96
+2                                   14.5  1.00   14.64   14.61
+Select agent 3                      17.0  0.90    9.82    8.56
+F3                                  12.0  1.00    7.69    7.69
+Num 3                               12.0  1.00    7.41    7.08
+3                                   14.5  1.00   14.27   14.27
+Select agent 4                      17.0  0.90   10.65    9.72
+F4                                  12.0  1.00    7.72    7.72
+Num 4                               12.0  1.00    7.80    7.60
+4                                   14.5  1.00   14.09   14.09
+Select all                          17.0  0.90   10.38   10.24
+Num 5                               12.0  1.00    8.27    8.06
+5                                   14.5  1.00   14.08   13.92
+Next agent                          17.0  0.90   10.77   10.38
+Tab                                 14.5  1.00   14.43   14.13
+Add to group                        17.0  0.90   11.04   10.21
+R Shift                             12.0  1.00    7.83    7.73
+Shift                               14.5  1.00   14.47   14.44
+Pick action 1                       17.0  0.90   11.06    9.97
+Num 1                               12.0  1.00    7.83    7.41
+Shift 1                             14.5  1.00   13.94   13.92
+Pick action 2                       17.0  0.90   11.32   10.23
+Num 2                               12.0  1.00    8.05    7.28
+Shift 2                             14.5  1.00   13.77   13.54
+Pick action 3                       17.0  0.90   11.31   10.50
+Num 3                               12.0  1.00    8.18    7.41
+Shift 3                             14.5  1.00   13.92   13.72
+Pick action 4                       17.0  0.90   10.89   10.49
+Num 4                               12.0  1.00    8.18    7.40
+Shift 4                             14.5  1.00   13.92   13.51
+Cancel                              17.0  1.00   12.05   11.71
+N                                   14.5  1.00   14.25   13.92
+Walk or run                         17.0  0.90   10.03    9.64
+G                                   14.5  1.00   14.11   13.92
+Pause                               17.0  0.90   10.67   10.09
+Space                               14.5  1.00   12.90   12.90
+Faster                              17.0  0.90   10.64   10.22
+Num +                               12.0  1.00    6.48    6.48
+=                                   14.5  1.00   12.88   12.85
+Slower                              17.0  0.90   10.89   10.64
+Num –                               12.0  1.00    6.67    6.49
+–                                   14.5  1.00   12.71   12.71
+Next event                          17.0  0.90   10.24    9.44
+N                                   14.5  1.00   13.02   12.89
+Briefing                            17.0  0.90   10.39    9.59
+B                                   14.5  1.00   13.36   13.36
+History                             17.0  0.90   10.79    9.84
+L                                   14.5  1.00   13.59   13.57
+Intel                               17.0  0.90   11.58   11.04
+Response list                       17.0  0.90   10.52    9.33
+R                                   14.5  1.00   14.45   14.43
+Hints                               17.0  0.90   11.58   11.31
+H                                   14.5  1.00   14.63   14.63
+Acknowledge                         17.0  0.90   11.06    9.34
+K                                   14.5  1.00   14.60   14.47
+Detail (hold)                       17.0  0.90   10.90    9.32
+R Alt                               12.0  1.00    8.63    8.28
+Alt                                 14.5  1.00   14.27   14.27
+All strips                          17.0  0.90   11.06   10.53
+`                                   14.5  1.00   14.44   14.42
+Play again                          17.0  0.90   10.90    9.99
+Num Enter                           12.0  1.00    9.19    9.00
+Return                              14.5  1.00   14.29   14.08
+N already: Next event               16.5  1.00   13.55   13.36
+Swap                                15.5  0.74    8.64    7.99
+Cancel                              15.5  1.00   13.99   13.80
+Reset all                           15.5  0.74    6.77    6.53
+Back                                15.5  0.74    7.18    6.85
+min p95 6.053405004720348
+== controls&mode=clash&f=11 2880x1864
+text                                  px alpha  cr p50  cr p95
+Build 0.2.87 · c031 · sim 0.26.0 ·  21.6  0.85    7.02    6.14
+Controls                            55.2  1.00    9.40    9.35
+Command                             26.8  1.00    9.37    9.37
+Camera                              26.8  0.74    6.05    6.05
+Fights                              26.8  0.74    6.94    6.14
+Third person                        26.8  0.74    7.87    7.13
+Select agent 1                      29.3  0.90    9.19    8.07
+F1                                  20.7  1.00    7.41    7.29
+Num 1                               20.7  1.00    6.77    6.66
+1                                   25.0  1.00   14.81   14.77
+Select agent 2                      29.3  0.90    9.78    8.17
+F2                                  20.7  1.00    7.92    7.82
+Num 2                               20.7  1.00    7.07    6.96
+2                                   25.0  1.00   14.64   14.61
+Select agent 3                      29.3  0.90    9.91    8.56
+F3                                  20.7  1.00    7.70    7.69
+Num 3                               20.7  1.00    7.50    7.08
+3                                   25.0  1.00   14.27   14.27
+Select agent 4                      29.3  0.90   10.65    9.72
+F4                                  20.7  1.00    7.72    7.72
+Num 4                               20.7  1.00    7.80    7.60
+4                                   25.0  1.00   14.09   14.09
+Select all                          29.3  0.90   10.38   10.13
+Num 5                               20.7  1.00    8.27    8.15
+5                                   25.0  1.00   14.09   13.92
+Next agent                          29.3  0.90   10.77   10.38
+Tab                                 25.0  1.00   14.44   14.27
+Add to group                        29.3  0.90   11.04   10.21
+R Shift                             20.7  1.00    7.83    7.73
+Shift                               25.0  1.00   14.47   14.44
+Pick action 1                       29.3  0.90   11.06    9.94
+Num 1                               20.7  1.00    7.83    7.40
+Shift 1                             25.0  1.00   13.94   13.90
+Pick action 2                       29.3  0.90   11.32   10.23
+Num 2                               20.7  1.00    8.05    7.31
+Shift 2                             25.0  1.00   13.77   13.54
+Pick action 3                       29.3  0.90   11.31   10.50
+Num 3                               20.7  1.00    8.18    7.50
+Shift 3                             25.0  1.00   13.92   13.72
+Pick action 4                       29.3  0.90   10.89   10.49
+Num 4                               20.7  1.00    8.18    7.40
+Shift 4                             25.0  1.00   13.92   13.50
+Cancel                              29.3  1.00   12.05   11.71
+N                                   25.0  1.00   14.25   13.92
+Walk or run                         29.3  0.90   10.03    9.64
+G                                   25.0  1.00   14.11   13.92
+Pause                               29.3  0.90   10.67   10.10
+Space                               25.0  1.00   12.90   12.90
+Faster                              29.3  0.90   10.64   10.23
+Num +                               20.7  1.00    6.48    6.40
+=                                   25.0  1.00   12.88   12.85
+Slower                              29.3  0.90   10.91   10.64
+Num –                               20.7  1.00    6.69    6.49
+–                                   25.0  1.00   12.71   12.71
+Next event                          29.3  0.90   10.24    9.33
+N                                   25.0  1.00   13.02   12.89
+Briefing                            29.3  0.90   10.39    9.59
+B                                   25.0  1.00   13.36   13.36
+History                             29.3  0.90   10.79    9.84
+L                                   25.0  1.00   13.59   13.58
+Intel                               29.3  0.90   11.58   11.04
+I                                   25.0  1.00   14.10   13.97
+Response list                       29.3  0.90   10.52    9.33
+R                                   25.0  1.00   14.45   14.43
+Hints                               29.3  0.90   11.59   11.34
+H                                   25.0  1.00   14.63   14.63
+Acknowledge                         29.3  0.90   11.06    9.32
+K                                   25.0  1.00   14.60   14.47
+Detail (hold)                       29.3  0.90   10.90    9.30
+R Alt                               20.7  1.00    8.63    8.30
+Alt                                 25.0  1.00   14.40   14.27
+All strips                          29.3  0.90   11.06   10.61
+`                                   25.0  1.00   14.44   14.42
+Play again                          29.3  0.90   10.90    9.99
+Num Enter                           20.7  1.00    9.10    9.00
+Return                              25.0  1.00   14.29   14.09
+N already: Next event               28.5  1.00   13.55   13.36
+Swap                                26.8  0.74    8.65    7.99
+Cancel                              26.8  1.00   13.99   13.93
+Reset all                           26.8  0.74    6.77    6.53
+Back                                26.8  0.74    7.19    6.86
+min p95 6.053405004720348
+== brief 1920x1080
+text                                  px alpha  cr p50  cr p95
+The Handover                        42.0  1.00   15.03   14.70
+Vale has a file on you. Tonight he  21.0  1.00   14.87   14.29
+The cameras caught your cell. Coun  18.5  0.95   13.43   12.97
+No networks here. The file lives i  18.5  0.95   13.77   12.91
+Reach him first. Then we learn who  18.5  0.95   13.77   12.83
+Target                              12.5  1.00    9.31    9.06
+Councillor Vale. Holds the file on  15.5  1.00   15.18   14.28
+Location                            12.5  1.00    9.29    8.96
+Civic Records Office, the civic bl  15.5  1.00   15.14   14.09
+Window                              12.5  1.00    9.15    8.93
+Shift change, 5:30 pm. He leaves s  15.5  1.00   15.16   14.28
+Objective                           12.5  1.00    9.28    8.94
+Take him alive. Deliver him to the  15.5  1.00   15.14   14.10
+Intel                               12.5  1.00   10.00    9.15
+Inez, café waitress. She knows the  15.5  1.00   15.18   14.07
+Vale's driver needs cash.           15.5  1.00   15.51   14.25
+A rival crew wants him too.         15.5  1.00   15.57   14.11
+Cameras are watched by people. Peo  15.5  1.00   15.63   14.25
+Quiet hands. Go.                    18.5  1.00   15.93   14.80
+Continue                            18.0  1.00   15.51   15.33
+min p95 8.927309523500462
+== brief 2880x1864
+text                                  px alpha  cr p50  cr p95
+The Handover                        72.5  1.00   15.03   14.72
+Vale has a file on you. Tonight he  36.2  1.00   14.87   14.43
+The cameras caught your cell. Coun  31.9  0.95   13.42   13.14
+No networks here. The file lives i  31.9  0.95   13.77   13.02
+Reach him first. Then we learn who  31.9  0.95   13.77   12.84
+Target                              21.6  1.00    9.38    9.28
+Councillor Vale. Holds the file on  26.8  1.00   15.18   14.26
+Location                            21.6  1.00    9.30    9.16
+Civic Records Office, the civic bl  26.8  1.00   15.14   14.09
+Window                              21.6  1.00    9.16    9.03
+Shift change, 5:30 pm. He leaves s  26.8  1.00   15.16   14.28
+Objective                           21.6  1.00    9.28    9.05
+Take him alive. Deliver him to the  26.8  1.00   15.14   14.10
+Intel                               21.6  1.00    9.99    9.15
+Inez, café waitress. She knows the  26.8  1.00   15.17   14.07
+Vale's driver needs cash.           26.8  1.00   15.52   14.25
+A rival crew wants him too.         26.8  1.00   15.57   14.25
+Cameras are watched by people. Peo  26.8  1.00   15.63   14.28
+Quiet hands. Go.                    31.9  1.00   15.93   14.82
+Continue                            31.1  1.00   15.51   15.33
+min p95 9.031060051001232
+== pause&f=2 1920x1080
+text                                  px alpha  cr p50  cr p95
+Paused                              22.0  1.00   10.18   10.01
+Resume                              18.0  0.74    6.47    6.32
+Options                             18.0  0.74    6.56    6.32
+Controls                            18.0  1.00   11.12   10.01
+Restart mission                     18.0  0.74    6.55    6.31
+Fight range                         18.0  0.74    6.34    6.09
+Quit to menu                        18.0  0.74    6.40    6.17
+Quit                                18.0  0.74    6.75    6.17
+Build 0.2.87 · c031 · sim 0.26.0 ·  11.5  0.85    5.47    5.19
+min p95 5.19258120140149
+== pause&f=2 2880x1864
+text                                  px alpha  cr p50  cr p95
+Paused                              38.0  1.00   10.18   10.01
+Resume                              31.1  0.74    6.47    6.32
+Options                             31.1  0.74    6.59    6.32
+Controls                            31.1  1.00   11.10   10.01
+Restart mission                     31.1  0.74    6.57    6.31
+Fight range                         31.1  0.74    6.39    6.10
+Quit to menu                        31.1  0.74    6.41    6.17
+Quit                                31.1  0.74    6.73    6.17
+Build 0.2.87 · c031 · sim 0.26.0 ·  19.8  0.85    5.47    5.19
+min p95 5.19258120140149

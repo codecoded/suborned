@@ -51,15 +51,18 @@ namespace Suborned.Sim
             return null;
         }
         /// <summary>A free cell whose +x and +y neighbours are blocked and whose diagonal +x+y is free: a corner a diagonal step could slip through.</summary>
-        static (Pt at, Pt beyond)? Corner(Grid gr, Pt near)
+        /// <summary>The nearest free cell whose two neighbours toward one diagonal are blocked and whose diagonal is free (any of the four
+        /// diagonals: brief 055's drawn walk left the block no south-east one), with the cells behind it free; sx, sy the diagonal's steps.</summary>
+        static (Pt at, Pt beyond, int sx, int sy)? Corner(Grid gr, Pt near)
         {
             int ci = gr.CI(near.X), cj = gr.CJ(near.Y);
-            for (int rr = 0; rr < 160; rr++)
+            for (int rr = 0; rr < Math.Max(gr.Nx, gr.Ny); rr++)
                 for (int i = ci - rr; i <= ci + rr; i++) for (int j = cj - rr; j <= cj + rr; j++)
                 {
                     if (Math.Max(Math.Abs(i - ci), Math.Abs(j - cj)) != rr) continue;
-                    if (gr.FreeCell(i, j) && !gr.FreeCell(i + 1, j) && !gr.FreeCell(i, j + 1) && gr.FreeCell(i + 1, j + 1) && gr.FreeCell(i - 1, j) && gr.FreeCell(i, j - 1))
-                        return (gr.Centre(i, j), gr.Centre(i + 1, j + 1));
+                    foreach (var (sx, sy) in new[] { (1, 1), (1, -1), (-1, 1), (-1, -1) })
+                        if (gr.FreeCell(i, j) && !gr.FreeCell(i + sx, j) && !gr.FreeCell(i, j + sy) && gr.FreeCell(i + sx, j + sy) && gr.FreeCell(i - sx, j) && gr.FreeCell(i, j - sy))
+                            return (gr.Centre(i, j), gr.Centre(i + sx, j + sy), sx, sy);
                 }
             return null;
         }
@@ -68,12 +71,12 @@ namespace Suborned.Sim
 
         static void DriveCases()
         {
-            Add("D01", "—", "A straight walk (brief 025, EXPERIMENTAL): the Scout driven 5 s along open ground, a walk's pace apart: every sample taken whole, the agent exactly where the host put her, nothing corrected; the samples are orders in the log.", r =>
+            Add("D01", "—", "A straight walk (brief 025, EXPERIMENTAL): the Scout driven 5 s east along open ground (brief 055: west runs into the call box the grid now holds), a walk's pace apart: every sample taken whole, the agent exactly where the host put her, nothing corrected; the samples are orders in the log.", r =>
             {
                 var g = r.G; var start = r.Op(Scout).Pos; int v = WalkCm(r);
-                int taken = Push(r, Scout, new Pt(0, -v), T(5));
+                int taken = Push(r, Scout, new Pt(0, v), T(5));
                 r.Eq(taken, T(5), "every sample taken");
-                r.Eq(r.Op(Scout).Pos, new Pt(start.X, start.Y - v * T(5)), "where the host put her");
+                r.Eq(r.Op(Scout).Pos, new Pt(start.X, start.Y + v * T(5)), "where the host put her");
                 var pose = g.DrivePoseOf(OpId.Scout);
                 r.Is(pose.Driven && pose.Corrections == 0 && !pose.Corrected, $"driven, nothing corrected ({pose.Corrections})");
                 r.Eq(g.Orders.Count(o => o.order.Do == "drive"), T(5), "the samples are in the order log");
@@ -83,11 +86,11 @@ namespace Suborned.Sim
             Add("D02", "—", "The pace budget: samples a metre ahead of the Scout each tick. She moves at most two ticks' walk plus slack in the first tick and a walk a tick after (cell.drive.burst, slack): 5 s covers a walk's 7 m, not 50, and each sample is flagged corrected.", r =>
             {
                 var g = r.G; var start = r.Op(Scout).Pos; int v = WalkCm(r), slack = g.R.Drive!.SlackCm;
-                Sample(r, Scout, new Pt(start.X, start.Y - 100)); g.Step();
-                int first = start.Y - r.Op(Scout).Pos.Y;
+                Sample(r, Scout, new Pt(start.X, start.Y + 100)); g.Step();
+                int first = r.Op(Scout).Pos.Y - start.Y;
                 r.Is(first <= 2 * v + slack && first >= v, $"the first tick: {first} cm (a walk {v}, burst {2 * v}, slack {slack})");
-                Push(r, Scout, new Pt(0, -100), T(5) - 1);
-                int went = start.Y - r.Op(Scout).Pos.Y;
+                Push(r, Scout, new Pt(0, 100), T(5) - 1);
+                int went = r.Op(Scout).Pos.Y - start.Y;
                 r.Is(went <= v * T(5) + v + slack + 1 && went >= v * T(5) - v, $"5 s at a walk: {went} cm (a walk's {v * T(5)}; one tick's burst and the slack at most over it)");
                 r.Is(g.DrivePoseOf(OpId.Scout).Corrections >= T(5) - 1, "each sample corrected");
                 r.Is(OnFree(r, Scout), "on free ground");
@@ -121,7 +124,7 @@ namespace Suborned.Sim
                 r.Is(r.Op(Scout).Pos.Y - y0 >= v / 2 * T(3), $"slides along it: {r.Op(Scout).Pos.Y - y0} cm");
             }, DriveStart());
 
-            Add("D05", "—", "A corner: a free cell whose east and south neighbours are blocked and whose diagonal is free. Driven straight at the diagonal for 2 s, the Scout never passes between the two blocked cells: she stays in her cell or slides out by a free side, never into the diagonal by the corner.", r =>
+            Add("D05", "—", "A corner: a free cell whose two neighbours toward a diagonal are blocked and whose diagonal is free (any diagonal: brief 055). Driven straight at the diagonal for 2 s, the Scout never passes between the two blocked cells: she stays in her cell or slides out by a free side, never into the diagonal by the corner.", r =>
             {
                 var g = r.G; var gr = g.S.Grid;
                 var c = Corner(gr, r.Op(Scout).Pos);
@@ -133,7 +136,7 @@ namespace Suborned.Sim
                 {
                     Sample(r, Scout, c.Value.beyond); g.Step();
                     var p = r.Op(Scout).Pos; free &= gr.Free(p);
-                    if (gr.CI(p.X) == ci + 1 && gr.CJ(p.Y) == cj + 1) through = true;
+                    if (gr.CI(p.X) == ci + c.Value.sx && gr.CJ(p.Y) == cj + c.Value.sy) through = true;
                 }
                 r.Is(free && !through, "never through the corner");
             }, DriveStart());
@@ -242,8 +245,8 @@ namespace Suborned.Sim
                 r.Is(Throws("{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":[0,0],\"release\":true}") && Throws("{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":[0,0],\"face\":10}"), "release or face on a move: rejected");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "drive" }).code, "no-place", "a sample with no position: refused");
                 var start = r.Op(Scout).Pos; int v = WalkCm(r);
-                Push(r, Scout, new Pt(0, -2 * v), T(2));
-                int went = start.Y - r.Op(Scout).Pos.Y;
+                Push(r, Scout, new Pt(0, 2 * v), T(2));
+                int went = r.Op(Scout).Pos.Y - start.Y;
                 r.Is(went >= 2 * v * T(2) - 2 * v && went <= 2 * v * T(2) + 4 * v, $"pace 2000 per mille: {went} cm in 2 s (twice a walk's {v * T(2)})");
             }, DriveStart(pace: 2000));
 

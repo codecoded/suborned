@@ -105,14 +105,29 @@ namespace Suborned.World
         /// <summary>M_RobotFace (brief 031, Vela's kit piece PatrolRobot names it; robot-face-stage.json): DK_RobotFaceStage.shader with the stage
         /// atlas robot_face_stage_v1.png (copied by `bun run kit`; point, no mips, linear) and Vela's colours (phosphor #BFF3E6 x1.6, alarm
         /// #FF5A3C x2.2, linear HDR). Made or refreshed on demand, committed under Materials/Robots; the kit's FBX remaps its slot onto it.</summary>
+        /// <summary>The stage atlas's import as the shader reads it (point, no mips, linear, uncompressed, and NOT scaled to a power of two:
+        /// item 24, Sky 2026-10-24 "the patrol robot's face is upside down": the 16 x 60 atlas was imported at nPOTScale ToNearest, so 16 x 64,
+        /// and the shader's LOAD rows (h = 60) read every slice about four rows low: the calm slice's eyes at the bottom, its smile on top).
+        /// Checked on every world build (HarbourWorldBuilder), not only when M_RobotFace is made. True when it reimported.</summary>
+        public static bool EnsureStageAtlas()
+        {
+            if (AssetImporter.GetAtPath(StageAtlasPath) is not TextureImporter ti) return false;
+            var sa = ti.GetPlatformTextureSettings("Standalone");
+            if (ti.filterMode == FilterMode.Point && !ti.mipmapEnabled && !ti.sRGBTexture && ti.textureCompression == TextureImporterCompression.Uncompressed && ti.npotScale == TextureImporterNPOTScale.None && !sa.overridden) return false;
+            if (sa.overridden) { sa.overridden = false; ti.SetPlatformTextureSettings(sa); } // a compressed Standalone override (BC7) would blur the rows too
+            ti.filterMode = FilterMode.Point; ti.mipmapEnabled = false; ti.sRGBTexture = false; ti.textureCompression = TextureImporterCompression.Uncompressed; ti.npotScale = TextureImporterNPOTScale.None; ti.SaveAndReimport();
+            Debug.Log("World: robots: the patrol face's stage atlas reimported (point, linear, uncompressed, no power-of-two scaling)");
+            return true;
+        }
+
         public static Material StageMaterial()
         {
             var shader = Shader.Find(StageShader) ?? throw new InvalidDataException($"World: robots: shader {StageShader} missing (Shaders/DecoKit/DK_RobotFaceStage.shader)");
             var atlas = AssetDatabase.LoadAssetAtPath<Texture2D>(StageAtlasPath);
             if (!atlas && File.Exists(Path.Combine(HarbourWorldBuilder.RepoRoot, "unity", StageAtlasPath))) { AssetDatabase.ImportAsset(StageAtlasPath, ImportAssetOptions.ForceSynchronousImport); atlas = AssetDatabase.LoadAssetAtPath<Texture2D>(StageAtlasPath); }
             if (!atlas) throw new FileNotFoundException($"World: robots: {StageAtlasPath} missing (run `bun run kit`)");
-            if (AssetImporter.GetAtPath(StageAtlasPath) is TextureImporter ti && (ti.filterMode != FilterMode.Point || ti.mipmapEnabled || ti.sRGBTexture || ti.textureCompression != TextureImporterCompression.Uncompressed))
-            { ti.filterMode = FilterMode.Point; ti.mipmapEnabled = false; ti.sRGBTexture = false; ti.textureCompression = TextureImporterCompression.Uncompressed; ti.npotScale = TextureImporterNPOTScale.None; ti.SaveAndReimport(); atlas = AssetDatabase.LoadAssetAtPath<Texture2D>(StageAtlasPath); }
+            if (EnsureStageAtlas())
+            atlas = AssetDatabase.LoadAssetAtPath<Texture2D>(StageAtlasPath);
             var m = AssetDatabase.LoadAssetAtPath<Material>(StageMaterialPath);
             if (!m)
             {

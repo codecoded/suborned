@@ -16,6 +16,9 @@ import { WATER_LEVEL } from './gen/signatures';
 import { dressCivic, dressingOf, footOf } from './civic/dress';
 import { seededYaw } from './civic/cafe';
 import { look } from './civic/look';
+import { civicRoofs } from './civic/roof';
+import { finishSet } from '../plan/finish-set';
+import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
 export const PROV = {
@@ -41,7 +44,7 @@ const ring = (poly: V[]) => poly.map(rv);
 /** The look keys of the carriageway and its kerb cap (standards.streetscape.roads.finish; brief 028 Road, Sky 2026-10-22 "can try"): a road's surface is `keys[byClass[its class]].surface`, the circus ring's
  *  is its gyratory road's, a kerbed bay's is its road's (finish.also), the kerb's is `finish.kerb.surface`. A plan without the finish standard (a pinned plan) keeps the old city's `asphalt` and `kerb`. */
 export function roadSurfaces(plan: Plan): { of: (cls: string) => string; kerb: string; keyed: boolean } {
-  const fin = (plan.standards as any).streetscape?.roads?.finish, keys = fin?.keys ?? {}, by = fin?.byClass ?? {};
+  const fin = (plan.standards as any).streetscape?.roads?.finish, keys = fin?.keys ?? {}, by = fin ? finishSet((plan.standards as any).streetscape.roads).byClass : {}; // brief 055 road test: the finish set (default enamel) picks the class -> key table
   const of = (cls: string): string => { const k = keys[by[cls]]; if (fin && !k?.surface) throw new Error(`finish: class ${cls} names ${JSON.stringify(by[cls])}, which has no surface key (standards.streetscape.roads.finish.keys)`); return k?.surface ?? 'asphalt'; };
   return { of, kerb: fin?.kerb?.surface ?? 'kerb', keyed: !!fin };
 }
@@ -52,17 +55,17 @@ function ground(plan: Plan, d: Derived, civ: Civic): World['ground'] {
   const c = plan.circus;
   // a kerbed bay takes its road's finish (finish.also); the others (the service bay off its drive) keep the pavement's
   const kerbedBay = new Map<string, string>(((plan.standards as any).streetscape?.roads?.kerbs?.bays?.kerbed ?? []).map((k: { bay: string; road: string }) => [k.bay, k.road]));
-  const quayX = Math.min(...plan.quay.flat().map(p => p[0]));
+  const nctx = ctxOf(plan, d, civ, PROV.pavement), quayX = Math.min(...plan.quay.flat().map(p => p[0])), rounded = new Map(baysOf(ctxOf(plan, d, civ, PROV.pavement)).map(b => [b.id, b.ring]));
   const flats: Flat[] = [
     { id: 'ground/land', surface: 'pavement', ring: rectPoly([plan.sheet.x[0], quayX, plan.sheet.y[0], plan.sheet.y[1]]), level: PROV.ground },
     ...plan.beyond.map((b, i): Flat => ({ id: `ground/beyond-${i}`, surface: 'beyond', ring: ring(b), level: PROV.beyond })),
-    ...civ.bays.map((b): Flat => ({ id: `civic/bay/${b.id}`, surface: kerbedBay.has(b.id) ? fin.of(d.roads.find(r => r.id === kerbedBay.get(b.id))?.class ?? 'access') : 'bay', ring: ring(b.poly), level: PROV.foot })),
+    ...civ.bays.map((b): Flat => ({ id: `civic/bay/${b.id}`, surface: kerbedBay.has(b.id) ? fin.of(d.roads.find(r => r.id === kerbedBay.get(b.id))?.class ?? 'access') : 'bay', ring: ring(rounded.get(b.id) ?? b.poly), level: PROV.foot })), // brief 028: a kerbed bay's back corners are rounded (its ring stays convex: the slab is cut round it)
   ];
   const circus: Circus = { id: 'circus/crown', surface: fin.of(d.roads.find(r => r.gyratory)?.class ?? 'district'), islandSurface: 'circus/island', centre: rv(c.c), radius: c.ring[1], islandRadius: c.ring[0], level: 0, islandHeight: PROV.pavement };
   return {
     roads: d.roads.filter(r => !r.gyratory).map(wide), // the gyratory is the circus ring
     foot: plan.foot.map((f): Road => ({ id: `foot/${f.id}`, surface: 'foot', kerbSurface: 'kerb', line: f.pts.map(rv), width: f.w, level: PROV.foot, kerbWidth: 0, kerbHeight: 0 })),
-    medians: d.zones.filter(z => z.kind === 'median').map((z, i): Mass => ({ id: `median/${i}`, surface: 'median', ring: ring(z.poly!), base: 0, height: PROV.pavement })),
+    medians: d.zones.filter(z => z.kind === 'median').map((z, i): Mass => ({ id: `median/${i}`, surface: 'median', ring: ring(noseRing(nctx, i, z.poly!)), base: 0, height: PROV.pavement })), // brief 028: a median's ends are bullnoses (kerbReturn.nose)
     circuses: [circus],
     water: plan.water.map((w, i): Flat => ({ id: `water/${i}`, surface: 'water', ring: ring(w), level: PROV.water })),
     quays: plan.quay.map((q, i): Mass => ({ id: `quay/${i}`, surface: 'quay', ring: ring(q), base: PROV.quayBase, height: r3(PROV.pavement - PROV.quayBase) })),
@@ -263,8 +266,14 @@ function gates(plan: Plan, d: Derived): Mass[] {
 }
 
 export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen: Generated } {
-  const g = ground(plan, d, civ), t = transit(plan, d), gen = generate(ctxOf(plan, d, civ, PROV.pavement), t.stops, t.stations);
+  const g = ground(plan, d, civ), t = transit(plan, d), gctx = ctxOf(plan, d, civ, PROV.pavement), gen = generate(gctx, t.stops, t.stations);
   g.plots = gen.slabs;
+  // brief 028 (Sky 2026-10-24, rounded pavement corners): the slab no longer covers the corner a kerb return cuts, so the carriageway is laid there: one flat per convex return, the road's finish of the minor road's class, at the carriageway's level
+  const fin = roadSurfaces(plan);
+  for (const r of returnsOf(gctx)) if (r.convex && !r.nose) g.flats.push({ id: `ground/return/${r.id}`, surface: fin.of(r.cls), ring: fillRing(r).map(rv), level: r.level ? PROV.foot : 0 });
+  // brief 028 round 2 (Glyph 0.2.112, junction NE): two roads that meet end to end at a bend have square ends; the outside of the turn is a square no road ribbon covers: the carriageway is laid to the outside kerb arc
+  for (const r of returnsOf(gctx)) if (r.hole) g.flats.push({ id: `ground/return/${r.id}/hole`, surface: fin.of(r.cls), ring: r.hole.map(rv), level: 0 });
+  for (const l of gen.roadFinish?.lawn ?? []) g.flats.push({ id: `reservation/${l.id}`, surface: 'median', ring: l.ring.map(rv), level: 0.02 }); // brief 028 (Vela): the tram reservation's lawn track, kerb face to kerb face, under the rails (level 0.04) and over the carriageway (0)
   if (gen.groundPieces?.length) g.pieces = gen.groundPieces; // brief 026: flat ground pieces (kerb, flags, pits, drains, manholes, tactile, terrazzo)
   const civicM = civicMasses(civ, toPlanFn(plan.civic));
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
@@ -272,7 +281,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: gen.roofs, skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped } } : {}),
+    ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped } } : {}),
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicM, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {

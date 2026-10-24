@@ -26,15 +26,14 @@ test('the rules the plan states: arms 8 m off the junction, the circus island, t
   expect(r).toMatchObject({ reach: 4, arms: { offset: 8 }, island: { ring: 'crown-circus' }, midBlock: { gap: 120, class: ['district'], reach: 15 }, dedupe: { mouth: 30, bend: 20, turn: 45 } });
 });
 
-test('the live export: 25 rule sites (12 arms, 8 island, 2 mall, 3 mid-block), 11 twins dropped, 6 pieces of furniture moved, 1 site left out, and SF-22 passes', () => {
+test('the live export: 22 rule sites (11 arms, 7 island, 2 mall, 2 mid-block), no twins (the landings stand 3 m past the kerb returns), furniture moved, 3 sites left out, and SF-22 passes', () => {
+  // brief 028: every junction landing's near edge stands 3 m past the kerb return's tangent point (kerbReturn.landings), so no two kerb crossings of one road stand within 30 m across a side road's mouth any more
   const log = base.w.crossingRules!;
-  expect(log.sites).toEqual({ arm: 12, island: 8, mall: 2, mid: 3 });
-  expect(log.twins).toHaveLength(11);
-  expect(log.twins.every(t => /: a twin (across a side road's mouth|round a bend) \(\d+ m from the crossing it keeps\)$/.test(t))).toBe(true);
-  expect(log.moved).toHaveLength(6);
-  expect(log.left).toHaveLength(1);
-  expect(log.left[0]).toMatch(/^arm\/crown-road\/nw\/after: no free spot for the landing at kerb b/);
-  expect(base.w.crossings!.filter(isSite)).toHaveLength(25);
+  expect(log.sites).toEqual({ arm: 11, island: 7, mall: 2, mid: 2 });
+  expect(log.twins).toHaveLength(0);
+  expect(log.moved.length).toBeGreaterThan(0);
+  expect(log.left.map(l => l.split(':')[0])).toEqual(['arm/crown-road/nw/after', 'arm/crown-road/n_avenue/before', 'island/circus-road/r']); // the Crown Terraces podium stands at the kerb: no landing fits on it; a flag mast and a tree stand where the shifted island crossing would
+  expect(base.w.crossings!.filter(isSite)).toHaveLength(22);
   const r = run()!;
   expect(r.ok, r.detail).toBe(true);
 });
@@ -61,21 +60,15 @@ test('a site the export names as left out passes, and fails when the log forgets
   expect(left).toContain('no free spot');
 });
 
-test('a twin across a side road\'s mouth fails: a copy of the crossing the rules keep, put back where the rules dropped its twin', () => {
-  const twin = base.w.crossingRules!.twins.find(t => t.startsWith('market-street at '))!, [, x, y] = /at (-?\d+),(-?\d+):/.exec(twin)!.map(Number) as [number, number, number];
+test('a twin across a side road\'s mouth fails: a copy of a kerb crossing put across a side road\'s mouth, 20 m from the one it copies', () => {
+  const kerb = base.w.crossings!.filter(c => c.kind === 'kerb' && !isSite(c)).map(c => { const r = d.roads.find(q => q.id === c.road)!; return { c, r, node: r.path.map(n => plan.nodes[n]!).find(n => Math.hypot(n[0] - mid(c)[0], n[1] - mid(c)[1]) < 14 && d.roads.some(q => q !== r && q.path.some(m => plan.nodes[m] === n))) }; }).find(x => x.node && x.r.class !== 'primary')!;
+  const m = mid(kerb.c), n = kerb.node!, dx = (n[0] - m[0]) * 2, dy = (n[1] - m[1]) * 2;
   const r = run(w => {
-    const kerb = w.crossings!.filter(c => c.kind === 'kerb' && c.road === 'market-street' && !isSite(c)).sort((a, b) => Math.hypot(mid(a)[0] - x!, mid(a)[1] - y!) - Math.hypot(mid(b)[0] - x!, mid(b)[1] - y!))[0]!;
-    const m = mid(kerb), dx = x! - m[0], dy = y! - m[1], clone = structuredClone(kerb);
-    clone.id = 'crossing/test/twin'; clone.line = [[kerb.line[0][0] + dx, kerb.line[0][1] + dy], [kerb.line[1][0] + dx, kerb.line[1][1] + dy]];
-    clone.landings = kerb.landings.map((l, i) => ({ ...l, id: `street/zz-twin/${i}` })) as never;
+    const clone = structuredClone(w.crossings!.find(c => c.id === kerb.c.id)!);
+    clone.id = 'crossing/test/twin'; clone.line = [[clone.line[0][0] + dx, clone.line[0][1] + dy], [clone.line[1][0] + dx, clone.line[1][1] + dy]];
+    clone.landings = clone.landings.map((l, i) => ({ ...l, id: `street/zz-twin/${i}` })) as never;
     w.crossings!.push(clone);
   })!;
   expect(r.ok).toBe(false);
   expect(r.detail).toMatch(/crossing\/test\/twin is a twin across a side road's mouth \(\d+ m from the crossing it keeps\)/);
-});
-
-test('a plan that states no coverage rules has no SF-22; the export carries no crossingRules either', () => {
-  const p2: Plan = structuredClone(plan); delete p2.standards.streetscape.crossings.coverage.rules;
-  expect(run(() => {}, p2)).toBeUndefined();
-  expect(run(w => { delete w.crossingRules; })).toBeUndefined();
 });

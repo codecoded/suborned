@@ -8,7 +8,7 @@ import { join } from 'node:path';
 import { peopleFiles } from '../levels/people/hash';
 import { Grid, d2, leg, type Pt } from './walk';
 import { parseRules } from './rules';
-import { Hz, ROUNDS_CANDIDATE, ROUNDS_ENGINE, build, findMeetings, occupancy, pickStop, poseAt, readInputs, stopsOf, summary, type Events, type PeopleIn, type Rounds } from './rounds';
+import { Hz, ROUNDS_CANDIDATE, ROUNDS_ENGINE, build, findMeetings, occupancy, pickStop, poseAt, readInputs, servicePoints, stopsOf, summary, type Events, type PeopleIn, type Rounds } from './rounds';
 
 const root = join(import.meta.dir, '..', '..');
 const read = (f: string) => readFileSync(join(root, f), 'utf8');
@@ -30,7 +30,7 @@ describe('the rules (contracts/people/routines.rules.json)', () => {
   test('the numbers that copy the rulebook equal it', () => {
     expect(rules.rounds.pace.cmPerS).toBe(rulebook['op-speed-cm-s']!.v);
     expect(rules.partners.summoned.stay.s).toBe(rulebook['lover-stay-s']!.v);
-    expect(rules.partners.closeCm.v / 100).toBeLessThan(rulebook['together-m']!.v); // a Watch that ends with them standing together still teaches the affair
+    expect(rules.partners.closeCm.v).toBe(rulebook['partners-close-cm']!.v); // the engine's rounds.close (brief 054 §9.2 retired together-m: a Watch never teaches a secret)
     if (rulebook['partners-clear-cm']) expect(rules.partners.clearCm.v).toBe(rulebook['partners-clear-cm'].v); // Keel adds the value with the reader (brief 022 addendum)
   });
   test('the rest are inside what the engine can walk and a person can see', () => {
@@ -48,6 +48,14 @@ describe('the bake', () => {
     const live = join(root, ROUNDS_ENGINE);
     // once Keel moves the addendum's file (guard.stops) the engine's copy is held to the same bytes; until then it is the file before the addendum and the engine still reads that one
     if (existsSync(live) && JSON.parse(read(ROUNDS_ENGINE)).guard.stops) expect(read(ROUNDS_ENGINE)).toBe(text);
+  });
+  test('the plain grid walk comes short of the drawn solids on the live world, and the baked legs do not (the invisible ledge: tables 1, 2 and 5)', () => {
+    const plain = servicePoints(g, sv.at, inp.tables, inp.people.places, rules.rounds, 'cafe-table-'), anchor = rules.rounds.clear.anchorCm;
+    const short = plain.filter((x) => inp.clear!.pathShortfall(x.path.points, anchor) > 0).map((x) => x.table);
+    expect(short.length).toBeGreaterThan(0); // if the grid ever keeps clear by itself, this rule has nothing left to do: retire it
+    for (const e of sp.excursions) expect(inp.clear!.pathShortfall(e.path, anchor)).toBe(0);
+    // a service point moved out is moved a few centimetres, not to another ring
+    for (const x of plain) { const e = sp.excursions.find((q) => q.table === x.table); if (e) expect(Math.hypot(e.at[0] - x.at[0], e.at[1] - x.at[1])).toBeLessThanOrEqual(rules.rounds.servicePoint.outToCm); }
   });
   test('builds nothing the people hash reaches (the people verdicts and out/people stay as they were)', () => {
     expect(peopleFiles().filter((f) => /routines|rounds/.test(f))).toEqual([]);
@@ -67,8 +75,15 @@ describe('the bake', () => {
       const c = inp.tables[e.table]!; // she faces the table's centre
       const want = [c[0] - e.at[0], c[1] - e.at[1]], l = Math.hypot(want[0]!, want[1]!), f = Math.hypot(e.face[0], e.face[1]);
       expect((want[0]! * e.face[0] + want[1]! * e.face[1]) / (l * f)).toBeGreaterThan(0.99);
-      const path = leg(g, sv.at, e.at);
-      expect(e.path).toEqual(path.points);
+      // the walk is the grid's, eased clear of the drawn solids (rules.rounds.clear): it starts at her post, ends at the service point, every line of it is clear ground on the grid, and it keeps
+      // a body (and the margin) from every drawn solid and the face distance from a wall, past the first anchorCm from her post (Sky 2026-10-24, the invisible ledge; brief 055 G-1d)
+      expect(e.path[0]).toEqual(sv.at); expect(e.path[e.path.length - 1]).toEqual(e.at);
+      for (let i = 1; i < e.path.length; i++) expect(g.lineFree(e.path[i - 1]!, e.path[i]!)).toBe(true);
+      expect(inp.clear!.pathShortfall(e.path, rules.rounds.clear.anchorCm)).toBe(0);
+      expect(inp.clear!.shortfall(e.at, e.at)).toBe(0);
+      const plain = leg(g, sv.at, e.at); // the plain grid walk is never longer than hers, and the same when it was already clear
+      expect(e.m).toBeGreaterThanOrEqual(Math.round(plain.length / 10) - 1);
+      if (inp.clear!.pathShortfall(plain.points, rules.rounds.clear.anchorCm) === 0) expect(e.path).toEqual(plain.points);
       expect(e.out).toBe(Math.max(1, Math.ceil(e.m / rules.rounds.pace.cmPerS - 1e-9)));
       expect(e.out * rules.rounds.pace.cmPerS).toBeGreaterThanOrEqual(e.m); // never faster than the cell walks
       expect(e.m).toBeLessThanOrEqual(rules.rounds.leashM.v * 100);
@@ -148,13 +163,12 @@ describe('the guard\'s visit is the one the Handover was built on', () => {
 
 describe('where the summoned partner stands (partners.summoned.side; brief 022 addendum)', () => {
   const stops = R.guard.stops, beside = P('beside-inez'), court = P('d:Courtyard');
-  test('the stops are on the ring, on free ground, walkable, inside together-m, and the first is the default', () => {
+  test('the stops are on the ring, on free ground, walkable, and the first is the default', () => {
     expect(stops.length).toBeGreaterThan(1);
     expect(R.guard.ringCm).toBe(R.rules.closeCm);
     for (const st of stops) {
       expect(Math.abs(Math.hypot(st.at[0] - sv.at[0], st.at[1] - sv.at[1]) - R.rules.closeCm)).toBeLessThan(2);
       expect(g.isFree(st.at)).toBe(true);
-      expect(near(st.at, sv.at, rulebook['together-m']!.v)).toBe(true);
       expect(st.face[0] * (sv.at[0] - st.at[0]) + st.face[1] * (sv.at[1] - st.at[1])).toBeGreaterThan(0); // he faces her
     }
     expect(R.guard.stopAt).toEqual(stops[0]!.at); expect(R.guard.face).toEqual(stops[0]!.face);

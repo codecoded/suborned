@@ -109,6 +109,13 @@ namespace Suborned.Play
         public string ObjTake = "Take [Vale] alive.", ObjBring = "Bring [Vale] out.", ObjCarry = "Get [Vale] to the [car].", BriefGoal = "Take [Vale] alive to the [car].", EndWin = "Vale is in the car.", EndWithdraw = "You withdrew.";
         /// <summary>debrief.standing (Fable, brief 014): the line's form, the band names, the cause words.</summary>
         public string StandingLine = "{district}: {band} {to}, was {from}. {cause}"; public readonly Dictionary<string, string> StandingBands = new(), StandingCauses = new();
+        /// <summary>Brief 054 / 057 (Fable, less.mood): the mood words, the approach words, the "likely" and "harder" tags, the Watch card's footers.</summary>
+        public readonly Dictionary<string, string> MoodWord = new() { ["friendly"] = "friendly", ["uneasy"] = "uneasy", ["scared"] = "scared" }, MoodLever = new() { ["pay"] = "pay", ["help"] = "help", ["pressure"] = "pressure" };
+        public string MoodLikely = "likely", MoodHurt = "harder", MoodFooter = "{who} · {mood} · {lever} likely", MoodFooterHurt = "{who} · {mood} · {lever} harder", MoodFooterBare = "{who} · {mood}";
+        /// <summary>less.alt.mood: the mood's words on Alt.</summary>
+        public readonly Dictionary<string, string> AltMood = new();
+        /// <summary>Brief 057 §4 (Fable, less.sealed): the sealed fail's sub-line, tip and story line by the car's state (held, ready, empty; line also unknown).</summary>
+        public readonly Dictionary<string, string> SealedLine = new(), SealedTip = new(), SealedStory = new();
         /** brief 030 (no plate): Fable's one hint, less.hint.firstAct ("Right-click to act."); "" until text.json carries it */ public string FirstActHint = "";
         public float ObjShowS = 6, FeedS = 4, FeedDedupeS = 10, BubbleS = 3, HintShowS = 6, HintReturnS = 20; public int FeedMax = 2, BubbleMax = 2, CityBeats = 3, HintMaxShows = 2;
 
@@ -266,6 +273,15 @@ namespace Suborned.Play
             if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
             if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }
             if (l.Opt("hint") is JNode hn) { HintShowS = F(hn, "showSeconds", HintShowS); HintReturnS = F(hn, "returnSeconds", HintReturnS); HintMaxShows = (int)F(hn, "maxShows", HintMaxShows); if (hn.Opt("firstAct") is JNode fa && fa.Kind == JKind.Str) FirstActHint = fa.Str(); }
+            if (l.Opt("mood") is JNode md) // brief 054 (Fable): the Watch card's footer and the pill's tag
+            {
+                if (md.Opt("word") is JNode mw) foreach (var kv in mw.Entries) MoodWord[kv.Key] = kv.Value.Str();
+                if (md.Opt("lever") is JNode ml) foreach (var kv in ml.Entries) MoodLever[kv.Key] = kv.Value.Str();
+                MoodLikely = S(md, "likely") ?? MoodLikely; MoodHurt = S(md, "hurt") ?? MoodHurt; MoodFooter = S(md, "footer") ?? MoodFooter; MoodFooterHurt = S(md, "footerHurt") ?? MoodFooterHurt; MoodFooterBare = S(md, "footerBare") ?? MoodFooterBare;
+            }
+            if (l.Opt("alt")?.Opt("mood") is JNode am) foreach (var kv in am.Entries) if (kv.Value.Kind == JKind.Str) AltMood[kv.Key] = kv.Value.Str();
+            if (l.Opt("sealed") is JNode sd) // brief 057 §4 (Fable): the sealed fail by the car's state
+                foreach (var (k, into) in new[] { ("line", SealedLine), ("tip", SealedTip), ("story", SealedStory) }) if (sd.Opt(k) is JNode m) foreach (var kv in m.Entries) if (kv.Value.Kind == JKind.Str) into[kv.Key] = kv.Value.Str();
             if (l.Opt("price") is JNode pr)
             {
                 if (pr.Opt("order") is JNode po) PriceOrder.AddRange(po.Strs());

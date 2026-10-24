@@ -12,6 +12,7 @@ import { buildChrome, refresh, setHint, setFps } from './ui.js';
 import { makeCones } from './cones.js';
 import { commitsOnRelease, holdFor, startCharge, beginFire, releaseHold, stopAll, stepFire, shooters, isDrawn, FOLLOW_M, fightOn, syndicate, focusFire, underFire } from './fire.js';
 import { liveStatus } from './status.js';
+import { MODES, occFrame, setMode as setOcc } from './occlusion.js';
 import { gainsFrame, resetGains, cancelsOf, cancelHtml, isFresh, on as doneOn } from './gains.js';
 
 const $ = (id) => document.getElementById(id);
@@ -294,6 +295,7 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Tab') { // step through the people under the cursor
     e.preventDefault(); const hits = entsAt(G.ptr.x, G.ptr.y).filter(actionable); if (hits.length > 1) { const i = hits.indexOf(G.stick); G.tabEnt = hits[(i + 1) % hits.length]; G.tabAt = { x: G.ptr.x, y: G.ptr.y }; say(`Target · ${G.tabEnt.name}`); } return;
   }
+  if (e.code === 'KeyO') { const i = MODES.findIndex(([k]) => k === G.occ); setOcc(MODES[(i + (e.shiftKey ? MODES.length - 1 : 1)) % MODES.length][0]); drawOcc(); return say(`Occlusion · ${MODES.find(([k]) => k === G.occ)[1]}`); }
   if (e.code === 'KeyL') { G.histOpen = !G.histOpen; return; }
   if (e.code === 'KeyG' && syndicate()) return toggleFree();
   if (e.code === 'KeyF') { const on = !selected().every(isDrawn); selected().forEach((a) => { a.drawnUntil = on ? G.clock + 1e9 : 0; }); return say(`${names(selected())} ${on ? 'draw' : 'holster'}`); }
@@ -381,16 +383,15 @@ function setCrowd(level) {
     e.pick.forEach((m) => { m.userData.ent = e; w.picks.push(m); });
   }
 }
-// ---- third person: buildings that hide the agent fade out (the camera inside one counts)
-const fadeRay = new THREE.Ray();
-function fadeBuildings(real) {
-  const me = agentOf(), cam = camera.position, tgt = new THREE.Vector3(me.g.position.x, 1.2, me.g.position.z), d = cam.distanceTo(tgt), p = new THREE.Vector3();
-  fadeRay.set(cam, tgt.clone().sub(cam).normalize());
-  for (const b of G.world.buildings) {
-    const hit = G.view === 'tp' && (b.box.containsPoint(cam) || (fadeRay.intersectBox(b.box, p) && cam.distanceTo(p) < d));
-    b.mesh.material.opacity += ((hit ? 0.16 : 1) - b.mesh.material.opacity) * Math.min(1, real * 8);
-  }
+// ---- brief 056: occlusion options (occlusion.js); the bar at the top right switches them live, O steps through them
+const occBar = $('occ');
+function drawOcc() {
+  occBar.innerHTML = '<span class="occt">Occlusion</span>' + MODES.map(([k, t]) => `<button data-occ="${k}" class="${G.occ === k ? 'on' : ''}">${t}</button>`).join('')
+    + '<span class="occt">Silhouettes</span>' + [['auto', 'By option'], ['on', 'On'], ['off', 'Off']].map(([k, t]) => `<button data-sil="${k}" class="${G.sil === k ? 'on' : ''}">${t}</button>`).join('');
 }
+occBar.addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; if (b.dataset.occ) setOcc(b.dataset.occ); if (b.dataset.sil) G.sil = b.dataset.sil; drawOcc(); });
+occBar.addEventListener('pointerdown', (e) => e.stopPropagation()); occBar.addEventListener('mousedown', (e) => e.stopPropagation());
+{ const q = new URLSearchParams(location.search); if (q.get('occ')) G.occ = q.get('occ'); if (q.get('sil')) G.sil = q.get('sil'); if (q.get('yaw')) { rig.yaw = rig.yawTarget = Number(q.get('yaw')) * Math.PI / 180; } setOcc(G.occ); drawOcc(); }
 // ---- pause and plan
 function togglePause() {
   G.paused = !G.paused;
@@ -512,7 +513,7 @@ function frame(now) {
     const dx = a.fireFrom.g.position.x - a.g.position.x, dz = a.fireFrom.g.position.z - a.g.position.z, l = Math.hypot(dx, dz) || 1, ph = (performance.now() / 450) % 1, pop = Math.max(0, 1 - (G.clock - (a.incomingAt ?? -9)) / 0.35);
     pair.forEach((g, k) => { const f = (ph + k * 0.5) % 1, r = 1.1 + f * 1; g.position.set(a.g.position.x + dx / l * r, 0.07, a.g.position.z + dz / l * r); g.rotation.y = -Math.atan2(dz, dx); g.scale.setScalar(1 + pop * 0.5); g.children[0].material.opacity = Math.min(1, (1 - f) * 1.3) * (0.7 + 0.3 * pop); });
   });
-  fadeBuildings(real); drawGhosts(); document.body.classList.toggle('paused', G.paused);
+  occFrame(camera, real); drawGhosts(); document.body.classList.toggle('paused', G.paused);
   if (G.vale && !G.vale.done) { const v = G.vale, locked = new Set(G.sessions.filter((s) => s.lock && s.ent.id.startsWith('officer')).flatMap((s) => s.agents.map((a) => a.id))); v.n = locked.size; v.sim = G.clock - v.t0s; v.real = (performance.now() - v.t0r) / 1000; if (v.n >= 3) v.done = true; }
   placeRing(project);
   { // brief 043: the done moment, and the warning on open ground when a click would drop an act in progress (after the pointer has rested a moment)
@@ -530,4 +531,4 @@ requestAnimationFrame(frame);
 
 // for the headless check
 $('histkey').innerHTML = icon('talk', 20); $('histkey').addEventListener('click', () => { G.histOpen = !G.histOpen; });
-window.__ctl = { project, ways: (id, ai) => waysFor(G.world.byId[id], G.world.agents[ai]).map((w) => w.id), planFor, setCrowd, entsAt, marker, defaultsOk: () => G.world.ents.every((e) => G.world.agents.every((a) => !['knock', 'kill'].includes(defaultFor(e, a)?.id))), select: (i) => setGroup(G.group.map((_, k) => k === i), false), squad: selectAll, G, screenOf: (id) => { const e = G.world.byId[id]; return project(e.g.position.x, e.h * 0.5, e.g.position.z); }, setView, preset: (k) => { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; closeRing(); G.selTarget = null; drawChrome(); } };
+window.__ctl = { setOcc: (m) => { setOcc(m); drawOcc(); }, setSil: (v) => { G.sil = v; drawOcc(); }, yaw: (d) => { rig.yaw = rig.yawTarget = d * Math.PI / 180; }, camera, rig, project, ways: (id, ai) => waysFor(G.world.byId[id], G.world.agents[ai]).map((w) => w.id), planFor, setCrowd, entsAt, marker, defaultsOk: () => G.world.ents.every((e) => G.world.agents.every((a) => !['knock', 'kill'].includes(defaultFor(e, a)?.id))), select: (i) => setGroup(G.group.map((_, k) => k === i), false), squad: selectAll, G, screenOf: (id) => { const e = G.world.byId[id]; return project(e.g.position.x, e.h * 0.5, e.g.position.z); }, setView, preset: (k) => { G.preset = k; G.marker = PRESETS[k].marker; if (PRESETS[k].runMode) G.runMode = PRESETS[k].runMode; closeRing(); G.selTarget = null; drawChrome(); } };

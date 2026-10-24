@@ -1,7 +1,7 @@
 // The civic block in plan coordinates: block frame (contracts/world/civic-block.json, suborned.block/4) → plan by blockToPlan.
 // A pinned suborned.block/2 or /3 (recorded runs) reads the same: its destinations and crew belong to an overlay, not here, and a tower
 // without a stated footprint (`polygon`, /4) is a point `at`: the checker then knows no tower plan, as when the run was made.
-import { type Rect, type V, rectPoly } from './geom';
+import { type Rect, type V, inPoly, rectPoly } from './geom';
 
 /** What an entrance is for (block/4): public = the door a visitor uses, official = the councillor's door, service = staff and goods. */
 export type EntranceKind = 'public' | 'official' | 'service';
@@ -24,6 +24,9 @@ export type Civic = {
   walkFrom: { name: string; p: V }[];
   blocks: { id: string; outer: V[]; core: V[] }[];
   crossing: V[];
+  /** The floors a person stands on above the pavement (block/4 `floors`, brief 055): door landings, flights of steps, terraces, plan frame. `top` is the height above the
+   *  pavement (block z); a flight carries its risers, rise, tread, foot and head (plan frame) and the landing it climbs to. Absent on a block without them (read as none). */
+  floors: Floor[];
   /** The block's `dressing` key (block/4), unchanged and in block frame: keep-clear zones, lamps, bollards, planters, parasols, piece pivots. The world generator places it (tools/world/civic/dress.ts); rules CD-1..4 hold it. */
   dressing?: Record<string, unknown>;
   /** From block/4 with a `dressing`: the ground solids a walker cannot cross, plan frame: the pieces' wall, cheeks and pilasters (not the overhead marquee), the objects (beds, tables, fountain), the pillars, cabinets and monument, and the dressing's planter runs, pots, bollards and lamp bases (plan.civic.groundPieces). Absent on a block without one, so recorded walks read what they always did. */
@@ -32,7 +35,30 @@ export type Civic = {
   solidIds?: string[];
 };
 
-/** The ground furniture of the block's dressing a walker cannot cross, as footprints in the plan frame: every planter run module, topiary pot, bollard and lamp base (civic-block.json `dressing`),
+/** A floor of the block (block/4 `floors`), plan frame. */
+export type Floor = { id: string; name: string; kind: 'landing' | 'steps' | 'terrace'; level: string; top: number; poly: V[]; risers?: number; rise?: number; tread?: number; foot?: V; head?: V; landing?: string };
+
+/** The floor the block declares at p, as height above the pavement (block z; plan = pavement + this): a flight's tread (rise × (1 + whole treads from its foot)),
+ *  a landing's or terrace's top, a bay's or drive's surface (carriageway level, `bay` − `pavement` of standards.levels.datum), else 0, the pavement. `on` names the
+ *  floor, bay or drive. The highest floor wins where two touch (a flight's head on its landing's edge). */
+export function floorAt(civ: Pick<Civic, 'floors' | 'bays' | 'drives'>, p: V, datum: { pavement: number; bay: number } = { pavement: 0.18, bay: 0 }): { floor: number; on?: string; level: string } {
+  let best: { floor: number; on?: string; level: string } | undefined;
+  for (const f of civ.floors) {
+    if (!inPoly(p, f.poly)) continue;
+    let h = f.top;
+    if (f.kind === 'steps' && f.foot && f.head && f.rise && f.tread && f.risers) {
+      const L = Math.hypot(f.head[0] - f.foot[0], f.head[1] - f.foot[1]), u: V = [(f.head[0] - f.foot[0]) / L, (f.head[1] - f.foot[1]) / L];
+      const d = (p[0] - f.foot[0]) * u[0] + (p[1] - f.foot[1]) * u[1];
+      h = Math.round(f.rise * Math.min(f.risers - 1, 1 + Math.max(0, Math.floor(d / f.tread + 1e-9))) * 1000) / 1000;
+    }
+    if (!best || h > best.floor) best = { floor: h, on: f.id, level: f.level };
+  }
+  if (best) return best;
+  const bay = [...civ.bays, ...civ.drives].find(b => inPoly(p, b.poly));
+  return bay ? { floor: Math.round((datum.bay - datum.pavement) * 1000) / 1000, on: bay.id, level: 'street' } : { floor: 0, level: 'street' };
+}
+
+/** The ground furniture of the block's dressing a walker cannot cross, as footprints in the plan frame: every planter run module, topiary pot, bollard, lamp base and cypress on the ground (civic-block.json `dressing`),
  *  each a rectangle of the size plan.civic.groundPieces gives its piece (along its yaw, across it; the pivot is the centre: the lamp's is the pole), turned by the dressing's yawDeg (block frame: from +x toward +y).
  *  The pieces' own sizes are Vela's (kit.json); the plan states the walker's version of them so a kit re-hash does not move a walk. A piece the plan gives no size is an error, never a gap in the floor. */
 function furniture(spec: any, dressing: any, toPlan: (p: V) => V): { poly: V[]; id: string }[] {
@@ -48,6 +74,10 @@ function furniture(spec: any, dressing: any, toPlan: (p: V) => V): { poly: V[]; 
   for (const t of dressing.topiary?.at ?? []) put(t.id, dressing.topiary.piece, t.at, t.yawDeg);
   for (const b of dressing.bollards?.at ?? []) put(b.id, dressing.bollards.piece, b.at, b.yawDeg);
   for (const l of dressing.lamps?.at ?? []) put(l.id, dressing.lamps.piece, l.at, l.yawDeg);
+  // brief 055 step 5 (Vantage): a cypress on the ground is a walk solid; one planted `on` a bed stands in the bed's solid
+  // Opt-in, as the floors are: only a plan that sizes the cypress (groundPieces.sizes.Cypress_Play) walls it, so a pinned plan and its recorded walks (people run r016's) read as they were made.
+  // tools/plan/civic-cypress.test.ts holds the live plan to it (it sizes Cypress_Play, so its ground cypresses are solids).
+  for (const c of dressing.cypress?.at ?? []) if (!c.on && sizes[dressing.cypress.piece]) put(c.id, dressing.cypress.piece, c.at, c.yawDeg);
   return out;
 }
 
@@ -77,6 +107,7 @@ export function civic(spec: any, block: any): Civic {
     walkFrom: doors.map((e: any) => ({ name: e.name, p: e.p })),
     blocks: Object.entries(spec.blocks as Record<string, Rect>).map(([id, r]) => ({ id, outer: blockRect(r), core: blockRect([r[0] + w, r[1] - w, r[2] + w, r[3] - w]) })),
     crossing: blockRect(spec.crossing),
+    floors: (block.floors ?? []).map(({ polygon, foot, head, ...x }: any) => ({ ...x, poly: polygon.map(toPlan), ...(foot ? { foot: toPlan(foot) } : {}), ...(head ? { head: toPlan(head) } : {}) })),
     ...(block.dressing ? {
       dressing: block.dressing,
       solids: [

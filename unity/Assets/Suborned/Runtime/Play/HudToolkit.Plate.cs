@@ -110,12 +110,13 @@ namespace Suborned.Play
             Icon(wrap.Q("glyph"), icon, light ? Col(Tok.type.card, Ink) : Col(Tok.disc.icon, Cream));
         }
 
-        /// <summary>A block of the kit's warning stripes (`overlays/stripes_warn`, tiled at 22 x 15 px as the kit draws it).</summary>
+        /// <summary>A block of the kit's warning stripes (`overlays/stripes_warn`, the kit's 22 x 15 px tile scaled to the block's height).</summary>
         VisualElement Stripes(VisualElement parent, float w, float h)
         {
             var e = E(parent, null, w: w, h: h); e.style.flexShrink = 0; Bg(e, "overlays/stripes_warn", Color.white);
             e.style.backgroundRepeat = new BackgroundRepeat(Repeat.Repeat, Repeat.Repeat);
-            e.style.backgroundSize = new BackgroundSize(new Length(22f), new Length(15f));
+            // Glyph's 0.2.94 review #10: one tile tall (the kit's 22 x 15 scaled to the block's height), so no tile seam breaks a diagonal mid-block
+            e.style.backgroundSize = new BackgroundSize(new Length(22f * h / 15f), new Length(h));
             e.style.backgroundPositionX = new BackgroundPosition(BackgroundPositionKeyword.Left); e.style.backgroundPositionY = new BackgroundPosition(BackgroundPositionKeyword.Top);
             Round(e, 2f); return e;
         }

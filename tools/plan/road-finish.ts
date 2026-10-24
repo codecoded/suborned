@@ -15,6 +15,7 @@ import type { Check } from './checks';
 import type { Civic } from './civic';
 import { dist, lineDist } from './geom';
 import type { Derived, Plan } from './plan';
+import { finishSet, finishSets } from './finish-set';
 
 export type KitRow = { id: string; status?: string; size?: number[]; tags?: { use?: string[] } };
 const root = resolve(import.meta.dir, '../..');
@@ -40,6 +41,14 @@ export function roadFinishChecks(plan: Plan, kit: KitRow[] = kitRows(), geo?: { 
     const bad: string[] = [], classes = [...new Set(plan.roads.map(r => r.class as string))];
     const keys = R.finish?.keys ?? {}, by = R.finish?.byClass ?? {};
     for (const c of classes) if (!by[c]) bad.push(`class ${c} has no finish`); else if (!keys[by[c]]?.material) bad.push(`class ${c}: finish ${by[c]} is not a key with a material`);
+    // brief 055 road test: the finish set (finish.set, default enamel) and every set the plan lists: a class table over finish keys, marks 'lozenges' or 'lanes'; the asphalt set's marks are held below
+    let sets: ReturnType<typeof finishSets> = [];
+    try { finishSet(R); sets = finishSets(R); } catch (e) { bad.push(String((e as Error).message)); }
+    for (const st of sets) {
+      for (const k of st.drop) if (!['ribbon', 'shoulder', 'pinstripe'].includes(k)) bad.push(`finish set ${st.name}: drop ${JSON.stringify(k)} is not ribbon, shoulder or pinstripe`);
+      if (st.marks !== 'lozenges' && st.marks !== 'lanes') bad.push(`finish set ${st.name}: marks ${JSON.stringify(st.marks)} is not lozenges or lanes`);
+      for (const c of classes) { const k = st.byClass[c]; if (!k) bad.push(`finish set ${st.name}: class ${c} has no finish`); else if (!keys[k]?.material || !keys[k]?.surface) bad.push(`finish set ${st.name}: class ${c}: ${k} is not a key with a material and a surface`); }
+    }
     if (R.finish?.paint !== false) bad.push('finish.paint is not false: the road is never painted');
     const rb = R.ribbon ?? {};
     for (const c of rb.classes ?? []) if (!classes.includes(c)) bad.push(`ribbon class ${c} is no road's class`);
@@ -61,6 +70,28 @@ export function roadFinishChecks(plan: Plan, kit: KitRow[] = kitRows(), geo?: { 
     for (const c of classes) { const k = keys[by[c]]; if (k && !(typeof k.surface === 'string' && k.surface)) bad.push(`class ${c}: finish ${by[c]} has no \`surface\` (the export's look key)`); }
     const fk = R.finish?.kerb; if (fk) { if (!(typeof fk.surface === 'string' && fk.surface)) bad.push('finish.kerb has no `surface` (the export\'s look key)'); for (const id of fk.pieces ?? []) piece(id, 'ground:kerb', bad, 'finish.kerb piece'); }
     // the shoulder: the pearl band beside the ribbon (brief 028 Road, Vela)
+    // the white marks of a 'lanes' set (roads.marks): kit pieces with their use tags, a line clear of the shoulder's chrome, lane counts that leave 3 m a lane between the edge lines
+    if (sets.some(x => x.marks === 'lanes')) {
+      const mk = R.marks;
+      if (!mk) bad.push('a finish set lays lanes marks but roads.marks is missing');
+      else {
+        piece(mk.pieces?.dash, 'ground:road-lane-dash', bad, 'marks dash');
+        const need = (R.shoulder?.to ?? 0) + (R.shoulder?.chrome ?? 0), inset: number = mk.edge?.offset ?? 0; // an edge line is optional (the clean asphalt has none); when laid it is a kit piece and clears the shoulder's chrome
+        if (mk.edge) piece(mk.pieces?.edge, 'ground:road-edge-line', bad, 'marks edge line');
+        if (mk.edge && (!num(mk.edge.offset) || !num(mk.edge.width) || mk.edge.offset - mk.edge.width / 2 <= need)) bad.push(`marks edge line ${mk.edge?.offset} ± ${(mk.edge?.width ?? 0) / 2} m from the kerb face does not clear the shoulder's outer chrome (${need} m)`);
+        if (num(mk.dash?.dividerWidth) && (mk.dash.dividerWidth <= 0 || mk.dash.dividerWidth > mk.dash.width)) bad.push(`marks dash dividerWidth ${mk.dash.dividerWidth} is not within 0..${mk.dash.width}`);
+        if (!num(mk.dash?.length) || !num(mk.dash?.spacing) || mk.dash.spacing < mk.dash.length + 2 * (num(mk.stopShort) ? mk.stopShort : 0)) bad.push(`marks dash spacing ${mk.dash?.spacing} < length ${mk.dash?.length} + 2 × stopShort`);
+        if (!num(mk.stopShort) || mk.stopShort < (num(R.breaks?.stopShort) ? R.breaks.stopShort : 0)) bad.push(`marks.stopShort ${mk.stopShort} is shorter than the breaks' ${R.breaks?.stopShort}: white marks stop at least as far from a crossing as the road's light`);
+        for (const [id, n] of Object.entries(mk.lanes ?? {}) as [string, number][]) {
+          const rd = plan.roads.find(r => r.id === id) as any;
+          if (!rd) { bad.push(`marks.lanes names ${id}, which is no road`); continue; }
+          const m = ((rd.median ?? 0) || rd.reservation || 0) / 2, half = m ? (rd.w / 2 - m) / 2 : rd.w / 2;
+          if (!Number.isInteger(n) || n < 1) bad.push(`marks.lanes ${id}: ${n} is not a lane count`);
+          else if (!m) bad.push(`marks.lanes ${id}: an undivided road takes its centre line, not a lane count`);
+          else if (2 * (half - inset) / n < 3.0 - 1e-9) bad.push(`marks.lanes ${id}: ${n} lanes leave ${(2 * (half - inset) / n).toFixed(2)} m each (< 3.0)`);
+        }
+      }
+    }
     const shd = R.shoulder, lzw = (kit.find(r => r.id === lz.piece)?.size?.[2] ?? 0.54) / 2, stop = num(sh) ? sh : 0;
     if (shd) {
       piece(shd.piece, 'ground:road-shoulder', bad, 'shoulder straight');

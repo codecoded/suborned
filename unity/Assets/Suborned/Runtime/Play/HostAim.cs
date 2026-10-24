@@ -36,11 +36,11 @@ namespace Suborned.Play
             {
                 case TpIn.ETap: return s == TpState.RingOpen ? TpDo.TakeLit : TpDo.Act;
                 case TpIn.EHold: return s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act; // brief 041 (Double click): no hold opens a ring; a held E acts as a tap on release
-                case TpIn.LeftTap: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Act;
+                case TpIn.LeftTap: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : TpDo.Ring; // item 33 (Sky 2026-10-24): a left click on the prompted target opens its ring
                 case TpIn.LeftHold: return s == TpState.Aiming ? TpDo.Fire : s == TpState.RingOpen ? TpDo.TakeWedge : HoldRing ? TpDo.Ring : TpDo.Act;
                 case TpIn.LeftDrag: return s == TpState.Aiming ? TpDo.Fire : TpDo.Orbit;
                 case TpIn.LeftAiming: return s == TpState.Aiming ? TpDo.Fire : TpDo.Nothing; // no hidden hip fire
-                case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : s == TpState.RingOpen ? TpDo.CloseRing : TpDo.RingAtTarget;
+                case TpIn.RightTap: return s == TpState.Aiming ? TpDo.LowerAim : TpDo.Nothing; // item 33: a right tap does nothing (the right button is for firing: its hold aims)
                 case TpIn.RightHold: return s is TpState.RingOpen or TpState.CarryingVale ? TpDo.Nothing : TpDo.Aim; // walking Vale, the Enforcer doesn't fire
                 case TpIn.MiddleDrag: return TpDo.Look;
             }
@@ -153,6 +153,7 @@ namespace Suborned.Play
                 {
                     lTapPending = false;
                     if (lRing) { var rs = Ring; if (rs == null) return true; int s = (p - rs.PointerAtOpen).magnitude > RingDeadPx * KitScale ? RingSegAt(p) : -1; if (s >= 0) RingTakeTry(s, "release"); else { rs.Sticky = true; rs.Always = true; } return true; }
+                    if (TpResolve(TpIn.LeftTap, TpNow) == TpDo.Ring) { TpRing(lTapTarget, false); if (Ring != null) { Ring.Sticky = true; Ring.Always = false; Ring.ByClick = true; } return true; } // item 33: the click's ring, nothing taken
                     if (TpResolve(TpIn.LeftTap, TpNow) == TpDo.Act)
                     {
                         if (!controls.DoubleClick) TpAct(lTapTarget, "click");
@@ -402,6 +403,7 @@ namespace Suborned.Play
         void RingTakeTry(int seg, string src)
         {
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
+            if (rs.Segs[seg].Shut) { var sr = rs.Segs[seg].Row; HolderPulseAt = Time.unscaledTime; PopKey(sr?.Lock.code ?? "car-held", null, rs.Plan?.Pn?.World, Feedback.Refused, sr?.Reason ?? ""); rs.Sticky = true; return; } // brief 057 §4.2: a shut Go says why and pulses the holders; nothing taken
             if (!rs.Segs[seg].HoldWedge) { RingTake(seg); return; }
             rs.Sticky = true; rs.Always = true; rs.FromHold = false;
             if (src == "release") { Status = "Hold to take it"; return; }
@@ -528,6 +530,9 @@ namespace Suborned.Play
             if (Time.unscaledTime - FireStoppedAt[k] < StoppedS) return ("Stopped", "", true, Drawn(k));
             return ("", "", false, false);
         }
+
+        /// <summary>The seconds to down (or disabled) on agent k's fire line, as FireLine priced it this tick; -1 none.</summary>
+        public int FireLineDownS(int k) => k is >= 0 and < 4 && FireNow[k].Firing ? lineDown[k] : -1;
 
         /// <summary>A fire target's name in the line: a car by the text's car names ("Vale's car"), else the usual name.</summary>
         string FireName(string id) => id.StartsWith("car:") ? Text?.TargetName("car-" + id[4..], "the car") ?? "the car"

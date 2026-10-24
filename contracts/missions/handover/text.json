@@ -203,7 +203,7 @@
    "vale-dead": "Vale is dead. We needed him alive.",
    "vale-leaves": "Vale left in his car. We were too slow.",
    "rivals-reach-vale": "The rival crew got to Vale first.",
-   "sealed": "Sealed off before Vale reached the car.",
+   "sealed": "The getaway car hadn't left when security sealed the district.",
    "enforcer-down": "The Enforcer is down. Nobody else can carry Vale.",
    "entry-seen-guard": "The guard saw the Enforcer go in. Vale was warned.",
    "entry-seen-camera": "The entrance camera saw the Enforcer go in. The Office locked down.",
@@ -971,8 +971,8 @@
     "agent": "fixer",
     "verb": "turn",
     "target": "the person whose need is known",
-    "line": "The Fixer can turn this person. Hover an option to read its price.",
-    "short": "Turn [{who}]: right click.",
+    "line": "Click this person for choices. The Fixer can turn them; hover a choice to read its price.",
+    "short": "Turn [{who}]: click.",
     "trigger": "a person's need is known, they're not turned, and no approach has been given",
     "rings": "the Fixer's portrait",
     "goneWhen": "any Turn order"
@@ -993,8 +993,8 @@
     "agent": "fixer",
     "verb": "call",
     "target": "the turned contact",
-    "line": "Turned people act on a call. The Fixer can Call them: right click to see what they do.",
-    "short": "Call [{who}]: right click.",
+    "line": "Turned people act on a call. Click one, and the Fixer can Call them. Hover to see what they do.",
+    "short": "Call [{who}]: click.",
     "trigger": "a contact is turned and has never been called",
     "rings": "the contact",
     "goneWhen": "a Call order"
@@ -1059,7 +1059,7 @@
     "agent": "any",
     "verb": "carry",
     "target": "the downed operative",
-    "line": "Anyone not in the car stays behind. Select another agent and right click a downed one to carry them.",
+    "line": "Anyone not in the car stays behind. Select another agent, click a downed one and pick Carry.",
     "short": "Carry the [downed agent].",
     "trigger": "an operative is downed, the final fight is on or over, and nobody is carrying them",
     "rings": "the downed operative",
@@ -1129,8 +1129,8 @@
     "agent": "any",
     "verb": "fire",
     "target": "the hostile",
-    "line": "Any armed agent can Fire. Select one and right click a hostile.",
-    "short": "Fire at [{who}]: right click.",
+    "line": "Any armed agent can Fire. Select one and hold right click on a hostile.",
+    "short": "Fire at [{who}]: hold right.",
     "trigger": "a fight is on, an armed agent other than the Enforcer is selected, a hostile is present, and no agent other than the Enforcer has fired yet (the fight hint, Aster 2026-10-18; not in Motive's table)",
     "rings": "the hostile",
     "goneWhen": "an agent other than the Enforcer fires, or the fight ends"
@@ -1140,7 +1140,7 @@
     "agent": "any",
     "verb": "go",
     "target": "the getaway car",
-    "line": "Vale is in the car. Any agent can Go: right click the car. Anyone outside stays behind.",
+    "line": "Vale is in the car. Click the car: any agent can Go. Anyone outside stays behind.",
     "short": "Go: drive off in the [car].",
     "trigger": "Vale is in the car and no Go has been given; shown once, on the first final fight (brief 018 section 6, point 7)",
     "rings": "the getaway car",
@@ -1212,6 +1212,9 @@
    "goingLoud.captured": "alt",
    "goingLoud.fails": "alt",
    "less.go": "label",
+   "less.mood": "beat",
+   "less.sealed": "debrief",
+   "less.alt.mood": "alt",
    "less.failcam": "beat",
    "less.done": "label",
    "dialogue": "speech",
@@ -1543,6 +1546,39 @@
     "call-not-now": "Not now",
     "wins": "Wins the mission",
     "loud": "Goes loud"
+   },
+   "mood": {
+    "friendly": "Friendly: Help and Pay come easier. Pressure comes harder.",
+    "uneasy": "Uneasy: Help comes harder. Pay and Pressure stay as priced.",
+    "scared": "Scared: Pressure comes easier. Help comes harder."
+   }
+  },
+  "mood": {
+   "rule": "Brief 054 (the Watch teaches a mood; Fable, 2026-10-24). One lowercase word per mood and per approach, filled into the Watch card's footer, which says what the Watch taught: {who} · {mood} · {lever} likely. Neutral says nothing, so a Watch that taught nothing has no footer. The mood marks the engine gives (rulebook mood.shift): friendly eases Help and Pay and hardens Pressure; uneasy hardens Help; scared eases Pressure and hardens Help. An approach the mood eases wears `likely` (Quote.Likely); one it hardens wears `hurt` (Quote.Hurt). Uneasy eases nothing, so its footer names the hurt approach, not a likely one. Once Listen has taught the temperament the card is exact and the footer is dropped. The mood's words on Alt are `less.alt.mood`; the done chip's capitalised word is `less.done.gain.mood-<mood>`.",
+   "word": {"friendly":"friendly","uneasy":"uneasy","scared":"scared"},
+   "lever": {"pay":"pay","help":"help","pressure":"pressure"},
+   "likely": "likely",
+   "hurt": "harder",
+   "footer": "{who} · {mood} · {lever} likely",
+   "footerHurt": "{who} · {mood} · {lever} harder",
+   "footerBare": "{who} · {mood}"
+  },
+  "sealed": {
+   "rule": "Brief 057 section 4 (Glyph's wording table; Sky, 2026-10-24: 'District sealed. Sealed off before Vale reached the car.' on a card that also said Vale reached the car). The engine's fail is: the getaway car had not left when security sealed the district. Keel's FailCause.Car says which of three it was: held (hostiles held the car, so Go was refused), ready (Vale was aboard, the car was free and Go was never given), empty (Vale was not aboard). `line` is the fail card's sub-line (it replaces briefing.fails.sealed whenever the car state is known; briefing.fails.sealed is the same sentence as `unknown`), `tip` the fail camera's next-time line, `story` the debrief's extra route line after 'Vale reached the getaway car.', and the same car state chooses all three, so they cannot disagree. {holders} is names.holders as holdersPhrase says it ('a rival', '2 robots', 'police'). The origin captions (less.failcam.caption.sealed) stay: they say what caused the seal; these say why it cost the run.",
+   "line": {
+    "held": "{holders} held the car, so it couldn't leave before the district sealed.",
+    "ready": "Vale was in the car, but nobody gave Go before the district sealed.",
+    "empty": "Vale wasn't in the car when security sealed the district.",
+    "unknown": "The getaway car hadn't left when security sealed the district."
+   },
+   "tip": {
+    "held": "Clear the blockers, then press Go.",
+    "ready": "Press Go once Vale is aboard.",
+    "empty": "Get Vale aboard before the seal."
+   },
+   "story": {
+    "held": "{holders} held the car.",
+    "ready": "Go was never given."
    }
   },
   "hint": {
@@ -1550,7 +1586,7 @@
    "showSeconds": 6,
    "returnSeconds": 20,
    "maxShows": 2,
-   "firstAct": "Right-click to act."
+   "firstAct": "Click a thing to act."
   },
   "go": {
    "rule": "Brief 018 (the getaway, section 6.5 and 6.6): the Go card and the roster flag. Nobody left: the card reads `none`. Someone left: `leaves`, with {list} the names in id order, each followed by its `why` in brackets when the fate is captured (\"Tech (down), Scout\"), and `seen` added when a police officer, a robot or the patrol would see the car leave. The roster shows `flag` on every agent not in the car while the Go card is open; Alt on a fate glyph is `fate`.",
@@ -1708,6 +1744,7 @@
     "rounds": "Rounds", "cone": "Cone", "nothing-new": "Nothing new",
     "contact": "Contact", "not-yet": "Not yet", "refused": "Refused", "reported": "Reported",
     "guard-away": "Guard away", "camera-blind": "Camera blind", "camera-dark": "Camera dark", "patrol-away": "Patrol away", "rivals-away": "Rivals away",
+    "mood-friendly": "Friendly", "mood-uneasy": "Uneasy", "mood-scared": "Scared",
     "vale": "Vale", "inside": "Inside", "no-vale": "No Vale", "aboard": "Aboard",
     "out": "Out", "wakes": "Wakes {s} s", "dead": "Dead",
     "carrying": "Carrying", "hidden": "Hidden", "tied": "Tied", "laid-down": "Laid down"

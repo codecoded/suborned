@@ -5,6 +5,7 @@ import { type Ctx, r3, r4, rv } from '../common';
 import { SIGHT_CLEAR, junctionCorners } from '../edges';
 import { type Rect, inRect, pointInRing } from '../geo';
 import { BOOTH, TUB } from '../surfaces';
+import { cutHits } from '../kerbreturn';
 import { Grid } from '../../../plan/street-geo';
 import { FLAT, beamBlock, footprintOf, quayBlock, ringGap, roadAt, samples9, tramBlock, walkBlock } from '../../../plan/street-zones';
 
@@ -22,6 +23,9 @@ const NEAR_CROSSING = new Set(['bollard', 'beacon', 'crossing']);
 
 /** A kerb crossing landing as dressRoads placed it: `flank` = the bollards and beacons placed with it (they go with it if it is dropped). */
 export type Landing = { id: string; road: string; cls: string; flank: string[] };
+
+/** m: nothing stands closer than this to a rounded kerb face (SF-5's 0.45 m off a kerb face, read along the arc). */
+export const KERB_ARC_CLEAR = 0.45;
 
 export class Layer {
   items: StreetItem[] = [];
@@ -86,6 +90,8 @@ export class Layer {
     const c = this.ctx.S.catalogue[kind] as any, size = o.size ?? (c?.size as [number, number, number]) ?? [0.5, 0.5, 1], r = o.r ?? Math.max(size[0], size[1]) / 2;
     if (!o.force && !this.free(at, r, o.ground ?? true, kind)) return false;
     const ring = footprintOf(this.ctx.S, kind, o.variant, at, size as [number, number, number], yaw);
+    // brief 028: a kerb return turns the pavement corner into carriageway: nothing stands in it, and everything keeps the kerb's 0.45 m (SF-5) off the arc, as off a straight kerb face (skip, never squeeze: SF-6)
+    if ((o.ground ?? true) && !edge.startsWith('stop/') && cutHits(this.ctx, ring, KERB_ARC_CLEAR)) return false;
     if ((o.ground ?? true) && !FLAT.has(kind)) {
       // skip, never squeeze: the clear walking zone and the tram's own space stay clear (SF-1, SF-3); crossings keep 2 m clear (SF-2)
       if (!o.force && (walkBlock(this.ctx, samples9(ring), edge) || tramBlock(this.ctx, samples9(ring)))) return false;

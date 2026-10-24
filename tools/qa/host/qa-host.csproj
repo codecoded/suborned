@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <!-- Suture's QA host (brief 060, tier 1): plays order scripts on the engine library as `suborned-sim batch` does, and adds read-only
+       observations the play JSON lacks today (the debrief on every ending, as HandoverHost builds it; stuck intervals; early spawns; the
+       seal clock's moves). tools/qa/sim.ts builds it with -p:EngineDir=<engine root> (the working tree or a pinned copy). Never hashed. -->
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <AssemblyName>suborned-qa</AssemblyName>
+    <RootNamespace>Suborned.Qa</RootNamespace>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <EngineDir Condition="'$(EngineDir)' == ''">../../..</EngineDir>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="QaHost.cs" />
+  </ItemGroup>
+  <!-- an engine's sources (the tree, a pinned commit), or a built player's own library (-p:EngineDll=<Suborned.Sim.dll>: the engine Sky plays) -->
+  <ItemGroup Condition="'$(EngineDll)' == ''">
+    <ProjectReference Include="$(EngineDir)/sim/Suborned.Sim/Suborned.Sim.csproj" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(EngineDll)' != ''">
+    <Reference Include="Suborned.Sim"><HintPath>$(EngineDll)</HintPath><Private>true</Private></Reference>
+  </ItemGroup>
+</Project>

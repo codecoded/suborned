@@ -1,0 +1,140 @@
+{
+ "official-to-service": {
+  "m": 34.0,
+  "road_m": 12.4,
+  "yard_m": 21.5,
+  "s": 13.3
+ },
+ "getaway-to-service-drive": {
+  "m": 121.0,
+  "road_m": 107.5,
+  "yard_m": 13.5,
+  "s": 28.3
+ },
+ "rivals-in-to-drop": {
+  "m": 55.4,
+  "road_m": 55.4,
+  "yard_m": 0.0,
+  "s": 11.1
+ },
+ "rivals-drop-to-park": {
+  "m": 77.6,
+  "road_m": 77.6,
+  "yard_m": 0.0,
+  "s": 15.5
+ },
+ "rivals-in-direct-today": {
+  "m": 85.0,
+  "road_m": 85.0,
+  "yard_m": 0.0,
+  "s": 17.0
+ },
+ "official-leaves-east": {
+  "m": 47.9,
+  "road_m": 31.4,
+  "yard_m": 16.4,
+  "s": 14.5
+ },
+ "rivals-tail-to-mouth": {
+  "m": 19.5,
+  "road_m": 19.5,
+  "yard_m": 0.0,
+  "s": 3.9
+ },
+ "rivals-to-square": {
+  "m": 77.6,
+  "road_m": 77.6,
+  "yard_m": 0.0,
+  "s": 15.5
+ },
+ "rivals-tip-leaves": {
+  "m": 87.7,
+  "road_m": 87.7,
+  "yard_m": 0.0,
+  "s": 17.5
+ },
+ "rivals-in-to-square": {
+  "m": 55.4,
+  "road_m": 55.4,
+  "yard_m": 0.0,
+  "s": 11.1
+ },
+ "enforcer-start-to-service-lane": {
+  "m": 72.3,
+  "walk_s": 51.7,
+  "rival_s": 45.2
+ },
+ "service-lane-to-getaway-bay": {
+  "m": 67.0,
+  "walk_s": 47.9,
+  "rival_s": 41.9
+ },
+ "official-rear-door-to-getaway-stand": {
+  "m": 3.5,
+  "walk_s": 2.5,
+  "rival_s": 2.2
+ },
+ "rival-park-to-lookout": {
+  "m": 6.0,
+  "walk_s": 4.3,
+  "rival_s": 3.8
+ },
+ "drop-to-ambush-1": {
+  "m": 14.5,
+  "walk_s": 10.3,
+  "rival_s": 9.1
+ },
+ "drop-to-ambush-2": {
+  "m": 54.5,
+  "walk_s": 38.9,
+  "rival_s": 34.0
+ },
+ "drop-to-ambush-3": {
+  "m": 13.7,
+  "walk_s": 9.8,
+  "rival_s": 8.5
+ },
+ "lookout-to-ambush-4": {
+  "m": 110.6,
+  "walk_s": 79.0,
+  "rival_s": 69.2
+ },
+ "lookout-to-service-drive": {
+  "m": 27.8,
+  "walk_s": 19.9,
+  "rival_s": 17.4
+ },
+ "square-ambush-1-to-service-drive": {
+  "m": 59.5,
+  "walk_s": 42.5,
+  "rival_s": 37.2
+ },
+ "mouth-to-official-car": {
+  "m": 17.6,
+  "walk_s": 12.6,
+  "rival_s": 11.0
+ },
+ "getaway-bay-to-service-lane-cell": {
+  "m": 75.4,
+  "walk_s": 53.9,
+  "rival_s": 47.1
+ },
+ "stands": {
+  "getaway-service-drive": [
+   6935,
+   -1500
+  ],
+  "rivals-in": [
+   3750,
+   1575
+  ],
+  "rivals-out-east": [
+   8350,
+   1575
+  ],
+  "square-stop": [
+   3400,
+   -3800
+  ]
+ }
+}

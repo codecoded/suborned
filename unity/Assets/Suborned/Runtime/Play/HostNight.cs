@@ -23,6 +23,12 @@ namespace Suborned.Play
         /// `-night` on the command line (the app's proof at night): night for this launch, the stored choice untouched.</summary>
         void NightAtStart()
         {
+            if (GameBoot.Arg("-evening")) // brief 048 (Glint, item 21): the day look with the dusk lights on (RoadLight's evening level), for the proof's shots; the stored choice untouched
+            {
+                NightLook = false; var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
+                if (lp) { lp.Focus = () => cam ? focus : (Vector3?)null; lp.SetEvening(); } else Debug.LogWarning("HostNight: -evening with no LightPhase in the scene");
+                return;
+            }
             if (GameBoot.Arg("-night")) { int keep = PlayerPrefs.GetInt(NightPref, 0); SetNight(true); PlayerPrefs.SetInt(NightPref, keep); return; }
             if (PlayerPrefs.GetInt(NightPref, 0) == 1) SetNight(true); else NightLook = false;
         }

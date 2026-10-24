@@ -80,9 +80,9 @@ namespace Suborned.Play
             string probe = h.ProbeAt(Sp(h, izw)); string offer = HudToolkit.PillWords;
             yield return Shoot(dir, "hold-act-offer", log);
             int n0 = g.Orders.Count; yield return Left(h, izw, 0f); yield return new WaitForSecondsRealtime(0.5f);
-            var click = OrdersSince(h, n0); string pendClick = h.PendingOf(1).verb;
-            bool clickOk = click.Count > 0 && click.TrueForAll(o => o.StartsWith("fixer:move")) && pendClick.Length == 0 && h.ThingWalks > 0;
-            parts.Add($"\"click\": {{\"ok\": {B(clickOk)}, \"orders\": \"{string.Join(",", click)}\", \"pending\": \"{pendClick}\", \"probe\": \"{J(probe)}\", \"offer\": \"{J(offer)}\"}}"); ok &= clickOk;
+            var click = OrdersSince(h, n0); string pendClick = h.PendingOf(1).verb; bool clickRing = h.Ring != null; if (clickRing) h.CloseRing(); yield return Frames(2);
+            bool clickOk = click.Count == 0 && pendClick.Length == 0 && clickRing; // item 33 (Sky 2026-10-24): a click on a thing opens its ring, nothing given
+            parts.Add($"\"click\": {{\"ok\": {B(clickOk)}, \"ring\": {B(clickRing)}, \"orders\": \"{string.Join(",", click)}\", \"pending\": \"{pendClick}\", \"probe\": \"{J(probe)}\", \"offer\": \"{J(offer)}\"}}"); ok &= clickOk;
             log.Add($"holdActs click: {(clickOk ? "ok" : "FAILED")}: [{string.Join(",", click)}] pending '{pendClick}'; offer '{offer}'; probe {probe}");
             // the early release (0.28 s: the charge shows, then the button comes up)
             int c0 = h.HoldCancels; n0 = g.Orders.Count; yield return Left(h, izw, 0.28f); yield return Frames(3);
@@ -119,7 +119,7 @@ namespace Suborned.Play
             string latchWords = HudToolkit.PillWords, latchState = HudToolkit.PillState; float walked = (iz.position - startPos).magnitude; var under = h.ProbeAt(Sp(h, pressW));
             Btn(Sp(h, pressW)); yield return new WaitForSecondsRealtime(0.4f); var latch = OrdersSince(h, n0); string latchPend = h.PendingOf(1).verb;
             bool latchOk = latchState == "ready" && latchWords.StartsWith("Let go ·") && (latchPend.Length > 0 || latch.Exists(o => o.StartsWith("fixer:") && !o.StartsWith("fixer:cancel"))) && (h.PendingTarget(1) == "waitress" || latch.Exists(o => o.StartsWith("fixer:") && o.Contains("waitress")));
-            float ks = Mathf.Max(1f, Mathf.Round(Screen.height / 1080f)); int tc0 = h.HoldTravelCancels; n0 = g.Orders.Count; // 120 kit px (the cancel is at 80) h.Select(OpId.Scout, false); yield return null;
+            float ks = Mathf.Max(1f, Mathf.Round(Screen.height / 1080f)); int tc0 = h.HoldTravelCancels; n0 = g.Orders.Count; /* 120 kit px (the cancel is at 80) */ h.Select(OpId.Scout, false); yield return null;
             { var sp = Aim(h, pressW = iz.position + Vector3.up); yield return Frames(2); Btn(sp, left: true); yield return new WaitForSecondsRealtime(0.15f); HandoverHost.PointerWorld = null; for (int s2 = 1; s2 <= 8; s2++) { Btn(sp + new Vector2(15f * ks * s2, 0f), left: true); yield return null; } yield return new WaitForSecondsRealtime(0.4f); HandoverHost.PointerWorld = null; Btn(sp + new Vector2(120f * ks, 0f)); yield return Frames(4); }
             var dragged = OrdersSince(h, n0); bool travelOk = h.HoldTravelCancels == tc0 + 1 && !dragged.Exists(o => o.StartsWith("scout:watch") || o.StartsWith("scout:move"));
             parts.Add($"\"holdLatch\": {{\"ok\": {B(latchOk && travelOk)}, \"walkedM\": {F(walked)}, \"ready\": \"{J(latchWords)}\", \"orders\": \"{string.Join(",", latch)}\", \"pending\": \"{latchPend}\", \"underPointerAtRelease\": \"{J(under)}\", \"travelCancel\": {B(travelOk)}, \"travelOrders\": \"{string.Join(",", dragged)}\"}}"); ok &= latchOk && travelOk;
@@ -265,7 +265,7 @@ namespace Suborned.Play
                 h.LookAt(hw.Value); yield return Frames(2); var pa = hw.Value + Vector3.up * 1.0f; HandoverHost.ChargeScale = 10f; var psp = Aim(h, pa); yield return Frames(3); // centred on the target: the pill clear of the range panel (Glyph 0.2.65)
                 Btn(psp, right: true); yield return new WaitForSecondsRealtime(1.2f); log.Add($"fire charge picture: {HudToolkit.PillState} '{HudToolkit.PillWords}'"); h.SetPaused(true); yield return Shoot(dir, "hold-fire-charge", log); h.SetPaused(false); Btn(Sp(h, pa)); yield return Frames(3); HandoverHost.ChargeScale = 1f; // 0.2 s × 10: about 60 % at 1.2 s
                 h.SetPaused(false); Btn(Sp(h, pa), right: true); yield return new WaitForSecondsRealtime(0.55f); log.Add($"fire ready picture: {HudToolkit.PillState} '{HudToolkit.PillWords}'"); h.SetPaused(true); yield return Shoot(dir, "hold-fire-ready", log); h.SetPaused(false); Btn(Sp(h, pa)); yield return Frames(3);
-                h.SetPaused(false); Btn(Sp(h, pa), right: true); yield return new WaitForSecondsRealtime(0.6f); Btn(Sp(h, pa)); float t2 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - t2 < 3f && !HudToolkit.PillWords.StartsWith("Firing at")) yield return null;
+                h.SetPaused(false); Btn(Sp(h, pa), right: true); yield return new WaitForSecondsRealtime(0.6f); Btn(Sp(h, pa)); float t2 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - t2 < 3f && HudToolkit.PillState != "fire") yield return null; // the fire pill (brief 049 row 4: disc and seconds, no "Firing at")
                 log.Add($"fire picture: '{HudToolkit.PillWords}'"); h.SetPaused(true); yield return Shoot(dir, "hold-fire-firing", log); h.SetPaused(false);
             }
             log.Add($"holdRange right hold (commit on release): {(fireOk ? "ok" : "FAILED")}: drawn {drawn0}→{drawnNow}; before release [{string.Join(",", during)}] '{fullWords}' ({fullState}); release [{string.Join(",", after)}] lasting {lasting}; words {string.Join(" | ", words)}");
@@ -274,9 +274,15 @@ namespace Suborned.Play
             bool byOk = false; string byOrders = ""; string ringHover = "", ringOurs = ""; bool hoverOk = false, oursSeen = false;
             if (bs != null && h.Views.BystanderKey(g, bs.Id) is string bk && h.Views.Find(bk) is Transform bt)
             {
+                // Glyph's 0.2.94 review #7: a passer-by wears the hover ring only while a selected agent has a weapon drawn (049 round 1): draw first
+                ProofRings.DrawAll(h, new[] { (int)OpId.Enforcer }); bool drewFirst = g.Ops[(int)OpId.Enforcer].Gun.Drawn;
                 h.LookAt(bt.position); yield return Frames(2); var bw = bt.position + Vector3.up * 1.0f; var bsp = Aim(h, bw); yield return Frames(3);
+                // Glyph's 0.2.97 review #8: at 2160 the rings were read while the draw's 1 s bar still ran (the hover offer comes after it): keep the
+                // pointer on the passer-by until the hover ring is up (or 3 s), then read and shoot
+                float hw0 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - hw0 < 3f && !h.TargetRings.Any(r => r.Id == bs.Id && r.Hover)) { bsp = Aim(h, bw); yield return null; }
+                float hoverWait = Time.realtimeSinceStartup - hw0;
                 // Glyph 0.2.79 #2 (brief 049): a passer-by under the cursor wears the cream hover ring
-                ringHover = ProofRings.RingsNow(h); hoverOk = h.TargetRings.Any(r => r.Id == bs.Id && r.Hover && r.Side == HandoverHost.RingSide.Civilian);
+                ringHover = (drewFirst ? "drawn;" : "not drawn;") + $"waited {hoverWait:0.00} s;" + ProofRings.RingsNow(h); hoverOk = h.TargetRings.Any(r => r.Id == bs.Id && r.Hover && r.Side == HandoverHost.RingSide.Civilian);
                 yield return Shoot(dir, "ring-hover-passerby", log); Aim(h, bw); yield return Frames(2);
                 n0 = g.Orders.Count; Btn(bsp, right: true); yield return new WaitForSecondsRealtime(0.7f); Btn(Sp(h, bw)); yield return Frames(3);
                 // ... and, once the Enforcer aims at it, the cell's four cream ticks on its cream ring (a non-hostile)

@@ -67,11 +67,14 @@ namespace Suborned.Play
             return lastWatch;
         }
 
-        /// <summary>Per frame: which fans to draw (Alt: every learned one; else the focused watcher's, if its sight is learned).</summary>
+        /// <summary>Per frame: which fans to draw and how strong (brief 057 §3, Sky 2026-10-24: "once watched its cone now permanently appears
+        /// but we need to make it softer"): every learned cone at rest strength (quiet: the rim is the memory), strong when it matters: hovered
+        /// or named (its Watch row, its ring wedge, Alt), a cell agent in it or within 3 m of it heading in, an agent's path through it, Alert 2
+        /// or more, or the watcher noticing someone now. The Scout's last Watch no longer keeps a cone strong once the Watch is done.</summary>
         void ShowSight()
         {
             if (Game == null || views == null) return;
-            shownFans.Clear();
+            shownFans.Clear(); fanStrong.Clear();
             // Glyph's 016 review §5: the detail layer shows once Alt has been held 0.25 s, so an Alt chord (Alt + middle turns the view) or a quick
             // tap never flashes it; nothing shows while the view is being turned
             bool held = controls.Held(Keyboard.current, PlayAction.Peek); if (!held) peekHeldSince = -1f; else if (peekHeldSince < 0f) peekHeldSince = Time.unscaledTime;
@@ -79,21 +82,67 @@ namespace Suborned.Play
             FocusWatcher = null;
             Guard("sight", () =>
             {
-                if (Peeking || HoldOn && WatchReach.HasValue && Hover != null) { shownFans.AddRange(Game.KnownFans()); return; } // brief 041: hovering a Watch shows the cones the cell has learned
-                if (RingFocus is (string _, string rw) && rw.Length > 0) // a ring wedge naming a camera: its cone, when the cell knows its sight (sight.unknown: never more)
-                { if (Game.Known(rw) is { Sight: true }) { FocusWatcher = rw; var rf = Game.ConeFan(rw); if (rf != null) shownFans.Add(rf); } return; }
-                var w = WatcherOf(Hover) ?? WatcherOf(Panel?.T) ?? ScoutWatch();
-                if (w == null || Game.Known(w) is not { Sight: true }) return;
-                FocusWatcher = w; var f = Game.ConeFan(w); if (f != null) shownFans.Add(f);
+                string focus = null;
+                if (RingFocus is (string _, string rw) && rw.Length > 0) focus = rw; // a ring wedge naming a watcher
+                else focus = WatcherOf(Hover) ?? WatcherOf(Panel?.T) ?? ScoutWatchingNow();
+                if (focus != null && Game.Known(focus) is { Sight: true }) FocusWatcher = focus;
+                var g = Game;
+                foreach (var f in g.KnownFans())
+                {
+                    bool strong = Peeking || f.Watcher == FocusWatcher || HoldOn && WatchReach.HasValue && Hover != null || g.Alert >= 2 || noticingNow.Contains(f.Watcher) || FanMatters(f);
+                    shownFans.Add(f); fanStrong.Add(strong);
+                }
             });
-            views.ShowFans(shownFans);
+            views.ShowFans(shownFans, fanStrong);
             // the mast's heads, numbered at their rims (Glyph §9): the farthest point of each head's polygon
             MastHeads.Clear();
             foreach (var f in shownFans)
             {
-                if (f.More.Length == 0) continue;
+                if (f.More.Length == 0 || !(Peeking || f.Watcher == FocusWatcher)) continue;
                 MastHeads.Add(Far(f, f.Points)); foreach (var m in f.More) MastHeads.Add(Far(f, m));
             }
+        }
+        readonly List<bool> fanStrong = new();
+        readonly HashSet<string> noticingNow = new();
+
+        /// <summary>The watcher a cell agent is watching now (the busy Watch), else null: brief 057 §3, no fallback to a finished Watch.</summary>
+        string ScoutWatchingNow()
+        {
+            foreach (var w in new[] { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer })
+            { var sc = Game.Ops[(int)w]; if (sc.Busy != null && sc.Busy.Do == "watch" && Game.WatcherKind(sc.Busy.Target).Length > 0) return sc.Busy.Target; }
+            return null;
+        }
+
+        /// <summary>Brief 057 §3 (2, 3): a cell agent on the street inside the fan, or within 3 m of it walking in, or an agent's walk crossing it.</summary>
+        bool FanMatters(Fan f)
+        {
+            var g = Game;
+            for (int k = 0; k < 4; k++)
+            {
+                var op = g.Ops[k]; if (op.Down || op.Inside || op.InCar) continue;
+                if (InFan(f, op.Pos)) return true;
+                var w = op.Walk; if (w == null || w.Points.Length < 2) continue;
+                if (NearFan(f, op.Pos, 300) && InFan(f, w.End)) return true;
+                for (int i = 1; i < w.Points.Length; i++) { var a = w.Points[i - 1]; var b = w.Points[i]; long d = Math.Max(1, (long)Math.Sqrt(G.D2(a, b))); int n = (int)Math.Min(40, d / 100 + 1); for (int s = 1; s <= n; s++) if (InFan(f, new Pt(a.X + (int)((b.X - a.X) * (long)s / n), a.Y + (int)((b.Y - a.Y) * (long)s / n)))) return true; }
+            }
+            return false;
+        }
+        static bool InFan(Fan f, Pt p) { if (InPoly(f.Points, p)) return true; foreach (var m in f.More) if (InPoly(m, p)) return true; return false; }
+        static bool InPoly(Pt[] poly, Pt p)
+        {
+            bool inside = false; int n = poly.Length;
+            for (int i = 0, j = n - 1; i < n; j = i++) { var a = poly[i]; var b = poly[j]; if ((a.Y > p.Y) != (b.Y > p.Y) && p.X < (double)(b.X - a.X) * (p.Y - a.Y) / (b.Y - a.Y) + a.X) inside = !inside; }
+            return inside;
+        }
+        static bool NearFan(Fan f, Pt p, int cm)
+        {
+            var poly = f.Points; int n = poly.Length; long c2 = (long)cm * cm;
+            for (int i = 0, j = n - 1; i < n; j = i++)
+            {
+                var a = poly[j]; var b = poly[i]; double vx = b.X - a.X, vy = b.Y - a.Y, l2 = vx * vx + vy * vy; double t = l2 <= 0 ? 0 : Math.Max(0, Math.Min(1, ((p.X - a.X) * vx + (p.Y - a.Y) * vy) / l2));
+                double dx = a.X + vx * t - p.X, dy = a.Y + vy * t - p.Y; if (dx * dx + dy * dy <= c2) return true;
+            }
+            return false;
         }
 
         /// <summary>The mast heads' rim points (world), for their number plates; empty unless a mast's cone shows.</summary>
@@ -105,6 +154,7 @@ namespace Suborned.Play
         {
             Unknowns.Clear();
             List<Noticing> n = null; if (!Guard("detection", () => n = Game.Detection())) return;
+            noticingNow.Clear(); foreach (var x in n) noticingNow.Add(x.Watcher); // brief 057 §3 (4): a watcher noticing someone draws strong
             foreach (var x in n) { if (x.Known) continue; var at = frame.World(x.From) + Vector3.up * 3.2f; if (!Unknowns.Contains(at)) Unknowns.Add(at); }
         }
 

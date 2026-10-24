@@ -1,6 +1,7 @@
 // bun run world: write out/world/<plan id>.world.json (suborned.world/2, contracts/world/world.schema.ts) from the plan.
 // Exits 1, writing nothing, unless the plan passes the checker and every generated deck has its connectors.
-// usage: bun tools/world/export.ts [plan.json] [--out file] [--kit kit.json] [--dev]   (--dev: develop against a plan the checker refuses; the export is marked; --kit: generate against that catalogue, e.g. a proposal with candidate pieces set to adopted, instead of contracts/world/kit.json)
+// usage: bun tools/world/export.ts [plan.json] [--out file] [--kit kit.json] [--road-finish enamel|asphalt] [--dev]   (--road-finish: the road finish set of this export, over the plan's own roads.finish.set; brief 055 road test)
+// earlier usage line, still true: [plan.json] [--out file] [--kit kit.json] [--dev]   (--dev: develop against a plan the checker refuses; the export is marked; --kit: generate against that catalogue, e.g. a proposal with candidate pieces set to adopted, instead of contracts/world/kit.json)
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { derive, type Plan } from '../plan/plan';
@@ -11,13 +12,14 @@ import { withKit } from './gen/kitrefs';
 import { report } from './report';
 import { hasWorldStandards, worldRules } from '../plan/world-rules';
 import { ctxOf as worldCtx } from '../plan/world-ctx';
+import { withFinishSet } from '../plan/finish-set';
 
 const root = resolve(import.meta.dir, '../..');
 const args = process.argv.slice(2), opt = (k: string) => (args.includes(k) ? args[args.indexOf(k) + 1] : undefined), dev = args.includes('--dev');
-const src = args.find(a => a.endsWith('.json') && a !== opt('--out') && a !== opt('--kit')) ?? 'contracts/world/harbour-district.plan.json';
+const src = args.find(a => a.endsWith('.json') && a !== opt('--out') && a !== opt('--kit') && a !== opt('--road-finish')) ?? 'contracts/world/harbour-district.plan.json';
 const json = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 
-const plan: Plan = json(src), d = derive(plan), civ = civic(plan.civic, json(plan.civic.block));
+const plan: Plan = withFinishSet(json(src) as Plan, opt('--road-finish')), d = derive(plan), civ = civic(plan.civic, json(plan.civic.block));
 const failed = check(plan, d, civ).checks.filter(c => !c.ok);
 for (const c of failed) console.error(`${dev ? 'dev: ' : ''}FAIL ${c.id} ${c.rule}: ${c.value}`);
 if (failed.length && !dev) { console.error('world: plan fails the checker; no export (--dev to develop against it)'); process.exit(1); }

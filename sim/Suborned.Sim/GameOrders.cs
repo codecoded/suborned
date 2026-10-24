@@ -167,6 +167,7 @@ namespace Suborned.Sim
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
             var p = PersonByRole(o.Target);
             if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds"); // brief 031: his tether covers Watch
+            if (o.Do == "watch" && R.WatchOffers && !ScoutTeaches(LearnEv(o.Do), p) && WatchRefusal(p) == "nothing-to-see") return No("nothing-to-see", $"watching {p.Role} would show nothing the cell can act on (brief 054 §2): no Watch to give");
             if (!ScoutTeaches(LearnEv(o.Do), p)) return o.Do == "listen" ? No("already-heard", $"the cell knows {p.Role}'s need and temperament already: a Listen teaches nothing more") : No("already-watched", $"the cell knows {p.Role}'s place and when already: a Watch teaches nothing more");
             var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
             var ev = LearnEv(o.Do);
@@ -199,15 +200,15 @@ namespace Suborned.Sim
 
         /// <summary>Whether a Scout event on this person can still teach the cell anything (Sky 2026-10-18: "if I've listened to someone before,
         /// I think I can then listen to them again?"; a repeat that teaches nothing is refused, already-heard or already-watched, at no cost).
-        /// Read from the rulebook, not listed here: every fact its outcomes and `also` rows learn of the subject (an `also` that needs a lover
-        /// only for someone who has one), the temperament if the event is in preview.knownBy, and for the guard's Watch his sight (rulebook
+        /// Read from the rulebook, not listed here: every fact its outcomes and `also` rows learn of the subject, the temperament if the event is in preview.knownBy, and for the guard's Watch his sight (rulebook
         /// sight: his Watch teaches it too). A secret counts only for someone who has one. Knowledge forgotten opens the event again.</summary>
         bool ScoutTeaches(Event ev, Person p)
         {
+            if (ev.Id == "cell.watch" && R.WatchOffers) return WatchTeaches(p); // brief 054 §2.1: a Watch teaches the mood, or security's sight and marks, or nothing
             bool Open(string what) => what == "secret" ? p.Secret.Length > 0 && !p.KSecret : what != "refused" && !p.Knows(what);
             bool Learns(List<Eff> changes) { foreach (var c in changes) if (c.Do == "learn" && c.S("of") == "subject") foreach (var w in c.L("what")) if (Open(w)) return true; return false; }
             foreach (var oc in ev.Outcomes) if (Learns(oc.Changes)) return true;
-            foreach (var a in ev.Also) if (!a.When.Exists(c => c.K == "lover-within") || p.Lover != null) if (Learns(a.Changes)) return true;
+            foreach (var a in ev.Also) if (Learns(a.Changes)) return true; // brief 054 §9.2 (engine 0.29.0): no Watch row learns a secret; the lover-within exception went with it
             if (R.KnownBy.Contains(ev.Id) && !p.KTemperament) return true;
             if (ev.Id == "cell.watch" && p == GuardP && !(Known("guard")?.Sight ?? true)) return true;
             return false;
@@ -243,6 +244,7 @@ namespace Suborned.Sim
             if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer turns people (§03)");
             if (o.Approach.Length == 0) return No("turn-needs-approach", "turn needs an approach (ask, pay, help, pressure)");
             var ev = R.Ev("turn." + o.Approach);
+            if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one the cell can turn here"); // engine 0.30.0 (Suture's bot pass): refused, not thrown
             var p = PersonByRole(o.Target); var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
             if (p == ValeP) return No("vale-not-contact", "Vale is the target, not a contact");
             var x = Ctx(p, ev);
@@ -278,7 +280,9 @@ namespace Suborned.Sim
                     Note("loop.on", "One feed repeats. The Tech is tied to the cabinet."); break;
                 case "reroute":
                     if (PatrolDown) break;
+                    var rerouteFrom = PatrolPose()?.pos; // where it leaves from: its sweep, a chase or an alarm (engine 0.30.0)
                     PatrolAwayUntil = Tick + T(R.RerouteAwayS); PatrolChasing = false; PatrolTracking = false;
+                    PlanRerouteWalk(rerouteFrom);
                     if (PatrolUnit() is Unit pu) { pu.St = "gone"; PatrolAlarmed = false; } // false orders override the alarm too
                     AddTrail(R.RerouteTrail, "reroute"); Actions.Add("reroute"); Chain.Add("patrol-rerouted");
                     Note("patrol.rerouted", "The patrol follows false orders and leaves the entrance sweep."); break;
@@ -332,6 +336,7 @@ namespace Suborned.Sim
             var acts = new List<string>();
             if (!ev.Private) foreach (var w in ev.Witnesses) if (AllHold(w.When, x)) acts.Add(w.Act); // rulebook privacy: a private conversation has no onlookers
             bool witnessed = false;
+            if (ev.Id == "cell.watch" && R.MoodOn) p.KMood = MoodNow(p); // brief 054 §2.3: the mood seen at the Watch's end
             foreach (var act in acts) witnessed |= WitnessAct(act, p, "fixer");
             bool charged = false;
             foreach (var c in changes) charged |= Apply(c, p, q, witnessed);
@@ -404,10 +409,13 @@ namespace Suborned.Sim
 
         /// <summary>rulebook witness.sees: anyone (but the subject and the cell) within witness range on a clear sightline sees a traceable act:
         /// one incident adds witness Trail and moves standing once; simulated witnesses remember it.</summary>
+        /// <summary>Brief 054 §3.2: the witness.notice act a traceable act is noticed as: a threat (Pressure) as threat; a payment or a debt
+        /// cleared in sight as the approach it comes from (pay, help: never, below every Alert).</summary>
+        static string NoticeActOf(string traceable) => traceable switch { "threat" => "threat", "payment" => "pay", "debt-cleared" => "help", "weapon-drawn" => "weapon-drawn", _ => throw new InvalidOperationException($"witness.sees: '{traceable}' has no witness.notice act (unknown = reject)") };
         bool WitnessAct(string act, Person subject, string by)
         {
             var at = PersonPos(subject); if (!at.HasValue) return false;
-            var seenAt = WitnessesWithPos(at.Value, subject);
+            var seenAt = WitnessesWithPos(at.Value, subject, NoticeActOf(act));
             var seen = seenAt.ConvertAll(x => x.p);
             if (seen.Count == 0) return false;
             var inc = AddIncident(act, act + ":" + subject.Role, at.Value, seenAt);
@@ -424,8 +432,8 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- the rulebook's conditions, the action card
 
-        sealed class PCtx { public Person P = null!; public Event Ev = null!; public Band Band; public string? Outcome; public bool Reach = true; public long Cash; }
-        PCtx Ctx(Person p, Event ev) => new PCtx { P = p, Ev = ev, Band = R.BandOf(Standing), Cash = Cash };
+        sealed class PCtx { public Person P = null!; public Event Ev = null!; public Band Band; public string? Outcome; public bool Reach = true; public long Cash; public string Mood = "neutral"; }
+        PCtx Ctx(Person p, Event ev) => new PCtx { P = p, Ev = ev, Band = R.BandOf(Standing), Cash = Cash, Mood = MoodNow(p) }; // brief 054 §4: the fit reads the true mood
         bool AllHold(List<Cond> cs, PCtx x) { foreach (var c in cs) if (!Holds(c, x)) return false; return true; }
         Outcome_ FirstOutcome(Event ev, PCtx x) { foreach (var o in ev.Outcomes) if (AllHold(o.When, x)) return new Outcome_(o); throw new InvalidOperationException("no outcome"); }
         readonly struct Outcome_ { public readonly string Id; public readonly List<Eff> Changes; public Outcome_(ROutcome o) { Id = o.Id; Changes = o.Changes; } }
@@ -450,21 +458,21 @@ namespace Suborned.Sim
             {
                 case "tier": return c.S("is") == "simulated";
                 case "turned": if (c.N.Has("of")) break; return p.Turned == c.B("is");
-                case "known": return p.Knows(c.S("what")) == (!c.N.Has("is") || c.B("is"));
+                case "known": return KnowsGate(p, c.S("what")) == (!c.N.Has("is") || c.B("is"));
                 case "leverage": // Motive, motive-lovers.md §2.2: the need it acts on (known), or the person's secret known
                     {
                         var r = R.ApproachRequires(c.S("approach"));
                         return ((r == "nothing" || p.Knows(r)) && R.NeedMetBy(p.Need, c.S("approach"))) || p.Knows("secret");
                     }
-                case "lover-within": { if (p.Lover == null) return false; var a = PersonPos(p); var b = PersonPos(p.Lover); return a.HasValue && b.HasValue && G.Within(a.Value, b.Value, (int)R.Num(c.S("m")) * 100); }
-                case "requires": { var r = R.ApproachRequires(c.S("approach")); return r == "nothing" || p.Knows(r); }
+                case "requires": { var r = R.ApproachRequires(c.S("approach")); return r == "nothing" || KnowsGate(p, r); }
+                case "orders-base": { long n = OrdersBase(x.Ev, x); return (!c.N.Has("above") || n > R.Num(c.S("above"))) && (!c.N.Has("atMost") || n <= R.Num(c.S("atMost"))); }
                 case "need-met-by": return R.NeedMetBy(p.Need, c.S("approach"));
                 case "need-is": return c.L("in").Contains(p.Need);
                 case "need-met": return p.NeedMet == c.B("is");
                 case "reach": return x.Reach;
                 case "cash-covers": return x.Cash >= Quote(x.Ev, p).WorstUsd;
                 case "memory": if (c.N.Has("of") || c.N.Has("this")) break; return p.Has(c.S("act")) == c.B("has");
-                case "fit": return c.L("is").Contains(FitId(R.FitOf(x.Ev.Id.Substring(5), p.Temperament, x.Band)));
+                case "fit": return c.L("is").Contains(FitId(R.FitWithMood(x.Ev.Id.Substring(5), p.Temperament, x.Band, x.Mood))); // brief 054 §4.2: the mood steps it
                 case "temperament": return c.L("in").Contains(p.Temperament);
                 case "standing": return c.L("band").Contains(Rules.BandId(x.Band));
                 case "orders-reached": return (p.Count(R.HelpedAct) + 1 >= OrdersFor(x.Ev, x)) == c.B("is");
@@ -489,10 +497,24 @@ namespace Suborned.Sim
             }
             throw new FormatException($"condition '{c.K}' is not evaluated inside a mission");
         }
-        static string FitId(Fit f) => f == Fit.Suits ? "suits" : f == Fit.Worse ? "worse" : "refused";
+        static string FitId(Fit f) => f == Fit.Suits ? "suits" : f == Fit.Worse ? "worse" : f == Fit.Ready ? "ready" : "refused";
         static readonly string[] TemperamentConds = { "fit", "temperament", "reports", "reports-approach", "orders-reached" };
         static bool ReadsTemperament(List<Cond> cs) { foreach (var c in cs) if (Array.IndexOf(TemperamentConds, c.K) >= 0) return true; return false; }
 
+        /// <summary>Brief 054 §4.2: a Help's orders from the lines that hold, before a ready step (lines that take orders away are left out).</summary>
+        long OrdersBase(Event ev, PCtx x)
+        {
+            long n = 0; bool any = false;
+            for (int i = 0; i < ev.Price.Count; i++)
+            {
+                var l = ev.Price[i];
+                if (l.Orders != null && l.OrdersV < 0) continue;
+                if (l.When.Exists(c => c.K == "orders-base")) continue;
+                if (!AllHold(l.When, x)) continue;
+                if (l.Orders != null) { n += l.OrdersV; any = true; } else if (i == 0) { n += 1; any = true; }
+            }
+            return any && n > 0 ? n : 1;
+        }
         long OrdersFor(Event ev, PCtx x)
         {
             long n = 0; bool any = false;
@@ -524,7 +546,8 @@ namespace Suborned.Sim
             q.Orders = OrdersFor(ev, x);
             q.Outcome = p.KTemperament ? FirstOutcome(ev, x).Id : Agree(p, t => FirstOutcome(ev, WithTemperament(x, t)).Id);
             q.Event = ev.Id;
-            if ((ev.Id.StartsWith("scout.", StringComparison.Ordinal) || ev.Id == "cell.watch") && !ScoutTeaches(ev, p)) q.Refused = ev.Id == "scout.listen" ? "already-heard" : "already-watched"; // the same test Issue refuses by
+            if ((ev.Id.StartsWith("scout.", StringComparison.Ordinal) || ev.Id == "cell.watch") && !ScoutTeaches(ev, p)) q.Refused = ev.Id == "scout.listen" ? "already-heard" : WatchRefusal(p);
+            QuoteMood(q, ev, p); // brief 054 §4.3 // the same test Issue refuses by
             q.Leverage = ev.Id == "turn.pressure" && p.Knows("secret");
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal) && p.KnownRefused.Contains(ev.Id.Substring(5))) q.Outcome = "refused"; // a refusal seen: ✗
             if (ev.Id.StartsWith("turn.", StringComparison.Ordinal))
@@ -536,7 +559,12 @@ namespace Suborned.Sim
                 q.AlertIfReported = Math.Max(Alert, list[Math.Min(Reported + 1, list.Length) - 1]);
             }
             var at = PersonPos(p);
-            if (at.HasValue && !ev.Private) q.Witnesses = WitnessesWithPos(at.Value, p).Count; // who would see it: the same reading as witness.sees (WitnessAct), crowd included
+            if (at.HasValue && !ev.Private) // who would see it: the same reading as witness.sees (WitnessAct), crowd included; brief 054 §3.5: by the notice rule, with ids
+            {
+                string wa = ev.Witnesses.Count > 0 ? ev.Witnesses[0].Act : "threat";
+                foreach (var (w, _) in WitnessesWithPos(at.Value, p, NoticeActOf(wa))) q.WitnessIds.Add(w.Id);
+                q.Witnesses = q.WitnessIds.Count;
+            }
             return q;
         }
         static readonly Cond ReportsCond = new Cond(JNode.Parse("{\"k\": \"reports\"}"));
@@ -566,9 +594,10 @@ namespace Suborned.Sim
 
         PCtx WithTemperament(PCtx x, string t)
         {
-            var q = new Person { Role = x.P.Role, Id = x.P.Id, Name = x.P.Name, Temperament = t, Need = x.P.Need, Turned = x.P.Turned, NeedMet = x.P.NeedMet, KRoutine = x.P.KRoutine, KNeed = x.P.KNeed, KTemperament = x.P.KTemperament, Place = x.P.Place, Secret = x.P.Secret, KSecret = x.P.KSecret, Lover = x.P.Lover, Record = x.P.Record, Size = x.P.Size, Holder = x.P.Holder };
+            var q = new Person { Role = x.P.Role, Id = x.P.Id, Name = x.P.Name, Temperament = t, Need = x.P.Need, Turned = x.P.Turned, NeedMet = x.P.NeedMet, KRoutine = x.P.KRoutine, KNeed = x.P.KNeed, KTemperament = x.P.KTemperament, Place = x.P.Place, Secret = x.P.Secret, KSecret = x.P.KSecret, Lover = x.P.Lover, Record = x.P.Record, Size = x.P.Size, Holder = x.P.Holder, KMood = x.P.KMood };
             Array.Copy(x.P.Sc, q.Sc, 4); q.Memory.AddRange(x.P.Memory);
-            return new PCtx { P = q, Ev = x.Ev, Band = x.Band, Outcome = x.Outcome, Reach = x.Reach, Cash = x.Cash };
+            // brief 054 §4.3: the card's "?" reads the mood the cell knows (its Watch's), never the true one
+            return new PCtx { P = q, Ev = x.Ev, Band = x.Band, Outcome = x.Outcome, Reach = x.Reach, Cash = x.Cash, Mood = x.P.KMood.Length > 0 ? x.P.KMood : "neutral" };
         }
         /// <summary>The answer every temperament gives alike, else "?" (Motive's review, other findings 3).</summary>
         string Agree(Person p, Func<string, string> f)
@@ -583,6 +612,7 @@ namespace Suborned.Sim
         /// <summary>Whether the Fixer could call this contact now (the action card's Call), without calling.</summary>
         public bool CanCall(string role)
         {
+            if (!IsPersonRoleName(role)) return false; // engine 0.30.0: a crowd person or an unknown id is no contact
             var p = PersonByRole(role); var f = OpOf(OpId.Fixer);
             if (Over || f.Busy != null || p.Down || !p.Turned) return false;
             if (p == Driver) return Vale != ValeAt.Car && (BlockMove == INF || Tick >= BlockedUntil + blockMoveT) && Tick < T(driverLastS) - blockMoveT;
@@ -634,6 +664,7 @@ namespace Suborned.Sim
         string CallRefusal(Op op, string role)
         {
             if (op.Id != OpId.Fixer) return No("only-fixer", "only the Fixer calls contacts (§03)");
+            if (!IsPersonRoleName(role)) return No("not-a-contact", $"'{role}' is not a contact"); // engine 0.30.0 (Suture's bot pass): refused, not thrown
             var p = PersonByRole(role);
             if (p.Down) return No("person-down", $"{p.Role} is down");
             if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
@@ -741,6 +772,8 @@ namespace Suborned.Sim
             if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
             RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : "gap"; // a takedown is no shooting (brief 013 E4)
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
+            AtEntry = new RouteFacts { Lured = LureTick >= 0 && !GuardHeld, Looped = LoopOn && LoopCam == "entrance", PatrolAway = !PatrolDown && PatrolAwayUntil > Tick,
+                PatrolSweeping = !PatrolDown && PatrolAwayUntil <= Tick && !PatrolChasing && PatrolUnit() == null }; // engine 0.30.0 (brief 060 #8): the debrief's route lines, output only
             bool alarm = Alert >= 2; // Sky 2026-10-15 Q5 (rulebook cell.enter.alarm): once Alert ≥ 2 the Office staff hide Vale
             op.Gun.Order = ""; op.Gun.Target = "";
             Engage(op, o, R.EnterS + (alarm ? R.EnterAlarmS : 0));
@@ -760,6 +793,7 @@ namespace Suborned.Sim
             if (RivalsPresent && (!RivalsDrawn || (rp.HasValue && G.Within(op.Pos, rp.Value.pos, RivalsGun.W!.EffCm)))) // drawn rivals within their weapon's effective reach
             { Fail("rivals-reach-vale", "The rival crew follows Vale's car and reaches the pickup first.", () => With(Because("beat-to-pickup", true, Locate("rivals", "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";
+            AtTake = new RouteFacts { CameraBlocked = !PickupService && !PickupCameraLive() }; // engine 0.30.0 (brief 060 #8): the debrief's route lines, output only
             Vale = ValeAt.Taking;
             Engage(op, o, R.TakeS);
             TakeScan(); // a Take seen is a takedown seen (brief 013 D; rev 4: its struggle, unless inside his own car)

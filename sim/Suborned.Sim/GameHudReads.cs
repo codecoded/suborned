@@ -133,7 +133,13 @@ namespace Suborned.Sim
         ///  · reroute, patrol: the patrol away on false orders until PatrolAwayUntil (patrol.returns).
         ///  · mislead, rivals: the False tip, the rival crew away until RivalsDelayedUntil (no log code at its end; a retreat under fire is
         ///    not a window).
-        ///  · loop, the camera id (LoopCam): held while the Tech stays at the cabinet, Until -1 (loop.ends).</summary>
+        ///  · loop, the camera id (LoopCam): held while the Tech stays at the cabinet, Until -1 (loop.ends).
+        ///  · seal, district (brief 057 §4, engine 0.30.0): the seal clock, from the tick Lockdown was last set or pulled earlier (From) to
+        ///    Lockdown (Until), the district sealing then unless the car leaves first (seal.starts, security.called, fight.loud set it; a later
+        ///    report may pull it earlier: From and Until move, Origin is that report). Origin: the report whose time is running (FailCause's
+        ///    LastMove, else its Origin): Because loud-fight (the shooting), response (a report called the response: Report says which,
+        ///    gunfire:*, drawn-seen:*, post-empty:* = a missed check-in, report:*), confirmed (a unit confirmed a reported act; Confirmer);
+        ///    null when the engine kept none. Not listed once the run is over.</summary>
         public List<OpenWindow> Windows()
         {
             var l = new List<OpenWindow>();
@@ -147,6 +153,7 @@ namespace Suborned.Sim
             if (!PatrolDown && PatrolAwayUntil > Tick) l.Add(new OpenWindow("reroute", "patrol", PatrolAwayUntil));
             if (RivalsDelayMethod == "mislead" && RivalsDelayedUntil > Tick && !RivalsAbsorbed) l.Add(new OpenWindow("mislead", "rivals", RivalsDelayedUntil));
             if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, -1));
+            if (!Range && !Over && Lockdown < INF) l.Add(new OpenWindow("seal", "district", Lockdown, sealMovedAt, SealRunning)); // brief 057 §4 (engine 0.30.0)
             return l;
         }
     }
@@ -155,7 +162,11 @@ namespace Suborned.Sim
     public sealed class OpenWindow
     {
         public readonly string Kind, Thing; public readonly int Until;
-        public OpenWindow(string kind, string thing, int until) { Kind = kind; Thing = thing; Until = until; }
+        /// <summary>The tick the window opened or last moved, where the engine keeps it (seal only, engine 0.30.0); -1 otherwise.</summary>
+        public readonly int From;
+        /// <summary>The seal only (engine 0.30.0): the report whose time is running (FailCause.cs CauseOrigin); null otherwise.</summary>
+        public readonly CauseOrigin? Origin;
+        public OpenWindow(string kind, string thing, int until, int from = -1, CauseOrigin? origin = null) { Kind = kind; Thing = thing; Until = until; From = from; Origin = origin; }
         public override string ToString() => Kind + ":" + Thing + "@" + Until.ToString(System.Globalization.CultureInfo.InvariantCulture);
     }
 }

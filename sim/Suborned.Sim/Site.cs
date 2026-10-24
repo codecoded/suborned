@@ -12,6 +12,9 @@ namespace Suborned.Sim
         /// <summary>Every head's facing (a mast carries several; the mission's poles one, Facing). World: built by the world's rules
         /// (sim/data/handover.takedown.json watchers), so the Tech's cabinet can loop it; the mission's poles are the mission's.</summary>
         public Pt[] Facings = Array.Empty<Pt>(); public bool World;
+        /// <summary>Brief 055 §7: the camera's kind, which sets its lens height (rulebook perception.mount): the mission's poles "pole-camera"
+        /// (site cameras[].kind), the world's masts "mast-camera". "" only on a site written before 0.28.0 (the range's parked poles).</summary>
+        public string Kind = "";
     }
     public sealed class CastRole
     {
@@ -202,7 +205,7 @@ namespace Suborned.Sim
                 int range = x["range"].Int(), deg = x["coneDeg"].Int();
                 if (fs.Count == 0 || range <= 0 || range > 100_000 || deg < 2 || deg > 178) throw new FormatException($"{x.Path}: a camera needs facings, a range and a cone 2..178°");
                 if (Cameras.Exists(c => c.Id == seg)) throw new FormatException($"{x.Path}: camera {seg} repeats");
-                Cameras.Add(new Camera { Id = seg, At = Pt.Of(x["at"]), Facing = fs[0], Facings = fs.ToArray(), Reach = range, Half = (int)((long)range * TanHalf[deg / 2] / 10000), World = true });
+                Cameras.Add(new Camera { Id = seg, At = Pt.Of(x["at"]), Facing = fs[0], Facings = fs.ToArray(), Reach = range, Half = (int)((long)range * TanHalf[deg / 2] / 10000), World = true, Kind = "mast-camera" });
             }
             HasTakedownWorld = true;
         }
@@ -221,7 +224,7 @@ namespace Suborned.Sim
             if (r["schema"].Str() != "suborned.sim.site/1") throw new FormatException("site schema is not suborned.sim.site/1");
             Mission = r["mission"].Str();
             if (Mission != "handover" && Mission != "range") throw new FormatException("only the Handover plays (brief 011), and the fight range (brief 029)");
-            r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "src");
+            r["grid"].Only("x0", "y0", "cell", "nx", "ny", "body", "rows", "floor", "collide", "drawn", "src");
             Grid = new Grid(r["grid"]);
             // brief 023 (engine 0.8.2, rulebook car.drive): where a car may be, on the walk grid's window and cells. Required: no car moves without it
             var dg = r.Opt("drive") ?? throw new FormatException("site drive is missing: engine 0.8.2 routes every moving car on the drive grid (rulebook car.drive, tools/sim/drive.ts)");
@@ -249,8 +252,8 @@ namespace Suborned.Sim
             }
             foreach (var c in r["cameras"].Items)
             {
-                c.Only("id", "at", "facing", "reach", "half", "src", "reason");
-                var cam = new Camera { Id = c["id"].Str(), At = Pt.Of(c["at"]), Facing = Pt.Of(c["facing"]), Reach = c["reach"].Int(), Half = c["half"].Int() };
+                c.Only("id", "kind", "at", "facing", "reach", "half", "src", "reason");
+                var cam = new Camera { Id = c["id"].Str(), Kind = c.Opt("kind")?.Str() ?? "", At = Pt.Of(c["at"]), Facing = Pt.Of(c["facing"]), Reach = c["reach"].Int(), Half = c["half"].Int() };
                 cam.Facings = new[] { cam.Facing };
                 if (cam.Facing == new Pt(0, 0) || cam.Reach <= 0 || cam.Reach > 100_000 || cam.Half < 0) throw new FormatException($"{c.Path}: a camera needs a facing and a reach");
                 Cameras.Add(cam);
@@ -344,6 +347,13 @@ namespace Suborned.Sim
         public bool Sight(Pt a, Pt b, int eye)
         {
             foreach (var o in Occluders) if (o.Blocks(a, b, eye)) return false;
+            return true;
+        }
+        /// <summary>Brief 055 §7 (rulebook perception.mount): true if no occluder's prism crosses the 3D line from a at za to b at zb (block z
+        /// cm). own: a camera's lens point, whose own piece (an occluder whose footprint holds it in plan) never blocks its lines.</summary>
+        public bool Sight3(Pt a, int za, Pt b, int zb, bool own = false, bool ownB = false)
+        {
+            foreach (var o in Occluders) { if ((own && o.Contains(a)) || (ownB && o.Contains(b))) continue; if (o.Blocks3(a, za, b, zb)) return false; }
             return true;
         }
         public bool InsideOccluder(Pt p) { foreach (var o in Occluders) if (o.Contains(p)) return true; return false; }

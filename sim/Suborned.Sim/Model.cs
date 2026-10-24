@@ -25,6 +25,8 @@ namespace Suborned.Sim
         public readonly List<Mem> Memory = new List<Mem>();
         public bool Turned, NeedMet, Down;
         public bool KRoutine, KNeed, KTemperament, KSecret; // the cell's knowledge of this person
+        /// <summary>Brief 054 §2.3: the mood the cell saw at its last Watch of this person ("" never watched; hashed only when set).</summary>
+        public string KMood = "";
         public string Secret = "";                 // people.rules secrets: affair, record, or none (Motive, motive-lovers.md)
         public Person? Lover;                       // the other end of a lover tie, when both are cast
         public int Summoned;                        // times this person came to a lover's call this shift
@@ -261,6 +263,8 @@ namespace Suborned.Sim
             "takedown-how", "takedown-vale", "no-body", "body-stashed", "not-carrying", "stand-at-stash", "stash-full", "body-dead", "already-restrained", "stand-beside-body", "doors-locked", "door-held",
             // Sky 2026-10-18: a Watch or Listen that can teach nothing more is refused, free (GameOrders.ScoutTeaches, GameSight.WatchWatcher)
             "already-heard", "already-watched",
+            // brief 054 §2.1 (engine 0.28.0): a Watch on a person that would show nothing the cell can act on, free; the host draws no row
+            "nothing-to-see",
             // brief 018 (Sky 2026-10-18): Board and Go
             "board-running", "board-tethered", "in-car", "car-empty", "fire-carrying-vale",
             // brief 023 (Motive 2026-10-19, rulebook fight.over): no fire order on a final-fight hostile once the final fight is over
@@ -284,10 +288,15 @@ namespace Suborned.Sim
         public string Event = "";            // the rulebook event the card prices
         public string Reports = "no";        // risk: "yes", "no" or "?" — would this person report the approach (+A)? (Motive's review, other findings 2)
         public int AlertIfReported;          // the Alert a report would raise it to
+        /// <summary>Brief 054 §3.5: the ids of the people counted in Witnesses (the hover's cones and Alt read them), in OnTheStreet order.</summary>
+        public readonly List<string> WitnessIds = new List<string>();
         public int Witnesses;                // risk: people within witness range of the target now, who would see a traceable act (+1 T); 0 for a private event (rulebook privacy)
         public int WalkS;                    // seconds the acting operative walks to stand within reach, 0 if already there
         public bool Leverage;                // Pressure on a known secret: "exposure: their secret" (Motive, motive-lovers.md §2.2)
         public SeenQuote? Seen;              // the card's "seen by" where the act is done (Preview only; rulebook sight.unknown): "?" for an unknown watcher
+        /// <summary>Brief 054 §4.3: the mood the card reads (known: a Watch's, or the true one once the temperament is known; "" none), and whether
+        /// it favours this approach (likely, a dashed tick) or hurts it (a dashed half).</summary>
+        public string Mood = ""; public bool Likely, Hurt;
         public string Refused = "";          // a Watch or Listen that can teach nothing more: already-watched or already-heard (Sky 2026-10-18), the row greyed; "" otherwise
     }
 }

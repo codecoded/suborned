@@ -1,0 +1,47 @@
+{
+  "schema": "suborned.hud.engine29/1",
+  "note": "Glyph, 2026-10-24. Numbers read from the lab (testbed/hud-style/world29.js) at play zoom 1080p, 38.6 px/m, ground flattened by 0.616. Widths are metres on the ground (what a LineRenderer takes). Every colour has a source; nothing new.",
+  "colours": { "cream": ["#f7f4ec", "kit.uss --cream"], "inkDeep": ["#0b1615", "kit.uss --ink-deep"], "coneRed": ["#e03a2f", "style contract signal_colours.cones"] },
+  "layer": "the signal layer: unlit, emissive, outside the post grade; depth-tested so what stands in front of the ground hides it",
+  "civilianCone": {
+    "read": "Game.PersonCone(id).Kind == wedge: At, Facing, Reach 1300 cm, HalfCm 2252 (+-60 deg)",
+    "shape": "a wedge, radii and the 13 m arc, rim only, no fill, no apex mark, still (it turns with the person)",
+    "line": { "edge": { "colour": "inkDeep", "alpha": 0.6, "widthM": 0.17 }, "rim": { "colour": "cream", "alpha": 1, "widthM": 0.075 } },
+    "cuts": "Fan.Shadows and the walls and decks the host already clips: the rim is removed inside them; a rim of 0.05 m cream over 0.12 m ink-deep (alpha 0.55) follows every cut edge inside the wedge",
+    "deadGround": "inside a Fan.Shadows polygon only: 45 deg hatch, cream 0.045 m lines on a 0.34 m pitch, alpha 0.7. Never a tint. Walls and decks are cut but not hatched.",
+    "showsWhen": "hover (one wedge at a time) or Alt (the armed order's people, 6 nearest; the non-hovered at alpha 0.9) and: Game.CaresAbout(id, armedAct), or the person is on the armed card's eye (Quote.WitnessIds, TakedownQuote.People), or Game.NoticesNow(id, act, point) for an operative's seen act now. Below Alert 2 a Pressure, a run or Vale's grip draws none.",
+    "neverRed": "a civilian is not a red signal; cream is the colour of the civilian hover ring (TARGET_RINGS.civilian)"
+  },
+  "securityFan": {
+    "unchanged": "wedge fill red 38 %, rim 0.085 m red, as built",
+    "shadows": "Fan.Shadows polygons are cut out of the fill and the rim; each cut gets a rim 0.045 m red (alpha 0.9) over 0.08 m ink-deep (alpha 0.45). No hatch: the ground shows through.",
+    "ring": "PersonSight.Kind == ring (security see all round within Reach): a closed ellipse, 0.07 m red over 0.14 m ink-deep (alpha 0.5), no fill, clipped like a fan; drawn on hover or Alt only when the armed act would count that person"
+  },
+  "nearBodyRing": {
+    "read": "PersonSight.NearCm (150 for a civilian on the street, 0 for security)",
+    "when": "with that civilian's wedge, only while the armed order leaves or drops a body: a takedown (knockout or kill) or a drop. Not a carry, not a stash.",
+    "shape": "a dashed ellipse at the feet, radius NearCm/100 m (57.9 px across x, 35.7 px down at play zoom), 36 dashes, 56 % on",
+    "line": { "edge": { "colour": "inkDeep", "alpha": 0.6, "widthM": 0.14 }, "rim": { "colour": "cream", "widthM": 0.07 } },
+    "why": "a ring is a place, a wedge is a direction; dashed tells it from the hover ring (solid, 0.68 m) and from the security ring (solid, red)"
+  },
+  "moodDisc": {
+    "read": "Game.MoodOf(role): '' and neutral draw nothing; friendly, uneasy, scared draw one disc",
+    "disc": "kit markers/disc_dark_24 on a 32 px element (the sprite's dark interior is 56 % of the element: keep the icon at 0.53, 17 px)",
+    "icons": ["icons/mood_friendly@2x.png", "icons/mood_uneasy@2x.png", "icons/mood_scared@2x.png"],
+    "iconSpec": "64 px @2x, solid cream, cut-outs transparent; friendly = round head, open smile; uneasy = round head, eyes glancing right, flat mouth, one drop; scared = head over hunched shoulders, wide eyes, round mouth, two tremble marks",
+    "position": "centred over the head, element bottom edge 2 px below the head top (about 54 px above the feet at play zoom)",
+    "max": "two icons over a person: the mood disc and, beside it with a 3 px gap, the person's one other icon (status); nothing else"
+  },
+  "predictionMarks": {
+    "likely": "Quote.Likely: a plate_dark pill (nine-slice 0.37, 22 px) at the end of the price line before the faces: a dashed ring 15 px (cream, 1.5 px, 3.1 on / 2.3 off) with a check 8 px, then the word 'likely' (Jost 12.5)",
+    "worse": "Quote.Hurt: the same plate with a dashed ring holding a half disc; no word",
+    "exact": "after Listen: the kit's solid mark_ok / mark_half 15 px in the same plate, no word, no dash",
+    "verbPlate": "the same dashed marks 15 px at the lower right of the knob, no word"
+  },
+  "watch": {
+    "offered": "Game.WatchOffered(role)",
+    "notOffered": "no row anywhere (action panel, ring, verbs 1-4, Intel's next step): rows close up in ContextRank order; the plate shows the next ranked verbs; trailing knobs, if fewer than four, use btn_verb_disabled as built; nothing struck, greyed or empty for 'nothing-to-see'; no pop, no pill, no sound",
+    "afterWatch": "already-watched greys the row as built; it returns if the mood changes"
+  },
+  "budget": { "limit": "15 % of the 1080p frame", "measured": "see qa/budget.json: 6.2 to 7.1 % at rest, 10 % with five pills on screen" }
+}

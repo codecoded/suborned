@@ -226,7 +226,7 @@ def hanging_basket(s):
 
 # ----------------------------------------------------------------- window box
 
-@asset("WindowBox", "Furnish")
+@asset("WindowBox", "Furnish", floor="clamp")  # brief 055 K-1: sprays that hang below the sill stop at it
 def window_box(s):
     """1.4 m ivory window box with a teal rim, chrome shoes, teal speed lines and a gold starburst; shrub and
     coral flowers with sprays over the front lip. Sits on a sill at z = 0, back toward +Y: 1.44 x 0.28 x 0.24 m."""

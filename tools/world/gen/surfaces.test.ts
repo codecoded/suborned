@@ -70,9 +70,9 @@ test('the market-deck cranes (4 masts, 4 booms) draw `crane`; the Skyport girder
 
 test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs and palm trunks stay `trim` (RoofKit paints roof items from roofItems)', () => {
   const booths = w.street.filter(s => s.kind === 'phone-booth'), tubs = w.street.filter(s => s.kind === 'tub-palm');
-  expect(booths.length).toBe(59); // 70 until the 11 booth pairs merged into twin booths (brief 026); 64 along the streets and the 6 call boxes the civic block's report rule placed (brief 013, street/civic/call-box-n; 4 until 2026-10-19, when the walk grid learned the pavement: a built plot blocks only behind its building line, so Starline's pavements, Rocket Lane's far side and the rest are ground the boxes must cover; and a box keeps 8 m off a post or the dock)
+  expect(booths.length).toBe(57); // 70 until the 11 booth pairs merged into twin booths (brief 026); 64 along the streets and the 6 call boxes the civic block's report rule placed (brief 013, street/civic/call-box-n; 4 until 2026-10-19, when the walk grid learned the pavement: a built plot blocks only behind its building line, so Starline's pavements, Rocket Lane's far side and the rest are ground the boxes must cover; and a box keeps 8 m off a post or the dock)
   for (const s of booths) expect(s.surface, s.id).toBe(BOOTH);
-  expect(withKey(BOOTH).length).toBe(59);
+  expect(withKey(BOOTH).length).toBe(57);
   expect(tubs.length).toBe(198); for (const s of tubs) expect(s.surface, s.id).toBe(TUB);
   expect(withKey(TUB).length).toBe(198); // nothing else in the world: not the 418 roof tubs
   const roofTubs = w.roofs.flatMap(r => r.parts).filter(p => /\/(tub|palm)-\d+$/.test(p.id));
@@ -81,22 +81,22 @@ test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs
 
 test('a crossing\'s lights draw `glow`, its arcs `inlay`, its orbs `orb`; its studs stay `trim` (brass, a frame line); no slab is left to draw `crossing`', () => {
   const part = (kind: string) => w.street.filter(s => s.kind === kind);
-  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(1464); for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
-  expect(part('crossing-field').length).toBe(747); for (const s of part('crossing-field')) expect(s.surface, s.id).toBe(GLOW); // the lit strip is light too
-  expect(part('crossing-arc').length).toBe(322); for (const s of part('crossing-arc')) expect(s.surface, s.id).toBe(INLAY);
-  expect(part('signal-orb').length).toBe(207); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
-  expect(part('crossing-stud').length).toBe(704); for (const s of part('crossing-stud')) expect(s.surface, s.id).toBe('trim');
+  expect(part('crossing-bar').length).toBe(0); expect(part('crossing-dots').length).toBe(1562); for (const s of part('crossing-dots')) expect(s.surface, s.id).toBe(GLOW);
+  expect(part('crossing-field').length).toBe(799); for (const s of part('crossing-field')) expect(s.surface, s.id).toBe(GLOW); // the lit strip is light too
+  expect(part('crossing-arc').length).toBe(370); for (const s of part('crossing-arc')) expect(s.surface, s.id).toBe(INLAY);
+  expect(part('signal-orb').length).toBe(228); for (const s of part('signal-orb')) expect(s.surface, s.id).toBe(ORB);
+  expect(part('crossing-stud').length).toBe(768); for (const s of part('crossing-stud')) expect(s.surface, s.id).toBe('trim');
   expect(part('crossing')).toEqual([]);
-  expect(withKey(GLOW).length).toBe(2211); expect(withKey(INLAY).length).toBe(322); expect(withKey(ORB).length).toBe(207); // 1464 dot rows + 747 lit strip modules
+  expect(withKey(GLOW).length).toBe(2361); expect(withKey(INLAY).length).toBe(370); expect(withKey(ORB).length).toBe(228); // 1562 dot rows + 799 lit strip modules
 });
 
-test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 477 + 2,740 parts in them', () => {
+test('the canopy, plate, hoop, booth, tub, crane and girder keys, and a crossing\'s glow, inlay and orb, are the whole of OWN_KEYS, and the export carries 475 + 2,959 parts in them', () => {
   const keys: string[] = [...OWN_KEYS], named: string[] = [BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB, GLOW, INLAY, ORB];
   expect(keys.sort()).toEqual(named.sort());
   const count = (ks: string[]) => ks.reduce((n, k) => n + withKey(k).length, 0);
-  expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(477);
-  expect(count([GLOW, INLAY, ORB])).toBe(2740);
-  expect(count(OWN_KEYS as unknown as string[])).toBe(3217);
+  expect(count([BOOTH, CANOPY, CRANE, GIRDER, HOOP, PLATE, TUB])).toBe(475);
+  expect(count([GLOW, INLAY, ORB])).toBe(2959);
+  expect(count(OWN_KEYS as unknown as string[])).toBe(3434);
 });
 
 test('nothing else moved: every other street kind keeps the surface it drew before', () => {
@@ -110,5 +110,5 @@ test('nothing else moved: every other street kind keeps the surface it drew befo
   const seen = new Map<string, Set<string>>();
   for (const s of w.street) seen.set(s.kind, (seen.get(s.kind) ?? new Set()).add(s.surface));
   for (const [kind, surfaces] of seen) expect([...surfaces], kind).toEqual([was[kind]!]);
-  expect(w.street.length - w.street.filter(s => s.id.startsWith('street/capstone/')).length).toBe(8193); // 8201 until 11 booth pairs became twins and 3 curved kiosks came (brief 026); (2026-10-19, the walk grid takes the pavement off the built plots (brief 023, Sky: add pavement): +2 call boxes and +1 police post on the pavements now in reach, two boxes where one stood by a post; before that: call boxes where a real city puts them: the call boxes are four again, one at each of the corner pavements that reach the block's ground, the same four as before the siting rule in number only; brief 023 drives: the street keeps 2 m off the service drive, no item moved; brief 013: +10 on the civic block: 1 stash container, 5 police posts, 4 call boxes; 2026-10-19, door option b: +1, a sixth police post, because the public door moved to the Office's west face and the Office doors are the response origins that cover the block) 3101 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
+  expect(w.street.length - w.street.filter(s => s.id.startsWith('street/capstone/')).length).toBe(8559); // 8201 until 11 booth pairs became twins and 3 curved kiosks came (brief 026); (2026-10-19, the walk grid takes the pavement off the built plots (brief 023, Sky: add pavement): +2 call boxes and +1 police post on the pavements now in reach, two boxes where one stood by a post; before that: call boxes where a real city puts them: the call boxes are four again, one at each of the corner pavements that reach the block's ground, the same four as before the siting rule in number only; brief 023 drives: the street keeps 2 m off the service drive, no item moved; brief 013: +10 on the civic block: 1 stash container, 5 police posts, 4 call boxes; 2026-10-19, door option b: +1, a sixth police post, because the public door moved to the Office's west face and the Office doors are the response origins that cover the block) 3101 without the 5,096 crossing parts (1,464 dot rows, 747 lit strip modules, 1,652 edge line modules, 207 orbs, 704 studs, 322 arcs): the 86 beacons gone where an eye stands, 6 trees and lamps moved out of the coverage sites' landings, and their bollards; the landing slabs are keep-clear footprints
 });

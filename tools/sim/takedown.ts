@@ -14,7 +14,8 @@ import { civic } from '../plan/civic';
 import type { V } from '../plan/geom';
 import { derive } from '../plan/plan';
 import { boxRing } from '../plan/street-zones';
-import { toBlockFn, walkGrid, CELL, WINDOW } from '../plan/walk-grid';
+import { toBlockFn, CELL, WINDOW } from '../plan/walk-grid';
+import { simGrid } from './solids';
 import { generated } from '../plan/world-ctx';
 import { pretty } from './site';
 
@@ -31,10 +32,18 @@ export function buildTakedown(): { json: string; data: unknown } {
   const d = derive(plan), civ = civic(plan.civic, block), toBlock = toBlockFn(plan.civic);
   const w = generated(plan, d, civ).w, t: Takedown | undefined = w.takedown;
   if (!t) throw new Error('the world has no takedown section: the civic block has no service door (brief 013)');
-  const G = walkGrid(plan, d, civ, WINDOW, CELL);
+  const drawnWalk = !!JSON.parse(read('sim/data/handover.site.json')).grid?.drawn?.walk;
+  const G = simGrid(plan, d, civ, JSON.parse(read('contracts/rules/rulebook.json')).values['eye-cm'].v / 100, WINDOW, CELL, drawnWalk); // the site's own grid (brief 055: with the drawn solids when the site holds them)
   const P = (p: V): Pt => { const q = toBlock(p); return [cm(q[0]), cm(q[1])]; };
   /** A stand must be free ground on the site's grid, or the engine's walkers can't stand there. */
-  const S = (p: V, what: string): Pt => { const q = toBlock(p); if (!G.free(q)) throw new Error(`${what} stands on blocked ground (${q})`); return [cm(q[0]), cm(q[1])]; };
+  // A stand must be free ground on the site's grid. The world places it on the block-only grid (quiet.ts), which does not hold the drawn solids; where the piece's own
+  // body clearance now covers it, the walker stands at the nearest free cell, as the site stands a place on a face (site.ts `stand`). More than SNAP away is an error.
+  const SNAP = 1.5;
+  const S = (p: V, what: string): Pt => {
+    let q = toBlock(p);
+    if (!G.free(q)) { const n = G.tryNearestFree(q); if (!n || Math.hypot(n[0] - q[0], n[1] - q[1]) > SNAP) throw new Error(`${what} stands on blocked ground (${q}), no free cell within ${SNAP} m`); q = n; }
+    return [cm(q[0]), cm(q[1])];
+  };
   const byId = new Map<string, StreetItem>(w.street.map((s) => [s.id, s]));
   const solid = (id: string) => { const s = byId.get(id)!; return { id, poly: boxRing(s.at, s.size[0], s.size[1], s.yaw).map(P), h: cm(s.size[2]) }; };
   const items = new Set<string>([...t.stashes.flatMap((s) => (s.item ? [s.item] : [])), ...t.report.flatMap((r) => (r.item ? [r.item] : [])), ...t.origins.flatMap((o) => (o.item ? [o.item] : []))]);
@@ -58,7 +67,9 @@ export function buildTakedown(): { json: string; data: unknown } {
     origins: t.origins.map((o) => ({ id: o.id, kind: o.kind, at: P(o.at), stand: S(o.stand, o.id), ...(o.door ? { door: o.door } : {}), ...(o.item ? { item: o.item } : {}) })),
     coverage: t.coverage,
     solids: civicItems.map(solid),
-    solidsSrc: 'the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid does not hold them: holding them would change the grid, and with it every walk and every replay',
+    solidsSrc: drawnWalk
+      ? 'the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid holds them too, as drawn (brief 055, tools/sim/solids.ts), so a stand inside one\'s body clearance stands at the nearest free cell'
+      : 'the footprints and heights of the pieces the rules placed (containers, call boxes, posts). The site grid does not hold them yet: the drawn walk (brief 055, tools/sim/solids.ts) is built and held until its adoption (tools/sim/site.ts SiteOptions)',
     watchers: t.watchers.map((x) => ({ id: x.id, kind: x.kind, at: P(x.at), facings: x.facings.map(dir), range: cm(x.range), coneDeg: x.coneDeg, inSim: false })),
     watchersSrc: 'the watchers the world stands in the window (plan streetscape.watchers.sites). The engine reads none of them yet: its cameras are mission.json cameras (entrance, pickup). briefs/013 C open issue 3; whose reading is right is Aster\'s call',
   };

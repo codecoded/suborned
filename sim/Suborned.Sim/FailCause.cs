@@ -69,6 +69,17 @@ namespace Suborned.Sim
         public CauseOrigin? Origin;
         /// <summary>The seal only: a later report that moved the seal clock earlier (the one whose time ran out), when it is not the origin.</summary>
         public CauseOrigin? LastMove;
+        /// <summary>The seal only (brief 057 §4, engine 0.30.0): the getaway car's state at the tick the district sealed, so the fail card, the fail
+        /// camera and the debrief say why the seal cost the run. "empty": Vale was not aboard; "ready": Vale was aboard, nothing held the car and
+        /// Go was never given; "held": Vale was aboard and combatants held the car (Go would have been refused car-held), Holders naming them.
+        /// "" on every other ending.</summary>
+        public string Car = "";
+        /// <summary>Car "held" only: the holders at the seal, in id order: exactly Game.CarHolders() (the hold Go's car-held refusal names).</summary>
+        public readonly List<string> Holders = new List<string>();
+        /// <summary>Car "ready" or "held": the tick Vale boarded (his board.in), -1 otherwise.</summary>
+        public int AboardAt = -1;
+        /// <summary>The seal only: the last Go refused before the seal (its tick, -1 for none) and its code (car-held, car-empty).</summary>
+        public int GoRefusedAt = -1; public string GoRefused = "";
 
         public void Write(JWriter w)
         {
@@ -77,6 +88,11 @@ namespace Suborned.Sim
             w.OpenArr("ops"); foreach (var o in Ops) w.Str(o); w.EndArr();
             if (Origin != null) { w.Key("origin"); Origin.Write(w); }
             if (LastMove != null) { w.Key("lastMove"); LastMove.Write(w); }
+            if (Car.Length > 0) // brief 057 §4: written only for the seal, so every other cause's line is the bytes it was
+            {
+                w.Prop("car", Car); w.OpenArr("holders"); foreach (var h in Holders) w.Str(h); w.EndArr();
+                w.Prop("aboardAt", AboardAt).Prop("goRefusedAt", GoRefusedAt).Prop("goRefused", GoRefused);
+            }
             w.EndObj();
         }
         public string Json() { var w = new JWriter(); Write(w); return w.ToString(); }
@@ -210,7 +226,7 @@ namespace Suborned.Sim
 
         /// <summary>The seal clock moved: the first report that set it is the origin (what started the chain); a later one that moved it is
         /// the last move (whose time ran out). Read when the district seals.</summary>
-        void SealOrigin(int before, Func<CauseOrigin?> origin)
+        void NoteSealOrigin(int before, Func<CauseOrigin?> origin)
         {
             if (Lockdown == before) return;
             try
@@ -220,12 +236,39 @@ namespace Suborned.Sim
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { }
         }
+        /// <summary>Brief 057 §4 (engine 0.30.0): the tick the seal clock was last set or pulled earlier, for Windows()' seal entry. Output only.</summary>
+        int sealMovedAt = -1;
+        void SealMoved(int before) { if (Lockdown != before) sealMovedAt = Tick; }
+        /// <summary>The report whose seal time is running now (the last move, else the origin), or null: Windows()' seal entry.</summary>
+        CauseOrigin? SealRunning => sealLast ?? sealOrigin;
+        /// <summary>Live, while the seal clock runs (brief 057 §4.1, engine 0.30.0; the clock's hover icon): the report whose seal time is running
+        /// now (a later report that pulled the clock earlier, else the one that set it), null before the clock is set or when the engine kept
+        /// none. Because: loud-fight (the shooting made the final fight loud), response (a report called the response: Report gunfire:<target>,
+        /// drawn-seen:<op>, post-empty:<who> = a missed check-in, report:<kind>:<victim>, ...), confirmed (a unit confirmed a reported act:
+        /// Confirmer). Reporter: who reported it (Id in the engine's grammar: camera:<id>, guard, patrol, security-<n>, robot-<n>, a person's
+        /// role or id, desk, heard; Kind camera, guard, patrol, officer, robot, person, desk, heard) where they stood. Output only.</summary>
+        public CauseOrigin? SealOrigin => Lockdown < INF ? SealRunning : null;
+        /// <summary>Live: the report that first set the seal clock (FailCause.Origin at a seal), null before. Output only.</summary>
+        public CauseOrigin? SealFirstOrigin => Lockdown < INF ? sealOrigin : null;
+
         FailCause Sealed()
         {
             var c = Because("sealed", false); c.Origin = sealOrigin; c.LastMove = sealLast;
             if (sealOrigin != null) With(c, sealOrigin.Ops.ToArray());
             if (sealLast != null) With(c, sealLast.Ops.ToArray());
+            CarAtSeal(c);
             return c;
+        }
+        /// <summary>Brief 057 §4 (engine 0.30.0): the getaway car's state as the district seals: empty (Vale not aboard), held (Vale aboard and
+        /// the hold stands: CarHolders(), the same list Go's car-held refusal names) or ready (Vale aboard, the car free, Go never given).</summary>
+        void CarAtSeal(FailCause c)
+        {
+            if (Vale != ValeAt.Car) c.Car = "empty";
+            else
+            {
+                var hs = CarHolders(); c.Holders.AddRange(hs); c.Car = hs.Count > 0 ? "held" : "ready"; c.AboardAt = valeAboardAt;
+            }
+            if (goRefusedAt >= 0) { c.GoRefusedAt = goRefusedAt; c.GoRefused = goRefused; }
         }
 
         /// <summary>Alert reached 2 (search): who raised it, read from the ledger's cause and the report landing now. For a loud final fight.</summary>

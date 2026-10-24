@@ -35,7 +35,7 @@ namespace Suborned.Play
         static Vector3? World(HandoverHost h, string kind, string key) => h.TargetWorld(new HandoverHost.Target { Kind = kind, Key = key });
 
         /// <summary>Draws every armed agent in `who` (a draw order each, the engine stepped until drawn, 3 s at most).</summary>
-        static void DrawAll(HandoverHost h, IEnumerable<int> who)
+        public static void DrawAll(HandoverHost h, IEnumerable<int> who)
         {
             var g = h.Game; var list = who.Where(k => g.Ops[k].Gun.W != null && !g.Ops[k].Down).ToList();
             foreach (int k in list) if (!g.Ops[k].Gun.Drawn) h.Issue(new Order { Op = Op.Name((OpId)k), Do = "draw" });
@@ -49,12 +49,17 @@ namespace Suborned.Play
             // A · amber: the whole cell drawn, the guard and the patrol in frame
             h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; var g = h.Game;
             if (h.View) h.View.orthographicSize = 14f;
+            // Glyph's 0.2.94 review #2: the patrol in frame with the guard: the clock runs (no orders) until the patrol's round brings it within
+            // 18 m of the guard (2 min at most), then the cell draws
+            long Near() { var a = g.PosOf("guard"); var b = g.PosOf("patrol"); if (!a.HasValue || !b.HasValue) return long.MaxValue; long dx = a.Value.X - b.Value.X, dy = a.Value.Y - b.Value.Y; return dx * dx + dy * dy; }
+            { int lim = g.Tick + Suborned.Sim.Game.T(120); while (g.Tick < lim && !g.Over && Near() > 1800L * 1800L) h.RunTo(System.Math.Min(lim, g.Tick + 5)); }
             h.SelectAll(); DrawAll(h, Enumerable.Range(0, 4));
-            var guardAt = World(h, "person", "guard"); if (guardAt.HasValue) h.LookAt(guardAt.Value);
+            var guardAt = World(h, "person", "guard"); var patrolAt = World(h, "patrol", "patrol");
+            if (guardAt.HasValue) h.LookAt(patrolAt.HasValue && Near() <= 1800L * 1800L ? (guardAt.Value + patrolAt.Value) / 2f : guardAt.Value);
             yield return Frames(4); string ringsA = RingsNow(h);
             bool aOk = h.TargetRings.Any(r => r.Side == HandoverHost.RingSide.Guard && !r.Aim && !r.Fire);
             yield return Shoot(dir, "ring-plain-amber", log);
-            parts.Add($"\"amber\": {{\"ok\": {B(aOk)}, \"drawn\": \"{string.Join(",", Enumerable.Range(0, 4).Where(k => g.Ops[k].Gun.Drawn))}\", \"rings\": \"{J(ringsA)}\"}}"); ok &= aOk;
+            parts.Add($"\"amber\": {{\"ok\": {B(aOk)}, \"tick\": {g.Tick}, \"patrolM\": {(Near() == long.MaxValue ? -1 : Mathf.Sqrt(Near()) / 100f).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)}, \"drawn\": \"{string.Join(",", Enumerable.Range(0, 4).Where(k => g.Ops[k].Gun.Drawn))}\", \"rings\": \"{J(ringsA)}\"}}"); ok &= aOk;
             log.Add($"rings amber: {(aOk ? "ok" : "FAILED")}: {ringsA}");
             // B · out of reach: only the armed agent farthest past its own max ring from the guard (or the patrol) selected
             int outK = -1; string outOf = ""; float worst = 0f;

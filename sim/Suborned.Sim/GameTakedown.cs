@@ -130,7 +130,8 @@ namespace Suborned.Sim
             // Motive rev 3 §1.3: a person who witnessed one of the cell's acts (a takedown, a carry, a drawn weapon) stays aware of the
             // Enforcer for the rest of the mission (until Pulse gives a stop its facing)
             if (!aware) foreach (var m in p.Memory) if (m.Act == "saw-takedown" || m.Act == "saw-carry" || m.Act == "saw-weapon-drawn") { aware = true; break; }
-            if (!aware) { var f = FacingOf(p); if (f.HasValue && G.InCone(at, f.Value, R.FacingReachCm, R.FacingHalfCm, 0, e.Pos) && Sees(at, e.Pos)) aware = true; }
+            if (!aware && R.PeopleCone && !IsStaff(p)) { if (InPeopleCone(p, at, e.Pos) && Sees(at, e.Pos)) aware = true; } // brief 054 §3.3: a civilian target by the people cone
+            else if (!aware) { var f = FacingOf(p); if (f.HasValue && G.InCone(at, f.Value, R.FacingReachCm, R.FacingHalfCm, 0, e.Pos) && Sees(at, e.Pos)) aware = true; }
             return (aware, armed);
         }
         /// <summary>The way a person faces now, if the engine knows it: a walker on the move, the way they walk; else none.</summary>
@@ -141,6 +142,8 @@ namespace Suborned.Sim
             {
                 if (w.Run != null && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking") && Tick >= w.RunStart)
                 { long mm = (long)(Tick - w.RunStart) * (w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : opSpeed); if (mm < w.Run.Length) return w.Run.Heading(mm); }
+                // brief 054 §3.3 (cone): the startled face what startled them
+                if (stopFace != null && w.St == "startled" && lastShooterFor.TryGetValue(w.P.Id, out var src)) { var d = src - w.At; if (d != new Pt(0, 0)) return d; }
                 return null;
             }
             var c = People2!;
@@ -148,8 +151,13 @@ namespace Suborned.Sim
                 if (Tick >= w.To[i] && Tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
                 {
                     var path = CrowdPath(w.Place[i], w.Place[i + 1]); int span = w.From[i + 1] - w.To[i];
-                    return span <= 0 ? (Pt?)null : path.Heading(LegMm(w, path, Tick - w.To[i], span));
+                    if (span <= 0) return null;
+                    long lm = LegMm(w, path, Tick - w.To[i], span);
+                    if (stopFace != null && lm >= path.Length && StopFace(w.Place[i + 1]) is Pt sf) return sf; // brief 054 §3.3: early at the leg's end, waiting
+                    return path.Heading(lm);
                 }
+            // brief 054 §3.3 (cone): at a stop on the street, the stop's facing
+            if (stopFace != null) for (int i = 0; i < w.Place.Length; i++) if (Tick >= w.From[i] && Tick < w.To[i] && w.Out[i]) return StopFace(w.Place[i]);
             return null;
         }
 
@@ -313,7 +321,7 @@ namespace Suborned.Sim
             foreach (var (p, wp) in OnTheStreet())
             {
                 if (p == a.P || a.Noticed.Contains(p.Id) || Accomplice(a, p)) continue; // rev 4: an accomplice is never a witness
-                if (!G.Within(wp, at, witnessRange) || !Sees(wp, at)) continue;
+                if (!Notices(p, wp, at, what == "act" ? "takedown" : what)) continue; // brief 054 §3.2: act (a takedown, the Take's struggle), carry, body
                 if (dry) return true;
                 a.Noticed.Add(p.Id);
                 PersonNotices(a, p, wp, what, b);
@@ -432,6 +440,10 @@ namespace Suborned.Sim
 
         /// <summary>A scream (Pulse §2.1 shout): heard within witness.scream with no line. A hearer with a line within witness range has
         /// seen it already; the rest hold heard-alarm (a lead: place and time).</summary>
+        /// <summary>What a hearer of a scream turns to see: the act while it lasts, the body carried, else the body.</summary>
+        string ShoutWhat(TdAct a) { var b = BodyOfAct(a); return b == null ? "act" : b.Seizing ? "act" : b.Carrier.HasValue ? "carry" : "body"; }
+        Body? ShoutBody(TdAct a) => BodyOfAct(a);
+        Body? BodyOfAct(TdAct a) { foreach (var b in Bodies) if (ActOf(b) == a) return b; return null; }
         void Shout(TdAct a, Pt at, Person by)
         {
             Note("witness.scream", $"{Who(by)} screams.");
@@ -439,6 +451,8 @@ namespace Suborned.Sim
             {
                 if (p == by || p == a.P || a.Noticed.Contains(p.Id) || a.Heard.Contains(p.Id)) continue;
                 if (!G.Within(wp, at, R.ScreamCm)) continue;
+                // brief 054 §3.2: a hearer within witness range on a clear line turns and sees what is there (cone only; around saw it already)
+                if (R.PeopleCone && !Accomplice(a, p) && Notices(p, wp, at, "scream")) { a.Noticed.Add(p.Id); PersonNotices(a, p, wp, ShoutWhat(a), ShoutBody(a)); if (Over) return; continue; }
                 a.Heard.Add(p.Id); Remember(p, "heard-alarm", "", false);
             }
         }
@@ -769,7 +783,8 @@ namespace Suborned.Sim
             foreach (var (p, wp) in OnTheStreet())
             {
                 if (p == a.P || a.Noticed.Contains(p.Id) || Accomplice(a, p)) continue;
-                if (!(G.Within(wp, at, near) || (G.Within(wp, at, witnessRange) && IsKin(p, a.P))) || !Sees(wp, at)) continue;
+                if (R.PeopleCone ? !(IsKin(p, a.P) ? Notices(p, wp, at, "carry") : G.Within(wp, at, near) && Notices(p, wp, at, "escort")) // brief 054 §3.2: kin in their cone at any Alert, anyone within near by the escort row
+                    : (!(G.Within(wp, at, near) || (G.Within(wp, at, witnessRange) && IsKin(p, a.P))) || !Sees(wp, at))) continue;
                 if (dry) return true;
                 a.Noticed.Add(p.Id);
                 PersonNotices(a, p, wp, "carry", null);
@@ -876,7 +891,7 @@ namespace Suborned.Sim
             var probe = new TdAct { P = p, Kill = kill };
             foreach (var (w, wp) in OnTheStreet())
             {
-                if (w == p || !G.Within(wp, at.Value, witnessRange) || !Sees(wp, at.Value)) continue;
+                if (w == p || !Notices(w, wp, at.Value, "takedown")) continue;
                 string verb = VerbShown(probe, w, "act");
                 int land = -1;
                 if (verb == "radio") land = R.WitnessReactS + R.PostCallS;

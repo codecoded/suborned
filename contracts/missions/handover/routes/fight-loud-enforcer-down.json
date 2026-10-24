@@ -6,12 +6,12 @@
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
   {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750],"run":true},
-  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":1236,"op":"enforcer","do":"fire","target":"guard"},
-  {"tick":1276,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
-  {"tick":1312,"op":"enforcer","do":"enter"},
-  {"tick":1992,"op":"enforcer","do":"move","to":"police-1"}
+  {"tick":165,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":785,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1235,"op":"enforcer","do":"fire","target":"guard"},
+  {"tick":1275,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
+  {"tick":1311,"op":"enforcer","do":"enter"},
+  {"tick":1991,"op":"enforcer","do":"move","to":"police-1"}
  ],
  "until": 5100
 }

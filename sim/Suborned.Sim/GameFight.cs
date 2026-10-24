@@ -59,8 +59,8 @@ namespace Suborned.Sim
                     Hostiles.Add(new Hostile { Id = gun.Id, At = home, Home = home, Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }
                 int lockBefore = Lockdown;
-                Lockdown = Math.Min(Lockdown, Tick + T(SealS));
-                SealOrigin(lockBefore, () => { var o = alertTwoOrigin ?? gunfireOrigin; return o == null ? OriginNow("loud-fight", "loud-fight", "", null, null, null, "enforcer") : Recast(o, "loud-fight"); }); // what made it loud
+                Lockdown = Math.Min(Lockdown, Tick + T(SealS)); SealMoved(lockBefore);
+                NoteSealOrigin(lockBefore, () => { var o = alertTwoOrigin ?? gunfireOrigin; return o == null ? OriginNow("loud-fight", "loud-fight", "", null, null, null, "enforcer") : Recast(o, "loud-fight"); }); // what made it loud
                 Note("fight.loud", $"The final fight: {Hostiles.Count} police officers come in from the north street. The seal clock is running.");
             }
             else

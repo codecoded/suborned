@@ -76,7 +76,10 @@ float DKCutKeepAt(float3 p, float ghost, float clean)
     {
         float4 q = _DKCutPoints[i];
         bool person = q.w < 0.0;
-        keep = min(keep, DKCutDisc(p, q.xyz, abs(q.w), q.y + rise, person ? clean : ghost, person ? _DKCutClean.y : _DKCutShape.x));
+        // Glyph's 0.2.99 review 1b: a person's clean disc keeps its whole radius clean and feathers outward over _DKCutClean.y (the column's
+        // vertical edges over a figure were a 0.4 m hard cut)
+        float r = person ? abs(q.w) + _DKCutClean.y : abs(q.w);
+        keep = min(keep, DKCutDisc(p, q.xyz, r, q.y + rise, person ? clean : ghost, person ? _DKCutClean.y : _DKCutShape.x));
     }
     return keep;
 }
@@ -85,14 +88,32 @@ float DKCutKeep(float3 p) { return DKCutKeepAt(p, _DKCutShape.y, _DKCutClean.x);
 
 bool DKCutOn() { return _DKCutFocus.w > 0.0 && (GetMeshRenderingLayer() & DK_CUT_LAYER) != 0u; }
 
-void DKCutaway(float4 positionCS)
+// Glyph's 0.2.94 review #1 (the heavy stipple): what stays of a ghost is drawn as a veil, not the wall's own colour at full contrast:
+// the kept fragments lean towards _DKCutVeil.rgb (linear) by _DKCutVeil.a times how far into the ghost they are. Returns that lean
+// (0 outside any cut) and the ground point the fragment hides (its view ray at the focus's level).
+// Glyph's 0.2.97 review #1 (a dither screen over the Records Office door and paving at yaw 30, none at 210): the two yaws differ in
+// light, not in the cut. At 210 the faces that ghost are the ones in shade, so their kept dots are dim over dim paving; at 30 the
+// ghosted wing faces the sun, and its dots were lit as a sunny surface wherever the street behind lay, so they read as a pale screen
+// over the shaded paving. The veil is now the street behind as it is lit: the paving's albedo (_DKCutVeil.rgb) under the sun as it
+// falls on flat ground at that point, through the shadow map there (so the ghost shadow and the towers' shade count), plus the sky's
+// ambient. The dots sink into the paving they cover; the mass still reads where it covers anything else, and by its ghost shadow.
+float4 _DKCutVeil;
+float DKCutaway(float4 positionCS, out float3 ground)
 {
+    ground = 0;
 #if defined(_DK_CUT)
-    if (!DKCutOn()) return;
+    if (!DKCutOn()) return 0.0;
     float3 p = ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(positionCS), positionCS.z, UNITY_MATRIX_I_VP);
-    clip(DKCutKeep(p) - DKBayer4(positionCS.xy));
+    float keep = DKCutKeep(p);
+    clip(keep - DKBayer4(positionCS.xy));
+    float2 k = _DKCutView.xz / max(-_DKCutView.y, 1e-3);
+    ground = float3(p.x + k.x * (p.y - _DKCutFocus.y), _DKCutFocus.y, p.z + k.y * (p.y - _DKCutFocus.y));
+    return _DKCutVeil.a * saturate((1.0 - keep) / max(1.0 - _DKCutShape.y, 1e-3));
+#else
+    return 0.0;
 #endif
 }
+float DKCutaway(float4 positionCS) { float3 g; return DKCutaway(positionCS, g); }
 
 #endif
 
@@ -103,12 +124,23 @@ void DKLitPassFragment(Varyings input, out half4 outColor : SV_Target0
 #endif
 )
 {
-    DKCutaway(input.positionCS);
+    float3 ground;
+    float veil = DKCutaway(input.positionCS, ground);
     LitPassFragment(input, outColor
 #ifdef _WRITE_RENDERING_LAYERS
         , outRenderingLayers
 #endif
     );
+    // the veil is the street behind in this light: the sun on flat ground at the hidden point, through its shadow, plus the sky's ambient
+    if (veil > 0.0)
+    {
+        half shade = 1.0;
+#if defined(MAIN_LIGHT_CALCULATE_SHADOWS) && !defined(_MAIN_LIGHT_SHADOWS_SCREEN)
+        shade = MainLightRealtimeShadow(TransformWorldToShadowCoord(ground));
+#endif
+        half3 lit = _MainLightColor.rgb * (saturate(_MainLightPosition.y) * shade) + SampleSH(half3(0, 1, 0));
+        outColor.rgb = lerp(outColor.rgb, _DKCutVeil.rgb * lit, veil);
+    }
 }
 #undef DK_CUT_FORWARD
 #endif

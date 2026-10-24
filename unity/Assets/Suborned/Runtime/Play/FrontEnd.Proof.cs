@@ -42,10 +42,17 @@ namespace Suborned.Play
             // ---- the screens
             fe.Show(FrontEnd.Screen.Loading); fe.ForceProgress(0.62f, "People"); yield return Shot(fe, "loading");
             fe.Show(FrontEnd.Screen.Menu); yield return Shot(fe, "menu"); log.Add($"menu: Continue {(fe.ContinueShown ? "shown" : "absent")}");
-            fe.KeyMove(1); fe.KeyMove(1); yield return Shot(fe, "menu-focus"); // keyboard focus moved down twice (the default ring is on the first button in "menu")
+            fe.KeyMove(1); fe.KeyMove(1); yield return Shot(fe, "menu-focus"); // keyboard focus moved down twice from the default (Continue when present, else New game)
+            // light line: hover = focus (the call a PointerEnter makes), one marked thing at a time
+            bool hov = fe.HoverFocus("menu-options"); Check("menuHoverFocus", hov && fe.FocusedName == "menu-options", $"hover {hov}, focused {fe.FocusedName}");
             FrontEnd.ForceNoSave = true; fe.Show(FrontEnd.Screen.Menu); yield return Shot(fe, "menu-nosave"); Check("menuNoSave", !fe.ContinueShown, ""); FrontEnd.ForceNoSave = false;
             fe.Show(FrontEnd.Screen.Options);
             foreach (var (i, n) in new[] { (0, "display"), (1, "audio"), (2, "camera"), (3, "gameplay") }) { fe.SetTab(i); yield return Shot(fe, "options-" + n); }
+            // keys walk the rows; a disabled row (Frame cap under V-sync) never takes the focus
+            { var d = Settings.Current.display; bool vs = d.vsync; d.vsync = true; fe.SetTab(0); yield return null; var seen = new List<string> { fe.FocusedName };
+              for (int k = 0; k < 6; k++) { fe.KeyMove(1); seen.Add(fe.FocusedName); }
+              Check("focusSkipsDisabled", seen[0] == "row-window-mode" && !seen.Contains("row-frame-cap") && seen.Contains("row-hud-scale"), string.Join(" > ", seen));
+              fe.SetTab(0); fe.KeyMove(1); fe.KeyMove(1); fe.KeyMove(1); yield return Shot(fe, "options-focus"); d.vsync = vs; } // focus on Quality (the mockup's frame)
             fe.Show(FrontEnd.Screen.Controls); fe.SetTab(0); yield return Shot(fe, "controls-command");
             fe.Listen(PlayAction.Cancel, 0); yield return Shot(fe, "controls-rebind-focus"); // the rebind row: focus fill, tick, "Press a key" in the live ring
             fe.Offer(PlayAction.Cancel, 0, Key.N); yield return Shot(fe, "controls-clash"); fe.ClashCancel();
@@ -63,6 +70,8 @@ namespace Suborned.Play
             Check("briefingAfter", h.ShowBriefing && !FrontEnd.Covers, $"host briefing {h.ShowBriefing}");
             yield return Shot(fe, "briefing");
             h.StartClock(); yield return new WaitForSecondsRealtime(1.5f); h.OpenMenu(); yield return null; yield return null;
+            { string f0 = HudToolkit.MenuFocusName; HudToolkit.MenuKeyMove(1); string f1 = HudToolkit.MenuFocusName; bool mh = HudToolkit.MenuHover("pause-quit"); string f2 = HudToolkit.MenuFocusName; HudToolkit.MenuHover("pause-resume");
+              Check("pauseFocus", f0 == "pause-resume" && f1 == "pause-options" && mh && f2 == "pause-quit" && HudToolkit.MenuFocusName == "pause-resume", $"{f0} > {f1} > {f2} > {HudToolkit.MenuFocusName}"); }
             yield return Shot(fe, "pause");
             FrontEnd.OpenFromPause(true); yield return Shot(fe, "options-from-pause");
             fe.Back(); yield return null; Check("backToPause", h.MenuOpen && !FrontEnd.Covers, $"menu {h.MenuOpen}, covers {FrontEnd.Covers}");
@@ -132,6 +141,7 @@ namespace Suborned.Play
         IEnumerator Shot(FrontEnd fe, string name)
         {
             for (int i = 0; i < 3; i++) { fe.Settle(); yield return null; }
+            yield return new WaitForSecondsRealtime(0.75f); fe.Settle(); // light line: the marker's 0.3 s appearance, the line's 0.26 s draw, the tick's slide
             yield return new WaitForEndOfFrame(); fe.Settle();
             var t = ScreenCapture.CaptureScreenshotAsTexture();
             try { File.WriteAllBytes(Path.Combine(Dir, name + ".png"), t.EncodeToPNG()); shots.Add($"\"{name}\""); }

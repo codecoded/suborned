@@ -77,6 +77,7 @@ Bright retro-future: a 1950s world that discovered atomic power centuries ago. 1
 - **Civic block:** cream stone, seafoam and deep teal enamel bands, chrome spheres, banners, planted terraces, pale paving with teal bands.
 - **Brass is a thin line only** (frames, beads, hairlines, SF-21), never a large surface. Gold only on skyline crowns.
 - **Materials:** honed limestone, granite kerbs, vitreous enamel panels, chrome and brushed silver, white vinyl, clear acrylic, pale asphalt.
+- **Curvy and smooth, never harsh** (Sky, 2026-10-24: "modern retro future world is curvy and smooth, not harsh lines and strong angles"): pavement and kerb corners are rounded returns, building corners arc, props have radiused edges; no sharp mitres or boxy corners where a curve can go.
 - **Character over triangles:** keep silhouette and chrome on props; never slim a prop until it loses its character.
 
 ## People and robots

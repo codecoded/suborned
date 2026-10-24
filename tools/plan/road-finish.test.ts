@@ -77,3 +77,23 @@ describe('RF-2 fails', () => {
   test('spokes starting inside the ring', () => f(p => { I(p).bands.spokes.from = 4.5; }, /start inside the ring/));
   test('a band scaled to another length', () => f(p => { I(p).bands.length = 4; }, /band length 4 ≠ the piece's 6/));
 });
+
+describe('RF-1 and the asphalt finish set (brief 055 road test)', () => {
+  const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
+  test('the committed plan lists the asphalt set, off by default, and its marks pass', () => {
+    const s = R(plan); expect(s.finish.set).toBe('enamel'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder']); // brief 048: strip light, not the pearl band
+    expect(Object.keys(s.marks.lanes).sort()).toEqual(['boulevard', 'comet-row', 'crown-road', 'harbour-road', 'sunset-way']);
+    expect(run()['RF-1']!.ok).toBe(true);
+  });
+  test('a set the plan does not list', () => f(p => { R(p).finish.set = 'gravel'; }, /finish\.set is "gravel"/));
+  test('a set that leaves a class without a finish', () => f(p => { delete R(p).finish.sets.asphalt.byClass.access; }, /finish set asphalt: class access has no finish/));
+  test('a set naming a key with no surface', () => f(p => { R(p).finish.sets.asphalt.byClass.access = 'nothing'; }, /finish set asphalt: class access: nothing is not a key/));
+  test('a mark piece that is not in the kit', () => f(p => { R(p).marks.pieces.dash = 'RoadMark_Dash_9m'; }, /marks dash: "RoadMark_Dash_9m" is not in the kit/));
+  test('an edge line that touches the shoulder', () => f(p => { R(p).marks.edge = { offset: 1.05, width: 0.2 }; }, /does not clear the shoulder/));
+  test('white marks that stop nearer a crossing than the road\'s light', () => f(p => { R(p).marks.stopShort = 0.1; }, /marks\.stopShort 0\.1 is shorter/));
+  test('a lane count on a road with no median (centre line only)', () => f(p => { R(p).marks.lanes['rocket-lane'] = 2; }, /undivided road takes its centre line/));
+  test('lanes narrower than 3 m between the edge lines', () => f(p => { R(p).marks.lanes['crown-avenue'] = 3; }, /marks\.lanes crown-avenue: 3 lanes leave 2\.00 m/));
+  test('a drop that names no family', () => f(p => { R(p).finish.sets.asphalt.drop.push('seam'); }, /drop "seam" is not ribbon/));
+  test('a lane count on no road', () => f(p => { R(p).marks.lanes['nowhere'] = 2; }, /marks\.lanes names nowhere/));
+  test('no marks block while a set lays lanes', () => f(p => { delete R(p).marks; }, /roads\.marks is missing/));
+});

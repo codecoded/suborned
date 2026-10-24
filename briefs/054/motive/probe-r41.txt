@@ -1,0 +1,81 @@
+# brief 054 §9 probe (Motive, 2026-10-24). Engine: working tree sim 0.28.0 copied to out/scratch/motive/b055near/eng + probe-r41.patch. Env MOTIVE_BODY_NEAR=<cm> (civilian near sense for the body act), MOTIVE_NEAR_MODE=2 (also takedown, carry), MOTIVE_NO_AFFAIR_WATCH=1. Scenarios: 285 (suborned-sim list); routes: snapshot of contracts/missions/handover/routes at 03:27 (38). Ran: bun run guard dotnet <dll> batch --list <f> --no-replay; fight-lab --rulebook contracts/rules/rulebook.json (writes nothing).
+
+== scen: base failing 0: []
+-- near 100: 6 move
+   ('N54', 'none/ 3315 T8 A2 St1 -> none/ 3315 T8 A2 St1', [])
+   ('N68', 'failure/sealed 3760 T8 A2 St1 -> failure/sealed 3760 T8 A2 St1', ['0.28.0: the clerks stepping out face away from the body on the landing: the Idealist clerk does not find it'])
+   ('N87', 'failure/enforcer-down 4237 T12 A3 St-1 -> failure/enforcer-down 4237 T12 A3 St-1', [])
+   ('N159', 'none/ 3395 T14 A2 St-1 -> none/ 3395 T14 A2 St-1', [])
+   ('N161', 'failure/enforcer-down 3341 T15 A2 St-2 -> failure/enforcer-down 3341 T15 A2 St-2', [])
+   ('N163', 'none/ 3726 T17 A3 St-1 -> none/ 3726 T18 A3 St-2', [])
+-- near 120: 6 move
+   ('N54', 'none/ 3315 T8 A2 St1 -> none/ 3315 T8 A2 St1', [])
+   ('N68', 'failure/sealed 3760 T8 A2 St1 -> failure/sealed 3760 T8 A2 St1', ['0.28.0: the clerks stepping out face away from the body on the landing: the Idealist clerk does not find it'])
+   ('N87', 'failure/enforcer-down 4237 T12 A3 St-1 -> failure/enforcer-down 4237 T12 A3 St-1', [])
+   ('N159', 'none/ 3395 T14 A2 St-1 -> none/ 3395 T14 A2 St-1', [])
+   ('N161', 'failure/enforcer-down 3341 T15 A2 St-2 -> failure/enforcer-down 3341 T15 A2 St-2', [])
+   ('N163', 'none/ 3726 T17 A3 St-1 -> none/ 3726 T18 A3 St-2', [])
+-- near 150: 6 move
+   ('N54', 'none/ 3315 T8 A2 St1 -> none/ 3315 T8 A2 St1', [])
+   ('N68', 'failure/sealed 3760 T8 A2 St1 -> failure/sealed 3760 T8 A2 St1', ['0.28.0: the clerks stepping out face away from the body on the landing: the Idealist clerk does not find it'])
+   ('N87', 'failure/enforcer-down 4237 T12 A3 St-1 -> failure/enforcer-down 4237 T12 A3 St-1', [])
+   ('N159', 'none/ 3395 T14 A2 St-1 -> none/ 3395 T14 A2 St-1', [])
+   ('N161', 'failure/enforcer-down 3341 T15 A2 St-2 -> failure/enforcer-down 3341 T15 A2 St-2', [])
+   ('N163', 'none/ 3726 T17 A3 St-1 -> none/ 3726 T18 A3 St-2', [])
+-- near 200: 7 move
+   ('N54', 'none/ 3315 T8 A2 St1 -> none/ 3315 T8 A2 St1', [])
+   ('N68', 'failure/sealed 3760 T8 A2 St1 -> failure/sealed 3760 T8 A2 St1', ['0.28.0: the clerks stepping out face away from the body on the landing: the Idealist clerk does not find it'])
+   ('N87', 'failure/enforcer-down 4237 T12 A3 St-1 -> failure/enforcer-down 4237 T12 A3 St-1', [])
+   ('S9-CROWD', 'none/ 2907 T8 A3 St-1 -> none/ 2907 T8 A3 St-1', [])
+   ('N159', 'none/ 3395 T14 A2 St-1 -> none/ 3395 T14 A2 St-1', [])
+   ('N161', 'failure/enforcer-down 3341 T15 A2 St-2 -> failure/enforcer-down 3341 T15 A2 St-2', [])
+   ('N163', 'none/ 3726 T17 A3 St-1 -> none/ 3726 T18 A3 St-2', [])
+-- near 300: 7 move
+   ('N54', 'none/ 3315 T8 A2 St1 -> none/ 3315 T8 A2 St1', [])
+   ('N68', 'failure/sealed 3760 T8 A2 St1 -> failure/sealed 3760 T8 A2 St1', ['0.28.0: the clerks stepping out face away from the body on the landing: the Idealist clerk does not find it'])
+   ('N87', 'failure/enforcer-down 4237 T12 A3 St-1 -> failure/enforcer-down 4237 T12 A3 St-1', [])
+   ('S9-CROWD', 'none/ 2907 T8 A3 St-1 -> none/ 2907 T8 A3 St-1', [])
+   ('N159', 'none/ 3395 T14 A2 St-1 -> none/ 3395 T14 A2 St-1', [])
+   ('N161', 'failure/enforcer-down 3341 T15 A2 St-2 -> failure/enforcer-down 3341 T15 A2 St-2', [])
+   ('N163', 'none/ 3726 T17 A3 St-1 -> none/ 3726 T18 A3 St-2', [])
+== routes: base failing 0: []
+-- near 100: 0 move
+-- near 120: 0 move
+-- near 150: 0 move
+-- near 200: 0 move
+-- near 300: 1 move
+   ('careless-takedown-seen-crowd.json', 'failure/enforcer-down 3924 T7 A3 St1 -> failure/enforcer-down 3924 T7 A3 St1', [])
+
+## mode 2 (takedown and carry near too)
+routes, near 150 [('careless-takedown-seen-crowd.json', 'failure 3924 T7 St1 -> failure 4142 T8 St0')]
+routes, near 200 [('careless-takedown-seen-crowd.json', 'failure 3924 T7 St1 -> failure 4142 T8 St0')]
+
+## affair Watch dropped (MOTIVE_NO_AFFAIR_WATCH=1)
+scen moved: ['N40'] failing: ['N40']
+routes moved: [] failing: []
+
+## fight lab, near 0 vs 150
+53c53
+< lab             L4   failure enforcer-down 7:21.1   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    47    2/3    c0/0 s0   pass (fail)
+---
+> lab             L4   failure enforcer-down 7:03.2   51/51    3  2→-4  high    active      1    1    0    38 %    7    8    47    2/3    c0/0 s0   pass (fail)
+98c98
+< lab-snap-off    L4   failure enforcer-down 7:21.1   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    47    2/2    c0/0 s0   pass (fail)
+---
+> lab-snap-off    L4   failure enforcer-down 7:03.2   51/51    3  2→-4  high    active      1    1    0    38 %    7    8    47    2/2    c0/0 s0   pass (fail)
+143c143
+< lab-cover       L4   failure enforcer-down 7:21.1   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    58    4/3    c0/0 s0   pass (fail)
+---
+> lab-cover       L4   failure enforcer-down 7:03.2   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    58    4/3    c0/0 s0   pass (fail)
+188c188
+< lab-charge-off  L4   failure enforcer-down 7:21.1   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    43    2/3    c0/0 s0   pass (fail)
+---
+> lab-charge-off  L4   failure enforcer-down 7:03.2   51/51    3  2→-4  high    active      1    1    0    38 %    7    8    43    2/3    c0/0 s0   pass (fail)
+233c233
+< lab-field-on    L4   failure enforcer-down 7:21.1   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    47    2/3    c0/0 s0   pass (fail)
+---
+> lab-field-on    L4   failure enforcer-down 7:03.2   51/51    3  2→-4  high    active      1    1    0    38 %    7    8    47    2/3    c0/0 s0   pass (fail)
+278c278
+< lab-kite-off    L4   failure enforcer-down 7:21.1   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    51    3/3    c0/0 s0   pass (fail)
+---
+> lab-kite-off    L4   failure enforcer-down 7:03.2   50/50    3  2→-4  high    active      1    1    0    38 %    7    8    51    3/3    c0/0 s0   pass (fail)

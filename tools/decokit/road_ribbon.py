@@ -5,6 +5,11 @@ What the 2.5D testbed (civic-road-guides.js, civic-road-finish.js, civic-roads.j
   RoadRibbon_Arc90_R4/R8   the same round a 90 degree corner (inner radius 4 or 8 m to the lens centre), for the kerb returns
   RoadMark_Lozenge         the pearl diamond that replaces the dashed lane line (1.7 x 0.48 m, every 8.5 m on the centre line): no paint, no zebra
   RoadMark_Seam            a chrome joint across the enamel (4.6 m, every 9 m): the carriageway reads as panels, not poured
+Brief 055 road test (Vela, 2026-10-24), the asphalt option beside the enamel: the dark carriageway DK_Ground_RoadAsphalt (road_tex.py) with white lane marks that replace the lozenges and seams
+  RoadMark_Dash_2m         the dashed centre line and lane divider: a white enamel inlay 2.0 x 0.20 m, 5 mm proud, laid every 6 m
+  RoadMark_EdgeLine_6m     the solid edge line along each kerb: 6.0 x 0.20 m, stretched along to fit a run; the generator keeps it 1.25 m off the kerb face, outside the pearl shoulder
+  Ground_RoadAsphaltSwatch carries the asphalt and the mark material into the kit (not placed)
+The marks are white vitreous-enamel inlay, flush with the road, not paint (standard roads.finish.paint stays false).
 Frame (all four): lying along +X, centred, z 0 = the carriageway top (flush: the lens is 4 mm up, the hairlines 7 mm), the carriageway on the +Y side of the ribbon (mirror with yaw 180 for the
 far kerb). The ribbon is light the way the crossings are: emissive, drawn unlit (DK_Road_Lens); its state (off by day, warm at evening and night: testbed `setLighting`, auto / on / off) is the
 lighting rig's, not the piece's. The pool is a `glow` quad (alpha is what it adds; the fade across it is the shader's, as DK_Cross_Pool).
@@ -20,14 +25,25 @@ from kit import asset
 from mats import TEXTURES, pal, register
 
 # ----------------------------------------------------------------------------- materials
-register("DK_Road_Lens", "emit", "#FFE6B5", 4.0)             # testbed ribbonTint #ffe6b5 x strength 2.5: warm cream, drawn unlit
+# The kerb strip light (brief 048, Vela, Sky 2026-10-24: "modern strip lighting around the road edges, like a futuristic city would, not white edges"): the .mat is written at the DAY value, a pale cream line
+# that reads against the enamel and does not glow (was 4.0, which drew a bright line by day); the lighting rig raises it with light.json emissive.night.roadLens (5.0; evening about 3.0), the testbed's auto.
+LENS_EMISSION = dict(day=1.4, evening=3.0, night=5.0)
+register("DK_Road_Lens", "emit", "#FFE6B5", LENS_EMISSION["day"])  # testbed ribbonTint #ffe6b5: warm cream, drawn unlit
 register("DK_Road_Pool", "glow", "#FFE6B5", 2.0, 0.22)       # the light pool on the carriageway: alpha added, fade in the shader
 register("DK_Ground_RoadEnamel", "ground", "#FFFFFF")
 register("DK_Ground_RoadPearl", "ground", "#FFFFFF")
+register("DK_Ground_RoadAsphalt", "ground", "#FFFFFF")
+# The road's own chrome (brief 028 enamel fix, 2026-10-24): the testbed's joints are #9aa9b4 at metalness 0.72, roughness 0.54, which read as crisp dark lines on the enamel; DK_Chrome (#EDEDED, metal 1.0,
+# smooth 0.95) mirrors the bright sky and reads pale. Scope: this row is used by the road pieces only (the shoulder's two border lines and the seam); every other DK_Chrome user is untouched.
+mats.KIND.setdefault("roadmetal", (0.54, 0.72, 0.0, 0.0, 1.0))
+register("DK_Road_Chrome", "roadmetal", "#9AA9B4")
+register("DK_Road_Mark", "enamel", "#F3EFE4")                 # the lane marks: white enamel inlay (a vitreous strip set in the road), the pearl's neighbour
 for _role in ("RoadEnamel", "RoadPearl"):
     TEXTURES.setdefault(f"DK_Ground_{_role}", (f"ground_{_role.lower()}_v1.png", 2.0))
-mats.GROUND.setdefault("DK_Ground_RoadEnamel", dict(albedo="ground_roadenamel_v1.png", normal="ground_roadenamel_v1_normal.png", mask="ground_roadenamel_v1_mask.png", tile=(2.0, 2.0), smoothness=1.0))
+TEXTURES.setdefault("DK_Ground_RoadAsphalt", ("ground_roadasphalt_v1.png", 4.0))  # 4 m tile at 1024 px
+mats.GROUND.setdefault("DK_Ground_RoadEnamel", dict(albedo="ground_roadenamel_v1.png", normal="ground_roadenamel_v1_normal.png", mask="ground_roadenamel_v1_mask.png", tile=(2.0, 2.0), smoothness=0.55))  # x the mask's ~0.62 = ~0.34 (was 1.0: sky reflection washed the road white at grazing angles; testbed roughness 0.36 + envMap 0.35)
 mats.GROUND.setdefault("DK_Ground_RoadPearl", dict(albedo="ground_roadpearl_v1.png", normal="ground_roadpearl_v1_normal.png", mask="ground_roadpearl_v1_mask.png", tile=(2.0, 2.0), smoothness=1.0))
+mats.GROUND.setdefault("DK_Ground_RoadAsphalt", dict(albedo="ground_roadasphalt_v1.png", normal="ground_roadasphalt_v1_normal.png", mask="ground_roadasphalt_v1_mask.png", tile=(4.0, 4.0), smoothness=1.0))
 
 LENS_W, HAIR_W = 0.12, 0.02
 Z_LENS, Z_HAIR, Z_POOL = 0.004, 0.007, 0.010
@@ -88,16 +104,15 @@ def ribbon_arc8(s):
 
 @asset("RoadMark_Lozenge", "Ground", bevel=0.0)
 def road_lozenge(s):
-    """The pearl diamond (testbed marking(): 1.7 x 0.48 m, a flat lozenge, no paint): a stone inlay 5 mm proud, a brass hairline round it."""
+    """The pearl diamond (testbed marking(): 1.7 x 0.48 m, a flat lozenge, no paint): a stone inlay 5 mm proud. No brass hairline (the testbed's has none: it read as an outline that shrank the white)."""
     w, h = 0.85, 0.24
-    for (ww, hh), z, mat in (((w + 0.05, h + 0.03), 0.0045, pal.Brass_Civic), ((w, h), 0.005, pal.Ground_RoadPearl)):
-        s.face([(-ww, 0, z), (0, -hh, z), (ww, 0, z), (0, hh, z)], mat)
+    s.face([(-w, 0, 0.005), (0, -h, 0.005), (w, 0, 0.005), (0, h, 0.005)], pal.Ground_RoadPearl)
 
 
 @asset("RoadMark_Seam", "Ground", bevel=0.0)
 def road_seam(s):
     """A chrome joint across the enamel: 4.6 m x 0.03 m, 4 mm proud (the testbed's `seamParts`, every 9 m)."""
-    s.face([(-0.015, -2.3, 0.004), (0.015, -2.3, 0.004), (0.015, 2.3, 0.004), (-0.015, 2.3, 0.004)], pal.Chrome)
+    s.face([(-0.015, -2.3, 0.004), (0.015, -2.3, 0.004), (0.015, 2.3, 0.004), (-0.015, 2.3, 0.004)], pal.Road_Chrome)
 
 
 # ----------------------------------------------------------------------------- brief 028 (2026-10-22): what the 20 Oct pieces left out of the testbed's road
@@ -110,10 +125,10 @@ PINSTRIPE_W, Z_PINSTRIPE = 0.04, 0.003
 
 
 def shoulder(s, path):
-    """The pearl band and its chrome borders along `path` (the lens centre line): marble DK_Ground_RoadPearl, chrome DK_Chrome."""
+    """The pearl band and its chrome borders along `path` (the lens centre line): marble DK_Ground_RoadPearl, chrome DK_Road_Chrome."""
     _band(s, path, SHOULDER_D0, SHOULDER_D1, Z_SHOULDER, pal.Ground_RoadPearl)
-    _band(s, path, SHOULDER_D0, SHOULDER_D0 + CHROME_W, Z_CHROME, pal.Chrome)
-    _band(s, path, SHOULDER_D1, SHOULDER_D1 + CHROME_W, Z_CHROME, pal.Chrome)
+    _band(s, path, SHOULDER_D0, SHOULDER_D0 + CHROME_W, Z_CHROME, pal.Road_Chrome)
+    _band(s, path, SHOULDER_D1, SHOULDER_D1 + CHROME_W, Z_CHROME, pal.Road_Chrome)
 
 
 @asset("RoadShoulder_Straight_6m", "Ground", bevel=0.0)
@@ -144,3 +159,29 @@ def road_swatch(s):
     for (x0, w, d, mat) in ((-3.1, 4.0, 4.0, pal.Ground_RoadEnamel), (1.1, 2.0, 4.0, pal.Ground_RoadPearl)):
         pts = [(x0, -2.0, 0.0), (x0 + w, -2.0, 0.0), (x0 + w, -2.0 + d, 0.0), (x0, -2.0 + d, 0.0)]
         s.decal(pts, mat, ((0, 0), (w, 0), (w, d), (0, d)), lift=0.0)
+
+
+# ----------------------------------------------------------------------------- brief 055 (2026-10-24): the asphalt option's lane marks
+MARK_W, Z_MARK = 0.20, 0.005
+
+
+@asset("RoadMark_Dash_2m", "Ground", bevel=0.0)
+def road_dash(s):
+    """One dash of the centre line or a lane divider: 2.0 x 0.20 m white enamel inlay lying along +X, centred, 5 mm proud (as the lozenge)."""
+    s.face([(-1.0, -MARK_W / 2, Z_MARK), (1.0, -MARK_W / 2, Z_MARK), (1.0, MARK_W / 2, Z_MARK), (-1.0, MARK_W / 2, Z_MARK)], pal.Road_Mark)
+
+
+@asset("RoadMark_EdgeLine_6m", "Ground", bevel=0.0)
+def road_edge_line(s):
+    """The solid edge line: 6.0 x 0.20 m along +X, centred, y 0 = the line's centre. The generator places it with the kerb-face frame of the ribbon (pivot `offset` out from the kerb face, the
+    carriageway on +Y) and stretches it along to its span: a flat colour, nothing to distort."""
+    s.face([(-3.0, -MARK_W / 2, Z_MARK), (3.0, -MARK_W / 2, Z_MARK), (3.0, MARK_W / 2, Z_MARK), (-3.0, MARK_W / 2, Z_MARK)], pal.Road_Mark)
+
+
+@asset("Ground_RoadAsphaltSwatch", "Ground", bevel=0)
+def road_asphalt_swatch(s):
+    """Carries the asphalt option's materials into the kit (a material no piece uses is never copied): the asphalt 4 x 4 m at true scale (UV = metres) with a dash and a 2 m edge line on it.
+    Not placed in the world."""
+    pts = [(-2.0, -2.0, 0.0), (2.0, -2.0, 0.0), (2.0, 2.0, 0.0), (-2.0, 2.0, 0.0)]
+    s.decal(pts, pal.Ground_RoadAsphalt, ((0, 0), (4, 0), (4, 4), (0, 4)), lift=0.0)
+    s.face([(-1.0, -0.1, Z_MARK), (1.0, -0.1, Z_MARK), (1.0, 0.1, Z_MARK), (-1.0, 0.1, Z_MARK)], pal.Road_Mark)

@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace Suborned.Sim
 {
     public enum Band { Hero, Neutral, Menace }
-    public enum Fit { Suits, Worse, Refused }
+    public enum Fit { Suits, Worse, Refused, Ready } // Ready: a step up from suits by mood (brief 054 §4.2); the fit table itself never says it
     /// <summary>A shooter's gait this tick (tuning.md §8.3): from its own step. Hostiles have one moving pace: a walk.</summary>
     public enum Gait { Stand, Walk, Run, RunAway }
 
@@ -100,14 +100,14 @@ namespace Suborned.Sim
     {
         public static readonly string[] ScaleNames = { "bravery", "resentment", "fear", "loyalty" };
         public const int Bravery = 0, Resentment = 1, Fear = 2, Loyalty = 3;
-        static readonly string[] Bands = { "hero", "neutral", "menace" }, Fits = { "suits", "worse", "refused" }, Knows = { "routine", "need", "temperament", "refused", "secret" };
+        static readonly string[] Bands = { "hero", "neutral", "menace" }, Fits = { "suits", "worse", "refused" }, CondFits = { "suits", "worse", "refused", "ready" }, Knows = { "routine", "need", "temperament", "refused", "secret" };
 
         static readonly Dictionary<string, string[]> CondKeys = new Dictionary<string, string[]>(StringComparer.Ordinal)
         {
-            ["tier"] = new[] { "is" }, ["turned"] = new[] { "is", "of" }, ["known"] = new[] { "what", "is" }, ["leverage"] = new[] { "approach" }, ["lover-within"] = new[] { "m" }, ["requires"] = new[] { "approach" },
+            ["tier"] = new[] { "is" }, ["turned"] = new[] { "is", "of" }, ["known"] = new[] { "what", "is" }, ["leverage"] = new[] { "approach" }, ["requires"] = new[] { "approach" },
             ["need-met-by"] = new[] { "approach" }, ["need-is"] = new[] { "in" }, ["need-met"] = new[] { "is" }, ["reach"] = new[] { "m" },
             ["cash-covers"] = new string[0], ["memory"] = new[] { "act", "has", "this", "of" }, ["fit"] = new[] { "is" }, ["temperament"] = new[] { "in" },
-            ["standing"] = new[] { "band" }, ["orders-reached"] = new[] { "is" }, ["reports"] = new string[0], ["reports-approach"] = new string[0],
+            ["standing"] = new[] { "band" }, ["orders-reached"] = new[] { "is" }, ["orders-base"] = new[] { "above", "atMost" }, ["reports"] = new string[0], ["reports-approach"] = new string[0],
             ["outcome"] = new[] { "is" }, ["talker"] = new[] { "is" }, ["lies"] = new[] { "is" }, ["holds-fact"] = new[] { "is", "how" },
             ["scale"] = new[] { "scale", "op", "than" }, ["trail"] = new[] { "atLeast" }, ["keeper-position"] = new string[0], ["introduces-along"] = new string[0],
             ["tie"] = new[] { "kinds" }, ["tie-between-holds"] = new[] { "is" }, ["act"] = new[] { "in" }, ["within"] = new[] { "m", "sightline" },
@@ -136,7 +136,7 @@ namespace Suborned.Sim
         static readonly string[] FightKinds = { "fired-on", "rivals-public", "fired-first", "rivals-broken" };
         /// <summary>The kinds the engine itself evaluates inside a mission (the interpreted events: scout.*, turn.*; the reports table).</summary>
         static readonly HashSet<string> MissionKinds = new HashSet<string>(StringComparer.Ordinal)
-        { "tier", "turned", "known", "leverage", "lover-within", "requires", "need-met-by", "need-is", "need-met", "reach", "cash-covers", "memory", "fit", "temperament", "standing", "orders-reached", "reports", "reports-approach", "outcome", "talker", "lies", "holds-fact", "scale", "trail" };
+        { "tier", "turned", "known", "leverage", "requires", "need-met-by", "need-is", "need-met", "reach", "cash-covers", "memory", "fit", "temperament", "standing", "orders-reached", "orders-base", "reports", "reports-approach", "outcome", "talker", "lies", "holds-fact", "scale", "trail" };
         /// <summary>The effects the engine applies inside a mission's interpreted events.</summary>
         static readonly HashSet<string> MissionEffects = new HashSet<string>(StringComparer.Ordinal) { "charge", "turn", "move", "need-met", "learn", "forget", "remember", "report", "debrief" };
 
@@ -199,13 +199,17 @@ namespace Suborned.Sim
         /// <summary>fight.lab (brief 027, EXPERIMENTAL): the fight playground's rules; null when the rulebook has none (a start that turns it on is
         /// refused). Read only by a run whose start turns it on (Start.FightLabOn); off, every rule is today's.</summary>
         public readonly LabRules? Lab;
+        /// <summary>cell.reroute.walk (engine 0.30.0): the rerouted patrol's pace on its walk out and back, cm/s; 0 when the rulebook has none (placed, 0.29.0).</summary>
+        public readonly int RerouteWalkCmS;
+        /// <summary>security.sealWarns (engine 0.30.0): a call of the response that sets the seal clock logs seal.starts with its time and origin.</summary>
+        public readonly bool SealWarns;
         public readonly int CellSpeed, RunSpeed, RunAlert, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, TakeStruggleS, CarryS;
         // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
         public readonly Weapon Pistol, Carbine;
         // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
         public readonly string CancelTurn, CancelEnter, CancelTake;
         // the summons and the secret (Motive, briefs/011/motive-lovers.md)
-        public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift, TogetherCm;
+        public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift;
         public readonly HashSet<string> SecretIds = new HashSet<string>(StringComparer.Ordinal);
         // the fight AI (Pulse, briefs/011/pulse-fight-ai.md)
         public readonly int CoverSnapCm, CoverQFull, CoverQPartial, ModCoverPartial, CoverRetreatCm, CoverStepCloserCm, CoverStepGapS, CoverLeaveS, EngageLapseS, ReacquireS, StopReachPerMille, OverflowCm,
@@ -245,6 +249,38 @@ namespace Suborned.Sim
         public readonly int RespWitnessS, RespSeenS, RespUnseenS, RespCivilianS, RespRivalsUnseenS, SecuritySpeed, RivalsSpeed, RivalsDrawnS, RivalsRetreatS, PatrolBreakCm, PatrolPeriodS, PatrolChase;
         // perception
         public readonly int NearCm, Eye, DoorReachCm, DoorHalfCm, FacingReachCm, FacingHalfCm, SecReachCm, SecHalfCm, RivReachCm, RivHalfCm, PatrolDepthCm, PatrolHalfBase, PatrolHalfPerMille;
+        /// <summary>Brief 055 §7 (engine 0.28.0; rulebook perception.mount): every watcher sees from its own eye above its own floor (grid floor) to
+        /// a target's head (floor + Eye) or chest (floor + MountChestCm), in 3D; a person on the street blocks a line below its head top (floor +
+        /// MountHeadTopCm). Off (no perception.mount: a rulebook pinned before it) every eye is Eye above one flat datum, as 0.27.0.</summary>
+        public readonly bool MountOn;
+        /// <summary>Brief 054 §3 (engine 0.28.0; rulebook perception.people, witness.notice): civilians see by a facing cone (PeopleReachCm,
+        /// PeopleHalfCm, no near sense), and the odd acts only from PeopleCareAlert; off (sees around, or absent) as 0.27.0.</summary>
+        public readonly bool PeopleCone; public readonly int PeopleReachCm, PeopleHalfCm, PeopleCareAlert;
+        /// <summary>Brief 054 §2, §4 (engine 0.28.0; rulebook mood): a person's mood toward the cell, its step on the fit, the Watch offered only
+        /// where it shows something. Off (no mood section: a rulebook pinned before it) as 0.27.0.</summary>
+        public readonly bool MoodOn, WatchOffers, MoodWary; public readonly int MoodScaredFear, MoodUneasyFear, MoodUneasyResentment, MoodFriendlyLoyalty;
+        public readonly HashSet<string> MoodScaredActs = new HashSet<string>(StringComparer.Ordinal), MoodUneasyActs = new HashSet<string>(StringComparer.Ordinal), MoodFriendlyActs = new HashSet<string>(StringComparer.Ordinal);
+        readonly Dictionary<string, int> moodStep = new Dictionary<string, int>(StringComparer.Ordinal);
+        public static readonly string[] Moods = { "scared", "uneasy", "friendly", "neutral" };
+        /// <summary>The step a mood gives an approach's fit (rulebook mood.shift; 0 for neutral, Ask, or the mood off).</summary>
+        public int MoodStep(string mood, string approach) => moodStep.TryGetValue(mood + "/" + approach, out var v) ? v : 0;
+        /// <summary>The fit an approach has for a temperament in a band, stepped by a mood (brief 054 §4.2): refused stays refused, worse is the floor, ready the top.</summary>
+        public Fit FitWithMood(string approach, string temperament, Band band, string mood)
+        {
+            var f = FitOf(approach, temperament, band); if (f == Fit.Refused || !MoodOn) return f;
+            int lv = (f == Fit.Worse ? 0 : 1) + MoodStep(mood, approach); lv = Math.Max(0, Math.Min(2, lv));
+            return lv == 0 ? Fit.Worse : lv == 1 ? Fit.Suits : Fit.Ready;
+        }
+        public readonly HashSet<string> NoticeAlways = new HashSet<string>(StringComparer.Ordinal), NoticeOdd = new HashSet<string>(StringComparer.Ordinal),
+            NoticeNever = new HashSet<string>(StringComparer.Ordinal), NoticeHeard = new HashSet<string>(StringComparer.Ordinal),
+            NoticeNear = new HashSet<string>(StringComparer.Ordinal); // brief 054 §9.1: always acts a civilian finds within PeopleNearCm, any facing
+        /// <summary>Brief 054 §9.1 (witness.notice.near.cm, people-near-body-cm): a civilian's near sense for NoticeNear, cm; 0 with no near row.</summary>
+        public readonly int PeopleNearCm;
+        /// <summary>The act ids a witness path asks about (brief 054 §3.2): each in exactly one witness.notice list.</summary>
+        public static readonly string[] NoticeActs = { "weapon-drawn", "takedown", "carry", "body", "threat", "run", "escort", "listen", "ask", "pay", "help", "watch", "loiter", "loop", "reroute", "mislead", "call", "enter", "board", "gunfire", "scream" };
+        public readonly int MountPatrolCm, MountRobotCm, MountChestCm, MountHeadTopCm;
+        /// <summary>A camera kind's lens above its floor, cm (perception.mount cameras); a kind not here is rejected at the start.</summary>
+        public readonly Dictionary<string, int> MountCameraCm = new Dictionary<string, int>(StringComparer.Ordinal);
         // the cell's knowledge of watchers (Sky 2026-10-16: cones are the Scout's skill): Watch's time and reach on a watcher, the watched
         // seconds a routine needs, and per kind (camera, guard, patrol, security, rivals) how its sight is learned and what its routine is
         public readonly int SightWatchS, SightRoutineS;
@@ -295,7 +331,7 @@ namespace Suborned.Sim
         {
             Book = JNode.Parse(rulebookJson, "rulebook"); People = JNode.Parse(peopleJson, "people");
             var b = Book; var pp = People;
-            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
+            b.Only("schema", "author", "gdd", "rule", "reads", "tags", "units", "values", "standing", "alert", "fit", "reports", "ladders", "memory", "exposure", "traceable", "privacy", "cell", "security", "weapons", "ai", "crowd", "summon", "cancel", "perception", "sight", "mood", "attention", "takedown", "witness", "response", "campaign", "rounds", "car", "fight", "investigation", "preview", "streams", "phases", "debrief", "events");
             if (b["schema"].Str() != "suborned.rulebook/1") throw new FormatException("rulebook schema is not suborned.rulebook/1");
             pp.Only("schema", "author", "gdd", "rule", "person", "tiers", "scales", "temperaments", "institutions", "approaches", "needs", "secrets", "ties", "knowledge", "talker", "positions", "temperamentsBy", "names");
             if (pp["schema"].Str() != "suborned.people.rules/1") throw new FormatException("people rules schema is not suborned.people.rules/1");
@@ -355,7 +391,7 @@ namespace Suborned.Sim
                 var (lo, hi) = unit switch
                 {
                     "s" => (1L, 3600L), "usd" => (-1_000_000_000L, 1_000_000_000L), "m" => (0L, 1000L), "cm" => (0L, 100_000L), "cm-per-s" => (1L, 10_000L),
-                    "trail" => (0L, 100L), "alert" => (0L, 3L), "standing" => (-1000L, 1000L), "orders" => (0L, 10L), "scale-steps" => (-10L, 10L),
+                    "trail" => (-100L, 100L), "alert" => (0L, 3L), "standing" => (-1000L, 1000L), "orders" => (-10L, 10L), /* brief 054 §4.2: a ready line takes Trail or orders off */ "scale-steps" => (-10L, 10L),
                     "entries" => (1L, 100L), "hops" => (0L, 10L), "count" => (0L, 100L), "per-mille" => (0L, 1_000_000L), "ticks" => (1L, 36_000L), "pct" => (0L, 100L), "deg" => (0L, 360L),
                     _ => throw new FormatException($"{v.Path}.unit '{unit}' is unknown"),
                 };
@@ -446,7 +482,8 @@ namespace Suborned.Sim
             CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); RunAlert = RI(c["runAlert"]); ActReachCm = RI(c["reach"]) * 100; AtReachCm = RI(c["atReach"]);
             c["loop"].Only("s", "trail", "tether", "targets"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]); TetherCm = RI(c["loop"]["tether"]) * 100;
             LoopTargets.AddRange(c["loop"]["targets"].Strs());
-            c["reroute"].Only("s", "trail", "away"); RerouteS = RI(c["reroute"]["s"]); RerouteTrail = RI(c["reroute"]["trail"]); RerouteAwayS = RI(c["reroute"]["away"]);
+            c["reroute"].Only("s", "trail", "away", "walk"); RerouteS = RI(c["reroute"]["s"]); RerouteTrail = RI(c["reroute"]["trail"]); RerouteAwayS = RI(c["reroute"]["away"]);
+            RerouteWalkCmS = c["reroute"].Opt("walk") is JNode rw ? RI(rw) : 0; // engine 0.30.0 (brief 057 §2, Sky 2026-10-24): the rerouted patrol walks; absent, it is placed (0.29.0)
             c["mislead"].Only("s", "trail", "away"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); MisleadAwayS = RI(c["mislead"]["away"]);
             c["call"].Only("trail"); CallTrail = RI(c["call"]["trail"]);
             c["enter"].Only("s", "alarm"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
@@ -454,7 +491,8 @@ namespace Suborned.Sim
             c["board"].Only("s"); BoardS = RI(c["board"]["s"]); // brief 018 §2: Board, and stepping out
             if (BoardS < 1) throw new FormatException("cell.board.s is at least 1 s");
             c["take"].Only("s", "trailUnturned", "struggle"); TakeS = RI(c["take"]["s"]); TakeTrailUnturned = RI(c["take"]["trailUnturned"]); TakeStruggleS = RI(c["take"]["struggle"]);
-            var se = b["security"]; se.Only("response", "speed", "rivals", "patrol", "rule", "tag", "src"); // checkIn and seal retired by brief 013 (response.checkIn, response.levels)
+            var se = b["security"]; se.Only("response", "speed", "rivals", "patrol", "sealWarns", "rule", "tag", "src");
+            SealWarns = se.Opt("sealWarns") is JNode sealWarnsN && sealWarnsN.Bool(); // engine 0.30.0: the response's call says when the district seals (seal.starts); absent, as 0.29.0 // checkIn and seal retired by brief 013 (response.checkIn, response.levels)
             var re = se["response"]; re.Only("witness", "seen", "unseen", "civilian", "rivalsUnseen");
             RespWitnessS = RI(re["witness"]); RespSeenS = RI(re["seen"]); RespUnseenS = RI(re["unseen"]); RespCivilianS = RI(re["civilian"]); RespRivalsUnseenS = RI(re["rivalsUnseen"]);
             SecuritySpeed = RI(se["speed"]);
@@ -517,8 +555,8 @@ namespace Suborned.Sim
                 foreach (var hb in Intent.RobotFaceHeat) if (Array.IndexOf(new[] { "unknown", "noticed", "wanted", "infamous" }, hb) < 0) throw new FormatException($"ai.intent.robots.faceHeat: '{hb}' is not a Heat band (attention.bands)");
                 if (Intent.WarnTicks < 1 || Intent.WarnPerWatcher < 1 || Intent.WarnTrail < 0) throw new FormatException("ai.intent.police.warn: ticks and perWatcher at least 1, trail 0 or more");
             }
-            var su = b["summon"]; su.Only("stay", "walkMax", "alertMax", "perShift", "together", "rule", "tag", "src", "proposed", "reason");
-            SummonStayS = RI(su["stay"]); SummonWalkMaxS = RI(su["walkMax"]); SummonAlertMax = RI(su["alertMax"]); SummonsPerShift = RI(su["perShift"]); TogetherCm = RI(su["together"]) * 100;
+            var su = b["summon"]; su.Only("stay", "walkMax", "alertMax", "perShift", "rule", "tag", "src", "proposed", "reason");
+            SummonStayS = RI(su["stay"]); SummonWalkMaxS = RI(su["walkMax"]); SummonAlertMax = RI(su["alertMax"]); SummonsPerShift = RI(su["perShift"]); // brief 054 §9.2 (engine 0.29.0): together retired with the affair Watch
             if (pp.Opt("secrets") is JNode sec)
             {
                 sec.Only("rule", "perPerson", "list", "src", "proposed", "reason");
@@ -528,19 +566,47 @@ namespace Suborned.Sim
             CrowdScatterCm = RI(cr["scatter"]) * 100; CrowdStartleTicks = RI(cr["startle"]); CrowdStartleFearfulTicks = RI(cr["startleFearful"]); CrowdRunSpeed = RI(cr["run"]);
             CrowdFleeMaxCm = RI(cr["fleeMax"]); CrowdQuietS = RI(cr["quiet"]); CrowdOccludeCm = RI(cr["occlude"]);
             CrowdPaceSpreadPct = RI(cr["pace"]); if (CrowdPaceSpreadPct < 0 || CrowdPaceSpreadPct > 50) throw new FormatException("crowd.pace: a spread of 0..50 %"); // brief 023 (engine 0.8.2)
+            if (b.Opt("mood") is JNode md) // brief 054 §2, §4
+            {
+                md.Only("scared", "uneasy", "friendly", "shift", "offers", "rule", "tag", "src", "proposed", "reason");
+                void Acts(JNode a, HashSet<string> into) { foreach (var x in a.Strs()) { if (!MemoryActs.Contains(x)) throw new FormatException($"{a.Path}: memory act '{x}' is unknown"); into.Add(x); } }
+                md["scared"].Only("fear", "acts"); MoodScaredFear = RI(md["scared"]["fear"]); Acts(md["scared"]["acts"], MoodScaredActs);
+                md["uneasy"].Only("fear", "resentment", "acts", "wary"); MoodUneasyFear = RI(md["uneasy"]["fear"]); MoodUneasyResentment = RI(md["uneasy"]["resentment"]); Acts(md["uneasy"]["acts"], MoodUneasyActs); MoodWary = md["uneasy"]["wary"].Bool();
+                md["friendly"].Only("loyalty", "acts"); MoodFriendlyLoyalty = RI(md["friendly"]["loyalty"]); Acts(md["friendly"]["acts"], MoodFriendlyActs);
+                var st = md["shift"]; st.Only("friendly", "uneasy", "scared");
+                foreach (var m in new[] { "friendly", "uneasy", "scared" }) { var row = st[m]; row.Only("help", "pay", "pressure"); foreach (var a in new[] { "help", "pay", "pressure" }) { int v = row[a].Int(); if (v < -1 || v > 1) throw new FormatException($"{row[a].Path}: a mood moves a fit one step at most"); moodStep[m + "/" + a] = v; } }
+                WatchOffers = md["offers"].Bool(); MoodOn = true;
+            }
             var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "takedown", "body", "rule", "tag", "src", "proposed", "reason");
             OneOf(ca["takedown"], new[] { "released" }); OneOf(ca["body"], new[] { "lost" }); // brief 013
             foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("loopHeld", "ends"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
                 OneOf(ca[k], new[] { v });
             CancelTurn = OneOf(ca["turn"], new[] { "aborted", "lost" }); CancelEnter = OneOf(ca["enter"], new[] { "staff-report", "quiet" }); CancelTake = OneOf(ca["take"], new[] { "vale-reports", "quiet" });
             if (!MemoryActs.Contains("aborted") && CancelTurn == "aborted") throw new FormatException("cancel.turn aborted needs memory.acts.aborted");
-            var pe = b["perception"]; pe.Only("near", "eye", "door", "facing", "security", "rivals", "patrol", "rule", "tag", "src");
+            var pe = b["perception"]; pe.Only("near", "eye", "door", "facing", "security", "rivals", "patrol", "mount", "people", "rule", "tag", "src");
             NearCm = RI(pe["near"]) * 100; Eye = RI(pe["eye"]);
+            if (pe.Opt("mount") is JNode mo) // brief 055 §7
+            {
+                mo.Only("person", "cameras", "patrol", "robot", "chest", "headTop");
+                if (RI(mo["person"]) != Eye) throw new FormatException("perception.mount.person: a person's eye is perception.eye (eye-cm)");
+                foreach (var kv in mo["cameras"].Entries) { int v = RI(kv.Value); if (v <= 0 || v > 5000) throw new FormatException($"perception.mount.cameras.{kv.Key}: a lens 1..5000 cm above its floor"); MountCameraCm[kv.Key] = v; }
+                if (MountCameraCm.Count == 0) throw new FormatException("perception.mount.cameras: name every camera kind's lens height");
+                MountPatrolCm = RI(mo["patrol"]); MountRobotCm = RI(mo["robot"]); MountChestCm = RI(mo["chest"]); MountHeadTopCm = RI(mo["headTop"]);
+                if (MountPatrolCm <= 0 || MountRobotCm <= 0 || MountChestCm <= 0 || MountChestCm >= Eye || MountHeadTopCm <= Eye) throw new FormatException("perception.mount: eyes above 0, the chest below the eye, the head top above it");
+                MountOn = true;
+            }
             pe["door"].Only("reach", "half"); DoorReachCm = RI(pe["door"]["reach"]) * 100; DoorHalfCm = RI(pe["door"]["half"]) * 100;
             pe["facing"].Only("reach", "half"); FacingReachCm = RI(pe["facing"]["reach"]) * 100; FacingHalfCm = RI(pe["facing"]["half"]) * 100;
             pe["security"].Only("reach", "half"); SecReachCm = RI(pe["security"]["reach"]) * 100; SecHalfCm = RI(pe["security"]["half"]) * 100;
             pe["rivals"].Only("reach", "half"); RivReachCm = RI(pe["rivals"]["reach"]) * 100; RivHalfCm = RI(pe["rivals"]["half"]) * 100;
             pe["patrol"].Only("depth", "halfBase", "halfPerMille"); PatrolDepthCm = RI(pe["patrol"]["depth"]) * 100; PatrolHalfBase = RI(pe["patrol"]["halfBase"]); PatrolHalfPerMille = RI(pe["patrol"]["halfPerMille"]);
+            if (pe.Opt("people") is JNode ppl) // brief 054 §3.3
+            {
+                ppl.Only("sees", "reach", "half");
+                PeopleCone = OneOf(ppl["sees"], new[] { "around", "cone" }) == "cone";
+                PeopleReachCm = RI(ppl["reach"]) * 100; PeopleHalfCm = RI(ppl["half"]);
+                if (PeopleReachCm <= 0 || PeopleHalfCm <= 0) throw new FormatException("perception.people: a reach and a half-width above 0");
+            }
             var si = b["sight"]; si.Only("watch", "kinds", "unknown", "rule", "tag", "src", "proposed", "reason");
             si["watch"].Only("s", "reach", "routine"); SightWatchS = RI(si["watch"]["s"]); SightRoutineS = RI(si["watch"]["routine"]);
             { // brief 031: one reach a operative (a single reach, as runs pinned before it carry, is every operative's)
@@ -593,7 +659,33 @@ namespace Suborned.Sim
             if (StashDoorHolds < 1) throw new FormatException("takedown.stash.doorHolds is at least 1");
             td["service"].Only("period", "dwell"); ServicePeriodS = RI(td["service"]["period"]); ServiceDwellS = RI(td["service"]["dwell"]);
             if (KoAlertMax < 0 || KoAlertMax > 3) throw new FormatException("takedown.koAlertMax is an Alert, 0..3");
-            var wi = b["witness"]; wi.Only("react", "call", "postCall", "robot", "cameraScan", "cap", "scream", "screamFear", "terrifiedFear", "mercenaryAlert", "check", "tell", "alert", "staff", "kin", "close", "tells", "rule", "tag", "src", "proposed", "reason");
+            var wi = b["witness"]; wi.Only("react", "call", "postCall", "robot", "cameraScan", "cap", "scream", "screamFear", "terrifiedFear", "mercenaryAlert", "check", "tell", "alert", "staff", "notice", "kin", "close", "tells", "rule", "tag", "src", "proposed", "reason");
+            if (wi.Opt("notice") is JNode no) // brief 054 §3.2: every act in exactly one list, unknown = reject
+            {
+                no.Only("always", "from", "odd", "never", "heard", "near", "rule");
+                PeopleCareAlert = RI(no["from"]);
+                foreach (var (k, set) in new[] { ("always", NoticeAlways), ("odd", NoticeOdd), ("never", NoticeNever), ("heard", NoticeHeard) })
+                    foreach (var a in no[k].Strs())
+                    {
+                        if (Array.IndexOf(NoticeActs, a) < 0) throw new FormatException($"witness.notice.{k}: '{a}' is no act a witness path asks about (unknown = reject)");
+                        if (NoticeAlways.Contains(a) || NoticeOdd.Contains(a) || NoticeNever.Contains(a) || NoticeHeard.Contains(a)) throw new FormatException($"witness.notice: '{a}' is in two lists");
+                        set.Add(a);
+                    }
+                foreach (var a in NoticeActs) if (!NoticeAlways.Contains(a) && !NoticeOdd.Contains(a) && !NoticeNever.Contains(a) && !NoticeHeard.Contains(a)) throw new FormatException($"witness.notice: act '{a}' is in no list");
+                if (no.Opt("near") is JNode nr) // brief 054 §9.1 (engine 0.29.0): a body at your feet, found whatever the facing
+                {
+                    nr.Only("acts", "cm");
+                    foreach (var a in nr["acts"].Strs())
+                    {
+                        if (!NoticeAlways.Contains(a)) throw new FormatException($"witness.notice.near: '{a}' is no witness.notice.always act (unknown = reject)");
+                        NoticeNear.Add(a);
+                    }
+                    if (NoticeNear.Count == 0) throw new FormatException("witness.notice.near: acts lists at least one act");
+                    PeopleNearCm = RI(nr["cm"]);
+                    if (PeopleNearCm < 1 || PeopleNearCm >= PeopleReachCm) throw new FormatException("witness.notice.near.cm: above 0 and inside perception.people.reach");
+                }
+            }
+            else if (PeopleCone) throw new FormatException("perception.people.sees cone needs witness.notice (who notices what, by act and Alert)");
             WitnessReactS = RI(wi["react"]); CallS = RI(wi["call"]); PostCallS = RI(wi["postCall"]); RobotReportS = RI(wi["robot"]); CameraScanS = RI(wi["cameraScan"]); ReportCap = RI(wi["cap"]);
             ScreamCm = RI(wi["scream"]) * 100; ScreamFear = RI(wi["screamFear"]); TerrifiedFear = RI(wi["terrifiedFear"]); MercenaryAlert = RI(wi["mercenaryAlert"]); TellCm = RI(wi["tell"]) * 100;
             wi["check"].Only("ticks", "s"); BodyCheckTicks = RI(wi["check"]["ticks"]); BodyCheckS = RI(wi["check"]["s"]);
@@ -655,7 +747,7 @@ namespace Suborned.Sim
             RoundsLingerS = RI(rd["linger"]); PartnersCloseCm = RI(rd["close"]); PartnersClearCm = RI(rd["clear"]); PartnersPartS = RI(rd["part"]);
             foreach (var v in rd["holds"].Strs()) { if (v != "listen" && !approaches.ContainsKey(v)) throw new FormatException($"rounds.holds: '{v}' is neither listen nor an approach (unknown = reject)"); RoundHolds.Add(v); }
             foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
-            if (PartnersCloseCm < 1 || PartnersCloseCm >= TogetherCm) throw new FormatException("rounds.close is inside summon.together (a Watch that ends with them standing together still teaches the affair)");
+            if (PartnersCloseCm < 1) throw new FormatException("rounds.close is a distance of 1 cm or more (the summoned lover stops this short of her post)");
             if (PartnersClearCm < 1) throw new FormatException("rounds.clear is a distance of 1 cm or more (the summoned partner's room round his stop)");
             var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "rule", "tag", "src");
             { // Sky 2026-10-20 (tuning.md §7.9): the kite response, today's (the lab reads its own fight.lab.kite)
@@ -870,7 +962,6 @@ namespace Suborned.Sim
                 case "turned": Bool("is"); if (n.Has("of")) OneOf(n["of"], new[] { "friend" }); break;
                 case "known": OneOf(n["what"], Knows); Bool("is"); break;
                 case "leverage": Known(approaches, c.S("approach"), "approach", w); break;
-                case "lover-within": Num(c.S("m")); break;
                 case "requires": case "need-met-by": Known(approaches, c.S("approach"), "approach", w); break;
                 case "need-is": foreach (var x in c.L("in")) Known(Needs, x, "need", w); break;
                 case "need-met": case "orders-reached": case "talker": case "lies": case "cell": case "called": case "exposed": case "tie-between-holds": case "fired-first": case "rivals-broken": Bool("is"); break;
@@ -879,7 +970,8 @@ namespace Suborned.Sim
                 case "fired-on": if (c.L("in").Count == 0) throw new FormatException($"{w}: fired-on names a foe"); foreach (var x in c.L("in")) OneOfStr(x, Foes, w); break;
                 case "rivals-public": if (c.L("in").Count == 0) throw new FormatException($"{w}: rivals-public names one"); foreach (var x in c.L("in")) OneOfStr(x, RivalsPublics, w); break;
                 case "memory": if (!MemoryActs.Contains(c.S("act"))) throw new FormatException($"{w}: memory act '{c.S("act")}' is unknown"); Bool("has"); if (n.Has("this")) OneOf(n["this"], new[] { "mission" }); if (n.Has("of")) OneOf(n["of"], new[] { "friend" }); break;
-                case "fit": foreach (var x in c.L("is")) if (Array.IndexOf(Fits, x) < 0) throw new FormatException($"{w}: fit '{x}' is unknown"); break;
+                case "fit": foreach (var x in c.L("is")) if (Array.IndexOf(CondFits, x) < 0) throw new FormatException($"{w}: fit '{x}' is unknown"); break;
+                case "orders-base": if (!n.Has("above") && !n.Has("atMost")) throw new FormatException($"{w}: orders-base names above or atMost"); if (n.Has("above")) Num(c.S("above")); if (n.Has("atMost")) Num(c.S("atMost")); break;
                 case "temperament": foreach (var x in c.L("in")) Known(temps, x, "temperament", w); break;
                 case "standing": foreach (var x in c.L("band")) if (Array.IndexOf(Bands, x) < 0) throw new FormatException($"{w}: band '{x}' is unknown"); break;
                 case "outcome": foreach (var x in c.L("is")) if (outs == null || !outs.Contains(x)) throw new FormatException($"{w}: outcome '{x}' is not one of {ev?.Id}'s"); break;

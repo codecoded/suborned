@@ -40,7 +40,8 @@ export const Cond = z.discriminatedUnion('k', [
   z.strictObject({ k: z.literal('turned'), is: z.boolean(), of: z.literal('friend').optional() }),
   z.strictObject({ k: z.literal('known'), what: Know, is: z.boolean().optional() }), // the cell knows this of the subject (is false: it does not)
   z.strictObject({ k: z.literal('leverage'), approach: id }), // the approach's knowledge known and the need it acts on, or the subject's secret known (Motive, motive-lovers.md §2.2)
-  z.strictObject({ k: z.literal('lover-within'), m: Ref }), // the subject's lover stands within m of them (a Watch that sees them together)
+  // retired in engine 0.29.0 (brief 054 §9.2: a Watch never teaches a secret); kept only so runs pinned before it parse. rulebook.test.ts holds the live rulebook to none
+  z.strictObject({ k: z.literal('lover-within'), m: Ref }),
   z.strictObject({ k: z.literal('requires'), approach: id }), // people.rules approaches[a].requires is known
   z.strictObject({ k: z.literal('need-met-by'), approach: id }), // the subject's need lists the approach in people.rules metBy
   z.strictObject({ k: z.literal('need-is'), in: z.array(id).min(1) }),
@@ -48,10 +49,11 @@ export const Cond = z.discriminatedUnion('k', [
   z.strictObject({ k: z.literal('reach'), m: Ref }), // the acting operative stands within m
   z.strictObject({ k: z.literal('cash-covers') }), // cash ≥ the worst-case price of one order (preview)
   z.strictObject({ k: z.literal('memory'), act: id, has: z.boolean(), this: z.literal('mission').optional(), of: z.literal('friend').optional() }),
-  z.strictObject({ k: z.literal('fit'), is: z.array(Fit).min(1) }), // fit table; reads the temperament
+  z.strictObject({ k: z.literal('fit'), is: z.array(z.enum([...FITS, 'ready'])).min(1) }), // fit table; reads the temperament (brief 054 §4.2: ready, a step up from suits by mood)
   z.strictObject({ k: z.literal('temperament'), in: z.array(id).min(1) }), // reads the temperament
   z.strictObject({ k: z.literal('standing'), band: z.array(Band).min(1) }), // the district's band
   z.strictObject({ k: z.literal('orders-reached'), is: z.boolean() }), // Help orders given, this one included, ≥ orders needed
+  z.strictObject({ k: z.literal('orders-base'), above: Ref.optional(), atMost: Ref.optional() }), // brief 054 §4.2: the Help's orders before a ready step
   z.strictObject({ k: z.literal('reports') }), // any `reports` row holds
   z.strictObject({ k: z.literal('reports-approach') }), // people.rules temperaments[t].reportsApproach
   z.strictObject({ k: z.literal('outcome'), is: z.array(id).min(1) }), // in `also` and `witnesses`: the outcome that applied
@@ -113,8 +115,8 @@ export type Eff = z.infer<typeof Eff>;
 
 /** The bounds of a value by its unit, the same in the C# loader (Rules.cs): a duration is at least 1 s (Redline E3), nothing wraps (E9). */
 export const UNIT_BOUNDS = {
-  s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [0, 100], alert: [0, 3], standing: [-1000, 1000],
-  orders: [0, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100], deg: [0, 360],
+  s: [1, 3600], usd: [-1e9, 1e9], m: [0, 1000], cm: [0, 100000], 'cm-per-s': [1, 10000], trail: [-100, 100], alert: [0, 3], standing: [-1000, 1000],
+  orders: [-10, 10], 'scale-steps': [-10, 10], entries: [1, 100], hops: [0, 10], count: [0, 100], 'per-mille': [0, 1000000], ticks: [1, 36000], pct: [0, 100], deg: [0, 360],
 } as const;
 const Value = ground({
   v: z.number().int(), // integer state (§11)
@@ -254,7 +256,7 @@ export const Rulebook = z.strictObject({
   cell: ground({
     speed: Ref, runSpeed: Ref, runAlert: Ref, reach: Ref, atReach: Ref,
     loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref, targets: z.array(id).nonempty().optional() }), // targets: site camera ids, or 'world' (the city's own cameras); optional only for runs pinned before brief 013 (rulebook.test.ts holds the live one to it)
-    reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
+    reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref, walk: Ref.optional() }), // engine 0.30.0 (brief 057 §2): the rerouted patrol walks out and back at this pace; absent, it is placed (0.29.0)
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     call: z.strictObject({ trail: Ref }),
     enter: z.strictObject({ s: Ref, alarm: Ref }),
@@ -272,6 +274,7 @@ export const Rulebook = z.strictObject({
   security: ground({
     response: z.strictObject({ witness: Ref, seen: Ref, unseen: Ref, civilian: Ref, checkIn: Ref.optional(), rivalsUnseen: Ref }),
     checkIn: Ref.optional(), seal: Ref.optional(), speed: Ref,
+    sealWarns: z.boolean().optional(), // engine 0.30.0 (Suture's bot pass): the response's call logs seal.starts when it sets the seal clock
     rivals: z.strictObject({ speed: Ref, drawn: Ref, retreat: Ref }),
     patrol: z.strictObject({ breakTo: Ref, period: Ref, chase: Ref }),
     rule: text,
@@ -309,7 +312,8 @@ export const Rulebook = z.strictObject({
   // The crowd in a fight (Pulse §4): every number a ref.
   crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
   // The summons (Motive, motive-lovers.md §1.3): numbers only, every one a ref.
-  summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref, rule: text }),
+  // together: retired in engine 0.29.0 (brief 054 §9.2); optional only so runs pinned before it parse (rulebook.test.ts holds the live one to none)
+  summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref.optional(), rule: text }),
   // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
   cancel: ground({
     move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),
@@ -325,6 +329,10 @@ export const Rulebook = z.strictObject({
     security: z.strictObject({ reach: Ref, half: Ref }),
     rivals: z.strictObject({ reach: Ref, half: Ref }),
     patrol: z.strictObject({ depth: Ref, halfBase: Ref, halfPerMille: Ref }),
+    // brief 055 §7 (engine 0.28.0): every watcher's eye above its own floor, a target's head or chest, the crowd's head top; optional only for runs pinned before it
+    mount: z.strictObject({ person: Ref, cameras: z.record(id, Ref), patrol: Ref, robot: Ref, chest: Ref, headTop: Ref }).optional(),
+    // brief 054 §3.3 (engine 0.28.0): how civilians see, all round (as before) or by their facing cone; optional only for runs pinned before it
+    people: z.strictObject({ sees: z.enum(['around', 'cone']), reach: Ref, half: Ref }).optional(),
     rule: text,
   }),
   // What the cell knows of each watcher's sight (Sky 2026-10-16: cones are the Scout's skill; Glyph's review §3.4): how it is learned, per kind.
@@ -337,6 +345,20 @@ export const Rulebook = z.strictObject({
       camera: SightKind, guard: SightKind, patrol: SightKind, security: SightKind, rivals: SightKind,
     }),
     unknown: z.literal('?'),
+    rule: text,
+  }).optional(),
+  // Brief 054 §2, §4 (engine 0.28.0): a person's mood toward the cell, its step on the fit, and the Watch offered only where it shows something;
+  // optional only for runs pinned before it
+  mood: ground({
+    scared: z.strictObject({ fear: Ref, acts: z.array(id).min(1) }),
+    uneasy: z.strictObject({ fear: Ref, resentment: Ref, acts: z.array(id).min(1), wary: z.boolean() }),
+    friendly: z.strictObject({ loyalty: Ref, acts: z.array(id).min(1) }),
+    shift: z.strictObject({
+      friendly: z.strictObject({ help: z.number().int(), pay: z.number().int(), pressure: z.number().int() }),
+      uneasy: z.strictObject({ help: z.number().int(), pay: z.number().int(), pressure: z.number().int() }),
+      scared: z.strictObject({ help: z.number().int(), pay: z.number().int(), pressure: z.number().int() }),
+    }),
+    offers: z.boolean(),
     rule: text,
   }).optional(),
   // Brief 031 (Sky 2026-10-20): watchers notice loiterers. A clock per security watcher and operative; the marks by the cell's Heat band
@@ -362,6 +384,10 @@ export const Rulebook = z.strictObject({
     check: z.strictObject({ ticks: Ref, s: Ref }), tell: Ref,
     alert: z.strictObject({ seen: Ref, carry: Ref, down: Ref, dead: Ref, woken: Ref, noise: Ref, mark: Ref, missing: Ref }),
     staff: z.array(id).min(1), kin: z.array(id).min(1), close: z.array(id).min(1), tells: z.array(id).min(1),
+    // brief 054 §3.2 (engine 0.28.0): what a civilian notices, by act and Alert; optional only for runs pinned before it
+    notice: z.strictObject({ always: z.array(id), from: Ref, odd: z.array(id), never: z.array(id), heard: z.array(id),
+      // brief 054 §9.1 (engine 0.29.0): a civilian finds an act in `acts` (each an `always` act) within `cm` on a clear line, any facing; optional only for runs pinned before it
+      near: z.strictObject({ acts: z.array(id).min(1), cm: Ref }).optional(), rule: text }).optional(),
     rule: text,
   }).optional(),
   response: ground({

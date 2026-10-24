@@ -98,7 +98,7 @@ namespace Suborned.World
             foreach (var (layer, kit, proc, cov) in want)
             {
                 var t = root.Find(layer);
-                int k = placer.Placed(layer), p = Combine.Procedural(t), c = Combine.Covered(t);
+                int k = placer.Placed(layer) + (layer == "street" ? placer.Placed(CityLayers.CrossingParts) : 0), p = Combine.Procedural(t), c = Combine.Covered(t); // brief 048: the street's flush crossing parts are baked into crossing-parts
                 sb.Append($" {layer} {k}/{kit} {p}/{proc} {c}/{cov}");
                 if (k != kit || p != proc || c != cov) { bad++; Debug.LogError($"World: layer {layer}: kit {k}/{kit}, procedural {p}/{proc}, covered {c}/{cov}"); }
             }

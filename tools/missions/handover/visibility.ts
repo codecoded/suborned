@@ -20,11 +20,13 @@ export const YAWS = [30, 120, 210, 300] as const;
 const PAVE = 0.18, LANDING = 0.75;
 const viewAt = (yaw?: number): View => ({ ...PLAY, yaw: yaw ?? PLAY.yaw });
 
+/** Where a point says it stands (mission.schema.ts, M-3; brief 055): its level and the floor above that level's walk. Absent (a study's or a pinned mission): the old reading. */
+type Stand = { level?: string; floor?: number };
 type M = {
   /** `hidden`: the mission's own reason a point is out of the camera's view by design (a hiding place); V-1 lists it and does not fail it.
    *  `yaw`: the heading the point is played at (30 / 120 / 210 / 300; default 30). A camera's `yaw` is its cone's; the patrol's sweep takes patrol-a's and patrol-b's. */
-  destinations: { name: string; at: V; surface: string; hidden?: string; yaw?: number }[]; crew: { name: string; at: V; yaw?: number }[];
-  points?: { id: string; at?: V; structure?: string; hidden?: string; yaw?: number }[]; cameras?: { id: string; at: V; looksAt: string; reachM: number; halfM: number; yaw?: number }[];
+  destinations: ({ name: string; at: V; surface: string; hidden?: string; yaw?: number } & Stand)[]; crew: ({ name: string; at: V; yaw?: number } & Stand)[];
+  points?: ({ id: string; at?: V; structure?: string; hidden?: string; yaw?: number } & Stand)[]; cameras?: { id: string; at: V; looksAt: string; reachM: number; halfM: number; yaw?: number }[];
 };
 export type Row = { what: string; kind: 'person' | 'cone' | 'sweep'; p: V; z: number; seen: number; clear: number; onlyFade: number; by: string[]; yaw: number; declared?: string; problem?: string };
 
@@ -48,15 +50,17 @@ export function entranceShapes(w: World, civ: Civic, toPlan: (p: V) => V): Piece
 /** Every Handover point measured, each from its own heading (`yaw`, default 30). `blockers` from blockersFor (or a study's own). */
 export function visibility(m: M, civ: Civic, plan: any, blockers: Blocker[]): Row[] {
   const toPlan = toPlanFn(plan.civic), rows: Row[] = [];
-  const zAt = (p: V, surface?: string) => (surface === 'office-public' ? PAVE + LANDING : civ.bays.some(b => inPoly(p, b.poly)) ? 0 : PAVE);
-  const person = (what: string, at: V, surface?: string, declared?: string, yaw?: number) => {
-    const p = toPlan(at), z = zAt(p, surface), v = viewAt(yaw), s = seen(p, z, blockers, v);
+  const walk = new Map((plan.standards.levels.list as { id: string; z: number; walk?: number }[]).map(l => [l.id, l.walk ?? (l.id === 'street' ? PAVE : l.z)]));
+  const zAt = (p: V, surface?: string, st?: Stand) => (st?.level && walk.has(st.level) ? walk.get(st.level)! + (st.floor ?? 0)
+    : surface === 'office-public' ? PAVE + LANDING : civ.bays.some(b => inPoly(p, b.poly)) ? 0 : PAVE); // a point that states its level stands on it (M-3 holds the floor to the block)
+  const person = (what: string, at: V, surface?: string, declared?: string, yaw?: number, st?: Stand) => {
+    const p = toPlan(at), z = zAt(p, surface, st), v = viewAt(yaw), s = seen(p, z, blockers, v);
     rows.push({ what, kind: 'person', p, z, seen: s.pastArchitecture, clear: s.clear, onlyFade: s.onlyFade, by: s.by, yaw: v.yaw, ...(declared ? { declared } : {}) });
   };
-  for (const d of m.destinations) person(d.name, d.at, d.surface, d.hidden, d.yaw);
-  for (const c of m.crew) person(`crew ${c.name}`, c.at, undefined, undefined, c.yaw);
+  for (const d of m.destinations) person(d.name, d.at, d.surface, d.hidden, d.yaw, d);
+  for (const c of m.crew) person(`crew ${c.name}`, c.at, undefined, undefined, c.yaw, c);
   for (const pt of m.points ?? []) {
-    if (pt.at) person(pt.id, pt.at, undefined, pt.hidden, pt.yaw);
+    if (pt.at) person(pt.id, pt.at, undefined, pt.hidden, pt.yaw, pt);
     else if (pt.structure) { const s = civ.structures.find(x => x.id === pt.structure); if (s) { const c: V = [s.poly.reduce((a, q) => a + q[0], 0) / s.poly.length, s.poly.reduce((a, q) => a + q[1], 0) / s.poly.length]; const z = PAVE, v = viewAt(pt.yaw), r = seen(c, z, blockers, v); rows.push({ what: pt.id, kind: 'person', p: c, z, seen: r.pastArchitecture, clear: r.clear, onlyFade: r.onlyFade, by: r.by, yaw: v.yaw, ...(pt.hidden ? { declared: pt.hidden } : {}) }); } }
   }
   const footprints = civ.buildings.flatMap(b => [b.poly, ...(b.towers ?? []).flatMap(t => (t.poly ? [t.poly] : []))]);

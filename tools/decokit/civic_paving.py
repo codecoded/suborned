@@ -16,7 +16,11 @@ from kit import asset
 import mats
 from mats import pal, register
 
-register("DK_Pave_Civic", "stone", "#FFFFFF")
+# Plaza paving (brief 048, Vela 2026-10-24; Glint: the plaza blows out white in the long view and exposure cannot fix it, the albedo is the cause): the sheet's mean was #E4DACA; the tint
+# multiplies it by (.888, .807, .644) in linear light, 19 percent darker in luminance and warm (toward the testbed's buff-gold slab), the joints and slab-to-slab drift untouched.
+register("DK_Pave_Civic", "stone", "#F2E8D2")
+# Unity: the generator writes the .mat (it was the legacy one, never rewritten), same guid, the legacy layout (UV = world metres / 4 over a 4 m sheet: scale 1), maps by the same names, tint as above
+mats.GROUND.setdefault("DK_Pave_Civic", dict(albedo="pave_civic_v1.png", normal="pave_civic_v1_normal.png", mask="pave_civic_v1_mask.png", tile=(1.0, 1.0), smoothness=1.0, tint="#F2E8D2"))
 mats.TEXTURES.setdefault("DK_Pave_Civic", ("pave_civic_v1.png", 4.0))
 
 PROUD = 0.004

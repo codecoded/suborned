@@ -21,20 +21,27 @@ import { type V, dist, inPoly, lineDist, segDist } from '../../../plan/geom';
 import { FLAT_FOOT, LAND, type Ctx, r3, r4 } from '../common';
 import { adoptedBy } from '../kitrefs';
 import { kerbRuns } from './capstone';
+import { finishSet } from '../../../plan/finish-set';
+import { baysOf, chordsOf, inCut, onRoundedEnd, returnsOf } from '../kerbreturn';
 
 export type RoadFinishLog = {
   /** pieces placed by item kind and by kit id */
   counts: Record<string, number>; pieces: Record<string, number>;
   /** the ribbon: kerb runs seen, metres of kerb face, metres laid, metres cut at breaks (by what cut them) */
   kerb: { runs: number; edgeM: number; laidM: number; cutM: Record<string, number>; /** metres of kerb face by where it comes from (plot, circus, median, mouth, bay, beyond, quay, reservation) */ faceM: Record<string, number>; /** road edge not covered by any face (metres, then where) */ uncoveredM: number; uncovered: string[] };
+  /** brief 028: the kerb returns the families are swept round: returns, chords laid (all families), chords dropped at a break, metres of chord */ returns: { returns: number; chords: number; dropped: number; m: number };
   lozenges: { lines: number; runs: number; placed: number }; seams: { placed: number; dropped: Record<string, number> };
+  /** the finish set laid (finish.set) and, for the asphalt set's white marks (brief 055 road test): metres of edge line, dashes by road and by kind (centre, divider), the roads that take dividers, metres cut at breaks */
+  set: string; marks: { edgeM: number; dashes: number; byRoad: Record<string, { centre: number; divider: number }>; cutM: Record<string, number> };
+  /** the lawn track of each road's reservation (brief 028, Vela 2026-10-24): one flat per stretch between its breaks, kerb face to kerb face; the world export adds them to ground.flats (surface `median`) */
+  lawn: { id: string; ring: V[] }[];
   /** what the generator did not do, and why (to Datum and Splice) */
   gaps: { rule: string; where: string; why: string }[];
 };
 
 type Box = [number, number, number, number];
 type Blocker = { kind: string; ring: V[]; bb: Box; /** a bay's own faces lie inside its ring: the blocker is not theirs */ owner?: string };
-type Family = { id: 'ribbon' | 'shoulder' | 'pinstripe'; kind: string; piece: KitAsset; /** pivot offset from the kerb face, + toward the carriageway */ at: number; /** lateral extent of its section from the kerb face (a < b) */ a: number; b: number; z: number };
+type Family = { id: 'ribbon' | 'shoulder' | 'pinstripe' | 'edge'; kind: string; piece: KitAsset; /** pivot offset from the kerb face, + toward the carriageway */ at: number; /** lateral extent of its section from the kerb face (a < b) */ a: number; b: number; z: number };
 type Seg = { s0: number; s1: number };
 type Line = { id: string; p0: V; u: V; n: V; len: number; road: string; edge: string; plot?: boolean; /** where the face comes from (log.kerb.faceM) */ from: string; /** the bay whose face this is */ bay?: string; /** the level it lies at, else the carriageway's 0 */ z?: number; /** no pavement top beside it: no pinstripe */ noPin?: boolean; /** the level of the pavement top beside it, else ctx.pav */ padZ?: number; /** cut inside the circus ring (a reservation edge runs on into it) */ circusCut?: boolean };
 
@@ -96,19 +103,26 @@ export function offsetLine(line: V[], d: number): V[] {
 /** Where a pinstripe lies beside a face is the walking surface on its pavement side: a plot slab, a median or the circus island at the pavement top (ctx.pav), a foot way at FLAT_FOOT, the land under a circus band at LAND. */
 export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** tram platform rings (the world's transit.stops[].ring) */ platforms?: V[][] }): { items: StreetItem[]; log: RoadFinishLog } | undefined {
   const R = ctx.S.roads; if (!R?.ribbon || !R.breaks || !R.lozenges || !R.seams) return undefined;
+  const FS = finishSet(R), lanes = FS.marks === 'lanes', M = lanes ? R.marks : undefined; // the asphalt set: white lane marks instead of lozenges and seams
   const straight = adoptedBy(R.ribbon.pieces.straight), lozenge = adoptedBy(R.lozenges.piece), seam = adoptedBy(R.seams.piece);
-  const log: RoadFinishLog = { counts: {}, pieces: {}, kerb: { runs: 0, edgeM: 0, laidM: 0, cutM: {}, faceM: {}, uncoveredM: 0, uncovered: [] }, lozenges: { lines: 0, runs: 0, placed: 0 }, seams: { placed: 0, dropped: {} }, gaps: [] };
+  const log: RoadFinishLog = { counts: {}, pieces: {}, kerb: { runs: 0, edgeM: 0, laidM: 0, cutM: {}, faceM: {}, uncoveredM: 0, uncovered: [] }, returns: { returns: 0, chords: 0, dropped: 0, m: 0 }, lozenges: { lines: 0, runs: 0, placed: 0 }, seams: { placed: 0, dropped: {} }, set: FS.name, marks: { edgeM: 0, dashes: 0, byRoad: {}, cutM: {} }, lawn: [], gaps: [] };
   const gap = (rule: string, where: string, why: string) => { log.gaps.push({ rule, where, why }); };
+  const dashP = M && adoptedBy(M.pieces?.dash), edgeP = M?.edge ? adoptedBy(M.pieces?.edge) : undefined;
+  if (lanes && (!M || !dashP || (M.edge && !edgeP))) { gap('RF', 'kit', `finish set ${FS.name} lays white marks: ${M?.pieces?.dash}${M?.edge ? ', ' + M.pieces?.edge : ''} (roads.marks.pieces) are not both adopted in the kit`); return { items: [], log }; }
   if (!straight || !lozenge || !seam) { gap('RF', 'kit', `${R.ribbon.pieces.straight}, ${R.lozenges.piece}, ${R.seams.piece}: one is not adopted in the kit (candidate until Sky agrees the road)`); return { items: [], log }; }
 
   const stop: number = R.breaks.stopShort, off: number = R.ribbon.offset, half: number = R.ribbon.section / 2;
-  const fams: Family[] = [{ id: 'ribbon', kind: 'road-ribbon', piece: straight, at: off, a: off - half, b: off + half, z: 0 }];
-  const sh = R.shoulder, ps = R.pinstripe, shP = sh && adoptedBy(sh.piece), psP = ps && adoptedBy(ps.piece);
+  const drop = new Set<string>(FS.drop); // families the finish set does not lay (the clean asphalt: only the pearl kerb beside the road)
+  const fams: Family[] = drop.has('ribbon') ? [] : [{ id: 'ribbon', kind: 'road-ribbon', piece: straight, at: off, a: off - half, b: off + half, z: 0 }];
+  const sh = drop.has('shoulder') ? undefined : R.shoulder, ps = drop.has('pinstripe') ? undefined : R.pinstripe, shP = sh && adoptedBy(sh.piece), psP = ps && adoptedBy(ps.piece);
   if (sh && shP) fams.push({ id: 'shoulder', kind: 'road-shoulder', piece: shP, at: off, a: sh.from, b: sh.to + sh.chrome, z: 0 });
   else if (sh) gap('RF', 'shoulder', `${sh.piece} is not adopted: the pearl band beside the ribbon is not laid`);
   if (ps && psP) fams.push({ id: 'pinstripe', kind: 'road-pinstripe', piece: psP, at: -ps.offset, a: -ps.offset - ps.width / 2, b: -ps.offset + ps.width / 2, z: ctx.pav });
   else if (ps) gap('RF', 'pinstripe', `${ps.piece} is not adopted: the pavement pinstripe is not laid`);
 
+  /** the asphalt set's edge line: its pivot `offset` out from the kerb face, white enamel inlay a little proud of the road (brief 055 road test) */
+  if (M?.edge && edgeP) fams.push({ id: 'edge', kind: 'road-edge-line', piece: edgeP, at: M.edge.offset, a: M.edge.offset - M.edge.width / 2, b: M.edge.offset + M.edge.width / 2, z: 0 });
+  const mStop: number = M?.stopShort ?? stop;
   const items: StreetItem[] = [], n: Record<string, number> = {};
   const put = (kind: string, a: KitAsset, at: V, yaw: number, z: number, scale: [number, number, number], edge: string) => {
     items.push({ id: `street/roadfinish/${kind}-${(n[kind] = (n[kind] ?? 0) + 1) - 1}`, kind, at: [r3(at[0]), r3(at[1])], yaw: wrap(yaw), z: r3(z), size: [r3(a.size[0] * scale[0]), r3(a.size[2] * scale[2]), r3(a.size[1] * scale[1])], surface: 'trim', edge, sight: 'open', source: 'kit', kit: { id: a.id, scale } });
@@ -144,6 +158,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   /** How far past (+) or short of (-) its vertex a run's line of family f ends at a right-angled corner of its plot: the through run (x-dominant) runs on to the other's outer edge and the other stops at
    *  the through run's inner edge, so the two sections meet as an L with nothing doubled; at a reflex corner the reverse (each trimmed). */
   const ext = (r: Run, atB: boolean, f: Family): number => {
+    const t = atB ? r.tB : r.tA; if (t > 0) return -t; // brief 028: a rounded kerb return: the straight run stops at the arc's tangent point; the arc is swept below (step 1c)
     if (!(atB ? r.trimB : r.trimA)) return 0;
     const v = atB ? r.b : r.a, other = (endAt.get(`${r.plot}|${key(v)}`) ?? []).find(q => q !== r); if (!other) return 0;
     const convex = (atB ? cross(r.u, other.u) : cross(other.u, r.u)) > 0, through = Math.abs(r.u[0]) > Math.abs(r.u[1]);
@@ -153,7 +168,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   const runOf = new Map<string, Run>(runs.map((r, i) => [`${r.plot}#${i}`, r]));
   const circus = ctx.plan.circus;
   const face = (id: string, from: string, road: string, a: V, b: V, toward: V, more: Partial<Line> = {}) => {
-    const len = dist(a, b); if (len < 0.4) return;
+    const len = dist(a, b); if (len < (more.bay ? 0.1 : 0.4)) return; // a lay-by's 0.2 m end face between two arcs is laid: the light has no gap
     lines.push({ id, p0: a, u: norm2([b[0] - a[0], b[1] - a[1]]), n: norm2(toward), len, road, edge: `roadfinish/${id}`, from, ...more });
   };
   // the circus: the island kerb (the carriageway outside it) and the outer kerb (the carriageway inside it), as 2 m chords of the lens circle (a sagitta under 0.02 m)
@@ -170,20 +185,30 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   ctx.d.zones.filter(z => z.kind === 'median' && z.poly).forEach((z, zi) => {
     const P = z.poly!, c: V = [P.reduce((s, p) => s + p[0], 0) / P.length, P.reduce((s, p) => s + p[1], 0) / P.length];
     const host = ctx.d.roads.filter(r => !r.gyratory && r.median).map(r => ({ id: r.id, d: Math.min(...r.line.map(p => dist(p, c))) })).sort((a, b) => a.d - b.d)[0]?.id ?? 'median';
+    const noses = returnsOf(ctx).filter(x => x.nose && x.plot === `median/${zi}`), shortEdge = (i: number) => dist(P[i]!, P[(i + 1) % P.length]!) <= Math.min(dist(P[0]!, P[1]!), dist(P[1]!, P[2]!)) + 1e-6, r0 = noses[0]?.r ?? 0;
     P.forEach((p, i) => {
-      const q = P[(i + 1) % P.length]!, L = dist(p, q); if (L < 1) return;
+      let q = P[(i + 1) % P.length]!; const L = dist(p, q); if (L < 1) return;
       const u = norm2([q[0] - p[0], q[1] - p[1]]); let nn: V = [u[1], -u[0]];
       if ((c[0] - p[0]) * nn[0] + (c[1] - p[1]) * nn[1] > 0) nn = [-nn[0], -nn[1]]; // away from the zone's centre: into the carriageway
+      if (noses.length === 2) { if (shortEdge(i)) return; p = [p[0] + u[0] * r0, p[1] + u[1] * r0]; q = [q[0] - u[0] * r0, q[1] - u[1] * r0]; } // brief 028: the end is a bullnose (swept in step 1c): the long side stops where the half round starts
       face(`median/${zi}/${i}`, 'median', host, p, q, nn, { edge: `roadfinish/median/${zi}` });
     });
   });
   // the faces with no plot edge (roads.kerbs): the plan lists the circus and foot-way mouths; a kerbed bay is read from the block; beyond, quay and reservation are read from the plan's own geometry
   const K = R.kerbs ?? {};
-  for (const f of K.circusMouths?.faces ?? []) face(f.id, 'mouth', f.road, f.a, f.b, f.toward, { padZ: LAND });
+  for (const f of K.circusMouths?.faces ?? []) { // brief 028: the face starts at the tangent point of the mouth's kerb return (the arc is swept in step 1c); a plan without kerbReturn keeps the square mouth
+    const rt = returnsOf(ctx).find(q => q.mouth === f.id), u = norm2([f.b[0] - f.a[0], f.b[1] - f.a[1]]);
+    face(f.id, 'mouth', f.road, rt ? [f.a[0] + u[0] * rt.t, f.a[1] + u[1] * rt.t] : f.a, f.b, f.toward, { padZ: LAND });
+  }
   for (const f of K.footMouths?.faces ?? []) face(f.id, 'mouth', f.road, f.a, f.b, f.toward, { padZ: FLAT_FOOT });
+  // a kerbed bay (brief 028: rounded by kerbReturn.bay): the ribbon goes round its outline, the straight kerb faces between the arcs here (an end, the back, an end; the arcs are swept in step 1c, the plot's run stops at the mouth corner's tangent point,
+  // capstone.kerbRuns), none across the mouth; a plan without kerbReturn keeps the square bay: its back and ends as faces, the plot run cut at the mouth by a break
+  const shapes = baysOf(ctx);
   for (const kb of K.bays?.kerbed ?? [] as { bay: string; road: string }[]) {
     const bay = ctx.civ.bays.find(b => b.id === kb.bay), road = ctx.d.roads.find(r => r.id === kb.road);
     if (!bay || !road) { gap('RF-kerb', `bay ${kb.bay}`, `the block has no bay ${kb.bay}, or the plan no road ${kb.road}`); continue; }
+    const shape = shapes.find(b => b.id === kb.bay);
+    if (shape) { shape.faces.forEach((f, i) => face(`bay/${kb.bay}/${i}`, 'bay', kb.road, f.a, f.b, f.n, { bay: kb.bay, z: FLAT_FOOT })); continue; }
     const P = bay.poly as V[], c: V = [P.reduce((s, p) => s + p[0], 0) / P.length, P.reduce((s, p) => s + p[1], 0) / P.length];
     const onEdge = (q: V) => Math.abs(lineDist(q, road.line) - road.w / 2) <= 0.1;
     const mouth = P.findIndex((q, i) => onEdge(q) && onEdge(P[(i + 1) % P.length]!));
@@ -241,7 +266,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
       for (let i = 0; i < pts.length - 1; i++) for (const t of [0, 0.5]) {
         const p: V = [pts[i]![0] + (pts[i + 1]![0] - pts[i]![0]) * t, pts[i]![1] + (pts[i + 1]![1] - pts[i]![1]) * t];
         if (Math.abs(lineDist(p, rd.line) - d) > 0.15) continue; // the offset line's mitre at a bend lies nearer the road than its edge: not an edge
-        if (roadLines.within(p, 0.5, rd.id) || Math.hypot(p[0] - circus.c[0], p[1] - circus.c[1]) < circus.ring[1] + 0.5 || cov.within(p, 0.35)) continue;
+        if (roadLines.within(p, 0.5, rd.id) || Math.hypot(p[0] - circus.c[0], p[1] - circus.c[1]) < circus.ring[1] + 0.5 || cov.within(p, 0.35) || inCut(ctx, p, 0.35) || shapes.some(b => segDist(p, b.M[0], b.M[1]) < 0.35) || onRoundedEnd(ctx, p, 0.35)) continue; // a kerbed bay's mouth is open carriageway: no face by design // inCut (brief 028): the corner a kerb return takes is no kerb edge now; its arc is swept below
         const k = `${rd.id} ${side > 0 ? 'left' : 'right'} ${d}`; (miss.get(k) ?? miss.set(k, []).get(k)!).push(p); log.kerb.uncoveredM += 1;
       }
     }
@@ -253,8 +278,9 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   for (const f of fams) {
     for (const L of lines) {
       if (f.id === 'pinstripe' && L.noPin) continue;
+      if (f.id === 'edge' && L.from === 'bay') continue; // a lay-by's own faces are not the carriageway's edge
       const run = runOf.get(L.id), start = run ? -ext(run, false, f) : 0, end = run ? L.len + ext(run, true, f) : L.len;
-      if (end - start < 0.4) continue;
+      if (end - start < (L.from === 'bay' ? 0.1 : 0.4)) continue;
       const pos = (s: number): V => [L.p0[0] + L.u[0] * s + L.n[0] * f.at, L.p0[1] + L.u[1] * s + L.n[1] * f.at];
       const cut: Record<string, number> = {}, road = ctx.d.roads.find(q => q.id === L.road);
       const kerbed = (s: number): boolean => { // a plot edge runs on past a road that ends: there is no kerb face (as capstone.kerbs: the edge must lie on the road's carriageway edge)
@@ -263,33 +289,63 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
         return v;
       };
       const segs = spans(start, end, s => {
-        const p = pos(s), b = hit(p, stop, L.u, L.bay); if (b) return b;
+        const p = pos(s), b = hit(p, f.id === 'edge' ? mStop : stop, L.u, L.bay); if (b) return b;
+        if (L.from === 'circus' && inCut(ctx, p, 0.12)) return 'return'; // brief 028: the ring's outer kerb turns into the mouth's return here
         if (run) return kerbed(s) || s < 0 || s > L.len ? undefined : 'no-kerb'; // the corner extensions past the plot's vertex lie on the other road's kerb
         if (L.circusCut && Math.hypot(p[0] - circus.c[0], p[1] - circus.c[1]) < circus.ring[1] + stop) return 'circus';
-        return roadLines.within(p, stop, L.road) ? 'junction' : undefined; // a median's or the circus's line is cut where another road's carriageway runs over it
+        return roadLines.within(p, f.id === 'edge' ? mStop : stop, L.road) ? 'junction' : undefined; // a median's or the circus's line is cut where another road's carriageway runs over it
       }, 0.2, cut);
       if (f.id === 'ribbon') { log.kerb.edgeM += end - start; log.kerb.faceM[L.from] = r3((log.kerb.faceM[L.from] ?? 0) + end - start); if (run) log.kerb.runs++; for (const [k, v] of Object.entries(cut)) log.kerb.cutM[k] = (log.kerb.cutM[k] ?? 0) + v; }
       const yaw = Math.atan2(L.n[0], -L.n[1]), pieceLen = f.piece.size[0], z = f.id === 'pinstripe' ? (L.padZ ?? f.z) : (L.z ?? f.z);
-      for (const sg of segs) for (const pc of fill(sg.s0, sg.s1, pieceLen, 0.5)) {
+      for (const sg of segs) for (const pc of fill(sg.s0, sg.s1, pieceLen, L.from === 'bay' ? 0.1 : 0.5)) {
         put(f.kind, f.piece, pos(pc.s), yaw, z, [r3(pc.len / pieceLen), 1, 1], L.edge);
         if (f.id === 'ribbon') log.kerb.laidM += pc.len;
+        if (f.id === 'edge') log.marks.edgeM += pc.len;
+      }
+      if (f.id === 'edge') for (const [k, v] of Object.entries(cut)) log.marks.cutM[k] = r3((log.marks.cutM[k] ?? 0) + v);
+    }
+  }
+  // ---- 1b. the reservation's lawn track (the plan: 'the tram reservation is lawn track'; ribbon.along: a kerb face each side): the strip between the two faces, cut where the faces are cut, the rails (ground.tram) laid on it.
+  //  Before this the world drew nothing between the two faces but the carriageway's enamel and the tracks, so the pearl bands at the faces read as two white bars down the middle of the road.
+  for (const L of lines) {
+    if (L.from !== 'reservation' || !/\/l\d+\.\d+$/.test(L.id)) continue; // one flat per stretch of the left face; the right face is its mirror about the road line
+    const rd = ctx.d.roads.find(q => q.id === L.road), res = (rd as { reservation?: number } | undefined)?.reservation; if (!rd || !res) continue;
+    const at = (s: number, k: number): V => [L.p0[0] + L.u[0] * s + L.u[1] * res * k, L.p0[1] + L.u[1] * s - L.u[0] * res * k]; // k 0 = this face, 1 = the other (the road line lies a half reservation to its right)
+    const segs = spans(0, L.len, s => { const p = at(s, 0), b = hit(p, stop, L.u); if (b) return b; return roadLines.within(p, stop, L.road) ? 'junction' : undefined; }, 0.2, {});
+    segs.forEach((sg, k) => { if (sg.s1 - sg.s0 >= 2) log.lawn.push({ id: `${L.id}.${k}`, ring: [at(sg.s0, 0), at(sg.s1, 0), at(sg.s1, 1), at(sg.s0, 1)].map((q): V => [r3(q[0]), r3(q[1])]) }); });
+  }
+  // ---- 1c. the kerb returns (brief 028, Sky 2026-10-24: rounded pavement corners): every family is swept round each convex return's arc as straight chords of the same piece (scaled along, as the straight runs are), on the circle
+  //  `at` off the kerb face (the plan's ribbon.corners: "else the ribbon is swept along the kerb at offset from the pieces' section"): no mitre. A chord is at most 7.5 degrees and never under 0.6 m, so a quarter turn is 12 chords
+  //  of a 6 m or larger return; its pivot sits on the circle compensated by half its sagitta (the chord is out by at most 0.011 m either way on a 10 m return). A chord that stands within stopShort of a break is dropped, as a straight piece is.
+  const sweep = { returns: 0, chords: 0, dropped: 0, m: 0 };
+  for (const rt of returnsOf(ctx)) {
+    if (!classes.includes(rt.cls)) continue; sweep.returns++;
+    for (const f of fams) {
+      const stopF = f.id === 'edge' ? mStop : stop;
+      for (const ch of chordsOf(rt, f.at)) {
+        if ([ch.from, ch.at, ch.to].some(p => hit(p, stopF))) { sweep.dropped++; continue; }
+        const z = f.id === 'pinstripe' ? f.z : rt.bay ? rt.level : f.z, yaw = Math.atan2(ch.n[0], -ch.n[1]); // a bay's ribbon lies on its floor (FLAT_FOOT), the pinstripe on the pavement
+        put(f.kind, f.piece, ch.at, yaw, z, [r3(ch.len / f.piece.size[0]), 1, 1], `roadfinish/return/${rt.id}`);
+        if (f.id === 'ribbon') { log.kerb.laidM += ch.len; log.kerb.edgeM += ch.len; log.kerb.faceM.return = r3((log.kerb.faceM.return ?? 0) + ch.len); }
+        if (f.id === 'edge') log.marks.edgeM += ch.len;
+        sweep.chords++; sweep.m += ch.len;
       }
     }
   }
-  if (R.ribbon.pieces.arcs) gap('RF-arc', 'the kerb returns', 'the arc pieces (RoadRibbon_Arc90_R4/R8, RoadShoulder_Arc90_R4/R8) are adopted but not placed: the plot slabs have square corners (grammar §1), so every return is the mitred L of two straight runs (ribbon.corners)');
+  log.returns = { returns: sweep.returns, chords: sweep.chords, dropped: sweep.dropped, m: r3(sweep.m) };
 
   // ---- 2. lozenges and seams on each carriageway's middle line
   const lozenges = R.lozenges, seams = R.seams, hl = lozenges.length / 2;
   const clear = sh && shP ? sh.to + sh.chrome : off + half + stop; // from a kerb face to where a seam starts: the shoulder's outer chrome (1.015 m), else the ribbon's brass and stopShort
-  type Cw = { road: string; line: V[]; half: number };
+  type Cw = { road: string; line: V[]; half: number; /** a median's or reservation's side: one-way, its own middle line */ divided: boolean };
   const carriageways: Cw[] = [];
   for (const r of ctx.d.roads) {
     if (r.gyratory || !classes.includes(r.class)) continue;
     const hw = r.w / 2, m = ((r.median ?? 0) || (r as { reservation?: number }).reservation || 0) / 2; // a median's or a reservation's two carriageways each take their own middle line, never the road line (which lies in it)
-    if (!m) carriageways.push({ road: r.id, line: r.line, half: hw });
-    else for (const side of [1, -1]) carriageways.push({ road: r.id, line: offsetLine(r.line, (side * (m + hw)) / 2), half: (hw - m) / 2 });
+    if (!m) carriageways.push({ road: r.id, line: r.line, half: hw, divided: false });
+    else for (const side of [1, -1]) carriageways.push({ road: r.id, line: offsetLine(r.line, (side * (m + hw)) / 2), half: (hw - m) / 2, divided: true });
   }
-  for (const cw of carriageways) {
+  for (const cw of lanes ? [] : carriageways) { // the enamel set: lozenges and seams (the asphalt set lays marks below)
     log.lozenges.lines++;
     const line = cw.line, cum: number[] = [0]; for (let i = 1; i < line.length; i++) cum.push(cum[i - 1]! + dist(line[i - 1]!, line[i]!));
     const total = cum[cum.length - 1]!; if (total < 4) continue;
@@ -328,6 +384,39 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
         for (let j = 0; j < nPc; j++) {
           const t = -half2 + (j + 0.5) * each;
           put('road-seam', seam, [p[0] + nrm[0] * t, p[1] + nrm[1] * t], Math.atan2(nrm[0], -nrm[1]), 0, [1, 1, r3(each / seam.size[2])], `roadfinish/seam/${cw.road}`); log.seams.placed++;
+        }
+      }
+    }
+  }
+  // ---- 3. the asphalt set's white marks (brief 055 road test): dashes on the centre line of every undivided carriageway and on each lane divider roads.marks.lanes names, by the lozenges' placement
+  if (lanes && M && dashP) {
+    const dash = M.dash, hd = dash.length / 2, lane = (M.lanes ?? {}) as Record<string, number>;
+    for (const cw of carriageways) {
+      // the lines that carry dashes: the road line of an undivided carriageway, else the lane boundaries between the edge lines (lane count from the plan; one lane = none)
+      const inset: number = M.edge?.offset ?? 0, nLane = cw.divided ? (lane[cw.road] ?? 1) : 1, span = 2 * (cw.half - inset); // lanes between the edge lines (or kerb to kerb when the set has none)
+      const offs: { d: number; kind: 'centre' | 'divider' }[] = !cw.divided ? [{ d: 0, kind: 'centre' }] : Array.from({ length: Math.max(0, nLane - 1) }, (_, k) => ({ d: -span / 2 + ((k + 1) * span) / nLane, kind: 'divider' as const }));
+      if (cw.divided && nLane >= 2 && span / nLane < 3.0 - 1e-9) { gap('RF-marks', `road ${cw.road}`, `${nLane} lanes leave ${(span / nLane).toFixed(2)} m each (< 3.0): no dividers`); continue; }
+      for (const o of offs) {
+        const line = o.d ? offsetLine(cw.line, o.d) : cw.line, cum: number[] = [0]; for (let i = 1; i < line.length; i++) cum.push(cum[i - 1]! + dist(line[i - 1]!, line[i]!));
+        const total = cum[cum.length - 1]!; if (total < 4) continue;
+        const at = (s: number): { p: V; u: V } => {
+          let i = 1; while (i < line.length - 1 && cum[i]! < s) i++;
+          const a = line[i - 1]!, b = line[i]!, t = (s - cum[i - 1]!) / (cum[i]! - cum[i - 1]! || 1);
+          return { p: [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], u: norm2([b[0] - a[0], b[1] - a[1]]) };
+        };
+        const blocked = (p: V, g: number): string | undefined => {
+          if (roadLines.within(p, g, cw.road)) return 'junction';
+          if (Math.hypot(p[0] - circus.c[0], p[1] - circus.c[1]) < circus.ring[1] + g) return 'circus';
+          return hit(p, g);
+        };
+        for (const rn of spans(0, total, s => blocked(at(s).p, mStop), 0.25, log.marks.cutM)) {
+          const mid = (rn.s0 + rn.s1) / 2, L = rn.s1 - rn.s0;
+          for (let k = 0; k * dash.spacing <= L / 2; k++) for (const sg of k ? [1, -1] : [1]) {
+            const s = mid + sg * k * dash.spacing; if (s - hd < rn.s0 - 1e-9 || s + hd > rn.s1 + 1e-9) continue;
+            const { p, u } = at(s);
+            put('road-lane-dash', dashP, p, Math.atan2(u[1], u[0]), 0, [1, 1, o.kind === 'divider' ? r3((dash.dividerWidth ?? dash.width) / dash.width) : 1], `roadfinish/${o.kind}/${cw.road}`);
+            log.marks.dashes++; const b = (log.marks.byRoad[cw.road] ??= { centre: 0, divider: 0 }); b[o.kind]++;
+          }
         }
       }
     }

@@ -30,6 +30,10 @@ namespace Suborned.Sim
         public string[] Stop = Array.Empty<string>();
         /// <summary>A camera with several heads (the Records Square mast): the other heads' polygons and stops, as Points and Stop.</summary>
         public Pt[][] More = Array.Empty<Pt[]>(); public string[][] MoreStop = Array.Empty<string[]>();
+        /// <summary>Brief 055 §7 (perception.mount): the shadows of solids the eye sees over or under, each a convex polygon the watcher does
+        /// not see into although it lies inside Points (or More): a 2 m planting under a 4.79 m lens hides only a short stretch behind it.
+        /// A point is in sight when it is in a polygon and in no shadow. Empty with the mount off.</summary>
+        public Pt[][] Shadows = Array.Empty<Pt[]>();
     }
 
     /// <summary>What the cell knows of one watcher (rulebook sight).</summary>
@@ -168,9 +172,21 @@ namespace Suborned.Sim
         public bool InSight(string watcher, Pt p, bool crowd = true)
         {
             var s = ShapeOf(watcher); if (!s.HasValue) return false;
-            if (!InShape(s.Value, p) || !Sees(s.Value.At, p)) return false;
-            return !(crowd && watcher != "rivals" && CrowdBlocks(s.Value.At, p));
+            if (!InShape(s.Value, p) || !WatcherSees(watcher, s.Value.At, p)) return false;
+            return !(crowd && watcher != "rivals" && WatcherCrowd(watcher, s.Value.At, p));
         }
+        /// <summary>Brief 055 §7 (perception.mount): the watcher's eye, block z cm, at `at`: a camera's lens (its own piece never blocks it), the
+        /// patrol robot's face, a response robot's lamp, a person's eye; null with the mount off (the flat test).</summary>
+        (int z, bool own)? WatcherEye(string w, Pt at)
+        {
+            if (!R.MountOn) return null;
+            if (w.StartsWith("camera:", StringComparison.Ordinal)) { var id = w.Substring(7); foreach (var c in S.Cameras) if (c.Id == id) return (LensZ(c), true); }
+            if (w == "patrol") return (FloorAt(at) + R.MountPatrolCm, false);
+            if (UnitOf(w) is Unit u) return (FloorAt(at) + UnitMount(u), false);
+            return (FloorAt(at) + eye, false);
+        }
+        bool WatcherSees(string w, Pt at, Pt p) { var e = WatcherEye(w, at); return e.HasValue ? SeesFrom(at, e.Value.z, p, e.Value.own) : Sees(at, p); }
+        bool WatcherCrowd(string w, Pt at, Pt p) { var e = WatcherEye(w, at); return e.HasValue ? CrowdBlocksZ(at, e.Value.z, p, FloorAt(p) + eye) : CrowdBlocks(at, p); }
         /// <summary>The watcher sees p now (Live and InSight): the same answer as CameraWatching, GuardWatching (unless the guard is the
         /// cell's ally), PatrolWatching, the officers' and RivalsWatching. The detection fill and the "seen by" truth read this.</summary>
         public bool SeesNow(string watcher, Pt p, bool crowd = true)
@@ -199,6 +215,7 @@ namespace Suborned.Sim
             string ck = watcher + (useCrowd ? "/crowd" : "");
             if (fanCache.TryGetValue(ck, out var hit) && hit.key == key) return hit.fan;
             var fan = BuildFan(watcher, s, useCrowd);
+            if (R.MountOn) fan.Shadows = FanShadows(watcher, s, useCrowd);
             if (s.Heads != null) // a mast: one polygon a head; the first is the fan's own, the rest its More (brief 013)
             {
                 var more = new List<Pt[]>(); var moreStop = new List<string[]>();
@@ -232,8 +249,9 @@ namespace Suborned.Sim
         {
             var fan = new Fan { Watcher = watcher, Kind = WatcherKind(watcher), At = s.At, Facing = s.F, Level = 0, Live = s.Live };
             var o = s.At;
-            // a watcher standing in a solid sees nothing (Occluder.Blocks: a sightline that starts inside it is blocked)
-            foreach (var oc in S.Occluders) if (eye >= oc.Z && eye <= oc.Z + oc.H && G.InPoly(o, oc.Poly)) return fan;
+            // a watcher standing in a solid sees nothing (Occluder.Blocks: a sightline that starts inside it is blocked); brief 055 §7: its own piece aside
+            var weye = WatcherEye(watcher, o);
+            foreach (var oc in S.Occluders) if ((weye.HasValue ? !weye.Value.own && FullBlocker(oc, weye.Value.z, o) : eye >= oc.Z && eye <= oc.Z + oc.H) && G.InPoly(o, oc.Poly)) return fan;
 
             // the shape as a convex polygon about o (the cone's triangle, the sweep's trapezoid), and its near circle
             var poly = new List<Pt>(); bool apex;
@@ -267,10 +285,10 @@ namespace Suborned.Sim
             // the occluders that matter: at eye height, within maxR of o
             int bx0 = (int)(o.X - maxR), bx1 = (int)(o.X + maxR), by0 = (int)(o.Y - maxR), by1 = (int)(o.Y + maxR);
             var occ = new List<Occluder>();
-            foreach (var oc in S.Occluders) if (eye >= oc.Z && eye <= oc.Z + oc.H && oc.BoxMeets(bx0, by0, bx1, by1)) occ.Add(oc);
+            foreach (var oc in S.Occluders) if ((weye.HasValue ? !(weye.Value.own && G.InPoly(o, oc.Poly)) && FullBlocker(oc, weye.Value.z, o) : eye >= oc.Z && eye <= oc.Z + oc.H) && oc.BoxMeets(bx0, by0, bx1, by1)) occ.Add(oc); // brief 055 §7: the solids that hide everything behind them from this eye
             var walkers = new List<Pt>();
             long occR = R.CrowdOccludeCm;
-            if (crowd) foreach (var w in Walkers) { var wp = CrowdPos(w); if (wp.HasValue && G.Within(o, wp.Value, (int)(maxR + 2 * occR))) walkers.Add(wp.Value); }
+            if (crowd) foreach (var w in Walkers) { var wp = CrowdPos(w); if (wp.HasValue && G.Within(o, wp.Value, (int)(maxR + 2 * occR)) && !(weye.HasValue && weye.Value.z > FloorAt(wp.Value) + R.MountHeadTopCm)) walkers.Add(wp.Value); } // brief 055 §7: an eye over a person's head sees past them but for a short stretch (FanShadows)
 
             // the rays: toward the shape's corners, its near circle, every occluder corner in reach and where an occluder edge crosses the
             // shape's edge (each also a hair either side, so a shadow's edge is caught on both sides), and every person's edges
@@ -383,6 +401,109 @@ namespace Suborned.Sim
             return fan;
         }
 
+        /// <summary>Brief 055 §7: the head and chest planes a target behind this occluder stands at (its base, the floor it stands on, + eye or chest).</summary>
+        (int head, int chest) TargetPlanes(Occluder oc, Pt from)
+        {
+            // the floor just behind the solid, seen from `from` (60 cm past its middle along the line): where a hidden target would stand
+            long cx = 0, cy = 0; foreach (var q in oc.Poly) { cx += q.X; cy += q.Y; } var c = new Pt((int)(cx / oc.Poly.Length), (int)(cy / oc.Poly.Length));
+            long dx = c.X - from.X, dy = c.Y - from.Y, len = Math.Max(1, G.Isqrt(dx * dx + dy * dy));
+            var behind = new Pt(c.X + (int)(dx * 60 / len), c.Y + (int)(dy * 60 / len));
+            int f = Math.Max(oc.Z, FloorAt(behind));
+            return (f + eye, f + R.MountChestCm);
+        }
+        /// <summary>Brief 055 §7: from an eye at z, this solid hides every head and chest behind it (it rises over the eye and the head, and its base
+        /// is under the eye and the chest): the fan cuts its rays there.</summary>
+        bool FullBlocker(Occluder oc, int z, Pt from)
+        {
+            var (hd, ch) = TargetPlanes(oc, from); int top = oc.Z + oc.H;
+            return oc.Z <= Math.Min(z, ch) && top >= Math.Max(z, hd);
+        }
+        /// <summary>Brief 055 §7: the shadows of the solids this watcher sees over (a lens above a planting: a stretch behind it, the footprint scaled
+        /// from 1 to (eye − head)/(eye − top) about the eye) or under (a low eye below a planting: from (head − eye)/(top − eye) out to the reach):
+        /// each the convex hull of the footprint scaled by the two ends, within the shape's reach. Integers only.</summary>
+        Pt[][] FanShadows(string watcher, Shape s, bool crowd)
+        {
+            var e = WatcherEye(watcher, s.At); if (!e.HasValue) return Array.Empty<Pt[]>();
+            int z = e.Value.z; var o = s.At; long reach = Math.Max(s.Reach, s.Near); if (s.Sweep) reach = Math.Max(reach, s.Depth + s.HalfBase + (long)s.Depth * s.PerMille / 1000);
+            var l = new List<Pt[]>();
+            foreach (var oc in S.Occluders)
+            {
+                if (!oc.BoxMeets(o.X - (int)reach, o.Y - (int)reach, o.X + (int)reach, o.Y + (int)reach) || FullBlocker(oc, z, o) || G.InPoly(o, oc.Poly)) continue;
+                var (hd, ch) = TargetPlanes(oc, o); int top = oc.Z + oc.H;
+                long num0, den0, num1, den1; // the two scales, as fractions
+                if (z > top && top >= hd && oc.Z <= ch)
+                {
+                    // the floor at the stretch's far end: a target standing higher there (the Office landing) shows over it, so read the planes there
+                    long cx = 0, cy = 0; foreach (var q in oc.Poly) { cx += q.X; cy += q.Y; } var c = new Pt((int)(cx / oc.Poly.Length), (int)(cy / oc.Poly.Length));
+                    // march the stretch along the line through its middle: where the ground rises (the Office landing) a target shows over it, so the
+                    // shadow ends at the first point whose floor is higher than the ground just behind the solid
+                    // each footprint corner's ray marched on its own (the landing's edge need not face the eye)
+                    long kn = z - hd, kd = z - top; int f0 = hd - eye;
+                    var vp = new List<Pt>();
+                    foreach (var v in oc.Poly)
+                    {
+                        vp.Add(v); long stop = 32;
+                        for (int k = 1; k <= 32; k++)
+                        {
+                            long sn = kd * 32 + (kn - kd) * k, sd = kd * 32; // scale 1 + (k/32)(kn/kd − 1)
+                            var q = new Pt(o.X + (int)((long)(v.X - o.X) * sn / sd), o.Y + (int)((long)(v.Y - o.Y) * sn / sd));
+                            if (FloorAt(q) > f0) { stop = k - 1; break; }
+                        }
+                        long fn = kd * 32 + (kn - kd) * stop, fd = kd * 32;
+                        vp.Add(new Pt(o.X + (int)((long)(v.X - o.X) * fn / fd), o.Y + (int)((long)(v.Y - o.Y) * fn / fd)));
+                    }
+                    var vh = Hull(vp); if (vh.Length >= 3) l.Add(vh);
+                    continue;
+                }
+                else if (z < hd && top > z && top < hd && oc.Z <= z) { num0 = hd - z; den0 = top - z; num1 = 0; den1 = 0; }    // seen under: from far on
+                else continue;
+                long near2 = long.MaxValue; foreach (var q in oc.Poly) near2 = Math.Min(near2, G.D2(o, q));
+                long nearD = Math.Max(1, G.Isqrt(near2));
+                if (den1 == 0) { num1 = reach * 2; den1 = nearD; } // out past the reach
+                if (num0 * nearD > reach * den0 * 2) continue;     // the shadow starts beyond the reach
+                var pts = new List<Pt>();
+                foreach (var q in oc.Poly) foreach (var (n, d) in new[] { (num0, den0), (num1, den1) })
+                        pts.Add(new Pt(o.X + (int)((long)(q.X - o.X) * n / d), o.Y + (int)((long)(q.Y - o.Y) * n / d)));
+                var hull = Hull(pts); if (hull.Length >= 3) l.Add(hull);
+            }
+            // a person on the street under an eye over their head top: a short stretch behind them (brief 055 §7 rule 4), an octagon round them scaled
+            if (crowd && People2 != null && Start.Crowd)
+                foreach (var w in Walkers)
+                {
+                    var wp = CrowdPos(w); if (!wp.HasValue || !G.Within(o, wp.Value, (int)reach)) continue;
+                    int topw = FloorAt(wp.Value) + R.MountHeadTopCm, hd = FloorAt(wp.Value) + eye; if (z <= topw) continue;
+                    long d = G.Isqrt(G.D2(o, wp.Value)); long occ = R.CrowdOccludeCm; if (d <= 2 * occ) continue;
+                    // hidden from two bodies' width past them (a target that close is not blocked: CrowdBlocks' ends) to the stretch's end
+                    long sn0 = d + 2 * occ, sd0 = d, sn1 = z - hd, sd1 = z - topw; if (sn1 * sd0 <= sn0 * sd1) continue;
+                    var pts = new List<Pt>();
+                    foreach (var (ux, uy) in new[] { (1000, 0), (707, 707), (0, 1000), (-707, 707), (-1000, 0), (-707, -707), (0, -1000), (707, -707) })
+                    {
+                        var q = new Pt(wp.Value.X + (int)(ux * occ / 1000), wp.Value.Y + (int)(uy * occ / 1000));
+                        pts.Add(new Pt(o.X + (int)((long)(q.X - o.X) * sn0 / sd0), o.Y + (int)((long)(q.Y - o.Y) * sn0 / sd0)));
+                        pts.Add(new Pt(o.X + (int)((long)(q.X - o.X) * sn1 / sd1), o.Y + (int)((long)(q.Y - o.Y) * sn1 / sd1)));
+                    }
+                    var hull = Hull(pts); if (hull.Length >= 3) l.Add(hull);
+                }
+            return l.ToArray();
+        }
+        /// <summary>The convex hull, counter-clockwise (Andrew's monotone chain, integers).</summary>
+        static Pt[] Hull(List<Pt> pts)
+        {
+            pts.Sort((a, b) => a.X != b.X ? a.X.CompareTo(b.X) : a.Y.CompareTo(b.Y));
+            var h = new List<Pt>();
+            for (int pass = 0; pass < 2; pass++)
+            {
+                int start = h.Count;
+                for (int i = 0; i < pts.Count; i++)
+                {
+                    var p = pass == 0 ? pts[i] : pts[pts.Count - 1 - i];
+                    while (h.Count >= start + 2 && G.Cross(h[h.Count - 2], h[h.Count - 1], p) <= 0) h.RemoveAt(h.Count - 1);
+                    h.Add(p);
+                }
+                h.RemoveAt(h.Count - 1);
+            }
+            return h.ToArray();
+        }
         /// <summary>0 for directions in [0, π) counter-clockwise from r, 1 for [π, 2π).</summary>
         static int Half(Pt r, Pt u)
         {
@@ -556,7 +677,7 @@ namespace Suborned.Sim
             var at = sh.Value.At;
             int reach = R.WatchReachCm(op.Id); // brief 031: the reach is the agent's
             if (!G.Within(op.Pos, at, reach)) return No("too-far", $"stand within {reach / 100} m of the {o.Target.Replace("camera:", "")} {(kind == "camera" ? "camera" : "")}".TrimEnd(), m: reach / 100);
-            if (!Sees(op.Pos, at) || CrowdBlocks(op.Pos, at)) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it");
+            if (!SeesId(op.Pos, o.Target, at) || CrowdId(op.Pos, o.Target, at)) return No("no-clear-line", $"no clear line: move to where the {Sim.Op.Name(op.Id)} can see it");
             if (!engage) return "";
             Engage(op, o, R.SightWatchS);
             op.BusyQuote = null; op.BusyPaid = 0;
@@ -661,7 +782,7 @@ namespace Suborned.Sim
                 var k = Known(w)!;
                 if (k.Sight) { foreach (var p in points) if (SeesNow(w, p)) { q.SeenBy.Add(w); break; } continue; }
                 long reach = FarthestSight(sh.Value);
-                foreach (var p in points) if (G.Within(sh.Value.At, p, (int)reach) && Sees(sh.Value.At, p)) { q.MaybeSeenBy.Add(w); break; }
+                foreach (var p in points) if (G.Within(sh.Value.At, p, (int)reach) && WatcherSees(w, sh.Value.At, p)) { q.MaybeSeenBy.Add(w); break; }
             }
             q.Seen = q.SeenBy.Count > 0 ? "yes" : q.MaybeSeenBy.Count > 0 ? "?" : "no";
             if (q.Seen == "no") q.AlertIfSeen = Alert;

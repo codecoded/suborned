@@ -81,6 +81,12 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
       for (const [k, x] of Object.entries(D.fire)) push(`less.done.fire.${k}`, x, false, 12);
       push('less.done.walk.plate',D.walk.plate.replace('{who}', 'passer-by'), false, 16); for (const [k, x] of Object.entries(D.walk.who)) push(`less.done.walk.who.${k}`, x, false, 12); }
     for (const [k, x] of Object.entries(L.alt.outcome)) push(`less.alt.outcome.${k}`, x);
+    for (const [k, x] of Object.entries(L.alt.mood)) push(`less.alt.mood.${k}`, x);
+    for (const k of ['footer', 'footerHurt', 'footerBare'] as const) push(`less.mood.${k}`, L.mood[k], false, 44);
+    for (const k of ['likely', 'hurt'] as const) push(`less.mood.${k}`, L.mood[k], false, 10);
+    for (const [k, x] of Object.entries(L.sealed.line)) push(`less.sealed.line.${k}`, x);
+    for (const [k, x] of Object.entries(L.sealed.tip)) push(`less.sealed.tip.${k}`, x, false, 36);
+    for (const [k, x] of Object.entries(L.sealed.story)) push(`less.sealed.story.${k}`, x);
     for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
 }
@@ -89,7 +95,7 @@ const widest = (s: string) => s.replace(/\{who\}/g, 'the councillor').replace(/\
   // brief 013's between-missions fields: the widest the host fills each (the same widths as contracts/dialogue debriefFill, with a short place name)
   .replace(/\{fact\}/g, "the Fixer's face").replace(/\{facts\}/g, "place, time and the Enforcer's face").replace(/\{place\}/g, 'the service lane').replace(/\{of\}/g, 'Dimitra Marchetti').replace(/\{move\}/g, 'bravery +1')
   .replace(/\{fear\}/g, 'fear +1').replace(/\{guards\}/g, '2').replace(/\{cameras\}/g, '2').replace(/\{missions\}/g, '3').replace(/\{kind\}/g, 'found killing').replace(/\{closes\}/g, 'when the body is found')
-  .replace(/\{s\}/g, '99').replace(/\{holders\}/g, '2 rivals').replace(/\{fate\}/g, 'walked out').replace(/\{why\}/g, 'the district was sealed').replace(/\{held-at\}/g, 'the post').replace(/\{holds\}/g, '3 missions').replace(/\{rescue-until\}/g, '3 missions').replace(/\{by\}/g, 'A police officer')
+  .replace(/\{s\}/g, '99').replace(/\{holders\}/g, '2 rivals').replace(/\{mood\}/g, 'friendly').replace(/\{lever\}/g, 'pressure').replace(/\{fate\}/g, 'walked out').replace(/\{why\}/g, 'the district was sealed').replace(/\{held-at\}/g, 'the post').replace(/\{holds\}/g, '3 missions').replace(/\{rescue-until\}/g, '3 missions').replace(/\{by\}/g, 'A police officer')
   .replace(/\{district\}/g, 'Harbour').replace(/\{band\}/g, 'Neutral').replace(/\{from\}/g, '-3').replace(/\{to\}/g, '-3');
 
 describe('the file', () => {
@@ -106,7 +112,7 @@ describe('the file', () => {
     expect(bad).toEqual([]);
   });
   test('placeholders are only {who} {op} {m} {usd} {tick} {target} {need} {temperament} {alert} and the cards\' {agent} {n} {clock} {trail} {hits} {cause} {list}, and the between-missions lines\' {fact} {facts} {place} {of} {move} {fear} {guards} {cameras} {missions} {kind} {closes}, and the Standing line\'s {district} {band} {from} {to}, and brief 018\'s {holders} (locks) {fate} {why} {held-at} {holds} {rescue-until} {by} (the getaway lines)', () => {
-    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\}|s\}|holders\}|fate\}|why\}|held-at\}|holds\}|rescue-until\}|by\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+    const bad = strings.filter((s) => /\{(?!who\}|op\}|m\}|usd\}|tick\}|target\}|need\}|temperament\}|alert\}|agent\}|n\}|clock\}|trail\}|hits\}|cause\}|list\}|fact\}|facts\}|place\}|of\}|move\}|fear\}|guards\}|cameras\}|missions\}|kind\}|closes\}|district\}|band\}|from\}|to\}|s\}|holders\}|mood\}|lever\}|fate\}|why\}|held-at\}|holds\}|rescue-until\}|by\})[^}]*\}/.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
   });
   test('no two spoken entries repeat a line, and no entry repeats its own', () => {
@@ -294,7 +300,9 @@ describe('verbs and refusals', () => {
     if (!haveSim) return;
     const codes = engineCodes();
     expect(codes.length).toBeGreaterThanOrEqual(80);
-    expect(Object.keys(t.locks).sort()).toEqual([...codes].sort());
+    // brief 054 §7 (engine 0.28.0): nothing-to-see is never shown (the host draws no Watch row), so it has no line
+    const NEVER_SHOWN = ['nothing-to-see'];
+    expect(Object.keys(t.locks).sort()).toEqual([...codes].filter((c) => !NEVER_SHOWN.includes(c)).sort());
   });
   test('every code the engine can raise is in that list, and every lock names real verbs', () => {
     if (!haveSim) return;
@@ -352,7 +360,9 @@ describe('verbs and refusals', () => {
     const r = Bun.spawnSync(['dotnet', 'run', '--project', 'sim/cli', '--', 'codes'], { cwd: root, env, stdout: 'pipe', stderr: 'pipe' });
     expect(r.exitCode, new TextDecoder().decode(r.stderr)).toBe(0);
     const codes = JSON.parse(new TextDecoder().decode(r.stdout)) as string[];
-    expect(Object.keys(t.locks).sort()).toEqual([...codes].sort());
+    // brief 054 §7 (engine 0.28.0): nothing-to-see is never shown (the host draws no Watch row), so it has no line
+    const NEVER_SHOWN = ['nothing-to-see'];
+    expect(Object.keys(t.locks).sort()).toEqual([...codes].filter((c) => !NEVER_SHOWN.includes(c)).sort());
   }, 120000);
   test('every fail code the engine can return has plain words and a spoken line', () => {
     if (!haveSim) return;
@@ -451,9 +461,11 @@ describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.m
     expect(named.length).toBeGreaterThanOrEqual(4); // the scan finds the keys that are there
     if (howTo) for (const [k, v] of Object.entries(MEANS).filter(([k]) => k !== 'Q' && k !== 'E')) expect(howTo, `${k} (${v.action}) is bound in HOW-TO-PLAY.md`).toMatch(new RegExp(`\\*\\*[^*]*\\b${k}\\b[^*]*\\*\\*`));
   });
-  test('H11 says how to carry: right click the downed agent with another selected', () => {
+  test('H11 says how to carry: click the downed agent with another selected, then pick Carry (controls trial 2026-10-24: a left click opens the ring)', () => {
     const l = t.hints.items.H11!.line;
-    expect(l).toMatch(/right click/i);
+    expect(l).toMatch(/\bclick\b/i);
+    expect(l).not.toMatch(/right/i);
+    expect(l).toMatch(/Carry/);
     expect(l).toMatch(/another agent/i);
     expect(l).not.toMatch(/\(C\)/);
   });
@@ -1097,14 +1109,14 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     // a hint's verb is one the action panel gives, and the enforcer gives it
     for (const h of [a, b, c]) expect(t.actions[h.verb as keyof typeof t.actions]!.by).toContain('enforcer');
   });
-  test('H17 teaches the fire order in a fight: right click a hostile, for any armed agent, behind H15 so the end step wins while a fight holds the car', () => {
+  test('H17 teaches the fire order in a fight: hold right click on a hostile, for any armed agent, behind H15 so the end step wins while a fight holds the car', () => {
     const h = t.hints.items.H17!;
     expect(h.verb).toBe('fire');
     expect(h.agent).toBe('any');
-    expect(h.short).toBe('Fire at [{who}]: right click.');
+    expect(h.short).toBe('Fire at [{who}]: hold right.');
     expect(marked(h.short)).toEqual(['{who}']);
     expect(words(h.short)).toBeLessThanOrEqual(6);
-    expect(h.line).toMatch(/right click/);
+    expect(h.line).toMatch(/hold right click/);
     expect(h.line).toMatch(/\bagent/);
     expect(h.priority).toBeGreaterThan(t.hints.items.H15!.priority);
     expect(h.priority).toBeLessThan(0);
@@ -1221,6 +1233,63 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(Object.keys(t.cards.items).length).toBe(58);
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
+  });
+});
+
+// ---------------------------------------------------------------- controls trial 2026-10-24, brief 054 mood words, brief 057 sealed line
+const words = (x: string) => x.replace(/\{[a-z]+\}/g, '').replace(/[·▲👁✓✗½[\]]/gu, ' ').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+describe('controls trial 2026-10-24: no line teaches the old mapping (right click opens the ring)', () => {
+  test('no hint, tutorial or first-act line says right click or right tap except H17, which teaches the right hold that fires', () => {
+    const bad = strings.filter((s) => /right[- ](click|tap)|right-click/i.test(s.text) && !s.path.startsWith('hints.H17')).map((s) => `${s.path}: ${s.text}`);
+    expect(bad).toEqual([]);
+    expect(JSON.stringify(t.hints.items.H17)).toMatch(/hold right/);
+    expect(t.less.hint.firstAct).toBe('Click a thing to act.');
+  });
+  test('the click hints say click, and ringed nouns stay one each', () => {
+    for (const id of ['H3', 'H5']) { const h = t.hints.items[id]!; expect(h.short, id).toMatch(/^(Turn|Call) \[\{who\}\]: click\.$/); expect(h.line, id).toMatch(/\bClick\b/); expect(marked(h.short), id).toEqual(['{who}']); expect(words(h.short), id).toBeLessThanOrEqual(6); }
+    expect(t.hints.items.H18!.line).toMatch(/Click the car/);
+    expect(t.hints.items.H18!.line).not.toMatch(/right/i);
+  });
+});
+describe('brief 054: the mood words', () => {
+  const M = t.less.mood;
+  test('the footer is "{who} · {mood} · {lever} likely"; hurt and bare forms drop what is missing; the done chip words are the capitalised moods', () => {
+    expect(M.footer).toBe('{who} · {mood} · {lever} likely');
+    expect(M.footerHurt).toContain('{lever} ' + M.hurt);
+    expect(M.footerBare).toBe('{who} · {mood}');
+    for (const f of [M.footer, M.footerHurt, M.footerBare]) { expect(f).toContain('{who}'); expect(f).toContain('{mood}'); }
+    for (const m of ['friendly', 'uneasy', 'scared'] as const) {
+      expect(M.word[m]).toBe(m);
+      expect(t.less.done.gain[`mood-${m}`], m).toBe(m[0]!.toUpperCase() + m.slice(1));
+      expect(words(t.less.alt.mood[m]), m).toBeGreaterThan(3);
+      expect(t.less.alt.mood[m]!.startsWith(t.less.done.gain[`mood-${m}`]!), m).toBe(true);
+    }
+    expect(Object.keys(M.lever).sort()).toEqual(['help', 'pay', 'pressure']);
+  });
+  test('the Alt mood lines agree with the rulebook shift: every approach a mood moves is named once, up as easier and down as harder', () => {
+    const shift = (rb as unknown as { mood: { shift: Record<string, Record<string, number>> } }).mood.shift;
+    for (const [m, line] of Object.entries(t.less.alt.mood)) for (const [ap, step] of Object.entries(shift[m]!)) {
+      const w = ap[0]!.toUpperCase() + ap.slice(1);
+      if (step > 0) expect(line, `${m} ${ap}`).toMatch(new RegExp(`${w}( and \\w+)? comes? easier|\\b${w} comes easier`));
+      if (step < 0) expect(line, `${m} ${ap}`).toMatch(new RegExp(`${w}( and \\w+)? comes? harder|\\b${w} comes harder`));
+    }
+  });
+});
+describe('brief 057 section 4: the sealed fail line says what happened by the car\'s state', () => {
+  const S = t.less.sealed;
+  test('the unknown line is the briefing line and says the engine\'s fail; no line says Vale did not reach a car he reached', () => {
+    expect(S.line.unknown).toBe(t.briefing.fails.sealed);
+    expect(S.line.unknown).toMatch(/car hadn't left when security sealed the district/);
+    expect(JSON.stringify(t.briefing.fails)).not.toMatch(/before Vale reached/);
+    expect(S.line.held).toContain('{holders}');
+    expect(S.line.ready).toMatch(/Vale was in the car/); expect(S.line.ready).toMatch(/Go/);
+    expect(S.line.empty).toMatch(/Vale wasn't in the car/);
+    expect(S.story.ready).toBe('Go was never given.');
+    expect(S.story.held).toContain('{holders}');
+  });
+  test('the tips are at most six words and name Go where Go is the fix', () => {
+    for (const [k, x] of Object.entries(S.tip)) { expect(words(x), k).toBeLessThanOrEqual(6); expect(x, k).toMatch(/[.]$/); }
+    expect(S.tip.held).toMatch(/Go/); expect(S.tip.ready).toMatch(/Go/);
   });
 });
 

@@ -171,3 +171,8 @@ em.new { display: inline-block; flex: none; width: 17px; height: 17px; backgroun
 #log { bottom: 60px; }
 #ring .newring { animation: newpip .7s ease-in-out infinite alternate; transform-box: fill-box; transform-origin: center; }
 .plate1 .cx { margin-left: 6px; } .plate1 em.new { margin: 0 2px; }
+
+/* brief 056: the occlusion bar (lab only) */
+#occ { position: fixed; right: 12px; top: 56px; z-index: 7; display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 760px; align-items: center; }
+#occ button { padding: 5px 10px; font-size: 13px; }
+#occ .occt { font-size: 11px; opacity: .7; background: var(--panel); border-radius: 6px; padding: 5px 8px; margin-left: 4px; }

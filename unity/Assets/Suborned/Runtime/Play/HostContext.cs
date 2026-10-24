@@ -119,11 +119,14 @@ namespace Suborned.Play
         {
             public int Way = -1; public PanelRow Row; public readonly List<OpId> By = new(); public string Word = "", Icon = "";
             public string Named = "";
-            public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1; // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
+            public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1;
+            /// <summary>Brief 057: Shut = a way shown shut (Go while the car is held: struck, dim, never taken; its pill shows the lock and the holders);
+            /// Focus = the way moves something the ring is not on (Reroute: the patrol), shown in the world on hover; Obj = that thing's cameo badge.</summary>
+            public bool Shut, Focus; public string Obj = "", Holders = ""; // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
         }
         public sealed class RingState
         {
-            public ContextPlan Plan; public Vector2 Gui, Screen; public float OpenedAt; public bool Sticky, ByE, FromHold, Always; public int Hover = -1, Lit = -1;
+            public ContextPlan Plan; public Vector2 Gui, Screen; public float OpenedAt; public bool Sticky, ByE, FromHold, Always, ByClick; public int Hover = -1, Lit = -1; /** ByClick: opened by a left click (item 33): a double click's second press in its middle keeps it */
             public Vector2 PointerAtOpen; public readonly List<RingSeg> Segs = new();
             /// <summary>A harmful wedge's hold under way (HostAim.RingHoldFrame): which wedge, since when, by what input (left, right, E); Ctrl: Ctrl + right's Fire.</summary>
             public int HoldSeg = -1; public float HoldStart = -1f; public string HoldSrc = ""; public bool HoldCtrl;
@@ -136,7 +139,7 @@ namespace Suborned.Play
             get
             {
                 var rs = Ring; if (rs == null || Game == null) return null; int i = rs.Hover >= 0 ? rs.Hover : rs.Lit;
-                if (i < 0 || i >= rs.Segs.Count) return null; var s = rs.Segs[i]; if (s.More || s.Named.Length == 0 || s.Row?.I?.Order is not Order o || o.Target.Length == 0) return null;
+                if (i < 0 || i >= rs.Segs.Count) return null; var s = rs.Segs[i]; if (s.More || s.Named.Length == 0 && !s.Focus || s.Row?.I?.Order is not Order o || o.Target.Length == 0) return null; // brief 057 §2: Reroute shows the patrol
                 bool cam = o.Do == "loop" || Game.S.Cameras.Exists(c => c.Id == o.Target);
                 return cam ? ("camera/" + o.Target, "camera:" + o.Target) : (o.Target, Game.WatcherKind(o.Target).Length > 0 ? o.Target : "");
             }
@@ -176,11 +179,23 @@ namespace Suborned.Play
                 s.Named = it.Label.Length > 0 && it.Label != s.Word ? it.Label : tn.Length > 0 ? $"{s.Word} {(it.Order?.Do == "loop" ? CameraName(tn) : Name(tn))}" : s.Word;
             }
             foreach (var s in rs.Segs) if (s.Named.Length > 0) s.Word = s.Named;
+            // brief 057 §2: a way whose object is not what the ring is open on wears that object's cameo after its word (Reroute: the patrol;
+            // Loop from the cabinet: the camera; Call: the guard or the driver's car); Reroute names the patrol for the focus marks
+            foreach (var s in rs.Segs)
+            {
+                var o2 = s.Row?.I?.Order; if (o2 == null) continue;
+                if (o2.Do == "reroute") { s.Obj = "badges/signal_unit"; s.Focus = true; }
+                else if (o2.Do == "loop" && plan.T?.Kind == "cabinet") s.Obj = "badges/signal_camera";
+                else if (o2.Do == "call") s.Obj = o2.Target == "driver" ? "icon:car" : "badges/signal_guard";
+            }
+            // brief 057 §4.2: Go while the car is held shows shut (struck, dim), its pill the lock and one badge a holder; a press says why and pulses them
+            if (plan.Pn.Rows.Find(r => r.I?.Order?.Do == "go" && !r.Available && r.Lock.code == "car-held") is PanelRow gr && !rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "go") && rs.Segs.Count < RingMaxWays)
+                rs.Segs.Insert(0, new RingSeg { Way = -1, Row = gr, Word = RingWord(gr.I), Icon = "car", Shut = true, Holders = gr.Lock.ids ?? "" });
             rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason
             rs.Lit = ch.Act == ContextRank.Act.Ring || ch.Act == ContextRank.Act.Default ? Math.Max(0, rs.Segs.FindIndex(x => x.Way == ch.Pick)) : controls.quickAction ? 0 : -1; // ring by default: nothing ranked (a passer-by's takedowns), nothing lit
             if (rs.Segs.Count == 1) rs.Lit = 0;
             if (Picked >= 0) { int ai = rs.Segs.FindIndex(x => x.Key == Picked && x.By.Contains(Agent)); if (ai >= 0) rs.Lit = ai; } // brief 030 (no plate): the ring opens on the armed verb's wedge
-            if (rs.Lit >= 0 && rs.Lit < rs.Segs.Count && rs.Segs[rs.Lit].Harmful) rs.Lit = -1; // brief 038: a harmful way is never lit (the second click takes nothing)
+            if (rs.Lit >= 0 && rs.Lit < rs.Segs.Count && (rs.Segs[rs.Lit].Harmful || rs.Segs[rs.Lit].Shut)) rs.Lit = -1; // brief 038: a harmful way is never lit (the second click takes nothing)
             // never off screen: it slides in to fit (the pills reach ~230 px past the wedges)
             float k = KitScale, mx = (RingOuter + 250f) * k, my = (RingOuter + 40f) * k;
             var c = new Vector2(Mathf.Clamp(screen.x, Mathf.Min(mx, Screen.width / 2f), Mathf.Max(Screen.width - mx, Screen.width / 2f)), Mathf.Clamp(screen.y, Mathf.Min(my, Screen.height / 2f), Mathf.Max(Screen.height - my, Screen.height / 2f)));
@@ -297,6 +312,7 @@ namespace Suborned.Play
                     if (rs.Always || Time.unscaledTime - rs.OpenedAt < RingStickyS && (p - rs.PointerAtOpen).magnitude < RingMovePx * KitScale) { rs.Sticky = true; return true; }
                     CloseRing(); return true;
                 }
+                if (mouse.leftButton.wasPressedThisFrame && rs.ByClick && middle && Time.unscaledTime - rs.OpenedAt < controls.doubleSeconds) return true; // item 33: the second click of a double click on the target keeps its ring (nothing taken)
                 if (mouse.leftButton.wasPressedThisFrame) { if (rs.Hover >= 0) RingTakeTry(rs.Hover, "left"); else if (rs.Always && middle) RingTakeTry(rs.Lit, "left"); else CloseRing(); return true; }
                 if (mouse.rightButton.wasPressedThisFrame)
                 {
@@ -415,10 +431,21 @@ namespace Suborned.Play
         }
 
         /// <summary>What the cursor shows over the hovered thing: "aim" (a press fires), "ring" (other ways are one hold away), else "".</summary>
+        Pt noWalkCell = new(int.MinValue, 0); bool noWalkWas;
+        /// <summary>The ground under the pointer has no walkable cell within 3 m (Playable's rule for a walk), cached per 1 m cell.</summary>
+        bool NoWalkUnder()
+        {
+            if (!cam || !frame.Ground(cam.ScreenPointToRay(lastHover), out var w)) return false;
+            var at = frame.Engine(w); var cell = new Pt(at.X / 100 * 100, at.Y / 100 * 100); if (cell == noWalkCell) return noWalkWas;
+            noWalkCell = cell; var g = Game.S.Grid; if (g.Free(at)) return noWalkWas = false;
+            var nf = g.NearestFree(at); return noWalkWas = !nf.HasValue || G.Dist(nf.Value, at) > 300;
+        }
+
         public string CursorKind
         {
             get
             {
+                if (Ring == null && Panel == null && Hover == null && Game != null && Array.IndexOf(Selected, true) >= 0 && NoWalkUnder()) return "nowalk"; // Suture's bot pass: ground the engine can't walk shows before the click (every preset: the hold preset has no move chip)
                 if (Ring != null || Hover == null || Panel != null || Game == null || TargetMode) return "";
                 if (IsFire(Hover) && (controls.quickAction || PressFires(Hover) || PickedId == "fire")) return "aim";
                 return HoverIntent != null && HoverIntent.More ? "ring" : "";

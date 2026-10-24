@@ -1,6 +1,7 @@
 // The little street: capsules and boxes, a grid for walking, and the walkers.
 import * as THREE from './vendor/three.module.min.js';
 import { TARGETS, ROLES } from './data.js';
+import { makeBuilding, addSilhouette } from './occlusion.js';
 
 const CELL = 0.5, X0 = -24, Z0 = -9, NX = 100, NZ = 50;
 const M = (c) => new THREE.MeshLambertMaterial({ color: c });
@@ -77,9 +78,18 @@ export function buildWorld(scene) {
   ground(-26, 28, 0, 7, 0xeadfc6); // pavement
   ground(-26, 28, 7, 18, 0xd9cfb8);
   for (let x = -22; x < 28; x += 8) { const m = box(3, 0.02, 0.25, 0xf6f0de); m.position.set(x, 0.01, -4.5); group.add(m); }
-  const buildings = []; // they fade when they hide the agent in third person
-  for (const m of [solid(9, 12, 22, 10, 8, 0xbfe3d6), solid(-14, 11, 14, 8, 4.8, 0xf2c9a8)]) { m.material.transparent = true; buildings.push({ mesh: m, box: new THREE.Box3().setFromObject(m) }); }
-  nav.box(9, 12, 22, 10); nav.box(-14, 11, 14, 8); // records office and cafe, fronts at z = 7
+  // Brief 056: a street with tall buildings on every side, so each camera turn has something between the camera and the people.
+  // The Records Office (z 7 to 17) and the cafe stand behind the pavement; a tower across the road, a block at the east end and a low row hide the other three views.
+  const buildings = [];
+  ground(-90, 90, -90, -9, 0xd9cfb8, 0); ground(-90, -26, -9, 40, 0xd9cfb8); ground(28, 90, -9, 40, 0xd9cfb8); ground(-26, 28, 18, 40, 0xd9cfb8); // the plaza round the street
+  buildings.push(
+    makeBuilding(group, { cx: 9, cz: 12, w: 22, d: 10, h: 19.2, wall: '#bfe3d6', glass: '#2c6469', band: '#8fc7b8' }), // Records Office
+    makeBuilding(group, { cx: -14, cz: 11, w: 14, d: 8, h: 16, wall: '#f2c9a8', glass: '#35686e', band: '#d9a47e' }), // cafe
+    makeBuilding(group, { cx: 28, cz: 4.5, w: 8, d: 27, h: 25.6, wall: '#efe6d2', glass: '#2f6e74', band: '#cdbf9f' }), // east block, closing the street
+    makeBuilding(group, { cx: -5, cz: -16, w: 10, d: 8, h: 22.4, wall: '#efe6d2', glass: '#2f6e74', band: '#cdbf9f' }), // tower across the road
+    makeBuilding(group, { cx: 17, cz: -15, w: 16, d: 6, h: 9.6, wall: '#f2c9a8', glass: '#35686e', band: '#d9a47e' }), // low row across the road
+  );
+  nav.box(9, 12, 22, 10); nav.box(-14, 11, 14, 8); nav.box(28, 4.5, 8, 27); // fronts at z = 7
   solid(9, 7.05, 22, 0.3, 0.5, 0xd0b88a, 3.2); // band over the door
   const kerb = box(54, 0.15, 0.3, 0xcfc4a8); kerb.position.set(1, 0.07, 0); group.add(kerb);
 
@@ -102,7 +112,9 @@ export function buildWorld(scene) {
     const body = new THREE.Mesh(new THREE.CapsuleGeometry(0.32, 1.0, 4, 10), M(color)); body.position.y = 0.82;
     const nose = box(0.16, 0.12, 0.3, 0xffffff); nose.position.set(0, 1.25, 0.3);
     pose.add(body, nose); g.pose = pose;
-    return add({ id, kind, ...TARGETS[kind], g, r: 0.4, h: 1.95, reach: 1.9, pick: [body, nose], used: new Set(), tint: [], body, state: 'ok', person: true, ...o });
+    body.renderOrder = nose.renderOrder = 6; // drawn after a fading building, so a ghosted wall never tints the people
+    const sil = kind !== 'walker' ? addSilhouette(pose, body, nose, color) : null;
+    return add({ sil, id, kind, ...TARGETS[kind], g, r: 0.4, h: 1.95, reach: 1.9, pick: [body, nose], used: new Set(), tint: [], body, state: 'ok', person: true, ...o });
   };
   person('guard', 'guard', 10.4, 5.2, 0xd9a441);
   person('inez', 'inez', -9.5, 5.4, 0xe88aa0);

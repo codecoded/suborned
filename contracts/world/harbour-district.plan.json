@@ -391,19 +391,32 @@
     "levels": {
       "source": "brief 004 (levels are world) · standards.skyrail.height · standards.buildings storey arithmetic · A. & P. Smithson / Park Hill (streets in the sky) · Barbican highwalks · Gruen (pedestrian galleries)",
       "list": [
-        { "id": "street", "z": 0, "note": "carriageway 0, pavement 0.18; the simulation's level" },
+        { "id": "street", "z": 0, "walk": 0.18, "note": "carriageway 0, pavement 0.18 (datum): z is the carriageway, walk the pavement top a person stands on; the simulation's level" },
         {
           "id": "deck",
           "z": 9.43,
+          "walk": 9.43,
           "note": "pavement 0.18 + plinth 0.45 + ground storey 5.2 + one upper storey 3.6: the roof of a two-storey podium, so deck frontages open from storey 3 of the buildings they meet"
         },
         {
           "id": "concourse",
           "z": 24,
           "from": "standards.skyrail.height",
+          "walk": 24,
           "note": "sky rail platform level. A building meeting it stretches storey 6 to 3.77 m so its storey-7 floor lands at 24.0 (storey arithmetic gives 23.83)"
         }
       ],
+      "datum": {
+        "tag": "[B]",
+        "carriageway": 0,
+        "pavement": 0.18,
+        "bay": 0,
+        "foot": 0,
+        "drawnOffset": { "bay": 0.02, "foot": 0.02, "why": "the world lays a bay, a drive and a foot path at 0.02 (tools/world/gen/common.ts FLAT_FOOT) so flat layers never z-fight; within any stand tolerance, not a datum" },
+        "rule": "One walking datum. Every height in the plan is above the carriageway (0): standards.levels.list z, a deck's top, a person's feet. The street level is walked on the pavement top, 0.18 above it: plots, the civic block (its frame z0), kerbs and every street piece stand on it, and each level states the floor it is walked on (`walk`; a deck and the concourse are walked on their own top). A lay-by, a drive and a foot path (plan.foot) are carriageway level (bay 0, foot 0); a person in the carriageway stands on it. A person stands on the walk of their level unless their point says otherwise: mission points carry `level` and, off the pavement, `on` (a civic-block floor, bay or drive, a road or a foot path) and `floor` (m above the walk, block z). A floor above the pavement (a landing, a flight of steps, a terrace) is declared in the civic block (civic-block.json floors, written from civic-block.adjust.json `floor` ops with reasons), never found in the kit.",
+        "why": "Brief 055 (Sky 2026-10-23: 'need to work on the levels - and proper collision detection / hit box geometry throughout'; the door guard sunk to the hips): the street had two datums in prose only (the street note, standards.buildings.datum, the block's frame.z0, the world's PROV.pavement) and the Office landing's 0.75 m only in mission.json's words, so the host stood everyone on the slab. L-9 holds the world to this datum; C-5 holds the block's floors and the doors on them; M-3 holds every mission point to the floor the block declares where it stands and to a walkable surface of its level.",
+        "source": "tools/world/build.ts PROV.pavement 0.18 (the world's slab top) · contracts/world/civic-block.json frame.z0 · standards.buildings.datum · brief 055 §4 step 6"
+      },
       "minWidth": { "deck": 6, "deckAisle": 8, "gallery": 5, "bridge": 4.5, "skybridge": 5, "concourse": 8, "stair": 3, "ramp": 2.4, "cartRamp": 7 },
       "headroom": { "road": 5.5, "walk": 3, "underBeam": 2.5, "colonnade": 4.6 },
       "headroomWhy": "colonnade 4.6 [S] = buildings.groundCeiling (the café's ground ceiling): the covered walk under an overhang reads as a full ground storey, never a tunnel; above walk 3. Under a deck the clear is 9.43 − 1.2 − 0.18 = 8.05",
@@ -967,7 +980,7 @@
     "streetscape": {
       "source": "brief 004 (Sky 2026-10-11: kiosks, stops, phone booths, tree-lined streets, rooftops) · GDD §05 (watchers at stations, stops, gates, squares; witness 13 m; cameras fixed visible cones blocked by roofs and parked vehicles; levels in 3D) · §09 (people from the trades on their block) · §15 (palms, chrome, coral transit, no text, signal colours never on a surface) · NACTO Urban Street Design Guide 2013 (frontage / pedestrian through / furniture zones) · DfT Inclusive Mobility 2021 (2.0 m clear path, 1.5 m at obstacles, seats 0.45–0.48, bollards ≥ 1.0 m tall) · BS 5489-1:2020 + EN 13201 (column spacing ≈ 3–4 × mounting height) · Manual for Streets 2007 (furniture 0.45 m from the kerb face) · IFC 2021 Appendix C (hydrant spacing) · Fruin, Pedestrian Planning and Design 1971 (stair speeds) · EN 115-1 (escalators ≤ 30°, 0.5 m/s, flat landings) · Seattle Center Monorail 1962 (Alweg beam 0.9 × 1.5 m) · Googie: Armet & Davis, Lautner; Litfaß column (Berlin 1855); K6 kiosk (Scott 1935)",
       "rule": "Rules the generator applies per street edge, seeded by plot id + edge index; nothing here is placed item by item. Order per edge: section zones → transit kits → crossings + bollards → trees → lamps → watchers → catalogue items by want priority. An item that does not fit is skipped, never squeezed (SF-6). Heights are above the surface the item stands on.",
-      "pavement": "Plots run to the kerb line (plot edges meet road edges; standards.roads.frontage tolerance 1 m). The pavement is the strip of each plot between the kerb face and the building line: the building line is the plot edge set back by sections[class].pavement. A plot edge on two classes takes the wider. Civic blocks keep their own 4 m walk (civic.walk, fixed by C-0) and their own objects; this standard does not dress them.",
+      "pavement": "Plots run to the kerb line (plot edges meet road edges; standards.roads.frontage tolerance 1 m); at a junction the kerb line turns by a kerb return (kerbReturn), so a plot's road corner is an arc on its kerb side, and its building line is unchanged. The pavement is the strip of each plot between the kerb face and the building line: the building line is the plot edge set back by sections[class].pavement. A plot edge on two classes takes the wider. Civic blocks keep their own 4 m walk (civic.walk, fixed by C-0) and their own objects; this standard does not dress them.",
       "sections": {
         "note": "zones from the kerb face inward: kerb (trees, lamps, furniture; items ≥ 0.45 m from the kerb face, Manual for Streets) · walk (clear, never blocked, SF-1) · frontage (spill, vending robots, planters; spill depth = min(frontage.placement.spill.depth, this zone)). pavement = kerb + walk + frontage.",
         "primary":  {
@@ -1029,7 +1042,7 @@
       "crossings": {
         "w": 4.0, "rule": "dressing and traffic calming; people still cross anywhere (standards.walking)",
         "where": ["every arm of a district or access junction, near edge ≥ 3 m past the corner kerb tangent", "both ends of every tram stop platform", "the foot of every station street bank", "every gate (where a mission seals)", "mid-block on district roads: one crossing at the middle of every gap of more than 120 m between crossings, a junction counting as one (coverage.rules.midBlock)",
-          "every arm of a primary through road at each junction with another road: past the side road's mouth by its half width and 8 m, where a plot's pavement stands against a kerb (coverage.rules.arms)",
+          "every arm of a primary through road at each junction with another road: past the side road's mouth by its half width and 8 m, or by its half width and the kerb return + 3 + w / 2 where that is further (kerbReturn.landings), where a plot's pavement stands against a kerb (coverage.rules.arms)",
           "every footway line that meets the Crown Circus ring, a road's pavement middle or a mall's walk band middle: the radial from the ring's outer kerb to the island (coverage.rules.island)",
           "a mall that ends at a road's kerb: its two walk bands across the road, kerb to kerb (coverage.rules.mall)",
           "never two crossings of one road less than 30 m apart across a side road's mouth, or 20 m apart round a bend: the one on the longer plot edge stays (coverage.rules.dedupe)"],
@@ -1127,7 +1140,7 @@
         "sites": {
           "station":   { "concourse": "2 canopy-cameras per platform", "street": "1 pole-camera at each bank foot facing the entrance", "robot": "1 civic-robot at the main bank", "skybridge": "1 canopy-camera at the station end of every megastructure skybridge", "why": "§05 levels: a station watcher covers its concourse" },
           "tramStop":  { "cameras": "1 pole-camera per platform at its far ramp, facing back along it" },
-          "gate":      { "cameras": "1 pole-camera on the area side, 10 m inside the gate node, facing out over the junction", "why": "a gate is where a mission seals: who came in, when" },
+          "gate":      { "cameras": "1 pole-camera on the area side, 10 m inside the gate node, facing out over the junction; where a kerb return takes that spot, the first spot on the straight past the arc's tangent point (kerbReturn: on a gate's access road off a district road, about 15.5 m in)", "why": "a gate is where a mission seals: who came in, when" },
           "square":    { "cameras": "1 mast-camera at the edge nearest the square's main entrance", "robot": "1 civic-robot" },
           "circus":    { "cameras": "2 mast-cameras on the island ring band, north and south of the monument", "robot": "2 civic-robots on the T1/S1 interchange walk" }
         },
@@ -1139,9 +1152,16 @@
         "source": "brief 026/028 (Sky 2026-10-20: the 2.5D testbed's road, finish B, Vela's briefs/026/vela/testbed-vs-now.html) · testbed civic-road-guides.js (ribbon lip 0.048–0.080, lens 0.064–0.12 from the kerb face, warm #ffe6b5, auto/on/off), civic-road-finish.js (markerSpacing 8.5, panelSpacing 9), civic-roads.js (lozenges on the carriageway's middle line, 4.6 m chrome seams across it, no zebra) · Vela's pieces tools/decokit/road_ribbon.py (lens 0.12 between 0.02 brass hairlines, 1.0 pool) · GDD §15 design test (light set in the road, never paint)",
         "rule": "The carriageway is drawn by light and stone, never paint. Rules the generator applies per carriageway (kerb face to kerb face, or kerb to a median or reservation kerb), seeded by road id; nothing is placed item by item. Order: finish → ribbons along every kerb face → breaks cut → lozenges on the middle line → seams across. Anything that does not fit is dropped, never squeezed (SF-6).",
         "finish": {
+          "set": "enamel",
+          "sets": {
+            "enamel": { "byClass": { "primary": "enamel", "district": "enamel", "access": "enamel" }, "marks": "lozenges", "drop": ["shoulder"], "why": "brief 048, Sky 2026-10-24 on the testbed road ('we only had modern strip lighting around the road edges, like a futuristic city would, not white edges'): the road edge is the light ribbon at the kerb face, the pearl kerb and the brass crown; the pearl streamline band beside the kerb is not laid (it read as a wide white bar down the Boulevard, third person 0.2.99). Everything else of the base set stands: byClass as the base, lozenges and seams, ribbon, pinstripe. Drop `shoulder` from this list to bring the band back (Sky 2026-10-22 'can try'). Vela, tell Datum." },
+            "asphalt": { "byClass": { "primary": "road-asphalt", "district": "road-asphalt", "access": "road-asphalt" }, "marks": "lanes", "drop": ["ribbon", "shoulder", "pinstripe"], "why": "brief 055 road test, clean variant (Vela 2026-10-24; Sky on the first board: 'soooo messy'): the old city's dark road with a few clean white lines, as the flyby still draws it (briefs/028/palm/ref-flyby-boulevard-old-city.png). Only the pearl kerb beside the road: no light ribbon (it read as one more bright line beside the dashes; drop `ribbon` from this list to bring it back), no pearl shoulder band, no brass pinstripe, no white edge lines (the first try stacked 4-5 parallel stripes along every kerb). The lozenges and seams give way to roads.marks (one dashed centre line; thinner dashed dividers only on the roads roads.marks.lanes names). Not the default: switch with finish.set (or the export's --road-finish asphalt)" }
+          },
+          "setNote": "`set` is the one switch: 'enamel' (the base: byClass below, pearl lozenges and chrome seams) or a name in `sets`. A set lists its own byClass and its `marks` ('lozenges' | 'lanes'); everything else (kerb, shoulder, ribbon, pinstripe, breaks) is shared. tools/plan/finish-set.ts reads it for the checker, the export and the generator.",
           "byClass": { "primary": "enamel", "district": "enamel", "access": "enamel" },
           "keys": {
-            "enamel": { "material": "DK_Ground_RoadEnamel", "hex": "#AED0E6", "tile": 2.0, "surface": "road-enamel", "why": "Sky's pick B of 20 Oct, and 'can try' of 22 Oct (brief 028 Road): the testbed's sealed powder-blue enamel; pale, even, slightly glossy, so the ribbon and the lozenges read on it" },
+            "enamel": { "material": "DK_Ground_RoadEnamel", "hex": "#8FAFC1", "tile": 2.0, "surface": "road-enamel", "why": "Sky's pick B of 20 Oct, and 'can try' of 22 Oct (brief 028 Road): the testbed's sealed powder-blue enamel; pale, even, slightly glossy, so the ribbon and the lozenges read on it" },
+            "road-asphalt": { "material": "DK_Ground_RoadAsphalt", "hex": "#505359", "tile": 4.0, "surface": "road-asphalt", "why": "brief 055 road test: a made sheet (tools/decokit/road_tex.py asphalt()): slate binder, three sizes of aggregate in the city's stone colours, worn and tar-sealed patches, slightly glossy where polished; dark enough to carry white lines, cool slate so it is not grey-black mud against the cream and peach" },
             "asphalt": { "material": "DK_Ground_Asphalt", "surface": "asphalt", "why": "the old city's sheet (brief 026 round 1); no class takes it now, kept so a plan can name it" }
           },
           "kerb": { "pieces": ["Kerb_Pearl_0", "Kerb_Pearl_1"], "material": "DK_Ground_RoadPearl", "surface": "kerb", "why": "the testbed's pearl kerb cap, brass crown hairline, no gutter: the ribbon takes the gutter's place" },
@@ -1158,7 +1178,7 @@
           "lens": 0.12,
           "pool": 1.0,
           "pieces": { "straight": "RoadRibbon_Straight_6m", "arcs": { "4": "RoadRibbon_Arc90_R4", "8": "RoadRibbon_Arc90_R8" } },
-          "corners": "a rounded kerb return takes the arc piece nearest its lens radius (return radius ± offset), else the ribbon is swept along the kerb at offset from the pieces' section; a square kerb corner (today's plot slabs) is mitred",
+          "corners": "every kerb corner is a return (streetscape.kerbReturn) and the ribbon follows its arc at offset. Its lens radius is the return radius + offset on a convex pavement corner and − offset on a concave one. Where the corner turns 90° and that radius is within 0.15 m of an Arc90 piece's, the piece is laid (an 8 m return: 8.1 → RoadRibbon_Arc90_R8); otherwise the ribbon is swept along the kerb at offset from the pieces' section (6.1, 1.9, the bays' 1.5 / 1.3, the bends' 17.9 / 29.9, the noses' 2.1 / 3.1, the circus mouths at 102° and 109°). Nothing is mitred",
           "light": "lens #FFE6B5 (DK_Road_Lens, emissive, drawn unlit); its state (off by day to a faint lens, on at evening and night: the testbed's auto) is the lighting rig's (Glint, Latch), not the plan's",
           "why": "offset = the lens centre from the kerb face: the testbed's lens is 0.064–0.12 (centre 0.092); with Vela's 0.16 section (0.02 brass + 0.12 lens + 0.02 brass) at 0.10 the outer hairline starts 0.02 m off the kerb, clear of the kerb's own brass crown. Every class: Sky chose the road, and the testbed traced every kerb it had; ≈ 24 pieces (16 tris) per side per 100 m (Vela)"
         },
@@ -1169,7 +1189,7 @@
           "to": 0.98,
           "chrome": 0.035,
           "classes": "as ribbon.classes: every carriageway kerb face the ribbon runs on, with the ribbon's breaks",
-          "corner": "through run (x-dominant) to the other run's outer edge (to + chrome from the kerb face), the other to the through run's inner edge (from); a reflex corner trims by the reverse",
+          "corner": "follows the kerb return as the ribbon does (ribbon.corners: the Arc90 piece at the ribbon's lens radius, or swept), parallel to the kerb all the way round; nothing is mitred. On a concave return the band's road-side edge stays a curve while the radius exceeds to + chrome (1.015 m): kerbReturn.concave 2.0 and bay 1.4 are set above it",
           "why": "Sky 2026-10-22 ('can try', brief 028 Road): the testbed's pearl streamline band beside every kerb (civic-road-finish.js bandStart 0.36, bandEnd 0.98, chromeWidth 0.035; civic-roads.js 'Pearl streamline bands', 'Chrome band borders'), the white-marble strip every testbed road frame shows between the kerb and the blue. Laid by the ribbon's rule (same kerb faces, same breaks, same corners), pivot on the lens centre line, so the band lies 0.26–0.88 m from it. Clears the narrowest middle line by metres (to + chrome = 1.015; the access carriageway's middle is 6 m out). Draft: Vela, briefs/028/road/plan-keys.json"
         },
         "pinstripe": {
@@ -1180,7 +1200,7 @@
           "why": "Sky 2026-10-22 ('can try'): the testbed's pavement pinstripe (civic-roads.js 'Gold pavement edging', inlayParts −0.52 to −0.47 from the kerb face, #e3c775); brass here, a hairline (§15: gold or brass only as hairline, frame, bead, small metal; SF-21). 0.5 clears the kerb's own brass crown (0.02) by 0.46. Draft: Vela, briefs/028/road/plan-keys.json"
         },
         "kerbs": {
-          "rule": "The kerb faces the ribbon, shoulder and pinstripe run on are: (1) every plot edge on a road's carriageway edge (capstone.kerbRuns); (2) the circus's island and outer kerbs and every median edge; and (3) the faces below, which have no plot edge to run on. Each face lies on its road's carriageway edge; `toward` is the unit normal into the carriageway. A face meets a plot run or the ring at its ends as a square corner (mitred, ribbon.corners). Draft gap: Vela's RF-bay (brief 028 Road, 2026-10-22); checked by Datum against the plan's plots and road lines (no other kerb line in the district lacks a face, 2026-10-22).",
+          "rule": "The kerb faces the ribbon, shoulder and pinstripe run on are: (1) every plot edge on a road's carriageway edge (capstone.kerbRuns); (2) the circus's island and outer kerbs and every median edge; and (3) the faces below, which have no plot edge to run on. Each face lies on its road's carriageway edge; `toward` is the unit normal into the carriageway. Where a face meets a plot run or the ring at an angle, the corner is a kerb return (streetscape.kerbReturn: an arc tangent to both, never a square corner); where it runs on in line, the two are one straight. Draft gap: Vela's RF-bay (brief 028 Road, 2026-10-22); checked by Datum against the plan's plots and road lines (no other kerb line in the district lacks a face, 2026-10-22).",
           "circusMouths": {
             "why": "the kerb of each radial road between the ring's outer kerb (circus.ring[1] 43) and the plot corner at the circus pavement (circus.pavement 51): the circus pavement band has no plot, so the loop was open at the three road mouths. Crown Parade's mouth is a mall at pavement level: the ring's outer kerb runs on across it",
             "faces": [
@@ -1244,6 +1264,20 @@
           "never": "on a carriageway a tram runs in (the rails are its joints), in a junction box, on a crossing strip",
           "why": "the testbed's panelSpacing 9 (chrome joints 4.6 m across a 6.6 m road): the enamel reads as laid panels, not poured"
         },
+        "marks": {
+          "tag": "[S]",
+          "for": "finish set 'asphalt' (finish.sets.asphalt.marks = 'lanes'); the enamel set lays lozenges and seams instead and never these",
+          "rule": "Few clean white lines, by the lozenges' own placement (per carriageway run between breaks: one at the run's middle, then every spacing both ways while the piece stays inside the run). Order: centre line on undivided carriageways -> lane dividers where `lanes` names the road. Nothing is placed item by item; none where a line lies in a track's swept envelope. Never paint: white vitreous-enamel inlay 5 mm proud, flush in the road (finish.paint stays false); crossings keep their own light (floating signal orbs, light set in the road, no zebra: crossings.meet = stop).",
+          "pieces": { "dash": "RoadMark_Dash_2m", "edge": "RoadMark_EdgeLine_6m" },
+          "dash": { "length": 2.0, "spacing": 6.0, "width": 0.2, "dividerWidth": 0.12, "on": "the centre line (the road line) of every UNDIVIDED carriageway (no median, no reservation): the access roads, 12 and 13 m, two ways, 0.2 m wide; and each lane divider below, 0.12 m wide" },
+          "edgeOff": { "offset": 1.25, "width": 0.2, "note": "NOT laid in the clean asphalt (rename the key to `edge` to lay it again): a solid white line along every kerb face, 1.25 m out, outside the shoulder. The first board stacked it with the pearl shoulder, the pinstripe and the ribbon: 4-5 parallel stripes along each kerb, 'soooo messy' (Sky)" },
+          "stopShort": 1.0,
+          "lanes": {
+            "boulevard": 2, "sunset-way": 2, "crown-road": 2, "comet-row": 2, "harbour-road": 2
+          },
+          "lanesNote": "lanes per one-way carriageway, kerb to kerb (3.0 m or more a lane); a divider is a dashed line at each lane boundary. The plan recorded no lane counts before: these five are Vela's proposal from the carriageway widths (Datum to confirm): the Boulevard's 9 m carriageways and the primaries' 10 m halves (the T2 half carries the rails, so its divider lies in the swept envelope and is cut; the other half takes the divider). Not named: the districts' 6 m halves (one lane) and the 12-13 m access roads (centre line only). The tram section's own `lanes` (tram, shared, kerbside) are bands of the T2 half, not counts, and take no paint",
+          "why": "Sky's asphalt reference (briefs/028/palm/ref-flyby-boulevard-old-city.png): a dark road, a few clean white lines; mockups paid/055-road/codex/*_C_asphalt_lanes.png. 1.0 m stop-short at crossings and junctions (breaks.stopShort is 0.3 for the light pieces): white marks read hard, and the crossing's floating orbs and in-road light need clear road round them"
+        },
         "crossings": {
           "meet": "stop",
           "never": ["zebra", "paint", "ribbon across the strip"],
@@ -1251,6 +1285,41 @@
           "why": "§15 and brief 009: no zebra, no paint, no landing slab; a crossing is its own light"
         },
         "checks": "RF-1 (tools/plan/road-finish.ts) holds this standard against the plan and the kit; SF-22 is the world-side rule once the export carries the ribbon (Splice)"
+      },
+      "kerbReturn": {
+        "tag": "[S]",
+        "units": "m, kerb-face radius in plan",
+        "byClass": { "primary": 6, "district": 8, "access": 6 },
+        "governs": "the minor road's class: the lower of the corner's two road classes (access < district < primary), so `primary` applies only where two primaries meet (the ring's corners). A corner listed under `civic` takes that radius instead",
+        "concave": 2.0,
+        "bay": 1.4,
+        "civic": 2.0,
+        "applies": "byClass: every convex pavement corner where two carriageway edges meet. That covers the plot corners at junctions and on the inside of a road's bend, the beyond blocks' corners where a road runs on to the sheet edge, and the circus mouths: each radial road's kerb meets the ring's outer kerb at 102° (Crown Avenue, Circus Road) or 109° (the Boulevard), and there the arc is tangent to the line and to the ring, which gives tangents of 6.5 and 5.7 m on faces 8.2 and 8.4 m long; the circus pavement band has no plot, so its own slab is rounded. The arc is cut from the pavement on its kerb side only. Building lines and buildings do not move. Tram platforms (their edge is the tram's straight line) and drives (dropped kerb, flush) keep square ends.",
+        "rule": "Every kerb corner is an arc tangent to both kerb lines; none is square. The kerb, its brass crown, the ribbon (roads.ribbon.corners), the shoulder where laid and the pinstripe follow the arc. The walk floor and the walk solids follow the same outline. On a kerb, the straight runs between the tangent points.",
+        "byClassWhy": "the side road sets the corner, as in street practice (Manual for Streets: the radius is the minor road's). 6 and 8 read as curves at play zoom (zoom 14 at 1080p is about 38 px a metre, so a 6 m return draws a 230 px arc). Podiums and buildings under grammar.roundFrom (3 storeys) keep square ground-floor corners. With a square building corner, the narrowest pavement on the corner's bisector is √2·p − (√2 − 1)·R for equal pavements p, and it must hold the wider kerb + walk of the two sections. So primary is 6, not 10: where two primaries meet (5 / 5 pavements, needing 1.5 + 3 = 4.5), R 10 leaves 2.93, R 8 leaves 3.76 and R 6 leaves 4.59 (docks-south and lantern-west stand there). District 8 against primary (5 / 8) leaves 5.00 against the district's 2 + 3 = 5.0; R 10 would leave 4.62. Access × access at 6 leaves 6.52, district × access at 6 leaves 6.80, primary × access at 6 leaves 5.02, district × district at 8 leaves 8.00.",
+        "civicWhy": "the civic block's eight corners (records-square and records-office, civic.blocks), plus the five plot corners across from them that hold a civic crossing's partner landing: rocket-west (−192, −204), garden-row-east (−126, −204) and (−126, −261), pylon-row-east (−114, −274) and (−114, −310). The block's dressing (contracts/world/civic-block.json) is laid to square corners. x-rocket-n, x-garden-n / -s and x-pylon-n / -s, and their partners' kerb points, stand 4.6–5 m from the corner (near edge 2.6–3.0); cyp-sq-nw / -ne stand at (1.2, 1.2) from it; run-west-south's last planter ends 1.35 m from the corner, 0.16 m off the kerb face. R 2 keeps all of them on the pavement (the planter by 0.05 m) and each landing on the straight, 0.6–1.0 m past the tangent. R 2.6 would put the planter and the cypress crowns over the kerb. The old game's corner cells, where the block comes from, used R 2 arcs (DecoKitStreetLayout.cs). Any larger civic return needs Vantage's adjustment first (civic-block.adjust.json: the five crossings and their partners out to the straight, the two cypresses and the planter in).",
+        "concaveWhy": "every concave pavement corner that is not a bay or a bend: today the dead end of Observatory Lane (sphere-gardens at (−106, 96), sphere-gardens / avenue-court at (−94, 96)). At least the testbed's 1.2 (its concave joins 1.25: \"enough radius for the curb and blue edging to remain parallel curves\"); 2.0 keeps a road-side curve for the shoulder band if it is laid again (to + chrome 1.015 m) and puts the ribbon's lens at 1.9. The crossing at the lane's end (landing near edge 3 m from the corner) stays 1 m past the fillet.",
+        "bayWhy": "every corner of a kerbed bay (roads.kerbs.bays.kerbed: squareBay, officeBay): the convex mouth corners and the concave back corners, the testbed's 1.4 (civicRoadBoundaries, officialBay and getawayBay). A 3 m deep bay keeps 0.2 m of straight on each end (3 − 2 × 1.4); a car parked centred in squareBay (9 m) or officeBay (14.4 m) clears the fillets, which take 1.4 m at each end. A back fillet adds pavement into the bay and never takes any, so the square pavilion's supports (0.72 m off squareBay's back corners, on the pavement) are untouched; the nearest Handover point is 1.43 m from a back corner. serviceBay is not kerbed (bays.notKerbed) and keeps its corners.",
+        "bend": {
+          "outer": "concentric",
+          "rule": "where a road turns on itself at a node no other road meets, the inside corner takes its return (byClass) and the outside kerb is concentric with it: R = inside R + carriageway width, so the carriageway keeps its width round the turn and both tangent points lie on one line across the road (landings pair square). The outside corner is two plots' corners, or a beyond block and the quay, meeting on a party line, so the fillet is pavement laid into the road's corner, never a plot change.",
+          "where": "the U lanes' ten bends (lamplight-lane l_sw, l_se; crescent-lane b_se, b_ne; harbour-lane h_nw, h_ne; dock-road f_sw, f_se; lantern-lane e_sw, e_se): 6 inside, 18 outside. The ring's se corner (Comet Row into Harbour Road): 6 inside, 30 outside. There T2's R 50 curve (swept outer edge 53.6 m from (256, −676)) stays at least 8 m inside the outer arc.",
+          "why": "the testbed's loop: R 3.2 inside and 9.8 outside across its 6.6 m carriageway (civicRoadBoundaries)"
+        },
+        "nose": {
+          "rule": "every median and reservation end, at a junction box or a crossing's refuge, is a bullnose: a half round of half the island's width (primary median 4 → R 2, district median 6 → R 3), its tip where the end is today, so the median is never shortened; trees, lamps and pylons in a median stand on its straight. Where a track runs out through the end (the Boulevard's lawn track at each junction, T2 where it slews across a median), no kerb crosses the track: each side kerb turns in by a quarter round of the gap to the swept envelope's edge (at most `bay`) and stops there.",
+          "why": "a square median end among rounded corners is the one hard angle left in a junction seen from above"
+        },
+        "landings": {
+          "clear": 3,
+          "rule": "a crossing landing next to a convex return stands on the straight with its near edge at least `clear` m past the tangent point. This is the junction-arm clearance in crossings.where, and it also keeps the strip's inlay arcs (crossings.strip.arc, R 2.83 along the kerb) on the straight. So each landing moves out by R from where a square corner put it: plot-edge landings at junction ends go from 5 m off the corner to R + 5 (11 where the minor road is access, 13 where it is district). A primary arm (coverage.rules.arms) stands past the side road's mouth by its half width + max(arms.offset, R + clear + crossings.w / 2), so 13 past a district side road and 11 past an access side road or a primary (the ring's T's), where today it is 8. An island crossing (coverage.rules.island) at a circus mouth steps round the ring from its footway line to the first spot past the mouth's tangent + clear: today it stands 0.1–2.3 m from the mouth, and it moves about 7–10 m round. That move is part of the rule's base position, not of coverage.rules.reach. At a bend both landings move out by their own R, so they stay opposite. The civic block's own landings, and their partners' kerb points, stay where the block puts them, which is why those corners take `civic`. A landing next to a concave fillet or a bay stays where it is.",
+          "why": "Wakefield District Design Code 4.46g: at junctions with radii of 10 or 15 m, crossings \"should be positioned further from the major routes\"; with 4 or 6 m they may lie within the radius, but here the strip's inlay arcs need the straight"
+        },
+        "dressing": "every along-kerb distance the street dressing takes from a junction corner is measured from the return's tangent point, where the straight starts: landings (above), trees from tangent + 9, corner furniture at 8.5, trees.keepClear.junctionCorner 6, SF-8's 6 m (already read from the tangent point). Nothing but the kerb, the ribbon and the pinstripe lies on an arc's kerb zone.",
+        "why": "Sky, 2026-10-24 (brief 028): \"make sure the corners of pavements are rounded like in testbed, not sharp - modern retro future world is curvy and smooth, not harsh lines and strong angles.\" The testbed rounded every kerb as one perimeter of arcs (civic-road-layout.js civicRoadBoundaries: loop 9.8 / island 3.2, junction fillets 1.2–2.6, bays 1.4). Here the returns are as generous as the corners allow: they keep the kerb and walk whole against square building corners and every crossing on a straight.",
+        "source": "Manual for Streets (DfT 2007) §6.3.12–6.3.13 and MfS2 (CIHT 2010) §9.4.10: tight radii at side-road junctions (under 2 m) and other junctions (under 6 m) for pedestrians · NACTO Urban Street Design Guide (2013), Corner Radii: standard curb radii 10–15 ft (3.0–4.6 m), actual radii over 15 ft the exception · Wakefield District Design Code B4.4.1, guidance 4.46g (crossings within a 4–6 m radius; further from the major route with 10–15 m) · AASHTO Green Book 2018 §9.6.1.4 as NACTO cites it (about 5 m for cars, 12 m or more for trucks and buses). These values are larger than street practice on purpose, for the look; people cross anywhere (standards.walking). Notes: briefs/028/research/kerb-return-radii.md",
+        "owner": "Datum (values). Splice: the generator, with the slabs, kerb, ribbon, pinstripe, walk floor and solids, landings and dressing. Vela: curved kerb or ribbon pieces if sweeping does not hold the look. Vantage: the civic block's dressing before `civic` can grow.",
+        "checked": "Datum, 2026-10-24, against the plan and that day's export (out/world): all 76 convex junction corners, with the walk widths above as the least each class pair leaves against the ground floors standing there (docks-south and lantern-west 4.59, the primary × district corners 5.00, nothing under its section's kerb + walk); every junction landing sits 3 m (district, access) or 6 m (primary arms) past a square corner today, so each moves out as `landings` says; the civic block and its dressing as listed under civicWhy. Scratch: out/scratch/datum/kerb-return/"
       },
       "inlays": {
         "tag": "[S]",
@@ -2041,14 +2110,15 @@
     "crossing": [31, 44, -32.5, -27.5],
     "groundPieces": {
       "tag": "[S]",
-      "why": "The dressing's ground furniture a walker cannot cross (Vantage, 2026-10-15: tools/plan/civic.ts left the planter runs out, so the walk graph, the engine site and the people's seats went through all 15 modules). civic.ts turns each placement of these pieces into a walk solid: a rectangle of this size, centred on the pivot (the lamp's is the pole), turned by the dressing's yawDeg. The walker's footprint is stated here, not read from kit.json, so a kit re-hash never moves a walk; Vela's sizes (kit.json) are the source, rounded up to the cm: planter run modules 4.30 to 4.37 x 0.68 (PlanterRun_4_A/B/C), the potted topiary 0.72 (PottedTopiary_Play), the bollard 0.42 (BollardSphere), the lamp's 0.52 plinth (PlazaSphereLamp_Play: pole at the pivot, arms overhead). A dressing piece of these kinds with no size here fails civic() by name. Trees stand in beds (objects) and parasols over tables, which are solids already.",
+      "why": "The dressing's ground furniture a walker cannot cross (Vantage, 2026-10-15: tools/plan/civic.ts left the planter runs out, so the walk graph, the engine site and the people's seats went through all 15 modules). civic.ts turns each placement of these pieces into a walk solid: a rectangle of this size, centred on the pivot (the lamp's is the pole), turned by the dressing's yawDeg. The walker's footprint is stated here, not read from kit.json, so a kit re-hash never moves a walk; Vela's sizes (kit.json) are the source, rounded up to the cm: planter run modules 4.30 to 4.37 x 0.68 (PlanterRun_4_A/B/C), the potted topiary 0.72 (PottedTopiary_Play), the bollard 0.42 (BollardSphere), the lamp's 0.52 plinth (PlazaSphereLamp_Play: pole at the pivot, arms overhead). A dressing piece of these kinds with no size here fails civic() by name. Parasols stand over tables, and a tree in a bed (cypress `on` a bed object) stands in the bed's solid already. A cypress on the ground is a solid of its own (Vantage, brief 055 step 5, Sky 2026-10-23 'proper collision detection'): Cypress_Play is 1.6 to 1.75 m across with its foliage down to 0.75 m (bun run geometry's voxels), so a walker cannot pass under it; its walker footprint is the 1.3 m square whose 0.65 m clearance covers the round crown (r 0.85) without blocking the square's corners, where nothing is drawn; before, the walks and the engine site went through the four ground cypresses (cyp-office-w/e, cyp-sq-nw/ne).",
       "sizes": {
         "PlanterRun_4_A": [4.37, 0.68],
         "PlanterRun_4_B": [4.37, 0.68],
         "PlanterRun_4_C": [4.37, 0.68],
         "PottedTopiary_Play": [0.72, 0.72],
         "BollardSphere": [0.42, 0.42],
-        "PlazaSphereLamp_Play": [0.52, 0.52]
+        "PlazaSphereLamp_Play": [0.52, 0.52],
+        "Cypress_Play": [1.3, 1.3]
       }
     }
   },

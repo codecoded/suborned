@@ -105,7 +105,9 @@ static class Program
         void put(string id, Game g) { w.OpenArr(id); foreach (var (t, h) in g.Checkpoints) w.Str(t.ToString(CultureInfo.InvariantCulture) + ":" + Hash.Hex(h)); w.Str("result:" + g.Result + ":" + g.FailCode); w.EndArr(); }
         foreach (var sc in Scenarios.All)
         {
-            var r = new Run(new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd)); sc.Body(r); r.G.Finish(); put(sc.Id, r.G);
+            var r = new Run(new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd));
+            try { sc.Body(r); } catch (Exception e) when (e is InvalidOperationException || e is FormatException || e is NullReferenceException) { w.OpenArr(sc.Id); w.Str("threw:" + e.GetType().Name + ": " + e.Message); w.EndArr(); continue; } // brief 055: a body that throws under another start text is a move, not the end of the list
+            r.G.Finish(); put(sc.Id, r.G);
         }
         var files = new List<string>();
         foreach (var d in new[] { "contracts/missions/handover/routes", "briefs/011/motive-fights" })

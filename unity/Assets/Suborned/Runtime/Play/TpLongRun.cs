@@ -95,6 +95,7 @@ namespace Suborned.Play
             yield return PalmLods(); // brief 048 (Aster 2026-10-22, Sky approved palm LODs): Market Street east and west, and the commander view
             yield return SignalsHaze(); // Glint 2026-10-23: the signals in a long third-person view under the haze
             yield return GlassFrames(); // Vela 2026-10-23: tower windows (DK_GlassSky) and the facade's class 3 shopfront glass, close, in third person
+            yield return RoadTest(); // brief 055/028: the enamel road in the road boards' two views, for the compare with the testbed
             Write(allOk ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(allOk ? 0 : 1);
         }
 
@@ -158,6 +159,58 @@ namespace Suborned.Play
             try { File.WriteAllText(Path.Combine(dir_, "palms.json"), "{\n \"schema\": \"suborned.tplong.palms/1\", \"palmGroups\": " + groups.Count + ", \"lodBias\": " + F(QualitySettings.lodBias) + ", \"views\": [\n  " + string.Join(",\n  ", rows) + "\n ]\n}\n"); } catch (Exception e) { Debug.LogError("TpLongRun: palms.json: " + e.Message); }
         }
         string dir_ => dir;
+
+        // ---------------------------------------------------------------- the road views (brief 055 / 028: the enamel beside the testbed)
+
+        /// <summary>The road as built (the enamel; Sky 2026-10-24: "it's the white lines that aren't needed - look at the testbed version")
+        /// in the two views of Vela's road boards (tools/decokit/road_board.py; briefs/028/road/boards), for the compare with the testbed:
+        /// office-210 = the play camera (orthographic size 14, pitch 38, compass yaw 210) on the Records Office front (plan -160, -281);
+        /// boulevard-third = third person (fov 55, eye 3.24 m, far as the follow view) down the Boulevard from plan (-9.5, -104), looking south.
+        /// No HUD (the boards have none); the play view's post and haze. Pictures road-&lt;finish&gt;-office-210.jpg, road-&lt;finish&gt;-boulevard-third.jpg
+        /// and road.json (finish = RoadFinish.Current, "enamel" when the scene has no switch).</summary>
+        IEnumerator RoadTest()
+        {
+            var view = h.View; if (!view) yield break;
+            if (h.Following) h.FollowToggle(); h.Begin(); h.SetPaused(true); yield return null; yield return null;
+            string fin = Suborned.RoadFinish.Current.Length > 0 ? Suborned.RoadFinish.Current : "enamel"; var rows = new List<string>();
+            var go = new GameObject("tplong-road-cam"); var pc = go.AddComponent<Camera>(); pc.CopyFrom(view); pc.enabled = false;
+            go.AddComponent<UniversalAdditionalCameraData>().renderPostProcessing = true;
+            var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>(); var phase0 = lp ? lp.Current : LightPhase.Phase.Day;
+            foreach (var ph in lp ? new[] { LightPhase.Phase.Day, LightPhase.Phase.Evening, LightPhase.Phase.Night } : new[] { LightPhase.Phase.Day }) // item 21 (Glint, brief 048): the strip light by phase; day keeps its old names
+            {
+            if (lp) { if (ph == LightPhase.Phase.Evening) lp.SetEvening(); else lp.Set(ph == LightPhase.Phase.Night); var t0 = Time.realtimeSinceStartup; while (Time.realtimeSinceStartup - t0 < 2.5f) yield return null; } // RoadLight eases over 1.5 s (unscaled)
+            string sfx = ph == LightPhase.Phase.Day ? "" : "-" + ph.ToString().ToLowerInvariant();
+            foreach (var name in new[] { "office-210", "office-30", "boulevard-third" }) // office-30: the opening heading on the same front (Glint, brief 028 road fix)
+            {
+                Vector3 at; Quaternion rot;
+                if (name.StartsWith("office-"))
+                {
+                    pc.orthographic = true; pc.orthographicSize = 14f; pc.nearClipPlane = 0.3f; pc.farClipPlane = 1500f;
+                    rot = Quaternion.Euler(38f, name == "office-30" ? 30f : 210f, 0f); var focus = new Vector3(-160f, 0f, -281f); at = focus - rot * Vector3.forward * 400f;
+                }
+                else
+                {
+                    pc.orthographic = false; pc.fieldOfView = 55f; pc.nearClipPlane = 0.2f; pc.farClipPlane = Mathf.Min(h.followFar, DistanceHaze.FarClip > 0f ? DistanceHaze.FarClip : h.followFar);
+                    rot = Quaternion.Euler(0f, 180f, 0f); at = new Vector3(-9.5f, 3.24f, -104f);
+                }
+                go.transform.SetPositionAndRotation(at, rot);
+                yield return new WaitForEndOfFrame();
+                int w = Screen.width, ht = Screen.height; var rt = new RenderTexture(w, ht, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+                try
+                {
+                    for (int i = 0; i < 2; i++) { pc.targetTexture = rt; pc.Render(); }
+                    var prev = RenderTexture.active; RenderTexture.active = rt; var tx = new Texture2D(w, ht, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, w, ht), 0, 0); tx.Apply(); RenderTexture.active = prev;
+                    File.WriteAllBytes(Path.Combine(dir, $"road-{fin}-{name}{sfx}.jpg"), tx.EncodeToJPG(90)); Destroy(tx);
+                }
+                catch (Exception e) { Debug.LogError("TpLongRun: road picture: " + e.Message); }
+                pc.targetTexture = null; rt.Release(); Destroy(rt);
+                rows.Add($"{{\"view\": \"{name}{sfx}\", \"lens\": {F(Suborned.RoadLight.Instance ? Suborned.RoadLight.Instance.LensLevel : -1f)}, \"pool\": {F(Suborned.RoadLight.Instance ? Suborned.RoadLight.Instance.PoolAlpha : -1f)}, \"camera\": [{F(at.x)}, {F(at.y)}, {F(at.z)}], \"ortho\": {(pc.orthographic ? "true" : "false")}, \"far\": {F(pc.farClipPlane)}}}");
+            }
+            }
+            if (lp) { if (phase0 == LightPhase.Phase.Evening) lp.SetEvening(); else lp.Set(phase0 == LightPhase.Phase.Night); }
+            Destroy(go);
+            try { File.WriteAllText(Path.Combine(dir, "road.json"), "{\n \"schema\": \"suborned.tplong.road/2\", \"finish\": \"" + fin + "\", \"size\": [" + Screen.width + ", " + Screen.height + "], \"views\": [\n  " + string.Join(",\n  ", rows) + "\n ]\n}\n"); } catch (Exception e) { Debug.LogError("TpLongRun: road.json: " + e.Message); }
+        }
 
         // ---------------------------------------------------------------- glass (Vela 2026-10-23)
 
@@ -305,7 +358,7 @@ namespace Suborned.Play
                     yield return null; Shoot(bc, $"signals-{d}-control-offset");
                     foreach (var mm in fanMats) { mm.SetFloat("_OffsetFactor", 0f); mm.SetFloat("_OffsetUnits", 0f); mm.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.Always); }
                     yield return null; Shoot(bc, $"signals-{d}-control-ztest-always");
-                    foreach (var mm in fanMats) mm.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.LessEqual);
+                    foreach (var mm in fanMats) { mm.SetFloat("_ZTest", (float)UnityEngine.Rendering.CompareFunction.LessEqual); mm.SetFloat("_OffsetFactor", -2f); mm.SetFloat("_OffsetUnits", -2f); } // back as built (FanMat's offset)
                     controlMats = fanMats.Count;
                     Layers(true); AtmosphereSettings.Enabled = false; yield return null; Shoot(bc, $"signals-{d}-bare-nohaze"); // the frame with no fan (the base camera does not draw the signal layer)
                     foreach (var r in fanRenderers) if (r) r.gameObject.layer = SignalLayer; // the mask: the fans alone on black

@@ -215,7 +215,7 @@ namespace Suborned.Play
                 if (!Proj(a.World, out var p)) continue;
                 if (edgeMarks.Count <= ei) { var k = new Mark { Root = E(marks, "s-plate_dark", 0, 0, float.NaN, 26) }; k.Root.style.flexDirection = FlexDirection.Row; k.Root.style.alignItems = Align.Center; k.Root.style.paddingLeft = 8; k.Root.style.paddingRight = 10; k.Glyph = E(k.Root, null, w: 15, h: 15); Icon(k.Glyph, "units", Cream); k.Text = L(k.Root, "verb-name"); k.Text.style.marginLeft = 6; edgeMarks.Add(k); }
                 var u = edgeMarks[ei++]; Show(u.Root, true); Text(u.Text, a.Text);
-                u.Root.style.left = Mathf.Clamp(p.x - 50, 130, W - 160); // clear of the roster column u.Root.style.top = Mathf.Clamp(p.y - 13, 70, H - 120);
+                u.Root.style.left = Mathf.Clamp(p.x - 50, 130, W - 160); /* clear of the roster column */ u.Root.style.top = Mathf.Clamp(p.y - 13, 70, H - 120);
             }
             for (int i = ei; i < edgeMarks.Count; i++) Show(edgeMarks[i].Root, false);
             // the mast heads' number plates

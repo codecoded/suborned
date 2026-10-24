@@ -317,6 +317,8 @@ namespace Suborned.Play
             int ticks = DownTicks(k, id, tg, acc); return (ticks + Game.Hz - 1) / Game.Hz;
         }
 
+        /// <summary>Brief 058 (Motive): a fire target that is property (a camera, a car): the engine charges the shooting's Trail once and no hit Trail.</summary>
+        public static bool PropertyId(string id) => id != null && (id.StartsWith("camera:", System.StringComparison.Ordinal) || id.StartsWith("car:", System.StringComparison.Ordinal));
         bool AnyDrawn() { for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) return true; return false; }
 
         string Aim(int k, string target, bool force, Target t)
@@ -347,8 +349,8 @@ namespace Suborned.Play
             FirePreview fp = null; Guard("aim preview", () => fp = g.PreviewFire((OpId)k, id, force));
             if (fp != null && fp.Line && fp.ShotsToDown > 0) { int ps = PreviewDownS(fp, k); if (ps >= 0) secs = ps; acc = fp.Acc; }
             if (fp != null) { parts.Gait = fp.Gait is "walk" or "run" or "run-away" ? fp.Gait : ""; if (fp.HasEnd && fp.ShotsToDownEnd > 0 && w != null) parts.ArriveS = (R.AimNewTicks + (fp.ShotsToDownEnd - 1) * w.Every + Game.Hz - 1) / Game.Hz; }
-            parts.Down = $"{secs} s"; parts.Ratio = Ratio(acc); // Glyph fight r1 #2: whole seconds, as the rest of the HUD parts.Cover = cover < 1000;
-            parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : $"+{R.HitTrail}/hit";
+            parts.Down = $"{secs} s"; parts.Ratio = Ratio(acc); /* Glyph fight r1 #2: whole seconds, as the rest of the HUD */ parts.Cover = cover < 1000;
+            parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : PropertyId(id) ? $"+{R.GunfireTrail}" : $"+{R.HitTrail}/hit"; // brief 058: property costs the shooting once
             return $"{who} · hits {Ratio(acc)} · down in {secs} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";
         }
 
@@ -396,6 +398,8 @@ namespace Suborned.Play
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
             bool carrying = Game.Ops[k].CarryBody.Length > 0;
             if (carrying) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)
+            if (!carrying && Game.Ops[k].Carrying.HasValue) // item 31 (c): carrying a downed agent, the move keeps carrying at the carry's pace: the marker's time says so before the click
+            { var R = Game.R; int sp = k == (int)OpId.Enforcer ? R.CellSpeed : R.CarryUntrainedSpeed; MoveNow.CarryS = sp > 0 ? (int)Math.Ceiling(q.WalkS * (double)R.CellSpeed / sp) : q.WalkS; MoveNow.RunS = -1; MoveChip = $"{AgentNames[k]}: carrying · walk {MoveNow.CarryS} s"; }
             Guard("move preview", () => PreviewRoute(k, to.Value, MoveNow, q.Seen, carrying && lastCarry != null && lastCarry.SeenS.Count > 0)); // Glyph's ring: its state and the route's glow
             { var mp = MoveNow; var tp = to.Value; Guard("cover snap", () => CoverSnapPreview(k, tp, mp)); } // brief 027 B5: the ring moves to the cover point the move will end on
         }

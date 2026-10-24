@@ -82,13 +82,14 @@ namespace Suborned.World
             var toCamera = -new Vector3(Mathf.Sin(yaw), 0f, Mathf.Cos(yaw));
             int parts = 0, eyes = 0, walk = 0, casters = 0, quiet = 0, lit = 0; float turned = 0f;
             var kitLight = KitImport.Library(Light) ?? throw new InvalidDataException($"World: kit material {Light} missing (run `bun run kit`)");
-            var light = Lens(kitLight);
+            var light = LightMaterial(); int baked = 0;
             var byKind = new SortedDictionary<string, int>(System.StringComparer.Ordinal);
             foreach (var s in w.Street)
             {
                 if (s.Crossing == null) continue;
                 if (!Kinds.Contains(s.Kind)) throw new InvalidDataException($"World: {s.Id}: crossing part kind `{s.Kind}` is not drawn");
                 if (s.Kit == null) throw new InvalidDataException($"World: {s.Id}: a crossing part without its kit piece (no adopted piece of its size)");
+                if (!eyeKind(s) && CityLayers.BakedCrossingPart(s)) { if (s.CastShadows) throw new InvalidDataException($"World: {s.Id}: a flush crossing part that casts"); baked++; byKind[s.Kind] = (byKind.TryGetValue(s.Kind, out var nb) ? nb : 0) + 1; parts++; continue; } // brief 048: baked into crossing-parts (CityLayers.Street), its light swapped at bake time
                 if (!els.TryGetValue(s.Id, out var el) || el.childCount != 1) throw new InvalidDataException($"World: {s.Id}: crossing part not placed on the street layer");
                 var piece = el.GetChild(0);
                 parts++; byKind[s.Kind] = (byKind.TryGetValue(s.Kind, out var n) ? n : 0) + 1;
@@ -135,7 +136,17 @@ namespace Suborned.World
             }
             var kinds = new List<string>(); foreach (var kv in byKind) kinds.Add($"{kv.Value} {kv.Key}");
             Debug.Log($"World: crossing parts {parts} ({string.Join(", ", kinds)}); eyes {eyes} ({walk} walk, {eyes - walk} stop), displays turned to the play camera (yaw {w.View.Yaw}°) by at most {turned:F0}°; " +
-                $"renderers casting {casters} (orb bodies, every LOD), not casting {quiet}; seafoam light on {lit} renderers (emission only, x{LightGlow})");
+                $"renderers casting {casters} (orb bodies, every LOD), not casting {quiet}; seafoam light on {lit} renderers (emission only, x{LightGlow}); {baked} flush parts baked into {CityLayers.CrossingParts}");
+        }
+
+        static bool eyeKind(StreetItemDto s) => s.Kind == "signal-orb";
+        static Material lightMat;
+        /// <summary>The emission-only seafoam light, made once a build (the street layer's bake asks for it first, the orbs' dress after).</summary>
+        public static Material LightMaterial()
+        {
+            if (lightMat) return lightMat;
+            var kit = KitImport.Library(Light) ?? throw new InvalidDataException($"World: kit material {Light} missing (run `bun run kit`)");
+            return lightMat = Lens(kit);
         }
 
         /// <summary>The seafoam light drawn as emission only, from the kit row (its colour, shader and fade); saved beside the scene.</summary>

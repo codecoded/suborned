@@ -25,7 +25,7 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         bool PlateOn => host.controls.actionPlate;
-        static readonly Color Pale = new(1f, 0.914f, 0.659f), Alarm = new(1f, 0.353f, 0.235f), DownRing = new(0.231f, 0.29f, 0.278f), DiscTeal = new(0.086f, 0.4f, 0.369f);
+        static readonly Color Pale = new(0.969f, 0.957f, 0.925f), /* cream #f7f4ec: the old #ffe9a8 had no kit source (Glyph 0.2.94 #5b) */ Alarm = new(1f, 0.353f, 0.235f), DownRing = new(0.231f, 0.29f, 0.278f), DiscTeal = new(0.086f, 0.4f, 0.369f);
         const float CueS = 39f / 32f; // the cue board's 64 px portrait (ring r 31-32) to the roster's photo (r 39)
         const float FadeS = 0.15f;
 
@@ -53,7 +53,7 @@ namespace Suborned.Play
             // the cue layer: redrawn while its state moves
             if (w.CueFace != face) { w.CueFace = face; w.CueSince = host.FaceSince(i); }
             Show(w.Cue, !m.Ended || face == Face.Downed); w.Cue.MarkDirtyRepaint();
-            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended && !w.Under; Show(w.Eye, eye); // the tall column: the status slot's cone if (eye) w.Eye.MarkDirtyRepaint();
+            bool eye = host.EyeStage(i) >= 1 && !s.InCar && !s.Down && !m.Ended && !w.Under; Show(w.Eye, eye); /* the tall column: the status slot's cone */ if (eye) w.Eye.MarkDirtyRepaint();
             // brief 030 (no plate): the armed verb's glyph on the selected portrait
             int pk = host.Picked; bool armed = !PlateOn && pk >= 0 && pk < 5 && i == m.Agent && s.Selected && m.VerbHas[pk] && !m.Ended && !w.Under; // the tall column: the status slot
             Show(w.Glyph, armed);
@@ -122,9 +122,10 @@ namespace Suborned.Play
                         break;
                     }
                 case Face.Firing:
-                    {   // three rays at the sidearm corner, flickering at 2 Hz
+                    {   // three rays out of the ring's left side, flickering at 2 Hz: cream (Glyph's 0.2.94 review #5b: the pale yellow had no kit
+                        // source, and at the sidearm corner a ray crossed the weapon disc under the portrait)
                         if (Mathf.Repeat(now * 2f, 1f) > 0.7f) break;
-                        Stroke2(p, () => { p.MoveTo(At(2, 54)); p.LineTo(At(-6, 58)); p.MoveTo(At(4, 60)); p.LineTo(At(-2, 68)); p.MoveTo(At(12, 64)); p.LineTo(At(10, 73)); }, Pale, 2.6f * s);
+                        Stroke2(p, () => { foreach (var deg in new[] { 160f, 180f, 200f }) { var d = new Vector2(Mathf.Cos(deg * Mathf.Deg2Rad), Mathf.Sin(deg * Mathf.Deg2Rad)); p.MoveTo(c + d * 37f * s); p.LineTo(c + d * (deg == 180f ? 45f : 43f) * s); } }, Cream, 2.6f * s);
                         break;
                     }
                 case Face.Hurt:

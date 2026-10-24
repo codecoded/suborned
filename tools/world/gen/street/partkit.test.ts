@@ -42,11 +42,11 @@ test('the pieces are adopted in the live kit: every part is bound to one, none s
   expect(bound(gone).every(s => s.source === 'procedural' && !s.kit)).toBe(true);
 });
 
-test('adopted, each part takes its piece by use and size: 1200 + 264 dot rows, 732 + 15 lit strip modules, 1652 edge lines, 704 studs, 322 arcs, 207 eyes; none scaled', () => {
+test('adopted, each part takes its piece by use and size: 1278 + 284 dot rows, 781 + 18 lit strip modules, 1788 edge lines, 768 studs, 370 arcs, 228 eyes; none scaled', () => {
   const out = bound(catalogue()), by = (id: string) => out.filter(s => s.kit?.id === id).length;
-  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('KerbStud'), by('CrossInlayArc_R24_W08'), by('SignalEye'), by('LightBar_4')]).toEqual([1200, 264, 704, 322, 207, 0]);
-  expect(by('CrossEdgeLine_2') + by('CrossEdgeLine_1')).toBe(1652);
-  expect([by('LightField_2'), by('LightField_1')]).toEqual([732, 15]);
+  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('KerbStud'), by('CrossInlayArc_R24_W08'), by('SignalEye'), by('LightBar_4')]).toEqual([1278, 284, 768, 370, 228, 0]);
+  expect(by('CrossEdgeLine_2') + by('CrossEdgeLine_1')).toBe(1788);
+  expect([by('LightField_2'), by('LightField_1')]).toEqual([781, 18]);
   expect(out.every(s => s.source === 'kit' && s.kit!.scale.every(v => v === 1))).toBe(true);
 });
 

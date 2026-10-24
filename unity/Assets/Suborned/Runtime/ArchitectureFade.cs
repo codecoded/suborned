@@ -63,10 +63,14 @@ namespace Suborned
         public float fadeTime = 0.25f;
 
         static readonly int FocusId = Shader.PropertyToID("_DKCutFocus"), ViewId = Shader.PropertyToID("_DKCutView"),
-            ShapeId = Shader.PropertyToID("_DKCutShape"), BackId = Shader.PropertyToID("_DKCutBack"), PointsId = Shader.PropertyToID("_DKCutPoints"), CleanId = Shader.PropertyToID("_DKCutClean");
+            ShapeId = Shader.PropertyToID("_DKCutShape"), VeilId = Shader.PropertyToID("_DKCutVeil"), BackId = Shader.PropertyToID("_DKCutBack"), PointsId = Shader.PropertyToID("_DKCutPoints"), CleanId = Shader.PropertyToID("_DKCutClean");
 
-        [Tooltip("Brief 020 (Glyph): a person's disc (SetPoints with a negative radius) is cut clean, not to the ghost, so no screen door falls over a figure; this is its feather (m).")]
-        public float cleanFeather = 0.4f;
+        [Tooltip("Brief 020 (Glyph): a person's disc (SetPoints with a negative radius) is cut clean, not to the ghost, so no screen door falls over a figure; this is its feather (m), outward from the disc (Glyph 0.2.99).")]
+        public float personFeather = 1.3f; // Glyph's 0.2.99 review 1b: ~100 px at 2x at play zoom (38.6 px/m), feathered outward from the disc (DK_Cutaway.hlsl)
+        [Tooltip("Glyph's 0.2.94/0.2.97 reviews #1: what stays of a ghost leans by `streetVeil` at full fade towards the street it hides, as that street is lit (DK_Cutaway.hlsl: the paving's albedo under the sun at the hidden ground point, through the shadow map there, plus the ambient), so the dots sink into the paving instead of screening it. 0 = the wall's own colour (as built to 0.2.94).")]
+        [Range(0f, 1f)] public float streetVeil = 0.9f; // renamed from `veil` (0.45 / #f2ead6 to 0.2.97) so scenes built before 0.2.98 take the new values
+        [Tooltip("The street's albedo (sRGB) the veil takes: the civic paving's mean (pave_civic_v1.png, #e4daca), lit in the shader as flat ground at the hidden point.")]
+        public Color streetAlbedo = new Color(0.894f, 0.855f, 0.792f); // #e4daca (pave_civic_v1.png mean)
 
         /// <summary>DK_CUT_POINTS in DK_Cutaway.hlsl: the shader's array is always this long.</summary>
         public const int MaxPoints = 10;
@@ -163,7 +167,8 @@ namespace Suborned
             Shader.SetGlobalVector(ShapeId, new Vector4(f, Mathf.Lerp(1f, ghost, level), column ? 1f : 0f, shadows ? 1f : 0f));
             Shader.SetGlobalVector(BackId, new Vector4(cut.Back, f, Mathf.Lerp(1f, ghostShadow, level), pointCount));
             Shader.SetGlobalVectorArray(PointsId, points);
-            Shader.SetGlobalVector(CleanId, new Vector4(1f - level, Mathf.Max(cleanFeather, 0.01f), 0f, 0f));
+            var vc = streetAlbedo.linear; Shader.SetGlobalVector(VeilId, new Vector4(vc.r, vc.g, vc.b, streetVeil * level));
+            Shader.SetGlobalVector(CleanId, new Vector4(1f - level, Mathf.Max(personFeather, 0.01f), 0f, 0f));
             if (reach == null) Shader.EnableKeyword(FadeReach.Keyword); // no reach: every tagged shader takes its cutting variant for this render
         }
 

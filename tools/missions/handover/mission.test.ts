@@ -30,10 +30,11 @@ setDefaultTimeout(30000);
 const root = resolve(import.meta.dir, '../../..'), FILE = 'contracts/missions/handover/mission.json';
 const text = (p: string) => Bun.file(resolve(root, p)).text();
 const raw = await text(FILE), mission = Mission.parse(JSON.parse(raw));
-/** Destinations, crew and routes as written: the file from `"destinations"` to its end, without `yaw` and `hidden`. Those two say how a
- *  point is shown (the heading it is played at, a hiding place's reason; GDD §10 v0.24, Sky's pick (h), 2026-10-18), not where it stands,
- *  so adding them moves no place and recorded runs keep their pinned places. Each is dropped with the comma it put on the line before. */
-const places = (s: string) => s.slice(s.indexOf('\n "destinations": [')).replace(/,\n {3}"(?:yaw|hidden)": (?:\d+|"(?:[^"\\]|\\.)*")(?=\n)/g, '');
+/** Destinations, crew and routes as written: the file from `"destinations"` to its end, without `yaw`, `hidden`, `level`, `on` and `floor`. The first two say how a
+ *  point is shown (the heading it is played at, a hiding place's reason; GDD §10 v0.24, Sky's pick (h), 2026-10-18), the last three the level and floor it stands on
+ *  (brief 055, Datum: data for what the block already draws there), not where on the ground it stands, so adding them moves no place and recorded runs keep their
+ *  pinned places. They close an object; each run of them is dropped with the comma it put on the line before. */
+const places = (s: string) => s.slice(s.indexOf('\n "destinations": [')).replace(/(?:,\n {3}"(?:yaw|hidden|level|on|floor)": (?:-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"))+(?=\n)/g, '');
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
 const PLACES = '4f9fbebf0ee133e8a0dba471cf8ced9887cd56137ce02eec280f741d5b4ef39c'; // sha256 of places() now: WAS with MOVED and RENAMED applied

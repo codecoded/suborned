@@ -5,8 +5,8 @@ using UnityEngine;
 namespace Suborned.Play
 {
     /// <summary>The engine's frame to Unity's: the engine works in the civic block frame (integer cm, x south, y east; sim/data/handover.site.json);
-    /// the plan places that frame by plan.civic.blockToPlan (metres); Unity x = plan x, Unity z = plan y. Ground heights are baked on a 1 m
-    /// grid over the site window from the export's plot slabs (PlayInstall), so a capsule stands on the pavement, not in it.</summary>
+    /// the plan places that frame by plan.civic.blockToPlan (metres); Unity x = plan x, Unity z = plan y. Ground heights cover the site window: brief 055,
+    /// the drawn floor from the walk file (`bun run geometry`, 0.25 m cells: landings, steps, kerbs, collars), else the plot slabs on 1 m (PlayInstall).</summary>
     [Serializable]
     public sealed class SiteFrame
     {

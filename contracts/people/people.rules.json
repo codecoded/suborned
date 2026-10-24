@@ -181,14 +181,14 @@
     }
   },
   "secrets": {
-    "rule": "0 or 1 secret per simulated person, from this closed list. A secret is a fact the person hides, separate from their need: the need is what they want (Help meets it), the secret is what they fear known (Pressure threatens it). Learned only by the cell, only by Listen, or by a Watch that ends while two lovers stand together (rulebook summon.together). Never told along ties, never in a keeper's tips. Read by turn.pressure: a known secret is Pressure's leverage. Until the need `secret` retires (Pulse's cast tables), a person may still carry that need; the person field `secret` is this list's.",
+    "rule": "0 or 1 secret per simulated person, from this closed list. A secret is a fact the person hides, separate from their need: the need is what they want (Help meets it), the secret is what they fear known (Pressure threatens it). Learned only by the cell, only by Listen (a Watch never teaches a secret: brief 054 §9.2). Never told along ties, never in a keeper's tips. Read by turn.pressure: a known secret is Pressure's leverage. Until the need `secret` retires (Pulse's cast tables), a person may still carry that need; the person field `secret` is this list's.",
     "perPerson": { "min": 0, "max": 1 },
     "list": {
       "affair": {
         "requires": "lover-tie", "learnedBy": ["scout.listen", "cell.watch"],
         "src": "Story spine v0.1: Inez's affair with the guard is her secret; Pressure threatens to expose it",
         "proposed": true,
-        "reason": "every person with a lover tie holds `affair`, and nobody else does: the tie is the secret, so the checker can see it. Watch teaches it only when it ends with the two lovers together."
+        "reason": "every person with a lover tie holds `affair`, and nobody else does: the tie is the secret, so the checker can see it. Listen alone teaches it (brief 054 §9.2)."
       },
       "record": {
         "requires": "nothing", "learnedBy": ["scout.listen"],

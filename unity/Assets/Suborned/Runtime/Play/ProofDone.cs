@@ -177,10 +177,14 @@ namespace Suborned.Play
             log.Add($"done call window: {(winOk ? "ok" : "FAILED")}: turns [{turnOut}], markers '{winWords}', chip '{callChip}'");
             if (Still) // the window's last 10 s: the underline amber, the plate blinking
             {
-                bool soon = StepUntil(h, () => h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard" && w.Until >= 0 && w.Until - h.Game.Tick <= 7 * Suborned.Sim.Game.Hz), 600); yield return Frames(4); // the engine's window (the HUD's marks refresh per frame, not per step)
-                log.Add($"window soon: {soon} '{HudToolkit.WindowWords}'"); yield return Shoot(h, dir, "done-window-soon", log);
+                bool soon = StepUntil(h, () => h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard" && w.Until >= 0 && w.Until - h.Game.Tick <= 7 * Suborned.Sim.Game.Hz), 600); yield return Frames(4); yield return new WaitForSecondsRealtime(0.3f); // the engine's window (the HUD's marks refresh per frame, not per step); Glyph 0.2.97 #2 / Latch 0.2.99: past the callouts' 0.15 s fade-in (a callout born in the synchronous step shot at ~0.06 s read as a milky ghost)
+                log.Add($"window soon: {soon} '{HudToolkit.WindowWords}'"); log.Add($"window soon probe (review 12 stray line, 1x panel 1100,511 and 1125,511): {HudToolkit.ElementsAt(new Vector2(1100, 511))} || {HudToolkit.ElementsAt(new Vector2(1125, 511))}"); yield return Shoot(h, dir, "done-window-soon", log);
             }
+            // Glyph's 0.2.94 review #9: the pop's clock is the frame's: born at the end of a long synchronous step, it read as half faded in the
+            // next frame. Step to a tick before the close, let a frame pass, then step the close itself
+            StepUntil(h, () => !h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard" && (w.Until < 0 || w.Until - h.Game.Tick > 2)), 3000); yield return Frames(2);
             bool back = StepUntil(h, () => !h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard"), 3000); yield return Frames(3);
+            if (Still) yield return new WaitForSecondsRealtime(0.3f); // Latch 0.2.99: past the callouts' fade-in (the robot's medallion shot half see-through)
             string closeWord = h.LastClosePop; bool backOk = back && h.WindowClosePops > cw0 && closeWord == "Guard back";
             yield return Shoot(h, dir, "done-guard-back", log);
             parts.Add($"\"guardBack\": {{\"ok\": {B(backOk)}, \"pop\": \"{J(closeWord)}\", \"closes\": {h.WindowClosePops - cw0}}}"); ok &= backOk;
@@ -213,6 +217,7 @@ namespace Suborned.Play
             bool tpOk = focus == "patrol:patrol" && tpReady.StartsWith("Let go · Fire") && tpOrders.Contains("scout:fire:patrol") && tpLog;
             parts.Add($"\"tpFire\": {{\"ok\": {B(tpOk)}, \"focus\": \"{J(focus)}\", \"offer\": \"{J(tpOffer)}\", \"ready\": \"{J(tpReady)}\", \"orders\": \"{string.Join(",", tpOrders)}\", \"tpFireLog\": {B(tpLog)}}}"); ok &= tpOk;
             log.Add($"done tp fire: {(tpOk ? "ok" : "FAILED")}: focus '{focus}', offer '{tpOffer}', ready '{tpReady}', [{string.Join(",", tpOrders)}], log {tpLog}");
+            { bool rl = h.RolelessUnlockFrames == 0; ok &= rl; parts.Add($"\"rolelessUnlocks\": {{\"ok\": {B(rl)}, \"frames\": {h.RolelessUnlockFrames}}}"); log.Add($"done roleless unlocks: {(rl ? "ok" : "FAILED")}: {h.RolelessUnlockFrames} frames a chip with no person wore unlock pills"); } // Glyph's 0.2.104 review #2
             h.controls.conversations = keepConvo; HandoverHost.PointerWorld = null; Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f)); h.Begin();
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
         }

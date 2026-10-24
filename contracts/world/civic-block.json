@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "62b7266c6a07ed57d0cc959a8b8d71749e6d731c50672edeba450d1a1227918a",
+  "sha256": "b2a1a8198f3be302d2210022c9d4d101f6ddaadb4d1a87ecf492971a0e9d991e",
   "owner": "Vantage",
   "applied": [
    {
@@ -329,6 +329,28 @@
     "id": "civic-control-cabinet",
     "move": [19.6, -27.5],
     "reason": "Sky 2026-10-19, door option (b), V-1 (study.ts B_SITES 'cabinet' (46.5, -44.5)): the Tech's control cabinet goes with the door to the office plot's north-west corner, behind the entrance camera's pole (53, -44.5) and outside its cone, the guard's door cone and the patrol's sweep (y -44.8, x 52..68), within 5.5 m of the west face line where the ground is seen (further west the 35 m terrace across Rocket Lane, bld/rocket-west/17, hides it). Centre (25.4, -17) -> (45.0, -44.5), x 44.546..45.454, y -45.344..-43.656: the mission's 'cabinet' point (46.5, -44.5) stands 1.05 m off its south (x 45.454) face, centred on it, as before; the cabinet stands on the far side of the Tech from the play camera, so it never hides him."
+   },
+   {
+    "op": "floor",
+    "id": "office-public-landing",
+    "kind": "landing",
+    "level": "street",
+    "top": 0.75,
+    "reason": "Datum, brief 055 step 6b (Sky 2026-10-23: 'proper collision detection / hit box geometry throughout'; the door guard sunk to the hips): the public door landing is a floor a person stands on, 0.75 m above the pavement (plan 0.93), stated here and not found in the kit. The host stood him on the plot slab (0.18) because nothing in the data said a person stands higher; mission.json said so only in prose ('the public landing 0.75 m up six steps'). Top = the structure's z 0 + height 0.75 = Vela's RecordsEntrance landing; 'Office entrance' (64, -41.25) and the office-entrance door (z 0.75, on office-public-landing) stand on it. Checker C-5."
+   },
+   {
+    "op": "floor",
+    "id": "office-public-steps",
+    "kind": "steps",
+    "level": "street",
+    "top": 0.625,
+    "reason": "Datum, brief 055 step 6b: the flight to the public landing is a floor walked on, tread by tread: 6 risers of 0.125 m (0.75 m, the landing's top) and 5 treads of 0.36 m (the structure's rise, risers and going: Vantage's, Vela's RecordsEntrance), from the foot (64, -43.8) on the pavement to the head (64, -42) on the landing. Top 0.625 = the top tread (the structure's height). A point on the flight stands on its tread: 0.125 x (1 + whole treads from the foot). Rise 0.125 and tread 0.36 are inside standards.levels.connectors.stair (riser 0.16 at most, going 0.3 at least). Checker C-5."
+   },
+   {
+    "op": "edit",
+    "id": "atom-fountain",
+    "height": 0.5,
+    "reason": "Vantage, brief 055 step 5 (Sky 2026-10-23: 'proper collision detection / hit box geometry throughout'): the block said the fountain is a 4.2 m solid of r 3.3 (the Oct 9 figure), so the sim walled it off as a 4.2 m sight and fire blocker with 11 'fire+sight' cover points round it. What the world draws (AtomFountain_Testbed, measured by bun run geometry's voxels, 2026-10-23) is a basin of r 3.3 whose rim stands 0.50 m over the pavement (water 0.39), with a central column about 0.5 m across and 3.0 m high and the atom's rings overhead from 1.8 m. The footprint stays (you do not walk through the water: the basin stays a walk solid); the height is the rim's, so the basin is low cover and no blocker, as drawn. The column is too thin to hide a body (cover minWidth 0.6 m) and is not stated here: a civic object with no kit piece would be drawn as an extra mass. Pulse reruns bun run cover (the fountain's 11 points go) and CV-2; Keel's occluders follow when the site is rebuilt from the drawn solids (brief 055 steps 2-3)."
    },
    {
     "op": "dressing",
@@ -668,7 +690,7 @@
     [9.737, -30.644]
    ],
    "z": 0,
-   "height": 4.2
+   "height": 0.5
   },
   {
    "id": "fountain-garden-north-east",
@@ -1564,6 +1586,40 @@
    "reason": "Sky 2026-10-19, service door east face, quiet back way: the vehicle way from Apron Road (kerb x 80) to serviceBay (x 67), 3 m wide on the bay's line (y -16.5..-13.5), 3 m clear of the wing's south-east corner (72.5, -19.5), crossing the Apron pavement (x 72.5..80) as a dropped-kerb driveway would. It was a keep-clear zone until the block could state a drive; now it is one (Splice, brief 023): the block's drives[] carries it, the world exports it as a flat at road level with the kerb dropped along x 80, y -16.5..-13.5, nothing stands on it and street items keep 2 m off it (DR-1..DR-3, SF-2, SF-18, SF-20), and the sim routes the turned driver's car over it (tools/sim/drive.ts)."
   }
  ],
+ "floors": [
+  {
+   "id": "office-public-landing",
+   "name": "Public door landing",
+   "kind": "landing",
+   "level": "street",
+   "top": 0.75,
+   "polygon": [
+    [61.7, -42],
+    [66.3, -42],
+    [66.3, -40.5],
+    [61.7, -40.5]
+   ]
+  },
+  {
+   "id": "office-public-steps",
+   "name": "Public door steps",
+   "kind": "steps",
+   "level": "street",
+   "top": 0.625,
+   "risers": 6,
+   "rise": 0.125,
+   "tread": 0.36,
+   "foot": [64, -43.8],
+   "head": [64, -42],
+   "landing": "office-public-landing",
+   "polygon": [
+    [61.7, -43.8],
+    [66.3, -43.8],
+    [66.3, -42],
+    [61.7, -42]
+   ]
+  }
+ ],
  "dressing": {
   "schema": "suborned.block-dressing/0 (carried into civic-block.json by the `dressing` adjustment; the generator does not place from it yet)",
   "frame": "Block frame, metres. yawDeg turns from +x (south) toward +y (east): a piece's local +X maps to (cos, sin). Pieces face local -Y, building on +Y. Pivots as each piece states.",
@@ -2252,7 +2308,7 @@
    "at": [
     {
      "id": "cyp-office-w",
-     "at": [71, -42.3],
+     "at": [71, -41.7],
      "yawDeg": 0
     },
     {
@@ -2263,7 +2319,7 @@
     },
     {
      "id": "cyp-office-e",
-     "at": [57, -42.3],
+     "at": [57, -41.7],
      "yawDeg": 140
     },
     {
@@ -2283,7 +2339,7 @@
      "yawDeg": 350
     }
    ],
-   "reason": "Office front: a pair each side of the public door, as the mission-block and records-office paintings show: the outer tree forward in the entrance bed (8 m off the axis), the inner one back against the wing in the facade bed (6.1 m and 6.9 m off: the two chamfers differ). All four stand in beds that are already there, so they take no ground and no walk passes; the facade pair overhangs its 1.05 m bed by 0.3 m a side and stands 0.38 m off the wing. From the play camera three of the four are behind the wing and read through the fade; cyp-office-w shows past the office's west corner. They are for the eye-level view at the Office door. Square: one at each north corner, 0.4 m inside both kerbs, 0.59 m and 0.98 m off the landings x-rocket-n and x-garden-n. They close the view either side of the café and their camera shadows (8 m, to the north-north-east) fall off the plot. None at the south corners: the crew's walk to 'Service lane' passes 1.0 m from the south-west spot and would run 8 m in the tree's camera shadow, and the planter run holds that kerb. No Handover point is hidden by any of the six. Yaws only vary the silhouette. Sky 2026-10-19, door option (b): the public door has turned onto the west face and the paintings' pair now frames it. cyp-office-w and -e leave the removed entrance beds and stand on the ground 7 m either side of the door axis x 64, 1.8 m out from the wing face (y -42.3): (71, -42.3) south, 1.8 m off the wing's south-west corner, and (57, -42.3) north, before the north-west chamfer (cyp-facade-w stays in its bed on the chamfer). Each stands 2.5 m or more off the steps' cheeks, the pots and the service cabinets; their camera shadows fall north-north-east onto the wing, 2.6 m or more clear of 'Office entrance'. On the ground, like cyp-sq-nw/ne, they are not walk solids (civic.ts: trees stand in beds); turned beds under them are Vela's if wanted."
+   "reason": "Office front: a pair each side of the public door, as the mission-block and records-office paintings show: the outer tree forward in the entrance bed (8 m off the axis), the inner one back against the wing in the facade bed (6.1 m and 6.9 m off: the two chamfers differ). All four stand in beds that are already there, so they take no ground and no walk passes; the facade pair overhangs its 1.05 m bed by 0.3 m a side and stands 0.38 m off the wing. From the play camera three of the four are behind the wing and read through the fade; cyp-office-w shows past the office's west corner. They are for the eye-level view at the Office door. Square: one at each north corner, 0.4 m inside both kerbs, 0.59 m and 0.98 m off the landings x-rocket-n and x-garden-n. They close the view either side of the café and their camera shadows (8 m, to the north-north-east) fall off the plot. None at the south corners: the crew's walk to 'Service lane' passes 1.0 m from the south-west spot and would run 8 m in the tree's camera shadow, and the planter run holds that kerb. No Handover point is hidden by any of the six. Yaws only vary the silhouette. Sky 2026-10-19, door option (b): the public door has turned onto the west face and the paintings' pair now frames it. cyp-office-w and -e leave the removed entrance beds and stand on the ground 7 m either side of the door axis x 64, 1.8 m out from the wing face (y -42.3): (71, -42.3) south, 1.8 m off the wing's south-west corner, and (57, -42.3) north, before the north-west chamfer (cyp-facade-w stays in its bed on the chamfer). Each stands 2.5 m or more off the steps' cheeks, the pots and the service cabinets; their camera shadows fall north-north-east onto the wing, 2.6 m or more clear of 'Office entrance'. Brief 055 step 5 (Vantage, 2026-10-23): a cypress on the ground is now a walk solid (plan civic.groundPieces.sizes.Cypress_Play, 1.3 m square; its foliage reaches down to 0.75 m), like cyp-sq-nw/ne; the office pair moved 0.6 m in toward the wing (y -42.3 -> -41.7) so the walk past the service cabinets keeps its clear width (W-5: 1.48 m between cyp-office-e and civic-service-cabinet-0 at -42.3)."
   },
   "topiary": {
    "piece": "PottedTopiary_Play",

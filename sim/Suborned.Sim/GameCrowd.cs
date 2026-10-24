@@ -63,11 +63,14 @@ namespace Suborned.Sim
             pts.Add(pb);
             return new Path(pts.ToArray());
         }
+        /// <summary>Brief 054 §3.3: the stop facings as the people file gives them: a direction (a seat), or a rule word (door, kerb, to:place).</summary>
+        public readonly Dictionary<string, Pt> FaceVec = new Dictionary<string, Pt>(StringComparer.Ordinal);
+        public readonly Dictionary<string, string> FaceRule = new Dictionary<string, string>(StringComparer.Ordinal);
         public readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> Stops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);
         public Crowd(string json, Rules rules, ICollection<string> cast)
         {
             var n = JNode.Parse(json, "people");
-            n.Only("schema", "from", "scope", "frame", "startsAt", "places", "needs", "people");
+            n.Only("schema", "from", "scope", "frame", "startsAt", "places", "faces", "facesFrame", "needs", "people");
             if (n["schema"].Str() != "suborned.sim.people/2") throw new FormatException("people schema is not suborned.sim.people/2");
             // the need records (brief 017): every record's kind is a rules need and its size one the need kinds name (unknown = reject)
             var nd = n["needs"]; nd.Only("sizes", "records", "frame");
@@ -83,6 +86,19 @@ namespace Suborned.Sim
             }
             StartsAt = n["startsAt"].Int();
             foreach (var kv in n["places"].Entries) Places[kv.Key] = Pt.Of(kv.Value);
+            // brief 054 §3.3 (engine 0.28.0): how a person faces at each stop place; resolved against the site by Game (StopFaces)
+            if (n.Opt("faces") is JNode fc)
+                foreach (var kv in fc.Entries)
+                {
+                    if (!Places.ContainsKey(kv.Key)) throw new FormatException($"people faces: place '{kv.Key}' is not in places");
+                    if (kv.Value.Kind == JKind.Str)
+                    {
+                        var f = kv.Value.Str();
+                        if (f != "door" && f != "kerb" && !(f.StartsWith("to:", StringComparison.Ordinal) && Places.ContainsKey(f.Substring(3)))) throw new FormatException($"people faces.{kv.Key}: '{f}' is not door, kerb or to:<place> (unknown = reject)");
+                        FaceRule[kv.Key] = f;
+                    }
+                    else { var v = Pt.Of(kv.Value); if (v == new Pt(0, 0)) throw new FormatException($"people faces.{kv.Key}: a facing can't be zero"); FaceVec[kv.Key] = v; }
+                }
             foreach (var p in n["people"].Items)
             {
                 p.Only("id", "name", "job", "temperament", "need", "home", "work", "record", "size", "holder", "start", "ties", "stops");
@@ -177,13 +193,14 @@ namespace Suborned.Sim
         }
 
         /// <summary>The people within witness range of `at` on a clear sightline, but not `except`.</summary>
-        List<Person> WitnessesOf(Pt at, Person? except, Person? also = null)
+        /// <summary>Brief 054 §3.2: by the notice rule for `act` (a shot, a person shot and a car blown are heard: all round within reach).</summary>
+        List<Person> WitnessesOf(Pt at, Person? except, string act, Person? also = null)
         {
             var seen = new List<Person>();
             foreach (var (p, wp) in OnTheStreet())
             {
                 if (p == except || p == also) continue;
-                if (G.Within(wp, at, witnessRange) && Sees(wp, at)) seen.Add(p);
+                if (Notices(p, wp, at, act)) seen.Add(p);
             }
             return seen;
         }

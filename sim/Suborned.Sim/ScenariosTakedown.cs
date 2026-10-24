@@ -71,6 +71,21 @@ namespace Suborned.Sim
             r.SendTo(Enf, spot);
             return tick;
         }
+        /// <summary>Meet a walking person head on (engine 0.28.0, brief 054 §3.3): stand a little ahead of where their routine puts them at
+        /// `tick`, to one side of their heading, so they see him coming (aware: they struggle and scream); returns the tick.</summary>
+        static int MeetFromFront(Run r, Walker w, int tick)
+        {
+            var g = r.G; var at = g.CrowdPos(w, tick)!.Value; var ahead = g.CrowdPos(w, tick + 10)!.Value;
+            var h = ahead - at; long len = Math.Max(1, G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y));
+            Pt spot = at;
+            foreach (int side in new[] { 1, -1 })
+            {
+                var q = new Pt(at.X + (int)(h.X * 90 / len) - side * (int)(h.Y * 60 / len), at.Y + (int)(h.Y * 90 / len) + side * (int)(h.X * 60 / len));
+                if (g.S.Grid.Free(q) && g.S.Grid.Route(r.Op(Enf).Pos, q) != null) { spot = q; break; }
+            }
+            r.SendTo(Enf, spot);
+            return tick;
+        }
         static Walker WalkerById(Run r, string id) => r.G.Walkers.First(w => w.P.Id == id);
         static Start DriverBlind() { var s = new Start(); s.Turned.Add("driver"); s.Crowd = false; return s; }
 
@@ -153,7 +168,7 @@ namespace Suborned.Sim
                 var spot = Beside(r, seat) ?? throw new InvalidOperationException("no ground beside the terrace table");
                 r.To(r.SendTo(Enf, spot));
                 var q = g.QuoteTakedown(Victim, "knockout");
-                r.Is(q.People.Count >= 3 && q.People.Exists(x => x.verb == "?"), $"the card: {q.People.Count} would see it, verbs '?' until their temperaments are known");
+                r.Is(q.People.Count >= 2 && q.People.Exists(x => x.verb == "?"), $"the card: {q.People.Count} would see it, verbs '?' until their temperaments are known"); // engine 0.30.0: 2, was 3: p-garden-row-east-02 at (-15.5, -15.1) is behind the café's curved bay front, which the site's occluders lacked until Vela's CafeBay_v2 volumes (kit.collide.json, 2026-10-24: sightOccluders 193 → 245); the bay counts as a civic piece that stops sight (tools/sim/solids.ts). Whether its glazing should let people see through is Motive's and Vela's question
                 r.Eq(q.AlertIfSeen, 3, "the card: Alert 3 if seen");
                 int trail = g.Trail, standing = g.Standing;
                 r.Takedown(Victim, "knockout");
@@ -188,22 +203,28 @@ namespace Suborned.Sim
                 r.Is(ws.P.Has("saw-takedown") && g.CrowdPos(ws) is Pt ps && G.Within(ps, seat, 600) && g.QuoteTakedown(Stays, "knockout").Aware == "yes", "a witness stays aware of the Enforcer for the rest of the mission (Motive rev 3): taking her now is the seen-coming case, though she sits at a stop");
             });
 
-            Add("N49", "—", "A takedown seen by a camera: guard 29 at the official entrance knocked out under the pickup camera. The driver beside him is a Mercenary and keeps quiet at Alert 0; the camera's watcher reads the screen at its next scan (every 20 s, phase from the camera's id) and calls it in 3 s later: Alert 3.", r =>
+            // Engine 0.28.0 (brief 055 §7): the official entrance pier (office-official-entrance#0, 0.5 x 0.7 m, 5.65 m tall) stands between the pickup
+            // camera and guard 29's post at any lens height, so the camera never sees him; the one person it sees on the street is guard 57,
+            // crossing the official entrance from 6:30.9 for 14 s (out/scratch/keel/b056/probe camall). The takedown moves to him there.
+            Add("N49", "—", "A takedown seen by a camera: guard 57 knocked out under the pickup camera as he crosses the official entrance at 6:31 (brief 055: the official entrance pier hides guard 29's post from it). The camera's watcher reads the screen at its next scan (every 20 s, phase from the camera's id) and calls it in 3 s later: Alert 3.", r =>
             {
                 var g = r.G;
-                var w = WalkerById(r, "p-records-office-29"); var at = g.CrowdPos(w)!.Value;
-                var spot = Beside(r, at) ?? throw new InvalidOperationException("no ground beside guard 29");
-                r.To(r.SendTo(Enf, spot));
-                r.Takedown("p-records-office-29", "knockout");
-                var a = ActOn(r, "p-records-office-29");
+                const string Victim = "p-records-office-57";
+                var w = WalkerById(r, Victim);
+                int t = Enumerable.Range(T(380), T(30)).FirstOrDefault(x => g.CrowdPos(w, x) is Pt p && g.CameraWatching("pickup", p, false));
+                if (!r.Is(t > 0, "guard 57 crosses the pickup camera's view between 6:20 and 6:50")) return;
+                int when = t + T(4);
+                var at = g.CrowdPos(w, when) ?? throw new InvalidOperationException("guard 57 is not on the street then");
+                var spot = Beside(r, at) ?? throw new InvalidOperationException("no ground beside guard 57");
+                r.To(when - T(75)); r.To(r.SendTo(Enf, spot)); r.To(Math.Max(g.Tick, when)); // he walks in late, so the camera has no time to mark him loitering
+                r.Is(g.Alert == 0, "no Alert before the takedown");
+                r.Takedown(Victim, "knockout");
+                var a = ActOn(r, Victim);
                 var cam = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.By == "camera:pickup");
-                r.Is(cam != null, "the pickup camera records it");
+                if (!r.Is(cam != null, "the pickup camera records it")) return;
                 int period = T(g.R.CameraScanS), phase = (int)(Streams.Fnv1a32("camera:pickup") % (uint)period);
-                r.Is(cam != null && (cam.LandAt - T(g.R.PostCallS) - phase) % period == 0 && cam.LandAt - T(g.R.PostCallS) >= a.Tick && cam.LandAt - T(g.R.PostCallS) < a.Tick + period, "its watcher reads the screen at the next scan, then calls it in");
-                r.Is(a.Noticed.Contains(g.Driver.Id) && !g.Reps.Exists(x => x.P == g.Driver && x.Kind != "tell"), "the driver saw it and keeps quiet (a Mercenary at Alert 0): no report");
-                r.Is(g.Reps.Exists(x => x.P == g.Driver && x.Kind == "tell" && x.Phase == "walk"), "he goes to a phone to tell a workmate indoors (brief 013 E1: no tie within speaking range)");
-                r.Is(g.Driver.Has("saw-takedown") && g.FactsOf(g.Driver).Contains("enforcer-face"), "he holds the Enforcer's face (Sky D3)");
-                r.To(cam!.LandAt);
+                r.Is((cam!.LandAt - T(g.R.PostCallS) - phase) % period == 0 && cam.LandAt - T(g.R.PostCallS) >= a.Tick && cam.LandAt - T(g.R.PostCallS) < a.Tick + period, "its watcher reads the screen at the next scan, then calls it in");
+                r.To(cam.LandAt);
                 r.Eq(g.Alert, 3, "the camera's report lands: Alert 3");
             });
 
@@ -296,7 +317,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => a.ActTrail, T(30)), "his statement or his own report: +4 T");
             });
 
-            Add("N54", "—", "A body found by routine (Pulse §4.1): the guard killed unseen and left at his post. His 4:00 mark is missed (Alert 1); at 4:34 the patrol, back on its sweep from the reroute, finds him and rings in a dead body: Alert 2 when it lands, the level's units and robots. A unit confirms him: the act's +6 T, a found killing's step toward Menace (Sky 1), and the seal starts at the confirmation, not before.", r =>
+            Add("N54", "—", "A body found by routine (Pulse §4.1): the guard killed unseen and left at his post. His 4:00 mark is missed (Alert 1); at 4:34 the patrol, back on its sweep, finds him and rings in a dead body (guard 74 passes at 4:23, but the door planting hides the landing from him: brief 055): Alert 2 when it lands, the level's units and robots. A unit confirms him: the act's +6 T, a found killing's step toward Menace (Sky 1), and the seal starts at the confirmation, not before.", r =>
             {
                 var g = r.G;
                 // Changed 2026-10-19 (the public door on the west face): nobody's routine passes the door between 4:00 and 5:00 now (guard 74
@@ -310,8 +331,11 @@ namespace Suborned.Sim
                 var a = ActOn(r, GuardId);
                 r.Is(!a.Witnessed && a.Noticed.Count == 0, "nobody saw it");
                 r.To(T(240)); r.Eq(g.Alert, 1, "the missed mark: Alert 1");
+                // brief 055 (engine 0.28.0): with the drawn solids guard 74 leaves the café by the forecourt and passes the door at 4:23, but the
+                // door planting (top-office-w, 2 m) stands between his eye and the body on the landing: the routine that finds him is still the patrol's
                 r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.By == "patrol"), T(60)), "the patrol, back on its sweep, finds the body");
-                var rep = g.Reps.First(x => x.Act == a.Id && x.By == "patrol");
+                var rep = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.By == "patrol");
+                if (rep == null) return; // the check above has failed: a clear failure, not a LINQ throw
                 r.Eq((rep.Kind, rep.LandAt - g.Tick), ("dead", T(g.R.RobotReportS)), "the patrol knows a dead body and rings the desk: 4 s");
                 r.To(rep.LandAt);
                 r.Eq(g.Alert, 2, "a dead body reported: Alert 2");
@@ -351,7 +375,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 var w = WalkerById(r, "p-records-office-73");
-                int t = T(240);
+                int t = T(245); // brief 055: 4:05, was 4:00: with the drawn solids p-pylon-row-east-04 walks into view of the 4:00 takedown (4:02 to 4:20 are clear)
                 r.To(t - T(25)); MeetFromBehind(r, w, t); r.To(t);
                 int fear = w.P.Sc[Rules.Fear];
                 r.Takedown("p-records-office-73", "knockout"); r.Done(Enf);
@@ -380,7 +404,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 var w73 = WalkerById(r, "p-records-office-73");
-                int t = T(240);
+                int t = T(245); // brief 055: 4:05, was 4:00, as N56 (p-pylon-row-east-04 now walks into view at 4:00)
                 r.To(t - T(25)); MeetFromBehind(r, w73, t); r.To(t);
                 r.Takedown("p-records-office-73", "kill"); r.Done(Enf);
                 var a = ActOn(r, "p-records-office-73");

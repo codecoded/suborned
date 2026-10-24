@@ -18,6 +18,29 @@ const CROWN_BY_USE: Record<string, [string, number][]> = {
   port: [['Crown_Antenna', 40], ['Crown_Dish', 40], ['Crown_Finial', 20]],
 };
 CROWN_BY_USE.mixed = CROWN_BY_USE.commercial!; CROWN_BY_USE.office = CROWN_BY_USE.port!;
+
+type PutPrim = (n: string, shape: Prim['shape'], surface: string, lu: number, lv: number, size: [number, number, number], base?: number, yawAdd?: number) => void;
+
+/** The roof's extract vent as a finned rocket (§01: rockets on the skyline), inside the plan's 2 x 2 x 3.5 m: a chrome footing, a cream body with one accent band (the building's enamel, a ring, never a
+ *  box), a chrome nose and two crossed chrome fins. `size` = the plan's [w, d, h]; the body is 0.6 of the width (plan `body` 1.2). */
+export function rocketVent(P: PutPrim, id: string, x: number, y: number, size: readonly number[]): void {
+  const [w, , h] = size as [number, number, number], d = w * 0.6, nose = h * 0.4;
+  P(`${id}-foot`, 'cyl', 'column', x, y, [d * 1.25, d * 1.25, 0.2]);
+  P(`${id}-body`, 'cyl', 'roof', x, y, [d, d, r3(h - nose + 0.1 - 0.2)], 0.2);
+  P(`${id}-band`, 'cyl', 'trim', x, y, [r3(d * 1.06), r3(d * 1.06), 0.28], r3(h * 0.38));
+  P(`${id}-nose`, 'sphere', 'column', x, y, [d, d, r3(nose + 0.1)], r3(h - nose - 0.1));
+  P(`${id}-fin-a`, 'box', 'column', x, y, [w, 0.08, r3(h * 0.32)], 0.2);
+  P(`${id}-fin-b`, 'box', 'column', x, y, [w, 0.08, r3(h * 0.32)], 0.2, Math.PI / 2);
+}
+
+/** The roof's lift overrun and plant house (plan always.plant, 6 x 6 x 3.6 m, a chrome box before): a cream house with a coping, one accent band and a chrome flue. */
+export function plant(P: PutPrim, x: number, y: number, size: readonly number[]): void {
+  const [w, dd, h] = size as [number, number, number];
+  P('plant-body', 'box', 'roof', x, y, [w, dd, r3(h - 0.35)]);
+  P('plant-band', 'box', 'trim', x, y, [r3(w + 0.06), r3(dd + 0.06), 0.4], r3(h * 0.5));
+  P('plant-coping', 'box', 'roof', x, y, [r3(w + 0.5), r3(dd + 0.5), 0.35], r3(h - 0.35));
+  P('plant-flue', 'cyl', 'column', x - w * 0.25, y - dd * 0.25, [0.8, 0.8, 1.8], h);
+}
 const ACCESSIBLE = new Set(['roof-garden', 'sun-terrace-pool', 'tennis-court', 'hover-pad', 'observation-saucer']);
 
 export function generateRoofs(ctx: Ctx, blds: Bld[], terraces: Terrace[]): Roof[] {
@@ -101,9 +124,11 @@ export function generateRoofs(ctx: Ctx, blds: Bld[], terraces: Terrace[]): Roof[
     }
     // always: plant (one per stair-lift core: one per building), rocket vents on the roof's edge band
     const keep = (x: number, y: number) => chosen !== 'hover-pad' || Math.hypot(Math.max(Math.abs(x - pad.c[0]) - pad.half[0], 0), Math.max(Math.abs(y - pad.c[1]) - pad.half[1], 0)) >= 10; // no vent within 10 m of the pad edge
-    if (W >= 12 && D >= 8) P('plant', 'box', 'column', W / 2 - 3, -D / 2 + 3, always.plant.size);
+    // brief 048 (Vela, 2026-10-24; Glyph: 'big flat orange and yellow boxes on the rooftops read as untextured placeholders, the loudest colour in the frame'): the plant and the vents were one box each,
+    // the vent in the building's accent enamel at 2 x 2 x 3.5 m. Both are dressed from the same prims, to the plan's sizes (plant 6 x 6 x 3.6, vent 2 x 2 x 3.5, ids keep the SF-15 exemption)
+    if (W >= 12 && D >= 8) plant(P, W / 2 - 3, -D / 2 + 3, always.plant.size);
     const nv = Math.max(2, Math.ceil(areaOf(b.top) / 300));
-    for (let i = 0; i < nv; i++) { const x = -W / 2 + 1.5 + ((i + 0.5) / nv) * Math.max(0.1, W - 3), y = (i % 2 ? 1 : -1) * Math.max(0, D / 2 - 1.2); if (keep(x, y)) P(`vent-${i}`, 'box', 'trim', x, y, always['rocket-vent'].size); }
+    for (let i = 0; i < nv; i++) { const x = -W / 2 + 1.5 + ((i + 0.5) / nv) * Math.max(0.1, W - 3), y = (i % 2 ? 1 : -1) * Math.max(0, D / 2 - 1.2); if (keep(x, y)) rocketVent(P, `rocket-vent-${i}`, x, y, always['rocket-vent'].size); }
     out.push({ id, building: b.id, programme: chosen, surface: 'roof', z: b.z, c: rv(f.c), size: [r3(f.W), r3(f.D)], yaw: r4(f.yaw), parapet: ACCESSIBLE.has(chosen) ? always.parapet.accessible : always.parapet.other, parts, ...(padKit ? { kit: padKit } : {}), ...(crown ? { crown } : {}) });
   }
   // stepped garden terraces: tubs and a planting strip along each step's roof
