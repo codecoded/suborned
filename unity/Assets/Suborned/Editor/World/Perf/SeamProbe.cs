@@ -56,8 +56,8 @@ namespace Suborned.World
                 y = a.y + u * (c.y - a.y) + w2 * (b.y - a.y); return true;
             }
             var pairs = new Dictionary<string, int>();
-            for (float x = box.min.x; x <= box.max.x; x += 0.5f)
-                for (float z = box.min.z; z <= box.max.z; z += 0.5f)
+            for (float x = box.min.x + 0.13f; x <= box.max.x; x += 0.5f) // Splice: offset off the pieces' boundaries (the Boulevard's edges at x +-14, joins every 2 m)
+                for (float z = box.min.z + 0.07f; z <= box.max.z; z += 0.5f)
                 {
                     samples++; var under = new List<(string who, string mat, float y)>();
                     foreach (var tr in tris) if (In(new Vector2(x, z), tr.a, tr.b, tr.c, out var y)) under.Add((tr.who, tr.mat, y));

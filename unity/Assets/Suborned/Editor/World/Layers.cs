@@ -14,6 +14,11 @@ namespace Suborned.World
         /// <summary>Brief 028 road finish (Vela): the enamel carriageway runs to the pearl kerb with no gutter strip.</summary>
         static bool NoGutter(string roadSurface) => roadSurface is "road-enamel" or "road-asphalt"; // brief 055: the asphalt option likewise (Vela)
 
+        /// <summary>The kerb runs Ground built this build (the kerb's centre line after the drive drop, OffOtherRoads and OutsideRings), with their road's line,
+        /// level and kerb width: ContactShade lays its kerb-foot strip along exactly these (Vela, 0.2.116: the strip ran both full edges of every road, across
+        /// other roads' carriageways at every junction, the X seam; Splice measured 1,222 m inside other carriageways and 1,005 m in return fills).</summary>
+        public static readonly System.Collections.Generic.List<(Vector2[] centre, Vector2[] roadLine, float level, float kerbWidth)> KerbFeet = new();
+
         public void Ground(Transform layer, GroundDto g)
         {
             KerbKit.PaveTop = 0f; foreach (var p in g.Plots) if (p.Height < 0.5f) KerbKit.PaveTop = Mathf.Max(KerbKit.PaveTop, p.Base + p.Height);
@@ -29,6 +34,7 @@ namespace Suborned.World
             // tools/geometry/visible.ts and tools/sim/solids.ts mirror it (Splice).
             var others = new System.Collections.Generic.List<(string id, Vector2[] line, float half, Rect box)>();
             foreach (var o in g.Roads) { var ol = Poly.CleanLine(o.Line); float hw = o.Width / 2f - 0.01f; float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue; foreach (var v in ol) { x0 = Mathf.Min(x0, v.x); y0 = Mathf.Min(y0, v.y); x1 = Mathf.Max(x1, v.x); y1 = Mathf.Max(y1, v.y); } others.Add((o.Id, ol, hw, Rect.MinMaxRect(x0 - hw, y0 - hw, x1 + hw, y1 + hw))); }
+            KerbFeet.Clear();
             var sheets = RoadClip.Sheets(g); // Glyph 0.2.113/0.2.115 #5, Splice: each point of carriageway drawn once, at its road's level (no coplanar overlap, no step)
             foreach (var r in g.Roads)
             {
@@ -45,7 +51,7 @@ namespace Suborned.World
                     foreach (var off in OffOtherRoads(whole, r.Id, others, g.Circuses))
                     foreach (var piece in OutsideRings(off, returns))
                     {   // brief 026 round 2: a stone (top, face, end caps) with UVs in metres, and the gutter along its foot
-                        if (!drop) KerbKit.Build(kerbs, gutter ? gutters : null, piece, roadLine, r.KerbWidth, r.Level, Mathf.Max(r.Level + r.KerbHeight, KerbKit.PaveTop + KerbKit.TopProud), r.Level);
+                        if (!drop) { KerbKit.Build(kerbs, gutter ? gutters : null, piece, roadLine, r.KerbWidth, r.Level, Mathf.Max(r.Level + r.KerbHeight, KerbKit.PaveTop + KerbKit.TopProud), r.Level); if (r.KerbHeight > 0.02f) KerbFeet.Add((piece, roadLine, r.Level, r.KerbWidth)); } // Vela and Splice: the contact shade's kerb feet follow the kerb runs built, nothing else
                         else { KerbKit.Build(dropped, gutter ? gutters : null, piece, roadLine, r.KerbWidth, r.Level, r.Level + h, r.Level); anyDrop = true; }
                     }
                 var kerbMat = nodes.Mat(nodes.Ground(r.KerbSurface)); // its own UVs: no planar UV pass
