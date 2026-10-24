@@ -281,3 +281,88 @@ In a synthetic test, 6 MB/min sustained trips it, while one 25 MB step and the b
   - `bun run typecheck` clean;
   - the regrade and ranking on the smoke rows (`out/scratch/suture/q-solid/lane-check.ts`), with the carry race confirmed by replay on the build engine;
   - a `--dev` pass through the guard rendered the report (`out/qa/dev-20261024-161647/`).
+
+## Human profile (Suture, 2026-10-25)
+
+Sky, 2026-10-25: "I think the biggest influence would be a bot that's indecisive. Humans aren't consistent with their actions." Latch's `human` policy (`tools/qa/human.ts`, `BotRun.Human.cs`, rows human-a and human-b) follows a recorded winning route and puts indecision on top. The rates of that indecision come from Sky's own saved sessions, measured by `tools/qa/human-measure.ts` and written to `tools/qa/human-profile.json`. Latch's `readProfile` takes every value, with none defaulted. The full measures are in `briefs/060/qa/human-measures.json`.
+
+### Whose sessions these are
+
+- **The "177 real sessions" were mostly not Sky's.** The play folders hold 7,150 saved sessions, counting both the player's folder and the editor's `out/play`. A person plays at real time, so the wall clock from a file's first save to its last is at least 0.9 × the mission time it holds; pauses only make it longer. Automation fast-forwards, or plays one order sequence again in every batch, timed a little differently each time.
+  - Of the 176 seeds `tools/qa/seeds.ts` takes ("over 8 KB"):
+    - 121 are one 17-second shape (the Scout drives 135 ticks, then one Watch): a tp-long proof;
+    - about 40 are late-row replays of Sky's session of 2026-10-22 17:54 (`sky-0.2.58-session1`);
+    - about 10 are Sky's.
+  - `s-20261024-022456` (brief 041 port-progress calls it "Sky's session") is a late-row replay: it ran 66 s of wall clock for 301 s of mission. `handover-20261022-202331` is the `loud-fight` late row.
+- **Kept as Sky's:** 56 Handover sessions and 27 Fight Lab range sessions, from 2026-10-15 to 2026-10-23 (engines 0.3.0 to 0.26.0). They hold 1,077 decisions over 156 minutes of mission.
+  - Dropped: 2,287 fast-forwarded files, 244 repeated real-time proof sequences, 23 copies of an earlier session, 4,512 too short or with no orders, and 1 host repeat (20 identical follow toggles in one tick).
+- **Refusal codes need the engine Sky played.** 30 sessions replay exactly, every recorded checkpoint matching, on the committed engine of their version. Only those are read for refusals. Engines 0.8.1, 0.10.0, 0.14.1, 0.20.0, 0.24.0 and 0.25.0 were never committed and their builds are gone, so those sessions give timings only.
+- **Sky tests; he doesn't play to win.** 75% of his sessions end with no ending: he leaves after a median 57 s, and 32% restart within 2 minutes. The bot shouldn't copy that. It plays each row to its end, and early quitting stays out of the profile (it is in `measured` only).
+
+### The profile (`values`; one plan step = one decision)
+
+| field | value | source |
+|---|---|---|
+| cancelProb | 0.223 | measured. An order undone before it landed. Acts: 0.34 (43 of 158 given another order before their time was up, 11 cancelled). Moves: 0.21 (230 of 1,178 sent > 3 m and > 30° off their heading, 14 stopped). Steering along the way (356) and walks cut short by the act they led to (113) are not counted. Move arrival assumes a straight walk at 1.4 m/s, so the move share is a floor |
+| cancelDelayS | p50 1.9, p90 8.5 | measured: from the order to its undoing. Acts median 3.6 s, explicit cancels 1.0 s, redirected moves 1.7 s |
+| repeatProb (new) | 0.221 | measured: per act step on a target, the same agent gives the same act on the same target again (38 of 172): "the repeat Watch". 53% of refused acts on a target are given again within 30 s. Latch adds the repeat behaviour |
+| reorderProb | 0.15 | **estimated**: a step out of the plan's order needs a plan, and Sky has none. Bounds: 0.29 of his decisions go to a different agent than the one before (an upper bound, mostly the plan's own turn-taking); 0.006 are switches that did not stick (a floor) |
+| switchProb | 0.006 | measured, **a floor**. Per decision: an order to the wrong agent undone within 5 s and given to another (4), or a decision on another agent and straight back within 6 s (3 of 207 such A-B-A triples). Selecting an agent without ordering is not recorded |
+| gapS | p10 0.6, p50 2.6, p90 8.5 | measured: mission time between inputs (decisions, and taking an agent in third person), up to 15 s; pauses don't count. Across all gaps: median 3.1 s, p90 16.5 s. First order after the start: median 1.1 s |
+| idleProb / idleS | 0.113 / p50 22.8, p90 50.5 | measured: gaps over 15 s (128 of 1,129) |
+| abandonProb | 0.019 | measured: per decision, a line given up (20 of 1,077). Per line it is 0.45: 20 of 44 Watches or Listens on a target were never followed by a turn, call, loop, reroute, mislead, takedown or fire on it, counting only lines with 60 s of run after them. Inez 8, cameras 7, guard 2, patrol 2, driver 1 |
+| misclickProb | 0.06 | **estimated**. Missed clicks that open nothing aren't recorded. Measured anchor: 8.7% of Sky's moves (90 of 1,032 in the faithful replays) landed on ground that can't be walked, and 56% of those were re-clicked within 3 s. Pointing studies run at about 4% errors (Soukoreff and MacKenzie 2004), and people here are moving targets 40-60 px tall. About half a route's steps are moves |
+| ringOpenCloseProb | 0.12 | **estimated**. Ring opens aren't recorded. Every order shows its price before you commit, so looking and backing out is designed play. In the faithful replays 1 ring order in 30 was refused for knowledge or reach, and a lock seen first would be closed instead, several times as often. Novices browse radial menus (Kurtenbach and Buxton 1993) |
+| cameraTurnProb | 0.05 | **estimated**. Q/E turns aren't recorded. The front is played at yaw 210 and the run opens at 30, so a run needs at least two quarter steps over about 50 decisions |
+| wrongVerbProb | 0.03 | **estimated**. The trace a wrong wedge would leave (another verb on the same target by the same agent within 5 s, the first undone) is 0 of 172. 8-way radial menus run at about 2-5% wrong picks |
+| thirdPersonProb / thirdPersonS | 0.10 / p50 2.3, p90 20 | measured: 108 third-person stretches (drive samples on one agent less than 5 s apart). 12 of 56 sessions used it, for 8% of mission time. It clusters by session, so a row-level "uses third person" flag (p 0.21), then 0.27 a decision in those rows, would be truer than one flat rate |
+
+Every draw comes from a stream seeded by the row seed and the noise's name (`human.ts` `stream`), so a row replays exactly. `measured` in the profile holds the calibration targets:
+- refused per order 0.137 (unwalkable ground 90, busy 29, fight orders 21, knowledge or reach 17, agent down 9);
+- runs 0.20 of moves;
+- squad orders 0.16 of decisions;
+- wall clock 1.27 × mission time (median).
+
+**Not in the sessions:** ring opens and closes, hovers, misses that open nothing, selection without an order, Q/E turns, pans, zoom, pause count (only its total, from the wall-clock ratio), and reading time.
+
+### What the human bot should catch, and the checks that say it
+
+These are new checks in `tools/qa/checks/human.ts`, plus `tools/qa/bot-human.ts` for the bot lane, wired into `run.ts` after `gradeRows`.
+- **Where they run:** on every tier-1 seed play, and on each bot row's whole `session.script.json` replayed on the build engine.
+- **What a human row adds:** its `human.events` say what the bot meant. A stop it meant is info; one it didn't mean is S2.
+- **Where they are relaxed:** mutants are exempt where a mutation makes the finding on purpose. On a session the engine no longer replays as Sky saw it, the findings drop to info (as Q-OFFER does).
+
+| check | in plain words | first seen in Sky's own sessions |
+|---|---|---|
+| Q-CANCEL | "A new order stopped the Listen the agent was doing" (the host's cancel and new order in one gesture); "A new order quietly ended an agent's walk to an act: the act never happened" (`order.walk-in-ends`); "Taking an agent in third person stopped their turn" (S2, Sky's #14) | 20261021-151046 at 4:12.8: the Fixer's Turn on Inez was aborted by a third-person drive. 20261021-151951 at 6:33.9: the Tech's Loop was lost the same way |
+| Q-LOOP-LEFT | "The Tech left the camera loop for a move" (brief 058 §5). A route's planned walk-off at the Enter is info | 20261018-003824 at 2:06.7 |
+| Q-INTENT | human rows: "The bot meant move, the game gave carry" (next-batch 31). Reads Latch's `given` events (tick, op, act, target) | needs the human rows |
+| Q-PILE | "Orders piled up on a busy scout: 3 orders in 10 s refused as busy", or each stopping the act before | 11 times in the 0.3-0.4 sessions, where an act locked the agent |
+| Q-STALE-RING | "The ring still offered fire on patrol, who was already gone": the target side of Q-GIVER. Within 0.1 s it is a race (info) | 20261019-221751 at 2:43.0: Fire on the patrol 2.3 s after it went down |
+| Q-LEAK | "A cancelled watch still happened" (S1) or "still cost Trail" (S2), with no new order of it in between. It holds on every play | none (one false hit on cautious-a was another agent's own Watch of Inez landing; fixed) |
+| Q-BOT-STALL | "A bot row stalled: it took 168 wedges and the game got 4 orders" (S3) | last night's greedy-a |
+| Q-HUMAN-RATE | info for Latch: a human row's count of each indecision kind against steps × Sky's rate, flagged when it is more than 2.5× off | needs the human rows |
+
+**greedy-a (2026-10-25 02:05, seed 788720): a bot bug, not "a re-order cancels the walk-in".** The engine got 4 orders, all by 0:10: the Enforcer and the Fixer moved to the getaway bay and boarded. After that it got none, and refused none. A walk-in starts only once the engine has taken the order, so there was nothing for a new decision to cancel.
+- The policy ranks Go first (`BotRun.cs` GreedyOrder). With Vale outside, Go leaves the Scout and the Tech behind, so it opens a going-loud card that would fail the mission.
+- The bot backs off such a card (`Source == "wait"`, `BotRun.cs:297`), then ranks Go first again, about 164 times. Board for the Scout and the Tech never wins.
+- The HUD agrees: "Go · leaves Scout, Tech" for 23 frames, and the car's Board pill on hover for the rest.
+- Fix (Latch): drop a way the bot backed off from for that target for a while, or rank Board above a Go that leaves people behind while Vale is outside.
+
+### Handoffs
+
+- **Latch:**
+  - read `repeatProb`; until then `readProfile` lists it under `ignored`;
+  - write `given` events (tick, op, act, target) for every step, so Q-INTENT can judge;
+  - use the event kinds `cancel`, `reorder`, `repeat`, `switch`, `misclick`, `wrong`, `ring-close`, `idle`, `turn`, `peek`, `abandon`, `wander` (any case);
+  - fix the greedy Go loop;
+  - optional: a row-level third-person flag.
+- **Aster:** `tools/qa/seeds.ts` still takes the 176 "over 8 KB" files as Sky's sessions. Should tier 1 seed only from the 56 (`skySessions`), with the proof sessions kept as their own kind? That changes what "an order Sky gave" means in Q-OFFER, so it's your call.
+- **Keel:** for Q-CANCEL:drive, does a third-person drive end an act by design (`cell.drive.onBusy`)? Sky called third person stopping actions a fault (#14).
+- **Rerun:** `bun run guard bun tools/qa/human-measure.ts --replay --write` as Sky plays more. The replays are cached in `out/qa/human/plays/`.
+- **Verified:**
+  - `bun test tools/qa`: 63 pass;
+  - `bun run typecheck` clean;
+  - `bun run guard bun tools/qa/human-measure.ts --replay --write`;
+  - `--dev` passes `out/qa/dev-20261024-215306/` and `-215350/`: 14.9 s; the stale ring reached the list on the first, then dropped to info as replay-differs;
+  - the lane hook on last night's rows (`out/qa/20261024-190031/bot/`).

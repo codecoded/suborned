@@ -96,11 +96,12 @@ export function skySessions(all: Sess[], r = RULES): Classified {
     if (Math.max(...per.values()) > r.maxSamePerTick) { dropped['a burst no hand makes']!++; return false; }
     return true;
   });
-  const seqN = new Map<string, number>(); for (const s of rt) seqN.set(s.seq, (seqN.get(s.seq) ?? 0) + 1);
   const keys = new Map(all.map(s => [s, nonDrive(s.orders).map(okey)]));
+  // a real-time proof plays one sequence again in every batch, each time a little differently timed; a copy (a Continue left at once) is the same orders exactly
+  const seqN = new Map<string, Set<string>>(); for (const s of rt) seqN.set(s.seq, (seqN.get(s.seq) ?? new Set()).add(keys.get(s)!.join('|')));
   const sky: Sess[] = [];
   for (const s of rt) {
-    if (seqN.get(s.seq)! > 1) { dropped['repeated real-time sequence (proof)']!++; continue; }
+    if (seqN.get(s.seq)!.size > 1) { dropped['repeated real-time sequence (proof)']!++; continue; }
     const mine = keys.get(s)!; let best = 0, from = '';
     for (const p of all) {
       if (p.start >= s.start) break;
@@ -348,6 +349,7 @@ export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verd
 
 /** What the sessions cannot show, estimated: the value and the reasoning. */
 export const ESTIMATES = {
+  reorderProb: { v: 0.15, why: 'estimated: a step taken out of the plan\'s order needs the plan, and Sky\'s sessions have none. The bounds: 0.29 of his decisions go to another agent than the one before (an upper bound: most of it is the plan\'s own turn-taking), and 0.007 are switches that did not stick (a floor). Halfway, rounded down: 0.15, Latch\'s starting value.' },
   misclickProb: { v: 0.06, why: 'estimated: misses that open nothing are not recorded. Two anchors: (1) moves Sky clicked onto ground that cannot be walked (a roof, a wall, a solid) are near-misses the engine logs, measured below; (2) pointing tasks are run at about 4% errors (Soukoreff and MacKenzie 2004, the ISO 9241-9 convention), and the Handover\'s people are moving targets 40-60 px tall, which misses more often than still ones. Ground clicks miss more (8.7% of Sky\'s moves land on ground that cannot be walked, half re-clicked within 3 s), people less (about 4%); about half a route\'s steps are moves. So 6% a ring or move step.' },
   ringOpenCloseProb: { v: 0.12, why: 'estimated: ring opens are not recorded. Every order shows its price before you commit (GDD §01), so looking and backing out is designed play. In the faithful replays Sky gave orders the game then refused for knowledge or reach (needs-routine, stand within) on about 1 in 30 ring orders; a shut wedge he saw first was one he closed instead, which would be several times that. Novices browse radial menus before they commit (Kurtenbach and Buxton 1993). So about 1 ring in 8 is opened and closed without a choice.' },
   cameraTurnProb: { v: 0.05, why: 'estimated: Q/E turns are not recorded (the camera is not in the engine). The Records Office front is played at yaw 210 and the run opens at 30 (GDD §10), so a run needs at least two quarter steps; Sky gives a median of about 50 decisions a run. A 5% chance a step gives 2-3 turns a run.' },
@@ -363,26 +365,29 @@ export function toProfile(m: Measures, build = '') {
   const cancelP = r3(undone / Math.max(1, judged));
   const delays = [...[c.actReplaceDelayS], ...[c.cancelDelayS], ...[c.moveRedirectDelayS]].filter(q => q.n);
   const pool = (k: 'p50' | 'p90') => r2(delays.reduce((a, q) => a + q[k] * q.n, 0) / Math.max(1, delays.reduce((a, q) => a + q.n, 0)));
+  const d = (q: Q, fb: { p50: number; p90: number }) => q.n >= 5 && q.p50 > 0 ? { p50: q.p50, p90: Math.max(q.p90, q.p50) } : fb; // fewer than 5 samples: Latch's starting value
   const values = {
     cancelProb: cancelP,
-    cancelDelayS: { p50: pool('p50'), p90: pool('p90') },
-    reorderProb: r3(m.reorders.sameAgainSameTarget.p + m.reorders.otherApproachSameTarget.p),
+    cancelDelayS: pool('p50') > 0 ? { p50: pool('p50'), p90: Math.max(pool('p90'), pool('p50')) } : { p50: 1.2, p90: 4 },
+    reorderProb: ESTIMATES.reorderProb.v,
+    repeatProb: r3(m.reorders.sameAgainSameTarget.p + m.reorders.otherApproachSameTarget.p),
     switchProb: r3((m.switching.detours.k + m.switching.wrongAgent.k) / Math.max(1, m.sessions.decisions)),
-    gapS: { p50: g.hesitation.p50, p90: g.hesitation.p90, p10: g.hesitation.p10 },
+    gapS: { ...d(g.hesitation, { p50: 1.5, p90: 5 }), p10: g.hesitation.p10 },
     idleProb: g.idle.p,
-    idleS: { p50: g.idle.s.p50, p90: g.idle.s.p90 },
+    idleS: d(g.idle.s, { p50: 5, p90: 15 }),
     abandonProb: m.abandon.perDecision.p,
     misclickProb: ESTIMATES.misclickProb.v,
     ringOpenCloseProb: ESTIMATES.ringOpenCloseProb.v,
     cameraTurnProb: ESTIMATES.cameraTurnProb.v,
     wrongVerbProb: Math.max(ESTIMATES.wrongVerbProb.v, m.reorders.wrongVerbPutRight.p),
     thirdPersonProb: m.thirdPerson.boutsPerDecision.p,
-    thirdPersonS: { p50: m.thirdPerson.boutS.p50, p90: m.thirdPerson.boutS.p90 },
+    thirdPersonS: d(m.thirdPerson.boutS, { p50: 3, p90: 8 }),
   };
   const source: Record<keyof typeof values, string> = {
     cancelProb: `measured from ${n}: per order, undone before it landed: an act given another order (${c.actsReplacedBeforeLanding.k}) or cancelled (${c.actsCancelledBeforeLanding.k}) before its time was up, of ${c.actsReplacedBeforeLanding.n} acts (${r3((c.actsReplacedBeforeLanding.k + c.actsCancelledBeforeLanding.k) / Math.max(1, c.actsReplacedBeforeLanding.n))}); a move sent more than ${RULES.redirectM} m off and ${RULES.redirectDeg} degrees off its heading (${c.movesRedirected.k}) or stopped (${c.movesStopped.k}) before it arrived, of ${c.movesRedirected.n} judged moves (${r3((c.movesRedirected.k + c.movesStopped.k) / Math.max(1, c.movesRedirected.n))}). Steering along the way (${c.movesNudged.k}) and a walk cut short by the act it led to (${c.movesCutByAnAct.k}) are not counted. Arrival is a straight walk from the last known point at 1.4 m/s (2.8 running), so the move share is a floor`,
     cancelDelayS: `measured: time from the order to its cancel or replacement, pooled over acts (median ${c.actReplaceDelayS.p50} s), explicit cancels (${c.cancelDelayS.p50} s) and redirected moves (${c.moveRedirectDelayS.p50} s)`,
-    reorderProb: `measured from ${n}: per act on a target, the same agent giving the same act on the same target again (${m.reorders.sameAgainSameTarget.k} of ${m.reorders.sameAgainSameTarget.n}) or another approach of the same verb on it (${m.reorders.otherApproachSameTarget.k}). This is a repeat ("the repeat Watch"), not steps out of order`,
+    reorderProb: `${ESTIMATES.reorderProb.why} Measured bound: the agent changes between Sky's decisions ${m.switching.agentChanges.p}`,
+    repeatProb: `measured from ${n}: per act step on a target (moves excluded), the same agent giving the same act on the same target again (${m.reorders.sameAgainSameTarget.k} of ${m.reorders.sameAgainSameTarget.n}) or another approach of the same verb on it (${m.reorders.otherApproachSameTarget.k}): "the repeat Watch". ${Math.round(m.reorders.retryAfterRefusal.p * 100)}% of refused acts on a target were given again within 30 s`,
     switchProb: `measured from ${n}, a floor: per decision, a switch that did not stick: an order given to the wrong agent, undone within 5 s and given to another (${m.switching.wrongAgent.k}), or a decision on another agent and straight back (A, B, A within ${RULES.detourS} s; ${m.switching.detours.k} of ${m.switching.detours.n} such triples). Selecting an agent (F1-F4, a portrait) without ordering is not recorded, so glances that gave no order are missing. The plain agent change between decisions is ${m.switching.agentChanges.p}, mostly the plan's own turn-taking; squad orders are ${m.switching.squadOrders.p} of decisions`,
     gapS: `measured from ${n}: time between inputs (a decision, or taking an agent in third person), gaps up to ${RULES.idleS} s, in mission time (pauses excluded); all gaps: median ${g.all.p50} s, p90 ${g.all.p90} s`,
     idleProb: `measured: share of gaps between inputs over ${RULES.idleS} s (${g.idle.k} of ${g.idle.n})`,

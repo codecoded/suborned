@@ -47,7 +47,7 @@ function meantBy(src: Src, op: string, tick: number): HumanEventLike | undefined
   return src.events?.filter(e => MEANT.has(kindOf(e.kind)) && (e.op === op || kindOf(e.kind) === 'switch') && e.tick <= tick + HUMAN_RULES.gestureTicks && tick - e.tick <= HUMAN_RULES.meantS * 10).pop();
 }
 const sevFor = (src: Src, meant: HumanEventLike | undefined, seedSev: Severity): Severity => src.seed === 'bot' ? (meant ? 'info' : 'S2') : seedSev;
-const who = (src: Src) => src.seed === 'route' ? 'a route step' : src.seed === 'bot' ? 'the human bot' : 'Sky';
+const who = (src: Src) => src.seed === 'route' ? 'a route step' : src.seed === 'bot' ? (src.events ? 'the human bot' : 'the bot') : 'Sky';
 
 export function qCancel(p: Play, src: Src): Finding[] {
   if (p.error || src.mutated) return [];
@@ -164,11 +164,11 @@ export function qStaleRing(p: Play, src: Src): Finding[] {
 }
 
 /** The log line that says an act landed (for its verb), and whether it names the target. */
-function landed(verb: string, target: string, l: { code: string; text: string }): boolean {
+function landed(verb: string, target: string, l: { code: string; text: string }, op = ''): boolean {
   const named = !target || l.text.includes(`(${target})`) || l.text.includes(target);
   switch (verb) {
-    case 'watch': return /^(scout|fixer|tech|enforcer)\.watch\.(?!container)/.test(l.code) && named;
-    case 'listen': return /^(scout|fixer|tech|enforcer)\.listen\./.test(l.code) && named;
+    case 'watch': return new RegExp(`^${op || '(scout|fixer|tech|enforcer)'}\\.watch\\.(?!container)`).test(l.code) && named;
+    case 'listen': return new RegExp(`^${op || '(scout|fixer|tech|enforcer)'}\\.listen\\.`).test(l.code) && named;
     case 'turn': return /^turn\.[a-z]+\.(turned|refused)$/.test(l.code) && named;
     case 'loop': return l.code === 'loop.on';
     case 'reroute': return l.code === 'patrol.rerouted';
@@ -191,10 +191,12 @@ export function qLeak(p: Play, src: Src): Finding[] {
     if (w) { const o = p.orders.map(x => x.order).filter(x => x.op === w.op && x.target === w.target && x.tick <= l.tick && ACT.has(x.do)).pop(); if (o) drops.push({ op: w.op, verb: o.do, target: w.target }); }
     for (const d of drops) {
       const again = (t: number) => p.orders.some(x => x.ok && x.order.do === d.verb && (!d.target || x.order.target === d.target) && x.order.tick > l.tick && x.order.tick <= t);
-      const late = p.log.find(x => x.tick > l.tick && landed(d.verb, d.target, x) && !again(x.tick));
+      // another agent with the same act on the same target going (taken before the stop) may land it: not this one's
+      const elsewhere = p.orders.some(x => x.ok && x.order.op !== d.op && x.order.do === d.verb && (!d.target || x.order.target === d.target) && x.order.tick <= l.tick);
+      const late = p.log.find(x => x.tick > l.tick && landed(d.verb, d.target, x, d.op) && !again(x.tick) && (/^(watch|listen)$/.test(d.verb) || !elsewhere));
       if (late) out.push({ check: 'Q-LEAK', severity: 'S1', key: `Q-LEAK:lands:${d.verb}`, owner: 'Keel', title: `A cancelled ${d.verb} still happened`,
         expected: 'an act stopped before it lands never lands, unless it is ordered again', observed: `${d.op} ${d.verb}${d.target ? ' ' + d.target : ''} stopped at ${clock(l.tick)}; "${late.text.slice(0, 90)}" at ${clock(late.tick)} (${who(src)})`, tick: late.tick });
-      const cost = (p.ledger ?? []).find(x => x.tick > l.tick && (x.what === 'trail' || x.what === 'alert') && x.cause.split(/[.:]/)[0] === d.verb && (!d.target || x.cause.includes(d.target) || !x.cause.includes(':')) && !again(x.tick));
+      const cost = elsewhere ? undefined : (p.ledger ?? []).find(x => x.tick > l.tick && (x.what === 'trail' || x.what === 'alert') && x.cause.split(/[.:]/)[0] === d.verb && (!d.target || x.cause.includes(d.target) || !x.cause.includes(':')) && !again(x.tick));
       if (cost) out.push({ check: 'Q-LEAK', severity: 'S2', key: `Q-LEAK:cost:${d.verb}`, owner: 'Keel', title: `A cancelled ${d.verb} still cost ${cost.what === 'trail' ? 'Trail' : 'Alert'}`,
         expected: 'what a stopped act costs is the rulebook cancel line, shown before you cancel; nothing more lands later', observed: `${d.op} ${d.verb}${d.target ? ' ' + d.target : ''} stopped at ${clock(l.tick)}; ${cost.what} +${cost.delta} (${cost.cause}) at ${clock(cost.tick)} (${who(src)})`, tick: cost.tick });
     }
@@ -208,5 +210,8 @@ export function humanChecks(p: Play, src: Src): Finding[] {
 }
 /** The same for a tier-1 item (a seed or its mutant). */
 export function qHuman(p: Play, it: Item): Finding[] {
-  return humanChecks(p, { seed: it.seed.kind, mutated: it.mutations.length > 0 });
+  const f = humanChecks(p, { seed: it.seed.kind, mutated: it.mutations.length > 0 });
+  // a saved session the engine no longer replays as Sky saw it (as Q-OFFER): what the game did differs, so only the engine's own invariant stands
+  if (it.seed.kind !== 'session' || p.qa?.record === '') return f;
+  return f.map(x => x.check === 'Q-LEAK' ? x : { ...x, severity: 'info', key: `${x.key}:replay-differs`, observed: `${x.observed} (replay differs from what Sky saw)` });
 }

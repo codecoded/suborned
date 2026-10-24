@@ -4,6 +4,10 @@
 // game's. The other policies order busy agents and stale targets on purpose, so they get only the checks that hold whatever the player does
 // (Q-LEAK, Q-STALE-RING). Findings ride as graded anomalies, so the report, the issue book and the replay command treat them as the player's.
 //
+// Q-BOT-STALL (S3): a row that took wedges but gave the game almost no orders tested nothing for most of its run (2026-10-25 nightly: greedy-a
+// took 168 wedges and the engine got 4 orders. It ranks Go first, Go with Vale outside opens a card that would fail the mission, the bot backs
+// off, and ranks Go first again). Fewer orders than a fifth of the wedges taken, over at least 20 wedges.
+//
 // Q-HUMAN-RATE (info): how far a human row's indecision was from Sky's profile (tools/qa/human-profile.json): each kind's count against
 // steps x its rate. It tells Latch the tape plays as drawn; it never reaches Sky's list.
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -16,7 +20,7 @@ import type { Finding, Play } from './types';
 
 export const SESSION_FILE = 'session.script.json';
 /** The rate a human event kind is drawn at (tools/qa/human-profile.json `values`). */
-export const KIND_RATE: Record<string, string> = { cancel: 'cancelProb', reorder: 'reorderProb', switch: 'switchProb', idle: 'idleProb', abandon: 'abandonProb', wander: 'abandonProb', misclick: 'misclickProb', 'ring-close': 'ringOpenCloseProb', turn: 'cameraTurnProb', wrong: 'wrongVerbProb', peek: 'thirdPersonProb' };
+export const KIND_RATE: Record<string, string> = { cancel: 'cancelProb', reorder: 'reorderProb', repeat: 'repeatProb', switch: 'switchProb', idle: 'idleProb', abandon: 'abandonProb', wander: 'abandonProb', misclick: 'misclickProb', 'ring-close': 'ringOpenCloseProb', turn: 'cameraTurnProb', wrong: 'wrongVerbProb', peek: 'thirdPersonProb' };
 
 /** A finding as a graded anomaly of its row (findingsOf keys it as `${check}:${grade.cause}`). */
 export function asAnomaly(f: Finding, script: string): BotAnomaly {
@@ -28,6 +32,14 @@ export function asAnomaly(f: Finding, script: string): BotAnomaly {
 export function rowFindings(row: BotReportRow, p: Play): Finding[] {
   if (row.policy === 'human') return humanChecks(p, { seed: 'bot', mutated: false, events: (row.human?.events ?? []).map(e => ({ ...e })) });
   return [...qLeak(p, { seed: 'bot', mutated: false }), ...qStaleRing(p, { seed: 'bot', mutated: false })];
+}
+
+/** Q-BOT-STALL: wedges taken, few orders given. */
+export function stallFindings(row: BotReportRow): Finding[] {
+  const taken = row.input?.taken ?? 0, given = row.orders?.given ?? 0;
+  if (taken < 20 || given >= taken / 5) return [];
+  return [{ check: 'Q-BOT-STALL', severity: 'S3', key: `Q-BOT-STALL:${row.policy}`, owner: 'Latch (BotRun policy)', title: `A bot row stalled: it took ${taken} wedges and the game got ${given} orders`,
+    expected: 'most wedges a bot takes reach the engine as orders (or are refused there, counted by code)', observed: `${row.name} (${row.policy}, seed ${row.seed}): ${taken} wedges, ${given} orders, ${row.orders?.refused ?? 0} refused, ${row.outcome}${row.failCode ? ' (' + row.failCode + ')' : ''} at tick ${row.endTick}` }];
 }
 
 /** Q-HUMAN-RATE: each indecision kind's count on a human row against steps x the profile's rate (info; off by more than x2.5 either way). */
@@ -60,7 +72,7 @@ export async function sessionChecks(rows: BotReportRow[], outDir: string, o: Ses
   const say = o.say ?? (() => {}), withS = rows.filter(r => existsSync(join(outDir, r.name, SESSION_FILE)));
   let values: Record<string, unknown> = {};
   try { values = JSON.parse(readFileSync(o.profileFile ?? join(import.meta.dir, 'human-profile.json'), 'utf8')).values ?? {}; } catch { /* no profile: no rate check */ }
-  for (const r of rows) for (const f of rateFindings(r, values)) r.anomalies.push(asAnomaly(f, ''));
+  for (const r of rows) for (const f of [...stallFindings(r), ...rateFindings(r, values)]) r.anomalies.push(asAnomaly(f, ''));
   if (!withS.length) return;
   let plays: Play[];
   try { plays = await (o.replay ?? (s => replayOnBuild(s, outDir)))(withS.map(r => join(outDir, r.name, SESSION_FILE))); }

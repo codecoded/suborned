@@ -1,0 +1,86 @@
+{
+ "schema": "suborned.bot.human-profile/1",
+ "note": "Brief 060 tier 2, Suture: how Sky plays, measured from his saved sessions (tools/qa/human-measure.ts). The human bot policy (Latch, tools/qa/human.ts readProfile) reads `values`: each probability is a chance per plan step (one step = one decision), each time is seconds as {p50, p90} (lognormal). Every draw comes from a stream seeded by the row seed and the value's name (human.ts stream), so a row replays exactly. `source` says, per value, measured from what or estimated and why; `measured` carries the calibration targets the checks compare a human row against.",
+ "by": "Suture 2026-10-24; build 0.2.117",
+ "sessions": {
+  "sky": 56,
+  "fightLab": 27,
+  "faithfulReplays": 30,
+  "saved": 7150,
+  "dates": "20261015..20261023"
+ },
+ "values": {
+  "cancelProb": 0.223,
+  "cancelDelayS": {
+   "p50": 1.93,
+   "p90": 8.5
+  },
+  "reorderProb": 0.15,
+  "repeatProb": 0.221,
+  "switchProb": 0.006,
+  "gapS": {
+   "p50": 2.6,
+   "p90": 8.5,
+   "p10": 0.6
+  },
+  "idleProb": 0.113,
+  "idleS": {
+   "p50": 22.8,
+   "p90": 50.45
+  },
+  "abandonProb": 0.019,
+  "misclickProb": 0.06,
+  "ringOpenCloseProb": 0.12,
+  "cameraTurnProb": 0.05,
+  "wrongVerbProb": 0.03,
+  "thirdPersonProb": 0.1,
+  "thirdPersonS": {
+   "p50": 2.3,
+   "p90": 20.05
+  }
+ },
+ "source": {
+  "cancelProb": "measured from 56 Handover sessions of Sky's (20261015..20261023, engines 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0; 1077 decisions over 156.07 min of mission): per order, undone before it landed: an act given another order (43) or cancelled (11) before its time was up, of 158 acts (0.342); a move sent more than 3 m off and 30 degrees off its heading (230) or stopped (14) before it arrived, of 1178 judged moves (0.207). Steering along the way (356) and a walk cut short by the act it led to (113) are not counted. Arrival is a straight walk from the last known point at 1.4 m/s (2.8 running), so the move share is a floor",
+  "cancelDelayS": "measured: time from the order to its cancel or replacement, pooled over acts (median 3.55 s), explicit cancels (1 s) and redirected moves (1.7 s)",
+  "reorderProb": "estimated: a step taken out of the plan's order needs the plan, and Sky's sessions have none. The bounds: 0.29 of his decisions go to another agent than the one before (an upper bound: most of it is the plan's own turn-taking), and 0.007 are switches that did not stick (a floor). Halfway, rounded down: 0.15, Latch's starting value. Measured bound: the agent changes between Sky's decisions 0.293",
+  "repeatProb": "measured from 56 Handover sessions of Sky's (20261015..20261023, engines 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0; 1077 decisions over 156.07 min of mission): per act step on a target (moves excluded), the same agent giving the same act on the same target again (38 of 172) or another approach of the same verb on it (0): \"the repeat Watch\". 53% of refused acts on a target were given again within 30 s",
+  "switchProb": "measured from 56 Handover sessions of Sky's (20261015..20261023, engines 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0; 1077 decisions over 156.07 min of mission), a floor: per decision, a switch that did not stick: an order given to the wrong agent, undone within 5 s and given to another (4), or a decision on another agent and straight back (A, B, A within 6 s; 3 of 207 such triples). Selecting an agent (F1-F4, a portrait) without ordering is not recorded, so glances that gave no order are missing. The plain agent change between decisions is 0.293, mostly the plan's own turn-taking; squad orders are 0.164 of decisions",
+  "gapS": "measured from 56 Handover sessions of Sky's (20261015..20261023, engines 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0; 1077 decisions over 156.07 min of mission): time between inputs (a decision, or taking an agent in third person), gaps up to 15 s, in mission time (pauses excluded); all gaps: median 3.1 s, p90 16.54 s",
+  "idleProb": "measured: share of gaps between inputs over 15 s (128 of 1129)",
+  "idleS": "measured: those idle gaps (n 128)",
+  "abandonProb": "measured from 56 Handover sessions of Sky's (20261015..20261023, engines 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0; 1077 decisions over 156.07 min of mission): per decision, a line given up: a Watch or Listen on a target with no turn, call, loop, reroute, mislead, takedown or fire on it before the run ended (20 of 44 lines, 0.455 a line; only lines with 60 s of run after them)",
+  "misclickProb": "estimated: misses that open nothing are not recorded. Two anchors: (1) moves Sky clicked onto ground that cannot be walked (a roof, a wall, a solid) are near-misses the engine logs, measured below; (2) pointing tasks are run at about 4% errors (Soukoreff and MacKenzie 2004, the ISO 9241-9 convention), and the Handover's people are moving targets 40-60 px tall, which misses more often than still ones. Ground clicks miss more (8.7% of Sky's moves land on ground that cannot be walked, half re-clicked within 3 s), people less (about 4%); about half a route's steps are moves. So 6% a ring or move step. Measured anchor: 90 unwalkable moves among 1212 orders in the sessions replayed exactly on their own engine",
+  "ringOpenCloseProb": "estimated: ring opens are not recorded. Every order shows its price before you commit (GDD §01), so looking and backing out is designed play. In the faithful replays Sky gave orders the game then refused for knowledge or reach (needs-routine, stand within) on about 1 in 30 ring orders; a shut wedge he saw first was one he closed instead, which would be several times that. Novices browse radial menus before they commit (Kurtenbach and Buxton 1993). So about 1 ring in 8 is opened and closed without a choice.",
+  "cameraTurnProb": "estimated: Q/E turns are not recorded (the camera is not in the engine). The Records Office front is played at yaw 210 and the run opens at 30 (GDD §10), so a run needs at least two quarter steps; Sky gives a median of about 50 decisions a run. A 5% chance a step gives 2-3 turns a run.",
+  "wrongVerbProb": "partly measured: a different verb on the same target by the same agent within 5 s of the first (the first undone) is the trace a wrong wedge leaves; see reorders.wrongVerbPutRight. The wrong wedge that was noticed before release leaves no trace, and 8-way radial menus run at about 2-5% selection errors (Kurtenbach and Buxton 1993). So 3%. Measured trace: 0 of 172 acts",
+  "thirdPersonProb": "measured from 56 Handover sessions of Sky's (20261015..20261023, engines 0.3.0, 0.4.0, 0.5.0, 0.6.0, 0.6.2, 0.7.0, 0.8.1, 0.9.0, 0.10.0, 0.14.1, 0.18.0, 0.20.0, 0.24.0, 0.25.0, 0.26.0; 1077 decisions over 156.07 min of mission): third-person bouts (drive samples) per decision, 108 bouts; 12 of 56 sessions used it, 8% of mission time",
+  "thirdPersonS": "measured: length of a third-person bout (n 108)"
+ },
+ "measured": {
+  "refusedPerOrder": 0.137,
+  "refusedByFamily": {
+   "ground that cannot be walked": 90,
+   "not ready (knowledge or reach)": 17,
+   "agent busy": 29,
+   "fight order not possible": 21,
+   "agent down, carried or away": 9
+  },
+  "retryAfterRefusal": 0.531,
+  "runShareOfMoves": 0.199,
+  "squadShareOfDecisions": 0.164,
+  "agentChangeBetweenDecisions": 0.293,
+  "firstOrderS": {
+   "p50": 1.1,
+   "p90": 10
+  },
+  "quitWithoutEnding": 0.75,
+  "quitAtS": {
+   "p50": 56.5,
+   "p90": 350.78
+  },
+  "wallToMission": {
+   "p50": 1.27,
+   "p90": 6.42
+  }
+ }
+}
