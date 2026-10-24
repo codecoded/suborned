@@ -17,8 +17,9 @@ import { join } from 'node:path';
 import { z } from 'zod';
 import { ROOT } from '../missions/check/engine';
 import { whoIsPlaying } from '../game/playing';
-import { BUILD_APP } from './sim';
-import type { Finding, Severity } from './types';
+import { BUILD_APP, lane, playStream } from './sim';
+import { feetShare, gradeMem, gradeSolid, isRace, loadChairs, loadWalk, offerOf, plainRefusal, readFeet, readMem, SEATS_FILES, GRADE, type Grade } from './grade';
+import type { Finding, Play, Severity } from './types';
 
 export const POLICIES = ['random', 'greedy', 'cautious'] as const;
 export const BotRow = z.object({
@@ -47,7 +48,7 @@ export function planRows(raw: unknown, night: string, o: { rows?: number; minute
 
 // ---------------------------------------------------------------- the player's report
 
-export type BotAnomaly = { check: string; key: string; title: string; expected: string; observed: string; tick: number; clock: string; at: [number, number]; shot: string; script: string };
+export type BotAnomaly = { check: string; key: string; title: string; expected: string; observed: string; tick: number; clock: string; at: [number, number]; shot: string; script: string; /** Suture's offline regrade (grade.ts): its cause, severity and plain words win over the player's */ grade?: Grade };
 export type BotReportRow = {
   name: string; policy: string; seed: number; status: string; error?: string; preset: string; seconds: number; endTick: number; outcome: string; failCode: string; cardHead: string;
   input: { decisions: number; clicks: number; rings: number; ringMisses: number; taken: number; moves: number; runs: number; pans: number; turns: number };
@@ -63,7 +64,7 @@ export const CHECK_META: Record<string, { severity: Severity; owner: string }> =
   'Q-GIVER': { severity: 'S2', owner: 'Latch' }, 'Q-OFFER': { severity: 'S2', owner: 'Latch (host offer) / Keel (engine refusal)' },
   'Q-WARN-HUD': { severity: 'S2', owner: 'Latch / Glyph' }, 'Q-CARD': { severity: 'S1', owner: 'Latch / Fable' },
   'Q-FEET': { severity: 'S3', owner: 'Latch / Splice (walk file)' }, 'Q-SOLID': { severity: 'S3', owner: 'Latch / Pulse (paths)' },
-  'Q-ERR': { severity: 'S1', owner: 'Latch' }, 'Q-FRAME': { severity: 'S4', owner: 'Redline' }, 'Q-MEM': { severity: 'S4', owner: 'Redline' },
+  'Q-ERR': { severity: 'S1', owner: 'Latch' }, 'Q-FRAME': { severity: 'S4', owner: 'Redline' }, 'Q-MEM': { severity: 'S4', owner: 'Latch (Redline profiles)' },
   'Q-STUCK': { severity: 'S1', owner: 'Latch / Keel' }, 'Q-BOT': { severity: 'S1', owner: 'Latch' },
 };
 
@@ -73,14 +74,69 @@ export function findingsOf(row: BotReportRow | undefined, name: string, base: st
   const out: (Finding & { shot?: string; script?: string })[] = [];
   if (row.status === 'failed') out.push({ check: 'Q-BOT', severity: 'S1', owner: 'Latch', key: 'Q-BOT:failed', title: 'A bot row broke', expected: 'the row plays to its end', observed: `${name}: ${row.error ?? 'failed'}` });
   for (const a of row.anomalies) {
-    const m = CHECK_META[a.check] ?? { severity: 'S3' as Severity, owner: 'Suture' };
+    const m = CHECK_META[a.check] ?? { severity: 'S3' as Severity, owner: 'Suture' }, g = a.grade;
     out.push({
-      check: a.check, severity: m.severity, owner: m.owner, key: `${a.check}:${a.key.replace(/[0-9]+/g, '#').slice(0, 80)}`, title: a.title,
-      expected: a.expected, observed: `${a.observed} (${row.policy} seed ${row.seed}, ${a.clock})`, tick: a.tick,
+      check: a.check, severity: g?.severity ?? m.severity, owner: g?.owner ?? m.owner, key: g ? `${a.check}:${g.cause}` : `${a.check}:${a.key.replace(/[0-9]+/g, '#').slice(0, 80)}`, title: g?.title ?? a.title,
+      expected: g?.expected ?? a.expected, observed: `${a.observed}${g?.note ? `; ${g.note}` : ''} (${row.policy} seed ${row.seed}, ${a.clock})`, tick: a.tick,
       shot: a.shot ? join(base, a.shot) : undefined, script: a.script ? join(base, a.script) : undefined,
     });
   }
   return out;
+}
+
+// ---------------------------------------------------------------- the offline regrade (Suture, grade.ts)
+
+export type GradeOpts = { walkFile?: string; seatsFile?: string; app?: string; say?: (m: string) => void;
+  /** replays anomaly scripts on the built player's engine and gives each play's log (tests stand in for the engine) */ replay?: (scripts: string[]) => Promise<{ tick: number; code: string }[][]> };
+
+/** Replays scripts on the build lane (the built player's own engine and inputs), in order. */
+async function replayOnBuild(scripts: string[], dir: string): Promise<{ tick: number; code: string }[][]> {
+  const l = lane('build'), list = join(dir, 'replay-list.txt'), logs: { tick: number; code: string }[][] = [];
+  writeFileSync(list, scripts.join('\n') + '\n');
+  await playStream(l, list, (p: Play, i: number) => { logs[i] = p.log ?? []; }, { replay: false });
+  rmSync(list, { force: true });
+  return logs;
+}
+
+/** Regrades each row's anomalies in place from the files the row wrote (grade.ts): Q-SOLID by cause against the drawn ground, Q-OFFER refusals for
+ *  a doer who went down in the order's own tick as races, Q-MEM by held growth instead of one slope, and the Q-FEET share. A row without its files keeps
+ *  the player's word. */
+export async function gradeRows(rows: BotReportRow[], outDir: string, o: GradeOpts = {}): Promise<void> {
+  const say = o.say ?? (() => {}), app = o.app ?? BUILD_APP;
+  const walk = loadWalk(o.walkFile ?? join(ROOT, 'out/world/harbour-district.walk.json'));
+  const chairs = loadChairs(o.seatsFile ?? SEATS_FILES(app, ROOT).find(f => existsSync(f)) ?? '');
+  if (!walk) say('qa bot: no walk file (bun run geometry writes out/world/harbour-district.walk.json): Q-SOLID keeps the player\'s grid word');
+  const races: { a: BotAnomaly; op: string; script: string }[] = [];
+  for (const row of rows) {
+    const dir = join(outDir, row.name), feet = readFeet(join(dir, 'feet.csv')), mem = readMem(join(dir, 'mem.csv'));
+    for (const a of row.anomalies) {
+      if (a.check === 'Q-SOLID' && feet.length) a.grade = gradeSolid(a, feet, walk, chairs);
+      if (a.check === 'Q-OFFER') {
+        const of = offerOf(a.observed); if (!of) continue;
+        a.grade = { cause: `${of.verb}:${of.code}`, severity: 'S2', title: `The ring offers ${of.verb[0]!.toUpperCase() + of.verb.slice(1)}, then the game refuses it: ${plainRefusal(of.code)}`, owner: CHECK_META['Q-OFFER']!.owner, note: '' };
+        if ((GRADE.offer.doerCodes as readonly string[]).includes(of.code) && a.script) races.push({ a, op: of.op, script: join(outDir, a.script) });
+      }
+    }
+    if (mem.length) {
+      const v = gradeMem(mem), had = row.anomalies.find(a => a.check === 'Q-MEM');
+      row.anomalies = row.anomalies.filter(a => a.check !== 'Q-MEM');
+      const base: BotAnomaly = { check: 'Q-MEM', key: 'held', title: 'Memory keeps growing through the run', expected: `no held growth over ${GRADE.mem.totalMBMin} MB a minute (total) or ${GRADE.mem.managedMBMin} MB a minute (managed) after a ${GRADE.mem.warmS} s warm-up`, observed: v.note, tick: had?.tick ?? row.endTick, clock: had?.clock ?? '', at: [0, 0], shot: '', script: had?.script ?? '' };
+      if (v.judged && v.leak) row.anomalies.push({ ...base, grade: { cause: 'held-growth', severity: 'S4', title: base.title, owner: CHECK_META['Q-MEM']!.owner, note: '' } });
+      else if (had) row.anomalies.push({ ...base, observed: `${had.observed}; regraded: ${v.note}`, grade: { cause: v.judged ? 'not-a-leak' : 'not-judged', severity: 'info', title: v.judged ? 'Memory rose, then held: not a leak' : 'Memory: the row was too short to judge', owner: CHECK_META['Q-MEM']!.owner, note: '' } });
+    }
+    if (feet.length) {
+      const f = feetShare(feet);
+      if (!f.ok) row.anomalies.push({ check: 'Q-FEET', key: 'share', title: 'Feet off the drawn floor too often', expected: `feet within ${GRADE.feet.tolM * 100} cm of the drawn floor on ${GRADE.feet.share * 100}% of samples`, observed: `${f.within} of ${f.n} samples (${(f.share * 100).toFixed(2)}%)`, tick: row.endTick, clock: '', at: [0, 0], shot: '', script: '', grade: { cause: 'share', severity: 'S3', title: 'Feet off the drawn floor too often', owner: CHECK_META['Q-FEET']!.owner, note: '' } });
+    }
+  }
+  if (!races.length) return;
+  let logs: { tick: number; code: string }[][];
+  try { logs = await (o.replay ?? (s => replayOnBuild(s, outDir)))(races.map(r => r.script)); } catch (e) { say(`qa bot: the Q-OFFER replays did not run (${(e as Error).message.split('\n')[0]}): those refusals stay findings`); return; }
+  races.forEach((r, i) => {
+    const log = logs[i]; if (!log) return;
+    if (isRace(log, r.op, r.a.tick)) r.a.grade = { cause: 'race', severity: 'info', title: 'An agent went down in the same tick the order landed (a race, not a lie)', owner: CHECK_META['Q-OFFER']!.owner, note: `the ${r.op} went down within ${GRADE.offer.raceTicks} tick of the order: nothing on screen could have shown it` };
+    else r.a.grade = { cause: 'stale-ring', severity: 'S2', title: 'The ring kept offering an agent who was already down', owner: 'Latch (the open ring must re-check its givers)', note: `the ${r.op} was down before the order landed` };
+  });
 }
 
 // ---------------------------------------------------------------- running the player

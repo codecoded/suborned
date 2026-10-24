@@ -185,3 +185,41 @@ Scope: Latch's 0303 evidence (`049/build/2160-0303`, `041/build/0303`, `054/buil
 | 5 | Road sheet seams; taupe-olive guideway | `r29-boulevard-market-play-210.png` | Even the sheet tone; Vela decides the guideway colour | Splice, Vela |
 
 No handoff to Aster is needed. The HUD stays inside the art bible's colour rule: the only colours I found were kit sources, and the violet rival badge is the free signal colour.
+
+## 0.2.115 check (Glyph, 2x crops, 2026-10-24)
+Pictures: `041/build/0304/night/*`, `levels-*`, `r29-*`; `028/corners/game-0304/r29-boulevard-market-play-210.png`; `049/build/2160-0304`. Verdict: ship the build; night is not ready to offer as it is (fix list below, all optional for the build).
+
+### Night with the HUD (`start-overhead-night`, `cafe-front-night` vs day)
+- HUD: reads cleanly. Roster plate, clock bar, plot scope, "Take Vale alive." plate and the Watch feed card keep their kit colours and edges over the dark. Faces and the 2 px chrome rings are as bright as by day. Nothing new in the palette. Pass.
+- Palette: the ambient is teal-green more than indigo; it sits with the enamel (seafoam, deep teal) and the warm table-lamp pools. In palette. One table pool is violet (cafe-front-night, upper right) and one mint; violet is the rivals' signal colour, but signals are free colours, so this is only a read risk: a violet pool beside a rival ring. Note for Glint.
+- Masses: they do not all read. Ground furniture (benches, planters, fountain basin, the hedge kerb) is dark teal on dark teal and shows by its edge only (start-overhead-night, right half: three benches and the fountain are near invisible). Roof and water-tower masses on the left merge with the road. Passers-by outside the pools are black cut-outs; in start-overhead-night the two at (1400, 340) and (1500, 350) are barely there. The cell is found only by the cyan rings (crop at 2x: figures are silhouettes with no rim). In a game about watching people this is the main problem.
+- Two things are brighter than anything lit: (1) the café cutaway, a hard white-cream dithered block (cafe-front-night, 540-880 x 110-540) that glows at night, as if the interior were a spotlight, not the cut-through of a dark room; (2) the brass/kerb hairline along the deck edge (start-overhead-night, diagonal from (320, 315) to (1010, 920)), cream and hard-edged, the brightest line on screen. It looks like a signal line, which it is not. Brass is a thin line, but unlit it should sit near the pools' brightness, not above.
+- Offer night as it is? No. Offer it only after: lift the ground and furniture one stop (or a faint rim on benches, planters, fountain); a soft rim or fill on people so passers-by read at 50 px; tint the café cutaway to the night grade; dim the kerb line. Until then keep it off the menu or labelled as a look test.
+
+### Office steps (`levels-crew-steps`, `levels-guard-landing`)
+- Feet meet the step treads in both crops; no figure shows below the tread, no gap above it. The guard on the landing is under the building's dither fade, which hides his lower body, so those two shots cannot prove the 0.13 m lift. Stills cannot show popping: the check is a clip or Latch's per-frame foot height at the three tread edges. From the stills: nothing looks wrong. Pass, with that limit.
+
+### Unchanged pieces (crops at 3x-4x)
+- `r29-go-held`: "Go", lock and violet badge even, as in 0.2.113. Pass.
+- `r29-no-walk-cursor`: footprint pair struck, in the 2 px chrome ring with the ink-deep edge, hanging off the Uneasy chip's lower-left corner (the test parks the cursor there). Pass.
+- `r29-reroute-edge-chip`: robot-face disc in the chrome ring, plate edges and the cursor arrow unchanged. Pass.
+
+### Road seams (`r29-boulevard-market-play-210.png`, crops of the crossing at 1.4x-1.5x)
+What I see, exactly: two straight dark seam lines cross the carriageway as an X, one running NW-SE and one SW-NE, meeting at about (1300, 195) in the displayed frame. Each is a soft shaded edge, 6-10 px wide, darker on one side only, like the lip of a very low step: the sheet on one side is a half-tone darker than the other, so the road reads as flat sheets laid at slightly different heights, not one surface. They run unbroken from the crossing far past the lane marks to the road's edge. The thin brown hairlines (lane edges) are separate, 1 px, and stop short in mid-road. The cream lozenges are clean. The crossing has no z-fight shimmer (no stipple or flicker across the sheet), so the coplanar fix worked.
+- My read: the dark edge on one side is what a 3 mm step looks like with the contact shadow or ambient occlusion on, so the fix may have turned the flicker into a shaded edge. Splice: try the lower sheet at 0 mm with a render-order or depth bias instead of a sink, or mask the road layer out of the AO/shadow bias and compare the same view. Vela: if the sheets stay separate pieces, give them one tone and one grain so a seam shows nothing even at a step.
+- Also in this frame: the taupe-olive guideway band through the dither circle (upper left to lower right) is still there, with grey cut-through blocks in the circle; Vela's call (open item 5).
+
+### Anything else in `049/build/2160-0304`
+- Compared to 0303 by pixel difference, only the seven corner "play" shots and `overhead-avenue` differ much. The corner shots were taken at another moment and another framing (0303 has the "District sealed" card in `r29-boulevard-market-play`, 0304 is at 0:26), so they are not a regression. `overhead-avenue` is a slightly moved camera over the same palms and road. Every other shot differs by under 2 on a 0-255 scale (animation only).
+- Nothing odd in the HUD: no clipping, overlap or off-kit colour in the shots I opened (the six above plus the corner shots).
+
+### Fix list
+| # | Item | Shot | Fix | Owner |
+|---|---|---|---|---|
+| 1 | Night masses and people do not read | `night/start-overhead-night.png` | Lift ground, furniture, people rim; keep pools | Glint |
+| 2 | Café cutaway and kerb line glow above the lit pools | `night/cafe-front-night.png`, `start-overhead-night.png` | Night-grade the cutaway; dim the line | Glint, Latch |
+| 3 | Seam lines shaded at the road crossing | `r29-boulevard-market-play-210.png` | Depth bias instead of a 3 mm sink, or match sheet tone; test with AO off | Splice, Vela |
+| 4 | Steps: no popping proof in stills | `levels-*` | A clip or foot-height log at the tread edges | Latch |
+| 5 | Taupe-olive guideway (carried) | same as 3 | Vela decides the colour | Vela |
+
+No handoff to Aster is needed.

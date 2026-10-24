@@ -23,7 +23,7 @@ import { lane, playStream, type Lane } from './sim';
 import { rowOf, tables, type Row } from './tables';
 import { runStatics } from './statics';
 import { loadText } from './text';
-import { runBotLane, findingsOf } from './bot';
+import { runBotLane, findingsOf, gradeRows } from './bot';
 import { DEFAULT_RULES, type Ctx, type Item, type Play, type Seed } from './types';
 
 export type PassOpts = {
@@ -124,6 +124,7 @@ async function botLane(dir: string, o: PassOpts, book: IssueBook, stats: LaneSta
   let r: Awaited<ReturnType<typeof runBotLane>>;
   try { r = await runBotLane(out, { rows: o.botRows, minutes: o.botMinutes, say }); } catch (e) { say(`qa: lane bot skipped: ${(e as Error).message}`); return; }
   if (r.skipped) { say(`qa: lane bot skipped (a note, not a finding): ${r.skipped}`); return; }
+  if (r.report) await gradeRows(r.report.rows, out, { say }); // Suture's offline regrade (grade.ts): causes, races, held memory growth, the feet share
   const flagged = new Map<string, Set<string>>(); let errors = 0;
   for (const row of r.rows) {
     const rep = r.report?.rows.find(x => x.name === row.name); if (!rep && !r.ran.includes(row.name)) continue; // not started (Sky opened the game): not a finding

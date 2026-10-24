@@ -93,7 +93,7 @@ Layers: **sim** (engine and trace, tier 1), **host** (built player, tier 2), **r
 | 12 | a camera cone dominating the frame | Q-CONE | render | the share of the frame the signal layer covers at play zoom (drawn alone, as HudToolkit splits layers), sampled every 10 s at each yaw | ≤ 8% of the frame, no single cone ≥ 5% [S; Glyph sets the final number with brief 057] |
 | 13 | "Reroute" not naming what it moves | Q-NAMES | host | every offered way whose effect lands on something other than the clicked target (reroute → patrol, loop → camera, call → person; a verb → affected-thing table from the rulebook) carries that thing on its pill (cameo id or name in the manifest) | 0 |
 | 14 | third person stopping actions | Q-CANCEL | host | every act that ends early has a cause: a logged bot input, or an engine refusal or interrupt code. Also, the same order set in third person and on the map gives the same engine log | 0 unexplained; logs identical |
-| 15 | lag late in a run | Q-FRAME, Q-MEM | host | whole real-time runs, measured on the Studio (the Air gets its own row later): p99 ≤ 16.7 ms; no frame over 50 ms except boot or load; the last 2 minutes' p99 ≤ 1.2× the first 2 minutes' (after warm-up); memory (managed and native) grows ≤ 5 MB a minute [S] after warm-up. These are the late-fight gates from `tools/game/late.ts`, applied to every minute | all four |
+| 15 | lag late in a run | Q-FRAME, Q-MEM | host | whole real-time runs, measured on the Studio (the Air gets its own row later): p99 ≤ 16.7 ms; no frame over 50 ms except boot or load; the last 2 minutes' p99 ≤ 1.2× the first 2 minutes' (after warm-up); memory (managed and native) shows no held growth after a 120 s warm-up: the floor of each third of the window rises by no more than 3 MB a minute (total) and 1 MB a minute (managed) on both steps (set in the smoke triage below; was ≤ 5 MB a minute as one slope). These are the late-fight gates from `tools/game/late.ts`, applied to every minute | all four |
 
 The general invariants that tiers 1 and 2 add:
 - **Q-OFFER (host):** every way the host offers is accepted, or its refusal was shown on the pill or plate before the commit.
@@ -178,3 +178,106 @@ Order (owners are mid-round elsewhere, so the slice is staged): Suture's invaria
 - **Runner:** `tools/qa/bot.ts` (rows in `tools/qa/bot.json`: random-a, greedy-a, cautious-a; each seed mixed with the night's date and reported), one player process per row, killed by PID after the row's cap + 150 s, the guard asked before each row. Wired as lane `bot` in `tools/qa/run.ts`; `bun run qa --nightly` = lanes build, tree, bot (`--bot-rows`, `--bot-minutes`); a `--dev` pass never starts the player. Output under `out/qa/<run>/bot/`, rotated with the pass. Findings carry severity and owner by check (`CHECK_META`), the shot and the replay; the report embeds the shot (720 px JPEG) on the issue card and gives the replay on the build engine. Changes in Suture's files, additive: `Finding.shot/script` (types.ts), `Exemplar.shot` (issues.ts), the shot and the bot replay in report.ts.
 - **Schedule:** the 02:00 run is Sky's app's scheduled task (Aster: `bun run world && bun run qa --nightly`); no LaunchAgent. A built player without `-bot` (0.2.112 and earlier: `playerHasBot` looks for the report schema in Suborned.Runtime.dll) skips the bot lane with a note, no finding, exit 0.
 - **Tests:** `tools/qa/bot.test.ts` (plan seeds, findings, issue exemplars, the runner with a stand-in player, guard stop between rows, the clean skip on an old or missing player).
+
+## Smoke triage (Suture, 2026-10-24)
+
+Two `random-a` smoke rows of Latch's `-bot` (seed 121577): **0303** on 0.2.113 (`briefs/060/smoke-0303/`, row files in `out/scratch/latch/bot-smoke/`) and **0304** on 0.2.115 (`briefs/060/smoke-0304/`, row files in `out/scratch/latch/bot-smoke3/`). A third row on 0.2.115 with the same seed (`out/scratch/latch/bot-smoke2/`, not committed) was used as a cross-check. Each anomaly was checked against the engine's walk grid (`sim/data/handover.site.json`, 0.5 m cells), against what is drawn (`out/world/harbour-district.walk.json`, 0.25 m cells, kind 2 or 4 = solid), and against the collision volumes and Keel's 0.3 m face margin (`tools/sim/solids.ts`). The scratch probes are in `out/scratch/suture/q-solid/`.
+
+### Q-SOLID: counts by cause
+
+| cause | 0303 (21 counted, 20 kept) | 0304 (23) | verdict | owner |
+|---|---|---|---|---|
+| café customers at the opening, seated. `HostViews.FigureFeet` skips a seated figure by `sitTick >= 0`, but a figure seated at the opening gets `sitTick = tick − 23`, which stays negative for the first 2.3 s. crowd/29, 31, 34, 108, 109 and 113 at 0:00 | 6 | 6 | check | Latch |
+| café customers sitting down or getting up. The chair sits inside the table set, so the last metre to it lies inside the grid's 0.65 m clearance, by design. 0303: crowd/35, 24, 25 and 109 (2:30). 0304: crowd/109 (0:16, 2:30), 24 and 25 | 4 | 4 | check | Latch |
+| the followers of the rival crew and the response unit: security/1, rivals/1 and rivals/2. The host draws them at a fixed 0.9 m offset from the one pose the engine gives the group (`HostViews.cs` 175-177: rivals/1 +0.9 m on block x, rivals/2 and security/1 +0.9 m on block y), so they walk through whatever lies 0.9 m to the side of the leader's path: pavilion supports, cypresses, the café terrace wall, the Office steps | 7 (5 overlap a drawn solid by 9-22 cm) | 12 (6 overlap by 10-24 cm) | **real** (S3) | Latch |
+| a walker in the grid's clearance, 32 cm from the nearest drawn solid (crowd/109 passing the café palm) | 1 | 1 | check | Latch |
+| off the walk map (crowd/121 at (-160, 0), crowd/124 at (0, -380)); bounded to the grid since 0.2.115 | 2 | 0 | check, fixed | — |
+
+- **Real: 19** (7 + 12), all from the follower offset: a visible fault (S3). 11 of them overlap a drawn solid by more than the 5 cm tolerance. The other 8 sit within 4 cm or clear, but have the same cause and the same fix.
+- **The check's fault: 24** (13 + 11).
+- **Pulse and Keel: nothing.** The group leaders (rivals/0, security/0) and every officer (unit/police-1..6) never tripped. The crowd tripped only at the café chairs and in one 14 cm graze past free ground, 32 cm clear of anything drawn. The engine's paths keep to free ground, and the grid matches what is drawn.
+- **The check logic was wrong in four ways:**
+  1. the seated skip (above);
+  2. it had no café-seat skip;
+  3. it measured to the nearest free cell's *centre*, not its edge, so 5 cm past free ground could trip it;
+  4. it judged on the walk grid, whose blocked cells include the 0.65 m body clearance round ground solids. So "on a blocked cell" is not "inside something". For example, rivals/2 at 2:04 was flagged 89 cm from anything drawn.
+
+### Q-OFFER: one Carry by a doer who went down
+
+**Decision: a race.** Replaying `out/scratch/latch/bot-smoke3/random-a/anomalies/027-Q-OFFER-2049.script.json` on the build engine shows the sequence: police-1 hits the scout at 204.9 s (tick 2049), the scout goes down, and the carry order is rejected in the same tick. The scout was up on every frame the ring showed (Q-GIVER, checked as the ring was built, stayed quiet). Nothing on screen could have shown the down before the click.
+
+- **What changes in the check:** a refusal for the doer's own state counts as a race, not Q-OFFER, when the doer went down in the order's own tick or the tick before it (≤ 1 tick, 0.1 s). That covers `agent-down`, `enforcer-inside` and `in-car`.
+- **The latent HUD gap is real:** the ring is built once (`HostContext.OpenRing`) and never rechecked while open. If a doer goes down 1 s before the click, the wedge still looks available.
+  - Latch: the open ring rechecks its givers each engine tick. A wedge whose giver goes down, is carried, goes inside or gets into the car re-ranks to another able giver, or shuts with its lock (agent-down).
+  - Q-GIVER proves it: the open ring is checked every tick, not only as built, with a 0.2 s grace. A wedge still offered by a giver who has been down longer than 0.2 s is the HUD bug, S2.
+- **The other Q-OFFER hits are known and fixed in code** (Latch, next build):
+  - 0303: Fire on a busy agent, ×6 (`agent-busy`). Fire now waits for, or cancels, the act (Proof29 `fireBusy`).
+  - 0304: Fire on a camera already shot dark, ×9 (`no-target`). The ring and the panel now drop it (FireQuery).
+- **Cross-check row:** it adds one more, Listen on Inez refused `needs-routine`. No Watch on her ever completed in that run (every one was cancelled), so the routine was never known.
+  - The random policy also clicks shut wedges. The check cannot tell yet whether that wedge showed its lock. If it was shut, the refusal is honest.
+  - Latch: Q-OFFER skips a wedge that was shut at the click, and its observed text says "wedge shut" when it was. Until then this one ranks as S2 (Latch / Keel).
+
+### Q-MEM: 12 MB a minute over the 3-minute window
+
+**Not a leak, and not only warm-up.** The OLS slope from 60 s mixes three things:
+- the post-boot dip and refill: total memory falls to about 1,250 MB at 30-75 s and is back to about 1,280 MB by 100-110 s, so a 60 s warm-up starts at the bottom of the dip;
+- the fight's spawn step: about +20 MB at 180-195 s, when the response units (unit/police-5 and police-6, then police-3 and police-4) and the gunfire come in;
+- shot transients: spikes of up to +70 MB around captures.
+
+The same seed on the same build gave 12.1 MB/min (0304), 3.9 MB/min (cross-check) and -2.1 MB/min (0303). After 120 s, the 30 s floors are flat apart from that one step. Managed memory rises 0.4-0.5 MB/min after 120 s. That is about the size of the bot's own in-memory `frames.csv` and `feet.csv` buffers (StringBuilders plus the frame list, about 3 MB over 4 minutes).
+
+**The rule now** (tools/qa/grade.ts, and the same values for the player):
+- warm-up 120 s;
+- the rest of the run is split into thirds, and each third's floor is its lowest 1 Hz sample, so transients drop out;
+- it is a leak only when the floor rises on **both** steps by more than **3 MB/min total** or **1 MB/min managed**. A single step, such as the response spawning in, moves only one of them;
+- it is judged only when each third lasts **at least 60 s**, so rows under 5 minutes of real time are reported "not judged". The random rows seal at about 3:30-4:00, so they are not judged. Greedy and cautious rows that play to the 8:30 close are.
+
+In a synthetic test, 6 MB/min sustained trips it, while one 25 MB step and the boot dip do not. **No owner now.** If it trips on a long row, it goes to Latch, with Redline for the profiling.
+
+### The other thresholds
+
+| check | value | evidence |
+|---|---|---|
+| Q-WARN-HUD | **confirmed**: the seal's marker hidden for 0.5 s or more while the seal runs and no modal is up. A sealed fail whose marker never showed is a finding | 0303 had 1 hit on the seal's first frame, before the 0.5 s rule; 0304 had 0 |
+| Q-STUCK | **confirmed**: 11 minutes a row (`tools/qa/bot.json` default), with the runner killing the player at cap + 150 s. The mission closes at 8:30, and shots hold the clock for at most about 60 s | both rows ended (sealed at 3:23.8 and 3:48.6) |
+| Q-CARD | **confirmed**: zero contradictions (head against result and fail code, no "escapes with Vale" on a failure, no "reached the getaway car" without `board.in`, the sealed line against `SealedWords`) | both cards clean: "District sealed" / "Vale wasn't in the car when security sealed the district.", no problems |
+| Q-FEET | **confirmed in the player**: 15 cm for 0.5 s. **Added offline**: the brief's share, feet within 5 cm of the drawn floor on 99.9% of samples, with carried and lifted figures left out | 0 hits; 99.95% (0303) and 99.98% (0304) within 5 cm; one 0303 sample over 15 cm (crowd/24, 18.8 cm, a single sample) |
+| Q-FRAME | **confirmed**: no frame over 50 ms after 20 s that holds no save, order, end or bot work | 0 hits; p99 6.2 and 8.4 ms, max 25 and 34 ms |
+| tier 1 (`DEFAULT_RULES`) | **unchanged**: warning lead 30 s, stuck 10 s, Vale at the car 10 s | — |
+
+### For Latch: exact values and changes in BotRun.cs and the host
+
+| what | now | set to |
+|---|---|---|
+| seated skip (`HostViews.FigureFeet`) | `sitTick >= 0` | a `seated` flag on Fig, set where the seat is applied (`f.seated = seat is { }`); skip when seated |
+| café-seat skip (Q-SOLID) | none | `SeatSkipM = 1.5f`: a crowd figure within 1.5 m of a café chair (`host.CafeSeats.Chairs`) is not judged |
+| Q-SOLID test | grid cell not free and ≥ `SolidFreeM` 0.3 m from a free cell *centre* | against what is drawn: `SolidBodyR = 0.25f`, `SolidOverlapM = 0.05f` (feet within 0.20 m of a walk-file cell of kind 2 or 4, for `SolidRunS` 0.5 s). Bake the walk file's `kind` into SiteFrame beside `heights` (`PlayInstall.WalkFloor` reads the same file). Until that is baked: `SolidFreeM = 0.3f` measured to the free cell's *edge* |
+| feet.csv | `t,tick,key,x,y,z,floor,free` | add `skip` (1 when the feet checks skip the figure) |
+| frames.csv, feet.csv | StringBuilders held all run | stream to disk as written (as hud.jsonl); p99 from a preallocated buffer or a 0.1 ms histogram |
+| Q-MEM | `MemWarmS 60`, OLS slope > `MemSlopeMBMin 5` | `MemWarmS = 120f`; `MemThirdMinS = 60f`, `MemTotalMBMin = 3f`, `MemManagedMBMin = 1f` (held growth by thirds, as above); keep the slope in the report as information |
+| Q-OFFER | any refusal of the taken way within 5 s | `OfferRaceTicks = 1`: a doer-state refusal (`agent-down`, `enforcer-inside`, `in-car`) whose doer was able in the tick before the order is a race, counted under refusals, not Q-OFFER; a wedge that was shut at the click is not Q-OFFER (say "wedge shut") |
+| Q-GIVER | each ring once, as built | the open ring every engine tick, `GiverGraceTicks = 2` (0.2 s) |
+| Q-WARN-HUD | 0.5 s | keep; skip frames while `capturing` |
+| FeetTolM, FeetRunS, FrameSpikeMs, WarmS, dedupe 2 m / 30 s, 60 shots | as built | keep |
+| the real fault | rivals/1-2 and security/1 drawn at a fixed 0.9 m offset | draw each follower on free ground: trail it along the leader's recent path (0.9 m and 1.8 m back), or offset it and then snap to the nearest free walk-grid cell, eased. Keel only if the engine should carry members |
+| shots for figure checks | the view as it is (`Focus()` = the camera's look point) | for Q-SOLID and Q-FEET, centre the view on the figure for the capture (optional) |
+
+### Tonight's report (02:00, `bun run qa --nightly`)
+
+- The bot lane's anomalies are regraded before they rank (`gradeRows` in `tools/qa/bot.ts`, rules in `tools/qa/grade.ts`), so tonight's player (0.2.115, without the BotRun changes above) still reads cleanly. What a regrade clears stays in the full table as `info`, named by its cause, and never reaches Sky's list.
+- Titles are plain:
+  - "The ring offers Fire, then the game refuses it: there is nothing there to act on any more";
+  - "The rival crew and the response unit walk through trees, walls and steps";
+  - "Café customers at their chairs counted as inside a solid (the check, not the game)".
+- Issues are keyed by cause, so the crowd, the rivals and the officers no longer split one fault three ways.
+- The report heads itself "tiers 1 and 2" when the bot lane ran. The bot's issue cards give the policy, the seed, the mission clock and the replay.
+- On the smoke rows, the list would be three items:
+  1. S2: Fire offered on a dark camera (fixed in code, next build);
+  2. S2: Listen offered without the routine (the cross-check row; Latch or Keel to confirm whether the wedge was shut);
+  3. S3: the followers walking through things (Latch).
+- The ranking is unchanged: severity × share, as the qa tests hold. With 3 bot rows, a bot share is 0, 33, 67 or 100%, so bot issues rank high next to tier 1's thousands of plays. That is intended: they are what the built player shows.
+- Verified:
+  - `bun test tools/qa`: 37 pass;
+  - `bun run typecheck` clean;
+  - the regrade and ranking on the smoke rows (`out/scratch/suture/q-solid/lane-check.ts`), with the carry race confirmed by replay on the build engine;
+  - a `--dev` pass through the guard rendered the report (`out/qa/dev-20261024-161647/`).

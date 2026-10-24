@@ -53,7 +53,7 @@ export function html(p: Pass): string {
     const rows = i.exemplars.map(e => `<li><code>${esc(e.lane)}</code> ${esc(e.item)}${e.mutations.length ? ' — ' + esc(e.mutations.join('; ')) : ' (unmutated)'}<br><span class="dim">expected:</span> ${esc(e.finding.expected)}<br><span class="dim">observed:</span> ${esc(e.finding.observed)}${e.script ? `<br><code class="cmd">${esc(replayCommand(e.script, e.lane))}</code>` : ''}</li>`).join('');
     return `<section class="issue ${i.severity}"><h3>${n}. <span class="sev">${i.severity}</span> ${esc(i.title)}</h3>
 <p class="meta">${esc(i.check)} · owner <b>${esc(i.owner)}</b> · ${Object.entries(i.plays).map(([l, k]) => `${esc(l)}: ${k} plays (${pct(i.share[l] ?? 0)})`).join(' · ')} · ${i.change ? esc(i.change) : 'new'}${i.firstSeen ? ' · first seen ' + esc(i.firstSeen) : ''} · <code>${esc(i.key)}</code></p>
-${ex ? `<p><b>Steps:</b> play ${ex.seedKind === 'session' ? "Sky's saved session" : 'the route'} <code>${esc(ex.seed)}</code>${ex.mutations.length ? ', changed: ' + esc(ex.mutations.join('; ')) : ' as recorded'}, then read the log at ${esc(ex.finding.observed.match(/\d+:\d\d\.\d/)?.[0] ?? 'the end')}.</p>` : ''}
+${ex ? `<p><b>Steps:</b> ${ex.lane === 'bot' ? `the built player played itself (${esc(ex.seed.replace(/^bot /, ''))}); at ${esc(ex.finding.observed.match(/, (\d+:\d\d)\)$/)?.[1] ?? 'the end')} of the mission clock the check saw it. Replay the session to that moment with the command below, or look at the shot.` : `play ${ex.seedKind === 'session' ? "Sky's saved session" : 'the route'} <code>${esc(ex.seed)}</code>${ex.mutations.length ? ', changed: ' + esc(ex.mutations.join('; ')) : ' as recorded'}, then read the log at ${esc(ex.finding.observed.match(/\d+:\d\d\.\d/)?.[0] ?? 'the end')}.`}</p>` : ''}
 <ul>${rows}</ul>${(() => { const sh = i.exemplars.find(e => e.shot)?.shot; const src = sh ? thumb(sh, p.root) : ''; return src ? `<p><img src="${src}" alt="${esc(i.title)}" style="max-width:720px;width:100%;border-radius:4px"><br><span class="dim">${esc(sh)}</span></p>` : '<p class="dim">Shot: none (tier 1 plays the engine headless; the bot lane keeps one at each anomaly).</p>'; })()}</section>`;
   };
   const table = (head: string[], body: string[][]) => `<table><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr>${body.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
@@ -79,7 +79,7 @@ table{border-collapse:collapse;width:100%;font-size:12.5px;margin:8px 0}td,th{bo
 .issue{background:#fff;border-left:4px solid #aaa;padding:10px 14px;margin:12px 0;border-radius:4px}.issue.S1{border-color:#c0392b}.issue.S2{border-color:#d68910}.issue.S3{border-color:#2874a6}.issue.S4{border-color:#7f8c8d}
 .sev{font-weight:700}.meta,.dim{color:#6b6458;font-size:12.5px}code{font:12px ui-monospace,Menlo,monospace;background:#f3eee5;padding:0 3px}.cmd{display:inline-block;margin-top:3px}li{margin:6px 0}
 </style></head><body>
-<h1>Bot playtest, tier 1 (sim fuzz) · ${esc(p.run)}</h1>
+<h1>Bot playtest, ${p.lanes.some(l => l.lane.name === 'bot') ? 'tiers 1 and 2 (sim fuzz and the built player)' : 'tier 1 (sim fuzz)'} · ${esc(p.run)}</h1>
 <p class="dim">${esc(p.at)} · ${p.seconds.toFixed(0)} s in all · brief 060 · Suture<br>${lanesLine}</p>
 <p class="dim">Severity: S1 the run breaks (crash, stuck, unfair fail, a card that contradicts itself) · S2 the rules lie (offered then refused, a missing warning) · S3 a visible oddity · S4 polish. Ranked by severity × the share of a lane's plays affected.${p.previous ? ' Change against ' + esc(p.previous) + '.' : ' No earlier pass to compare.'}</p>
 <h2>For Sky: ${sky.length} issue${sky.length === 1 ? '' : 's'}</h2>
@@ -88,7 +88,7 @@ ${p.fixed.length ? `<h2>Fixed since the last pass</h2><p>${p.fixed.map(esc).join
 <h2>Every issue</h2>${all}
 ${statics}
 <h2>Checks</h2>${checks}
-<p class="dim">Waiting for other owners: Q-SOLID, Q-FEET (Keel's trace + Splice's checker), Q-PREVIEW (a Quote or Preview beside each Issue), Q-GIVER, Q-OFFER on the real offer, Q-WARN-HUD, Q-CARD, Q-DRAWN, Q-FRAME, Q-MEM (Latch's -bot row). Q-LEARN here is a proxy from the log (the same completion line twice), exact once the trace carries the knowledge diff.</p>
+<p class="dim">The built player's checks (lane bot: Q-GIVER, Q-OFFER on the real offer, Q-WARN-HUD, Q-CARD, Q-FEET, Q-SOLID, Q-ERR, Q-FRAME, Q-MEM, Q-STUCK) are regraded here before they rank (tools/qa/grade.ts): Q-SOLID by its cause against the drawn ground, a refusal for a doer who went down in the order's own tick as a race, Q-MEM by growth that holds, the feet share. What a regrade clears stays in the full table as info. Waiting for other owners: Q-SOLID and Q-FEET in the engine (Keel's trace + Splice's checker), Q-PREVIEW (a Quote or Preview beside each Issue), Q-DRAWN. Q-LEARN here is a proxy from the log (the same completion line twice), exact once the trace carries the knowledge diff.</p>
 <h2>What works: by mutation family</h2>${fam}
 <h2>What works: by route (its mutants)</h2>${seeds}
 <p>${sessLine}</p>

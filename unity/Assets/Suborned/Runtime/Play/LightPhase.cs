@@ -85,6 +85,13 @@ namespace Suborned.Play
             RenderSettings.ambientSkyColor = AtmosphereLens.Scaled(n.ambient.sky.hex, n.ambient.sky.value);
             RenderSettings.ambientEquatorColor = AtmosphereLens.Scaled(n.ambient.equator.hex, n.ambient.equator.value);
             RenderSettings.ambientGroundColor = AtmosphereLens.Scaled(n.ambient.ground.hex, n.ambient.ground.value);
+            if (sun && n.moonIntensity > 0f) { sun.intensity = n.moonIntensity; if (!string.IsNullOrEmpty(n.moonColour)) sun.color = AtmosphereLens.Colour(n.moonColour); }
+            if (n.violetToHueDeg > 0f)
+                foreach (var l in lamps)
+                {   // a violet pool beside a rival's ring reads as the ring's colour: lamps of that hue go to a flamingo, same saturation and value
+                    if (!l) continue; Color.RGBToHSV(l.color, out var h, out var s, out var v); float hd = h * 360f;
+                    if (s > 0.15f && hd >= n.violetFromDeg && hd <= n.violetToDeg) l.color = Color.HSVToRGB(n.violetToHueDeg / 360f, s, v);
+                }
         }
 
         /// <summary>The sun, the ambient and the reflections at the evening's Dusk (lens.json `evening`), from the day State; nothing when Dusk is 0 or the lens has no evening.</summary>
