@@ -219,6 +219,27 @@ namespace Suborned.Play
                 log.Add($"holdActs tp keeps {kind}: {(one ? "ok" : "FAILED")}: given {given}, trailing {trailing}, driven {driven}, working {working}, running {op.Running}, moved {F(tpMoved)} cm, samples/cease {samples}, landed {landed}{(afterW.Length > 0 ? ", W: " + afterW : "")}");
                 keepOk &= one; if (h.Driving) h.DriveLetGoToMap(); yield return null;
             }
+            // 4b · Sky's walk-off (2026-10-25): a movement key held over a swap never walks the agent taken. The Fixer driven with W held, F1 takes
+            // the Scout on her Listen with W still down: no drive sample or cancel for her, the Listen still under way, the held key ignored; W let
+            // go and pressed again then takes her stick
+            {
+                h.Begin(); h.IntelOpen = false; h.StartClock(); yield return null; g = h.Game; h.SetPaused(false);
+                h.Issue(new Order { Op = "scout", Do = "watch", Target = "waitress" }); int lim = g.Tick + 1500;
+                while (g.Tick < lim && !g.PersonByRole("waitress").KRoutine) h.RunTo(g.Tick + 5);
+                h.RunTo(g.Tick + 5); bool given = h.Issue(new Order { Op = "scout", Do = "listen", Target = "waitress" });
+                h.Select(OpId.Fixer, false); yield return null; h.DriveToggle(); yield return Frames(3);
+                Keys(Key.W); yield return new WaitForSecondsRealtime(0.4f);
+                int ign0 = h.DriveKeysIgnored, sn0 = g.Orders.Count; Keys(Key.W, Key.F1); yield return null; Keys(Key.W); yield return new WaitForSecondsRealtime(0.8f);
+                var sop = g.Ops[0]; bool working = sop.Busy?.Do == "listen" || sop.Act?.Do == "listen"; int scoutOrders = 0;
+                for (int i = sn0; i < g.Orders.Count; i++) if (g.Orders[i].order.Op == "scout" && g.Orders[i].order.Do is "drive" or "move" or "cancel" && !g.Orders[i].order.Release) scoutOrders++;
+                bool swapped = h.DriveAgent == 0, ignored = h.DriveKeysIgnored > ign0, latched = h.DriveKeyLatched;
+                Keys(); yield return Frames(3); Keys(Key.W); yield return new WaitForSecondsRealtime(0.4f); Keys(); yield return Frames(3);
+                bool retaken = !h.DriveTrailing && g.DrivePoseOf(OpId.Scout).Driven;
+                bool swapOk = given && swapped && working && scoutOrders == 0 && ignored && latched && retaken;
+                parts.Add($"\"tpSwapHeldKey\": {{\"ok\": {B(swapOk)}, \"given\": {B(given)}, \"swapped\": {B(swapped)}, \"listenKept\": {B(working)}, \"scoutOrders\": {scoutOrders}, \"ignored\": {B(ignored)}, \"latched\": {B(latched)}, \"repressTakes\": {B(retaken)}}}"); ok &= swapOk;
+                log.Add($"holdActs tp swap with a held key: {(swapOk ? "ok" : "FAILED")}: given {given}, swapped {swapped}, listen kept {working}, scout orders {scoutOrders}, ignored {ignored}, latched {latched}, re-press takes {retaken}");
+                if (h.Driving) h.DriveLetGoToMap(); yield return null;
+            }
             parts.Add($"\"tpKeeps\": {{\"ok\": {B(keepOk)}, {string.Join(", ", keeps)}}}"); ok &= keepOk;
             HandoverHost.PointerWorld = null; h.controls.planTogether = keepPlan; h.Begin(); Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.5f));
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";

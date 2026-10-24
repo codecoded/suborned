@@ -113,8 +113,17 @@ namespace Suborned.Play
             return a.ok;
         }
 
+        /// <summary>Sky's walk-off (2026-10-25, Aster): a movement key held over from the last agent never walks the one just taken. On every take
+        /// (T, Shift+T, Tab, F1-F4, a portrait or a click), the movement keys are ignored until all of them are up and one is pressed again; a Tech
+        /// holding the loop is not walked off the cabinet by the key that was walking someone else. WASD resuming a drive the game ended
+        /// (DriveResume) is the press itself and takes the stick at once. DriveKeysIgnored counts the frames a held key was ignored (checks).</summary>
+        bool dKeyLatch, dNoLatch;
+        public bool DriveKeyLatched => Driving && dKeyLatch;
+        public int DriveKeysIgnored { get; private set; }
+
         void DriveTake(int k)
         {
+            dKeyLatch = !dNoLatch;
             // brief 024 dropped the standing fire order here ("the trigger is the player's now"); Sky after 0.2.56: the switch never ends work (DriveTrailIfBusy)
             var op = Game.Ops[k]; dAgent = k; dCm = new Vector2(op.Pos.X, op.Pos.Y); dVel = Vector2.zero; dSent = null; dSentFace = -1; dMoving = false; DriveCorrections = 0;
             dYaw = Following ? fYaw : yawNow;
@@ -180,6 +189,7 @@ namespace Suborned.Play
             {
                 if (controls.Held(kb, PlayAction.PanUp)) input.y += 1; if (controls.Held(kb, PlayAction.PanDown)) input.y -= 1;
                 if (controls.Held(kb, PlayAction.PanRight)) input.x += 1; if (controls.Held(kb, PlayAction.PanLeft)) input.x -= 1;
+                if (dKeyLatch) { bool any = controls.Held(kb, PlayAction.PanUp) || controls.Held(kb, PlayAction.PanDown) || controls.Held(kb, PlayAction.PanRight) || controls.Held(kb, PlayAction.PanLeft); if (any) { input = Vector2.zero; DriveKeysIgnored++; } else dKeyLatch = false; } // held over from the last agent: not this one's
                 run |= controls.Held(kb, PlayAction.AddToGroup);
                 if (controls.Down(kb, PlayAction.Gait) && !HoldOn) dRunLatch = !dRunLatch; // brief 041 (hold): G is weapons free; Shift runs
                 TpE(kb); // brief 024 revision: E taps act on the prompt, held 0.22 s the ring (HostAim)
@@ -252,7 +262,7 @@ namespace Suborned.Play
             if (!(controls.Held(kb, PlayAction.PanUp) || controls.Held(kb, PlayAction.PanDown) || controls.Held(kb, PlayAction.PanLeft) || controls.Held(kb, PlayAction.PanRight))) return;
             var op = Game.Ops[FollowWho()]; if (op.Down || op.Inside || op.InCar || op.CarriedBy.HasValue) return; // nothing to take: no pop each frame
             if (Time.unscaledTime < dResumeAt) return; dResumeAt = Time.unscaledTime + 0.5f; // a take the engine refuses at once is not retried every frame
-            dResume = false; DriveEnter();
+            dResume = false; dNoLatch = true; try { DriveEnter(); } finally { dNoLatch = false; }
         }
         float dResumeAt = -1f;
 

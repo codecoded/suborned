@@ -55,7 +55,7 @@ namespace Suborned.Play
             }
             public string Trace => $"{Route}: " + string.Concat(Enumerable.Range(0, Steps.Length).Select(i => Mark[i] == 'd' && Tries[i] > 1 ? (char)('0' + Math.Min(9, Tries[i])) : Mark[i]));
         }
-        sealed class Flight { public int Step, Mark, Op = -1; public float At; public bool SeenPending, Repeat; }
+        sealed class Flight { public int Step, Mark, Op = -1, Tick; public float At; public bool SeenPending, Repeat; }
         sealed class HumanRes
         {
             public string Route = "", Group = "", Profile = ""; public bool ThirdPerson; public readonly List<string> Routes = new(), Traces = new(); public int Steps, Done, Skipped;
@@ -107,7 +107,7 @@ namespace Suborned.Play
                 if (hs.RepeatQ.Count > 0 && hs.RepeatQ.FindIndex(j => OpFree(hs.Steps[j].op) && !hs.OpInFlight(hs.Steps[j].op)) is int rq && rq >= 0) // a repeat goes before the agent's next step
                 {
                     int j = hs.RepeatQ[rq]; hs.RepeatQ.RemoveAt(rq); var rs0 = hs.Steps[j]; Noise("repeat", rs0, "the same again"); yield return Wait(rs0.gapS);
-                    if (OpFree(rs0.op)) { var rr = new StepRes(); yield return PlayStep(rs0, true, rr); if (rr.Given && !rr.Done) hs.Flights.Add(new Flight { Step = j, Repeat = true, Mark = rr.Mark, At = Time.realtimeSinceStartup, Op = rs0.op == "cell" ? -1 : (int)Op.Parse(rs0.op) }); else if (!rr.Given) Given(rs0, null, false, "", $"the repeat gave nothing: {rr.Why}"); }
+                    if (OpFree(rs0.op)) { var rr = new StepRes(); yield return PlayStep(rs0, true, rr); if (rr.Given && !rr.Done) hs.Flights.Add(new Flight { Step = j, Repeat = true, Mark = rr.Mark, Tick = rr.MarkTick >= 0 ? rr.MarkTick : h.Game.Tick, At = Time.realtimeSinceStartup, Op = rs0.op == "cell" ? -1 : (int)Op.Parse(rs0.op) }); else if (!rr.Given) Given(rs0, null, false, "", $"the repeat gave nothing: {rr.Why}"); }
                     continue;
                 }
                 int pick = NextStep(out int over);
@@ -139,7 +139,7 @@ namespace Suborned.Play
                 {
                     hs.Issued[pick] = h.Game.Tick;
                     if (res.Done) { Given(s, null, true, "", res.Why.Length > 0 ? res.Why : "nothing to give: already so"); Resolve(pick, 'd'); continue; }
-                    var fl = new Flight { Step = pick, Mark = res.Mark, At = Time.realtimeSinceStartup, Op = s.op == "cell" ? -1 : (int)Op.Parse(s.op) }; hs.Flights.Add(fl);
+                    var fl = new Flight { Step = pick, Mark = res.Mark, Tick = res.MarkTick >= 0 ? res.MarkTick : h.Game.Tick, At = Time.realtimeSinceStartup, Op = s.op == "cell" ? -1 : (int)Op.Parse(s.op) }; hs.Flights.Add(fl);
                     if (!clean && s.cancel)
                     {
                         yield return Wait(s.cancelS); FlightFrame();
@@ -179,7 +179,7 @@ namespace Suborned.Play
             {
                 var (o, ok, code, _) = g.Orders[n];
                 if (!EngineMatch(o, s)) { if (other == null && o != null && o.Do != "drive" && (s.op == "cell" || o.Op == s.op)) { other = o; otherOk = ok; } continue; } // what the game gave instead (Q-INTENT)
-                Given(s, o, ok, code, f.Repeat ? "the repeat" : "");
+                Given(s, o, ok, code, f.Repeat ? "the repeat" : "", f.Tick);
                 hs.Flights.Remove(f); if (f.Repeat) return;
                 if (ok) { Resolve(i, 'd'); return; }
                 hs.Issued[i] = -1; if (hs.Tries[i] >= HumanTries) { Resolve(i, 's'); Noise("skip", s, $"refused {hs.Tries[i]} times: {code}"); } return;
@@ -189,20 +189,21 @@ namespace Suborned.Play
             if (!pend && age > HumanConfirmS || age > HumanFlightS)
             {
                 string why = other != null ? "not what was meant" : f.SeenPending ? "walked in, never given" : "no order came of it";
-                Given(s, other, otherOk, "", f.Repeat ? "the repeat: " + why : why);
+                Given(s, other, otherOk, "", f.Repeat ? "the repeat: " + why : why, f.Tick);
                 hs.Flights.Remove(f); if (f.Repeat) return;
                 hs.Issued[i] = -1; if (hs.Tries[i] >= HumanTries) { Resolve(i, 's'); Noise("skip", s, why); }
             }
         }
 
         /// <summary>The "given" event of a try: what the bot meant (the step) against what the game gave (the engine order, or nothing).</summary>
-        void Given(HumanStep s, Order o, bool ok, string code, string detail)
+        /// <summary>`tick`: when the try's input was given (-1: now); the engine's order, if any, comes at or after it.</summary>
+        void Given(HumanStep s, Order o, bool ok, string code, string detail, int tick = -1)
         {
             var hr = cur?.Human; if (hr == null) return; var g = h.Game;
             hr.Counts["given"] = (hr.Counts.TryGetValue("given", out var n) ? n : 0) + 1;
             if (hr.Events.Count >= HumanMaxEvents) return;
             string to = o == null ? "" : o.Point is Pt pt ? $"{pt.X},{pt.Y}" : o.To ?? "";
-            hr.Events.Add(new HEvent { T = Time.realtimeSinceStartup - rowStart, Tick = g?.Tick ?? 0, Kind = "given", Route = hs?.Route ?? "", Step = s.i, Op = s.op, Act = s.act, Target = s.target.Length > 0 ? s.target : s.place.Length > 0 ? s.place : s.xy ? $"{s.x},{s.y}" : "", Detail = detail,
+            hr.Events.Add(new HEvent { T = Time.realtimeSinceStartup - rowStart, Tick = tick >= 0 ? tick : g?.Tick ?? 0, Kind = "given", Route = hs?.Route ?? "", Step = s.i, Op = s.op, Act = s.act, Target = s.target.Length > 0 ? s.target : s.place.Length > 0 ? s.place : s.xy ? $"{s.x},{s.y}" : "", Detail = detail,
                 Gave = o != null, GaveOp = o?.Op ?? "", GaveAct = o?.Do ?? "", GaveTarget = o?.Target ?? "", GaveTo = to, GaveOk = ok, GaveCode = code ?? "" });
         }
 
@@ -222,7 +223,7 @@ namespace Suborned.Play
 
         /// <summary>Why a try gave nothing: Hard (the step cannot be given this way: no such place, unarmed) is given up after HumanTries; a soft one
         /// (locked now, not on the ring, off screen) is tried again until HumanGiveUpS.</summary>
-        sealed class StepRes { public bool Given, Done, Hard; public int Mark; public string Why = ""; }
+        sealed class StepRes { public bool Given, Done, Hard; public int Mark, MarkTick = -1; public string Why = ""; }
 
         IEnumerator PlayStep(HumanStep s, bool clean, StepRes res)
         {
@@ -233,7 +234,7 @@ namespace Suborned.Play
                 case "draw":
                     if (k < 0 || g.Ops[k].Gun.W == null) { res.Why = "unarmed"; res.Hard = true; yield break; }
                     if (g.Ops[k].Gun.Drawn) { res.Given = res.Done = true; yield break; } // F would holster
-                    yield return SelectOp(k, false); res.Mark = g.Orders.Count; yield return HoldKey(Key.F, 0.15f); res.Given = true; yield break;
+                    yield return SelectOp(k, false); res.Mark = g.Orders.Count; res.MarkTick = g.Tick; yield return HoldKey(Key.F, 0.15f); res.Given = true; yield break;
                 case "stance":
                     if (k < 0 || g.Ops[k].Gun.W == null) { res.Why = "unarmed"; res.Hard = true; yield break; }
                     yield return SelectOp(k, false);
@@ -243,7 +244,7 @@ namespace Suborned.Play
                 case "panic":
                 {
                     var c = new Vector2(Screen.width * 0.5f, Screen.height * 0.45f); c = OffThings(c);
-                    res.Mark = g.Orders.Count; yield return Both(c, 1.2f); res.Given = true; yield break;
+                    res.Mark = g.Orders.Count; res.MarkTick = g.Tick; yield return Both(c, 1.2f); res.Given = true; yield break;
                 }
                 default: yield return PlayRing(s, k, clean, res); yield break;
             }
@@ -260,7 +261,7 @@ namespace Suborned.Play
             if (!clean && s.misclick) { sp += new Vector2(s.missDx, s.missDy) * Kpx; Noise("misclick", s, $"the ground {s.missDx:0},{s.missDy:0} px off"); }
             int tr = s.i < hs.Tries.Length ? hs.Tries[s.i] : 1; if (tr > 1) { float a = (s.i * 97 + tr * 131) % 360 * Mathf.Deg2Rad; sp += new Vector2(Mathf.Cos(a), Mathf.Sin(a)) * (tr - 1) * 18f * Kpx; } // a retry clicks a little aside (the first point was a roof, a wall or a solid)
             sp = OffThings(sp);
-            res.Mark = g.Orders.Count; cur.Moves++;
+            res.Mark = g.Orders.Count; res.MarkTick = g.Tick; cur.Moves++;
             if (s.run) { cur.Runs++; yield return Click(sp); yield return Wait(0.06f); }
             yield return Click(sp); res.Given = true;
         }
@@ -294,11 +295,11 @@ namespace Suborned.Play
             var rs = ring[0];
             if (!clean && s.wrong != 0 && k >= 0 && WrongSeg(rs, seg, s.wrong, k) is int ws && ws >= 0)
             {
-                var wseg = rs.Segs[ws]; Noise("wrong-verb", s, $"took {wseg.Word} for {rs.Segs[seg].Word}; noticed {s.wrongNoticeS:0.0} s later (X)");
+                var wseg = rs.Segs[ws]; Noise("wrong", s, $"took {wseg.Word} for {rs.Segs[seg].Word}; noticed {s.wrongNoticeS:0.0} s later (X)");
                 yield return Take(rs, ws); yield return Wait(s.wrongNoticeS); yield return Stop(s.op); yield return Wait(0.4f);
                 res.Why = "wrong wedge"; yield break; // the retry is clean
             }
-            res.Mark = g.Orders.Count; yield return Take(rs, seg); res.Given = true;
+            res.Mark = g.Orders.Count; res.MarkTick = g.Tick; yield return Take(rs, seg); res.Given = true;
         }
 
         /// <summary>A way the ring does not show (it holds five): the ⋯ wedge opens the full panel, and the person clicks the way's row there. When the
@@ -313,7 +314,7 @@ namespace Suborned.Play
             int row = -1; for (int i = 0; i < pn.Rows.Count; i++) { var r = pn.Rows[i]; if (r.Available && (k < 0 || r.By == (OpId)k) && RowMatch(r.I?.Order, s)) { row = i; break; } }
             if (row < 0) { res.Why = "not on the ring or the panel"; if (h.Panel != null) yield return Keys(new[] { Key.Escape }, 2); yield break; }
             var od = pn.Rows[row].I.Order; offered = (Op.Name(pn.Rows[row].By), od.Do ?? "", od.Target ?? "", Time.realtimeSinceStartup, false);
-            res.Mark = g.Orders.Count; var at = HudToolkit.PanelRowScreen(row);
+            res.Mark = g.Orders.Count; res.MarkTick = g.Tick; var at = HudToolkit.PanelRowScreen(row);
             if (at is Vector2 a) { cur.Clicks++; yield return Click(a); yield return Wait(0.3f); }
             if (h.Panel != null && ReferenceEquals(h.Panel, pn)) { Noise("panel-direct", s, at == null ? "the kit drew no such row" : "the row's press was not taken"); h.PanelDo(row); }
             res.Given = true;
@@ -384,12 +385,27 @@ namespace Suborned.Play
             var busy = op.Busy; int busyEnd = op.BusyEnd; var act = op.Act; bool loop = k == (int)OpId.Tech && g.LoopOn; int mark = g.Orders.Count; var from = op.Pos;
             string had = busy != null ? $"{busy.Do} {busy.Target}".Trim() : act != null ? $"walking in to {act.Do} {act.Target}".Trim() : loop ? "holding the loop" : op.Walk != null ? "walking" : "";
             Noise("third-person", s, $"{s.peekS:0.0} s behind the {Op.Name((OpId)k)}{(had.Length > 0 ? $", {had}" : "")}");
-            yield return Keys(new[] { Key.T }, 2); yield return Wait(s.peekS);
-            string lost = TpLost(k, busy, busyEnd, act, loop, mark, from);
+            yield return Keys(new[] { Key.T }, 2);
+            // the walk-off case (Sky, 2026-10-25): on every other look from an idle agent, W held there, then the agent key of one at work with W still
+            // down: the key held over must not walk the agent taken (the host ignores it until it is pressed again)
+            int j = Enumerable.Range(0, 4).FirstOrDefault(x => x != k && Works(x)); bool swapTest = (s.i & 1) == 1 && h.Driving && !Works(k) && j != k && Works(j);
+            if (swapTest)
+            {
+                var oj = g.Ops[j]; var jb = oj.Busy; int jEnd = oj.BusyEnd; var ja = oj.Act; bool jl = j == (int)OpId.Tech && g.LoopOn; int jm = g.Orders.Count; var jf = oj.Pos;
+                Noise("third-person", s, $"W held on the {Op.Name((OpId)k)}, then the {Op.Name((OpId)j)} taken with W still down");
+                yield return HoldKeys(new[] { Key.W }, 0.4f, keepDown: true); yield return HoldKeys(new[] { Key.W, Key.F1 + j }, 0f, keepDown: true); yield return HoldKeys(new[] { Key.W }, 0.8f);
+                string jlost = h.DriveAgent == j ? TpLost(j, jb, jEnd, ja, jl, jm, jf) : null;
+                if (jlost != null) yield return Hit("Q-TP-KEEP", $"{Op.Name((OpId)j)}:held-key", "A key held over a swap walked the agent taken", "a movement key held from the last agent is ignored until it is pressed again (Sky's walk-off, 2026-10-25)", jlost, h.frame.World(g.Ops[j].Pos));
+            }
+            yield return Wait(s.peekS);
+            string lost = swapTest ? null : TpLost(k, busy, busyEnd, act, loop, mark, from); // with the swap test the bot walked the first agent itself
             if (h.Following) yield return Keys(new[] { Key.T }, 2);
-            yield return Wait(0.3f); lost ??= TpLost(k, busy, busyEnd, act, loop, mark, from); // the let-go too
+            yield return Wait(0.3f); if (!swapTest) lost ??= TpLost(k, busy, busyEnd, act, loop, mark, from); // the let-go too
             if (lost != null) yield return Hit("Q-TP-KEEP", $"{Op.Name((OpId)k)}:{busy?.Do ?? act?.Do ?? (loop ? "loop" : "")}", "Third person stopped an act", "an act under way when T is pressed goes on until the player intervenes (Sky 2026-10-22)", lost, h.frame.World(g.Ops[k].Pos));
         }
+
+        /// <summary>Agent x is at work: an act, a walk-in, a walk, a queued act, or (the Tech) the loop held.</summary>
+        bool Works(int x) { var g = h.Game; var o = g.Ops[x]; return !o.Down && !o.Inside && !o.InCar && (o.Busy != null || o.Act != null || o.Walk != null || h.PendingOf(x).verb.Length > 0 || x == (int)OpId.Tech && g.LoopOn); }
 
         /// <summary>What third person cost agent k since `mark`, null nothing: the act it was on ended early, its walk-in dropped, or the loop let go,
         /// with an order for it in between that the bot did not press for (a cancel, a move, a drive sample that moved it).</summary>
@@ -531,11 +547,13 @@ namespace Suborned.Play
             }
         }
 
-        static IEnumerator HoldKeys(Key[] keys, float seconds)
+        /// <summary>Keys held for `seconds` (at least a frame), then let go; keepDown leaves them down for the next sequence to change.</summary>
+        static IEnumerator HoldKeys(Key[] keys, float seconds, bool keepDown = false)
         {
             if (UnityEngine.InputSystem.Keyboard.current is not UnityEngine.InputSystem.Keyboard kb) yield break;
             float until = Time.realtimeSinceStartup + seconds;
             do { UnityEngine.InputSystem.InputSystem.QueueStateEvent(kb, new UnityEngine.InputSystem.LowLevel.KeyboardState(keys)); yield return null; } while (Time.realtimeSinceStartup < until);
+            if (keepDown) yield break;
             UnityEngine.InputSystem.InputSystem.QueueStateEvent(kb, new UnityEngine.InputSystem.LowLevel.KeyboardState()); yield return null;
         }
         /// <summary>A key held while the going-loud card it opens wants it (F's draw at Alert), at least `min` seconds.</summary>

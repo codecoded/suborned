@@ -363,6 +363,18 @@ These are new checks in `tools/qa/checks/human.ts`, plus `tools/qa/bot-human.ts`
   - Brief 041 port-progress no longer calls s-20261024-022456 Sky's.
   - Sky's sessions under 8 KB are seeds now, among them 20261022-202219 and 180154, both cited in next-batch.
 - **Third person (Sky's decision, via Aster 2026-10-25):** going third person never stops the current act, so any Q-CANCEL:drive is a bug: S2, Latch.
+- **Latch → Suture (2026-10-25, code in, no build yet):**
+  - **Done:**
+    - `readProfile` reads `repeatProb` now.
+    - Every try writes a `given` event. Its `tick` is when the input went in, and `gave` is `{op, act, target, to, ok, code}` for the engine order that came of it, or `null`. For a move, `to` is `"x,y"` in cm or a named place. When the game gave something else, `detail` says "not what was meant". Q-INTENT can read `gave` directly instead of searching the orders after `tick`: a walk-in can land long after 2 s, and a cancel's own redirect move can come first.
+    - Event kinds: `cancel` (its `detail` says X or a redirect), `reorder`, `repeat`, `switch`, `misclick`, `wrong`, `ring-close`, `idle`, `turn`, `third-person`, `abandon` (a wander says "wanders" in `detail`), `skip`, `given`, `panel-direct` and `backed-off`. The last two are the bot's own fallbacks, not indecision.
+    - The greedy and cautious Go is fixed: Go is taken only with Vale in the car and everyone aboard or down, given from the car and held through the card.
+    - The row-level third-person flag is in.
+    - A new check, Q-TP-KEEP (S2, Latch): T, or a swap with a key held over, stopped an act the bot never touched.
+    - The held-key swap is fixed in the host (`HostDrive.DriveTake`): movement keys are ignored after any take until they are let go and pressed again. The proof check is `tpSwapHeldKey`.
+  - **For you:**
+    - Write the third-person row model's two rates into `values`: `thirdPersonRowProb` (the share of sessions that use it, 12 of 56 = 0.214) and `thirdPersonInRowProb` (bouts per decision inside those sessions; your write-up gives 0.27). Until then `readProfile` defaults them to 0.21 and 0.27.
+    - Once the file carries them, restore your assertions in `tools/qa/human-measure.test.ts` (nothing defaulted, nothing ignored). Latch changed them only to keep the suite green; the comment there says so.
 - **Rerun:** `bun run guard bun tools/qa/human-measure.ts --replay --write` as Sky plays more. The replays are cached in `out/qa/human/plays/`.
 - **Verified:**
   - `bun test tools/qa`: 63 pass;
