@@ -19,7 +19,7 @@
     { "material": "DK_Cafe_BackBar", "mode": "emission", "evening": 0.8, "night": 0.1 },
     { "material": "DK_Cafe_Bakelite", "mode": "emission", "evening": 0.8, "night": 0.1 },
     { "material": "DK_Cafe_Coral", "mode": "emission", "evening": 0.8, "night": 0.1 },
-    { "material": "DK_Cafe_Floor", "mode": "emission", "evening": 0.8, "night": 0.1 },
+    { "material": "DK_Cafe_Floor", "mode": "emission", "evening": 0.8, "night": 0.05 },
     { "material": "DK_Cafe_Ivory", "mode": "emission", "evening": 0.8, "night": 0.1 },
     { "material": "DK_Cafe_Leaf", "mode": "emission", "evening": 0.8, "night": 0.1 },
     { "material": "DK_Cafe_Mural", "mode": "emission", "evening": 0.8, "night": 0.1 },
