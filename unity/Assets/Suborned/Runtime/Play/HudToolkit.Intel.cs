@@ -201,7 +201,7 @@ namespace Suborned.Play
                 Fill(c.Slots[1], p.KTemperament ? "learned" : "unk", p.Temperament, p.KTemperament ? IntelFragment("temperament", p.Temperament) : "");
                 bool tiesKnown = p.KSecret && p.Secret.Length > 0, noneKnown = p.KNeed && p.KTemperament && p.Secret.Length == 0;
                 string lover = p.Lover != null ? host.Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; // "Loves Inez", "Loves the guard" (Aster)
-                Fill(c.Slots[2], tiesKnown || noneKnown ? "learned" : "unk", tiesKnown ? (p.Secret == "affair" ? "kin" : "secret") : noneKnown ? "secret_none" : "", tiesKnown ? IntelFragment("secret", p.Secret, lover) : noneKnown ? IntelFragment("secret", "") : "");
+                Fill(c.Slots[2], tiesKnown || noneKnown ? "learned" : "unk", tiesKnown ? (p.Secret == "affair" ? "lovers" : "secret") : noneKnown ? "secret_none" : "", tiesKnown ? IntelFragment("secret", p.Secret, lover) : noneKnown ? IntelFragment("secret", "") : "");
                 foreach (var sl in c.Slots) sl.Verb = sl.State == "unk" && nx is { verb: "watch" or "listen" } ? nx.Value.verb : sl.State == "unk" ? "listen" : "";
                 if (stress) foreach (var sl in c.Slots) { sl.Frag = IntelWorst[0]; }
                 // the chip

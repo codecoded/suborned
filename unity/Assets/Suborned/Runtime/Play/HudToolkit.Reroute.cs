@@ -6,7 +6,7 @@ namespace Suborned.Play
     /// <summary>Brief 057 §2 with Sky's note ("just make it thin"): what Reroute moves, on the ground, hairline weight, cream over ink-deep (054's
     /// language, no new colour): the patrol's sweep as a line between its two ends with a short cross-tick at each; the route it walks to the wait
     /// spot dotted (0.35 m on, 0.35 m off) with a small filled chevron every 3 m; the wait spot a dashed circle (0.9 m); on hover the patrol's own
-    /// ground ring. The patrol's cameo (the kit's signal_unit badge, until Forma and Glyph make npc_patrol) over the patrol on hover and over the
+    /// ground ring. The patrol's cameo (Glyph's npc_patrol_face, the face without its bezel: Cameo draws the ring; a stand-in until Forma's art) over the patrol on hover and over the
     /// wait spot; an edge chip (plate_dark 22 px, the cameo and the pointer icon turned toward it) when the wait spot is off screen. Drawn while
     /// the way is hovered or lit, and while the reroute is in play.</summary>
     public sealed partial class HudToolkit
@@ -38,7 +38,7 @@ namespace Suborned.Play
 
         VisualElement RrCameo()
         {
-            var c = Cameo(marks, 14f, 2f); c.style.position = Position.Absolute; c.pickingMode = PickingMode.Ignore; Bg(c.Q("face"), "badges/signal_unit", Color.white); Show(c, false); return c;
+            var c = Cameo(marks, 14f, 2f); c.style.position = Position.Absolute; c.pickingMode = PickingMode.Ignore; Bg(c.Q("face"), "badges/npc_patrol_face", Color.white); Show(c, false); return c;
         }
 
         void RerouteDraw()
@@ -49,7 +49,7 @@ namespace Suborned.Play
             {   // Glyph's 0.2.104 review #3: cameo, 4 px, the pointer (cream, 12 px, painted turned toward the wait spot so its box stays 12 px for the
                 // layout audit), the plate shrinking to fit; 9 px each side keeps both 4 px clear of the rim
                 rrEdge = PlateDark(marks, 30f, 0.37f); rrEdge.style.position = Position.Absolute; rrEdge.style.paddingLeft = 10; rrEdge.style.paddingRight = 10;
-                var cm = Cameo(rrEdge, 12f, 2f); Bg(cm.Q("face"), "badges/signal_unit", Color.white);
+                var cm = Cameo(rrEdge, 12f, 2f); Bg(cm.Q("face"), "badges/npc_patrol_face", Color.white);
                 rrEdgeArrow = P(rrEdge, 0, 0, 12, 12, (pt, r) =>
                 {
                     var c = r.center; float a = rrEdgeAngle; Vector2 R(Vector2 v) => new(v.x * Mathf.Cos(a) - v.y * Mathf.Sin(a), v.x * Mathf.Sin(a) + v.y * Mathf.Cos(a));

@@ -84,10 +84,23 @@ export function transit(plan: Plan, d: Derived): World['transit'] {
     spacing: p.double ? sstd.beamCentres : 0, capDepth: p.double ? PROV.beam.cap : 0,
   }));
   const sides = (mode: 'tram' | 'sky') => modeOf(plan).find(m => m[0] === mode)![1].flatMap(line => placements(plan, d, line, mode).items.map(s => ({ line, s })));
+  // brief 028 round 2 (Splice's proposal to Datum, not on by default): `streetscape.kerbReturn.platform` = a radius in m rounds the two corners of a tram platform's far (street) side; the track side stays straight for boarding. The plan says "Tram platforms keep square ends"; the key is Datum's to set.
+  const platEnds = Number((plan.standards as any).streetscape?.kerbReturn?.platform ?? 0);
+  const roundFar = (q: V[], R: number): V[] => {
+    const out: V[] = [q[0]!, q[1]!];
+    for (const i of [2, 3]) {
+      const p = q[i]!, pa = q[i - 1]!, pb = q[(i + 1) % 4]!, ua = norm(sub(pa, p)), ub = norm(sub(pb, p)), r = Math.min(R, dist(p, pa) / 2, dist(p, pb) / 2);
+      const t1: V = [p[0] + ua[0] * r, p[1] + ua[1] * r], t2: V = [p[0] + ub[0] * r, p[1] + ub[1] * r], c: V = [p[0] + (ua[0] + ub[0]) * r, p[1] + (ua[1] + ub[1]) * r], a0 = Math.atan2(t1[1] - c[1], t1[0] - c[0]);
+      let da = Math.atan2(t2[1] - c[1], t2[0] - c[0]) - a0; while (da > Math.PI) da -= 2 * Math.PI; while (da < -Math.PI) da += 2 * Math.PI;
+      for (let k = 0; k <= 8; k++) out.push([c[0] + r * Math.cos(a0 + da * k / 8), c[1] + r * Math.sin(a0 + da * k / 8)]);
+    }
+    return out;
+  };
   const platform = (id: string, s: ReturnType<typeof sides>[number]['s'], side: 1 | -1, off: number, w: number, len: number, base: number, h: number): Mass => {
     const smp = s.path.samples.reduce((b, x) => (dist(x.p, s.at) < dist(b.p, s.at) ? x : b)), u = smp.dir, n: V = [-u[1] * side, u[0] * side];
     const c: V = [smp.p[0] + n[0] * off, smp.p[1] + n[1] * off], a: V = [u[0] * len / 2, u[1] * len / 2], b: V = [n[0] * w / 2, n[1] * w / 2];
-    return { id, surface: 'platform', ring: ring([[c[0] - a[0] - b[0], c[1] - a[1] - b[1]], [c[0] + a[0] - b[0], c[1] + a[1] - b[1]], [c[0] + a[0] + b[0], c[1] + a[1] + b[1]], [c[0] - a[0] + b[0], c[1] - a[1] + b[1]]]), base: r3(base), height: r3(h) };
+    const quad: V[] = [[c[0] - a[0] - b[0], c[1] - a[1] - b[1]], [c[0] + a[0] - b[0], c[1] + a[1] - b[1]], [c[0] + a[0] + b[0], c[1] + a[1] + b[1]], [c[0] - a[0] + b[0], c[1] - a[1] + b[1]]];
+    return { id, surface: 'platform', ring: ring(platEnds > 0 && id.startsWith('stop/') ? roundFar(quad, platEnds) : quad), base: r3(base), height: r3(h) };
   };
   const stops = sides('tram').flatMap(({ line, s }) => ([1, -1] as const).map(side =>
     platform(`stop/${line.id}/${s.id}/${side > 0 ? 'l' : 'r'}`, s, side, tstd.trackCentres / 2 + PROV.track.width / 2 + PROV.platform.tram.width / 2 + 0.5, PROV.platform.tram.width, s.length ?? tstd.platform, 0, PROV.platform.tram.height)));

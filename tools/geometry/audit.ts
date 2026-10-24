@@ -41,6 +41,8 @@ const withKind = (vis: Visible, gs: Group[]): Group[] => gs.map(g => ({ ...g, ki
 
 /** The raster column under a block-frame point (the cell the point is in). A walk cell's centre lies on the corner of four raster cells; 5 cm south-east of it is in one of them, and the walk file is read at the same point. */
 export const NUDGE = 0.05;
+/** The legs' read of the cell under a route point: 1 mm south-east, so a point on a cell edge takes one cell by a fixed rule, not by rounding. */
+export const LEG_NUDGE = 0.001;
 export function colAt(c: Ctx, b: V) {
   const p = c.sim.frame.toPlan([b[0] + NUDGE, b[1] + NUDGE]), [i, j] = c.vis.R.cellOf(p);
   return c.vis.R.inside(i, j) ? c.vis.R.column(i, j) : undefined;
@@ -299,7 +301,7 @@ export function auditLegs(c: Ctx, world: World, route?: { list: Route[]; paths: 
       const a = leg.pts[k]!, b = leg.pts[k + 1]!, L = Math.hypot(b[0] - a[0], b[1] - a[1]); if (L < 0.005) continue;
       const n = Math.max(1, Math.ceil(L / 0.25)); metres += L;
       for (let m = 0; m <= n; m++) {
-        const t = m / n, q: V = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], [ci, cj] = R.cellOf(sim.frame.toPlan(q)); if (!R.inside(ci, cj)) { flush(); continue; }
+        const t = m / n, q: V = [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], [ci, cj] = R.cellOf(sim.frame.toPlan([q[0] + LEG_NUDGE, q[1] + LEG_NUDGE])); if (!R.inside(ci, cj)) { flush(); continue; } // the cell under the point, read 1 mm south-east: a route point exactly on a raster cell edge (the café door's walk to its tables, x -10.25) is not in the wall's cell (brief 028, Vantage 2026-10-24: the engine's collide boxes leave it free)
         const col = R.column(ci, cj), rise = col.top - col.ground, floor = (col.walkable ? col.top : col.ground) - 0.18, declared = !!floorAt(sim.civ, sim.frame.toPlan(q)).on; // block z: the pavement is 0; a floor the civic block declares (the Office landing and its steps) is a stair, not a ledge
         let cause: LegStretch['cause'] | undefined = !col.walkable && rise > FLUSH ? 'solid' : col.walkable && rise > LEDGE && !declared ? 'ledge' : col.walkable && col.roof - col.top < HEAD ? 'ceiling' : undefined, owner = key(col.owner), clear: number | undefined;
         if (!cause) { // the body's clearance: a drawn solid that blocks a walker at this floor (above a step, under head room), a building's face by the point itself, or a camera pole

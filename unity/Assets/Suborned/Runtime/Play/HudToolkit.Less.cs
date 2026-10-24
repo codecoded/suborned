@@ -1384,7 +1384,7 @@ namespace Suborned.Play
             if (heldMark == null)
             {   // the held car: a lock and the number of hostiles holding it, no words (Glyph fight r1 A)
                 heldMark = E(marks, "s-disc_dark_24", 0, 0, 26, 26, pick: true); Icon(E(heldMark, null, 5, 5, 16, 16), "lock", Cream);
-                var nb = E(heldMark, null, 17, -6, 17, 17); nb.style.backgroundColor = Cream; Round(nb, 8.5f); Border(nb, 1.2f, Ink);
+                var nb = E(heldMark, null, 21, -9, 17, 17); /* Glyph's 0.2.112 check: the count clear of the lock (it touched at 17, -6) */ nb.style.backgroundColor = Cream; Round(nb, 8.5f); Border(nb, 1.2f, Ink);
                 heldNum = L(nb, "verb-name"); heldNum.style.position = Position.Absolute; heldNum.style.left = 0; heldNum.style.top = 0; heldNum.style.width = 14.6f; heldNum.style.height = 14.6f; heldNum.style.unityTextAlign = TextAnchor.MiddleCenter; heldNum.style.color = Ink; heldNum.style.fontSize = 11; heldNum.style.paddingLeft = 0; heldNum.style.paddingRight = 0; heldNum.style.paddingTop = 0; heldNum.style.paddingBottom = 0; heldNum.style.marginLeft = 0; heldNum.style.marginTop = 0;
                 heldMark.RegisterCallback<PointerDownEvent>(ev => { if (ev.button != 0) return; ev.StopPropagation(); host.StepMarkClick("car"); });
                 manifest.Add((heldMark, "image", () => "car held marker")); Show(heldMark, false);
@@ -1458,7 +1458,7 @@ namespace Suborned.Play
                 var carW = host.frame.World(g.S.At(g.S.GetawayCar)); bool ring = host.CarRingOn, held = ring && host.CarHeldNow;
                 var holders = held ? host.CarHolders() : new List<(string id, Vector3 at)>();
                 Place(carMark, (car || ring) && !held, carW, "car", !ring && !hintHere("H15"), -1, TurqLight, TurqLight);
-                if (held && Proj(carW, out var cq0)) { Show(heldMark, true); Text(heldNum, holders.Count.ToString()); heldMark.style.left = cq0.x - 13; heldMark.style.top = cq0.y - 13; }
+                if (held && !(host.Ring?.Plan?.T?.Kind == "car") && Proj(carW, out var cq0)) { Show(heldMark, true); /* Glyph's 0.2.112 check: under an open car ring the marker sat on the ring's middle, its lock and count against the car pip; the Go pill shows the lock and the holders there */ Text(heldNum, holders.Count.ToString()); heldMark.style.left = cq0.x - 13; heldMark.style.top = cq0.y - 13; }
                 else Show(heldMark, false);
                 // brief 018 §6.3: five seat pips under the car marker (Vale, then the Scout, Fixer, Tech, Enforcer), filled as each boards; shown with
                 // the marker, the held lock, or anyone in the car. Vale's pip is the larger.

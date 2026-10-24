@@ -48,6 +48,7 @@ export type Return = {
   /** a median's end (kerbReturn.nose): the bullnose, a half round of half the island's width, its centre inside the pavement; no carriageway fill, no cut: the road runs under the median */ nose?: boolean;
   /** a road bend's outside kerb (kerbReturn.bend): the id of the inside return it is concentric with; the region `cut` is pavement laid into the road's corner (a slab), not carriageway */ bend?: string;
   /** a bend where two roads meet end to end (no mitre): the uncovered square at the outside of the turn, up to the outside kerb arc: the node, then the arc a .. b (the carriageway there, laid as a flat) */ hole?: V[];
+  /** a corner of a junction box on the sheet's edge, beside a beyond block or the quay (no plot has a vertex there) */ edge?: boolean;
 };
 /** A kerbed bay (standards.streetscape.roads.kerbs.bays.kerbed) with its corners rounded by kerbReturn.bay: the lay-by in the road, mouth open on the carriageway, its pavement corners at the mouth (convex) and its back corners (concave) arcs of one radius.
  *  `notch` is the outline the plot slab takes round it, from the mouth's first point `M[0]` to the second `M[1]`, `ring` the bay flat's own (convex) ring with its back corners rounded, `faces` the straight kerb faces between the arcs (end, back, end), `n` into the bay. */
@@ -214,7 +215,7 @@ function edgeReturns(ctx: Pick<Ctx, 'plan' | 'd'>, std: KerbReturnStd, have: Ret
         const t = R / Math.tan(alpha / 2), c = add(P, mul(norm(add(e1, e2)), R / Math.sin(alpha / 2)));
         const n1 = norm(sub([0, 0], sub(e2, mul(e1, dot(e1, e2))))), n2 = norm(sub([0, 0], sub(e1, mul(e2, dot(e1, e2)))));
         out.push(arcReturn(`edge/${key}`, 'edge', '', `${A.id}`, cls, P, add(P, mul(e1, t)), add(P, mul(e2, t)), c, R, true, n1, n2));
-        const o = out[out.length - 1]!; o.bay = undefined; o.level = 0; o.roads = [A.id, B.id]; o.t = t; o.theta = Math.PI - alpha;
+        const o = out[out.length - 1]!; o.bay = undefined; o.edge = true; o.level = 0; o.roads = [A.id, B.id]; o.t = t; o.theta = Math.PI - alpha;
       }
     }
   }

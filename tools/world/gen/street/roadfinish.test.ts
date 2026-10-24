@@ -96,11 +96,20 @@ describe('the road finish', () => {
     expect(pin.some(i => /roadfinish\/(beyond|.*reservation)/.test(i.edge))).toBe(false);
     expect(new Set(pin.map(i => i.z))).toEqual(new Set([0.18, 0.02, -0.03]));
   });
+  test('the Boulevard\'s lawn track ends in quarter rounds (kerbReturn.nose): each stretch is rounded at its ends except on the sheet\'s edge, the kerb ribbon is swept round them, and the rounds keep the swept envelope clear', () => {
+    const lawn = res.log.lawn.filter(l => l.ring.length > 4), arcs = res.items.filter(i => i.edge.startsWith('roadfinish/lawn/'));
+    expect(lawn.length).toBeGreaterThan(8); expect(arcs.length).toBeGreaterThan(40); expect(arcs.some(i => i.kind === 'road-ribbon')).toBe(true);
+    const sq = res.log.lawn.filter(l => l.ring.length === 4); expect(sq.length).toBeLessThanOrEqual(1); // the stretch that runs on to the sheet's edge at one end keeps that end square
+    for (const l of lawn) for (const q of l.ring) { const x = Math.abs(q[0] - 0); expect(x).toBeLessThanOrEqual(5.0001); } // never wider than the reservation
+    // the swept envelope (the double track 1.8 either side + 1.825) stays inside every rounded stretch's outline
+    for (const l of lawn) for (const x of [-3.625, 3.625]) for (const y of [(Math.min(...l.ring.map(q => q[1])) + Math.max(...l.ring.map(q => q[1]))) / 2]) expect(inPoly([x, y], l.ring)).toBe(true);
+    // each round is tangent to the end line: the stretch's two ends are straight between the arcs
+  });
   test('a kerbed bay\'s own faces and arcs are laid on its floor, none across its mouth, and the plot run beside it stops at the mouth corner\'s tangent point (brief 028)', () => {
     const bay = res.items.filter(i => (i.edge.startsWith('roadfinish/bay/') || i.edge.startsWith('roadfinish/return/layby/')) && i.kind !== 'road-pinstripe');
     expect(bay.length).toBeGreaterThan(0); expect(bay.every(i => i.z === 0.02)).toBe(true);
     expect(res.log.kerb.cutM.bay ?? 0).toBe(0); // no break: the geometry stops the run (capstone.kerbRuns)
-    expect(res.log.returns.returns).toBe(153); expect(res.log.returns.chords).toBeGreaterThan(1500);
+    expect(res.log.returns.returns).toBe(160); expect(res.log.returns.chords).toBeGreaterThan(1500);
     for (const b of baysOf(ctxOf(plan, d, civ))) for (const i of res.items.filter(x => x.kind === 'road-ribbon' && /^roadfinish\/(rocket-lane|apron-road)/.test(x.edge))) expect(segDist(i.at, b.M[0], b.M[1]), `${i.id} on the mouth of ${b.id}`).toBeGreaterThan(0.5); // no ribbon on a mouth
   });
   test('no two pieces of one kind stand at the same place and heading (a kerb face is laid once)', () => {

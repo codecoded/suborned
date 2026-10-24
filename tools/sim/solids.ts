@@ -37,6 +37,9 @@ const COMPACT = 3;
 const THIN = 0.6;
 /** Engine 0.30.0: how far above the eye line a volume must reach to stop sight (m). */
 const GRAZE = 0.1;
+/** Engine 0.30.0 (brief 055; Vantage 2026-10-24: Inez's centre passed 10 cm from the café front, her shoulder sank into the wall): a cell whose centre is within
+ *  this of a building's face is blocked, so a walker's body keeps off walls (half a drawn body's shoulder width, 0.25 m, and a few cm). Was 0: the centre only. */
+const FACE = 0.3;
 
 type Box = { shape: 'box'; min: [number, number, number]; max: [number, number, number]; stand?: boolean };
 type Cyl = { shape: 'cylinder'; c: [number, number]; r: number; y0: number; y1: number; stand?: boolean };
@@ -46,7 +49,7 @@ type Piece = { sha256: string; bounds: [[number, number, number], [number, numbe
 /** A placed volume, block frame. `poly` is the footprint (a rectangle, or a 16-gon round a cylinder) for sight; `circle` keeps a cylinder exact for the walk. */
 export type Solid = {
   id: string; piece?: string; poly: V[]; circle?: { c: V; r: number }; z0: number; z1: number; stand: boolean; sight: 'blocks' | 'glazed' | 'open';
-  /** A building's face (a civic building and its ground storey, a facade piece, a shopfront box): blocked by the cell centre, as the building line is; every other solid keeps the body clearance. */
+  /** A building's face (a civic building and its ground storey, a facade piece, a shopfront box): blocked within FACE (0.3 m) of the cell centre (engine 0.30.0; was the centre only); every other solid keeps the body clearance. */
   face: boolean;
   x0: number; x1: number; y0: number; y1: number;
 };
@@ -207,14 +210,14 @@ export function simGrid(plan: Plan, d: Derived, civ: Civic, eyeM: number, win: W
   for (const s of [...drawn.solids, ...missionPoles(floorAt)]) {
     const mid: V = [(s.x0 + s.x1) / 2, (s.y0 + s.y1) / 2];
     if (s.stand && Math.abs(s.z1 - floorAt(mid)) <= FLUSH) continue; // a stand top that is the floor declared under it: that floor
-    const rr = s.face ? 0 : r;
+    const rr = s.face ? FACE : r;
     const i0 = Math.max(0, Math.floor((s.x0 - rr - win.x0) / cell)), i1 = Math.min(nx - 1, Math.floor((s.x1 + rr - win.x0) / cell));
     const j0 = Math.max(0, Math.floor((s.y0 - rr - win.y0) / cell)), j1 = Math.min(ny - 1, Math.floor((s.y1 + rr - win.y0) / cell));
     for (let i = i0; i <= i1; i++) for (let j = j0; j <= j1; j++) {
       if (rows[i]![j] === '#') continue;
       const f = floor[i * ny + j]!;
       if (!(s.z0 < f + HEAD && s.z1 > f + STEP)) continue;
-      const dc = distTo(s, base.centre(i, j)); if (s.face ? dc > 0 : dc >= r) continue;
+      const dc = distTo(s, base.centre(i, j)); if (s.face ? dc >= FACE : dc >= r) continue; // engine 0.30.0: a face keeps a walker's shoulder off it (FACE), every other solid the whole body (r)
       rows[i]![j] = '#'; added.set(i * ny + j, s.id);
     }
   }

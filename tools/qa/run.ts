@@ -7,6 +7,7 @@
 //                                          [--jobs n] [--no-replay] [--run id] [--no-summary]
 //        bun tools/qa/run.ts --replay <script.json> [--engine build|tree|<rev>]     play one script and print its findings
 //        bun tools/qa/run.ts --dev ...    a small pass while Sky plays (at most 300 plays a lane, 2 threads; no summary)
+// Lanes: bot = tier 2, the built player playing itself through real input (tools/qa/bot.ts; ~10 min a row; `bun run qa --nightly` adds it).
 // Lanes: build = the built player's engine and inputs (what Sky plays: his sessions); tree = the working tree (the routes, which are timed
 // for its site, and the sessions). runPass() is the module entry point for Splice's `bun run qa`.
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -22,11 +23,12 @@ import { lane, playStream, type Lane } from './sim';
 import { rowOf, tables, type Row } from './tables';
 import { runStatics } from './statics';
 import { loadText } from './text';
+import { runBotLane, findingsOf } from './bot';
 import { DEFAULT_RULES, type Ctx, type Item, type Play, type Seed } from './types';
 
 export type PassOpts = {
   lanes: string[]; routeMutants: number; sessionMutants: number; sessionsDir: string; maxSessions?: number; jobs?: number; replay: boolean;
-  run: string; writeSummary: boolean; maxPlays?: number; say?: (m: string) => void; /** run the static plan, world and geometry checks beside the plays (statics.ts): `bun run qa` does */ statics?: boolean;
+  run: string; writeSummary: boolean; maxPlays?: number; say?: (m: string) => void; /** the bot lane (tier 2, `bot` in lanes): rows to play (default all of tools/qa/bot.json) and minutes a row */ botRows?: number; botMinutes?: number; /** run the static plan, world and geometry checks beside the plays (statics.ts): `bun run qa` does */ statics?: boolean;
 };
 export const DEFAULTS: PassOpts = { lanes: ['build', 'tree'], routeMutants: 60, sessionMutants: 12, sessionsDir: SESSIONS_DIR, replay: true, run: '', writeSummary: true };
 
@@ -57,6 +59,7 @@ export async function runPass(opts: Partial<PassOpts> = {}): Promise<{ pass: Pas
   const playsPerLane: Record<string, number> = {};
   for (const spec of o.lanes) {
     const tl = performance.now(); let l: Lane;
+    if (spec === 'bot') { await botLane(dir, o, book, stats, checks, playsPerLane, say); continue; }
     try { l = lane(spec); } catch (e) { say(`qa: lane ${spec} skipped: ${(e as Error).message.split('\n')[0]}`); continue; }
     const ctx: Ctx = { text: loadText(l.textFile), rules: DEFAULT_RULES };
     const items = itemsFor(l.name, routes, sessions, o), work = join(dir, 'work', l.name);
@@ -112,6 +115,32 @@ export async function runPass(opts: Partial<PassOpts> = {}): Promise<{ pass: Pas
   let summaryFile: string | undefined;
   if (o.writeSummary) { mkdirSync(sumDir, { recursive: true }); summaryFile = join(sumDir, `${run}.summary.json`); writeFileSync(summaryFile, JSON.stringify(summary(pass), null, 1) + '\n'); }
   return { pass, dir, summaryFile };
+}
+
+/** Tier 2 (Latch): the built player plays rows of the Handover through real input (tools/qa/bot.ts); each anomaly it kept is a finding with
+ *  its shot and replay script. Rows play at real time (~10 min each); the guard is asked before each row. */
+async function botLane(dir: string, o: PassOpts, book: IssueBook, stats: LaneStat[], checks: Record<string, Record<string, number>>, playsPerLane: Record<string, number>, say: (m: string) => void) {
+  const tl = performance.now(), out = join(dir, 'bot');
+  let r: Awaited<ReturnType<typeof runBotLane>>;
+  try { r = await runBotLane(out, { rows: o.botRows, minutes: o.botMinutes, say }); } catch (e) { say(`qa: lane bot skipped: ${(e as Error).message}`); return; }
+  if (r.skipped) { say(`qa: lane bot skipped (a note, not a finding): ${r.skipped}`); return; }
+  const flagged = new Map<string, Set<string>>(); let errors = 0;
+  for (const row of r.rows) {
+    const rep = r.report?.rows.find(x => x.name === row.name); if (!rep && !r.ran.includes(row.name)) continue; // not started (Sky opened the game): not a finding
+    const session = join(out, row.name, 'session.script.json'); let script: Item['script'];
+    try { script = JSON.parse(readFileSync(session, 'utf8')); } catch { script = { schema: 'suborned.sim.script/1', mission: 'handover', start: {}, orders: [] }; }
+    const it: Item = { id: `${row.name} (${row.policy}, seed ${row.seed})`, seed: { id: `bot ${row.policy} seed ${row.seed}`, kind: 'route', file: session, script }, mutations: [], script };
+    const fs = findingsOf(rep, row.name, out); if (!rep || rep.status === 'failed') errors++;
+    for (const f of fs) { const s2 = flagged.get(f.check) ?? new Set(); s2.add(row.name); flagged.set(f.check, s2); if (f.script) f.script = f.script.replace(ROOT + '/', ''); if (f.shot) f.shot = f.shot.replace(ROOT + '/', ''); }
+    book.add('bot', it, fs);
+  }
+  for (const [c, s2] of flagged) (checks[c] ??= {})['bot'] = s2.size;
+  playsPerLane['bot'] = Math.max(1, r.ran.length);
+  const rows = r.report?.rows ?? [];
+  const host = `${r.ran.length}/${r.rows.length} rows${r.stoppedForSky ? ' (stopped: Sky opened the game)' : ''}: ${rows.map(x => `${x.name} ${x.outcome || x.status}${x.failCode ? ` (${x.failCode})` : ''}, p99 ${x.frames.p99Ms} ms, ${x.input.taken} ways taken, ${x.orders.refused} refused`).join('; ')}`;
+  const bl: Lane = { name: 'bot', dll: '', cwd: ROOT, textFile: '', engine: `the built player ${r.build}`, label: `the built player ${r.build} played through real input (random, greedy, cautious)`, inputs: 'the built player', build: r.build };
+  stats.push({ lane: bl, faithful: 0, seeds: r.rows.length, mutants: 0, plays: r.ran.length, errors, replayChecked: 0, seconds: (performance.now() - tl) / 1000, host });
+  say(`qa: lane bot done in ${((performance.now() - tl) / 1000).toFixed(0)} s (${host})`);
 }
 
 async function replayOne(script: string, engine: string) {

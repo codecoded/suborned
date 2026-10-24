@@ -1,5 +1,8 @@
 // Brief 060 §3 (Suture): the pass report (out/qa/<run>/report.html, self-contained) and the commit-ready summary
 // (briefs/060/qa/<run>.summary.json: counts per check, the build and engine, the ranked issue keys, the balance headlines).
+import { existsSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 import type { Issue } from './issues';
 import type { Agg, Tables } from './tables';
 import type { Lane } from './sim';
@@ -14,7 +17,16 @@ const top = (r: Record<string, number>, n = 4) => Object.entries(r).sort((a, b) 
 const winCell = (a: Agg) => a.win ? `${a.win.s.toFixed(0)} s · $${Math.round(a.win.spent).toLocaleString('en-US')} · T ${a.win.trail.toFixed(1)} · A ${a.win.alert.toFixed(1)}` : '–';
 
 export function replayCommand(scriptPath: string, lane: string): string {
-  return `bun tools/qa/run.ts --replay ${scriptPath} --engine ${lane}`;
+  return `bun tools/qa/run.ts --replay ${scriptPath} --engine ${lane === 'bot' ? 'build' : lane}`; // the bot's replay is the built player's session: its engine is the build lane's
+}
+
+/** A bot shot as a small embedded JPEG (sips: 720 px wide, quality 70), else "". */
+export function thumb(file: string, root: string): string {
+  const abs = file.startsWith('/') ? file : join(root, file); if (!existsSync(abs)) return '';
+  const tmp = join(tmpdir(), `qa-thumb-${process.pid}-${Math.random().toString(36).slice(2)}.jpg`);
+  const r = Bun.spawnSync(['sips', '-Z', '720', '-s', 'format', 'jpeg', '-s', 'formatOptions', '70', abs, '--out', tmp], { stdout: 'ignore', stderr: 'ignore' });
+  if (r.exitCode !== 0 || !existsSync(tmp)) return '';
+  const b = readFileSync(tmp).toString('base64'); rmSync(tmp, { force: true }); return `data:image/jpeg;base64,${b}`;
 }
 
 export function summary(p: Pass) {
@@ -42,7 +54,7 @@ export function html(p: Pass): string {
     return `<section class="issue ${i.severity}"><h3>${n}. <span class="sev">${i.severity}</span> ${esc(i.title)}</h3>
 <p class="meta">${esc(i.check)} · owner <b>${esc(i.owner)}</b> · ${Object.entries(i.plays).map(([l, k]) => `${esc(l)}: ${k} plays (${pct(i.share[l] ?? 0)})`).join(' · ')} · ${i.change ? esc(i.change) : 'new'}${i.firstSeen ? ' · first seen ' + esc(i.firstSeen) : ''} · <code>${esc(i.key)}</code></p>
 ${ex ? `<p><b>Steps:</b> play ${ex.seedKind === 'session' ? "Sky's saved session" : 'the route'} <code>${esc(ex.seed)}</code>${ex.mutations.length ? ', changed: ' + esc(ex.mutations.join('; ')) : ' as recorded'}, then read the log at ${esc(ex.finding.observed.match(/\d+:\d\d\.\d/)?.[0] ?? 'the end')}.</p>` : ''}
-<ul>${rows}</ul><p class="dim">Shot: none (tier 1 plays the engine headless; shots come with Latch's -bot row).</p></section>`;
+<ul>${rows}</ul>${(() => { const sh = i.exemplars.find(e => e.shot)?.shot; const src = sh ? thumb(sh, p.root) : ''; return src ? `<p><img src="${src}" alt="${esc(i.title)}" style="max-width:720px;width:100%;border-radius:4px"><br><span class="dim">${esc(sh)}</span></p>` : '<p class="dim">Shot: none (tier 1 plays the engine headless; the bot lane keeps one at each anomaly).</p>'; })()}</section>`;
   };
   const table = (head: string[], body: string[][]) => `<table><tr>${head.map(h => `<th>${esc(h)}</th>`).join('')}</tr>${body.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</table>`;
   const all = table(['#', 'sev', 'check', 'issue', 'owner', 'plays', 'score', 'change'], p.issues.map((i, k) => [String(k + 1), i.severity, esc(i.check), esc(i.title), esc(i.owner), esc(Object.entries(i.plays).map(([l, n]) => `${l} ${n}`).join(', ')), i.score.toFixed(3), esc(i.change ?? 'new')]));

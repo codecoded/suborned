@@ -10,6 +10,8 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
 using UnityEngine.Profiling;
+using Path = System.IO.Path;
+using Key = UnityEngine.InputSystem.Key;
 
 namespace Suborned.Play
 {
@@ -56,7 +58,7 @@ namespace Suborned.Play
         readonly Dictionary<string, float> lastCapture = new(); readonly List<string> consoleErrors = new();
         int ordersSeen; (string op, string act, string target, float at)? offered;
         readonly Dictionary<string, float> feetOff = new(), solidIn = new();
-        bool capturing;
+        bool capturing, skipFrame; object lastRing, lastPanel;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Boot()
@@ -124,18 +126,19 @@ namespace Suborned.Play
             var frames = new StringBuilder("ms,tick,what\n"); var feet = new StringBuilder("t,tick,key,x,y,z,floor,free\n");
             using var hud = new StreamWriter(Path.Combine(rowDir, "hud.jsonl"));
             double last = Time.realtimeSinceStartupAsDouble; bool sealSeen = false, sealMissed = false; int sealFrames = 0, sealHidden = 0;
-            IEnumerator act = null;
+            var act = new Stack<IEnumerator>(); // an input sequence in progress, stepped a frame at a time (nested sequences pushed)
             while (true)
             {
                 yield return null;
                 double nowD = Time.realtimeSinceStartupAsDouble, ms = (nowD - last) * 1000.0; last = nowD; float now = (float)nowD, t = now - start;
                 var g = h.Game; if (g == null) { Fail("the run went away"); break; }
                 string what = HandoverHost.FrameCost; HandoverHost.FrameCost = "";
-                if (!capturing) { cur.Frames.Add(ms); frames.Append(F(ms)).Append(',').Append(g.Tick).Append(',').Append(string.IsNullOrEmpty(what) ? "none" : what.Replace(",", "+")).Append('\n'); }
+                if (skipFrame) { skipFrame = false; HandoverHost.FrameCost = ""; what = "shot"; } // the frame after a capture carries its wait: not a frame of play
+                if (!capturing && what != "shot") { cur.Frames.Add(ms); frames.Append(F(ms)).Append(',').Append(g.Tick).Append(',').Append(string.IsNullOrEmpty(what) ? "none" : what.Replace(",", "+")).Append('\n'); }
                 if (!capturing && t > WarmS && ms > FrameSpikeMs && string.IsNullOrEmpty(what) && overAt < 0f) yield return Hit("Q-FRAME", "frame", "A frame over 50 ms with no save, order or end in it", $"every frame under {FrameSpikeMs} ms after the first {WarmS} s", $"{F(ms)} ms at {HandoverHost.MissionClock(g.Tick)}", Focus());
                 // the console
                 string[] errs; lock (consoleErrors) { errs = consoleErrors.ToArray(); consoleErrors.Clear(); }
-                foreach (var e in errs) yield return Hit("Q-ERR", Key(e), "An error in the console", "no error or exception in the console", e, Focus());
+                foreach (var e in errs) yield return Hit("Q-ERR", ErrKey(e), "An error in the console", "no error or exception in the console", e, Focus());
                 // the engine's refusals of what the ring offered (Q-OFFER), and every refusal counted
                 for (; ordersSeen < g.Orders.Count; ordersSeen++)
                 {
@@ -154,7 +157,8 @@ namespace Suborned.Play
                 if (!capturing && now >= nextHud) { nextHud = now + 2f; var mj = HudToolkit.ManifestNow(); if (mj != null) hud.WriteLine($"{{\"t\": {F(t)}, \"tick\": {g.Tick}, \"manifest\": {mj.Trim()}}}"); }
                 if (now >= nextMem) { nextMem = now + 1f; mem.Add((t, GC.GetTotalMemory(false) / 1048576.0, Profiler.GetTotalAllocatedMemoryLong() / 1048576.0)); }
                 // Q-GIVER: every ring and panel the host builds
-                GiverCheck(out var giverWhy); if (giverWhy != null) yield return Hit("Q-GIVER", giverWhy.Split(':')[0], "A downed or unable agent offered as the doer", "no giver who is down, carried, inside or in the car", giverWhy, Focus());
+                string giverWhy = null; if (!ReferenceEquals(h.Ring, lastRing) || !ReferenceEquals(h.Panel, lastPanel)) { lastRing = h.Ring; lastPanel = h.Panel; GiverCheck(out giverWhy); } // each ring and panel once, as built
+                if (giverWhy != null) yield return Hit("Q-GIVER", giverWhy.Split(':')[0], "A downed or unable agent offered as the doer", "no giver who is down, carried, inside or in the car", giverWhy, Focus());
                 // the end
                 bool over = g.Over || h.Ending.Length > 0;
                 if (over)
@@ -165,11 +169,11 @@ namespace Suborned.Play
                 }
                 if (t > row.seconds) { cur.Status = "timeout"; cur.Error = $"no end after {row.seconds:0} s of real time (mission clock {HandoverHost.MissionClock(g.Tick)})"; cur.EndTick = g.Tick; yield return Hit("Q-STUCK", "timeout", "The run did not end", $"an ending within {row.seconds:0} s of real time", cur.Error, Focus()); break; }
                 if (h.Paused && h.Modal == ModalGate.Modal.None && !capturing) h.SetPaused(false); // nothing the bot does pauses; a scene or a pop that did: play on
-                if (act != null) { if (!act.MoveNext()) act = null; continue; } // an input sequence in progress, a step a frame
+                if (act.Count > 0) { Step(act); continue; }
                 if (now >= nextDecide && h.Modal == ModalGate.Modal.None)
                 {
                     nextDecide = now + decide * (0.7f + 0.6f * (float)rng.NextDouble()); cur.Decisions++;
-                    act = Decide(row.policy);
+                    act.Push(Decide(row.policy));
                 }
             }
             HandoverHost.BeforeStep = null;
@@ -209,7 +213,8 @@ namespace Suborned.Play
             // the candidates: what is drawn on screen now, off the HUD, and the host's own offers on it
             var cands = new List<(HandoverHost.Pickable p, Vector2 sp, HandoverHost.ContextPlan plan)>();
             var opPos = h.frame.World(g.Ops[k].Pos);
-            foreach (var p in h.Pickables().OrderBy(p => (p.Anchor - opPos).sqrMagnitude).Take(24))
+            HandoverHost.FrameCost += HandoverHost.FrameCost.Length > 0 ? "+bot" : "bot"; // the offers are priced this frame (BuildPanel): Q-FRAME does not count the bot's own work
+            foreach (var p in h.Pickables().OrderBy(p => (p.Anchor - opPos).sqrMagnitude).Take(12))
             {
                 if (p.T.Kind == "op" && !g.Ops[(int)Op.Parse(p.T.Key)].Down) continue;
                 var s3 = cam.WorldToScreenPoint(p.Anchor); if (s3.z <= 0f) continue; var sp = new Vector2(s3.x, s3.y);
@@ -225,7 +230,7 @@ namespace Suborned.Play
             if (move) { yield return GroundMove(k, policy == "random" && rng.NextDouble() < 0.25); yield break; }
             // the target and the way, by policy
             (HandoverHost.Pickable p, Vector2 sp, HandoverHost.ContextPlan plan) pick; int wantWay = -1;
-            if (policy == "random") pick = (rng.NextDouble() < 0.15 && cands.Count > 0 ? cands : useful)[rng.Next((rng.NextDouble() < 0.15 && cands.Count > 0 ? cands : useful).Count)];
+            if (policy == "random") { var pool = cands.Count > 0 && (useful.Count == 0 || rng.NextDouble() < 0.15) ? cands : useful; if (pool.Count == 0) { yield return PanToward(k); yield break; } pick = pool[rng.Next(pool.Count)]; } // now and then a thing with nothing open: its lock should say why
             else
             {
                 var order = policy == "cautious" ? CautiousOrder : GreedyOrder; float best = float.MinValue; pick = useful[0];
@@ -258,6 +263,19 @@ namespace Suborned.Play
             yield return Press(at, hold ? 1.4f : 0f); // a held wedge: the wedge's hold (0.5 s) and the going-loud card's (0.5 s) on the same button
             if (h.Loud != null && h.Loud.Source == "wait") yield return RightTap(at); // a card that would fail the mission waits for a hold on it: back off
             yield return Wait(0.3f);
+        }
+
+        /// <summary>One frame of a nested input sequence: the innermost step runs; a step that yields a sequence starts it.</summary>
+        static void Step(Stack<IEnumerator> st)
+        {
+            while (st.Count > 0)
+            {
+                var top = st.Peek(); bool more;
+                try { more = top.MoveNext(); } catch (Exception e) { Debug.LogWarning("BotRun: a step broke: " + e.Message); st.Clear(); return; }
+                if (!more) { st.Pop(); continue; }
+                if (top.Current is IEnumerator inner) { st.Push(inner); continue; }
+                return; // a frame's wait
+            }
         }
 
         /// <summary>A wedge's middle on screen (HandoverHost.RingSegAt's geometry: 0 at 12 o'clock, clockwise, between the inner and outer radius).</summary>
@@ -375,7 +393,7 @@ namespace Suborned.Play
             catch { }
             foreach (var p in problems) yield return Hit("Q-CARD", fc.Length > 0 ? fc : cur.Outcome, "The end card contradicts the engine", "the card's head and lines agree with the result, the fail code and Vale's state", p, Focus(), dedupe: false);
             // Q-WARN-HUD at the fail: a sealed run whose clock never showed (the fail had no warning on screen)
-            if (fc == "sealed" && (!sealSeen || sealHidden == sealFrames)) foreach (var x in Hit("Q-WARN-HUD", "sealed-unwarned", "Sealed with no clock on screen", "the seal marker on screen from the seal's start to the end", sealSeen ? $"the marker hidden in all {sealFrames} frames of the seal" : "the seal never ran in a frame the HUD drew", Focus(), dedupe: false).Cast<object>()) yield return x;
+            if (fc == "sealed" && (!sealSeen || sealHidden == sealFrames)) yield return Hit("Q-WARN-HUD", "sealed-unwarned", "Sealed with no clock on screen", "the seal marker on screen from the seal's start to the end", sealSeen ? $"the marker hidden in all {sealFrames} frames of the seal" : "the seal never ran in a frame the HUD drew", Focus(), dedupe: false);
             // the card itself, always (the shot Q-CARD's reader and Glyph look at)
             yield return Shot("end-card");
         }
@@ -416,11 +434,11 @@ namespace Suborned.Play
                 }
             }
             catch (Exception e) { Debug.LogWarning("BotRun: shot not kept: " + e.Message); }
-            h.SetPaused(was); capturing = false; yield return null;
+            h.SetPaused(was); capturing = false; skipFrame = true; yield return null;
         }
 
         string Rel(string p) => p.StartsWith(dir) ? p[dir.Length..].TrimStart('/', '\\') : p;
-        static string Key(string e) { var s = new string(e.Where(ch => !char.IsDigit(ch)).ToArray()); return s.Length > 80 ? s[..80] : s; }
+        static string ErrKey(string e) { var s = new string(e.Where(ch => !char.IsDigit(ch)).ToArray()); return s.Length > 80 ? s[..80] : s; }
         void Fail(string why) { cur.Status = "failed"; cur.Error = why; Debug.LogWarning($"BotRun: {cur.Name}: {why}"); }
         static string Guard(Action a) { try { a(); return null; } catch (Exception e) { return e.GetType().Name + ": " + e.Message; } }
         static string Esc(string s) => (s ?? "").Replace("\\", "\\\\").Replace("\"", "'").Replace("\n", " ").Replace("\u0001", " ");

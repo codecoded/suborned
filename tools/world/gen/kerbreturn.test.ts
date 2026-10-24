@@ -21,7 +21,7 @@ describe('the corners', () => {
     expect(KERB_RETURN_DEFAULT.byClass).toEqual(k.byClass); // a plan without the key takes the same numbers
   });
   test('every plot corner where two kerbs meet is rounded: 76 convex (12 of them civic, 2 m), one concave (the lane end), none shrunk', () => {
-    const L = returnsOf(live.ctx).filter(r => !r.bay && !r.mouth && !r.nose && !r.bend);
+    const L = returnsOf(live.ctx).filter(r => !r.bay && !r.mouth && !r.nose && !r.bend && !r.edge);
     expect(L.filter(r => r.convex).length).toBe(76); expect(L.filter(r => !r.convex).length).toBe(1);
     expect(L.filter(r => r.civic).length).toBe(12);
     expect(L.every(r => Math.abs(r.r - r.want) < 0.01)).toBe(true);
@@ -63,11 +63,22 @@ describe('the corners', () => {
     expect(f.length).toBe(r.n + 2);
     expect(Math.abs(dist(f[2]!, r.c) - (r.r - 0.05))).toBeLessThan(0.01); expect(inPoly(r.at, f) || f.some(q => dist(q, r.at) < 0.1)).toBe(true);
   });
-  test('the chords of a return keep the offset circle: a ribbon 0.1 m out on a 6 m return is on r 6.1, within half a sagitta', () => {
+  test('the chords of a return keep the offset circle: a ribbon 0.1 m out on a 6 m return is on r 6.1, its chords meet on the circle', () => {
     const r = returnsOf(live.ctx).find(x => x.convex && !x.bay && !x.mouth && !x.civic && x.want === 6)!, cs = chordsOf(r, 0.1);
     expect(cs.length).toBe(12);
-    for (const c of cs) { expect(Math.abs(dist(c.at, r.c) - 6.1)).toBeLessThan(0.012); expect(c.len).toBeGreaterThan(0.7); expect(Math.abs(dist(c.from, r.c) - 6.1)).toBeLessThan(1e-9); }
+    for (const c of cs) { expect(Math.abs(dist(c.at, r.c) - 6.1 * Math.cos(Math.PI / 48))).toBeLessThan(1e-9); expect(dist(c.to, r.c)).toBeCloseTo(6.1, 9); expect(c.len).toBeGreaterThan(0.7); expect(Math.abs(dist(c.from, r.c) - 6.1)).toBeLessThan(1e-9); }
     expect(cs.reduce((s, c) => s + c.len, 0)).toBeCloseTo(2 * 6.1 * Math.sin(Math.PI / 48) * 12, 2);
+  });
+  test('the sheet-edge corners (Datum: the beyond blocks\' corners where a road runs on to the sheet edge) are rounded: 7 junction-box corners, the minor road\'s radius, none of them a plot, bay, mouth or bend', () => {
+    const E = returnsOf(live.ctx).filter(r => r.edge);
+    expect(E.length).toBe(7); expect(E.every(r => r.convex && !r.plot && Math.abs(r.r - r.want) < 0.01 && !r.bay && !r.mouth && !r.bend)).toBe(true);
+    for (const r of E) { expect(r.want).toBe(r.cls === 'district' ? 8 : 6); expect(Math.abs(dist(r.a, r.c) - r.r)).toBeLessThan(1e-6); expect(dist(r.a, r.at)).toBeCloseTo(r.t, 6); }
+    expect(E.map(r => r.at.map(Math.round).join(',')).sort()).toEqual(['-14,-732', '-328,-732', '-352,-9', '-352,268', '-352,9', '14,-732', '288,292'].sort());
+  });
+  test('where two roads meet end to end at a bend the outside of the turn is laid to the outside arc: a hole fill from the node to the arc, 2 of them (junction NE, the ring\'s south-east corner)', () => {
+    const H = returnsOf(live.ctx).filter(r => r.hole);
+    expect(H.length).toBe(2);
+    for (const r of H) { expect(dist(r.hole![0]!, r.a)).toBeCloseTo(dist(r.hole![0]!, r.b), 6); expect(r.hole!.length).toBe(r.n + 2); expect(r.bend).toBeDefined(); }
   });
   test('tangentAt reads a vertex of a plot, 0 where the corner is square', () => {
     const r = returnsOf(live.ctx).find(x => x.convex && !x.bay && !x.mouth)!;

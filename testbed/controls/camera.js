@@ -26,9 +26,18 @@ export class Rig {
     this.focus = new THREE.Vector3(2, 0, 4.5); this.yaw = rad(210); this.yawTarget = this.yaw; this.yawVel = { v: 0 }; this.dist = 38; this.distGoal = 38; this.focusGoal = null;
     this.f = 0; this.fVel = { v: 0 }; this.arm = LEASH.arm; this.pivot = new THREE.Vector3(); this.pitch = rad(15);
     this.idle = 99; this.steady = 0; this.lastH = 0; this.side = 1; this.frame = null; this.lastTgt = new THREE.Vector3();
+    this.distMin = 30; this.distMax = 46; // the desktop range; a phone in portrait needs to stand further back (fit)
   }
+  // A narrow screen (a phone upright) sees a thin slice of the street at 38 m. Stand back until about 26 m of street fits across; desktop and landscape stay as they were.
+  fit(aspect, touch) {
+    const narrow = aspect < 1.5, want = narrow ? clamp(26 / (2 * Math.tan(rad(15)) * aspect), 38, 105) : 38;
+    this.distMin = touch || narrow ? 22 : 30; this.distMax = touch || narrow ? 120 : 46;
+    this.distGoal = want; if (this.mode === 'cmd') this.dist = want;
+  }
+  // a two-finger pinch: ratio > 1 spreads the fingers, which brings the view closer
+  pinch(ratio) { if (this.mode === 'cmd') this.distGoal = clamp(this.distGoal / ratio, this.distMin, this.distMax); else this.arm = clamp(this.arm / ratio, 3, 10); }
   turn(dir) { if (this.mode === 'cmd') this.yawTarget += dir * Math.PI / 2; }
-  zoom(dy) { if (this.mode === 'cmd') this.distGoal = clamp(this.distGoal * (1 + dy * 0.001), 30, 46); else this.arm = clamp(this.arm * (1 + dy * 0.001), 3, 10); }
+  zoom(dy) { if (this.mode === 'cmd') this.distGoal = clamp(this.distGoal * (1 + dy * 0.001), this.distMin, this.distMax); else this.arm = clamp(this.arm * (1 + dy * 0.001), 3, 10); }
   // The commander view moves by hand: a middle-drag, WASD or the edge of the screen. Any of them ends a follow or a centring.
   pan(dx, dy) {
     if (this.mode !== 'cmd') return;

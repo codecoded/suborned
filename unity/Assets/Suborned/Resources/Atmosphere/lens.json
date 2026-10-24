@@ -49,6 +49,19 @@
     "retune": "2026-10-23 (Glint, verdict on build 0.2.79): the old warm lift (liftWarmth 0.6, #e9d9b8) drove the blue channel to 0 in the darkest tones (chart cube, play camera: black rendered 59,46,0) and turned greens toward olive (palm green hue 115 to 97, shaded paving S 0.37 to 0.50). Now sat 14, liftWarmth 0.15, tint #f2cfc2 (peach, not sand): black 56,46,42, palm green hue 106, shaded paving S 0.38, lit cream S 0.14 (was 0.17), cobalt S 0.81. Proof: briefs/048/glint/fix/.",
     "note": "The play camera's only change (briefs/048 board-playzoom.png mock). saturationPercent: the scene grade's own saturation x 1.16 (its multiplier 1.18 becomes 1.37, ColorAdjustments saturation 36.9), read from the day grade volume, fallbackSaturation if none is found. liftOffset / liftTint / liftWarmth: a LiftGammaGain lift in linear before the tonemap, c x (1 - liftOffset) + liftOffset (white stays white, the highlights do not move): liftOffset 0.03 raises the shadows, and the warm hue of liftTint at liftWarmth warms them (the old iso frame's p5 was 0.46 against today's 0.19). START VALUES, tune in game by the Shift+F10 A/B: saturation 36.9 is strong against the 'too bright' calls of the 026 rounds and may turn lit cream toward mustard; 8 to 10 percent is the fallback. Both live in the grading LUT: no per-pixel cost."
   },
+  "evening": {
+    "easeSeconds": 1.5,
+    "note": "Glint 2026-10-24 (evening looked like day: only RoadLight's strip lifted). The evening phase, LightPhase.SetEvening / -evening / TpLongRun.RoadTest: a state between day and night, eased in by LightPhase.Dusk (0 day .. 1 this) over easeSeconds (95 percent), look only (nothing a rule, sight or replay reads). sun: a low warm sun, pitch 19 (day 38) so shadows run 2.9 times the height, from the west-south-west (yaw 62; day 330) so the sunlit faces are the ones the opening heading (yaw 30) looks at; the colour is a deeper peach, the intensity pays back the lower angle (ground irradiance I x sin pitch: 1.8 x 0.62 = 1.11 by day, 2.1 x 0.33 = 0.68 now, the walls facing it get 1.99 against 1.42), shadowStrength the low sun's own (the shade stays filled). ambient: HSV value-scaled hexes as light.json builds them, a lilac-blue skylight, a peach equator, a warm ground, about 0.85 of day. reflection: the baked cubes and probes stay the day's, so they are turned down (intensity 0.66 of 0.8, probes x 0.8). sky (perspective tiers): zenith and mid blend in linear toward a deeper cobalt and a coral-lilac, the glow colour and the haze band follow the real sun (low and orange); haze colour, gain and density are haze.json evening. grade: deltas on each tier's own grade by Dusk (exposure EV, contrast, saturation), a warm colour filter and white balance, a cool tint in the shadows and a warm one in the highlights, and a stronger vignette; no new pass and no per-pixel cost (the grade is the LUT). Signals draw on their own camera outside all of it. Lit windows and signs are roadlight.json glow.",
+    "sun": { "colour": "#ffcfae", "intensity": 2.8, "pitch": 16, "yaw": 62, "shadowStrength": 0.75 },
+    "ambient": {
+      "sky": { "hex": "#d6d0ee", "value": 0.78 },
+      "equator": { "hex": "#f8dcc8", "value": 0.76 },
+      "ground": { "hex": "#e0b898", "value": 0.50 }
+    },
+    "reflection": { "intensity": 0.70, "probeScale": 0.85 },
+    "sky": { "zenith": "#4a78d2", "mid": "#e6a79a", "sunGlow": "#ff9a58", "hazeHeight": 0.16, "aureole": 1.1, "aureolePower": 90, "hazeLift": 0.9, "peach": 1.2 },
+    "grade": { "exposure": 0.12, "contrast": 4, "saturation": 5, "temperature": 4, "tint": 2, "filter": "#fff5ec", "shadows": "#e4e4f6", "highlights": "#fff2e6", "vignette": 0.16 }
+  },
   "farBand": {
     "resource": "Atmosphere/farband",
     "minDeg": -1,

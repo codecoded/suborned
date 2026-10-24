@@ -332,7 +332,7 @@ namespace Suborned.Play
             Briefing.Add(("<b>The cell</b>", Part.Body));
             foreach (var k in new[] { "scout", "fixer", "tech", "enforcer" }) if (t.Cell.TryGetValue(k, out var cl)) Briefing.Add(("   " + cl, Part.Small));
             var c = h.controls;
-            Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   right click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
+            Briefing.Add(($"{c.Label(PlayAction.Pause)}: start the clock   ·   {c.Label(PlayAction.Briefing)}: this briefing   ·   Esc: close   ·   click a person or thing for actions   ·   text: {t.Source}", Part.Footer));
         }
 
         /// <summary>The end card in the player's words (Fable §1 I): a headline, the result line from the text's fails, the tally, then the debrief
@@ -443,7 +443,7 @@ namespace Suborned.Play
         static string Badge(HandoverHost.Target t) => t.Kind switch
         {
             "person" => t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "councillor" => "badges/npc_councillor", "guard" => "badges/signal_guard", _ => "badges/npc_passer" },
-            "rivals" => "badges/signal_rival", "patrol" => "badges/signal_unit", "security" or "hostile" => "badges/signal_police", "camera" => "badges/signal_camera", _ => "",
+            "rivals" => "badges/signal_rival", "patrol" => "badges/npc_patrol", "security" or "hostile" => "badges/signal_police", "camera" => "badges/signal_camera", _ => "",
         };
 
         /// <summary>The kit's outcome mark for a card's outcome: turned or kept ok, refused no, not yet half, unknown "?".</summary>

@@ -12,6 +12,17 @@ namespace Suborned.Play
     public sealed partial class HostViews
     {
         sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; }
+        /// <summary>Brief 060 (-bot): each figure drawn now: its key, the model's feet, and whether the feet checks skip it (seated, lifted, laid down
+        /// or carried: the feet are not on the floor by design).</summary>
+        public IEnumerable<(string key, Vector3 feet, bool skip)> FigureFeet()
+        {
+            foreach (var kv in figs)
+            {
+                if (!things.TryGetValue(kv.Key, out var th) || !th.shown || !th.t || !th.t.gameObject.activeInHierarchy || kv.Value.model == null) continue;
+                bool lifted = this.lifted.TryGetValue(kv.Key, out var l) && l > 0.01f, carriedVale = kv.Key == "councillor" && host.Game != null && host.Game.Vale == ValeAt.WithEnforcer;
+                yield return (kv.Key, kv.Value.model.position, kv.Value.sitTick >= 0 || lifted || carriedVale);
+            }
+        }
         readonly Dictionary<string, Fig> figs = new(); readonly Dictionary<string, Vector3> faces = new(); // brief 022: a pose's facing, while standing
         readonly Dictionary<string, string> phases = new(); // brief 022: a server's round phase (at post, to table, serving, from table, held, to post, together)
         readonly Dictionary<string, float> lifted = new(); // a view's lift (m) while down: 0 on the ground, 1.15 on a shoulder

@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "f5da088ba9e129cf5b8940f569451d1ce701df1dfb6d508c86560c5ea18638a1",
+    "sha256": "c8c3475b9bc71311242fe0a6fa9fa28de7ade1cd6b90224ac112b4569a8c3739",
     "stale": false
   },
   "window": {
@@ -15,28 +15,28 @@
     "cell": 0.25
   },
   "ground": {
-    "walkCells": 43313,
-    "walkableCells": 43238,
-    "sunk": 675,
+    "walkCells": 43029,
+    "walkableCells": 43029,
+    "sunk": 665,
     "floating": 44,
     "bands": {
       "sunk 5-15 cm": 0,
-      "sunk 15-50 cm": 645,
-      "sunk 0.5 m or more": 30,
+      "sunk 15-50 cm": 641,
+      "sunk 0.5 m or more": 24,
       "floats 5-15 cm": 0,
       "floats 15 cm or more": 44
     },
     "byCause": {
-      "a drawn piece (stair, platform, kerb stone) raises the floor": 590,
+      "a drawn piece (stair, platform, kerb stone) raises the floor": 580,
       "ground layer drawn above the host height (kerb strip, quantised edge)": 85,
       "ground layer drawn below the host height (quantised edge)": 44
     }
   },
   "walk": {
-    "freeCells": 43313,
-    "throughSolid": 67,
-    "lowCeiling": 4,
-    "brush": 59,
+    "freeCells": 43029,
+    "throughSolid": 0,
+    "lowCeiling": 2,
+    "brush": 0,
     "invisibleWall": 122
   },
   "sight": {
@@ -58,7 +58,7 @@
     "off5cm": 37,
     "off30cm": 6,
     "off50cm": 6,
-    "inSolid": 2
+    "inSolid": 0
   },
   "guard": {
     "id": "d:Office entrance",
@@ -96,21 +96,21 @@
     },
     {
       "id": "G-1d",
-      "count": 2,
+      "count": 0,
       "unit": "stretches",
-      "example": "waitress d:Café door to cafe-table-4-seat-0: 3.5 m solid on civic/cafe/ground (+4.05 m) from -10.25,-33.25 to -10.25,-35.25"
+      "example": "none"
     },
     {
       "id": "G-1c",
-      "count": 719,
+      "count": 709,
       "unit": "cells",
-      "example": "civic/office-public-entrance: 42 cells, worst 1.05 m"
+      "example": "civic/office-public-entrance: 36 cells, worst 0.75 m"
     },
     {
       "id": "G-2a",
-      "count": 67,
+      "count": 0,
       "unit": "cells",
-      "example": "frontage:canopy: 16 cells, 15 solids in all"
+      "example": "none"
     },
     {
       "id": "G-2b",
@@ -120,7 +120,7 @@
     },
     {
       "id": "G-2c",
-      "count": 4,
+      "count": 2,
       "unit": "cells",
       "example": "civic/cafe-palm-1: 2 cells"
     },

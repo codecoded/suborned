@@ -3,15 +3,15 @@
   "note": "The most each geometry rule (tools/geometry/rules.ts) may count. Written by `bun run geometry --ratchet` from the current audit; fixes lower it, nothing raises it without a reason in `changes` (a correct consequence of a world change, stated and sourced). The target of every rule is 0.",
   "counts": {
     "G-1a": 1,
-    "G-1b": 10,
-    "G-1c": 1126,
-    "G-2a": 645,
+    "G-1b": 6,
+    "G-1d": 0,
+    "G-1c": 709,
+    "G-2a": 0,
     "G-2b": 122,
-    "G-2c": 148,
-    "G-3a": 110,
+    "G-2c": 2,
+    "G-3a": 61,
     "G-3b": 2,
-    "K-1": 0,
-    "G-1d": 2
+    "K-1": 0
   },
   "changes": [
     {
@@ -68,14 +68,14 @@
       "rule": "G-1d",
       "from": null,
       "to": 24,
-      "reason": "New rule, one rule for every leg that is walked (Sky 2026-10-24, playing 0.2.99: \"Inez seems to be walking on an invisible ledge sometimes\"; \"the robot patrol is able to go through the camera pole\"; Pulse's legs: tools/missions/handover/legs.ts). A leg stands on the drawn floor (no walkable floor more than 25 cm over the pavement but the declared stairs and landing, no drawn solid, 1.8 m of head room) and keeps the body (standards.walking.body.r 0.65 m) clear of every drawn solid and every mission camera pole. Measured on the rounds' waypoint legs, the mission's fixed legs (the patrol sweep and where the rerouted patrol waits), the door guard's stops and the cast routes (the grid's A* between the places). 24 stretches today: 10 on Inez's leg to cafe-table-5 (2 m through the caf\u00e9's curved ground floor and the plinth cells 0.45 to 0.55 m high on both sides of it: the ledge Sky saw; plus 0.62 m from the tables 1 and 2 sets), 8 on the waitress's grid routes through the same curve, 1 patrol sweep brush (0.63 m from the Records Entrance's west flank), 5 on camera poles the world does not place (the guard's route 0.24 m from the entrance pole; each crew member's route to the driver 0.55 m from the pickup pole). Cause of the caf\u00e9 ones: kit.collide.json's CafeBay_v2 holds the straight plinth and wall boxes but nothing along the curved front, so the site grid is free across a 4.05 m solid the raster draws (G-2a's cells there): Vela's volumes (a chain of boxes along the arc), then Keel's grid, then Pulse re-runs `bun run rounds`; the poles: Keel's grid (the poles are the host's), Pulse's route."
+      "reason": "New rule, one rule for every leg that is walked (Sky 2026-10-24, playing 0.2.99: \"Inez seems to be walking on an invisible ledge sometimes\"; \"the robot patrol is able to go through the camera pole\"; Pulse's legs: tools/missions/handover/legs.ts). A leg stands on the drawn floor (no walkable floor more than 25 cm over the pavement but the declared stairs and landing, no drawn solid, 1.8 m of head room) and keeps the body (standards.walking.body.r 0.65 m) clear of every drawn solid and every mission camera pole. Measured on the rounds' waypoint legs, the mission's fixed legs (the patrol sweep and where the rerouted patrol waits), the door guard's stops and the cast routes (the grid's A* between the places). 24 stretches today: 10 on Inez's leg to cafe-table-5 (2 m through the café's curved ground floor and the plinth cells 0.45 to 0.55 m high on both sides of it: the ledge Sky saw; plus 0.62 m from the tables 1 and 2 sets), 8 on the waitress's grid routes through the same curve, 1 patrol sweep brush (0.63 m from the Records Entrance's west flank), 5 on camera poles the world does not place (the guard's route 0.24 m from the entrance pole; each crew member's route to the driver 0.55 m from the pickup pole). Cause of the café ones: kit.collide.json's CafeBay_v2 holds the straight plinth and wall boxes but nothing along the curved front, so the site grid is free across a 4.05 m solid the raster draws (G-2a's cells there): Vela's volumes (a chain of boxes along the arc), then Keel's grid, then Pulse re-runs `bun run rounds`; the poles: Keel's grid (the poles are the host's), Pulse's route."
     },
     {
       "date": "2026-10-24",
       "rule": "G-1d",
       "from": 24,
       "to": 2,
-      "reason": "Lowered: Pulse's re-bake of the rounds (the legs now keep the body clear of the caf\u00e9's curved front and its tables) takes Inez's leg to table 5, her brushes of tables 1 and 2, the waitress's grid routes through the curve and the patrol and crew brushes to 0. Two stretches are left, both the waitress's legs from the Caf\u00e9 door to tables 4 and 5: 3.5 m from the door point (-10.25, -33.25) into civic/cafe/ground (the point stands in the front's solid in the raster, 4.05 m; the engine's collide volumes for CafeBay_v2 leave it free). The audit's stand now follows the engine's Site.Stand (the place's `stand`, else the point itself), not a cell centre."
+      "reason": "Lowered: Pulse's re-bake of the rounds (the legs now keep the body clear of the café's curved front and its tables) takes Inez's leg to table 5, her brushes of tables 1 and 2, the waitress's grid routes through the curve and the patrol and crew brushes to 0. Two stretches are left, both the waitress's legs from the Café door to tables 4 and 5: 3.5 m from the route point (-10.25, -33.25), which is not the door (the door is elsewhere on the front: the point is the first waypoint of both legs) into civic/cafe/ground (the point stands in the front's solid in the raster, 4.05 m; the engine's collide volumes for CafeBay_v2 leave it free). The audit's stand now follows the engine's Site.Stand (the place's `stand`, else the point itself), not a cell centre."
     },
     {
       "date": "2026-10-24",
@@ -89,7 +89,21 @@
       "rule": "G-3b",
       "from": 10,
       "to": 2,
-      "reason": "Lowered (Keel, engine 0.30.0; Sky 2026-10-24: \"can take some liberties for performance e.g looking through glass isn't needed\"): tools/sim/solids.ts no longer makes a sight occluder of an element narrower than 0.6 m both ways at eye height (the cover rule's width: the seven caf\u00e9 parasol stems, the eight civic lamps, service-robot-12), nor of a volume whose top clears the eye line by under 0.1 m (a rounded shoulder the line grazes: the civic steward monument's robot, service-robot-9). sightOccluders 245 -> 227; site regenerated with --drawn-walk --drawn-occluders. Left: plot-04 (84 %: a 6.25 m stretch of bld/lamplight-south-w/13's face at block (-45.4..-51.4, -34) with nothing drawn at 1.6 m, owner Splice) and cover:civic/foreground-civic-robot (81 %: Pulse's cover blocker, tools/cover/gen.ts)."
+      "reason": "Lowered (Keel, engine 0.30.0; Sky 2026-10-24: \"can take some liberties for performance e.g looking through glass isn't needed\"): tools/sim/solids.ts no longer makes a sight occluder of an element narrower than 0.6 m both ways at eye height (the cover rule's width: the seven café parasol stems, the eight civic lamps, service-robot-12), nor of a volume whose top clears the eye line by under 0.1 m (a rounded shoulder the line grazes: the civic steward monument's robot, service-robot-9). sightOccluders 245 -> 227; site regenerated with --drawn-walk --drawn-occluders. Left: plot-04 (84 %: a 6.25 m stretch of bld/lamplight-south-w/13's face at block (-45.4..-51.4, -34) with nothing drawn at 1.6 m, owner Splice) and cover:civic/foreground-civic-robot (81 %: Pulse's cover blocker, tools/cover/gen.ts)."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-1d",
+      "from": 2,
+      "to": 0,
+      "reason": "Lowered: the last two stretches were the audit's, not the layout (Vantage's probes, out/scratch/vantage/): the route point (-10.25, -33.25) lies exactly on a raster cell edge and the raster read it into the cafe wall's cell; read 1 mm out it is open pavement, and the engine's collide boxes leave it free. tools/geometry/audit.ts auditLegs now reads the cell under a leg's sample 1 mm south-east (LEG_NUDGE), so a point on an edge takes one cell by a fixed rule, not by rounding. No world or site change."
+    },
+    {
+      "date": "2026-10-24",
+      "rule": "G-1b,G-1c,G-2a,G-2c,G-3a",
+      "from": null,
+      "to": null,
+      "reason": "Lowered to the audit as run at 20:22 on world c8c3475b9b and the site written at 20:19 (G-1b 10 to 6, G-1c 1126 to 709, G-2a 645 to 0, G-2c 148 to 2, G-3a 110 to 61): not this round's work (the rounded corners, lawn ends and edge returns lie on the carriageway and change no walk cell's floor or solid); the cause is the site regenerated by the engine owner (Keel: drawn solids, the cell face margin). Written by `bun run geometry --ratchet` so the caps follow the fix."
     }
   ]
 }

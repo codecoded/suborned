@@ -265,7 +265,7 @@ namespace Suborned.Play
                     {
                         if (p.KNeed) { string lb = ""; try { lb = g.NeedRecordOf(p).label ?? ""; } catch (Exception) { } Line(p.Need.Length > 0 ? p.Need : "unknown", lb.Length > 0 ? lb : Intel("need", p.Need)); }
                         if (p.KTemperament) Line(p.Temperament.Length > 0 ? p.Temperament : "unknown", Intel("temperament", p.Temperament));
-                        if (p.KSecret && p.Secret.Length > 0) { string lover = p.Lover != null ? Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; Line(p.Secret == "affair" ? "kin" : "secret", Intel("secret", p.Secret, lover)); }
+                        if (p.KSecret && p.Secret.Length > 0) { string lover = p.Lover != null ? Text?.TargetName(p.Lover.Role, p.Lover.Name) ?? p.Lover.Name : ""; Line(p.Secret == "affair" ? "lovers" : "secret", Intel("secret", p.Secret, lover)); }
                         if (chip.Lines.Count == 0) Line("dot", DW("gain.nothing-new", "Nothing new"));
                     }
                     break;

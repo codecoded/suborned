@@ -26,8 +26,8 @@
    "usd": 55.10232
   },
   "2026-10-24": {
-   "calls": 17,
-   "usd": 0.34101
+   "calls": 18,
+   "usd": 0.35277
   }
  },
  "by_model": {
@@ -64,11 +64,11 @@
    "usd": 0.15
   },
   "openai:gpt-image@2": {
-   "calls": 9,
-   "usd": 0.36019
+   "calls": 10,
+   "usd": 0.37195
   }
  },
- "calls": 265,
+ "calls": 266,
  "failed": 11,
  "jobs": {
   "007-concepts": {
@@ -467,8 +467,8 @@
    "blocked": 0,
    "by_day": {
     "2026-10-24": {
-     "calls": 9,
-     "usd": 0.34101
+     "calls": 10,
+     "usd": 0.35277
     }
    },
    "by_model": {
@@ -477,29 +477,29 @@
      "usd": 0.0
     },
     "openai:gpt-image@2": {
-     "calls": 8,
-     "usd": 0.34101
+     "calls": 9,
+     "usd": 0.35277
     }
    },
    "by_pass": {
     "concepts": {
      "budget_usd": 2.0,
-     "calls": 8,
-     "usd": 0.34101
+     "calls": 9,
+     "usd": 0.35277
     },
     "probe": {
      "calls": 1,
      "usd": 0.0
     }
    },
-   "calls": 9,
-   "cost_per_used": 0.04263,
+   "calls": 10,
+   "cost_per_used": 0.0392,
    "failed": 1,
-   "ok": 8,
-   "total_usd": 0.34101,
+   "ok": 9,
+   "total_usd": 0.35277,
    "unknown_cost_calls": 0,
-   "used": 8,
-   "used_usd": 0.34101
+   "used": 9,
+   "used_usd": 0.35277
   },
   "900-codexcheck": {
    "blocked": 0,
@@ -536,6 +536,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 62.66257,
- "used": 60
+ "total_usd": 62.67433,
+ "used": 61
 }

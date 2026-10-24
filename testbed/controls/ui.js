@@ -61,7 +61,7 @@ export function buildChrome(hooks) {
 
 export function refresh(project) {
   const w = G.world;
-  $('stats').innerHTML = `Trail <b>${G.trail}</b> · Alert <b>${G.alert}</b> · $<b>${G.cash.toLocaleString('en-US')}</b> · <u>${G.paused ? 'paused ' : G.timeScale < 1 ? '¼ speed ' : ''}${Math.floor(G.clock / 60)}:${String(Math.floor(G.clock % 60)).padStart(2, '0')}</u> · <span id="fps"></span>`;
+  $('stats').innerHTML = `Trail <b>${G.trail}</b> · Alert <b>${G.alert}</b> · $<b>${G.cash.toLocaleString('en-US')}</b> · <u>${G.paused ? 'paused ' : G.timeScale < 1 ? '¼ speed ' : ''}${Math.floor(G.clock / 60)}:${String(Math.floor(G.clock % 60)).padStart(2, '0')}</u> · <span id="fps">${document.body.classList.contains('touch') ? G.fpsText ?? '' : ''}</span>`;
   [...$('roster').querySelectorAll('[data-agent]')].forEach((b, i) => {
     const a = w.agents[i], o = a.order; b.classList.toggle('sel', G.group[i]); b.classList.toggle('lead', G.group[i] && G.group.filter(Boolean).length > 1 && i === G.sel);
     b.classList.toggle('ready', !!G.readyIdx?.includes(i)); b.classList.toggle('break', !!G.pv?.lead.includes(i)); b.classList.toggle('hold', !!G.pv?.holds.includes(i));
@@ -116,4 +116,4 @@ export function refresh(project) {
   $('log').innerHTML = lines.map((l) => `<div class="${l.tone}" style="opacity:${Math.max(0.35, 1 - (now - l.at) / 20000)}">${l.text}</div>`).join('');
 }
 export const setHint = (t) => { const h = $('hint'); if (h.textContent !== t) h.textContent = t; h.style.opacity = t ? 1 : 0; };
-export const setFps = (f) => { const e = $('fps'); if (e) e.textContent = `${f} fps`; };
+export const setFps = (f, extra = '') => { G.fpsText = `${f} fps${extra}`; const e = $('fps'); if (e) e.textContent = G.fpsText; };

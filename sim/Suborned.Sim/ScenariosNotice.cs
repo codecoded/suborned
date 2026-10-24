@@ -144,6 +144,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 // the cell gives no orders (NC-4's café): a seated customer, a body behind her chair, by the engine's one test (ScanAct reads it)
+                r.Wait(1); // engine 0.30.0: someone is seated at 0:00 on the face-margin grid; a run that never steps does not replay as itself (Finish's closing checkpoint)
                 (Walker w, PersonSight s, Pt ahead, Pt behind)? c = null;
                 for (int k = 0; k < 20 && !c.HasValue; k++) { c = ACivilian(g, x => x.Place.Any(p => p.Contains("-seat-")) && g.CrowdPos(x) is Pt q && g.People2!.Places.Any(kv => kv.Key.Contains("-seat-") && kv.Value == q)); if (!c.HasValue) r.To(g.Tick + T(15)); }
                 if (r.Is(c.HasValue, "someone seated at a café table"))

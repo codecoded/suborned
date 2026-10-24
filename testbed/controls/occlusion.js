@@ -129,7 +129,7 @@ const wantSil = (e) => e.agent || e.hostile || ['guard', 'police', 'rival', 'ine
 export function setMode(m) { G.occ = m; document.body.dataset.occ = m; }
 
 export function occFrame(camera, real, drawBtns) {
-  const w = G.world, mode = G.occ, sm = SHADER_MODE[mode] ?? 0, dpr = Math.min(devicePixelRatio, 2), H = innerHeight * dpr;
+  const w = G.world, mode = G.occ, sm = SHADER_MODE[mode] ?? 0, dpr = G.dpr ?? Math.min(devicePixelRatio, 2), H = innerHeight * dpr; // G.dpr is the renderer's own ratio (a phone may run lower)
   const me = w.agents[G.sel] ?? w.agents[0];
   const fwd = camera.getWorldDirection(new THREE.Vector3()); U.uFwd.value.copy(fwd);
   const focus = G.rig.mode === 'cmd' ? G.rig.focus : me.g.position, dist = camera.position.distanceTo(focus);

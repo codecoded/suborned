@@ -22,7 +22,7 @@ import { FLAT_FOOT, LAND, type Ctx, r3, r4 } from '../common';
 import { adoptedBy } from '../kitrefs';
 import { kerbRuns } from './capstone';
 import { finishSet } from '../../../plan/finish-set';
-import { baysOf, chordsOf, inCut, onRoundedEnd, returnsOf } from '../kerbreturn';
+import { baysOf, chordsOf, inCut, kerbReturnStd, onRoundedEnd, returnsOf, type Return } from '../kerbreturn';
 
 export type RoadFinishLog = {
   /** pieces placed by item kind and by kit id */
@@ -274,6 +274,23 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   for (const [k, ps] of miss) log.kerb.uncovered.push(`${k}: ${ps.length} m from ${ps[0]!.map(r3).join(',')} to ${ps[ps.length - 1]!.map(r3).join(',')}`);
   if (log.kerb.uncoveredM) gap('RF-kerb', `${miss.size} road edges`, `${log.kerb.uncoveredM} m of carriageway edge has no kerb face the ribbon can run on (log.kerb.uncovered)`);
 
+  // ---- the reservation's lawn track ends (brief 028 round 2, Sky 2026-10-24 "curvy and smooth"; kerbReturn.nose: "where a track runs out through the end, no kerb crosses the track: each side kerb turns in by a quarter round of the gap to the swept
+  //  envelope's edge (at most `bay`) and stops there"): R = min(kerbReturn.bay, the gap between the kerb face and the swept envelope, half the stretch); an end on the sheet's edge stays square (the road runs on).
+  const kbay = kerbReturnStd(ctx.S).bay, kerbStd = (ctx.S as { kerbReturn?: unknown } | undefined)?.kerbReturn !== undefined;
+  const envHalf = (rd: (typeof ctx.d.roads)[number], res: number): number => ctx.d.tram.reduce((m, t) => (t.samples.some(x => lineDist(x.p, rd.line) < res / 2) ? Math.max(m, (t.double ? 1.8 : 0) + 1.825) : m), 0);
+  const onSheet = (p: V) => p[0] < sheet.x[0] + 0.5 || p[0] > sheet.x[1] - 0.5 || p[1] < sheet.y[0] + 0.5 || p[1] > sheet.y[1] - 0.5;
+  /** The quarter rounds a reservation face's stretch s0..s1 takes at its two ends (0 = square). */
+  const lawnEnds = (L: Line, s0: number, s1: number): [number, number] => {
+    const rd = ctx.d.roads.find(q => q.id === L.road), res = (rd as { reservation?: number } | undefined)?.reservation; if (!kerbStd || !rd || !res || L.from !== 'reservation') return [0, 0];
+    const gap = res / 2 - envHalf(rd, res), R0 = Math.min(kbay, gap > 0.2 ? gap : kbay, (s1 - s0) / 2), at = (s: number): V => [L.p0[0] + L.u[0] * s, L.p0[1] + L.u[1] * s];
+    const R = R0 >= 0.3 ? r3(R0) : 0; return [onSheet(at(s0)) ? 0 : R, onSheet(at(s1)) ? 0 : R];
+  };
+  /** The quarter round at a lawn end as a return (convex about its centre inside the lawn; no fill, no cut): `F` the face's point at the end, `n` out of the lawn, `w` along the face toward the end. */
+  const lawnArc = (id: string, F: V, n: V, w: V, R: number): Return => {
+    const c: V = [F[0] - w[0] * R - n[0] * R, F[1] - w[1] * R - n[1] * R], a: V = [c[0] + n[0] * R, c[1] + n[1] * R], b: V = [c[0] + w[0] * R, c[1] + w[1] * R], sweep = (Math.sign(n[0] * w[1] - n[1] * w[0]) || 1) * Math.PI / 2;
+    return { id, plot: id, at: F, convex: true, civic: false, cls: 'district', roads: ['', ''], r: R, want: R, t: R, a, b, c, theta: Math.PI / 2, arc: [], n: 0, cut: [], u1: w, u2: n, sweep, n1: n, n2: w, level: 0 };
+  };
+  const arcAt = (r: Return, k: number, N: number): V => { const phi = (k / N) * Math.PI / 2, nn = r.n1, ww = r.n2; return [r.c[0] + r.r * (nn[0] * Math.cos(phi) + ww[0] * Math.sin(phi)), r.c[1] + r.r * (nn[1] * Math.cos(phi) + ww[1] * Math.sin(phi))]; };
   const okAt = new Map<string, Map<number, boolean>>();
   for (const f of fams) {
     for (const L of lines) {
@@ -297,10 +314,18 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
       }, 0.2, cut);
       if (f.id === 'ribbon') { log.kerb.edgeM += end - start; log.kerb.faceM[L.from] = r3((log.kerb.faceM[L.from] ?? 0) + end - start); if (run) log.kerb.runs++; for (const [k, v] of Object.entries(cut)) log.kerb.cutM[k] = (log.kerb.cutM[k] ?? 0) + v; }
       const yaw = Math.atan2(L.n[0], -L.n[1]), pieceLen = f.piece.size[0], z = f.id === 'pinstripe' ? (L.padZ ?? f.z) : (L.z ?? f.z);
-      for (const sg of segs) for (const pc of fill(sg.s0, sg.s1, pieceLen, L.from === 'bay' ? 0.1 : 0.5)) {
-        put(f.kind, f.piece, pos(pc.s), yaw, z, [r3(pc.len / pieceLen), 1, 1], L.edge);
-        if (f.id === 'ribbon') log.kerb.laidM += pc.len;
-        if (f.id === 'edge') log.marks.edgeM += pc.len;
+      for (const sg of segs) {
+        const [e0, e1] = lawnEnds(L, sg.s0, sg.s1);
+        for (const pc of fill(sg.s0 + e0, sg.s1 - e1, pieceLen, L.from === 'bay' ? 0.1 : 0.5)) {
+          put(f.kind, f.piece, pos(pc.s), yaw, z, [r3(pc.len / pieceLen), 1, 1], L.edge);
+          if (f.id === 'ribbon') log.kerb.laidM += pc.len;
+          if (f.id === 'edge') log.marks.edgeM += pc.len;
+        }
+        for (const [e, s, w] of [[e0, sg.s0, -1], [e1, sg.s1, 1]] as [number, number, number][]) { // the quarter rounds at the stretch's ends, swept as straight chords like a kerb return's
+          if (!(e > 0)) continue;
+          const F: V = [L.p0[0] + L.u[0] * s, L.p0[1] + L.u[1] * s], rt = lawnArc(`${L.id}/${s}`, F, L.n, [L.u[0] * w, L.u[1] * w], e);
+          for (const ch of chordsOf(rt, f.at)) { put(f.kind, f.piece, ch.at, Math.atan2(ch.n[0], -ch.n[1]), z, [r3(ch.len / pieceLen), 1, 1], `roadfinish/lawn/${rt.id}`); if (f.id === 'ribbon') { log.kerb.laidM += ch.len; log.kerb.edgeM += ch.len; } }
+        }
       }
       if (f.id === 'edge') for (const [k, v] of Object.entries(cut)) log.marks.cutM[k] = r3((log.marks.cutM[k] ?? 0) + v);
     }
@@ -312,11 +337,23 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
     const rd = ctx.d.roads.find(q => q.id === L.road), res = (rd as { reservation?: number } | undefined)?.reservation; if (!rd || !res) continue;
     const at = (s: number, k: number): V => [L.p0[0] + L.u[0] * s + L.u[1] * res * k, L.p0[1] + L.u[1] * s - L.u[0] * res * k]; // k 0 = this face, 1 = the other (the road line lies a half reservation to its right)
     const segs = spans(0, L.len, s => { const p = at(s, 0), b = hit(p, stop, L.u); if (b) return b; return roadLines.within(p, stop, L.road) ? 'junction' : undefined; }, 0.2, {});
-    segs.forEach((sg, k) => { if (sg.s1 - sg.s0 >= 2) log.lawn.push({ id: `${L.id}.${k}`, ring: [at(sg.s0, 0), at(sg.s1, 0), at(sg.s1, 1), at(sg.s0, 1)].map((q): V => [r3(q[0]), r3(q[1])]) }); });
+    segs.forEach((sg, k) => {
+      if (sg.s1 - sg.s0 < 2) return;
+      const [e0, e1] = lawnEnds(L, sg.s0, sg.s1), N = 8, nOut: V = L.n;
+      // the lawn's outline: the stretch's two faces and its two ends, each end corner a quarter round of e (brief 028 round 2); a square corner where e = 0
+      const corner = (s: number, k2: number, e: number, w: number, rev: boolean): V[] => {
+        const F = at(s, k2), nn: V = k2 ? [-nOut[0], -nOut[1]] : nOut;
+        if (!(e > 0)) return [F];
+        const rt = lawnArc('lawn', F, nn, [L.u[0] * w, L.u[1] * w], e), pts = Array.from({ length: N + 1 }, (_, i) => arcAt(rt, i, N)); // from the face's tangent point (i 0) to the end line (i N)
+        return rev ? pts.reverse() : pts;
+      };
+      const ring = [...corner(sg.s0, 0, e0, -1, true), ...corner(sg.s1, 0, e1, 1, false), ...corner(sg.s1, 1, e1, 1, true), ...corner(sg.s0, 1, e0, -1, false)];
+      log.lawn.push({ id: `${L.id}.${k}`, ring: ring.map((q): V => [r3(q[0]), r3(q[1])]) });
+    });
   }
   // ---- 1c. the kerb returns (brief 028, Sky 2026-10-24: rounded pavement corners): every family is swept round each convex return's arc as straight chords of the same piece (scaled along, as the straight runs are), on the circle
   //  `at` off the kerb face (the plan's ribbon.corners: "else the ribbon is swept along the kerb at offset from the pieces' section"): no mitre. A chord is at most 7.5 degrees and never under 0.6 m, so a quarter turn is 12 chords
-  //  of a 6 m or larger return; its pivot sits on the circle compensated by half its sagitta (the chord is out by at most 0.011 m either way on a 10 m return). A chord that stands within stopShort of a break is dropped, as a straight piece is.
+  //  of a 6 m or larger return; each chord is centred on its own midpoint, so neighbours meet on the circle (no kink). A chord that stands within stopShort of a break is dropped, as a straight piece is.
   const sweep = { returns: 0, chords: 0, dropped: 0, m: 0 };
   for (const rt of returnsOf(ctx)) {
     if (!classes.includes(rt.cls)) continue; sweep.returns++;

@@ -185,7 +185,7 @@ namespace Suborned.Play
             var g = cursorMark.Q("g"); Show(g, kind is "aim" or "nowalk"); if (kind == "aim") Icon(g, "fire", Cream); else if (kind == "nowalk") Icon(g, "s_moving", Cream);
             var nw = cursorMark.Q("nowalk"); if (nw == null) { nw = P(cursorMark, 0, 0, 22, 22, (p, r) => { p.strokeColor = Cream; p.lineWidth = 2f; p.lineCap = LineCap.Round; p.BeginPath(); p.MoveTo(new Vector2(4, 18)); p.LineTo(new Vector2(18, 4)); p.Stroke(); }); nw.name = "nowalk"; } Show(nw, kind == "nowalk"); // struck footprints: no walk there
             Show(cursorDots, kind == "ring");
-            cursorMark.style.backgroundColor = new Color(Plate.r, Plate.g, Plate.b, 0.85f); Round(cursorMark, 11);
+            cursorMark.style.backgroundColor = new Color(Plate.r, Plate.g, Plate.b, 0.85f); Round(cursorMark, 11); var cr = cursorMark.Q("chrome"); if (cr == null) { cr = P(cursorMark, 0, 0, 22, 22, (pp, r) => { pp.strokeColor = InkDeep; pp.lineWidth = 1f; pp.BeginPath(); pp.Arc(r.center, 10.5f, Deg(0), Deg(360)); pp.Stroke(); pp.strokeColor = Chrome; pp.lineWidth = 2f; pp.BeginPath(); pp.Arc(r.center, 9f, Deg(0), Deg(360)); pp.Stroke(); }); cr.name = "chrome"; } Show(cr, kind == "nowalk"); /* Glyph's 0.2.112 check: the no-walk disc in its chrome ring (2 px #cbc6c3, 1 px ink-deep outside), as a kind disc; painted, so the glyph stays centred */
         }
     }
 }

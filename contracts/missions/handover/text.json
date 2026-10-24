@@ -1509,6 +1509,7 @@
    "car-held": "Fight blocks car",
    "take-control": "Take control: T",
    "let-go": "Let go: T",
+   "camera-looped": "Camera looped",
    "camera-dark": "Camera dark",
    "camera-hit": "Camera hit",
    "fire-out-of-range": "Too far"

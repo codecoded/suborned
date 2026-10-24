@@ -118,7 +118,17 @@ namespace Suborned
         readonly HashSet<Camera> forcedPost = new();
 
         static readonly int idHaze = Shader.PropertyToID("_AtmHaze"), idZenith = Shader.PropertyToID("_AtmSkyZenith"), idMid = Shader.PropertyToID("_AtmSkyMid"),
-            idShape = Shader.PropertyToID("_AtmSkyShape"), idExtra = Shader.PropertyToID("_AtmSkyExtra"), idBand = Shader.PropertyToID("_AtmFarBand"), idBandRange = Shader.PropertyToID("_AtmFarBandRange");
+            idShape = Shader.PropertyToID("_AtmSkyShape"), idExtra = Shader.PropertyToID("_AtmSkyExtra"), idBand = Shader.PropertyToID("_AtmFarBand"), idBandRange = Shader.PropertyToID("_AtmFarBandRange"),
+            idSunDir = Shader.PropertyToID("_AtmSunDir"), idSunCol = Shader.PropertyToID("_AtmSunCol");
+        Color dayZenith, dayMid, daySunGlow; bool skyRead;
+
+        /// <summary>The scene sky material's own zenith, mid and sun glow (linear), read once from the day skybox (the evening blends from them).</summary>
+        void SceneSky()
+        {
+            if (skyRead) return;
+            var m = RenderSettings.skybox; if (!m || !m.HasProperty("_Zenith") || !m.HasProperty("_Mid") || !m.HasProperty("_SunColour")) return;
+            dayZenith = Lin(m.GetColor("_Zenith")); dayMid = Lin(m.GetColor("_Mid")); daySunGlow = Lin(m.GetColor("_SunColour")); skyRead = true;
+        }
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Install()
@@ -285,7 +295,51 @@ namespace Suborned
                 sunStrength0 = sunLight.shadowStrength;
             }
             float want = on && data.sun != null && data.sun.shadowStrength > 0f ? data.sun.shadowStrength : sunStrength0;
+            float k = on ? Dusk : 0f; // evening (Glint 2026-10-24): the low sun's own shadow strength, eased in with LightPhase.Dusk
+            if (k > 0f && data.evening != null) want = Mathf.Lerp(want, data.evening.sun.shadowStrength, k);
             if (!Mathf.Approximately(sunLight.shadowStrength, want)) sunLight.shadowStrength = want;
+        }
+
+        ColorAdjustments SceneAdj()
+        {
+            var ph = Suborned.Play.LightPhase.Instance; var vol = ph ? ph.day.grade : null;
+            return vol && vol.sharedProfile && vol.sharedProfile.TryGet<ColorAdjustments>(out var ca) ? ca : null;
+        }
+
+        /// <summary>The evening grade at k (0 day .. 1 evening) on the three tiers' volumes: exposure, contrast, saturation, the colour filter, white balance, the shadows' and highlights' tint and the vignette, each as the SCENE GRADE's
+        /// own value plus the evening's change by k. At k 0 every override that is not the tier's own day grade is released, so day frames do not move. Look only, no per-pixel cost (the grade is the LUT).</summary>
+        void PushEvening(float k)
+        {
+            var g = data.evening.grade; bool on = k > 0.0005f;
+            var sa = SceneAdj(); float c0 = sa != null && sa.contrast.overrideState ? sa.contrast.value : 6f;
+            Color f0 = sa != null && sa.colorFilter.overrideState ? sa.colorFilter.value : Color.white;
+            var ph = Suborned.Play.LightPhase.Instance; var vol = ph ? ph.day.grade : null; var prof = vol ? vol.sharedProfile : null;
+            Vector4 s0 = new Vector4(1f, 1f, 1f, 0f), h0 = s0; float v0 = 0.1f;
+            if (prof && prof.TryGet<ShadowsMidtonesHighlights>(out var sm)) { if (sm.shadows.overrideState) s0 = sm.shadows.value; if (sm.highlights.overrideState) h0 = sm.highlights.value; }
+            if (prof && prof.TryGet<Vignette>(out var vg) && vg.intensity.overrideState) v0 = vg.intensity.value;
+            Color fil = Color.Lerp(Color.white, Hex(g.filter), k), shT = Color.Lerp(Color.white, Hex(g.shadows), k), hiT = Color.Lerp(Color.white, Hex(g.highlights), k);
+            float expBase = BaseExposure(), satBase = BaseSaturation();
+            Rig[] rigs = { rigPlay, rigFollow, rigLong };
+            for (int i = 0; i < 3; i++)
+            {
+                var r = rigs[i]; if (r == null) continue;
+                bool play = i == 0, lng = i == 2;
+                // exposure: the long tier's own delta stays; play and follow have none by day
+                if (lng && Mathf.Abs(longExposureDelta) > 0.001f) r.adj.postExposure.Override(expBase + longExposureDelta + g.exposure * k);
+                else if (on) r.adj.postExposure.Override(expBase + g.exposure * k); else r.adj.postExposure.overrideState = false;
+                if (play) r.adj.saturation.Override(playSatValue + g.saturation * k);                      // the play grade's own saturation is always overridden
+                else if (on) r.adj.saturation.Override(satBase + g.saturation * k); else r.adj.saturation.overrideState = false;
+                if (on) { r.adj.contrast.Override(c0 + g.contrast * k); r.adj.colorFilter.Override(new Color(f0.r * fil.r, f0.g * fil.g, f0.b * fil.b, 1f)); }
+                else { r.adj.contrast.overrideState = false; r.adj.colorFilter.overrideState = false; }
+                if (on) { r.wb.temperature.Override(g.temperature * k); r.wb.tint.Override(g.tint * k); } else { r.wb.temperature.overrideState = false; r.wb.tint.overrideState = false; }
+                if (on)
+                {
+                    r.smh.shadows.Override(new Vector4(s0.x * shT.r, s0.y * shT.g, s0.z * shT.b, s0.w));
+                    r.smh.highlights.Override(new Vector4(h0.x * hiT.r, h0.y * hiT.g, h0.z * hiT.b, h0.w));
+                    r.vig.intensity.Override(Mathf.Lerp(v0, g.vignette, k));
+                }
+                else { r.smh.shadows.overrideState = false; r.smh.highlights.overrideState = false; r.vig.intensity.overrideState = false; }
+            }
         }
 
         float BaseSaturation()
@@ -315,8 +369,12 @@ namespace Suborned
             if (Instance == this) Instance = null;
         }
 
+        /// <summary>How far into the evening the look is (LightPhase.Dusk, 0 = day), 0 when the lens has no evening or the atmosphere is off.</summary>
+        float Dusk { get { var ph = Suborned.Play.LightPhase.Instance; return data.evening != null && ph && AtmosphereSettings.Enabled ? ph.Dusk : 0f; } }
+
         void Update()
         {
+            if (data.evening != null) { float k = Dusk; if (!Mathf.Approximately(k, duskK)) { duskK = k; PushEvening(k); } }
             var kb = Keyboard.current;
             if (kb == null || !(kb.leftShiftKey.isPressed || kb.rightShiftKey.isPressed)) return;
             if (kb.f9Key.wasPressedThisFrame) AtmosphereSettings.SkyTeal = !AtmosphereSettings.SkyTeal;
@@ -370,22 +428,44 @@ namespace Suborned
             {
                 Shader.SetGlobalVector(idHaze, Vector4.zero); Shader.SetGlobalVector(idZenith, Vector4.zero); Shader.SetGlobalVector(idMid, Vector4.zero);
                 Shader.SetGlobalVector(idShape, Vector4.zero); Shader.SetGlobalVector(idExtra, Vector4.zero); Shader.SetGlobalVector(idBandRange, Vector4.zero);
+                Shader.SetGlobalVector(idSunDir, Vector4.zero); Shader.SetGlobalVector(idSunCol, Vector4.zero);
                 return;
             }
             var s = data.sky;
+            float k = Dusk; var ev = k > 0f ? data.evening : null; // evening (Glint 2026-10-24): the sky leans toward its dusk values by k; at k 0 none of it is set, the sky is as it was
             var h = DistanceHaze.LinearHaze(tier); // the sky's horizon and below-horizon colour: the fog's colour (already linear; the long tier's HDR gain included)
             Shader.SetGlobalVector(idHaze, new Vector4(h.r, h.g, h.b, 1f));
+            if (ev != null) SceneSky();
             if (AtmosphereSettings.SkyTeal)
             {
                 var z = Lin(tealZenith); var m = Lin(tealMid);
+                if (ev != null) { z = Color.Lerp(z, Lin(Hex(ev.sky.zenith)), k); m = Color.Lerp(m, Lin(Hex(ev.sky.mid)), k); }
+                Shader.SetGlobalVector(idZenith, new Vector4(z.r, z.g, z.b, 1f));
+                Shader.SetGlobalVector(idMid, new Vector4(m.r, m.g, m.b, 1f));
+            }
+            else if (ev != null && skyRead)
+            {   // cobalt by day is the scene sky material's own; at dusk it is blended (in linear) toward the evening zenith and mid
+                var z = Color.Lerp(dayZenith, Lin(Hex(ev.sky.zenith)), k); var m = Color.Lerp(dayMid, Lin(Hex(ev.sky.mid)), k);
                 Shader.SetGlobalVector(idZenith, new Vector4(z.r, z.g, z.b, 1f));
                 Shader.SetGlobalVector(idMid, new Vector4(m.r, m.g, m.b, 1f));
             }
             else { Shader.SetGlobalVector(idZenith, Vector4.zero); Shader.SetGlobalVector(idMid, Vector4.zero); } // cobalt: the scene sky material's own
             float hh = AtmosphereSettings.SkyTeal && data.teal.hazeHeight > 0f ? data.teal.hazeHeight : s.hazeHeight; // the teal sky's gentler band into cream; cobalt keeps sky.hazeHeight
             if (!AtmosphereSettings.SkyTeal && tier == DistanceHaze.Tier.Long && s.hazeHeightLong > 0f) hh = s.hazeHeightLong; // the long tier's own, lower band: the sky stays blue overhead
-            Shader.SetGlobalVector(idShape, new Vector4(hh, s.aureole, s.aureolePower, s.hazeLift));
-            Shader.SetGlobalVector(idExtra, new Vector4(s.broad, s.broadPower, s.peach, 0f));
+            float aur = s.aureole, aurP = s.aureolePower, lift = s.hazeLift, peach = s.peach;
+            if (ev != null)
+            {
+                hh = Mathf.Lerp(hh, ev.sky.hazeHeight, k); aur = Mathf.Lerp(aur, ev.sky.aureole, k); aurP = Mathf.Lerp(aurP, ev.sky.aureolePower, k); lift = Mathf.Lerp(lift, ev.sky.hazeLift, k); peach = Mathf.Lerp(peach, ev.sky.peach, k);
+                var ph = Suborned.Play.LightPhase.Instance; var sun = ph ? ph.sun : null;
+                if (sun)
+                {   // the sky's glare follows the real sun: its direction and a glow colour that leans from the scene's to the dusk orange
+                    var to = -sun.transform.forward; var gc = Color.Lerp(skyRead ? daySunGlow : Lin(Hex(ev.sky.sunGlow)), Lin(Hex(ev.sky.sunGlow)), k);
+                    Shader.SetGlobalVector(idSunDir, new Vector4(to.x, to.y, to.z, 1f)); Shader.SetGlobalVector(idSunCol, new Vector4(gc.r, gc.g, gc.b, 1f));
+                }
+            }
+            else { Shader.SetGlobalVector(idSunDir, Vector4.zero); Shader.SetGlobalVector(idSunCol, Vector4.zero); }
+            Shader.SetGlobalVector(idShape, new Vector4(hh, aur, aurP, lift));
+            Shader.SetGlobalVector(idExtra, new Vector4(s.broad, s.broadPower, peach, 0f));
             FarBand();
         }
 

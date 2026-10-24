@@ -184,7 +184,7 @@ namespace Suborned.Play
             foreach (var s in rs.Segs)
             {
                 var o2 = s.Row?.I?.Order; if (o2 == null) continue;
-                if (o2.Do == "reroute") { s.Obj = "badges/signal_unit"; s.Focus = true; }
+                if (o2.Do == "reroute") { s.Obj = "badges/npc_patrol_face"; /* Glyph, brief 057 §5: the face in the cameo's own ring, no amber on the pill */ s.Focus = true; }
                 else if (o2.Do == "loop" && plan.T?.Kind == "cabinet") s.Obj = "badges/signal_camera";
                 else if (o2.Do == "call") s.Obj = o2.Target == "driver" ? "icon:car" : "badges/signal_guard";
             }

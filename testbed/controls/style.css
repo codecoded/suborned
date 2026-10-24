@@ -176,3 +176,78 @@ em.new { display: inline-block; flex: none; width: 17px; height: 17px; backgroun
 #occ { position: fixed; right: 12px; top: 56px; z-index: 7; display: flex; flex-wrap: wrap; gap: 4px; justify-content: flex-end; max-width: 760px; align-items: center; }
 #occ button { padding: 5px 10px; font-size: 13px; }
 #occ .occt { font-size: 11px; opacity: .7; background: var(--panel); border-radius: 6px; padding: 5px 8px; margin-left: 4px; }
+
+/* ---- phones and tablets (Sky, 2026-10-24). body.m = a touch screen or a window under 820 px: panels fold, buttons are 44 px. body.touch = a coarse pointer: the dock. Desktop is untouched. */
+:root { --sl: env(safe-area-inset-left, 0px); --sr: env(safe-area-inset-right, 0px); --st: env(safe-area-inset-top, 0px); --sb: env(safe-area-inset-bottom, 0px); }
+html, body { height: 100dvh; overscroll-behavior: none; -webkit-text-size-adjust: 100%; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+button { touch-action: manipulation; }
+canvas, #ring, #roster button, #dock button, #stick, #occ { touch-action: none; }
+#menukey, #dock, #stick, #touchhelp, .occhead { display: none; }
+#stick { position: fixed; width: 112px; height: 112px; margin: -56px 0 0 -56px; border-radius: 50%; border: 2px solid rgba(241, 234, 216, .85); background: rgba(16, 32, 31, .35); z-index: 6; pointer-events: none; }
+#stick i { position: absolute; left: 34px; top: 34px; width: 44px; height: 44px; border-radius: 50%; background: rgba(241, 234, 216, .92); box-shadow: 0 2px 8px rgba(0, 0, 0, .4); }
+
+body.m { font-size: 15px; }
+/* the menu: one button; the presets, the about line, the touch legend and Settings open under it */
+body.m #top { left: calc(8px + var(--sl)); top: calc(8px + var(--st)); width: max-content; max-width: calc(100vw - 16px - var(--sl) - var(--sr)); max-height: calc(100dvh - 16px - var(--st) - var(--sb)); overflow-y: auto; overscroll-behavior: contain; touch-action: pan-y; gap: 8px; justify-items: start; }
+body.m.menu-open #top { background: var(--panel); border-radius: 12px; padding: 8px; width: min(560px, calc(100vw - 16px - var(--sl) - var(--sr))); justify-items: stretch; }
+body.m #menukey { display: block; min-width: 88px; height: 44px; font-weight: 700; font-size: 15px; }
+body.m:not(.menu-open) :is(#tabs, #about, #touchhelp, #opts) { display: none !important; }
+body.m.menu-open #touchhelp { display: block; font-size: 12.5px; line-height: 1.4; opacity: .9; } body.m #touchhelp b { color: #1fd1b5; margin-right: 4px; }
+body.m #tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+body.m #tabs button { margin: 0; font-size: 14px; padding: 6px 12px; min-height: 44px; }
+body.m #about { max-width: none; width: auto; font-size: 12.5px; background: transparent; padding: 0; }
+body.m #opts { gap: 8px; }
+body.m .grp { flex-wrap: wrap; row-gap: 4px; padding: 4px 6px 4px 10px; border: 1px solid rgba(241, 234, 216, .15); }
+body.m .grp em { font-size: 12.5px; }
+body.m .grp button { min-height: 44px; padding: 6px 12px; font-size: 14px; }
+body.m .reset { font-size: 14px; opacity: 1; min-height: 44px; }
+
+/* the top bar: the clock and money on the right, the occlusion head in the middle (one line under the menu when the screen is upright) */
+body.m #stats { right: calc(8px + var(--sr)); top: calc(8px + var(--st)); min-height: 44px; display: flex; align-items: center; max-width: calc(100vw - 112px - var(--sl) - var(--sr)); font-size: 12.5px; line-height: 1.25; padding: 4px 10px; }
+body.m #occ { right: auto; left: 50%; translate: -50% 0; top: calc(56px + var(--st)); width: min(360px, calc(100vw - 16px)); max-width: none; justify-content: center; align-content: flex-start; pointer-events: none; gap: 4px; touch-action: none; }
+body.m #occ > * { pointer-events: auto; }
+body.m .occhead { display: flex; width: 100%; gap: 4px; }
+body.m .occhead button { min-height: 44px; padding: 0; font-size: 24px; line-height: 1; flex: 0 0 52px; }
+body.m .occhead .occcur { flex: 1; font-size: 15px; font-weight: 700; white-space: nowrap; }
+body.m .occcur b { display: inline-grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: var(--cream); color: var(--ink); margin-right: 4px; font-size: 14px; } body.m .occcur i { font-style: normal; opacity: .7; margin-left: 4px; }
+body.m #occ:not(.open) > :not(.occhead) { display: none; }
+body.m #occ.open { background: var(--panel); border-radius: 12px; padding: 6px; pointer-events: auto; }
+body.m #occ.open .occhead button { background: rgba(241, 234, 216, .1); }
+body.m #occ .occt { flex: 1 1 100%; background: transparent; margin: 2px 0 0; padding: 2px 4px; font-size: 12px; opacity: .85; }
+body.m #occ button[data-occ], body.m #occ button[data-sil] { flex: 1 1 calc(33.3% - 4px); min-height: 44px; padding: 4px 6px; font-size: 14px; }
+body.m #occ button[data-occ] { font-size: 0; } body.m #occ button[data-occ]::before { content: attr(data-short); font-size: 14px; }
+
+/* the roster: narrow buttons at the bottom left; the order plate opens to the right of a portrait only while it has an order */
+body.m #roster { left: calc(8px + var(--sl)); bottom: calc(8px + var(--sb)); gap: 4px; }
+body.m .agentrow { position: relative; }
+body.m #roster button[data-agent], body.m #roster .squad { width: 84px; min-height: 44px; padding: 3px 8px; font-size: 14px; }
+body.m #roster b { font-size: 18px; }
+body.m #roster .squad { padding-left: 10px; }
+body.m #roster .free { width: 28px; height: 28px; top: 7px; right: 5px; }
+body.m .aplate { position: absolute; left: 90px; top: 4px; height: 36px; width: min(176px, calc(100vw - 84px - 120px - var(--sl) - var(--sr) - 16px)); z-index: 5; }
+body.m .aplate .val { min-width: 0; flex: 0 1 88px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+body.m .aplate .gi { width: 34px; height: 34px; } body.m .aplate .x { opacity: .9; font-size: 24px; padding: 0 8px; }
+
+/* the dock: the keys that a keyboard has and a phone does not */
+body.m #dock { display: grid; grid-template-columns: repeat(2, 50px); gap: 4px; position: fixed; right: calc(8px + var(--sr)); bottom: calc(8px + var(--sb)); z-index: 7; }
+#dock button { height: 44px; min-width: 0; padding: 0; font-size: 13px; font-weight: 700; line-height: 1.1; }
+#dock #dockkey { grid-column: 1 / -1; }
+#dock .big { grid-column: 1 / -1; height: 60px; font-size: 16px; }
+body:not([data-view="tp"]) #dock .tp, body[data-view="tp"] #dock .cmd { display: none; }
+body.dock-off #dock button:not(#dockkey) { display: none; }
+
+/* text that has no place in play on a small screen */
+body.m #hint { display: none; }
+body.m.menu-open #log { display: none; }
+body.m #log { left: calc(8px + var(--sl)); right: auto; bottom: auto; top: calc(108px + var(--st)); width: min(300px, 56vw); justify-items: start; font-size: 12px; }
+body.m #log div:not(:nth-last-child(-n+3)) { display: none; }
+body.m #paused { left: auto; right: calc(8px + var(--sr)); transform: none; top: calc(106px + var(--st)); }
+body.m #test { top: calc(106px + var(--st)); right: calc(8px + var(--sr)); max-width: 60vw; font-size: 12px; }
+body.m #hist { top: calc(108px + var(--st)); right: calc(8px + var(--sr)); width: min(520px, calc(100vw - 16px)); font-size: 12px; }
+body.m #histkey { right: calc(120px + var(--sr)); bottom: calc(8px + var(--sb)); width: 44px; height: 44px; }
+body.m #errors { top: calc(110px + var(--st)); }
+@media (orientation: landscape) {
+  body.m #occ { top: calc(8px + var(--st)); }
+  body.m #log { top: calc(60px + var(--st)); }
+  body.m #paused, body.m #test, body.m #hist { top: calc(60px + var(--st)); }
+}

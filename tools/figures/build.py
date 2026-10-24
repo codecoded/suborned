@@ -184,6 +184,18 @@ def apply_tint(img, t):
     hdeg = hh * 60.0; s_ = np.where(mx > 1e-6, d / np.maximum(mx, 1e-6), 0); v_ = mx
     dh = np.abs((hdeg - t.get('from', 0) + 180) % 360 - 180)
     sel = (dh <= t.get('width', 30)) & (s_ >= t.get('minSat', 0.2)) & (s_ <= t.get('maxSat', 1.0)) & (v_ >= t.get('minVal', 0.0)) & (v_ <= t.get('maxVal', 1.0))
+    if t.get('keep'):
+        # keep: regions of the map (fractions of its width and height, origin top-left as an image viewer shows it) where the tint never applies, for skin that
+        # shares the garment's hue (brief 063: the driver's lips, nose and hands went mint). {"ellipse": [cx, cy, rx, ry]} protects every pixel inside it;
+        # {"box": [x0, y0, x1, y1], "hueAbove": deg} protects the pixels in the box whose hue is above `hueAbove` (skin is more orange than coral).
+        idx = np.arange(w * h); xf = (idx % w + 0.5) / w; yf = 1.0 - (idx // w + 0.5) / h
+        hs = ((hdeg + 180.0) % 360.0) - 180.0
+        for k in t['keep']:
+            if 'ellipse' in k:
+                cx, cy, rx, ry = k['ellipse']; sel &= ~((((xf - cx) / rx) ** 2 + ((yf - cy) / ry) ** 2) <= 1.0)
+            elif 'box' in k:
+                x0, y0, x1, y1 = k['box']; inbox = (xf >= x0) & (xf <= x1) & (yf >= y0) & (yf <= y1)
+                sel &= ~(inbox & (hs > k.get('hueAbove', -999.0)))
     hdeg = np.where(sel, (hdeg + t.get('shift', 0)) % 360, hdeg)
     s_ = np.where(sel, np.clip(s_ * t.get('sat', 1.0), 0, 1), s_); v_ = np.where(sel, np.clip(v_ * t.get('val', 1.0), 0, 1), v_)
     H = hdeg / 60.0; i = np.floor(H).astype(int) % 6; f = H - np.floor(H)

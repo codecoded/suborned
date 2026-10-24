@@ -16,6 +16,8 @@ namespace Suborned.Play
     public sealed partial class HudToolkit
     {
         public static bool ShotBusy { get; private set; }
+        /// <summary>Brief 060 (-bot): the HUD manifest as a capture would write it now (no capture), else null.</summary>
+        public static string ManifestNow(string state = "rest") => live != null && live.on ? live.Manifest(state, Screen.height) : null;
         public static string LastShot { get; private set; } = "";
 
         /// <summary>Queue a capture to `basePath` (absolute, no extension); `state` is rest, active or alt (rest becomes briefing while the briefing card is up, log while the history panel is open). Poll ShotBusy.</summary>

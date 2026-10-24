@@ -35,7 +35,7 @@ export type Item = { id: string; seed: Seed; mutations: Mutation[]; script: Scri
 
 export type Severity = 'S1' | 'S2' | 'S3' | 'S4' | 'info';
 /** One finding of one check on one play. `key` groups findings into one issue (the same fault in many plays). */
-export type Finding = { check: string; severity: Severity; key: string; title: string; expected: string; observed: string; tick?: number; owner: string };
+export type Finding = { check: string; severity: Severity; key: string; title: string; expected: string; observed: string; tick?: number; owner: string; /** the bot lane (tier 2): its shot (JPEG) and replay script, absolute */ shot?: string; script?: string };
 export type Ctx = { text: TextTables; rules: QaRules };
 export type TextTables = { fails: Set<string>; endFails: Set<string>; failcam: Record<string, Record<string, string>>; beats: Set<string> };
 export type QaRules = { warnLeadS: number; stuckS: number; valeStuckS: number };

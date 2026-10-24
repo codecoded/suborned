@@ -578,7 +578,7 @@ namespace Suborned.Play
             if (plate[slot].Id is "drop" or "stash") { PlateAct(plate[slot].Id); return; } // carrying: Put down and Hide act at once (Glyph §4)
             if (plate[slot].Id == "takedown") { Way = Picked == slot && Way == "knockout" ? "kill" : "knockout"; } // 4 again flips; kill is never the default (Glyph §1)
             Picked = slot; intentKey = "";
-            Status = $"{VerbKey(slot)}: {plate[slot].Label}{(plate[slot].Id == "takedown" ? $" ({(Way == "kill" ? "Kill" : "Knock out")})" : "")} — right click a target";
+            Status = $"{VerbKey(slot)}: {plate[slot].Label}{(plate[slot].Id == "takedown" ? $" ({(Way == "kill" ? "Kill" : "Knock out")})" : "")} — click a target"; /* item 33: a left click on a target */
         }
 
         /// <summary>The mouse over the world (pixels, origin bottom left): what is under it, and what a right click would do there, priced once per change.</summary>
@@ -1404,8 +1404,19 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the session, the end
 
+        /// <summary>Brief 060 (-bot): the folder sessions are written to instead of the player's play folder (Sky's saved sessions are QA seeds), else null.</summary>
+        public static string SessionDirOverride;
+
+        /// <summary>Brief 060 (-bot): the session as it stands (Save's replayable record, closing checkpoint and all) copied to `to`; returns `to`.</summary>
+        public string SaveSessionTo(string to)
+        {
+            Save(); if (SessionPath.Length == 0 || !File.Exists(SessionPath)) throw new IOException("no session written");
+            File.Copy(SessionPath, to, true); return to;
+        }
+
         string SessionFile()
         {
+            if (!string.IsNullOrEmpty(SessionDirOverride)) { Directory.CreateDirectory(SessionDirOverride); return Path.Combine(SessionDirOverride, $"handover-{DateTime.Now:yyyyMMdd-HHmmss}.script.json"); }
             var dir = Application.isEditor ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "out", "play")) : Path.Combine(Application.persistentDataPath, "play");
             Directory.CreateDirectory(dir);
             return Path.Combine(dir, $"handover-{DateTime.Now:yyyyMMdd-HHmmss}.script.json");

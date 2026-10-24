@@ -3,5 +3,18 @@
   "note": "Glint, brief 048 (2026-10-24; Sky: 'modern strip lighting around the road edges, like a futuristic city would'). The kerb strip light by phase, LOOK ONLY (no rule, sight or replay reads it). RoadLight (Runtime/RoadLight.cs) reads LightPhase.Current (Day, Evening, Night) and eases the lens emission and the road pool toward the level below, on RUNTIME COPIES of the two materials (the Kit .mat and the Glow .mat are never written, so the hash-checked kit stays as shipped). lens: DK_Road_Lens (Vela, tools/decokit/road_ribbon.py), levels are the .mat's own emission-strength scale: the kit writes _EmissionColor rgb as (linear(#FFE6B5) x level) ^ (1 / gamma) with the level in alpha, so a level L is the material's day rgb x (L / day) ^ (1 / gamma); `day` must equal the .mat's alpha (RoadLight warns if it does not). The numbers mirror light.json emissive (night.roadLens 5.0, dayResidual.roadLens 1.4, evening.roadLens 3.0); change both. pool: DK_Road_Pool (Materials/Glow, Suborned/Cross Glow mode 3, additive, one quad band per kerb, no light): _Alpha, off by day (the .mat is 0), 0.22 at night is the kit's own value (road_ribbon.py register alpha). Cost: no light, no extra pass; the lens is one emissive line, the pool one additive quad per combined batch. Signals are never touched (they draw on their own camera, outside the grade).",
   "lens": { "material": "DK_Road_Lens", "gamma": 2.2, "day": 1.4, "evening": 3.0, "night": 5.0 },
   "pool": { "material": "DK_Road_Pool", "day": 0.0, "evening": 0.14, "night": 0.22 },
-  "easeSeconds": 1.5
+  "easeSeconds": 1.5,
+  "glowNote": "Glint 2026-10-24 (the evening phase; the road strip's own levels above are unchanged). glow: the other lights that come up at dusk, each on its own RUNTIME COPY (the kit .mat never written), eased like the strip. mode lit: a Suborned/DecoKit/GlassSky pane (DK_GlassDark: the facade windows, 972 renderers in the Handover scene); evening and night are the SHARE of panes with their interior light on (shader _Lit, 0 by day), colour the warm light (_LitColour): about a third of the panes at evening, three in four at night, a pane being a cell of 6 m by 3.6 m on the facade. mode emission: a material that already glows; evening and night are multipliers on its own emission (1 by day). The kit's signs (the DK_Neon set, lightbox, billboard and screens) are listed; the Handover scene draws none of them yet (0 references in HarbourDistrict.unity), so nothing changes there until Vela lays one. A material not in the scene, or without what its mode drives, is skipped (RoadLight logs which were found).",
+  "glow": [
+    { "material": "DK_GlassDark", "mode": "lit", "colour": "#ffc27a", "evening": 0.35, "night": 0.75 },
+    { "material": "DK_Neon_Coral", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Neon_Cream", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Neon_Gold", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Neon_Red", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Neon_Teal", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Lightbox_Travel", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Billboard_Ads_Lit", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Screen", "mode": "emission", "evening": 1.25, "night": 1.7 },
+    { "material": "DK_Screen_Amber", "mode": "emission", "evening": 1.25, "night": 1.7 }
+  ]
 }

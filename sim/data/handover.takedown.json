@@ -27,7 +27,7 @@
    "name": "Café entrance",
    "kind": "public",
    "at": [-1030,-2900],
-   "stand": [-1025,-2875]
+   "stand": [-975,-2875]
   },
   {
    "id": "office-entrance",
@@ -51,7 +51,7 @@
    "name": "Café kitchen door",
    "kind": "service",
    "at": [-2240,-2600],
-   "stand": [-2225,-2575]
+   "stand": [-2275,-2575]
   },
   {
    "id": "office-service-door",
@@ -68,7 +68,7 @@
    "kind": "door",
    "of": "cafe-kitchen-door",
    "at": [-2240,-2600],
-   "stand": [-2225,-2575],
+   "stand": [-2275,-2575],
    "holds": 3,
    "bare": "no container: neither against the wall beside Café kitchen door nor in a kerb zone within 10 m of it does a Dumpster (2.1 x 1.186 m) pass the street rules (SF-1 clear walking zone, SF-2 crossings and doors, SF-14 quay)",
    "src": "civic-block.json entrance with kind service: a body put through it is a timed off-screen action (Motive 013 §2.4, 10 s)"
@@ -98,7 +98,7 @@
    "id": "door:cafe-entrance",
    "kind": "door",
    "at": [-1030,-2900],
-   "stand": [-1025,-2875],
+   "stand": [-975,-2875],
    "door": "cafe-entrance"
   },
   {
