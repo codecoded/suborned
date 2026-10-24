@@ -97,7 +97,7 @@ namespace Suborned.Play
             bool frozen = live && host.Frozen;
             if (frozen && !flWasFrozen) flFrozenAt = Time.unscaledTime; flWasFrozen = frozen;
             // the portraits keep today's pips without the lab; with it, segment bars (and the charge) replace them
-            for (int i = 0; i < 4; i++) foreach (var w in new[] { colWins[i], rowWins[i] }) if (w?.Pips != null) w.Pips.style.visibility = FlOn ? Visibility.Hidden : Visibility.Visible;
+            for (int i = 0; i < 4; i++) foreach (var w in new[] { colWins[i], rowWins[i] }) if (w?.Pips != null) w.Pips.style.visibility = FlOn ? Visibility.Hidden : StyleKeyword.Null; /* Glyph's 0.2.113 #2: inherit, never force Visible (the fail replay hides the roster and the pips stayed) */
             Show(flPill, frozen); Show(flGo, frozen && look.ladder); foreach (var q in flQueue) Show(q.root, frozen && look.ladder);
             int badges = 0, walks = 0, kites = 0;
             Show(flCoinRing, live && host.AimNow is { Lab: true }); flCoinBand = host.AimNow?.Band ?? ""; flCoinRing.MarkDirtyRepaint();

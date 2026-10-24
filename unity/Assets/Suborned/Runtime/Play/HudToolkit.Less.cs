@@ -263,7 +263,7 @@ namespace Suborned.Play
                     string eye = running ? host.RunEye(i) : ""; var eb = busyEyes[i]; Show(eb, eye.Length > 0); // a run is noticed: who could see it, as on the price line
                     if (eye.Length > 0) Icon(eb[0], "eye_" + eye, eye == "open" ? new Color(0.878f, 0.227f, 0.184f) : Cream);
                     bool carry = s.Pace.Length > 0 && s.Progress < 0;
-                    bar.style.visibility = s.Progress >= 0 && !s.Down ? Visibility.Visible : Visibility.Hidden; fill.style.width = Length.Percent(100f * Mathf.Clamp01(s.Progress / 1000f)); // the slot keeps its place
+                    bar.style.visibility = s.Progress >= 0 && !s.Down ? StyleKeyword.Null : Visibility.Hidden; fill.style.width = Length.Percent(100f * Mathf.Clamp01(s.Progress / 1000f)); // the slot keeps its place
                     // brief 049 row 9 (Glyph's 0.2.94 review #5c): the plate keeps a number ("9 s"); a word alone ("aiming", "refused", "not yet")
                     // is the icon alone, on the small plate, never a bar-wide plate with a word at its far end
                     bool hwDigit = false; for (int ci = 0; ci < hw.Length && !hwDigit; ci++) hwDigit = char.IsDigit(hw[ci]); bool hwWord = hw.Length > 0 && !hwDigit; /* Redline 064 #6: no LINQ a row a frame */ string hwShown = hwWord ? "" : hw;
@@ -685,10 +685,10 @@ namespace Suborned.Play
                     Show(u.Cameo, many); if (many) Bg(u.Cameo, $"portraits/cameo_{Op.Name(r.By)}_normal");
                     Icon(u.Glyph, r.Available ? (it.Lead.Length > 0 ? it.Lead : HudModel.AtlasIcon(it.Order.Do, it.Order.Approach, "")) : "lock", Ink);
                     Text(u.Name, HudModel.ShortName(host, it)); u.Name.style.width = Mathf.Ceil(nameW) + 1; u.Name.style.flexShrink = 0; var tag = HudModel.Tag(it);
-                    Show(u.TagIcon, anyTag); u.TagIcon.style.visibility = tag.Length > 0 ? Visibility.Visible : Visibility.Hidden; // the cabinet's loops: which camera, as a glyph (Glyph: no word)
+                    Show(u.TagIcon, anyTag); u.TagIcon.style.visibility = tag.Length > 0 ? StyleKeyword.Null : Visibility.Hidden; // the cabinet's loops: which camera, as a glyph (Glyph: no word)
                     if (tag.Length > 0) Art(u.TagIcon, tag == "entrance" ? "icons/singles/enter" : tag == "pickup" ? "icons/singles/car" : "badges/signal_camera", Ink);
                     u.FieldsKey = ""; Fields(u.Fields, lines[i], Ink, ref u.FieldsKey, false, cols: sheetCols);
-                    bool key = KeyLegends && r.Key >= 0 && host.Selected[(int)r.By]; Show(u.Key, KeyLegends); u.Key.style.visibility = key ? Visibility.Visible : Visibility.Hidden; Text(u.KeyText, key ? host.VerbKey(r.Key) : "0"); // the slot is kept, so every row's columns align
+                    bool key = KeyLegends && r.Key >= 0 && host.Selected[(int)r.By]; Show(u.Key, KeyLegends); u.Key.style.visibility = key ? StyleKeyword.Null : Visibility.Hidden; Text(u.KeyText, key ? host.VerbKey(r.Key) : "0"); // the slot is kept, so every row's columns align
                     bool goBlocked = !r.Available && it.Order?.Do == "go"; u.Root.style.opacity = r.Available || goBlocked ? 1f : 0.45f; u.Glyph.style.opacity = u.Name.style.opacity = goBlocked ? 0.45f : 1f; // Glyph r3: a blocked Go dims only its lock and name; the cameos and red cuffs stay full
                 }
             }

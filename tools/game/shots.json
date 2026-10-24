@@ -6,6 +6,7 @@
     { "name": "briefing-day", "briefing": true, "tick": 0, "note": "the briefing card" },
     { "name": "start-overhead-day", "tick": 0, "perf": 4, "note": "play zoom at the opening, frame times" },
     { "name": "start-overhead-night", "tick": 0, "night": true },
+    { "name": "cafe-front-night", "script": "route-a-board", "night": true, "tick": 600, "focus": "waitress", "yaw": 0, "note": "Glyph 0.2.113 #3: the play view at night with its HUD, before night is offered; before cafe-front-day, so the run ends by day" },
     { "name": "cafe-front-day", "script": "route-a-board", "night": false, "tick": 600, "focus": "waitress", "yaw": 0 },
     { "name": "office-front-yaw210", "script": "route-a-board", "tick": 1200, "focus": "camera/entrance", "yaw": 2, "note": "the Records Office front is played at yaw 210" },
     { "name": "plate-pay-armed", "script": "route-a-board", "tick": 1200, "select": "fixer", "arm": "pay", "focus": "waitress", "yaw": 0, "pointer": [0.62, 0.42], "state": "active" },

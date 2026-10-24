@@ -65,7 +65,7 @@ namespace Suborned.Play
             if (menuCard == null) return;
             bool open = host.MenuOpen && !FrontEnd.Covers; // Options or Controls opened from it stand in its place until Back
             Show(menuVeil, host.MenuOpen); Show(menuCard, open);
-            if (brief != null) brief.style.visibility = host.MenuOpen ? Visibility.Hidden : Visibility.Visible; // the briefing card never stands behind the pause sheet (review #5)
+            if (brief != null) brief.style.visibility = host.MenuOpen ? Visibility.Hidden : StyleKeyword.Null; // the briefing card never stands behind the pause sheet (review #5)
             if (host.MenuOpen && !menuWasOpen) { menuOpenFrame = Time.frameCount; MenuFocus(0); } // Resume focused on open
             menuWasOpen = host.MenuOpen;
             if (!open) return;

@@ -361,23 +361,26 @@ namespace Suborned.Play
                 IEnumerator Case(bool shortAct, string[] res)
                 {
                     h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; var g = h.Game;
-                    h.Select(OpId.Scout, false); h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "waitress" });
+                    h.Select(OpId.Scout, false); h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "guard" }); // at the Office door: the entrance camera is in pistol range (0.2.114: the official car was 16 m from the cafe, out of range)
                     var sc = g.Ops[(int)OpId.Scout];
                     for (int i = 0; i < 1500 && !g.Over; i++)
                     {
                         if (sc.Busy != null) { int left = sc.BusyEnd - g.Tick; if (shortAct ? left <= 2 * Suborned.Sim.Game.Hz && left > 3 : left > 4 * Suborned.Sim.Game.Hz) break; }
                         h.RunTo(g.Tick + 1);
                     }
-                    string before = Busy(g); int n0 = g.Orders.Count, c0 = h.FireCancelledActs;
-                    h.Issue(new Order { Op = "scout", Do = "fire", Target = "car:official" }, (Vector2?)null, (Vector3?)null); // the player's path (Playable), as a ring wedge gives it
+                    // a property target in range with a clear line from where the Scout stands (the entrance camera first)
+                    string tgt = ""; var cands = new List<string> { "camera:entrance" }; foreach (var cm in g.S.Cameras) cands.Add("camera:" + cm.Id); cands.Add("car:official"); cands.Add("car:getaway");
+                    foreach (var cid in cands) { var tp = g.PosOf(cid); if (tp.HasValue && Suborned.Sim.G.Within(sc.Pos, tp.Value, sc.Gun.W.MaxCm - 100) && g.S.Sight(sc.Pos, tp.Value, g.R.Eye)) { tgt = cid; break; } }
+                    string before = Busy(g) + (tgt.Length > 0 ? $", target {tgt}" : ", no property target in range"); int n0 = g.Orders.Count, c0 = h.FireCancelledActs;
+                    h.Issue(new Order { Op = "scout", Do = "fire", Target = tgt.Length > 0 ? tgt : "camera:entrance" }, (Vector2?)null, (Vector3?)null); // the player's path (Playable), as a ring wedge gives it
                     int given = g.Orders.Count - n0; bool waited = shortAct && given == 0;
                     for (int i = 0; i < 40 && !g.Over && g.Orders.Count == n0; i++) h.RunTo(g.Tick + 1); // the wait: the fire goes when the act lands
                     h.RunTo(g.Tick + 1);
                     bool busyRefusal = false, fireOk = false, cancel = false;
-                    for (int i = n0; i < g.Orders.Count; i++) { var (oo, ok2, code, _) = g.Orders[i]; if (code == "agent-busy") busyRefusal = true; if (oo.Do == "fire" && ok2) fireOk = true; if (oo.Do == "cancel" && ok2) cancel = true; }
+                    string fireCode = ""; for (int i = n0; i < g.Orders.Count; i++) { var (oo, ok2, code, _) = g.Orders[i]; if (code == "agent-busy") busyRefusal = true; if (oo.Do == "fire") { if (ok2) fireOk = true; else fireCode = code; } if (oo.Do == "cancel" && ok2) cancel = true; }
                     bool cOk = !busyRefusal && fireOk && (shortAct ? waited && !cancel : cancel && h.FireCancelledActs > c0);
-                    res[0] = $"{{\"ok\": {B(cOk)}, \"busy\": \"{J(before)}\", \"givenAtOnce\": {given}, \"waited\": {B(waited)}, \"cancelled\": {B(cancel)}, \"fired\": {B(fireOk)}, \"agentBusy\": {B(busyRefusal)}}}";
-                    log.Add($"r29 fire busy ({(shortAct ? "act ending within 2 s" : "longer act")}): {(cOk ? "ok" : "FAILED")}: {before}; given at once {given}, waited {waited}, cancelled {cancel}, fired {fireOk}, agent-busy {busyRefusal}");
+                    res[0] = $"{{\"ok\": {B(cOk)}, \"busy\": \"{J(before)}\", \"givenAtOnce\": {given}, \"waited\": {B(waited)}, \"cancelled\": {B(cancel)}, \"fired\": {B(fireOk)}, \"agentBusy\": {B(busyRefusal)}, \"fireRefused\": \"{fireCode}\"}}";
+                    log.Add($"r29 fire busy ({(shortAct ? "act ending within 2 s" : "longer act")}): {(cOk ? "ok" : "FAILED")}: {before}; given at once {given}, waited {waited}, cancelled {cancel}, fired {fireOk}{(fireCode.Length > 0 ? " (refused " + fireCode + ")" : "")}, agent-busy {busyRefusal}");
                     ok &= cOk;
                 }
                 var rs = new string[1]; var rl = new string[1];

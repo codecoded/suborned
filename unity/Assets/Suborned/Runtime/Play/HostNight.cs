@@ -12,7 +12,7 @@ namespace Suborned.Play
 
         public void SetNight(bool night)
         {
-            NightLook = night; PlayerPrefs.SetInt(NightPref, night ? 1 : 0);
+            NightLook = night; if (!GameBoot.Automation) PlayerPrefs.SetInt(NightPref, night ? 1 : 0); // 0.2.115: a proof, shot or bot run never stores Sky's choice (the night shots left his game at night, and every later run with it)
             var lp = LightPhase.Instance ? LightPhase.Instance : FindAnyObjectByType<LightPhase>();
             if (!lp) return;
             lp.Focus = () => cam ? focus : (Vector3?)null;
@@ -30,7 +30,7 @@ namespace Suborned.Play
                 return;
             }
             if (GameBoot.Arg("-night")) { int keep = PlayerPrefs.GetInt(NightPref, 0); SetNight(true); PlayerPrefs.SetInt(NightPref, keep); return; }
-            if (PlayerPrefs.GetInt(NightPref, 0) == 1) SetNight(true); else NightLook = false;
+            if (!GameBoot.Automation && PlayerPrefs.GetInt(NightPref, 0) == 1) SetNight(true); else NightLook = false; // an automated run starts by day unless it says -night
         }
     }
 }

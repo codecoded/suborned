@@ -29,10 +29,12 @@ namespace Suborned.World
             // tools/geometry/visible.ts and tools/sim/solids.ts mirror it (Splice).
             var others = new System.Collections.Generic.List<(string id, Vector2[] line, float half, Rect box)>();
             foreach (var o in g.Roads) { var ol = Poly.CleanLine(o.Line); float hw = o.Width / 2f - 0.01f; float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue; foreach (var v in ol) { x0 = Mathf.Min(x0, v.x); y0 = Mathf.Min(y0, v.y); x1 = Mathf.Max(x1, v.x); y1 = Mathf.Max(y1, v.y); } others.Add((o.Id, ol, hw, Rect.MinMaxRect(x0 - hw, y0 - hw, x1 + hw, y1 + hw))); }
+            var sink = RoadSinks(g); // Glyph's 0.2.113 review #5 (SeamProbe: 1,867 half-metre samples of two road batches coplanar at Boulevard x Market)
             foreach (var r in g.Roads)
             {
                 var el = Nodes.Element(layer, r.Id);
-                nodes.Part(el, "carriageway", new MeshKit().Ribbon(r.Line, r.Width, r.Level, r.Level), nodes.Ground(r.Surface));
+                float cy = r.Level - (sink.TryGetValue(r.Id, out var sk) ? sk : 0f);
+                nodes.Part(el, "carriageway", new MeshKit().Ribbon(r.Line, r.Width, cy, cy), nodes.Ground(r.Surface));
                 // Kerb strips centred on the carriageway edges' outer side: offset lines at (width + kerb) / 2.
                 var (l, rr) = Poly.Ribbon(Poly.CleanLine(r.Line), r.Width + r.KerbWidth, false);
                 var drives = g.Drives.FindAll(d => d.Road == r.Id && d.Kerb is { Length: 2 });
@@ -331,5 +333,42 @@ namespace Suborned.World
             }
             return kit;
         }
-    }
+    
+        /// <summary>Glyph's 0.2.113 review #5: where two carriageways cross (or a road meets a circus) both ribbons lay the junction at one level,
+        /// from two batches, and z-fight into faint tonal steps and hairlines. The junction is drawn by the higher road (a circus first, then the
+        /// wider, then by id): each road takes the shallowest step (SinkStep each) that no higher road it overlaps holds, so two crossing roads
+        /// never share a level and a crossing is never coplanar. Millimetres: the kerbs, gutters and the road's own pieces stand on their own levels; the
+        /// walk file's 5 cm tests do not see it. No export change.</summary>
+        public const float SinkStep = 0.003f;
+        static System.Collections.Generic.Dictionary<string, float> RoadSinks(GroundDto g)
+        {
+            var roads = new System.Collections.Generic.List<RoadDto>(g.Roads);
+            roads.Sort((a, b) => b.Width != a.Width ? b.Width.CompareTo(a.Width) : string.CompareOrdinal(a.Id, b.Id));
+            var step = new System.Collections.Generic.Dictionary<string, int>(); var lines = new System.Collections.Generic.Dictionary<string, Vector2[]>();
+            foreach (var r in roads) lines[r.Id] = Poly.CleanLine(r.Line);
+            static float SegD(Vector2 p, Vector2 a, Vector2 b) { var ab = b - a; float t = ab.sqrMagnitude < 1e-8f ? 0f : Mathf.Clamp01(Vector2.Dot(p - a, ab) / ab.sqrMagnitude); return (a + ab * t - p).magnitude; }
+            static float LineD(Vector2 p, Vector2[] l) { float d = float.MaxValue; for (int i = 1; i < l.Length; i++) d = Mathf.Min(d, SegD(p, l[i - 1], l[i])); return d; }
+            bool Overlaps(Vector2[] a, float ha, Vector2[] b, float hb)
+            {
+                for (int i = 1; i < a.Length; i++)
+                {
+                    float len = Vector2.Distance(a[i - 1], a[i]); int n = Mathf.Max(1, Mathf.CeilToInt(len / 1f));
+                    for (int s = 0; s <= n; s++) if (LineD(Vector2.Lerp(a[i - 1], a[i], s / (float)n), b) < hb + 0.01f) return true; // a's centreline inside b's carriageway
+                }
+                return false;
+            }
+            bool OnCircus(Vector2[] l, float h) { foreach (var c in g.Circuses) foreach (var v in l) if (Vector2.Distance(v, c.Centre) < c.Radius + h) return true; return false; }
+            var sink = new System.Collections.Generic.Dictionary<string, float>();
+            for (int i = 0; i < roads.Count; i++)
+            {
+                var r = roads[i]; var taken = new System.Collections.Generic.HashSet<int>(); if (OnCircus(lines[r.Id], r.Width / 2f)) taken.Add(0); // a circus is level 0
+                for (int j = 0; j < i; j++) { var o = roads[j]; if (Overlaps(lines[r.Id], r.Width / 2f, lines[o.Id], o.Width / 2f) || Overlaps(lines[o.Id], o.Width / 2f, lines[r.Id], r.Width / 2f)) taken.Add(step[o.Id]); }
+                int k = 0; while (taken.Contains(k)) k++; // the shallowest step no road it crosses holds (a colouring: two crossing roads never share a level; 0.2.113 first try stacked 7 deep, 21 mm)
+                step[r.Id] = k; if (k > 0) sink[r.Id] = k * SinkStep;
+            }
+            int deepest = 0; foreach (var v in step.Values) deepest = Mathf.Max(deepest, v);
+            Debug.Log($"World: carriageways under a crossing road: {sink.Count} of {roads.Count} sunk, deepest {deepest} step(s) of {SinkStep * 1000f:0} mm (Glyph 0.2.113 #5)");
+            return sink;
+        }
+}
 }

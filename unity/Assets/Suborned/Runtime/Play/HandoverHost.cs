@@ -873,11 +873,15 @@ namespace Suborned.Play
                         if (t.Kind == "bystander" && !controls.HoldActs && !controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null; // engine 0.18: a range bystander is fired on only with Ctrl held (the goal line says so)
                         string target = t.Kind is "person" or "hostile" or "unit" or "bystander" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : "";
                         if (target.Length == 0) return null;
+                        if (t.Kind is "camera" or "car" && NoFireTarget(by, target)) return null; /* the 0.2.115 bot row (Q-OFFER no-target x9): a camera already shot dark (or none the engine knows) is never offered */
                         var i = I("fire", target, "", $"Fire at {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? $"T +{R.GunfireTrail}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i; // brief 058: property costs the shooting once (the panel's Trail line)
                     }
             }
             return null;
         }
+
+        /// <summary>The engine's fire answer is no-target (the camera or car is down or unknown): read-only (FireQuery).</summary>
+        bool NoFireTarget(OpId by, string target) { Answer a = default; return Guard("fire-query", () => a = Game.FireQuery(by, target)) && !a.ok && a.code == "no-target"; }
 
         /// <summary>Fire on a fight target for any armed agent (the Enforcer's knob intent, for an agent with no Fire knob).</summary>
         Intent FireIntent(OpId by, Target t)
@@ -887,6 +891,8 @@ namespace Suborned.Play
             if (t.Kind == "camera") target = "camera:" + t.Key; // brief 058 (Motive's probes): every armed agent fires on a camera, not only the Enforcer
             if (Game.Range && t.Kind == "bystander" && (controls.HoldActs || controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force))) target = t.Key; // brief 041: no Ctrl in the hold preset // and a bystander, only with Ctrl held
             if (target.Length == 0) return null; // Keel 0.15.0: a unit by its own id
+            if (t.Kind is "camera" or "car" && NoFireTarget(by, target)) return null; // the 0.2.115 bot row (Q-OFFER no-target): a camera shot dark is not offered
+
             var i = new Intent { Slot = -1, Label = $"Fire at {t.Label}", Order = new Order { Op = Op.Name(by), Do = "fire", Target = target, Force = t.Kind == "bystander" } };
             i.Time = "until down"; i.Trail = PropertyId(target) ? $"T +{R.GunfireTrail}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
         }
