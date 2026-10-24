@@ -125,7 +125,7 @@ namespace Suborned.Play
             var mem = new List<(float t, double managed, double total)>();
             var frames = new StringBuilder("ms,tick,what\n"); var feet = new StringBuilder("t,tick,key,x,y,z,floor,free\n");
             using var hud = new StreamWriter(Path.Combine(rowDir, "hud.jsonl"));
-            double last = Time.realtimeSinceStartupAsDouble; bool sealSeen = false, sealMissed = false; int sealFrames = 0, sealHidden = 0;
+            double last = Time.realtimeSinceStartupAsDouble; float sealHiddenSince = -1f; bool sealSeen = false, sealMissed = false; int sealFrames = 0, sealHidden = 0;
             var act = new Stack<IEnumerator>(); // an input sequence in progress, stepped a frame at a time (nested sequences pushed)
             while (true)
             {
@@ -151,7 +151,8 @@ namespace Suborned.Play
                 if (h.SealOn && h.Modal == ModalGate.Modal.None)
                 {
                     sealFrames++; sealSeen = true;
-                    if (string.IsNullOrEmpty(HudToolkit.SealWords)) { sealHidden++; if (!sealMissed) { sealMissed = true; yield return Hit("Q-WARN-HUD", "seal", "The seal is running and its clock is not on screen", "the seal marker under the clock pill every frame the seal runs", $"seal at {HandoverHost.MissionClock(g.Lockdown)}, {h.SealLeftS} s left, marker hidden", Focus()); } }
+                    if (string.IsNullOrEmpty(HudToolkit.SealWords)) { sealHidden++; if (sealHiddenSince < 0f) sealHiddenSince = t; } else sealHiddenSince = -1f;
+                    if (sealHiddenSince >= 0f && t - sealHiddenSince >= 0.5f) { if (!sealMissed) { sealMissed = true; yield return Hit("Q-WARN-HUD", "seal", "The seal is running and its clock is not on screen", "the seal marker under the clock pill every frame the seal runs", $"seal at {HandoverHost.MissionClock(g.Lockdown)}, {h.SealLeftS} s left, marker hidden", Focus()); } }
                 }
                 if (!capturing && now >= nextFeet) { nextFeet = now + 0.5f; foreach (var x in FeetFrame(t, g, feet)) yield return x; }
                 if (!capturing && now >= nextHud) { nextHud = now + 2f; var mj = HudToolkit.ManifestNow(); if (mj != null) hud.WriteLine($"{{\"t\": {F(t)}, \"tick\": {g.Tick}, \"manifest\": {mj.Trim()}}}"); }
@@ -363,7 +364,8 @@ namespace Suborned.Play
                 float dy = Mathf.Abs(p.y - floor);
                 if (dy > FeetTolM) { if (!feetOff.TryGetValue(key, out var since)) feetOff[key] = t; else if (t - since >= FeetRunS) { feetOff[key] = float.MaxValue; yield return Hit("Q-FEET", key, $"Feet off the floor: {key}", $"feet within {FeetTolM * 100:0} cm of the drawn floor", $"feet {F(p.y)} m, floor {F(floor)} m ({F(dy * 100f)} cm) for over {FeetRunS} s", p); } }
                 else feetOff.Remove(key);
-                bool inSolid = !free && (grid.NearestFree(ep) is not Pt nf || G.Dist(nf, ep) >= SolidFreeM * 100f);
+                bool inGrid = ep.X >= grid.X0 && ep.Y >= grid.Y0 && ep.X < grid.X0 + grid.Nx * grid.Cell && ep.Y < grid.Y0 + grid.Ny * grid.Cell; // the walk grid covers the site only: outside it nothing is free (smoke row 0.2.113: crowd beyond the block flagged)
+                bool inSolid = inGrid && !free && (grid.NearestFree(ep) is not Pt nf || G.Dist(nf, ep) >= SolidFreeM * 100f);
                 if (inSolid) { if (!solidIn.TryGetValue(key, out var since)) solidIn[key] = t; else if (t - since >= SolidRunS) { solidIn[key] = float.MaxValue; yield return Hit("Q-SOLID", key, $"A figure inside a solid: {key}", "every figure on a cell the engine can walk, or within 0.3 m of one", $"{key} at ({F(p.x)}, {F(p.z)}) for over {SolidRunS} s", p); } }
                 else solidIn.Remove(key);
             }

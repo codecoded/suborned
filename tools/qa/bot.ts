@@ -12,7 +12,7 @@
 // usage (normally through `bun run qa --nightly` or `bun run qa --lanes bot`):
 //   bun tools/qa/bot.ts --plan [--night YYYYMMDD]       print the rows a night would play
 //   bun tools/qa/bot.ts --run <outDir> [--rows n] [--minutes m] [--force]   play them now (waits while Sky plays)
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { z } from 'zod';
 import { ROOT } from '../missions/check/engine';
@@ -112,15 +112,15 @@ export async function runBotLane(outDir: string, o: RunOpts = {}): Promise<BotLa
   for (const row of rows) {
     if (playing().length) { say(`qa bot: Sky is playing; the rows from ${row.name} on are not started`); stoppedForSky = true; break; }
     const dir = join(outDir, row.name); mkdirSync(dir, { recursive: true });
-    const planFile = join(outDir, `${row.name}.plan.json`), plan: BotPlan = { schema: 'suborned.bot.plan/1', outDir: dir, rows: [row] };
+    const planFile = join(outDir, `${row.name}.plan.json`), plan: BotPlan = { schema: 'suborned.bot.plan/1', outDir, rows: [row] }; // the player writes <outDir>/bot.json and <outDir>/<row>/..., so its paths are relative to the lane folder
+    const repFile = join(outDir, 'bot.json'); rmSync(repFile, { force: true });
     writeFileSync(planFile, JSON.stringify(plan, null, 1));
     say(`qa bot: ${row.name} (${row.policy}, seed ${row.seed}, up to ${Math.round(row.seconds / 60)} min) on ${build}`);
-    const proc = Bun.spawn([exe(app), '-bot', planFile, dir, '-capture-size', `${row.w}x${row.h}`, '-novsync', '-logFile', join(dir, 'player.log')], { stdout: 'ignore', stderr: 'ignore' });
+    const proc = Bun.spawn([exe(app), '-bot', planFile, outDir, '-capture-size', `${row.w}x${row.h}`, '-novsync', '-logFile', join(dir, 'player.log')], { stdout: 'ignore', stderr: 'ignore' });
     const limit = (row.seconds + 150) * 1000; let killed = false;
     const timer = setTimeout(() => { killed = true; try { process.kill(proc.pid); } catch { /* gone */ } }, limit); // by PID only
     await proc.exited; clearTimeout(timer);
     ran.push(row.name);
-    const repFile = join(dir, 'bot.json');
     if (existsSync(repFile)) { try { last = JSON.parse(readFileSync(repFile, 'utf8')) as BotReport; merged.push(...last.rows); } catch (e) { say(`qa bot: ${row.name}: bot.json unreadable: ${(e as Error).message}`); } }
     if (killed) say(`qa bot: ${row.name}: stopped after ${Math.round(limit / 1000)} s`);
   }
