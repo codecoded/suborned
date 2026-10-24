@@ -214,12 +214,22 @@ namespace Suborned.Sim
             return false;
         }
 
+        /// <summary>Engine 0.30.0 (the 0.2.116 bot row: Listen on Inez offered while the Scout was busy, then refused needs-routine three times): for a
+        /// busy agent, a refusal the order itself carries (needs-routine, needs-need, already-heard, only-scout, nothing-to-see, …) outranks agent-busy,
+        /// since waiting for the agent won't cure it; reach and line (too-far, no-clear-line, no-walk) do not, and then the answer is agent-busy.</summary>
+        string BusyLearn(Op op, string agent, string verb, string target)
+        {
+            var why = Scout(op, new Order { Tick = Tick, Op = agent, Do = verb, Target = target }, engage: false);
+            if (why.Length > 0 && !(refusal.code is "too-far" or "no-clear-line" or "no-walk")) return why;
+            return No("agent-busy", $"{agent} is busy until {op.BusyEnd}", tick: op.BusyEnd);
+        }
+
         /// <summary>The Scout's Watch or Listen row before the click: LearnQuery for the Scout (kept for its callers).</summary>
         public Answer ScoutQuery(string verb, string target) => LearnQuery("scout", verb, target);
 
         /// <summary>The Watch or Listen row before the click (Latch, as CallQuery), for any operative: would this agent's order on this target be
         /// taken now, and if not, its refusal code (only-scout, run-tethered, already-heard, already-watched, too-far, …), words and numbers,
-        /// exactly as Issue would answer it. The Tech's Watch on a machine (Sky 2026-10-18) asks here with agent "tech". Read-only.</summary>
+        /// exactly as Issue would answer it; for a busy agent, the order's own refusal if it has one (engine 0.30.0: BusyLearn), else agent-busy. The Tech's Watch on a machine (Sky 2026-10-18) asks here with agent "tech". Read-only.</summary>
         public Answer LearnQuery(string agent, string verb, string target)
         {
             var saved = refusal; refusal = default; string why;
@@ -230,7 +240,7 @@ namespace Suborned.Sim
                     : verb != "watch" && verb != "listen" ? No("unknown-verb", $"verb '{verb}' is no Watch or Listen")
                     : op.Down ? No("agent-down", $"the {agent} is down")
                     : op.Inside ? No("enforcer-inside", "inside the Office")
-                    : op.Busy != null ? No("agent-busy", $"{agent} is busy until {op.BusyEnd}", tick: op.BusyEnd)
+                    : op.Busy != null ? BusyLearn(op, agent, verb, target)
                     : Scout(op, new Order { Tick = Tick, Op = agent, Do = verb, Target = target }, engage: false);
             }
             catch (Exception e) when (!(e is OutOfMemoryException)) { why = No("engine-error", "engine error: " + e.GetType().Name + ": " + e.Message); }

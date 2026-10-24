@@ -252,6 +252,21 @@ namespace Suborned.Sim
                 bool threw = false; try { if (stale != null) g.NoticesAt(stale, "body", stale.At); } catch (InvalidOperationException) { threw = true; }
                 r.Is(stale == null || threw, "a probe from another tick is refused");
             });
+            Add("NQ-2", "—", "A Listen offered must be a Listen taken (the 0.2.116 bot row, Q-OFFER: Listen on Inez offered on the ring while the Scout was busy, refused needs-routine when clicked): while the Scout is busy on the guard's Watch, LearnQuery for a Listen on Inez says needs-routine (her Watch is still to give), not agent-busy; a Watch on Inez, whose only bar is the busy Scout, says agent-busy; once he is free, the query and Issue agree on needs-routine.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Scout, "d:Courtyard"));
+                r.Do(Scout, "watch", GuardR);
+                r.Is(r.Until(() => r.Op(Scout).Busy != null, T(60)), "the Scout is busy on the guard's Watch (after any walk in)");
+                r.Is(g.WatchOffered(Inez) && !g.Inez.KRoutine, "Inez's Watch is still to give");
+                var busyListen = g.LearnQuery(Scout, "listen", Inez);
+                r.Eq((busyListen.ok, busyListen.code), (false, "needs-routine"), "busy: the Listen's own refusal, not agent-busy");
+                var busyWatch = g.LearnQuery(Scout, "watch", Inez);
+                r.Eq((busyWatch.ok, busyWatch.code), (false, "agent-busy"), "busy: a Watch with no other bar says agent-busy");
+                r.Done(Scout);
+                var q = g.LearnQuery(Scout, "listen", Inez); var a = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "listen", Target = Inez });
+                r.Eq((q.ok, q.code), (a.ok, a.code), $"free: the query and Issue agree ({a.code})");
+            });
         }
 
         static Pt SweepAt(Game g, int t) { int period = T(g.R.PatrolPeriodS), half = period / 2, ph = t % period; return G.Lerp(g.S.Stand(g.S.PatrolA), g.S.Stand(g.S.PatrolB), ph <= half ? ph : period - ph, half); }

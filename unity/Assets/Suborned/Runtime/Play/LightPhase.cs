@@ -32,6 +32,7 @@ namespace Suborned.Play
         [Tooltip("night.lamps: every spawned light, its night intensity")] public Light[] lamps = Array.Empty<Light>();
         public float[] lampIntensity = Array.Empty<float>();
         public int liveCap = 32; public float liveRadius = 60f;
+        float[] lampBase; // the lamps' built intensities, kept by NightFloor when a group is scaled
 
         /// <summary>The phase of the day the look is in (Glint, brief 048). Day and Night are full looks (the two States above, built into the scene). Evening is the day State
         /// leaned toward the evening values of Resources/Atmosphere/lens.json `evening` by Dusk (0 day .. 1 evening, eased): a low warm sun with long shadows, a warmer ambient, softer reflections
@@ -86,6 +87,15 @@ namespace Suborned.Play
             RenderSettings.ambientEquatorColor = AtmosphereLens.Scaled(n.ambient.equator.hex, n.ambient.equator.value);
             RenderSettings.ambientGroundColor = AtmosphereLens.Scaled(n.ambient.ground.hex, n.ambient.ground.value);
             if (sun && n.moonIntensity > 0f) { sun.intensity = n.moonIntensity; if (!string.IsNullOrEmpty(n.moonColour)) sun.color = AtmosphereLens.Colour(n.moonColour); }
+            if (n.lampScales != null && n.lampScales.Length > 0)
+            {   // lamp groups at a share of the intensity they were built with (Cap writes lampIntensity, so the array is what changes; the first look is kept)
+                lampBase ??= (float[])lampIntensity.Clone();
+                for (int i = 0; i < lamps.Length && i < lampIntensity.Length; i++)
+                {
+                    float s = 1f; if (lamps[i]) foreach (var ls in n.lampScales) if (lamps[i].name.StartsWith(ls.prefix)) { s = ls.scale; break; }
+                    lampIntensity[i] = lampBase[i] * s;
+                }
+            }
             if (n.violetToHueDeg > 0f)
                 foreach (var l in lamps)
                 {   // a violet pool beside a rival's ring reads as the ring's colour: lamps of that hue go to a flamingo, same saturation and value

@@ -71,6 +71,7 @@
       "ground": { "hex": "#3d7080", "value": 0.16 }
     },
     "moonIntensity": 0.42, "moonColour": "#b4d2e6",
+    "lampScales": [ { "prefix": "interior", "scale": 0.0 } ],
     "violetFromDeg": 235, "violetToDeg": 320, "violetToHueDeg": 345,
     "liftOffset": 0.002,
     "liftTintShare": 0.25,

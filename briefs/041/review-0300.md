@@ -223,3 +223,41 @@ What I see, exactly: two straight dark seam lines cross the carriageway as an X,
 | 5 | Taupe-olive guideway (carried) | same as 3 | Vela decides the colour | Vela |
 
 No handoff to Aster is needed.
+
+## 0.2.116 check (Glyph, 2x crops of the 1920x1080 shots; HUD at 100 %)
+
+**Verdict: ship the night view as an offer (Latch/Glint nits below, none blocking). Seams stay on Vela's list. Corners clean.**
+
+### Night round 2 (`041/build/0305/night/`, vs `048/glint/evening/night-0.2.115-vs-now-with-hud.jpg`)
+- Good enough to offer. Ground, planters, fountain, kerbs and the roof masses now read as one teal-on-teal night with the warm pools standing out; no violet pool; the strip light reads as a clean white edge, not a glare. HUD is untouched by the grade (roster, clock bar, feed card, plates, chip all on-kit).
+- People: the cell reads by the cyan ring and a faint teal rim; at 2x the four on the start shot are separable by silhouette (the pale-coat Enforcer best), inside a lamp pool they read well. Outside a pool, passers-by are dark silhouettes only (acceptable at night; they read as "someone").
+- Café: interior is dimmed, the checker floor and tables are visible through the dither, no white block. The dither stipple on the cutaway is still coarse, and the checker floor is the brightest large patch in the frame after the pools (tones: cream squares ~ the lamp pools). Nit for Glint: take the cream squares down one step so the room sits behind the terrace pools.
+- One stray soft white glow at the café door's left edge (about (1075, 205) in start-overhead, (840, 490) in cafe-front); it has no lamp under it. Glint to name its source or drop it.
+- The night offer exists: the briefing card carries the DAY / NIGHT toggle (`2160-0305/briefing.png`), on-kit.
+
+### Road seams (`041/build/0305/seams/`, Boulevard x Market, yaw 210 and 30)
+- SSAO on vs off: same picture. Mean absolute difference 0.01 (yaw 210) and 0.05 (yaw 30) on 0-255, max 9 and 28 (the 28 is the dither edge of the building, not the road). So the X is not AO.
+- What it is, exactly: two straight lines crossing as an X (one NW-SE, one SW-NE), meeting at one point in the middle of the crossing and running unbroken to the road edges. Road either side is the same blue-grey, RGB about (168, 179, 184); same grain, same fleck texture, same hue. No texture or colour change across the line.
+- The line itself is a one-sided shade: the pixels step from (168, 179, 184) down to about (125-140, 135-148, 145-158) (about 20-25 % darker, hue held) at the line, and the dark side fades back to road tone over about 12-20 px at 1080p (8-10 px for the shorter line). The other side is a hard edge: dark to road tone in 1-2 px. Total readable width 6-20 px. It looks like a very low lip or a shadow edge laid along the line, not a painted line, and a scratch-thin 1 px darker thread runs along the hard edge.
+- It repeats at every junction in the corner set (the Civic Junction frame shows the X plus a second short L-shaped step at the left, and a 3-5 px sideways jog in two lines at the right). The lane marks (cream lozenges, brown dashes) are separate and clean.
+- For Vela: the surface (colour, grain) is fine and matches. The tone change is geometry- or normal-driven, not material-driven, so a retexture will not fix it: ask Splice/Latch whether the clipped carriageway pieces share vertex normals at the shared edges and whether the clip leaves a 3-5 mm lip (SeamProbe still lists 340 coplanar samples at @-1,-7 vs @0,-7). If the pieces are one level, give them a merged or smoothed normal across the line; the check is the same crop with the line gone.
+
+### Corners (`028/corners/game-0305/`)
+- Looked at all 7 sites (play, 210, street and street-b views, and 1:1 crops of Circus Mouth and Civic Junction). No cracks, slivers or gaps at the kerb returns, bays or the circus mouth; kerb arcs are clean and closed; no sky or dark showing through the road.
+- Still there, known: the taupe-olive guideway band across Boulevard, Circus Mouth and Market (Vela's colour call, item 5 above).
+
+### Followers
+- No rival crew or response units on the road in any 0305 frame. What the frames show: our own cell trailing the leader in `follow-cafe`, `follow-pickup` (three followers spaced on the free road ground, rings and feet on the ground, none inside the leader or inside the car) and `car-blast` / `car-burning` (cell standing together on the pavement). No overlap, no feet in the kerb. Nothing to judge for rivals and response units until a frame has them: ask for `overhead-fight` or a response shot with a unit visible.
+
+### Regressions in `049/build/2160-0305`
+- None in the HUD: no clipping, overlap or off-kit colour in the 24 shots opened (roster, clock bar, feed card, chip, plates, hold pill, ring panel, going-loud and fire plates).
+- Off-kit, not new (dev scenes, not play): `hold-under-fire.png` is the Fight Range lab (flat web buttons and panel, grey floor) and the pause menu in `menu.png` is plain text on a bare dark panel without the kit frame; `fail-getaway-lost.png` has a flat "replay 0.6x" tag at top left. Not for the player's first minutes; port to the kit before they are reachable.
+
+### Fix list
+| # | Item | Fix | Owner |
+|---|---|---|---|
+| 1 | Seam X on every junction: one-sided 20-25 % shade, hard edge one side, 6-20 px, same texture | Not a material fix: check shared normals / 3-5 mm lip at the clip edges; compare the same crop | Splice, Latch (Vela only if they clear it) |
+| 2 | Café floor cream squares brightest after the pools | One step down | Glint |
+| 3 | Stray white glow at the café door | Name the source or drop | Glint |
+| 4 | Taupe-olive guideway (carried) | Colour call | Vela |
+| 5 | Fight Range, pause menu and replay tag off-kit | Restyle before reachable | Glyph (after Latch gives the elements) |

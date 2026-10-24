@@ -96,7 +96,10 @@ namespace Suborned
             public float moonIntensity; public string moonColour;
             /// <summary>A night lamp whose hue is between fromDeg and toDeg (the lilac table lamp: violet is the rivals' signal colour) is turned to toHueDeg (a flamingo), keeping its saturation and value; 0 = off.</summary>
             public float violetFromDeg, violetToDeg, violetToHueDeg;
+            /// <summary>Glyph's 0.2.116 check: a night lamp group (by its object's name prefix, e.g. "interior" for the café's three pendants) at a share of its built intensity. The pendants are inside the café: seen through the cutaway one shows as a hot spot on the checker floor with no fixture over it.</summary>
+            public LampScale[] lampScales;
         }
+        [Serializable] public sealed class LampScale { public string prefix; public float scale; }
         [Serializable] public sealed class Lens
         {
             public string schema; public Skyp sky; public Palp teal; public Bloomp bloomFollow, bloomLong; public Dofp dofLong;
@@ -191,6 +194,7 @@ namespace Suborned
                 if (n.shadowStrength < 0.2f || n.shadowStrength > 1f || n.liftOffset < 0f || n.liftOffset > 0.1f || n.liftTintShare < 0f || n.liftTintShare > 1f || !ColorUtility.TryParseHtmlString(n.liftTint, out _)) return "night: shadowStrength 0.2..1, liftOffset 0..0.1, liftTintShare 0..1, liftTint #rrggbb";
                 if (n.moonIntensity < 0f || n.moonIntensity > 3f || (!string.IsNullOrEmpty(n.moonColour) && !ColorUtility.TryParseHtmlString(n.moonColour, out _))) return "night: moonIntensity 0..3 (0 = the scene's), moonColour #rrggbb";
                 if (n.violetToHueDeg != 0f && !(0f <= n.violetFromDeg && n.violetFromDeg < n.violetToDeg && n.violetToDeg <= 360f && n.violetToHueDeg >= 0f && n.violetToHueDeg <= 360f)) return "night: 0 <= violetFromDeg < violetToDeg <= 360, violetToHueDeg 0..360";
+                if (n.lampScales != null) foreach (var ls in n.lampScales) if (ls == null || string.IsNullOrEmpty(ls.prefix) || ls.scale < 0f || ls.scale > 2f) return "night.lampScales: prefix, scale 0..2";
                 if (n.ambient == null || n.ambient.sky == null || n.ambient.equator == null || n.ambient.ground == null) return "night.ambient: sky, equator, ground";
                 foreach (var a in new[] { n.ambient.sky, n.ambient.equator, n.ambient.ground }) if (!ColorUtility.TryParseHtmlString(a.hex, out _) || a.value < 0f || a.value > 1f) return "night.ambient: hex #rrggbb, value 0..1";
             }
