@@ -62,6 +62,18 @@
     "sky": { "zenith": "#4a78d2", "mid": "#e6a79a", "sunGlow": "#ff9a58", "hazeHeight": 0.16, "aureole": 1.1, "aureolePower": 90, "hazeLift": 0.9, "peach": 1.2 },
     "grade": { "exposure": 0.15, "contrast": 4, "saturation": 2, "temperature": 3, "tint": 1, "filter": "#fffaf4", "shadows": "#e4e4f6", "highlights": "#fff8f0", "vignette": 0.16 }
   },
+  "night": {
+    "note": "Glint 2026-10-24 (Glyph, 0.2.113: night walls crush to #020100 in road-enamel-office-210-night). The night floor, applied at runtime on the night State the scene is saved with (no rebuild), look only, no lights. Two things made it black: the moon's shadow kept the scene's own strength 1.0 (a shadow took the whole moon out), and the night ambient (light.json night.ambient: sky #8fb3d6 x 0.20, equator #7fa6bf x 0.18, ground #3d5b66 x 0.12) reaches a cream wall at about 0.04 before the tonemap. shadowStrength: the moon fills the shade. ambient: HSV value-scaled hexes as light.json builds them, a deep indigo skylight over a teal equator and a teal-blue ground, about x1.9 of the old values. lift: LiftGammaGain on a lens volume while it is night, offset in linear before the tonemap (c x (1 - L) + L, white stays white), tinted deep indigo, so the darkest wall is a deep teal-indigo, not black; strip light, windows, lamps and bloom are unchanged (they are well above it). Shift+F10 (atmosphere off) shows night as built.",
+    "shadowStrength": 0.6,
+    "ambient": {
+      "sky": { "hex": "#7f9bd0", "value": 0.25 },
+      "equator": { "hex": "#68a8b8", "value": 0.24 },
+      "ground": { "hex": "#3d7080", "value": 0.16 }
+    },
+    "liftOffset": 0.002,
+    "liftTintShare": 0.25,
+    "liftTint": "#3f8a9a"
+  },
   "farBand": {
     "resource": "Atmosphere/farband",
     "minDeg": -1,

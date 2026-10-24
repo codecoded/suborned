@@ -75,6 +75,8 @@ class Lines {
 }
 
 /** The stretches [s0, s1] of `start..end` (m) whose samples (every `step` m) are not blocked; `cut` takes `step` m for every blocked sample under the blocker's name. A stretch starts at its first free sample, so it is never longer than the free ground. */
+/** The shortest stretch of a reservation that is laid as a lawn track with its kerb (m); a shorter one between two breaks is carriageway. */
+const LAWN_MIN = 2;
 function spans(start: number, end: number, blockedAt: (s: number) => string | undefined, step: number, cut: Record<string, number>): Seg[] {
   const out: Seg[] = [], n = Math.ceil((end - start) / step - 1e-9);
   let first: number | undefined, last = 0;
@@ -305,16 +307,24 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
         let v = c.get(k); if (v === undefined) { const q: V = [L.p0[0] + L.u[0] * k * 0.2, L.p0[1] + L.u[1] * k * 0.2]; v = !road || Math.abs(lineDist(q, road.line) - road.w / 2) <= 0.25; c.set(k, v); }
         return v;
       };
-      const segs = spans(start, end, s => {
-        const p = pos(s), b = hit(p, f.id === 'edge' ? mStop : stop, L.u, L.bay); if (b) return b;
-        if (L.from === 'circus' && inCut(ctx, p, 0.12)) return 'return'; // brief 028: the ring's outer kerb turns into the mouth's return here
-        if (run) return kerbed(s) || s < 0 || s > L.len ? undefined : 'no-kerb'; // the corner extensions past the plot's vertex lie on the other road's kerb
+      // a reservation's two faces break together: a break near one face (a crossing's landing, a platform) cuts the other too, so no kerb bar or arc stands alone in the road (Glyph 0.2.113 nit 1)
+      const resW = L.from === 'reservation' ? ((ctx.d.roads.find(q => q.id === L.road) as { reservation?: number } | undefined)?.reservation ?? 0) : 0;
+      const stopL = f.id === 'edge' ? mStop : stop;
+      const blockedAt = (p: V): string | undefined => {
+        const b = hit(p, stopL, L.u, L.bay); if (b) return b;
         if (L.circusCut && Math.hypot(p[0] - circus.c[0], p[1] - circus.c[1]) < circus.ring[1] + stop) return 'circus';
-        return roadLines.within(p, f.id === 'edge' ? mStop : stop, L.road) ? 'junction' : undefined; // a median's or the circus's line is cut where another road's carriageway runs over it
+        return roadLines.within(p, stopL, L.road) ? 'junction' : undefined; // a median's or the circus's line is cut where another road's carriageway runs over it
+      };
+      const segs = spans(start, end, s => {
+        const p = pos(s);
+        if (L.from === 'circus' && inCut(ctx, p, 0.12)) return 'return'; // brief 028: the ring's outer kerb turns into the mouth's return here
+        if (run) return hit(p, stopL, L.u, L.bay) ?? (kerbed(s) || s < 0 || s > L.len ? undefined : 'no-kerb'); // the corner extensions past the plot's vertex lie on the other road's kerb
+        return blockedAt(p) ?? (resW ? blockedAt([p[0] - L.n[0] * resW, p[1] - L.n[1] * resW]) : undefined);
       }, 0.2, cut);
       if (f.id === 'ribbon') { log.kerb.edgeM += end - start; log.kerb.faceM[L.from] = r3((log.kerb.faceM[L.from] ?? 0) + end - start); if (run) log.kerb.runs++; for (const [k, v] of Object.entries(cut)) log.kerb.cutM[k] = (log.kerb.cutM[k] ?? 0) + v; }
       const yaw = Math.atan2(L.n[0], -L.n[1]), pieceLen = f.piece.size[0], z = f.id === 'pinstripe' ? (L.padZ ?? f.z) : (L.z ?? f.z);
       for (const sg of segs) {
+        if (L.from === 'reservation' && sg.s1 - sg.s0 < LAWN_MIN) continue; // a stretch too short to carry a lawn (no flat in 1b) carries no kerb either: a lone bar or arc in the road (Glyph 0.2.113 nit 1)
         const [e0, e1] = lawnEnds(L, sg.s0, sg.s1);
         for (const pc of fill(sg.s0 + e0, sg.s1 - e1, pieceLen, L.from === 'bay' ? 0.1 : 0.5)) {
           put(f.kind, f.piece, pos(pc.s), yaw, z, [r3(pc.len / pieceLen), 1, 1], L.edge);
@@ -336,9 +346,9 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
     if (L.from !== 'reservation' || !/\/l\d+\.\d+$/.test(L.id)) continue; // one flat per stretch of the left face; the right face is its mirror about the road line
     const rd = ctx.d.roads.find(q => q.id === L.road), res = (rd as { reservation?: number } | undefined)?.reservation; if (!rd || !res) continue;
     const at = (s: number, k: number): V => [L.p0[0] + L.u[0] * s + L.u[1] * res * k, L.p0[1] + L.u[1] * s - L.u[0] * res * k]; // k 0 = this face, 1 = the other (the road line lies a half reservation to its right)
-    const segs = spans(0, L.len, s => { const p = at(s, 0), b = hit(p, stop, L.u); if (b) return b; return roadLines.within(p, stop, L.road) ? 'junction' : undefined; }, 0.2, {});
+    const segs = spans(0, L.len, s => { for (const k2 of [0, 1]) { const p = at(s, k2), b = hit(p, stop, L.u); if (b) return b; if (roadLines.within(p, stop, L.road)) return 'junction'; } return undefined; }, 0.2, {});
     segs.forEach((sg, k) => {
-      if (sg.s1 - sg.s0 < 2) return;
+      if (sg.s1 - sg.s0 < LAWN_MIN) return;
       const [e0, e1] = lawnEnds(L, sg.s0, sg.s1), N = 8, nOut: V = L.n;
       // the lawn's outline: the stretch's two faces and its two ends, each end corner a quarter round of e (brief 028 round 2); a square corner where e = 0
       const corner = (s: number, k2: number, e: number, w: number, rev: boolean): V[] => {

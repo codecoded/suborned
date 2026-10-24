@@ -44,6 +44,11 @@ describe('KR-2 and KR-3', () => {
     const without = (n: number) => run(w => { const ids = new Set(mine(w).slice(0, n).map(s => s.id)); w.ground.pieces = w.ground.pieces!.filter(s => !ids.has(s.id)); })['KR-2'];
     expect(without(1)).toBe(''); expect(without(4)).toMatch(/m of kerb stone on an arc of/);
   });
+  test('KR-5 fails on a reservation kerb piece lying alone in the road (Glyph 0.2.113: the two cream arcs at the circus mouth)', () => {
+    expect(run()['KR-5' as 'KR-2']).toBe('');
+    const r = run(w => { const k = w.ground.pieces!.find(s => /^roadfinish\/boulevard\/reservation\//.test(s.edge))!; k.at = [k.at[0] + 12, k.at[1]]; });
+    expect(r['KR-5' as 'KR-2']).toMatch(/beside no lawn track: a lone kerb piece in the road/);
+  });
   test('KR-2 fails on a plot slab that still covers the old corner', () => {
     const r = convex();
     expect(run(w => { const p = w.ground.plots.find(q => q.id === `plot/${r.plot}`)!; p.ring = d.plots.find(q => q.id === r.plot)!.polyV; })['KR-2']).toMatch(/the plot slab still covers the old corner/);

@@ -354,6 +354,37 @@ namespace Suborned.Play
                 log.Add($"r29 seal: {(sOk ? "ok" : "FAILED")}: on {on}, {left} s left, marker '{words}', cause {cause}; ended {g.FailCode}; car state '{car}' (Keel's FailCause.Car); end card: {endLines}");
             }
 
+            // ---- fire on a busy agent (the 0.2.113 bot smoke row, Q-OFFER: the ring offered Fire to a busy Scout, refused agent-busy): an act ending
+            // within 2 s is waited for and the fire goes when it lands; a longer act is cancelled first and the fire goes now; never agent-busy
+            {
+                string Busy(Suborned.Sim.Game g0) { var op = g0.Ops[(int)OpId.Scout]; return op.Busy == null ? "" : $"{op.Busy.Do} ends in {(op.BusyEnd - g0.Tick) / (float)Suborned.Sim.Game.Hz:0.0} s"; }
+                IEnumerator Case(bool shortAct, string[] res)
+                {
+                    h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; var g = h.Game;
+                    h.Select(OpId.Scout, false); h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "waitress" });
+                    var sc = g.Ops[(int)OpId.Scout];
+                    for (int i = 0; i < 1500 && !g.Over; i++)
+                    {
+                        if (sc.Busy != null) { int left = sc.BusyEnd - g.Tick; if (shortAct ? left <= 2 * Suborned.Sim.Game.Hz && left > 3 : left > 4 * Suborned.Sim.Game.Hz) break; }
+                        h.RunTo(g.Tick + 1);
+                    }
+                    string before = Busy(g); int n0 = g.Orders.Count, c0 = h.FireCancelledActs;
+                    h.Issue(new Order { Op = "scout", Do = "fire", Target = "car:official" }, (Vector2?)null, (Vector3?)null); // the player's path (Playable), as a ring wedge gives it
+                    int given = g.Orders.Count - n0; bool waited = shortAct && given == 0;
+                    for (int i = 0; i < 40 && !g.Over && g.Orders.Count == n0; i++) h.RunTo(g.Tick + 1); // the wait: the fire goes when the act lands
+                    h.RunTo(g.Tick + 1);
+                    bool busyRefusal = false, fireOk = false, cancel = false;
+                    for (int i = n0; i < g.Orders.Count; i++) { var (oo, ok2, code, _) = g.Orders[i]; if (code == "agent-busy") busyRefusal = true; if (oo.Do == "fire" && ok2) fireOk = true; if (oo.Do == "cancel" && ok2) cancel = true; }
+                    bool cOk = !busyRefusal && fireOk && (shortAct ? waited && !cancel : cancel && h.FireCancelledActs > c0);
+                    res[0] = $"{{\"ok\": {B(cOk)}, \"busy\": \"{J(before)}\", \"givenAtOnce\": {given}, \"waited\": {B(waited)}, \"cancelled\": {B(cancel)}, \"fired\": {B(fireOk)}, \"agentBusy\": {B(busyRefusal)}}}";
+                    log.Add($"r29 fire busy ({(shortAct ? "act ending within 2 s" : "longer act")}): {(cOk ? "ok" : "FAILED")}: {before}; given at once {given}, waited {waited}, cancelled {cancel}, fired {fireOk}, agent-busy {busyRefusal}");
+                    ok &= cOk;
+                }
+                var rs = new string[1]; var rl = new string[1];
+                yield return Case(true, rs); yield return Case(false, rl);
+                parts.Add($"\"fireBusy\": {{\"shortAct\": {rs[0]}, \"longAct\": {rl[0]}}}");
+            }
+
             // ---- the junction and the Boulevard (item 22)
             {
                 var spots = new (string name, Vector2 plan)[] { ("civic-junction", new Vector2(-132f, -267.5f)), ("squarebay", new Vector2(-177.8f, -238.5f)), ("officebay", new Vector2(-161f, -307.8f)), ("boulevard-market", new Vector2(0f, -410f)), ("circus-mouth", new Vector2(0f, -46f)), ("junction-ne", new Vector2(-60f, -198f)), ("boulevard", new Vector2(-9.5f, -104f)) }; // item 22 (Splice's corners, briefs/028/corners): the civic junction, the two lay-bys (Sky's stray-kerb ring at a bay mouth), Boulevard x Market, the circus mouth

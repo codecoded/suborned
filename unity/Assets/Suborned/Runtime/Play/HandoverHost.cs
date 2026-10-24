@@ -955,6 +955,14 @@ namespace Suborned.Play
                 if (op.BusyEnd - g.Tick <= 2 * Game.Hz) { pending[k] = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How }; pendingAt[k] = target; pendingFrom[k] = g.Tick; Track(); return false; } // it goes when the act in hand ends (FollowUp)
                 CancelAgent(k, screen);
             }
+            // the 0.2.113 bot smoke row (Q-OFFER, 6 of them): the ring offered Fire to a busy agent and the engine refused it agent-busy (rulebook:
+            // fire is no act a busy operative takes; a cancel ends the act at its cancel line's cost). Fire is urgent: an act ending within 2 s is
+            // waited for (the fire goes then, the whole order kept), any other is cancelled first and the fire goes now; in every preset
+            if (o.Do == "fire" && op.Busy != null && !op.Down)
+            {
+                if (op.BusyEnd - g.Tick <= 2 * Game.Hz) { pending[k] = FireCopy(o); pendingAt[k] = target; pendingFrom[k] = g.Tick; Track(); return false; }
+                CancelAgent(k, screen); FireCancelledActs++;
+            }
             if (o.Do == "watch" && Game.WatcherKind(o.Target) == "patrol")
             {
                 Answer a = default; Guard("watch reach", () => a = g.LearnQuery(o.Op, "watch", o.Target));
@@ -968,6 +976,9 @@ namespace Suborned.Play
             return true;
         }
         readonly int[] rewalks = new int[4];
+        /// <summary>For checks: acts cancelled so a fire order could go (Playable).</summary>
+        public int FireCancelledActs { get; private set; }
+        static Order FireCopy(Order o) => new() { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run, Stance = o.Stance, Force = o.Force, On = o.On, Release = o.Release, Face = o.Face, Count = o.Count, Shots = o.Shots, Then = o.Then };
 
         bool IssueCore(Order o, Vector2? screen, Vector3? target, bool quietRefusal, bool player)
         {
@@ -1377,7 +1388,7 @@ namespace Suborned.Play
                 if (o.Do == "watch" && CrowdBlocked(k, o.Target)) { if (retryUntil[k] < 0) retryUntil[k] = Game.Tick + 5 * Game.Hz; if (Game.Tick < retryUntil[k]) continue; }
                 retryUntil[k] = -1;
                 pending[k] = null;
-                var act = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How };
+                var act = o.Do == "fire" ? FireCopy(o) : new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How }; // a waited fire keeps its whole order
                 if (Issue(act, null, pendingAt[k]) && Game.Tick - pendingFrom[k] >= 5 * Game.Hz) SayArrive((OpId)k, act); // a short walk: the ack said it (Fable §4)
             }
         }

@@ -88,14 +88,18 @@ namespace Suborned
         /// <summary>The grade between day and night, ADDED to the tier's own grade by k (0 = day, 1 = evening). exposure EV and contrast/saturation are deltas on the scene grade; filter, shadows, highlights are multipliers on the scene's own; temperature, tint on the scene's 0; vignette is the absolute intensity.</summary>
         [Serializable] public sealed class EveGrade { public float exposure, contrast, saturation, temperature, tint, vignette; public string filter, shadows, highlights; }
         [Serializable] public sealed class Evening { public float easeSeconds; public EveSun sun; public EveAmbient ambient; public EveReflection reflection; public EveSky sky; public EveGrade grade; }
+        /// <summary>The night floor (Glint 2026-10-24, Glyph's 0.2.113 check: night walls crush to #020100). Look only, applied at runtime on the night State the scene was saved with: a higher teal-indigo ambient (LightPhase), the moon's shadow strength below 1 so the moon fills the shade, and a lift in the night grade (offset in linear before the tonemap, tinted). No lights.</summary>
+        [Serializable] public sealed class NightFloor { public float shadowStrength, liftOffset, liftTintShare; public string liftTint; public EveAmbient ambient; }
         [Serializable] public sealed class Lens
         {
             public string schema; public Skyp sky; public Palp teal; public Bloomp bloomFollow, bloomLong; public Dofp dofLong;
-            public Flarep flare; public Gradep gradePlay; public Bandp farBand; public Sunp sun; public Longp gradeLong; public Evening evening;
+            public Flarep flare; public Gradep gradePlay; public Bandp farBand; public Sunp sun; public Longp gradeLong; public Evening evening; public NightFloor night;
         }
 
         /// <summary>The evening phase's data (lens.json `evening`), or null when the file has none or was rejected: LightPhase reads it for the sun, the ambient and the reflections.</summary>
         public static Evening EveningData { get; private set; }
+        /// <summary>The night floor's data (lens.json `night`), or null: LightPhase reads the ambient from it.</summary>
+        public static NightFloor NightData { get; private set; }
         /// <summary>A hex colour with its HSV value scaled, as the builder makes the ambient colours (Look.Palette).</summary>
         public static Color Scaled(string hex, float value) { var c = HexC(hex); Color.RGBToHSV(c, out var h, out var s, out var v); return Color.HSVToRGB(h, s, Mathf.Clamp01(v * value)); }
 
@@ -111,6 +115,7 @@ namespace Suborned
         /// <summary>The evening grade's parts on one tier's volume (a tier volume holds the tier's own grade; the evening is pushed onto it by k, so a tier is never stacked on another).</summary>
         sealed class Rig { public ColorAdjustments adj; public WhiteBalance wb; public ShadowsMidtonesHighlights smh; public Vignette vig; }
         Rig rigPlay, rigFollow, rigLong;
+        Volume vNight; LiftGammaGain nightLift;
         float duskK = -1f, playSatValue, longExposureDelta;
         Light sunLight; float sunStrength0 = -1f; int sunSearched;
         LensFlareComponentSRP flare; LensFlareDataSRP flareData; Texture flareStarburst;
@@ -140,7 +145,7 @@ namespace Suborned
             try { d = JsonUtility.FromJson<Lens>(text.text); } catch (Exception e) { Debug.LogError($"AtmosphereLens: lens.json: {e.Message}"); return; }
             string why = Check(d);
             if (why != null) { Debug.LogError($"AtmosphereLens: lens.json rejected ({why}); no lens, grade or sky change"); return; }
-            EveningData = d.evening;
+            EveningData = d.evening; NightData = d.night;
             var go = new GameObject("atmosphere lens");
             go.SetActive(false); // OnEnable runs on AddComponent: fill in the data first, then switch on
             DontDestroyOnLoad(go);
@@ -173,6 +178,13 @@ namespace Suborned
             if (d.sky.peach < 0f || d.sky.peach > 2f) return "sky.peach in [0, 2] (0 = none)";
             if (d.sun != null && d.sun.shadowStrength != 0f && (d.sun.shadowStrength < 0.2f || d.sun.shadowStrength > 1f)) return "sun.shadowStrength 0 (the scene's own) or 0.2..1";
             if (d.gradeLong != null && Mathf.Abs(d.gradeLong.exposureDelta) > 1.5f) return "gradeLong.exposureDelta within +-1.5 EV";
+            var n = d.night;
+            if (n != null)
+            {
+                if (n.shadowStrength < 0.2f || n.shadowStrength > 1f || n.liftOffset < 0f || n.liftOffset > 0.1f || n.liftTintShare < 0f || n.liftTintShare > 1f || !ColorUtility.TryParseHtmlString(n.liftTint, out _)) return "night: shadowStrength 0.2..1, liftOffset 0..0.1, liftTintShare 0..1, liftTint #rrggbb";
+                if (n.ambient == null || n.ambient.sky == null || n.ambient.equator == null || n.ambient.ground == null) return "night.ambient: sky, equator, ground";
+                foreach (var a in new[] { n.ambient.sky, n.ambient.equator, n.ambient.ground }) if (!ColorUtility.TryParseHtmlString(a.hex, out _) || a.value < 0f || a.value > 1f) return "night.ambient: hex #rrggbb, value 0..1";
+            }
             return CheckEvening(d.evening);
         }
 
@@ -227,6 +239,12 @@ namespace Suborned
                 dof.mode.Override(DepthOfFieldMode.Gaussian);
                 dof.gaussianStart.Override(data.dofLong.start); dof.gaussianEnd.Override(data.dofLong.end);
                 dof.gaussianMaxRadius.Override(data.dofLong.maxRadius); dof.highQualitySampling.Override(data.dofLong.highQuality);
+            }
+            if (data.night != null)
+            {   // the night floor: one lift on every non-overlay post camera while it is night (weight set per camera)
+                vNight = NewVolume("lens/night", out var pn); nightLift = pn.Add<LiftGammaGain>(false);
+                var tn = Color.Lerp(Color.white, Hex(data.night.liftTint), data.night.liftTintShare); float lo = data.night.liftOffset;
+                nightLift.lift.Override(new Vector4(tn.r, tn.g, tn.b, lo)); nightLift.gain.Override(new Vector4(1f, 1f, 1f, -lo));
             }
             ApplyPlayGrade();
             UnityEngine.SceneManagement.SceneManager.sceneLoaded += (_, _) => { baseSaturation = -999f; };
@@ -300,6 +318,7 @@ namespace Suborned
                 sunStrength0 = sunLight.shadowStrength;
             }
             float want = on && data.sun != null && data.sun.shadowStrength > 0f ? data.sun.shadowStrength : sunStrength0;
+            if (!on && DistanceHaze.Night && data.night != null && AtmosphereSettings.Enabled) want = data.night.shadowStrength; // the moon fills the shade (the night floor)
             float k = on ? Dusk : 0f; // evening (Glint 2026-10-24): the low sun's own shadow strength, eased in with LightPhase.Dusk
             if (k > 0f && data.evening != null) want = Mathf.Lerp(want, data.evening.sun.shadowStrength, k);
             if (!Mathf.Approximately(sunLight.shadowStrength, want)) sunLight.shadowStrength = want;
@@ -401,6 +420,7 @@ namespace Suborned
             bool post = on && hasUd && ud.renderPostProcessing && !overlay;
             if (baseSaturation < -990f && on) ApplyPlayGrade();
             if (!overlay) SunShade(on);
+            if (vNight) vNight.weight = hasUd && ud.renderPostProcessing && !overlay && DistanceHaze.Night && AtmosphereSettings.Enabled ? 1f : 0f;
             vPlay.weight = post && tier == DistanceHaze.Tier.Play ? 1f : 0f;
             vFollow.weight = post && tier == DistanceHaze.Tier.Follow ? 1f : 0f;
             vLong.weight = post && tier == DistanceHaze.Tier.Long ? 1f : 0f;
@@ -421,6 +441,7 @@ namespace Suborned
         /// signals overlay: zero), so they are only cleared when the component goes.</summary>
         void Reset(bool sky)
         {
+            if (vNight) vNight.weight = 0f;
             if (vPlay) vPlay.weight = 0f; if (vFollow) vFollow.weight = 0f; if (vLong) vLong.weight = 0f;
             if (flare) flare.intensity = 0f;
             if (sky) { Sky(false, DistanceHaze.Tier.Play); SunShade(false); }

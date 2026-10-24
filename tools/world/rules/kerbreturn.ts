@@ -62,10 +62,16 @@ export function kerbReturnRules(c: WCtx): Check[] {
   const rings = [...c.w.ground.plots.map(p => p.ring as V[]), ...c.w.ground.medians.map(m => m.ring as V[])], bad4: string[] = [];
   const near = (p: V) => rings.some(r => { const xs = r.map(q => q[0]), ys = r.map(q => q[1]); return p[0] >= Math.min(...xs) - 0.5 && p[0] <= Math.max(...xs) + 0.5 && p[1] >= Math.min(...ys) - 0.5 && p[1] <= Math.max(...ys) + 0.5 && r.some((q, i) => segDist(p, q, r[(i + 1) % r.length]!) <= 0.5); });
   for (const s of kerbs) if (!/^kerbreturn\/(circus-mouth|edge)\//.test(s.edge) && !near(s.at as V)) bad4.push(`${s.id} (${s.kind}) lies at ${s.at.map(x => x.toFixed(1))}, on no pavement edge`);
+  // KR-5 (Glyph 0.2.113 nit 1): a reservation's kerb face or lawn-end arc lies along a lawn flat of the reservation (a stray bar or arc in the road is a face with no lawn beside it)
+  const lawns = c.w.ground.flats.filter(f => f.id.startsWith('reservation/')).map(f => f.ring as V[]), bad5: string[] = [];
+  const onLawn = (q: V) => lawns.some(r => inPoly(q, r) || r.some((p, i) => segDist(q, p, r[(i + 1) % r.length]!) <= 0.6));
+  const faces = (c.w.ground.pieces ?? []).filter(s => /^roadfinish\/(lawn\/)?[^/]+\/reservation\//.test(s.edge));
+  for (const s of faces) if (!onLawn(s.at as V)) bad5.push(`${s.id} (${s.kind}) lies at ${s.at.map(x => x.toFixed(1))}, beside no lawn track: a lone kerb piece in the road`);
   void slabRing; void stat;
   return [
     rule('KR-2', G, 'Kerb returns: each convex return has its carriageway fill and a cut slab; nothing stands in the carriageway it takes or within the kerb\'s 0.45 m of its arc; the arc carries its kerb stones', list.length, bad2, 'none', SRC),
     rule('KR-4', G, 'A kerb stone lies on a pavement edge (a plot slab, a bend pad or a median), never out on the carriageway', kerbs.length, bad4, 'none', SRC),
+    rule('KR-5', G, 'A reservation\'s kerb piece lies beside its lawn track: no bar or arc of kerb stands alone in the road', faces.length, bad5, 'none', SRC),
     rule('KR-3', G, 'A kerb stands only where pavement meets carriageway: no kerb stone lies across the mouth of a kerbed bay', bays.length, bad3, 'none', SRC),
     stat('KR-2/n', G, 'Kerb returns (informational): returns, arc metres, kerb stone metres on them', `${returnsOf(gc).length} returns`, '-', true, SRC, `convex ${list.length} (junction corners, lay-by mouths, circus mouths), concave ${returnsOf(gc).filter(x => !x.convex && !x.bend).length} (a lane end, lay-by backs), bend outsides ${returnsOf(gc).filter(x => x.bend).length}, median noses ${returnsOf(gc).filter(x => x.nose).length}; ${arcM.toFixed(0)} m of arc, ${stoneM.toFixed(0)} m of stone; ${c.gen.roadFinish?.returns.chords ?? 0} ribbon and pinstripe chords`),
   ];

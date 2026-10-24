@@ -56,15 +56,15 @@ namespace Suborned.Play
                 for (int k = 0; k < 4; k++) { var p = g.Ops[k].Pos; long dx = p.X - door.X, dy = p.Y - door.Y; if (dx * dx + dy * dy < 600L * 600L) near = true; }
                 if (near) break;
             }
-            h.SetPaused(false); float t0 = Time.realtimeSinceStartup; bool shot = false;
+            h.SetPaused(false); float t0 = Time.realtimeSinceStartup; bool shot = false; HostViews.FeetRaisedMax = 0f;
             while (Time.realtimeSinceStartup - t0 < 12f && !g.Over)
             {
                 yield return null;
                 for (int k = 0; k < 4; k++)
                 {
                     var t = h.Views.Find("op/" + Suborned.Sim.Op.Name((OpId)k)); if (!t || !t.gameObject.activeSelf) continue;
-                    float y = t.position.y, under = f.World(g.Ops[k].Pos).y; top[k] = Mathf.Max(top[k], y); low[k] = Mathf.Min(low[k], y);
-                    sunk = Mathf.Max(sunk, under - y - 0.12f); // a figure eases between ticks: 0.12 m of slack on a 0.1 m stair step
+                    var bp = f.ToBlock(new Vector2(t.position.x, t.position.z)); float y = t.position.y, under = f.Height(bp.x, bp.y); top[k] = Mathf.Max(top[k], y); low[k] = Mathf.Min(low[k], y);
+                    sunk = Mathf.Max(sunk, under - y - 0.12f); // Splice (0.2.113): the floor at the figure's own drawn place, not under its engine position a tick ahead (0.12 m slack kept)
                     if (!shot && y > 0.4f && y < 0.85f) { onSteps = k; }
                 }
                 if (!shot && onSteps >= 0) { shot = true; var t = h.Views.Find("op/" + Suborned.Sim.Op.Name((OpId)onSteps)); if (t) h.LookAt(t.position); yield return Frames(3); yield return Shoot(h, dir, "levels-crew-steps", log); }
@@ -75,7 +75,7 @@ namespace Suborned.Play
             int climbed = 0; for (int k = 0; k < 4; k++) if (top[k] > 0.85f) climbed++;
             bool crewOk = fine && climbed >= 3 && sunk <= 0.05f;
             log.Add($"levels crew: {(crewOk ? "ok" : "FAILED")}: {climbed} of 4 reached the landing (highest {F(top[0])} {F(top[1])} {F(top[2])} {F(top[3])} m), deepest under the floor {F(Mathf.Max(0f, sunk))} m past the slack, a figure on the steps shot: {B(shot)}");
-            json[0] = $"{{\"ok\": {B(guardOk && crewOk)}, \"cell\": {F(f.cell)}, \"nx\": {f.nx}, \"ny\": {f.ny}, \"guardFloor\": {F(floor)}, \"guardFigure\": {F(fig)}, \"climbed\": {climbed}, \"tops\": [{F(top[0])}, {F(top[1])}, {F(top[2])}, {F(top[3])}], \"sunkM\": {F(Mathf.Max(0f, sunk))}}}";
+            json[0] = $"{{\"ok\": {B(guardOk && crewOk)}, \"cell\": {F(f.cell)}, \"nx\": {f.nx}, \"ny\": {f.ny}, \"guardFloor\": {F(floor)}, \"guardFigure\": {F(fig)}, \"climbed\": {climbed}, \"tops\": [{F(top[0])}, {F(top[1])}, {F(top[2])}, {F(top[3])}], \"sunkM\": {F(Mathf.Max(0f, sunk))}, \"easeLiftM\": {F(HostViews.FeetRaisedMax)}}}"; // easeLiftM: how far the plain ease would have put a figure under the floor at its own place (lifted onto it since 0.2.114)
             h.TurnSnap(0); h.controls.conversations = keepConvo; h.Begin(); yield return null;
         }
     }

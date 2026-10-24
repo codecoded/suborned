@@ -394,6 +394,8 @@ namespace Suborned.Play
         public readonly Dictionary<string, Vector3> Aim = new(); public readonly HashSet<string> FiredNow = new();
 
         /// <summary>Per frame: eases positions, draws the cones and the selection rings.</summary>
+        /// <summary>For checks (ProofLevels): the most a figure was lifted onto the floor at its own place since the last reset (m): how far the plain ease would have sunk it.</summary>
+        public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
             float now = Time.unscaledTime;
@@ -407,7 +409,18 @@ namespace Suborned.Play
                     float k = 1f - Mathf.Exp(-Time.unscaledDeltaTime / 0.05f); driveY = driveKeyWas == DriveKey && Mathf.Abs(DrivePos.y - driveY) < 1.5f ? Mathf.Lerp(driveY, DrivePos.y, k) : DrivePos.y; driveKeyWas = DriveKey;
                     t.position = new Vector3(DrivePos.x, driveY, DrivePos.z);
                 }
-                else if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/")) t.position = Vector3.Lerp(from, to, alpha);
+                else if (shown && !kv.Key.StartsWith("camera/") && !kv.Key.StartsWith("marker/") && !kv.Key.StartsWith("stash/"))
+                {
+                    var p = Vector3.Lerp(from, to, alpha);
+                    // Splice on ProofLevels (0.2.113): eased straight between two ticks, a figure climbing a stair (0.15-0.25 m a cell) cuts under the
+                    // tread ahead for part of the tick; a figure is never drawn under the floor at its own place (the climb snaps up; a descent eases)
+                    if (from.y != to.y && figs.ContainsKey(kv.Key) && !(lifted.TryGetValue(kv.Key, out var lf) && lf > 0.01f))
+                    {
+                        var b = frame.ToBlock(new Vector2(p.x, p.z)); float floor = frame.Height(b.x, b.y);
+                        if (floor > p.y && floor - p.y < 0.5f) { FeetRaisedMax = Mathf.Max(FeetRaisedMax, floor - p.y); p.y = floor; }
+                    }
+                    t.position = p;
+                }
             }
             var g = host.Game;
             Untangle();

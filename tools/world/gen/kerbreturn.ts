@@ -349,7 +349,9 @@ export function cutHits(ctx: Pick<Ctx, 'plan' | 'd' | 'S'>, ring: V[], g = 0): R
 
 /** Straight chords along a return's arc, for a family laid `offset` m off the kerb face (+ toward the carriageway): the circle at r + offset (convex) or r - offset (concave), `step` rad per chord at most, never shorter than `minLen` m.
  *  Each chord is the piece's pivot (the chord's middle, on the circle compensated so the chord is wrong by half its sagitta each way), its direction normal `n` (toward the carriageway) and its length. */
-export function chordsOf(r: Return, offset: number, maxStep = Math.PI / 24, minLen = 0.6): { at: V; n: V; len: number; mid: number; from: V; to: V }[] {
+/** The most a chord may fall inside its arc (m): a 6 m return keeps its 7.5 degree chords (sagitta 0.0129 at R 6.1); a bend's 18 or 30 m outer arc gets finer ones, so a third-person camera sees a curve, not a polygon (Glyph 0.2.113 nit 4). */
+const SAGITTA = 0.0135;
+export function chordsOf(r: Return, offset: number, maxStep = Math.min(Math.PI / 24, 2 * Math.acos(Math.max(0, 1 - SAGITTA / Math.max(r.r + (r.convex ? 1 : -1) * offset, 0.5)))), minLen = 0.6): { at: V; n: V; len: number; mid: number; from: V; to: V }[] {
   const sg = r.convex ? 1 : -1, rad = r.r + sg * offset; if (!(rad > 0.05)) return [];
   const phi0 = Math.atan2(r.a[1] - r.c[1], r.a[0] - r.c[0]), sweep = r.sweep, arcLen = rad * r.theta;
   const nChord = Math.max(1, Math.min(Math.ceil(r.theta / maxStep), Math.floor(arcLen / minLen) || 1));

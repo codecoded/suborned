@@ -74,7 +74,17 @@ namespace Suborned.Play
             DynamicGI.UpdateEnvironment();
             if (!toNight) { foreach (var l in lamps) if (l) l.enabled = false; LiveLamps = 0; }
             else Cap(true);
+            if (toNight) NightFloor();
             duskApplied = -1f; ApplyDusk(); // Apply wrote the day State: lean it back to where the dusk is (no pop when day is chosen from the evening)
+        }
+
+        /// <summary>The night floor (lens.json `night`, Glint 2026-10-24: night walls crushed to #020100): the ambient the scene's night State was built with is replaced by a higher teal-indigo one, at runtime, so no scene rebuild; the moon's shadow strength and the grade's lift are AtmosphereLens's. No lights.</summary>
+        void NightFloor()
+        {
+            var n = AtmosphereLens.NightData; if (n == null) return;
+            RenderSettings.ambientSkyColor = AtmosphereLens.Scaled(n.ambient.sky.hex, n.ambient.sky.value);
+            RenderSettings.ambientEquatorColor = AtmosphereLens.Scaled(n.ambient.equator.hex, n.ambient.equator.value);
+            RenderSettings.ambientGroundColor = AtmosphereLens.Scaled(n.ambient.ground.hex, n.ambient.ground.value);
         }
 
         /// <summary>The sun, the ambient and the reflections at the evening's Dusk (lens.json `evening`), from the day State; nothing when Dusk is 0 or the lens has no evening.</summary>

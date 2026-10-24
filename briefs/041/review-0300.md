@@ -138,3 +138,50 @@ Every blocker and fix from the 0.2.104 review is met. No fix round is needed. Fo
 
 ### Handoffs
 None required before Sky plays. Aster: the cream `badges/npc_patrol` disc (Forma face, my disc) and the "Loves the guard" lover icon are still open from the 0.2.104 review; neither blocks.
+
+## 0.2.113 check (Glyph, 2026-10-24)
+
+Scope: Latch's 0303 evidence (`049/build/2160-0303`, `041/build/0303`, `054/build/0303`, `057/build/0303`, `028/corners/game-0303`, `028/road/game-0303`, `048/evening/game-0303`), the changed pieces cropped at 2x or more (crops in `out/scratch/glyph/0303/`).
+
+### Verdict: ship to Sky. Two small fixes are worth doing in the next batch; neither blocks play.
+
+### Evening phase (Glint): holds the look
+- **Palette:** `048/evening/game-0303/start-overhead-evening-vs-day.jpg`, `road-enamel-boulevard-third-evening.jpg`. The low warm sun, peach haze and coral-to-mauve sky read as the same city at a later hour. Cream walls go peach (sampled #dbb58e, hue 30) and the road goes a cooler periwinkle (#6e7788). Nothing greys out.
+- **Teal and seafoam do not go olive.** Deep teal stays hue 166-188 (#4b6468 on windows, #517c72 on ground bands). Sunlit seafoam trim moves from hue 136-147 to about 99 (#89a37c), a sage; in shade it stays 137. At 2x (`road-enamel-office-210-evening.jpg`, crop at 1000-2000 x 0-900) it still reads mint-sage, not olive. Pass, but it is the one to watch if the sun gets warmer.
+- **HUD over it:** roster, clock bar, pill, goal plate, feed card and plot scope are unchanged and read cleanly over the evening paving, the road and the peach sky (`office-front-yaw210-evening.png`, `cafe-front-evening.png`). The HUD adds no colour of its own.
+- **Lit windows:** at night (`road-enamel-boulevard-third-night.jpg`) the warm amber panes are the only light and read well. In the evening they are not noticeable in the play-view shots (daylight still wins). Fine.
+- **Watch, not a fix (Glint):** at night the building faces and the paving crush to near-black (wall #020100, paving #061212; `road-enamel-office-210-night.jpg`). The district reads as a silhouette with lit panes, which suits a moment, but nothing in the evidence shows the play view at night with the HUD. Before night is offered to Sky, give me a night play shot (start overhead and café front) and I will check that the cast, rings and cones still read. A deep teal or indigo floor instead of pure black would stay closer to the bright retro-future.
+- **Minor, Glint:** on the boulevard evening shot the khaki wall on the right (day #c2c5b2, already sage) drops to #7a7964 in shade, which reads muddy olive-grey. The fix is a touch more warmth in the shade grade for that hue band. Low.
+
+### Corners round 2: good at the play camera
+- **Lawn-track ends:** `r29-boulevard-market-play-210.png`: pill ends, with the cream kerb following the round. Pass.
+- **Junction NE:** `r29-junction-ne-street.jpg` and `-street-b.jpg`: the sand triangle is gone and the arc is smooth. Pass.
+- **Civic junction, office bay, square bay, tram platforms** (`r29-civic-junction-play.png`, `r29-officebay-play-210.png`, `r29-squarebay-play.png`): rounded returns, brass a clean hairline, no kinks at play zoom. Pass.
+- **Nit 1, Splice (returns.ts), low:** at street level the brass hairline and the kerb are still faceted (visible straight segments with a corner every few metres) on the junction-NE arc in `r29-junction-ne-street-b.jpg`, around (780-900, 600-950); there is also a small step in the outer brass line at the top of that crop. Not visible at the play camera, so it will not stop Sky; it only shows in third person.
+- **Nit 2, Splice (returns.ts), medium:** `r29-circus-mouth-play.png` still has two stray cream line fragments lying in the road, at about (870, 665) and (1210, 570). In 0.2.112 they were straight bars; now they are faceted arcs. They are the leftover kerb returns that brief 057's "no stray kerb bars" meant to remove. They read as chalk marks on the road. Same area in `r29-circus-mouth-street.jpg` if you want a ground view.
+- **Nit 3, Splice, low:** the road sheets leave faint tonal steps and thin hairlines across the road in `r29-boulevard-market-play-210.png` (around (1300, 200) to (1700, 580) and the thin lines near the lawn). Visible only when you look for it. The taupe-olive band across the road (#777262) is the sky-rail guideway, unchanged since 0.2.112; if it is meant to read as enamel it is the one thing in the corner shots that tends olive. Vela's call.
+
+### My pieces and your nits
+- **Lovers icon** (`049/build/2160-0303/done-listen-chip.png`, crop at 2.5x): two figures with a heart above, in the same solid cream as Bureau loan and Fearful, on the same row grid. Reads "couple" at once. Pass; the old open item is closed.
+- **Patrol stand-in face** (`057/build/0303/r29-reroute-edge-chip.png`, crop at 2.5x): a cream disc with the dot-matrix robot face glyph in deep teal, inside the kit's chrome ring, on the edge chip. It reads as a robot. Pass. The icon beside it is the white cursor arrow, not a part of the chip.
+- **No-walk cursor** (`041/build/0303/r29-no-walk-cursor.png`, crop at 8x): the footprint pair, struck by a dark diagonal, now sits in the 2 px chrome ring with the 1 px ink-deep edge, the same as the kit disc. Pass. The test parked it on the corner of the Uneasy chip, so it overlaps the chip's rim there; in play it follows the cursor, so that is the shot, not the build.
+- **Held Go** (`r29-go-held.png`, crop at 3x): "Go", the lock and the violet rival badge have even gaps; the lock no longer touches the badge. The plate is still translucent, as the known-people plate is. Pass.
+- **Driver** (`049/build/2160-0303/follow-pickup.png`, crop at 3x): dark-brown face and hands, mint-green uniform, black boots. No teal skin. Pass.
+
+### Perf changes (cones)
+- The fan rim and wedge still frames (`054/build/0303/r29-cone-strong.png`, `r29-cone-rest.png`, `r29-cone-pressure-a1.png`) look right: a red outline with a soft wedge, the rim crisp at 2x, the quiet cone faint at rest and strong when picked.
+- A still cannot show the two perf changes (one cone built per frame, a rim that steps rather than widens at mid-fade). At 0.2.113 every new cone is built within 1-2 frames per Latch's numbers (5.7 and 2.6 builds a second), so a plain wedge would show for under 0.1 s. Not seen as a problem. Suture's replay or Sky's first play should confirm no flash of unlit wedge when the patrol's fan changes pose (10 geometry builds a second remain).
+
+### One small HUD thing (Latch, low)
+- In the corner "replay 0.6x" shots (`r29-officebay-play-210.png`, `r29-civic-junction-play.png`, `r29-squarebay-play.png`), the roster portraits are hidden but the four pip rows ("o o o o") stay on screen as free-floating dots at the left (crop at (0-400, 0-900)). If replay hides the roster, hide the pips with it. These are test shots, so it only matters if the same state shows in a real replay.
+
+### Fix list (all optional before Sky)
+| # | Item | Shot | Fix | Owner |
+|---|---|---|---|---|
+| 1 | Stray cream arcs in the road | `028/corners/game-0303/r29-circus-mouth-play.png` (870,665) and (1210,570) | Drop the orphan kerb-return fragments | Splice |
+| 2 | Pips left without the roster in replay | `r29-officebay-play-210.png`, left edge | Hide with the roster | Latch |
+| 3 | Night play view not shown | none | Provide start-overhead and café-front night shots before offering night | Glint, Latch |
+| 4 | Faceted brass line and kerb on the NE arc | `r29-junction-ne-street-b.jpg` | More samples on the arc | Splice |
+| 5 | Road sheet seams; taupe-olive guideway | `r29-boulevard-market-play-210.png` | Even the sheet tone; Vela decides the guideway colour | Splice, Vela |
+
+No handoff to Aster is needed. The HUD stays inside the art bible's colour rule: the only colours I found were kit sources, and the violet rival badge is the free signal colour.
