@@ -1,10 +1,11 @@
 // Brief 060 (Suture): the mutation seeds. The Handover's route scripts (contracts/missions/handover/routes, Waymark's; their expected
 // outcome and kind from routes.json) and Sky's saved sessions: the handover-*.script.json files over 8 KB in the built player's play folder
-// (the smaller ones are proof sessions). A session that ended (its record's outcome is not "none") plays on to the mission's close, so a
+// (the smaller ones are proof sessions, unless Sky played them). A session that ended (its record's outcome is not "none") plays on to the mission's close, so a
 // changed engine can finish it; a session Sky left mid-run keeps its own end.
 // Most of those files are automation, not Sky (2026-10-25: of 176, 121 are one tp-long proof shape and ~40 late-row replays). Every one stays a
 // mutation seed, since automation still exercises the rules, tagged `by` sky or automation with the real-time test (human-measure.ts skySessions):
 // only Sky's count as "an order Sky gave" (Aster 2026-10-25).
+// The 8 KB floor keeps out automation's tiny proof sessions only; a session of Sky's is a seed at any size.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { basename, join } from 'node:path';
@@ -32,7 +33,7 @@ export function sessionSeeds(dir = SESSIONS_DIR, minBytes = SESSION_MIN_BYTES): 
   if (!existsSync(dir)) return [];
   const out: Seed[] = [], sky = new Set(skySessions(readSessions([dir])).sky.map(s => s.file));
   for (const f of readdirSync(dir).filter(f => /^handover-.*\.script\.json$/.test(f)).sort()) {
-    const p = join(dir, f); if (statSync(p).size < minBytes) continue;
+    const p = join(dir, f); if (statSync(p).size < minBytes && !sky.has(p)) continue; // the size floor is for automation: Sky's own play is a seed at any size (Aster 2026-10-25)
     let script: Script; try { script = JSON.parse(readFileSync(p, 'utf8')) as Script; } catch { continue; }
     if (script.schema !== 'suborned.sim.script/1' || script.mission !== 'handover') continue;
     const ended = !!script.expect?.outcome && script.expect.outcome !== 'none';

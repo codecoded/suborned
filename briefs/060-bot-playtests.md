@@ -357,11 +357,11 @@ These are new checks in `tools/qa/checks/human.ts`, plus `tools/qa/bot-human.ts`
   - use the event kinds `cancel`, `reorder`, `repeat`, `switch`, `misclick`, `wrong`, `ring-close`, `idle`, `turn`, `peek`, `abandon`, `wander` (any case);
   - fix the greedy Go loop;
   - optional: a row-level third-person flag.
-- **Seeds (Aster, 2026-10-25):** all 176 "over 8 KB" files stay mutation seeds, since automation still exercises the rules. Each is tagged `by: 'sky'` or `'automation'` by the real-time test (`seeds.ts`, `skySessions`): **11 are Sky's, 165 are automation.**
+- **Seeds (Aster, 2026-10-25):** all 176 "over 8 KB" files stay mutation seeds, since automation still exercises the rules. Each is tagged `by: 'sky'` or `'automation'` by the real-time test (`seeds.ts`, `skySessions`). The size floor applies to automation only: Sky's own play is a seed at any size. **187 seeds: 22 are Sky's, 165 are automation.**
   - Only Sky's say "An order Sky gave", "(Sky)" or "what Sky saw" in Q-OFFER, the human checks and the report's steps. Automation says "a saved proof session" and "the recording", and its Q-OFFER key is `Q-OFFER:automation:...`.
   - The report's lane line counts Sky's sessions apart. The summary JSON gains `skySessions`.
   - Brief 041 port-progress no longer calls s-20261024-022456 Sky's.
-  - Sky's sessions under 8 KB (among them 20261022-202219 and 180154, both cited in next-batch) are still not seeds. Lifting the size rule for Sky-tagged files would add them.
+  - Sky's sessions under 8 KB are seeds now, among them 20261022-202219 and 180154, both cited in next-batch.
 - **Third person (Sky's decision, via Aster 2026-10-25):** going third person never stops the current act, so any Q-CANCEL:drive is a bug: S2, Latch.
 - **Rerun:** `bun run guard bun tools/qa/human-measure.ts --replay --write` as Sky plays more. The replays are cached in `out/qa/human/plays/`.
 - **Verified:**

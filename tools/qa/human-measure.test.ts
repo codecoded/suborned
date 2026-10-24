@@ -64,3 +64,19 @@ test('the profile: every value Latch reads comes from the file (none defaulted),
   for (const [k, v] of Object.entries(p.values)) if (typeof v === 'number') { expect(v).toBeGreaterThanOrEqual(0); expect(v).toBeLessThanOrEqual(1); } else expect((v as { p50: number }).p50, k).toBeGreaterThanOrEqual(0);
   if (existsSync(PROFILE_OUT)) { const f = readProfile(JSON.parse(readFileSync(PROFILE_OUT, 'utf8'))); expect(f.source.defaulted).toEqual([]); } // the committed file reads whole
 });
+
+test('seeds: every saved session over 8 KB, and Sky\'s own at any size, each tagged sky or automation', async () => {
+  const { mkdtempSync, writeFileSync, utimesSync } = await import('node:fs'), { tmpdir } = await import('node:os'), { join } = await import('node:path'), { sessionSeeds } = await import('./seeds');
+  const dir = mkdtempSync(join(tmpdir(), 'qa-seeds-'));
+  const put = (stamp: string, orders: O[], until: number, wallS: number, pad = 0) => {
+    const f = join(dir, `handover-${stamp}.script.json`);
+    writeFileSync(f, JSON.stringify({ schema: 'suborned.sim.script/1', mission: 'handover', start: {}, orders, until, expect: { outcome: 'none' }, pad: 'x'.repeat(pad) }));
+    const t0 = new Date(+stamp.slice(0, 4), +stamp.slice(4, 6) - 1, +stamp.slice(6, 8), +stamp.slice(9, 11), +stamp.slice(11, 13), +stamp.slice(13, 15)).getTime() / 1000;
+    utimesSync(f, t0 + wallS, t0 + wallS);
+  };
+  put('20261022-100000', [mv(10, 'scout', 0, 0), act(60, 'scout', 'watch', 'waitress')], 1200, 130); // Sky, small: a seed
+  put('20261022-110000', [mv(10, 'tech', 5, 5), act(40, 'tech', 'loop', 'entrance')], 1200, 20); // automation, small: not
+  put('20261022-120000', [mv(10, 'fixer', 7, 7), act(40, 'fixer', 'turn', 'waitress')], 1200, 20, 9000); // automation, over 8 KB: a seed
+  const s = sessionSeeds(dir);
+  expect(s.map(x => [x.id, x.by])).toEqual([['s-20261022-100000', 'sky'], ['s-20261022-120000', 'automation']]);
+});
