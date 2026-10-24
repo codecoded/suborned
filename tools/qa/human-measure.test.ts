@@ -59,10 +59,10 @@ test('the profile: every value Latch reads comes from the file (none defaulted),
   const s = sess('s10', [mv(0, 'scout', 0, 0), act(100, 'scout', 'watch', 'waitress'), mv(130, 'scout', 900, 0), act(700, 'fixer', 'turn', 'waitress')]);
   const p = toProfile(measure([s], { sky: [s], dropped: {} }));
   const r = readProfile(p);
-  expect(r.source.defaulted).toEqual([]); expect(r.source.ignored).toEqual(['repeatProb']); // repeatProb: Sky's repeats, for the repeat behaviour Latch is adding
+  expect(r.source.defaulted).toEqual(['thirdPersonRowProb', 'thirdPersonInRowProb']); expect(r.source.ignored).toEqual([]); // Latch 2026-10-25: repeatProb is read now; the third-person row model's two rates default (0.21, 0.27) until this file writes them
   for (const k of Object.keys(p.values)) expect(typeof (p.source as Record<string, string>)[k]).toBe('string');
   for (const [k, v] of Object.entries(p.values)) if (typeof v === 'number') { expect(v).toBeGreaterThanOrEqual(0); expect(v).toBeLessThanOrEqual(1); } else expect((v as { p50: number }).p50, k).toBeGreaterThanOrEqual(0);
-  if (existsSync(PROFILE_OUT)) { const f = readProfile(JSON.parse(readFileSync(PROFILE_OUT, 'utf8'))); expect(f.source.defaulted).toEqual([]); } // the committed file reads whole
+  if (existsSync(PROFILE_OUT)) { const f = readProfile(JSON.parse(readFileSync(PROFILE_OUT, 'utf8'))); expect(f.source.defaulted).toEqual(['thirdPersonRowProb', 'thirdPersonInRowProb']); } // the committed file reads whole (but for the row model's two rates, above)
 });
 
 test('seeds: every saved session over 8 KB, and Sky\'s own at any size, each tagged sky or automation', async () => {

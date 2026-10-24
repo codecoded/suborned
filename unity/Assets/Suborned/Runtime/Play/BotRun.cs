@@ -230,6 +230,8 @@ namespace Suborned.Play
         static readonly string[] GreedyOrder = { "go", "board", "take", "act", "call", "loop", "reroute", "turn", "watch", "listen", "carry", "restrain", "stash", "takedown", "fire" };
         static readonly string[] CautiousOrder = { "watch", "listen", "turn", "loop", "reroute", "call", "act", "take", "board", "go", "carry" };
 
+        /// <summary>Go is worth giving: Vale is in the car and every agent is in it or down (no one standing is left behind).</summary>
+        static bool GoReady(Game g) => g.Vale == ValeAt.Car && g.Ops.All(o => o.InCar || o.Down);
         bool Able(int k) { var op = h.Game.Ops[k]; return !op.Down && !op.Inside && !op.InCar && op.CarriedBy == null; }
         bool Idle(int k) { var op = h.Game.Ops[k]; return op.Busy == null && op.Act == null && op.Walk == null; }
 
@@ -237,8 +239,10 @@ namespace Suborned.Play
         {
             var g = h.Game; var cam = h.View; if (cam == null) yield break;
             // the agent: random any able (busy too: that is a test); greedy and cautious an idle able one when there is one
-            var able = Enumerable.Range(0, 4).Where(Able).ToList(); if (able.Count == 0) yield break;
-            var idle = able.Where(Idle).ToList();
+            var able = Enumerable.Range(0, 4).Where(Able).ToList();
+            if (policy != "random" && GoReady(g) && Enumerable.Range(0, 4).FirstOrDefault(j => g.Ops[j].InCar) is int kc && g.Ops[kc].InCar) able = new List<int> { kc }; // Go is given from the car, by one aboard
+            if (able.Count == 0) yield break;
+            var idle = policy != "random" && GoReady(g) ? able : able.Where(Idle).ToList();
             int k = policy == "random" || idle.Count == 0 ? able[rng.Next(able.Count)] : idle[rng.Next(idle.Count)];
             if (!h.Selected[k] || h.Agent != (OpId)k) { yield return Keys(new[] { Key.F1 + k }, 2); }
             double roll = rng.NextDouble();
@@ -271,6 +275,7 @@ namespace Suborned.Play
                     {
                         var r = c.plan.Row(w); if (!r.Available || r.I?.Order == null) continue; var o = r.I.Order;
                         if (policy == "cautious" && (o.Do is "takedown" or "fire" || o.Do == "turn" && o.Approach == "pressure" || ContextRank.Num(r.I.Trail) > 0)) continue;
+                        if (o.Do == "go" && !GoReady(g)) continue; // the 0.2.117 greedy row: Go ranked first with Vale outside (a withdraw) opened the going-loud card 164 times, was backed off each time, and nobody else boarded
                         int rank = Array.IndexOf(order, o.Do); if (rank < 0) continue;
                         float score = (order.Length - rank) * 10f - ContextRank.Num(r.I.Usd) / 20000f - ContextRank.Num(r.I.Trail) * 3f + (c.plan.Givers[w].Contains((OpId)k) ? 2f : 0f) + (float)rng.NextDouble();
                         if (score > best) { best = score; pick = c; wantWay = w; }
@@ -292,7 +297,7 @@ namespace Suborned.Play
             offered = od == null ? null : (s.By.Count == 1 ? Op.Name(s.By[0]) : "", od.Do ?? "", od.Target ?? "", Time.realtimeSinceStartup, s.Shut || s.Row?.Available == false); // a wedge shown shut (or a locked row) at the click
             cur.Taken++;
             var at = WedgeAt(rs, seg, rs.Segs.Count);
-            bool hold = s.HoldWedge || s.Harmful || od?.Do == "fire";
+            bool hold = s.HoldWedge || s.Harmful || od?.Do is "fire" or "go"; // Go: held through the card when it leaves a downed agent behind
             yield return Press(at, hold ? 1.4f : 0f); // a held wedge: the wedge's hold (0.5 s) and the going-loud card's (0.5 s) on the same button
             if (h.Loud != null && h.Loud.Source == "wait") yield return RightTap(at); // a card that would fail the mission waits for a hold on it: back off
             yield return Wait(0.3f);

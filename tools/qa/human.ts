@@ -57,15 +57,19 @@ export type Dist = { p50: number; p90: number };
 export type HumanProfile = {
   cancelProb: number; cancelDelayS: Dist; reorderProb: number; switchProb: number; gapS: Dist; idleProb: number; idleS: Dist; abandonProb: number;
   misclickProb: number; ringOpenCloseProb: number; cameraTurnProb: number; wrongVerbProb: number;
-  /** Not in Suture's list (Sky asked for third person "if you can"): a look through the follow view (T), then back. */
-  thirdPersonProb: number; thirdPersonS: Dist;
+  /** The same act on the same target again once it is done ("the repeat Watch"), per act step on a target. */
+  repeatProb: number;
+  /** Third person (T): measured per decision overall (thirdPersonProb), but it clusters by session (Suture, brief 060): a row uses it with
+   *  thirdPersonRowProb, then a step looks through it with thirdPersonInRowProb; thirdPersonS is a look's length. The row model is the one played. */
+  thirdPersonProb: number; thirdPersonS: Dist; thirdPersonRowProb: number; thirdPersonInRowProb: number;
 };
 /** [S] starting values until Suture's measured file lands (each a per-step chance, or a time's median and 90th percentile). */
 export const DEFAULT_PROFILE: HumanProfile = {
   cancelProb: 0.06, cancelDelayS: { p50: 1.2, p90: 4 }, reorderProb: 0.15, switchProb: 0.12, gapS: { p50: 1.5, p90: 5 }, idleProb: 0.05, idleS: { p50: 5, p90: 15 },
-  abandonProb: 0.01, misclickProb: 0.06, ringOpenCloseProb: 0.08, cameraTurnProb: 0.06, wrongVerbProb: 0.04, thirdPersonProb: 0.02, thirdPersonS: { p50: 3, p90: 8 },
+  abandonProb: 0.01, misclickProb: 0.06, ringOpenCloseProb: 0.08, cameraTurnProb: 0.06, wrongVerbProb: 0.04, repeatProb: 0.2,
+  thirdPersonProb: 0.1, thirdPersonS: { p50: 3, p90: 8 }, thirdPersonRowProb: 0.21, thirdPersonInRowProb: 0.27, // Suture's row model (12 of 56 of Sky's sessions; 0.27 a decision in them)
 };
-const PROBS = ['cancelProb', 'reorderProb', 'switchProb', 'idleProb', 'abandonProb', 'misclickProb', 'ringOpenCloseProb', 'cameraTurnProb', 'wrongVerbProb', 'thirdPersonProb'] as const;
+const PROBS = ['cancelProb', 'reorderProb', 'switchProb', 'idleProb', 'abandonProb', 'misclickProb', 'ringOpenCloseProb', 'cameraTurnProb', 'wrongVerbProb', 'repeatProb', 'thirdPersonProb', 'thirdPersonRowProb', 'thirdPersonInRowProb'] as const;
 const TIMES = ['cancelDelayS', 'gapS', 'idleS', 'thirdPersonS'] as const;
 export type ProfileSource = { file: string; fromFile: string[]; defaulted: string[]; ignored: string[] };
 
@@ -126,9 +130,12 @@ export type HumanStep = {
   // noise, drawn for the step's first try (a retry is played clean)
   gapS: number; idleS: number; turn: number; switchTo: number; peekS: number; ringClose: boolean; misclick: boolean; missDx: number; missDy: number;
   wrong: number; wrongNoticeS: number; cancel: boolean; cancelS: number; reorder: boolean; abandon: number; wanderS: number;
+  /** how a cancel undoes it: "x" (the stop key) or "redirect" (a ground click cancelDx, cancelDy px from the agent: a new walk replaces the order,
+   *  as most of Sky's undoings were: 230 of 244 moves sent elsewhere, 43 of 54 acts given another order) */ cancelBy: string; cancelDx: number; cancelDy: number;
+  /** given again once done (the same act on the same target) */ repeat: boolean;
 };
 export type HumanRoute = { route: string; group: string; steps: HumanStep[] };
-export type HumanTape = { schema: 'suborned.bot.human/1'; seed: number; route: string; group: string; steps: HumanStep[]; alts: HumanRoute[]; profile: HumanProfile; profileSource: ProfileSource };
+export type HumanTape = { schema: 'suborned.bot.human/1'; seed: number; route: string; group: string; /** this row looks through third person now and then */ thirdPerson: boolean; steps: HumanStep[]; alts: HumanRoute[]; profile: HumanProfile; profileSource: ProfileSource };
 /** abandon: -1 keeps the plan; -2 wanders a while and comes back; n >= 0 drops it for alts[n]. */
 export const WANDER = -2;
 
@@ -150,16 +157,19 @@ export function stepsOf(orders: RouteOrder[]): Omit<HumanStep, NoiseKey>[] {
     return s;
   });
 }
-type NoiseKey = 'gapS' | 'idleS' | 'turn' | 'switchTo' | 'peekS' | 'ringClose' | 'misclick' | 'missDx' | 'missDy' | 'wrong' | 'wrongNoticeS' | 'cancel' | 'cancelS' | 'reorder' | 'abandon' | 'wanderS';
+type NoiseKey = 'gapS' | 'idleS' | 'turn' | 'switchTo' | 'peekS' | 'ringClose' | 'misclick' | 'missDx' | 'missDy' | 'wrong' | 'wrongNoticeS' | 'cancel' | 'cancelS' | 'reorder' | 'abandon' | 'wanderS' | 'cancelBy' | 'cancelDx' | 'cancelDy' | 'repeat';
 const OPS = ['scout', 'fixer', 'tech', 'enforcer'];
 /** Steps given through the ring (a left click on a thing, then a wedge): the ones a misclick, a wrong wedge or an opened-and-shut ring can touch. */
 export const RING_ACTS = new Set(['watch', 'listen', 'turn', 'call', 'loop', 'reroute', 'mislead', 'enter', 'take', 'board', 'go', 'carry', 'restrain', 'stash', 'drop', 'takedown', 'fire']);
+/** Acts a person gives again on the same target (Sky's repeats were Watches, Listens, turns): never one that changes the scene for good (enter,
+ *  take, board, go, a body's carry or hiding, a takedown, a shot). */
+export const REPEATABLE = new Set(['watch', 'listen', 'turn', 'call', 'loop', 'reroute', 'mislead']);
 
 /** Each step's noise, one stream per noise: the same seed and profile give the same tape. `altBase` is the alt route a route abandon goes to
- *  (-1: this route may only wander). */
-export function noise(base: Omit<HumanStep, NoiseKey>[], p: HumanProfile, seed: number, altBase: number): HumanStep[] {
+ *  (-1: this route may only wander); `thirdPerson`: the row is one that uses the follow view. */
+export function noise(base: Omit<HumanStep, NoiseKey>[], p: HumanProfile, seed: number, altBase: number, thirdPerson = false): HumanStep[] {
   const R = (n: string) => stream(seed, n);
-  const gap = R('gap'), idle = R('idle'), turn = R('turn'), sw = R('switch'), peek = R('peek'), ring = R('ring'), miss = R('misclick'), wrong = R('wrong'), cancel = R('cancel'), reorder = R('reorder'), ab = R('abandon');
+  const gap = R('gap'), idle = R('idle'), turn = R('turn'), sw = R('switch'), peek = R('peek'), ring = R('ring'), miss = R('misclick'), wrong = R('wrong'), cancel = R('cancel'), reorder = R('reorder'), ab = R('abandon'), again = R('repeat'), how = R('cancel-how');
   let abandoned = false;
   return base.map(b => {
     const s = { ...b } as HumanStep;
@@ -167,12 +177,14 @@ export function noise(base: Omit<HumanStep, NoiseKey>[], p: HumanProfile, seed: 
     s.idleS = idle() < p.idleProb ? drawTime(idle, p.idleS) : 0;
     s.turn = turn() < p.cameraTurnProb ? (turn() < 0.5 ? -1 : 1) : 0;
     { const yes = sw() < p.switchProb, others = OPS.filter(o => o !== b.op), k = Math.floor(sw() * others.length); s.switchTo = yes ? OPS.indexOf(others[k]!) : -1; }
-    s.peekS = peek() < p.thirdPersonProb ? drawTime(peek, p.thirdPersonS) : 0;
+    s.peekS = peek() < (thirdPerson ? p.thirdPersonInRowProb : 0) ? drawTime(peek, p.thirdPersonS) : 0;
     const ringy = RING_ACTS.has(b.act);
     s.ringClose = ring() < p.ringOpenCloseProb && ringy;
     { const yes = miss() < p.misclickProb, a = miss() * 2 * Math.PI, rad = 36 + miss() * 44; s.misclick = yes && (ringy || b.act === 'move'); s.missDx = s.misclick ? round(Math.cos(a) * rad, 1) : 0; s.missDy = s.misclick ? round(Math.sin(a) * rad, 1) : 0; }
     { const yes = wrong() < p.wrongVerbProb, dir = wrong() < 0.5 ? -1 : 1, t = drawTime(wrong, { p50: 1.5, p90: 3.5 }); s.wrong = yes && ringy ? dir : 0; s.wrongNoticeS = s.wrong ? t : 0; }
     { const yes = cancel() < p.cancelProb, t = drawTime(cancel, p.cancelDelayS); s.cancel = yes && b.op !== 'cell'; s.cancelS = s.cancel ? t : 0; }
+    { const x = how() < (b.act === 'move' ? 14 / 244 : 11 / 54), a = how() * 2 * Math.PI, rad = 110 + how() * 110; s.cancelBy = s.cancel ? (x ? 'x' : 'redirect') : ''; s.cancelDx = s.cancelBy === 'redirect' ? round(Math.cos(a) * rad, 1) : 0; s.cancelDy = s.cancelBy === 'redirect' ? round(Math.sin(a) * rad, 1) : 0; } // Sky: stops were 14 of 244 move undoings, 11 of 54 act undoings
+    s.repeat = again() < p.repeatProb && REPEATABLE.has(b.act) && b.target.length > 0 && b.op !== 'cell';
     s.reorder = reorder() < p.reorderProb;
     { const yes = ab() < p.abandonProb, toRoute = ab() < 0.5, w = round(15 + ab() * 30, 1); s.abandon = -1; s.wanderS = 0; if (yes && b.i > 0) { if (toRoute && altBase >= 0 && !abandoned) { s.abandon = altBase; abandoned = true; } else if (!toRoute) { s.abandon = WANDER; s.wanderS = w; } } }
     return s;
@@ -183,9 +195,10 @@ export function noise(base: Omit<HumanStep, NoiseKey>[], p: HumanProfile, seed: 
  *  with its own noise from the seed, the last one unable to switch again. */
 export function humanTape(seed: number, routes: RouteScript[], prof: { profile: HumanProfile; source: ProfileSource } = loadProfile(), pin?: string): HumanTape {
   const pick = stream(seed, 'route'), main = pickRoute(routes, pick, pin), used = [main.group], alts: HumanRoute[] = [];
+  const tp = stream(seed, 'third-person-row')() < prof.profile.thirdPersonRowProb; // one person: the habit holds across a route switch
   for (let k = 0; k < MAX_ROUTE_SWITCHES; k++) { const a = pickRoute(routes, pick, undefined, used); used.push(a.group); alts.push({ route: a.id, group: a.group, steps: [] }); }
-  alts.forEach((a, k) => { a.steps = noise(stepsOf(routes.find(x => x.id === a.route)!.orders), prof.profile, fnv(`${seed}:alt${k}`) % 1_000_000, k + 1 < alts.length ? k + 1 : -1); });
-  return { schema: 'suborned.bot.human/1', seed, route: main.id, group: main.group, steps: noise(stepsOf(main.orders), prof.profile, seed, alts.length ? 0 : -1), alts, profile: prof.profile, profileSource: prof.source };
+  alts.forEach((a, k) => { a.steps = noise(stepsOf(routes.find(x => x.id === a.route)!.orders), prof.profile, fnv(`${seed}:alt${k}`) % 1_000_000, k + 1 < alts.length ? k + 1 : -1, tp); });
+  return { schema: 'suborned.bot.human/1', seed, route: main.id, group: main.group, thirdPerson: tp, steps: noise(stepsOf(main.orders), prof.profile, seed, alts.length ? 0 : -1, tp), alts, profile: prof.profile, profileSource: prof.source };
 }
 
 // ---------------------------------------------------------------- following (the player mirrors this: BotRun.Human.Ready and NextStep)

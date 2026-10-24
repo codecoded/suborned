@@ -22,35 +22,43 @@ namespace Suborned.Play
         [Serializable] public class HumanStep
         {
             public int i, tick, after = -1, afterN, gap, opPrev = -1, x, y, turn, switchTo = -1, wrong, abandon = -1;
-            public string op = "", act = "", target = "", approach = "", how = "", stance = "", place = "";
-            public bool run, xy, ringClose, misclick, cancel, reorder;
-            public float gapS, idleS, peekS, missDx, missDy, wrongNoticeS, cancelS, wanderS;
+            public string op = "", act = "", target = "", approach = "", how = "", stance = "", place = "", cancelBy = "";
+            public bool run, xy, ringClose, misclick, cancel, reorder, repeat;
+            public float gapS, idleS, peekS, missDx, missDy, wrongNoticeS, cancelS, wanderS, cancelDx, cancelDy;
         }
         [Serializable] public class HumanRoute { public string route = "", group = ""; public HumanStep[] steps; }
         [Serializable] public class HumanSource { public string file = ""; public string[] fromFile, defaulted; }
-        [Serializable] public class HumanTape { public string schema = "", route = "", group = ""; public int seed; public HumanStep[] steps; public HumanRoute[] alts; public HumanSource profileSource; }
+        [Serializable] public class HumanTape { public string schema = "", route = "", group = ""; public int seed; public bool thirdPerson; public HumanStep[] steps; public HumanRoute[] alts; public HumanSource profileSource; }
 
         /// <summary>human.ts: LOOKAHEAD, WANDER. A step that cannot be given (refused, not on the ring, its agent never free) is given up after
         /// HumanTries tries or HumanGiveUpS of real time; one in flight (the host walking the agent in to give it) is waited on HumanFlightS.</summary>
         public const int HumanLookahead = 4, HumanWander = -2, HumanTries = 4;
+        public const int HumanMaxEvents = 900, TpMovedCm = 15; // TpMovedCm: a drive sample this far from where the look began moved the agent (over the engine's drive slack)
         public const float HumanGiveUpS = 75f, HumanBlockedS = 90f, HumanDownS = 20f, HumanFlightS = 45f, HumanConfirmS = 1.5f, HumanNoiseS = 10f;
 
-        sealed class HEvent { public float T; public int Tick, Step; public string Kind = "", Route = "", Op = "", Act = "", Target = "", Detail = ""; }
+        /// <summary>One logged event. Op, Act, Target: the step (what the bot meant). A "given" event (Suture's Q-INTENT) also says what the game gave:
+        /// the engine order that came of the try (Gave*: op, verb, target, where to; GaveOk, GaveCode its answer), Gave false when nothing came.</summary>
+        sealed class HEvent { public float T; public int Tick, Step; public string Kind = "", Route = "", Op = "", Act = "", Target = "", Detail = "", GaveOp = "", GaveAct = "", GaveTarget = "", GaveTo = "", GaveCode = ""; public bool Gave, GaveOk; }
         sealed class HumanState
         {
             public string Route = "", Group = ""; public HumanStep[] Steps; public int[] Issued, Tries; public bool[] Resolved, Noised; public char[] Mark; public float[] FirstTry, BlockedSince;
-            public int Flight = -1, FlightMark, FlightOp = -1; public float FlightAt; public bool FlightSeenPending;
+            /// <summary>Tries given to the host and not yet answered: one per agent at most (a walk-in on one never hides another's answer).</summary>
+            public readonly List<Flight> Flights = new();
+            public bool[] Repeated; public readonly List<int> RepeatQ = new();
+            public bool InFlight(int i) => Flights.Exists(f => f.Step == i && !f.Repeat);
+            public bool OpInFlight(string op) => Flights.Exists(f => Steps[f.Step].op == op);
             public void Load(HumanStep[] steps, string route, string group)
             {
                 Steps = steps ?? new HumanStep[0]; Route = route; Group = group; int n = Steps.Length;
                 Issued = Enumerable.Repeat(-1, n).ToArray(); Tries = new int[n]; Resolved = new bool[n]; Noised = new bool[n]; Mark = Enumerable.Repeat('-', n).ToArray();
-                FirstTry = Enumerable.Repeat(-1f, n).ToArray(); BlockedSince = Enumerable.Repeat(-1f, n).ToArray(); Flight = -1; FlightOp = -1;
+                FirstTry = Enumerable.Repeat(-1f, n).ToArray(); BlockedSince = Enumerable.Repeat(-1f, n).ToArray(); Flights.Clear(); Repeated = new bool[n]; RepeatQ.Clear();
             }
             public string Trace => $"{Route}: " + string.Concat(Enumerable.Range(0, Steps.Length).Select(i => Mark[i] == 'd' && Tries[i] > 1 ? (char)('0' + Math.Min(9, Tries[i])) : Mark[i]));
         }
+        sealed class Flight { public int Step, Mark, Op = -1; public float At; public bool SeenPending, Repeat; }
         sealed class HumanRes
         {
-            public string Route = "", Group = "", Profile = ""; public readonly List<string> Routes = new(), Traces = new(); public int Steps, Done, Skipped;
+            public string Route = "", Group = "", Profile = ""; public bool ThirdPerson; public readonly List<string> Routes = new(), Traces = new(); public int Steps, Done, Skipped;
             public readonly Dictionary<string, int> Counts = new(); public readonly List<HEvent> Events = new();
         }
 
@@ -71,8 +79,8 @@ namespace Suborned.Play
             return e;
         }
         /// <summary>Ready but for the agent (blocked: past its tick, its agent's earlier step done, the agent not free).</summary>
-        bool Due(int i) { var s = hs.Steps[i]; if (hs.Resolved[i] || hs.Flight == i) return false; if (s.opPrev >= 0 && !hs.Resolved[s.opPrev]) return false; var e = Earliest(i); return e != null && h.Game.Tick >= e; }
-        bool Ready(int i) => Due(i) && OpFree(hs.Steps[i].op) && (hs.Steps[i].act != "panic" || h.Game.FightOn) && !(hs.Flight >= 0 && hs.Steps[hs.Flight].op == hs.Steps[i].op);
+        bool Due(int i) { var s = hs.Steps[i]; if (hs.Resolved[i] || hs.InFlight(i)) return false; if (s.opPrev >= 0 && !hs.Resolved[s.opPrev]) return false; var e = Earliest(i); return e != null && h.Game.Tick >= e; }
+        bool Ready(int i) => Due(i) && OpFree(hs.Steps[i].op) && (hs.Steps[i].act != "panic" || h.Game.FightOn) && !hs.OpInFlight(hs.Steps[i].op);
         int NextStep(out int over)
         {
             over = -1; int first = Array.IndexOf(hs.Resolved, false); if (first < 0) return -1;
@@ -88,7 +96,7 @@ namespace Suborned.Play
         IEnumerator Human(BotRow row)
         {
             var tape = row.human; var hr = new HumanRes { Profile = tape.profileSource == null || string.IsNullOrEmpty(tape.profileSource.file) ? "defaults" : $"{tape.profileSource.file} ({tape.profileSource.fromFile?.Length ?? 0} fields measured)" };
-            cur.Human = hr; hs = new HumanState(); hs.Load(tape.steps, tape.route, tape.group); hr.Route = tape.route; hr.Group = tape.group; hr.Routes.Add(tape.route); hr.Steps = hs.Steps.Length; lastNoise = null;
+            cur.Human = hr; hs = new HumanState(); hs.Load(tape.steps, tape.route, tape.group); hr.Route = tape.route; hr.Group = tape.group; hr.ThirdPerson = tape.thirdPerson; hr.Routes.Add(tape.route); hr.Steps = hs.Steps.Length; lastNoise = null;
             float menuSince = -1f;
             while (true)
             {
@@ -96,6 +104,12 @@ namespace Suborned.Play
                 menuSince = -1f;
                 if (h.Modal != ModalGate.Modal.None || capturing) { yield return null; continue; }
                 FlightFrame();
+                if (hs.RepeatQ.Count > 0 && hs.RepeatQ.FindIndex(j => OpFree(hs.Steps[j].op) && !hs.OpInFlight(hs.Steps[j].op)) is int rq && rq >= 0) // a repeat goes before the agent's next step
+                {
+                    int j = hs.RepeatQ[rq]; hs.RepeatQ.RemoveAt(rq); var rs0 = hs.Steps[j]; Noise("repeat", rs0, "the same again"); yield return Wait(rs0.gapS);
+                    if (OpFree(rs0.op)) { var rr = new StepRes(); yield return PlayStep(rs0, true, rr); if (rr.Given && !rr.Done) hs.Flights.Add(new Flight { Step = j, Repeat = true, Mark = rr.Mark, At = Time.realtimeSinceStartup, Op = rs0.op == "cell" ? -1 : (int)Op.Parse(rs0.op) }); else if (!rr.Given) Given(rs0, null, false, "", $"the repeat gave nothing: {rr.Why}"); }
+                    continue;
+                }
                 int pick = NextStep(out int over);
                 if (pick < 0) { BlockedFrame(); yield return Wait(0.2f); continue; }
                 var s = hs.Steps[pick]; cur.Decisions++;
@@ -113,7 +127,7 @@ namespace Suborned.Play
                     if (s.idleS > 0f) { Noise("idle", s, $"{s.idleS:0.0} s"); yield return Wait(s.idleS); }
                     if (s.turn != 0) { Noise("turn", s, s.turn < 0 ? "Q" : "E"); cur.Turns++; yield return Keys(new[] { s.turn < 0 ? Key.Q : Key.E }, 2); yield return Wait(0.4f); }
                     if (s.switchTo >= 0 && s.switchTo < 4) { bool centre = (s.i & 1) == 0; Noise("switch", s, $"looks at the {Op.Name((OpId)s.switchTo)}{(centre ? " (centred)" : "")}"); yield return SelectOp(s.switchTo, centre); yield return Wait(0.6f + (s.gapS % 1f)); }
-                    if (s.peekS > 0f && !h.Following) { Noise("third-person", s, $"{s.peekS:0.0} s"); yield return Keys(new[] { Key.T }, 2); yield return Wait(s.peekS); if (h.Following) yield return Keys(new[] { Key.T }, 2); yield return Wait(0.5f); }
+                    if (s.peekS > 0f && !h.Following) yield return Peek(s);
                     if (!Ready(pick)) continue; // the world moved while the person dithered
                 }
                 else yield return Wait(1.5f); // a retry: a beat to look again
@@ -124,20 +138,21 @@ namespace Suborned.Play
                 if (res.Given)
                 {
                     hs.Issued[pick] = h.Game.Tick;
-                    if (res.Done) { Resolve(pick, 'd'); continue; }
-                    hs.Flight = pick; hs.FlightMark = res.Mark; hs.FlightAt = Time.realtimeSinceStartup; hs.FlightSeenPending = false; hs.FlightOp = s.op == "cell" ? -1 : (int)Op.Parse(s.op);
+                    if (res.Done) { Given(s, null, true, "", res.Why.Length > 0 ? res.Why : "nothing to give: already so"); Resolve(pick, 'd'); continue; }
+                    var fl = new Flight { Step = pick, Mark = res.Mark, At = Time.realtimeSinceStartup, Op = s.op == "cell" ? -1 : (int)Op.Parse(s.op) }; hs.Flights.Add(fl);
                     if (!clean && s.cancel)
                     {
                         yield return Wait(s.cancelS); FlightFrame();
-                        int ck = hs.FlightOp; var cop = ck >= 0 ? h.Game.Ops[ck] : null;
+                        int ck = fl.Op; var cop = ck >= 0 ? h.Game.Ops[ck] : null;
                         bool live = cop != null && (cop.Busy != null || cop.Act != null || cop.Walk != null || h.PendingOf(ck).verb.Length > 0);
                         if (!live) Noise("cancel", s, $"X {s.cancelS:0.0} s after giving it: too late, nothing to stop");
                         else
                         {
-                            Noise("cancel", s, $"stopped {s.cancelS:0.0} s after giving it (X); given again later");
-                            yield return Stop(s.op);
+                            bool redirect = s.cancelBy == "redirect";
+                            Noise("cancel", s, redirect ? $"sent elsewhere {s.cancelS:0.0} s after giving it (a ground click {s.cancelDx:0},{s.cancelDy:0} px off); given again later" : $"stopped {s.cancelS:0.0} s after giving it (X); given again later");
+                            if (redirect) yield return Redirect(ck, new Vector2(s.cancelDx, s.cancelDy)); else yield return Stop(s.op);
                             if (hs.Mark[pick] == 'd') hr.Done--;
-                            hs.Flight = -1; hs.Resolved[pick] = false; hs.Mark[pick] = '-'; hs.Issued[pick] = -1;
+                            hs.Flights.Remove(fl); hs.Resolved[pick] = false; hs.Mark[pick] = '-'; hs.Issued[pick] = -1; hs.RepeatQ.Remove(pick); hs.Repeated[pick] = false; // undone: its repeat waits for the real one
                         }
                     }
                     continue;
@@ -146,23 +161,49 @@ namespace Suborned.Play
             }
         }
 
-        void Resolve(int i, char mark) { hs.Resolved[i] = true; hs.Mark[i] = mark; if (hs.Flight == i) hs.Flight = -1; var hr = cur.Human; if (hr != null) { if (mark == 'd') hr.Done++; else hr.Skipped++; } }
+        void Resolve(int i, char mark)
+        {
+            hs.Resolved[i] = true; hs.Mark[i] = mark; hs.Flights.RemoveAll(f => f.Step == i && !f.Repeat); var hr = cur.Human; if (hr != null) { if (mark == 'd') hr.Done++; else hr.Skipped++; }
+            if (mark == 'd' && hs.Steps[i].repeat && !hs.Repeated[i]) { hs.Repeated[i] = true; hs.RepeatQ.Add(i); }
+        }
         void Settle(HumanRes hr) { hr.Traces.Add(hs.Trace); }
 
         /// <summary>A step in flight (given to the host): done when the engine takes a matching order; given back for a retry when the engine refuses
         /// it, or when nothing came of it (no order, and the host is not walking the agent in to give it).</summary>
-        void FlightFrame()
+        void FlightFrame() { foreach (var f in hs.Flights.ToArray()) FlightOne(f); }
+
+        void FlightOne(Flight f)
         {
-            int i = hs.Flight; if (i < 0) return; var s = hs.Steps[i]; var g = h.Game;
-            for (int n = hs.FlightMark; n < g.Orders.Count; n++)
+            int i = f.Step; var s = hs.Steps[i]; var g = h.Game; Order other = null; bool otherOk = false;
+            for (int n = f.Mark; n < g.Orders.Count; n++)
             {
-                var (o, ok, code, _) = g.Orders[n]; if (!EngineMatch(o, s)) continue;
+                var (o, ok, code, _) = g.Orders[n];
+                if (!EngineMatch(o, s)) { if (other == null && o != null && o.Do != "drive" && (s.op == "cell" || o.Op == s.op)) { other = o; otherOk = ok; } continue; } // what the game gave instead (Q-INTENT)
+                Given(s, o, ok, code, f.Repeat ? "the repeat" : "");
+                hs.Flights.Remove(f); if (f.Repeat) return;
                 if (ok) { Resolve(i, 'd'); return; }
-                hs.Flight = -1; hs.Issued[i] = -1; hs.FlightMark = g.Orders.Count; if (hs.Tries[i] >= HumanTries) { Resolve(i, 's'); Noise("skip", s, $"refused {hs.Tries[i]} times: {code}"); } return;
+                hs.Issued[i] = -1; if (hs.Tries[i] >= HumanTries) { Resolve(i, 's'); Noise("skip", s, $"refused {hs.Tries[i]} times: {code}"); } return;
             }
-            bool pend = hs.FlightOp >= 0 && h.PendingOf(hs.FlightOp).verb.Length > 0; if (pend) hs.FlightSeenPending = true;
-            float age = Time.realtimeSinceStartup - hs.FlightAt;
-            if (!pend && age > HumanConfirmS || age > HumanFlightS) { hs.Flight = -1; hs.Issued[i] = -1; if (hs.Tries[i] >= HumanTries) { Resolve(i, 's'); Noise("skip", s, hs.FlightSeenPending ? "walked in, never given" : "no order came of it"); } }
+            bool pend = f.Op >= 0 && h.PendingOf(f.Op).verb.Length > 0; if (pend) f.SeenPending = true;
+            float age = Time.realtimeSinceStartup - f.At;
+            if (!pend && age > HumanConfirmS || age > HumanFlightS)
+            {
+                string why = other != null ? "not what was meant" : f.SeenPending ? "walked in, never given" : "no order came of it";
+                Given(s, other, otherOk, "", f.Repeat ? "the repeat: " + why : why);
+                hs.Flights.Remove(f); if (f.Repeat) return;
+                hs.Issued[i] = -1; if (hs.Tries[i] >= HumanTries) { Resolve(i, 's'); Noise("skip", s, why); }
+            }
+        }
+
+        /// <summary>The "given" event of a try: what the bot meant (the step) against what the game gave (the engine order, or nothing).</summary>
+        void Given(HumanStep s, Order o, bool ok, string code, string detail)
+        {
+            var hr = cur?.Human; if (hr == null) return; var g = h.Game;
+            hr.Counts["given"] = (hr.Counts.TryGetValue("given", out var n) ? n : 0) + 1;
+            if (hr.Events.Count >= HumanMaxEvents) return;
+            string to = o == null ? "" : o.Point is Pt pt ? $"{pt.X},{pt.Y}" : o.To ?? "";
+            hr.Events.Add(new HEvent { T = Time.realtimeSinceStartup - rowStart, Tick = g?.Tick ?? 0, Kind = "given", Route = hs?.Route ?? "", Step = s.i, Op = s.op, Act = s.act, Target = s.target.Length > 0 ? s.target : s.place.Length > 0 ? s.place : s.xy ? $"{s.x},{s.y}" : "", Detail = detail,
+                Gave = o != null, GaveOp = o?.Op ?? "", GaveAct = o?.Do ?? "", GaveTarget = o?.Target ?? "", GaveTo = to, GaveOk = ok, GaveCode = code ?? "" });
         }
 
         /// <summary>A step whose agent has not been free for HumanBlockedS since it fell due is given up (an agent down, inside for good, or held).</summary>
@@ -228,6 +269,7 @@ namespace Suborned.Play
         {
             var g = h.Game;
             if (k >= 0) yield return SelectOp(k, false);
+            else if (s.act == "go" && Enumerable.Range(0, 4).FirstOrDefault(j => g.Ops[j].InCar) is int kc && g.Ops[kc].InCar) yield return SelectOp(kc, false); // Go is given from the car, by one aboard
             var found = new Found[1]; yield return FindTarget(s, k, found);
             var f = found[0]; if (f?.P == null) { res.Why = "nothing near offers it"; yield break; }
             var on = new bool[1]; yield return OnScreen(f.P.Anchor, k, on); if (!on[0]) { res.Why = "the thing would not come on screen"; yield break; }
@@ -329,6 +371,44 @@ namespace Suborned.Play
             return -1;
         }
 
+        // ---------------------------------------------------------------- third person (T), and Sky's rule on it
+
+        /// <summary>A look through third person: T on the selected agent, nothing pressed for the look's seconds, T back. Sky (2026-10-22, after
+        /// 0.2.56): "when I go third person, it shouldn't stop the character walking / running or doing whatever action they were until I intervene."
+        /// The bot presses nothing in between, so an act under way that ends early with a cancel, a drive sample that moves the agent, or a move for
+        /// it in the orders (or the Tech's loop let go) is the host's doing: Q-TP-KEEP.</summary>
+        IEnumerator Peek(HumanStep s)
+        {
+            var g = h.Game; int k = (int)h.Agent; if (k < 0 || k > 3 || !h.Selected[k]) yield break; var op = g.Ops[k];
+            if (op.Down || op.Inside || op.InCar) yield break; // T on an agent who can't be taken only pops a refusal
+            var busy = op.Busy; int busyEnd = op.BusyEnd; var act = op.Act; bool loop = k == (int)OpId.Tech && g.LoopOn; int mark = g.Orders.Count; var from = op.Pos;
+            string had = busy != null ? $"{busy.Do} {busy.Target}".Trim() : act != null ? $"walking in to {act.Do} {act.Target}".Trim() : loop ? "holding the loop" : op.Walk != null ? "walking" : "";
+            Noise("third-person", s, $"{s.peekS:0.0} s behind the {Op.Name((OpId)k)}{(had.Length > 0 ? $", {had}" : "")}");
+            yield return Keys(new[] { Key.T }, 2); yield return Wait(s.peekS);
+            string lost = TpLost(k, busy, busyEnd, act, loop, mark, from);
+            if (h.Following) yield return Keys(new[] { Key.T }, 2);
+            yield return Wait(0.3f); lost ??= TpLost(k, busy, busyEnd, act, loop, mark, from); // the let-go too
+            if (lost != null) yield return Hit("Q-TP-KEEP", $"{Op.Name((OpId)k)}:{busy?.Do ?? act?.Do ?? (loop ? "loop" : "")}", "Third person stopped an act", "an act under way when T is pressed goes on until the player intervenes (Sky 2026-10-22)", lost, h.frame.World(g.Ops[k].Pos));
+        }
+
+        /// <summary>What third person cost agent k since `mark`, null nothing: the act it was on ended early, its walk-in dropped, or the loop let go,
+        /// with an order for it in between that the bot did not press for (a cancel, a move, a drive sample that moved it).</summary>
+        string TpLost(int k, Order busy, int busyEnd, Order act, bool loop, int mark, Pt from)
+        {
+            var g = h.Game; var op = g.Ops[k]; string name = Op.Name((OpId)k), by = "";
+            for (int n = mark; n < g.Orders.Count && by.Length == 0; n++)
+            {
+                var (o, ok, _, _) = g.Orders[n]; if (o == null || o.Op != name || !ok) continue;
+                if (o.Do is "cancel" or "move") by = o.Do; else if (o.Do == "drive" && !o.Release && o.Point is Pt p && G.Dist(p, from) > TpMovedCm) by = "a drive sample that moved it";
+            }
+            if (by.Length == 0) return null;
+            string clock = HandoverHost.MissionClock(g.Tick);
+            if (busy != null && !ReferenceEquals(op.Busy, busy) && g.Tick < busyEnd - 1) return $"the {name}'s {busy.Do} {busy.Target} ended at {clock}, {(busyEnd - g.Tick) / (float)Game.Hz:0.0} s early, after {by} the bot never gave";
+            if (act != null && op.Act == null && op.Busy?.Do != act.Do) return $"the {name}'s walk-in to {act.Do} {act.Target} dropped at {clock}, after {by} the bot never gave";
+            if (loop && !g.LoopOn) return $"the Tech's loop let go at {clock}, after {by} the bot never gave";
+            return null;
+        }
+
         // ---------------------------------------------------------------- finding the thing
 
         sealed class Found { public HandoverHost.Pickable P; public string Locked = ""; }
@@ -425,6 +505,15 @@ namespace Suborned.Play
             return sp;
         }
 
+        /// <summary>A cancel as Sky mostly made one: a ground click `off` px (at 1080p) from the agent, a new walk that replaces the order.</summary>
+        IEnumerator Redirect(int k, Vector2 off)
+        {
+            if (k < 0) yield break; yield return SelectOp(k, false);
+            var q = h.View.WorldToScreenPoint(h.frame.World(h.Game.Ops[k].Pos)); if (q.z <= 0f) { yield return Keys(new[] { Key.X }, 2); yield break; }
+            var sp = OffThings(new Vector2(q.x, q.y) + off * Kpx); sp.x = Mathf.Clamp(sp.x, 90f, Screen.width - 90f); sp.y = Mathf.Clamp(sp.y, 90f, Screen.height - 90f);
+            cur.Moves++; yield return Click(sp);
+        }
+
         /// <summary>X: the selected agent's order stops (the hold preset's stop).</summary>
         IEnumerator Stop(string op) { if (op == "cell") yield break; yield return SelectOp((int)Op.Parse(op), false); yield return Keys(new[] { Key.X }, 2); }
 
@@ -477,8 +566,8 @@ namespace Suborned.Play
         {
             var hr = cur?.Human; if (hr == null) return; var g = h.Game;
             hr.Counts[kind] = (hr.Counts.TryGetValue(kind, out var n) ? n : 0) + 1;
-            if (hr.Events.Count < 400) hr.Events.Add(new HEvent { T = Time.realtimeSinceStartup - rowStart, Tick = g?.Tick ?? 0, Kind = kind, Route = hs?.Route ?? "", Step = s?.i ?? -1, Op = s?.op ?? "", Act = s?.act ?? "", Target = s == null ? "" : s.target.Length > 0 ? s.target : s.place, Detail = detail });
-            if (kind is not ("skip" or "panel-direct" or "backed-off")) lastNoise = (Time.realtimeSinceStartup, $"{kind}: {(s != null ? $"step {s.i} {Say(s)}" : "")}{(detail.Length > 0 ? $" ({detail})" : "")}");
+            if (hr.Events.Count < HumanMaxEvents) hr.Events.Add(new HEvent { T = Time.realtimeSinceStartup - rowStart, Tick = g?.Tick ?? 0, Kind = kind, Route = hs?.Route ?? "", Step = s?.i ?? -1, Op = s?.op ?? "", Act = s?.act ?? "", Target = s == null ? "" : s.target.Length > 0 ? s.target : s.place, Detail = detail });
+            if (kind is not ("skip" or "panel-direct" or "backed-off" or "tp-check")) lastNoise = (Time.realtimeSinceStartup, $"{kind}: {(s != null ? $"step {s.i} {Say(s)}" : "")}{(detail.Length > 0 ? $" ({detail})" : "")}");
         }
 
         /// <summary>The indecision just before an anomaly (within HumanNoiseS), for its report line.</summary>
@@ -487,14 +576,16 @@ namespace Suborned.Play
         void WriteHuman(StringBuilder sb, HumanRes hr)
         {
             var traces = new List<string>(hr.Traces); if (hs != null && hr.Routes.Count > 0 && hr.Routes[^1] == hs.Route && traces.Count < hr.Routes.Count) traces.Add(hs.Trace);
-            sb.Append(", \"human\": {\"route\": \"").Append(Esc(hr.Route)).Append("\", \"group\": \"").Append(Esc(hr.Group)).Append("\", \"routes\": [").Append(string.Join(", ", hr.Routes.Select(r => "\"" + Esc(r) + "\""))).Append("], \"profile\": \"").Append(Esc(hr.Profile))
+            sb.Append(", \"human\": {\"route\": \"").Append(Esc(hr.Route)).Append("\", \"group\": \"").Append(Esc(hr.Group)).Append("\", \"thirdPerson\": ").Append(hr.ThirdPerson ? "true" : "false").Append(", \"routes\": [").Append(string.Join(", ", hr.Routes.Select(r => "\"" + Esc(r) + "\""))).Append("], \"profile\": \"").Append(Esc(hr.Profile))
               .Append("\", \"steps\": ").Append(hr.Steps).Append(", \"done\": ").Append(hr.Done).Append(", \"skipped\": ").Append(hr.Skipped).Append(", \"trace\": \"").Append(Esc(string.Join(" > ", traces))).Append('"')
               .Append(", \"counts\": {").Append(string.Join(", ", hr.Counts.Select(kv => $"\"{Esc(kv.Key)}\": {kv.Value}"))).Append("}, \"events\": [");
             for (int i = 0; i < hr.Events.Count; i++)
             {
                 var e = hr.Events[i];
                 sb.Append(i == 0 ? "\n    " : ",\n    ").Append("{\"t\": ").Append(F(e.T)).Append(", \"tick\": ").Append(e.Tick).Append(", \"clock\": \"").Append(HandoverHost.MissionClock(e.Tick)).Append("\", \"kind\": \"").Append(Esc(e.Kind)).Append("\", \"route\": \"").Append(Esc(e.Route))
-                  .Append("\", \"step\": ").Append(e.Step).Append(", \"op\": \"").Append(Esc(e.Op)).Append("\", \"act\": \"").Append(Esc(e.Act)).Append("\", \"target\": \"").Append(Esc(e.Target)).Append("\", \"detail\": \"").Append(Esc(e.Detail)).Append("\"}");
+                  .Append("\", \"step\": ").Append(e.Step).Append(", \"op\": \"").Append(Esc(e.Op)).Append("\", \"act\": \"").Append(Esc(e.Act)).Append("\", \"target\": \"").Append(Esc(e.Target)).Append("\", \"detail\": \"").Append(Esc(e.Detail)).Append('"');
+                if (e.Kind == "given") sb.Append(", \"gave\": ").Append(!e.Gave ? "null" : $"{{\"op\": \"{Esc(e.GaveOp)}\", \"act\": \"{Esc(e.GaveAct)}\", \"target\": \"{Esc(e.GaveTarget)}\", \"to\": \"{Esc(e.GaveTo)}\", \"ok\": {(e.GaveOk ? "true" : "false")}, \"code\": \"{Esc(e.GaveCode)}\"}}");
+                sb.Append('}');
             }
             sb.Append(hr.Events.Count > 0 ? "\n  ]}" : "]}");
         }

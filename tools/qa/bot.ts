@@ -58,8 +58,10 @@ export function planRows(raw: unknown, night: string, o: { rows?: number; minute
 export type BotAnomaly = { check: string; key: string; title: string; expected: string; observed: string; tick: number; clock: string; at: [number, number]; shot: string; script: string; /** Suture's offline regrade (grade.ts): its cause, severity and plain words win over the player's */ grade?: Grade;
   /** human rows: the indecision just before it (the latest cancel, abandon, misclick, re-order, wrong wedge ... within HUMAN_NOISE_S), e.g. "misclick 2.1 s before: step 7 scout listen waitress" */ noise?: string };
 /** One indecision the human row acted out (BotRun.Human), in the row's report: when, which step of which route, what. */
-export type HumanEvent = { t: number; tick: number; clock: string; kind: string; route: string; step: number; op: string; act: string; target: string; detail: string };
-export type HumanReport = { route: string; group: string; routes: string[]; profile: string; steps: number; done: number; skipped: number; counts: Record<string, number>; events: HumanEvent[];
+export type HumanEvent = { t: number; tick: number; clock: string; kind: string; route: string; step: number; op: string; act: string; target: string; detail: string;
+  /** kind "given" (Suture's Q-INTENT): what the game gave for the try whose step is op/act/target (the bot's intent); null when nothing came of it.
+   *  `to` is a move's point "x,y" (engine cm) or its named place */ gave?: { op: string; act: string; target: string; to: string; ok: boolean; code: string } | null };
+export type HumanReport = { route: string; group: string; /** the row uses third person now and then (the profile's row model) */ thirdPerson?: boolean; routes: string[]; profile: string; steps: number; done: number; skipped: number; counts: Record<string, number>; events: HumanEvent[];
   /** each step as it ended: d done (given), s skipped (refused or blocked too long), - never reached; with its tries */ trace: string };
 export type BotReportRow = {
   name: string; policy: string; seed: number; status: string; error?: string; preset: string; seconds: number; endTick: number; outcome: string; failCode: string; cardHead: string;
@@ -79,6 +81,7 @@ export const CHECK_META: Record<string, { severity: Severity; owner: string }> =
   'Q-FEET': { severity: 'S3', owner: 'Latch / Splice (walk file)' }, 'Q-SOLID': { severity: 'S3', owner: 'Latch / Pulse (paths)' },
   'Q-ERR': { severity: 'S1', owner: 'Latch' }, 'Q-FRAME': { severity: 'S4', owner: 'Redline' }, 'Q-MEM': { severity: 'S4', owner: 'Latch (Redline profiles)' },
   'Q-STUCK': { severity: 'S1', owner: 'Latch / Keel' }, 'Q-BOT': { severity: 'S1', owner: 'Latch' },
+  'Q-TP-KEEP': { severity: 'S2', owner: 'Latch' }, // human rows: T stopped an act the bot never touched (Sky 2026-10-22)
 };
 
 /** The findings of one row: one per anomaly the player kept (its replay and shot ride along), and a row that broke or never ran. */

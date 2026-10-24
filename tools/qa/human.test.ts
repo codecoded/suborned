@@ -184,3 +184,38 @@ test('the player reads every field the tape writes (BotRun.HumanStep and HumanTa
   expect([...fields('HumanStep')].sort()).toEqual(Object.keys(t.steps[0]!).sort());
   const tape = fields('HumanTape'); for (const k of Object.keys(t)) if (k !== 'profile') expect(tape.has(k)).toBe(true); // the profile rides along for the report's reader, not the player
 });
+
+test('repeat: only calm acts on a target (never a move, an entry, a take, a board, a shot), at the profile\'s rate; Suture\'s file feeds it', () => {
+  const acts = ['watch', 'listen', 'turn', 'loop', 'enter', 'take', 'board', 'fire', 'move'];
+  const orders: RouteOrder[] = Array.from({ length: 4500 }, (_, i) => ord(i * 100, 'fixer', acts[i % acts.length]!, { target: 'waitress', to: [0, 0] }));
+  const t = noise(stepsOf(orders), { ...DEFAULT_PROFILE, repeatProb: 0.22 }, 8, -1);
+  expect(t.filter(s => s.repeat).every(s => ['watch', 'listen', 'turn', 'loop'].includes(s.act))).toBe(true);
+  const calm = t.filter(s => ['watch', 'listen', 'turn', 'loop'].includes(s.act)); expect(Math.abs(calm.filter(s => s.repeat).length / calm.length - 0.22)).toBeLessThan(0.03);
+  expect(noise(stepsOf([ord(0, 'scout', 'watch')]), { ...DEFAULT_PROFILE, repeatProb: 1 }, 1, -1)[0]!.repeat).toBe(false); // no target: nothing to repeat on
+  expect(readProfile({ values: { repeatProb: 0.221 } }).profile.repeatProb).toBe(0.221);
+});
+
+test('cancel: mostly a new order sent elsewhere (Sky: 230 of 244 moves, 43 of 54 acts), else the stop key; the redirect is 110-220 px off', () => {
+  const orders: RouteOrder[] = Array.from({ length: 4000 }, (_, i) => ord(i * 100, 'tech', i % 2 ? 'loop' : 'move', { target: 'entrance', to: [0, 0] }));
+  const t = noise(stepsOf(orders), { ...DEFAULT_PROFILE, cancelProb: 1 }, 3, -1);
+  const share = (act: string) => { const c = t.filter(s => s.act === act); return c.filter(s => s.cancelBy === 'x').length / c.length; };
+  expect(Math.abs(share('move') - 14 / 244)).toBeLessThan(0.02); expect(Math.abs(share('loop') - 11 / 54)).toBeLessThan(0.03);
+  for (const s of t.filter(x => x.cancelBy === 'redirect')) { const r = Math.hypot(s.cancelDx, s.cancelDy); expect(r).toBeGreaterThanOrEqual(109.9); expect(r).toBeLessThanOrEqual(220.1); }
+  expect(noise(stepsOf(orders.slice(0, 50)), { ...DEFAULT_PROFILE, cancelProb: 0 }, 3, -1).every(s => s.cancelBy === '' && !s.cancel)).toBe(true);
+});
+
+test('third person: a row uses it or not (about 21% of rows), and only those rows look through it, at the in-row rate, on every route they play', () => {
+  const p = prof({ thirdPersonRowProb: 0.21, thirdPersonInRowProb: 0.27 });
+  const tapes = Array.from({ length: 300 }, (_, seed) => humanTape(seed, routes, p)), users = tapes.filter(t => t.thirdPerson);
+  expect(Math.abs(users.length / tapes.length - 0.21)).toBeLessThan(0.06);
+  for (const t of tapes.filter(x => !x.thirdPerson)) expect([...t.steps, ...t.alts.flatMap(a => a.steps)].every(s => s.peekS === 0)).toBe(true);
+  const looks = users.flatMap(t => t.steps); expect(Math.abs(looks.filter(s => s.peekS > 0).length / looks.length - 0.27)).toBeLessThan(0.04);
+  expect(users.some(t => t.alts.some(a => a.steps.some(s => s.peekS > 0)))).toBe(true);
+});
+
+test('the player writes each try\'s "given" event with the fields Q-INTENT reads (gave: op, act, target, to, ok, code, or null)', () => {
+  const cs = readFileSync(join(ROOT, 'unity/Assets/Suborned/Runtime/Play/BotRun.Human.cs'), 'utf8');
+  const line = cs.split('\n').find(l => l.includes('if (e.Kind == "given")')) ?? '';
+  for (const k of ['op', 'act', 'target', 'to', 'ok', 'code']) expect(line).toContain(`\\"${k}\\": `);
+  expect(line).toContain('"null"');
+});
