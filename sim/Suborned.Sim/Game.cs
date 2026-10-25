@@ -43,6 +43,10 @@ namespace Suborned.Sim
         /// from `from` to `until` (mission seconds), read as a unit holding that door (Game.DoorHeld, HeldUntil). For a rule play can't reach
         /// on a block, as `untie` cuts a tie for a test. Never in a route or a session; empty, every start hashes as before.</summary>
         public readonly List<(string door, int from, int until)> Holds = new List<(string, int, int)>();
+        /// <summary>Test only (brief 059, Keel): Vale's driver neither drives him away (Sky 3a) nor round: Vale waits at his car at the official
+        /// bay to the close, as before engine 0.32.0. For the scenarios of other systems (takedowns, the crowd, the fail camera) that need the
+        /// pickup after 6:13, as `holds` places a held scene. Never in a route or a session; off, every start hashes as before.</summary>
+        public bool ValeWaits;
         /// <summary>Brief 025 playground (EXPERIMENTAL): the driven agent's switches for this run, over the rulebook's cell.drive: pace (per mille
         /// of every pace, 250..4000), onBusy (cancel, hold), onRelease (stand, resume), gap (cm, 0 off). Null: the rulebook's. Hashed when set.</summary>
         public int? DrivePace, DriveGap; public string? DriveOnBusy, DriveOnRelease;
@@ -59,7 +63,8 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "valeWaits");
+            if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
             {
                 fl.Only("on", "healthScale", "pips", "stances", "then", "close", "charge", "field", "policeWarning", "hostilesFireMoving", "coverSnap", "kite", "loadout");
@@ -156,6 +161,7 @@ namespace Suborned.Sim
                 w.EndObj();
             }
             if (Holds.Count > 0) { w.OpenArr("holds"); foreach (var (d, f, u) in Holds) w.Obj().Prop("door", d).Prop("from", f).Prop("until", u).EndObj(); w.EndArr(); } // test only: likewise
+            if (ValeWaits) w.Prop("valeWaits", true); // brief 059, test only: likewise
             return w.EndObj().ToString();
         }
     }
@@ -316,7 +322,7 @@ namespace Suborned.Sim
                 }
             RivalAt = T(Start.RivalsAtS ?? rivalsArriveS);
             CurStand = S.Stands[0]; // brief 059 K6: the getaway car starts at its first stand (getaway.car)
-            if (!Range) InitCrew(); // brief 059 K7: the crew's timetable, computed back from the park
+            if (!Range) { InitCrew(); if (Driver.Turned) driverTurnedAt = 0; } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
 
             blockPath = new Path(S.CarBlockPath); // car.drive (brief 023): the block move keeps to drivable cells, from the pickup to the block's stand
             var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
@@ -429,12 +435,13 @@ namespace Suborned.Sim
         void CarTimeline()
         {
             if (valeDriveStart < 0 || carDrive == null || carStoppedAt.HasValue) return;
-            if (!mouthDecided && carMouthMm >= 0 && CarDriveMm(Tick) >= carMouthMm)
+            int kNow = Tick - valeDriveStart;
+            if (!mouthDecided && carMouthMm >= 0 && kNow >= 0 && kNow + 1 < carDrive.Length && carDrive[kNow + 1] > carMouthMm) // its next tick would pass the mouth: decide now, still on the road
             {
                 mouthDecided = true;
                 if (DriveTaken())
                 {
-                    int k = Math.Max(0, Math.Min(Tick - valeDriveStart, carDrive.Length - 1));
+                    int k = Math.Max(0, Math.Min(kNow, carDrive.Length - 1));
                     var cut = new long[k + 1]; Array.Copy(carDrive, cut, k + 1); carDrive = cut; CarAtMouth = true;
                     Note("car.blocked", "Our car is on the service drive: the driver stops at its mouth on Apron Road.");
                 }
@@ -452,10 +459,16 @@ namespace Suborned.Sim
             for (long at = carMouthMm; at <= carToService.Length; at += 100) if (G.Within(carToService.At(at), st.CarCell, 200)) return true; // a stand on the drive the driver must use
             return false;
         }
-        /// <summary>The mm along the route to the service bay where it leaves the carriageway for the drive (the drive's mouth), or -1.</summary>
+        /// <summary>The mm along the route to the service bay where it leaves the carriageway for the drive (the drive's mouth: the last road
+        /// point after the official bay's own cells), or -1.</summary>
         long MouthMm(Path p)
         {
-            for (long at = 0; at <= p.Length; at += 50) if (S.Drive.SurfaceAt(p.At(at)) != 'r') { long back = Math.Max(0, at - 50); return back; }
+            bool road = false;
+            for (long at = 0; at <= p.Length; at += 50)
+            {
+                bool r = S.Drive.SurfaceAt(p.At(at)) == 'r';
+                if (r) road = true; else if (road) return Math.Max(0, at - 50);
+            }
             return -1;
         }
         /// <summary>engine 0.24.0 (brief 043 §6): the rerouted patrol's false orders run out and it is back on its entrance sweep (PatrolPose
@@ -483,7 +496,7 @@ namespace Suborned.Sim
             }
             // brief 059 K1, K2 (car.pickup.valeIn): he gets in. With his driver at the car, unturned he drives Vale away (the mission is over, Sky 3a);
             // turned, he drives Vale round to the service bay. With no driver (down) or the car disabled, Vale waits by it.
-            if (Tick == T(valeAtCarS) + T(R.ValeInS) && Vale == ValeAt.Pickup && !Driver.Down && !OfficialOut)
+            if (Tick == T(valeAtCarS) + T(R.ValeInS) && Vale == ValeAt.Pickup && !Driver.Down && !OfficialOut && !Start.ValeWaits)
             {
                 Vale = ValeAt.InCar;
                 if (!Driver.Turned)

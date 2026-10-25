@@ -21,7 +21,7 @@ namespace Suborned.Sim
         /// longer; was to the rivals' park, watching at 0:56.0), then steps back to where she stood.</summary>
         static Order[] DriverOpening() => new[] {
             new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, new Pt(7625, -2880)), Mv(0, Scout, "d:Meet driver"), Mv(0, Fixer, "crew:fixer"),
-            Act(166, Tech, "loop", "pickup"), MvTo(776, Scout, new Pt(8250, -3100)) }; // engine 0.28.0: the driver's Watch (0:57.6) dropped: no Watch to give on him (brief 054 §2.1)
+            Act(166, Tech, "loop", "pickup"), MvTo(776, Scout, TipPt) }; // brief 059: the tip at the rival car where it parks // engine 0.28.0: the driver's Watch (0:57.6) dropped: no Watch to give on him (brief 054 §2.1)
         const string Guard29 = "p-records-office-29", Guard74 = "p-records-office-74", Guard65 = "p-records-office-65", Clerk39 = "p-records-office-39";
         static bool ToldBy(Person q, Person by) => q.Memory.Exists(m => m.Act == "told" && m.By == by.Id);
 
@@ -116,7 +116,7 @@ namespace Suborned.Sim
                     r.To(g.Tick + T(30));
                     r.Is(!a.Told.Contains("p-records-office-54"), "and her workmate is never told");
                 }
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N84", "—", "A cancelled Enter comes out by a door no unit holds (Aster 2026-10-16, brief 013 E3; rulebook response: no exit through a held door). Waymark's orders (2026-10-19, the west-face door): the guard knocked out unseen at his post at 4:25.0 (brief 055; was 4:00.1, before guard 74 walked the forecourt) and left; guard 73 finds him and radios it (5:01.1, landing 5:06.1: the door planting cuts her first look, brief 055 §7); the Enforcer goes in at the landing, before the scene unit arrives. The unit holds the public door from 5:12.1. The player cancels the Enter: the Enforcer comes out at the service lane, not through the held public door.", r =>
             {

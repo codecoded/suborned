@@ -143,6 +143,7 @@ namespace Suborned.Sim
         void LandBoard(Op op)
         {
             if (op.Down) return;
+            if (getawayPath != null || !G.Within(op.Pos, Car, R.AtReachCm)) { Note("board.missed", $"The getaway car is gone from beside the {Sim.Op.Name(op.Id)}: nobody boards."); return; } // brief 059: it drove off while he got in
             var seat = GetawaySeat; string name = Sim.Op.Name(op.Id), with = ""; // brief 059 K6: the stand it is at
             op.InCar = true; op.Pos = seat; op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             if (op.Carrying.HasValue)

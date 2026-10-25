@@ -115,7 +115,7 @@ namespace Suborned.Sim
                 r.Eq((l.WordUncapped, l.Word), (3, g.R.WordStandingCap), "the word nets +3 and moves the district +2 (the cap)");
                 r.Eq((l.From, l.To, l.Drift), (2, 4, 0), "+2 → +4");
                 r.Eq((l.Band, l.Cause, l.Who), ("hero", "word-helped", Inez), "Hero, because helped people told their ties (the line names the first teller by person id: Inez, p-cafe-14)");
-            }, Knowing(Driver, Inez, GuardR));
+            }, KeepVale(Knowing(Driver, Inez, GuardR))); // brief 059: the helped driver would drive Vale round at 6:13 and the tail end the run before the guard's Help
 
             Add("N92", "—", "Drift down (briefs/014/motive-standing.md rule 5): a district that starts at +5 (a campaign's Hero) and where nothing moves Standing this mission steps 1 back toward +2: +4, still Hero. Unkept Hero fades.", r =>
             {

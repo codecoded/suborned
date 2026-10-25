@@ -44,7 +44,7 @@ namespace Suborned.Sim
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
                     Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // as c022's route G-kill (2026-10-19, the door on the west face: the loop at 0:16.6, the watch at 0:46.2; were 0:13.6 and 0:35.5)
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
-                    MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), Mv(1920, Enf, "d:Getaway bay"));
+                    MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), MvTo(1920, Enf, new Pt(2400, -6000))); // brief 059: he waits with Vale south of the square, beyond the posted three's reach (at the getaway bay, with no final fight, they fire on the Vale holder)
                 const string Clerk = "p-records-office-09";
                 // engine 0.29.0 (brief 054 §9.1): under the people cone the clerks stepping out of the door after the chime face away from the body on
                 // the landing; they find it by the near sense (an open body within people-near-body-cm, any facing), as they did with 0.27.0's all-round sight
@@ -69,7 +69,7 @@ namespace Suborned.Sim
                 var o = fc?.Origin;
                 r.Is(o != null && o.Because == "confirmed" && o.Report.StartsWith("report:dead:", StringComparison.Ordinal) && o.Reporter?.Id == "camera:entrance" && o.Confirmer != null && o.Confirmer.Placed, $"the origin: the entrance camera's report of the dead guard, confirmed by a unit (got {o?.Report}, {o?.Because}, {o?.Reporter}, {o?.Confirmer})");
                 }
-            }, new Start { FinalFight = false });
+            }, new Start { FinalFight = false, ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N69", "—", "A takedown under the live entrance camera (Waymark §6): route G without the Loop. The camera is a watcher like any other: it records the act, its watcher reads the screen at the next scan and the report lands 3 s later (Alert 3, a takedown seen); nothing fails at the act or when he is out. At this level Alert 3 locks the Office doors: the Enter is refused, and the response comes by the dial. (The old guard-down rule is kept only for a guard shot: his missed mark calls the response, as gunfire's own rule.)", r =>
             {
@@ -152,7 +152,7 @@ namespace Suborned.Sim
                 r.Is(g.Units.Count(u => u.Robot) <= Math.Max(g.DialNow.A1Robots, g.DialNow.A2Robots) && g.Units.Count(u => !u.Robot && !u.Cordon && !u.Legacy) <= g.DialNow.A2Units * g.R.ResponseOfficers, "the dial's counts, never a second set");
                 r.Is(g.AlarmDestinations.SequenceEqual(dests), "the destinations stand as the first report set them");
                 r.Eq(g.Reported, 1, "one reported incident");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N71", "—", "A later report at the same Alert sends nothing (one incident, one dispatch): route G-KO, the guard knocked out unseen after his 2:30 mark and left at the post. His 4:00 mark lands (Alert 1: the level's robots); guard 74 finds him and radios it: a knockout stays Alert 1, so his report lands and the robots out stay out, with no second dispatch. A later report that raises the Alert tops the same dispatch up to the new level's counts (N62: the dead guard's report, Alert 1 to 2). His report is the body found, so its scene unit comes (rev 4, N74): that is the lockdown, not a dispatch.", r =>
             {
@@ -217,7 +217,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "alarm.dispatches") && g.SecurityArrives == land + T(g.DialNow.DispatchS), "the response: the unit the level's dispatch after the landing");
                 r.Is(!a.ActTrail && g.Trail == trail + g.R.WitnessTrail, "no assault Trail: the Take keeps its own");
                 r.Eq(g.Acts.Count(x => x.Take), 1, "one Take, one incident");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N74", "—", "A found body holds the scene (Motive rev 4 R4.1; Sky 2026-10-16): the guard knocked out unseen at his post; the card says that, found here, he would hold the Office door. The Tech lets the loop go, so the entrance camera reads him at its next scan: a body found. A unit of officers comes at Alert 1 (no robot reach for officers; not one of the dial's units) and holds the Office door, which he lies at: Enter is refused (door-held) from its arrival, through its check and 60 s sweep, until it stands down; the Alert stays 1 (a knockout), and at Alert 1 the sweep opens no stash.", r =>
             {
@@ -309,21 +309,21 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 // rivals from (8600, -3400), 2.8 m outside the pickup cone; the three's posts by the car within 15 m of the ambush
                 Orders(r, Mv(0, Enf, "d:Service lane"), MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), /* engine 0.28.0: the driver's Watch (0:62) dropped: no Watch to give on him, brief 054 §2.1 */
                     Mv(760, Fixer, "d:Boarding pavilion"), Mv(820, Scout, "d:Meet driver"), new Order { Tick = 820, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(838, Scout, "listen", Driver),
-                    MvTo(1270, Scout, new Pt(8600, -3400)), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals") /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it */, MvTo(2340, Scout, new Pt(1175, -4825)), MvTo(2340, Tech, new Pt(675, -4625)));
-                r.To(T(370));
-                r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the lane, its driver turned");
+                    MvTo(1270, Scout, TipPt), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals") /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it; brief 059: the tip at the rival car where it parks */, MvTo(2340, Scout, new Pt(1175, -4825)), MvTo(2340, Tech, new Pt(675, -4625)));
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: Vale gets in at 6:13 and is driven round
+                r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the service bay, its driver turned");
                 int near = 0; var vp = g.ValePos()!.Value; foreach (var w in g.Walkers) if (g.CrowdPos(w) is Pt p && G.Within(p, vp, g.R.WitnessRangeCm)) near++;
                 // the lane is not empty: someone stands within witness range of the car, so a Take outside it would be seen (Waymark 2026-10-19:
                 // three clerks at 6:10 on this tree; the check asks for one, since the crowd's own pace moves who is there)
                 r.Is(near >= 1, $"{near} people within witness range of the car");
-                Orders(r, Act(3700, Enf, "take"));
-                r.Done(Enf);
+                int there = DriveRound(r); // brief 059 (Sky 1a): the getaway car round behind Vale's
+                r.Do(Enf, "take"); int done = r.Op(Enf).BusyEnd; r.To(done - 1);
                 r.Is(!g.Acts.Exists(x => x.Take), "inside the car: nobody saw a Take, the driver no witness");
                 r.Eq(g.Alert, 0, "Alert 0");
-                Orders(r, MvTo(4080, Enf, new Pt(2400, -6000)), Act(4473, "cell", "panic"), Mv(4570, Enf, "d:Getaway bay"), Act(4699, Enf, "board", "car"), Act(4739, "cell", "go")); // c025: Board (with Vale, 4 s) and Go; brief 055: the panic at 4473, was 4470: the drawn solids make his walk to (2400, -6000) 0.2 s longer and the ambush springs at 4472
-                r.Is(!g.Acts.Exists(x => x.Take), "the escort: no kin of Vale near, nobody within 3 m of the grip");
-                r.Eq(g.Result, Outcome.Success, "route B wins");
-                r.Eq((g.Tick, g.Trail, g.Alert), (4739, 3, 0), "at 7:53.9 (Waymark's c025 route-b, 2026-10-21, engine 0.14.1), 3 T, Alert 0 (rulebook privacy, Sky 2026-10-16: the driver's Pay is private, so the clerk who saw it adds no witness Trail; it was 4 T)");
+                r.To(Math.Max(there, done));
+                r.FightItOut(120, Scout, Fixer, Tech); r.Extract();
+                r.Line(!g.Acts.Exists(x => x.Take), $"the escort (3.5 m) unseen: nobody within 3 m of the grip (brief 059: at 7:07 the clerks leaving by the service door stand within 3 m of it: {string.Join(", ", g.Acts.Where(x => x.Take).SelectMany(x => x.Noticed))}; Waymark times the carry)");
+                r.Line(g.Result == Outcome.Success, $"route B wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}; Waymark re-composes route B on engine 0.32.0)");
             });
 
             Add("N78", "—", "The escort seen (rev 4 R4.2): Vale taken inside his car in the lane (the driver turned), then walked straight at a clerk standing in the lane: within 3 m she sees the grip. A carry seen: +1 witness Trail and one step toward Menace at sight; her report lands at Alert 2. Workmate is not kin (rev 4): Vale's workmates further off see two men walking.", r =>
@@ -333,14 +333,15 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 r.To(Max(r.Send(Scout, "d:Meet driver"), r.Send(Fixer, "d:Boarding pavilion")));
                 r.Do(Scout, "listen", Driver); r.Done(Scout); /* engine 0.28.0: no Watch to give on the driver (brief 054 §2.1) */
                 TurnDriver(r);
-                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
-                r.To(T(370)); r.Do(Enf, "take"); r.Done(Enf);
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60));
+                int trail = g.Trail, standing = g.Standing; // brief 059: before the Take lands (the clerks leaving by the service door may see the grip at once)
+                r.Do(Enf, "take"); r.Done(Enf); // brief 059: in his car in the service bay
                 // the nearest person on the street now who is no accomplice, and walk Vale to her
                 Walker? near = null; long bd = long.MaxValue; var at = r.Op(Enf).Pos;
                 foreach (var w in g.Walkers) if (w.P != g.Driver && g.CrowdPos(w) is Pt p && g.S.Grid.Free(p)) { long d = G.D2(p, at); if (d < bd) { bd = d; near = w; } }
                 r.Is(near != null, "someone is on the street");
                 if (near == null) return;
-                int trail = g.Trail, standing = g.Standing;
                 for (int k = 0; k < 40 && !g.Acts.Exists(x => x.Take); k++) { if (g.CrowdPos(near) is Pt p) r.SendTo(Enf, g.S.Grid.NearestFree(p) ?? p); r.Wait(5); }
                 var a = g.Acts.FirstOrDefault(x => x.Take);
                 r.Is(a != null && a.Noticed.Contains(near.P.Id), $"{near.P.Id}, within 3 m, sees the grip");

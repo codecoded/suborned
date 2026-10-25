@@ -146,7 +146,7 @@ namespace Suborned.Sim
             }
             if (CrewOf(id) is CrewMember cm) // brief 059 K8: each member of the crew on foot, by his own cone (engine 0.19.0: the crew watches the street from its arrival)
             {
-                if (cm.Fight || !Up(cm) || !cm.OnFoot) { if (!cm.Fight) LoseTarget(cm.Gun); return; }
+                if (cm.Fight || !Up(cm) || !cm.OnFoot || CrewBrokenPre) { if (!cm.Fight) LoseTarget(cm.Gun); return; } // a broken crew makes for its car and fires nothing (Motive M059-3.5)
                 if (!RivalsDrawn && !R.Intent.RivalsStreet) return;
                 int nf = cm.Gun.NoFoeSince; PreFight(id, cm.Gun, MemberPose(cm)?.pos, p => MemberWatching(cm, p)); if (!RivalsDrawn && cm.Gun.Target.Length == 0) cm.Gun.NoFoeSince = nf; // no foe leaves its gun as it was (nothing reads NoFoeSince for the crew)
             }

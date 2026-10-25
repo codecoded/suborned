@@ -46,19 +46,34 @@ namespace Suborned.Sim
             return g.Tick;
         }
 
-        /// <summary>The rival crew arrives (3:10) by its car; the Enforcer, waiting beside it out of their way, fires on them as they come.</summary>
+        /// <summary>A shot's target is one of the rival crew (brief 059: five people, rival-1..5).</summary>
+        static bool CrewT(string id) => id.StartsWith("rival-", StringComparison.Ordinal);
+        /// <summary>Brief 059: the crew is five people; these operatives fire on "rivals" (the nearest member on the street) again each time one
+        /// goes down, until the crew breaks (more than half of it on the map down: Motive M059-3.5) or the limit passes.</summary>
+        static void FireUntilBroken(Run r, int limitS, params string[] ops)
+        {
+            var g = r.G; int end = g.Tick + T(limitS);
+            while (!g.Over && g.Tick < end && g.RivalsDelayMethod != "fire")
+            {
+                foreach (var op in ops) { var o = r.Op(op); if (!o.Down && o.Gun.Order.Length == 0 && o.Busy == null && o.Gun.W != null) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "fire", Target = "rivals" }); }
+                g.Step();
+            }
+        }
+
+        /// <summary>The rival crew arrives by its car and drops three who post round the cell's car (brief 059, 2:46); the Enforcer, waiting by the
+        /// square out of their way, fires on them as they post.</summary>
         static void FireOnArrivingRivals(Run r, bool once)
         {
             var g = r.G;
-            // c025 (brief 031): he waits outside the pickup camera's cone (Waymark's tip point) and walks beside the rival car as it parks
-            r.To(r.SendTo(Enf, new Pt(8600, -3400)));
-            r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), $"the rival crew is here at {Report.Clock(g.Tick)}");
-            r.To(r.SendTo(Enf, Beside(r, g.S.Stand(g.S.RivalsPark)) ?? g.S.Stand(g.S.RivalsPark)));
+            // brief 059: the crew's first bodies on the street are the posted three, round the cell's car at the square
+            r.To(r.SendTo(Enf, new Pt(2400, -3600)));
+            r.Is(r.Until(() => g.Crew[1].Mode == CrewMode.Posted, T(200)), $"the rival crew posts round our car at {Report.Clock(g.Tick)}");
             r.Do(Enf, "draw");
             r.Fire(Enf, "rivals");
-            r.Is(r.Until(() => r.Shots().Exists(x => x.by == Enf && x.target == "rivals"), T(10)), "the Enforcer fires on the crew");
+            r.Is(r.Until(() => r.Shots().Exists(x => x.by == Enf && CrewT(x.target)), T(10)), "the Enforcer fires on the crew");
             if (once) { r.Do(Enf, "cease"); r.Is(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "stance", Stance = "hold" }).ok, "he holds his fire"); return; } // engine 0.19.0: the crew sees the street and fires back (Sky's answer 3); hold keeps him from answering (cease alone stands weapons free down only until he is shot at)
-            r.Is(r.Until(() => g.RivalsDelayMethod == "fire", T(20)), $"the crew is driven back at {Report.Clock(g.Tick)}");
+            FireUntilBroken(r, 60, Enf);
+            r.Is(g.RivalsDelayMethod == "fire", $"the crew is driven back at {Report.Clock(g.Tick)}");
         }
 
         /// <summary>The patrol down, the Enforcer walks within reach of the rival crew its gunfire drew to the Office front and fires on them
@@ -69,8 +84,9 @@ namespace Suborned.Sim
             r.Is(r.Until(() => g.RivalsDrawn && g.RivalsPresent, T(30)), $"the gunfire draws the rival crew ({Report.Clock(g.Tick)})");
             r.To(r.SendTo(Enf, g.S.Grid.NearestFree(NearFront) ?? NearFront));
             if (waitForPeople) r.Is(r.Until(() => HeardBy(g, Enf, true) > 0, T(120)), $"people back on the street within reach at {Report.Clock(g.Tick)}");
-            r.Fire(Enf, "rivals");
-            r.Is(r.Until(() => g.RivalsDelayMethod == "fire", T(30)), $"the crew is driven back at {Report.Clock(g.Tick)}");
+            r.Until(() => g.Crew.Exists(m => m.OnFoot && !m.Gun.Down && G.Within(g.MemberPos(m, g.Tick), r.Op(Enf).Pos, r.Op(Enf).Gun.W!.MaxCm)), T(60)); // brief 059: the crew comes member by member
+            FireUntilBroken(r, 60, Enf);
+            r.Is(g.RivalsDelayMethod == "fire", $"the crew is driven back at {Report.Clock(g.Tick)}");
         }
         /// <summary>Between the shot corner and the Office front, 16 m from where the drawn rivals make for (d:Office approach). Re-sited
         /// 2026-10-19 with the door (brief 023; was (3600, -2000)).</summary>
@@ -89,7 +105,7 @@ namespace Suborned.Sim
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins through the ambush");
                 var bo = g.Log.FindAll(l => l.Code == "blocker.out"); var cf = g.Log.FindAll(l => l.Code == "car.free"); // moved here from N113 (2026-10-19)
-                r.Is(bo.Count == 1 && cf.Count >= 1 && cf[0].Tick >= bo[0].Tick, $"logged by code: blocker.out, then car.free ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
+                r.Is(bo.Count == 1 && (cf.Count == 0 || cf[0].Tick >= bo[0].Tick), $"logged by code: blocker.out, and car.free (if the car was held) after it (brief 059: the blocker can fall before he holds it) ({string.Join(", ", bo.Concat(cf).Select(l => l.Code + "@" + Report.Clock(l.Tick)))})");
                 r.Eq(g.Fights.Count, 1, "one fight: the final fight");
                 var f = g.Fights[0];
                 r.Is(f.Final && f.Public, "the final fight, and the public heard it");
@@ -200,7 +216,7 @@ namespace Suborned.Sim
                 PatrolShotDown(r);
                 if (apart) r.Is(r.Until(() => g.Fights.Count == 1, T(60)), $"the patrol's fight ends at {Report.Clock(g.Tick)}");
                 FireOnDrawnRivals(r, apart);
-                int first = r.Shots().Find(x => (x.by == Enf && x.target == "rivals") || (x.by == "rivals" && x.target == Enf)).tick;
+                int first = r.Shots().Find(x => (x.by == Enf && CrewT(x.target)) || (CrewT(x.by) && x.target == Enf)).tick;
                 int gap = first - r.Shots().FindLast(x => x.tick < first && (x.by == Enf || x.target == Enf)).tick;
                 r.Is(apart ? gap >= g.R.FightQuietTicks : gap < g.R.FightQuietTicks, $"the rivals' fight starts {gap / 10} s after the last shot at the patrol");
                 r.Is(r.Until(() => g.OpenFight == null, T(60)), $"the last fight ends at {Report.Clock(g.Tick)}");

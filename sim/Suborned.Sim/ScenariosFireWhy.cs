@@ -136,20 +136,22 @@ namespace Suborned.Sim
             Add("FW-SEEN", "—", "engine 0.25.0: HI-RIVALS: the calm crew takes the drawn Enforcer for the draw; he holsters at once; it stays on him for what it saw (seen), its first causes kept (drawn first)", r =>
             {
                 var g = r.G; Free(r, false);
-                r.To(r.SendTo(Enf, new Pt(8600, -3400)));
-                r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), "the rival crew is here");
-                var park = g.S.Stand(g.S.RivalsPark); var e = Beside(r, park) ?? park;
+                // brief 059: the lookout (rival-4) posts across Apron Road at 3:18, facing the official bay: the Enforcer stands 6 m in front of him, where the bay's watchers see his draw (Alert 2: the crew alerted, ai.intent.rivals)
+                r.Is(r.Until(() => g.Crew[3].Mode == CrewMode.Posted, T(200)), "the rival crew is here");
+                var post = g.MemberPos(g.Crew[3], g.Tick); var face = g.Crew[3].Base; long fl = Math.Max(1, G.Isqrt((long)face.X * face.X + (long)face.Y * face.Y));
+                var front = new Pt(post.X + (int)(face.X * 600L / fl), post.Y + (int)(face.Y * 600L / fl)); var e = g.S.Grid.NearestFree(front) ?? front;
                 r.To(r.SendTo(Enf, e));
+                r.Until(() => g.MemberWatching(g.Crew[3], r.Op(Enf).Pos), T(45)); // his beats turn him (and pace him 2 m): wait for the watch beat
                 r.Is(g.RivalsStreetWatching(r.Op(Enf).Pos), "he stands in the crew's cone");
-                r.Is(g.FireCauses("rivals", OpId.Enforcer).Length == 0, "holstered, the calm crew has no cause");
+                r.Is(g.FireCauses("rival-4", OpId.Enforcer).Length == 0, "holstered, the calm crew has no cause");
                 r.Do(Enf, "draw");
-                r.Is(r.Until(() => g.RivalsGun.Target == Enf || g.Over, T(6)), "the crew takes the drawn Enforcer");
-                var w0 = Why(r, Enf, "rivals");
+                r.Is(r.Until(() => g.Crew[3].Gun.Target == Enf || g.Over, T(6)), "the crew takes the drawn Enforcer");
+                var w0 = Why(r, Enf, "rival-4");
                 r.Is(w0.HasValue && w0.Value.Main == "drawn", $"for the draw ({(w0.HasValue ? Cs(w0.Value.First) : "-")})");
                 r.Do(Enf, "holster");
                 r.Is(r.Until(() => !r.Op(Enf).Gun.Drawn, T(3)), "he holsters");
                 r.Is(g.RivalsSawAct.Contains(Enf), "the crew saw him act");
-                var w = Why(r, Enf, "rivals");
+                var w = Why(r, Enf, "rival-4") ?? WhyAny(r, Enf, x => x.By.StartsWith("rival-", StringComparison.Ordinal)); // brief 059: his beats may turn rival-2 away a moment; another of the crew keeps him
                 r.Is(w.HasValue && w.Value.Causes.SequenceEqual(new[] { "seen" }), $"holstered, the crew's cause is what it saw: seen ({(w.HasValue ? Cs(w.Value.Causes) : "-")})");
                 r.Is(w.HasValue && w0.HasValue && w.Value.First.SequenceEqual(w0.Value.First) && w.Value.First[0] == "drawn", $"its first causes are kept ({(w.HasValue ? Cs(w.Value.First) : "-")})");
                 FireWhyLog(r);

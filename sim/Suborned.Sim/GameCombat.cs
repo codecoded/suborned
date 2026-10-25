@@ -364,6 +364,7 @@ namespace Suborned.Sim
                 FightShot(s.By, s.T, s.From); // the public hears it: one fight, judged when it ends (fight.public)
                 if (IsOpId(s.T)) CellFiredOn = true;
                 Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
+                if (FightBranch == "safe" && FightSprung == INF && IsOpId(s.By) && IsRival(s.T) && IsFightHostile(s.T)) Spring(true); // brief 059: the crew lurks in plain sight; a shot at one of them springs the ambush
                 bool cell = IsOpId(s.By), untraced = cell && (Range || IsFightHostile(s.T) && !R.FightTraced && FightOverTick == INF); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced)
                 if (cell) CellGunfire(OpOf(Sim.Op.Parse(s.By)), s.T, s.At, untraced);
                 else if (!IsFightHostile(s.By) && !(s.By == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + s.By); // any gunfire (§05)
@@ -920,7 +921,7 @@ namespace Suborned.Sim
             var op = OpOf(Sim.Op.Parse(o.Op)); var g = op.Gun;
             if (g.W == null) { c.Refused = $"{o.Op} carries no weapon (Arms)"; return c; }
             if ((o.Do == "fire" || o.Do == "volley") && CarriesVale(op)) { c.Refused = "walking Vale, the Enforcer doesn't fire"; return c; }
-            if (o.Do == "fire" || o.Do == "volley") { var ft = FireTarget(op, o.Target); var fp = ft.Length > 0 && !IsOpId(ft) ? PersonById(ft) : null; c.Fails = ft == "car:getaway" ? "getaway-lost" : ft == "car:official" && (Vale == ValeAt.Pickup || Vale == ValeAt.Taking) && !PickupService ? "vale-dead" : fp == null ? "" : fp == ValeP ? "vale-dead" : fp == Driver && Vale != ValeAt.Office ? "driver-shot" : ""; } // §9.3: always the hold; §10.7: the getaway car, or the official car with Vale at it
+            if (o.Do == "fire" || o.Do == "volley") { var ft = FireTarget(op, o.Target); var fp = ft.Length > 0 && !IsOpId(ft) ? PersonById(ft) : null; c.Fails = ft == "car:getaway" ? "getaway-lost" : ft == "car:official" && (Vale == ValeAt.Pickup || Vale == ValeAt.Taking || Vale == ValeAt.InCar) ? "vale-dead" : fp == null ? "" : fp == ValeP ? "vale-dead" : fp == Driver && Vale != ValeAt.Office ? "driver-shot" : ""; } // §9.3: always the hold; §10.7: the getaway car, or the official car with Vale at it
             if (FightOn || FightBranch.Length > 0) { c.Why = "fight-on"; return c; }
             if (loudNow) { c.Why = "already-loud"; return c; }
             string reported; int delay; int civ = 0;

@@ -125,7 +125,7 @@ namespace Suborned.Sim
                 var vp = g.ValePos(); r.Is(vp.HasValue && vp.Value != g.CarPos(), "Vale is out beside it");
                 r.Until(() => g.Over, T(40));
                 r.Eq(g.FailCode, "vale-dead", "the blast kills Vale: vale-dead");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("CAR-GETAWAY", "—", "§10.7: the getaway car disabled fails the mission getaway-lost (the card says so first; the cause is the wrecked car)", r =>
             {

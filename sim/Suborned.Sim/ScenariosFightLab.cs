@@ -106,8 +106,10 @@ namespace Suborned.Sim
                 var g = r.G;
                 RouteA(r, reroute: true); Support(r); ToAmbush(r);
                 int firedAt = -1; string first = "";
-                if (r.Until(() => { var t = g.Combatants().FirstOrDefault(id => id.StartsWith("rival-", StringComparison.Ordinal)); return t != null && g.PosOf(t).HasValue && g.PreviewFire(OpId.Scout, t).Refused.Length == 0; }, T(30)))
-                { first = g.Combatants().First(id => id.StartsWith("rival-", StringComparison.Ordinal)); r.Fire(Scout, first); firedAt = g.Tick; }
+                // brief 059: the crew's bodies post by the greedy rule (rival-1 at ambush-3): the Scout takes the nearest rival he can fire on now
+                string Pick() => g.Combatants().Where(id => id.StartsWith("rival-", StringComparison.Ordinal) && g.PosOf(id).HasValue && g.PreviewFire(OpId.Scout, id).Refused.Length == 0).OrderBy(id => G.D2(g.PosOf(id)!.Value, r.Op(Scout).Pos)).ThenBy(id => id, StringComparer.Ordinal).FirstOrDefault() ?? "";
+                if (r.Until(() => Pick().Length > 0, T(30)))
+                { first = Pick(); r.Fire(Scout, first); firedAt = g.Tick; }
                 r.Until(() => g.GunOf(first)?.Down == true || g.FightOverTick != Never, T(60));
                 r.Is(g.GunOf(first)?.Down == true, $"{first} goes down");
                 int downAt = g.Tick; r.Wait(T(3));

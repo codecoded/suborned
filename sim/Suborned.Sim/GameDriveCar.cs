@@ -71,6 +71,8 @@ namespace Suborned.Sim
             Note("car.parked", $"The getaway car is at {CurStand.Id}.");
             SawGetaway(); // Motive M059-2.4: a driver at the wheel of his own car nearby learns it
         }
+        /// <summary>How many cover points of `of` (car/getaway, car/rivals, …) stand now (a read; never hashed).</summary>
+        public int LiveCoverOf(string of) => LiveCover.FindAll(p => p.Of == of).Count;
         /// <summary>The Drive's seconds from the car's stand to a stand (a host read for the price line; -1 for no stand).</summary>
         public int DriveTicks(string standId)
         {

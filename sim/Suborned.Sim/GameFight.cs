@@ -107,13 +107,28 @@ namespace Suborned.Sim
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
             var e = Enforcer; var car = Car;
-            if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm))
+            if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) Spring(false);
+            bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+            if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
+            if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
+            // the guard runs in against the rivals (safe); his shots are in Combat()
+            if (GuardAlly && guardAllyPath != null && !GuardDown)
+            {
+                long mm = (long)(Tick - guardAllyStart) * secSpeed;
+                heldPos = guardAllyPath.At(mm); heldFacing = guardAllyPath.Heading(mm);
+            }
+        }
+
+        /// <summary>The ambush springs: the Enforcer brings Vale within fight.safe.ambush of the car, or (brief 059: the crew lurks on the street,
+        /// in plain sight) the cell's shot at one of them gives it away first.</summary>
+        void Spring(bool shot)
+        {
             {
                 FightSprung = Tick;
                 // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing); brief 059: a
                 // member still in the car springs when he gets out (he comes in on his path)
                 foreach (var h in Hostiles) { if (CrewOf(h.Id) is CrewMember cm && !cm.Fight) continue; h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
-                Note("fight.ambush", FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
+                Note("fight.ambush", shot ? "The cell's shot gives the ambush away: the rival crew springs." : FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
                 if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
                 if (GuardAlly)
                 {
@@ -124,15 +139,6 @@ namespace Suborned.Sim
                     GuardHeld = true; heldPhase = "fighting the rivals"; heldPos = from; GuardAwayUntil = INF;
                     Note("fight.guard", "The guard hears the shooting and runs in against the rivals.");
                 }
-            }
-            bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
-            if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
-            if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
-            // the guard runs in against the rivals (safe); his shots are in Combat()
-            if (GuardAlly && guardAllyPath != null && !GuardDown)
-            {
-                long mm = (long)(Tick - guardAllyStart) * secSpeed;
-                heldPos = guardAllyPath.At(mm); heldFacing = guardAllyPath.Heading(mm);
             }
         }
         bool GuardAllyMoving => GuardAlly && guardAllyPath != null && (long)(Tick - guardAllyStart) * secSpeed < guardAllyPath.Length;

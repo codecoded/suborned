@@ -48,6 +48,8 @@ namespace Suborned.Sim
         /// <summary>The default timetable's ticks (Pulse §4): the car enters, stops at the drop, leaves it, parks (RivalAt).</summary>
         public int CrewEntry, CrewDropArrive, CrewDropLeave;
         int crewNextAt = INF; string crewNext = "";               // the car's next scheduled move (leave the drop, re-enter after a tip, …)
+        /// <summary>The car's next scheduled move and its tick (a read; never hashed beyond the state it is).</summary>
+        public (int tick, string what) CrewNextMove => (crewNextAt, crewNext);
         int followAt = INF; string followStand = "";             // F1: the three re-plan for this stand at this tick
         int tailAt = INF;                                        // F2: the car follows Vale's car at this tick
         int warnAt = INF, driverTurnedAt = -1; bool warnDecided;  // F4: the lookout leaves his post for the word at this tick
@@ -439,7 +441,7 @@ namespace Suborned.Sim
         {
             var st = StandForCrew(); fightStandId = st.Id; crewLate = true; followAt = INF; tailAt = INF; warnAt = INF;
             // who is in the fight: on the map, or still to come in the car
-            bool carAway = CarSt == CrewCar.Away || CarSt == CrewCar.TipOut;
+            bool carAway = CarSt == CrewCar.Away || CarSt == CrewCar.TipOut; wheelmanAwayAtStart = carAway && Up(Wheelman) && Wheelman.Mode == CrewMode.Aboard;
             var l = Lookout; bool lookoutBoards = CarSt == CrewCar.Parked && Up(l) && !lookoutWarned && l.Mode == CrewMode.Posted && l.Post == "lookout";
             foreach (var m in Crew)
             {
@@ -475,22 +477,36 @@ namespace Suborned.Sim
             if (bodies > Cr.Size) throw new InvalidOperationException($"the safe fight holds {bodies} of a crew of {Cr.Size}");
         }
 
-        /// <summary>The safe fight's crew still to come: a member up and aboard the car, with no body yet, while the car comes (the tipped
-        /// wheelman's return, the lookout boarding): the fight is not over until he is down or gone (Pulse §7).</summary>
+        /// <summary>Host read: the safe fight's crew, its bodies and those still to come with the car (the lookout boarding it; not the wheelman
+        /// away on a tip, who joins only if it ends in time). 0 outside the safe fight.</summary>
+        public int CrewInFight
+        {
+            get
+            {
+                if (FightBranch != "safe") return 0;
+                int n = 0; foreach (var h in Hostiles) if (IsRival(h.Id)) n++;
+                foreach (var m in Crew) if (m.H == null && Up(m) && !m.Fight && (m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Walking && m.Goal == "board") || (m.Mode == CrewMode.Aboard && CarSt != CrewCar.Away && CarSt != CrewCar.TipOut))) n++;
+                return n;
+            }
+        }
+        /// <summary>The safe fight's crew still to come that it counted at its start: the lookout boarding the parked car (he joins at the stand):
+        /// the fight is not over until he is down or gone. A wheelman away on a tip at the start is not counted: he joins a fight still running
+        /// when he comes back, but the fight does not wait for him (Pulse §7's [S] alternative, for Motive: a fight held open minutes for a man not
+        /// yet on the map read as nothing on the street).</summary>
         bool CrewDue()
         {
             if (FightBranch != "safe") return false;
-            foreach (var m in Crew) if (m.H == null && Up(m) && !m.Fight && (m.Mode == CrewMode.Aboard || m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Walking && m.Goal == "board")) && CarSt != CrewCar.Stopped) return true;
+            foreach (var m in Crew) if (m.H == null && Up(m) && !m.Fight && !(m == Wheelman && wheelmanAwayAtStart) && (m.Mode == CrewMode.Aboard || m.Mode == CrewMode.Boarding || (m.Mode == CrewMode.Walking && m.Goal == "board")) && (CarSt != CrewCar.Stopped || m.OutAt < INF)) return true;
             return false;
         }
+        bool wheelmanAwayAtStart;
 
-        /// <summary>The front Take (brief 059): the crew watching the pickup reaches Vale first: the lookout posted and up (he watches the official
-        /// bay), the car parked at rivals.park with its wheelman, or a drawn member on foot within his effective reach of the Enforcer. The member's
-        /// id, or null. (The old rule, "the crew present and not drawn", read with bodies; Motive and Pulse to confirm.)</summary>
+        /// <summary>The front Take (brief 059): the crew reaches Vale first when its car is parked at rivals.park with the wheelman aboard (not
+        /// tipped: the old rule, "the crew present and not drawn", read with bodies), or a drawn member on foot is within his effective reach of the
+        /// Enforcer. The lookout alone does not (no rule gives him that; Motive and Pulse to confirm). The member's id, or null.</summary>
         string? FrontCrew(Op op)
         {
             if (Range || FightBranch.Length > 0) return null;
-            var l = Lookout; if (!RivalsDrawn && Up(l) && l.Mode == CrewMode.Posted && l.Post == "lookout") return l.Id;
             if (!RivalsDrawn && rivalCarParked && Wheelman.Mode == CrewMode.Aboard && Up(Wheelman)) return Wheelman.Id;
             if (RivalsDrawn) foreach (var m in Crew) { var p = MemberPose(m); if (p.HasValue && !m.Fight && G.Within(op.Pos, p.Value.pos, m.Gun.W!.EffCm)) return m.Id; }
             return null;
@@ -737,7 +753,7 @@ namespace Suborned.Sim
         internal void HashCrew(Hash.H h)
         {
             if (!CrewHashes) return;
-            h.S("crew").I((int)CarSt).I(CarStTick).I(ccStart).S(ccStop).I(CrewEntry).I(crewNextAt).S(crewNext).I(followAt).S(followStand).I(tailAt).I(warnAt).I(driverTurnedAt).Z(warnDecided).Z(crewLate).Z(lookoutWarned).Z(RivalsWatched).S(CrewStandId).S(fightStandId).Z(CrewBrokenPre);
+            h.S("crew").I((int)CarSt).I(CarStTick).I(ccStart).S(ccStop).I(CrewEntry).I(crewNextAt).S(crewNext).I(followAt).S(followStand).I(tailAt).I(warnAt).I(driverTurnedAt).Z(warnDecided).Z(crewLate).Z(lookoutWarned).Z(wheelmanAwayAtStart).Z(RivalsWatched).S(CrewStandId).S(fightStandId).Z(CrewBrokenPre);
             var cp = RivalCarPose(); h.Z(cp.HasValue); if (cp.HasValue) h.P(cp.Value.pos);
             foreach (var m in Crew)
             {
