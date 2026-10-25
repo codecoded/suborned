@@ -22,7 +22,7 @@ import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 import { buildExit, blockM, checkExit } from './getaway';
 import { driveGrid, driveFree, type Drive } from './drive';
-import { buildRivals, buildStands, checkRivals, checkStands, placesFor059 } from './stands';
+import { buildRivals, buildStands, checkRivals, checkStands } from './stands';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -208,7 +208,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   const driveOk = driveFree(drive), stands = buildStands(plan, d, mission, block, rulebook, places);
   const standsBad = checkStands(stands, plan, d, places, rulebook, (q) => free(q), driveOk);
   if (standsBad.length) throw new Error(`getaway.stands (SX-2): ${standsBad.join('; ')}`);
-  const places059 = placesFor059(places), rivalsNew = buildRivals(plan, d, mission, places059), rivalsBad = checkRivals(rivalsNew, plan, d, places059, rulebook, schedule.rivalsArrive, (q) => free(q), driveOk);
+  const rivalsNew = buildRivals(plan, d, mission, places), rivalsBad = checkRivals(rivalsNew, plan, d, places, rulebook, schedule.rivalsArrive, (q) => free(q), driveOk);
   if (rivalsBad.length) throw new Error(`rivals (SX-3): ${rivalsBad.join('; ')}`);
 
   const site = {

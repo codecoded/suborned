@@ -2125,9 +2125,9 @@
    "reason": "Listen needs the Scout within 3 m of Inez (rulebook listen-reach-m [B]); the Courtyard point is 3.5 m from the café door, so this stands 2.1 m from her, between the café palms."
   },
   "rival-park": {
-   "at": [8400,-3100],
-   "src": "GDD §07: 3:10 rival car parks near pickup",
-   "reason": "on Apron Road, 5.8 m south of the official car in the official bay. Held here for batch 0.2.118 (Aster, 2026-10-25): Vantage's target (90.5, -31.0), on the eastbound lane, is in briefs/059-pickup-and-rivals.md 'Aster: inputs for Keel's 059 round' and in tools/sim/stands.ts RIVAL_PARK_059; it moves here with Keel's 059 round."
+   "at": [9050,-3100],
+   "src": "GDD §07: 3:10 rival car parks near pickup; re-sited 2026-10-25 from (84.0, -31.0) (brief 059 §5, Vantage; Sky's answer 2a: the rival crew drives in, drops a team and parks)",
+   "reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 12.3 m south of Vale's car in the official bay (78.2, -31.0), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round)."
   },
   "rival-entry": {
    "at": [3600,1000],
@@ -2698,6 +2698,53 @@
   "entry": "rival-entry",
   "front": "d:Office approach",
   "public": "menace",
+  "car": {
+   "entry": "rival-car-entry",
+   "drop": "rival-drop",
+   "park": "rival-park",
+   "tail": "rival-tail",
+   "front": "rival-front-stop",
+   "facing": {
+    "entry": [0,-100],
+    "drop": [0,-100],
+    "park": [0,100],
+    "tail": [0,100],
+    "front": [100,0]
+   },
+   "route": {
+    "polyline": [[3750,1600],[3750,-5600],[8600,-5600],[8600,1000]],
+    "roads": [
+     {
+      "id": "orbit-walk",
+      "w": 13
+     },
+     {
+      "id": "rocket-lane",
+      "w": 12
+     },
+     {
+      "id": "apron-road",
+      "w": 12
+     }
+    ],
+    "length": 186.5,
+    "chain": {
+     "entry": 25,
+     "drop": 5400,
+     "park": 14550,
+     "tail": 15950,
+     "front": 9825
+    },
+    "src": "mission.json routes \"rivals\" (off_seagates through r_orbit_e, r_orbit_w, r_apron_w to r_pylon_s): the plan road centrelines in travel order, cut to the walk window where it enters (rival-car-entry's edge); points: site frame, cm; chain: where each rival point projects, cm along the polyline from its start. Brief 059 §5, tools/sim/stands.ts"
+   },
+   "src": "brief 059 §2.2 and §5, Pulse's rival routine (briefs/059/pulse/rival-routine.md §9, K10) and Vantage's mission points: the rival car enters at entry, stops at drop to drop three, parks at park; tail is where it stops when it follows Vale's car (and the service-drive stand's rival stop), front where a crew drawn by gunfire stops; facing = the route's direction at each point (block frame, 100 = one axis step; the front stop's heading is the engine's, from the route it rides); route is derived from mission route \"rivals\". Values are place ids (mission.json points)"
+  },
+  "posts": {
+   "lookout": "rival-lookout",
+   "lookoutExit": "rival-lookout-exit",
+   "valeDoor": "rival-vale-door",
+   "src": "the crew on foot (mission.json points): the lookout's post, where a warned lookout leaves the map, and the wheelman's place at Vale's car. Place ids"
+  },
   "src": "GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office; public: mission.json rivals (Sky 2026-10-16 (via Aster: 'a rival gang that has menace level authority is a +1'); briefs/014/motive-standing.md, a public fight, rule 4: the Handover's rivals are menace)"
  },
  "security": {
@@ -2713,6 +2760,58 @@
    "w": 12,
    "src": "mission.json routes \"getaway\" (r_orbit_w to off_southside), its first road rocket-lane (plan.roads w 12 m); the car's bay \"Getaway bay\" projected onto it, walked forward fight-block-m 30 m (rulebook). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts"
   },
+  "stands": [
+   {
+    "id": "square",
+    "car": "d:Getaway bay",
+    "facing": [100,0],
+    "exit": {
+     "polyline": [[850,-5600],[3850,-5600]],
+     "w": 12,
+     "src": "mission.json routes \"getaway\" (r_orbit_w to off_southside), its first road rocket-lane (plan.roads w 12 m); the car's bay \"Getaway bay\" projected onto it, walked forward fight-block-m 30 m (rulebook). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts"
+    },
+    "ambush": [
+     "ambush-1",
+     "ambush-2",
+     "ambush-3",
+     "ambush-4",
+     "ambush-5"
+    ],
+    "police": [
+     "police-1",
+     "police-2",
+     "police-3",
+     "police-4"
+    ],
+    "rivalStop": "rival-drop",
+    "src": "brief 059 §1.4 and §5: the getaway car's stand square (d:Getaway bay); exit = the carriageway ahead of the car along mission route \"getaway\" (fight-block-m); ambush and police = the mission points /^ambush-\\d+$/ and /^police-\\d+$/, in number order; rivalStop = where the rival car stops for it (rival-drop); facing = nose along the bay's long axis the way the exit lane runs (block frame, 100 = one axis step)"
+   },
+   {
+    "id": "service-drive",
+    "car": "service-drive",
+    "facing": [100,0],
+    "exit": {
+     "polyline": [[8600,-1500],[8600,1500]],
+     "w": 12,
+     "src": "mission.json routes \"getaway-service\" (r_apron_w to r_apron_e), its first road apron-road (plan.roads w 12 m); the car's stand at block (69.35, -15) projected onto it, walked forward fight-block-m 30 m (rulebook). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts"
+    },
+    "ambush": [
+     "svc-ambush-1",
+     "svc-ambush-2",
+     "svc-ambush-3",
+     "svc-ambush-4",
+     "svc-ambush-5"
+    ],
+    "police": [
+     "svc-police-1",
+     "svc-police-2",
+     "svc-police-3",
+     "svc-police-4"
+    ],
+    "rivalStop": "rival-tail",
+    "src": "brief 059 §1.4 and §5: the getaway car's stand service-drive (service-drive); exit = the carriageway ahead of the car along mission route \"getaway-service\" (fight-block-m); ambush and police = the mission points /^svc-ambush-\\d+$/ and /^svc-police-\\d+$/, in number order; rivalStop = where the rival car stops for it (rival-tail); facing = nose out along the drive's long axis, away from the bay (block frame, 100 = one axis step)"
+   }
+  ],
   "src": "GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay"
  },
  "fight": {
@@ -2790,7 +2889,7 @@
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "603ec7d249129087ff44e3bee248ed0735dfa1606e31a586cda8dbcdabbebe0c",
+  "sha256": "9642bbcb179e31e04fa618cb96717279e8a4d9c6aef6847f5c6ec3fbf3f440b2",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {
@@ -2925,7 +3024,7 @@
    },
    {
     "id": "cv-011",
-    "at": [8225,-3125],
+    "at": [8875,-3125],
     "faces": [1000,0],
     "arc": 58,
     "cos": 529,
@@ -2938,7 +3037,7 @@
    },
    {
     "id": "cv-012",
-    "at": [8375,-3425],
+    "at": [9025,-3425],
     "faces": [0,1000],
     "arc": 30,
     "cos": 866,
@@ -2951,7 +3050,7 @@
    },
    {
     "id": "cv-013",
-    "at": [8375,-2775],
+    "at": [9025,-2775],
     "faces": [0,-1000],
     "arc": 30,
     "cos": 866,
@@ -2964,7 +3063,7 @@
    },
    {
     "id": "cv-014",
-    "at": [8575,-3125],
+    "at": [9225,-3125],
     "faces": [-1000,0],
     "arc": 58,
     "cos": 529,

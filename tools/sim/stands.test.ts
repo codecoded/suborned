@@ -8,11 +8,11 @@ import { civic } from '../plan/civic';
 import type { V } from '../plan/geom';
 import { driveFree, type DriveGrid } from './drive';
 import { buildSite, optionsOfSite, readStands, sourceOfSite, SITE_FILE, STANDS_FILE } from './site';
-import { buildRivalRoute, buildRivals, buildStands, checkRivals, checkStands, placesFor059, RIVAL_PARK_059, standFacing, STANDS } from './stands';
+import { buildRivalRoute, buildRivals, buildStands, checkRivals, checkStands, standFacing, STANDS } from './stands';
 
 const root = join(import.meta.dir, '..', '..'), read = (f: string) => JSON.parse(readFileSync(join(root, f), 'utf8'));
 const plan = read('contracts/world/harbour-district.plan.json'), mission = read('contracts/missions/handover/mission.json'), rulebook = read('contracts/rules/rulebook.json'), block = read(plan.civic.block), site = read(SITE_FILE);
-const d = derive(plan), places = site.places, places059 = placesFor059(places), g = site.grid, s059 = readStands(); // the getaway stands and the rival car's way in: the second file until Keel's round folds them into the site
+const d = derive(plan), places = site.places, places059 = places, g = site.grid, s059 = readStands(); // the getaway stands and the rival car's way in, folded into the site by Keel's 059 round
 const free = (q: V) => { const i = Math.floor((Math.round(q[0] * 100) - g.x0) / g.cell), j = Math.floor((Math.round(q[1] * 100) - g.y0) / g.cell); return site.grid.rows[i]?.[j] === '.'; };
 const drivable = driveFree(site.drive as DriveGrid);
 const cp = <T>(x: T): T => JSON.parse(JSON.stringify(x));
@@ -98,10 +98,9 @@ describe('rivals.car and rivals.posts (SX-3)', () => {
     expect(r.src).toContain('routes "rivals"');
     expect(r.chain.entry).toBeLessThan(r.chain.drop); expect(r.chain.drop).toBeLessThan(r.chain.park); expect(r.chain.park).toBeLessThan(r.chain.tail);
     expect((s059.rivals.car as any).facing).toEqual({ entry: [0, -100], drop: [0, -100], park: [0, 100], tail: [0, 100], front: [100, 0] });
-    expect(places['rival-park'].at).toEqual([8400, -3100]); // held for batch 0.2.118 (Aster 2026-10-25): the live point is (84, -31) until Keel's 059 round
-    expect(places059['rival-park'].at).toEqual(RIVAL_PARK_059); expect(RIVAL_PARK_059).toEqual([9050, -3100]); // the 059 target (Vantage): Apron Road's south kerb, the eastbound lane
+    expect(places['rival-park'].at).toEqual([9050, -3100]); // Vantage's 059 park (brief 059 §5): Apron Road's south kerb, the eastbound lane, moved in Keel's 059 round
   });
-  test('is what buildRivals makes from the plan, the mission and the site\'s places with the 059 park today', () => expect(buildRivals(plan, d, mission, places059)).toEqual({ car: s059.rivals.car, posts: s059.rivals.posts } as never));
+  test('is what buildRivals makes from the plan, the mission and the site\'s places', () => expect(buildRivals(plan, d, mission, places059)).toEqual({ car: s059.rivals.car, posts: s059.rivals.posts } as never));
   test('SX-3 holds on the shipped route and points', () => expect(sx3(rivals())).toEqual([]));
 
   test('SX-3 fails on a route that is missing or not cut to the window, points off it or out of order, a foot point on a wall, a car point off the drive grid, an entry before 0:00', () => {

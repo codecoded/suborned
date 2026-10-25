@@ -206,9 +206,9 @@
   },
   {
    "id": "rival-park",
-   "at": [84.0, -31.0],
-   "src": "GDD §07: 3:10 rival car parks near pickup",
-   "reason": "on Apron Road, 5.8 m south of the official car in the official bay. Held here for batch 0.2.118 (Aster, 2026-10-25): Vantage's target (90.5, -31.0), on the eastbound lane, is in briefs/059-pickup-and-rivals.md 'Aster: inputs for Keel's 059 round' and in tools/sim/stands.ts RIVAL_PARK_059; it moves here with Keel's 059 round.",
+   "at": [90.5, -31.0],
+   "src": "GDD §07: 3:10 rival car parks near pickup; re-sited 2026-10-25 from (84.0, -31.0) (brief 059 §5, Vantage; Sky's answer 2a: the rival crew drives in, drops a team and parks)",
+   "reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 12.3 m south of Vale's car in the official bay (78.2, -31.0), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round).",
    "level": "street",
    "on": "apron-road",
    "floor": -0.18

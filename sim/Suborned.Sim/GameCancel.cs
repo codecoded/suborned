@@ -189,7 +189,7 @@ namespace Suborned.Sim
                                 if (BodyById(o.Target) is Body tb && tb.Seizing) { var ta = ActOf(tb); ta.Aware = true; tb.Seizing = false; Remember(tb.P, "attacked-aware", "enforcer", false); Wake(tb, false); }
                                 break;
                             case "take":
-                                Vale = ValeAt.Pickup;
+                                Vale = PickupService ? ValeAt.InCar : ValeAt.Pickup; // brief 059: let go in his car round the back, he stays in it
                                 if (R.CancelTake == "vale-reports")
                                 {
                                     // a Take already seen is an incident: Vale's own report is one more report of it (one incident counts once

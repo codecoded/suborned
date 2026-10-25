@@ -728,7 +728,7 @@ namespace Suborned.Sim
 
         /// <summary>A Take at Vale's own car with its driver turned happens inside the car (Sky, rev 4): an interior, off-screen (§01), with
         /// no witness window and nothing for the pickup camera to see; onlookers see a councillor get into his official car.</summary>
-        public bool TakeInCar => Driver.Turned && !Driver.Down;
+        public bool TakeInCar => Driver.Turned && !Driver.Down && PickupService; // brief 059 K3: in his car round the back (service bay, or the drive's mouth), parked
         /// <summary>An accomplice of the act is never its witness (rev 4 R4.2, the first row, ahead of kin): a person turned to enable this
         /// very act. For the Take (and the escort that is its tail), the driver turned to move the pickup or blind its camera.</summary>
         bool Accomplice(TdAct a, Person p) => a.Take && p == Driver && Driver.Turned;

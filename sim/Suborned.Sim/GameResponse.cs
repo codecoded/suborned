@@ -240,7 +240,7 @@ namespace Suborned.Sim
             int n = 0;
             if (!GuardDown && !GuardGun.Down) n++; if (!PatrolDown) n++;
             foreach (var g in SecGuns) if (!g.Down) n++;
-            if (RivalsPresent) n++;
+            foreach (var m in Crew) if (!m.Fight && Up(m) && m.OnFoot) n++; // brief 059: each member of the crew on the street
             foreach (var h in Hostiles) if (!h.Down && h.Present) n++;
             foreach (var u in Units) if (!u.Patrol && !u.Legacy && !u.Gun.Down && u.St != "gone") n++;
             return n;

@@ -73,18 +73,13 @@ namespace Suborned.Sim
 
         /// <summary>The rival crew's cone on the street (perception.rivals): from their arrival with ai.intent.rivals.street, else once drawn
         /// (RivalsWatching). Its own sight ignores people, as RivalsWatching does.</summary>
-        public bool RivalsStreetWatching(Pt p)
-        {
-            if (!RivalsDrawn && !R.Intent.RivalsStreet) return false;
-            var r = RivalsPose(); if (!r.HasValue) return false;
-            return G.InCone(r.Value.pos, r.Value.facing, R.RivReachCm, R.RivHalfCm, near, p) && Sees(r.Value.pos, p);
-        }
-        bool RivalsStreetOn => RivalsPresent && (RivalsDrawn || (R.Intent.RivalsStreet));
+        public bool RivalsStreetWatching(Pt p) => CrewSees(p); // brief 059: any member on foot, by his own cone
+        bool RivalsStreetOn => CrewStreetOn;
 
         /// <summary>Once a fight tick, before the bodies act: what the crew sees each agent do (a weapon out, a takedown, a carry).</summary>
         void IntentTick()
         {
-            if (!RivalsStreetOn || RivalsGun.Down) return;
+            if (!RivalsStreetOn) return;
             foreach (var op in Ops)
             {
                 if (op.Down || op.Inside || op.InCar) continue;
@@ -93,7 +88,7 @@ namespace Suborned.Sim
             }
         }
         /// <summary>A shot landed (Resolve): the crew sees an operative that fires in its cone.</summary>
-        void IntentShot(string by, Pt from) { if (IsOpId(by) && RivalsStreetOn && !RivalsGun.Down && RivalsStreetWatching(from)) rivalsSaw.Add(by); }
+        void IntentShot(string by, Pt from) { if (IsOpId(by) && RivalsStreetOn && RivalsStreetWatching(from)) rivalsSaw.Add(by); }
 
         // ---------------------------------------------------------------- engaging by face (the guard, the patrol)
 
@@ -153,19 +148,19 @@ namespace Suborned.Sim
         /// <summary>The drawn crew, while the Enforcer holds Vale on the street, walks to its stop point of him (ai.stopReach of its effective
         /// ring), re-planned each kite.replan; once he no longer holds Vale it holds where it stands (it never walks back). True while the press
         /// owns the crew's walk (KiteRivals then does nothing else).</summary>
-        bool IntentPress()
+        bool IntentPress(CrewMember m)
         {
             if (!R.Intent.RivalsPress) return false;
-            var g = RivalsGun; if (!RivalsDrawn || !RivalsPresent || g.Down || g.W == null) return false;
-            bool pressing = rivalsDisp != null && rivalsDisp.Press;
+            var g = m.Gun; if (!RivalsDrawn || m.Fight || !Up(m) || !m.OnFoot || g.Down || g.W == null) return false;
+            bool pressing = m.Disp != null && m.Disp.Press;
             var e = Enforcer;
             if (Vale != ValeAt.WithEnforcer || e.Inside || e.Down) return pressing;
-            if (pressing && Tick - rivalsDisp!.Start < Kr.KiteReplan) return true;
-            var pose = RivalsPose(); if (!pose.HasValue) return pressing;
+            if (pressing && Tick - m.Disp!.Start < Kr.KiteReplan) return true;
+            var pose = MemberPose(m); if (!pose.HasValue) return pressing;
             var pos = pose.Value.pos; var to = StopPoint(pos, e.Pos, g.W.EffCm);
             var path = to == pos ? null : KitePath(pos, to, int.MaxValue / 20);
-            if (!pressing) Note("ai.kite", "The rivals see Vale taken and press for the Enforcer.");
-            rivalsDisp = new KiteDisp { P = path ?? new Path(new[] { pos, pos }), Start = Tick, Face = Facing(path?.End ?? pos, e.Pos), Press = true };
+            if (!pressing) Note("ai.kite", $"{m.Id} sees Vale taken and presses for the Enforcer.");
+            m.Disp = new KiteDisp { P = path ?? new Path(new[] { pos, pos }), Start = Tick, Face = Facing(path?.End ?? pos, e.Pos), Press = true };
             return true;
         }
 

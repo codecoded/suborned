@@ -27,7 +27,7 @@ namespace Suborned.Sim
 
         static bool IsRival(string id) => id.StartsWith("rival-", StringComparison.Ordinal);
         bool IsHolder(Hostile h) => !IsRival(h.Id) || h.Blocker; // police and the response unit hold their stand (Pulse §3.2); a blocker its lane point (brief 018 §1)
-        Pt Car => S.At(S.GetawayCar);
+        Pt Car => GetawayCarPos(); // brief 059 K6: where the getaway car is now (its stand, or along its Drive)
 
         // ---------------------------------------------------------------- moving a body
 
@@ -143,11 +143,12 @@ namespace Suborned.Sim
                     PreFight("patrol", PatrolGun, PosOf("patrol"), p => PatrolWatching(p, false));
                     if (!patrolReturning && PatrolGun.NoFoeSince >= 0 && Tick - PatrolGun.NoFoeSince >= T(R.PatrolResumeS)) { patrolReturning = true; Note("patrol.resumes", "No foe in reach: the patrol goes back to its sweep."); }
                     return;
-                case "rivals":
-                    if (RivalsDrawn && RivalsPresent) PreFight("rivals", RivalsGun, PosOf("rivals"), RivalsWatching);
-                    else if (RivalsStreetOn) // engine 0.19.0 (Sky's answer 3): the crew watches the street from its arrival; no foe leaves its gun as it was (no NoFoeSince: nothing reads it for the crew)
-                    { int nf = RivalsGun.NoFoeSince; PreFight("rivals", RivalsGun, PosOf("rivals"), RivalsStreetWatching); if (RivalsGun.Target.Length == 0) RivalsGun.NoFoeSince = nf; }
-                    return;
+            }
+            if (CrewOf(id) is CrewMember cm) // brief 059 K8: each member of the crew on foot, by his own cone (engine 0.19.0: the crew watches the street from its arrival)
+            {
+                if (cm.Fight || !Up(cm) || !cm.OnFoot) { if (!cm.Fight) LoseTarget(cm.Gun); return; }
+                if (!RivalsDrawn && !R.Intent.RivalsStreet) return;
+                int nf = cm.Gun.NoFoeSince; PreFight(id, cm.Gun, MemberPose(cm)?.pos, p => MemberWatching(cm, p)); if (!RivalsDrawn && cm.Gun.Target.Length == 0) cm.Gun.NoFoeSince = nf; // no foe leaves its gun as it was (nothing reads NoFoeSince for the crew)
             }
         }
 
@@ -205,7 +206,7 @@ namespace Suborned.Sim
                     else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { g.St = "advance"; Advance(h); }
                     break;
                 case "break":
-                    if (G.Within(pos, S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
+                    if (G.Within(pos, h.BreakTo ?? S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
                     return;
             }
             if (g.St != "engage" || foes.Count == 0) { if (g.St != "engage") LoseTarget(g); return; }
@@ -289,11 +290,12 @@ namespace Suborned.Sim
             foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down) down++; }
             if (down * 2 <= n) return;
             bool any = false;
+            var carAt = Range ? S.Stand(S.RivalsPark) : RivalCarPose() is var rcp && rcp.HasValue ? S.Grid.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark); // brief 059: they run for their car where it stands
             foreach (var h in Hostiles)
             {
                 if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
-                if (!h.Present) { h.Gun.St = "gone"; continue; } // still lying in wait: it never comes
-                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; MoveTo(h, S.Stand(S.RivalsPark)); any = true;
+                if (!h.Present) { h.Gun.St = "gone"; if (CrewOf(h.Id) is CrewMember gm && !gm.Fight) { gm.Mode = CrewMode.Gone; gm.ModeTick = Tick; } continue; } // still lying in wait, or still in the car: it never comes
+                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); any = true;
             }
             if (any) { FightWhy.Add("rivals-break"); Note("ai.break", "More than half the crew is down: the rivals break for their car."); }
         }
@@ -310,7 +312,7 @@ namespace Suborned.Sim
                 var pose = SecOfficerPose(k); if (!pose.HasValue) continue;
                 var from = pose.Value.pos;
                 string stand = ""; long bd = long.MaxValue;
-                foreach (var st in S.FightPolice) { long d = G.D2(from, S.Stand(st)); if (d < bd || (d == bd && string.CompareOrdinal(st, stand) < 0)) { bd = d; stand = st; } }
+                foreach (var st in CurStand.Police) { long d = G.D2(from, S.Stand(st)); if (d < bd || (d == bd && string.CompareOrdinal(st, stand) < 0)) { bd = d; stand = st; } } // brief 059 K6: the stand's police stands
                 var sp = S.Stand(stand);
                 bool taken = false;
                 foreach (var o in Hostiles) if (!o.Down && o.Home == sp) taken = true;
