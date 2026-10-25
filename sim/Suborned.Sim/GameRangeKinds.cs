@@ -175,7 +175,7 @@ namespace Suborned.Sim
             CoverPoint? cp = null;
             foreach (var p in LiveCover)
                 if (p.Of == $"car/slot-{c.Slot}" && !coverTaken.ContainsKey(p.Id) && CoverRules.Protects(p, mark, sec, R.PointBlankCm) && (cp == null || G.D2(p.At, car + new Pt(180, 0)) < G.D2(cp.At, car + new Pt(180, 0)))) cp = p;
-            var exit = cp?.At ?? S.Grid.NearestFree(car + new Pt(180, 0)) ?? car;
+            var exit = cp?.At ?? Walk.NearestFree(car + new Pt(180, 0)) ?? car;
             if (c.With == "bystander")
             {
                 var b = NewBystander(exit); b.Wave = c.Wave; rangeCivs.Add(b); c.Occupant = b.Id;

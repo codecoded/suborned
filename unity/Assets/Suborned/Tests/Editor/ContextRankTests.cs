@@ -67,6 +67,18 @@ namespace Suborned.Play.Tests
             var b = new[] { W("watch", ok: false), W("loop") }; Assert.AreEqual("loop", Picked(C("camera", b), b));
         }
 
+        [Test] public void OnAStandDriveIsTheQuickClick()
+        {
+            var w = new[] { W("drive-car") }; Assert.AreEqual("drive-car", Picked(C("stand", w), w), "brief 059 K6: a stand's one way is Drive");
+            var l = new[] { W("drive-car", ok: false) }; Assert.AreEqual(ContextRank.Act.Lock, C("stand", l).Act, "a refused Drive (held, busy) says its lock");
+        }
+
+        [Test] public void RivalsTakeTheFalseTipAtTheirCar()
+        {
+            var w = new[] { W("watch"), W("mislead"), W("fire") }; Assert.AreEqual("watch", Picked(C("rivals", w), w), "brief 059 §2.2: a free learn first (the timetable)");
+            var t = new[] { W("watch", ok: false), W("mislead"), W("fire") }; Assert.AreEqual("mislead", Picked(C("rivals", t), t), "then the tip; never Fire as a click");
+        }
+
         [Test] public void OnACameraLoopLeadsTheRingAndWatchStandsAtThree()
         {
             var t = new[] { W("watch"), W("loop"), W("disable"), W("fire") }; var c = C("camera", t);

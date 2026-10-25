@@ -96,12 +96,15 @@ export const Action = z.strictObject({
     .describe('brief 013: an order with a choice (Order.How: takedown knockout or kill): the panel row for each way and its price in words'),
 });
 
+/** The wording a lock can have besides its base line (Lock.byTarget). */
+export const LOCK_VARIANTS = ['machine', 'rival-car', 'rival-car-driving'] as const;
 export const Lock = z.strictObject({
   line: Line.describe('what is wrong and what unlocks it; {who} {op} come from the order, {m} {usd} {tick} from the engine\'s Answer. Brief 014: this is the Alt line (hold Alt on the locked row) and the history; the pop at the click is `short`'),
   short: Short().describe('brief 014: the pop at the click, a few words, no sentence, no {who} or {op} (the pop sits on what it names); every number the line carries ({m} {usd} {tick}) stays, e.g. "Too far · {m} m"'),
   verbs: z.array(z.union([Verb, z.enum(CONTROL_VERBS), z.literal('*')])).min(1).describe('the verbs that can return it'),
-  byTarget: z.partialRecord(z.enum(['machine']), z.strictObject({ line: Line, short: Short() })).optional()
-    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table)'),
+  byTarget: z.partialRecord(z.enum(LOCK_VARIANTS), z.strictObject({ line: Line, short: Short() })).optional()
+    .describe('brief 019 (plain copy; Sky 2026-10-18): the same refusal when the order is on a machine (a camera or the patrol) rather than a person. only-scout: a person is "Scout only", a camera or the patrol is "Scout or Tech". Brief 043: the `serving` variant is retired (engine 0.23: the agent walks up to a server at her table). Engine 0.33.0 (brief 059): `rival-car` and `rival-car-driving` are car-held when `car:rivals` is among Answer.ids (the rival car still carries a member): the first when the engine sends a step-out `tick`, the second when it sends none (-1: the car is still driving). `fillLock` and `fillLockShort` pick them'),
+  tickAs: z.enum(['clock', 'left']).optional().describe('how {tick} is filled: `clock` (default) is the mission clock as ctx.clock says it ("3:03"); `left` is the time still to wait, as ctx.left says it ("18 s"), for a tick that is a moment to count down to (car-held: the rival crew\'s first step-out)'),
 });
 
 /** What an agent is doing now (sim Game.ActivityOf): the roster and verb plate words. `{who}` is the activity's target. */
@@ -192,6 +195,7 @@ export const Debrief = z.strictObject({
   investigation: z.strictObject({ little: Line, early: Line, active: Line, activeBecause: Line }),
   causes: z.record(code, Line).describe('Debrief.InvestigationCause (and the engine\'s named-witness:<role>, whose {who} is the role as names.targets says it)'),
   fight: z.strictObject({ loud: Line, safe: Line }),
+  fightWhy: z.record(code, Line).describe('engine 0.33.0 (brief 059): one clause for each id the debrief\'s finalFight.why can carry (sim FightWhy.Add), each a plain sentence that follows the Final fight line on the end card and in the history'),
   kept: Line,
   route: z.record(code, Line),
   assets: z.record(code, Line),
@@ -276,6 +280,7 @@ export const Less = z.strictObject({
     fail: z.record(code, Short()).describe('one line per fail code (the headline); the full sentence is briefing.fails, shown in the debrief'),
   }),
   pop: z.record(code, Short()).describe('refusals and notices the host builds itself (not engine codes): one pop each'),
+  why: z.record(code, Short(16)).describe('engine 0.33.0 (brief 059, Keel 0.25.0 FireWhyOf): the one or two words of why a hostile fires on an agent, by the engine\'s fire cause (Game.FireCauseOrder: range, final, fired, vale, violence, crewmate, drawn, face, seen). The under-fire cue shows the main cause beside its icon; Alt lists them all'),
   cancel: z.record(code, Short(20)).describe('what a cancel costs, in a few words, by the same ids as cancelCosts; a costly one tints the cancel mark'),
   alt: z.strictObject({
     rule: z.string().min(1),
@@ -461,8 +466,8 @@ export function cardResult(t: Pick<TextFile, 'cards'>, code: string, variant?: s
 /** What the engine sends with a refusal (sim Answer): -1 = none. */
 export type Answer = { code: string; m?: number; cm?: number; usd?: number; tick?: number; /** brief 018: the ids a refusal names, comma-joined (car-held: its holders, in id order) */ ids?: string };
 
-/** The role of an engine id (rival-1 → rival; security-1 and officer-1 → officer; robot-1 → robot; patrol; guard); anything else is `other`. */
-export const roleOfId = (id: string): string => (/^rivals?(-\d+)?$/.test(id) ? 'rival' : /^(officer|security)(-\d+)?$/.test(id) ? 'officer' : /^robot(-\d+)?$/.test(id) ? 'robot' : id === 'patrol' ? 'patrol' : id === 'guard' ? 'guard' : 'other');
+/** The role of an engine id (rival-1 and car:rivals (engine 0.33.0: the rival car, which holds the car while a member rides in it) → rival; security-1 and officer-1 → officer; robot-1 → robot; patrol; guard); anything else is `other`. */
+export const roleOfId = (id: string): string => (/^rivals?(-\d+)?$/.test(id) || id === 'car:rivals' ? 'rival' : /^(officer|security)(-\d+)?$/.test(id) ? 'officer' : /^robot(-\d+)?$/.test(id) ? 'robot' : id === 'patrol' ? 'patrol' : id === 'guard' ? 'guard' : 'other');
 /** What holds the car, in words, for `{holders}` in a refusal: "a rival", "2 robots", "police", "patrol", or "3 hostiles" when the roles differ. `ids` is Answer.ids. */
 export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
   const list = ids.split(',').map((x) => x.trim()).filter(Boolean);
@@ -473,19 +478,32 @@ export function holdersPhrase(t: Pick<TextFile, 'names'>, ids: string): string {
   if (!w) return h['mixed']!.many.replace('{n}', String(list.length));
   return list.length === 1 ? w.one : w.many.replace('{n}', String(list.length));
 }
-/** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss.
- *  {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission clock. Unknown code = undefined. */
-export function fillLock(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: { who?: string; op?: string; clock?: (tick: number) => string; variant?: 'machine' } = {}): string | undefined {
+/** The refusal line for an answer. `who` is the target's name ("Inez", "the driver"), `op` the agent ("Scout"), `clock` turns an engine tick into m:ss, `left` turns a tick still to come
+ *  into the time to wait ("18 s"; used for a lock marked `tickAs: left`). {m} is Answer.m, or Answer.cm / 100 when the engine sends cm; {usd} is "$" and the thousands; {tick} is the mission
+ *  clock, or the time left. Engine 0.33.0: car-held with `car:rivals` among the ids is worded by `rival-car` (tick known) or `rival-car-driving` (tick -1), not the base line. Unknown code = undefined. */
+export type LockCtx = { who?: string; op?: string; clock?: (tick: number) => string; left?: (tick: number) => string; variant?: (typeof LOCK_VARIANTS)[number] };
+/** The variant a lock answer is worded by: the caller's, else the rival car's when the car is among the holders. */
+export function lockVariant(a: Answer, ctx: LockCtx = {}): (typeof LOCK_VARIANTS)[number] | undefined {
+  if (ctx.variant) return ctx.variant;
+  if (a.code !== 'car-held' || !(a.ids ?? '').split(',').map((x) => x.trim()).includes('car:rivals')) return undefined;
+  return a.tick !== undefined && a.tick >= 0 ? 'rival-car' : 'rival-car-driving';
+}
+function fillLockWith(t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: LockCtx, field: 'line' | 'short'): string | undefined {
   const l = t.locks[a.code];
   if (!l) return undefined;
-  const line = (ctx.variant && l.byTarget?.[ctx.variant]?.line) || l.line;
+  const v = lockVariant(a, ctx);
+  const text = (v && l.byTarget?.[v]?.[field]) || l[field];
   const m = a.m !== undefined && a.m >= 0 ? a.m : a.cm !== undefined && a.cm >= 0 ? Math.round(a.cm / 100) : undefined;
-  return line
+  const stamp = l.tickAs === 'left' && ctx.left ? ctx.left : ctx.clock ?? String;
+  return text
     .replace(/\{who\}/g, ctx.who ?? 'them').replace(/\{op\}/g, ctx.op ?? 'The agent').replace(/\{holders\}/g, holdersPhrase(t, a.ids ?? ''))
     .replace(/\{m\}/g, m === undefined ? '?' : String(m))
     .replace(/\{usd\}/g, a.usd !== undefined && a.usd >= 0 ? '$' + a.usd.toLocaleString('en-US') : '?')
-    .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? (ctx.clock ?? String)(a.tick) : '?');
+    .replace(/\{tick\}/g, a.tick !== undefined && a.tick >= 0 ? stamp(a.tick) : '?');
 }
+export const fillLock = (t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: LockCtx = {}): string | undefined => fillLockWith(t, a, ctx, 'line');
+/** The pop at the click for the same answer: the lock's `short`, with the same variant and numbers (the chip beside the car reads it too). */
+export const fillLockShort = (t: Pick<TextFile, 'locks' | 'names'>, a: Answer, ctx: LockCtx = {}): string | undefined => fillLockWith(t, a, ctx, 'short');
 
 export type Query = { event: string; verb?: string; speaker: string; outcome?: string; temperament?: string; about?: string };
 

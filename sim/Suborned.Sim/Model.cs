@@ -277,6 +277,8 @@ namespace Suborned.Sim
             "free-not-cell",
             // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
             "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked",
+            // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
+            "car-driving",
         };
     }
 

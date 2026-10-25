@@ -171,7 +171,7 @@ namespace Suborned.Sim
             if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
             if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
-            if (getawayPath != null || !G.Within(op.Pos, Car, R.AtReachCm)) return No("stand-at-getaway", "stand at the getaway car", cm: R.AtReachCm); // brief 059: not while it drives
+            if (!AtGetaway(op.Pos)) return No("stand-at-getaway", "stand at the getaway car", cm: R.CarReachCm); // brief 059: not while it drives; engine 0.33.1: within car.footprint.reach of its body
             bool carrying = op.Carrying.HasValue || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);
             op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             Engage(op, o, R.BoardS + (carrying ? R.CarryS : 0));
@@ -180,7 +180,7 @@ namespace Suborned.Sim
         void LandBoard(Op op)
         {
             if (op.Down) return;
-            if (getawayPath != null || !G.Within(op.Pos, Car, R.AtReachCm)) { Note("board.missed", $"The getaway car is gone from beside the {Sim.Op.Name(op.Id)}: nobody boards."); return; } // brief 059: it drove off while he got in
+            if (!AtGetaway(op.Pos)) { Note("board.missed", $"The getaway car is gone from beside the {Sim.Op.Name(op.Id)}: nobody boards."); return; } // brief 059: it drove off while he got in
             var seat = GetawaySeat; string name = Sim.Op.Name(op.Id), with = ""; // brief 059 K6: the stand it is at
             op.InCar = true; op.Pos = seat; op.Walk = null; op.WalkMm = 0; op.Running = false; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = "";
             if (op.Carrying.HasValue)
@@ -199,15 +199,17 @@ namespace Suborned.Sim
             if (o.Point.HasValue) to = o.Point.Value;
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
             else return No("no-place", $"no place '{o.To}'");
-            if (!S.Grid.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
-            if (S.Grid.Route(GetawaySeat, to) == null) return No("no-walk", "no walk there");
+            var walk = Walk;
+            if (walk.CarCovers(to) && walk.RouteBeside(walk.NearestFree(GetawaySeat) ?? GetawaySeat, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): as Move, beside a standing car
+            if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
+            if (walk.Route(GetawaySeat, to) == null) return No("no-walk", "no walk there");
             Engage(op, o, R.BoardS);
             return "";
         }
         void LandStepOut(Op op, Order o)
         {
             if (op.Down || !op.InCar) return;
-            op.InCar = false; op.Pos = GetawaySeat;
+            op.InCar = false; op.Pos = Walk.NearestFree(GetawaySeat) ?? GetawaySeat; // engine 0.33.1 (car.footprint): out at the car's side, the free cell nearest its seat
             Note("board.out", $"The {Sim.Op.Name(op.Id)} steps out of the car.");
             var why = Move(op, o);
             if (why.Length > 0) Note("order.rejected", $"{o.Op} move {o.To}: {why}");
@@ -312,15 +314,15 @@ namespace Suborned.Sim
             {
                 if (!Up(h)) continue;
                 var from = h.Pos(Tick); var post = BlockPost(from, out _);
-                var to = S.Grid.NearestFree(post); if (!to.HasValue) continue;
-                var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, to.Value); if (route == null) continue;
+                var to = Walk.NearestFree(post); if (!to.HasValue) continue;
+                var route = Walk.Route(Walk.NearestFree(from) ?? from, to.Value); if (route == null) continue;
                 scored.Add((new Path(route).Length, h.Id, h));
             }
             scored.Sort((a, b) => a.mm != b.mm ? a.mm.CompareTo(b.mm) : string.CompareOrdinal(a.id, b.id));
             for (int i = 0; i < scored.Count && i < R.Blockers; i++)
             {
                 var (_, _, h) = scored[i];
-                var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : S.Grid.NearestFree(post) ?? post;
+                var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : Walk.NearestFree(post) ?? post;
                 if (cv != null) TakeCover(h.Gun, cv); else ReleaseCover(h.Gun); // the cover it held before (a joined officer's) is free again
                 h.Blocker = true; h.Home = to; MoveTo(h, to); Blockers.Add(h.Id);
                 Note("fight.blocker", $"{h.Id} goes for the road ({(cv != null ? "cover at " + cv.Id : "the lane, in the open")}).");
@@ -343,12 +345,13 @@ namespace Suborned.Sim
             return best;
         }
 
-        /// <summary>A rival within cell.atReach of the car while Vale is in it, with no operative standing within cell.reach of it (brief 018 §1).</summary>
+        /// <summary>A rival at the car (engine 0.33.1: within car.footprint.reach of its body; was cell.atReach of its centre) while Vale is in it,
+        /// with no operative standing within cell.reach of it (brief 018 §1).</summary>
         bool RivalReachesVale()
         {
             if (Vale != ValeAt.Car) return false;
             bool rival = false;
-            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && G.Within(h.Pos(Tick), Car, R.AtReachCm)) rival = true;
+            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && AtGetaway(h.Pos(Tick))) rival = true;
             if (!rival) return false;
             foreach (var op in Ops) if (!op.Down && !op.InCar && !op.Inside && G.Within(op.Pos, Car, actReach)) return false;
             return true;

@@ -32,13 +32,13 @@ namespace Suborned.Play
             Person("waitress", Family("server"), shape: Shape("server")); Person("driver", Family("official-driver"), shape: Shape("official-driver"));
             Person("guard", Family("guard"), shape: Shape("guard")); Person("councillor", Family("councillor"));
             Person("patrol", host.securityColour);
-            for (int i = 0; i < 3; i++) Person("rivals/" + i, host.rivalBodyColour);
             for (int i = 0; i < 2; i++) Person("security/" + i, host.securityColour);
             Box("car/official", new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true);
             Box("car/getaway", new Vector3(1.8f, 1.4f, 4.6f), host.getawayColour, true);
             if (Visual("patrol", host.patrolRobot) is Transform pr) { if (things["patrol"].t.Find("head")?.GetComponent<MeshRenderer>() is MeshRenderer ph) ph.enabled = false; carModels["patrol"] = pr; } // the patrol is Vela's PatrolRobot (brief 031: its head is the attention face), facing where it goes
             if (Visual("car/official", host.sedanOfficial) is Transform so) carModels["car/official"] = so; // brief 020: Vela's sedans; the boxes stay the click targets
             if (Visual("car/getaway", host.sedanGetaway) is Transform sg) carModels["car/getaway"] = sg;
+            RivalViewsInit(); // brief 059 K8: the five and their car (HostViews.Rivals)
             if (!g.Range) Marker("door", frame.World(s.At(s.GuardPost)) + Vector3.up * 1.2f, new Vector3(2.4f, 2.4f, 2.4f)); // brief 029: the range has no door, cabinet or cameras to draw
             if (s.HasPlace("cabinet")) Marker("cabinet", frame.World(s.At("cabinet")) + Vector3.up * 0.7f, new Vector3(1.4f, 1.4f, 1.4f));
             foreach (var c in g.Range ? new List<Suborned.Sim.Camera>() : s.Cameras)
@@ -150,8 +150,8 @@ namespace Suborned.Play
             if (g.Range)
             {   // brief 029 (Keel): the fight range draws the cell and the spawned hostiles only; the Handover's cast, guard, patrol, Vale, cars and
                 // cameras are the site format's required keys parked in the wings, and are never drawn
-                foreach (var k in new[] { "waitress", "driver", "guard", "councillor", "patrol", "car/official", "car/getaway" }) Set(k, null);
-                for (int i = 0; i < 3; i++) Set("rivals/" + i, null); for (int i = 0; i < 2; i++) Set("security/" + i, null);
+                foreach (var k in new[] { "waitress", "driver", "guard", "councillor", "patrol", "car/official", "car/getaway", "car/rivals" }) Set(k, null);
+                foreach (var k in RivalKeys) Set(k, null); for (int i = 0; i < 2; i++) Set("security/" + i, null);
                 faces.Clear(); phases.Clear();
                 var gone = new HashSet<string>(); foreach (var rh in g.RangeHostiles()) if (rh.Gone) gone.Add(rh.Id);
                 for (int i = 0; i < MaxHostiles; i++)
@@ -163,25 +163,21 @@ namespace Suborned.Play
                 RangeCars(g); RangeBystanders(g); // engine 0.18: the range's cars and bystanders
                 return;
             }
-            Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", g.DriverPos(), g.Driver.Down);
-            Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car ? null : g.ValePos(), g.ValeP.Down);
+            var dpos = g.DriverPos(); bool driverIn = dpos.HasValue && !g.Driver.Down && dpos.Value == g.CarPos() && !(g.Vale == ValeAt.Office || g.Vale == ValeAt.Leaving); // brief 059 K1, K2: at the wheel (Vale in the back), never a figure standing in the car
+            Set("waitress", g.PersonPos(g.Inez), g.Inez.Down); Set("driver", driverIn ? null : dpos, g.Driver.Down);
+            Set("guard", g.GuardPose()?.pos, g.GuardDown); Set("councillor", g.Vale == ValeAt.Car || g.Vale == ValeAt.InCar || g.Vale == ValeAt.Taking && g.TakeInCar ? null : g.ValePos(), g.ValeP.Down); // brief 059 K1: in the back of his car (and taken from it) he is in the car, not on the street
             // brief 022: Inez's round gives her facing (to her table, to the guard when they stand together), the guard's pose his
             faces.Clear();
             phases.Clear();
             if (g.PersonPose(g.Inez) is { } ip) { if (ip.facing.X != 0 || ip.facing.Y != 0) faces["waitress"] = frame.Dir(ip.facing); phases["waitress"] = ip.phase; if (ip.phase == "together") phases["guard"] = "together"; } // he stands with her: both talk
             if (g.GuardPose() is { } gp && (gp.facing.X != 0 || gp.facing.Y != 0)) faces["guard"] = frame.Dir(gp.facing);
             var pp = g.PatrolPose(); Set("patrol", pp?.pos, g.PatrolDown);
-            var rp = g.RivalsPose();
-            // Suture's bot triage (0.2.115, Q-SOLID x19): the engine gives a group one pose; its followers were drawn at a fixed 0.9 m offset and
-            // walked through supports, cypresses, the terrace wall and the Office steps. Each follower is drawn on free ground: 0.9 m (then 1.8 m)
-            // back along the leader's own path while it walks, else beside it, and always on a free walk cell (the nearest one when not)
-            for (int i = 0; i < 3; i++) Set("rivals/" + i, rp.HasValue ? (i == 0 ? rp.Value.pos : Follower(g, "rivals", rp.Value.pos, i, new Pt(i == 1 ? 90 : 0, i == 2 ? 90 : 0))) : (Pt?)null);
-            if (!rp.HasValue) trails.Remove("rivals");
+            RivalViews(g); // brief 059 K8: one view per member and one for the car, from RivalPoses (the three followers at one point are gone)
             var sp = g.SecurityPose();
             for (int i = 0; i < 2; i++) Set("security/" + i, sp.HasValue ? (i == 0 ? sp.Value.pos : Follower(g, "security", sp.Value.pos, i, new Pt(0, i * 90))) : (Pt?)null);
             if (!sp.HasValue) trails.Remove("security");
             Set("car/official", g.Vale == ValeAt.Car && g.Result != Outcome.Success ? (Pt?)null : g.CarPos());
-            Set("car/getaway", s.At(s.GetawayCar));
+            Set("car/getaway", g.GetawayCarPos()); // brief 059 K6: its stand, or along its Drive
             // the crowd: people the engine puts on one point are spread for the eye only (HostCrowdSpread: hash-seeded spots 0.7 m apart, a
             // loose column when walking, drawn up to a wall when standing; the engine is not told)
             Spread(g);
@@ -202,6 +198,7 @@ namespace Suborned.Play
             for (int i = 0; i < MaxHostiles; i++)
             {
                 var h = i < g.Hostiles.Count ? g.Hostiles[i] : null;
+                if (h != null && IsCrewId(h.Id)) { Set(hostileKeys[i], null); continue; } // brief 059 (059 §2 point 1): a crew member's fight body is drawn by his own view (RivalViews), never popped onto a fresh one
                 Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
                 if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
             }
@@ -278,13 +275,15 @@ namespace Suborned.Play
                 if (!things.ContainsKey(key))
                 {
                     var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
-                    Person(key, Family(job), shape: Shape(job)); Dress(key, PersonFigure(p));
+                    if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, "rival"); } // engine 0.33.0: a rival taken down is a body like anyone's, in his own clothes
+                    else { Person(key, Family(job), shape: Shape(job)); Dress(key, PersonFigure(p)); }
                 }
                 bool down = p.Down || b.Seizing;
                 if (down) // the person's own view hides; the body draws
                 {
                     if (CastKeys.TryGetValue(p.Role, out var ck)) Set(ck, null);
                     else if (walkerIndex.TryGetValue(p, out var wi)) Set(crowdKeys[wi], null);
+                    else if (IsCrewId(p.Id)) Set(p.Id, null);
                 }
                 if (!down || !b.Open) { Set(key, null); continue; }
                 if (b.Seizing) { Set(key, b.At, false); continue; }                  // the struggle: still on their feet
@@ -476,7 +475,7 @@ namespace Suborned.Play
         {
             foreach (var kv in things)
             {
-                var k = kv.Key; if (!(k.StartsWith("hostile/") || k.StartsWith("unit/") || k.StartsWith("rivals/") || k.StartsWith("security/") || k == "patrol")) continue;
+                var k = kv.Key; if (!(k.StartsWith("hostile/") || k.StartsWith("unit/") || IsCrewId(k) || k.StartsWith("security/") || k == "patrol")) continue;
                 var (t, _, _, shown) = kv.Value; if (shown && t.gameObject.activeInHierarchy) yield return t.position;
             }
         }

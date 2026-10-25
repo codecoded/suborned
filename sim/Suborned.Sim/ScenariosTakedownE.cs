@@ -34,7 +34,7 @@ namespace Suborned.Sim
                 var a = ActOn(r, Guard29);
                 r.Is(a.Noticed.Contains(g.Driver.Id) && !g.Reps.Exists(x => x.P == g.Driver && x.Kind != "tell"), "the driver saw it and reports nothing");
                 var tell = g.Reps.SingleOrDefault(x => x.P == g.Driver && x.Kind == "tell");
-                r.Is(tell != null && tell.Phase == "walk" && tell.LandAt == T(162), $"he goes to the official entrance's phone: react, the walk, the call at 2:42 ({(tell == null ? "none" : Report.Clock(tell.LandAt))})");
+                r.Is(tell != null && tell.Phase == "walk" && tell.LandAt == T(163) + 2, $"he goes to the official entrance's phone: react, the walk, the call at 2:43.2 (engine 0.33.1: he steps off his car's ground and walks round its tail; 2:42 before) ({(tell == null ? "none" : Report.Clock(tell.LandAt))})");
                 var c39 = g.PersonById(Clerk39)!;
                 r.Is(!ToldBy(c39, g.Driver) && !g.Log.Exists(l => l.Code == "witness.told"), "nobody is told at the sight");
                 Orders(r, MvTo(1570, Enf, new Pt(7690, -3370)), Act(1600, Enf, "takedown", Driver, "kill")); // engine 0.28.0 (brief 054 §3.3): guard 29, facing his post's way, sees him coming and struggles (+3 s): the driver's kill 3 s later

@@ -127,13 +127,13 @@
    "to": "service-drive"
   },
   {
-   "tick": 4470,
+   "tick": 4459,
    "op": "enforcer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 4470,
+   "tick": 4459,
    "op": "cell",
    "do": "panic"
   },
@@ -157,24 +157,24 @@
   },
   {
    "tick": 4521,
-   "op": "fixer",
-   "do": "move",
-   "to": "service-drive"
-  },
-  {
-   "tick": 4530,
    "op": "scout",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 4550,
+   "tick": 4521,
+   "op": "fixer",
+   "do": "move",
+   "to": "service-drive"
+  },
+  {
+   "tick": 4551,
    "op": "fixer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 4560,
+   "tick": 4561,
    "op": "cell",
    "do": "go"
   }

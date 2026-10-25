@@ -292,6 +292,7 @@ namespace Suborned.Play
             if (PerfTiming) { double v0 = Now(); views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f)); PerfViewsMs += Now() - v0; }
             else views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
             Guard("target rings", TargetRingsFrame); // brief 049 round 2: after the views moved
+            Guard("rival marks", RivalMarksFrame); Guard("drive marks", DriveMarksFrame); RivalAudioFrame(); // brief 059: the rivals' approach, walks, posts and Watch reads; the stands and Vale's car round the back; the rivals' sounds
             FollowFrame(); // the test follow view (HostFollow): after the views moved
             CamFollowFrame(); Guard("hold status", HoldStatusFrame); // brief 041: C's follow and the eased centring; the pill's live words
             Guard("fight lab", FightLabFrame); // brief 027: queued ghost lines and the hostiles' focus in a freeze
@@ -332,7 +333,7 @@ namespace Suborned.Play
         void Drain()
         {
             if (Game.Log.Count <= lastLog) return;
-            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); if (x.Code.StartsWith("shot.")) { Shot(x); continue; } if (x.Code.StartsWith("fire.camera-")) { CameraShot(x); continue; } FeedEvent(x); SayLanded(x); }
+            for (int i = lastLog; i < Game.Log.Count; i++) { var x = Game.Log[i]; HintLog(x); AudioLog(x); /* brief 059: Chime's cues by log code */ if (x.Code.StartsWith("shot.")) { Shot(x); continue; } if (x.Code.StartsWith("fire.camera-")) { CameraShot(x); continue; } FeedEvent(x); SayLanded(x); }
             var l = Game.Log[Game.Log.Count - 1]; Status = $"{Report.Clock(l.Tick)} {l.Text}"; lastLog = Game.Log.Count;
         }
 
@@ -735,7 +736,13 @@ namespace Suborned.Play
                 if (n.StartsWith("op/")) return new Target { Kind = "op", Key = n[3..], Label = Game.Ops[(int)Op.Parse(n[3..])].Down ? $"the downed {n[3..]}" : n[3..] };
                 if (n is "waitress" or "driver" or "guard" or "councillor") return new Target { Kind = "person", Key = n, Label = Name(n), Id = n };
                 if (n == "patrol") return new Target { Kind = "patrol", Key = "patrol", Label = "the patrol" };
-                if (n.StartsWith("rivals/")) return new Target { Kind = "rivals", Key = "rivals", Label = "the rival crew" };
+                if (HostViews.IsCrewId(n) && !Game.Range) // brief 059 K8 / engine 0.33.0: a member is a person to the takedown and the fire order; in the fight, a hostile
+                {
+                    var md = views != null && views.RivalModes.TryGetValue(n, out var mm) ? mm : "";
+                    if (md is "down" or "aboard" or "") return null; // down: his body view takes the click; aboard: off the street
+                    return new Target { Kind = md == "fight" ? "hostile" : "rivals", Key = n, Id = n, Label = Text?.HoldersPhrase(n) ?? "a rival" };
+                }
+                if (n == "car/rivals") return new Target { Kind = "rivals", Key = "car:rivals", Id = "car:rivals", Label = Name("rivals") }; // the rival car: Watch, the false tip, Fire
                 if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = "the response unit" };
                 if (n.StartsWith("hostile/"))
                 {
@@ -744,10 +751,11 @@ namespace Suborned.Play
                     return new Target { Kind = "hostile", Key = id, Label = id.StartsWith("rival") ? "a rival" : "an officer" };
                 }
                 if (n.StartsWith("crowd/")) { int ci = int.Parse(n[6..]); var cp = ci < Game.Walkers.Count ? Game.Walkers[ci].P : null; return new Target { Kind = "crowd", Key = n, Label = "a passer-by", Id = cp?.Id ?? "" }; }
-                if (n.StartsWith("body/")) { var bp = Game.PersonById(n[5..]); return bp == null ? null : new Target { Kind = "body", Key = n[5..], Id = n[5..], Label = PersonName(bp) }; }
+                if (n.StartsWith("body/")) { var bp = Game.PersonById(n[5..]) ?? Game.BodyById(n[5..])?.P; return bp == null ? null : new Target { Kind = "body", Key = n[5..], Id = n[5..], Label = PersonName(bp) }; } // engine 0.33.0: a rival's body (BodyById finds the crew; PersonById the cast and the crowd)
                 if (n.StartsWith("stash/")) { var st = Game.S.Stashes.Find(x => x.Id == n[6..]); return st == null ? null : new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) }; }
                 if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
                 if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = "the official car" };
+                if (n.StartsWith("stand/")) return StandTarget(n); // brief 059 K6: a stand of the getaway car (its Drive)
                 if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
                 if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a passer-by" }; } // engine 0.18: a range bystander
                 if (n == "car/getaway") return new Target { Kind = "car", Key = "getaway", Label = "the getaway car" };
@@ -835,6 +843,11 @@ namespace Suborned.Play
             Intent I(string verb, string target, string approach, string label) => new Intent { Slot = slot, Label = label, Order = new Order { Op = op, Do = verb, Target = target, Approach = approach } };
             switch (id)
             {
+                case "watch" when t.Kind == "rivals": // brief 059 §2.2: a Watch on the rival car teaches their timetable (RivalNext), once; on the car, never a member
+                    {
+                        if (t.Key != "car:rivals" || g.RivalsWatched || !g.RivalCarPose().HasValue) return null;
+                        var i = I("watch", "car:rivals", "", $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "their timetable"; return i;
+                    }
                 case "watch" when t.Kind is "camera" or "patrol": // a watcher: its sight is learned (rulebook sight.watch: within the agent's reach, on a clear line)
                     {
                         var w = t.Kind == "camera" ? "camera:" + t.Key : "patrol";
@@ -848,8 +861,8 @@ namespace Suborned.Play
                         var i = I(id, t.Key, "", $"{plate[slot].Label} {t.Label}"); i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Outcome = id == "watch" ? (t.Key == "guard" ? "routine" : "mood") : "need, temperament"; return i; // brief 054: a person's Watch reads the mood; the guard's his sight and marks
                     }
                 case "mislead":
-                    if (t.Kind != "rivals") return null;
-                    { var i = I("mislead", "rivals", "", "False tip"); i.Time = $"{R.MisleadS} s"; i.Trail = $"T +{R.MisleadTrail}"; return i; }
+                    if (t.Kind != "rivals" || t.Key != "car:rivals") return null; // brief 059 F3: the tip is given at the parked car, to its wheelman
+                    { var i = I("mislead", "car:rivals", "", "False tip"); i.Time = $"{R.MisleadS} s"; i.Trail = $"T +{R.MisleadTrail}"; return i; }
                 case "ask": case "pay": case "help": case "pressure":
                     if (t.Kind != "person" || t.Key == "councillor" || CastOf(t.Key) == null) return null; // a turn is on a cast person only
                     {
@@ -883,10 +896,10 @@ namespace Suborned.Play
                         // engine 0.15.0 (tuning.md §9.1): anyone can be shot: every person (Vale too: the hold card says the mission fails), forced
                         // (a civilian), a unit by its own id, a camera, a car (0.16.0); each a harmful wedge with the 0.5 s hold (HoldWedge)
                         if (t.Kind == "bystander" && !controls.HoldActs && !controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force)) return null; // engine 0.18: a range bystander is fired on only with Ctrl held (the goal line says so)
-                        string target = t.Kind is "person" or "hostile" or "unit" or "bystander" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : "";
+                        string target = t.Kind is "person" or "hostile" or "unit" or "bystander" or "rivals" ? t.Key : t.Kind is "patrol" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : ""; // brief 059: a member by his id, the rival car as car:rivals
                         if (target.Length == 0) return null;
-                        if (t.Kind is "camera" or "car" && NoFireTarget(by, target)) return null; /* the 0.2.115 bot row (Q-OFFER no-target x9): a camera already shot dark (or none the engine knows) is never offered */
-                        var i = I("fire", target, "", $"Fire at {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? $"T {FireTrail(by, target)}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i; // brief 058: property costs the shooting once (the panel's Trail line)
+                        if ((t.Kind is "camera" or "car" || target == "car:rivals") && NoFireTarget(by, target)) return null; /* the 0.2.115 bot row (Q-OFFER no-target x9): a camera already shot dark (or none the engine knows) is never offered */
+                        var i = I("fire", target, "", $"Fire at {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" || target == "car:rivals" ? $"T {FireTrail(by, target)}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i; // brief 058: property costs the shooting once (the panel's Trail line)
                     }
             }
             return null;
@@ -898,7 +911,7 @@ namespace Suborned.Play
         /// <summary>Fire on a fight target for any armed agent (the Enforcer's knob intent, for an agent with no Fire knob).</summary>
         Intent FireIntent(OpId by, Target t)
         {
-            var R = Game.R; string target = t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind is "hostile" or "unit" ? t.Key : "";
+            var R = Game.R; string target = t.Kind is "patrol" or "security" ? t.Kind : t.Kind is "hostile" or "unit" or "rivals" ? t.Key : ""; // brief 059: a member by his id, the car as car:rivals
             if (Game.Range && t.Kind == "car") target = "car:" + t.Key; // engine 0.18: the range's cars, by every armed agent
             if (t.Kind == "camera") target = "camera:" + t.Key; // brief 058 (Motive's probes): every armed agent fires on a camera, not only the Enforcer
             if (Game.Range && t.Kind == "bystander" && (controls.HoldActs || controls.Held(UnityEngine.InputSystem.Keyboard.current, PlayAction.Force))) target = t.Key; // brief 041: no Ctrl in the hold preset // and a bystander, only with Ctrl held
@@ -920,10 +933,10 @@ namespace Suborned.Play
         Intent Go(Target t)
         {
             var g = Game; var s = g.S; int first = Array.IndexOf(Selected, true); if (first < 0) return null;
-            string place = t.Kind switch { "door" => s.GuardPost, "cabinet" => "cabinet", "car" when t.Key == "getaway" => s.GetawayCar, _ => "" };
+            string place = t.Kind switch { "door" => s.GuardPost, "cabinet" => "cabinet", "car" when t.Key == "getaway" => g.CurStand.Car, _ => "" }; // brief 059 K6: the car's current stand
             Pt? to = place.Length > 0 ? s.Stand(place) : t.Kind switch
             {
-                "person" => CastOf(t.Key) is Person cp ? g.PersonPos(cp) : null, "patrol" => g.PatrolPose()?.pos, "rivals" => g.RivalsPose()?.pos, "security" => g.SecurityPose()?.pos,
+                "person" => CastOf(t.Key) is Person cp ? g.PersonPos(cp) : null, "patrol" => g.PatrolPose()?.pos, "rivals" => RivalPos(t), "security" => g.SecurityPose()?.pos,
                 "car" => g.CarPos(), "camera" => CameraAt(t.Key), _ => null,
             };
             if (!to.HasValue) return null;
@@ -1014,7 +1027,9 @@ namespace Suborned.Play
             if (!r.ok && !quietRefusal)
             {
                 var full = Humanise(o, r); // brief 014: the pop is the short form with its family glyph; the long line is Alt
-                Pop(ShortOf(o, r) ?? full, screen, screen.HasValue ? null : target ?? (o.Op == "cell" ? null : SelectedWorld()), Feedback.Refused, 2f, PopIcon(r.code), full);
+                bool atStand = o.Do == "drive-car" && StandWorld(o.Target).HasValue; // Glyph 2026-10-26 §5: a refused Drive pops at the stand's footprint, with one pulse there
+                Pop(ShortOf(o, r) ?? full, atStand ? null : screen, atStand ? StandWorld(o.Target) : screen.HasValue ? null : target ?? (o.Op == "cell" ? null : SelectedWorld()), Feedback.Refused, 2f, PopIcon(r.code), full);
+                if (r.code is "drive-held" or "car-held") HolderPulseAt = Time.unscaledTime; // the holders pulse as for Go
                 if (screen.HasValue && target.HasValue) Pulses.Add((target.Value, Feedback.Refused, Time.unscaledTime));
             }
             if (!r.ok && o.Do == "call" && r.code.StartsWith("summon-")) FeedSummonRefused(o.Target, o, r); // the contact and their lover say why not
@@ -1105,6 +1120,7 @@ namespace Suborned.Play
                 var order = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k] && Able(k)) order.Add(k); // item 29: a downed agent is no giver (its rows never exist: no wedge, no cameo)
                 if (order.Count == 0) { pn.Note = "Select an agent."; return; }
                 if (IsGetaway(t)) { CarRows(pn, order, t); KeyRows(pn); return; } // brief 018: Board for each selected agent, then Go
+                if (t.Kind == "stand") { StandRows(pn, order, t); KeyRows(pn); return; } // brief 059 K6: Drive the getaway car here
                 foreach (var k in order)
                 {
                     var rows = new List<PanelRow>();
@@ -1200,9 +1216,9 @@ namespace Suborned.Play
         /// <summary>A target's key in the text's `targets` and `onTarget` (camera-entrance, car-getaway; a person by role).</summary>
         public string TextKey(Target t) => t.Kind switch
         {
-            "camera" => "camera-" + t.Key, "car" => "car-" + t.Key, "hostile" => "hostile", "crowd" => "crowd",
+            "camera" => "camera-" + t.Key, "car" => "car-" + t.Key, "hostile" => "hostile", "crowd" => "crowd", "stand" => "stand-" + t.Key, "rivals" => "rivals", // brief 059 (Fable's keys): a stand by its id; a member or the rival car is the crew's entry
             "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Kind == "door" ? "stash-door" : "stash-bin",
-            "body" => Game.PersonById(t.Key) is Person bp && bp.Role.Length > 0 ? bp.Role : "crowd", _ => t.Key,
+            "body" => Game.PersonById(t.Key) is Person bp && bp.Role.Length > 0 ? bp.Role : HostViews.IsCrewId(t.Key) ? "rivals" : "crowd", _ => t.Key,
         };
 
         /// <summary>Why a row cannot be given now, from the engine's own state (the engine still answers the order; its refusal shows as a pop).</summary>
@@ -1241,9 +1257,12 @@ namespace Suborned.Play
                 case "drop": return op.CarryBody.Length == 0 && !op.Carrying.HasValue ? No("not-carrying", "carrying nobody") : yes;
                 case "restrain": case "carry" when !IsOpName(o.Target): return op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
                 case "reroute": return g.PatrolAwayUntil > g.Tick ? No("patrol-away", "the patrol is already away", g.PatrolAwayUntil) : yes;
-                case "mislead": return g.RivalsPresent ? yes : No("no-rivals", "no rivals here yet");
+                case "mislead": return MisleadOpen() ? yes : No("no-rivals", "no rival car parked here with its wheelman in it"); // brief 059 F3 (the engine's MisleadRefusal, mirrored for the card; the order still asks the engine)
                 case "enter": return g.Vale == ValeAt.Office ? yes : No("vale-not-inside", "Vale is not inside");
-                case "take": return g.Vale == ValeAt.Pickup ? yes : No("vale-not-at-car", "Vale is not at his car yet");
+                case "take": // brief 059 K3 (the engine's Take, mirrored for the card): round the back with a turned driver, never at the front or on the way
+                    if (g.Vale == ValeAt.InCar && !g.PickupService && g.CarInBayTick >= 0) return No("car-not-parked", "Vale's car is driving round: take him once it parks", g.CarInBayTick);
+                    if (g.Vale == ValeAt.Pickup && g.Driver.Turned && !g.Driver.Down) return No("driver-brings-vale", "the turned driver is bringing Vale round the back: take him there");
+                    return g.Vale == ValeAt.Pickup || g.Vale == ValeAt.InCar && g.PickupService ? yes : No("vale-not-at-car", "Vale is not at his car yet");
                 case "fire" when by == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer: return No("fire-carrying-vale", "walking Vale, the Enforcer doesn't fire: the others cover him");
                 case "fire":
                     {   // the 0.2.116 bot row (Q-OFFER: fire-carrying x14, no-target x2): the wedge shows the engine's own refusal (FireQuery) as its lock;
@@ -1284,16 +1303,16 @@ namespace Suborned.Play
             {
                 case "loop": case "disable": case "reroute": place = "cabinet"; break;
                 case "enter": place = s.GuardPost; break;
-                case "board": place = s.GetawayCar; break; // brief 018: board within at-reach of the car
-                case "watch": tp = PosOf(t); reach = R.WatchReachCm(by); break; // brief 031: within the agent's own reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m), on a clear line
+                case "board": place = g.CurStand.Car; break; // brief 018: board within at-reach of the car; brief 059 K6: at the stand it stands at
+                case "watch": tp = o.Target == "car:rivals" ? g.RivalCarPose()?.pos : PosOf(t); reach = R.WatchReachCm(by); break; // brief 031: within the agent's own reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m), on a clear line
                 case "listen": tp = PosOf(t); reach = ReachOf("scout.listen"); break;
                 case "turn": tp = PosOf(t); reach = R.ApproachReachCm; break;
                 case "take": tp = g.ValePos(); reach = R.ActReachCm; break;
-                case "mislead": tp = g.RivalsPose()?.pos; reach = R.ActReachCm; break;
+                case "mislead": tp = g.RivalCarPose()?.pos; reach = R.ActReachCm; break; // brief 059 F3: at the rival car
                 case "fire": tp = PosOf(t); if (op.Gun.W == null) return null; reach = op.Gun.W.EffCm; break; // walk into the weapon's effective band
                 case "carry" when IsOpName(o.Target): tp = g.Ops[(int)Op.Parse(o.Target)].Pos; reach = R.ActReachCm; break;
                 case "carry": case "restrain": { var b = g.BodyById(o.Target); if (b == null) return null; tp = g.BodyPos(b); reach = R.ActReachCm; break; }
-                case "takedown": { var p = g.PersonById(o.Target); tp = p == null ? null : g.PosOfPerson(p); reach = R.TakedownReachCm; break; }
+                case "takedown": { var p = g.PersonById(o.Target); tp = p == null ? (HostViews.IsCrewId(o.Target) ? g.PosOf(o.Target) : null) : g.PosOfPerson(p); reach = R.TakedownReachCm; break; } // engine 0.33.0: a member on foot
                 case "stash": { var st = g.S.Stashes.Find(x => x.Id == o.Target); if (st == null) return null; tp = st.Stand; reach = R.AtReachCm; break; }
                 default: return null; // a call is made from wherever the Fixer stands
             }
@@ -1335,7 +1354,7 @@ namespace Suborned.Play
 
         Pt? PosOf(Target t) => t.Kind switch
         {
-            "person" => CastOf(t.Key) is Person pp ? Game.PersonPos(pp) : null, "patrol" => Game.PatrolPose()?.pos, "rivals" => Game.RivalsPose()?.pos,
+            "person" => CastOf(t.Key) is Person pp ? Game.PersonPos(pp) : null, "patrol" => Game.PatrolPose()?.pos, "rivals" => RivalPos(t),
             "security" => Game.SecurityPose()?.pos, "hostile" => Game.PosOf(t.Key), "op" => Game.Ops[(int)Op.Parse(t.Key)].Pos, "camera" => CameraAt(t.Key),
             "crowd" => Game.PersonById(t.Id) is Person cp ? Game.PosOfPerson(cp) : null, "body" => Game.BodyById(t.Key) is Body b ? Game.BodyPos(b) : null,
             "stash" => Game.S.Stashes.Find(x => x.Id == t.Key)?.Stand, "bystander" => Game.PosOf(t.Key), "car" when Game.Range => Game.CarAt("car:" + t.Key), _ => null,
@@ -1385,7 +1404,7 @@ namespace Suborned.Play
             return s;
         }
 
-        string PlaceName(string place) => place == "cabinet" ? "the control cabinet" : place == Game.S.GuardPost ? "the public door" : place == Game.S.GetawayCar ? "the getaway car" : place;
+        string PlaceName(string place) => place == "cabinet" ? "the control cabinet" : place == Game.S.GuardPost ? "the public door" : place == Game.S.GetawayCar || Game.S.Stands.Exists(x => x.Car == place) ? "the getaway car" : place;
 
         /// <summary>The act an agent walks to give (verb, approach), or empty (brief 014: its glyph at the walk's end).</summary>
         public (string verb, string approach) PendingOf(int k) { var q = pending[k] ?? (Game != null && Game.Ops[k].Busy == null ? Game.Ops[k].Act : null); return q == null ? ("", "") : (q.Do, q.Approach ?? ""); } // engine 0.23: the act a walk-in walks to counts as the agent's queued act
@@ -1441,7 +1460,8 @@ namespace Suborned.Play
 
         public Vector3? TargetWorld(Target t)
         {
-            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => "rivals/0", "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
+            var key = t.Kind switch { "person" => t.Key, "door" => "marker/door", "cabinet" => "marker/cabinet", "camera" => "camera/" + t.Key, "car" => "car/" + t.Key, "patrol" => "patrol", "rivals" => t.Key == "car:rivals" ? "car/rivals" : t.Key, "stand" => "stand/" + t.Key, "security" => "security/0", "hostile" => ViewKey(t.Key), "op" => "op/" + t.Key, "crowd" => t.Key, "body" => "body/" + t.Key, "stash" => "stash/" + t.Key, "unit" => "unit/" + t.Key, "bystander" => views.BystanderKey(Game, t.Key), _ => null };
+            if (t.Kind == "stand") return StandWorld(t.Key);
             var tr = key != null ? views.Find(key) : null; return tr ? tr.position : (Vector3?)null;
         }
 

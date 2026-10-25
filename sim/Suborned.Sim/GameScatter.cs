@@ -85,8 +85,8 @@ namespace Suborned.Sim
 
         Path RouteOf(Pt a, Pt b)
         {
-            var fa = S.Grid.NearestFree(a) ?? a; var fb = S.Grid.NearestFree(b) ?? b;
-            var route = S.Grid.Route(fa, fb);
+            var fa = Walk.NearestFree(a) ?? a; var fb = Walk.NearestFree(b) ?? b;
+            var route = Walk.Route(fa, fb);
             return new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
         }
 

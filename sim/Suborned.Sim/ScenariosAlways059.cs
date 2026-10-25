@@ -455,7 +455,10 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Is(g.S.Stand("svc-ambush-1") == new Pt(7735, -800), "svc-ambush-1 at (77.35, -8.0) (Vantage, M059-B4)");
                 if (!PlayFixture(r, "bal-rbb-ff", NoLocks)) return;
-                r.Eq((g.Result, g.FailCode), (Outcome.Failure, "rivals-reach-vale"), $"the carry is lost at will ({Report.Clock(g.Tick)}; Motive 7:30.0)");
+                // engine 0.33.1 (car.footprint): his walk ends at the car's side, 1.1 s sooner than at its centre, so he boards at 7:29.9 and the third
+                // hit (7:30.0) downs him in the car with Vale, not carrying him (0.33.0: rivals-reach-vale at 7:30.0). Either way the carry is lost: no win
+                int down = LogTick(g, "enforcer.down") is int ed && ed >= 0 ? ed : LogTick(g, "fail.rivals-reach-vale");
+                r.Is(down >= 0 && down <= T(451) && g.Result != Outcome.Success, $"the carry is lost at will: the Enforcer down at {(down >= 0 ? Report.Clock(down) : "-")} (Motive 7:30.0), no win ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
             });
             void Focus(Run r, string fx, bool late)
             {

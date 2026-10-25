@@ -210,12 +210,12 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- members
 
         static bool Up(CrewMember m) => !m.Gun.Down && m.Mode != CrewMode.Gone;
-        Pt StepOutAt() { var c = RivalCarPose()?.pos ?? S.Stand(S.RivalsPark); return S.Grid.NearestFree(c) ?? c; }
+        Pt StepOutAt() { var c = RivalCarPose()?.pos ?? S.Stand(S.RivalsPark); return Walk.NearestFree(c) ?? c; }
 
         void StartWalk(CrewMember m, Pt from, Pt to, string goal, int speed)
         {
-            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(to) ?? to;
-            var route = S.Grid.Route(a, b) ?? new[] { a, b };
+            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            var route = Walk.Route(a, b) ?? new[] { a, b };
             m.Walk = new Path(route); m.WalkStart = Tick; m.Speed = Math.Max(1, speed); m.Goal = goal; m.Mode = CrewMode.Walking; m.ModeTick = Tick; m.Disp = null;
             if (m.Walk.Length == 0) ArriveWalk(m);
         }
@@ -302,7 +302,7 @@ namespace Suborned.Sim
             }
             m.Spot = best < 0 ? Math.Min(m.N - 1, st.Ambush.Length - 1) : best; m.SpotStand = st.Id;
         }
-        long WalkMm(Pt a, Pt b) { var r = S.Grid.Route(S.Grid.NearestFree(a) ?? a, S.Grid.NearestFree(b) ?? b); return r == null ? long.MaxValue / 4 : new Path(r).Length; }
+        long WalkMm(Pt a, Pt b) { var r = Walk.Route(Walk.NearestFree(a) ?? a, Walk.NearestFree(b) ?? b); return r == null ? long.MaxValue / 4 : new Path(r).Length; }
 
         /// <summary>F1: the getaway car leaves its stand on a Drive: the posted three (posted, walking to a post, or still aboard at the drop) re-plan
         /// rivals.follow later for the new stand's spots, in id order from where each stands, at rivals.followPace.</summary>
@@ -409,7 +409,7 @@ namespace Suborned.Sim
         {
             Pt d = S.Stand(S.CarDriver), lk = S.Stand(S.RivalLookout); long dist = Math.Max(1, G.Dist(d, lk));
             var p = new Pt(d.X + (int)((long)(lk.X - d.X) * 150 / dist), d.Y + (int)((long)(lk.Y - d.Y) * 150 / dist));
-            return S.Grid.NearestFree(p) ?? p;
+            return Walk.NearestFree(p) ?? p;
         }
 
         // ---------------------------------------------------------------- gunfire draws them (F5)
@@ -420,7 +420,7 @@ namespace Suborned.Sim
             Pt a = S.Stand(S.RivalsFront), c = S.At(S.RivalCarFront); var f = a - c; long len = Math.Max(1, G.Isqrt((long)f.X * f.X + (long)f.Y * f.Y));
             int[] ks = { 0, 1, -1, 2, -2 }; int k = ks[Math.Min(m.N - 1, ks.Length - 1)];
             var p = new Pt(a.X + (int)(-f.Y * 90L * k / len), a.Y + (int)(f.X * 90L * k / len));
-            return S.Grid.NearestFree(p) ?? a;
+            return Walk.NearestFree(p) ?? a;
         }
         /// <summary>F5: the crew already on the map makes for the Office front now; off the map, the car comes for it.</summary>
         void CrewDrawn()
@@ -581,8 +581,8 @@ namespace Suborned.Sim
         }
         void MoveToFight(Hostile h, Pt to)
         {
-            var from = h.Pos(Tick); var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(to) ?? to;
-            var route = S.Grid.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
+            var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            var route = Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; if (h.Run.Length == 0) h.Run = null;
         }
         /// <summary>F6: a rider steps out at the fight's stand (or a member still on foot when the fight takes him): his body joins the fight, walking

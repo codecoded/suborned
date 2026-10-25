@@ -44,33 +44,38 @@ namespace Suborned.Sim
         /// <summary>Every routine leg's walk (place → place), built once at load (Warm), read-only after: a leg's route never depends on when
         /// it is walked, so building them up front changes no run, and the chime (58 clerks starting new legs on one tick) costs no frame.</summary>
         public readonly Dictionary<string, Path> Legs = new Dictionary<string, Path>(StringComparer.Ordinal);
-        public void Warm(Site site)
+        public void Warm(Site site, Rules rules)
         {
+            var home = Home(site, rules);
             foreach (var w in Walkers)
                 for (int i = 0; i + 1 < w.Place.Length; i++)
                 {
                     var a = w.Place[i]; var b = w.Place[i + 1]; if (a == "beyond" || b == "beyond") continue;
                     var key = a + "→" + b; if (Legs.ContainsKey(key)) continue;
-                    Legs[key] = Leg(site, Places[a], Places[b]);
+                    Legs[key] = Leg(site, Places[a], Places[b], home);
                 }
         }
-        internal static Path Leg(Site site, Pt pa, Pt pb) => Leg(site, pa, pb, out _);
+        /// <summary>Engine 0.33.1 (rulebook car.footprint): the cells of the cars standing when the mission starts (Game.HomeCars), which every
+        /// routine leg goes round; computed once per crowd (the same for every game on these inputs).</summary>
+        public bool[]? Home(Site site, Rules rules) { if (!homeDone) { home = Game.HomeCars(site, rules); homeDone = true; } return home; }
+        bool[]? home; bool homeDone;
+        internal static Path Leg(Site site, Pt pa, Pt pb, bool[]? cars = null) => Leg(site, pa, pb, out _, cars);
         /// <summary>A routine leg: from pa onto the walk grid, the grid's route, and off it to pb. Engine 0.33.0 (brief 060, Suture's cause A): an
         /// end with no free cell within 6 m (off the window, as t1-records, or deep in a solid) joins the grid at the free cell nearest it with no
         /// cap (Grid.NearestFreeAny), so the leg walks the grid and leaves the window from there; 0.32.0 drew it as a straight line through the
         /// Records Office. An end whose cell lies on a pocket of free ground cut off from the other end's (a seat walled in by tables) joins
         /// the other's piece at its cell nearest that end. Only a leg with both ends off the window is still a straight line (routed false).</summary>
-        public static Path Leg(Site site, Pt pa, Pt pb, out bool routed)
+        public static Path Leg(Site site, Pt pa, Pt pb, out bool routed, bool[]? cars = null)
         {
             var g = site.Grid; bool both = !g.InGrid(pa) && !g.InGrid(pb);
-            Pt? fa = both ? g.NearestFree(pa) : g.NearestFreeAny(pa), fb = both ? g.NearestFree(pb) : g.NearestFreeAny(pb);
+            Pt? fa = both ? g.NearestFree(pa, cars) : g.NearestFreeAny(pa, cars), fb = both ? g.NearestFree(pb, cars) : g.NearestFreeAny(pb, cars);
             var pts = new List<Pt> { pa };
             if (fa.HasValue && fb.HasValue && g.PieceOf(fa.Value) != g.PieceOf(fb.Value)) // an end on a pocket of free ground (a seat walled in by tables): the smaller piece's end joins the larger's nearest cell
             {
                 int ka = g.PieceOf(fa.Value), kb = g.PieceOf(fb.Value);
                 if (g.PieceSize(kb) <= g.PieceSize(ka)) fb = g.NearestFreeIn(pb, ka); else fa = g.NearestFreeIn(pa, kb);
             }
-            var route = fa.HasValue && fb.HasValue ? g.Route(fa.Value, fb.Value) : null;
+            var route = fa.HasValue && fb.HasValue ? g.Route(fa.Value, fb.Value, cars) : null;
             routed = route != null;
             if (route != null) pts.AddRange(route); else pts.Add(fb ?? pb);
             pts.Add(pb);
@@ -168,7 +173,7 @@ namespace Suborned.Sim
                 if (i + 1 < w.Place.Length && tick >= w.To[i] && tick < w.From[i + 1])
                 {
                     if (w.Place[i] == "beyond" || w.Place[i + 1] == "beyond") return null;
-                    var path = CrowdPath(w.Place[i], w.Place[i + 1]);
+                    var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]);
                     int span = w.From[i + 1] - w.To[i];
                     return span <= 0 ? path.End : path.At(LegMm(w, path, tick - w.To[i], span));
                 }
@@ -184,13 +189,29 @@ namespace Suborned.Sim
             long mm = path.Length * t * (100 + w.PacePct) / (100L * span);
             return mm < path.Length ? mm : path.Length;
         }
-        Path CrowdPath(string a, string b)
+        /// <summary>A routine leg's walk, for a leg that sets out at tick `from`. Engine 0.33.1 (rulebook car.footprint): it goes round the cars
+        /// standing when it sets out (CarEpochAt). While those are the mission's start cars (the getaway car at its first stand, the official car
+        /// at the pickup), the leg built at load (Crowd.Warm, round those two); once a car stands elsewhere, that same leg if it crosses none of
+        /// the cars standing then, else the leg walked again round them (kept for this game, by the cars' epoch).</summary>
+        Path CrowdPath(string a, string b, int from)
         {
             var key = a + "→" + b;
             var c = People2!;
-            if (c.Legs.TryGetValue(key, out var p)) return p; // built at load (Crowd.Warm)
-            if (crowdPaths.TryGetValue(key, out p)) return p;
-            p = Crowd.Leg(S, c.Places[a], c.Places[b]); crowdPaths[key] = p; return p;
+            var ep = CarEpochAt(from);
+            if (!c.Legs.TryGetValue(key, out var p) && !crowdPaths.TryGetValue(key, out p)) { p = Crowd.Leg(S, c.Places[a], c.Places[b], c.Home(S, R)); crowdPaths[key] = p; } // built at load (Crowd.Warm), else once here
+            if (ep.home) return p;
+            var ek = ep.id.ToString(System.Globalization.CultureInfo.InvariantCulture) + "|" + key;
+            if (crowdPaths.TryGetValue(ek, out var q)) return q;
+            q = Crosses(p, ep.mask) ? Crowd.Leg(S, c.Places[a], c.Places[b], ep.mask) : p;
+            crowdPaths[ek] = q; return q;
+        }
+        /// <summary>Whether a walk passes over ground the mask's cars cover (sampled every 10 cm, as Grid.LineFree).</summary>
+        bool Crosses(Path p, bool[]? m)
+        {
+            if (m == null) return false;
+            var g = S.Grid;
+            for (long mm = 0; mm <= p.Length; mm += 100) { var x = p.At(mm); int i = g.CI(x.X), j = g.CJ(x.Y); if (g.FreeCell(i, j) && m[i * g.Ny + j]) return true; }
+            return false;
         }
 
         /// <summary>Everyone on the street who could witness: the cast by their role, then the crowd by id (Start.Crowd, Suture's T4 arm).</summary>

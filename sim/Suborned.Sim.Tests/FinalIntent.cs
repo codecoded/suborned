@@ -86,7 +86,8 @@ public class FinalIntentTests
         var a = Engine.Play(Agent, script.Start, script.Orders, script.Until);
         var b = Engine.Play(Every, script.Start, script.Orders, script.Until);
         Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode));
-        if (!name.StartsWith("careless-", StringComparison.Ordinal) && !name.StartsWith("fight-", StringComparison.Ordinal)) Assert.Equal((a.Trail, a.Alert), (b.Trail, b.Alert)); // the failure rows' Trail may fall (fight-loud-enforcer-down 9 -> 8: fewer hits)
+        if (!name.StartsWith("careless-", StringComparison.Ordinal) && !name.StartsWith("fight-", StringComparison.Ordinal) && !Moves.Contains(name)) Assert.Equal((a.Trail, a.Alert), (b.Trail, b.Alert)); // the failure rows' Trail may fall (fight-loud-enforcer-down 9 -> 8: fewer hits)
+        else if (Moves.Contains(name)) { Assert.Equal(a.Alert, b.Alert); Assert.True(a.Trail <= b.Trail, $"{name}: Trail {a.Trail} under agent, {b.Trail} under every"); } // engine 0.33.1 (car.footprint): on the loud rows the agents who did nothing are no longer shot, and the Trail may differ too (12 under agent, 14 under every)
         if (Moves.Contains(name)) Assert.NotEqual(a.Checkpoints, b.Checkpoints); // Motive §15.2: the agents who did nothing are no longer shot
         else Assert.Equal(a.Checkpoints, b.Checkpoints);
     }

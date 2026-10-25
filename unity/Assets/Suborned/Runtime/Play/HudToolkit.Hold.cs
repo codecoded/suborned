@@ -40,7 +40,7 @@ namespace Suborned.Play
         void HoldPillFrame()
         {
             var h = host; var cam = h.View; bool modal = m.Ended || h.Modal != ModalGate.Modal.None || h.Ring != null || h.Panel != null || h.Loud != null || cam == null;
-            Target t = null; string anchorId = "", text = "", icon = ""; pillPredNow = ""; bool harm = false, seen = false; float fill = -1f; var faces = new List<int>(); string state = "";
+            Target t = null; string anchorId = "", text = "", icon = ""; pillPredNow = ""; pillAfterNow = false; bool harm = false, seen = false; float fill = -1f; var faces = new List<int>(); string state = "";
             if (!modal)
             {
                 var ch = h.Charge;
@@ -67,6 +67,7 @@ namespace Suborned.Play
                     {
                         state = "offer"; t = on; harm = Harmful(hi.Order); icon = hi.Order.Do == "fire" ? "fire" : hi.Lead.Length > 0 ? hi.Lead : HudModel.AtlasIcon(hi.Order.Do, hi.Order.Approach, "");
                         text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); if (!h.HoverFire) pillPredNow = hi.PredMark; faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
+                        pillAfterNow = hi.Order.Do == "drive-car" && hi.Outcome == "after Vale's car"; // Glyph 2026-10-26 §3: the yard before Vale's car parks: the caution plate
                     }
                 }
             }

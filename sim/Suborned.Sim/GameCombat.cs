@@ -551,7 +551,7 @@ namespace Suborned.Sim
                 Fail("vale-dead", "Vale is dead. The live capture objective has failed.", () => ShotDown("shot", "councillor"));
                 return;
             }
-            if (p == Driver) carStoppedAt = CarPos();
+            if (p == Driver) StopOfficial(CarPos());
             var fell = PosOfPerson(p) ?? resolving?.At;
             p.Down = true; p.Turned = false;
             if (WalkerOf(p) is Walker cw) { cw.St = ""; cw.Run = null; cw.Pace = 0; }
@@ -965,7 +965,7 @@ namespace Suborned.Sim
         {
             var q = new MoveQuote(); var op = OpOf(Sim.Op.Parse(opName));
             q.RunRefused = RunRefusal(op);
-            var route = S.Grid.Free(to) ? S.Grid.Route(op.Pos, to) : null;
+            var route = Walk.Free(to) ? Walk.Route(op.Pos, to) : null;
             if (route == null) { q.RunRefused = q.RunRefused.Length > 0 ? q.RunRefused : "no walk there"; return q; }
             var path = new Path(route);
             q.WalkS = (int)((path.Length + opSpeed * Hz - 1) / (opSpeed * Hz));

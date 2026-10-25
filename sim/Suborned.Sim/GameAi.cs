@@ -34,8 +34,8 @@ namespace Suborned.Sim
         void MoveTo(Hostile h, Pt to)
         {
             var from = h.Pos(Tick);
-            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(to) ?? to;
-            var route = S.Grid.Route(a, b);
+            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            var route = Walk.Route(a, b);
             if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End;
             if (h.Run.Length == 0) { h.Run = null; }
@@ -56,8 +56,8 @@ namespace Suborned.Sim
         {
             long stop = (long)effCm * R.StopReachPerMille / 1000;
             if (G.D2(from, target) <= stop * stop) return from;
-            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(target) ?? target;
-            var route = S.Grid.Route(a, b); if (route == null) return from;
+            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(target) ?? target;
+            var route = Walk.Route(a, b); if (route == null) return from;
             var p = new Path(route);
             for (long mm = 0; mm <= p.Length; mm += 500) { var q = p.At(mm); if (G.D2(q, target) <= stop * stop) return q; } // every 50 cm (Path is in mm)
             return p.End;
@@ -290,7 +290,7 @@ namespace Suborned.Sim
             foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down) down++; }
             if (down * 2 <= n) return;
             bool any = false;
-            var carAt = Range ? S.Stand(S.RivalsPark) : RivalCarPose() is var rcp && rcp.HasValue ? S.Grid.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark); // brief 059: they run for their car where it stands
+            var carAt = Range ? S.Stand(S.RivalsPark) : RivalCarPose() is var rcp && rcp.HasValue ? Walk.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark); // brief 059: they run for their car where it stands
             foreach (var h in Hostiles)
             {
                 if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
@@ -332,7 +332,7 @@ namespace Suborned.Sim
                     {
                         long vx = Car.X - sp.X, vy = Car.Y - sp.Y, len = Math.Max(1, G.Isqrt(vx * vx + vy * vy)); int side = overflow % 2 == 0 ? 1 : -1; int step = 1 + overflow / 2;
                         var slot = new Pt(sp.X + (int)(-vy * R.OverflowCm * step * side / len), sp.Y + (int)(vx * R.OverflowCm * step * side / len));
-                        home = S.Grid.NearestFree(slot) ?? sp; standOverflow[stand] = overflow + 1;
+                        home = Walk.NearestFree(slot) ?? sp; standOverflow[stand] = overflow + 1;
                     }
                 }
                 var gun = SecGuns[k]; gun.Engaged = true; gun.St = "advance"; LoseTarget(gun);

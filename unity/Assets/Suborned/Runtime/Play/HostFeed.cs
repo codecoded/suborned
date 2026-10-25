@@ -60,8 +60,17 @@ namespace Suborned.Play
         string PlaceWords(string target) => target switch
         {
             "waitress" => "café door", "driver" => "the pickup", "guard" => "Office door", "councillor" => "the Office", "entrance" or "cabinet" => "control cabinet",
-            "patrol" => "the patrol", "rivals" => "the pickup", _ => "",
+            "patrol" => "the patrol", "rivals" or "car:rivals" => "the pickup", _ when HostViews.IsCrewId(target) => RivalPlace(target), _ => "",
         };
+
+        /// <summary>Brief 059 (engine 0.32.0): where a member of the crew stands, in the player's words: the three posted round our car, the lookout
+        /// and the wheelman by the pickup (the car's state says where the car is).</summary>
+        string RivalPlace(string id)
+        {
+            var md = views != null && views.RivalModes.TryGetValue(id, out var m) ? m : "";
+            if (md == "aboard") return Game?.RivalCarPose() is { } cp && Game.S.HasPlace("rival-park") && G.Within(cp.pos, Game.S.At("rival-park"), 1500) ? "the pickup" : "the rival car";
+            return id is "rival-1" or "rival-2" or "rival-3" && Game?.CrewStandId is { Length: > 0 } ? "our car" : "the pickup";
+        }
 
         /// <summary>After each Track: an act starting opens its card (with its scene), its progress reveals beats, its end lands the card.</summary>
         void FeedTrack()
@@ -180,7 +189,7 @@ namespace Suborned.Play
                 case "listen": { var p = CastOf(c.Target); return p == null || (!p.KNeed && !p.KTemperament) ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
                 case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is free to go." : "The loop didn't hold."; // engine 0.31.0: no tether
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";
-                case "mislead": c.Tone = g.RivalsPresent ? Feedback.Info : Feedback.Ok; return g.RivalsPresent ? "The tip missed." : "The rivals follow the false tip. They may be back.";
+                case "mislead": { bool away = g.CarSt is CrewCar.TipOut or CrewCar.Away or CrewCar.TipBack; c.Tone = away ? Feedback.Ok : Feedback.Info; return away ? "The rivals follow the false tip. They may be back." : "The tip missed."; } // brief 059 F3: the car leaves on the tip (CarSt), the crew on foot stays
                 case "enter": return g.Vale == ValeAt.WithEnforcer ? "Out at the service lane with Vale." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : "Back out without Vale.";
                 case "take": c.Tone = g.Vale == ValeAt.WithEnforcer ? Feedback.Ok : Feedback.Info; return g.Vale == ValeAt.WithEnforcer ? "Vale is with the Enforcer: get him to the car." : "Vale was not taken.";
                 case "carry": return "Lifted: walk them to the car.";
@@ -258,10 +267,10 @@ namespace Suborned.Play
         // engine's sentence (its log keeps it).
         static readonly Dictionary<string, (string kind, string title, string place)> FeedEvents = new()
         {
-            ["rivals.arrive"] = ("city", "Rival car arrives", "rivals/0"), ["rivals.misled"] = ("city", "Rivals sent away", "rivals/0"), ["rivals.drawn"] = ("warning", "Rivals heading in", "rivals/0"),
+            ["rivals.arrive"] = ("city", "Rival car arrives", "car/rivals"), ["rivals.misled"] = ("city", "Rivals sent away", "car/rivals"), ["rivals.drawn"] = ("warning", "Rivals heading in", "car/rivals"),
             ["guard.at-cafe"] = ("city", "The guard is at the café", "guard"), ["guard.back"] = ("city", "Guard back on the door", "guard"),
             ["vale.exits"] = ("city", "Vale comes out", "councillor"), ["vale.at-car"] = ("city", "Vale reaches his car", "councillor"),
-            ["car.blocks"] = ("city", "The car blocks the camera", "car/official"), ["car.leaves"] = ("city", "The official car leaves", "car/official"),
+            ["car.leaves"] = ("city", "The official car leaves", "car/official"), // engine 0.32.0: car.blocks is never logged (the driver's Call is retired)
             ["loop.ends"] = ("warning", "The loop ends", "camera/entrance"), ["security.called"] = ("warning", "Security is coming", "security/0"), ["patrol.breaks"] = ("warning", "The patrol turns on you", "patrol"),
             ["run.seen"] = ("warning", "Runner seen", ""), ["report"] = ("warning", "Reported", ""), ["fight.loud"] = ("fight", "Police coming in", "security/0"), ["fight.safe"] = ("fight", "The rivals wait at the car", "car/getaway"),
             ["fight.ambush"] = ("fight", "Ambush", "car/getaway"), ["fight.over"] = ("fight", "The fight is over", "car/getaway"), ["captured"] = ("fight", "Captured", ""),
@@ -312,10 +321,9 @@ namespace Suborned.Play
                 case "rivals.drawn": return "They heard the shots.";
                 case "guard.at-cafe": return "Away from the door.";
                 case "guard.back": return "Watching the door again.";
-                case "vale.exits": return g.PickupService ? "Walking to the service lane." : "Walking to the official car.";
-                case "vale.at-car": return g.PickupService ? "In the service lane." : "Under the pickup camera.";
-                case "car.blocks": return "The pickup camera is blind.";
-                case "car.leaves": return "Heading for the service lane.";
+                case "vale.exits": return "Walking to the official car."; // brief 059 K1: always the front (the service-lane walk is gone)
+                case "vale.at-car": return "Under the pickup camera.";
+                case "car.leaves": return g.Driver.Turned && !g.Driver.Down ? "Driving him on." : "Driving him away."; // brief 059 K1, K4: unturned at 6:13, turned at the 8:30 close
                 case "loop.ends": return "The camera sees again.";
                 case "security.called": return "From the north street.";
                 case "patrol.breaks": return t.Contains("gunfire") ? "Toward the gunfire." : "Toward the drawn weapon.";
@@ -366,7 +374,7 @@ namespace Suborned.Play
         (Pt? at, string key, string where) EventPlace(string ev, LogLine? l = null) => ev switch
         {
             "witness-reacts" or "person-missed" when l.HasValue && WhoIn(l.Value) is Person wp => (Game.PosOfPerson(wp), wp.Role.Length > 0 ? wp.Role : CrowdKey(wp), ""),
-            "rivals-arrive" => (Game.RivalsPose()?.pos ?? (Game.S.HasPlace("rival-park") ? Game.S.At("rival-park") : (Pt?)null), "rivals/0", "the pickup"),
+            "rivals-arrive" => (Game.RivalCarPose()?.pos ?? (Game.S.HasPlace("rival-park") ? Game.S.At("rival-park") : (Pt?)null), "car/rivals", "the pickup"), // brief 059: the car parked across from Vale's
             "guard-at-cafe" => (Game.GuardPose()?.pos, "guard", "café"),
             "chime" => (Game.S.At(Game.S.GuardPost), "marker/door", "the Office"),
             _ => (null, "", ""),

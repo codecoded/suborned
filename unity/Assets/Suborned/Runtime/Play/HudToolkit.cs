@@ -1167,7 +1167,7 @@ namespace Suborned.Play
             followRing.Clear();
             if (f && host.FollowAgent >= 0 && host.Views?.Find("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)host.FollowAgent)) is Transform ft && ft.gameObject.activeSelf)
                 GroundRing(ft.position, 0.55f, Cream, 2f, false, 0.5f); // brief 046: on the ground, depth-tested: the agent's legs stand in front of it
-            ActMarkFrame(); TargetRingsDraw(); ConesDraw(); RerouteDraw(); GroundFlush(); // Sky 2026-10-21: the hover marker says what a right click does (HudToolkit.ActMark), in both views
+            ActMarkFrame(); TargetRingsDraw(); ConesDraw(); RerouteDraw(); RivalsDraw(); DriveDraw(); GroundFlush(); /* brief 059: the rivals, the stands, Vale's car round the back */ // Sky 2026-10-21: the hover marker says what a right click does (HudToolkit.ActMark), in both views
             if (!f && !followHid) return; followHid = f;
             foreach (var c in marks.Children())
             {

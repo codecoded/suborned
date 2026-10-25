@@ -165,8 +165,8 @@ namespace Suborned.Sim
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
                 Pt? lr = null; int sl = 0; if (!r.Until(() => { var p = g.RivalsDrawn && g.Crew[0].OnFoot ? g.MemberPose(g.Crew[0])?.pos : null; sl = p.HasValue && p == lr ? sl + 1 : 0; lr = p; return sl >= 2; }, T(150))) { r.Is(false, "the rivals come and stand"); return; }
                 var rp = g.MemberPose(g.Crew[0])!.Value.pos;
-                var spot = g.S.Grid.Nearest(rp, q => G.D2(q, rp) <= 1000L * 1000 && G.D2(q, rp) >= 500L * 500 && g.S.Sight(q, rp, g.R.Eye), 2000);
-                if (!r.Is(spot.HasValue, "a spot 5–10 m from the crew")) return;
+                var spot = g.S.Grid.Nearest(rp, q => G.D2(q, rp) <= 1000L * 1000 && G.D2(q, rp) >= 400L * 400 && g.S.Sight(q, rp, g.R.Eye), 2000); // engine 0.33.1: 4 m (was 5): with the walks round the getaway car the 5 m spot loses the exchange before the seal
+                if (!r.Is(spot.HasValue, "a spot 4–10 m from the crew")) return;
                 var up = new[] { Tech, Fixer, Scout }.Where(op => !r.Op(op).Down).ToArray();
                 r.To(up.Select(op => r.SendTo(op, spot!.Value)).Max());
                 foreach (var op in up) { r.Do(op, "draw"); }

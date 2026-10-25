@@ -222,12 +222,13 @@ namespace Suborned.Sim
                 if (G.Over || G.Tick >= end) return;
                 // the fight is over: the engine ends the fire orders still open on the broken crew (rulebook fight.over, Motive 2026-10-19),
                 // so the helper calls nothing off (the cease it gave here before 0.8.2 is gone; N95 holds without it)
-                if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm))
+                if (!G.AtGetaway(Op("enforcer").Pos)) // engine 0.33.1: at the car is car.footprint.reach of its body
                 {
                     int at = SendTo("enforcer", G.GetawaySeat);
                     while (!G.Over && G.Tick < at && free()) G.Step();
+                    if (at <= G.Tick && !G.Over) G.Step(); // no walk (already as near as the walk goes): time still runs, so the loop ends
                 }
-                if (free() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
+                if (free() && G.AtGetaway(Op("enforcer").Pos)) return;
             }
         }
         /// <summary>The getaway (brief 018): each named operative walks to the car if it isn't at it and boards (the Enforcer first, carrying
@@ -239,7 +240,7 @@ namespace Suborned.Sim
             {
                 if (G.Over) break;
                 var o = Op(name); if (o.Down || o.InCar) continue;
-                if (!G.Within(o.Pos, car, G.R.AtReachCm)) { int at = SendTo(name, G.GetawaySeat); while (!G.Over && G.Tick < at) G.Step(); }
+                if (!G.AtGetaway(o.Pos)) { int at = SendTo(name, G.GetawaySeat); while (!G.Over && G.Tick < at) G.Step(); }
                 if (G.Over) break;
                 Do(name, "board", "car"); Done(name); if (!G.Over) G.Step();
             }

@@ -286,18 +286,18 @@ namespace Suborned.Sim
         {
             c = SelectCover(pos, objective, sp, R.SeekRivalCm);
             if (c != null) return c.At;
-            return S.Grid.Nearest(pos, q => !Sees(q, sp), KiteBlindCm);
+            return Walk.Nearest(pos, q => !Sees(q, sp), KiteBlindCm);
         }
 
         /// <summary>The walk from `pos` to `dest` on the grid, cut at `remCm` of walk (the chase budget left); null if there is none.</summary>
         Path? KitePath(Pt pos, Pt dest, int remCm)
         {
-            var a = S.Grid.NearestFree(pos) ?? pos; var b = S.Grid.NearestFree(dest) ?? dest;
-            var route = S.Grid.Route(a, b); if (route == null || route.Length < 2) return null;
+            var a = Walk.NearestFree(pos) ?? pos; var b = Walk.NearestFree(dest) ?? dest;
+            var route = Walk.Route(a, b); if (route == null || route.Length < 2) return null;
             var path = new Path(route); long remMm = (long)remCm * 10;
             if (path.Length > remMm)
             {
-                var cut = path.At(remMm); route = S.Grid.Route(a, S.Grid.NearestFree(cut) ?? cut);
+                var cut = path.At(remMm); route = Walk.Route(a, Walk.NearestFree(cut) ?? cut);
                 if (route == null || route.Length < 2) return null;
                 path = new Path(route);
             }

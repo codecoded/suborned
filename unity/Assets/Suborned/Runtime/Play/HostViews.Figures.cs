@@ -33,7 +33,7 @@ namespace Suborned.Play
         {
             "op/scout" => "scout", "op/fixer" => "fixer", "op/tech" => "tech", "op/enforcer" => "enforcer",
             "waitress" => "waitress", "guard" => "guard", "driver" => "driver", "councillor" => "councillor",
-            "patrol" => null, _ when key.StartsWith("security/") || key.StartsWith("unit/") => "security", _ when key.StartsWith("rivals/") => "rival",
+            "patrol" => null, _ when key.StartsWith("security/") || key.StartsWith("unit/") => "security", _ when IsCrewId(key) || key.StartsWith("body/rival-") => "rival",
             _ => null,
         };
 
@@ -285,6 +285,8 @@ namespace Suborned.Play
                 var (t, from, to, shown) = things[kv.Key]; if (!shown) continue;
                 if (Aim.TryGetValue(kv.Key, out var aimAt)) { var ad = aimAt - t.position; ad.y = 0f; if (ad.sqrMagnitude > 0.04f) { kv.Value.rotation = Quaternion.RotateTowards(kv.Value.rotation, Quaternion.LookRotation(ad.normalized, Vector3.up) * carNose, 900f * Time.unscaledDeltaTime); continue; } } // a robot or vehicle that shoots faces its target (the shared rule)
                 if (kv.Key == "car/official" && CarFacing() is Vector3 h) { kv.Value.localRotation = Quaternion.LookRotation(h, Vector3.up) * carNose; continue; }
+                if (kv.Key == "car/rivals" && RivalCarFacing() is Vector3 rh) { kv.Value.rotation = Quaternion.RotateTowards(kv.Value.rotation, Quaternion.LookRotation(rh, Vector3.up) * carNose, 360f * Time.unscaledDeltaTime); continue; } // brief 059: the engine's heading, eased (a car turns, it never snaps)
+                if (kv.Key == "car/getaway" && GetawayFacing() is Vector3 gh) { kv.Value.rotation = Quaternion.RotateTowards(kv.Value.rotation, Quaternion.LookRotation(gh, Vector3.up) * carNose, 360f * Time.unscaledDeltaTime); continue; } // brief 059 K6: along its Drive, then its stand's facing
                 if (kv.Key == "patrol") // brief 057 §2 (Sky: "make sure robot moves smoothly"): walking its route (faster than its sweep's 0.32 m/s) it turns, eased, to face where it goes
                 {
                     var mv = to - from; mv.y = 0f; float mps = mv.magnitude * Suborned.Sim.Game.Hz;
@@ -354,15 +356,16 @@ namespace Suborned.Play
                 var r = rivalRings[used++]; if (!r.gameObject.activeSelf) r.gameObject.SetActive(true);
                 r.transform.position = th.t.position + Vector3.up * 0.04f;
             }
-            for (int k = 0; k < 3; k++) Ring("rivals/" + k);
-            if (g != null) for (int i = 0; i < hostileKeys.Length && i < g.Hostiles.Count; i++) if (g.Hostiles[i].Id.StartsWith("rival")) Ring(hostileKeys[i]);
+            foreach (var k in RivalKeys) Ring(k); // brief 059: every member on foot, before and in the fight
+            if (g != null && g.Range) for (int i = 0; i < hostileKeys.Length && i < g.Hostiles.Count; i++) if (g.Hostiles[i].Id.StartsWith("rival")) Ring(hostileKeys[i]); // the range's spawned rivals
             for (int i = used; i < rivalRings.Count; i++) if (rivalRings[i].gameObject.activeSelf) rivalRings[i].gameObject.SetActive(false);
         }
 
         bool Armed(string key, Game g)
         {
             for (int k = 0; k < 4; k++) if (key == OpKeys[k]) { var gun = g.Ops[k].Gun; return gun.W != null && gun.Drawn; }
-            return g.FightOn && (key.StartsWith("hostile/") || key.StartsWith("rivals/") || key.StartsWith("security/") || key.StartsWith("unit/") || key == "patrol");
+            if (IsCrewId(key)) return RivalModes.TryGetValue(key, out var md) && md == "fight" || g.GunOf(key) is Gun rg && rg.Drawn && !rg.Down; // brief 059: a member draws in the fight, or when the engine has his gun out (a takedown seen)
+            return g.FightOn && (key.StartsWith("hostile/") || key.StartsWith("security/") || key.StartsWith("unit/") || key == "patrol");
         }
         bool CrowdStartled(string key, Game g) { int i = int.Parse(key.Substring(6)); return i < g.Walkers.Count && g.Walkers[i].St == "startled"; }
     }

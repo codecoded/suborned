@@ -294,11 +294,11 @@ namespace Suborned.Sim
             catch (Exception e) when (!(e is OutOfMemoryException)) { alertTwoOrigin = new CauseOrigin { Tick = Tick, Report = cause, Because = "alert" }; }
         }
 
-        /// <summary>Brief 018's rival at the car: every rival within cell.atReach of it (nearest first, ties on id), then Vale in the car.</summary>
+        /// <summary>Brief 018's rival at the car: every rival within car.footprint.reach of its body (nearest first, ties on id), then Vale in the car.</summary>
         FailCause RivalsAtCar()
         {
             var car = Car; var near = new List<(long d, string id)>();
-            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && G.Within(h.Pos(Tick), car, R.AtReachCm)) near.Add((G.D2(h.Pos(Tick), car), h.Id));
+            foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && AtGetaway(h.Pos(Tick))) near.Add((G.D2(h.Pos(Tick), car), h.Id)); // engine 0.33.1: at the car's body (car.footprint.reach)
             near.Sort((x, y) => x.d != y.d ? x.d.CompareTo(y.d) : string.CompareOrdinal(x.id, y.id));
             var c = Because("reached-car", true);
             foreach (var (_, id) in near) c.Culprits.Add(Locate(id, "reached", car));

@@ -21,7 +21,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- brief 041: the verb pill (Sky's pick, testbed/controls/markers.js 'pill')
 
-        VisualElement vpill, vpillDisc, vpillDown, vpillClip, vpillFill, vpillFaces, vpillSeen, vpillStripeL, vpillStripeR; Label vpillHead, vpillDot, vpillText; Paint vpillTail, vpillGlow, vpillPip;
+        VisualElement vpill, vpillDisc, vpillDown, vpillClip, vpillFill, vpillFaces, vpillSeen, vpillAfter, vpillStripeL, vpillStripeR; bool pillAfterNow; Label vpillHead, vpillDot, vpillText; Paint vpillTail, vpillGlow, vpillPip;
         string vpillKey = "", vpillLine = ""; bool vpillHarm, vpillReady;
         readonly List<VisualElement> faceEls = new();
         /// <summary>The pill's height and its tail (brief 044 A: `pill_status` 38 px at slice 0.43; harm `panel_strip` at 0.3).</summary>
@@ -102,6 +102,11 @@ namespace Suborned.Play
             vpillSeen.style.backgroundColor = InkDeep; Round(vpillSeen, 5); Border(vpillSeen, 1.5f, new Color(PanelLine.r, PanelLine.g, PanelLine.b, 0.66f)); vpillSeen.style.overflow = Overflow.Hidden;
             Stripes(vpillSeen, 7, 19); var seenIcon = E(vpillSeen, null, w: 13, h: 13); seenIcon.style.flexShrink = 0; seenIcon.style.marginLeft = 5; Icon(seenIcon, "sawyou", Cream);
             var seenWord = Words(vpillSeen, 12.5f); seenWord.text = "Watched spot"; seenWord.style.marginLeft = 5;
+            // Glyph 2026-10-26 §3: a Drive to the yard before Vale's car is parked: the same caution plate, the stripes, Vale's cameo, nextevent (no words)
+            vpillAfter = E(vpill, null, w: float.NaN, h: 22); vpillAfter.style.flexDirection = FlexDirection.Row; vpillAfter.style.alignItems = Align.Center; vpillAfter.style.flexShrink = 0; vpillAfter.style.marginLeft = 9; vpillAfter.style.paddingRight = 8;
+            vpillAfter.style.backgroundColor = InkDeep; Round(vpillAfter, 5); Border(vpillAfter, 1.5f, new Color(PanelLine.r, PanelLine.g, PanelLine.b, 0.66f)); vpillAfter.style.overflow = Overflow.Hidden;
+            Stripes(vpillAfter, 7, 19); { var vc = Cameo(vpillAfter, 12f, 2f); vc.style.marginLeft = 5; Bg(vc.Q("face"), "badges/npc_councillor", Color.white); var ni = E(vpillAfter, null, w: 14, h: 14); ni.style.flexShrink = 0; ni.style.marginLeft = 4; Icon(ni, "nextevent", Cream); }
+            Show(vpillAfter, false);
             vpillStripeR = Stripes(vpill, 10, 24); vpillStripeR.style.marginLeft = 9;
             // the tail: a chrome triangle with the pill's body inside it, its tip at the thing
             vpillTail = P(marks, 0, 0, TailW, TailH, (p, r) =>
@@ -126,7 +131,7 @@ namespace Suborned.Play
         void PillLook(string text, string icon, bool harm, IReadOnlyList<int> faces, bool seen, float fill, string state)
         {
             bool ready = state == "ready";
-            string key = text + "|" + icon + "|" + harm + "|" + seen + "|" + (faces == null ? "" : string.Join(",", faces)) + "|" + ready + "|" + pillPredNow + "|" + PredForce;
+            string key = text + "|" + icon + "|" + harm + "|" + seen + "|" + (faces == null ? "" : string.Join(",", faces)) + "|" + ready + "|" + pillPredNow + "|" + PredForce + "|" + pillAfterNow;
             if (key != vpillKey)
             {
                 vpillKey = key; vpillLine = text; string head = "", rest = text;
@@ -139,7 +144,7 @@ namespace Suborned.Play
                 Show(vpillDisc, icon.Length > 0); if (icon.Length > 0) ActDiscOf(vpillDisc, icon, harm);
                 int n = faces?.Count ?? 0; Show(vpillFaces, n > 0);
                 for (int i = 0; i < 4; i++) { bool on = i < n; Show(faceEls[i], on); if (on) CameoOf(faceEls[i], faces[i]); }
-                Show(vpillSeen, seen); PillPred(harm ? "" : pillPredNow);
+                Show(vpillSeen, seen); PillPred(harm ? "" : pillPredNow); Show(vpillAfter, pillAfterNow && !seen);
                 if (harm != vpillHarm || vpill.ClassListContains("s-pill_status") == harm)
                 {
                     vpillHarm = harm; Class(vpill, "s-pill_status", !harm); Class(vpill, "s-panel_strip", harm); vpill.style.unitySliceScale = harm ? 0.3f : PillH / 88f;

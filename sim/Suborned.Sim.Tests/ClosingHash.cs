@@ -34,7 +34,7 @@ public class ClosingHashTests
         {
             var o = list[k];
             if (o.Tick > until) break;
-            while (g.Tick < o.Tick && !g.Over) { g.Step(); if (g.Tick - saved >= Game.T(5)) Save(); }
+            while (g.Tick < o.Tick && !g.Over) { g.Step(); if (g.Tick - saved >= Game.T(5) && g.Tick != o.Tick) Save(); } // engine 0.33.1: never before an order of this tick is given (it is saved after it, as Engine.Play ends there); S20 and S21 board at a 5 s mark
             if (g.Over && g.Tick != o.Tick) break;
             if (g.Tick == o.Tick) g.Issue(o);
             if (k + 1 == list.Count || list[k + 1].Tick != o.Tick) Save();

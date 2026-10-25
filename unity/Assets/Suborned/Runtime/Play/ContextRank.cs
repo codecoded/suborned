@@ -31,7 +31,7 @@ namespace Suborned.Play
 
         public static int Tier(Way w) => w.Do switch
         {
-            "take" or "enter" or "board" or "go" or "call" => 1,
+            "take" or "enter" or "board" or "go" or "call" or "drive-car" => 1, // brief 059 K6: a stand's one way is Drive (the quick click)
             "watch" or "listen" => 2,
             "turn" => 3,
             "loop" or "disable" or "reroute" or "mislead" => 4,

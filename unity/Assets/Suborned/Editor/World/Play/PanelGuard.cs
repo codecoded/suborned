@@ -175,7 +175,8 @@ namespace Suborned.World.Play
             foreach (var p in g.People) if (p.Role.Length > 0) Add("person", p.Role, p.Role, p.Role);
             Add("patrol", "patrol", "the patrol");
             foreach (var c in g.S.Cameras) Add("camera", c.Id, $"the {c.Id} camera");
-            Add("rivals", "rivals", "the rival crew"); Add("security", "security", "the response unit");
+            Add("rivals", "rivals", "the rival crew"); Add("rivals", "car:rivals", "the rival car", "car:rivals"); Add("security", "security", "the response unit"); // brief 059: the car, and each member drawn (Pickables)
+            foreach (var st in g.S.Stands) Add("stand", st.Id, st.Id, st.Id); // brief 059 K6: the getaway car's stands (Drive)
             Add("car", "official", "the official car"); Add("car", "getaway", "the getaway car");
             Add("door", "door", "the public door"); Add("cabinet", "cabinet", "the control cabinet");
             foreach (var op in new[] { "scout", "fixer", "tech", "enforcer" }) Add("op", op, op);

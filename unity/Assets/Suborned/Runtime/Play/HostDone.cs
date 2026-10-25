@@ -33,7 +33,7 @@ namespace Suborned.Play
         public int RolelessUnlockFrames { get; private set; }
         public readonly List<DoneChip> DoneChips = new();
         /// <summary>An open window's marker: what it is on (a view key), its seconds left (-1 held), the face that holds it (-1 none).</summary>
-        public sealed class WindowMark { public string Kind = "", Thing = "", Key = ""; public int Until = -1, Face = -1, Left = -1, Total = -1; }
+        public sealed class WindowMark { public string Kind = "", Thing = "", Key = "", Label = ""; public int Until = -1, Face = -1, Left = -1, Total = -1; } // Label: a fixed m:ss in place of the count (brief 059: Vale's car before it parks shows the 8:30 close)
         /// <summary>Each open window's length in ticks, taken when it first shows (or its end moves): the marker's draining underline.</summary>
         readonly Dictionary<string, (int until, int span)> windowSpan = new();
         public readonly List<WindowMark> WindowMarks = new();
@@ -135,6 +135,7 @@ namespace Suborned.Play
             if (c is "take.done" or "enter.in" or "enter.out") return L((int)OpId.Enforcer, c[..c.IndexOf('.')]);
             if (c is "takedown.out" or "takedown.dead") return L(AgentIn(l.Text, (int)OpId.Enforcer), "takedown");
             if (c == "board.in") return L(AgentIn(l.Text, (int)OpId.Enforcer), "board");
+            if (c == "car.parked") { for (int k = 0; k < 4; k++) if (g.Ops[k].InCar) return L(k, "drive-car"); return no; } // brief 059 K6: the Drive has arrived (its driver: the first aboard)
             if (c == "carry.body") return L(AgentIn(l.Text, (int)OpId.Enforcer), "carry");
             if (c.StartsWith("stash.", StringComparison.Ordinal) && c is not "stash.found") return L(AgentIn(l.Text, (int)OpId.Enforcer), "stash");
             if (c == "restrain.done") return L(AgentIn(l.Text, (int)OpId.Enforcer), "restrain");
@@ -263,6 +264,7 @@ namespace Suborned.Play
                         if (land.Role == "guard" && Game.Known("guard") is { Sight: true } gk && !(knownBefore.TryGetValue("guard", out var gb) && gb.sight)) Line("cone", DW("gain.cone", "Cone"));
                         if (chip.Lines.Count == 0) Line("dot", DW("gain.nothing-new", "Nothing new"));
                     }
+                    else if ((l.Text ?? "").Contains("rivals' timetable")) { chip.AnchorKey = "car/rivals"; Line("nextevent", DW("gain.timetable", "Timetable")); } // brief 059 §2.2: a Watch on the rival car
                     else
                     {
                         var mm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"watched the (\w+)( camera)?");
@@ -303,7 +305,7 @@ namespace Suborned.Play
                 case "disable": { var dm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"cuts the (\S+) camera"); chip.AnchorKey = "camera/" + (dm.Success ? dm.Groups[1].Value : "entrance"); Line("disable", DW("gain.camera-cut", "Camera cut")); break; } // engine 0.31.0 (Glyph 058 §3): the desk's clock is the marker under it
                 case "camera-shot": { var sm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"The (\S+) camera"); chip.AnchorKey = "camera/" + (sm.Success ? sm.Groups[1].Value : "entrance"); Line("fire", DW("gain.camera-shot", "Camera shot out")); break; } // Glyph 058 §3: no marker
                 case "reroute": chip.AnchorKey = "patrol"; Line("reroute", DW("gain.patrol-away", "Patrol away")); break;
-                case "mislead": chip.AnchorKey = "rivals/0"; Line("mislead", DW("gain.rivals-away", "Rivals away")); break;
+                case "mislead": chip.AnchorKey = "car/rivals"; Line("mislead", DW("gain.rivals-away", "Rivals away")); break;
                 case "enter":
                     chip.AnchorKey = "op/enforcer";
                     if (l.Code == "enter.in") Line("enter", DW("gain.inside", "Inside"));
@@ -311,6 +313,7 @@ namespace Suborned.Play
                     break;
                 case "take": chip.AnchorKey = "councillor"; Line("take", DW("gain.vale", "Vale")); break;
                 case "board": chip.AnchorKey = "car/getaway"; Line("car", DW("gain.aboard", "Aboard")); break;
+                case "drive-car": chip.AnchorKey = "car/getaway"; Line("car", DW("gain.parked", "Parked")); break; // Glyph 059 board 04: the arrival, one row
                 case "takedown":
                     {
                         var who = BodyKeyIn(l.Text); chip.AnchorKey = who.Length > 0 ? "body/" + who : "op/" + Op.Name((OpId)k);
@@ -381,6 +384,7 @@ namespace Suborned.Play
                 m.Total = w.Until < 0 ? -1 : Math.Max(1, (windowSpan[sk].span + Game.Hz - 1) / Game.Hz);
                 WindowMarks.Add(m); now[w.Kind + "|" + w.Thing] = w.Until;
             }
+            RivalWindowMarks(); // brief 059: the rivals' next move once watched, Vale's car round the back (never closing pops: not in `now`)
             if (pops && Ending.Length == 0)
                 foreach (var kv in windowsBefore)
                 {
@@ -399,7 +403,7 @@ namespace Suborned.Play
 
         static string WindowKey(string kind, string thing) => kind switch
         {
-            "call" => thing == "guard" ? "guard" : "camera/pickup", "loop" or "disable" => "camera/" + thing, "reroute" => "patrol", "mislead" => "rivals/0", _ => thing,
+            "call" => thing == "guard" ? "guard" : "camera/pickup", "loop" or "disable" => "camera/" + thing, "reroute" => "patrol", "mislead" => "car/rivals", _ => thing,
         };
 
         // ---------------------------------------------------------------- cancelling

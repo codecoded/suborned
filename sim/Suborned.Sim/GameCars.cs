@@ -118,7 +118,7 @@ namespace Suborned.Sim
                     if (Range) RangeCarOut(c); // the range's car: its occupant gets out (GameRange.cs)
                     return;
                 case "car:official":
-                    carStoppedAt = c.At; // it stops where it is (the driver-shot rule's own stop)
+                    StopOfficial(c.At); // it stops where it is (the driver-shot rule's own stop)
                     bool driverIn = !Driver.Down && valeDriveStart >= 0, valeIn = Vale == ValeAt.InCar; // at the pickup the driver stands beside it already (brief 059: until Vale is in)
                     if (valeIn) { Vale = ValeAt.Pickup; PickupService = false; } // brief 059: he gets out and stands by it
                     if (driverIn || valeIn) Note("car.out", driverIn && valeIn ? "The driver and Vale get out of the official car." : driverIn ? "The driver gets out of the official car." : "Vale gets out of the official car.");
@@ -126,9 +126,16 @@ namespace Suborned.Sim
             }
         }
 
-        /// <summary>The disabled official car's people stand beside it, the driver on the road side, Vale on the kerb side: the nearest free
-        /// ground 1.5 m either side of the car (the walk grid's NearestFree, deterministic).</summary>
-        Pt BesideCar(Pt car, int side) => S.Grid.NearestFree(car + new Pt(0, 150 * side)) ?? car;
+        /// <summary>The disabled official car's people stand beside it, the driver on the road side (side -1), Vale on the kerb side (+1): the
+        /// nearest free ground 1.5 m either side of the car, across its heading (engine 0.33.1, car.footprint: 0.33.0 put them 1.5 m along +y,
+        /// which is along the car in the official bay). The kerb side is the car's right (the block frame turns x to y anticlockwise, and the
+        /// city drives on the right), the walk grid's NearestFree round the standing cars, deterministic.</summary>
+        Pt BesideCar(Pt car, int side)
+        {
+            var h = OfficialHeading(); long n = G.Isqrt((long)h.X * h.X + (long)h.Y * h.Y); if (n == 0) { h = new Pt(0, 100); n = 100; }
+            var right = new Pt((int)(h.Y * 150L / n), (int)(-h.X * 150L / n)); // the heading turned clockwise, 150 cm
+            return Walk.NearestFree(car + new Pt(right.X * side, right.Y * side)) ?? car;
+        }
 
         /// <summary>One tick of burning cars: each blows car.target.burn after it caught fire.</summary>
         void CarsStep()

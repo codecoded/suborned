@@ -82,6 +82,8 @@ namespace Suborned.Play
         string Name(string key) => key switch
         {
             "" => "", "hostiles" => "the hostiles", _ when key.StartsWith("camera:") => CameraName(key[7..]),
+            "car:rivals" => Text?.TargetName("rivals", "the rival crew") ?? "the rival crew", _ when HostViews.IsCrewId(key) => Text?.HoldersPhrase(key) ?? "a rival", // brief 059 K8
+            _ when Game != null && Game.S.StandById(key) != null => Text?.TargetName("stand-" + key, "the " + key) ?? key, // brief 059 K6: a car stand (Fable's targets.stand-*)
             _ when Game != null && !IsOpName(key) && key is not ("waitress" or "driver" or "guard" or "councillor") && Game.PersonById(key) is Person cp => PersonName(cp), // a passer-by (brief 013)
             _ when Game != null && Game.S.Stashes.Find(x => x.Id == key) is StashPlace sp => StashName(sp),
             _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key,

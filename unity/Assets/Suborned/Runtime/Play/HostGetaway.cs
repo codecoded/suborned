@@ -14,6 +14,8 @@ namespace Suborned.Play
     public sealed partial class HandoverHost
     {
         bool IsGetaway(Target t) => t != null && t.Kind == "car" && t.Key == "getaway";
+        /// <summary>Brief 059 K6: where the getaway car is drawn now (its stand, or along its Drive), as a world point.</summary>
+        public Vector3 GetawayWorld => Game == null ? Vector3.zero : frame.World(Game.Range ? Game.S.At(Game.S.GetawayCar) : Game.GetawayCarPos());
 
         /// <summary>Board for an agent: its time (1 s, 4 s carrying Vale or a downed agent), the carried named.</summary>
         Intent BoardIntent(OpId k)
@@ -84,7 +86,7 @@ namespace Suborned.Play
         void GoGive(OpId by, Vector2? screen, string source)
         {
             var lk = GoLock();
-            var at = frame.World(Game.S.At(Game.S.GetawayCar));
+            var at = GetawayWorld;
             if (!lk.ok) { Pop(ShortOf(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why, screen, screen.HasValue ? null : at, Feedback.Refused, 2f, PopIcon(lk.code ?? ""), LockLine(new Order { Op = Op.Name(by), Do = "go" }, lk) ?? lk.why); if (lk.code == "car-held") HolderPulseAt = Time.unscaledTime; return; }
             var order = new Order { Op = Op.Name(by), Do = "go" };
             var left = LeftBehindNow();
@@ -99,6 +101,17 @@ namespace Suborned.Play
             }
             Issue(order, screen, at);
         }
+
+        /// <summary>Engine 0.33.0 (the gate, Motive M059-S1.7 "Rivals coming · 18 s"): while the rival car holds Go (its riders still to come), the
+        /// seconds to the first rider's step-out (GoQuery's tick), else -1 (no car:rivals hold, or the car still driving with no step-out set).
+        /// Read once a tick.</summary>
+        public int RivalsComingS()
+        {
+            var g = Game; if (g == null || g.Range) return -1;
+            if (rivalsComingTick != g.Tick) { rivalsComingTick = g.Tick; var a = GoLock(); rivalsComing = a.code == "car-held" && (a.ids ?? "").Contains("car:rivals") && a.tick >= 0 ? Math.Max(0, (a.tick - g.Tick + Game.Hz - 1) / Game.Hz) : -1; }
+            return rivalsComing;
+        }
+        int rivalsComingTick = -1, rivalsComing = -1;
 
         /// <summary>When a refused Go last pulsed the holder marks (§6.5).</summary>
         public float HolderPulseAt { get; set; } = -10f;
@@ -122,8 +135,8 @@ namespace Suborned.Play
         public (List<Vector3> line, float half) ExitLane()
         {
             var l = new List<Vector3>(); var g = Game; if (g == null) return (l, 0f);
-            foreach (var p in g.S.ExitLane) l.Add(frame.World(p));
-            return (l, g.S.ExitHalfCm / 100f);
+            foreach (var p in g.CurStand.Exit) l.Add(frame.World(p)); // brief 059 K6: the current stand's lane
+            return (l, g.CurStand.ExitHalfCm / 100f);
         }
 
         /// <summary>The Enforcer has Vale and is outside the car, with no Board given or walked for: the car marker calls him.</summary>

@@ -76,7 +76,7 @@ namespace Suborned.Sim
         void CoverScene(TdAct? a, Pt scene, string stash, int launch)
         {
             if (a == null) return;
-            var at = S.Grid.NearestFree(scene) ?? scene;
+            var at = Walk.NearestFree(scene) ?? scene;
             foreach (var u in Units) if (u.St != "gone" && u.Act == a.Id && u.Scene && G.Within(u.Dest, at, witnessRange)) { if (stash.Length > 0 && !u.ToOpen.Contains(stash) && u.St != "hold") u.ToOpen.Add(stash); return; }
             Unit? best = null; int bt = int.MaxValue;
             foreach (var u in Units)
@@ -90,7 +90,7 @@ namespace Suborned.Sim
             if (best == null) return;
             if (best.St != "wait")
             {
-                var from = UnitPose(best)!.Value.pos; var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, at);
+                var from = UnitPose(best)!.Value.pos; var route = Walk.Route(Walk.NearestFree(from) ?? from, at);
                 best.Route = new Path(route != null && route.Length >= 2 ? route : new[] { from, at }); best.Launch = Tick; best.St = "walk"; // radioed: it turns now
             }
             best.Dest = at; best.Act = a.Id; best.Scene = true; best.Verified = false; best.ToOpen.Clear(); if (stash.Length > 0) best.ToOpen.Add(stash);
@@ -128,7 +128,7 @@ namespace Suborned.Sim
         void BuildDests(TdAct? a, Pt scene, Person? raiser)
         {
             var l = new List<Pt>();
-            void add(Pt? p) { if (!p.HasValue) return; var f = S.Grid.NearestFree(p.Value) ?? p.Value; foreach (var x in l) if (G.Within(x, f, witnessRange)) return; l.Add(f); }
+            void add(Pt? p) { if (!p.HasValue) return; var f = Walk.NearestFree(p.Value) ?? p.Value; foreach (var x in l) if (G.Within(x, f, witnessRange)) return; l.Add(f); }
             add(scene);
             if (a != null)
             {
@@ -207,8 +207,8 @@ namespace Suborned.Sim
         /// a confirmation (Motive §2.3). Its officers verify and search like any unit.</summary>
         void CallScene(int arrival, Pt scene, TdAct? a)
         {
-            var from = S.Stand(S.SecEntry); var to = S.Grid.NearestFree(scene) ?? scene;
-            var route = S.Grid.Route(from, to);
+            var from = S.Stand(S.SecEntry); var to = Walk.NearestFree(scene) ?? scene;
+            var route = Walk.Route(from, to);
             if (route != null && route.Length >= 2) securityPath = new Path(route);
             SecurityArrives = arrival; unitsSent++;
             if (sealOnArrival) { sealOnArrival = false; SealFrom(arrival, () => pendingSealOrigin); }
@@ -218,7 +218,7 @@ namespace Suborned.Sim
         void Cordon(int launch)
         {
             cordonSent = true; var lv = DialNow;
-            var mouths = new List<Pt>(); foreach (var (id, at, kind) in S.Refuges) if (kind == "mouth") mouths.Add(S.Grid.NearestFree(at) ?? at);
+            var mouths = new List<Pt>(); foreach (var (id, at, kind) in S.Refuges) if (kind == "mouth") mouths.Add(Walk.NearestFree(at) ?? at);
             for (int i = 0; i < lv.A3Units && mouths.Count > 0; i++) { var u0 = Units.Count; if (!SendPolice(null, mouths[i % mouths.Count], false, launch + i * R.LaunchGapTicks, "")) break; for (int j = u0; j < Units.Count; j++) Units[j].Cordon = true; }
             if (lv.DoorsLock) Note("doors.lock", "Lockdown: the Office doors are locked.");
         }
@@ -231,8 +231,8 @@ namespace Suborned.Sim
         }
         int TravelTicks(Pt from, Pt to, int speed)
         {
-            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(to) ?? to;
-            var route = S.Grid.Route(a, b); long len = route == null ? G.Dist(a, b) * 10L : new Path(route).Length;
+            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
+            var route = Walk.Route(a, b); long len = route == null ? G.Dist(a, b) * 10L : new Path(route).Length;
             return (int)((len + speed - 1) / speed);
         }
         int CombatantCount()
@@ -314,8 +314,8 @@ namespace Suborned.Sim
                         if (Tick < u.Launch) break;
                         {
                             var from = u.Patrol ? PatrolPose()!.Value.pos : u.From;
-                            var a = S.Grid.NearestFree(from) ?? from; var b = S.Grid.NearestFree(u.Dest) ?? u.Dest;
-                            var route = S.Grid.Route(a, b); u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
+                            var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(u.Dest) ?? u.Dest;
+                            var route = Walk.Route(a, b); u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { a, b });
                             u.Launch = Tick; u.St = "walk";
                             if (u.Patrol) Note("patrol.alarm", "The patrol leaves its sweep for the alarm.");
                         }
@@ -345,7 +345,7 @@ namespace Suborned.Sim
                 if (standDown && (u.St == "hold" || (u.St == "check" && !HeldScene(u))) && !u.Legacy && !u.Cordon)
                 {
                     if (u.Patrol) { var p = UnitPose(u)!.Value.pos; u.St = "gone"; PatrolAlarmed = false; chasePos = p; PatrolChasing = true; patrolReturning = true; PatrolGun.NoFoeSince = -1; Note("patrol.stands-down", "The patrol goes back to its sweep."); continue; }
-                    var here = UnitPose(u)!.Value.pos; var route = S.Grid.Route(S.Grid.NearestFree(here) ?? here, S.Grid.NearestFree(u.From) ?? u.From);
+                    var here = UnitPose(u)!.Value.pos; var route = Walk.Route(Walk.NearestFree(here) ?? here, Walk.NearestFree(u.From) ?? u.From);
                     u.Route = new Path(route != null && route.Length >= 2 ? route : new[] { here, u.From }); u.Launch = Tick; u.St = "back";
                 }
                 if (u.St == "back" && u.Route != null && (long)(Tick - u.Launch) * u.Speed >= u.Route.Length) u.St = "gone";
@@ -487,10 +487,10 @@ namespace Suborned.Sim
             else return;
             var h = new SceneHold { Act = a.Id, At = at }; h.Doors.AddRange(DoorsInSightOf(at));
             SceneHolds.Add(h);
-            if (!Units.Exists(u => !u.Robot && u.Act == a.Id && u.Scene && u.St != "gone" && u.St != "back" && G.Within(u.Dest, S.Grid.NearestFree(at) ?? at, witnessRange))) // a unit already bound for this scene (Alert 2's response unit)
+            if (!Units.Exists(u => !u.Robot && u.Act == a.Id && u.Scene && u.St != "gone" && u.St != "back" && G.Within(u.Dest, Walk.NearestFree(at) ?? at, witnessRange))) // a unit already bound for this scene (Alert 2's response unit)
             {
                 int counted = unitsSent;
-                if (SendPolice(a, S.Grid.NearestFree(at) ?? at, true, Tick + T(DialNow.DispatchS), "")) { unitsSent = counted; Note("security.called", $"A body is found: a unit is sent to hold the scene{(h.Doors.Count > 0 ? " (" + string.Join(", ", h.Doors) + ")" : "")}. Security is coming."); }
+                if (SendPolice(a, Walk.NearestFree(at) ?? at, true, Tick + T(DialNow.DispatchS), "")) { unitsSent = counted; Note("security.called", $"A body is found: a unit is sent to hold the scene{(h.Doors.Count > 0 ? " (" + string.Join(", ", h.Doors) + ")" : "")}. Security is coming."); }
             }
         }
 
@@ -641,7 +641,7 @@ namespace Suborned.Sim
         {
             guardBackAt = -1; if (GuardDown || !GuardHeld || heldPhase != "woken") return;
             var from = heldPos; GuardHeld = false;
-            guardRun = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
+            guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
             guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
             Note("guard.back-to-post", "The guard walks back to his post.");
         }

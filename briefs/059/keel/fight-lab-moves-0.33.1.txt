@@ -1,0 +1,324 @@
+fight-lab moves, engine suborned.sim/0.33.0 -> suborned.sim/0.33.1 (brief 041, Keel: car.footprint): preset, run: before -> after (result, fail, end, Alert, Trail, verdict)
+288 of 294 rows moved
+today L1: failure entry-seen-camera 0:54.8 2 12 pass (fail) -> failure entry-seen-camera 0:55.6 2 12 pass (fail)
+today L1c: failure enforcer-down 3:00.2 3 45 pass (fail) -> failure enforcer-down 3:01.0 3 41 pass (fail)
+today L2: failure sealed 3:24.3 3 31 pass (fail) -> failure sealed 3:24.2 3 31 pass (fail)
+today L3: failure enforcer-down 2:58.6 2 32 pass (fail) -> failure enforcer-down 2:58.7 2 32 pass (fail)
+today L4: failure entry-seen-camera 4:37.2 2 62 pass (fail) -> failure entry-seen-camera 4:48.5 2 44 pass (fail)
+today P-A: success  5:18.1 1 5 pass -> success  4:46.9 1 5 pass
+today P-G: failure rivals-reach-vale 3:06.7 1 2 FAIL -> failure rivals-reach-vale 3:05.2 1 2 FAIL
+today P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+today L3:kite: failure sealed 4:40.5 2 8 pass (fail) -> failure sealed 4:40.5 2 10 pass (fail)
+today L3:reset-kite: failure sealed 4:40.5 2 8 pass (fail) -> failure sealed 4:40.5 2 10 pass (fail)
+today L3:focus-reset-kite: failure sealed 4:40.5 2 8 pass (fail) -> failure sealed 4:40.5 2 10 pass (fail)
+today L3:cycle-kite: failure sealed 4:40.5 2 8 pass (fail) -> failure sealed 4:40.5 2 10 pass (fail)
+today L3:carbine-kite: failure enforcer-down 3:12.7 3 57 pass (fail) -> failure enforcer-down 2:25.7 2 26 pass (fail)
+today P-G:reset: failure rivals-reach-vale 3:06.7 1 2 FAIL -> failure rivals-reach-vale 3:05.2 1 2 FAIL
+today L3:enfgo-carfree-runkite: failure enforcer-down 2:57.7 2 8 pass (fail) -> failure enforcer-down 2:58.0 2 8 pass (fail)
+today L3:focus-enfgo-carfree-runkite: failure enforcer-down 2:57.7 2 8 pass (fail) -> failure enforcer-down 2:58.0 2 8 pass (fail)
+today L3:enfgo-carfree-kite: failure enforcer-down 2:57.7 2 8 pass (fail) -> failure enforcer-down 2:58.0 2 10 pass (fail)
+today L3:at208-runkite: failure enforcer-down 3:36.1 2 12 pass (fail) -> failure enforcer-down 3:36.1 2 8 pass (fail)
+today L3:focus-at208-runkite: failure enforcer-down 3:36.1 2 10 pass (fail) -> failure enforcer-down 3:36.1 2 8 pass (fail)
+today L3:at208-kite: failure enforcer-down 3:36.1 2 8 pass (fail) -> failure enforcer-down 3:36.1 2 10 pass (fail)
+today L3:at196-runkite: failure enforcer-down 3:24.1 2 12 pass (fail) -> failure enforcer-down 3:24.1 2 8 pass (fail)
+today L3:at236-runkite: failure enforcer-down 4:04.1 2 12 pass (fail) -> failure enforcer-down 4:04.1 2 8 pass (fail)
+today L3:tight-kite: failure sealed 4:40.5 2 30 pass (fail) -> failure enforcer-down 3:16.9 2 22 pass (fail)
+today L3:tight-reset-kite: failure sealed 4:40.5 2 32 pass (fail) -> failure enforcer-down 3:16.9 2 18 pass (fail)
+today L3:tight-focus-reset-kite: failure sealed 4:40.5 2 29 pass (fail) -> failure sealed 4:40.5 2 32 pass (fail)
+today L3:tight-cycle-kite: failure sealed 4:40.5 2 32 pass (fail) -> failure enforcer-down 3:16.9 2 18 pass (fail)
+today L3:tight-carbine-kite: failure enforcer-down 3:11.8 3 61 pass (fail) -> failure enforcer-down 2:25.7 2 26 pass (fail)
+today L3:tight-enfgo-carfree-runkite: failure enforcer-down 2:57.7 2 16 pass (fail) -> failure enforcer-down 3:20.3 2 20 pass (fail)
+today L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 2:57.7 2 12 pass (fail) -> failure enforcer-down 3:18.8 2 16 pass (fail)
+today L3:tight-enfgo-carfree-kite: failure enforcer-down 2:58.2 2 24 pass (fail) -> failure enforcer-down 2:58.9 2 16 pass (fail)
+today L3:tight-at196-runkite: failure enforcer-down 3:24.1 2 24 pass (fail) -> failure enforcer-down 3:09.4 2 14 pass (fail)
+today L3:tight-at208-runkite: failure enforcer-down 3:36.1 2 28 pass (fail) -> failure enforcer-down 3:09.4 2 14 pass (fail)
+today L3:tight-focus-at208-runkite: failure enforcer-down 4:39.8 2 30 pass (fail) -> failure enforcer-down 3:07.3 2 16 pass (fail)
+today L3:tight-hold-runkite: failure enforcer-down 3:24.4 2 18 pass (fail) -> failure enforcer-down 3:05.4 2 12 pass (fail)
+today L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down 4:07.2 2 36 pass (fail) -> failure sealed 4:40.5 2 32 pass (fail)
+today L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 2:58.2 2 24 pass (fail) -> failure enforcer-down 3:00.6 2 20 pass (fail)
+today L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down 4:35.2 2 36 pass (fail) -> failure sealed 4:40.5 2 34 pass (fail)
+today L3:circle-kite: failure sealed 4:40.5 2 15 pass (fail) -> failure enforcer-down 3:15.9 2 30 pass (fail)
+today L3:charge: failure enforcer-down 3:53.2 3 30 pass (fail) -> failure enforcer-down 3:57.6 3 49 pass (fail)
+today P-G:runfire: failure rivals-reach-vale 3:06.7 1 2 FAIL -> failure rivals-reach-vale 3:05.2 1 2 FAIL
+lab L1: failure entry-seen-camera 0:55.5 2 12 pass (fail) -> failure entry-seen-camera 0:56.3 2 12 pass (fail)
+lab L1c: failure enforcer-down 3:01.4 3 57 pass (fail) -> failure enforcer-down 3:02.2 2 56 pass (fail)
+lab L2: failure sealed 3:24.3 3 37 pass (fail) -> failure sealed 3:24.2 3 47 pass (fail)
+lab L3: failure enforcer-down 2:56.6 2 32 pass (fail) -> failure enforcer-down 2:58.9 2 34 pass (fail)
+lab L4: failure entry-seen-camera 4:37.8 2 44 pass (fail) -> failure entry-seen-camera 4:32.2 2 50 pass (fail)
+lab P-A: success  5:19.9 1 5 pass -> success  4:46.6 1 5 pass
+lab P-G: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+lab L3:kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab L3:reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab L3:focus-reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 20 pass (fail)
+lab L3:cycle-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab L3:carbine-kite: failure enforcer-down 3:10.6 2 44 pass (fail) -> failure enforcer-down 3:10.5 2 46 pass (fail)
+lab P-G:reset: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab L3:enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab L3:focus-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab L3:enfgo-carfree-kite: failure enforcer-down 2:55.3 2 10 pass (fail) -> failure enforcer-down 2:55.6 2 10 pass (fail)
+lab L3:at208-runkite: failure enforcer-down 3:35.1 2 16 pass (fail) -> failure enforcer-down 3:36.1 2 10 pass (fail)
+lab L3:focus-at208-runkite: failure enforcer-down 3:35.1 2 12 pass (fail) -> failure enforcer-down 3:36.1 2 18 pass (fail)
+lab L3:at208-kite: failure enforcer-down 3:35.1 2 10 pass (fail) -> failure enforcer-down 3:36.1 2 12 pass (fail)
+lab L3:at196-runkite: failure enforcer-down 3:23.1 2 16 pass (fail) -> failure enforcer-down 3:24.1 2 10 pass (fail)
+lab L3:at236-runkite: failure enforcer-down 4:03.1 2 16 pass (fail) -> failure enforcer-down 4:04.1 2 10 pass (fail)
+lab L3:hold-runkite: failure enforcer-down 3:20.5 2 8 pass (fail) -> failure enforcer-down 3:20.5 2 10 pass (fail)
+lab L3:tight-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 20 pass (fail)
+lab L3:tight-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab L3:tight-focus-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.0 2 20 pass (fail)
+lab L3:tight-cycle-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab L3:tight-carbine-kite: failure enforcer-down 3:10.8 2 46 pass (fail) -> failure enforcer-down 3:10.2 2 46 pass (fail)
+lab L3:tight-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 16 pass (fail) -> failure enforcer-down 2:57.7 2 18 pass (fail)
+lab L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 2:58.5 2 20 pass (fail) -> failure enforcer-down 2:59.8 2 16 pass (fail)
+lab L3:tight-enfgo-carfree-kite: failure enforcer-down 3:18.0 2 22 pass (fail) -> failure enforcer-down 3:16.5 2 20 pass (fail)
+lab L3:tight-at196-runkite: failure enforcer-down 4:01.0 2 34 pass (fail) -> failure enforcer-down 3:46.3 2 30 pass (fail)
+lab L3:tight-at208-runkite: failure enforcer-down 4:13.0 2 34 pass (fail) -> failure enforcer-down 3:58.3 2 32 pass (fail)
+lab L3:tight-focus-at208-runkite: failure enforcer-down 3:07.0 2 20 pass (fail) -> failure enforcer-down 3:54.3 2 28 pass (fail)
+lab L3:tight-hold-runkite: failure enforcer-down 3:22.5 2 18 pass (fail) -> failure enforcer-down 3:05.7 2 20 pass (fail)
+lab L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down 4:24.0 2 38 pass (fail) -> failure enforcer-down 4:01.1 2 32 pass (fail)
+lab L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 2:55.8 2 22 pass (fail) -> failure enforcer-down 2:58.9 2 24 pass (fail)
+lab L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down 4:33.7 3 37 pass (fail) -> failure enforcer-down 4:37.9 3 41 pass (fail)
+lab L3:runfire-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab L3:circle-kite: failure sealed 4:39.3 3 35 pass (fail) -> failure enforcer-down 3:09.5 3 23 pass (fail)
+lab L3:charge: failure enforcer-down 3:48.5 3 35 pass (fail) -> failure enforcer-down 3:52.8 3 39 pass (fail)
+lab P-G:runfire: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-snap-off L1: failure entry-seen-camera 0:54.8 2 12 pass (fail) -> failure entry-seen-camera 0:55.6 2 12 pass (fail)
+lab-snap-off L1c: failure enforcer-down 3:00.7 3 57 pass (fail) -> failure enforcer-down 3:01.5 2 56 pass (fail)
+lab-snap-off L2: failure sealed 3:24.3 3 37 pass (fail) -> failure sealed 3:24.2 3 45 pass (fail)
+lab-snap-off L3: failure enforcer-down 2:56.6 2 32 pass (fail) -> failure enforcer-down 2:58.9 2 34 pass (fail)
+lab-snap-off L4: failure entry-seen-camera 4:37.0 2 44 pass (fail) -> failure entry-seen-camera 4:31.4 2 50 pass (fail)
+lab-snap-off P-A: success  5:18.2 1 5 pass -> success  4:46.6 1 5 pass
+lab-snap-off P-G: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-snap-off P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+lab-snap-off L3:kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-snap-off L3:reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-snap-off L3:focus-reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 14 pass (fail)
+lab-snap-off L3:cycle-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-snap-off L3:carbine-kite: failure enforcer-down 3:10.4 2 52 pass (fail) -> failure enforcer-down 3:20.0 2 48 pass (fail)
+lab-snap-off P-G:reset: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-snap-off L3:enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab-snap-off L3:focus-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab-snap-off L3:enfgo-carfree-kite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 10 pass (fail)
+lab-snap-off L3:at208-runkite: failure enforcer-down 3:35.1 2 20 pass (fail) -> failure enforcer-down 3:36.1 2 10 pass (fail)
+lab-snap-off L3:focus-at208-runkite: failure enforcer-down 3:35.1 2 12 pass (fail) -> failure enforcer-down 3:36.1 2 16 pass (fail)
+lab-snap-off L3:at208-kite: failure enforcer-down 3:35.1 2 8 pass (fail) -> failure enforcer-down 3:36.1 2 12 pass (fail)
+lab-snap-off L3:at196-runkite: failure enforcer-down 3:23.1 2 20 pass (fail) -> failure enforcer-down 3:24.1 2 10 pass (fail)
+lab-snap-off L3:at236-runkite: failure enforcer-down 4:03.1 2 20 pass (fail) -> failure enforcer-down 4:04.1 2 10 pass (fail)
+lab-snap-off L3:tight-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 20 pass (fail)
+lab-snap-off L3:tight-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab-snap-off L3:tight-focus-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.0 2 20 pass (fail)
+lab-snap-off L3:tight-cycle-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab-snap-off L3:tight-carbine-kite: failure enforcer-down 3:10.8 2 52 pass (fail) -> failure enforcer-down 3:17.0 2 46 pass (fail)
+lab-snap-off L3:tight-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 18 pass (fail) -> failure enforcer-down 2:57.7 2 16 pass (fail)
+lab-snap-off L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 2:54.8 2 18 pass (fail) -> failure enforcer-down 3:00.3 2 22 pass (fail)
+lab-snap-off L3:tight-enfgo-carfree-kite: failure enforcer-down 3:18.5 2 22 pass (fail) -> failure enforcer-down 3:19.6 2 20 pass (fail)
+lab-snap-off L3:tight-at196-runkite: failure enforcer-down 3:58.5 2 34 pass (fail) -> failure enforcer-down 3:11.0 2 20 pass (fail)
+lab-snap-off L3:tight-at208-runkite: failure enforcer-down 4:29.0 2 34 pass (fail) -> failure enforcer-down 3:11.0 2 20 pass (fail)
+lab-snap-off L3:tight-focus-at208-runkite: failure sealed 4:39.3 2 34 pass (fail) -> failure enforcer-down 3:13.4 2 24 pass (fail)
+lab-snap-off L3:tight-hold-runkite: failure enforcer-down 3:14.7 2 18 pass (fail) -> failure enforcer-down 3:05.7 2 16 pass (fail)
+lab-snap-off L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down 4:03.1 2 36 pass (fail) -> success  4:33.7 2 32 pass (heavy debrief)
+lab-snap-off L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 2:55.8 2 22 pass (fail) -> failure enforcer-down 2:58.5 2 22 pass (fail)
+lab-snap-off L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down 4:33.7 3 47 pass (fail) -> failure sealed 4:39.3 2 33 pass (fail)
+lab-snap-off L3:runfire-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 16 pass (fail)
+lab-snap-off L3:circle-kite: failure sealed 4:39.3 3 43 pass (fail) -> failure enforcer-down 3:09.5 3 23 pass (fail)
+lab-snap-off L3:charge: failure enforcer-down 3:48.5 3 35 pass (fail) -> failure enforcer-down 3:53.8 3 45 pass (fail)
+lab-snap-off P-G:runfire: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-cover L1: failure entry-seen-camera 0:55.5 2 12 pass (fail) -> failure entry-seen-camera 0:56.3 2 12 pass (fail)
+lab-cover L1c: failure enforcer-down 3:02.4 2 54 pass (fail) -> failure enforcer-down 3:02.2 2 56 pass (fail)
+lab-cover L2: failure sealed 3:24.3 3 37 pass (fail) -> failure sealed 3:24.2 3 31 pass (fail)
+lab-cover L3: failure enforcer-down 3:06.2 2 28 pass (fail) -> success  3:38.6 2 29 pass (heavy debrief)
+lab-cover L4: failure entry-seen-camera 4:36.0 2 50 pass (fail) -> failure entry-seen-camera 4:32.2 2 60 pass (fail)
+lab-cover P-A: success  5:16.1 1 5 pass -> success  4:54.3 1 5 pass
+lab-cover P-G: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-cover P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+lab-cover L3:kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-cover L3:reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-cover L3:focus-reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 20 pass (fail)
+lab-cover L3:cycle-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-cover L3:carbine-kite: failure enforcer-down 3:10.6 2 44 pass (fail) -> failure enforcer-down 3:10.5 2 46 pass (fail)
+lab-cover P-G:reset: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-cover L3:enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab-cover L3:focus-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab-cover L3:enfgo-carfree-kite: failure enforcer-down 2:55.3 2 10 pass (fail) -> failure enforcer-down 2:55.6 2 10 pass (fail)
+lab-cover L3:at208-runkite: failure enforcer-down 3:35.1 2 16 pass (fail) -> failure enforcer-down 3:36.1 2 10 pass (fail)
+lab-cover L3:focus-at208-runkite: failure enforcer-down 3:35.1 2 12 pass (fail) -> failure enforcer-down 3:36.1 2 18 pass (fail)
+lab-cover L3:at208-kite: failure enforcer-down 3:35.1 2 10 pass (fail) -> failure enforcer-down 3:36.1 2 12 pass (fail)
+lab-cover L3:at196-runkite: failure enforcer-down 3:23.1 2 16 pass (fail) -> failure enforcer-down 3:24.1 2 10 pass (fail)
+lab-cover L3:at236-runkite: failure enforcer-down 4:03.1 2 16 pass (fail) -> failure enforcer-down 4:04.1 2 10 pass (fail)
+lab-cover L3:hold-runkite: failure enforcer-down 3:20.5 2 8 pass (fail) -> failure enforcer-down 3:20.5 2 10 pass (fail)
+lab-cover L3:tight-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 20 pass (fail)
+lab-cover L3:tight-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab-cover L3:tight-focus-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.0 2 20 pass (fail)
+lab-cover L3:tight-cycle-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab-cover L3:tight-carbine-kite: failure enforcer-down 3:10.8 2 46 pass (fail) -> failure enforcer-down 3:10.2 2 46 pass (fail)
+lab-cover L3:tight-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 16 pass (fail) -> failure enforcer-down 2:57.7 2 18 pass (fail)
+lab-cover L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 2:58.5 2 20 pass (fail) -> failure enforcer-down 2:59.8 2 16 pass (fail)
+lab-cover L3:tight-enfgo-carfree-kite: failure enforcer-down 3:18.0 2 22 pass (fail) -> failure enforcer-down 3:16.5 2 20 pass (fail)
+lab-cover L3:tight-at196-runkite: failure enforcer-down 4:01.0 2 34 pass (fail) -> failure enforcer-down 3:46.3 2 30 pass (fail)
+lab-cover L3:tight-at208-runkite: failure enforcer-down 4:13.0 2 34 pass (fail) -> failure enforcer-down 3:58.3 2 32 pass (fail)
+lab-cover L3:tight-focus-at208-runkite: failure enforcer-down 3:07.0 2 20 pass (fail) -> failure enforcer-down 3:54.3 2 28 pass (fail)
+lab-cover L3:tight-hold-runkite: failure enforcer-down 3:22.5 2 18 pass (fail) -> failure enforcer-down 3:05.7 2 20 pass (fail)
+lab-cover L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down 4:24.0 2 38 pass (fail) -> failure enforcer-down 4:01.1 2 32 pass (fail)
+lab-cover L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 2:55.8 2 22 pass (fail) -> failure enforcer-down 2:58.9 2 24 pass (fail)
+lab-cover L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down 4:33.7 3 37 pass (fail) -> failure enforcer-down 4:37.9 3 41 pass (fail)
+lab-cover L3:runfire-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-cover L3:circle-kite: failure sealed 4:39.3 3 35 pass (fail) -> failure enforcer-down 3:09.5 3 23 pass (fail)
+lab-cover L3:charge: failure enforcer-down 3:48.5 3 35 pass (fail) -> failure enforcer-down 3:52.8 3 39 pass (fail)
+lab-cover P-G:runfire: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-charge-off L1: failure entry-seen-camera 0:55.5 2 12 pass (fail) -> failure entry-seen-camera 0:56.3 2 12 pass (fail)
+lab-charge-off L1c: failure enforcer-down 3:01.4 3 57 pass (fail) -> failure enforcer-down 3:02.2 2 56 pass (fail)
+lab-charge-off L2: failure sealed 3:24.3 3 37 pass (fail) -> failure sealed 3:24.2 3 47 pass (fail)
+lab-charge-off L3: failure enforcer-down 2:56.6 2 32 pass (fail) -> failure enforcer-down 2:58.9 2 34 pass (fail)
+lab-charge-off L4: failure entry-seen-camera 4:38.8 2 44 pass (fail) -> failure entry-seen-camera 4:36.2 2 38 pass (fail)
+lab-charge-off P-A: success  5:19.9 1 5 pass -> success  4:46.6 1 5 pass
+lab-charge-off P-G: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-charge-off P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+lab-charge-off L3:kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-charge-off L3:reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-charge-off L3:focus-reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 20 pass (fail)
+lab-charge-off L3:cycle-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-charge-off L3:carbine-kite: failure entry-seen-camera 3:03.4 2 64 pass (fail) -> failure entry-seen-camera 3:05.3 2 68 pass (fail)
+lab-charge-off P-G:reset: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-charge-off L3:enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab-charge-off L3:focus-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 8 pass (fail) -> failure enforcer-down 2:55.6 2 8 pass (fail)
+lab-charge-off L3:enfgo-carfree-kite: failure enforcer-down 2:55.3 2 10 pass (fail) -> failure enforcer-down 2:55.6 2 10 pass (fail)
+lab-charge-off L3:at208-runkite: failure enforcer-down 3:35.1 2 16 pass (fail) -> failure enforcer-down 3:36.1 2 10 pass (fail)
+lab-charge-off L3:focus-at208-runkite: failure enforcer-down 3:35.1 2 12 pass (fail) -> failure enforcer-down 3:36.1 2 18 pass (fail)
+lab-charge-off L3:at208-kite: failure enforcer-down 3:35.1 2 10 pass (fail) -> failure enforcer-down 3:36.1 2 12 pass (fail)
+lab-charge-off L3:at196-runkite: failure enforcer-down 3:23.1 2 16 pass (fail) -> failure enforcer-down 3:24.1 2 10 pass (fail)
+lab-charge-off L3:at236-runkite: failure enforcer-down 4:03.1 2 16 pass (fail) -> failure enforcer-down 4:04.1 2 10 pass (fail)
+lab-charge-off L3:hold-runkite: failure enforcer-down 3:20.5 2 8 pass (fail) -> failure enforcer-down 3:20.5 2 10 pass (fail)
+lab-charge-off L3:tight-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 20 pass (fail)
+lab-charge-off L3:tight-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab-charge-off L3:tight-focus-reset-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.0 2 20 pass (fail)
+lab-charge-off L3:tight-cycle-kite: failure enforcer-down 3:06.0 2 22 pass (fail) -> failure enforcer-down 3:06.9 2 22 pass (fail)
+lab-charge-off L3:tight-carbine-kite: failure entry-seen-camera 3:04.5 2 68 pass (fail) -> failure entry-seen-camera 3:05.1 2 68 pass (fail)
+lab-charge-off L3:tight-enfgo-carfree-runkite: failure enforcer-down 2:55.3 2 16 pass (fail) -> failure enforcer-down 2:57.7 2 18 pass (fail)
+lab-charge-off L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 2:58.5 2 20 pass (fail) -> failure enforcer-down 2:59.8 2 16 pass (fail)
+lab-charge-off L3:tight-enfgo-carfree-kite: failure enforcer-down 3:18.0 2 22 pass (fail) -> failure enforcer-down 3:16.5 2 20 pass (fail)
+lab-charge-off L3:tight-at196-runkite: failure enforcer-down 4:01.0 2 34 pass (fail) -> failure enforcer-down 3:46.3 2 30 pass (fail)
+lab-charge-off L3:tight-at208-runkite: failure enforcer-down 4:13.0 2 34 pass (fail) -> failure enforcer-down 3:58.3 2 32 pass (fail)
+lab-charge-off L3:tight-focus-at208-runkite: failure enforcer-down 3:07.0 2 20 pass (fail) -> failure enforcer-down 3:54.3 2 28 pass (fail)
+lab-charge-off L3:tight-hold-runkite: failure enforcer-down 3:22.5 2 18 pass (fail) -> failure enforcer-down 3:05.7 2 20 pass (fail)
+lab-charge-off L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down 4:24.0 2 38 pass (fail) -> failure enforcer-down 4:01.1 2 32 pass (fail)
+lab-charge-off L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 2:55.8 2 22 pass (fail) -> failure enforcer-down 2:58.9 2 24 pass (fail)
+lab-charge-off L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down 4:33.7 3 37 pass (fail) -> failure enforcer-down 4:37.9 3 41 pass (fail)
+lab-charge-off L3:runfire-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-charge-off L3:circle-kite: failure sealed 4:39.3 3 35 pass (fail) -> failure enforcer-down 3:09.5 3 23 pass (fail)
+lab-charge-off L3:charge: failure enforcer-down 3:48.5 3 35 pass (fail) -> failure enforcer-down 3:52.8 3 39 pass (fail)
+lab-charge-off P-G:runfire: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-field-on L1: failure entry-seen-camera 0:55.5 2 12 pass (fail) -> failure entry-seen-camera 0:56.3 2 12 pass (fail)
+lab-field-on L1c: failure enforcer-down 3:03.4 2 60 pass (fail) -> failure enforcer-down 3:04.2 2 60 pass (fail)
+lab-field-on L2: failure sealed 3:24.3 3 57 pass (fail) -> failure sealed 3:24.2 3 64 pass (fail)
+lab-field-on L3: failure enforcer-down 2:56.6 2 32 pass (fail) -> failure enforcer-down 2:58.9 2 34 pass (fail)
+lab-field-on L4: failure entry-seen-camera 4:37.8 2 44 pass (fail) -> failure entry-seen-camera 4:32.2 2 50 pass (fail)
+lab-field-on P-A: success  5:19.9 1 5 pass -> success  4:46.6 1 5 pass
+lab-field-on P-G: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-field-on P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+lab-field-on L3:kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-field-on L3:reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-field-on L3:focus-reset-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 20 pass (fail)
+lab-field-on L3:cycle-kite: failure sealed 4:39.3 2 10 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-field-on L3:carbine-kite: failure enforcer-down 3:10.6 2 44 pass (fail) -> failure enforcer-down 3:10.5 2 46 pass (fail)
+lab-field-on P-G:reset: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-field-on L3:enfgo-carfree-runkite: failure enforcer-down 2:57.8 2 8 pass (fail) -> failure enforcer-down 3:00.1 2 8 pass (fail)
+lab-field-on L3:focus-enfgo-carfree-runkite: failure enforcer-down 2:57.8 2 8 pass (fail) -> failure enforcer-down 3:00.1 2 8 pass (fail)
+lab-field-on L3:enfgo-carfree-kite: failure enforcer-down 2:57.8 2 10 pass (fail) -> failure enforcer-down 3:00.1 2 10 pass (fail)
+lab-field-on L3:at208-runkite: failure enforcer-down 3:35.9 2 16 pass (fail) -> failure enforcer-down 3:36.9 2 10 pass (fail)
+lab-field-on L3:focus-at208-runkite: failure enforcer-down 3:35.9 2 12 pass (fail) -> failure enforcer-down 3:36.9 2 24 pass (fail)
+lab-field-on L3:at208-kite: failure enforcer-down 3:35.9 2 10 pass (fail) -> failure enforcer-down 3:36.9 2 12 pass (fail)
+lab-field-on L3:at196-runkite: failure enforcer-down 3:23.9 2 16 pass (fail) -> failure enforcer-down 3:24.9 2 10 pass (fail)
+lab-field-on L3:at236-runkite: failure enforcer-down 4:03.9 2 16 pass (fail) -> failure enforcer-down 4:04.9 2 10 pass (fail)
+lab-field-on L3:hold-runkite: failure enforcer-down 3:30.0 2 8 pass (fail) -> failure enforcer-down 3:30.0 2 10 pass (fail)
+lab-field-on L3:tight-kite: failure enforcer-down 3:10.0 2 22 pass (fail) -> failure enforcer-down 3:14.2 2 20 pass (fail)
+lab-field-on L3:tight-reset-kite: failure enforcer-down 3:10.0 2 22 pass (fail) -> failure enforcer-down 3:14.2 2 22 pass (fail)
+lab-field-on L3:tight-focus-reset-kite: failure enforcer-down 3:10.0 2 22 pass (fail) -> failure enforcer-down 3:10.0 2 20 pass (fail)
+lab-field-on L3:tight-cycle-kite: failure enforcer-down 3:10.0 2 22 pass (fail) -> failure enforcer-down 3:14.2 2 22 pass (fail)
+lab-field-on L3:tight-carbine-kite: failure enforcer-down 3:10.8 2 46 pass (fail) -> failure enforcer-down 3:10.2 2 46 pass (fail)
+lab-field-on L3:tight-enfgo-carfree-runkite: failure enforcer-down 2:56.3 2 16 pass (fail) -> failure enforcer-down 3:05.7 2 22 pass (fail)
+lab-field-on L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 3:22.8 2 22 pass (fail) -> failure enforcer-down 3:15.4 2 24 pass (fail)
+lab-field-on L3:tight-enfgo-carfree-kite: failure enforcer-down 3:36.5 2 28 pass (fail) -> failure enforcer-down 3:42.7 2 28 pass (fail)
+lab-field-on L3:tight-at196-runkite: failure enforcer-down 4:02.5 2 38 pass (fail) -> failure enforcer-down 3:47.3 2 28 pass (fail)
+lab-field-on L3:tight-at208-runkite: failure enforcer-down 4:14.5 2 40 pass (fail) -> failure enforcer-down 4:04.5 2 28 pass (fail)
+lab-field-on L3:tight-focus-at208-runkite: failure enforcer-down 3:11.0 2 22 pass (fail) -> failure enforcer-down 4:05.6 2 32 pass (fail)
+lab-field-on L3:tight-hold-runkite: failure enforcer-down 3:32.9 2 18 pass (fail) -> failure enforcer-down 3:12.7 2 20 pass (fail)
+lab-field-on L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down 4:28.9 2 38 pass (fail) -> failure enforcer-down 4:14.4 2 32 pass (fail)
+lab-field-on L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 3:28.1 2 32 pass (fail) -> failure enforcer-down 3:24.8 2 34 pass (fail)
+lab-field-on L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down 4:37.7 3 37 pass (fail) -> failure sealed 4:39.3 3 41 pass (fail)
+lab-field-on L3:runfire-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 12 pass (fail)
+lab-field-on L3:circle-kite: failure sealed 4:39.3 3 45 pass (fail) -> failure enforcer-down 3:15.5 3 25 pass (fail)
+lab-field-on L3:charge: failure enforcer-down 3:52.5 3 35 pass (fail) -> failure enforcer-down 3:53.1 2 39 pass (fail)
+lab-field-on P-G:runfire: failure rivals-reach-vale 3:05.2 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-kite-off L1: failure entry-seen-camera 0:55.5 2 12 pass (fail) -> failure entry-seen-camera 0:56.3 2 12 pass (fail)
+lab-kite-off L1c: failure enforcer-down 3:02.4 2 60 pass (fail) -> failure enforcer-down 3:03.2 2 62 pass (fail)
+lab-kite-off L2: failure sealed 3:24.3 3 60 pass (fail) -> failure sealed 3:24.2 3 50 pass (fail)
+lab-kite-off L3: failure enforcer-down 3:37.0 2 18 pass (fail) -> success  4:08.2 2 23 FAIL
+lab-kite-off L4: failure entry-seen-camera 4:32.8 2 50 pass (fail) -> failure entry-seen-camera 4:24.4 2 38 pass (fail)
+lab-kite-off P-A: success  5:19.9 1 5 pass -> success  4:46.6 1 5 pass
+lab-kite-off P-G: failure rivals-reach-vale 3:02.3 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-kite-off P-B: failure rivals-reach-vale 8:07.0 0 3 FAIL -> failure rivals-reach-vale 8:10.5 0 3 FAIL
+lab-kite-off L3:kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 10 pass (fail)
+lab-kite-off L3:reset-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 10 pass (fail)
+lab-kite-off L3:focus-reset-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 10 pass (fail)
+lab-kite-off L3:cycle-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 10 pass (fail)
+lab-kite-off L3:carbine-kite: failure enforcer-down 3:10.6 2 46 pass (fail) -> failure enforcer-down 3:12.9 2 48 pass (fail)
+lab-kite-off P-G:reset: failure rivals-reach-vale 3:02.3 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+lab-kite-off L3:enfgo-carfree-runkite: failure enforcer-down 3:18.7 2 8 pass (fail) -> failure enforcer-down 3:22.9 2 8 pass (fail)
+lab-kite-off L3:focus-enfgo-carfree-runkite: failure enforcer-down 3:18.7 2 8 pass (fail) -> failure enforcer-down 3:22.9 2 8 pass (fail)
+lab-kite-off L3:enfgo-carfree-kite: failure enforcer-down 3:18.7 2 8 pass (fail) -> failure enforcer-down 3:22.9 2 10 pass (fail)
+lab-kite-off L3:at208-runkite: failure enforcer-down 4:05.7 2 8 pass (fail) -> failure enforcer-down 4:09.9 2 8 pass (fail)
+lab-kite-off L3:focus-at208-runkite: failure enforcer-down 4:05.7 2 8 pass (fail) -> failure enforcer-down 4:09.9 2 8 pass (fail)
+lab-kite-off L3:at208-kite: failure enforcer-down 4:05.7 2 8 pass (fail) -> failure enforcer-down 4:09.9 2 10 pass (fail)
+lab-kite-off L3:at196-runkite: failure enforcer-down 3:53.7 2 8 pass (fail) -> failure enforcer-down 3:57.9 2 8 pass (fail)
+lab-kite-off L3:at236-runkite: failure enforcer-down 4:33.7 2 8 pass (fail) -> failure enforcer-down 4:37.9 2 8 pass (fail)
+lab-kite-off L3:hold-runkite: failure enforcer-down 4:18.7 2 8 pass (fail) -> failure enforcer-down 4:22.9 2 8 pass (fail)
+lab-kite-off L3:tight-reset-kite: failure sealed 4:39.3 2 28 pass (fail) -> failure sealed 4:39.3 2 38 pass (fail)
+lab-kite-off L3:tight-focus-reset-kite: failure sealed 4:39.3 2 28 pass (fail) -> failure sealed 4:39.3 2 38 pass (fail)
+lab-kite-off L3:tight-cycle-kite: failure sealed 4:39.3 2 28 pass (fail) -> failure sealed 4:39.3 2 38 pass (fail)
+lab-kite-off L3:tight-carbine-kite: failure enforcer-down 3:10.3 2 48 pass (fail) -> failure enforcer-down 3:12.8 2 48 pass (fail)
+lab-kite-off L3:tight-enfgo-carfree-runkite: failure enforcer-down 3:35.8 2 28 pass (fail) -> success  4:31.0 2 29 FAIL
+lab-kite-off L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down 3:18.7 2 28 pass (fail) -> success  4:31.1 2 29 FAIL
+lab-kite-off L3:tight-enfgo-carfree-kite: failure enforcer-down 3:35.8 2 28 pass (fail) -> success  4:31.0 2 29 FAIL
+lab-kite-off L3:tight-at196-runkite: success  4:19.1 2 28 FAIL -> success  4:18.7 2 28 FAIL
+lab-kite-off L3:tight-at208-runkite: success  4:31.1 2 28 FAIL -> success  4:30.7 2 28 FAIL
+lab-kite-off L3:tight-focus-at208-runkite: success  4:30.9 2 28 FAIL -> success  4:30.7 2 28 FAIL
+lab-kite-off L3:km10-fm5-step200-norivals-at208-runkite: failure sealed 4:39.3 2 46 pass (fail) -> success  4:30.4 2 34 pass (heavy debrief)
+lab-kite-off L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down 3:35.8 2 28 pass (fail) -> success  4:29.7 2 39 FAIL
+lab-kite-off L3:tight-step200-focus-norivals-at236-runkite: failure sealed 4:39.3 2 38 pass (fail) -> failure sealed 4:39.3 2 30 pass (fail)
+lab-kite-off L3:runfire-kite: failure sealed 4:39.3 2 8 pass (fail) -> failure sealed 4:39.3 2 10 pass (fail)
+lab-kite-off L3:charge: failure enforcer-down 3:49.1 2 21 pass (fail) -> failure enforcer-down 3:49.1 2 27 pass (fail)
+lab-kite-off P-G:runfire: failure rivals-reach-vale 3:02.3 1 2 FAIL -> failure rivals-reach-vale 3:08.0 1 6 FAIL
+
+verdicts moved (8):
+lab-snap-off L3:km10-fm5-step200-norivals-at208-runkite: pass (fail) -> pass (heavy debrief)
+lab-cover L3: pass (fail) -> pass (heavy debrief)
+lab-kite-off L3: pass (fail) -> FAIL
+lab-kite-off L3:tight-enfgo-carfree-runkite: pass (fail) -> FAIL
+lab-kite-off L3:tight-focus-enfgo-carfree-runkite: pass (fail) -> FAIL
+lab-kite-off L3:tight-enfgo-carfree-kite: pass (fail) -> FAIL
+lab-kite-off L3:km10-fm5-step200-norivals-at208-runkite: pass (fail) -> pass (heavy debrief)
+lab-kite-off L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: pass (fail) -> FAIL
+
+outcomes moved (22):
+today L3:tight-kite: failure sealed -> failure enforcer-down
+today L3:tight-reset-kite: failure sealed -> failure enforcer-down
+today L3:tight-cycle-kite: failure sealed -> failure enforcer-down
+today L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down -> failure sealed
+today L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down -> failure sealed
+today L3:circle-kite: failure sealed -> failure enforcer-down
+lab L3:circle-kite: failure sealed -> failure enforcer-down
+lab-snap-off L3:tight-focus-at208-runkite: failure sealed -> failure enforcer-down
+lab-snap-off L3:km10-fm5-step200-norivals-at208-runkite: failure enforcer-down -> success
+lab-snap-off L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down -> failure sealed
+lab-snap-off L3:circle-kite: failure sealed -> failure enforcer-down
+lab-cover L3: failure enforcer-down -> success
+lab-cover L3:circle-kite: failure sealed -> failure enforcer-down
+lab-charge-off L3:circle-kite: failure sealed -> failure enforcer-down
+lab-field-on L3:tight-step200-focus-norivals-at236-runkite: failure enforcer-down -> failure sealed
+lab-field-on L3:circle-kite: failure sealed -> failure enforcer-down
+lab-kite-off L3: failure enforcer-down -> success
+lab-kite-off L3:tight-enfgo-carfree-runkite: failure enforcer-down -> success
+lab-kite-off L3:tight-focus-enfgo-carfree-runkite: failure enforcer-down -> success
+lab-kite-off L3:tight-enfgo-carfree-kite: failure enforcer-down -> success
+lab-kite-off L3:km10-fm5-step200-norivals-at208-runkite: failure sealed -> success
+lab-kite-off L3:km15-fm5-step300-norivals-enfgo-carfree-runkite: failure enforcer-down -> success

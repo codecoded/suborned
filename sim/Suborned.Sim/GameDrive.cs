@@ -159,7 +159,7 @@ namespace Suborned.Sim
             if (op.Gun.TrigT.Length > 0 || op.Gun.Trig || op.Gun.TrigTap) { ClearTrigger(op.Gun); if (op.Gun.Order.Length == 0) op.Gun.Target = ""; } // tuning.md §11: control ends, the trigger with it
             var resume = op.DriveResume; bool resumeRun = op.DriveResumeRun; op.DriveResume = null; op.DriveResumeRun = false;
             if (!release || DriveOnRelease != "resume" || !resume.HasValue || op.Down || op.Inside || op.InCar || op.Busy != null) return;
-            var route = S.Grid.Route(op.Pos, resume.Value); if (route == null) return;
+            var route = Walk.Route(op.Pos, resume.Value); if (route == null) return;
             op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; if (op.Walk.Length == 0) { op.Walk = null; return; }
             bool run = resumeRun && DriveCapMm(op, true) > DriveCapMm(op, false); // a run where one is allowed (as RunRefusal, without its refusal)
             op.Running = run; op.WalkSpeed = PaceOf(op, run);

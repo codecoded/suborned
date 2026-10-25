@@ -260,7 +260,8 @@ namespace Suborned.Play
             switch (t.Kind)
             {
                 case "hostile": case "unit": return t.Key;
-                case "patrol": case "rivals": case "security": return t.Kind;
+                case "patrol": case "security": return t.Kind;
+                case "rivals": return t.Key; // brief 059: a member by his id, the rival car as car:rivals
                 case "camera": return "camera:" + t.Key;
                 case "car": return "car:" + t.Key;
                 case "person": if (t.Key == "guard") return "guard"; force = true; return t.Key;

@@ -40,10 +40,10 @@ namespace Suborned.Play
         /// <summary>The badge a beat leads with, by the log code or scene it came from (Glyph §6).</summary>
         static (string path, bool tinted) BeatBadge(string code) => code switch
         {
-            "rivals.arrive" or "rivals-arrive" => ("badges/signal_rival", false),
+            "rivals.arrive" or "rivals-arrive" or "rivals.coming" or "rivals-coming" or "rivals.drop" or "rivals-drop" => ("badges/signal_rival", false), // brief 059: the car turning in, the drop, the park
             "call" => ("badges/npc_waitress", false),
             "vale.exits" => ("badges/npc_councillor", false),
-            "car.blocks" => ("badges/signal_camera", false),
+            "car.blocked" => ("icons/singles/car", true), // brief 059 K5: Vale's car stops short (car.blocks is retired with the driver's Call)
             "report" or "report.landed" => ("icons/singles/call", true),
             "security.called" or "fight.loud" => ("badges/signal_police", false),
             "alarm.dispatches/robots" => ("badges/signal_guard", false),
@@ -127,7 +127,7 @@ namespace Suborned.Play
         {
             string key = b.Speaker switch
             {
-                "scout" or "fixer" or "tech" or "enforcer" => "op/" + b.Speaker, "rivals" => "rivals/0", "security" => "security/0", "patrol" => "patrol",
+                "scout" or "fixer" or "tech" or "enforcer" => "op/" + b.Speaker, "rivals" => views?.RivalAnchorKey() ?? "car/rivals", "security" => "security/0", "patrol" => "patrol",
                 "waitress" or "driver" or "guard" or "councillor" => b.Speaker, _ => null,
             };
             if (key == null || views == null) return null;
@@ -162,7 +162,7 @@ namespace Suborned.Play
         public static string PopIcon(string code) => code switch
         {
             "too-far" or "out-of-range" or "needs-reach" or "no-place" or "unwalkable" or "no-walk" or "no-way" => "icons/singles/s_moving",
-            _ when code.StartsWith("stand-") => "icons/singles/s_moving",
+            _ when code.StartsWith("stand-") && code != "stand-shut" => "icons/singles/s_moving",
             "needs-routine" => "icons/singles/watch",
             "needs-need" or "needs-temperament" or "no-leverage" => "icons/singles/listen",
             "only-scout" => "portraits/cameo_scout_normal", "only-fixer" => "portraits/cameo_fixer_normal", "only-tech" => "portraits/cameo_tech_normal", "only-enforcer" => "portraits/cameo_enforcer_normal",
@@ -173,6 +173,9 @@ namespace Suborned.Play
             "carry-vale" or "already-carrying" or "carry-names-downed" or "carry-self" or "not-down" or "no-body" or "already-carried" or "body-stashed" or "not-carrying" or "stash-full" or "body-dead"
                 or "already-restrained" or "keeps-vale" or "run-carrying-vale" or "run-carrying-downed" or "other-carries" or "no-room" => "icons/singles/s_carrying",
             "doors-locked" or "door-held" => "icons/singles/lock",
+            // Glyph 2026-10-26 §5 (Drive's refusals): the fixable hold is the lock; the fight that has started is the car struck through
+            "drive-held" => "icons/singles/lock", "drive-fight" => "icons/singles/car#struck", "drive-busy" or "stand-shut" => "icons/singles/p_time",
+            "drive-no-driver" or "drive-here" or "driver-brings-vale" => "icons/singles/car", "unknown-stand" => "badges/mark_no", "car-not-parked" => "icons/singles/p_time", // brief 059 K3: the Take round the back
             "hints-on" or "hints-off" => "icons/singles/p_unknown",
             _ => "badges/mark_no",
         };
@@ -315,7 +318,7 @@ namespace Suborned.Play
                 case "camera": { var c = g.S.Cameras.Find(x => "camera:" + x.Id == id); return c == null ? null : frame.World(c.At) + Vector3.up * 0.6f; }
                 case "guard": return g.GuardPose() is var gp && gp.HasValue ? frame.World(gp.Value.pos) : null;
                 case "patrol": return g.PatrolPose() is var pp && pp.HasValue ? frame.World(pp.Value.pos) : null;
-                case "rivals": return g.RivalsPose() is var rp && rp.HasValue ? frame.World(rp.Value.pos) : null;
+                case "rivals": return g.PosOf(id) is Pt rp ? frame.World(rp) : null; // brief 059 K8: each member is a watcher (RivalsPose is the migration shim)
             }
             return null;
         }

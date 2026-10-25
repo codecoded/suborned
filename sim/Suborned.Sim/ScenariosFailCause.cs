@@ -78,7 +78,7 @@ namespace Suborned.Sim
                 var c = CauseIs(r, "abduction-seen-camera", "seen", true, "camera:pickup", "camera", Enf);
                 var cam = g.S.Cameras.Single(x => x.Id == "pickup");
                 PosedAs(r, c?.Culprits.FirstOrDefault(), cam.At, cam.Facing, "the pickup camera on its pole");
-                r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].At == g.CarPos(), "then Vale, at his car");
+                r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].At == g.ValePos() && g.CarBodyCm("car:official", c.Culprits[1].At) is int vb && vb >= 0 && vb <= g.R.CarReachCm, "then Vale, at his car (engine 0.33.1: at its kerb-side door)");
             });
 
             Add("N122", "—", "The fail camera: the rivals beat the cell to Vale (§07; route fail-rivals-reach-vale; brief 059 F2): route B without the false tip; the rival car follows Vale's car round and its wheelman reaches Vale's door before the Take in the service bay is done. The culprit is the wheelman where he stands; no operative is named.", r =>

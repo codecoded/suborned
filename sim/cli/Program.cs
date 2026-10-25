@@ -64,6 +64,7 @@ static class Program
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
+                case "cars": Probe.Cars(inputs); return 0; // engine 0.33.1 (car.footprint): the cars standing at the start, what lies on their ground, which routine legs cross it
                 case "range": return RangeCli.Run(root, args); // brief 029: the fight range, on its own inputs
                 case "fight-lab": return FightLabCli.Run(inputs, root, args); // brief 027 §6.5: the balance matrix (briefs/027/keel/fight-lab.json)
                 case "drive-session": return DriveSession.Record(inputs, root, args.Length > 1 ? args[1] : null); // brief 025: record DP1's session

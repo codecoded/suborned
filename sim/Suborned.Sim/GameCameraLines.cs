@@ -128,7 +128,7 @@ namespace Suborned.Sim
             {
                 if (r.Done || r.LandAt > Tick) continue;
                 r.Done = true;
-                var cam = S.Cameras.Find(c => c.Id == r.Cam); var at = cam != null ? (S.Grid.NearestFree(cam.At) ?? cam.At) : S.Stand(S.GuardPost);
+                var cam = S.Cameras.Find(c => c.Id == r.Cam); var at = cam != null ? (Walk.NearestFree(cam.At) ?? cam.At) : S.Stand(S.GuardPost);
                 Reported++;
                 var list = R.AlertByIncident;
                 int to = Math.Max(R.AlertMark, list[Math.Min(Reported, list.Length) - 1]);

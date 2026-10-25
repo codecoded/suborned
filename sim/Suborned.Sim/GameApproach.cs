@@ -44,7 +44,7 @@ namespace Suborned.Sim
             int speed = Math.Max(1, PaceOf(op, false));
             (Path, int)? To(Pt where)
             {
-                var st = S.Grid.NearestFree(where); var rt = st.HasValue ? S.Grid.Route(op.Pos, st.Value) : null; if (rt == null) return null;
+                var st = Walk.NearestFree(where); var rt = st.HasValue ? Walk.Route(op.Pos, st.Value) : null; if (rt == null) return null;
                 var path = new Path(rt); long mm = Math.Max(0, path.Length - reach * 10L); return (path, (int)((mm + speed - 1) / speed));
             }
             var now = To(at.Value); if (ServerOf(p) == null || now == null) return now;
@@ -64,7 +64,7 @@ namespace Suborned.Sim
         bool CanWalkIn(Op op, Person p)
         {
             var at = PersonPos(p); if (!at.HasValue) return false;
-            var st = S.Grid.NearestFree(at.Value); return st.HasValue && S.Grid.Route(op.Pos, st.Value) != null;
+            var st = Walk.NearestFree(at.Value); return st.HasValue && Walk.Route(op.Pos, st.Value) != null;
         }
         Path? WalkInRoute(Op op, Person p, string verb) => Intercept(op, p, ActReachOf(op, verb))?.path;
 

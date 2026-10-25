@@ -91,8 +91,8 @@ namespace Suborned.Play
                         winEls.Add((r, ic, nl, f, u));
                     }
                     var (wr, wi, wn, wf, wu2) = winEls[wu++]; Show(wr, true);
-                    Icon(wi, w.Kind == "disable" ? "p_alert" : "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face); // Glyph 058 §3: the desk's clock wears the siren
-                    if (face) CameoOf(wf, w.Face); else Text(wn, WindowCount(w.Left, w.Total));
+                    Icon(wi, w.Kind == "disable" ? "p_alert" : w.Kind == "rivals-next" ? "nextevent" : w.Kind == "vale-car" ? "car" : "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face); // Glyph 058 §3: the desk's clock wears the siren; Glyph 059: the rivals' next move (nextevent), Vale's car (car)
+                    if (face) CameoOf(wf, w.Face); else Text(wn, w.Label.Length > 0 ? w.Label : WindowCount(w.Left, w.Total));
                     bool low = !face && w.Left >= 0 && w.Left <= 10; wr.style.opacity = low ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 4f)) : 1f;
                     bool timed = w.Left >= 0 && w.Total > 0; Show(wu2.parent, timed);
                     if (timed) { wu2.style.width = Length.Percent(Mathf.Clamp01(w.Left / (float)w.Total) * 100f); wu2.style.backgroundColor = low ? LookSoon : LookLive; }

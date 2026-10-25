@@ -603,7 +603,9 @@ namespace Suborned.Play
                 if (pp.World.HasValue && Proj(pp.World.Value + Vector3.up * 2.9f, out var wp)) at = wp;
                 else if (pp.Screen.HasValue) { at = RuntimePanelUtils.ScreenToPanel(root.panel, pp.Screen.Value) + new Vector2(18, -36 - stack); stack += 32; }
                 else { Show(r, false); continue; }
-                Art(ic, pp.Icon.Length > 0 ? pp.Icon : "badges/mark_no", pp.Icon.StartsWith("icons/") ? Cream : (Color?)null);
+                bool struck = pp.Icon.EndsWith("#struck"); var icon = struck ? pp.Icon[..^7] : pp.Icon; // Glyph 2026-10-26 §5: drive-fight's car struck through (a 2 px cream diagonal, the shut-way strike)
+                Art(ic, icon.Length > 0 ? icon : "badges/mark_no", icon.StartsWith("icons/") ? Cream : (Color?)null);
+                var sk = ic.Q("strike"); if (sk == null && struck) { sk = E(ic, null, -2f, Glyph / 2f - 1f, Glyph + 4f, 2f); sk.name = "strike"; sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); } if (sk != null) Show(sk, struck);
                 Text(t, alt && pp.Long.Length > 0 ? pp.Long : pp.Text); r.style.height = alt ? StyleKeyword.Auto : ChipH;
                 float w = r.resolvedStyle.width; if (float.IsNaN(w)) w = 120;
                 float ph = r.resolvedStyle.height; if (float.IsNaN(ph)) ph = ChipH;
@@ -1122,7 +1124,7 @@ namespace Suborned.Play
             foreach (var c in g.S.Cameras) if (g.Known("camera:" + c.Id) is not { Sight: true }) yield return (host.frame.World(c.At) + Vector3.up * 3.6f, Red);
             if (g.Known("guard") is not { Sight: true } && g.GuardPose() is var gp && gp.HasValue && !g.GuardP.KRoutine) yield return (host.frame.World(gp.Value.pos) + Vector3.up * 2.9f, Amber);
             if (g.Known("patrol") is not { Sight: true } && g.PatrolPose() is var pp && pp.HasValue) yield return (host.frame.World(pp.Value.pos) + Vector3.up * 2.9f, Amber);
-            if (g.RivalsPresent && g.Known("rivals") is not { Sight: true } && g.RivalsPose() is var rp && rp.HasValue) yield return (host.frame.World(rp.Value.pos) + Vector3.up * 2.9f, Violet);
+            if (g.RivalsPresent && !g.RivalsWatched && g.RivalCarPose() is var rp && rp.HasValue) yield return (host.frame.World(rp.Value.pos) + Vector3.up * 2.2f, Violet); // brief 059 §2.2: the Watch is on the car (RivalsWatched)
         }
 
         // ---------------------------------------------------------------- key-person pips (Sky, 2026-10-16: "no idea who the waitress is")
@@ -1487,7 +1489,7 @@ namespace Suborned.Play
                 // brief 018 grammar (Glyph fight r1 A-C): one car marker whose shape is its state. In the final fight the hold reach is a ring on
                 // the ground, solid and quiet while the car is free, dashed with a slow drift while it is held; the marker turns to a lock with the
                 // holder count; each holder carries a lock and a tether to the car (ink underlay), and both fade over a beat when it stops holding.
-                var carW = host.frame.World(g.S.At(g.S.GetawayCar)); bool ring = host.CarRingOn, held = ring && host.CarHeldNow;
+                var carW = host.GetawayWorld; bool ring = host.CarRingOn, held = ring && host.CarHeldNow;
                 var holders = held ? host.CarHolders() : new List<(string id, Vector3 at)>();
                 Place(carMark, (car || ring) && !held, carW, "car", !ring && !hintHere("H15"), -1, TurqLight, TurqLight);
                 if (held && !(host.Ring?.Plan?.T?.Kind == "car") && Proj(carW, out var cq0)) { Show(heldMark, true); /* Glyph's 0.2.112 check: under an open car ring the marker sat on the ring's middle, its lock and count against the car pip; the Go pill shows the lock and the holders there */ Text(heldNum, holders.Count.ToString()); heldMark.style.left = cq0.x - 13; heldMark.style.top = cq0.y - 13; }
@@ -1577,6 +1579,8 @@ namespace Suborned.Play
                     float alpha = lost < 0 ? 1f : 1f - (now - lost) / 0.4f; if (alpha <= 0f || !ring) { gone.Add(kv.Key); continue; }
                     if (!Proj(hw0 + Vector3.up * 2.4f, out var hq) || !Proj(hw0, out var fq)) continue;
                     var e = HolderEl(); e.style.left = hq.x - 13; e.style.top = hq.y - 13; e.style.opacity = alpha; // Glyph r2: the blocked chip's no-entry sign, 18 px on a dark disc
+                    { var nl = e.Q<Label>("n"); int rcs = kv.Key == "car:rivals" ? host.RivalsComingS() : -1; if (nl == null && rcs >= 0) { var pl = PlateDark(e, 22f, 0.3f); pl.name = "np"; pl.style.position = Position.Absolute; pl.style.left = 27; pl.style.top = 2; pl.style.paddingLeft = 7; pl.style.paddingRight = 7; nl = Words(pl, 13.5f); nl.name = "n"; }
+                      if (e.Q("np") is VisualElement np) { Show(np, rcs >= 0); if (rcs >= 0) Text(nl, $"{rcs} s"); } } // engine 0.33.0: the rival car holds the car until its first rider steps out: the seconds to it
                     float pulse = now - host.HolderPulseAt; if (pulse >= 0 && pulse < 1f) { float sc2 = 1f + 0.3f * Mathf.Sin(pulse * Mathf.PI * 3f) * (1f - pulse); e.style.scale = new Scale(new Vector2(sc2, sc2)); } else e.style.scale = new Scale(Vector2.one); // §6.5: a refused Go pulses the holders
                     // the tether ends on the ring (a holder outside it, on the exit lane) or at the car's foot (inside it)
                     if (!Proj(carW, out var eq)) continue; eq += (fq - eq).normalized * 15f; // Glyph r3: to the car marker's disc edge (its centre is carW; the seat pill hangs below it)

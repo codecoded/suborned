@@ -143,7 +143,7 @@ namespace Suborned.Play
 
         /// <summary>The cause icon of a hostile's strongest cause (brief 046 why.icons: kit icons only; the gun never repeats: "drawn" rides on
         /// the weapon disc).</summary>
-        static string WhyIcon(string cause) => cause switch { "fired" => "bang", "vale" => "s_carrying", "violence" => "takedown", "face" => "papers", "seen" => "sawyou", "range" or "final" => "bang", _ => "" };
+        static string WhyIcon(string cause) => cause switch { "fired" => "bang", "vale" => "s_carrying", "violence" => "takedown", "crewmate" => "takedown", "face" => "papers", /* engine 0.33.0: a crewmate saw one of the crew taken down */ "seen" => "sawyou", "range" or "final" => "bang", _ => "" };
 
         /// <summary>One portrait's row this frame: the weapon (drawn = light disc, ink gun; holstered = dark disc, the gun at 55 %; "drawn" as the
         /// cause = the kit's selected light disc), the status slot by priority (left or in the car > under fire's cause > down > seen (a known

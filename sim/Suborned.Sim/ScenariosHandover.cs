@@ -120,7 +120,8 @@ namespace Suborned.Sim
                 r.Is(mid != r.Stand("d:Official entrance") && mid != g.CarPos(), "Vale walks toward the car in live time");
                 r.To(T(370));
                 r.Eq(g.Vale, ValeAt.Pickup, "at 6:10 Vale is at the car");
-                r.Eq(g.ValePos(), (Pt?)g.CarPos(), "Vale stands at the official car");
+                var vp = g.ValePos()!.Value; int body = g.CarBodyCm("car:official", vp);
+                r.Is(!g.Walk.CarCovers(vp) && body >= 0 && body <= g.R.CarReachCm, $"Vale stands at the official car, at its kerb-side door off its ground (engine 0.33.1: {body} cm from its body)");
             });
 
             Add("S03", "36", "Called, the guard walks away in live time; behind him the Enforcer is out of his cone; a far shot leaves Inez unwitnessed; his 3 health drops him (Sky 2026-10-15 fights: health, not 2 hits); Alert 2.", r =>
@@ -203,8 +204,7 @@ namespace Suborned.Sim
                 r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
                 r.Done(Enf);
                 r.Send(Enf, "d:Getaway bay");
-                var car = r.At("d:Getaway bay"); int reach = g.R.AtReachCm;
-                while (!g.Over && !G.Within(r.Op(Enf).Pos, car, reach)) g.Step();
+                while (!g.Over && !g.AtGetaway(r.Op(Enf).Pos)) g.Step(); // engine 0.33.1: at the car's body (car.footprint.reach)
                 r.Extract();
                 r.Line(g.Result == Outcome.Success, $"a witnessed shooting leaves an escape window ({g.Result} {g.FailCode}; brief 059: the four of the crew on foot are drawn to the Office front and press the Enforcer: Motive)");
                 var d = Debrief.Of(g);
@@ -303,8 +303,8 @@ namespace Suborned.Sim
                 r.To(r.Send(Tech, "cabinet"));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.Is(g.PatrolWatching(r.At("d:Office entrance")) || g.SweepSeesEntrance(g.Tick + T(45)), "the patrol covers the door on its sweep");
-                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
-                r.To(r.Send(Enf, "d:Office approach"));
+                r.Do(Tech, "reroute", "patrol"); r.To(r.Op(Tech).BusyEnd - 8); // engine 0.33.1: he walks round the getaway car (0.8 s), so he sets off 0.8 s before the reroute lands and reaches the approach when he did on 0.33.0
+                int there = r.Send(Enf, "d:Office approach"); r.Done(Tech); r.To(there);
                 r.Is(g.LoopOn, "the Tech holds the loop while diverting the patrol");
                 r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "the patrol is away");
                 r.Fire(Enf, GuardR);
@@ -323,7 +323,7 @@ namespace Suborned.Sim
                 r.Done(Enf);
                 // engine 0.19.0 (ai.intent.rivals.press, Pulse hostile-initiative.md §2.2): the rivals drawn by the gunfire press for the Vale
                 // holder, who can't fire walking Vale: the others go after them while he walks to the car
-                int bay = r.Send(Enf, "d:Getaway bay");
+                int bay = r.SendTo(Enf, g.Walk.NearestFree(r.Stand("d:Getaway bay") + new Pt(0, -160)) ?? r.Stand("d:Getaway bay")); // engine 0.33.1 (car.footprint): to its road-side door (0.33.0 walked him into the car's middle; at the kerb-side door the pressing three down him first)
                 r.Engage(r.CityGunmen, () => g.Tick >= bay, (bay - g.Tick) / Game.Hz + 1, new[] { Scout, Fixer, Tech }, false);
                 r.To(Math.Max(bay, g.Tick));
                 r.Extract();
@@ -427,8 +427,12 @@ namespace Suborned.Sim
             Add("S17", "274", "A rerouted patrol doesn't chase; the rivals still come from the east street, spot the Enforcer and fire after their 2 s react.", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                // engine 0.33.1 (brief 031, as S11): the Enforcer no longer waits by the door while the Tech works (the entrance camera reported him
+                // loitering at 1:37.6 and sent the police, who reached him 0.2 s before the rivals' react once the getaway car on the walk put the
+                // shot 0.8 s later): he sets off so he arrives as the reroute lands
+                r.To(r.Send(Tech, "cabinet"));
+                r.Do(Tech, "reroute", "patrol"); r.To(r.Op(Tech).BusyEnd - T(50));
+                r.To(Math.Max(r.SendTo(Enf, BesideDoor), r.Op(Tech).BusyEnd)); r.Done(Tech);
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Is(!g.PatrolChasing, "rerouting prevents the chase");
@@ -437,9 +441,9 @@ namespace Suborned.Sim
                 // FIX → orders: the prototype moved the Enforcer to the service lane by hand; here he walks onto the rivals' way in. Brief 059: the
                 // drawn crew comes by car to rivals.car.front and walks to the Office front, then turns back the way it came: he waits across Rocket
                 // Lane from the front stop, in their sight as they turn
-                r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(6575, -4250)) ?? BesideDoor); // brief 059: on the forecourt, ahead of the drawn crew as they walk from the front stop to the Office front
+                r.SendTo(Enf, g.S.Grid.NearestFree(new Pt(6575, -4700)) ?? BesideDoor); // brief 059: ahead of the drawn crew as they walk from the front stop to the Office front (engine 0.33.1: south of the approach, off the guard's body, where the police hold the scene)
                 int limit = g.RivalAt + T(90);
-                while (!g.RivalsTracking && g.Tick < limit && !g.Over) g.Step();
+                while (!g.RivalsTracking && g.Tick < limit && !g.Over) { g.Step(); var e = r.Op(Enf); if (!e.Gun.Drawn && e.Gun.HolsterAt < 0 && e.Busy == null) g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "draw" }); } // his weapon out as the crew comes (he holsters when a fight is over)
                 r.Is(g.RivalCarPose().HasValue, "the rivals come in visibly, by car");
                 r.Is(g.RivalsTracking, "the rival crew spots the Enforcer");
                 int spotted = g.Tick;
@@ -542,7 +546,7 @@ namespace Suborned.Sim
                 r.Is(g.PickupCameraLive(), "the pickup camera stays live (no block)");
                 r.Do(Tech, "reroute", "patrol");
                 r.To(T(370));
-                r.Eq((g.Vale, g.ValePos()), (ValeAt.Pickup, (Pt?)g.CarPos()), "6:10: Vale at his car at the official bay (brief 059 K1)");
+                r.Eq((g.Vale, g.ValePos()), (ValeAt.Pickup, g.Walk.NearestFree(g.CarPos() + new Pt(-150, 0))), "6:10: Vale at his car at the official bay (brief 059 K1), at its kerb-side door (engine 0.33.1: the car's right, -x in the official bay)");
                 r.To(T(370) + T(g.R.ValeInS));
                 r.Is(g.Vale == ValeAt.InCar && g.CarHeading().HasValue, "6:13: he is in, and the turned driver drives (its heading along the drive)");
                 r.Is(g.CarInBayTick > T(373) && g.CarInBayTick < T(395), $"parked in the service bay at {Report.Clock(g.CarInBayTick)} (car.pace: 12 m of road at 5 m/s, the drive at 2 m/s)");
@@ -671,12 +675,15 @@ namespace Suborned.Sim
                 var g = r.G;
                 var (ok, _) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", Point = Roof });
                 r.Is(!ok, "orders cannot target the Office");
+                var rb = g.Walk.RouteBeside(r.Op(Scout).Pos, r.Stand("d:Meet driver")); var sent = rb?[rb.Length - 1];
                 int at = r.Send(Scout, "d:Meet driver");
                 r.Is(r.Op(Scout).Walk!.Points.Length > 2, "the route bends round the Office");
-                bool outside = true;
-                while (g.Tick < at) { g.Step(); var p = r.Op(Scout).Pos; if (g.S.InsideOccluder(p) || !g.S.Grid.Free(p)) outside = false; }
-                r.Is(outside, "the operative stays outside the Office");
-                r.Eq(r.Op(Scout).Pos, r.Stand("d:Meet driver"), "and arrives where sent");
+                bool outside = true, offCar = true;
+                Pt? inside = null;
+                while (g.Tick < at) { g.Step(); var p = r.Op(Scout).Pos; if (g.S.InsideOccluder(p) || !(g.S.Grid.Free(p) || g.S.Grid.Free(p + new Pt(10, 0)) || g.S.Grid.Free(p + new Pt(-10, 0)) || g.S.Grid.Free(p + new Pt(0, 10)) || g.S.Grid.Free(p + new Pt(0, -10)))) { outside = false; inside ??= p; } /* a string-pulled line is sampled every 10 cm (Grid.LineFree), so it may cut a blocked cell's corner by a few cm: engine 0.33.1's walk round Vale's car cuts one by 3 cm at (6900, -4403) */ if (g.Walk.CarCovers(p)) offCar = false; }
+                r.Is(outside, $"the operative stays outside the Office{(inside.HasValue ? $" (in at {inside.Value}: {string.Join(", ", g.S.Occluders.FindAll(o => o.Contains(inside.Value)).ConvertAll(o => o.Id))})" : "")}");
+                r.Is(offCar, "and never walks over Vale's car (engine 0.33.1, car.footprint)");
+                r.Eq(r.Op(Scout).Pos, sent, "and arrives where sent: d:Meet driver lies on the ground of Vale's car at the pickup, so beside it, on the side he comes to (Walk.RouteBeside)");
             });
 
             Add("S28", "471", "Engaging nearby stops the approach walk.", r =>

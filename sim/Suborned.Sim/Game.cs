@@ -337,6 +337,7 @@ namespace Suborned.Sim
             securityPath = new Path(sp.ToArray());
             if (Range) InitRange(); // brief 029 (GameRange.cs): the fight range: no mission, no schedule, no cast but what is spawned
             else Note("start", "Vale is inside. His official car will collect him later. The city is already moving.");
+            CarEpochStep(); // engine 0.33.1 (car.footprint): the cars standing at the start (the crowd's legs built at load go round them)
         }
 
         public Person PersonByRole(string role)
@@ -373,6 +374,7 @@ namespace Suborned.Sim
         void StepInner()
         {
             Tick++;
+            CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
             if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
             foreach (var op in Ops)
             {
@@ -425,7 +427,7 @@ namespace Suborned.Sim
             if (!guardRunning && Tick < GuardAwayUntil && Alert > R.SummonAlertMax)
             {
                 var from = GuardPose()!.Value.pos;
-                guardRun = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
+                guardRun = new Path(Walk.Route(Walk.NearestFree(from) ?? from, S.Stand(S.GuardPost)) ?? new[] { from, S.Stand(S.GuardPost) });
                 guardRunning = true; LureTick = Tick; GuardAwayUntil = Tick + (int)((guardRun.Length + secSpeed - 1) / secSpeed);
                 Note("guard.recalled", "The alarm is up: the guard runs back to his post.");
                 return;
@@ -492,8 +494,8 @@ namespace Suborned.Sim
             if (Tick == T(valeExitsS) && Vale == ValeAt.Office && !EntryInProgress && !driverKnownDown)
             {
                 Vale = ValeAt.Leaving; // brief 059 K1: always to the official bay
-                var to = S.Stand(S.ValeCar);
-                valePath = new Path(S.Grid.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
+                var to = BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): to his car's kerb-side door, off its ground (0.33.0: its centre, S.ValeCar)
+                valePath = new Path(Walk.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
                 Note("vale.exits", "Vale steps out of the official entrance and walks to his car.");
             }
             if (Tick == T(valeAtCarS) && Vale == ValeAt.Leaving)
@@ -524,9 +526,9 @@ namespace Suborned.Sim
             if (PatrolGun.Target.Length > 0 && !patrolReturning) return; // engaging: it stops (Pulse §3.6)
             var target = patrolReturning ? SweepPos(Tick) : patrolOrigin; // to the shot's origin; resuming, back to its sweep
             if (patrolReturning && G.Within(chasePos, target, 100)) { PatrolChasing = false; patrolReturning = false; PatrolGun.NoFoeSince = -1; Note("patrol.sweep", "The patrol is back on its sweep."); return; }
-            var t = S.Grid.NearestFree(target); var from = S.Grid.NearestFree(chasePos);
+            var t = Walk.NearestFree(target); var from = Walk.NearestFree(chasePos);
             if (!t.HasValue || !from.HasValue) return;
-            var route = S.Grid.Route(from.Value, t.Value); if (route == null) return;
+            var route = Walk.Route(from.Value, t.Value); if (route == null) return;
             chasePos = new Path(route).At(chaseSpeed * Hz); // a second's chase, as the top-down test moved it
         }
 
@@ -582,31 +584,27 @@ namespace Suborned.Sim
         public int CarInBayTick => carDrive == null ? -1 : valeDriveStart + carDrive.Length - 1;
         /// <summary>Brief 059 (host read): the official car is parked round the back with Vale in it: the in-car Take's window is open.</summary>
         public bool ValeCarParked => PickupService && (Vale == ValeAt.InCar || Vale == ValeAt.Taking);
-        /// <summary>Which way the official car points, for the host (read-only, never hashed; brief 023): along its drive while it moves, and
-        /// the site's car.serviceFacing once parked in the service bay, car.blockFacing parked at block-spot; null where the host keeps its own rule
-        /// (at the pickup, on the block move).</summary>
-        public Pt? CarHeading()
-        {
-            if (carStoppedAt.HasValue) return null;
-            if (valeDriveStart < 0 || carToService == null) return null; // at the pickup: the host keeps its own rule
-            if (Tick >= CarInBayTick) return CarAtMouth ? carToService.Heading(CarDriveMm(Tick)) : S.CarServiceFacing; // parked in the bay (car.pace): it waits there with Vale; at the mouth, along the road
-            return carToService.Heading(CarDriveMm(Tick));
-        }
+        /// <summary>Which way the official car points, for the host (read-only, never hashed; brief 023): engine 0.33.1 (brief 041, Sky's
+        /// "cars-walk-through" shot: the host's own rule drew it across the bay, rear on the kerb by the door) always gives one, the same the
+        /// walk's car.footprint uses: car.blockFacing (the official bay's long axis) at the pickup, along its drive while it moves,
+        /// car.serviceFacing parked in the service bay, along the road at the drive's mouth, and the way it was going where it stopped.
+        /// Never null now; nullable for the hosts that read it so.</summary>
+        public Pt? CarHeading() => OfficialHeading();
         public Pt? DriverPos()
         {
             if (Driver.Down) return null;
             var car = CarPos();
             if (valeDriveStart < 0 && car == blockPath.Points[0]) return S.Stand(S.CarDriver); // brief 059: on duty by his car at the pickup until Vale is in
-            return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car
+            return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car (engine 0.33.1: the road side)
         }
         public Pt? ValePos()
         {
             switch (Vale)
             {
                 case ValeAt.Leaving: { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.At(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
-                case ValeAt.Pickup: return OfficialOut ? BesideCar(CarPos(), 1) : CarPos(); // tuning.md §10.7: out of a disabled car
+                case ValeAt.Pickup: return BesideCar(CarPos(), 1); // engine 0.33.1 (car.footprint): at his car's kerb-side door until he gets in, or waiting by it (0.33.0: its centre, inside the body, unless disabled)
                 case ValeAt.InCar: return CarPos(); // brief 059 K1: in the back of his car
-                case ValeAt.Taking: return OfficialOut ? BesideCar(CarPos(), 1) : CarPos();
+                case ValeAt.Taking: return OfficialOut || !PickupService ? BesideCar(CarPos(), 1) : CarPos(); // seized at the door at the front; in the back round the back
                 case ValeAt.WithEnforcer: return Enforcer.Inside ? (Pt?)null : Enforcer.Pos + new Pt(100, 0);
                 default: return null;
             }

@@ -140,7 +140,7 @@ namespace Suborned.Play
 
         /// <summary>Proofs: a Watch on a watcher given as a click gives it (the walk to a stand point in reach and line, then the Watch).</summary>
         public void GiveWatchScripted(OpId by, string watcher) => Give(by, new Order { Op = Op.Name(by), Do = "watch", Target = watcher }, WatcherTarget(watcher), null);
-        Target WatcherTarget(string watcher) => watcher.StartsWith("camera:") ? new Target { Kind = "camera", Key = watcher[7..], Label = WatcherName(watcher), Id = watcher } : new Target { Kind = "patrol", Key = "patrol", Label = WatcherName(watcher), Id = "patrol" };
+        Target WatcherTarget(string watcher) => watcher == "car:rivals" ? new Target { Kind = "rivals", Key = "car:rivals", Label = Name("rivals"), Id = "car:rivals" } : watcher.StartsWith("camera:") ? new Target { Kind = "camera", Key = watcher[7..], Label = WatcherName(watcher), Id = watcher } : new Target { Kind = "patrol", Key = "patrol", Label = WatcherName(watcher), Id = "patrol" };
 
         /// <summary>The door's next-step chip clicked: the agent selected first; selected, the Watch is given (walk, then watch).</summary>
         public void DoorNextClick()

@@ -44,7 +44,7 @@ namespace Suborned.Sim
         /// <summary>A's walk to b on the walk grid, starting at a and ending at b exactly (the straight line if the grid has no route).</summary>
         Path WalkPath(Pt a, Pt b)
         {
-            var route = S.Grid.Route(S.Grid.NearestFree(a) ?? a, S.Grid.NearestFree(b) ?? b);
+            var route = Walk.Route(Walk.NearestFree(a) ?? a, Walk.NearestFree(b) ?? b);
             var pts = new List<Pt> { a };
             if (route != null) foreach (var p in route) if (pts[pts.Count - 1] != p) pts.Add(p);
             if (pts[pts.Count - 1] != b) pts.Add(b);

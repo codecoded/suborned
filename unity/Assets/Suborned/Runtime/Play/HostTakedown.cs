@@ -17,7 +17,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- names
 
-        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by";
+        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : p.Job == Person.RivalJob ? Text?.HoldersPhrase(p.Id) ?? "a rival" : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by"; // engine 0.33.0: a member of the crew is "a rival"
         public string StashName(StashPlace st) => Text?.TargetName(st.Kind == "door" ? "stash-door" : "stash-bin", st.Kind == "door" ? "the service door" : "the bin") ?? st.Id;
         public string CameraName(string id) => id == "entrance" || id == "pickup" ? Text?.TargetName("camera-" + id, $"the {id} camera") ?? $"the {id} camera"
             : Text != null && Text.TargetNames.TryGetValue("camera-" + id, out var n) ? n : "the square's mast camera";
@@ -98,12 +98,12 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- the takedown (Glyph §1, §2)
 
-        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key), _ => null };
+        Person PersonOf(Target t) => t.Kind switch { "person" => CastOf(t.Key), "crowd" or "body" => Game.PersonById(t.Id.Length > 0 ? t.Id : t.Key) ?? Game.BodyById(t.Key)?.P, "rivals" when HostViews.IsCrewId(t.Key) => Game.CrewOf(t.Key)?.P, _ => null }; // engine 0.33.0: a member on foot, a rival's body
 
         /// <summary>A takedown on a person, one way, priced by the engine (QuoteTakedown, read-only).</summary>
         Intent TakedownIntent(int slot, Target t, string how)
         {
-            if (t.Kind is not ("person" or "crowd")) return null;
+            if (!(t.Kind is "person" or "crowd" || t.Kind == "rivals" && HostViews.IsCrewId(t.Key))) return null; // engine 0.33.0: the crew as people (rivals.peopleRule)
             var p = PersonOf(t); if (p == null || p.Down) return null;
             if (p == Game.ValeP && how == "knockout") return null; // Vale: the refusal pill only (Glyph §2)
             var q = Game.QuoteTakedown(KeyOf(p), how);
@@ -406,9 +406,14 @@ namespace Suborned.Play
                 "scene" => Game.Acts.Count > 0 ? Game.Acts[Game.Acts.Count - 1].Scene : (Pt?)null,
                 "guard" => Game.GuardPose()?.pos, "patrol" => Game.PatrolPose()?.pos,
                 "door" => Game.SceneHolds.Count > 0 ? Game.SceneHolds[Game.SceneHolds.Count - 1].At : (Pt?)null,
-                "unit" => UnitNear(), _ => null,
+                "unit" => UnitNear(),
+                "rival-car" => Game.RivalCarPose()?.pos, "vale-car" => Game.CarPos(), // brief 059 (Fable's cards): the rival car, Vale's car
+                _ => null,
             };
-            if (c.Sight == "in-sight" && !(at.HasValue && CellSees(at.Value))) { hidden = true; return true; }
+            // Aster's 059 routing (Sky on 0.2.122): the rival car's arrival is the 2:35 beat wherever the cell stands (it turns in off Orbit Walk, out of
+            // everyone's sight); the card points at it, so a click or N shows it coming. Its in-sight rule is Fable's for the rest
+            bool heard = l.Code == "rivals.coming";
+            if (c.Sight == "in-sight" && !heard && !(at.HasValue && CellSees(at.Value))) { hidden = true; return true; }
             if (c.Needs == "routine" && !(who?.KRoutine ?? false)) { hidden = true; return true; }
             string result = c.Result;
             if (c.Results.Count > 0) result = c.Results.TryGetValue(CardPick(l, who), out var r) ? r : new List<string>(c.Results.Values)[0];
@@ -436,7 +441,7 @@ namespace Suborned.Play
             string t = l.Text;
             switch (l.Code)
             {
-                case "vale.exits": case "vale.at-car": return Game.PickupService ? "service" : "front";
+                case "vale.exits": case "vale.at-car": return "front"; // brief 059 K1: Vale always comes out of the official door to his car (the service-lane walk is gone)
                 case "fight.ambush": return t.Contains("warning") ? "warned" : "sprung";
                 case "takedown.starts": return t.Contains("sees it coming") ? "struggle" : "unseen";
                 case "takedown.seen": return t.Contains("carried") ? "carry" : "act";

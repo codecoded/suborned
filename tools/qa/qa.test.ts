@@ -47,6 +47,10 @@ describe('Q-DEBRIEF', () => {
     expect(fs.map(f => f.severity)).toEqual(['info']);
   });
   test('the loud flag must match the gunfire', () => expect(qDebrief(play({ gunfire: 3 })).map(f => f.key)).toEqual(['Q-DEBRIEF:loud']));
+  test('a route id retired by engine 0.33 (pickup-camera-blocked, with car.blocks) is S2 even when an old log has car.blocks', () => {
+    const fs = qDebrief(play({ qa: { ...play().qa, debrief: { route: ['pickup-camera-blocked'] } }, log: [...play().log, { tick: 3000, code: 'car.blocks', text: '' }] }));
+    expect(fs.map(f => [f.key, f.severity])).toEqual([['Q-DEBRIEF:retired:pickup-camera-blocked', 'S2']]);
+  });
 });
 
 describe('Q-FAIL', () => {

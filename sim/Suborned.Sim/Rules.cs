@@ -242,6 +242,8 @@ namespace Suborned.Sim
         public readonly bool CoverStepFires;
         public readonly int ModRunning, ModRunningAway, ModTargetRunning, RunAwayConeDeg, RunAwayCosPm; public readonly bool PointBlankCover;
         public readonly int PointBlankCm, AccPoint, AccEff, AccLong, AccStart, ModMoving, ModCover, ModVale, ModUntrained, DrawTicks, HolsterTicks, AimNewTicks, ReactS, LineLapseS, SidearmArms;
+        /// <summary>car.footprint (engine 0.33.1, brief 041): a standing car's footprint (cm, along and across its heading), the clearance a walker keeps off its body, and "at the car" from its body.</summary>
+        public readonly int CarLenCm, CarWCm, CarClearCm, CarReachCm;
         public readonly int HealthCar, CarDisabledAt, CarBurnS, CarBlastCm, CarBlastDamage; // tuning.md §10.7 (Sky 2026-10-21, cars "as in Syndicate"): car.target, ×healthScale in the lab (not burn, not the ring)
         public readonly string WeaponsSettle = ""; // tuning.md §10.2 settle: the rule text (no number: it waits weapons.aimNew)
         /// <summary>Tuning.md §11 (engine 0.17.0): the follow ring round the driven agent (weapons.follow, follow-m, cm) and the trigger's rule text.</summary>
@@ -609,8 +611,9 @@ namespace Suborned.Sim
                 foreach (var m in new[] { "friendly", "uneasy", "scared" }) { var row = st[m]; row.Only("help", "pay", "pressure"); foreach (var a in new[] { "help", "pay", "pressure" }) { int v = row[a].Int(); if (v < -1 || v > 1) throw new FormatException($"{row[a].Path}: a mood moves a fit one step at most"); moodStep[m + "/" + a] = v; } }
                 WatchOffers = md["offers"].Bool(); MoodOn = true;
             }
-            var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "takedown", "body", "rule", "tag", "src", "proposed", "reason");
+            var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "takedown", "body", "driveCar", "rule", "tag", "src", "proposed", "reason");
             OneOf(ca["takedown"], new[] { "released" }); OneOf(ca["body"], new[] { "lost" }); // brief 013
+            OneOf(ca.Opt("driveCar") ?? throw new FormatException("rulebook cancel.driveCar is missing: engine 0.33.1 refuses a cancel of a Drive under way (drives-on)"), new[] { "drives-on" });
             foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
                 OneOf(ca[k], new[] { v });
             if (ca.Opt("loopHeld") is JNode lh) { if (LoopRuns) throw new FormatException("cancel.loopHeld: retired with the tether (engine 0.31.0): a loop that runs has nothing to cancel"); OneOf(lh, new[] { "ends" }); }
@@ -764,7 +767,13 @@ namespace Suborned.Sim
             // brief 023 (engine 0.8.2): where a car may be. The rule has no numbers; the engine routes every moving car on the site's drive grid
             // only when the rulebook states it (unknown = reject: a rulebook without car.drive is one the engine was not built for)
             var cd = b.Opt("car") ?? throw new FormatException("rulebook has no car section: engine 0.8.2 routes cars by car.drive (brief 023)");
-            cd.Only("drive", "pace", "paceRule", "target", "pickup", "tag", "src", "proposed", "reason");
+            cd.Only("drive", "pace", "footprint", "paceRule", "target", "pickup", "tag", "src", "proposed", "reason");
+            { // engine 0.33.1 (brief 041, Sky: "characters are walking through cars"): a standing car blocks the walk; required (unknown = reject)
+                var fp = cd.Opt("footprint") ?? throw new FormatException("rulebook car.footprint is missing: engine 0.33.1 keeps walkers out of a standing car (brief 041)");
+                fp.Only("len", "w", "clear", "reach", "rule"); fp["rule"].Str();
+                CarLenCm = RI(fp["len"]); CarWCm = RI(fp["w"]); CarClearCm = RI(fp["clear"]); CarReachCm = RI(fp["reach"]);
+                if (CarLenCm < 100 || CarWCm < 50 || CarWCm > CarLenCm || CarClearCm < 0 || CarReachCm <= CarClearCm) throw new FormatException("car.footprint: len at least 1 m, w at least 50 cm and no more than len, clear not negative, reach beyond clear (the first free ring is at the car)");
+            }
             { var pk = cd.Opt("pickup") ?? throw new FormatException("rulebook car.pickup is missing: engine 0.32.0 puts Vale in his car at the official bay (brief 059 K1)"); pk.Only("valeIn", "rule"); pk["rule"].Str(); ValeInS = RI(pk["valeIn"]); if (ValeInS < 1) throw new FormatException("car.pickup.valeIn is at least 1 s"); } CarDrive = cd["drive"].Str(); if (CarDrive.Length == 0) throw new FormatException("car.drive is empty");
             // car.pace (Motive 2026-10-19, brief 023): a moving car drives each cell at its surface's pace; required from engine 0.8.2
             var cp = cd.Opt("pace") ?? throw new FormatException("rulebook car.pace is missing: engine 0.8.2 drives each cell at its surface's pace (brief 023)");

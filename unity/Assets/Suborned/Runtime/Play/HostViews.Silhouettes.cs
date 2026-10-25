@@ -9,7 +9,7 @@ namespace Suborned.Play
     public sealed partial class HostViews
     {
         /// <summary>The views whose people take a silhouette.</summary>
-        public static bool SilhouetteKey(string key) => key.StartsWith("op/") || key.StartsWith("hostile/") || key.StartsWith("unit/") || key.StartsWith("rivals/") || key.StartsWith("security/")
+        public static bool SilhouetteKey(string key) => key.StartsWith("op/") || key.StartsWith("hostile/") || key.StartsWith("unit/") || IsCrewId(key) || key.StartsWith("security/")
             || key is "patrol" or "waitress" or "guard" or "driver" or "councillor";
 
         /// <summary>Glint 056 (2026-10-26) test: every shown, active person view that takes a silhouette, with its position (HostTurn.UncutSilhouettePeople).</summary>

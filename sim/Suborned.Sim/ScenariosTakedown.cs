@@ -57,9 +57,10 @@ namespace Suborned.Sim
         static Pt? Beside(Run r, Pt at, Pt? facing = null)
         {
             var g = r.G;
-            foreach (var d in new[] { new Pt(0, 120), new Pt(0, -120), new Pt(-120, 0), new Pt(120, 0), new Pt(85, 85), new Pt(85, -85), new Pt(-85, 85), new Pt(-85, -85) })
+            foreach (var d in new[] { new Pt(0, 120), new Pt(0, -120), new Pt(-120, 0), new Pt(120, 0), new Pt(85, 85), new Pt(85, -85), new Pt(-85, 85), new Pt(-85, -85),
+                                      new Pt(0, 200), new Pt(0, -200), new Pt(-200, 0), new Pt(200, 0) }) // engine 0.33.1: 2 m out where a standing car covers 1.2 m round the point (car.footprint)
             {
-                var q = at + d; if (!g.S.Grid.Free(q) || g.S.Grid.Route(r.Op(Enf).Pos, q) == null) continue;
+                var q = at + d; if (!g.Walk.Free(q) || g.Walk.Route(r.Op(Enf).Pos, q) == null) continue; // engine 0.33.1: off a standing car's ground (car.footprint)
                 if (facing.HasValue && G.InCone(at, facing.Value, g.R.FacingReachCm, g.R.FacingHalfCm, 0, q)) continue;
                 return q;
             }

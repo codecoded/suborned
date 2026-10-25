@@ -429,7 +429,8 @@ namespace Suborned.Play
                     DrawLine(ref n, a.Value + chest, b.Value + chest, false, SideColour(id));
                 }
                 foreach (var h in Game.Hostiles) if (h.Present) Focus(h.Id, h.Gun);
-                foreach (var id in new[] { "guard", "patrol", "rivals" }) Focus(id, Game.GunOf(id));
+                foreach (var id in new[] { "guard", "patrol" }) Focus(id, Game.GunOf(id));
+                if (!Game.Range) foreach (var rid in HostViews.RivalKeys) if (!Game.Hostiles.Exists(x => x.Id == rid)) Focus(rid, Game.GunOf(rid)); // brief 059 K8: each member his own gun
                 foreach (var sg in Game.SecGuns) Focus(sg.Id, sg);
             }
             else if (Game != null && Game.Lab && unlitTemplate && LabFire is { Walk: true } hp && LabFireAgent >= 0 && DrawnAt(Op.Name((OpId)LabFireAgent)) is Vector3 aw && DrawnAt(LabFireTarget) is Vector3 tw2)

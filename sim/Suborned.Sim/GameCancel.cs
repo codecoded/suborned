@@ -41,6 +41,7 @@ namespace Suborned.Sim
                 a.OnDone = OnDone(op, o);
                 a.CanCancel = true; (a.CancelCost, a.CancelText) = CancelLine(op, o.Do);
                 if (o.Do == "enter" && o.How == "out") { a.CanCancel = false; a.CancelCost = "nothing"; a.CancelText = "both doors are held: he waits inside until one is free"; } // a cancelled Enter, waiting
+                if (o.Do == "drive-car" || o.Do == "ride") { a.CanCancel = false; a.CancelCost = "drives-on"; a.CancelText = $"the car drives on to {o.Target}: it stops only at a stand"; } // engine 0.33.1 (rulebook cancel.driveCar; Fable's question): 0.33.0 cleared the order and left the car driving for ever
                 return a;
             }
             if (op.InCar) // brief 018: boarded; a move steps out (an order, not a cancel)
@@ -167,7 +168,7 @@ namespace Suborned.Sim
         string Cancel(Op op)
         {
             var a = ActivityOf(op.Id); string name = Sim.Op.Name(op.Id);
-            if (!a.CanCancel) return No(a.CancelCost == "down" ? "agent-down" : a.CancelCost == "keeps-vale" ? "keeps-vale" : a.CancelCost == "none" ? "holstering" : "nothing-to-cancel", a.CancelText);
+            if (!a.CanCancel) return No(a.CancelCost == "down" ? "agent-down" : a.CancelCost == "keeps-vale" ? "keeps-vale" : a.CancelCost == "none" ? "holstering" : a.CancelCost == "drives-on" ? "car-driving" : "nothing-to-cancel", a.CancelText);
             switch (a.Phase)
             {
                 case "acting":

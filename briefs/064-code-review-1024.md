@@ -307,3 +307,138 @@ All of them are view-only and I found none that changes an order, so replay stay
 - **Splice:** late.ts reads R2's columns; NOISY MACHINE re-runs perf064.
 - **Keel (with the 059 port):** R6 (a) and (b), hash-identical.
 - **Not now:** R3's merge, R5's A/B.
+
+## Air 0.2.122 (2026-10-26)
+- **Inputs:** briefs/064/air-0122/ (README, tplong, tplong-2, perf064, late, machine.txt, run-air.sh); the raw run on the Studio (out/scratch/main/air-0122/results/air-perf-0122-20261026-0214: machine.log, player logs, late frames CSVs); PC_RPAsset.asset, PC_Renderer.asset, QualitySettings, RenderCap.cs, TacticalShadows.cs, light.json `shadows.tactical`, HandoverHost `standOff`; URP 17.6's SSAO source in Library/PackageCache; briefs/008/perf/ab-1 (the one Air A/B we have, 008 B6). Sources: briefs/064/research/air-0122-gpu.md.
+- **Measured here:** nothing on the Air, no player run, no Unity. Read and arithmetic only. Every ms below that is not from the Air run is labelled an estimate.
+- **Done-check:** Sky's OK for the soak (Aster); the soak returns a GPU-clock trace; the settings A/B (second sitting, below) replaces the estimates in the table with warm Air numbers; Glint and Sky rule on the look items.
+
+### Answers in short
+1. **The evidence supports thermal throttling. It does not prove it.** With the same counts, every view slows by 1.40–1.56× after about 6 minutes. The main thread barely moves, and the frame also drifts inside a single perf064 run. No clock or temperature was traced, though, and the size of the rise is larger than the published ~22 % for this machine. The soak below settles it in one ~25-minute sitting, using the same player and kit, plus `macmon` (sudoless GPU clock and temperature).
+2. **At play zoom the biggest single item costs us frame time and shows nothing.** The renderer's SSAO has Falloff 100 m. The play camera stands 160 m back, so URP's SSAO skips every street pixel (no occlusion), yet its blur and composite still run full-screen. Turning it off for the orthographic play camera should give back about 2–3.5 ms warm with no visible change (to confirm with shots). Below that, the ranked list gets play zoom to roughly 14–17 ms warm on look-cheap settings alone. **Street level (tp-worst) does not reach 60 warm without a render-scale decision.**
+3. **That decision is also a spec question.** GDD §11 says "60 fps at 1080p". Every tplong and perf064 row ran at 2880 × 1864, which is 2.6× the pixels of 1080p. Sky should say which one is the bar (Aster).
+4. **Headroom for the asset-quality brief: none today.** Target: warm mean ≤ 13.0 ms and p99 ≤ 16.7 ms at play-opening and tp-worst, at the shipped render resolution. Today these views are 8–10 ms over. Until a settings round is measured warm, that brief must be frame-neutral. After it, its allowance is 13.0 ms minus the measured warm mean, capped at 1.5 ms.
+
+### A1 · Does the evidence support throttling? Yes, on four counts, with three gaps (Info · medium-high confidence; owner: Aster for Sky's OK)
+- **For:**
+  - **Same work, slower frame.** Same counts in both runs (play 1.81 M tris, 117 SetPass; tp-worst 5.14 M, 218, 1,894 drawn). Mean frame ×1.40 (play), ×1.53 (tp-street), ×1.56 (tp-worst); p99 ×1.35, ×1.67, ×1.62.
+  - **The CPU is not what grew.** Main thread 8.8 → 8.0, 7.0 → 7.8, 5.8 → 7.5 ms. Render thread 2.0 → 2.1, 3.2 → 3.6, 3.2 → 4.2 ms. Both stay far under the frame, so the frame is GPU-bound and the GPU got slower. The CPU's small rise matches its own published power step-down (20.5 → 12 W by 5 min).
+  - **It drifts inside one process.** perf064 after-1 → after-2, 40 s apart in the same run, about 3 and 4 minutes into the session: 15.46 → 17.31 ms mean, frames over 16.7 ms 220 → 652. The host did *less* work in after-2 (cone builds 5.5 → 2.5 a second, cones 0.52 → 0.32 ms a frame).
+  - **The machine is known to do this.** The Air is fanless. Notebookcheck measured the GPU "dropped by around 22%" under longer load, with the SoC going from 29 W to about 9 W. GDD §11 already says it throttles.
+- **Gaps:**
+  - **No trace.** `pmset -g therm` prints nothing on Apple Silicon. `thermalState` and the GPU clock were not read.
+  - **Larger than the published loss.** ×1.40–1.56 against ~×1.28. Something else may be adding to it:
+    - T3 Code and Outlook were open;
+    - the late pass ended at load 7.14. That is mostly the player's own threads, but it is not separated;
+    - the runs were 2880 × 1864 windowed on a desktop whose first surface was 3840 × 2410, which hints at a scaled display mode the compositor pays for (see A4).
+  - **Not settled.** The runs reached only ~7 minutes. Published CPU power settles at ~20 minutes, so the warm number may not be the floor yet.
+- **Weak evidence, not used:** loud-left-downed's 10 s buckets rise 12.4 → 15.0 ms, but its content changes over the fight.
+- **Metal gpuMs:** on Metal it is the span from the frame's first command buffer to its last. A pipelined, GPU-bound frame overlaps the next one and includes waits, so the span reads above the frame interval (008 B6 M6 saw 23.8 ms on a 13.1 ms frame). It is unusable as busy time. Use the frame interval when GPU-bound, macmon's `gpu_active_ratio`, and for a per-pass split `Recorder.gpuElapsedNanoseconds` (A3).
+
+### A2 · The soak to ask Sky for (owner: Aster for Sky's OK; Latch or main to add the script to the kit)
+- **Script:** `briefs/064/air-0122/soak-air.sh` (new; `zsh -n` clean; not run anywhere). It is run-air.sh's player, kit and rows, plus a trace and a cold gate. Copy it into the 0.2.122 kit folder beside run-air.sh and run it over SSH as before: `ROOM_C=<room °C> ./soak-air.sh`.
+- **Trace, no sudo:**
+  - `macmon pipe -i 500 > macmon.jsonl`: GPU clock, GPU power, GPU and CPU temperature, every 0.5 s. Needs `brew install macmon` on the Air, which is installing software on Sky's machine, so ask. Without it the script still runs, with the thermal state only.
+  - `osascript -l JavaScript -e "ObjC.import('Foundation'); $.NSProcessInfo.processInfo.thermalState"` every 5 s, with the load average, into `thermal.log`.
+  - `pmset -g thermlog` (expected empty).
+  - The tracers are killed by PID at the end.
+- **Controls:**
+  - AC power, battery not charging (charging heats the chassis), Low Power Mode off;
+  - every app quit (T3 Code and Outlook too), lid open on a hard desk, room temperature logged;
+  - `display.txt` (system_profiler, with the "UI Looks like" mode), the top processes at start and end, and the player's own settings file copied;
+  - **cold gate:** the script waits until thermal state is 0 and the GPU is under 45 °C (checked every 30 s, up to 20 minutes).
+- **Sequence (~25 min of load):**
+  1. tplong-01, cold, `-novsync`.
+  2. tplong-02 … 07 back to back: the same three rows every ~110 s, to ~13 min. This is the soak and its time series.
+  3. perf064 (2880 × 1864, warm 30, windows 20) and late (1920 × 1080), as run-air.sh runs them.
+  4. tplong-08 `-novsync`: the warm row.
+  5. As shipped: tplong-09 with vsync on (the player's settings, no `-novsync`), and perf064 `-capture-native` at the display's own size.
+- **Verdict rule (Redline reads it):**
+  - **Throttling, confirmed:** counts within 1 % between tplong-01 and tplong-08, and the frame-time rise tracks the drop in mean `gpu_freq_mhz` over each row's window (frame ratio ≈ clock ratio, ±10 %) while `gpu_active_ratio` stays near 1.
+  - **Then the bar is the plateau:** the mean of the last three soak rows, if they agree within 3 %.
+  - **Not throttling:** the clock stays flat while the frame rises. Then look at top-start/top-end, the load and the display mode.
+  - If macmon reads 0 for power (its macOS 27 caveat), the clock and temperature still decide.
+
+### A3 · Where the GPU ms come back, against the warm number (owner: Latch for settings, Glint for the look, Sky for render scale)
+- **What we know about the split:**
+  - There is no measured per-pass GPU split anywhere. The Studio is main-thread-bound, and Metal's gpuMs is a span.
+  - The only Air A/B is 008 B6 (1920 × 1080, world only, run contaminated, ratios only): SSAO from depth after opaque cost 1.2–1.9 ms over SSAO off (1.6–1.9 at five of seven stops), and shadows off saved 24–40 %.
+  - The rest are estimates from that run and from bandwidth: 120 GB/s, and one full-screen read and write at 5.37 Mpx is ~43 MB, about 0.3–0.6 ms.
+  - **One shape is measured:**
+    - The cold frame does not follow triangles: tp-worst draws 2.8× play's triangles and 6.6× its renderers at the same 14.9 ms.
+    - Late at 1080p ran 12.7–14.1 ms mean against play's 21.0 at 2880 × 1864, both warm-ish.
+    - Read together, these put about 2.1–2.5 ms per Mpx warm on pixel work, so 53–64 % of the warm play frame scales with pixels. This is a two-point model across different scenes: crude.
+- **As set today:**
+  - render scale 1 on the Air (RenderCap.MaxPixels = 2880 × 1864);
+  - SSAO full resolution, Depth source with Medium normals, Medium (8) samples, High (bilateral, 3-pass) blur, after opaque, Falloff 100;
+  - main-light shadows 4,096 atlas, fitted to 2 cascades (2,048 each) at play, soft shadows High (7×7 tent);
+  - HDR (R11G11B10), Opaque Texture and Depth Texture forced on for every camera;
+  - Bloom half-resolution start, SMAA Medium on the play camera;
+  - a signals overlay camera stacked on the play camera; Forward+.
+
+| # | change (exact setting) | est. warm saving, play / tp-worst (2880 × 1864) | look cost | judge |
+|---|---|---|---|---|
+| 1 | **SSAO off for the orthographic play camera.** In `TacticalShadows.Begin`/`End` (already per camera, ortho only), `ScriptableRendererFeature.SetActive(false)` on PC_Renderer's SSAO, restored at End; or a second renderer data without SSAO in PC_RPAsset `m_RendererDataList`, set on the play camera. The follow view keeps SSAO. | **2–3.5** / 0 | **None expected.** URP's `ShouldSkipAO` (SSAOCommon.hlsl:184) gives no occlusion past Falloff 100 m, and the play camera's street lies 142–178 m from it (standOff 160). Only roofs taller than ~70–100 m come inside 100 m, and there URP scales AO by (1 − d/100)²: a few percent, except on the very tallest towers. Glint confirms on yaw 30 and 210 shots, as 008 B6 already proposed ("SSAO off as shipped"). If Glint wants AO at play zoom, the alternative is Falloff ≥ 260 with Downsample on, Blur Low and Samples Low: it then costs about 1–1.5 ms and adds a look. | Glint |
+| 2 | **Render scale (the spec question).** `RenderCap.MaxPixels` (RenderCap.cs:12) 2880 × 1864 → 2160 × 1398 (0.75 on the Air) or 1920 × 1080 (≈ 0.62, the GDD's pixels); PC_RPAsset `m_UpscalingFilter` 0 (Auto) → FSR 1.0 (EASU + RCAS, ~0.3 ms back); STP as a variant (temporal: replaces SMAA, may ghost the crowd). | **4.5–6 at 0.75; 6.5–8.5 at 0.62**, both views | A softer 3D frame; the HUD stays native. Characters are 52–78 px at 0.75 and 43–64 px at 0.62, against the 40–60 px at 1080p bar: readability holds at both. | Sky, Glint |
+| 3 | **Soft shadows High → Medium.** PC_RPAsset `m_SoftShadowQuality` 3 → 2 (the sun uses the pipeline's). 16 → 9 taps in every lit pixel. Set it in the asset, not at runtime: prefiltering may strip the other variant. | 0.7–1.5 / 0.7–1.5 | A slightly firmer penumbra: a 5×5 tent over ~3.3 px texels instead of 7×7. | Glint |
+| 4 | **Opaque texture off.** PC_RPAsset `m_RequireOpaqueTexture` 1 → 0. No shader in unity/Assets reads `_CameraOpaqueTexture` or `SampleSceneColor` (rg); every camera is set to "use pipeline". | 0.3–0.8 / 0.3–0.8 | None. Latch checks the frame debugger (no CopyColor) and identical shots. | Latch |
+| 5 | **Depth texture by request.** PC_RPAsset `m_RequireDepthTexture` 1 → 0, **and** the sun's `LensFlareComponentSRP` disabled while the play tier renders (AtmosphereLens.cs:440–442 only sets its intensity to 0 there). A registered data-driven flare with occlusion makes URP force the depth texture (UniversalRenderPipeline.cs:1487, `CheckPostProcessForDepth`); SSAO and DoF (the long view) request depth themselves. Pays only together with 1. | 0.3–0.6 (+ the flare's occlusion pass) / 0 | None if nothing else reads it (no shader in Assets does). Check that the flare and DoF still work in third person and the long view. | Latch |
+| 6 | **Bloom starts at quarter resolution.** `Atmosphere.Profile` (Editor/World/Light/Atmosphere.cs:54–57): `bl.downscale.Override(BloomDownscaleMode.Quarter)`, from light.json `post.bloom`. | 0.3–0.7 / 0.3–0.7 | Wider, softer glow. Signals are drawn outside post, so they are untouched. | Glint |
+| 7 | **The signals overlay camera becomes a pass in the base camera after post** (HostFightLab.SignalCamera, lines 315–330): one colour and depth load/store fewer on the tile GPU, and one camera's culling fewer on the CPU. | 0.3–0.8 / 0.3–0.8 | None, if signals stay outside the grade and draw the same. Medium confidence: measure. | Latch, Glint checks signals |
+| 8 | **SMAA Medium → Low** (HandoverHost.cs:194 `antialiasingQuality`), or FXAA. Moot if 2 picks STP. | 0.3–0.7 / 0.3–0.7 | Figure edges (brief 020 asked for AA). | Glint |
+| 9 | **Small-mesh shadow cull.** PC_RPAsset `m_ShadowSmallMeshScreenPercentages` (0 today), e.g. 0.5 % on the last cascade. | 0–0.3 / 0.3–1 | Tiny far props lose their shadows, inside the haze. | Glint |
+| 10 | **Shadow atlas 4,096 → 2,048** (`m_MainLightShadowmapResolution`). A render target, not an art texture. | 0.3–0.8 / 0.3–0.8 | The street band goes from ~5 to ~10 cm a texel: softer, can shimmer when panning. Last resort. | Glint |
+
+- **Not additive.** Items 1, 3, 4 and 6 shrink the very pixel work that 2 scales. My combined estimates:
+  - play: 1 + 3–6 gives 21.0 → ~14–17 ms warm; adding 2 at 0.75 gives ~11–14.
+  - tp-worst: 3–8 gives 23.3 → ~19.5–22; adding 2 at 0.75 gives ~15.5–18. That is still over the target. Street level also needs brief 048's geometry items (the palms' LODs, cull levels), or 2 at 0.62.
+- **Not recommended:**
+  - URP Tile-Only Mode (incompatible with post);
+  - the drawer's GPU occlusion (+36 % on the Studio, render thread +3 ms);
+  - HDR off (bloom and the HDR signals need it);
+  - cascades 2 → 1 (halves the street's shadow sharpness);
+  - MSAA in place of SMAA (with the depth copy and SSAO it adds resolves);
+  - any decimation, triangle cap or texture cut (GDD §12: Sky).
+- **Not measured, and likely to matter:**
+  - Night and evening. The scene has 391 lights, the lamp pools are point lights, and Forward+ loops over them per pixel. No Air row has timed them.
+  - The 1080p late row's p99 (19.7 / 23.1) and its 57.7 ms frame are CPU ("order+save"): R2, not the GPU.
+- **Turning the estimates into numbers (Latch, for a second sitting after the soak; needs a build):**
+  - **tplong:**
+    - `-look <variant>` with: as-built; ssao-play-off; no-opaque (4 + 5); bloom-quarter; scale-075-fsr; scale-062-fsr; cheap = 1 + 4 + 5 + 6; cheap + scale-075.
+    - Soft-medium is built into the asset for that build, because of the variant.
+    - Run interleaved A B A B, 20 s each, at play-opening and tp-worst, after the 13-minute soak.
+  - **Per row:** `Recorder.gpuElapsedNanoseconds` for URP's main-light shadow, opaques, SSAO and its blur, the depth and colour copies, transparents, bloom, uber post, SMAA, the final blit and the UI, plus `SystemInfo.supportsGpuRecorder` in the log. That gives the per-pass split we have never had.
+
+### A4 · The display mode (Low-Medium · low confidence; owner: Latch, after the soak)
+- **What the log shows:** the tplong player.log opens on a Metal surface of 3840 × 2410, then CaptureSize sets a 2880 × 1864 window.
+- **If that is the Air's scaled desktop:** a player in the default borderless fullscreen gets a 3840 × 2410 drawable (9.3 Mpx). RenderCap then draws the 3D at ~0.75, but the final blit, the HUD and the compositor's downscale to the panel all run at 9.3 Mpx. That is perhaps 0.5–1.5 ms the harness never sees.
+- **The soak shows which:** `display.txt` and perf064-native.
+- **If confirmed:** size the fullscreen drawable on macOS to the panel's pixels, measured.
+
+### A5 · The baseline for the asset-quality brief (owner: Aster, into that brief)
+- **Target, warm on the Air, at the shipped render resolution, `-novsync`:**
+  - mean ≤ 13.0 ms and p99 ≤ 16.7 ms at play-opening and at tp-worst;
+  - derivation: the Air's p99/mean ratio is 1.20–1.41 (cold and warm, all three views), so p99 ≤ 16.7 needs mean ≤ ~13.
+  - Vsync is on in the shipped player (GameBoot.cs:34), so any GPU frame over 16.7 ms is a dropped frame. The uncapped warm number is the right one to hold.
+- **Today:** 21.0 / 26.0 (play) and 23.3 / 28.9 (tp-worst) at 2880 × 1864: **8 and 10 ms over. The headroom is negative.**
+- **Rule until A3's round is measured warm:** the asset brief is frame-neutral. That means ≤ +0.3 ms warm mean in an interleaved Air A/B; on the Studio, counts may not grow (triangles ≤ +10 %, SetPass, casters).
+- **After A3:** the allowance is 13.0 ms minus the measured warm mean, capped at 1.5 ms. The rest is kept for the fight (30 combatants), night lights and p99.
+- **Where that brief's cost will come from (from this run):**
+  - Triangles are not the main cost: 2.8× the triangles at the same cold frame. Warm, tp-worst's extra 3.3 M triangles and 1,600 renderers cost ≤ 2.3 ms. Read that as an upper bound of ~0.7 ms per extra million drawn triangles, shadows included.
+  - **The risk is per pixel on surfaces that fill the screen** (facades, roofs, ground):
+    - extra texture samples, normal or detail maps, parallax;
+    - transparency;
+    - above all alpha-test or discard, which costs the Apple GPU its hidden-surface removal. 008 B6: the fade's discard alone halved the heaviest stop before it was limited to the reach.
+  - Each such material change gets its own warm A/B.
+
+### Code now, by owner
+- **Aster:**
+  - Sky's OK for the soak and for `brew install macmon` on the Air;
+  - the GDD question "1080p or the Air's panel" (§11), for Sky.
+- **Latch:**
+  - add soak-air.sh to the 0.2.122 kit;
+  - then A3's `-look` variants and the GPU recorder columns in tplong for the second sitting;
+  - item 4 can go in now (no look change; frame-debugger check);
+  - items 1 and 5 after Glint's shots.
+- **Glint:** items 1 (confirm it is invisible), 3, 6, 8, 9 and 10; render scale with Sky.
+- **Not now:** item 10, STP.

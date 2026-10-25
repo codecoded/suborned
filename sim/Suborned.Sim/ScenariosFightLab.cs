@@ -118,7 +118,9 @@ namespace Suborned.Sim
                 r.Until(() => r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first) || g.FightOverTick != Never, T(15));
                 bool firedOn = r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first);
                 bool newOrder = g.Orders.Exists(o => o.order.Op == Scout && o.order.Do == "fire" && o.order.Tick > firedAt);
-                r.Is(!newOrder && (firedOn || g.FightOverTick != Never), "the Scout fights on with no new order (or the fight is over)");
+                // engine 0.33.1: with the walks round the cars the rest of the crew takes other cover, out of the Scout's reach, and the run ends
+                // (rivals-reach-vale, 5:39.5) before one comes into it: the fight is over with the run, and he was given no new order
+                r.Is(!newOrder && (firedOn || g.FightOverTick != Never || g.Over), $"the Scout fights on with no new order (or the fight is over{(g.Over ? $": the run ends {g.FailCode} at {Report.Clock(g.Tick)}" : "")})");
             }, LabStart());
 
             Add("N144", "—", "Brief 027 P6 (EXPERIMENTAL fire.close): a fire order out of range walks the grid into the effective ring with a clear line, then fires; it neither lapses nor is refused. Brief 030 (weapons.close, Sky 2026-10-20): today the same order walks in too (it was refused out-of-range).", r =>
@@ -290,8 +292,9 @@ namespace Suborned.Sim
                 r.Is(g.PreviewSnap(OpId.Fixer, click)?.Id == c.Id, "and is free to snap to again");
                 // a named place (a mission point, a person's) never snaps, drawn or not: Suture F8, d:Meet driver lies by the official car's cv-008
                 var md = g.S.Stand("d:Meet driver"); var mdc = g.S.Cover.Where(Ok).OrderBy(x => G.D2(md, x.At)).First();
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Meet driver" }).ok && r.Op(Scout).Walk?.End == md && g.CoverOf(OpId.Scout) == "",
-                     $"the drawn Scout's move to d:Meet driver ends there ({mdc.Id} is {G.Dist(md, mdc.At)} cm off; a click there would {(g.PreviewSnap(OpId.Scout, md) != null ? "snap" : "not snap")})");
+                var mdb = g.Walk.RouteBeside(r.Op(Scout).Pos, md);
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Meet driver" }).ok && r.Op(Scout).Walk?.End == mdb?[mdb.Length - 1] && g.CoverOf(OpId.Scout) == "",
+                     $"the drawn Scout's move to d:Meet driver ends there, or beside Vale's car where it covers the point (engine 0.33.1), holding no cover ({mdc.Id} is {G.Dist(md, mdc.At)} cm off; a click there would {(g.PreviewSnap(OpId.Scout, md) != null ? "snap" : "not snap")})");
             }, LabStart());
 
             Add("N151", "—", "Brief 027 B5 mid-volley (EXPERIMENTAL coverSnap): a snap given during a volley is walked like any move: the agent fires the rest of its volley on the way at walking pips, keeps its shots, and has no cover until it stands; the walk into range (close) never snaps.", r =>

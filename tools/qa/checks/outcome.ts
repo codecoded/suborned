@@ -76,12 +76,14 @@ export const CLAIMS: Record<string, { why: string; backed: (p: Play) => boolean 
   'guard-knocked-out': { why: 'takedown.out (guard)', backed: p => has(p, 'takedown.out', /guard/i) },
   'guard-killed': { why: 'takedown.dead (guard) or guard.down', backed: p => has(p, 'takedown.dead', /guard/i) || has(p, 'guard.down') },
   'driver-moves-vale-to-service-lane': { why: 'vale.exits to the service lane', backed: p => has(p, 'vale.exits', /service lane/) },
-  'pickup-camera-blocked': { why: 'car.blocks', backed: p => has(p, 'car.blocks') },
   'rivals-driven-back': { why: 'rivals.retreat', backed: p => has(p, 'rivals.retreat') },
   'rivals-follow-false-tip': { why: 'rivals.misled', backed: p => has(p, 'rivals.misled') },
 };
 /** Route ids that only a won run may claim. */
 const WIN_ONLY = new Set(['vale-reaches-getaway-car']);
+/** Route ids the engine retired, with the version that retired them: no debrief of that engine or later gives them, so one that does is a
+ *  regression (engine 0.33.0, brief 059: "pickup-camera-blocked" went with car.blocks and the driver's Call; nothing blocks the pickup camera). */
+export const RETIRED: Record<string, string> = { 'pickup-camera-blocked': 'engine 0.33.0 (brief 059: car.blocks and the driver\'s Call retired)' };
 
 /** Q-DEBRIEF: every route claim of the debrief (built on every ending, as HandoverHost does) is backed by the log; a run that did not win
  *  makes no claim only a win can make; the debrief's own loud flag agrees with the gunfire count. */
@@ -90,6 +92,7 @@ export function qDebrief(p: Play): Finding[] {
   const d = p.qa?.debrief ?? p.debrief; if (!d) return [];
   const out: Finding[] = [];
   for (const id of d.route ?? []) {
+    if (RETIRED[id]) { out.push({ check: 'Q-DEBRIEF', severity: 'S2', key: 'Q-DEBRIEF:retired:' + id, title: `The debrief still says ${id}, retired in ${RETIRED[id]}`, expected: 'no retired route id', observed: id, tick: p.tick, owner: 'Keel' }); continue; }
     const c = CLAIMS[id];
     if (!c) { out.push({ check: 'Q-DEBRIEF', severity: 'info', key: 'Q-DEBRIEF:unknown:' + id, title: `Debrief route id ${id} has no evidence rule yet`, expected: 'a rule in tools/qa/checks/outcome.ts CLAIMS', observed: id, owner: 'Suture' }); continue; }
     if (c.backed(p)) continue;

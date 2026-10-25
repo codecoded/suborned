@@ -196,7 +196,7 @@ namespace Suborned.Play
             {
                 case "hostile": id = t.Key; return true;
                 case "bystander": if (!ctrl) return false; id = t.Key; force = true; return true; // engine 0.18: a range bystander, only with Ctrl held
-                case "patrol": case "rivals": case "security": if (!(drawn || ctrl)) return false; id = t.Kind; return true;
+                case "patrol": case "rivals": case "security": if (!(drawn || ctrl)) return false; id = t.Kind == "rivals" ? t.Key : t.Kind; return true; // brief 059: a member by his id, the car as car:rivals
                 case "unit": if (!(drawn || ctrl || Game.FightOn)) return false; id = t.Key; return true; // Keel 0.15.0 host notes: a unit is fired on by its own id (police-1, robot-1, …)
                 case "person":
                     if (t.Key == "councillor") return false;
@@ -493,14 +493,14 @@ namespace Suborned.Play
                 if (string.IsNullOrEmpty(by) || string.IsNullOrEmpty(target) || by == target) return;
                 Vector3? at = null; Guard("aim", () => at = DrawnAt(target)); if (!at.HasValue) return;
                 var key = ViewKey(by);
-                if (by == "rivals") { for (int i = 0; i < 3; i++) into["rivals/" + i] = at.Value; return; } // the crew shoots as one gun
                 into[key] = at.Value;
             }
             bool Aiming(Gun gun) => gun != null && !gun.Down && gun.W != null && gun.Drawn && gun.HolsterAt < 0 && gun.Target.Length > 0 && g.PosOf(gun.Target).HasValue;
             Guard("aim", () =>
             {
                 var guns = new List<Gun>(); foreach (var op in g.Ops) guns.Add(op.Gun);
-                guns.Add(g.GuardGun); guns.Add(g.PatrolGun); guns.Add(g.RivalsGun); guns.AddRange(g.SecGuns);
+                guns.Add(g.GuardGun); guns.Add(g.PatrolGun); guns.AddRange(g.SecGuns);
+                if (!g.Range) foreach (var rid in HostViews.RivalKeys) if (!g.Hostiles.Exists(x => x.Id == rid) && g.GunOf(rid) is Gun rg) guns.Add(rg); // brief 059 K8: each member his own gun (in the fight, his body's: the hostiles below)
                 foreach (var u in g.Units) guns.Add(u.Gun); foreach (var h in g.Hostiles) guns.Add(h.Gun);
                 foreach (var gun in guns) if (Aiming(gun)) Face(gun.Id, gun.Target);
                 for (int k = 0; k < 4; k++) { var fs = FireNow[k]; if (fs.Target is { Length: > 0 } ft && fs.Mode.Length > 0 && !(Driving && k == dAgent && this.Aiming)) Face(Op.Name((OpId)k), ft); } // brief 024: the trigger, a lock or a follow: the agent faces its target (the aiming driven agent faces its reticle: HostAim)
@@ -509,7 +509,7 @@ namespace Suborned.Play
             foreach (var kv in lastShot)
             {
                 float age = now - kv.Value.at; if (age > AimAfterShotS) { stale.Add(kv.Key); continue; }
-                Face(kv.Key, kv.Value.t); if (age < 0.4f) { var k = ViewKey(kv.Key); if (kv.Key == "rivals") for (int i = 0; i < 3; i++) fired.Add("rivals/" + i); else fired.Add(k); }
+                Face(kv.Key, kv.Value.t); if (age < 0.4f) fired.Add(ViewKey(kv.Key));
             }
             foreach (var k in stale) lastShot.Remove(k);
         }
@@ -518,7 +518,8 @@ namespace Suborned.Play
         public string ViewKey(string id)
         {
             if (id is "scout" or "fixer" or "tech" or "enforcer") return "op/" + id;
-            if (id == "rivals") return "rivals/0";
+            if (!Game.Range && HostViews.IsCrewId(id)) return id; // brief 059 K8: a member draws on his own view, before and in the fight
+            if (id == "rivals") return views?.RivalAnchorKey() ?? "car/rivals"; // the family alias: the car, else the first member drawn
             if (id.StartsWith("car:")) return "car/" + id[4..]; // engine 0.16: a car target is drawn by its car view
             if (id.StartsWith("camera:")) return "camera/" + id[7..]; // engine 0.15: a camera target
             if (Game.Range && id.StartsWith("bystander-")) return views?.BystanderKey(Game, id) ?? id; // engine 0.18: a range bystander
@@ -535,7 +536,7 @@ namespace Suborned.Play
             var g = Game; bool fight = g.FightOn;
             for (int k = 0; k < 4; k++) { var gun = g.Ops[k].Gun; if (gun.W != null && !g.Ops[k].InCar && (fight || gun.Drawn || gun.Health < gun.Max || g.Ops[k].Down)) yield return (Op.Name((OpId)k), gun); }
             foreach (var h in g.Hostiles) if (h.Present && !h.Down) yield return (h.Id, h.Gun);
-            foreach (var id in new[] { "guard", "patrol", "rivals" }) { var gun = g.GunOf(id); if (gun != null && !gun.Down && (gun.Fired || gun.Engaged || gun.Health < gun.Max || (fight && id == "guard" && g.GuardAlly))) yield return (id, gun); }
+            foreach (var id in g.Range ? new[] { "guard", "patrol" } : new[] { "guard", "patrol", "rival-1", "rival-2", "rival-3", "rival-4", "rival-5" }) { var gun = g.GunOf(id); if (gun != null && HostViews.IsCrewId(id) && g.Hostiles.Exists(x => x.Id == id)) continue; /* a member in the fight is listed with the hostiles */ if (gun != null && !gun.Down && (gun.Fired || gun.Engaged || gun.Health < gun.Max || (fight && id == "guard" && g.GuardAlly))) yield return (id, gun); }
             foreach (var gun in g.SecGuns) if (!gun.Down && (gun.Fired || gun.Engaged) && g.PosOf(gun.Id).HasValue) yield return (gun.Id, gun);
         }
     }

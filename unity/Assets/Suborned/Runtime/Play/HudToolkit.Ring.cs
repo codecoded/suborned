@@ -120,10 +120,11 @@ namespace Suborned.Play
                     if (w.HeldKey != s.Holders) { w.HeldKey = s.Holders; w.HeldIds.Clear(); foreach (var hx in s.Holders.Split(",")) if (hx.Trim().Length > 0) w.HeldIds.Add(hx.Trim()); } var ids = w.HeldIds; /* Redline 064 #6: split once a ring, not a frame */
                     while (w.Held.childCount < 1 + Mathf.Max(1, ids.Count)) { var c0 = w.Held.childCount == 0 ? E(w.Held, null, w: 14, h: 14) : Cameo(w.Held, 12f, 2f); c0.style.marginRight = 2; }
                     Icon(w.Held[0], "lock", Cream);
-                    for (int k = 1; k < w.Held.childCount; k++) { bool has = k - 1 < ids.Count; Show(w.Held[k], has); if (has) Bg(w.Held[k].Q("face"), "badges/" + (PlayText.RoleOfId(ids[k - 1]) == "rival" ? "signal_rival" : "signal_police"), Color.white); }
+                    for (int k = 1; k < w.Held.childCount; k++) { bool has = k - 1 < ids.Count; Show(w.Held[k], has); if (has) Bg(w.Held[k].Q("face"), "badges/" + (PlayText.RoleOfId(ids[k - 1]) == "rival" || ids[k - 1] == "car:rivals" ? "signal_rival" : "signal_police"), Color.white); } // engine 0.33.0: the rival car holds while its riders are still to come
                 }
                 var fs = s.Shut ? new List<HudModel.PField>() : HudModel.PriceLine(host, s.Row.I);
                 if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = s.ShutText });
+                else if (s.Shut && host.RivalsComingS() is int rcs && rcs >= 0 && s.Holders.Contains("car:rivals")) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = $"{rcs} s" }); // engine 0.33.0 (Motive M059-S1.7): the countdown to the first rider's step-out
                 if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
                 Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false);
                 Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);

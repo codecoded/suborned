@@ -122,8 +122,8 @@ namespace Suborned.Sim
                 if (PatrolGun.Target.Length > 0 && !patrolReturning) { Hold(r, "hold", r.At, Tick, -1); return r; } // engaging: it stops (PatrolChase)
                 int next = Tick % Hz == 0 ? Tick : Tick + Hz - Tick % Hz; // PatrolChase moves on the whole second
                 var target = patrolReturning ? SweepPos(next) : patrolOrigin;
-                var t = S.Grid.NearestFree(target); var from = S.Grid.NearestFree(chasePos);
-                var route = t.HasValue && from.HasValue ? S.Grid.Route(from.Value, t.Value) : null;
+                var t = Walk.NearestFree(target); var from = Walk.NearestFree(chasePos);
+                var route = t.HasValue && from.HasValue ? Walk.Route(from.Value, t.Value) : null;
                 if (route == null) { Hold(r, "hold", r.At, Tick, -1); return r; }
                 var leg = new PatrolLeg { Kind = "chase", Walk = true, From = Tick };
                 var pts = new List<Pt> { chasePos }; foreach (var p in route) if (pts[pts.Count - 1] != p) pts.Add(p);

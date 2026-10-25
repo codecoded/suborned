@@ -394,7 +394,7 @@ namespace Suborned.Play
             "waitress-pulls-guard-away" => "Inez drew the guard off the door.", "guard-shot-beside-waitress" => "The guard was shot beside Inez.", "guard-shot-away-from-waitress" => "The guard was shot away from Inez.",
             "entrance-camera-looped" => "The entrance camera was looped.", "patrol-diverted" => "The patrol was rerouted.", "entry-timed-between-sweeps" => "The Enforcer went in between the patrol's sweeps.",
             "vale-taken-through-office" => "The Enforcer took Vale through the Office.", "vale-reaches-getaway-car" => "Vale reached the getaway car.",
-            "driver-moves-vale-to-service-lane" => "The driver brought Vale round to the service lane.", "pickup-camera-blocked" => "The driver's car blinded the pickup camera.",
+            "driver-moves-vale-to-service-lane" => "The driver brought Vale round to the service lane.", // engine 0.33.0: pickup-camera-blocked is retired with car.blocks
             "rivals-driven-back" => "The rivals were driven back.", "rivals-follow-false-tip" => "The rivals followed a false tip.", "vale-intercepted-outside" => "Vale was taken outside.",
             _ => null,
         };
@@ -458,7 +458,7 @@ namespace Suborned.Play
         {
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
             "watch" or "listen" or "mislead" or "loop" or "disable" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
-            "act" => "enter", "board" or "go" => "car", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
+            "act" => "enter", "board" or "go" or "drive-car" or "ride" => "car", /* brief 059 K6: Drive, and riding in the car */ "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)
             _ => phase == "holding" ? "s_looping" : "s_ready",

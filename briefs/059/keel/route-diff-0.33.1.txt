@@ -1,0 +1,159 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a f65936f1 --b tree --json briefs/059/keel/route-diff-0.33.1.json
+· engines ready (1.3 s); playing 41 routes on A and 41 on B
+A = f65936f1daeb    B = the working tree    (= means the value did not move)
+route                          outcome              fail                   end              Trail    Alert  health lost
+careless-body-found            =                    =                      3:32.7 → 3:32.3  13 → 6   3 → 2  =
+    first log line apart (line 30):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:57.6  report.landed  the camera entrance's report lands: dead (guard). Alert 2.
+careless-g-disable             =                    =                      4:10.2 → 4:11.7  =        =      =
+    first log line apart (line 26):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+careless-guard-left-door-held  =                    =                      =                =        =      =
+    first log line apart (line 27):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:56.5  attention.wary  the camera entrance is wary of the enforcer for the rest of the mission.
+careless-reporter-not-stopped  failure → withdrawn  rivals-reach-vale → -  8:07.0 → 8:08.0  =        =      =
+    first log line apart (line 13):
+      A  1:56.9  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  1:56.8  attention.noticed  the camera pickup notices the scout standing still in its sight.
+careless-scout-idles-pickup    =                    =                      6:36.0 → 6:39.5  =        =      =
+    first log line apart (line 13):
+      A  1:56.9  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  1:56.8  attention.noticed  the camera pickup notices the scout standing still in its sight.
+careless-takedown-seen-camera  =                    =                      =                =        =      =
+    first log line apart (line 8):
+      A  0:56.8  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+      B  0:57.6  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+careless-takedown-seen-crowd   =                    =                      =                =        =      =
+    first log line apart (line 13):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+fail-district-seals            =                    =                      =                =        =      =
+    first log line apart (line 5):
+      A  0:56.8  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+      B  0:57.6  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-enforcer-down             =                    =                      =                =        =      =
+    first log line apart (line 12):
+      A  0:37.4  crowd.startled  1 on the street are startled and run.
+      B  0:37.5  drawn.seen  The patrol sees the enforcer's weapon drawn. Alert 2.
+fail-entry-seen-camera         =                    =                      =                =        =      =
+    first log line apart (line 11):
+      A  2:18.1  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+      B  2:18.9  attention.noticed  the camera entrance notices the enforcer standing still in its sight.
+fail-entry-seen-guard          =                    =                      =                =        =      =
+    first log line apart (line 19):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+fail-entry-seen-patrol         =                    =                      =                =        =      =
+    first log line apart (line 16):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+fail-rivals-reach-vale         =                    =                      6:36.0 → 6:39.5  =        =      =
+    first log line apart (line 5):
+      A  1:10.7  attention.noticed  the camera pickup notices the fixer standing still in its sight.
+      B  1:10.4  attention.noticed  the camera pickup notices the scout standing still in its sight.
+fail-take-seen-camera          =                    =                      =                =        =      =
+    first log line apart (line 4):
+      A  1:08.5  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+      B  1:09.2  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+fail-vale-dead                 =                    =                      =                =        =      =
+    first log line apart (line 3):
+      A  1:08.5  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+      B  1:09.2  attention.noticed  the camera pickup notices the enforcer standing still in its sight.
+fail-vale-leaves               =                    =                      =                =        =      =
+    first log line apart (line 5):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+fight-loud-enforcer-down       =                    =                      =                =        =      =
+    first log line apart (line 39):
+      A  2:17.4  crowd.sheltered  1 reach shelter.
+      B  2:18.2  crowd.sheltered  1 reach shelter.
+fight-safe-rivals-reach-vale   =                    =                      6:36.0 → 6:39.5  =        =      =
+    first log line apart (line 5):
+      A  1:10.7  attention.noticed  the camera pickup notices the fixer standing still in its sight.
+      B  1:10.4  attention.noticed  the camera pickup notices the scout standing still in its sight.
+loud                           =                    =                      =                14 → 12  =      44 % → 66 %
+    first log line apart (line 41):
+      A  3:26.9  crowd.sheltered  1 reach shelter.
+      B  3:27.7  crowd.sheltered  1 reach shelter.
+loud-fast                      =                    =                      =                14 → 12  =      44 % → 66 %
+    first log line apart (line 41):
+      A  3:26.9  crowd.sheltered  1 reach shelter.
+      B  3:27.7  crowd.sheltered  1 reach shelter.
+loud-fight                     =                    =                      =                14 → 12  =      44 % → 66 %
+    first log line apart (line 41):
+      A  3:26.9  crowd.sheltered  1 reach shelter.
+      B  3:27.7  crowd.sheltered  1 reach shelter.
+loud-left-downed               =                    =                      =                14 → 12  =      44 % → 66 %
+    first log line apart (line 41):
+      A  3:26.9  crowd.sheltered  1 reach shelter.
+      B  3:27.7  crowd.sheltered  1 reach shelter.
+loud-left-standing             =                    =                      =                14 → 12  =      44 % → 66 %
+    first log line apart (line 41):
+      A  3:26.9  crowd.sheltered  1 reach shelter.
+      B  3:27.7  crowd.sheltered  1 reach shelter.
+route-a                        =                    =                      =                =        =      0 % → 33 %
+    first log line apart (line 31):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+route-a-board                  =                    =                      =                =        =      0 % → 22 %
+    first log line apart (line 31):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+route-a-disable                =                    =                      =                =        =      0 % → 33 %
+    first log line apart (line 34):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+route-a-pressure               =                    =                      3:47.6 → 3:20.1  =        =      83 % → 66 %
+    first log line apart (line 43):
+      A  3:04.2  ai.cover  rival-4 takes cover at cv-063 (planter-run civic/run-sq-south/0, q 740).
+      B  3:04.2  ai.why  rival-2 takes the enforcer as its target: vale, drawn.
+route-a-pressure-board         =                    =                      3:12.1 → 3:11.7  =        =      =
+    first log line apart (line 55):
+      A  3:04.3  ai.why  rival-5 takes the fixer as its target: drawn.
+      B  3:05.2  shot.miss  scout fires on rival-1 at 15 m (300 ‰): miss.
+route-b                        failure → withdrawn  rivals-reach-vale → -  8:07.0 → 8:08.0  =        =      =
+    first log line apart (line 13):
+      A  1:56.9  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  1:56.8  attention.noticed  the camera pickup notices the scout standing still in its sight.
+route-b-block                  failure → withdrawn  rivals-reach-vale → -  8:07.0 → 8:08.0  =        =      =
+    first log line apart (line 14):
+      A  1:56.9  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  1:56.8  attention.noticed  the camera pickup notices the scout standing still in its sight.
+route-b-block-board            =                    =                      =                =        =      =
+    first log line apart (line 14):
+      A  1:56.9  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  1:56.8  attention.noticed  the camera pickup notices the scout standing still in its sight.
+route-b-board                  =                    =                      =                =        =      =
+    first log line apart (line 13):
+      A  1:56.9  attention.noticed  the camera pickup notices the scout standing still in its sight.
+      B  1:56.8  attention.noticed  the camera pickup notices the scout standing still in its sight.
+route-g                        =                    =                      4:10.2 → 4:11.7  =        =      =
+    first log line apart (line 22):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+route-g-board                  =                    =                      4:04.2 → 4:05.7  =        =      =
+    first log line apart (line 22):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+route-g-fast                   =                    =                      3:12.9 → 3:11.1  =        =      =
+    first log line apart (line 38):
+      A  2:54.7  crowd.startled  1 on the street are startled and run.
+      B  2:56.2  shot.hit  rival-1 fires on enforcer at 14 m (281 ‰): hit.
+route-g-fast-board             =                    =                      3:06.7 → 3:05.2  =        =      =
+    first log line apart (line 37):
+      A  2:54.7  ai.why  rival-2 takes the enforcer as its target: vale, drawn.
+      B  2:54.7  shot.miss  rival-2 fires on enforcer at 14 m (281 ‰): miss.
+route-g-kill                   =                    =                      =                =        =      38 % → 27 %
+    first log line apart (line 22):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+route-g-kill-board             success → failure    - → rivals-reach-vale  5:38.5 → 5:30.2  =        =      27 % → 44 %
+    first log line apart (line 22):
+      A  2:56.4  rivals.post  rival-1 takes his post round our car.
+      B  2:58.9  rivals.post  rival-1 takes his post round our car.
+
+41 routes: 38 moved, 3 unchanged (1 of them with reworded log lines; --all lists them)
+(5.4 s)

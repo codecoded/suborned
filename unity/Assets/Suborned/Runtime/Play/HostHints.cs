@@ -132,7 +132,7 @@ namespace Suborned.Play
                     if (g.LoopOn || g.Tick < 45 * Game.Hz || doing[(int)OpId.Tech].Busy) return false;
                     ring = At("marker/cabinet"); return true;
                 case "H5":
-                    foreach (var r in new[] { "waitress", "driver" })
+                    foreach (var r in new[] { "waitress" }) // brief 059 (Motive M059-6.1): the driver's Call is retired; only Inez is called
                         if (g.PersonByRole(r).Turned && !Given(o => o.Do == "call" && o.Target == r)) { ring = At(r); trigWho = r; return true; }
                     return false;
                 case "H6":
@@ -147,8 +147,8 @@ namespace Suborned.Play
                     }
                 case "H8":
                     if (g.Tick < 190 * Game.Hz || !g.RivalsPresent || g.Vale == ValeAt.WithEnforcer) return false;
-                    if (Given(o => o.Target == "rivals")) return false;
-                    ring = At("rivals/0"); return true;
+                    if (Given(o => o.Target is "rivals" or "car:rivals") || !MisleadOpen()) return false; // brief 059 F3: the tip is given at the parked car, its wheelman aboard
+                    ring = At("car/rivals"); return true;
                 case "H9":
                     {
                         if (g.Tick < 240 * Game.Hz) return false;
@@ -160,10 +160,13 @@ namespace Suborned.Play
                 case "H10":
                     {
                         if (g.Vale != ValeAt.WithEnforcer) return false;
-                        var car = g.S.At(g.S.GetawayCar);
+                        var car = g.GetawayCarPos(); // brief 059 K6: wherever the car stands
                         for (int k = 0; k < 3; k++) { var op = g.Ops[k]; if (op.Gun.W != null && !op.Down && !op.Inside && G.Within(op.Pos, car, 1500)) return false; }
                         ring = At("car/getaway"); return true;
                     }
+                case "H20": // brief 059 §1.4 (Fable's H20; Glyph's shut-stand mark clears on the same tick): Vale's car parked round the back, ours still at the square with someone aboard, no Drive given
+                    if (!g.Driver.Turned || g.Driver.Down || !g.ValeCarParked || g.GetawayDriving || g.CurStand != g.S.Stands[0] || !g.AnyInCar || Given(o => o.Do == "drive-car")) return false;
+                    ring = At("car/getaway"); return true;
                 case "H12": // Sky 2026-10-16: the first long walk teaches the run toggle (G, or the chip's pace glyph)
                     for (int k = 0; k < 4; k++)
                     {
@@ -179,9 +182,9 @@ namespace Suborned.Play
                 case "H15": // out with Vale, not boarded yet (before H10; brief 018: Board replaces Extract)
                     if (!BoardAvailable || Given(o => o.Do == "board" && o.Op == "enforcer")) return false;
                     ring = At("car/getaway"); portrait = (int)OpId.Enforcer; return true;
-                case "H16": // route B: the driver turned, Vale at his car, not taken
-                    if (!g.PersonByRole("driver").Turned || g.Vale != ValeAt.Pickup) return false;
-                    ring = At("councillor"); portrait = (int)OpId.Enforcer; return true;
+                case "H16": // route B (brief 059 K3): the driver turned, Vale's car parked round the back with him in it, not taken: the Take is from the back seat
+                    if (!g.PersonByRole("driver").Turned || !g.ValeCarParked || g.Vale != ValeAt.InCar) return false;
+                    ring = At("car/official"); portrait = (int)OpId.Enforcer; return true;
                 case "H17": // Sky 2026-10-18: a fight is on and an armed agent other than the Enforcer has not fired yet: everyone armed can fire
                     {
                         if (!g.FightOn || HoldOn && !FightOnNow) return false; // brief 041: the right click focuses only while the engine's fight is on (FreeFightOn); the first shot is the right hold
@@ -241,7 +244,8 @@ namespace Suborned.Play
                 case "H14": return Given(o => o.Do == "enter", from);
                 case "H15": return Given(o => o.Do == "board" && o.Op == "enforcer", from);
                 case "H18": return Given(o => o.Do == "go", from) || Game.Over;
-                case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.Pickup;
+                case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.InCar;
+                case "H20": return Given(o => o.Do == "drive-car", from) || g.CurStand != g.S.Stands[0];
                 case "H19": { foreach (var c in Cues()) if (c.stage >= 1) return false; return true; } // the agent moved on or out of sight, and the watcher cooled
             }
             return false;

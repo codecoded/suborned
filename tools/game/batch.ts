@@ -16,7 +16,7 @@
 //   Every step that reports frame times (game-check, shots, late-fight, tp-long, perf064) records the load average (1/5/15) at its start and end and prints it under its row, NOISY MACHINE included.
 // Sky is playing (a player of his, no automation flag; playing.ts): before every step the batch waits ("Sky is playing; waiting") up to --wait-timeout seconds (default 1200), then stops; --force goes on.
 // then prints one screen: pass/fail per step, seconds, the build, frame times, where the shots are. Logs of every step: out/batch/logs/<step>.log.
-// --dry-run prints what each step would run and touches nothing (no Unity, no build). Exit 0 only if every step that ran passed.
+// --dry-run prints what each step would run and touches nothing (no Unity, no build, nothing written under out/): only the steps' plan() texts run, plus read-only pgrep to see whether the Editor is open (tests: batch.test.ts). Exit 0 only if every step that ran passed.
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { cpus, homedir, loadavg } from 'node:os';
 import { join, resolve } from 'node:path';
@@ -28,7 +28,7 @@ import { perf064Lines, spanEnd, spanStart, spanText, type LoadSpan, type Perf064
 import { build as buildEngine, engineAt } from '../missions/check/engine';
 import { DEFAULT_FILE, ROOT, expectedFiles, fileResolver, pngFileSize, resolveShots, type ResolvedFile } from './shots';
 
-const UNITY = join(ROOT, 'unity'), OUT = join(ROOT, 'out/batch'), APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
+const UNITY = join(ROOT, 'unity'), OUT = process.env.SUBORNED_BATCH_OUT ? resolve(process.env.SUBORNED_BATCH_OUT) : join(ROOT, 'out/batch'), /* SUBORNED_BATCH_OUT: the tests' scratch folder */ APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
 const SCENE = join(UNITY, 'Assets/Scenes/HarbourDistrict.unity'), MATCH = join(ROOT, 'out/sim-unity/unity-editor.json');
 const FILES = ['ShotRunner.cs', 'CaptureSize.cs'].map(f => [join(ROOT, 'tools/game/unity', f), join(UNITY, 'Assets/Suborned/Runtime/Play', f)] as const);
 const env = { ...process.env, DOTNET_CLI_TELEMETRY_OPTOUT: '1', DOTNET_NOLOGO: '1', ...(process.env.DOTNET_ROOT || !existsSync('/opt/homebrew/opt/dotnet/libexec') ? {} : { DOTNET_ROOT: '/opt/homebrew/opt/dotnet/libexec' }) };

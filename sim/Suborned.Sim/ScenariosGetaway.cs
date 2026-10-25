@@ -42,7 +42,7 @@ namespace Suborned.Sim
         static int BoardVale(Run r)
         {
             var g = r.G; var car = r.At("d:Getaway bay");
-            if (!G.Within(r.Op(Enf).Pos, car, g.R.AtReachCm)) { int at = r.SendTo(Enf, r.Stand("d:Getaway bay")); while (!g.Over && g.Tick < at) g.Step(); }
+            if (!g.AtGetaway(r.Op(Enf).Pos)) { int at = r.SendTo(Enf, r.Stand("d:Getaway bay")); while (!g.Over && g.Tick < at) g.Step(); }
             r.Do(Enf, "board", "car"); int took = r.Op(Enf).BusyEnd - g.Tick; r.Done(Enf); if (!g.Over) g.Step();
             return took;
         }
@@ -81,10 +81,10 @@ namespace Suborned.Sim
         }
         /// <summary>Board and go, covered (brief 018 §5): the Enforcer walks Vale straight to the car while the three by it fire on the blocker
         /// alone, then on whoever is up to draw the fire off him (rivals shoot whoever last shot at them), until he is in with Vale; then they hold.</summary>
-        static void CoveredBoardAndGo(Run r, bool go, bool draw = true)
+        static void CoveredBoardAndGo(Run r, bool go, bool draw = true, Pt? door = null)
         {
             var g = r.G; string[] sup = { Scout, Fixer, Tech };
-            int at = r.SendTo(Enf, r.Stand("d:Getaway bay"));
+            int at = r.SendTo(Enf, door ?? r.Stand("d:Getaway bay"));
             DownBlocker(r, sup);
             if (!draw) foreach (var op in sup) { g.Issue(new Order { Tick = g.Tick, Op = op, Do = "cease" }); g.Issue(new Order { Tick = g.Tick, Op = op, Do = "stance", Stance = "hold" }); }
             if (draw) r.Engage(() => Targets(g, false), () => g.Tick >= at, 60, sup, false, advance: false);
@@ -237,7 +237,7 @@ namespace Suborned.Sim
                 Support(r);
                 ToAmbush(r);
                 var b = g.Hostiles.Find(h => h.Blocker)!;
-                CoveredBoardAndGo(r, go: false, draw: false); // the three by the car down the blocker and draw the fire while the Enforcer boards
+                CoveredBoardAndGo(r, go: false, draw: false, door: g.Walk.NearestFree(r.Stand("d:Getaway bay") + new Pt(0, -160))); // the three by the car down the blocker and draw the fire while the Enforcer boards (engine 0.33.1: by its road-side door, out of the guard's sight: at the kerb side he sees Vale carried, a Menace step)
                 r.Is(!g.CarHeld() && (b.Down || b.Gun.St == "break" || b.Gun.St == "gone"), $"the car is free: the blocker {b.Id} is down");
                 r.Is(g.Hostiles.Exists(h => h.Present && !h.Down && h.Gun.St != "break" && h.Gun.St != "gone"), "the crew is not broken");
                 r.Eq(g.Hostiles.Count(h => h.Blocker), 1, "the job of the road did not pass on");
@@ -295,7 +295,7 @@ namespace Suborned.Sim
                 var a = g.Issue(new Order { Tick = g.Tick, Op = Fixer, Do = "move", To = "d:Getaway bay" });
                 r.Is(a.ok && r.Op(Fixer).BusyEnd - g.Tick == T(g.R.BoardS), $"a move on a boarded operative: 1 s to step out ({a.why})");
                 r.Done(Fixer); g.Step();
-                r.Is(!r.Op(Fixer).InCar && r.Op(Fixer).Pos == r.Stand("d:Getaway bay"), "out at the car's side");
+                r.Is(!r.Op(Fixer).InCar && r.Op(Fixer).Pos == g.Walk.NearestFree(r.Stand("d:Getaway bay")), "out at the car's side (engine 0.33.1: the free cell nearest its seat, off its ground)");
                 r.Do(Fixer, "board", "car"); r.Eq(r.Op(Fixer).BusyEnd - g.Tick, T(g.R.BoardS), "back in: 1 s"); r.Done(Fixer); g.Step();
                 r.Is(g.Lockdown != Never && g.Tick < g.Lockdown && !g.Over, "the seal clock runs, not yet sealed");
                 r.Is(r.Do("cell", "go"), "Go before the seal");

@@ -88,7 +88,7 @@ namespace Suborned.Play
             if (h.View) h.View.orthographicSize = 14f;
             { int lim = g.RivalAt + Suborned.Sim.Game.T(10); while (g.Tick < lim && !g.Over) h.RunTo(System.Math.Min(lim, g.Tick + 50)); }
             bool cSeen = false; string ringsC = ""; int vk = -1;
-            var rv = g.PosOf("rivals");
+            string rid = System.Array.Find(HostViews.RivalKeys, x => g.PosOf(x).HasValue) ?? "rival-1"; var rv = g.PosOf(rid); // engine 0.32.0: PosOf("rivals") is null; a member on foot
             if (rv.HasValue && !g.Over)
             {
                 for (int k = 0; k < 4 && vk < 0; k++)
@@ -100,7 +100,7 @@ namespace Suborned.Play
                 if (vk >= 0)
                 {
                     h.Select((OpId)vk, false); DrawAll(h, new[] { vk });
-                    var rw = World(h, "rivals", "rivals"); if (rw.HasValue) h.LookAt(rw.Value);
+                    var rw = World(h, "rivals", rid); if (rw.HasValue) h.LookAt(rw.Value);
                     yield return Frames(4); ringsC = RingsNow(h);
                     cSeen = h.TargetRings.Any(r => r.Side == HandoverHost.RingSide.Rival && !r.Aim && !r.Fire);
                     yield return Shoot(dir, "ring-plain-rival", log);

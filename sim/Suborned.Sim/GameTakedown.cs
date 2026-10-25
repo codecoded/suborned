@@ -154,7 +154,7 @@ namespace Suborned.Sim
             for (int i = 0; i + 1 < w.Place.Length; i++)
                 if (Tick >= w.To[i] && Tick < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
                 {
-                    var path = CrowdPath(w.Place[i], w.Place[i + 1]); int span = w.From[i + 1] - w.To[i];
+                    var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]); int span = w.From[i + 1] - w.To[i];
                     if (span <= 0) return null;
                     long lm = LegMm(w, path, Tick - w.To[i], span);
                     if (stopFace != null && lm >= path.Length && StopFace(w.Place[i + 1]) is Pt sf) return sf; // brief 054 §3.3: early at the leg's end, waiting
@@ -214,7 +214,7 @@ namespace Suborned.Sim
             if (CrewOfPerson(p) is CrewMember cm) { CrewSeized(cm, at); return; } // engine 0.33.0 (GameCrewBodies.cs)
             var w = WalkerOf(p); if (w != null) { w.St = ""; w.Run = null; w.Pace = 0; }
             if (p == GuardP) { GuardDown = true; GuardEngaged = false; GuardHeld = false; }
-            if (p == Driver) carStoppedAt = CarPos();
+            if (p == Driver) StopOfficial(CarPos());
             foreach (var r in Reps) if (r.P == p && r.LandAt > Tick) r.Phase = "stopped";
         }
         static string Who(Person p) => p.Role.Length > 0 ? p.Role : p.Id;
@@ -519,16 +519,16 @@ namespace Suborned.Sim
             var pts = new List<(string, Pt)>();
             foreach (var (id, at, kind) in S.Refuges) if (kind == "door") pts.Add((id, at));
             foreach (var cb in S.CallBoxes) pts.Add(cb);
-            var a = S.Grid.NearestFree(from) ?? from;
+            var a = Walk.NearestFree(from) ?? from;
             // nearest by the straight line first: a walk is never shorter than it, so once the next point's line is longer than the best
             // walk found nothing after it can win (the same choice as walking to every point, at a few A* instead of one a point)
             var order = new List<(long line, string id, Pt at, Pt b)>();
-            foreach (var (id, at) in pts) { var b0 = S.Grid.NearestFree(at) ?? at; order.Add((G.Isqrt(G.D2(a, b0)) * 10, id, at, b0)); }
+            foreach (var (id, at) in pts) { var b0 = Walk.NearestFree(at) ?? at; order.Add((G.Isqrt(G.D2(a, b0)) * 10, id, at, b0)); }
             order.Sort((x, y) => x.line != y.line ? x.line.CompareTo(y.line) : string.CompareOrdinal(x.id, y.id));
             foreach (var (line, id, at, b) in order)
             {
                 if (best != null && line > best.Value.path.Length + 1000) break; // 1 m of slack for the integer rounding of both lengths
-                var route = S.Grid.Route(a, b);
+                var route = Walk.Route(a, b);
                 var path = route == null ? null : new Path(route.Length >= 2 ? route : new[] { a, b });
                 if (path == null) continue;
                 if (best == null || path.Length < best.Value.path.Length || (path.Length == best.Value.path.Length && string.CompareOrdinal(id, best.Value.id) < 0)) best = (id, at, path);
@@ -920,7 +920,7 @@ namespace Suborned.Sim
             {
                 int landS = R.WitnessReactS + R.PostCallS;
                 var origin = alertThen >= 2 && SecurityArrives == INF ? S.Stand(S.SecEntry) : OriginOf(at.Value, S.Posts);
-                var route = S.Grid.Route(S.Grid.NearestFree(origin) ?? origin, S.Grid.NearestFree(at.Value) ?? at.Value);
+                var route = Walk.Route(Walk.NearestFree(origin) ?? origin, Walk.NearestFree(at.Value) ?? at.Value);
                 int walkS = route == null ? 0 : (int)((new Path(route).Length + secSpeed * Hz - 1) / (secSpeed * Hz));
                 q.PoliceInS = landS + lv.DispatchS + walkS;
             }

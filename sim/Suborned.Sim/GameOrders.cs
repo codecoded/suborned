@@ -124,12 +124,14 @@ namespace Suborned.Sim
             if (o.Point.HasValue) to = o.Point.Value;
             else if (S.HasPlace(o.To)) to = S.Stand(o.To);
             else return No("no-place", $"no place '{o.To}'");
-            if (!S.Grid.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
+            var walk = Walk; bool onCar = walk.CarCovers(to);
+            if (onCar && walk.RouteBeside(op.Pos, to) is Pt[] rb) to = rb[rb.Length - 1]; // engine 0.33.1 (car.footprint): a move onto a standing car's ground ends beside it, on the side he comes to
+            if (!walk.Free(to)) return No("unwalkable", "that ground can't be walked (a roof, a wall or a solid)");
             if (o.Run) { var no = RunRefusal(op); if (no.Length > 0) return no; }
-            var route = S.Grid.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
+            var route = Walk.Route(op.Pos, to); if (route == null) return No("no-walk", "no walk there");
             if (op.Driven) EndDrive(op, false); // brief 025: a click move takes control back
-            var snap = o.Point.HasValue ? SnapPoint(op, to) : null; // brief 027 B5 (EXPERIMENTAL fight.lab.coverSnap): a click on the ground (never a named place: a mission point or a person's) ending by a free cover point ends on it; null with the lab off
-            if (snap != null) { var rs = S.Grid.Route(op.Pos, snap.At); if (rs != null) route = rs; else snap = null; }
+            var snap = o.Point.HasValue && !onCar ? SnapPoint(op, to) : null; // brief 027 B5 (EXPERIMENTAL fight.lab.coverSnap): a click on the ground (never a named place: a mission point or a person's) ending by a free cover point ends on it; null with the lab off; engine 0.33.1: a click on a car goes to the car, never to a cover point by it
+            if (snap != null) { var rs = Walk.Route(op.Pos, snap.At); if (rs != null) route = rs; else snap = null; }
             if (CoverSnapOn) { if (snap != null) HoldCover(op, snap); else DropCover(op); }
             op.Walk = new Path(route); op.WalkMm = 0; op.CloseWalk = false; // brief 027: a click move is the player's walk, not a walk into range
             if (op.Walk.Length == 0) op.Walk = null;
@@ -591,12 +593,12 @@ namespace Suborned.Sim
             var at = PersonPos(p); var op = OpOf(by);
             if (at.HasValue && ServerOf(p) != null && !G.Within(op.Pos, at.Value, approachReach)) // brief 022: aim the walk at where her round will have her
             {
-                var st = S.Grid.NearestFree(at.Value); var rt = st.HasValue ? S.Grid.Route(op.Pos, st.Value) : null;
+                var st = Walk.NearestFree(at.Value); var rt = st.HasValue ? Walk.Route(op.Pos, st.Value) : null;
                 if (rt != null) { int k = (int)(new Path(rt).Length / Math.Max(1, opSpeed)); var ahead = PoseAhead(p, k); if (ahead.HasValue) at = ahead.Value.pos; }
             }
             if (at.HasValue && !G.Within(op.Pos, at.Value, approachReach))
             {
-                var stand = S.Grid.NearestFree(at.Value); var route = stand.HasValue ? S.Grid.Route(op.Pos, stand.Value) : null;
+                var stand = Walk.NearestFree(at.Value); var route = stand.HasValue ? Walk.Route(op.Pos, stand.Value) : null;
                 if (route != null) { long mm = Math.Max(0, new Path(route).Length - approachReach * 10L); q.WalkS = (int)((mm + opSpeed * Hz - 1) / (opSpeed * Hz)); }
             }
             // seen by (rulebook sight.unknown): where the operative stands for the act, its own place when already within reach, else the person's
@@ -649,7 +651,7 @@ namespace Suborned.Sim
                     return ("summon-saw-violence", "he saw what you did");
             if (lover.Summoned >= R.SummonsPerShift) return ("summon-came-once", "he came once already");
             var to = ServerOf(caller) is RoundsData.Server csv && !caller.Down ? csv.At : PersonPos(caller); if (!to.HasValue) return ("summon-off-street", "she isn't on the street"); // brief 022: the summons reads her post, never her pose
-            var route = S.Grid.Route(S.Grid.NearestFree(at.Value.pos) ?? at.Value.pos, S.Grid.NearestFree(to.Value) ?? to.Value);
+            var route = Walk.Route(Walk.NearestFree(at.Value.pos) ?? at.Value.pos, Walk.NearestFree(to.Value) ?? to.Value);
             if (route == null) return ("summon-too-far", "no walk between them");
             long len = new Path(route).Length; walkTicks = (int)((len + opSpeed - 1) / opSpeed); // at walking pace (cell.speed)
             if (walkTicks > T(R.SummonWalkMaxS)) return ("summon-too-far", $"too far: {walkTicks / Hz} s away");
@@ -707,12 +709,12 @@ namespace Suborned.Sim
             var lover = p.Lover!;
             var sv = ServerOf(p);
             var from = GuardPose()!.Value.pos; var to = sv != null ? sv.At : PersonPos(p)!.Value;
-            guardOut = new Path(S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(to) ?? to)!);
+            guardOut = new Path(Walk.Route(Walk.NearestFree(from) ?? from, Walk.NearestFree(to) ?? to)!);
             walkT = walk; stayT = T(R.SummonStayS); guardRunning = false;
             if (sv != null) // brief 022: he walks to her post and stops rounds.close from it, at her side (PartnerStop), facing her
             {
                 var side = PartnerStop(p, lover); // baked free and walkable from his post; a stop his grid cannot reach falls back as no stop does
-                var toSide = side.HasValue ? S.Grid.Route(S.Grid.NearestFree(from) ?? from, side.Value) : null;
+                var toSide = side.HasValue ? Walk.Route(Walk.NearestFree(from) ?? from, side.Value) : null;
                 if (toSide != null) guardOut = new Path(toSide);
                 else guardOut = guardOut.Cut(Math.Max(0, guardOut.Length - R.PartnersCloseCm * 10L)); // the file holds no stop: the old stop, on his route
                 walkT = (int)((guardOut.Length + opSpeed - 1) / opSpeed);
@@ -720,7 +722,7 @@ namespace Suborned.Sim
                 RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End);
             }
             else cafeFace = S.CafeFacing;
-            guardBack = new Path(S.Grid.Route(S.Grid.NearestFree(guardOut.End) ?? guardOut.End, S.Grid.NearestFree(from) ?? from)!);
+            guardBack = new Path(Walk.Route(Walk.NearestFree(guardOut.End) ?? guardOut.End, Walk.NearestFree(from) ?? from)!);
             LureTick = Tick; GuardAwayUntil = Tick + 2 * walkT + stayT; lover.Summoned++;
             AddTrail(R.CallTrail, "call:" + p.Role); Remember(p, "job", "fixer", false);
             Actions.Add("call:" + p.Role); Chain.Add($"{p.Role}-calls-{lover.Role}");

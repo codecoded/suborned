@@ -245,9 +245,9 @@ namespace Suborned.Sim
         Path? CloseTo(Op op, Pt at)
         {
             var w = op.Gun.W!; long eff2 = (long)w.EffCm * w.EffCm;
-            var to = S.Grid.Nearest(op.Pos, p => G.D2(p, at) <= eff2 && Sees(p, at), CloseSearchCm);
+            var to = Walk.Nearest(op.Pos, p => G.D2(p, at) <= eff2 && Sees(p, at), CloseSearchCm);
             if (!to.HasValue) return null;
-            var route = S.Grid.Route(op.Pos, to.Value); if (route == null) return null;
+            var route = Walk.Route(op.Pos, to.Value); if (route == null) return null;
             var path = new Path(route);
             return path.Length == 0 ? null : path;
         }
@@ -428,8 +428,8 @@ namespace Suborned.Sim
             if (walk)
             {
                 long eff2 = (long)w.EffCm * w.EffCm;
-                var wk = S.Grid.Nearest(op.Pos, q => G.D2(q, at) <= eff2 && Sees(q, at), CloseSearchCm);
-                var route = wk.HasValue ? S.Grid.Route(op.Pos, wk.Value) : null;
+                var wk = Walk.Nearest(op.Pos, q => G.D2(q, at) <= eff2 && Sees(q, at), CloseSearchCm);
+                var route = wk.HasValue ? Walk.Route(op.Pos, wk.Value) : null;
                 var path = route == null ? null : new Path(route);
                 if (path == null || path.Length == 0) { p.Refused = p.DistanceCm > w.MaxCm ? "out-of-range" : "no-clear-line"; return p; }
                 p.Walk = true; p.WalkTo = wk!.Value;
@@ -547,7 +547,7 @@ namespace Suborned.Sim
                 if (!c.Present(sec) || c.Q < R.CoverQPartial) continue;
                 long d = G.D2(to, c.At); if (d > r2) continue;
                 var who = CoverHolder(c); if (who.Length > 0 && who != me) continue; // retest §7.5: never onto a point a hostile stands on or walks to
-                if (!S.Grid.LineFree(to, c.At)) continue;
+                if (!Walk.LineFree(to, c.At)) continue;
                 int shield = fp.HasValue && CoverRules.Protects(c, fp.Value, sec, R.PointBlankCm) ? 0 : 1;
                 if (shield < bestShield || (shield == bestShield && (d < bestD || (d == bestD && string.CompareOrdinal(c.Id, best!.Id) < 0)))) { best = c; bestShield = shield; bestD = d; }
             }
@@ -573,7 +573,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>Where a move by the agent to `to` would end now: the snapped cover point, or null (it ends at `to`). Read-only.</summary>
-        public CoverPoint? PreviewSnap(OpId opId, Pt to) { var op = OpOf(opId); return op.Down || !S.Grid.Free(to) ? null : SnapPoint(op, to); }
+        public CoverPoint? PreviewSnap(OpId opId, Pt to) { var op = OpOf(opId); return op.Down || !Walk.Free(to) ? null : SnapPoint(op, to); }
         /// <summary>The cover point the agent holds ("" none).</summary>
         public string CoverOf(OpId opId) => OpOf(opId).Gun.Cover;
         /// <summary>Whom a snapped agent faces: the nearest combatant ("" none: face the point's own Faces). Presentation only.</summary>

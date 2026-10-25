@@ -14,7 +14,7 @@ import { readTexts, world } from '../../../tools/people/inputs.ts';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -347,7 +347,8 @@ describe('verbs and refusals', () => {
     expect(sent.size).toBeGreaterThanOrEqual(10);
     const bad: string[] = [];
     for (const [c, l] of Object.entries(t.locks)) {
-      const uses = new Set([...l.line.matchAll(/\{(m|usd|tick)\}/g)].map((x) => x[1]!));
+      // a lock's variants (byTarget) are worded for the cases the engine sends the number with; the base line is the case it does not (car-held: tick only when car:rivals holds the car)
+      const uses = new Set([l.line, ...Object.values(l.byTarget ?? {}).map((v) => v.line)].flatMap((x) => [...x.matchAll(/\{(m|usd|tick)\}/g)].map((y) => y[1]!)));
       const send = sent.get(c) ?? new Set<string>();
       for (const u of uses) if (!send.has(u)) bad.push(`${c}: line uses {${u}} but the engine does not send it`);
       for (const f of send) if (!uses.has(f)) bad.push(`${c}: the engine sends ${f} and the line ignores it`);
@@ -849,7 +850,7 @@ describe('feed cards for engine events no scene covers', () => {
     expect(items['rivals.arrive']!.sight).toBe('in-sight'); expect(items['guard.at-cafe']!.sight).toBe('in-sight');
     // the two cards of the city scenes (their place is the scene's); and brief 013's cards, which name where the check looks (`at`). Nothing else is in sight only.
     const SCENE_CARDS = ['rivals.arrive', 'guard.at-cafe'];
-    const SEEN_AT: Record<string, string> = { 'rivals.coming': 'rival-car', 'rivals.drop': 'rival-car', 'rivals.follows': 'rival-car', 'rivals.back': 'rival-car', 'rivals.warned': 'rival-lookout', 'rivals.no-warning': 'rival-lookout',
+    const SEEN_AT: Record<string, string> = { 'rivals.coming': 'rival-car', 'rivals.drop': 'rival-car', 'rivals.follows': 'rival-car', 'rivals.back': 'rival-car', 'rivals.warned': 'rival-lookout', 'rivals.no-warning': 'rival-lookout', 'rivals.wakes': 'victim', 'rivals.frees': 'victim',
       'rivals.at-vale': 'vale-car', 'car.blocked': 'vale-car', 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
       'report.unfounded': 'scene', 'report.confirmed': 'scene', 'person.missed': 'person', 'guard.back-to-post': 'guard', 'alarm.reassigns': 'unit', 'doors.lock': 'door', 'patrol.alarm': 'patrol',
       'patrol.stands-down': 'patrol', 'stash.serviced': 'stash', 'stash.opened': 'stash' };
@@ -861,7 +862,7 @@ describe('feed cards for engine events no scene covers', () => {
   });
   test('brief 013: the cell\'s own acts and the city\'s answers to an Alert have no sight rule; what happens at a place does (the told/learned rule)', () => {
     // the cell\'s own acts: the agent is there. The city\'s answers: the Alert pill and the street show them, so a card says that it came, never who made the report or why.
-    for (const c of ['takedown.starts', 'takedown.fails', 'takedown.dead', 'takedown.out', 'takedown.seen', 'carry.body', 'carry.down', 'stash.', 'restrain.done', 'report.landed', 'seal.starts', 'alarm.dispatches', 'response.reinforces']) expect(items[c]?.sight, c).toBeUndefined();
+    for (const c of ['takedown.starts', 'takedown.fails', 'takedown.dead', 'takedown.out', 'takedown.seen', 'carry.body', 'carry.down', 'stash.', 'restrain.done', 'report.landed', 'seal.starts', 'alarm.dispatches', 'response.reinforces', 'rivals.recalled', 'rivals.wiped', 'rivals.see-takedown']) expect(items[c]?.sight, c).toBeUndefined();
     // a cause only a Watch can teach: the card waits for the routine
     expect(items['post.missed']!.needs).toBe('routine');
     expect(Object.entries(items).filter(([, x]) => x.needs).map(([c]) => c)).toEqual(['post.missed']);
@@ -1173,6 +1174,57 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(fillLock(t, { code: 'car-held', ids: 'officer-1,officer-2,rival-1' }, {})).toContain('blocked by hostiles');
     expect(fillLock(t, { code: 'car-held', ids: 'robot-1,robot-2' }, {})).toContain('blocked by 2 robots');
   });
+  test('engine 0.33.0 (brief 059): car-held with the rival car among the holders counts down to its first step-out; with no step-out yet it only says the car is driving in', () => {
+    const left = (tk: number) => `${Math.max(0, Math.ceil((tk - 1000) / 10))} s`;
+    const clock = (tk: number) => `${Math.floor(tk / 600)}:${String(Math.floor(tk / 10) % 60).padStart(2, '0')}`;
+    const lk = t.locks['car-held']!;
+    expect(lk.tickAs).toBe('left');
+    expect(Object.keys(lk.byTarget ?? {}).sort()).toEqual(['rival-car', 'rival-car-driving']);
+    expect(lk.byTarget!['rival-car']!.line).toContain('{tick}'); expect(lk.byTarget!['rival-car']!.short).toContain('{tick}');
+    expect(lk.byTarget!['rival-car-driving']!.line).not.toContain('{tick}'); expect(lk.byTarget!['rival-car-driving']!.short).not.toContain('{tick}');
+    expect(lk.line).not.toContain('{tick}'); expect(lk.short).not.toContain('{tick}');
+    const a = { code: 'car-held', ids: 'car:rivals', tick: 1180 };
+    expect(fillLock(t, a, { left })).toBe('The rival car is coming. Its crew is out in 18 s. Down them, then Go.');
+    expect(fillLockShort(t, a, { left })).toBe('Rivals coming · 18 s');
+    expect(fillLockShort(t, a, { clock })).toBe('Rivals coming · 1:58'); // no `left` given: the mission clock, still a word the player can read
+    expect(fillLock(t, { code: 'car-held', ids: 'car:rivals,rival-3', tick: 1180 }, { left })).toContain('rival car is coming');
+    expect(fillLockShort(t, { code: 'car-held', ids: 'car:rivals', tick: -1 })).toBe('Rivals coming');
+    expect(fillLock(t, { code: 'car-held', ids: 'car:rivals', tick: -1 })).toBe('The rival car is still driving in. Wait for its crew, down them, then Go.');
+    // without the rival car the base line and its short answer as before, whatever the tick
+    expect(fillLockShort(t, { code: 'car-held', ids: 'rival-3' })).toBe('Blocked · down a rival');
+    expect(fillLock(t, { code: 'car-held', ids: 'rival-3', tick: -1 })).toBe('The car is blocked by a rival. Down them, or drive them off, then Go.');
+    // the fail card's "{holders} held the car" says a rival when the rival car held it
+    expect(holdersPhrase(t, 'car:rivals')).toBe('a rival');
+    expect(roleOfId('car:rivals')).toBe('rival');
+    // a variant's pop fits the pop
+    for (const [c, l] of Object.entries(t.locks)) for (const v of Object.values(l.byTarget ?? {})) expect(v.short.length, c).toBeLessThanOrEqual(SHORT_MAX);
+  });
+  test('engine 0.33.0 (brief 059): every id of the final fight\'s why has a clause, and every fire cause a word', () => {
+    if (!haveSim) return;
+    const why = new Set<string>();
+    for (const src of simAll()) for (const m of src.matchAll(/FightWhy\.Add\("([a-z0-9-]+)"/g)) why.add(m[1]!);
+    expect(why.size).toBeGreaterThanOrEqual(9);
+    expect(Object.keys(t.debrief.fightWhy).sort()).toEqual([...why].sort());
+    for (const [k, v] of Object.entries(t.debrief.fightWhy)) expect(v, k).toMatch(/^[A-Z][^.!?]*\.$/);
+    for (const id of ['rivals-recalled', 'crew-destroyed']) expect(t.debrief.fightWhy[id], id).toBeTruthy();
+    const f = simFile('GameFireWhy.cs');
+    const order = f.slice(f.indexOf('FireCauseOrder = {'), f.indexOf('};', f.indexOf('FireCauseOrder = {')));
+    const causes = [...order.matchAll(/"([a-z]+)"/g)].map((m) => m[1]!);
+    expect(causes).toContain('crewmate');
+    expect(Object.keys(L.why)).toEqual(causes); // the engine's order, strongest first
+    for (const [k, v] of Object.entries(L.why)) { expect(v.split(' ').length, k).toBeLessThanOrEqual(3); expect(v, k).not.toMatch(/[.!?]/); }
+  });
+  test('engine 0.33.0 (brief 059): the crew\'s six new log codes are worded or silent with a reason, and the beats stay at the cap', () => {
+    for (const c of ['rivals.recalled', 'rivals.wiped', 'rivals.see-takedown']) {
+      expect(t.cards.items[c], c).toBeTruthy();
+      expect(Object.values(t.events).some((e) => e.log?.includes(c)), `${c} is spoken by an event`).toBe(true);
+    }
+    for (const c of ['rivals.wakes', 'rivals.frees']) { expect(t.cards.items[c], c).toBeTruthy(); expect(t.silentLogs[c], c).toMatch(/card only/); }
+    expect(t.silentLogs['rivals.gone']).toMatch(/silent/);
+    expect(t.cards.items['rivals.wakes']!.result).not.toMatch(/report|statement/); // a crewmate makes none (rivals.peopleRule)
+    for (const e of ['rivals-recalled', 'rivals-wiped', 'rivals-saw-takedown']) for (const sp of t.events[e]!.speakers) expect(lookup(t, { event: e, speaker: sp }), `${e} ${sp}`).toBeTruthy();
+    for (const c of ['rivals.recalled', 'rivals.wiped', 'rivals.see-takedown', 'rivals.wakes', 'rivals.frees']) expect(t.cards.items[c]!.fate, c).not.toBe('beat'); // the feed is at ten beats: none of these takes one
+  });
   test('the price line: a canonical field order, a list for every verb that starts with the name and keeps that order', () => {
     expect(L.price.order).toEqual([...PRICE_FIELDS]);
     expect(Object.keys(L.price.verbs).sort()).toEqual([...VERBS].sort());
@@ -1270,7 +1322,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(70); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed)
+    expect(Object.keys(t.cards.items).length).toBe(75); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
   });

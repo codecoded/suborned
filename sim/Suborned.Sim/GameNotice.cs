@@ -84,7 +84,7 @@ namespace Suborned.Sim
             for (int i = 0; i + 1 < w.Place.Length; i++)
                 if (t >= w.To[i] && t < w.From[i + 1] && w.Place[i] != "beyond" && w.Place[i + 1] != "beyond")
                 {
-                    var path = CrowdPath(w.Place[i], w.Place[i + 1]); int span = w.From[i + 1] - w.To[i]; if (span <= 0) return null;
+                    var path = CrowdPath(w.Place[i], w.Place[i + 1], w.To[i]); int span = w.From[i + 1] - w.To[i]; if (span <= 0) return null;
                     long lm = LegMm(w, path, t - w.To[i], span);
                     return lm >= path.Length ? StopFace(w.Place[i + 1]) : path.Heading(lm);
                 }

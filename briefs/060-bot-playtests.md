@@ -456,3 +456,159 @@ Down, carried and inside givers stay findings for Go as well: the ring should na
   - The rest are single 0.5 s samples 5 to 15 cm off at kerbs and step edges (the eased height lagging a step), none in a run of two. The player's own rule (15 cm for 0.5 s) found nothing.
   - The random rows that set the bar barely walk the steps. I'll set the share for human rows (count only runs of two or more samples, or 99.8%) after the next nightly gives a second human row. Until then, read that S3 as these steps, not a floor fault.
 - The Q-SOLID text says "for over 0.5 s" even when a figure is inside a solid for 21 s, because a flagged figure is held until it leaves. Optional (Latch): give the stretch's length in the row (the longest run per key), so a long walk-through reads as one.
+
+## Sky's 0.2.122 play: cars walked through, Inez and the guard with no ring (Suture, 2026-10-26)
+
+Evidence: `briefs/041/sky-play-0122/` (Sky's script, 316 orders, Failure enforcer-down at 8:10.5; `cars-walk-through.png`).
+
+How I checked:
+- I built engine e4b61f2e (sim 0.31.0, the build's) in a separate worktree at `out/scratch/suture/e4b6`, since removed. The script replays identical there: `suborned-sim play` gives "[ok] the replay matches its record", final `6c75f2fbf9c3765d`.
+- Probe `out/scratch/suture/probe0122/` replays the script on that engine and reads, tick by tick:
+  - everyone's position against the car footprints (`cars.txt`, `cars-bay.txt`, `units.txt`);
+  - the Fixer's and Scout's rows on Inez and the guard: the engine's `Preview`, `CallQuery` and `LearnQuery`, with the host's `Locked()` rules (`fixer.txt`, `guard.txt`).
+- ContextRank.cs from the build, compiled on its own (`out/scratch/suture/rank0122/`), gives the choice on those rows.
+- The 0.2.122 player (Sky's zip, unpacked in scratch, settings at defaults: the hold preset) took six shots with `-shots` on Sky's script, through `bun run guard`. They are in `out/scratch/suture/shots0122/out/`, with crops `../crop-*.png`; report status ok, build "0.2.122 · c037 · sim 0.31.0 · e4b61f2e+".
+- The host files the findings rest on are the same at 5e5da7b7 (the 0.2.122 batch commit) as at e4b61f2e:
+  - HostHold, HostHoldStatus, HostContext and ContextRank;
+  - HostViews.Figures and HandoverHost (Locked, BuildPanel).
+- Frame: engine cm, x south, y east; 10 ticks a second.
+
+### 1. "Characters are walking through cars"
+
+**Which car.** It is Vale's official car (Sedan_Official: deep teal, ivory roof; `tools/decokit/cars020.py`). It is not the getaway car (coral, seafoam roof). The driver was never turned, so it stands at the pickup the whole mission.
+
+**Where the engine puts it.** `CarPos()` = (7820, −3100), the "d:Official drop-off" place. `CarHeading()` there is null in 0.31.0 ("the host keeps its own rule"). The drop-off lies in the Office bay:
+- the drive grid's `y` strip covers x 7700–7975 and runs along y;
+- the Office face is at x ≈ 7550–7650, the road starts at x 8000;
+- the site's `car.blockFacing` is (0, −100), the bay's long axis.
+
+So a parked car should lie along y, covering x 7728–7912 and y −3330 to −2870.
+
+**Where the host draws it.** `HostViews.Figures.Visual()` turns the car across the line from it to "d:Meet driver" at (7810, −3370). Since the 10-14 re-siting that line runs along the kerb, so the car is drawn along x:
+- it covers x 7590–8050, nose into the road;
+- its tail is on the pavement, 0.4 m from the Office face, its corner on the official entrance point (7625, −3000).
+
+That is Sky's picture. Shot 06 at 8:09.5 reproduces it.
+
+**Grid.** On e4b6's grid nothing blocks a car. Walkable sample points:
+
+| Footprint | Walkable |
+|---|---|
+| Official car, drawn (along x) | 125 of 135 |
+| Official car, along the bay | 133 of 133 |
+| Getaway car | 130 of 133 |
+
+**Who is inside a car footprint, and when.** Positions are the engine's; the host spreads the crowd by up to 0.7 m. First the official car as drawn:
+
+| When | Who | Note |
+|---|---|---|
+| 5:50.3–end | Vale | `ValePos()` at `ValeAt.Pickup` *is* `CarPos()`: from 6:10.0 he stands at the car's centre (inside the body), by rule |
+| 6:30.1–6:32.8 | p-records-office-57 | |
+| 6:52.6–6:53.2 | p-records-office-74 | |
+| 7:00.1–7:01.3 | -27, -66, -13, -08, -21, -44, -53 | Startled crowd running along the pavement at x 7675, through the drawn tail |
+| 7:30.6–7:31.2 | -67, -30 | The two who radio the Take |
+| 8:00.3–8:01.6 | The same seven | Coming back |
+| 8:07.2–end | police-3 | Arrives |
+| 8:08.7–end | police-4 | Arrives |
+| 8:09.6–8:10.2 | -74 | |
+
+The response officers come to check the reported Take, and their destination is the car's centre (7820, −3100): `unit.Dest` = `CarPos`. They stand there in state "check" and shoot the Enforcer from there: the cause names police-4 at (7820, −3100).
+
+With the car along the bay, these remain inside it:
+- Vale (from 6:00.6);
+- the seven crossing the bay at 8:00.8–8:02.6;
+- police-3 (from 8:07.5) and police-4 (from 8:09.0).
+
+The crowd at x 7675 then clears it. So most of the crowd crossings Sky saw come from the host's heading. The engine's own overlaps are Vale's point, the officers' destination and a free bay.
+
+Inside the getaway car at (850, −4820), drawn along the exit lane:
+- startled crowd -42, -28, -25, -35, -71, -62 at 7:12.8–7:15.0, and -73 at 7:16.0–7:17.7;
+- the response unit's lead at 7:39.4–7:41.4.
+
+**"x2" is not two guards.** It is the response's unit badge, merged within 2.5 m (`HostTakedown`: `UnitBadges`). Its icon is `badges/signal_police`, the shield with a chevron; robots wear the plain shield. The two units are police-3 and police-4, both on exactly (7820, −3100), the car's centre and Vale's point. The rimmed figure inside the body is one of the three people the engine stands there. Sky's shot is from 8:08–8:10.5, the last two seconds.
+
+**Changes:**
+- **Keel (sim).** The 0.33.1 work in the tree (`GameCarFootprint.cs`) already gives the official car the bay heading at the pickup and turns `BesideCar` with the heading. Still to do:
+  - (a) Vale's point at the pickup (`ValePos`, `ValeAt.Pickup`/`Taking`) must not be `CarPos()`: use the kerb-side door point, `BesideCar(car, kerb side)`, about (7670, −3100);
+  - (b) a response unit sent to an incident at the car (the Take) needs a destination that is a free cell outside the footprint, not `CarPos()`;
+  - (c) the getaway car's footprint is in the mask too (the startled crowd's route at 7:13).
+
+  Done-check: re-run this script with the probe on 0.33.1. Nobody but a boarding agent is inside any footprint (`cars-bay.txt` is empty of crowd, Vale and units).
+- **Latch (host).** Once `CarHeading()` is non-null at the pickup, `Visual()` and `Cars()` already take it. Delete the "d:Meet driver" across-the-line fallback (`HostViews.Figures.cs`, the `car/official` branch), so a moved driver point can never turn a car across its bay again. Draw Vale beside the car door from the engine's point, not at the car's centre. Done-check: shot 06 again, with the car along the kerb and no figure in it.
+
+### 2. "Times I couldn't perform action on Inez"
+
+The Fixer's rows on Inez, from the engine at each order (`fixer.txt`):
+
+| Tick | What happened | Ask | Pay | Help | Pressure |
+|---|---|---|---|---|---|
+| 1977 (3:17.7) | Help given; lands 4:12.7, "not yet" (shown before the click, 2 orders), $40,000 | refused | turned | not-yet | turned |
+| 3256 (5:25.6) | Ask given; refused at 5:51.8 | refused | no-cash ($90,000, cash $60,000) | turned | open |
+| 3578 (5:57.8) | Help again; turned at 6:47.8, cash $10,000 | refusal-remembered (from 5:51.8) | no-cash | turned | open |
+
+Ask's card said "refused" before it was given, a gamble Sky took from the ring. Watch is no row all mission: she was watched at 0:25.7 (mood uneasy), and the row stays gone until her mood changes. In the hold preset agent-busy is not a lock, so the ring offered Help and Pressure (and Ask until 5:51.8) at every turn; nothing was refused out of sight here.
+
+**The silent refusal.** After 6:47.8 she is a contact, and the Fixer's only row on her is Call (`BuildPanel`: a turned contact gets Call alone):
+- Call is open for 10 s, 6:47.8–6:58.0. Shot 03 at 6:49.0: "Hold · Call Inez · +1 Trail".
+- From 6:58.0 (Alert 3, when the patrol saw the Enforcer's drawn weapon) to the end, `CallQuery("waitress")` = `summon-alert`: "security is searching: he won't leave".
+- From 7:47.5 to 8:01.2 Sky gives ten clicks, every one a Move. Inez stands at (−975, −2925), and six of the ten targets are within 0.5 m of her feet: these are clicks on her.
+
+Why they walk:
+
+| Step | What the code does |
+|---|---|
+| The choice | ContextRank on [Call, locked] gives `Lock`, with no ring ways (`rank0122`) |
+| A left click | `HostHold.ClickRing` returns false when `Choice.Order` is empty (only a held Go is let through), so `HoldClick` walks to the ground under the cursor |
+| The hover | `HoldIntent` gives null: no calm main way, and `FireOffered` is false for a contact. So no pill. |
+| A right tap | Does nothing (item 33) |
+
+The lock's words exist in text.json ("summon-alert": short "Alarm up"), but no path shows them in the hold preset. Shot 05 at 7:48.0, Fixer selected and hovering Inez, shows her name tag and no pill. Its "Contact › Call" card is a shot artefact: the shot runner fast-forwards, so the 4.2 s gain chip from 6:47.8 is still up. Sky's would have gone.
+
+**Changes:**
+- **Glyph (cue spec).** In the hold preset, a thing whose every way for the selection is locked still answers:
+  - (a) Hover: the pill in a lock state, with lock icon, verb, who and short lock ("Call Inez · Alarm up"), dim, no "Hold" head, and the doer's face.
+  - (b) Left click: the ring opens with the locked ways shut (struck, dim, the short lock on the wedge's pill, as Go/car-held and Loop/loop-holds already are). A press on a shut wedge pops the full lock line. Never a walk.
+  - (c) With no row at all: the WhoCan hint pop.
+
+  Spec whether a shut ring shows more than one locked way: Pay "no cash" and Ask "refused before" are also only in the ⋯ panel today.
+- **Latch (host), after Glyph's spec.**
+  - `HostHold.ClickRing`: open the ring when the panel has any locked row; drop the `Choice.Order.Count == 0` → false exit.
+  - `OpenRing`: generalise the car-held and loop-holds `Shut` inserts to any locked row, up to five.
+  - `HoldIntent` and `HoldPillFrame`: return and draw the lock intent when there is no calm main way and a locked calm row exists.
+  - `HoldClick`: never `GroupWalk` to the feet of a thing with only locked ways.
+
+  Done-check: shot 05 again shows "Call Inez · Alarm up", and a scripted left click at 4680 opens a ring with a shut Call and issues no Move.
+
+### 3. "Hovering over the door guard didn't show any action ring"
+
+In the hold preset hover never opens a ring. It shows a pill, and the ring comes on a left click. The script records orders only, so which agent was selected when Sky hovered isn't known. Here is what each agent got on the guard (`guard.txt`, shots 01, 02 and 04):
+
+| When | Scout | Tech | Fixer | Enforcer |
+|---|---|---|---|---|
+| to 5:20.9 (guard not yet watched) | Hold · Watch | Hold · Watch | Hold · Watch | Hold · Watch |
+| 5:20.9–7:05.8 | "Hold · Listen the guard · 50 s" (shot 01) | No row at all. Pill: "Right hold · Fire · +2/hit Trail · Alert ≥2" (shot 02). Left click: no ring, it walks. | Pill: Fire. Click: ring with Ask (shows "refused") and Pressure. | Pill: Fire. Click: ring with Knockout, Kill, Fire. |
+| 7:05.8–end | Listen locked "already heard", Watch gone. Pill: "Fire · +2/hit Trail · Alert ≥2" (shot 04, a fight on). Left click: no ring, it walks. | as above | as above | as above |
+
+Behind these rows:
+- Every agent can Watch a cast person until he is watched. Then the Watch row is gone for everyone until his mood changes (`Verb`: `WatchOffered`).
+- The guard is a non-combatant with `FireOffered` true (`HostHold.cs:602`), and every agent is armed (pistols, carbine). So with no calm main way, `HoldIntent` offers Fire.
+
+So after 5:20.9, three of four agents (all four after 7:05.8) are offered only "Fire" on the door guard on hover. For the Scout after 7:05.8 and the Tech after 5:20.9, a click opens no ring and walks them to him. An agent with no way on the guard gets a hidden ring, not an empty one, and the pill offers to shoot him. No Move near the guard appears in Sky's orders, so Sky hovered without clicking: he saw a Fire pill or nothing he wanted. The Scout's last orders on the guard (4:14.8 watch, 6:11.8 listen) did come through the ring.
+
+**Changes:**
+- **Glyph (spec).** Outside a fight, a harmful Fire offer on a non-combatant must not stand in for a hidden calm way. The pill shows the locked calm way ("Listen · Already heard") under the same lock state as §2, else the WhoCan hint ("the Fixer can turn him"). Fire on the guard stays one right hold away, priced.
+- **Latch.** In `HoldIntent`, try the lock intent (§2) before `FireOffered` when the target is not a combatant.
+- **Fable or Latch (words).** The hold pill reads "Listen the guard". `Verb()`'s label is "{plate label} {target}", so it needs "Listen to …", as `Words()` already gives the panel.
+
+### 4. A gap in the evidence
+
+The selection, hovers, ring opens and lock pops live only in the host, so a note like "I hovered the guard" cannot be tied to a tick.
+
+**Latch:** write a host sidecar beside the session script, `<script>.host.jsonl` with one line per change: `{tick, sel:[…], hover:kind/key, ring:open|take|shut, pop:code, click:walk-from-thing}`. Suture reads it in the next triage. It is outside the engine and the replay.
+
+### 5. tools/qa/checks/outcome.ts (engine 0.33)
+
+- `pickup-camera-blocked` is out of `CLAIMS`: it read `car.blocks`, which engine 0.33.0 retired with the driver's Call, and `Debrief.cs` no longer gives that id.
+- A new `RETIRED` map makes a debrief that still says it an S2 Q-DEBRIEF (`retired:pickup-camera-blocked`, owner Keel), even when an old log carries `car.blocks`.
+- There is a test in `tools/qa/qa.test.ts`.
+- Verified: `bun test --parallel=8 tools/qa` 71 pass; `bun run typecheck` clean.

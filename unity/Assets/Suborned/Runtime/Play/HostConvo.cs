@@ -79,7 +79,7 @@ namespace Suborned.Play
         Transform ConvoView(string key) => views == null ? null : key switch
         {
             "scout" or "fixer" or "tech" or "enforcer" => views.Find("op/" + key),
-            "rivals" => views.Find("rivals/0"),
+            "rivals" => views.Find(views.RivalAnchorKey()), // brief 059: the car, else the first member drawn
             _ => views.Find(key),
         };
 

@@ -140,31 +140,31 @@
    "target": "security-2"
   },
   {
-   "tick": 2277,
+   "tick": 2279,
    "op": "scout",
    "do": "fire",
    "target": "security-1"
   },
   {
-   "tick": 2277,
+   "tick": 2279,
    "op": "fixer",
    "do": "fire",
    "target": "security-1"
   },
   {
-   "tick": 2277,
+   "tick": 2279,
    "op": "tech",
    "do": "fire",
    "target": "security-1"
   },
   {
-   "tick": 2292,
+   "tick": 2294,
    "op": "scout",
    "do": "fire",
    "target": "rivals"
   },
   {
-   "tick": 2292,
+   "tick": 2294,
    "op": "scout",
    "do": "move",
    "to": [
@@ -173,13 +173,13 @@
    ]
   },
   {
-   "tick": 2292,
+   "tick": 2294,
    "op": "fixer",
    "do": "fire",
    "target": "rivals"
   },
   {
-   "tick": 2292,
+   "tick": 2294,
    "op": "fixer",
    "do": "move",
    "to": [
@@ -188,31 +188,31 @@
    ]
   },
   {
-   "tick": 2583,
+   "tick": 2585,
    "op": "scout",
    "do": "fire",
    "target": "rival-2"
   },
   {
-   "tick": 2583,
+   "tick": 2585,
    "op": "fixer",
    "do": "fire",
    "target": "rival-2"
   },
   {
-   "tick": 2643,
+   "tick": 2645,
    "op": "scout",
    "do": "fire",
    "target": "rival-3"
   },
   {
-   "tick": 2643,
+   "tick": 2645,
    "op": "fixer",
    "do": "fire",
    "target": "rival-3"
   },
   {
-   "tick": 2684,
+   "tick": 2686,
    "op": "scout",
    "do": "move",
    "to": [
@@ -221,7 +221,7 @@
    ]
   },
   {
-   "tick": 2684,
+   "tick": 2686,
    "op": "fixer",
    "do": "move",
    "to": [
@@ -230,55 +230,55 @@
    ]
   },
   {
-   "tick": 2684,
+   "tick": 2686,
    "op": "enforcer",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3138,
+   "tick": 3134,
    "op": "enforcer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 3178,
+   "tick": 3174,
    "op": "scout",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3178,
+   "tick": 3174,
    "op": "fixer",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3178,
+   "tick": 3174,
    "op": "tech",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3184,
+   "tick": 3174,
+   "op": "fixer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3174,
+   "op": "tech",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3175,
    "op": "scout",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 3184,
-   "op": "tech",
-   "do": "board",
-   "target": "car"
-  },
-  {
-   "tick": 3191,
-   "op": "fixer",
-   "do": "board",
-   "target": "car"
-  },
-  {
-   "tick": 3201,
+   "tick": 3185,
    "op": "cell",
    "do": "go"
   }

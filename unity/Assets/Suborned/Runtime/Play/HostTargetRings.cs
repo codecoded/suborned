@@ -70,7 +70,7 @@ namespace Suborned.Play
             float now = Time.unscaledTime; int used = 0;
             void Add(string id, RingSide side, bool combatant)
             {
-                if (string.IsNullOrEmpty(id)) return;
+                if (string.IsNullOrEmpty(id) || TargetRingKeys.Contains(ViewKey(id))) return; // one ring a view
                 bool aim = threatAim.Contains(id), fire = threatShot.TryGetValue(id, out var last) && g.Tick - last <= Game.Hz;
                 bool hover = id == hoverId; bool ours = false; for (int k = 0; k < 4; k++) if (FireNow[k].Target == id && !string.IsNullOrEmpty(FireNow[k].Mode)) ours = true;
                 if (!(aim || fire || ours || hover || combatant && combat)) return;
@@ -91,7 +91,7 @@ namespace Suborned.Play
                 if (!g.GuardAlly) Add("guard", RingSide.Guard, true);
                 Add("patrol", RingSide.Guard, true);
                 foreach (var sg in g.SecGuns) Add(sg.Id, RingSide.Guard, true);
-                Add("rivals", RingSide.Rival, true);
+                foreach (var rid in HostViews.RivalKeys) if (!g.Hostiles.Exists(x => x.Id == rid)) Add(rid, RingSide.Rival, true); // brief 059 K8: each member on foot (in the fight, from the hostiles below)
                 foreach (var u in g.Units) if (!u.Legacy && !u.Patrol && u.OnStreet(g.Tick)) Add(u.Id, RingSide.Guard, true);
             }
             foreach (var h in g.Hostiles) if (h.Present) Add(h.Id, h.Id.StartsWith("rival") ? RingSide.Rival : RingSide.Guard, true);

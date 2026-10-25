@@ -127,13 +127,13 @@
    "to": "service-drive"
   },
   {
-   "tick": 4470,
+   "tick": 4459,
    "op": "enforcer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 4470,
+   "tick": 4459,
    "op": "cell",
    "do": "panic"
   },

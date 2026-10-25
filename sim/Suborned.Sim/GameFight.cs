@@ -49,13 +49,13 @@ namespace Suborned.Sim
                 var stands = CurStand.Police; // brief 059 K6: the stand's police stands
                 for (int i = 0; i < n && i < stands.Length; i++)
                 {
-                    var route = S.Grid.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
+                    var route = Walk.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
                     var gun = NewGun($"officer-{i + 1}", PistolW, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
                     var home = S.Stand(stands[i]);
                     if (Lab && i < Labr!.PoliceContest) // brief 027 retest R1 (lab; Pulse retest-fixes.md §2, Motive tuning.md §7.2): its stand pulled into its ring of the car
                     {
                         var cp = StopPoint(home, Car, gun.W!.EffCm);
-                        if (cp != home) { Note("ai.kite", $"{gun.Id} comes for the car: its stand is {G.Dist(cp, Car) / 100} m from it, not {G.Dist(home, Car) / 100} m."); home = cp; route = S.Grid.Route(entry, home) ?? new[] { entry, home }; }
+                        if (cp != home) { Note("ai.kite", $"{gun.Id} comes for the car: its stand is {G.Dist(cp, Car) / 100} m from it, not {G.Dist(home, Car) / 100} m."); home = cp; route = Walk.Route(entry, home) ?? new[] { entry, home }; }
                     }
                     Hostiles.Add(new Hostile { Id = gun.Id, At = home, Home = home, Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }
@@ -85,7 +85,7 @@ namespace Suborned.Sim
         {
             var home = S.Stand(S.FightEntry); name = "the north street";
             if (R.LoudEntry != "nearest" || Range) return home;
-            var car = S.Grid.NearestFree(Car) ?? Car; long best = WalkMm(home, car); var at = home;
+            var car = Walk.NearestFree(Car) ?? Car; long best = WalkMm(home, car); var at = home;
             foreach (var e in S.Entrances)
             {
                 if (e.kind != "official") continue;
@@ -134,7 +134,7 @@ namespace Suborned.Sim
                 {
                     var from = GuardPose()?.pos ?? S.Stand(S.GuardPost);
                     var stop = AllyStop(); // his post, or the cover beside it (Pulse §3.4)
-                    var route = S.Grid.Route(S.Grid.NearestFree(from) ?? from, S.Grid.NearestFree(stop) ?? stop);
+                    var route = Walk.Route(Walk.NearestFree(from) ?? from, Walk.NearestFree(stop) ?? stop);
                     guardAllyPath = new Path(route ?? new[] { from, stop }); guardAllyStart = Tick;
                     GuardHeld = true; heldPhase = "fighting the rivals"; heldPos = from; GuardAwayUntil = INF;
                     Note("fight.guard", "The guard hears the shooting and runs in against the rivals.");

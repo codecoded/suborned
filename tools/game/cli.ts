@@ -8,22 +8,26 @@
 // Staleness is by content (Splice, 2026-10-21): the app is rebuilt only when an input (unity/Assets, ProjectSettings, Packages, the icon, the engine
 // DLL) differs from what the last build read (out/build/play/inputs.json, a fingerprint of blob ids); a commit that only records built files
 // changes nothing. After a rebuild for play only the short draw check runs (`-drawCheck`: one frame, windowed, a few seconds); `--check` is the
-// full proof. A running game is never built under: it says to close it. `--dry-run` says whether it would build and stops.
+// full proof. A running game is never built under: it says to close it.
+// `--dry-run` (Splice, 2026-10-26; a `--send --dry-run` once started a real Unity build): with any other flag it prints what would be built, checked, packed, sent or opened and exits 0.
+// It builds nothing, starts no Unity, signs, zips and sends nothing and writes nothing under out/build or runs/builds; the spawn wrapper below refuses (exit 3) to start
+// anything but read-only git, pgrep, sysctl and `security find-identity` while it is on. Tests: cli.test.ts (SUBORNED_GAME_OUT, SUBORNED_GAME_SPAWN_LOG, SUBORNED_GAME_SPAWN_STUB).
 // `bun run game:pack` zips the app for another Mac (TheSuborned-0.2.<build>.zip); `bun run game:send [device]` packs and sends it by
 // Taildrop (default the MacBook Air, skys-macbook-air-1; --dry-run prints the command) and logs it in runs/builds/builds.json.
 // Build numbers: tools/game/version.json (committed) counts them; every successful build takes the next (GameBuild.Version), so the app's
 // Finder Version, the pause menu, the briefing's corner and the zip all say 0.2.<build>.
 // `bun run game:signing-check` says whether the Developer ID identity and the notary profile exist, and how to make each.
 // Flags: --build (force), --check (pictures 1920x1080, frame times at the Air's 2880x1864, one proof run: the window switches to 1080p around each picture (CaptureSize -frames-size); --native: everything at the display's own size; --capture-size WxH: everything at that size; --no-air: frame times at 1920x1080; --reuse-proof: use the proof the build just took, if it is complete and newer than the build), --pack, --send [device], --dry-run, --signing-check, --no-open, --windowed (open in a window).
-import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
-import { join, relative } from 'node:path';
-import { spawnSync } from 'node:child_process';
+import { appendFileSync, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
+import { basename, join, relative, resolve } from 'node:path';
+import { spawnSync as realSpawnSync, type SpawnSyncOptions, type SpawnSyncReturns } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { usageGate } from '../gen/flags';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
-const DIR = join(ROOT, 'out', 'build', 'play');
+/** SUBORNED_GAME_OUT: the tests point the build folder at a scratch folder; nothing else sets it. */
+const DIR = process.env.SUBORNED_GAME_OUT ? resolve(process.env.SUBORNED_GAME_OUT) : join(ROOT, 'out', 'build', 'play');
 const APP = join(DIR, 'The Suborned.app');
 const STAMP = join(DIR, 'build.json');
 const PROFILE = 'suborned-notary';
@@ -46,7 +50,7 @@ const USAGE = `usage: bun tools/game/cli.ts [flags]   (or bun run game, game:bui
   (no flag)          open the built app, building it first when an input changed
   --build            force a build            --check          build if stale, then the full proof
   --pack             zip the app for another Mac   --send [device]  pack and send by Taildrop (default skys-macbook-air-1)
-  --dry-run          say whether it would build (or send) and stop
+  --dry-run          with any of the above: print what would be built, checked, packed, sent or opened, and stop (exit 0); builds, starts and writes nothing
   --signing-check    say whether the signing identity and notary profile exist
   --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof   (modifiers of the above)
   --help, -h         print this and exit; any unknown option does the same and does nothing (no build, no Unity)`;
@@ -55,6 +59,17 @@ usageGate(args, {
   valued: [{ flag: '--send' }, { flag: '--capture-size', required: true }],
 }, USAGE, 'game');
 
+/** Every process this CLI starts goes through here. SUBORNED_GAME_SPAWN_LOG: each command is appended to that file as a JSON line. SUBORNED_GAME_SPAWN_STUB=1: nothing but the
+ *  read-only commands really starts (the tests' guard against a regression launching Unity). With --dry-run only read-only commands are allowed: anything else is refused, exit 3. */
+const DRY = args.includes('--dry-run');
+function readOnly(cmd: string, a: string[]): boolean { const c = basename(cmd); return c === 'git' || c === 'pgrep' || c === 'sysctl' || (c === 'security' && a[0] === 'find-identity'); }
+function spawnSync(cmd: string, a: string[], opts: SpawnSyncOptions = {}): SpawnSyncReturns<string> {
+  if (process.env.SUBORNED_GAME_SPAWN_LOG) appendFileSync(process.env.SUBORNED_GAME_SPAWN_LOG, JSON.stringify([cmd, ...a]) + '\n');
+  const ro = readOnly(cmd, a);
+  if (DRY && !ro) { console.error(`game: --dry-run refused to start ${[cmd, ...a].join(' ')}; nothing was done`); process.exit(3); }
+  if (process.env.SUBORNED_GAME_SPAWN_STUB === '1' && !ro) return { pid: 0, output: [], stdout: '', stderr: '', status: 0, signal: null } as any;
+  return realSpawnSync(cmd, a, opts) as any;
+}
 const run = (cmd: string, a: string[], opts: { quiet?: boolean } = {}) => spawnSync(cmd, a, { cwd: ROOT, encoding: 'utf8', stdio: opts.quiet ? 'pipe' : 'inherit' });
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -111,7 +126,7 @@ function inputsChanged(): string {
   const at = statSync(STAMP).mtimeMs;
   const newer = moved.find(f => !existsSync(join(ROOT, f)) || statSync(join(ROOT, f)).mtimeMs > at);
   if (newer) return `${newer} changed since the build`;
-  recordInputs(); // current: keep the record from here on
+  if (!DRY) recordInputs(); // current: keep the record from here on (a dry run writes nothing)
   return '';
 }
 
@@ -326,10 +341,10 @@ async function buildDrawn(why: string, quick: boolean): Promise<boolean> {
   return true;
 }
 
-if (has('--signing-check')) process.exit(signingCheck() ? 0 : 1);
+if (has('--signing-check')) { const ok = signingCheck(DRY); process.exit(ok || DRY ? 0 : 1); }
 const b = built();
 const stale = !b.ok ? b.why : inputsChanged();
-if (has('--dry-run') && !has('--send') && (stale || has('--build'))) { console.log(`game: would build (${has('--build') ? 'forced' : stale})`); process.exit(0); }
+if (DRY) process.exit(dryRun(stale)); // nothing below this line runs on a dry run
 if (has('--build') || stale) {
   if (!(await buildDrawn(has('--build') ? 'forced' : stale, !has('--build') && !has('--check') && !has('--pack') && !has('--send')))) process.exit(1);
 } else console.log('game: the app is current');
@@ -350,6 +365,35 @@ if (has('--pack') || has('--send')) {
   process.exit(0);
 }
 if (!has('--no-open') && !has('--build')) run('open', has('--windowed') ? ['-n', APP, '--args', '-windowed'] : ['-n', APP]);
+
+// ---------------------------------------------------------------- --dry-run
+
+/** `--dry-run`: what this invocation would do, said and nothing done (Splice, 2026-10-26). Reads only: git, pgrep, security find-identity. Returns the exit code (0). */
+function dryRun(stale: string): number {
+  const say = (m: string) => console.log(`game: ${m}`);
+  const forced = has('--build'), building = forced || !!stale;
+  const v = JSON.parse(existsSync(join(ROOT, 'tools', 'game', 'version.json')) ? readFileSync(join(ROOT, 'tools', 'game', 'version.json'), 'utf8') : '{}');
+  const next = `0.2.${(v.build ?? 0) + 1}`;
+  say('dry run: nothing is built, checked, packed, signed, sent or opened; Unity is not started; nothing is written under out/build or runs/builds');
+  if (building) {
+    say(`would build ${next} (${forced ? 'forced' : stale})`);
+    say(`  how: ${editorOpen() ? 'through the open Editor (unity cmd editor invoke_menu "Suborned/Build Game"), when it is stopped and not compiling' : 'Unity in batch mode (-executeMethod Suborned.World.Play.GameBuild.Cli; log out/build/play/build.log)'}`);
+    if (appRunning()) say('  the game is open: a real run would stop here and ask you to close it');
+  } else say(`the app is current (${stamp().version ?? 'built before the counter'}); would not build`);
+  const full = has('--build') || has('--check') || has('--pack') || has('--send');
+  if (building) say(`  then ${full ? 'the full proof (-gameProof; a blank frame gets one more build under the same number)' : 'the short draw check (-drawCheck, a few seconds)'}`);
+  if (has('--check')) say(`would run the full proof on the app: scenarios against headless, -gameProof${onePass() ? ' (one pass, frame times at 2880x1864)' : ''}, the driven sessions replayed headless`);
+  if (has('--pack') || has('--send')) {
+    const zip = building ? join(DIR, `TheSuborned-${next}.zip`) : zipOf(), id = identity();
+    say(id ? `would sign ${relative(ROOT, APP)} with ${id} (hardened runtime, timestamp), zip it with ditto to ${relative(ROOT, zip)}, notarise and staple it if the notary profile "${PROFILE}" exists, then verify it with codesign and spctl` : `would zip ${relative(ROOT, APP)} with ditto to ${relative(ROOT, zip)} as the ad hoc build (no Developer ID identity found)`);
+    if (has('--send')) {
+      const device = sendDevice(), cmd = sendCommand(zip, device);
+      say(`would run: ${cmd.map(c => (c.includes(' ') ? `"${c}"` : c)).join(' ')}; would log build ${building ? next : stamp().version ?? '(no version: built before the counter)'} in runs/builds/builds.json`);
+    }
+  }
+  if (!has('--check') && !has('--pack') && !has('--send') && !has('--build')) say(has('--no-open') ? 'would not open the app (--no-open)' : `would open ${relative(ROOT, APP)}${has('--windowed') ? ' in a window' : ''}`);
+  return 0;
+}
 
 // ---------------------------------------------------------------- signing and notarisation (Gatekeeper on other Macs)
 
@@ -376,12 +420,13 @@ function profileOk(): boolean {
   return r.status === 0;
 }
 
-function signingCheck(): boolean {
-  const id = identity(), prof = profileOk();
+function signingCheck(dry = false): boolean {
+  const id = identity(), prof = dry ? false : profileOk(); // asking Apple is a network call: a dry run does not
   console.log(`game: signing identity ${id ? `found: ${id}` : 'missing (no "Developer ID Application" in the keychain)'}`);
   if (!id) console.log(`  fix: ${FIX.identity}`);
-  console.log(`game: notary profile "${PROFILE}" ${prof ? 'found' : 'missing'}`);
-  if (!prof) console.log(`  fix: ${FIX.profile}`);
+  console.log(`game: notary profile "${PROFILE}" ${dry ? 'not checked (dry run: that asks Apple)' : prof ? 'found' : 'missing'}`);
+  if (!prof && !dry) console.log(`  fix: ${FIX.profile}`);
+  if (dry) return !!id;
   console.log(id && prof ? 'game: ready; `bun run game:pack` signs, notarises and staples' : 'game: until both exist, `bun run game:pack` makes the ad hoc build (right-click → Open on other Macs)');
   return !!(id && prof);
 }
@@ -459,18 +504,17 @@ function pack(): string | null {
 }
 
 /** Taildrop to another Mac on the tailnet (no SSH needed): the file lands in its Downloads through the Tailscale app. */
-function send(zip: string): boolean {
-  const i = args.indexOf('--send'); const next = args[i + 1];
-  const device = next && !next.startsWith('--') ? next : 'skys-macbook-air-1';
+function sendDevice(): string { const i = args.indexOf('--send'); const next = args[i + 1]; return next && !next.startsWith('--') ? next : 'skys-macbook-air-1'; }
+function sendCommand(zip: string, device: string): string[] {
   const ts = existsSync('/Applications/Tailscale.app/Contents/MacOS/Tailscale') ? '/Applications/Tailscale.app/Contents/MacOS/Tailscale' : 'tailscale';
-  const cmd = [ts, 'file', 'cp', zip, `${device}:`];
-  if (has('--dry-run')) console.log(`game: would run: ${cmd.map(c => (c.includes(' ') ? `"${c}"` : c)).join(' ')}; would log build ${stamp().version ?? '(no version: built before the counter)'} in runs/builds/builds.json`);
-  else {
-    console.log(`game: sending to ${device} by Taildrop…`);
-    const r = run(cmd[0], cmd.slice(1));
-    if (r.status !== 0) { console.error(`game: tailscale file cp exited ${r.status}`); return false; }
-    console.log(`game: sent ${relative(ROOT, zip)} to ${device}; logged in ${logSent(zip, device)}`);
-  }
+  return [ts, 'file', 'cp', zip, `${device}:`];
+}
+function send(zip: string): boolean {
+  const device = sendDevice(), cmd = sendCommand(zip, device);
+  console.log(`game: sending to ${device} by Taildrop…`);
+  const r = run(cmd[0], cmd.slice(1));
+  if (r.status !== 0) { console.error(`game: tailscale file cp exited ${r.status}`); return false; }
+  console.log(`game: sent ${relative(ROOT, zip)} to ${device}; logged in ${logSent(zip, device)}`);
   const name = zip.split('/').pop();
   const notarised = existsSync(SIGNING) && JSON.parse(readFileSync(SIGNING, 'utf8')).notarised === true;
   console.log(`On ${device}: accept the file in the Tailscale menu if asked (it lands in Downloads), then

@@ -64,7 +64,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Until(() => g.Over, T(60));
                 r.Eq(g.FailCode, "sealed", "sealed, the fixture's failure");
-                r.Eq(g.Tick, T(376), "at 6:16 (the dial's seal: no final fight, brief 018; 6:12 before 2026-10-19: the unit's walk to the post on the west face confirms him 4 s later)");
+                r.Eq(g.Tick, T(376) + 5, "at 6:16.5 (the dial's seal: no final fight, brief 018; 6:12 before 2026-10-19: the unit's walk to the post on the west face confirms him 4 s later; engine 0.33.1: the unit walks round Vale's car, 0.5 s)");
                 var fc = CauseIs(r, "sealed", "sealed", false, "", "", Enf); // the fail camera (ScenariosFailCause.cs): no single culprit; the report the confirmation sealed on
                 var o = fc?.Origin;
                 r.Is(o != null && o.Because == "confirmed" && o.Report.StartsWith("report:dead:", StringComparison.Ordinal) && o.Reporter?.Id == "camera:entrance" && o.Confirmer != null && o.Confirmer.Placed, $"the origin: the entrance camera's report of the dead guard, confirmed by a unit (got {o?.Report}, {o?.Because}, {o?.Reporter}, {o?.Confirmer})");
