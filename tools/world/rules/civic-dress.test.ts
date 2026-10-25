@@ -172,19 +172,17 @@ describe('CD-1 keep-clear and Handover points', () => {
     expect(rules(w => moveTo(civicMass(w, 'civic/band/forecourt-bar.0'), [64, -42.5]))['CD-1']!.detail).toContain('office-public-steps');
     expect(rules(w => moveTo(civicMass(w, 'civic/band/spine-inner.0'), [2.1, -25.6]))['CD-1']!.detail).toContain('fountain-garden');
   });
-  test('crossings (brief 009): a stud or a signal halo on a Handover point fails; the orb overhead, the dot rows and the arcs flush with the paving pass', () => {
+  test('crossings (brief 009, 061): a signal halo on a Handover point fails; the head overhead and the dot rows flush with the paving pass', () => {
     const at = (kind: string) => base.w.street.find(s => s.kind === kind)!;
     const near = (p: V) => handoverPoints(toPlan).sort((a, b) => Math.hypot(a.p[0] - p[0], a.p[1] - p[1]) - Math.hypot(b.p[0] - p[0], b.p[1] - p[1]))[0]!;
     const onPoint = (w: World, id: string) => { const s = w.street.find(q => q.id === id)!, h = near(s.at); s.at = h.p; if (s.signal) s.signal.halo.at = h.p; return h.name; };
-    const stud = at('crossing-stud'), orb = at('signal-orb'), bar = at('crossing-dots'), arc = at('crossing-arc');
+    const orb = at('signal-orb'), bar = at('crossing-dots');
     let name = '';
-    const a = rules(w => { name = onPoint(w, stud.id); });
-    expect(a['CD-1']!.ok).toBe(false); expect(a['CD-1']!.detail).toContain(`${stud.id} (crossing stud) is 0.00 m from '${name}'`);
     const b = rules(w => { name = onPoint(w, orb.id); });
     expect(b['CD-1']!.ok).toBe(false); expect(b['CD-1']!.detail).toContain(`${orb.id} (signal halo) is 0.00 m from '${name}'`);
-    const c = rules(w => { for (const id of [bar.id, arc.id]) { const s = w.street.find(q => q.id === id)!; s.at = near(s.at).p; } }); // flat lights and inlay: exempt, as flat inlay is
+    const c = rules(w => { const s = w.street.find(q => q.id === bar.id)!; s.at = near(s.at).p; }); // flat lights: exempt, as flat inlay is
     expect(c['CD-1']!.ok).toBe(true);
-    const d = rules(w => { const s = w.street.find(q => q.id === orb.id)!; s.at = near(s.at).p; }); // the orb hovers overhead: only its halo (left where it was) counts
+    const d = rules(w => { const s = w.street.find(q => q.id === orb.id)!; s.at = near(s.at).p; }); // the head hovers overhead: only its halo (left where it was) counts
     expect(d['CD-1']!.ok).toBe(true);
   });
   test('passes: flat inlay under a Handover point (spine-north under "Courtyard")', () => {

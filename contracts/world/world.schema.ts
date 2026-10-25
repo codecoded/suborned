@@ -17,6 +17,7 @@ export type World = {
     water: Flat[]; quays: Mass[]; flats: Flat[]; // flats: land under everything and the plan's `beyond`
     pieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces, each with a kit ref (kinds kerb, pave-flags, tree-pit, drain, manhole, tactile, terrazzo): paving laid on the plot slabs and the carriageway, not furniture; z = the piece's base. Brief 028 Road: and the road finish (kinds road-ribbon, road-shoulder, road-pinstripe, road-lozenge, road-seam; ids street/roadfinish/<kind>-<n>): ribbon, shoulder and pinstripe lie along their kerb face with `yaw` = atan2(n.x, -n.y) for n the unit normal into the carriageway and `kit.scale[0]` stretching the 6 m piece to its span (z 0, a kerbed bay's floor 0.02, the pinstripe at the walking surface beside it: 0.18, 0.02 or -0.03); a lozenge lies along its carriageway's middle line, a seam across it (`kit.scale[2]`). Only road finish and capstone kinds are drawn from here; ground.roads[].surface and kerbSurface carry the look keys of the carriageway and its kerb cap (streetscape.roads.finish)
     plots: Mass[]; // one 0.18 m pavement slab per plot (the ground a plot stands on, courts and setback strips included)
+    footways?: Footway[]; // brief 061: the continuous footway at each gate's lane mouth (present when the plan carries streetscape.continuousFootway): the table is also a flat in `flats` (id `<footway id>/table` under ground/), at the pavement top, so the walk floor and the audits read it as floor
     drives?: Drive[]; // brief 023: the vehicle crossings from a carriageway over a plot's pavement to a bay that touches no road (present when the civic block states drives); not in counts.ground until the Unity reader draws them
   };
   transit: { tram: Track[]; skyRail: SkyRail[]; stops: Mass[]; stations: Mass[] };
@@ -30,7 +31,7 @@ export type World = {
   street: StreetItem[]; // trees, lamps, furniture, transit kits, station entrances, watchers
   crossings?: Crossing[]; // kerb-to-kerb crossings (present when the plan carries streetscape.crossings.strip): each is its landings (keep-clear footprints, not drawn), the strip between them, and its parts (street items: light bars or dots, signal orbs, kerb studs, inlay arcs)
   /** The coverage rules' doing (streetscape.crossings.coverage.rules; present when the plan carries them): the crossings each rule placed, the twins dropped (each named with the crossing it kept), the furniture moved out of a landing's way, and the sites left out for want of ground, each with why. SF-22 holds the crossings to it. */
-  crossingRules?: { sites: Record<string, number>; twins: string[]; moved: string[]; left: string[] };
+  crossingRules?: { sites: Record<string, number>; twins: string[]; moved: string[]; left: string[]; /** footway sites an existing crossing serves (the civic block's own), each named with it: `<site id>: <crossing id>` */ served?: string[] };
   levels: Level[]; // standards.levels.list: street, deck, concourse; decks carry their columns
   megastructures: { id: string; parts: Mass[]; prims: Prim[]; gateway?: KitRef & { at: V } }[]; // gateway: a kit arch standing on the megastructure's quay (its yaw turns the piece's +X); parts: extruded rings (bodies, halls, legs); prims: cranes, saucer, vaults
   civic: Mass[]; // the civic block: buildings, structures and objects at exact size
@@ -51,6 +52,19 @@ export type Flat = { id: string; surface: string; ring: V[]; level: number };
  *  flat it reaches (`civic/bay/<bay>`); `kerb` = the segment of the road's kerb the drive crosses, which is DROPPED there: along it the kerb strip (`kerbWidth` m wide, the road's) has height `kerbHeight` (0 = flush
  *  with the carriageway), so the way runs level from the road into the drive. Nothing stands on it and street items keep 2 m off it (SF-2); no pylon (SF-18) and no crossing (SF-20) either. */
 export type Drive = { id: string; surface: string; ring: V[]; level: number; road: string; to: string; kerb: [V, V]; kerbWidth: number; kerbHeight: number };
+/** A continuous footway (brief 061; plan standards.streetscape.continuousFootway): a gate's lane mouth where the pavement of the higher road `road` runs on across the lane `lane` at kerb height and the lane's traffic gives way. All rings are counter-clockwise, the lane as wide as its carriageway.
+ *  `frame`: `origin` = the point of the higher road's near kerb line on the lane's axis, `along` = the kerb line's direction, `into` = the unit vector from the kerb into the lane (away from the carriageway); `half` = half the lane's width; `depth` = how far the table reaches into the lane.
+ *  `table`: a flat at `level` (the pavement top, 0.18) in the plots' paving `surface`, between the two plot corners; the world also lists it in ground.flats (id `table.id`). `ramp`: the lane's carriageway rising from 0 at `depth + run` into the lane to `level` at `depth` (its top on the table's back edge; 1 in run/rise);
+ *  `lip`: the table's front edge on its side of the kerb line, `d` wide, falling `drop` from the table to the carriageway. `bands`: flush threshold strips, one across the lane at the ramp's foot (level 0) and one along the table's front edge behind the lip (level `level`). `posts`: the lane's two bollards (street items
+ *  `street/footway/<gate>/post-a|b`), at the table's back corners just outside the lane's kerb faces. No kerb return stands at the mouth's corners, the upstand kerb is not laid across it, and the higher road's light ribbon runs straight on. */
+export type Footway = {
+  id: string; gate: string; lane: string; road: string; level: number; frame: { origin: V; along: V; into: V }; half: number; depth: number;
+  table: { id: string; ring: V[]; surface: string };
+  ramp: { ring: V[]; run: number; rise: number; surface: string };
+  lip: { ring: V[]; d: number; drop: number; surface: string };
+  bands: { ring: V[]; level: number; surface: string }[];
+  posts: V[];
+};
 /** Extruded footprint from base to base + height. */
 export type Mass = {
   id: string; surface: string; ring: V[]; base: number; height: number; source?: Source; kit?: KitRef & { at: V; base: number };
@@ -159,37 +173,37 @@ export type Connector = {
 /** A crossing (streetscape.crossings.strip): a `kerb` crossing is two landings (one on each kerb of `road`) and the `strip` across the carriageway between them,
  *  `line` its centre line from one landing's kerb point to the other's, `width` across it; `refuges` = the rings of the median the strip crosses where the median is refuge width, where people wait;
  *  `control` = `signal` where the plan says the road class has one: the crossing then carries signal orbs (a zebra no longer exists, brief 009). A `stop` or `bank` crossing is one landing (the way from a tram platform,
- *  or from a station bank, across the road): `line` runs along its long axis (`size[0]`), `strip` is the landing's own footprint, and it has no kerb ends, so no orbs, studs or arcs.
- *  `items` = the ids of every street item that is a part of this crossing, in drawing order (the two light lines, then orbs, studs, arcs); each part names it back in `crossing`. A part is in exactly one crossing.
+ *  or from a station bank, across the road): `line` runs along its long axis (`size[0]`), `strip` is the landing's own footprint, and it has no kerb ends, so no signal heads.
+ *  `items` = the ids of every street item that is a part of this crossing, in drawing order (the two light lines, then the signal heads); each part names it back in `crossing`. A part is in exactly one crossing.
  *  `walk` = the walk-axis yaw (plan frame, radians): the way across, from `line[0]` to `line[1]`. The light lines run along it, kerb to kerb; no piece lies across it (SF-20 holds every light piece's long axis off the carriageway's axis by 30 degrees or more).
  *  Nothing here is a slab: the landing is not drawn, the paving under it is the street's. */
-export type Crossing = { id: string; kind: 'kerb' | 'stop' | 'bank'; road: string; items: string[]; landings: Landing[]; line: [V, V]; strip: V[]; width: number; walk: number; control?: 'signal'; refuges: V[][] };
+/** A signal crossing's cycle (brief 061, plan strip.signal.cycle; look only, the sim and the people read nothing from it): seconds. WALK `walk`, CLEARING `clearing` (= ceil(W / 1.4 m/s), W = the crossing's kerb-to-kerb length), STOP `stop` (= 14 + clearing), its last `arrive` seconds shown as ARRIVING.
+ *  The cycle is walk + clearing + stop; the phase at mission second t is (t + offset) mod cycle, offset a whole number of seconds in [0, cycle) hashed from the crossing's id. Every head of the crossing shows the same state. Only a crossing with `control` has one. */
+export type SignalCycle = { walk: number; clearing: number; stop: number; arrive: number; offset: number };
+export type Crossing = { id: string; kind: 'kerb' | 'stop' | 'bank'; road: string; items: string[]; landings: Landing[]; line: [V, V]; strip: V[]; width: number; walk: number; control?: 'signal'; /** present with `control` (plan strip.signal.cycle) */ cycle?: SignalCycle; refuges: V[][] };
 /** Where people step on or off a crossing (a kerb crossing's two ends; a stop or bank crossing's one patch): the footprint `size` = [depth along `yaw` from the kerb, width along the kerb, 0.02] centred on `at`, `yaw` across the road,
  *  `z` the surface under it (the pavement top 0.18; a tram stop's patch lies on the carriageway at 0). Keep-clear only, NOT drawn: nothing stands within 2 m of it (SF-2), a pylon keeps 2 m (SF-18), a Handover point keeps its 1.2 m (CD-1);
- *  `id` = the id the old landing slab had. A kerb end's studs, arc and orb stand on it. */
+ *  `id` = the id the old landing slab had. A kerb end's signal head stands on it. */
 export type Landing = Pick<StreetItem, 'id' | 'edge' | 'at' | 'yaw' | 'z' | 'size'>;
-/** A signal orb's state, set by the plan (`streetscape.crossings.strip.signal.state`, `walk` at build) and switched by city life (Pulse, brief 005): every orb of a crossing shows the same one. */
+/** A signal head's state at build and in the editor (`streetscape.crossings.strip.signal.state`, `walk`); at run time the head shows the state its crossing's `cycle` gives at the mission clock (brief 061: WALK, CLEARING, STOP, ARRIVING; look only, Latch's SignalHead): every head of a crossing shows the same one. */
 export type SignalState = 'walk' | 'stop';
-/** `signal-orb` (brief 009): the SignalEye piece, a chrome orb hovering over a kerb end (`id` `<crossing>/signal/a|b`) or a refuge (`/signal/r0..`), a round display on each of its two faces showing the walking figure (`walk`) or the stop pictogram
+/** `signal-orb` (brief 009): the SignalLens piece (brief 061; before it, the SignalEye), a chrome lens hovering over a kerb end (`id` `<crossing>/signal/a|b`) or a refuge (`/signal/r0..`), a round display on each of its two faces showing the walking figure (`walk`) or the stop pictogram
  *  (`stop`, red is allowed on this display only), a thin beam from its underside down to a glowing disc on the ground (`halo`) where people wait.
  *  The item stands where the beam lands: `at` is the halo's centre (and the orb's, vertically above), `z` the ground there (= `halo.z`, the piece's pivot), `size` [halo diameter, halo diameter, height of the finial];
  *  the orb's centre hangs `hover` above `z`, `size` across (the diameter). `faces[0]` is the heading display A (the piece's front, +Z) looks along: the walk heading at this kerb end, toward the far kerb; `faces[1]` the way back (display B).
- *  The orb hangs overhead (canopy-class, exempt from the ground rules); the halo and the studs are ground items. Only the orb's body casts a shadow (the item's `castShadows`); the beam, halo and displays never do. */
+ *  The orb hangs overhead (canopy-class, exempt from the ground rules); the halo is a ground item (its ring in the paving). Only the orb's body casts a shadow (the item's `castShadows`); the beam, halo and displays never do. */
 export type Signal = { state: SignalState; hover: number; size: number; faces: [number, number]; halo: { at: V; z: number; r: number } };
 
 export type StreetItem = {
   id: string; kind: string; at: V; yaw: number; z: number; size: [number, number, number]; surface: string; edge: string; // edge = street edge / host id; surface = a look key (not enumerated here): `trim` by default, `park`, `enamel`, `crossing` for the landing patches of a plan without streetscape.crossings.strip, `glow` (light bars and dots), `inlay` (arcs), `orb` (signal orbs), `booth` for a phone booth, `tub` for a palm tub
   sight: 'blocks' | 'glazed' | 'open'; staffed?: { trade?: string; occupation?: string; hours: [number, number] | 'service' }; variant?: string;
-  /** A crossing's part (kinds `crossing-bar`, `crossing-dots`, `crossing-edge`, `crossing-stud`, `crossing-arc`, `signal-orb`): the crossing it belongs to. Every such part carries it. `yaw`: the way across (light pieces: their long axis; studs), the heading from the arc's centre toward the mouth corner it rounds (arcs),
+  /** A crossing's part (kinds `crossing-bar`, `crossing-dots`, `signal-orb`; the brass edge lines, kerb studs, inlay arcs and lit strip of brief 009 are gone, brief 061): the crossing it belongs to. Every such part carries it. `yaw`: the way across (light pieces: their long axis; studs), the heading from the arc's centre toward the mouth corner it rounds (arcs),
    *  the heading display A looks along (orbs); `z` the surface it lies on (an orb: the ground under its halo). */
   crossing?: string;
   /** `signal-orb` only. */
   signal?: Signal;
-  /** `crossing-dots` only: one module of a light line, a row of `n` flush light dots `d` across, `pitch` apart, along `yaw`, centred on `at`; `size` = [the module's length, its frame width, thickness]. (`crossing-bar`: one flush light bar, `size` = [length along `yaw`, frame width, thickness].) */
+  /** `crossing-dots` only: one module of a light line, a row of `n` flush light dots `d` across, `pitch` apart, along `yaw`, centred on `at`; `n` = dots in the 2 m or 1 m laying module; `size` = [the piece's length along the walk = module - pitch + seat width (1.8 or 0.8 m), the seat's width (0.30), thickness]; `at` is the module's centre, so rows laid end to end at the module step keep the pitch across every joint (brief 061, plan lightsFit). (`crossing-bar`: one flush light bar, `size` = [length along `yaw`, frame width, thickness].) */
   dots?: { n: number; pitch: number; d: number };
-  /** `crossing-arc` only: a quarter ring of seafoam inlay in the paving that rounds one corner of a crossing's mouth: the centre line of a band `w` wide at radius `r` about `at` (the circle's centre, which is the piece's pivot), swept `sweep` radians symmetrically about `yaw` (toward the corner);
-   *  `outer` = the outer radius including the brass hairline: the circle is tangent to the kerb line and to the strip's edge line. `size` = [outer, outer, thickness]. */
-  arc?: { r: number; w: number; sweep: number; outer: number };
   /** Parts of a crossing only: whether Unity casts a shadow from the item. The signal orb's body does (the piece's other parts never); every other part is flush paving or light and casts none. */
   castShadows?: boolean;
   source?: Source; kit?: KitRef; // wave 1: street furniture, plants, signs; absent on a layer the kit has not reached

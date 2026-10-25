@@ -89,7 +89,7 @@ namespace Suborned.Play
 
         string ActPlaceName(int k, Order q) => q.Do switch
         {
-            "loop" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => "Vale",
+            "loop" or "disable" or "reroute" => "the cabinet", "enter" => "the public door", "board" => "the getaway car", "take" => "Vale",
             _ => q.Target.Length > 0 ? Name(q.Target) : "the act",
         };
 
@@ -109,7 +109,7 @@ namespace Suborned.Play
             return (verb == "turn" ? approach : verb) switch
             {
                 "watch" => $"Watching {who}", "listen" => $"Listening to {who}", "ask" => $"Asking {who}", "pay" => $"Paying {who}", "help" => $"Helping {who}",
-                "pressure" => $"Pressuring {who}", "loop" => "Looping the camera", "reroute" => "Rerouting the patrol", "mislead" => "Tipping off the rivals",
+                "pressure" => $"Pressuring {who}", "loop" => "Looping the camera", "disable" => "Cutting the line", "reroute" => "Rerouting the patrol", "mislead" => "Tipping off the rivals",
                 "enter" => "Inside: finding Vale", "take" => "Taking Vale", "carry" => $"Lifting the {target}", "holster" => "Holstering", "call" => $"Calling {who}",
                 var v => v.Length > 0 ? char.ToUpperInvariant(v[0]) + v[1..] : "Busy",
             };
@@ -117,7 +117,7 @@ namespace Suborned.Play
 
         public static string Glyph(string verb, string approach) => verb switch
         {
-            "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "reroute" => "route",
+            "watch" => "eye", "listen" => "ear", "turn" => approach == "pay" ? "$" : approach, "call" => "call", "loop" => "loop", "disable" => "disable", "reroute" => "route",
             "mislead" => "tip", "enter" => "in", "take" => "take", "board" or "go" => "car", "fire" => "fire", "move" => "›", "draw" => "draw", "carry" => "lift", "takedown" => "takedown", "restrain" => "restrain", "stash" => "stash", "drop" => "drop", "" => "", _ => verb,
         };
 
@@ -253,7 +253,7 @@ namespace Suborned.Play
         // engine log codes that land an order's act, and the verb and agent whose exchange they belong to
         static readonly Dictionary<string, (string verb, string op)> Lands = new()
         {
-            ["loop.on"] = ("loop", "tech"), ["patrol.rerouted"] = ("reroute", "tech"), ["rivals.misled"] = ("mislead", "scout"),
+            ["loop.on"] = ("loop", "tech"), ["camera.cut"] = ("disable", "tech"), ["patrol.rerouted"] = ("reroute", "tech"), ["rivals.misled"] = ("mislead", "scout"),
             ["enter.out"] = ("enter", "enforcer"), ["take.done"] = ("take", "enforcer"),
             ["takedown.out"] = ("takedown", "enforcer"), ["takedown.dead"] = ("takedown", "enforcer"),
         };

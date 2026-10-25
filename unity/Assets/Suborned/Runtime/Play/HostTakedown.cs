@@ -21,7 +21,7 @@ namespace Suborned.Play
         public string StashName(StashPlace st) => Text?.TargetName(st.Kind == "door" ? "stash-door" : "stash-bin", st.Kind == "door" ? "the service door" : "the bin") ?? st.Id;
         public string CameraName(string id) => id == "entrance" || id == "pickup" ? Text?.TargetName("camera-" + id, $"the {id} camera") ?? $"the {id} camera"
             : Text != null && Text.TargetNames.TryGetValue("camera-" + id, out var n) ? n : "the square's mast camera";
-        static bool IsOpName(string s) => s is "scout" or "fixer" or "tech" or "enforcer";
+        public static bool IsOpName(string s) => s is "scout" or "fixer" or "tech" or "enforcer";
         static string KeyOf(Person p) => HostViews.KeyOf(p);
 
         // ---------------------------------------------------------------- the plate
@@ -71,10 +71,21 @@ namespace Suborned.Play
         {
             var R = Game.R;
             var i = new Intent { Slot = slot, Label = $"Loop {CameraName(cam)}", Order = new Order { Op = "tech", Do = "loop", Target = cam } };
-            i.Time = $"{R.LoopS} s"; i.Trail = $"T +{R.LoopTrail}"; i.Outcome = "tethered";
+            i.Time = $"{R.LoopS} s"; i.Trail = $"T +{R.LoopTrail}"; i.Outcome = R.LoopRuns ? $"runs {R.LoopRunS / 60}:{R.LoopRunS % 60:00}" : ""; // engine 0.31.0: the loop runs 2:00 from its landing, wherever the Tech goes (no tether)
             var k = Game.Known("camera:" + cam);
             i.Rows.Add(("watch", k != null && k.Sight ? $"Blinds: what {CameraName(cam)} sees{(Game.S.Cameras.Find(x => x.Id == cam)?.Facings.Length > 1 ? " (all three heads)" : "")}" : "Blinds: ? until the cell watches it"));
-            if (Game.LoopOn && Game.LoopCam != cam) i.Rows.Add(("loop", $"Replaces the loop on {CameraName(Game.LoopCam)}"));
+            return i;
+        }
+
+        /// <summary>Engine 0.31.0 (brief 058 §2, Glyph 058 §1): the Tech's Disable at the cabinet: 10 s, +2 T, and the Alert its report will raise
+        /// when the desk next looks at that screen (Game.AlertIfCut: 1 for the first incident, 2 after). Null when the rulebook has no Disable.</summary>
+        Intent DisableIntent(int slot, string cam)
+        {
+            var R = Game.R; if (!R.DisableOn) return null;
+            var i = new Intent { Slot = slot, Label = $"Disable {CameraName(cam)}", Order = new Order { Op = "tech", Do = "disable", Target = cam } };
+            i.Time = $"{R.DisableS} s"; i.Trail = $"T +{R.DisableTrail}"; int a = 1; Guard("alert if cut", () => a = Game.AlertIfCut()); i.Alert = $"A →{a}"; i.Outcome = "cut";
+            int at = -1; Guard("cut noticed", () => at = Game.CutNoticedAt(cam, Game.Tick + R.DisableS * Game.Hz));
+            if (at >= 0) i.Rows.Add(("p_alert", $"The desk sees it at {MissionClock(at)}")); // the panel's row; the ring keeps the shipped line (Aster 2026-10-25: no extra price fields)
             return i;
         }
 
@@ -151,6 +162,10 @@ namespace Suborned.Play
                     {
                         var (label, does) = Text.Action(o.Do, TextKey(t));
                         v.Name = o.Do switch { "stash" => $"Hide in {t.Label}", "drop" => label, _ => $"{label} {t.Label}" }; v.Does = does; return true;
+                    }
+                case "disable":
+                    {
+                        v.Name = $"Disable {CameraName(o.Target)}"; v.Does = Text.Action("disable", t.Kind == "camera" ? TextKey(t) : "cabinet").does; return true;
                     }
                 case "loop":
                     {

@@ -28,6 +28,10 @@
   "2026-10-24": {
    "calls": 19,
    "usd": 0.35277
+  },
+  "2026-10-25": {
+   "calls": 11,
+   "usd": 2.95
   }
  },
  "by_model": {
@@ -44,7 +48,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 26,
+   "calls": 31,
    "usd": 0.0
   },
   "google:4@2": {
@@ -59,6 +63,10 @@
    "calls": 7,
    "usd": 5.59
   },
+  "minimax:h3@fast": {
+   "calls": 4,
+   "usd": 1.6
+  },
   "minimax:music@2.6": {
    "calls": 1,
    "usd": 0.15
@@ -66,10 +74,14 @@
   "openai:gpt-image@2": {
    "calls": 10,
    "usd": 0.37195
+  },
+  "tencent:hunyuan-3d@3.1-pro": {
+   "calls": 2,
+   "usd": 1.35
   }
  },
- "calls": 267,
- "failed": 12,
+ "calls": 278,
+ "failed": 14,
  "jobs": {
   "007-concepts": {
    "blocked": 0,
@@ -469,16 +481,24 @@
     "2026-10-24": {
      "calls": 11,
      "usd": 0.35277
+    },
+    "2026-10-25": {
+     "calls": 5,
+     "usd": 1.35
     }
    },
    "by_model": {
     "codex:image_gen": {
-     "calls": 2,
+     "calls": 5,
      "usd": 0.0
     },
     "openai:gpt-image@2": {
      "calls": 9,
      "usd": 0.35277
+    },
+    "tencent:hunyuan-3d@3.1-pro": {
+     "calls": 2,
+     "usd": 1.35
     }
    },
    "by_pass": {
@@ -491,19 +511,58 @@
      "calls": 1,
      "usd": 0.0
     },
+    "vale-model": {
+     "budget_usd": 3.0,
+     "calls": 2,
+     "usd": 1.35
+    },
     "vale-sheet": {
-     "calls": 1,
+     "calls": 4,
      "usd": 0.0
     }
    },
-   "calls": 11,
-   "cost_per_used": 0.0392,
+   "calls": 16,
+   "cost_per_used": 0.1548,
    "failed": 2,
-   "ok": 9,
-   "total_usd": 0.35277,
+   "ok": 14,
+   "total_usd": 1.70277,
    "unknown_cost_calls": 0,
-   "used": 9,
-   "used_usd": 0.35277
+   "used": 11,
+   "used_usd": 1.70277
+  },
+  "065-capture-pip": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-25": {
+     "calls": 6,
+     "usd": 1.6
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 2,
+     "usd": 0.0
+    },
+    "minimax:h3@fast": {
+     "calls": 4,
+     "usd": 1.6
+    }
+   },
+   "by_pass": {
+    "1": {
+     "budget_usd": 5.0,
+     "calls": 6,
+     "usd": 1.6
+    }
+   },
+   "calls": 6,
+   "cost_per_used": null,
+   "failed": 2,
+   "ok": 4,
+   "total_usd": 1.6,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
   },
   "900-codexcheck": {
    "blocked": 0,
@@ -540,6 +599,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 62.67433,
- "used": 61
+ "total_usd": 65.62433,
+ "used": 63
 }

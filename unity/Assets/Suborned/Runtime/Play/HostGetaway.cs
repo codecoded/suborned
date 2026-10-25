@@ -56,7 +56,6 @@ namespace Suborned.Play
             if (op.InCar) return No("in-car", "already in the car");
             if (op.Down) return No("agent-down", "down");
             if (op.Running) return No("board-running", "running: stop first");
-            if (k == OpId.Tech && g.LoopOn) return No("board-tethered", "tied to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
             return new Answer { ok = true, code = "", why = "" };
         }

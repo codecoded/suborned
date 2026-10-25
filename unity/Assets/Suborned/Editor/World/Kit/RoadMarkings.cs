@@ -33,7 +33,7 @@ namespace Suborned.World
                 {
                     if (s < EndClear || s + On > total - EndClear) continue;
                     var a = At(line, s); var b = At(line, s + On); var mid = (a + b) * 0.5f;
-                    if (InOther(lines, r.Id, mid) || InCrossing(world, mid) || InCircus(world, mid)) continue;
+                    if (InOther(lines, r.Id, mid) || InCrossing(world, mid) || InCircus(world, mid) || FootwayKit.On(world.Ground.Footways, a) || FootwayKit.On(world.Ground.Footways, b)) continue; // brief 061: none on a lane mouth's table or ramp
                     var d = (b - a).normalized; var nrm = new Vector2(-d.y, d.x) * (Wide * 0.5f); float y = r.Level + Lift;
                     int i0 = kit.Vert(W(a - nrm, y)), i1 = kit.Vert(W(b - nrm, y)), i2 = kit.Vert(W(b + nrm, y)), i3 = kit.Vert(W(a + nrm, y));
                     // face up: Unity's front normal is cross(p1 - p0, p2 - p0)

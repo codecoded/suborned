@@ -1,7 +1,7 @@
 // KR-2 and KR-3 on the export (brief 028, Sky 2026-10-24: rounded pavement corners; and "some odd curb / road layout going on here": kerb stones lying across a sunk bay's mouth).
 // KR-2 the kerb returns hold in the world: each convex return has its carriageway fill (a flat `ground/return/<id>` at the carriageway's level, in its road's finish) and its plot slab is cut by the arc (the old corner is outside the slab);
 //      nothing stands in the carriageway a return takes: no street item (kept the kerb's 0.45 m off the arc, SF-5), crossing landing or strip, flat ground piece or inlay lies in it; and the kerb, the light ribbon and the pinstripe
-//      follow the arc: kerb stones (kind kerb-return) stand on every arc (the arc is covered to within a stone, less what crossings and drives drop), no `kerb` stone lies across one.
+//      follow the arc: kerb stones (kind kerb-return) stand on every arc (the arc is covered to within a stone, less the metres the generator logged as dropped at crossings and drives), no `kerb` stone lies across one.
 // KR-3 a kerb stands only where pavement meets carriageway: no kerb stone, no kerb-return stone, lies across the mouth of a kerbed bay (a lay-by is open to the road); the bay outline's stones lie on its end, back and arcs, 0.15 m inside the pavement edge.
 // KR-4 a kerb stone (kind kerb or kerb-return) lies on a pavement edge: within 0.5 m of the ring of a plot slab, a bend's pad or a median (its centre stands 0.15 m inside the kerb face); never out on the carriageway. The circus mouths' stones stand on the circus band, which has no slab, and the sheet-edge corners' on a beyond block (a flat under the road's own edge, no slab).
 // Failing examples: kerbreturn.test.ts.
@@ -39,14 +39,13 @@ export function kerbReturnRules(c: WCtx): Check[] {
   for (const s of c.w.street) if (s.kind.startsWith('crossing-') && s.kind !== 'crossing-arc') { const r = cutHits(gc, itemRing(s), 0); if (r) bad2.push(`${s.id} (${s.kind}) lies in the carriageway of ${r.id}`); }
   // KR-2: the arc carries a kerb stone all the way round (what crossings and drives drop aside)
   const stones = (c.w.ground.pieces ?? []).filter(s => s.kind === 'kerb-return');
-  const cutters: V[][] = [...(c.w.crossings ?? []).map(x => x.strip as V[]), ...(c.w.ground.drives ?? []).map(x => x.ring as V[])];
   let arcM = 0, stoneM = 0;
   for (const r of returnsOf(gc).filter(x => !x.nose)) {
     const len = r.r * r.theta; arcM += len;
     const mine = stones.filter(s => s.edge === `kerbreturn/${r.id}`); const m = mine.reduce((t, s) => t + s.size[0], 0); stoneM += m;
-    // to within a stone, less what crossings and drives drop: an arc with no strip or drive beside it (within a metre of its stones) may miss one stone's length; one that has may drop what they cover (no more than half)
-    const one = Math.max(0.9, ...mine.map(x => x.size[0])), beside = r.arc.some(q => cutters.some(ring => inPoly(q, ring) || ring.some((p, i) => segDist(q, p, ring[(i + 1) % ring.length]!) < 1)));
-    if (m < (beside ? len * 0.5 : len - one)) bad2.push(`${r.id}: ${m.toFixed(1)} m of kerb stone on an arc of ${len.toFixed(1)} m${beside ? ' (beside a crossing or a drive)' : ''}`);
+    // to within a stone, less what crossings and drives dropped: the metres the generator logged as dropped on this arc (dressKerbArcs, by edge), not a guess from what lies beside it (Redline brief 064 #10)
+    const one = Math.max(0.9, ...mine.map(x => x.size[0])), dropped = c.gen.kerbArcs?.dropped?.[`kerbreturn/${r.id}`] ?? 0;
+    if (m < len - dropped - one) bad2.push(`${r.id}: ${m.toFixed(1)} m of kerb stone on an arc of ${len.toFixed(1)} m${dropped > 0 ? ` (${dropped.toFixed(1)} m dropped at a crossing or a drive)` : ''}`);
   }
   // KR-3: no kerb across a lay-by's mouth, and the lay-by's own stones lie on its outline
   const bays = c.w.ground.flats.filter(f => f.id.startsWith('civic/bay/') && c.gen.roadFinish && (c.S.roads?.kerbs?.bays?.kerbed ?? []).some((k: { bay: string }) => `civic/bay/${k.bay}` === f.id));

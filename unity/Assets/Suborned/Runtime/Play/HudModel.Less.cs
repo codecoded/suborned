@@ -17,6 +17,9 @@ namespace Suborned.Play
         static readonly Regex Num = new(@"(\d+)"), Plus = new(@"\+(\d+)"), AtLeast = new(@"≥\s*(\d+)"), Arrow = new(@"→\s*(\d+)"), Speed = new(@"(\d+(?:\.\d+)?) m/s");
 
         /// <summary>The eye's hover line (Glyph, "Eyes, revised"): one sentence.</summary>
+        /// <summary>The move card's eye with a number (engine 0.31.0, RunRememberedBy): who keeps the runner's face.</summary>
+        public static string RememberTip(int n) => n == 1 ? "A passer-by would remember your face." : $"{n} passers-by would remember your face.";
+
         public static string EyeTip(string eye, string seenBy) => eye == "open" ? $"Seen by {(string.IsNullOrEmpty(seenBy) || seenBy == "?" ? "a watcher" : seenBy)}." : eye == "unk" ? "Unknown. Watch first." : "Unseen.";
 
         /// <summary>Fable's field order (less.price.order), the price line's columns.</summary>
@@ -45,6 +48,7 @@ namespace Suborned.Play
             if (o.Do == "board") return "Board";
             if (o.Do == "go") return "Go"; // brief 018 §6.5 (Glyph r1): who stays is the row's cameos and fate glyphs, not a sentence
             if (o.Do == "loop") return "Loop";
+            if (o.Do == "disable") return "Disable";
             if (o.Do == "stash") return "Hide";
             if (o.Do == "reroute") return "Reroute";
             var label = t?.Action(PriceVerb(o), null).label ?? PriceVerb(o);
@@ -52,7 +56,7 @@ namespace Suborned.Play
         }
 
         /// <summary>A second one-word tag where several rows share a name (the cabinet's loops: entrance, pickup, mast).</summary>
-        public static string Tag(HandoverHost.Intent i) => i.Order?.Do == "loop" ? (i.Order.Target is "entrance" or "pickup" ? i.Order.Target : "mast") : "";
+        public static string Tag(HandoverHost.Intent i) => i.Order?.Do is "loop" or "disable" ? (i.Order.Target is "entrance" or "pickup" ? i.Order.Target : "mast") : "";
 
         /// <summary>The line's fields for an intent (zero fields hidden), in Fable's order.</summary>
         public static List<PField> PriceLine(HandoverHost h, HandoverHost.Intent i)
@@ -85,7 +89,7 @@ namespace Suborned.Play
                         }
                     case "trail":
                         {
-                            if (o.Do == "fire") { F("trail", "p_trail", HandoverHost.PropertyId(o.Target) ? $"+{h.Game.R.GunfireTrail}" : $"+{h.Game.R.HitTrail}/hit"); break; } // brief 058 (Motive): a camera or a car costs the shooting's Trail once, hit or miss; no hit Trail on property
+                            if (o.Do == "fire") { var ft = HandoverHost.IsOpName(o.Op) ? h.FireTrail(Op.Parse(o.Op), o.Target, o.Force) : HandoverHost.PropertyId(o.Target) ? $"+{h.Game.R.GunfireTrail}" : $"+{h.Game.R.HitTrail}/hit"; if (ft.Length > 0) F("trail", "p_trail", ft); break; } // brief 058 §3: one price from PreviewFire (HandoverHost.FireTrail): a camera or a car the shooting once (+0 once paid), never /hit
                             int n = td ? i.Td.TrailIfFound : Plus.Match(i.Trail ?? "") is var pm && pm.Success ? int.Parse(pm.Groups[1].Value) : 0;
                             if (n <= 0) break;
                             var f = F("trail", "p_trail", $"+{n}");

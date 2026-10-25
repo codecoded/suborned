@@ -52,7 +52,7 @@ export function kitFitChecks(c: WCtx): Check[] {
   for (const s of w.street) if (s.kit) {
     const k = piece(s.id, s.kit), slot = slotOf(g, s); if (!k) continue;
     if (PART_USE[s.kind]) { // a crossing's part: its slot is its own size, and the piece is the one of its use, unscaled
-      if (!k.a.tags.use.includes(PART_USE[s.kind]!) || s.kit.scale.some(v => v !== 1) || !fitsPart(k.a.size, s)) bad.push(`${s.id}: ${k.a.id} ${k.a.size.map(f1).join('×')} m is not the ${PART_USE[s.kind]} piece of the part's ${s.size.map(f1).join('×')} m`);
+      if (!PART_USE[s.kind]!.some(u => k.a.tags.use.includes(u)) || s.kit.scale.some(v => v !== 1) || !fitsPart(k.a.size, s)) bad.push(`${s.id}: ${k.a.id} ${k.a.size.map(f1).join('×')} m is not the ${PART_USE[s.kind]!.join(' / ')} piece of the part's ${s.size.map(f1).join('×')} m`);
       continue;
     }
     if (!slot) { bad.push(`${s.id}: a ${s.kind} has no slot`); continue; }

@@ -1,7 +1,7 @@
 """The testbed's road, as kit pieces (brief 026, Vela): light set in the road, white pearl lozenges, chrome panel seams, over a sealed enamel carriageway.
 
 What the 2.5D testbed (civic-road-guides.js, civic-road-finish.js, civic-roads.js) drew and the world export has no word for:
-  RoadRibbon_Straight_6m   a continuous warm lens 0.12 m wide set flush in the carriageway beside the gutter, between two brass hairlines, with a soft light pool on the carriageway side
+  RoadRibbon_Straight_6m   a continuous warm lens 0.12 m wide set flush in the carriageway beside the gutter, with a soft light pool on the carriageway side (brief 061: no brass hairlines either side now)
   RoadRibbon_Arc90_R4/R8   the same round a 90 degree corner (inner radius 4 or 8 m to the lens centre), for the kerb returns
   RoadMark_Lozenge         the pearl diamond that replaces the dashed lane line (1.7 x 0.48 m, every 8.5 m on the centre line): no paint, no zebra
   RoadMark_Seam            a chrome joint across the enamel (4.6 m, every 9 m): the carriageway reads as panels, not poured
@@ -70,12 +70,11 @@ def _band(s, path, d0, d1, z, mat):
 
 
 def ribbon(s, path):
-    """The ribbon section along `path` (the lens centre line): brass hairline, lens, brass hairline, and the pool on the +d side."""
+    """The ribbon section along `path` (the lens centre line): the lens and the pool on the +d side. Brief 061 (Sky 2026-10-25: no brass on the road edge): the two brass hairlines that lay each side of
+    the lens are gone and the pool, still POOL_W wide, now starts at the lens edge (it started 2 cm out, at the right hairline's edge), so the lit lens is the whole edge. The piece's centre stays 0.5 m out."""
     h = LENS_W / 2
-    _band(s, path, -h - HAIR_W, -h, Z_HAIR, pal.Brass_Civic)
     _band(s, path, -h, h, Z_LENS, pal.Road_Lens)
-    _band(s, path, h, h + HAIR_W, Z_HAIR, pal.Brass_Civic)
-    _band(s, path, h + HAIR_W, h + HAIR_W + POOL_W, Z_POOL, pal.Road_Pool)
+    _band(s, path, h, h + POOL_W, Z_POOL, pal.Road_Pool)
 
 
 def _line(length, n=1):

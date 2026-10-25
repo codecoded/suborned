@@ -7,6 +7,7 @@ import { inPoly, segDist, type V } from '../plan/geom';
 import { kitAssets, type PieceData } from './pieces';
 import { Raster } from './raster';
 import { returnFills } from './returns';
+import { slopeAt } from '../world/gen/street/footway';
 
 export type Place = { at: V; yaw: number; scale: [number, number, number]; z0: number };
 export type Meta = { id: string; layer: 'civic' | 'street' | 'facade' | 'frontage' | 'building' | 'ground'; kind: string; piece?: string; mesh: boolean; ring: V[]; base?: number; top: number; yaw?: number; place?: Place };
@@ -48,6 +49,8 @@ export function buildVisible(world: World, pieces: Map<string, PieceData>, win: 
   const cuts: { ring: V[]; level: number; id: string }[] = [];
   for (const d of world.ground.drives ?? []) cuts.push({ ring: d.ring, level: d.level, id: d.id });
   for (const f of world.ground.flats) if (f.id.includes('/bay/')) cuts.push({ ring: f.ring, level: f.level, id: f.id }); // brief 055: every bay is sunk (Layers.IsBay)
+  // brief 061: a continuous footway's ramp (the lane's carriageway rising to the table) and lip (the table's edge falling to the carriageway) are slopes: the floor under a point of either is the line between their edges (the table is a flat, read above)
+  const footways = world.ground.footways ?? [];
   const bb = (ring: V[]) => ({ x0: Math.min(...ring.map(p => p[0])), x1: Math.max(...ring.map(p => p[0])), y0: Math.min(...ring.map(p => p[1])), y1: Math.max(...ring.map(p => p[1])) });
   const pb = plots.map(p => ({ p, b: bb(p.ring) })), fb = flats.map(f => ({ f, b: bb(f.ring) })), cb = cuts.map(c => ({ c, b: bb(c.ring) }));
   const inB = (b: { x0: number; x1: number; y0: number; y1: number }, q: V) => q[0] >= b.x0 && q[0] <= b.x1 && q[1] >= b.y0 && q[1] <= b.y1;
@@ -60,6 +63,12 @@ export function buildVisible(world: World, pieces: Map<string, PieceData>, win: 
     }
     for (const r of foot) if (distToLine(q, r.line as V[]) <= r.width / 2 && r.level > g) { g = r.level; who = r.id; }
     for (const { f, b } of fb) if (inB(b, q) && inPoly(q, f.ring) && f.level > g) { g = f.level; who = f.id; }
+    // The lip strip belongs to the drawn slope: the table's flat (ring from the kerb line, read above) lies under it at the table's level, but Unity draws the table from lip.d (FootwayKit.Build), so over the strip the slope wins, not the higher of the two (Aster 2026-10-25). The ramp has no flat under it: the higher floor stands.
+    for (const f of footways) {
+      const z = slopeAt(f, q); if (z === undefined) continue;
+      const s = (q[0] - f.frame.origin[0]) * f.frame.into[0] + (q[1] - f.frame.origin[1]) * f.frame.into[1];
+      if (s >= 0 && s <= f.lip.d) { g = z; who = `${f.id}/lip`; } else if (z > g) { g = z; who = `${f.id}/ramp`; }
+    }
     let cut: { level: number; id: string } | undefined;
     for (const { c, b } of cb) if (inB(b, q) && inPoly(q, c.ring)) { cut = c; break; }
     if (cut) { if (cut.level > g || who === 'ground/none') { g = cut.level; who = cut.id; } }

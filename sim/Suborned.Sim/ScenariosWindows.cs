@@ -26,7 +26,7 @@ namespace Suborned.Sim
                     bool ok = (WindowOf(g, "call", "guard") is OpenWindow cg ? guardOpen && cg.Until == g.GuardAwayUntil : !guardOpen)
                         && (WindowOf(g, "call", "pickup") != null) == (g.Tick >= g.BlockedFrom && !g.PickupCameraLive())
                         && (WindowOf(g, "reroute", "patrol") is OpenWindow rp ? rp.Until == g.PatrolAwayUntil && rp.Until > g.Tick : g.PatrolAwayUntil <= g.Tick)
-                        && (WindowOf(g, "loop", g.LoopCam) is OpenWindow lw ? g.LoopOn && lw.Until == -1 : !g.LoopOn)
+                        && (WindowOf(g, "loop", g.LoopCam) is OpenWindow lw ? g.LoopOn && lw.Until == (g.R.LoopRuns ? g.LoopUntil : -1) : !g.LoopOn)
                         && w.All(x => x.Until == -1 || x.Until > g.Tick);
                     if (!ok && same) { same = false; firstOff = $"{Report.Clock(g.Tick)}: {WindowsNow(g)}"; }
                 }
@@ -51,7 +51,8 @@ namespace Suborned.Sim
                 Go(r.Send(Tech, "cabinet", run: true));
                 r.Do(Tech, "loop", "entrance"); Go(r.Op(Tech).BusyEnd);
                 var lw = WindowOf(g, "loop", "entrance");
-                r.Is(lw != null && lw.Until == -1, $"loop.on: loop:entrance, held (-1) ({WindowsNow(g)})");
+                int loopEnds = g.Tick + T(g.R.LoopRunS);
+                r.Is(lw != null && lw.Until == loopEnds, $"loop.on: loop:entrance until {Report.Clock(loopEnds)} (Loop v2, engine 0.31.0: a real end) ({WindowsNow(g)})");
                 r.Do(Tech, "reroute", "patrol"); Go(r.Op(Tech).BusyEnd);
                 int away = g.PatrolAwayUntil;
                 var rp = WindowOf(g, "reroute", "patrol");
@@ -73,10 +74,9 @@ namespace Suborned.Sim
                 Go(away + T(5));
                 r.Eq(g.Log.Count(l => l.Code == "patrol.returns"), 1, "said once");
 
-                // the loop ends when the Tech walks off
-                int leaves = g.Tick; r.SendTo(Tech, r.Op(Tech).Pos + new Pt(0, g.R.TetherCm + 600)); // a move lets the loop go (cancel, loop.ends)
-                Go(g.Tick + T(10));
-                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick >= leaves) && WindowOf(g, "loop", "entrance") == null, "the Tech walks off, loop.ends: the loop window is gone");
+                // Loop v2 (engine 0.31.0): the loop runs out on its tick, and the window goes with it (walking off keeps it: S26)
+                Go(Math.Max(g.Tick, loopEnds));
+                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick == loopEnds) && WindowOf(g, "loop", "entrance") == null, $"loop.ends at {Report.Clock(loopEnds)}: the loop window is gone");
 
                 // a false tip
                 Go(r.SendTo(Scout, new Pt(8250, -3100)));

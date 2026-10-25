@@ -95,7 +95,7 @@ namespace Suborned.Play
 
         /// <summary>Brief 031 (Intel's chip and the door's next step): who should Watch `target` (a role, camera:&lt;id&gt;, patrol): the selected
         /// agent if it can (too far or out of line still counts: it walks to its ring); else the free agent who'd learn soonest (the walk to
-        /// its ring plus the Watch), ties to the Scout; else the busy one free soonest. Null when nobody can (already watched, tethered, down).
+        /// its ring plus the Watch), ties to the Scout; else the busy one free soonest. Null when nobody can (already watched, down).
         /// Read-only (LearnQuery, one A* each); kept a second.</summary>
         public OpId? WatchBy(string target)
         {
@@ -137,9 +137,6 @@ namespace Suborned.Play
             return WatchBy(watcher) is OpId b ? (b, watcher) : null;
         }
 
-        /// <summary>The Tech's Watch knob greys while his loop holds (he is tied to the cabinet: the engine refuses run-tethered); its rows on a
-        /// camera or the patrol still show, locked, with the short reason.</summary>
-        public bool KnobTethered(OpId by, Slot s) => by == OpId.Tech && s.Id == "watch" && Game != null && Game.LoopOn;
 
         /// <summary>Proofs: a Watch on a watcher given as a click gives it (the walk to a stand point in reach and line, then the Watch).</summary>
         public void GiveWatchScripted(OpId by, string watcher) => Give(by, new Order { Op = Op.Name(by), Do = "watch", Target = watcher }, WatcherTarget(watcher), null);

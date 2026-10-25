@@ -17,6 +17,7 @@ import { dressCircus, dressDecks, dressFoot, dressMedians, dressParks, dressPavi
 import { dressQuiet } from './street/quiet';
 import { type CapLog, dressCapstone } from './street/capstone';
 import { dressRoads } from './street/roads';
+import { dressFootways } from './street/footway';
 import { dressTransit } from './street/transit';
 
 export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[]; decks: DeckRec[]; stops: Mass[]; stations: Mass[]; connectors: Connector[]; frontages: Frontage[] }): { items: StreetItem[]; flags: Flag[]; crossings?: Crossing[]; crossingLog?: CrossingLog; takedown?: Takedown; capstone?: CapLog; groundPieces?: StreetItem[] } {
@@ -30,6 +31,7 @@ export function generateStreet(ctx: Ctx, o: { buildings: Mass[]; megas: MegaOut[
   const doors = o.frontages.filter(f => f.level === 'street').map(f => boxRing(f.entrance.c as V, f.entrance.size[0], f.entrance.size[1], f.entrance.yaw));
   const L = new Layer(ctx, solids, under, cols, keep, ctx.d.pylons.map(p => p.p), doors);
   dressTransit(ctx, L, o.stops, o.stations, o.connectors, o.decks); // transit kits first: their places are fixed
+  dressFootways(ctx, L); // brief 061: the lane posts of each continuous footway, under explicit ids (no other id moves), before the furniture so it keeps its distance
   dressRoads(ctx, L); dressMedians(ctx, L); dressFoot(ctx, L); dressCircus(ctx, L); dressPavilions(ctx, L); dressParks(ctx, L);
   const hall = o.megas.flatMap(m => m.parts.filter(p => /\/(hall|core)-/.test(p.id)).map(p => p.ring));
   const D = new Layer(ctx, hall, [], [], keep, []);

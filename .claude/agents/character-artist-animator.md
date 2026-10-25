@@ -11,7 +11,7 @@ GDD model: GPT 6.1 Sol (target); runs on Claude sonnet for now. Generated from G
 owns: People, rigs and animation, the stand-in figures, and the cell's live portraits.
 receives: Job silhouettes and the character-height target.
 delivers: Figures, rigs and animation, including the combat set (shoot, melee, hit, panic, a fall), the takedown set (knockout, kill, struggle, carry, a body lying, restrained), conversation idles and the watchers' head turns; kills are shown. Glyph checks legibility; Latch builds.
-hold: 40–60 px tall at 1080p; job, silhouette and facing readable. Vale has his own model (concept B: older, white beard, chain of office), carried by the Enforcer's clip. Stand-ins until the finals: the store's rigged models with walk and run clips, capsules as the fallback; models ship at full detail, and a new compression goes to Sky first. Only walk and run exist so far: combat animation is a top risk. Live portraits: nine stills per agent, the same face, centre and scale in all nine.
+hold: 40–60 px tall at 1080p; job, silhouette and facing readable. Vale has his own model (concept C: older, grey hair and moustache, round chrome spectacles, ivory tunic-jacket, black shoulder disc and gloves), carried by the Enforcer's clip. Stand-ins until the finals: the store's rigged models with walk and run clips, capsules as the fallback; models ship at full detail, and a new compression goes to Sky first. Only walk and run exist so far: combat animation is a top risk. Live portraits: nine stills per agent, the same face, centre and scale in all nine.
 opens: §06, §10, §15 · tools: Blender, Runware
 
 ## Core (§01)

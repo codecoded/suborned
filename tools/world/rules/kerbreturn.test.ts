@@ -13,9 +13,9 @@ import { kerbReturnRules } from './kerbreturn';
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
 const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = derive(plan), civ = civic(plan.civic, read(plan.civic.block)), base = generated(plan, d, civ), gc = genCtx(plan, d, civ, 0.18);
-const run = (mutate: (w: World) => void = () => {}) => {
+const run = (mutate: (w: World) => void = () => {}, gen: typeof base.gen = base.gen) => {
   const w = structuredClone(base.w) as World; mutate(w);
-  const out = Object.fromEntries(kerbReturnRules(ctxOf(plan, d, civ, { w, gen: base.gen })).map(c => [c.id, c.ok ? '' : (c.detail ?? 'fail')]));
+  const out = Object.fromEntries(kerbReturnRules(ctxOf(plan, d, civ, { w, gen })).map(c => [c.id, c.ok ? '' : (c.detail ?? 'fail')]));
   return out as { 'KR-2': string; 'KR-3': string };
 };
 const convex = () => returnsOf(gc).find(r => r.convex && !r.bay && !r.mouth && !r.civic && r.want === 6)!;
@@ -43,6 +43,18 @@ describe('KR-2 and KR-3', () => {
     const r = convex(), mine = (w: World) => w.ground.pieces!.filter(s => s.edge === `kerbreturn/${r.id}`);
     const without = (n: number) => run(w => { const ids = new Set(mine(w).slice(0, n).map(s => s.id)); w.ground.pieces = w.ground.pieces!.filter(s => !ids.has(s.id)); })['KR-2'];
     expect(without(1)).toBe(''); expect(without(4)).toMatch(/m of kerb stone on an arc of/);
+  });
+  test('KR-2 gives an arc beside a crossing only the metres the generator dropped, not half of it (Redline brief 064 #10: 42 % missing used to pass beside a strip)', () => {
+    const r = convex(), edge = `kerbreturn/${r.id}`, mine = (w: World) => w.ground.pieces!.filter(s => s.edge === edge), len = r.r * r.theta;
+    const mid = r.arc[Math.floor(r.n / 2)]!, toC = [(r.c[0] - mid[0]) / r.r, (r.c[1] - mid[1]) / r.r], ctr: [number, number] = [mid[0] + toC[0]! * 1.9, mid[1] + toC[1]! * 1.9];
+    const strip = [[ctr[0] - 1, ctr[1] - 1], [ctr[0] + 1, ctr[1] - 1], [ctr[0] + 1, ctr[1] + 1], [ctr[0] - 1, ctr[1] + 1]]; // on the pavement side of the arc, within a metre of its stones, not in the cut
+    const cut = (n: number) => (w: World) => { w.crossings![0]!.strip = strip as any; const ids = new Set(mine(w).slice(0, n).map(s => s.id)); w.ground.pieces = w.ground.pieces!.filter(s => !ids.has(s.id)); };
+    const n = mine(base.w).length, five = Math.floor(n * 0.42);
+    expect(n).toBeGreaterThanOrEqual(10); expect(five / n).toBeLessThan(0.5);
+    expect(run(cut(five))['KR-2']).toMatch(/m of kerb stone on an arc of/);
+    // the metres the generator says it dropped are allowed to be missing: the same stones gone, logged as dropped, pass
+    const gone = mine(base.w).slice(0, five).reduce((t, s) => t + s.size[0], 0), logged = { ...base.gen, kerbArcs: { ...base.gen.kerbArcs!, dropped: { [edge]: gone } } } as typeof base.gen;
+    expect(run(cut(five), logged)['KR-2']).toBe(''); expect(gone).toBeLessThan(len);
   });
   test('KR-5 fails on a reservation kerb piece lying alone in the road (Glyph 0.2.113: the two cream arcs at the circus mouth)', () => {
     expect(run()['KR-5' as 'KR-2']).toBe('');

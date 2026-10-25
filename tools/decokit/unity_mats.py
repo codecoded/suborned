@@ -181,6 +181,31 @@ def pbr_text(row, legacy):
     return base
 
 
+def emitmap_text(row):
+    """An emission-only signal .mat (kind `emitmap`, brief 061): URP Lit, base colour BLACK, the emission colour (the row's hex x its strength: the state's default, replaced per head by a
+    MaterialPropertyBlock) and, where the row has a texture, that texture as _BaseMap AND _EmissionMap with the alpha clip on at the row's cutoff (a glyph atlas draws only its glyphs; the clock
+    ring's _Cutoff is its fill). No specular, no reflections, no ambient: it shows its emission and nothing else. Queue 2450, alpha-tested (written with a texture only)."""
+    t = mat_text(dict(row, kind="emit"))
+    t = re.sub(r"(- _BaseColor: )\{[^}]*\}", r"\g<1>{r: 0, g: 0, b: 0, a: 1}", t)
+    t = re.sub(r"(- _Color: )\{[^}]*\}", r"\g<1>{r: 0, g: 0, b: 0, a: 1}", t)
+    t = re.sub(r"(- _Smoothness: )[0-9.eE+-]+", r"\g<1>0", t)
+    t = re.sub(r"(- _SpecularHighlights: )1", r"\g<1>0", t)
+    t = re.sub(r"(- _EnvironmentReflections: )1", r"\g<1>0", t)
+    t = re.sub(r"(- _ReceiveShadows: )1", r"\g<1>0", t)
+    if row["texture"]:
+        g = tex_guid(row["texture"])
+        for slot in ("_BaseMap", "_MainTex", "_EmissionMap"):
+            old = f"    - {slot}:\n        m_Texture: {{fileID: 0}}\n"
+            assert old in t, slot
+            t = t.replace(old, f"    - {slot}:\n        m_Texture: {{fileID: 2800000, guid: {g}, type: 3}}\n")
+        t = re.sub(r"(- _AlphaClip: )0", r"\g<1>1", t)
+        t = re.sub(r"(- _AlphaToMask: )0", r"\g<1>1", t)
+        t = re.sub(r"(- _Cutoff: )[0-9.]+", rf"\g<1>{_f(row.get('cutoff', 0.5))}", t)
+        t = t.replace("  m_ValidKeywords:\n  - _EMISSION", "  m_ValidKeywords:\n  - _ALPHATEST_ON\n  - _EMISSION")
+        t = t.replace("m_CustomRenderQueue: -1", "m_CustomRenderQueue: 2450").replace("RenderType: Opaque", "RenderType: TransparentCutout")
+    return t
+
+
 def robot_enamel_text(row):
     """DK_RobotEnamel_*: the enamel .mat (Complex Lit, clear coat) with the robot detail pair: albedo (linear, x2) and normal at the row's bump, tiled 0.5 m x 2 m."""
     d = row["robotDetail"]
@@ -211,6 +236,12 @@ def write(table_path, dst, retuned):
         if row["kind"] in ("clear", "sheen") and not (legacy / f"{n}.mat").exists():  # window panes
             d.mkdir(parents=True, exist_ok=True)
             (d / f"{n}.mat").write_text(clear_text(row, legacy))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            continue
+        if row["kind"] == "emitmap":  # an emission-only signal surface (the lens rim, the face atlas, the clock ring): written whether or not the legacy kit has the name
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(emitmap_text(row))
             (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
             out.append(n)
             continue

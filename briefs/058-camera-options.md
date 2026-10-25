@@ -185,3 +185,101 @@ Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your re
 2. Disable counts as an **incident**.
 3. Ship the walk-off stopgap (§5) **now**.
 Next: Latch the stopgap (host only, next batch); Keel rulebook and engine; Waymark routes; Glyph and Fable ring, pill, plates and words; Latch the port; Aster the GDD lines (§7).
+
+## Glyph (2026-10-25)
+Spec for Latch, in the Suborned HUD kit (no lab look; every piece is a kit sprite, a kit.uss colour or a kit icon). Boards, over the Oct 25 office-front capture at play zoom (zoom 14, 38 degrees, yaw 210), 2 px per game px, placement indicative (Latch projects): `briefs/058/board-01-ring-on-a-camera.png` · `board-02-camera-states.png` · `board-03-done-plates.png` · `board-04-walkoff-stopgap.png` · `board-05-price-lines.png`. Redraw with `python3 -I briefs/058/boards.py` (library `briefs/058/glib.py`; numbers in `briefs/058/budget.json`). Sky's calls above stand (2:00 loop, Disable an incident, stopgap now).
+
+### 0 · Words: Fable's, none of mine
+All from `contracts/missions/handover/text.json` (Fable's keys, already there): `less.price.verbs.loop` [name, time, trail] · `.disable` [name, time, trail, alert] · `.fire` [name, trail, alert] with `price.examples.fire-camera` ("Fire · +2 · ▲≥2": no time, never "/hit") · `less.done.gain.camera-looped` / `camera-cut` / `camera-shot` · `less.done.close.camera` ("Camera on", the pop when a loop ends) · `activity.holding.loop` ("Holding the loop": the plate's hover and Alt label; the plate itself shows icons) · `less.hold.loop-walk-off.short` ("Camera comes back", the hold pill's body; `.line` is its Alt). I wrote no sentence. Where a board prints a word it is one of these keys.
+
+### 1 · The ring on a camera (board 01)
+- **Who gets what.** `HandoverHost.RingState` for a `camera/*` target: the Tech: **Loop · Disable · Fire**; any other armed agent: **Fire** alone (so the ring shows even with one way: `n = 1`). Order by `ContextRank` with the harmless ways first and Fire last; Loop is the default `Lit` (12 o'clock). Weapons free never picks a camera (unchanged).
+- **Wedges (HudToolkit.Ring.cs, as built).** n = 3 puts the wedges at 0°, 120°, 240° (Loop top, Disable lower right, Fire lower left); the gap is 2.2°. n = 1 is the whole ring: `a0 = 0, a1 = 359.99`, no gap (check the closed `Arc` draws; if not, two 180° arcs), the icon at 12 o'clock on the mid radius, the pill centred above (`RingFrame` already places a `|dir.x| <= 0.2` pill above). Icons 22 px at the mid radius (57): `loop`, `disable` (new, below), `fire`; cream, the lit one `--turquoise-light`. **Fire is `Violent`**: dashed outline (as built), the `bang` loud mark (14 px) at the end of its pill, and the 0.5 s hold fills the wedge from the middle out in turquoise-light at 75 % (board 01, middle). Loop and Disable are one click; a tap on Fire does nothing.
+- **Price pills, one line each** (`HudModel.PriceLine`, fields in Fable's `price.order`): **Loop** time (walk + the 20 s act, e.g. 38 s) · Trail +1. **Disable** time (walk + the 10 s act, e.g. 28 s) · Trail +2 · the siren with 1 (Alert 1 on the first report, 2 on the second: the number comes from the engine's `byIncident`, never typed). **Fire at a camera or a car** Trail +2 · the siren with ≥2 · the loud mark: no time, no "/hit". Fire's Trail for a camera is `TrailShooting` once, 0 if the cell has already fired at it, so one function builds it from `PreviewFire`'s parts (`GameFightLab.cs:468`) for the ring pill, the panel row, the aim chip and `HostFight`'s cost line (§3.2 above). Fire at a person keeps "+n/hit" (it is per hit there).
+- **Hover marks.** The hovered wedge names the camera: `RingFocusFrame` as built (the turquoise-light ring on the head, its ground ring at the foot). The cone it reads from is drawn at its state (§2).
+- **Alt** (board 05, bottom two): walk split from act, every field including zeros and the eye ("none"); the same icons.
+- **Widths** (game px, measured): Loop 148 · Disable 198 · Fire 132 · Alt Loop 295 · Alt Disable 308, against the shipped Pressure 315. Nothing here grows the ring.
+- **Optional, not in Fable's keys, for Sky/Aster/Fable to say yes or no (board 05, rows 4 and 5):** Motive's order lines also carried the loop's run time and the desk's delay: `Loop · 38 s · +1 · [loop icon] 2:00` (206 px) and `Disable · 28 s · +2 · siren 1 · [nextevent, dim] 14 s` (244 px). They need two new price fields (`lasts`, `in`) and read as more to learn on the ring, against "less reading". I recommend the shipped lines: the 2:00 shows the moment it lands (chip and marker, §3), and the 14 s is the desk marker (§2). If Sky wants them on the ring, they are drawn and measured.
+
+### 2 · What a camera looks like (board 02)
+- **Live, learned** (a learned cone at rest): unchanged from brief 057 §3 (red, 13 % fading to 1 %, rim 55 %, dashed far edge).
+- **Looped:** the same cone, **hollow and dashed all round**: no fill, rim `0.05 m` at 50 %, both side edges and the far edge dashed (5 px on, 4 px off at play zoom, i.e. 0.13 m on, 0.10 m off). Recorded, not live: own shape cue, still red, still drawn unlit and emissive outside the grade. In `HostViews` the fan gets a `Looped` bool; the existing `FillAlpha` goes to 0 and the two side rims take the far edge's dash. The marker on the head is the existing window marker (§3): `eye_shut` and the count.
+- **Cut** (Disable): the cone is gone. A **dead disc** stays on the camera to the end of the mission: `markers/disc_dark_24` at 24 px, the new `icons/singles/disable` at 15 px in cream, centred 20 px above the head's projected point (head = pole top; the disc sits clear of the window marker, which stays where it is built, at the anchor +0.75 m). Until the desk reads the screen, a second marker: the **desk's clock**, the as-built window marker with the `p_alert` icon and the seconds to the desk's report (scan phase + `post-call-s`; the underline drains over the scan interval, amber and blinking in its last 10 s as built). At the report the clock goes; the disc stays; the feed beat is Fable's.
+- **Shot out:** the cone is gone; the dead disc is `markers/disc_light_24` with `fire` in ink at 15 px (harm's own pair, the art bible's "harm reads by shape and the light disc"); no clock, because the gunfire already raised Alert. Persistent like the cut one.
+- **Sources of state** (host, no engine change needed to draw): cut and shot are `CameraDark` with the cause recorded (Keel: `cut` vs `shot`, brief 058 §6); until that lands the host can tell them apart by which order darkened the camera.
+- **Budget:** a dead disc is 24 × 24 px; at most three cameras; nothing at rest beyond that.
+
+### 3 · The done plates and the 2:00 (board 03)
+- **Loop** (`HostDone.cs:287`, already `gain.camera-looped`): the chip as built (panel_dark at slice 0.5, the Tech's face 32 px in the chrome ring with the tick badge `mark_ok`, one row: `loop` icon 16 px + "Camera looped" in Jost Bold 15), 4.2 s. **The 2:00 rides the window marker under it** (Fable's rule, kept): `OpenWindow("loop", cam, until)` now has a real `until`; `HostDone.cs:362` stops setting `m.Face` for the loop (the Tech's face stood for "no end"; there is an end now), so the marker shows the countdown like every other window.
+- **Window marker label format:** m:ss when the window's `Total` is 60 s or longer (the loop: 2:00, 1:12, 0:09), plain seconds under that (the guard's and patrol's, the desk's: 14, 3). One format helper in `HudToolkit.Done.cs` where `Text(wn, w.Left.ToString())` is today. The underline and the amber-and-blink in the last 10 s are as built. The marker icon is `eye_shut` for a loop, `p_alert` for the desk's clock; its kind is `loop` or `desk`.
+- **Disable:** chip with the Tech's face, `disable` icon + "Camera cut" (`gain.camera-cut`); the desk's clock marker under it (§2).
+- **Shoot:** chip with the shooter's face, `fire` icon + "Camera shot out" (`gain.camera-shot`); no marker.
+- **Never "Camera dark" for a loop.** When the loop ends the host pop is `close.camera` ("Camera on") as built.
+- **Lines:** each chip is one row; a chip's second row is not used (the engine numbers live on the markers).
+
+### 4 · The walk-off stopgap (board 04)
+- **The Tech's plate.** The roster's activity plate (layout.json `timer-n`, 176 × 36 at the Tech's row; the board draws it 172 × 30 because the shot's own was taken out first) takes a **holding** state while the Tech holds a loop (`activity.holding.loop`): `plate_dark`, `s_looping` 15 px cream at the left (17 px in), a still **full** bar (track ink-deep at 63 %, 6 px, fill `--turquoise-light` at 59 %: nothing counts down, because the loop has no end until Loop v2), and the `lock` icon 14 px at the right (17 px in). No number, no word on the plate (the words are its hover and Alt label).
+- **A squad move that leaves him:** the plate takes a 2 px `--turquoise-light` rim, 3 px outside the plate, for 0.6 s (ease out) once per squad move. His portrait and the rest of the roster do not change. A move given to him alone still walks him (the hold below).
+- **The hold.** A move that would take the Tech off the cabinet is a harm-free **costly** order: it takes the 0.5 s hold the harmful orders use (the same `Charge` machinery), but draws on the plain `pill_status` (not the chamfered strip: it is a loss, not a harm). The pill, as built (`PillLook`): `disc_dark_24`-scaled disc with `loop` at the left, the dim head word ("Hold", then "Let go" in `--turquoise-light` when full), the body = `less.hold.loop-walk-off.short` ("Camera comes back"), the Tech's face at the end (24 px cameo); offer, charge (the turquoise-light sweep at 40 % inside the pill's window), ready (2 px ring, glow, scale 1.05). Anchor: the destination ring (the walk's solid cream ring, 0.5 m), the tail 22 px above it. A ground click has no `Target`: use the world point +1.5 m as `HoldPillFrame` does for a thing without a height. A tap does nothing; a held press walks him off and the camera comes back at once.
+- **The cabinet:** where he stands keeps its solid ring (0.5 m), with the plan's dashed line to the destination as every ghost path (cream over ink-deep).
+
+### 5 · The new kit asset
+`unity/Assets/Suborned/UI/Resources/Kit/icons/singles/disable@2x.png` (+ `.meta`, new guid; 64 px, white on alpha like the other singles, scissors cutting at 45 degrees, solid, about 8 % stroke) and the same file with a 32 px `disable@1x.png` in `briefs/011/ui/kit/icons/singles/` (the kit source). `Icon(el, "disable", tint)` loads it by path; nothing else registers it. If the importer regenerates `kit.uss`, add `disable` to the icon list in `briefs/011/ui/kit` so `.i-disable` appears; the HUD does not read that class.
+
+### 6 · HUD budget (tools/hud-budget rule: rest ≤ 15 %, 22 % with a card or the ring open, 30 % with Alt)
+The capture's own HUD at rest is 6.66 % of the screen (`office-front-yaw210.hud.png`). Added on top: the ring open 8.27 % (Tech) and 7.90 % (one wedge); Fire held 8.27 %; a chip with its marker 7.15 %; the dead disc 6.67 to 6.69 %; the markers strip 7.09 %; the walk-off pill 7.22 % (offer, charge) and 7.64 % (ready, with its glow); the roster plate 6.66 to 6.71 %. The red cone's fill is a world mark (9.87 % counting it). Largest state 8.27 %: far inside every limit. At most two icons over a person: unchanged (the camera carries a disc and a marker).
+
+### 7 · Done-check and open
+- Done: the five boards; budget numbers; the icon installed (path above, `.meta` present). Not done: Unity (Latch), words (Fable has his), a 2160 shot of the ring open on a camera for the 2x review (nothing in `out/batch/shots` has one): Latch, please capture it, Glyph reviews the crop.
+- Open: the optional price fields (§1); the dead disc's cause (cut vs shot) is host-only until Keel records it; the board's camera is the entrance one, the mast camera sits higher, so the dead disc's 20 px offset is "above the projected head" not a fixed number.
+- **Next owner: Latch** (ring, states, chips, marker format, plate, hold pill); Fable has the words; Keel the `cut`/`shot` cause.
+
+## Motive (2026-10-25): one robot at the entrance camera — accepted (a)
+**Question (Aster, engine 0.31.0):** a Disable at the entrance camera brings only the patrol, not the 2 robots §2 said. That's because the block's one dock (`civic-robot-dock-315`, in the square) is 75.4 m from the camera and robots go only to places within 60 m of where they start (§05; `robot-reach-m` 60).
+**Ruling: (a) accept.** The reach rule is the dial doing what it was designed to do, and it already has its own scenarios (N59, and the dock "too far from the bay" check in `ScenariosTakedown.cs`). Keel's DIS-REPORT already expects "the robots within reach, the patrol first". The "2 robots" in §2 and in §6 DIS-REPORT was my number and I was wrong: the dial's Alert-1 response at S2 is 2 robots *within reach*, and at the entrance camera only the patrol is in reach. Nothing Sky approved changes: his call was that Disable is an incident (it is, and it brings the dial's response to the camera). He never set the robot count.
+
+**Measured** (engine 0.31.0, dll copied to scratch, sha256 `7d4623cf…`; rulebook `1bdcbdc3…`; scripts built from c036 routes). Both trees ran with `bun tools/game/playing.ts dotnet …/suborned-sim.dll batch …/scripts --jobs 2`, giving "9 played in 1.0 s; 0 not ok". The counterfactual tree differs only in `robot-reach-m` 100, which lets the dock robot come, so it gets the 2 robots §2 expected.
+
+| script | 1 robot (live rule) | 2 robots (reach 100) |
+|---|---|---|
+| `route-a-disable` (Disable 0:16.5) | success 4:59.7 · 6 T · A 1 · Standing 3 | the same |
+| `careless-g-disable` (Disable 0:16.5) | success 4:44.7 · 12 T · A 2 · loud final fight | the same |
+| `route-a-disable-late` (Disable 2:14, after the Reroute) | 6 T · A 1 · **nobody comes** ("0 robots, 0 units") | 7 T: a dock robot sees the car leave (+1 `car-seen`) |
+| references: `route-a-loop-retimed` / `route-g-loop-retimed` | 5 T · A 1 / 6 T · A 1 | the same |
+
+- **route-a-disable:** the report lands at 0:37.6 and the patrol leaves its sweep at 0:41.6. It becomes wary of the Tech at the cabinet (1:01.6), stands down at 1:37.6 and is back on its sweep at 1:52, so the Reroute still lands at 2:03.5. Alert 1 had already come from the guard seeing the run at 0:02.8, so the cut adds no Alert. That matches §4's expected 6 T, A 1. A second robot from the dock (75 m at 0.85 m/s, about 90 s on foot) is called back by the stand-down before it matters.
+- **careless-g-disable:** the patrol at the pole reports the Tech loitering (1:29.6: a found fault, no Trail). The guard's missed 4:00 mark is the second incident, giving Alert 2, the response unit and a loud fight. This matches §4's "worse". The dock robot in the reach-100 tree only notices the Scout and the Enforcer and reports nothing.
+- **Per camera on this block (live rule):** entrance → the patrol only; pickup → the patrol only; mast-314 → 2 robots from the dock beside it. The dial reads the same everywhere. The count follows where the docks stand.
+
+**Why not (b):**
+- One robot changes no result on either route.
+- Raising the reach or adding a dock near the forecourt only makes the late Disable dearer (+1 T) and puts a second robot where the player isn't looking.
+- The robot that does come is the patrol the player has already watched on its sweep, so the response stays something they can see coming.
+
+**Open, for others:**
+- **Fable:** after the Reroute a Disable sends nobody, yet `camera.cut-reported` says "Someone is coming to look" and the Scout says "Robots coming". Those lines need a version for a dispatch of 0 (the engine logs the count in `alarm.dispatches`).
+- **Waymark:** use the early Disable (0:16.5) for `route-a-disable`. The late one gives the same price, so it isn't a separate route.
+- **Keel:** nothing for 059 from this ruling.
+- Read §2's "2 robots" as "the dial's Alert-1 robots within 60 m (here, the patrol)". I've left §2's text as Sky approved it. The GDD §05 Disable line already says "the dial's response", so it needs no change.
+- Probes: `out/scratch/motive/058b/` (`make.py`, `read.py`, `logs.py`; `base.jsonl`, `reach.jsonl`).
+
+## Waymark (2026-10-25): routes on engine 0.31.0
+Evidence: `briefs/058/waymark/route-retime-0.31.json` (every script against c036, the conditions, the slack). Record: c037, SHIPS, 41 scripts, 1711 plays, replays exactly. Re-recorded 2026-10-25 on batch 0.2.118's live site: rival-park held at (84.0, −31.0) in mission.json and `handover.site.json` (site sha256 a897dbdf…), after Splice's 061 round; the 059 data is in `handover.stands.json` and `tools/sim/stands.ts`, for Keel's 059 round. The first c037, taken with rival-park at (90.5, −31.0), is withdrawn.
+- **Retimed, each to c036's end, Trail, Alert and Standing:**
+  - route A and A-board plant the loop at 1:25 (live 1:45 to 3:45), then Reroute (patrol away 2:30 to 4:25). Rerouting first, as §6 says, brings the patrol back at 2:56.5, 3 s after the Enter: A-board's slack falls from 7 s to 3 s. This order keeps 7 s (the Inez limit), and 51 s from the wait by the door.
+  - the loud family plants at 1:00, then Reroute (patrol away 2:05 to 4:00, as c036).
+  - G and G-board plant at 1:00 (live 1:20 to 3:20).
+  - G-kill and G-kill-board reroute at 1:25, not 1:46, and plant at 2:10 (live 2:30 to 4:30). Otherwise the Reroute holds the Tech through the 1:44 to 2:11 window.
+  - fail-entry-seen-patrol plants at 2:40.
+  - careless-guard-left-door-held: walking off no longer ends a loop. The Enforcer now enters at 3:12.6, after the loop has run out with the guard at the door.
+- **Moved by the recompose, not retimed:** A-pressure and G-fast keep their order (loop, then Reroute), but the loop now holds the Tech for 20 s, not 62 s:
+  - A-pressure-board 3:38.1 → 3:20.5;
+  - G-fast-board 3:53 → 3:11;
+  - same Trail, Alert and Standing.
+- **New:**
+  - `route-a-disable`: quiet, under A. Disable at 0:16.5, 4:59.7, 6 T, A 1.
+  - `careless-g-disable`: Disable at 1:10, so it lands when G's loop does and the Tech isn't left loitering. Alert 2 in the final fight; the three are captured; 12 + 12 T.
+  - `careless-loop-runs-out`: careless fault `timing`. The loop is planted first, so the Enter at 2:53.4 is seen by the camera.
+- **rival-park stays at (84.0, −31.0) for this batch:** careless-scout-idles-pickup and fight-safe-rivals-reach-vale keep their wait at (82.5, −31.0), and fail-vale-leaves ends at Alert 1, all as c036. When Keel's 059 round moves the park to (90.5, −31.0), the Scout's Mislead from (82.5, −31.0) is refused (too far from the rivals) and fail-vale-leaves' Scout is out of the pickup camera's view (Alert 0): those three need re-siting then (tried on the withdrawn c037: wait at (85.0, −31.0), 5.5 m from the park).
+- **Moved by the engine and site, not retimed:** careless-body-found, careless-enforcer-watches-guard, fail-enforcer-down and fight-loud-enforcer-down: same fail code and Alert, different times.
+- **054 §6:** careless-takedown-seen-crowd is re-sited to 5:30.0, when the clerks face the door. Their reports land at 5:38 (Alert 3) and the Enter at 5:39 is refused.

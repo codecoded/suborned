@@ -62,7 +62,7 @@ namespace Suborned.Sim
         /// "busy": a busy agent is pinned anyway), scaled by the playground pace.</summary>
         int DriveCapMm(Op op, bool run)
         {
-            bool canRun = run && !(op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.Id == OpId.Tech && LoopOn);
+            bool canRun = run && !(op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) && !op.Carrying.HasValue && op.CarryBody.Length == 0 && !(op.Id == OpId.Tech && Tethered);
             int pace = PaceOf(op, canRun);
             return Math.Max(1, (int)((long)pace * DrivePacePm / 1000));
         }

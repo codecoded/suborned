@@ -6,7 +6,7 @@
 // bytes. The file names its sources but holds no hash of them: an edit to the plan or the mission that leaves this ground as it
 // was leaves the file, and every replay's start hash, as they were; tools/sim/sim.test.ts fails on any edit that changes it.
 // Run: bun run sim:site (writes the file, the people extract, the takedown places (tools/sim/takedown.ts) and the provisional file with the security level (below)); bun test tools/sim (checks them).
-import { readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { derive } from '../plan/plan';
 import { civic, toPlanFn } from '../plan/civic';
@@ -21,7 +21,8 @@ import { createHash } from 'node:crypto';
 import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 import { buildExit, blockM, checkExit } from './getaway';
-import { driveGrid, type Drive } from './drive';
+import { driveGrid, driveFree, type Drive } from './drive';
+import { buildRivals, buildStands, checkRivals, checkStands, placesFor059 } from './stands';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -46,14 +47,24 @@ type Place = { at: number[]; src: string; reason?: string };
  *  `drawnOccluders`: the drawn volumes that span eye height are sight occluders. Held for: under the rulebook's one eye height (eye-cm) a camera on a pole or a mast
  *    sees at 1.6 m like a person, so the two 2 m topiaries at the Office door cut the entrance camera's line to the door and the café's planting cuts the Records
  *    Square mast; 10 scenarios move.
- *  On: `bun run sim:site --drawn-walk --drawn-occluders` (then `bun run cover`, `bun run sim:site` with the same flags, re-record). The site records which (grid.drawn). */
-export type SiteOptions = { drawnWalk?: boolean; drawnOccluders?: boolean };
+ *  On: `bun run sim:site --drawn-walk --drawn-occluders` (then `bun run cover`, `bun run sim:site`, re-record). The site records which (grid.drawn); a plain `bun run sim:site` keeps what the committed site has. */
+export type SiteOptions = { drawnWalk?: boolean; drawnOccluders?: boolean;
+  /** Brief 059 (Splice): fold the getaway stands and the rival car's way in into the site itself (`getaway.stands`, `rivals.car`, `rivals.posts`). Off, they are the second file sim/data/handover.stands.json and the site keeps the shape the engine reads (Site.cs rejects a key it does not know).
+   *  Keel's 059 round turns it on (`bun run sim:site --fold-stands`) when the engine reads them from the site. */
+  foldStands?: boolean };
 /** The options the committed site was built with (grid.drawn), so a check rebuilds it the same way. */
 export const optionsOfSite = (): SiteOptions => {
-  const d = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')).grid?.drawn;
-  return { drawnWalk: !!d?.walk, drawnOccluders: !!d?.sight };
+  const site = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8')), d = site.grid?.drawn;
+  return { drawnWalk: !!d?.walk, drawnOccluders: !!d?.sight, foldStands: !!site.getaway?.stands };
 };
-export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteOptions = {}): { json: string; site: unknown } {
+/** Brief 059: the getaway stands and the rival car's way in, as the committed files hold them: in the site when folded, else the second file. */
+export const STANDS_FILE = 'sim/data/handover.stands.json';
+export const readStands = (): { getaway: { stands: unknown[] }; rivals: { car: Record<string, unknown>; posts: Record<string, unknown> } } => {
+  const site = JSON.parse(readFileSync(join(root, SITE_FILE), 'utf8'));
+  if (site.getaway?.stands) return { getaway: { stands: site.getaway.stands }, rivals: { car: site.rivals.car, posts: site.rivals.posts } };
+  return JSON.parse(readFileSync(join(root, STANDS_FILE), 'utf8'));
+};
+export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteOptions = {}): { json: string; site: unknown; stands: string } {
   const read = (f: string) => readFileSync(join(root, f), 'utf8');
   const planText = read(PLAN), plan = JSON.parse(planText);
   const blockText = read(plan.civic.block), block = JSON.parse(blockText);
@@ -193,6 +204,13 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   const kx = blockBay.polygon.map((p) => p[0]), ky = blockBay.polygon.map((p) => p[1]);
   const blockFacing = Math.max(...kx) - Math.min(...kx) >= Math.max(...ky) - Math.min(...ky) ? [bsAt[0] >= puAt[0] ? 100 : -100, 0] : [0, bsAt[1] >= puAt[1] ? 100 : -100];
 
+  // ---- brief 059 §5 (Splice): the getaway car's stands (each with its exit lane, spots and rival stop) and the rival car's way in, derived from the mission's points and routes and held by SX-2 and SX-3
+  const driveOk = driveFree(drive), stands = buildStands(plan, d, mission, block, rulebook, places);
+  const standsBad = checkStands(stands, plan, d, places, rulebook, (q) => free(q), driveOk);
+  if (standsBad.length) throw new Error(`getaway.stands (SX-2): ${standsBad.join('; ')}`);
+  const places059 = placesFor059(places), rivalsNew = buildRivals(plan, d, mission, places059), rivalsBad = checkRivals(rivalsNew, plan, d, places059, rulebook, schedule.rivalsArrive, (q) => free(q), driveOk);
+  if (rivalsBad.length) throw new Error(`rivals (SX-3): ${rivalsBad.join('; ')}`);
+
   const site = {
     schema: 'suborned.sim.site/1',
     mission: 'handover',
@@ -213,9 +231,9 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
     vale: { exit: 'd:Official entrance', car: 'd:Official drop-off', service: 'd:Service lane', src: 'GDD §07 5:50 Vale exits, 6:10 at car (service lane if the driver is turned); mission.json roles.councillor leavesTo' },
     car: { pickup: 'd:Official drop-off', driver: 'd:Meet driver', service: 'service-bay', block: 'block-spot', serviceFacing: serviceFacing, blockFacing: blockFacing, src: 'GDD §07; mission.json roles.driver; blockFacing: parked at block-spot the car lies along its bay\'s long axis (the official bay\'s kerb), nose the way it pulled out from the pickup (tools/sim/site.ts); the turned driver parks in the Office\'s east yard bay (mission.json point service-bay, brief 023), nose in: serviceFacing is the bay\'s long axis pointing away from the drive it is entered by (tools/sim/site.ts)' },
     drive,
-    rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', ...(mission.rivals ? { public: mission.rivals.public } : {}), src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' + (mission.rivals ? `; public: mission.json rivals (${mission.rivals.src})` : '') },
+    rivals: { park: 'rival-park', entry: 'rival-entry', front: 'd:Office approach', ...(mission.rivals ? { public: mission.rivals.public } : {}), ...(opts.foldStands ? { car: rivalsNew.car, posts: rivalsNew.posts } : {}), src: 'GDD §05 rivals; the top-down test: drawn by gunfire they make for the front of the Office' + (mission.rivals ? `; public: mission.json rivals (${mission.rivals.src})` : '') },
     security: { entry: 'security-entry', via: 'd:Office approach', to: 'd:Service lane', src: 'the top-down test: the response unit crosses to the Office front, then the service side' },
-    getaway: { car: 'd:Getaway bay', exit: exitLane, src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
+    getaway: { car: 'd:Getaway bay', exit: exitLane, ...(opts.foldStands ? { stands } : {}), src: 'GDD §07 win: Vale alive at the getaway car; mission.json destinations Getaway bay' },
     fight: { ambush: ambush.map((p) => p.id), police: police.map((p) => p.id), entry: 'security-entry', guard: 'guard-ally', src: 'GDD §07 final fight [S]; rulebook fight' },
     schedule,
     purse: 100000,
@@ -228,7 +246,14 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
     cover: coverOf(),
   };
   const json = pretty(site) + '\n';
-  return { json, site };
+  // brief 059: the second file (the engine does not read it yet): the same stands and rival data, with the frame and its sources, in the site's own units
+  const standsFile = pretty({
+    schema: 'suborned.sim.stands/1', mission: 'handover', frame: site.frame,
+    from: [PLAN, plan.civic.block, MISSION, 'sim/data/handover.site.json (places, grid, drive)', 'tools/sim/stands.ts', 'tools/sim/getaway.ts'],
+    src: 'brief 059 §5 (Splice): getaway.stands[] and rivals.car / rivals.posts, derived from the mission points (Vantage), the mission routes getaway, getaway-service and rivals, and the plan, held by SX-2 and SX-3 (tools/sim/stands.ts). A second file so the site keeps the shape the engine reads (Site.cs rejects a key it does not know): `bun run sim:site --fold-stands` moves it into the site (getaway.stands, rivals.car, rivals.posts) when Keel\'s 059 round reads it there, and this file is then not written',
+    getaway: { stands }, rivals: { car: rivalsNew.car, posts: rivalsNew.posts },
+  }) + '\n';
+  return { json, site, stands: standsFile };
 }
 
 /** The security level the engine runs at (GDD v0.23 §05, briefs/013/motive-takedowns.md §5.3), written into sim/data/handover.provisional.json from the data that owns it:
@@ -299,12 +324,16 @@ if (import.meta.main) {
   const a = process.argv.slice(2), at = (k: string) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : undefined; };
   const src: Source = { people: at('--people') ?? PROMOTED_PEOPLE, ...(at('--fixture') ? { fixture: at('--fixture')! } : {}) };
   if (src.people !== PROMOTED_PEOPLE && !src.fixture) throw new Error('a people file other than the promoted one is a fixture: say why with --fixture');
-  const { json } = buildSite(src, { drawnWalk: a.includes('--drawn-walk'), drawnOccluders: a.includes('--drawn-occluders') });
+  // the drawn solids stay as the committed site has them (grid.drawn: engine 0.30 adopted both); --drawn-walk / --drawn-occluders force one on, --no-drawn-walk / --no-drawn-occluders off. Without a site file both default to off.
+  const had: SiteOptions = existsSync(join(root, SITE_FILE)) ? optionsOfSite() : {};
+  const flag = (on: string, off: string, was?: boolean) => (a.includes(off) ? false : a.includes(on) || !!was);
+  const { json, stands } = buildSite(src, { drawnWalk: flag('--drawn-walk', '--no-drawn-walk', had.drawnWalk), drawnOccluders: flag('--drawn-occluders', '--no-drawn-occluders', had.drawnOccluders), foldStands: flag('--fold-stands', '--no-fold-stands', had.foldStands) });
   writeFileSync(join(root, SITE_FILE), json);
+  if (!JSON.parse(json).getaway.stands) writeFileSync(join(root, STANDS_FILE), stands); else rmSync(join(root, STANDS_FILE), { force: true }); // folded into the site: no second file
   const people = buildPeople(src);
   writeFileSync(join(root, PEOPLE_OUT), people);
   const take = buildTakedown().json; // brief 013: stashes, report points, origins and watchers, derived from the world; a second file, so the site (and every replay's input hash) stays as the engine reads it
   writeFileSync(join(root, TAKEDOWN_FILE), take);
   writeFileSync(join(root, PROVISIONAL_FILE), buildProvisional()); // the security level, from the plan and the mission
-  console.log(`wrote ${SITE_FILE} (${json.length} bytes), ${PEOPLE_OUT} (${people.length} bytes) from ${src.people}${src.fixture ? ' (FIXTURE: ' + src.fixture + ')' : ''} and ${TAKEDOWN_FILE} (${take.length} bytes)`);
+  console.log(`wrote ${SITE_FILE} (${json.length} bytes)${JSON.parse(json).getaway.stands ? " with the 059 stands folded in" : `, ${STANDS_FILE} (${stands.length} bytes)`}, ${PEOPLE_OUT} (${people.length} bytes) from ${src.people}${src.fixture ? ' (FIXTURE: ' + src.fixture + ')' : ''} and ${TAKEDOWN_FILE} (${take.length} bytes)`);
 }

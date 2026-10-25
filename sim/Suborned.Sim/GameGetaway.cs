@@ -125,7 +125,7 @@ namespace Suborned.Sim
         {
             if (o.Target.Length > 0 && o.Target != "car") return No("target-unknown", $"board names the getaway car (\"car\"), not '{o.Target}'");
             if (op.Running) return No("board-running", "a running operative doesn't board: stop first");
-            if (op.Id == OpId.Tech && LoopOn) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
+            if (op.Id == OpId.Tech && Tethered) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body: the car seats the cell and the target");
             if (!G.Within(op.Pos, Car, R.AtReachCm)) return No("stand-at-getaway", "stand at the getaway car", cm: R.AtReachCm);
             bool carrying = op.Carrying.HasValue || (op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer);

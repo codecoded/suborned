@@ -119,7 +119,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- target mode
 
-        static readonly HashSet<string> TargetVerbs = new() { "watch", "listen", "mislead", "ask", "pay", "help", "pressure", "loop", "reroute", "takedown" };
+        static readonly HashSet<string> TargetVerbs = new() { "watch", "listen", "mislead", "ask", "pay", "help", "pressure", "loop", "disable", "reroute", "takedown" };
         readonly List<Pickable> targets = new(); string targetsKey = ""; float targetsAt = -10f; int focusIndex = -1;
 
         /// <summary>A verb that needs a target is picked.</summary>

@@ -81,7 +81,7 @@ describe('RF-2 fails', () => {
 describe('RF-1 and the asphalt finish set (brief 055 road test)', () => {
   const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
   test('the committed plan lists the asphalt set, off by default, and its marks pass', () => {
-    const s = R(plan); expect(s.finish.set).toBe('enamel'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder']); // brief 048: strip light, not the pearl band
+    const s = R(plan); expect(s.finish.set).toBe('enamel'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder', 'pinstripe']); // brief 048: strip light, not the pearl band; brief 061 (Sky 2026-10-25): no brass pinstripe on the pavement edge
     expect(Object.keys(s.marks.lanes).sort()).toEqual(['boulevard', 'comet-row', 'crown-road', 'harbour-road', 'sunset-way']);
     expect(run()['RF-1']!.ok).toBe(true);
   });

@@ -154,6 +154,64 @@ class T(unittest.TestCase):
         j = json.loads(self.spend.read_text())['jobs']['900-test']
         self.assertEqual((j['total_usd'], j['unknown_cost_calls']), (0, 1))
 
+    # ---- the 3d kind (brief 063, Forma): image to 3D, GLB out, the file url nested under outputs.files
+    GLB = {'status': 'success', 'taskUUID': 'u3', 'outputs': {'files': [{'url': 'https://x/m.glb'}]}, 'cost': 0.675}
+
+    def mesh(self, p, name='m.glb', est=0.7, **kw):
+        return p.mesh({'model': 'tencent:hunyuan-3d@3.1-pro', 'inputs': {'image': 'data:image/png;base64,AAAA'}, 'settings': {'faceCount': 50000}}, name=name, est=est, prompt='from the front cut-out', **kw)
+
+    def test_mesh_writes_glb_ledger_and_rollup(self):
+        fake = Fake(results=[self.GLB]); p = self.mk(budget=3.0, client=fake); [row] = self.mesh(p, 'vale_t1.glb')
+        self.assertEqual(fake.fetched, ['https://x/m.glb'])                       # the url under outputs.files[0]
+        self.assertEqual(fake.calls[0]['taskType'], '3dInference'); self.assertEqual(fake.calls[0]['outputFormat'], 'GLB'); self.assertEqual(fake.calls[0]['outputType'], 'URL')
+        self.assertEqual((self.dir / '900-test/meshes/vale_t1.glb').read_bytes(), PNG)
+        [led] = paid.read_ledger('900-test', self.dir)
+        for k, v in dict(task='3d', status='ok', cost_usd=0.675, file='meshes/vale_t1.glb', model='tencent:hunyuan-3d@3.1-pro', params={'faceCount': 50000}, prompt='from the front cut-out').items():
+            self.assertEqual(led[k], v, k)
+        self.assertEqual(led['sha256'], paid.sha256(PNG)); self.assertEqual(led['task_uuid'], fake.calls[0]['taskUUID'])
+        s = json.loads(self.spend.read_text())
+        self.assertEqual((s['jobs']['900-test']['total_usd'], s['jobs']['900-test']['calls']), (0.675, 1)); self.assertEqual(s['by_model']['tencent:hunyuan-3d@3.1-pro']['calls'], 1)
+        self.assertEqual(p.spent(), 0.675)
+
+    def test_mesh_stops_at_budget_before_the_call(self):
+        fake = Fake(results=[self.GLB]); p = self.mk(budget=1.0, client=fake); self.mesh(p, 'a.glb')       # $0.675 spent of $1.00
+        n = len(fake.calls)
+        with self.assertRaises(paid.BudgetError):
+            self.mesh(p, 'b.glb')                                                                     # 0.675 + 0.7 > 1.00: nothing is submitted
+        self.assertEqual(len(fake.calls), n); self.assertEqual(len(paid.read_ledger('900-test', self.dir)), 1)
+
+    def test_mesh_without_a_file_url_is_not_a_result(self):
+        # a getResponse with status success but no outputs.files yet keeps waiting; unreturned it counts its estimate toward the budget (no free retry)
+        p = self.mk(budget=3.0, client=Fake(results=[{'status': 'success', 'taskUUID': 'u3', 'outputs': {}}])); orig = paid.KIND['3d']; paid.KIND['3d'] = orig[:5] + (0.0,)
+        try:
+            with self.assertRaises(SystemExit):
+                self.mesh(p, est=0.7)
+        finally:
+            paid.KIND['3d'] = orig
+        [led] = paid.read_ledger('900-test', self.dir)
+        self.assertEqual((led['task'], led['status'], led['cost_usd'], led['cost_est'], led['file']), ('3d', 'failed', None, 0.7, None)); self.assertEqual(p.spent(), 0.7)
+
+    def test_mesh_fetch_failure_keeps_the_charge_and_the_url(self):
+        class Bad(Fake):
+            def fetch(self, url): raise OSError('reset')
+        p = self.mk(budget=3.0, client=Bad(results=[self.GLB]))
+        with self.assertRaises(SystemExit):
+            self.mesh(p)
+        [led] = paid.read_ledger('900-test', self.dir)
+        self.assertEqual((led['status'], led['cost_usd'], led['file']), ('failed', 0.675, None)); self.assertIn('https://x/m.glb', led['note']); self.assertEqual(p.spent(), 0.675)
+
+    def test_mesh_error_is_logged_at_zero_cost(self):
+        p = self.mk(budget=3.0, client=Fake(fail='bad image'))
+        with self.assertRaises(SystemExit):
+            self.mesh(p)
+        [led] = paid.read_ledger('900-test', self.dir)
+        self.assertEqual((led['task'], led['status'], led['cost_usd']), ('3d', 'failed', 0)); self.assertEqual(p.spent(), 0)
+
+    def test_view_lists_a_glb_as_a_model_not_as_missing(self):
+        p = self.mk(budget=3.0, client=Fake(results=[self.GLB])); self.mesh(p, 'v.glb')
+        d = paid.view_data(self.dir, self.spend, make_thumbs=False); [r] = [x for x in d['rows'] if x['task'] == '3d']
+        self.assertEqual((r['media'], r['exists']), ('model', True))
+
     def test_link_symlinks_and_never_replaces_a_real_file(self):
         p = self.mk(); link = Path(self.tmp.name) / 'consumer/a.png'
         self.img(p, 'a.png', link=link)

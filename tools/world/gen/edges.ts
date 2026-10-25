@@ -6,6 +6,7 @@ import type { Plot } from '../../plan/plan';
 import type { Ctx } from './common';
 import { type Ring, areaOf, ccw, clipHalf, edgeN, pointInRing } from './geo';
 import { returnAt } from './kerbreturn';
+import { footwayTangentPoints } from './street/footway';
 
 export const kindOf = (c: string) => c.split(':')[0]!;
 export const idOf = (c: string) => c.split(':')[1] ?? '';
@@ -59,7 +60,7 @@ export function junctionCorners(ctx: Ctx): V[] {
   for (const pl of ctx.d.plots) {
     if (pl.civic) continue;
     const r = plotRing(ctx, pl), n = r.p.length;
-    for (let i = 0; i < n; i++) if (CORNER_ROADS.includes(kindOf(r.c[(i + n - 1) % n]!)) && CORNER_ROADS.includes(kindOf(r.c[i]!))) { const q = r.p[i]!, k = `${Math.round(q[0] * 2)},${Math.round(q[1] * 2)}`; if (!seen.has(k)) { seen.add(k); const rt = returnAt(ctx, pl.id, q); if (rt?.convex) out.push(rt.a, rt.b); else out.push(q); } }  // brief 028: a rounded corner's kerb tangent points (kerbReturn.dressing), the vertex where it is square
+    for (let i = 0; i < n; i++) if (CORNER_ROADS.includes(kindOf(r.c[(i + n - 1) % n]!)) && CORNER_ROADS.includes(kindOf(r.c[i]!))) { const q = r.p[i]!, k = `${Math.round(q[0] * 2)},${Math.round(q[1] * 2)}`; if (!seen.has(k)) { seen.add(k); const rt = returnAt(ctx, pl.id, q), fw = rt ? [] : footwayTangentPoints(ctx, [idOf(r.c[(i + n - 1) % n]!), idOf(r.c[i]!)], q); if (rt?.convex) out.push(rt.a, rt.b); else if (fw.length) out.push(...fw); else out.push(q); } }  // brief 028: a rounded corner's kerb tangent points (kerbReturn.dressing), the vertex where it is square
   }
   cornersOf.set(ctx, out);
   return out;

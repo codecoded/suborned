@@ -72,7 +72,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // N115's orders
+                    Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // N115's orders
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), Mv(1540, Fixer, "d:Getaway bay"));
                 r.Is(r.Until(() => g.Lockdown != Never, T(120)) && !g.Over, $"the seal clock runs ({Report.Clock(g.Tick)}; seal {Report.Clock(g.Lockdown)})");
@@ -207,7 +207,7 @@ namespace Suborned.Sim
                 int period = T(g.R.PatrolPeriodS), pace = g.R.RerouteWalkCmS / Game.Hz + 2;
                 for (int off = 0; off <= period; off += T(5))
                 {
-                    var h = Engine.New(r.Inputs!); var tech = h.OpOf(OpId.Tech);
+                    var h = r.Inputs != null ? Engine.New(r.Inputs) : new Game(g.R, g.S, Start.Parse(JNode.Parse(g.Start.Canonical())), null, g.People2); var tech = h.OpOf(OpId.Tech); // engine 0.31.0: a run made without inputs (RoundsTests) plays its sub-runs on the run's own rules, site, start and people
                     h.Issue(new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true });
                     while (tech.Walk != null && !h.Over) h.Step();
                     int give = Math.Max(h.Tick, T(40) + off - T(h.R.RerouteS)); // the landing at 40 s + off

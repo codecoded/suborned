@@ -29,7 +29,7 @@ namespace Suborned.Sim
         /// <summary>The tick the leg starts, and the tick it ends as the engine has it now (-1: no end the engine knows: a sweep repeats, a
         /// chase or an alarm ends on an event).</summary>
         public int From, Until = -1;
-        public override string ToString() => $"{Kind}{(Walk ? "" : "!")}[{string.Join(" ", Points)}]{From}..{Until}";
+        public override string ToString() => $"{Kind}{(Walk ? "" : "!")}[{string.Join(" ", Points)}]{From.ToString(System.Globalization.CultureInfo.InvariantCulture)}..{Until.ToString(System.Globalization.CultureInfo.InvariantCulture)}"; // engine 0.31.0: invariant (Redline E7: sv-SE, ar-SA, fa-IR wrote -1 with their own minus)
     }
 
     /// <summary>The patrol's path from now on (Game.PatrolLegs).</summary>

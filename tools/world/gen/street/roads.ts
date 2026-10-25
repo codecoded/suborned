@@ -7,6 +7,7 @@ import { edgeN } from '../geo';
 import { avenueVariant, speciesOf } from '../../../plan/trees';
 import type { Layer } from './kit';
 import { kerbReturnStd, returnAt } from '../kerbreturn';
+import { footwayTangentAt } from './footway';
 
 const ROADS = ['primary', 'district', 'access'];
 
@@ -41,8 +42,11 @@ export function dressRoads(ctx: Ctx, L: Layer): void {
       // [w, depth], which ran the 4 m across the road)
       // brief 028 (kerbReturn.landings): a crossing landing next to a rounded kerb return stands on the straight, its near edge `clear` (3) m past the arc's tangent point: centre = tangent + 3 + w / 2 (R + 5 on a 6 m return); a square corner keeps the old 5 m centre.
       // Where the edge cannot hold two landings, one stands in the middle.
-      const W: number = S.crossings.w, clear = kerbReturnStd(S).clear, rA = returnAt(ctx, plot.id, a), rB = returnAt(ctx, plot.id, b), tA = rA?.t ?? 0, tB = rB?.t ?? 0;
-      const sA = Math.max(5, rA && !rA.civic ? tA + clear + W / 2 : 0), sB = len - Math.max(5, rB && !rB.civic ? tB + clear + W / 2 : 0); // a civic corner's landings stay where the block puts its own (5 m off the corner)
+      // brief 061 (coverage.rules.edges false): these landings are candidates, not crossings: pairCrossings keeps the ones a coverage rule calls for (and the civic block's partners) and drops the rest with their bollards and beacons, so the furniture round them stays where it was
+      const W: number = S.crossings.w, clear = kerbReturnStd(S).clear, rA = returnAt(ctx, plot.id, a), rB = returnAt(ctx, plot.id, b), me = idOf(ring.c[i]!);
+      // brief 061: a gate's lane mouth is a continuous footway, its corners are square (no return); the landings and kiosks keep the distance the return's tangent point gave them (footwayTangentAt)
+      const tA = rA?.t ?? footwayTangentAt(ctx, [idOf(ring.c[(i + n - 1) % n]!), me], a), tB = rB?.t ?? footwayTangentAt(ctx, [me, idOf(ring.c[(i + 1) % n]!)], b);
+      const sA = Math.max(5, (rA ? !rA.civic : tA > 0) ? tA + clear + W / 2 : 0), sB = len - Math.max(5, (rB ? !rB.civic : tB > 0) ? tB + clear + W / 2 : 0); // a civic corner's landings stay where the block puts its own (5 m off the corner)
       for (const s of sB - sA >= W + 0.5 ? [sA, sB] : [len / 2]) landing(ctx, L, at, s, yaw, id, kind, idOf(ring.c[i]!));
       // the tree grid keeps its rhythm (hydrants and benches are set against it); the first tree a rounded corner's kerb, or SF-8's 6 m from its tangent point, crowds out is skipped, never squeezed
       const s0 = 9, s1 = len - 9, nT = s1 > s0 ? Math.floor((s1 - s0) / S.trees.spacing) + 1 : 0, t0 = s0 + (s1 - s0 - (nT - 1) * S.trees.spacing) / 2, kerbMid = 0.45 + 0.75;

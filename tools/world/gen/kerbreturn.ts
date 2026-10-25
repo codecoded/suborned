@@ -17,6 +17,7 @@ import { toPlanFn } from '../../plan/civic';
 import type { Ctx } from './common';
 import { kindOf, idOf, plotRing } from './edges';
 import { areaOf } from './geo';
+import { isFootwayCorner } from './street/footway';
 
 export type KerbReturnStd = { byClass: Record<string, number>; concave: number; bay: number; /** the civic block's corners, and the corners across the road that hold its crossings' partner landings (plan: kerbReturn.civic) */ civic: number; /** the outside of a bend is concentric with its inside return (plan kerbReturn.bend.outer: 'concentric'); false: square */ bendOuter?: boolean; /** every median end is a bullnose (plan kerbReturn.nose) */ nose?: boolean; /** a crossing landing's near edge stands this far past a convex return's tangent point (plan: kerbReturn.landings.clear) */ clear: number; off?: boolean };
 export const KERB_RETURN_DEFAULT: KerbReturnStd = { byClass: { primary: 6, district: 8, access: 6 }, concave: 2.0, bay: 1.4, civic: 2.0, clear: 3 }; // standards.streetscape.kerbReturn, Datum 2026-10-24; a plan without the key takes these
@@ -73,8 +74,10 @@ function civicCorners(ctx: Pick<Ctx, 'plan' | 'd' | 'civ'>, ring: (plot: string)
   return out;
 }
 type Idx = { list: Return[]; byVertex: Map<string, Return>; grid: Map<string, Return[]>; std: KerbReturnStd; bays: BayShape[] };
-/** Keyed on the derived plan, then the streetscape standards, then the civic block: the result reads all three (Redline brief 064 #10); a missing one stands as a shared empty key. */
-const cache = new WeakMap<object, WeakMap<object, WeakMap<object, Idx>>>(), NONE = {};
+/** Keyed on the derived plan, then the streetscape standards, then the civic block (the result reads all three: Redline brief 064 #10), then a fingerprint of the keys it reads most: kerbReturn and the kerbed bays, so a standard edited in place on the same objects is
+ *  another list too. The rest of the standards (the circus mouths, the sections) are read by identity: replace `S`, do not edit them in place. A missing key stands as a shared empty one. */
+const cache = new WeakMap<object, WeakMap<object, WeakMap<object, Map<string, Idx>>>>(), NONE = {};
+const fingerprint = (S: Ctx['S'] | undefined): string => JSON.stringify([S?.kerbReturn, S?.roads?.kerbs?.bays?.kerbed, !!S?.sections]);
 
 const CELL = 32;
 const cellsOf = (r: Return): string[] => {
@@ -212,6 +215,7 @@ function edgeReturns(ctx: Pick<Ctx, 'plan' | 'd'>, std: KerbReturnStd, have: Ret
         const roadQ = ends.filter(({ e1, e2 }) => road(add(P, mul(norm(add(e1, e2)), 0.6))));
         if (free.length !== 1 || roadQ.length !== 3) continue;
         if (have.some(h => dist(h.at, P) < 0.3)) continue;
+        if (isFootwayCorner(ctx as Pick<Ctx, 'plan' | 'd' | 'S'>, [A.id, B.id], P)) continue; // brief 061: a gate's lane mouth corner is no junction box corner either
         const { e1, e2 } = free[0]!, alpha = Math.acos(Math.max(-1, Math.min(1, dot(e1, e2)))), cls = RANK[A.class]! <= RANK[B.class]! ? A.class : B.class, R = std.byClass[cls]; if (!(R > 0)) continue;
         const t = R / Math.tan(alpha / 2), c = add(P, mul(norm(add(e1, e2)), R / Math.sin(alpha / 2)));
         const n1 = norm(sub([0, 0], sub(e2, mul(e1, dot(e1, e2))))), n2 = norm(sub([0, 0], sub(e1, mul(e2, dot(e1, e2)))));
@@ -229,8 +233,9 @@ export const baysOf = (ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): BaySh
 /** Every kerb return of the district, once. Cached per derived plan, standards and civic block. */
 export function returnsOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Return[] { return indexOf(ctx).list; }
 function indexOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Idx {
-  const bySd = cache.get(ctx.d) ?? cache.set(ctx.d, new WeakMap()).get(ctx.d)!, byCiv = bySd.get((ctx.S as object | undefined) ?? NONE) ?? bySd.set((ctx.S as object | undefined) ?? NONE, new WeakMap()).get((ctx.S as object | undefined) ?? NONE)!;
-  const hit = byCiv.get((ctx.civ as object | undefined) ?? NONE); if (hit) return hit;
+  const sKey = (ctx.S as object | undefined) ?? NONE, cKey = (ctx.civ as object | undefined) ?? NONE, fp = fingerprint(ctx.S);
+  const bySd = cache.get(ctx.d) ?? cache.set(ctx.d, new WeakMap()).get(ctx.d)!, byCiv = bySd.get(sKey) ?? bySd.set(sKey, new WeakMap()).get(sKey)!, byFp = byCiv.get(cKey) ?? byCiv.set(cKey, new Map()).get(cKey)!;
+  const hit = byFp.get(fp); if (hit) return hit;
   const std = kerbReturnStd(ctx.S), list: Return[] = [], bays: BayShape[] = [];
   if (!std.off && ctx.S?.sections) {
     const civicKeys = civicCorners(ctx as Pick<Ctx, 'plan' | 'd' | 'civ'>, id => plotRing(ctx as Ctx, ctx.d.plots.find(p => p.id === id)!).p);
@@ -240,6 +245,7 @@ function indexOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Idx {
       const want: (Want | undefined)[] = vs.map((v, i): Want | undefined => {
         const cin = ring.c[(i + n - 1) % n]!, cout = ring.c[i]!;
         if (!ROADS.includes(kindOf(cin)) || !ROADS.includes(kindOf(cout))) return undefined;
+        if (isFootwayCorner(ctx as Ctx, [idOf(cin), idOf(cout)], v)) return undefined; // brief 061: a gate's lane mouth is a continuous footway (street/footway.ts): its two corners stay square, the pavement runs on across
         const prev = vs[(i + n - 1) % n]!, next = vs[(i + 1) % n]!, u1 = norm(sub(v, prev)), u2 = norm(sub(next, v));
         const cr = u1[0] * u2[1] - u1[1] * u2[0], dt = u1[0] * u2[0] + u1[1] * u2[1], theta = Math.abs(Math.atan2(cr, dt));
         if (theta < 0.35 || theta > 2.6) return undefined; // a straight run split by a class change (0 degrees), or a hairpin
@@ -272,7 +278,7 @@ function indexOf(ctx: Pick<Ctx, 'plan' | 'd' | 'S'> & Partial<Ctx>): Idx {
   const byVertex = new Map<string, Return>(), grid = new Map<string, Return[]>();
   for (const r of list) { if (!r.bay && !r.bend) byVertex.set(`${r.plot}|${key(r.at)}`, r); for (const k of cellsOf(r)) (grid.get(k) ?? grid.set(k, []).get(k)!).push(r); }
   const out: Idx = { list, byVertex, grid, std, bays };
-  byCiv.set((ctx.civ as object | undefined) ?? NONE, out);
+  byFp.set(fp, out);
   return out;
 }
 

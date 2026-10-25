@@ -34,7 +34,7 @@ namespace Suborned.Play
             "take" or "enter" or "board" or "go" or "call" => 1,
             "watch" or "listen" => 2,
             "turn" => 3,
-            "loop" or "reroute" or "mislead" => 4,
+            "loop" or "disable" or "reroute" or "mislead" => 4,
             "carry" or "stash" or "restrain" or "drop" => 5,
             "takedown" => 6,
             "fire" => 7,
@@ -45,6 +45,7 @@ namespace Suborned.Play
         {
             "go" => -1, // brief 057 §4.2: once Vale is aboard, Go is the car's first way (before another agent's Board)
             "watch" => 0, "listen" => 1,
+            "disable" => 1, // engine 0.31.0 (Glyph 058 §1): Loop leads on a camera; Disable after the cabinet's loops and Reroute
             "carry" => 0, "stash" => 1, "restrain" => 2, "drop" => 3,
             "takedown" => w.How == "kill" ? 1 : 0,
             "turn" => w.Approach == "pressure" ? 1 : 0, // Pressure is never a default: last of the turns

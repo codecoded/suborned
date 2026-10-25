@@ -53,7 +53,7 @@ namespace Suborned.Sim
             int at = Math.Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)); // N10's loud route (LoudToCar)
             if (scoutFirst == null) at = Math.Max(at, r.SendTo(Scout, post)); else { scoutFirst(); r.SendTo(Scout, post); } // scoutFirst: the Scout's own business on the way (F15-FACE)
             r.To(Math.Max(at, g.Tick));
-            r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) r.To(mark + 1);
             r.Fire(Enf, GuardR); r.Is(r.Until(() => g.GuardDown, T(30)), "the Enforcer shoots the guard down");
             r.To(r.Send(Enf, "d:Office entrance"));

@@ -2,7 +2,7 @@
   "schema": "suborned.geometry.summary/1",
   "brief": "055",
   "world": {
-    "sha256": "54674e07759210c3b21ce4b19bab752f5fac80ffabad430f537df3434f59e36d",
+    "sha256": "333e3ddd2c84a4d1cc8ed5120cc84d615ba69a14cfadef70d84812a735d761bd",
     "stale": false
   },
   "window": {
@@ -15,33 +15,33 @@
     "cell": 0.25
   },
   "ground": {
-    "walkCells": 43029,
-    "walkableCells": 43029,
-    "sunk": 665,
+    "walkCells": 43039,
+    "walkableCells": 43039,
+    "sunk": 685,
     "floating": 44,
     "bands": {
       "sunk 5-15 cm": 0,
-      "sunk 15-50 cm": 641,
+      "sunk 15-50 cm": 661,
       "sunk 0.5 m or more": 24,
       "floats 5-15 cm": 0,
       "floats 15 cm or more": 44
     },
     "byCause": {
-      "a drawn piece (stair, platform, kerb stone) raises the floor": 580,
-      "ground layer drawn above the host height (kerb strip, quantised edge)": 85,
+      "a drawn piece (stair, platform, kerb stone) raises the floor": 595,
+      "ground layer drawn above the host height (kerb strip, quantised edge)": 90,
       "ground layer drawn below the host height (quantised edge)": 44
     }
   },
   "walk": {
-    "freeCells": 43029,
+    "freeCells": 43039,
     "throughSolid": 0,
     "lowCeiling": 2,
     "brush": 0,
     "invisibleWall": 122
   },
   "sight": {
-    "drawnAtEye": 405,
-    "drawnAtChest": 576,
+    "drawnAtEye": 460,
+    "drawnAtChest": 621,
     "occludersWithGaps": [
       {
         "id": "plot-04",
@@ -77,7 +77,7 @@
     "blockedBy": ""
   },
   "kit": {
-    "measured": 297,
+    "measured": 292,
     "offPivotOrSize": 12,
     "placedHere": []
   },
@@ -102,7 +102,7 @@
     },
     {
       "id": "G-1c",
-      "count": 709,
+      "count": 729,
       "unit": "cells",
       "example": "civic/office-public-entrance: 36 cells, worst 0.75 m"
     },
@@ -126,9 +126,9 @@
     },
     {
       "id": "G-3a",
-      "count": 61,
+      "count": 58,
       "unit": "objects",
-      "example": "street:phone-booth: 8 objects, 46 m²"
+      "example": "street:phone-booth: 9 objects, 61.75 m²"
     },
     {
       "id": "G-3b",

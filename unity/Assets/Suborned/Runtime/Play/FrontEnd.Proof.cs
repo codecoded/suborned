@@ -63,13 +63,21 @@ namespace Suborned.Play
 
             // ---- New game → the brief → the tactical briefing → play → the pause menu → Options from it
             fe.Show(FrontEnd.Screen.Menu); yield return null;
-            var b = fe.MenuButton("new"); b?.Invoke(); yield return null;
-            Check("newGameBrief", fe.Showing == FrontEnd.Screen.Brief, $"showing {fe.Showing}; brief pick {fe.BriefPick}, {fe.BriefWords} words");
-            yield return Shot(fe, "brief");
-            fe.Show(FrontEnd.Screen.None); yield return null; yield return null;
-            Check("briefingAfter", h.ShowBriefing && !FrontEnd.Covers, $"host briefing {h.ShowBriefing}");
+            HandoverHost.BriefCamInAutomation = true; var b = fe.MenuButton("new"); b?.Invoke(); yield return null;
+            // brief 062 B: New game goes straight to the briefing on the street (no lore screen), the key art dissolving into it
+            Check("newGameBriefing", fe.Showing == FrontEnd.Screen.None && h.ShowBriefing && h.BriefCamOn, $"showing {fe.Showing}; host briefing {h.ShowBriefing}, camera on the briefing frame {h.BriefCamOn}");
+            yield return new WaitForSecondsRealtime(FrontEnd.DissolveS + 0.3f);
+            Check("briefingAfter", h.ShowBriefing && !FrontEnd.Covers && HudToolkit.BriefingState.StartsWith("up"), $"host briefing {h.ShowBriefing}; {HudToolkit.BriefingState}");
             yield return Shot(fe, "briefing");
-            h.StartClock(); yield return new WaitForSecondsRealtime(1.5f); h.OpenMenu(); yield return null; yield return null;
+            // the start (board 03): Begin, then stills at 0.15 s (the exit), 1.8 s (the glide), 3.4 s (the settle), then play; the clock holds until 3.6 s
+            HandoverHost.StartFreeze = true; h.BriefingBegin(); int tick0 = h.Game.Tick;
+            foreach (var (at, name) in new[] { (0.15f, "start-1-begin"), (1.8f, "start-2-glide"), (3.4f, "start-3-settle") })
+            { h.StartSeek(at); yield return null; yield return new WaitForSecondsRealtime(0.1f); yield return Shot(fe, name); }
+            Check("startHeld", h.Starting && h.Paused && h.Game.Tick == tick0, $"starting {h.Starting}, paused {h.Paused}, tick {h.Game.Tick} (was {tick0})");
+            HandoverHost.StartFreeze = false; h.StartSeek(HandoverHost.BriefPlayAt); yield return new WaitForSecondsRealtime(0.5f);
+            Check("startPlays", !h.Starting && !h.Paused && !h.BriefCamOn && Mathf.Abs(Mathf.DeltaAngle(h.Yaw, 30f)) < 0.5f, $"starting {h.Starting}, paused {h.Paused}, yaw {h.Yaw:0.#}");
+            yield return Shot(fe, "start-4-play"); HandoverHost.BriefCamInAutomation = false;
+            yield return new WaitForSecondsRealtime(1.0f); h.OpenMenu(); yield return null; yield return null;
             { string f0 = HudToolkit.MenuFocusName; HudToolkit.MenuKeyMove(1); string f1 = HudToolkit.MenuFocusName; bool mh = HudToolkit.MenuHover("pause-quit"); string f2 = HudToolkit.MenuFocusName; HudToolkit.MenuHover("pause-resume");
               Check("pauseFocus", f0 == "pause-resume" && f1 == "pause-options" && mh && f2 == "pause-quit" && HudToolkit.MenuFocusName == "pause-resume", $"{f0} > {f1} > {f2} > {HudToolkit.MenuFocusName}"); }
             yield return Shot(fe, "pause");

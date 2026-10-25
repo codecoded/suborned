@@ -1,0 +1,117 @@
+{
+ "schema": "suborned.sim.stands/1",
+ "mission": "handover",
+ "frame": "civic-block.json block frame in integer centimetres: x south, y east. Mission clock in seconds from 0:00 (the engine ticks at 10 Hz).",
+ "from": [
+  "contracts/world/harbour-district.plan.json",
+  "contracts/world/civic-block.json",
+  "contracts/missions/handover/mission.json",
+  "sim/data/handover.site.json (places, grid, drive)",
+  "tools/sim/stands.ts",
+  "tools/sim/getaway.ts"
+ ],
+ "src": "brief 059 §5 (Splice): getaway.stands[] and rivals.car / rivals.posts, derived from the mission points (Vantage), the mission routes getaway, getaway-service and rivals, and the plan, held by SX-2 and SX-3 (tools/sim/stands.ts). A second file so the site keeps the shape the engine reads (Site.cs rejects a key it does not know): `bun run sim:site --fold-stands` moves it into the site (getaway.stands, rivals.car, rivals.posts) when Keel's 059 round reads it there, and this file is then not written",
+ "getaway": {
+  "stands": [
+   {
+    "id": "square",
+    "car": "d:Getaway bay",
+    "facing": [100,0],
+    "exit": {
+     "polyline": [[850,-5600],[3850,-5600]],
+     "w": 12,
+     "src": "mission.json routes \"getaway\" (r_orbit_w to off_southside), its first road rocket-lane (plan.roads w 12 m); the car's bay \"Getaway bay\" projected onto it, walked forward fight-block-m 30 m (rulebook). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts"
+    },
+    "ambush": [
+     "ambush-1",
+     "ambush-2",
+     "ambush-3",
+     "ambush-4",
+     "ambush-5"
+    ],
+    "police": [
+     "police-1",
+     "police-2",
+     "police-3",
+     "police-4"
+    ],
+    "rivalStop": "rival-drop",
+    "src": "brief 059 §1.4 and §5: the getaway car's stand square (d:Getaway bay); exit = the carriageway ahead of the car along mission route \"getaway\" (fight-block-m); ambush and police = the mission points /^ambush-\\d+$/ and /^police-\\d+$/, in number order; rivalStop = where the rival car stops for it (rival-drop); facing = nose along the bay's long axis the way the exit lane runs (block frame, 100 = one axis step)"
+   },
+   {
+    "id": "service-drive",
+    "car": "service-drive",
+    "facing": [100,0],
+    "exit": {
+     "polyline": [[8600,-1500],[8600,1500]],
+     "w": 12,
+     "src": "mission.json routes \"getaway-service\" (r_apron_w to r_apron_e), its first road apron-road (plan.roads w 12 m); the car's stand at block (69.35, -15) projected onto it, walked forward fight-block-m 30 m (rulebook). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts"
+    },
+    "ambush": [
+     "svc-ambush-1",
+     "svc-ambush-2",
+     "svc-ambush-3",
+     "svc-ambush-4",
+     "svc-ambush-5"
+    ],
+    "police": [
+     "svc-police-1",
+     "svc-police-2",
+     "svc-police-3",
+     "svc-police-4"
+    ],
+    "rivalStop": "rival-tail",
+    "src": "brief 059 §1.4 and §5: the getaway car's stand service-drive (service-drive); exit = the carriageway ahead of the car along mission route \"getaway-service\" (fight-block-m); ambush and police = the mission points /^svc-ambush-\\d+$/ and /^svc-police-\\d+$/, in number order; rivalStop = where the rival car stops for it (rival-tail); facing = nose out along the drive's long axis, away from the bay (block frame, 100 = one axis step)"
+   }
+  ]
+ },
+ "rivals": {
+  "car": {
+   "entry": "rival-car-entry",
+   "drop": "rival-drop",
+   "park": "rival-park",
+   "tail": "rival-tail",
+   "front": "rival-front-stop",
+   "facing": {
+    "entry": [0,-100],
+    "drop": [0,-100],
+    "park": [0,100],
+    "tail": [0,100],
+    "front": [100,0]
+   },
+   "route": {
+    "polyline": [[3750,1600],[3750,-5600],[8600,-5600],[8600,1000]],
+    "roads": [
+     {
+      "id": "orbit-walk",
+      "w": 13
+     },
+     {
+      "id": "rocket-lane",
+      "w": 12
+     },
+     {
+      "id": "apron-road",
+      "w": 12
+     }
+    ],
+    "length": 186.5,
+    "chain": {
+     "entry": 25,
+     "drop": 5400,
+     "park": 14550,
+     "tail": 15950,
+     "front": 9825
+    },
+    "src": "mission.json routes \"rivals\" (off_seagates through r_orbit_e, r_orbit_w, r_apron_w to r_pylon_s): the plan road centrelines in travel order, cut to the walk window where it enters (rival-car-entry's edge); points: site frame, cm; chain: where each rival point projects, cm along the polyline from its start. Brief 059 §5, tools/sim/stands.ts"
+   },
+   "src": "brief 059 §2.2 and §5, Pulse's rival routine (briefs/059/pulse/rival-routine.md §9, K10) and Vantage's mission points: the rival car enters at entry, stops at drop to drop three, parks at park; tail is where it stops when it follows Vale's car (and the service-drive stand's rival stop), front where a crew drawn by gunfire stops; facing = the route's direction at each point (block frame, 100 = one axis step; the front stop's heading is the engine's, from the route it rides); route is derived from mission route \"rivals\". Values are place ids (mission.json points)"
+  },
+  "posts": {
+   "lookout": "rival-lookout",
+   "lookoutExit": "rival-lookout-exit",
+   "valeDoor": "rival-vale-door",
+   "src": "the crew on foot (mission.json points): the lookout's post, where a warned lookout leaves the map, and the wheelman's place at Vale's car. Place ids"
+  }
+ }
+}

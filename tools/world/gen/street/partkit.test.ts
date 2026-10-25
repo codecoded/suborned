@@ -1,4 +1,4 @@
-// A crossing's parts take Vela's pieces (brief 009 A, catalogue.proposal.json) once they are adopted (brief 009 B, Splice: all eight are in contracts/world/kit.json), unscaled and by exact size. The catalogue here is the proposal's eight rows
+// A crossing's parts take Vela's pieces (brief 009 A, catalogue.proposal.json) once they are adopted (brief 009 B, Splice), unscaled and by exact size: the dot rows, the bars and the signal head (brief 061: no edge line, stud, arc or lit strip any more; the head is SignalLens, the dot rows are the re-cut 1.8 and 0.8 m). The catalogue here is the rows
 // (id, use tag, size) set to adopted and written to a temp file, pinned with withKit, so nothing depends on out/ or on kit.json being changed.
 import { expect, setDefaultTimeout, test } from 'bun:test';
 import { mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -11,7 +11,8 @@ import { derive, type Plan } from '../../../plan/plan';
 import { ctxOf } from '../../../plan/world-ctx';
 import { worldOf } from '../../build';
 import { withKit } from '../kitrefs';
-import { bindPart, kitYaw } from './partkit';
+import { PART_USE, bindPart, kitYaw } from './partkit';
+import { dotsLength, dotsModule } from './parts';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -19,12 +20,10 @@ const plan: Plan = read('contracts/world/harbour-district.plan.json'), civ = civ
 const d = derive(plan), { world: w, gen } = worldOf(plan, d, civ);
 const parts = w.street.filter(s => s.crossing).map(({ kit, ...s }) => ({ ...s, source: 'procedural' as const })); // the world binds them from the live kit: unbound here, so each test binds from its own catalogue
 
-/** Vela's eight rows: id, use tag, size in kit axes (x, up, z). */
+/** Vela's rows for the parts that stand: id, use tag, size in kit axes (x, up, z), as built (out/decokit/decokit_manifest.json). SignalLens is the head (SignalEye, 1.12 x 3.225, is retired and never binds); a dot row is its module less the pitch plus the 0.30 m seat. */
 const PIECES: [string, string, [number, number, number]][] = [
-  ['SignalEye', 'signal:eye', [1.12, 3.23, 1.12]], ['KerbStud', 'stud:kerb', [0.4, 0.084, 0.3804]], ['LightBar_4', 'crossing:bar', [4, 0.006, 0.44]],
-  ['LightDotRow_2', 'crossing:dots', [2, 0.006, 0.43]], ['LightDotRow_1', 'crossing:dots', [1, 0.006, 0.43]], ['CrossInlayArc_R24_W08', 'inlay:crossing-arc', [2.83, 0.006, 2.83]],
-  ['CrossEdgeLine_2', 'crossing:edge', [2, 0.006, 0.04]], ['CrossEdgeLine_1', 'crossing:edge', [1, 0.006, 0.04]],
-  ['LightField_2', 'crossing:field', [2, 0.002, 3.9]], ['LightField_1', 'crossing:field', [1, 0.002, 3.9]],
+  ['SignalLens', 'signal:lens', [0.95, 3.085, 0.94]], ['LightBar_4', 'crossing:bar', [4, 0.006, 0.44]],
+  ['LightDotRow_2', 'crossing:dots', [1.8, 0.002, 0.3]], ['LightDotRow_1', 'crossing:dots', [0.8, 0.002, 0.3]],
 ];
 const catalogue = (mutate: (rows: any[]) => void = () => {}) => {
   const kit = read('contracts/world/kit.json'), rows = PIECES.map(([id, use, size]) => ({ id, category: 'Street', size: [...size], pivot: 'footprint-centre-ground', front: '+Z', tris: 10, materials: [], tags: { use: [use], scale: [1, 1], squash: 1, wave: 2, sight: 'open' }, status: 'adopted', source: 'generated', files: [] }));
@@ -42,27 +41,54 @@ test('the pieces are adopted in the live kit: every part is bound to one, none s
   expect(bound(gone).every(s => s.source === 'procedural' && !s.kit)).toBe(true);
 });
 
-test('adopted, each part takes its piece by use and size: 1278 + 284 dot rows, 781 + 18 lit strip modules, 1788 edge lines, 768 studs, 370 arcs, 228 eyes; none scaled', () => {
+test('adopted, each part takes its piece by use and size: 212 + 62 dot rows, 41 signal heads (SignalLens), no bars; none scaled', () => {
   const out = bound(catalogue()), by = (id: string) => out.filter(s => s.kit?.id === id).length;
-  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('KerbStud'), by('CrossInlayArc_R24_W08'), by('SignalEye'), by('LightBar_4')]).toEqual([1278, 284, 768, 370, 228, 0]);
-  expect(by('CrossEdgeLine_2') + by('CrossEdgeLine_1')).toBe(1788);
-  expect([by('LightField_2'), by('LightField_1')]).toEqual([781, 18]);
+  expect([by('LightDotRow_2'), by('LightDotRow_1'), by('SignalLens'), by('LightBar_4')]).toEqual([212, 62, 41, 0]);
+  expect(out.length).toBe(315);
   expect(out.every(s => s.source === 'kit' && s.kit!.scale.every(v => v === 1))).toBe(true);
 });
 
-test('the kit yaw: lights and studs along the part\'s yaw, the eye\'s front (+Z) along the walk, the arc\'s quarter toward the corner it rounds', () => {
+test('the signal head is SignalLens once it is adopted; a candidate leaves the heads procedural, and the retired SignalEye (1.12 x 3.225) binds no head', () => {
+  const lens = (rows: any[]) => rows.find(r => r.id === 'SignalLens');
+  expect(new Set(bound(catalogue()).filter(s => s.kind === 'signal-orb').map(s => s.kit!.id))).toEqual(new Set(['SignalLens']));
+  const candidate = catalogue(rows => { lens(rows).status = 'candidate'; });
+  expect(bound(candidate).filter(s => s.kind === 'signal-orb').every(s => s.source === 'procedural' && !s.kit)).toBe(true);
+  const eye = catalogue(rows => rows.push({ ...lens(rows), id: 'SignalEye', size: [1.12, 3.225, 1.12], tags: { ...lens(rows).tags, use: ['signal:eye'] } }));
+  expect(new Set(bound(eye).filter(s => s.kind === 'signal-orb').map(s => s.kit!.id))).toEqual(new Set(['SignalLens']));
+  const eyeOnly = catalogue(rows => { lens(rows).status = 'candidate'; rows.push({ ...lens(rows), id: 'SignalEye', status: 'adopted', size: [1.12, 3.225, 1.12], tags: { ...lens(rows).tags, use: ['signal:eye'] } }); });
+  expect(bound(eyeOnly).filter(s => s.kind === 'signal-orb').every(s => s.source === 'procedural')).toBe(true); // PART_USE no longer names signal:eye
+});
+
+test('a dot row is its module less the pitch plus the seat (brief 061): 2 m -> 1.8, 1 m -> 0.8, laid at the module step so rows keep the 0.5 m pitch across every joint', () => {
+  const rows = parts.filter(s => s.kind === 'crossing-dots');
+  expect(new Set(rows.map(s => s.size[0]))).toEqual(new Set([1.8, 0.8]));
+  expect(new Set(rows.map(s => s.size[1]))).toEqual(new Set([0.3]));
+  expect(dotsLength(2, { pitch: 0.5, width: 0.3 })).toBe(1.8); expect(dotsLength(1, { pitch: 0.5, width: 0.3 })).toBe(0.8);
+  expect(dotsModule(1.8, { pitch: 0.5, width: 0.3 })).toBe(2); expect(dotsModule(0.8, { pitch: 0.5, width: 0.3 })).toBe(1);
+  // rows laid end to end in one line: the nearest dots of neighbours stand one pitch apart (the outer dot's centre is half a seat in from the piece's end)
+  const seat = 0.3, pitch = 0.5, byLine = new Map<string, StreetItem[]>();
+  for (const r of rows) { const k = r.id.replace(/\/dots\/[lr]\d+$/, '') + (r.id.match(/\/dots\/([lr])\d+$/)?.[1] ?? ''); byLine.set(k, [...(byLine.get(k) ?? []), r]); }
+  let joints = 0;
+  for (const l of byLine.values()) for (let i = 1; i < l.length; i++) {
+    const a = l[i - 1]!, b = l[i]!, c = Math.hypot(a.at[0] - b.at[0], a.at[1] - b.at[1]), step = (dotsModule(a.size[0], { pitch, width: seat }) + dotsModule(b.size[0], { pitch, width: seat })) / 2;
+    if (Math.abs(c - step) < 1e-3) { joints++; expect(c - a.size[0] / 2 - b.size[0] / 2 + seat).toBeCloseTo(pitch, 2); } // modules touching: a joint
+  }
+  expect(joints).toBeGreaterThan(20);
+});
+
+test('the kit yaw: lights along the part\'s yaw, the head\'s front (+Z) along the walk', () => {
   const out = bound(catalogue());
   for (const s of out) {
-    const want = s.kind === 'signal-orb' ? s.yaw - Math.PI / 2 : s.kind === 'crossing-arc' ? s.yaw + (3 * Math.PI) / 4 : s.yaw;
+    const want = s.kind === 'signal-orb' ? s.yaw - Math.PI / 2 : s.yaw;
     expect(wrap(s.kit!.yaw! - want), s.id).toBeCloseTo(0, 3);
   }
   expect(kitYaw({ kind: 'signal-orb', yaw: 0 })).toBeCloseTo(-Math.PI / 2, 3);
 });
 
-test('a piece of another size is not the part\'s: the dot row module of 2.2 m leaves the 2 m rows procedural, the 1 m ones still bind', () => {
-  const out = bound(catalogue(rows => { rows.find(r => r.id === 'LightDotRow_2').size[0] = 2.2; }));
-  expect(out.filter(s => s.kind === 'crossing-dots' && s.size[0] === 2).every(s => s.source === 'procedural')).toBe(true);
-  expect(out.filter(s => s.kind === 'crossing-dots' && s.size[0] === 1).every(s => s.kit?.id === 'LightDotRow_1')).toBe(true);
+test('a piece of another size is not the part\'s: a 2.0 m dot row piece leaves the 1.8 m rows procedural, the 0.8 m ones still bind', () => {
+  const out = bound(catalogue(rows => { rows.find(r => r.id === 'LightDotRow_2').size[0] = 2; }));
+  expect(out.filter(s => s.kind === 'crossing-dots' && s.size[0] === 1.8).every(s => s.source === 'procedural')).toBe(true);
+  expect(out.filter(s => s.kind === 'crossing-dots' && s.size[0] === 0.8).every(s => s.kit?.id === 'LightDotRow_1')).toBe(true);
 });
 
 test('a part with no use tag in the kit (a lamp) is left as it was', () => {
@@ -70,7 +96,7 @@ test('a part with no use tag in the kit (a lamp) is left as it was', () => {
   expect(withKit(catalogue(), () => bindPart(lamp))).toBe(lamp);
 });
 
-test('K-1 holds a bound part to its own size: the bound world passes, a 2 m row given the 1 m piece, an eye given the stud, or a scaled piece fails', () => {
+test('K-1 holds a bound part to its own size: the bound world passes, a 1.8 m row given the 0.8 m piece, a head given a dot row, or a scaled piece fails', () => {
   const file = catalogue(), k1 = (mutate: (s: StreetItem[]) => void = () => {}) => withKit(file, () => {
     const street = w.street.map(s => (s.crossing ? bindPart(s) : s)).map(s => structuredClone(s));
     mutate(street);
@@ -78,19 +104,19 @@ test('K-1 holds a bound part to its own size: the bound world passes, a 2 m row 
   });
   expect(k1().ok).toBe(true);
   const row = (street: StreetItem[], len: number) => street.find(s => s.kind === 'crossing-dots' && s.size[0] === len)!;
-  expect(k1(st => { row(st, 2).kit!.id = 'LightDotRow_1'; }).detail).toContain('LightDotRow_1 1.0×0.0×0.4 m is not the crossing:dots piece of the part\'s 2.0×0.4×0.0 m');
-  expect(k1(st => { st.find(s => s.kind === 'signal-orb')!.kit!.id = 'KerbStud'; }).detail).toContain('KerbStud');
-  expect(k1(st => { row(st, 2).kit!.scale = [1.2, 1.2, 1.2]; }).detail).toContain('is not the crossing:dots piece');
+  expect(k1(st => { row(st, 1.8).kit!.id = 'LightDotRow_1'; }).detail).toContain('LightDotRow_1 0.8×0.0×0.3 m is not the crossing:dots piece of the part\'s 1.8×0.3×0.0 m');
+  expect(k1(st => { st.find(s => s.kind === 'signal-orb')!.kit!.id = 'LightDotRow_2'; }).detail).toContain('LightDotRow_2');
+  expect(k1(st => { row(st, 1.8).kit!.scale = [1.2, 1.2, 1.2]; }).detail).toContain('is not the crossing:dots piece');
 });
 
-test('each arc\'s quarter lies into the corner it rounds: measured from the live kit\'s pivotOffset (not from ARC_BULGE), the piece\'s footprint centre, turned by the kit yaw, lies along the arc\'s own heading from its pivot', () => {
-  const asset = read('contracts/world/kit.json').assets.find((a: any) => a.id === 'CrossInlayArc_R24_W08');
-  const [ox, oz] = asset.pivotOffset as [number, number]; // footprint centre from the pivot, kit axes: +X along the yaw, +Z at yaw + 90 degrees (box.ts signBox)
-  expect(asset.pivot).toBe('origin-ground');
-  const arcs = bound(catalogue()).filter(s => s.kind === 'crossing-arc' && s.kit?.id === 'CrossInlayArc_R24_W08');
-  expect(arcs.length).toBeGreaterThan(0);
-  for (const s of arcs) {
-    const k = s.kit!.yaw!, cx = ox * Math.cos(k) - oz * Math.sin(k), cy = ox * Math.sin(k) + oz * Math.cos(k); // plan offset of the footprint centre from the pivot
-    expect(wrap(Math.atan2(cy, cx) - s.yaw), s.id).toBeCloseTo(0, 2); // the arc item's yaw is the heading of the middle of its sweep from its centre
-  }
+test('brief 061 kit adoption: SignalLens and HaloRing are adopted (HaloRing with no part kind of its own), the re-cut dot rows, kerb and ribbon carry no brass, the seven retired pieces are rejected and untagged, and the export places none of them', () => {
+  const kit = read('contracts/world/kit.json'), by = new Map<string, any>(kit.assets.map((a: any) => [a.id, a]));
+  for (const id of ['SignalLens', 'HaloRing']) { expect(by.get(id)!.status, id).toBe('adopted'); expect(by.get(id)!.source, id).toBe('generated'); }
+  expect(by.get('SignalLens')!.tags.use).toEqual(['signal:lens']); expect(by.get('HaloRing')!.tags.use).toEqual(['signal:halo']);
+  expect(by.get('SignalLens')!.files.some((f: any) => f.role === 'data' && f.path === 'Data/signal-lens.json')).toBe(true); // Latch's SignalHead and Glint read the look data beside the model
+  expect(Object.values(PART_USE).flat()).not.toContain('signal:halo'); // the ring is placed by Latch from signal.halo, never by the export
+  expect(by.get('LightDotRow_2')!.size).toEqual([1.8, 0.002, 0.3]); expect(by.get('LightDotRow_1')!.size).toEqual([0.8, 0.002, 0.3]);
+  for (const id of ['LightDotRow_2', 'LightDotRow_1', 'Kerb_Pearl_0', 'Kerb_Pearl_1', 'RoadRibbon_Straight_6m', 'RoadRibbon_Arc90_R4', 'RoadRibbon_Arc90_R8']) expect(by.get(id)!.materials, id).not.toContain('DK_Brass_Civic');
+  const retired = ['SignalEye', 'KerbStud', 'CrossEdgeLine_1', 'CrossEdgeLine_2', 'CrossInlayArc_R24_W08', 'LightField_1', 'LightField_2'], text = JSON.stringify(w);
+  for (const id of retired) { expect(by.get(id)!.status, id).toBe('rejected'); expect(by.get(id)!.tags.use.some((u: string) => /^(signal:eye|stud:kerb|crossing:edge|inlay:crossing-arc|crossing:field)$/.test(u)), id).toBe(false); expect(text.includes(`"${id}"`), id).toBe(false); }
 });

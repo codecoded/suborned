@@ -318,6 +318,29 @@ namespace Suborned.Play
         }
 
         /// <summary>Brief 058 (Motive): a fire target that is property (a camera, a car): the engine charges the shooting's Trail once and no hit Trail.</summary>
+        /// <summary>Brief 058 §3 (Glyph §1): the one place a fire order's Trail is priced, from the engine's own PreviewFire parts, for the ring
+        /// pill, the panel row, the aim chip and the cost line alike. A camera or a car: the shooting once ("+2"), "+0" once the cell has fired
+        /// at it, never "/hit"; a person: "+n/hit". "" when nothing is traced (the final fight's hostiles, the range). A camera or car never shot
+        /// has no gun until the order makes one (the preview refuses target-unknown): it prices the shooting as the rulebook's gunfire Trail.</summary>
+        public string FireTrail(OpId by, string target, bool force = false)
+        {
+            var g = Game; if (g == null) return ""; var R = g.R;
+            string key = $"{(int)by}|{target}|{force}"; if (fireTrailTick == g.Tick && ReferenceEquals(fireTrailGame, g) && fireTrailMemo.TryGetValue(key, out var memo)) return memo; // read per frame by the ring and pill: once a tick (PreviewFire may search a walk in)
+            if (fireTrailTick != g.Tick || !ReferenceEquals(fireTrailGame, g)) { fireTrailMemo.Clear(); fireTrailTick = g.Tick; fireTrailGame = g; }
+            return fireTrailMemo[key] = FireTrailNow(by, target, force);
+        }
+        readonly Dictionary<string, string> fireTrailMemo = new(); int fireTrailTick = -1; Game fireTrailGame;
+
+        string FireTrailNow(OpId by, string target, bool force)
+        {
+            var g = Game; var R = g.R;
+            FirePreview fp = null; Guard("fire price", () => fp = g.PreviewFire(by, target, force));
+            bool priced = fp != null && (fp.Refused.Length == 0 || fp.Refused is "out-of-range" or "no-clear-line");
+            if (priced && fp.Untraced) return "";
+            if (PropertyId(target)) return priced ? $"+{fp.TrailShooting}" : $"+{R.GunfireTrail}";
+            return $"+{R.HitTrail}/hit"; // per hit on a person (Glyph 058 §1: it stays "+n/hit")
+        }
+
         public static bool PropertyId(string id) => id != null && (id.StartsWith("camera:", System.StringComparison.Ordinal) || id.StartsWith("car:", System.StringComparison.Ordinal));
         bool AnyDrawn() { for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) return true; return false; }
 
@@ -343,14 +366,14 @@ namespace Suborned.Play
             if (acc <= 0) { parts.Refused = P("no-line", "No clear line"); return $"{who} · can't hit from here"; }
             int ticks = DownTicks(k, id, tg, acc);
             string band = d <= R.PointBlankCm ? "point blank" : d <= w.EffCm ? "effective" : "long";
-            string cost = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "untraced" : g.Gunfire > 0 ? $"+{R.HitTrail} T hit · +{R.DownTrail} T down" : $"+{R.GunfireTrail} T shooting · +{R.HitTrail} T hit · +{R.DownTrail} T down";
+            string cost = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "untraced" : PropertyId(id) ? $"{FireTrail((OpId)k, id, force)} T shooting" : g.Gunfire > 0 ? $"+{R.HitTrail} T hit · +{R.DownTrail} T down" : $"+{R.GunfireTrail} T shooting · +{R.HitTrail} T hit · +{R.DownTrail} T down";
             int secs = (ticks + Game.Hz - 1) / Game.Hz;
             // Keel 0.15.0 (tuning.md §8.8) host notes: the chip at the shooter's gait and heading, now → on arrival (PreviewFire, both presets)
             FirePreview fp = null; Guard("aim preview", () => fp = g.PreviewFire((OpId)k, id, force));
             if (fp != null && fp.Line && fp.ShotsToDown > 0) { int ps = PreviewDownS(fp, k); if (ps >= 0) secs = ps; acc = fp.Acc; }
             if (fp != null) { parts.Gait = fp.Gait is "walk" or "run" or "run-away" ? fp.Gait : ""; if (fp.HasEnd && fp.ShotsToDownEnd > 0 && w != null) parts.ArriveS = (R.AimNewTicks + (fp.ShotsToDownEnd - 1) * w.Every + Game.Hz - 1) / Game.Hz; }
             parts.Down = $"{secs} s"; parts.Ratio = Ratio(acc); /* Glyph fight r1 #2: whole seconds, as the rest of the HUD */ parts.Cover = cover < 1000;
-            parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : PropertyId(id) ? $"+{R.GunfireTrail}" : $"+{R.HitTrail}/hit"; // brief 058: property costs the shooting once
+            parts.Trail = g.FightBranch.Length > 0 && !R.FightTraced && g.Hostiles.Exists(h => h.Id == id) ? "" : FireTrail((OpId)k, id, force); // brief 058 §3: one price, from PreviewFire
             return $"{who} · hits {Ratio(acc)} · down in {secs} s · {d / 100} m {band}{(cover < 1000 ? " · in cover" : "")} · {cost}";
         }
 
@@ -391,10 +414,11 @@ namespace Suborned.Play
             MoveNow = new MoveParts { WalkS = q.WalkS, RunS = q.RunRefused.Length > 0 ? -1 : q.RunS, RunFree = q.RunFree, Eye = q.RunFree ? "" : crowdGuard ? "open" : EyeOf(q.Seen), Alert = q.RunFree || q.Seen.Seen == "no" && !crowdGuard ? "" : (crowdGuard ? Math.Max(q.AlertIfRun, q.Seen.AlertIfSeen) : q.Seen.AlertIfSeen).ToString() };
             // "seen by" is the engine's SeenQuote (rulebook sight.unknown): a known watcher's true answer, "?" for one the Scout hasn't watched that
             // could; never RunSeenBy, which knows every watcher (Sky 2026-10-16: sight is the Scout's skill)
+            if (q.RunRefused.Length == 0 && q.RunRememberedBy.Count > 0) { MoveNow.Remembers = q.RunRememberedBy.Count; if (MoveNow.Eye is "" or "shut") MoveNow.Eye = "open"; } // engine 0.31.0: on edge, a passer-by who sees the run keeps the face (no Alert)
             var seen = SeenWords(q.Seen); int runAlert = q.Seen.AlertIfSeen;
             if (crowdGuard) { seen = seen.Length > 0 && seen != "?" ? seen + ", a guard" : "a guard"; runAlert = Math.Max(q.AlertIfRun, runAlert); }
             string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
-                : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {runAlert})" : "")}";
+                : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {runAlert})" : "")}{(MoveNow.Remembers > 0 ? $" · {MoveNow.Remembers} remember the face" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
             bool carrying = Game.Ops[k].CarryBody.Length > 0;
             if (carrying) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)

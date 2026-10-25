@@ -13,9 +13,55 @@
     "signoff"
   ],
   "note": "Fable, 2026-10-23, third pass: the file is the motive (Sky); Vale carries it out of the Office at shift change and delivers it to Security tonight, so the take lands before the hand-off. variants.A/B/C each complete; the screen reads variants[pick]. 'short' is the one-line summary. Empty arrays/strings are omitted by the layout. The file is story only: no file objective, the game does not model it yet.",
+  "target": "councillor",
+  "ways": [
+    {
+      "id": "front-door",
+      "contact": "waitress",
+      "steps": [
+        "badges/signal_guard",
+        "enter"
+      ]
+    },
+    {
+      "id": "pickup",
+      "contact": "driver",
+      "steps": [
+        "car",
+        "take"
+      ]
+    }
+  ],
+  "clock": [
+    {
+      "id": "start",
+      "at": "0:00",
+      "icon": "p_time"
+    },
+    {
+      "id": "chime",
+      "at": "5:30",
+      "icon": "enter",
+      "lit": true
+    },
+    {
+      "id": "over",
+      "at": "8:30",
+      "icon": "car"
+    }
+  ],
+  "camera": {
+    "place": "d:Meet driver",
+    "offsetCm": [
+      500,
+      -500
+    ],
+    "yaw": 0
+  },
+  "dataSrc": "Waymark, 2026-10-25 (brief 062 'Portraits and ids', Glyph, Fable and Waymark): the briefing's mission data, read by Latch's Briefing.cs (HostBriefing.cs BriefScreen.Load: brief.json first, then mission.json brief). target: the roles[] id of the man to take (his photograph is portraits/card_<target>). ways: one per way in; id is the text.json less.briefing.ways key and, for front-door, mission.json windows[0].id (route A); contact a roles[] id (its face portraits/face_<contact>); steps up to three kit icons after the face (front door: Inez, the guard's badge, the door; pickup: the driver, the car, the take). pickup has no window yet. clock: the marks from mission.json timeline (0:00 the start, 5:30 the handover chime, 8:30 the close: rivals take Vale or the car leaves). camera: the briefing frame (062 §5: overhead-pickup, the Office door right of centre at play zoom), 5 m on from d:Meet driver, opening yaw; the same frame the host derived before this data existed, so the screen does not move.",
   "variants": {
     "A": {
-      "hook": "Vale has a file on you. Tonight he carries it to Security.",
+      "hook": "Vale has a file on you.",
       "handler": [
         "The cameras caught your cell. Councillor Vale put it on paper.",
         "No networks here. The file lives in a folder and in his head.",
@@ -25,7 +71,7 @@
         "target": "Councillor Vale. Holds the file on you.",
         "location": "Civic Records Office, the civic block.",
         "window": "Shift change, 5:30 pm. He leaves soon after.",
-        "objective": "Take him alive. Deliver him to the getaway car."
+        "objective": "Take him alive before it reaches Security."
       },
       "intel": [
         "Inez, café waitress. She knows the door guard.",
@@ -50,7 +96,7 @@
         },
         {
           "field": "objective",
-          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23)"
+          "src": "GDD/the-suborned-agent-gdd-v0.24.0-2026-10-18.md §07 lines 160, 174 (take him alive to the getaway car; win = Vale alive at the getaway car). No file objective: the game does not model the file yet (Sky 2026-10-23). Fable 2026-10-25 (brief 062, Sky: pick B): the briefing on the street shows only the hook and this line; \"it\" is the file, and the deadline is its delivery (Vale's car leaving, or 8:30 with a turned driver). Where he is taken is the goal line in play (text.json less.briefing.goal)"
         },
         {
           "field": "intel.waitress",
@@ -74,7 +120,7 @@
         },
         {
           "field": "hook",
-          "src": "Sky 2026-10-23: the file (replaces the clearance order)"
+          "src": "Sky 2026-10-23: the file (replaces the clearance order). Fable 2026-10-25 (brief 062): cut to its first sentence; the second (Tonight he carries it to Security) moved into the objective as the deadline; the old screens read the same words"
         },
         {
           "field": "handler.1",

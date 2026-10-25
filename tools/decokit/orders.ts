@@ -10,7 +10,11 @@ export type Order = {
   id: string; from: string; kind: 'tower' | 'megastructure' | 'signature'; hash: string;
   sites: { id: string; rect: Rect; storeys?: number }[]; regen: Record<string, unknown>; limits: Record<string, unknown>;
 };
-export type Orders = { plan: string; grid: { storey: number; bay: number; halfBay: number; deck: number; crownTip: number; setbackAbove: number }; pieces: Order[] };
+/** The plain pieces (no regen order) a bare `bun run decokit` also builds, beside the plan's regen orders (brief 061, Sky 2026-10-25; Splice): the crossing signal head and its clock ring, the dot rows the plan's lightsFit is fitted to, and the kerb and road ribbon cut without
+ *  their brass. Each is a builder in tools/decokit (crossing_lens.py, crossing_flat.py, pave026.py, road_ribbon.py); the plan's sizes (signal.halo/top/hover/size, lights.dots) are fitted to what they build, and K-1 holds the export to them. A piece that is retired
+ *  (kit.asset retired=) is not listed: its builder stays, `bun run decokit --only <id>` rebuilds it, and the catalogue keeps its last bytes until it is rejected. */
+export const BUILD: readonly string[] = ['SignalLens', 'HaloRing', 'LightDotRow_2', 'LightDotRow_1', 'Kerb_Pearl_0', 'Kerb_Pearl_1', 'RoadRibbon_Straight_6m', 'RoadRibbon_Arc90_R4', 'RoadRibbon_Arc90_R8'];
+export type Orders = { plan: string; grid: { storey: number; bay: number; halfBay: number; deck: number; crownTip: number; setbackAbove: number }; pieces: Order[]; /** plain pieces built beside the orders */ build: string[] };
 const sha = (v: unknown) => createHash('sha256').update(JSON.stringify(v)).digest('hex');
 export function readOrders(planPath = PLAN): Orders {
   const p = JSON.parse(readFileSync(planPath, 'utf8')), st = p.standards, b = st.buildings, t = b.towers;
@@ -34,6 +38,6 @@ export function readOrders(planPath = PLAN): Orders {
     const sitesOut = [{ id: g.id, rect: g.ground }], limits = { c: g.c, height: g.height, portal: g.portal };
     pieces.push({ id: r.variant, from: r.from, kind: 'signature', sites: sitesOut, regen: r, limits, hash: sha({ regen: r, sites: sitesOut, limits, grid }) });
   }
-  return { plan: 'contracts/world/harbour-district.plan.json', grid, pieces };
+  return { plan: 'contracts/world/harbour-district.plan.json', grid, pieces, build: [...BUILD] };
 }
 export const writeOrders = (to: string, planPath?: string) => writeFileSync(to, JSON.stringify(readOrders(planPath), null, 1) + '\n');

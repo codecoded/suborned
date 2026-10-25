@@ -6,8 +6,8 @@ pearl-marble kerb cap and tree-bed foundations, and a gold pinstripe along every
 a random running bond in tan and grey that reads as brick at play zoom, with flat seafoam terrazzo inlays and a granite kerb with a sett gutter.
 
   Pave_Slab           2 x 2 m flat module, DK_Ground_PaveLimestone (the testbed's limestone sheet, 2 m tile = 2 x 2 slabs); lies at z 0 (brief 055 K-1: a flat piece is on its pivot and the world sets its height; it was modelled at 0.15 and the host laid it back), a drop-in for Pave_Flags_i (same size, same pivot)
-  Kerb_Pearl_0 / _1   2 m kerb run, pivot = the kerb line at road level as Kerb_Granite (stone on +Y), 0.3 m deep, 0.154 high, pearl marble (DK_Ground_RoadPearl) in two stones, a brass hairline on
-                      the road-side crown edge; no gutter (the road's light ribbon takes its place, road_ribbon.py)
+  Kerb_Pearl_0 / _1   2 m kerb run, pivot = the kerb line at road level as Kerb_Granite (stone on +Y), 0.3 m deep, 0.154 high, pearl marble (DK_Ground_RoadPearl) in two stones (brief 061: no brass crown line on the
+                      road-side edge now); no gutter (the road's light ribbon takes its place, road_ribbon.py)
   TreePit_Pearl       2 x 2 m limestone module with a 1.2 m pit, a pearl surround 0.12 m wide with a brass hairline round the inside, dark soil; the pit the street palm (CoconutPalm_Street) stands in
   PaveInlay_Band_6m   6 x 0.82 m band of glazed teal tile (DK_Ground_TileTeal), a brass hairline each side: the testbed's approach bands; lies at z 0.154
   PaveInlay_Ring_Q    a quarter of the 0.52 m ring (centre-line radius 4.62 m, 90 degrees, 16 segments), pivot = the ring's centre, from +X to +Y; four make the fountain ring; scale the radius by
@@ -42,8 +42,7 @@ def _kerb(i):
         cuts = (-1.0, 0.0, 1.0) if i == 0 else (-1.0, -0.5, 0.5, 1.0)
         for a, b in zip(cuts, cuts[1:]):
             s.rbox((a + 0.003, 0.0, 0.0), (b - 0.003, 0.3, 0.154), 0.012, pal.Ground_RoadPearl, seg=2)
-        s.box((-1.0, 0.0, 0.153), (1.0, 0.02, 0.157), pal.Brass_Civic)
-    return build
+    return build          # brief 061 (Sky 2026-10-25: no brass on the road edge): the 0.02 m brass crown box that lay on the road-side top edge is gone; the pearl stones are the kerb
 
 
 for _i in (0, 1):

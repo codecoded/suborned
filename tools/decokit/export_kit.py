@@ -191,7 +191,7 @@ def copy_ground():
         raise SystemExit(f"[DK-EXPORT] no ground set in {src}: run python3 tools/decokit/ground_tex.py")
     out = DST / "Textures"
     out.mkdir(parents=True, exist_ok=True)
-    for f in sorted(p for g in ("ground_*", "robot_*", "cabinet_*", "pavilion_*", "fountain_*") for p in src.glob(g) if p.suffix != ".json"):
+    for f in sorted(p for g in ("ground_*", "robot_*", "cabinet_*", "pavilion_*", "fountain_*", "signal_*") for p in src.glob(g) if p.suffix != ".json"):
         shutil.copy2(f, out / f.name)
     shutil.copy2(src / "ground.json", DST / "ground.json")
 
@@ -227,6 +227,8 @@ def main():
                                    **({"stand": True} if v["stand"] else {})) for v in json.loads(src["dk_volumes"])]
         if n in regen.ORDERS:  # a regen order's piece: which order, and what was built (fit table)
             row.update(source="generated", order=dict(id=n, hash=regen.ORDERS[n]["hash"]), built=regen.measure(n, src))
+        if kit.REGISTRY[n].get("retired"):  # brief 061: marked for retirement (kit.asset retired=); the builder stays until Splice has re-cut the export
+            row["retired"] = kit.REGISTRY[n]["retired"]
         if len(objs) > 1:
             row["parts"] = [nm for nm, _ in full[1:]]
         if (tris >= LOD_SPEC[0][3] or kit.REGISTRY[n].get("near")) and not NO_LODS and not kit.REGISTRY[n].get("nolod"):
@@ -248,6 +250,9 @@ def main():
             bpy.data.meshes.remove(b.data)
     tex = copy_textures()
     copy_ground()
+    if "SignalLens" in names:  # brief 061: the head's look data (state colours, cues, blink, the cycle, the atlas and ring tables) rides beside the manifest for Latch's SignalHead and Glint
+        import crossing_lens
+        crossing_lens.write_data(DST / "Data" / "signal-lens.json")
     mats.export_json(DST / "decokit_materials.json")
     table = json.loads((DST / "decokit_materials.json").read_text())
     for row in table["materials"]:

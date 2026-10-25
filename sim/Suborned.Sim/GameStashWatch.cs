@@ -26,7 +26,7 @@ namespace Suborned.Sim
         {
             var s = StashById(o.Target);
             if (s == null || s.Kind != "container") return No("target-unknown", $"'{o.Target}' is no container to watch here");
-            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
+            if (op.Id == OpId.Tech && Tethered) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (KnowsRound(s.Id)) return No("already-watched", $"the cell knows when the round empties the {s.Id} already: a Watch teaches nothing more");
             int reach = R.WatchReachCm(op.Id); // brief 031: any agent, from its own reach
             if (!G.Within(op.Pos, s.Stand, reach)) return No("too-far", $"stand within {reach / 100} m of the {s.Id}", m: reach / 100);

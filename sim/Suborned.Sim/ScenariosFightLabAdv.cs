@@ -257,7 +257,7 @@ namespace Suborned.Sim
         public static string PanicSpam(Engine.Inputs i, int cycles, int holdTicks, int gapTicks)
         {
             var r = new Run(Engine.New(i, LabStart(s => s.Security = 1))); var g = r.G;
-            r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             var post = g.PosOf(GuardR)!.Value; Pt? spot = null;
             for (int dx = -800; dx <= 800 && spot == null; dx += 100) for (int dy = -800; dy <= 800 && spot == null; dy += 100)
             { var q = new Pt(post.X + dx, post.Y + dy); if (g.S.Grid.Free(q) && G.D2(q, post) >= 300L * 300 && g.GuardWatching(q) && !g.PatrolWatching(q) && !g.CameraWatching("pickup", q)) spot = q; }

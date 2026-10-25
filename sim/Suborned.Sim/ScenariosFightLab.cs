@@ -138,7 +138,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 var cw = r.Op(Enf).Gun.W!; int tc = cw.TargetCharge, own = cw.Charge, max = g.Labr!.ChargeMax, paid = max - 3 * tc; // the rulebook's (Motive tunes them)
                 var fv = g.PreviewVolley(OpId.Enforcer, GuardR, 3);
                 r.Eq((fv.Refused, fv.ChargeCost, fv.ChargeLeft), ("", 3 * tc, paid), $"three targeted carbine shots cost {3 * tc} of {max}");
@@ -160,7 +160,7 @@ namespace Suborned.Sim
             Add("N146", "—", "Brief 027 P10 (EXPERIMENTAL police warning): the guard sees the Scout draw before any shot and gives 2 s. Holstered in time: Alert 1, no engagement, no drawn-seen; drawn again and held: today's drawn-seen (Alert 2, he engages).", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.To(Max(r.Send(Tech, "cabinet"))); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 var post = g.PosOf(GuardR)!.Value; Pt? spot = null;
                 for (int dx = -800; dx <= 800 && spot == null; dx += 100) for (int dy = -800; dy <= 800 && spot == null; dy += 100)
                 { var q = new Pt(post.X + dx, post.Y + dy); if (g.S.Grid.Free(q) && G.D2(q, post) >= 300L * 300 && g.GuardWatching(q) && !g.PatrolWatching(q) && !g.CameraWatching("pickup", q)) spot = q; }
@@ -665,7 +665,7 @@ namespace Suborned.Sim
         {
             var rl = new Run(Engine.New(i, Level(1))); var g = rl.G;
             rl.To(Max(rl.Send(Tech, "cabinet"), rl.SendTo(Enf, BesideDoor)));
-            rl.Do(Tech, "loop", "entrance"); rl.Done(Tech); rl.Do(Tech, "reroute", "patrol"); rl.Done(Tech);
+            rl.Do(Tech, "reroute", "patrol"); rl.Done(Tech); rl.Do(Tech, "loop", "entrance"); rl.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) rl.To(mark + 1);
             rl.Fire(Enf, GuardR);
             var rs = new Run(Engine.New(i)); RouteA(rs, reroute: true);

@@ -91,7 +91,7 @@ namespace Suborned.Play
             {
                 Person p = null; try { p = g.PersonByRole(role); } catch (Exception) { } if (p == null) continue;
                 Answer a = default; bool got = Guard("gate listen", () => a = g.LearnQuery("scout", "listen", role));
-                if (got && (a.ok || a.code is "too-far" or "agent-busy" or "no-clear-line" or "no-walk" or "run-tethered")) open.Add(role + "|listen");
+                if (got && (a.ok || a.code is "too-far" or "agent-busy" or "no-clear-line" or "no-walk")) open.Add(role + "|listen");
                 if (!p.Turned)
                     foreach (var ap in Approaches)
                     {
@@ -129,6 +129,8 @@ namespace Suborned.Play
             }
             if (c.StartsWith("call.", StringComparison.Ordinal) && c[5..] is "waitress" or "driver" or "guard") return L((int)OpId.Fixer, "call");
             if (c == "loop.on") return L((int)OpId.Tech, "loop");
+            if (c == "camera.cut") return L((int)OpId.Tech, "disable"); // engine 0.31.0 (brief 058 §2): the Tech's Disable lands
+            if (c == "fire.camera-dark") return L(CameraShooter(g, l), "camera-shot"); // brief 058 §3 (Glyph board 03): the shooter's chip, "Camera shot out"
             if (c == "patrol.rerouted") return L((int)OpId.Tech, "reroute");
             if (c is "take.done" or "enter.in" or "enter.out") return L((int)OpId.Enforcer, c[..c.IndexOf('.')]);
             if (c is "takedown.out" or "takedown.dead") return L(AgentIn(l.Text, (int)OpId.Enforcer), "takedown");
@@ -138,6 +140,19 @@ namespace Suborned.Play
             if (c == "restrain.done") return L(AgentIn(l.Text, (int)OpId.Enforcer), "restrain");
             if (c == "carry.down") return L(AgentIn(l.Text, (int)OpId.Enforcer), "drop");
             return no;
+        }
+
+        /// <summary>Who shot a camera out: the agent of the last hit on it at or before the dark line ("{by} fires on camera:{id} at …"), else
+        /// the Enforcer.</summary>
+        static int CameraShooter(Suborned.Sim.Game g, LogLine dark)
+        {
+            var m = System.Text.RegularExpressions.Regex.Match(dark.Text ?? "", @"The (\S+) camera"); string on = m.Success ? " fires on camera:" + m.Groups[1].Value : " fires on camera:";
+            for (int i = g.Log.Count - 1; i >= 0; i--)
+            {
+                var x = g.Log[i]; if (x.Tick > dark.Tick) continue; if (x.Tick < dark.Tick - Game.Hz) break;
+                int f = (x.Text ?? "").IndexOf(on, StringComparison.Ordinal); if (f > 0 && IsOpName(x.Text[..f])) return (int)Op.Parse(x.Text[..f]);
+            }
+            return (int)OpId.Enforcer;
         }
 
         static int AgentIn(string text, int fallback)
@@ -284,7 +299,9 @@ namespace Suborned.Play
                     else if (l.Code == "call.waitress") { chip.AnchorKey = "guard"; Line("eye_shut", DW("gain.guard-away", "Guard away")); }
                     else { chip.AnchorKey = l.Code[5..]; Line("call", VerbWord("call")); }
                     break;
-                case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("loop", DW("gain.camera-looped", "Camera looped")); break; // brief 058 (Motive): a looped camera shows the desk a clean picture; "Camera dark" is a camera shot out (Fable: gain.camera-looped, placeholder until text.json has it)
+                case "loop": chip.AnchorKey = "camera/" + g.LoopCam; Line("loop", DW("gain.camera-looped", "Camera looped")); break; // brief 058 (Motive): a looped camera shows the desk a clean picture; never "Camera dark" (Glyph 058 §3: the 2:00 rides the window marker under it)
+                case "disable": { var dm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"cuts the (\S+) camera"); chip.AnchorKey = "camera/" + (dm.Success ? dm.Groups[1].Value : "entrance"); Line("disable", DW("gain.camera-cut", "Camera cut")); break; } // engine 0.31.0 (Glyph 058 §3): the desk's clock is the marker under it
+                case "camera-shot": { var sm = System.Text.RegularExpressions.Regex.Match(l.Text ?? "", @"The (\S+) camera"); chip.AnchorKey = "camera/" + (sm.Success ? sm.Groups[1].Value : "entrance"); Line("fire", DW("gain.camera-shot", "Camera shot out")); break; } // Glyph 058 §3: no marker
                 case "reroute": chip.AnchorKey = "patrol"; Line("reroute", DW("gain.patrol-away", "Patrol away")); break;
                 case "mislead": chip.AnchorKey = "rivals/0"; Line("mislead", DW("gain.rivals-away", "Rivals away")); break;
                 case "enter":
@@ -359,8 +376,8 @@ namespace Suborned.Play
             {
                 if (w.Kind == "seal") continue; // engine 0.30: the seal's window is HostSeal's marker under the clock pill, never a world mark or a close pop
                 var m = new WindowMark { Kind = w.Kind, Thing = w.Thing, Until = w.Until, Key = WindowKey(w.Kind, w.Thing) };
-                m.Left = w.Until < 0 ? -1 : Math.Max(0, (w.Until - g.Tick + Game.Hz - 1) / Game.Hz); if (w.Kind == "loop") m.Face = (int)OpId.Tech;
-                string sk = w.Kind + "|" + w.Thing; if (w.Until >= 0 && (!windowSpan.TryGetValue(sk, out var sp) || sp.until != w.Until)) windowSpan[sk] = sp = (w.Until, Math.Max(1, w.Until - g.Tick));
+                m.Left = w.Until < 0 ? -1 : Math.Max(0, (w.Until - g.Tick + Game.Hz - 1) / Game.Hz); if (w.Kind == "loop" && w.Until < 0) m.Face = (int)OpId.Tech; // engine 0.31.0 (Glyph 058 §3): a loop has an end (Until), so it counts 2:00 down like every window; the Tech's face only for a loop with no end (a pinned tether run)
+                string sk = w.Kind + "|" + w.Thing; if (w.Until >= 0 && (!windowSpan.TryGetValue(sk, out var sp) || sp.until != w.Until)) windowSpan[sk] = sp = (w.Until, Math.Max(1, w.Until - (w.From >= 0 ? Math.Min(w.From, g.Tick) : g.Tick))); // the desk's clock drains from the cut (OpenWindow.From)
                 m.Total = w.Until < 0 ? -1 : Math.Max(1, (windowSpan[sk].span + Game.Hz - 1) / Game.Hz);
                 WindowMarks.Add(m); now[w.Kind + "|" + w.Thing] = w.Until;
             }
@@ -368,6 +385,8 @@ namespace Suborned.Play
                 foreach (var kv in windowsBefore)
                 {
                     if (now.ContainsKey(kv.Key)) continue; var parts = kv.Key.Split('|');
+                    if (parts[0] == "loop" && g.CameraDark(parts[1])) continue; // a loop the cut (or a shot) ended: the camera is not "on"
+                    if (parts[0] == "disable") { DoneChips.RemoveAll(c => c.AnchorKey == WindowKey(parts[0], parts[1])); continue; } // the desk's clock goes at the report; the dead disc stays and the feed beat is Fable's (Glyph 058 §2): no close pop
                     string kind = parts[0] == "call" ? (parts[1] == "guard" ? "guard" : "camera") : parts[0] == "loop" ? "camera" : parts[0] == "reroute" ? "patrol" : "rivals";
                     string word = DW("close." + kind, kind == "guard" ? "Guard back" : kind == "camera" ? "Camera on" : kind == "patrol" ? "Patrol back" : "Rivals back");
                     var at = AnchorWorld(WindowKey(parts[0], parts[1])); if (!at.HasValue) continue;
@@ -380,7 +399,7 @@ namespace Suborned.Play
 
         static string WindowKey(string kind, string thing) => kind switch
         {
-            "call" => thing == "guard" ? "guard" : "camera/pickup", "loop" => "camera/" + thing, "reroute" => "patrol", "mislead" => "rivals/0", _ => thing,
+            "call" => thing == "guard" ? "guard" : "camera/pickup", "loop" or "disable" => "camera/" + thing, "reroute" => "patrol", "mislead" => "rivals/0", _ => thing,
         };
 
         // ---------------------------------------------------------------- cancelling

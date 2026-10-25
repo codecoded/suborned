@@ -20,7 +20,7 @@ namespace Suborned.Sim
 
         /// <summary>The quiet setup for the guard (Motive §6.1, route G): the Tech loops the entrance camera and reroutes the patrol; the
         /// Enforcer waits beside the door; then, just after the guard's check-in mark, the Enforcer stands beside him.</summary>
-        static void GuardQuiet(Run r)
+        static void GuardQuiet(Run r, bool resplice = true)
         {
             var g = r.G;
             // 2026-10-19 (the door on the west face): the cabinet is 48 m from the Tech's start, so she runs to it as Waymark's c022 route G
@@ -29,13 +29,22 @@ namespace Suborned.Sim
             // takedown and the 4:00 mark (back on its sweep at 4:00 it would take the alarm itself, Pulse §12.2, which N46 doesn't test).
             int enfAt = r.SendTo(Enf, BesideDoor);
             r.To(r.Send(Tech, "cabinet", run: true));
+            // Loop v2 (engine 0.31.0, brief 058 §4): the loop runs 2:00 from its landing (it was held from 0:36 by the tether). The Enforcer
+            // waits beside the door in the camera's sight, so the Tech keeps it blind by re-splicing: once before the reroute and once after
+            // it (+2 T over the held loop), blind without a break from 0:36 to 4:45, over the wait, the takedown after the mark, the 4:00
+            // mark and the finds these scenarios test. Every other order keeps its tick.
             r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-            r.To(Math.Max(g.Tick, g.NextMarkOf(g.GuardP, g.Tick + T(g.R.RerouteS)) - T(g.R.RerouteS + 5)));
+            int rerouteAt = Math.Max(g.Tick + T(g.R.LoopS), g.NextMarkOf(g.GuardP, g.Tick + T(g.R.RerouteS)) - T(g.R.RerouteS + 5));
+            r.To(rerouteAt - T(g.R.LoopS)); r.Do(Tech, "loop", "entrance"); r.Done(Tech); // the first re-splice lands as the reroute is ordered
             r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            if (resplice) r.Do(Tech, "loop", "entrance"); // the second: lands 20 s on, a fresh 2:00 from there (without it the loop runs out at 3:40)
             r.To(Math.Max(g.Tick, enfAt));
             int mark = g.NextMarkOf(g.GuardP, g.Tick); r.To(mark + 1);
             r.To(r.SendTo(Enf, BesideGuard));
         }
+        /// <summary>Loop v2 (engine 0.31.0): the Trail but the loops' (GuardQuiet re-splices while the scenario runs, charged when each lands),
+        /// so a check on the takedown's own Trail reads it alone.</summary>
+        static int ActTrail(Game g) { int t = g.Trail; foreach (var l in g.Ledger) if (l.what == "trail" && l.cause == "loop") t -= l.delta; return t; }
         /// <summary>The last takedown on `id` (a person id or a role); a clear failure, not a LINQ throw, when there is none.</summary>
         static TdAct ActOn(Run r, string id)
         {
@@ -95,7 +104,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 GuardQuiet(r);
-                int trail = g.Trail, standing = g.Standing;
+                int trail = ActTrail(g), standing = g.Standing;
                 var q = g.QuoteTakedown("guard", "knockout");
                 r.Eq(q.S, g.R.KoS, "the card: 6 s, from the side (he doesn't see it coming)");
                 r.Eq(q.TrailIfFound, g.R.HitTrail + g.R.DownTrail, "the card: +4 T if found");
@@ -106,7 +115,7 @@ namespace Suborned.Sim
                 r.Done(Enf);
                 var a = ActOn(r, GuardId);
                 r.Is(!a.Witnessed && a.Noticed.Count == 0, "nobody saw it");
-                r.Eq((g.Trail, g.Standing, g.Alert), (trail, standing, 0), "no Trail, no Standing, no Alert");
+                r.Eq((ActTrail(g), g.Standing, g.Alert), (trail, standing, 0), "no Trail, no Standing, no Alert");
                 r.Eq(g.BodyById("guard")!.WakeAt, g.Tick + T(g.R.WakeS), "he wakes in 120 s");
                 int mark = g.NextMarkOf(g.GuardP, g.Tick);
                 r.Eq(mark, T(240), "his next mark: 4:00");
@@ -120,7 +129,7 @@ namespace Suborned.Sim
                 r.Until(() => a.ActTrail, T(200));
                 r.Is(a.Confirmed || a.Woke, "found by the passing guard and the patrol (one incident), then he wakes and radios it in");
                 r.Eq(g.Alert, 1, "a knockout never takes Alert above 1 by itself");
-                r.Is(a.ActTrail && g.Trail == trail + g.R.HitTrail + g.R.DownTrail, "his statement: +4 T, once");
+                r.Is(a.ActTrail && ActTrail(g) == trail + g.R.HitTrail + g.R.DownTrail, "his statement: +4 T, once");
                 r.Eq(g.Lockdown, int.MaxValue / 4, "no seal at Alert 1");
             });
 
@@ -128,7 +137,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 GuardQuiet(r);
-                int trail = g.Trail;
+                int trail = ActTrail(g);
                 r.Takedown("guard", "kill"); r.Done(Enf);
                 var a = ActOn(r, GuardId); var b = g.BodyById("guard")!;
                 r.Is(b.Dead && b.Open, "dead, lying at his post");
@@ -142,7 +151,7 @@ namespace Suborned.Sim
                 r.Body(Enf, "stash", ServiceDoorId); r.Done(Enf);
                 r.Is(!b.Open && b.Stash == ServiceDoorId && r.Op(Enf).CarryBody.Length == 0, "hidden behind the service door");
                 r.Is(!a.Witnessed && a.Noticed.Count == 0, "nobody saw the kill or the carry");
-                r.Eq((g.Trail, g.Alert), (trail, 0), "no Trail, no Alert yet");
+                r.Eq((ActTrail(g), g.Alert), (trail, 0), "no Trail, no Alert yet");
                 r.To(T(240));
                 r.Eq(g.Alert, 1, "the 4:00 mark is missed: Alert 1");
                 r.To(T(420));
@@ -325,7 +334,7 @@ namespace Suborned.Sim
                 // that finds him is the patrol's: rerouted before the 2:30 mark, it is back on its sweep at 4:20 and sees the body at the door
                 // on its way along the forecourt. A robot rings the desk (robot.report, 4 s) where a person radios (5 s); the rest is as before.
                 GuardQuiet(r);
-                int trail = g.Trail, standing = g.Standing;
+                int trail = ActTrail(g), standing = g.Standing;
                 r.Takedown("guard", "kill"); r.Done(Enf);
                 r.SendTo(Enf, BesideDoor);
                 var a = ActOn(r, GuardId);
@@ -343,7 +352,7 @@ namespace Suborned.Sim
                 r.Eq(g.Lockdown, int.MaxValue / 4, "no seal on a report alone");
                 r.Is(r.Until(() => a.Confirmed, T(200)), "a unit confirms him");
                 r.Eq(g.Lockdown, g.Tick + T(g.SealS), "the seal starts at the confirmation (Alert 2)");
-                r.Eq(g.Trail, trail + g.R.HitTrail + g.R.DownTrail + g.R.KillTrail, "the act's Trail: +6 T for a kill");
+                r.Eq(ActTrail(g), trail + g.R.HitTrail + g.R.DownTrail + g.R.KillTrail, "the act's Trail: +6 T for a kill");
                 r.Eq(g.Standing, standing + g.R.FoundKillStanding, "a found killing: one step toward Menace though nobody saw it (Sky answer 1)");
             });
 
@@ -564,7 +573,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "move", To = "cabinet", Run = true }); r.SendTo(Enf, BesideDoor);
                 r.Until(() => r.Op(Tech).Walk == null, T(60));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 r.To(r.SendTo(Enf, BesideGuard));
                 r.Is(g.NextMarkOf(g.GuardP, g.Tick) == T(150), "before his 2:30 mark");
                 r.Takedown("guard", "kill"); r.Done(Enf);

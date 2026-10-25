@@ -273,6 +273,9 @@ namespace Suborned.Play
         public sealed class MoveParts
         {
             public int WalkS = -1, RunS = -1, CarryS = -1; public string Eye = "", Alert = "", Refused = ""; public bool RunFree;
+            /// <summary>Engine 0.31.0 (brief 054 §3.5, Fable's price `eye`): the passers-by who would keep the runner's face (MoveQuote.RunRememberedBy:
+            /// Alert 2 or more, a quiet run); the card's eye mark carries their number. 0 none.</summary>
+            public int Remembers;
             /// <summary>The move preview (Glyph, "Move preview", variant A): where the ring sits, its state (safe, seen, unk, alert), the seeing
             /// watcher's kind (camera, guard, rivals: the ring's colour), the stretches of the route inside each known watcher's sight (the glow,
             /// world points with the watcher's kind), and the unwatched watchers on the route (a faint "?" over each).</summary>

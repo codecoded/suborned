@@ -125,7 +125,7 @@ namespace Suborned.Sim
                         var id = w.Substring(7);
                         foreach (var c in S.Cameras)
                             if (c.Id == id)
-                                return new Shape { At = c.At, F = c.Facing, Heads = c.Facings.Length > 1 ? c.Facings : null, Reach = c.Reach, Half = c.Half, Near = 0, Live = !(id == LoopCam && LoopOn) && !(id == "pickup" && !PickupCameraLive()) };
+                                return new Shape { At = c.At, F = c.Facing, Heads = c.Facings.Length > 1 ? c.Facings : null, Reach = c.Reach, Half = c.Half, Near = 0, Live = !(id == LoopCam && LoopOn) && !CameraDark(id) && !(id == "pickup" && !PickupCameraLive()) };
                         return null;
                     }
                 case "guard":
@@ -668,7 +668,7 @@ namespace Suborned.Sim
             if (!IsWatcher(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to watch here");
             if (R.SightKinds[kind].learn != "watch") return No("target-unknown", $"the {kind}'s sight is known when they come: there is nothing to watch for");
             if (!WatchesKind(op, o.Target)) return No("only-scout", $"the {Sim.Op.Name(op.Id)} doesn't watch the {kind} (sight.kinds.{kind}.by)");
-            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
+            if (op.Id == OpId.Tech && Tethered) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             // Sky 2026-10-18: a Watch that can teach nothing is refused, free: its sight known, and its routine (a camera's comes with its sight;
             // the patrol's once the cell's Watches of it total sight.watch.routine seconds, or told)
             { var k = Known(o.Target)!; if (k.Sight && k.Routine) return No("already-watched", $"the cell knows the {o.Target.Replace("camera:", "")}{(kind == "camera" ? " camera" : "")}'s sight{(kind == "patrol" ? " and routine" : "")} already: a Watch teaches nothing more"); }

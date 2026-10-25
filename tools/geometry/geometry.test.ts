@@ -3,6 +3,8 @@ import { expect, test } from 'bun:test';
 import { BRIDGE, HEAD, Raster, STEP } from './raster';
 import type { V } from '../plan/geom';
 import { walkFloorAt, type WalkFile } from './walk-export';
+import { buildVisible } from './visible';
+import type { World } from '../../contracts/world/world.schema';
 
 const make = () => { const R = new Raster(0, 0, 10, 10); R.ground.fill(0.18); return R; };
 const box = (x0: number, y0: number, x1: number, y1: number): V[] => [[x0, y0], [x1, y0], [x1, y1], [x0, y1]];
@@ -60,4 +62,18 @@ test('the walk file reads back the floor it was written with', () => {
   expect(at([-1.7, -1.4])).toBeCloseTo(0.93, 3); // i = 1, j = 2
   expect(at([-1.9, -1.9])).toBeCloseTo(0.18, 3);
   expect(at([5, 5])).toBe(0);
+});
+
+// brief 061 (Aster 2026-10-25, the drawn slope wins): a continuous footway's table is a flat from the kerb line (its ring), but Unity draws it from lip.d; over the 0.38 m lip strip the floor is the slope, not the higher of slope and table
+test('the footway lip strip reads the drawn slope, the table beyond it the table, the ramp the ramp', () => {
+  const ring = (s0: number, s1: number): V[] => [[0, s0], [12, s0], [12, s1], [0, s1]]; // frame: origin (0,0), along +x, into +y; half 6 about x = 6
+  const f = { id: 'footway/t', level: 0.18, frame: { origin: [6, 0], along: [1, 0], into: [0, 1] }, half: 6, depth: 6, ramp: { run: 2.4, rise: 0.18 }, lip: { d: 0.38, drop: 0.18 } };
+  const world = { ground: { plots: [], roads: [], foot: [], flats: [{ id: 'ground/footway/t/table', ring: ring(0, 6), level: 0.18 }], footways: [f], drives: [], pieces: [] }, civic: [], buildings: [], facades: [], street: [], frontages: [] } as unknown as World;
+  const R = buildVisible(world, new Map(), { x0: 0, y0: 0, x1: 12, y1: 9 }, 0).R, floor = (x: number, y: number) => R.column(...R.cellOf([x, y])).ground;
+  expect(floor(6, 0.125)).toBeCloseTo(0.18 * 0.125 / 0.38, 3); // lip, near the kerb line: low
+  expect(floor(6, 0.375)).toBeCloseTo(0.18 * 0.375 / 0.38, 3); // lip, at its top edge
+  expect(floor(6, 0.625)).toBeCloseTo(0.18, 3); // the table
+  expect(floor(6, 3)).toBeCloseTo(0.18, 3);
+  expect(floor(6, 6.625)).toBeCloseTo(0.18 * (1 - 0.625 / 2.4), 3); // the ramp, falling to the lane
+  expect(floor(6, 8.875)).toBeCloseTo(0, 3); // past the ramp's foot: the carriageway
 });

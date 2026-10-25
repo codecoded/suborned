@@ -10,10 +10,10 @@
   {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
   {"tick":0,"op":"scout","do":"move","to":[1175,-4825]},
   {"tick":165,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":785,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":1235,"op":"enforcer","do":"move","to":[6520,-4110]},
-  {"tick":1325,"op":"enforcer","do":"watch","target":"guard"},
-  {"tick":1525,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"}
+  {"tick":365,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":815,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":905,"op":"enforcer","do":"watch","target":"guard"},
+  {"tick":1105,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"}
  ],
  "until": 5100
 }

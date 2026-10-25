@@ -14,6 +14,7 @@ import type { CrossingLog } from './street/crossings';
 import type { CapLog } from './street/capstone';
 import { type RoadFinishLog, dressRoadFinish } from './street/roadfinish';
 import { type KerbArcLog, dressKerbArcs } from './street/kerbarcs';
+import { activeMouths } from './street/footway';
 import { dressConnectors } from './dress';
 import { generateSkins } from './skins';
 import { adjacent } from './facades';
@@ -50,7 +51,7 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const life = colourLife(ctx, blds, masses, skins0, fac.facades, frontages), skins = life.skins;
   const { items: street, flags, crossings, crossingLog, takedown, capstone, groundPieces } = generateStreet(ctx, { buildings: masses, megas: megaOut, decks, stops, stations, connectors: conn.connectors, frontages });
   // brief 028 Road (Sky 2026-10-22 "can try"): the testbed's road finish, laid by rule on every kerb face; opt-in on standards.streetscape.roads and the pieces adopted in the kit (a pinned plan or kit gets none)
-  const rf = dressRoadFinish(ctx, { crossings: crossings ?? [], platforms: stops.map(s => s.ring) });
+  const rf = dressRoadFinish(ctx, { crossings: crossings ?? [], platforms: stops.map(s => s.ring), mouths: activeMouths(ctx) }); // brief 061: the continuous footways' mouths: the higher road's ribbon runs on across, the lane's stops short of the ramp
   const ka = dressKerbArcs(ctx, { strips: (crossings ?? []).map(c => c.strip as V[]), drives: (ctx.civ.drives ?? []).map(d => d.poly as V[]) }); // brief 028: after the crossings, so a stone never lies across a crossing strip
   const flat = [...(groundPieces ?? []), ...(ka?.items ?? []), ...(rf?.items ?? [])];
   const slabs: Mass[] = ctx.d.plots.map(p => ({ id: `plot/${p.id}`, surface: p.use, ring: slabRing(ctx, p).map(rv), base: 0, height: ctx.pav })); // brief 028: the kerb side's corners are rounded (kerbreturn.ts); the building side and the building line are as the plan has them

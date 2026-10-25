@@ -83,7 +83,7 @@ namespace Suborned.Sim
                 return a;
             }
             if (g.HolsterAt >= 0) { a.Verb = "holster"; a.Phase = "acting"; a.TicksLeft = Math.Max(0, g.HolsterAt - Tick); a.OnDone = "weapon away"; a.CancelCost = "none"; a.CancelText = "holstering finishes in a moment"; return a; }
-            if (id == OpId.Tech && LoopOn)
+            if (id == OpId.Tech && Tethered) // the tether only (before engine 0.31.0): a Loop v2 runs on its own, no activity of the Tech's
             {
                 a.Verb = "loop"; a.Target = LoopCam; a.Phase = "holding"; a.TicksLeft = -1; a.OnDone = "holds while the Tech stays at the cabinet";
                 a.CanCancel = true; a.CancelCost = "ends"; a.CancelText = "the loop ends and the camera comes back";
@@ -133,6 +133,7 @@ namespace Suborned.Sim
                 case "listen": return "learns the need and temperament";
                 case "turn": return op.BusyQuote?.Outcome ?? "?";
                 case "loop": return o.Target == "entrance" ? "the entrance camera loops" : $"the {o.Target} camera loops";
+                case "disable": return $"the {o.Target} camera is cut";
                 case "reroute": return "the patrol leaves its sweep";
                 case "mislead": return "the rivals follow a false tip";
                 case "enter": return o.How == "out" ? "out by a door no unit holds, without Vale" : "out at the service lane with Vale";
@@ -154,7 +155,7 @@ namespace Suborned.Sim
             {
                 case "watch": case "listen": return ("lost", "the time is spent; nothing is learned");
                 case "turn": return R.CancelTurn == "aborted" ? ("aborted", $"the money held comes back; the {op.Busy!.Target} remembers an aborted approach and the Fixer's face") : ("lost", "the money held comes back; nothing is remembered");
-                case "loop": case "reroute": case "mislead": case "carry": case "drop": case "stash": case "restrain": return ("lost", "the time is spent; nothing lands");
+                case "loop": case "disable": case "reroute": case "mislead": case "carry": case "drop": case "stash": case "restrain": return ("lost", "the time is spent; nothing lands");
                 case "takedown": return ("released", "the victim is let go: he saw it, and reports it as a woken victim would");
                 case "enter": return R.CancelEnter == "staff-report" ? ("staff-report", $"back out {CancelledEnterOut()} without Vale; the staff report the intruder (a reported incident)") : ("quiet", $"back out {CancelledEnterOut()} without Vale");
                 case "take": return R.CancelTake == "vale-reports" ? ("vale-reports", "Vale is let go at his car and reports the attempt (a reported incident)") : ("quiet", "Vale is let go at his car");

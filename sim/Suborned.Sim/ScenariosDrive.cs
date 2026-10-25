@@ -154,7 +154,7 @@ namespace Suborned.Sim
                 r.Eq(g.Log.Count(l => l.Code == "run.seen"), 2, "a new span is noticed again");
             }, DriveStart());
 
-            Add("D07", "—", "The tether: the Tech runs (a click) to the cabinet and loops the entrance camera. Driven with Shift held she walks (a run is refused while she holds the loop, as a move's run is); 2 m off the cabinet the loop ends (loop.ends).", r =>
+            Add("D07", "—", "Loop v2 (brief 058 §6, engine 0.31.0; it was the tether): the Tech runs (a click) to the cabinet and loops the entrance camera. Driven with Shift held she runs (no tether: a run is not refused), and 2 m off the cabinet and beyond the loop runs on.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet", run: true)); r.Do(Tech, "loop", "entrance"); r.Done(Tech);
@@ -163,9 +163,9 @@ namespace Suborned.Sim
                 int len = Math.Max(1, G.Dist(away[0], away[1])), v = RunCm(r); var step = new Pt(dir.X * v / len, dir.Y * v / len);
                 Push(r, Tech, step, 1, run: true);
                 int went = G.Dist(from, r.Op(Tech).Pos);
-                r.Is(went <= 2 * WalkCm(r) + g.R.Drive!.SlackCm && !r.Op(Tech).Running, $"tethered, she walks: {went} cm, not running");
-                for (int k = 0; k < T(5) && g.LoopOn; k++) Push(r, Tech, step, 1, run: true);
-                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends"), $"off the cabinet the loop ends ({G.Dist(r.Op(Tech).Pos, g.S.At("cabinet"))} cm off)");
+                r.Is(r.Op(Tech).Running, $"Loop v2 (engine 0.31.0): no tether, she runs ({went} cm in the tick)");
+                for (int k = 0; k < T(5); k++) Push(r, Tech, step, 1, run: true);
+                r.Is(g.LoopOn && !g.Log.Exists(l => l.Code == "loop.ends"), $"off the cabinet the loop runs on ({G.Dist(r.Op(Tech).Pos, g.S.At("cabinet"))} cm off)");
             }, DriveStart());
 
             Add("D08", "—", "Walking Vale: route A to the Take; the Enforcer driven with Shift held walks at his walk (nobody runs carrying Vale), and Vale stays at his side.", r =>

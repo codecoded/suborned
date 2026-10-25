@@ -64,12 +64,13 @@ namespace Suborned.World
             return items.Count;
         }
 
-        /// <summary>Brief 048 (Splice, the tp-long renderer budget): a crossing's flush parts (dots, bars, edge lines, studs, inlay arcs, the
-        /// lit strip's pool) are baked into the non-fade `crossing-parts` batches by material and tile, as the ground pieces are, not one prefab
-        /// instance each (~600 renderers in the worst third-person view); the signal orbs stay instances (they turn to the camera, show a state
-        /// and cast). Their light is drawn as emission only (CrossingKit.LightMaterial); no shadows (Combine.Flush).</summary>
+        /// <summary>Brief 048 (Splice, the tp-long renderer budget): a crossing's flush parts (dot rows, light bars; brief 061 retired the edge
+        /// lines, studs, inlay arcs and the lit strip) are baked into the non-fade `crossing-parts` batches by material and tile, as the ground
+        /// pieces are, not one prefab instance each (~600 renderers in the worst third-person view); the signal heads stay instances (they show
+        /// a state and cast). Their light is drawn as emission only (CrossingKit.LightMaterial); no shadows (Combine.Flush).</summary>
         public const string CrossingParts = "crossing-parts";
-        public static bool BakedCrossingPart(StreetItemDto s) => s.Crossing != null && s.Kind is "crossing-dots" or "crossing-bar" or "crossing-edge" or "crossing-stud" or "crossing-arc" or "crossing-field";
+        public static bool BakedCrossingPart(StreetItemDto s) => s.Crossing != null && s.Kind is "crossing-dots" or "crossing-bar"
+            && !(CrossingKit.LiveDots && s.Kind == "crossing-dots" && CrossingKit.Signalled.Contains(s.Crossing)); // brief 061: a signalled crossing's dot rows stay instances, gated by SignalHead (when LiveDots)
         public int CrossingsBaked { get; private set; }
 
         public void Street(Transform layer, List<StreetItemDto> items)

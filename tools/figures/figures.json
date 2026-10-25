@@ -714,16 +714,18 @@
    "id": "councillor",
    "role": "councillor",
    "kind": "transfer",
-   "label": "Councillor Vale stand-in: commuter D4 with the navy trousers turned camel (a warm tone, so a carried Vale separates from the Enforcer's black at play zoom)",
+   "label": "Councillor Vale C (cropped grey hair, round chrome spectacles, grey moustache, ivory tunic-jacket, ink collar band, black shoulder disc, black gloves): a real model, not the D4 stand-in (brief 063, 2026-10-25)",
    "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
    "noMetal": true,
-   "source": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); navy turned camel",
+   "source": "Citizens3D/citizens/vale_C__hunyuan_pro.glb (50k, decimated here to 8000, 3000, 1500; Hunyuan 3.1 pro from the front cut-out of the Codex model sheet of the picked Vale C plate; skinned from the C1 Meshy rig)",
    "provenance": [
-    "citizens/commuters_D4__hunyuan_pro.glb"
+    "citizens/vale_C__hunyuan_pro.glb",
+    "model_sheets/vale_C__front.png",
+    "model_sheets/vale_C__sheet3view.png"
    ],
    "lods": [
     {
-     "src": "Citizens3D/citizens/commuters_D4__hunyuan_pro.glb",
+     "src": "Citizens3D/citizens/vale_C__hunyuan_pro.glb",
      "tex": 2048,
      "decimateTo": 8000
     },
@@ -738,31 +740,7 @@
      "tex": 512
     }
    ],
-   "tint": {
-    "from": 220,
-    "width": 30,
-    "minSat": 0.3,
-    "shift": -188,
-    "sat": 0.75,
-    "val": 2.2
-   },
    "smoothness": 0.2,
-   "notes": "citizens/commuters_D4__hunyuan_pro.glb has no entry in Citizens3D/PROVENANCE.json (the file is there; the generation record is not); the other Hunyuan citizens do.",
-   "repair": [
-    {
-     "op": "flatten",
-     "sat": [
-      0.0,
-      0.16
-     ],
-     "val": [
-      0.5,
-      1.0
-     ],
-     "to": 0.72,
-     "k": 0.4
-    }
-   ],
    "matSmoothness": 0.05,
    "noNormal": true,
    "torsoWebs": true

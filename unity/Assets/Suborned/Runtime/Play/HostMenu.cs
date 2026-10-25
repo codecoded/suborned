@@ -41,7 +41,7 @@ namespace Suborned.Play
         public void ContinueFrom(string path)
         {
             continueScript = path; Begin();
-            if (Continued) { ShowBriefing = false; Status = "Continued."; }
+            if (Continued) { ShowBriefing = false; BriefCamLand(); Status = "Continued."; }
         }
         Suborned.Sim.Game ContinueGame()
         {

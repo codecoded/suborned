@@ -19,11 +19,12 @@ const failing = (mutate: (w: World) => void = () => {}): string => {
 const first = (w: World, kind: string): StreetItem => w.ground.pieces!.find(s => s.kind === kind)!;
 
 describe('the road finish rule RF-3', () => {
-  test('the live world passes, and the finish is there: four kinds, thousands of pieces (the enamel set drops the pearl shoulder: brief 048)', () => {
+  test('the live world passes, and the finish is there: three kinds, thousands of pieces (the enamel set drops the pearl shoulder, brief 048, and the brass pinstripe, brief 061)', () => {
     expect(failing()).toBe('');
     const n = (k: string) => base.w.ground.pieces!.filter(s => s.kind === k).length;
-    for (const k of ['road-ribbon', 'road-pinstripe', 'road-lozenge', 'road-seam']) expect(n(k), k).toBeGreaterThan(1000);
+    for (const k of ['road-ribbon', 'road-lozenge', 'road-seam']) expect(n(k), k).toBeGreaterThan(1000);
     expect(n('road-shoulder')).toBe(0);
+    expect(n('road-pinstripe')).toBe(0); // brief 061, Sky 2026-10-25: no brass on the road edge
     expect(base.gen.roadFinish!.gaps.every(g => g.rule && g.where && g.why)).toBe(true);
   });
   test('it fails on a ribbon piece laid in the middle of a crossing strip', () => {
@@ -35,7 +36,7 @@ describe('the road finish rule RF-3', () => {
   });
   test('it fails on a piece that is not the family\'s kit piece, one that is not adopted, and one at the wrong level', () => {
     expect(failing(w => { first(w, 'road-lozenge').kit = { id: 'Bench', scale: [1, 1, 1] }; })).toMatch(/Bench is not an adopted ground:road-lozenge piece/);
-    expect(failing(w => { first(w, 'road-pinstripe').kit = { id: 'WashingtoniaPalm_Street', scale: [1, 1, 1] }; })).toMatch(/not an adopted ground:pave-pinstripe piece/);
+    expect(failing(w => { first(w, 'road-seam').kit = { id: 'WashingtoniaPalm_Street', scale: [1, 1, 1] }; })).toMatch(/not an adopted ground:road-seam piece/);
     expect(failing(w => { first(w, 'road-ribbon').z = 0.18; })).toMatch(/road-ribbon at z 0\.18, not 0 or 0\.02/);
   });
   test('it fails on two lozenges of one carriageway closer than their length and stopShort', () => {

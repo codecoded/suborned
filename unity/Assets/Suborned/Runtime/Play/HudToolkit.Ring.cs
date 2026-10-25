@@ -113,7 +113,7 @@ namespace Suborned.Play
                 Text(w.Word, s.Word); Show(w.Draw, s.Draws);
                 Show(w.Obj, s.Obj.Length > 0);
                 if (s.Obj.Length > 0) { var fc = w.Obj.Q("face"); if (s.Obj.StartsWith("icon:")) { fc.style.backgroundImage = StyleKeyword.None; if (fc.childCount == 0) E(fc, null, 1.5f, 1.5f, 9, 9); Icon(fc[0], s.Obj[5..], Cream); } else { if (fc.childCount > 0) Show(fc[0], false); Bg(fc, s.Obj, Color.white); } }
-                Show(w.Held, s.Shut); Show(w.Fields, !s.Shut);
+                Show(w.Held, s.Shut); Show(w.Fields, !s.Shut || s.ShutText.Length > 0); // a shut Loop (one loop at a time) keeps one field: when the running loop ends
                 w.Pill.style.opacity = s.Shut ? 0.75f : 1f; w.Icon.style.opacity = s.Shut ? 0.45f : 1f;
                 if (s.Shut)
                 {   // the lock, then one police badge a holder (brief 057 §4.2): the same holders the world marks
@@ -122,7 +122,8 @@ namespace Suborned.Play
                     Icon(w.Held[0], "lock", Cream);
                     for (int k = 1; k < w.Held.childCount; k++) { bool has = k - 1 < ids.Count; Show(w.Held[k], has); if (has) Bg(w.Held[k].Q("face"), "badges/" + (PlayText.RoleOfId(ids[k - 1]) == "rival" ? "signal_rival" : "signal_police"), Color.white); }
                 }
-                var fs = HudModel.PriceLine(host, s.Row.I);
+                var fs = s.Shut ? new List<HudModel.PField>() : HudModel.PriceLine(host, s.Row.I);
+                if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = s.ShutText });
                 if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
                 Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false);
                 Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);

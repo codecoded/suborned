@@ -274,6 +274,13 @@ namespace Suborned.Play
                     float cw = iconOnly ? IconOnlyW : ChipW; if (hwShown.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
                     if (carry && hw.Length == 0 && !s.Down) { Show(bar, false); r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 8; } // Glyph's 0.2.104 review #7: carrying, the plate is its icon and pace (no empty bar slot between them)
                     else tx.style.marginLeft = StyleKeyword.Null;
+                    { // Aster's call (brief 062 "Portraits and ids"): the Enforcer's plate names who he carries: Vale's model cameo, 18 px, before the pace
+                        var g0 = host.Game; bool vale = i == (int)OpId.Enforcer && g0 != null && !s.Down && (g0.Vale == ValeAt.WithEnforcer || g0.Ops[i].CarryBody.Length > 0 && host.CastOf("councillor") is Person vp && g0.Ops[i].CarryBody == vp.Id);
+                        var vc = r.Q("vale-cameo");
+                        if (vale && vc == null) { vc = E(r, null, w: 18, h: 18); vc.name = "vale-cameo"; vc.style.flexShrink = 0; vc.style.marginLeft = 6; r.Remove(vc); r.Insert(Mathf.Min(r.childCount, r.IndexOf(ic) + 1), vc); Bg(vc, "portraits/cameo_councillor_model", Color.white); }
+                        if (vc != null) Show(vc, vale);
+                        if (vale) { r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; } /* the plate grows by the cameo */
+                    }
                     float isz = iconOnly ? 13 : Glyph; ic.style.width = isz; ic.style.height = isz; r.style.paddingLeft = iconOnly ? (IconOnlyW - isz) / 2 : ChipPad; r.style.paddingRight = iconOnly ? (IconOnlyW - isz) / 2 : ChipPad; /* Glyph round 3: the loop glyph centred at ~75% in the small chip */
                     bool canX = (s.CanCancel || hw is "firing" or "aiming" or "drawing" or "too far" or "no line") && (busyHover == i || tipFor == i); /* brief 041: × also stops a lasting fire order */ x.style.left = cw + 4;
                     Show(x, canX);
@@ -771,7 +778,9 @@ namespace Suborned.Play
                 if (f.Kind == "eye") // Glyph, "Eyes, revised": the bare glyph, 18 px (no chrome disc: a rimmed disc read as a help button); its line on hover
                 {
                     float es = chip ? 18 : small ? 14 : 18; var gl = E(part, null, w: es, h: es, pick: true); Icon(gl, f.Icon, f.Eye == "open" ? Red : chip ? Cream : Ink);
-                    var tip = f.Tip; gl.RegisterCallback<PointerEnterEvent>(_ => EyeTipShow(gl, tip)); gl.RegisterCallback<PointerLeaveEvent>(_ => EyeTipShow(null, null)); continue;
+                    var tip = f.Tip; gl.RegisterCallback<PointerEnterEvent>(_ => EyeTipShow(gl, tip)); gl.RegisterCallback<PointerLeaveEvent>(_ => EyeTipShow(null, null));
+                    if (f.Text.Length > 0) { var en = L(part, chip ? "chip-value" : "card-price"); en.text = f.Text; en.style.color = ink; en.style.marginLeft = 2; if (!chip) { en.style.fontSize = small ? 11.5f : 13f; en.style.unityFontStyleAndWeight = FontStyle.Bold; } } // the move card: how many would keep the runner's face (Fable: the number after the eye)
+                    continue;
                 }
                 if (f.Kind == "mark") { Bg(E(part, null, w: ic + 2, h: ic + 2), $"badges/mark_{f.Mark}"); continue; }
                 if (f.Kind == "left") // brief 018 (Glyph r1): a 20 px cameo, then its fate glyph at 14 px (lock captured, footprints walks out)
@@ -820,7 +829,7 @@ namespace Suborned.Play
                     else
                     {
                         lead = "icons/singles/s_moving"; fs.Add(new HudModel.PField { Kind = "walk", Icon = "", Text = $"{mv.WalkS} s" });
-                        if (mv.RunS >= 0) { fs.Add(new HudModel.PField { Kind = "run", Icon = "run", Text = $"{mv.RunS} s" }); if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye }); if (mv.Alert.Length > 0) fs.Add(new HudModel.PField { Kind = "alert", Icon = "p_alert", Text = mv.Alert }); }
+                        if (mv.RunS >= 0) { fs.Add(new HudModel.PField { Kind = "run", Icon = "run", Text = $"{mv.RunS} s" }); if (mv.Eye.Length > 0) fs.Add(new HudModel.PField { Kind = "eye", Icon = "eye_" + mv.Eye, Eye = mv.Eye, Text = mv.Remembers > 0 ? mv.Remembers.ToString() : "", Tip = mv.Remembers > 0 ? HudModel.RememberTip(mv.Remembers) : "" }); /* engine 0.31.0: the passers-by who keep the face, their number after the eye */ if (mv.Alert.Length > 0) fs.Add(new HudModel.PField { Kind = "alert", Icon = "p_alert", Text = mv.Alert }); }
                     }
                 }
                 else if (it != null && hov != null && it.Actionable && host.Driving && it.Opens && host.HoverAct.glyph.Length == 0)
@@ -846,6 +855,9 @@ namespace Suborned.Play
         }
 
         // ---------------------------------------------------------------- the street
+
+        /// <summary>Dead camera discs drawn since start (the proof reads it).</summary>
+        public static int DeadDiscsShown { get; private set; }
 
         VisualElement WorldEl(string cls, float w, float h)
         {
@@ -981,6 +993,18 @@ namespace Suborned.Play
                 paints.Add(pp => { for (int k = 0; k < mx; k++) { var c = new Vector2(q.x + (k - (mx - 1) / 2f) * 8, q.y); if (!cell) { pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.55f); pp.BeginPath(); pp.Arc(c, 3.6f, Deg(0), Deg(360)); pp.Fill(); } pp.fillColor = k < hp ? (cell ? Cream : new Color(0.78f, 0.27f, 0.25f)) : new Color(1, 1, 1, 0.25f); pp.BeginPath(); pp.Arc(c, 2.6f, Deg(0), Deg(360)); pp.Fill(); } /* Glyph 022: a hostile's pips a deep red on an ink rim (the pale pink washed out on the paving) */ });
             }
             foreach (var dn in m.Down) { if (!Proj(dn.World + Vector3.up * 1.0f, out var q)) continue; var e = WorldEl("s-disc_dark_24", 22, 22); e.style.left = q.x - 11; e.style.top = q.y - 11; Icon(e.Q("g"), "s_downed", Cream); }
+            // Glyph 058 §2 (board 02): a dead camera keeps a disc to the end, 24 px, centred 20 px above its projected head (the pole top), clear of
+            // the window marker: cut (Disable) = disc_dark with the disable icon in cream; shot out = disc_light with fire in ink (harm's own pair)
+            if (!g.Range && host.Views != null)
+                foreach (var cm in g.S.Cameras)
+                {
+                    string dead = ""; try { dead = g.CameraDeadAs(cm.Id); } catch { } if (dead.Length == 0) continue;
+                    var ct = host.Views.Find("camera/" + cm.Id); if (ct == null || !ct.gameObject.activeInHierarchy || !Proj(ct.position + Vector3.up * (host.Views.CamHeadUp - 1.6f), out var hq)) continue;
+                    bool cut = dead == "cut"; var de = WorldEl(cut ? "s-disc_dark_24" : null, 24, 24); de.style.left = hq.x - 12; de.style.top = hq.y - 20 - 12;
+                    if (!cut) Bg(de, "markers/disc_light_24", Color.white);
+                    var dg = de.Q("g"); dg.style.left = 4.5f; dg.style.top = 4.5f; dg.style.width = 15; dg.style.height = 15; Icon(dg, cut ? "disable" : "fire", cut ? Cream : Ink);
+                    DeadDiscsShown++;
+                }
             // the eye on the target while a takedown is armed or hovered (Glyph §3): shut = from behind, open = he sees you, ? unknown
             var it = host.HoverIntent; HandoverHost.Target tg = host.Hover;
             if (host.Panel != null && host.PanelHover >= 0 && host.PanelHover < host.Panel.Rows.Count) { it = host.Panel.Rows[host.PanelHover].I; tg = host.Panel.T; }
@@ -1102,6 +1126,12 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- key-person pips (Sky, 2026-10-16: "no idea who the waitress is")
 
         static readonly string[] Cast = { "waitress", "guard", "driver", "councillor" };
+        /// <summary>Brief 062 "Portraits and ids" (Glyph 2026-10-25): a cast person's face at card size (Intel, the feed, the ticker): the painted
+        /// cameo with its baked ring, portraits/cameo_&lt;role&gt;_normal, for the waitress, the driver and the councillor; the guard keeps his pictogram
+        /// (he has no face file). CastBadge stays on the 11 to 14 px reads, where a face does not hold.</summary>
+        public static string FaceOf(string role) => role is "waitress" or "driver" or "councillor" ? $"portraits/cameo_{role}_normal" : CastBadge(role);
+        public static bool HasFace(string role) => role is "waitress" or "driver" or "councillor";
+
         public static string CastBadge(string role) => role switch { "waitress" => "badges/npc_waitress", "guard" => "badges/signal_guard", "driver" => "badges/npc_driver", _ => "badges/npc_councillor" };
         readonly Dictionary<string, float> pulseAt = new();
         string pipHover;
@@ -1741,7 +1771,7 @@ namespace Suborned.Play
 
         void BriefLess(bool alt)
         {
-            if (!m.BriefingOpen || briefObjective == null) return;
+            if (!m.BriefingOpen || briefObjective == null || BriefOnStreet) return;
             // at rest: the title, the goal line, three numbers, the four portraits and Begin; the sentences come back on Alt
             foreach (var e in new VisualElement[] { briefObjective.parent, briefTarget.parent, briefWin.parent.parent, briefWays[0].title.parent.parent }) Show(e, alt);
             if (briefFootLine != null) Show(briefFootLine, alt);

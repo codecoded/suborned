@@ -440,7 +440,7 @@ namespace Suborned.Play
                 "enter" => p.T.Kind == "door",
                 "take" => p.T.Kind == "person" && p.T.Key is "councillor" or "driver" || p.T.Kind == "car" && p.T.Key == "official",
                 "board" or "go" => p.T.Kind == "car" && p.T.Key == "getaway",
-                "loop" or "reroute" => p.T.Kind is "cabinet" or "camera" or "patrol",
+                "loop" or "disable" or "reroute" => p.T.Kind is "cabinet" or "camera" or "patrol",
                 "carry" or "restrain" or "drop" => p.T.Kind is "body" or "person" or "op",
                 "stash" => p.T.Kind is "stash" or "door",
                 "fire" or "mislead" => p.T.Kind is "rivals" or "hostile" or "security" or "unit" or "patrol" or "person" or "camera" or "car",

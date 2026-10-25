@@ -8,7 +8,8 @@ frame = float(a[3]) if len(a) > 3 else 0.50
 head_alb = a[5] if len(a) > 5 else None
 cut_below = float(a[6]) if len(a) > 6 else 0.235
 below = float(a[4]) if len(a) > 4 else 0.12
-F = "/Users/sky/Projects/suborned/unity/Assets/Suborned/People/Figures/%s/" % name
+F = os.environ.get("PEOPLE", "/Users/sky/Projects/suborned/unity/Assets/Suborned/People") + "/Figures/%s/" % name
+YAW = math.radians(float(os.environ.get("YAW", "0")))   # camera turn round the figure (degrees; + = camera to the figure's left)
 bpy.ops.wm.read_factory_settings(use_empty=True)
 bpy.ops.import_scene.fbx(filepath=F + "%s.fbx" % name)
 objs = [o for o in bpy.context.scene.objects if o.type == "MESH"]
@@ -53,7 +54,8 @@ tgt = mathutils.Vector((cx, cy, tz))
 dist = frame * 85 / 36
 cam = bpy.data.objects.new("cam", bpy.data.cameras.new("cam")); bpy.context.scene.collection.objects.link(cam)
 cam.data.lens = 85; cam.data.sensor_width = 36; cam.data.sensor_fit = "HORIZONTAL"
-cam.location = (cx, cy - dist, tz)
+ELEV = math.radians(float(os.environ.get("ELEV", "0")))   # camera raised by this angle, looking at the target
+cam.location = (cx + dist * math.cos(ELEV) * math.sin(YAW), cy - dist * math.cos(ELEV) * math.cos(YAW), tz + dist * math.sin(ELEV))
 cam.rotation_euler = (tgt - cam.location).to_track_quat("-Z", "Y").to_euler(); bpy.context.scene.camera = cam
 def light(loc, e, size, col=(1, 0.96, 0.9)):
     l = bpy.data.lights.new("l", "AREA"); l.energy = e; l.size = size; l.color = col
@@ -66,7 +68,7 @@ w = bpy.data.worlds.new("w"); w.use_nodes = True
 w.node_tree.nodes["Background"].inputs[0].default_value = (0.55, 0.55, 0.55, 1); w.node_tree.nodes["Background"].inputs[1].default_value = 0.55
 bpy.context.scene.world = w
 sc = bpy.context.scene; sc.render.engine = "BLENDER_EEVEE"; sc.render.resolution_x = 1024; sc.render.resolution_y = 1024
-sc.view_settings.view_transform = "Standard"
+sc.view_settings.view_transform = "Standard"; sc.view_settings.exposure = float(os.environ.get("EXPOSURE", "0"))
 sc.render.film_transparent = True; sc.render.image_settings.color_mode = "RGBA"; sc.render.filepath = out
 bpy.ops.render.render(write_still=True)
 print("BOUNDS", mn, mx)

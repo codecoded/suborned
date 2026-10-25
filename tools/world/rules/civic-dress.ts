@@ -1,5 +1,5 @@
 // CD-1..CD-4: the civic block's dressing (civic-block.json `dressing`, brief 008 B3). Each reads the export's civic masses, so what Unity draws is what is checked.
-// CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted; a crossing's signal orb is a canopy, its halo and studs are ground);
+// CD-1 nothing placed stands in a keep-clear zone that bars its kind, and nothing on the ground within 1.2 m of a Handover point (a canopy overhead and flat inlay excepted; a crossing's signal head is a canopy, its halo is ground);
 // CD-2 every piece the block names is adopted in the kit, and a material a mass draws in place of its piece's own replaces a slot the piece has; CD-3 the pieces brief 008 added (the bed tufts and the terrace among them)
 // stay within their LOD0 triangle budget; CD-4 every material they draw (pieces, bed kerb and hedge, replaced slots) has its unlit colour in the look palette. (CD-4 was also a dE2000 >= 20 gate from the signal colours; Sky freed them on 2026-10-16.)
 import { readFileSync } from 'node:fs';
@@ -44,10 +44,10 @@ function zonesOf(c: WCtx, dr: Dressing, toPlan: (p: V) => V): Zone[] {
   return zones;
 }
 
-/** What the crossings put on the ground (brief 009): each kerb stud and each signal orb's halo disc, on the ground within reach of a Handover point like any piece of the dressing. The orb itself hovers overhead (canopy class, exempt), and the light bars, dots and
- *  inlay arcs are flush with the paving (flat inlay, exempt); the halo is a glowing disc and the studs are domes, so they count. */
+/** What the crossings put on the ground (brief 009): each signal head's halo disc (brief 061: no kerb studs any more), on the ground within reach of a Handover point like any piece of the dressing. The orb itself hovers overhead (canopy class, exempt), and the light bars and dots
+ *  are flush with the paving (flat inlay, exempt); the halo is a glowing disc, so it counts. */
 export function crossingGround(w: Pick<World, 'street'>): Ground[] {
-  return w.street.flatMap(s => s.kind === 'crossing-stud' ? [{ id: s.id, what: 'crossing stud', ring: itemRing(s) }] : s.signal ? [{ id: s.id, what: 'signal halo', ring: discRing(s.signal.halo.at, s.signal.halo.r) }] : []);
+  return w.street.flatMap(s => s.signal ? [{ id: s.id, what: 'signal halo', ring: discRing(s.signal.halo.at, s.signal.halo.r) }] : []);
 }
 type Ground = { id: string; what: string; ring: V[] };
 
@@ -61,7 +61,7 @@ export function clearRule(masses: Mass[], kinds: Map<string, string>, zones: Zon
     for (const z of zones) if (z.bars.includes(kind) && z.hits(m.ring)) bad.push(`${m.id} (${kind}) stands in ${z.id}`);
     if (kind !== 'parasol' && kind !== 'band') for (const h of points) if (toRing(h.p, m.ring) < HANDOVER_CLEAR - 0.011) bad.push(`${m.id} (${kind}) is ${toRing(h.p, m.ring).toFixed(2)} m from '${h.name}'`);
   }
-  return rule('CD-1', 'Civic dressing', `Nothing the block's dressing places stands in a keep-clear zone that bars its kind, or on the ground within ${HANDOVER_CLEAR} m of a Handover point (a parasol's canopy and flat inlay may); a crossing's studs and signal halos are on the ground, its orb is a canopy`, placed.length + ground.length, bad, 'none', SOURCE);
+  return rule('CD-1', 'Civic dressing', `Nothing the block's dressing places stands in a keep-clear zone that bars its kind, or on the ground within ${HANDOVER_CLEAR} m of a Handover point (a parasol's canopy and flat inlay may); a crossing's signal halos are on the ground, its head is a canopy`, placed.length + ground.length, bad, 'none', SOURCE);
 }
 
 /** Every piece id the block's dressing and civic-look.json name. */

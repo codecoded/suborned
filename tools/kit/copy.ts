@@ -30,6 +30,12 @@ export function copyAdopted(kit: Kit, root: string, dest: string, gen?: string):
     const path = relative(dest, abs); if (!/_L\d\.fbx$/.test(path) || want.has(path)) continue;
     rmSync(abs); if (existsSync(abs + '.meta')) rmSync(abs + '.meta'); r.pruned.push(path);
   }
+  // a rejected piece's files (brief 061 retired SignalEye, KerbStud, CrossEdgeLine_1/2, CrossInlayArc_R24_W08 and LightField_1/2; SpaceHQ before): status rejected means removed from the copy. Only the files no adopted piece lists
+  // (a material or model two pieces share stays), only under Models/ and Materials/ (the textures are pruned below; Prefabs/ holds Unity's own generated prefabs, which KitImport/KitPlacer remove through the AssetDatabase), each with its meta.
+  for (const a of kit.assets.filter(x => x.status === 'rejected')) for (const f of a.files) {
+    const path = f.path.replace(/\.meta$/, ''); if (!/^(Models|Materials)\//.test(path) || want.has(path) || want.has(path + '.meta')) continue;
+    for (const rel of [path, path + '.meta']) { const abs = join(dest, rel); if (existsSync(abs)) { rmSync(abs); r.pruned.push(rel); } }
+  }
   // textures no adopted piece lists any more (a material re-pointed at a lighter sheet leaves the old one behind: brief 026, the six pave_flags_v1 files): removed with their meta. Only Textures/ is pruned: it holds nothing but the kit's copies.
   for (const abs of walk(join(dest, 'Textures'))) {
     const path = relative(dest, abs).replace(/\.meta$/, ''); if (want.has(path) || want.has(path + '.meta') || want.has(relative(dest, abs))) continue;

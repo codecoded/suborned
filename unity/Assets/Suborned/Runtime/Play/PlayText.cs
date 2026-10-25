@@ -243,6 +243,12 @@ namespace Suborned.Play
                 }
         }
 
+        /// <summary>Brief 062 B (Fable's less.briefing): the briefing screen's labels flattened ("target", "fact", "office", "ways.pickup", "job.tech", "begin").</summary>
+        public readonly Dictionary<string, string> BriefWords = new();
+        void BriefFlat(JNode n, string pre) { foreach (var kv in n.Entries) { if (kv.Value.Kind == JKind.Obj) BriefFlat(kv.Value, pre + kv.Key + "."); else if (kv.Value.Kind == JKind.Str) BriefWords[pre + kv.Key] = kv.Value.Str(); } }
+        /// <summary>A briefing label by key, else the fallback.</summary>
+        public string BriefWord(string key, string fallback) => BriefWords.TryGetValue(key, out var v) && v.Length > 0 ? v : fallback;
+
         /// <summary>Brief 043's done-moment words (text.json less.done), flattened "group.key" ("plate.done", "cancel.cost.lost", "walk.who.waitress").</summary>
         public readonly Dictionary<string, string> Done = new();
         void DoneFlat(JNode n, string pre) { foreach (var kv in n.Entries) { if (kv.Value.Kind == JKind.Obj) DoneFlat(kv.Value, pre + kv.Key + "."); else if (kv.Value.Kind == JKind.Str) Done[pre + kv.Key] = kv.Value.Str(); } }
@@ -269,7 +275,7 @@ namespace Suborned.Play
                 if (go.Opt("why") is JNode gw) foreach (var kv in gw.Entries) GoWhy[kv.Key] = kv.Value.Str();
                 if (go.Opt("fate") is JNode gf) foreach (var kv in gf.Entries) GoFate[kv.Key] = kv.Value.Str();
             } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it
-            if (l.Opt("briefing") is JNode br) BriefGoal = S(br, "goal") ?? BriefGoal;
+            if (l.Opt("briefing") is JNode br) { BriefGoal = S(br, "goal") ?? BriefGoal; BriefFlat(br, ""); } // brief 062 B (Fable): the briefing's labels, "target", "ways.front-door", "job.scout"
             if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
             if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }
             if (l.Opt("hint") is JNode hn) { HintShowS = F(hn, "showSeconds", HintShowS); HintReturnS = F(hn, "returnSeconds", HintReturnS); HintMaxShows = (int)F(hn, "maxShows", HintMaxShows); if (hn.Opt("firstAct") is JNode fa && fa.Kind == JKind.Str) FirstActHint = fa.Str(); }
@@ -510,7 +516,8 @@ namespace Suborned.Play
             A("help", "Help", "solve their problem for them: loyal after, if you know what they need");
             A("pressure", "Pressure", "lean on them: quick and cheap, but it leaves resentment and a trail");
             A("call", "Call", "ring a turned contact and ask for the favour now");
-            A("loop", "Loop camera", "patch an old recording into the entrance feed; the Tech must stay at the cabinet");
+            A("loop", "Loop camera", "loop a camera for two minutes; once it is set, the Tech is free to go");
+            A("disable", "Disable camera", "cut a camera for good; the desk soon notices, and that counts as a report");
             A("reroute", "Reroute patrol", "send the patrol false orders: it leaves the entrance sweep for a while");
             A("mislead", "False tip", "a false tip sends the rival crew elsewhere for a while");
             A("enter", "Enter", "slip in at the public door to reach Vale; anyone watching the door sees");

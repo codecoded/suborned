@@ -241,7 +241,7 @@ describe('what the quiet play can reach (recorded routes, taken against the refe
     return taken;
   }
   test('there are recorded routes that touch Inez, and each of their orders is taken at its recorded tick', () => {
-    expect(scripts.length).toBe(7); // route A (Help, Pressure, and their board variants) and the three fail-entry-* routes
+    expect(scripts.length).toBe(9); // route A (Help, Pressure, and their board variants), the three fail-entry-* routes, and brief 058's route-a-disable and careless-loop-runs-out (Waymark, 2026-10-25)
     for (const { f, s } of scripts) for (const t of walk(s.orders!)) expect([f, t.o.tick, t.o.do, t.waited]).toEqual([f, t.o.tick, t.o.do, 0]);
   });
   test('the check can fail: a Help given while she is at a table is refused by reach', () => {

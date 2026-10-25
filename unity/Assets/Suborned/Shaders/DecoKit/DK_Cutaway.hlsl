@@ -33,7 +33,22 @@ float4 _DKCutBack;   // x how far beyond the focus along the view the cut reache
 // with its own narrow feather: _DKCutClean.x what stays there (0 at full fade), .y its feather (m). The shadow map keeps the ghost shadow.
 #define DK_CUT_POINTS 10
 float4 _DKCutPoints[DK_CUT_POINTS];
-float4 _DKCutClean;
+float4 _DKCutClean;  // x what stays of a person's disc (0 at full fade); y its feather (m); z the fade's ease (0 solid .. 1 full, ArchitectureFade.fadeTime)
+// Brief 056 F (Sky 2026-10-25: "the soft circle cut with silhouettes, as the one rule for every yaw"): in the camera's passes (forward,
+// depth, depth-normals) a capsule per point replaces the ground discs: the point's foot to its head on the screen (view-space x, y: the
+// camera is orthographic, so view space is screen space in metres), a soft edge from _DKCutCaps.z of its radius out to the radius, cut only
+// where the fragment is nearer the camera than the point by _DKCutCaps.w (0.45 m on linear eye depth): a wall behind a person, or beside
+// it at the same depth, stays whole. Interleaved gradient noise for the soft edge (a 4x4 Bayer screen read as a screen door), a small cream
+// lean on the rim (_DKCutRim, scaled by the wall's lit luminance x _DKCutRimLit; Glint). With capsules ArchitectureFade sets _DKCutShape.w 0, so the shadow pass never discards.
+float4 _DKCutCaps;                    // x capsule mode (0 / 1); y capsules in use; z the soft edge's start as a share of the radius (0.55); w the depth margin (m)
+float4 _DKCapsSeg[DK_CUT_POINTS];     // view-space foot (x, y) and head (z, w), m
+float4 _DKCapsInfo[DK_CUT_POINTS];    // x the point's linear eye depth (m); y the capsule's radius (m)
+float4 _DKCutRim;                     // rgb the rim's lean (linear); a its strength at full fade
+float _DKCutRimLit;                   // the rim's cream scales with the wall's lit luminance x this (Glint, signals.json capsule.rimLit)
+static float dkRim = 0.0;             // the rim's lean for this fragment (set by DKCutaway, read by the forward pass)
+
+// Interleaved gradient noise (Jimenez 2014): a fine, even threshold per pixel, soft at 2x where Bayer 4x4 reads as a grid.
+float DKIGN(float2 px) { return frac(52.9829189 * frac(dot(px, float2(0.06711056, 0.00583715)))); }
 
 float DKBayer4(float2 px)
 {
@@ -86,6 +101,22 @@ float DKCutKeepAt(float3 p, float ghost, float clean)
 
 float DKCutKeep(float3 p) { return DKCutKeepAt(p, _DKCutShape.y, _DKCutClean.x); }
 
+// Brief 056 F: how much of the fragment stays (1 = all) at view-space position v (x, y on the screen in m; depth its linear eye depth):
+// the least over the capsules it is nearer the camera than, smoothstep from 0.55 r to r round the foot-to-head segment.
+float DKCapsKeep(float2 v, float depth)
+{
+    float keep = 1.0;
+    int n = min((int)_DKCutCaps.y, DK_CUT_POINTS);
+    for (int i = 0; i < n; i++)
+    {
+        float2 info = _DKCapsInfo[i].xy;
+        if (depth >= info.x - _DKCutCaps.w) continue;  // not in front of the point: whole
+        float4 s = _DKCapsSeg[i];
+        keep = min(keep, smoothstep(info.y * _DKCutCaps.z, info.y, DKSegmentDistance(v, s.xy, s.zw)));
+    }
+    return keep;
+}
+
 bool DKCutOn() { return _DKCutFocus.w > 0.0 && (GetMeshRenderingLayer() & DK_CUT_LAYER) != 0u; }
 
 // Glyph's 0.2.94 review #1 (the heavy stipple): what stays of a ghost is drawn as a veil, not the wall's own colour at full contrast:
@@ -104,6 +135,13 @@ float DKCutaway(float4 positionCS, out float3 ground)
 #if defined(_DK_CUT)
     if (!DKCutOn()) return 0.0;
     float3 p = ComputeWorldSpacePosition(GetNormalizedScreenSpaceUV(positionCS), positionCS.z, UNITY_MATRIX_I_VP);
+    if (_DKCutCaps.x > 0.5)
+    {   // brief 056 F: the capsules, eased in and out with the fade
+        float3 v = TransformWorldToView(p);
+        float ck = lerp(1.0, DKCapsKeep(v.xy, -v.z), _DKCutClean.z);
+        if (ck < 0.999) { clip(ck - DKIGN(positionCS.xy)); dkRim = _DKCutRim.a * (1.0 - abs(ck * 2.0 - 1.0)); }
+        return 0.0;
+    }
     float keep = DKCutKeep(p);
     clip(keep - DKBayer4(positionCS.xy));
     float2 k = _DKCutView.xz / max(-_DKCutView.y, 1e-3);
@@ -141,6 +179,7 @@ void DKLitPassFragment(Varyings input, out half4 outColor : SV_Target0
         half3 lit = _MainLightColor.rgb * (saturate(_MainLightPosition.y) * shade) + SampleSH(half3(0, 1, 0));
         outColor.rgb = lerp(outColor.rgb, _DKCutVeil.rgb * lit, veil);
     }
+    if (dkRim > 0.0) { half lum = dot(outColor.rgb, half3(0.2126, 0.7152, 0.0722)); outColor.rgb = lerp(outColor.rgb, _DKCutRim.rgb * saturate(lum * _DKCutRimLit), dkRim); }  // brief 056 F: the cut's rim leans cream, scaled by the wall's own lit luminance (Glint 2026-10-25: faint on enamel and at night, nothing on sunlit stone)
 }
 #undef DK_CUT_FORWARD
 #endif

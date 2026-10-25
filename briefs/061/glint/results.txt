@@ -1,0 +1,54 @@
+# python3 -I validate.py
+cones  #e03a2f through the grade -> #c30008  dE00 10.0 (Neutral-era record: cones 7.2, guard 5.0, rivals 3.3: only the guard is comparable)
+guard  #f0a020 through the grade -> #db9900  dE00 4.8 (Neutral-era record: cones 7.2, guard 5.0, rivals 3.3: only the guard is comparable)
+rivals #8a4fd0 through the grade -> #6e24c4  dE00 10.5 (Neutral-era record: cones 7.2, guard 5.0, rivals 3.3: only the guard is comparable)
+dE00 #e03a2f #c30008: here 10.03  deltae.py 10.03
+dE00 #f0a020 #db9900: here 4.84  deltae.py 4.84
+dE00 #FFB624 #f0a020: here 6.31  deltae.py 6.31
+civic paving (albedo #e4dacb), sun on flat ground: #e4d5c5 (record: R about 235, the paintings 237,220,201)
+
+# python3 -I final.py
+walk     day      trim #53ffb3 x1.30  dE 0.36 (+-10% level: 1.73)  out #57e7b2  peak lin 1.30
+walk     evening  trim #39ffc6 x1.15  dE 0.25 (+-10% level: 1.75)  out #52e6b0  peak lin 1.15
+walk     night    trim #00ffa9 x1.15  dE 0.83 (+-10% level: 1.98)  out #5fe4af  peak lin 1.15
+clearing day      trim #ff8c00 x1.90  dE 1.23 (+-10% level: 2.79)  out #ffb400  peak lin 1.90
+clearing evening  trim #ff8b06 x1.90  dE 1.23 (+-10% level: 2.82)  out #ffb400  peak lin 1.90
+clearing night    trim #ff8800 x1.75  dE 1.45 (+-10% level: 3.12)  out #fcb200  peak lin 1.75
+stop     day      trim #ff5a59 x1.15  dE 0.56 (+-10% level: 2.30)  out #f5422e  peak lin 1.15
+stop     evening  trim #ff6766 x0.90  dE 0.26 (+-10% level: 2.49)  out #f1422d  peak lin 0.90
+stop     night    trim #ff4b46 x1.20  dE 0.38 (+-10% level: 2.34)  out #f3442e  peak lin 1.20
+
+day walk-clearing 43 clearing-stop 37 walk-stop 72 | clearing vs guard #f0a020: 6.4 | stop vs cone #e03a2f: 5.2 | hue clearing 42 guard 37
+evening walk-clearing 43 clearing-stop 37 walk-stop 71 | clearing vs guard #f0a020: 6.4 | stop vs cone #e03a2f: 4.7 | hue clearing 42 guard 37
+night walk-clearing 42 clearing-stop 37 walk-stop 70 | clearing vs guard #f0a020: 6.0 | stop vs cone #e03a2f: 5.1 | hue clearing 42 guard 37
+
+# python3 -I sil.py
+fill day dE 3.76 pre #12544c lin [0.006  0.0883 0.0716] -> out #002c2d
+fill evening dE 0.04 pre #3d514e lin [0.0467 0.083  0.0756] -> out #17302f
+fill night dE 0.01 pre #595e5c lin [0.0997 0.1118 0.1081] -> out #17302f
+fill nightB dE 0.03 pre #5c5d5c lin [0.1067 0.1101 0.1069] -> out #17302f
+rim day #eee8da dE 0.06 pre #ffffff lin [1.861 1.555 1.125] max 1.86 -> out #eee8da
+rim evening #f0e2cf dE 0.05 pre #ffffff lin [1.444 1.205 1.005] max 1.44 -> out #f0e2cf
+rim night #d7d9d0 dE 0.04 pre #f4f9e5 lin [0.906 0.949 0.786] max 0.95 -> out #d7d9d0
+rim nightB #d7d9d0 dE 0.10 pre #f5fae8 lin [0.915 0.952 0.811] max 0.95 -> out #d7d9d0
+
+# python3 -I rim.py
+wall (displayed)                 L* | now: lerp to cream .33 | relative .33 (k 2.5)   | relative .45 (k 2.5)  
+day lit stone #ecdac5          87.8 | #e6d8c9 dL* -0.8       | #e6d8c9 dL* -0.8       | #e4d7ca dL* -1.1      
+day shade stone #a99c91        65.0 | #beb8b0 dL* +9.9       | #bdb6ae dL* +9.3       | #c2bdb5 dL* +11.7     
+day lit seafoam #8fcfc0        78.6 | #b3d0c6 dL* +2.7       | #b3d0c6 dL* +2.7       | #bcd1c8 dL* +3.5      
+day shade teal enamel #1f4a50   28.8 | #9aa19a dL* +36.6      | #516564 dL* +12.5      | #606e6b dL* +16.5     
+night wall (ambient) #00151a    5.4 | #9a9996 dL* +57.8      | #0b2225 dL* +6.3       | #122829 dL* +8.9      
+night wall in a lamp pool #7a6a55   45.7 | #b2aba0 dL* +24.6      | #968b7e dL* +12.9      | #9d9488 dL* +16.0     
+
+# python3 -I vale.py
+albedo: ivory #e0d4bf (lin [0.74 0.66 0.52]), black plates #161514, gold trim ~#916b41 (the brightest fifth, the darkest, the saturated trim)
+lit as (day)                               ivory    gold     black    black+spec
+top, in sun                                #e3d2bb  #b57020  #1f1b1c  #221f21   
+wall facing the sun                        #ebdbc2  #c87f1b  #201c1c  #232022   
+wall in shade (the Records Office front)   #b19977  #59381e  #1c1919  #1f1d1e   
+dE00 ivory vs stone of the same albedo as the street paving: sun wall 2.4, shade wall 2.6
+albedo scales on the ivory (linear) and dE00 to the stone (sun / shade):
+   [0.95 0.92 0.86] #ead8b8 #ae946b 4.8 / 5.0
+   [0.92 0.86 0.76] #ead5ae #ac8f62 6.9 / 6.9
+   [0.9  0.82 0.7 ] #ead3a7 #ab8b5c 8.2 / 8.1

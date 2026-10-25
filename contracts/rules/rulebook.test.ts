@@ -544,6 +544,19 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(n(rs.checkIn)).toBe(90); // Sky answer 4: every staff post, every 90 s from the shift's start
   });
 
+  test('Loop v2 and Disable (brief 058 §6, engine 0.31.0; Sky 2026-10-25): the tether and its cancel are retired, a loop runs 2:00', () => {
+    expect(rb.cell.loop.tether).toBeUndefined(); expect(rb.values['tether-m']).toBeUndefined(); // kept optional in the schema only for pinned runs
+    expect(rb.cancel.loopHeld).toBeUndefined();
+    expect([n(rb.cell.loop.s), n(rb.cell.loop.trail), n(rb.cell.loop.run!)]).toEqual([20, 1, 120]);
+    expect(rb.cell.disable).toBeDefined();
+    expect([n(rb.cell.disable!.s), n(rb.cell.disable!.trail)]).toEqual([10, 2]);
+    expect(rb.cell.disable!.targets).toBe('cell.loop.targets');
+    const both = structuredClone(raw); both.cell.loop.tether = 'v:loop-s';
+    expect(Rulebook.safeParse(both).success).toBe(false); // exactly one of tether or run
+    expect(rb.witness?.notice?.odd).toEqual(expect.arrayContaining(['threat', 'run'])); // brief 054 §8, Sky 2026-10-25: both rows confirmed
+    expect(rb.witness?.notice?.never).toContain('disable');
+  });
+
   test('the takedown: Motive §7.1, read by ref', () => {
     expect([td.ko, td.kill, td.struggle, td.wake, td.stagger, td.restrain, td.free, td.callOut].map(n)).toEqual([6, 3, 3, 120, 4, 8, 3, 10]);
     expect(td.reach).toBe(rb.cell.atReach); // hands: the same reach as an act at a device

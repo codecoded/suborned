@@ -95,13 +95,13 @@ def light_pool_1(s):
     quad(s, 1.0, POOL_W, GLOW, pal.Cross_Pool)
 
 
-@asset("LightField_2", "Ground", bevel=0.0, near=lambda s: quad(s, 2.0, FIELD_W, GLOW, pal.Cross_Pool))
+@asset("LightField_2", "Ground", bevel=0.0, near=lambda s: quad(s, 2.0, FIELD_W, GLOW, pal.Cross_Pool), retired="brief 061 (Sky 2026-10-25): the lit field goes; the dot rows and the ring are the light")
 def light_field_2(s):
     """2 m of light spilt across the whole strip: one 2.0 x 3.9 m glow quad (kind glow, additive), 2 mm proud; fade = 1 - |v| / 1.95. Ends butt. Sits between the brass edge lines (y = +-2.0)."""
     quad(s, 2.0, FIELD_W, GLOW, pal.Cross_Pool)
 
 
-@asset("LightField_1", "Ground", bevel=0.0, near=lambda s: quad(s, 1.0, FIELD_W, GLOW, pal.Cross_Pool))
+@asset("LightField_1", "Ground", bevel=0.0, near=lambda s: quad(s, 1.0, FIELD_W, GLOW, pal.Cross_Pool), retired="brief 061 (Sky 2026-10-25): the lit field goes; the dot rows and the ring are the light")
 def light_field_1(s):
     """1 m end module of LightField_2 (1.0 x 3.9 m)."""
     quad(s, 1.0, FIELD_W, GLOW, pal.Cross_Pool)

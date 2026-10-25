@@ -85,6 +85,7 @@ namespace Suborned.Sim
                 case "turn": return Turn(op, o);
                 case "call": return Call(op, o);
                 case "loop": return Loop(op, o);
+                case "disable": return Disable(op, o); // brief 058 §2 (GameCameraLines.cs); unknown-verb without cell.disable
                 case "reroute": return Reroute(op, o);
                 case "mislead": return Mislead(op, o);
                 case "fire": return Fire(op, o);
@@ -166,7 +167,7 @@ namespace Suborned.Sim
             if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
             var p = PersonByRole(o.Target);
-            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds"); // brief 031: his tether covers Watch
+            if (op.Id == OpId.Tech && Tethered) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds"); // brief 031: his tether covers Watch (before engine 0.31.0: Loop v2 has no tether)
             if (o.Do == "watch" && R.WatchOffers && !ScoutTeaches(LearnEv(o.Do), p) && WatchRefusal(p) == "nothing-to-see") return No("nothing-to-see", $"watching {p.Role} would show nothing the cell can act on (brief 054 §2): no Watch to give");
             if (!ScoutTeaches(LearnEv(o.Do), p)) return o.Do == "listen" ? No("already-heard", $"the cell knows {p.Role}'s need and temperament already: a Listen teaches nothing more") : No("already-watched", $"the cell knows {p.Role}'s place and when already: a Watch teaches nothing more");
             var miss = Present(p, out var pos); if (miss.Length > 0) return miss;
@@ -285,9 +286,8 @@ namespace Suborned.Sim
                     if (o.Do == "watch" && o.Target == "guard") WatchedWatcher("guard", R.SightWatchS); // the guard's Watch teaches his sight too
                     break;
                 case "turn": LandPersonEvent(op, o, R.Ev("turn." + o.Approach), PersonByRole(o.Target)); break;
-                case "loop":
-                    LoopOn = true; LoopCam = o.Target; AddTrail(R.LoopTrail, "loop"); Actions.Add(o.Target == "entrance" ? "loop" : "loop:" + o.Target);
-                    Note("loop.on", "One feed repeats. The Tech is tied to the cabinet."); break;
+                case "loop": LandLoop(o); break; // GameCameraLines.cs (Loop v2, engine 0.31.0)
+                case "disable": LandDisable(o); break; // brief 058 §2 (engine 0.31.0)
                 case "reroute":
                     if (PatrolDown) break;
                     var rerouteFrom = PatrolPose()?.pos; // where it leaves from: its sweep, a chase or an alarm (engine 0.30.0)
@@ -737,14 +737,6 @@ namespace Suborned.Sim
             return "";
         }
 
-        string Loop(Op op, Order o)
-        {
-            if (op.Id != OpId.Tech) return No("only-tech", "only the Tech loops cameras (§03)");
-            if (!LoopTarget(o.Target)) return No("loop-wrong-target", "the Tech's cabinet loops the entrance camera, the pickup camera and the city's own cameras (the Records Square mast)");
-            if (LoopOn) return No("loop-holds", "the loop already holds");
-            if (!G.Within(op.Pos, S.At("cabinet"), R.AtReachCm)) return No("stand-at-cabinet", "stand at the cabinet", cm: R.AtReachCm);
-            Engage(op, o, R.LoopS); return "";
-        }
         /// <summary>A camera the cabinet loops (rulebook cell.loop.targets): a site camera named in the list, or any of the city's own
         /// cameras when the list holds "world". One loop at a time.</summary>
         bool LoopTarget(string id)

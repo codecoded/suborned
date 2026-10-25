@@ -208,7 +208,7 @@
    "id": "rival-park",
    "at": [84.0, -31.0],
    "src": "GDD §07: 3:10 rival car parks near pickup",
-   "reason": "on Apron Road, 5.8 m south of the official car in the official bay.",
+   "reason": "on Apron Road, 5.8 m south of the official car in the official bay. Held here for batch 0.2.118 (Aster, 2026-10-25): Vantage's target (90.5, -31.0), on the eastbound lane, is in briefs/059-pickup-and-rivals.md 'Aster: inputs for Keel's 059 round' and in tools/sim/stands.ts RIVAL_PARK_059; it moves here with Keel's 059 round.",
    "level": "street",
    "on": "apron-road",
    "floor": -0.18
@@ -340,6 +340,148 @@
    "src": "GDD §07 safe: the guard (never saw you) fights them",
    "reason": "on the Office side of the getaway car, 10 m from it, within fire reach of the ambush spots.",
    "level": "street"
+  },
+  {
+   "id": "service-drive",
+   "at": [69.35, -15.0],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: the second getaway stand, on the Office's service drive behind Vale's car",
+   "reason": "The getaway car's stand on the service drive (civic-block.json drives service-drive, x 67..80, y -16.5..-13.5), nose out toward Apron Road (facing +x, south; the mission schema has no heading for a car, so it is stated here, as service-bay's is). Behind Vale's car, which stands nose in at service-bay (63.75, -15.0) in serviceBay (x 60.5..67): brief 059 §1.4 puts it 1 m behind; this centre is 2.35 m past the bay's mouth (x 67) and 5.6 m from Vale's car's. The carry from Vale's back door to this car's is about 3.5 m (brief 059 §1.4). The drive is one car wide: on it before Vale's car, it blocks his way in (K5). Exit: Apron Road east (+y), away from the rival car at rival-park. V-1 at yaw 210, the heading the yard is played at: 30 100 %, 120 0 %, 210 100 %, 300 100 %. A free cell of the walk grid as well as the drive grid. The stand id is service-drive, the same string as the civic block's drive it stands on (a different list: drives[], not places).",
+   "yaw": 210,
+   "level": "street",
+   "on": "service-drive",
+   "floor": -0.18
+  },
+  {
+   "id": "svc-ambush-1",
+   "at": [57.25, -17.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 1 at the service-drive stand, MC-11",
+   "reason": "North of the Office's service door, beside its dumpster (the stash street/civic/stash/office-service-door, 2.8 m from its centre), on the side the posted three come from (the square, round the Office's north side). 12.4 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-2",
+   "at": [60.25, -6.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 2 at the service-drive stand, MC-11",
+   "reason": "The yard's north-east, the low bed civic-office-west (0.52 m) between it and the car. 12.3 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-3",
+   "at": [63.25, -4.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 3 at the service-drive stand, MC-11",
+   "reason": "The open yard east of the bed, facing the car's flank. 12.4 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-4",
+   "at": [71.75, -2.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 4 at the service-drive stand, MC-11",
+   "reason": "The open yard east of the car, 8 m in from Apron Road's kerb. 12.5 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 0 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-ambush-5",
+   "at": [76.75, 1.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 5 at the service-drive stand, MC-11",
+   "reason": "The yard's south-east by Apron Road, 3.25 m in from the kerb, off the strip where the generator lays kerb furniture (call box, police post; they move with brief 061's crossings). 17.9 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 0 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-1",
+   "at": [54.25, -19.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 1 at the service-drive stand, MC-11",
+   "reason": "At the Office's north-east corner (55.5, -19.5), the wall beside it: the police come from the north street round the Office's north side (security-entry), so their stands face the car from that side. 15.7 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-2",
+   "at": [55.75, -14.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 2 at the service-drive stand, MC-11",
+   "reason": "The yard's north edge, in line with the drive. 13.6 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-3",
+   "at": [52.25, -15.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 3 at the service-drive stand, MC-11",
+   "reason": "Behind police stand 2, toward Orbit Walk, the way the police come in. 17.1 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "svc-police-4",
+   "at": [53.25, -11.25],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: police stand 4 at the service-drive stand, MC-11",
+   "reason": "The yard's north edge, 4 m east of police stand 3. 16.5 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight.",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "rival-drop",
+   "at": [34, -38],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: 2:46.5 the rival car stops by the square and drops three (§2.2)",
+   "reason": "Orbit Walk's north lane (centreline x 37.5, w 13: this is 3.5 m north of it, 3 m off the square's kerb x 31): P1 to P3 get out (rivals-drop-s 8 s) and walk to ambush-1 (14.5 m), ambush-3 (13.7 m) and ambush-2 (54.5 m) round the cell's car (brief 059 §2.2). V-1 at yaw 30, the heading the square is played at: 30 100 %, 120 83 %, 210 100 %, 300 100 %. A free cell of the walk grid. Not read by the engine yet (K7, K10 rivals.car.drop).",
+   "level": "street",
+   "on": "orbit-walk",
+   "floor": -0.18
+  },
+  {
+   "id": "rival-lookout",
+   "at": [94, -27],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: 3:15 the lookout gets out and posts on the far pavement facing the official door (§2.2)",
+   "reason": "Apron Road's far (south) pavement, 2 m in from its kerb (x 92) on the orbit-gardens plot, 5.3 m from the parked rival car at rival-park's re-site (90.5, -31), facing across the road to the official door (76.25, -30; 18.0 m) and the official drop-off (78.2, -31; 16.3 m). V-1 at yaw 30 (the official bay's heading): 30 100 %, 120 100 %, 210 100 %, 300 100 %. A free cell of the walk grid. Not read by the engine yet (K8, K10 rivals.posts.lookout).",
+   "level": "street"
+  },
+  {
+   "id": "rival-car-entry",
+   "at": [37.5, 15.75],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: 2:35.4 the rival car turns in from Orbit Walk at the window's east edge (§2.2)",
+   "reason": "Orbit Walk's centreline at the walk grid's east edge (its last cells, y 15.5..16): where the car comes into the window from the Sea Gates side, 5.75 m past Pylon Row's centreline (y 10). It drives west to rival-drop (55.4 m). V-1 at yaw 30 (the opening heading): 30 100 %, 120 100 %, 210 0 %, 300 0 %. A free cell of the walk grid. Not read by the engine yet (K7, K10 rivals.car.entry).",
+   "level": "street",
+   "on": "orbit-walk",
+   "floor": -0.18
+  },
+  {
+   "id": "rival-lookout-exit",
+   "at": [94, 15.75],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F4; rival-routine.values.json points.new); placed by Vantage 2026-10-25: a warned lookout leaves the map here",
+   "reason": "Apron Road's far (south) pavement at the walk grid's east edge (its last cells, y 15.5..16, as rival-car-entry on Orbit Walk), on the same pavement as rival-lookout (94, -27), 42.75 m east of it: after his word with the turned driver the lookout walks off east, away from the yard and the square, and is gone for good (off the roster, not in the fight). V-1 at yaw 30 (the opening heading, as rival-lookout): 30 100 %, 120 100 %, 210 0 %, 300 100 %. A free cell of the walk grid (the committed site and today's in-memory build); its nearest blocked cell is the grid's edge, 0.5 m east. Not read by the engine yet (Keel, rivals.posts.lookoutExit).",
+   "level": "street"
+  },
+  {
+   "id": "rival-tail",
+   "at": [90.5, -17],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F2, §7; rival-routine.values.json points.new); placed by Vantage 2026-10-25: the rival car stops here when it follows Vale's car, and it is the service-drive stand's rival stop",
+   "reason": "Apron Road's eastbound (south) lane at the south kerb (x 92), nose east (+y; the mission schema has no heading for a car, so it is stated here), abreast of the service drive's mouth (y -16.5..-13.5): 14.0 m on along its own lane from rival-park (90.5, -31), so the car never crosses the westbound lane. The wheelman steps out here and walks to rival-vale-door; at the yard fight the riders still aboard step out here. Kept out of the yard stand's exit lane: the lane starts at the stand's foot on Apron Road's centreline (86, -15) and runs 30 m east with square ends, 12 m wide (x 80..92); this point stands 2.0 m short of its start, so the engine's lane test (Site.InExitLane) never holds it, and the car's body (the sedan's footprint 1.82 x 4.73 m, nose +2.45 m) reaches only 0.45 m past the start line along the kerb (x 89.59..91.41), leaving the westbound lane and 3.6 m of the eastbound free beside it: the cell's car turning left out of the drive sweeps no nearer than about 4 m to it. 21.2 m from the service-drive stand. V-1 at yaw 210, the heading the yard is played at: 30 100 %, 120 100 %, 210 100 %, 300 100 %. A free cell of the walk grid (2.0 m from the nearest blocked cell). Not read by the engine yet (Keel, rivals.car.tail and the service-drive stand's rival stop in Splice's getaway.stands[]).",
+   "yaw": 210,
+   "level": "street",
+   "on": "apron-road",
+   "floor": -0.18
+  },
+  {
+   "id": "rival-vale-door",
+   "at": [64.55, -16.9],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F2; rival-routine.values.json points.new); placed by Vantage 2026-10-25: where the wheelman walks to when the rivals tail Vale's car",
+   "reason": "The yard side of Vale's car in serviceBay: the car's centre at service-bay (63.75, -15.0) + (0.8, -1.9) m, beside its rear door on the service door's side, 2.05 m from 'Service lane' (62.5, -16.8), where Vale comes out. W walks here from rival-tail (25.7 m on the grid, 16.1 s) and is Posted, so the engine's yard case of RivalReachesVale reads him. 5.2 m from the service-drive stand (69.35, -15.0): inside fight-hold 8 m, by design of the routine (he stands at Vale's car, not at a post; his fight spot is the stand's fifth ambush spot, svc-ambush-5). V-1 at yaw 210, the heading the yard is played at (as service-bay and 'Service lane'): 30 0 %, 120 0 %, 210 100 %, 300 100 %. A free cell of the walk grid (2.5 m from the nearest blocked cell). Not read by the engine yet (Keel, rivals.posts.valeDoor).",
+   "yaw": 210,
+   "level": "street"
+  },
+  {
+   "id": "rival-front-stop",
+   "at": [63.75, -50.25],
+   "src": "brief 059 §5 and Pulse's rival routine (briefs/059/pulse/rival-routine.md §1, §6 F5; rival-routine.values.json points.new); placed by Vantage 2026-10-25: where the rival car stops when gunfire draws the crew to the Office front",
+   "reason": "Rocket Lane's carriageway (y -62..-50) at its east (Office-side) kerb, 0.25 m in from it (a sedan 1.82 m wide centred here overhangs the kerb by 0.66 m; the engine stands a car on its place or the nearest drivable cell, Site.CarStand), abreast of the Office approach (64, -44.4), 5.9 m from it: the nearest road cell of d:Office approach, written down so the choice is not a tie. The riders step out and walk to the Office approach and its offsets (6.0 m); the wheelman stays aboard. The east kerb is the northbound lane under the plan's right-hand traffic: a car from rival-park comes up Rocket Lane (-x) and stops on its own side; one from rival-car-entry comes down it (+x, the spec's facing) and stops in the oncoming lane. The heading is the engine's, from the route it rides (the schema has none for a point). V-1 at yaw 210, the heading the Records Office front is played at: 30 0 %, 120 0 %, 210 100 %, 300 0 %. At the opening heading Rocket Lane abreast of the Office reads 0 % for every road cell from x 56 to 72 (y -58 to -51), so no nearby cell would read at 30; the crew it brings stands at the Office approach, which is seen at 30. A free cell of the walk grid. Not read by the engine yet (Keel, rivals.car.front).",
+   "yaw": 210,
+   "level": "street",
+   "on": "rocket-lane",
+   "floor": -0.18
   }
  ],
  "cameras": [
@@ -551,6 +693,29 @@
     "r_pylon_s"
    ],
    "toName": "the official bay"
+  },
+  {
+   "id": "getaway-service",
+   "name": "Getaway from the service drive: Apron Road east",
+   "from": "r_apron_w",
+   "to": [
+    "r_apron_e"
+   ],
+   "toName": "Apron Road east of the service drive"
+  },
+  {
+   "id": "rivals",
+   "name": "Rival crew car: from the Sea Gates by Orbit Walk and Rocket Lane to Apron Road",
+   "from": "off_seagates",
+   "via": [
+    "r_orbit_e",
+    "r_orbit_w",
+    "r_apron_w"
+   ],
+   "to": [
+    "r_pylon_s"
+   ],
+   "toName": "the rival car's park on Apron Road"
   }
  ]
 }

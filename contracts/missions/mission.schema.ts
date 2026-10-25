@@ -149,8 +149,8 @@ export const Mission = z.strictObject({
   cameras: z.array(camera).optional(),
   destinations: z.array(point).min(1),
   crew: z.array(point),
-  /** Road routes over the plan graph: from a node to the nearest of `to`. */
-  routes: z.array(z.strictObject({ id, name: z.string().min(1), from: z.string().min(1), to: z.array(z.string().min(1)).min(1), toName: z.string().min(1).optional() })),
+  /** Road routes over the plan graph: from a node to the nearest of `to`; with `via` (brief 059), through those nodes in order, so a route goes the way it is meant to (the rival car comes by Orbit Walk and Rocket Lane, not the shortest road). */
+  routes: z.array(z.strictObject({ id, name: z.string().min(1), from: z.string().min(1), via: z.array(z.string().min(1)).min(1).optional(), to: z.array(z.string().min(1)).min(1), toName: z.string().min(1).optional() })),
 })
   .refine(m => m.timeline.every((e, i, a) => i === 0 || offsetS(a[i - 1]!.at) <= offsetS(e.at)), { path: ['timeline'], error: 'timeline offsets never go back' })
   .refine(m => m.events.every(e => m.timeline.some(t => t.at === e.at)), { path: ['events'], error: 'every event starts on a timeline entry' })

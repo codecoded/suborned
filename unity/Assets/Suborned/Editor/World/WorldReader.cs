@@ -43,6 +43,7 @@ namespace Suborned.World
                 Kerb = J.Poly(x, "kerb"), KerbWidth = J.F(x, "kerbWidth"), KerbHeight = J.F(x, "kerbHeight"),
             }); // optional (present when the civic block states drives)
             w.Ground.Pieces = Each(g, "pieces", StreetItem); // brief 026: optional
+            w.Ground.Footways = Each(g, "footways", Footway); // brief 061: optional (present when the plan carries streetscape.continuousFootway)
 
             var t = J.Get(o, "transit");
             w.Transit.Tram = Each(t, "tram", x => new TrackDto
@@ -98,6 +99,7 @@ namespace Suborned.World
                 {
                     Id = Id(c), Kind = J.S(c, "kind"), Road = J.S(c, "road"), Control = J.S(c, "control"), Items = Strs(c, "items"),
                     Line = J.Poly(c, "line"), Width = J.F(c, "width"), Refuges = Each(c, "refuges", J.Poly),
+                    Cycle = J.Get(c, "cycle") is { } cy ? new SignalCycleDto { Walk = (int)J.F(cy, "walk"), Clearing = (int)J.F(cy, "clearing"), Stop = (int)J.F(cy, "stop"), Arrive = (int)J.F(cy, "arrive"), Offset = (int)J.F(cy, "offset") } : null, // brief 061: absent = the export's state stands
                 });
             w.Levels = Each(o, "levels", l => new LevelDto
             {
@@ -234,11 +236,31 @@ namespace Suborned.World
             };
         }
 
+        /// <summary>A continuous footway (brief 061, world.schema.ts Footway); every part required (unknown = reject).</summary>
+        static FootwayDto Footway(object x)
+        {
+            var fr = Req(x, "frame"); var table = Req(x, "table"); var ramp = Req(x, "ramp"); var lip = Req(x, "lip");
+            var f = new FootwayDto
+            {
+                Id = Id(x), Gate = J.S(x, "gate"), Lane = J.S(x, "lane"), Road = J.S(x, "road"), Level = J.F(x, "level"), Half = J.F(x, "half"), Depth = J.F(x, "depth"),
+                Origin = J.P(fr, "origin"), Along = J.P(fr, "along"), Into = J.P(fr, "into"),
+                TableId = J.S(table, "id") ?? throw new InvalidDataException($"World: {Id(x)}: table without its flat id"), Table = J.Poly(table, "ring"), TableSurface = J.S(table, "surface"),
+                Ramp = J.Poly(ramp, "ring"), RampRun = J.F(ramp, "run"), RampRise = J.F(ramp, "rise"), RampSurface = J.S(ramp, "surface"),
+                Lip = J.Poly(lip, "ring"), LipD = J.F(lip, "d"), LipDrop = J.F(lip, "drop"), LipSurface = J.S(lip, "surface"),
+                Posts = J.Poly(x, "posts"),
+            };
+            foreach (var b in Each(x, "bands", b => (J.Poly(b, "ring"), J.F(b, "level"), J.S(b, "surface")))) f.Bands.Add(b);
+            if (f.Half <= 0f || f.Depth <= 0f || f.LipD <= 0f || f.RampRun <= 0f || f.LipD >= f.Depth) throw new InvalidDataException($"World: {f.Id}: footway sizes out of order (half {f.Half}, lip {f.LipD}, depth {f.Depth}, run {f.RampRun})");
+            return f;
+        }
+
         static StreetItemDto StreetItem(object s)
         {
             var st = J.Get(s, "staffed"); var h = st != null ? J.Get(st, "hours") : null; var hl = h as List<object>;
+            var halo = J.Get(s, "signal") is { } sgh ? J.Get(sgh, "halo") : null;
             return new StreetItemDto
             {
+                HasHalo = halo != null, HaloAt = halo != null ? J.P(halo, "at") : default, HaloZ = halo != null ? J.F(halo, "z") : 0f, HaloR = halo != null ? J.F(halo, "r") : 0f,
                 Id = Id(s), Kind = J.S(s, "kind"), Surface = J.S(s, "surface"), Edge = J.S(s, "edge"), Sight = J.S(s, "sight"), Variant = J.S(s, "variant"), At = J.P(s, "at"), Z = J.F(s, "z"), Yaw = J.F(s, "yaw"), Size = V3(s, "size"),
                 Staffed = st != null, Trade = st != null ? J.S(st, "trade") : null, Occupation = st != null ? J.S(st, "occupation") : null, HoursService = h is string, HoursFrom = hl != null ? (float)(double)hl[0] : 0, HoursTo = hl != null ? (float)(double)hl[1] : 0,
                 Source = J.S(s, "source"), Kit = Kit(J.Get(s, "kit")),

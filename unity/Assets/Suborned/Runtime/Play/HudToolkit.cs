@@ -656,8 +656,10 @@ namespace Suborned.Play
                 failMarks = new VisualElement { pickingMode = PickingMode.Ignore }; failMarks.style.position = Position.Absolute; failMarks.style.left = 0; failMarks.style.top = 0; failMarks.style.right = 0; failMarks.style.bottom = 0;
                 failMarks.generateVisualContent += FailMarksPaint; root.Add(failMarks); failMarks.SendToBack(); Show(failMarks, false);
                 failLoc = E(root, "s-disc_dark_24", 0, 0, 28, 28); Border(failLoc, 2f, new Color(0.878f, 0.227f, 0.184f)); failLocIcon = E(failLoc, null, 5, 5, 18, 18); Icon(failLocIcon, "eye_open", new Color(0.878f, 0.227f, 0.184f)); manifest.Add((failLoc, "image", () => "culprit locator")); Show(failLoc, false);
-                failChip = E(root, "s-plate_dark", 14, 14, float.NaN, 30); failChip.style.flexDirection = FlexDirection.Row; failChip.style.alignItems = Align.Center; failChip.style.paddingLeft = 12; failChip.style.paddingRight = 12;
-                var fcl = L(failChip, "verb-name"); fcl.name = "t"; fcl.style.fontSize = 12; manifest.Add((failChip, "image", () => "replay chip")); Show(failChip, false);
+                /* Glyph 0.2.117 #1: the kit's plate at the unlock pills' size and slice (a fat unsliced rim read as a web pill), the time icon, Jost Bold 12.5 */
+                failChip = PlateDark(root, UnlH, UnlScale); failChip.style.position = Position.Absolute; failChip.style.left = 14; failChip.style.top = 14; failChip.style.paddingLeft = 9; failChip.style.paddingRight = 10;
+                var fci = E(failChip, null, w: 12, h: 12); fci.style.flexShrink = 0; Icon(fci, "p_time", Cream);
+                var fcl = Words(failChip, 12.5f); fcl.name = "t"; fcl.style.marginLeft = 5; manifest.Add((failChip, "image", () => "replay chip")); Show(failChip, false);
             }
             bool f = host.FailCamOn;
             if (showAgain != null) Show(showAgain, !f && host.FailCamAvailable && m.Ended); EndButtonsFit();
@@ -799,9 +801,10 @@ namespace Suborned.Play
                 var p = RuntimePanelUtils.ScreenToPanel(root.panel, m.LoudAt); float lh2 = loud.resolvedStyle.height; if (float.IsNaN(lh2)) lh2 = 268;
                 loud.style.left = Mathf.Clamp(p.x + 24, 14, W - 430 - 14); loud.style.top = Mathf.Max(14, p.y - lh2 - 16);
             }
-            // the briefing
-            Show(brief, m.BriefingOpen && m.BriefTitle.Length > 0);
-            if (m.BriefingOpen && m.BriefTitle.Length > 0)
+            // the briefing: brief 062 B (Briefing.cs) on the street replaces the card; the old card stays built but hidden (BriefOnStreet off brings it back)
+            if (BriefOnStreet) { Show(brief, false); BriefingFrame(); Entrance(); }
+            else Show(brief, m.BriefingOpen && m.BriefTitle.Length > 0);
+            if (!BriefOnStreet && m.BriefingOpen && m.BriefTitle.Length > 0)
             {
                 brief.style.left = (W - 700) / 2 + 40;
                 Text(briefTitle, m.BriefTitle); Text(briefSub, m.BriefSub); Text(briefObjective, m.BriefObjective); Text(briefTarget, m.BriefSituation);
@@ -1046,7 +1049,7 @@ namespace Suborned.Play
             Text(objText, m.Objective); Text(objTail, m.ObjectiveTail.Replace(' ', '\u00A0')); // UI Toolkit trims a label's leading spaces: "car· closes"
             // the objective never changes in a mission: up for 20 s after the briefing closes (B brings it back), or while the pill is hovered, or pinned
             if (briefWas && !m.BriefingOpen) objUntil = Time.unscaledTime + ObjectiveS; briefWas = m.BriefingOpen;
-            bool objOn = m.BriefingOpen || ObjPinned || pillHover || objHover || Time.unscaledTime < objUntil;
+            bool objOn = m.BriefingOpen && !BriefOnStreet || !m.BriefingOpen && (ObjPinned || pillHover || objHover || Time.unscaledTime < objUntil); /* brief 062 B: the goal line comes up with play, not over the briefing */
             Show(objective, objOn); intel.style.top = objOn ? 108 : 62;
             // Intel: the strip, and when open a row for each person the cell knows something of (a secret and a lover tie only once known)
             Text(intelCount, $"{m.IntelKnown} people known"); Icon(intelChevron, m.IntelOpen ? "chev_up" : "chev_down", Cream);
@@ -1133,7 +1136,7 @@ namespace Suborned.Play
             {
                 var t = m.Ticker; float a = t == null ? 0f : Mathf.Clamp01((5f - m.TickerAge) / 1f);
                 Show(ticker, a > 0.01f); ticker.style.opacity = a;
-                if (t != null && a > 0.01f) { Text(tickerText, t.Text); Bg(tickerChip, $"portraits/cameo_{t.Speaker}_normal"); }
+                if (t != null && a > 0.01f) { Text(tickerText, t.Text); Bg(tickerChip, HasFace(t.Speaker) ? FaceOf(t.Speaker) : $"portraits/cameo_{t.Speaker}_normal"); } // brief 062: a cast face for the waitress, driver, councillor
             }
             Feed();
             PanelFrame(); Step3Frame(); TakedownFrame();
@@ -1257,7 +1260,7 @@ namespace Suborned.Play
                         var l = card.Lines[r]; bool cell = l.Speaker is "scout" or "fixer" or "tech" or "enforcer";
                         Text(name, l.Name); Class(name, "t-feed-name-cell", cell); Class(name, "t-feed-name", !cell);
                         Text(text, l.Text); Class(text, "t-feed-line-npc", !cell); Class(text, "t-feed-line", cell);
-                        Bg(chip, cell ? $"portraits/cameo_{l.Speaker}_normal" : SpeakerBadge(l.Speaker));
+                        Bg(chip, cell ? $"portraits/cameo_{l.Speaker}_normal" : HasFace(l.Speaker) ? FaceOf(l.Speaker) : SpeakerBadge(l.Speaker)); // brief 062: the waitress, driver and councillor speak with their painted faces; the name and line classes stay the NPC's
                     }
                     Show(c.Typing, card.Revealed < card.Lines.Count);
                 }

@@ -19,6 +19,7 @@ import { look } from './civic/look';
 import { civicRoofs } from './civic/roof';
 import { finishSet } from '../plan/finish-set';
 import { baysOf, fillRing, noseRing, returnsOf } from './gen/kerbreturn';
+import { footwaysOf } from './gen/street/footway';
 
 /** Provisional numbers: TODO each moves into the plan's standards (Datum) and is then read from there. */
 export const PROV = {
@@ -286,6 +287,9 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   for (const r of returnsOf(gctx)) if (r.convex && !r.nose) g.flats.push({ id: `ground/return/${r.id}`, surface: fin.of(r.cls), ring: fillRing(r).map(rv), level: r.level ? PROV.foot : 0 });
   // brief 028 round 2 (Glyph 0.2.112, junction NE): two roads that meet end to end at a bend have square ends; the outside of the turn is a square no road ribbon covers: the carriageway is laid to the outside kerb arc
   for (const r of returnsOf(gctx)) if (r.hole) g.flats.push({ id: `ground/return/${r.id}/hole`, surface: fin.of(r.cls), ring: r.hole.map(rv), level: 0 });
+  // brief 061 (Sky 2026-10-25, lane mouths as a continuous footway): at each gate the pavement runs on across the lane's mouth at kerb height: the table is a flat at the pavement top (floor for the walk and the audits), the ramp, lip and bands are the footway's own (ground.footways)
+  const fw = footwaysOf(gctx, { road: fin.of, kerb: fin.kerb });
+  if (fw.length) { g.footways = fw; for (const f of fw) g.flats.push({ id: f.table.id, surface: f.table.surface, ring: f.table.ring, level: f.level }); }
   for (const l of gen.roadFinish?.lawn ?? []) g.flats.push({ id: `reservation/${l.id}`, surface: 'median', ring: l.ring.map(rv), level: 0.02 }); // brief 028 (Vela): the tram reservation's lawn track, kerb face to kerb face, under the rails (level 0.04) and over the carriageway (0)
   if (gen.groundPieces?.length) g.pieces = gen.groundPieces; // brief 026: flat ground pieces (kerb, flags, pits, drains, manholes, tactile, terrazzo)
   const civicM = civicMasses(civ, toPlanFn(plan.civic));
@@ -294,7 +298,7 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped } } : {}),
+    ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped, served: gen.crossingLog.coverage.served } } : {}),
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicM, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {

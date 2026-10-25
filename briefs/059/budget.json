@@ -1,0 +1,57 @@
+{
+ "rival-turns-in": {
+  "rest_baseline_pct": 4.7,
+  "with_pct": 4.71,
+  "with_world_pct": 5.37
+ },
+ "rival-drops": {
+  "rest_baseline_pct": 4.7,
+  "with_pct": 4.74,
+  "with_world_pct": 5.51
+ },
+ "rivals-parked": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.67,
+  "with_world_pct": 7.14
+ },
+ "rivals-watch-office": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.75,
+  "with_world_pct": 7.24
+ },
+ "rivals-watch-square": {
+  "rest_baseline_pct": 4.7,
+  "with_pct": 4.77,
+  "with_world_pct": 5.73
+ },
+ "vale-car-bay": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.82,
+  "with_world_pct": 6.88
+ },
+ "vale-car-yard-route": {
+  "rest_baseline_pct": 6.67,
+  "with_pct": 6.8,
+  "with_world_pct": 7.02
+ },
+ "vale-car-yard-parked": {
+  "rest_baseline_pct": 6.67,
+  "with_pct": 6.79,
+  "with_world_pct": 6.94
+ },
+ "drive-square": {
+  "rest_baseline_pct": 4.7,
+  "with_pct": 4.74,
+  "with_world_pct": 4.82
+ },
+ "drive-yard-shut": {
+  "rest_baseline_pct": 6.67,
+  "with_pct": 6.73,
+  "with_world_pct": 6.97
+ },
+ "drive-yard-hover": {
+  "rest_baseline_pct": 6.67,
+  "with_pct": 7.11,
+  "with_world_pct": 7.45
+ }
+}

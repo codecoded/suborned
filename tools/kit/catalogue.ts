@@ -32,7 +32,8 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   const genTex = (path: string) => !!gen && /^Textures\/[^/]+(\.meta)?$/.test(path) && existsSync(join(gen, path)) && !existsSync(join(root, path));
   const cache = new Map<string, KitFile>();
   /** brief 031: the attention face's files ride with the patrol robot: the stage atlas and the face data Latch's RobotFace.cs reads (copied to Kit/Data/). */
-  const dataFiles = (id: string): KitFile[] => id !== 'PatrolRobot' || !gen ? [] : ['Data/robot-face-stage.json', 'Data/robot-faces.json', 'Data/RobotGlyphs.txt'].filter(p => existsSync(join(gen, p))).map(p => { const b = readFileSync(join(gen, p)); return { root: 'generated' as const, role: 'data' as const, path: p, sha256: sha(b), bytes: b.length }; });
+  const DATA: Record<string, string[]> = { PatrolRobot: ['Data/robot-face-stage.json', 'Data/robot-faces.json', 'Data/RobotGlyphs.txt'], SignalLens: ['Data/signal-lens.json'] }; // SignalLens (brief 061): the head's look data (state colours, cues, blink, cycle, atlas and ring tables) Latch's SignalHead and Glint read, copied to Kit/Data/
+  const dataFiles = (id: string): KitFile[] => !DATA[id] || !gen ? [] : DATA[id]!.filter(p => existsSync(join(gen, p))).map(p => { const b = readFileSync(join(gen, p)); return { root: 'generated' as const, role: 'data' as const, path: p, sha256: sha(b), bytes: b.length }; });
   // Materials the generator wrote (tools/decokit unity_mats.py: the v0.17 colours and the retuned ones) win over the legacy root's.
   const genMat = (path: string) => !!gen && /^Materials\/[^/]+\.mat(\.meta)?$/.test(path) && existsSync(join(gen, path));
   const file = (role: KitFile['role'], path: string): KitFile | null => {

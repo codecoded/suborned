@@ -1,50 +1,48 @@
-// Crossing coverage rules (brief 009; Datum's proposal of 2026-10-15, approved by Sky): the crossings the plot edges do not give, as rules over the plan, not a list.
-// A plot-edge landing (roads.ts, pairCrossings steps 1-2) stands at both ends of every district and access frontage; that left the Crown Circus ring with no way to its island, the
-// primary roads with none at their junctions, and long district roads with none between. standards.streetscape.crossings.coverage.rules says where else a crossing stands:
-//   arms      a primary through road, at each junction with another road, takes a crossing on each arm, past the side road's mouth by its half width and `offset` (8 m: a district
-//             road's pavement), where a plot's pavement stands against at least one kerb (an arm toward the map's edge leads nowhere)
-//   island    every footway line that meets the circus ring from outside (a road's pavement middle, a mall's walk band middle) crosses the ring by the radial through the point where it
-//             meets the ring's outer edge, to the island
-//   mall      a mall that ends at a road's kerb carries its walk bands across it, kerb to kerb
-//   midBlock  a district road with more than `gap` m between two crossings (or a junction and a crossing) takes one at the middle of the gap, moved by up to `reach` m to the nearest spot
-//             where both landings stand free
-//   dedupe    two kerb crossings of one road less than `mouth` m apart across a side road's mouth, or `bend` m apart round a bend, are one: the one on the longer plot edge stays
+// Crossing coverage rules (brief 009 Datum's proposal of 2026-10-15; reworked by brief 061, Sky 2026-10-24/25 "there's way too many crossings"): the crossings that stand, as rules over the plan, not a list.
+// A plot edge gives no landing (rules.edges false: roads.ts places none), so every crossing is a site some rule calls for. standards.streetscape.crossings.coverage.rules says which:
+//   stops      one crossing per tram stop, at the platform end toward the nearer junction or footway end (transit.ts places the patch; siting.ts picks the end)
+//   island     one crossing per road into the circus (`per` road): that road's `side` footway line seen leaving the circus, by the radial through the point where it meets the ring's outer edge, to the island
+//   foot       a mall or walk that meets or crosses a road continues across it with one crossing, on its axis, or (a mall) on the middle of its walk band, or at the nearest free spot (`reach`)
+//   crossroads access lanes meeting a district road at one node (two or more roads of the access class): the district road takes one crossing on its arm before the node, its near edge `kerbReturn.landings.clear` past the
+//              side road's mouth (the kerb return's tangent point, or the side of a continuous footway's table: streetscape.continuousFootway)
+//   junction   two district roads meeting: each takes one crossing on its arm before the node, unless a tram stop's crossing of that road stands within `stopWithin` m of the node
+//   dedupe     two kerb crossings of one road less than `mouth` m apart across a side road's mouth, or `bend` m apart round a bend, are one: the one on the longer plot edge stays
 // A site is two landings on the pavement and the strip between their kerbs (a signal crossing like any other: orbs at the kerb ends, a refuge where it crosses a median); it is placed after the
 // furniture, so no existing id moves, and left out where either landing has no free spot (named in the log). A strip across a tram track stands where the plan lets a kerb crossing cross
-// one (strip.across.track names `kerb`): the signal stops the tram.
-import { type V, add, dist, dot, inPoly, lineDist, mul, norm, segDist, sub } from '../../../plan/geom';
-import { boxRing, quayBlock, ringGap, samples9 } from '../../../plan/street-zones';
+// one (strip.across.track names `kerb`). The civic block's crossings and their partner landings are placed by pairCrossings.
+import { type V, add, dist, dot, inPoly, lineDist, mul, norm, sub } from '../../../plan/geom';
+import { boxRing, quayBlock, samples9 } from '../../../plan/street-zones';
 import type { Ctx } from '../common';
 import { rv } from '../common';
-import { idOf, kindOf, plotRing } from '../edges';
 import type { Landing, Layer } from './kit';
 import { landing } from './roads';
+import { type CoverageRules, rulesOf } from './siting';
+import { footwayTangents } from './footway';
 import { kerbReturnStd, returnsOf } from '../kerbreturn';
 import { discRing } from '../box';
-import { lookOf } from './parts';
+import { clearReach, lookOf } from './parts';
 
 const QUARTER = Math.PI / 2;
 
 /** One crossing the rules call for, before it is placed: the kerb points of its two ends (a, b), the road it crosses and that road's class (its control comes from the class). */
-export type Seed = { id: string; rule: 'arm' | 'island' | 'mall' | 'mid'; road: string; cls: string; ka: V; kb: V; why: string; /** how the seed moves to find a free spot: along its road (chainage s) or round the circus ring (the radial's angle from the ring's centre) */ via: { s: number } | { ring: V; r0: number; r1: number; angle: number } };
+export type Seed = {
+  id: string; rule: 'island' | 'foot' | 'crossroads' | 'junction'; road: string; cls: string; ka: V; kb: V; why: string;
+  /** how the seed moves to find a free spot: along its road (chainage s; `dir` = the one way it may move, away from a kerb return, else either) or round the circus ring (the radial's angle from the ring's centre) */
+  via: { s: number; dir?: 1 | -1 } | { ring: V; r0: number; r1: number; angle: number };
+  /** seeds of one group are alternatives for one site (a mall's axis, then its walk bands): the first that can stand wins and the others are not tried */
+  group?: string;
+};
 /** Two landings on opposite kerbs and the kerb points the strip runs between (pairCrossings' own type). */
 export type Pair = { a: Landing; b: Landing; ka: V; kb: V };
 
-export type CoverageRules = {
-  /** How far (m) an arm, island or mall site may move along its road, or round the ring, to the nearest spot where both its landings stand free. */
-  reach?: number;
-  arms?: { offset: number }; island?: { ring: string }; mall?: Record<string, never>;
-  midBlock?: { gap: number; class: string[]; reach: number };
-  dedupe?: { mouth: number; bend: number; turn: number };
-};
-export const rulesOf = (ctx: Ctx): CoverageRules | undefined => (ctx.S.crossings.coverage as { rules?: CoverageRules } | undefined)?.rules;
+export { type CoverageRules, rulesOf };
 
 /** What the rules did, for the export's log. */
-export type CoverageLog = { dedupe: string[]; sites: Record<string, number>; skipped: string[]; /** furniture ids a site took out of the street */ moved: string[] };
+export type CoverageLog = { dedupe: string[]; sites: Record<string, number>; skipped: string[]; /** footway sites an existing crossing serves, `<site>: <crossing>` */ served: string[]; /** furniture ids a site took out of the street */ moved: string[] };
 
 // ---- polylines
 /** The point and tangent at chainage s of a polyline. */
-function atChainage(line: V[], s: number): { p: V; t: V } {
+export function atChainage(line: V[], s: number): { p: V; t: V } {
   let acc = 0;
   for (let i = 1; i < line.length; i++) {
     const a = line[i - 1]!, b = line[i]!, l = dist(a, b);
@@ -54,7 +52,7 @@ function atChainage(line: V[], s: number): { p: V; t: V } {
   return { p: line[0]!, t: [1, 0] };
 }
 /** The chainage of the point of a polyline nearest to p, and how far p is from it. */
-function project(line: V[], p: V): { s: number; d: number } {
+export function project(line: V[], p: V): { s: number; d: number } {
   let acc = 0, best = { s: 0, d: Infinity };
   for (let i = 1; i < line.length; i++) {
     const a = line[i - 1]!, b = line[i]!, l = dist(a, b), u = l ? norm(sub(b, a)) : ([1, 0] as V), t = Math.max(0, Math.min(l, dot(sub(p, a), u))), d = dist(p, add(a, mul(u, t)));
@@ -63,8 +61,8 @@ function project(line: V[], p: V): { s: number; d: number } {
   }
   return best;
 }
-const lengthOf = (line: V[]) => line.reduce((n, p, i) => (i ? n + dist(line[i - 1]!, p) : 0), 0);
-const left = (t: V): V => [-t[1], t[0]];
+export const lengthOf = (line: V[]) => line.reduce((n, p, i) => (i ? n + dist(line[i - 1]!, p) : 0), 0);
+export const left = (t: V): V => [-t[1], t[0]];
 
 /** A seed for the road `road` across its width at chainage s: the left kerb is a, the right b. */
 export function acrossRoad(ctx: Ctx, rule: Seed['rule'], id: string, road: string, s: number, why: string): Seed | undefined {
@@ -74,31 +72,42 @@ export function acrossRoad(ctx: Ctx, rule: Seed['rule'], id: string, road: strin
   return { id, rule, road, cls: r.class, ka: rv(add(p, mul(n, r.w / 2))), kb: rv(add(p, mul(n, -r.w / 2))), why, via: { s } };
 }
 
-/** True if a built plot's pavement stands against the road's kerb at `k` (a plot edge of that road within 1.5 m of it). */
-function plotBeside(ctx: Ctx, k: V, road: string): boolean {
-  return ctx.d.plots.some(pl => {
-    const ring = plotRing(ctx, pl);
-    return ring.p.some((a, i) => { const c = ring.c[i]!; return (kindOf(c) === 'primary' || kindOf(c) === 'district' || kindOf(c) === 'access') && idOf(c) === road && segDist(k, a, ring.p[(i + 1) % ring.p.length]!) < 1.5; });
-  });
-}
-
 // ---- the sites the rules give outright
-/** Arms: see the file header. */
-export function armSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
-  const offset = rules.arms?.offset; if (offset === undefined) return [];
+/** The longest kerb return tangent (m) at `node` on road `P`: the returns of the junction that touch P within 40 m (a gate mouth's footway has none; its table's side stands where the tangent point was: footway.ts). */
+export function tangentAt(ctx: Ctx, P: { id: string }, node: string): number {
+  const at = ctx.plan.nodes[node]!;
+  return Math.max(0, footwayTangents(ctx, P.id, node), ...returnsOf(ctx).filter(r => r.convex && !r.nose && r.roads.includes(P.id) && dist(r.at, at) < 40).map(r => r.t));
+}
+/** One crossing of road `P` on its arm `before` (lower chainage) or `after` node `node`: the near edge stands kerbReturn.landings.clear past the side roads' mouths, i.e. past the kerb return's tangent point (centre = half the widest side road + t + clear + w / 2).
+ *  It may only move away from the node (a crossing never slides toward the corner it keeps its clear from). */
+function armSeed(ctx: Ctx, rule: 'crossroads' | 'junction', P: { id: string; name: string; line: V[] }, node: string, sides: { w: number; name: string }[], arm: 'before' | 'after'): Seed | undefined {
+  const W = ctx.S.crossings.w as number, t = tangentAt(ctx, P, node), half = Math.max(...sides.map(q => q.w)) / 2, reach = half + t + kerbReturnStd(ctx.S).clear + W / 2, s0 = project(P.line, ctx.plan.nodes[node]!).s, sg = arm === 'before' ? -1 : 1;
+  const seed = acrossRoad(ctx, rule, `${rule}/${P.id}/${node}/${arm}`, P.id, s0 + sg * reach, `${P.name}, ${reach.toFixed(0)} m ${arm} the node of ${sides.map(q => q.name).join(' and ')}`);
+  if (seed) seed.via = { s: (seed.via as { s: number }).s, dir: sg as 1 | -1 };
+  return seed;
+}
+const roadsAtNode = (ctx: Ctx, node: string) => ctx.d.roads.filter(r => r.path.includes(node));
+
+/** Crossroads: where two or more access roads (the rule's `class`es are the district roads that take the crossing; the side roads are the access lanes) meet a district road at one node, the district road takes one crossing on its arm `arm` the node. */
+export function crossroadsSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
+  const R = rules.crossroads; if (!R) return [];
   const out: Seed[] = [];
-  for (const P of ctx.d.roads.filter(r => r.class === 'primary')) {
-    P.path.forEach((node, i) => {
-      if (i === 0 || i === P.path.length - 1) return; // a road that ends at a node has no arm beyond it
-      const sides = ctx.d.roads.filter(q => q !== P && q.path.includes(node)); if (!sides.length) return;
-      // brief 028: a rounded kerb return of this junction takes `t` m of the kerb past the side road's mouth: the crossing's near edge stands kerbReturn.landings.clear (3) m beyond it (centre = t + 3 + w/2), where the rule's own offset is not already past it
-      const nodeAt = ctx.plan.nodes[node]!, t = Math.max(0, ...returnsOf(ctx).filter(r => r.convex && r.roads.includes(P.id) && dist(r.at, nodeAt) < 40).map(r => r.t));
-      const reach = Math.max(...sides.map(q => q.w)) / 2 + Math.max(offset, t ? t + kerbReturnStd(ctx.S).clear + (ctx.S.crossings.w as number) / 2 : 0), s0 = project(P.line, ctx.plan.nodes[node]!).s;
-      for (const sg of [-1, 1]) {
-        const seed = acrossRoad(ctx, 'arm', `arm/${P.id}/${node}/${sg < 0 ? 'before' : 'after'}`, P.id, s0 + sg * reach, `${P.name}, past ${sides.map(q => q.name).join(' and ')} (${reach.toFixed(0)} m from the junction)`);
-        if (seed && (plotBeside(ctx, seed.ka, P.id) || plotBeside(ctx, seed.kb, P.id))) out.push(seed);
-      }
-    });
+  for (const P of ctx.d.roads.filter(r => R.class.includes(r.class) && !r.gyratory)) for (const node of P.path) {
+    const others = roadsAtNode(ctx, node).filter(q => q !== P), lanes = others.filter(q => q.class === 'access'); if (lanes.length < 2) continue;
+    const seed = armSeed(ctx, 'crossroads', P, node, others, R.arm); if (seed) out.push(seed);
+  }
+  return out;
+}
+/** Junction: where two district roads meet (and no crossroads of lanes), each takes one crossing on its arm `arm` the node, unless a tram stop's crossing of that road stands within `stopWithin` m of the node (`stops`: the stop crossings so far, with the road each crosses). */
+export function junctionSeeds(ctx: Ctx, rules: CoverageRules, stops: { road: string; mid: V }[]): Seed[] {
+  const R = rules.junction; if (!R) return [];
+  const out: Seed[] = [];
+  for (const P of ctx.d.roads.filter(r => R.class.includes(r.class) && !r.gyratory)) for (const node of P.path) {
+    const others = roadsAtNode(ctx, node).filter(q => q !== P), lanes = others.filter(q => q.class === 'access'), twin = others.filter(q => R.class.includes(q.class) && !q.gyratory);
+    if (lanes.length >= 2 || !twin.length) continue;
+    const at = ctx.plan.nodes[node]!, s0 = project(P.line, at).s;
+    if (stops.some(x => x.road === P.id && Math.abs(project(P.line, x.mid).s - s0) <= R.stopWithin)) continue;
+    const seed = armSeed(ctx, 'junction', P, node, others, R.arm); if (seed) out.push(seed);
   }
   return out;
 }
@@ -108,6 +117,7 @@ export function islandSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
   if (!rules.island) return [];
   const road = ctx.d.roads.find(r => r.id === rules.island!.ring), c = ctx.plan.circus, [r0, r1] = c.ring, S = ctx.S, mid = (r0 + r1) / 2;
   if (!road) return [];
+  const sides: (1 | -1)[] = rules.island.per === 'road' ? [rules.island.side === 'r' ? -1 : 1] : [-1, 1]; // brief 061: one footway line per road, the `side` one seen leaving the circus (l = the left); without `per`, both
   const out: Seed[] = [], mouths = returnsOf(ctx).filter(r => r.mouth), wrapA = (a: number) => Math.atan2(Math.sin(a), Math.cos(a));
   const line = (id: string, o: number, u: V, why: string, roadId = '') => { // the footway line `o` m left of the way out `u` through the mouth meets the ring's outer edge at one point
     const nl = left(u), t = Math.sqrt(r1 * r1 - o * o), pOut = add(add(c.c, mul(nl, o)), mul(u, t));
@@ -123,28 +133,38 @@ export function islandSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
   for (const q of ctx.d.roads.filter(x => x !== road && !x.gyratory)) { // a road with a node on the ring's middle line
     const node = q.path.find(n => Math.abs(dist(ctx.plan.nodes[n]!, c.c) - mid) < 1); if (!node) continue;
     const j = project(q.line, ctx.plan.nodes[node]!).s, u = norm(sub(atChainage(q.line, j < lengthOf(q.line) / 2 ? j + 10 : j - 10).p, ctx.plan.nodes[node]!)), off = q.w / 2 + S.sections[q.class].pavement / 2;
-    for (const sg of [-1, 1]) line(`island/${q.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${q.name}'s footway, ${off.toFixed(1)} m off its axis, to the island`, q.id);
+    for (const sg of sides) line(`island/${q.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${q.name}'s footway, ${off.toFixed(1)} m off its axis, to the island`, q.id);
   }
   for (const f of ctx.plan.foot.filter(x => x.kind === 'mall')) {
     for (const end of [f.pts[0]!, f.pts[f.pts.length - 1]!]) {
       if (Math.abs(dist(end, c.c) - r1) > 1) continue;
       const other = f.pts[f.pts.length - 1] === end ? f.pts[f.pts.length - 2]! : f.pts[1]!, u = norm(sub(other, end)), band = S.sections.mall.bands.walk as [number, number], off = (band[0] + band[1]) / 2;
-      for (const sg of [-1, 1]) line(`island/${f.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${f.name}'s walk band, ${off} m off its axis, to the island`);
+      for (const sg of sides) line(`island/${f.id}/${sg < 0 ? 'r' : 'l'}`, sg * off, u, `${f.name}'s walk band, ${off} m off its axis, to the island`);
     }
   }
   return out;
 }
 
-/** Mall: see the file header. */
-export function mallSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
-  if (!rules.mall) return [];
-  const out: Seed[] = [], c = ctx.plan.circus, band = ctx.S.sections.mall.bands.walk as [number, number], off = (band[0] + band[1]) / 2;
-  for (const f of ctx.plan.foot.filter(x => x.kind === 'mall')) for (const end of [f.pts[0]!, f.pts[f.pts.length - 1]!]) {
-    if (dist(end, c.c) < c.ring[1] + 1) continue; // the ring end is the island rule's
-    const road = ctx.d.roads.filter(r => !r.gyratory).map(r => ({ r, d: lineDist(end, r.line) })).filter(x => Math.abs(x.d - x.r.w / 2) <= 1.5).sort((p, q) => p.d - q.d)[0]?.r; if (!road) continue;
-    const j = project(road.line, end).s, tg = atChainage(road.line, j).t, other = f.pts[f.pts.length - 1] === end ? f.pts[f.pts.length - 2]! : f.pts[1]!;
-    if (Math.abs(dot(tg, norm(sub(end, other)))) > 0.2) continue; // the mall must meet the road square
-    for (const sg of [-1, 1]) { const seed = acrossRoad(ctx, 'mall', `mall/${f.id}/${road.id}/${sg < 0 ? 'r' : 'l'}`, road.id, j + sg * off, `${f.name}'s walk band, ${off} m off its axis, across ${road.name}`); if (seed) out.push(seed); }
+/** Foot: see the file header. A footway of `kinds` (plan foot[].kind) meets or crosses a road where its axis comes within half the carriageway's width + 0.6 m of the road's centre line; it continues across with one crossing at that point (the axis point nearest the line), square to the road.
+ *  Where the axis cannot stand, a mall's walk band middles (nearest the axis first) are the alternatives of the same site (one `group`). The circus ring is the island rule's; two footways meeting one road at one place are one site (the first in the plan's order names it). */
+export function footSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
+  const R = rules.foot; if (!R) return [];
+  const out: Seed[] = [], c = ctx.plan.circus, sites: { road: string; s: number }[] = [];
+  for (const f of ctx.plan.foot.filter(x => R.kinds.includes(x.kind))) {
+    const ax = f.pts as V[], pts: { p: V; u: V }[] = [];
+    for (let i = 1; i < ax.length; i++) { const a = ax[i - 1]!, b = ax[i]!, l = dist(a, b), u = norm(sub(b, a)); for (let t = 0; t <= l + 1e-9; t += 0.25) pts.push({ p: add(a, mul(u, Math.min(t, l))), u }); }
+    for (const road of ctx.d.roads.filter(r => !r.gyratory)) {
+      const near = pts.map(x => ({ ...x, d: lineDist(x.p, road.line) })).filter(x => x.d <= road.w / 2 + 0.6).sort((p, q) => p.d - q.d)[0]; if (!near) continue;
+      if (dist(near.p, c.c) < c.ring[1] + 1) continue; // the circus ring is the island rule's
+      const j = project(road.line, near.p).s, tg = atChainage(road.line, j).t;
+      if (Math.abs(dot(tg, near.u)) > 0.2) continue; // the footway must meet the road square
+      if (sites.some(x => x.road === road.id && Math.abs(x.s - j) < 5)) continue; // another footway already crosses here
+      sites.push({ road: road.id, s: j });
+      const group = `foot/${f.id}/${road.id}`, walk = (ctx.S.sections as Record<string, { bands?: { walk?: [number, number] } }>)[f.kind === 'mall' ? 'mall' : 'walk']?.bands?.walk, nl = left(near.u);
+      const where: { id: string; off: number; why: string }[] = [{ id: `${group}/axis`, off: 0, why: `${f.name}'s axis across ${road.name}` }];
+      if (f.kind === 'mall' && walk) for (const sg of [1, -1]) where.push({ id: `${group}/${sg < 0 ? 'r' : 'l'}`, off: sg * (walk[0] + walk[1]) / 2, why: `${f.name}'s walk band, ${((walk[0] + walk[1]) / 2)} m off its axis, across ${road.name}` });
+      for (const w of where) { const seed = acrossRoad(ctx, 'foot', w.id, road.id, j + w.off * dot(tg, nl), w.why); if (seed) out.push({ ...seed, group }); }
+    }
   }
   return out;
 }
@@ -154,7 +174,8 @@ export function mallSeeds(ctx: Ctx, rules: CoverageRules): Seed[] {
 export function variants(ctx: Ctx, seed: Seed, reach: number): Seed[] {
   const v = seed.via, out: Seed[] = [seed];
   for (let k = 1; k <= reach; k++) for (const sg of [1, -1]) {
-    if ('s' in v) { const moved = acrossRoad(ctx, seed.rule, seed.id, seed.road, v.s + sg * k, seed.why); if (moved) out.push(moved); }
+    if ('s' in v && v.dir !== undefined && sg !== v.dir) continue; // an arm crossing only moves away from the corner it keeps its clear from
+    if ('s' in v) { const moved = acrossRoad(ctx, seed.rule, seed.id, seed.road, v.s + sg * k, seed.why); if (moved) out.push({ ...moved, via: { s: v.s + sg * k, ...(v.dir !== undefined ? { dir: v.dir } : {}) }, ...(seed.group ? { group: seed.group } : {}) }); }
     else { const a = v.angle + (sg * k) / v.r1, e: V = [Math.cos(a), Math.sin(a)]; out.push({ ...seed, ka: rv(add(v.ring, mul(e, v.r1))), kb: rv(add(v.ring, mul(e, v.r0))), via: { ...v, angle: a } }); }
   }
   return out;
@@ -167,7 +188,7 @@ function refugeOf(ctx: Ctx, ka: V, kb: V, W: number): { cands: V[]; r: number; c
   const strip = ctx.S.crossings.strip as { refuge: number; control?: Record<string, string> };
   const road = ctx.d.roads.find(r => !r.gyratory && Math.abs(lineDist(ka, r.line) - r.w / 2) < 1.5 && Math.abs(lineDist(kb, r.line) - r.w / 2) < 1.5);
   if (!road || strip.control?.[road.class] !== 'signal') return undefined;
-  const len = dist(ka, kb), u = norm(sub(kb, ka)), nrm = left(u), look = lookOf(ctx.S.crossings.strip), halo = look.signal.halo + 0.1;
+  const len = dist(ka, kb), u = norm(sub(kb, ka)), nrm = left(u), look = lookOf(ctx.S.crossings.strip), halo = clearReach(look); // the halo and the clock ring round it (parts.ts RING_OUTER)
   for (const z of ctx.d.zones.filter(q => q.kind === 'median' && q.poly)) {
     const P = z.poly as V[]; if (dist(P[1]!, P[2]!) < strip.refuge - 1e-9) continue;
     let lo = Infinity, hi = -Infinity;
@@ -242,18 +263,5 @@ export function dedupe(ctx: Ctx, pairs: Pair[], edgeLen: (p: Pair) => number, ru
   return out;
 }
 
-// ---- mid-block
-/** The seeds of the mid-block rule: for each district road, the middle of every gap wider than `gap` m between consecutive crossings of it (junctions with other roads count as crossings), one seed per gap.
- *  `crossings`: where the crossings of each road stand (the midpoint of each strip). The seed's chainage is the middle; `place` moves it by up to `reach` m (see midOffsets). */
-export function midBlockGaps(ctx: Ctx, rules: CoverageRules, crossings: { road: string; mid: V }[]): { road: string; s: number; from: number; to: number }[] {
-  const m = rules.midBlock; if (!m) return [];
-  const out: { road: string; s: number; from: number; to: number }[] = [];
-  for (const r of ctx.d.roads.filter(x => m.class.includes(x.class) && !x.gyratory)) {
-    const len = lengthOf(r.line), junctions = r.path.map(n => ({ n, s: project(r.line, ctx.plan.nodes[n]!).s })).filter(x => ctx.d.roads.some(q => q !== r && q.path.includes(x.n))).map(x => x.s);
-    const at = [...junctions, ...crossings.filter(c => c.road === r.id).map(c => project(r.line, c.mid).s)].filter(s => s >= -1 && s <= len + 1).sort((a, b) => a - b);
-    for (let i = 1; i < at.length; i++) if (at[i]! - at[i - 1]! > m.gap) out.push({ road: r.id, s: (at[i]! + at[i - 1]!) / 2, from: at[i - 1]!, to: at[i]! });
-  }
-  return out;
-}
-/** The chainages to try for a mid-block site: the middle first, then 1 m steps either side up to `reach`. */
-export const midOffsets = (reach: number): number[] => { const o = [0]; for (let k = 1; k <= reach; k++) o.push(k, -k); return o; };
+/** m: a foot site is served by a crossing of its road that stands this near the footway's axis (the civic block's own crossing, Garden Walk's at Starline Street, stands 9 m off the axis: the walk is 8 m wide and a crossing 4). */
+export const FOOT_SERVED = 10;

@@ -1,0 +1,79 @@
+{
+ "ring-tech-open": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 8.27
+ },
+ "ring-tech-hold": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 8.27
+ },
+ "ring-other": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.9
+ },
+ "camera-live": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.66,
+  "with_world_pct": 9.87
+ },
+ "camera-looped": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.68,
+  "with_world_pct": 6.76
+ },
+ "camera-cut": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.69,
+  "with_world_pct": 6.69
+ },
+ "camera-shot": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.67,
+  "with_world_pct": 6.67
+ },
+ "done-loop": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.15
+ },
+ "done-cut": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.07
+ },
+ "done-shot": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.15
+ },
+ "done-strip": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.09
+ },
+ "stopgap-roster-hold": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.66
+ },
+ "stopgap-roster-squad": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 6.71
+ },
+ "stopgap-walk-offer": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.22
+ },
+ "stopgap-walk-charge": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.22
+ },
+ "stopgap-walk-ready": {
+  "rest_baseline_pct": 6.66,
+  "with_pct": 7.64
+ },
+ "price-line-widths": {
+  "Loop": 148,
+  "Disable": 198,
+  "Fire at a camera or a car": 132,
+  "Option, not in the keys: Loop with its run time": 206,
+  "Option, not in the keys: Disable with the desk's delay": 244,
+  "Alt: Loop with every field": 295,
+  "Alt: Disable with every field": 308
+ }
+}

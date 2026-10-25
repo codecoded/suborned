@@ -1,0 +1,1127 @@
+{
+ "schema": "waymark.route-retime/1",
+ "brief": "058 \u00a76 (Waymark: routes), 054 \u00a76 (crowd-seen twin)",
+ "record": "runs/missions/handover/c037 (replays: bun run missions:check replay handover c037)",
+ "engine": "suborned.sim/0.31.0",
+ "engineSource": "a1162735aa9fc1d1de001b5f5cc7ab0279922cf15886d04c682e78d4f945004e",
+ "inputs": {
+  "contracts/rules/rulebook.json": "1bdcbdc396a499a0c33c3ae50dd5c6652522a8e6ec39d9200404a3b757c0d98b",
+  "contracts/people/people.rules.json": "04a08f0d6d8952b705b98133bd299255bca7c8e7d84c9d3f024db331cbe74804",
+  "sim/data/handover.people.json": "3926a9fe02ee55f729cafd47b1eb20a8bc4ff345bdd13a95d383564a0fac4a73",
+  "sim/data/handover.provisional.json": "1f01ce6907c9644d627932f6dd1b6ba16d14fd7926a60145db20ab28ca4635e2",
+  "sim/data/handover.rounds.json": "c5e53f8bbeb98a26c794caf5875105d30dbbf18c8a691af827303ca8f795dc57",
+  "sim/data/handover.site.json": "a897dbdf5d2ce0405655d4355d05826580f9cea889744733753e8c7e49e7596e",
+  "sim/data/handover.stands.json": "bfafb622fe2c11a3e1947ee6d99b80374daef00f02fe0a9d654e3f5274096b3f",
+  "sim/data/handover.takedown.json": "6da791961467dde1ca222fbfe7cd4eb86f56a36c6651d1d77860c5425104bc45",
+  "sim/data/range-dense.site.json": "8f806f32efbfdb197b81be567384b4c053734cf69b4247171be09fc1506b7a7f",
+  "sim/data/range-lane.site.json": "9673082e78ee3697cbc92306edb612835f80160f49e88e42534db1dc77b987cc",
+  "sim/data/range.site.json": "b5332531e7ad8c4f8f45a11ed1dc7ec752c97c705bd3afced995a64f3efa2698",
+  "tree:contracts/missions/handover/mission.json": "188f3d15534613b235c97917d5d189a90700b4021353252ff5e73602c4298adb"
+ },
+ "verdict": "SHIPS",
+ "conditions": [
+  {
+   "id": "MC-0",
+   "ok": true,
+   "value": "41/41"
+  },
+  {
+   "id": "MC-1",
+   "ok": true,
+   "value": "3 (A, B, G)"
+  },
+  {
+   "id": "MC-2",
+   "ok": true,
+   "value": "loud 13+3 (case) T vs quiet route-a 5, route-a-board 5, route-a-pressure 7, route-a-pressure-board 7, route-a-disable 6, route-b 3, route-b-board 3, route-b-block 4, route-b-block-board 4, route-g 6, route-g-board 6, route-g-fast 6, route-g-fast-board 6, route-g-kill 2+2+3 (case), route-g-kill-board 2+2+3 (case) (mission+campaign+cases at 3 T)"
+  },
+  {
+   "id": "MC-3",
+   "ok": true,
+   "value": "8/8"
+  },
+  {
+   "id": "MC-4",
+   "ok": true,
+   "value": "without waitress: B, G; without driver: A, G"
+  },
+  {
+   "id": "MC-5",
+   "ok": true,
+   "value": "route A 2:56 early, route B 1:42 early, route G 4:13 early"
+  },
+  {
+   "id": "MC-6",
+   "ok": true,
+   "value": "route-g-fast-board 3:11 vs loud 5:10: 119.0 s faster"
+  },
+  {
+   "id": "MC-7",
+   "ok": true,
+   "value": "7/7"
+  },
+  {
+   "id": "MC-8",
+   "ok": true,
+   "value": "route-g 4:44.7, 6 s of takedown, route-g-board 4:11.5, 6 s of takedown, route-g-fast 3:44.2, 6 s of takedown, route-g-fast-board 3:11, 6 s of takedown, route-g-kill 6:11.7, 47.5 s of takedown, route-g-kill-board 5:38.5, 47.5 s of takedown"
+  },
+  {
+   "id": "MC-9",
+   "ok": true,
+   "value": "6 takedown wins, none dominant over 9 turning wins"
+  },
+  {
+   "id": "MC-10",
+   "ok": true,
+   "value": "quiet 3-7 T, A \u2264 1, Standing \u2265 2; loud 15-16 T, A \u2265 2, Standing \u2264 -1"
+  },
+  {
+   "id": "MC-11",
+   "ok": true,
+   "value": "9/9 posts clear (nearest 12.2 m); 18/18 reference wins free at Go"
+  },
+  {
+   "id": "MC-12",
+   "ok": true,
+   "value": "15/15 quiet scripts unreported; 1/1 loiter twins dearer"
+  }
+ ],
+ "slack": [
+  {
+   "script": "route-a-board",
+   "maxS": 7,
+   "steps": [
+    {
+     "tick": 0,
+     "slackS": 7,
+     "breaksAs": "entry-seen-guard",
+     "orders": "scout move, tech move, fixer move, enforcer move"
+    },
+    {
+     "tick": 90,
+     "slackS": 7,
+     "breaksAs": "entry-seen-guard",
+     "orders": "scout watch waitress"
+    },
+    {
+     "tick": 290,
+     "slackS": 7,
+     "breaksAs": "entry-seen-guard",
+     "orders": "scout listen waitress"
+    },
+    {
+     "tick": 710,
+     "slackS": 11,
+     "breaksAs": "entry-seen-guard",
+     "orders": "fixer turn waitress"
+    },
+    {
+     "tick": 850,
+     "slackS": 11,
+     "breaksAs": "entry-seen-guard",
+     "orders": "tech loop entrance"
+    },
+    {
+     "tick": 1050,
+     "slackS": 11,
+     "breaksAs": "entry-seen-guard",
+     "orders": "tech reroute patrol"
+    },
+    {
+     "tick": 1210,
+     "slackS": 11,
+     "breaksAs": "entry-seen-guard",
+     "orders": "fixer turn waitress"
+    },
+    {
+     "tick": 1500,
+     "slackS": 51,
+     "breaksAs": "entry-seen-camera",
+     "orders": "enforcer move"
+    },
+    {
+     "tick": 1710,
+     "slackS": 51,
+     "breaksAs": "entry-seen-camera",
+     "orders": "fixer call waitress, enforcer move, fixer move, scout move"
+    },
+    {
+     "tick": 1734,
+     "slackS": 51,
+     "breaksAs": "entry-seen-camera",
+     "orders": "enforcer enter, tech move"
+    }
+   ]
+  },
+  {
+   "script": "route-b-board",
+   "maxS": 66,
+   "steps": [
+    {
+     "tick": 0,
+     "slackS": 102,
+     "breaksAs": "vale-leaves",
+     "orders": "enforcer move, scout move, fixer move"
+    },
+    {
+     "tick": 620,
+     "slackS": 102,
+     "breaksAs": "vale-leaves",
+     "orders": "scout move, fixer move, fixer turn driver"
+    },
+    {
+     "tick": 670,
+     "slackS": 102,
+     "breaksAs": "vale-leaves",
+     "orders": "scout listen driver"
+    },
+    {
+     "tick": 1129,
+     "slackS": 102,
+     "breaksAs": "vale-leaves",
+     "orders": "fixer move"
+    },
+    {
+     "tick": 1190,
+     "slackS": 102,
+     "breaksAs": "vale-leaves",
+     "orders": "scout move"
+    },
+    {
+     "tick": 1900,
+     "slackS": 102,
+     "breaksAs": "vale-leaves",
+     "orders": "scout mislead rivals"
+    },
+    {
+     "tick": 2340,
+     "slackS": 93,
+     "breaksAs": "rivals-reach-vale",
+     "orders": "scout move, tech move"
+    },
+    {
+     "tick": 3700,
+     "slackS": 93,
+     "breaksAs": "rivals-reach-vale",
+     "orders": "enforcer take"
+    },
+    {
+     "tick": 4080,
+     "slackS": 66,
+     "breaksAs": "rivals-reach-vale",
+     "orders": "enforcer move"
+    }
+   ]
+  },
+  {
+   "script": "route-g-fast-board",
+   "maxS": 19,
+   "steps": [
+    {
+     "tick": 0,
+     "slackS": 120,
+     "orders": "tech move, enforcer move, scout move, fixer move"
+    },
+    {
+     "tick": 165,
+     "slackS": 120,
+     "orders": "tech loop entrance"
+    },
+    {
+     "tick": 310,
+     "slackS": 59,
+     "breaksAs": "entry-seen-camera",
+     "orders": "scout watch guard"
+    },
+    {
+     "tick": 365,
+     "slackS": 59,
+     "breaksAs": "entry-seen-camera",
+     "orders": "tech reroute patrol"
+    },
+    {
+     "tick": 510,
+     "slackS": 59,
+     "breaksAs": "entry-seen-camera",
+     "orders": "scout move"
+    },
+    {
+     "tick": 815,
+     "slackS": 59,
+     "breaksAs": "entry-seen-camera",
+     "orders": "enforcer move"
+    },
+    {
+     "tick": 905,
+     "slackS": 19,
+     "breaksAs": "entry-seen-guard",
+     "orders": "enforcer takedown guard"
+    },
+    {
+     "tick": 965,
+     "slackS": 59,
+     "breaksAs": "entry-seen-camera",
+     "orders": "enforcer enter, tech move"
+    }
+   ]
+  }
+ ],
+ "routes": {
+  "careless-body-found": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2498,
+    "trail": 2,
+    "alert": 2,
+    "standing": 1,
+    "finalHash": "3214a009e6a53350"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2405,
+    "trail": 8,
+    "alert": 2,
+    "finalHash": "8df71a35e125d157"
+   },
+   "same": false
+  },
+  "careless-enforcer-watches-guard": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2151,
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "finalHash": "8765d1b6fd969fd3"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1731,
+    "trail": 2,
+    "alert": 2,
+    "standing": 2,
+    "finalHash": "0d5e0608e4b266fa"
+   },
+   "same": false
+  },
+  "careless-g-disable": {
+   "c036": null,
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 12,
+    "campaignTrail": 12,
+    "alert": 2,
+    "standing": 2,
+    "finalHash": "fd8e03a32ec5c09b"
+   },
+   "same": false
+  },
+  "careless-guard-left-door-held": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "d56e0f6a2ff642a1"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "3bfd0bad7cfa7c36"
+   },
+   "same": true
+  },
+  "careless-loop-runs-out": {
+   "c036": null,
+   "c037": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1734,
+    "trail": 5,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "42d166dbdf72988b"
+   },
+   "same": false
+  },
+  "careless-reporter-not-stopped": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "campaignTrail": 6,
+    "openCases": 1,
+    "alert": 2,
+    "standing": 3,
+    "finalHash": "333c9b9124b7c182"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "campaignTrail": 6,
+    "openCases": 1,
+    "alert": 2,
+    "standing": 3,
+    "finalHash": "e349f4f57c231f44"
+   },
+   "same": true
+  },
+  "careless-scout-idles-pickup": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "53c03f8786d30e0c"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "676d8b2454f7b3f3"
+   },
+   "same": true
+  },
+  "careless-takedown-seen-camera": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "b7650be3c1d01157"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "5a1b2c1bfc0eddb2"
+   },
+   "same": true
+  },
+  "careless-takedown-seen-crowd": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3926,
+    "trail": 7,
+    "alert": 3,
+    "standing": 1,
+    "finalHash": "54dfc9069289874e"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3939,
+    "trail": 7,
+    "alert": 3,
+    "standing": 1,
+    "finalHash": "66aa2788d0a13dad"
+   },
+   "same": false
+  },
+  "fail-district-seals": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "finalHash": "183099bf6598a20b"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "finalHash": "7f5ac36b92d69bfc"
+   },
+   "same": true
+  },
+  "fail-enforcer-down": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1066,
+    "trail": 12,
+    "alert": 2,
+    "finalHash": "0fee524c21eff84e"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1067,
+    "trail": 12,
+    "alert": 2,
+    "finalHash": "b6cefcc8b240ad08"
+   },
+   "same": false
+  },
+  "fail-entry-seen-camera": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "ea7c758b77433293"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "f8096b61c8fb51cb"
+   },
+   "same": true
+  },
+  "fail-entry-seen-guard": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "45bfabe432f62020"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "64a496a925c62846"
+   },
+   "same": true
+  },
+  "fail-entry-seen-patrol": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "finalHash": "b84c432fc0c72f71"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "standing": 2,
+    "finalHash": "3bfddba7f0ed91c6"
+   },
+   "same": true
+  },
+  "fail-rivals-reach-vale": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "04af0d6a8cc643a3"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "ec670c689f80af25"
+   },
+   "same": true
+  },
+  "fail-take-seen-camera": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "83eaebbd1298f5f2"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "08313ecf4bb0df28"
+   },
+   "same": true
+  },
+  "fail-vale-dead": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "finalHash": "ab4eb153986931ef"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "finalHash": "9008d71a3389400d"
+   },
+   "same": true
+  },
+  "fail-vale-leaves": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "87aaca106676fb1d"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "232113857b5632c3"
+   },
+   "same": true
+  },
+  "fight-loud-enforcer-down": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2485,
+    "trail": 8,
+    "alert": 2,
+    "finalHash": "38d77d50fe5252ff"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2065,
+    "trail": 9,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "619ce9303b0569a8"
+   },
+   "same": false
+  },
+  "fight-safe-rivals-reach-vale": {
+   "c036": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "9b34737dbdcfdc48"
+   },
+   "c037": {
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "0d4c2681b5379ad6"
+   },
+   "same": true
+  },
+  "loud": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "9f3577fa56cdc1ad"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "a5e7bbe00981283a"
+   },
+   "same": true
+  },
+  "loud-fast": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "9f3577fa56cdc1ad"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "a5e7bbe00981283a"
+   },
+   "same": true
+  },
+  "loud-fight": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3128,
+    "trail": 12,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "b39ba64574d4e197"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3128,
+    "trail": 12,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "01d3495df46b9ee1"
+   },
+   "same": true
+  },
+  "loud-left-downed": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "campaignTrail": 4,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "9adbb5393de7b82e"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "campaignTrail": 4,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "13f369af4af2c966"
+   },
+   "same": true
+  },
+  "loud-left-standing": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "campaignTrail": 4,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "d2b3f15bdb14d599"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "campaignTrail": 4,
+    "openCases": 1,
+    "alert": 2,
+    "standing": -1,
+    "finalHash": "bbe00179dce97796"
+   },
+   "same": true
+  },
+  "route-a": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "ffd7e806a8c72cf4"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "2b8434008d235d49"
+   },
+   "same": true
+  },
+  "route-a-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2679,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "194cc9ec46115e8c"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2679,
+    "trail": 5,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "1ec8d8e794b30e79"
+   },
+   "same": true
+  },
+  "route-a-disable": {
+   "c036": null,
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "1d73dea6e4a34994"
+   },
+   "same": false
+  },
+  "route-a-pressure": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2513,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "71c7bd7aeff14fa9"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2337,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "3ad8f02188abc773"
+   },
+   "same": false
+  },
+  "route-a-pressure-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2181,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "37bf1309967765cc"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2005,
+    "trail": 7,
+    "alert": 1,
+    "standing": 2,
+    "finalHash": "a9ac545cb1f50c13"
+   },
+   "same": false
+  },
+  "route-b": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "0e5d29039d043aa9"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "32c695ced98bf160"
+   },
+   "same": true
+  },
+  "route-b-block": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 4,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "afab18642fd7a988"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 4,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "8bdf0fca72b26119"
+   },
+   "same": true
+  },
+  "route-b-block-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 4,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "ab9ae6090100b5cb"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 4,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "9fba597e1b292c8f"
+   },
+   "same": true
+  },
+  "route-b-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "63dc8e26901212c6"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "standing": 3,
+    "finalHash": "c61f457970dbbb3a"
+   },
+   "same": true
+  },
+  "route-g": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "85b67225cf018eeb"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "60a4e35f1015d38e"
+   },
+   "same": true
+  },
+  "route-g-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2515,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "9313b12029a40453"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2515,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "859fc310b6205484"
+   },
+   "same": true
+  },
+  "route-g-fast": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2662,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "c4625304d04f8b2a"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2242,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "36376901bb7fbbc0"
+   },
+   "same": false
+  },
+  "route-g-fast-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 2330,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "b41101132833f226"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 1910,
+    "trail": 6,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "9f3cffb0a380ea36"
+   },
+   "same": false
+  },
+  "route-g-kill": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3717,
+    "trail": 2,
+    "campaignTrail": 2,
+    "openCases": 1,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "a7a967e9082ee792"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3717,
+    "trail": 2,
+    "campaignTrail": 2,
+    "openCases": 1,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "759f1f243c119c50"
+   },
+   "same": true
+  },
+  "route-g-kill-board": {
+   "c036": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3385,
+    "trail": 2,
+    "campaignTrail": 2,
+    "openCases": 1,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "e8b2f27e1c75e5ea"
+   },
+   "c037": {
+    "outcome": "success",
+    "fail": "",
+    "tick": 3385,
+    "trail": 2,
+    "campaignTrail": 2,
+    "openCases": 1,
+    "alert": 1,
+    "standing": 3,
+    "finalHash": "4cab7ed1363c8891"
+   },
+   "same": true
+  },
+  "withdraw": {
+   "c036": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "standing": 2,
+    "finalHash": "ed252a1fa0474bc5"
+   },
+   "c037": {
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "standing": 2,
+    "finalHash": "8466cc070268b117"
+   },
+   "same": true
+  }
+ }
+}

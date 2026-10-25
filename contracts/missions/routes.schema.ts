@@ -3,7 +3,7 @@
 // orders, `until`), played headless by the mission checker (tools/missions/check). This file says what every script is for:
 // - kind: quiet (a route that wins with no shot), loud (wins with gunfire), fail (reaches one §07 fail), outcome (withdraw),
 //   careless (brief 013: a takedown done carelessly, seen or found or reported; brief 031, careless: loiter, an agent left standing in a
-//   watcher's sight until reported; `twin` names the careful script it is compared with);
+//   watcher's sight until reported; brief 058, careless: timing, a window that runs out before the act it covers; `twin` names the careful script it is compared with);
 // - route: which of the mission's routes it plays (quiet routes are counted by route, not by script: a variant is the same route);
 // - primary: the route's reference script (the one the §09 conditions compare and vary);
 // - expects: the outcome and fail code the engine must report (sim/Suborned.Sim/Game*.cs Fail codes), and (brief 018) who the car
@@ -35,8 +35,9 @@ export const RouteScript = z.strictObject({
     /** brief 031: the Alert the run ends at, exactly (a loiterer reported is a found fault, Alert at least 1, with no Trail: the outcome alone can't show it). */
     alert: z.number().int().min(0).max(3).optional(),
   }),
-  /** A careless script's fault (default violence, brief 013 D, MC-7): `loiter` (brief 031, MC-12) is its careful twin with an agent left standing in a watcher's sight. */
-  careless: z.enum(['violence', 'loiter']).optional(),
+  /** A careless script's fault (default violence, brief 013 D, MC-7): `loiter` (brief 031, MC-12) is its careful twin with an agent left standing in a watcher's sight;
+   *  `timing` (brief 058, Loop v2) is its careful twin with a window planted too early, so it runs out before the act it was for (judged by its expects, MC-0). */
+  careless: z.enum(['violence', 'loiter', 'timing']).optional(),
   reaches: id.optional().describe('the `fails` entry a fail script reaches'),
   twin: id.optional().describe('a careless script: the careful script it is the careless version of (brief 013 D, MC-7)'),
   pending: z.string().min(1).optional(),

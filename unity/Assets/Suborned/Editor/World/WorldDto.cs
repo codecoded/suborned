@@ -57,6 +57,21 @@ namespace Suborned.World
         public List<MassDto> Plots = new();  // one 0.18 m pavement slab per plot
         public List<DriveDto> Drives = new(); // brief 023: a car's way from a road's carriageway over a plot's pavement to a bay that touches no road
         public List<StreetItemDto> Pieces = new(); // brief 026 (Splice): flat kit pieces on the ground (tactile, terrazzo, drain, manhole; kerb, flags, pits when adopted); not in counts.ground
+        public List<FootwayDto> Footways = new(); // brief 061: the continuous footway at each gate's lane mouth; its table is also a flat in Flats (id Table)
+    }
+
+    /// <summary>Brief 061 (world.schema.ts Footway): a gate's lane mouth where the higher road's pavement runs on across the lane at kerb height.
+    /// Frame: Origin = the higher road's near kerb line on the lane's axis, Along = that kerb line's direction, Into = from the kerb into the lane;
+    /// a point is Origin + Along * a + Into * s, |a| &lt;= Half. The table (a flat at Level, in Flats as TableId) runs s 0..Depth; the lip falls
+    /// LipDrop from the table over s 0..LipD to the carriageway; the ramp falls RampRise from the table over s Depth..Depth + RampRun; the
+    /// bands are flush strips (ring, level, surface); the posts are street items of their own.</summary>
+    public sealed class FootwayDto
+    {
+        public string Id, Gate, Lane, Road, TableId, TableSurface, RampSurface, LipSurface;
+        public float Level, Half, Depth, RampRun, RampRise, LipD, LipDrop;
+        public Vector2 Origin, Along, Into;
+        public Vector2[] Table, Ramp, Lip, Posts;
+        public List<(Vector2[] ring, float level, string surface)> Bands = new();
     }
 
     /// <summary>A drive (brief 023, world.schema.ts Drive): Ring a flat at Level in Surface, from Road (a road id) to To (a bay flat id); the road's
@@ -212,13 +227,18 @@ namespace Suborned.World
     /// <summary>Tree, lamp, furniture, kit item or watcher at At, standing on Z. Kind names the catalogue entry; Variant the species or lamp type.</summary>
     public sealed class StreetItemDto { public string Id, Kind, Surface, Edge, Sight, Variant, Trade, Occupation; public Vector2 At; public float Z, Yaw; public Vector3 Size; public bool Staffed; public float HoursFrom, HoursTo; public bool HoursService; public string Source; public KitRefDto Kit;
         /// <summary>A crossing's part (brief 009): the crossing it belongs to; whether it casts (the signal orb's body only); a signal orb's state (walk | stop).</summary>
-        public string Crossing, Signal; public bool CastShadows; }
+        public string Crossing, Signal; public bool CastShadows;
+        /// <summary>`signal-orb` only (brief 061): the halo's centre, ground and radius (`signal.halo`); the clock ring (HaloRing) stands there.</summary>
+        public bool HasHalo; public Vector2 HaloAt; public float HaloZ, HaloR; }
 
     /// <summary>A crossing. Kind kerb = two landings (street items, one on each kerb of Road) and the way across the carriageway
     /// between them; stop | bank = one patch, its one street item (the way from a tram platform, or from a station bank). Line = the
     /// way's centre line, end to end; Width across it; Control signal (it carries signal orbs), null = none (a zebra no longer exists, brief 009); Refuges = the rings of the median the way
     /// crosses, where people wait.</summary>
-    public sealed class CrossingDto { public string Id, Kind, Road, Control; public string[] Items; public Vector2[] Line; public float Width; public List<Vector2[]> Refuges = new(); }
+    public sealed class CrossingDto { public string Id, Kind, Road, Control; public string[] Items; public Vector2[] Line; public float Width; public List<Vector2[]> Refuges = new(); public SignalCycleDto Cycle; }
+    /// <summary>Brief 061 (plan strip.signal.cycle; look only): a signal crossing's cycle in whole seconds, the phase offset hashed by the generator
+    /// from the crossing's id (Unity never hashes). Null on a crossing with no control, or an export before brief 061.</summary>
+    public sealed class SignalCycleDto { public int Walk, Clearing, Stop, Arrive, Offset; }
 
     /// <summary>A DecoKit piece (contracts/world/kit.json id) standing in for an element. Scale = (across, up, depth) on the piece's own
     /// size = Unity local (x, y, z). Yaw (plan radians from +x toward +y) turns the piece's +X; its front (+Z) faces Yaw + 90°; NaN = the

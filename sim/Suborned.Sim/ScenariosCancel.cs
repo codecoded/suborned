@@ -69,20 +69,20 @@ namespace Suborned.Sim
                 r.Is(g.Inez.Turned, "Help again turns her");
             }, help);
 
-            Add("N30", "—", "Cancel a Loop: part-done, nothing lands and no Trail; held, the loop ends and the camera comes back.", r =>
+            Add("N30", "—", "Cancel a Loop: part-done, nothing lands and no Trail. Loop v2 (brief 058 §6, engine 0.31.0): a landed loop runs on its own, so there is nothing of the Tech's to cancel (cancel.loopHeld retired): the camera stays blind.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet"));
                 int trail = g.Trail;
-                r.Do(Tech, "loop", "entrance"); r.Wait(T(30)); r.Do(Tech, "cancel");
+                r.Do(Tech, "loop", "entrance"); r.Wait(T(g.R.LoopS / 2)); r.Do(Tech, "cancel"); // half-way through the splice (Loop v2: 20 s)
                 r.Wait(T(40));
                 r.Is(!g.LoopOn && g.Trail == trail, "part-done: no loop, no Trail");
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.Is(!g.CameraWatching("entrance", r.Stand("d:Office entrance")), "looped in full, the camera is blind");
                 var a = g.ActivityOf(OpId.Tech);
-                r.Eq((a.Verb, a.Phase, a.CancelCost), ("loop", "holding", "ends"), "the HUD reads the loop held");
-                r.Do(Tech, "cancel");
-                r.Is(!g.LoopOn && g.CameraWatching("entrance", r.Stand("d:Office entrance")), "cancelled, the camera comes back");
+                r.Is(a.Verb != "loop", $"the HUD reads no loop held by the Tech (now: '{a.Verb}')");
+                r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "cancel" }).code, "nothing-to-cancel", "a running loop is nothing to cancel");
+                r.Is(g.LoopOn && !g.CameraWatching("entrance", r.Stand("d:Office entrance")), "the camera stays blind");
             });
 
             Add("N31", "—", "Cancel Reroute and Mislead part-done: the patrol keeps its sweep and the rivals stay; no Trail.", r =>
@@ -101,14 +101,15 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
-                r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance"); r.Done(Scout);
+                r.Do(Scout, "watch", Inez); r.Done(Scout);
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
                 r.Done(Scout); HelpUntilTurned(r, Inez);
                 while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+                while (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn) g.Step();
                 r.Do(Enf, "enter"); r.Wait(T(10));
                 var a = g.ActivityOf(OpId.Enforcer);
                 r.Eq((a.Verb, a.CancelCost), ("enter", "staff-report"), "the HUD reads Enter and the cancel's cost");
@@ -168,7 +169,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 r.Do(Enf, "draw"); r.Wait(5);
                 r.Eq(g.ActivityOf(OpId.Enforcer).Phase, "drawing", "the HUD reads the draw");
                 r.Do(Enf, "cancel");

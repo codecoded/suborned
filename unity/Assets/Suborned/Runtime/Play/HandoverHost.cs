@@ -87,13 +87,13 @@ namespace Suborned.Play
         public bool rangeHalf;
         public bool Paused { get; private set; }
         /// <summary>The briefing's Begin (the kit's button; Space does the same): the clock runs and the briefing closes.</summary>
-        public void StartClock() { Paused = false; ShowBriefing = false; Status = "Running."; ClockStarted = Time.unscaledTime; }
+        public void StartClock() { BriefCamLand(); StartT = -1f; Paused = false; ShowBriefing = false; Status = "Running."; ClockStarted = Time.unscaledTime; } /* brief 062: a script's start lands the briefing camera on the opening view (no glide) */
         /// <summary>Brief 014: when the clock last started from the briefing (the goal line shows for its seconds from here).</summary>
         public float ClockStarted { get; private set; } = -100f;
         /// <summary>The Next Step line: whether the HUD shows it now (its ring shows with it), and when the player asked for it again (H, the "?").</summary>
         public bool HintLineShowing { get; set; } public float HintReopenAt { get; set; } = -1f;
         /// <summary>For scripted captures and checks (the route scripts, the budget shots): hold the clock, or let it run.</summary>
-        public void SetPaused(bool p) { Paused = p; if (!p) { ShowBriefing = false; if (ClockStarted < 0) ClockStarted = Time.unscaledTime; } }
+        public void SetPaused(bool p) { Paused = p; if (!p) { BriefCamLand(); StartT = -1f; ShowBriefing = false; if (ClockStarted < 0) ClockStarted = Time.unscaledTime; } }
         public int Speed { get; private set; } = 1;
         /// <summary>For proofs: the clock's speed as =/− give it (1 to 8).</summary>
         public void SetSpeed(int s) => Speed = Mathf.Clamp(s, 1, 8);
@@ -126,7 +126,7 @@ namespace Suborned.Play
         {
             new[] { new Slot("watch", "Watch", "eye"), new Slot("listen", "Listen", "ear"), new Slot("mislead", "False tip", "tip") },
             new[] { new Slot("ask", "Ask", "ask"), new Slot("pay", "Pay", "$"), new Slot("help", "Help", "help"), new Slot("pressure", "Pressure", "press"), new Slot("watch", "Watch", "eye") }, // brief 031: every agent watches; the Fixer's four knobs are his approaches, so his Watch is the fifth (the ring and the panel offer it; Glyph to place a fifth knob)
-            new[] { new Slot("loop", "Loop camera", "loop"), new Slot("reroute", "Reroute patrol", "route"), new Slot("watch", "Watch", "eye") }, // Sky 2026-10-18: the Tech watches machines (rulebook sight.kinds[*].by)
+            new[] { new Slot("loop", "Loop camera", "loop"), new Slot("reroute", "Reroute patrol", "route"), new Slot("watch", "Watch", "eye"), new Slot("disable", "Disable camera", "disable") }, // Sky 2026-10-18: the Tech watches machines (rulebook sight.kinds[*].by); engine 0.31.0 (brief 058): Disable on the fourth knob
             new[] { new Slot("act", "Enter / Take / Car", "act"), new Slot("fire", "Fire", "fire"), new Slot("takedown", "Takedown", "takedown"), new Slot("watch", "Watch", "eye") }, // brief 013: Takedown on the first empty knob (Glyph §1); brief 031: Watch on the fourth
         };
         [Tooltip("Key bindings and HUD settings: one table (remap here; a settings screen later edits the same object).")]
@@ -237,6 +237,7 @@ namespace Suborned.Play
             Status = $"Paused. {controls.Label(PlayAction.Pause)} starts the clock; {controls.Label(PlayAction.Briefing)} shows the briefing again.";
             if (rangeMode) { ShowBriefing = false; Paused = false; LookAt(frame.World(Game.RangeMark)); Status = "Fight range: spawn from the panel; R restarts"; } // brief 029
             if (FightRunCheckpoint.Length > 0) { ShowBriefing = false; LookAt(frame.World(Game.Ops[(int)OpId.Enforcer].Pos)); Status = $"{FightRunCheckpoint.ToUpperInvariant()} at {Report.Clock(Game.Tick)} ({FightRunPreset}): {controls.Label(PlayAction.Pause)} runs the clock"; } // brief 027: a checkpoint opens on the fight, no briefing
+            BriefingCamera(); // brief 062 B: the briefing opens on the street (the mission's briefing frame); Begin glides to the cell
         }
 
         /// <summary>Brief 031: the guard's and the officers' heads turn after their clips have posed them (HostViews.LateHeads), view only.</summary>
@@ -256,6 +257,7 @@ namespace Suborned.Play
         {
             Uncover();
             if (Game == null) return;
+            SignalHead.MissionSeconds = Game.Tick / (double)Game.Hz; // brief 061: the crossing heads' clock is the mission clock (look only)
             var kb = Keyboard.current;
             if (controls.Down(kb, PlayAction.Debug)) ShowDebug = !ShowDebug;
             if (Fault != null) return;
@@ -379,11 +381,12 @@ namespace Suborned.Play
         void Controls()
         {
             var kb = Keyboard.current; var mouse = UnityEngine.InputSystem.Mouse.current; var c = controls;
+            if (StartFrame(kb, mouse)) return; // brief 062 B: the start sequence has the keys (any lands the glide)
             if (Modal == ModalGate.Modal.Briefing) // modal until Begin: Space or the button begins; B and Esc close it; the camera may look round
             {
                 ClearHover(); if (Panel != null) ClosePanel();
-                if (c.Down(kb, PlayAction.Pause)) { Paused = false; ClockStarted = Time.unscaledTime; ShowBriefing = false; Status = "Running."; }
-                else if (c.Down(kb, PlayAction.Briefing) || (kb != null && kb.escapeKey.wasPressedThisFrame)) ShowBriefing = false;
+                if (c.Down(kb, PlayAction.Pause)) BriefingBegin(); // brief 062 B: Space is Begin (the glide on a fresh run)
+                else if (c.Down(kb, PlayAction.Briefing) || (kb != null && kb.escapeKey.wasPressedThisFrame)) { ShowBriefing = false; BriefCamLand(); }
                 CameraOnly(kb, mouse);
                 return;
             }
@@ -856,6 +859,9 @@ namespace Suborned.Play
                 case "loop":
                     if (!(t.Kind == "cabinet" || (t.Kind == "camera" && Loopable(t.Key)))) return null;
                     return LoopIntent(slot, t.Kind == "camera" ? t.Key : "entrance");
+                case "disable": // engine 0.31.0 (brief 058 §2): a camera the cabinet loops, alive; on the cabinet, the entrance camera (the others from their own ring)
+                    if (!(t.Kind == "cabinet" || (t.Kind == "camera" && Loopable(t.Key)))) return null;
+                    { var cam = t.Kind == "camera" ? t.Key : "entrance"; if (g.CameraDark(cam)) return null; return DisableIntent(slot, cam); }
                 case "reroute":
                     if (t.Kind is not ("cabinet" or "patrol")) return null;
                     { var i = I("reroute", "patrol", "", "Reroute the patrol"); i.Time = $"{R.RerouteS} s"; i.Trail = $"T +{R.RerouteTrail}"; return i; }
@@ -874,7 +880,7 @@ namespace Suborned.Play
                         string target = t.Kind is "person" or "hostile" or "unit" or "bystander" ? t.Key : t.Kind is "patrol" or "rivals" or "security" ? t.Kind : t.Kind == "camera" ? "camera:" + t.Key : t.Kind == "car" ? "car:" + t.Key : "";
                         if (target.Length == 0) return null;
                         if (t.Kind is "camera" or "car" && NoFireTarget(by, target)) return null; /* the 0.2.115 bot row (Q-OFFER no-target x9): a camera already shot dark (or none the engine knows) is never offered */
-                        var i = I("fire", target, "", $"Fire at {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? $"T +{R.GunfireTrail}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i; // brief 058: property costs the shooting once (the panel's Trail line)
+                        var i = I("fire", target, "", $"Fire at {t.Label}"); i.Order.Force = t.Kind == "person" && t.Key != "guard" || t.Kind == "bystander"; i.Time = "until down"; i.Trail = t.Kind is "camera" or "car" ? $"T {FireTrail(by, target)}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i; // brief 058: property costs the shooting once (the panel's Trail line)
                     }
             }
             return null;
@@ -894,7 +900,7 @@ namespace Suborned.Play
             if (t.Kind is "camera" or "car" && NoFireTarget(by, target)) return null; // the 0.2.115 bot row (Q-OFFER no-target): a camera shot dark is not offered
 
             var i = new Intent { Slot = -1, Label = $"Fire at {t.Label}", Order = new Order { Op = Op.Name(by), Do = "fire", Target = target, Force = t.Kind == "bystander" } };
-            i.Time = "until down"; i.Trail = PropertyId(target) ? $"T +{R.GunfireTrail}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
+            i.Time = "until down"; i.Trail = PropertyId(target) ? $"T {FireTrail(by, target)}" : $"T +{R.HitTrail} a hit, +{R.DownTrail} down"; i.Alert = $"A ≥{R.GunfireAlert}"; i.Outcome = "loud"; return i;
         }
 
         Intent Call(Target t)
@@ -955,7 +961,7 @@ namespace Suborned.Play
                 if (nf.HasValue && G.Dist(nf.Value, at.Value) <= 300) { o.Point = nf.Value; o.To = ""; return true; }
                 PopKey("no-way", screen, target, Feedback.Refused, "Can't walk there."); return false;
             }
-            bool engages = o.Do is "watch" or "listen" or "turn" or "call" or "loop" or "reroute" or "mislead" or "enter" or "take" or "board" or "carry" or "restrain" or "stash" or "drop" or "takedown";
+            bool engages = o.Do is "watch" or "listen" or "turn" or "call" or "loop" or "disable" or "reroute" or "mislead" or "enter" or "take" or "board" or "carry" or "restrain" or "stash" or "drop" or "takedown";
             if (engages && HoldOn && op.Busy != null && !op.Down)
             {
                 if (op.BusyEnd - g.Tick <= 2 * Game.Hz) { pending[k] = new Order { Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, How = o.How }; pendingAt[k] = target; pendingFrom[k] = g.Tick; Track(); return false; } // it goes when the act in hand ends (FollowUp)
@@ -1119,7 +1125,7 @@ namespace Suborned.Play
                             if (aw != null) { v.Walk = $"walks {aw.Cm / 100} m ({aw.Seconds} s) to {(aw.Place.Length > 0 ? PlaceName(aw.Place) : "within reach")}, then"; v.WalkS = aw.Seconds; }
                             Words(v, t);
                             var lk = Locked((OpId)k, v, t);
-                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.code is "car-held" or "too-far" or "run-tethered" or "vale-not-at-car" or "already-heard" or "already-watched" or "needs-routine" ? ShortOf(v.Order, lk) ?? lk.why : lk.why }); // Take too early: when (Sky, route B)
+                            rows.Add(new PanelRow { By = (OpId)k, Slot = i, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : lk.code is "car-held" or "too-far" or "loop-holds" or "vale-not-at-car" or "already-heard" or "already-watched" or "needs-routine" ? ShortOf(v.Order, lk) ?? lk.why : lk.why }); // Take too early: when (Sky, route B)
                         }
                     }
                     foreach (var r in rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
@@ -1201,7 +1207,7 @@ namespace Suborned.Play
             var yes = new Answer { ok = true, code = "", why = "" };
             if (op.Inside) return No("enforcer-inside", "inside the Office");
             if (op.Busy != null && !HoldOn) return No("agent-busy", $"busy until {MissionClock(op.BusyEnd)} ({doing[(int)by].Label}); {controls.Label(PlayAction.Cancel)} cancels it", op.BusyEnd);
-            if (o.Do is "watch" or "listen") { var sq = g.LearnQuery(Op.Name(by), o.Do, o.Target); /* any agent (the Tech watches machines): only-scout, run-tethered, already-watched */ if (!sq.ok && sq.code is not ("too-far" or "agent-busy" or "mission-over")) return sq; } // Keel's refusals (a second Watch or Listen teaches nothing): the engine's, not the host's
+            if (o.Do is "watch" or "listen") { var sq = g.LearnQuery(Op.Name(by), o.Do, o.Target); /* any agent (the Tech watches machines): only-scout, already-watched */ if (!sq.ok && sq.code is not ("too-far" or "agent-busy" or "mission-over")) return sq; } // Keel's refusals (a second Watch or Listen teaches nothing): the engine's, not the host's
             switch (o.Do)
             {
                 case "watch" when Game.WatcherKind(o.Target) is "camera" or "patrol":
@@ -1217,7 +1223,11 @@ namespace Suborned.Play
                         var q = g.Preview(o.Approach, o.Target, OpId.Fixer); if (q.WorstUsd > g.Cash) return No("no-cash", $"not enough cash (${q.WorstUsd:N0})", -1, q.WorstUsd);
                         return yes;
                     }
-                case "loop": return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
+                case "loop": // engine 0.31.0 (brief 058 §2): one loop at a time (another camera: loop-holds, with the tick it ends); the camera already looping re-splices; a dead camera has no feed
+                    if (g.CameraDark(o.Target)) return No("camera-dead", "that camera is already dead");
+                    if (!g.R.LoopRuns) return g.LoopOn ? No("loop-holds", "the loop already holds") : yes;
+                    return g.LoopOn && g.LoopCam != o.Target ? No("loop-holds", $"one loop at a time: the {g.LoopCam} loop runs until {MissionClock(g.LoopUntil)}", g.LoopUntil) : yes;
+                case "disable": return g.CameraDark(o.Target) ? No("camera-dead", "that camera is already dead") : yes;
                 case "board": return BoardLock(by);
                 case "go": return GoLock();
                 case "takedown": return v.Td != null && v.Td.Refused.Length > 0 ? No(v.Td.RefusedCode, v.Td.Refused) : op.CarryBody.Length > 0 || op.Carrying.HasValue ? No("already-carrying", "already carrying") : yes;
@@ -1266,7 +1276,7 @@ namespace Suborned.Play
             string place = ""; int reach = 0; Pt? tp = null;
             switch (o.Do)
             {
-                case "loop": case "reroute": place = "cabinet"; break;
+                case "loop": case "disable": case "reroute": place = "cabinet"; break;
                 case "enter": place = s.GuardPost; break;
                 case "board": place = s.GetawayCar; break; // brief 018: board within at-reach of the car
                 case "watch": tp = PosOf(t); reach = R.WatchReachCm(by); break; // brief 031: within the agent's own reach (Scout 30, Tech 24, Fixer 12, Enforcer 3 m), on a clear line

@@ -119,6 +119,155 @@
     "base": 0,
     "height": 0.18
    }
+  ],
+  "footways": [
+   {
+    "id": "footway/rocket-gate",
+    "gate": "rocket-gate",
+    "lane": "rocket-lane",
+    "road": "market-street",
+    "level": 0.18,
+    "frame": {
+     "origin": [
+      -186,
+      -401
+     ],
+     "along": [
+      1,
+      0
+     ],
+     "into": [
+      0,
+      1
+     ]
+    },
+    "half": 6,
+    "depth": 6,
+    "table": {
+     "id": "ground/footway/rocket-gate/table",
+     "ring": [
+      [
+       -192,
+       -401
+      ],
+      [
+       -180,
+       -401
+      ],
+      [
+       -180,
+       -395
+      ],
+      [
+       -192,
+       -395
+      ]
+     ],
+     "surface": "residential"
+    },
+    "ramp": {
+     "ring": [
+      [
+       -192,
+       -395
+      ],
+      [
+       -180,
+       -395
+      ],
+      [
+       -180,
+       -392.6
+      ],
+      [
+       -192,
+       -392.6
+      ]
+     ],
+     "run": 2.4,
+     "rise": 0.18,
+     "surface": "road-enamel"
+    },
+    "lip": {
+     "ring": [
+      [
+       -192,
+       -401
+      ],
+      [
+       -180,
+       -401
+      ],
+      [
+       -180,
+       -400.62
+      ],
+      [
+       -192,
+       -400.62
+      ]
+     ],
+     "d": 0.38,
+     "drop": 0.18,
+     "surface": "kerb"
+    },
+    "bands": [
+     {
+      "ring": [
+       [
+        -192,
+        -392.6
+       ],
+       [
+        -180,
+        -392.6
+       ],
+       [
+        -180,
+        -392.44
+       ],
+       [
+        -192,
+        -392.44
+       ]
+      ],
+      "level": 0,
+      "surface": "kerb"
+     },
+     {
+      "ring": [
+       [
+        -192,
+        -400.62
+       ],
+       [
+        -180,
+        -400.62
+       ],
+       [
+        -180,
+        -400.46
+       ],
+       [
+        -192,
+        -400.46
+       ]
+      ],
+      "level": 0.18,
+      "surface": "kerb"
+     }
+    ],
+    "posts": [
+     [
+      -192.6,
+      -395
+     ],
+     [
+      -179.4,
+      -395
+     ]
+    ]
+   }
   ]
  },
  "transit": {
@@ -2068,7 +2217,7 @@
     ]
    ],
    "width": 4,
-   "control": "zebra",
+   "control": "signal",
    "refuges": [
     [
      [
@@ -2088,24 +2237,32 @@
       -407
      ]
     ]
-   ]
+   ],
+   "cycle": {
+    "walk": 6,
+    "clearing": 13,
+    "stop": 27,
+    "arrive": 3,
+    "offset": 17
+   }
   }
  ],
  "crossingRules": {
   "sites": {
-   "arm": 12,
-   "island": 8,
-   "mall": 2,
-   "mid": 3
+   "island": 4,
+   "foot": 4,
+   "crossroads": 6,
+   "junction": 1,
+   "civic": 1,
+   "stops": 10
   },
-  "twins": [
-   "market-street at -175,-401: a twin across a side road's mouth (22 m from the crossing it keeps)"
-  ],
+  "twins": [],
   "moved": [
-   "street/circus/tree-2596"
+   "street/circus/tree-2496"
   ],
-  "left": [
-   "arm/crown-road/nw/after: no free spot for the landing at kerb b (-320, 268) (nor within 4 m either way)"
+  "left": [],
+  "served": [
+   "foot/garden-walk/circus-road/axis: street/gardens-forecourt-e/e2/crossing-728"
   ]
  },
  "levels": [

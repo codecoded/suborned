@@ -84,6 +84,10 @@ namespace Suborned.Sim
         /// <summary>A fight is on (motive-fights.md §2.4 panic, §1.1 running free): someone has fired on the cell, or the final fight is on.</summary>
         public bool FightOn => CellFiredOn || FightSprung != INF || FightBranch == "loud" || Range; // brief 029: the range is a fight from its first tick
         bool RunFree(Op op) => FightOn || Alert >= 2 || Gunfire > 0 || UnderFire(op);
+        /// <summary>The loud run (motive-fights.md §1.1): a fight on, a shot fired, or the runner under fire: nobody counts a runner, civilians
+        /// included. RunFree adds Alert ≥ 2, which frees the run for security only (brief 054 §3.2, §8: from people-care-alert a civilian
+        /// still remembers the face; engine 0.31.0, Sky 2026-10-25).</summary>
+        bool RunLoud(Op op) => FightOn || Gunfire > 0 || UnderFire(op);
         bool UnderFire(Op op)
         {
             string id = Sim.Op.Name(op.Id);
@@ -649,8 +653,13 @@ namespace Suborned.Sim
         /// Running is free once a fight is on or the run is loud.</summary>
         void RunAttention(Op op)
         {
-            if (RunFree(op)) return;
+            if (RunLoud(op)) return;
             string name = Sim.Op.Name(op.Id);
+            if (RunFree(op)) // Alert ≥ 2, not loud (engine 0.31.0, brief 054 §8 confirmed): security is free of the run as before; a civilian who sees it in their cone remembers the face, and raises nothing
+            {
+                if (R.PeopleCone) foreach (var (p, _) in WitnessesWithPos(op.Pos, null, "run")) if (!IsStaff(p) && op.RunSeen.Add(p.Id)) Remember(p, "saw-runner", name, true);
+                return;
+            }
             // brief 054 §3.2 (cone): from people-care-alert a civilian who sees the run in their cone remembers the face too, and raises nothing
             foreach (var (p, _) in WitnessesWithPos(op.Pos, null, "run")) if ((IsStaff(p) || R.PeopleCone) && op.RunSeen.Add(p.Id)) Remember(p, "saw-runner", name, true);
             Person? staffSaw = null; // engine 0.22.0 (Sky via Aster 2026-10-22: "a guard is a guard"): a crowd guard who sees the run by the guard's sight rule
@@ -961,6 +970,16 @@ namespace Suborned.Sim
             q.RunS = (int)((path.Length + R.RunSpeed * Hz - 1) / (R.RunSpeed * Hz));
             { var at = new List<Pt>(); for (long mm = 0; ; mm += 1000) { at.Add(path.At(Math.Min(mm, path.Length))); if (mm >= path.Length) break; } q.Seen = SeenAt(at); } // the same samples as below
             q.RunFree = RunFree(op); q.AlertIfRun = Alert;
+            if (q.RunFree && !RunLoud(op) && R.PeopleCone) // engine 0.31.0 (brief 054 §8): free for security from Alert 2, a civilian still remembers the face
+            {
+                for (long mm = 0; ; mm += 1000)
+                {
+                    var p = path.At(Math.Min(mm, path.Length));
+                    foreach (var (pp, wp) in OnTheStreet()) if (!IsStaff(pp) && !q.RunRememberedBy.Contains(pp.Id) && Notices(pp, wp, p, "run")) q.RunRememberedBy.Add(pp.Id);
+                    if (mm >= path.Length) break;
+                }
+                return q;
+            }
             if (q.RunFree) return q;
             var people = new HashSet<string>(StringComparer.Ordinal);
             for (long mm = 0; ; mm += 1000) // a sample every metre of the route, at the current tick
@@ -986,7 +1005,7 @@ namespace Suborned.Sim
             if (op.Down) return No("agent-down", $"the {Sim.Op.Name(op.Id)} is down");
             if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("run-carrying-vale", "carrying Vale, the Enforcer walks: a man being taken walks");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("run-carrying-downed", "carrying, the operative walks");
-            if (op.Id == OpId.Tech && LoopOn) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
+            if (op.Id == OpId.Tech && Tethered) return No("run-tethered", "the Tech is tethered to the cabinet while the loop holds");
             if (op.Busy != null) return No("agent-busy", $"{Sim.Op.Name(op.Id)} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             return "";
         }

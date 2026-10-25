@@ -133,7 +133,10 @@ namespace Suborned.Sim
         ///  · reroute, patrol: the patrol away on false orders until PatrolAwayUntil (patrol.returns).
         ///  · mislead, rivals: the False tip, the rival crew away until RivalsDelayedUntil (no log code at its end; a retreat under fire is
         ///    not a window).
-        ///  · loop, the camera id (LoopCam): held while the Tech stays at the cabinet, Until -1 (loop.ends).
+        ///  · loop, the camera id (LoopCam): Loop v2 (engine 0.31.0) runs until LoopUntil (loop.ends); under the tether (a rulebook pinned
+        ///    before 0.31.0) held while the Tech stays at the cabinet, Until -1.
+        ///  · disable, the camera id (engine 0.31.0, brief 058 §2): a cut camera's missed check-in on its way, From the cut to Until, the tick
+        ///    the desk's report lands (camera.cut-reported); gone once it lands.
         ///  · seal, district (brief 057 §4, engine 0.30.0): the seal clock, from the tick Lockdown was last set or pulled earlier (From) to
         ///    Lockdown (Until), the district sealing then unless the car leaves first (seal.starts, security.called, fight.loud set it; a later
         ///    report may pull it earlier: From and Until move, Origin is that report). Origin: the report whose time is running (FailCause's
@@ -152,7 +155,8 @@ namespace Suborned.Sim
             }
             if (!PatrolDown && PatrolAwayUntil > Tick) l.Add(new OpenWindow("reroute", "patrol", PatrolAwayUntil));
             if (RivalsDelayMethod == "mislead" && RivalsDelayedUntil > Tick && !RivalsAbsorbed) l.Add(new OpenWindow("mislead", "rivals", RivalsDelayedUntil));
-            if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, -1));
+            if (LoopOn) l.Add(new OpenWindow("loop", LoopCam, R.LoopRuns ? LoopUntil : -1)); // engine 0.31.0 (Loop v2): a real end
+            if (!Over) foreach (var c in CutReps) if (!c.Done) l.Add(new OpenWindow("disable", c.Cam, c.LandAt, c.From)); // engine 0.31.0 (brief 058 §2): the desk's clock
             if (!Range && !Over && Lockdown < INF) l.Add(new OpenWindow("seal", "district", Lockdown, sealMovedAt, SealRunning)); // brief 057 §4 (engine 0.30.0)
             return l;
         }

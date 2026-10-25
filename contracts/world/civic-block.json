@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "b2a1a8198f3be302d2210022c9d4d101f6ddaadb4d1a87ecf492971a0e9d991e",
+  "sha256": "5c54a6507583ba35b7437f694171c1c4aa638266e90e28fd2cbb1e5f2aa04c73",
   "owner": "Vantage",
   "applied": [
    {
@@ -2399,18 +2399,6 @@
      "reason": "Its other landing, on the office plot's north kerb. Sky 2026-10-19, door option (b): the steps and lamps that stood 5 m in front of it have turned with the door onto the west face; from here the way to the door is 20 m round the Office's north-west corner."
     },
     {
-     "id": "x-starline-w",
-     "at": [-26, -39],
-     "inward": [1, 0],
-     "plot": "records-square",
-     "road": "starline-street",
-     "partner": {
-      "edge": "lamplight-south-w/e1",
-      "kerb": [-38, -39]
-     },
-     "reason": "Mirror of the dropped landing (Lamplight Lane's west arm). On the 4 m pavement behind the café, 2.2 m off its back wall, 1 m short of its west corner. 2.15 m from 'Behind café': people waiting here are eyes on that point (Waymark, Pulse)."
-    },
-    {
      "id": "x-starline-e",
      "at": [-26, -21],
      "inward": [1, 0],
@@ -2421,66 +2409,6 @@
       "kerb": [-38, -21]
      },
      "reason": "Mirror of the dropped landing (east arm), 3 m short of the café's east corner; 12 m from 'Behind café'."
-    },
-    {
-     "id": "x-rocket-n",
-     "at": [-21.39, -50],
-     "inward": [0, 1],
-     "plot": "records-square",
-     "road": "rocket-lane",
-     "partner": {
-      "edge": "rocket-west/e1",
-      "kerb": [-21.39, -62]
-     },
-     "reason": "Mirror of the dropped landing, in the open kerb north of bol-terrace-w. 17.4 m north of crew-line-getaway, 23.4 m from the square bay. Rocket Lane is the first road of the getaway route (Waymark)."
-    },
-    {
-     "id": "x-garden-n",
-     "at": [-21, -8],
-     "inward": [0, -1],
-     "plot": "records-square",
-     "road": "garden-row",
-     "partner": {
-      "edge": "garden-row-east/e3",
-      "kerb": [-21, 4]
-     },
-     "reason": "Mirror of the dropped landing, in the open kerb north of bol-terrace-e (4.3 m from the nearest table set)."
-    },
-    {
-     "id": "x-garden-s",
-     "at": [26, -8],
-     "inward": [0, -1],
-     "plot": "records-square",
-     "road": "garden-row",
-     "partner": {
-      "edge": "garden-row-east/e3",
-      "kerb": [26, 4]
-     },
-     "reason": "Mirror of the dropped landing, in the open kerb south of run-east-south (1.35 m off its end); 7.2 m from 'South walkway'."
-    },
-    {
-     "id": "x-pylon-n",
-     "at": [49, 4],
-     "inward": [0, -1],
-     "plot": "records-office",
-     "road": "pylon-row",
-     "partner": {
-      "edge": "pylon-row-east/e3",
-      "kerb": [49, 16]
-     },
-     "reason": "Mirror of the dropped landing, on the office's east pavement; nothing within 18 m."
-    },
-    {
-     "id": "x-pylon-s",
-     "at": [75, 4],
-     "inward": [0, -1],
-     "plot": "records-office",
-     "road": "pylon-row",
-     "partner": {
-      "edge": "pylon-row-east/e3",
-      "kerb": [75, 16]
-     },
-     "reason": "Mirror of the dropped landing; 26 m from the official bay."
     }
    ],
    "none": [
@@ -2501,6 +2429,78 @@
      "kerb": [31, 9],
      "road": "orbit-walk",
      "reason": "Faces the mouth of Pylon Row, 5 m past the office's corner (y 4). Nearest civic point (44, 2) is 7 m along. Stays dropped; Orbit Walk is crossed at y 21 and on the axis."
+    },
+    {
+     "id": "x-starline-w",
+     "at": [-26, -39],
+     "inward": [1, 0],
+     "plot": "records-square",
+     "road": "starline-street",
+     "partner": {
+      "edge": "lamplight-south-w/e1",
+      "kerb": [-38, -39]
+     },
+     "reason": "Dropped, brief 061 (Sky 2026-10-25: 'way too many crossings', 26 kept in the district; Datum's coverage rules). It mirrored a plot-edge landing (Lamplight Lane's west arm), and plot-edge landings are off (rules.edges false). Starline Street keeps one civic crossing, x-starline-e, 18 m along the same kerb, where Garden Walk lands (rules.foot). It stood 2.15 m from 'Behind café', so the people waiting at it were eyes on that point; with it gone that corner is quieter, which no route reads today (the Handover names no crossing). Kept here with its geometry: moving the line back to `at` rebuilds it."
+    },
+    {
+     "id": "x-rocket-n",
+     "at": [-21.39, -50],
+     "inward": [0, 1],
+     "plot": "records-square",
+     "road": "rocket-lane",
+     "partner": {
+      "edge": "rocket-west/e1",
+      "kerb": [-21.39, -62]
+     },
+     "reason": "Dropped, brief 061 (Sky 2026-10-25: 'way too many crossings', 26 kept in the district; Datum's coverage rules). It mirrored a plot-edge landing (rules.edges false). Rocket Lane is an access lane: people cross it anywhere (standards.walking), and no kept rule (stops, foot, crossroads, junction) lands on it here. The getaway route's first road, but the route and its exit lane name no crossing. Kept here with its geometry: moving the line back to `at` rebuilds it."
+    },
+    {
+     "id": "x-garden-n",
+     "at": [-21, -8],
+     "inward": [0, -1],
+     "plot": "records-square",
+     "road": "garden-row",
+     "partner": {
+      "edge": "garden-row-east/e3",
+      "kerb": [-21, 4]
+     },
+     "reason": "Dropped, brief 061 (Sky 2026-10-25: 'way too many crossings', 26 kept in the district; Datum's coverage rules). It mirrored a plot-edge landing (rules.edges false). Garden Row is an access lane, crossed anywhere (standards.walking); no kept rule lands on it at the square. Kept here with its geometry: moving the line back to `at` rebuilds it."
+    },
+    {
+     "id": "x-garden-s",
+     "at": [26, -8],
+     "inward": [0, -1],
+     "plot": "records-square",
+     "road": "garden-row",
+     "partner": {
+      "edge": "garden-row-east/e3",
+      "kerb": [26, 4]
+     },
+     "reason": "Dropped, brief 061 (Sky 2026-10-25: 'way too many crossings', 26 kept in the district; Datum's coverage rules). As x-garden-n, at the square's other end; 'South walkway' (7.2 m off) is reached without it. Kept here with its geometry: moving the line back to `at` rebuilds it."
+    },
+    {
+     "id": "x-pylon-n",
+     "at": [49, 4],
+     "inward": [0, -1],
+     "plot": "records-office",
+     "road": "pylon-row",
+     "partner": {
+      "edge": "pylon-row-east/e3",
+      "kerb": [49, 16]
+     },
+     "reason": "Dropped, brief 061 (Sky 2026-10-25: 'way too many crossings', 26 kept in the district; Datum's coverage rules). It mirrored a plot-edge landing (rules.edges false). Pylon Row is an access lane, crossed anywhere; nothing of the mission stood within 18 m. Kept here with its geometry: moving the line back to `at` rebuilds it."
+    },
+    {
+     "id": "x-pylon-s",
+     "at": [75, 4],
+     "inward": [0, -1],
+     "plot": "records-office",
+     "road": "pylon-row",
+     "partner": {
+      "edge": "pylon-row-east/e3",
+      "kerb": [75, 16]
+     },
+     "reason": "Dropped, brief 061 (Sky 2026-10-25: 'way too many crossings', 26 kept in the district; Datum's coverage rules). As x-pylon-n, at the Office plot's east corner, 26 m from the official bay; the service yard's drive (y -16.5..-13.5) and the brief 059 stand there are reached from Apron Road, not across Pylon Row. Kept here with its geometry: moving the line back to `at` rebuilds it."
     }
    ],
    "checked": "Each pair run through the generator's own tests (tools/world/gen/street/crossings.ts stripBlock and the `fits` arithmetic) in a scratch script: kerb to kerb 12.00 to 13.00 m against road widths 12 and 13 (x-apron-w 12.05), offset along the road 0 (x-apron-w 1.10), every strip clear of tram tracks and both bays. Landing patches: 0.35 m or more from any solid, 0.59 m or more from any dressing, 5.9 m or more from a bay, 17.4 m or more from crew-line-getaway."

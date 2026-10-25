@@ -1,0 +1,544 @@
+{
+ "schema": "suborned.signallens/1",
+ "brief": "061",
+ "source": "tools/decokit/crossing_lens.py, tools/decokit/signal_tex.py",
+ "note": "Look only (Sky 2026-10-25): the cycle is runtime look, the sim reads nothing from it. SignalHead reads the mission clock and writes MaterialPropertyBlocks; the heads keep the export's `faces` yaw and are never turned.",
+ "states": {
+  "walk": {
+   "colour": "#55E6B0",
+   "emission": {
+    "day": 1.3,
+    "evening": 1.15,
+    "night": 1.15,
+    "colour": {
+     "day": "#53FFB3",
+     "evening": "#39FFC6",
+     "night": "#00FFA9"
+    },
+    "board": "#55E6B0",
+    "owner": "Glint",
+    "dayAsBuilt": 2.0,
+    "note": "Glint 2026-10-25: _EmissionColor = linear(colour[phase]) x emission[phase], HDR. `colour` is the trim (pre-grade); the board colour (`board`, = this state's `colour` above) is what the grade then shows. Source of truth: unity/Assets/Suborned/Resources/Atmosphere/signals.json (crossing); fit and model in briefs/061/glint/."
+   },
+   "figure": "walk_full",
+   "numerals": "none",
+   "rim": "steady",
+   "ring": "full",
+   "dots": "all lit",
+   "note": "the figure walks; nothing counts"
+  },
+  "clearing": {
+   "colour": "#FFB624",
+   "emission": {
+    "day": 1.9,
+    "evening": 1.9,
+    "night": 1.75,
+    "colour": {
+     "day": "#FF8C00",
+     "evening": "#FF8B06",
+     "night": "#FF8800"
+    },
+    "board": "#FFB624",
+    "owner": "Glint",
+    "dayAsBuilt": 2.0,
+    "note": "Glint 2026-10-25: _EmissionColor = linear(colour[phase]) x emission[phase], HDR. `colour` is the trim (pre-grade); the board colour (`board`, = this state's `colour` above) is what the grade then shows. Source of truth: unity/Assets/Suborned/Resources/Atmosphere/signals.json (crossing); fit and model in briefs/061/glint/."
+   },
+   "figure": "walk_head",
+   "numerals": "seconds left",
+   "rim": "steady, blinks in the last 3 s",
+   "ring": "drains: lit = ceil(24 x left / clearing)",
+   "dots": "go dark from both kerbs toward the middle, in step with the seconds left",
+   "note": "the window is closing: the figure still walks, the numerals count down"
+  },
+  "stop": {
+   "colour": "#F2432E",
+   "emission": {
+    "day": 1.15,
+    "evening": 0.9,
+    "night": 1.2,
+    "colour": {
+     "day": "#FF5A59",
+     "evening": "#FF6766",
+     "night": "#FF4B46"
+    },
+    "board": "#F2432E",
+    "owner": "Glint",
+    "dayAsBuilt": 1.8,
+    "note": "Glint 2026-10-25: _EmissionColor = linear(colour[phase]) x emission[phase], HDR. `colour` is the trim (pre-grade); the board colour (`board`, = this state's `colour` above) is what the grade then shows. Source of truth: unity/Assets/Suborned/Resources/Atmosphere/signals.json (crossing); fit and model in briefs/061/glint/."
+   },
+   "figure": "stand_full",
+   "numerals": "none",
+   "rim": "steady",
+   "ring": "full",
+   "dots": "all lit",
+   "note": "the figure stands; nothing counts"
+  },
+  "arriving": {
+   "colour": "#F2432E",
+   "emission": {
+    "day": 1.15,
+    "evening": 0.9,
+    "night": 1.2,
+    "colour": {
+     "day": "#FF5A59",
+     "evening": "#FF6766",
+     "night": "#FF4B46"
+    },
+    "board": "#F2432E",
+    "owner": "Glint",
+    "dayAsBuilt": 1.8,
+    "note": "Glint 2026-10-25: _EmissionColor = linear(colour[phase]) x emission[phase], HDR. `colour` is the trim (pre-grade); the board colour (`board`, = this state's `colour` above) is what the grade then shows. Source of truth: unity/Assets/Suborned/Resources/Atmosphere/signals.json (crossing); fit and model in briefs/061/glint/."
+   },
+   "figure": "stand_head",
+   "numerals": "3, 2, 1",
+   "rim": "blinks",
+   "ring": "fills: lit = floor(24 x elapsed / 3)",
+   "dots": "all lit",
+   "note": "the last 3 s of STOP: the window is opening, counted down"
+  }
+ },
+ "rim": {
+  "part": "DK_SignalLens_Rim",
+  "material": "DK_Signal_Rim",
+  "property": "_EmissionColor",
+  "blink": {
+   "hz": 2.0,
+   "offLevel": 0.15,
+   "clearingLastSeconds": 3.0,
+   "arriving": "whole state"
+  },
+  "crossfadeSeconds": 0.2
+ },
+ "faces": {
+  "material": "DK_Signal_Atlas",
+  "property": "_BaseMap_ST",
+  "emissionProperty": "_EmissionColor",
+  "note": "One block per part drives both faces. Colour crossfades CROSSFADE_S, glyphs cut. Digits: clearing = ceil(seconds left), arriving = 3, 2, 1; under ten the tens part takes `blank`; walk and stop take `blank` on both digit parts.",
+  "parts": {
+   "Figure": {
+    "quads": 2,
+    "size": [
+     0.5,
+     0.5
+    ],
+    "default": "walk_full",
+    "st": {
+     "walk_full": [
+      1,
+      1,
+      0.0,
+      0.0
+     ],
+     "stand_full": [
+      1,
+      1,
+      0.25,
+      0.0
+     ],
+     "walk_head": [
+      1,
+      1,
+      0.5,
+      0.0
+     ],
+     "stand_head": [
+      1,
+      1,
+      0.75,
+      0.0
+     ]
+    }
+   },
+   "Tens": {
+    "quads": 2,
+    "size": [
+     0.1461,
+     0.2338
+    ],
+    "default": "blank",
+    "st": {
+     "0": [
+      1,
+      1,
+      -0.5,
+      0.5
+     ],
+     "1": [
+      1,
+      1,
+      -0.25,
+      0.5
+     ],
+     "2": [
+      1,
+      1,
+      0.0,
+      0.5
+     ],
+     "3": [
+      1,
+      1,
+      0.25,
+      0.5
+     ],
+     "4": [
+      1,
+      1,
+      -0.5,
+      0.25
+     ],
+     "5": [
+      1,
+      1,
+      -0.25,
+      0.25
+     ],
+     "6": [
+      1,
+      1,
+      0.0,
+      0.25
+     ],
+     "7": [
+      1,
+      1,
+      0.25,
+      0.25
+     ],
+     "8": [
+      1,
+      1,
+      -0.5,
+      0.0
+     ],
+     "9": [
+      1,
+      1,
+      -0.25,
+      0.0
+     ],
+     "blank": [
+      1,
+      1,
+      0.0,
+      0.0
+     ],
+     "dash": [
+      1,
+      1,
+      0.25,
+      0.0
+     ]
+    }
+   },
+   "Units": {
+    "quads": 2,
+    "size": [
+     0.1461,
+     0.2338
+    ],
+    "default": "blank",
+    "st": {
+     "0": [
+      1,
+      1,
+      -0.5,
+      0.5
+     ],
+     "1": [
+      1,
+      1,
+      -0.25,
+      0.5
+     ],
+     "2": [
+      1,
+      1,
+      0.0,
+      0.5
+     ],
+     "3": [
+      1,
+      1,
+      0.25,
+      0.5
+     ],
+     "4": [
+      1,
+      1,
+      -0.5,
+      0.25
+     ],
+     "5": [
+      1,
+      1,
+      -0.25,
+      0.25
+     ],
+     "6": [
+      1,
+      1,
+      0.0,
+      0.25
+     ],
+     "7": [
+      1,
+      1,
+      0.25,
+      0.25
+     ],
+     "8": [
+      1,
+      1,
+      -0.5,
+      0.0
+     ],
+     "9": [
+      1,
+      1,
+      -0.25,
+      0.0
+     ],
+     "blank": [
+      1,
+      1,
+      0.0,
+      0.0
+     ],
+     "dash": [
+      1,
+      1,
+      0.25,
+      0.0
+     ]
+    }
+   }
+  },
+  "figureByState": {
+   "walk": "walk_full",
+   "clearing": "walk_head",
+   "stop": "stand_full",
+   "arriving": "stand_head"
+  }
+ },
+ "atlas": {
+  "file": "Textures/signal_atlas_v1.png",
+  "size": [
+   256,
+   256
+  ],
+  "cell": 64,
+  "alphaClip": 0.5,
+  "cells": {
+   "walk_full": [
+    0.0,
+    0.75,
+    0.25,
+    0.25
+   ],
+   "stand_full": [
+    0.25,
+    0.75,
+    0.25,
+    0.25
+   ],
+   "walk_head": [
+    0.5,
+    0.75,
+    0.25,
+    0.25
+   ],
+   "stand_head": [
+    0.75,
+    0.75,
+    0.25,
+    0.25
+   ],
+   "0": [
+    0.046875,
+    0.5,
+    0.15625,
+    0.25
+   ],
+   "1": [
+    0.296875,
+    0.5,
+    0.15625,
+    0.25
+   ],
+   "2": [
+    0.546875,
+    0.5,
+    0.15625,
+    0.25
+   ],
+   "3": [
+    0.796875,
+    0.5,
+    0.15625,
+    0.25
+   ],
+   "4": [
+    0.046875,
+    0.25,
+    0.15625,
+    0.25
+   ],
+   "5": [
+    0.296875,
+    0.25,
+    0.15625,
+    0.25
+   ],
+   "6": [
+    0.546875,
+    0.25,
+    0.15625,
+    0.25
+   ],
+   "7": [
+    0.796875,
+    0.25,
+    0.15625,
+    0.25
+   ],
+   "8": [
+    0.046875,
+    0.0,
+    0.15625,
+    0.25
+   ],
+   "9": [
+    0.296875,
+    0.0,
+    0.15625,
+    0.25
+   ],
+   "blank": [
+    0.546875,
+    0.0,
+    0.15625,
+    0.25
+   ],
+   "dash": [
+    0.796875,
+    0.0,
+    0.15625,
+    0.25
+   ]
+  }
+ },
+ "beam": {
+  "part": "DK_SignalLens_Beam",
+  "material": "DK_Cross_Beam",
+  "alpha": 0.26,
+  "colour": "state"
+ },
+ "halo": {
+  "part": "DK_SignalLens_Halo",
+  "material": "DK_Cross_Halo",
+  "alpha": 0.4,
+  "colour": "state"
+ },
+ "ring": {
+  "piece": "HaloRing",
+  "material": "DK_Signal_Ring",
+  "texture": "Textures/signal_ring_v1.png",
+  "segments": 24,
+  "fillProperty": "_Cutoff",
+  "lit": "_Cutoff = 1 - lit / 24 lights exactly `lit` segments clockwise from local -Y (the way across the road)",
+  "placement": "the SignalLens's own transform: same pivot (the beam's foot) and yaw",
+  "size": [
+   1.24,
+   1.24
+  ],
+  "radii": [
+   0.47,
+   0.6
+  ],
+  "walk": "lit 24, state colour",
+  "clearing": "drains: lit = ceil(24 x left / clearing)",
+  "stop": "lit 24, red",
+  "arriving": "fills: lit = floor(24 x elapsed / 3)"
+ },
+ "dots": {
+  "pieces": [
+   "LightDotRow_2",
+   "LightDotRow_1"
+  ],
+  "material": "DK_Cross_Light",
+  "property": "_LitFrom / _LitTo",
+  "moduleLengths": [
+   2.0,
+   1.0
+  ],
+  "pitch": 0.5,
+  "uv": "u = metres from the module's -X end to the dot's centre (the same for every vertex of a dot, so a dot is lit or dark, never cut); v = metres across the row",
+  "gate": "a dot is lit when _LitFrom <= u <= _LitTo; per module, from the module's own u; a dark dot shows its charcoal enamel seat",
+  "walk": "all lit",
+  "clearing": "go dark from both kerbs toward the middle, in step with the seconds left",
+  "stop": "all lit, red",
+  "arriving": "all lit, red"
+ },
+ "cycle": {
+  "walkSeconds": 6,
+  "clearingSeconds": "ceil(W / 1.4), W = kerb-to-kerb carriageway width crossed (m)",
+  "stopBaseSeconds": 14,
+  "arrivingSeconds": 3,
+  "stopSeconds": "14 + clearing, its last 3 s are ARRIVING",
+  "phase": "(missionSeconds + offset(id)) mod cycle, cycle = walk + clearing + stop",
+  "offset": "FNV-1a 32-bit of the crossing id's UTF-8 bytes, mod cycle (deterministic: the same on every replay; mission clock, never frame time)",
+  "order": "walk, clearing, stop (the last 3 s arriving)",
+  "examples": {
+   "13 m (Orbit Walk)": [
+    6,
+    10,
+    24
+   ],
+   "28 m (the Boulevard)": [
+    6,
+    20,
+    34
+   ]
+  },
+  "status": "[S] look only; the sim reads nothing from it"
+ },
+ "stateNeverOnColourAlone": {
+  "rule": "every pair of states differs by the figure, the numerals, the rim motion or the ring motion, not only by colour",
+  "pairs": {
+   "clearing/walk": [
+    "figure",
+    "numerals",
+    "rim",
+    "ring"
+   ],
+   "clearing/stop": [
+    "figure",
+    "numerals",
+    "rim",
+    "ring"
+   ],
+   "stop/walk": [
+    "figure"
+   ],
+   "arriving/walk": [
+    "figure",
+    "numerals",
+    "rim",
+    "ring"
+   ],
+   "arriving/clearing": [
+    "figure",
+    "numerals",
+    "rim",
+    "ring"
+   ],
+   "arriving/stop": [
+    "figure",
+    "numerals",
+    "rim",
+    "ring"
+   ]
+  }
+ }
+}

@@ -1,0 +1,364 @@
+{
+  "brief": "059 §5 Motive (systems): prices and balance",
+  "author": "Motive",
+  "date": "2026-10-25",
+  "gdd": "v0.25.0 (§03, §05, §06, §07 as Aster carried briefs 058 and 059 with Sky's answers 1a, 2a, 3a)",
+  "engine": "suborned.sim/0.30.0 (out/missions/engine/tree), inputs HEAD 0f0ada75; the tree's rulebook is mid-edit by Keel (054/058), so the probes pin HEAD's rulebook",
+  "evidence": "briefs/059/motive/probe/ (scripts, results.txt); scratch copies under out/scratch/motive/059/",
+  "howToRead": "kind: value (a new or changed rulebook value), rule (a rulebook rule text), refusal (a refusal code), memory (a memory act), data (site or mission data for Splice, Vantage or Pulse), retire (remove), confirm (unchanged, recorded), check (a scenario or mission condition that proves the entry). key is a proposal; Keel names the final path. Every entry is proposed: true until Sky plays it.",
+  "entries": [
+    {
+      "id": "M059-1.1",
+      "ruling": 1,
+      "kind": "confirm",
+      "key": "people.rules approaches.pay / approaches.help on the driver",
+      "value": "Pay $70,000 · 50 s · +2 T; Help (cash need) $40,000 · 50 s · +1 T",
+      "tag": "B",
+      "reason": "The favour is the same size: the turned driver moves Vale's car to the service bay, now with Vale in it, as he moved it empty before. His exposure is unchanged: the investigation already questions him for place and time. The purse rule still holds and still teaches: pay + driver ($110,000) is over the $100,000 purse, help + driver ($80,000) fits, so learning his need buys the second route.",
+      "src": "brief 059 §1.5; GDD v0.25 §04 approaches, purse; Motive card hold"
+    },
+    {
+      "id": "M059-1.2",
+      "ruling": 1,
+      "kind": "confirm",
+      "key": "schedule.driverLast 340 (5:40); refusal driver-too-late",
+      "value": "unchanged",
+      "tag": "B",
+      "reason": "5:40 stays the last chance to turn him: from then on he stands at his car, on duty, waiting for Vale (brief 059 §1.1).",
+      "src": "brief 059 §1.1; GDD v0.25 §07 schedule"
+    },
+    {
+      "id": "M059-1.3",
+      "ruling": 1,
+      "kind": "confirm",
+      "key": "mislead-s 44, mislead-trail 1, false-tip-s 230",
+      "value": "unchanged; the tip is now given at the rival car (act-reach-m 6 m to car:rivals) and sends the car and its wheelman away",
+      "tag": "B",
+      "reason": "Same act, new target: the tip lands on the car and its wheelman (brief 059 §1.5). Re-sited at Apron Road's south kerb (90.5, -31), the rival car is 18.8 m from the pickup pole (74, -40), outside its 18 m reach, so giving the tip there costs no new camera exposure.",
+      "src": "brief 059 §1.5, §2.2; site cameras.pickup"
+    },
+    {
+      "id": "M059-2.1",
+      "ruling": 2,
+      "kind": "rule",
+      "key": "cell.driveCar (the getaway car's Drive order; not cell.drive, which is the take-control experiment)",
+      "value": "price: $0 · 0 T · no Alert · the drive's seconds (car.pace: car-road-cm-s 500 on a carriageway, car-yard-cm-s 200 on a drive or in a bay; the square to the service drive is 121 m, 28.3 s)",
+      "tag": "S",
+      "reason": "Confirmed at $0, 0 T, no Alert. Nobody whose sight counts sees a strange car in the service drive. The stand (69.35, -15) is 25.4 m from the pickup pole (reach 18 m) and 34 m from the entrance pole (reach 22 m). It is out of the guard's cone and the sweep (GDD §07 places the service door out of all of them). An agent in the car is off the street, so no watcher keeps an attention clock on them. A price for a strange car would need a new kind of watcher for nobody to use. Drive already pays in four ways the player can see: (1) the driving agent's seconds, sat in the car; (2) the posted rivals follow the car, so the ambush moves with it (M059-2.3); (3) the drive is one car wide, so arriving before Vale's car stops it in the road and makes an 18 m carry on a public pavement; (4) the stand brings its own police in a loud run (M059-5.1). A fifth price, the turned driver seeing your car (M059-2.4), is deferred to the debrief.",
+      "src": "brief 059 §1.4, §5.2; GDD v0.25 §06 getaway Drive; probe measure.py"
+    },
+    {
+      "id": "M059-2.2",
+      "ruling": 2,
+      "kind": "refusal",
+      "key": "drive-fight",
+      "value": "Drive is refused once the final fight has started (FightStart set). Go stays the only way out.",
+      "tag": "S",
+      "reason": "Without it, a cell whose Enforcer has Vale could drive the car away from a sprung ambush to a stand the crew has not reached, and shed the fight by driving. The fight is fought at the stand where it started. The other refusals stand as brief 059 §1.4 lists them: car-held, no operative aboard, the driver or the carried mid-act, an unknown stand.",
+      "src": "Motive 2026-10-25 (brief 059 ruling 2); brief 018 the hold"
+    },
+    {
+      "id": "M059-2.3",
+      "ruling": 2,
+      "kind": "value",
+      "key": "rivals-follow-cm-s",
+      "value": 280,
+      "unit": "cm-per-s",
+      "tag": "S",
+      "reason": "When the cell's car drives to another stand, the posted rivals run after it at the run pace (op-run-speed-cm-s), starting rivals-follow-s 2 s after it moves (Pulse F1). From the square's posts to the service drive is 59.5 m: 21.2 s running, against the Drive's 28.3 s. So the crew is posted before the car arrives, and a late Drive can't make them arrive late. At the walk (1.6 m/s, Pulse F1 as written, which follows the GDD) they take 37.2 s and get there 9 s after the car, which opens a timing trick that skips the fight. Pulse's re-plan rule stands; only the pace changes.",
+      "src": "Motive 2026-10-25; brief 059 §2.2; briefs/059/pulse/rival-routine.md §6 F1; probe measure.py (square ambush-1 to the stand 59.5 m); needs Sky (S3: the GDD says they walk)"
+    },
+    {
+      "id": "M059-2.4",
+      "ruling": 2,
+      "kind": "memory",
+      "key": "memory.acts.saw-getaway",
+      "value": "{ facts: [cell-car, place-time] }: the turned driver learns it when the getaway car parks within 13 m of his car while he is in it (the service-drive stand behind the service bay)",
+      "tag": "S",
+      "reason": "Drive's deferred price is a fact, not a number. The driver sees your car pull in behind him. Whether he gives it up later is the Talker test (fear + resentment > bravery + loyalty), so how he was turned decides it. Paid or helped, he doesn't talk. Pressured, he talks and the car becomes a lead. This is the pillar: knowing more makes a person cheaper, quieter or more loyal. It uses the existing knowledge rule (witnessed within 13 m) and the existing fact cell-car (people.talker.facts).",
+      "src": "GDD v0.25 §04 knowledge, talker; rulebook memory.acts.rode-car (the same facts)"
+    },
+    {
+      "id": "M059-3.1",
+      "ruling": 3,
+      "kind": "rule",
+      "key": "rivals.people",
+      "value": "The five (W, L, P1-P3) are people for every cell verb: Fire, takedown (knockout or kill), carry, restrain, stash. Each has health-rival 3. Crew in the rival car are off the street: they are not takedown or fire targets, though the car is (car:rivals, car.target).",
+      "tag": "S",
+      "reason": "GDD §06: anyone on the street can be targeted. With bodies (K8) the old single 'rivals' gun goes, and so does its drive-back on a down. One rule set for every person, no named exceptions.",
+      "src": "GDD v0.25 §06 takedown, civilians targetable; brief 059 K8"
+    },
+    {
+      "id": "M059-3.2",
+      "ruling": 3,
+      "kind": "rule",
+      "key": "rivals.trail",
+      "value": "Shot before the fight: hit-trail +2 once per rival, down-trail +2 more (traced, as any person). Taken down: knockout +4, kill +6, charged only when someone else's report of it is confirmed: a rival never reports, never gives a statement and is never reported missing. So a rival killed and never found costs 0 T and opens no case (missing-trail does not apply).",
+      "tag": "S",
+      "reason": "§06 charges a takedown 'when a report is confirmed or the victim gives a statement'. Rivals don't report (§06 seen leaving), and a woken gangster doesn't go to the police. They have no ties among the city's people, so nobody's missing-person alarm fires (§05 suspicion needs a tie at a shared stop). Their silence is not a free pass: whoever sees the takedown or finds the body reports as usual, and it is charged then.",
+      "src": "GDD v0.25 §02 Trail, §05 reports, suspicion, §06 cost; rulebook takedown"
+    },
+    {
+      "id": "M059-3.3",
+      "ruling": 3,
+      "kind": "rule",
+      "key": "rivals.standing",
+      "value": "As anyone: -1 per seen incident (a takedown, a carry, violence or a drawn weapon), -1 for a found killing, 0 for a missing rival. Gunfire with the crew before the final fight is a public fight, judged once by fight.public: the Handover's crew is feared, so breaking it is +1 and leaving before it breaks is 0. A rival shot dead is a found killing once found, -1, as the guard is today.",
+      "tag": "S",
+      "reason": "No victim-type exceptions. The public sees a man strangled in the square, not his trade. The guard precedent already charges a shot person both the found killing and the fight (c036 loud: found-killing -1, seen-fight-security -1). So shooting the posted three costs about -2 net, besides the Trail and Alert 2. That is the right size for the least prepared answer.",
+      "src": "GDD v0.25 §04 standing; rulebook standing.causes; c036 loud debrief (probe results.txt)"
+    },
+    {
+      "id": "M059-3.4",
+      "ruling": 3,
+      "kind": "rule",
+      "key": "rivals.wake",
+      "value": "A knocked-out rival wakes after wake-s 120, staggers stagger-s 4, and rejoins his crew (his post, or the car if the crew has gone). He makes no report and gives no statement. He keeps the Enforcer's face in memory, so he has cause to target the Enforcer. Restrained, he is out until freed. A crew member within 1.5 m frees him in free-s, and the crew raises no alarm for him (rivals keep no attention clocks, §05).",
+      "tag": "S",
+      "reason": "A knockout buys 2:00, not the rest of the mission, unless the cell also pays restrain's 8 s and leaves an open body on a busy square. Waking is how the takedown rules already price a knockout. Rejoining is what a gangster does instead of reporting.",
+      "src": "GDD v0.25 §05 bodies, §06 takedown; rulebook takedown.wake, restrain, free"
+    },
+    {
+      "id": "M059-3.5",
+      "ruling": 3,
+      "kind": "rule",
+      "key": "rivals.break (before the final fight)",
+      "value": "A crew with more than half of its members on the map down breaks. The rest leave in the rival car for rivals-retreat-s 175 and come back with whoever is still up. rivals-retreat-s keeps its value; its meaning moves from 'the single crew gun goes down' to 'the crew breaks'.",
+      "tag": "S",
+      "reason": "The same break test the final fight uses (§06 hostiles), applied to bodies. It keeps 175 s, so a broken crew comes back within the mission, as a tipped one does.",
+      "src": "GDD v0.25 §06 hostiles; rulebook rivals-retreat-s [B]"
+    },
+    {
+      "id": "M059-3.6",
+      "ruling": 3,
+      "kind": "value",
+      "key": "rivals-crew (renames fight-safe-hostiles)",
+      "value": 5,
+      "unit": "count",
+      "tag": "S",
+      "reason": "Five in one car: W, L and P1-P3 (GDD §07 cast). The safe fight's hostiles are now the crew members present at its start (M059-4.1), so 5 is the crew's size and the most the fight can hold. It is no longer a base that modifiers subtract from.",
+      "src": "GDD v0.25 §07 cast, rivals; brief 059 §2.2, K9; rulebook fight-safe-hostiles"
+    },
+    {
+      "id": "M059-3.7",
+      "ruling": 3,
+      "kind": "retire",
+      "key": "fight-modifier (fight.safe.minus) and the FightWhy codes driver-blocks-rival-car, earlier-false-tip",
+      "value": "retired; the two -1s are now people away from the fight: W while the tip holds (3:50), L warned off by the turned driver. New FightWhy codes: wheelman-away, lookout-warned-off",
+      "tag": "S",
+      "reason": "The -1s stop being arithmetic and become bodies the player can see leave (brief 059 §2.2, K9).",
+      "src": "brief 059 K9"
+    },
+    {
+      "id": "M059-3.8",
+      "ruling": 3,
+      "kind": "rule",
+      "key": "fight.safe floor",
+      "value": "No floor is rebuilt. The tip and the turned driver can't take the fight below 3, because each removes one named member. Takedowns before the fight can thin it further, down to none. With none present, the final fight still starts and holds nothing. A returning wheelman joins it when he arrives.",
+      "tag": "S",
+      "reason": "Fights measure preparation (§06), and the systems already price thinning by hand. The posted three stand 2.3 m apart (ambush-1 and ambush-3) facing your car, armed. A takedown one of them sees fails and starts gunfire, which makes the run loud. A takedown a civilian sees on the busy square is reported (Alert 3). A knocked-out rival wakes in 2:00. A restrained or killed one is an open body on the square (found knockout Alert 1, found kill Alert 2), unless the cell carries it to a stash, and a carry seen is Alert 2. Shooting them makes the final fight loud (police), so it never thins the safe fight. Rebuilding a floor would mean spawning rivals: systems > scripts.",
+      "src": "GDD v0.25 §05, §06; site places ambush-1 (21.75, -44.25), ambush-3 (22.0, -42.0); needs Sky (S1: the GDD says 3-5 hostiles, always)"
+    },
+    {
+      "id": "M059-4.1",
+      "ruling": 4,
+      "kind": "rule",
+      "key": "fight.safe.crew",
+      "value": "At the fight's start, the safe fight's hostiles are the crew members on the map and up: posted, walking, or in the rival car. A member who comes back during the fight (the wheelman at the tip's end) joins when he arrives. Never more than rivals-crew.",
+      "tag": "S",
+      "reason": "The count is whoever is really there (brief 059 K9). The two levers stay readable: the player sees the car drive off on the tip and the lookout walk away.",
+      "src": "brief 059 §2.2, K9"
+    },
+    {
+      "id": "M059-4.2",
+      "ruling": 4,
+      "kind": "rule",
+      "key": "fight.safe.arrivals",
+      "value": "Crew in the rival car never fire. The car drives to the cell's car's stand and stops at that stand's rival drop point; the crew get out (rivals-out-s 5) and are then hostiles under §06. They advance to cover and fire nothing while moving. A crew member still on his way when the ambush springs comes in on his path, as police do (Hostile.Run). He holds the car only within fight-hold-m 8 m of it or on the exit lane, as everyone does.",
+      "tag": "S",
+      "reason": "Late arrivals make a second front without brief 039. 039 is undecided, so nothing here depends on it: no rivals joining any fight, no police pressing in. They lengthen the fight toward §07's 30-60 s and open with fewer guns, so nothing gets harder than today's five lying in wait.",
+      "src": "GDD v0.25 §06 hostiles, §07 final fight; brief 027 (the fight numbers unchanged); brief 039 (not depended on)"
+    },
+    {
+      "id": "M059-4.3",
+      "ruling": 4,
+      "kind": "rule",
+      "key": "fight.safe.blocker and fight.safe.break",
+      "value": "The blocker is picked when the ambush springs, from the crew members on foot only (never one still in the car), by shortest grid walk to its post, ties by id. The break counts the whole crew in the fight (present at the start plus joiners): more than half down breaks it, and members still on their way break with it and turn back to the car.",
+      "tag": "S",
+      "reason": "A blocker in a car could not walk to the lane. Counting the travellers in the denominator stops a crew from 'breaking' at 2 of 3 down and then un-breaking when two more arrive.",
+      "src": "GDD v0.25 §06 the blocker, hostiles (rivals break when more than half are down)"
+    },
+    {
+      "id": "M059-4.4",
+      "ruling": 4,
+      "kind": "data",
+      "key": "Pulse routine / Vantage points: the rivals reach any stand before the cell can use it",
+      "value": "(a) Pulse's fixed drop at the square stands (rival-routine.md §4: one timetable whatever the cell's car does, readable and replayable). So the earliest the posted three can stand at the service drive is about 3:05 running (M059-2.3), or about 3:17 walking. A cell gone from there before that leaves unfought (S1). (b) Once posted, they run after a Driven car (M059-2.3). (c) At the service-drive stand, the ambush spot nearest the blocker's lane post is at most 8 m from it by walk (5 s at 1.6 m/s), under the 6.5 s that the 3.5 m carry and Board take from Vale's rear door. (d) Each stand's rival stop (the square: rival-drop; the service drive: rival-tail at (90.5, -17)) lies beyond 8 m and off its exit lane, so the stop alone never holds the car (MC-11 extended to rival stops). Whether lookout and wheelman stepping out at rival-tail reach the lane before the 9.4 s exit from the service lane is measured in the re-record.",
+      "tag": "S",
+      "reason": "The square's 67 m carry (47.9 s) always gave the crew time. The service drive's 3.5 m carry (2.5 s, then Board 4 s) gives them 6.5 s. Without (a) to (c), a 'fight with 5' at the yard comes down to a race of a few seconds that flips with timing slop, which the player can't read.",
+      "src": "brief 059 measures.json; briefs/059/pulse/rival-routine.md §4, §6 F1, F6; probe measure.py (drop stop to the yard 45.0 m; rival-park to the yard 23.2 m)"
+    },
+    {
+      "id": "M059-4.5",
+      "ruling": 4,
+      "kind": "confirm",
+      "key": "health, accuracy, cadence, fight-ambush-m 20, fight-warn-s 10, fight-hold-m 8, fight-block-* (brief 027 values)",
+      "value": "unchanged",
+      "tag": "S",
+      "reason": "At the square, A-pressure and G still fight five, posted at the same five ambush spots before the 20 m ring. Brief 059 §3 has the crew out by about 2:55 and the ring at 3:20.8. That is c036's fight: on every route that fights five, the car is free 6.5 to 8.0 s after the spring (A 4:17.1, A-pressure 3:28.8, G 4:02.2, G-fast 3:43.7), and a crew fought out breaks 32 to 34 s after it. Brief 027 §17.3's health proposal (Enforcer 8, ops 5) is separate and still with Sky.",
+      "src": "runs/missions/handover/c036/run.json marks (probe results.txt: HEAD inputs replay c036 38/38)"
+    },
+    {
+      "id": "M059-5.1",
+      "ruling": 5,
+      "kind": "rule",
+      "key": "fight.loud.entry",
+      "value": "The loud final fight's officers come from the mission's police entry nearest, by grid walk, to the getaway car's stand at the fight's start. The Handover has two: the north street (security-entry, as built: 61.1 m to the square's car) and the official entrance (d:Official entrance, the Office's own guards: 19.5 m to the service-drive stand, 16.4 m to the drive mouth). Square → north street (unchanged); service drive → official entrance.",
+      "tag": "S",
+      "reason": "Yes, a second entry is needed, and it must be close. The probe ran the c036 loud front with the cell waiting in the car at the service drive, and the Enforcer carrying Vale 7.6 m from the service lane. From the north street (126.3 m, 57 s away) the car leaves unfought at 3:55.3 with 8 T. The 'Apron Road west' entry at the window's edge (57 m, 26 s) is no better: unfought at 3:55.3. From the official entrance, or Apron Road by the official bay, the car is held and the cell must fight. At the square, loud wins at 5:10.0 with 13 T, after 80.8 s of fighting. Without this rule, the service drive turns loud into a 75 s faster run with 5 T less and no fight, only 1 T dearer than the dearest quiet route (A-pressure, 7 T). MC-2 and MC-6 would technically hold, but §05's 'fighting out is a last resort, not a route' would not, and brief 027 §17.4's worry about loud's robustness gets worse. 'Nearest' makes it a rule, not a script: the square keeps its north-street police (61.1 m against 81.8 m).",
+      "src": "GDD v0.25 §05 response, §07 final fight loud, cast (the Office's other guards at the official entrance); probes loud-yard, loud-yard-late-board (briefs/059/motive/probe/results.txt); needs Sky (S2: the GDD names one entry)"
+    },
+    {
+      "id": "M059-5.2",
+      "ruling": 5,
+      "kind": "data",
+      "key": "site fight.entries[] (Splice) with mission.json points (Waymark)",
+      "value": "[security-entry, official-entrance]; the engine picks the nearest per M059-5.1. Unknown or empty = reject.",
+      "tag": "S",
+      "reason": "This is data, as each stand already carries its own exit lane, ambush spots and police stands (brief 059 §1.4). Vantage places the service drive's four police stands under MC-11.",
+      "src": "brief 059 §1.4, K6, K10"
+    },
+    {
+      "id": "M059-5.3",
+      "ruling": 5,
+      "kind": "check",
+      "key": "MC-13 (new, Waymark): every stand's loud-wait twin is held",
+      "value": "For each car stand, a loud run whose cell waits in the car while the Enforcer brings Vale out is held at the Enforcer's Board: it must fight before Go. The probe on official-entrance data: held. On north-street data: unfought at 3:55.3.",
+      "tag": "S",
+      "reason": "Keeps a later stand from reopening an unfought loud exit.",
+      "src": "probe loud-yard (results.txt)"
+    },
+    {
+      "id": "M059-5.4",
+      "ruling": 5,
+      "kind": "check",
+      "key": "careless-loud-b-yard (Keel scenario, Waymark twin)",
+      "value": "Route B taken at Alert 2 (an earlier shot): the in-car Take, a 3.5 m carry, Board, Go. The cell needs 6.5 s; the officers from the official entrance need about 7.5 s to the drive mouth (16.4 m at 2.2 m/s). Measure it. If it leaves unfought, the yard's loud officers set out from the official entrance when the run first reaches Alert 2, not when the final fight starts.",
+      "tag": "S",
+      "reason": "The only loud race the probe could not cover: the in-car Take has not been built yet.",
+      "src": "probe measure.py"
+    },
+    {
+      "id": "M059-6.1",
+      "ruling": 6,
+      "kind": "retire",
+      "key": "the driver's Call (block the pickup camera 2:30): the engine's block job; site schedule.blockMoveS, schedule.blockHoldS, car.block, car.blockFacing, place block-spot, the official car's block path (car.drive's block move); routes route-b-block, route-b-block-board",
+      "value": "retired. A Call on the turned driver is not offered: the row is absent, as an empty Watch is (brief 054). cell.call.trail (call-trail 1) stays for Inez's call.",
+      "tag": "S",
+      "reason": "The Call has no job left. The front is ordinary, and nothing at the official bay needs blinding: Vale walks 2 m and gets in, and the drive mouth is 25.7 m from the pickup pole, outside its 18 m reach. For anything else, brief 058 gives the pickup camera three answers: Loop (2:00, +1 T), Disable (+2 T, an incident) and Shoot (loud). A fourth answer for one camera no route uses is reading without a choice (readable > rich, less reading). §11's cut order already names the camera-block variant. Not a Sky item: Sky approved 'the block call goes with 3a/1a unless Motive gives it a new job'.",
+      "src": "brief 059 §1.3, §4 (Sky's calls 2026-10-25); brief 058 (Sky's calls 2026-10-25); GDD v0.25 §11 cut order"
+    },
+    {
+      "id": "M059-6.2",
+      "ruling": 6,
+      "kind": "rule",
+      "key": "considered and rejected: the driver's warning as a Call",
+      "value": "The warning stays automatic, as part of the turned driver's favour, made as Pulse's F4 has it: the lookout walks to the driver, they speak driver-warns-s 10 s, and he leaves the map. It happens only if the word is over by 5:40, so a driver turned after 5:16.3 makes no visit and the lookout stays: the fight is 4, or 3 with the tip. The cliff at 5:16.3 is intended: it is the stake for turning him early. It must be readable, so the driver's Turn line shows it before 5:16 (\"warns their lookout · by 5:16\") and drops the clause after (Fable and Glyph, one line, no sentence).",
+      "tag": "S",
+      "reason": "As a Call (+1 T for -1 rival) it would be one more click with an obvious answer. The cut-off makes the timing count: turn him early and he also clears the lookout.",
+      "src": "brief 059 §2.2; briefs/059/pulse/rival-routine.md §6 F4 (cut-off 5:16.3); GDD v0.25 §07 schedule (5:40)"
+    },
+    {
+      "id": "M059-7.1",
+      "ruling": 7,
+      "kind": "value",
+      "key": "vale-in-s",
+      "value": 3,
+      "unit": "s",
+      "tag": "S",
+      "reason": "Getting into the back seat at the official bay, 6:10 to 6:13. Long enough to read as a beat at play zoom, short enough that no Take fits in it. Unturned, the car pulls away at its end (Sky 3a).",
+      "src": "brief 059 §1.1, K1, K11; Sky's call 3a (2026-10-25)"
+    },
+    {
+      "id": "M059-7.2",
+      "ruling": 7,
+      "kind": "value",
+      "key": "rivals-drop-s",
+      "value": 8,
+      "unit": "s",
+      "tag": "S",
+      "reason": "The car's stop to let three men out by the cell's car, 2:46.5 to 2:54.5. A stop that long reads at play zoom as 'they're getting out here', and it fixes the timetable: 2:54.5 plus the 15.5 s round to rival-park lands the park exactly on §07's 3:10.",
+      "src": "brief 059 §2.2, K10, K11"
+    },
+    {
+      "id": "M059-7.3",
+      "ruling": 7,
+      "kind": "value",
+      "key": "rivals-out-s",
+      "value": 5,
+      "unit": "s",
+      "tag": "S",
+      "reason": "One or two men out of a parked car: the lookout at rival-park (3:10 to 3:15), and the lookout and wheelman at a stand in the fight (M059-4.2). It is shorter than the three-man drop, and a man getting out is no target and fires nothing.",
+      "src": "brief 059 §2.2, K10, K11"
+    },
+    {
+      "id": "M059-7.4",
+      "ruling": 7,
+      "kind": "value",
+      "key": "driver-warns-s",
+      "value": 10,
+      "unit": "s",
+      "tag": "S",
+      "reason": "A word between two people, as long as Inez's warning (fight-warn-s 10) and well under Ask (25 s). The cut-off in M059-6.2 reads it.",
+      "src": "brief 059 §2.2, K11"
+    },
+    {
+      "id": "M059-7.5",
+      "ruling": 7,
+      "kind": "value",
+      "key": "rivals-follow-cm-s and rivals-crew",
+      "value": "280 cm-per-s and 5 (M059-2.3, M059-3.6)",
+      "tag": "S",
+      "reason": "The two values these rulings add to K11's four.",
+      "src": "this file"
+    },
+    {
+      "id": "M059-7.6",
+      "ruling": 7,
+      "kind": "confirm",
+      "key": "Pulse's routine values (briefs/059/pulse/rival-routine.values.json): rivals-step-s 2, rivals-follow-s 2, rivals-posted 3, driver-warn-lag-s 3, lookout-pace-cm 200",
+      "value": "confirmed as starting values, all [S]",
+      "tag": "S",
+      "reason": "None of them moves a reference route's result: they place bodies and beats inside the 8 s drop and the 34 s warn. driver-warn-lag-s 3 is part of the 5:16.3 cut-off (M059-6.2). rivals-posted 3 is the GDD's 'three who post round the cell's car'.",
+      "src": "briefs/059/pulse/rival-routine.values.json; GDD v0.25 §07 rivals"
+    }
+  ],
+  "sky": [
+    {
+      "id": "S1",
+      "question": "Can a prepared or fast cell leave without a final fight? GDD §07 says 'final fight: always; 3-5 hostiles'. With real bodies arriving on a timetable, two things become possible. (a) A cell with Vale in the car before the crew can reach the stand leaves unfought: A-pressure with the car on the service drive gets Vale at 2:41.6 and can Go by about 2:51, before the rival car can reach the yard (after 3:00). (b) Silent takedowns of the posted three can thin the safe fight below 3, or to none on route B.",
+      "pick": "Allow both. 'Always' becomes 'the crew always comes for your car'. A cell that is gone before anyone holds the car has paid in preparation and timing, and it forgoes the fight's +1 Standing against feared rivals: the existing 'board and go' trade (§06). Takedowns are priced by the systems already (M059-3.8). Loud always fights (S2).",
+      "why": "Keeping 'always' needs a script: spawn rivals or hold Go until they come. That breaks systems > scripts, and a 3.5 m carry can't keep it any other way.",
+      "else": "Keep 'always' literally: the car can't Go before the crew has posted at its stand, plus a floor of 3 rebuilt by a call for more rivals. I would not do this."
+    },
+    {
+      "id": "S2",
+      "question": "Should the loud fight's police come from the nearest entry to your car, so that at the service drive they come out of the Office's official entrance? GDD §07 names only the north street.",
+      "pick": "Yes (M059-5.1). Without it, loud at the service drive is an unfought escape (probe: 3:55.3, 8 T) against today's 5:10, 13 T fight at the square. The square is unchanged.",
+      "why": "Loud must stay the last resort, with its fight. A nearer entry at the window's edge on Apron Road doesn't do it (probe: still unfought).",
+      "else": "Leave the north street alone: MC-2 and MC-6 still pass, but loud at the yard has no fight."
+    },
+    {
+      "id": "S3",
+      "question": "Should the posted rivals run after your car when it drives to another stand? GDD §07 says they walk after it.",
+      "pick": "Run, at 2.8 m/s (M059-2.3). They reach the service drive in 21 s against the Drive's 28 s, so the ambush can't be shed by driving.",
+      "why": "Walking (37 s), they arrive 9 s after the car, and a well-timed Drive skips the fight.",
+      "else": "Walk, and accept a timing trick at the yard."
+    }
+  ],
+  "checks": [
+    "Keel scenarios: DRIVE-FIGHT (Drive refused once the fight starts); FOLLOW-RUN (posted three reach the service drive before a car Driven from the square); RIVAL-KO-WAKES (knocked-out P1 rejoins at 2:00 with the Enforcer's face, no report); RIVAL-KILL-UNFOUND (0 T, no case); RIVAL-KILL-FOUND (+6 T on the finder's report, -1 Standing, Alert 2); RIVALS-SHOT-PREFIGHT (+4 T per rival down, Alert 2, fight.public +1 if broken, the final fight loud); BREAK-COUNTS-TRAVELLERS; BLOCKER-ON-FOOT; LOUD-ENTRY-NEAREST (square: north street; yard: official entrance); DRIVER-SEES-CAR (saw-getaway on the driver, given up only if he talks).",
+    "Waymark: MC-13 loud-wait twin per stand; careless-loud-b-yard; route-b-thin (route B plus takedowns of the posted three, to show their price); retire route-b-block and route-b-block-board; MC-2 margin: loud at the yard is at least 8 T against quiet's 7 T at most."
+  ]
+}

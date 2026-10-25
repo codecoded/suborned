@@ -24,7 +24,7 @@ namespace Suborned.Play
         {
             switch (o?.Do ?? "")
             {
-                case "watch": return "Watching"; case "listen": return "Listening"; case "call": return "Calling"; case "loop": return "Looping the camera";
+                case "watch": return "Watching"; case "listen": return "Listening"; case "call": return "Calling"; case "loop": return "Looping the camera"; case "disable": return "Cutting the line";
                 case "reroute": return "Rerouting the patrol"; case "mislead": return "Tipping off the rivals"; case "enter": return "Going in"; case "take": return "Taking Vale";
                 case "board": return "Boarding"; case "carry": return "Lifting"; case "restrain": return "Tying"; case "stash": return "Hiding"; case "drop": return "Putting down";
                 case "takedown": return o.How == "kill" ? "Killing" : "Knocking out";
@@ -38,7 +38,7 @@ namespace Suborned.Play
             switch (o?.Do ?? "")
             {
                 case "watch": return t != null && t.Kind is "camera" or "patrol" ? "learned its sight" : "learned their round"; case "listen": return "heard them"; case "call": return "call made";
-                case "loop": return "camera looped"; case "reroute": return "patrol rerouted"; case "mislead": return "tip given"; case "enter": return "inside"; case "take": return "taken";
+                case "loop": return "camera looped"; case "disable": return "camera cut"; case "reroute": return "patrol rerouted"; case "mislead": return "tip given"; case "enter": return "inside"; case "take": return "taken";
                 case "board": return "aboard"; case "carry": return "lifted"; case "restrain": return "tied"; case "stash": return "hidden"; case "drop": return "put down";
                 case "takedown": return o.How == "kill" ? "done" : "knocked out";
                 case "turn": return o.Approach switch { "ask" => "asked", "pay" => "paid", "help" => "helped", "pressure" => "pressed", _ => "done" };

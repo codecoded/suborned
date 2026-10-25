@@ -456,9 +456,23 @@ namespace Suborned.Play
             else { foreach (var c in covered) if (c) c.enabled = true; covered.Clear(); if (ownCam) ownCam.enabled = false; }
         }
 
+        /// <summary>Brief 062 §6: the key art cross-dissolves to the street over DissolveS, so the briefing is no hard cut; the game's cameras draw under it.</summary>
+        public const float DissolveS = 0.4f;
+        float dissolveUntil = -1f;
+        void DissolveToGame()
+        {
+            Show(Screen.None); if (pictureLayer == null) return;
+            Show(pictureLayer, true); pictureLayer.style.opacity = 1f; FadeOut(pictureLayer, DissolveS); dissolveUntil = Time.unscaledTime + DissolveS;
+        }
+
         void Update()
         {
-            if (screen == Screen.None) return;
+            if (screen == Screen.None)
+            {
+                if (dissolveUntil >= 0f) { Animate(); if (Time.unscaledTime >= dissolveUntil) { dissolveUntil = -1f; Show(pictureLayer, false); pictureLayer.style.opacity = 1f; } }
+                return;
+            }
+            dissolveUntil = -1f;
             if (!fromPause) CoverGame(true); // a camera the scene brought in under the picture (the load) stands down too
             if (L.image.pushIn != null && L.image.pushIn.scale > 0 && screen is Screen.Loading or Screen.Menu) { push = L.image.pushIn.scale * Mathf.Clamp01((Time.unscaledTime - pushStart) / Mathf.Max(1f, L.image.pushIn.seconds)); }
             LayoutPicture();
@@ -697,7 +711,7 @@ namespace Suborned.Play
                 case "new":
                     if (h != null && (h.rangeMode)) { pendingAfterLoad = "brief"; LoadClock.Begin(false); SceneManager.LoadScene(GameScene); return; }
                     if (h != null && (h.Game == null || h.Game.Tick > 0 || h.Game.Orders.Count > 0 || h.Continued)) h.Begin(); // a fresh run (the one left is saved at its last tick)
-                    liveRun = false; Show(Screen.Brief); return;
+                    liveRun = false; DissolveToGame(); return; // brief 062 B: New game goes straight to the briefing on the street (the lore screen's job is the hook and the objective)
                 case "continue":
                     if (LiveRunAvailable()) { Show(Screen.None); return; }
                     if (continuePath != null && h != null) { h.ContinueFrom(continuePath); liveRun = false; Show(Screen.None); }
@@ -726,7 +740,7 @@ namespace Suborned.Play
         {
             HandoverHost h = null; float t0 = Time.unscaledTime;
             while (((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) && Time.unscaledTime - t0 < 60f) yield return null;
-            if (what == "menu") { liveRun = false; Show(Screen.Menu); } else if (what == "brief") Show(Screen.Brief);
+            if (what == "menu") { liveRun = false; Show(Screen.Menu); } else if (what == "brief") DissolveToGame();
         }
 
         /// <summary>The pause menu's Quit to menu: the run is saved (as Quit does) and the menu comes up over it; Continue returns to it. From the fight

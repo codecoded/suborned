@@ -1,6 +1,7 @@
 // Kerb-to-kerb crossings (streetscape.crossings.strip, Sky's walk note 1; brief 009: light, not paint): what the generator makes on the live plan, and that
 // the standard is opt-in (a plan without it exports the single landing patches it always did, and nothing else moves). A crossing lays no slab and no zebra:
-// its landings are keep-clear footprints, and what is drawn is its parts (two light lines of dot rows or bars along the walk, signal orbs, brass studs, quarter inlay arcs), each in one crossing.
+// its landings are keep-clear footprints, and what is drawn is its parts (two light lines of dot rows or bars along the walk, the signal heads), each in one crossing; a signal crossing exports its cycle (brief 061, look only).
+// Brief 061 (Sky 2026-10-25): 26 crossings, head A, no brass edge lines, kerb studs, inlay arcs or lit field.
 import { expect, setDefaultTimeout, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -12,7 +13,7 @@ import { worldOf } from '../build';
 import type { StreetItem } from '../../../contracts/world/world.schema';
 import { areaOf, clipConvex, landingsOf } from './street/crossings';
 import { ringWidth } from './kerbreturn';
-import { PART_KINDS } from './street/parts';
+import { PART_KINDS, cycleOf, lookOf } from './street/parts';
 import { extraRules } from '../rules';
 import { ctxOf } from '../../plan/world-ctx';
 
@@ -36,28 +37,29 @@ test('no zone rule counts a crossing\'s part as standing in a zone (flush paving
   for (const k of PART_KINDS) expect(FLAT.has(k), k).toBe(true);
 });
 
-test('the live plan has crossings: 96 kerb pairs, 20 tram stop and 8 station bank patches (brief 028: landings 3 m past the kerb returns, no twins to drop)', () => {
-  expect(w.crossings!.length).toBe(124);
-  expect(kerb.length).toBe(96);
-  expect(w.crossings!.filter(c => c.kind === 'stop').length).toBe(20);
-  expect(w.crossings!.filter(c => c.kind === 'bank').length).toBe(8);
-  expect(w.crossings!.reduce((n, c) => n + c.refuges.length, 0)).toBe(36);
-  expect(w.counts.crossings).toBe(124);
-  expect(gen.crossingLog!.landings).toBe(177); // 168 plot-edge landings and the civic block's 9
+test('the live plan has crossings: 16 kerb pairs, 10 tram stop patches (one end each) and no station bank patch (brief 061: stops, island, foot, crossroads, junction and the civic block\'s own)', () => {
+  expect(w.crossings!.length).toBe(26);
+  expect(kerb.length).toBe(16);
+  expect(w.crossings!.filter(c => c.kind === 'stop').length).toBe(10);
+  expect(w.crossings!.filter(c => c.kind === 'bank').length).toBe(0);
+  expect(w.crossings!.reduce((n, c) => n + c.refuges.length, 0)).toBe(9);
+  expect(w.counts.crossings).toBe(26);
+  expect(gen.crossingLog!.landings).toBe(171); // 168 plot-edge landings and the civic block's 3 (the landings the rules do not keep are dropped with their bollards and beacons: 171 of them)
 });
 
 test('every part is in exactly one crossing and names it; no landing slab is left in the street; a kerb crossing is two landings on opposite kerbs', () => {
   const owner = new Map<string, string[]>();
   for (const c of w.crossings!) for (const id of c.items) owner.set(id, [...(owner.get(id) ?? []), c.id]);
   const parts = w.street.filter(s => s.crossing);
-  expect(parts.length).toBe(5515); // 1562 dot rows, 799 lit strip modules, 1788 brass edge line modules, 228 orbs, 768 studs, 370 arcs
-  expect(new Set(parts.map(s => s.kind))).toEqual(new Set([...kindsOf].filter(k => k !== 'crossing-bar'))); // dot rows, not bars, by the plan's form
+  expect(parts.length).toBe(315); // 274 dot rows and 41 signal heads: no brass edge line, stud, arc or lit strip (brief 061)
+  expect(new Set(parts.map(s => s.kind))).toEqual(new Set(['crossing-dots', 'signal-orb'])); // dot rows, not bars, by the plan's form
   for (const s of parts) expect(owner.get(s.id), s.id).toEqual([s.crossing!]);
-  expect(w.crossings!.reduce((n, c) => n + c.items.length, 0)).toBe(5515);
+  expect(w.crossings!.reduce((n, c) => n + c.items.length, 0)).toBe(315);
   expect(w.street.filter(s => s.kind === 'crossing')).toEqual([]);
+  expect(w.street.filter(s => /^crossing-(edge|field|stud|arc)$/.test(s.kind))).toEqual([]);
   const lands = landingsOf(w);
-  expect(lands.length).toBe(220); // 192 landings in 96 pairs, 20 stop patches, 8 bank patches
-  expect(new Set(lands.map(l => l.id)).size).toBe(220);
+  expect(lands.length).toBe(42); // 32 landings in 16 pairs, 10 stop patches
+  expect(new Set(lands.map(l => l.id)).size).toBe(42);
   const rings = lands.map(s => ({ s, ring: boxRing(s.at, s.size[0], s.size[1], s.yaw) }));
   for (const [i, a] of rings.entries()) for (const b of rings.slice(i + 1)) if (dist(a.s.at, b.s.at) < 12) expect(ringGap(a.ring, b.ring), `${a.s.id} ~ ${b.s.id}`).toBeGreaterThanOrEqual(1); // no two landings run into each other
   for (const c of kerb) {
@@ -71,26 +73,17 @@ test('every part is in exactly one crossing and names it; no landing slab is lef
   }
 });
 
-test('the parts, in counts: 1562 dot-row modules (1278 of 2 m, 284 of 1 m), 799 lit strip modules (781 and 18), 228 signal orbs (192 kerb ends and 36 refuges), 768 studs (4 a kerb end), 370 arcs (of 384 corners), no bars', () => {
+test('the parts, in counts: 274 dot-row modules (212 in a 2 m module = LightDotRow_2 1.8 m, 62 in a 1 m module = _1 0.8 m), 41 signal heads (32 kerb ends and 9 refuges), no bars, no edge lines, studs, arcs or lit strip; every orb found clear ground for its halo', () => {
   expect(ofKind(w, 'crossing-bar').length).toBe(0);
-  expect(ofKind(w, 'crossing-dots').length).toBe(1562);
-  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 2).length).toBe(1278);
-  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 1).length).toBe(284);
-  expect(ofKind(w, 'crossing-field').length).toBe(799);
-  expect(ofKind(w, 'crossing-field').filter(s => s.size[0] === 2).length).toBe(781);
-  expect(ofKind(w, 'crossing-field').filter(s => s.size[0] === 1).length).toBe(18);
-  expect(ofKind(w, 'signal-orb').length).toBe(228);
-  expect(ofKind(w, 'signal-orb').filter(s => /\/signal\/r\d+$/.test(s.id)).length).toBe(36);
-  expect(ofKind(w, 'crossing-stud').length).toBe(768);
-  expect(ofKind(w, 'crossing-arc').length).toBe(370);
-  const left = gen.crossingLog!.skipped;
-  expect(left.length).toBe(14); // 384 corners, 370 arcs
-  expect(left.every(x => /\/arc\//.test(x)), left.join('; ')).toBe(true); // every orb found clear ground for its halo; only arcs are left out
-  expect(left.filter(x => /overlap another crossing's arc/.test(x)).length).toBe(3); // two crossings at one corner round it once
-  expect(left.filter(x => /run over lawn or carriageway/.test(x)).length).toBe(11); // the ring's and the primaries' corners: a band that would cross the road or the island's edge is left out
-  expect(ofKind(w, 'crossing-arc').length + left.length).toBe(4 * kerb.length);
-  for (const c of w.crossings!) expect(c.items.some(id => id.includes('/dots/')), c.id).toBe(true); // every crossing, tram stop and bank ways included, has light along it
-  for (const c of w.crossings!.filter(c => c.kind !== 'kerb')) expect(c.items.every(id => id.includes('/dots/') || id.includes('/edge/') || id.includes('/field/')), c.id).toBe(true); // a stop or bank crossing has no kerb end: lights, lit strip and edge lines only
+  expect(ofKind(w, 'crossing-dots').length).toBe(274);
+  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 1.8).length).toBe(212);
+  expect(ofKind(w, 'crossing-dots').filter(s => s.size[0] === 0.8).length).toBe(62);
+  expect(ofKind(w, 'signal-orb').length).toBe(41);
+  expect(ofKind(w, 'signal-orb').filter(s => /\/signal\/r\d+$/.test(s.id)).length).toBe(9);
+  for (const k of ['crossing-edge', 'crossing-field', 'crossing-stud', 'crossing-arc']) expect(ofKind(w, k).length, k).toBe(0);
+  expect(gen.crossingLog!.skipped).toEqual([]);
+  for (const c of w.crossings!) expect(c.items.some(id => id.includes('/dots/')), c.id).toBe(true); // every crossing, tram stop ways included, has light along it
+  for (const c of w.crossings!.filter(c => c.kind !== 'kerb')) expect(c.items.every(id => id.includes('/dots/')), c.id).toBe(true); // a stop crossing has no kerb end: lights only
 });
 
 test('a signal orb: the id is the crossing\'s, the state is walk, its pivot is the ground under its halo, it hovers 2.7 m (centre) and its halo falls straight down', () => {
@@ -121,17 +114,17 @@ test('only the orb casts a shadow; every crossing has its walk yaw', () => {
   for (const c of w.crossings!) expect(c.walk, c.id).toBeCloseTo(Math.atan2(c.line[1][1] - c.line[0][1], c.line[1][0] - c.line[0][0]), 3);
 });
 
-test('the lights are two lines of dot rows along the walk: 0.43 wide, flush at the carriageway datum, ±1.75 m off the middle (the row outer hairline at 1.965 clears the edge line at 2.0), end to end, off the refuges', () => {
+test('the lights are two lines of dot rows along the walk: 0.30 wide (the seat), 1.8 or 0.8 long in a 2 or 1 m module, flush at the carriageway datum, ±1.75 m off the middle, end to end, off the refuges', () => {
   for (const c of w.crossings!) {
     const rows = c.items.map(id => items.get(id)!).filter(s => s.kind === 'crossing-dots');
     expect(new Set(rows.map(s => Math.sign(frame(c, s.at).across))), c.id).toEqual(new Set([1, -1]));
     for (const s of rows) expect(Math.abs(frame(c, s.at).across), s.id).toBeCloseTo(1.75, 2);
     for (const s of rows) {
-      expect(s.size[1], s.id).toBe(0.43); expect([1, 2], s.id).toContain(s.size[0]);
+      expect(s.size[1], s.id).toBe(0.3); expect([0.8, 1.8], s.id).toContain(s.size[0]);
       expect(s.surface).toBe('glow');
       expect(Math.abs(Math.cos(s.yaw - c.walk)), s.id).toBeGreaterThan(0.999); // the long axis is the walk's: never stripes across it
       expect(s.z).toBe(c.kind === 'bank' ? 0.18 : c.kind === 'stop' ? 0 : 0); // a station bank's way lies on the pavement top
-      expect(s.dots).toEqual({ n: s.size[0] * 2, pitch: 0.5, d: 0.22 });
+      expect(s.dots).toEqual({ n: (s.size[0] + 0.2) * 2, pitch: 0.5, d: 0.22 }); // four dots in a 2 m module, two in a 1 m one
     }
     for (const sg of [1, -1]) { // end to end: each line's pieces touch or leave a refuge between them, and none runs past 0.5 m of a kerb
       const line = rows.filter(s => Math.sign(frame(c, s.at).across) === sg).sort((p, q) => frame(c, p.at).along - frame(c, q.at).along);
@@ -144,38 +137,33 @@ test('the lights are two lines of dot rows along the walk: 0.43 wide, flush at t
   for (const s of rows) for (const r of c.refuges) expect(areaOf(clipConvex(boxRing(s.at, s.size[0], s.size[1], s.yaw), r)), s.id).toBeLessThan(0.01);
 });
 
-test('a kerb end has 4 studs on the kerb edge, the outer two at the landing\'s corners, and two quarter arcs tangent to the kerb line and to the landing\'s side lines', () => {
-  const R = 2.83;
-  for (const c of kerb) {
-    for (const [i, e] of ['a', 'b'].entries()) {
-      const k = c.line[i]!, l = c.landings[i]!, n = Math.hypot(l.at[0] - k[0], l.at[1] - k[1]), inward: V = [(l.at[0] - k[0]) / n, (l.at[1] - k[1]) / n], t: V = [-inward[1], inward[0]];
-      const at = (p: V) => ({ kerb: (p[0] - k[0]) * t[0] + (p[1] - k[1]) * t[1], depth: (p[0] - k[0]) * inward[0] + (p[1] - k[1]) * inward[1] }); // along the kerb from the strip's kerb point, and into the pavement
-      const studs = c.items.map(id => items.get(id)!).filter(s => s.kind === 'crossing-stud' && s.id.includes(`/stud/${e}`));
-      expect(studs.length, c.id).toBe(4);
-      const along = studs.map(s => at(s.at).kerb).sort((p, q) => p - q);
-      expect(along[0]!).toBeCloseTo(-1.8, 2); expect(along[3]!).toBeCloseTo(1.8, 2); // d 0.4: flush with the landing's edge at ±2
-      for (const s of studs) expect(at(s.at).depth, s.id).toBeCloseTo(0.2, 2); // 0.2 m in from the kerb
-      const arcs = c.items.map(id => items.get(id)!).filter(s => s.kind === 'crossing-arc' && s.id.includes(`/arc/${e}`));
-      for (const arc of arcs) {
-        expect(Math.abs(at(arc.at).kerb), arc.id).toBeCloseTo(2 + R, 2); // R past the landing's side along the kerb
-        expect(at(arc.at).depth, arc.id).toBeCloseTo(R, 2); // and R into the pavement
-        expect(arc.arc).toEqual({ r: 2.4, w: 0.8, sweep: 1.5708, outer: R });
-        expect(arc.surface).toBe('inlay');
-        const toCorner: V = [Math.cos(arc.yaw), Math.sin(arc.yaw)]; // the quarter bulges toward the mouth's corner: down to the kerb and in to the landing's side
-        expect(toCorner[0] * inward[0] + toCorner[1] * inward[1], arc.id).toBeCloseTo(-Math.SQRT1_2, 2);
-        expect(Math.sign(toCorner[0] * t[0] + toCorner[1] * t[1]), arc.id).toBe(-Math.sign(at(arc.at).kerb));
-      }
-    }
+test('a signal crossing exports its cycle (look only): WALK 6 s, CLEARING ceil(W / 1.4), STOP 14 s + CLEARING with the last 3 s ARRIVING; the offset a whole second in [0, cycle) from the crossing\'s id; a crossing with no control has none', () => {
+  const std = lookOf(plan.standards.streetscape.crossings.strip).signal.cycle;
+  expect(std).toEqual({ walk: 6, clearing: { speed: 1.4, round: 'ceil' }, stop: 14, arriving: 3 });
+  const offsets = new Set<number>();
+  for (const c of w.crossings!) {
+    if (c.kind !== 'kerb') { expect(c.cycle, c.id).toBeUndefined(); continue; }
+    const W = dist(c.line[0], c.line[1]), clearing = Math.ceil(W / 1.4), cy = c.cycle!;
+    expect(cy, c.id).toEqual({ walk: 6, clearing, stop: 14 + clearing, arrive: 3, offset: cy.offset });
+    expect(Number.isInteger(cy.offset) && cy.offset >= 0 && cy.offset < 6 + clearing + 14 + clearing, c.id).toBe(true);
+    expect(cy, c.id).toEqual(cycleOf(std, c.id, W)); // the generator\'s own arithmetic, by id and width
+    offsets.add(cy.offset);
   }
+  expect(offsets.size).toBeGreaterThan(8); // the crossings do not all change together
+  // the plan\'s worked examples: a 13 m crossing is 6 + 10 + 24 = 40 s, the 28 m Boulevard 6 + 20 + 34 = 60 s
+  const sum = (W: number) => { const x = cycleOf(std, 'x', W); return x.walk + x.clearing + x.stop; };
+  expect(sum(13)).toBe(40); expect(sum(28)).toBe(60);
+  expect(w.crossings!.find(c => c.id === 'crossing/market-street/0')!.cycle).toMatchObject({ walk: 6, clearing: 13, stop: 27, arrive: 3 }); // Market Street, 18 m
+  expect(JSON.stringify(worldOf(plan, d, civ).world.crossings!.map(c => c.cycle))).toBe(JSON.stringify(w.crossings!.map(c => c.cycle))); // the same on every run
 });
 
-test('the lights are a plan choice: bars give two lines of 4 m LightBar_4 along the walk and no dots, the same orbs, studs and arcs by the same ids, and nothing else moves', () => {
+test('the lights are a plan choice: bars give two lines of 4 m LightBar_4 along the walk and no dots, the same signal heads by the same ids, and nothing else moves', () => {
   const bw = bars.world;
   expect(ofKind(bw, 'crossing-dots').length).toBe(0);
   const bs = ofKind(bw, 'crossing-bar');
-  expect(bs.length).toBeGreaterThan(200);
+  expect(bs.length).toBeGreaterThan(60); // 90 on the 26 crossings (two lines of 4 m bars where the span allows)
   for (const s of bs) { expect(s.surface).toBe('glow'); expect(s.size).toEqual([4, 0.44, 0.006]); expect(s.dots).toBeUndefined(); }
-  for (const kind of ['signal-orb', 'crossing-stud', 'crossing-arc']) expect(ofKind(bw, kind).map(s => s.id), kind).toEqual(ofKind(w, kind).map(s => s.id));
+  expect(ofKind(bw, 'signal-orb').map(s => s.id)).toEqual(ofKind(w, 'signal-orb').map(s => s.id));
   expect(JSON.stringify(bw.street.filter(s => s.kind !== 'crossing-bar'))).toBe(JSON.stringify(w.street.filter(s => s.kind !== 'crossing-dots'))); // every other street item identical
   for (const k of Object.keys(w).filter(k => k !== 'street' && k !== 'counts' && k !== 'crossings')) expect(JSON.stringify((bw as any)[k]), k).toBe(JSON.stringify((w as any)[k]));
   expect(extraRules(ctxOf(barsPlan, derive(barsPlan), civ, { w: bw, gen: bars.gen })).filter(c => !c.ok && c.id !== 'R-REPORT').map(c => `${c.id} ${c.detail}`)).toEqual([]); // R-REPORT is open on the live world (tools/world/rules/quiet.test.ts), not this test's concern
@@ -185,7 +173,7 @@ test('the default form is dots: a plan with no lights.form draws dot rows', () =
   const p2: Plan = structuredClone(plan);
   delete p2.standards.streetscape.crossings.strip.lights.form;
   const x = worldOf(p2, derive(p2), civ).world;
-  expect(ofKind(x, 'crossing-dots').length).toBe(1562);
+  expect(ofKind(x, 'crossing-dots').length).toBe(274);
   expect(ofKind(x, 'crossing-bar').length).toBe(0);
 });
 
@@ -223,7 +211,7 @@ test('with the standard on, nothing but crossings (their slabs gone, their parts
   for (const o of old.street) if (!items.has(o.id) && !civicQuiet(o.id)) expect(moves.has(o.kind) || moved.has(o.id), o.id).toBe(true);
   const keep = (x: { street: { id: string; kind: string }[] }) => x.street.filter(s => !moves.has(s.kind) && !civicQuiet(s.id)).length;
   expect(keep(w) + moved.size).toBe(keep(old));
-  expect(moved.size).toBe(11);
+  expect(moved.size).toBe(1); // the circus island's four sites take one tree out of their way (brief 061; seven sites and eleven pieces of furniture before)
   for (const k of Object.keys(old).filter(k => k !== 'street' && k !== 'counts' && k !== 'takedown')) expect(JSON.stringify(k === 'ground' ? { ...(w as any).ground, pieces: undefined, flats: lawnless((w as any).ground.flats) } : (w as any)[k]), k).toBe(JSON.stringify(k === 'ground' ? { ...(old as any).ground, pieces: undefined, flats: lawnless((old as any).ground.flats) } : (old as any)[k])); // every other layer (the ground less the capstone's flat pieces) is the same (the takedown section lists the call boxes and posts the rules stood on what the crossings left: it follows the standard)
 });
 
@@ -236,14 +224,13 @@ test('every kerb crossing is a signal crossing on every road class; a stop or a 
 
 test('no street item draws the `crossing` look key: a crossing lays no slab, its parts have keys of their own, and a plan without the standard still has its slabs', () => {
   expect(w.street.filter(s => s.surface === 'crossing')).toEqual([]);
-  expect(new Set(w.street.filter(s => s.crossing).map(s => `${s.kind}:${s.surface}`))).toEqual(new Set(['crossing-dots:glow', 'crossing-field:glow', 'crossing-edge:trim', 'crossing-stud:trim', 'crossing-arc:inlay', 'signal-orb:orb']));
+  expect(new Set(w.street.filter(s => s.crossing).map(s => `${s.kind}:${s.surface}`))).toEqual(new Set(['crossing-dots:glow', 'signal-orb:orb']));
   expect(w.street.filter(s => !['phone-booth', 'tub-palm'].includes(s.kind) && !s.crossing).every(s => ['trim', 'park', 'enamel'].includes(s.surface))).toBe(true); // a booth and a palm tub have their own too (surfaces.test.ts)
   expect(old.street.filter(s => s.kind === 'crossing').every(s => s.surface === 'crossing')).toBe(true); // a plan without the strip standard names it
 });
 
 test('a landing lies at the level of the surface under it: a stop landing on the carriageway at 0, the rest on the pavement top; none on a lawn', () => {
   for (const s of landingsOf(w)) expect(s.z, s.id).toBe(s.edge.startsWith('stop/') ? 0 : 0.18); // 0.18 = the pavement top
-  const gardens = landingsOf(w).find(l => l.id === 'street/bank/S1/gardens/l/crossing-213')!;
-  expect(gardens.at).toEqual([-163.2, 15]); // it stood on the lawn 11.5 m out, at (-155.2, 29.5); now it is in the street pavement beside the foot of the tower (x -160)
-  expect(old.street.find(s => s.id === gardens.id)!.at).toEqual([-155.2, 29.5]); // a plan without crossings.strip keeps it there
+  expect(landingsOf(w).filter(l => l.edge.startsWith('bank/'))).toEqual([]); // brief 061: no patch at a station bank's stair foot (Sphere Gardens\' lawn-bound one moved to the street pavement in the generator, then was dropped with the rest)
+  expect(old.street.find(s => s.id === 'street/bank/S1/gardens/l/crossing-213')!.at).toEqual([-155.2, 29.5]); // a plan without crossings.strip keeps its patch on the lawn
 });

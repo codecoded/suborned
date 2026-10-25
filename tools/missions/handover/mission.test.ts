@@ -34,7 +34,9 @@ const raw = await text(FILE), mission = Mission.parse(JSON.parse(raw));
  *  point is shown (the heading it is played at, a hiding place's reason; GDD §10 v0.24, Sky's pick (h), 2026-10-18), the last three the level and floor it stands on
  *  (brief 055, Datum: data for what the block already draws there), not where on the ground it stands, so adding them moves no place and recorded runs keep their
  *  pinned places. They close an object; each run of them is dropped with the comma it put on the line before. */
-const places = (s: string) => s.slice(s.indexOf('\n "destinations": [')).replace(/(?:,\n {3}"(?:yaw|hidden|level|on|floor)": (?:-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"))+(?=\n)/g, '');
+/** Routes added since WAS (brief 059, Splice 2026-10-25): the service-drive stand's exit and the rival car's way in. A new route moves no place a recorded run pinned, so the lock is taken without them, as it is without the level and floor keys. */
+const ADDED_ROUTES = ['getaway-service', 'rivals'];
+const places = (s: string) => ADDED_ROUTES.reduce((t, id) => t.replace(new RegExp(`,\\n  \\{\\n   "id": "${id}",[\\s\\S]*?\\n  \\}(?=,\\n  \\{|\\n \\])`), ''), s.slice(s.indexOf('\n "destinations": ['))).replace(/(?:,\n {3}"(?:yaw|hidden|level|on|floor)": (?:-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"))+(?=\n)/g, '');
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
 const PLACES = '4f9fbebf0ee133e8a0dba471cf8ced9887cd56137ce02eec280f741d5b4ef39c'; // sha256 of places() now: WAS with MOVED and RENAMED applied
@@ -87,7 +89,9 @@ describe('handover mission file', () => {
     expect(broken(m => { delete m.roles[2].at; })).toBe(false); // alone, and nowhere
     // the engine's points and cameras (brief 011 B, Suture O-6): mission content, read into the site by tools/sim/site.ts
     expect(mission.points!.map(p => p.id)).toEqual(['cabinet', 'beside-inez', 'rival-park', 'rival-entry', 'security-entry', 'patrol-a', 'patrol-b', 'patrol-reroute', 'service-bay', 'block-spot',
-      'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally']); // the final fight's posts since engine 0.4.0; service-bay, the turned driver's car in the east yard's serviceBay (2026-10-19, brief 023)
+      'ambush-1', 'ambush-2', 'ambush-3', 'ambush-4', 'ambush-5', 'police-1', 'police-2', 'police-3', 'police-4', 'guard-ally',
+      'service-drive', 'svc-ambush-1', 'svc-ambush-2', 'svc-ambush-3', 'svc-ambush-4', 'svc-ambush-5', 'svc-police-1', 'svc-police-2', 'svc-police-3', 'svc-police-4',
+      'rival-drop', 'rival-lookout', 'rival-car-entry', 'rival-lookout-exit', 'rival-tail', 'rival-vale-door', 'rival-front-stop']); // the final fight's posts since engine 0.4.0; service-bay, the turned driver's car in the east yard's serviceBay (2026-10-19, brief 023); brief 059 (Vantage 2026-10-25): the yard getaway stand with its own posts, and the rival car's drop, lookout and entry; then Pulse's rival routine's lookout exit, tail stop (the yard stand's rival stop), the wheelman's place at Vale's car and the drawn crew's stop at the Office front
     expect(mission.arms?.sidearms).toBe(3); // GDD §07 Arms 3
     expect(mission.rivals?.public).toBe('menace'); // briefs/014/motive-standing.md rule 4: the Handover's rivals are feared (fight.public)
     expect(mission.cameras!.map(c => `${c.id}>${c.looksAt}`)).toEqual(['entrance>Office entrance', 'pickup>Official drop-off']);

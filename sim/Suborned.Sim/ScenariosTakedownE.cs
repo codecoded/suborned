@@ -121,7 +121,7 @@ namespace Suborned.Sim
             Add("N84", "—", "A cancelled Enter comes out by a door no unit holds (Aster 2026-10-16, brief 013 E3; rulebook response: no exit through a held door). Waymark's orders (2026-10-19, the west-face door): the guard knocked out unseen at his post at 4:25.0 (brief 055; was 4:00.1, before guard 74 walked the forecourt) and left; guard 73 finds him and radios it (5:01.1, landing 5:06.1: the door planting cuts her first look, brief 055 §7); the Enforcer goes in at the landing, before the scene unit arrives. The unit holds the public door from 5:12.1. The player cancels the Enter: the Enforcer comes out at the service lane, not through the held public door.", r =>
             {
                 var g = r.G;
-                Orders(r, Mv(0, Tech, "cabinet", run: true), MvTo(0, Enf, BesideDoor), Act(166, Tech, "loop", "entrance"), Act(1900, Tech, "reroute", "patrol"),
+                Orders(r, Mv(0, Tech, "cabinet", run: true), MvTo(0, Enf, BesideDoor), Act(166, Tech, "loop", "entrance"), Act(1300, Tech, "loop", "entrance"), Act(1900, Tech, "reroute", "patrol"), Act(2450, Tech, "loop", "entrance") /* Loop v2 (engine 0.31.0, brief 058): re-spliced twice (+2 T), blind without a break from 0:36 to 6:25 as the held loop was */,
                     MvTo(2600, Enf, new Pt(6520, -4110)), Act(2650, Enf, "takedown", "guard", "knockout"), Mv(2710, Enf, "d:Office entrance")); // engine 0.28.0: he steps beside the guard at 4:20, not 3:50 (standing 35 s in the guard's near sense, the guard grew wary and drew); brief 055: the knockout at 4:25.0, was 4:00.1: guard 74 now walks the forecourt and passes the door at 4:23, so after him; 73 still finds him at 4:57
                 var a = ActOn(r, GuardId);
                 r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio"), T(200)), $"a passer-by finds him and radios it ({Report.Clock(g.Tick)})");
@@ -144,8 +144,8 @@ namespace Suborned.Sim
             Add("N85", "—", "Both doors held, he waits (brief 013 E3; rulebook response: no exit through a held door). This block can't reach it in play (Keel 2026-10-19, briefs/023/keel-n85-question.md): the public door and the service door are on opposite faces, so it takes two scenes, and the quiet yard is found only by the response unit (6:24 at best) while any Enter begun before the public door is held (5:12.1) ends by 6:20. So the start places a held scene at each door (test only, Start.holds; Aster 2026-10-19, option 1). N84's orders take the guard down and go in at 5:02.1; from 5:03 both doors are held (the service door to 5:40, the public door to 6:00). The cancelled Enter waits inside without Vale (the wait itself cannot be cancelled), and comes out the tick a door is free, by that door, when the HUD said.", r =>
             {
                 var g = r.G;
-                Orders(r, Mv(0, Tech, "cabinet", run: true), MvTo(0, Enf, BesideDoor), Act(166, Tech, "loop", "entrance"), Act(1900, Tech, "reroute", "patrol"),
-                    MvTo(2300, Enf, new Pt(6520, -4110)), Act(2401, Enf, "takedown", "guard", "knockout"), Mv(2461, Enf, "d:Office entrance"));
+                Orders(r, Mv(0, Tech, "cabinet", run: true), MvTo(0, Enf, BesideDoor), Act(166, Tech, "loop", "entrance"), Act(1300, Tech, "loop", "entrance"), Act(1900, Tech, "reroute", "patrol") /* Loop v2 (engine 0.31.0, brief 058): re-spliced at 2:10 and 4:05 (+2 T), blind without a break from 0:36 to 6:25 as the held loop was */,
+                    MvTo(2300, Enf, new Pt(6520, -4110)), Act(2401, Enf, "takedown", "guard", "knockout"), Act(2450, Tech, "loop", "entrance"), Mv(2461, Enf, "d:Office entrance"));
                 r.To(3021);
                 r.Is(!g.DoorHeld(g.EnterDoor) && !g.DoorHeld(g.ExitDoor), "no door held yet");
                 Orders(r, Act(3021, Enf, "enter"));
@@ -168,7 +168,7 @@ namespace Suborned.Sim
             Add("N86", "—", "The HUD's read-only accessors (Glyph's ask 1; Aster 2026-10-16): HeldUntil (a held door's stand-down, -1 when not held), StashRoom (bodies and room), NextRound (a container's next round, unknown to the cell), CarryPathSight (who sees which stretch of a carry, SeenQuote's test a second at a time). Calling them changes nothing: the state hash is the same before and after.", r =>
             {
                 var g = r.G;
-                GuardQuiet(r);
+                GuardQuiet(r, resplice: false);
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 ulong h0 = Hash.State(g);
                 r.Eq(g.HeldUntil(g.EnterDoor), -1, "no door held");
@@ -187,7 +187,7 @@ namespace Suborned.Sim
                 var guardCam = "camera:entrance";
                 r.Is(!dry.SeenS.ContainsKey(guardCam), "the looped entrance camera sees none of it");
                 r.Is(Hash.State(g) == h0, "nothing changed: the state hash is the same");
-                r.Do(Tech, "cancel"); // the loop goes: the entrance camera is live again
+                r.Is(r.Until(() => !g.LoopOn, T(90)), $"Loop v2 (engine 0.31.0): the loop runs out ({Report.Clock(g.Tick)}): the entrance camera is live again"); // it was the Tech letting the held loop go
                 var live = g.CarryPathSight(OpId.Enforcer, ServiceDoor);
                 var k = g.Known(guardCam)!;
                 r.Is(k.Sight ? live.SeenS.ContainsKey(guardCam) && live.Seen == "yes" : live.MaybeS.ContainsKey(guardCam), $"live, the entrance camera {(k.Sight ? "sees" : "could see (?)")} the first stretch ({string.Join(", ", live.SeenS.Select(x => x.Key + " " + x.Value + " s"))}{string.Join(", ", live.MaybeS.Select(x => x.Key + " ? " + x.Value + " s"))})");
@@ -198,10 +198,10 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 OrdersWhileOn(r, DriverOpening().Concat(new[] {
-                    MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
+                    Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10 and 4:05, blind from 0:36 to 6:25 as the held loop was */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
                     Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), Act(1960, Scout, "mislead", "rivals"), Act(1960, Tech, "reroute", "patrol"), // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
                     new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 now sees the driver's takedown and radios it (the face margin moved his walk), so he lies where he fell: no second carry
-                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
+                    MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "loop", "pickup"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
                     MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on
                 const int opens = 4161; // 6:56.1 (Waymark 2026-10-19; was 7:58.5, tick 4785, before the east-face door)
                 r.To(opens);

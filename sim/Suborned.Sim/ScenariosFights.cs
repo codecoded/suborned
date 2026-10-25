@@ -218,13 +218,14 @@ namespace Suborned.Sim
                 r.Eq(g.Trail, trail, "no Trail");
             });
 
-            Add("N21", "—", "Runs refused, each with its reason (motive-fights.md §1.1): the Tech tethered to a loop, an operative in the middle of an action; walking stays open.", r =>
+            Add("N21", "—", "Runs refused, each with its reason (motive-fights.md §1.1): an operative in the middle of an action; walking stays open. Loop v2 (brief 058 §2, engine 0.31.0): the Tech is no longer tethered to a loop: with it running she runs.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet")); r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                r.Eq(g.QuoteMove(Tech, r.Stand("d:Courtyard")).RunRefused, "", "the chip offers the run: no tether");
                 var (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "move", To = "d:Courtyard", Run = true });
-                r.Is(!ok && why.Contains("tethered"), $"the Tech can't run while the loop holds: {why}");
-                r.Eq(g.QuoteMove(Tech, r.Stand("d:Courtyard")).RunRefused, why, "the chip says so before the double-click");
+                r.Is(ok && r.Op(Tech).Running && g.LoopOn, $"the Tech runs off and the loop keeps running {why}");
+                r.Do(Tech, "cancel");
                 r.To(r.Send(Scout, "d:Courtyard")); r.Do(Scout, "watch", Inez);
                 (ok, why) = g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Office approach", Run = true });
                 r.Is(!ok && why.Contains("busy"), $"mid-action, no run: {why}");
@@ -232,7 +233,7 @@ namespace Suborned.Sim
                 r.Send(Scout, "d:Office approach", run: true);
                 r.Is(r.Op(Scout).Running, "the action done, the Scout runs");
                 r.Send(Tech, "d:Courtyard");
-                r.Is(r.Op(Tech).Walk != null && !r.Op(Tech).Running, "the Tech may still walk away (and the loop ends at the tether)");
+                r.Is(r.Op(Tech).Walk != null && !r.Op(Tech).Running && g.LoopOn, "the Tech walks away too, and the loop still runs");
             });
 
             Add("N22", "—", "Hits are counted, not rolled (motive-fights.md §2.2): the untrained Scout's pistol at point blank is 750 ‰, so exactly three hits in four, the third shot the miss; the guard's 3 health falls on the fourth shot. +2 T for the hit, +2 for the down.", r =>
@@ -328,13 +329,14 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(r.Send(Scout, "d:Office approach", run: true)); // running past the door: the guard holds a memory, so no ally (Motive §1.1)
                 r.Is(g.GuardP.Has("saw-runner"), "the guard saw the Scout run");
-                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet"), r.Send(Scout, "d:Courtyard"))); r.Do(Tech, "loop", "entrance");
-                r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer); r.Done(Tech);
+                r.To(Max(r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet"), r.Send(Scout, "d:Courtyard")));
+                r.Do(Fixer, "turn", Inez, "pressure"); r.Done(Fixer);
                 r.SendTo(Enf, new Pt(4900, -1700)); r.To(r.Arrival(Enf));
                 while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from the start by the tether)
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+                while (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn) g.Step();
                 r.Do(Enf, "enter"); r.Do(Tech, "reroute", "patrol"); r.Done(Enf);
                 r.Is(!g.FightWarned, "pressured, Inez warns nobody");
                 r.Is(!g.GuardAlly, "the guard saw the cell: no ally");

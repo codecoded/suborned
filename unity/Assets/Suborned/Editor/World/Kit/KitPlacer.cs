@@ -16,6 +16,9 @@ namespace Suborned.World
         /// <summary>The prefabs the builder places (KitLods writes them from the sources at kit import: colliders stripped, LODGroup from the catalogue).</summary>
         public const string BuiltRoot = KitRoot + "Prefabs/Built/";
         readonly Dictionary<string, string> prefabs = new(), sources = new(), generated = new(), categories_ = new();
+        readonly HashSet<string> rejectedGenerated = new(System.StringComparer.Ordinal);
+        /// <summary>The Generated/ prefab paths of rejected generated pieces (brief 061's retired crossing pieces): KitImport.Generated removes them.</summary>
+        public IReadOnlyCollection<string> RejectedGenerated => rejectedGenerated;
         readonly Dictionary<string, List<(string file, float screen)>> lods = new();
         readonly List<(string, string)> uses = new();
         readonly Dictionary<string, GameObject> loaded = new();
@@ -30,6 +33,8 @@ namespace Suborned.World
                 foreach (var kv in cats) categories[kv.Key] = (J.F(kv.Value, "l1"), J.F(kv.Value, "l2"));
             foreach (var a in J.A(root, "assets"))
             {
+                if (J.S(a, "status") == "rejected" && J.S(a, "source") == "generated") // where its generated prefab stood (KitImport.Generated removes it)
+                    foreach (var f in J.A(a, "files")) if (J.S(f, "role") == "fbx") rejectedGenerated.Add(KitRoot + "Prefabs/Generated/" + Path.GetFileNameWithoutExtension(J.S(f, "path")) + ".prefab");
                 if (J.S(a, "status") != "adopted") continue;
                 var id = J.S(a, "id");
                 foreach (var f in J.A(a, "files"))

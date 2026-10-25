@@ -1,21 +1,21 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "Careless violence (brief 013 D, rev 4 lockdown): route-g-fast's knockout, but the Tech leaves the cabinet as soon as the guard is down and the Enforcer waits half a minute before the Enter, so the guard is left at the door the cell still needs. The entrance camera's watcher reads him (Alert 1: a knockout), a unit comes from the Office's door post, brings him round (his statement, +4 T) and holds the scene: the Enter is refused (door-held). Vale is never reached: at 8:30 the rivals have him. The careful twin is route-g-fast (Enter at once, the loop held until the Enforcer is inside). Re-sited 2026-10-20 (Waymark, brief 031): route-g-fast's orders as re-sited, to the knockout at 2:12.6 (the Enforcer waits on the forecourt out of every cone and walks in once the patrol has gone), then the Tech's move 6 s and the refused Enter 36 s after it. On the old orders the Enforcer stood 39 s beside the guard, who grew wary and drew at the blow (entry-seen-guard).",
+ "note": "Careless violence (brief 013 D, rev 4 lockdown): route-g-fast's knockout, but the Enforcer dawdles a minute before the Enter, so the loop runs out with the guard lying at the door the cell still needs. The entrance camera's watcher reads him (Alert 1: a knockout), a unit comes from the Office's door post, brings him round (his statement, +4 T) and holds the scene: the Enter is refused (door-held). Vale is never reached: at 8:30 the rivals have him. The careful twin is route-g-fast (Enter at once, 18 s before the loop runs out). Re-sited 2026-10-20 (Waymark, brief 031): route-g-fast's orders as re-sited, to the knockout at 2:12.6 (the Enforcer waits on the forecourt out of every cone and walks in once the patrol has gone). Retimed 2026-10-25 (Waymark, brief 058; engine 0.31.0, Loop v2): the loop no longer ends when the Tech walks off (his move to the car at 2:18.6 stays, as a player would give it), it runs out 2:00 after it lands (0:36.6 to 2:36.6); the camera reads the guard at 2:36.6 (report 2:57.6) and the unit holds the door from about 3:08, so the Enter goes from 2:48.6 to 3:12.6, a minute after the blow (from 2:48.6 to 3:07 the live camera sees the entry instead: entry-seen-camera).",
  "start": {},
  "orders": [
-  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
-  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
-  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
-  {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
-  {"tick":166,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":310,"op":"scout","do":"watch","target":"guard"},
-  {"tick":510,"op":"scout","do":"move","to":[1175,-4825]},
-  {"tick":786,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":1236,"op":"enforcer","do":"move","to":[6520,-4110]},
-  {"tick":1326,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
-  {"tick":1386,"op":"tech","do":"move","to":"crew:tech"},
-  {"tick":1686,"op":"enforcer","do":"enter"}
+  {"tick": 0, "op": "tech", "do": "move", "to": "cabinet", "run": true},
+  {"tick": 0, "op": "enforcer", "do": "move", "to": [5650, -4750]},
+  {"tick": 0, "op": "scout", "do": "move", "to": [3800, -5000]},
+  {"tick": 0, "op": "fixer", "do": "move", "to": [1025, -4625]},
+  {"tick": 166, "op": "tech", "do": "loop", "target": "entrance"},
+  {"tick": 310, "op": "scout", "do": "watch", "target": "guard"},
+  {"tick": 510, "op": "scout", "do": "move", "to": [1175, -4825]},
+  {"tick": 786, "op": "tech", "do": "reroute", "target": "patrol"},
+  {"tick": 1236, "op": "enforcer", "do": "move", "to": [6520, -4110]},
+  {"tick": 1326, "op": "enforcer", "do": "takedown", "target": "guard", "how": "knockout"},
+  {"tick": 1386, "op": "tech", "do": "move", "to": "crew:tech"},
+  {"tick": 1926, "op": "enforcer", "do": "enter"}
  ],
  "until": 5100
 }

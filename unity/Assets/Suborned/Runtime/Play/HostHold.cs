@@ -25,7 +25,7 @@ namespace Suborned.Play
         /// <summary>A hold under way: what it is on, which button, since when, how long it needs; Done once it acted.</summary>
         public sealed class HoldCharge
         {
-            public Target T; public int Button; public float Start; public float Need => ChargeS * ChargeScale; public bool Done, Fire, Force, Run, Bystander;
+            public Target T; public int Button; public float Start; public float NeedS = ChargeS; public float Need => NeedS * ChargeScale; public bool Done, Fire, Force, Run, Bystander;
             public string FireId = "", Verb = "", Extra = ""; public ContextPlan Plan; public int Way = -1;
             /// <summary>Who does it, chosen at the press and kept (the best placed then: the playground's charge.only).</summary>
             public List<int> Doers;

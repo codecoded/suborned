@@ -284,7 +284,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // c022's route G-kill timings (N68)
+                    Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // c022's route G-kill timings (N68)
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), Mv(1540, Fixer, "d:Getaway bay"));
                 r.Is(r.Until(() => g.Lockdown != Never, T(120)) && !g.Over, $"the seal clock runs ({Report.Clock(g.Tick)}; seal {Report.Clock(g.Lockdown)})");
@@ -306,7 +306,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor), r.Send(Fixer, "d:Getaway bay")));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 r.Do(Fixer, "board", "car"); r.Done(Fixer);
                 r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
                 r.Is(r.Until(() => g.CarWatcher().Length > 0, T(120)), $"the response unit has the car in sight ({Report.Clock(g.Tick)}: {g.CarWatcher()})");
@@ -338,7 +338,7 @@ namespace Suborned.Sim
         {
             var g = r.G;
             r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-            r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+            r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
             int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) r.To(mark + 1);
             r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
             r.To(r.Send(Enf, "d:Office entrance"));

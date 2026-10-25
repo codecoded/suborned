@@ -56,7 +56,7 @@ export function streetRules(c: WCtx): Check[] {
 
   // SF-12 every tram stop platform and every station side has its whole transit kit
   const twin = S.catalogue['phone-booth']?.twin as { variant: string; counts: number } | undefined, worth = (x: Spot) => twin && x.s.kind === 'phone-booth' && x.s.variant === twin.variant ? twin.counts : 1; // brief 026: a twin booth serves a pair
-  const bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)).length : spots.filter(x => x.s.kind === kind && test(x.s.edge)).reduce((a, x) => a + worth(x), 0); // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
+  const cov = (S.crossings?.coverage as { rules?: { stops?: { ends?: number }; banks?: boolean } } | undefined)?.rules, bad12: string[] = [], by = (kind: string, test: (e: string) => boolean) => kind === 'crossing' ? landingsOf(w).filter(l => test(l.edge)).length : spots.filter(x => x.s.kind === kind && test(x.s.edge)).reduce((a, x) => a + worth(x), 0); // a crossing is its landing, a street item only in a plan without streetscape.crossings.strip
   const need = (label: string, kind: string, test: (e: string) => boolean, n: number) => { const got = by(kind, test); if (got < n) bad12.push(`${label}: ${got} ${kind} (needs ${n})`); };
   const stops = w.transit.stops;
   for (const m of stops) for (const [kind, n] of [['tram-shelter', 1], ['bench', 2], ['ticket-machine', 1], ['timetable-column', 1], ['bin', 1], ['bollard', 2], ['pole-camera', 1]] as const) need(m.id, kind, e => e === m.id, n);
@@ -65,7 +65,7 @@ export function streetRules(c: WCtx): Check[] {
     units++;
     const onPrimary = [...ix.roads.nearest(s.at, 30)].some(([id, dl]) => d.roads.find(r => r.id === id)?.class === 'primary' && dl < d.roads.find(r => r.id === id)!.w);
     const mine = (e: string) => e.startsWith(`stop/${l.id}/${s.id}/`);
-    need(`${l.id}/${s.id} stop`, 'crossing', mine, 2);
+    need(`${l.id}/${s.id} stop`, 'crossing', mine, cov?.stops?.ends ?? 2); // brief 061: a stop's crossing is at one platform end (coverage.rules.stops.ends)
     if (!onPrimary) { // the pavement kit; a primary's narrow kerb zone may skip it (SF-6)
       need(`${l.id}/${s.id} stop`, 'kiosk-tickets', mine, 1); need(`${l.id}/${s.id} stop`, 'newsstand', mine, 1); need(`${l.id}/${s.id} stop`, 'phone-booth', mine, 2);
       if (String(s.interchange ?? '').startsWith('S1')) need(`${l.id}/${s.id} interchange`, 'public-clock', mine, 1);
@@ -75,7 +75,7 @@ export function streetRules(c: WCtx): Check[] {
     units++;
     for (const side of ['l', 'r']) {
       const bank = `bank/${l.id}/${s.id}/${side}`, label = `${l.id}/${s.id}/${side} bank`, mine = (e: string) => e === bank;
-      for (const [kind, n] of [['station-entrance', 1], ['newsstand', 1], ['phone-booth', 2], ['crossing', 1]] as const) need(label, kind, mine, n);
+      for (const [kind, n] of [['station-entrance', 1], ['newsstand', 1], ['phone-booth', 2], ['crossing', cov?.banks === false ? 0 : 1]] as const) need(label, kind, mine, n); // brief 061: coverage.rules.banks false: no patch at the stair foot
       const ids = w.connectors.filter(k => k.id.startsWith(`${bank}/`)).map(k => k.id.slice(bank.length + 1));
       for (const part of ['tower', 'run-a', 'run-b', 'lift']) if (!ids.includes(part)) bad12.push(`${label}: no ${part}`);
     }

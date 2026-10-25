@@ -45820,16 +45820,16 @@
    ],
    "tags": {
     "use": [
-     "crossing:edge"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -45886,16 +45886,16 @@
    ],
    "tags": {
     "use": [
-     "crossing:edge"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -45971,16 +45971,16 @@
    ],
    "tags": {
     "use": [
-     "inlay:crossing-arc"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -48521,6 +48521,72 @@
    "source": "generated"
   },
   {
+   "id": "HaloRing",
+   "category": "Ground",
+   "size": [
+    1.24,
+    0,
+    1.24
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 2,
+   "materials": [
+    "DK_Signal_Ring"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Ground/DK_HaloRing.fbx",
+     "sha256": "6b277b7c0b86a181bf442095615c4877c20e847fce2e3ece865129f078e7f350",
+     "bytes": 17932
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Signal_Ring.mat",
+     "sha256": "a728b99097abf6cd34034de992ff3dc19837dd033d2b3dac07d2ce41c8f5908e",
+     "bytes": 4093
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Signal_Ring.mat.meta",
+     "sha256": "4cf52a4984b5ea915d31d71eb224861868a999e7ce0d036cbef286ef41ea960b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/signal_ring_v1.png",
+     "sha256": "fa400002d3e4adcab82faaf2d8df7c664e34c4a26a152dde74ded58757a9eb41",
+     "bytes": 6672
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/signal_ring_v1.png.meta",
+     "sha256": "8919cbc35895c294096c2b3343597eb6d82536269186dc38c882be15704b8747",
+     "bytes": 2715
+    }
+   ],
+   "tags": {
+    "use": [
+     "signal:halo"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "adopted",
+   "source": "generated"
+  },
+  {
    "id": "Horizon_Massif",
    "category": "Horizon",
    "size": [
@@ -50117,8 +50183,8 @@
    "id": "Kerb_Pearl_0",
    "category": "Ground",
    "size": [
-    2,
-    0.157,
+    1.994,
+    0.154,
     0.3
    ],
    "pivot": "origin-ground",
@@ -50127,10 +50193,9 @@
     -0.15
    ],
    "front": "+Z",
-   "tris": 228,
+   "tris": 216,
    "materials": [
-    "DK_Ground_RoadPearl",
-    "DK_Brass_Civic"
+    "DK_Ground_RoadPearl"
    ],
    "lodCategory": "street",
    "files": [
@@ -50138,8 +50203,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Kerb_Pearl_0.fbx",
-     "sha256": "32cb9f93bafdd4940d0dad525a9883f850529b1573c82f1ce70a1d633defdd3f",
-     "bytes": 26092
+     "sha256": "b5b4e610368bbe02f82f57545c73894c297f76d4a2f2639d20d7b3f75f461c4d",
+     "bytes": 24716
     },
     {
      "root": "generated",
@@ -50153,20 +50218,6 @@
      "role": "material-meta",
      "path": "Materials/DK_Ground_RoadPearl.mat.meta",
      "sha256": "a33d9671189bd44a97cf28424079c340f58909dc068e120bb0eee45093f7f7e2",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -50230,8 +50281,8 @@
    "id": "Kerb_Pearl_1",
    "category": "Ground",
    "size": [
-    2,
-    0.157,
+    1.994,
+    0.154,
     0.3
    ],
    "pivot": "origin-ground",
@@ -50240,10 +50291,9 @@
     -0.15
    ],
    "front": "+Z",
-   "tris": 336,
+   "tris": 324,
    "materials": [
-    "DK_Ground_RoadPearl",
-    "DK_Brass_Civic"
+    "DK_Ground_RoadPearl"
    ],
    "lodCategory": "street",
    "files": [
@@ -50251,8 +50301,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_Kerb_Pearl_1.fbx",
-     "sha256": "c3c00094e492d4020291cdff53afa2dd475adeb238fd1329ffb8555377cb85a0",
-     "bytes": 28780
+     "sha256": "62cf38238a208d4451e34a73858ea94082bd4f0ee2508fa7b9a3c68a4538a90b",
+     "bytes": 27372
     },
     {
      "root": "generated",
@@ -50266,20 +50316,6 @@
      "role": "material-meta",
      "path": "Materials/DK_Ground_RoadPearl.mat.meta",
      "sha256": "a33d9671189bd44a97cf28424079c340f58909dc068e120bb0eee45093f7f7e2",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
      "bytes": 188
     },
     {
@@ -50393,16 +50429,16 @@
    ],
    "tags": {
     "use": [
-     "stud:kerb"
+     "street"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -50490,21 +50526,21 @@
    "id": "LightDotRow_1",
    "category": "Ground",
    "size": [
-    1,
+    0.8,
     0.002,
-    0.43
+    0.3
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 48,
+   "tris": 24,
    "materials": [
-    "DK_Brass_Civic",
+    "DK_Enamel_Charcoal",
     "DK_Cross_Light"
    ],
    "lods": [
     {
      "file": "Models/Ground/DK_LightDotRow_1_L1.fbx",
-     "tris": 8,
+     "tris": 12,
      "screen": 0.008
     }
    ],
@@ -50514,21 +50550,19 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_LightDotRow_1.fbx",
-     "sha256": "528f24d17a8742e3129f7f1df5594c92202ff7c539c3fd5fb293cbbd1e313525",
-     "bytes": 17052
+     "sha256": "edc5f24f820d14773df52a49ed6b243213abf8a0e99d8390c02c5799a4a492dd",
+     "bytes": 16604
     },
     {
-     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
+     "path": "Materials/DK_Enamel_Charcoal.mat",
+     "sha256": "fa8d8dc9453cd325fde9707588af2d957ac2b48f46834186f844f309b385ec8a",
+     "bytes": 3851
     },
     {
-     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
+     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
      "bytes": 188
     },
     {
@@ -50549,8 +50583,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Ground/DK_LightDotRow_1_L1.fbx",
-     "sha256": "a130a36828f3f9b221191af989fa502e7a842a34eaabf325cf217a476cf36bc3",
-     "bytes": 16188
+     "sha256": "3139d779fa0b00a67d8edce364f473d2a60311e476066e64147e1da410d37465",
+     "bytes": 16268
     }
    ],
    "tags": {
@@ -50571,21 +50605,21 @@
    "id": "LightDotRow_2",
    "category": "Ground",
    "size": [
-    2,
+    1.8,
     0.002,
-    0.43
+    0.3
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 92,
+   "tris": 48,
    "materials": [
-    "DK_Brass_Civic",
+    "DK_Enamel_Charcoal",
     "DK_Cross_Light"
    ],
    "lods": [
     {
      "file": "Models/Ground/DK_LightDotRow_2_L1.fbx",
-     "tris": 12,
+     "tris": 24,
      "screen": 0.008
     }
    ],
@@ -50595,21 +50629,19 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_LightDotRow_2.fbx",
-     "sha256": "4d4848186d72a511fa28e390cd2775f93a9e499ca9dce08eb1ed90ed942e1b3c",
-     "bytes": 17916
+     "sha256": "23f772ea108de61be15f9767cd16eabe79da03ce750290a8bd6c75acb65fe05e",
+     "bytes": 16700
     },
     {
-     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
+     "path": "Materials/DK_Enamel_Charcoal.mat",
+     "sha256": "fa8d8dc9453cd325fde9707588af2d957ac2b48f46834186f844f309b385ec8a",
+     "bytes": 3851
     },
     {
-     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
+     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
      "bytes": 188
     },
     {
@@ -50630,8 +50662,8 @@
      "root": "generated",
      "role": "lod",
      "path": "Models/Ground/DK_LightDotRow_2_L1.fbx",
-     "sha256": "a3a6e49fc34872dd62c63748ed8880cc4e148dab5827e046bda465d0df63fbe6",
-     "bytes": 16412
+     "sha256": "1853d6e610d467c00e6d02383a9baba40cfa44e38d5bb23276b6efd08c40cbb0",
+     "bytes": 16364
     }
    ],
    "tags": {
@@ -50688,16 +50720,16 @@
    ],
    "tags": {
     "use": [
-     "crossing:field"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -50740,16 +50772,16 @@
    ],
    "tags": {
     "use": [
-     "crossing:field"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -56535,19 +56567,18 @@
    "id": "RoadRibbon_Arc90_R4",
    "category": "Ground",
    "size": [
-    4.1645,
+    4.143,
     0.006,
-    4.1645
+    4.143
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
-    -1.997,
-    -2.002
+    -1.988,
+    -2.012
    ],
    "front": "+Z",
-   "tris": 80,
+   "tris": 40,
    "materials": [
-    "DK_Brass_Civic",
     "DK_Road_Lens",
     "DK_Road_Pool"
    ],
@@ -56557,22 +56588,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadRibbon_Arc90_R4.fbx",
-     "sha256": "d4904a673208cf46ca99488c8f21609ed4b84c266150d368e06e837b79618d4e",
-     "bytes": 19740
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
-     "bytes": 188
+     "sha256": "0a8914281ced1ca197c2593a560e565d9483ed1dcd669bffd0fa776a4bc0894a",
+     "bytes": 17516
     },
     {
      "root": "generated",
@@ -56607,19 +56624,18 @@
    "id": "RoadRibbon_Arc90_R8",
    "category": "Ground",
    "size": [
-    8.1404,
+    8.1193,
     0.006,
-    8.1404
+    8.1193
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
-    -4.009,
-    -3.99
+    -4.001,
+    -3.999
    ],
    "front": "+Z",
-   "tris": 112,
+   "tris": 56,
    "materials": [
-    "DK_Brass_Civic",
     "DK_Road_Lens",
     "DK_Road_Pool"
    ],
@@ -56629,22 +56645,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadRibbon_Arc90_R8.fbx",
-     "sha256": "094b0b33fb79c5eabd28e275fc6647ed22e7618dbc77ad41ae4d1cadd5dccb97",
-     "bytes": 20668
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
-     "bytes": 188
+     "sha256": "440847458944489233e3ed8918a0a41e681ee461757298ad57b9febf22820fdd",
+     "bytes": 18076
     },
     {
      "root": "generated",
@@ -56681,7 +56683,7 @@
    "size": [
     6,
     0.006,
-    1.16
+    1.12
    ],
    "pivot": "origin-ground",
    "pivotOffset": [
@@ -56689,9 +56691,8 @@
     -0.5
    ],
    "front": "+Z",
-   "tris": 16,
+   "tris": 8,
    "materials": [
-    "DK_Brass_Civic",
     "DK_Road_Lens",
     "DK_Road_Pool"
    ],
@@ -56701,22 +56702,8 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_RoadRibbon_Straight_6m.fbx",
-     "sha256": "e8629520acea9263fc5bc37e2357db13c64a101c1177141a44ead1deee2170f8",
-     "bytes": 17820
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "769909d7d677b13166110e8c2a9043040601a4dfaee7b29437c177561cf961b2",
-     "bytes": 3901
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
-     "bytes": 188
+     "sha256": "4df86599c841f36b5e7ad5c40d94406ba98fa3f678f193b4a387e1b48730edee",
+     "bytes": 16332
     },
     {
      "root": "generated",
@@ -59411,7 +59398,145 @@
    ],
    "tags": {
     "use": [
-     "signal:eye"
+     "street"
+    ],
+    "scale": [
+     0.9,
+     1.1
+    ],
+    "squash": 1,
+    "wave": 2
+   },
+   "status": "rejected",
+   "source": "generated"
+  },
+  {
+   "id": "SignalLens",
+   "category": "Signals",
+   "size": [
+    0.95,
+    3.085,
+    0.94
+   ],
+   "pivot": "footprint-centre-ground",
+   "front": "+Z",
+   "tris": 650,
+   "materials": [
+    "DK_Chrome",
+    "DK_Enamel_Charcoal",
+    "DK_Cross_Beam",
+    "DK_Signal_Atlas",
+    "DK_Cross_Halo",
+    "DK_Signal_Rim"
+   ],
+   "parts": [
+    "DK_SignalLens_Beam",
+    "DK_SignalLens_Figure",
+    "DK_SignalLens_Halo",
+    "DK_SignalLens_Rim",
+    "DK_SignalLens_Tens",
+    "DK_SignalLens_Units"
+   ],
+   "lods": [
+    {
+     "file": "Models/Signals/DK_SignalLens_L1.fbx",
+     "tris": 234,
+     "screen": 0.008
+    }
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Signals/DK_SignalLens.fbx",
+     "sha256": "18dcc243ae88ade4fe12bf17bad6820fc8299250d84d0ec5c6e05c13b9940dd1",
+     "bytes": 53212
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
+     "bytes": 3929
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Enamel_Charcoal.mat",
+     "sha256": "fa8d8dc9453cd325fde9707588af2d957ac2b48f46834186f844f309b385ec8a",
+     "bytes": 3851
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
+     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Signal_Atlas.mat",
+     "sha256": "82c88345c5bee7d89db26bfd758f6d9d796c724c48242c98debe4ac7b6b0777c",
+     "bytes": 4092
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Signal_Atlas.mat.meta",
+     "sha256": "baaad421a47c5ede23d7712022f8c9ba6fa1fa6f2a5a17fdfee2672b72bbb719",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Signal_Rim.mat",
+     "sha256": "1c6d8a3667accad13b53813cf2ff584060ac7d1d7c0a9dab43a7e6868d2bcb36",
+     "bytes": 3895
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Signal_Rim.mat.meta",
+     "sha256": "927b1863f3d0454eafdf08636e4389d49d72c63f7113ecff343b87ecb060e015",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/signal_atlas_v1.png",
+     "sha256": "67b04d24ae1b0b0c5238e3d28a8112b5d21c9c65691836b8d5b8fd08a54d1a16",
+     "bytes": 4673
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/signal_atlas_v1.png.meta",
+     "sha256": "1e44dd8d27304b2d1d25786b5756cf68bb40215831663fed897631a6f45531d8",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Signals/DK_SignalLens_L1.fbx",
+     "sha256": "9bad3169d3141652baafd23e283d8459c584ec5a446a7c41cad259c8df396028",
+     "bytes": 42924
+    },
+    {
+     "root": "generated",
+     "role": "data",
+     "path": "Data/signal-lens.json",
+     "sha256": "6082f530f17c9fcc56fc38b3cc5c39cf98f6a10fa426ba2a14488ceb2bf4851f",
+     "bytes": 10549
+    }
+   ],
+   "tags": {
+    "use": [
+     "signal:lens"
     ],
     "scale": [
      1,

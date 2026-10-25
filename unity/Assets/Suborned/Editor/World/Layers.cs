@@ -71,7 +71,12 @@ namespace Suborned.World
             }
             foreach (var f in g.Foot) nodes.Solid(layer, f.Id, new MeshKit().Ribbon(f.Line, f.Width, f.Level, f.Level), nodes.Ground(f.Surface));
             foreach (var m in g.Medians) Mass(layer, m, true);
-            foreach (var f in g.Flats) nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), nodes.Ground(f.Surface));
+            var tables = FootwayKit.ByTable(g); FootwayKit.Built = FootwayKit.Bands = 0; // brief 061: a footway's table is its element: table, lip, ramp and bands (FootwayKit)
+            foreach (var f in g.Flats)
+                if (tables.TryGetValue(f.Id, out var fw)) FootwayKit.Build(nodes, Nodes.Element(layer, f.Id), fw);
+                else nodes.Solid(layer, f.Id, new MeshKit().Flat(f.Ring, f.Level), nodes.Ground(f.Surface));
+            if (FootwayKit.Built != g.Footways.Count) throw new System.IO.InvalidDataException($"World: {g.Footways.Count} footways in the export, {FootwayKit.Built} with their table in ground.flats");
+            if (g.Footways.Count > 0) Debug.Log($"World: continuous footways {FootwayKit.Built} (brief 061: table, lip, ramp and {FootwayKit.Bands} bands; posts with the street)");
             foreach (var w in g.Water) nodes.Solid(layer, w.Id, new MeshKit().Flat(w.Ring, w.Level), w.Surface);
             foreach (var q in g.Quays) Mass(layer, q, true);
             // brief 023: a drive and the bay it reaches lie below the plot slab's top: the slab is cut round them (each a convex ring).

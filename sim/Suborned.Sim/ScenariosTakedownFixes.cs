@@ -42,7 +42,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // as c022's route G-kill (2026-10-19, the door on the west face: the loop at 0:16.6, the watch at 0:46.2; were 0:13.6 and 0:35.5)
+                    Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // as c022's route G-kill (2026-10-19, the door on the west face: the loop at 0:16.6, the watch at 0:46.2; were 0:13.6 and 0:35.5)
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "enter"),
                     MvTo(1540, Tech, new Pt(675, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4625)), Mv(1920, Enf, "d:Getaway bay"));
                 const string Clerk = "p-records-office-09";
@@ -222,13 +222,13 @@ namespace Suborned.Sim
             Add("N74", "—", "A found body holds the scene (Motive rev 4 R4.1; Sky 2026-10-16): the guard knocked out unseen at his post; the card says that, found here, he would hold the Office door. The Tech lets the loop go, so the entrance camera reads him at its next scan: a body found. A unit of officers comes at Alert 1 (no robot reach for officers; not one of the dial's units) and holds the Office door, which he lies at: Enter is refused (door-held) from its arrival, through its check and 60 s sweep, until it stands down; the Alert stays 1 (a knockout), and at Alert 1 the sweep opens no stash.", r =>
             {
                 var g = r.G;
-                GuardQuiet(r);
+                GuardQuiet(r, resplice: false); // Loop v2: the loop runs out at 3:40, before his 4:00 mark (it was the Tech letting the held loop go)
                 var q = g.QuoteTakedown("guard", "knockout");
                 r.Is(q.HoldsDoors.Contains(g.EnterDoor) && q.HoldS == g.R.CheckS + g.R.SearchS && q.PoliceInS > 0, $"the card: found here, he holds {string.Join(", ", q.HoldsDoors)} ~{q.HoldS} s; a unit in ~{q.PoliceInS} s");
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 var a = ActOn(r, GuardId);
                 r.SendTo(Enf, BesideDoor);
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "cancel" }).ok && !g.LoopOn, "the Tech lets the loop go: the camera is live");
+                r.Is(r.Until(() => !g.LoopOn, T(180)), $"Loop v2 (engine 0.31.0): the loop runs out ({Report.Clock(g.Tick)}): the camera is live"); // it was the Tech letting the held loop go
                 r.Is(r.Until(() => a.Landed, T(30)), "the camera reads him: a report of a body lands");
                 r.Eq(g.Alert, 1, "a knockout: Alert 1");
                 r.Is(g.SceneHolds.Count == 1 && g.SceneHolds[0].Doors.Contains(g.EnterDoor) && !g.SceneHolds[0].Doors.Contains(g.ExitDoor), $"the scene holds the doors in its sight: {string.Join(", ", g.SceneHolds[0].Doors)} (the service door is round the corner)");
@@ -271,6 +271,7 @@ namespace Suborned.Sim
                 // brief 055 (engine 0.27.0): nobody's routine passes the east yard before the clerks leave at 5:40 now (guard 74 leaves the café by the
                 // forecourt), so the body is not found in time; the service door's hold is the start's fixture (as N85), from 4:30, when the scene's unit
                 // held it before. The rule under test is the same: a held door is no way out.
+                r.To(Math.Max(g.Tick, T(260))); r.Do(Tech, "loop", "entrance"); r.Done(Tech); // Loop v2 (engine 0.31.0): re-spliced before GuardQuiet's runs out at 4:45, so the camera stays blind over the Enter (+1 T)
                 r.To(Math.Max(g.Tick, T(270)));
                 r.Is(g.DoorHeld(g.ExitDoor) && !g.DoorHeld(g.EnterDoor), "the service door is held, not the public door");
                 r.To(Math.Max(g.Tick, g.PatrolAwayUntil)); r.Do(Tech, "reroute", "patrol"); r.Done(Tech); // the patrol away again for the Enter

@@ -1,0 +1,57 @@
+# Motive 059 probe results, 2026-10-25. Engine out/missions/engine/tree (suborned.sim/0.30.0), inputs = HEAD 0f0ada75 (rulebook from git show HEAD; the tree's rulebook is mid-edit by Keel).
+# measure.py (walk grid, sim/data/handover.site.json):
+to the yard stand (69.35,-15.0), walk grid, metres; seconds at police 2.2, rival 1.6, op 1.4 m/s
+  security-entry            126.3 m  police  57.4 s  rival  78.9 s  op  90.2 s
+  office-entrance            45.9 m  police  20.9 s  rival  28.7 s  op  32.8 s
+  office-approach            43.8 m  police  19.9 s  rival  27.4 s  op  31.3 s
+  service-lane                7.6 m  police   3.5 s  rival   4.8 s  op   5.4 s
+  apron-south-edge           57.0 m  police  25.9 s  rival  35.6 s  op  40.7 s
+  apron-north-edge           36.8 m  police  16.7 s  rival  23.0 s  op  26.3 s
+  apron-at-official-bay      24.9 m  police  11.3 s  rival  15.6 s  op  17.8 s
+  rival-park                 23.2 m  police  10.5 s  rival  14.5 s  op  16.6 s
+  lookout(94,-27)            29.5 m  police  13.4 s  rival  18.4 s  op  21.1 s
+  square-car                 74.7 m  police  33.9 s  rival  46.7 s  op  53.3 s
+  ambush-1                   59.5 m  police  27.1 s  rival  37.2 s  op  42.5 s
+  ambush-2                   91.9 m  police  41.8 s  rival  57.4 s  op  65.6 s
+  ambush-3                   58.7 m  police  26.7 s  rival  36.7 s  op  41.9 s
+  ambush-4                   87.5 m  police  39.8 s  rival  54.7 s  op  62.5 s
+  ambush-5                   64.2 m  police  29.2 s  rival  40.1 s  op  45.9 s
+  police-1                   95.2 m  police  43.3 s  rival  59.5 s  op  68.0 s
+  police-2                   97.0 m  police  44.1 s  rival  60.6 s  op  69.3 s
+  police-3                   82.7 m  police  37.6 s  rival  51.7 s  op  59.1 s
+  police-4                   92.3 m  police  42.0 s  rival  57.7 s  op  66.0 s
+response path: entry->approach 118.3 m, approach->service lane 43.7 m, total 162.0 m = 73.6 s at 2.2 m/s
+square stand: security-entry -> police-1..4: [43.2, 40.6, 52.9, 42.9]
+square: security-entry -> getaway bay 61.1
+service lane -> yard car 7.08 m straight; 7.6 m walk
+drop stop (34,-38) -> yard 45.0 m
+rival-park (84,-31) -> yard 23.2 m walk
+official entrance -> yard 19.5 m; -> drive mouth (80,-15) 16.4 m
+to d:Getaway bay : north 61.1 official 81.8
+to police-1 : north 43.2 official 113.0
+to police-2 : north 40.6 official 110.8
+to police-3 : north 52.9 official 94.4
+to police-4 : north 42.9 official 100.8
+
+# read.py (batches through the guard: 38 c036 routes on HEAD inputs; 5 yard probes x 4 police entries):
+head inputs vs c036: 38 same, 0 differ
+north        loud-yard-fight-20       success                258.7s T  9 A2 carFree=None fight=None blocker=None free=None left=None
+north        loud-yard-fight-40       success                278.2s T 13 A2 carFree=None fight=None blocker=None free=None left=None
+north        loud-yard-fight-60       success                298.2s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+north        loud-yard-late-board     success                235.3s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+north        loud-yard                success                235.3s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+apron-south  loud-yard-fight-20       failure    sealed      341.0s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+apron-south  loud-yard-fight-40       failure    sealed      341.0s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+apron-south  loud-yard-fight-60       failure    sealed      341.0s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+apron-south  loud-yard-late-board     success                235.3s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+apron-south  loud-yard                success                235.3s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+official     loud-yard-fight-20       failure    sealed      341.0s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+official     loud-yard-fight-40       failure    sealed      341.0s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+official     loud-yard-fight-60       failure    sealed      341.0s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+official     loud-yard-late-board     none                   340.0s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+official     loud-yard                none                   340.0s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+apron-bay    loud-yard-fight-20       success                258.2s T  9 A2 carFree=None fight=None blocker=None free=None left=None
+apron-bay    loud-yard-fight-40       failure    sealed      341.0s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+apron-bay    loud-yard-fight-60       failure    sealed      341.0s T 12 A2 carFree=None fight=None blocker=None free=None left=None
+apron-bay    loud-yard-late-board     none                   340.0s T  8 A2 carFree=None fight=None blocker=None free=None left=None
+apron-bay    loud-yard                none                   340.0s T  8 A2 carFree=None fight=None blocker=None free=None left=None

@@ -1,0 +1,249 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
+using UnityEngine;
+using Order = Suborned.Sim.Order;
+using OpId = Suborned.Sim.OpId;
+using ValeAt = Suborned.Sim.ValeAt;
+
+namespace Suborned.Play
+{
+    /// <summary>Batch 0.2.118's proof (briefs/041/next-batch.md items A, C, E, F), in the built player, one JSON object `r118`:
+    ///  · cam058 (engine 0.31.0, Glyph 058; gated): the Tech at the cabinet, the ring on the entrance camera reads Loop · Disable · Fire; the
+    ///    Scout's reads Fire alone; the loop lands and its window marker counts m:ss from about 2:00 (no Tech face); a Loop on the pickup camera
+    ///    while it runs is shown shut (loop-holds); Disable on the pickup camera lands "Camera cut" with the desk's clock, then the dead disc stays
+    ///    after the report; a camera shot is priced "+2", never "/hit" (FireTrail). Pictures r118-ring-camera-tech (Glyph's 2x crop: run at 2160),
+    ///    -ring-camera-scout, -loop-marker, -loop-holds, -camera-cut, -dead-disc.
+    ///  · Glint's shot list (pictures and measurements, not gated; the values go back to Glint): H1-H5 the crossing heads nearest the Records
+    ///    Office (SignalHead.Hold), R1-R5 the capsule rim, the uncut shadow, the silhouettes and the reach (each frame logs the agents' screen
+    ///    points so the fill can be measured), V1-V3 Vale C on the landing, carried and at eye level.
+    /// Nothing here changes a rule; every order is the host's own. The light is put back to day at the end.</summary>
+    public static class Proof118
+    {
+        static string F(float v) => v.ToString("0.###", CultureInfo.InvariantCulture);
+        static string B(bool b) => b ? "true" : "false";
+        static string J(string x) => (x ?? "").Replace("\\", "/").Replace("\"", "'").Replace("\n", " ");
+        static IEnumerator Frames(int n) { for (int i = 0; i < n; i++) yield return null; }
+        static Vector2 Sp(HandoverHost h, Vector3 w) { var s = h.View.WorldToScreenPoint(w); return new Vector2(s.x, s.y); }
+        static IEnumerator Shoot(HandoverHost h, string dir, string name, List<string> log, string state = "rest")
+        {
+            bool was = h.Paused; h.SetPaused(true);
+            while (HudToolkit.ShotBusy) yield return null;
+            log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(dir, name), state)); yield return null; while (HudToolkit.ShotBusy) yield return null;
+            h.SetPaused(was);
+        }
+        static string RingWords(HandoverHost h) => h.Ring == null ? "" : string.Join(" | ", h.Ring.Segs.ConvertAll(x => x.More ? "⋯" : (x.Shut ? "~" : "") + x.Word));
+        static List<Order> Route(string name)
+        {
+            var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FightLab.Dir(""))), "contracts", "missions", "handover", "routes", name + ".json");
+            var sc = Suborned.Sim.Script.Parse(File.ReadAllText(path));
+            return sc.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList();
+        }
+        static void Play(HandoverHost h, List<Order> orders, int until, int runTo)
+        {
+            foreach (var o in orders)
+            {
+                if (o.Tick >= until || h.Game.Over) break;
+                if (o.Tick > h.Game.Tick) h.RunTo(o.Tick);
+                var c = new Order { Tick = o.Tick, Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run };
+                if (c.Do is "watch" or "listen" or "turn" or "call") h.GiveScripted(c); else h.Issue(c);
+            }
+            if (runTo > h.Game.Tick && !h.Game.Over) h.RunTo(runTo);
+        }
+        static IEnumerator Fresh(HandoverHost h) { h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null; yield return null; }
+
+        /// <summary>The light phase for a shot: day, evening (held at full Dusk) or night; waits for the ease.</summary>
+        static IEnumerator Phase(HandoverHost h, string phase)
+        {
+            if (phase == "night") h.SetNight(true);
+            else { h.SetNight(false); if (phase == "evening" && LightPhase.Instance) LightPhase.Instance.SetEvening(); }
+            float t0 = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - t0 < 6f) { var lp = LightPhase.Instance; if (!lp || (phase == "evening" ? lp.Dusk >= 0.99f : phase == "day" ? lp.Dusk <= 0.01f : true) && Time.realtimeSinceStartup - t0 > 1.5f) break; yield return null; }
+        }
+
+        /// <summary>The agents' and key people's screen points now (for Glint's pixel measures: R4 fill, V1 jacket).</summary>
+        static string Points(HandoverHost h, params string[] keys)
+        {
+            var l = new List<string>();
+            foreach (var k in keys) { var t = h.Views.Find(k); if (!t || !t.gameObject.activeInHierarchy) continue; var s = Sp(h, t.position + Vector3.up * 1.0f); l.Add($"{k}@{s.x:0},{Screen.height - s.y:0}"); }
+            return string.Join(" ", l);
+        }
+
+        public static IEnumerator Run(HandoverHost h, string dir, List<string> log, string[] json)
+        {
+            var parts = new List<string>(); bool ok = true; bool keepPlan = h.controls.planTogether; h.controls.planTogether = false;
+            HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
+
+            // ---- cam058 (engine 0.31.0): the ring, the loop's 2:00, one loop at a time, Disable and the desk's clock, the dead disc, the price
+            {
+                yield return Fresh(h); var g = h.Game;
+                h.Issue(new Order { Op = "tech", Do = "move", To = "cabinet" });
+                for (int i = 0; i < 90 * Suborned.Sim.Game.Hz && !Suborned.Sim.G.Within(g.Ops[(int)OpId.Tech].Pos, g.S.At("cabinet"), g.R.AtReachCm) && !g.Over; i += 5) h.RunTo(g.Tick + 5);
+                bool atCab = Suborned.Sim.G.Within(g.Ops[(int)OpId.Tech].Pos, g.S.At("cabinet"), g.R.AtReachCm);
+                string ringTech = "", ringScout = "", holds = "", marker = "", cut = "", desk = "", after = ""; bool shutLoop = false; int deadDiscs0 = HudToolkit.DeadDiscsShown;
+                var ec = h.Views.Find("camera/entrance"); var pc = h.Views.Find("camera/pickup");
+                if (ec)
+                {
+                    h.Select(OpId.Tech, false); h.LookAt(ec.position); yield return Frames(3);
+                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); ringTech = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-ring-camera-tech", log, "active"); h.CloseRing();
+                    h.Select(OpId.Scout, false); yield return Frames(2);
+                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); ringScout = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-ring-camera-scout", log, "active"); h.CloseRing();
+                    h.Issue(new Order { Op = "tech", Do = "loop", Target = "entrance" });
+                    for (int i = 0; i < 40 * Suborned.Sim.Game.Hz && !g.LoopOn && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    h.RunTo(g.Tick + 2); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); yield return Frames(2);
+                    marker = HudToolkit.WindowWords; yield return Shoot(h, dir, "r118-loop-marker", log, "active");
+                }
+                if (pc && g.LoopOn)
+                {
+                    h.Select(OpId.Tech, false); h.LookAt(pc.position); yield return Frames(3);
+                    h.LeftClickScripted(Sp(h, pc.position)); yield return Frames(4); holds = RingWords(h);
+                    shutLoop = h.Ring != null && h.Ring.Segs.Exists(x => x.Shut && x.Row?.Lock.code == "loop-holds"); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-loop-holds", log, "active"); h.CloseRing();
+                    h.Issue(new Order { Op = "tech", Do = "disable", Target = "pickup" });
+                    for (int i = 0; i < 30 * Suborned.Sim.Game.Hz && g.CameraDeadAs("pickup") != "cut" && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    h.RunTo(g.Tick + 2); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); yield return Frames(2);
+                    cut = h.LastChip != null ? string.Join(",", h.LastChip.Lines.ConvertAll(x => x.Word)) : ""; desk = HudToolkit.WindowWords;
+                    yield return Shoot(h, dir, "r118-camera-cut", log, "active");
+                    for (int i = 0; i < 40 * Suborned.Sim.Game.Hz && g.CutReps.Exists(x => !x.Done) && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    h.RunTo(g.Tick + 2); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true); yield return Frames(3);
+                    after = HudToolkit.WindowWords; yield return Shoot(h, dir, "r118-dead-disc", log, "active");
+                }
+                string price = h.FireTrail(OpId.Scout, "camera:entrance");
+                bool loopMarker = marker.Contains("loop:entrance:1:5") || marker.Contains("loop:entrance:2:00");
+                bool cOk = atCab && ringTech.Contains("Loop") && ringTech.Contains("Disable") && ringTech.Contains("Fire") && !ringTech.Contains("⋯")
+                    && ringScout.Contains("Fire") && !ringScout.Contains("Loop") && !ringScout.Contains("Disable") && loopMarker && shutLoop
+                    && g.CameraDeadAs("pickup") == "cut" && cut.Contains("Camera cut") && desk.Contains("disable:pickup:") && !after.Contains("disable:pickup:") && HudToolkit.DeadDiscsShown > deadDiscs0 && price == "+2";
+                ok &= cOk;
+                parts.Add($"\"cam058\": {{\"ok\": {B(cOk)}, \"atCabinet\": {B(atCab)}, \"ringTech\": \"{J(ringTech)}\", \"ringScout\": \"{J(ringScout)}\", \"loopMarker\": \"{J(marker)}\", \"loopHolds\": \"{J(holds)}\", \"shutLoop\": {B(shutLoop)}, \"cutChip\": \"{J(cut)}\", \"desk\": \"{J(desk)}\", \"afterReport\": \"{J(after)}\", \"deadDiscs\": {HudToolkit.DeadDiscsShown - deadDiscs0}, \"alert\": {g.Alert}, \"firePrice\": \"{price}\"}}");
+                log.Add($"r118 cam058: {(cOk ? "ok" : "FAILED")}: cabinet {atCab}; Tech ring [{ringTech}]; Scout ring [{ringScout}]; marker [{marker}]; second loop [{holds}] shut {shutLoop}; cut chip [{cut}] desk [{desk}] after [{after}] discs {HudToolkit.DeadDiscsShown - deadDiscs0}; Alert {g.Alert}; fire price {price}");
+            }
+
+            // ---- H1-H5 (Glint, brief 061): the crossing heads nearest the Records Office, held in each state (pictures; measured by Glint)
+            {
+                yield return Fresh(h);
+                var office = h.Views.Find("camera/entrance"); var at = office ? office.position : h.frame.World(HandoverHost.OpeningFocus);
+                var heads = SignalHead.All.Where(x => x && x.gameObject.activeInHierarchy).OrderBy(x => (x.transform.position - at).sqrMagnitude).ToList();
+                string note;
+                if (heads.Count == 0) { note = "no SignalHead in this world (the export or the kit adoption predates brief 061)"; parts.Add($"\"heads\": {{\"ok\": null, \"note\": \"{note}\"}}"); log.Add("r118 heads: " + note); }
+                else
+                {
+                    var head = heads[0]; var crossing = head.Crossing; var shots = new List<string>();
+                    string[] states = { "walk", "clearing", "stop", "arriving" };
+                    yield return Phase(h, "day");
+                    for (int y = 0; y < 4; y++) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; SignalHead.HoldLeft = st == "arriving" ? 2f : 7f; yield return Frames(4); var n = $"r118-h1-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); } }
+                    foreach (var ph in new[] { "evening", "night" })
+                    {
+                        yield return Phase(h, ph);
+                        foreach (var y in new[] { 0, 2 }) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; yield return Frames(4); var n = $"r118-h2-{ph}-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); } }
+                    }
+                    // H3: eye level on the head, walk, clearing, stop, by day and at night
+                    foreach (var ph in new[] { "day", "night" })
+                    {
+                        yield return Phase(h, ph);
+                        var hp = head.transform.position; var fwd = head.transform.forward; fwd.y = 0f; if (fwd.sqrMagnitude < 1e-4f) fwd = Vector3.forward; fwd.Normalize();
+                        foreach (var st in new[] { "walk", "clearing", "stop" }) { SignalHead.Hold = st; yield return Frames(3); var n = $"r118-h3-{ph}-{st}"; yield return Pose(h, dir, n, hp + fwd * 6f + Vector3.up * 1.7f, hp + Vector3.up * 2.4f, 45f, log); shots.Add(n); }
+                    }
+                    // H4: the clearing head and the guard's cone in one frame at play zoom, day and night (composed: the guard stands where he stands)
+                    foreach (var ph in new[] { "day", "night" })
+                    {
+                        yield return Phase(h, ph); SignalHead.Hold = "clearing"; var gd = h.Views.Find("guard");
+                        h.TurnSnap(2); h.LookAt(gd ? (gd.position + head.transform.position) * 0.5f : head.transform.position); yield return Frames(4);
+                        var n = $"r118-h4-{ph}"; yield return Shoot(h, dir, n, log); shots.Add(n);
+                        log.Add($"{n}: head {Points(h)} guard {(gd ? (gd.position - head.transform.position).magnitude.ToString("0.0", CultureInfo.InvariantCulture) : "?")} m from the head");
+                    }
+                    // H5: three states in one frame at night (the three nearest heads of other crossings, each held on its own)
+                    {
+                        yield return Phase(h, "night"); SignalHead.Hold = "";
+                        var three = heads.GroupBy(x => x.Crossing).Select(gr => gr.First()).Take(3).ToList(); string[] st3 = { "walk", "clearing", "stop" };
+                        for (int i = 0; i < three.Count; i++) three[i].HoldHere = st3[i];
+                        var c3 = Vector3.zero; foreach (var x in three) c3 += x.transform.position; c3 /= Mathf.Max(1, three.Count);
+                        h.TurnSnap(0); h.LookAt(c3); yield return Frames(4); yield return Shoot(h, dir, "r118-h5-night", log); shots.Add("r118-h5-night");
+                        foreach (var x in three) x.HoldHere = "";
+                    }
+                    SignalHead.Hold = ""; yield return Phase(h, "day"); h.TurnSnap(0);
+                    parts.Add($"\"heads\": {{\"ok\": true, \"crossing\": \"{J(crossing)}\", \"heads\": {heads.Count}, \"cycled\": {heads.Count(x => x.HasCycle)}, \"rim\": {B(head.Rim)}, \"ring\": {B(head.Ring)}, \"dots\": {head.Dots.Length}, \"shots\": {shots.Count}}}");
+                    log.Add($"r118 heads: {heads.Count} heads ({heads.Count(x => x.HasCycle)} on a cycle); nearest {crossing}: rim {(bool)head.Rim}, ring {(bool)head.Ring}, dots {head.Dots.Length}; {shots.Count} shots");
+                }
+            }
+
+            // ---- R1-R5 (Glint, brief 056 F): the rim in a shaded wall, the uncut shadow, the silhouettes, the reach; the Enforcer beside the Office
+            // door on route A (2:10) at yaw 210 (played) and 30, day, evening and night; each frame logs the people's screen points and the reach
+            {
+                yield return Fresh(h); var g = h.Game; Play(h, Route("route-a"), 130 * Suborned.Sim.Game.Hz, 130 * Suborned.Sim.Game.Hz);
+                var fade = h.View ? h.View.GetComponent<ArchitectureFade>() : null; var rows = new List<string>();
+                foreach (var ph in new[] { "day", "evening", "night" })
+                {
+                    yield return Phase(h, ph);
+                    foreach (var y in new[] { 2, 0 })
+                    {
+                        h.TurnSnap(y); var en = h.Views.Find("op/enforcer"); if (en) h.LookAt(en.position); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); yield return Frames(2);
+                        var n = $"r118-r-{ph}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log);
+                        var pts = Points(h, "op/scout", "op/fixer", "op/tech", "op/enforcer", "guard", "waitress"); int reached = fade ? fade.Reached : -1;
+                        rows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\", \"reached\": {reached}, \"capsules\": {B(fade && fade.capsules)}}}"); log.Add($"{n}: {pts}; reached {reached}");
+                    }
+                }
+                yield return Phase(h, "day"); h.TurnSnap(0);
+                parts.Add($"\"rim\": {{\"frames\": [{string.Join(", ", rows)}]}}");
+            }
+
+            // ---- V1-V3 (Glint, brief 063): Vale C on the Office landing beside the guard (yaw 210, day/evening/night), carried by the Enforcer
+            // (yaw 30 and 120, day), at eye level in sun
+            {
+                yield return Fresh(h); var g = h.Game; var vrows = new List<string>();
+                var vale = h.Views.Find("councillor"); var gd = h.Views.Find("guard"); bool landing = false;
+                for (int i = 0; i < 300 * Suborned.Sim.Game.Hz && !g.Over && vale && gd; i += 5) { h.RunTo(g.Tick + 5); if (i % 20 == 0) yield return null; if (vale.gameObject.activeInHierarchy && (vale.position - gd.position).magnitude < 3.5f) { landing = true; break; } }
+                if (landing)
+                    foreach (var ph in new[] { "day", "evening", "night" })
+                    {
+                        yield return Phase(h, ph); h.TurnSnap(2); h.LookAt(vale.position); yield return Frames(4);
+                        var n = $"r118-v1-{ph}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "guard"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}");
+                    }
+                yield return Phase(h, "day");
+                if (vale) { var vp = vale.position; yield return Pose(h, dir, "r118-v3-eye", vp + vale.forward * 3f + Vector3.up * 1.6f, vp + Vector3.up * 1.4f, 40f, log); yield return Pose(h, dir, "r118-v3-eye-back", vp - vale.forward * 3f + Vector3.up * 1.6f, vp + Vector3.up * 1.4f, 40f, log); }
+                // V2: carried (route A to the Enforcer out with Vale)
+                yield return Fresh(h); g = h.Game; var orders = Route("route-a");
+                foreach (var o in orders) // the route's orders until the Enforcer is out with Vale (the board and Go after it are not given)
+                {
+                    while (g.Tick < o.Tick && g.Vale != ValeAt.WithEnforcer && !g.Over) h.RunTo(Math.Min(o.Tick, g.Tick + 5));
+                    if (g.Vale == ValeAt.WithEnforcer || g.Over) break;
+                    var c = new Order { Tick = o.Tick, Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run };
+                    if (c.Do is "watch" or "listen" or "turn" or "call") h.GiveScripted(c); else h.Issue(c);
+                }
+                for (int i = 0; i < 120 * Suborned.Sim.Game.Hz && g.Vale != ValeAt.WithEnforcer && !g.Over; i += 5) h.RunTo(g.Tick + 5);
+                bool carried = g.Vale == ValeAt.WithEnforcer;
+                if (carried)
+                    foreach (var y in new[] { 0, 1 })
+                    {
+                        h.TurnSnap(y); var en = h.Views.Find("op/enforcer"); if (en) h.LookAt(en.position); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true); yield return Frames(2);
+                        var n = $"r118-v2-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "op/enforcer"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}");
+                    }
+                h.TurnSnap(0);
+                parts.Add($"\"vale\": {{\"landing\": {B(landing)}, \"carried\": {B(carried)}, \"frames\": [{string.Join(", ", vrows)}]}}");
+                log.Add($"r118 vale: landing {landing}, carried {carried}, {vrows.Count} frames");
+            }
+
+            h.controls.planTogether = keepPlan; SignalHead.Hold = ""; h.SetNight(false);
+            json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
+        }
+
+        /// <summary>A world-only picture from a free camera (the play view's lens copied, perspective), as Proof29's.</summary>
+        static IEnumerator Pose(HandoverHost h, string dir, string name, Vector3 eye, Vector3 look, float fov, List<string> log)
+        {
+            var view = h.View; if (!view) yield break;
+            var go = new GameObject("r118-cam"); var pc = go.AddComponent<Camera>(); pc.CopyFrom(view); pc.enabled = false; go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>().renderPostProcessing = true;
+            pc.orthographic = false; pc.fieldOfView = fov; pc.nearClipPlane = 0.05f; pc.farClipPlane = 400f; go.transform.SetPositionAndRotation(eye, Quaternion.LookRotation(look - eye, Vector3.up));
+            yield return new WaitForEndOfFrame();
+            int w = Mathf.Min(Screen.width, 1920), ht = Mathf.Min(Screen.height, 1080); var rt = new RenderTexture(w, ht, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB);
+            try
+            {
+                for (int i = 0; i < 2; i++) { pc.targetTexture = rt; pc.Render(); }
+                var prev = RenderTexture.active; RenderTexture.active = rt; var tx = new Texture2D(w, ht, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, w, ht), 0, 0); tx.Apply(); RenderTexture.active = prev;
+                File.WriteAllBytes(Path.Combine(dir, name + ".jpg"), tx.EncodeToJPG(90)); UnityEngine.Object.Destroy(tx); log.Add($"{name}: ok ({w}x{ht})");
+            }
+            catch (Exception e) { log.Add($"{name}: FAILED {e.Message}"); }
+            pc.targetTexture = null; rt.Release(); UnityEngine.Object.Destroy(rt); UnityEngine.Object.Destroy(go);
+        }
+    }
+}

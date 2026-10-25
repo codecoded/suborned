@@ -100,6 +100,7 @@ namespace Suborned.Sim
             if (g.FollowLock) h.S("followLock"); // tuning.md §11.5: the follow setting on adds bytes (off, every run hashes as before)
             g.HashFree(h); g.HashIntent(h); // engine 0.19.0: weapons free and hostile intent; no bytes until either has state
             if (g.LoopCam != "entrance") h.S(g.LoopCam); // only a loop on another camera adds bytes
+            g.HashCameraLines(h); // engine 0.31.0 (brief 058): Loop v2's end and the cut cameras; no bytes until either has state
             Gun(h, g.GuardGun); Gun(h, g.PatrolGun); Gun(h, g.RivalsGun); foreach (var s in g.SecGuns) Gun(h, s);
             foreach (var role in new[] { "waitress", "driver", "councillor" }) Gun(h, g.GunOf(role)!);
             h.I(g.LureTick).I(g.GuardAwayUntil).I(g.MissingNotice).Z(g.GuardHeld).Z(g.GuardEngaged).Z(g.GuardDown);

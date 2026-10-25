@@ -403,6 +403,7 @@ namespace Suborned.Play
         void RingTakeTry(int seg, string src)
         {
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
+            if (rs.Segs[seg].Shut && rs.Segs[seg].Row is PanelRow lh && lh.Lock.code == "loop-holds") { Pop(lh.Reason, null, rs.Plan?.Pn?.World, Feedback.Refused, 2f, PopIcon("loop-holds"), lh.Unlock); rs.Sticky = true; return; } /* engine 0.31.0: one loop at a time, with its end (Fable's short line, {tick} filled) */
             if (rs.Segs[seg].Shut) { var sr = rs.Segs[seg].Row; HolderPulseAt = Time.unscaledTime; PopKey(sr?.Lock.code ?? "car-held", null, rs.Plan?.Pn?.World, Feedback.Refused, sr?.Reason ?? ""); rs.Sticky = true; return; } // brief 057 §4.2: a shut Go says why and pulses the holders; nothing taken
             if (!rs.Segs[seg].HoldWedge) { RingTake(seg); return; }
             rs.Sticky = true; rs.Always = true; rs.FromHold = false;

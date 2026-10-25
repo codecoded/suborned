@@ -1,8 +1,8 @@
 {
  "schema": "suborned.text/1",
  "mission": "handover",
- "author": "Fable (brief 011; GDD v0.22.0 §04, §07, §09, §10, §14)",
- "gdd": "the-suborned-agent-gdd-v0.22.0-2026-10-15.md",
+ "author": "Fable (brief 011; GDD v0.22.0 §04, §07, §09, §10, §14; briefs 058, 059, 062: GDD v0.25.0)",
+ "gdd": "the-suborned-agent-gdd-v0.25.0-2026-10-25.md",
  "rule": "The words of the Handover, made at build time and read by the Unity host; nothing here is written live and no line decides anything (GDD §09: text is a light layer, history is what the systems record). The host finds a line with lookup() and picks a variant with pickIndex() (contracts/missions/handover/text.schema.ts): same seed and same run, same words. Keys follow the engine: verbs are the panel verb ids, outcomes the rulebook outcomes (`suspicious` when the person reports the approach), refusals are text codes found by lockOf() because the engine returns free text. People are named only Inez and Vale; everyone else is a role. Civilians are never the payload: no line asks a civilian to die, fight or be used as a weapon. Lines that name Halcyon are pending Sky (a Story proposal): ship the `unnamed` cliffhanger until Sky decides. Inez and the door guard are lovers (the Story spine; Sky, 2026-10-15): her debt is her need (Help), her secret is the guard (Pressure threatens to expose it). Written plainly and with tact, never explicit.",
  "tone": {
   "world": "An alternate 1950s that found atomic power centuries ago: 1950s manners and speech, centuries-ahead machines, no thinking machines or networks. Optimistic on the surface, coercive underneath: the city is polite, orderly and watching. Speech is plain, short and spoken; no period slang to dress it up, no modern internet speech.",
@@ -269,13 +269,13 @@
   "cell": {
    "scout": "Scout: watches from furthest, listens, and can send rivals astray.",
    "fixer": "Fixer: turns people (Ask, Pay, Help, Pressure) and can Call them to act.",
-   "tech": "Tech: loops cameras and reroutes patrols from the control cabinet.",
+   "tech": "Tech: loops or cuts cameras and reroutes patrols from the control cabinet.",
    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
   }
  },
  "targets": {
   "waitress": {"name":"Inez","about":"Serves the café by the square. People say she's close to the door guard.","watched":"Works the door and the tables. The guard stops by for coffee.","heard":"In debt, and {temperament}. Her secret is the door guard."},
-  "driver": {"name":"The driver","about":"Vale's official driver. Waits at the pickup. Short of cash, they say.","watched":"Waits at the pickup with the car, and moves it when Vale comes out.","heard":"Needs {need}. Temperament: {temperament}."},
+  "driver": {"name":"The driver","about":"Vale's official driver. Waits at the pickup. Short of cash, they say.","watched":"Waits at the car. Drives off as soon as Vale is in.","heard":"Needs {need}. Temperament: {temperament}."},
   "guard": {"name":"The guard","about":"Door guard. Takes his coffee at Inez's café before he goes off shift.","watched":"Stands at the door and steps, and leaves them for his coffee.","heard":"Needs {need}. Temperament: {temperament}."},
   "councillor": {"name":"Vale","about":"Councillor. Holds the file on us. Inside until the chime.","watched":"Stays inside until the chime, then walks out to his car.","heard":"Needs {need}. Temperament: {temperament}."},
   "door": {"name":"The public door","about":"The Office's front door. The guard stands on it."},
@@ -298,18 +298,19 @@
   "listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"Learn what they need and who they are. Stand close; it takes a while.","onTarget":{"waitress":"Hear what Inez needs and how she'd take an offer.","driver":"Hear what the driver needs and how he'd take an offer. Stand close.","guard":"Hear what the guard wants and whom he answers to. Stand close.","councillor":"Hear what Vale wants and who he answers to. Stand close."},"withTarget":"Listen to {target}","then":"listens to {target}"},
   "mislead": {"label":"False tip","by":["scout"],"engine":{"do":"mislead"},"does":"Send the rivals the wrong way for a while. They may come back.","onTarget":{"rivals":"Whisper the rivals a bad address. It buys minutes, not safety."},"withTarget":"Give {target} a false tip","then":"gives {target} a false tip"},
   "ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"Ask outright. Free, but most refuse, and they remember you asked.","onTarget":{"waitress":"Ask Inez outright. Free, but she'll likely refuse and remember.","driver":"Ask the driver outright. Free, but he'll likely refuse and remember.","guard":"Ask the guard outright. Free, but he may report you."},"withTarget":"Ask {target}","then":"asks {target}"},
-  "pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"Slip cash for a favour. They'll owe you, but cash adds Trail.","onTarget":{"waitress":"Slip Inez cash for a favour. She'll owe you, but cash adds Trail.","driver":"Slip the driver cash for the pickup. Cash adds Trail.","guard":"Slip the guard cash to look away. Cash adds Trail."},"withTarget":"Pay {target}","then":"pays {target}"},
-  "help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"Solve their trouble. Slower and costlier, but they remember it kindly.","onTarget":{"waitress":"Clear Inez's debt. She'll remember it kindly, but it costs real money.","driver":"Cover the driver's cash trouble. He'll remember it, but it costs money.","guard":"Do the guard a kindness. Slow, but it can win him round."},"withTarget":"Help {target}","then":"helps {target}"},
+  "pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"Slip cash for a favour. They'll owe you, but cash adds Trail.","onTarget":{"waitress":"Slip Inez cash for a favour. She'll owe you, but cash adds Trail.","driver":"Slip the driver cash to bring Vale round the back. Cash adds Trail.","guard":"Slip the guard cash to look away. Cash adds Trail."},"withTarget":"Pay {target}","then":"pays {target}"},
+  "help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"Solve their trouble. Slower and costlier, but they remember it kindly.","onTarget":{"waitress":"Clear Inez's debt. She'll remember it kindly, but it costs real money.","driver":"Cover the driver's cash trouble. He'll bring Vale round the back.","guard":"Do the guard a kindness. Slow, but it can win him round."},"withTarget":"Help {target}","then":"helps {target}"},
   "pressure": {"label":"Pressure","by":["fixer"],"engine":{"do":"turn","approach":"pressure"},"does":"Lean on their trouble. Quick and free, but they'll fear and resent you.","onTarget":{"waitress":"Lean on Inez's trouble. Quick and free; she'll fear and resent you.","driver":"Lean on the driver's trouble. Quick and free, but he'll resent you.","guard":"Lean on the guard. Quick and free, but the guard may report you."},"withTarget":"Pressure {target}","then":"pressures {target}"},
   "call": {"label":"Call","by":["fixer"],"engine":{"do":"call"},"does":"Call a turned person to act now. Timing matters.","onTarget":{"waitress":"Inez calls the guard over. He leaves his post for her, and a spill covers it.","driver":"The driver parks across the pickup camera and blinds it for a while."},"withTarget":"Call {target}","then":"calls {target}"},
-  "loop": {"label":"Loop camera","by":["tech"],"engine":{"do":"loop"},"does":"Loop a camera for a minute. The Tech must stay at the cabinet.","onTarget":{"cabinet":"Loop a camera from the cabinet for a minute. The Tech stays here.","camera-entrance":"Loop this camera for a minute. The Tech stays at the cabinet.","camera-pickup":"Loop this camera for a minute. The Tech stays at the cabinet.","camera-mast-314":"Loop this camera for a minute. The Tech stays at the cabinet."},"withTarget":"Loop {target}","then":"loops {target}"},
+  "loop": {"label":"Loop camera","by":["tech"],"engine":{"do":"loop"},"does":"Loop a camera for two minutes. Once it is set, the Tech is free to go.","onTarget":{"cabinet":"Loop a camera from the cabinet for two minutes. The Tech can then leave.","camera-entrance":"Loop this camera for two minutes. The Tech can leave the cabinet.","camera-pickup":"Loop this camera for two minutes. The Tech can leave the cabinet.","camera-mast-314":"Loop this camera for two minutes. The Tech can leave the cabinet."},"withTarget":"Loop {target}","then":"loops {target}"},
+  "disable": {"label":"Disable camera","by":["tech"],"engine":{"do":"disable"},"does":"Cut a camera for good. The desk soon notices, and that counts as a report.","onTarget":{"cabinet":"Cut a camera's line from the cabinet. The desk will notice.","camera-entrance":"Cut this camera for good. The desk soon sees a dead screen.","camera-pickup":"Cut this camera for good. The desk soon sees a dead screen.","camera-mast-314":"Cut this camera for good. The desk soon sees a dead screen."},"withTarget":"Disable {target}","then":"disables {target}"},
   "reroute": {"label":"Reroute patrol","by":["tech"],"engine":{"do":"reroute"},"does":"Send the patrol off its sweep on false orders. It comes back.","onTarget":{"cabinet":"Work the cabinet: false orders take the patrol off its sweep for a while.","patrol":"Give the patrol false orders. It leaves its sweep, then returns."},"withTarget":"Reroute {target}","then":"reroutes {target}"},
   "enter": {"label":"Enter the Office","by":["enforcer"],"engine":{"do":"enter"},"does":"Go in for Vale by the public door. If anyone sees you go in, you fail.","onTarget":{"door":"Go in by the public door while the guard is away and the camera is blind."},"withTarget":"Go in by {target}","then":"goes in by {target}"},
   "take": {"label":"Take Vale","by":["enforcer"],"engine":{"do":"take"},"does":"Take Vale at his car. A watching camera or the rivals will ruin it.","onTarget":{"councillor":"Take Vale at his car. A watching camera or the rivals will ruin it."},"withTarget":"Take {target}","then":"takes {target}"},
   "board": {"label":"Board","by":["scout","fixer","tech","enforcer"],"engine":{"do":"board"},"does":"Get into the getaway car, with anyone you carry.","onTarget":{"car-getaway":"Get in the car, with anyone you carry. In the car you can't fire."},"withTarget":"Board {target}","then":"boards {target}"},
   "go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"Drive off with whoever is in the car. The rest stay behind.","onTarget":{"car-getaway":"Leave now. Anyone outside the car stays behind. A hostile near it blocks it."},"withTarget":"Go in {target}","then":"drives off in {target}"},
   "spawn": {"label":"Spawn","by":["fixer"],"engine":{"do":"spawn"},"does":"Fight range only: put 1 to 6 hostiles on the range."},
-  "fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"Shoot to stop them. Gunfire raises Alert, and every hit adds Trail.","onTarget":{"hostile":"Fire until this one is down. Shots in this fight add no Trail.","councillor":"Never fire at Vale. Shooting Vale fails the mission."},"withTarget":"Fire at {target}","then":"fires at {target}"},
+  "fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"Shoot to stop them. Gunfire raises Alert, and every hit adds Trail.","onTarget":{"hostile":"Fire until this one is down. Shots in this fight add no Trail.","councillor":"Never fire at Vale. Shooting Vale fails the mission.","camera-entrance":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.","camera-pickup":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.","camera-mast-314":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail."},"withTarget":"Fire at {target}","then":"fires at {target}"},
   "draw": {"label":"Draw weapon","by":["scout","fixer","tech","enforcer"],"engine":{"do":"draw"},"does":"Draw a weapon. Anyone who sees it may raise the alarm."},
   "holster": {"label":"Holster","by":["scout","fixer","tech","enforcer"],"engine":{"do":"holster"},"does":"Put the weapon away. It doesn't undo what was seen."},
   "cease": {"label":"Cease fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cease"},"does":"Stop firing. The weapon stays drawn."},
@@ -339,6 +340,7 @@
   "ring-go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"The ring's word for this verb."},
   "ring-fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"The ring's word for this verb."},
   "ring-loop": {"label":"Loop","by":["tech"],"engine":{"do":"loop"},"does":"The ring's word for this verb."},
+  "ring-disable": {"label":"Disable","by":["tech"],"engine":{"do":"disable"},"does":"The ring's word for this verb."},
   "ring-reroute": {"label":"Reroute","by":["tech"],"engine":{"do":"reroute"},"does":"The ring's word for this verb."},
   "ring-carry": {"label":"Carry","by":["scout","fixer","tech","enforcer"],"engine":{"do":"carry"},"does":"The ring's word for this verb."},
   "ring-stash": {"label":"Hide","by":["scout","fixer","tech","enforcer"],"engine":{"do":"stash"},"does":"The ring's word for this verb."},
@@ -377,7 +379,7 @@
   "holstering": "Putting the weapon away",
   "firing": "Firing at {who}",
   "holding": {
-   "loop": "Looping the camera",
+   "loop": "Holding the loop",
    "carry": "Carrying {who}",
    "take": "Carrying Vale to the car"
   },
@@ -390,6 +392,7 @@
    "help": "Helping {who}",
    "pressure": "Pressuring {who}",
    "loop": "Setting up the loop",
+   "disable": "Cutting the line",
    "reroute": "Rerouting the patrol",
    "mislead": "Giving the rivals a false tip",
    "enter": "Inside the Office",
@@ -421,7 +424,7 @@
   "run-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to move him.","short":"Busy looping","verbs":["run","move","watch"]},
   "only-scout": {"line":"Only the Scout can listen or give a false tip.","short":"Scout only","verbs":["listen","mislead"]},
   "only-fixer": {"line":"Only the Fixer can do this. Select the Fixer.","short":"Fixer only","verbs":["ask","pay","help","pressure","call"]},
-  "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","reroute"]},
+  "only-tech": {"line":"Only the Tech can do this. Select the Tech.","short":"Tech only","verbs":["loop","disable","reroute"]},
   "only-enforcer": {"line":"Only the Enforcer can do this. Select the Enforcer.","short":"Enforcer only","verbs":["enter","take"]},
   "too-far": {"line":"Too far from {who}. Walk within {m} m first.","short":"Too far · {m} m","verbs":["watch","listen","ask","pay","help","pressure"]},
   "needs-routine": {"line":"Learn {who}'s routine first: Watch them.","short":"Watch first","verbs":["listen","pay"]},
@@ -443,8 +446,10 @@
   "call-too-late": {"line":"Too late: Vale's car leaves for the pickup at {tick}.","short":"Too late · {tick}","verbs":["call"]},
   "nothing-to-call": {"line":"A call gives {who} nothing to do.","short":"Nothing to call","verbs":["call"]},
   "loop-wrong-target": {"line":"The cabinet can't loop that. Pick a camera.","short":"Can't loop that","verbs":["loop"]},
-  "loop-holds": {"line":"A camera is already looped. Only one loop at a time.","short":"Already looping","verbs":["loop"]},
-  "stand-at-cabinet": {"line":"Walk the Tech within {m} m of the control cabinet first.","short":"Too far · {m} m","verbs":["loop","reroute"]},
+  "loop-holds": {"line":"One loop at a time. The running loop ends at {tick}.","short":"Loop ends {tick}","verbs":["loop"]},
+  "camera-dead": {"line":"That camera is already dead. Pick another one.","short":"Already dead","verbs":["loop","disable"]},
+  "disable-wrong-target": {"line":"The cabinet can't cut that. Pick a camera.","short":"Can't cut that","verbs":["disable"]},
+  "stand-at-cabinet": {"line":"Walk the Tech within {m} m of the control cabinet first.","short":"Too far · {m} m","verbs":["loop","disable","reroute"]},
   "patrol-down": {"line":"The patrol is down. Nothing to watch or reroute.","short":"Patrol down","verbs":["watch","reroute"]},
   "patrol-away": {"line":"The patrol is away until {tick}. Wait for it to return.","short":"Away · {tick}","verbs":["reroute"]},
   "no-rivals": {"line":"No rivals here yet. Wait for them to show.","short":"No rivals yet","verbs":["mislead"]},
@@ -526,11 +531,13 @@
    "rivals.drawn": {"kind":"warning","fate":"alt","title":"Rivals heading in","result":"They heard the shots."},
    "guard.at-cafe": {"kind":"city","fate":"alt","title":"The guard is at the café","sight":"in-sight","result":"Away from the door."},
    "guard.back": {"kind":"city","fate":"icon","title":"Guard back on the door","result":"Watching the door again."},
-   "vale.exits": {"kind":"city","fate":"beat","beat":"Vale is out.","title":"Vale comes out","result":{"front":"Walking to the official car.","service":"Walking to the service lane."},"pick":"service when Game.PickupService, else front"},
-   "vale.at-car": {"kind":"city","fate":"icon","title":"Vale reaches his car","result":{"front":"Under the pickup camera.","service":"In the service lane."},"pick":"service when Game.PickupService, else front"},
+   "vale.exits": {"kind":"city","fate":"beat","beat":"Vale is out.","title":"Vale comes out","result":"Walking to his car."},
+   "vale.at-car": {"kind":"city","fate":"icon","title":"Vale reaches his car","result":"At his car, under the pickup camera."},
    "car.blocks": {"kind":"city","fate":"beat","beat":"Camera blind.","title":"The car blocks the camera","result":"The pickup camera is blind."},
-   "car.leaves": {"kind":"city","fate":"alt","title":"Vale's car leaves","result":"Heading for the service lane."},
-   "loop.ends": {"kind":"warning","fate":"icon","title":"The loop ends","result":"The camera sees again."},
+   "car.leaves": {"kind":"city","fate":"alt","title":"Vale's car leaves","result":"Driving Vale round the back."},
+   "loop.ends": {"kind":"warning","fate":"icon","title":"The loop ends","result":"The tape has stopped."},
+   "camera.cut": {"kind":"city","fate":"icon","title":"Camera cut","result":"The line is cut. That camera is dead for good."},
+   "camera.cut-reported": {"kind":"warning","fate":"alt","title":"The desk sees a dead camera","result":{"sent":"Someone is coming to look.","none":"No one is near enough to look."},"pick":"none when the alarm.dispatches line of the same tick says 0 robots and 0 units, else sent"},
    "security.called": {"kind":"warning","fate":"beat","beat":"Police coming.","title":"Police are coming","result":"From the north street."},
    "patrol.breaks": {"kind":"warning","fate":"alt","title":"The patrol turns on you","result":"It saw a weapon or heard shots."},
    "run.seen": {"kind":"warning","fate":"alt","title":"Seen running","result":"{who} saw {agent} run. Alert {alert}."},
@@ -571,7 +578,7 @@
    "post.missed": {"kind":"warning","fate":"icon","title":"The post went quiet","needs":"routine","result":"{who} missed the {clock} check-in. The post is reported empty."},
    "person.missed": {"kind":"warning","fate":"alt","title":"Waiting for someone","sight":"in-sight","at":"person","result":"{who} expected someone and is growing suspicious."},
    "guard.back-to-post": {"kind":"city","fate":"alt","title":"The guard is up","sight":"in-sight","at":"guard","result":"Awake and heading back to the door."},
-   "alarm.dispatches": {"kind":"warning","fate":"beat","beat":{"robots":"Robots coming.","both":"Police coming."},"title":"The alarm is answered","result":{"robots":"Robots are coming. On the street by {clock}.","both":"Robots and police are coming. On the street by {clock}."},"pick":"robots when the engine's text says 0 units, else both"},
+   "alarm.dispatches": {"kind":"warning","fate":"beat","beat":{"robots":"Robots coming.","both":"Police coming."},"title":"The alarm is answered","result":{"none":"The desk has no one near enough to send.","robots":"Robots are coming. On the street by {clock}.","both":"Robots and police are coming. On the street by {clock}."},"pick":"none when the engine's text says 0 robots and 0 units, else robots when it says 0 units, else both"},
    "alarm.reassigns": {"kind":"warning","fate":"alt","title":"Police change course","sight":"in-sight","at":"unit","result":"{who} is heading somewhere else."},
    "doors.lock": {"kind":"warning","fate":"icon","title":"Doors locked","sight":"in-sight","at":"door","result":"The Office doors are locked. Nobody goes in."},
    "response.reinforces": {"kind":"warning","fate":"icon","title":"More police","result":"More police are coming from the north street."},
@@ -591,7 +598,7 @@
   "causes": {"waitress-shot":"Inez was shot","driver-shot":"the driver was shot","waitress-witnessed-shooting":"Inez saw the shooting","waitress-can-identify-fixer":"Inez can identify the Fixer","named-witness":"{who} gave up the Fixer's face","staged-distraction":"the guard's trip to the café looks staged","several-interventions":"several acts point back to the cell","few-leads":"a few small traces"},
   "fight": {"loud":"Final fight: the police, {n} against you. Hits taken: {hits}.","safe":"Final fight: the rivals, {n} against you. Hits taken: {hits}."},
   "kept": "Kept for next time: {list}",
-  "route": {"waitress-pulls-guard-away":"Inez drew the guard off the door.","guard-shot-beside-waitress":"The guard was shot beside Inez.","guard-shot-away-from-waitress":"The guard was shot away from Inez.","guard-knocked-out":"The Enforcer knocked the guard out.","guard-killed":"The Enforcer killed the guard.","entrance-camera-looped":"The entrance camera was looped.","patrol-diverted":"The patrol was rerouted.","entry-timed-between-sweeps":"The Enforcer went in between the patrol's sweeps.","vale-taken-through-office":"The Enforcer took Vale through the Office.","vale-reaches-getaway-car":"Vale reached the getaway car.","driver-moves-vale-to-service-lane":"The driver brought Vale round to the service lane.","pickup-camera-blocked":"The driver's car blinded the pickup camera.","rivals-driven-back":"The rivals were driven back.","rivals-follow-false-tip":"The rivals followed a false tip.","vale-intercepted-outside":"Vale was taken outside."},
+  "route": {"waitress-pulls-guard-away":"Inez drew the guard off the door.","guard-shot-beside-waitress":"The guard was shot beside Inez.","guard-shot-away-from-waitress":"The guard was shot away from Inez.","guard-knocked-out":"The Enforcer knocked the guard out.","guard-killed":"The Enforcer killed the guard.","entrance-camera-looped":"The entrance camera was looped.","patrol-diverted":"The patrol was rerouted.","entry-timed-between-sweeps":"The Enforcer went in between the patrol's sweeps.","vale-taken-through-office":"The Enforcer took Vale through the Office.","vale-reaches-getaway-car":"Vale reached the getaway car.","driver-moves-vale-to-service-lane":"The driver brought Vale round the back.","pickup-camera-blocked":"The driver's car blinded the pickup camera.","rivals-driven-back":"The rivals were driven back.","rivals-follow-false-tip":"The rivals followed a false tip.","vale-intercepted-outside":"Vale was taken outside."},
   "assets": {"waitress-introduces-cafe":"Inez, who can introduce you at the café.","waitress-may-be-questioned":"Inez, though investigators may question her.","waitress-may-identify-fixer":"Inez, who could identify the Fixer.","waitress-witnessed-shooting":"Inez, who saw the shooting.","driver-alters-pickups":"The driver, who can change a pickup."},
   "between": {"volunteer":"{who} came forward unasked and gave up {fact}.","statement":"{who} gave a statement: {facts}. Trail {trail}.","missing":"{who} is missing near {place}. Case open, Trail {trail}.","grief":"{who} grieves for {of}: {move}.","worry":"{who} is frightened for {of}: {fear}.","area-watch":"{place}: +{guards} guard, +{cameras} camera for {missions} missions.","case":"Case on {who}: {kind}. Closes {closes}.","left-behind":"{who} was left behind and {fate}: {why}.","captive":"{who}: talks in {holds} · rescue within {rescue-until} · at {held-at}","car-seen":"{by} saw the car leave. Investigators know it now. Trail +{trail}."},
   "getaway": {
@@ -637,9 +644,9 @@
   }
  },
  "events": {
-  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","reroute","enter","take","board","go","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
-  "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
-  "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
+  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
+  "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","disable","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
+  "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, camera.cut, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","camera.cut","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","disable","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
   "reply": {"kind":"reply","trigger":"a turn order lands on a person: their answer, by the rulebook outcome (suspicious when the approach is reported)","speakers":["waitress","driver","guard"],"verbs":["ask","pay","help","pressure"],"note":"one answer per turn order; the contact's temperament picks the voice"},
   "confirm": {"kind":"reply","trigger":"the Fixer calls a turned contact: the contact confirms aloud (Chime voices it)","speakers":["waitress","driver"],"log":["call.waitress","call.driver"],"verbs":["call"]},
   "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
@@ -661,8 +668,9 @@
   "car-clears": {"kind":"world","trigger":"the car clears the pickup camera","speakers":["scout","tech"],"log":["car.clears"]},
   "car-burns": {"kind":"world","trigger":"a shot car catches fire and will explode in a few seconds","speakers":["scout","tech"],"log":["car.burning"]},
   "camera-shot": {"kind":"world","trigger":"a camera is shot out and goes dark (engine 0.19: fire.camera-dark; a hit that does not put it out, fire.camera-hit, stays silent and shows as the pop)","speakers":["scout","tech"],"log":["fire.camera-dark"]},
-  "car-leaves": {"kind":"world","trigger":"the turned driver takes the car to the service lane","speakers":["driver","fixer"],"log":["car.leaves"]},
-  "loop-ends": {"kind":"world","trigger":"the loop ends (the Tech leaves the cabinet or goes down)","speakers":["tech","scout"],"log":["loop.ends"]},
+  "car-leaves": {"kind":"world","trigger":"the turned driver drives Vale round the back","speakers":["driver","fixer"],"log":["car.leaves"]},
+  "camera-reported": {"kind":"world","trigger":"the desk's next scan finds a cut camera dead; outcome nobody-sent when the same tick's alarm.dispatches says 0 robots and 0 units, else no outcome","speakers":["watcher","scout"],"log":["camera.cut-reported"]},
+  "loop-ends": {"kind":"world","trigger":"the loop runs out (2:00 from its landing), or a Disable on that camera cuts it; a re-splice of the same camera is loop.on, not an end","speakers":["tech","scout"],"log":["loop.ends"]},
   "patrol-rerouted": {"kind":"world","trigger":"the patrol takes the false orders","speakers":["patrol","tech"],"log":["patrol.rerouted"]},
   "patrol-returns": {"kind":"world","trigger":"the false orders run out and the patrol is back on its entrance sweep (engine 0.24.0: patrol.returns, once)","speakers":["tech","scout"],"log":["patrol.returns"]},
   "patrol-breaks": {"kind":"world","trigger":"the patrol breaks its route to gunfire or a drawn weapon","speakers":["patrol"],"log":["patrol.breaks"]},
@@ -761,6 +769,11 @@
    "arrive",
    "done"
   ],
+  "disable": [
+   "ack",
+   "arrive",
+   "done"
+  ],
   "reroute": [
    "ack",
    "arrive",
@@ -853,6 +866,8 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "loop.dead": "the camera was shot or cut while the loop was being spliced: nothing lands and nothing is charged; the camera's own dark marker speaks",
+  "disable.dead": "the camera was shot while the line was being cut: nothing more to cut; the camera's own dark marker speaks",
   "ai.why": "engine 0.25.0 (Sky playing 0.2.56): a hostile first takes an agent as its target, with its causes strongest first (range, final, fired, vale, violence, drawn, face, seen); silent until Fable words it (PLACEHOLDER, Keel): the host shows the why from Game.FireWhyOf under the under-fire cue",
   "ai.kite": "a hostile side answers fire from beyond its ring (brief 027 lab, Pulse kite-response): police running in and rivals ducking to cover speak for it on the street",
   "fight.judged": "a fight ends and the street judges it (fight.public, Sky 2026-10-16): the debrief's Standing line speaks for it, by its cause",
@@ -1212,6 +1227,11 @@
    "goingLoud.captured": "alt",
    "goingLoud.fails": "alt",
    "less.go": "label",
+  "less.briefing.job": "label",
+  "less.briefing.begin": "label",
+  "less.briefing.target": "label",
+  "less.briefing.ways": "label",
+  "pending": "cut",
    "less.mood": "beat",
    "less.sealed": "debrief",
    "less.alt.mood": "alt",
@@ -1230,6 +1250,7 @@
     "time",
     "trail",
     "alert",
+    "lasts",
     "eye",
     "learns",
     "pace",
@@ -1253,11 +1274,15 @@
      "hiddenWhen": "it traces nothing"
     },
     "alert": {
-     "shows": "the Alert mark and the Alert the order raises when it goes wrong (seen, reported, found, fired): 1, 3, or \"≥2\" for gunfire",
+     "shows": "the Alert mark and the Alert the order raises when it goes wrong (seen, reported, found, fired): 1, 3, or \"≥2\" for gunfire; a Disable adds when the desk will notice it (▲1 in 14 s, from the desk's next scan)",
      "hiddenWhen": "it raises none"
     },
+    "lasts": {
+     "shows": "how long the effect runs once it is set, m:ss: a loop's 2:00 (the clock icon, then the time)",
+     "hiddenWhen": "the effect has no end"
+    },
     "eye": {
-     "shows": "the eye mark and who could see it: none, ? (a watcher the Scout has not learned could), or the watchers",
+     "shows": "the eye mark and who could see it: none, ? (a watcher the Scout has not learned could), or the watchers. A move or run at Alert 2 or more also counts the passers-by who would keep the runner's face (the engine's RunRememberedBy):: the same eye mark, with their number after the watchers",
      "hiddenWhen": "the order cannot be seen (a Call, a Watch from range)"
     },
     "learns": {
@@ -1333,8 +1358,10 @@
     "loop": [
      "name",
      "time",
-     "trail"
+     "trail",
+     "lasts"
     ],
+    "disable": ["name", "time", "trail", "alert"],
     "reroute": [
      "name",
      "time",
@@ -1437,6 +1464,9 @@
     "help": "Help · $40k · 50 s · +1 · ½",
     "pressure": "Pressure · 35 s · +3 · ✓",
     "fire": "Fire · +2/hit · ▲≥2",
+    "fire-camera": "Fire · +2 · ▲≥2",
+    "loop": "Loop · 20 s · +1 · 2:00",
+    "disable": "Disable · 10 s · +2 · ▲1 in 14 s",
     "board": "Board · 4 s",
     "go": "Go · +1"
    }
@@ -1465,8 +1495,12 @@
    "showSeconds": 6
   },
   "briefing": {
-   "rule": "Before Begin the card shows the goal line, three numbers (close, purse, Alert) and the four portraits with their one-word roles. The sentences, the fails and the two ways in are Alt (B).",
-   "goal": "Take [Vale] alive to the [car]."
+   "rule": "Brief 062 (Sky, 2026-10-25: pick B, on the street). The hook and the objective are the only two lines of story and live in brief.json (hook, dossier.objective). The rest is labels: the file card's header and one fact, the Office tag, the way names, the cell strip's job word under each face (the agent's name is names.speakers), Day, Night and Begin. The goal line shows once play starts. The sentences, the fails and the two ways in are Alt.",
+   "goal": "Take [Vale] alive to the [car].",
+   "job": {"scout": "Eyes", "fixer": "People", "tech": "Machines", "enforcer": "Force"},
+   "begin": "Begin", "day": "Day", "night": "Night",
+   "target": "Target", "fact": "Alive", "office": "Records Office",
+   "ways": {"front-door": "Front door", "pickup": "Pickup"}
   },
   "end": {
    "rule": "The end card is one line, the tally (m:ss, $ spent, Trail) and two buttons. The sentence under it, the route, the security and investigation lines and Kept are the debrief.",
@@ -1510,9 +1544,10 @@
    "take-control": "Take control: T",
    "let-go": "Let go: T",
    "camera-looped": "Camera looped",
-   "camera-dark": "Camera dark",
+   "camera-dark": "Camera shot out",
    "camera-hit": "Camera hit",
-   "fire-out-of-range": "Too far"
+   "fire-out-of-range": "Too far",
+   "stand-after-vale": "After Vale's car"
   },
   "cancel": {
    "stop": "free",
@@ -1542,7 +1577,7 @@
     "learns-routine": "Learns their routine",
     "learns-sight": "Learns what it sees",
     "learns-person": "Learns their need and temperament",
-    "tethered": "Loops the camera; the Tech stays at the cabinet",
+    "tethered": "Loops the camera for two minutes; the Tech is free to go",
     "call-ready": "They act on the call",
     "call-not-now": "Not now",
     "wins": "Wins the mission",
@@ -1739,18 +1774,18 @@
    }
   },
   "done": {
-   "rule": "Brief 043 (the done moment; Sky 2026-10-22: it is not clear when a task has completed and what it gained). Labels and numbers, never sentences. The plate is the portrait plate's word for 2.2 s after a landing or a cancel, keyed by the engine's outcome (the last part of turn.<approach>.<outcome>) or `done`; kept reads as turned. The gain chip shows one icon-plus-word line per fact, at most three, and the facts a Watch or Listen teaches are Intel's own fragments (less.intel: the need's record label, the temperament, Loves {name}) so the chip and the Intel panel never disagree; only the words in `gain` are new. A window marker is an icon with a count or the doer's face; `close` is the pop on the thing when the window ends, by the marker's kind. Unlock-row pills are the verbs' own ring labels (actions.ring-*), shut ones struck through, so they carry no words here. Cancel: the tag before is `tag` or `tagCost`, the pop after `pop` or `popCost`, {verb} the ring label of the order dropped, {cost} one of `cost` by the engine's cancel cost (lost, aborted, released, staff-report, vale-reports, ends; the rest are free and show no cost), {s} the seconds spent. Walking in: the plate shows `walk.plate` with {who} from `walk.who`; the pill and Alt show `walk.line` with {target} from names.targets and {verb} the ring label. The old 'serving a table, back in {s} s' refusal is retired (engine 0.23: the agent walks up to the server at the table).",
+   "rule": "Brief 043 (the done moment; Sky 2026-10-22: it is not clear when a task has completed and what it gained). Labels and numbers, never sentences. The plate is the portrait plate's word for 2.2 s after a landing or a cancel, keyed by the engine's outcome (the last part of turn.<approach>.<outcome>) or `done`; kept reads as turned. The gain chip shows one icon-plus-word line per fact, at most three, and the facts a Watch or Listen teaches are Intel's own fragments (less.intel: the need's record label, the temperament, Loves {name}) so the chip and the Intel panel never disagree; only the words in `gain` are new. Brief 058 (Sky, 2026-10-25): a looped camera shows the desk a clean picture, so a loop is never \"dark\": `camera-looped` is the Loop chip (the 2:00 countdown rides the window marker), `camera-cut` the Disable chip, `camera-shot` the chip of a camera shot out, and `parked` the chip of a car Drive that has arrived (brief 059). A window marker is an icon with a count or the doer's face; `close` is the pop on the thing when the window ends, by the marker's kind. Unlock-row pills are the verbs' own ring labels (actions.ring-*), shut ones struck through, so they carry no words here. Cancel: the tag before is `tag` or `tagCost`, the pop after `pop` or `popCost`, {verb} the ring label of the order dropped, {cost} one of `cost` by the engine's cancel cost (lost, aborted, released, staff-report, vale-reports, ends; the rest are free and show no cost), {s} the seconds spent. Walking in: the plate shows `walk.plate` with {who} from `walk.who`; the pill and Alt show `walk.line` with {target} from names.targets and {verb} the ring label. The old 'serving a table, back in {s} s' refusal is retired (engine 0.23: the agent walks up to the server at the table).",
    "plate": {"done": "done", "turned": "turned", "kept": "turned", "not-yet": "not yet", "refused": "refused", "suspicious": "reported", "cancelled": "cancelled"},
    "gain": {
     "rounds": "Rounds", "cone": "Cone", "nothing-new": "Nothing new",
     "contact": "Contact", "not-yet": "Not yet", "refused": "Refused", "reported": "Reported",
-    "guard-away": "Guard away", "camera-blind": "Camera blind", "camera-dark": "Camera dark", "patrol-away": "Patrol away", "rivals-away": "Rivals away",
+    "guard-away": "Guard away", "camera-blind": "Camera blind", "camera-looped": "Camera looped", "camera-cut": "Camera cut", "camera-shot": "Camera shot out", "patrol-away": "Patrol away", "rivals-away": "Rivals away",
     "mood-friendly": "Friendly", "mood-uneasy": "Uneasy", "mood-scared": "Scared",
     "vale": "Vale", "inside": "Inside", "no-vale": "No Vale", "aboard": "Aboard",
     "out": "Out", "wakes": "Wakes {s} s", "dead": "Dead",
-    "carrying": "Carrying", "hidden": "Hidden", "tied": "Tied", "laid-down": "Laid down"
+    "carrying": "Carrying", "hidden": "Hidden", "tied": "Tied", "laid-down": "Laid down", "parked": "Parked"
    },
-   "close": {"guard": "Guard back", "camera": "Camera on", "patrol": "Patrol back", "rivals": "Rivals back"},
+   "close": {"guard": "Guard back", "camera": "Camera on", "patrol": "Patrol back", "rivals": "Rivals back", "disable": "Desk reports"},
    "cancel": {
     "tag": "Cancels {verb}",
     "tagCost": "Cancels {verb} · {cost}",
@@ -1782,7 +1817,7 @@
   {"event":"ack","verb":"watch","speaker":"fixer","lines":["Let me have a look.","I'll keep an eye out.","Just browsing, friends."]},
   {"event":"ack","verb":"watch","speaker":"enforcer","lines":["Looking.","I'll look.","Eyes open."]},
   {"event":"ack","verb":"watch","speaker":"tech","lines":["Taking a look.","Logging it.","Lens first."]},
-  {"event":"ack","verb":"loop","speaker":"tech","lines":["Cabinet. One minute.","Looping the feed.","Give me a minute."]},
+  {"event":"ack","verb":"loop","speaker":"tech","lines":["Cabinet. Splicing now.","Looping the feed.","Give me a moment."]},
   {"event":"ack","verb":"reroute","speaker":"tech","lines":["New orders for the patrol.","Sending it the long way round.","The patrol takes a stroll."]},
   {"event":"ack","verb":"enter","speaker":"enforcer","lines":["Going in.","The door is mine.","Right. Inside."]},
   {"event":"ack","verb":"take","speaker":"enforcer","lines":["I've got him.","Taking him.","Councillor. Walk with me."]},
@@ -1873,7 +1908,7 @@
   {"event":"arrive","verb":"takedown","speaker":"enforcer","lines":["From behind.","Now.","Steady."]},
   {"event":"arrive","verb":"takedown","speaker":"enforcer","outcome":"struggle","lines":["Hold still!","Keep it down!","Quiet! Quiet!"]},
   {"event":"done","verb":"mislead","speaker":"scout","lines":["Tip's away. They're moving.","They bought it.","Gone. For now."]},
-  {"event":"done","verb":"loop","speaker":"tech","lines":["Looped. I'm stuck here.","Holding. Don't ask me to move.","Same minute, on repeat."]},
+  {"event":"done","verb":"loop","speaker":"tech","lines":["Looped. I'm free to go.","Spliced. It runs by itself.","Tape's rolling. Let's move."]},
   {"event":"done","verb":"reroute","speaker":"tech","lines":["Patrol's off its sweep. Not for long.","Rerouted. It will be back.","Gone the long way. Briefly."]},
   {"event":"done","verb":"enter","speaker":"enforcer","lines":["Inside. Looking for him.","In. Quiet halls.","Inside. Tell me if that changes."]},
   {"event":"done","verb":"take","speaker":"enforcer","lines":["Got him. To the car.","He's with me.","The Councillor comes along."]},
@@ -2043,10 +2078,16 @@
   {"event":"car-burns","speaker":"tech","lines":["Fuel's alight. Everyone back.","Fire in the car. Move away."]},
   {"event":"camera-shot","speaker":"scout","lines":["Camera's shot out. It's dark.","That lens is dead."]},
   {"event":"camera-shot","speaker":"tech","lines":["Lens is gone. No picture now.","Camera's dead. Nobody's watching that one."]},
-  {"event":"car-leaves","speaker":"driver","lines":["Service lane, Councillor. Quieter that way.","Taking the car round to the lane."]},
-  {"event":"car-leaves","speaker":"fixer","lines":["The driver's moved the car. Service lane.","He's taken it round the back."]},
-  {"event":"loop-ends","speaker":"tech","lines":["Left the cabinet. The feed is live again.","Loop's gone. The camera sees again."]},
-  {"event":"loop-ends","speaker":"scout","lines":["Entrance camera is live.","The loop's off. Watch the lens."]},
+  {"event":"car-leaves","speaker":"driver","lines":["Service door, Councillor. Quieter that way.","Taking you round the back."]},
+  {"event":"car-leaves","speaker":"fixer","lines":["The driver is taking Vale round the back.","Vale's car is going round. Service door."]},
+  {"event":"ack","verb":"disable","speaker":"tech","lines":["Cabinet. Cutting the line.","Snipping the camera's wire.","On it. This one's permanent."]},
+  {"event":"arrive","verb":"disable","speaker":"tech","lines":["Panel's open. Cutters out.","Found the camera's line.","Right. This one."]},
+  {"event":"done","verb":"disable","speaker":"tech","lines":["Cut. That camera's finished.","Line's dead. They'll notice.","Gone for good. Expect company."]},
+  {"event":"camera-reported","speaker":"watcher","lines":["That screen has gone blank. Send a unit.","Dead screen on my board. Somebody check the pole."]},
+  {"event":"camera-reported","speaker":"scout","lines":["They've seen the dead camera. Robots coming.","The desk knows. Expect robots at the pole."]},
+  {"event":"camera-reported","speaker":"scout","outcome":"nobody-sent","lines":["They've seen the dead camera. Nobody's near enough to come.","The desk knows. No robot can reach the pole.","Dead camera noted. Nobody is free to send."]},
+  {"event":"loop-ends","speaker":"tech","lines":["The tape's run out.","That loop is finished."]},
+  {"event":"loop-ends","speaker":"scout","lines":["The loop is over.","Loop's done."]},
   {"event":"patrol-rerouted","speaker":"patrol","lines":["New orders received. Proceeding.","Route amended. Thank you."]},
   {"event":"patrol-rerouted","speaker":"tech","lines":["It took the orders. It always does.","Patrol's gone. Fixed routines are easy."]},
   {"event":"patrol-returns","speaker":"tech","lines":["The false orders ran out. Patrol's back.","Patrol's back on its sweep. Mind the entrance."]},
@@ -2370,5 +2411,364 @@
    {"kind":"city","title":"Someone freezes","outcome":"flee","event":"witness-reacts","sight":"in-sight","result":"A passer-by saw and is frightened. They may talk.","variants":[{"beats":[{"speaker":"crowd","line":"Oh no. Did you see that?"},{"speaker":"crowd","line":"Hush. I saw nothing. Nothing."},{"speaker":"crowd","line":"Walk. Just walk. Don't turn round."}]},{"beats":[{"speaker":"crowd","line":"Don't stare. Don't stare."},{"speaker":"crowd","line":"They'll see us looking."},{"speaker":"crowd","line":"Go home. Say nothing. Please."}]}]},
    {"kind":"city","title":"Someone stops to help","outcome":"check","event":"witness-reacts","sight":"in-sight","result":"A passer-by is going to the body. They will find it.","variants":[{"beats":[{"speaker":"crowd","line":"Wait. Someone's down."},{"speaker":"crowd","line":"Careful. Is it a trick?"},{"speaker":"crowd","line":"Hello? Are you hurt?"}]},{"beats":[{"speaker":"crowd","line":"That's a person down there."},{"speaker":"crowd","line":"I'll look. Stay close."},{"speaker":"crowd","line":"Is anyone there? Wake up!"}]}]}
   ]
+ },
+ "pending": {
+  "rule": "Words drafted ahead of the engine (briefs 058 and 059, GDD v0.25.0). The host reads none of this. Each entry names its brief and says whether its code, key or trigger is a `guess`: the brief did not name it, and its owner confirms or renames it. When Keel lands a code or a verb, the entry moves unchanged to the section of the same name (locks, cards.items, events, dialogue, actions, activity, hints, less.price, targets) and Latch wires it in that batch; a `replaces` entry takes the place of the live one with the same key.  A test holds every line here to the live limits.",
+  "locks": {
+   "driver-brings-vale": {
+    "line": "The driver is bringing Vale round the back. Take him there.",
+    "short": "Round the back",
+    "verbs": [
+     "take"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.2: a Take at the front with a turned driver (quoted: \"He's bringing Vale round the back.\")"
+   },
+   "car-not-parked": {
+    "line": "Vale's car hasn't stopped yet. Take him once it parks.",
+    "short": "Car not parked",
+    "verbs": [
+     "take"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.2: a Take before the car is in the service bay; the live vale-not-at-car says wait for him to come out"
+   },
+   "drive-held": {
+    "line": "The car is blocked by {holders}. Down them first, then drive.",
+    "short": "Blocked · down {holders}",
+    "verbs": [
+     "drive-car"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) K6: Drive on a held car (brief 018); the live car-held is worded for Go"
+   },
+   "drive-no-driver": {
+    "line": "Nobody is in the car to drive it. Board first.",
+    "short": "No driver",
+    "verbs": [
+     "drive-car"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) K6: no driver aboard"
+   },
+   "stand-unknown": {
+    "line": "That isn't a stand for the car. Pick a marked bay.",
+    "short": "Not a stand",
+    "verbs": [
+     "drive-car"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) K6: an unknown stand"
+   },
+   "drive-busy": {
+    "line": "Whoever is in the car is busy. Wait for the act to land.",
+    "short": "Car busy",
+    "verbs": [
+     "drive-car"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.4: refused while the car's driver or carried person is mid-act"
+   }
+  },
+  "cards": {
+   "rivals.coming": {
+    "kind": "city",
+    "title": "A rival car turns in",
+    "sight": "in-sight",
+    "at": "rival-car",
+    "result": "Off Orbit Walk. They are after Vale too.",
+    "fate": "beat",
+    "beat": "Rival car coming.",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s2 (the feed line \"Rival car coming\"): takes the beat slot of \"Rivals here.\", so rivals.arrive loses its beat (the file holds at most ten distinct beats)"
+   },
+   "rivals.drop": {
+    "kind": "city",
+    "title": "Rivals post round our car",
+    "sight": "in-sight",
+    "at": "rival-car",
+    "result": "Three of them are taking posts round our car.",
+    "fate": "icon",
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals) s2 (named: rivals.drop)"
+   },
+   "rivals.arrive": {
+    "kind": "city",
+    "title": "Rival car parks",
+    "sight": "in-sight",
+    "result": "Across from Vale's car. A lookout watches the official door.",
+    "fate": "icon",
+    "replaces": true,
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals) s2: the 3:10 park, now with a lookout; fate icon and no beat, because rivals.coming speaks first. The rivals-arrive scene loses its beat too"
+   },
+   "car.parks": {
+    "kind": "city",
+    "title": "Vale's car parks",
+    "result": "In the service bay. Take him from the back seat.",
+    "fate": "icon",
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals) K2 (named: car.parks)"
+   },
+   "rivals.follows": {
+    "kind": "warning",
+    "title": "The rival car follows",
+    "sight": "in-sight",
+    "at": "rival-car",
+    "result": "It is tailing Vale's car round the back.",
+    "fate": "alt",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s2: the rival car follows Vale's car when it leaves the bay"
+   },
+   "rivals.back": {
+    "kind": "city",
+    "title": "The rival car is back",
+    "sight": "in-sight",
+    "at": "rival-car",
+    "result": "The false tip wore off. They are after Vale again.",
+    "fate": "alt",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s2: the rival car returns after a false tip"
+   }
+  },
+  "events": {
+   "rivals-coming": {
+    "kind": "world",
+    "trigger": "the rival car turns in from Orbit Walk",
+    "log": [
+     "rivals.coming"
+    ],
+    "clock": "2:35",
+    "speakers": [
+     "scout"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   "rivals-drop": {
+    "kind": "world",
+    "trigger": "the rival car drops three by the cell's car",
+    "log": [
+     "rivals.drop"
+    ],
+    "clock": "2:46",
+    "speakers": [
+     "rivals",
+     "scout"
+    ],
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   "car-parks": {
+    "kind": "world",
+    "trigger": "the turned driver parks Vale's car in the service bay",
+    "log": [
+     "car.parks"
+    ],
+    "clock": "6:25",
+    "speakers": [
+     "driver",
+     "fixer"
+    ],
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   "rivals-follow": {
+    "kind": "world",
+    "trigger": "the rival car follows Vale's car out of the bay",
+    "log": [
+     "rivals.follows"
+    ],
+    "speakers": [
+     "scout"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   "driver-tail": {
+    "kind": "read",
+    "trigger": "a completed Scout Listen on the driver: the tail fact",
+    "speakers": [
+     "driver"
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) (Also: a Listen on the driver adds \"That car's tailed us all week\")"
+   }
+  },
+  "dialogue": [
+   {
+    "event": "rivals-coming",
+    "speaker": "scout",
+    "lines": [
+     "Car turning in off Orbit Walk.",
+     "Unfamiliar car. Coming this way."
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   {
+    "event": "rivals-drop",
+    "speaker": "rivals",
+    "lines": [
+     "That's their car. Spread out.",
+     "Take your places. Nobody drives it off.",
+     "Eyes on the car. Wait for the word."
+    ],
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   {
+    "event": "rivals-drop",
+    "speaker": "scout",
+    "lines": [
+     "Three out. Posting round our car.",
+     "They're covering our car. Stay clear."
+    ],
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   {
+    "event": "car-parks",
+    "speaker": "driver",
+    "lines": [
+     "Here we are, Councillor. The back way.",
+     "Service door, Councillor. Mind the step."
+    ],
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   {
+    "event": "car-parks",
+    "speaker": "fixer",
+    "lines": [
+     "Vale's car is round the back. Bring ours.",
+     "Vale's parked. Back seat. Quickly now."
+    ],
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   {
+    "event": "rivals-follow",
+    "speaker": "scout",
+    "lines": [
+     "Rival car is following Vale's.",
+     "They're tailing the Councillor's car."
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals)"
+   },
+   {
+    "event": "driver-tail",
+    "speaker": "driver",
+    "lines": [
+     "That car's tailed us all week.",
+     "Same car behind us every night.",
+     "That grey car again. All week."
+    ],
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals)"
+   }
+  ],
+  "actions": {
+   "drive-car": {
+    "label": "Drive",
+    "by": [
+     "scout",
+     "fixer",
+     "tech",
+     "enforcer"
+    ],
+    "engine": {
+     "do": "drive-car"
+    },
+    "does": "Drive the getaway car to another stand. Free, but it takes time.",
+    "withTarget": "Drive to {target}",
+    "then": "drives to {target}",
+    "onTarget": {
+     "stand-service": "Put the car behind Vale's for a short carry. Free, and it takes time.",
+     "stand-square": "Take the car back to the square's bay. Free, and it takes time."
+    },
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) K6: `drive` is already Take control (brief 025), so the engine needs another id"
+   },
+   "ring-drive": {
+    "label": "Drive",
+    "by": [
+     "scout",
+     "fixer",
+     "tech",
+     "enforcer"
+    ],
+    "engine": {
+     "do": "drive-car"
+    },
+    "does": "The ring's word for this verb.",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals)"
+   }
+  },
+  "activity": {
+   "acting.drive": "Driving the car"
+  },
+  "price": {
+   "fields": {},
+   "verbs": {
+    "drive-car": [
+     "name",
+     "time"
+    ]
+   },
+   "examples": {
+    "drive-car": "Drive · 28 s"
+   }
+  },
+  "targets": {
+   "rivals": {
+    "watched": "Five in one car. Three post round our car. It follows Vale's car.",
+    "guess": false,
+    "brief": "brief 059 (pickup and rivals) s2.2: what a Watch on the parked rival car teaches (the schema's WATCHED list gains `rivals`)"
+   },
+   "stand-service": {
+    "name": "The service drive",
+    "about": "A bay behind Vale's car, nose out. Leave the getaway car here.",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.4 (the stand; the key is a guess)"
+   },
+   "stand-square": {
+    "name": "The square's bay",
+    "about": "Where the getaway car starts.",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.4"
+   }
+  },
+  "hints": {
+   "H16": {
+    "priority": -3,
+    "agent": "enforcer",
+    "verb": "take",
+    "target": "take Vale in his car",
+    "line": "The driver brought Vale round. The Enforcer can Take him in the car.",
+    "short": "Take [Vale] from the back seat.",
+    "trigger": "the driver is turned and Vale's car is parked in the service bay",
+    "rings": "Vale's car",
+    "goneWhen": "any Take order",
+    "replaces": true,
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.2: the live H16 says \"at the pickup\"; the trigger is a guess for Motive"
+   },
+   "H20": {
+    "priority": -2,
+    "agent": "any",
+    "verb": "drive-car",
+    "target": "drive the getaway car round behind Vale's car",
+    "line": "Vale's car is round the back. Any agent in our car can Drive it behind.",
+    "short": "Drive the [car] round.",
+    "trigger": "Vale's car is parked in the service bay and the getaway car is still at the square",
+    "rings": "the getaway car",
+    "goneWhen": "any Drive order, or the getaway car on the service drive",
+    "guess": true,
+    "brief": "brief 059 (pickup and rivals) s1.4: a new hint; Motive confirms the trigger"
+   }
+  }
  }
 }

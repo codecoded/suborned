@@ -118,12 +118,14 @@ Shots: four agents close together in front of the café and the Office at yaw 30
 Inputs:
 - Fable: the hook and objective words.
 - Waymark: `brief.ways[]` and `brief.clock[]` in the mission data (queued with his 058 round).
-- Forma: Vale B's portrait.
+- Forma and Glyph: Vale C's portrait (being redone, item E).
 - Glyph: the file-card duotone.
 The briefing can't ship with the badge fallback: it waits for the portrait.
 **E. 063 portraits and figures.**
 - The driver's three albedo JPEGs and the manifest change are already in the tree: refresh and look at the driver once in play (face, hands).
-- Vale B, the new `councillor` figure, comes from Forma (in progress, paid pass budget $3): import it, then check it at 40–60 px and in the Enforcer's carry.
+- **Vale is C, not B** (Sky's revised call, end of brief 063). **C has landed** (Forma, 2026-10-25; brief 063 "Vale C model (2026-10-25)"; LODs 7988/2992/1500; the pass is at $1.35 of $3). Copy `out/people-models/People/Figures/councillor/` and `manifest.json` into `unity/Assets/Suborned/People/` (same names and GUIDs), then look at him once in play at about 60 px at the four yaws and in the Enforcer's carry. Never import B (it is kept in briefs/063/vale_B_figures_entry.txt and out/scratch/forma/063/).
+- Faces: the model's cameo goes on the carried figure; the painted crop goes on the briefing card, the Intel face and the feed. That split was decided for B, whose model face didn't hold at card size. Glyph redoes all four councillor portraits from C and checks whether C's model face holds at card size; if it does, the split goes.
+- Glint: the matte-map check on Vale, whose chain plates are flat, albedo only.
 - Patrol face A: Glyph installs it under the same file names.
 **F. 061 crossings.**
 - Delete the turn in CrossingKit.Dress (Latch, coding now).
@@ -150,3 +152,106 @@ The briefing can't ship with the badge fallback: it waits for the portrait.
 - One build to Sky.
 
 **Needs Sky, not in the batch:** the Air perf run for brief 064 findings 1 and 2 (perf064 at play zoom, warm, on the 15-inch MacBook Air M4).
+
+**Fable's words are in (2026-10-25):** text.json, text.schema.ts, text.test.ts and brief.json; text.test passes 137/137.
+- 058's keys are written live against engine 0.31.0. `less.pop.camera-dark` now reads "Camera shot out". A camera shot is priced "+2 · ▲≥2" with no /hit. The loop lock shows its end tick.
+- 059's codes that don't exist yet sit in text.json's `pending` block, some marked guess:true. Keel confirms or renames them in his 059 round. Drive needs its own engine id, because `drive` is already Take control.
+- 062: `less.briefing` holds the job words (Eyes, People, Machines, Force), the labels and the ways (front-door, pickup). Glyph and Latch agree the `brief.ways[]` ids with these keys. Waymark makes briefing.timeline match mission.json in his round.
+- Latch, with the 059 port (item I): drop `Game.PickupService` in HostTakedown.cs:424 and HostFeed.cs:315–316.
+- The feed is at its 10-beat cap. If Motive retires the driver's Call, "Camera blind." frees a slot for car.parks.
+
+**Vela's 061 pieces are built (2026-10-25):**
+- New family `crossing_lens`: SignalLens (Rim/Figure/Tens/Units/Beam/Halo), HaloRing (fills by `_Cutoff`), atlases `signal_atlas_v1` and `signal_ring_v1`, the dot rows re-cut without brass, Kerb_Pearl without its crown, RoadRibbon without its hairlines.
+- Look data: Data/signal-lens.json (a copy is at briefs/061/vela-signal-lens-data.json).
+- Sheet: briefs/061/pick-A-pieces-built.png.
+Item F for Latch, then:
+- SignalHead, with per-head ring `_Cutoff`.
+- A `_LitFrom/_LitTo` gate on u for the dot rows (stock URP Lit has none).
+- `_BaseMap_ST` face tables.
+- The turn deleted in CrossingKit.Dress (coding now).
+- Glint fills evening and night emission (null in the data) and trims red and amber per state.
+- Aster's call on the sizes Vela flagged (LightDotRow 1.8 × 0.30 and 0.8 × 0.30, SignalLens 0.95 × 0.94 × 3.085, no longer within partkit's 0.05 m): the plan's part sizes are re-fitted to the built pieces, not the reverse. The plan sizes are Datum's edit; Splice then adopts, tags, exports and retires the old pieces. The 1,562 dot-row parts and 228 heads stay procedural until then.
+
+**Glyph's specs are in (2026-10-25):**
+- 058 (item A): brief 058 "Glyph (2026-10-25)", boards briefs/058/board-01..05, new icon `icons/singles/disable@2x.png`.
+- 059 (item I): brief 059 "Glyph (2026-10-25)", boards briefs/059/board-01..04.
+- Patrol face A is installed under the same badge names.
+- The cameo ground is roster grey #b3b0ad.
+Aster's calls on Glyph's open points:
+- Keep the shipped price lines; Motive's extra fields are not added.
+- Drive's time prints as "28 s".
+- The getaway Drive gets its own key and engine id (Keel names the id in his 059 round, Fable keys it).
+- The cut-or-shot camera disc reads Keel's record once it exists.
+
+**Glyph's portraits are installed (2026-10-25).** They are in `Kit/portraits/` (card_councillor, face_* and cameo_*); the reads are listed in brief 062 under "Portraits and ids". Inez A and the driver A stand. The four councillor files are Vale B's and are being redone from C under the same names, so the reads don't change. Latch, items D and E:
+- `FaceOf(role)` → portraits/cameo_<role>_normal for the waitress, driver and councillor, at HudToolkit.Intel.cs:192, HudToolkit.cs:1262 and the ticker at :1138. The guard keeps badges/signal_guard.
+- Briefing.cs: `Sp("portraits/card_councillor")` at 360×296, with a 3 px ink-deep rim and radius 13; the way contacts use `Cameo(portraits/face_<contact>)`.
+- Aster's call: `cameo_councillor_model` at 18 px on the Enforcer's carrying plate (HudToolkit.Less.cs:265–275), which is where the model's face is read.
+- CastBadge stays on the 11–14 px reads.
+- Way ids front-door and pickup match text.json. Waymark's brief.ways[] and clock (0:00 / 5:30 / 8:30) are written into brief 062; Waymark moves them into the mission data in his round.
+
+**Glint's lighting data is in (2026-10-25):** unity/Assets/Suborned/Resources/Atmosphere/signals.json (suborned.signallight/1). Sections are in briefs 056, 061 and 063; evidence in briefs/061/glint/. Latch, items C and F:
+- ArchitectureFade: the Begin() shadow flag becomes `shadows && !capsules`, and LateUpdate builds its reach from the capsule cuts only (about 5 m, not 11).
+- The rim scales cream by the wall's lit luminance (rimLit 2.5).
+- Silhouettes read their per-phase colours from signals.json; the edge goes from 0.035 to 0.045 m.
+- SignalHead reads signals.json, with a way to hold a state for shots.
+- Shots H1–H5, R1–R5 and V1–V3 (the list is in brief 056's Glint section). H1's measured values go back to Glint for a refit; R4 measures the silhouette's colour space; H4 checks the head's amber against the guard cone (ΔE 6.0–6.4, kept apart by shape and place).
+- Vale C: his ivory is ΔE 2.4–2.6 from the Office stone. He separates by his black collar, disc, gloves and trousers. His gold trim reads orange (#C87F1B) in sun: note it in the play check, Forma's to fix only if Sky minds.
+- Bloom isn't modelled: if the heads bloom, refit at 0.8.
+
+**Vela's lens patch is in (2026-10-25):** crossing_lens.py writes Glint's trimmed day values and the evening and night levels; Data/signal-lens.json matches signals.json.
+- For Splice's kit adoption: the changed hashes are listed in Vela's report (signal-lens.json, DK_Signal_Rim, Atlas and Ring .mat, DK_SignalLens and _L1, DK_HaloRing, decokit_materials.json). A bare `bun run decokit` doesn't build SignalLens or HaloRing until the plan orders them: Splice adds the order.
+- Latch: SignalHead must supply `_EmissionColor` per state by MaterialPropertyBlock (linear colour × level). The .mat default is written gamma-style by unity_mats.py, so nothing may read it.
+
+**Engine 0.31.0 is in (Keel, 2026-10-25).** 303/303 scenarios pass and replay exactly; host notes are in host-interface.md "Engine 0.31.0".
+- Item B is **dropped**: a move no longer ends a loop, so the walk-off stopgap has nothing to guard. Latch removes HostLoopKeep in round 2.
+- Item A's port is Latch's round 2.
+- Waymark retimes the 13 moved scripts and re-records (c037) before the batch's game-check.
+- Motive rules whether Disable at the entrance camera may send only the patrol (the dock robots are out of the 60 m reach).
+
+**Fable's 0.31 words check (2026-10-25):** every new code is covered.
+- loop.ends reads "The tape has stopped." and fires on a run-out or a Disable cut; a re-splice logs loop.on.
+- New close word: less.done.close disable, "Desk reports".
+- The eye mark counts RunRememberedBy.
+- The tether lines stay only for pinned runs; the stopgap keys are retired.
+Latch:
+- Remove HostLoopKeep and its placeholder keys.
+- Never read activity.holding.loop or cancelCosts.ends on the live rulebook.
+- Show the "Desk reports" pop when the Disable marker closes.
+
+**Disable that sends nobody (Motive's ruling (a), Fable's words, 2026-10-25):** one robot at the entrance camera is the reach rule working; neither route moves. Latch, item A:
+- HostTakedown.cs CardPick bug: `t.Contains(" 0 unit") ? "robots" : "both"` matches "0 robots, 0 units", so a dispatch of nobody shows "Robots coming". Test the none case first (0 robots and 0 units).
+- A camera.cut-reported case reads the same-tick alarm.dispatches line: "none" picks "No one is near enough to look." and queries the Scout line with the outcome nobody-sent.
+- The counts are cumulative, so a later report with a robot already out reads as sent.
+- Regenerate StreamingAssets/sim/text.json (git-ignored) in the batch.
+
+**Latch's round 2 is coded (2026-10-25):** A (the 0.31 port, stopgap deleted), C (Glint's data through Runtime/SignalLight.cs), E (portrait reads and the 18 px carry cameo) and F (SignalHead.cs, Shaders/SignalDots.shader; `-signalstate` and `-signalleft` hold a state). Proof118.cs is gated as r118 in tools/game/cli.ts. Before the batch can run:
+- Splice's adoption and export (running). Answers owed to Latch: the part names DK_SignalLens_Rim/_Figure/_Tens/_Units/_Beam/_Halo; whether HaloRing is exported on its own (then the builder pairs it with its head) or only under its head; the re-cut dots adopted, so Latch can turn on `CrossingKit.LiveDots`. Until SignalLens is adopted, the world build stops on the 41 procedural heads, by design.
+- Waymark's c037 on 0.31.0.
+- The batch's sim step copies 0.31.0 (the one tools/game failure clears with it).
+- The Vale C copy (item E).
+Redline: count renderers once LiveDots is on (each signalled module is its own renderer) and read it in the perf064 row.
+
+## After batch 0.2.118 is built and shipped (not mid-batch)
+**Package upgrade (Latch; Sky 2026-10-25: "Yep. Can wait").** In unity/Packages/manifest.json, upgrade `com.unity.pipeline` from 0.7.0-exp.1 to 0.9.1-exp.1, to match the Unity CLI (now 1.0.0-beta.14; Sky's other project already uses 0.9.1-exp.1).
+Done-check:
+- the Editor reimports with 0 console errors;
+- the Unity MCP tools still answer (editor status, compile, console, screenshot);
+- the upgrade is committed alone, as its own checkpoint.
+
+**Latch's round 3 is coded (2026-10-25):**
+- FootwayKit.cs draws the 14 footways.
+- The SignalLens parts are verified. The HaloRing name mismatch is fixed (`DK_HaloRing`); a head now fails the build without its body, rim and ring.
+- LiveDots is on (`-bakeddots` for A/B), and the round-2 seat-plate bug is fixed.
+- Retired-piece references are removed.
+- Dry check: 14/14 footways, 41/41 halos, 16/16 signalled crossings, 274 dot rows.
+Order before the batch: Splice's revert (running) → Splice's lip and prune fix (below) → Waymark re-records c037 on the final site → the batch.
+- Aster's call on the footway lip: **the drawn slope wins.** tools/geometry/visible.ts and the walk file follow what Unity draws over the 0.38 m lip strip, not the higher of table and lip. If that moves the sim site, it moves before Waymark's record.
+- The kit tool prunes rejected pieces' model files (the seven retired FBX are still in Kit/Models). Latch's KitImport/KitPlacer prefab cleanup stays unless Splice wants it in the kit tool instead.
+- Redline: 194 live dot renderers (up to 388 draws, previously batched) plus 41 rings. Compare the build log's "live dot rows" and "clock rings" against `-bakeddots` on the perf064 row.
+- Glint: ContactShade no longer lays a blob under signal heads. Check ring and dot brightness in the shots.
+
+**Splice's lip and prune are in (2026-10-25):**
+- The footway lip follows the drawn slope in tools/geometry/visible.ts. No number moves (all 14 footways are outside the site window), the sim site is unchanged, and c037 stands.
+- The kit tool prunes rejected pieces: 8 FBX are removed (the seven crossing pieces and SpaceHQ, rejected since 10-13; the world uses SpaceHQ_Portal) and the orphan DK_Cross_Stop/Walk.mat. Unity reimports once.
+- Latch: Prefabs/Landmarks/DK_SpaceHQ.prefab is still on disk. KitPlacer only collects rejected pieces with source `generated`, so remove it too in the batch, and confirm that nothing references it.

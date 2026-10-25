@@ -203,6 +203,14 @@ namespace Suborned.Sim
         public readonly int RerouteWalkCmS;
         /// <summary>security.sealWarns (engine 0.30.0): a call of the response that sets the seal clock logs seal.starts with its time and origin.</summary>
         public readonly bool SealWarns;
+        /// <summary>cell.loop.run (engine 0.31.0, brief 058 §2 Loop v2): a landed loop plays this long from its landing, s, then the feed returns;
+        /// 0 when the rulebook carries the tether instead (a run pinned before 0.31.0: the loop holds while the Tech stays at the cabinet).</summary>
+        public readonly int LoopRunS;
+        /// <summary>Loop v2: the loop runs on its own (cell.loop.run); false: the tether (cell.loop.tether, before 0.31.0).</summary>
+        public bool LoopRuns => LoopRunS > 0;
+        /// <summary>cell.disable (engine 0.31.0, brief 058 §2): the Tech cuts a camera's line at the cabinet; DisableOn false when the rulebook has none (the verb is unknown).</summary>
+        public readonly bool DisableOn;
+        public readonly int DisableS, DisableTrail;
         public readonly int CellSpeed, RunSpeed, RunAlert, ActReachCm, AtReachCm, LoopS, LoopTrail, TetherCm, RerouteS, RerouteTrail, RerouteAwayS, MisleadS, MisleadTrail, MisleadAwayS, CallTrail, EnterS, EnterAlarmS, TakeS, TakeTrailUnturned, TakeStruggleS, CarryS;
         // weapons, health and what a shot costs (Sky 2026-10-15, briefs/011/motive-fights.md)
         public readonly Weapon Pistol, Carbine;
@@ -278,6 +286,8 @@ namespace Suborned.Sim
         public readonly int PeopleNearCm;
         /// <summary>The act ids a witness path asks about (brief 054 §3.2): each in exactly one witness.notice list.</summary>
         public static readonly string[] NoticeActs = { "weapon-drawn", "takedown", "carry", "body", "threat", "run", "escort", "listen", "ask", "pay", "help", "watch", "loiter", "loop", "reroute", "mislead", "call", "enter", "board", "gunfire", "scream" };
+        /// <summary>Acts a witness.notice list may name but need not (engine 0.31.0: disable, a cabinet act like loop; rulebooks pinned before it have none).</summary>
+        public static readonly string[] NoticeActsOptional = { "disable" };
         public readonly int MountPatrolCm, MountRobotCm, MountChestCm, MountHeadTopCm;
         /// <summary>A camera kind's lens above its floor, cm (perception.mount cameras); a kind not here is rejected at the start.</summary>
         public readonly Dictionary<string, int> MountCameraCm = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -462,7 +472,7 @@ namespace Suborned.Sim
                 if (b["debrief"]["lines"].Opt(ln) is not JNode dl || string.Join(",", dl["fields"].Strs()) != fs) throw new FormatException($"debrief.lines.{ln} carries {fs.Replace(",", ", ")} (brief 018)");
             WitnessRangeCm = VI("witness-range-m") * 100; WitnessTrail = VI("witness-trail"); ApproachReachCm = VI("approach-reach-m") * 100; ListenReachCm = VI("listen-reach-m") * 100; TrailOpen = VI("trail-open");
 
-            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "reroute", "mislead", "call", "enter", "take", "carry", "board", "approach", "drive", "rule", "tag", "src");
+            var c = b["cell"]; c.Only("speed", "runSpeed", "runAlert", "reach", "atReach", "loop", "disable", "reroute", "mislead", "call", "enter", "take", "carry", "board", "approach", "drive", "rule", "tag", "src");
             if (c.Opt("approach") is JNode cap) // engine 0.23.0 (Sky 2026-10-22): absent (a rulebook pinned before it), out of reach is too-far as before
             {
                 cap.Only("walkIn", "repath", "rule", "tag", "src", "proposed", "reason");
@@ -480,8 +490,18 @@ namespace Suborned.Sim
                 Drive = new DriveRules { SlackCm = RI(dv["slack"]), BurstTicks = RI(dv["burst"]), BusyPushCm = RI(dv["busyPush"]), GapCm = RI(dv["gap"]), OnBusy = onBusy, OnRelease = onRelease };
             }
             CellSpeed = RI(c["speed"]); RunSpeed = RI(c["runSpeed"]); RunAlert = RI(c["runAlert"]); ActReachCm = RI(c["reach"]) * 100; AtReachCm = RI(c["atReach"]);
-            c["loop"].Only("s", "trail", "tether", "targets"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]); TetherCm = RI(c["loop"]["tether"]) * 100;
+            c["loop"].Only("s", "trail", "tether", "run", "targets"); LoopS = RI(c["loop"]["s"]); LoopTrail = RI(c["loop"]["trail"]);
+            { var lt = c["loop"].Opt("tether"); var lr = c["loop"].Opt("run"); // engine 0.31.0 (brief 058 §6): run (Loop v2) or tether (a run pinned before it), exactly one
+              if ((lt == null) == (lr == null)) throw new FormatException("cell.loop: exactly one of tether (before engine 0.31.0) or run (Loop v2)");
+              if (lt != null) TetherCm = RI(lt) * 100; else { LoopRunS = RI(lr!); if (LoopRunS < 1) throw new FormatException("cell.loop.run is at least 1 s"); } }
             LoopTargets.AddRange(c["loop"]["targets"].Strs());
+            if (c.Opt("disable") is JNode di) // engine 0.31.0 (brief 058 §2): absent (a run pinned before it), disable is an unknown verb
+            {
+                di.Only("s", "trail", "targets");
+                if (di["targets"].Str() != "cell.loop.targets") throw new FormatException("cell.disable.targets is 'cell.loop.targets': the cameras the cabinet loops (unknown = reject)");
+                DisableS = RI(di["s"]); DisableTrail = RI(di["trail"]); DisableOn = true;
+                if (DisableS < 1) throw new FormatException("cell.disable.s is at least 1 s");
+            }
             c["reroute"].Only("s", "trail", "away", "walk"); RerouteS = RI(c["reroute"]["s"]); RerouteTrail = RI(c["reroute"]["trail"]); RerouteAwayS = RI(c["reroute"]["away"]);
             RerouteWalkCmS = c["reroute"].Opt("walk") is JNode rw ? RI(rw) : 0; // engine 0.30.0 (brief 057 §2, Sky 2026-10-24): the rerouted patrol walks; absent, it is placed (0.29.0)
             c["mislead"].Only("s", "trail", "away"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); MisleadAwayS = RI(c["mislead"]["away"]);
@@ -579,8 +599,10 @@ namespace Suborned.Sim
             }
             var ca = b["cancel"]; ca.Only("move", "draw", "fire", "watch", "listen", "turn", "loop", "loopHeld", "reroute", "mislead", "enter", "take", "carry", "carrying", "takedown", "body", "rule", "tag", "src", "proposed", "reason");
             OneOf(ca["takedown"], new[] { "released" }); OneOf(ca["body"], new[] { "lost" }); // brief 013
-            foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("loopHeld", "ends"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
+            foreach (var (k, v) in new[] { ("move", "stop"), ("draw", "holster"), ("fire", "cease"), ("watch", "lost"), ("listen", "lost"), ("loop", "lost"), ("reroute", "lost"), ("mislead", "lost"), ("carry", "lost"), ("carrying", "put-down") })
                 OneOf(ca[k], new[] { v });
+            if (ca.Opt("loopHeld") is JNode lh) { if (LoopRuns) throw new FormatException("cancel.loopHeld: retired with the tether (engine 0.31.0): a loop that runs has nothing to cancel"); OneOf(lh, new[] { "ends" }); }
+            else if (!LoopRuns) throw new FormatException("cancel.loopHeld: a tethered loop needs its cancel line (ends)");
             CancelTurn = OneOf(ca["turn"], new[] { "aborted", "lost" }); CancelEnter = OneOf(ca["enter"], new[] { "staff-report", "quiet" }); CancelTake = OneOf(ca["take"], new[] { "vale-reports", "quiet" });
             if (!MemoryActs.Contains("aborted") && CancelTurn == "aborted") throw new FormatException("cancel.turn aborted needs memory.acts.aborted");
             var pe = b["perception"]; pe.Only("near", "eye", "door", "facing", "security", "rivals", "patrol", "mount", "people", "rule", "tag", "src");
@@ -667,7 +689,7 @@ namespace Suborned.Sim
                 foreach (var (k, set) in new[] { ("always", NoticeAlways), ("odd", NoticeOdd), ("never", NoticeNever), ("heard", NoticeHeard) })
                     foreach (var a in no[k].Strs())
                     {
-                        if (Array.IndexOf(NoticeActs, a) < 0) throw new FormatException($"witness.notice.{k}: '{a}' is no act a witness path asks about (unknown = reject)");
+                        if (Array.IndexOf(NoticeActs, a) < 0 && Array.IndexOf(NoticeActsOptional, a) < 0) throw new FormatException($"witness.notice.{k}: '{a}' is no act a witness path asks about (unknown = reject)");
                         if (NoticeAlways.Contains(a) || NoticeOdd.Contains(a) || NoticeNever.Contains(a) || NoticeHeard.Contains(a)) throw new FormatException($"witness.notice: '{a}' is in two lists");
                         set.Add(a);
                     }

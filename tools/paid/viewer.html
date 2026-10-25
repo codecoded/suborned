@@ -137,6 +137,7 @@ function card(r) {
   else if (r.media === 'image') media = `<img loading="lazy" decoding="async" src="${esc(r.thumb || r.src)}" alt="">`;
   else if (r.media === 'video') media = (r.thumb ? `<img loading="lazy" decoding="async" src="${esc(r.thumb)}" alt="">` : `<video preload="metadata" muted src="${esc(r.src)}#t=0.5"></video>`) + `<span class="play">▶ ${r.duration_s ? esc(r.duration_s) + ' s' : 'video'}</span>`;
   else if (r.media === 'audio') media = `<span class="none">♪ audio · click to play</span>`;
+  else if (r.media === 'model') media = `<span class="none">3D model · ${esc(r.bytes ? (r.bytes / 1048576).toFixed(1) + ' MB' : '')} · ${esc(nameOf(r))}</span>`;
   const i = hasMedia(r) ? VIEW.indexOf(r) : -1;
   return `<div class="${cls}"><div class="media"${i >= 0 ? ` data-i="${i}"` : ''}>${media}</div>` + caption(r) + '</div>';
 }

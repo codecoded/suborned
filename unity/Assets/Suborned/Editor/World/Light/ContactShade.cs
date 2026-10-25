@@ -116,6 +116,7 @@ namespace Suborned.World
                 foreach (var t in street.GetComponentsInChildren<Transform>(true))
                 {
                     if (!PrefabUtility.IsOutermostPrefabInstanceRoot(t.gameObject)) continue;
+                    if (t.GetComponent<Suborned.Play.SignalHead>()) continue; // brief 061: a signal head hovers; the ground under it is its own light (halo disc, clock ring), never shaded over
                     var rs = KitLods.Lod0(t.gameObject).ToArray(); if (rs.Length == 0) continue;
                     var b = rs[0].bounds; foreach (var x in rs) b.Encapsulate(x.bounds);
                     if (b.size.y < 0.3f || b.min.y > t.position.y + 0.4f) continue; // flat inlays, hanging baskets

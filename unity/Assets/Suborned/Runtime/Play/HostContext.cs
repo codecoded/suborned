@@ -122,7 +122,7 @@ namespace Suborned.Play
             public bool Violent, Draws, More, Harmful, HoldWedge; public int Key = -1;
             /// <summary>Brief 057: Shut = a way shown shut (Go while the car is held: struck, dim, never taken; its pill shows the lock and the holders);
             /// Focus = the way moves something the ring is not on (Reroute: the patrol), shown in the world on hover; Obj = that thing's cameo badge.</summary>
-            public bool Shut, Focus; public string Obj = "", Holders = ""; // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
+            public bool Shut, Focus; public string Obj = "", Holders = "", ShutText = ""; /* ShutText: a shut Loop's end (m:ss), shown after its lock */ // HoldWedge: Kill, Fire on a non-combatant: the 0.5 s hold (brief 038 §4.3)
         }
         public sealed class RingState
         {
@@ -140,7 +140,7 @@ namespace Suborned.Play
             {
                 var rs = Ring; if (rs == null || Game == null) return null; int i = rs.Hover >= 0 ? rs.Hover : rs.Lit;
                 if (i < 0 || i >= rs.Segs.Count) return null; var s = rs.Segs[i]; if (s.More || s.Named.Length == 0 && !s.Focus || s.Row?.I?.Order is not Order o || o.Target.Length == 0) return null; // brief 057 §2: Reroute shows the patrol
-                bool cam = o.Do == "loop" || Game.S.Cameras.Exists(c => c.Id == o.Target);
+                bool cam = o.Do is "loop" or "disable" || Game.S.Cameras.Exists(c => c.Id == o.Target);
                 return cam ? ("camera/" + o.Target, "camera:" + o.Target) : (o.Target, Game.WatcherKind(o.Target).Length > 0 ? o.Target : "");
             }
         }
@@ -176,7 +176,7 @@ namespace Suborned.Play
             {
                 if (rs.Segs.FindAll(x => x.Word == s.Word).Count < 2 || s.Row?.I == null) continue;
                 var it = s.Row.I; string tn = it.Order?.Target ?? "";
-                s.Named = it.Label.Length > 0 && it.Label != s.Word ? it.Label : tn.Length > 0 ? $"{s.Word} {(it.Order?.Do == "loop" ? CameraName(tn) : Name(tn))}" : s.Word;
+                s.Named = it.Label.Length > 0 && it.Label != s.Word ? it.Label : tn.Length > 0 ? $"{s.Word} {(it.Order?.Do is "loop" or "disable" ? CameraName(tn) : Name(tn))}" : s.Word;
             }
             foreach (var s in rs.Segs) if (s.Named.Length > 0) s.Word = s.Named;
             // brief 057 §2: a way whose object is not what the ring is open on wears that object's cameo after its word (Reroute: the patrol;
@@ -185,13 +185,17 @@ namespace Suborned.Play
             {
                 var o2 = s.Row?.I?.Order; if (o2 == null) continue;
                 if (o2.Do == "reroute") { s.Obj = "badges/npc_patrol_face"; /* Glyph, brief 057 §5: the face in the cameo's own ring, no amber on the pill */ s.Focus = true; }
-                else if (o2.Do == "loop" && plan.T?.Kind == "cabinet") s.Obj = "badges/signal_camera";
+                else if (o2.Do is "loop" or "disable" && plan.T?.Kind == "cabinet") s.Obj = "badges/signal_camera";
                 else if (o2.Do == "call") s.Obj = o2.Target == "driver" ? "icon:car" : "badges/signal_guard";
             }
             // brief 057 §4.2: Go while the car is held shows shut (struck, dim), its pill the lock and one badge a holder; a press says why and pulses them
             if (plan.Pn.Rows.Find(r => r.I?.Order?.Do == "go" && !r.Available && r.Lock.code == "car-held") is PanelRow gr && !rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "go") && rs.Segs.Count < RingMaxWays)
                 rs.Segs.Insert(0, new RingSeg { Way = -1, Row = gr, Word = RingWord(gr.I), Icon = "car", Shut = true, Holders = gr.Lock.ids ?? "" });
-            rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason
+            // engine 0.31.0 (brief 058 §2, Glyph 058 §1): one loop at a time: the Tech's Loop on another camera while one runs shows shut (struck,
+            // dim), its pill the lock and the time the running loop ends; a press says why (loop-holds)
+            if (plan.T?.Kind == "camera" && plan.Pn.Rows.Find(r => r.I?.Order?.Do == "loop" && !r.Available && r.Lock.code == "loop-holds") is PanelRow lr && !rs.Segs.Exists(x => x.Row?.I?.Order?.Do == "loop") && rs.Segs.Count < RingMaxWays)
+                rs.Segs.Insert(0, new RingSeg { Way = -1, Row = lr, Word = RingWord(lr.I), Icon = "loop", Shut = true, ShutText = lr.Lock.tick >= 0 ? MissionClock(lr.Lock.tick) : "" });
+            if (plan.T?.Kind != "camera" || rs.Segs.Count == 0) rs.Segs.Add(new RingSeg { More = true, Icon = "", Word = "" }); // ⋯: the full panel, every locked row and its reason (Glyph 058 §1: a camera's ring is its ways alone: Loop · Disable · Fire, or Fire as the whole ring)
             rs.Lit = ch.Act == ContextRank.Act.Ring || ch.Act == ContextRank.Act.Default ? Math.Max(0, rs.Segs.FindIndex(x => x.Way == ch.Pick)) : controls.quickAction ? 0 : -1; // ring by default: nothing ranked (a passer-by's takedowns), nothing lit
             if (rs.Segs.Count == 1) rs.Lit = 0;
             if (Picked >= 0) { int ai = rs.Segs.FindIndex(x => x.Key == Picked && x.By.Contains(Agent)); if (ai >= 0) rs.Lit = ai; } // brief 030 (no plate): the ring opens on the armed verb's wedge

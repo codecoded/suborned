@@ -255,7 +255,12 @@ export const Rulebook = z.strictObject({
   // (but loop.targets: the cameras the cabinet loops, brief 013 D).
   cell: ground({
     speed: Ref, runSpeed: Ref, runAlert: Ref, reach: Ref, atReach: Ref,
-    loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref, targets: z.array(id).nonempty().optional() }), // targets: site camera ids, or 'world' (the city's own cameras); optional only for runs pinned before brief 013 (rulebook.test.ts holds the live one to it)
+    // engine 0.31.0 (brief 058 §2, Loop v2): `run` (the tape plays loop-run-s from the landing, then the feed returns) replaces `tether`; exactly one of
+    // the two (refined below). tether is kept optional only so runs pinned before 0.31.0 parse; rulebook.test.ts holds the live rulebook to run
+    loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref.optional(), run: Ref.optional(), targets: z.array(id).nonempty().optional() }) // targets: site camera ids, or 'world' (the city's own cameras); optional only for runs pinned before brief 013 (rulebook.test.ts holds the live one to it)
+      .refine((l) => (l.tether === undefined) !== (l.run === undefined), { message: 'cell.loop: exactly one of tether (before engine 0.31.0) or run (Loop v2)' }),
+    // engine 0.31.0 (brief 058 §2): the Tech cuts a camera's line at the cabinet; its targets are the loop's (the one literal pointer); optional only for runs pinned before it
+    disable: z.strictObject({ s: Ref, trail: Ref, targets: z.literal('cell.loop.targets') }).optional(),
     reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref, walk: Ref.optional() }), // engine 0.30.0 (brief 057 §2): the rerouted patrol walks out and back at this pace; absent, it is placed (0.29.0)
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     call: z.strictObject({ trail: Ref }),
@@ -317,7 +322,7 @@ export const Rulebook = z.strictObject({
   // Cancel (Sky 2026-10-15 playtest): what stopping each verb mid-way costs or keeps; each line one of a closed set.
   cancel: ground({
     move: z.literal('stop'), draw: z.literal('holster'), fire: z.literal('cease'), watch: z.literal('lost'), listen: z.literal('lost'),
-    turn: z.enum(['aborted', 'lost']), loop: z.literal('lost'), loopHeld: z.literal('ends'), reroute: z.literal('lost'), mislead: z.literal('lost'),
+    turn: z.enum(['aborted', 'lost']), loop: z.literal('lost'), loopHeld: z.literal('ends').optional() /* retired in engine 0.31.0 with the tether (brief 058 §6); optional only for runs pinned before it */, reroute: z.literal('lost'), mislead: z.literal('lost'),
     enter: z.enum(['staff-report', 'quiet']), take: z.enum(['vale-reports', 'quiet']), carry: z.literal('lost'), carrying: z.literal('put-down'),
     takedown: z.literal('released').optional(), body: z.literal('lost').optional(), // brief 013 (optional only for runs pinned before it)
     rule: text,

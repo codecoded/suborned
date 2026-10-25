@@ -1,0 +1,135 @@
+{
+ "about": "briefs/059/pulse/check.py: the figures rival-routine.md quotes, from the site grids (briefs/059/routes.py's router, ticks as CarProfile). Reference for Keel; his router is the authority.",
+ "ticksHz": 10,
+ "legs": {
+  "entry -> drop": {
+   "ticks": 111,
+   "s": 11.1,
+   "m": 55.5
+  },
+  "drop -> park": {
+   "ticks": 156,
+   "s": 15.6,
+   "m": 77.6
+  },
+  "park -> tail": {
+   "ticks": 28,
+   "s": 2.8,
+   "m": 14.0
+  },
+  "park -> entry (tip out)": {
+   "ticks": 176,
+   "s": 17.6,
+   "m": 87.7
+  },
+  "entry -> park (tip back)": {
+   "ticks": 176,
+   "s": 17.6,
+   "m": 87.7
+  },
+  "entry -> front stop (drawn)": {
+   "ticks": 181,
+   "s": 18.1,
+   "m": 90.2
+  },
+  "park -> front stop (drawn)": {
+   "ticks": 83,
+   "s": 8.3,
+   "m": 41.2
+  },
+  "tail -> drop": {
+   "ticks": 184,
+   "s": 18.4,
+   "m": 91.6
+  },
+  "drop -> tail": {
+   "ticks": 184,
+   "s": 18.4,
+   "m": 91.6
+  },
+  "park -> drop": {
+   "ticks": 156,
+   "s": 15.6,
+   "m": 77.6
+  },
+  "entry -> tail": {
+   "ticks": 148,
+   "s": 14.8,
+   "m": 73.7
+  }
+ },
+ "timetable": {
+  "enter": 1553,
+  "dropArrive": 1664,
+  "dropLeave": 1744,
+  "park": 1900,
+  "clock": {
+   "enter": "2:35.3",
+   "dropArrive": "2:46.4",
+   "dropLeave": "2:54.4",
+   "park": "3:10.0"
+  }
+ },
+ "posted": {
+  "rival-1": {
+   "out": 1684,
+   "posted": 1770,
+   "spot": "ambush-3",
+   "m": 13.7,
+   "clock": [
+    "2:48.4",
+    "2:57.0"
+   ]
+  },
+  "rival-2": {
+   "out": 1704,
+   "posted": 1795,
+   "spot": "ambush-1",
+   "m": 14.5,
+   "clock": [
+    "2:50.4",
+    "2:59.5"
+   ]
+  },
+  "rival-3": {
+   "out": 1724,
+   "posted": 2065,
+   "spot": "ambush-2",
+   "m": 54.5,
+   "clock": [
+    "2:52.4",
+    "3:26.5"
+   ]
+  }
+ },
+ "lookout": {
+  "out": 1950,
+  "posted": 1988,
+  "clock": [
+   "3:15.0",
+   "3:18.8"
+  ]
+ },
+ "tail": {
+  "valeIn": 3730,
+  "moves": 3750,
+  "stops": 3778,
+  "out": 3828,
+  "atDoor": 3989,
+  "clock": [
+   "6:13.0",
+   "6:15.0",
+   "6:17.8",
+   "6:22.8",
+   "6:38.9"
+  ],
+  "walkM": 25.7
+ },
+ "warn": {
+  "walkToDriverM": 17.0,
+  "walkS": 10.7,
+  "exitM": 55.0,
+  "exitS": 34.4,
+  "latestTurn": "5:16.3"
+ }
+}

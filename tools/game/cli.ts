@@ -173,7 +173,7 @@ function check(): boolean {
  *  (the fight gave no hostile in range) is reported, not failed. */
 function inputChecks(pj: any): boolean {
   let pass = true;
-  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29']) {
+  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29', 'r118']) {
     const r = pj?.frames?.[k];
     if (r === undefined) { console.log(`game: ${k}: not in this proof (an older build)`); continue; }
     const { ok, ...rest } = r ?? {};

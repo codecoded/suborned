@@ -121,11 +121,12 @@ namespace Suborned.World
             placer.Signs(frontages, world.Frontages);
             city.Connectors(Nodes.Group(root, "connectors"), world.Connectors);
             var street = Nodes.Group(root, "street");
+            CrossingKit.Signalled.Clear(); if (world.Crossings != null) foreach (var cx in world.Crossings) if (cx.Cycle != null) CrossingKit.Signalled.Add(cx.Id); // brief 061: before the street layer bakes the crossing parts
             city.Street(street, world.Street);
             var roadAlt = RoadFinishTwin.Load(path, world); // brief 055 road test: the asphalt finish beside the enamel, switched at run time
             if (world.Ground.Pieces.Count > 0) { int gp = city.GroundPieces(Nodes.Group(root, "ground-pieces"), world.Ground.Pieces, roadAlt == null ? null : (System.Func<StreetItemDto, string>)(gpc => roadAlt.EnamelOnly.Contains(RoadFinishTwin.Key(gpc)) ? RoadFinishTwin.EnamelLayer : null)); Debug.Log($"World: ground pieces {gp} (export ground.pieces: tiles, drains, manholes)"); }
             if (roadAlt != null) { int ap = city.GroundPieces(Nodes.Group(root, RoadFinishTwin.AsphaltLayer), roadAlt.AsphaltOnly); Debug.Log($"World: road finish twin: {roadAlt.EnamelOnly.Count} enamel-only pieces baked apart, {ap} asphalt-only pieces built off ({roadAlt.Path})"); }
-            if (world.Crossings != null) new CrossingKit(nodes, kit).Build(Nodes.Group(root, "crossings"), street, world);
+            if (world.Crossings != null) new CrossingKit(nodes, kit, placer).Build(Nodes.Group(root, "crossings"), street, world);
             layers.Levels(Nodes.Group(root, "levels"), Nodes.Group(root, "decks"), world.Levels);
             megas.Megastructures(Nodes.Group(root, "megastructures"), world.Megastructures, placer, standIns);
             if (world.HiddenCivic > 0) Debug.Log($"World: {world.HiddenCivic} civic masses `hidden` in the export, not drawn (data only)");

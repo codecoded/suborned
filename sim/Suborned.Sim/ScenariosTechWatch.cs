@@ -83,22 +83,21 @@ namespace Suborned.Sim
                 r.Is(g.Log.Exists(l => l.Code == "tech.watch.watched" && l.Text.Contains("guard")), "logged as the Tech's Watch (tech.watch.watched)");
             });
 
-            Add("N110", "—", "The Tech doesn't Watch while his loop holds (rulebook sight: tethered to the cabinet): looping the mast camera, he is refused run-tethered on any camera, free, the loop still holding; when he lets the loop go, he walks within reach of the mast camera, watches it and learns it.", r =>
+            Add("N110", "—", "Loop v2 (brief 058 §6, engine 0.31.0; it was the tether, rulebook sight): looping the mast camera, the Tech is refused run-tethered on no camera; he walks off, the loop still running, and Watches the mast camera: its sight is learned.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet"));
                 r.Do(Tech, "loop", "mast-314"); r.Done(Tech);
                 r.Is(g.LoopOn && g.LoopCam == "mast-314", "the mast camera's loop holds");
                 var cams = g.WatcherIds().Where(w => w.StartsWith("camera:", StringComparison.Ordinal)).ToList();
-                foreach (var c in cams) RefusedFreeBy(r, Tech, "watch", c, "run-tethered");
+                foreach (var c in cams) r.Is(g.LearnQuery(Tech, "watch", c).code != "run-tethered", $"Loop v2 (engine 0.31.0): no tether, so the Tech's Watch on {c} is not refused run-tethered");
                 r.Is(g.LoopOn, "the loop still holds");
-                r.Is(g.Do(new Order { Tick = g.Tick, Op = Tech, Do = "cancel" }), "the Tech lets the loop go");
-                r.Is(!g.LoopOn, "the loop ends");
                 var spot = WatchSpot(r, "camera:mast-314", unseen: false, who: Tech);
                 r.To(r.SendTo(Tech, spot));
                 r.Is(r.Until(() => Watchable(r, "camera:mast-314", Tech), T(30)), "a clear line to the mast camera (brief 031: people on the street block it)");
                 r.Do(Tech, "watch", "camera:mast-314"); r.Done(Tech);
                 r.Is(g.Known("camera:mast-314")!.Sight, "the mast camera's sight is learned by the Tech");
+                r.Is(g.LoopOn, "with the mast's loop still running: he walked off and watched (no tether)");
             });
         }
     }

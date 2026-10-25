@@ -20,13 +20,13 @@ describe('the corners', () => {
     expect([k.byClass.primary, k.byClass.district, k.byClass.access, k.civic, k.concave, k.bay]).toEqual([6, 8, 6, 2, 2, 1.4]);
     expect(KERB_RETURN_DEFAULT.byClass).toEqual(k.byClass); // a plan without the key takes the same numbers
   });
-  test('every plot corner where two kerbs meet is rounded: 76 convex (12 of them civic, 2 m), one concave (the lane end), none shrunk', () => {
+  test('every plot corner where two kerbs meet is rounded except at a gate lane mouth: 48 convex (8 of them civic, 2 m; the 28 corners of the 14 gate footways stay square, brief 061), one concave (the lane end), none shrunk', () => {
     const L = returnsOf(live.ctx).filter(r => !r.bay && !r.mouth && !r.nose && !r.bend && !r.edge);
-    expect(L.filter(r => r.convex).length).toBe(76); expect(L.filter(r => !r.convex).length).toBe(1);
-    expect(L.filter(r => r.civic).length).toBe(12);
+    expect(L.filter(r => r.convex).length).toBe(48); expect(L.filter(r => !r.convex).length).toBe(1);
+    expect(L.filter(r => r.civic).length).toBe(8);
     expect(L.every(r => Math.abs(r.r - r.want) < 0.01)).toBe(true);
     const by: Record<string, number> = {}; for (const r of L.filter(r => r.convex && !r.civic)) by[`${r.cls} ${r.want}`] = (by[`${r.cls} ${r.want}`] ?? 0) + 1;
-    expect(by).toEqual({ 'access 6': 46, 'district 8': 14, 'primary 6': 4 });
+    expect(by).toEqual({ 'access 6': 22, 'district 8': 14, 'primary 6': 4 });
   });
   test('a return is an arc tangent to both kerb faces, from tangent point to tangent point, 16 chords a quarter turn (8 under 4 m)', () => {
     for (const r of returnsOf(live.ctx).filter(x => x.convex && !x.mouth && !x.nose && !x.bay)) {
@@ -83,6 +83,20 @@ describe('the corners', () => {
   test('the returns are cached on the plan, the standards and the civic block together: another standard on the same derived plan is another list (Redline brief 064 #10)', () => {
     const n = returnsOf(live.ctx).length, off = { ...live.ctx, S: { ...live.ctx.S, kerbReturn: { ...(live.ctx.S as any).kerbReturn, off: true } } } as typeof live.ctx;
     expect(returnsOf(off).length).toBe(0); expect(returnsOf(live.ctx).length).toBe(n); expect(returnsOf({ ...live.ctx, S: undefined } as any).length).toBe(0); expect(returnsOf(live.ctx).length).toBe(n);
+  });
+  test('the cache holds when a standard is edited in place on the same objects, and a call without the standards or the civic block comes first (Redline brief 064 #10)', () => {
+    const f = make(), none = { ...f.ctx, S: undefined, civ: undefined } as any;
+    expect(returnsOf(none).length).toBe(0); // first call: no standards
+    const n = returnsOf(f.ctx).length; expect(n).toBeGreaterThan(40); // then the same derived plan with them
+    expect(baysOf({ ...f.ctx, civ: undefined } as any).length).toBe(0); // no civic block: no lay-bys
+    expect(baysOf(f.ctx).length).toBeGreaterThan(0);
+    const S = f.ctx.S as any, access = returnsOf(f.ctx).find(r => r.cls === 'access' && r.convex && !r.civic && !r.bay && !r.mouth && !r.bend)!;
+    S.kerbReturn.byClass.access = 4; // edited in place: the same S, the same d
+    expect(returnsOf(f.ctx).find(r => r.id === access.id)!.want).toBe(4);
+    S.kerbReturn.off = true;
+    expect(returnsOf(f.ctx).length).toBe(0);
+    S.kerbReturn.off = false; S.kerbReturn.byClass.access = 6;
+    expect(returnsOf(f.ctx).length).toBe(n);
   });
   test('tangentAt reads a vertex of a plot, 0 where the corner is square', () => {
     const r = returnsOf(live.ctx).find(x => x.convex && !x.bay && !x.mouth)!;

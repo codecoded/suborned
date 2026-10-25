@@ -116,24 +116,24 @@
    "door": "official-entrance"
   },
   {
-   "id": "street/orbit-gardens/e2/phone-booth-462",
+   "id": "street/orbit-gardens/e2/phone-booth-452",
    "kind": "call-box",
    "at": [9315,400],
    "stand": [9175,425],
-   "item": "street/orbit-gardens/e2/phone-booth-462"
+   "item": "street/orbit-gardens/e2/phone-booth-452"
   },
   {
-   "id": "street/rocket-west/e1/phone-booth-534",
+   "id": "street/rocket-west/e1/phone-booth-524",
    "kind": "call-box",
    "at": [11100,-6300],
    "stand": [11175,-6175],
-   "item": "street/rocket-west/e1/phone-booth-534"
+   "item": "street/rocket-west/e1/phone-booth-524"
   },
   {
    "id": "street/civic/call-box-0",
    "kind": "call-box",
-   "at": [3015,-1400],
-   "stand": [2875,-1375],
+   "at": [2400,-885],
+   "stand": [2425,-1025],
    "item": "street/civic/call-box-0"
   },
   {
@@ -153,15 +153,15 @@
   {
    "id": "street/civic/call-box-3",
    "kind": "call-box",
-   "at": [-2500,1400],
-   "stand": [-2425,1525],
+   "at": [-2000,-885],
+   "stand": [-1975,-1025],
    "item": "street/civic/call-box-3"
   },
   {
    "id": "street/civic/call-box-4",
    "kind": "call-box",
-   "at": [-2500,-4400],
-   "stand": [-2425,-4275],
+   "at": [-2000,-4915],
+   "stand": [-1975,-4775],
    "item": "street/civic/call-box-4"
   },
   {
@@ -170,6 +170,13 @@
    "at": [5000,-4915],
    "stand": [5025,-4775],
    "item": "street/civic/call-box-5"
+  },
+  {
+   "id": "street/civic/call-box-6",
+   "kind": "call-box",
+   "at": [7915,-200],
+   "stand": [7775,-175],
+   "item": "street/civic/call-box-6"
   }
  ],
  "origins": [
@@ -204,15 +211,15 @@
   {
    "id": "street/civic/police-post-1",
    "kind": "post",
-   "at": [7900,-200],
-   "stand": [7925,-75],
+   "at": [-2500,-4200],
+   "stand": [-2475,-4075],
    "item": "street/civic/police-post-1"
   },
   {
    "id": "street/civic/police-post-2",
    "kind": "post",
-   "at": [-2500,-3400],
-   "stand": [-2475,-3275],
+   "at": [7900,-1000],
+   "stand": [7925,-875],
    "item": "street/civic/police-post-2"
   },
   {
@@ -232,31 +239,38 @@
   {
    "id": "street/civic/police-post-5",
    "kind": "post",
-   "at": [-1200,500],
-   "stand": [-1175,625],
+   "at": [1400,500],
+   "stand": [1425,625],
    "item": "street/civic/police-post-5"
   },
   {
    "id": "street/civic/police-post-6",
    "kind": "post",
-   "at": [4500,-200],
-   "stand": [4525,-75],
+   "at": [-1000,500],
+   "stand": [-975,625],
    "item": "street/civic/police-post-6"
+  },
+  {
+   "id": "street/civic/police-post-7",
+   "kind": "post",
+   "at": [9300,-1400],
+   "stand": [9325,-1275],
+   "item": "street/civic/police-post-7"
   }
  ],
  "coverage": {
   "report": {
    "samples": 2850,
-   "worstM": 39.8,
-   "medianM": 17.6,
+   "worstM": 36.2,
+   "medianM": 16.6,
    "within": 1000,
    "baselineWithin": 650,
    "baselineWorstM": 67.2
   },
   "origin": {
    "samples": 2850,
-   "worstM": 39.8,
-   "medianM": 17.4,
+   "worstM": 39,
+   "medianM": 17,
    "within": 1000,
    "baselineWithin": 634,
    "baselineWorstM": 68
@@ -265,7 +279,7 @@
  "solids": [
   {
    "id": "street/civic/call-box-0",
-   "poly": [[3080,-1530],[3080,-1270],[2950,-1270],[2950,-1530]],
+   "poly": [[2530,-820],[2270,-820],[2270,-950],[2530,-950]],
    "h": 240
   },
   {
@@ -280,17 +294,22 @@
   },
   {
    "id": "street/civic/call-box-3",
-   "poly": [[-2550,1450],[-2550,1350],[-2450,1350],[-2450,1450]],
-   "h": 250
+   "poly": [[-1870,-820],[-2130,-820],[-2130,-950],[-1870,-950]],
+   "h": 240
   },
   {
    "id": "street/civic/call-box-4",
-   "poly": [[-2550,-4350],[-2550,-4450],[-2450,-4450],[-2450,-4350]],
-   "h": 250
+   "poly": [[-2130,-4980],[-1870,-4980],[-1870,-4850],[-2130,-4850]],
+   "h": 240
   },
   {
    "id": "street/civic/call-box-5",
    "poly": [[4870,-4980],[5130,-4980],[5130,-4850],[4870,-4850]],
+   "h": 240
+  },
+  {
+   "id": "street/civic/call-box-6",
+   "poly": [[7980,-330],[7980,-70],[7850,-70],[7850,-330]],
    "h": 240
   },
   {
@@ -300,12 +319,12 @@
   },
   {
    "id": "street/civic/police-post-1",
-   "poly": [[7950,-250],[7950,-150],[7850,-150],[7850,-250]],
+   "poly": [[-2550,-4150],[-2550,-4250],[-2450,-4250],[-2450,-4150]],
    "h": 280
   },
   {
    "id": "street/civic/police-post-2",
-   "poly": [[-2550,-3350],[-2550,-3450],[-2450,-3450],[-2450,-3350]],
+   "poly": [[7950,-1050],[7950,-950],[7850,-950],[7850,-1050]],
    "h": 280
   },
   {
@@ -320,12 +339,17 @@
   },
   {
    "id": "street/civic/police-post-5",
-   "poly": [[-1250,450],[-1150,450],[-1150,550],[-1250,550]],
+   "poly": [[1350,450],[1450,450],[1450,550],[1350,550]],
    "h": 280
   },
   {
    "id": "street/civic/police-post-6",
-   "poly": [[4450,-150],[4450,-250],[4550,-250],[4550,-150]],
+   "poly": [[-1050,450],[-950,450],[-950,550],[-1050,550]],
+   "h": 280
+  },
+  {
+   "id": "street/civic/police-post-7",
+   "poly": [[9250,-1350],[9250,-1450],[9350,-1450],[9350,-1350]],
    "h": 280
   },
   {

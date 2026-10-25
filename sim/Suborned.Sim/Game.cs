@@ -454,15 +454,6 @@ namespace Suborned.Sim
             }
         }
 
-        void Tether()
-        {
-            var tech = OpOf(OpId.Tech);
-            if (LoopOn && (tech.Down || !G.Within(tech.Pos, S.At("cabinet"), R.TetherCm)))
-            {
-                LoopOn = false; Note("loop.ends", tech.Down ? "The Tech is down. The camera feed returns." : "The Tech leaves the cabinet. The camera feed returns.");
-            }
-        }
-
         void PatrolChase()
         {
             if (!PatrolChasing || PatrolDown || PatrolAwayUntil > Tick || Tick % Hz != 0) return;

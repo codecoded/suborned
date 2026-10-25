@@ -1,9 +1,9 @@
 // The catalogue and the copy: kit.json matches the manifest, hashes verify, wave 1 is adopted, a copy twice copies nothing.
 import { expect, test } from 'bun:test';
 import { createHash } from 'node:crypto';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 import { buildCatalogue } from './catalogue';
 import { copyAdopted } from './copy';
@@ -34,6 +34,25 @@ test('copy verifies hashes, is idempotent, and refuses a tampered source', () =>
     for (const f of kit.assets.filter(x => x.status === 'adopted').flatMap(x => x.files).slice(0, 40)) expect(createHash('sha256').update(readFileSync(join(dest, f.path))).digest('hex')).toBe(f.sha256);
     const bad = join(dest, kit.assets.find(x => x.id === 'Bollard')!.files[0]!.path); writeFileSync(bad, 'x');
     expect(copyAdopted(kit, root, dest, GEN_ROOT).copied).toContain(kit.assets.find(x => x.id === 'Bollard')!.files[0]!.path); // a damaged copy is re-copied
+  } finally { rmSync(dest, { recursive: true, force: true }); }
+});
+
+test('a rejected piece\'s model files are removed from the copy, with their metas; what an adopted piece lists, and the Unity prefabs, stay', () => {
+  const dest = mkdtempSync(join(tmpdir(), 'kit-')), a = copyAdopted(kit, root, dest, GEN_ROOT);
+  try {
+    expect(a.errors).toEqual([]); expect(a.pruned).toEqual([]);
+    const rejected = kit.assets.filter(x => x.status === 'rejected'), eye = rejected.find(x => x.id === 'SignalEye')!, adopted = new Set(kit.assets.filter(x => x.status === 'adopted').flatMap(x => x.files.map(f => f.path)));
+    expect(rejected.length).toBeGreaterThan(0);
+    const planted = [...new Set(rejected.flatMap(r => r.files.map(f => f.path.replace(/\.meta$/, ''))).filter(p => /^Models\//.test(p) && !adopted.has(p)).flatMap(p => [p, p + '.meta']))];
+    for (const p of planted) { const abs = join(dest, p); mkdirSync(dirname(abs), { recursive: true }); writeFileSync(abs, 'old'); }
+    expect(planted.length).toBeGreaterThan(10); expect(planted).toContain('Models/Signals/DK_SignalEye.fbx'); expect(eye.files.some(f => f.role === 'lod')).toBe(true);
+    const shared = eye.files.find(f => f.role === 'material' && adopted.has(f.path))!; expect(shared).toBeDefined(); // DK_Chrome: the retired eye and adopted pieces both list it
+    const prefab = join(dest, 'Prefabs/Generated/DK_SignalEye.prefab'); mkdirSync(dirname(prefab), { recursive: true }); writeFileSync(prefab, 'unity');
+    const b = copyAdopted(kit, root, dest, GEN_ROOT);
+    expect(b.errors).toEqual([]); expect(b.pruned.sort()).toEqual(planted.filter(p => !/_L\d\.fbx\.meta$/.test(p)).sort()); // a LOD's meta goes with the LOD (listed once)
+    for (const p of planted) expect(existsSync(join(dest, p))).toBe(false);
+    expect(existsSync(join(dest, shared.path))).toBe(true); expect(existsSync(prefab)).toBe(true);
+    expect(copyAdopted(kit, root, dest, GEN_ROOT).pruned).toEqual([]); // idempotent
   } finally { rmSync(dest, { recursive: true, force: true }); }
 });
 

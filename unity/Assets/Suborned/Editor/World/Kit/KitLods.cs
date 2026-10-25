@@ -12,7 +12,7 @@ namespace Suborned.World
     /// one LODGroup: LOD0 = the source's renderers, LOD1 and LOD2 = children `__LOD1`, `__LOD2` carrying the catalogue's `lods[i].file`
     /// meshes, switching at `lods[i].screen` (else the piece's `lodCategory` switch point), the last level culled (brief 048: below 1 % of the screen under 8 m, 0.4 % above). Every LOD
     /// material is the library material of its slot's name (Kit/Materials); an unmapped slot = reject, and a LOD slot the LOD0 does not
-    /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted. A multi-part piece (the SignalEye)
+    /// list (13 older pieces carry DK_Beacon_Rose on their LODs only) is mapped the same way and counted. A multi-part piece (the SignalLens)
     /// puts each level's parts under one `__LOD<i>` child, each named as the LOD0 part it stands for.</summary>
     public static class KitLods
     {
@@ -120,7 +120,7 @@ namespace Suborned.World
             // down to 0.15 %, about 500 m for a bollard, so small pieces still drew to the 350 m clip)
             var kept = lods.Where(l => l.screen > cull).ToList(); LevelsBelowCull += lods.Count - kept.Count; lods = kept;
             if (lods.Count == 0) CullOnly++;
-            // a multi-part piece (brief 009: the SignalEye's body, Walk, Stop, Beam and Halo are sibling objects Unity switches and
+            // a multi-part piece (brief 061: the SignalLens's body, rim, figure, digits, beam and halo are sibling objects Unity drives and
             // lights apart) matches each LOD file renderer to its LOD0 part by name (its `_L1` tag and Blender's `.001` suffix dropped)
             bool parts = r0.Length > 1;
             var byPart = new Dictionary<string, MeshRenderer>(System.StringComparer.Ordinal);
@@ -166,7 +166,7 @@ namespace Suborned.World
             Groups++; if (small) CullSmallCount++;
         }
 
-        /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalEye_L1_Beam`, `DK_SignalEye_Beam.001` → `DK_SignalEye_Beam`).</summary>
+        /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalLens_L1_Beam`, `DK_SignalLens_Beam.001` → `DK_SignalLens_Beam`).</summary>
         public static string Part(string name) => System.Text.RegularExpressions.Regex.Replace(System.Text.RegularExpressions.Regex.Replace(name, @"\.\d{3}$", ""), @"_L\d+(?=_|$)", "");
 
         /// <summary>One LOD renderer: the LOD file's mesh `l` standing where its LOD0 part `src` stands, with `src`'s render settings.</summary>

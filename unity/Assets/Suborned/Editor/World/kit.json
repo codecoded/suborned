@@ -4,7 +4,7 @@
   "fadeCell": 16,
   "shadowProxies": false,
   "crossings": {
-    "note": "How the export's crossings[] are drawn (metres; brief 009). A crossing's light rows, brass edge lines, kerb studs, inlay arcs and signal eyes are street items with kit refs, placed with the street and dressed by CrossingKit (casters, the eye's state, its displays turned to the play camera); nothing of it is paint. What is drawn here is its refuges: a refuge is its ring grown by `lip` and raised `lip` above its median, in its road's kerb surface (`surface` when the export names no road), in the ground batch of that surface that already reaches it: the one it grows least on plan, by no more than `reach`. Never a signal colour (GDD 15).",
+    "note": "How the export's crossings[] are drawn (metres; brief 009). A crossing's light-dot rows and signal heads (SignalLens, with its HaloRing clock ring placed at signal.halo; brief 061 retired the brass edge lines, kerb studs, inlay arcs, lit strip and SignalEye) are street items with kit refs, placed with the street and dressed by CrossingKit (casters, the clock ring, SignalHead and the live dot rows; the heads keep the export's faces yaw); nothing of it is paint. What is drawn here is its refuges: a refuge is its ring grown by `lip` and raised `lip` above its median, in its road's kerb surface (`surface` when the export names no road), in the ground batch of that surface that already reaches it: the one it grows least on plan, by no more than `reach`. Never a signal colour (GDD 15).",
     "lip": 0.02, "reach": 4, "surface": "kerb"
   },
   "connectors": {

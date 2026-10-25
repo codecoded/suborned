@@ -411,3 +411,124 @@ Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your re
 2. **(a)** the rivals post round the cell's car in plain sight from 2:46.
 3. **(a)** with the driver unturned, his car drives off at 6:13 and the mission ends.
 Next: Aster writes the GDD lines (a new version, then `bun run crew`); then Keel, Waymark, Latch as above.
+
+## Pulse (2026-10-25)
+The rival routine (§5 "Pulse") is written: **`briefs/059/pulse/rival-routine.md`**, with `rival-routine.values.json` (the eight new [S] values, the beat lists, every point and route named), `check.py` (`python3 -I briefs/059/pulse/check.py`, 104 checks, exit 0) and `measures.json`. Keel builds from it (K7 to K11 reconciled in its §9).
+- **The crew** is `rival-1` to `rival-5` plus `car:rivals`, roles by id: the posted three, the lookout (`rival-4`), the wheelman (`rival-5`). The timetable is computed back from the 3:10 park: enters 2:35.3, stops 2:46.4, leaves 2:54.4, parks 3:10.0; the three step out 2 s apart and post at 2:57.0, 2:59.5 and 3:26.5; the lookout posts at 3:18.8.
+- **Idle business:** loops of 34 to 42 s, no pose longer than 10 s, in place (the posted keep their cover), yaw windows a Watch can show. No bench or kiosk exists in the civic block, so the business uses only what a person carries.
+- **Follows:** the three walk after the cell's car 2 s after a Drive (first 3 spots of the new stand, shortest walk, ties the lower id); the car follows Vale's car 2 s after 6:13 and again whenever it parks with Vale's car away (a tip that ends late); W reaches Vale's door at 6:38.9 untipped.
+- **Warn:** the lookout walks to the driver, a 10 s word, leaves the map; only if the word is over by 5:40 (turn by 5:16.3). Late arrival: a table by the car's state when the cell has Vale; the car stops at the stand's rival stop and the missing riders step out in id order.
+- **New points for Vantage:** `rival-car-entry`, `rival-drop`, `rival-lookout`, `rival-tail` (also the service-drive stand's rival stop), `rival-vale-door`, `rival-front-stop`, `rival-lookout-exit`; `rival-park` re-sited to (90.5, -31.0); the `service-drive` stand and its spots. Routes for Splice: `rivals`, `getaway-service`. All are on the right grids and outside the pickup camera's cone (checked); `rival-entry` is retired when nothing reads it.
+- **Open:** the fight's count becomes bodies (Motive); the warn has a cliff at 5:16.3 (Motive, Fable, Glyph); the tail reaches the door at 6:38.9, not the brief's about 6:30 (Waymark); no car-car collision (Keel). The brief's 6:25.3 for Vale's car parking counts from 6:12; from 6:13.0 it is 6:26.3.
+Next owner: Keel.
+
+## Motive (2026-10-25)
+The rulebook-ready entries (key, value, tag, reason, source) are in `briefs/059/motive/rulings.json`. The probes are in `briefs/059/motive/probe/`, run on engine 0.30.0 with HEAD's inputs. Those inputs replay c036 38/38. Keel lands the entries in his 059 round.
+1. **Turn prices: unchanged.** Pay $70,000 · 50 s · +2 T. Help $40,000 · 50 s · +1 T. 5:40 and the false tip (44 s, +1 T, 3:50) are unchanged too; the tip is now given at the rival car.
+2. **Drive: $0 · 0 T · no Alert, confirmed.** No camera, guard or sweep sees the service-drive stand: it is 25.4 m from the pickup pole, whose reach is 18 m. Three additions:
+   - Drive is refused once the final fight has started, so nobody drives away from a sprung ambush.
+   - The posted three run after a Driven car (2.8 m/s: 21 s against the Drive's 28 s; Pulse F1 has them walk, 37 s), so the ambush can't be shed. **Sky: S3.**
+   - The turned driver learns the cell's car when it parks behind him. He gives it up only if he talks (the Talker test).
+3. **Rivals targeted before the fight.**
+   - The five are people. Shot: +2 T per hit, +2 more if he goes down. Taken down: +4 or +6, charged only when someone else's report of it is confirmed. Rivals never report, give statements or go missing.
+   - Standing works as for anyone: seen acts and found killings are −1 each, and a pre-fight fight is judged once by opponent.
+   - A knocked-out rival wakes after 2:00 and rejoins his crew.
+   - Shooting the posted three makes the run loud, so it never thins the safe fight.
+   - The floor of 3 holds against the tip and the driver. Takedowns can thin the fight further, priced by the systems: the three stand 2.3 m apart facing your car, the square is busy, and a body left on it is found. **Sky: S1.**
+4. **The fight with crew on the move.**
+   - The count is whoever is on the map at the fight's start, plus a wheelman coming back. At most 5.
+   - Arrivals never fire from the car. They get out at the stand (5 s) and come in on their path.
+   - The blocker is picked only from the crew on foot. The break counts the travellers.
+   - At the square, A-pressure and G fight c036's five at the same spots: the car is free 6.5 to 8 s after the spring. Brief 027's numbers are unchanged, and nothing depends on brief 039.
+   - Pulse's fixed drop at the square stands. For Vantage: at the service drive, the blocker's spot is within 5 s of its lane post, so the 6.5 s carry and Board can't beat it; each stand's rival stop is beyond 8 m and off the exit lane.
+5. **Loud at the service drive: yes, a second entry is needed, and only a near one works.** The loud police come from the entry nearest the car's stand:
+   - the square keeps the north street;
+   - the service drive gets the official entrance (the Office's own guards, 19.5 m away).
+   
+   Probe, the loud front with the cell waiting in the car at the service drive:
+   - north-street police: unfought, 3:55.3, 8 T;
+   - an Apron Road entry at the window's edge: also unfought, 3:55.3;
+   - the official entrance: the car is held, and the cell must fight.
+   
+   At the square, loud is 5:10.0 with 13 T. **Sky: S2.**
+6. **The driver's Call: retired.** It has no job left, and the pickup camera already has Loop, Disable and Shoot (brief 058). Routes route-b-block and route-b-block-board go. A Call on the driver is not offered. call-trail stays for Inez. The lookout warning stays automatic (Pulse F4). The cut-off at 5:16.3 is intended, and the driver's Turn line shows it until then.
+7. **K11:** `vale-in-s` 3, `rivals-drop-s` 8, `rivals-out-s` 5 and `driver-warns-s` 10, all [S], plus `rivals-follow-cm-s` 280 and `rivals-crew` 5 (it renames `fight-safe-hostiles`). `fight-modifier` is retired: the −1s are now people who have left. Pulse's five routine values (step 2 s, follow beat 2 s, posted 3, warn lag 3 s, lookout pace 2 m) are confirmed.
+
+**For Sky (each with my pick):**
+- **S1:** a fast or prepared cell may leave without a final fight (A-pressure with the car at the service drive goes by about 2:51; takedowns can thin the crew to none). Pick: allow it. It forgoes the fight's +1 Standing, and loud always fights.
+- **S2:** the loud police come from the nearest entry (the official entrance for the service drive). Pick: yes.
+- **S3:** the posted three run after a Driven car instead of walking. Pick: run.
+
+## Glyph (2026-10-25)
+Spec for Latch (§5 "Glyph"), in the Suborned HUD kit, for Sky's calls above (1a Drive, 2a the rivals post round the cell's car in plain sight from 2:46, 3a an unturned driver leaves at 6:13). Boards at play zoom, 2 px per game px, placement indicative (Latch projects from the site export): `briefs/059/board-01-rival-car-arrives.png` · `board-02-watch-reads-the-rivals.png` · `board-03-vale-car-driver-turned.png` · `board-04-drive.png`. The square at yaw 30 (`start-overhead-day`), the Office front and the bay at yaw 210 (`done-call-window`), the service door at yaw 210 (`briefs/023/latch/service-door-210.png`). Redraw: `python3 -I briefs/059/carsprite.py && python3 -I briefs/059/boards.py` (library `briefs/058/glib.py`; numbers `briefs/059/budget.json`). Stand-ins: the violet car in boards 01 and 02 is cut from the official car (Vela's sedan in rival trim replaces it); the cars in the yard and at the Office front are footprints (the models draw in game). Words are Fable's keys where they exist; the marks are icons and times, no sentence.
+
+### 0 · Words that already exist (Fable, text.json)
+`cards["rivals.coming"]` (beat "Rival car coming.") · `cards["rivals.drop"]` (icon, "Rivals post round our car") · `cards["rivals.arrive"]` (icon, the park) · `less.done.gain.parked` ("Parked", a Drive that has arrived) · the refusal codes for a held car, no driver aboard, an unknown stand (his, §Also). **Name clash to settle (Aster/Fable):** `actions.drive` is today's third-person "Take control" (HostDrive.cs); the new getaway order's verb is also "Drive" (Sky's 1a). The pill prints the order's own label, so give the new one its own key (e.g. `actions.drive-car`, label "Drive") and keep "Take control" as the other's label.
+
+### 1 · The rival car and its approach (boards 01, 02)
+- **The car** is a view (`car/rivals`, heading from the engine, Latch's §5). It is drawn the whole way: nothing is invented for the HUD. Violet is the rivals' signal colour (`#8a4fd0`, style contract `signal_colours.rivals`), used on the ground marks and the ring only; the model's trim is Vela's.
+- **Approach line** (the car's next leg, from its nose to its next stop, on the site's `rivals` route, never typed): violet `#8a4fd0`, 2.2 px, over an ink-deep underlay (4.8 px, 60 %), **diamond ticks** every 2.4 m (half-size 3.4 px, violet with an ink-deep rim), trimmed from the nose each frame so it shortens as the car drives. The stop is an `arrive` icon (cream, 13 px) on a `disc_dark_24` (22 px). Ground marks depth-test as the rest (brief 046): behind a building it hides. The pointer chip (below) takes over when the car leaves the screen. It is drawn from the car's first frame in sight (2:35), with no Watch: it is a car driving past; the Watch adds what is next (§2).
+- **The drop (2:46):** three people step out and walk to their posts: a dotted violet walk line (1.8 px, 2.5 on / 5 off) from the stop to each post, gone when they stand; each post is the **rival ring as built**: solid ring 2.4 px at r 0.55 m and a dashed ring (3.5 on / 3.5 off, 1.8 px, 82 %) at r 0.95 m, violet over the ink-deep underlay. Rings only; no icon over them (the budget).
+- **The car's onward leg** (round by Rocket Lane, Apron Road): the same approach line to its next stop; the **pointer chip** at the screen edge when it is off screen: `plate_dark` 22 px high, 52 px wide, the kit's `badges/signal_rival` in the cameo ring (16 px) and the `pointer` icon (14 px) turned toward it.
+- **The park (3:10):** a violet footprint stands in for the model in board 02 (4.6 × 1.9 m, 0.5 m corner radius, 60/255 fill); the **lookout** is one ring on the far kerb facing the official door; the wheelman has no mark (he stays in the car). The feed: the card as built; `rivals.coming` is the only beat.
+- **After a Watch on the rivals** (brief 054's "sight and marks": the three facts it teaches, three marks, nothing written):
+  1. **the next move:** the as-built window marker over the car (anchor +56 px), `nextevent` icon (the double arrow), the seconds to its next move, the underline draining over the leg: "24" at 0:24 (m:ss only if the leg is 60 s or longer);
+  2. **how close is too close:** a thin dashed violet ellipse (`7 on / 6 off`, 1.8 px, 78 %), the ground circle of the spring radius (the rulebook's 20 m, read, never typed; on screen 772 px wide by 475 tall at play zoom, so the arc crosses the screen: the board crops it) round the cell's **current** stand. Shown on hover of the rival car or any rival post, or with Alt; never at rest. The three posts are the rings already on the ground;
+  3. **it follows Vale's car:** a dotted violet line (2 px, 2.5/5) with filled chevrons (5.5 px, every 3 m) from the rival car to Vale's car, drawn once learned and only while the follow is possible.
+  A Listen on the driver ("that car's tailed us all week") adds nothing new to draw.
+
+### 2 · Vale's car with the driver turned (board 03)
+- **The route** (hover the car, or select the turned driver): the official bay to the service bay along Apron Road and the drive, on the drive grid: **cream over ink-deep, dashed** (2.4 px, 7 on / 6 off), the walk-and-run language, filled chevrons every 3 m (6 px). It is cream, not violet: it is the cell's own read of its contact's act, not a signal.
+- **The times:** a `plate_dark` 28 px high on the route: `car` icon 14 px, `6:13`, `pointer` icon 12 px, `6:25` (Jost Bold 13.5, cream). The engine writes both numbers (Pulse measured 6:26.3 from 6:13.0: the plate shows the engine's, the boards the brief's). Nothing else on the line.
+- **Parked (6:25 to 8:30):** the car stands where the model is; the **wait pip** is the as-built window marker over it: `car` icon + the countdown to 8:30 (m:ss, e.g. 1:52), the underline draining, amber and blinking in the last 10 s. Before it parks the same marker shows the fixed 8:30 with no underline. The **hand-off ring** is where the Enforcer stands to take: a cream ring on the ground (0.8 m, 2.6 px over the underlay) at the rear door (0.3 m behind the car's centre, 1.5 m to the door side), with a `disc_dark_24` 22 px carrying `take` at its side. It is the Take's act reach, the same ring the other acts use.
+- **Off screen:** an edge chip (`plate_dark` 22 px, `car` icon 14 px + `pointer` turned toward it) at the screen edge when the route leaves it (board 03, left).
+- **The front** (6:10): nothing new on the official door; the car's leaving is the route above. A Take ordered there is refused with the new code ("He's bringing Vale round the back": Fable's).
+- **The warn's cliff** (Pulse's open): the lookout's ring is the read; if the driver is turned after 5:16.3 the lookout is still on his ring when Vale gets in, which is visible. No new mark. If Sky wants the cliff on screen, it is one window marker on the driver (`nextevent` + the seconds to 5:16.3), in the grammar above.
+
+### 3 · Drive (board 04)
+- **Select the getaway car, or an operative in it:** every stand shows a **footprint ghost** on the ground: a dashed cream rounded rectangle 4.6 × 1.9 m (corner radius 0.5 m), 2.2 px over the ink-deep underlay, a filled chevron at the nose, a `disc_dark_24` 24 px with `car` at its centre. The stand the car is on is the same footprint under the car (no disc).
+- **Off screen:** an edge chip toward the stand (`car` + `pointer`).
+- **Shut stand** (the yard, until Vale's car is parked): the footprint at 50 % with a short dash (3 on / 5 off); a `plate_dark` 26 px high, 60 wide, above it: the `lock` icon 14 px and Vale's cameo (`badges/npc_councillor`, 18 px, in the chrome ring), the way a shut Go carries its lock and holder. No route. A hover or a try gives the refusal in the pill as Go's does. No sentence on the ground.
+- **Hover a live stand:** the footprint turns solid turquoise-light; the **route preview** from the car along the drive grid: cream dashed 2.4 px (7/6) with chevrons every 3 m, ending in the footprint; the verb pill (as built: `pill_status` 38 px, `disc_dark_24` with `car`, the dim head "Hold", the body `Drive · 28 s`, the driver's face, tail 22 px above the footprint). The brief writes "Drive · 0:28"; the game prints every time as seconds, so the pill prints **28 s**. A hold commits (0.5 s as every hold; the sweep, "Let go", the ring: as built), right click opens the panel with the same line.
+- **Footprint orientation:** from the stand's facing (nose out at the service stand; the board draws it behind Vale's car, 1 m behind: `CAR_L + 1.0` m back along the axis). Latch reads it from `getaway.stands[]`.
+- **The arrival:** the chip `gain.parked` ("Parked") on the car, one row, `car` icon 16 px.
+
+### 4 · HUD budget (rest ≤ 15 %, 22 % with a card or the ring open, 30 % with Alt)
+Baselines: the square at rest 4.70 %, the Office front 6.66 % (the captures' own HUD). Added: the approach line 4.71 %; the drop 4.74 %; the Watch's pip and line 6.77 %, and in the square 4.80 %; the route and plate at the bay 6.82 %, in the yard 6.80 %; parked with its pip and ring 6.79 %; the stand ghosts 4.74 %; the shut stand 6.73 %; the hover with its pill 7.11 %. With the world marks counted (lines, rings, ellipses): 4.82 to 7.45 %. Largest 7.45 %: far inside every limit. At most two icons over a person: rings only on the rivals; the car carries one disc or one marker.
+
+### 5 · Done-check and open
+- Done: the four boards; budget; no new kit asset (all icons exist: `car`, `arrive`, `pointer`, `lock`, `take`, `nextevent`, `p_alert`; badges `signal_rival`, `npc_councillor`). Not done: Unity (Latch); a 2160 shot of each for the 2x review once built; Vela's rival sedan (placeholder cut from the official car, `briefs/059/rival_car_standin.png` and its script).
+- Open: the "Drive" name clash (§0); the plate's two numbers come from the engine; the 20 m ring's name in the rulebook is Keel's; the 2x crop review waits for real frames.
+- **Next owner: Latch** (markers and the Drive input), Fable (the refusal words and the clash), Vela (the sedan).
+
+## Aster: inputs for Keel's 059 round (2026-10-25)
+Order: Splice's 061 round lands → Splice's 059 site export → Keel K1–K11 → Waymark → Latch (batch 0.2.118 item I, or the next batch).
+- **Spec:** Pulse's `briefs/059/pulse/` (rival-routine.md, values); Motive's `briefs/059/motive/rulings.json` (32 entries); Vantage's 17 points in mission.json; Glyph's and Fable's sections above; Fable's `pending` codes in text.json, to confirm or rename.
+- **Sky's open questions (decision log 23–25):** S1 (leave without a final fight), S2 (loud police from the entry nearest the stand) and S3 (posted rivals run after a moved car). Build each as a rule value set to Motive's pick, so Sky's answer is a value change, not a rebuild. The §07 lines change only once Sky answers.
+- **The getaway Drive** gets its own engine id, separate from Take control's `drive`. Record whether a dead camera was cut or shot, for Glyph's two discs.
+- **Rulings Keel makes with Motive and Pulse, from Vantage's second report:**
+  - Riders walking from `rival-tail` cross the first metres of the exit lane, and count as blocking while they are in it. Re-measure once Splice exports `getaway-service`.
+  - `rival-front-stop` is 0.25 m from the kerb, so the car hangs 0.66 m over the pavement. (63.75, −51.0) clears it but breaks Pulse's nearest-cell rule.
+  - The front stop is northbound, so a car arriving from `rival-car-entry` stops in the oncoming lane.
+  - `rival-vale-door` is 5.2 m from the yard stand, inside the 8 m fight-hold, so a posted wheelman holds the cell's car before any fight.
+- **Pulse's notes:**
+  - Cars don't collide: the rival car shares Rocket Lane and Apron Road with the getaway exit.
+  - The turned driver waits until 8:30, although his day in handover.people.json ends at 7:30 (an engine rule for a turned driver).
+  - The driver's warning is promised only while 5:16.3 can still be reached.
+- **Then Waymark:**
+  - re-compose the route B family;
+  - retire `route-b-block` and `route-b-block-board` (the driver's Call is retired);
+  - add MC-13 (every car stand's wait-in-the-car loud run is held);
+  - land mission.json's timeline and route-A strings for GDD v0.25 §07, with site.ts's word patterns (the fold's report lists them);
+  - re-record.
+- **Glyph:** `rival-front-stop` and Rocket Lane by the Office are 0 % seen at yaw 30, so the approach line there reads at 210.
+- **Also for Keel:**
+  - Fight-lab L3 replays route-g-fast-board to fixed tick 1236, where the guard is already down, so L3 and L3:charge read "not loud". Tie L3 to the Enforcer's move (Waymark, 0.31 retimes).
+  - tools/people/test/handover-fix.cast.json:619 still says "marked block" (Fable).
+- **The site, Aster's call (2026-10-25):** the 059 keys (`rivals.car`, `getaway.stands`) stay out of the live sim/data/handover.site.json until Keel's 059 engine reads them. Engine 0.31.0 rejects an unknown key, and batch 0.2.118 ships on the pre-059 site plus 061. Splice keeps the 059 output in a side file, or behind a site.ts switch, and turns it on in the same change as Keel's engine.
+- **`rival-park` is held at (84.0, -31.0) for batch 0.2.118 (Aster, 2026-10-25; Splice).** The live `mission.json` point and the live `sim/data/handover.site.json` place carry the pre-059 position; Vantage's target is **(90.5, -31.0)** (Apron Road's south kerb, the eastbound lane, `on: apron-road`, floor -0.18; the full entry is kept below).
+  - **The point's 059 entry, kept for Keel to paste back** (mission.json, as Vantage wrote it): `"at": [90.5, -31.0]`, `"src": "GDD §07: 3:10 rival car parks near pickup; re-sited 2026-10-25 from (84.0, -31.0) (brief 059 §5, Vantage; Sky's answer 2a: the rival crew drives in, drops a team and parks)"`, `"reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 12.3 m south of Vale's car in the official bay (78.2, -31.0), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round)."`, `"on": "apron-road"`, `"floor": -0.18`.
+  - **Where the target lives now:** `RIVAL_PARK_059 = [9050, -3100]` in `tools/sim/stands.ts` (with `placesFor059`). The side file `sim/data/handover.stands.json` is built with the park there (`rivals.car.route.chain.park` 14550, facing [0, 100]), SX-3 checks the target, and `tools/sim/stands.test.ts` pins both positions. Keel's 059 round moves the mission point to (90.5, -31.0), deletes the constant and `placesFor059` (and the test lines naming the hold), and runs `bun run sim:site` and `bun run cover`.
+  - **The 13 scenarios whose outcome moves at (90.5, -31.0)** (measured by running the whole suite with the site at the target: S05; S20, S21, N11b, N19b, N33, N78; N31, N81, N82, N87, N181, FW-SEEN). Keel re-sites them in the same round. DP1 also fails there, but it fails on the site's inputs hash at either position (see the site note below).
+  - **Also read the park:** `contracts/missions/handover/routes/routes.json` `fail-vale-leaves` (it expects Alert 1 at (84, −31), where the camera and the patrol report the Scout. With the park at the 059 target the Scout can wait out of the pickup camera's view and it reads Alert 0: Waymark re-checks it in the 059 round, together with the Scout's wait spots in careless-scout-idles-pickup and fight-safe-rivals-reach-vale), and the points `rival-drop`, `rival-tail` and the stand prose, which cite the target by number. Waymark's c037 sees the route at (84, -31) until Keel's round.
+  - **Cover:** `bun run cover` regenerated `contracts/world/civic-block.cover.json`: the four rival-car points `cv-011..cv-014` (of `car/rivals`) moved back 6.5 m with the park, to (82.25, -31.25), (83.75, -34.25), (83.75, -27.75), (85.75, -31.25) (they stood at 88.75/90.25/90.25/92.25 at the target). Pulse: the rival car's four cover points are the only change. Run `bun run cover` again after the move.

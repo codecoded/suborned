@@ -1,0 +1,24 @@
+== ADOPT (new pieces; status candidate until Splice sets adopted) ==
+  HaloRing  Ground  tris 2  lods -  size [1.24,0,1.24]  materials DK_Signal_Ring  parts []  files 5  default tags ["ground"] scale [0.9,1.1]
+  SignalLens  Signals  tris 650  lods 234  size [0.95,3.085,0.94]  materials DK_Chrome, DK_Enamel_Charcoal, DK_Cross_Beam, DK_Signal_Atlas, DK_Cross_Halo, DK_Signal_Rim  parts ["DK_SignalLens_Beam","DK_SignalLens_Figure","DK_SignalLens_Halo","DK_SignalLens_Rim","DK_SignalLens_Tens","DK_SignalLens_Units"]  files 12  default tags ["street"] scale [0.9,1.1]
+== RE-ADOPT (same id, new bytes: re-hash; sizes and triangles) ==
+  Kerb_Pearl_0  tris 228 -> 216  size [2,0.157,0.3] -> [1.994,0.154,0.3]  pivotOffset [0,-0.15] -> [0,-0.15]  placed 0  materials DK_Ground_RoadPearl+DK_Brass_Civic -> DK_Ground_RoadPearl
+  Kerb_Pearl_1  tris 336 -> 324  size [2,0.157,0.3] -> [1.994,0.154,0.3]  pivotOffset [0,-0.15] -> [0,-0.15]  placed 0  materials DK_Ground_RoadPearl+DK_Brass_Civic -> DK_Ground_RoadPearl
+  LightDotRow_1  tris 48 -> 24  size [1,0.002,0.43] -> [0.8,0.002,0.3]  pivotOffset null -> null  placed 284  materials DK_Brass_Civic+DK_Cross_Light -> DK_Enamel_Charcoal+DK_Cross_Light
+  LightDotRow_2  tris 92 -> 48  size [2,0.002,0.43] -> [1.8,0.002,0.3]  pivotOffset null -> null  placed 1278  materials DK_Brass_Civic+DK_Cross_Light -> DK_Enamel_Charcoal+DK_Cross_Light
+  RoadRibbon_Arc90_R4  tris 80 -> 40  size [4.1645,0.006,4.1645] -> [4.143,0.006,4.143]  pivotOffset [-1.997,-2.002] -> [-1.988,-2.012]  placed 0  materials DK_Brass_Civic+DK_Road_Lens+DK_Road_Pool -> DK_Road_Lens+DK_Road_Pool
+  RoadRibbon_Arc90_R8  tris 112 -> 56  size [8.1404,0.006,8.1404] -> [8.1193,0.006,8.1193]  pivotOffset [-4.009,-3.99] -> [-4.001,-3.999]  placed 0  materials DK_Brass_Civic+DK_Road_Lens+DK_Road_Pool -> DK_Road_Lens+DK_Road_Pool
+  RoadRibbon_Straight_6m  tris 16 -> 8  size [6,0.006,1.16] -> [6,0.006,1.12]  pivotOffset [0,-0.5] -> [0,-0.5]  placed 0  materials DK_Brass_Civic+DK_Road_Lens+DK_Road_Pool -> DK_Road_Lens+DK_Road_Pool
+== RETIRE (manifest `retired`; adopted today; placed in the world export today) ==
+  SignalEye  status adopted  placed 228  use ["signal:eye"]  -- brief 061 (Sky 2026-10-25): replaced by SignalLens (crossing_lens.py): the floating lens, oriented, with state and clock
+  KerbStud  status adopted  placed 768  use ["stud:kerb"]  -- brief 061 (Sky 2026-10-25): the brass studs go (they render as dark brown blobs)
+  CrossEdgeLine_1  status adopted  placed 32  use ["crossing:edge"]  -- brief 061 (Sky 2026-10-25): no brass on the crossing edge; the dot rows are the edge
+  CrossEdgeLine_2  status adopted  placed 1756  use ["crossing:edge"]  -- brief 061 (Sky 2026-10-25): no brass on the crossing edge; the dot rows are the edge
+  CrossInlayArc_R24_W08  status adopted  placed 370  use ["inlay:crossing-arc"]  -- brief 061 (Sky 2026-10-25): the seafoam inlay arcs go; the HaloRing marks where to wait
+  LightField_1  status adopted  placed 18  use ["crossing:field"]  -- brief 061 (Sky 2026-10-25): the lit field goes; the dot rows and the ring are the light
+  LightField_2  status adopted  placed 781  use ["crossing:field"]  -- brief 061 (Sky 2026-10-25): the lit field goes; the dot rows and the ring are the light
+== DATA ==
+  Data/signal-lens.json  sha256 8f7afc06c6039172  (catalogue.ts dataFiles() names PatrolRobot only: add SignalLens)
+== TEXTURES / MATERIALS the new pieces bring ==
+  HaloRing: Materials/DK_Signal_Ring.mat, Textures/signal_ring_v1.png
+  SignalLens: Materials/DK_Chrome.mat, Materials/DK_Enamel_Charcoal.mat, Materials/DK_Signal_Atlas.mat, Materials/DK_Signal_Rim.mat, Textures/signal_atlas_v1.png

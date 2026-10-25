@@ -178,7 +178,7 @@ namespace Suborned.Play
                     }
                 case "watch": { var p = CastOf(c.Target); return p == null ? "Nothing learned." : p.KRoutine ? $"Learned: {who}'s routine." : "Nothing learned."; }
                 case "listen": { var p = CastOf(c.Target); return p == null || (!p.KNeed && !p.KTemperament) ? "Nothing learned." : $"Learned: {Cap(who)} {NeedWords(p.Need)}; {TemperWords(p.Temperament)}."; }
-                case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is tied to the cabinet." : "The loop didn't hold.";
+                case "loop": c.Tone = g.LoopOn ? Feedback.Ok : Feedback.Info; return g.LoopOn ? "Camera looped. The Tech is free to go." : "The loop didn't hold."; // engine 0.31.0: no tether
                 case "reroute": c.Tone = Feedback.Ok; return "The patrol is off its sweep for a while.";
                 case "mislead": c.Tone = g.RivalsPresent ? Feedback.Info : Feedback.Ok; return g.RivalsPresent ? "The tip missed." : "The rivals follow the false tip. They may be back.";
                 case "enter": return g.Vale == ValeAt.WithEnforcer ? "Out at the service lane with Vale." : g.Ops[(int)OpId.Enforcer].Inside ? "Inside the Office." : "Back out without Vale.";

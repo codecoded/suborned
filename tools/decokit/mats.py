@@ -155,7 +155,7 @@ GROUND = {
     "DK_Granite_Kerb_B": dict(albedo="ground_kerb_v1.png", normal="ground_kerb_v1_normal.png", mask="ground_kerb_v1_mask.png", tile=(0.5, 0.5), smoothness=1.0, tint="#EAE6DF"),
 }
 
-UV_MAPPED = ("decal", "art", "emit", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
+UV_MAPPED = ("decal", "art", "emit", "emitmap", "fabric", "cutout", "paving", "face")  # these use the face's explicit (decal) UVs, not metric tiling
 SOURCE_ART = Path(os.environ.get("DECOKIT_SOURCEART") or Path(os.environ.get("SUBORNED_STORE", "~/Projects/the-suborned-store")).expanduser() / "source-art/DecoKit")
 EXTRA_TEXDIRS = tuple(Path(p).expanduser() for p in os.environ.get("DECOKIT_TEXDIRS_EXTRA", "").split(os.pathsep) if p)  # candidate textures (brief 008): searched first, the store stays read-only
 ART_DIRS = (Path(__file__).resolve().parent / "art/cafe",)  # source art kept in this repo (brief 020: the café's paintings and floor, with PROVENANCE.json)
@@ -204,6 +204,9 @@ KIND = {
     "ground": (0.75, 0.0, 0.0, 0.0, 1.0),  # world-metre-UV ground (GROUND); roughness comes from the _mask alpha where there is one
     "paving": (0.5, 0.0, 0.0, 0.0, 1.0),  # sheet-mapped stone (paving.py); roughness comes from the _mask alpha
     "face": (0.2, 0.0, 0.0, 0.0, 0.0),  # robot display face: drawn by DK_RobotFace.shader in Unity, clear here
+    # brief 061 (Vela): an emission-only signal surface. Base colour black; the emission colour is the state's (set per head at runtime by a MaterialPropertyBlock); with a texture (a glyph atlas or a clock
+    # ring, white on clear) the texture is the emission map AND the alpha clip, so only the glyph draws. register(name, "emitmap", state hex, strength[, cutoff]); Unity: unity_mats.emitmap_text.
+    "emitmap": (0.2, 0.0, 0.0, 0.0, 1.0),
     "glow": (1.0, 0.0, 0.0, 0.0, 1.0),  # light volume (crossing beam, halo disc; brief 009): register(name, "glow", hex, strength, alpha); no .mat is written, Latch draws it additive, double-sided
 }
 
@@ -277,9 +280,11 @@ def get(name):
     if kind == "face":
         m.surface_render_method = "BLENDED"
         b.inputs["Alpha"].default_value = alpha
-    if kind in ("emit", "glow"):
+    if kind in ("emit", "glow", "emitmap"):
         b.inputs["Emission Color"].default_value = col
         b.inputs["Emission Strength"].default_value = extra[0]
+    if kind == "emitmap":  # emission only: the base is black, so the lit state is all the surface shows
+        b.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1.0)
     if kind == "glow":
         m.surface_render_method = "BLENDED"
         b.inputs["Alpha"].default_value = extra[1]
@@ -304,6 +309,18 @@ def get(name):
             nt.links.new(tex.outputs["Color"], b.inputs["Base Color"])
         if kind == "emit":  # lit artwork (lightboxes): the texture is the emission
             nt.links.new(tex.outputs["Color"], b.inputs["Emission Color"])
+        if kind == "emitmap":  # the glyph is the emission (x the state colour) and its alpha the clip
+            mix = nt.nodes.new("ShaderNodeMix")
+            mix.data_type, mix.blend_type = "RGBA", "MULTIPLY"
+            mix.inputs["Factor"].default_value = 1.0
+            mix.inputs["B"].default_value = col
+            nt.links.new(tex.outputs["Color"], mix.inputs["A"])
+            nt.links.new(mix.outputs["Result"], b.inputs["Emission Color"])
+            nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
+            for lk in list(b.inputs["Base Color"].links):  # the texture colour was linked to the base above: an emitter has none
+                nt.links.remove(lk)
+            b.inputs["Base Color"].default_value = (0.0, 0.0, 0.0, 1.0)
+            m.surface_render_method = "DITHERED"
         if kind in ("decal", "cutout"):
             nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
             m.surface_render_method = "DITHERED"
@@ -393,7 +410,7 @@ def export_json(path):
         tex = TEXTURES.get(name)
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
-                         emission=extra[0] if extra else 0.0, texture=tex[0] if tex else "",
+                         emission=extra[0] if extra else 0.0, **({"cutoff": extra[1]} if kind == "emitmap" and len(extra) > 1 else {}), texture=tex[0] if tex else "",
                          tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": ROBOT_DETAIL} if name.startswith("DK_RobotEnamel_") else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))

@@ -20,14 +20,18 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 15. (035 Q16) The rampage ladder stays [L] with no rules until Sky opens it; Motive's "shoot anyone" ruling (brief 027 tuning.md §8/§9) is still to land.
 16. (Motive, 2026-10-23) Under the file story, may Vale be Idealist (a zealous official)? Today councillors are never Idealist; changing it re-casts Vale.
 17. (brief 027 tuning §15.2, Sky 2026-10-22 "I think so - sounds right") The final fight per agent stays "on trial" until Sky confirms after play.
-18. (brief 058 / 059, Motive) The driver's Call (block the pickup camera) has no route use now the front is ordinary: keep, retire or give it a new job; whether loud at the yard stand needs a second police entry.
+18. (brief 059, Motive 2026-10-25) The driver's Call (block the pickup camera) is retired, since the pickup camera has Loop, Disable and Shoot; `route-b-block` and `route-b-block-board` go. Motive's ruling; Sky may strike it.
 19. (brief 061 Q3, Q8) Painted crossing concepts, or the 3D mock-ups (they stand); heads edge-on in third person, judged in play.
 20. (brief 056 Q2, Q3) Silhouettes for hostiles and key people as well as the cell (as now), and the cut's rim: judged in play.
 21. (brief 043) The done moment: which pieces stay after Sky plays it; whether a busy agent's act is protected from a new order rather than only warned.
 22. (brief 035, 2026-10-22/24) On trial: haze #ecd9b4; the guideway #b3c7cf (the style contract and looks/harbour.json still say #96979c and must follow if kept).
+23. (brief 059 S1, Motive) May a fast or prepared cell leave without a final fight? §07 says "always; 3–5". A-pressure with the car at the service drive can be gone about 2:51, before the crew arrives, and takedowns can thin the crew to none. Motive's pick: allow it (leaving unfought gives up the fight's +1 Standing; loud always fights).
+24. (brief 059 S2, Motive) Loud police come from the entry nearest the car's stand: the north street for the square, the Office's official entrance (19.5 m) for the service drive. Without it, loud at the service drive wins unfought. Motive's pick: yes.
+25. (brief 059 S3, Motive) The three posted rivals run after a moved car (21 s, against Drive's 28 s) rather than walk (37 s). Motive's pick: run.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## v0.25.0 (2026-10-25; briefs 017–063; review sheet briefs/035-gdd-v0.25.md)
+- Aster, 2026-10-25 (brief 058, Waymark's 0.31 retimes): route A plants the loop first (about 1:25), then the optional reroute, which keeps A-board's 7 s of slack (reroute first leaves 3 s). G-kill's reroute moves to 1:25. The faster A-pressure and G-fast times that Loop v2 gives (the Tech is held 20 s, not 62) stand, because the result is the rules' (§07's reference results point to the latest mission check). careless-g-disable plants at 1:10.
 
 ### Since the 2026-10-21 draft
 - Sky, 2026-10-25, on the outstanding-work summary: "Your recommendation seem good". Every pick below from briefs 054, 056, 058, 059, 061, 062 and 063 is that approval; each brief's "Sky's calls (2026-10-25)" section lists them.
@@ -43,7 +47,7 @@ Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out o
 - Sky, 2026-10-25 (brief 062): the briefing B, "on the street", and the Begin glide; New game straight to the briefing (§10).
 - Sky, 2026-10-23 (brief 051): the front end (loading screen, main menu, Options, Controls, pause menu; restyle A, "A seems ok") (§10).
 - Sky, 2026-10-23 (brief 051, Fable's brief.json): the Handover's motive is the file, replacing the clearance order ("cheap", it never came up in dialogue). The record label "Clearance order" and its id stay in the needs data; its text is rewritten (§07 brief).
-- Sky, 2026-10-25 (brief 063): Vale B (white beard, chain of office), Inez A, the driver A, the patrol face A; Vale's model through tools/paid/paid.py with a $3 budget (§07 cast, §15).
+- Sky, 2026-10-25 (brief 063): Vale C (grey hair, round chrome spectacles, grey moustache, ivory tunic-jacket, black shoulder disc; Sky, on board-01: "I liked the last guy in the list", replacing his first pick, B), Inez A, the driver A, the patrol face A; Vale's model through tools/paid/paid.py with a $3 budget (§07 cast, §15).
 - Sky, 2026-10-24 (brief 041, next-batch item 33): "left click brings up the action ring. Right click then doesn't do anything ... makes RMB more relevant for firing only": the commander view's left click rings, the right hold fires, third person the same (§10 controls).
 - Sky, 2026-10-21/22 (brief 041): click walks, hold acts, commit on release, the hold latches to its target, an agent given a squad act leaves the selection; fire keeps going on the move ("Keep them firing until out of range") (§10).
 - Aster, 2026-10-22 (next-batch item 13, no reason against it in the code): a squad fire order goes to every selected agent who can fire; a holstered one draws, one out of range walks in, one that can't says why in two words (§06).

@@ -328,7 +328,7 @@ namespace Suborned.Play
             if (Game == null || on == Exploring) return;
             if (on)
             {
-                exploreWasPaused = Paused; ShowBriefing = false; Lab.explore = true;
+                exploreWasPaused = Paused; ShowBriefing = false; BriefCamLand(); Lab.explore = true;
                 if (!Driving) DriveEnter();
                 if (!Driving) { Lab.explore = false; return; }
                 Paused = true; Status = $"Explore: the clock is held; walk anywhere, nothing sees you ({controls.Label(PlayAction.FollowView)} or the panel ends it)";

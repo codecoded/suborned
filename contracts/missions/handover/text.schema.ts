@@ -26,6 +26,10 @@
 //              timeline mark, `fate` and `beat` on a card, `beat` on a scene, and the `less` block (the one-line price grammar, the feed, the
 //              objective line, the end card's one line, pops that are not locks, cancel costs in a few words, the Alt words for the outcome marks)
 //
+//   pending    briefs 058, 059 (GDD v0.25.0): words for engine changes that are approved but not built (locks, cards, events, dialogue, actions, hints, price
+//              fields, a Watch on the rival crew), each with its brief and a `guess` flag for any code the brief did not name; the host reads none of it, and an
+//              entry moves to its live section when Keel lands the code (the live locks and cards must equal the engine's codes)
+//
 // Rules the checker (text.test.ts) holds: every line ≤ 80 characters; a spoken line 1–12 words; no one named but the cast; no
 // modern speech; no strong profanity; every engine verb, refusal and fail has text; every reply the rulebook can produce has a line
 // for each Handover role and each temperament the role allows; every line naming Halcyon is marked pending.
@@ -40,7 +44,7 @@ export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as co
 export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', 'patrol'] as const;
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
-export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'reroute', 'enter', 'take',
+export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',
   'board', 'go', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
 export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
@@ -63,7 +67,7 @@ export const SHORT_MAX = 24;
 export const BEAT_MAX = 24;
 /** brief 014: the price line's fields, in the order the line shows them (canonical). `learns` = the icons of what a Watch or Listen teaches;
  *  `pace` = a carry's walking pace; `mark` = the outcome mark (works, refuse, half, unknown). */
-export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'alert', 'eye', 'learns', 'pace', 'mark'] as const;
+export const PRICE_FIELDS = ['name', 'usd', 'time', 'trail', 'alert', 'lasts', 'eye', 'learns', 'pace', 'mark'] as const;
 
 const clock = z.string().regex(/^\d{1,2}:[0-5]\d$/);
 const code = z.string().regex(/^[a-z][a-z0-9-]*$/);
@@ -102,7 +106,7 @@ export const Lock = z.strictObject({
 export const Activity = z.strictObject({
   idle: Line, down: Line, walking: Line, running: Line, drawing: Line, holstering: Line, firing: Line,
   holding: z.strictObject({ loop: Line, carry: Line, take: Line }),
-  acting: z.strictObject({ board: Line, watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
+  acting: z.strictObject({ board: Line, watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, disable: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
     takedown: Line, drop: Line, stash: Line, restrain: Line, body: Line.describe('any other work with a body (the rulebook cancel verb `body`: lift, drop, stash or tie)') }),
 });
 
@@ -255,7 +259,15 @@ export const Less = z.strictObject({
     steps: z.array(z.strictObject({ key: z.enum(['take', 'bring', 'carry', 'go']), when: z.string().min(1).describe('the game state in which the host shows this line as the goal') })).min(3)
       .describe('the goal line in order: take, then bring, then carry; each `key` names the line above, `when` is the state the host reads (Latch builds the trigger)'),
   }),
-  briefing: z.strictObject({ rule: z.string().min(1), goal: Short(32) }),
+  briefing: z.strictObject({
+    rule: z.string().min(1), goal: Short(32),
+    job: z.record(z.enum(AGENTS), Short(10)).describe('brief 062 (the briefing on the street): the dim word under each face on the cell strip, beside the agent\'s name (names.speakers): what that agent works on, one word, a noun'),
+    begin: Short(12).describe('brief 062: the light-line item that starts the mission (always focused; Space begins)'),
+    day: Short(8), night: Short(8),
+    target: Short(12).describe('brief 062: the header of the file card'), fact: Short(12).describe('brief 062: the one fact on the file card, beside the take icon'),
+    office: Short(24).describe('brief 062: the tag over the Office canopy'),
+    ways: z.record(code, Short(16)).describe('brief 062: the name of each way in on the two way cards, by the mission\'s way id (front-door, pickup)'),
+  }),
   end: z.strictObject({
     rule: z.string().min(1),
     win: Short(), withdraw: Short(),
@@ -318,7 +330,7 @@ export const Less = z.strictObject({
     rule: z.string().min(1),
     plate: z.record(code, Short(12)).describe('brief 043: the portrait plate\'s word after a landing, by the engine\'s outcome (turned, kept, not-yet, refused, suspicious) or done, or cancelled; at most two words'),
     gain: z.record(code, Short(16)).describe('brief 043: the gain chip\'s new words, one icon-plus-label fact each; a Watch or Listen\'s facts are less.intel; {s} is seconds'),
-    close: z.record(code, Short(16)).describe('brief 043: the pop when a window ends, by the marker\'s kind (guard, camera, patrol, rivals)'),
+    close: z.record(code, Short(16)).describe('brief 043: the pop when a window ends, by the marker\'s kind (guard, camera, patrol, rivals, and disable: the desk\'s report landing)'),
     cancel: z.strictObject({
       tag: Short(24), tagCost: Short(36), pop: Short(24), popCost: Short(36),
       cost: z.record(code, Short(16)).describe('the cost word by the engine\'s cancel cost; a cancel cost with no entry is free'),
@@ -332,6 +344,29 @@ export const Less = z.strictObject({
   }),
 });
 export type Less = z.infer<typeof Less>;
+
+// ---------------------------------------------------------------- pending: words drafted ahead of the engine (briefs 058, 059; GDD v0.25.0)
+/** Every entry says whether its code, key or trigger is a `guess` (the brief did not name it; Keel confirms or renames) and the `brief` it comes from. */
+const Meta = { guess: z.boolean().describe('true = the code, key or trigger is the writer\'s guess, not named by the brief; the engine\'s owner confirms or renames it'), brief: z.string().min(1) };
+export const Pending = z.strictObject({
+  rule: z.string().min(1),
+  locks: z.record(code, z.strictObject({ line: Line, short: Short(), verbs: z.array(z.string().regex(/^[a-z][a-z-]*$|^\*$/)).min(1), supersedes: z.boolean().optional().describe('true = replaces the live lock of the same code when the engine lands'), ...Meta }))
+    .describe('refusal codes the engine does not give yet (or gives with new numbers). The live `locks` must equal the engine\'s codes (a test), so these wait here until Keel lands the code; then the entry moves to `locks` unchanged'),
+  cards: z.record(z.string().regex(/^[a-z][a-z0-9.-]*$/), Card.omit({ at: true }).extend({ at: z.string().optional().describe('where the sight check looks; a value outside CARD_AT is a new place the host must learn'), replaces: z.boolean().optional().describe('true = replaces the live card of the same code'), ...Meta }))
+    .describe('feed cards for log codes the engine does not write yet; they move to `cards.items` when Keel logs the code (the live test: every card is for a code the engine logs)'),
+  events: z.record(code, EventDef.extend(Meta)).describe('events (situations that can speak) for the same new log codes'),
+  dialogue: z.array(Entry.extend(Meta)).describe('lines for the pending events, and new outcomes of live events (loop-ends ran-out)'),
+  actions: z.record(z.string().regex(/^[a-z][a-z-]*$/), Action.extend(Meta)).describe('verbs the engine does not have yet; `engine.do` is a guess unless the entry says otherwise'),
+  activity: z.record(z.string(), Line).describe('roster words by activity path (acting.disable)'),
+  price: z.strictObject({
+    fields: z.record(code, z.strictObject({ shows: z.string().min(1), hiddenWhen: z.string().min(1) })),
+    verbs: z.record(code, z.array(z.string()).min(1)),
+    examples: z.record(code, z.string().min(1).max(60)),
+  }).describe('price-line fields, verbs and worked lines the grammar of `less.price` does not have yet'),
+  targets: z.record(code, Target.partial().extend(Meta)).describe('things the cell can pick that the plan does not have yet, and tiers a live target gains (a Watch on the rival crew)'),
+  hints: z.record(z.string().regex(/^H\d+$/), Hint.omit({ verb: true }).extend({ verb: z.string().min(1), replaces: z.boolean().optional(), ...Meta })),
+});
+export type Pending = z.infer<typeof Pending>;
 
 /** The nouns a hint or objective line marks in [brackets]. */
 export const marked = (s: string): string[] => [...s.matchAll(/\[([^\]]+)\]/g)].map((m) => m[1]!);
@@ -390,6 +425,7 @@ export const TextFile = z.strictObject({
   dialogue: z.array(Entry).min(1),
   scenes: z.strictObject({ rules: z.record(z.string(), z.union([z.string(), z.record(z.string(), z.string())])), items: z.array(Scene).min(1) }),
   less: Less.describe('brief 014 (less reading): the short forms and grammar the HUD reads at rest; the long lines above are the Alt and debrief text'),
+  pending: Pending.optional().describe('briefs 058 and 059: words for engine changes that are approved but not built; nothing here is read by the host until its entry moves to its live place'),
 });
 export type TextFile = z.infer<typeof TextFile>;
 

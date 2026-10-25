@@ -69,7 +69,7 @@ namespace Suborned.Play
             var lib = host.figures; if (lib == null || id == null || !things.TryGetValue(key, out var th)) return;
             if (figs.TryGetValue(key, out var have)) { if (have.id == id) return; Object.Destroy(have.model.gameObject); figs.Remove(key); }
             var e = lib.Find(id); if (e?.model == null || lib.controller == null) return;
-            var t = th.t; var inst = Object.Instantiate(e.model, t, false); inst.name = "figure";
+            var t = th.t; var inst = Object.Instantiate(e.model, t, false); inst.name = "figure"; MarkPerson(key, inst); /* brief 056 F: the silhouette bits */
             if (inst.GetComponentInChildren<LODGroup>() is LODGroup lg && e.lodHeights.Length > 0)
             {
                 var lods = lg.GetLODs(); for (int i = 0; i < lods.Length; i++) lods[i].screenRelativeTransitionHeight = e.lodHeights[Mathf.Min(i, e.lodHeights.Length - 1)]; lg.SetLODs(lods);
@@ -235,7 +235,7 @@ namespace Suborned.Play
         Transform Visual(string key, GameObject model)
         {
             if (model == null || !things.TryGetValue(key, out var th)) return null;
-            var t = th.t; var inst = Object.Instantiate(model, t, false); inst.name = "model";
+            var t = th.t; var inst = Object.Instantiate(model, t, false); inst.name = "model"; MarkPerson(key, inst); /* brief 056 F: a robot is a person to the silhouettes; a car is not */
             // until it moves, a car stands along its street, never nose to the kerb: the getaway car along its exit lane; the official car
             // across the line from it to the driver's meeting point (the pavement beside it)
             var S = host.Game.S; Vector3 along = Vector3.zero;

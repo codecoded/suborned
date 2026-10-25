@@ -27,12 +27,12 @@ describe('the Handover route manifest and scripts', () => {
     // §07: route A and route B quiet, a loud route, every fail listed, both final-fight branches played (N10, N11 landed)
     const by = (k: string) => L.manifest.scripts.filter(s => s.kind === k).map(s => s.id);
     // brief 018 §5: each quiet route as fight it out (the id) and board and go (<id>-board)
-    expect(by('quiet')).toEqual(['route-a', 'route-a-board', 'route-a-pressure', 'route-a-pressure-board', 'route-b', 'route-b-board', 'route-b-block', 'route-b-block-board', 'route-g', 'route-g-board', 'route-g-fast', 'route-g-fast-board', 'route-g-kill', 'route-g-kill-board']);
+    expect(by('quiet')).toEqual(['route-a', 'route-a-board', 'route-a-pressure', 'route-a-pressure-board', 'route-a-disable', 'route-b', 'route-b-board', 'route-b-block', 'route-b-block-board', 'route-g', 'route-g-board', 'route-g-fast', 'route-g-fast-board', 'route-g-kill', 'route-g-kill-board']);
     expect(by('loud')).toEqual(['loud', 'loud-fight', 'loud-fast']);
     expect(by('outcome')).toEqual(['withdraw', 'loud-left-downed', 'loud-left-standing']); // brief 018 §5: an op left downed, an op left standing
-    expect(L.manifest.scripts.filter(s => s.expects.left).map(s => `${s.id} ${JSON.stringify(s.expects.left)}`)).toEqual(['loud-left-downed {"scout":"captured downed"}', 'loud-left-standing {"scout":"captured fighting"}']);
+    expect(L.manifest.scripts.filter(s => s.expects.left).map(s => `${s.id} ${JSON.stringify(s.expects.left)}`)).toEqual(['loud-left-downed {"scout":"captured downed"}', 'loud-left-standing {"scout":"captured fighting"}', 'careless-g-disable {"scout":"captured fighting","fixer":"captured downed","tech":"captured fighting"}']); // brief 058: Disable on route G lifts the final fight to Alert 2, and the three who would walk out are captured
     expect(Object.values(L.scripts).some(s => s.orders.some(o => o.do === 'extract'))).toBe(false); // brief 018: extract is retired into Board and Go
-    expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held', 'careless-enforcer-watches-guard', 'careless-scout-idles-pickup']); // brief 013 D; brief 031
+    expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held', 'careless-enforcer-watches-guard', 'careless-scout-idles-pickup', 'careless-g-disable', 'careless-loop-runs-out']); // brief 013 D; brief 031; brief 058 (Loop v2, Disable)
     expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in official car', 'rivals reach Vale', 'district seals', 'Enforcer down', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
     expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual([]);
     expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale']);
@@ -98,6 +98,9 @@ describe('the §09 conditions, each with a failing example', () => {
     for (const s of ['route-b', 'route-b-block']) p[`${s}~no-driver`] = fail('abduction-seen-camera');
     // brief 031: the Enforcer watching the guard from his side is sensed, and the blow fails; the Scout idling in the pickup camera's view is reported
     p['careless-enforcer-watches-guard'] = fail('enforcer-down'); p['careless-scout-idles-pickup'] = { ...win(4739, 3, { 'attention.reporting': 1553 }), alert: 1 };
+    // brief 058: route A with Disable wins one Trail dearer; route G with Disable wins at Alert 2 with the three captured; a loop planted first runs out before the Enter
+    p['route-a-disable'] = win(3097, 4, { 'enter.in': 2329 }); p['careless-g-disable'] = { ...win(2847, 12), alert: 2, campaignTrail: 12, left: { scout: 'captured fighting', fixer: 'captured downed', tech: 'captured fighting' } };
+    p['careless-loop-runs-out'] = fail('entry-seen-camera'); p['route-a-disable~no-waitress'] = fail('entry-seen-guard');
     for (const s of L.manifest.scripts) if (s.expects.alert !== undefined && p[s.id]) p[s.id] = { ...p[s.id]!, alert: s.expects.alert }; // each ends at the Alert its manifest states
     return p;
   };

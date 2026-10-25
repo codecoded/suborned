@@ -77,7 +77,7 @@ namespace Suborned.Sim
         {
             var g = r.G;
             r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
-            r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance"); r.Done(Scout);
+            r.Do(Scout, "watch", Inez); r.Done(Scout);
             r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
             r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
             r.Done(Scout); HelpUntilTurned(r, Inez);
@@ -85,9 +85,10 @@ namespace Suborned.Sim
             // route still calls at the first sweep opening from 3:48, as it did, so Vale comes out at 5:53 and not at 4:32, when guard 74 crosses the
             // service lane on his new way round the police post (he would see the carry and radio it: Alert 2, the patrol's fight)
             while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick)) g.Step();
+            r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:16 by the tether)
             r.Do(Fixer, "call", Inez);
             r.To(r.Send(Enf, "d:Office entrance"));
-            while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
+            while (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn) g.Step();
             r.Do(Enf, "enter");
             if (reroute) r.Do(Tech, "reroute", "patrol");
             r.Done(Enf);
@@ -165,7 +166,7 @@ namespace Suborned.Sim
                 // shorter and the seal falls later behind him
                 r.SendTo(Enf, new Pt(600, -2500));
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Fixer, "d:Courtyard"), r.Send(Tech, "cabinet")));
-                r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance");
+                r.Do(Scout, "watch", Inez);
                 r.Done(Scout); r.To(r.Send(Scout, "beside-inez"));
                 r.Do(Scout, "listen", Inez); r.Done(Scout);
                 // Changed: with every action taking its time the shot lands after the rivals park (3:10). A player who means to shoot sends
@@ -181,6 +182,7 @@ namespace Suborned.Sim
                     r.Done(Fixer);
                 }
                 r.Is(g.Inez.Turned, "Inez is turned");
+                r.Done(Tech); r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:34 by the tether)
                 r.Do(Fixer, "call", Inez);
                 r.To(g.RivalAt); r.To(Math.Max(g.Tick, r.Arrival(Scout))); r.Do(Scout, "mislead", "rivals");
                 r.To(g.LureTick + g.VisitWalkTicks);
@@ -266,7 +268,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
                 r.Is(!g.Inez.KRoutine, "arriving at the café does not observe Inez");
-                r.Do(Scout, "watch", Inez); r.Do(Tech, "loop", "entrance");
+                r.Do(Scout, "watch", Inez);
                 r.Done(Scout);
                 r.Is(!g.Inez.KNeed, "watching does not reveal Inez's debt");
                 r.To(r.Send(Scout, "beside-inez"));
@@ -275,6 +277,7 @@ namespace Suborned.Sim
                 r.Done(Scout);
                 HelpUntilTurned(r, Inez); // as many Helps as the card asks (the cast's temperament, §04)
                 while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick) || g.SweepSeesEntrance(g.Tick - 1)) g.Step(); // call as the patrol's sweep comes onto the door, from 3:48, so the Enforcer arrives under it and waits it out (engine 0.30.0: Pulse's sweep of 2026-10-24 covers the door 0-29.2 s and 70.9-100 s of its period, 6.4 s more than the old line's 0-26 and 74.1-100; at 3:48, phase 28.0, the old "covers now" call left 1.2 s, so he arrived into the opening)
+                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:34 by the tether)
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
                 r.Is(g.PatrolWatching(r.At("d:Office entrance")), "the patrol covers the entrance at the first opening");
@@ -368,7 +371,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.Send(Enf, "d:Office approach")));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 r.Fire(Enf, GuardR); r.Is(r.Until(() => g.GuardDown, T(30)), "the guard is down");
                 int mark = g.NextMarkOf(g.GuardP, g.Tick);
                 r.Is(mark > g.Tick && mark <= g.Tick + T(g.R.CheckInPeriodS) && (mark - T(60)) % T(g.R.CheckInPeriodS) == 0, "his next mark is within 90 s, on his shift's 90 s marks (1:00, 2:30, …)");
@@ -389,7 +392,9 @@ namespace Suborned.Sim
                 // camera when she reaches the cabinet, which keeps the guard down before his 2:30 mark (waiting put him down at 2:30.8).
                 int enfAt = r.SendTo(Enf, BesideDoor);
                 r.To(r.Send(Tech, "cabinet"));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                r.To(g.Tick + T(42)); // Loop v2 (engine 0.31.0): the loop lands 42 s sooner than the held loop did (20 s, not 62 s); the reroute keeps its tick
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 r.To(Math.Max(g.Tick, enfAt));
                 r.Is(!g.GuardWatching(r.Op(Enf).Pos), "out of the guard's cone");
                 r.Fire(Enf, GuardR);
@@ -655,13 +660,18 @@ namespace Suborned.Sim
                 r.Is(g.CanCall(Inez), "she can be called");
             });
 
-            Add("S26", "448", "The Tech's tether: leaving the cabinet ends the loop.", r =>
+            Add("S26", "448", "Loop v2 (brief 058 §2, engine 0.31.0; it was the Tech's tether): leaving the cabinet keeps the loop; it runs out on its own loop.run after it lands.", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Tech, "cabinet")); r.Do(Tech, "loop", "entrance"); r.Done(Tech);
+                int landed = g.Tick;
                 r.Is(!g.CameraWatching("entrance", r.Stand("d:Office entrance")), "the loop holds");
                 r.To(r.SendTo(Tech, r.Stand("cabinet") + new Pt(-900, 0)));
-                r.Is(!g.LoopOn, "leaving the cabinet ends the loop");
+                r.Is(g.LoopOn && !g.CameraWatching("entrance", r.Stand("d:Office entrance")), "leaving the cabinet keeps the loop");
+                r.To(landed + T(g.R.LoopRunS) - 1);
+                r.Is(g.LoopOn, "still looped a tick before it runs out");
+                r.To(landed + T(g.R.LoopRunS));
+                r.Is(!g.LoopOn && g.Log.Exists(l => l.Code == "loop.ends" && l.Tick == g.Tick), "loop.ends at landing + loop.run");
                 r.Is(g.CameraWatching("entrance", r.Stand("d:Office entrance")), "the camera is live again");
             });
 
@@ -706,7 +716,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech); r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
+                r.Do(Tech, "reroute", "patrol"); r.Done(Tech); r.Do(Tech, "loop", "entrance"); r.Done(Tech); /* Loop v2 (engine 0.31.0, brief 058 §4): the 2:00 loop is planted after the Reroute */
                 // brief 013 (Motive §5.1): the guard checks in every 90 s; a shot just after a mark leaves the shot's own report to call the unit
                 int mark = g.NextMarkOf(g.GuardP, g.Tick); if (mark - g.Tick < T(30)) r.To(mark + 1);
                 r.Fire(Enf, GuardR); r.Until(() => g.GuardDown, T(30));
@@ -1077,6 +1087,7 @@ namespace Suborned.Sim
             WindowCases(); // engine 0.24.0 (brief 043 §6): Windows(), the window marker's one read, and patrol.returns (ScenariosWindows.cs)
             FireWhyCases(); // engine 0.25.0 (Sky playing 0.2.56): why a hostile fires on an operative, FireWhyOf and ai.why (ScenariosFireWhy.cs)
             NoticeCases(); // engine 0.28.0 (briefs 054, 055): sight from real heights, civilian notice by cone and Alert, the Watch that shows something (ScenariosNotice.cs)
+            CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
         }
     }

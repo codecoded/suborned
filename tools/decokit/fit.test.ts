@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
 import { NARROW, fitRow, printTable, type Built } from './fit';
-import { readOrders } from './orders';
+import { BUILD, readOrders } from './orders';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const orders = readOrders(), gen = kit.assets.filter(a => a.source === 'generated' && a.order); // pieces built to a plan order; generated pieces without one (crowns, horizon, civic, stations) have no site to fit
@@ -54,4 +54,12 @@ test('a tier as wide as the plan passes, one short by the tolerance passes, one 
     expect(pass(want.map(([w, d], i) => (i === 1 ? [w - NARROW - 0.02, d] : [w, d]) as [number, number])).length, id).toBe(1);
     expect(pass(undefined).length, id).toBe(1);
   }
+});
+
+// A bare `bun run decokit` builds the plan's regen orders and the plain pieces in orders.ts BUILD (brief 061): each is catalogued, adopted and from the generator; none is retired.
+test('orders.json carries the BUILD pieces beside the regen orders; each is an adopted generated piece in kit.json and none is one of the retired', () => {
+  expect(orders.build).toEqual([...BUILD]);
+  expect(BUILD).toEqual(expect.arrayContaining(['SignalLens', 'HaloRing', 'LightDotRow_2', 'LightDotRow_1', 'Kerb_Pearl_0', 'Kerb_Pearl_1', 'RoadRibbon_Straight_6m', 'RoadRibbon_Arc90_R4', 'RoadRibbon_Arc90_R8']));
+  for (const id of BUILD) { const a = kit.assets.find(x => x.id === id); expect(a?.status, id).toBe('adopted'); expect(a?.source, id).toBe('generated'); }
+  for (const id of ['SignalEye', 'KerbStud', 'CrossEdgeLine_1', 'CrossEdgeLine_2', 'CrossInlayArc_R24_W08', 'LightField_1', 'LightField_2']) expect(BUILD).not.toContain(id);
 });

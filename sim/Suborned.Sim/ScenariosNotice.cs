@@ -114,7 +114,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true }, MvTo(0, Enf, BesideDoor), Mv(0, Scout, "d:Office approach"), Mv(0, Fixer, "crew:fixer"),
-                    Act(166, Tech, "loop", "entrance"), Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // N68's route G-kill; the Tech holds the loop
+                    Act(300, Tech, "loop", "entrance") /* Loop v2 (brief 058 §4): planted at 0:30 so its 2:00 runs past the Enter */, Act(462, Scout, "watch", "guard"), Mv(662, Scout, "crew:scout"), Act(1060, Tech, "reroute", "patrol"), // N68's route G-kill; the Tech holds the loop
                     MvTo(1440, Enf, BesideGuard), Act(1510, Enf, "takedown", "guard", "kill"), MvTo(1540, Enf, new Pt(1025, -4625)), MvTo(1540, Scout, new Pt(1175, -4825)), MvTo(1540, Fixer, new Pt(1025, -4825)));
                 r.To(T(160));
                 var body = g.Bodies.FirstOrDefault(b => b.P == g.GuardP);

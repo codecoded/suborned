@@ -5,7 +5,7 @@
 // Unknown = reject: no getaway route, a route that reaches no end, a bay off every road, or a lane crossing roads of different widths throws.
 // Rule SX-1 (checkExit): the lane exists, is as long as the rulebook's fight-block-m, starts at the car and lies on the carriageway.
 import type { Derived, Plan } from '../plan/plan';
-import { edges, dijkstra } from '../plan/graph';
+import { edges, routeVia } from '../plan/graph';
 import { toPlanFn } from '../plan/civic';
 import { sample, segDist, dist, type Sample, type V } from '../plan/geom';
 
@@ -17,20 +17,20 @@ export function blockM(rulebook: { values: Record<string, { v: number }> }): { m
 }
 
 export type Exit = { polyline: number[][]; w: number; src: string };
-type Mission = { routes: { id: string; from: string; to: string[] }[]; destinations: { name: string; at: V }[] };
+type Mission = { routes: { id: string; from: string; via?: string[]; to: string[] }[]; destinations: { name: string; at: V }[] };
 
 const cm = (m: number) => Math.round(m * 100);
 const STEP = 0.5; // m between samples of a road's centreline
 const LANE_EPS = 0.02; // m: the polyline may leave the centreline by this much when thinned (below the cm the file keeps)
 
 /** Plan → block frame (the inverse of civic.blockToPlan), in metres. */
-function toBlockFn(spec: { blockToPlan: { origin: V; x: V; y: V } }) {
+export function toBlockFn(spec: { blockToPlan: { origin: V; x: V; y: V } }) {
   const o = spec.blockToPlan.origin, ax = spec.blockToPlan.x, ay = spec.blockToPlan.y, det = ax[0] * ay[1] - ax[1] * ay[0];
   return (p: V): V => { const dx = p[0] - o[0], dy = p[1] - o[1]; return [(dx * ay[1] - dy * ay[0]) / det, (ax[0] * dy - ax[1] * dx) / det]; };
 }
 
 /** Nearest point of a sampled centreline to p: chainage and distance. Projects onto the straight pieces between samples. */
-function project(ss: Sample[], p: V): { s: number; d: number } {
+export function project(ss: Sample[], p: V): { s: number; d: number } {
   let best = { s: 0, d: Infinity };
   for (let i = 1; i < ss.length; i++) {
     const a = ss[i - 1]!, b = ss[i]!, abx = b.p[0] - a.p[0], aby = b.p[1] - a.p[1];
@@ -41,13 +41,13 @@ function project(ss: Sample[], p: V): { s: number; d: number } {
   return best;
 }
 /** The point at chainage s of a sampled centreline. */
-function at(ss: Sample[], s: number): V {
+export function at(ss: Sample[], s: number): V {
   const k = Math.min(ss.length - 1, Math.max(1, ss.findIndex((x) => x.s >= s)));
   const a = ss[k - 1]!, b = ss[k]!, t = b.s > a.s ? Math.max(0, Math.min(1, (s - a.s) / (b.s - a.s))) : 0;
   return [a.p[0] + (b.p[0] - a.p[0]) * t, a.p[1] + (b.p[1] - a.p[1]) * t];
 }
 /** Drops the points that lie within `eps` m of the chord between their kept neighbours (a straight stretch is two points). */
-function thin(pts: V[], eps: number): V[] {
+export function thin(pts: V[], eps: number): V[] {
   if (pts.length < 3) return pts;
   let worst = 0, wi = 0;
   for (let i = 1; i < pts.length - 1; i++) { const d = segDist(pts[i]!, pts[0]!, pts.at(-1)!); if (d > worst) { worst = d; wi = i; } }
@@ -56,28 +56,26 @@ function thin(pts: V[], eps: number): V[] {
 }
 
 /** The plan road whose centreline is nearest p, and how far. */
-const nearestRoad = (d: Derived, p: V) => d.roads.map((r) => ({ road: r, d: r.line.slice(1).reduce((m, b, i) => Math.min(m, segDist(p, r.line[i]!, b)), Infinity) })).reduce((m, c) => (c.d < m.d ? c : m));
+export const nearestRoad = (d: Derived, p: V) => d.roads.map((r) => ({ road: r, d: r.line.slice(1).reduce((m, b, i) => Math.min(m, segDist(p, r.line[i]!, b)), Infinity) })).reduce((m, c) => (c.d < m.d ? c : m));
 
-/** The exit lane of the mission's getaway route (plan frame points, in metres, with the roads it lies on and its width). */
-export function exitLane(plan: Plan, d: Derived, mission: Mission, bay: string, blockLen: number): { line: V[]; w: number; route: { id: string; from: string; to: string }; roads: string[]; length: number } {
-  const r = mission.routes.find((x) => x.id === 'getaway');
-  if (!r) throw new Error('the mission gives no routes.getaway: the exit lane has nothing to follow (brief 018 §1)');
-  const dest = mission.destinations.find((x) => x.name === bay);
-  if (!dest) throw new Error(`the mission has no destination "${bay}" for the car`);
-  const E = edges(plan, d), { D, trace } = dijkstra(E, r.from);
-  const to = r.to.reduce((b, t) => ((D.get(t) ?? Infinity) < (D.get(b) ?? Infinity) ? t : b));
-  if (!Number.isFinite(D.get(to) ?? Infinity)) throw new Error(`routes.getaway from ${r.from} reaches none of ${r.to.join(', ')}`);
-  const path = trace(to);
-  if (!path.length) throw new Error(`routes.getaway starts at its end (${r.from}): no road to follow`);
+/** The exit lane of a mission getaway route (plan frame points, in metres, with the roads it lies on and its width). `bay` = a destination's name, or the car's stand as a block-frame point (brief 059: the service-drive stand is a mission point, not a destination);
+ *  `routeId` = the mission route the lane follows: `getaway` for the square's stand, `getaway-service` for the service drive's. */
+export function exitLane(plan: Plan, d: Derived, mission: Mission, bay: string | V, blockLen: number, routeId = 'getaway'): { line: V[]; w: number; route: { id: string; from: string; to: string }; roads: string[]; length: number } {
+  const r = mission.routes.find((x) => x.id === routeId);
+  if (!r) throw new Error(`the mission gives no routes.${routeId}: the exit lane has nothing to follow (brief 018 §1)`);
+  const bayAt: V | undefined = typeof bay === 'string' ? mission.destinations.find((x) => x.name === bay)?.at : bay;
+  if (!bayAt) throw new Error(`the mission has no destination "${bay}" for the car`);
+  const E = edges(plan, d), rp = (() => { try { return routeVia(E, r); } catch { throw new Error(`routes.${routeId} from ${r.from} reaches none of ${r.to.join(', ')}`); } })(), to = rp.to, path = rp.edges;
+  if (!path.length) throw new Error(`routes.${routeId} starts at its end (${r.from}): no road to follow`);
   // the route as nodes in travel order, and as runs of one road
-  const nodes = [r.from]; for (const e of path) nodes.push(e.a === nodes.at(-1) ? e.b : e.a);
+  const nodes = rp.nodes;
   const runs: { road: string; from: string; to: string }[] = [];
   path.forEach((e, i) => { const last = runs.at(-1); if (last && last.road === e.road) last.to = nodes[i + 1]!; else runs.push({ road: e.road, from: nodes[i]!, to: nodes[i + 1]! }); });
   const road = (id: string) => d.roads.find((x) => x.id === id)!;
   const ss = new Map<string, Sample[]>(); const samples = (id: string) => ss.get(id) ?? (ss.set(id, sample(road(id).segs, STEP)), ss.get(id)!);
   const chain = (id: string, n: string) => project(samples(id), plan.nodes[n] as V).s;
 
-  const bayPlan = toPlanFn(plan.civic)(dest.at);
+  const bayPlan = toPlanFn(plan.civic)(bayAt);
   const first = project(samples(runs[0]!.road), bayPlan);
   const near = nearestRoad(d, bayPlan); // the car stands at the kerb beside its road, so the bay need not lie on the carriageway; it must be this road's
   if (near.road.id !== runs[0]!.road) throw new Error(`the car's bay (${bay}) is nearest ${near.road.id} (${near.d.toFixed(1)} m), not ${runs[0]!.road}, the getaway route's first road`);
@@ -103,12 +101,12 @@ export function exitLane(plan: Plan, d: Derived, mission: Mission, bay: string, 
 }
 
 /** `getaway.exit` for the site file: the lane in the site frame (cm), its width in metres, and where it comes from. */
-export function buildExit(plan: Plan, d: Derived, mission: Mission, bay: string, rulebook: { values: Record<string, { v: number }> }): Exit {
-  const bm = blockM(rulebook), lane = exitLane(plan, d, mission, bay, bm.m), toBlock = toBlockFn(plan.civic as any);
+export function buildExit(plan: Plan, d: Derived, mission: Mission, bay: string | V, rulebook: { values: Record<string, { v: number }> }, routeId = 'getaway'): Exit {
+  const bm = blockM(rulebook), lane = exitLane(plan, d, mission, bay, bm.m, routeId), toBlock = toBlockFn(plan.civic as any);
   return {
     polyline: lane.line.map((p) => { const b = toBlock(p); return [cm(b[0]), cm(b[1])]; }),
     w: lane.w,
-    src: `mission.json routes "${lane.route.id}" (${lane.route.from} to ${lane.route.to}), its first road ${lane.roads.join(' then ')} (plan.roads w ${lane.w} m); the car's bay "${bay}" projected onto it, walked forward fight-block-m ${bm.m} m (${bm.fromRulebook ? 'rulebook' : 'rulebook has no fight-block-m yet: brief 018 §1 sets 30'}). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts`,
+    src: `mission.json routes "${lane.route.id}" (${lane.route.from} to ${lane.route.to}), its first road ${lane.roads.join(' then ')} (plan.roads w ${lane.w} m); ${typeof bay === 'string' ? `the car's bay "${bay}"` : `the car's stand at block (${bay[0]}, ${bay[1]})`} projected onto it, walked forward fight-block-m ${bm.m} m (${bm.fromRulebook ? 'rulebook' : 'rulebook has no fight-block-m yet: brief 018 §1 sets 30'}). points: site frame, cm; w: metres. Brief 018 §1, tools/sim/getaway.ts`,
   };
 }
 

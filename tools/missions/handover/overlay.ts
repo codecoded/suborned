@@ -17,7 +17,7 @@ import type { Check } from '../../plan/checks';
 import { type Civic, toPlanFn } from '../../plan/civic';
 import { standAt } from '../../plan/floors';
 import type { World } from '../../../contracts/world/world.schema';
-import { dijkstra } from '../../plan/graph';
+import { routeVia } from '../../plan/graph';
 import { lineDist, inPoly, type V } from '../../plan/geom';
 import type { Overlay, Route } from '../../plan/overlay';
 import { currentPeople } from '../../people/current';
@@ -91,7 +91,7 @@ export function levelCheck(plan: any, d: Derived, civ: Civic, m: { destinations:
   };
 }
 
-function build(plan: any, destinations: { name: string; at: V; surface: string }[], routes: { id: string; name: string; from: string; to: string[]; toName?: string }[], cast?: CastMission, people?: PeopleIn): Overlay {
+function build(plan: any, destinations: { name: string; at: V; surface: string }[], routes: { id: string; name: string; from: string; via?: string[]; to: string[]; toName?: string }[], cast?: CastMission, people?: PeopleIn): Overlay {
   const toPlan = toPlanFn(plan.civic), points = destinations.map(d => ({ name: d.name, p: toPlan(d.at) }));
   return {
     origins: p => (p.standards.walking.from as string[]).map(name => ({ name, p: points.find(x => x.name === name)!.p })),
@@ -103,12 +103,12 @@ function build(plan: any, destinations: { name: string; at: V; surface: string }
     routes: ({ plan, d, E, roadById }) => {
       const gateAt = new Map(plan.gates.map(g => [`${g.node}|${g.road}`, g.name]));
       const out: Route[] = routes.map(r => {
-        const { D, trace } = dijkstra(E, r.from), to = r.to.reduce((b, t) => ((D.get(t) ?? Infinity) < (D.get(b) ?? Infinity) ? t : b));
-        const path = trace(to), names: string[] = [];
+        const rp = (() => { try { return routeVia(E, r); } catch { return undefined; } })(); // a route that reaches no end has length Infinity (M-1 fails it); `via` nodes make a route go the way it is meant to (brief 059: the rival car comes by Orbit Walk, not the shortest road)
+        const path = rp?.edges ?? [], to = rp?.to ?? r.to[0]!, names: string[] = [];
         for (const e of path) { const n = roadById.get(e.road)!.name; if (names[names.length - 1] !== n) names.push(n); }
         const gates = path.flatMap(e => [gateAt.get(`${e.a}|${e.road}`), gateAt.get(`${e.b}|${e.road}`)]).filter(Boolean) as string[];
         const link = plan.links.find(l => l.node === to);
-        return { id: r.id, name: r.name, to: link ? `${link.to} (off-sheet)` : r.toName ?? to, length: D.get(to) ?? Infinity, roads: names, gates: [...new Set(gates)] };
+        return { id: r.id, name: r.name, to: link ? `${link.to} (off-sheet)` : r.toName ?? to, length: rp?.length ?? Infinity, roads: names, gates: [...new Set(gates)] };
       });
       const m1: Check = { id: 'M-1', group: 'Mission', rule: 'Every mission route reaches its end', value: out.map(r => `${r.id} ${f(r.length)} m`).join(', '), limit: 'finite', ok: out.every(r => r.length < Infinity) };
       return { checks: [m1], routes: out };

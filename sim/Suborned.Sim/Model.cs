@@ -251,7 +251,7 @@ namespace Suborned.Sim
             "person-away", "no-place", "unwalkable", "no-walk", "run-carrying-vale", "run-carrying-downed", "run-tethered", "only-scout", "only-fixer",
             "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
             "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", "car-gone", "car-busy",
-            "call-too-late", "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "patrol-down", "patrol-away", "no-rivals",
+            "call-too-late", "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", "no-rivals",
             "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
             "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "not-driven", "follow-not-cell", "fire-running",
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",

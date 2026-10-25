@@ -176,7 +176,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++) { var t = h.Views?.Find(Roles[k]); Cast[k].World = t && t.gameObject.activeSelf ? t.position : null; }
             // the hotbar
             var slots = h.PlateOf(h.Agent); // brief 013: carrying swaps knobs 1 and 2 to Put down and Hide, the rest dim
-            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && !h.KnobTethered(h.Agent, slots[i]) && h.Able((int)h.Agent); /* item 29: a downed agent's knobs are empty sockets */ VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
+            for (int i = 0; i < 5; i++) { VerbRefused[i] = i < slots.Length && slots[i].Dim && slots[i].Id == "fire" && h.Agent == OpId.Enforcer && g.Vale == ValeAt.WithEnforcer; VerbHas[i] = i < slots.Length && !slots[i].Dim && h.Able((int)h.Agent); /* item 29: a downed agent's knobs are empty sockets */ VerbGlyph[i] = i < slots.Length ? slots[i].Glyph : "·"; VerbKey[i] = h.VerbKey(i); VerbIcon[i] = i < slots.Length ? (slots[i].Id == "act" && slots[i].Glyph == "car" ? "car" : AtlasIcon(slots[i].Id, slots[i].Id, "")) : ""; /* the end steps: out with Vale, the car */ VerbName[i] = i < slots.Length ? slots[i].Label : ""; }
             Agent = (int)h.Agent; AllStrips = h.ShowAllStrips; IntelOpen = h.IntelOpen; Fight = g.FightOn; CancelKey = h.controls.Label(PlayAction.Cancel);
             // strips (Glyph #8): busy, hurt and queued agents a full strip; a ready or downed one a 34 px line ("SCOUT · READY"), shown when selected or
             // down; ` shows every strip full
@@ -253,9 +253,9 @@ namespace Suborned.Play
             LoudOpen = h.Loud != null; LoudLines.Clear();
             if (LoudOpen) { LoudCard(h); LoudProgress = h.GateProgress; LoudAt = h.Loud.Gui; }
             // the hint and the toast, the briefing
-            Hint = h.HintNow != null && !ended && !h.ShowBriefing ? h.HintNow.Line : null; HintRing = h.HintNow?.Ring;
+            Hint = h.HintNow != null && !ended && !h.ShowBriefing && !h.Starting ? h.HintNow.Line : null; HintRing = h.HintNow?.Ring;
             Toast = h.Toast != null && Time.unscaledTime < h.ToastUntil ? h.Toast : null;
-            BriefingOpen = h.ShowBriefing && !ended; if (BriefingOpen && Briefing.Count == 0) BriefingParts(h); else if (!BriefingOpen) Briefing.Clear();
+            BriefingOpen = (h.ShowBriefing || h.Starting) && !ended; /* brief 062 B: the play HUD stays down through the start sequence; the roster and the clock bar enter on their own beats (HudToolkit.Briefing) */ if (BriefingOpen && Briefing.Count == 0) BriefingParts(h); else if (!BriefingOpen) Briefing.Clear();
             // the feed and the ticker
             Feed = h.Feed; Unread = h.Unread; FeedFold = g.FightOn; HistoryOpen = h.FeedHistoryOpen; Filter = h.FeedFilter;
             HistoryRows(h); // Sky 2026-10-18: the panel always shows the newest entry (collapsed), so the list is kept either way (cached by key)
@@ -431,7 +431,8 @@ namespace Suborned.Play
                     };
                 case "watch": return i.Outcome == "its sight" ? "Learns what it sees" : "Reads their mood"; // brief 054 §7 (Fable to word): a Watch on a person shows their mood
                 case "listen": return "Learns their need and temperament";
-                case "loop": return "Loops the camera; the Tech stays at the cabinet";
+                case "loop": return "Loops the camera for two minutes; the Tech is free to go"; // engine 0.31.0: no tether
+                case "disable": return "Cuts the camera for good; the desk notices";
                 case "call": return i.Outcome == "ready" ? "They act on the call" : "Not now";
                 case "go": return i.Outcome == "win" ? "Wins the mission" : "Withdraws"; // brief 018: who stays is the Go line itself
                 case "board": return i.Outcome.Length > 0 ? "In the car " + i.Outcome : "In the car";
@@ -440,9 +441,12 @@ namespace Suborned.Play
             }
         }
 
+        /// <summary>A cast role's kit badge (the briefing's ways and file card read it too).</summary>
+        public static string PersonBadge(string role) => role switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "councillor" => "badges/npc_councillor", "guard" => "badges/signal_guard", _ => "badges/npc_passer" };
+
         static string Badge(HandoverHost.Target t) => t.Kind switch
         {
-            "person" => t.Key switch { "waitress" => "badges/npc_waitress", "driver" => "badges/npc_driver", "councillor" => "badges/npc_councillor", "guard" => "badges/signal_guard", _ => "badges/npc_passer" },
+            "person" => PersonBadge(t.Key),
             "rivals" => "badges/signal_rival", "patrol" => "badges/npc_patrol", "security" or "hostile" => "badges/signal_police", "camera" => "badges/signal_camera", _ => "",
         };
 
@@ -453,7 +457,7 @@ namespace Suborned.Play
         public static string AtlasIcon(string verb, string approach, string phase) => verb switch
         {
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
-            "watch" or "listen" or "mislead" or "loop" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
+            "watch" or "listen" or "mislead" or "loop" or "disable" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
             "act" => "enter", "board" or "go" => "car", "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)

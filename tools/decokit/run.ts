@@ -4,7 +4,7 @@
 import { mkdirSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { type Built, fitRow, printTable } from './fit';
-import { readOrders, writeOrders } from './orders';
+import { BUILD, readOrders, writeOrders } from './orders';
 import { WAVE1 } from '../kit/tags';
 
 const repo = resolve(import.meta.dir, '../..');
@@ -22,9 +22,10 @@ const ct = Bun.spawnSync(['python3', resolve(import.meta.dir, 'cabinet_tex.py')]
 const pt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'pavilion_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (pt.exitCode) process.exit(pt.exitCode);
 const ft = Bun.spawnSync(['python3', resolve(import.meta.dir, 'fountain_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ft.exitCode) process.exit(ft.exitCode);
 const rt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rt.exitCode) process.exit(rt.exitCode);
+const sg = Bun.spawnSync(['python3', resolve(import.meta.dir, 'signal_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (sg.exitCode) process.exit(sg.exitCode); // brief 061: the lens face atlas and the clock ring map
 const rf = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_face_stage.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rf.exitCode) process.exit(rf.exitCode);
-// Default: the plan's generated pieces (full export + LODs), then LODs only for the adopted DecoKit pieces (their binaries stay the store's).
-const passes = pass.length ? [pass] : [['--only', readOrders().pieces.map(o => o.id).join(',')], ['--lods-only', '--only', [...WAVE1].join(',')]];
+// Default: the plan's generated pieces and the plain pieces in orders.ts BUILD (full export + LODs), then LODs only for the adopted DecoKit pieces (their binaries stay the store's).
+const passes = pass.length ? [pass] : [['--only', [...readOrders().pieces.map(o => o.id), ...BUILD].join(',')], ['--lods-only', '--only', [...WAVE1].join(',')]];
 for (const a of passes) { const c = run(a); if (c) process.exit(c); }
 // The fit table for every generated piece in this run's manifest.
 const manifest = JSON.parse(readFileSync(resolve(out, 'decokit_manifest.json'), 'utf8')).assets as { name: string; order?: { hash: string }; built?: Built }[];

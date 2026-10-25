@@ -61,6 +61,10 @@ namespace Suborned.Play
             chipEls.Add(c); return c;
         }
 
+        /// <summary>Glyph 058 §3, the window marker's count: m:ss when the window runs a minute or more (the loop's 2:00, 1:12, 0:09), plain
+        /// seconds under that (the guard's, the patrol's, the desk's clock: 14, 3).</summary>
+        public static string WindowCount(int left, int total) => left < 0 ? "" : total >= 60 ? $"{left / 60}:{left % 60:00}" : left.ToString();
+
         /// <summary>Per frame after the pill (the commander view and third person alike; none while the end card or the briefing is up).</summary>
         void DoneMarks()
         {
@@ -87,14 +91,14 @@ namespace Suborned.Play
                         winEls.Add((r, ic, nl, f, u));
                     }
                     var (wr, wi, wn, wf, wu2) = winEls[wu++]; Show(wr, true);
-                    Icon(wi, "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face);
-                    if (face) CameoOf(wf, w.Face); else Text(wn, w.Left.ToString());
+                    Icon(wi, w.Kind == "disable" ? "p_alert" : "eye_shut", Cream); bool face = w.Face >= 0; Show(wf, face); Show(wn, !face); // Glyph 058 §3: the desk's clock wears the siren
+                    if (face) CameoOf(wf, w.Face); else Text(wn, WindowCount(w.Left, w.Total));
                     bool low = !face && w.Left >= 0 && w.Left <= 10; wr.style.opacity = low ? 0.55f + 0.45f * (0.5f + 0.5f * Mathf.Sin(now * Mathf.PI * 4f)) : 1f;
                     bool timed = w.Left >= 0 && w.Total > 0; Show(wu2.parent, timed);
                     if (timed) { wu2.style.width = Length.Percent(Mathf.Clamp01(w.Left / (float)w.Total) * 100f); wu2.style.backgroundColor = low ? LookSoon : LookLive; }
                     float ww = float.IsNaN(wr.resolvedStyle.width) ? 60f : wr.resolvedStyle.width, wx = q.x - ww / 2f, wb = ClearOfSpeech(bubbles, wx, ww, q.y - 12f, WinH); // above the thing's speech, never on it
                     wr.style.left = wx; wr.style.top = wb - WinH; markTop[w.Key] = wb - WinH;
-                    wwords.Add($"{w.Kind}:{w.Thing}:{(face ? "face" : w.Left.ToString())}");
+                    wwords.Add($"{w.Kind}:{w.Thing}:{(face ? "face" : WindowCount(w.Left, w.Total))}");
                 }
             for (int i = wu; i < winEls.Count; i++) Show(winEls[i].root, false);
             WindowMarksShown = wu; WindowWords = string.Join(" ", wwords);

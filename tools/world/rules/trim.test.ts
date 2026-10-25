@@ -6,7 +6,7 @@ import type { World } from '../../../contracts/world/world.schema';
 import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { ctxOf, generated } from '../../plan/world-ctx';
-import { CANOPY, BOOTH, CRANE, GIRDER, GLOW, HOOP, INLAY, ORB, OWN_KEYS, PLATE, TUB } from '../gen/surfaces';
+import { CANOPY, BOOTH, CRANE, GIRDER, GLOW, HOOP, ORB, OWN_KEYS, PLATE, TUB } from '../gen/surfaces';
 import { broad, broadParts, brassParts, faceOf, trimRules } from './trim';
 
 setDefaultTimeout(120000);
@@ -67,12 +67,13 @@ describe('SF-21 on the live world', () => {
     expect(all.check.detail).toContain('220 fail: mega/parade-galleries/range-0-0/canopy (megastructure prim box 121.4 x 2.5 x 0.3 m, face 2.5 x 121 m)'); // the first six are named, the rest counted
   });
 
-  test('brief 009: a crossing\'s arcs (370), eyes (228) and lit strip modules (799, 3.9 m across) are broad faces and need their own keys; its dot rows (0.43 wide) and studs would pass in trim', () => {
-    for (const [key, n] of [[GLOW, 799], [INLAY, 370], [ORB, 228]] as const) {
-      const { w, check } = sf21(w => { for (const x of owned(w, [key])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } }); // unbound: a part with its kit piece carries the piece's own materials
-      expect(broadParts(w).length, key).toBe(n);
-      expect(check.ok, key).toBe(false);
-    }
+  test('brief 009, 061: a crossing\'s signal heads (41) are broad faces and need their own key; its dot rows (0.43 wide) would pass in trim (the arcs and the lit strip are gone: brief 061)', () => {
+    const orbs = sf21(w => { for (const x of owned(w, [ORB])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } }); // unbound: a part with its kit piece carries the piece's own materials
+    expect(broadParts(orbs.w).length).toBe(41);
+    expect(orbs.check.ok).toBe(false);
+    const rows = sf21(w => { for (const x of owned(w, [GLOW])) { x.surface = 'trim'; delete (x as { kit?: unknown }).kit; } });
+    expect(broadParts(rows.w).length).toBe(0); // a 0.43 m row is a frame, not a broad face
+    expect(rows.check.ok).toBe(true);
   });
 
   test('a new broad part in trim fails; the same part in a key of its own, or as a bead, passes', () => {

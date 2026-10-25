@@ -79,3 +79,8 @@ After a context reset Aster spawned the crew from their cards without the wake/b
 
 ## Back on (Sky, 2026-10-22: "switch it on")
 The protocol above applies again to every Keel, Latch and Glyph round from 2026-10-22 (Latch's overlay-style build woken mid-task). Log rows go in the pilot table; compare against the "Without Anima" set; decide after about four rounds each.
+
+| date | agent | task | tokens | tools | minutes | lesson used? | rediscovery? | notes |
+|---|---|---|---|---|---|---|---|---|
+| 2026-10-25 | glyph | patrol face A install, 058 camera HUD spec, 059 rivals and Drive HUD spec | 433k | 135 | 25 | no (wake ran; stored lessons not relevant) | none reported | three briefs' specs in one round; budget checks written |
+| 2026-10-25 | latch | batch 0.2.118 code round: 058 stopgap, 056 occlusion F (capsule cut and silhouettes), 062 briefing and glide, 061 turn removed | 428k | 190 | 44 | yes: unity-batch-proof-runs (compile against the tree engine in scratch, `/* */` notes, the comment lint); figures-under-fade | none reported | code only, no build; shaders unproven on Metal until the batch |

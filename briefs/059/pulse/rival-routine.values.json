@@ -1,0 +1,433 @@
+{
+ "schema": "suborned.rivals.routine.proposal/1",
+ "author": "Pulse, brief 059 §5, 2026-10-25",
+ "note": "Machine copy of briefs/059/pulse/rival-routine.md: the values, beats, points and routes it names. Nothing here is in the rulebook, mission.json or the site yet. Keel adds the values to contracts/rules/rulebook.json (same shape: v, unit, tag, src, reason; Motive owns every number). Check: python3 -I briefs/059/pulse/check.py (reads sim/data/handover.site.json and contracts/missions/handover/mission.json and this file; writes briefs/059/pulse/measures.json only with --write; exit 1 on any failed check).",
+ "tags": "[B] built and proven in the engine today, or fixed by the GDD; [S] spec, starting value, tune by playtest.",
+ "reuses": {
+  "schedule.rivalsArrive": "190 s [B]: the park, 3:10 (GDD §07). Everything before it is computed back from it.",
+  "rivals-speed-cm-s": "160 [B]: every rival on foot.",
+  "rivals-drawn-s": "16 [B]: gunfire draws them in within 16 s.",
+  "false-tip-s": "230 [B]: away 3:50 from the tip's landing.",
+  "mislead-s": "44 [B]: the Scout's false tip act.",
+  "act-reach-m": "6 [B]: the Scout stands this near the car to give the tip.",
+  "car-road-cm-s": "500 [S]: a car on a carriageway (GameCars CarProfile).",
+  "car-yard-cm-s": "200 [S]: a car on a drive or in a bay.",
+  "op-speed-cm-s": "140 [S]: people's walking pace (life.json pedestrians.walkSpeed); the driver's walk is not in this spec any more.",
+  "fight-ambush-m": "20 [S]: the posted spring at this range from the cell's car.",
+  "fight-safe-hostiles": "5 [S]: stays as the TEST of the count (§7 of the spec); the bodies are the source.",
+  "react-s": "2 [S]: a hostile surprised outside a fight (not used by the routine; the follow reaction below is its own value).",
+  "cover-snap-cm": "70 [S]: a post is a place within this of a cover point; `lean` is only played there.",
+  "perception.rivals": "reach 18 m, half 8 m [B]: the cone of a rival on foot, from the arrival (ai.intent.rivals.street).",
+  "driverLastS": "340 [B]: the last chance to turn the driver; the lookout's word must be over by it.",
+  "valeAtCarS": "370 [B]: Vale at his car; `vale-in-s` (brief 059, Motive) makes it 6:13."
+ },
+ "values": {
+  "rivals-drop-s": {
+   "v": 8,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 059 §2.3 K10 dropS; Pulse rival-routine.md §3",
+   "reason": "the car stands at the drop stop 8 s: the three step out 2 s apart from 2 s in (2, 4, 6) and it leaves 2 s after the last. Long enough to be seen to stop and drop, short enough that the 3:10 park holds.",
+   "proposed": true
+  },
+  "rivals-out-s": {
+   "v": 5,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 059 §2.3 K10 outS; Pulse rival-routine.md §3",
+   "reason": "a car that stops at the park, the tail stop or a stand's stop puts its first rider out after 5 s (3:10 park -> 3:15 the lookout gets out, the brief's own table).",
+   "proposed": true
+  },
+  "rivals-step-s": {
+   "v": 2,
+   "unit": "s",
+   "tag": "S",
+   "src": "Pulse rival-routine.md §3",
+   "reason": "each further rider steps out 2 s after the one before, in id order: the order is what a player can read and what replays.",
+   "proposed": true
+  },
+  "rivals-follow-s": {
+   "v": 2,
+   "unit": "s",
+   "tag": "S",
+   "src": "Pulse rival-routine.md §6 F1, F2",
+   "reason": "the beat between a thing they follow starting to move (the cell's car, Vale's car) and their first move: the same 2 s as react-s, kept as its own value so Motive can move one without the other.",
+   "proposed": true
+  },
+  "rivals-posted": {
+   "v": 3,
+   "unit": "count",
+   "tag": "S",
+   "src": "GDD §07 rivals: a crew of five, three post round the cell's car",
+   "reason": "the first 3 of a stand's ambush spots, in the stand's order, are the posted three's. The lookout takes the 4th, the wheelman the 5th.",
+   "proposed": true
+  },
+  "driver-warns-s": {
+   "v": 10,
+   "unit": "s",
+   "tag": "S",
+   "src": "brief 059 §2.3 K11; Pulse rival-routine.md §6 F4",
+   "reason": "the word between the turned driver and the lookout: 'the pickup's watched'.",
+   "proposed": true
+  },
+  "driver-warn-lag-s": {
+   "v": 3,
+   "unit": "s",
+   "tag": "S",
+   "src": "Pulse rival-routine.md §6 F4",
+   "reason": "the lookout does not start across the road the instant the turn lands: 3 s after it, and never before he is posted.",
+   "proposed": true
+  },
+  "lookout-pace-cm": {
+   "v": 200,
+   "unit": "cm",
+   "tag": "S",
+   "src": "Pulse rival-routine.md §5",
+   "reason": "the lookout's idle stroll along the kerb: 2 m out and back. Short enough to stay on free pavement and inside the bay's view.",
+   "proposed": true
+  }
+ },
+ "beats": {
+  "rule": "A beat list is a pure function of (tick - the tick the member's post began + phase). Position is the post except the lookout's pace; a beat changes the pose and (for the three posted and the lookout) the facing by a yaw offset from the base facing. Yaw is one of 0, +-30, +-60 degrees by the integer table c/s (per mille): 30 -> (866, 500), 60 -> (500, 866); facing' = ((fx*c - fy*s) / 1000, (fx*s + fy*c) / 1000) with s signed by the yaw, divided toward zero. +yaw turns x toward y in the block frame. No beat is longer than maxBeatS; no two beats in a row have the same pose and yaw, and a run of one pose is never longer than maxBeatS; every loop has at least minBeats beats.",
+  "maxBeatS": 12,
+  "minBeats": 5,
+  "lists": {
+   "posted": {
+    "who": [
+     "rival-1",
+     "rival-2",
+     "rival-3"
+    ],
+    "base": "toward the cell's car at the stand (the stand's car point minus the post)",
+    "phaseS": {
+     "rival-1": 0,
+     "rival-2": 10,
+     "rival-3": 32
+    },
+    "leanNeeds": "a cover point within cover-snap-cm of the post; elsewhere `lean` plays as `watch`",
+    "loop": [
+     {
+      "pose": "watch",
+      "s": 10,
+      "yaw": 0
+     },
+     {
+      "pose": "read-paper",
+      "s": 8,
+      "yaw": 30
+     },
+     {
+      "pose": "watch",
+      "s": 8,
+      "yaw": 0
+     },
+     {
+      "pose": "check-watch",
+      "s": 3,
+      "yaw": 0
+     },
+     {
+      "pose": "lean",
+      "s": 9,
+      "yaw": 0
+     },
+     {
+      "pose": "look-around",
+      "s": 2,
+      "yaw": -60
+     },
+     {
+      "pose": "look-around",
+      "s": 2,
+      "yaw": 60
+     }
+    ],
+    "why": "phases 0, 10 and 32 s: rival-1 and rival-2 are never looking away from the car together, nor rival-1 and rival-3 (rival-2 and rival-3 overlap 2 s). Found by check.py section 5; change a loop and the phases need finding again."
+   },
+   "lookout": {
+    "who": [
+     "rival-4"
+    ],
+    "base": "toward d:Official drop-off (the official bay) from rival-lookout",
+    "phaseS": {
+     "rival-4": 0
+    },
+    "pace": {
+     "axis": "+y (along the kerb, away from the bay)",
+     "cm": "lookout-pace-cm",
+     "cells": "every cell of the walk grid from the post to the post + pace must be free (check.py)"
+    },
+    "loop": [
+     {
+      "pose": "watch",
+      "s": 8,
+      "yaw": 0
+     },
+     {
+      "pose": "pace-out",
+      "s": 6,
+      "yaw": 0,
+      "move": "post -> post + pace, linear over the beat"
+     },
+     {
+      "pose": "watch",
+      "s": 5,
+      "yaw": 0,
+      "at": "post + pace"
+     },
+     {
+      "pose": "pace-back",
+      "s": 6,
+      "yaw": 0,
+      "move": "post + pace -> post, linear over the beat"
+     },
+     {
+      "pose": "read-paper",
+      "s": 6,
+      "yaw": 30
+     },
+     {
+      "pose": "check-watch",
+      "s": 3,
+      "yaw": 0
+     }
+    ]
+   },
+   "wheelman": {
+    "who": [
+     "rival-5"
+    ],
+    "base": "the car's heading",
+    "phaseS": {
+     "rival-5": 0
+    },
+    "host": "aboard: the host's view only; no rule reads it, no cone while aboard. On foot at a post (the yard door) he plays the `posted` loop with `lean` as `watch`.",
+    "loop": [
+     {
+      "pose": "wheel",
+      "s": 9,
+      "yaw": 0
+     },
+     {
+      "pose": "mirror",
+      "s": 4,
+      "yaw": 0
+     },
+     {
+      "pose": "wheel",
+      "s": 8,
+      "yaw": 0
+     },
+     {
+      "pose": "window-arm",
+      "s": 8,
+      "yaw": 0
+     },
+     {
+      "pose": "check-watch",
+      "s": 3,
+      "yaw": 0
+     },
+     {
+      "pose": "mirror",
+      "s": 4,
+      "yaw": 0
+     }
+    ]
+   }
+  },
+  "poses": [
+   "watch",
+   "read-paper",
+   "check-watch",
+   "lean",
+   "look-around",
+   "pace-out",
+   "pace-back",
+   "talk",
+   "wheel",
+   "mirror",
+   "window-arm",
+   "step-out",
+   "board"
+  ],
+  "newForForma": [
+   "read-paper",
+   "check-watch",
+   "lean",
+   "look-around",
+   "talk",
+   "wheel",
+   "mirror",
+   "window-arm",
+   "step-out",
+   "board"
+  ]
+ },
+ "crew": {
+  "rival-1": {
+   "role": "posted",
+   "spot": "greedy among the stand's first rivals-posted spots (id order, shortest grid walk, ties lower spot id)"
+  },
+  "rival-2": {
+   "role": "posted",
+   "spot": "as rival-1, after it"
+  },
+  "rival-3": {
+   "role": "posted",
+   "spot": "as rival-1, after rival-2"
+  },
+  "rival-4": {
+   "role": "lookout",
+   "post": "rival-lookout",
+   "fightSpot": "the stand's 4th ambush spot"
+  },
+  "rival-5": {
+   "role": "wheelman",
+   "post": "the car",
+   "fightSpot": "the stand's 5th ambush spot"
+  },
+  "car": "car:rivals"
+ },
+ "points": {
+  "existing": {
+   "rival-park": "site place, mission.json point: (84.0, -31.0) today; RE-SITED below",
+   "rival-entry": "site place, mission.json point: (36.0, 10.0). The car no longer uses it (rival-car-entry replaces it); kept until Keel's scenarios and tools/cover stop reading it, then Vantage removes it.",
+   "ambush-1": "(21.75, -44.25) square stand's 1st ambush spot",
+   "ambush-2": "(-5.75, -37.75), stand (-5.75, -36.25)",
+   "ambush-3": "(22.0, -42.0)",
+   "ambush-4": "(-6.0, -44.0)",
+   "ambush-5": "(14.0, -36.0)",
+   "d:Getaway bay": "(8.5, -48.2): the square stand's car point",
+   "d:Official drop-off": "(78.2, -31.0): the official bay, the lookout's base facing, Vale's car's start",
+   "d:Meet driver": "(78.1, -33.7): the driver's post",
+   "d:Office approach": "(64.0, -44.4): where a drawn crew stands at the Office front",
+   "d:Service lane": "(62.5, -16.8): the Enforcer's side of the service door; not a rival point",
+   "service-bay": "(63.75, -15.0): Vale's car in the yard"
+  },
+  "new": {
+   "rival-park": {
+    "at": [
+     9050,
+     -3100
+    ],
+    "facing": [
+     0,
+     100
+    ],
+    "kind": "car",
+    "note": "RE-SITE (brief 059 §5 Vantage): Apron Road's south kerb, eastbound lane, nose east. 12.3 m south of Vale's car."
+   },
+   "rival-car-entry": {
+    "at": [
+     3750,
+     1575
+    ],
+    "facing": [
+     0,
+     -100
+    ],
+    "kind": "car",
+    "note": "Orbit Walk at the window's east edge (block y 15.75). Where the car appears, and where a tipped car goes off the map."
+   },
+   "rival-drop": {
+    "at": [
+     3400,
+     -3800
+    ],
+    "facing": [
+     0,
+     -100
+    ],
+    "kind": "car",
+    "note": "Orbit Walk's north lane by the square: the square stand's rival stop and the drop."
+   },
+   "rival-lookout": {
+    "at": [
+     9400,
+     -2700
+    ],
+    "facing": [
+     -158,
+     -40
+    ],
+    "kind": "foot",
+    "note": "the far (south) pavement of Apron Road, facing the official bay. 18.0 m from the door, 16.3 m from the bay."
+   },
+   "rival-tail": {
+    "at": [
+     9050,
+     -1700
+    ],
+    "facing": [
+     0,
+     100
+    ],
+    "kind": "car",
+    "note": "Apron Road's eastbound lane abreast of the service drive's mouth: where the rival car stops when it follows Vale's car, and the service-drive stand's rival stop."
+   },
+   "rival-vale-door": {
+    "at": [
+     6455,
+     -1690
+    ],
+    "facing": [
+     0,
+     100
+    ],
+    "kind": "foot",
+    "note": "the yard side of Vale's car in the service bay (the car's centre + (0.8, -1.9) m): where the wheelman walks to."
+   },
+   "rival-front-stop": {
+    "at": [
+     6375,
+     -5025
+    ],
+    "facing": [
+     100,
+     0
+    ],
+    "kind": "car",
+    "note": "Rocket Lane's carriageway abreast of the Office approach (5.9 m from it): where a crew drawn by gunfire stops. Nearest 'r' cell of d:Office approach, written down so the choice is not a tie."
+   },
+   "rival-lookout-exit": {
+    "at": [
+     9400,
+     1575
+    ],
+    "facing": [
+     0,
+     100
+    ],
+    "kind": "foot",
+    "note": "the south pavement at the window's east edge: where a warned lookout leaves the map."
+   },
+   "service-drive": {
+    "at": [
+     6935,
+     -1500
+    ],
+    "facing": [
+     100,
+     0
+    ],
+    "kind": "car stand",
+    "note": "brief 059 §1.4 (Vantage): the getaway car's second stand, nose out toward Apron Road (+x, south), 1 m behind Vale's car in the bay, with its own exit lane, five ambush spots and four police stands. Its rival stop is rival-tail."
+   }
+  },
+  "derived": {
+   "rival-lookout-word": "the free walk cell nearest the point 1.5 m from d:Meet driver toward rival-lookout: where the lookout stands to speak to the driver. Derived by the engine (Grid.NearestFree), not a point.",
+   "rival-front-offsets": "a drawn crew at the front stands at d:Office approach + k * 90 cm along the perpendicular of its facing, k = 0, +1, -1, +2 for rival-1..4 (the wheelman stays in the car)."
+  }
+ },
+ "routes": {
+  "existing": [
+   "getaway",
+   "official"
+  ],
+  "new": {
+   "rivals": "Splice: off_seagates -> Orbit Walk -> Rocket Lane -> Apron Road -> rival-park, cut to the window (brief 059 §5 Splice). The engine does not read it: it routes the car on the drive grid (CarRoute) between the points above. An SX rule checks its ends against rival-car-entry, rival-drop and rival-park.",
+   "getaway-service": "Splice: Apron Road east from the service drive, the service-drive stand's exit lane (brief 059 §5 Splice)."
+  }
+ }
+}

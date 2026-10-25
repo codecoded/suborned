@@ -6,9 +6,9 @@
  "orders": [
   {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
   {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750],"run":true},
-  {"tick":165,"op":"tech","do":"loop","target":"entrance"},
-  {"tick":785,"op":"tech","do":"reroute","target":"patrol"},
-  {"tick":1235,"op":"enforcer","do":"move","to":[6925,-4250]},
+  {"tick":600,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":800,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":1250,"op":"enforcer","do":"move","to":[6925,-4250]},
   {"tick":1510,"op":"enforcer","do":"fire","target":"guard"},
   {"tick":1510,"op":"scout","do":"move","to":[975,-4625],"run":true},
   {"tick":1510,"op":"fixer","do":"move","to":[1175,-4825],"run":true},

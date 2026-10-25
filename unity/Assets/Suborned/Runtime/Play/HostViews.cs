@@ -550,7 +550,7 @@ namespace Suborned.Play
 
         sealed class FanDraw
         {
-            public GameObject Go; public Mesh Fill, Rim, Under, RimS; public MeshRenderer FillR, RimR, UnderR, RimSR; public Fan For; public bool Live; public string Kind = "", Watcher = "";
+            public GameObject Go; public Mesh Fill, Rim, Under, RimS; public MeshRenderer FillR, RimR, UnderR, RimSR; public Fan For; public bool Live, Looped; public string Kind = "", Watcher = "";
             /// <summary>Redline 064 #2: each fill vertex's place from the lens to the far edge (0..1), so a fade rewrites colours only; Rim is the rest rim, RimS the strong.</summary>
             public readonly List<float> FillT = new();
             public Vector3 Hub; public readonly List<Vector3> Ring = new();
@@ -578,12 +578,14 @@ namespace Suborned.Play
             var seen = fanSeen; seen.Clear(); int n = list?.Count ?? 0; float dt = Time.unscaledDeltaTime; // Redline 064 #2: one set, reused
             for (int i = 0; i < n; i++)
             {
-                var f = list[i]; string key = f.Watcher.Length > 0 ? f.Watcher : "fan/" + i; if (!seen.Add(key)) continue;
+                var f = list[i]; string key = f.Watcher.Length > 0 ? f.Watcher : "fan/" + i;
+                if (CameraDead(f.Watcher)) continue; // Glyph 058 §2: a camera cut or shot out has no cone (its dead disc stays)
+                if (!seen.Add(key)) continue;
                 if (!fanBy.TryGetValue(key, out var d)) fanBy[key] = d = NewFan(key);
                 if (!d.Go.activeSelf) { d.Go.SetActive(true); d.Strength = -1f; }
                 d.Want = strong == null ? 1f : i < strong.Count && strong[i] ? 1f : 0f;
                 d.Strength = d.Strength < 0f ? d.Want : Mathf.MoveTowards(d.Strength, d.Want, dt / (d.Want > d.Strength ? InS : OutS));
-                if (!ReferenceEquals(d.For, f) || d.Live != f.Live) Build(d, f);
+                if (!ReferenceEquals(d.For, f) || d.Live != f.Live || d.Looped != LoopedFan(f)) Build(d, f);
                 else if (Mathf.Abs(d.Strength - d.BuiltAt) > 0.02f || (d.Strength == d.Want && d.BuiltAt != d.Strength)) Restrength(d);
             }
             foreach (var kv in fanBy) if (!seen.Contains(kv.Key) && kv.Value.Go.activeSelf) { kv.Value.Go.SetActive(false); kv.Value.For = null; }
@@ -624,9 +626,14 @@ namespace Suborned.Play
 
         Color KindColour(string kind) => kind switch { "guard" => host.guardColour, "rivals" => host.rivalColour, _ => host.coneColour }; // §10: cones red, guard amber, rivals violet
 
+        /// <summary>Glyph 058 §2 (board 02): the camera the running loop plays on: its cone draws recorded, not live: still red, hollow, dashed all round.</summary>
+        bool LoopedFan(Fan f) { var g = host.Game; return g != null && !f.Live && g.LoopOn && f.Watcher == "camera:" + g.LoopCam; }
+        bool CameraDead(string watcher) { var g = host.Game; if (g == null || !watcher.StartsWith("camera:", System.StringComparison.Ordinal)) return false; try { return g.CameraDeadAs(watcher[7..]).Length > 0; } catch { return false; } }
+        const float LoopRimW = 0.05f, LoopRimA = 0.5f, LoopDashOn = 0.13f, LoopDashOff = 0.10f;
+
         void Build(FanDraw d, Fan f)
         {
-            d.For = f; d.Live = f.Live; d.Kind = f.Kind;
+            d.For = f; d.Live = f.Live; d.Kind = f.Kind; d.Looped = LoopedFan(f);
             var pts = f.Points; int n = pts.Length;
             d.Ring.Clear(); for (int i = 0; i < n; i++) d.Ring.Add(frame.World(pts[i]));
             d.Hub = frame.World(f.At); d.Reach = 1f; foreach (var r in d.Ring) d.Reach = Mathf.Max(d.Reach, Flat(r - d.Hub).magnitude);
@@ -664,13 +671,13 @@ namespace Suborned.Play
             ShadowsOf(f); CutFill(); // engine 0.28 (hud29 securityFan.shadows): Fan.Shadows cut out of the fill
             d.FillT.Clear(); foreach (var v in verts) d.FillT.Add(Mathf.Clamp01(Flat(v - d.Hub).magnitude / d.Reach));
             d.Fill.Clear(); d.Fill.SetVertices(verts); d.Fill.SetTriangles(tris, 0); d.Fill.RecalculateBounds();
-            var c = f.Live ? KindColour(f.Kind) : Grey;
+            var c = f.Live || d.Looped ? KindColour(f.Kind) : Grey;
             // the rims: crisp along walls and the near circle; the far edge (both ends stopped by reach) in the kind's cue; rest and strong widths
             for (int pass = 0; pass < 2; pass++)
             {
-                rimW = pass == 0 ? RestRimW : StrongRimW;
+                rimW = d.Looped ? LoopRimW : pass == 0 ? RestRimW : StrongRimW;
                 verts.Clear(); tris.Clear(); float dash = 0f;
-                foreach (var (ring, stop) in polys) { int m = ring.Count; RimOf(d, f, ring, stop, ref dash); if (!f.Live && m >= 3) Hatch(ring); }
+                foreach (var (ring, stop) in polys) { int m = ring.Count; if (d.Looped) { LoopRim(ring, ref dash); continue; } RimOf(d, f, ring, stop, ref dash); if (!f.Live && m >= 3) Hatch(ring); }
                 ShadowRims(polys, c, d); // each cut gets a thin rim of the fan's colour over ink-deep (the ink in its own mesh)
                 var mesh = pass == 0 ? d.Rim : d.RimS; mesh.Clear(); mesh.SetVertices(verts); mesh.SetTriangles(tris, 0); mesh.RecalculateBounds();
             }
@@ -682,13 +689,26 @@ namespace Suborned.Play
         void ApplyStrength(FanDraw d)
         {
             var f = d.For; if (f == null) return; float s = Mathf.Clamp01(d.Strength < 0f ? 1f : d.Strength); d.BuiltAt = s;
-            var c = f.Live ? KindColour(f.Kind) : Grey;
+            var c = f.Live || d.Looped ? KindColour(f.Kind) : Grey;
             void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
             float aHub = Mathf.Lerp(RestHub, StrongHub, s), aFar = Mathf.Lerp(RestFar, StrongFar, s);
+            if (d.Looped) { aHub = 0f; aFar = 0f; } // looped: hollow (no fill), the rim at 50 % whatever its strength
             cols.Clear(); foreach (var t in d.FillT) cols.Add(new Color(1f, 1f, 1f, Mathf.Lerp(aHub, aFar, t)));
             if (cols.Count == d.Fill.vertexCount) d.Fill.SetColors(cols);
-            Mat(d.FillR, FillMat(c)); Mat(d.RimR, FanMat(c, RestRimA)); Mat(d.RimSR, FanMat(c, 1f));
+            Mat(d.FillR, FillMat(c)); Mat(d.RimR, FanMat(c, d.Looped ? LoopRimA : RestRimA)); Mat(d.RimSR, FanMat(c, d.Looped ? LoopRimA : 1f));
             bool strong = s > 0.5f; if (d.RimR.enabled == strong) d.RimR.enabled = !strong; if (d.RimSR.enabled != strong) d.RimSR.enabled = strong;
+        }
+
+        /// <summary>Glyph 058 §2: a looped cone's rim, dashed all round (0.13 m on, 0.10 m off: 5 px on, 4 off at play zoom), the phase carried.</summary>
+        void LoopRim(List<Vector3> ring, ref float dash)
+        {
+            int n = ring.Count; float period = LoopDashOn + LoopDashOff;
+            for (int i = 0; i < n && n >= 3; i++)
+            {
+                Vector3 a = ring[i] + Vector3.up * RimY, b = ring[(i + 1) % n] + Vector3.up * RimY; float len = Vector3.Distance(a, b); if (len < 1e-4f) continue;
+                for (float t = -dash; t < len; t += period) { float s0 = Mathf.Max(0f, t), s1 = Mathf.Min(len, t + LoopDashOn); if (s1 > s0) QuadCut(Vector3.Lerp(a, b, s0 / len), Vector3.Lerp(a, b, s1 / len), rimW); }
+                dash = (dash + len) % period;
+            }
         }
 
         void RimOf(FanDraw d, Fan f, List<Vector3> Ring, string[] Stop, ref float dash)

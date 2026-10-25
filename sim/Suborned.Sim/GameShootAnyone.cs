@@ -19,7 +19,7 @@ namespace Suborned.Sim
         static bool IsCameraId(string id) => id.StartsWith("camera:", StringComparison.Ordinal);
         Camera? CameraOf(string id) { if (!IsCameraId(id)) return null; var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return c; return null; }
         /// <summary>A camera shot out (tuning.md §9.2): dark for the rest of the mission; it watches nothing, and a loop on it is moot.</summary>
-        public bool CameraDark(string camId) => camGuns.TryGetValue("camera:" + camId, out var g) && g.Down;
+        public bool CameraDark(string camId) => (camGuns.TryGetValue("camera:" + camId, out var g) && g.Down) || CutCams.Contains(camId); // engine 0.31.0: or cut (brief 058 §2)
         void EnsureCameraGun(string id) { if (CameraOf(id) != null && !camGuns.ContainsKey(id)) camGuns[id] = NewGun(id, null, false, R.HealthCamera); }
         /// <summary>A camera's gun: the one a fire order made, else a fresh one for a preview (never stored, so a preview changes nothing).</summary>
         Gun? CameraGun(string id) => camGuns.TryGetValue(id, out var g) ? g : CameraOf(id) != null ? NewGun(id, null, false, R.HealthCamera) : null;
