@@ -404,3 +404,10 @@ The block call goes with 3a/1a unless Motive gives it a new job (below). §05 ri
 - **Waymark (me), after Keel:**
   - re-compose the route B family and the new plans, and re-record all 38 plus the new ones as c035;
   - retime mission.json's timeline and roles (the driver's `waitsFor`, the councillor's `leavesTo`), its points and a `rivals` block.
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+1. **(a)** bring the cell's car round behind Vale's with the new Drive order (3.5 m carry).
+2. **(a)** the rivals post round the cell's car in plain sight from 2:46.
+3. **(a)** with the driver unturned, his car drives off at 6:13 and the mission ends.
+Next: Aster writes the GDD lines (a new version, then `bun run crew`); then Keel, Waymark, Latch as above.

@@ -1,0 +1,11 @@
+{
+ "schema": "suborned.perf064/1",
+ "build": "Build 0.2.113 · c036 · sim 0.30.0 · a87f3e41+", "screen": "2880x1864", "device": "Mac17,14 Apple M5 Max", "warmS": 30, "windowS": 20,
+ "setup": "patrol fan True, entrance fan False at 2:30", "walker": "crowd/109", "over": false,
+ "windows": [
+  {"name": "before-1", "legacy": true, "seconds": 20.002, "ticks": [1800, 2000], "cones": 5, "frameMs": {"n": 4310, "mean": 4.641, "p99": 14.715, "max": 19.92, "over16_7": 9}, "sightMs": {"n": 4310, "mean": 0.043, "p99": 0.585, "max": 2.009, "over16_7": 0}, "conesMs": {"n": 4310, "mean": 0.462, "p99": 8.476, "max": 13.106, "over16_7": 0}, "rerouteMs": {"n": 4310, "mean": 0.001, "p99": 0.001, "max": 0.002, "over16_7": 0}, "coneBuildsPerS": 11.749, "coneQueriesPerS": 13646.365, "fanGeometriesPerS": 9.999},
+  {"name": "after-1", "legacy": false, "seconds": 20.003, "ticks": [2000, 2200], "cones": 2, "frameMs": {"n": 4928, "mean": 4.059, "p99": 8.216, "max": 11.128, "over16_7": 0}, "sightMs": {"n": 4928, "mean": 0.037, "p99": 0.581, "max": 1.855, "over16_7": 0}, "conesMs": {"n": 4928, "mean": 0.103, "p99": 3.348, "max": 4.166, "over16_7": 0}, "rerouteMs": {"n": 4928, "mean": 0, "p99": 0.001, "max": 0.003, "over16_7": 0}, "coneBuildsPerS": 5.749, "coneQueriesPerS": 5470.919, "fanGeometriesPerS": 9.999},
+  {"name": "before-2", "legacy": true, "seconds": 20.003, "ticks": [2200, 2400], "cones": 1, "frameMs": {"n": 4529, "mean": 4.417, "p99": 17.348, "max": 20.582, "over16_7": 87}, "sightMs": {"n": 4529, "mean": 0.043, "p99": 0.646, "max": 2.894, "over16_7": 0}, "conesMs": {"n": 4529, "mean": 0.513, "p99": 12.424, "max": 15.62, "over16_7": 0}, "rerouteMs": {"n": 4529, "mean": 0.001, "p99": 0.001, "max": 0.009, "over16_7": 0}, "coneBuildsPerS": 14.348, "coneQueriesPerS": 15305.576, "fanGeometriesPerS": 9.999},
+  {"name": "after-2", "legacy": false, "seconds": 20, "ticks": [2400, 2600], "cones": 1, "frameMs": {"n": 5147, "mean": 3.886, "p99": 7.661, "max": 10.641, "over16_7": 0}, "sightMs": {"n": 5147, "mean": 0.04, "p99": 0.668, "max": 2.198, "over16_7": 0}, "conesMs": {"n": 5147, "mean": 0.07, "p99": 2.893, "max": 3.195, "over16_7": 0}, "rerouteMs": {"n": 5147, "mean": 0.001, "p99": 0.001, "max": 0.011, "over16_7": 0}, "coneBuildsPerS": 2.6, "coneQueriesPerS": 3244.743, "fanGeometriesPerS": 10}
+ ]
+}

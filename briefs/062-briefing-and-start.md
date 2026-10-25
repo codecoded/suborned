@@ -72,3 +72,8 @@ New `Briefing.cs` (replaces the briefing card and the lore screen): build the la
 
 ## Done-check
 Boards and mockups written; nothing in Unity, the sim or contracts was edited. **Next owner:** Aster (Sky picks), then Latch with the asks above.
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+Pick **B, "on the street"**. Not answered: the dropped 051 text behind a "file" button (left out until Sky asks).
+Next: Latch (spec above), with Fable (hook and objective), Waymark (timeline numbers) and Forma (Vale's portrait, brief 063).

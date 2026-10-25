@@ -60,3 +60,9 @@ Port notes for Latch (no change made): replace `DKCutDisc` with a screen-space c
 1. F alone, or F plus the floors blend (E) for tall blocks?
 2. Do silhouettes show for hostiles and key people too (as now), or only for your four agents?
 3. Does the rim help or look like a decoration? (`occVeil` in `occlusion.js`; easy to drop.)
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+1. **F** (the soft circle cut with silhouettes) as the one rule for every yaw. E (dropping a tall block by storeys) is tried in play only if four close agents make holes over a third of a building's face; not built before that.
+2. and 3. Not answered: silhouettes stay as now (hostiles and key people too), and the rim stays until Sky sees it in play.
+Next: Latch ports F (port notes above), Glint the rim's look; Glyph reviews the 2x crops.

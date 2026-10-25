@@ -612,3 +612,9 @@ The words in `HudModel.cs:117` and `:426` are Fable's (§7).
 1. **Ordinary people and sight:** "Ordinary people shouldn't really care unless there's high alert status - think real world. And yeah, would be in cone area only for seeing." Civilians see by a facing cone only, and they don't care about what the cell does unless Alert is high. What "care" covers (which acts still draw a reaction at low Alert, e.g. gunfire, a kill in plain view, a scream) is for Motive and Pulse to define against brief 013, then price.
 2. **The free tell** (the Watch row marking the Fearful people) is accepted: "that's fine".
 3. The defaults Sky didn't stop go ahead: Listen and Pay need a Watch only where one is offered, and the guard and the driver are named in play.
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+1. Pressure is unseen by ordinary people below Alert 2: **yes**.
+2. Civilians remember a runner from Alert 2: **yes**.
+Next: Keel (rulebook and engine, one bump) as in the Done-check, then Pulse, Glyph, Fable, Waymark, Latch, Suture.

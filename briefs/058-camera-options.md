@@ -178,3 +178,10 @@ Measured on engine 0.29.0 with `suborned-sim batch` (§7). "Needs dark" is from 
 1. **How long does a loop run?** **Pick 2:00.** It matches the guard's call window and covers every route with one plant. At 1:30, G-kill needs two plants (2 T → 3 T).
 2. **Does Disable count as an incident, or only as a found fault?** **Pick incident.** The `hold-*` probes show that darkness alone costs nothing on today's routes. As a found fault, Disable would be Loop with no timing for +1 T, and nobody would loop. As an incident, it uses up the free first report, and that is the choice.
 3. **Ship the walk-off stopgap now (§5)?** **Pick yes.** It is host-only, changes no replay, and fixes what annoyed Sky while Loop v2 waits on Keel and Waymark.
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+1. A loop runs **2:00**.
+2. Disable counts as an **incident**.
+3. Ship the walk-off stopgap (§5) **now**.
+Next: Latch the stopgap (host only, next batch); Keel rulebook and engine; Waymark routes; Glyph and Fable ring, pill, plates and words; Latch the port; Aster the GDD lines (§7).

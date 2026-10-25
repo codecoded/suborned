@@ -75,3 +75,8 @@ The patrol is a robot in play. Evidence in the code:
 - **Aster:** the Codex login still gives 401 (ledger rows 1 and 11); the stale `playRoles.patrol` line in the people manifest (§5).
 - **Glyph:** place the patrol pick; decide the cameo ground (cream or roster grey) and run the 2x crop review.
 - **Next owner:** Sky (picks), then Forma (model), Glyph, Latch.
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+Vale **B** (white beard, chain of office) · Inez **A** · the driver **A** · patrol face **A** (stern screen). Path 2 (the Vale model, about $2) was not raised with Sky by name; it is under the $10 pass limit, so it goes through `tools/paid/paid.py` with a $3 budget.
+Next: Forma (Vale B model and portrait), Glyph (patrol placement, cameo ground, 2x crops), Latch (import).

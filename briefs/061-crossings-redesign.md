@@ -221,3 +221,9 @@ The losses fall into four groups:
 - **Vantage** (civic block dressing): keep `x-orbit-axis-n/s` and `x-starline-e`. Drop `x-starline-w`, `x-rocket-n`, `x-garden-n`, `x-garden-s`, `x-pylon-n` and `x-pylon-s`, each with a reason in `civic-block.adjust.json`. The Handover mission and its routes name no crossing.
 - **Waymark:** gates lose their crossing. Confirm that no seal or route reads one.
 - **Pulse:** fewer kerb signals across tram track (on the T2 primaries only the Parade's stays). Check the timetables if trams stop at crossing signals.
+
+## Sky's calls (2026-10-25)
+Sky, 2026-10-25, on the outstanding-work summary that listed each pick: "Your recommendation seem good".
+Look (Vela's questions): 1 remove all three bits of edge brass, **yes** · 2 signal head **A** · 4 numerals and the paving ring, plus ARRIVING, **yes** · 5 **look only** for now (trams and people don't obey it) · 6 drop the inlay arcs, studs and lit field, **yes** · 7 lane mouths as a continuous footway, **yes**. Not answered: 3 (mock-ups or painted concepts; the 3D mock-ups stand) and 8 (edge-on reading in third person; judged in play).
+Count (Datum's questions): 1 lane mouths at the gates cross on a continuous footway, **yes** · 2 tram stops crossed at **one end** (26 crossings).
+Next: Datum (plan coverage and keys), Vela (pieces), Splice (rules SF-20/SF-21, crossing-parts, world export), then Latch.
