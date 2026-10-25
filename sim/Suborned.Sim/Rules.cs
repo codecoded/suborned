@@ -324,10 +324,11 @@ namespace Suborned.Sim
         public readonly Dictionary<string, List<string>> ActFacts = new Dictionary<string, List<string>>(StringComparer.Ordinal);
         // the final fight
         public readonly int SafeHostiles, SafeWarnS, SafeAmbushCm, LoudOfficers, LoudAlert, LoudCivilian, HoldCm; public readonly bool FightTraced;
-        /// <summary>Brief 059 (engine 0.32.0), Sky's open questions as values: S1 fight.safe.leaveUnfought (true: a cell gone before the crew reaches
-        /// its stand leaves unfought; false: a crew member counted in the safe fight and still on his way holds the car); S2 fight.loud.entry
-        /// ("nearest": the loud officers come from the entry nearest the car's stand; "response": the response unit's entry, as before).</summary>
-        public readonly bool SafeLeaveUnfought = true; public readonly string LoudEntry = "response";
+        /// <summary>Brief 059, Sky's open questions as values. S1 (engine 0.33.0; Sky 2026-10-25: no): fight.safe.always (the value fight-always:
+        /// true, the final fight always comes: the gate, the late spring, the floor, crew-wiped; false, 0.32.0's leave-unfought) and fight.safe.floor
+        /// (rivals-floor: the crew comes back up to this many at the safe fight's start; 0 no recall). fight.safe.leaveUnfought is retired into them.
+        /// S2 fight.loud.entry ("nearest": the loud officers come from the entry nearest the car's stand; "response": the response unit's entry).</summary>
+        public readonly bool FightAlways; public readonly int RivalsFloor; public readonly string LoudEntry = "response";
         /// <summary>Brief 059 K1 (car.pickup.valeIn): Vale gets into his car this long after he reaches it.</summary>
         public readonly int ValeInS;
         /// <summary>Brief 059 K6 (cell.driveCar): the getaway car's Drive between the mission's car stands. False: drive-car is an unknown verb.</summary>
@@ -783,7 +784,7 @@ namespace Suborned.Sim
             foreach (var v in rd["ends"].Strs()) { if (Array.IndexOf(new[] { "alert-2", "gunfire", "body-found", "final-fight" }, v) < 0) throw new FormatException($"rounds.ends: '{v}' is unknown"); RoundEnds.Add(v); }
             if (PartnersCloseCm < 1) throw new FormatException("rounds.close is a distance of 1 cm or more (the summoned lover stops this short of her post)");
             if (PartnersClearCm < 1) throw new FormatException("rounds.clear is a distance of 1 cm or more (the summoned partner's room round his stop)");
-            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "openRule", "rule", "tag", "src");
+            var fg = b["fight"]; fg.Only("safe", "loud", "hold", "block", "blockNear", "blockFar", "blockers", "traced", "rivalsPublic", "rivalsPublicReason", "tracedReason", "over", "overReason", "lab", "kite", "openRule", "alwaysRule", "rule", "tag", "src");
             { // Sky 2026-10-20 (tuning.md §7.9): the kite response, today's (the lab reads its own fight.lab.kite)
                 var kt = fg.Opt("kite") ?? throw new FormatException("rulebook fight.kite is missing: engine 0.13.0 runs the kite response in today (tuning.md §7.9)");
                 kt.Only("on", "react", "replan", "chase", "lapse", "hide", "contact", "rearm", "hideMax", "coverHold", "rule", "src"); kt["rule"].Str(); kt["src"].Str();
@@ -799,8 +800,10 @@ namespace Suborned.Sim
             if (BlockCm < 100 || Blockers < 0) throw new FormatException("fight.block is at least 1 m and fight.blockers is not negative");
             BlockNearCm = RI(fg["blockNear"]) * 100; BlockFarCm = RI(fg["blockFar"]) * 100; // brief 018 §10 (Pulse): the blocker's post ring
             RivalsPublicDefault = OneOf(fg["rivalsPublic"], RivalsPublics); fg["rivalsPublicReason"].Str();
-            fg["safe"].Only("hostiles", "warn", "ambush", "leaveUnfought"); SafeHostiles = RI(fg["safe"]["hostiles"]); SafeWarnS = RI(fg["safe"]["warn"]); SafeAmbushCm = RI(fg["safe"]["ambush"]) * 100; // brief 059: safe.minus is retired (the −1s are people who left; unknown = reject)
-            SafeLeaveUnfought = (fg["safe"].Opt("leaveUnfought") ?? throw new FormatException("fight.safe.leaveUnfought is missing: engine 0.32.0 reads Sky's S1 (brief 059)")).Bool();
+            fg["safe"].Only("hostiles", "warn", "ambush", "always", "floor"); SafeHostiles = RI(fg["safe"]["hostiles"]); SafeWarnS = RI(fg["safe"]["warn"]); SafeAmbushCm = RI(fg["safe"]["ambush"]) * 100; // brief 059: safe.minus is retired (the −1s are people who left; unknown = reject); engine 0.33.0: leaveUnfought is retired into always and floor
+            { int alw = RI(fg["safe"].Opt("always") ?? throw new FormatException("fight.safe.always is missing: engine 0.33.0 reads Sky's S1 = no as the value fight-always (Motive M059-S1.1)")); if (alw != 0 && alw != 1) throw new FormatException("fight.safe.always is 0 or 1"); FightAlways = alw == 1; }
+            RivalsFloor = RI(fg["safe"].Opt("floor") ?? throw new FormatException("fight.safe.floor is missing: engine 0.33.0 recalls the crew to rivals-floor (Motive M059-S1.4)"));
+            if (fg.Opt("alwaysRule") is not JNode alr || alr.Str().Length == 0) throw new FormatException("fight.alwaysRule is missing: engine 0.33.0 states the final fight's gate, late spring, floor and crew-wiped there");
             fg["loud"].Only("officers", "alert", "civilian", "entry"); LoudOfficers = RI(fg["loud"]["officers"]); LoudAlert = RI(fg["loud"]["alert"]); LoudCivilian = RI(fg["loud"]["civilian"]);
             LoudEntry = OneOf(fg["loud"].Opt("entry") ?? throw new FormatException("fight.loud.entry is missing: engine 0.32.0 reads Sky's S2 (brief 059)"), new[] { "response", "nearest" });
             Crew = new CrewRules(b.Opt("rivals") ?? throw new FormatException("rulebook rivals is missing: engine 0.32.0 runs the rival crew of five (brief 059)"), RI, SafeHostiles);
@@ -1129,7 +1132,7 @@ namespace Suborned.Sim
     /// (its face is known to security), seen (the rivals saw it act). An Alert rung of 4 never comes.</summary>
     public sealed class IntentRules
     {
-        public static readonly string[] Kinds = { "drawn", "fired", "vale", "violence", "face", "seen" };
+        public static readonly string[] Kinds = { "drawn", "fired", "vale", "violence", "face", "seen", "crewmate" }; // crewmate (engine 0.33.0, Motive M059-S1.6): a member saw the agent take one of the crew down, or the agent tried it on him
         public string[] PoliceFoes = Array.Empty<string>(), RobotFoes = Array.Empty<string>(), RivalsCalm = Array.Empty<string>(), RivalsAlerted = Array.Empty<string>();
         public int PoliceFace, PoliceCloseIn, PoliceCloseLevel, RobotFace, RivalsAlertedAt, WarnTicks, WarnAlert, WarnMaxAlert, WarnPerWatcher, WarnTrail;
         public bool RivalsStreet, RivalsPress;

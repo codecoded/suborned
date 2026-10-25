@@ -382,11 +382,12 @@ namespace Suborned.Sim
         /// gives a statement; ties grieve or worry; the block hardens; the cases set the district's next level. On copies, as the rest.</summary>
         void Takedowns(Between b, Func<Person, Person> C, Dictionary<string, Person> byId, Action<string, Person, string> line, Func<int, string> fmt)
         {
-            if (!Acts.Exists(x => !x.Take)) { b.NextLevel = S.SecurityLevel; return; } // a Take seen is an incident, never a body
+            if (!Acts.Exists(x => !x.Take && !(CrewOfPerson(x.P) != null && (!x.Kill || !x.Confirmed)))) { b.NextLevel = S.SecurityLevel; return; } // a Take seen is an incident, never a body; engine 0.33.0: nor a rival's takedown unless a found killing
             var found = new List<TdAct>(); var missing = new List<TdAct>();
             foreach (var a in Acts)
             {
                 if (a.Take) continue;
+                if (CrewOfPerson(a.P) != null && (!a.Kill || !a.Confirmed)) continue; // engine 0.33.0 (Motive M059-3.2, 3.4): a rival never found costs nothing and is never missed; he gives no statement
                 var body = BodyOf(a.P);
                 string where = a.Scene.ToString();
                 if (a.Kill)

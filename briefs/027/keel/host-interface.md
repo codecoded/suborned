@@ -434,3 +434,56 @@ One bump. The rulebook (`rivals` section, `cell.driveCar`, `car.pickup`, `fight.
 **Codes.** New refusals: `drive-no-driver`, `unknown-stand`, `drive-here`, `drive-busy`, `drive-held`, `drive-fight`, `driver-brings-vale`, `car-not-parked` (all in `Answer.Codes` and in text.json's locks; `drive-here` and `drive-fight` have placeholder words for Fable). Retired: `car-gone`, `car-busy`, `call-too-late`. New log codes: `car.parks`, `car.parked`, `car.blocked`, `car.leaves`, `order.drive-car`, and `rivals.coming`, `.drop`, `.post`, `.arrive`, `.follows`, `.follow-car`, `.at-vale`, `.tip-leaves`, `.back`, `.warned`, `.word-off`, `.lookout-gone`, `.no-warning`, `.drawn-stop`, `.joins`, `.late`, `.hit`, `.down`, `.retreat`. The ones Fable has not yet worded are in text.json's `silentLogs` (PLACEHOLDER). `Start.valeWaits` (Vale waits at his car past 6:13) is test only: never set it from the host.
 
 **Dead camera, cut or shot:** unchanged since 0.31.0. `CameraDeadAs(id)` is `"cut"`, `"shot"` or `""`.
+
+## Engine 0.33.0: the final fight always comes, the crew as people, Motive's balance fixes, the crowd's legs (brief 059 Sky's S1 = no; Motive s1-rulings.json, balance-rulings.json; brief 060 cause A)
+One bump. The rulebook moved (values `fight-always` 1, `rivals-floor` 3, `rivals-free-cm` 150; `fight.safe.always`/`floor` replace the retired `fight.safe.leaveUnfought`; `fight.alwaysRule`, `rivals.free`, `rivals.peopleRule`; the ai.intent foe `crewmate` in rivals calm and alerted), the site moved (svc-ambush-1 at (77.35, -8.0), Vantage; `rivals.entry` dropped; the cover's north refuge is `mouth:rival-car-entry`), and the crowd's legs moved, so every inputs hash and many routes move. Scenarios S1-*, BAL-*, CREW-BODY and CREW-FREE (`sim/Suborned.Sim/ScenariosAlways059.cs`) show each rule; `GateC037Tests` and `CrowdLegTests` are xunit tests (they read the repo's routes and the people file).
+
+**The gate (Go).** With `fight-always` 1, from the final fight's start until it is over, Go with Vale aboard is refused `car-held` while the fight's blocker is up, wherever he stands (not only within 8 m or on the lane). Before a blocker is named (the late spring below), whoever is coming holds it:
+- `car:rivals` while a member still rides in the rival car. The answer's `tick` is then the first rider's step-out tick (or `-1` while the car drives with no step-out set yet; its stop plus rivals.out). The words read "(the rival car is coming: out in N s)". Show the countdown from `tick` (Motive M059-S1.7: "Rivals coming · 18 s"; Fable words it). `GoQuery()` answers the same.
+- a member walking back to the fight (the recalled lookout) or one knocked out and due to wake, by his id; the loud fight's officers on their way.
+Go without Vale and the menu's Withdraw are not gated. Drive is still `drive-fight` once the fight has started. Draw `car:rivals` as a holder with the car's marker (it is a car target id already).
+
+**The late spring.** The ambush springs as before, or once Vale is in the car. If nobody of the crew is on foot then, no blocker is picked until the first rider steps out (`fight.blocker` logs it then, among those on foot). Each member who steps out after the spring fires `AimNewT` after his step-out. With `fight-always` 0 none of this applies, and engine 0.32.0's leave-unfought behaviour comes back (S1-GATE-SWITCH-OFF).
+
+**The floor and crew destroyed.** At the safe fight's start, if fewer than `rivals-floor` members are up and coming, away members come back, the earliest at the stand first:
+- the tipped car cuts its trip short and rides to the stand's rival stop (`CarSt` `tostand`; `RivalsDelayedUntil` becomes now);
+- or the warned lookout walks back from where he is (or from `rival-lookout-exit` once gone): he reappears in `RivalPoses()` walking, mode `fight`.
+Each logs `rivals.recalled`, and the fight's why gains `rivals-recalled`. With every member killed or tied (none knocked out to wake), the fight is over at its start: `rivals.wiped`, fight why `crew-destroyed`, chain `rivals-destroyed`; the gate is open. The debrief's `fight.why` carries both codes.
+
+**The crew as people (takedown, carry, drop, stash, restrain).** `takedown` on `rival-1`..`rival-5` (the Enforcer) and the body orders `carry`, `drop`, `stash`, `restrain` on a rival body work as on anyone, through the brief-013 pipeline (`Bodies`, `Acts`, `BodyById("rival-n")`, the same log codes: `takedown.starts/out/dead/fails`, `carry.body`, `carry.down`, `stash.*`, `restrain.done`, `restrain.freed`). A member in the rival car or in the final fight is refused `person-away`; fire on him there.
+- He is armed and aware of the Enforcer by his own facing cone (no all-round near ring): aware, the takedown fails (`takedown.fails`) and he fires.
+- A crewmate on foot who sees a takedown on one of the crew (his cone with its near ring, a line, inside his weapon's max) fires on the taker: `rivals.see-takedown`. His cause in `FireCauses`/`ai.why` is the new `crewmate` (HudToolkit.Roster.cs `WhyIcon` needs a case for it; FireCauseOrder puts it after `violence`).
+- Knocked out, he wakes after wake-s: `rivals.wakes` (never `victim.wakes`). He makes no report and no statement, keeps the Enforcer as a foe (he shoots him on sight before the fight), and rejoins his crew: his post, the front if drawn, the car if the crew has gone back to it, off the map (`rivals.gone`) if the car is away; in a running safe fight he joins it.
+- Tied, a crewmate within `rivals-free-cm` frees him in free-s: `rivals.frees`. A civilian finder frees him too, as for anyone.
+- Civilians who see the act or find the body report it, and the Trail and Alert are charged as for anyone. A rival never reports, is never missed, and between missions a rival act counts only as a found killing: `TakedownQuote` on a rival reads `Armed` true, `IfNeverFound` "" and `TrailIfMissing` 0.
+- `RivalPoses()` lists a member taken down where his body is (at his carrier while carried) and not at all while stashed. A fight body that fell is listed where he fell (0.32.0 listed (0,0): HostViews can drop any guard for that). `MemberPos` follows the body.
+
+**Balance fixes (no new codes).**
+- M059-B1: a posted or walking member becomes a fight body where he stands (0.32.0 started them all at (0,0)).
+- M059-B2: a rival blocker never takes the kite step out of a shooter's line; he keeps his lane.
+- M059-B3: a crew broken before the final fight never presses (no `ai.kite` "presses" after `rivals.retreat`).
+
+**Brief 060, cause A (the crowd).** A routine leg whose end has no free walk cell within 6 m (off the window, as the T1 stop) now joins the walk grid at the free cell nearest it with no cap (`Grid.NearestFreeAny`) and leaves the window from there. An end on a cut-off pocket (cafe-table-5-seat-2) joins the other end's piece. No routine leg with an end in the window is a straight line now (`CrowdLegTests`). The 5:30, 6:30 and 7:30 clerks bound for T1 walk round the Office and past the official bay to Apron Road's north end; they no longer walk through the Office. So `OnTheStreet` no longer counts people inside it, and more of them see the official bay from about 5:45 to 6:10 (N82 re-staged). `HostViews.GiveWay` (cause B) is still Latch's.
+
+**Retired.**
+- `fight.safe.leaveUnfought`, and the scenarios P59-S1-GO and P59-S1-HOLD.
+- The debrief route line `pickup-camera-blocked` (with `car.blocks`: nothing blocks the pickup camera now). HudModel.cs:397 and tools/qa/checks/outcome.ts:79 can drop it.
+- The site's `rivals.entry` (the engine reads it if present, and nothing needs it). Vantage can retire the place `rival-entry`.
+
+**Test only.** `Start.CrewGone` (script start key `crewGone`, rival ids): members killed before the mission, with no body. For the floor scenarios only: never set it from the host.
+
+**Codes for Fable** (text.json, not edited here). New log codes:
+- `rivals.recalled`: the floor brings back the tipped car or the warned lookout.
+- `rivals.wiped`: the safe fight is over at its start, the crew destroyed.
+- `rivals.see-takedown`: a crewmate sees one of the crew taken down and draws.
+- `rivals.wakes`: a knocked-out rival comes round (or is brought round).
+- `rivals.frees`: a crewmate unties a tied rival.
+- `rivals.gone`: a woken rival with his car away walks off the map.
+
+Also for Fable:
+- New fight why codes `rivals-recalled` and `crew-destroyed`.
+- The new fire cause `crewmate`.
+- `car-held` now sends `tick` when `car:rivals` holds: text.test's numbers check fails until its line takes `{tick}` or says why not.
+No refusal code is new or retired.
+
+**Fixtures.** `sim/Suborned.Sim/Fixtures/bal-loud-x4.script.json`, `bal-rb-ff.script.json` and `bal-rbb-ff.script.json` are Motive's probe plans composed on this engine (`bun tools/sim/fixtures059.ts`). Re-compose them when the engine moves, as DP1's drive session is re-recorded.

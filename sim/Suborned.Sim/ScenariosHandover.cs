@@ -1085,6 +1085,7 @@ namespace Suborned.Sim
             CameraLineCases(); // engine 0.31.0 (brief 058 §6, brief 054 §8): Loop v2, Disable, the camera shot's price, a runner remembered from Alert 2 (ScenariosCameraLines.cs)
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
             Pickup059(); // engine 0.32.0 (brief 059): route B at the service door, the rival crew of five, Drive, Sky's S1–S3 both ways (ScenariosPickup059.cs)
+            Always059(); // engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
         }
     }
 }

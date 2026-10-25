@@ -728,3 +728,60 @@ All pops: `plate_dark` solid, 26 px high, the icon 16 px cream then the short in
 - **Next: Keel.**
   - Run `bun run sim:site` first.
   - Re-measure at (77.35, −8.0): BAL-YARD-FOCUS (win; both locks 3.0 s late), route-b-board's slack line (3 s), and the blocker's walk to (86, −5) (9.16 m).
+
+## Motive: the units slip, (c) and the yard's lane post (2026-10-26)
+Aster's three rulings on Vantage's section. Entries in `briefs/059/motive/balance-rulings.json` (`corrections`, M059-B4 fixed, new M059-B9 and M059-B10, `checks.keel` + `checks.keel_after_sky_B10`). Evidence in `briefs/059/motive/lane/` (`results/yard-geometry.txt`, `results/outcomes.txt`, `results/cand-*.txt`; plans ylA–ylJ, `mk.py`, `cand.sh`). The probe is `balance/engine-probe.patch`, regenerated, which still applies to 100b5e3a.
+
+**1. The units slip: fixed.** The probe's `Row()` divided `Path.Length` (mm) by 100. It now divides by 1000, in the patch and in the scratch tree.
+- The true walks to (86, −5) are 9.16 m from (77.35, −8.0), 11.46 m from svc-ambush-5, 14.46 m from svc-ambush-4 and 31.5 m from the old svc-ambush-1.
+- B4's 91.6 m and vantage[1]'s 92–340 m are corrected. No verdict, slack or outcome moves, because they all come from play, not from `Row()`.
+
+**2. M059-4.4(c): restated in seconds (M059-B9) [S].** The yard's blocker reaches his post within the carry plus Board from Vale's rear door: 6.5 s, or 10.4 m at his 1.6 m/s.
+- The limit is read from the rules, never fixed in metres.
+- It holds at 9.16 m / 5.7 s on today's lane and at 7.49 m / 4.7 s on the lane in ruling 3.
+- With the gate nothing leaks if he is late, so (c) is now about readability.
+
+**3. The yard's lane: it starts at the car (M059-B10), and that needs a GDD clause.**
+- **What the export does now.** `tools/sim/getaway.ts` projects the car onto Apron Road, so the lane starts 16.65 m out at (86, −15) and the post lands 19.42 m from the car.
+- **Measured on today's lane** (svc-ambush-1 at (77.35, −8.0), base R):
+  - No plan that goes for the blocker wins: ylA and ylB lose to rivals-reach-vale at 7:33.0.
+  - Every yard win breaks the crew (Standing +3), so §06's choice at the car (board and go, or fight it out) is gone at the yard.
+  - A rival standing in the drive 8–16.65 m ahead of the car, its only way out, doesn't hold it.
+- **On the lane from the car** (PROBE_YARDLANE=2: the drive 3 m wide to Apron Road's centreline, then the road 12 m wide, 30 m in all; post (79.35, −15.0), 10.0 m out):
+  - Board and go composes: ylA downs the blocker at 7:28.0 and Goes at 7:31.9, Standing +2, no break.
+  - Fight it out is unchanged (7:32.2).
+  - The early yard routes Go 7.1 s sooner (apy-1, gfy-1: 3:00.3 against 3:07.4).
+  - loud-yard is unchanged.
+  - MC-0 to MC-12 are as cand-c5 except route-b-board's line.
+- **The cost.** route-b-board's slack falls from 3 s to 0 s with today's locks. Re-composed it gets 2 s (ylB: the Scout locks the blocker so he answers her, and the Fixer locks rival-1 then rival-2; ylF: the Tech steps out). Today's lane gives 3–4 s. Moving the spot doesn't change this: three other spots also give 2 s.
+- **The drive must keep its own width.** At the road's 12 m, rival-tail (90.5, −17) falls inside the lane and breaks 4.4(d). Every svc-ambush, svc-police and rival point stays outside the lane at 3 m.
+- **Ruling: the lane from the car.** I accept 2 s for keeping board and go at the yard, and the post's own reason.
+- **It is not inside §06 as written.** §06's Drive line separates "a carriageway" from "a drive", so "the getaway route's carriageway" excludes the drive. That letter puts the post outside the reach its own sentence gives as the reason. Proposed wording for Sky, in §06 the hold:
+  > or on the exit lane: the first 30 m of the getaway route from the car, at the width of the way it runs on (a drive at the drive's width, then the carriageway at the road's), derived from the stand's getaway route (no route, no mission: unknown = reject).
+  - The blocker sentence stands. "10 m along it" is then 10 m from the car at every stand.
+
+**For Keel.**
+- **Now:**
+  - Build nothing for B10.
+  - Add BAL-YARD-POST: the blocker reaches his post within 6.5 s, read from the rules.
+- **If Sky says yes:**
+  - Build the stand's exit lane as parts, each a polyline with its own half-width and square ends at the junction. `InExitLane`, `NearestInExitLane` and the hold read the parts. `LanePointAt` runs along the whole line from the car.
+  - Splice's `exitLane`/`stands.ts`: a car on a drive starts the lane at the car and follows the drive at its width to the first road's centreline, then the road. The site exports the parts. The square's lane stays byte-identical.
+  - Scenarios: BAL-YARD-LANE, BAL-YARD-BOARD, BAL-YARD-FOCUS (2 s) and BAL-YARD-EARLY (the `keel_after_sky_B10` list).
+  - Waymark then re-composes route-b-board as ylB.
+- **If Sky says no:** today's lane stands. The yard has no board and go, and route-b-board stays a crew break (3 s).
+
+**For Sky (hostile fire on the move).**
+- **The record.** Sky answered on 2026-10-21, in brief 027 `motive/tuning.md` §9.7 item 3, not under Q11: "Hostiles firing as they walk in `today`: OK".
+- **What the engine does now** (since 0.15, GameAi):
+  - Every hostile fires as it walks, at the walk's odds: ×500, so 281 ‰ instead of 562 ‰ untrained at effective range. A step to cover fires too (`ai.cover.stepFires` true). Only the lab's `hostilesFireMoving` can turn it off.
+  - The blocker has no exception: he fires on the way to his post.
+- **What changes if the engine follows §06.**
+  - Every advance and step to cover becomes silent, so the cell can walk-and-fire at police who can't answer. That is the kite §8.3 closed: loud fights get cheaper.
+  - Every fight number since 0.15 (c037, the fight lab, this pass) would need re-measuring.
+  - Holding only the blocker's fire changes nothing measurable at the yard: outcomes are identical on both lanes, and the slack is 2 s / 0 s as without it.
+- **Recommendation:** keep the engine and bring §06's text to Sky's answer:
+  - hostiles: "firing as they walk, at the walk's odds";
+  - the blocker: "It walks there without stopping, firing as it walks".
+
+Next owner: Aster (the B10 clause to Sky), then Keel.

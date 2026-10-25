@@ -218,7 +218,7 @@ export function routes(c: Ctx, gr: GroundAudit, wk: WalkAudit): { list: Route[];
   add('councillor', 'd:Official entrance', 'd:Official drop-off'); add('councillor', 'd:Official entrance', 'd:Service lane');
   add('driver', 'd:Meet driver', 'd:Official drop-off'); add('driver', 'd:Meet driver', 'd:Service lane');
   for (const cr of ['fixer', 'tech', 'scout', 'enforcer']) for (const dest of ['d:Office entrance', 'd:Café door', 'cabinet', 'd:Meet Vale', 'd:Getaway bay', 'd:Meet driver', 'd:Under parasol']) add(`crew-${cr}`, `crew:${cr}`, dest);
-  add('rivals', 'rival-entry', 'd:Office approach'); add('security', 'security-entry', 'd:Office approach'); add('security', 'd:Office approach', 'd:Service lane');
+  add('rivals', 'rival-front-stop', 'd:Office approach'); // brief 059 (engine 0.33.0): the drawn crew steps out of its car at the front stop and walks to the Office front add('security', 'security-entry', 'd:Office approach'); add('security', 'd:Office approach', 'd:Service lane');
   for (const p of sim.places) if (/^cafe-table-\d-seat-0$/.test(p.id)) add('waitress', 'd:Café door', p.id);
   for (const p of sim.places) if (/^ambush-|^police-/.test(p.id)) add('final fight', p.id, 'd:Office approach');
   const out: Route[] = [], pathCells = new Map<string, number>(), paths = new Map<string, [number, number][]>();

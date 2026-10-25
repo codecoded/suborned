@@ -1,6 +1,6 @@
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameAi.cs tree/sim/Suborned.Sim/GameAi.cs
 --- orig/sim/Suborned.Sim/GameAi.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameAi.cs	2026-10-26 00:57:18
++++ tree/sim/Suborned.Sim/GameAi.cs	2026-10-26 01:06:52
 @@ -176,6 +176,7 @@
              Func<Pt, bool> sees = p => Sees(pos, p);
              var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
@@ -19,7 +19,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameAi.cs tree/sim/Su
              string t = ChooseTarget(h.Id, g, pos, foes);
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameCombat.cs tree/sim/Suborned.Sim/GameCombat.cs
 --- orig/sim/Suborned.Sim/GameCombat.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameCombat.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GameCombat.cs	2026-10-26 01:06:52
 @@ -164,6 +164,7 @@
          int CoverMod(string t, Pt at, Pt from)
          {
@@ -30,7 +30,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameCombat.cs tree/si
          }
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameCrew.cs tree/sim/Suborned.Sim/GameCrew.cs
 --- orig/sim/Suborned.Sim/GameCrew.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameCrew.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GameCrew.cs	2026-10-26 01:06:52
 @@ -472,11 +472,44 @@
                      { var from = RivalCarPose()!.Value.pos; CarLeg(CrewCar.ToStand, CarRouteP(S.Drive.NearestFree(from) ?? from, S.CarStand(st.RivalStop)), st.RivalStop); }
                      break;
@@ -133,7 +133,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameCrew.cs tree/sim/
          /// it leaves the way it came and is back at the park security.rivals.retreat after the break. Off the map, they walk off it.</summary>
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameFight.cs tree/sim/Suborned.Sim/GameFight.cs
 --- orig/sim/Suborned.Sim/GameFight.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameFight.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GameFight.cs	2026-10-26 01:06:52
 @@ -29,6 +29,12 @@
          public readonly List<string> FightWhy = new List<string>();
          Path? guardAllyPath; int guardAllyStart;
@@ -183,7 +183,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameFight.cs tree/sim
          public bool MisledEver => misledOnce;
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameGetaway.cs tree/sim/Suborned.Sim/GameGetaway.cs
 --- orig/sim/Suborned.Sim/GameGetaway.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameGetaway.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GameGetaway.cs	2026-10-26 01:06:52
 @@ -48,7 +48,9 @@
              if (pickFrom.Length > 0)
              {
@@ -213,7 +213,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameGetaway.cs tree/s
              return l;
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameIntent.cs tree/sim/Suborned.Sim/GameIntent.cs
 --- orig/sim/Suborned.Sim/GameIntent.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameIntent.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GameIntent.cs	2026-10-26 01:06:52
 @@ -152,6 +152,7 @@
          {
              if (!R.Intent.RivalsPress) return false;
@@ -224,7 +224,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameIntent.cs tree/si
              if (Vale != ValeAt.WithEnforcer || e.Inside || e.Down) return pressing;
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameKite.cs tree/sim/Suborned.Sim/GameKite.cs
 --- orig/sim/Suborned.Sim/GameKite.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GameKite.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GameKite.cs	2026-10-26 01:06:52
 @@ -179,6 +179,7 @@
              }
              // rivals: out of the shooter's line
@@ -235,7 +235,7 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GameKite.cs tree/sim/
              if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GamePublicFight.cs tree/sim/Suborned.Sim/GamePublicFight.cs
 --- orig/sim/Suborned.Sim/GamePublicFight.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/GamePublicFight.cs	2026-10-26 00:39:58
++++ tree/sim/Suborned.Sim/GamePublicFight.cs	2026-10-26 01:06:52
 @@ -141,6 +141,7 @@
          /// or is down when it ends. The crew absorbed into the ambush is judged by the ambush.</summary>
          bool RivalsBroken(PublicFight f)
@@ -246,8 +246,34 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/GamePublicFight.cs tr
              int judged = 0;
 diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/Site.cs tree/sim/Suborned.Sim/Site.cs
 --- orig/sim/Suborned.Sim/Site.cs	2026-10-25 22:15:07
-+++ tree/sim/Suborned.Sim/Site.cs	2026-10-26 00:39:58
-@@ -273,6 +273,8 @@
++++ tree/sim/Suborned.Sim/Site.cs	2026-10-26 02:12:03
+@@ -26,6 +26,7 @@
+     public sealed class Stand
+     {
+         public string Id = "", Car = "", RivalStop = ""; public Pt Facing, CarAt, CarCell; public Pt[] Exit = Array.Empty<Pt>(); public int ExitHalfCm;
++        public int DriveEnd = -1, DriveHalfCm; // Motive 2026-10-26 probe (PROBE_YARDLANE=2): Exit[0..DriveEnd] is the drive at the drive's width, Exit[DriveEnd..] the carriageway at the road's
+         public string[] Ambush = Array.Empty<string>(), Police = Array.Empty<string>();
+     }
+ 
+@@ -78,7 +79,7 @@
+         /// square), or of an inner corner. Integers only.</summary>
+         public bool InExitLane(Pt p) => InExitLane(p, ExitLane, ExitHalfCm);
+         /// <summary>Brief 059 K6: inside a stand's exit lane.</summary>
+-        public bool InExitLane(Pt p, Stand st) => InExitLane(p, st.Exit, st.ExitHalfCm);
++        public bool InExitLane(Pt p, Stand st) => st.DriveEnd > 0 ? InExitLane(p, st.Exit[..(st.DriveEnd + 1)], st.DriveHalfCm) || InExitLane(p, st.Exit[st.DriveEnd..], st.ExitHalfCm) : InExitLane(p, st.Exit, st.ExitHalfCm);
+         static bool InExitLane(Pt p, Pt[] L, int half)
+         {
+             for (int i = 1; i < L.Length; i++)
+@@ -112,7 +113,7 @@
+         /// <summary>The point of the lane nearest p, kept a metre inside its sides (or on the centreline for a lane narrower than 2 m).</summary>
+         public Pt NearestInExitLane(Pt p) => NearestInExitLane(p, ExitLane, ExitHalfCm);
+         /// <summary>Brief 059 K6: in a stand's exit lane.</summary>
+-        public Pt NearestInExitLane(Pt p, Stand st) => NearestInExitLane(p, st.Exit, st.ExitHalfCm);
++        public Pt NearestInExitLane(Pt p, Stand st) { if (st.DriveEnd <= 0) return NearestInExitLane(p, st.Exit, st.ExitHalfCm); var a = NearestInExitLane(p, st.Exit[..(st.DriveEnd + 1)], st.DriveHalfCm); var b = NearestInExitLane(p, st.Exit[st.DriveEnd..], st.ExitHalfCm); return G.D2(p, a) <= G.D2(p, b) ? a : b; }
+         static Pt NearestInExitLane(Pt p, Pt[] L, int half)
+         {
+             Pt best = L[0]; long bd = long.MaxValue; int inset = Math.Max(0, half - 100);
+@@ -273,6 +274,8 @@
                  if (!Grid.Free(s)) throw new FormatException($"place {kv.Key} stands on blocked ground");
                  stand[kv.Key] = s;
              }
@@ -256,22 +282,23 @@ diff -ru --exclude=obj --exclude=bin orig/sim/Suborned.Sim/Site.cs tree/sim/Subo
              foreach (var c in r["cameras"].Items)
              {
                  c.Only("id", "kind", "at", "facing", "reach", "half", "src", "reason");
-@@ -346,6 +348,12 @@
+@@ -346,6 +349,13 @@
                      if (st.Ambush.Length != FightAmbush.Length || st.Police.Length != FightPolice.Length) throw new FormatException($"{x.Path}: a stand has as many ambush spots and police stands as the square (SX-2)");
                      st.CarAt = at[st.Car]; st.CarCell = Drive.NearestFree(st.CarAt) ?? throw new FormatException($"{x.Path}: stand {st.Id}'s car has no drivable cell within 6 m (rulebook car.drive)");
                      if (!carStand.ContainsKey(st.RivalStop)) carStand[st.RivalStop] = Drive.NearestFree(at[st.RivalStop]) ?? throw new FormatException($"{x.Path}.rivalStop has no drivable cell");
-+                    if (Environment.GetEnvironmentVariable("PROBE_YARDLANE") == "1" && st.Id == "service-drive") // Motive 059c probe: the lane is the car's way out, drive included: 30 m from the car
++                    if (Environment.GetEnvironmentVariable("PROBE_YARDLANE") is "1" or "2" && st.Id == "service-drive") // Motive 059c probe: the lane is the car's way out, drive included: 30 m from the car
 +                    {
 +                        var head = new List<Pt> { st.CarAt }; long left = 3000 - G.Dist(st.CarAt, st.Exit[0]); head.Add(st.Exit[0]);
 +                        for (int k = 1; k < st.Exit.Length && left > 0; k++) { var a0 = st.Exit[k - 1]; var b0 = st.Exit[k]; long d0 = G.Dist(a0, b0); if (d0 <= left) { head.Add(b0); left -= d0; } else { head.Add(new Pt(a0.X + (int)((b0.X - a0.X) * left / d0), a0.Y + (int)((b0.Y - a0.Y) * left / d0))); left = 0; } }
 +                        st.Exit = head.ToArray();
++                        if (Environment.GetEnvironmentVariable("PROBE_YARDLANE") == "2") { st.DriveEnd = 1; st.DriveHalfCm = 150; } // the drive part at the drive's 3 m (civic-block service-drive y -16.5..-13.5), the road part at the road's
 +                    }
                      Stands.Add(st);
                  }
                  if (Stands.Count == 0 || Stands[0].Car != GetawayCar) throw new FormatException($"{sts.Path}: the first stand is the car's start (getaway.car)");
 diff -ru --exclude=obj --exclude=bin orig/sim/cli/Probe.cs tree/sim/cli/Probe.cs
 --- orig/sim/cli/Probe.cs	2026-10-25 22:15:07
-+++ tree/sim/cli/Probe.cs	2026-10-26 00:39:58
++++ tree/sim/cli/Probe.cs	2026-10-26 02:10:18
 @@ -36,4 +36,28 @@
          foreach (var st in s.Stands) Console.WriteLine($"stand {st.Id}: car {st.CarAt} (drive cell {st.CarCell}), facing {st.Facing}, rival stop {st.RivalStop}, Drive from the square {g.DriveTicks(st.Id) / 10.0:0.0} s");
          Console.Write("guard at door sees:"); foreach (var id in s.PlaceIds) if (g.GuardWatching(s.Stand(id))) Console.Write($" {id}"); Console.WriteLine();
@@ -283,9 +310,9 @@ diff -ru --exclude=obj --exclude=bin orig/sim/cli/Probe.cs tree/sim/cli/Probe.cs
 +    {
 +        var s = i.SiteData; var st = s.StandById(standId)!; var car = st.CarAt; var door = s.Stand("d:Service lane"); var vd = s.Stand("rival-vale-door");
 +        var post = s.LanePointAt(1000, st); var postF = s.Grid.NearestFree(post) ?? post; int speed = i.Rules.CellSpeed;
-+        Console.WriteLine($"stand {standId} car {car} lane post {post} (free {postF})");
++        Console.WriteLine($"stand {standId} car {car} lane post {post} (free {postF}); lane from {st.Exit[0]}, {G.Dist(car, st.Exit[0]) / 100.0:0.00} m from the car; post {G.Dist(car, post) / 100.0:0.00} m from the car; lane {string.Join(" ", st.Exit)} half {st.ExitHalfCm} cm; rival stop {st.RivalStop} {s.Stand(st.RivalStop)} lane {(s.InExitLane(s.Stand(st.RivalStop), st) ? 1 : 0)} car {G.Dist(car, s.Stand(st.RivalStop)) / 100.0:0.0} m; rear door lane {(s.InExitLane(vd, st) ? 1 : 0)}");
 +        foreach (var id in st.Ambush) Row(s, st, id, s.Stand(id), car, door, vd, postF);
-+        if (Environment.GetEnvironmentVariable("YARD_LINE") == "1") { for (int y = -2500; y <= 500; y += 250) { Console.Write($"y {y,6}:"); for (int x = 5000; x <= 9000; x += 250) { var q = new Pt(x, y); if (!s.Grid.Free(q)) { Console.Write("    #"); continue; } var rr = s.Grid.Route(q, postF); Console.Write(rr == null ? "    -" : $"{new Path(rr).Length / 100,5}"); } Console.WriteLine(); } return; }
++        if (Environment.GetEnvironmentVariable("YARD_LINE") == "1") { for (int y = -2500; y <= 500; y += 250) { Console.Write($"y {y,6}:"); for (int x = 5000; x <= 9000; x += 250) { var q = new Pt(x, y); if (!s.Grid.Free(q)) { Console.Write("    #"); continue; } var rr = s.Grid.Route(q, postF); Console.Write(rr == null ? "    -" : $"{new Path(rr).Length / 1000.0,5:0.0}"); } Console.WriteLine(); } return; }
 +        for (int x = car.X - 2000; x <= car.X + 2000; x += 50) for (int y = car.Y - 2000; y <= car.Y + 2000; y += 50)
 +        {
 +            var p = new Pt(x, y); if (!s.Grid.Free(p)) continue;
@@ -298,12 +325,12 @@ diff -ru --exclude=obj --exclude=bin orig/sim/cli/Probe.cs tree/sim/cli/Probe.cs
 +    static void Row(Site s, Stand st, string id, Pt p, Pt car, Pt door, Pt vd, Pt post)
 +    {
 +        var r = s.Grid.Route(s.Grid.NearestFree(p) ?? p, post); long walk = r == null ? -1 : new Path(r).Length;
-+        Console.WriteLine($"{id,-14} {p.X,6} {p.Y,6}  car {G.Dist(p, car) / 100.0,5:0.0} m  door {G.Dist(p, door) / 100.0,5:0.0} m  valeDoor {G.Dist(p, vd) / 100.0,5:0.0} m  lineCar {(s.Sight(p, car, 160) ? 1 : 0)} lineDoor {(s.Sight(p, door, 160) ? 1 : 0)} lane {(s.InExitLane(p, st) ? 1 : 0)}  toPost {(walk < 0 ? -1 : walk / 100.0),5:0.0} m");
++        Console.WriteLine($"{id,-14} {p.X,6} {p.Y,6}  car {G.Dist(p, car) / 100.0,5:0.0} m  door {G.Dist(p, door) / 100.0,5:0.0} m  valeDoor {G.Dist(p, vd) / 100.0,5:0.0} m  lineCar {(s.Sight(p, car, 160) ? 1 : 0)} lineDoor {(s.Sight(p, door, 160) ? 1 : 0)} lane {(s.InExitLane(p, st) ? 1 : 0)}  toPost {(walk < 0 ? -1 : walk / 1000.0),5:0.00} m"); // Path.Length is in mm (Motive 2026-10-26: was / 100, a units slip)
 +    }
  }
 diff -ru --exclude=obj --exclude=bin orig/sim/cli/Program.cs tree/sim/cli/Program.cs
 --- orig/sim/cli/Program.cs	2026-10-25 22:15:07
-+++ tree/sim/cli/Program.cs	2026-10-26 00:39:58
++++ tree/sim/cli/Program.cs	2026-10-26 01:06:52
 @@ -64,6 +64,7 @@
                  case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                  case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");

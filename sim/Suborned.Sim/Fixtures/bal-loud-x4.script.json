@@ -1,0 +1,288 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "run": true
+  },
+  {
+   "tick": 600,
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance"
+  },
+  {
+   "tick": 800,
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol"
+  },
+  {
+   "tick": 1250,
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ]
+  },
+  {
+   "tick": 1510,
+   "op": "enforcer",
+   "do": "fire",
+   "target": "guard"
+  },
+  {
+   "tick": 1510,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    975,
+    -4625
+   ],
+   "run": true
+  },
+  {
+   "tick": 1510,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "run": true
+  },
+  {
+   "tick": 1550,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "run": true
+  },
+  {
+   "tick": 1577,
+   "op": "enforcer",
+   "do": "enter"
+  },
+  {
+   "tick": 1577,
+   "op": "tech",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "tick": 2257,
+   "op": "scout",
+   "do": "draw"
+  },
+  {
+   "tick": 2257,
+   "op": "scout",
+   "do": "stance",
+   "stance": "free"
+  },
+  {
+   "tick": 2257,
+   "op": "scout",
+   "do": "fire",
+   "target": "security-2"
+  },
+  {
+   "tick": 2257,
+   "op": "fixer",
+   "do": "draw"
+  },
+  {
+   "tick": 2257,
+   "op": "fixer",
+   "do": "stance",
+   "stance": "free"
+  },
+  {
+   "tick": 2257,
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-2"
+  },
+  {
+   "tick": 2257,
+   "op": "tech",
+   "do": "draw"
+  },
+  {
+   "tick": 2257,
+   "op": "tech",
+   "do": "stance",
+   "stance": "free"
+  },
+  {
+   "tick": 2257,
+   "op": "tech",
+   "do": "fire",
+   "target": "security-2"
+  },
+  {
+   "tick": 2277,
+   "op": "scout",
+   "do": "fire",
+   "target": "security-1"
+  },
+  {
+   "tick": 2277,
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-1"
+  },
+  {
+   "tick": 2277,
+   "op": "tech",
+   "do": "fire",
+   "target": "security-1"
+  },
+  {
+   "tick": 2292,
+   "op": "scout",
+   "do": "fire",
+   "target": "rivals"
+  },
+  {
+   "tick": 2292,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    4300,
+    -3100
+   ]
+  },
+  {
+   "tick": 2292,
+   "op": "fixer",
+   "do": "fire",
+   "target": "rivals"
+  },
+  {
+   "tick": 2292,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    4400,
+    -3350
+   ]
+  },
+  {
+   "tick": 2583,
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2"
+  },
+  {
+   "tick": 2583,
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2"
+  },
+  {
+   "tick": 2643,
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-3"
+  },
+  {
+   "tick": 2643,
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-3"
+  },
+  {
+   "tick": 2684,
+   "op": "scout",
+   "do": "move",
+   "to": [
+    975,
+    -4625
+   ]
+  },
+  {
+   "tick": 2684,
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ]
+  },
+  {
+   "tick": 2684,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 3138,
+   "op": "enforcer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3178,
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 3178,
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 3178,
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "tick": 3184,
+   "op": "scout",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3184,
+   "op": "tech",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3191,
+   "op": "fixer",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3201,
+   "op": "cell",
+   "do": "go"
+  }
+ ],
+ "until": 5100,
+ "note": "Composed by tools/sim/fixtures059.ts from briefs/059/motive/balance/probe-plans/loud-x4.plan.json on the working tree's engine: BAL-LOUD-BREAK, BAL-NOPRESS (M059-B5, B3): loud, the four drawn on foot, the Scout and Fixer lock rival-1..3 in turn; the Enforcer walks Vale out on rivals.retreat. Re-compose when the engine moves."
+}

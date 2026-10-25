@@ -99,7 +99,7 @@ export function loadSim(world: World): Sim {
   role('councillor', site.vale.exit, 'site.vale.exit'); role('councillor-car', site.vale.car, 'site.vale.car'); role('driver', site.car.driver, 'site.car.driver');
   role('waitress', 'd:Café door', 'cast waitress post');
   for (const c of ['fixer', 'tech', 'scout', 'enforcer']) role(`crew-${c}`, `crew:${c}`, 'crew start');
-  role('rival-entry', site.rivals.entry, 'rivals'); role('security-entry', site.security.entry, 'security'); role('patrol-a', site.patrol.a, 'patrol'); role('patrol-b', site.patrol.b, 'patrol');
+  role('rival-car-entry', site.rivals.car?.entry ?? 'rival-car-entry', 'rivals.car'); // brief 059 (engine 0.33.0): the crew comes by car; rival-entry is read by nothing now role('security-entry', site.security.entry, 'security'); role('patrol-a', site.patrol.a, 'patrol'); role('patrol-b', site.patrol.b, 'patrol');
   for (const [k, s] of Object.entries(rounds2.guard.stops as { at: number[] }[])) persons.push({ id: `guard:round-${k}`, role: 'guard-round', at: [cm(s.at[0]!), cm(s.at[1]!)], place: 'round stop', src: 'rounds.guard.stops' });
   for (const [pid, v] of Object.entries(rounds2.servers as Record<string, { excursions?: never; spans: { excursions?: { at: number[] }[] }[] }>)) for (const sp of v.spans) for (const [k, e] of (sp.excursions ?? []).entries()) persons.push({ id: `${pid}:table-${k}`, role: 'server-round', at: [cm(e.at[0]!), cm(e.at[1]!)], place: 'table', src: 'rounds.servers' });
   const coverPoints = (site.cover.points as { id: string; at: number[]; kind: string; of: string; h: number }[]).map(c => ({ id: c.id, at: [cm(c.at[0]!), cm(c.at[1]!)] as V, kind: c.kind, of: c.of, h: cm(c.h) }));

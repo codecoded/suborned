@@ -59,7 +59,7 @@
     "at will": "route-b and route-b-board (panic only): rivals-reach-vale at 7:30.0, 7.0 s after the Take, at all six placements swept. The three posted take the carrying Enforcer as target from the first tick at 562 per mille (each first shot hits: the accumulator starts at 500) and he takes 6 hits across the 3.5 m carry and the 4 s Board.",
     "focus fire, today's point": "rb-ff 7:32.6, rbb-ff 7:34.7, rbb-ff3 (the Tech steps out after the Drive) 7:31.7; all T 3 A 0 St +3, 2 health left at Vale-in. Locks 1.0 s late still hold (1 health); 1.5-2.0 s late lose. Mission check: route-b-board 'every planned step can slip 0 s' (7:23 1 s late -> rivals-reach-vale).",
     "focus fire, (77.35, -8.0)": "rb-ff 7:32.2, rbb-ff 7:36.0, rbb-ff3 7:31.9; T 3 A 0 St +3, 3 health left at Vale-in; locks up to 3.0 s late hold in all three plans. Mission check: route-b-board can slip 3 s (c037 on 0.31: 66 s, before the yard ambush existed). MC-1..MC-12 ok.",
-    "why this point": "it is 15.6 m from Vale's rear door (rival-vale-door), at the pistol's long band (300 per mille untrained), and 17.3 m from the service door, off its line. It also becomes the stand's blocker (the shortest walk to the lane post, 91.6 m against svc-ambush-4's 144.6 m), so one of the three walks away from the carry instead of shooting into it. Four other placements (north band, 8-14 m from the doors) gave 1.0-1.5 s."
+    "why this point": "it is 15.6 m from Vale's rear door (rival-vale-door), at the pistol's long band (300 per mille untrained), and 17.3 m from the service door, off its line. It also becomes the stand's blocker (the shortest walk to the lane post on the engine's grid: 9.16 m, 5.7 s at 1.6 m/s, against svc-ambush-5's 11.46 m and svc-ambush-4's 14.46 m; corrected 2026-10-26, see corrections), so one of the three walks away from the carry instead of shooting into it. Four other placements (north band, 8-14 m from the doors) gave 1.0-1.5 s."
    },
    "src": "briefs/059/motive/balance/results/sweep-svc1-*.txt; cand-r-2026-10-26.txt and cand-c5-2026-10-26.txt (slack lines)"
   },
@@ -109,8 +109,8 @@
    ],
    "unit": "m",
    "tag": "S",
-   "reason": "Route B's carry from Vale's rear door has 3 s of slack for the cell's locks there, against 0-1 s at (57.25, -17.75). Constraints, if Vantage needs a nearby cell for sight or cover: >= 15.5 m from rival-vale-door (64.55, -16.9); >= 15 m from the service door; 10-13 m from the service-drive stand (69.35, -15.0), so outside fight-hold 8 m and inside the cell's effective reach; outside the exit lane; a line to the car; and the shortest walk to the yard's lane post of the yard's spots, so it is the blocker. (77.35, -8.0): 10.6 m from the car, 15.6 m from the rear door, 17.3 m from the service door, line to car and door, outside the lane, a free walk cell (the engine accepts it), 91.6 m walk to the post.",
-   "src": "results/sweep-svc1-*.txt; cand-c5-2026-10-26.txt; probe motive-yard"
+   "reason": "Route B's carry from Vale's rear door has 3 s of slack for the cell's locks there, against 0-1 s at (57.25, -17.75). Constraints, if Vantage needs a nearby cell for sight or cover: >= 15.5 m from rival-vale-door (64.55, -16.9); >= 15 m from the service door; 10-13 m from the service-drive stand (69.35, -15.0), so outside fight-hold 8 m and inside the cell's effective reach; outside the exit lane; a line to the car; and the shortest walk to the yard's lane post of the yard's spots, so it is the blocker. (77.35, -8.0): 10.6 m from the car, 15.6 m from the rear door, 17.3 m from the service door, line to car and door, outside the lane, a free walk cell (the engine accepts it), 9.16 m walk to the post (86, -5) on the exported lane, 5.7 s at 1.6 m/s; 7.49 m (4.7 s) to (79.35, -15.0) on the lane from the car (M059-B10). Corrected 2026-10-26: the probe divided Path.Length (mm) by 100.",
+   "src": "results/sweep-svc1-*.txt; cand-c5-2026-10-26.txt; probe motive-yard; lane/results/yard-geometry.txt (the walks, corrected)"
   },
   {
    "id": "M059-B5",
@@ -147,6 +147,24 @@
    "tag": "S",
    "reason": "Re-measured on 0.32: leak (a) is open with the gate off (apy-leak 2:32.0, gfy-leak 2:22.5, unfought) and closed with it (held to the blocker's down at 3:03.5). The late spring picks the blocker at the first step-out (2:51.3 at the yard). Leak (b), the floor, was not re-run on 0.32: Keel's S1-FLOOR-* scenarios measure it on his build.",
    "src": "results/verdicts-2026-10-26.txt Q2"
+  },
+  {
+   "id": "M059-B9",
+   "kind": "data",
+   "key": "M059-4.4(c) restated (rulings.json; MC-11's yard reading, Vantage's spot check)",
+   "value": "At the service-drive stand, the ambush spot with the shortest grid walk to the blocker's post (the stand's blocker) reaches it within the carry and Board from Vale's rear door: 6.5 s (the 3.5 m carry, 2.5 s, plus Board carrying, 4 s), so at the blocker's walk of 1.6 m/s at most 10.4 m. Supersedes (c)'s 'at most 8 m by walk (5 s)'. The limit is read from the rules (carry pace, fight board-carrying, the hostile walk), never a fixed metre count.",
+   "tag": "S",
+   "reason": "(c)'s reason was always the time: the blocker is in the lane by the time the cell could board and go. With the gate (M059-S1.2) nothing leaks if he is late, so (c) is now about readability: by the time the Enforcer is in, the man holding the car stands where the cell can see and answer him. Measured: 9.16 m / 5.7 s on the exported lane, 7.49 m / 4.7 s on the lane from the car (M059-B10); both hold. 8 m could not hold with route B on the exported lane: every spot tried inside 8.4 m loses it (Vantage).",
+   "src": "rulings.json M059-4.4(c); Vantage 2026-10-26 (brief 059); lane/results/yard-geometry.txt"
+  },
+  {
+   "id": "M059-B10",
+   "kind": "rule",
+   "key": "getaway exit lane at a stand whose car stands on a drive (the service-drive stand); the blocker's post follows",
+   "value": "PROPOSED, needs Sky's yes on the GDD wording (brief 059 'Motive: the units slip, (c) and the yard's lane post (2026-10-26)'); not in the rules until then. The exit lane starts at the car and follows the getaway route: along the drive at the drive's width (3 m) to where the route meets its first road's centreline, then that carriageway at the road's width, 30 m in all; each part has square ends. The blocker's open post (lane centreline 10 m along) is then 10 m from the car on every stand: at the yard (79.35, -15.0), the drive's mouth. A stand at a kerbside bay (the square) is unchanged: its lane already starts at the car's foot.",
+   "tag": "S",
+   "reason": "§06 states the post's reason: 10-13 m from the car, 'beyond the hold and point blank, inside the cell's effective reach'; the engine checks the same (fight.blockNear > hold, blockFar < the pistol's effective reach) and LanePointAt is written as 'from the car's foot'. The exported lane starts on Apron Road 16.65 m out, so the post is 19.42 m from the car, out of the cell's reach. Measured (svc-ambush-1 at (77.35, -8.0), R): on the exported lane no plan that goes for the blocker wins (ylA, ylB: rivals-reach-vale 7:33.0), so every yard win breaks the crew (Standing +3) and §06's choice at the car (board and go, the fight moves Standing 0, or fight it out) is gone at the yard; a rival standing in the drive 8-16.65 m ahead of the car, its only way out, doesn't hold it. On the lane from the car: board and go composes (ylA: blocker down 7:28.0, Go 7:31.9, St +2, no break); fight it out unchanged (rb-ff 7:32.2, St +3); the early yard routes Go 7.1 s sooner (apy-1, gfy-1 3:00.3 against 3:07.4: the late car's blocker posts in reach and is down at 2:56.4); loud-yard unchanged (held and lost 7:42.5). The cost is route-b-board's slack: 3 s -> 0 s with today's locks (rbb-ff), 2 s re-composed (ylB: the Scout locks the blocker so he answers her, the Fixer locks rival-1 then rival-2; or ylF: the Tech steps out), against 3-4 s on the exported lane; the spot doesn't move it (2 s at three other spots). Rival-tail (90.5, -17) stays outside the lane only with the drive at its own width: at the road's 12 m it falls inside (M059-4.4(d)). MC-0..12 otherwise identical to cand-c5 (only route-b-board's line moves).",
+   "src": "GDD v0.25 §06 getaway (the hold, the blocker), Drive ('5 m/s on a carriageway, 2 m/s on a drive'); tools/sim/getaway.ts exitLane (projects the car onto the route's first road); engine Site.LanePointAt; probe PROBE_YARDLANE=2; lane/results/ (cand-yl2-c5-*.txt, cand-yl0-c5-ylF.txt, cand-yl-*.txt, outcomes.txt, yard-geometry.txt)"
   }
  ],
  "effects": {
@@ -200,8 +218,8 @@
   },
   {
    "point": "the yard's lane post",
-   "to": "no move asked; a finding",
-   "reason": "Every yard spot walks 92-340 m on the walk grid to the lane post at (86, -5) (M059-4.4(c) asks <= 8 m): there is no foot way from the yard to Apron Road there. With the gate the blocker still holds the car wherever he is, so nothing leaks. But the yard's blocker walks out of the fight instead of to a post the cell can answer. Vantage and Splice: a reachable post, or Aster accepts it."
+   "to": "no move asked",
+   "reason": "Corrected 2026-10-26 (Vantage found it): the 92-340 m was a units slip in the probe's Row() (Path.Length is mm; it divided by 100). The true walks to the post (86, -5) are 9.16 m from (77.35, -8.0), 11.46 m from svc-ambush-5, 14.46 m from svc-ambush-4 and 31.5 m from today's svc-ambush-1 (57.25, -17.75): the yard reaches Apron Road on foot. The real fault is where the post is: 19.42 m from the car, beyond fight-block-far 13 m and the pistol's 16 m. Ruled in M059-B10."
   }
  ],
  "waymark": [
@@ -221,14 +239,32 @@
    "BAL-YARD-FOCUS (M059-B4, B7): route B at the yard with svc-ambush-1 at (77.35, -8.0), the Scout and Fixer locking rival-1 then rival-2 from the Take: wins (probe fight out 7:32.2, T 3, A 0, Standing +3), and still wins with both locks 3.0 s late.",
    "BAL-LOUD-BREAK (M059-B5): loud with the four drawn on foot: no break at 1 or 2 down; break at the third.",
    "BAL-NOPRESS (M059-B3): after a pre-fight break no member presses (no ai.kite 'presses' line after rivals.retreat).",
-   "BAL-LANE (M059-B2): a rival blocker fired on from outside its reach stays on its lane."
+   "BAL-LANE (M059-B2): a rival blocker fired on from outside its reach stays on its lane.",
+   "BAL-YARD-POST (M059-B9; on the build as it stands): at the service-drive stand the blocker (svc-ambush-1's man at (77.35, -8.0)) walks 9.16 m to (86, -5), arriving within 6.5 s of the spring; the check reads the limit from the rules (carry 3.5 m at the carry pace + fight board-carrying), not a metre count."
+  ],
+  "keel_after_sky_B10": [
+   "BAL-YARD-LANE: the service-drive stand's exit lane starts at the car (69.35, -15.0); the drive part is 3 m wide and ends at Apron Road's centreline (86, -15); the road part runs north to 30 m in all (86, -1.65), 12 m wide; the open post is (79.35, -15.0), 10.0 m from the car; rival-tail, every svc-ambush-n and svc-police-n lie outside the lane; the square's lane is byte-identical.",
+   "BAL-YARD-BOARD: route B at the yard, the Scout and Fixer lock the blocker from the spring, then rival-1: blocker down (probe 7:28.0), board and Go (probe 7:31.9), no break, Standing +2 (the fight moves it 0).",
+   "BAL-YARD-FOCUS re-measured: route-b-board with the Scout on the blocker and the Fixer on rival-1 then rival-2 wins (probe 7:34.9, St +3); slack 2 s.",
+   "BAL-YARD-EARLY: apy-1's shape (A-pressure, the car Driven to the yard before the Enter): the late car's blocker posts at (79.35, -15.0) and Go comes after blocker.out (probe 2:56.4 / 3:00.3)."
   ]
  },
  "open": [
   "For Aster (a GDD/rulebook mismatch, not resolved here): GDD §06 says hostiles advance 'firing nothing while they move', and the blocker 'walks there without stopping or firing'. The rulebook and engine since 0.15.0 have hostiles firing as they walk, at walking pips (my brief 027 tuning.md §8.3; Sky 2026-10-21). Measured at the yard (PROBE_BLKHOLD, a walking blocker holding fire): at today's svc-ambush-1 it gives the same 3 s as M059-B4; with the point moved it adds nothing, so B4 doesn't depend on the answer. The GDD wins on conflict, so the GDD text or the engine needs a call.",
   "Keel's missions-check-0.32 and route-diff-0.32 safe-fight numbers are on the (0,0) fault (M059-B1). Read them after the fix.",
   "Robustness dropped with 059's fight: the late-step slack is 3 s for route-b-board (with M059-B4) and 1 s for route-g-fast-board, against c037's 66 s and 19 s on 0.31. The c037 fights had the crew lying in wait at fixed spots, and the pickup had no yard ambush. Part of it is the probe's locks, named by rival id, which a shifted run can misfit. Waymark's re-record measures it properly; if it stays under 3 s on the square's G-fast, Suture's playtest decides whether fight-ambush-m (20 m) or the posts need a value change. That would be my next ruling, not a GDD change.",
-  "The yard's lane post is out of foot reach (vantage[1]).",
+  "Corrected 2026-10-26: the yard's lane post is in foot reach (9.16 m from svc-ambush-1); its distance from the car is ruled in M059-B10.",
   "The 2026-10-25 run's results/final-check.txt ('SHIPS') is not evidence for any rule here: it ran with PROBE_SHIELD and PROBE_DRAWNBREAK=1 (M059-B5, B6)."
+ ],
+ "corrections": [
+  {
+   "date": "2026-10-26",
+   "what": "the yard's walks to the blocker's post",
+   "was": "92-340 m (vantage[1]); 91.6 m and 144.6 m (M059-B4, verdicts q3)",
+   "is": "9.16 m (svc-ambush-1 at (77.35, -8.0)), 11.46 m (svc-ambush-5), 14.46 m (svc-ambush-4), 22.76-33.96 m for the yard's west spots",
+   "cause": "the probe's Row() (balance/engine-probe.patch, sim/cli/Probe.cs) divided Path.Length, which is in mm, by 100. Fixed to / 1000 in the patch and the scratch tree; no verdict, slack or outcome moves (they come from play, not from Row()).",
+   "found": "Vantage, brief 059 'Vantage: svc-ambush-1 and the yard's lane post (2026-10-26)'",
+   "src": "lane/results/yard-geometry.txt"
+  }
  ]
 }

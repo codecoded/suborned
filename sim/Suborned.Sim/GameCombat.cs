@@ -882,7 +882,7 @@ namespace Suborned.Sim
         {
             if (op.Id == OpId.Enforcer && (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking)) return No("carry-vale", "the Enforcer is carrying Vale");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("already-carrying", "already carrying");
-            if (!IsOpId(o.Target)) return PersonById(o.Target) != null ? CarryBody(op, o) : No("carry-names-downed", "carry names a downed operative or a body");
+            if (!IsOpId(o.Target)) return TakedownPerson(o.Target) != null ? CarryBody(op, o) : No("carry-names-downed", "carry names a downed operative or a body"); // engine 0.33.0: a member of the crew too (M059-3.1)
             var other = OpOf(Sim.Op.Parse(o.Target));
             if (other == op) return No("carry-self", "nobody carries themself");
             if (!other.Down) return No("not-down", $"{o.Target} is not down");

@@ -1,0 +1,51 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a HEAD --b tree --json "briefs/059/keel/route-diff-0.33.json"
+· engines ready (1.1 s); playing 41 routes on A and 41 on B
+A = HEAD 511058c3c928    B = the working tree    (= means the value did not move)
+route                         outcome            fail                   end              Trail   Alert  health lost
+careless-body-found           =                  =                      =                =       =      =
+    first log line apart (line 105):
+      A  3:30.0  crowd.sheltered  1 reach shelter.
+      B  3:30.7  shot.miss  rival-1 fires on enforcer at 4 m (750 ‰): miss.
+careless-g-disable            success → failure  - → rivals-reach-vale  4:44.7 → 4:10.2  12 → 3  =      44 % → 50 %
+    first log line apart (line 41):
+      A  3:55.2  ai.why  rival-4 takes the fixer as its target: drawn.
+      B  3:55.2  ai.cover  rival-4 takes cover at cv-077 (planter-run civic/run-west-south/2, q 740).
+careless-takedown-seen-crowd  =                  =                      =                =       =      =
+    first log line apart (line 65):
+      A  5:48.3  crowd.back  2 are back on their way.
+      B  5:42.9  crowd.back  1 are back on their way.
+fail-vale-dead                =                  =                      =                =       =      =
+    first log line apart (line 34):
+      A  6:12.0  rivals.drawn  The rivals hear gunfire and head for the Office.
+      B  6:12.0  witness.crowd  Meera Castillo sees the councillor shot at.
+route-a                       =                  =                      =                =       =      =
+    first log line apart (line 55):
+      A  4:12.6  blocker.out  rival-4, on the road, is down: nobody blocks the lane now.
+      B  4:12.6  crowd.startled  7 on the street are startled and run.
+route-a-board                 =                  =                      =                =       =      =
+    first log line apart (line 54):
+      A  4:12.6  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:12.6  shot.hit  tech fires on rival-4 at 8 m (562 ‰): hit.
+route-a-disable               =                  =                      =                =       =      =
+    first log line apart (line 58):
+      A  4:12.6  blocker.out  rival-4, on the road, is down: nobody blocks the lane now.
+      B  4:12.6  crowd.startled  7 on the street are startled and run.
+route-g                       success → failure  - → rivals-reach-vale  4:44.7 → 4:10.2  =       =      5 % → 50 %
+    first log line apart (line 45):
+      A  3:55.2  ai.why  rival-4 takes the fixer as its target: drawn.
+      B  3:55.2  ai.cover  rival-4 takes cover at cv-077 (planter-run civic/run-west-south/2, q 740).
+route-g-board                 success → failure  - → rivals-reach-vale  4:11.5 → 4:04.2  =       =      0 % → 44 %
+    first log line apart (line 47):
+      A  3:55.2  shot.miss  rival-5 fires on fixer at 9 m (281 ‰): miss.
+      B  3:55.2  ai.why  rival-2 takes the enforcer as its target: vale, drawn.
+route-g-kill                  =                  =                      =                =       =      5 % → 38 %
+    first log line apart (line 49):
+      A  5:22.2  ai.why  rival-4 takes the scout as its target: drawn.
+      B  5:22.2  ai.cover  rival-3 takes cover at cv-032 (wall civic/cafe/wall-arc-w, q 589).
+route-g-kill-board            =                  =                      =                =       =      11 % → 27 %
+    first log line apart (line 50):
+      A  5:22.2  ai.why  rival-4 takes the fixer as its target: drawn.
+      B  5:22.2  ai.cover  rival-3 takes cover at cv-032 (wall civic/cafe/wall-arc-w, q 589).
+
+41 routes: 11 moved, 30 unchanged
+(5.1 s)

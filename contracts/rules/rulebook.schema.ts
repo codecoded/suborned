@@ -134,7 +134,8 @@ const Also = z.strictObject({ when: z.array(Cond).min(1), changes: z.array(Eff).
 const Witness = z.strictObject({ when: z.array(Cond).optional(), act: id });
 
 // ai.intent's foes (engine 0.19.0): a closed set, unknown = reject
-const IntentFoe = z.enum(['drawn', 'fired', 'vale', 'violence', 'face', 'seen']);
+// crewmate (engine 0.33.0, Motive M059-S1.6): the rivals' own cause: an agent a member saw take one of the crew down (or who tried it on him)
+const IntentFoe = z.enum(['drawn', 'fired', 'vale', 'violence', 'face', 'seen', 'crewmate']);
 const Weapon = z.strictObject({ damage: Ref, every: Ref, eff: Ref, max: Ref });
 /** brief 027 (EXPERIMENTAL): a playground weapon: damage a hit, cadence, rings, its Arms in the loadout, the charge a targeted shot costs,
  *  and optionally the charge each shot draws, a near band with its own damage (the riot gun), and no fire while walking (the long rifle). */
@@ -431,10 +432,12 @@ export const Rulebook = z.strictObject({
     target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
   fight: ground({
     // brief 059 (engine 0.32.0, Motive M059-3.7): `minus` is retired (the −1s are people who have left); optional only so runs pinned before it parse, and
-    // rulebook.test.ts holds the live rulebook to none. leaveUnfought (Sky's S1) and loud.entry (S2): optional only for runs pinned before them
-    safe: z.strictObject({ hostiles: Ref, minus: Ref.optional(), warn: Ref, ambush: Ref, leaveUnfought: z.boolean().optional() }),
+    // rulebook.test.ts holds the live rulebook to none. leaveUnfought (Sky's S1 as 0.32.0 built it) and loud.entry (S2): optional only for runs pinned
+    // before them; engine 0.33.0 retires leaveUnfought into always (fight-always) and floor (rivals-floor), Sky's S1 = no (Motive M059-S1.1, S1.4)
+    safe: z.strictObject({ hostiles: Ref, minus: Ref.optional(), warn: Ref, ambush: Ref, leaveUnfought: z.boolean().optional(), always: Ref.optional(), floor: Ref.optional() }),
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref, entry: z.enum(['response', 'nearest']).optional() }),
     openRule: text.optional(), // brief 059: Sky's open questions S1–S3, each a value
+    alwaysRule: text.optional(), // engine 0.33.0: the final fight always comes (Sky's S1 = no; Motive M059-S1.2 to S1.5)
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
     block: Ref.optional(), blockers: Ref.optional(), blockNear: Ref.optional(), blockFar: Ref.optional(), // brief 018 §1: the exit lane's length and the blockers; optional only for runs pinned before it
     // Sky 2026-10-16 (fight.public): the default when a mission's rivals name none; optional so a rulebook pinned before it parses
@@ -450,6 +453,9 @@ export const Rulebook = z.strictObject({
   // brief 059 (engine 0.32.0): the rival crew, five people and a car (Pulse briefs/059/pulse/rival-routine.md); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
   rivals: ground({
     crew: Ref, posted: Ref, speed: Ref, followPace: Ref, drop: Ref, out: Ref, step: Ref, follow: Ref, warn: Ref, warnLag: Ref, lookoutPace: Ref,
+    // engine 0.33.0 (Motive M059-3.1, 3.4): the crew as people for the takedown and the body orders; free: a crewmate within it unties a tied member.
+    // Optional only so a rulebook pinned before 0.33.0 parses (rulebook.test.ts holds the live one to both)
+    free: Ref.optional(), peopleRule: text.optional(),
     beats: z.strictObject({ maxS: z.number().int().positive(), minBeats: z.number().int().positive(),
       posted: z.strictObject({ phase: z.record(id, z.number().int().nonnegative()), loop: z.array(z.strictObject({ pose: id, s: z.number().int().positive(), yaw: z.union([z.literal(0), z.literal(30), z.literal(-30), z.literal(60), z.literal(-60)]), move: z.enum(['out', 'back']).optional(), at: z.literal('pace').optional() })).min(1) }),
       lookout: z.strictObject({ phase: z.record(id, z.number().int().nonnegative()), loop: z.array(z.strictObject({ pose: id, s: z.number().int().positive(), yaw: z.union([z.literal(0), z.literal(30), z.literal(-30), z.literal(60), z.literal(-60)]), move: z.enum(['out', 'back']).optional(), at: z.literal('pace').optional() })).min(1) }),

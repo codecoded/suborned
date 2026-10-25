@@ -29,6 +29,8 @@
 //   pending    briefs 058, 059 (GDD v0.25.0): words for engine changes that are approved but not built (locks, cards, events, dialogue, actions, hints, price
 //              fields, a Watch on the rival crew), each with its brief and a `guess` flag for any code the brief did not name; the host reads none of it, and an
 //              entry moves to its live section when Keel lands the code (the live locks and cards must equal the engine's codes)
+//              Empty since the 059 port (engine 0.32.0, 2026-10-26): the Drive (`drive-car`, its two stands, `ride`), the Watch on the rival crew
+//              (`rivals` in WATCHED), the driver's tail fact, H16 and H20 are live. A stand's text key is `stand-<site getaway.stands id>`.
 //
 // Rules the checker (text.test.ts) holds: every line ≤ 80 characters; a spoken line 1–12 words; no one named but the cast; no
 // modern speech; no strong profanity; every engine verb, refusal and fail has text; every reply the rulebook can produce has a line
@@ -40,12 +42,12 @@ import { fnv1a32 } from '../../rules/rulebook.ref.ts';
 export const AGENTS = ['scout', 'fixer', 'tech', 'enforcer'] as const;
 export const PEOPLE = ['waitress', 'driver', 'guard', 'councillor'] as const;
 export const OTHERS = ['rivals', 'patrol', 'security', 'watcher', 'crowd'] as const;
-/** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. */
-export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', 'patrol'] as const;
+/** Things a Scout can Watch besides a person (rulebook sight.kinds learn: watch): `targets` keys. The guard is watched as a person. `rivals` (brief 059, engine 0.32.0): the parked rival car teaches the crew's timetable. */
+export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', 'patrol', 'rivals'] as const;
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',
-  'board', 'go', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
+  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
 export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb. */
@@ -106,7 +108,7 @@ export const Lock = z.strictObject({
 export const Activity = z.strictObject({
   idle: Line, down: Line, walking: Line, running: Line, drawing: Line, holstering: Line, firing: Line,
   holding: z.strictObject({ loop: Line, carry: Line, take: Line }),
-  acting: z.strictObject({ board: Line, watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, disable: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
+  acting: z.strictObject({ board: Line, 'drive-car': Line.describe('the one who drives the getaway car to another bay (brief 059)'), ride: Line.describe('everyone else in the car while it drives'), watch: Line, listen: Line, ask: Line, pay: Line, help: Line, pressure: Line, loop: Line, disable: Line, reroute: Line, mislead: Line, enter: Line, take: Line, carry: Line,
     takedown: Line, drop: Line, stash: Line, restrain: Line, body: Line.describe('any other work with a body (the rulebook cancel verb `body`: lift, drop, stash or tie)') }),
 });
 

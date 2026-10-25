@@ -47,6 +47,10 @@ namespace Suborned.Sim
         /// bay to the close, as before engine 0.32.0. For the scenarios of other systems (takedowns, the crowd, the fail camera) that need the
         /// pickup after 6:13, as `holds` places a held scene. Never in a route or a session; off, every start hashes as before.</summary>
         public bool ValeWaits;
+        /// <summary>Test only (engine 0.33.0, Keel; Motive's S1-FLOOR-NO-SPAWN, S1-FLOOR-ZERO, S1-CREW-WIPED): members of the rival crew killed before
+        /// the mission and never found (no body), so the floor and crew-destroyed rules can be read with three or five dead, as `holds` places a
+        /// held scene. Never in a route or a session; empty, every start hashes as before.</summary>
+        public readonly List<string> CrewGone = new List<string>();
         /// <summary>Brief 025 playground (EXPERIMENTAL): the driven agent's switches for this run, over the rulebook's cell.drive: pace (per mille
         /// of every pace, 250..4000), onBusy (cancel, hold), onRelease (stand, resume), gap (cm, 0 off). Null: the rulebook's. Hashed when set.</summary>
         public int? DrivePace, DriveGap; public string? DriveOnBusy, DriveOnRelease;
@@ -63,8 +67,9 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "valeWaits");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "valeWaits", "crewGone");
             if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
+            if (n.Opt("crewGone") is JNode cg) foreach (var x in cg.Items) { var id = x.Str(); if (!id.StartsWith("rival-", StringComparison.Ordinal) || s.CrewGone.Contains(id)) throw new FormatException($"{x.Path}: crewGone names rival-1..rival-5, once each"); s.CrewGone.Add(id); } // engine 0.33.0: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
             {
                 fl.Only("on", "healthScale", "pips", "stances", "then", "close", "charge", "field", "policeWarning", "hostilesFireMoving", "coverSnap", "kite", "loadout");
@@ -162,6 +167,7 @@ namespace Suborned.Sim
             }
             if (Holds.Count > 0) { w.OpenArr("holds"); foreach (var (d, f, u) in Holds) w.Obj().Prop("door", d).Prop("from", f).Prop("until", u).EndObj(); w.EndArr(); } // test only: likewise
             if (ValeWaits) w.Prop("valeWaits", true); // brief 059, test only: likewise
+            if (CrewGone.Count > 0) { w.OpenArr("crewGone"); foreach (var x in CrewGone) w.Str(x); w.EndArr(); } // engine 0.33.0, test only: likewise
             return w.EndObj().ToString();
         }
     }
@@ -608,6 +614,7 @@ namespace Suborned.Sim
         public Pt? PersonPos(Person p)
         {
             if (p.Down) return null;
+            if (CrewOfPerson(p) is CrewMember cm) return !cm.Fight && cm.OnFoot ? MemberPose(cm)?.pos : null; // engine 0.33.0: a rival on the street (aboard or in the final fight, no takedown target)
             if (ServerOf(p) is RoundsData.Server sv) return RoundPoseAt(sv, EvRead(sv), Tick).Pos; // brief 022: a server's round
             if (p == Inez) return S.Stand(Inez.Place);
             if (p == Driver) return DriverPos();
@@ -649,8 +656,9 @@ namespace Suborned.Sim
             foreach (var m in Crew)
             {
                 var p = MemberPose(m); string mode = m.Gun.Down ? "down" : m.Fight ? "fight" : m.Mode.ToString().ToLowerInvariant();
+                if (m.Mode == CrewMode.Gone && m.Gun.Down) continue; // killed before the mission (Start.CrewGone, test only): never on the map
                 if (p.HasValue) l.Add((m.Id, p.Value.pos, p.Value.facing, mode));
-                else if (m.Gun.Down) l.Add((m.Id, m.DownAt, new Pt(0, 100), mode));
+                else if (m.Gun.Down) { if (BodyOf(m.P) is not Body hb || hb.Open) l.Add((m.Id, MemberPos(m, Tick), new Pt(0, 100), mode)); } // engine 0.33.0: where he fell, in the fight too (0.32.0 listed a fight body at (0,0)); carried, at his carrier; a stashed body not at all
                 else { var cp0 = RivalCarPose(); if (cp0.HasValue && m.Mode == CrewMode.Aboard) l.Add((m.Id, cp0.Value.pos, cp0.Value.heading, mode)); }
             }
             var cp = RivalCarPose();

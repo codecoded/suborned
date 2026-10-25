@@ -69,11 +69,11 @@ namespace Suborned.Sim
                 r.Is(!g.Reps.Exists(x => x.P == g.Driver), "no walk to a phone");
             });
 
-            Add("N82", "—", "One hop (Pulse §3.4; rulebook memory: a told entry is never retold): the late driver route on to 6:30. Vale sees the driver knocked out at 6:07 (engine 0.28.0: guard 74 struggles first, +3 s) and tells guard 65, by phone; 65, Loyal, walks to report it and it lands at 6:19. At his phone he calls nobody: what he was told is not his to tell. (Before brief 013 E1 a told reporter told again from the phone.)", r =>
+            Add("N82", "—", "One hop (Pulse §3.4; rulebook memory: a told entry is never retold): the late driver route on to 6:40. Vale, waiting at his car (Start.ValeWaits), sees the driver knocked out at 6:28 (engine 0.33.0: after the T1 clerks have walked past the official bay, brief 060 cause A; guard 74 is taken first at 6:16) and tells guard 65, by phone; 65, Loyal, walks to report it. At his phone he calls nobody: what he was told is not his to tell. (Before brief 013 E1 a told reporter told again from the phone.)", r =>
             {
                 var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] { Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"), Act(3550, Enf, "takedown", Guard74, "knockout"),
-                    MvTo(3640, Enf, new Pt(7690, -3370)), Act(3670, Enf, "takedown", Driver, "knockout") }).ToArray()); // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the driver 3 s later
+                Orders(r, DriverOpening().Concat(new[] { Act(1900, Scout, "mislead", "rivals"), Mv(2340, Scout, "crew:scout"), Act(3760, Enf, "takedown", Guard74, "knockout"),
+                    MvTo(3850, Enf, new Pt(7690, -3370)), Act(3880, Enf, "takedown", Driver, "knockout") }).ToArray()); // engine 0.33.0: 3:31 later than 0.28.0's (5:55, 6:04, 6:07): the T1 clerks now walk the grid past the official bay to 6:10 (brief 060 cause A), and three of them saw guard 74's takedown; engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the driver 3 s later
                 var a = ActOn(r, Driver);
                 var g65 = g.PersonById(Guard65)!;
                 r.Is(a.Told.Contains(Guard65) && ToldBy(g65, g.ValeP), "Vale tells guard 65 of the driver's takedown");
@@ -83,7 +83,7 @@ namespace Suborned.Sim
                 r.To(rep.LandAt);
                 r.Is(rep.Phase == "landed", $"his report lands ({Report.Clock(rep.LandAt)})");
                 r.Is(!g.People.Concat(g.Walkers.Select(w => w.P)).Any(p => ToldBy(p, g65)), "and he tells nobody: one hop");
-            });
+            }, new Start { ValeWaits = true }); // engine 0.33.0: Vale waits at his car past 6:13 (test only) for the later takedowns
 
             // Re-cast 2026-10-19 (Keel, brief 023): Pulse's leave stagger (0..8 min after the chime for an inside post) keeps clerk 32 inside
             // past the close and sends 42 out alone at 6:30, so the pair no longer walks. The intent is the same with the 5:30 group bound for

@@ -29,7 +29,7 @@ export function writeReport(r: ReportIn) {
   const box = { x0: sim.window.x0, y0: sim.window.y0, x1: sim.window.x1, y1: sim.window.y1 };
   const polyOf = (id: string) => sim.occluders.find(o => o.id === id)?.poly;
   const mk = (b: V, label: string, colour: string) => ({ b, label, colour });
-  const keyPlaces = sim.places.filter(p => /^d:|^crew:|^cabinet$|^patrol-a$|^patrol-b$|^security-entry$|^rival-entry$/.test(p.id)).map(p => mk(p.at, p.id.replace(/^d:/, ''), '#1b4fd8'));
+  const keyPlaces = sim.places.filter(p => /^d:|^crew:|^cabinet$|^patrol-a$|^patrol-b$|^security-entry$|^rival-car-entry$/.test(p.id)).map(p => mk(p.at, p.id.replace(/^d:/, ''), '#1b4fd8'));
   mkdirSync(resolve(out, 'maps'), { recursive: true });
   const save = (name: string, m: ReturnType<typeof renderMap>) => { writeFileSync(resolve(out, 'maps', `${name}.png`), Buffer.from(m.png, 'base64')); return m; };
   let mapN = 0;

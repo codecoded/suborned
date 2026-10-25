@@ -37,6 +37,12 @@ namespace Suborned.Sim
         public Pt DownAt; public bool Fight;                     // where he fell; he is a final-fight body (Hostile H)
         public Hostile? H;
         public KiteDisp? Disp;                                   // drawn: the kite's walk off his line, or the press (fight.kite, ai.intent.rivals.press)
+        /// <summary>Engine 0.33.0 (Motive M059-3.1): the member as a person for the takedown and the body orders (job "rival"; never in Game.People,
+        /// so no witness, report, statement, check-in or missing rule reads him).</summary>
+        public Person P = null!;
+        /// <summary>Engine 0.33.0 (Motive M059-S1.6, M059-3.4): the agents he saw take one of the crew down, tried it on him, or took him down:
+        /// his cause to fire on them (ai.intent foe crewmate).</summary>
+        public readonly SortedSet<string> Avenge = new SortedSet<string>(StringComparer.Ordinal);
         public bool OnFoot => Mode == CrewMode.Walking || Mode == CrewMode.Posted || Mode == CrewMode.Talking;
     }
 
@@ -68,7 +74,8 @@ namespace Suborned.Sim
         void InitCrew()
         {
             string[] roles = { "posted", "posted", "posted", "lookout", "wheelman" };
-            for (int i = 0; i < 5; i++) Crew.Add(new CrewMember { Id = CrewIds[i], N = i + 1, Role = roles[i], Gun = NewGun(CrewIds[i], PistolW, false, R.HealthRival) });
+            for (int i = 0; i < 5; i++) Crew.Add(new CrewMember { Id = CrewIds[i], N = i + 1, Role = roles[i], Gun = NewGun(CrewIds[i], PistolW, false, R.HealthRival), P = new Person { Id = CrewIds[i], Job = Person.RivalJob } });
+            foreach (var id in Start.CrewGone) { var gm = CrewOf(id) ?? throw new FormatException($"start crewGone: no member '{id}'"); gm.Gun.Down = true; gm.Mode = CrewMode.Gone; } // test only: killed before the mission, no body
             var a = CarRoute(S.RivalCarEntry, S.RivalCarDrop); var b = CarRoute(S.RivalCarDrop, S.RivalsPark);
             CrewDropLeave = RivalAt - (CarProfile(b).Length - 1);
             CrewDropArrive = CrewDropLeave - T(Cr.DropS);
@@ -78,6 +85,8 @@ namespace Suborned.Sim
         }
 
         Path CarRoute(string from, string to) => CarRouteP(S.CarStand(from), S.CarStand(to));
+        /// <summary>A read (scenarios, the debug view; never hashed): the ticks of the rival car's drive between two of its points (the profile's length).</summary>
+        public int CarProfileTicks(string from, string to) => CarProfile(CarRoute(from, to)).Length;
         Path CarRouteP(Pt from, Pt to) => new Path(S.Drive.CarRoute(from, to, S.DriveLaneCm) ?? new[] { from, to });
 
         // ---------------------------------------------------------------- the car
@@ -155,7 +164,7 @@ namespace Suborned.Sim
         {
             if (Range) return;
             // the drawn crew comes in from off the map at RivalAt (F5), else the timetable's entry
-            if (CarSt == CrewCar.Off && Tick == CrewEntryNow) Enter();
+            if (CarSt == CrewCar.Off && Tick == CrewEntryNow && !(Wheelman.Gun.Down && Wheelman.Mode == CrewMode.Gone)) Enter(); // a wheelman killed before the mission (Start.CrewGone, test only) drives no car in
             if (CarMoving && Tick >= ccStart + ccProf!.Length - 1) CarArrive();
             if (crewNextAt == Tick) CrewNext();
             if (tailAt == Tick) Tail();
@@ -246,6 +255,8 @@ namespace Suborned.Sim
                 case "word": m.Mode = CrewMode.Talking; m.ModeTick = Tick; m.Until = Tick + T(Cr.WarnS); m.Post = "word"; m.Base = FaceFrom(end, DriverPos() ?? S.Stand(S.CarDriver)); break;
                 case "exit": m.Mode = CrewMode.Gone; m.ModeTick = Tick; Note("rivals.lookout-gone", "The rival lookout walks off down Apron Road and is gone."); break;
                 case "board": m.Mode = CrewMode.Boarding; m.ModeTick = Tick; m.Until = Tick + T(Cr.StepS); break;
+                case "aboard": m.Mode = CrewMode.Aboard; m.ModeTick = Tick; m.Post = ""; break; // engine 0.33.0: a woken member back in his car (M059-3.4)
+                case "leave": m.Mode = CrewMode.Gone; m.ModeTick = Tick; Note("rivals.gone", $"{m.Id} of the rival crew walks off the map."); break; // engine 0.33.0: a woken member with his car gone
                 case "flee": // M059-3.5: aboard; when the last of them is in, the car leaves
                     m.Mode = CrewMode.Aboard; m.ModeTick = Tick; m.Post = ""; m.Spot = -1; m.SpotStand = "";
                     if (!Crew.Exists(x => Up(x) && x.Mode == CrewMode.Walking && x.Goal == "flee")) CrewLeaves();
@@ -472,6 +483,7 @@ namespace Suborned.Sim
                     { var from = RivalCarPose()!.Value.pos; CarLeg(CrewCar.ToStand, CarRouteP(S.Drive.NearestFree(from) ?? from, S.CarStand(st.RivalStop)), st.RivalStop); }
                     break;
             }
+            CrewFloor(st, lookoutBoards); // engine 0.33.0 (Motive M059-S1.4, S1.5): the floor, then crew destroyed (GameCrewBodies.cs)
             // Pulse §7: the count is a consequence, never a subtraction; a crew above its size is an engine fault
             int bodies = Hostiles.FindAll(h => IsRival(h.Id)).Count + (lookoutBoards ? 1 : 0);
             if (bodies > Cr.Size) throw new InvalidOperationException($"the safe fight holds {bodies} of a crew of {Cr.Size}");
@@ -533,23 +545,27 @@ namespace Suborned.Sim
         {
             var g = m.Gun; g.St = "routine"; g.Target = ""; LoseTarget(g);
             var h = new Hostile { Id = m.Id, Gun = g, Speed = rivSpeed };
+            // Motive M059-B1 (engine 0.33.0): where he stands and his spot are read before he becomes a fight body. MemberPos answers m.H's place once
+            // m.Fight is set, and 0.32.0 set it first, so every posted or walking member started the fight at the new body's (0,0)
+            bool onFoot = m.Mode != CrewMode.Aboard && m.Mode != CrewMode.Boarding;
+            Pt where = MemberPos(m, Tick); Pt spot = onFoot ? SpotFor(m, st) : default;
             m.H = h; m.Fight = true; m.Disp = null;
-            if (m.Mode == CrewMode.Aboard || m.Mode == CrewMode.Boarding)
+            if (!onFoot)
             {
                 h.Present = false; var at = RivalCarPose()?.pos ?? S.Stand(S.RivalsPark); h.At = h.Home = at; m.Fight = false; // the crew routine brings him; he joins at his step-out
                 if (m.Mode == CrewMode.Boarding) { m.Mode = CrewMode.Aboard; m.Until = INF; }
             }
             else if (m.Mode == CrewMode.Walking && m.Goal != "exit")
             {
-                var spot = SpotFor(m, st); bool toSpot = m.Goal == "spot" && m.SpotStand == st.Id;
+                bool toSpot = m.Goal == "spot" && m.SpotStand == st.Id;
                 h.Present = true;
                 if (toSpot) { h.Run = m.Walk; h.RunStart = m.WalkStart; h.Speed = m.Speed; h.At = h.Home = m.Walk!.End; }
-                else { h.At = MemberPos(m, Tick); h.Home = spot; MoveToFight(h, spot); }
+                else { h.At = where; h.Home = spot; MoveToFight(h, spot); }
             }
             else // posted (a spot, the lookout's post, the yard door, the front) or talking: he lurks where he stands; the lookout and wheelman walk to their spots
             {
-                var at = MemberPos(m, Tick); h.Present = true; h.At = h.Home = at;
-                if ((m.Post != "spot" || m.SpotStand != st.Id) && m.Post != "door") { var spot = SpotFor(m, st); h.Home = spot; MoveToFight(h, spot); }
+                h.Present = true; h.At = h.Home = where;
+                if ((m.Post != "spot" || m.SpotStand != st.Id) && m.Post != "door") { h.Home = spot; MoveToFight(h, spot); }
             }
             Hostiles.Add(h);
         }
@@ -571,13 +587,21 @@ namespace Suborned.Sim
         }
         /// <summary>F6: a rider steps out at the fight's stand (or a member still on foot when the fight takes him): his body joins the fight, walking
         /// to his spot. False when there is no fight for him.</summary>
-        bool JoinFightOnFoot(CrewMember m, Pt from)
+        bool JoinFightOnFoot(CrewMember m, Pt from, string joins = "")
         {
             var st = FightStand;
-            var h = m.H; if (h == null) { var g = m.Gun; g.St = "routine"; h = new Hostile { Id = m.Id, Gun = g, Speed = rivSpeed }; m.H = h; Hostiles.Add(h); Note("rivals.joins", $"{m.Id} gets out of the rival car and joins the fight."); }
-            m.Fight = true; m.Mode = CrewMode.Walking; m.ModeTick = Tick;
-            h.Present = true; h.At = from; var spot = SpotFor(m, st); h.Home = spot; MoveToFight(h, spot);
-            if (FightSprung != INF) { h.Gun.Engaged = true; h.Gun.St = "advance"; } // after the spring he comes in on his path, as police do
+            var h = m.H; if (h == null) { var g = m.Gun; g.St = "routine"; h = new Hostile { Id = m.Id, Gun = g, Speed = rivSpeed }; m.H = h; Hostiles.Add(h); Note(joins.Length > 0 ? "rivals.recalled" : "rivals.joins", joins.Length > 0 ? joins : $"{m.Id} gets out of the rival car and joins the fight."); }
+            m.Fight = true; m.Mode = CrewMode.Walking; m.ModeTick = Tick; m.Disp = null;
+            h.Present = true; h.At = from; h.Run = null; var spot = SpotFor(m, st); h.Home = spot; MoveToFight(h, spot); // his body stands at `from` before his spot is read (MemberPos answers it)
+            if (FightSprung != INF)
+            {
+                h.Gun.Engaged = true; h.Gun.St = "advance"; // after the spring he comes in on his path, as police do
+                if (R.FightAlways)
+                {
+                    h.Gun.NextShot = Math.Max(h.Gun.NextShot, Tick + AimNewT); // Motive M059-S1.3: each later arrival fires weapons.aimNew after he steps out
+                    if (pickLater && !blockersPicked) { pickLater = false; pickFrom = "rivals"; } // the late spring: the blocker is picked at the first step-out, among those on foot
+                }
+            }
             return true;
         }
         /// <summary>F6, Dropping: the car left the drop for a stand elsewhere.</summary>
@@ -593,7 +617,7 @@ namespace Suborned.Sim
         public Pt MemberPos(CrewMember m, int tick)
         {
             if (m.Fight && m.H != null) return m.H.Pos(tick);
-            if (m.Gun.Down) return m.DownAt;
+            if (m.Gun.Down) return BodyOf(m.P) is Body b ? BodyPos(b) : m.DownAt; // engine 0.33.0: a body taken down, carried or stashed
             switch (m.Mode)
             {
                 case CrewMode.Walking: return m.Disp != null ? DispPose(m.Disp, rivSpeed, tick).pos : WalkPos(m, tick);
@@ -705,9 +729,7 @@ namespace Suborned.Sim
             if (!down) { Note("rivals.hit", $"{m.Id} of the rival crew is hit."); return; }
             m.DownAt = RawMemberPos(m, Tick); m.Disp = null; m.Until = INF; ReleaseCover(m.Gun); LoseTarget(m.Gun);
             Note("rivals.down", $"{m.Id} of the rival crew is down."); Chain.Add(m.Id + "-down");
-            int on = 0, dn = 0;
-            foreach (var x in Crew) { if (x.Gun.Down) { on++; dn++; continue; } if (x.Mode == CrewMode.Gone || x.Mode == CrewMode.Aboard) continue; on++; }
-            if (dn * 2 > on && !CrewBrokenPre) CrewBreaks();
+            CrewBreakCheck();
         }
         /// <summary>Motive M059-3.5: the crew breaks before the final fight: whoever is up on foot goes to the car (it stops where it is) and boards;
         /// it leaves the way it came and is back at the park security.rivals.retreat after the break. Off the map, they walk off it.</summary>
@@ -758,6 +780,7 @@ namespace Suborned.Sim
             foreach (var m in Crew)
             {
                 h.S(m.Id).I((int)m.Mode).I(m.ModeTick).I(m.OutAt).I(m.WalkStart).I(m.Speed).I(m.PostTick).S(m.Post).I(m.Spot).S(m.SpotStand).S(m.Goal).I(m.Until).Z(m.Fight).Z(m.Disp != null);
+                if (m.Avenge.Count > 0) { h.S("avenge"); foreach (var x in m.Avenge) h.S(x); } // engine 0.33.0: only a run where the crew saw a takedown adds bytes
                 var p = MemberPose(m); h.Z(p.HasValue); if (p.HasValue) h.P(p.Value.pos).P(p.Value.facing);
                 Hash.HashGun(h, m.Gun);
             }

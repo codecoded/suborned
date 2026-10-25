@@ -277,3 +277,14 @@ Builds 0.2.118 to 0.2.121 are superseded.
 4. **The ring on a camera (Aster's call):** Watch stays (watching a camera teaches its cone). For the Tech, Loop takes 12 o'clock. Add rest-state ring shots for the Tech, the Scout and another armed agent.
 5. **Unverified in 0.2.122, so shoot them:** the hollow dashed looped cone, the shot-out disc, the "Camera on" pop, and the Alt breakdowns for Loop and Disable.
 6. Splice's signal-meta fix, Suture's Q-SOLID and Q-GIVER findings, and Redline's 0.2.122 perf findings, as they land.
+
+## Batch 0.2.123 additions (Aster, 2026-10-26)
+State: engine 0.33.0 (Keel: B1, S1 flip with fight-always and rivals-floor, the crew as people, cause A walks, car.blocks retired); Latch's code round 1 (511058c3); Fable's 059 words; Vantage's svc-ambush-1 (77.35, -8.0).
+7. **Sky's play notes on 0.2.122** (Air, briefs/041/sky-play-0122/; replay handover-20261026-024947, engine e4b61f2e, 316 orders, enforcer-down 8:10.5):
+   - "characters are walking through cars" (cars-walk-through.png: a parked green car angled with its rear on the kerb at the Office door, a figure inside its body, a guard badge "x2" over it). Suture finds the moments; Keel checks the walk grid against car footprints (parked, stopped, Vale's car, the getaway car, the rival car) and the car's own placement; Pulse for crowd avoidance if needed; Latch if it is only the drawn position or heading.
+   - "there are times I couldn't perform action on Inez" (Fixer, ticks 4675-4812: about ten Moves to one point). Suture finds what the ring offered and refused; a refusal with no visible reason is the bug. Glyph and Latch fix the cue.
+   - "hovering over the door guard didn't show any action ring". Suture finds which agent was selected; an agent with no way shows the ring with greyed ways and their reasons, never nothing (Glyph spec, Latch build).
+   - "rivals just suddenly appeared when near car, they should be coming in from somewhere when the chime comes": the 059 port must show the drive-in. The rival car is drawn and seen arriving at 2:35 (a view for it; the cell's car not in the way), the three get out at 2:46 and walk to their posts, the "rivals coming" beat and Chime's cue at 2:35, and no fight-start pop (059 §2 point 1). Proof shots at 2:35, 2:46 and 3:10.
+8. **Engine round 2 before Waymark's c038:** the car collision answer above, and Fable's question on a cancelled Drive. Then Waymark re-composes once on the final engine (MC-14, MC-15, MC-11 over every stand).
+9. **Held for Sky:** Motive's B10 (the yard's exit lane starts at the car; GDD §06 clause) and §06's fire-on-the-move text (Sky's 2026-10-21 answer, never written into the GDD).
+10. **After the batch, not in it:** the asset-quality look brief (Sky's yes, 2026-10-26); Redline's warm-Air GPU proposal from briefs/064/air-0122.

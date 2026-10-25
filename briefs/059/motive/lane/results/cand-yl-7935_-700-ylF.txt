@@ -1,0 +1,163 @@
+· careless-reporter-not-stopped 22/25 enforcer move service-drive at tick 4430
+· careless-loop-runs-out 7/14 scout listen waitress at tick 290
+· careless-g-disable 12/23 tech move at tick 1570
+· loud-left-standing 24/36 scout fire rivals at tick 2292
+· loud-left-standing 25/36 scout move at tick 2292
+· careless-g-disable 13/23 enforcer move at tick 1950
+· careless-loop-runs-out 8/14 tech reroute patrol at tick 365
+· loud-left-standing 26/36 fixer fire rivals at tick 2292
+· careless-reporter-not-stopped 23/25 enforcer board car at tick 4470
+· careless-scout-idles-pickup 16/23 scout fire rival-1 at tick 4430
+· loud-left-standing 27/36 fixer move at tick 2292
+· careless-reporter-not-stopped 24/25 cell panic at tick 4470
+· careless-reporter-not-stopped 25/25 cell go at tick 4522
+composed careless-reporter-not-stopped: 25 orders, last at tick 4522 (12.2 s) → routes/careless-reporter-not-stopped.json
+· careless-g-disable 14/23 cell panic at tick 2342
+· careless-loop-runs-out 9/14 enforcer move at tick 815
+· careless-loop-runs-out 10/14 fixer turn waitress at tick 710
+· careless-loop-runs-out 11/14 fixer turn waitress at tick 1210
+· careless-scout-idles-pickup 17/23 fixer fire rival-1 at tick 4430
+· careless-scout-idles-pickup 18/23 scout fire rival-2 at tick 4480
+· careless-loop-runs-out 12/14 fixer call waitress at tick 1710
+· careless-loop-runs-out 13/14 enforcer move d:Office entrance at tick 1710
+· careless-scout-idles-pickup 19/23 fixer fire rival-2 at tick 4480
+· careless-loop-runs-out 14/14 enforcer enter at tick 1734
+composed careless-loop-runs-out: 14 orders, last at tick 1734 (4.8 s) → routes/careless-loop-runs-out.json
+· careless-scout-idles-pickup 20/23 enforcer move service-drive at tick 4430
+· careless-scout-idles-pickup 21/23 enforcer board car at tick 4470
+· careless-g-disable 15/23 scout fire rival-2 at tick 2342
+· careless-scout-idles-pickup 22/23 cell panic at tick 4470
+· careless-scout-idles-pickup 23/23 cell go at tick 4522
+composed careless-scout-idles-pickup: 23 orders, last at tick 4522 (7.3 s) → routes/careless-scout-idles-pickup.json
+· careless-g-disable 16/23 fixer fire rival-2 at tick 2342
+· careless-g-disable 17/23 tech fire rival-2 at tick 2342
+· careless-g-disable 18/23 scout fire rival-1 at tick 2368
+· careless-g-disable 19/23 fixer fire rival-1 at tick 2368
+· careless-g-disable 20/23 tech fire rival-1 at tick 2368
+· careless-g-disable 21/23 enforcer move d:Getaway bay at tick 2342
+· careless-g-disable 22/23 enforcer board car at tick 2475
+· careless-g-disable 23/23 cell go at tick 2515
+composed careless-g-disable: 23 orders, last at tick 2515 (8.1 s) → routes/careless-g-disable.json
+NOT COMPOSED route-a-pressure-board: route-a-pressure-board step 19 (enforcer board car): not taken between 1832 and 5100
+NOT COMPOSED loud-fight: loud-fight step 28 (enforcer move): not taken between 1577 and 5100
+NOT COMPOSED loud-fast: loud-fast step 28 (enforcer move): not taken between 1577 and 5100
+NOT COMPOSED loud-left-downed: loud-left-downed step 28 (enforcer move): not taken between 1577 and 5100
+NOT COMPOSED loud-left-standing: loud-left-standing step 28 (enforcer move): not taken between 1577 and 5100
+· playing 46 scripts and contact variations on the engine at the working tree
+· late from each of route-a-board's 10 planned steps, 1 s at a time to 120 s
+· late from each of route-b-board's 11 planned steps, 1 s at a time to 120 s
+· late from each of route-g-fast-board's 8 planned steps, 1 s at a time to 120 s
+FAIL  MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 33/39
+        route-a-pressure-board: expected success at A 1, got failure rivals-reach-vale at A 1
+        loud-fight: expected success at A 2, got failure enforcer-down at A 2
+        loud-fast: expected success at A 2, got failure enforcer-down at A 2
+        loud-left-downed: expected success
+        left: scout captured downed at A 2, got failure enforcer-down at A 2
+        loud-left-standing: expected success
+        left: scout captured fighting at A 2, got failure enforcer-down at A 2
+        careless-reporter-not-stopped: expected success at A 2, got success at A 1
+ok    MC-1  ≥ 2 quiet routes win (no shot before the final fight), counted by route: 3 (A, B, G)
+        route-a (route A) wins at 4:35.6, 5 T
+        route-a-board (route A) wins at 4:27.9, 5 T
+        route-a-pressure (route A) wins at 3:20.5, 7 T
+        route-a-pressure-board (route A) failure rivals-reach-vale
+        route-a-disable (route A) wins at 4:35.6, 6 T
+        route-b (route B) wins at 7:32.2, 3 T
+        route-b-board (route B) wins at 7:31.9, 3 T
+        route-g (route G) wins at 4:11.5, 6 T
+        route-g-board (route G) wins at 4:11.5, 6 T
+        route-g-fast (route G) wins at 3:11, 6 T
+        route-g-fast-board (route G) wins at 3:11, 6 T
+        route-g-kill (route G) wins at 5:51.7, 2 T
+        route-g-kill-board (route G) wins at 5:38.5, 2 T
+ok    MC-2  The loud route exists, wins, and costs more T than every quiet win (variants too): loud 27+3 (case) T vs quiet route-a 5, route-a-board 5, route-a-pressure 7, route-a-disable 6, route-b 3, route-b-board 3, route-g 6, route-g-board 6, route-g-fast 6, route-g-fast-board 6, route-g-kill 2+6+3 (case), route-g-kill-board 2+2+3 (case) (mission+campaign+cases at 3 T)
+        loud: success, 27 T, 4 shots before the fight, A 2
+        loud-fight: failure enforcer-down, 14 T, 4 shots before the fight, A 2
+        loud-fast: failure enforcer-down, 14 T, 4 shots before the fight, A 2
+ok    MC-3  Every §07 fail is reached by a played script: 8/8
+        Vale killed: fail-vale-dead
+        Vale leaves in official car: fail-vale-leaves
+        rivals reach Vale: fail-rivals-reach-vale, fight-safe-rivals-reach-vale
+        district seals: fail-district-seals
+        Enforcer down: fail-enforcer-down, fight-loud-enforcer-down
+        entry seen by guard: fail-entry-seen-guard
+        entry seen by live camera: fail-entry-seen-camera, fail-take-seen-camera
+        entry seen by patrol: fail-entry-seen-patrol
+ok    MC-4  No single contact is essential: without each, a quiet route still wins (a contact that leaves < 2 quiet routes is named): without waitress: B, G; without driver: A, G
+        waitress (Inez (route A: she calls the guard away)): route A depends on it
+        driver (the official driver (route B: he moves the pickup to the service lane)): route B depends on it
+ok    MC-5  The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event: route A 2:56 early, route B 1:07 early, route G 4:13 early
+        route A (route-a-board): Vale secured at 2:53.4, 2:56 before 5:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 4:27.9, 4:02 before the mission's 8:30 close
+        every planned step can slip 7 s and still win
+        route B (route-b-board): Vale secured at 7:23, 1:07 before 8:30 rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)
+        at the getaway car 7:31.9, 0:58 before the mission's 8:30 close
+        every planned step can slip 2 s and still win
+        route G (route-g-fast-board): Vale secured at 1:36.5, 4:13 before 5:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 3:11, 5:19 before the mission's 8:30 close
+        every planned step can slip 1 s and still win
+ok    MC-6  The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2): route-g-fast 3:11 vs loud 5:20.1: 129.1 s faster
+        route-g-fast (quiet) 3:11
+        route-g-fast-board (quiet) 3:11
+        route-a-pressure (quiet) 3:20.5
+        route-g (quiet) 4:11.5
+        route-g-board (quiet) 4:11.5
+        route-a-board (quiet) 4:27.9
+        route-a (quiet) 4:35.6
+        route-a-disable (quiet) 4:35.6
+        route-g-kill-board (quiet) 5:38.5
+        route-g-kill (quiet) 5:51.7
+        route-b-board (quiet) 7:31.9
+        route-b (quiet) 7:32.2
+        loud (loud) 5:20.1
+ok    MC-7  Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 (or above its careful twin's) and dearer in total Trail than its careful twin: 7/7
+        careless-takedown-seen-camera: fails: entry-seen-camera
+        careless-takedown-seen-crowd: fails: vale-leaves
+        careless-body-found: fails: enforcer-down
+        careless-reporter-not-stopped: success at Alert 1, 12 T against route-b's 3 T at Alert 0
+        careless-guard-left-door-held: fails: vale-leaves
+        careless-enforcer-watches-guard: fails: enforcer-down
+        careless-g-disable: success at Alert 2, 7 T against route-g's 6 T at Alert 1
+ok    MC-8  Takedown routes are viable with a real time cost: ≥ 1 quiet route that takes someone down wins at Alert ≤ 1, each spending Enforcer time on it: route-g 4:11.5, 6 s of takedown, route-g-board 4:11.5, 6 s of takedown, route-g-fast 3:11, 6 s of takedown, route-g-fast-board 3:11, 6 s of takedown, route-g-kill 5:51.7, 47.5 s of takedown, route-g-kill-board 5:38.5, 47.5 s of takedown
+        route-g (route G): success at 4:11.5, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-board (route G): success at 4:11.5, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-fast (route G): success at 3:11, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-fast-board (route G): success at 3:11, 6 T, A 1, $100,000 left, takedown work 6 s
+        route-g-kill (route G): success
+        left: fixer walked, scout captured downed, tech walked at 5:51.7, 2+6+3 (case) T, A 1, $100,000 left, takedown work 47.5 s, 1 open case
+        route-g-kill-board (route G): success at 5:38.5, 2+2+3 (case) T, A 1, $100,000 left, takedown work 47.5 s, 1 open case
+ok    MC-9  Turning people stays competitive: no takedown win is at once as fast and as cheap in total Trail as every turning win: 6 takedown wins, none dominant over 6 turning wins
+        route-g (4:11.5, 6 T): faster route-a-pressure
+        cheaper route-a, route-a-board, route-b, route-b-board
+        route-g-board (4:11.5, 6 T): faster route-a-pressure
+        cheaper route-a, route-a-board, route-b, route-b-board
+        route-g-fast (3:11, 6 T): faster none
+        cheaper route-a, route-a-board, route-b, route-b-board
+        route-g-fast-board (3:11, 6 T): faster none
+        cheaper route-a, route-a-board, route-b, route-b-board
+        route-g-kill (5:51.7, 11 T): faster route-a, route-a-board, route-a-pressure, route-a-disable
+        cheaper route-a, route-a-board, route-a-pressure, route-a-disable, route-b, route-b-board
+        route-g-kill-board (5:38.5, 7 T): faster route-a, route-a-board, route-a-pressure, route-a-disable
+        cheaper route-a, route-a-board, route-a-disable, route-b, route-b-board
+ok    MC-10  Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no seal clock: quiet 3-11 T, A ≤ 1, Standing ≥ 2; loud 30-30 T, A ≥ 2, Standing ≤ -1
+        loud 27+3 (case) T, A 2, Standing -1, seal clock
+ok    MC-11  No stop holds the car: every ambush spot and police stand lies beyond fight-hold 8 m of the car and outside the exit lane, and every reference win's car was free when it left: 9/9 posts clear (nearest 12.2 m); 13/13 reference wins free at Go
+        route-a: blocker out 17.0 s before Go
+        route-a-board: blocker out 10.8 s before Go
+        route-a-pressure: blocker out 9.3 s before Go
+        route-a-disable: blocker out 17.0 s before Go
+        route-b: blocker out 0.1 s before Go
+        route-b-board: blocker out 3.9 s before Go
+        route-g: blocker out 14.7 s before Go
+        route-g-board: blocker out 14.7 s before Go
+        route-g-fast: blocker out 14.5 s before Go
+        route-g-fast-board: blocker out 14.7 s before Go
+        route-g-kill: blocker out 22.6 s before Go
+        route-g-kill-board: blocker out 9.2 s before Go
+        loud: blocker out 90.9 s before Go
+ok    MC-12  Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin: 13/13 quiet scripts unreported; 1/1 loiter twins dearer
+        careless-scout-idles-pickup: reported at 2:33.9, success at A 1 against route-b's success at A 0
+slack route-a-board: every planned step can slip 7 s (0:00 7 s → entry-seen-guard, 0:09 7 s → entry-seen-guard, 0:29 7 s → entry-seen-guard, 1:11 11 s → entry-seen-guard, 1:25 11 s → entry-seen-guard, 1:45 11 s → entry-seen-guard, 2:01 11 s → entry-seen-guard, 2:30 51 s → entry-seen-camera, 2:51 51 s → entry-seen-camera, 2:53 51 s → entry-seen-camera)
+slack route-b-board: every planned step can slip 2 s (0:00 104 s → vale-leaves, 1:02 104 s → vale-leaves, 1:07 104 s → vale-leaves, 1:59 104 s → vale-leaves, 3:10 104 s → vale-leaves, 5:30 4 s → none, 5:55 4 s → none, 6:25 4 s → none, 6:45 4 s → none, 6:54 2 s → rivals-reach-vale, 7:23 2 s → rivals-reach-vale)
+slack route-g-fast-board: every planned step can slip 1 s (0:00 1 s → rivals-reach-vale, 0:16 1 s → rivals-reach-vale, 0:31 1 s → rivals-reach-vale, 0:36 1 s → rivals-reach-vale, 0:51 1 s → rivals-reach-vale, 1:21 1 s → rivals-reach-vale, 1:30 1 s → rivals-reach-vale, 1:36 1 s → rivals-reach-vale)
+HOLDS handover: 841 plays on engine tree in 16.8 s; report out/missions/handover/check.html

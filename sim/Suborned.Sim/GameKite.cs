@@ -179,6 +179,7 @@ namespace Suborned.Sim
             }
             // rivals: out of the shooter's line
             if (h == null || Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
+            if (h.Blocker) return; // Motive M059-B2 (engine 0.33.0; GDD §06): a rival blocker keeps its lane and answers only from it, as the police blocker does
             g.StepAt = Tick;
             var dest = KiteHide(g, pos, sp, Car, out var c);
             if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter

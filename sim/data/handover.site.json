@@ -2222,9 +2222,9 @@
    "reason": "The getaway car's stand on the service drive (civic-block.json drives service-drive, x 67..80, y -16.5..-13.5), nose out toward Apron Road (facing +x, south; the mission schema has no heading for a car, so it is stated here, as service-bay's is). Behind Vale's car, which stands nose in at service-bay (63.75, -15.0) in serviceBay (x 60.5..67): brief 059 §1.4 puts it 1 m behind; this centre is 2.35 m past the bay's mouth (x 67) and 5.6 m from Vale's car's. The carry from Vale's back door to this car's is about 3.5 m (brief 059 §1.4). The drive is one car wide: on it before Vale's car, it blocks his way in (K5). Exit: Apron Road east (+y), away from the rival car at rival-park. V-1 at yaw 210, the heading the yard is played at: 30 100 %, 120 0 %, 210 100 %, 300 100 %. A free cell of the walk grid as well as the drive grid. The stand id is service-drive, the same string as the civic block's drive it stands on (a different list: drives[], not places)."
   },
   "svc-ambush-1": {
-   "at": [5725,-1775],
-   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25: ambush spot 1 at the service-drive stand, MC-11",
-   "reason": "North of the Office's service door, beside its dumpster (the stash street/civic/stash/office-service-door, 2.8 m from its centre), on the side the posted three come from (the square, round the Office's north side). 12.4 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and outside its exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). Pavement, a free cell of the engine's walk grid (committed site and today's in-memory build). V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 0 %, 120 100 %, 210 100 %, 300 100 % seen past architecture. Not read by the engine yet: the stand's posts are wired by Splice's site export (getaway.stands[]) and Keel's K6; the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight."
+   "at": [7735,-800],
+   "src": "brief 059 §1.4 and §5 (Sky 2026-10-25, answers 1a, 2a, 3a; GDD v0.25 §07 getaway and rivals); placed by Vantage 2026-10-25 at (57.25, -17.75); moved by Vantage 2026-10-26 to Motive's M059-B4 [S] spot (briefs/059/motive/balance-rulings.json), ambush spot 1 at the service-drive stand, MC-11",
+   "reason": "The yard's east side by Apron Road, 0.65 m in from the kerb strip where police-post-2 (79, -10) and call-box-6 (79.15, -2) stand, facing the drive's mouth. M059-B4: route B's carry from Vale's rear door gets 3 s of slack for the cell's locks (route-b-board slip 3 s; 0 s at (57.25, -17.75)), because this spot's man becomes the stand's blocker and walks to the road instead of shooting into the carry. 10.6 m from the yard stand service-drive (69.35, -15.0), outside fight-hold 8 m and inside fight-block-far 13 m; 15.6 m from rival-vale-door (64.55, -16.9) and 17.3 m from 'Service lane' (62.5, -16.8), off the service door's line; a clear line to the car and the door at eye height. Outside the stand's exit lane (Apron Road from the car's projection (86, -15), fight-block-m 30 m east to (86, 15), 12 m wide: x 80..92, y -15..15). The shortest walk of the yard's spots to the blocker's open post (86, -5): 9.16 m on the engine's grid (5.7 s at 1.6 m/s; svc-ambush-5 11.5 m, svc-ambush-4 14.5 m); M059-4.4(c) asks 8 m, but every spot tried at 6.8-8.4 m loses route B (the blocker posts sooner and fires standing, 562 against 281 per mille walking, and downs the Fixer at 7:31.5), so the spot keeps the 9.16 m (Vantage 2026-10-26, brief 059). No cover point stands in the yard (the site's cover has none there; the police post and call box are not cover in tools/cover), so this is an open position, like the other four yard spots. Pavement, floor 0, a free cell of the engine's walk grid. V-1 played at yaw 210 like the yard (service-bay, 'Service lane'): 30 100 %, 120 0 %, 210 100 %, 300 100 % seen past architecture. Read through Splice's site export (getaway.stands[]); the id stays off the ambush-n / police-n pattern so site.ts does not add it to the square's fight."
   },
   "svc-ambush-2": {
    "at": [6025,-675],
@@ -2695,7 +2695,6 @@
  },
  "rivals": {
   "park": "rival-park",
-  "entry": "rival-entry",
   "front": "d:Office approach",
   "public": "menace",
   "car": {
@@ -2889,7 +2888,7 @@
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "9642bbcb179e31e04fa618cb96717279e8a4d9c6aef6847f5c6ec3fbf3f440b2",
+  "sha256": "be09206526f825da2d8a130e4d4e521b87ac584bba6973fcf6be075da51ce543",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {
@@ -3940,8 +3939,8 @@
     "kind": "door"
    },
    {
-    "id": "mouth:rival-entry",
-    "at": [3600,1000],
+    "id": "mouth:rival-car-entry",
+    "at": [3750,1575],
     "kind": "mouth"
    },
    {

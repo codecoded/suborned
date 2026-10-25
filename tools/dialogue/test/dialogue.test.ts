@@ -432,7 +432,7 @@ describe('the Handover bound to generated people', () => {
     expect(cmp.missing).toEqual([]); expect(cmp.fewer).toEqual([]); expect(cmp.matched).toBeGreaterThan(20);
     expect(bindHandover(lines, { waitress: 'p-nobody-01' }).problems.length).toBe(1);
     // a person with fewer lines than the hand-written text is found
-    const thin = entries.filter(e => !(e.speaker === 'driver' && e.event === 'confirm'));
+    const thin = entries.filter(e => !(e.speaker === 'driver' && e.event === 'reply'));
     expect(compareToReference(thin, text, { driver: driver.temperament }).missing.length).toBeGreaterThan(0);
   });
 });

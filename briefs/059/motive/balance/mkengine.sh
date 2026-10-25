@@ -9,7 +9,7 @@
 # The engine is suborned.sim/0.32.0 plus engine-probe.patch: env switches only, every switch off = 0.32.0 (the off check reproduces Keel's
 # briefs/059/keel/missions-check-0.32.txt failures). Switches: PROBE_FIXPOS (the JoinFight (0,0) fix), PROBE_GATE, PROBE_LATE, PROBE_FLOOR=n (S1),
 # PROBE_LANE (a rival blocker keeps its lane), PROBE_DRAWNBREAK=1|2 (1: a drawn crew breaks at its first man down, rejected; 2: a broken crew never
-# presses), PROBE_SHIELD (Vale as cover for his carrier, rejected), PROBE_BLKHOLD (a walking blocker holds fire, GDD §06 text), PROBE_CAP, PROBE_YARDLANE,
+# presses), PROBE_SHIELD (Vale as cover for his carrier, rejected), PROBE_BLKHOLD (a walking blocker holds fire, GDD §06 text), PROBE_CAP, PROBE_YARDLANE=1|2 (the yard's lane from the car along the drive; 1 at the road's width throughout, 2 the drive part at the drive's 3 m: lane ruling 2026-10-26),
 # PROBE_PLACES=id:x:y;… (moves a place), PROBE_TRACE. final.sh, matrix.sh and s1demo.sh are the 2026-10-25 run's (SHIELD and DRAWNBREAK on: superseded).
 set -e
 B=briefs/059/motive/balance; S=out/scratch/motive/059c

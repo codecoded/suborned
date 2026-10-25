@@ -4,7 +4,7 @@
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
   "block": "db919206b8cdbfa103d74b52906a5133f1f77e04e253e45d28415e8356ab4257",
-  "site": "850ae668c41e6ab4cad23e9ab9abaffe9e3ecaf7e68768db85f24d41478dc238",
+  "site": "b60a66c67f1ad7562fd24493be500711cd2ab6edd001c7c14be0ac6a26b9a8ec",
   "kit": "10cda6dc11638e5c68ee4d04077f6e4f064f64effb8c73e898e56715381449f5",
   "plan": "67b17343184a3522689928ce7013443117076cc67ed68e9a202fd9c86d232db8"
  },
@@ -1720,13 +1720,13 @@
    "src": "civic-block.json buildings.civic-office.entrances.official-entrance"
   },
   {
-   "id": "mouth:rival-entry",
+   "id": "mouth:rival-car-entry",
    "at": [
-    3600,
-    1000
+    3750,
+    1575
    ],
    "kind": "mouth",
-   "src": "handover.site.json places.rival-entry: where a street meets the block's window"
+   "src": "handover.site.json places.rival-car-entry: where a street meets the block's window"
   },
   {
    "id": "mouth:security-entry",

@@ -11,7 +11,7 @@
 //    P59-TIP       the tip at the parked car: the car and wheelman leave the way they came, back at the park 3:50 after it lands
 //    P59-EARLY     the cell has Vale before the rivals come: the car comes straight to the cell's stand, all five step out there
 //    P59-GUN       gunfire before 2:35: the car enters within 16 s and rides to the Office front; the riders walk to their places there
-//    P59-S1-GO / P59-S1-HOLD   Sky's S1 both ways: with travellers still to come, Go leaves unfought (leaveUnfought), or they hold the car
+//    (P59-S1-GO / P59-S1-HOLD retired in engine 0.33.0 with leaveUnfought: Sky's S1 = no; the S1-* scenarios hold the rule)
 //    P59-S2-NEAR / P59-S2-NORTH  Sky's S2 both ways: the loud fight at the service drive, officers from the official entrance, or the north street
 //    P59-S3-RUN / P59-S3-WALK  Sky's S3 both ways: the posted three go after a Driven car at the run (280) or the walk (160)
 //    P59-BEAT      the front, driver unturned, the rival car parked with its wheelman aboard: the Take fails rivals-reach-vale (beat-to-pickup)
@@ -256,30 +256,7 @@ namespace Suborned.Sim
                 r.Is(Mem(r, 1).Goal == "front" && Mem(r, 5).Mode == CrewMode.Aboard, "the riders walk to the front; the wheelman stays aboard");
             });
 
-            // S1: with the cell gone before the crew reaches its stand. The Enforcer has Vale early (the crew still to come), boards at the square, Go.
-            void S1(Run r, bool leave)
-            {
-                var g = r.G;
-                int at = Max(r.Send(Tech, "cabinet"), r.Send(Enf, "d:Office entrance"));
-                r.To(at);
-                r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                r.Do(Fixer, "call", Inez);
-                r.Until(() => !g.GuardAtDoor, T(120));
-                r.Do(Enf, "enter"); r.Done(Enf);
-                r.To(r.SendTo(Enf, g.GetawaySeat));
-                r.Do(Enf, "board", "car"); r.Done(Enf);
-                var a = g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "go" });
-                if (leave) r.Is(a.ok && g.Result == Outcome.Success, $"S1 leaveUnfought: the cell leaves before the crew arrives, unfought ({Report.Clock(g.Tick)})");
-                else r.Is(!a.ok && a.code == "car-held" && a.ids.Contains("rival-1"), $"S1 off: the crew still on its way holds the car (car-held {a.ids})");
-            }
-            Add("P59-S1-GO", "059", "Sky's S1 (fight.safe.leaveUnfought true, Motive's pick): a cell gone before the crew reaches its stand leaves unfought.", r => S1(r, true), early);
-            Add("P59-S1-HOLD", "059", "Sky's S1 the other way (leaveUnfought false): a crew member counted in the safe fight and still on his way holds the car.", r =>
-            {
-                if (!r.Is(r.Inputs != null, "inputs")) return;
-                var alt = Alt(r, With059(r.Inputs!, "\"leaveUnfought\": true", "\"leaveUnfought\": false"));
-                S1(alt, false); foreach (var c in alt.Checks) r.Is(c.ok, "[S1 off] " + c.what);
-                r.Is(true, "played on the rulebook with leaveUnfought false");
-            }, early);
+            // S1 (Sky 2026-10-25: no): P59-S1-GO and P59-S1-HOLD are retired with fight.safe.leaveUnfought; the S1-* scenarios (ScenariosAlways059.cs) hold the rule.
 
             // S2: the loud fight at the service drive: the officers come from the nearest entry, or the north street
             void S2(Run r, bool nearest)

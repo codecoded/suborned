@@ -114,6 +114,8 @@ namespace Suborned.Sim
                 r.Is(g.GunOf(first)?.Down == true, $"{first} goes down");
                 int downAt = g.Tick; r.Wait(T(3));
                 r.Eq(r.Op(Scout).Gun.Stance, "free", "then free: back to at will");
+                // engine 0.33.0 (M059-B1): the crew fights from where it stands, so the next rival may be a few seconds out of the Scout's line
+                r.Until(() => r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first) || g.FightOverTick != Never, T(15));
                 bool firedOn = r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first);
                 bool newOrder = g.Orders.Exists(o => o.order.Op == Scout && o.order.Do == "fire" && o.order.Tick > firedAt);
                 r.Is(!newOrder && (firedOn || g.FightOverTick != Never), "the Scout fights on with no new order (or the fight is over)");

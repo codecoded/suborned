@@ -431,8 +431,8 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect([n(it.police.face), n(it.robots.face), n(it.police.closeIn), n(it.police.closeLevel), n(it.rivals.alertedAt), n(it.police.warn.maxAlert)]).toEqual([2, 2, 3, 1, 2, 1]);
     expect(it.robots.faceHeat).toEqual(['wanted', 'infamous']);
     expect([it.police.warn.ticks, it.police.warn.alert, it.police.warn.perWatcher, it.police.warn.trail]).toEqual(['v:lab-warn-ticks', 'v:lab-warn-alert', 'v:lab-warn-per-watcher', 'v:lab-warn-trail']); // the lab's warning, its numbers
-    expect(it.rivals.calm).toEqual(['drawn', 'vale']);
-    expect(it.rivals.alerted).toEqual(['drawn', 'vale', 'seen']);
+    expect(it.rivals.calm).toEqual(['drawn', 'vale', 'crewmate']); // engine 0.33.0 (Motive M059-S1.6): a member who sees one of the crew taken down fires on the taker
+    expect(it.rivals.alerted).toEqual(['drawn', 'vale', 'seen', 'crewmate']);
     expect(it.rivals.street && it.rivals.press).toBe(true);
     expect(it.final).toBe('agent'); // tuning.md §15.2 (engine 0.20.0): PROVISIONAL, Sky to confirm after play
     expect(rb.ai.intent!.reason).toMatch(/provisional/);
@@ -564,7 +564,9 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(n(rb.car!.pickup!.valeIn)).toBe(3);
     expect(rb.fight.safe.minus).toBeUndefined(); expect(rb.values['fight-modifier']).toBeUndefined(); expect(rb.values['fight-safe-hostiles']).toBeUndefined(); // Motive M059-3.6, 3.7: kept optional in the schema only for pinned runs
     expect(rb.fight.safe.hostiles).toBe('v:rivals-crew');
-    expect(rb.fight.safe.leaveUnfought).toBe(true); expect(rb.fight.loud.entry).toBe('nearest'); // S1, S2: Motive's picks until Sky answers
+    expect(rb.fight.safe.leaveUnfought).toBeUndefined(); expect(rb.fight.loud.entry).toBe('nearest'); // S2 nearest (Sky 'yea'); S1 = no: leaveUnfought retired into always and floor (engine 0.33.0)
+    expect(rb.fight.safe.always).toBe('v:fight-always'); expect(rb.fight.safe.floor).toBe('v:rivals-floor'); expect(n(rb.fight.safe.always!)).toBe(1); expect(n(rb.fight.safe.floor!)).toBe(3); // Motive M059-S1.1, S1.4
+    expect(rb.fight.alwaysRule).toBeDefined(); expect(rb.ai.intent!.rivals.calm).toContain('crewmate'); expect(rb.ai.intent!.rivals.alerted).toContain('crewmate'); // M059-S1.6
     for (const k of ['posted', 'lookout', 'wheelman'] as const) {
       const l = cr.beats[k].loop; expect(l.length).toBeGreaterThanOrEqual(cr.beats.minBeats);
       expect(l.every((b) => b.s <= cr.beats.maxS)).toBe(true);

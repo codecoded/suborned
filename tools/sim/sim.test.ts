@@ -94,12 +94,12 @@ describe.skipIf(!dotnet)('the C# engine through its CLI', () => {
   }, 180_000);
 
   test('an order script plays to the outcome its scenario reached', () => {
-    // engine 0.32.0 (brief 059): route B's quiet win is P59-B (the driver turned, Vale driven round, the getaway car driven behind him); S20's
-    // run now ends enforcer-down at 7:19.3 (the posted three at the yard), a route move Waymark re-composes
-    const s = sim('script', 'P59-B');
+    // engine 0.33.0 (brief 059, Motive M059-B1, B7): route B's quiet win is Motive's rb-ff at the yard (BAL-YARD-FOCUS: the Scout and Fixer lock
+    // rival-1 then rival-2 from the spring); P59-B's at-will carry is lost now that the posted three fight from where they stand
+    const s = sim('script', 'BAL-YARD-FOCUS');
     expect(s.code, s.err).toBe(0);
     mkdirSync(join(root, 'out/sim'), { recursive: true });
-    const file = join(root, 'out/sim/p59-b.script.json');
+    const file = join(root, 'out/sim/bal-yard-focus.script.json');
     writeFileSync(file, s.out);
     const p = sim('play', file, '--json');
     expect(p.code, p.err).toBe(0);

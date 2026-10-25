@@ -40,7 +40,7 @@ namespace Suborned.Sim
                     "guard-knocked-out" => g.Chain.Exists(c => c.StartsWith("knocked-out:", StringComparison.Ordinal)),
                     "guard-shot-beside-waitress" or "guard-shot-away-from-waitress" => chain("guard-shot"),
                     "driver-moves-vale-to-service-lane" => g.PickupService,
-                    "pickup-camera-blocked" => log("car.blocks") && g.AtTake != null && g.AtTake.CameraBlocked,
+                    // "pickup-camera-blocked" is retired with car.blocks and the driver's Call (brief 059, engine 0.33.0): the debrief never gives it
                     "rivals-follow-false-tip" => chain("rivals-false-tip"),
                     "rivals-driven-back" => chain("rivals-driven-back"),
                     _ => false,
@@ -123,7 +123,12 @@ namespace Suborned.Sim
                 r.Until(() => g.Over || g.FightSprung != Never, T(240));
                 var b = g.Hostiles.Find(h => h.Blocker);
                 if (!r.Is(b != null && !g.Over, $"the ambush springs and one goes for the road ({Report.Clock(g.Tick)})")) return;
-                r.Is(r.Until(() => g.Over || (r.Op(Enf).Walk == null && r.Op(Enf).Busy == null && g.Vale == ValeAt.WithEnforcer), T(120)) && !g.Over, $"the Enforcer at the car with Vale ({Report.Clock(g.Tick)})");
+                // engine 0.33.0 (Motive M059-B1, B7): the crew fights from where it stands and shoots the carrier, so the three support him (focus
+                // fire on whoever fires on him), sparing the blocker
+                r.Focus = true;
+                r.Engage(() => Targets(g, true), () => g.Over || (r.Op(Enf).Walk == null && r.Op(Enf).Busy == null && g.Vale == ValeAt.WithEnforcer), 120, new[] { Scout, Fixer, Tech }, false, advance: false);
+                r.Focus = false;
+                r.Is(!g.Over && r.Op(Enf).Walk == null && g.Vale == ValeAt.WithEnforcer, $"the Enforcer at the car with Vale ({Report.Clock(g.Tick)}; {g.Result} {g.FailCode})");
                 if (!r.Is(r.Do(Enf, "board", "car"), "he boards with Vale")) return;
                 r.Done(Enf); g.Step();
                 r.Is(g.Vale == ValeAt.Car, "Vale is in the car");

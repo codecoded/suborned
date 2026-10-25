@@ -46,10 +46,10 @@ namespace Suborned.Sim
         {
             var ir = R.Intent; string kind = IntentKind(id);
             string[] foes = kind == "police" ? ir.PoliceFoes : kind == "robots" ? ir.RobotFoes : RivalsAlert ? ir.RivalsAlerted : ir.RivalsCalm;
-            foreach (var f in foes) if (HasFoe(f, op)) return true;
+            foreach (var f in foes) if (HasFoe(f, op, id)) return true;
             return Alert >= FaceAt(kind) && faces.Contains(Sim.Op.Name(op.Id));
         }
-        bool HasFoe(string f, Op op)
+        bool HasFoe(string f, Op op, string id = "")
         {
             string name = Sim.Op.Name(op.Id);
             switch (f)
@@ -60,6 +60,7 @@ namespace Suborned.Sim
                 case "violence": return markedFoes.Contains(name);
                 case "face": return faces.Contains(name);
                 case "seen": return rivalsSaw.Contains(name);
+                case "crewmate": return CrewOf(id) is CrewMember cm && cm.Avenge.Contains(name); // engine 0.33.0 (Motive M059-S1.6): he saw this agent take one of the crew down, or the agent tried it on him
             }
             throw new InvalidOperationException($"ai.intent: '{f}' is not a foe"); // Rules rejects it at load
         }
@@ -152,6 +153,7 @@ namespace Suborned.Sim
         {
             if (!R.Intent.RivalsPress) return false;
             var g = m.Gun; if (!RivalsDrawn || m.Fight || !Up(m) || !m.OnFoot || g.Down || g.W == null) return false;
+            if (CrewBrokenPre) return false; // Motive M059-B3 (engine 0.33.0; GDD §06 'a broken crew is no target'): a crew broken before the final fight makes for its car, it never presses
             bool pressing = m.Disp != null && m.Disp.Press;
             var e = Enforcer;
             if (Vale != ValeAt.WithEnforcer || e.Inside || e.Down) return pressing;

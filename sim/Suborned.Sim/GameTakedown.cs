@@ -104,7 +104,10 @@ namespace Suborned.Sim
         }
         bool IsKin(Person a, Person victim) { foreach (var k in TiesBetween(a, victim)) if (R.KinTies.Contains(k)) return true; return false; }
         public Body? BodyOf(Person p) { foreach (var b in Bodies) if (b.P == p) return b; return null; }
-        public Body? BodyById(string idOrRole) { var p = PersonById(idOrRole); return p == null ? null : BodyOf(p); }
+        public Body? BodyById(string idOrRole) { var p = TakedownPerson(idOrRole); return p == null ? null : BodyOf(p); }
+        /// <summary>A person the takedown and the body orders name: anyone PersonById finds, or (engine 0.33.0, Motive M059-3.1) a member of the
+        /// rival crew by id. Only these verbs read the crew's persons; every other verb names the crew as before.</summary>
+        Person? TakedownPerson(string idOrRole) => PersonById(idOrRole) ?? (IsCrewId(idOrRole) ? CrewOf(idOrRole)!.P : null);
         /// <summary>Where a body is now: with its carrier, in its stash, or where it lies.</summary>
         public Pt BodyPos(Body b) => b.Carrier.HasValue ? OpOf(b.Carrier.Value).Pos : b.At;
         TdAct ActOf(Body b) => Acts[b.Act];
@@ -123,6 +126,7 @@ namespace Suborned.Sim
         /// Armed: carries a weapon (the door guard).</summary>
         (bool aware, bool armed) Awareness(Person p, Pt at)
         {
+            if (CrewOfPerson(p) is CrewMember cm) return CrewAwareness(cm); // engine 0.33.0: a member of the crew, by his own cone (GameCrewBodies.cs)
             var e = Enforcer; bool armed = p == GuardP && GuardGun.W != null && !GuardAlly;
             bool aware = IsStaff(p) && e.Running && (e.Walk != null || e.DriveMoved) && G.Within(e.Pos, at, witnessRange); // brief 025: a driven run is a run; engine 0.22.0: only security staff hear it (Sky 2026-10-22)
             if (!aware && p == GuardP) aware = GuardWatching(e.Pos, false);
@@ -167,7 +171,7 @@ namespace Suborned.Sim
             if (Vale == ValeAt.WithEnforcer || Vale == ValeAt.Taking) return No("carry-vale", "the Enforcer is carrying Vale");
             if (op.Carrying.HasValue || op.CarryBody.Length > 0) return No("already-carrying", "already carrying");
             if (o.How != "knockout" && o.How != "kill") return No("takedown-how", "a takedown is a knockout or a kill");
-            var p = PersonById(o.Target);
+            var p = TakedownPerson(o.Target);
             if (p == null) return No("target-unknown", $"'{o.Target}' is no one here (unknown = reject)");
             if (p == ValeP && o.How == "knockout") return No("takedown-vale", "Vale is taken, not knocked out: use Take");
             var at = PosOfPerson(p);
@@ -194,6 +198,7 @@ namespace Suborned.Sim
         void TakedownFails(Op op, Person p, Pt at)
         {
             Note("takedown.fails", $"{Who(p)} sees the Enforcer coming and draws: the takedown fails.");
+            if (CrewOfPerson(p) is CrewMember cm) { cm.Avenge.Add(Sim.Op.Name(op.Id)); return; } // engine 0.33.0: a rival draws and fires on him (foe crewmate); he raises no alarm (rivals don't report)
             markedFoes.Add("enforcer"); KnowFace("enforcer"); // engine 0.19.0 (ai.intent face)
             var pose = GuardPose();
             if (pose.HasValue && pose.Value.phase != "door" && !GuardHeld) { GuardHeld = true; heldPos = pose.Value.pos; heldFacing = pose.Value.facing; heldPhase = "drawing on the cell"; GuardAwayUntil = INF; }
@@ -206,6 +211,7 @@ namespace Suborned.Sim
         void Seize(Person p, Pt at)
         {
             p.Down = true;
+            if (CrewOfPerson(p) is CrewMember cm) { CrewSeized(cm, at); return; } // engine 0.33.0 (GameCrewBodies.cs)
             var w = WalkerOf(p); if (w != null) { w.St = ""; w.Run = null; w.Pace = 0; }
             if (p == GuardP) { GuardDown = true; GuardEngaged = false; GuardHeld = false; }
             if (p == Driver) carStoppedAt = CarPos();
@@ -801,9 +807,10 @@ namespace Suborned.Sim
             {
                 if (Over) return;
                 var a = ActOf(b);
-                if (b.Seizing) { ScanAct(a, BodyPos(b), "act", b); continue; } // the act is seen at any tick of it
+                if (b.Seizing) { ScanAct(a, BodyPos(b), "act", b); if (CrewOfPerson(b.P) is CrewMember sm) CrewSeesTakedown(sm); continue; } // the act is seen at any tick of it; engine 0.33.0: a crewmate who sees it fires (M059-S1.6)
                 if (b.Carrier.HasValue) { ScanAct(a, BodyPos(b), "carry", b); continue; }
                 if (b.FreeAt >= 0 && Tick >= b.FreeAt && b.Restrained) { b.Restrained = false; b.FreeAt = -1; Note("restrain.freed", $"{Who(b.P)} is untied."); }
+                if (b.Restrained && b.FreeAt < 0 && b.Open && !b.Carrier.HasValue && CrewOfPerson(b.P) is CrewMember fm) CrewFrees(b, fm); // engine 0.33.0 (M059-3.4)
                 if (!b.Dead && Tick >= b.WakeAt && b.P.Down)
                 {
                     if (b.Restrained) { } // awake, tied: waits for a finder
@@ -822,6 +829,7 @@ namespace Suborned.Sim
         {
             var a = ActOf(b); var p = b.P; var at = BodyPos(b);
             Bodies.Remove(b); p.Down = false; a.Woke = true;
+            if (CrewOfPerson(p) is CrewMember cm) { CrewWakes(cm, at, brought); return; } // engine 0.33.0 (Motive M059-3.4): no report, no statement; he rejoins his crew
             p.Sc[Rules.Fear] = R.Clamp(Rules.Fear, p.Sc[Rules.Fear] + 1); if (a.Aware) p.Sc[Rules.Resentment] = R.Clamp(Rules.Resentment, p.Sc[Rules.Resentment] + 1);
             if (p == GuardP) { GuardDown = false; GuardHeld = true; heldPos = at; heldFacing = S.GuardFacing; heldPhase = "woken"; GuardAwayUntil = INF; guardBackAt = Tick + T(R.StaggerS) + (brought ? 0 : T(R.PostCallS)); } // he radios, then walks back to his post
             if (p == Driver) carStoppedAt = null;
@@ -875,15 +883,15 @@ namespace Suborned.Sim
         public TakedownQuote QuoteTakedown(string target, string how)
         {
             var q = new TakedownQuote();
-            var p = PersonById(target); var e = Enforcer;
+            var p = TakedownPerson(target); var e = Enforcer; bool rival = CrewOfPerson(p!) != null;
             if (p == null) { q.Refused = "no one here"; q.RefusedCode = "target-unknown"; return q; }
             if (p == ValeP && how == "knockout") { q.Refused = "Vale is taken, not knocked out: use Take"; q.RefusedCode = "takedown-vale"; }
             var at = PosOfPerson(p);
             if (!at.HasValue) { q.Refused = p.Down ? "down" : "not on the street"; q.RefusedCode = p.Down ? "person-down" : "person-away"; return q; }
             bool kill = how == "kill";
             var (aware, armed) = Awareness(p, at.Value);
-            q.Armed = p == GuardP;
-            bool known = p != GuardP || (Known("guard")?.Sight ?? false);
+            q.Armed = p == GuardP || rival; // engine 0.33.0: a rival carries his pistol
+            bool known = (p != GuardP || (Known("guard")?.Sight ?? false)); // a rival's cone is on the street to see
             q.Aware = known ? (aware ? "yes" : "no") : "?";
             q.IfAware = q.Armed ? "fight" : "struggle";
             q.S = (kill ? R.KillS : R.KoS) + (aware && known && !armed ? R.StruggleS : 0);
@@ -901,8 +909,8 @@ namespace Suborned.Sim
             q.AlertIfSeen = Math.Max(Alert, R.AlertSeen);
             q.AlertIfFound = Math.Max(Alert, kill ? R.AlertDead : Math.Min(R.AlertDown, R.KoAlertMax));
             q.TrailIfFound = R.HitTrail + R.DownTrail + (kill ? R.KillTrail : 0); q.MenaceIfFound = kill;
-            q.TrailIfMissing = kill ? R.MissingTrail : R.HitTrail + R.DownTrail;
-            q.IfNeverFound = kill ? "missing" : "comes-home";
+            q.TrailIfMissing = rival ? 0 : kill ? R.MissingTrail : R.HitTrail + R.DownTrail;
+            q.IfNeverFound = rival ? "" : kill ? "missing" : "comes-home"; // engine 0.33.0 (Motive M059-3.2): a rival never found costs nothing and is never missed
             if (!kill) q.WakesAt = Tick + T((kill ? R.KillS : R.KoS) + R.WakeS);
             if (IsStaff(p) && p.KRoutine) q.NextMark = NextMarkOf(p, Tick);
             if (kill && People2 != null && People2.Ties.TryGetValue(p.Id, out var ts)) foreach (var (k, _) in ts) if (R.CloseTies.Contains(k)) q.Ties++;

@@ -107,7 +107,7 @@ namespace Suborned.Sim
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
             var e = Enforcer; var car = Car;
-            if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) Spring(false);
+            if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car
             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
             if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
             if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }

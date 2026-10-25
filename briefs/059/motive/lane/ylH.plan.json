@@ -1,0 +1,278 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "Motive 2026-10-26 yard-lane probe: locks scout=rival-3>rival-1,fixer=rival-1>rival-2,tech=rival-2>rival-1 (tech out)",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7950,
+    -4000
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "gap": 62
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "driver",
+   "label": "heard",
+   "gap": 5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Boarding pavilion",
+   "gap": 62
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "pay",
+   "by": "5:40",
+   "label": "turned"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8600,
+    -3400
+   ],
+   "after": [
+    "heard"
+   ],
+   "gap": 52
+  },
+  {
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals",
+   "at": "3:10",
+   "label": "tip"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7300,
+    -1900
+   ],
+   "after": [
+    "tip"
+   ],
+   "at": "5:55",
+   "label": "scout-yard"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7300,
+    -1100
+   ],
+   "after": [
+    "turned"
+   ],
+   "at": "5:55",
+   "label": "fixer-yard"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in",
+   "at": "5:30"
+  },
+  {
+   "op": "tech",
+   "do": "drive-car",
+   "target": "service-drive",
+   "label": "drive",
+   "when": "car.parks"
+  },
+  {
+   "op": "enforcer",
+   "do": "take",
+   "when": "car.parks",
+   "label": "take",
+   "at": "6:45"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    7300,
+    -1500
+   ],
+   "after": [
+    "drive"
+   ],
+   "when": "car.parked"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-3",
+   "label": "scout-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "take"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "scout-l2",
+   "every": 0.5,
+   "after": [
+    "scout-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "fixer-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "take"
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "fixer-l2",
+   "every": 0.5,
+   "after": [
+    "fixer-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "tech-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "take"
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "tech-l2",
+   "every": 0.5,
+   "after": [
+    "tech-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "take",
+    "drive"
+   ],
+   "when": "take.done",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "in"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in"
+   ],
+   "gap": 1,
+   "unless": [
+    "captured",
+    "withdraw.car"
+   ]
+  }
+ ]
+}

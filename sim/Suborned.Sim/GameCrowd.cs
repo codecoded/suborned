@@ -54,12 +54,25 @@ namespace Suborned.Sim
                     Legs[key] = Leg(site, Places[a], Places[b]);
                 }
         }
-        internal static Path Leg(Site site, Pt pa, Pt pb)
+        internal static Path Leg(Site site, Pt pa, Pt pb) => Leg(site, pa, pb, out _);
+        /// <summary>A routine leg: from pa onto the walk grid, the grid's route, and off it to pb. Engine 0.33.0 (brief 060, Suture's cause A): an
+        /// end with no free cell within 6 m (off the window, as t1-records, or deep in a solid) joins the grid at the free cell nearest it with no
+        /// cap (Grid.NearestFreeAny), so the leg walks the grid and leaves the window from there; 0.32.0 drew it as a straight line through the
+        /// Records Office. An end whose cell lies on a pocket of free ground cut off from the other end's (a seat walled in by tables) joins
+        /// the other's piece at its cell nearest that end. Only a leg with both ends off the window is still a straight line (routed false).</summary>
+        public static Path Leg(Site site, Pt pa, Pt pb, out bool routed)
         {
-            var fa = site.Grid.NearestFree(pa) ?? pa; var fb = site.Grid.NearestFree(pb) ?? pb;
+            var g = site.Grid; bool both = !g.InGrid(pa) && !g.InGrid(pb);
+            Pt? fa = both ? g.NearestFree(pa) : g.NearestFreeAny(pa), fb = both ? g.NearestFree(pb) : g.NearestFreeAny(pb);
             var pts = new List<Pt> { pa };
-            var route = site.Grid.Route(fa, fb);
-            if (route != null) pts.AddRange(route); else pts.Add(fb);
+            if (fa.HasValue && fb.HasValue && g.PieceOf(fa.Value) != g.PieceOf(fb.Value)) // an end on a pocket of free ground (a seat walled in by tables): the smaller piece's end joins the larger's nearest cell
+            {
+                int ka = g.PieceOf(fa.Value), kb = g.PieceOf(fb.Value);
+                if (g.PieceSize(kb) <= g.PieceSize(ka)) fb = g.NearestFreeIn(pb, ka); else fa = g.NearestFreeIn(pa, kb);
+            }
+            var route = fa.HasValue && fb.HasValue ? g.Route(fa.Value, fb.Value) : null;
+            routed = route != null;
+            if (route != null) pts.AddRange(route); else pts.Add(fb ?? pb);
             pts.Add(pb);
             return new Path(pts.ToArray());
         }

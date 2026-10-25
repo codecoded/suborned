@@ -188,8 +188,8 @@ namespace Suborned.Sim
                 int from = g.Tick; r.Wait(T(20));
                 r.Is(!r.Shots().Exists(x => x.tick > from && x.by == Scout), "she fires nothing from the car");
                 var shots = ShotsAt(g, Scout, from);
-                bool cover(int m, int pm) { for (int d = m * 100; d < m * 100 + 100; d++) if (g.R.Accuracy(g.R.Pistol, d, false, g.R.ModCover, false, true) == pm) return true; return false; }
-                r.Is(shots.TrueForAll(x => cover(x.m, x.pm)), $"any shot at her in the car is at one beside cover, ×500 ({shots.Count} shots: {string.Join(", ", shots.Select(x => x.pm))} ‰)");
+                bool cover(int m, int pm) { for (int d = m * 100; d < m * 100 + 100; d++) if (g.R.Accuracy(g.R.Pistol, d, false, g.R.ModCover, false, true) == pm || g.R.Accuracy(g.R.Pistol, d, true, g.R.ModCover, false, true) == pm) return true; return false; } // standing or walking (engine 0.33.0: the lookout fires walking in to his spot, M059-B1)
+                r.Is(shots.TrueForAll(x => x.m * 100 < g.R.PointBlankCm || cover(x.m, x.pm)), $"any shot at her in the car past point blank is at one beside cover, ×500 (at arm's length cover counts for nothing: tuning.md §8.4; {shots.Count} shots: {string.Join(", ", shots.Select(x => x.m + " m " + x.pm))} ‰)");
             });
 
             Add("N112", "—", "Left behind, downed and fighting (brief 018 §3 rows 1 and 2), and Go without Vale: the guard downs the Scout in front of the Office (N26's fixture); the Fixer boards the empty car and the car goes. The outcome is Withdrawn and the left-behind rules apply: the Scout is captured downed; the Tech and the Enforcer, standing while the guard still fights, are captured fighting. Custody (campaign.custody, founding cell bravery 2, loyalty 3): downed holds 2 missions (talks at the third questioning, 3 + 0 > 2 + 0), abandoned holds 1 (2 + 1 > 2 + 0); +4 T each to the campaign; a captive gives every face, the car and place and time.", r =>

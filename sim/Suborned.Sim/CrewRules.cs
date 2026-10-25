@@ -20,11 +20,15 @@ namespace Suborned.Sim
     public sealed class CrewRules
     {
         public readonly int Size, Posted, SpeedCmS, FollowCmS, DropS, OutS, StepS, FollowS, WarnS, WarnLagS, LookoutPaceCm;
+        /// <summary>Engine 0.33.0 (rivals.free, Motive M059-3.4): a crewmate within this many cm of a tied member unties him.</summary>
+        public readonly int FreeCm;
         public readonly CrewLoop PostedLoop, LookoutLoop, WheelmanLoop;
 
         public CrewRules(JNode n, Func<JNode, int> ri, int safeHostiles)
         {
-            n.Only("crew", "posted", "speed", "followPace", "drop", "out", "step", "follow", "warn", "warnLag", "lookoutPace", "beats", "rule", "tag", "src", "proposed", "reason");
+            n.Only("crew", "posted", "speed", "followPace", "drop", "out", "step", "follow", "warn", "warnLag", "lookoutPace", "free", "peopleRule", "beats", "rule", "tag", "src", "proposed", "reason");
+            FreeCm = ri(n.Opt("free") ?? throw new FormatException("rivals.free is missing: engine 0.33.0 frees a tied rival by a crewmate within it (Motive M059-3.4)"));
+            if (n.Opt("peopleRule") is not JNode pr || pr.Str().Length == 0) throw new FormatException("rivals.peopleRule is missing: engine 0.33.0 takes the crew as people for the takedown and the body orders (Motive M059-3.1)");
             if (n["rule"].Str().Length == 0) throw new FormatException("rivals.rule is empty");
             Size = ri(n["crew"]); Posted = ri(n["posted"]); SpeedCmS = ri(n["speed"]); FollowCmS = ri(n["followPace"]);
             DropS = ri(n["drop"]); OutS = ri(n["out"]); StepS = ri(n["step"]); FollowS = ri(n["follow"]);

@@ -110,6 +110,8 @@
    "camera-mast-314": "the square's mast camera",
    "car-getaway": "the getaway car",
    "car-official": "Vale's car",
+   "stand-square": "the square's bay",
+   "stand-service-drive": "the service drive",
    "patrol": "the patrol",
    "rivals": "the rival crew",
    "security": "the police",
@@ -297,8 +299,10 @@
   "camera-mast-314": {"name":"Mast camera","about":"On a mast over the square. A person watches it live.","watched":"Its cone covers the square. It turns between three views."},
   "car-getaway": {"name":"Getaway car","about":"Our car. Get everyone in, then Go."},
   "car-official": {"name":"Vale's car","about":"Vale's car. The driver waits with it."},
+  "stand-square": {"name":"The square's bay","about":"Where the getaway car starts."},
+  "stand-service-drive": {"name":"The service drive","about":"The bay in the service drive, nose out. A short carry from Vale's car."},
   "patrol": {"name":"The patrol","about":"A clockwork patrol sweeps the square. Gunfire turns it against you.","watched":"Its cone sweeps the square and reaches the door at times.","routine":"It turns at each end of its sweep. The door is clear between sweeps."},
-  "rivals": {"name":"Rival crew","about":"Another crew after Vale, on their own schedule."},
+  "rivals": {"name":"Rival crew","about":"Another crew after Vale, on their own schedule.","watched":"Five in one car. Three post round our car. It follows Vale's car."},
   "security": {"name":"Police","about":"Police and robots sent when the alarm goes up."},
   "hostile": {"name":"Hostile","about":"Armed and in the fight. Shoot to stop them."},
   "crowd": {"name":"Passer-by","about":"Just passing. They notice and remember what you do."},
@@ -306,7 +310,7 @@
   "stash-door": {"name":"The service door","about":"The Office service door, off the lane. A body can go in, but slowly."}
  },
  "actions": {
-  "watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"Learn where they go and when. No Trail, but it takes time.","onTarget":{"waitress":"Learn Inez's rounds: door, tables, and when the guard drops in.","driver":"Learn the driver's routine: when he waits and when he moves.","guard":"Learn the guard's rounds: door, steps, and his coffee break.","councillor":"Learn when Vale moves. He stays inside until the chime.","camera-entrance":"Watch it from close by to learn what it sees. Needs a clear line.","camera-pickup":"Watch it from close by to learn what it sees. Needs a clear line.","camera-mast-314":"Watch it from close by to learn what it sees. Needs a clear line.","patrol":"Learn what the patrol sees. Its rounds take longer. Needs a clear line."},"onTargetBy":{"tech":{"camera-entrance":"Study the lens: what it sees, and where it goes blind. Needs a clear line.","camera-pickup":"Study the lens on the pickup: its cone, its blind side. Needs a clear line.","camera-mast-314":"Study the lens: its cone, and when it turns. Needs a clear line.","patrol":"Time the patrol: its cone first, its turns after. Needs a clear line."}},"withTarget":"Watch {target}","then":"watches {target}"},
+  "watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"Learn where they go and when. No Trail, but it takes time.","onTarget":{"waitress":"Learn Inez's rounds: door, tables, and when the guard drops in.","driver":"Learn the driver's routine: when he waits and when he moves.","guard":"Learn the guard's rounds: door, steps, and his coffee break.","councillor":"Learn when Vale moves. He stays inside until the chime.","camera-entrance":"Watch it from close by to learn what it sees. Needs a clear line.","camera-pickup":"Watch it from close by to learn what it sees. Needs a clear line.","camera-mast-314":"Watch it from close by to learn what it sees. Needs a clear line.","patrol":"Learn what the patrol sees. Its rounds take longer. Needs a clear line.","rivals":"Watch their car to learn who goes where, and when. Needs a clear line."},"onTargetBy":{"tech":{"camera-entrance":"Study the lens: what it sees, and where it goes blind. Needs a clear line.","camera-pickup":"Study the lens on the pickup: its cone, its blind side. Needs a clear line.","camera-mast-314":"Study the lens: its cone, and when it turns. Needs a clear line.","patrol":"Time the patrol: its cone first, its turns after. Needs a clear line.","rivals":"Read the rival crew's timetable off their car. Needs a clear line."}},"withTarget":"Watch {target}","then":"watches {target}"},
   "listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"Learn what they need and who they are. Stand close; it takes a while.","onTarget":{"waitress":"Hear what Inez needs and how she'd take an offer.","driver":"Hear what the driver needs and how he'd take an offer. Stand close.","guard":"Hear what the guard wants and whom he answers to. Stand close.","councillor":"Hear what Vale wants and who he answers to. Stand close."},"withTarget":"Listen to {target}","then":"listens to {target}"},
   "mislead": {"label":"False tip","by":["scout"],"engine":{"do":"mislead"},"does":"Send the rivals the wrong way for a while. They may come back.","onTarget":{"rivals":"Whisper the rivals a bad address. It buys minutes, not safety."},"withTarget":"Give {target} a false tip","then":"gives {target} a false tip"},
   "ask": {"label":"Ask","by":["fixer"],"engine":{"do":"turn","approach":"ask"},"does":"Ask outright. Free, but most refuse, and they remember you asked.","onTarget":{"waitress":"Ask Inez outright. Free, but she'll likely refuse and remember.","driver":"Ask the driver outright. Free, but he'll likely refuse and remember.","guard":"Ask the guard outright. Free, but he may report you."},"withTarget":"Ask {target}","then":"asks {target}"},
@@ -321,6 +325,7 @@
   "take": {"label":"Take Vale","by":["enforcer"],"engine":{"do":"take"},"does":"Take Vale at his car. A watching camera or the rivals will ruin it.","onTarget":{"councillor":"Take Vale at his car. A watching camera or the rivals will ruin it."},"withTarget":"Take {target}","then":"takes {target}"},
   "board": {"label":"Board","by":["scout","fixer","tech","enforcer"],"engine":{"do":"board"},"does":"Get into the getaway car, with anyone you carry.","onTarget":{"car-getaway":"Get in the car, with anyone you carry. In the car you can't fire."},"withTarget":"Board {target}","then":"boards {target}"},
   "go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"Drive off with whoever is in the car. The rest stay behind.","onTarget":{"car-getaway":"Leave now. Anyone outside the car stays behind. A hostile near it blocks it."},"withTarget":"Go in {target}","then":"drives off in {target}"},
+  "drive-car": {"label":"Drive","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive-car"},"does":"Drive the getaway car to another bay. Free, but it takes time.","onTarget":{"stand-service-drive":"Put the car behind Vale's for a short carry. Free, and it takes time.","stand-square":"Take the car back to the square's bay. Free, and it takes time."},"withTarget":"Drive into {target}","then":"drives into {target}"},
   "spawn": {"label":"Spawn","by":["fixer"],"engine":{"do":"spawn"},"does":"Fight range only: put 1 to 6 hostiles on the range."},
   "fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"Shoot to stop them. Gunfire raises Alert, and every hit adds Trail.","onTarget":{"hostile":"Fire until this one is down. Shots in this fight add no Trail.","councillor":"Never fire at Vale. Shooting Vale fails the mission.","camera-entrance":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.","camera-pickup":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.","camera-mast-314":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail."},"withTarget":"Fire at {target}","then":"fires at {target}"},
   "draw": {"label":"Draw weapon","by":["scout","fixer","tech","enforcer"],"engine":{"do":"draw"},"does":"Draw a weapon. Anyone who sees it may raise the alarm."},
@@ -350,6 +355,7 @@
   "ring-enter": {"label":"Enter","by":["enforcer"],"engine":{"do":"enter"},"does":"The ring's word for this verb."},
   "ring-board": {"label":"Board","by":["scout","fixer","tech","enforcer"],"engine":{"do":"board"},"does":"The ring's word for this verb."},
   "ring-go": {"label":"Go","by":["scout","fixer","tech","enforcer"],"engine":{"do":"go"},"does":"The ring's word for this verb."},
+  "ring-drive": {"label":"Drive","by":["scout","fixer","tech","enforcer"],"engine":{"do":"drive-car"},"does":"The ring's word for this verb."},
   "ring-fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"The ring's word for this verb."},
   "ring-loop": {"label":"Loop","by":["tech"],"engine":{"do":"loop"},"does":"The ring's word for this verb."},
   "ring-disable": {"label":"Disable","by":["tech"],"engine":{"do":"disable"},"does":"The ring's word for this verb."},
@@ -397,6 +403,8 @@
   },
   "acting": {
    "board": "Getting into the car",
+   "drive-car": "Driving the car",
+   "ride": "Riding in the car",
    "watch": "Watching {who}",
    "listen": "Listening to {who}",
    "ask": "Asking {who}",
@@ -472,11 +480,11 @@
   "driver-brings-vale": {"line":"The driver is bringing Vale round the back. Take him there.","short":"Round the back","verbs":["take"]},
   "car-not-parked": {"line":"Vale's car hasn't stopped yet. Take him once it parks.","short":"Car not parked","verbs":["take"]},
   "drive-held": {"line":"The car is blocked by {holders}. Down them first, then drive.","short":"Blocked · down {holders}","verbs":["*"]},
-  "drive-no-driver": {"line":"Nobody is in the car to drive it. Board first.","short":"No driver","verbs":["*"]},
+  "drive-no-driver": {"line":"Nobody is in the car to drive it. Board first.","short":"Board first","verbs":["*"]},
   "unknown-stand": {"line":"That isn't a stand for the car. Pick a marked bay.","short":"Not a stand","verbs":["*"]},
   "drive-busy": {"line":"Whoever is in the car is busy. Wait for the act to land.","short":"Car busy","verbs":["*"]},
-  "drive-here": {"line":"The car is at that bay already. Pick the other bay.","short":"Car is already there","verbs":["*"]},
-  "drive-fight": {"line":"A fight blocks the car. Fight it out here, then Go.","short":"Fight blocks the car","verbs":["*"]},
+  "drive-here": {"line":"The car is at that bay already. Pick the other bay.","short":"Already here","verbs":["*"]},
+  "drive-fight": {"line":"The fight has started. Fight it out here, or Go.","short":"Fight or Go","verbs":["*"]},
   "car-empty": {"line":"Nobody is in the car. Board first.","short":"Car is empty","verbs":["go"]},
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
@@ -553,7 +561,7 @@
    "rivals.no-warning": {"kind":"warning","fate":"alt","title":"The warning came too late","sight":"in-sight","at":"rival-lookout","result":"The driver turned too late. The lookout stays at his post."},
    "rivals.at-vale": {"kind":"warning","fate":"alt","title":"A rival is at Vale's car","sight":"in-sight","at":"vale-car","result":"Take Vale before they do, or the rivals have him."},
    "car.parks": {"kind":"city","fate":"icon","title":"Vale's car parks","result":"In the service bay. Take him from the back seat."},
-   "car.blocked": {"kind":"warning","fate":"alt","title":"Vale's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
+   "car.blocked": {"kind":"warning","fate":"beat","beat":"Vale's car stops short.","title":"Vale's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
    "board.missed": {"kind":"warning","fate":"alt","title":"Nobody got in","result":"The car drove off first. Wait until it stops."},
    "rivals.misled": {"kind":"city","fate":"alt","title":"Rivals sent away","result":"They may be back."},
    "rivals.drawn": {"kind":"warning","fate":"alt","title":"Rivals heading in","result":"They heard the shots."},
@@ -671,7 +679,7 @@
   }
  },
  "events": {
-  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
+  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","drive-car","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
   "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","disable","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
   "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, camera.cut, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","camera.cut","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","disable","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
   "reply": {"kind":"reply","trigger":"a turn order lands on a person: their answer, by the rulebook outcome (suspicious when the approach is reported)","speakers":["waitress","driver","guard"],"verbs":["ask","pay","help","pressure"],"note":"one answer per turn order; the contact's temperament picks the voice"},
@@ -701,6 +709,7 @@
   "car-burns": {"kind":"world","trigger":"a shot car catches fire and will explode in a few seconds","speakers":["scout","tech"],"log":["car.burning"]},
   "camera-shot": {"kind":"world","trigger":"a camera is shot out and goes dark (engine 0.19: fire.camera-dark; a hit that does not put it out, fire.camera-hit, stays silent and shows as the pop)","speakers":["scout","tech"],"log":["fire.camera-dark"]},
   "car-leaves": {"kind":"world","trigger":"the turned driver drives Vale round the back","speakers":["driver","fixer"],"log":["car.leaves"]},
+  "driver-tail": {"kind":"read","trigger":"a Scout Listen on the driver lands: the driver says the tail fact aloud (the engine writes no log code for it, so the host plays it with the Listen's scene)","speakers":["driver"],"verbs":["listen"],"note":"brief 059: a Listen on the driver adds one fact, that a car has tailed them all week. The Watch on the rival car teaches the same fact (targets.rivals.watched)."},
   "camera-reported": {"kind":"world","trigger":"the desk's next scan finds a cut camera dead; outcome nobody-sent when the same tick's alarm.dispatches says 0 robots and 0 units, else no outcome","speakers":["watcher","scout"],"log":["camera.cut-reported"]},
   "loop-ends": {"kind":"world","trigger":"the loop runs out (2:00 from its landing), or a Disable on that camera cuts it; a re-splice of the same camera is loop.on, not an end","speakers":["tech","scout"],"log":["loop.ends"]},
   "patrol-rerouted": {"kind":"world","trigger":"the patrol takes the false orders","speakers":["patrol","tech"],"log":["patrol.rerouted"]},
@@ -830,6 +839,9 @@
   "go": [
    "ack",
    "win"
+  ],
+  "drive-car": [
+   "ack"
   ],
   "spawn": [
    "ack"
@@ -1003,7 +1015,7 @@
  "hints": {
   "rules": {
    "source": "briefs/011/motive-fights.md §8 (Motive); words by Fable; each line fits Glyph's 110 characters",
-   "one": "One at a time, in priority order, lowest number first (H14, H16 and H15, the end steps, are -4 to -2: they win over every other hint, H17 and H13 included, when their trigger holds; their triggers never hold together; H17, the fight hint, is -1, behind H15 so that Put Vale in the car wins while a fight holds the car, ahead of H13).",
+   "one": "One at a time, in priority order, lowest number first (H14, H16 and H15, the end steps, are -4 to -2: they win over every other hint, H17 and H13 included, when their trigger holds; their triggers never hold together; H20, Drive the car round (brief 059), is -7: it wins over H16 while the getaway car is still at the square, so the Take is not offered with a long carry ahead; H17, the fight hint, is -1, behind H15 so that Put Vale in the car wins while a fight holds the car, ahead of H13).",
    "once": "Each fires once per run, and H hides the layer for good.",
    "idle": "A hint shows only after the cell has given no order for 8 s.",
    "vanishes": "It vanishes the moment its gone-when act happens, or when its trigger stops holding.",
@@ -1184,12 +1196,12 @@
     "priority": -3,
     "agent": "enforcer",
     "verb": "take",
-    "target": "Vale at the pickup",
-    "line": "The driver is turned and Vale is at the car. The Enforcer can Take Vale. Don't be seen.",
-    "short": "Take [Vale] at the pickup.",
-    "trigger": "the driver is turned, Vale is at his car (the pickup), and the Enforcer has not taken him (route B; end steps, Aster 2026-10-18; not in Motive's table)",
-    "rings": "Vale at the pickup",
-    "goneWhen": "a Take order, or Vale leaves the pickup"
+    "target": "take Vale in his car",
+    "line": "The driver brought Vale round. The Enforcer can Take him in the car.",
+    "short": "Take [Vale] from the back seat.",
+    "trigger": "the driver is turned, Vale's car is parked (ValeCarParked: in the service bay, or at the drive's mouth when ours is on the drive), and the Enforcer has not taken him; H20 is offered ahead of it while the getaway car is still at the square (end steps, Aster 2026-10-18; brief 059 route B; not in Motive's table)",
+    "rings": "Vale's car",
+    "goneWhen": "a Take order"
    },
    "H17": {
     "priority": -1,
@@ -1223,6 +1235,17 @@
     "trigger": "the first time a security watcher's attention reaches noticed for any agent (brief 031); shown once",
     "rings": "nothing: the watcher's own cue shows it",
     "goneWhen": "the agent moves out of sight, or the watcher cools"
+   },
+   "H20": {
+    "priority": -7,
+    "agent": "any",
+    "verb": "drive-car",
+    "target": "drive the getaway car round behind Vale's car",
+    "line": "Vale's car is parked round the back. Any agent in our car can Drive round behind it.",
+    "short": "Drive the [car] round the back.",
+    "trigger": "the driver is turned, Vale's car is parked (ValeCarParked), the getaway car is still at the square with an agent aboard, and no Drive has been given (brief 059 section 1.4; Fable, Aster's call 2026-10-26: Glyph's mark clears on car.parks and this hint arrives on the same tick)",
+    "rings": "the getaway car",
+    "goneWhen": "a Drive order, or the getaway car is on the service drive"
    }
   }
  },
@@ -1438,6 +1461,10 @@
      "name",
      "trail"
     ],
+    "drive-car": [
+     "name",
+     "time"
+    ],
     "spawn": [
      "name"
     ],
@@ -1520,7 +1547,8 @@
     "loop": "Loop · 20 s · +1 · 2:00",
     "disable": "Disable · 10 s · +2 · ▲1 in 14 s",
     "board": "Board · 4 s",
-    "go": "Go · +1"
+    "go": "Go · +1",
+    "drive-car": "Drive · 28 s"
    }
   },
   "feed": {
@@ -1882,6 +1910,10 @@
   {"event":"ack","verb":"go","speaker":"fixer","lines":["Drive. We're done here.","Off we go.","Take us out, please."]},
   {"event":"ack","verb":"go","speaker":"tech","lines":["Go. Steady now.","Right, drive.","Wheels rolling."]},
   {"event":"ack","verb":"go","speaker":"enforcer","lines":["Drive.","Get us out.","Go on."]},
+  {"event":"ack","verb":"drive-car","speaker":"scout","lines":["Moving the car.","Short hop. Driving.","Car goes round."]},
+  {"event":"ack","verb":"drive-car","speaker":"fixer","lines":["A short drive. Hold on.","Round we go. Steady, please.","Gently now. Round we go."]},
+  {"event":"ack","verb":"drive-car","speaker":"tech","lines":["Driving. Mind the corners.","Short hop. Hold on.","Rolling. Steady hands."]},
+  {"event":"ack","verb":"drive-car","speaker":"enforcer","lines":["Driving.","Hold on.","Car's moving."]},
   {"event":"ack","verb":"withdraw","speaker":"fixer","lines":["Pull back. We'll try again.","Walk away. All of you."]},
   {"event":"ack","verb":"fire","speaker":"scout","lines":["Contact. Firing.","In my sights."]},
   {"event":"ack","verb":"fire","speaker":"fixer","lines":["Forgive me.","If I must."]},
@@ -1996,6 +2028,8 @@
   {"event":"read","verb":"watch","speaker":"tech","about":"camera-mast-314","lines":["Mast camera. Three views, one lens.","It pans the square. I have the turns.","One lens on a slow pan. I know its views."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"sight","lines":["Cone mapped. The turns need more time.","I have its sight. The timing, not yet.","Sweeps the square. Give me longer for the turns."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"routine","lines":["Clockwork. I have the full round.","Turns at each end. Timing logged.","Full round logged. Door's clear between sweeps."]},
+  {"event":"read","verb":"watch","speaker":"scout","about":"rivals","lines":["Five in one car. Three post by ours.","Their car follows Vale's. I have the timings.","Posted three, a lookout, a wheelman. All timed."]},
+  {"event":"read","verb":"watch","speaker":"tech","about":"rivals","lines":["Five aboard. They tail Vale's car round.","I have their timetable. Three go for our car.","Timed to the minute. Their car follows Vale's."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"idealist","about":"waitress","lines":["Debt. And she's seeing the door guard. Proud.","Owes a lender, meets the guard quietly. Won't be bought."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"mercenary","about":"waitress","lines":["Debt. Meets the door guard. Money talks to her.","Owes a lender. Sees the guard on the quiet. Sells her time."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"fearful","about":"waitress","lines":["Debt. The guard visits her quietly. She startles.","Owes money, sees the guard in secret. Jumpy."]},
@@ -2134,6 +2168,7 @@
   {"event":"camera-shot","speaker":"tech","lines":["Lens is gone. No picture now.","Camera's dead. Nobody's watching that one."]},
   {"event":"car-leaves","speaker":"driver","lines":["Service door, Councillor. Quieter that way.","Taking you round the back."]},
   {"event":"car-leaves","speaker":"fixer","lines":["The driver is taking Vale round the back.","Vale's car is going round. Service door."]},
+  {"event":"driver-tail","speaker":"driver","lines":["That car's tailed us all week.","Same car behind us every night.","Someone's followed us all week. Same car."]},
   {"event":"ack","verb":"disable","speaker":"tech","lines":["Cabinet. Cutting the line.","Snipping the camera's wire.","On it. This one's permanent."]},
   {"event":"arrive","verb":"disable","speaker":"tech","lines":["Panel's open. Cutters out.","Found the camera's line.","Right. This one."]},
   {"event":"done","verb":"disable","speaker":"tech","lines":["Cut. That camera's finished.","Line's dead. They'll notice.","Gone for good. Expect company."]},
@@ -2463,133 +2498,19 @@
   ]
  },
  "pending": {
-  "rule": "Words drafted ahead of the engine (briefs 058 and 059, GDD v0.25.0). The host reads none of this. Each entry names its brief and says whether its code, key or trigger is a `guess`: the brief did not name it, and its owner confirms or renames it. When Keel lands a code or a verb, the entry moves unchanged to the section of the same name (locks, cards.items, events, dialogue, actions, activity, hints, less.price, targets) and Latch wires it in that batch; a `replaces` entry takes the place of the live one with the same key.  A test holds every line here to the live limits.",
+  "rule": "Words drafted ahead of the engine (briefs 058 and 059, GDD v0.25.0). The host reads none of this. Each entry names its brief and says whether its code, key or trigger is a `guess`: the brief did not name it, and its owner confirms or renames it. When Keel lands a code or a verb, the entry moves unchanged to the section of the same name (locks, cards.items, events, dialogue, actions, activity, hints, less.price, targets) and Latch wires it in that batch; a `replaces` entry takes the place of the live one with the same key.  A test holds every line here to the live limits. Empty since the 059 port (2026-10-26): the Drive, the rival crew's Watch, the driver's tail fact, H16 and H20 are live.",
   "locks": {},
   "cards": {},
-  "events": {
-   "driver-tail": {
-    "kind": "read",
-    "trigger": "a completed Scout Listen on the driver: the tail fact",
-    "speakers": [
-     "driver"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) (Also: a Listen on the driver adds \"That car's tailed us all week\")"
-   }
-  },
-  "dialogue": [
-   {
-    "event": "driver-tail",
-    "speaker": "driver",
-    "lines": [
-     "That car's tailed us all week.",
-     "Same car behind us every night.",
-     "That grey car again. All week."
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals)"
-   }
-  ],
-  "actions": {
-   "drive-car": {
-    "label": "Drive",
-    "by": [
-     "scout",
-     "fixer",
-     "tech",
-     "enforcer"
-    ],
-    "engine": {
-     "do": "drive-car"
-    },
-    "does": "Drive the getaway car to another stand. Free, but it takes time.",
-    "withTarget": "Drive to {target}",
-    "then": "drives to {target}",
-    "onTarget": {
-     "stand-service": "Put the car behind Vale's for a short carry. Free, and it takes time.",
-     "stand-square": "Take the car back to the square's bay. Free, and it takes time."
-    },
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) K6: `drive` is already Take control (brief 025), so the engine needs another id"
-   },
-   "ring-drive": {
-    "label": "Drive",
-    "by": [
-     "scout",
-     "fixer",
-     "tech",
-     "enforcer"
-    ],
-    "engine": {
-     "do": "drive-car"
-    },
-    "does": "The ring's word for this verb.",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   }
-  },
-  "activity": {
-   "acting.drive": "Driving the car"
-  },
+  "events": {},
+  "dialogue": [],
+  "actions": {},
+  "activity": {},
   "price": {
    "fields": {},
-   "verbs": {
-    "drive-car": [
-     "name",
-     "time"
-    ]
-   },
-   "examples": {
-    "drive-car": "Drive · 28 s"
-   }
+   "verbs": {},
+   "examples": {}
   },
-  "targets": {
-   "rivals": {
-    "watched": "Five in one car. Three post round our car. It follows Vale's car.",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) s2.2: what a Watch on the parked rival car teaches (the schema's WATCHED list gains `rivals`)"
-   },
-   "stand-service": {
-    "name": "The service drive",
-    "about": "A bay behind Vale's car, nose out. Leave the getaway car here.",
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.4 (the stand; the key is a guess)"
-   },
-   "stand-square": {
-    "name": "The square's bay",
-    "about": "Where the getaway car starts.",
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.4"
-   }
-  },
-  "hints": {
-   "H16": {
-    "priority": -3,
-    "agent": "enforcer",
-    "verb": "take",
-    "target": "take Vale in his car",
-    "line": "The driver brought Vale round. The Enforcer can Take him in the car.",
-    "short": "Take [Vale] from the back seat.",
-    "trigger": "the driver is turned and Vale's car is parked in the service bay",
-    "rings": "Vale's car",
-    "goneWhen": "any Take order",
-    "replaces": true,
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.2: the live H16 says \"at the pickup\"; the trigger is a guess for Motive"
-   },
-   "H20": {
-    "priority": -2,
-    "agent": "any",
-    "verb": "drive-car",
-    "target": "drive the getaway car round behind Vale's car",
-    "line": "Vale's car is round the back. Any agent in our car can Drive it behind.",
-    "short": "Drive the [car] round.",
-    "trigger": "Vale's car is parked in the service bay and the getaway car is still at the square",
-    "rings": "the getaway car",
-    "goneWhen": "any Drive order, or the getaway car on the service drive",
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.4: a new hint; Motive confirms the trigger"
-   }
-  }
+  "targets": {},
+  "hints": {}
  }
 }

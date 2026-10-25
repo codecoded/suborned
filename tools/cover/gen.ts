@@ -187,7 +187,8 @@ export function buildCover(): { cover: Cover; json: string } {
     refuge: [
       ...block.buildings.flatMap((b: any) => (b.entrances ?? []).filter((e: any) => e.kind !== 'service').map((e: any) => // a service door is no refuge for the crowd (brief 013)
          ({ id: `door:${e.id}`, at: [Math.round(e.at[0] * 100), Math.round(e.at[1] * 100)], kind: 'door' as const, src: `civic-block.json buildings.${b.id}.entrances.${e.id}` }))),
-      ...['security-entry', 'rival-entry'].map(id => ({ id: `mouth:${id}`, at: at(id), kind: 'mouth' as const, src: `handover.site.json places.${id}: where a street meets the block's window` })),
+      // brief 059 (engine 0.33.0, Keel): the north mouth is the rival car's entry (rival-car-entry, Orbit Walk at the window's edge); rival-entry is read by nothing now
+      ...['security-entry', 'rival-car-entry'].map(id => ({ id: `mouth:${id}`, at: at(id), kind: 'mouth' as const, src: `handover.site.json places.${id}: where a street meets the block's window` })),
     ].sort((x: { id: string }, y: { id: string }) => (x.id < y.id ? -1 : 1)),
     areas: [area('getaway-safe', site.fight.ambush, [site.fight.guard]), area('getaway-loud', site.fight.police, [])],
   };

@@ -20,7 +20,9 @@ namespace Suborned.Sim
         /// its holder ("beyond": nobody on the sheet; phase 2 binds a person). "" when the host loaded no people file. Phase 1: read, never acted on.</summary>
         public string Record = "", Size = "", Holder = "";
         /// <summary>The city's own security (§05: guards, patrol officers, investigators, watchers) are no civilians: violence they see is not §05's "seen by a civilian".</summary>
-        public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard";
+        public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard" && Job != RivalJob;
+        /// <summary>Engine 0.33.0: the job of a rival crew member's person (CrewMember.P; Motive M059-3.1): no civilian, no staff.</summary>
+        public const string RivalJob = "rival";
         public readonly int[] Sc = new int[4];
         public readonly List<Mem> Memory = new List<Mem>();
         public bool Turned, NeedMet, Down;
