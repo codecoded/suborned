@@ -230,9 +230,21 @@
   "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
   "timeline": [
    {
+    "at": "2:35",
+    "label": "A rival car turns in",
+    "short": "Rivals in",
+    "known": false
+   },
+   {
+    "at": "2:46",
+    "label": "Three rivals get out by our car",
+    "short": "Rivals out",
+    "known": false
+   },
+   {
     "at": "3:10",
-    "label": "Rival car arrives",
-    "short": "Rivals",
+    "label": "The rival car parks by Vale's car",
+    "short": "Rivals park",
     "known": false
    },
    {
@@ -261,7 +273,7 @@
    },
    {
     "at": "8:30",
-    "label": "Close: rivals take Vale",
+    "label": "Close: Vale is driven away",
     "short": "Close",
     "known": true
    }
