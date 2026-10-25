@@ -48568,7 +48568,7 @@
      "root": "generated",
      "role": "texture-meta",
      "path": "Textures/signal_ring_v1.png.meta",
-     "sha256": "8919cbc35895c294096c2b3343597eb6d82536269186dc38c882be15704b8747",
+     "sha256": "a573b064648b711e23ab4f81e198cefb0a9e13a30246707d5481cd739e302245",
      "bytes": 2715
     }
    ],
@@ -59516,7 +59516,7 @@
      "root": "generated",
      "role": "texture-meta",
      "path": "Textures/signal_atlas_v1.png.meta",
-     "sha256": "1e44dd8d27304b2d1d25786b5756cf68bb40215831663fed897631a6f45531d8",
+     "sha256": "b0de53416e8b7f15d5214760321633aa6b1478ab6fbcb758937760bf6349d18e",
      "bytes": 2715
     },
     {

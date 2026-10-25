@@ -3,7 +3,7 @@ import { expect, test } from 'bun:test';
 import { mkdirSync, mkdtempSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { feetShare, gradeMem, gradeSolid, isRace, loadWalk, offerOf, type FeetRow, type MemRow } from './grade';
+import { feetShare, gradeGiver, gradeMem, gradeSolid, insideRun, isRace, loadWalk, offerOf, type FeetRow, type MemRow } from './grade';
 import { findingsOf, gradeRows, type BotReportRow } from './bot';
 
 // a 4 m × 4 m walk window at block (0, 0), 0.25 m cells, one solid cell column at block x 2.0-2.25 (i = 8); identity frame (Unity x = block x, z = block y)
@@ -27,6 +27,32 @@ test('Q-SOLID: a body overlapping a drawn solid by more than 5 cm is real; a fig
   expect(gradeSolid({ key: 'crowd/7', tick: 100 }, [at('crowd/7', -30, 1)], w, chairs)!.cause).toBe('off-map');
   expect(gradeSolid({ key: 'crowd/7', tick: 100 }, [at('crowd/7', 1.7, 1, 400)], w, chairs)).toBeUndefined(); // no sample near the hit: the player's word stands
   expect(gradeSolid({ key: 'crowd/7', tick: 100 }, [at('crowd/7', 1.9, 1)], undefined, chairs)).toBeUndefined();
+});
+
+test('Q-SOLID (0.2.122 human-b): a crowd figure inside drawn solids for 3 s or more is on a straight routine leg (Keel); one beside the cast was stepped aside into the wall (Latch)', () => {
+  const w = loadWalk(walkFile(mkdtempSync(join(tmpdir(), 'qa-grade-'))))!, chairs: [number, number][] = [];
+  // walking through the solid column for 4 s (ticks 100-140), flagged at the wall's face 0.5 s before it went in
+  const leg = [at('crowd/7', 1.9, 1, 95), ...Array.from({ length: 9 }, (_, k) => at('crowd/7', 2.1, 1 + k * 0.3, 100 + k * 5)), at('crowd/7', 2.6, 4, 145)];
+  expect(insideRun(leg, w).s).toBeCloseTo(4, 5);
+  expect(gradeSolid({ key: 'crowd/7', tick: 95 }, leg, w, chairs)!.cause).toBe('straight-leg');
+  // the same figure passing a post 40 s later: still the straight leg (the run lies within 60 s before)
+  expect(gradeSolid({ key: 'crowd/7', tick: 500 }, [...leg, at('crowd/7', 1.9, 2, 500)], w, chairs)!.cause).toBe('straight-leg');
+  // standing 10 cm off the wall, 0.7 m from the guard: the host's give-way
+  expect(gradeSolid({ key: 'crowd/8', tick: 100 }, [at('crowd/8', 1.9, 1), at('guard', 1.25, 0.7)], w, chairs)!.cause).toBe('give-way');
+  // a crowd figure grazing the wall with nobody of the cast near and no long run inside: still 'inside'
+  expect(gradeSolid({ key: 'crowd/8', tick: 100 }, [at('crowd/8', 1.9, 1), at('guard', 0.2, 3)], w, chairs)!.cause).toBe('inside');
+  // a follower stays the follower offset, whatever else
+  expect(gradeSolid({ key: 'rivals/1', tick: 95 }, leg.map(r => ({ ...r, key: 'rivals/1' })), w, chairs)!.cause).toBe('follower-offset');
+});
+
+test('Q-GIVER: Go offered by an agent in the car is the check (GDD §06: anyone, once someone is in it); other unable givers stay findings', () => {
+  expect(gradeGiver({ observed: 'ring:enforcer in the car: offered for Go on car/getaway' })).toMatchObject({ cause: 'go-from-car', severity: 'info' });
+  expect(gradeGiver({ observed: 'open-ring:enforcer in the car 0.7 s: still offered for Go on car/getaway' })!.cause).toBe('go-from-car');
+  expect(gradeGiver({ observed: 'plan:fixer in the car: a giver of Go on car/getaway' })!.cause).toBe('go-from-car');
+  expect(gradeGiver({ observed: 'panel:tech in the car: offered Go on car/getaway' })!.cause).toBe('go-from-car');
+  expect(gradeGiver({ observed: 'ring:enforcer in the car: offered for Fire on unit/police-1' })).toBeUndefined();
+  expect(gradeGiver({ observed: 'ring:scout down: offered for Go on car/getaway' })).toBeUndefined();
+  expect(gradeGiver({ observed: 'open-ring:scout down 0.4 s: still offered for Board on car/getaway' })).toBeUndefined();
 });
 
 test('Q-MEM: a rise that holds is a leak; one step (the response spawning in), a warm-up dip or a short row is not', () => {

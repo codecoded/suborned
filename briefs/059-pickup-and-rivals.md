@@ -621,3 +621,29 @@ Next owner: Keel.
   6. Glyph: the shut-stand refusal.
   7. Latch: the 059 port, in the next batch.
 - Redline: S10 is 15–25 % slower per run on 0.32 (Combat plus the crew step, about 4 ms a run). Read it with the next perf pass.
+
+## Motive: balance pass on 0.32 (2026-10-26)
+The 2026-10-25 run died at the usage limit. Rerun on engine 0.32.0 (100b5e3a) plus the scratch switches in `briefs/059/motive/balance/engine-probe.patch`; with every switch off it reproduces Keel's 0.32 check. Entries for Keel: **`briefs/059/motive/balance-rulings.json`** (M059-B1 to B8; verdicts, effects, checks, re-compose list, open items). Evidence: `balance/results/` (`verdicts-2026-10-26.txt` from `verdicts.sh`; `cand-r` and `cand-c5` from `cand.sh`, the full mission check on a candidate route set; the sweeps; `c037-check-0.31` as the baseline).
+- **Base R = the GDD as written:** the S1 gate, late spring and floor, a rival blocker keeps its lane, plus one engine fault fixed (B1).
+  - **B1:** 0.32's `JoinFight` starts every posted or walking rival's fight body at (0,0). Keel's 0.32 safe-fight numbers are void.
+  - **Not reused from the dead run:** its two switches outside the GDD. The first-down break contradicts §06's more-than-half (B5); Vale as cover for his carrier is a new modifier (B6). Its "SHIPS" rested on them.
+- **1. Loud against the carry: holds at both stands.**
+  - **Square:** loud, re-composed to drop 3 of the 4 drawn rivals as §06's break needs, wins 5:20.1 at 27 T (+3 case), A 2, Standing −1, seal clock running. The quiet carries: 3–11 T, A ≤ 1, Standing ≥ +2, no seal (MC-2, MC-10 ok).
+  - **Yard:** loud is held and lost. The official-entrance officers and the response unit down the Enforcer at 7:42.5, with 11 T spent. Route B: 7:32.6, 3 T, A 0, +3.
+- **2. Early quiet routes: both win, and both §07 lines hold.**
+  - **Square:** A-pressure 3:20.5 (7 T); G-fast with focus fire 3:11.0 (6 T).
+  - **Yard:** A-pressure 3:07.4 (7 T, +1); G-fast 3:07.4 (2 T, +2).
+  - **The gate:** it holds Go from Vale-in (2:32.0 / 2:22.5) until the late car's blocker is down (3:03.5). With the gate off both leave unfought, at 2:32.0 and 2:22.5.
+  - **Fastest:** quiet 3:07.4–3:11.0 against loud 5:20.1 (MC-6: 129.1 s).
+- **3. Route B at the yard: svc-ambush-1 moves to (77.35, −8.0) [S] (B4, Vantage).**
+  - **At will loses at all six spots tried** (rivals-reach-vale 7:30.0). All three posted shoot the carrying Enforcer at 562 ‰.
+  - **Focus fire wins at every spot**, two locks from the Take (B7, Waymark).
+  - **Today's spot:** route-b-board can slip 0 s, and locks 1.0 s late are the limit.
+  - **The new spot:** 3 s of slack; locks 3.0 s late still hold. The spot is 15.6 m from Vale's rear door (the long band) and off the service door's line, and it becomes the stand's blocker.
+  - **Times:** fight out 7:32.2, board 7:36.0; 3 T, A 0, +3.
+- **4. MC-5 holds** (it failed on raw 0.32): A 2:56 early (slip 7 s), B 1:07 (slip 0 s → 3 s with B4), G 4:13 (slip 1 s). MC-1 to MC-12 all pass on the candidate set. MC-0 is 33/39, the six left on Waymark's list.
+- **Open for Aster:**
+  - **A mismatch.** §06 says hostiles fire nothing while they move and the blocker walks without firing. The engine has fired on the move since 0.15 (my 027 §8.3, Sky 2026-10-21). With B4, the yard result doesn't depend on which reads.
+  - **Slack fell from c037** (B 66 s → 3 s, G-fast 19 s → 1 s); the re-record measures it.
+  - **The yard's lane post** is 92–340 m by walk from every yard spot.
+- **Next owner: Vantage** (svc-ambush-1; the lane-post finding), **then Keel** (B1–B3 and the six BAL-* scenarios with the s1 entries), **then Waymark** (the re-compose list in balance-rulings.json).

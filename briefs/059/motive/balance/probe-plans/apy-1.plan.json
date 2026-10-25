@@ -1,0 +1,204 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe A-pressure at the yard (car driven round before the Enter)",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "beside-inez",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Courtyard",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "waitress",
+   "gap": 9
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop"
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "waitress"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "reroute"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "pressure",
+   "label": "turned"
+  },
+  {
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress",
+   "label": "call"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "after": [
+    "reroute"
+   ],
+   "run": true,
+   "gap": 41.5
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "reroute"
+   ],
+   "label": "tech-car"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in"
+  },
+  {
+   "op": "tech",
+   "do": "drive-car",
+   "target": "service-drive",
+   "label": "drive"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7300,
+    -1100
+   ],
+   "after": [
+    "call"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7300,
+    -1900
+   ],
+   "after": [
+    "scout",
+    "call"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "enter",
+    "drive"
+   ],
+   "when": "enter.out",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "in"
+   ],
+   "when": "fight.ambush"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "service-drive",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in"
+   ],
+   "gap": 1,
+   "unless": [
+    "captured",
+    "withdraw.car"
+   ]
+  }
+ ]
+}

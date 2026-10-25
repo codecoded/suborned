@@ -1,0 +1,189 @@
+{
+ "calibration": {
+  "day": {
+   "gain": {
+    "p": 1.244,
+    "worstDE": 2.57
+   },
+   "offset": {
+    "p": 0.325,
+    "worstDE": 2.5
+   },
+   "veil": {
+    "p": 0.084,
+    "worstDE": 3.29
+   }
+  },
+  "evening": {
+   "gain": {
+    "p": 1.163,
+    "worstDE": 2.98
+   },
+   "offset": {
+    "p": 0.172,
+    "worstDE": 3.12
+   },
+   "veil": {
+    "p": 0.062,
+    "worstDE": 3.74
+   }
+  },
+  "night": {
+   "gain": {
+    "p": 1.053,
+    "worstDE": 1.24
+   },
+   "offset": {
+    "p": 0.06,
+    "worstDE": 1.24
+   },
+   "veil": {
+    "p": 0.013,
+    "worstDE": 1.39
+   }
+  }
+ },
+ "refit": {
+  "day": {
+   "walk": {
+    "colour": "#40ffb1",
+    "level": 1.1,
+    "dE": {
+     "gain": 1.28,
+     "offset": 1.33,
+     "veil": 0.84
+    },
+    "dE_pm10": 2.14,
+    "shows": {
+     "gain": "#44e9b3",
+     "offset": "#4debb6",
+     "veil": "#5ae4ac"
+    }
+   },
+   "clearing": {
+    "colour": "#ff8e0d",
+    "level": 1.5,
+    "dE": {
+     "gain": 1.27,
+     "offset": 1.27,
+     "veil": 1.73
+    },
+    "dE_pm10": 3.18,
+    "shows": {
+     "gain": "#ffb400",
+     "offset": "#feb300",
+     "veil": "#fab000"
+    }
+   },
+   "stop": {
+    "colour": "#ff4d51",
+    "level": 1.0,
+    "dE": {
+     "gain": 2.04,
+     "offset": 2.0,
+     "veil": 2.74
+    },
+    "dE_pm10": 3.78,
+    "shows": {
+     "gain": "#fb2f24",
+     "offset": "#fe3526",
+     "veil": "#f1533e"
+    }
+   }
+  },
+  "evening": {
+   "walk": {
+    "colour": "#26ffc4",
+    "level": 1.05,
+    "dE": {
+     "gain": 0.84,
+     "offset": 0.84,
+     "veil": 1.29
+    },
+    "dE_pm10": 1.97,
+    "shows": {
+     "gain": "#4ce8b3",
+     "offset": "#4ce8b3",
+     "veil": "#63e4ad"
+    }
+   },
+   "clearing": {
+    "colour": "#ff9c1a",
+    "level": 1.25,
+    "dE": {
+     "gain": 1.29,
+     "offset": 1.43,
+     "veil": 1.59
+    },
+    "dE_pm10": 2.66,
+    "shows": {
+     "gain": "#feb300",
+     "offset": "#fdb100",
+     "veil": "#fab100"
+    }
+   },
+   "stop": {
+    "colour": "#ff595e",
+    "level": 0.85,
+    "dE": {
+     "gain": 2.12,
+     "offset": 1.83,
+     "veil": 1.74
+    },
+    "dE_pm10": 3.72,
+    "shows": {
+     "gain": "#f82e25",
+     "offset": "#fa3227",
+     "veil": "#f24e38"
+    }
+   }
+  },
+  "night": {
+   "walk": {
+    "colour": "#00ffa9",
+    "level": 1.1,
+    "dE": {
+     "gain": 0.88,
+     "offset": 0.9,
+     "veil": 1.06
+    },
+    "dE_pm10": 2.08,
+    "shows": {
+     "gain": "#60e4b0",
+     "offset": "#60e4b0",
+     "veil": "#5fe3ad"
+    }
+   },
+   "clearing": {
+    "colour": "#ff8800",
+    "level": 1.7,
+    "dE": {
+     "gain": 1.42,
+     "offset": 1.42,
+     "veil": 1.52
+    },
+    "dE_pm10": 3.16,
+    "shows": {
+     "gain": "#fcb300",
+     "offset": "#fcb200",
+     "veil": "#fbb100"
+    }
+   },
+   "stop": {
+    "colour": "#ff4140",
+    "level": 1.25,
+    "dE": {
+     "gain": 1.21,
+     "offset": 1.18,
+     "veil": 0.77
+    },
+    "dE_pm10": 2.57,
+    "shows": {
+     "gain": "#f93d2a",
+     "offset": "#f93c29",
+     "veil": "#f7402d"
+    }
+   }
+  }
+ }
+}

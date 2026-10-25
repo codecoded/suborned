@@ -1,0 +1,384 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe: loud on 0.32 rules, scout and fixer lock rival-1..4 in turn until the crew breaks",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop",
+   "at": "1:00"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "reroute",
+   "after": [
+    "loop"
+   ],
+   "when": "loop.on"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ],
+   "after": [
+    "reroute"
+   ],
+   "when": "patrol.rerouted"
+  },
+  {
+   "op": "enforcer",
+   "do": "fire",
+   "target": "guard",
+   "after": [
+    "reroute",
+    "enforcer"
+   ],
+   "at": "2:31",
+   "label": "shot"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    975,
+    -4625
+   ],
+   "run": true,
+   "after": [
+    "shot"
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "run": true,
+   "after": [
+    "shot"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "after": [
+    "shot"
+   ],
+   "gap": 4,
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "draw",
+   "when": "fight.loud",
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "stance",
+   "stance": "free"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "security-2",
+   "label": "scout-lock1"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "when": "fight.loud",
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "stance",
+   "stance": "free"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-2",
+   "label": "fixer-lock1"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "when": "fight.loud",
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "stance",
+   "stance": "free"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "security-2",
+   "label": "tech-lock1"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "security-1",
+   "after": [
+    "scout-lock1"
+   ],
+   "when": "security.officer-down",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "security-1",
+   "after": [
+    "fixer-lock1"
+   ],
+   "when": "security.officer-down",
+   "every": 0.5
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "security-1",
+   "after": [
+    "tech-lock1"
+   ],
+   "when": "security.officer-down",
+   "every": 0.5
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rivals",
+   "after": [
+    "scout"
+   ],
+   "when": "security.down",
+   "label": "scout-rivals"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    4300,
+    -3100
+   ],
+   "label": "scout-flank"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rivals",
+   "after": [
+    "fixer"
+   ],
+   "when": "security.down",
+   "label": "fixer-rivals"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    4400,
+    -3350
+   ],
+   "label": "fixer-flank"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "scout-rival-2",
+   "every": 0.5,
+   "after": [
+    "scout-flank"
+   ],
+   "when": "rivals.down"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "fixer-rival-2",
+   "every": 0.5,
+   "after": [
+    "fixer-flank"
+   ],
+   "when": "rivals.down"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-3",
+   "label": "scout-rival-3",
+   "every": 0.5,
+   "after": [
+    "scout-rival-2"
+   ],
+   "gap": 6
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-3",
+   "label": "fixer-rival-3",
+   "every": 0.5,
+   "after": [
+    "fixer-rival-2"
+   ],
+   "gap": 6
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-4",
+   "label": "scout-rival-4",
+   "every": 0.5,
+   "after": [
+    "scout-rival-3"
+   ],
+   "gap": 6
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-4",
+   "label": "fixer-rival-4",
+   "every": 0.5,
+   "after": [
+    "fixer-rival-3"
+   ],
+   "gap": 6
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "label": "out",
+   "after": [
+    "enter"
+   ],
+   "when": "rivals.retreat"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "board.in"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "board.in"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "board.in"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in",
+    "tech-in"
+   ],
+   "gap": 1,
+   "unless": "captured"
+  }
+ ]
+}

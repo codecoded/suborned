@@ -94,7 +94,7 @@ const $ = id => document.getElementById(id);
 const usd = x => '$' + (x || 0).toFixed(2);
 const usd3 = x => (x == null ? '?' : '$' + x.toFixed(3));
 const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const isCall = r => ['image','video','audio'].includes(r.task);
+const isCall = r => ['image','video','audio','3d'].includes(r.task);
 const isUsed = r => (r.used_in || []).some(u => !String(u).startsWith('via '));
 
 $('built').textContent = 'Built ' + D.built + ' from paid/*/ledger.jsonl (rollup committed as tools/paid/spend.json). Load: thumbnails only, media on click.';

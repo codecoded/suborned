@@ -9,7 +9,7 @@
   signal_ring_v1.png    512 x 512 RGBA, the HaloRing: 24 wedge segments between r 0.47 m and 0.60 m on a 1.24 m square, white, alpha = 1 - (k + 0.5) / 24 for segment k clockwise from the top (k = 0 is the
                         first to go dark when the ring drains) and 0 outside. Alpha clip with _Cutoff = 1 - lit / 24 lights exactly `lit` segments: the one fill property.
 Pictograms are drawn here, not in Blender, so the figure is a rounded 1950s pictogram at 64 px a glyph rather than a few flat polygons.
-Both go to <out>/signal_*.png (+ .meta: clamp, coverage-preserving mips, alpha is transparency) and signal-tex.json (the cell table crossing_lens.py and the Unity data read)."""
+Both go to <out>/signal_*.png (+ .meta: clamp, coverage-preserving mips, Alpha Source = input texture alpha (alphaUsage 1: the glyph and the ring ARE the alpha; with None Unity drops it and every face and ring draws as a solid square), alpha is transparency) and signal-tex.json (the cell table crossing_lens.py and the Unity data read)."""
 
 import json
 import math
@@ -124,7 +124,7 @@ def ring():
 
 def meta(name, size, coverage):
     t = meta_text(name, "a", size)
-    for old, new in (("wrapU: 0", "wrapU: 1"), ("wrapV: 0", "wrapV: 1"), ("alphaIsTransparency: 0", "alphaIsTransparency: 1")) + ((("mipMapsPreserveCoverage: 0", "mipMapsPreserveCoverage: 1"),) if coverage else ()):
+    for old, new in (("wrapU: 0", "wrapU: 1"), ("wrapV: 0", "wrapV: 1"), ("alphaUsage: 0", "alphaUsage: 1"), ("alphaIsTransparency: 0", "alphaIsTransparency: 1")) + ((("mipMapsPreserveCoverage: 0", "mipMapsPreserveCoverage: 1"),) if coverage else ()):
         assert old in t, old
         t = t.replace(old, new)
     return t

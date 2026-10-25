@@ -1,0 +1,161 @@
+$ bun tools/game/playing.ts bash -c "for r in route-a loud-fight loud-left-downed loud; do for n in w031 w032 w031 w032; do cd out/scratch/redline/simperf/\$n && echo \"## \$n\" && dotnet sim/cli/bin/Release/net10.0/suborned-sim.dll tickprof contracts/missions/handover/routes/\$r.json 10 2>&1 | head -9; done; done"
+## w031
+contracts/missions/handover/routes/route-a.json x10: end tick 2997 (Success ); wall 99.3 ms a play (incl. load/verify); Step: 59940 ticks, mean 14.0 us, p50 5.7, p99 111.9, p999 579.4, max 4023.0 us; step sum 83.63 ms a play
+  Combat               23.867 ms a play      3.98 us a tick  max   3617.6 us
+  AttentionStep        20.888 ms a play      3.48 us a tick  max    507.8 us
+  CrowdStep            17.939 ms a play      2.99 us a tick  max   3826.0 us
+  OpsStep               6.019 ms a play      1.00 us a tick  max    371.8 us
+  TakedownStep          5.548 ms a play      0.93 us a tick  max    296.6 us
+  Checkpoint            2.674 ms a play      0.45 us a tick  max   3724.2 us
+  GetawayAfterFire      1.502 ms a play      0.25 us a tick  max    394.1 us
+  Watchers              1.369 ms a play      0.23 us a tick  max    263.0 us
+## w032
+contracts/missions/handover/routes/route-a.json x10: end tick 2997 (Success ); wall 105.2 ms a play (incl. load/verify); Step: 59940 ticks, mean 14.3 us, p50 7.9, p99 68.9, p999 902.8, max 5279.8 us; step sum 85.47 ms a play
+  Combat               28.588 ms a play      4.77 us a tick  max   4350.5 us
+  AttentionStep        14.545 ms a play      2.43 us a tick  max    395.3 us
+  CrowdStep            13.940 ms a play      2.33 us a tick  max   1302.7 us
+  CrewStep              6.194 ms a play      1.03 us a tick  max   1497.5 us
+  TakedownStep          5.458 ms a play      0.91 us a tick  max   3961.3 us
+  OpsStep               4.753 ms a play      0.79 us a tick  max    382.5 us
+  GetawayAfterFire      3.453 ms a play      0.58 us a tick  max   1681.7 us
+  Checkpoint            3.254 ms a play      0.54 us a tick  max   3890.5 us
+## w031
+contracts/missions/handover/routes/route-a.json x10: end tick 2997 (Success ); wall 92.2 ms a play (incl. load/verify); Step: 59940 ticks, mean 12.5 us, p50 5.4, p99 97.1, p999 575.7, max 4044.2 us; step sum 74.64 ms a play
+  Combat               21.233 ms a play      3.54 us a tick  max   4014.8 us
+  AttentionStep        17.424 ms a play      2.91 us a tick  max    412.5 us
+  CrowdStep            13.728 ms a play      2.29 us a tick  max    910.4 us
+  TakedownStep          6.068 ms a play      1.01 us a tick  max    228.4 us
+  OpsStep               6.030 ms a play      1.01 us a tick  max    360.1 us
+  Checkpoint            3.219 ms a play      0.54 us a tick  max   4013.3 us
+  GetawayAfterFire      1.648 ms a play      0.27 us a tick  max    311.1 us
+  Watchers              1.329 ms a play      0.22 us a tick  max    413.3 us
+## w032
+contracts/missions/handover/routes/route-a.json x10: end tick 2997 (Success ); wall 101.2 ms a play (incl. load/verify); Step: 59940 ticks, mean 13.8 us, p50 6.5, p99 57.0, p999 908.2, max 6381.9 us; step sum 82.55 ms a play
+  Combat               27.912 ms a play      4.66 us a tick  max   4330.6 us
+  CrowdStep            13.442 ms a play      2.24 us a tick  max   3881.8 us
+  AttentionStep        13.105 ms a play      2.19 us a tick  max   6269.6 us
+  CrewStep              6.023 ms a play      1.00 us a tick  max   3537.8 us
+  TakedownStep          5.863 ms a play      0.98 us a tick  max   3536.2 us
+  OpsStep               4.432 ms a play      0.74 us a tick  max    348.7 us
+  GetawayAfterFire      3.603 ms a play      0.60 us a tick  max   1358.0 us
+  Checkpoint            2.907 ms a play      0.49 us a tick  max   3936.9 us
+## w031
+contracts/missions/handover/routes/loud-fight.json x10: end tick 3128 (Success ); wall 108.4 ms a play (incl. load/verify); Step: 62560 ticks, mean 14.6 us, p50 5.1, p99 110.8, p999 818.0, max 4259.6 us; step sum 91.28 ms a play
+  Combat               37.080 ms a play      5.93 us a tick  max   3428.3 us
+  CrowdStep            17.965 ms a play      2.87 us a tick  max   3082.2 us
+  AttentionStep        12.766 ms a play      2.04 us a tick  max    479.9 us
+  TakedownStep          7.646 ms a play      1.22 us a tick  max    411.2 us
+  OpsStep               4.282 ms a play      0.68 us a tick  max    244.5 us
+  Checkpoint            3.126 ms a play      0.50 us a tick  max   4252.3 us
+  GetawayAfterFire      2.043 ms a play      0.33 us a tick  max    460.3 us
+  Watchers              1.093 ms a play      0.17 us a tick  max   3656.7 us
+## w032
+contracts/missions/handover/routes/loud-fight.json x10: end tick 2664 (Failure enforcer-down); wall 103.6 ms a play (incl. load/verify); Step: 53280 ticks, mean 16.6 us, p50 5.9, p99 170.8, p999 777.5, max 4141.2 us; step sum 88.52 ms a play
+  Combat               39.612 ms a play      7.43 us a tick  max   3923.6 us
+  AttentionStep        14.236 ms a play      2.67 us a tick  max    632.3 us
+  CrowdStep            11.607 ms a play      2.18 us a tick  max   1301.6 us
+  OpsStep               5.388 ms a play      1.01 us a tick  max    473.8 us
+  TakedownStep          5.157 ms a play      0.97 us a tick  max    350.4 us
+  Checkpoint            3.835 ms a play      0.72 us a tick  max   4120.8 us
+  GetawayAfterFire      1.862 ms a play      0.35 us a tick  max    464.7 us
+  CrewStep              1.734 ms a play      0.33 us a tick  max    777.4 us
+## w031
+contracts/missions/handover/routes/loud-fight.json x10: end tick 3128 (Success ); wall 108.1 ms a play (incl. load/verify); Step: 62560 ticks, mean 14.5 us, p50 5.5, p99 113.9, p999 782.0, max 5157.0 us; step sum 90.76 ms a play
+  Combat               34.233 ms a play      5.47 us a tick  max   1057.1 us
+  CrowdStep            18.475 ms a play      2.95 us a tick  max   4212.8 us
+  AttentionStep        14.070 ms a play      2.25 us a tick  max   3846.0 us
+  TakedownStep          7.446 ms a play      1.19 us a tick  max    575.8 us
+  OpsStep               4.691 ms a play      0.75 us a tick  max    407.7 us
+  Checkpoint            3.306 ms a play      0.53 us a tick  max   5151.4 us
+  GetawayAfterFire      1.652 ms a play      0.26 us a tick  max    736.3 us
+  Watchers              0.710 ms a play      0.11 us a tick  max    439.9 us
+## w032
+contracts/missions/handover/routes/loud-fight.json x10: end tick 2664 (Failure enforcer-down); wall 100.9 ms a play (incl. load/verify); Step: 53280 ticks, mean 15.6 us, p50 6.4, p99 155.0, p999 792.1, max 4099.7 us; step sum 82.98 ms a play
+  Combat               35.957 ms a play      6.75 us a tick  max   4077.6 us
+  CrowdStep            12.154 ms a play      2.28 us a tick  max   1342.5 us
+  AttentionStep        11.517 ms a play      2.16 us a tick  max    464.1 us
+  TakedownStep          5.515 ms a play      1.04 us a tick  max    411.8 us
+  OpsStep               4.767 ms a play      0.89 us a tick  max    483.1 us
+  Checkpoint            3.134 ms a play      0.59 us a tick  max   4084.0 us
+  GetawayAfterFire      1.872 ms a play      0.35 us a tick  max    483.4 us
+  CrewStep              1.760 ms a play      0.33 us a tick  max    844.7 us
+## w031
+contracts/missions/handover/routes/loud-left-downed.json x10: end tick 3130 (Success ); wall 100.9 ms a play (incl. load/verify); Step: 62600 ticks, mean 13.2 us, p50 6.4, p99 110.0, p999 660.9, max 4026.0 us; step sum 82.77 ms a play
+  Combat               31.797 ms a play      5.08 us a tick  max   3614.8 us
+  CrowdStep            13.385 ms a play      2.14 us a tick  max   1230.2 us
+  AttentionStep        12.694 ms a play      2.03 us a tick  max    455.3 us
+  TakedownStep          7.438 ms a play      1.19 us a tick  max    419.4 us
+  OpsStep               4.493 ms a play      0.72 us a tick  max    418.6 us
+  Checkpoint            3.745 ms a play      0.60 us a tick  max   4016.8 us
+  GetawayAfterFire      1.680 ms a play      0.27 us a tick  max    432.8 us
+  Watchers              0.842 ms a play      0.13 us a tick  max    484.4 us
+## w032
+contracts/missions/handover/routes/loud-left-downed.json x10: end tick 2664 (Failure enforcer-down); wall 102.2 ms a play (incl. load/verify); Step: 53280 ticks, mean 15.9 us, p50 6.5, p99 166.5, p999 758.8, max 4138.1 us; step sum 84.75 ms a play
+  Combat               35.987 ms a play      6.75 us a tick  max   1499.5 us
+  AttentionStep        12.385 ms a play      2.32 us a tick  max   3715.5 us
+  CrowdStep            11.996 ms a play      2.25 us a tick  max   1280.9 us
+  TakedownStep          6.162 ms a play      1.16 us a tick  max    374.5 us
+  OpsStep               4.619 ms a play      0.87 us a tick  max    466.1 us
+  Checkpoint            3.905 ms a play      0.73 us a tick  max   4127.8 us
+  GetawayAfterFire      1.956 ms a play      0.37 us a tick  max    497.3 us
+  CrewStep              1.760 ms a play      0.33 us a tick  max    842.6 us
+## w031
+contracts/missions/handover/routes/loud-left-downed.json x10: end tick 3130 (Success ); wall 103.2 ms a play (incl. load/verify); Step: 62600 ticks, mean 13.6 us, p50 5.5, p99 111.8, p999 678.1, max 4112.0 us; step sum 85.00 ms a play
+  Combat               36.942 ms a play      5.90 us a tick  max   3840.7 us
+  AttentionStep        12.364 ms a play      1.98 us a tick  max    416.8 us
+  CrowdStep            11.438 ms a play      1.83 us a tick  max   1464.3 us
+  TakedownStep          7.339 ms a play      1.17 us a tick  max    397.5 us
+  OpsStep               4.412 ms a play      0.70 us a tick  max    504.0 us
+  Checkpoint            3.867 ms a play      0.62 us a tick  max   4091.9 us
+  GetawayAfterFire      2.043 ms a play      0.33 us a tick  max    752.3 us
+  Watchers              0.602 ms a play      0.10 us a tick  max    292.1 us
+## w032
+contracts/missions/handover/routes/loud-left-downed.json x10: end tick 2664 (Failure enforcer-down); wall 113.4 ms a play (incl. load/verify); Step: 53280 ticks, mean 18.1 us, p50 7.0, p99 184.3, p999 987.0, max 4451.7 us; step sum 96.53 ms a play
+  Combat               41.800 ms a play      7.85 us a tick  max   1111.7 us
+  AttentionStep        14.967 ms a play      2.81 us a tick  max   4429.9 us
+  CrowdStep            13.043 ms a play      2.45 us a tick  max   1644.6 us
+  OpsStep               6.282 ms a play      1.18 us a tick  max    582.0 us
+  TakedownStep          6.039 ms a play      1.13 us a tick  max    478.0 us
+  Checkpoint            4.271 ms a play      0.80 us a tick  max   4345.8 us
+  CrewStep              1.927 ms a play      0.36 us a tick  max   1070.5 us
+  GetawayAfterFire      1.902 ms a play      0.36 us a tick  max    740.5 us
+## w031
+contracts/missions/handover/routes/loud.json x10: end tick 3100 (Success ); wall 104.0 ms a play (incl. load/verify); Step: 62000 ticks, mean 14.1 us, p50 5.6, p99 116.5, p999 788.7, max 4301.9 us; step sum 87.43 ms a play
+  Combat               32.402 ms a play      5.23 us a tick  max   1162.8 us
+  CrowdStep            17.815 ms a play      2.87 us a tick  max   2983.8 us
+  AttentionStep        13.592 ms a play      2.19 us a tick  max   3757.7 us
+  TakedownStep          6.861 ms a play      1.11 us a tick  max    402.9 us
+  OpsStep               4.437 ms a play      0.72 us a tick  max    492.2 us
+  Checkpoint            4.264 ms a play      0.69 us a tick  max   4267.1 us
+  GetawayAfterFire      1.533 ms a play      0.25 us a tick  max    459.8 us
+  Watchers              0.666 ms a play      0.11 us a tick  max    190.4 us
+## w032
+contracts/missions/handover/routes/loud.json x10: end tick 2664 (Failure enforcer-down); wall 108.8 ms a play (incl. load/verify); Step: 53280 ticks, mean 17.3 us, p50 7.1, p99 168.0, p999 803.8, max 4281.7 us; step sum 92.35 ms a play
+  Combat               37.115 ms a play      6.97 us a tick  max   1080.7 us
+  AttentionStep        15.173 ms a play      2.85 us a tick  max    470.3 us
+  CrowdStep            14.427 ms a play      2.71 us a tick  max   1435.5 us
+  OpsStep               6.289 ms a play      1.18 us a tick  max   1105.4 us
+  TakedownStep          5.971 ms a play      1.12 us a tick  max    412.9 us
+  Checkpoint            4.274 ms a play      0.80 us a tick  max   4261.8 us
+  CrewStep              1.874 ms a play      0.35 us a tick  max    813.5 us
+  GetawayAfterFire      1.809 ms a play      0.34 us a tick  max    452.6 us
+## w031
+contracts/missions/handover/routes/loud.json x10: end tick 3100 (Success ); wall 110.3 ms a play (incl. load/verify); Step: 62000 ticks, mean 14.8 us, p50 5.1, p99 118.8, p999 771.5, max 4083.3 us; step sum 91.96 ms a play
+  Combat               36.491 ms a play      5.89 us a tick  max   3846.8 us
+  CrowdStep            17.666 ms a play      2.85 us a tick  max   3097.8 us
+  AttentionStep        12.405 ms a play      2.00 us a tick  max    482.6 us
+  TakedownStep          8.515 ms a play      1.37 us a tick  max    425.8 us
+  OpsStep               4.673 ms a play      0.75 us a tick  max    441.2 us
+  Checkpoint            3.951 ms a play      0.64 us a tick  max   4073.3 us
+  GetawayAfterFire      1.948 ms a play      0.31 us a tick  max    462.7 us
+  DrawnSeen             0.574 ms a play      0.09 us a tick  max     13.6 us
+## w032
+contracts/missions/handover/routes/loud.json x10: end tick 2664 (Failure enforcer-down); wall 108.1 ms a play (incl. load/verify); Step: 53280 ticks, mean 17.3 us, p50 7.5, p99 169.0, p999 842.9, max 4046.8 us; step sum 91.99 ms a play
+  Combat               36.577 ms a play      6.87 us a tick  max   1123.3 us
+  AttentionStep        14.929 ms a play      2.80 us a tick  max    425.2 us
+  CrowdStep            14.565 ms a play      2.73 us a tick  max   1342.0 us
+  OpsStep               6.363 ms a play      1.19 us a tick  max   1088.0 us
+  TakedownStep          6.017 ms a play      1.13 us a tick  max    301.1 us
+  Checkpoint            3.873 ms a play      0.73 us a tick  max   4002.0 us
+  CrewStep              2.166 ms a play      0.41 us a tick  max   4021.9 us
+  GetawayAfterFire      1.651 ms a play      0.31 us a tick  max    438.0 us

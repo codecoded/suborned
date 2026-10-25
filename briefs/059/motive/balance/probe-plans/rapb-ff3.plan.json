@@ -1,0 +1,281 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe 2026-10-26 focus fire (scout,fixer,tech lock rival-2 > rival-5 from the spring) on: Board and go (brief 018 \u00a75), the twin of route-a-pressure: the same route to the ambush; then the Enforcer walks Vale to the car as it springs, the three fire until the blocker is down, then board, and the car leaves with the whole cell. Route A with Pressure for Help (Keel S25; Sky Q4): Pressure le",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "beside-inez",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Courtyard",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "waitress",
+   "gap": 9
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop"
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "waitress"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "reroute"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "pressure",
+   "label": "turned"
+  },
+  {
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress",
+   "label": "call"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "after": [
+    "reroute"
+   ],
+   "run": true,
+   "gap": 41.5
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1025,
+    -4625
+   ],
+   "after": [
+    "call"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "after": [
+    "scout",
+    "call"
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    2400,
+    -6000
+   ],
+   "after": [
+    "enter"
+   ],
+   "label": "hold"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "scout-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "scout"
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "fixer-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "fixer"
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "tech-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "tech"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-5",
+   "label": "scout-l2",
+   "every": 0.5,
+   "after": [
+    "scout-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-5",
+   "label": "fixer-l2",
+   "every": 0.5,
+   "after": [
+    "fixer-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-5",
+   "label": "tech-l2",
+   "every": 0.5,
+   "after": [
+    "tech-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "fight.ambush",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in"
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in",
+    "tech-in"
+   ],
+   "gap": 1,
+   "unless": [
+    "captured",
+    "withdraw.car"
+   ]
+  }
+ ]
+}

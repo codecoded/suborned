@@ -1,0 +1,17 @@
+$ bun tools/game/playing.ts bash -c "for r in route-a loud-fight; do for n in w031 w032; do cd out/scratch/redline/simperf/\$n && echo \"## \$n\" && dotnet sim/cli/bin/Release/net10.0/suborned-sim.dll tickprof contracts/missions/handover/routes/\$r.json 20 2>&1 | sed -n '1,2p;\$p'; done; done"
+## w031
+contracts/missions/handover/routes/route-a.json x20: end tick 2997 (Success ); wall 86.1 ms a play (incl. load/verify); Step: 119880 ticks, mean 11.9 us, p50 5.4, p99 97.7, p999 582.0, max 4237.5 us; step sum 71.23 ms a play
+  alloc: mean 5117 B a tick, p99 9968, max 32488; 29.25 MB a play; gen0 GCs over the run 85
+  worst ticks (median over reps): 2827:1082us(Combat), 2531:928us(CrowdStep), 2528:596us(CrowdStep), 2506:299us(GetawayAfterFire), 1500:115us(OpsStep), 2616:99us(Combat), 2600:74us(Checkpoint), 2700:67us(Checkpoint)
+## w032
+contracts/missions/handover/routes/route-a.json x20: end tick 2997 (Success ); wall 93.6 ms a play (incl. load/verify); Step: 119880 ticks, mean 12.9 us, p50 6.1, p99 50.6, p999 921.2, max 6864.0 us; step sum 77.53 ms a play
+  alloc: mean 6191 B a tick, p99 11016, max 51512; 35.39 MB a play; gen0 GCs over the run 102
+  worst ticks (median over reps): 2531:3249us(Combat), 2506:1355us(GetawayAfterFire), 1724:986us(CrewStep), 2571:645us(Combat), 2528:601us(CrowdStep), 2611:551us(Combat), 1684:541us(CrewStep), 2651:503us(Combat)
+## w031
+contracts/missions/handover/routes/loud-fight.json x20: end tick 3128 (Success ); wall 98.3 ms a play (incl. load/verify); Step: 125120 ticks, mean 13.7 us, p50 5.4, p99 99.8, p999 734.0, max 4205.8 us; step sum 85.60 ms a play
+  alloc: mean 5924 B a tick, p99 14704, max 44112; 35.34 MB a play; gen0 GCs over the run 102
+  worst ticks (median over reps): 2883:2753us(CrowdStep), 1535:1221us(CrowdStep), 2257:789us(GetawayAfterFire), 2282:669us(Combat), 1530:640us(Combat), 2287:482us(Combat), 2297:430us(Combat), 2307:373us(Combat)
+## w032
+contracts/missions/handover/routes/loud-fight.json x20: end tick 2664 (Failure enforcer-down); wall 91.8 ms a play (incl. load/verify); Step: 106560 ticks, mean 14.8 us, p50 4.8, p99 161.1, p999 751.5, max 3970.0 us; step sum 78.86 ms a play
+  alloc: mean 6627 B a tick, p99 19280, max 69408; 33.67 MB a play; gen0 GCs over the run 97
+  worst ticks (median over reps): 2257:1372us(Combat), 1535:1266us(CrowdStep), 1556:741us(CrewStep), 2287:701us(Combat), 2282:684us(Combat), 2297:627us(Combat), 2307:542us(Combat), 2317:470us(Combat)

@@ -1,0 +1,12 @@
+namespace Suborned.Sim {
+public static class Prof {
+  public static bool On; public static long SightN, SightT, RouteN, RouteT, NearN, NearT, RouteNull, PullT, PullLF, RawLen, LF;
+  public static readonly System.Collections.Generic.Dictionary<string, long> Cur = new(), Sum = new(), Max = new(), ASum = new(), ACur = new();
+  public static readonly System.Collections.Generic.List<(int tick, long total, string top, long topT, long alloc, long sight, long sightN, long route, long routeN)> Ticks = new();
+  [System.ThreadStatic] static long a0s;
+  public static void Add(string k, long t0) { if (!On) return; long d = System.Diagnostics.Stopwatch.GetTimestamp() - t0; Cur[k] = (Cur.TryGetValue(k, out var v) ? v : 0) + d; }
+  public static void EndTick(int tick, long t0) { if (!On) return; long d = System.Diagnostics.Stopwatch.GetTimestamp() - t0; long al = System.GC.GetAllocatedBytesForCurrentThread() - a0s; string top = ""; long tt = 0;
+    foreach (var kv in Cur) { Sum[kv.Key] = (Sum.TryGetValue(kv.Key, out var v) ? v : 0) + kv.Value; if (!Max.TryGetValue(kv.Key, out var m) || kv.Value > m) Max[kv.Key] = kv.Value; if (kv.Value > tt) { tt = kv.Value; top = kv.Key; } }
+    Cur.Clear(); Ticks.Add((tick, d, top, tt, al, SightT - s0t, SightN - s0n, RouteT - r0t, RouteN - r0n)); }
+  static long s0t, s0n, r0t, r0n; public static void BeginTick() { if (On) { a0s = System.GC.GetAllocatedBytesForCurrentThread(); s0t = SightT; s0n = SightN; r0t = RouteT; r0n = RouteN; } }
+}}

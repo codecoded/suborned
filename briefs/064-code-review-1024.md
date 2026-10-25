@@ -158,3 +158,152 @@ All of them are view-only and I found none that changes an order, so replay stay
 
 ## Keel's answers (2026-10-25)
 - **3 and 8:** confirmed: `Occluder.Blocks3` (sim/Suborned.Sim/Geo.cs) allocates nothing per test since engine 0.30.0 (`Pt` is a struct; the overflow check runs up front with no `Pt[]`), and no `.rej` or `.orig` file remains under `sim/` (tracked or untracked).
+
+## Redline follow-up on build 0.2.122 (2026-10-26; read-only, no player run, no Unity)
+- **Inputs:** briefs/041/port-progress.md "Batch 0.2.118 … BATCH OK on build 0.2.122" (the perf064 bullet, the renderer counts) and code round 3 ("live dot rows", "signal heads … clock rings"); briefs/041/build/0311/perf064 and 0309/perf064; briefs/064/perf (0.2.113); out/batch-0303b…0311.log; out/batch/late (0.2.122's late-fight frames); brief 059's note on S10 and engine 0.32.0 (worktree agent-ad654047fa24cd1cb at 100b5e3a).
+- **Measured here:** the engine only, headless, on the Studio, through `bun run guard`. Three engines, each a scratch copy under out/scratch/redline/simperf with a per-call timer: 0.30.0 (0.2.117's, `git archive 3d7dcdb1`), 0.31.0 (0.2.118–0.2.122, this tree) and 0.32.0 (the worktree). Each played its own tree's route scripts 10 to 20 times, in Release on CoreCLR, interleaved. Load was 3 to 18 (uptime). Outputs and patch scripts are in briefs/064/perf/redline-1026/. The repo's sim/ was not touched. Line numbers below are this tree at 2026-10-26 00:50, or the worktree where marked (wt).
+- **Done-check:** each finding answered by its owner; R1's open question closes with the Air run.
+
+### Answers in short
+1. **No frame-time regression against 0.2.113 at play zoom once load is accounted for.** The live dots were already in 0.2.118, which measured like 0.2.113–0.2.117. The ~1 ms swing since then came on an unchanged world. The live-dot design is within budget on the Air by estimate: it costs CPU draw submission, not GPU. One real change shows elsewhere: the late-fight row's shape since 0.2.120 (R2). The engine is ruled out for it.
+2. **Baked-dots A/B in batch 0.2.123: no.** It cannot resolve the expected difference on the Studio, and the question it would answer is already answered within the Studio's resolution. The run is given under R5, for the Air only.
+3. **0.32's "4 ms a run" is a cost only in batch tooling, and negligible there too.** It is ~1–2 µs a tick on average: 0.01–0.02 ms a second of play at 10 Hz. What reaches the live game is 0.32's worst ticks. The worst is 3.3 ms on CoreCLR, at route A 4:13.1: three rivals kite in one tick, through a grid flood that runs a sight test per cell. Grid A* is the hot path in every version. Two result-identical fixes are worth taking with the 059 port. Neither blocks it (R6).
+
+### R1 · 0.2.122 against 0.2.113: no regression at play zoom beyond noise (Info · high confidence; owner: none, Aster to note)
+- **Same world, different numbers.** Batch 0307 built the world once, with the live dots ("live dot rows: 194 modules", out/scratch/latch/live-world-0307.log). 0.2.118 and 0.2.119 share that world and its per-frame code; 0.2.119 changed only proofs and the briefing tags.
+  - Play zoom: 0.2.118 289 fps (p99 4.8 ms); 0.2.119 267 fps (p99 5.2 ms).
+  - Start shot GPU: 3.0 ms on 0.2.118, 3.5 ms on 0.2.119.
+  - 0.2.113–0.2.117 (baked dots) read 290–294 fps (p99 4.6–4.8 ms). So the live dots cost nothing measurable at play zoom; the ~1 ms step at 0.2.119 is the machine.
+- **perf064, like for like at 2880×1864:**
+  - 0.2.122's after-windows run +0.35 and +0.53 ms (mean) over 0.2.113's.
+  - 0.2.120 and 0.2.122 have the same content, yet differ by up to 0.40 ms mean (4.64 vs 4.24 in after-2): that is the noise band.
+  - The host costs the harness isolates are flat (mean ms a frame): sight 0.045 vs 0.037–0.041, cones 0.078–0.118 vs 0.070–0.103.
+  - The extra frame time is therefore outside the code that changed, and inside the noise.
+- **Counts (no noise), tp-worst:**
+  - drawn 2,145 → 1,894;
+  - SetPass 255 → 218;
+  - tris 5.7 → 5.1 M;
+  - render thread 2.6 → 2.6 ms.
+  
+  The retired crossing pieces more than paid for the 160 extra renderers.
+- **Air estimate:** play-opening GPU 3.2 ms × 4–4.5 (the brief 048 ratio) → 12.8–14.4 ms; tp-worst 3.6 ms → 14.4–16.2 ms. The binding limit stays the whole frame's GPU, which this round barely moved. **Needs the Air** (open since brief 064 findings 1 and 2).
+
+### R2 · late-fight changed shape from 0.2.120 on; host or GC, not the engine (Medium · medium confidence; owner: Latch, with Splice)
+- **The change:**
+  - Through 0.2.117, loud-fight's worst frame was the deterministic end frame ("order+save+end", 19–20 ms), p99 5.6–5.8 ms.
+  - On 0.2.120, 0.2.121 and 0.2.122 (3 of 3 runs) it is an untagged mid-fight frame (41.3, 32.7, 28.4 ms), p99 7.2, 7.4, 6.9 ms.
+  - Load does not explain it: 0.2.120 ran at 0.2.113's load (5.7 → 11.3 against 4.9 → 11).
+- **Where it falls:** in 0.2.122's frames (out/batch/late/loud-fight.frames.csv), the frames over 15 ms sit at ticks 2883–2913, plus 3025.
+  - Frames that run a tick average 5.79 ms against 4.40 ms for frames that don't.
+  - The tick frames' p99 is 17.1 ms, against 6.5 ms for the rest.
+- **Not the engine:** 0.30.0 and 0.31.0 time the same on loud-fight.
+  - Mean 14.5 vs 14.8 µs a tick, p99 116 vs 118 µs.
+  - Same worst tick: 2883, the startled crowd's 9 routes, 2.84 vs 2.90 ms (tickprof-6).
+  - So the 2883–2913 burst is host work around the crowd startle (views, cones, fans, ground lookups), or GC.
+- **Fix (Latch):**
+  - Let `-late` set `HandoverHost.PerfTiming`.
+  - Write per frame into frames.csv: the engine step's ms (a Stopwatch round the host's `RunTo`), `ShowSight`, `PersonConesFrame`, `RerouteFrame`, `SignalHead` (all heads), and `GC.CollectionCount(0)`.
+  - Splice: late.ts names the top section of any frame over 15 ms.
+  - The next batch then says which one it is. Until then, don't chase it by guesswork.
+
+### R3 · Live dots: within budget; what they cost is draw submission (Low perf · medium confidence; owner: Latch, optional)
+- **What runs:**
+  - 481 renderers carry MaterialPropertyBlocks: 41 heads × 7 parts = 287, plus 194 dot modules. The build log reads "not casting 481"; the baked build reads 287.
+  - Unity 6 draws a renderer with an MPB outside both the GPU Resident Drawer and the SRP Batcher (briefs/064/research/mpb-batching.md). The live dots add 194 such draws, against 34 batch chunks removed.
+  - The seat slot gets the MPB too (SignalHead.cs:146 sets it renderer-wide), but DK_Enamel_Charcoal has no `_EMISSION`, so the look is unaffected.
+- **No LOD gap:** each head has one renderer per part (41 casting + 287 = 8 a head), so CrossingKit.cs:183's "first LOD found" wiring misses nothing.
+- **GPU:** none to speak of. 24–48 tris a module, unlit opaque (Shaders/SignalDots.shader), with a depth pass and no shadow pass.
+- **CPU:** at play zoom ~1–3 signalled crossings are in view, about 30–90 per-object draws (estimate). The Studio's tp-worst render thread did not move (2.6 ms).
+- **If the Air shows its render thread within ~2 ms of its GPU time,** the change is the builder's, not the A/B:
+  - merge each signalled crossing's live modules into one renderer at bake, with uv.x rewritten to metres along the crossing (CrossingKit.cs:195–213's `DotFrom` and the mirroring on line 208 already compute it), and `CityLayers.BakedCrossingPart` (CityLayers.cs:72–73) unchanged;
+  - SignalHead then drives one renderer a crossing: 194 → 16 renderers, 388 → 32 slots, 194 → 16 MPBs.
+  - No art change, so it needs no compression sign-off.
+- **Not now:** nothing measured asks for it.
+
+### R4 · SignalHead rewrites every part of every head in CLEARING, every frame (Low-Medium perf · high confidence in the mechanism, cost estimated; owner: Latch, code now)
+`unity/Assets/Suborned/Runtime/Play/SignalHead.cs:126–147`
+- **What happens:**
+  - The change key (line 127) holds `half` to the centimetre for every head, including the 25 heads that drive no dots (`Dots.Length == 0`).
+  - On all 16 signalled crossings `half` falls 65–69 cm/s (L 12–24 m over clearing 9–18 s; from the export), so at 60 fps the key changes every frame. That holds for ~28 % of the cycle on every crossing.
+  - In those frames lines 133–140 rewrite all 7 part MPBs of each such head, and the driving head rewrites its ~12 modules (141–147).
+  - That is about 11 heads × 7 plus ~55 modules ≈ 130 `SetPropertyBlock` a frame. Estimated 0.1–0.3 ms of main thread on Mono, and the off-screen heads pay it too.
+- **Fix:**
+  - (a) Line 126: compute `half` only when `Dots.Length > 0`.
+  - (b) Give the dots a key of their own (`half` to 5 cm, or to the dot pitch: a dot is lit or dark by its centre's u, so nothing finer shows), apart from the head's (state, numeral, ring lit, blink, colour).
+  - (c) Optional: skip the writes while none of the head's renderers `isVisible`. Keep a last-written key per head and per module, so a head that comes into view writes once.
+  - Look only: no replay effect. Proof118's H frames re-shot as the check.
+
+### R5 · Baked-dots player A/B: no, not in 0.2.123 (Info; owner: Aster)
+- **Why not:**
+  - The live dots were already measured against baked: 0.2.118 against 0.2.113–0.2.117 (R1), no difference at play zoom.
+  - The expected difference (R3) sits below the Studio's ±1 ms GPU noise.
+  - The one column precise enough to show it (tp-long's render thread, ±0.15 ms across builds) shows nothing.
+  - It costs two world builds and a player build, with Latch mid package bump.
+- **When it becomes yes:** only after the Air run, if tp-worst's render thread there is within ~2 ms of its GPU time.
+- **The run then, on a quiet Studio:**
+  1. `bun run guard /Applications/Unity/Hub/Editor/6000.6.2f1/Unity.app/Contents/MacOS/Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -bakeddots -logFile out/scratch/latch/bakeddots-world-0123.log`. The log must say "dot rows baked, not gated (-bakeddots)".
+  2. `bun run batch --from game-build`: the baked player with tp-long. Then out/scratch/latch/perf064.sh into briefs/041/build/<n>/perf064-baked.
+  3. Keep that app for the Air.
+  4. `bun run batch --from unity-world`: the live world and Sky's player.
+  5. On the Air, warm and quiet: tp-long and perf064 on both players.
+  6. Compare tp-worst render ms, SetPass and drawn, and perf064 after-window mean and p99.
+- R3's merge would make the A/B moot. If anything is built, build that instead.
+
+### R6 · Engine 0.32.0: the cost per run is noise for the game; the worst ticks are what matter; A* is the hot path (Low-Medium perf · high confidence on CoreCLR; owner: Keel)
+- **S10 re-measured:** `suborned-sim perf 30 S10`, interleaved, 0.31 vs 0.32: 25.1/25.5 → 30.3/30.3 ms a run (+20 %, Keel's figure). S10 is 4,177 ticks, so that is 6.1 → 7.3 µs a tick.
+- **In the live game** that is +0.012 ms a second at 10 Hz: nothing.
+- **In batch tooling:** about 320 runs × 5 ms ≈ 1.6 s of CPU, spread over 18 cores: nothing.
+- **Allocation per tick:**
+  - 0.30: 3.9 KB; 0.31: 5.1 KB; 0.32: 6.2–6.6 KB a tick on average, up to 69 KB in one tick.
+  - That is ~60 KB/s at 10 Hz: small for Unity's incremental GC, but it rises every version. Watch it; no action.
+- **Worst ticks, median of 10–20 plays (CoreCLR, Studio):**
+  - **0.32, route A, tick 2531 (4:13.1), 3.26 ms (0.31's worst on route A: 1.09 ms).** Three `ai.kite` answers in one tick:
+    - 1.40 ms of it is 2,135 sight lines from KiteHide's blind-point flood: wt GameKite.cs:288, `S.Grid.Nearest(pos, q => !Sees(q, sp), 800)`, two `Sight3` per cell to 8 m;
+    - 1.65 ms is 12 `Grid.Route` calls.
+  
+    The re-plans at 2571, 2611 and 2651 cost 0.5–0.65 ms each (~620–670 lines). The route A play has 16 `Nearest` calls in all, 7.5 ms, against none on 0.31.
+  - **0.32 elsewhere:**
+    - `GetawayAfterFire` at 2506: 1.37 ms (6 routes; 0.30 ms on 0.31);
+    - `CrewStep` at 1724: 0.97 ms (2 routes).
+  - **In every version, 0.30–0.32:**
+    - loud-fight 2883 (the crowd startles): 2.9 ms, 9 routes;
+    - 1535: 1.3 ms, a single route.
+- **The hot path:**
+  - **`Grid.Route`** (Grid.cs:206–250, the same in wt) is 15–28 % of step time: 42–148 µs a call, up to 1.3 ms for one long route, and several in one tick. None returns null. The search is ~80 % of it; the string-pull (line 244, quadratic) is ~20 %.
+  - **`Site.Sight3`** (Site.cs:354; wt 415) is 16–29 % of step time: a linear scan of all 236 occluders with a box reject, ~0.6 µs a call. The host's cone builds run through it too (perf064 cones p99 3.1–3.6 ms on 0.2.122).
+- **Mono:** the player runs the engine on Mono, so read these CoreCLR ticks as a floor. The factor is not measured. R2's engine-step column measures it in the player.
+- **Fix before or with the 059 port (Keel).** Both are pure speed-ups, with the same results in the same order:
+  - (a) KiteHide (wt GameKite.cs:284–289): build the occluder subset whose boxes meet the box of `sp` ∪ (pos ± 8 m) once per call, and test the predicate's two lines against it. The boolean and the first cell found are identical. Better and more general: a bucket index over `Site.Occluders`, built at load and walked along the segment with a stamp, so each occluder is tested at most once. Every sight test and the host's cones gain from it.
+  - (b) `Grid.Route` and `Grid.Nearest` (Grid.cs:206, 253; `Heap` at 286):
+    - a `long[]` heap that grows by doubling, in place of `List<long>`;
+    - a one-cell blocked border on `free[]`, so the neighbour loop drops its bounds tests;
+    - carry i and j instead of `k / Ny` and `k % Ny`;
+    - the same push and pop order, so the same paths.
+    
+    Estimate 1.5–2× on the route share.
+  - **Not recommended:** spreading same-tick re-plans over several ticks. It changes replays (version bump, re-record).
+  - **Done-check:** `suborned-sim hashes` byte-identical before and after on every scenario and route script; `bun run test`; `suborned-sim perf 30 S10` and the scratch `tickprof` (briefs/064/perf/redline-1026/patch.py, patch2.py) before and after.
+
+### R7 · The perf rows can't separate the build from the machine (Medium, process · high confidence; owner: Latch for the player, Splice for the batch)
+- **The gap:**
+  - perf064 times the wall-clock frame interval only, with no load and no CPU/GPU split (Perf064.cs:79–96).
+  - late-fight samples load but has nothing per section (R2).
+  - Every judgement above leans on comparing builds in different runs.
+- **Fix:**
+  - perf064 per window: FrameTimingManager main, render and GPU ms, plus the load average at the start and end of each window (the batch's sampler).
+  - Batch: when a row is NOISY MACHINE, run perf064's after-window pair again (Splice, tools/game).
+  - Counts stay the gate; ms only with a quiet machine or on the Air.
+
+### What needs the Air (Sky's go-ahead; Aster)
+- Play zoom and tp-worst, whole frame: GPU against 16.7 ms (estimate 12.8–16.2 ms). This decides 60 fps; nothing in this round moves it much.
+- The engine's worst ticks on Mono on the M4, through R2's column: route A 4:13.1 on 0.32, and the crowd startle.
+- tp-worst's render thread with the 481 per-object draws, to decide R3 and R5.
+
+### Code now, by owner
+- **Latch:**
+  - R4 (SignalHead.cs:126–147);
+  - R2's frames.csv columns and `-late` PerfTiming;
+  - R7's perf064 columns.
+- **Splice:** late.ts reads R2's columns; NOISY MACHINE re-runs perf064.
+- **Keel (with the 059 port):** R6 (a) and (b), hash-identical.
+- **Not now:** R3's merge, R5's A/B.

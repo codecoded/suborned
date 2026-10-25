@@ -9,6 +9,12 @@
 //            Real hits by the rival crew's and the response unit's followers (rivals/1-2, security/1) are one cause: the host draws them at a fixed
 //            0.9 m offset from the one pose the engine gives the group (HostViews.cs, rivals and security), so they walk through whatever lies 0.9 m to
 //            the side of the leader's path.
+//            Two more causes (0.2.122 human-b, 2026-10-26): a crowd figure that spends 3 s or more inside a drawn solid within 60 s before or 30 s after the
+//            hit is on a routine leg the engine drew as a straight line (Crowd.Leg: an end with no free walk cell within 6 m, such as t1-records off the
+//            grid, gives no route, so the leg is [from, to, to] and runs through the Records Office); a crowd figure within 0.8 m of a cast figure at the
+//            hit was pushed there by the host stepping it aside for the cast (HostViews.GiveWay: 70 cm to the camera's side, with no free-ground test).
+//   Q-GIVER  an agent in the car offered for Go is the check's fault, not the ring's: Go is an order by anyone once someone is in the car (GDD §06), and an
+//            agent aboard gives it (the engine takes Go before any doer state). Every other giver in the car, down, carried or inside stays a finding.
 //   Q-OFFER  a refusal for the doer's own state (agent-down) is a race, not a lie, when the doer went down in the order's own tick or the one before it
 //            (≤ 0.1 s: nothing on screen could have shown it); found by replaying the anomaly's script on the build engine.
 //   Q-MEM    a leak is growth that holds: after a 120 s warm-up the window splits in thirds; each third's floor (its lowest 1 Hz sample, so shots and
@@ -21,7 +27,8 @@ import { join } from 'node:path';
 import type { Severity } from './types';
 
 export const GRADE = {
-  solid: { bodyR: 0.25, overlapM: 0.05, beforeTicks: 20, afterTicks: 10, seatR: 1.5, followers: ['rivals/1', 'rivals/2', 'security/1'] },
+  solid: { bodyR: 0.25, overlapM: 0.05, beforeTicks: 20, afterTicks: 10, seatR: 1.5, followers: ['rivals/1', 'rivals/2', 'security/1'], legInsideS: 3, legBackTicks: 600, legAheadTicks: 300, giveWayM: 0.8, cast: ['guard', 'waitress', 'driver', 'councillor'] },
+  giver: { fromCar: ['go'] },
   offer: { raceTicks: 1, doerCodes: ['agent-down'] },
   mem: { warmS: 120, minThirdS: 60, totalMBMin: 3, managedMBMin: 1 },
   feet: { tolM: 0.05, share: 0.999, liftedM: 0.6 },
@@ -100,7 +107,43 @@ export function gradeSolid(a: { key: string; tick: number }, feet: FeetRow[], w:
   const overlap = `the body overlaps a drawn solid by ${cm(G.bodyR - near)}`;
   if ((G.followers as readonly string[]).includes(a.key))
     return { cause: 'follower-offset', severity: 'S3', title: 'The rival crew and the response unit walk through trees, walls and steps', owner: 'Latch (host: followers drawn 0.9 m off the group pose)', note: `${overlap}; the host draws ${a.key} at a fixed 0.9 m offset from the group's one engine pose (HostViews.cs)`, expected };
+  if (a.key.startsWith('crowd/')) {
+    const run = insideRun(feet.filter(r => r.key === a.key && r.tick >= a.tick - G.legBackTicks && r.tick <= a.tick + G.legAheadTicks), w);
+    if (run.s >= G.legInsideS)
+      return { cause: 'straight-leg', severity: 'S3', title: 'People walk straight through buildings on a routine leg the engine drew as a straight line', owner: 'Keel (engine: Crowd.Leg, an end off the walk grid)', note: `${overlap}; ${a.key} was inside drawn solids for ${run.s.toFixed(1)} s (ticks ${run.from}-${run.to}): a leg with no grid route is a straight line`, expected };
+    const me = mine.reduce((k, r) => Math.abs(r.tick - a.tick) < Math.abs(k.tick - a.tick) ? r : k, mine[0]!);
+    const cast = feet.filter(r => r.tick === me.tick && (G.cast as readonly string[]).includes(r.key)).map(r => ({ key: r.key, d: Math.hypot(r.x - me.x, r.z - me.z) })).sort((p, q) => p.d - q.d)[0];
+    if (cast && cast.d <= G.giveWayM)
+      return { cause: 'give-way', severity: 'S3', title: 'People stepping aside for the cast are pushed into walls and onto one another', owner: 'Latch (host: HostViews.GiveWay)', note: `${overlap}; ${cm(cast.d)} from the ${cast.key}: the host steps the crowd 70 cm aside for the cast with no free-ground test`, expected };
+  }
   return { cause: 'inside', severity: 'S3', title: 'A person walks through a drawn solid', owner: 'Pulse (paths) / Keel (walk grid)', note: overlap, expected };
+}
+
+/** The longest stretch (s) of a figure's samples (in tick order) with the feet inside a drawn solid cell. */
+export function insideRun(rows: FeetRow[], w: Walk): { s: number; from: number; to: number } {
+  let best = { s: 0, from: 0, to: 0 }, start: FeetRow | undefined;
+  const sorted = [...rows].sort((p, q) => p.tick - q.tick);
+  sorted.forEach((r, i) => {
+    const b = w.toBlock(r.x, r.z), inside = onMap(w, b) && solidDist(w, b, 0.25) === 0;
+    if (inside && !start) start = r;
+    const last = !inside || i === sorted.length - 1;
+    if (start && last) { const end = inside ? r : sorted[i - 1]!; if (end.t - start.t > best.s) best = { s: end.t - start.t, from: start.tick, to: end.tick }; start = undefined; }
+  });
+  return best;
+}
+
+// ---------------------------------------------------------------- Q-GIVER
+
+/** The giver, its state and the way's word in a Q-GIVER observed text (`ring:`, `plan:`, `panel:` or `open-ring:<op> <state>[ <s> s]: ... <Word> on <kind>/<key>`). */
+export function giverOf(observed: string): { src: string; op: string; state: string; word: string } | undefined {
+  const m = /^([a-z-]+):(\w+) (down|carried|inside|in the car)(?: [\d.]+ s)?: (?:still offered for|offered for|a giver of|offered) (.+?) on \S+$/.exec(observed);
+  return m ? { src: m[1]!, op: m[2]!, state: m[3]!, word: m[4]! } : undefined;
+}
+export function gradeGiver(a: { observed: string }): Grade | undefined {
+  const g = giverOf(a.observed); if (!g) return undefined;
+  if (g.state === 'in the car' && (GRADE.giver.fromCar as readonly string[]).includes(g.word.toLowerCase()))
+    return { cause: 'go-from-car', severity: 'info', title: 'Go offered by an agent in the car (the check, not the game: Go is anyone\'s once someone is in it)', owner: 'Latch (check)', note: `the ${g.op} is aboard; GDD §06: Go is an order on the car by anyone once someone is in it`, expected: 'no giver who is down, carried or inside; in the car only for a way given from the car (Go)' };
+  return undefined;
 }
 
 // ---------------------------------------------------------------- Q-MEM

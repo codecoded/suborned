@@ -1,0 +1,208 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe 2026-10-26 focus fire (scout,fixer,tech lock rival-2 > rival-1 from the spring) on: Careless (brief 058 \u00a74, \u00a76; Waymark 2026-10-25, engine 0.31.0; Sky 2026-10-25: Disable is an incident): route G with Disable in place of the Loop. The cut is the run's first incident (Alert 1) and costs 2 T where the loop costs 1; the guard knocked out at 2:31 misses his 4:00 mark, and that second i",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "disable",
+   "target": "entrance",
+   "label": "cut",
+   "at": "1:10"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    3800,
+    -5000
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    725,
+    -5025
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "guard",
+   "gap": 31
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "at": "1:46"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6520,
+    -4110
+   ],
+   "at": "2:20"
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "guard",
+   "how": "knockout",
+   "at": "2:31",
+   "label": "td"
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    2400,
+    -6000
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "scout-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "scout"
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "fixer-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "fixer"
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "tech-l1",
+   "every": 0.5,
+   "when": "fight.ambush",
+   "after": [
+    "tech"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "scout-l2",
+   "every": 0.5,
+   "after": [
+    "scout-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "fixer-l2",
+   "every": 0.5,
+   "after": [
+    "fixer-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "tech-l2",
+   "every": 0.5,
+   "after": [
+    "tech-l1"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "fight.ambush",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "in"
+   ],
+   "when": "fight.over"
+  }
+ ]
+}

@@ -1,0 +1,45 @@
+c0+5   rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out 7:33.0 over 7:33.1 vale-in 7:
+c0+5   rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c0+5   rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 5 hp@in 1 | spring 7:23.0 blocker.out 7:30.0 over 7:30.1 vale-in
+c0+10  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out 7:33.5 over 7:33.6 vale-in 7:
+c0+10  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c0+10  rbb-ff3.R.json               none at 8:30.0 T 3 A 0 St 3 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out 7:35.0 over 7:35.1 vale-in 7:
+c0+15  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out 7:34.0 over 7:34.1 vale-in 7:
+c0+15  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c0+15  rbb-ff3.R.json               failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c0+20  rb-ff.R.json                 failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c0+20  rbb-ff.R.json                failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c0+20  rbb-ff3.R.json               failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c0+25  rb-ff.R.json                 failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c0+25  rbb-ff.R.json                failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c0+25  rbb-ff3.R.json               failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c2+5   rb-ff.R.json                 success at 7:32.6 T 3 A 0 St 3 | E hits 5 hp@in 2 | spring 7:23.0 blocker.out 7:32.6 over - vale-in 7:31
+c2+5   rbb-ff.R.json                success at 7:34.7 T 3 A 0 St 3 | E hits 5 hp@in 2 | spring 7:23.0 blocker.out 7:34.5 over 7:34.6 vale-in
+c2+5   rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 3 hp@in 3 | spring 7:23.0 blocker.out 7:28.5 over 7:28.6 vale-in
+c2+10  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 2 | spring 7:23.0 blocker.out 7:33.1 over 7:33.2 vale-in 7:
+c2+10  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 2 | spring 7:23.0 blocker.out 7:35.0 over 7:35.1 vale-in 7:
+c2+10  rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 4 hp@in 2 | spring 7:23.0 blocker.out 7:29.0 over 7:29.1 vale-in
+c2+15  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 2 | spring 7:23.0 blocker.out 7:33.6 over 7:33.7 vale-in 7:
+c2+15  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 2 | spring 7:23.0 blocker.out 7:35.5 over 7:35.6 vale-in 7:
+c2+15  rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 4 hp@in 2 | spring 7:23.0 blocker.out 7:29.5 over 7:29.6 vale-in
+c2+20  rb-ff.R.json                 failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c2+20  rbb-ff.R.json                failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c2+20  rbb-ff3.R.json               failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c2+25  rb-ff.R.json                 failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c2+25  rbb-ff.R.json                failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c2+25  rbb-ff3.R.json               failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 | E hits 6 hp@in - | spring 7:23.0 blocker.out - over -
+c5+5   rb-ff.R.json                 success at 7:32.6 T 3 A 0 St 3 | E hits 3 hp@in 3 | spring 7:23.0 blocker.out 7:32.6 over - vale-in 7:31
+c5+5   rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 3 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c5+5   rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 3 hp@in 3 | spring 7:23.0 blocker.out 7:28.5 over 7:28.6 vale-in
+c5+10  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 4 hp@in 2 | spring 7:23.0 blocker.out 7:33.1 over 7:33.2 vale-in 7:
+c5+10  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 2 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c5+10  rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 3 hp@in 3 | spring 7:23.0 blocker.out 7:29.0 over 7:29.1 vale-in
+c5+15  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 4 hp@in 2 | spring 7:23.0 blocker.out 7:33.6 over 7:33.7 vale-in 7:
+c5+15  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 2 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c5+15  rbb-ff3.R.json               success at 7:31.7 T 3 A 0 St 3 | E hits 3 hp@in 3 | spring 7:23.0 blocker.out 7:29.5 over 7:29.6 vale-in
+c5+20  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 1 | spring 7:23.0 blocker.out 7:34.1 over 7:34.2 vale-in 7:
+c5+20  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c5+20  rbb-ff3.R.json               none at 8:30.0 T 3 A 0 St 3 | E hits 4 hp@in 2 | spring 7:23.0 blocker.out 7:33.0 over 7:33.1 vale-in 7:
+c5+25  rb-ff.R.json                 none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 1 | spring 7:23.0 blocker.out 7:34.6 over 7:34.7 vale-in 7:
+c5+25  rbb-ff.R.json                none at 8:30.0 T 3 A 0 St 2 | E hits 6 hp@in 1 | spring 7:23.0 blocker.out - over - vale-in 7:31.0
+c5+25  rbb-ff3.R.json               none at 8:30.0 T 3 A 0 St 3 | E hits 5 hp@in 1 | spring 7:23.0 blocker.out 7:33.5 over 7:33.6 vale-in 7:

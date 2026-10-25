@@ -382,3 +382,77 @@ These are new checks in `tools/qa/checks/human.ts`, plus `tools/qa/bot-human.ts`
   - `bun run guard bun tools/qa/human-measure.ts --replay --write`;
   - `--dev` passes `out/qa/dev-20261024-215306/` and `-215350/`: 14.9 s; the stale ring reached the list on the first, then dropped to info as replay-differs;
   - the lane hook on last night's rows (`out/qa/20261024-190031/bot/`).
+
+## 0.2.122 bot rows: Q-SOLID at the Office doors, Q-GIVER on Go (Suture, 2026-10-26)
+
+Rows: human-b (route-b, seed 404510, success at 8:24.1) on 0.2.122, from `briefs/041/build/0311/bot/bot-row.json` and Latch's row files in `out/scratch/latch/bot-0311/human-b/` (feet.csv, session.script.json, anomalies/). Walk file `out/world/harbour-district.walk.json` (world 333e3ddd2c84, the build's). The Unity editor was not opened. Probes are in `out/scratch/suture/q-solid-0311/` (dump.py, owners.ts, path.py, legs.py, regrade.ts) and `out/scratch/suture/crowdprobe/` (the engine's own `CrowdPos`, built against `sim/cli/bin/Release/net10.0/Suborned.Sim.dll`; nothing in `sim/` was rebuilt).
+
+### 1. Q-SOLID at the Office doors: **real**, two causes, neither the check
+
+Both points are where the drawn solids are, and the walk file is right there. The public entrance landing is kind 1 at 0.93 to 0.98 m, and from block y −40.50 m east it is kind 2 (`civic/civic-office`, the Office mass). (−140.2, −309.6) is block (79.6, −10.2), 0.10 m off `street/civic/police-post-2` (a 1 m square, 2.98 m tall). The check judges against what is drawn (SolidBodyR 0.25 − SolidOverlapM 0.05 = feet within 0.20 m of a kind 2/4 cell), so it is not judging on the grid. Splice's walk file and Vantage's door point (`d:Office entrance` (64.00, −41.25), on a free grid cell) are both fine.
+
+**Cause A (23 of 25): the clerks' leg from the Office to the T1 stop is a straight line through the Records Office. Owner: Keel (engine).**
+- `t1-records` is at block (150, 130), outside the walk grid (x −52..112, y −66..16). `Grid.NearestFree` searches only 6 m, so it returns null, and `Route` returns null. `Crowd.Leg` (sim/Suborned.Sim/GameCrowd.cs, `Leg`) then falls back to `[pa, pb, pb]`.
+- The engine probe prints the leg as `(6400,-4125) (15000,13000) (15000,13000)`: "t1-records nearest free null; Route null: the leg is a straight line".
+- Over the engine's own `CrowdPos`, p-records-office-12 (crowd/48) is on blocked cells for 27 of the 1 s samples from 5:30, from (6438, −4048) to (7986, −966).
+- In the row, crowd/42 is drawn inside kind 2 cells from tick 3311 to 3525 (21.4 s, 18.2 m through the Office's ground floor). It comes out at block (72.6, −24.2) and then passes 3 to 11 cm from police-post-2 at 6:10 to 6:12.
+- These figures are drawn the whole time: `FigureFeet` yields only shown figures, and the silhouette pass draws people behind walls. The 6:31 shot (`anomalies/012-Q-SOLID-3910.jpg`, crop `out/scratch/suture/q-solid-0311/door-0631.png`) shows the leavers bunched into the doorway.
+- `legs.py` over the people file: office-entrance → t1-records is the only straight leg in 0:00 to 8:30. 16 clerks take it, leaving at 5:30, 6:30 and 7:30 (8:30 is at the close). Each walks 18.2 m through drawn solid and 24.0 m over blocked cells.
+- The other off-grid legs (homes ↔ t1-records stands, café ↔ t1-records, up to 7 m through solids) all run outside the mission window today.
+- This explains the counts: 15 door hits at 5:30, 6:31 and 7:30 (5 + 8 + 2), and 8 hits at the post 40 s later (6:10 to 6:12, 7:11 to 7:12, 8:09). The post is 34 m on at about 0.85 m/s. One hit per figure per stretch, because the check holds a flagged figure until it leaves the solid.
+- Side effect for Keel to weigh: `OnTheStreet` takes `CrowdPos`, so these clerks count as people on the street, and as possible witnesses, while they are inside the Office.
+
+**Cause B (2 of 25, plus the bunching in A): the host steps the crowd aside for the guard into the Office wall and onto one spot. Owner: Latch (host).**
+- crowd/108 is p-records-office-73, a crowd guard whose `office-entrance` stop is on the street from 5:20 to the end. The engine stands them on (6400, −4125), the cast guard's own post.
+- `HostViews.GiveWay` (HostViews.cs 232-250) moves any crowd point within 70 cm of a cast figure to exactly 70 cm. When the two points coincide (d ≈ 0) the push is `r * 70` (the camera's right), and there is no free-ground test.
+- feet.csv shows the guard at Unity (−171.25, −294.00) and crowd/108 at (−170.64, −294.35): exactly 0.70 m off the guard, and 10 cm from the Office face (0.15 m body overlap). It stands there from 5:18 to the end.
+- At 5:30, 6:31 and 7:30 the departing clerks start on the same engine point and get the same push. Cause A also leaves the Column spread with no free cell ahead, so they land within 1 to 10 cm of one another.
+
+**Changes:**
+
+| who | where | now | set to |
+|---|---|---|---|
+| Keel | `Crowd.Leg` (GameCrowd.cs) | `var fa = site.Grid.NearestFree(pa) ?? pa; var fb = site.Grid.NearestFree(pb) ?? pb;` a missing route is a straight line | an end with no free cell within 6 m (off the grid, as t1-records) takes the free cell nearest it with no 6 m cap: clamp the point into the grid, then search outward until a free cell is found (`Grid.NearestFreeAny`). The leg routes on the grid to that cell and leaves the window from there. For t1-records that is (11175, 1575), the grid's north-east corner, reachable from office-entrance (BFS path of 137 cells). The straight fallback stays only for two ends that are both off the grid. Add a sim test: no routine leg of `handover.people.json` with an end inside the window is a straight-line fallback. The crowd's positions change, so this is a new engine version with re-recorded expectations: your call |
+| Latch | `HostViews.GiveWay` (HostViews.cs 232-250), called as `GiveWay(g, SpreadAt(i))` | the pushed point is not checked; at d ≈ 0 always `r * 70f` | pass the walker index (`GiveWay(g, SpreadAt(i), i)`). At d ≈ 0, push to the side by the walker's hash: `r * ((idHash[i] & 1) == 0 ? 70f : -70f)`. Keep the pushed point only if `g.S.Grid.Free` holds there; otherwise try the mirror side (`d - 2f * r * Vector2.Dot(d, r)`), then behind the cast (`cp + f * 100f`). If none of those is free, keep the engine's point |
+| Pulse (optional) | `handover.people.json`, p-records-office-73 | the relief guard stands on `office-entrance`, the cast guard's post | a stand of its own beside the post (1 m along the landing), so two guards never share a point. Latch's change above covers the drawing either way |
+| Suture | `tools/qa/grade.ts` | these hits graded `inside`, owner "Pulse / Keel" | done: causes `straight-leg` (Keel) and `give-way` (Latch), below |
+
+### 2. Q-GIVER on Go from inside the car: **the check**, not the ring
+
+- GDD §06: "Go: an order on the car by anyone once someone is in it." The engine agrees: `GameOrders.Check` takes `go` (GameGetaway.cs) before any check of the doer's state.
+- The replay shows it. `dotnet sim/cli/bin/Release/net10.0/suborned-sim.dll play out/scratch/latch/bot-0311/human-b/session.script.json` gives: board.in at 8:22.9 ("The enforcer is in the car with Vale"), the Enforcer's `go` at tick 5041, then Success at 8:24.1, "[ok] the replay matches its record".
+- The two hits (ticks 5035 and 5036) are the ring offering the boarded Enforcer for Go 0.6 to 0.7 s after he boarded. That is the right giver.
+- The check's `Bad()` (BotRun.cs 382) and `OpenRingGivers` (BotRun.cs 399) count "in the car" as unable for every way.
+- **Drive:** the GDD's car Drive (to a car stand) is not in the engine yet. The engine's `drive` verb is the third-person drive, and it refuses `in-car` (GameDrive.cs 47), so it must **not** be exempt. Add the car's Drive by its own verb when Keel builds it. A boarded op's `move` (the step out), `stance`, `holster` and `cease` are taken from the car too, but none of them is a way on a ring or panel today.
+
+| who | where | now | set to |
+|---|---|---|---|
+| Latch | BotRun.cs `GiverCheck` | `string Bad(OpId k)`: `op.InCar ? "in the car"` for every way | `static readonly string[] FromCar = { "go" };` (GDD §06; the car's Drive verb joins it when the engine has one), and `string Bad(OpId k, string verb) => ... : op.InCar && Array.IndexOf(FromCar, verb) < 0 ? "in the car" : null`. Call it with `s.Row?.I?.Order?.Do` (ring), `pl.Row(w).I?.Order?.Do` (plan) and `r.I?.Order?.Do` (panel) |
+| Latch | BotRun.cs `OpenRingGivers` | any giver unable longer than `GiverGraceTicks` | skip a giver who is in the car (and not down, carried or inside) when `Array.IndexOf(FromCar, sg.Row?.I?.Order?.Do) >= 0` |
+| Suture | `tools/qa/grade.ts` | Q-GIVER not regraded | done: `go-from-car`, info |
+
+Down, carried and inside givers stay findings for Go as well: the ring should name someone able or aboard.
+
+### Regrade (my files, in until the player changes land)
+
+- `tools/qa/grade.ts`: `GRADE.solid` gains `legInsideS 3`, `legBackTicks 600`, `legAheadTicks 300`, `giveWayM 0.8` and `cast [guard, waitress, driver, councillor]`. A real crowd hit is now graded as follows:
+  - `straight-leg` (S3, Keel) when the figure is inside drawn solid cells for 3 s or more within 60 s before or 30 s after the hit (`insideRun`);
+  - else `give-way` (S3, Latch) when a cast figure is within 0.8 m at the hit;
+  - else `inside`, as before.
+- `GRADE.giver.fromCar ['go']` with `giverOf` and `gradeGiver`: Go offered by a giver in the car is `go-from-car`, info, "(the check, not the game)".
+- `tools/qa/bot.ts` `gradeRows` calls `gradeGiver` on Q-GIVER.
+- Tests are in `tools/qa/grade.test.ts`, two new.
+- On the 0.2.122 rows (`bun out/scratch/suture/q-solid-0311/regrade.ts`), human-b reads:
+  - Q-SOLID straight-leg ×23, S3, Keel;
+  - give-way ×2, S3, Latch;
+  - Q-GIVER go-from-car ×2, info.
+  random-a and human-a are unchanged.
+- Verified: `bun run guard bun test tools/qa` 70 pass; `bun run typecheck` clean.
+
+### Open
+
+- **Q-FEET share on the human rows (mine).** The offline share on human-b is 99.87% (24,816 of 24,849 within 5 cm), under the 99.9% bar, so tonight's report would carry "Feet off the drawn floor too often" (S3). Of the 33 samples off the floor:
+  - 4 are cause A: the drop from 0.98 m to the 0.18 m ground inside the Office.
+  - The rest are single 0.5 s samples 5 to 15 cm off at kerbs and step edges (the eased height lagging a step), none in a run of two. The player's own rule (15 cm for 0.5 s) found nothing.
+  - The random rows that set the bar barely walk the steps. I'll set the share for human rows (count only runs of two or more samples, or 99.8%) after the next nightly gives a second human row. Until then, read that S3 as these steps, not a floor fault.
+- The Q-SOLID text says "for over 0.5 s" even when a figure is inside a solid for 21 s, because a flagged figure is held until it leaves. Optional (Latch): give the stretch's length in the row (the longest run per key), so a long walk-through reads as one.

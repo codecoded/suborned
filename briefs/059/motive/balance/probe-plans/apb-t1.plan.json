@@ -1,0 +1,223 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe apb-t1",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "beside-inez",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Courtyard",
+   "run": true
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "waitress",
+   "gap": 9
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop"
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "waitress"
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "label": "reroute"
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "waitress",
+   "approach": "pressure",
+   "label": "turned"
+  },
+  {
+   "op": "fixer",
+   "do": "call",
+   "target": "waitress",
+   "label": "call"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "after": [
+    "reroute"
+   ],
+   "run": true,
+   "gap": 41.5
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1025,
+    -4625
+   ],
+   "after": [
+    "call"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "after": [
+    "scout",
+    "call"
+   ]
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ],
+   "after": [
+    "enter"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    3000,
+    -6000
+   ],
+   "after": [
+    "enter"
+   ],
+   "label": "hold"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "hostiles",
+   "when": "rivals.late",
+   "gap": 12,
+   "label": "scout-open"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "scout-open"
+   ]
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "blocker.out",
+   "label": "out"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "in"
+   ],
+   "when": "blocker.out"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in"
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in",
+    "tech-in"
+   ],
+   "gap": 1,
+   "unless": [
+    "captured",
+    "withdraw.car"
+   ]
+  }
+ ]
+}

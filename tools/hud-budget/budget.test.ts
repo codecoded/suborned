@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { analyse, footprint, LIMIT, maskOf, rectMask, stack, type Manifest, type Rect } from './budget';
+import { analyse, BRIEFING_READING, footprint, LIMIT, maskOf, rectMask, stack, type Manifest, type Rect } from './budget';
 import { decodePng, encodePng, type Image } from './png';
 
 const fx = (f: string) => join(import.meta.dir, 'fixtures', f);
@@ -126,5 +126,26 @@ describe('the briefing card (a reading surface before play)', () => {
     if (!existsSync(f + '.png') || !existsSync(f + '.hud.png')) return;
     const run = (state: 'rest' | 'briefing') => analyse(decodePng(readFileSync(f + '.png')), { state, hud: decodePng(readFileSync(f + '.hud.png')), manifest: JSON.parse(readFileSync(f + '.manifest.json', 'utf8')) });
     expect(run('briefing').pass).toBe(true); expect(run('rest').pass).toBe(false);
+  });
+});
+
+describe('the street briefing (brief 062 B: a modal reading surface, scrim outside the HUD layer)', () => {
+  // fixtures/briefing-b.manifest.json = batch 0.2.122's briefing-day.manifest.json (state briefing; hook 6 words and objective 7 as `hud`, a hidden place label off screen)
+  const man = JSON.parse(readFileSync(join(import.meta.dir, 'fixtures/briefing-b.manifest.json'), 'utf8')) as Manifest, shot = flat(1920, 1080), rects = [{ x: 1448, y: 132, w: 408, h: 748 }, { x: 64, y: 58, w: 349, h: 108 }];
+  const run = (m: Manifest, state: 'briefing' | 'rest' = 'briefing') => analyse(shot, { state, rects, manifest: m });
+  test('as shipped it is within the reading cap: two sentences, thirteen words; the off-screen label is not counted', () => {
+    expect(man.state).toBe('briefing'); expect(run(man).failures).toEqual([]);
+    expect(man.elements.some(e => e.text === 'Records Office' && e.x > 1920)).toBe(true);
+  });
+  test('the dossier objective is reading copy (`hud`), not a goal line: its seven words count toward the reading cap, never toward the six-word `line` rule', () => {
+    const obj = man.elements.find(e => /^Take him alive/.test(e.text ?? ''))!; expect(obj.kind).toBe('hud'); expect(obj.text!.split(/\s+/).length).toBe(7);
+  });
+  test('the cap bites: a third paragraph, or a longer one, fails; rest is untouched by it', () => {
+    const para = (text: string, y: number) => ({ kind: 'hud' as const, x: 64, y, w: 349, h: 28, text });
+    const more: Manifest = { ...man, elements: [...man.elements, para('He keeps it in the left drawer.', 170), para('Inez knows which one it is.', 200)] };
+    expect(run(more).failures.join()).toContain('the briefing reads 4 sentences, 26 words');
+    const long: Manifest = { ...man, elements: [...man.elements, para('Take him alive before it reaches Security or the whole block will know who sent you here today.', 170)] };
+    expect(run(long).failures.join()).toContain(`at most ${BRIEFING_READING.lines} and ${BRIEFING_READING.words}`);
+    expect(run(more, 'rest').failures.join()).not.toContain('the briefing reads');
   });
 });

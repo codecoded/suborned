@@ -255,3 +255,25 @@ Order before the batch: Splice's revert (running) → Splice's lip and prune fix
 - The footway lip follows the drawn slope in tools/geometry/visible.ts. No number moves (all 14 footways are outside the site window), the sim site is unchanged, and c037 stands.
 - The kit tool prunes rejected pieces: 8 FBX are removed (the seven crossing pieces and SpaceHQ, rejected since 10-13; the world uses SpaceHQ_Portal) and the orphan DK_Cross_Stop/Walk.mat. Unity reimports once.
 - Latch: Prefabs/Landmarks/DK_SpaceHQ.prefab is still on disk. KitPlacer only collects rejected pieces with source `generated`, so remove it too in the batch, and confirm that nothing references it.
+
+## Batch 0.2.118 result: build 0.2.122, BATCH OK (2026-10-25)
+Glyph's 2x review says SHIP. 0.2.122 goes to Sky with these known issues:
+- at yaw 210, the silhouettes of the driver and Vale behind the Office tower read as people on its terrace, and the rivals show inside a cut hole (Glint's fix is in progress);
+- briefing nits N1–N4.
+Builds 0.2.118 to 0.2.121 are superseded.
+
+## Batch 0.2.123 (queued, Aster 2026-10-25): one batch
+1. **059 port (item I carried over).**
+   - Order: Keel's 0.32 branch merges (after the package upgrade), then Motive's balance pass, Vantage's points, Keel's round (the S1 flip, s1-rulings, the balance entries), Waymark's re-compose (c038), Fable's and Glyph's items.
+   - Then Latch ports per host-interface.md "Engine 0.32.0" and the routing in brief 059.
+2. **Glint's silhouette and cut fix** at yaw 210 (spec in brief 056 when Glint lands it), plus the H1 refit of the signal trims.
+3. **Glyph's nits** (port-progress "Glyph 2x (0.2.122)"):
+   - N1: Waymark adds the official entrance to brief.json; Latch points the Target leader and Office tag at it (HostBriefing.cs:144).
+   - N2: the Office tag is anchored on the canopy and clamped to the viewport.
+   - N3: the objective line's contrast reaches 5.9:1 (Briefing.cs:236 scrim).
+   - N4: the pointer and hover cues stay hidden until the roster lands.
+   - N5–N9 and N11–N12 as listed.
+   - N10 (the carry plate at 40 px) only if Sky asks.
+4. **The ring on a camera (Aster's call):** Watch stays (watching a camera teaches its cone). For the Tech, Loop takes 12 o'clock. Add rest-state ring shots for the Tech, the Scout and another armed agent.
+5. **Unverified in 0.2.122, so shoot them:** the hollow dashed looped cone, the shot-out disc, the "Camera on" pop, and the Alt breakdowns for Loop and Disable.
+6. Splice's signal-meta fix, Suture's Q-SOLID and Q-GIVER findings, and Redline's 0.2.122 perf findings, as they land.

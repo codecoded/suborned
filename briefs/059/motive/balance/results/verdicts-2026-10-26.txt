@@ -1,0 +1,34 @@
+$ bun tools/game/playing.ts zsh "briefs/059/motive/balance/verdicts.sh"
+# R = FIXPOS GATE LATE FLOOR=3 LANE (GDD §06/§07 as written); c5 = svc-ambush-1 at (77.35, -8.0)
+## Q1 loud against the carry
+R          loud-x4: success at 5:20.1 T 27 A 2 St -1 gun 20 | spring - blocker.out 3:49.2 over - break - vale-in 5:17.8
+R          loud-yard: failure enforcer-down at 7:42.5 T 11 A 2 St 1 gun 7 | spring - blocker.out 7:31.0 over - break - vale-in - [PARTIAL: step 20 (fixer fire officer-2): not taken between 4430 and 5100]
+R          rb-ff: success at 7:32.6 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.5 over 7:32.6 break 7:32.5 vale-in 7:31.0
+R          rg-ff: success at 4:11.5 T 6 A 1 St 3 gun 0 | spring 3:54.2 blocker.out 3:56.8 over 4:09.3 break 4:09.2 vale-in 4:11.5
+R          route-a-pressure: success at 3:20.5 T 7 A 1 St 2 gun 0 | spring 3:03.2 blocker.out 3:11.2 over 3:14.3 break 3:14.2 vale-in 3:20.5
+R          route-a: success at 4:35.6 T 5 A 1 St 3 gun 0 | spring 4:10.6 blocker.out 4:18.6 over 4:18.7 break 4:18.6 vale-in 4:35.6
+## Q2 the early quiet routes (square and yard), the leak twins with the gate off
+R          apy-1: success at 3:07.4 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0
+R          apy-leak: success at 3:03.5 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out 3:03.5 over - break - vale-in 2:32.0 captured scout,fixer
+R          gfy-1: success at 3:07.4 T 2 A 1 St 2 gun 0 | spring 2:14.5 blocker.out 3:03.5 over - break - vale-in 2:22.5
+R          gfy-leak: none at 8:30.0 T 6 A 1 St 2 gun 0 | spring 2:14.5 blocker.out - over - break - vale-in 2:22.5 [PARTIAL: step 19 (cell go): not taken between 1385 and 5100]
+R          rgf-ff: success at 3:11.0 T 6 A 1 St 3 gun 0 | spring 2:53.7 blocker.out 2:56.5 over 3:03.6 break 3:03.5 vale-in 3:11.0
+R          rgfb-ff: success at 3:11.0 T 6 A 1 St 2 gun 0 | spring 2:53.7 blocker.out 2:56.3 over - break - vale-in 3:11.0
+R          route-a-pressure: success at 3:20.5 T 7 A 1 St 2 gun 0 | spring 3:03.2 blocker.out 3:11.2 over 3:14.3 break 3:14.2 vale-in 3:20.5
+nogate     apy-leak: success at 2:32.0 T 7 A 1 St 1 gun 0 | spring 2:24.0 blocker.out - over - break - vale-in 2:32.0 captured scout,fixer
+nogate     gfy-leak: success at 2:22.5 T 2 A 0 St 2 gun 0 | spring 2:14.5 blocker.out - over - break - vale-in 2:22.5 captured scout,fixer
+## Q3 route B at the yard: at will and focus fire, today's svc-ambush-1 and c5
+R          rb-ff: success at 7:32.6 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.5 over 7:32.6 break 7:32.5 vale-in 7:31.0
+R          rbb-ff3: success at 7:31.7 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:29.5 over 7:29.6 break 7:29.5 vale-in 7:31.0
+R          rbb-ff: success at 7:34.7 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.5 over 7:32.6 break 7:32.5 vale-in 7:31.0
+R          route-b-board: failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 19 (scout move): not taken between 4470 and 5100]
+R          route-b: failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 19 (cell go): not taken between 4470 and 5100]
+c5         rb-ff: success at 7:32.2 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+c5         rbb-ff3: success at 7:31.9 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:28.0 over 7:28.1 break 7:28.0 vale-in 7:31.0
+c5         rbb-ff: success at 7:36.0 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.1 over 7:32.2 break 7:32.1 vale-in 7:31.0
+c5         route-b-board: failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 19 (scout move): not taken between 4470 and 5100]
+c5         route-b: failure rivals-reach-vale at 7:30.0 T 3 A 0 St 2 gun 0 | spring 7:23.0 blocker.out - over - break - vale-in - [PARTIAL: step 19 (cell go): not taken between 4470 and 5100]
+## rejected switches, for the record (not rules): SHIELD and the first-down break
+Rshield    route-b: success at 7:39.6 T 3 A 0 St 3 gun 0 | spring 7:23.0 blocker.out 7:32.0 over 7:39.6 break 7:39.5 vale-in 7:31.0
+Rshield    route-g-board: success at 4:11.5 T 6 A 1 St 3 gun 0 | spring 3:54.2 blocker.out 4:02.3 over 4:07.6 break 4:07.5 vale-in 4:11.5
+Rdb1       loud: success at 5:10.0 T 15 A 2 St -1 gun 9 | spring - blocker.out 3:49.2 over - break - vale-in 5:07.7

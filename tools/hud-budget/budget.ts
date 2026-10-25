@@ -26,6 +26,10 @@ export interface Report {
 export const LIMIT: Record<State, number> = { rest: 15, active: 22, alt: 30, log: 18, briefing: 18 };
 /** The states that are reading surfaces the player opens or meets before play (the history log; the briefing card): their lines are sentences by design. */
 export const READING: State[] = ['log', 'briefing'];
+/** The briefing's reading copy (its hook and objective: manifest `hud` elements of three or more words, on screen) is exempt from the running-text rule, so it gets its own cap: it is the one
+ *  place the game may read a sentence, and a modal screen is where "the reading is too much" would creep back. Shipped 0.2.122: 2 lines, 13 words (hook 6, objective 7). [S] starting value. The
+ *  objective is NOT a `line` here: a `line` is the in-play goal or hint (at most six words, one at a time); the briefing's objective is the dossier's sentence, and the play goal that follows Begin is the short line. */
+export const BRIEFING_READING = { lines: 3, words: 20 };
 /** Warn above this at rest: the goal is a bare screen. */
 export const WARN_REST = 10;
 export const HUD_ALPHA = 24, WORLD_DIFF = 10;
@@ -184,6 +188,10 @@ export function analyse(shot: Image, o: Options): Report {
   const blocks = READING.includes(o.state) ? [] : stack(hudRuns.filter(r => r.words >= 2 && r.comps >= 6)).filter(b => b.length >= 2 && b.reduce((a, r) => a + r.words, 0) >= 4);
   if (coveragePct > limitPct) failures.push(`HUD covers ${coveragePct.toFixed(1)}% of the screen (limit ${limitPct}% ${o.state})`);
   else if (o.state === 'rest' && coveragePct > WARN_REST) warnings.push(`HUD covers ${coveragePct.toFixed(1)}% at rest (aim under ${WARN_REST}%)`);
+  if (o.state === 'briefing' && o.manifest) { // the reading surface's own budget (see BRIEFING_READING); an element outside the screen (a hidden place label) is not on show
+    const read = els.filter(e => e.kind === 'hud' && e.text && wordsOf(e.text) >= SENTENCE_WORDS && e.x < w && e.y < h && e.x + e.w > 0 && e.y + e.h > 0), words = read.reduce((a, e) => a + wordsOf(e.text!), 0);
+    if (read.length > BRIEFING_READING.lines || words > BRIEFING_READING.words) failures.push(`the briefing reads ${read.length} sentence${read.length === 1 ? '' : 's'}, ${words} words (at most ${BRIEFING_READING.lines} and ${BRIEFING_READING.words})`);
+  }
   if (sentences.length) failures.push(`${sentences.length} line${sentences.length > 1 ? 's' : ''} of running text that is not speech`);
   if (blocks.length) failures.push(`${blocks.length} block${blocks.length > 1 ? 's' : ''} of stacked text`);
   // Text rows of a line or beat: runs whose centres lie within 8 px share a row. A row of a few strokes beside a row of a whole line is the panel's rim

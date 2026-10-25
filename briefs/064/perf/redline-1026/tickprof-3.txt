@@ -1,0 +1,11 @@
+$ bun tools/game/playing.ts bash -c "for n in w031 w032; do cd out/scratch/redline/simperf/\$n/sim/cli && dotnet build -c Release -v q -nologo 2>&1 | grep -E ' error |rror\\(s\\)'; done; for r in route-a loud-fight; do for n in w031 w032; do cd out/scratch/redline/simperf/\$n && echo \"## \$n \$r\" && dotnet sim/cli/bin/Release/net10.0/suborned-sim.dll tickprof contracts/missions/handover/routes/\$r.json 10 2>&1 | tail -1; done; done"
+    0 Error(s)
+    0 Error(s)
+## w031 route-a
+  worst ticks (median over reps): 2827:1090us(Combat; sight 11us in 23 lines; 21KB), 2531:919us(CrowdStep; sight 27us in 50 lines; 30KB), 2528:603us(CrowdStep; sight 22us in 43 lines; 14KB), 2506:304us(GetawayAfterFire; sight 5us in 6 lines; 21KB), 1500:119us(OpsStep; sight 3us in 8 lines; 15KB), 2616:116us(Combat; sight 14us in 32 lines; 14KB), 2600:91us(Checkpoint; sight 14us in 32 lines; 11KB), 2700:85us(Checkpoint; sight 11us in 23 lines; 11KB)
+## w032 route-a
+  worst ticks (median over reps): 2531:3222us(Combat; sight 1344us in 2135 lines; 50KB), 2506:1290us(GetawayAfterFire; sight 3us in 5 lines; 28KB), 1724:948us(CrewStep; sight 2us in 5 lines; 13KB), 2571:643us(Combat; sight 362us in 618 lines; 16KB), 2528:569us(CrowdStep; sight 13us in 22 lines; 14KB), 2611:539us(Combat; sight 339us in 630 lines; 15KB), 1684:534us(CrewStep; sight 1us in 4 lines; 12KB), 2651:517us(Combat; sight 364us in 669 lines; 12KB)
+## w031 loud-fight
+  worst ticks (median over reps): 2883:2845us(CrowdStep; sight 6us in 22 lines; 43KB), 1535:1265us(CrowdStep; sight 1us in 2 lines; 16KB), 2257:825us(GetawayAfterFire; sight 5us in 7 lines; 41KB), 2282:683us(Combat; sight 10us in 29 lines; 34KB), 1530:658us(Combat; sight 1us in 4 lines; 19KB), 2287:496us(Combat; sight 9us in 29 lines; 27KB), 2297:434us(Combat; sight 3us in 16 lines; 24KB), 2307:380us(Combat; sight 10us in 16 lines; 23KB)
+## w032 loud-fight
+  worst ticks (median over reps): 2257:1563us(Combat; sight 6us in 7 lines; 68KB), 1535:1385us(CrowdStep; sight 1us in 2 lines; 17KB), 2282:842us(Combat; sight 12us in 29 lines; 35KB), 1556:827us(CrewStep; sight 0us in 4 lines; 22KB), 2287:819us(Combat; sight 11us in 29 lines; 43KB), 2297:746us(Combat; sight 4us in 16 lines; 38KB), 2307:628us(Combat; sight 10us in 16 lines; 37KB), 2317:624us(Combat; sight 18us in 16 lines; 34KB)

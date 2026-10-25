@@ -11,6 +11,7 @@ import { fit } from './fit';
 import { GEN_ROOT, kitRoot } from './store';
 import { WAVE1 } from './tags';
 import { LOD_BY_ID, LOD_CATEGORIES } from './lod';
+import { decodePng } from '../hud-budget/png';
 
 const kit: Kit = JSON.parse(readFileSync(resolve(import.meta.dir, '../../contracts/world/kit.json'), 'utf8'));
 const root = kitRoot();
@@ -130,4 +131,25 @@ test('brief 013 (Vantage, Motive §2.5): only a piece tagged `stash` can hold a 
   expect(stash[0]!.tags.use).toContain('dumpster'); // the street item kind the world places it as
   // size does not decide it: pieces as big as a Dumpster that must not hold a body (a booth, a lamp, a crate stack, a coffee cart)
   for (const id of ['PhoneBooth', 'Streetlamp', 'CrateStack', 'UtilityCabinet', 'RecyclingBins']) expect(kit.assets.find(a => a.id === id)!.tags.stash, id).toBeUndefined();
+});
+
+// Batch 0.2.118: signal_atlas_v1 and signal_ring_v1 carry their picture in the alpha channel (the glyph / the ring segment IS the alpha). Imported with Alpha Source None, Unity drops it and every
+// lens face draws as a solid square and every clock ring as a full one. The meta the kit copies must say `alphaUsage: 1` (Alpha Source = input texture alpha), at the generator, in the catalogue and in the copy.
+test('signal textures carry real alpha and their metas import it (Alpha Source = input texture alpha)', () => {
+  const dest = mkdtempSync(join(tmpdir(), 'kit-')), a = copyAdopted(kit, root, dest, GEN_ROOT);
+  try {
+    expect(a.errors).toEqual([]);
+    const pngs = [...new Set(kit.assets.filter(x => x.status === 'adopted').flatMap(x => x.files.map(f => f.path)).filter(p => /^Textures\/signal_[^/]*\.png$/.test(p)))].sort();
+    expect(pngs).toEqual(['Textures/signal_atlas_v1.png', 'Textures/signal_ring_v1.png']);
+    const trees = [['copy', dest], ...(existsSync(resolve(import.meta.dir, '../../unity/Assets/Suborned/Kit/Textures')) ? [['unity Kit', resolve(import.meta.dir, '../../unity/Assets/Suborned/Kit')]] : [])] as [string, string][];
+    for (const [where, base] of trees) for (const p of pngs) {
+      const im = decodePng(readFileSync(join(base, p)));
+      let clear = 0, solid = 0; for (let i = 3; i < im.data.length; i += 4) { if (im.data[i] === 0) clear++; else if (im.data[i]! > 200) solid++; }
+      expect(clear, `${where} ${p}: no transparent texel`).toBeGreaterThan(0); expect(solid, `${where} ${p}: no opaque texel`).toBeGreaterThan(0); // alpha is the picture: a flat-alpha PNG draws a square
+      const meta = readFileSync(join(base, p + '.meta'), 'utf8');
+      expect(/^ {2}alphaUsage: 1$/m.test(meta), `${where} ${p}.meta: Alpha Source must be "input texture alpha" (alphaUsage: 1)`).toBe(true);
+      expect(/^ {2}alphaIsTransparency: 1$/m.test(meta), `${where} ${p}.meta: alphaIsTransparency`).toBe(true);
+    }
+    for (const p of pngs) expect(readFileSync(join(GEN_ROOT, p + '.meta'), 'utf8'), `generator ${p}.meta`).toContain('alphaUsage: 1'); // the exporter's own copy, not only what was copied
+  } finally { rmSync(dest, { recursive: true, force: true }); }
 });

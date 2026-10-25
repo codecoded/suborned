@@ -19,7 +19,7 @@ import { z } from 'zod';
 import { ROOT } from '../missions/check/engine';
 import { whoIsPlaying } from '../game/playing';
 import { BUILD_APP, lane, playStream } from './sim';
-import { feetShare, gradeMem, gradeSolid, isRace, loadChairs, loadWalk, offerOf, plainRefusal, readFeet, readMem, SEATS_FILES, GRADE, type Grade } from './grade';
+import { feetShare, gradeGiver, gradeMem, gradeSolid, isRace, loadChairs, loadWalk, offerOf, plainRefusal, readFeet, readMem, SEATS_FILES, GRADE, type Grade } from './grade';
 import type { Finding, Play, Severity } from './types';
 import { humanTape, loadProfile, winningRoutes, type HumanProfile, type HumanTape, type ProfileSource, type RouteScript } from './human';
 
@@ -127,6 +127,7 @@ export async function gradeRows(rows: BotReportRow[], outDir: string, o: GradeOp
     const dir = join(outDir, row.name), feet = readFeet(join(dir, 'feet.csv')), mem = readMem(join(dir, 'mem.csv'));
     for (const a of row.anomalies) {
       if (a.check === 'Q-SOLID' && feet.length) a.grade = gradeSolid(a, feet, walk, chairs);
+      if (a.check === 'Q-GIVER') a.grade = gradeGiver(a) ?? a.grade; // Go given from the car is the check's (GDD §06)
       if (a.check === 'Q-OFFER') {
         const of = offerOf(a.observed); if (!of) continue;
         a.grade = { cause: `${of.verb}:${of.code}`, severity: 'S2', title: `The ring offers ${of.verb[0]!.toUpperCase() + of.verb.slice(1)}, then the game refuses it: ${plainRefusal(of.code)}`, owner: CHECK_META['Q-OFFER']!.owner, note: '' };
