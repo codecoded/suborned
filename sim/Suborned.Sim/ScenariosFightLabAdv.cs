@@ -225,7 +225,7 @@ namespace Suborned.Sim
         }
         static void SLoudGuardShot(Run r, string routeG)
         {
-            var g = r.G; Replay(r, routeG, 1236);
+            var g = r.G; Replay(r, routeG, GuardTakedownTick(routeG)); // brief 059: tied to the route's takedown order (LoudGuardShot)
             if (g.Over) return;
             g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = GuardR });
             DrawAll(r);

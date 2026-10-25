@@ -557,6 +557,22 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(rb.witness?.notice?.never).toContain('disable');
   });
 
+  test('brief 059 (engine 0.32.0; Sky 2026-10-25, 1a 2a 3a): the crew of five, Vale in his car, the Drive; the safe fight\'s −1s retired; Sky\'s S1–S3 values', () => {
+    expect(rb.rivals).toBeDefined(); expect(rb.car?.pickup).toBeDefined(); expect(rb.cell.driveCar).toBeDefined(); // optional in the schema only for pinned runs
+    const cr = rb.rivals!;
+    expect([cr.crew, cr.posted, cr.drop, cr.out, cr.step, cr.follow, cr.followPace, cr.warn, cr.warnLag, cr.lookoutPace].map(n)).toEqual([5, 3, 8, 5, 2, 2, 280, 10, 3, 200]);
+    expect(n(rb.car!.pickup!.valeIn)).toBe(3);
+    expect(rb.fight.safe.minus).toBeUndefined(); expect(rb.values['fight-modifier']).toBeUndefined(); expect(rb.values['fight-safe-hostiles']).toBeUndefined(); // Motive M059-3.6, 3.7: kept optional in the schema only for pinned runs
+    expect(rb.fight.safe.hostiles).toBe('v:rivals-crew');
+    expect(rb.fight.safe.leaveUnfought).toBe(true); expect(rb.fight.loud.entry).toBe('nearest'); // S1, S2: Motive's picks until Sky answers
+    for (const k of ['posted', 'lookout', 'wheelman'] as const) {
+      const l = cr.beats[k].loop; expect(l.length).toBeGreaterThanOrEqual(cr.beats.minBeats);
+      expect(l.every((b) => b.s <= cr.beats.maxS)).toBe(true);
+      expect(l.every((b, i) => i === 0 || !(b.pose === l[i - 1]!.pose && b.yaw === l[i - 1]!.yaw))).toBe(true);
+    }
+    expect(rb.memory.acts['saw-getaway']).toEqual({ facts: ['cell-car', 'place-time'] }); // Motive M059-2.4
+  });
+
   test('the takedown: Motive §7.1, read by ref', () => {
     expect([td.ko, td.kill, td.struggle, td.wake, td.stagger, td.restrain, td.free, td.callOut].map(n)).toEqual([6, 3, 3, 120, 4, 8, 3, 10]);
     expect(td.reach).toBe(rb.cell.atReach); // hands: the same reach as an act at a device

@@ -130,6 +130,7 @@ namespace Suborned.Sim
                 r.Is(g.TakeInCar && !g.Acts.Exists(a => a.Take), "the Take is in the car: no struggle, nothing to witness");
                 r.To(Math.Max(there, takeEnd));
                 r.Is(g.Vale == ValeAt.WithEnforcer && g.FightBranch == "safe" && g.CurStand.Id == "service-drive", "Vale is with the Enforcer; the safe fight at the service drive");
+                r.Is(g.Driver.Has("saw-getaway") && g.Driver.Memory.Exists(m => m.Act == "saw-getaway" && m.By == Tech), "the turned driver saw our car pull in behind him (Motive M059-2.4: memory saw-getaway, the cell's car; whether he gives it up is the Talker test)");
                 var rivals = g.Hostiles.Where(h => h.Id.StartsWith("rival-", StringComparison.Ordinal)).Select(h => h.Id).OrderBy(x => x, StringComparer.Ordinal).ToList();
                 r.Eq(string.Join(",", rivals), "rival-1,rival-2,rival-3", "the fight's bodies are the posted three: the lookout warned off, the wheelman away on the tip (Pulse §7)");
                 r.Is(g.FightWhy.Contains("lookout-warned-off") && g.FightWhy.Contains("wheelman-away"), "fight why: lookout-warned-off, wheelman-away");
@@ -333,7 +334,7 @@ namespace Suborned.Sim
                 string Code(string op, string verb, string target) => g.Issue(new Order { Tick = g.Tick, Op = op, Do = verb, Target = target }).code;
                 r.Eq(Code(Tech, "drive-car", "service-drive"), "drive-no-driver", "not in the car: drive-no-driver");
                 r.To(r.SendTo(Tech, g.GetawaySeat)); r.Do(Tech, "board", "car"); r.Done(Tech);
-                r.Eq(Code(Tech, "drive-car", "nowhere"), "stand-unknown", "no stand: stand-unknown");
+                r.Eq(Code(Tech, "drive-car", "nowhere"), "unknown-stand", "no stand: stand-unknown");
                 r.Eq(Code(Tech, "drive-car", "square"), "drive-here", "the stand it is at: drive-here");
                 r.To(r.SendTo(Scout, g.GetawaySeat)); r.Do(Scout, "board", "car"); r.Done(Scout);
                 r.Do(Tech, "drive-car", "service-drive"); int arr = r.Op(Tech).BusyEnd;
@@ -341,6 +342,27 @@ namespace Suborned.Sim
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "move", To = "d:Courtyard" }).code, "agent-busy", "a passenger rides, busy until it arrives");
                 r.To(arr); r.Is(g.CurStand.Id == "service-drive" && G.Within(r.Op(Scout).Pos, g.GetawayCarPos(), 300), "both arrive with the car");
                 r.Is(g.LiveCoverOf("car/getaway") == 0, "the getaway car's cover points went with it (brief 059: a car that drives off takes its cover)");
+            });
+
+            Add("P59-LOUD-YARD", "059", "Motive M059-5.4 (careless-loud-b-yard, a measurement): route B taken at Alert 2 (the Enforcer shot the pickup camera out early): the in-car Take, a 3.5 m carry, Board, Go. The loud fight at the service drive takes its officers from the official entrance (S2); measured: whether they hold the car before the cell's Go.", r =>
+            {
+                var g = r.G;
+                Open059(r); Tip059(r);
+                r.To(Math.Max(g.Tick, T(370) + T(g.R.ValeInS))); r.Until(() => g.PickupService || g.Over, T(60));
+                // the earlier shot: the Fixer at the pavilion shoots the pickup camera out as Vale's car parks (late, so the response's seal does not end the run first)
+                r.Do(Fixer, "draw"); r.Wait(g.DrawT + 1); r.Fire(Fixer, "camera:pickup"); r.Until(() => g.CameraDark("pickup") || g.Over, T(20));
+                r.Is(g.Gunfire > 0 && g.Alert >= 2, $"a shot: Alert {g.Alert}, the run is loud");
+                r.Do(Fixer, "holster");
+                if (!r.Is(!g.Over && g.PickupService, $"Vale's car parks round the back ({g.Result} {g.FailCode})")) return;
+                int there = DriveRound(r);
+                r.Do(Enf, "take"); r.To(Math.Max(there, r.Op(Enf).BusyEnd));
+                if (!r.Is(g.FightBranch == "loud" && g.CurStand.Id == "service-drive", $"the loud fight at the service drive ({g.FightBranch} {g.Result} {g.FailCode})")) return;
+                var off = g.Hostiles.Where(h => h.Id.StartsWith("officer-", StringComparison.Ordinal)).ToList();
+                r.Is(off.Count > 0 && off[0].Run != null && G.Within(off[0].Run!.Points[0], g.S.Entrances.Find(e => e.kind == "official").stand, 100), "its officers set out from the official entrance (S2 nearest)");
+                int start = g.Tick;
+                r.To(Math.Max(g.Tick, r.SendTo(Enf, g.GetawaySeat))); if (!g.Over) { r.Do(Enf, "board", "car"); r.Done(Enf); }
+                var a = g.Over ? default : g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "go" }); // measured, not asserted: held or not is the line below
+                r.Line(!a.ok, $"M059-5.4: the yard's loud officers hold the car before the cell can Go ({(a.ok ? "LEFT UNFOUGHT" : "held: " + a.ids)}; Go tried {Report.Clock(g.Tick)}, {(g.Tick - start) / 10.0:0.0} s after the fight began): if it leaves unfought, Motive's fallback sends them at the run's first Alert 2");
             });
 
             var turnedB = new Start(); turnedB.Turned.Add(Driver);

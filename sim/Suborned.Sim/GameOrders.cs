@@ -304,7 +304,7 @@ namespace Suborned.Sim
                     RivalsDelayMethod = "mislead"; MisledOnce();
                     AddTrail(R.MisleadTrail, "mislead"); Actions.Add("mislead"); Chain.Add("rivals-false-tip");
                     Note("rivals.misled", "A false tip sends the rival car and its wheelman away. They may return."); break;
-                case "drive-car": LandDriveCar(); break; // brief 059 K6
+                case "drive-car": LandDriveCar(op); break; // brief 059 K6
                 case "ride": break; // a passenger of the Drive: nothing of his own lands
                 case "enter" when o.How == "out": ExitWithoutVale(op, false); break; // a cancelled Enter waiting inside for a free door
                 case "enter":

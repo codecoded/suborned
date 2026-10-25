@@ -450,6 +450,7 @@ namespace Suborned.Sim
             {
                 PickupService = Vale == ValeAt.InCar || Vale == ValeAt.Taking;
                 Note("car.parks", CarAtMouth ? "Vale's car stops at the mouth of the service drive. Take him from the back seat." : "Vale's car parks in the service bay. Take him from the back seat.");
+                SawGetaway(InCarName()); // Motive M059-2.4: our car already behind his
             }
         }
         /// <summary>K5: the service drive is taken: the getaway car stands at its service-drive stand, or is driving there.</summary>

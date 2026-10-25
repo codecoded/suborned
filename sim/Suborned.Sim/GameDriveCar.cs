@@ -36,15 +36,15 @@ namespace Suborned.Sim
         Pt LaneAt(int cm) => S.LanePointAt(cm, CurStand);
 
         /// <summary>Drive (brief 059 K6): refused while held (drive-held), by an operative not in the car (drive-no-driver), while anyone in it is
-        /// mid-act (drive-busy), for no stand (stand-unknown) or the one it is at (drive-here), and once the final fight has started (drive-fight).</summary>
+        /// mid-act (drive-busy), for no stand (unknown-stand) or the one it is at (drive-here), and once the final fight has started (drive-fight).</summary>
         string DriveCar(Op op, Order o)
         {
             if (!R.DriveCarOn || Range) return No("unknown-verb", "drive-car is the getaway car's Drive (rulebook cell.driveCar): unknown = reject");
             var id = o.Target.Length > 0 ? o.Target : o.To;
-            var st = S.StandById(id); if (st == null) return No("stand-unknown", $"'{id}' is no stand for the getaway car (site getaway.stands)");
+            var st = S.StandById(id); if (st == null) return No("unknown-stand", $"'{id}' is no stand for the getaway car (site getaway.stands)");
             if (!op.InCar) return No("drive-no-driver", $"the {o.Op} is not in the getaway car: board it first");
             if (FightStart != INF) return No("drive-fight", "the final fight has started: it is fought where it started, and Go is the way out");
-            foreach (var x in Ops) if (x.InCar && x.Busy != null) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}", tick: x.BusyEnd);
+            foreach (var x in Ops) if (x.InCar && x.Busy != null) return No("drive-busy", $"the {Sim.Op.Name(x.Id)} in the car is busy until {Sim.Report.Clock(x.BusyEnd)}");
             if (st == CurStand) return No("drive-here", $"the car is at {st.Id} already");
             var hs = CarHolders(); if (hs.Count > 0) return No("drive-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs));
             var path = new Path(S.Drive.CarRoute(CurStand.CarCell, st.CarCell, S.DriveLaneCm) ?? new[] { CurStand.CarCell, st.CarCell });
@@ -62,14 +62,13 @@ namespace Suborned.Sim
             return "";
         }
         /// <summary>The Drive lands: the car stands at its new stand; whoever is in it sits there.</summary>
-        void LandDriveCar()
+        void LandDriveCar(Op op)
         {
             if (GetawayDest == null) return;
             CurStand = GetawayDest; GetawayDest = null; getawayPath = null; getawayProf = null; liveCoverKey = -1;
             foreach (var x in Ops) if (x.InCar) x.Pos = GetawaySeat;
-            if (Vale == ValeAt.Car) { } // Vale rides in it
             Note("car.parked", $"The getaway car is at {CurStand.Id}.");
-            SawGetaway(); // Motive M059-2.4: a driver at the wheel of his own car nearby learns it
+            SawGetaway(Sim.Op.Name(op.Id)); // Motive M059-2.4: a driver at the wheel of his own car nearby learns it
         }
         /// <summary>How many cover points of `of` (car/getaway, car/rivals, …) stand now (a read; never hashed).</summary>
         public int LiveCoverOf(string of) => LiveCover.FindAll(p => p.Of == of).Count;
@@ -83,13 +82,15 @@ namespace Suborned.Sim
 
         /// <summary>Motive M059-2.4 (memory.acts saw-getaway, facts cell-car and place-time): the turned driver, in his car, sees the getaway car park
         /// within witness range behind him: he knows the cell's car. Whether he gives it up is the Talker test, as for anyone.</summary>
-        void SawGetaway()
+        void SawGetaway(string by)
         {
-            if (!R.MemoryActs.Contains("saw-getaway") || Driver.Down || valeDriveStart < 0) return;
+            if (!R.MemoryActs.Contains("saw-getaway") || Driver.Down || valeDriveStart < 0 || by.Length == 0 || getawayPath != null) return;
             var dp = DriverPos(); if (!dp.HasValue || !G.Within(dp.Value, Car, witnessRange)) return;
             if (Driver.Memory.Exists(m => m.Act == "saw-getaway")) return;
-            Remember(Driver, "saw-getaway", "cell", true);
+            Remember(Driver, "saw-getaway", by, true);
         }
+        /// <summary>Who of the cell sits in the getaway car (the first by id), or "".</summary>
+        string InCarName() { foreach (var x in Ops) if (x.InCar) return Sim.Op.Name(x.Id); return ""; }
 
         /// <summary>The getaway's drive for the checkpoint hash: no bytes until it drives or stands elsewhere.</summary>
         internal void HashDriveCar(Hash.H h)

@@ -250,8 +250,8 @@ namespace Suborned.Sim
             "mission-over", "engine-error", "unknown-verb", "agent-down", "enforcer-inside", "agent-busy", "guard-down", "guard-not-at-door", "person-down",
             "person-away", "no-place", "unwalkable", "no-walk", "run-carrying-vale", "run-carrying-downed", "run-tethered", "only-scout", "only-fixer",
             "only-tech", "only-enforcer", "too-far", "needs-routine", "needs-need", "needs-temperament", "no-act-need", "need-met", "refusal-remembered",
-            "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", "car-gone", "car-busy",
-            "call-too-late", "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", "no-rivals",
+            "already-turned", "no-cash", "driver-too-late", "turn-needs-approach", "vale-not-contact", "not-a-contact", /* brief 059: car-gone, car-busy and call-too-late retired with the driver's Call */
+            "nothing-to-call", "loop-wrong-target", "loop-holds", "stand-at-cabinet", "camera-dead", "disable-wrong-target", "patrol-down", "patrol-away", "no-rivals",
             "stand-near-rivals", "vale-not-inside", "stand-at-door", "vale-not-at-car", "stand-beside-vale", "stand-at-getaway",
             "car-held", "no-weapon", "already-drawn", "not-drawn", "stance-unknown", "panic-not-cell", "panic-no-fight", "panic-nobody", "not-driven", "follow-not-cell", "fire-running",
             "fire-carrying", "no-target", "fire-on-cell", "target-unknown", "civilian-target", "out-of-range", "no-clear-line", "carry-vale",
@@ -274,7 +274,7 @@ namespace Suborned.Sim
             // tuning.md §14 (engine 0.19.0): weapons free is the cell's setting
             "free-not-cell",
             // brief 059 (engine 0.32.0): the getaway car's Drive between its stands, and the Take round the back
-            "drive-held", "drive-no-driver", "stand-unknown", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked",
+            "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked",
         };
     }
 

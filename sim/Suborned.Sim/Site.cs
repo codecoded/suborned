@@ -300,7 +300,7 @@ namespace Suborned.Sim
             }
             CarBlockPath = Drive.CarRoute(carStand[CarPickup], carStand[CarBlock], DriveLaneCm) ?? throw new FormatException($"car.drive: no drive from '{CarPickup}' to '{CarBlock}'");
             CarServicePath = Drive.CarRoute(carStand[CarPickup], carStand[CarService], DriveLaneCm) ?? throw new FormatException($"car.drive: no drive from '{CarPickup}' to '{CarService}' (the turned driver's way to the service bay)");
-            var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "car", "posts", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]); RivalsFront = P(ri["front"]);
+            var ri = r["rivals"]; ri.Only("park", "entry", "front", "public", "car", "posts", "src"); RivalsPark = P(ri["park"]); RivalsEntry = P(ri["entry"]) /* brief 059: read by no engine rule (the crew comes by car, rivals.car); kept while tools/cover (a refuge mouth) and tools/geometry read the place */; RivalsFront = P(ri["front"]);
             if (Mission == "handover") // brief 059 K10: the rival car and the crew on foot (tools/sim/stands.ts, SX-3); required: the engine runs the crew from them
             {
                 var rc = ri.Opt("car") ?? throw new FormatException($"{ri.Path}.car is missing: engine 0.32.0 drives the rival car between its points (brief 059 K10; bun run sim:site --fold-stands)");

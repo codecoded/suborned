@@ -137,7 +137,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   };
   // the guard's visit (mission.json windows rule summon) is the engine's: its grid walk and the rulebook's stay; the site writes neither
   const schedule = {
-    rivalsArrive: at('3:10', /rival car/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn driver/), valeExits: at('5:50', /Vale exits/), valeAtCar: at('6:10', /Vale at car/), over: at('8:00', /= over$/),
+    rivalsArrive: at('3:10', /rival car parks/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn the driver/), valeExits: at('5:50', /Vale comes out/), valeAtCar: at('6:10', /Vale at his car/), over: at('8:30', /\(over\)$/), // GDD v0.25.0 §07's words (brief 059): each pattern matches one entry
     blockMoveS: 8, blockHoldS: 150,
     src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
   };
