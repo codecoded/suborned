@@ -125,3 +125,35 @@ Not yet a rule (needs a decision): **L-1** every stand, route and occluder names
   - Mission check, the five loud scripts (`loud`, `loud-fight`, `loud-fast`, `loud-left-downed`, `loud-left-standing`) fail with enforcer-down. At 2:31 the fire order steps the Enforcer 0.56 m north off `BesideDoor` to get a line past the drawn planting. The scripted Enter at 2:37.4 then finds him 0.5 s short of the door, and the police take him. MC-2, MC-6 and MC-10 fail only because no loud win is left. **Waymark/Keel:** re-compose the loud scripts (`missions:check compose`) after the rule.
 
 **Hand-off to Keel.** *Inputs:* this section; the evidence JSON; the prototype patch; the probes in `out/scratch/motive/b055/tools/` (`los.py` names the occluders that cut a 3D line, `run.sh`/`all.sh` run the scenario variants, `mcheck.ts` runs the mission check on a scratch root, `lens.py`/`mats.py` take measurements in Blender). *Do:* write `perception.mount` into the rulebook with the values above (kinds and lens heights, a chest height of 120, a head top of 175). Give the site every camera's kind: mission.json `cameras[].kind` "pole-camera" (Waymark), and the world watchers already carry theirs. Make sight read the floor under both ends. Give the line test its integer 3D form, with the fan built the same way. Land it with the occluders still off. Then move `BesideDoor` and `ShotCorner`, settle N49's spot, re-pin N84 and re-record DP1. After that, turn the occluders on and re-compose the loud scripts with Waymark. *Done-check:* with occluders off, 275 scenarios pass and `bun run missions:check` SHIPS with no script outcome moved. With occluders on and the rule in place, the only failures left are the six named above until their fixes land, then none. *Next owner:* Keel, then Waymark (camera kinds, the loud re-compose), Latch (draw the mission poles as `CCTVPole` at 5.5 m), Splice (a geometry rule that holds each rulebook lens height within 10 cm of the drawn glass, so the two cannot drift), Datum (the civic-robot eye in the plan).
+
+## Aster's fix order (2026-10-25)
+
+What has landed since §4 (from `contracts/world/geometry.ratchet.json` and the code):
+- the host's walk-floor code (`PlayInstall.WalkFloor`, step 1);
+- walk solids (G-2a 645 → 0);
+- K-1 at 0;
+- the fountain's sim height (G-3b 3 → 2);
+- drawn occluders, plus §7's `perception.mount` in the rulebook (engine 0.28–0.30).
+
+Still counted: G-1a 1, G-1b 6, G-1c 709, G-2b 122, G-2c 2, G-3a 61, G-3b 2.
+
+The order that pays from here:
+1. **Latch, batch 0.2.118 item G (step 1 close-out).** Prove the walk-floor host in the build:
+   - the log line says the ground comes from the walk file, not the slab bake;
+   - the door guard stands on the Office landing, as in `briefs/055/shots/office-entrance.jpg`;
+   - steps ease.
+2. **Splice, right after that build.** Flip `loadSim`'s host in `tools/geometry/sim.ts` to the walk file and re-ratchet G-1a, G-1b and G-1c. The target is 0, as `ifHostReadsWalkFile` predicts. Then put `bun run geometry --check` in the batch's pre-flight.
+3. **Motive, then Keel and Splice (G-3a, 61 objects).** Phone booths, vending machines, police posts, palms and shopfront doors span eye height but don't block sight.
+   - Motive first rules §4 step 3's open question: does a 1.1 m planter stop a chest-high shot, or only lower the hit chance?
+   - Then Splice exports their eye- and chest-height footprints and Keel's `site.ts` makes them occluders. Thin pieces stay out, by the 0.6 m rule (Sky: liberties for performance).
+   - It moves every replay, so it runs once, with Waymark's re-record.
+4. **Vantage, with Vela (G-2b 122, G-2c 2).**
+   - The atom fountain's 89 cells and the Records Entrance cheeks' 24: either the sim solid follows the drawn piece, or the piece gets what the sim keeps.
+   - The pavilion supports and civic robot (9).
+   - The two low-headroom cells.
+5. **Datum (§4 step 6).**
+   - One walking datum in `standards.levels` (pavement 0.18 beside carriageway 0).
+   - Landings and step runs declared in the civic block (height, rise, tread).
+   - `level` on every mission point and people place, ready for L-1 when the first deck mission is briefed. That can wait until then.
+
+L-1 and S-1 stay unwritten until a deck mission or a seat rule needs them.

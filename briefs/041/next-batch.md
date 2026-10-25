@@ -1,6 +1,6 @@
 # Next Unity batch (Latch), queued by Aster
 
-Waiting on Sky's play notes from 0.2.48; then one batch.
+**Current: "Batch 0.2.118" at the end of this file (2026-10-25).** Everything above it is the log of earlier batches, kept for reference.
 
 1. Engine 0.22.0 dll + rulebook + text.json together (0.21: fire order ends out of range / on a new act; 0.22: only security notices a run, crowd guards raise Alert). Notes: briefs/027/keel/host-interface.md "Engine 0.21.0" and "0.22".
 2. 0.21 host: keep the cease before an act's walk; on `fire.out-of-range` drop that agent's lock and show the pop ("Too far", text.json less.pop.fire-out-of-range).
@@ -97,3 +97,56 @@ Site regenerated again (Splice, kerb strips out of junction boxes): c035's input
 Next build: Keel's LearnQuery fix (NQ-2): host asks LearnQuery for the actual giver (Listen = Scout). Rebuild and rerun the bot row.
 
 0.2.117: Glyph SHIP (2026-10-25). Next round (small): the 'replay 0.6x' tag is a flat web pill (fail-getaway-lost.png): Latch restyles on plate_dark; faint 1 px hairlines at junctions (Splice, optional); guideway reads flat paper-grey, maybe a touch of chrome (Vela, optional).
+
+## Batch 0.2.118 (Aster, 2026-10-25): one batch, code first, test once
+
+From Sky's calls of 2026-10-25 (briefs 054, 056, 058, 059, 061, 062, 063) and GDD v0.25.0. Latch codes through this list now with fast checks only (runtime-compile, unit tests). The full batch (`bun run batch`, game-check, shots, Glyph's 2x review, the bot row) runs **once**, when items A to H are in. No build before then. Not while Sky is playing (`bun run batch` waits).
+
+**A. Engine release (Keel, in progress): 054 final rows, 058 Loop v2 and Disable, the needs text.** The batch's sim step copies the dll. Host port from briefs/027/keel/host-interface.md (the new version):
+- the ring on a camera: Tech gets Loop · Disable · Fire; any other armed agent gets Fire;
+- plates "Camera looped" with the 2:00 countdown, "Camera cut", "Camera shot out";
+- the one-loop refusal, with the time left;
+- the tether UI and its refusals removed.
+Words: Fable's keys. Look: Glyph's 058 spec, in the brief. Waymark retimes routes A, A-board, G, G-kill and the loud family, adds `route-a-disable`, `careless-g-disable` and `careless-loop-runs-out`, and re-records the check (c037) before the batch's game-check.
+**B. 058 walk-off stopgap (Latch, coding now).** Host only:
+- a squad move leaves a looping Tech in place, with the plate "Holding the loop";
+- a move that would take him off the cabinet needs the 0.5 s hold ("Camera comes back").
+If A's Loop v2 lands in this batch, a walk-off no longer ends a loop. The stopgap then has nothing to guard: drop it, or keep it inert. Say which in port-progress.
+**C. 056 occlusion F (Latch, coding now).** The screen-space capsule cut and the silhouette pass. Port notes are in briefs/056-occlusion.md. Silhouettes show for the cell, hostiles and key people. The rim stays until Sky sees it. Glint tunes the rim's look. Glyph reviews the 2x crops.
+Shots: four agents close together in front of the café and the Office at yaw 30, 120, 210 and 300. Sky's E fallback is tried in play only if holes cover over a third of a building's face.
+**D. 062 briefing B, "on the street" (Latch, coding now).** Briefing.cs replaces the card and the lore screen. Begin glides the camera to the cell (3.0 s, skippable), the HUD enters in §5's order, and the clock starts when the roster settles. New game goes straight to the briefing.
+Inputs:
+- Fable: the hook and objective words.
+- Waymark: `brief.ways[]` and `brief.clock[]` in the mission data (queued with his 058 round).
+- Forma: Vale B's portrait.
+- Glyph: the file-card duotone.
+The briefing can't ship with the badge fallback: it waits for the portrait.
+**E. 063 portraits and figures.**
+- The driver's three albedo JPEGs and the manifest change are already in the tree: refresh and look at the driver once in play (face, hands).
+- Vale B, the new `councillor` figure, comes from Forma (in progress, paid pass budget $3): import it, then check it at 40–60 px and in the Enforcer's carry.
+- Patrol face A: Glyph installs it under the same file names.
+**F. 061 crossings.**
+- Delete the turn in CrossingKit.Dress (Latch, coding now).
+- Then `SignalHead` (Latch): it reads the mission clock and writes the state, numerals, ring fill and dot ranges per head with a MaterialPropertyBlock, using the export's `crossings[].cycle`. A look only: the sim reads nothing.
+- Inputs: Datum's plan keys (in progress), Vela's pieces (in progress), then Splice's rules and export (26 crossings, continuous footways at lane mouths, the edge brass gone). Glint sets the emission per state.
+- Shots: the Records Office crossing in all four states at yaw 30, 120, 210 and 300 and at eye level, plus a lane-mouth footway.
+**G. 055 step 1 close-out.** PlayInstall.WalkFloor is in.
+- Prove it in the build. The log says the ground comes from the walk file. The door guard stands on the Office landing, matching briefs/055/shots/office-entrance.jpg. Steps ease.
+- Then Splice flips `tools/geometry` to the walk file and re-ratchets G-1a/b/c toward 0. The rest of 055's order is in briefs/055-levels-collision.md, "Aster's fix order".
+**H. Small.**
+- 057 §5: the lovers icon for the affair, and the patrol badges (npc_patrol and npc_patrol_face).
+- 0.2.117: the "replay 0.6x" tag on plate_dark.
+**I. 059 (route B through the service drive, the rival car arriving): in only if it lands before A to H are done.**
+- Chain: Pulse's routine, Motive's prices and Vantage's points (all in progress), then Splice's site export, Keel's K1–K11, Waymark's re-compose, Glyph's spec (in progress), then Latch's port. The port covers the rival car and its five figures, the official car's drive, Drive on the getaway car, and the markers.
+- Until then, mission.test.ts fails on two asserts by design: §07's new schedule against mission.json's timeline, and route A's figures. Waymark lands the mission.json strings with Keel's 059 engine.
+- If 059 misses this batch, it opens the next one. The batch doesn't wait.
+
+**Batch done-check:**
+- `bun run batch` OK: sim, unity-match, game-check, shots, budget and audit, late-fight, tp-long.
+- Shots: C, D (frames 1 to 5 of the start), E, F and G.
+- Glyph says "ship" on the 2x crops.
+- The bot row (`-bot`, human-a and human-b) shows no new Q-* class.
+- The perf064 row on the Studio.
+- One build to Sky.
+
+**Needs Sky, not in the batch:** the Air perf run for brief 064 findings 1 and 2 (perf064 at play zoom, warm, on the 15-inch MacBook Air M4).

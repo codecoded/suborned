@@ -1,7 +1,61 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## v0.25.0 (draft 2026-10-21; briefs 017–033; review sheet briefs/035-gdd-v0.25.md)
+## Open for Sky (as of v0.25.0, 2026-10-25)
+The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
+1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
+2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
+3. (035 Q3) Q and E in third person: a look-around (as built), or a squad wheel (briefs 024, 030)? Draft: no wheel.
+4. (035 Q4) Keycaps on portraits (1–4) and agent wedges (⇧1–⇧4) only, every other button without? Draft: yes.
+5. (035 Q5) The conversation scene is a cutaway outside the play camera's limits (faces far above 60 px)? Draft: yes.
+6. (035 Q6) The scene's default: first time with each person (refusals dropped under timing B)? Draft: yes.
+7. (035 Q7) Night: is the Handover played by day, by night, or chosen at the briefing; should night ever change sight? Draft: night is a look only.
+8. (035 Q8) The police contest for Vale in the loud final fight: promote from the lab, or wait for the fight lab?
+9. (035 Q9) The fight lab's 16 questions, including which fight mode stays.
+10. (035 Q10) The decisive shot: keep it [L] or strike it (it is aiming)?
+11. (035 Q11) Getaway tension: a rival blocker that holds until downed, and/or Inez's warning from 10 s to 5 s ("play the build first"). Keel's separate bug: a downed Enforcer at a held car with nobody firing needs a time limit and a fail line.
+12. (035 Q12) The paintings set the street's character; the old DecoKit city and the testbed set the quality floor and are where assets come from. Right?
+13. (035 Q14) Starting values: Inez's rounds (rests 24–36 s, visits 12–18 s) and the briefing's Heat words (unknown, noticed, wanted, infamous).
+14. (035 Q15) "With every door held, the Enforcer waits inside" cannot happen on the Handover's block: keep it for other blocks (draft), or retire it? Motive still to choose between Keel's options.
+15. (035 Q16) The rampage ladder stays [L] with no rules until Sky opens it; Motive's "shoot anyone" ruling (brief 027 tuning.md §8/§9) is still to land.
+16. (Motive, 2026-10-23) Under the file story, may Vale be Idealist (a zealous official)? Today councillors are never Idealist; changing it re-casts Vale.
+17. (brief 027 tuning §15.2, Sky 2026-10-22 "I think so - sounds right") The final fight per agent stays "on trial" until Sky confirms after play.
+18. (brief 058 / 059, Motive) The driver's Call (block the pickup camera) has no route use now the front is ordinary: keep, retire or give it a new job; whether loud at the yard stand needs a second police entry.
+19. (brief 061 Q3, Q8) Painted crossing concepts, or the 3D mock-ups (they stand); heads edge-on in third person, judged in play.
+20. (brief 056 Q2, Q3) Silhouettes for hostiles and key people as well as the cell (as now), and the cut's rim: judged in play.
+21. (brief 043) The done moment: which pieces stay after Sky plays it; whether a busy agent's act is protected from a new order rather than only warned.
+22. (brief 035, 2026-10-22/24) On trial: haze #ecd9b4; the guideway #b3c7cf (the style contract and looks/harbour.json still say #96979c and must follow if kept).
+Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.25.0 (2026-10-25; briefs 017–063; review sheet briefs/035-gdd-v0.25.md)
+
+### Since the 2026-10-21 draft
+- Sky, 2026-10-25, on the outstanding-work summary: "Your recommendation seem good". Every pick below from briefs 054, 056, 058, 059, 061, 062 and 063 is that approval; each brief's "Sky's calls (2026-10-25)" section lists them.
+- Sky, 2026-10-25 (brief 054 §8): Pressure is unseen by ordinary people below Alert 2: yes · civilians remember a runner from Alert 2: yes (§04 private, §05 witness, running).
+- Sky, 2026-10-23/24 (brief 054): mood counts from any cause ("she's nervous coz having an affair and in debt etc... people have their feelings outside of the cell"); a cone on hover "only though if it matters"; "If a person being watched has no impact then we just drop that watched action"; her round and the tie line dropped for now; names do the "who she meets" job; "Ordinary people shouldn't really care unless there's high alert status - think real world. And yeah, would be in cone area only for seeing"; the free tell accepted. Motive's revision 4 table (act × Alert), the 1.5 m body sense and "a Watch never teaches a secret" (§9). Uneasy lifts Pressure (Motive, 2026-10-24). Aster's call: the row is absent after a Watch (Sky, 2026-10-23), not greyed (§03, §04, §05, §10).
+- Motive, 2026-10-24 (brief 055 §7), built by Keel (engine 0.28–0.30): perception.mount, each watcher's eye above its own floor; head or chest seen. Sky, 2026-10-24: "Can take some liberties for performance e.g looking through glass isn't needed": glass blocks sight (§05 sight).
+- Sky, 2026-10-25 (brief 056): occlusion F, the soft circle cut with silhouettes, one rule at every yaw; E only if tried in play; silhouettes and the rim stay as now until Sky sees them (§10, §15 camera).
+- Sky, 2026-10-24 (brief 057 §2–§4): Reroute's route lines thin, the new route drawn while in play, the robot on the drawn path and moving smoothly; quiet cones, "looks good, let's try it"; the seal clock, Go's state and true fail lines, "better - lets try". §1 held for Glyph's ring version (§10).
+- Sky, 2026-10-25 (brief 058): a loop runs 2:00; Disable counts as an incident; the walk-off stopgap now. Motive's camera table (Loop 20 s +1 T, Disable 10 s +2 T, Shoot +2 T once, everyone can shoot cameras; the tether retired) (§02, §03, §05, §06, §07).
+- Sky, 2026-10-25 (brief 059): 1a the cell's car brought round by Drive (3.5 m carry); 2a the rivals post round the cell's car in plain sight from 2:46; 3a the unturned driver drives off at 6:13 and the mission ends. Sky's notes, 2026-10-24: "I thought the driver should wait for Vale then take him to the service entrance?"; "The rival gang also, need to be coming in from a distance, not just standing around at the pickup point." Waymark's §4 text taken (§05 rivals, §06 Drive, §07).
+- Sky, 2026-10-24 (brief 060): "yes to all your recommendations": bot playtests nightly from 02:00 unless the game is open, ≤ 10 issues a pass, the look review a week after the first pass; Sky, 2026-10-25: "a bot that's indecisive" (§11 checks).
+- Sky, 2026-10-24/25 (brief 061): "there's way too many crossings"; "The lights are cool but seem to always be facing camera. I would have them change color, run a clock for showing state"; picks: no edge brass, head A, numerals and the paving ring with ARRIVING, look only, no inlay arcs, studs or lit field, lane mouths as continuous footways, tram stops crossed at one end (26 crossings) (§09, §14 Datum, §15).
+- Sky, 2026-10-25 (brief 062): the briefing B, "on the street", and the Begin glide; New game straight to the briefing (§10).
+- Sky, 2026-10-23 (brief 051): the front end (loading screen, main menu, Options, Controls, pause menu; restyle A, "A seems ok") (§10).
+- Sky, 2026-10-23 (brief 051, Fable's brief.json): the Handover's motive is the file, replacing the clearance order ("cheap", it never came up in dialogue). The record label "Clearance order" and its id stay in the needs data; its text is rewritten (§07 brief).
+- Sky, 2026-10-25 (brief 063): Vale B (white beard, chain of office), Inez A, the driver A, the patrol face A; Vale's model through tools/paid/paid.py with a $3 budget (§07 cast, §15).
+- Sky, 2026-10-24 (brief 041, next-batch item 33): "left click brings up the action ring. Right click then doesn't do anything ... makes RMB more relevant for firing only": the commander view's left click rings, the right hold fires, third person the same (§10 controls).
+- Sky, 2026-10-21/22 (brief 041): click walks, hold acts, commit on release, the hold latches to its target, an agent given a squad act leaves the selection; fire keeps going on the move ("Keep them firing until out of range") (§10).
+- Aster, 2026-10-22 (next-batch item 13, no reason against it in the code): a squad fire order goes to every selected agent who can fire; a holstered one draws, one out of range walks in, one that can't says why in two words (§06).
+- Aster, 2026-10-22 (next-batch item 8, after Sky tried to shoot a calm patrol): the fire offer on security, with its price; passers-by get none on hover (§06).
+- Sky, 2026-10-22 (next-batch items 5, 9–11): "shouldn't block actions whilst Inez is moving about": acts on a moving person walk in; "yes, that was annoying, cancelling a task I had ordered": a cancel is never unseen (§10 move).
+- Sky, 2026-10-24 (next-batch items 29, 31): a down agent "shouldn't even be an option" as the one to act; a move never becomes a carry (§03, §10).
+- Sky, 2026-10-22 (brief 035 addendum): running is noticed only by security below Alert 2 (with 054's from-Alert-2 civilian row) (§05 running).
+- Sky, 2026-10-22, "I think so - sounds right" (brief 027 tuning §15.2, engine 0.20.0 provisional): the final fight follows per-agent intent, on trial until confirmed after play (§06 hostiles).
+- Sky, 2026-10-24 (brief 028): "curvy and smooth, not harsh lines": rounded kerb returns at pavement corners (§09, §15). Brief 028: the enamel road and the old city's coconut palm (§15).
+- Glint, on trial (brief 048): haze #ecd9b4 replaces #f3e8d4. Vela, 2026-10-25: the guideway pale silver #b3c7cf (§15 palette).
+- Aster, 2026-10-25: §13 gains T15 from brief 054's three uncoached questions; T13 reads "the mouse does what you meant?" now the left button rings and the right fires.
+
 
 ### Views, camera and controls
 - Sky, 2026-10-19 (brief 023; Vantage's study, briefs/011/vantage/study.ts option b): the Records Office public door, landing, steps and forecourt turn onto the wing's west face over Rocket Lane, seen at the opening yaw 30; the service door goes round the back onto the east face, "the quiet back way", with the turned driver's car in the east service bay. Replaces v0.24's "play the Office front at yaw 210" and its rejection of option (b). V-1: 47 of 48 points clear, Behind café hidden by design (§07, §10).
