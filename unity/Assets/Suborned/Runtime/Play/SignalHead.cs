@@ -40,6 +40,8 @@ namespace Suborned.Play
         /// <summary>Every live head (the proof reads them).</summary>
         public static readonly List<SignalHead> All = new();
 
+        /// <summary>The ring's lowest cutoff: under the texture's faintest ring pixel (5/255), over its empty corners (0).</summary>
+        public const float RingCutMin = 0.5f / 255f;
         public const float CrossfadeS = 0.2f, BlinkHz = 2f, BlinkOff = 0.15f, BlinkLastS = 3f; public const int RingSegments = 24;
 
         // Vela's tables (briefs/061/vela-signal-lens-data.json `faces`): _BaseMap_ST per glyph
@@ -133,7 +135,7 @@ namespace Suborned.Play
             if (Figure) { mpb.Clear(); mpb.SetVector(StId, FigureST[fig]); mpb.SetVector(EmissionId, E(1f)); Figure.SetPropertyBlock(mpb); }
             if (Tens) { mpb.Clear(); mpb.SetVector(StId, numeral >= 10 ? DigitST[(numeral / 10) % 10] : BlankST); mpb.SetVector(EmissionId, E(1f)); Tens.SetPropertyBlock(mpb); }
             if (Units) { mpb.Clear(); mpb.SetVector(StId, numeral >= 0 ? DigitST[numeral % 10] : BlankST); mpb.SetVector(EmissionId, E(1f)); Units.SetPropertyBlock(mpb); }
-            if (Ring) { mpb.Clear(); mpb.SetFloat(CutoffId, 1f - lit / (float)RingSegments); mpb.SetVector(EmissionId, E(1f)); Ring.SetPropertyBlock(mpb); }
+            if (Ring) { mpb.Clear(); mpb.SetFloat(CutoffId, Mathf.Clamp(1f - lit / (float)RingSegments, RingCutMin, 1.001f)); /* Vela's 1 - lit/24, kept off 0: at 0 the clip keeps alpha 0 too and a full ring drew its whole square (0.2.121); over 1 none is lit */ mpb.SetVector(EmissionId, E(1f)); Ring.SetPropertyBlock(mpb); }
             if (Beam) { mpb.Clear(); mpb.SetColor(BaseColorId, new Color(srgb.r, srgb.g, srgb.b, 1f)); Beam.SetPropertyBlock(mpb); } // CrossGlow keeps its own _Alpha (Vela: beam 0.26, halo 0.40)
             if (Halo) { mpb.Clear(); mpb.SetColor(BaseColorId, new Color(srgb.r, srgb.g, srgb.b, 1f)); Halo.SetPropertyBlock(mpb); }
             for (int i = 0; i < Dots.Length; i++)

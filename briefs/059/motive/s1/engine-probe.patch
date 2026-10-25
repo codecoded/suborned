@@ -1,0 +1,72 @@
+--- sim/Suborned.Sim/GameFight.cs	2026-10-24 15:05:55
++++ out/scratch/motive/059-s1/engine/Suborned.Sim/GameFight.cs	2026-10-25 20:18:42
+@@ -28,6 +28,10 @@
+         public readonly List<string> FightWhy = new List<string>();
+         Path? guardAllyPath; int guardAllyStart;
+         bool rivalsAbsorbed, misledOnce;
++        // ---- Motive 059 S1 probe (scratch only; env off = engine 0.31.0)
++        int[] probeAppear = new int[0]; bool probePickDeferred;
++        static readonly bool ProbeGate = Environment.GetEnvironmentVariable("PROBE_GATE") == "1";
++        int ProbeAppearOf(int i) => i < probeAppear.Length ? probeAppear[i] : -1;
+ 
+ 
+         /// <summary>The Enforcer has Vale: the final fight begins (§07: always).</summary>
+@@ -78,6 +82,8 @@
+                 if (FightWarned) FightWhy.Add("waitress-warns");
+                 GuardAlly = !GuardDown && GuardGun.Health == GuardGun.Max && !GuardEngaged && !SawCell(GuardP);
+                 if (GuardAlly) FightWhy.Add("guard-fights-them");
++                var pa = Environment.GetEnvironmentVariable("PROBE_APPEAR") ?? "";
++                if (pa.Length > 0) { var parts = pa.Split(','); probeAppear = new int[parts.Length]; for (int k = 0; k < parts.Length; k++) { var x = parts[k].Trim(); probeAppear[k] = x.Length == 0 ? -1 : x.StartsWith("+") ? Tick + int.Parse(x.Substring(1)) : int.Parse(x); } }
+                 rivalsAbsorbed = true; // the crew is the ambush now
+                 Note("fight.safe", $"The final fight: the rival crew ({Hostiles.Count}) lies in wait for the extraction.");
+             }
+@@ -99,9 +105,9 @@
+             {
+                 FightSprung = Tick;
+                 // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing)
+-                foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
++                for (int k = 0; k < Hostiles.Count; k++) { var h = Hostiles[k]; if (ProbeAppearOf(k) > Tick) continue; h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
+                 Note("fight.ambush", FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
+-                if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
++                if (!blockersPicked) { bool anyOn = false; foreach (var h in Hostiles) if (h.Present) anyOn = true; if (anyOn) pickFrom = "rivals"; else probePickDeferred = true; } // probe: picked from those on foot
+                 if (GuardAlly)
+                 {
+                     var from = GuardPose()?.pos ?? S.Stand(S.GuardPost);
+@@ -112,6 +118,14 @@
+                     Note("fight.guard", "The guard hears the shooting and runs in against the rivals.");
+                 }
+             }
++            if (FightBranch == "safe" && FightSprung != INF)
++                for (int k = 0; k < Hostiles.Count; k++)
++                {
++                    var h = Hostiles[k]; if (ProbeAppearOf(k) != Tick || h.Present || h.Down || h.Gun.St == "gone") continue;
++                    h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT;
++                    Note("probe.arrives", $"{h.Id} steps out at {h.At.X},{h.At.Y}.");
++                    if (probePickDeferred && !blockersPicked) { probePickDeferred = false; pickFrom = "rivals"; }
++                }
+             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+             if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
+             // the guard runs in against the rivals (safe); his shots are in Combat()
+--- sim/Suborned.Sim/GameGetaway.cs	2026-10-25 16:27:24
++++ out/scratch/motive/059-s1/engine/Suborned.Sim/GameGetaway.cs	2026-10-25 20:18:42
+@@ -48,7 +48,7 @@
+             if (pickFrom.Length > 0)
+             {
+                 var from = pickFrom; pickFrom = "";
+-                PickBlockers(Hostiles.FindAll(h => from == "rivals" ? IsRival(h.Id) : !IsRival(h.Id) && h.Present));
++                PickBlockers(Hostiles.FindAll(h => from == "rivals" ? IsRival(h.Id) && (probeAppear.Length == 0 || h.Present) : !IsRival(h.Id) && h.Present));
+             }
+             if (FightBranch.Length == 0) return;
+             if (!blockerOut && Blockers.Count > 0)
+@@ -174,6 +174,11 @@
+         {
+             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
+             if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
++            if (ProbeGate && Vale == ValeAt.Car && FightBranch.Length > 0 && FightOverTick == INF && !blockerOut)
++            {
++                bool coming = false; foreach (var h in Hostiles) if (Up(h)) coming = true;
++                if (coming) { goRefusedAt = Tick; goRefused = "fight-on"; return No("fight-on", Blockers.Count > 0 ? $"the blocker is up: {string.Join(", ", Blockers)}" : "the rivals are coming"); }
++            }
+             var hs = CarHolders();
+             if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; return No("car-held", $"the car is held: {string.Join(", ", hs)}", ids: string.Join(",", hs)); }
+             Leave();

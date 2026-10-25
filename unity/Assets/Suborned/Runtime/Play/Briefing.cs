@@ -33,7 +33,7 @@ namespace Suborned.Play
         {
             bf = E(root); bf.style.position = Position.Absolute; bf.style.left = 0; bf.style.top = 0; bf.style.right = 0; bf.style.bottom = 0; bf.pickingMode = PickingMode.Ignore; bf.style.overflow = Overflow.Hidden;
             bfScrim = new VisualElement { pickingMode = PickingMode.Ignore }; bfScrim.style.position = Position.Absolute; bfScrim.style.left = 0; bfScrim.style.top = 0; bfScrim.style.right = 0; bfScrim.style.bottom = 0;
-            bfScrim.generateVisualContent += ScrimMesh; bf.Add(bfScrim);
+            bfScrim.generateVisualContent += ScrimMesh; bf.Add(bfScrim); notHud.Add(bfScrim); /* the vignette dims the world, like the conversation veil and the dip: not HUD (brief 032) */
             bfLeaders = P(bf, 0, 0, 0, 0, LeaderPaint); bfLeaders.style.right = 0; bfLeaders.style.bottom = 0; bfLeaders.style.width = StyleKeyword.Auto; bfLeaders.style.height = StyleKeyword.Auto;
             // the title group (64, 58): THE HANDOVER (Jost Medium 15, tracking 0.30), a 2 px turquoise-light line 132 px, the hook (Jost Bold 34), the objective (Jost Regular 19)
             bfTitleGroup = E(bf, null, BfMargin, 58); bfTitleGroup.pickingMode = PickingMode.Ignore;
@@ -41,7 +41,7 @@ namespace Suborned.Play
             var tl = E(bfTitleGroup, null, w: 132, h: 2); tl.style.position = Position.Relative; tl.style.marginTop = 6; tl.style.backgroundColor = LookLive;
             bfHook = new Label { pickingMode = PickingMode.Ignore }; bfHook.style.marginTop = 12; bfTitleGroup.Add(bfHook);
             bfObjective = new Label { pickingMode = PickingMode.Ignore }; bfObjective.style.marginTop = 6; bfTitleGroup.Add(bfObjective);
-            manifest.Add((bfTitle, "line", () => bfTitle.text)); manifest.Add((bfHook, "line", () => bfHook.text)); manifest.Add((bfObjective, "line", () => bfObjective.text));
+            manifest.Add((bfTitle, "hud", () => bfTitle.text)); manifest.Add((bfHook, "hud", () => bfHook.text)); /* the title and hook are the reading surface's copy, as the 0.2.117 card's were */ manifest.Add((bfObjective, "hud", () => bfObjective.text)); /* reading copy before play (READING state); the in-play goal line is the one objective line */
             // the right column: the clock plate, the file card, the two ways (scaled as one when the window is short)
             bfCol = E(bf, null, 0, 0, BfColW, 1000); bfCol.pickingMode = PickingMode.Ignore; bfCol.style.transformOrigin = new TransformOrigin(Length.Percent(100), 0, 0);
             bfClock = PlateDark(bfCol, 82, 0.5f); bfClock.style.position = Position.Absolute; bfClock.style.left = BfColW - 560; bfClock.style.top = 40; bfClock.style.width = 560;
@@ -56,7 +56,7 @@ namespace Suborned.Play
             bfName = Words(bfCard, 28f, Ink); bfName.style.position = Position.Absolute; bfName.style.left = 24; bfName.style.top = 362;
             var fr = E(bfCard, null, 24, 410); fr.style.flexDirection = FlexDirection.Row; fr.style.alignItems = Align.Center;
             Icon(E(fr, null, w: 15, h: 15), "take", Ink); bfFact = Words(fr, 15f, Ink); bfFact.style.marginLeft = 7;
-            manifest.Add((bfCard, "image", () => "target file card")); manifest.Add((bfName, "line", () => bfName.text));
+            manifest.Add((bfCard, "image", () => "target file card")); manifest.Add((bfName, "hud", () => bfName.text));
             for (int i = 0; i < 2; i++)
             {
                 var w = E(bfCol, "s-panel_dark", 0, 640 + 128 * i, BfColW, 112); w.style.unitySliceScale = 0.5f; w.pickingMode = PickingMode.Ignore;
@@ -79,7 +79,7 @@ namespace Suborned.Play
                 p.fillColor = LookTail; p.BeginPath(); p.MoveTo(new Vector2(3, 0)); p.LineTo(new Vector2(15, 0)); p.LineTo(new Vector2(9, 7.5f)); p.ClosePath(); p.Fill();
             });
             tail.style.top = StyleKeyword.Auto; tail.style.bottom = -11; tail.style.left = Length.Percent(50); tail.style.translate = new Translate(-9, 0);
-            manifest.Add((bfTag, "line", () => bfTagText.text));
+            manifest.Add((bfTag, "hud", () => bfTagText.text));
             // the bottom strip: the faces (cameos in the chrome ring, 62 px) and their job words, the purse, Day / Night, Begin
             bfStrip = E(bf); bfStrip.style.position = Position.Absolute; bfStrip.style.left = 0; bfStrip.style.right = 0; bfStrip.style.bottom = 0; bfStrip.style.height = 150; bfStrip.pickingMode = PickingMode.Ignore;
             for (int i = 0; i < 4; i++)
@@ -91,7 +91,7 @@ namespace Suborned.Play
             manifest.Add((bfFaces[0].cameo, "image", () => "cell faces"));
             bfPurse = PlateDark(bfStrip, 34, 0.43f); bfPurse.style.position = Position.Absolute; bfPurse.style.left = BfMargin + 4 * 88 + 30; bfPurse.style.top = 150 - 64 - 62 - 22 + 14; bfPurse.style.paddingLeft = 12; bfPurse.style.paddingRight = 14;
             Icon(E(bfPurse, null, w: 14, h: 14), "p_cash", Cream); bfPurseText = Words(bfPurse, 15.5f); bfPurseText.style.marginLeft = 7;
-            manifest.Add((bfPurse, "line", () => bfPurseText.text));
+            manifest.Add((bfPurse, "hud", () => bfPurseText.text));
             var right = E(bfStrip); right.style.position = Position.Absolute; right.style.right = BfMargin; right.style.bottom = 64 - 18; right.style.flexDirection = FlexDirection.Row; right.style.alignItems = Align.Center; right.pickingMode = PickingMode.Ignore;
             var LL = FrontEnd.LS;
             for (int i = 0; i < 2; i++)
@@ -99,11 +99,11 @@ namespace Suborned.Play
                 bool night = i == 1; var w = FrontEnd.Word(right, host.Text?.BriefWord(night ? "night" : "day", night ? "Night" : "Day") ?? (night ? "Night" : "Day"), LL.type.tab, float.NaN, 34, 0f, 0f, 0f, 29f, false, false);
                 w.Root.style.marginLeft = i == 0 ? 0 : 22; FrontEnd.Hook(w, null, () => host.SetNight(night)); bfPhase[i] = w;
             }
-            manifest.Add((bfPhase[0].Root, "line", () => "Day Night"));
+            manifest.Add((bfPhase[0].Root, "hud", () => "Day Night"));
             var beginType = new FrontEnd.TypeS { font = "Jost-Medium", sizeRef = 26, trackingEm = 0.34f, uppercase = true };
             bfBegin = FrontEnd.Word(right, host.Text?.BriefWord("begin", "Begin") ?? "Begin", beginType, float.NaN, 52, 30f, 22f, 0f, 44f, true, false); bfBegin.Root.style.marginLeft = 64; bfBegin.Root.style.flexShrink = 0;
             FrontEnd.Hook(bfBegin, null, () => host.BriefingBegin()); bfBegin.Focused = true; FrontEnd.PaintWord(bfBegin);
-            manifest.Add((bfBegin.Root, "line", () => "Begin"));
+            manifest.Add((bfBegin.Root, "hud", () => "Begin"));
             Show(bf, false);
         }
 

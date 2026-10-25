@@ -542,3 +542,82 @@ Order: Splice's 061 round lands → Splice's 059 site export → Keel K1–K11 �
   - `windows[0].gdd` → "the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window".
   - `prep[A].gdd` → "listens to Inez (1:02)".
   - tools/sim/site.ts reads the timeline by its words: `/rival car/` must match exactly one entry, and `/Vale exits/`, `/Vale at car/` and `/= over$/` must change with the entries (the new ones end "(over)").
+
+## Sky's calls on S1–S3 (2026-10-25)
+1. **S1, leave without a final fight: no.** Sky: "no, it's to demonstrate the features of the games". This is not Motive's pick: the switch flips to "no skip". Motive defines the rule that holds the fight. Two leaks to close: (a) A-pressure with the car at the service drive leaving by about 2:51, before the rivals post; (b) takedowns thinning the posted crew to none. He prices the rule, then Keel builds it and Waymark re-composes. The rule stays a value.
+2. **S2, loud police from the entry nearest the stand: yes** ("yea"). The built value stands.
+3. **S3, the posted rivals run after a Driven car: run.** The built value stands.
+GDD §07 (final fight, loud, rivals) and §14 Chime are updated.
+
+## Motive: S1 = no, in rules (2026-10-25)
+The rulebook-ready entries are in **`briefs/059/motive/s1-rulings.json`**: key, value, tag, reason and source, plus what they supersede in rulings.json, the measured effect on each route, and the checks. The probe is in `briefs/059/motive/s1/`, with its numbers in `results.txt`. It runs engine 0.31.0 plus two scratch switches (`engine-probe.patch`). With both off it replays c037 byte for byte. Keel lands the entries.
+
+**The rule, as two values:**
+- **`fight-always` 1 [S].** Once the final fight has started, Go with Vale aboard is refused until the fight's blocker is out (down or gone) or the fight is over.
+  - The refusal stays `car-held`. Its holders are the blocker wherever he is, or, before he is named, whoever is coming: the rival car, with the seconds to its stop, or the officers running in.
+  - Board and go and fight it out are unchanged.
+  - 0 gives back the old pick.
+- **`rivals-floor` 3 [S].** At the safe fight's start, if fewer than 3 able crew are coming, away bodies come back:
+  - the tipped car cuts its tip short and brings the wheelman (on foot 19.8 s later at the yard);
+  - the warned lookout walks back (21.7 s).
+  - Nothing spawns. Killed or bound members stay gone.
+- **Two supporting rules:**
+  - **The late spring.** The blocker is picked at the first step-out when nobody is on foot at the spring.
+  - **Seen takedowns.** A crewmate who sees a takedown fires, so the run goes loud.
+- **One edge.** With all five killed or bound, the fight is over: "crew destroyed". This is not reachable quietly, because the wheelman never leaves his car before the fight except in route B's untipped tail.
+
+**The leaks:**
+- **(a) Closed by the gate.**
+  - Measured leak: A-pressure at the yard leaves at 2:32.1 and G-fast at 2:22.6, both before the rival car enters at 2:35.3.
+  - With the gate, both board and go at **2:59.7**: the first arrival, the blocker, steps out at 2:52.1 and is down at 2:54.7.
+  - Each is still faster than its square twin (3:20.5 and 3:11.0).
+  - G-fast pays +4 T (2 → 6): the guard's missed 2:30 mark is reported while the cell waits.
+- **(b) Closed by the floor and the gate.**
+  - Measured leak: route G at the yard with the posted three down goes unfought at 3:23.1.
+  - With the floor, the recalled wheelman and lookout hold Go until 3:42.4 (board) or 3:46.9 (fight out, Standing +3).
+  - Thinning one rival makes the fight easier, not skipped: the car is free 4.0 s after the spring against 5.6 s, and the crew breaks at 6.7 s against 8.7 s.
+  - Thinning all three only trades the ambush for a wait.
+- **The gate doesn't move c037:** all 41 of its scripts replay with the same final hash with the gate on, and all 23 wins already Go after `blocker.out`.
+
+**Keel adds** (s1-rulings.json `checks.keel`, 12 scenarios):
+- S1-GATE-EARLY-YARD, S1-GATE-SWITCH-OFF, S1-GATE-C037, S1-GATE-LOUD-YARD
+- S1-SPRING-LATE
+- S1-FLOOR-TIP, S1-FLOOR-LOOKOUT, S1-FLOOR-NO-SPAWN, S1-FLOOR-WAKE, S1-FLOOR-ZERO
+- S1-CREW-WIPED, S1-SEE-TAKEDOWN
+
+**Waymark re-composes:**
+- route-a-pressure-yard and route-g-fast-yard (Go about 2:59.7);
+- route-g-yard;
+- the route-b family at the yard, with focus fire;
+- new route-b-thin and careless-thin-all;
+- route-a-pressure and route-g-fast at the square, against F6's arrivals at rival-drop. The probe's stand-in loses c037's unchanged scripts there with the gate on or off: a re-compose item, not S1.
+- New checks: MC-14 (every win Goes at or after `blocker.out`) and MC-15 (no reference route reaches crew-wiped).
+
+**Open (for Aster):**
+- §07's "3–5 hostiles" can't hold 3 when the cell has killed or bound the posted three. Proposed wording: "fewer only when the cell has killed or bound crew members before it".
+- §06's hold gets one line for the gate.
+- Vantage: svc-ambush-1 is 5 m from the service door. Three posted round the yard shoot the carrying Enforcer down unless the cell focus-fires.
+
+Next owner: Keel.
+
+## Aster: routing for S1 = no (2026-10-25)
+- GDD §06 (the getaway: "the fight always comes") and §07 (3–5 hostiles, fewer only after crew killed or bound) carry Motive's rule.
+- Order: Keel's 059 round (in its worktree) merges first. Then Vantage rules on svc-ambush-1, 5 m from the service door, which makes the yard carry deadly. Then Keel builds the 12 S1-* scenarios with fight-always and rivals-floor (s1-rulings.json checks.keel; fight-always 0 reproduces the leak; c037 is unchanged with the gate on). Then Waymark:
+  - re-composes the yard variants (A-pressure, G-fast, G with focus fire, the B family);
+  - adds route-b-thin and careless-thin-all;
+  - re-checks A-pressure and G-fast at the square (M059-4.5 is in doubt: "rivals reach Vale" with the drop at rival-drop);
+  - adds MC-14 and MC-15;
+  - holds careless-loud-b-yard until the police blocker is down.
+
+## Aster: after Keel's 0.32.0 (2026-10-25)
+- Engine 0.32.0 is on branch `worktree-agent-ad654047fa24cd1cb` (3e3a0bb8..100b5e3a). It merges into the work branch once batch 0.2.118 reports. The merge moves rival-park and the site, so c037 gives way to the next record.
+- S1 was built as `fight.safe.leaveUnfought` true, before Sky's answer. Sky said no: Keel's next round flips it and builds s1-rulings.json.
+- Order:
+  1. Motive's single balance pass on 0.32 (running): loud against the carry, the early quiet routes, route B at the yard and svc-ambush-1, MC-5, with S1 folded in.
+  2. Vantage places any moved point.
+  3. Keel's round: the S1 flip, s1-rulings, Motive's balance entries, rival-entry's readers in tools/cover and tools/geometry, and the not-built items Motive keeps (rival-body takedown, carry, restrain and stash; a guard-ally point and car cover per stand; the front-stop overhang).
+  4. Waymark re-composes once and retires the -block scripts.
+  5. Fable: car.blocks' text test, the retired driver's Call dialogue, the drive-here and drive-fight locks, the 20 silent placeholder codes, Keel's draft timeline labels.
+  6. Glyph: the shut-stand refusal.
+  7. Latch: the 059 port, in the next batch.
+- Redline: S10 is 15–25 % slower per run on 0.32 (Combat plus the crew step, about 4 ms a run). Read it with the next perf pass.

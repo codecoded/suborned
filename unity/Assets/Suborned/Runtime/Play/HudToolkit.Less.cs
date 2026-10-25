@@ -274,10 +274,10 @@ namespace Suborned.Play
                     float cw = iconOnly ? IconOnlyW : ChipW; if (hwShown.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
                     if (carry && hw.Length == 0 && !s.Down) { Show(bar, false); r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 8; } // Glyph's 0.2.104 review #7: carrying, the plate is its icon and pace (no empty bar slot between them)
                     else tx.style.marginLeft = StyleKeyword.Null;
-                    { // Aster's call (brief 062 "Portraits and ids"): the Enforcer's plate names who he carries: Vale's model cameo, 18 px, before the pace
+                    { // Aster's call (brief 062 "Portraits and ids"): the Enforcer's plate names who he carries: Vale's model cameo, 14 px (18 and 15 failed the rim audit), before the pace
                         var g0 = host.Game; bool vale = i == (int)OpId.Enforcer && g0 != null && !s.Down && (g0.Vale == ValeAt.WithEnforcer || g0.Ops[i].CarryBody.Length > 0 && host.CastOf("councillor") is Person vp && g0.Ops[i].CarryBody == vp.Id);
                         var vc = r.Q("vale-cameo");
-                        if (vale && vc == null) { vc = E(r, null, w: 18, h: 18); vc.name = "vale-cameo"; vc.style.flexShrink = 0; vc.style.marginLeft = 6; r.Remove(vc); r.Insert(Mathf.Min(r.childCount, r.IndexOf(ic) + 1), vc); Bg(vc, "portraits/cameo_councillor_model", Color.white); }
+                        if (vale && vc == null) { vc = E(r, null, w: 14, h: 14); vc.name = "vale-cameo"; /* 14 px: the largest that sits 4 px clear of the 36 px plate's rim after layout rounding (the audit wants 10.2 px; 18 and 15 px failed) */ vc.style.flexShrink = 0; vc.style.marginLeft = 6; r.Remove(vc); r.Insert(Mathf.Min(r.childCount, r.IndexOf(ic) + 1), vc); Bg(vc, "portraits/cameo_councillor_model", Color.white); }
                         if (vc != null) Show(vc, vale);
                         if (vale) { r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; } /* the plate grows by the cameo */
                     }

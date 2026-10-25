@@ -30,8 +30,8 @@
    "usd": 0.35277
   },
   "2026-10-25": {
-   "calls": 11,
-   "usd": 2.95
+   "calls": 13,
+   "usd": 3.75
   }
  },
  "by_model": {
@@ -48,7 +48,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 31,
+   "calls": 32,
    "usd": 0.0
   },
   "google:4@2": {
@@ -64,8 +64,8 @@
    "usd": 5.59
   },
   "minimax:h3@fast": {
-   "calls": 4,
-   "usd": 1.6
+   "calls": 5,
+   "usd": 2.4
   },
   "minimax:music@2.6": {
    "calls": 1,
@@ -80,7 +80,7 @@
    "usd": 1.35
   }
  },
- "calls": 278,
+ "calls": 280,
  "failed": 14,
  "jobs": {
   "007-concepts": {
@@ -534,32 +534,32 @@
    "blocked": 0,
    "by_day": {
     "2026-10-25": {
-     "calls": 6,
-     "usd": 1.6
+     "calls": 8,
+     "usd": 2.4
     }
    },
    "by_model": {
     "codex:image_gen": {
-     "calls": 2,
+     "calls": 3,
      "usd": 0.0
     },
     "minimax:h3@fast": {
-     "calls": 4,
-     "usd": 1.6
+     "calls": 5,
+     "usd": 2.4
     }
    },
    "by_pass": {
     "1": {
      "budget_usd": 5.0,
-     "calls": 6,
-     "usd": 1.6
+     "calls": 8,
+     "usd": 2.4
     }
    },
-   "calls": 6,
+   "calls": 8,
    "cost_per_used": null,
    "failed": 2,
-   "ok": 4,
-   "total_usd": 1.6,
+   "ok": 6,
+   "total_usd": 2.4,
    "unknown_cost_calls": 0,
    "used": 0,
    "used_usd": 0.0
@@ -599,6 +599,6 @@
   }
  },
  "schema": "suborned.paid-spend/1",
- "total_usd": 65.62433,
+ "total_usd": 66.42433,
  "used": 63
 }

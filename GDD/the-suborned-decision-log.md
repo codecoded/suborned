@@ -25,12 +25,14 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 20. (brief 056 Q2, Q3) Silhouettes for hostiles and key people as well as the cell (as now), and the cut's rim: judged in play.
 21. (brief 043) The done moment: which pieces stay after Sky plays it; whether a busy agent's act is protected from a new order rather than only warned.
 22. (brief 035, 2026-10-22/24) On trial: haze #ecd9b4; the guideway #b3c7cf (the style contract and looks/harbour.json still say #96979c and must follow if kept).
-23. (brief 059 S1, Motive) May a fast or prepared cell leave without a final fight? §07 says "always; 3–5". A-pressure with the car at the service drive can be gone about 2:51, before the crew arrives, and takedowns can thin the crew to none. Motive's pick: allow it (leaving unfought gives up the fight's +1 Standing; loud always fights).
-24. (brief 059 S2, Motive) Loud police come from the entry nearest the car's stand: the north street for the square, the Office's official entrance (19.5 m) for the service drive. Without it, loud at the service drive wins unfought. Motive's pick: yes.
-25. (brief 059 S3, Motive) The three posted rivals run after a moved car (21 s, against Drive's 28 s) rather than walk (37 s). Motive's pick: run.
+23. (brief 059 S1) **Answered, Sky 2026-10-25: no.** A prepared cell never leaves without a final fight ("no, it's to demonstrate the features of the games"). Motive defines the rule that holds it (the A-pressure leave before the rivals post; takedowns thinning the crew to none); it stays a rule value.
+24. (brief 059 S2) **Answered, Sky 2026-10-25: yes.** Loud police come from the entry nearest the getaway car's stand (the north street for the square, the official entrance for the service drive).
+25. (brief 059 S3) **Answered, Sky 2026-10-25: run.** The posted rivals run after a Driven car.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
 ## v0.25.0 (2026-10-25; briefs 017–063; review sheet briefs/035-gdd-v0.25.md)
+- Motive, 2026-10-25 (brief 059, S1 = no in rules; briefs/059/motive/s1-rulings.json): fight-always (Go with Vale refused until the blocker is down or gone, or the fight ends) and rivals-floor 3 (away crew recalled, no spawns); §07 hostiles 3–5, fewer only after crew killed or bound (§06 getaway, §07 final fight).
+- Sky, 2026-10-25 (brief 059 S1–S3): the final fight always happens, however prepared the cell ("no, it's to demonstrate the features of the games"); loud police come from the entry nearest the car's stand ("yea"); the posted rivals run after a moved car (§07 final fight, loud, rivals; §14 Chime).
 - Aster, 2026-10-25 (brief 058, Waymark's 0.31 retimes): route A plants the loop first (about 1:25), then the optional reroute, which keeps A-board's 7 s of slack (reroute first leaves 3 s). G-kill's reroute moves to 1:25. The faster A-pressure and G-fast times that Loop v2 gives (the Tech is held 20 s, not 62) stand, because the result is the rules' (§07's reference results point to the latest mission check). careless-g-disable plants at 1:10.
 
 ### Since the 2026-10-21 draft

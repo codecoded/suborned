@@ -292,7 +292,7 @@ namespace Suborned.Play
             // ---- the reroute walk (brief 057 §2): the route drawn while in play, the patrol on it within 0.3 m, no jump
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
-                var g = h.Game; Play(h, Route("route-a"), 786, 790); // the Tech's Reroute at 1:18.5
+                var g = h.Game; var ra = Route("route-a"); int rr = ra.Find(o => o.Do == "reroute")?.Tick ?? 786; Play(h, ra, rr + 1, rr + 4); /* the Tech's Reroute, at its tick in route A (1:45 on c037; it was 1:18.5) */
                 for (int i = 0; i < 900 && !(g.PatrolAwayUntil > g.Tick) && !g.Over; i++) h.RunTo(g.Tick + 1);
                 int rolelessUnlocks = 0; h.UnattachedGates.Clear(); foreach (var dc in h.DoneChips) if (dc.Role.Length == 0 && dc.Unlocks.Count > 0) rolelessUnlocks++;
                 float maxOff = 0f, maxJump = 0f; int samples = 0, shots = 0; bool engine = false, live = false; Vector3? last = null; string shown = ""; List<Vector3> drawn = null; bool edgeShot = false, edgeSeen = false; // the route as first drawn when the reroute began: the robot must keep to it

@@ -1,0 +1,408 @@
+{
+ "schema": "latch.h1-measure/1",
+ "source": "/Users/sky/Projects/suborned/out/scratch/latch/proof2160-0311",
+ "picture": "3840x2160",
+ "note": "rect = the head figure renderer bounds projected at the picture size (padded 2 px); brightest = max luma, vividest = max V*S, top1pct_median = median of the 1% most vivid; dE2000 vs the board colour (Glint grade.py lab/de2000)",
+ "rows": [
+  {
+   "shot": "r118-h1-arriving-yaw120",
+   "state": "arriving",
+   "board": "#F2432E",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#CEAC81",
+    "dE": 29.8
+   },
+   "vividest": {
+    "rgb": "#FB5743",
+    "dE": 4.5
+   },
+   "top1pct_median": {
+    "rgb": "#FB5743",
+    "dE": 4.5,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-arriving-yaw210",
+   "state": "arriving",
+   "board": "#F2432E",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#BDAFA7",
+    "dE": 29.6
+   },
+   "vividest": {
+    "rgb": "#FB5642",
+    "dE": 4.3
+   },
+   "top1pct_median": {
+    "rgb": "#FB5643",
+    "dE": 4.4,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-arriving-yaw30",
+   "state": "arriving",
+   "board": "#F2432E",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#CDB390",
+    "dE": 31.4
+   },
+   "vividest": {
+    "rgb": "#CCB28E",
+    "dE": 31.4
+   },
+   "top1pct_median": {
+    "rgb": "#CDB28F",
+    "dE": 31.0,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-arriving-yaw300",
+   "state": "arriving",
+   "board": "#F2432E",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#CFB8A2",
+    "dE": 30.6
+   },
+   "vividest": {
+    "rgb": "#FB5743",
+    "dE": 4.5
+   },
+   "top1pct_median": {
+    "rgb": "#FB5743",
+    "dE": 4.5,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-clearing-yaw120",
+   "state": "clearing",
+   "board": "#FFB624",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#FDBA00",
+    "dE": 2.9
+   },
+   "vividest": {
+    "rgb": "#FDB800",
+    "dE": 2.3
+   },
+   "top1pct_median": {
+    "rgb": "#FDBA00",
+    "dE": 2.9,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-clearing-yaw210",
+   "state": "clearing",
+   "board": "#FFB624",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#FBB81A",
+    "dE": 2.0
+   },
+   "vividest": {
+    "rgb": "#FDB800",
+    "dE": 2.3
+   },
+   "top1pct_median": {
+    "rgb": "#FDB900",
+    "dE": 2.6,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-clearing-yaw30",
+   "state": "clearing",
+   "board": "#FFB624",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#CDB390",
+    "dE": 17.6
+   },
+   "vividest": {
+    "rgb": "#CCB28E",
+    "dE": 17.4
+   },
+   "top1pct_median": {
+    "rgb": "#CDB28F",
+    "dE": 17.5,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-clearing-yaw300",
+   "state": "clearing",
+   "board": "#FFB624",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#D8BB9F",
+    "dE": 18.8
+   },
+   "vividest": {
+    "rgb": "#FDB600",
+    "dE": 1.7
+   },
+   "top1pct_median": {
+    "rgb": "#FDBA00",
+    "dE": 2.9,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-stop-yaw120",
+   "state": "stop",
+   "board": "#F2432E",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#CEAC81",
+    "dE": 29.8
+   },
+   "vividest": {
+    "rgb": "#FB5742",
+    "dE": 4.4
+   },
+   "top1pct_median": {
+    "rgb": "#FB5743",
+    "dE": 4.5,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-stop-yaw210",
+   "state": "stop",
+   "board": "#F2432E",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#BDAFA7",
+    "dE": 29.6
+   },
+   "vividest": {
+    "rgb": "#FB5643",
+    "dE": 4.4
+   },
+   "top1pct_median": {
+    "rgb": "#FB5743",
+    "dE": 4.5,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-stop-yaw30",
+   "state": "stop",
+   "board": "#F2432E",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#CDB390",
+    "dE": 31.4
+   },
+   "vividest": {
+    "rgb": "#CCB28E",
+    "dE": 31.4
+   },
+   "top1pct_median": {
+    "rgb": "#CDB28F",
+    "dE": 31.0,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-stop-yaw300",
+   "state": "stop",
+   "board": "#F2432E",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#CFB8A2",
+    "dE": 30.6
+   },
+   "vividest": {
+    "rgb": "#FB5642",
+    "dE": 4.3
+   },
+   "top1pct_median": {
+    "rgb": "#FB5743",
+    "dE": 4.5,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-walk-yaw120",
+   "state": "walk",
+   "board": "#55E6B0",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#89ECC8",
+    "dE": 5.9
+   },
+   "vividest": {
+    "rgb": "#2389AC",
+    "dE": 38.7
+   },
+   "top1pct_median": {
+    "rgb": "#307BAB",
+    "dE": 44.3,
+    "n": 27
+   }
+  },
+  {
+   "shot": "r118-h1-walk-yaw210",
+   "state": "walk",
+   "board": "#55E6B0",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#88ECC8",
+    "dE": 5.8
+   },
+   "vividest": {
+    "rgb": "#26B587",
+    "dE": 12.4
+   },
+   "top1pct_median": {
+    "rgb": "#32A5AB",
+    "dE": 24.3,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-walk-yaw30",
+   "state": "walk",
+   "board": "#55E6B0",
+   "rect": [
+    1895,
+    885,
+    1945,
+    943
+   ],
+   "pixels": 2900,
+   "brightest": {
+    "rgb": "#CDB390",
+    "dE": 31.3
+   },
+   "vividest": {
+    "rgb": "#CCB28E",
+    "dE": 31.3
+   },
+   "top1pct_median": {
+    "rgb": "#CDB38F",
+    "dE": 31.2,
+    "n": 29
+   }
+  },
+  {
+   "shot": "r118-h1-walk-yaw300",
+   "state": "walk",
+   "board": "#55E6B0",
+   "rect": [
+    1898,
+    883,
+    1942,
+    945
+   ],
+   "pixels": 2728,
+   "brightest": {
+    "rgb": "#88ECC8",
+    "dE": 5.8
+   },
+   "vividest": {
+    "rgb": "#48CE9F",
+    "dE": 5.7
+   },
+   "top1pct_median": {
+    "rgb": "#48C9AB",
+    "dE": 8.6,
+    "n": 27
+   }
+  }
+ ]
+}

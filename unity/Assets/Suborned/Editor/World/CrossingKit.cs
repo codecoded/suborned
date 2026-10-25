@@ -19,6 +19,23 @@ namespace Suborned.World
     /// surface, in the ground layer's kerb batch that already reaches it (Combine.Fit), so it costs no renderer of its own.</summary>
     public sealed class CrossingKit
     {
+        /// <summary>The signal head's atlas (figure and numerals) and clock ring are white with the glyphs in alpha, cut at 0.5 (DK_Signal_Atlas,
+        /// DK_Signal_Ring `_Cutoff`). The kit's metas import them with Alpha Source None, so the build drew every face as a solid square and every
+        /// ring full (0.2.120's eye-level frames). Checked on every world build until the kit's own metas carry the alpha (Vela's exporter, then
+        /// Splice's catalogue; `bun run kit` puts the old meta back, and this reimports it). Returns how many it reimported.</summary>
+        public static int EnsureSignalTextures()
+        {
+            int n = 0;
+            foreach (var path in new[] { "Assets/Suborned/Kit/Textures/signal_atlas_v1.png", "Assets/Suborned/Kit/Textures/signal_ring_v1.png" })
+            {
+                if (AssetImporter.GetAtPath(path) is not TextureImporter ti) throw new InvalidDataException($"World: signal heads: {path} missing (the SignalLens and HaloRing pieces need it)");
+                if (ti.alphaSource == TextureImporterAlphaSource.FromInput && ti.alphaIsTransparency) continue;
+                ti.alphaSource = TextureImporterAlphaSource.FromInput; ti.alphaIsTransparency = true; ti.SaveAndReimport(); n++;
+                Debug.Log($"World: signal heads: {path} reimported with its alpha (the kit's meta says Alpha Source None)");
+            }
+            return n;
+        }
+
         const string Ground = "ground"; // the batch layer refuges go into, with the kerbs
         /// <summary>The kit's seafoam light (dots, bars, the eye's lens and halo ring) and the factor its linear base colour is emitted at.
         /// The kit row (DK_Cross_Light) is lit seafoam plus a pale HDR emission (r/g 0.63 against the colour's 0.36): in sun the two sum

@@ -158,6 +158,7 @@ namespace Suborned.World
             Play.PlayInstall.Install(world); // the live Handover host (brief 011 D): its own root, `play`
             Debug.Log($"World: kit parts spinning {KitParts.Spin(root)} (kit.json `parts`; view only)");
             RobotKit.EnsureStageAtlas(); // item 24: the patrol face atlas at its own 16 x 60 (no power-of-two scaling)
+            CrossingKit.EnsureSignalTextures(); /* batch 0.2.118: the signal atlas and ring keep their alpha (the figure, numerals and ring fill are alpha cuts) */
             Debug.Log($"World: robots alive: {RobotKit.Seeds(root)} placed robots rigged (face + head), seeded by their export path (brief 026; view only)");
 
             // Verify before saving: a scene that disagrees with the export is never written.

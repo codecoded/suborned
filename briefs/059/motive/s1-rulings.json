@@ -1,0 +1,140 @@
+{
+  "brief": "059 Sky's calls on S1-S3 (2026-10-25): S1 = no. Motive defines the rule that holds the final fight, and prices it",
+  "author": "Motive",
+  "date": "2026-10-25",
+  "gdd": "v0.25.0 §07 final fight: 'always, however fast or prepared the cell (the Handover shows the game's features; how the rules hold it is Motive's, §14); up to 60 s; 3-5 hostiles'; §06 getaway (Board, Drive, Go, the hold, the blocker)",
+  "sky": "S1, 2026-10-25: \"no, it's to demonstrate the features of the games\" (brief 059 'Sky's calls on S1-S3'). S2 yes and S3 run stand as built (rulings.json M059-5.1, M059-2.3).",
+  "engine": "probed on suborned.sim/0.31.0 plus two scratch switches (briefs/059/motive/s1/engine-probe.patch: PROBE_APPEAR stands in for 059 F6's arrivals by car, PROBE_GATE is M059-S1.2). With both off the scratch engine replays c037 byte for byte. Inputs are c037's. Keel's 059 engine was not read: the probe tests these rulings, not his code.",
+  "evidence": "briefs/059/motive/s1/results.txt (mkprobe.py, mkengine.sh, run.py, gate-c037.sh, engine-probe.patch); scratch under out/scratch/motive/059-s1/",
+  "howToRead": "As rulings.json: kind value | rule | refusal | check | supersede; key is a proposal and Keel names the final path; every entry is proposed: true until Sky plays it. The two values are switches, so a later call is a value change: fight-always 0 and rivals-floor 0 give back the old pick (leave unfought).",
+  "leaks": {
+    "a": {
+      "what": "A-pressure or G-fast with the getaway car Driven to the service-drive stand: Vale comes out of the service door 7.6 m from the car, and the cell goes before the rival car has even entered (2:35.3).",
+      "measured": "apress-leak Go 2:32.1 (T 7, A 1, Standing +1); gfast-leak Go 2:22.6 (T 2, A 0, Standing +2). No hostile is on the map (results.txt §3).",
+      "closedBy": "M059-S1.2 (the gate), with M059-S1.3 (the late spring). Measured with the gate: Go is refused until the first arrival, who is the blocker, is down. He steps out at 2:52.1 and is down at 2:54.7, and board and go is at 2:59.7 for both routes."
+    },
+    "b": {
+      "what": "Takedowns before the fight thin the posted three to none. With the tip (W away) and the warned lookout (L gone), nobody is left to fight.",
+      "measured": "g-thin0-leak (route G at the yard, the three posted down, no floor): Go at 3:23.1, the tick after Vale is aboard, with no fight (T 2, A 0, Standing +2).",
+      "closedBy": "M059-S1.4 (the floor recalls away bodies) and M059-S1.2 (the gate waits for them). Measured: g-thin3 (W and L recalled) has the blocker W step out at 3:34.8, down at 3:37.4. Board and go is at 3:42.4 and fight it out at 3:46.9 (Standing +3). M059-S1.6 makes thinning by hand a fight risk, and M059-S1.5 covers the one way to have no crew left."
+    }
+  },
+  "entries": [
+    {
+      "id": "M059-S1.1",
+      "kind": "value",
+      "key": "fight-always",
+      "value": 1,
+      "unit": "switch",
+      "tag": "S",
+      "reason": "Sky's S1: the Handover always shows its final fight. 1 = the final fight cannot be skipped: Go with Vale waits for the fight (M059-S1.2) and the crew refills to its floor (M059-S1.4). 0 = §06's hold alone, which was the old pick: a cell gone before anyone holds the car leaves unfought. One value, so Sky's later call is a value change. A generated mission can set it per mission: the capstone shows the feature, and a later mission may let preparation skip it.",
+      "src": "brief 059 'Sky's calls on S1-S3' 1; GDD v0.25 §07 final fight ('always, however fast or prepared the cell')"
+    },
+    {
+      "id": "M059-S1.2",
+      "kind": "rule",
+      "key": "fight.hold.gate (cell.go, CarHolders)",
+      "value": "With fight-always 1, from the final fight's start until it is over, Go with Vale aboard is refused while the fight's blocker is not out (down or gone, a rival blocker broken with his crew, §06). The refusal stays car-held, and its ids name the holders. (1) The blocker holds the car wherever he stands while he is up, not only on his lane post. (2) Before a blocker is named, whoever is coming holds it: car:rivals (safe; the answer carries its stop tick plus the step-out) or the officers still on their way (loud). The fight is over when every hostile is down, broken or gone, or, with no able crew left, as M059-S1.5. The §06 hold (within 8 m or on the exit lane) applies as before on top. Go without Vale (withdrawing by car) is not gated, and neither is the menu's Withdraw.",
+      "tag": "S",
+      "reason": "This is the only rule that closes leak (a). The rival car can't be on the map before 2:35.3 (GDD §07), and a cell can have Vale in a yard car at 2:22.5, so no timetable change makes the bodies arrive first. It reuses what the player already reads: Go's lock names its holders, and the rival car's approach line counts down to its stop (Glyph, brief 059 §1). It adds no new act: board and go (down the blocker, board, Go, Standing 0) and fight it out (+1) stay the two choices. The blocker becomes a must-down, which every shipped win already does: all 23 c037 wins Go after blocker.out, and with the gate on all 41 c037 scripts replay with the same final hash. It also closes M059-5.4's loud race at the yard (the cell's 6.5 s against the officers' 7.5 s), because the loud blocker must be down whatever the race. Preparation still pays: the gated yard (2:59.7) beats the square for A-pressure (3:20.5) and G-fast (3:11.0).",
+      "src": "GDD v0.25 §06 getaway (the hold, the blocker, Go), §07 final fight; probe results.txt §2 (41/41 same), §3 apress-gate, gfast-gate"
+    },
+    {
+      "id": "M059-S1.3",
+      "kind": "rule",
+      "key": "fight.safe.spring (late crew)",
+      "value": "The spring is as built: the Enforcer with Vale, not inside, within fight-ambush-m 20 m of the stand's car, or Vale already in the car. The blocker is picked at the spring from the crew on foot. If none is on foot then (the crew still in the rival car, 059 F6), he is picked at the tick the first one steps out, among those on foot (ties by id). Each later arrival alerts as he steps out and fires aimNew (1 s) after. While no blocker is named, M059-S1.2(2) holds the car.",
+      "tag": "S",
+      "reason": "Pulse's F6 says 'a rider still in the car at the spring is not a candidate until he is out', but it doesn't say when a blocker is picked if no one is out. Without this, a yard spring before 2:52.1 would pick no blocker, and the gate would wait on a holder that never comes. 'Or Vale in the car' covers a spring condition that can't otherwise hold once Vale is aboard.",
+      "src": "briefs/059/pulse/rival-routine.md §6 F6, §7 (the spring, the blocker); probe engine-probe.patch (picks at the first step-out)"
+    },
+    {
+      "id": "M059-S1.4",
+      "kind": "value",
+      "key": "rivals-floor",
+      "value": 3,
+      "unit": "count",
+      "tag": "S",
+      "reason": "§07's floor ('3-5 hostiles'), kept as a count of real bodies. The rule (rivals.recall): at the safe fight's start, count the crew members that are able (up, not bound) and coming (posted, walking, in the rival car, or due back during the fight). If fewer than rivals-floor, away members come back, the earliest at the stand first (ties by id), until the count reaches the floor or nobody away is left. (1) The tipped car cuts its tip short, re-enters at rival-car-entry, and rides to the stand's rival stop; W steps out after rivals-out-s 5 s (Yard: entry to rival-tail 14.8 s, so W is on foot 19.8 s after the fight starts). (2) The warned lookout walks back from rival-lookout-exit to the stand's 4th spot (to rival-tail 34.7 m, 21.7 s). A knocked-out member who wakes during the fight rejoins as a joiner (M059-3.4). A killed or bound member is never replaced, and nothing spawns: the floor is 3, or every able member if fewer are left. Fiction: the crew calls its car by radio when a man doesn't answer (voice, 1950s). Readability: the car comes back on its approach line with the 'Rival car coming' card (rivals.back). A takedown on a posted rival that would bring the floor into play shows it on its line (Glyph and Fable: one mark, the car with a return arrow, no sentence). 0 = no recall.",
+      "src": "GDD v0.25 §07 final fight (3-5 hostiles); brief 059 §2.2 (the tip, the warn); rival-routine.md §7 (the wheelman returns into a running fight); probe g-thin1, g-thin3, gff-thin1; mission points rival-car-entry, rival-lookout-exit, rival-tail"
+    },
+    {
+      "id": "M059-S1.5",
+      "kind": "rule",
+      "key": "rivals.crew-wiped",
+      "value": "If no crew member is able (every one of the five killed or bound, and no knocked-out one due to wake before the cell is gone), the safe fight is over at once and the gate is open. The debrief records it as 'the crew was destroyed', so the cell fought them, piecemeal. Not reachable quietly. W never leaves the rival car before the fight, except in route B's tail when no tip was given (he walks to Vale's door, 6:38.9), and crew in a car are no takedown target (M059-3.1). So it takes five permanent takedowns on a busy square and in the Office's yard, each charged when found or reported.",
+      "tag": "S",
+      "reason": "Without this, a cell that has really killed all five would wait for a blocker that never comes (a softlock). Keeping it named, measured and unreachable on every reference route is the honest form of 'always'.",
+      "src": "GDD v0.25 §06 the hold ('a combatant not down, broken or gone'); rulings.json M059-3.1, M059-3.2"
+    },
+    {
+      "id": "M059-S1.6",
+      "kind": "rule",
+      "key": "rivals.see-takedown",
+      "value": "A crew member who sees one of his crew taken down (in his cone, on a clear line, within his weapon's max ring) draws and fires on the taker. That is gunfire before the final fight (A >= 2, M059-3.3's public fight), and the final fight is loud. Finding a crewmate's body draws nothing (rivals don't report). It counts toward the recall at the fight's start.",
+      "tag": "S",
+      "reason": "§06 already fails a takedown on an armed target who sees it coming. This extends the same rule to his armed friends, so thinning by hand is priced by where the three stand. Pulse F7 leaves 'a member shot or taken down' to Motive. The posted pair at the square (ambush-1 and ambush-3, 2.3 m apart) can't be thinned quietly. A lone post can, and the floor then brings a late arrival, not nobody.",
+      "src": "GDD v0.25 §06 takedown (armed: fails, a fight), hostiles (rivals' cause: drawn, Vale, seen); rival-routine.md §6 F7"
+    },
+    {
+      "id": "M059-S1.7",
+      "kind": "refusal",
+      "key": "car-held (Go) and GoQuery",
+      "value": "No new code. car-held's ids may now hold car:rivals (with until = its stop tick + rivals-out-s) or an officer still running in, and the blocker wherever he is. Fable's line for the rival car: 'Rivals coming · 18 s' (the seconds from until). For the blocker the existing holder line is enough. Drive stays refused once the fight has started (M059-2.2), so the wait can't be driven out of.",
+      "tag": "S",
+      "reason": "Readable: one lock and one place to look. The reason is a body or a car the player can see on the map, with its seconds.",
+      "src": "GDD v0.25 §06 Go ('the refusal names the holders'); rulings.json M059-2.2; Glyph brief 059 §1 (approach line), §3 (shut stand)"
+    },
+    {
+      "id": "M059-S1.8",
+      "kind": "supersede",
+      "key": "rulings.json M059-3.8, M059-4.4(a) last sentence, sky S1 pick",
+      "value": "M059-3.8 ('no floor is rebuilt ... down to none ... the final fight still starts and holds nothing') is replaced by M059-S1.4 and M059-S1.5. In M059-4.4(a), 'A cell gone from there before that leaves unfought (S1)' is replaced by M059-S1.2. The S1 pick ('allow both') is overruled by Sky. M059-4.5's line 'At the square, A-pressure and G fight c036's five at the same spots' is under review: in the probe's F6 stand-in (the five standing at rival-drop, not walking on to their spots), c037's A-pressure and G-fast scripts lose at the square to rivals-reach-vale, with the gate on or off (results.txt §4). This is a re-compose item, not an S1 effect, and Keel's re-record decides it.",
+      "tag": "S",
+      "reason": "One source per rule: rulings.json stays as written, and this file says which of its lines no longer hold.",
+      "src": "this file; results.txt §4"
+    }
+  ],
+  "effects": {
+    "note": "Measured on the probe (results.txt §3). Yard = the getaway car at the service-drive stand. Board = down the blocker, board, Go (Standing 0 for the fight). Fight out = the crew broken first (+1). T and A are the run's. The probe's at-will posts stand in the open: the fight-out passes lose two operatives where marked, a cost of the posts, not of the rule. Routes not listed are unchanged: the gate replays all 41 c037 scripts with the same hash.",
+    "rows": [
+      { "route": "route-a-pressure-yard (new plan)", "before": "2:32.1 · T 7 · A 1 · Standing +1 · no fight (leaves before the rival car enters)", "after": "board 2:59.7 · T 7 · A 1 · Standing +1; fight out 3:08.5 · Standing +2 (Scout and Fixer downed from the open posts)", "delta": "+27.6 s, T 0, Standing 0 (board) or +1 (fight out). Still 20.8 s faster than the square's route-a-pressure-board (3:20.5, T 7, Standing +2)" },
+      { "route": "route-g-fast-yard (new plan)", "before": "2:22.6 · T 2 · A 0 · Standing +2 · no fight", "after": "board 2:59.7 · T 6 · A 1 · Standing +2; fight out 3:08.5 · Standing +3 (Scout and Fixer downed)", "delta": "+37.1 s, +4 T (the guard's missed 2:30 mark is reported while the cell waits; the leak left before it). 11.3 s faster than the square's route-g-fast-board (3:11.0, T 6, Standing +3)" },
+      { "route": "route-g-yard (new plan; the posted three plus L and W by car, gff-yard5)", "before": "unchanged by the gate (the crew is posted before Vale is out)", "after": "board 3:25.6 · T 2 · A 1 · Standing +2; fight out 3:30.2 · Standing +3 (focus fire)", "delta": "0 from S1. Against the square's route-g-board 4:11.5 (T 6), it leaves before the KO'd guard's statement (3:36.1)" },
+      { "route": "route-b family at the yard (proxy: route G's exit with three posted at svc-ambush-1..3, gff-posted3)", "before": "fights 3 posted (tip and warn); S1 changes nothing here", "after": "focus fire: car free 5.6 s and crew broken 8.7 s after the spring; at will (g-posted3) the Enforcer is shot down while carrying (rivals-reach-vale)", "delta": "0 from S1. Route B's T 3/3 unchanged (shots in the fight untraced); Waymark composes focus fire" },
+      { "route": "route-b-thin (new plan: P1 knocked out before the Take; W recalled, gff-thin1)", "before": "with no floor, a fight of 2", "after": "focus fire: car free 4.0 s and crew broken 6.7 s after the spring (2 posted break before W's car arrives)", "delta": "easier than route B's 3 (5.6 s and 8.7 s), not skipped. The knockout costs +4 T only if a finder or civilian reports it; the rival wakes in 2:00; a crewmate who sees it makes the run loud (M059-S1.6)" },
+      { "route": "careless-thin-all (new plan: all three posted down; W and L recalled, g-thin3)", "before": "g-thin0-leak: Go 3:23.1, unfought, T 2, A 0", "after": "board 3:42.4 · T 6 · A 1 · Standing +2; fight out 3:46.9 · Standing +3", "delta": "+19.3 s waiting for the recalled two (the gate). Over-thinning trades a posted ambush for a wait and a fight of 2" },
+      { "route": "route-a, route-g, route-g-kill, route-b at the square; the loud family", "before": "c037", "after": "c037 (41/41 same final hash with the gate on)", "delta": "0" },
+      { "route": "careless-loud-b-yard (M059-5.4)", "before": "a race: the cell 6.5 s against the officers' 7.5 s", "after": "held until the first officer at his post is down", "delta": "the race is gone; measure after the in-car Take is built" }
+    ]
+  },
+  "checks": {
+    "keel": [
+      "S1-GATE-EARLY-YARD: getaway car at service-drive, Vale aboard before 2:35.3. Go is refused car-held with ids [car:rivals] until the first rider steps out at rival-tail; then refused naming the blocker until he is down; then taken. Go at or after blocker.out.",
+      "S1-GATE-SWITCH-OFF: the same start with fight-always 0. Go is taken at Vale-aboard (the leak) and the fight never springs.",
+      "S1-GATE-C037: every c037 script with the gate on: the same outcome, tick and final hash (probe: 41/41).",
+      "S1-GATE-LOUD-YARD: route B taken at Alert 2. Go refused until the police blocker is down (closes M059-5.4's race).",
+      "S1-SPRING-LATE: the spring with nobody on foot. The blocker is picked at the first step-out (rival-1, ties by id), and each arrival fires aimNew after stepping out.",
+      "S1-FLOOR-TIP: tip, warned lookout, P1 knocked out. At the fight's start the tipped car re-enters at once, W steps out at the stand's rival stop 19.8 s later (yard), count 3.",
+      "S1-FLOOR-LOOKOUT: no tip, warned lookout, P1 and P2 knocked out. W comes by car (F6 Parked) and L walks back from rival-lookout-exit, count 3.",
+      "S1-FLOOR-NO-SPAWN: P1-P3 killed, tip, warn. W and L are recalled, count 2, and no hostile id beyond rival-5 exists.",
+      "S1-FLOOR-WAKE: P1 knocked out more than 2:00 before the fight. He rejoins his post and no recall is made.",
+      "S1-FLOOR-ZERO: rivals-floor 0 with the S1-FLOOR-NO-SPAWN start. No recall; with fight-always 1, crew-wiped holds only when no one is able.",
+      "S1-CREW-WIPED: all five killed. The fight is over at its start, the gate is open, and the debrief line reads 'crew destroyed'.",
+      "S1-SEE-TAKEDOWN: rival-1 (ambush-3) knocked out in rival-2's cone (ambush-1, 2.3 m). rival-2 fires, gunfire, A >= 2, the final fight is loud."
+    ],
+    "waymark": [
+      "Compose route-a-pressure-yard and route-g-fast-yard (+ board twins): Drive to the yard early, hold the drive mouth, Go once the first arrival is down (about 2:59.7).",
+      "Compose route-g-yard (+ twin) with focus fire (the probe at will loses the Enforcer).",
+      "Re-compose the route-b family for the yard's three posted with focus fire, and add route-b-thin (one posted rival knocked out where the other two can't see it; W recalled) and careless-thin-all (all three down; the wait).",
+      "Re-compose route-a-pressure and route-g-fast (+ twins) at the square against F6's arrivals at rival-drop (results.txt §4: the c037 scripts lose to rivals-reach-vale, gate on or off).",
+      "MC-14 (new): on every win, Go is at or after blocker.out (the final fight is always fought).",
+      "MC-15 (new): no reference route reaches crew-wiped.",
+      "careless-loud-b-yard: expect held until the police blocker is down."
+    ]
+  },
+  "open": [
+    "GDD §07 says '3-5 hostiles'. With the posted three killed or bound, and W and L the only ones left, the fight is 2. The floor can't make a third body without a spawn. Proposed §07 wording for Aster: '3-5 hostiles; fewer only when the cell has killed or bound crew members before it'. §06 the hold gets one line: 'in a mission that always fights (fight-always), the blocker holds the car wherever he is until he is out, and before he is named, whoever is coming holds it'.",
+    "The yard's ambush spots (Vantage): svc-ambush-1 is 5 m from the service door. Three posted at svc-ambush-1..3 shoot the carrying Enforcer down unless the cell focus-fires (probe g-posted3 at will: rivals-reach-vale at 3:22.0). Five at svc-ambush-1..5 kill him even with focus fire, but 059 never posts five. Waymark's re-record decides whether svc-ambush-1 moves off the door's line (a level change, not a rule)."
+  ]
+}

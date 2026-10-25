@@ -72,6 +72,31 @@ namespace Suborned.Play
             return string.Join(" ", l);
         }
 
+        /// <summary>A renderer's screen rect "x0,y0,x1,y1" (top-left origin, pixels of the current window), from its world bounds' eight corners.</summary>
+        static string Rect(HandoverHost h, Renderer r)
+        {
+            if (!r || !h.View) return "none";
+            var b = r.bounds; float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+            for (int i = 0; i < 8; i++) { var c = b.center + Vector3.Scale(b.extents, new Vector3((i & 1) == 0 ? -1 : 1, (i & 2) == 0 ? -1 : 1, (i & 4) == 0 ? -1 : 1)); var s = h.View.WorldToScreenPoint(c); x0 = Mathf.Min(x0, s.x); x1 = Mathf.Max(x1, s.x); y0 = Mathf.Min(y0, Screen.height - s.y); y1 = Mathf.Max(y1, Screen.height - s.y); }
+            return $"{x0:0},{y0:0},{x1:0},{y1:0}";
+        }
+        /// <summary>A figure's drawn height on screen in pixels (its bones), -1 when none; at 1080p a person reads 40-60 px.</summary>
+        static int PxTall(HandoverHost h, Transform t)
+        {
+            if (!t || !h.View) return -1; var rs = t.GetComponentsInChildren<SkinnedMeshRenderer>(); if (rs.Length == 0) return -1;
+            /* the bones, not the skinned bounds (those are loose: the driver read 114 px); each bone also 0.12 m up, for the crown */
+            float lo = float.MaxValue, hi = float.MinValue;
+            foreach (var r in rs) foreach (var bn in r.bones) { if (!bn) continue; foreach (var c in new[] { bn.position, bn.position + Vector3.up * 0.12f }) { var s = h.View.WorldToScreenPoint(c); lo = Mathf.Min(lo, s.y); hi = Mathf.Max(hi, s.y); } }
+            if (lo > hi) return -1;
+            return Mathf.RoundToInt((hi - lo) * 1080f / Mathf.Max(1, Screen.height));
+        }
+        static Vector3 Centre(HandoverHost h)
+        {
+            var c = Vector3.zero; int n = 0;
+            foreach (var k in new[] { "op/scout", "op/fixer", "op/tech", "op/enforcer" }) { var t = h.Views.Find(k); if (t && t.gameObject.activeInHierarchy) { c += t.position; n++; } }
+            return n > 0 ? c / n : h.frame.World(HandoverHost.OpeningFocus);
+        }
+
         public static IEnumerator Run(HandoverHost h, string dir, List<string> log, string[] json)
         {
             var parts = new List<string>(); bool ok = true; bool keepPlan = h.controls.planTogether; h.controls.planTogether = false;
@@ -132,23 +157,23 @@ namespace Suborned.Play
                     var head = heads[0]; var crossing = head.Crossing; var shots = new List<string>();
                     string[] states = { "walk", "clearing", "stop", "arriving" };
                     yield return Phase(h, "day");
-                    for (int y = 0; y < 4; y++) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; SignalHead.HoldLeft = st == "arriving" ? 2f : 7f; yield return Frames(4); var n = $"r118-h1-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); } }
+                    for (int y = 0; y < 4; y++) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; SignalHead.HoldLeft = st == "arriving" ? 2f : 7f; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); /* past the crossfade: 0.2.120's frames caught it mid-fade */ var n = $"r118-h1-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); log.Add($"{n}: h1 figure {Rect(h, head.Figure)} face {Rect(h, head.Rim)}"); } }
                     foreach (var ph in new[] { "evening", "night" })
                     {
                         yield return Phase(h, ph);
-                        foreach (var y in new[] { 0, 2 }) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; yield return Frames(4); var n = $"r118-h2-{ph}-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); } }
+                        foreach (var y in new[] { 0, 2 }) { h.TurnSnap(y); h.LookAt(head.transform.position); foreach (var st in states) { SignalHead.Hold = st; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); var n = $"r118-h2-{ph}-{st}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); shots.Add(n); } }
                     }
                     // H3: eye level on the head, walk, clearing, stop, by day and at night
                     foreach (var ph in new[] { "day", "night" })
                     {
                         yield return Phase(h, ph);
                         var hp = head.transform.position; var fwd = head.transform.forward; fwd.y = 0f; if (fwd.sqrMagnitude < 1e-4f) fwd = Vector3.forward; fwd.Normalize();
-                        foreach (var st in new[] { "walk", "clearing", "stop" }) { SignalHead.Hold = st; yield return Frames(3); var n = $"r118-h3-{ph}-{st}"; yield return Pose(h, dir, n, hp + fwd * 6f + Vector3.up * 1.7f, hp + Vector3.up * 2.4f, 45f, log); shots.Add(n); }
+                        foreach (var st in new[] { "walk", "clearing", "stop" }) { SignalHead.Hold = st; yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); var n = $"r118-h3-{ph}-{st}"; yield return Pose(h, dir, n, hp + fwd * 6f + Vector3.up * 1.7f, hp + Vector3.up * 2.4f, 45f, log); shots.Add(n); }
                     }
                     // H4: the clearing head and the guard's cone in one frame at play zoom, day and night (composed: the guard stands where he stands)
                     foreach (var ph in new[] { "day", "night" })
                     {
-                        yield return Phase(h, ph); SignalHead.Hold = "clearing"; var gd = h.Views.Find("guard");
+                        yield return Phase(h, ph); SignalHead.Hold = "clearing"; yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); var gd = h.Views.Find("guard");
                         h.TurnSnap(2); h.LookAt(gd ? (gd.position + head.transform.position) * 0.5f : head.transform.position); yield return Frames(4);
                         var n = $"r118-h4-{ph}"; yield return Shoot(h, dir, n, log); shots.Add(n);
                         log.Add($"{n}: head {Points(h)} guard {(gd ? (gd.position - head.transform.position).magnitude.ToString("0.0", CultureInfo.InvariantCulture) : "?")} m from the head");
@@ -159,7 +184,7 @@ namespace Suborned.Play
                         var three = heads.GroupBy(x => x.Crossing).Select(gr => gr.First()).Take(3).ToList(); string[] st3 = { "walk", "clearing", "stop" };
                         for (int i = 0; i < three.Count; i++) three[i].HoldHere = st3[i];
                         var c3 = Vector3.zero; foreach (var x in three) c3 += x.transform.position; c3 /= Mathf.Max(1, three.Count);
-                        h.TurnSnap(0); h.LookAt(c3); yield return Frames(4); yield return Shoot(h, dir, "r118-h5-night", log); shots.Add("r118-h5-night");
+                        h.TurnSnap(0); h.LookAt(c3); yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); yield return Shoot(h, dir, "r118-h5-night", log); shots.Add("r118-h5-night");
                         foreach (var x in three) x.HoldHere = "";
                     }
                     SignalHead.Hold = ""; yield return Phase(h, "day"); h.TurnSnap(0);
@@ -188,18 +213,29 @@ namespace Suborned.Play
                 parts.Add($"\"rim\": {{\"frames\": [{string.Join(", ", rows)}]}}");
             }
 
-            // ---- V1-V3 (Glint, brief 063): Vale C on the Office landing beside the guard (yaw 210, day/evening/night), carried by the Enforcer
+            // ---- V1-V3 (Glint, brief 063): Vale C out of the official entrance on his landing (yaw 210, day/evening/night; day also at 30, 120, 300), carried by the Enforcer
             // (yaw 30 and 120, day), at eye level in sun
             {
                 yield return Fresh(h); var g = h.Game; var vrows = new List<string>();
                 var vale = h.Views.Find("councillor"); var gd = h.Views.Find("guard"); bool landing = false;
-                for (int i = 0; i < 300 * Suborned.Sim.Game.Hz && !g.Over && vale && gd; i += 5) { h.RunTo(g.Tick + 5); if (i % 20 == 0) yield return null; if (vale.gameObject.activeInHierarchy && (vale.position - gd.position).magnitude < 3.5f) { landing = true; break; } }
+                for (int i = 0; i < 420 * Suborned.Sim.Game.Hz && !g.Over && vale; i += 5) { h.RunTo(g.Tick + 5); if (i % 20 == 0) yield return null; if (g.Vale != ValeAt.Office && vale.gameObject.activeInHierarchy) { landing = true; break; } }
+                /* Vale comes out of the official entrance at 5:50 (site schedule valeExits), not by the guard's public door: give him 2 s on his landing */
+                if (landing) h.RunTo(g.Tick + 2 * Suborned.Sim.Game.Hz);
                 if (landing)
                     foreach (var ph in new[] { "day", "evening", "night" })
                     {
                         yield return Phase(h, ph); h.TurnSnap(2); h.LookAt(vale.position); yield return Frames(4);
-                        var n = $"r118-v1-{ph}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "guard"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}");
+                        var n = $"r118-v1-{ph}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "guard"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}; Vale {PxTall(h, vale)} px tall");
                     }
+                if (landing) // E: Vale in play by day at the other three yaws (yaw 210 above), his drawn height in px (about 60 at 1080p)
+                {
+                    yield return Phase(h, "day");
+                    foreach (var y in new[] { 0, 1, 3 })
+                    {
+                        h.TurnSnap(y); h.LookAt(vale.position); yield return Frames(4);
+                        var n = $"r118-v1-day-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "guard"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\", \"px\": {PxTall(h, vale)}}}"); log.Add($"{n}: {pts}; Vale {PxTall(h, vale)} px tall");
+                    }
+                }
                 yield return Phase(h, "day");
                 if (vale) { var vp = vale.position; yield return Pose(h, dir, "r118-v3-eye", vp + vale.forward * 3f + Vector3.up * 1.6f, vp + Vector3.up * 1.4f, 40f, log); yield return Pose(h, dir, "r118-v3-eye-back", vp - vale.forward * 3f + Vector3.up * 1.6f, vp + Vector3.up * 1.4f, 40f, log); }
                 // V2: carried (route A to the Enforcer out with Vale)
@@ -214,14 +250,92 @@ namespace Suborned.Play
                 for (int i = 0; i < 120 * Suborned.Sim.Game.Hz && g.Vale != ValeAt.WithEnforcer && !g.Over; i += 5) h.RunTo(g.Tick + 5);
                 bool carried = g.Vale == ValeAt.WithEnforcer;
                 if (carried)
-                    foreach (var y in new[] { 0, 1 })
+                    foreach (var y in new[] { 0, 1, 2, 3 })
                     {
                         h.TurnSnap(y); var en = h.Views.Find("op/enforcer"); if (en) h.LookAt(en.position); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.3f); h.SetPaused(true); yield return Frames(2);
                         var n = $"r118-v2-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "op/enforcer"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}");
                     }
+                if (carried)
+                {
+                    // E: the portraits in play: Intel open (the cast faces), the feed's history (the NPC chips), the carry plate (in the v2 frames)
+                    h.TurnSnap(0); var en = h.Views.Find("op/enforcer"); if (en) h.LookAt(en.position);
+                    h.IntelOpen = true; yield return Frames(6); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-e-intel", log, "active"); h.IntelOpen = false;
+                    h.FeedHistoryOpen = true; yield return Frames(6); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-e-feed", log, "active"); h.FeedHistoryOpen = false;
+                    yield return Frames(3);
+                }
                 h.TurnSnap(0);
                 parts.Add($"\"vale\": {{\"landing\": {B(landing)}, \"carried\": {B(carried)}, \"frames\": [{string.Join(", ", vrows)}]}}");
                 log.Add($"r118 vale: landing {landing}, carried {carried}, {vrows.Count} frames");
+            }
+
+            // ---- E: the driver's face and hands (Glyph's albedo, brief 063), eye level, and at play zoom
+            {
+                yield return Fresh(h); var dv = h.Views.Find("driver"); bool on = dv && dv.gameObject.activeInHierarchy;
+                if (on)
+                {
+                    h.TurnSnap(2); h.LookAt(dv.position); yield return Frames(4); yield return Shoot(h, dir, "r118-e-driver-play", log);
+                    var f = dv.forward; f.y = 0f; if (f.sqrMagnitude < 1e-4f) f = Vector3.forward; f.Normalize(); var p = dv.position;
+                    yield return Pose(h, dir, "r118-e-driver-face", p + f * 1.6f + Vector3.up * 1.62f, p + Vector3.up * 1.58f, 28f, log);
+                    yield return Pose(h, dir, "r118-e-driver-hands", p + f * 1.5f + Vector3.right * 0.3f + Vector3.up * 1.25f, p + Vector3.up * 1.0f, 38f, log);
+                }
+                log.Add($"r118 driver: {(on ? $"at {dv.position.x:0.0},{dv.position.y:0.00},{dv.position.z:0.0}, {PxTall(h, dv)} px tall at play zoom" : "no driver figure in view")}");
+                h.TurnSnap(0);
+            }
+
+            // ---- C (056 F): the four agents close together in front of the café and of the Office, yaw 30, 120, 210 and 300, by day
+            {
+                var crows = new List<string>();
+                foreach (var (place, tag) in new[] { ("d:Courtyard", "cafe"), ("d:Office approach", "office") })
+                {
+                    yield return Fresh(h); var g = h.Game; var at = g.S.At(place); var fade = h.View ? h.View.GetComponent<ArchitectureFade>() : null;
+                    foreach (var op in new[] { "scout", "fixer", "tech", "enforcer" }) h.Issue(new Order { Op = op, Do = "move", To = place });
+                    int there = 0;
+                    for (int i = 0; i < 150 * Suborned.Sim.Game.Hz && !g.Over; i += 5)
+                    {
+                        h.RunTo(g.Tick + 5); there = 0;
+                        foreach (var id in new[] { OpId.Scout, OpId.Fixer, OpId.Tech, OpId.Enforcer }) if (Suborned.Sim.G.Within(g.Ops[(int)id].Pos, at, 450)) there++;
+                        if (there == 4) break;
+                    }
+                    yield return Phase(h, "day");
+                    for (int y = 0; y < 4; y++)
+                    {
+                        h.TurnSnap(y); h.LookAt(Centre(h)); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); yield return Frames(2);
+                        var n = $"r118-c-{tag}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log);
+                        var pts = Points(h, "op/scout", "op/fixer", "op/tech", "op/enforcer"); int reached = fade ? fade.Reached : -1;
+                        crows.Add($"{{\"shot\": \"{n}\", \"there\": {there}, \"points\": \"{pts}\", \"reached\": {reached}, \"capsules\": {B(fade && fade.capsules)}}}"); log.Add($"{n}: {there}/4 within 4.5 m of {place}; {pts}; reached {reached}");
+                    }
+                }
+                h.TurnSnap(0);
+                parts.Add($"\"cut4\": {{\"frames\": [{string.Join(", ", crows)}]}}");
+            }
+
+            // ---- F: a lane-mouth footway (brief 061, the export's ground.footways), the one nearest the Records Office, at play zoom and eye level
+            {
+                yield return Fresh(h);
+                var office = h.Views.Find("camera/entrance"); var near = office ? office.position : h.frame.World(HandoverHost.OpeningFocus);
+                string fid = ""; Vector3 fo = Vector3.zero, fin = Vector3.forward; float depth = 6f, run = 2.4f, best = float.MaxValue;
+                try
+                {
+                    var wpath = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FightLab.Dir(""))), "out", "world", "harbour-district.world.json");
+                    var txt = File.ReadAllText(wpath); var inv = CultureInfo.InvariantCulture;
+                    foreach (System.Text.RegularExpressions.Match m in System.Text.RegularExpressions.Regex.Matches(txt, "\"id\":\"(footway/[^\"]+)\"[^{]*?\"level\":([-0-9.]+),\"frame\":\\{\"origin\":\\[([-0-9.]+),([-0-9.]+)\\],\"along\":\\[[-0-9.]+,[-0-9.]+\\],\"into\":\\[([-0-9.]+),([-0-9.]+)\\]\\},\"half\":[0-9.]+,\"depth\":([0-9.]+)"))
+                    {
+                        float lv = float.Parse(m.Groups[2].Value, inv); var o = new Vector3(float.Parse(m.Groups[3].Value, inv), lv, float.Parse(m.Groups[4].Value, inv));
+                        float d2 = (o - near).sqrMagnitude; if (d2 >= best) continue;
+                        best = d2; fid = m.Groups[1].Value; fo = o; fin = new Vector3(float.Parse(m.Groups[5].Value, inv), 0f, float.Parse(m.Groups[6].Value, inv)); depth = float.Parse(m.Groups[7].Value, inv);
+                    }
+                }
+                catch (Exception e) { log.Add("r118 footway: " + e.Message); }
+                if (fid.Length > 0)
+                {
+                    var mid = fo + fin * (depth * 0.5f);
+                    foreach (var y in new[] { 0, 2 }) { h.TurnSnap(y); h.LookAt(mid); yield return Frames(4); yield return Shoot(h, dir, $"r118-f-footway-yaw{Mathf.RoundToInt(h.Yaw)}", log); }
+                    yield return Pose(h, dir, "r118-f-footway-eye", fo + fin * (depth + run + 5f) + Vector3.up * 1.7f, fo + fin * (depth * 0.4f), 50f, log);
+                    log.Add($"r118 footway: {fid} at {fo.x:0.0},{fo.z:0.0} ({Mathf.Sqrt(best):0} m from the Office camera)");
+                    parts.Add($"\"footway\": {{\"id\": \"{J(fid)}\", \"metres\": {F(Mathf.Sqrt(best))}}}");
+                }
+                else { log.Add("r118 footway: none found in the export"); parts.Add("\"footway\": null"); }
+                h.TurnSnap(0);
             }
 
             h.controls.planTogether = keepPlan; SignalHead.Hold = ""; h.SetNight(false);
