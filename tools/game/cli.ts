@@ -3,7 +3,7 @@
 //
 // How it builds (Unity holds a lock on the project while the Editor has it open, so a batch build cannot run beside it):
 //   Editor closed: Unity in batch mode, -executeMethod Suborned.World.Play.GameBuild.Cli (log: out/build/play/build.log).
-//   Editor open:   through the Editor (`unity cmd menu "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
+//   Editor open:   through the Editor (`unity cmd editor invoke_menu --path "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
 //                  refuses and says so (a build would end the session). Either way the result is out/build/play/build.json.
 // Staleness is by content (Splice, 2026-10-21): the app is rebuilt only when an input (unity/Assets, ProjectSettings, Packages, the icon, the engine
 // DLL) differs from what the last build read (out/build/play/inputs.json, a fingerprint of blob ids); a commit that only records built files
@@ -129,7 +129,7 @@ function editorOpen(): boolean {
   return ps.split('\n').some(l => l.toLowerCase().includes(UNITY.toLowerCase()) && !l.includes('-batchmode'));
 }
 function editorStatus(): { playMode?: string; compiling?: boolean } | null {
-  const r = run('unity', ['cmd', 'editor_status'], { quiet: true });
+  const r = run('unity', ['cmd', 'editor', 'status', '--project-path', join(ROOT, 'unity')], { quiet: true });
   const line = (r.stdout ?? '').split('\n').find(l => l.includes('"playMode"'));
   if (!line) return null;
   try { return JSON.parse(line.slice(line.indexOf('{'))); } catch { return null; }
@@ -143,7 +143,7 @@ async function build(): Promise<boolean> {
     if (st.playMode && st.playMode !== 'stopped') { console.error(`game: Unity is in Play (${st.playMode}). Stop Play, or close Unity, and run again; a build would end the session.`); return false; }
     for (let i = 0; i < 120 && editorStatus()?.compiling; i++) await sleep(2000);
     console.log('game: building through the open Editor (Suborned/Build Game)…');
-    run('unity', ['cmd', 'menu', '--path', 'Suborned/Build Game'], { quiet: true });
+    run('unity', ['cmd', 'editor', 'invoke_menu', '--path', 'Suborned/Build Game', '--project-path', join(ROOT, 'unity')], { quiet: true });
     for (let i = 0; i < 600; i++) { // up to 20 min
       await sleep(2000);
       if (existsSync(STAMP) && statSync(STAMP).mtimeMs > before) break;

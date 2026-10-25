@@ -23,6 +23,9 @@ namespace Suborned.Play
         /// <summary>Seconds since Begin while the start sequence runs; -1 when it does not.</summary>
         public float StartT { get; private set; } = -1f;
         public bool Starting => StartT >= 0f;
+        /// <summary>Glyph's N4 (0.2.122): the pointer's badge and every hover cue stay hidden while the briefing is up and through the glide, until the
+        /// roster lands (the settle, 3.3 s after Begin); no order can be given there.</summary>
+        public bool PointerHeld => ShowBriefing || Starting && StartT < BriefExitS + BriefGlideS;
         /// <summary>Proofs: the sequence holds where it is (StartSeek moves it) so a still can be taken at a given moment.</summary>
         public static bool StartFreeze;
         /// <summary>Automated runs open on the opening view as before; a proof of the briefing (FrontEnd.Proof) sets this to see the street briefing and the glide.</summary>
@@ -134,14 +137,19 @@ namespace Suborned.Play
             var mission = MissionFile("mission.json"); var bj = MissionFile("brief.json");
             JNode Brief(string k) => bj?.Opt(k) ?? mission?.Opt("brief")?.Opt(k);
             // the target: brief.target, else the councillor; its name from the dossier's target line ("Councillor Vale. Holds…"), else the text's
-            b.TargetRole = Brief("target") is JNode tr && tr.Kind == JKind.Str ? tr.Str() : "councillor";
+            // brief.target: a role id, or (Waymark, 0.2.123) { "role", "at" }: "at" is where the target leader ends (Glyph's N1: Vale leaves by the official
+            // entrance under the canopy, not the guard's public door)
+            var tnode = Brief("target"); string targetAt = tnode != null && tnode.Kind != JKind.Str ? S(tnode, "at") : null;
+            b.TargetRole = tnode is JNode tr && tr.Kind == JKind.Str ? tr.Str() : S(tnode, "role") ?? "councillor";
             string dt = v.dossier?.target ?? ""; int dot = dt.IndexOf('.');
             b.TargetName = dot > 0 ? dt[..dot] : h.Text?.TargetName(b.TargetRole, "Vale") ?? "Vale";
             b.TargetPhoto = $"portraits/card_{b.TargetRole}"; b.TargetBadge = HudModel.PersonBadge(b.TargetRole);
             b.TargetFact = h.Text?.BriefWord("fact", "Alive") ?? "Alive"; b.OfficeName = h.Text?.BriefWord("office", "Records Office") ?? "Records Office";
             Vector3 W(Pt p) => h.frame.World(p);
-            Vector3? Place(string id) { try { return id == "door" ? W(site.At(site.GuardPost)) : id == "car" ? W(g.CarPos()) : site.HasPlace(id) ? W(site.At(id)) : null; } catch (Exception) { return null; } }
-            b.TargetAt = Place("door"); b.OfficeAt = b.TargetAt;
+            Vector3? Place(string id) { try { return id == "door" ? W(site.At(site.GuardPost)) : id == "car" ? W(g.CarPos()) : site.HasPlace(id) ? W(site.At(id)) : site.HasPlace("d:" + id) ? W(site.At("d:" + id)) : null; } catch (Exception) { return null; } }
+            // Glyph's N1: the Target leader and the Office tag (over the canopy) at brief.target.at; the Front door way keeps "door" (the guard's post)
+            b.TargetAt = (targetAt != null ? Place(targetAt) : null) ?? Place("door"); b.OfficeAt = b.TargetAt;
+            b.Sources.Add(targetAt != null ? $"target at: brief.target.at {targetAt}{(Place(targetAt).HasValue ? "" : " (no such place: the door)")}" : "target at: the door (brief.target.at absent)");
             // the ways
             string WayName(string id) => h.Text?.BriefWord("ways." + id, null) ?? (id == "front-door" ? "Front door" : id == "pickup" ? "Pickup" : id);
             if (Brief("ways") is JNode wl && wl.Kind == JKind.Arr)

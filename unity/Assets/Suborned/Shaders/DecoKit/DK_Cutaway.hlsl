@@ -31,7 +31,7 @@ float4 _DKCutBack;   // x how far beyond the focus along the view the cut reache
 // stands as far above it as the focus's floor stands above the focus.
 // Brief 020 (Glyph: no screen door over a person): a point with a negative radius is a person's disc, cut clean rather than to the ghost,
 // with its own narrow feather: _DKCutClean.x what stays there (0 at full fade), .y its feather (m). The shadow map keeps the ghost shadow.
-#define DK_CUT_POINTS 10
+#define DK_CUT_POINTS 12
 float4 _DKCutPoints[DK_CUT_POINTS];
 float4 _DKCutClean;  // x what stays of a person's disc (0 at full fade); y its feather (m); z the fade's ease (0 solid .. 1 full, ArchitectureFade.fadeTime)
 // Brief 056 F (Sky 2026-10-25: "the soft circle cut with silhouettes, as the one rule for every yaw"): in the camera's passes (forward,

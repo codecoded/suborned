@@ -173,6 +173,9 @@ namespace Suborned.Play
         public static Vector2? PointerOverride;
         /// <summary>The perf probe (-perf064, Redline 064): time ShowSight (fans), PersonConesFrame and RerouteFrame each frame (Stopwatch ticks).</summary>
         public static bool PerfTiming; public static long PerfSightTicks, PerfConesTicks, PerfRerouteTicks;
+        /// <summary>Redline 064 R2 (0.2.122's mid-fight spikes): with PerfTiming, the frame's engine steps (Game.Step and the driven sample), the host's
+        /// work after each step (views.Tick, notices, beats, the log's drain) and the views' frame, in ms, summed until the reader (-late) clears them.</summary>
+        public static double PerfStepMs, PerfAfterMs, PerfViewsMs;
         /// <summary>For the proof: the pointer held on a world point (its screen position each frame, so a window resize never moves it off).</summary>
         public static Vector3? PointerWorld;
         string intentKey = ""; float hoverAt; GameObject background; Vector2 lastMouse = new(-1, -1), lastHover; readonly List<Camera> covered = new();
@@ -286,7 +289,8 @@ namespace Suborned.Play
             Guard("fire view", FireFrame); Guard("cars", CarFrame); // brief 024 Firing: each agent's fire state this frame (HostAim), the cars' effects
             Guard("attention cues", AttentionFrame);
             Guard("faces", FacesFrame); Guard("done", DoneFrame); // brief 043: the done moment (landings, windows, cancels) from the same log // brief 033: the roster's live portraits (HostPortraits) // brief 031: the watchers' displayed stages and the callouts (HostAttention), before the views draw them
-            views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
+            if (PerfTiming) { double v0 = Now(); views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f)); PerfViewsMs += Now() - v0; }
+            else views.Frame(Paused || Game.Over ? 1f : Mathf.Clamp01(acc / 0.1f));
             Guard("target rings", TargetRingsFrame); // brief 049 round 2: after the views moved
             FollowFrame(); // the test follow view (HostFollow): after the views moved
             CamFollowFrame(); Guard("hold status", HoldStatusFrame); // brief 041: C's follow and the eased centring; the pill's live words
@@ -317,8 +321,10 @@ namespace Suborned.Play
             DriveTick(); // brief 025: the driven agent's sample for this tick, before the step (HostDrive)
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
+            double a0 = 0; if (PerfTiming) { PerfStepMs += ms; a0 = Now(); }
             if (ok) { DriveAfterStep(); views.Tick(); FollowUp(); Track(); Notice(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); FeedClock(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; FreezeScan(log0); }
             Drain();
+            if (PerfTiming) PerfAfterMs += Now() - a0;
             return ok;
         }
 

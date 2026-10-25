@@ -89,6 +89,10 @@ namespace Suborned.Play
             var ch = new Choice(); var avail = new List<Way>();
             foreach (var w in ways) if (w.Available) avail.Add(w);
             avail.Sort(Compare); foreach (var w in avail) ch.Order.Add(w.Index);
+            // Aster's call (batch 0.2.123, Glyph's 0.2.122 question): on a camera Loop leads the ring at 12 o'clock and Watch stands next, at 3
+            // (Disable at 6, Fire at 9 as before); the Scout, with no Loop, keeps Watch at 12. Only the ring's order: the quick click below still
+            // ranks Watch first (watching a camera teaches its cone before it is looped).
+            if (kind == "camera") { int li = avail.FindIndex(w => w.Do == "loop"); if (li > 0) { int ix = ch.Order[li]; ch.Order.RemoveAt(li); ch.Order.Insert(0, ix); } }
             if (kind is "crowd" or "unit") { ch.Act = Act.Silent; ch.Why = "passer-by"; return ch; } // never a plain click on a passer-by or a unit
             if (avail.Count == 0)
             {

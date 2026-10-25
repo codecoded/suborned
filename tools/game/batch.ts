@@ -1,4 +1,4 @@
-// usage: bun run batch [--force] [--wait-timeout <s>] [--dry-run] [--from <step>] [--only a,b] [--skip a,b] [--editor | --batchmode] [--shots <file>] [--shots-out <dir>] [--no-shots] [--rebuild]
+// usage: bun run batch [--force] [--wait-timeout <s>] [--dry-run] [--from <step>] [--only a,b] [--skip a,b] [--editor | --batchmode] [--shots <file>] [--shots-out <dir>] [--no-shots] [--rebuild] [--perf064]
 // The one command Latch runs per build (brief 034 item 3). In order, stopping at the first failure:
 //   sim          bun tools/sim/unity.ts --tree           the engine, the inputs and the DLL into the Unity project (headless scenarios first)
 //   compile      tools/game/runtime-compile.ts           the player's scripts compile (dotnet, no Editor); the shot runner is installed first when it is not
@@ -12,6 +12,8 @@
 //   budget       tools/hud-budget + the layout audit     every HUD shot within budget; every audit clean
 //   late-fight   the built player with -late             tools/game/late.json: loud-fight and Sky's lagging session played to the last 60 s, then on at real time with the script's orders, 1080p; a frame over 50 ms tied to a save, order or the end, p99 over 16.7 ms, over 100 ms at the end: a row with findings is run once more and fails only if the same kind returns; the machine's load is recorded (brief 045; tools/game/late.ts)
 //   tp-long      the built player with -tplong          tools/game/tplong.json: the two third-person views (Sky's street, the worst heading) and the play view at 2880x1864, ~40 s: triangles, SetPass, shadow casters, renderers drawn and far, mean and p99 against the gates in tplong.ts (brief 048); SKIPPED, with the reason, until the built player has the hook
+//   perf064      the built player with -perf064         (opt-in: --perf064 or --only perf064, ~3 minutes) Redline's scene at 2880x1864, four 20 s windows, before/after: frame ms, the host's cone cost, the CPU/GPU split and each window's load when the build writes them (brief 064 R7; tools/game/perfrow.ts). Counts are the gate; ms only on a quiet machine
+//   Every step that reports frame times (game-check, shots, late-fight, tp-long, perf064) records the load average (1/5/15) at its start and end and prints it under its row, NOISY MACHINE included.
 // Sky is playing (a player of his, no automation flag; playing.ts): before every step the batch waits ("Sky is playing; waiting") up to --wait-timeout seconds (default 1200), then stops; --force goes on.
 // then prints one screen: pass/fail per step, seconds, the build, frame times, where the shots are. Logs of every step: out/batch/logs/<step>.log.
 // --dry-run prints what each step would run and touches nothing (no Unity, no build). Exit 0 only if every step that ran passed.
@@ -21,7 +23,8 @@ import { join, resolve } from 'node:path';
 import { compile as runtimeCompile } from './runtime-compile';
 import { guardConfig, takeGuardFlags, timeoutText, waitForSky } from './playing';
 import { GATES, MARKER as TPLONG_MARKER, judgeTpLong, resolveTpLong, type TpLongReport } from './tplong';
-import { LIMITS, loadText, resolveLate, runLate, type End, type LateReport, type LateResolvedFile, type LoadSample } from './late';
+import { LIMITS, loadText, noisy as loadNoisy, resolveLate, runLate, type End, type LateReport, type LateResolvedFile, type LoadSample } from './late';
+import { perf064Lines, spanEnd, spanStart, spanText, type LoadSpan, type Perf064Report } from './perfrow';
 import { build as buildEngine, engineAt } from '../missions/check/engine';
 import { DEFAULT_FILE, ROOT, expectedFiles, fileResolver, pngFileSize, resolveShots, type ResolvedFile } from './shots';
 
@@ -35,14 +38,17 @@ export type Ctx = {
   dry: boolean; mode: 'editor' | 'batchmode'; shotsFile: string; shotsOut: string;
   /** build the player even when nothing it is made from is newer than the app */
   rebuild?: boolean;
+  /** run the perf probe step (opt-in: about three minutes of the player; --perf064 or --only perf064) */
+  perf064?: boolean;
   /** what the steps hand each other */
   facts: Record<string, unknown>;
   say(m: string): void;
   /** called before each step runs; a text means Sky kept playing past the timeout: the step fails with it (playing.ts) */
   guard?(stepId: string): Promise<string | undefined>;
 };
-export type Step = { id: string; title: string; plan(c: Ctx): string[]; run(c: Ctx): Promise<StepResult> };
-export type Row = { id: string; title: string; status: 'ok' | 'FAILED' | 'skipped' | 'not run'; seconds: number; detail: string };
+/** perf: the step reports frame times, so the screen records the machine's load around it (perfrow.ts, Redline R7) */
+export type Step = { id: string; title: string; perf?: boolean; plan(c: Ctx): string[]; run(c: Ctx): Promise<StepResult> };
+export type Row = { id: string; title: string; status: 'ok' | 'FAILED' | 'skipped' | 'not run'; seconds: number; detail: string; /** the machine's load average (1/5/15) at the start and end of a perf step */ load?: LoadSpan };
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 const tail = (s: string, n = 12) => s.trim().split('\n').slice(-n).join('\n');
@@ -68,13 +74,14 @@ export function editorOpen(): boolean {
   const ps = Bun.spawnSync(['pgrep', '-fil', 'Unity.app/Contents/MacOS/Unity'], { stdout: 'pipe', stderr: 'pipe' }).stdout.toString();
   return ps.split('\n').some(l => l.toLowerCase().includes(UNITY.toLowerCase()) && !l.includes('-batchmode'));
 }
+// --project-path: with a second Editor open on this Mac (another project) the CLI refuses to guess (exit 6), so every call names ours
 async function editorStatus(): Promise<{ playMode?: string; compiling?: boolean } | null> {
-  const r = await sh('unity-cli', ['unity', 'cmd', 'editor_status']);
+  const r = await sh('unity-cli', ['unity', 'cmd', 'editor', 'status', '--project-path', UNITY]);
   const line = r.out.split('\n').find(l => l.includes('"playMode"'));
   if (!line) return null;
   try { return JSON.parse(line.slice(line.indexOf('{'))); } catch { return null; }
 }
-async function menu(path: string): Promise<boolean> { return (await sh('unity-cli', ['unity', 'cmd', 'menu', '--path', path], { append: true })).code === 0; }
+async function menu(path: string): Promise<boolean> { return (await sh('unity-cli', ['unity', 'cmd', 'editor', 'invoke_menu', '--path', path, '--project-path', UNITY], { append: true })).code === 0; }
 async function idle(timeoutMs = 600000): Promise<boolean> {
   const t0 = Date.now();
   while (Date.now() - t0 < timeoutMs) { const s = await editorStatus(); if (s && !s.compiling) return true; await sleep(2000); }
@@ -138,7 +145,7 @@ export const STEPS: Step[] = [
   {
     id: 'unity-world', title: 'Unity reimport + world rebuild',
     plan: c => c.mode === 'editor'
-      ? ['unity cmd editor_status  (must be stopped, not compiling)', 'unity cmd menu --path "Assets/Refresh"', 'unity cmd menu --path "Suborned/World/Build Harbour District (Export)"  (waits for unity/Assets/Scenes/HarbourDistrict.unity to be written)']
+      ? ['unity cmd editor status  (must be stopped, not compiling)', 'unity cmd editor invoke_menu --path "Assets/Refresh"', 'unity cmd editor invoke_menu --path "Suborned/World/Build Harbour District (Export)"  (waits for unity/Assets/Scenes/HarbourDistrict.unity to be written)']
       : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.HarbourWorldBuilder.Build -world out/world/harbour-district.world.json -logFile out/batch/logs/unity-world.unity.log`],
     async run(c) {
       const t0 = Date.now();
@@ -162,7 +169,7 @@ export const STEPS: Step[] = [
   },
   {
     id: 'unity-match', title: 'Unity scenarios match headless',
-    plan: c => c.mode === 'editor' ? ['unity cmd menu --path "Suborned/Sim/Run Scenarios (Unity vs headless)"  (waits for out/sim-unity/unity-editor.json)'] : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.Play.SimScenarios.RunBatch -logFile out/batch/logs/unity-match.unity.log`],
+    plan: c => c.mode === 'editor' ? ['unity cmd editor invoke_menu --path "Suborned/Sim/Run Scenarios (Unity vs headless)"  (waits for out/sim-unity/unity-editor.json)'] : [`${unityExe()} -batchmode -quit -projectPath unity -executeMethod Suborned.World.Play.SimScenarios.RunBatch -logFile out/batch/logs/unity-match.unity.log`],
     async run(c) {
       const t0 = Date.now();
       if (c.mode === 'editor') {
@@ -188,7 +195,7 @@ export const STEPS: Step[] = [
     },
   },
   {
-    id: 'game-check', title: 'player proof', plan: () => ['bun tools/game/cli.ts --check --reuse-proof  (the proof the build just took is reused)'],
+    id: 'game-check', perf: true, title: 'player proof', plan: () => ['bun tools/game/cli.ts --check --reuse-proof  (the proof the build just took is reused)'],
     async run(c) {
       const r = await sh('game-check', ['bun', 'tools/game/cli.ts', '--check', '--reuse-proof'], { timeoutMs: 1800000 });
       const scen = r.out.match(/scenarios (\d+)\/(\d+) match headless[^\n]*/)?.[0], drive = /driven session replays headless/.test(r.out);
@@ -197,7 +204,7 @@ export const STEPS: Step[] = [
     },
   },
   {
-    id: 'shots', title: 'shots in the player', plan: c => [`resolve ${rel(c.shotsFile)} → out/batch/shots.resolved.json`, `"${join(APP, 'Contents/MacOS/The Suborned')}" -shots out/batch/shots.resolved.json ${rel(c.shotsOut)} -novsync -logFile ${rel(c.shotsOut)}/player.log`],
+    id: 'shots', perf: true, title: 'shots in the player', plan: c => [`resolve ${rel(c.shotsFile)} → out/batch/shots.resolved.json`, `"${join(APP, 'Contents/MacOS/The Suborned')}" -shots out/batch/shots.resolved.json ${rel(c.shotsOut)} -novsync -logFile ${rel(c.shotsOut)}/player.log`],
     async run(c) {
       let resolved: ResolvedFile;
       try { resolved = prepare(c); } catch (e) { return fail((e as Error).message); }
@@ -224,7 +231,7 @@ export const STEPS: Step[] = [
     },
   },
   {
-    id: 'late-fight', title: 'late-fight frame times', plan: () => [`resolve tools/game/late.json → out/batch/late.resolved.json (each script's end from the engine)`, `"${join(APP, 'Contents/MacOS/The Suborned')}" -late out/batch/late.resolved.json out/batch/late -novsync -logFile out/batch/late/player.log`, 'fail: a frame > 50 ms tied to a save, order or the end, p99 > 16.7 ms, > 100 ms in the 2 s after the mission ends; each only if it comes back on a second run (brief 045)'],
+    id: 'late-fight', perf: true, title: 'late-fight frame times', plan: () => [`resolve tools/game/late.json → out/batch/late.resolved.json (each script's end from the engine)`, `"${join(APP, 'Contents/MacOS/The Suborned')}" -late out/batch/late.resolved.json out/batch/late -novsync -logFile out/batch/late/player.log`, 'fail: a frame > 50 ms tied to a save, order or the end, p99 > 16.7 ms, > 100 ms in the 2 s after the mission ends; each only if it comes back on a second run (brief 045)'],
     async run(c) {
       const exe = join(APP, 'Contents/MacOS/The Suborned');
       if (!existsSync(exe)) return fail(`no built player at ${rel(APP)}; run the game-build step`);
@@ -254,7 +261,7 @@ export const STEPS: Step[] = [
     },
   },
   {
-    id: 'tp-long', title: 'draw distance (third person)',
+    id: 'tp-long', perf: true, title: 'draw distance (third person)',
     plan: () => [`resolve tools/game/tplong.json → out/batch/tplong.resolved.json`, `"${join(APP, 'Contents/MacOS/The Suborned')}" -tplong out/batch/tplong.resolved.json out/batch/tplong -novsync -logFile out/batch/tplong/player.log`,
       `fail: third person over ${GATES.third.triangles / 1e6} M triangles, SetPass ${GATES.third.setPass}, shadow casters ${GATES.third.shadowCasters}, renderers drawn ${GATES.third.drawn} (${GATES.third.beyond150} beyond 150 m), mean ${GATES.third.meanMs} ms, p99 ${GATES.third.p99Ms} ms; play view over ${GATES.play.triangles / 1e6} M triangles or ${GATES.play.meanMs} ms (brief 048)`],
     async run(c) {
@@ -275,6 +282,26 @@ export const STEPS: Step[] = [
       writeFileSync(join(OUT, 'tplong.verdict.json'), JSON.stringify({ ok: v.ok, problems: v.problems, notes: v.notes, gates: GATES, load, lines: v.lines, report }, null, 1) + '\n');
       const tail = [...v.notes, loadText(load)];
       return v.ok ? { ok: true, detail: `${[...v.lines, ...tail].join('\n')}` } : fail(`${v.problems.length} problem${v.problems.length === 1 ? '' : 's'}:\n${[...v.problems, ...v.lines, ...tail].join('\n')}`);
+    },
+  },
+  {
+    id: 'perf064', perf: true, title: 'perf probe (Redline 064)',
+    plan: c => [c.perf064 ? 'asked for: runs' : 'SKIPPED unless --perf064 or --only perf064', `"${join(APP, 'Contents/MacOS/The Suborned')}" -perf064 out/batch/perf064 -capture-size 2880x1864 -novsync -perf-warm 30 -perf-seconds 20 -logFile out/batch/perf064/player.log`, 'measures only: no gate on ms; the load around the probe and per window is printed with it, NOISY MACHINE when the 1-minute load reached 0.6 of the cores (brief 064 R7)'],
+    async run(c) {
+      if (!c.perf064) return { ok: true, skipped: true, detail: 'opt-in, about three minutes of the player: --perf064 or --only perf064' };
+      const exe = join(APP, 'Contents/MacOS/The Suborned');
+      if (!existsSync(exe)) return fail(`no built player at ${rel(APP)}; run the game-build step`);
+      if (!playerHasPerf064()) return { ok: true, skipped: true, detail: `the built player has no -perf064 mode (its code lacks "${PERF064_MARKER}")` };
+      const dir = join(OUT, 'perf064'); rmSync(dir, { recursive: true, force: true }); mkdirSync(dir, { recursive: true });
+      const watch = watchLoad();
+      const r = await sh('perf064', [exe, '-perf064', dir, '-capture-size', '2880x1864', '-novsync', '-perf-warm', '30', '-perf-seconds', '20', '-logFile', join(dir, 'player.log')], { timeoutMs: 420000 });
+      const load = await watch.stop();
+      const rep = readJson(join(dir, 'perf064.json')) as Perf064Report | undefined;
+      if (!rep?.windows?.length) return fail(`the player wrote no perf064.json windows (exit ${r.code}); see ${rel(dir)}/player.log`);
+      const v = perf064Lines(rep, loadNoisy(load));
+      c.facts.perf064 = [...v.lines, ...v.notes, loadText(load)];
+      writeFileSync(join(OUT, 'perf064.verdict.json'), JSON.stringify({ load, noisy: v.noisy, notes: v.notes, lines: v.lines, report: rep }, null, 1) + '\n');
+      return { ok: true, detail: `${rep.windows.length} windows at ${rep.screen ?? '?'}${v.noisy ? ' · NOISY MACHINE, ms not judged' : ''}` };
     },
   },
 ];
@@ -376,6 +403,12 @@ export function playerHasLate(managed = join(APP, 'Contents/Resources/Data/Manag
   if (!existsSync(managed)) return false;
   return readFileSync(managed).includes(Buffer.from(LATE_MARKER, 'utf16le'));
 }
+const PERF064_MARKER = 'suborned.perf064/1';
+/** Does the built player carry the -perf064 probe? Its report's schema literal is in its code only when the probe is. */
+export function playerHasPerf064(managed = join(APP, 'Contents/Resources/Data/Managed/Suborned.Runtime.dll')): boolean {
+  if (!existsSync(managed)) return false;
+  return readFileSync(managed).includes(Buffer.from(PERF064_MARKER, 'utf16le'));
+}
 const TPLONG_FILE = join(ROOT, 'tools/game/tplong.json');
 /** Does the built player carry the -tplong mode? Its report's schema literal is in its code only when Latch's hook is. */
 export function playerHasTpLong(managed = join(APP, 'Contents/Resources/Data/Managed/Suborned.Runtime.dll')): boolean {
@@ -434,8 +467,9 @@ export async function runSteps(steps: Step[], c: Ctx, run: string[]): Promise<Ro
     const t0 = performance.now();
     if (!c.dry && c.guard) { const g = await c.guard(s.id); if (g) { rows.push({ id: s.id, title: s.title, status: 'FAILED', seconds: 0, detail: g }); stopped = true; continue; } }
     let r: StepResult;
+    const span0 = s.perf && !c.dry ? spanStart() : undefined; // the load average when a perf step starts and ends (Redline R7)
     try { r = c.dry ? { ok: true, detail: s.plan(c).join('\n') } : await s.run(c); } catch (e) { r = { ok: false, detail: `threw: ${(e as Error).message}` }; }
-    rows.push({ id: s.id, title: s.title, status: r.ok ? (r.skipped ? 'skipped' : 'ok') : 'FAILED', seconds: (performance.now() - t0) / 1000, detail: r.skipped ? `skipped: ${r.detail}` : r.detail });
+    rows.push({ id: s.id, title: s.title, status: r.ok ? (r.skipped ? 'skipped' : 'ok') : 'FAILED', seconds: (performance.now() - t0) / 1000, detail: r.skipped ? `skipped: ${r.detail}` : r.detail, ...(span0 && !r.skipped ? { load: spanEnd(span0) } : {}) });
     if (!r.ok) stopped = true;
   }
   return rows;
@@ -454,13 +488,14 @@ export function frameLines(proof: any, rep: Report | undefined): string[] {
   return out;
 }
 
-export function screen(rows: Row[], o: { when: string; mode: string; build?: any; proof?: any; shots?: Report; shotsOut: string; skipped?: string; late?: LateReport; lateNotes?: string[]; tplong?: string[] }): string {
+export function screen(rows: Row[], o: { when: string; mode: string; build?: any; proof?: any; shots?: Report; shotsOut: string; skipped?: string; late?: LateReport; lateNotes?: string[]; tplong?: string[]; perf064?: string[] }): string {
   const w = Math.max(...rows.map(r => r.id.length));
   const out: string[] = [`bun run batch · ${o.when} · Unity ${o.mode === 'editor' ? 'Editor open (menus through the Unity CLI)' : 'batchmode'}`, ''];
   for (const r of rows) {
     const first = r.detail.split('\n')[0] ?? '';
     out.push(`  ${r.id.padEnd(w)}  ${r.status.padEnd(8)} ${(r.status === 'ok' || r.status === 'FAILED' ? `${r.seconds.toFixed(0)} s` : '').padStart(5)}  ${first}`);
     if (r.status === 'FAILED') for (const l of r.detail.split('\n').slice(1)) out.push(`  ${' '.repeat(w)}  ${' '.repeat(8)} ${' '.repeat(5)}  ${l}`);
+    if (r.load) out.push(`  ${' '.repeat(w)}  ${' '.repeat(8)} ${' '.repeat(5)}  ${spanText(r.load)}`); // beside the numbers: a noisy machine shows in the row
   }
   out.push('');
   const bad = rows.find(r => r.status === 'FAILED');
@@ -470,6 +505,7 @@ export function screen(rows: Row[], o: { when: string; mode: string; build?: any
   for (const r of o.late?.rows ?? []) if (r.status === 'ok') out.push(`late    ${r.name}: worst ${f1(Math.max(r.window.maxMs, r.tail.maxMs))} ms, p99 ${f1(r.window.p99Ms)} ms, end ${f1(r.tail.maxMs)} ms (last 60 s, ${o.late!.screen})`);
   for (const n of o.lateNotes ?? []) if (/NOISY|not counted|stray/.test(n)) out.push(`late    ${n}`);
   for (const l of o.tplong ?? []) out.push(`tp-long  ${l}`);
+  for (const l of o.perf064 ?? []) out.push(`perf064  ${l}`);
   if (o.shots) out.push(`shots   ${rel(o.shotsOut)}/  (${o.shots.shots.length}; shots.json is the report)`);
   out.push(bad ? `STOPPED at ${bad.id}: ${bad.title}. Log: out/batch/logs/${bad.id}.log` : `BATCH OK: ${rows.filter(r => r.status === 'ok').length} steps in ${rows.reduce((a, r) => a + r.seconds, 0).toFixed(0)} s`);
   return out.join('\n');
@@ -477,16 +513,20 @@ export function screen(rows: Row[], o: { when: string; mode: string; build?: any
 
 if (import.meta.main) {
   const args = process.argv.slice(2), flag = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args.splice(i, 2)[1] : undefined; }, bool = (k: string) => { const i = args.indexOf(k); if (i >= 0) args.splice(i, 1); return i >= 0; };
+  if (args.includes('--help') || args.includes('-h')) { // the usage comment at the top of this file
+    const top: string[] = []; for (const l of readFileSync(import.meta.path, 'utf8').split('\n')) { if (!l.startsWith('//')) break; top.push(l.replace(/^\/\/ ?/, '')); }
+    console.log(top.join('\n')); process.exit(0);
+  }
   try { takeGuardFlags(args); } catch (e) { console.error((e as Error).message); process.exit(2); }
   const from = flag('--from'), only = flag('--only')?.split(','), skipArg = flag('--skip')?.split(','), shotsFile = resolve(flag('--shots') ?? DEFAULT_FILE), shotsOut = resolve(flag('--shots-out') ?? join(OUT, 'shots'));
-  const dry = bool('--dry-run'), noShots = bool('--no-shots'), forceEditor = bool('--editor'), forceBatch = bool('--batchmode'), rebuild = bool('--rebuild');
+  const dry = bool('--dry-run'), noShots = bool('--no-shots'), forceEditor = bool('--editor'), forceBatch = bool('--batchmode'), rebuild = bool('--rebuild'), perf064 = bool('--perf064') || !!only?.includes('perf064');
   if (args.length || (forceEditor && forceBatch)) { console.error(`unknown or conflicting argument ${args.join(' ') || '--editor --batchmode'}; see the usage line at the top of tools/game/batch.ts`); process.exit(2); }
   const skip = [...(skipArg ?? []), ...(noShots ? ['shots', 'budget'] : [])];
   const { run, unknown } = pick(STEPS.map(s => s.id), { from, only, skip });
   if (unknown.length) { console.error(`unknown step ${unknown.join(', ')}; steps: ${STEPS.map(s => s.id).join(' ')}`); process.exit(2); }
   const mode: Ctx['mode'] = forceEditor ? 'editor' : forceBatch ? 'batchmode' : editorOpen() ? 'editor' : 'batchmode';
   const c: Ctx = {
-    dry, mode, rebuild, shotsFile, shotsOut, facts: {}, say: m => console.error(m),
+    dry, mode, rebuild, perf064, shotsFile, shotsOut, facts: {}, say: m => console.error(m),
     // nothing heavy runs while Sky plays: wait before each step (a look at the process list when nobody does), stop after the timeout (playing.ts)
     guard: async id => { const w = await waitForSky(`batch ${id}`, { cfg: guardConfig }); return w.timedOut ? timeoutText(w) : undefined; },
   };
@@ -498,6 +538,6 @@ if (import.meta.main) {
   }
   const rows = await runSteps(STEPS, c, run);
   if (dry) { console.log(`bun run batch --dry-run · Unity ${mode === 'editor' ? 'Editor open' : 'batchmode'}\n`); for (const r of rows) console.log(r.status === 'ok' ? `${r.id}  ${r.title}\n${r.detail.split('\n').map(l => '    ' + l).join('\n')}` : `${r.id}  (${r.status})`); process.exit(rows.some(r => r.status === 'FAILED') ? 1 : 0); }
-  console.log(screen(rows, { when: new Date().toISOString().slice(0, 16).replace('T', ' '), mode, build: c.facts.build ?? readJson(join(ROOT, 'out/build/play/build.json')), proof: c.facts.proof, shots: c.facts.shots as Report | undefined, shotsOut, skipped: c.facts.rebuildSkipped as string | undefined, late: c.facts.late as LateReport | undefined, lateNotes: c.facts.lateNotes as string[] | undefined, tplong: c.facts.tplong as string[] | undefined }));
+  console.log(screen(rows, { when: new Date().toISOString().slice(0, 16).replace('T', ' '), mode, build: c.facts.build ?? readJson(join(ROOT, 'out/build/play/build.json')), proof: c.facts.proof, shots: c.facts.shots as Report | undefined, shotsOut, skipped: c.facts.rebuildSkipped as string | undefined, late: c.facts.late as LateReport | undefined, lateNotes: c.facts.lateNotes as string[] | undefined, tplong: c.facts.tplong as string[] | undefined, perf064: c.facts.perf064 as string[] | undefined }));
   process.exit(rows.some(r => r.status === 'FAILED') ? 1 : 0);
 }

@@ -33,7 +33,9 @@ namespace Suborned.Play
             if (GameBoot.ArgValue("-perf-warm") is string w && float.TryParse(w, NumberStyles.Float, CultureInfo.InvariantCulture, out var wv)) p.warm = wv;
         }
 
-        sealed class Win { public string Name = ""; public bool Legacy; public readonly List<double> Ms = new(), Sight = new(), Cones = new(), Reroute = new(); public int ConeBuilds, ConeQueries, FanGeoms, Cones0; public float Secs; public int Tick0, Tick1; }
+        /// <summary>Redline 064 R7: each window also keeps FrameTimingManager's CPU main-thread, render-thread and GPU frame ms (the split the wall-clock
+        /// interval cannot give), and its wall-clock start and end (Unix ms) so the batch's load sampler can be lined up with it (Splice, tools/game).</summary>
+        sealed class Win { public string Name = ""; public bool Legacy; public readonly List<double> Ms = new(), Sight = new(), Cones = new(), Reroute = new(), Main = new(), Render = new(), Gpu = new(); public int ConeBuilds, ConeQueries, FanGeoms, Cones0; public float Secs; public int Tick0, Tick1; public long Unix0, Unix1; }
 
         IEnumerator Start()
         {
@@ -76,12 +78,12 @@ namespace Suborned.Play
             float warmUntil = Time.realtimeSinceStartup + warm;
             while (Time.realtimeSinceStartup < warmUntil && !h.Game.Over) { var f = Frame(); while (f.MoveNext()) { } if (h.Paused) h.SetPaused(false); yield return null; }
             var wins = new List<Win> { new() { Name = "before-1", Legacy = true }, new() { Name = "after-1" }, new() { Name = "before-2", Legacy = true }, new() { Name = "after-2" } };
-            double tick2ms = 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+            double tick2ms = 1000.0 / System.Diagnostics.Stopwatch.Frequency; var ft = new FrameTiming[1];
             foreach (var w in wins)
             {
                 HandoverHost.PerfLegacy = w.Legacy; yield return null; yield return null; // the switch settles (one frame of each cost)
                 HandoverHost.ConeBuilds = HandoverHost.ConeQueries = 0; HostViews.FanGeometries = 0; w.Tick0 = h.Game.Tick;
-                double last = Time.realtimeSinceStartupAsDouble, start = last; int cones = 0, frames = 0;
+                double last = Time.realtimeSinceStartupAsDouble, start = last; int cones = 0, frames = 0; w.Unix0 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
                 while (Time.realtimeSinceStartupAsDouble - start < seconds && !h.Game.Over)
                 {
                     var f = Frame(); while (f.MoveNext()) { }
@@ -89,9 +91,11 @@ namespace Suborned.Play
                     yield return null;
                     double now = Time.realtimeSinceStartupAsDouble; w.Ms.Add((now - last) * 1000.0); last = now;
                     w.Sight.Add(HandoverHost.PerfSightTicks * tick2ms); w.Cones.Add(HandoverHost.PerfConesTicks * tick2ms); w.Reroute.Add(HandoverHost.PerfRerouteTicks * tick2ms);
+                    FrameTimingManager.CaptureFrameTimings(); // R7: the frame the timings describe lags a frame or two behind (the GPU's); fine for a 20 s window's mean and p99
+                    if (FrameTimingManager.GetLatestTimings(1, ft) == 1) { if (ft[0].cpuMainThreadFrameTime > 0) w.Main.Add(ft[0].cpuMainThreadFrameTime); if (ft[0].cpuRenderThreadFrameTime > 0) w.Render.Add(ft[0].cpuRenderThreadFrameTime); if (ft[0].gpuFrameTime > 0) w.Gpu.Add(ft[0].gpuFrameTime); }
                     cones += h.PersonCones.Count; frames++;
                 }
-                w.Secs = (float)(Time.realtimeSinceStartupAsDouble - start); w.ConeBuilds = HandoverHost.ConeBuilds; w.ConeQueries = HandoverHost.ConeQueries; w.FanGeoms = HostViews.FanGeometries; w.Tick1 = h.Game.Tick;
+                w.Unix1 = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(); w.Secs = (float)(Time.realtimeSinceStartupAsDouble - start); w.ConeBuilds = HandoverHost.ConeBuilds; w.ConeQueries = HandoverHost.ConeQueries; w.FanGeoms = HostViews.FanGeometries; w.Tick1 = h.Game.Tick;
                 w.Cones0 = frames > 0 ? (int)Math.Round(cones / (double)frames) : 0;
             }
             HandoverHost.PerfLegacy = false; HandoverHost.PerfTiming = false; HandoverHost.PointerOverride = null; h.PeekLatch = false;
@@ -103,6 +107,7 @@ namespace Suborned.Play
                 var w = wins[i];
                 sb.Append(i == 0 ? "\n" : ",\n").Append($"  {{\"name\": \"{w.Name}\", \"legacy\": {(w.Legacy ? "true" : "false")}, \"seconds\": {F(w.Secs)}, \"ticks\": [{w.Tick0}, {w.Tick1}], \"cones\": {w.Cones0}, ")
                   .Append($"\"frameMs\": {Stats(w.Ms)}, \"sightMs\": {Stats(w.Sight)}, \"conesMs\": {Stats(w.Cones)}, \"rerouteMs\": {Stats(w.Reroute)}, ")
+                  .Append($"\"mainMs\": {Stats(w.Main)}, \"renderMs\": {Stats(w.Render)}, \"gpuMs\": {Stats(w.Gpu)}, \"unix\": [{w.Unix0}, {w.Unix1}], ")
                   .Append($"\"coneBuildsPerS\": {F(w.ConeBuilds / Math.Max(0.001f, w.Secs))}, \"coneQueriesPerS\": {F(w.ConeQueries / Math.Max(0.001f, w.Secs))}, \"fanGeometriesPerS\": {F(w.FanGeoms / Math.Max(0.001f, w.Secs))}}}");
             }
             sb.Append("\n ]\n}\n");

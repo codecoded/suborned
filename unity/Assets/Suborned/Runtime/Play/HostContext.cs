@@ -469,6 +469,7 @@ namespace Suborned.Play
         {
             get
             {
+                if (PointerHeld) return ""; // Glyph's N4: no pointer badge over the briefing or the glide
                 if (Ring == null && Panel == null && Hover == null && Game != null && Array.IndexOf(Selected, true) >= 0 && NoWalkUnder()) return "nowalk"; // Suture's bot pass: ground the engine can't walk shows before the click (every preset: the hold preset has no move chip)
                 if (Ring != null || Hover == null || Panel != null || Game == null || TargetMode) return "";
                 if (IsFire(Hover) && (controls.quickAction || PressFires(Hover) || PickedId == "fire")) return "aim";

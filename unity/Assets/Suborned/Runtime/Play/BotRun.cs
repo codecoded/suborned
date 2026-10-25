@@ -43,6 +43,9 @@ namespace Suborned.Play
         // Suture's smoke triage (briefs/060 "Smoke triage", 2026-10-24): the café-seat skip, Q-SOLID against what is drawn, Q-MEM by thirds, the offer race, the open ring's grace
         public const float SeatSkipM = 1.5f, SolidBodyR = 0.25f, SolidOverlapM = 0.05f, MemWarmS = 120f, MemThirdMinS = 60f, MemTotalMBMin = 3f, MemManagedMBMin = 1f;
         public const int OfferRaceTicks = 1, GiverGraceTicks = 2;
+        /// <summary>Suture's Q-GIVER regrade (0.2.122): the ways an agent in the car may give (GDD §06: "Go: an order on the car by anyone once someone is
+        /// in it"); the car's Drive verb joins it when the engine has one (the engine's `drive` is the third-person drive and refuses in-car).</summary>
+        static readonly string[] FromCar = { "go" };
         public const float DedupeCellM = 2f, DedupeS = 30f; public const int MaxShots = 60;
 
         [Serializable] public class BotRow { public string name = "", policy = "random"; public int seed = 1, w = 1920, h = 1080; public float seconds = 660f, decideS = 0f; public HumanTape human; /* the human policy's tape (tools/qa/human.ts; BotRun.Human.cs) */ }
@@ -379,14 +382,14 @@ namespace Suborned.Play
         void GiverCheck(out string why)
         {
             why = null; var g = h.Game; if (g == null) return;
-            string Bad(OpId k) { var op = g.Ops[(int)k]; return op.Down ? "down" : op.CarriedBy != null ? "carried" : op.Inside ? "inside" : op.InCar ? "in the car" : null; }
+            string Bad(OpId k, string verb) { var op = g.Ops[(int)k]; return op.Down ? "down" : op.CarriedBy != null ? "carried" : op.Inside ? "inside" : op.InCar && Array.IndexOf(FromCar, verb) < 0 ? "in the car" : null; }
             var rs = h.Ring;
             if (rs != null)
             {
-                foreach (var s in rs.Segs) { if (s.More || s.Shut) continue; foreach (var k in s.By) if (Bad(k) is string b) { why = $"ring:{Op.Name(k)} {b}: offered for {s.Word} on {rs.Plan?.T?.Kind}/{rs.Plan?.T?.Key}"; return; } }
-                var pl = rs.Plan; if (pl != null) for (int w = 0; w < pl.Rep.Count; w++) if (pl.Row(w).Available) foreach (var k in pl.Givers[w]) if (Bad(k) is string b) { why = $"plan:{Op.Name(k)} {b}: a giver of {pl.Row(w).Verb} on {pl.T?.Kind}/{pl.T?.Key}"; return; }
+                foreach (var s in rs.Segs) { if (s.More || s.Shut) continue; foreach (var k in s.By) if (Bad(k, s.Row?.I?.Order?.Do) is string b) { why = $"ring:{Op.Name(k)} {b}: offered for {s.Word} on {rs.Plan?.T?.Kind}/{rs.Plan?.T?.Key}"; return; } }
+                var pl = rs.Plan; if (pl != null) for (int w = 0; w < pl.Rep.Count; w++) if (pl.Row(w).Available) foreach (var k in pl.Givers[w]) if (Bad(k, pl.Row(w).I?.Order?.Do) is string b) { why = $"plan:{Op.Name(k)} {b}: a giver of {pl.Row(w).Verb} on {pl.T?.Kind}/{pl.T?.Key}"; return; }
             }
-            var pn = h.Panel; if (pn != null) foreach (var r in pn.Rows) if (r.Available && Bad(r.By) is string b) { why = $"panel:{Op.Name(r.By)} {b}: offered {r.Verb} on {pn.T?.Kind}/{pn.T?.Key}"; return; }
+            var pn = h.Panel; if (pn != null) foreach (var r in pn.Rows) if (r.Available && Bad(r.By, r.I?.Order?.Do) is string b) { why = $"panel:{Op.Name(r.By)} {b}: offered {r.Verb} on {pn.T?.Kind}/{pn.T?.Key}"; return; }
         }
 
         /// <summary>Q-GIVER on the open ring, every frame (Suture): a wedge still offered by a giver who has been unable longer than GiverGraceTicks.</summary>
@@ -396,7 +399,8 @@ namespace Suborned.Play
             foreach (var sg in rs.Segs)
             {
                 if (sg.More || sg.Shut) continue;
-                foreach (var k in sg.By) { int i = (int)k; if (unableSince[i] >= 0 && g.Tick - unableSince[i] > GiverGraceTicks) { var op = g.Ops[i]; why = $"open-ring:{Op.Name(k)} {(op.Down ? "down" : op.CarriedBy != null ? "carried" : op.Inside ? "inside" : "in the car")} {(g.Tick - unableSince[i]) / 10f:0.0} s: still offered for {sg.Word} on {rs.Plan?.T?.Kind}/{rs.Plan?.T?.Key}"; return; } }
+                bool fromCar = Array.IndexOf(FromCar, sg.Row?.I?.Order?.Do) >= 0;
+                foreach (var k in sg.By) { int i = (int)k; var op0 = g.Ops[i]; if (fromCar && op0.InCar && !op0.Down && op0.CarriedBy == null && !op0.Inside) continue; /* Suture: Go from inside the car is the right giver */ if (unableSince[i] >= 0 && g.Tick - unableSince[i] > GiverGraceTicks) { var op = g.Ops[i]; why = $"open-ring:{Op.Name(k)} {(op.Down ? "down" : op.CarriedBy != null ? "carried" : op.Inside ? "inside" : "in the car")} {(g.Tick - unableSince[i]) / 10f:0.0} s: still offered for {sg.Word} on {rs.Plan?.T?.Kind}/{rs.Plan?.T?.Key}"; return; } }
             }
         }
 

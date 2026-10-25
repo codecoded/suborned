@@ -109,6 +109,7 @@ namespace Suborned.Play
                     var at = h.AnchorWorld(ch.AnchorKey) ?? ch.At; if (!at.HasValue) continue; ch.At = at;
                     bool person = ch.AnchorKey is "waitress" or "driver" or "guard" or "councillor" || ch.AnchorKey.StartsWith("op/") || ch.AnchorKey == "patrol";
                     if (!Proj(at.Value + Vector3.up * (person ? 2.3f : ch.AnchorKey.StartsWith("camera/") ? 0.7f : 1.6f), out var q)) continue;
+                    if (q.y < 0f) continue; // Glyph's N11: the anchor above the frame: no chip (the feed card carries the beat)
                     var c = used < chipEls.Count ? chipEls[used] : NewChip(); used++; Show(c.Root, true);
                     if (c.Id != ch.Id)
                     {
@@ -134,7 +135,8 @@ namespace Suborned.Play
                     // lift clear of the pill when they share the thing (the playground's hover lift)
                     if (pill.width > 0 && x < pill.xMax && x + cw > pill.xMin && bottom > pill.yMin - 8f && bottom - chh < pill.yMax) bottom = pill.yMin - 8f;
                     float W = root.layout.width > 0 ? root.layout.width : 1920f; x = Mathf.Clamp(x, 14f, Mathf.Max(14f, W - cw - 14f));
-                    c.Root.style.left = x; c.Root.style.top = bottom - chh; stackTop[ch.AnchorKey] = bottom - chh + rise; c.Root.style.opacity = Mathf.Min(1f, Mathf.Min(age / 0.12f, (HandoverHost.DoneChipS - age) / 0.5f)); c.Root.BringToFront();
+                    float ctop = Mathf.Max(8f, bottom - chh); // Glyph's N11: never cut by the top of the frame
+                    c.Root.style.left = x; c.Root.style.top = ctop; stackTop[ch.AnchorKey] = ctop + rise; c.Root.style.opacity = Mathf.Min(1f, Mathf.Min(age / 0.12f, (HandoverHost.DoneChipS - age) / 0.5f)); c.Root.BringToFront();
                     var ws = new List<string>(); foreach (var l in ch.Lines) ws.Add(l.Word); foreach (var u in ch.Unlocks) ws.Add((u.Shut ? "~" : "→") + u.Word); words.Add(string.Join("|", ws));
                 }
             for (int i = used; i < chipEls.Count; i++) { Show(chipEls[i].Root, false); chipEls[i].Id = -1; }

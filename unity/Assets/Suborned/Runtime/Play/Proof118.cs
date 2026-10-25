@@ -20,6 +20,10 @@ namespace Suborned.Play
     ///  · Glint's shot list (pictures and measurements, not gated; the values go back to Glint): H1-H5 the crossing heads nearest the Records
     ///    Office (SignalHead.Hold), R1-R5 the capsule rim, the uncut shadow, the silhouettes and the reach (each frame logs the agents' screen
     ///    points so the fill can be measured), V1-V3 Vale C on the landing, carried and at eye level.
+    ///  · 0.2.123: the camera ring at rest (Tech, Scout, Enforcer: -rest), the camera states Glyph had not seen (r118-alt-camera-panel,
+    ///    -loop-cone, -camera-on, -dead-disc-shot), H5 re-framed on three near heads, Glint's edge trial (r118-v1-edge-55/-70/-85) and the F1
+    ///    test: every shot logs the silhouette people with no cut and the fade points against the cap (`uncut`, gated: none on any frame), and
+    ///    the reach at yaw 210 (`reach`, gated: at most ReachedMax).
     /// Nothing here changes a rule; every order is the host's own. The light is put back to day at the end.</summary>
     public static class Proof118
     {
@@ -33,7 +37,28 @@ namespace Suborned.Play
             bool was = h.Paused; h.SetPaused(true);
             while (HudToolkit.ShotBusy) yield return null;
             log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(dir, name), state)); yield return null; while (HudToolkit.ShotBusy) yield return null;
+            log.Add(Uncut(h, name));
             h.SetPaused(was);
+        }
+        /// <summary>Glint 056 (2026-10-26): every shot logs the silhouette people with no cut (pass: none) and the fade points asked for against the cap;
+        /// at or past the cap logs "overflow" (one in the service yard means MaxPoints goes to 14, not a failure of the rule).</summary>
+        static int uncutFrames, withUncut, maxPoints, overflows;
+        internal static string Uncut(HandoverHost h, string name, bool count = true)
+        {
+            string u = h.UncutSilhouettePeople(); int n = h.FadePointCount; bool over = n >= ArchitectureFade.MaxPoints;
+            if (count) { uncutFrames++; if (u.Length > 0) withUncut++; maxPoints = Math.Max(maxPoints, n); if (over) overflows++; }
+            return $"{name}: uncut [{u}] points {n}/{ArchitectureFade.MaxPoints}{(over ? " overflow" : "")}";
+        }
+        /// <summary>Glint 056 R5 / F1 perf: renderers on the discarding variant; a frame past this is rejected.</summary>
+        public const int ReachedMax = 140;
+        /// <summary>Aster 0.2.123 item 3 (Glyph's 0.2.122 question): the open ring at rest, the pointer held in its dead zone (no wedge hovered, only the
+        /// lit one lit): its wedges logged clockwise from 12 o'clock.</summary>
+        static IEnumerator RestRing(HandoverHost h, string dir, string name, List<string> log)
+        {
+            if (h.Ring == null) { log.Add($"{name}: no ring open"); yield break; }
+            var keep = HandoverHost.PointerOverride; HandoverHost.PointerOverride = h.Ring.Screen; yield return Frames(4); yield return new WaitForSecondsRealtime(0.3f);
+            log.Add($"{name}: ring at rest [{RingWords(h)}] hover {h.Ring?.Hover ?? -2} lit {h.Ring?.Lit ?? -2}");
+            yield return Shoot(h, dir, name, log, "active"); HandoverHost.PointerOverride = keep;
         }
         static string RingWords(HandoverHost h) => h.Ring == null ? "" : string.Join(" | ", h.Ring.Segs.ConvertAll(x => x.More ? "⋯" : (x.Shut ? "~" : "") + x.Word));
         static List<Order> Route(string name)
@@ -100,6 +125,7 @@ namespace Suborned.Play
         public static IEnumerator Run(HandoverHost h, string dir, List<string> log, string[] json)
         {
             var parts = new List<string>(); bool ok = true; bool keepPlan = h.controls.planTogether; h.controls.planTogether = false;
+            uncutFrames = withUncut = maxPoints = overflows = 0; int reachMax = -1; var reachRows = new List<string>();
             HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
 
             // ---- cam058 (engine 0.31.0): the ring, the loop's 2:00, one loop at a time, Disable and the desk's clock, the dead disc, the price
@@ -113,9 +139,13 @@ namespace Suborned.Play
                 if (ec)
                 {
                     h.Select(OpId.Tech, false); h.LookAt(ec.position); yield return Frames(3);
-                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); ringTech = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-ring-camera-tech", log, "active"); h.CloseRing();
+                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); ringTech = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-ring-camera-tech", log, "active"); yield return RestRing(h, dir, "r118-ring-camera-tech-rest", log); h.CloseRing();
                     h.Select(OpId.Scout, false); yield return Frames(2);
-                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); ringScout = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-ring-camera-scout", log, "active"); h.CloseRing();
+                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); ringScout = RingWords(h); yield return new WaitForSecondsRealtime(0.3f); yield return Shoot(h, dir, "r118-ring-camera-scout", log, "active"); yield return RestRing(h, dir, "r118-ring-camera-scout-rest", log); h.CloseRing();
+                    // Aster 0.2.123 item 3: one more armed agent's ring on the camera, at rest (Fire alone, or Watch and Fire)
+                    h.Select(OpId.Enforcer, false); yield return Frames(2);
+                    h.LeftClickScripted(Sp(h, ec.position)); yield return Frames(4); yield return RestRing(h, dir, "r118-ring-camera-enforcer-rest", log); h.CloseRing();
+                    h.Select(OpId.Tech, false); yield return Frames(2);
                     h.Issue(new Order { Op = "tech", Do = "loop", Target = "entrance" });
                     for (int i = 0; i < 40 * Suborned.Sim.Game.Hz && !g.LoopOn && !g.Over; i++) h.RunTo(g.Tick + 1);
                     h.RunTo(g.Tick + 2); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); yield return Frames(2);
@@ -143,6 +173,58 @@ namespace Suborned.Play
                 ok &= cOk;
                 parts.Add($"\"cam058\": {{\"ok\": {B(cOk)}, \"atCabinet\": {B(atCab)}, \"ringTech\": \"{J(ringTech)}\", \"ringScout\": \"{J(ringScout)}\", \"loopMarker\": \"{J(marker)}\", \"loopHolds\": \"{J(holds)}\", \"shutLoop\": {B(shutLoop)}, \"cutChip\": \"{J(cut)}\", \"desk\": \"{J(desk)}\", \"afterReport\": \"{J(after)}\", \"deadDiscs\": {HudToolkit.DeadDiscsShown - deadDiscs0}, \"alert\": {g.Alert}, \"firePrice\": \"{price}\"}}");
                 log.Add($"r118 cam058: {(cOk ? "ok" : "FAILED")}: cabinet {atCab}; Tech ring [{ringTech}]; Scout ring [{ringScout}]; marker [{marker}]; second loop [{holds}] shut {shutLoop}; cut chip [{cut}] desk [{desk}] after [{after}] discs {HudToolkit.DeadDiscsShown - deadDiscs0}; Alert {g.Alert}; fire price {price}");
+            }
+
+            // ---- Glyph's unverified 0.2.122 states (Aster 0.2.123 item 4): the looped camera's hollow dashed cone (the Tech watches the entrance camera
+            // first, so its cone is learned and drawn), the Alt breakdowns for Loop and Disable (the camera's panel with Alt), the "Camera on" pop at the
+            // loop's 2:00 end, then the shot-out dead disc (disc_light_24, the ink fire icon). Pictures, not gated; the words logged.
+            {
+                yield return Fresh(h); var g = h.Game; var ec = h.Views.Find("camera/entrance");
+                bool learned = false, looped = false, on = false, shot = false; string fans = "", alt = "", pop = "", shotCam = "";
+                h.GiveWatchScripted(OpId.Tech, "camera:entrance");
+                for (int i = 0; i < 900 && !(learned = g.Known("camera:entrance") is { Sight: true }) && !g.Over; i++) h.RunTo(g.Tick + 1);
+                h.Issue(new Order { Op = "tech", Do = "move", To = "cabinet" });
+                for (int i = 0; i < 90 * Suborned.Sim.Game.Hz && !Suborned.Sim.G.Within(g.Ops[(int)OpId.Tech].Pos, g.S.At("cabinet"), g.R.AtReachCm) && !g.Over; i += 5) h.RunTo(g.Tick + 5);
+                if (ec && learned)
+                {
+                    // the Alt breakdowns: the entrance camera's panel with the Tech selected (Loop, Disable, Fire rows), Alt latched
+                    h.Select(OpId.Tech, false); h.LookAt(ec.position); yield return Frames(3);
+                    h.OpenPanel(new HandoverHost.Target { Kind = "camera", Key = "entrance", Label = h.CameraName("entrance") }, Sp(h, ec.position)); h.PeekLatch = true;
+                    yield return Frames(6); yield return new WaitForSecondsRealtime(0.4f);
+                    alt = h.Panel != null ? string.Join(" | ", h.Panel.Rows.ConvertAll(r => (r.Available ? "" : "~") + (r.I?.Order?.Do ?? "?"))) : "no panel";
+                    yield return Shoot(h, dir, "r118-alt-camera-panel", log, "active"); h.PeekLatch = false; h.ClosePanel(); yield return Frames(2);
+                    // the loop lands: the learned cone draws recorded (hollow, dashed all round)
+                    h.Issue(new Order { Op = "tech", Do = "loop", Target = "entrance" });
+                    for (int i = 0; i < 40 * Suborned.Sim.Game.Hz && !g.LoopOn && !g.Over; i++) h.RunTo(g.Tick + 1);
+                    h.RunTo(g.Tick + 2); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); h.LookAt(ec.position); yield return Frames(4);
+                    fans = h.Views.LoopedFans; looped = g.LoopOn && fans.Contains("camera:entrance");
+                    yield return Shoot(h, dir, "r118-loop-cone", log);
+                    // the loop's end (2:00 after it landed): the "Camera on" pop at the camera
+                    int pops0 = h.WindowClosePops;
+                    for (int i = 0; i < 150 * Suborned.Sim.Game.Hz && g.LoopOn && !g.Over; i += 5) h.RunTo(g.Tick + 5);
+                    h.RunTo(g.Tick + 1); h.SetPaused(false); yield return new WaitForSecondsRealtime(0.35f); h.SetPaused(true); h.LookAt(ec.position); yield return Frames(3);
+                    pop = h.LastClosePop; on = !g.LoopOn && h.WindowClosePops > pops0 && pop.Length > 0;
+                    yield return Shoot(h, dir, "r118-camera-on", log, "active");
+                }
+                // the shot-out disc: the Scout walks to a spot in pistol range with a clear line to a camera, then fires on it
+                {
+                    var sc = g.Ops[(int)OpId.Scout]; int reach = Math.Max(300, sc.Gun.W.MaxCm - 200);
+                    foreach (var cm in g.S.Cameras)
+                    {
+                        if (g.CameraDeadAs(cm.Id).Length > 0) continue; var cAt = cm.At;
+                        var spot = g.S.Grid.Nearest(sc.Pos, q => Suborned.Sim.G.D2(q, cAt) <= (long)reach * reach && g.S.Sight(q, cAt, g.R.Eye), 9000);
+                        if (!spot.HasValue) continue; shotCam = cm.Id;
+                        h.Issue(new Order { Op = "scout", Do = "move", Point = spot.Value });
+                        for (int i = 0; i < 120 * Suborned.Sim.Game.Hz && sc.Walk != null && !g.Over; i += 5) h.RunTo(g.Tick + 5);
+                        h.Issue(new Order { Op = "scout", Do = "fire", Target = "camera:" + cm.Id }, (Vector2?)null, (Vector3?)null);
+                        for (int i = 0; i < 20 * Suborned.Sim.Game.Hz && g.CameraDeadAs(cm.Id) != "shot" && !g.Over; i++) h.RunTo(g.Tick + 1);
+                        shot = g.CameraDeadAs(cm.Id) == "shot"; break;
+                    }
+                    var ct = shotCam.Length > 0 ? h.Views.Find("camera/" + shotCam) : null;
+                    if (ct) { h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); h.LookAt(ct.position); yield return Frames(4); yield return Shoot(h, dir, "r118-dead-disc-shot", log, "active"); }
+                }
+                parts.Add($"\"camStates\": {{\"learned\": {B(learned)}, \"looped\": {B(looped)}, \"loopedFans\": \"{J(fans)}\", \"altPanel\": \"{J(alt)}\", \"cameraOn\": {B(on)}, \"pop\": \"{J(pop)}\", \"shotCamera\": \"{J(shotCam)}\", \"shot\": {B(shot)}, \"alert\": {g.Alert}}}");
+                log.Add($"r118 camera states: learned {learned}; looped cone {looped} [{fans}]; Alt panel [{alt}]; Camera on {on} ('{pop}'); shot out {shot} ({shotCam}); Alert {g.Alert}");
             }
 
             // ---- H1-H5 (Glint, brief 061): the crossing heads nearest the Records Office, held in each state (pictures; measured by Glint)
@@ -181,10 +263,23 @@ namespace Suborned.Play
                     // H5: three states in one frame at night (the three nearest heads of other crossings, each held on its own)
                     {
                         yield return Phase(h, "night"); SignalHead.Hold = "";
-                        var three = heads.GroupBy(x => x.Crossing).Select(gr => gr.First()).Take(3).ToList(); string[] st3 = { "walk", "clearing", "stop" };
+                        // 0.2.122's frame showed no head (Glint): the three were the nearest of three crossings to the Office, too far apart for one frame, and
+                        // their centre fell on a roof. Now: the nearest head, then the heads of two other crossings nearest to it, at the yaw that keeps all three
+                        // inside the frame's middle 80 %
+                        var three = new List<SignalHead> { head };
+                        foreach (var x in heads.OrderBy(x => (x.transform.position - head.transform.position).sqrMagnitude)) { if (three.Count == 3) break; if (three.Exists(y => y.Crossing == x.Crossing)) continue; three.Add(x); }
+                        string[] st3 = { "walk", "clearing", "stop" };
                         for (int i = 0; i < three.Count; i++) three[i].HoldHere = st3[i];
                         var c3 = Vector3.zero; foreach (var x in three) c3 += x.transform.position; c3 /= Mathf.Max(1, three.Count);
-                        h.TurnSnap(0); h.LookAt(c3); yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); yield return Shoot(h, dir, "r118-h5-night", log); shots.Add("r118-h5-night");
+                        int bestYaw = 0, bestIn = -1;
+                        for (int y = 0; y < 4; y++)
+                        {
+                            h.TurnSnap(y); h.LookAt(c3); yield return Frames(2); int inside = 0;
+                            foreach (var x in three) { var vp = h.View.WorldToViewportPoint(x.transform.position + Vector3.up * 2.4f); if (vp.z > 0f && vp.x > 0.1f && vp.x < 0.9f && vp.y > 0.1f && vp.y < 0.9f) inside++; }
+                            if (inside > bestIn) { bestIn = inside; bestYaw = y; }
+                        }
+                        h.TurnSnap(bestYaw); h.LookAt(c3); yield return Frames(2); yield return new WaitForSecondsRealtime(SignalHead.CrossfadeS + 0.15f); yield return Shoot(h, dir, "r118-h5-night", log); shots.Add("r118-h5-night");
+                        log.Add($"r118-h5-night: {three.Count} heads ({string.Join(", ", three.Select(x => x.Crossing))}), {bestIn} inside the middle 80 % at yaw {Mathf.RoundToInt(h.Yaw)}; spread {F(three.Max(a => three.Max(b => (a.transform.position - b.transform.position).magnitude)))} m");
                         foreach (var x in three) x.HoldHere = "";
                     }
                     SignalHead.Hold = ""; yield return Phase(h, "day"); h.TurnSnap(0);
@@ -207,6 +302,7 @@ namespace Suborned.Play
                         var n = $"r118-r-{ph}-yaw{Mathf.RoundToInt(h.Yaw)}"; yield return Shoot(h, dir, n, log);
                         var pts = Points(h, "op/scout", "op/fixer", "op/tech", "op/enforcer", "guard", "waitress"); int reached = fade ? fade.Reached : -1;
                         rows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\", \"reached\": {reached}, \"capsules\": {B(fade && fade.capsules)}}}"); log.Add($"{n}: {pts}; reached {reached}");
+                        if (Mathf.RoundToInt(h.Yaw) == 210) { reachMax = Math.Max(reachMax, reached); reachRows.Add($"{{\"shot\": \"{n}\", \"reached\": {reached}}}"); }
                     }
                 }
                 yield return Phase(h, "day"); h.TurnSnap(0);
@@ -225,7 +321,19 @@ namespace Suborned.Play
                     foreach (var ph in new[] { "day", "evening", "night" })
                     {
                         yield return Phase(h, ph); h.TurnSnap(2); h.LookAt(vale.position); yield return Frames(4);
-                        var n = $"r118-v1-{ph}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "guard"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}; Vale {PxTall(h, vale)} px tall");
+                        var n = $"r118-v1-{ph}"; yield return Shoot(h, dir, n, log); var pts = Points(h, "councillor", "guard", "driver"); vrows.Add($"{{\"shot\": \"{n}\", \"points\": \"{pts}\"}}"); log.Add($"{n}: {pts}; Vale {PxTall(h, vale)} px tall");
+                        if (ph == "day")
+                        {
+                            var fade = h.View ? h.View.GetComponent<ArchitectureFade>() : null; int reached = fade ? fade.Reached : -1;
+                            reachMax = Math.Max(reachMax, reached); reachRows.Add($"{{\"shot\": \"{n}\", \"reached\": {reached}}}"); log.Add($"{n}: reached {reached}");
+                            // Glint 056 F2 (2026-10-26): the edge trial on the same frame, the soft band from 0.55, 0.70 and 0.85 of the radius (Glint picks)
+                            if (fade)
+                            {
+                                float keep = fade.edgeInner;
+                                foreach (var (e, tag) in new[] { (0.55f, "55"), (0.70f, "70"), (0.85f, "85") }) { fade.edgeInner = e; yield return Frames(3); yield return Shoot(h, dir, $"r118-v1-edge-{tag}", log); }
+                                fade.edgeInner = 0.70f; yield return Frames(2); log.Add($"r118 edge trial: 0.55, 0.70, 0.85 shot; edgeInner was {F(keep)}, set to 0.70 after");
+                            }
+                        }
                     }
                 if (landing) // E: Vale in play by day at the other three yaws (yaw 210 above), his drawn height in px (about 60 at 1080p)
                 {
@@ -338,6 +446,13 @@ namespace Suborned.Play
                 h.TurnSnap(0);
             }
 
+            // Glint 056 F1 test: no silhouette person without a cut on any frame; the reach under the cap at yaw 210 (reject past ReachedMax)
+            {
+                bool uOk = withUncut == 0, rOk = reachMax <= ReachedMax; ok &= uOk && rOk;
+                parts.Add($"\"uncut\": {{\"ok\": {B(uOk)}, \"frames\": {uncutFrames}, \"withUncut\": {withUncut}, \"maxPoints\": {maxPoints}, \"cap\": {ArchitectureFade.MaxPoints}, \"overflows\": {overflows}}}");
+                parts.Add($"\"reach\": {{\"ok\": {B(rOk)}, \"max\": {reachMax}, \"limit\": {ReachedMax}, \"frames\": [{string.Join(", ", reachRows)}]}}");
+                log.Add($"r118 uncut: {(uOk ? "ok" : "FAILED")}: {withUncut} of {uncutFrames} frames with an uncut silhouette person; max points {maxPoints}/{ArchitectureFade.MaxPoints}, {overflows} at the cap; reach max {reachMax} (limit {ReachedMax}) {(rOk ? "ok" : "FAILED")}");
+            }
             h.controls.planTogether = keepPlan; SignalHead.Hold = ""; h.SetNight(false);
             json[0] = $"{{\"ok\": {B(ok)}, {string.Join(", ", parts)}}}";
         }

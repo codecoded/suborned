@@ -167,12 +167,12 @@ export const CARD_FATES = ['beat', 'icon', 'alt', 'debrief'] as const;
 /** brief 014: where a piece of text goes. speech = a person talking, in the world; beat = a one-line feed beat; icon = an icon, number, ring or mark in the street (Glyph draws it); alt = full detail on hold (Alt) and in the history key; debrief = after the run; cut = not shown; label = a name or a word or two the HUD needs as it is. */
 export const FATES = ['speech', 'beat', 'icon', 'alt', 'debrief', 'cut', 'label'] as const;
 /** Where an in-sight card looks (brief 013): the engine position the sight check uses. The log carries no position; the host reads it from the game. */
-export const CARD_AT = ['victim', 'stash', 'reporter', 'scene', 'person', 'guard', 'unit', 'door', 'patrol'] as const;
+export const CARD_AT = ['victim', 'stash', 'reporter', 'scene', 'person', 'guard', 'unit', 'door', 'patrol', 'rival-car', 'rival-lookout', 'vale-car'] as const;
 export const Card = z.strictObject({
   kind: z.enum(CARD_KINDS),
   title: z.string().min(1).max(40),
   sight: z.enum(['in-sight']).optional().describe('the cell hears of it only if an agent is within 13 m with a clear line (as a city scene)'),
-  at: z.enum(CARD_AT).optional().describe('with `sight`: the place the check looks at: victim (the downed person), stash (the bin or door), reporter (who is making the report), scene (where the report sent the response), person (who is acting), guard, unit (the response member), door (the Office door), patrol'),
+  at: z.enum(CARD_AT).optional().describe('with `sight`: the place the check looks at: victim (the downed person), stash (the bin or door), reporter (who is making the report), scene (where the report sent the response), person (who is acting), guard, unit (the response member), door (the Office door), patrol, rival-car (the rival car, brief 059), rival-lookout (the rival lookout), vale-car (the car Vale rides in)'),
   needs: z.enum(['routine']).optional().describe('the card shows only once the cell holds the routine of the person it is about (a completed Watch); until then the city\'s answer (report.landed) speaks alone'),
   result: z.union([Line, z.record(code, Line)]).optional(),
   pick: z.string().optional().describe('when `result` is a record: the engine state that chooses the key'),

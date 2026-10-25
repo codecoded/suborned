@@ -417,3 +417,55 @@ Looked at: proof-2160 and frontend-2160 at 2x crops (my crops and a 1080 downsca
 
 ### Report
 Anima: read `anima read --wake --agent glyph --objective "2x review of build 0.2.122"` at the start. No skill matched (the two are controls iteration and play feedback); the standing rule "name the deep rule, scan sibling surfaces" did help once: the hold pill covering the loop marker became N9 only because I then looked for it on the desk clock and dead disc. About 190k tokens, 52 tool uses; I could not time the wall clock. `anima breathe --agent glyph` at delivery.
+
+## Batch 0.2.123 non-059 code round (Latch, 2026-10-26; code only: no player build, no batch, no shots)
+Queue: briefs/041/next-batch.md "Batch 0.2.123" items 2 to 6 (the 059 port is its own task). Nothing in tools/game, sim/, contracts/ or Resources/Atmosphere/signals.json was touched.
+- **1 · Glint's yaw-210 fix (brief 056, "Glint (2026-10-26)")**
+  - F1: HostTurn.FadePoints (HostTurn.cs:174-178) adds `driver` and an ungated `councillor` after the waitress (Aster's Q1: key people's silhouettes stay as built, not gated on sight). ArchitectureFade.MaxPoints 10 → 12 (ArchitectureFade.cs:114), DK_Cutaway.hlsl `DK_CUT_POINTS` 10 → 12 (line 34); the arrays and `cuts` follow the const.
+  - F2: `edgeInner` 0.55 → 0.70 (ArchitectureFade.cs:78; a trial). The scene's ArchitectureFade is added fresh by Rig.cs on every world build, so the batch's unity-world step takes 0.70; a scene built before this keeps 0.55 until rebuilt.
+  - Test: ArchitectureFade.HasPointNear / Cap (:129-132); HostViews.SilhouettePeople (Silhouettes.cs:15-20); HandoverHost.UncutSilhouettePeople and FadePointCount (HostTurn.cs:182-199). Proof118.Shoot and ProofLevels.Shoot log `<shot>: uncut [keys] points n/12` after every picture, `overflow` at or past the cap. r118 JSON gains `"uncut": {ok, frames, withUncut, maxPoints, cap, overflows}` (gated: withUncut 0) and `"reach": {ok, max, limit 140, frames}` over r118-v1-day and the four yaw-210 r frames (gated: max ≤ 140).
+  - Edge trial: after r118-v1-day, `r118-v1-edge-55`, `-70`, `-85` (the run's own resolution: 1080 and 2160 sets), then 0.70 restored.
+  - P1 (the darker lip) not built.
+  - Unity note: a global shader array keeps the size it was first set with for the Editor session, so an Editor opened before this change must be restarted. A player build is unaffected.
+- **2 · Glyph's nits (0.2.122)**
+  - N1: HostBriefing.Load (HostBriefing.cs:140-153) reads `brief.target` as a role string or `{role, at}`; `TargetAt = Place(brief.target.at)` (an id with or without `d:`; "door" when absent or unknown, logged in Sources); OfficeAt = TargetAt (the canopy). The ways keep their own `at` (Front door: "door").
+  - N2: the Office tag is clamped to 16 px at each side and 24 px at the top, and above the strip. Clamped, its tail is hidden (Briefing.cs:132-140).
+  - N3: the corner scrim is now `0.82 * clamp01(1 - d/1000)`.
+  - N6: the strip scrim is 0.88 over 300 px. The strip term was already composed in (Briefing.cs:249-250).
+  - N4: `PointerHeld` = briefing up, or the glide before 3.3 s (HostBriefing.cs:26-28). CursorKind returns "" (HostContext.cs:472) and the armed badge stays hidden (HudToolkit.Live.cs:273). Hover is already cleared in both states.
+  - N5: the job tags centre their letter row (`justifyContent: center`). FrontEnd.SetText lays a tracked word out as a row of letter labels, so the label's text-align did nothing.
+  - N7: the chain row spans the card and centres. A `badges/` step is drawn on `disc_dark_24` (58 px) with the badge at 34 px inside.
+  - N8: Jost Bold through FrontEnd.Typeset for the card head, the name (28, ink), the fact (15, ink) and the way names (15.5).
+  - N9: HoldPillFrame lifts the pill's tail to 6 px above a camera's window marker or dead disc. The tops come from the same projections DoneMarks and StreetLess use (HudToolkit.Hold.cs:29-41, 76-78).
+  - N11: a done chip whose anchor is above the frame is not drawn, and the top is clamped to ≥ 8 px (HudToolkit.Done.cs:112, 138-139).
+  - N12: a snug plate value (`hwShown`) is left-set 6 px after the bar with 4 px right padding (HudToolkit.Less.cs:272-273). The 2 px gap came from a right-aligned auto-width label.
+  - N10 is out.
+- **3 · The ring on a camera:** ContextRank.Choose (ContextRank.cs:92-95) moves Loop to the head of a camera's ring order. The Tech reads Loop 12, **Watch 3**, Disable 6, Fire 9; the Scout keeps Watch 12, Fire 6. Only the ring's order changed. The quick click and the lit wedge still follow the rank, so while the cone is unlearned the Tech's lit wedge is Watch at 3, and once it is learned it is Loop at 12. The test is ContextRankTests.OnACameraLoopLeadsTheRingAndWatchStandsAtThree. Rest shots: `r118-ring-camera-tech-rest`, `-scout-rest`, `-enforcer-rest`, with the pointer held in the ring's dead zone and the wedges, hover and lit logged (Proof118.RestRing).
+- **4 · Shots added** (Proof118 "camera states", not gated, logged and in `camStates`). The Tech watches the entrance camera, so its cone is learned; then `r118-alt-camera-panel` (the camera's panel with Alt latched: the Loop and Disable breakdowns), `r118-loop-cone` (`HostViews.LoopedFans` logged), `r118-camera-on` (the loop's 2:00 end, LastClosePop) and `r118-dead-disc-shot` (the Scout walks into pistol range with a line to the first live camera and shoots it). H5 is re-framed: the nearest head plus the nearest heads of two other crossings, at the yaw that keeps all three in the middle 80 %. The spread is logged. The 0.2.122 frame's three heads were the nearest to the Office, too far apart, and their centre fell on a roof.
+- **5 · Suture**
+  - `HostViews.GiveWay(g, p, walker)` (HostViews.cs:231-258): at d ≈ 0 the side comes from the walker's idHash bit. A pushed point is kept only if `Grid.Free`; otherwise the mirror side, otherwise 1 m behind the cast person, otherwise the engine's point (`HostViews.GiveWayKept` counts those).
+  - BotRun `FromCar = { "go" }`: `Bad(k, verb)` on the ring (`s.Row?.I?.Order?.Do`), the plan and the panel; OpenRingGivers skips an able giver in the car for a FromCar wedge (BotRun.cs:46-49, 385-402).
+  - The earlier value table was all in already: the seated flag, SeatSkipM 1.5, SolidBodyR 0.25 / SolidOverlapM 0.05 on the walk file's kinds, feet.csv `skip`, streamed frames/feet/hud, the p99 histogram, Q-MEM thirds (120 / 60 / 3 / 1), OfferRaceTicks 1 and "wedge shut", GiverGraceTicks 2, Q-WARN-HUD skipping while capturing, and the followers on free ground.
+  - Not done (optional): the Q-SOLID stretch length per key.
+- **6 · Redline**
+  - R4 (SignalHead.cs:71-79, 107-170): the head's parts and its dot rows have keys of their own. `half` is computed only for a head with dots, and the dots' key is `half` to 5 cm. Writes wait while none of the head's (or the rows') renderers is visible, and the first write is always made. There is no closure per frame. State, Left and RingLit are still computed every frame for the proofs.
+  - R2: `-late` turns on `HandoverHost.PerfTiming`. frames.csv is now `ms,tick,phase,what,stepMs,afterMs,viewsMs,sightMs,conesMs,rerouteMs,signalMs,gc`.
+    - `stepMs`: Game.Step and the driven sample, summed over the frame's ticks.
+    - `afterMs`: the host's per-tick work after each step (views.Tick, FollowUp, Track, Notice, beats, aim, hints, the drain).
+    - `viewsMs`: views.Frame.
+    - `sightMs`, `conesMs`, `rerouteMs`: ShowSight, PersonConesFrame, RerouteFrame plus RingGiversFrame.
+    - `signalMs`: every SignalHead's LateUpdate, summed. It is the previous frame's LateUpdate, inside the same frame gap.
+    - `gc`: gen-0 collections in the gap.
+    - BeforeStep (the orders given) is in none of them; the `what` column tags it (HandoverHost.cs:176-178, 292-293, 324-327; LateRun.cs).
+  - R7 (Perf064.cs): each window adds `mainMs`, `renderMs` and `gpuMs` (FrameTimingManager, the same stats as `frameMs`) and `unix: [start, end]` (ms), so Splice's load sampler can be lined up with the window.
+- **7 · Splice:** CrossingKit.EnsureSignalTextures stays as a guard. Its doc says the kit's metas carry alphaUsage 1 (both metas checked: alphaUsage 1, alphaIsTransparency 1), and a reimport now logs a warning (CrossingKit.cs:22-36; HarbourWorldBuilder.cs:161).
+- **Evidence:**
+  - `dotnet build sim/Suborned.Sim -o out/scratch/latch/sim123`: 0 errors.
+  - `bun out/scratch/latch/tools/compile123.ts` (Runtime/** against it): "compile123: OK".
+  - `dotnet build out/scratch/latch/compileEd123/ed.csproj` (Editor/World/**): "Build succeeded", 0 warnings.
+  - Unity 6000.6.2f1 batchmode through `bun run guard` (`-runTests -testPlatform EditMode -testFilter Suborned.Play.Tests.ContextRankTests`): scripts compiled (6.7 s, no `error CS` in out/scratch/latch/r123/editor-tests.log), 23/23 passed (out/scratch/latch/r123/contextrank.xml).
+  - `bun run typecheck`: clean.
+- **Open:**
+  - **Glyph / Aster**: on a camera, the Tech's lit wedge is Watch (at 3) until the cone is learned, then Loop at 12. Say if Loop should be lit from the start; that is a rank change (ContextRank's tested "watch until learned" rule).
+  - **Splice**: late.ts can name the top section from the new frames.csv columns, and the perf064 `unix` bounds can be matched to the load sampler.
+  - **Batch**: the uncut gate is new. If a service-yard frame logs `overflow`, MaxPoints goes to 14 (two lines). If the driver or Vale still show a flat figure beside a hole, try depthMargin 0.25 (Glint's step 5).

@@ -269,6 +269,8 @@ namespace Suborned.Play
                     bool hwDigit = false; for (int ci = 0; ci < hw.Length && !hwDigit; ci++) hwDigit = char.IsDigit(hw[ci]); bool hwWord = hw.Length > 0 && !hwDigit; /* Redline 064 #6: no LINQ a row a frame */ string hwShown = hwWord ? "" : hw;
                     Text(tx, s.Down && hw.Length == 0 || hwWord ? "" : hw.Length > 0 ? hw : carry ? PaceWords(s.Pace) : s.Left);
                     tx.style.width = hwShown.Length > 0 ? StyleKeyword.Auto : ValueW;
+                    // Glyph's N12 (0.2.122): a snug number ("1 s") sat 2 px from the bar's end cap: left-set 6 px after the bar, a little room on its right
+                    tx.style.unityTextAlign = hwShown.Length > 0 ? TextAnchor.MiddleLeft : TextAnchor.MiddleRight; tx.style.marginLeft = hwShown.Length > 0 ? 6 : 8; tx.style.paddingRight = hwShown.Length > 0 ? 4 : 0;
                     if (Stress && tx.text.Length > 0) Text(tx, carry ? "1.4 m/s" : "88 s");
                     bool iconOnly = (s.Progress < 0 || s.Down || hwWord) && tx.text.Length == 0 && hwShown.Length == 0; // no end ("holding the loop"), down, or a word: the icon alone (Glyph §1)
                     float cw = iconOnly ? IconOnlyW : ChipW; if (hwShown.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not

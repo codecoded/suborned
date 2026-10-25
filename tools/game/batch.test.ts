@@ -12,9 +12,9 @@ const stub = (id: string, ok: boolean, log: string[]): Step => ({ id, title: `ti
 const tmp = () => mkdtempSync(join(tmpdir(), 'batch-'));
 
 describe('the steps are the ones Sky named, in order', () => {
-  test('sim, kit, world, Unity, build, check, shots, budget, late-fight, tp-long', () => {
+  test('sim, kit, world, Unity, build, check, shots, budget, late-fight, tp-long, perf064', () => {
     const ids = STEPS.map(s => s.id);
-    expect(ids).toEqual(['sim', 'compile', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long']);
+    expect(ids).toEqual(['sim', 'compile', 'kit', 'world', 'unity-world', 'unity-match', 'game-build', 'game-check', 'shots', 'budget', 'late-fight', 'tp-long', 'perf064']);
     expect(STEPS.find(s => s.id === 'sim')!.plan(ctx())).toEqual(['bun tools/sim/unity.ts --tree']);
     expect(STEPS.find(s => s.id === 'game-build')!.plan(ctx({ rebuild: true }))[0]).toContain('bun tools/game/cli.ts --build');
   });
@@ -59,6 +59,32 @@ describe('running them', () => {
     const text = screen(rows, { when: '2026-10-21 14:00', mode: 'editor', build: { version: '0.2.18', recording: 'c026', sha: 'abc', dirty: true }, proof, shotsOut: '/o' });
     expect(text).toContain('BATCH OK: 1 steps'); expect(text).toContain('0.2.18 (c026, abc+)'); expect(text).toContain('slowest of 2 spots: cafe 96.4 fps (p99 12.3 ms, gpu 7.7 ms)'); expect(text).toContain('Editor open');
     expect(frameLines(undefined, undefined)).toEqual([]);
+  });
+});
+
+describe('the load beside the perf rows (Redline R7)', () => {
+  const perf = (id: string, ok = true): Step => ({ id, title: `title ${id}`, perf: true, plan: () => [`do ${id}`], run: async () => ({ ok, detail: `${id} fine` }) });
+  test('a perf step carries the load at its start and end; other steps and dry runs do not', async () => {
+    const rows = await runSteps([stub('a', true, []), perf('p')], ctx(), ['a', 'p']);
+    expect(rows[0]!.load).toBeUndefined(); expect(rows[1]!.load!.start).toHaveLength(3); expect(rows[1]!.load!.end).toHaveLength(3); expect(rows[1]!.load!.ncpu).toBeGreaterThan(0);
+    expect((await runSteps([perf('p')], ctx({ dry: true }), ['p']))[0]!.load).toBeUndefined();
+  });
+  test('a skipped perf step has no load row', async () => {
+    const s: Step = { ...perf('p'), run: async () => ({ ok: true, skipped: true, detail: 'opt-in' }) };
+    expect((await runSteps([s], ctx(), ['p']))[0]!.load).toBeUndefined();
+  });
+  test('the screen prints the load under the row, and says NOISY MACHINE when it was', () => {
+    const calm = { id: 'tp-long', title: 't', status: 'ok' as const, seconds: 40, detail: 'ok', load: { ncpu: 18, start: [3, 4, 5] as [number, number, number], end: [4, 4.2, 5] as [number, number, number] } };
+    const loud = { ...calm, id: 'shots', load: { ncpu: 18, start: [3, 4, 5] as [number, number, number], end: [14.2, 8, 5.5] as [number, number, number] } };
+    const text = screen([calm, loud], { when: 'now', mode: 'batchmode', shotsOut: '/o' });
+    expect(text).toContain('load 1/5/15 min 3/4/5 at start -> 4/4.2/5 at end, 18 cores\n'); expect(text).toContain('-> 14.2/8/5.5 at end, 18 cores · NOISY MACHINE');
+    expect(text.match(/NOISY MACHINE/g)).toHaveLength(1);
+  });
+  test('the batch has a perf064 step, opt-in', async () => {
+    const p = STEPS.find(s => s.id === 'perf064')!;
+    expect(p.perf).toBe(true); expect(p.plan(ctx()).join('\n')).toContain('SKIPPED unless --perf064');
+    expect((await runSteps([p], ctx(), ['perf064']))[0]).toMatchObject({ status: 'skipped', detail: expect.stringContaining('opt-in') });
+    for (const id of ['game-check', 'shots', 'late-fight', 'tp-long']) expect(STEPS.find(s => s.id === id)!.perf).toBe(true);
   });
 });
 

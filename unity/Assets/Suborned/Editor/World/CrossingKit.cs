@@ -20,9 +20,10 @@ namespace Suborned.World
     public sealed class CrossingKit
     {
         /// <summary>The signal head's atlas (figure and numerals) and clock ring are white with the glyphs in alpha, cut at 0.5 (DK_Signal_Atlas,
-        /// DK_Signal_Ring `_Cutoff`). The kit's metas import them with Alpha Source None, so the build drew every face as a solid square and every
-        /// ring full (0.2.120's eye-level frames). Checked on every world build until the kit's own metas carry the alpha (Vela's exporter, then
-        /// Splice's catalogue; `bun run kit` puts the old meta back, and this reimports it). Returns how many it reimported.</summary>
+        /// DK_Signal_Ring `_Cutoff`). Imported with Alpha Source None, the build drew every face as a solid square and every ring full (0.2.120's
+        /// eye-level frames). The kit's own metas now carry the alpha (alphaUsage 1, alphaIsTransparency; Splice's catalogue, 0.2.123), so this is a
+        /// guard: on every world build it checks the two importers and reimports only one that has lost its alpha (an older meta copied back by
+        /// hand or by a kit pass), saying so in the log. Expect 0. Returns how many it reimported.</summary>
         public static int EnsureSignalTextures()
         {
             int n = 0;
@@ -31,7 +32,7 @@ namespace Suborned.World
                 if (AssetImporter.GetAtPath(path) is not TextureImporter ti) throw new InvalidDataException($"World: signal heads: {path} missing (the SignalLens and HaloRing pieces need it)");
                 if (ti.alphaSource == TextureImporterAlphaSource.FromInput && ti.alphaIsTransparency) continue;
                 ti.alphaSource = TextureImporterAlphaSource.FromInput; ti.alphaIsTransparency = true; ti.SaveAndReimport(); n++;
-                Debug.Log($"World: signal heads: {path} reimported with its alpha (the kit's meta says Alpha Source None)");
+                Debug.LogWarning($"World: signal heads: {path} reimported with its alpha (its meta had lost it: alphaSource {ti.alphaSource}; the kit's meta should carry alphaUsage 1)");
             }
             return n;
         }

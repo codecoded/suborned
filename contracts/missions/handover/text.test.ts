@@ -398,9 +398,9 @@ describe('verbs and refusals', () => {
         for (const m of src.matchAll(/Note\("([a-z.\-]+)"/g)) codes.add(m[1]!);
         for (const m of src.matchAll(/Note\([^"()]*\?\s*"([a-z.\-]+)"\s*:\s*"([a-z.\-]+)"/g)) { codes.add(m[1]!); codes.add(m[2]!); } // Note(hit ? "shot.hit" : "shot.miss", …)
       }
-    // Note("call." + p.Role, …) builds the lovers' call code: expand it to the roles whose call can succeed (the driver's own call logs "call.driver" literally)
+    // Note("call." + p.Role, …) builds the lovers' call code: expand it to the roles whose call can succeed. Brief 059 (engine 0.32.0): the driver's Call is retired (CallRefusal: nothing-to-call), so only Inez's call logs
     expect(simAll().join('\n')).toContain('Note("call." + p.Role');
-    if (codes.delete('call.')) for (const r of ['waitress', 'driver']) codes.add('call.' + r);
+    if (codes.delete('call.')) for (const r of ['waitress']) codes.add('call.' + r);
     for (const c of ['scout.watch.watched', 'tech.watch.watched', 'fixer.watch.watched', 'enforcer.watch.watched', 'scout.listen.heard', 'scout.down', 'fixer.down', 'tech.down', 'enforcer.down']) codes.add(c);
     const spoken = new Set(Object.values(t.events).flatMap((e) => e.log ?? []));
     const covers = (code: string, set: Iterable<string>) => [...set].some((p) => (p.endsWith('.') ? code.startsWith(p) : code === p));
@@ -530,8 +530,8 @@ describe('scenes', () => {
     const dead = items.filter((x) => x.kind === 'approach').filter((x) => !replyCells().has(`${x.verb}/${x.temperament}/${x.outcome}`)).map(sceneKey);
     expect(dead).toEqual([]);
   });
-  test('the call: Inez calls the guard over and he leaves his post; the driver blinds the camera; each in all four voices', () => {
-    for (const role of ['waitress', 'driver']) for (const temp of TEMPERAMENTS) {
+  test('the call: Inez calls the guard over and he leaves his post, in all four voices; the driver has no call (brief 059, engine 0.32.0: it blinded the pickup camera, now retired)', () => {
+    for (const role of ['waitress']) for (const temp of TEMPERAMENTS) {
       const sc = lookupScene(t, { kind: 'call', verb: 'call', about: role, temperament: temp });
       expect(sc?.temperament, `${role} ${temp}`).toBe(temp);
     }
@@ -539,7 +539,13 @@ describe('scenes', () => {
       expect(sc.result).toMatch(/guard/);
       for (const v of sc.variants) { const who = new Set(v.beats.map((b) => b.speaker)); expect(who.has('waitress') && who.has('guard')).toBe(true); }
     }
-    for (const sc of items.filter((x) => x.kind === 'call' && x.about === 'driver')) expect(sc.result).toMatch(/camera/);
+    expect(items.filter((x) => x.kind === 'call' && x.about !== 'waitress').map(sceneKey)).toEqual([]);
+    expect(lookupScene(t, { kind: 'call', verb: 'call', about: 'driver', temperament: 'loyal' })?.about).not.toBe('driver');
+    expect(JSON.stringify(t.actions.call)).not.toMatch(/driver|camera/);
+    // a turned driver is told what he does now, not that the Fixer can call him to blind a camera
+    for (const sc of items.filter((x) => x.kind === 'approach' && x.about === 'driver' && x.outcome === 'turned')) { expect(sc.result, sceneKey(sc)).not.toMatch(/\bCall\b|camera|blind/); expect(sc.result, sceneKey(sc)).toMatch(/round the back/); }
+    // the Fixer is refused a Call on him in plain words (rulebook: nothing-to-call)
+    expect(t.locks['nothing-to-call']!.verbs).toContain('call');
   });
   test('Inez and the door guard (the Story spine): Listen on Inez overhears them, in every temperament and variant, and the Learned line says what was learned', () => {
     for (const temp of TEMPERAMENTS) {
@@ -746,7 +752,10 @@ describe('the dialogue', () => {
         if (!e || e.temperament !== temp || e.about !== role) bad.push(`listen ${role} ${temp}`);
       }
     }
-    for (const role of ['waitress', 'driver']) for (const temp of TEMPERAMENTS) if (lookup(t, { event: 'confirm', verb: 'call', speaker: role, temperament: temp })?.temperament !== temp) bad.push(`confirm ${role} ${temp}`);
+    for (const role of ['waitress']) for (const temp of TEMPERAMENTS) if (lookup(t, { event: 'confirm', verb: 'call', speaker: role, temperament: temp })?.temperament !== temp) bad.push(`confirm ${role} ${temp}`);
+    // brief 059: the driver confirms no call (he has none): no line, and the event does not list him
+    expect(t.dialogue.filter((e) => e.event === 'confirm' && e.speaker === 'driver')).toEqual([]);
+    expect(t.events.confirm!.speakers).toEqual(['waitress']); expect(t.events.confirm!.log).toEqual(['call.waitress']);
     for (const verb of ['take', 'enter']) for (const temp of allowedTemperaments(people, 'councillor')!) if (lookup(t, { event: 'taken', verb, speaker: 'councillor', temperament: temp })?.temperament !== temp) bad.push(`taken ${verb} ${temp}`);
     expect(bad).toEqual([]);
   });
@@ -813,7 +822,18 @@ describe('feed cards for engine events no scene covers', () => {
     const body = src.slice(a, src.indexOf('};', a));
     const codes = [...body.matchAll(/\["([a-z.\-]+)"\]\s*=\s*\("/g)].map((m) => m[1]!);
     expect(codes.length).toBeGreaterThan(15);
-    expect(codes.filter((c) => !(c in items))).toEqual([]);
+    // brief 059 (engine 0.32.0): car.blocks is retired with the driver's Call (Motive M059-6.1). The host keeps its fallback until Latch's port;
+    // it may list only codes that have words here or are retired in the engine too, so a retired code that comes back fails here, with no words for it.
+    const RETIRED = ['car.blocks'];
+    expect(codes.filter((c) => !(c in items) && !RETIRED.includes(c))).toEqual([]);
+    for (const c of RETIRED) { expect(c in items, `${c} has no card`).toBe(false); if (haveSim) expect(logCodes().has(c), `${c} is still logged by the engine`).toBe(false); expect(c in t.silentLogs, `${c} is not a silent log`).toBe(false); }
+  });
+  test('what replaced car.blocks: the driver has no Call, and the car stops are worded (brief 059)', () => {
+    // the camera is no longer blinded by a call: the lock says so, and the two stops of Vale's car (service bay, mouth of the drive) have cards
+    expect(t.locks['nothing-to-call']!.line).toMatch(/nothing to do/); expect(t.locks['nothing-to-call']!.short).toBe('Nothing to call');
+    for (const c of ['car.parks', 'car.blocked']) expect(items[c], c).toBeTruthy();
+    expect(items['car.parks']!.result).toMatch(/back seat/); expect(items['car.blocked']!.result).toMatch(/service drive/);
+    expect(JSON.stringify(t.cards)).not.toMatch(/blind/i);
   });
   test('titles name the event as the player would and are not ids; results carry the engine\'s numbers, never its sentence', () => {
     for (const [c, x] of Object.entries(items)) {
@@ -829,7 +849,8 @@ describe('feed cards for engine events no scene covers', () => {
     expect(items['rivals.arrive']!.sight).toBe('in-sight'); expect(items['guard.at-cafe']!.sight).toBe('in-sight');
     // the two cards of the city scenes (their place is the scene's); and brief 013's cards, which name where the check looks (`at`). Nothing else is in sight only.
     const SCENE_CARDS = ['rivals.arrive', 'guard.at-cafe'];
-    const SEEN_AT: Record<string, string> = { 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
+    const SEEN_AT: Record<string, string> = { 'rivals.coming': 'rival-car', 'rivals.drop': 'rival-car', 'rivals.follows': 'rival-car', 'rivals.back': 'rival-car', 'rivals.warned': 'rival-lookout', 'rivals.no-warning': 'rival-lookout',
+      'rivals.at-vale': 'vale-car', 'car.blocked': 'vale-car', 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
       'report.unfounded': 'scene', 'report.confirmed': 'scene', 'person.missed': 'person', 'guard.back-to-post': 'guard', 'alarm.reassigns': 'unit', 'doors.lock': 'door', 'patrol.alarm': 'patrol',
       'patrol.stands-down': 'patrol', 'stash.serviced': 'stash', 'stash.opened': 'stash' };
     for (const [c, x] of Object.entries(items)) {
@@ -1235,7 +1256,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   });
   test('the timeline marks have a word for Alt', () => {
     // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) and drop (2:46) are marks; 3:10 is its park (Keel's drafts, Fable words them)
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals out', 'Rivals park', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals post', 'Rivals park', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
@@ -1249,7 +1270,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(59); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1)
+    expect(Object.keys(t.cards.items).length).toBe(70); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
   });

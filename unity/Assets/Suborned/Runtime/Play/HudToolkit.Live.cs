@@ -270,7 +270,7 @@ namespace Suborned.Play
             }
             // the cursor: the armed verb rides it (Fire's crosshair mark wins where a press fires); target mode: a crosshair
             var mp = RuntimePanelUtils.ScreenToPanel(root.panel, m.Mouse);
-            bool live = host.Game != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && host.Ring == null && !host.ConvoOn && host.Panel == null;
+            bool live = host.Game != null && !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None && host.Ring == null && !host.ConvoOn && host.Panel == null && !host.PointerHeld; // Glyph's N4
             bool cross = !PlateOn && live && host.Frozen && host.TargetFreeze;
             bool badge = !PlateOn && live && !cross && host.Picked >= 0 && host.Picked < 5 && m.VerbHas[host.Picked] && host.CursorKind != "aim";
             Show(cursorArmed, badge); Show(cursorCross, cross);

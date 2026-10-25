@@ -16,6 +16,7 @@ namespace Suborned.Play
     /// at 3.3 s and the clock bar fades in at 3.6 s (Entrance).</summary>
     public sealed partial class HudToolkit
     {
+        VisualElement bfTagTail;
         VisualElement bf, bfScrim, bfTitleGroup, bfCol, bfCard, bfPhoto, bfPhotoBadge, bfTag, bfClock, bfStrip, bfLeaders, bfPurse; Label bfTitle, bfHook, bfObjective, bfCardHead, bfName, bfFact, bfTagText, bfPurseText;
         readonly List<(VisualElement root, Label name, List<VisualElement> pics, List<VisualElement> arrows)> bfWays = new();
         readonly List<(VisualElement root, VisualElement icon, Label time)> bfMarks = new();
@@ -61,7 +62,7 @@ namespace Suborned.Play
             {
                 var w = E(bfCol, "s-panel_dark", 0, 640 + 128 * i, BfColW, 112); w.style.unitySliceScale = 0.5f; w.pickingMode = PickingMode.Ignore;
                 var n = Words(w, 15.5f); n.style.position = Position.Absolute; n.style.left = 20; n.style.top = 13;
-                var row = E(w, null, 20, 48); row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.Center;
+                var row = E(w, null, 20, 48); row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.Center; row.style.right = 20; row.style.width = StyleKeyword.Auto; row.style.justifyContent = Justify.Center; // Glyph's N7: the chain centred on the card
                 var pics = new List<VisualElement>(); var arrows = new List<VisualElement>();
                 for (int k = 0; k < 3; k++)
                 {
@@ -78,7 +79,7 @@ namespace Suborned.Play
                 p.fillColor = Chrome; p.BeginPath(); p.MoveTo(new Vector2(0, 2)); p.LineTo(new Vector2(18, 2)); p.LineTo(new Vector2(9, 13)); p.ClosePath(); p.Fill();
                 p.fillColor = LookTail; p.BeginPath(); p.MoveTo(new Vector2(3, 0)); p.LineTo(new Vector2(15, 0)); p.LineTo(new Vector2(9, 7.5f)); p.ClosePath(); p.Fill();
             });
-            tail.style.top = StyleKeyword.Auto; tail.style.bottom = -11; tail.style.left = Length.Percent(50); tail.style.translate = new Translate(-9, 0);
+            tail.style.top = StyleKeyword.Auto; tail.style.bottom = -11; tail.style.left = Length.Percent(50); tail.style.translate = new Translate(-9, 0); bfTagTail = tail;
             manifest.Add((bfTag, "hud", () => bfTagText.text));
             // the bottom strip: the faces (cameos in the chrome ring, 62 px) and their job words, the purse, Day / Night, Begin
             bfStrip = E(bf); bfStrip.style.position = Position.Absolute; bfStrip.style.left = 0; bfStrip.style.right = 0; bfStrip.style.bottom = 0; bfStrip.style.height = 150; bfStrip.pickingMode = PickingMode.Ignore;
@@ -128,7 +129,15 @@ namespace Suborned.Play
             bfPurseText.text = m.Cash;
             for (int i = 0; i < 2; i++) if (bfPhase[i] is { } pw) { bool on = (i == 1) == h.NightLook; if (pw.Focused != on) { pw.Focused = on; FrontEnd.PaintWord(pw); } }
             // the Office tag over the canopy, its tail onto the door
-            if (b.OfficeAt is Vector3 oa && Proj(oa + Vector3.up * 4.6f, out var tq)) { Show(bfTag, true); float tw = float.IsNaN(bfTag.resolvedStyle.width) ? 150f : bfTag.resolvedStyle.width; bfTag.style.left = tq.x - tw / 2f; bfTag.style.top = tq.y - UnlH - 12f; } else Show(bfTag, false);
+            // Glyph's N2: anchored on the canopy (OfficeAt = brief.target.at, the official entrance), clamped inside the frame (24 px from the top, 16 px
+            // from each side); clamped, the tail no longer points at the canopy, so it is dropped
+            if (b.OfficeAt is Vector3 oa && Proj(oa + Vector3.up * 4.6f, out var tq))
+            {
+                Show(bfTag, true); float tw = float.IsNaN(bfTag.resolvedStyle.width) ? 150f : bfTag.resolvedStyle.width;
+                float left = tq.x - tw / 2f, top = tq.y - UnlH - 12f, cl = Mathf.Clamp(left, 16f, Mathf.Max(16f, W - 16f - tw)), ct = Mathf.Clamp(top, 24f, Mathf.Max(24f, H - 170f - UnlH));
+                bfTag.style.left = cl; bfTag.style.top = ct; Show(bfTagTail, Mathf.Abs(cl - left) < 0.5f && Mathf.Abs(ct - top) < 0.5f);
+            }
+            else Show(bfTag, false);
             // the dashed ground rings at the door and the car (the world markers' ground code: cream over ink)
             if (b.TargetAt is Vector3 ta) GroundRing(ta, 0.9f, Cream, 2.4f, true, 0.85f);
             foreach (var w in b.Ways) if (w.At is Vector3 wa && (!b.TargetAt.HasValue || (wa - b.TargetAt.Value).sqrMagnitude > 1f)) GroundRing(wa, 1.6f, Cream, 2.4f, true, 0.85f);
@@ -140,20 +149,23 @@ namespace Suborned.Play
             FrontEnd.Typeset(bfTitle, new FrontEnd.TypeS { font = "Jost-Medium", sizeRef = 15, trackingEm = 0.30f, uppercase = true }, b.Title);
             FrontEnd.Typeset(bfHook, new FrontEnd.TypeS { font = "Jost-Bold", sizeRef = 34 }, b.Hook);
             FrontEnd.Typeset(bfObjective, new FrontEnd.TypeS { font = "Jost-Regular", sizeRef = 19 }, b.Objective);
-            Text(bfCardHead, (host.Text?.BriefWord("target", "Target") ?? "Target").ToUpperInvariant()); Text(bfName, b.TargetName); Text(bfFact, b.TargetFact);
+            // Glyph's N8: Jost Bold (the kit file as cut) on the card head, the name, the fact and the way names; the overlays' own face is lighter
+            FrontEnd.Typeset(bfCardHead, new FrontEnd.TypeS { font = "Jost-Bold", sizeRef = 11.5f, trackingEm = 0.12f, uppercase = true }, host.Text?.BriefWord("target", "Target") ?? "Target");
+            FrontEnd.Typeset(bfName, new FrontEnd.TypeS { font = "Jost-Bold", sizeRef = 28f }, b.TargetName, "ink");
+            FrontEnd.Typeset(bfFact, new FrontEnd.TypeS { font = "Jost-Bold", sizeRef = 15f }, b.TargetFact, "ink"); bfFact.style.marginLeft = 7;
             bool photo = Sp(b.TargetPhoto) != null; Show(bfPhotoBadge, !photo);
             if (photo) { Bg(bfPhoto, b.TargetPhoto, Color.white); bfPhoto.style.backgroundColor = StyleKeyword.Null; } else { bfPhoto.style.backgroundImage = StyleKeyword.Null; bfPhoto.style.backgroundColor = DiscBody; Bg(bfPhotoBadge, b.TargetBadge, Color.white); } // until the portrait lands: the npc badge on the ink field
             Text(bfTagText, b.OfficeName);
             for (int i = 0; i < bfWays.Count; i++)
             {
                 var (root2, name, pics, arrows) = bfWays[i]; bool has = i < b.Ways.Count; Show(root2, has); if (!has) continue; var w = b.Ways[i];
-                Text(name, w.Name);
+                FrontEnd.Typeset(name, new FrontEnd.TypeS { font = "Jost-Bold", sizeRef = 15.5f }, w.Name);
                 for (int k = 0; k < pics.Count; k++)
                 {
                     var holder = pics[k]; holder.Clear(); bool on = k < w.Steps.Count; Show(holder, on); if (k > 0) Show(arrows[k - 1], on); if (!on) continue;
                     var s = w.Steps[k];
                     if (s.StartsWith("face:")) { var c = Cameo(holder, 38f, 2f); var role = s[5..]; var face = Sp("portraits/face_" + role) != null ? "portraits/face_" + role : HudModel.PersonBadge(role); Bg(c.Q("face"), face, Color.white); }
-                    else if (s.StartsWith("badges/") || s.StartsWith("badge:")) { var bd = E(holder, null, 0, 0, 44, 44); Bg(bd, s.StartsWith("badge:") ? "badges/" + s[6..] : s, Color.white); }
+                    else if (s.StartsWith("badges/") || s.StartsWith("badge:")) { var d = E(holder, "s-disc_dark_24", -7, -7, 58, 58); var bd = E(d, null, 12, 12, 34, 34); Bg(bd, s.StartsWith("badge:") ? "badges/" + s[6..] : s, Color.white); } // Glyph's N7: the badge on the kit disc with its chrome ring, one family with the icon discs
                     else { var icon = s.StartsWith("icon:") ? s[5..] : s; var d = E(holder, "s-disc_dark_24", -7, -7, 58, 58); var g = E(d, null, 16, 16, 26, 26); Icon(g, icon, Cream); }
                 }
             }
@@ -161,6 +173,7 @@ namespace Suborned.Play
             {
                 var role = Op.Name((OpId)i); Bg(bfFaces[i].cameo.Q("face"), $"portraits/cameo_{role}_normal", Color.white);
                 FrontEnd.Typeset(bfFaces[i].job, new FrontEnd.TypeS { font = "Jost-SemiBold", sizeRef = 11.5f, trackingEm = 0.12f, uppercase = true, color = "textDim" }, host.Text?.BriefWord("job." + role, role) ?? role);
+                bfFaces[i].job.style.justifyContent = Justify.Center; // Glyph's N5: a tracked word is a row of letters (FrontEnd.SetText), so the row is centred on the 62 px portrait, not the text
             }
             // the clock marks: icon and time over the track, at their place along it (the first left, the last right, the rest centred)
             foreach (var mk in bfMarks) mk.root.RemoveFromHierarchy(); bfMarks.Clear();
@@ -222,7 +235,7 @@ namespace Suborned.Play
         }
 
         /// <summary>The scrims as one vertex-coloured grid in ink-deep: the vignette (0.42 from half the way to the corners), the corner scrim
-        /// (0.82 at the top left falling to 0 over 700 px) and the strip's (0 at 220 px from the foot to 0.82 at it), composed as layers.</summary>
+        /// (0.82 at the top left falling linearly to 0 over 1000 px) and the strip's (0 at 300 px from the foot to 0.88 at it), composed as layers.</summary>
         void ScrimMesh(MeshGenerationContext mgc)
         {
             var r = bfScrim.contentRect; float W = r.width, H = r.height; if (W < 2f || H < 2f) return;
@@ -233,8 +246,8 @@ namespace Suborned.Play
                 {
                     float x = W * i / nx, y = H * j / ny;
                     float vig = 0.42f * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.5f, 1f, (new Vector2(x, y) - c).magnitude / half));
-                    float corner = 0.82f * Mathf.Pow(Mathf.Clamp01(1f - new Vector2(x, y).magnitude / 700f), 1.5f);
-                    float strip = 0.82f * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(H - 220f, H, y));
+                    float corner = 0.82f * Mathf.Clamp01(1f - new Vector2(x, y).magnitude / 1000f); // Glyph's N3: linear over 1000 px (was ^1.5 over 700): the objective line reaches 4.5:1
+                    float strip = 0.88f * Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(H - 300f, H, y)); // Glyph's N6: 0.88 over 300 px (was 0.82 over 220) under Begin and the tabs
                     float a = 1f - (1f - vig) * (1f - corner) * (1f - strip);
                     md.SetNextVertex(new Vertex { position = new Vector3(x, y, Vertex.nearZ), tint = new Color(InkDeep.r, InkDeep.g, InkDeep.b, a) });
                 }

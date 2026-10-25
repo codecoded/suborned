@@ -647,3 +647,84 @@ The 2026-10-25 run died at the usage limit. Rerun on engine 0.32.0 (100b5e3a) pl
   - **Slack fell from c037** (B 66 s → 3 s, G-fast 19 s → 1 s); the re-record measures it.
   - **The yard's lane post** is 92–340 m by walk from every yard spot.
 - **Next owner: Vantage** (svc-ambush-1; the lane-post finding), **then Keel** (B1–B3 and the six BAL-* scenarios with the s1 entries), **then Waymark** (the re-compose list in balance-rulings.json).
+
+## Glyph: the shut stand and Drive's refusals (2026-10-26)
+Aster's item 6. Spec only: no code, no Unity, no paid calls. It supersedes the "Shut stand" bullet of "3 · Drive (board 04)" above (that one shut the yard with a lock and gave no route; the engine does not refuse it).
+
+### 0 · A mismatch first (Aster, then Sky/Motive)
+**The engine has no refusal for a stand that is not yet open.** `GameDriveCar.DriveCar` (sim 0.32.0) refuses seven ways, in this order: `unknown-verb`, `unknown-stand` (an id that is no `getaway.stands` entry), `drive-no-driver`, `drive-fight`, `drive-busy`, `drive-here`, `drive-held`. rulebook `cell.driveCar` and host-interface.md list the same codes and no other. A Drive to `service-drive` before Vale's car is parked is **accepted**, by design: GDD §07 ("on the drive first, it blocks his way and he stops in the road"), K5, scenario P59 (`car.blocked`, `CarAtMouth`; the turned driver stops at the drive's mouth on Apron Road and the Take is about 18 m of carry on a public pavement). So "not yet open" is a **price**, not a lock. GDD §10 says only "a stand not yet open is marked so".
+- **Spec below (default):** the mark is a caution, the order stays orderable, nothing refuses. A lock here would teach that a lock means the engine will refuse, and it would hide a play §07 keeps (the early car as a cost).
+- **If Sky wants a hard refusal instead:** Keel adds one code, `stand-shut`, to `DriveCar` (no new rule needed beyond "the stand opens when `ValeCarParked`"). §4 below is ready for it. Do not build it unless Aster says so; unknown = reject.
+
+### 1 · When the mark shows (told and learned only)
+Shown while all of: the getaway car, or an agent in it, is selected (the ghosts' own condition) · the driver is turned (the player knows route B: Vale's car will come round; unturned, the yard is just a stand and shows no mark, so the ghost never leaks the plan) · `!ValeCarParked`. It clears the tick `car.parks` logs (Vale's car in the bay or stopped at the mouth). Hint H20 ("Drive the [car] round.") fires on the same trigger, so the mark clearing and the hint arriving are one moment.
+
+### 2 · The yard stand at rest (selected car), shut-looking and orderable
+Over the board-04 footprint (dashed cream rounded rectangle 4.6 × 1.9 m, radius 0.5 m, 2.2 px over the ink-deep underlay, chevron at the nose, `disc_dark_24` with `car` at the centre):
+- **Footprint at 50 % alpha, dash 3 on / 5 off** (the live stand is 7/6 at full alpha). The centre disc drops to 50 % too.
+- **Plate:** `plate_dark`, 60 × 26 px, centred 14 px above the footprint's far edge, never over the nose. Left: `nextevent` 14 px, cream. Right: Vale's cameo (`badges/npc_councillor`) 18 px in the chrome ring (2 px #cbc6c3, 1 px ink-deep). Reads "wait for Vale's car", two icons, no words. Not `lock`: the lock is kept for what the engine refuses.
+- **Motion cue:** while Vale's car is under way round (`car.leaves` at 6:13 to `car.parks` at about 6:25.9) the dashes crawl along the outline at 6 px/s (the car is coming); parked or not yet moving they are still. No colour change.
+- **Off screen:** the edge chip keeps its `car` + `pointer` and takes the same 50 % alpha.
+- **Opening:** at `car.parks` the plate fades out in 0.25 s, the dash goes to 7/6 and full alpha in 0.25 s, then the cream outline gives one 0.6 s pulse (scale 1.0 to 1.04 and back). Alt on the plate shows the glossary word `stand-after-vale`, "After Vale's car", in the 13.5 Jost tag (Alt only; the plate has no sentence).
+
+### 3 · Hover and the order anyway
+- **Hover (still shut-looking):** the footprint turns solid at 70 % alpha, cream, not turquoise-light: the turquoise is the live stand's. The route preview is drawn as for a live stand (cream dashed 2.4 px, 7/6, chevrons every 3 m) **and** Vale's car's route in the same style from the official bay with the board-03 label "6:13 → 6:25" (only when the Watch on the driver has taught it; else just the pill). Where the two lines meet at the drive's mouth the preview shows the board-03 hand-off ring (dashed, 1.2 m).
+- **Pill (as built, `pill_status` 38 px, slice 0.43):** `disc_dark_24` with `car`, dim head "Hold ·", body `Drive · 28 s`, the driver's face. Added right of the faces: **the caution plate** the Watched-spot offer already uses: `plate_dark` 26 px with the kit's `stripes_warn` block 9 px at its left, then Vale's cameo 18 px and `nextevent` 14 px. Nothing new in the kit: one plate pattern, reused.
+- **Alt (held) on the hover:** the zero fields and the consequence, numbers and icons only: at the mouth ring the carry, `s_carrying` 14 px + `18 m` (read from the stand and the bay, never hard-coded; ~18 m today).
+- **Commit:** the usual 0.5 s hold (sweep, "Let go", the ring). The engine accepts it. No pop, no confirmation card, no Trail or Alert (price $0, 0 T, no Alert). When the car lands and Vale's car stops short (`car.blocked`, `CarAtMouth`), the hand-off ring sits at the mouth on Apron Road instead of at the bay, the board-03 pill moves with it, and Fable's beat shows (§6).
+- **Budget:** the ghost plate 1,560 px (0.075 % of 1080p), the pill plate about 1,100 px (0.05 %); the shut stand's captured 6.73 % in board 04 becomes 6.80 %; the hover 7.11 % becomes 7.2 %. Far inside 15 / 22 / 30 %.
+
+### 4 · If the engine refuses it (`stand-shut`): the pop, ready
+Same footprint, plate and hover as §2 but with **no route preview** and the pill replaced by the shut pill (struck, no colour; the same grammar as a shut Go). The refusal pop on a try: `plate_dark` solid, 26 px high, icon `p_time` 16 px (the code is a wait, like `driver-too-late`; HostLess.PopIcon already maps waits to it) then the short in Jost Bold 13.5 cream: **"After Vale's car"** (the glossary's `stand-after-vale`, 3 words). Anchored at the footprint's world point (not the cursor), 2 s, `Feedback.Refused` with one footprint pulse. Never `lock`.
+
+### 5 · The real refusals of Drive, and how each differs from "a fight blocks the car"
+All pops: `plate_dark` solid, 26 px high, the icon 16 px cream then the short in Jost Bold 13.5; 2 s; anchored at the **stand's footprint** (world point, edge chip if off screen), plus one footprint pulse. Words are text.json's `lock` entries (Fable owns them). HostLess.PopIcon today has no case for any `drive-*` code (they fall to `badges/mark_no`): Latch adds these.
+
+| code | when | short (text.json today) | pop icon | other marks |
+|---|---|---|---|---|
+| `drive-held` | a combatant holds the car before the fight (CarHolders, `ids` names them) | "Blocked · down {holders}" | `lock` | the car-held grammar, unchanged: every other stand's ghost shut (struck, 45 % alpha as `goBlocked`, no route); the shut pill's tail shows `lock` + one `signal_police` / `signal_rival` cameo badge per holder (057 §4.2); holder marks and tethers pulse (`HolderPulseAt`) |
+| `drive-fight` | the final fight has started | "Fight on" | `car` struck through (a 2 px cream diagonal, the shut-way strike), no lock | no ghosts are drawn at all once the fight starts, no holder pulse; Go is the lit way on the car's ring |
+| `drive-busy` | someone aboard is mid-act | "Car busy" | `p_time` | the busy chip's bar on that agent's portrait is already the cause |
+| `drive-no-driver` | the ordering agent is not in the car (stray order) | "No driver" | `car` | the car marker's seat pips are empty |
+| `drive-here` | the stand it is at (stray) | "Already here" | `car` | the stand under the car has no disc, so it is never offered |
+| `unknown-stand` | never from the UI | "Not a stand" | `badges/mark_no` | none |
+
+**The difference, in one line:** the lock-and-holders is the **fixable** refusal (down the holders and Go or Drive works: it is Go's `car-held` and Drive's `drive-held`, one grammar, one lesson); the struck car is the **permanent-until-the-end** one (nothing on the street clears it; the only way out is Go). Pre-fight, a lock on Drive pulses the same holders as a lock on Go. Once the fight is on, the engine answers `drive-fight` before `drive-held`, so Drive never shows the lock in a fight: the holders stay on Go's lock alone.
+
+### 6 · Draft words for Fable (≤ 4 words; yours to change)
+- `stand-after-vale` (exists): "After Vale's car". Alt on the plate only.
+- `car.blocked` / `car.parks` at the mouth, the beat: "Vale's car stops short." (4). The story is the cost, said once.
+- `drive-no-driver`: "Board first" (the fix, 2 words) instead of "No driver".
+- `drive-here`: "Already here" is fine; "Car's here" if shorter is wanted.
+- `drive-fight`: "Fight on" is fine; "Go, don't drive" is the fix-first alternative (3).
+- If `stand-shut` is added: the short is "After Vale's car"; the long line (Alt) "Vale's car isn't round yet. Wait, or block his way." (placeholder).
+
+### 7 · Hand-off
+- **Latch (059 port):** build §2, §3 and §5 (the six pop mappings in PopIcon, the footprint anchor in `Pop`, the struck-car composite); §4 only if Keel adds `stand-shut`. Kit pieces by name: `plate_dark`, `pill_status`, `disc_dark_24`, `stripes_warn`, `icons/singles/{car, nextevent, lock, p_time, s_carrying, pointer}`, `badges/{npc_councillor, signal_police, signal_rival, mark_no}`. No new asset. Check each state cropped at 2x before it goes to Sky; I will review the 2x.
+- **Fable:** §6.
+- **Aster:** §0, whether the engine should refuse (Sky's call; my default is no, the mark is a caution) and the contradicted line in board 04's shut-stand bullet, now superseded here. Board 04's picture still shows the lock; I have not redrawn it (spec only).
+
+## Vantage: svc-ambush-1 and the yard's lane post (2026-10-26)
+- **svc-ambush-1 moves to (77.35, −8.0)**, B4's spot as Motive gave it (was (57.25, −17.75)): `contracts/missions/handover/mission.json`.
+  - **Checked:** 10.6 m from the car, 15.6 m from rival-vale-door, 17.3 m from 'Service lane', a line to both, outside the lane. Pavement, floor 0, a free cell. V-1 at yaw 210 is 100 %.
+  - **Cover:** none. The site's cover has no point in the yard, so all five yard spots stand in the open.
+  - **Nearby spots are no better:**
+    - (77.35, −7.5), (77.85, −8.5) and (76.85, −7.0) give the same 3 s.
+    - (77.85, −7.0) and five spots 6.8–8.0 m from the post lose route B. route-b and route-b-board no longer compose.
+    - The reason: the blocker posts sooner and fires standing (562 ‰ against 281 ‰ walking). He downs the Fixer at 7:31.5.
+  - **Evidence:** `out/scratch/vantage/059b4/` (cand-*.txt, late-sweep.txt), on a copy of Motive's probe tree with his R switches. c5 reproduces his check: route-b-board slip 3 s, MC-0 33/39, MC-1..12 ok.
+- **The lane post: Motive's 92–340 m is a units slip.**
+  - `Path.Length` is in mm, and the probe's `Row()` divides it by 100. The true walks to (86, −5) are 9.16 m from (77.35, −8.0), 11.5 m from svc-ambush-5 and 14.5 m from svc-ambush-4, up to 34 m from today's svc-ambush-1.
+  - The yard's pavement runs onto Apron Road (the grid is open across the kerb), and the blocker fights: rival-3 is out at 7:32.1. No point or route moves for reach.
+- **M059-4.4(c) against B4 (Motive):** (77.35, −8.0) walks 9.16 m (5.7 s), 1.16 m over (c)'s 8 m. Every spot inside 8.4 m loses route B, so the two can't both hold. (c)'s own reason, the blocker in the lane inside the 6.5 s carry and Board, still holds at 5.7 s. I ask Motive to state (c) as ≤ 6.5 s at 1.6 m/s (≤ 10.4 m).
+- **The real fault in the post (Motive and Keel; Splice exports):**
+  - The yard's lane starts on Apron Road, 16.65 m from the car. The open post, `LaneAt(fight-block-near)`, is therefore 19.4 m from the car.
+  - That is beyond fight-block-far (13 m) and pistol-max (16 m), against block-far's own reason ("in each other's effective reach").
+  - Starting the lane at the car, along the drive (Motive's PROBE_YARDLANE), puts the post at the drive's mouth (79.35, −15.0), 10 m out. But it takes route-b-board's slack from 3 s to 0 s with this spot.
+  - So it is a rule and a re-balance, not a point or route move. Nothing for Waymark.
+- **The checks:**
+  - MC-11 reads only the committed site's start-stand posts (the square's 9), so it can't see the yard's. Extend it to every `getaway.stands[]`.
+  - The committed site still holds the old point: `tools/sim/sim.test.ts`'s site test fails on svc-ambush-1 alone until `bun run sim:site`.
+- **Next: Keel.**
+  - Run `bun run sim:site` first.
+  - Re-measure at (77.35, −8.0): BAL-YARD-FOCUS (win; both locks 3.0 s late), route-b-board's slack line (3 s), and the blocker's walk to (86, −5) (9.16 m).

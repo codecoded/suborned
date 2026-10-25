@@ -188,7 +188,7 @@ namespace Suborned.Play
             for (int i = 0; i < g.Walkers.Count; i++)
             {
                 if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
-                Set(crowdKeys[i], GiveWay(g, SpreadAt(i)));
+                Set(crowdKeys[i], GiveWay(g, SpreadAt(i), i));
                 if (SpreadFace(i) is { } sf) faces[crowdKeys[i]] = sf;
                 // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
                 // refuge at the crowd's run speed and is off the street while sheltered (the engine gives no position), so the square empties
@@ -228,8 +228,11 @@ namespace Suborned.Play
 
         /// <summary>The crowd gives way to the people the cell knows (Inez, the door guard, the driver, Vale) for the eye only, so the known person
         /// draws on top of a cluster: a passer-by standing between the camera and one (up to 3 m in front, where a 1.75 m figure overlaps them at
-        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.</summary>
-        Pt GiveWay(Game g, Pt p)
+        /// pitch 38) steps 0.7 m aside, and anyone within 0.7 m steps out to 0.7 m. The engine is not told.
+        /// Suture's Q-SOLID give-way (0.2.122, briefs/060 "0.2.122 bot rows" cause B): on the cast's own point the side is the walker's hash (never
+        /// always the camera's right), and a pushed point is kept only on free ground (the engine's walk grid); else the mirror side, else 1 m behind
+        /// the cast person, else the engine's point (the relief guard on the door guard's post was pushed into the Office face).</summary>
+        Pt GiveWay(Game g, Pt p, int walker)
         {
             var cam = host.View; Vector2 f = Vector2.up, r = Vector2.right;
             if (cam)
@@ -242,9 +245,16 @@ namespace Suborned.Play
                 if (!cp.HasValue) continue;
                 var d = new Vector2(p.X - cp.Value.X, p.Y - cp.Value.Y);
                 float front = -Vector2.Dot(d, f), side = Vector2.Dot(d, r);
+                var d0 = d;
                 if (front > -40f && front < 300f && Mathf.Abs(side) < 70f) { side = side >= 0 ? 70f : -70f; d = -f * front + r * side; }
-                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * 70f : d.normalized * 70f;
-                p = new Pt(cp.Value.X + Mathf.RoundToInt(d.x), cp.Value.Y + Mathf.RoundToInt(d.y));
+                if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * (walker >= 0 && walker < idHash.Length && (idHash[walker] & 1) != 0 ? -70f : 70f) : d.normalized * 70f;
+                if (d == d0) continue; // not in the way: the point stands
+                var c = cp.Value; Pt At(Vector2 v) => new Pt(c.X + Mathf.RoundToInt(v.x), c.Y + Mathf.RoundToInt(v.y));
+                var grid = g.S.Grid; var pushed = At(d);
+                if (grid.Free(pushed)) { p = pushed; continue; }
+                var mirror = At(d - 2f * r * Vector2.Dot(d, r)); if (grid.Free(mirror)) { p = mirror; continue; }
+                var behind = At(f * 100f); if (grid.Free(behind)) { p = behind; continue; }
+                GiveWayKept++; // none free: the engine's point
             }
             return p;
         }
@@ -524,6 +534,8 @@ namespace Suborned.Play
         readonly Dictionary<string, List<Pt>> trails = new();
         /// <summary>For checks: followers drawn this build that had to be moved onto free ground.</summary>
         public static int FollowerSnaps;
+        /// <summary>Crowd points GiveWay left on the engine's point because no pushed side was free ground (Suture's Q-SOLID cause B).</summary>
+        public static int GiveWayKept;
 
         /// <summary>Follower `idx` of a group whose leader the engine places at `lead`: on the leader's recent path 0.9 m x idx back while it walks
         /// (the path is free ground: the engine walked it), else `offset` beside it; then on a free walk cell (the nearest free cell within 2 m),
@@ -569,6 +581,8 @@ namespace Suborned.Play
         float rimW = RimW;
         static readonly Color Grey = new(0.55f, 0.55f, 0.55f);
         /// <summary>The proof reads it: each drawn fan's watcher and strength now ("camera:entrance=0.00").</summary>
+        /// <summary>The proof reads it: the watchers whose drawn fan is looped (hollow, dashed all round).</summary>
+        public string LoopedFans { get { var l = new List<string>(); foreach (var kv in fanBy) if (kv.Value.Go.activeSelf && kv.Value.Looped) l.Add(kv.Key); return string.Join(" ", l); } }
         public string FanStrengths { get { var l = new List<string>(); foreach (var kv in fanBy) if (kv.Value.Go.activeSelf) l.Add($"{kv.Key}={kv.Value.Strength:0.00}"); return string.Join(" ", l); } }
 
         /// <summary>The fans to draw this frame (every learned one at rest, the ones that matter strong); the rest hide. Each mesh is rebuilt

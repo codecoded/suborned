@@ -24,6 +24,7 @@ namespace Suborned.Play
             bool was = h.Paused; h.SetPaused(true);
             while (HudToolkit.ShotBusy) yield return null;
             log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(dir, name), "rest")); yield return null; while (HudToolkit.ShotBusy) yield return null;
+            log.Add(Proof118.Uncut(h, name, count: false)); // Glint 056 (2026-10-26): the silhouette people with no cut (pass: none), the points against the cap
             h.SetPaused(was);
         }
 

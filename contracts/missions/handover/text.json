@@ -216,7 +216,7 @@
   },
   "clock": {
    "close": "8:30",
-   "line": "Handover chime at 5:30. At 8:30 the rivals take Vale or his car leaves."
+   "line": "Handover chime at 5:30. At 8:30 Vale's driver takes him away."
   },
   "purse": {
    "usd": 100000,
@@ -237,13 +237,13 @@
    },
    {
     "at": "2:46",
-    "label": "Three rivals get out by our car",
-    "short": "Rivals out",
+    "label": "Three rivals take posts round our car",
+    "short": "Rivals post",
     "known": false
    },
    {
     "at": "3:10",
-    "label": "The rival car parks by Vale's car",
+    "label": "The rival car parks. Its lookout watches the official door",
     "short": "Rivals park",
     "known": false
    },
@@ -267,20 +267,20 @@
    },
    {
     "at": "6:10",
-    "label": "Vale reaches his car",
+    "label": "Vale reaches his car. Unless turned, his driver drives off",
     "short": "Vale at car",
     "known": true
    },
    {
     "at": "8:30",
-    "label": "Close: Vale is driven away",
+    "label": "Close: the driver drives Vale away",
     "short": "Close",
     "known": true
    }
   ],
   "cell": {
    "scout": "Scout: watches from furthest, listens, and can send rivals astray.",
-   "fixer": "Fixer: turns people (Ask, Pay, Help, Pressure) and can Call them to act.",
+   "fixer": "Fixer: turns people (Ask, Pay, Help, Pressure) and can Call Inez to act.",
    "tech": "Tech: loops or cuts cameras and reroutes patrols from the control cabinet.",
    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
   }
@@ -313,7 +313,7 @@
   "pay": {"label":"Pay","by":["fixer"],"engine":{"do":"turn","approach":"pay"},"does":"Slip cash for a favour. They'll owe you, but cash adds Trail.","onTarget":{"waitress":"Slip Inez cash for a favour. She'll owe you, but cash adds Trail.","driver":"Slip the driver cash to bring Vale round the back. Cash adds Trail.","guard":"Slip the guard cash to look away. Cash adds Trail."},"withTarget":"Pay {target}","then":"pays {target}"},
   "help": {"label":"Help","by":["fixer"],"engine":{"do":"turn","approach":"help"},"does":"Solve their trouble. Slower and costlier, but they remember it kindly.","onTarget":{"waitress":"Clear Inez's debt. She'll remember it kindly, but it costs real money.","driver":"Cover the driver's cash trouble. He'll bring Vale round the back.","guard":"Do the guard a kindness. Slow, but it can win him round."},"withTarget":"Help {target}","then":"helps {target}"},
   "pressure": {"label":"Pressure","by":["fixer"],"engine":{"do":"turn","approach":"pressure"},"does":"Lean on their trouble. Quick and free, but they'll fear and resent you.","onTarget":{"waitress":"Lean on Inez's trouble. Quick and free; she'll fear and resent you.","driver":"Lean on the driver's trouble. Quick and free, but he'll resent you.","guard":"Lean on the guard. Quick and free, but the guard may report you."},"withTarget":"Pressure {target}","then":"pressures {target}"},
-  "call": {"label":"Call","by":["fixer"],"engine":{"do":"call"},"does":"Call a turned person to act now. Timing matters.","onTarget":{"waitress":"Inez calls the guard over. He leaves his post for her, and a spill covers it.","driver":"The driver parks across the pickup camera and blinds it for a while."},"withTarget":"Call {target}","then":"calls {target}"},
+  "call": {"label":"Call","by":["fixer"],"engine":{"do":"call"},"does":"Call Inez to draw the guard off the door. Timing matters.","onTarget":{"waitress":"Inez calls the guard over. He leaves his post for her, and a spill covers it."},"withTarget":"Call {target}","then":"calls {target}"},
   "loop": {"label":"Loop camera","by":["tech"],"engine":{"do":"loop"},"does":"Loop a camera for two minutes. Once it is set, the Tech is free to go.","onTarget":{"cabinet":"Loop a camera from the cabinet for two minutes. The Tech can then leave.","camera-entrance":"Loop this camera for two minutes. The Tech can leave the cabinet.","camera-pickup":"Loop this camera for two minutes. The Tech can leave the cabinet.","camera-mast-314":"Loop this camera for two minutes. The Tech can leave the cabinet."},"withTarget":"Loop {target}","then":"loops {target}"},
   "disable": {"label":"Disable camera","by":["tech"],"engine":{"do":"disable"},"does":"Cut a camera for good. The desk soon notices, and that counts as a report.","onTarget":{"cabinet":"Cut a camera's line from the cabinet. The desk will notice.","camera-entrance":"Cut this camera for good. The desk soon sees a dead screen.","camera-pickup":"Cut this camera for good. The desk soon sees a dead screen.","camera-mast-314":"Cut this camera for good. The desk soon sees a dead screen."},"withTarget":"Disable {target}","then":"disables {target}"},
   "reroute": {"label":"Reroute patrol","by":["tech"],"engine":{"do":"reroute"},"does":"Send the patrol off its sweep on false orders. It comes back.","onTarget":{"cabinet":"Work the cabinet: false orders take the patrol off its sweep for a while.","patrol":"Give the patrol false orders. It leaves its sweep, then returns."},"withTarget":"Reroute {target}","then":"reroutes {target}"},
@@ -475,8 +475,8 @@
   "drive-no-driver": {"line":"Nobody is in the car to drive it. Board first.","short":"No driver","verbs":["*"]},
   "unknown-stand": {"line":"That isn't a stand for the car. Pick a marked bay.","short":"Not a stand","verbs":["*"]},
   "drive-busy": {"line":"Whoever is in the car is busy. Wait for the act to land.","short":"Car busy","verbs":["*"]},
-  "drive-here": {"line":"The car is at that bay already. Pick the other bay.","short":"Already here","verbs":["*"]},
-  "drive-fight": {"line":"The fight has started. Fight it out here, then Go.","short":"Fight on","verbs":["*"]},
+  "drive-here": {"line":"The car is at that bay already. Pick the other bay.","short":"Car is already there","verbs":["*"]},
+  "drive-fight": {"line":"A fight blocks the car. Fight it out here, then Go.","short":"Fight blocks the car","verbs":["*"]},
   "car-empty": {"line":"Nobody is in the car. Board first.","short":"Car is empty","verbs":["go"]},
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
@@ -543,7 +543,18 @@
  "cards": {
   "rule": "The feed's cards for engine events no scene covers (Sky's review 2026-10-16, messages.html §1 D). Each is a title and one result in the player's words with the engine's numbers, never the engine's sentence (its log keeps that). A card with `sight` shows only when an agent can see the place, as a city scene does. A result that is a record is chosen by the engine state `pick` names. {who} is the person or watcher as names.targets says it, {agent} \"the Scout\"; the host capitalises the first letter after filling. Brief 013 (takedowns): a card says only what the cell has seen or been told. Three kinds: (1) the cell's own acts (the agent is there, so no `sight`); (2) things at a place the cell may not be near: `sight` in-sight, and `at` names the engine position the check looks at (the log carries none; the host reads it from the game); (3) the city's answer to an Alert, which the Alert pill and the street show: a card says that it came and when, never who made the report or why. `needs` routine: a cause the cell can name only once a Watch has taught the person's routine (a missed check in); until then report.landed speaks alone. Codes the engine builds (stash.container, stash.door) are one card keyed by the prefix. A spoken line of an event shows with that event's card or scene, so it follows the same sight rule: a line is never shown when its card is hidden. Brief 014 (less reading): every card has a `fate`: beat (a one-line feed beat, `beat`; at most ten distinct lines in the file), icon (the street shows it: a marker, ring, lock or pip), alt (history only, behind L), debrief (the end says it). A card with no beat is never a card on screen; its title and result are the history lines.",
   "items": {
-   "rivals.arrive": {"kind":"city","fate":"beat","beat":"Rivals here.","title":"Rival car arrives","sight":"in-sight","result":"Parked by the pickup. They want Vale too."},
+   "rivals.coming": {"kind":"city","fate":"beat","beat":"Rival car coming.","title":"A rival car turns in","sight":"in-sight","at":"rival-car","result":"Off Orbit Walk. They are after Vale too."},
+   "rivals.drop": {"kind":"city","fate":"icon","title":"Rivals post round our car","sight":"in-sight","at":"rival-car","result":"Three of them are taking posts round our car."},
+   "rivals.arrive": {"kind":"city","fate":"icon","title":"Rival car parks","sight":"in-sight","result":"Across from Vale's car. A lookout watches the official door."},
+   "rivals.follow-car": {"kind":"warning","fate":"alt","title":"The posted three follow","result":"They have left their posts and are going after our car."},
+   "rivals.follows": {"kind":"warning","fate":"alt","title":"The rival car follows","sight":"in-sight","at":"rival-car","result":"It is tailing Vale's car round the back."},
+   "rivals.back": {"kind":"city","fate":"alt","title":"The rival car is back","sight":"in-sight","at":"rival-car","result":"The false tip wore off. They are after Vale again."},
+   "rivals.warned": {"kind":"city","fate":"alt","title":"The lookout is warned off","sight":"in-sight","at":"rival-lookout","result":"The driver passed the word. The lookout leaves his post."},
+   "rivals.no-warning": {"kind":"warning","fate":"alt","title":"The warning came too late","sight":"in-sight","at":"rival-lookout","result":"The driver turned too late. The lookout stays at his post."},
+   "rivals.at-vale": {"kind":"warning","fate":"alt","title":"A rival is at Vale's car","sight":"in-sight","at":"vale-car","result":"Take Vale before they do, or the rivals have him."},
+   "car.parks": {"kind":"city","fate":"icon","title":"Vale's car parks","result":"In the service bay. Take him from the back seat."},
+   "car.blocked": {"kind":"warning","fate":"alt","title":"Vale's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
+   "board.missed": {"kind":"warning","fate":"alt","title":"Nobody got in","result":"The car drove off first. Wait until it stops."},
    "rivals.misled": {"kind":"city","fate":"alt","title":"Rivals sent away","result":"They may be back."},
    "rivals.drawn": {"kind":"warning","fate":"alt","title":"Rivals heading in","result":"They heard the shots."},
    "guard.at-cafe": {"kind":"city","fate":"alt","title":"The guard is at the café","sight":"in-sight","result":"Away from the door."},
@@ -664,7 +675,7 @@
   "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","disable","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
   "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, camera.cut, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","camera.cut","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","disable","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
   "reply": {"kind":"reply","trigger":"a turn order lands on a person: their answer, by the rulebook outcome (suspicious when the approach is reported)","speakers":["waitress","driver","guard"],"verbs":["ask","pay","help","pressure"],"note":"one answer per turn order; the contact's temperament picks the voice"},
-  "confirm": {"kind":"reply","trigger":"the Fixer calls a turned contact: the contact confirms aloud (Chime voices it)","speakers":["waitress","driver"],"log":["call.waitress","call.driver"],"verbs":["call"]},
+  "confirm": {"kind":"reply","trigger":"the Fixer calls a turned contact: the contact confirms aloud (Chime voices it)","speakers":["waitress"],"log":["call.waitress"],"verbs":["call"]},
   "read": {"kind":"read","trigger":"a Watch or Listen lands: the Scout says what the cell learned (Listen reveals need and temperament, Watch the routine); the Tech or the Scout on a camera or the patrol, its sight, and the patrol's rounds once they are known (Sky 2026-10-18: the Tech watches machines)","speakers":["scout","tech","fixer","enforcer"],"log":["scout.watch.watched","tech.watch.watched","fixer.watch.watched","enforcer.watch.watched","scout.listen.heard"],"verbs":["watch","listen"]},
   "taken": {"kind":"reply","trigger":"Vale is brought out (the Enforcer takes him at the car, or comes out of the Office with him)","speakers":["councillor"],"log":["take.done","enter.out"],"verbs":["enter","take"]},
   "start": {"kind":"world","trigger":"the mission starts, cell at the getaway car","speakers":["scout","fixer","tech","enforcer"],"log":["start"]},
@@ -673,6 +684,13 @@
   "vale-exits": {"kind":"world","trigger":"Vale leaves the Office","speakers":["scout"],"log":["vale.exits"],"clock":"5:50"},
   "vale-at-car": {"kind":"world","trigger":"Vale reaches his car","speakers":["scout","councillor"],"log":["vale.at-car"],"clock":"6:10"},
   "rivals-arrive": {"kind":"world","trigger":"the rival car parks near the pickup (or comes in on gunfire)","speakers":["rivals","scout"],"log":["rivals.arrive"],"clock":"3:10"},
+  "rivals-coming": {"kind":"world","trigger":"the rival car turns in from Orbit Walk","speakers":["scout"],"log":["rivals.coming"],"clock":"2:35"},
+  "rivals-drop": {"kind":"world","trigger":"the rival car drops three by the cell's car","speakers":["rivals","scout"],"log":["rivals.drop"],"clock":"2:46"},
+  "rivals-follow-car": {"kind":"world","trigger":"the getaway car drives off and the posted three go after it","speakers":["scout"],"log":["rivals.follow-car"]},
+  "rivals-follow": {"kind":"world","trigger":"the rival car follows Vale's car out of the bay","speakers":["scout"],"log":["rivals.follows"]},
+  "rivals-warned": {"kind":"world","trigger":"the turned driver's word reaches the rival lookout, who leaves his post","speakers":["driver","scout"],"log":["rivals.warned"]},
+  "rivals-at-vale": {"kind":"world","trigger":"a rival reaches Vale's car before the Take is done","speakers":["scout"],"log":["rivals.at-vale"]},
+  "car-parks": {"kind":"world","trigger":"the turned driver parks Vale's car in the service bay","speakers":["driver","fixer"],"log":["car.parks"]},
   "rivals-misled": {"kind":"world","trigger":"a false tip lands: the rivals leave","speakers":["rivals","scout"],"log":["rivals.misled"]},
   "rivals-retreat": {"kind":"world","trigger":"the rivals are driven back","speakers":["rivals"],"log":["rivals.retreat"]},
   "rivals-drawn": {"kind":"world","trigger":"gunfire draws the rivals","speakers":["rivals","scout"],"log":["rivals.drawn"]},
@@ -880,26 +898,26 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
-  "car.blocked": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "car.parks": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: car-parks",
-  "car.parked": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "board.missed": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.coming": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals-coming",
-  "rivals.drop": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals-drop",
-  "rivals.post": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.follow-car": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.follows": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals-follow",
-  "rivals.tip-leaves": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.back": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals.back (a pending card)",
-  "rivals.warned": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.lookout-gone": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.no-warning": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.word-off": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.at-vale": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.drawn-stop": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.late": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.joins": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
-  "rivals.down": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "car.blocked": "engine 0.32.0 (brief 059): card only: Vale's car stops at the road because our car is on the service drive; the Take still works from the back seat",
+  "car.parks": "engine 0.32.0 (brief 059): event car-parks and a card: the turned driver parks Vale's car in the service bay",
+  "car.parked": "engine 0.32.0 (brief 059): silent: the getaway car has stopped. The street shows it, the Drive's price line gave the time and the riders leave \"Driving\"; a line would only repeat that",
+  "board.missed": "engine 0.32.0 (brief 059): card only: the car drove off while an agent walked up to board it",
+  "rivals.coming": "engine 0.32.0 (brief 059): event rivals-coming and a card (the beat \"Rival car coming.\"): the 2:35 entry, and the drawn and late entries with it",
+  "rivals.drop": "engine 0.32.0 (brief 059): event rivals-drop and a card: the 2:46 drop, three out by our car",
+  "rivals.post": "engine 0.32.0 (brief 059): silent: each man takes his post on the street, where the player sees him walk and stop. rivals.drop and rivals.arrive already say it",
+  "rivals.follow-car": "engine 0.32.0 (brief 059): event rivals-follow-car and a card: the posted three go after our car when it drives",
+  "rivals.follows": "engine 0.32.0 (brief 059): event rivals-follow and a card: the rival car pulls out after Vale's car",
+  "rivals.tip-leaves": "engine 0.32.0 (brief 059): silent: rivals.misled said they would go; the street shows the car leave the district",
+  "rivals.back": "engine 0.32.0 (brief 059): card only: the rival car is back after a false tip",
+  "rivals.warned": "engine 0.32.0 (brief 059): event rivals-warned and a card: the driver's word reached the lookout and he leaves",
+  "rivals.lookout-gone": "engine 0.32.0 (brief 059): silent: the end of the walk rivals.warned began; the street shows him leave the map",
+  "rivals.no-warning": "engine 0.32.0 (brief 059): card only: the driver was turned too late for the lookout to be warned off before the last chance",
+  "rivals.word-off": "engine 0.32.0 (brief 059): silent: the lookout walks back to his post when the warning is cancelled; the street shows it and no new fact comes of it",
+  "rivals.at-vale": "engine 0.32.0 (brief 059): event rivals-at-vale and a card: a rival reaches Vale's car, so the Take has to land now",
+  "rivals.drawn-stop": "engine 0.32.0 (brief 059): silent: the drawn car has stopped by the Office front; rivals.coming and rivals.drawn already spoke and the street shows it stop",
+  "rivals.late": "engine 0.32.0 (brief 059): silent: the car pulls up for the fight and the crew get out; the fight events and the hostile rings speak",
+  "rivals.joins": "engine 0.32.0 (brief 059): silent: one man joins the fight on foot; the fight's hostile count and rings show it, and the fight start speaks",
+  "rivals.down": "engine 0.32.0 (brief 059): silent: a rival is down; the body, the fight count and the break (rivals.retreat) speak",
   "loop.dead": "the camera was shot or cut while the loop was being spliced: nothing lands and nothing is charged; the camera's own dark marker speaks",
   "disable.dead": "the camera was shot while the line was being cut: nothing more to cut; the camera's own dark marker speaks",
   "ai.why": "engine 0.25.0 (Sky playing 0.2.56): a hostile first takes an agent as its target, with its causes strongest first (range, final, fired, vale, violence, drawn, face, seen); silent until Fable words it (PLACEHOLDER, Keel): the host shows the why from Game.FireWhyOf under the under-fire cue",
@@ -1041,8 +1059,8 @@
     "priority": 5,
     "agent": "fixer",
     "verb": "call",
-    "target": "the turned contact",
-    "line": "Turned people act on a call. Click one, and the Fixer can Call them. Hover to see what they do.",
+    "target": "Inez",
+    "line": "Inez acts on a call. Click her, and the Fixer can Call her. Hover to see what she does.",
     "short": "Call [{who}]: click.",
     "trigger": "a contact is turned and has never been called",
     "rings": "the contact",
@@ -1995,10 +2013,6 @@
   {"event":"confirm","verb":"call","speaker":"waitress","temperament":"mercenary","lines":["I'm on the clock now. He'll come running.","Our deal. The guard is mine for a bit."]},
   {"event":"confirm","verb":"call","speaker":"waitress","temperament":"fearful","lines":["Okay. Okay. I'll call him. Be quick.","I'll spill it. Don't let him see me shake."]},
   {"event":"confirm","verb":"call","speaker":"waitress","temperament":"loyal","lines":["I know him. He comes when I ask.","Fine. One coffee, one delay."]},
-  {"event":"confirm","verb":"call","speaker":"driver","temperament":"idealist","lines":["Car's moving. Good luck, all of you.","Across the lens it goes. Be quick."]},
-  {"event":"confirm","verb":"call","speaker":"driver","temperament":"mercenary","lines":["Car's across the lens. Clock's ticking.","Parked where you wanted. Mind the time."]},
-  {"event":"confirm","verb":"call","speaker":"driver","temperament":"fearful","lines":["Moving it now. Please hurry.","It's in place. Don't be long."]},
-  {"event":"confirm","verb":"call","speaker":"driver","temperament":"loyal","lines":["Parking exactly by the book.","Nobody can fault where I've put it."]},
   {"event":"taken","verb":"take","speaker":"councillor","temperament":"loyal","lines":["You will answer to the Council for this.","Take your hands off a Councillor."]},
   {"event":"taken","verb":"take","speaker":"councillor","temperament":"mercenary","lines":["Name your figure. I'll double it.","Whoever pays you, I pay more."]},
   {"event":"taken","verb":"take","speaker":"councillor","temperament":"fearful","lines":["Please! I'll sign anything you like.","Don't hurt me. I've done nothing."]},
@@ -2091,6 +2105,16 @@
   {"event":"vale-at-car","speaker":"councillor","lines":["Home, please. It's been a long day.","Drive on. I'm expected."]},
   {"event":"rivals-arrive","speaker":"rivals","lines":["Same man. Our contract.","Eyes on the door. Wait for him.","Nobody touches him but us."]},
   {"event":"rivals-arrive","speaker":"scout","lines":["Rival car. Pickup side. Watching.","Company. One car, armed men."]},
+  {"event":"rivals-coming","speaker":"scout","lines":["Car turning in off Orbit Walk.","Unfamiliar car. Coming this way."]},
+  {"event":"rivals-drop","speaker":"rivals","lines":["That's their car. Spread out.","Take your places. Nobody drives it off.","Eyes on the car. Wait for the word."]},
+  {"event":"rivals-drop","speaker":"scout","lines":["Three out. Posting round our car.","They're covering our car. Stay clear."]},
+  {"event":"rivals-follow-car","speaker":"scout","lines":["The three are coming after our car.","They've left their posts. They're on us."]},
+  {"event":"rivals-follow","speaker":"scout","lines":["Rival car is following Vale's.","They're tailing the Councillor's car."]},
+  {"event":"rivals-warned","speaker":"driver","lines":["I've told the lookout. He's leaving.","Passed the word. He's walking off."]},
+  {"event":"rivals-warned","speaker":"scout","lines":["The lookout's walking off. Door's clear.","Their lookout is leaving his post."]},
+  {"event":"rivals-at-vale","speaker":"scout","lines":["One of them's at Vale's car. Move.","Rival at Vale's car. Take him now."]},
+  {"event":"car-parks","speaker":"driver","lines":["Here we are, Councillor. The back way.","Service door, Councillor. Mind the step."]},
+  {"event":"car-parks","speaker":"fixer","lines":["Vale's car is round the back. Bring ours.","Vale's parked. Back seat. Quickly now."]},
   {"event":"rivals-misled","speaker":"rivals","lines":["Wrong street? Turn it round.","That tip stank. Go back."]},
   {"event":"rivals-misled","speaker":"scout","lines":["They bought it. They're gone.","Tip worked. Rivals leaving."]},
   {"event":"rivals-retreat","speaker":"rivals","lines":["Pull back. Regroup.","Too hot. We'll be back."]},
@@ -2325,7 +2349,7 @@
    "kinds": {
     "overheard": "Watch or Listen lands: the target talks with the people around them (clerk, owner, customer, guard, driver). Watch learns the routine; Listen the need, the temperament and, for Inez, her secret.",
     "approach": "A turn order lands: the Fixer and the target, ending in the target's reply and the Fixer's reaction. Beats with `ref` are lines from `dialogue` (ack, arrive, reply, done, confirm), so a scene extends the exchange and never contradicts it.",
-    "call": "The Fixer calls a turned contact: Inez calls the guard over and he leaves his post for her, with the coffee spill as cover; the driver parks across the pickup camera.",
+    "call": "The Fixer calls a turned contact: Inez calls the guard over and he leaves his post for her, with the coffee spill as cover. The driver has no call (brief 059): he acts on his own once turned.",
     "city": "The city does something the cell may see. `sight` in-sight: show it only if an agent is within 13 m with a clear line; always: anyone hears it (the bell). Brief 013: a city scene may carry `outcome` (what the cell sees a witness do: report, flee, check) and `about` (the person missing); the host finds it with lookupScene() on the event, then the outcome."
    },
    "less": "Brief 014: a scene plays as speech bubbles at the speakers, not as a card. Overheard and approach scenes play every beat (what the cell learns, and the Fixer's drama, are in them); call and city scenes their first `less.feed.cityBeats`. `result` is the Alt and history line; a `beat` is the one feed line when the scene starts.",
@@ -2382,34 +2406,34 @@
    {"kind":"approach","verb":"pressure","about":"waitress","outcome":"turned","temperament":"fearful","result":"{who} is turned. Call {who} to pull the guard off the door.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"waitress","line":"Oh! You startled me. Yes?"},{"speaker":"fixer","line":"I know about you and the guard. People talk."},{"speaker":"waitress","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"waitress","line":"Yes? Sorry. I'm a bit jumpy."},{"speaker":"fixer","line":"The Office would love to know who you meet after shifts."},{"speaker":"waitress","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pressure","about":"waitress","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"waitress","line":"Welcome. The owner likes things quiet."},{"speaker":"fixer","line":"I know about you and the guard. People talk."},{"speaker":"waitress","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"waitress","line":"Good day. Café rules: order first."},{"speaker":"fixer","line":"The Office would love to know who you meet after shifts."},{"speaker":"waitress","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"driver","outcome":"refused","temperament":"idealist","result":"{who} refused, and will remember it.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"ask","about":"driver","outcome":"turned","temperament":"idealist","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"ask","about":"driver","outcome":"turned","temperament":"idealist","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"driver","outcome":"suspicious","temperament":"idealist","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"driver","outcome":"refused","temperament":"mercenary","result":"{who} refused, and will remember it.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"driver","outcome":"refused","temperament":"fearful","result":"{who} refused, and will remember it.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"ask","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"ask","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"driver","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"I'd like a hand with the car. Just ask."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"Could you do us a favour? No reason."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pay","about":"driver","outcome":"refused","temperament":"idealist","result":"{who} refused, and will remember it.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pay","about":"driver","outcome":"suspicious","temperament":"idealist","result":"{who} reported the approach. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"pay","about":"driver","outcome":"turned","temperament":"mercenary","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"pay","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"pay","about":"driver","outcome":"turned","temperament":"mercenary","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"pay","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pay","about":"driver","outcome":"suspicious","temperament":"loyal","result":"{who} reported the approach. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"A fee for moving the car. No questions."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"Cash for a favour. A fair rate."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"idealist","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"idealist","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"kept","temperament":"idealist","result":"{who} trusts you a little more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"More toward the garage bill, as promised."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"A little more for you, as agreed."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"suspicious","temperament":"idealist","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"not-yet","temperament":"mercenary","result":"{who} is warming to you, but isn't turned yet. Try once more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"mercenary","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"mercenary","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"kept","temperament":"mercenary","result":"{who} trusts you a little more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"More toward the garage bill, as promised."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"A little more for you, as agreed."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"not-yet","temperament":"fearful","result":"{who} is warming to you, but isn't turned yet. Try once more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"kept","temperament":"fearful","result":"{who} trusts you a little more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"More toward the garage bill, as promised."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"A little more for you, as agreed."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"not-yet","temperament":"loyal","result":"{who} is warming to you, but isn't turned yet. Try once more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"loyal","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"help","about":"driver","outcome":"turned","temperament":"loyal","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"kept","temperament":"loyal","result":"{who} trusts you a little more.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"More toward the garage bill, as promised."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"A little more for you, as agreed."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"help","about":"driver","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"I can cover what you're short."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"Let me settle the garage bill."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"pressure","about":"driver","outcome":"turned","temperament":"idealist","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"pressure","about":"driver","outcome":"turned","temperament":"idealist","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pressure","about":"driver","outcome":"suspicious","temperament":"idealist","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Yes? I'm listening. Fairly."},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Hello. Make it a fair question."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"pressure","about":"driver","outcome":"turned","temperament":"mercenary","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
-   {"kind":"approach","verb":"pressure","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Call {who} to blind the pickup camera.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"pressure","about":"driver","outcome":"turned","temperament":"mercenary","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Time is money, friend. What is it?"},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Make it worth my wait."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
+   {"kind":"approach","verb":"pressure","about":"driver","outcome":"turned","temperament":"fearful","result":"{who} is turned. Vale's car will come round the back.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Who sent you? Keep your voice down."},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Please, not here. People watch."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"pressure","about":"driver","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"I drive the Councillor. State your business."},{"speaker":"fixer","line":"The Councillor wouldn't like your debts known."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"driver","line":"Official car. Official business only."},{"speaker":"fixer","line":"I know you're short. I'd hate for it to spread."},{"speaker":"driver","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"guard","outcome":"refused","temperament":"mercenary","result":"{who} refused, and will remember it.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"On the clock. Make it quick."},{"speaker":"fixer","line":"Might you step away from the door?"},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"Yes? I charge for chatting."},{"speaker":"fixer","line":"A small favour, officer. Free of charge."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
    {"kind":"approach","verb":"ask","about":"guard","outcome":"suspicious","temperament":"loyal","result":"{who} reported you. Alert is now {alert}.","variants":[{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"State your business. I'm on the Office door."},{"speaker":"fixer","line":"Might you step away from the door?"},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]},{"beats":[{"speaker":"fixer","ref":"arrive"},{"speaker":"guard","line":"Halt. Identify yourself, please."},{"speaker":"fixer","line":"A small favour, officer. Free of charge."},{"speaker":"guard","ref":"reply"},{"speaker":"fixer","ref":"done"}]}]},
@@ -2428,11 +2452,7 @@
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"mercenary","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer! A word. It's worth your while."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Whoops. The cloth is on the house."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, love. I've something for you."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Oh dear, coffee. Let me wipe that."}]}]},
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"fearful","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Please, come over. Quickly. Quietly."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Oh! Oh no, I'm sorry!"}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here! Oh, please, hurry."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"Clumsy! I'm so clumsy. Sit, sit."}]}]},
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"loyal","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer. A moment at the café, please."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Forgive me. Café rules: I clean it."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, if you've a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"A spill. Sit, I'll see to it."}]}]},
-   {"kind":"call","verb":"call","about":"driver","temperament":"idealist","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Moving the car. One less file."},{"speaker":"tech","line":"Pickup camera's blind. Move now."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"The car's going across. Quick, all of you."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
-   {"kind":"call","verb":"call","about":"driver","temperament":"mercenary","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Pulling across the lens. Time's ticking."},{"speaker":"tech","line":"Pickup camera's blind. Move now."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"In place. Every minute counts."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
-   {"kind":"call","verb":"call","about":"driver","temperament":"fearful","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Moving it. Please, don't be long."},{"speaker":"tech","line":"Pickup camera's blind. Move now."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Car's across. I'm shaking, but it's there."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
-   {"kind":"call","verb":"call","about":"driver","temperament":"loyal","result":"The driver parked across the pickup camera. It is blind for now.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"Parking by the book, in the right place."},{"speaker":"tech","line":"Pickup camera's blind. Move now."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"driver","ref":"confirm"},{"speaker":"driver","line":"The car is exactly where it should be."},{"speaker":"tech","line":"Car across the lens. Good."}]}]},
-   {"kind":"city","title":"Rival car arrives","event":"rivals-arrive","beat":"Rivals here.","sight":"in-sight","result":"A rival crew has parked near the pickup. They are after Vale too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. Same door as the file."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
+   {"kind":"city","title":"Rival car arrives","event":"rivals-arrive","sight":"in-sight","result":"A rival crew has parked near the pickup. They are after Vale too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. Same door as the file."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
    {"kind":"city","title":"Handover chime","event":"chime","sight":"always","result":"The handover chime. Vale leaves the Office soon.","variants":[{"beats":[{"speaker":"crowd","line":"There is the chime. Time to go home."},{"speaker":"crowd","line":"Mind the steps, everyone."},{"speaker":"crowd","line":"Handover already? The day flew."}]},{"beats":[{"speaker":"crowd","line":"Chime! Shift's over at the Office."},{"speaker":"crowd","line":"Doors open. Here come the clerks."},{"speaker":"crowd","line":"Walk, please. Walking is encouraged."}]}]},
    {"kind":"city","title":"Shift change at the Office","event":"chime","sight":"in-sight","result":"The Office is changing shift. The driver is ready at the pickup.","variants":[{"beats":[{"speaker":"clerk","line":"Chime, driver. The Councillor is coming down."},{"speaker":"driver","line":"Engine's warm. Tell him I'm ready."},{"speaker":"clerk","line":"He's finishing the file."},{"speaker":"driver","line":"He always is."}]},{"beats":[{"speaker":"clerk","line":"Shift's over. The door is yours, officer."},{"speaker":"guard","line":"Quiet day. Quiet door."},{"speaker":"clerk","line":"Mind the patrol on the steps."},{"speaker":"guard","line":"It minds me, more like."}]}]},
    {"kind":"city","title":"The guard is at the café","event":"guard-at-cafe","sight":"in-sight","result":"The guard is at the café, away from the door.","variants":[{"beats":[{"speaker":"guard","line":"The usual, please."},{"speaker":"waitress","line":"You're early today."},{"speaker":"guard","line":"Quiet on the door. The patrol is due round."},{"speaker":"waitress","line":"Then sit. Two minutes."}]},{"beats":[{"speaker":"waitress","line":"Sit. You've a long evening."},{"speaker":"guard","line":"Not so long. I'll come by after."},{"speaker":"waitress","line":"Hush, and eat."},{"speaker":"guard","line":"Yes, ma'am."}]}]},
@@ -2444,123 +2464,9 @@
  },
  "pending": {
   "rule": "Words drafted ahead of the engine (briefs 058 and 059, GDD v0.25.0). The host reads none of this. Each entry names its brief and says whether its code, key or trigger is a `guess`: the brief did not name it, and its owner confirms or renames it. When Keel lands a code or a verb, the entry moves unchanged to the section of the same name (locks, cards.items, events, dialogue, actions, activity, hints, less.price, targets) and Latch wires it in that batch; a `replaces` entry takes the place of the live one with the same key.  A test holds every line here to the live limits.",
-  "locks": {
-  },
-  "cards": {
-   "rivals.coming": {
-    "kind": "city",
-    "title": "A rival car turns in",
-    "sight": "in-sight",
-    "at": "rival-car",
-    "result": "Off Orbit Walk. They are after Vale too.",
-    "fate": "beat",
-    "beat": "Rival car coming.",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) s2 (the feed line \"Rival car coming\"): takes the beat slot of \"Rivals here.\", so rivals.arrive loses its beat (the file holds at most ten distinct beats)"
-   },
-   "rivals.drop": {
-    "kind": "city",
-    "title": "Rivals post round our car",
-    "sight": "in-sight",
-    "at": "rival-car",
-    "result": "Three of them are taking posts round our car.",
-    "fate": "icon",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) s2 (named: rivals.drop)"
-   },
-   "rivals.arrive": {
-    "kind": "city",
-    "title": "Rival car parks",
-    "sight": "in-sight",
-    "result": "Across from Vale's car. A lookout watches the official door.",
-    "fate": "icon",
-    "replaces": true,
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) s2: the 3:10 park, now with a lookout; fate icon and no beat, because rivals.coming speaks first. The rivals-arrive scene loses its beat too"
-   },
-   "car.parks": {
-    "kind": "city",
-    "title": "Vale's car parks",
-    "result": "In the service bay. Take him from the back seat.",
-    "fate": "icon",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) K2 (named: car.parks)"
-   },
-   "rivals.follows": {
-    "kind": "warning",
-    "title": "The rival car follows",
-    "sight": "in-sight",
-    "at": "rival-car",
-    "result": "It is tailing Vale's car round the back.",
-    "fate": "alt",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) s2: the rival car follows Vale's car when it leaves the bay"
-   },
-   "rivals.back": {
-    "kind": "city",
-    "title": "The rival car is back",
-    "sight": "in-sight",
-    "at": "rival-car",
-    "result": "The false tip wore off. They are after Vale again.",
-    "fate": "alt",
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals) s2: the rival car returns after a false tip"
-   }
-  },
+  "locks": {},
+  "cards": {},
   "events": {
-   "rivals-coming": {
-    "kind": "world",
-    "trigger": "the rival car turns in from Orbit Walk",
-    "log": [
-     "rivals.coming"
-    ],
-    "clock": "2:35",
-    "speakers": [
-     "scout"
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   "rivals-drop": {
-    "kind": "world",
-    "trigger": "the rival car drops three by the cell's car",
-    "log": [
-     "rivals.drop"
-    ],
-    "clock": "2:46",
-    "speakers": [
-     "rivals",
-     "scout"
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   "car-parks": {
-    "kind": "world",
-    "trigger": "the turned driver parks Vale's car in the service bay",
-    "log": [
-     "car.parks"
-    ],
-    "clock": "6:25",
-    "speakers": [
-     "driver",
-     "fixer"
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   "rivals-follow": {
-    "kind": "world",
-    "trigger": "the rival car follows Vale's car out of the bay",
-    "log": [
-     "rivals.follows"
-    ],
-    "speakers": [
-     "scout"
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
    "driver-tail": {
     "kind": "read",
     "trigger": "a completed Scout Listen on the driver: the tail fact",
@@ -2572,67 +2478,6 @@
    }
   },
   "dialogue": [
-   {
-    "event": "rivals-coming",
-    "speaker": "scout",
-    "lines": [
-     "Car turning in off Orbit Walk.",
-     "Unfamiliar car. Coming this way."
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   {
-    "event": "rivals-drop",
-    "speaker": "rivals",
-    "lines": [
-     "That's their car. Spread out.",
-     "Take your places. Nobody drives it off.",
-     "Eyes on the car. Wait for the word."
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   {
-    "event": "rivals-drop",
-    "speaker": "scout",
-    "lines": [
-     "Three out. Posting round our car.",
-     "They're covering our car. Stay clear."
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   {
-    "event": "car-parks",
-    "speaker": "driver",
-    "lines": [
-     "Here we are, Councillor. The back way.",
-     "Service door, Councillor. Mind the step."
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   {
-    "event": "car-parks",
-    "speaker": "fixer",
-    "lines": [
-     "Vale's car is round the back. Bring ours.",
-     "Vale's parked. Back seat. Quickly now."
-    ],
-    "guess": false,
-    "brief": "brief 059 (pickup and rivals)"
-   },
-   {
-    "event": "rivals-follow",
-    "speaker": "scout",
-    "lines": [
-     "Rival car is following Vale's.",
-     "They're tailing the Councillor's car."
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals)"
-   },
    {
     "event": "driver-tail",
     "speaker": "driver",

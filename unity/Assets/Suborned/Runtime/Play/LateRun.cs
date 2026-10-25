@@ -27,6 +27,24 @@ namespace Suborned.Play
         {
             public string Name = "", Status = "ok", Error = "", Outcome = "", FailCode = "", Csv = ""; public int EndTick, Given, Refused;
             public readonly List<(double ms, int tick, string phase, string what)> Frames = new();
+            /// <summary>Redline 064 R2: each frame's sections, in the same order as Frames (ms; gc = gen-0 collections in the gap).</summary>
+            public readonly List<Sections> Parts = new();
+        }
+        /// <summary>Redline 064 R2 (frames.csv columns, for Splice's late.ts): stepMs the engine's steps (Game.Step), afterMs the host's work after each
+        /// step (views.Tick, notices, beats, the drain), viewsMs views.Frame, sightMs ShowSight (fans), conesMs PersonConesFrame, rerouteMs RerouteFrame
+        /// and the ring's givers, signalMs every SignalHead's LateUpdate (summed; the previous LateUpdate, inside the same gap), gc gen-0 collections.</summary>
+        struct Sections { public double Step, After, Views, Sight, Cones, Reroute, Signal; public int Gc; }
+        static readonly double TickMs = 1000.0 / System.Diagnostics.Stopwatch.Frequency;
+        static int gcLast;
+        static Sections Take()
+        {
+            int gc = GC.CollectionCount(0); var s = new Sections
+            {
+                Step = HandoverHost.PerfStepMs, After = HandoverHost.PerfAfterMs, Views = HandoverHost.PerfViewsMs, Sight = HandoverHost.PerfSightTicks * TickMs, Cones = HandoverHost.PerfConesTicks * TickMs,
+                Reroute = HandoverHost.PerfRerouteTicks * TickMs, Signal = SignalHead.FrameTicks * TickMs, Gc = gc - gcLast,
+            };
+            gcLast = gc; HandoverHost.PerfStepMs = HandoverHost.PerfAfterMs = HandoverHost.PerfViewsMs = 0; HandoverHost.PerfSightTicks = HandoverHost.PerfConesTicks = HandoverHost.PerfRerouteTicks = 0; SignalHead.FrameTicks = 0;
+            return s;
         }
 
         string path, dir; readonly List<Res> results = new();
@@ -51,6 +69,7 @@ namespace Suborned.Play
             while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { Write("no host after 60 s"); Application.Quit(2); yield break; } yield return null; }
             yield return new WaitForSecondsRealtime(3f); // the HUD built, the world streamed in
             h.controls.conversations = ConversationScenes.Never; // orders go in as the player's, with no scene to wait for
+            HandoverHost.PerfTiming = true; // Redline 064 R2: the per-frame sections in frames.csv
             bool allOk = true;
             foreach (var row in file.rows)
             {
@@ -83,31 +102,42 @@ namespace Suborned.Play
                 if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
                 // 2 · real time: every later order given before the step that leaves its tick
                 HandoverHost.BeforeStep = host => { while (oi < orders.Count && orders[oi].Tick <= host.Game.Tick && !host.Game.Over) GiveOne(host, orders[oi++]); };
-                HandoverHost.FrameCost = ""; h.SetPaused(false);
+                HandoverHost.FrameCost = ""; h.SetPaused(false); Take();
                 double last = Time.realtimeSinceStartupAsDouble, overAt = -1; bool timing = false;
                 while (true)
                 {
                     yield return null;
                     double now = Time.realtimeSinceStartupAsDouble, ms = (now - last) * 1000.0; last = now;
                     var g = h.Game; if (g == null) { Fail(res, "the run went away"); break; }
-                    string what = HandoverHost.FrameCost; HandoverHost.FrameCost = "";
+                    string what = HandoverHost.FrameCost; HandoverHost.FrameCost = ""; var sec = Take();
                     bool over = g.Over || h.Ending.Length > 0;
-                    if (over && overAt < 0) { overAt = now; res.EndTick = g.Tick; res.Outcome = g.Result.ToString().ToLowerInvariant(); res.FailCode = g.FailCode ?? ""; res.Frames.Add((ms, g.Tick, "t", what)); continue; }
-                    if (overAt >= 0) { if (now - overAt > row.tailSeconds) break; res.Frames.Add((ms, g.Tick, "t", what)); continue; }
-                    if (timing) res.Frames.Add((ms, g.Tick, "w", what));
+                    if (over && overAt < 0) { overAt = now; res.EndTick = g.Tick; res.Outcome = g.Result.ToString().ToLowerInvariant(); res.FailCode = g.FailCode ?? ""; res.Frames.Add((ms, g.Tick, "t", what)); res.Parts.Add(sec); continue; }
+                    if (overAt >= 0) { if (now - overAt > row.tailSeconds) break; res.Frames.Add((ms, g.Tick, "t", what)); res.Parts.Add(sec); continue; }
+                    if (timing) { res.Frames.Add((ms, g.Tick, "w", what)); res.Parts.Add(sec); }
                     if (!timing && g.Tick >= row.startTick) timing = true; // the frames from the first one that ends at or past startTick (this one's gap was before it)
                     if (g.Tick > row.endTick + 5 * Suborned.Sim.Game.Hz) { Fail(res, "ran past the end"); break; }
                     if (h.Paused) h.SetPaused(false); // nothing in this run pauses (a modal, a scene): play on as the script did
                 }
                 HandoverHost.BeforeStep = null; HandoverHost.FrameCost = "";
-                try { File.WriteAllText(Path.Combine(dir, res.Csv), "ms,tick,phase,what\n" + string.Join("\n", res.Frames.Select(f => $"{F(f.ms)},{f.tick},{f.phase},{What(f.what)}")) + "\n"); } catch { }
+                try
+                {
+                    var csv = new StringBuilder("ms,tick,phase,what,stepMs,afterMs,viewsMs,sightMs,conesMs,rerouteMs,signalMs,gc\n");
+                    for (int fi = 0; fi < res.Frames.Count; fi++)
+                    {
+                        var f = res.Frames[fi]; var p = fi < res.Parts.Count ? res.Parts[fi] : default;
+                        csv.Append(F(f.ms)).Append(',').Append(f.tick).Append(',').Append(f.phase).Append(',').Append(What(f.what)).Append(',').Append(F(p.Step)).Append(',').Append(F(p.After)).Append(',').Append(F(p.Views))
+                           .Append(',').Append(F(p.Sight)).Append(',').Append(F(p.Cones)).Append(',').Append(F(p.Reroute)).Append(',').Append(F(p.Signal)).Append(',').Append(p.Gc).Append('\n');
+                    }
+                    File.WriteAllText(Path.Combine(dir, res.Csv), csv.ToString());
+                }
+                catch { }
                 if (res.Status != "ok") allOk = false;
                 Write("running");
             }
             Write(allOk ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(allOk ? 0 : 1);
         }
 
-        void OnDestroy() { HandoverHost.BeforeStep = null; }
+        void OnDestroy() { HandoverHost.BeforeStep = null; HandoverHost.PerfTiming = false; }
 
         static Order Copy(Order o) => new() { Tick = o.Tick, Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run, Stance = o.Stance, Force = o.Force, On = o.On, Release = o.Release, Face = o.Face, Count = o.Count, Shots = o.Shots, Then = o.Then };
 

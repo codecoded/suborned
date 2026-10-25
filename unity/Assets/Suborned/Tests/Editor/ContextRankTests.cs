@@ -67,6 +67,15 @@ namespace Suborned.Play.Tests
             var b = new[] { W("watch", ok: false), W("loop") }; Assert.AreEqual("loop", Picked(C("camera", b), b));
         }
 
+        [Test] public void OnACameraLoopLeadsTheRingAndWatchStandsAtThree()
+        {
+            var t = new[] { W("watch"), W("loop"), W("disable"), W("fire") }; var c = C("camera", t);
+            Assert.AreEqual(new List<int> { 1, 0, 2, 3 }, c.Order, "the Tech: Loop 12, Watch 3, Disable 6, Fire 9");
+            Assert.AreEqual("watch", Picked(c, t), "the quick click still watches first");
+            var s = new[] { W("watch"), W("fire") }; Assert.AreEqual(new List<int> { 0, 1 }, C("camera", s).Order, "the Scout: Watch keeps 12");
+            var p = new[] { W("watch"), W("loop") }; Assert.AreEqual(new List<int> { 0, 1 }, C("person", p).Order, "only a camera's ring moves Loop");
+        }
+
         [Test] public void PatrolWatchesThenReroutesAndTheEnforcerAloneGetsTheRing()
         {
             var a = new[] { W("watch"), W("reroute") }; Assert.AreEqual("watch", Picked(C("patrol", a), a));

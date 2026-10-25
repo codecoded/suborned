@@ -68,7 +68,15 @@ namespace Suborned.Play
         public int Writes { get; private set; }
 
         Color shown, from, target; float fadeAt = -9f; bool first = true;
-        (string st, int numeral, int lit, bool off, int r, int g, int b, int half) last = ("", -2, -1, false, -1, -1, -1, -2);
+        // Redline 064 R4 (0.2.122): the head's parts and its dot rows keep keys of their own, so a clearing crossing's falling `half` (65-69 cm/s,
+        // a new centimetre every frame) no longer rewrites all seven parts of every head; the dots' key holds `half` to 5 cm (a dot is lit or dark
+        // by its centre, nothing finer shows), and heads without dots never compute it. Writes wait while nothing of the head (or of its rows) is
+        // visible; the last-written key stays, so a head that comes into view writes once.
+        (string st, int numeral, int lit, bool off, int r, int g, int b) lastHead = ("", -2, -1, false, -1, -1, -1);
+        (int half, int r, int g, int b) lastDots = (-2, -1, -1, -1);
+        bool wroteHead, wroteDots;
+        /// <summary>Redline 064 R2: every head's LateUpdate time this frame, summed (Stopwatch ticks; read by -late when PerfTiming).</summary>
+        public static long FrameTicks;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         static void Forget() { All.Clear(); MissionSeconds = 0; Hold = ""; HoldLeft = 7f; mpb = null; argsRead = false; }
@@ -97,6 +105,12 @@ namespace Suborned.Play
 
         void LateUpdate()
         {
+            if (!HandoverHost.PerfTiming) { Step(); return; }
+            long t0 = System.Diagnostics.Stopwatch.GetTimestamp(); Step(); FrameTicks += System.Diagnostics.Stopwatch.GetTimestamp() - t0;
+        }
+
+        void Step()
+        {
             ReadArgs();
             string st; float left;
             string hold = HoldHere.Length > 0 ? HoldHere : Hold;
@@ -123,13 +137,31 @@ namespace Suborned.Play
                 _ => RingSegments,
             };
             RingLit = lit;
-            float half = st == "clearing" && Clearing > 0 ? CrossLength * 0.5f * Mathf.Clamp01(left / Clearing) : float.PositiveInfinity;
-            var key = (st, numeral, lit, off, Mathf.RoundToInt(shown.r * 1000f), Mathf.RoundToInt(shown.g * 1000f), Mathf.RoundToInt(shown.b * 1000f), float.IsInfinity(half) ? -1 : Mathf.RoundToInt(half * 100f));
-            if (key == last) return; // written only when something shows differently (no allocation a frame)
-            last = key; Writes++;
+            int cr = Mathf.RoundToInt(shown.r * 1000f), cg = Mathf.RoundToInt(shown.g * 1000f), cb = Mathf.RoundToInt(shown.b * 1000f);
             mpb ??= new MaterialPropertyBlock();
-            Vector4 E(float lv) => new(shown.r * lv, shown.g * lv, shown.b * lv, 1f);
+            var headKey = (st, numeral, lit, off, cr, cg, cb);
+            if ((headKey != lastHead || !wroteHead) && (!wroteHead || HeadSeen())) { lastHead = headKey; wroteHead = true; Writes++; WriteHead(st, numeral, lit, rimLevel, srgb); }
+            if (Dots.Length == 0) return; // (a): a head that drives no dots never computes `half`
+            float half = st == "clearing" && Clearing > 0 ? CrossLength * 0.5f * Mathf.Clamp01(left / Clearing) : float.PositiveInfinity;
+            var dotKey = (float.IsInfinity(half) ? -1 : Mathf.RoundToInt(half * 20f), cr, cg, cb); // (b): to 5 cm
+            if ((dotKey == lastDots && wroteDots) || wroteDots && !DotsSeen()) return; // (c): nothing new, or no row on screen
+            lastDots = dotKey; wroteDots = true; Writes++;
+            for (int i = 0; i < Dots.Length; i++)
+            {
+                var d = Dots[i]; if (!d) continue;
+                float f0 = i < DotFrom.Length ? DotFrom[i] : 0f;
+                float a = float.IsInfinity(half) ? -1e4f : CrossLength * 0.5f - half - f0, b = float.IsInfinity(half) ? 1e4f : CrossLength * 0.5f + half - f0;
+                mpb.Clear(); mpb.SetFloat(LitFromId, a); mpb.SetFloat(LitToId, b); mpb.SetVector(EmissionId, E(1f)); d.SetPropertyBlock(mpb);
+            }
+        }
 
+        static bool Seen(Renderer r) => r && r.isVisible;
+        bool HeadSeen() => Seen(Rim) || Seen(Figure) || Seen(Tens) || Seen(Units) || Seen(Ring) || Seen(Beam) || Seen(Halo);
+        bool DotsSeen() { foreach (var d in Dots) if (Seen(d)) return true; return false; }
+
+        Vector4 E(float lv) => new(shown.r * lv, shown.g * lv, shown.b * lv, 1f); // no closure a frame
+        void WriteHead(string st, int numeral, int lit, float rimLevel, Color srgb)
+        {
             if (Rim) { mpb.Clear(); mpb.SetVector(EmissionId, E(rimLevel)); Rim.SetPropertyBlock(mpb); }
             string fig = st switch { "walk" => "walk_full", "clearing" => "walk_head", "arriving" => "stand_head", _ => "stand_full" };
             if (Figure) { mpb.Clear(); mpb.SetVector(StId, FigureST[fig]); mpb.SetVector(EmissionId, E(1f)); Figure.SetPropertyBlock(mpb); }
@@ -138,13 +170,6 @@ namespace Suborned.Play
             if (Ring) { mpb.Clear(); mpb.SetFloat(CutoffId, Mathf.Clamp(1f - lit / (float)RingSegments, RingCutMin, 1.001f)); /* Vela's 1 - lit/24, kept off 0: at 0 the clip keeps alpha 0 too and a full ring drew its whole square (0.2.121); over 1 none is lit */ mpb.SetVector(EmissionId, E(1f)); Ring.SetPropertyBlock(mpb); }
             if (Beam) { mpb.Clear(); mpb.SetColor(BaseColorId, new Color(srgb.r, srgb.g, srgb.b, 1f)); Beam.SetPropertyBlock(mpb); } // CrossGlow keeps its own _Alpha (Vela: beam 0.26, halo 0.40)
             if (Halo) { mpb.Clear(); mpb.SetColor(BaseColorId, new Color(srgb.r, srgb.g, srgb.b, 1f)); Halo.SetPropertyBlock(mpb); }
-            for (int i = 0; i < Dots.Length; i++)
-            {
-                var d = Dots[i]; if (!d) continue;
-                float f0 = i < DotFrom.Length ? DotFrom[i] : 0f;
-                float a = float.IsInfinity(half) ? -1e4f : CrossLength * 0.5f - half - f0, b = float.IsInfinity(half) ? 1e4f : CrossLength * 0.5f + half - f0;
-                mpb.Clear(); mpb.SetFloat(LitFromId, a); mpb.SetFloat(LitToId, b); mpb.SetVector(EmissionId, E(1f)); d.SetPropertyBlock(mpb);
-            }
         }
     }
 }

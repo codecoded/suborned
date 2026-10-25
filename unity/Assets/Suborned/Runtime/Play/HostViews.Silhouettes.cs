@@ -12,6 +12,12 @@ namespace Suborned.Play
         public static bool SilhouetteKey(string key) => key.StartsWith("op/") || key.StartsWith("hostile/") || key.StartsWith("unit/") || key.StartsWith("rivals/") || key.StartsWith("security/")
             || key is "patrol" or "waitress" or "guard" or "driver" or "councillor";
 
+        /// <summary>Glint 056 (2026-10-26) test: every shown, active person view that takes a silhouette, with its position (HostTurn.UncutSilhouettePeople).</summary>
+        public System.Collections.Generic.IEnumerable<(string key, Vector3 at)> SilhouettePeople()
+        {
+            foreach (var kv in things) { var (t, _, _, shown) = kv.Value; if (shown && t && t.gameObject.activeInHierarchy && SilhouetteKey(kv.Key)) yield return (kv.Key, t.position); }
+        }
+
         /// <summary>Marks every renderer of a person's model: the person bit, and the silhouette bit for the views that take one.</summary>
         static void MarkPerson(string key, GameObject model)
         {

@@ -26,6 +26,17 @@ namespace Suborned.Play
 
         /// <summary>Per frame (the hold preset): what the pill says and where. A charge first, then the live words (fire, then the orders on
         /// the thing under the cursor or the focus), then the offer of the hovered thing's main act.</summary>
+        /// <summary>The top (panel y) of what stands over a camera: its window marker (as DoneMarks places it, before any lift for speech) or its dead
+        /// disc (as StreetLess places it); +inf when neither.</summary>
+        float CameraMarkTop(string camKey)
+        {
+            var h = host; float top = float.PositiveInfinity;
+            foreach (var w in h.WindowMarks) if (w.Key == camKey && h.AnchorWorld(camKey) is Vector3 at && Proj(at + Vector3.up * 0.75f, out var mq)) top = Mathf.Min(top, mq.y - 12f - WinH);
+            string id = camKey.Substring(7), dead = ""; try { dead = h.Game?.CameraDeadAs(id) ?? ""; } catch (System.Exception) { }
+            if (dead.Length > 0 && h.Views?.Find(camKey) is Transform ct && ct.gameObject.activeInHierarchy && Proj(ct.position + Vector3.up * (h.Views.CamHeadUp - 1.6f), out var hq)) top = Mathf.Min(top, hq.y - 20f - 12f);
+            return top;
+        }
+
         void HoldPillFrame()
         {
             var h = host; var cam = h.View; bool modal = m.Ended || h.Modal != ModalGate.Modal.None || h.Ring != null || h.Panel != null || h.Loud != null || cam == null;
@@ -62,6 +73,9 @@ namespace Suborned.Play
             Vector3? at = null;
             if (text.Length > 0) { if (anchorId.Length > 0) at = h.DrawnAt(anchorId); else if (t != null) at = h.TargetWorld(t); }
             Vector2 q = default; bool show = at.HasValue && Proj(at.Value + Vector3.up * (t == null || t.Kind is "person" or "crowd" or "hostile" or "bystander" or "patrol" or "rivals" or "security" or "unit" ? 2.25f : 1.5f), out q);
+            // Glyph's N9 (0.2.122): on a camera with a window marker (the loop's clock, the desk's) or a dead disc, the pill's tail stands 6 px above
+            // that element, so the order reads pill, marker or disc, camera head (it covered "1:59", the desk's "14" and the disc)
+            if (show) { string camKey = t?.Kind == "camera" ? "camera/" + t.Key : anchorId.StartsWith("camera/") ? anchorId : anchorId.StartsWith("camera:") ? "camera/" + anchorId[7..] : null; if (camKey != null) q.y = Mathf.Min(q.y, CameraMarkTop(camKey) - 6f); }
             Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; return; }
             PillLook(text, icon, harm, faces, seen, fill, state);
             vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : 1f; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px)

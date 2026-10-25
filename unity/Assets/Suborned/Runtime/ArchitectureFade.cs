@@ -75,7 +75,7 @@ namespace Suborned
         [Tooltip("A ground point's capsule runs from the ground to this height (m).")]
         public float pointHeight = 0.4f;
         [Tooltip("The soft edge starts at this share of the radius and is gone at the radius (smoothstep; the lab's 0.55).")]
-        [Range(0f, 1f)] public float edgeInner = 0.55f;
+        [Range(0f, 1f)] public float edgeInner = 0.70f; // Glint 056 F2 (2026-10-26): 0.55 -> 0.70 trial (band 0.6 m, crisper on a sunlit roof); Proof118 shoots 0.55, 0.70, 0.85
         [Tooltip("A fragment is cut only when it is nearer the camera than the point by this much (m, linear eye depth: the lab's 0.45).")]
         public float depthMargin = 0.45f;
         [Tooltip("The cut's rim leans towards this colour (cream #f7f4ec; Glint tunes it).")]
@@ -111,7 +111,7 @@ namespace Suborned
         public Color streetAlbedo = new Color(0.894f, 0.855f, 0.792f); // #e4daca (pave_civic_v1.png mean)
 
         /// <summary>DK_CUT_POINTS in DK_Cutaway.hlsl: the shader's array is always this long.</summary>
-        public const int MaxPoints = 10;
+        public const int MaxPoints = 12; // Glint 056 (2026-10-26): 8 fixed slots (4 agents, target or hover, door, cursor, guard) + the driver and Vale; DK_CUT_POINTS must match
         readonly Vector4[] points = new Vector4[MaxPoints]; // xyz world, w disc radius (m)
         int pointCount;
         readonly FadeCut[] cuts = new FadeCut[2 * MaxPoints + 1];
@@ -126,6 +126,10 @@ namespace Suborned
         }
         /// <summary>The points kept clear now.</summary>
         public int PointCount => pointCount;
+        /// <summary>Glint 056 (2026-10-26) test: whether a kept point lies within m (ground plane) of w.</summary>
+        public bool HasPointNear(Vector3 w, float m) { for (int i = 0; i < pointCount; i++) { var d = new Vector3(points[i].x - w.x, 0f, points[i].z - w.z); if (d.sqrMagnitude <= m * m) return true; } return false; }
+        /// <summary>How many points the shader takes (MaxPoints = DK_CUT_POINTS).</summary>
+        public int Cap => MaxPoints;
 
         readonly System.Collections.Generic.Dictionary<Renderer, (Material[] plain, uint mask)> forced = new();
         /// <summary>Brief 022: a prop drawn whole (wholeProps) that must fade for now, as the architecture does (the parasol over the table
