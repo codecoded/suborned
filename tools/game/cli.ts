@@ -19,6 +19,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { join, relative } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { usageGate } from '../gen/flags';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
@@ -41,6 +42,18 @@ const FIX = {
 };
 const args = process.argv.slice(2);
 const has = (f: string) => args.includes(f);
+const USAGE = `usage: bun tools/game/cli.ts [flags]   (or bun run game, game:build, game:check, game:pack, game:send, game:signing-check)
+  (no flag)          open the built app, building it first when an input changed
+  --build            force a build            --check          build if stale, then the full proof
+  --pack             zip the app for another Mac   --send [device]  pack and send by Taildrop (default skys-macbook-air-1)
+  --dry-run          say whether it would build (or send) and stop
+  --signing-check    say whether the signing identity and notary profile exist
+  --no-open  --windowed  --native  --capture-size WxH  --no-air  --reuse-proof   (modifiers of the above)
+  --help, -h         print this and exit; any unknown option does the same and does nothing (no build, no Unity)`;
+usageGate(args, {
+  flags: ['--build', '--check', '--pack', '--dry-run', '--signing-check', '--no-open', '--windowed', '--native', '--no-air', '--reuse-proof'],
+  valued: [{ flag: '--send' }, { flag: '--capture-size', required: true }],
+}, USAGE, 'game');
 
 const run = (cmd: string, a: string[], opts: { quiet?: boolean } = {}) => spawnSync(cmd, a, { cwd: ROOT, encoding: 'utf8', stdio: opts.quiet ? 'pipe' : 'inherit' });
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));

@@ -532,3 +532,13 @@ Order: Splice's 061 round lands → Splice's 059 site export → Keel K1–K11 �
   - **The 13 scenarios whose outcome moves at (90.5, -31.0)** (measured by running the whole suite with the site at the target: S05; S20, S21, N11b, N19b, N33, N78; N31, N81, N82, N87, N181, FW-SEEN). Keel re-sites them in the same round. DP1 also fails there, but it fails on the site's inputs hash at either position (see the site note below).
   - **Also read the park:** `contracts/missions/handover/routes/routes.json` `fail-vale-leaves` (it expects Alert 1 at (84, −31), where the camera and the patrol report the Scout. With the park at the 059 target the Scout can wait out of the pickup camera's view and it reads Alert 0: Waymark re-checks it in the 059 round, together with the Scout's wait spots in careless-scout-idles-pickup and fight-safe-rivals-reach-vale), and the points `rival-drop`, `rival-tail` and the stand prose, which cite the target by number. Waymark's c037 sees the route at (84, -31) until Keel's round.
   - **Cover:** `bun run cover` regenerated `contracts/world/civic-block.cover.json`: the four rival-car points `cv-011..cv-014` (of `car/rivals`) moved back 6.5 m with the park, to (82.25, -31.25), (83.75, -34.25), (83.75, -27.75), (85.75, -31.25) (they stood at 88.75/90.25/90.25/92.25 at the target). Pulse: the rival car's four cover points are the only change. Run `bun run cover` again after the move.
+- **mission.json strings for GDD v0.25 §07** (from the GDD fold; mission.test.ts compares the timeline with §07's schedule line word for word, so the GDD line is the source):
+  - Timeline:
+    - "3:10 rival car parks near pickup" becomes three entries: "2:35 the rival car turns in from Orbit Walk", "2:46 it drops three by the cell's car, who post round it", and "3:10 the rival car parks across from Vale's car; its lookout watches the official bay".
+    - "5:40 last chance to turn driver" → "5:40 last chance to turn the driver".
+    - "5:50 Vale exits north (service lane if driver turned)" → "5:50 Vale comes out of the official door".
+    - "6:10 Vale at car" → "6:10 Vale at his car, in by 6:13: his own driver drives him away (over); a turned driver drives him round to the service bay (6:25) and waits there".
+    - "8:30 rivals take Vale or car leaves = over" → "8:30 the turned driver gives up and drives Vale on (over)".
+  - `windows[0].gdd` → "the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window".
+  - `prep[A].gdd` → "listens to Inez (1:02)".
+  - tools/sim/site.ts reads the timeline by its words: `/rival car/` must match exactly one entry, and `/Vale exits/`, `/Vale at car/` and `/= over$/` must change with the entries (the new ones end "(over)").

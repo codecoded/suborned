@@ -5,9 +5,17 @@
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
+import { usageGate } from '../gen/flags';
 import { buildCatalogue } from './catalogue';
 import { copyAdopted } from './copy';
 import { GEN_ROOT, kitRoot } from './store';
+
+const USAGE = `usage: bun run kit [--catalogue]
+  (no flag)    write contracts/world/kit.json from the DecoKit manifest, then copy the adopted pieces into unity/Assets/Suborned/Kit/ (hash-checked)
+  --catalogue  write kit.json only; copy nothing
+  --help, -h   print this and exit; any unknown option does the same and does nothing
+env: SUBORNED_OLD (old repo), SUBORNED_STORE (store), DECOKIT_OUT (generated pieces)`;
+usageGate(process.argv.slice(2), { flags: ['--catalogue'] }, USAGE, 'kit');
 
 const repo = resolve(import.meta.dir, '../..'), path = resolve(repo, 'contracts/world/kit.json'), dest = resolve(repo, 'unity/Assets/Suborned/Kit');
 const root = kitRoot(), prior: Kit | undefined = existsSync(path) ? JSON.parse(readFileSync(path, 'utf8')) : undefined;
