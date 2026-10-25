@@ -31,15 +31,6 @@ export const STANDS: StandSpec[] = [
 /** The rival car's points on the route, and the foot points of the crew (brief 059 §2.2; Vantage's mission points). */
 export const RIVAL_CAR = { entry: 'rival-car-entry', drop: 'rival-drop', park: 'rival-park', tail: 'rival-tail', front: 'rival-front-stop' } as const;
 
-/** Where the rival car parks in the 059 data (Vantage, brief 059 §5; Aster 2026-10-25): Apron Road's eastbound lane at the south kerb, site cm. The live mission and site hold `rival-park` at (84, -31)
- *  for batch 0.2.118; Keel's 059 round moves the point and the 14 scenarios that stand on it, and this override goes with it (delete it and the mission point is the target). Until then the side
- *  file (handover.stands.json) is built from the places with this park, and the live site's own `rival-park` place is untouched. */
-export const RIVAL_PARK_059: [number, number] = [9050, -3100];
-/** The places as the 059 data sees them: `rival-park` at RIVAL_PARK_059, every other place as it stands. */
-export function placesFor059<P extends { at: number[] }>(places: Record<string, P>): Record<string, P> {
-  const cur = places[RIVAL_CAR.park];
-  return cur ? { ...places, [RIVAL_CAR.park]: { ...cur, at: [...RIVAL_PARK_059] } } : places;
-}
 export const RIVAL_FOOT = { lookout: 'rival-lookout', lookoutExit: 'rival-lookout-exit', valeDoor: 'rival-vale-door' } as const;
 /** Pulse's drop stop (rivals-drop-s 8 [S], briefs/059/pulse): used for the entry tick until the rulebook carries it. */
 const DROP_S = 8;

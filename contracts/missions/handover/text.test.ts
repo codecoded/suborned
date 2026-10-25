@@ -1234,7 +1234,8 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(JSON.stringify(t.locks)).not.toMatch(/serving/);
   });
   test('the timeline marks have a word for Alt', () => {
-    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);
+    // brief 059 (engine 0.32.0, GDD v0.25.0 §07): the rival car's entry (2:35) and drop (2:46) are marks; 3:10 is its park (Keel's drafts, Fable words them)
+    expect(t.briefing.timeline.map((x) => x.short)).toEqual(['Rivals in', 'Rivals out', 'Rivals park', 'Chime', 'Last chance', 'Vale out', 'Vale at car', 'Close']);
   });
   test('every player-facing group of the file has a fate, and the fates are the brief\'s', () => {
     for (const f of Object.values(L.fates)) expect(FATES).toContain(f);
@@ -1248,7 +1249,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(60); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0)
+    expect(Object.keys(t.cards.items).length).toBe(59); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
   });

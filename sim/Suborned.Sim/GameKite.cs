@@ -56,7 +56,6 @@ namespace Suborned.Sim
             LabKite = R.KiteOn;
             Kr = (R.KiteReact, R.KiteReplan, R.KiteChaseCm, R.KiteLapse, R.KiteHide, R.KiteContactCm, R.KiteRearm, R.KiteHideMax, R.KiteCoverHold);
         }
-        KiteDisp? rivalsDisp;
         readonly SortedDictionary<int, KiteDisp> secDisp = new SortedDictionary<int, KiteDisp>();
         readonly SortedDictionary<string, KiteDisp> unitDisp = new SortedDictionary<string, KiteDisp>(StringComparer.Ordinal); // retest R3: police units off their post
         const int KiteBlindCm = 800; // Pulse §2: the rivals' blind-point fallback, within 8 m
@@ -75,7 +74,7 @@ namespace Suborned.Sim
         void KiteAlarm(string by, string t)
         {
             int side = KiteSide(t); if (side == 0) return;
-            if (t == "rivals") { KiteMark(RivalsGun, by); return; }
+            if (CrewOf(t) is CrewMember km && !km.Fight) { foreach (var m in Crew) if (!m.Fight && Up(m) && m.OnFoot) KiteMark(m.Gun, by); return; } // brief 059: the pre-fight crew on its own, member by member
             if (side == 3) { var u0 = KiteUnit(t); if (u0 == null) return; foreach (var u in Units) if (!u.Legacy && !u.Patrol && !u.Robot && u.Act == u0.Act) KiteMark(u.Gun, by); return; } // one incident, one dispatch
             if (side == 1) { foreach (var g in SecGuns) KiteMark(g, by); foreach (var h in Hostiles) if (KiteSide(h.Id) == 1 && SecIndex(h.Id) < 0) KiteMark(h.Gun, by); }
             else foreach (var h in Hostiles) if (KiteSide(h.Id) == 2) KiteMark(h.Gun, by);
@@ -99,7 +98,7 @@ namespace Suborned.Sim
         }
         Func<Pt, bool> KiteSees(string id, Pt pos)
         {
-            if (id == "rivals") return RivalsWatching;
+            if (CrewOf(id) is CrewMember sm && !sm.Fight) return p => MemberWatching(sm, p); // brief 059: a member's own cone
             int k = SecIndex(id); if (k >= 0 && !secJoined[k]) return p => SecOfficerWatching(k, p, false);
             return p => Sees(pos, p);
         }
@@ -107,7 +106,7 @@ namespace Suborned.Sim
         /// <summary>The tick's answers, before security's bodies act (Combat): the pre-fight crew, the response unit not yet joined, the hostiles.</summary>
         void KiteTick()
         {
-            KiteRivals();
+            foreach (var m in Crew) KiteRivals(m); // brief 059: member by member
             for (int k = 0; k < SecGuns.Length; k++)
             {
                 var g = SecGuns[k]; if (g.Down || secJoined[k]) continue;
@@ -307,14 +306,15 @@ namespace Suborned.Sim
 
         void SecStop(int k, Pt pos, Pt sp) => secDisp[k] = new KiteDisp { P = new Path(new[] { pos, pos }), Start = Tick, Face = Facing(pos, sp) };
 
-        /// <summary>The pre-fight rival crew: out to the hide, hold, back after kite.hide with no shot on it; the arrival clock shifts by the detour.</summary>
-        void KiteRivals()
+        /// <summary>The pre-fight rival crew, member by member (brief 059): out to the hide, hold, back after kite.hide with no shot on him; his walk's
+        /// clock shifts by the detour.</summary>
+        void KiteRivals(CrewMember m)
         {
-            var g = RivalsGun; if (!RivalsDrawn || !RivalsPresent || g.Down) { rivalsDisp = null; return; }
-            if (IntentPress()) return; // engine 0.19.0 (ai.intent.rivals.press): the press owns the crew's walk
-            if (rivalsDisp != null)
+            var g = m.Gun; if (!RivalsDrawn || m.Fight || !Up(m) || !m.OnFoot || g.Down) { m.Disp = null; return; }
+            if (IntentPress(m)) return; // engine 0.19.0 (ai.intent.rivals.press): the press owns the member's walk
+            if (m.Disp != null)
             {
-                var d = rivalsDisp; long len = d.P.Length;
+                var d = m.Disp; long len = d.P.Length;
                 if (d.Phase == 0 && (long)(Tick - d.Start) * rivSpeed >= len) { d.Phase = 1; g.KiteHoldAt = Tick; }
                 if (d.Phase == 1)
                 {
@@ -324,27 +324,27 @@ namespace Suborned.Sim
                     if (!quiet && w && sh != null && !sh.Down && !sh.Inside && Tick - g.KiteLast >= Kr.KiteReplan)
                     {
                         long dd = G.D2(d.P.End, sh.Pos);
-                        if (dd > (long)g.W!.EffCm * g.W.EffCm && dd <= (long)g.W.MaxCm * g.W.MaxCm && RivalsWatching(sh.Pos)) { CrewAdvance(d, sh.Pos); return; }
+                        if (dd > (long)g.W!.EffCm * g.W.EffCm && dd <= (long)g.W.MaxCm * g.W.MaxCm && MemberWatching(m, sh.Pos)) { CrewAdvance(m, d, sh.Pos); return; }
                     }
                     if (quiet)
                     {
                         if (!w || !ShooterOnLine(d.P.At(0), g.W!.MaxCm)) { d.Phase = 2; d.BackStart = Tick; } // Pulse §5.2: no lean-out into a shooter still there
-                        else if (Tick - g.KiteHoldAt >= Kr.KiteHideMax && sh != null && !sh.Down && !sh.Inside) { CrewAdvance(d, sh.Pos); return; } // a long hold advances
+                        else if (Tick - g.KiteHoldAt >= Kr.KiteHideMax && sh != null && !sh.Down && !sh.Inside) { CrewAdvance(m, d, sh.Pos); return; } // a long hold advances
                     }
                 }
                 if (d.Phase == 2 && (long)(Tick - d.BackStart) * rivSpeed >= len)
                 {
-                    if (RivalsDelayedUntil <= RivalsDrawnTick) RivalsDrawnTick += Tick - d.Start;
-                    Note("ai.kite", $"rivals lean out again after {(Tick - d.Start) / Hz} s out of the line.");
-                    rivalsDisp = null; KiteClear(g);
+                    if (m.Mode == CrewMode.Walking) m.WalkStart += Tick - d.Start; // his walk's clock shifts by the detour
+                    Note("ai.kite", $"{m.Id} leans out again after {(Tick - d.Start) / Hz} s out of the line.");
+                    m.Disp = null; KiteClear(g);
                 }
                 return;
             }
             if (g.KiteAt < 0 || Tick < g.KiteAt + Kr.KiteReact) return;
             var shooter = OpOf(Sim.Op.Parse(g.KiteBy)); if (shooter.Down || shooter.Inside) { KiteClear(g); return; }
-            var pose = RivalsPose(); if (!pose.HasValue || g.W == null) return;
+            var pose = MemberPose(m); if (!pose.HasValue || g.W == null) return;
             var pos = pose.Value.pos; var sp = shooter.Pos;
-            if (KiteCanAnswer(pos, g.W.EffCm, RivalsWatching) || RivalsDelayedUntil > RivalsDrawnTick) return;
+            if (KiteCanAnswer(pos, g.W.EffCm, p => MemberWatching(m, p))) return;
             var dest = KiteHide(g, pos, sp, pos, out var c);
             Path? path;
             if (dest.HasValue) path = KitePath(pos, dest.Value, int.MaxValue / 20);
@@ -358,15 +358,15 @@ namespace Suborned.Sim
             if (path == null) return;
             if (c != null) TakeCover(g, c);
             g.KiteLast = Tick;
-            Note("ai.kite", $"rivals answer {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, move at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(dest.HasValue ? "out of the line" + (c != null ? $" to {c.Id}" : "") : "to their ring of the shooter")}.");
-            rivalsDisp = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
+            Note("ai.kite", $"{m.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, move at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(dest.HasValue ? "out of the line" + (c != null ? $" to {c.Id}" : "") : "to his ring of the shooter")}.");
+            m.Disp = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
         }
 
-        /// <summary>Retest R4 (Pulse §5.1–5.2): the pre-fight crew, held out of the line, walks on toward its ring of `sp`: the old walk up to where
-        /// it stands, then the route on (cut at its chase budget), so it comes back the way it went; the detour clock is the whole walk.</summary>
-        void CrewAdvance(KiteDisp d, Pt sp)
+        /// <summary>Retest R4 (Pulse §5.1–5.2): a pre-fight member, held out of the line, walks on toward his ring of `sp`: the old walk up to where
+        /// he stands, then the route on (cut at its chase budget), so he comes back the way he went; the detour clock is the whole walk.</summary>
+        void CrewAdvance(CrewMember m, KiteDisp d, Pt sp)
         {
-            var g = RivalsGun; var pos = d.P.End;
+            var g = m.Gun; var pos = d.P.End;
             int rem = Kr.KiteChaseCm - g.KiteWalked, free = (int)Math.Max(0, G.Dist(pos, sp) - Kr.KiteContactCm);
             g.KiteLast = Tick;
             if (rem < S.Grid.Cell && free == 0) return; // its budget is spent: it holds
@@ -376,7 +376,7 @@ namespace Suborned.Sim
             var np = new Path(pts.ToArray()); long done = d.P.Length;
             g.KiteWalked += (int)Math.Max(0, add.Length / 10 - free);
             d.P = np; d.Phase = 0; d.Start = Tick - (int)((done + rivSpeed - 1) / rivSpeed); d.Face = Facing(np.End, sp); g.KiteHoldAt = -1;
-            Note("ai.kite", $"rivals walk on toward {g.KiteBy}, {G.Dist(pos, sp) / 100} m out.");
+            Note("ai.kite", $"{m.Id} walks on toward {g.KiteBy}, {G.Dist(pos, sp) / 100} m out.");
         }
 
         /// <summary>An operative with a weapon out within `reachCm` of `at` on a clear line (the crew's lean-out point is still covered).</summary>
@@ -475,12 +475,13 @@ namespace Suborned.Sim
             void G1(Gun g) => h.S(g.Id).I(g.KiteAt).I(g.KiteSeen).I(g.KiteLast).I(g.KiteWalked).S(g.KiteBy).P(g.KitePrev).Z(g.KiteHasPrev).Z(g.KiteCapped).I(g.KiteCapTick).I(g.KiteHoldAt).I(g.KiteCoverAt);
             foreach (var g in SecGuns) G1(g);
             foreach (var x in Hostiles) G1(x.Gun);
-            G1(RivalsGun);
+            G1(RivalsGun); // brief 059: retired, never moves (its bytes stay)
             foreach (var u in Units) if (!u.Legacy && !u.Patrol && !u.Robot) G1(u.Gun); // retest R3
             void D(KiteDisp d) { h.I(d.Start).I(d.Phase).I(d.BackStart).P(d.Face).I(d.P.Points.Length); foreach (var p in d.P.Points) h.P(p); if (d.Press) h.S("press"); }
             foreach (var kv in secDisp) { h.I(kv.Key); D(kv.Value); }
             foreach (var kv in unitDisp) { h.S(kv.Key); D(kv.Value); }
-            h.Z(rivalsDisp != null); if (rivalsDisp != null) D(rivalsDisp);
+            h.Z(false);
+            if (CrewHashes) foreach (var m in Crew) if (!m.Fight) { G1(m.Gun); h.Z(m.Disp != null); if (m.Disp != null) D(m.Disp); } // brief 059: each member on the street, once the crew is on the map
         }
     }
 }

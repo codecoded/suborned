@@ -106,8 +106,10 @@ namespace Suborned.Sim
                 var g = r.G;
                 RouteA(r, reroute: true); Support(r); ToAmbush(r);
                 int firedAt = -1; string first = "";
-                if (r.Until(() => { var t = g.Combatants().FirstOrDefault(id => id.StartsWith("rival-", StringComparison.Ordinal)); return t != null && g.PosOf(t).HasValue && g.PreviewFire(OpId.Scout, t).Refused.Length == 0; }, T(30)))
-                { first = g.Combatants().First(id => id.StartsWith("rival-", StringComparison.Ordinal)); r.Fire(Scout, first); firedAt = g.Tick; }
+                // brief 059: the crew's bodies post by the greedy rule (rival-1 at ambush-3): the Scout takes the nearest rival he can fire on now
+                string Pick() => g.Combatants().Where(id => id.StartsWith("rival-", StringComparison.Ordinal) && g.PosOf(id).HasValue && g.PreviewFire(OpId.Scout, id).Refused.Length == 0).OrderBy(id => G.D2(g.PosOf(id)!.Value, r.Op(Scout).Pos)).ThenBy(id => id, StringComparer.Ordinal).FirstOrDefault() ?? "";
+                if (r.Until(() => Pick().Length > 0, T(30)))
+                { first = Pick(); r.Fire(Scout, first); firedAt = g.Tick; }
                 r.Until(() => g.GunOf(first)?.Down == true || g.FightOverTick != Never, T(60));
                 r.Is(g.GunOf(first)?.Down == true, $"{first} goes down");
                 int downAt = g.Tick; r.Wait(T(3));
@@ -442,10 +444,12 @@ namespace Suborned.Sim
             FightToCar(r);
         }
 
-        /// <summary>L3: route G-fast's timing, but at 2:03.6 the Enforcer shoots the guard at his mark instead of the knockout; then Enter.</summary>
+        /// <summary>L3: route G-fast's timing, but where its Enforcer takes the guard down he shoots him instead; then Enter. Brief 059 (Aster): the
+        /// shot is tied to the route's own takedown order (GuardTakedownTick), not a fixed tick, so a retimed route (Waymark's 0.31 retimes moved it
+        /// from 2:03.6 to 1:30.5) never replays past the knockout and reads "not loud".</summary>
         static void LoudGuardShot(Run r, string routeG)
         {
-            var g = r.G; Replay(r, routeG, 1236);
+            var g = r.G; Replay(r, routeG, GuardTakedownTick(routeG));
             if (g.Over) return;
             g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "fire", Target = GuardR });
             DrawAll(r);
@@ -514,6 +518,12 @@ namespace Suborned.Sim
         }
 
         /// <summary>A script's orders before `beforeTick`, each at its tick (refused ones too: they are the player's).</summary>
+        /// <summary>The tick of the route's first takedown order on the guard (L3's shot replaces it); the script without one is rejected.</summary>
+        internal static int GuardTakedownTick(string scriptText)
+        {
+            foreach (var o in Suborned.Sim.Script.Parse(scriptText).Orders) if (o.Do == "takedown" && o.Target == GuardR) return o.Tick;
+            throw new FormatException("L3's route has no takedown on the guard to replace with a shot");
+        }
         static void Replay(Run r, string scriptText, int beforeTick)
         {
             var s = Suborned.Sim.Script.Parse(scriptText); var g = r.G;

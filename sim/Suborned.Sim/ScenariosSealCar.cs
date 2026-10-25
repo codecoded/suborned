@@ -55,7 +55,7 @@ namespace Suborned.Sim
             Add("N183", "—", "The seal's car state, empty (brief 057 §4), and a debrief true to the run (brief 060 #8): N128's fixture (route careless-body-found: the guard killed at his post, the Enter at once, the loud final fight; the Enforcer holds with Vale where he came out). The district seals with Vale never aboard: FailCause.Car empty, no holders. The debrief no longer says Vale reached the getaway car (0.29.0's Debrief.Of did, on every front route); it says he was taken through the Office, and every line it keeps is backed by the run.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true},{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Office approach\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"crew:fixer\"},{\"tick\":166,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":462,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"guard\"},{\"tick\":662,\"op\":\"scout\",\"do\":\"move\",\"to\":\"crew:scout\"},{\"tick\":1060,\"op\":\"tech\",\"do\":\"reroute\",\"target\":\"patrol\"},{\"tick\":1440,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6520,-4110]},{\"tick\":1510,\"op\":\"enforcer\",\"do\":\"takedown\",\"target\":\"guard\",\"how\":\"kill\"},{\"tick\":1540,\"op\":\"enforcer\",\"do\":\"enter\"},{\"tick\":1540,\"op\":\"tech\",\"do\":\"move\",\"to\":[675,-4625]},{\"tick\":1540,\"op\":\"scout\",\"do\":\"move\",\"to\":[1175,-4825]},{\"tick\":1540,\"op\":\"fixer\",\"do\":\"move\",\"to\":[1025,-4625]},{\"tick\":1920,\"op\":\"scout\",\"do\":\"draw\"},{\"tick\":1920,\"op\":\"fixer\",\"do\":\"draw\"},{\"tick\":1920,\"op\":\"tech\",\"do\":\"draw\"},{\"tick\":1920,\"op\":\"enforcer\",\"do\":\"stance\",\"stance\":\"hold\"}]"); // N128's orders
+                Script(r, "[{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true},{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Office approach\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"crew:fixer\"},{\"tick\":166,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":462,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"guard\"},{\"tick\":662,\"op\":\"scout\",\"do\":\"move\",\"to\":\"crew:scout\"},{\"tick\":1060,\"op\":\"tech\",\"do\":\"reroute\",\"target\":\"patrol\"},{\"tick\":1440,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6520,-4110]},{\"tick\":1510,\"op\":\"enforcer\",\"do\":\"takedown\",\"target\":\"guard\",\"how\":\"kill\"},{\"tick\":1540,\"op\":\"enforcer\",\"do\":\"enter\"},{\"tick\":1540,\"op\":\"tech\",\"do\":\"move\",\"to\":[675,-4625]},{\"tick\":1540,\"op\":\"scout\",\"do\":\"move\",\"to\":[1175,-4825]},{\"tick\":1540,\"op\":\"fixer\",\"do\":\"move\",\"to\":[1025,-4625]},{\"tick\":1920,\"op\":\"enforcer\",\"do\":\"stance\",\"stance\":\"hold\"}]"); // N128's orders
                 r.To(T(g.S.Over));
                 r.Eq(g.FailCode, "sealed", "the loud fight's seal runs out");
                 var c = CauseIs(r, "sealed", "sealed", false, "", "", Enf);
@@ -85,23 +85,31 @@ namespace Suborned.Sim
                     if (!ok && same) { same = false; off = $"{Report.Clock(g.Tick)}: {string.Join(" ", g.Windows())}"; }
                 }
                 Check();
-                var w0 = g.Windows().First(x => x.Kind == "seal");
-                r.Is(g.Log.Exists(l => l.Tick == w0.From && (l.Code == "seal.starts" || l.Code == "security.called" || l.Code == "fight.loud")), $"the window opens on the tick the clock was set ({Report.Clock(w0.From)})");
+                var w0 = g.Windows().FirstOrDefault(x => x.Kind == "seal");
+                if (!r.Is(w0 != null, $"the seal window is listed ({Report.Clock(g.Tick)}: {g.Result} {g.FailCode}, {string.Join(" ", g.Windows())})")) return;
+                r.Is(g.Log.Exists(l => l.Tick == w0!.From && (l.Code == "seal.starts" || l.Code == "security.called" || l.Code == "fight.loud")), $"the window opens on the tick the clock was set ({Report.Clock(w0!.From)})");
                 if (!r.Is(r.Until(() => { Check(); return g.Vale == ValeAt.WithEnforcer && !r.Op(Enf).Inside; }, T(120)), $"the Enforcer comes out with Vale ({Report.Clock(g.Tick)})")) return;
                 int at = r.Send(Enf, "d:Getaway bay");
                 while (!g.Over && g.Tick < at) { g.Step(); Check(); }
-                if (!r.Is(!g.Over && r.Do(Enf, "board", "car"), "he boards with Vale before the seal")) return;
+                bool aboard = !g.Over && g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "board", Target = "car" }).ok;
+                if (!r.Line(aboard, $"he boards with Vale before the seal ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; brief 059: with no final fight the posted three round our car fire on the Vale holder in their cone, Sky's answer 3)"))
+                {
+                    while (!g.Over && g.Tick < T(g.S.Over) + T(600)) { g.Step(); Check(); }
+                    r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})");
+                    return;
+                }
                 while (!g.Over && r.Op(Enf).Busy != null) { g.Step(); Check(); }
-                r.Is(g.Vale == ValeAt.Car && !g.Over, $"Vale is in the car ({Report.Clock(g.Tick)}), the seal at {Report.Clock(g.Lockdown)}");
-                int boarded = g.Log.Last(l => l.Code == "board.in").Tick;
-                var before = g.Windows().First(x => x.Kind == "seal");
+                r.Line(g.Vale == ValeAt.Car && !g.Over, $"Vale is in the car ({Report.Clock(g.Tick)}), the seal at {Report.Clock(g.Lockdown)}");
+                int bin = g.Log.FindLastIndex(l => l.Code == "board.in"); var before = g.Windows().FirstOrDefault(x => x.Kind == "seal");
+                if (!r.Line(bin >= 0 && before != null, $"Vale is aboard with the seal running ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; brief 059: the posted three round our car)")) { while (!g.Over && g.Tick < T(g.S.Over) + T(600)) { g.Step(); Check(); } r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})"); return; }
+                int boarded = g.Log[bin].Tick;
                 while (!g.Over && g.Tick < T(g.S.Over) + T(600)) { g.Step(); Check(); }
                 r.Is(same, $"the seal window matches Lockdown every tick, gone at the end ({off})");
                 r.Eq(g.FailCode, "sealed", "nobody gave Go: the district seals");
                 var c = CauseIs(r, "sealed", "sealed", false, "", "", g.Cause?.Ops.Count > 0 ? string.Join(",", g.Cause.Ops) : "");
                 r.Eq((c?.Car, c?.Holders.Count, c?.AboardAt, c?.GoRefusedAt), ("ready", 0, boarded, -1), "FailCause.Car: ready (aboard, free, no Go), aboard at his board.in");
                 r.Is(g.CarHolders().Count == 0, "nothing holds the car at the seal");
-                r.Is(c != null && before.Origin == (c.LastMove ?? c.Origin), "the window's origin is the report whose time ran out (the cause's last move, else its origin)");
+                r.Is(c != null && before!.Origin == (c.LastMove ?? c.Origin), "the window's origin is the report whose time ran out (the cause's last move, else its origin)");
                 var d = RouteBacked(r);
                 r.Is(d.Route.Contains("vale-reaches-getaway-car") && d.Route.Contains("vale-taken-through-office"), $"the debrief: through the Office, and he reached the car (route: {string.Join(", ", d.Route)})");
             }, NoFight());

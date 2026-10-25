@@ -152,7 +152,7 @@ namespace Suborned.Sim
                 case "desk": b.Kind = "desk"; at(null); return b;
                 case "heard": b.Kind = "heard"; at(null); return b;
                 case "car": b.Kind = "car"; at(CarPos()); return b;
-                case "getaway-car": b.Kind = "car"; at(S.At(S.GetawayCar)); return b;
+                case "getaway-car": b.Kind = "car"; at(Car); return b; // brief 059 K6: where the getaway car stands now
                 case "guard":
                     {
                         b.Kind = "guard"; var gp = GuardPose();
@@ -161,8 +161,9 @@ namespace Suborned.Sim
                         return b;
                     }
                 case "patrol": { b.Kind = "patrol"; var pp = PatrolPose(); if (pp.HasValue) { at(pp.Value.pos); face(pp.Value.facing); } else at(null); return b; }
-                case "rivals": { b.Kind = "rival"; var rp = RivalsPose(); if (rp.HasValue) { at(rp.Value.pos); face(rp.Value.facing); } else at(null); return b; }
+                case "rivals": case "car:rivals": { b.Kind = "rival"; var rp = RivalCarPose(); if (rp.HasValue) { at(rp.Value.pos); face(rp.Value.heading); } else at(null); return b; } // brief 059: the rival car
             }
+            if (CrewOf(id) is CrewMember cm && !cm.Fight && HostileOf(id) == null) { b.Kind = "rival"; var mp = MemberPose(cm); if (mp.HasValue) { at(mp.Value.pos); face(mp.Value.facing); } else at(cm.Gun.Down ? cm.DownAt : RivalCarPose()?.pos); return b; } // brief 059: a member of the crew on the street
             int k = SecIndex(id);
             if (k >= 0) { b.Kind = "officer"; var sp = SecOfficerPose(k); if (sp.HasValue) { at(sp.Value.pos); face(sp.Value.facing); } else at(null); return b; }
             foreach (var u in Units)
@@ -296,7 +297,7 @@ namespace Suborned.Sim
         /// <summary>Brief 018's rival at the car: every rival within cell.atReach of it (nearest first, ties on id), then Vale in the car.</summary>
         FailCause RivalsAtCar()
         {
-            var car = S.At(S.GetawayCar); var near = new List<(long d, string id)>();
+            var car = Car; var near = new List<(long d, string id)>();
             foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && G.Within(h.Pos(Tick), car, R.AtReachCm)) near.Add((G.D2(h.Pos(Tick), car), h.Id));
             near.Sort((x, y) => x.d != y.d ? x.d.CompareTo(y.d) : string.CompareOrdinal(x.id, y.id));
             var c = Because("reached-car", true);

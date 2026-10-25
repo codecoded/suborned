@@ -42,7 +42,7 @@ namespace Suborned.Sim
             if (coverSeekAt.TryGetValue(name, out var at) && G.Tick < at) return false;
             coverSeekAt[name] = G.Tick + Game.T(3);
             int sec = G.Tick / Game.Hz; CoverMark? best = null; int bestN = 0;
-            bool valeOut = G.Vale == ValeAt.WithEnforcer || G.Vale == ValeAt.Car; var en = G.OpOf(OpId.Enforcer); var holder = G.Vale == ValeAt.Car || en.Inside ? G.S.At(G.S.GetawayCar) : en.Pos;
+            bool valeOut = G.Vale == ValeAt.WithEnforcer || G.Vale == ValeAt.Car; var en = G.OpOf(OpId.Enforcer); var holder = G.Vale == ValeAt.Car || en.Inside ? G.GetawayCarPos() : en.Pos;
             var foes = new List<Pt>(); foreach (var id in ts) { var p = G.PosOf(id); if (p.HasValue && G.GunOf(id) is Gun fg && !fg.Down) foes.Add(p.Value); }
             foreach (var m in G.CoverMarks(e.Id))
             {
@@ -170,7 +170,7 @@ namespace Suborned.Sim
                         if (Focus) { var hg = G.GunOf(id)!; bool onHolder = G.Vale == ValeAt.WithEnforcer && hg.Target == "enforcer" && hg.Fired; bool blocker = G.Hostiles.Exists(h => h.Id == id && h.Blocker); k = onHolder ? 0 : blocker ? 1 : 2; } // §7.11.3 (b)
                         if (k < rank || (k == rank && d < bd)) { rank = k; bd = d; near = id; np = at.Value; }
                     }
-                    if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.S.Stand(G.S.GetawayCar) }); continue; }
+                    if (near.Length == 0) { if (carToEnforcer && name == "enforcer" && e.Walk == null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = G.GetawaySeat }); continue; }
                     if (name == "enforcer" && G.Vale == ValeAt.WithEnforcer) { if (e.Walk != null) G.Issue(new Order { Tick = G.Tick, Op = name, Do = "move", Point = e.Pos }); continue; } // brief 018: walking Vale he doesn't fire; he holds back while the others fight
                     bool line = G.S.Sight(e.Pos, np, G.R.Eye);
                     bool inEff = line && bd <= (long)(w.EffCm - 200) * (w.EffCm - 200);
@@ -200,7 +200,7 @@ namespace Suborned.Sim
         {
             var ids = new List<string>(); foreach (var s in G.SecGuns) ids.Add(s.Id);
             if (G.PatrolChasing && !G.PatrolDown) ids.Add("patrol");
-            if (G.RivalsDrawn && G.RivalsPresent) ids.Add("rivals");
+            if (G.RivalsDrawn) foreach (var m in G.Crew) if (!m.Fight && !m.Gun.Down && m.OnFoot) ids.Add(m.Id); // brief 059: the drawn crew, member by member
             return ids;
         }
         /// <summary>Hold posts and fire on the city's gunmen once they come into effective reach (or fire on the operative).</summary>
@@ -214,7 +214,7 @@ namespace Suborned.Sim
         {
             Func<bool> free = all ? () => !G.CarHeld() && G.FightOverTick != int.MaxValue / 4 : () => !G.CarHeld();
             var ops = new List<string> { "enforcer" }; ops.AddRange(with);
-            int end = G.Tick + Game.T(limitS); var car = G.S.At(G.S.GetawayCar);
+            int end = G.Tick + Game.T(limitS); var car = G.GetawayCarPos();
             while (!G.Over && G.Tick < end)
             {
                 Engage(() => { var l = new List<string>(); foreach (var h in G.Hostiles) if (h.Present && !h.Down) l.Add(h.Id); l.AddRange(CityGunmen()); return l; },
@@ -224,7 +224,7 @@ namespace Suborned.Sim
                 // so the helper calls nothing off (the cease it gave here before 0.8.2 is gone; N95 holds without it)
                 if (!G.Within(Op("enforcer").Pos, car, G.R.AtReachCm))
                 {
-                    int at = SendTo("enforcer", G.S.Stand(G.S.GetawayCar));
+                    int at = SendTo("enforcer", G.GetawaySeat);
                     while (!G.Over && G.Tick < at && free()) G.Step();
                 }
                 if (free() && G.Within(Op("enforcer").Pos, car, G.R.AtReachCm)) return;
@@ -234,12 +234,12 @@ namespace Suborned.Sim
         /// Vale), then Go once the car is free. Checks each order was taken; returns Go's answer. Anyone not named stays out (left behind).</summary>
         public Answer GetAway(params string[] ops)
         {
-            var car = G.S.At(G.S.GetawayCar);
+            var car = G.GetawayCarPos();
             foreach (var name in ops)
             {
                 if (G.Over) break;
                 var o = Op(name); if (o.Down || o.InCar) continue;
-                if (!G.Within(o.Pos, car, G.R.AtReachCm)) { int at = SendTo(name, G.S.Stand(G.S.GetawayCar)); while (!G.Over && G.Tick < at) G.Step(); }
+                if (!G.Within(o.Pos, car, G.R.AtReachCm)) { int at = SendTo(name, G.GetawaySeat); while (!G.Over && G.Tick < at) G.Step(); }
                 if (G.Over) break;
                 Do(name, "board", "car"); Done(name); if (!G.Over) G.Step();
             }

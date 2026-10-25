@@ -30,9 +30,22 @@
    "note": "Reworded 2026-10-17 (Waymark) to GDD v0.23.0 §07's words, which take in the cell's start re-sited on 2026-10-16 (brief 014; see the file's note); the offset is unchanged. Was 'Vale inside; routines run; cell at getaway car' (§07 to v0.22.0); before that the removed anchor 'Vale inside; routines run'. §07's next entry, 'the Office guards check in at 1:00, 2:30, 4:00 and 5:30 (shift end)', is a routine with no single offset, not a timeline entry: the engine reads the marks from the cast guard's post in sim/data/handover.people.json and the rulebook's check-in-period-s (90 s); the status pill does not show them (a watched guard's clock pip does, GDD §10); tools/missions/handover/mission.test.ts checks §07's marks against that data."
   },
   {
+   "at": "2:35",
+   "what": "the rival car turns in from Orbit Walk",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "The engine computes the car's entry back from the 3:10 park (rulebook rivals: the drop stop and the two drives at car.pace on the drive grid), so the park stays exactly 3:10 and this entry is §07's rounding of it (engine 0.32.0: 2:35.6). Nobody of the crew is on the map before it."
+  },
+  {
+   "at": "2:46",
+   "what": "it drops three by the cell's car, who post round it",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "The drop stop at rival-drop (engine 0.32.0: 2:46.4); the three step out rivals.step apart and walk to the first rivals.posted spots of the getaway car's stand."
+  },
+  {
    "at": "3:10",
-   "what": "rival car parks near pickup",
-   "src": "GDD §07"
+   "what": "the rival car parks across from Vale's car; its lookout watches the official bay",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "The park at rival-park (90.5, -31), Apron Road's south kerb (Vantage, brief 059 §5); the lookout steps out rivals.out later and posts at rival-lookout. Read by tools/sim/site.ts as schedule.rivalsArrive (/rival car parks/)."
   },
   {
    "at": "5:30",
@@ -42,26 +55,26 @@
   },
   {
    "at": "5:40",
-   "what": "last chance to turn driver",
-   "src": "GDD §07"
+   "what": "last chance to turn the driver",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)"
   },
   {
    "at": "5:50",
-   "what": "Vale exits north (service lane if driver turned)",
-   "src": "GDD §07",
-   "note": "Removed anchor: 'Vale exits north'; the service-lane branch is §07's and was missing. 'north' is the top-down test's compass: as sited in the plan the official entrance, canopy and bay are on the Records Office's south face (destinations Official entrance and Official drop-off, plan y -303 to -310, Apron Road) and the public front faced north to the square until 2026-10-19, when Sky's door option (b) turned the public door onto the wing's west face, over the forecourt and Rocket Lane (brief 023). The service-lane branch: the turned driver's car stands in serviceBay in the Office's east service yard (point service-bay, (63.75, -15.0), nose in facing -x), and Vale's stop is 'Service lane' (62.5, -16.8), by the service door on the east face since Sky's choice of 2026-10-19 (brief 023; it stood on the west side, (62.5, -43.2), then for a day by the new public door, (70.5, -43.2)): he walks from the official entrance to 'Service lane' (24.2 m, 17.3 s on the engine's grid), inside the 20 s from 5:50 to 6:10, then about 2 m to the car. The offsets are not re-timed."
+   "what": "Vale comes out of the official door",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "Brief 059 K1: he always walks to his car at the official bay (the service-lane walk is retired: a turned driver drives him round). Read by tools/sim/site.ts as schedule.valeExits (/Vale comes out/)."
   },
   {
    "at": "6:10",
-   "what": "Vale at car",
-   "src": "GDD §07",
-   "note": "Not in the removed anchors (Pulse, life.json v0.2.0 review, flag F10); added from §07."
+   "what": "Vale at his car, in by 6:13: his own driver drives him away (over); a turned driver drives him round to the service bay (6:25) and waits there",
+   "src": "GDD §07 (v0.25.0; brief 059, Sky's answers 1a, 2a, 3a, 2026-10-25)",
+   "note": "Brief 059 K1, K2: 6:10 is schedule.valeAtCar (/Vale at his car/); he gets in car.pickup.valeIn (3 s) later. Unturned, the driver drives him away and the mission fails vale-leaves (Sky 3a); turned, the drive round on the drive grid at car.pace parks in the service bay at about 6:26 (engine 0.32.0: 6:25.9)."
   },
   {
    "at": "8:30",
-   "what": "rivals take Vale or car leaves = over",
-   "src": "GDD §07; Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
-   "note": "Retimed with the world (CLAUDE.md: the Handover's timings may move): route B cannot take Vale before he reaches the service lane at 6:10, and the take (38 s, §07) and the 54 m walk to the getaway bay (39 s) left it 33 s before 8:00; at 8:30 it had 1:03, inside the 8-12 min mission rule (§01). Since the service door moved to the Office's east face (Sky, 2026-10-19, brief 023) the escort from 'Service lane' to 'Getaway bay' is 64.6 m on the engine's grid (46.2 s; Vantage's fine walk 63.9 m), so the take and the walk end at 7:34 and 8:30 leaves 56 s; the close stays (Waymark, brief 023: the Take itself, which MC-5 times, still lands 1:42 before it). Route A and the loud route finish long before either close. GDD §07's schedule reads 8:30 since v0.23.0 (it read 8:00 to v0.22.0). The close ends the take, not a carry already under way (Waymark's ruling, 2026-10-15): if the Enforcer holds Vale at 8:30 the run goes on (the engine logs horizon.open), and it wins only when Vale reaches the getaway car; the final fight and the seal bound the carry."
+   "what": "the turned driver gives up and drives Vale on (over)",
+   "src": "GDD §07 (v0.25.0; brief 059 K4); Sky 2026-10-15 (brief 011 Decisions, balance; briefs/011/motive-balance.md): the close moves 8:00 → 8:30",
+   "note": "The close (schedule.over, read by tools/sim/site.ts as /\\(over\\)$/). Brief 059 K4: with no Take begun by then the turned driver drives Vale on and the mission fails vale-leaves; a Take begun before it holds him until it ends. If the Enforcer holds Vale at 8:30 the run goes on (horizon.open) and wins only when Vale reaches the getaway car."
   }
  ],
  "events": [
@@ -147,7 +160,7 @@
    "role": "guard",
    "rule": "summon",
    "walk": { "from": "Office entrance", "to": "Café door" },
-   "gdd": "guard walks 30 s, stays 60 s, returns 30 s = 2:00 window",
+   "gdd": "the guard walks to her side (about 57 s), stays 60 s, walks back = about a 2:54 window",
    "src": "GDD §07 route A; Sky 2026-10-15: Inez and the door guard are lovers, her call pulls him off the door; rulebook summon (Motive briefs/011/motive-lovers.md §1.3): stay lover-stay-s, walk at most summon-walk-max-s, on the walk grid at walking pace",
    "note": "Read from the rules since the lovers canon (Waymark 2026-10-15): the guard is Inez's lover and her call summons him; how long he stays and how far he will walk are the rulebook's summon values, and his walk is the grid's (§07 says 30 s), so the window follows the world and the rules, never a number written here. Since the public door moved onto the wing's west face (Sky's door option (b), 2026-10-19, brief 023) he walks from the forecourt round the Office's north-west corner and across the square: 79.8 m to his stop at her side (the rounds file's guard.stops[0].walkCm 7978; 80.3 m door to door on the engine's grid), 57.0 s each way at 1.4 m/s, inside the summons' 90 s (summon-walk-max-s). The engine measures the unguarded door at 2:54.0 from the call (57 s out, 60 s at the café, 57 s back; Waymark, scratch play of route-a-pressure on engine 0.8.1: call 1:44.5, at the café 2:41.5, leaves 3:41.5, back 4:38.5), against 2:31.2 in c021. The beats hold: the Enforcer enters seconds after the call and is out by the service door long before the guard is back; on route A as recorded (call 2:49.5) he would be back at 5:43.5, after his 5:30 shift end, which only lengthens a window the route no longer needs. History: Measured by the engine (Waymark, c021, engine 0.8.1, brief 022 §7.1): he stops at her free side, the first of the rounds file's guard.stops with nobody within rounds.clear (partners-clear-cm 100 cm) at the call; on every recorded route with a call that is the first, 45 degrees ahead on her left (63.7 m from his post, 45.5 s at 1.4 m/s, 45.6 s in whole ticks each way), and the unguarded door runs 2:31.2 from the call (60 s at the café), against 2:30.6 at 0.8.0's stop 1.2 m straight in front of her and 2:32.4 without rounds. tools/missions/handover/mission.test.ts measures the walk and checks it against the summons' limit."
   }
@@ -175,7 +188,7 @@
    "what": "the Scout has watched and listened to Inez: her routine, need and temperament known",
    "at": "1:02",
    "from": ["watch-s", "listen-s"],
-   "gdd": "listens to Inez (1:34)",
+   "gdd": "listens to Inez (1:02)",
    "src": "GDD §07 route A; rulebook values watch-s 20 (Sky 2026-10-15) and listen-s 42",
    "note": "Retimed with Sky's Watch ruling (20 s, was 52): Watch then Listen is 1:02 of the Scout's time, not 1:34; the walk to her is the route's own. GDD §07 text owed. The guard's entry window opens when the Fixer's Help can first land after it (roles.guard)."
   },
@@ -206,9 +219,9 @@
   },
   {
    "id": "rival-park",
-   "at": [84.0, -31.0],
-   "src": "GDD §07: 3:10 rival car parks near pickup",
-   "reason": "on Apron Road, 5.8 m south of the official car in the official bay. Held here for batch 0.2.118 (Aster, 2026-10-25): Vantage's target (90.5, -31.0), on the eastbound lane, is in briefs/059-pickup-and-rivals.md 'Aster: inputs for Keel's 059 round' and in tools/sim/stands.ts RIVAL_PARK_059; it moves here with Keel's 059 round.",
+   "at": [90.5, -31.0],
+   "src": "GDD §07: 3:10 rival car parks near pickup; re-sited 2026-10-25 from (84.0, -31.0) (brief 059 §5, Vantage; Sky's answer 2a: the rival crew drives in, drops a team and parks)",
+   "reason": "on Apron Road's south kerb, in the eastbound lane (the carriageway is x 80..92, centreline 86), 12.3 m south of Vale's car in the official bay (78.2, -31.0), across the road from it. Re-sited from (84.0, -31.0) so the car parks on its own side of the road under the plan's right-hand traffic: it comes up Rocket Lane and along Apron Road eastbound, and stops at the kerb it drives on, not across the westbound lane. The engine moves with it (Game.RivalsPose, the rival car's park; Keel's 059 round).",
    "level": "street",
    "on": "apron-road",
    "floor": -0.18

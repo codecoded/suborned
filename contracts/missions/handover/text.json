@@ -230,9 +230,21 @@
   "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
   "timeline": [
    {
+    "at": "2:35",
+    "label": "A rival car turns in",
+    "short": "Rivals in",
+    "known": false
+   },
+   {
+    "at": "2:46",
+    "label": "Three rivals get out by our car",
+    "short": "Rivals out",
+    "known": false
+   },
+   {
     "at": "3:10",
-    "label": "Rival car arrives",
-    "short": "Rivals",
+    "label": "The rival car parks by Vale's car",
+    "short": "Rivals park",
     "known": false
    },
    {
@@ -261,7 +273,7 @@
    },
    {
     "at": "8:30",
-    "label": "Close: rivals take Vale",
+    "label": "Close: Vale is driven away",
     "short": "Close",
     "known": true
    }
@@ -441,9 +453,6 @@
   "turn-needs-approach": {"line":"Pick an approach: Ask, Pay, Help or Pressure.","short":"Pick an approach","verbs":["ask","pay","help","pressure"]},
   "vale-not-contact": {"line":"Vale can't be turned. Take Vale instead.","short":"Can't turn Vale","verbs":["ask","pay","help","pressure"]},
   "not-a-contact": {"line":"{who} isn't turned yet. Turn them first.","short":"Not turned yet","verbs":["call"]},
-  "car-gone": {"line":"Vale's car has gone. It's too late to call the driver.","short":"Car gone","verbs":["call"]},
-  "car-busy": {"line":"Vale's car is still moving. Call again at {tick}.","short":"Wait · {tick}","verbs":["call"]},
-  "call-too-late": {"line":"Too late: Vale's car leaves for the pickup at {tick}.","short":"Too late · {tick}","verbs":["call"]},
   "nothing-to-call": {"line":"A call gives {who} nothing to do.","short":"Nothing to call","verbs":["call"]},
   "loop-wrong-target": {"line":"The cabinet can't loop that. Pick a camera.","short":"Can't loop that","verbs":["loop"]},
   "loop-holds": {"line":"One loop at a time. The running loop ends at {tick}.","short":"Loop ends {tick}","verbs":["loop"]},
@@ -460,6 +469,14 @@
   "stand-beside-vale": {"line":"Walk the Enforcer within {m} m of Vale first.","short":"Too far · {m} m","verbs":["take"]},
   "stand-at-getaway": {"line":"Too far from the car. Walk within {m} m, then Board.","short":"Too far · {m} m","verbs":["board"]},
   "car-held": {"line":"The car is blocked by {holders}. Down them, or drive them off, then Go.","short":"Blocked · down {holders}","verbs":["go"]},
+  "driver-brings-vale": {"line":"The driver is bringing Vale round the back. Take him there.","short":"Round the back","verbs":["take"]},
+  "car-not-parked": {"line":"Vale's car hasn't stopped yet. Take him once it parks.","short":"Car not parked","verbs":["take"]},
+  "drive-held": {"line":"The car is blocked by {holders}. Down them first, then drive.","short":"Blocked · down {holders}","verbs":["*"]},
+  "drive-no-driver": {"line":"Nobody is in the car to drive it. Board first.","short":"No driver","verbs":["*"]},
+  "unknown-stand": {"line":"That isn't a stand for the car. Pick a marked bay.","short":"Not a stand","verbs":["*"]},
+  "drive-busy": {"line":"Whoever is in the car is busy. Wait for the act to land.","short":"Car busy","verbs":["*"]},
+  "drive-here": {"line":"The car is at that bay already. Pick the other bay.","short":"Already here","verbs":["*"]},
+  "drive-fight": {"line":"The fight has started. Fight it out here, then Go.","short":"Fight on","verbs":["*"]},
   "car-empty": {"line":"Nobody is in the car. Board first.","short":"Car is empty","verbs":["go"]},
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
@@ -533,7 +550,6 @@
    "guard.back": {"kind":"city","fate":"icon","title":"Guard back on the door","result":"Watching the door again."},
    "vale.exits": {"kind":"city","fate":"beat","beat":"Vale is out.","title":"Vale comes out","result":"Walking to his car."},
    "vale.at-car": {"kind":"city","fate":"icon","title":"Vale reaches his car","result":"At his car, under the pickup camera."},
-   "car.blocks": {"kind":"city","fate":"beat","beat":"Camera blind.","title":"The car blocks the camera","result":"The pickup camera is blind."},
    "car.leaves": {"kind":"city","fate":"alt","title":"Vale's car leaves","result":"Driving Vale round the back."},
    "loop.ends": {"kind":"warning","fate":"icon","title":"The loop ends","result":"The tape has stopped."},
    "camera.cut": {"kind":"city","fate":"icon","title":"Camera cut","result":"The line is cut. That camera is dead for good."},
@@ -664,8 +680,6 @@
   "guard-at-cafe": {"kind":"world","trigger":"the guard reaches Inez: the coffee spill (the payoff cut)","speakers":["waitress","guard","scout"],"log":["guard.at-cafe"]},
   "guard-leaves-cafe": {"kind":"world","trigger":"the guard starts back to the door","speakers":["guard","scout"],"log":["guard.leaves-cafe"]},
   "guard-back": {"kind":"world","trigger":"the guard is back on the door","speakers":["guard","scout"],"log":["guard.back"]},
-  "car-blocks": {"kind":"world","trigger":"the driver's car crosses the pickup camera","speakers":["driver","tech"],"log":["car.blocks"]},
-  "car-clears": {"kind":"world","trigger":"the car clears the pickup camera","speakers":["scout","tech"],"log":["car.clears"]},
   "car-burns": {"kind":"world","trigger":"a shot car catches fire and will explode in a few seconds","speakers":["scout","tech"],"log":["car.burning"]},
   "camera-shot": {"kind":"world","trigger":"a camera is shot out and goes dark (engine 0.19: fire.camera-dark; a hit that does not put it out, fire.camera-hit, stays silent and shows as the pop)","speakers":["scout","tech"],"log":["fire.camera-dark"]},
   "car-leaves": {"kind":"world","trigger":"the turned driver drives Vale round the back","speakers":["driver","fixer"],"log":["car.leaves"]},
@@ -866,6 +880,26 @@
   "down": "a hostile who is down speaks nothing"
  },
  "silentLogs": {
+  "car.blocked": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "car.parks": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: car-parks",
+  "car.parked": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "board.missed": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.coming": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals-coming",
+  "rivals.drop": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals-drop",
+  "rivals.post": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.follow-car": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.follows": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals-follow",
+  "rivals.tip-leaves": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.back": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel); its words wait in pending: rivals.back (a pending card)",
+  "rivals.warned": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.lookout-gone": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.no-warning": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.word-off": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.at-vale": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.drawn-stop": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.late": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.joins": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
+  "rivals.down": "engine 0.32.0 (brief 059): silent until Fable words it (PLACEHOLDER, Keel)",
   "loop.dead": "the camera was shot or cut while the loop was being spliced: nothing lands and nothing is charged; the camera's own dark marker speaks",
   "disable.dead": "the camera was shot while the line was being cut: nothing more to cut; the camera's own dark marker speaks",
   "ai.why": "engine 0.25.0 (Sky playing 0.2.56): a hostile first takes an agent as its target, with its causes strongest first (range, final, fired, vale, violence, drawn, face, seen); silent until Fable words it (PLACEHOLDER, Keel): the host shows the why from Game.FireWhyOf under the under-fire cue",
@@ -2070,10 +2104,6 @@
   {"event":"guard-leaves-cafe","speaker":"scout","lines":["Guard's leaving the café. Clock's running.","He's heading back. Be quick."]},
   {"event":"guard-back","speaker":"scout","lines":["Guard's back at the door.","He's on the door again."]},
   {"event":"guard-back","speaker":"guard","lines":["All quiet at the door.","Nothing to report. Good."]},
-  {"event":"car-blocks","speaker":"driver","lines":["Car's in the way. Camera's no use now.","Parked just so. Nobody sees a thing."]},
-  {"event":"car-blocks","speaker":"tech","lines":["Pickup camera's blind. Move now.","Car across the lens. Good."]},
-  {"event":"car-clears","speaker":"scout","lines":["Car's moving off. Camera's live.","The lens is clear again."]},
-  {"event":"car-clears","speaker":"tech","lines":["Pickup feed is back. Careful.","Camera sees again. Mind it."]},
   {"event":"car-burns","speaker":"scout","lines":["That car's on fire. Get clear!","It's about to go up. Back off!"]},
   {"event":"car-burns","speaker":"tech","lines":["Fuel's alight. Everyone back.","Fire in the car. Move away."]},
   {"event":"camera-shot","speaker":"scout","lines":["Camera's shot out. It's dark.","That lens is dead."]},
@@ -2415,60 +2445,6 @@
  "pending": {
   "rule": "Words drafted ahead of the engine (briefs 058 and 059, GDD v0.25.0). The host reads none of this. Each entry names its brief and says whether its code, key or trigger is a `guess`: the brief did not name it, and its owner confirms or renames it. When Keel lands a code or a verb, the entry moves unchanged to the section of the same name (locks, cards.items, events, dialogue, actions, activity, hints, less.price, targets) and Latch wires it in that batch; a `replaces` entry takes the place of the live one with the same key.  A test holds every line here to the live limits.",
   "locks": {
-   "driver-brings-vale": {
-    "line": "The driver is bringing Vale round the back. Take him there.",
-    "short": "Round the back",
-    "verbs": [
-     "take"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.2: a Take at the front with a turned driver (quoted: \"He's bringing Vale round the back.\")"
-   },
-   "car-not-parked": {
-    "line": "Vale's car hasn't stopped yet. Take him once it parks.",
-    "short": "Car not parked",
-    "verbs": [
-     "take"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.2: a Take before the car is in the service bay; the live vale-not-at-car says wait for him to come out"
-   },
-   "drive-held": {
-    "line": "The car is blocked by {holders}. Down them first, then drive.",
-    "short": "Blocked · down {holders}",
-    "verbs": [
-     "drive-car"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) K6: Drive on a held car (brief 018); the live car-held is worded for Go"
-   },
-   "drive-no-driver": {
-    "line": "Nobody is in the car to drive it. Board first.",
-    "short": "No driver",
-    "verbs": [
-     "drive-car"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) K6: no driver aboard"
-   },
-   "stand-unknown": {
-    "line": "That isn't a stand for the car. Pick a marked bay.",
-    "short": "Not a stand",
-    "verbs": [
-     "drive-car"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) K6: an unknown stand"
-   },
-   "drive-busy": {
-    "line": "Whoever is in the car is busy. Wait for the act to land.",
-    "short": "Car busy",
-    "verbs": [
-     "drive-car"
-    ],
-    "guess": true,
-    "brief": "brief 059 (pickup and rivals) s1.4: refused while the car's driver or carried person is mid-act"
-   }
   },
   "cards": {
    "rivals.coming": {
@@ -2479,7 +2455,7 @@
     "result": "Off Orbit Walk. They are after Vale too.",
     "fate": "beat",
     "beat": "Rival car coming.",
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals) s2 (the feed line \"Rival car coming\"): takes the beat slot of \"Rivals here.\", so rivals.arrive loses its beat (the file holds at most ten distinct beats)"
    },
    "rivals.drop": {
@@ -2517,7 +2493,7 @@
     "at": "rival-car",
     "result": "It is tailing Vale's car round the back.",
     "fate": "alt",
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals) s2: the rival car follows Vale's car when it leaves the bay"
    },
    "rivals.back": {
@@ -2527,7 +2503,7 @@
     "at": "rival-car",
     "result": "The false tip wore off. They are after Vale again.",
     "fate": "alt",
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals) s2: the rival car returns after a false tip"
    }
   },
@@ -2542,7 +2518,7 @@
     "speakers": [
      "scout"
     ],
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals)"
    },
    "rivals-drop": {
@@ -2582,7 +2558,7 @@
     "speakers": [
      "scout"
     ],
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals)"
    },
    "driver-tail": {
@@ -2688,7 +2664,7 @@
      "stand-service": "Put the car behind Vale's for a short carry. Free, and it takes time.",
      "stand-square": "Take the car back to the square's bay. Free, and it takes time."
     },
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals) K6: `drive` is already Take control (brief 025), so the engine needs another id"
    },
    "ring-drive": {
@@ -2703,7 +2679,7 @@
      "do": "drive-car"
     },
     "does": "The ring's word for this verb.",
-    "guess": true,
+    "guess": false,
     "brief": "brief 059 (pickup and rivals)"
    }
   },

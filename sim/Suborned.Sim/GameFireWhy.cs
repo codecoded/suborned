@@ -44,7 +44,7 @@ namespace Suborned.Sim
             {
                 yield return "guard"; yield return "patrol";
                 foreach (var g in SecGuns) yield return g.Id;
-                yield return "rivals";
+                foreach (var m in Crew) yield return m.Id; // brief 059: the crew, member by member
                 foreach (var h in Hostiles) yield return h.Id;
                 foreach (var u in Units) yield return u.Id;
             }

@@ -88,7 +88,7 @@ namespace Suborned.Sim
             Add("N31", "—", "Cancel Reroute and Mislead part-done: the patrol keeps its sweep and the rivals stay; no Trail.", r =>
             {
                 var g = r.G;
-                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, new Pt(8250, -3100))));
+                r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Scout, TipSpot(r)))); // brief 059: the tip is given at the rival car where it parks
                 int trail = g.Trail;
                 r.Do(Tech, "reroute", "patrol"); r.Wait(T(20)); r.Do(Tech, "cancel"); r.Wait(T(30));
                 r.Is(g.PatrolAwayUntil <= g.Tick && g.Trail == trail, "the patrol keeps its sweep; no Trail");
@@ -126,12 +126,12 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Send(Enf, "d:Service lane");
-                r.To(r.SendTo(Scout, new Pt(8250, -3100))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
-                r.To(T(370));
+                r.To(r.SendTo(Scout, TipSpot(r))); r.To(T(320)); r.Do(Scout, "mislead", "rivals");
+                r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: taken in his car round the back
                 r.Do(Enf, "take"); r.Wait(T(10));
                 r.Eq(g.ActivityOf(OpId.Enforcer).CancelCost, "vale-reports", "the HUD reads the cost");
                 r.Do(Enf, "cancel");
-                r.Eq(g.Vale, ValeAt.Pickup, "Vale is let go at his car");
+                r.Eq(g.Vale, ValeAt.InCar, "Vale is let go in his car");
                 r.Eq(g.Alert, 1, "he reports it: Alert 1");
                 r.Is(!g.Acts.Exists(x => x.Take), "the Take was inside his car (the driver turned, rev 4): nobody saw it, so his report is the one incident");
                 r.Is(g.ValeP.Has("aborted"), "and remembers it: a lead for the investigators (Motive addendum Q4)");

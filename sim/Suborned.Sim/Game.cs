@@ -9,7 +9,9 @@ using System.Collections.Generic;
 namespace Suborned.Sim
 {
     public enum Outcome { None, Success, Failure, Withdrawn }
-    public enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead }
+    /// <summary>Where Vale is. Pickup: standing at his car at the official bay (6:10); InCar (brief 059 K1): in the back of his own car, from
+    /// car.pickup.valeIn after he reaches it (appended last so every earlier value hashes as before).</summary>
+    public enum ValeAt { Office, Leaving, Pickup, Taking, WithEnforcer, Car, Dead, InCar }
 
     /// <summary>The start state's choices beyond the site: what a scenario fixes before tick 0 (hashed into the start state).</summary>
     public sealed class Start
@@ -41,6 +43,10 @@ namespace Suborned.Sim
         /// from `from` to `until` (mission seconds), read as a unit holding that door (Game.DoorHeld, HeldUntil). For a rule play can't reach
         /// on a block, as `untie` cuts a tie for a test. Never in a route or a session; empty, every start hashes as before.</summary>
         public readonly List<(string door, int from, int until)> Holds = new List<(string, int, int)>();
+        /// <summary>Test only (brief 059, Keel): Vale's driver neither drives him away (Sky 3a) nor round: Vale waits at his car at the official
+        /// bay to the close, as before engine 0.32.0. For the scenarios of other systems (takedowns, the crowd, the fail camera) that need the
+        /// pickup after 6:13, as `holds` places a held scene. Never in a route or a session; off, every start hashes as before.</summary>
+        public bool ValeWaits;
         /// <summary>Brief 025 playground (EXPERIMENTAL): the driven agent's switches for this run, over the rulebook's cell.drive: pace (per mille
         /// of every pace, 250..4000), onBusy (cancel, hold), onRelease (stand, resume), gap (cm, 0 off). Null: the rulebook's. Hashed when set.</summary>
         public int? DrivePace, DriveGap; public string? DriveOnBusy, DriveOnRelease;
@@ -57,7 +63,8 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "valeWaits");
+            if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
             {
                 fl.Only("on", "healthScale", "pips", "stances", "then", "close", "charge", "field", "policeWarning", "hostilesFireMoving", "coverSnap", "kite", "loadout");
@@ -154,6 +161,7 @@ namespace Suborned.Sim
                 w.EndObj();
             }
             if (Holds.Count > 0) { w.OpenArr("holds"); foreach (var (d, f, u) in Holds) w.Obj().Prop("door", d).Prop("from", f).Prop("until", u).EndObj(); w.EndArr(); } // test only: likewise
+            if (ValeWaits) w.Prop("valeWaits", true); // brief 059, test only: likewise
             return w.EndObj().ToString();
         }
     }
@@ -201,12 +209,17 @@ namespace Suborned.Sim
         Pt heldPos, heldFacing; string heldPhase = "";
         Path guardOut = null!, guardBack = null!, guardRun = null!; bool guardRunning; // the visit's walks (the summons), and its run back
         Pt cafeFace; // which way he faces at her (the site's café facing; brief 022: toward her post when she works a round)
-        // the official car and the driver
+        // the official car and the driver (the driver's Call, the camera block, is retired by brief 059: BlockMove stays INF, hashed as before)
         public int BlockMove = INF, BlockedFrom = INF, BlockedUntil;
         Pt? carStoppedAt; Path? carToService;
-        long[]? carDrive; // car.pace (brief 023): mm along carToService at each tick from driverLast, to its end; then parked in the bay
+        long[]? carDrive; // car.pace (brief 023): mm along carToService at each tick from valeDriveStart, to its end; then parked in the bay (or at the drive's mouth)
+        int valeDriveStart = -1; long carMouthMm = -1; bool mouthDecided; // brief 059 K2, K5: the turned driver's drive round with Vale in the back, and where it meets the drive
+        /// <summary>Brief 059 K5: the turned driver found the service drive taken by the getaway car and stopped at its mouth on Apron Road.</summary>
+        public bool CarAtMouth;
         readonly Path blockPath;
         // Vale
+        /// <summary>PickupService (brief 059): Vale is in his car round the back, parked (in the service bay, or at the drive's mouth), where the
+        /// Take is in-car. False at the front and while the car drives round.</summary>
         public ValeAt Vale = ValeAt.Office; public bool PickupService, EntryInProgress;
         Path? valePath;
         // the patrol (§05 patrol sweep)
@@ -217,7 +230,7 @@ namespace Suborned.Sim
         public int RivalAt; public bool RivalsArrived, RivalsDrawn, RivalsTracking; public int RivalsDelayedUntil, RivalsDrawnTick;
         public int RivalsHealth => RivalsGun.Health;
         public string RivalsDelayMethod = "";
-        Path? rivalsPath, rivalsRestartPath;
+        // brief 059: the drawn crew walks member by member (GameCrew.cs); the one crew path is retired
         // the response unit (§05 response unit on report; district seals after it arrives)
         public int SecurityArrives = INF, Lockdown = INF; public bool SecurityDown, SecurityTracking;
         public int SecurityHealth { get { int n = 0; foreach (var g in SecGuns) n += g.Health; return n; } }
@@ -308,6 +321,8 @@ namespace Suborned.Sim
                     else PersonByRole(kv.Key).Learn(w);
                 }
             RivalAt = T(Start.RivalsAtS ?? rivalsArriveS);
+            CurStand = S.Stands[0]; // brief 059 K6: the getaway car starts at its first stand (getaway.car)
+            if (!Range) { InitCrew(); if (Driver.Turned) driverTurnedAt = 0; } // brief 059 K7: the crew's timetable, computed back from the park; a driver turned before the mission turned at 0:00 (F4)
 
             blockPath = new Path(S.CarBlockPath); // car.drive (brief 023): the block move keeps to drivable cells, from the pickup to the block's stand
             var sec1 = S.Grid.Route(S.Stand(S.SecEntry), S.Stand(S.SecVia)) ?? throw new FormatException("no walk for the response unit");
@@ -352,7 +367,7 @@ namespace Suborned.Sim
         void StepInner()
         {
             Tick++;
-            if (!Range) { GuardTimeline(); CarTimeline(); RivalsTimeline(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule
+            if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
@@ -367,6 +382,7 @@ namespace Suborned.Sim
                 if (op.Act != null) ApproachStep(op); // engine 0.23.0 (rulebook cell.approach): a person act walking in starts once in place (GameApproach.cs)
             }
             foreach (var op in Ops) if (op.CarriedBy.HasValue) op.Pos = OpOf(op.CarriedBy.Value).Pos; // a carried operative goes where the carrier goes
+            if (getawayPath != null) foreach (var op in Ops) if (op.InCar) op.Pos = Car; // brief 059 K6: everyone in the getaway car rides its Drive
             if (Range) { RangeTick(); return; } // brief 029 (GameRange.cs): the fight range runs the fight and nothing of the mission
             if (!Over) Tether();
             if (!Over) Watchers();
@@ -382,10 +398,12 @@ namespace Suborned.Sim
             if (!Over && Tick >= Lockdown) Fail("sealed", "Security seals the district before the getaway car leaves.", Sealed); // brief 018: the car must leave, not only be reached
             if (!Over && Tick == T(overS) && Vale == ValeAt.WithEnforcer)
                 Note("horizon.open", Sim.Report.Clock(Tick) + " (the mission's close) with Vale in the Enforcer's hands: whether the mission closes here is a ruling for Waymark and Motive (Redline E8); the run goes on.");
-            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car)
+            // brief 059 K4: at the close the turned driver gives up and drives Vale on (a Take begun before it holds him until it ends); with no
+            // driver, Vale leaves by other means (the rivals reach Vale only physically now: the tail, the fight)
+            if (!Over && Tick >= T(overS) && Vale != ValeAt.WithEnforcer && Vale != ValeAt.Car && Vale != ValeAt.Taking)
             {
-                if (RivalsPresent) Fail("rivals-reach-vale", "The rival crew reaches Vale first.", () => Because("reached-at-close", true, Locate("rivals", "reached", ValePos()), Locate("councillor", "victim")));
-                else Fail("vale-leaves", "Vale leaves the district in the official car.", () => Because("too-late", true, Locate("car", "left"), Locate("councillor", "left")));
+                if (Vale == ValeAt.InCar) Note("car.leaves", "The driver gives up waiting and drives Vale away.");
+                Fail("vale-leaves", "Vale leaves the district in the official car.", () => Because("too-late", true, Locate("car", "left"), Locate("councillor", "left")));
             }
             FightEnds(); // fight.public: a fight ends quiet after its last shot, the final fight at its end, any fight with the mission
             if (Tick % 100 == 0 || Over) Checkpoints.Add((Tick, Hash.State(this)));
@@ -411,29 +429,54 @@ namespace Suborned.Sim
             if (Tick == LureTick + walkT + stayT) Note("guard.leaves-cafe", "The guard leaves the café and walks back toward his post.");
             if (Tick == GuardAwayUntil) Note("guard.back", "The guard returns to the office entrance.");
         }
+        /// <summary>Brief 059 K2, K5: the turned driver's drive round with Vale in the back. Where it reaches the service drive, a getaway car on
+        /// it (at the service-drive stand, or driving there) makes him stop at the drive's mouth on Apron Road; the car parks (car.parks) at its
+        /// drive's end.</summary>
         void CarTimeline()
         {
-            if (Tick == BlockedFrom) Note("car.blocks", "The car now blocks the pickup camera.");
-            if (Tick == BlockedUntil && Tick < T(driverLastS)) Note("car.clears", "The car clears the pickup camera. Its feed is live again.");
-            if (Tick == T(driverLastS) && Driver.Turned && !Driver.Down)
+            if (valeDriveStart < 0 || carDrive == null || carStoppedAt.HasValue) return;
+            int kNow = Tick - valeDriveStart;
+            if (!mouthDecided && carMouthMm >= 0 && kNow >= 0 && kNow + 1 < carDrive.Length && carDrive[kNow + 1] > carMouthMm) // its next tick would pass the mouth: decide now, still on the road
             {
-                var from = ParkedCar(Tick); // the pickup, or on the block move's drive if it still blocks: both drivable (car.drive)
-                carToService = new Path(from == blockPath.Points[0] ? S.CarServicePath : S.Drive.CarRoute(from, S.CarStand(S.CarService), S.DriveLaneCm) ?? S.CarServicePath);
-                carDrive = CarProfile(carToService); // car.pace: each tick at its surface's pace, then parked in the bay
-                Note("car.leaves", "The official car leaves the bay for the service lane.");
+                mouthDecided = true;
+                if (DriveTaken())
+                {
+                    int k = Math.Max(0, Math.Min(kNow, carDrive.Length - 1));
+                    var cut = new long[k + 1]; Array.Copy(carDrive, cut, k + 1); carDrive = cut; CarAtMouth = true;
+                    Note("car.blocked", "Our car is on the service drive: the driver stops at its mouth on Apron Road.");
+                }
             }
+            if (Tick == CarInBayTick)
+            {
+                PickupService = Vale == ValeAt.InCar || Vale == ValeAt.Taking;
+                Note("car.parks", CarAtMouth ? "Vale's car stops at the mouth of the service drive. Take him from the back seat." : "Vale's car parks in the service bay. Take him from the back seat.");
+                SawGetaway(InCarName()); // Motive M059-2.4: our car already behind his
+            }
+        }
+        /// <summary>K5: the service drive is taken: the getaway car stands at its service-drive stand, or is driving there.</summary>
+        bool DriveTaken()
+        {
+            var st = getawayPath != null ? GetawayDest : CurStand; if (st == null || carToService == null || carMouthMm < 0) return false;
+            for (long at = carMouthMm; at <= carToService.Length; at += 100) if (G.Within(carToService.At(at), st.CarCell, 200)) return true; // a stand on the drive the driver must use
+            return false;
+        }
+        /// <summary>The mm along the route to the service bay where it leaves the carriageway for the drive (the drive's mouth: the last road
+        /// point after the official bay's own cells), or -1.</summary>
+        long MouthMm(Path p)
+        {
+            bool road = false;
+            for (long at = 0; at <= p.Length; at += 50)
+            {
+                bool r = S.Drive.SurfaceAt(p.At(at)) == 'r';
+                if (r) road = true; else if (road) return Math.Max(0, at - 50);
+            }
+            return -1;
         }
         /// <summary>engine 0.24.0 (brief 043 §6): the rerouted patrol's false orders run out and it is back on its entrance sweep (PatrolPose
         /// returns to the sweep on this tick); before, only PatrolAwayUntil passing said so. The window marker's closing code.</summary>
         void PatrolTimeline()
         {
             if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on the entrance sweep.");
-        }
-        void RivalsTimeline()
-        {
-            if (Tick != RivalAt) return;
-            RivalsArrived = true; rivalCarParked = !RivalsDrawn; // tuning.md §10.7: a crew drawn by gunfire comes on foot
-            Note("rivals.arrive", RivalsDrawn ? "The rival crew comes in from the east street, following the gunfire." : "A rival car parks near Vale's pickup. Its crew starts watching the building.");
         }
         void ValeTimeline()
         {
@@ -442,15 +485,30 @@ namespace Suborned.Sim
             bool driverKnownDown = civGuns["driver"].Down || (Driver.Down && BodyOf(Driver) is Body db && Acts[db.Act].Landed);
             if (Tick == T(valeExitsS) && Vale == ValeAt.Office && !EntryInProgress && !driverKnownDown)
             {
-                Vale = ValeAt.Leaving; PickupService = Driver.Turned && carToService != null; // the service lane only if the car went there (a downed driver drove nowhere)
-                var to = PickupService ? S.Stand(S.ValeService) : S.Stand(S.ValeCar);
+                Vale = ValeAt.Leaving; // brief 059 K1: always to the official bay
+                var to = S.Stand(S.ValeCar);
                 valePath = new Path(S.Grid.Route(S.Stand(S.ValeExit), to) ?? new[] { S.Stand(S.ValeExit), to });
-                Note("vale.exits", PickupService ? "Vale comes out and walks round to the service lane, where his car is pulling in." : "Vale steps out of the official entrance and walks to his car.");
+                Note("vale.exits", "Vale steps out of the official entrance and walks to his car.");
             }
             if (Tick == T(valeAtCarS) && Vale == ValeAt.Leaving)
             {
                 Vale = ValeAt.Pickup;
-                Note("vale.at-car", PickupService ? "Vale reaches the car in the service lane." : "Vale reaches the official car under the pickup camera.");
+                Note("vale.at-car", "Vale reaches the official car under the pickup camera.");
+            }
+            // brief 059 K1, K2 (car.pickup.valeIn): he gets in. With his driver at the car, unturned he drives Vale away (the mission is over, Sky 3a);
+            // turned, he drives Vale round to the service bay. With no driver (down) or the car disabled, Vale waits by it.
+            if (Tick == T(valeAtCarS) + T(R.ValeInS) && Vale == ValeAt.Pickup && !Driver.Down && !OfficialOut && !Start.ValeWaits)
+            {
+                Vale = ValeAt.InCar;
+                if (!Driver.Turned)
+                {
+                    Note("car.leaves", "Vale gets into his car and his driver drives him away.");
+                    Fail("vale-leaves", "Vale leaves the district in the official car.", () => Because("driven-away", true, Locate("car", "left"), Locate("councillor", "left")));
+                    return;
+                }
+                valeDriveStart = Tick; carToService = new Path(S.CarServicePath); carDrive = CarProfile(carToService); carMouthMm = MouthMm(carToService);
+                Note("car.leaves", "Vale gets into his car. The turned driver drives him round to the service bay.");
+                ValeCarMoves(); // F2: the rival car follows rivals.follow later
             }
         }
 
@@ -495,7 +553,7 @@ namespace Suborned.Sim
         public Pt CarPos()
         {
             if (carStoppedAt.HasValue) return carStoppedAt.Value;
-            if (!Driver.Turned || Tick < T(driverLastS) || carToService == null) return ParkedCar(Tick);
+            if (valeDriveStart < 0 || carToService == null) return ParkedCar(Tick);
             return carToService.At(CarDriveMm(Tick));
         }
         /// <summary>car.pace (Motive 2026-10-19, brief 023): the drive to the service bay, tick by tick from driverLast: each tick the car moves
@@ -512,24 +570,27 @@ namespace Suborned.Sim
             }
             return mm.ToArray();
         }
-        long CarDriveMm(int tick) { var d = carDrive!; int k = tick - T(driverLastS); return k <= 0 ? 0 : k >= d.Length ? d[d.Length - 1] : d[k]; }
-        /// <summary>The tick the turned driver's car is parked in the service bay (car.pace), or -1 before it drives.</summary>
-        public int CarInBayTick => carDrive == null ? -1 : T(driverLastS) + carDrive.Length - 1;
+        long CarDriveMm(int tick) { var d = carDrive!; int k = tick - valeDriveStart; return k <= 0 ? 0 : k >= d.Length ? d[d.Length - 1] : d[k]; }
+        /// <summary>The tick the turned driver's car is parked round the back (in the service bay, or at the drive's mouth: brief 059 K5), or -1
+        /// before it drives. Brief 059: it drives from Vale-in (car.pickup.valeIn), with Vale in the back.</summary>
+        public int CarInBayTick => carDrive == null ? -1 : valeDriveStart + carDrive.Length - 1;
+        /// <summary>Brief 059 (host read): the official car is parked round the back with Vale in it: the in-car Take's window is open.</summary>
+        public bool ValeCarParked => PickupService && (Vale == ValeAt.InCar || Vale == ValeAt.Taking);
         /// <summary>Which way the official car points, for the host (read-only, never hashed; brief 023): along its drive while it moves, and
         /// the site's car.serviceFacing once parked in the service bay, car.blockFacing parked at block-spot; null where the host keeps its own rule
         /// (at the pickup, on the block move).</summary>
         public Pt? CarHeading()
         {
             if (carStoppedAt.HasValue) return null;
-            if (!Driver.Turned || Tick < T(driverLastS) || carToService == null) return Tick >= BlockedFrom && Tick < BlockedUntil ? S.CarBlockFacing : (Pt?)null; // parked at block-spot: along the bay's kerb (Aster 2026-10-19)
-            if (Tick >= CarInBayTick) return S.CarServiceFacing; // parked in the bay (car.pace): it waits there for Vale
+            if (valeDriveStart < 0 || carToService == null) return null; // at the pickup: the host keeps its own rule
+            if (Tick >= CarInBayTick) return CarAtMouth ? carToService.Heading(CarDriveMm(Tick)) : S.CarServiceFacing; // parked in the bay (car.pace): it waits there with Vale; at the mouth, along the road
             return carToService.Heading(CarDriveMm(Tick));
         }
         public Pt? DriverPos()
         {
             if (Driver.Down) return null;
             var car = CarPos();
-            if (car == blockPath.Points[0]) return S.Stand(S.CarDriver);
+            if (valeDriveStart < 0 && car == blockPath.Points[0]) return S.Stand(S.CarDriver); // brief 059: on duty by his car at the pickup until Vale is in
             return OfficialOut ? BesideCar(car, -1) : car; // tuning.md §10.7: out of a disabled car
         }
         public Pt? ValePos()
@@ -537,8 +598,9 @@ namespace Suborned.Sim
             switch (Vale)
             {
                 case ValeAt.Leaving: { int span = T(valeAtCarS) - T(valeExitsS); return valePath!.At(valePath.Length * Math.Min(span, Tick - T(valeExitsS)) / span); }
-                case ValeAt.Pickup: return PickupService ? S.Stand(S.ValeService) : OfficialOut ? BesideCar(CarPos(), 1) : CarPos(); // tuning.md §10.7: out of a disabled car
-                case ValeAt.Taking: return PickupService ? S.Stand(S.ValeService) : CarPos();
+                case ValeAt.Pickup: return OfficialOut ? BesideCar(CarPos(), 1) : CarPos(); // tuning.md §10.7: out of a disabled car
+                case ValeAt.InCar: return CarPos(); // brief 059 K1: in the back of his car
+                case ValeAt.Taking: return OfficialOut ? BesideCar(CarPos(), 1) : CarPos();
                 case ValeAt.WithEnforcer: return Enforcer.Inside ? (Pt?)null : Enforcer.Pos + new Pt(100, 0);
                 default: return null;
             }
@@ -567,21 +629,32 @@ namespace Suborned.Sim
             return G.Lerp(S.Stand(S.PatrolA), S.Stand(S.PatrolB), ph <= half ? ph : period - ph, half);
         }
 
-        public bool RivalsPresent => RivalsArrived && RivalsDelayedUntil <= Tick && !rivalsAbsorbed;
+        /// <summary>Brief 059: the crew is on the map (the car has entered and is not off it on a tip, or a member is on foot), before the final
+        /// fight takes them in.</summary>
+        public bool RivalsPresent { get { if (Range || rivalsAbsorbed) return false; if (CarSt != CrewCar.Off && CarSt != CrewCar.Away) return true; foreach (var m in Crew) if (Up(m) && m.OnFoot) return true; return false; } }
+        /// <summary>Retired by brief 059 (RivalPoses: five members and the car). Kept for hosts mid-migration: the rival car's pose while it is on the
+        /// map, else the first member on foot. Never read by a rule.</summary>
         public (Pt pos, Pt facing)? RivalsPose()
         {
             if (!RivalsPresent) return null;
-            if (!RivalsDrawn)
+            var cp = RivalCarPose(); if (cp.HasValue) return (cp.Value.pos, cp.Value.heading);
+            foreach (var m in Crew) if (MemberPose(m) is var p && p.HasValue) return p;
+            return null;
+        }
+        /// <summary>Brief 059 K8 (host read): each member's place, facing and mode ("aboard", "walking", "posted", "talking", "boarding", "gone",
+        /// "down", "fight"), and the car's place, heading and state ("off" while it is not on the map).</summary>
+        public (List<(string id, Pt pos, Pt facing, string mode)> members, (Pt pos, Pt heading, string state) car) RivalPoses()
+        {
+            var l = new List<(string, Pt, Pt, string)>();
+            foreach (var m in Crew)
             {
-                bool atService = Tick >= T(valeAtCarS) && PickupService;
-                return (S.Stand(atService ? S.ValeService : S.RivalsPark), new Pt(0, 100));
+                var p = MemberPose(m); string mode = m.Gun.Down ? "down" : m.Fight ? "fight" : m.Mode.ToString().ToLowerInvariant();
+                if (p.HasValue) l.Add((m.Id, p.Value.pos, p.Value.facing, mode));
+                else if (m.Gun.Down) l.Add((m.Id, m.DownAt, new Pt(0, 100), mode));
+                else { var cp0 = RivalCarPose(); if (cp0.HasValue && m.Mode == CrewMode.Aboard) l.Add((m.Id, cp0.Value.pos, cp0.Value.heading, mode)); }
             }
-            if (rivalsDisp != null) return DispPose(rivalsDisp, rivSpeed, Tick); // brief 027 F2 (lab kite): out of the shooter's line
-            bool restarting = RivalsDelayedUntil > RivalsDrawnTick;
-            var path = restarting ? (rivalsRestartPath ??= new Path(S.Grid.Route(S.Stand(S.RivalsEntry), S.Stand(S.RivalsFront))!)) : rivalsPath!;
-            int start = restarting ? RivalsDelayedUntil : RivalsDrawnTick;
-            long mm = (long)Math.Max(0, Tick - start) * rivSpeed;
-            return mm >= path.Length ? (path.End, Back(path)) : (path.At(mm), path.Heading(mm));
+            var cp = RivalCarPose();
+            return (l, cp.HasValue ? (cp.Value.pos, cp.Value.heading, CarSt.ToString().ToLowerInvariant()) : (default(Pt), new Pt(0, 100), "off"));
         }
 
         /// <summary>The response unit: its lead officer still up, and where the unit faces (its officers walk in file, `SecFileMm` apart).</summary>
@@ -649,7 +722,7 @@ namespace Suborned.Sim
         }
         /// <summary>In any head's cone of the camera (a mast carries several).</summary>
         static bool InHeads(Camera c, Pt p) { foreach (var f in c.Facings) if (G.InCone(c.At, f, c.Reach, c.Half, 0, p)) return true; return false; }
-        public bool PickupCameraLive() => (Driver.Turned && Tick >= T(driverLastS) && carToService != null) || Tick < BlockedFrom || Tick >= BlockedUntil; // after 5:40 the turned driver's car is gone from in front of it (if he drove it)
+        public bool PickupCameraLive() => Tick < BlockedFrom || Tick >= BlockedUntil; // brief 059: the driver's camera block is retired (BlockedFrom stays INF)
         /// <summary>The guard's cone; crowd: people on the street block it (Pulse §4: watchers), false for his own aim (§1.6).</summary>
         public bool GuardWatching(Pt p, bool crowd = true)
         {
@@ -690,12 +763,8 @@ namespace Suborned.Sim
             var s = SecOfficerPose(k); if (!s.HasValue) return false;
             return G.InCone(s.Value.pos, s.Value.facing, R.SecReachCm, R.SecHalfCm, near, p) && Sees(s.Value.pos, p) && !(crowd && CrowdBlocks(s.Value.pos, p));
         }
-        public bool RivalsWatching(Pt p)
-        {
-            if (!RivalsDrawn) return false;
-            var r = RivalsPose(); if (!r.HasValue) return false;
-            return G.InCone(r.Value.pos, r.Value.facing, R.RivReachCm, R.RivHalfCm, near, p) && Sees(r.Value.pos, p);
-        }
+        /// <summary>Any member of the drawn crew sees p (brief 059: each member's own cone).</summary>
+        public bool RivalsWatching(Pt p) => RivalsDrawn && CrewSees(p);
 
         // ---------------------------------------------------------------- security, rivals, patrol answering gunfire
 
@@ -718,14 +787,18 @@ namespace Suborned.Sim
             }
             if (first) GunfireAlarm(arrival, scene ?? S.Stand(S.SecTo));
         }
+        /// <summary>Gunfire draws the crew (brief 059 F5; security.rivals.drawn): on the map, at once, on foot to the Office front and the car to
+        /// rivals.car.front; off it, the car enters within rivals.drawn s and rides there; away on a tip, it comes back to the front when the tip ends.</summary>
         void DrawRivals()
         {
-            if (RivalsDrawn) return;
-            var start = RivalsArrived && RivalsPose() is var rp && rp.HasValue ? rp.Value.pos : S.Stand(S.RivalsEntry);
+            if (RivalsDrawn || Range || rivalsAbsorbed) return;
             RivalsDrawn = true;
-            if (!RivalsArrived) RivalAt = Math.Min(RivalAt, Tick + T(R.RivalsDrawnS));
-            RivalsDrawnTick = RivalsArrived ? Tick : RivalAt;
-            rivalsPath = new Path(S.Grid.Route(S.Grid.NearestFree(start) ?? start, S.Stand(S.RivalsFront)) ?? new[] { start, S.Stand(S.RivalsFront) });
+            if (CarSt == CrewCar.Off)
+            {
+                RivalAt = Math.Min(RivalAt, Tick + T(R.RivalsDrawnS)); crewDrawnEntry = Math.Max(Tick + 1, Math.Min(CrewEntry, Tick + T(R.RivalsDrawnS)));
+                RivalsDrawnTick = crewDrawnEntry;
+            }
+            else { RivalsDrawnTick = Tick; CrewDrawn(); }
             Note("rivals.drawn", "The rivals hear gunfire and head for the Office.");
         }
         void WakePatrol(Pt at, OpId who)

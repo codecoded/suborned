@@ -156,8 +156,8 @@ namespace Suborned.Sim
             Add("N45", "—", "The response unit and the rivals come for the cell: their sight is known from the moment they are on the street (rulebook sight.kinds learn arrival), never watched, never told. Gunfire at the guard draws both.", r =>
             {
                 var g = r.G;
-                r.Is(!g.Known("security-1")!.Sight && !g.Known("rivals")!.Sight, "neither is known before they come");
-                r.Is(g.ConeFan("security-1") == null && g.ConeFan("rivals") == null, "nor on the street");
+                r.Is(!g.Known("security-1")!.Sight && !g.Known("rival-1")!.Sight, "neither is known before they come"); // brief 059: the crew is five watchers, rival-1..5
+                r.Is(g.ConeFan("security-1") == null && g.ConeFan("rival-1") == null, "nor on the street");
                 r.To(Max(r.Send(Tech, "cabinet"), r.SendTo(Enf, BesideDoor)));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
                 r.Fire(Enf, GuardR);
@@ -170,7 +170,7 @@ namespace Suborned.Sim
                 r.Is(g.KnownFans().Exists(x => x.Watcher == "security-1"), "drawn on Alt");
                 r.Is(g.RivalsDrawn, "the gunfire drew the rivals");
                 r.Is(r.Until(() => g.RivalsPresent || g.Over, T(120)) && g.RivalsPresent, "they come");
-                var kr = g.Known("rivals")!;
+                var kr = g.Known("rival-1")!;
                 r.Is(kr.Sight && kr.How == "arrival", "their sight is known when they come");
             }, NoFight());
         }

@@ -267,6 +267,8 @@ export const Rulebook = z.strictObject({
     enter: z.strictObject({ s: Ref, alarm: Ref }),
     carry: z.strictObject({ s: Ref }),
     board: z.strictObject({ s: Ref }).optional(), // brief 018 (Board, step out); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+    // brief 059 K6 (engine 0.32.0): the getaway car's Drive between the mission's car stands; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+    driveCar: z.strictObject({ rule: text, src: text }).optional(),
     // brief 025 (EXPERIMENTAL, engine 0.9.0): the driven agent; optional: a rulebook without it makes drive an unknown verb (rulebook.test.ts holds the live one to it)
     drive: z.strictObject({ experimental: text, slack: Ref, burst: Ref, busyPush: Ref, gap: Ref, onBusy: z.enum(['cancel', 'hold']), onRelease: z.enum(['stand', 'resume']), rule: text, tag: z.string().optional(), src: z.string().optional() }).optional(),
     take: z.strictObject({ s: Ref, trailUnturned: Ref, struggle: Ref.optional() }), // struggle: optional only for runs pinned before brief 013
@@ -424,10 +426,15 @@ export const Rulebook = z.strictObject({
   // brief 023: car.drive (0.8.2) and car.pace (Motive 2026-10-19); pace optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
   // tuning.md §10.7 (engine 0.16.0): cars are targets; optional only so a rulebook pinned before it parses (rulebook.test.ts holds the live one to it)
   car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(),
+    // brief 059 K1–K4 (engine 0.32.0): Vale gets into his car at the official bay; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+    pickup: z.strictObject({ valeIn: Ref, rule: text }).optional(),
     target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
   fight: ground({
-    safe: z.strictObject({ hostiles: Ref, minus: Ref, warn: Ref, ambush: Ref }),
-    loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref }),
+    // brief 059 (engine 0.32.0, Motive M059-3.7): `minus` is retired (the −1s are people who have left); optional only so runs pinned before it parse, and
+    // rulebook.test.ts holds the live rulebook to none. leaveUnfought (Sky's S1) and loud.entry (S2): optional only for runs pinned before them
+    safe: z.strictObject({ hostiles: Ref, minus: Ref.optional(), warn: Ref, ambush: Ref, leaveUnfought: z.boolean().optional() }),
+    loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref, entry: z.enum(['response', 'nearest']).optional() }),
+    openRule: text.optional(), // brief 059: Sky's open questions S1–S3, each a value
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
     block: Ref.optional(), blockers: Ref.optional(), blockNear: Ref.optional(), blockFar: Ref.optional(), // brief 018 §1: the exit lane's length and the blockers; optional only for runs pinned before it
     // Sky 2026-10-16 (fight.public): the default when a mission's rivals name none; optional so a rulebook pinned before it parses
@@ -440,6 +447,16 @@ export const Rulebook = z.strictObject({
     // Sky 2026-10-20 (tuning.md §7.9): the lab's kite response promoted to today; optional only so runs pinned before it parse (rulebook.test.ts holds the live one to it)
     kite: z.strictObject({ on: z.boolean(), react: Ref, replan: Ref, chase: Ref, lapse: Ref, hide: Ref, contact: Ref, rearm: Ref, hideMax: Ref, coverHold: Ref, rule: text, src: text }).optional(),
   }),
+  // brief 059 (engine 0.32.0): the rival crew, five people and a car (Pulse briefs/059/pulse/rival-routine.md); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
+  rivals: ground({
+    crew: Ref, posted: Ref, speed: Ref, followPace: Ref, drop: Ref, out: Ref, step: Ref, follow: Ref, warn: Ref, warnLag: Ref, lookoutPace: Ref,
+    beats: z.strictObject({ maxS: z.number().int().positive(), minBeats: z.number().int().positive(),
+      posted: z.strictObject({ phase: z.record(id, z.number().int().nonnegative()), loop: z.array(z.strictObject({ pose: id, s: z.number().int().positive(), yaw: z.union([z.literal(0), z.literal(30), z.literal(-30), z.literal(60), z.literal(-60)]), move: z.enum(['out', 'back']).optional(), at: z.literal('pace').optional() })).min(1) }),
+      lookout: z.strictObject({ phase: z.record(id, z.number().int().nonnegative()), loop: z.array(z.strictObject({ pose: id, s: z.number().int().positive(), yaw: z.union([z.literal(0), z.literal(30), z.literal(-30), z.literal(60), z.literal(-60)]), move: z.enum(['out', 'back']).optional(), at: z.literal('pace').optional() })).min(1) }),
+      wheelman: z.strictObject({ phase: z.record(id, z.number().int().nonnegative()), loop: z.array(z.strictObject({ pose: id, s: z.number().int().positive(), yaw: z.union([z.literal(0), z.literal(30), z.literal(-30), z.literal(60), z.literal(-60)]), move: z.enum(['out', 'back']).optional(), at: z.literal('pace').optional() })).min(1) }),
+      rule: text }),
+    rule: text,
+  }).optional(),
   investigation: ground({ base: Ref, perAlert: Ref, hops: Ref, rule: text }),
   preview: ground({ rule: text, unknown: z.literal('?'), knownBy: z.array(eventId).min(1), knownByRule: text }),
   streams: ground({

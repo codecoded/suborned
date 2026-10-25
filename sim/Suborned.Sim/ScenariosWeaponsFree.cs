@@ -313,20 +313,22 @@ namespace Suborned.Sim
             Add("HI-RIVALS", "—", "Sky's answer 3: the crew watches the street from its arrival; calm, it fires on the drawn Enforcer in its cone and never on the holstered Scout beside him; a fight it starts costs the cell no Standing", r =>
             {
                 var g = r.G;
-                r.To(r.SendTo(Enf, new Pt(8600, -3400)));
-                r.Is(r.Until(() => g.RivalsPresent, T(g.S.RivalsArrive) + T(5) - g.Tick), $"the rival crew is here at {Report.Clock(g.Tick)}");
-                var park = g.S.Stand(g.S.RivalsPark);
-                var e = Beside(r, park) ?? park; var sc = Beside(r, e) ?? e;
+                // brief 059: the crew is five people; rival-2 posts at ambush-1 by our car at 2:59, facing it: the Enforcer and the Scout stand 6 m in front of him
+                r.Is(r.Until(() => g.Crew[1].Mode == CrewMode.Posted, T(200)), $"the rival crew is here (rival-2 posted) at {Report.Clock(g.Tick)}");
+                var post = g.MemberPos(g.Crew[1], g.Tick); var face = g.Crew[1].Base; long fl = Math.Max(1, G.Isqrt((long)face.X * face.X + (long)face.Y * face.Y));
+                var front = new Pt(post.X + (int)(face.X * 600L / fl), post.Y + (int)(face.Y * 600L / fl));
+                var e = g.S.Grid.NearestFree(front) ?? front; var sc = Beside(r, e) ?? e;
                 r.To(Math.Max(r.SendTo(Enf, e), r.SendTo(Scout, sc)));
+                r.Until(() => g.MemberWatching(g.Crew[1], r.Op(Enf).Pos) && g.MemberWatching(g.Crew[1], r.Op(Scout).Pos), T(45)); // his beats turn him: wait for the watch beat
                 r.Is(g.RivalsStreetWatching(r.Op(Enf).Pos) && g.RivalsStreetWatching(r.Op(Scout).Pos), "both stand in the crew's cone");
-                r.Is(g.SeesNow("rivals", r.Op(Enf).Pos), "and the host's cone shows it (the Scout's skill: learned at arrival)");
+                r.Is(g.SeesNow("rival-2", r.Op(Enf).Pos), "and the host's cone shows it (the Scout's skill: learned at arrival)");
                 r.Wait(T(5));
                 r.Eq(r.Shots().Count, 0, "holstered, nobody is fired on");
                 r.Do(Enf, "draw");
-                r.Is(r.Until(() => r.Shots().Exists(x => x.by == "rivals") || g.Over, T(6)), "the crew fires on the drawn Enforcer");
-                r.Is(r.Shots().First().by == "rivals" && r.Shots().First().target == Enf, "the first shot is theirs, at him");
+                r.Is(r.Until(() => r.Shots().Exists(x => x.by.StartsWith("rival-", StringComparison.Ordinal)) || g.Over, T(6)), "the crew fires on the drawn Enforcer");
+                r.Is(r.Shots().First().by.StartsWith("rival-", StringComparison.Ordinal) && r.Shots().First().target == Enf, "the first shot is theirs, at him");
                 r.Wait(T(8));
-                r.Eq(ShotsAt(r, Scout).Count(x => x.by == "rivals"), 0, "never at the holstered Scout");
+                r.Eq(ShotsAt(r, Scout).Count(x => x.by.StartsWith("rival-", StringComparison.Ordinal)), 0, "never at the holstered Scout");
                 r.Is(!FightMoves(g).Exists(m => m.delta < 0), "a fight the rivals start costs no Standing");
                 var fight = g.OpenFight ?? g.Fights.LastOrDefault();
                 r.Is(fight != null && fight.RivalsFirst == "rivals", "the fight's first shot is the rivals' (fight.public: fired first is the cell's only)");

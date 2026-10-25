@@ -29,8 +29,11 @@ static class Probe
             foreach (var id in s.PlaceIds) if (G.InCone(c.At, c.Facing, c.Reach, c.Half, 0, s.Stand(id)) && s.Sight(c.At, s.Stand(id), 160)) Console.Write($" {id}");
             Console.WriteLine();
         }
-        foreach (var (a, b) in new[] { ("security-entry", "d:Office approach"), ("d:Office approach", "d:Service lane"), ("d:Office entrance", "d:Café door"), ("rival-entry", "d:Office approach"), ("rival-park", "d:Office approach") })
+        foreach (var (a, b) in new[] { ("security-entry", "d:Office approach"), ("d:Office approach", "d:Service lane"), ("d:Office entrance", "d:Café door"), ("rival-front-stop", "d:Office approach"), ("rival-lookout", "d:Meet driver") }) // brief 059: the drawn crew's walk from its car, and the lookout's to the driver
             Console.WriteLine($"path {a} → {b}: {string.Join(" ", s.Grid.Route(s.Stand(a), s.Stand(b))!)}");
+        // brief 059 (engine 0.32.0): the rival car's timetable and legs on the drive grid (rulebook rivals; car.pace), and the getaway car's Drive
+        Console.WriteLine($"rival car: enters {Report.Clock(g.CrewEntry)}, stops at the drop {Report.Clock(g.CrewDropArrive)}, leaves it {Report.Clock(g.CrewDropLeave)}, parks {Report.Clock(g.RivalAt)} at rival-park {s.At(s.RivalsPark)}");
+        foreach (var st in s.Stands) Console.WriteLine($"stand {st.Id}: car {st.CarAt} (drive cell {st.CarCell}), facing {st.Facing}, rival stop {st.RivalStop}, Drive from the square {g.DriveTicks(st.Id) / 10.0:0.0} s");
         Console.Write("guard at door sees:"); foreach (var id in s.PlaceIds) if (g.GuardWatching(s.Stand(id))) Console.Write($" {id}"); Console.WriteLine();
     }
 }

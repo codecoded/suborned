@@ -273,10 +273,12 @@ namespace Suborned.Sim
                 r.Is(g.Lockdown == Never, "no seal clock");
                 r.Is(r.Do("cell", "go"), "Go");
                 r.Eq(g.Result, Outcome.Success, "the win");
-                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => x.fate == "walked" && x.why == "walked"), $"the fight over and no seal: the three left walk out ({string.Join("; ", g.LeftBehindAtGo)})");
-                r.Eq(g.Captured.Count, 0, "nobody captured");
+                // brief 059: the crew's five bodies may down one of the three; a downed operative is captured (row 1), the rest walk (row 4)
+                int downed = g.LeftBehindAtGo.Count(x => x.why == "downed");
+                r.Is(g.LeftBehindAtGo.Count == 3 && g.LeftBehindAtGo.TrueForAll(x => (x.fate == "walked" && x.why == "walked") || (x.fate == "captured" && x.why == "downed")) && downed < 3, $"the fight over and no seal: the three left standing walk out ({string.Join("; ", g.LeftBehindAtGo)})");
+                r.Eq(g.Captured.Count, downed, "nobody standing captured");
                 var next = Debrief.Of(g).Next;
-                r.Is(next.Captives.Count == 0 && next.Lines.Count(l => l.Line == "left-behind" && l.Detail == "walked (walked)") == 3, "no captive; three walked lines");
+                r.Is(next.Captives.Count == downed && next.Lines.Count(l => l.Line == "left-behind" && l.Detail == "walked (walked)") == 3 - downed, "no captive but the downed; the walked lines");
                 r.Eq(FightMoves(g).Sum(m => m.delta), 1, "the crew driven off: +1");
             });
 

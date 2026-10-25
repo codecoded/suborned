@@ -94,10 +94,12 @@ describe.skipIf(!dotnet)('the C# engine through its CLI', () => {
   }, 180_000);
 
   test('an order script plays to the outcome its scenario reached', () => {
-    const s = sim('script', 'S20');
+    // engine 0.32.0 (brief 059): route B's quiet win is P59-B (the driver turned, Vale driven round, the getaway car driven behind him); S20's
+    // run now ends enforcer-down at 7:19.3 (the posted three at the yard), a route move Waymark re-composes
+    const s = sim('script', 'P59-B');
     expect(s.code, s.err).toBe(0);
     mkdirSync(join(root, 'out/sim'), { recursive: true });
-    const file = join(root, 'out/sim/s20.script.json');
+    const file = join(root, 'out/sim/p59-b.script.json');
     writeFileSync(file, s.out);
     const p = sim('play', file, '--json');
     expect(p.code, p.err).toBe(0);

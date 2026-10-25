@@ -13,6 +13,7 @@ namespace Suborned.Sim
         public string Id = ""; public Pt At, Home; public Path? Run; public int RunStart, Speed; public bool Present; public Gun Gun = null!; // Home: its stand (police; a blocker's lane point)
         public int Wave; // brief 029: the range's spawn it came with (a crew breaks by its own spawn)
         public bool Blocker; // brief 018 §1: it went for the road, and holds its point in the exit lane as police hold a stand
+        public Pt? BreakTo; // brief 059: where a broken rival runs to (his car where it stood when the crew broke); not hashed (his walk is)
         public bool Down => Gun.Down; public int Health => Gun.Health;
         public Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
         public bool Moving(int tick) => Run != null && (long)Math.Max(0, tick - RunStart) * Speed < Run.Length;
@@ -44,8 +45,8 @@ namespace Suborned.Sim
                 if (Alert >= 3) { n += R.LoudAlert; FightWhy.Add("alert-3"); }
                 bool civShot = false; foreach (var kv in civGuns) if (kv.Value.Down) civShot = true; // a civilian shot (a takedown is no shot)
                 if (civShot) { n += R.LoudCivilian; FightWhy.Add("civilian-shot"); }
-                var entry = S.Stand(S.FightEntry);
-                var stands = S.FightPolice;
+                var entry = LoudEntryNow(out var entryName); // brief 059 S2 (fight.loud.entry): the response unit's entry, or the nearest to the car's stand
+                var stands = CurStand.Police; // brief 059 K6: the stand's police stands
                 for (int i = 0; i < n && i < stands.Length; i++)
                 {
                     var route = S.Grid.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
@@ -61,19 +62,14 @@ namespace Suborned.Sim
                 int lockBefore = Lockdown;
                 Lockdown = Math.Min(Lockdown, Tick + T(SealS)); SealMoved(lockBefore);
                 NoteSealOrigin(lockBefore, () => { var o = alertTwoOrigin ?? gunfireOrigin; return o == null ? OriginNow("loud-fight", "loud-fight", "", null, null, null, "enforcer") : Recast(o, "loud-fight"); }); // what made it loud
-                Note("fight.loud", $"The final fight: {Hostiles.Count} police officers come in from the north street. The seal clock is running.");
+                Note("fight.loud", $"The final fight: {Hostiles.Count} police officers come in from {entryName}. The seal clock is running.");
             }
             else
             {
-                int n = R.SafeHostiles;
-                if (Driver.Turned && !Driver.Down) { n -= R.SafeMinus; FightWhy.Add("driver-blocks-rival-car"); }
-                if (misledOnce) { n -= R.SafeMinus; FightWhy.Add("earlier-false-tip"); }
-                var spots = S.FightAmbush;
-                for (int i = 0; i < n && i < spots.Length; i++)
-                {
-                    var gun = NewGun($"rival-{i + 1}", PistolW, false, R.HealthRival); gun.St = "routine"; // lurking (Pulse §3.1)
-                    Hostiles.Add(new Hostile { Id = gun.Id, At = S.Stand(spots[i]), Home = S.Stand(spots[i]), Speed = rivSpeed, Gun = gun });
-                }
+                // brief 059 K9: the crew on the map (and still to come in the car) are the hostiles; no fresh spawns. The −1s are people who left
+                CrewToFight();
+                if (lookoutWarned) FightWhy.Add("lookout-warned-off");
+                if (CarSt == CrewCar.Away || CarSt == CrewCar.TipOut) FightWhy.Add("wheelman-away");
                 FightWarned = Inez.Turned && !Inez.Down && Inez.Has(R.HelpedAct);
                 if (FightWarned) FightWhy.Add("waitress-warns");
                 GuardAlly = !GuardDown && GuardGun.Health == GuardGun.Max && !GuardEngaged && !SawCell(GuardP);
@@ -81,6 +77,22 @@ namespace Suborned.Sim
                 rivalsAbsorbed = true; // the crew is the ambush now
                 Note("fight.safe", $"The final fight: the rival crew ({Hostiles.Count}) lies in wait for the extraction.");
             }
+        }
+
+        /// <summary>Brief 059 S2 (fight.loud.entry): where the loud fight's officers come from: the response unit's entry, or (nearest) whichever of
+        /// it and the mission's official entrances (the world's entrances of kind official) is the shortest grid walk to the getaway car's stand.</summary>
+        Pt LoudEntryNow(out string name)
+        {
+            var home = S.Stand(S.FightEntry); name = "the north street";
+            if (R.LoudEntry != "nearest" || Range) return home;
+            var car = S.Grid.NearestFree(Car) ?? Car; long best = WalkMm(home, car); var at = home;
+            foreach (var e in S.Entrances)
+            {
+                if (e.kind != "official") continue;
+                long d = WalkMm(e.stand, car);
+                if (d < best) { best = d; at = e.stand; name = "the " + e.id.Replace('-', ' '); }
+            }
+            return at;
         }
 
         /// <summary>The guard "never saw you" (§07): he holds no memory the cell left — no face, no act seen.</summary>
@@ -94,13 +106,29 @@ namespace Suborned.Sim
             JoinResponse();
             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
-            var e = Enforcer; var car = S.At(S.GetawayCar);
-            if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm))
+            var e = Enforcer; var car = Car;
+            if (FightBranch == "safe" && FightSprung == INF && Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) Spring(false);
+            bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+            if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
+            if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
+            // the guard runs in against the rivals (safe); his shots are in Combat()
+            if (GuardAlly && guardAllyPath != null && !GuardDown)
+            {
+                long mm = (long)(Tick - guardAllyStart) * secSpeed;
+                heldPos = guardAllyPath.At(mm); heldFacing = guardAllyPath.Heading(mm);
+            }
+        }
+
+        /// <summary>The ambush springs: the Enforcer brings Vale within fight.safe.ambush of the car, or (brief 059: the crew lurks on the street,
+        /// in plain sight) the cell's shot at one of them gives it away first.</summary>
+        void Spring(bool shot)
+        {
             {
                 FightSprung = Tick;
-                // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing)
-                foreach (var h in Hostiles) { h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
-                Note("fight.ambush", FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
+                // lying in wait, the crew fires aimNew after springing, plus the warning if Inez gave it (motive-fights.md §2.2 timing); brief 059: a
+                // member still in the car springs when he gets out (he comes in on his path)
+                foreach (var h in Hostiles) { if (CrewOf(h.Id) is CrewMember cm && !cm.Fight) continue; h.Present = true; h.Gun.Engaged = true; h.Gun.St = "alerted"; h.Gun.Until = h.Gun.NextShot = Tick + AimNewT + (FightWarned ? T(R.SafeWarnS) : 0); }
+                Note("fight.ambush", shot ? "The cell's shot gives the ambush away: the rival crew springs." : FightWarned ? "Inez's warning comes in time: the ambush is seen before it fires." : "The rival crew springs its ambush at the getaway car.");
                 if (!blockersPicked) pickFrom = "rivals"; // brief 018 §1: one goes for the road as the ambush springs (picked after this tick's fire)
                 if (GuardAlly)
                 {
@@ -111,14 +139,6 @@ namespace Suborned.Sim
                     GuardHeld = true; heldPhase = "fighting the rivals"; heldPos = from; GuardAwayUntil = INF;
                     Note("fight.guard", "The guard hears the shooting and runs in against the rivals.");
                 }
-            }
-            bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
-            if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
-            // the guard runs in against the rivals (safe); his shots are in Combat()
-            if (GuardAlly && guardAllyPath != null && !GuardDown)
-            {
-                long mm = (long)(Tick - guardAllyStart) * secSpeed;
-                heldPos = guardAllyPath.At(mm); heldFacing = guardAllyPath.Heading(mm);
             }
         }
         bool GuardAllyMoving => GuardAlly && guardAllyPath != null && (long)(Tick - guardAllyStart) * secSpeed < guardAllyPath.Length;
@@ -137,6 +157,8 @@ namespace Suborned.Sim
 
 
         void MisledOnce() { misledOnce = true; }
+        /// <summary>A false tip has landed this mission (brief 059: the safe fight counts the wheelman away, not this; a read for the debrief).</summary>
+        public bool MisledEver => misledOnce;
         bool RivalsAbsorbed => rivalsAbsorbed;
     }
 }

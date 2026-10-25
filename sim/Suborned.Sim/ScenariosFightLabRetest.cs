@@ -129,52 +129,55 @@ namespace Suborned.Sim
             {
                 var g = r.G; var st = KiteStage(r);
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
-                if (!r.Until(() => g.RivalsDrawn && g.RivalsPresent && g.RivalsPose().HasValue, T(120))) { r.Is(false, "the rivals come"); return; }
+                if (!r.Until(() => g.RivalsDrawn && g.Crew[0].OnFoot && g.MemberPose(g.Crew[0]).HasValue, T(120))) { r.Is(false, "the rivals come"); return; } // brief 059: the crew is five people: rival-1, drawn to the Office front
                 Pt? lastR = null; int still = 0;
-                r.Until(() => { var p = g.RivalsPose()?.pos; still = p == lastR ? still + 1 : 0; lastR = p; return still >= 2 || !g.RivalsPresent; }, T(150));
-                var rp = g.RivalsPose()?.pos; if (!r.Is(rp.HasValue && still >= 2, "the rivals stand at the Office")) return;
+                r.Until(() => { var p = g.MemberPose(g.Crew[0])?.pos; still = p == lastR ? still + 1 : 0; lastR = p; return still >= 2 || !g.Crew[0].OnFoot; }, T(150));
+                var rp = g.MemberPose(g.Crew[0])?.pos; if (!r.Is(rp.HasValue && still >= 2, "rival-1 stands at the Office")) return;
                 if (!g.PatrolDown) { var up = new[] { Scout, Fixer }.Where(op => !r.Op(op).Down).ToArray(); foreach (var op in up) r.Do(op, "draw"); r.Wait(g.DrawT + 1); foreach (var op in up) r.Fire(op, "patrol"); r.Until(() => g.PatrolDown || g.Over || up.All(op => r.Op(op).Down), T(90)); } // the patrol, which turns toward gunfire, out of the stage
                 if (!r.Is(g.PatrolDown && !g.Over, "the patrol is down")) return;
-                if (!r.Is(g.RivalsPose().HasValue, "the crew still stands")) return; rp = g.RivalsPose()!.Value.pos;
-                int eff = g.RivalsGun.W!.EffCm; var (o1, o2) = st!.Value; var rpos = rp!.Value;
+                if (!r.Is(g.MemberPose(g.Crew[0]).HasValue, "the crew still stands")) return; rp = g.MemberPose(g.Crew[0])!.Value.pos;
+                int eff = g.Crew[0].Gun.W!.EffCm; var (o1, o2) = st!.Value; var rpos = rp!.Value;
                 Pt? tp = null;
                 for (int rr = eff + 50; rr <= eff + 250 && tp == null; rr += 100)
                     for (int k = 0; k < 72 && tp == null; k++)
                     {
                         double ang = k * Math.PI / 36; var q0 = new Pt(rpos.X + (int)Math.Round(rr * Math.Cos(ang)), rpos.Y + (int)Math.Round(rr * Math.Sin(ang)));
                         if (!g.S.Grid.Free(q0) || G.D2(q0, o1) <= (long)(eff + 50) * (eff + 50) || G.D2(q0, o2) <= (long)(eff + 50) * (eff + 50) || !g.S.Sight(q0, rpos, g.R.Eye)) continue;
-                        if (g.PreviewAnswer(OpId.Tech, "rivals", q0) is KiteAnswer ka && ka.Side == "rivals" && ka.Cover) tp = q0;
+                        if (g.PreviewAnswer(OpId.Tech, "rival-1", q0) is KiteAnswer ka && ka.Side == "rivals" && ka.Cover) tp = q0;
                     }
                 if (!r.Is(tp.HasValue, "a spot 15.5–17.5 m from the crew from which it has cover to hide behind")) return;
                 foreach (var op in new[] { Scout, Fixer }) if (!r.Op(op).Down) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "holster" });
                 r.To(r.SendTo(Tech, tp!.Value)); r.Do(Tech, "draw"); r.Wait(g.DrawT + 1);
-                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "volley", Target = "rivals", Shots = 1 }).ok, "one targeted shot on the crew");
-                if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "tech" && s.target == "rivals"), T(3)), "the Tech's shot goes")) return;
+                r.Is(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "volley", Target = "rival-1", Shots = 1 }).ok, "one targeted shot on the crew");
+                if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "tech" && s.target == "rival-1"), T(3)), "the Tech's shot goes")) return;
                 g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "stance", Stance = "hold" }); // he stays drawn on the line, and fires no more
-                if (!r.Is(r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals answer", StringComparison.Ordinal)), T(3)), "the crew answers")) return;
+                if (!r.Is(r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 answers", StringComparison.Ordinal)), T(3)), "the crew answers")) return;
                 int quietFrom = g.Tick;
-                r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && (l.Text.StartsWith("rivals walk on", StringComparison.Ordinal) || l.Text.StartsWith("rivals lean out", StringComparison.Ordinal))) || g.Over, g.Labr!.KiteHide + g.Labr.KiteHideMax + T(30));
-                r.Is(!g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals lean out", StringComparison.Ordinal)), "it never leans back out into him");
-                var on = g.Log.FirstOrDefault(l => l.Code == "ai.kite" && l.Text.StartsWith("rivals walk on", StringComparison.Ordinal));
+                r.Until(() => g.Log.Exists(l => l.Code == "ai.kite" && (l.Text.StartsWith("rival-1 walks on", StringComparison.Ordinal) || l.Text.StartsWith("rival-1 leans out", StringComparison.Ordinal))) || g.Over, g.Labr!.KiteHide + g.Labr.KiteHideMax + T(30));
+                r.Is(!g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 leans out", StringComparison.Ordinal)), "it never leans back out into him");
+                var on = g.Log.FirstOrDefault(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 walks on", StringComparison.Ordinal));
                 r.Is(on.Code == "ai.kite" && on.Tick - quietFrom >= g.Labr.KiteHideMax, $"past kite.hideMax ({g.Labr.KiteHideMax} ticks) it walks on toward him");
             }, LabStart(s => s.Security = 0));
 
-            Add("N164", "—", "Brief 027 retest (Motive tuning.md §7.4): the cell drives the pre-fight crew back. Under the lab the crew's hit flag clears with its health, so its next drive-back's first hit is +hit-trail again (under today it stays set: one +hit-trail a mission; lab-gated, so today's hashes hold it), and a shot landing later in the drive-back's tick finds the crew gone.", r =>
+            Add("N164", "—", "Brief 027 retest (Motive tuning.md §7.4), brief 059 (Motive M059-3.5): the cell drives the pre-fight crew back. The crew is five people now: each down member stays down (no fresh health at a drive-back: the single crew gun's lab rule is retired); once more than half of the crew on the map is down it breaks and makes for its car (rivals.retreat), and fires no more.", r =>
             {
                 var g = r.G; var st = KiteStage(r);
                 if (!r.Is(st.HasValue, "the response unit stands at the Office front")) return;
-                Pt? lr = null; int sl = 0; if (!r.Until(() => { var p = g.RivalsDrawn && g.RivalsPresent ? g.RivalsPose()?.pos : null; sl = p.HasValue && p == lr ? sl + 1 : 0; lr = p; return sl >= 2; }, T(150))) { r.Is(false, "the rivals come and stand"); return; }
-                var rp = g.RivalsPose()!.Value.pos;
+                Pt? lr = null; int sl = 0; if (!r.Until(() => { var p = g.RivalsDrawn && g.Crew[0].OnFoot ? g.MemberPose(g.Crew[0])?.pos : null; sl = p.HasValue && p == lr ? sl + 1 : 0; lr = p; return sl >= 2; }, T(150))) { r.Is(false, "the rivals come and stand"); return; }
+                var rp = g.MemberPose(g.Crew[0])!.Value.pos;
                 var spot = g.S.Grid.Nearest(rp, q => G.D2(q, rp) <= 1000L * 1000 && G.D2(q, rp) >= 500L * 500 && g.S.Sight(q, rp, g.R.Eye), 2000);
                 if (!r.Is(spot.HasValue, "a spot 5–10 m from the crew")) return;
                 var up = new[] { Tech, Fixer, Scout }.Where(op => !r.Op(op).Down).ToArray();
                 r.To(up.Select(op => r.SendTo(op, spot!.Value)).Max());
                 foreach (var op in up) { r.Do(op, "draw"); }
                 r.Wait(g.DrawT + 1);
-                foreach (var op in up) g.Issue(new Order { Tick = g.Tick, Op = op, Do = "fire", Target = "rivals" });
-                if (!r.Is(r.Until(() => g.Log.Exists(l => l.Code == "rivals.retreat") || g.Over, T(30)) && !g.Over, "the crew is driven back")) return;
-                r.Is(g.RivalsGun.Health == g.RivalsGun.Max && !g.RivalsGun.Hit, "its health back and its hit flag clear: the next drive-back's first hit is +hit-trail (today the flag stays set: one +hit-trail a mission)");
-                r.Is(!g.Log.Exists(l => l.Tick == g.Tick && l.Code == "rivals.hit" && g.Log.IndexOf(l) > g.Log.FindIndex(x => x.Code == "rivals.retreat")), "a shot landing later in the drive-back's tick finds the crew gone");
+                FireUntilBroken(r, 30, up);
+                if (!r.Is(g.Log.Exists(l => l.Code == "rivals.retreat") && !g.Over, "the crew is driven back")) return;
+                var downs = g.Crew.Where(m => m.Gun.Down).ToList();
+                r.Is(downs.Count >= 2 && downs.TrueForAll(m => m.Gun.Health == 0), $"its downed members stay down ({string.Join(", ", downs.Select(m => m.Id))}): people, no fresh health at a drive-back");
+                r.Is(g.CrewBrokenPre && g.Crew.TrueForAll(m => m.Gun.Down || !m.OnFoot || m.Goal == "flee" || m.Goal == "exit"), "the rest make for the car");
+                int broke = g.Tick; r.Wait(T(5));
+                r.Is(!r.Shots().Exists(s => s.tick > broke && s.by.StartsWith("rival-", StringComparison.Ordinal)), "and fire no more");
             }, LabStart(s => s.Security = 1));
 
             Add("N165", "—", "Brief 027 retest (Motive tuning.md §7.5): route A to the safe fight under the lab, the Scout drawn. From the tick a blocker is picked to the end of the fight, a move of the Scout's onto the cover point the blocker walks to or stands on never snaps there (it is held, whatever its bookkeeping says).", r =>

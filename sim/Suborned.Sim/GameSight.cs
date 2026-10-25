@@ -80,7 +80,7 @@ namespace Suborned.Sim
         public static string WatcherKind(string id) =>
             id.StartsWith("camera:", StringComparison.Ordinal) ? "camera" : id == "guard" ? "guard" : id == "patrol" ? "patrol"
             : id.StartsWith("security-", StringComparison.Ordinal) || id.StartsWith("police-", StringComparison.Ordinal) || id.StartsWith("robot-", StringComparison.Ordinal) ? "security" // brief 013: the response's units come for the cell like the response unit
-            : id == "rivals" ? "rivals" : "";
+            : IsCrewId(id) ? "rivals" : ""; // brief 059 K8: each member of the crew is a watcher, rival-1..5
 
         /// <summary>Every watcher of this mission, in a fixed order: the cameras, the guard, the patrol, the response officers, the rivals.</summary>
         public List<string> WatcherIds()
@@ -89,7 +89,7 @@ namespace Suborned.Sim
             foreach (var c in S.Cameras) l.Add("camera:" + c.Id);
             l.Add("guard"); l.Add("patrol");
             foreach (var g in SecGuns) l.Add(g.Id);
-            l.Add("rivals");
+            if (!Range) foreach (var id in CrewIds) l.Add(id); // brief 059: the crew, member by member
             foreach (var u in Units) if (!u.Legacy && !u.Patrol) l.Add(u.Id); // brief 013: robots and police the dial sent, by id (none in a run without an alarm)
             return l;
         }
@@ -99,6 +99,7 @@ namespace Suborned.Sim
             {
                 case "camera": { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return true; return false; }
                 case "security": return SecIndex(id) >= 0 || UnitOf(id) != null;
+                case "rivals": return !Range;
                 case "": return false;
                 default: return true;
             }
@@ -151,7 +152,8 @@ namespace Suborned.Sim
                 case "rivals":
                     {
                         if (!RivalsDrawn && !R.Intent.RivalsStreet) return null; // engine 0.19.0 (Sky's answer 3): the crew watches the street from its arrival (ai.intent.rivals.street)
-                        var r = RivalsPose(); if (!r.HasValue) return null;
+                        var m = CrewOf(w); if (m == null) return null; // brief 059: a member on foot, by his own cone (none for a rider)
+                        var r = MemberPose(m); if (!r.HasValue) return null;
                         return new Shape { At = r.Value.pos, F = r.Value.facing, Reach = R.RivReachCm, Half = R.RivHalfCm, Near = near, Live = true };
                     }
             }
@@ -173,7 +175,7 @@ namespace Suborned.Sim
         {
             var s = ShapeOf(watcher); if (!s.HasValue) return false;
             if (!InShape(s.Value, p) || !WatcherSees(watcher, s.Value.At, p)) return false;
-            return !(crowd && watcher != "rivals" && WatcherCrowd(watcher, s.Value.At, p));
+            return !(crowd && WatcherKind(watcher) != "rivals" && WatcherCrowd(watcher, s.Value.At, p));
         }
         /// <summary>Brief 055 §7 (perception.mount): the watcher's eye, block z cm, at `at`: a camera's lens (its own piece never blocks it), the
         /// patrol robot's face, a response robot's lamp, a person's eye; null with the mount off (the flat test).</summary>
@@ -210,7 +212,7 @@ namespace Suborned.Sim
         {
             var sh = ShapeOf(watcher); if (!sh.HasValue) return null;
             var s = sh.Value;
-            bool useCrowd = crowd && watcher != "rivals" && People2 != null && Start.Crowd;
+            bool useCrowd = crowd && WatcherKind(watcher) != "rivals" && People2 != null && Start.Crowd;
             string key = s.Key() + (useCrowd ? "|crowd@" + Tick.ToString(System.Globalization.CultureInfo.InvariantCulture) : "");
             string ck = watcher + (useCrowd ? "/crowd" : "");
             if (fanCache.TryGetValue(ck, out var hit) && hit.key == key) return hit.fan;

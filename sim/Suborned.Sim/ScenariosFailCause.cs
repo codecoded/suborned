@@ -81,36 +81,36 @@ namespace Suborned.Sim
                 r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].At == g.CarPos(), "then Vale, at his car");
             });
 
-            Add("N122", "—", "The fail camera: the rivals beat the cell to the pickup (§07; route fail-rivals-reach-vale): route B without the false tip; the rivals follow the car to the service lane, and the Take there is theirs. The culprit is the rival crew where it stands.", r =>
+            Add("N122", "—", "The fail camera: the rivals beat the cell to Vale (§07; route fail-rivals-reach-vale; brief 059 F2): route B without the false tip; the rival car follows Vale's car round and its wheelman reaches Vale's door before the Take in the service bay is done. The culprit is the wheelman where he stands; no operative is named.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Service lane\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":776,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":797,\"op\":\"scout\",\"do\":\"listen\",\"target\":\"driver\"},{\"tick\":1217,\"op\":\"fixer\",\"do\":\"turn\",\"target\":\"driver\",\"approach\":\"pay\"},{\"tick\":1717,\"op\":\"scout\",\"do\":\"move\",\"to\":[8250,-3100]},{\"tick\":3700,\"op\":\"enforcer\",\"do\":\"take\"}]"); // c022: the Scout steps to the driver before the Listen (3 m)
+                Script(r, "[{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Service lane\"},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"d:Boarding pavilion\"},{\"tick\":776,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Meet driver\"},{\"tick\":797,\"op\":\"scout\",\"do\":\"listen\",\"target\":\"driver\"},{\"tick\":1217,\"op\":\"fixer\",\"do\":\"turn\",\"target\":\"driver\",\"approach\":\"pay\"},{\"tick\":1717,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]},{\"tick\":3860,\"op\":\"enforcer\",\"do\":\"take\"}]"); r.Until(() => g.Over, T(60)); // c022: the Scout steps to the driver before the Listen (3 m); brief 059: the Take in the service bay once Vale's car parks (6:25.9)
                 r.Eq(g.FailCode, "rivals-reach-vale", "the rivals reach Vale first");
-                var c = CauseIs(r, "rivals-reach-vale", "beat-to-pickup", true, "rivals", "rival", Enf);
-                var rp = g.RivalsPose()!.Value;
-                PosedAs(r, c?.Culprits.FirstOrDefault(), rp.pos, rp.facing, "the rival crew");
+                var c = CauseIs(r, "rivals-reach-vale", "tail", true, "rival-5", "rival", "");
+                var wq = g.MemberPose(g.Crew[4]); if (!r.Is(wq.HasValue, $"the wheelman is on the street ({g.FailCode} at {Report.Clock(g.Tick)}, {g.Crew[4].Mode} {g.CarSt})")) return;
+                var wp = wq!.Value;
+                PosedAs(r, c?.Culprits.FirstOrDefault(), wp.pos, wp.facing, "the wheelman");
                 r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale", "then Vale");
             });
 
-            Add("N123", "—", "The fail camera: the rivals have Vale at the close (§07): nobody touches anything; at 8:30 the rival crew, still watching the pickup, has him. The culprit is the rival crew; no operative is named.", r =>
+            Add("N123", "—", "The fail camera: Vale is driven away (§07, Sky's answer 3a; brief 059 K2): nobody touches anything; at 6:13 Vale is in his car and his driver drives him away. The culprit is the official car, then Vale; no operative is named.", r =>
             {
                 var g = r.G;
                 r.To(T(g.S.Over));
-                r.Eq(g.FailCode, "rivals-reach-vale", "at the close the rivals are there");
-                var c = CauseIs(r, "rivals-reach-vale", "reached-at-close", true, "rivals", "rival", "");
-                var rp = g.RivalsPose()!.Value;
-                PosedAs(r, c?.Culprits.FirstOrDefault(), rp.pos, rp.facing, "the rival crew at its car");
+                r.Eq((g.FailCode, g.Tick), ("vale-leaves", T(g.S.ValeAtCar) + T(g.R.ValeInS)), "at 6:13 he is driven away");
+                var c = CauseIs(r, "vale-leaves", "driven-away", true, "car", "car", "");
+                r.Is(c != null && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].Role == "left", "then Vale leaving in it");
             });
 
-            Add("N124", "—", "The fail camera: Vale leaves in his car (§07; route fail-vale-leaves): the Scout sends the rivals away late, so they are gone at 8:30 and the official car leaves with him. The culprit is the official car where it stands, then Vale.", r =>
+            Add("N124", "—", "The fail camera: Vale leaves in his car at the close (§07; route fail-vale-leaves; brief 059 K4): the driver turned at the start, the Scout sends the rivals away late (the tip runs past the close, so no tail comes back), nobody takes Vale; at 8:30 the driver gives up and drives him on. The culprit is the official car where it stands (the service bay), then Vale.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"rival-park\"},{\"tick\":2500,\"op\":\"scout\",\"do\":\"mislead\",\"target\":\"rivals\"}]");
+                Script(r, "[{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":[9300,-3100]},{\"tick\":2361,\"op\":\"scout\",\"do\":\"mislead\",\"target\":\"rivals\"}]");
                 r.To(T(g.S.Over));
                 r.Eq(g.FailCode, "vale-leaves", "Vale leaves in the official car");
                 var c = CauseIs(r, "vale-leaves", "too-late", true, "car", "car", "");
-                r.Is(c != null && c.Culprits[0].At == g.CarPos() && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].Role == "left", "the official car at the pickup, then Vale leaving in it");
-            });
+                r.Is(c != null && c.Culprits[0].At == g.CarPos() && g.CarPos() == g.S.CarStand(g.S.CarService) && c.Culprits.Count == 2 && c.Culprits[1].Kind == "vale" && c.Culprits[1].Role == "left", "the official car in the service bay, then Vale leaving in it");
+            }, Turned(Driver));
 
             Add("N125", "—", "The fail camera: the Enforcer down (§07; route fail-enforcer-down): an unprepared shot at the guard from inside his cone; the Enforcer trades fire until the response unit's officer drops him. The culprit is the shooter that downed him, where it fired from and facing him; the Enforcer is the operative and the second culprit (the victim).", r =>
             {
@@ -161,7 +161,7 @@ namespace Suborned.Sim
             Add("N128", "—", "The fail camera: the seal of a loud final fight (route careless-body-found): the guard killed at his post and left there, the Enter at once; the Tech leaves the cabinet and the entrance camera's watcher reads the dead guard (Alert 2). The Enforcer comes out into the loud fight, whose seal clock runs out at 5:37. No single culprit: the origin is what made the fight loud, the camera's report that raised Alert to 2, where the camera stands.", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true},{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Office approach\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"crew:fixer\"},{\"tick\":166,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":462,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"guard\"},{\"tick\":662,\"op\":\"scout\",\"do\":\"move\",\"to\":\"crew:scout\"},{\"tick\":1060,\"op\":\"tech\",\"do\":\"reroute\",\"target\":\"patrol\"},{\"tick\":1440,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6520,-4110]},{\"tick\":1510,\"op\":\"enforcer\",\"do\":\"takedown\",\"target\":\"guard\",\"how\":\"kill\"},{\"tick\":1540,\"op\":\"enforcer\",\"do\":\"enter\"},{\"tick\":1540,\"op\":\"tech\",\"do\":\"move\",\"to\":[675,-4625]},{\"tick\":1540,\"op\":\"scout\",\"do\":\"move\",\"to\":[1175,-4825]},{\"tick\":1540,\"op\":\"fixer\",\"do\":\"move\",\"to\":[1025,-4625]},{\"tick\":1920,\"op\":\"scout\",\"do\":\"draw\"},{\"tick\":1920,\"op\":\"fixer\",\"do\":\"draw\"},{\"tick\":1920,\"op\":\"tech\",\"do\":\"draw\"},{\"tick\":1920,\"op\":\"enforcer\",\"do\":\"stance\",\"stance\":\"hold\"}]"); // c022's careless-body-found, without its three free stances and the Enforcer's walk to the car (tuning.md §7.9, 2026-10-20: with the 16 m sidearm the three can no longer hold the officers off from beyond their reach, and the police now answer such fire: walked out, the Enforcer goes down before the seal; he holds with Vale where he came out instead)
+                Script(r, "[{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true},{\"tick\":0,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Office approach\"},{\"tick\":0,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"crew:fixer\"},{\"tick\":166,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":462,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"guard\"},{\"tick\":662,\"op\":\"scout\",\"do\":\"move\",\"to\":\"crew:scout\"},{\"tick\":1060,\"op\":\"tech\",\"do\":\"reroute\",\"target\":\"patrol\"},{\"tick\":1440,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6520,-4110]},{\"tick\":1510,\"op\":\"enforcer\",\"do\":\"takedown\",\"target\":\"guard\",\"how\":\"kill\"},{\"tick\":1540,\"op\":\"enforcer\",\"do\":\"enter\"},{\"tick\":1540,\"op\":\"tech\",\"do\":\"move\",\"to\":[675,-4625]},{\"tick\":1540,\"op\":\"scout\",\"do\":\"move\",\"to\":[1175,-4825]},{\"tick\":1540,\"op\":\"fixer\",\"do\":\"move\",\"to\":[1025,-4625]},{\"tick\":1920,\"op\":\"enforcer\",\"do\":\"stance\",\"stance\":\"hold\"}]"); // c022's careless-body-found, without its three free stances and the Enforcer's walk to the car (tuning.md §7.9, 2026-10-20: with the 16 m sidearm the three can no longer hold the officers off from beyond their reach, and the police now answer such fire: walked out, the Enforcer goes down before the seal; he holds with Vale where he came out instead)
                 r.To(T(g.S.Over));
                 r.Eq(g.FailCode, "sealed", "the loud fight's seal runs out");
                 var c = CauseIs(r, "sealed", "sealed", false, "", "", Enf);

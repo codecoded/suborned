@@ -1,0 +1,2081 @@
+{
+ "a": "suborned-sim.dll b7b66a0c on /Users/sky/Projects/suborned/.claude/worktrees/agent-ad654047fa24cd1cb/out/scratch/keel/b059/base",
+ "b": "suborned-sim.dll 45c1bfe8 on the working tree's inputs",
+ "routes": [
+  {
+   "id": "careless-body-found",
+   "status": "moved",
+   "a": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2405,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 0,
+    "health": {
+     "lost": 10,
+     "total": 18,
+     "pct": 55
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "8df71a35e125d157",
+    "scriptSha": "1793ca1faa3b0e996b9a3e8cdc87bbd680102edef5dae987503f8c783198b4fe"
+   },
+   "b": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2127,
+    "trail": 13,
+    "alert": 3,
+    "gunfire": 5,
+    "standing": 1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "b02d5b168caf4367",
+    "scriptSha": "1793ca1faa3b0e996b9a3e8cdc87bbd680102edef5dae987503f8c783198b4fe"
+   },
+   "cols": [
+    "end",
+    "trail",
+    "alert",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 24,
+    "a": "1566\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-enforcer-watches-guard",
+   "status": "moved",
+   "a": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1731,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "0d5e0608e4b266fa",
+    "scriptSha": "ab61c644dc44a54cf4f512645f74b79b6772754eda3a2d57f1ce6c94d30cfae0"
+   },
+   "b": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1731,
+    "trail": 2,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f677c88ada75aa5c",
+    "scriptSha": "ab61c644dc44a54cf4f512645f74b79b6772754eda3a2d57f1ce6c94d30cfae0"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 25,
+    "a": "1565\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-g-disable",
+   "status": "moved",
+   "a": {
+    "id": "careless-g-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 2,
+    "health": {
+     "lost": 11,
+     "total": 18,
+     "pct": 61
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "fd8e03a32ec5c09b",
+    "scriptSha": "28894278f832fa76f56530b034505ba18d0d8a873269592940bff81112e7ba9d"
+   },
+   "b": {
+    "id": "careless-g-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "ed0584a4dddda227",
+    "scriptSha": "28894278f832fa76f56530b034505ba18d0d8a873269592940bff81112e7ba9d"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 19,
+    "a": "1570\ttakedown.out\tguard is out. He wakes in 120 s.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "status": "moved",
+   "a": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 5100,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "3bfd0bad7cfa7c36",
+    "scriptSha": "4665703824c755c727d3f39008b23703096bda3a5804d496b718b7b7d79be67d"
+   },
+   "b": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "59790160aa8e19b7",
+    "scriptSha": "4665703824c755c727d3f39008b23703096bda3a5804d496b718b7b7d79be67d"
+   },
+   "cols": [
+    "fail",
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 20,
+    "a": "1566\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-loop-runs-out",
+   "status": "moved",
+   "a": {
+    "id": "careless-loop-runs-out",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1734,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "42d166dbdf72988b",
+    "scriptSha": "da60438d1714a5919b7e0a4f5cd001e506fd0c4a50e2296dfd03197806c8a39b"
+   },
+   "b": {
+    "id": "careless-loop-runs-out",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1734,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "192ec0885e0eb836",
+    "scriptSha": "da60438d1714a5919b7e0a4f5cd001e506fd0c4a50e2296dfd03197806c8a39b"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 19,
+    "a": "1565\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "status": "moved",
+   "a": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "e349f4f57c231f44",
+    "scriptSha": "e6688f9820f47595dc0894141f67b8956bd2c5c66d858143ae3ee2bb64df671b"
+   },
+   "b": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4870,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "0484ff6bad2b12b2",
+    "scriptSha": "e6688f9820f47595dc0894141f67b8956bd2c5c66d858143ae3ee2bb64df671b"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 14,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-scout-idles-pickup",
+   "status": "moved",
+   "a": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "676d8b2454f7b3f3",
+    "scriptSha": "ec210bbadbc5ff740ef9f0540af15c01d10aa46e0fa147f487db2c0d7165d38b"
+   },
+   "b": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3960,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "3f985e502ec9fa54",
+    "scriptSha": "ec210bbadbc5ff740ef9f0540af15c01d10aa46e0fa147f487db2c0d7165d38b"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 15,
+    "a": "1613\tattention.reporting\tthe camera pickup reports the scout loitering (lands 2:58.2).",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "status": "moved",
+   "a": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "5a1b2c1bfc0eddb2",
+    "scriptSha": "0a4b6e19f480c81f843ada194ae3a566aede59624546a23054a057b1393f5f68"
+   },
+   "b": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "93a11b11bd1ad7dc",
+    "scriptSha": "0a4b6e19f480c81f843ada194ae3a566aede59624546a23054a057b1393f5f68"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 27,
+    "a": "1570\ttakedown.out\tguard is out. He wakes in 120 s.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "status": "moved",
+   "a": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 3939,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "66aa2788d0a13dad",
+    "scriptSha": "5fb8742c8e9fef4fcacd933330c902ea635ead8a1325568ca00e359aa9b8d3d7"
+   },
+   "b": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "4cdb44e2a97ed824",
+    "scriptSha": "5fb8742c8e9fef4fcacd933330c902ea635ead8a1325568ca00e359aa9b8d3d7"
+   },
+   "cols": [
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 10,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-district-seals",
+   "status": "moved",
+   "a": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "7f5ac36b92d69bfc",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "b": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "d7e71d32ee51be76",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 29,
+    "a": "1581\treport.landed\tp-records-office-29's report lands: dead (guard). Alert 2.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1067,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "b6cefcc8b240ad08",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "b": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1067,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 4,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "564d7e2dfa336c8c",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 32,
+    "a": "534\trivals.arrive\tThe rival crew comes in from the east street, following the gunfire.",
+    "b": "534\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "f8096b61c8fb51cb",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "b": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "eb2cc38cb4c8ede1",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 12,
+    "a": "1733\tturn.help.not-yet\tInez Nikolaou (waitress): turn.help → not-yet.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "64a496a925c62846",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "b": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "26ffba0dd871802f",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 13,
+    "a": "1733\tturn.help.not-yet\tInez Nikolaou (waitress): turn.help → not-yet.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-entry-seen-patrol",
+   "status": "moved",
+   "a": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "3bfddba7f0ed91c6",
+    "scriptSha": "b238045544b8b45a84600b6a0a38ce9ccb044c282c3f3a8af7f10006ea81fa38"
+   },
+   "b": {
+    "id": "fail-entry-seen-patrol",
+    "outcome": "failure",
+    "fail": "entry-seen-patrol",
+    "tick": 2804,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "3f7988241d20919c",
+    "scriptSha": "b238045544b8b45a84600b6a0a38ce9ccb044c282c3f3a8af7f10006ea81fa38"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 10,
+    "a": "1600\torder.loop\ttech loop entrance (20 s)",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "status": "moved",
+   "a": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3700,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "ec670c689f80af25",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "b": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3960,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "aa9caadb321c17fd",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "cols": [
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1582\tattention.landed\tthe camera pickup's report lands: the scout loitering. Alert 1.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "status": "moved",
+   "a": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "08313ecf4bb0df28",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "b": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "5c8b8938de8d6346",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 4,
+    "a": "749\tattention.noticed\tthe camera pickup notices the scout standing still in its sight.",
+    "b": "805\tattention.wary\tthe camera pickup is wary of the enforcer for the rest of the mission.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-vale-dead",
+   "status": "moved",
+   "a": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "9008d71a3389400d",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "b": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 8,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "dd4a8183d90ad204",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 10,
+    "a": "1782\tpatrol.stands-down\tThe patrol goes back to its sweep.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fail-vale-leaves",
+   "status": "moved",
+   "a": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 5100,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "232113857b5632c3",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "b": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "64d496be800833c8",
+    "scriptSha": "36b8a1b773203d3972510968efb0c58f7b6eb55c38bd4560b6692a4e2dbf97f3"
+   },
+   "cols": [
+    "end",
+    "alert"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 2,
+    "a": "749\tattention.noticed\tthe camera pickup notices the scout standing still in its sight.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2065,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "619ce9303b0569a8",
+    "scriptSha": "bb9ac6b42ca6f89af0b843d363a4cc6ee98f922ef78bd0ffc082872e164a1cb6"
+   },
+   "b": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1790,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "6179e7a7d7a81880",
+    "scriptSha": "bb9ac6b42ca6f89af0b843d363a4cc6ee98f922ef78bd0ffc082872e164a1cb6"
+   },
+   "cols": [
+    "end",
+    "trail"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 27,
+    "a": "995\trivals.arrive\tThe rival crew comes in from the east street, following the gunfire.",
+    "b": "995\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "status": "moved",
+   "a": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4493,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 18,
+     "pct": 33
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "0d4c2681b5379ad6",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "b": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3960,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "1b94a282e2a06309",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "cols": [
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1582\tattention.landed\tthe camera pickup's report lands: the scout loitering. Alert 1.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud",
+   "status": "moved",
+   "a": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "a5e7bbe00981283a",
+    "scriptSha": "29dd6ea857d0b7e441c6a2f0ea8bf5c8d5746052db78ba377bc416c190a75e57"
+   },
+   "b": {
+    "id": "loud",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2664,
+    "trail": 14,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f9c6cfa5b3360590",
+    "scriptSha": "29dd6ea857d0b7e441c6a2f0ea8bf5c8d5746052db78ba377bc416c190a75e57"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 23,
+    "a": "1577\torder.enter\tenforcer enter (68 s)",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fast",
+   "status": "moved",
+   "a": {
+    "id": "loud-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3100,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "a5e7bbe00981283a",
+    "scriptSha": "167cee8840a2c15acef269b01465044b85e9ed4fd7cbd9ec3a011852a6a7a899"
+   },
+   "b": {
+    "id": "loud-fast",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2664,
+    "trail": 14,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f9c6cfa5b3360590",
+    "scriptSha": "167cee8840a2c15acef269b01465044b85e9ed4fd7cbd9ec3a011852a6a7a899"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 23,
+    "a": "1577\torder.enter\tenforcer enter (68 s)",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fight",
+   "status": "moved",
+   "a": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3128,
+    "trail": 12,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "01d3495df46b9ee1",
+    "scriptSha": "8d1ae72f7ac4fcabd36044257b55dbdc3d4dbdbb5b6761a7a412a1ccddb62b87"
+   },
+   "b": {
+    "id": "loud-fight",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2664,
+    "trail": 14,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f9c6cfa5b3360590",
+    "scriptSha": "8d1ae72f7ac4fcabd36044257b55dbdc3d4dbdbb5b6761a7a412a1ccddb62b87"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 23,
+    "a": "1577\torder.enter\tenforcer enter (68 s)",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-downed",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "13f369af4af2c966",
+    "scriptSha": "ebd2bc3756edfec2c7b68358d13834453faba27708bdf1e8abdd0196a55ec8bd"
+   },
+   "b": {
+    "id": "loud-left-downed",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2664,
+    "trail": 14,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "5eb290c14b28bac9",
+    "scriptSha": "ebd2bc3756edfec2c7b68358d13834453faba27708bdf1e8abdd0196a55ec8bd"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 23,
+    "a": "1577\torder.enter\tenforcer enter (68 s)",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-standing",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3130,
+    "trail": 13,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "bbe00179dce97796",
+    "scriptSha": "0bb82061da8a8c026cca59661ec0ddb117082e53f44aca0a18b332a11a9bcbdb"
+   },
+   "b": {
+    "id": "loud-left-standing",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2664,
+    "trail": 14,
+    "alert": 2,
+    "gunfire": 9,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f9c6cfa5b3360590",
+    "scriptSha": "0bb82061da8a8c026cca59661ec0ddb117082e53f44aca0a18b332a11a9bcbdb"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 23,
+    "a": "1577\torder.enter\tenforcer enter (68 s)",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk, racing for the gunfire.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a",
+   "status": "moved",
+   "a": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "2b8434008d235d49",
+    "scriptSha": "76a646d88422aa067425e94cc0a29d60f0d60cac07754782b97d6102d3bd7d90"
+   },
+   "b": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f3d84eb7a8ed60fb",
+    "scriptSha": "76a646d88422aa067425e94cc0a29d60f0d60cac07754782b97d6102d3bd7d90"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 19,
+    "a": "1710\tturn.help.turned\tInez Nikolaou (waitress): turn.help → turned.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2679,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "1ec8d8e794b30e79",
+    "scriptSha": "6603a143b2626827ca3df22e6ea0dbfa42498738d8acd0b8390e97b2a35e0903"
+   },
+   "b": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2679,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "f98fe18881140c01",
+    "scriptSha": "6603a143b2626827ca3df22e6ea0dbfa42498738d8acd0b8390e97b2a35e0903"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 19,
+    "a": "1710\tturn.help.turned\tInez Nikolaou (waitress): turn.help → turned.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-disable",
+   "status": "moved",
+   "a": {
+    "id": "route-a-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "1d73dea6e4a34994",
+    "scriptSha": "5f0ee7fb53148405076bea88c81f7c8a1bb694db21f10a97edcf2949fa04c131"
+   },
+   "b": {
+    "id": "route-a-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2997,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "206343348d179914",
+    "scriptSha": "5f0ee7fb53148405076bea88c81f7c8a1bb694db21f10a97edcf2949fa04c131"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 22,
+    "a": "1710\tturn.help.turned\tInez Nikolaou (waitress): turn.help → turned.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2337,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "3ad8f02188abc773",
+    "scriptSha": "5487cfbb28760350676879f27476bf3dd17accbc96e08062dee17e1669702f08"
+   },
+   "b": {
+    "id": "route-a-pressure",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 2276,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 15,
+     "total": 18,
+     "pct": 83
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "c55188f47f1de80a",
+    "scriptSha": "5487cfbb28760350676879f27476bf3dd17accbc96e08062dee17e1669702f08"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 32,
+    "a": "1565\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure-board",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2005,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "a9ac545cb1f50c13",
+    "scriptSha": "e63ce5a4871836e7120c1f423e5d1bf093cda9313d9243a870b4aabd7e249c45"
+   },
+   "b": {
+    "id": "route-a-pressure-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 1921,
+    "trail": 7,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 18,
+     "pct": 44
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "7a70f8c7f8f147fb",
+    "scriptSha": "e63ce5a4871836e7120c1f423e5d1bf093cda9313d9243a870b4aabd7e249c45"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 32,
+    "a": "1565\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b",
+   "status": "moved",
+   "a": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "32c695ced98bf160",
+    "scriptSha": "a16908b9074ddf849f6341c06c89696af1bbdd4f9c349d8a99e4b73c86a50838"
+   },
+   "b": {
+    "id": "route-b",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4870,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "b1685bdecc866d0a",
+    "scriptSha": "a16908b9074ddf849f6341c06c89696af1bbdd4f9c349d8a99e4b73c86a50838"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 14,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-block",
+   "status": "moved",
+   "a": {
+    "id": "route-b-block",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4880,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "8bdf0fca72b26119",
+    "scriptSha": "01e79672ab6091b5299e8a5c72195a1a1a7650ccb54f298677cec570abdca6c9"
+   },
+   "b": {
+    "id": "route-b-block",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 4870,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "38460fc685adc2b9",
+    "scriptSha": "01e79672ab6091b5299e8a5c72195a1a1a7650ccb54f298677cec570abdca6c9"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 11,
+    "a": "1129\tcall.driver\tThe driver starts moving the car across the pickup camera.",
+    "b": "1129\torder.rejected\tfixer call driver: the driver has nothing to do on a call: his camera block is retired (brief 059, Motive M059-6.1)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-block-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-block-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "9fba597e1b292c8f",
+    "scriptSha": "14f4e16115410d27f06519d32d281f0c7579b69056e2ce2f81cc27f8c6eb6f03"
+   },
+   "b": {
+    "id": "route-b-block-board",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "7a7bd3518e417413",
+    "scriptSha": "14f4e16115410d27f06519d32d281f0c7579b69056e2ce2f81cc27f8c6eb6f03"
+   },
+   "cols": [
+    "outcome",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 11,
+    "a": "1129\tcall.driver\tThe driver starts moving the car across the pickup camera.",
+    "b": "1129\torder.rejected\tfixer call driver: the driver has nothing to do on a call: his camera block is retired (brief 059, Motive M059-6.1)",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-b-board",
+   "status": "moved",
+   "a": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "c61f457970dbbb3a",
+    "scriptSha": "a1a97bea0a6994e61b25e016443ab3faed67c324f2d11ac5f5b338d6b1df9cce"
+   },
+   "b": {
+    "id": "route-b-board",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 4645,
+    "trail": 3,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "07819c7a90776c5c",
+    "scriptSha": "a1a97bea0a6994e61b25e016443ab3faed67c324f2d11ac5f5b338d6b1df9cce"
+   },
+   "cols": [
+    "outcome",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 14,
+    "a": "1900\trivals.arrive\tA rival car parks near Vale's pickup. Its crew starts watching the building.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g",
+   "status": "moved",
+   "a": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "60a4e35f1015d38e",
+    "scriptSha": "c7cc566a3a8392000ee7381bfb78a044e5785712d2aaf338fe66c3e4eeb1c399"
+   },
+   "b": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2847,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "14a9628bf01d10d8",
+    "scriptSha": "c7cc566a3a8392000ee7381bfb78a044e5785712d2aaf338fe66c3e4eeb1c399"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 15,
+    "a": "1570\ttakedown.out\tguard is out. He wakes in 120 s.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2515,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "859fc310b6205484",
+    "scriptSha": "9177df0481e4c9c298e75d2bd31aed07a0bcde00e1760fdb1316c3cd143185d8"
+   },
+   "b": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2515,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "44a566c59032ccce",
+    "scriptSha": "9177df0481e4c9c298e75d2bd31aed07a0bcde00e1760fdb1316c3cd143185d8"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 15,
+    "a": "1570\ttakedown.out\tguard is out. He wakes in 120 s.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2242,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "36376901bb7fbbc0",
+    "scriptSha": "6fc9b7e709cf389a0ab67df12e6c9a4b4b1800465ee26837695e8ae37b669c79"
+   },
+   "b": {
+    "id": "route-g-fast",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 1929,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "e41f8eeb62379048",
+    "scriptSha": "6fc9b7e709cf389a0ab67df12e6c9a4b4b1800465ee26837695e8ae37b669c79"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 26,
+    "a": "1565\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-fast-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1910,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "9f3cffb0a380ea36",
+    "scriptSha": "851aed37360c487e8fbffd006dbd2a830b5cdaced3df21e3a44aed8494394e16"
+   },
+   "b": {
+    "id": "route-g-fast-board",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 1867,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 7,
+     "total": 18,
+     "pct": 38
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "4a204481b826be59",
+    "scriptSha": "851aed37360c487e8fbffd006dbd2a830b5cdaced3df21e3a44aed8494394e16"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end",
+    "trail",
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 26,
+    "a": "1565\tloop.ends\tThe entrance loop runs out. The camera feed returns.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3717,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 18,
+     "pct": 22
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "759f1f243c119c50",
+    "scriptSha": "99ce09bb645998e7bc45e94cc94c3a4e02cd1b2c4569e910e92047ccfac08674"
+   },
+   "b": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3717,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 1,
+     "total": 18,
+     "pct": 5
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "d5676014d45ab112",
+    "scriptSha": "99ce09bb645998e7bc45e94cc94c3a4e02cd1b2c4569e910e92047ccfac08674"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1570\tcarry.body\tThe enforcer lifts guard.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3385,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 18,
+     "pct": 27
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "4cab7ed1363c8891",
+    "scriptSha": "4a389a9f2e98aa9b4a387d4a69e79dcd3b798b862e31301b2971e3a5c2616251"
+   },
+   "b": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3385,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 2,
+     "total": 18,
+     "pct": 11
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "c21efdac62a6a136",
+    "scriptSha": "4a389a9f2e98aa9b4a387d4a69e79dcd3b798b862e31301b2971e3a5c2616251"
+   },
+   "cols": [
+    "health"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 17,
+    "a": "1570\tcarry.body\tThe enforcer lifts guard.",
+    "b": "1556\trivals.coming\tA rival car turns in off Orbit Walk. It is after Vale too.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "withdraw",
+   "status": "same",
+   "a": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "ffdcd1129960fb37",
+    "finalHash": "8466cc070268b117",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "b": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 18,
+     "pct": 0
+    },
+    "startHash": "2d90d995047461fd",
+    "finalHash": "cf428a2ea8c2b9c5",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  }
+ ]
+}

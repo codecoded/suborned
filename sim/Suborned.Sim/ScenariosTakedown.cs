@@ -154,7 +154,7 @@ namespace Suborned.Sim
                 r.Eq((ActTrail(g), g.Alert), (trail, 0), "no Trail, no Alert yet");
                 r.To(T(240));
                 r.Eq(g.Alert, 1, "the 4:00 mark is missed: Alert 1");
-                r.To(T(420));
+                r.To(T(370)); // brief 059: to 6:10, before the unturned driver drives Vale away at 6:13 (it was 7:00); the debrief test reads the live run
                 r.Is(!a.Confirmed && b.Stash.Length > 0, "the door stays shut: at Alert 1 the search opens nothing, and nobody sees behind it");
                 r.Eq(g.Alert, 1, "Alert stays 1");
                 r.Eq(g.Lockdown, int.MaxValue / 4, "no seal");
@@ -235,7 +235,7 @@ namespace Suborned.Sim
                 r.Is((cam!.LandAt - T(g.R.PostCallS) - phase) % period == 0 && cam.LandAt - T(g.R.PostCallS) >= a.Tick && cam.LandAt - T(g.R.PostCallS) < a.Tick + period, "its watcher reads the screen at the next scan, then calls it in");
                 r.To(cam.LandAt);
                 r.Eq(g.Alert, 3, "the camera's report lands: Alert 3");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             // Changed 2026-10-19 (the public door on the Office's west face): guard 74's way from the café to the official entrance no longer
             // crosses the door guard's cone (it runs east along the square and through the service yard, 22 m from the door at the nearest).
@@ -378,7 +378,7 @@ namespace Suborned.Sim
                 r.To(rep!.LandAt); r.Eq(g.Alert, 2, "a dead body: Alert 2");
                 r.Is(r.Until(() => a.Confirmed, T(200)), "a unit confirms him");
                 r.Eq(g.Lockdown, g.Tick + T(g.SealS), "the seal starts at the confirmation");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N56", "—", "A woken victim's report (Motive §3; Pulse §5): guard 73, crossing the square to his post, is knocked out from behind with nobody near and carried to the bins on Rocket Lane's west pavement. He wakes 120 s later, staggers 4 s and radios it in (staff): Alert 1, +4 T, once; he holds what happened to him (attacked: place and time, no face: he never saw the Enforcer), and his fear rises.", r =>
             {
@@ -407,7 +407,7 @@ namespace Suborned.Sim
                 r.Is(a.ActTrail, "+4 T: the assault is on file");
                 r.Is(w.P.Has("attacked") && !g.FactsOf(w.P).Contains("enforcer-face"), "he knows where and when, not the face");
                 r.Eq(w.P.Sc[Rules.Fear], Math.Min(fear + 1, g.R.ScaleMax[Rules.Fear]), "his fear rises");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N65", "—", "A witness stopped before the report lands (Pulse §3.2): guard 73 is killed unseen crossing the square at 4:00 and carried to the bins on Rocket Lane's west pavement (nobody passes them); at 5:30, when the café's walkers are home and before the clerks leave, he is carried on to the north edge, unseen. At 6:47 clerk 34 (Loyal, and 73's workmate: he runs, Pulse row 2), walking home ahead of his group, finds the body and runs to the nearest phone (a call box) to report it. The Enforcer meets him on the way and takes him down: his report never lands. The next finder's report lands later: the incident still reaches the desk, by the next earliest.", r =>
             {
@@ -456,7 +456,7 @@ namespace Suborned.Sim
                 r.Is(a.Confirmed || (next != null && next.By != "p-records-office-34"), $"by someone else, later ({(next != null ? next.By : "a unit's confirmation")})");
                 // the Mercenary check (Sky merged call 4) moved to N68 on 2026-10-19 (Keel, brief 023): with Pulse's leave stagger no Mercenary passes this body
                 r.Is(g.PersonById("p-records-office-34")!.Has("attacked-aware") && g.FactsOf(g.PersonById("p-records-office-34")!).Contains("enforcer-face"), "clerk 34 holds the Enforcer's face");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N66", "—", "The search opens a stash (Motive §2.3): the patrol rerouted but the entrance camera live, the guard is killed at his post and put in the Dumpster 18 m away. The camera's watcher reports it (Alert 3); the unit finds no body at the post (unfounded) and, at Alert 2 or more, searches 60 s, opening every stash within 30 m, nearest first, 10 s each: the Dumpster. He is found and confirmed; the seal starts then.", r =>
             {
@@ -498,13 +498,13 @@ namespace Suborned.Sim
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "loop", Target = "gate" }).code, "loop-wrong-target", "no camera of that name (unknown = reject)");
             });
 
-            Add("N57", "—", "A missing tie (Sky answer 6; Motive §5.2; Pulse §11): the turned driver, called at 5:00, moves the car across the pickup camera; the Enforcer kills him there, unseen, and puts him in the Dumpster. Vale comes out at 5:50 to a car with no driver: after suspicion-s (20 s, flat by default) at the place without him he walks to the official door and calls it in. A missing-person report: Alert 1, one incident with the killing; the alarm sends the response to the bay, to the driver's ties and to Vale's. (Start: the driver is a contact, so his car can blind the camera; the crowd is off, since guard 29 stands 4.1 m from the driver until 5:30: a pickup loop would do it in play, idle-study T1.)", r =>
+            Add("N57", "—", "A missing tie (Sky answer 6; Motive §5.2; Pulse §11): the Tech loops the pickup camera at 4:50 (brief 059: the driver's Call, the camera block, is retired); the Enforcer kills the driver at his post, unseen, and puts him in the Dumpster. Vale comes out at 5:50 to a car with no driver: after suspicion-s (20 s, flat by default) at the place without him he walks to the official door and calls it in. A missing-person report: Alert 1, one incident with the killing; the alarm sends the response to the bay, to the driver's ties and to Vale's. (Start: the driver is a contact; the crowd is off, since guard 29 stands 4.1 m from the driver until 5:30.)", r =>
             {
                 var g = r.G;
+                r.To(r.Send(Tech, "cabinet"));
                 r.To(T(240)); r.To(r.SendTo(Enf, g.S.Stand(g.S.CarBlock) + new Pt(-300, -300)));
-                r.To(T(300)); r.Do(Fixer, "call", Driver);
-                r.To(g.BlockedFrom);
-                r.Is(!g.PickupCameraLive(), "the camera is blind behind the car");
+                r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.Is(!g.CameraWatching("pickup", g.DriverPos()!.Value, false), "the pickup camera is looped");
                 r.To(r.SendTo(Enf, Beside(r, g.DriverPos()!.Value)!.Value));
                 r.Takedown("driver", "kill"); r.Done(Enf);
                 var a = ActOn(r, "driver");
@@ -533,10 +533,10 @@ namespace Suborned.Sim
             Add("N57b", "—", "A held person reports nothing (Motive §5.2): as N57, but the Enforcer takes Vale at the car the moment he arrives, behind the blinded camera; suspicion never fires.", r =>
             {
                 var g = r.G;
-                r.SendTo(Scout, Beside(r, g.S.Stand(g.S.RivalsPark)) ?? g.S.Stand(g.S.RivalsPark)); r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals"); // the false tip (route B), so the rivals don't reach Vale first
+                r.Send(Tech, "cabinet");
+                r.SendTo(Scout, TipSpot(r)); r.To(T(g.S.RivalsArrive) + 1); r.Do(Scout, "mislead", "rivals"); // the false tip (route B), so the rivals don't reach Vale first
                 r.To(T(240)); r.To(r.SendTo(Enf, g.S.Stand(g.S.CarBlock) + new Pt(-300, -300)));
-                r.To(T(300)); r.Do(Fixer, "call", Driver);
-                r.To(g.BlockedFrom);
+                r.To(T(290)); r.Do(Tech, "loop", "pickup"); r.Done(Tech); // brief 059: the camera block is retired; the loop blinds it to 7:10
                 r.To(r.SendTo(Enf, Beside(r, g.DriverPos()!.Value)!.Value));
                 r.Takedown("driver", "kill"); r.Done(Enf);
                 r.Body(Enf, "carry", "driver"); r.Done(Enf);
@@ -566,7 +566,7 @@ namespace Suborned.Sim
                 r.Eq((g.Result, g.FailCode), (Outcome.Failure, "vale-dead"), "Vale killed: the mission fails");
                 var fc = CauseIs(r, "vale-dead", "killed", true, Enf, "op", Enf); // the fail camera (ScenariosFailCause.cs): the Enforcer who killed him, then Vale where he lies
                 r.Is(fc != null && fc.Culprits.Count == 2 && fc.Culprits[1].Kind == "vale" && fc.Culprits[1].Role == "victim" && fc.Culprits[1].At == g.BodyOf(g.ValeP)!.At, "then Vale, where he lies");
-            });
+            }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
             Add("N59", "—", "An alarm beyond robot reach (Pulse §12.2; Motive rev 3): the Tech runs to the cabinet, the guard is killed unseen just after the reroute lands (2:01) and put through the service door before his 2:30 mark. The mark lands (Alert 1). The patrol is away and the world's one dock (by the café) is more than 60 m from the post, so the level's robots go only where they can: to where his lover is meant to be. Nobody checks the post: nothing is confirmed, Alert stays 1, no seal, the door stays shut. (A report found unfounded at the scene: N66.)", r =>
             {

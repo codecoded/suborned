@@ -72,6 +72,7 @@ namespace Suborned.Sim
             if (op.Inside) return No("enforcer-inside", "the Enforcer is inside the Office");
             if (o.Do == "trigger") return Trigger(op, o); // tuning.md §11 (engine 0.17.0): before the busy check, so a release is always taken
             if (o.Do == "drive") return Drive(op, o); // brief 025 (EXPERIMENTAL): before the busy check, since moving a busy agent is the step's to judge (cell.drive.onBusy)
+            if (o.Do == "drive-car") return DriveCar(op, o); // brief 059 K6: before the busy and in-car checks (it has its own: drive-busy, drive-no-driver)
             if (op.Busy != null) return No("agent-busy", $"{o.Op} is busy until {op.BusyEnd}", tick: op.BusyEnd);
             if (op.InCar) // brief 018: a move steps out first; a stance, holster or cease changes nothing on the street; the rest waits for stepping out
             {
@@ -163,6 +164,7 @@ namespace Suborned.Sim
         {
             bool machine = o.Do == "watch" && !IsPersonRoleName(o.Target);
             if (o.Do == "listen" && op.Id != OpId.Scout) return No("only-scout", "only the Scout listens (§03)");
+            if (machine && (o.Target == "rivals" || o.Target == "car:rivals")) return WatchRivals(op, o, engage); // brief 059 §2.2: the rival car's timetable
             if (machine && IsContainer(o.Target)) return WatchContainer(op, o, engage); // a container's round (§05; GameStashWatch.cs)
             if (machine) return WatchWatcher(op, o, engage); // a camera or the patrol (rulebook sight)
             if (!IsPersonRoleName(o.Target)) return No("target-unknown", $"'{o.Target}' is no one to listen to here");
@@ -279,6 +281,7 @@ namespace Suborned.Sim
         {
             switch (o.Do)
             {
+                case "watch" when o.Target == "rivals" || o.Target == "car:rivals": RivalsWatched = true; Note($"{Sim.Op.Name(op.Id)}.watch.watched", "The rivals' timetable is read: their next move, where each will go, and that their car follows Vale's."); break; // brief 059 §2.2
                 case "watch" when IsContainer(o.Target): LandWatchContainer(op, o); break; // a container's round (GameStashWatch.cs)
                 case "watch" when !IsPersonRoleName(o.Target): LandWatchWatcher(op, o); break; // a camera or the patrol (rulebook sight), the Scout's or the Tech's
                 case "watch": case "listen":
@@ -296,11 +299,13 @@ namespace Suborned.Sim
                     if (PatrolUnit() is Unit pu) { pu.St = "gone"; PatrolAlarmed = false; } // false orders override the alarm too
                     AddTrail(R.RerouteTrail, "reroute"); Actions.Add("reroute"); Chain.Add("patrol-rerouted");
                     Note("patrol.rerouted", "The patrol follows false orders and leaves the entrance sweep."); break;
-                case "mislead":
-                    if (!RivalsPresent) { Note("mislead.missed", "The rivals are gone before the tip lands."); break; }
-                    RivalsDelayedUntil = Tick + T(R.MisleadAwayS); RivalsDelayMethod = "mislead"; MisledOnce();
+                case "mislead": // brief 059 F3: it lands on the parked car and its wheelman
+                    if (!TipLands()) { Note("mislead.missed", "The rival car is gone before the tip lands."); break; }
+                    RivalsDelayMethod = "mislead"; MisledOnce();
                     AddTrail(R.MisleadTrail, "mislead"); Actions.Add("mislead"); Chain.Add("rivals-false-tip");
-                    Note("rivals.misled", "A false tip sends the rival crew away. They may return."); break;
+                    Note("rivals.misled", "A false tip sends the rival car and its wheelman away. They may return."); break;
+                case "drive-car": LandDriveCar(op); break; // brief 059 K6
+                case "ride": break; // a passenger of the Drive: nothing of his own lands
                 case "enter" when o.How == "out": ExitWithoutVale(op, false); break; // a cancelled Enter waiting inside for a free door
                 case "enter":
                     {
@@ -370,7 +375,7 @@ namespace Suborned.Sim
                     var parts = c.L("parts");
                     if (parts.Contains("trail")) AddTrail((int)q.Trail, $"{q.Event}:{p.Role}");
                     return parts.Contains("usd");
-                case "turn": p.Turned = true; Chain.Add($"{p.Role}-turned"); return false;
+                case "turn": p.Turned = true; Chain.Add($"{p.Role}-turned"); if (p == Driver) DriverTurned(); return false; // brief 059 F4: the lookout's word counts from the turn
                 case "move": LadderMove(p, c.S("on")); return false;
                 case "need-met": p.NeedMet = true; return false;
                 case "remember": Remember(p, c.S("act"), "fixer", witnessed); return false;
@@ -678,13 +683,7 @@ namespace Suborned.Sim
             var p = PersonByRole(role);
             if (p.Down) return No("person-down", $"{p.Role} is down");
             if (!p.Turned) return No("not-a-contact", $"{p.Role} is not a contact");
-            if (p == Driver) // the driver's call is his role job, the camera block (unchanged)
-            {
-                if (Vale == ValeAt.Car) return No("car-gone", "the official car is gone");
-                if (BlockMove != INF && Tick < BlockedUntil + blockMoveT) return No("car-busy", "the car is still blocking or returning", tick: BlockedUntil + blockMoveT);
-                if (Tick >= T(driverLastS) - blockMoveT) return No("call-too-late", "too late: the car leaves for the pickup at 5:40", tick: T(driverLastS) - blockMoveT);
-                return "";
-            }
+            if (p == Driver) return No("nothing-to-call", "the driver has nothing to do on a call: his camera block is retired (brief 059, Motive M059-6.1)");
             if (p.Lover != null)
             {
                 var (code, why) = SummonRefusal(p, out int walk);
@@ -697,14 +696,6 @@ namespace Suborned.Sim
         {
             var no = CallRefusal(op, o.Target); if (no.Length > 0) return no;
             var p = PersonByRole(o.Target);
-            if (p == Driver) // the driver's call is his role job, the camera block (unchanged)
-            {
-                BlockMove = Tick; BlockedFrom = Tick + blockMoveT; BlockedUntil = Tick + blockMoveT + blockHoldT;
-                AddTrail(R.CallTrail, "call:driver"); Remember(Driver, "job", "fixer", false);
-                Actions.Add("call:driver"); Chain.Add("driver-blocks-camera");
-                Note("call.driver", "The driver starts moving the car across the pickup camera.");
-                return "";
-            }
             return Summon(p); // CallRefusal let it through: the lover comes
         }
 
@@ -755,8 +746,8 @@ namespace Suborned.Sim
         string Mislead(Op op, Order o)
         {
             if (op.Id != OpId.Scout) return No("only-scout", "only the Scout misleads (§03)");
-            var r = RivalsPose(); if (!r.HasValue) return No("no-rivals", "no rivals here");
-            if (!G.Within(op.Pos, r.Value.pos, actReach)) return No("stand-near-rivals", "stand near the rivals", m: actReach / 100);
+            if (o.Target.Length > 0 && o.Target != "rivals" && o.Target != "car:rivals") return No("target-unknown", $"a false tip is given to the rivals (\"rivals\" or \"car:rivals\"), not '{o.Target}'");
+            var no = MisleadRefusal(op); if (no.Length > 0) return no; // brief 059 F3: at the parked car, the wheelman aboard
             Engage(op, o, R.MisleadS); return "";
         }
 
@@ -786,14 +777,17 @@ namespace Suborned.Sim
         {
             if (op.Id != OpId.Enforcer) return No("only-enforcer", "only the Enforcer takes Vale (§03)");
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
-            if (Vale != ValeAt.Pickup) return No("vale-not-at-car", "Vale is not at his car");
+            // brief 059 K3: with his driver turned Vale is taken in his car round the back, never at the front (driver-brings-vale) and not while
+            // it drives round (car-not-parked)
+            if (Vale == ValeAt.InCar && !PickupService && valeDriveStart >= 0) return No("car-not-parked", "Vale's car is driving round: take him once it parks");
+            if (Vale == ValeAt.Pickup && Driver.Turned && !Driver.Down && !OfficialOut) return No("driver-brings-vale", "the turned driver is bringing Vale round the back: take him there");
+            if (Vale != ValeAt.Pickup && !(Vale == ValeAt.InCar && PickupService)) return No("vale-not-at-car", "Vale is not at his car");
             var vp = ValePos()!.Value;
             if (!G.Within(op.Pos, vp, actReach)) return No("stand-beside-vale", "stand beside Vale", m: actReach / 100);
             op.Walk = null;
             if (!PickupService && !TakeInCar && CameraWatching("pickup", op.Pos)) { Fail("abduction-seen-camera", "The pickup camera reports the abduction. Vale is rescued.", () => With(Because("seen", true, Locate("camera:pickup", "saw", op.Pos), Locate("councillor", "victim")), "enforcer")); return ""; }
-            var rp = RivalsPose();
-            if (RivalsPresent && (!RivalsDrawn || (rp.HasValue && G.Within(op.Pos, rp.Value.pos, RivalsGun.W!.EffCm)))) // drawn rivals within their weapon's effective reach
-            { Fail("rivals-reach-vale", "The rival crew follows Vale's car and reaches the pickup first.", () => With(Because("beat-to-pickup", true, Locate("rivals", "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
+            if (!PickupService && FrontCrew(op) is string who) // the front: the crew watching the pickup reaches him first (brief 059: the lookout posted, or the car parked with its wheelman; a drawn member within his reach)
+            { Fail("rivals-reach-vale", "The rival crew is watching the pickup and reaches Vale first.", () => With(Because("beat-to-pickup", true, Locate(who, "reached", vp), Locate("councillor", "victim")), "enforcer")); return ""; }
             RouteKind = PickupService ? "service" : "pickup"; RouteRival = RivalsArrived ? RivalsDelayMethod : "";
             AtTake = new RouteFacts { CameraBlocked = !PickupService && !PickupCameraLive() }; // engine 0.30.0 (brief 060 #8): the debrief's route lines, output only
             Vale = ValeAt.Taking;

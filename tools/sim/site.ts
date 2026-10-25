@@ -22,7 +22,7 @@ import { buildPeople, PEOPLE_OUT } from './people';
 import { buildTakedown, TAKEDOWN_FILE } from './takedown';
 import { buildExit, blockM, checkExit } from './getaway';
 import { driveGrid, driveFree, type Drive } from './drive';
-import { buildRivals, buildStands, checkRivals, checkStands, placesFor059 } from './stands';
+import { buildRivals, buildStands, checkRivals, checkStands } from './stands';
 
 const root = join(import.meta.dir, '..', '..');
 export const SITE_FILE = 'sim/data/handover.site.json';
@@ -137,7 +137,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   };
   // the guard's visit (mission.json windows rule summon) is the engine's: its grid walk and the rulebook's stay; the site writes neither
   const schedule = {
-    rivalsArrive: at('3:10', /rival car/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn driver/), valeExits: at('5:50', /Vale exits/), valeAtCar: at('6:10', /Vale at car/), over: at('8:00', /= over$/),
+    rivalsArrive: at('3:10', /rival car parks/), chime: at('5:30', /chime/), driverLast: at('5:40', /turn the driver/), valeExits: at('5:50', /Vale comes out/), valeAtCar: at('6:10', /Vale at his car/), over: at('8:30', /\(over\)$/), // GDD v0.25.0 §07's words (brief 059): each pattern matches one entry
     blockMoveS: 8, blockHoldS: 150,
     src: 'mission.json timeline (GDD §07) and windows.front-door; blockHoldS: §07 route B, driver blocks pickup camera 2:30; blockMoveS: the top-down test, the car takes 8 s to block the camera. over: the timeline\'s closing entry, read by its words (§07 8:00; Sky 2026-10-15 moves it to 8:30, Waymark retimes mission.json)',
   };
@@ -208,7 +208,7 @@ export function buildSite(src: Source = { people: PROMOTED_PEOPLE }, opts: SiteO
   const driveOk = driveFree(drive), stands = buildStands(plan, d, mission, block, rulebook, places);
   const standsBad = checkStands(stands, plan, d, places, rulebook, (q) => free(q), driveOk);
   if (standsBad.length) throw new Error(`getaway.stands (SX-2): ${standsBad.join('; ')}`);
-  const places059 = placesFor059(places), rivalsNew = buildRivals(plan, d, mission, places059), rivalsBad = checkRivals(rivalsNew, plan, d, places059, rulebook, schedule.rivalsArrive, (q) => free(q), driveOk);
+  const rivalsNew = buildRivals(plan, d, mission, places), rivalsBad = checkRivals(rivalsNew, plan, d, places, rulebook, schedule.rivalsArrive, (q) => free(q), driveOk);
   if (rivalsBad.length) throw new Error(`rivals (SX-3): ${rivalsBad.join('; ')}`);
 
   const site = {

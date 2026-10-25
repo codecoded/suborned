@@ -2,6 +2,7 @@
 //   play <scenario id | script.json> [--json]   play a scenario (S01…S28, N8…) or an order script; print outcome, log, checksums
 //   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
 //   batch --serve                               the same as a server: lines `tag<TAB>replay|noreplay<TAB>path` on stdin, `tag<TAB>json` out as each finishes (tools/missions/check/engine.ts)
+//   check [ids] [--no-replay]                   every scenario (or the named): failed checks and a bit-for-bit replay, in one process on every core
 //   list                                        the scenarios
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
@@ -59,6 +60,7 @@ static class Program
                         Console.WriteLine(Script.Write(Scenarios.Run(inputs, sc).G, inputs.Hash)); return 0;
                     }
                 case "batch": return BatchCli.Run(inputs, root, args); // brief 042: many scripts, one process, every core
+                case "check": return CheckCli.Run(inputs, args); // brief 059 (Keel): every scenario, its checks and its replay, on every core
                 case "play": return Play(inputs, root, args.Length > 1 ? args[1] : throw new ArgumentException("play what?"), json);
                 case "perf": return Perf(inputs, args.Length > 1 ? int.Parse(args[1], CultureInfo.InvariantCulture) : 20, args.Length > 2 ? args[2] : "S10");
                 case "probe": Probe.Run(inputs); return 0;
