@@ -14,7 +14,8 @@
 //    P59-S1-GO / P59-S1-HOLD   Sky's S1 both ways: with travellers still to come, Go leaves unfought (leaveUnfought), or they hold the car
 //    P59-S2-NEAR / P59-S2-NORTH  Sky's S2 both ways: the loud fight at the service drive, officers from the official entrance, or the north street
 //    P59-S3-RUN / P59-S3-WALK  Sky's S3 both ways: the posted three go after a Driven car at the run (280) or the walk (160)
-//    P59-REFUSE    Drive's and the Take's refusals: drive-no-driver, stand-unknown, drive-here, drive-busy, drive-held, drive-fight, driver-brings-vale, car-not-parked
+//    P59-BEAT      the front, driver unturned, the rival car parked with its wheelman aboard: the Take fails rivals-reach-vale (beat-to-pickup)
+//    P59-REFUSE    Drive's and the Take's refusals: drive-no-driver, unknown-stand, drive-here, drive-busy, drive-held, drive-fight, driver-brings-vale, car-not-parked
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -136,7 +137,7 @@ namespace Suborned.Sim
                 r.Is(g.FightWhy.Contains("lookout-warned-off") && g.FightWhy.Contains("wheelman-away"), "fight why: lookout-warned-off, wheelman-away");
                 r.Is(Mem(r, 1).SpotStand == "service-drive" && Mem(r, 2).SpotStand == "service-drive" && Mem(r, 3).SpotStand == "service-drive", "the three walked after our car to the service drive's spots (F1)");
                 long carry = G.Dist(r.Op(Enf).Pos, g.GetawayCarPos());
-                r.Is(carry <= 800, $"the carry is short: {carry / 100.0:0.0} m from the service door to our car (brief 059: 3.5 m from Vale's back door)");
+                r.Is(carry <= 800, $"the carry is short: {(carry / 100.0).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)} m from the service door to our car (brief 059: 3.5 m from Vale's back door)");
                 r.FightItOut(120, Scout, Fixer, Tech);
                 r.Extract();
                 r.Line(g.Result == Outcome.Success, $"route B on the 059 engine wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}): Waymark re-composes route B");
@@ -179,7 +180,7 @@ namespace Suborned.Sim
                 r.Do(Enf, "take"); r.Done(Enf);
                 r.Eq(g.Vale, ValeAt.WithEnforcer, "taken from the back seat at the mouth");
                 long carry = G.Dist(r.Op(Enf).Pos, g.GetawayCarPos());
-                r.Line(carry > 1000, $"the carry is longer, on the pavement: {carry / 100.0:0.0} m (brief 059: about 18 m)");
+                r.Line(carry > 1000, $"the carry is longer, on the pavement: {(carry / 100.0).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)} m (brief 059: about 18 m)");
             });
 
             Add("P59-TAIL", "059", "Brief 059 F2, K9 (the yard case): no tip. Vale's car leaves the bay with Vale; the rival car follows rivals.follow later to rivals.car.tail; the wheelman walks to Vale's door and reaches him before the Take is done: rivals-reach-vale.", r =>
@@ -328,7 +329,7 @@ namespace Suborned.Sim
                 S3(alt, 160); foreach (var c in alt.Checks) r.Is(c.ok, "[S3 walk] " + c.what);
             });
 
-            Add("P59-REFUSE", "059", "Brief 059 K3, K6: the refusals. Drive: drive-no-driver, stand-unknown, drive-here, drive-busy, drive-fight. Take: driver-brings-vale at the front with the driver turned.", r =>
+            Add("P59-REFUSE", "059", "Brief 059 K3, K6: the refusals. Drive: drive-no-driver, unknown-stand, drive-here, drive-busy, drive-fight. Take: driver-brings-vale at the front with the driver turned.", r =>
             {
                 var g = r.G;
                 string Code(string op, string verb, string target) => g.Issue(new Order { Tick = g.Tick, Op = op, Do = verb, Target = target }).code;
@@ -362,7 +363,7 @@ namespace Suborned.Sim
                 int start = g.Tick;
                 r.To(Math.Max(g.Tick, r.SendTo(Enf, g.GetawaySeat))); if (!g.Over) { r.Do(Enf, "board", "car"); r.Done(Enf); }
                 var a = g.Over ? default : g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "go" }); // measured, not asserted: held or not is the line below
-                r.Line(!a.ok, $"M059-5.4: the yard's loud officers hold the car before the cell can Go ({(a.ok ? "LEFT UNFOUGHT" : "held: " + a.ids)}; Go tried {Report.Clock(g.Tick)}, {(g.Tick - start) / 10.0:0.0} s after the fight began): if it leaves unfought, Motive's fallback sends them at the run's first Alert 2");
+                r.Line(!a.ok, $"M059-5.4: the yard's loud officers hold the car before the cell can Go ({(a.ok ? "LEFT UNFOUGHT" : "held: " + a.ids)}; Go tried {Report.Clock(g.Tick)}, {((g.Tick - start) / 10.0).ToString("0.0", System.Globalization.CultureInfo.InvariantCulture)} s after the fight began): if it leaves unfought, Motive's fallback sends them at the run's first Alert 2");
             });
 
             var turnedB = new Start(); turnedB.Turned.Add(Driver);
@@ -373,6 +374,20 @@ namespace Suborned.Sim
                 r.To(T(370));
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "take" }).code, "driver-brings-vale", "driver-brings-vale");
             }, turnedB);
+            Add("P59-BEAT", "059", "Brief 059 K3 (GDD v0.25.0 §07): the front with the driver unturned and the rival car parked across from Vale's with its wheelman aboard: the pickup camera looped, the Take at 6:10 fails rivals-reach-vale (beat-to-pickup); the wheelman is the culprit.", r =>
+            {
+                var g = r.G;
+                r.To(r.Send(Tech, "cabinet"));
+                r.To(T(300)); r.Do(Tech, "loop", "pickup"); r.Done(Tech);
+                r.To(r.SendTo(Enf, Beside(r, g.CarPos())!.Value));
+                r.To(T(g.S.ValeAtCar));
+                r.Is(g.Crew[4].Mode == CrewMode.Aboard && g.CarSt == CrewCar.Parked, "the rival car is parked with its wheelman aboard");
+                r.Do(Enf, "take", Vale);
+                r.Eq(g.FailCode, "rivals-reach-vale", "the crew reaches Vale first");
+                var c = CauseIs(r, "rivals-reach-vale", "beat-to-pickup", true, g.Crew[4].Id, "rival", Enf);
+                var mp = g.MemberPose(g.Crew[4]);
+                if (mp.HasValue) PosedAs(r, c?.Culprits.FirstOrDefault(), mp.Value.pos, mp.Value.facing, "the wheelman in the rival car");
+            }, KeepVale(new Start()));
         }
     }
 }

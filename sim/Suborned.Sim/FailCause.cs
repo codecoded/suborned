@@ -163,7 +163,7 @@ namespace Suborned.Sim
                 case "patrol": { b.Kind = "patrol"; var pp = PatrolPose(); if (pp.HasValue) { at(pp.Value.pos); face(pp.Value.facing); } else at(null); return b; }
                 case "rivals": case "car:rivals": { b.Kind = "rival"; var rp = RivalCarPose(); if (rp.HasValue) { at(rp.Value.pos); face(rp.Value.heading); } else at(null); return b; } // brief 059: the rival car
             }
-            if (CrewOf(id) is CrewMember cm && !cm.Fight) { b.Kind = "rival"; var mp = MemberPose(cm); if (mp.HasValue) { at(mp.Value.pos); face(mp.Value.facing); } else at(cm.Gun.Down ? cm.DownAt : RivalCarPose()?.pos); return b; } // brief 059: a member of the crew on the street
+            if (CrewOf(id) is CrewMember cm && !cm.Fight && HostileOf(id) == null) { b.Kind = "rival"; var mp = MemberPose(cm); if (mp.HasValue) { at(mp.Value.pos); face(mp.Value.facing); } else at(cm.Gun.Down ? cm.DownAt : RivalCarPose()?.pos); return b; } // brief 059: a member of the crew on the street
             int k = SecIndex(id);
             if (k >= 0) { b.Kind = "officer"; var sp = SecOfficerPose(k); if (sp.HasValue) { at(sp.Value.pos); face(sp.Value.facing); } else at(null); return b; }
             foreach (var u in Units)

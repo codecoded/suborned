@@ -75,10 +75,12 @@ public class FailCauseTests
     {
         var seen = new SortedSet<string>(StringComparer.Ordinal);
         foreach (var s in Scenarios.All) { var g = Scenarios.Run(I, s).G; if (g.Cause != null) seen.Add(g.Cause.Fail + "/" + g.Cause.Why); }
-        // engine-error is never reached by play (EngineErrorNamesNoCulprit); brief 018's rival at the car is a fixture (ARivalAtTheCar…)
+        // engine-error is never reached by play (EngineErrorNamesNoCulprit); brief 018's rival at the car is a fixture (ARivalAtTheCar…).
+        // Brief 059 (engine 0.32.0; GDD v0.25.0 §07): reached-at-close is retired (at the close Vale's driver always drives him on: vale-leaves);
+        // the tail (the wheelman at Vale's door) and driven-away (an unturned driver at 6:13) are new.
         var want = new[] { "abduction-seen-camera/seen", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "entry-seen-patrol/seen", "getaway-lost/wrecked",
-            "rivals-reach-vale/beat-to-pickup", "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/reached-at-close", "sealed/sealed", "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
-            "withdraw/car-left-without-vale", "withdraw/withdrew" };
+            "rivals-reach-vale/beat-to-pickup", "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/tail", "sealed/sealed", "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
+            "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" };
         foreach (var w in want) Assert.True(seen.Contains(w), $"no scenario ends in {w} (seen: {string.Join(", ", seen)})");
     }
 

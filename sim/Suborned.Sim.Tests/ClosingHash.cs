@@ -91,7 +91,8 @@ public class ClosingHashTests
         var sc = Script.Parse(File.ReadAllText(Path.Combine(Root, file)));
         var played = Engine.Play(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
         var (_, _, fight) = Live(Repo.Inputs, sc.Start, sc.Orders, sc.Until);
-        Assert.True(fight.Count >= (file == LoudFight ? 20 : 1), $"{file}: a fight is open at {fight.Count} saves"); // session 1 was recorded on 0.2.58's engine: today it meets fewer
+        Assert.True(fight.Count >= (file == LoudFight ? 15 : 1), $"{file}: a fight is open at {fight.Count} saves"); // session 1 was recorded on 0.2.58's engine: today it meets fewer;
+        // engine 0.32.0 (brief 059): loud-fight's drawn crew is four guns on foot and downs the Enforcer at 4:26.4 (it was a success at 5:12.8), 16 saves with a fight open (was 20+)
         Check(Repo.Inputs, sc.Start, sc.Orders, sc.Until, played, file, everyFight: true);
     }
 

@@ -154,7 +154,7 @@ namespace Suborned.Sim
                 r.Eq((ActTrail(g), g.Alert), (trail, 0), "no Trail, no Alert yet");
                 r.To(T(240));
                 r.Eq(g.Alert, 1, "the 4:00 mark is missed: Alert 1");
-                r.To(T(420));
+                r.To(T(370)); // brief 059: to 6:10, before the unturned driver drives Vale away at 6:13 (it was 7:00); the debrief test reads the live run
                 r.Is(!a.Confirmed && b.Stash.Length > 0, "the door stays shut: at Alert 1 the search opens nothing, and nobody sees behind it");
                 r.Eq(g.Alert, 1, "Alert stays 1");
                 r.Eq(g.Lockdown, int.MaxValue / 4, "no seal");

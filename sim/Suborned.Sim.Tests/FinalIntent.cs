@@ -23,9 +23,12 @@ public class FinalIntentTests
     static readonly HashSet<string> Moves = new HashSet<string>(StringComparer.Ordinal)
     {
         "loud", "loud-fast", "loud-fight", "loud-left-downed", "loud-left-standing",
-        "fight-loud-enforcer-down", "fight-safe-rivals-reach-vale",
+        "fight-loud-enforcer-down",
         // careless-takedown-seen-crowd left the set with engine 0.28.0: guard 73's radio locks the doors before the Enter, so the run has no
         // final fight and the agent and every rules cannot differ (Aster via Waymark, 2026-10-24)
+        // fight-safe-rivals-reach-vale left the set with engine 0.32.0 (brief 059): the rival car tails Vale's round to the service bay and its
+        // wheelman reaches Vale's door at 6:36.0 with no shot fired (it was the safe fight's rivals at 7:29.3), so the two rules cannot differ
+        // (Keel; Waymark re-composes the route)
     };
 
     [Fact]
