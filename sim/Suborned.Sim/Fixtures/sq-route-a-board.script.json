@@ -60,9 +60,12 @@
   },
   {
    "tick": 1050,
-   "op": "tech",
-   "do": "reroute",
-   "target": "patrol"
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6925,
+    -4250
+   ]
   },
   {
    "tick": 1210,
@@ -70,15 +73,6 @@
    "do": "turn",
    "target": "waitress",
    "approach": "help"
-  },
-  {
-   "tick": 1500,
-   "op": "enforcer",
-   "do": "move",
-   "to": [
-    6925,
-    -4250
-   ]
   },
   {
    "tick": 1710,

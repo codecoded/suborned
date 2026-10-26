@@ -615,7 +615,7 @@ namespace Suborned.Play
         {
             if (!Able((int)Agent)) { Status = $"{Op.Name(Agent)} is down"; return; } // item 29: a downed agent's knobs give nothing
             var plate = PlateOf(Agent);
-            if (slot < plate.Length && plate[slot].Dim && plate[slot].Id == "fire" && Game?.Vale == ValeAt.WithEnforcer && Agent == OpId.Enforcer) { var lk = new Answer { ok = false, code = "fire-carrying-vale", why = "walking Vale, the Enforcer doesn't fire", m = -1, cm = -1, usd = -1, tick = -1 }; var o = new Order { Op = "enforcer", Do = "fire" }; Pop(ShortOf(o, lk) ?? lk.why, null, SelectedWorld(), Feedback.Refused, 2f, PopIcon(lk.code), LockLine(o, lk) ?? lk.why); return; } // the greyed Fire knob says why
+            if (slot < plate.Length && plate[slot].Dim && plate[slot].Id == "fire" && Game?.Vale == ValeAt.WithEnforcer && Agent == OpId.Enforcer) { var lk = new Answer { ok = false, code = "fire-carrying-vale", why = "walking Vale, the Enforcer doesn't fire", m = -1, cm = -1, usd = -1, tick = -1 }; var o = new Order { Op = "enforcer", Do = "fire" }; popCode = lk.code; Pop(ShortOf(o, lk) ?? lk.why, null, SelectedWorld(), Feedback.Refused, 2f, PopIcon(lk.code), LockLine(o, lk) ?? lk.why); return; } // the greyed Fire knob says why
             if (slot >= plate.Length || plate[slot].Dim) { Status = $"{Op.Name(Agent)} has no verb on {VerbKey(slot)}"; return; }
             if (plate[slot].Id is "drop" or "stash") { PlateAct(plate[slot].Id); return; } // carrying: Put down and Hide act at once (Glyph §4)
             if (plate[slot].Id == "takedown") { Way = Picked == slot && Way == "knockout" ? "kill" : "knockout"; } // 4 again flips; kill is never the default (Glyph §1)
@@ -1067,6 +1067,7 @@ namespace Suborned.Play
             {
                 var full = Humanise(o, r); // brief 014: the pop is the short form with its family glyph; the long line is Alt
                 bool atStand = o.Do == "drive-car" && StandWorld(o.Target).HasValue; // Glyph 2026-10-26 §5: a refused Drive pops at the stand's footprint, with one pulse there
+                popCode = r.code; // the refusal's cause: one pop per cause and place (Pop), stance-unknown's stance marks (HudToolkit.StanceIcons)
                 Pop(ShortOf(o, r) ?? full, atStand ? null : screen, atStand ? StandWorld(o.Target) : screen.HasValue ? null : target ?? (o.Op == "cell" ? null : SelectedWorld()), Feedback.Refused, 2f, PopIcon(r.code), full);
                 if (r.code is "drive-held" or "car-held") HolderPulseAt = Time.unscaledTime; // the holders pulse as for Go
                 if (screen.HasValue && target.HasValue) Pulses.Add((target.Value, Feedback.Refused, Time.unscaledTime));
@@ -1228,7 +1229,7 @@ namespace Suborned.Play
             if (Panel == null || row < 0 || row >= Panel.Rows.Count) return;
             var r = Panel.Rows[row]; var t = Panel.T; var at = new Vector2(Panel.Gui.x, (cam ? cam.pixelHeight : Screen.height) - Panel.Gui.y);
             if (!r.Available && r.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime; // brief 018 §6.5: a refused Go pulses the holders
-            if (!r.Available) { var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}"; Pop(Text?.ShortLock(r.Lock.code) is string sh ? ShortOf(r.I.Order, r.Lock) : full, at, Panel.World, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full); return; }
+            if (!r.Available) { var full = r.Unlock.Length > 0 ? r.Unlock : $"{r.Verb}: {r.Reason}"; popCode = r.Lock.code ?? ""; Pop(Text?.ShortLock(r.Lock.code) is string sh ? ShortOf(r.I.Order, r.Lock) : full, at, Panel.World, Feedback.Refused, 2f, PopIcon(r.Lock.code ?? ""), full); return; }
             ClosePanel();
             DoRow(r, t, at, null, "left");
         }
@@ -1506,7 +1507,7 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- feedback: every click answers where it was made
 
         public enum Feedback { Info, Ok, Refused }
-        public sealed class PopUp { public string Text = "", Icon = "", Long = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born;
+        public sealed class PopUp { public string Text = "", Icon = "", Long = "", Code = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born;
             /// <summary>Brief 067 E4: a "who can" pop: the selected agents' faces struck, a pointer, then the faces of who can (no words).</summary>
             public int[] Struck, Faces; }
         /// <summary>Pops the HUD draws (at the cursor, or over a world point), newest last; and ring pulses on targets.</summary>
@@ -1517,7 +1518,13 @@ namespace Suborned.Play
         {
             float now = Time.unscaledTime;
             var gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : (Vector2?)null;
-            Pops.Add(new PopUp { Text = text, Icon = icon, Long = longLine.Length > 0 ? longLine : text, Screen = gui, World = world, Kind = kind, Born = now, Until = now + seconds });
+            // Aster r123 pre-flight 3 (the loud frame's three "Pick when to fire" on one spot): one refusal per cause and place on screen at once.
+            // The same words and icon over the same thing (within 1.5 m), or at the same click (within 40 px), while the first still shows: the
+            // first stays and lasts the longer of the two; the host record keeps every refusal (HostSidecar)
+            var code = popCode; var same = Pops.Find(x => now <= x.Until && x.Text == text && x.Icon == icon && x.Code == code && x.World.HasValue == world.HasValue && x.Screen.HasValue == gui.HasValue
+                && (!world.HasValue || (x.World.Value - world.Value).sqrMagnitude < 1.5f * 1.5f) && (!gui.HasValue || (x.Screen.Value - gui.Value).sqrMagnitude < 40f * 40f));
+            if (same != null) { same.Until = Mathf.Max(same.Until, now + seconds); Pops.Remove(same); Pops.Add(same); SidePop(text, icon); return; } // the newest last (HostHoldStatus dresses Pops[^1])
+            Pops.Add(new PopUp { Text = text, Icon = icon, Long = longLine.Length > 0 ? longLine : text, Code = code, Screen = gui, World = world, Kind = kind, Born = now, Until = now + seconds });
             SidePop(text, icon); // brief 067 E: the host record (HostSidecar)
             if (world.HasValue) Pulses.Add((world.Value, kind, now));
             while (Pops.Count > 6) Pops.RemoveAt(0);

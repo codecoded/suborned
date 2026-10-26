@@ -143,7 +143,7 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- the street marks
 
         const float GhostH = 38f, ClockH = 28f;
-        VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new();
+        VisualElement squadBtn; readonly List<(VisualElement root, VisualElement face, Label text)> ghostEls = new(); readonly List<(VisualElement root, Label text)> clockEls = new(); readonly List<Vector2[]> clockArcAt = new();
         VisualElement dragGhost; readonly List<VisualElement> dragFaces = new();
 
         /// <summary>A ring on the ground (brief 046: drawn in the world, depth-tested, so legs and props in front hide it; HudToolkit.Ground).</summary>
@@ -212,8 +212,9 @@ namespace Suborned.Play
                     var (cr, cl) = clockEls[cu++]; Show(cr, true); Text(cl, word);
                     bool soon = word is "wary" or "reported"; float frac = report > 0 ? Mathf.Clamp01(s / report) : 0f;
                     var under = cr.Q("under"); under.style.backgroundColor = soon ? LookSoon : Cream; under.style.width = (74f - 22f) * frac;
-                    cr.style.left = aq.x - 37; cr.style.top = aq.y - ClockH / 2f; var cq = aq + new Vector2(-48, 0); var arc = soon ? LookSoon : Cream;
-                    paints.Add(pp => { RingArc(pp, cq, 8f, 1f, new Color(Ink.r, Ink.g, Ink.b, 0.6f), 4f); RingArc(pp, cq, 8f, frac, arc, 2.6f); });
+                    cr.style.left = aq.x - 37; cr.style.top = aq.y - ClockH / 2f; var arc = soon ? LookSoon : Cream;
+                    while (clockArcAt.Count < cu) clockArcAt.Add(new Vector2[1]); var cbox = clockArcAt[cu - 1]; cbox[0] = aq + new Vector2(-48, 0); // Glyph r123 F2: StepAside may move the plate; its arc goes with it (NaN: hidden)
+                    paints.Add(pp => { var cq = cbox[0]; if (float.IsNaN(cq.x)) return; RingArc(pp, cq, 8f, 1f, new Color(Ink.r, Ink.g, Ink.b, 0.6f), 4f); RingArc(pp, cq, 8f, frac, arc, 2.6f); });
                 }
                 // the portrait drag: a band from the portrait to the cursor, the faces it carries
                 if (h.PortraitDragging && PortraitScreen(h.PortraitDragFrom) is Vector2 ps)

@@ -159,12 +159,13 @@ namespace Suborned.Play
             return l;
         }
         /// <summary>The bottom for a box (x, width, height) at `bottom`, raised until it clears every speech bubble by 10 px.</summary>
-        static float ClearOfSpeech(List<Rect> bubbles, float x, float w, float bottom, float hh)
+        static float ClearOfSpeech(List<Rect> bubbles, float x, float w, float bottom, float hh, float gap = 10f)
         {
+            float pad = Mathf.Max(4f, gap - 6f);
             for (int guard = 0; guard < 4; guard++)
             {
-                bool hit = false; var box = new Rect(x - 4f, bottom - hh - 4f, w + 8f, hh + 8f);
-                foreach (var b in bubbles) if (b.Overlaps(box)) { bottom = b.yMin - 10f; hit = true; box = new Rect(x - 4f, bottom - hh - 4f, w + 8f, hh + 8f); } // review 5: 8 px between as drawn (the bubble's rim eats 2)
+                bool hit = false; var box = new Rect(x - 4f, bottom - hh - pad, w + 8f, hh + 2f * pad);
+                foreach (var b in bubbles) if (b.Overlaps(box)) { bottom = b.yMin - gap; hit = true; box = new Rect(x - 4f, bottom - hh - pad, w + 8f, hh + 2f * pad); } // review 5: 8 px between as drawn (the bubble's rim eats 2)
                 if (!hit) break;
             }
             return bottom;

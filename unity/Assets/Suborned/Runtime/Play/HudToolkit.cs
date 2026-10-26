@@ -691,9 +691,11 @@ namespace Suborned.Play
                 for (int i = 0; i <= 40; i++) { float a = i * Mathf.PI * 2f / 40f; var v = oq + new Vector2(Mathf.Cos(a) * rx, Mathf.Sin(a) * ry); if (i == 0) p.MoveTo(v); else p.LineTo(v); }
                 p.Stroke();
             }
-            if (host.FailShot && Proj(host.FailShooterAt, out var sq) && Proj(ow + Vector3.up * 1.3f, out var hq))
+            if (host.FailShot)
             {
-                // Glyph 022 (N125): the shot itself, a tracer from the shooter's chest to the operative's, flashing once every 0.7 s
+                // Glyph 022 (N125): the shot itself, a tracer from the shooter's chest to the operative's, flashing once every 0.7 s; Glyph r123
+                // §2: only at the deciding moment (FailAtMoment, the 1.2 s hold), never over the whole replay
+                if (!host.FailAtMoment || !Proj(host.FailShooterAt, out var sq) || !Proj(ow + Vector3.up * 1.3f, out var hq)) return;
                 float ph = (Time.unscaledTime % 0.7f) / 0.7f, a = ph < 0.4f ? 1f : 0.8f; // a steady line that flashes: any still frame shows it
                 var dv = (hq - sq).normalized; var a0 = sq + dv * 6f; var b0 = hq - dv * 4f;
                 p.lineCap = LineCap.Round;

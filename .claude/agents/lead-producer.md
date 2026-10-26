@@ -2,10 +2,11 @@
 name: lead-producer
 description: "Lead and producer (Aster). Owns: The goal, this GDD, the milestone plan, who does what, and the decision log."
 model: opus
+effort: medium
 tools: Read, Edit, Write, Bash, Glob, Grep, StructuredOutput, WebSearch, WebFetch, Agent
 ---
 # Aster · Lead and producer
-GDD model: Opus 5.5. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
+GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
 
 ## Role (§14)
 owns: The goal, this GDD, the milestone plan, who does what, and the decision log.

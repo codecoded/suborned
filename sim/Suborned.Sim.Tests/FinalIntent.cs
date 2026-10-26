@@ -4,7 +4,8 @@
 //    F15_SWEEP   the fight-lab matrix's eight rows under today and the lab hash the same both ways
 //    F15_ROUTES  every route script hashes the same both ways, but the 5 loud rows and 3 failure rows Motive lists (§15.2); outcome and
 //                fail code stay everywhere, Trail and Alert too but on the failure rows (fewer hits can cost less Trail). Engine 0.34.0: a
-//                safe fight where a rival advances (M067-SQ2, which reads the intent) is left out: it differs both ways by the rule
+//                safe fight where a rival advances (M067-SQ2, which reads the intent) is left out: it differs both ways by the rule.
+//                c038: the set (Moves) is the loud rows less the retired loud-fast, plus the two loud-wait twins
 // F15-CLEAN, F15-DRAWN and F15-FACE are scenarios (Suborned.Sim/ScenariosFinalIntent.cs).
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,13 @@ public class FinalIntentTests
     /// <summary>Motive §15.2's measured moves: the rows whose hashes move (outcome, fail, T and Alert do not).</summary>
     static readonly HashSet<string> Moves = new HashSet<string>(StringComparer.Ordinal)
     {
-        "loud", "loud-fast", "loud-fight", "loud-left-downed", "loud-left-standing",
+        "loud", "loud-fight", "loud-left-downed", "loud-left-standing",
         "fight-loud-enforcer-down",
+        // c038 (Waymark, brief 067 §5.1): the loud-wait twins. Outcome, fail code, Trail and Alert agree both ways; under every the final
+        // fight's police fire on the cell in the car who gave them no cause (square: security-1/-2 take the fixer, "final", and shoot him
+        // down in the car at 3:49.1; yard: officer-2/-3 take the scout, aboard since 6:57.6 and never fired, at 7:27.5). Keel, 2026-10-26
+        "fight-loud-wait-square", "fight-loud-wait-yard",
+        // loud-fast left the set with c038: the route is retired (Waymark, brief 067)
         // careless-takedown-seen-crowd left the set with engine 0.28.0: guard 73's radio locks the doors before the Enter, so the run has no
         // final fight and the agent and every rules cannot differ (Aster via Waymark, 2026-10-24)
         // fight-safe-rivals-reach-vale left the set with engine 0.32.0 (brief 059): the rival car tails Vale's round to the service bay and its

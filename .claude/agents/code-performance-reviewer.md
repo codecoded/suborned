@@ -2,10 +2,11 @@
 name: code-performance-reviewer
 description: "Code and performance reviewer (Redline). Owns: Code review and performance."
 model: opus
+effort: medium
 tools: Read, Bash, Glob, Grep, StructuredOutput, WebSearch, WebFetch, Write
 ---
 # Redline · Code and performance reviewer
-GDD model: Opus 5.5. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
+GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
 
 ## Role (§14)
 owns: Code review and performance.

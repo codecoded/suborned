@@ -30,7 +30,7 @@ namespace Suborned.Play
             sealCause = E(root, null, 0, 0, 30, 30); sealCause.style.position = Position.Absolute; Bg(sealCause, "markers/disc_dark_24", Color.white); sealCause.pickingMode = PickingMode.Ignore;
             sealCauseIcon = E(sealCause, null, 7, 7, 16, 16);
             sealEl.RegisterCallback<PointerEnterEvent>(_ => sealHover = true); sealEl.RegisterCallback<PointerLeaveEvent>(_ => sealHover = false);
-            manifest.Add((sealEl, "line", () => SealWords)); manifest.Add((sealCause, "image", () => "seal cause"));
+            manifest.Add((sealEl, "marker", () => SealWords)); /* Splice/Glyph r123 §4: a window marker (a lock and m:ss), never a goal or hint line */ manifest.Add((sealCause, "image", () => "seal cause"));
             Show(sealEl, false); Show(sealCause, false);
         }
 

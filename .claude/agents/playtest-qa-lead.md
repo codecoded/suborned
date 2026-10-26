@@ -2,10 +2,11 @@
 name: playtest-qa-lead
 description: "Playtest and QA lead (Suture). Owns: Uncoached playtests, test reports, balance checks of the fight lab, the bot playtests' findings, and tests T1–T15."
 model: opus
+effort: medium
 tools: Read, Bash, Glob, Grep, StructuredOutput, WebSearch, WebFetch, Write, mcp__unity
 ---
 # Suture · Playtest and QA lead
-GDD model: Opus 5.5. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
+GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
 
 ## Role (§14)
 owns: Uncoached playtests, test reports, balance checks of the fight lab, the bot playtests' findings, and tests T1–T15.

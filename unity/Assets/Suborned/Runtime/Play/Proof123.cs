@@ -103,7 +103,8 @@ namespace Suborned.Play
         static IEnumerator FacingHold(HandoverHost h, float seconds, Dictionary<string, string> result)
         {
             var since = new Dictionary<string, (Vector3 at, float t)>(); float worst = 0f; string worstKey = ""; int frames = 0, badFrames = 0; var shooters = new HashSet<string>();
-            int flash0 = HudToolkit.ShotFlashes; float t0 = Time.realtimeSinceStartup; h.SetPaused(false);
+            int flash0 = HudToolkit.ShotFlashes, hflash0 = HudToolkit.ShotFlashesHostile; float t0 = Time.realtimeSinceStartup, u0 = Time.unscaledTime; h.SetPaused(false);
+            var shotSeen = new HashSet<(string side, float born)>(); // Glyph r123 G1: the shots logged in the window (ShotFx keeps the last 24), to tell no flash from no shot
             while (Time.realtimeSinceStartup - t0 < seconds && !h.Game.Over)
             {
                 yield return null; frames++; float now = Time.realtimeSinceStartup; bool bad = false;
@@ -119,11 +120,13 @@ namespace Suborned.Play
                     if (err > 25f) bad = true;
                 }
                 foreach (var k in since.Keys.ToList()) if (!h.Views.Aim.ContainsKey(k)) since.Remove(k);
+                foreach (var fx in h.ShotFx) if (fx.born >= u0) shotSeen.Add((fx.side, fx.born));
                 if (bad) badFrames++;
             }
             h.SetPaused(true); yield return Frames(2);
             result["frames"] = frames.ToString(); result["badFrames"] = badFrames.ToString(); result["worst"] = F(worst); result["worstKey"] = worstKey;
             result["shooters"] = string.Join(",", shooters.OrderBy(x => x)); result["flashes"] = (HudToolkit.ShotFlashes - flash0).ToString();
+            result["shots"] = shotSeen.Count.ToString(); result["hostileShots"] = shotSeen.Count(x => x.side != "cell").ToString(); result["hostileFlashes"] = (HudToolkit.ShotFlashesHostile - hflash0).ToString();
         }
 
         /// <summary>The crew's five as drawn now: id, its look (the body's when he is down), the look it should wear, its mode.</summary>
@@ -185,15 +188,15 @@ namespace Suborned.Play
                 if (name == "safe" && !g.Over && !g.Ops[(int)OpId.Scout].Down && !g.Ops[(int)OpId.Scout].InCar)
                 {   // the ground view: the Scout's third person, the clock running 1.2 s, the same measure
                     h.Select(OpId.Scout, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.6f);
-                    var gr = new Dictionary<string, string>(); yield return FacingHold(h, 1.2f, gr);
+                    var gr = new Dictionary<string, string>(); yield return FacingHold(h, 2.5f, gr); // Glyph r123 G1: 2.5 s (1.2 s could pass with no hostile shot)
                     yield return Shoot(h, dir, "r123-fight-ground", log);
-                    bool gOk = h.Following && gr["badFrames"] == "0"; fOk &= gOk;
-                    ground = $", \"ground\": {{\"ok\": {B(gOk)}, \"following\": {B(h.Following)}, \"frames\": {gr["frames"]}, \"badFrames\": {gr["badFrames"]}, \"worstDeg\": {gr["worst"]}, \"worstKey\": \"{gr["worstKey"]}\", \"shooters\": \"{gr["shooters"]}\", \"flashes\": {gr["flashes"]}}}";
-                    log.Add($"r123 fight ground: {(gOk ? "ok" : "FAILED")}: following {h.Following}; {gr["frames"]} frames, {gr["badFrames"]} with a shooter over 25 deg, worst {gr["worst"]} deg ({gr["worstKey"]}); shooters [{gr["shooters"]}]; flashes {gr["flashes"]}");
+                    bool gOk = h.Following && gr["badFrames"] == "0" && (gr["hostileShots"] == "0" || gr["hostileFlashes"] != "0"); fOk &= gOk; // G1: a hostile's shot in the ground view shows its flash
+                    ground = $", \"ground\": {{\"ok\": {B(gOk)}, \"following\": {B(h.Following)}, \"frames\": {gr["frames"]}, \"badFrames\": {gr["badFrames"]}, \"worstDeg\": {gr["worst"]}, \"worstKey\": \"{gr["worstKey"]}\", \"shooters\": \"{gr["shooters"]}\", \"flashes\": {gr["flashes"]}, \"shots\": {gr["shots"]}, \"hostileShots\": {gr["hostileShots"]}, \"hostileFlashes\": {gr["hostileFlashes"]}}}";
+                    log.Add($"r123 fight ground: {(gOk ? "ok" : "FAILED")}: following {h.Following}; {gr["frames"]} frames, {gr["badFrames"]} with a shooter over 25 deg, worst {gr["worst"]} deg ({gr["worstKey"]}); shooters [{gr["shooters"]}]; flashes {gr["flashes"]} ({gr["hostileFlashes"]} hostile) for {gr["shots"]} shots ({gr["hostileShots"]} hostile)");
                     h.DriveLetGoToMap(); yield return new WaitForSecondsRealtime(0.4f);
                 }
                 bool on = branch.Length > 0 && g.FightStart < int.MaxValue / 8, oneOk = on && fr["badFrames"] == "0" && fr["shooters"].Length > 0; fOk &= oneOk;
-                fights.Add($"\"{name}\": {{\"ok\": {B(oneOk)}, \"fixture\": \"{fixture}\", \"at\": \"{HandoverHost.MissionClock(g.Tick)}\", \"branch\": \"{branch}\", \"frames\": {fr["frames"]}, \"badFrames\": {fr["badFrames"]}, \"worstDeg\": {fr["worst"]}, \"worstKey\": \"{fr["worstKey"]}\", \"shooters\": \"{fr["shooters"]}\", \"flashes\": {fr["flashes"]}, \"reticles\": \"{J(HudToolkit.ReticlesShown)}\", \"cones\": \"{J(fans)}\", \"looks\": \"{J(words)}\", \"distinctLooks\": {n}{ground}}}");
+                fights.Add($"\"{name}\": {{\"ok\": {B(oneOk)}, \"fixture\": \"{fixture}\", \"at\": \"{HandoverHost.MissionClock(g.Tick)}\", \"branch\": \"{branch}\", \"frames\": {fr["frames"]}, \"badFrames\": {fr["badFrames"]}, \"worstDeg\": {fr["worst"]}, \"worstKey\": \"{fr["worstKey"]}\", \"shooters\": \"{fr["shooters"]}\", \"flashes\": {fr["flashes"]}, \"shots\": {fr["shots"]}, \"hostileShots\": {fr["hostileShots"]}, \"hostileFlashes\": {fr["hostileFlashes"]}, \"reticles\": \"{J(HudToolkit.ReticlesShown)}\", \"cones\": \"{J(fans)}\", \"looks\": \"{J(words)}\", \"distinctLooks\": {n}{ground}}}");
                 log.Add($"r123 fight {name}: {(oneOk ? "ok" : "FAILED")}: {fixture} at {HandoverHost.MissionClock(g.Tick)}, branch {(branch.Length > 0 ? branch : "none")}; {fr["frames"]} frames, {fr["badFrames"]} with a shooter over 25 deg, worst {fr["worst"]} deg ({fr["worstKey"]}); shooters [{fr["shooters"]}]; flashes {fr["flashes"]}; reticles [{HudToolkit.ReticlesShown}]; crew {words}");
             }
             ok &= fOk;

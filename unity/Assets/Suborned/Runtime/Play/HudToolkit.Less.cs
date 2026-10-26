@@ -615,6 +615,20 @@ namespace Suborned.Play
             first = true; foreach (var k in pp.Faces) { Face(k, false, first ? 0f : 3f); first = false; }
         }
 
+        readonly List<Rect> popPlaced = new();
+        /// <summary>Glyph r123 F2: a pop stands this far above a speech bubble (the 10 px rule left 3 px between the two plates' art).</summary>
+        const float PopSpeechGap = 16f;
+
+        /// <summary>Glyph r123 §4 (the loud frame's "Pick when to fire" read as running text): a stance-unknown pop shows the roster's three stance
+        /// marks (badges/stance_hold, stance_return, stance_free, 16 px), no words; Alt keeps the long line.</summary>
+        void StanceIcons(VisualElement r, VisualElement ic, Label t, HandoverHost.PopUp pp, bool alt)
+        {
+            var row = r.Q("stances"); bool on = pp.Code == "stance-unknown" && !alt;
+            if (row == null) { if (!on) return; row = E(r); row.name = "stances"; row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.Center; row.style.flexShrink = 0; row.style.marginLeft = 2;
+                foreach (var st in new[] { "hold", "return", "free" }) { var b = E(row, null, w: 16, h: 16); b.style.flexShrink = 0; b.style.marginLeft = st == "hold" ? 0 : 5; Bg(b, $"badges/stance_{st}", Color.white); } }
+            Show(row, on); if (!on) return; Show(t, false); Show(ic, false); r.style.height = ChipH;
+        }
+
         void Pops(Camera cam)
         {
             float now = Time.unscaledTime; bool alt = host.Peeking; var list = new List<HandoverHost.PopUp>();
@@ -623,9 +637,10 @@ namespace Suborned.Play
             {
                 var r = E(marks, "s-plate_dark"); r.style.position = Position.Absolute; r.style.height = ChipH; r.style.flexDirection = FlexDirection.Row; r.style.alignItems = Align.Center; r.style.paddingLeft = ChipPad; r.style.paddingRight = ChipPad; // the chips' rule
                 var ic = E(r, null, w: Glyph, h: Glyph); ic.style.marginRight = 8; var t = L(r, "verb-name"); t.style.fontSize = 13.5f; t.style.whiteSpace = WhiteSpace.Normal; t.style.maxWidth = 320; // brief 044 A: Jost Bold 13.5
-                popEls.Add((r, ic, t));
+                int pi = popEls.Count; popEls.Add((r, ic, t));
+                manifest.Add((r, "pop", () => popEls[pi].text.style.display == DisplayStyle.None ? "" : popEls[pi].text.text)); // Splice r123: a refusal pop is a `pop` (an icon and at most four words), with its words
             }
-            float stack = 0; List<Rect> speech = null;
+            float stack = 0; List<Rect> speech = null; popPlaced.Clear();
             for (int i = 0; i < popEls.Count; i++)
             {
                 var (r, ic, t) = popEls[i]; bool has = i < list.Count; Show(r, has); if (!has) continue;
@@ -634,14 +649,18 @@ namespace Suborned.Play
                 else if (pp.Screen.HasValue) { at = RuntimePanelUtils.ScreenToPanel(root.panel, pp.Screen.Value) + new Vector2(18, -36 - stack); stack += 32; }
                 else { Show(r, false); continue; }
                 bool struck = pp.Icon.EndsWith("#struck"); var icon = struck ? pp.Icon[..^7] : pp.Icon; // Glyph 2026-10-26 §5: drive-fight's car struck through (a 2 px cream diagonal, the shut-way strike)
+                Show(ic, true); Show(t, true); // each pop starts as icon and words; the faces and the stance marks take their place below
                 Art(ic, icon.Length > 0 ? icon : "badges/mark_no", icon.StartsWith("icons/") ? Cream : (Color?)null);
                 var sk = ic.Q("strike"); if (sk == null && struck) { sk = E(ic, null, -2f, Glyph / 2f - 1f, Glyph + 4f, 2f); sk.name = "strike"; sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); } if (sk != null) Show(sk, struck);
                 Text(t, alt && pp.Long.Length > 0 ? pp.Long : pp.Text); r.style.height = alt ? StyleKeyword.Auto : ChipH;
                 WhoCanFaces(r, ic, t, pp, alt); // brief 067 E4 (Glyph): the "who can" pop is faces, not words (Alt keeps the line)
+                StanceIcons(r, ic, t, pp, alt); // Glyph r123 §4: "Pick when to fire" is the roster's three stance marks, no words (Alt keeps the line)
                 float w = r.resolvedStyle.width; if (float.IsNaN(w)) w = 120;
                 float ph = r.resolvedStyle.height; if (float.IsNaN(ph)) ph = ChipH;
-                float py = pp.World.HasValue ? ClearOfSpeech(speech ??= SpeechRects(), at.x - w / 2, w, at.y + ph, ph) - ph : at.y; // brief 044: a pop on a thing sits above its speech, never under the leader
+                float py = pp.World.HasValue ? ClearOfSpeech(speech ??= SpeechRects(), at.x - w / 2, w, at.y + ph, ph, PopSpeechGap) - ph : at.y; // brief 044: a pop on a thing sits above its speech, never under the leader
                 float px = pp.Screen.HasValue && !pp.World.HasValue ? at.x : at.x - w / 2;
+                for (int guard = 0; guard < 4; guard++) { bool hit = false; foreach (var q in popPlaced) if (q.Overlaps(new Rect(px - 3, py - 3, w + 6, ph + 6))) { py = q.yMin - ph - 6f; hit = true; } if (!hit) break; } // Aster r123 pre-flight 3: two pops never share a spot (the newer steps up)
+                popPlaced.Add(new Rect(px, py, w, ph));
                 if (host.Ring != null && ringRoot != null && ringRoot.resolvedStyle.display != DisplayStyle.None)
                 {   // Glyph's 0.2.104 review #7: a pop never sits under the open ring's rim: it drops below the ring's circle
                     var rc = new Vector2(ringRoot.style.left.value.value, ringRoot.style.top.value.value); float rr = HandoverHost.RingOuter + 8f;
@@ -1412,7 +1431,7 @@ namespace Suborned.Play
 
         void StepMarks(float px, float now)
         {
-            holderUsed = 0;
+            holderUsed = 0; seatPill = default;
             VisualElement Mk(string which)
             {
                 var e = E(marks, "s-disc_dark_24", 0, 0, 26, 26, pick: true); var flat = E(e, null, 3.5f, 3.5f, 19, 19); flat.name = "flat"; Round(flat, 9.5f); flat.style.backgroundColor = Ink; E(e, null, 5, 5, 16, 16).name = "g"; P(e, 0, 0, 26, 26, UnknownEye).name = "unk";
@@ -1494,9 +1513,9 @@ namespace Suborned.Play
                     }
                 }
                 // brief 018 grammar (Glyph fight r1 A-C): one car marker whose shape is its state. In the final fight the hold reach is a ring on
-                // the ground, solid and quiet while the car is free, dashed with a slow drift while it is held; the marker turns to a lock with the
-                // holder count; each holder carries a lock and a tether to the car (ink underlay), and both fade over a beat when it stops holding.
-                var carW = host.GetawayWorld; bool ring = host.CarRingOn, held = ring && host.CarHeldNow;
+                // the ground, solid and quiet while the car is free, dashed while it is held; the marker turns to a lock with the holder count; each
+                // holder carries a lock (and, out on the lane, a tether to the car), and both fade over a beat when it stops holding.
+                var carW = host.GetawayWorld; bool ring = host.CarRingOn, held = ring && host.CarHeldNow; seatPill = default;
                 var holders = held ? host.CarHolders() : new List<(string id, Vector3 at)>();
                 Place(carMark, (car || ring) && !held, carW, "car", !ring && !hintHere("H15"), -1, TurqLight, TurqLight);
                 if (held && !(host.Ring?.Plan?.T?.Kind == "car") && Proj(carW, out var cq0)) { Show(heldMark, true); /* Glyph's 0.2.112 check: under an open car ring the marker sat on the ring's middle, its lock and count against the car pip; the Go pill shows the lock and the holders there */ Text(heldNum, holders.Count.ToString()); heldMark.style.left = cq0.x - 13; heldMark.style.top = cq0.y - 13; }
@@ -1506,6 +1525,7 @@ namespace Suborned.Play
                 if (live && (car || ring || g.AnyInCar || host.AnyBoardPending) && Proj(carW, out var sq0))
                 {
                     var (seats, seatPend, seatAt) = host.SeatState(); var sc = sq0 + new Vector2(0, 21); float pnow = Time.unscaledTime; // brief 067 C3 (Glyph): pending pips turn; a landing beats
+                    seatPill = Rect.MinMaxRect(sc.x - 27f, sc.y - 9f, sc.x + 27f, sc.y + 9f); // StepAside: plates keep off it
                     paints.Add(pp =>
                     {
                         pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.9f); pp.BeginPath(); // Glyph r1: a dark backing pill, 4 px round the pips (they sat in the fade dither)
@@ -1529,64 +1549,31 @@ namespace Suborned.Play
                         }
                     });
                 }
-                // brief 018 §6.1: the exit lane (site getaway.exit), drawn with the ring only in the final fight: its two sides on the ground, quiet
-                // while the car is free, dashed and drifting while it is held
-                if (ring)
+                // brief 018 §6.1: the exit lane (site getaway.exit), drawn with the ring only in the final fight: its two sides on the ground.
+                // Glyph r123 F1 (batch 0.2.123 pre-flight): both are ground decals now (HudToolkit.Ground: depth-tested, laid on the drawn floor),
+                // not screen paints, so the Office roof hides them at yaw 30 and the occlusion cut shows them round the car. Held: a static dash;
+                // free: solid at 55 %. The lane is never drawn past 12 m of the car.
+                if (ring && !host.Following) // the follow view keeps its own rings only (StreetLess's Ground)
                 {
                     var (lane, half) = host.ExitLane();
                     if (lane.Count >= 2 && half > 0)
                     {
-                        var sides = new List<Vector2[]>(); bool ok = true;
+                        var laneCol = new Color(TurqLight.r, TurqLight.g, TurqLight.b, held ? 1f : 0.55f);
                         foreach (int sgn in new[] { -1, 1 })
                         {
-                            var side = new Vector2[lane.Count];
-                            for (int k = 0; k < lane.Count && ok; k++)
+                            var side = new List<Vector3>(lane.Count);
+                            for (int k = 0; k < lane.Count; k++)
                             {
                                 var dir = (k < lane.Count - 1 ? lane[k + 1] - lane[k] : lane[k] - lane[k - 1]); dir.y = 0; dir.Normalize(); var nrm = new Vector3(-dir.z, 0, dir.x);
-                                ok = Proj(lane[k] + nrm * half * sgn, out side[k]);
+                                side.Add(lane[k] + nrm * half * sgn);
                             }
-                            sides.Add(side);
-                        }
-                        if (ok)
-                        {
-                            bool hd = held; float dr = now * 0.6f % 1f;
-                            paints.Add(pp =>
-                            {
-                                foreach (var side in sides)
-                                    for (int pass = 0; pass < 2; pass++)
-                                    {
-                                        pp.strokeColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.45f) : new Color(TurqLight.r, TurqLight.g, TurqLight.b, hd ? 1f : 0.55f); pp.lineWidth = pass == 0 ? (hd ? 4.2f : 3.2f) : (hd ? 2.2f : 1.4f);
-                                        for (int k = 0; k < side.Length - 1; k++)
-                                        {
-                                            if (!hd) { pp.BeginPath(); pp.MoveTo(side[k]); pp.LineTo(side[k + 1]); pp.Stroke(); continue; }
-                                            float len = Vector2.Distance(side[k], side[k + 1]); int n = Mathf.Max(1, (int)(len / 14f));
-                                            for (int d = 0; d < n; d++) { float a0 = (d + dr) / n, a1 = Mathf.Min(1f, (d + dr + 0.55f) / n); pp.BeginPath(); pp.MoveTo(Vector2.Lerp(side[k], side[k + 1], a0)); pp.LineTo(Vector2.Lerp(side[k], side[k + 1], a1)); pp.Stroke(); }
-                                        }
-                                    }
-                            });
+                            foreach (var piece in ClipToDisc(side, carW, CarMarkReachM)) FloorPath(piece, laneCol, held ? 2.2f : 1.4f, held, held ? 0.45f : 0.3f);
                         }
                     }
                 }
-                float holdM = host.CarHoldM;
-                if (ring && holdM > 0 && holdM <= 12f) // brief 018 §6.1: the 8 m ring (a reach over 12 m would fill the screen: noise, not a ring)
-                {
-                    var pts = new Vector2[49]; bool all = true;
-                    for (int k = 0; k <= 48; k++) { float a = Mathf.PI * 2 * k / 48; if (!Proj(carW + new Vector3(Mathf.Cos(a), 0, Mathf.Sin(a)) * holdM, out pts[k])) { all = false; break; } }
-                    if (all)
-                    {
-                        bool dashed = held; float drift = now * 0.6f % 1f;
-                        paints.Add(pp =>
-                        {
-                            void Stroke(Color c, float wdt)
-                            {
-                                pp.strokeColor = c; pp.lineWidth = wdt;
-                                if (!dashed) { pp.BeginPath(); pp.MoveTo(pts[0]); for (int k = 1; k <= 48; k++) pp.LineTo(pts[k]); pp.Stroke(); return; }
-                                for (int k = 0; k < 48; k += 2) { pp.BeginPath(); var a0 = Vector2.Lerp(pts[k], pts[k + 1], drift); pp.MoveTo(a0); pp.LineTo(pts[k + 1]); pp.LineTo(Vector2.Lerp(pts[k + 1], pts[k + 2 > 48 ? 48 : k + 2], drift)); pp.Stroke(); }
-                            }
-                            Stroke(new Color(Ink.r, Ink.g, Ink.b, 0.85f), dashed ? 4.6f : 4.4f); Stroke(new Color(TurqLight.r, TurqLight.g, TurqLight.b, dashed ? 1f : 0.85f), dashed ? 2.6f : 2.4f); /* Glyph 022: the quiet ring thicker (1.4 px read as a hairline) */ // Glyph r1: the quiet ring's 1 px dark under-stroke shows on pale paving
-                        });
-                    }
-                }
+                float holdM = host.CarHoldM; bool ringDrawn = ring && holdM > 0 && holdM <= CarMarkReachM;
+                if (ringDrawn && !host.Following) // brief 018 §6.1: the 8 m ring (a reach over 12 m would fill the screen: noise, not a ring); Glyph 022: the quiet ring 2.4 px (1.4 read as a hairline)
+                    FloorRing(carW, holdM, new Color(TurqLight.r, TurqLight.g, TurqLight.b, held ? 1f : 0.55f), held ? 2.6f : 2.4f, held ? 32 : 0, held ? 0.85f : 0.5f);
                 foreach (var (id, at) in holders) holderSeen[id] = (at, -1f);
                 holderIds.Clear(); foreach (var (id, _) in holders) holderIds.Add(id);
                 var gone = new List<string>();
@@ -1599,15 +1586,17 @@ namespace Suborned.Play
                     { var nl = e.Q<Label>("n"); string rw = kv.Key == "car:rivals" ? host.RivalsHoldShort() : ""; bool rOn = rw.Length > 0; if (nl == null && rOn) { var pl = PlateDark(e, 22f, 0.3f); pl.name = "np"; pl.style.position = Position.Absolute; pl.style.left = 27; pl.style.top = 2; pl.style.paddingLeft = 7; pl.style.paddingRight = 7; nl = Words(pl, 13.5f); nl.name = "n"; }
                       if (e.Q("np") is VisualElement np) { Show(np, rOn); if (rOn) Text(nl, rw); } } // engine 0.33.0: the rival car holds the car until its first rider steps out; Fable's fillLockShort for car-held by the rival car: "Rivals coming · 18 s", "Rivals coming" while it drives in
                     float pulse = now - host.HolderPulseAt; if (pulse >= 0 && pulse < 1f) { float sc2 = 1f + 0.3f * Mathf.Sin(pulse * Mathf.PI * 3f) * (1f - pulse); e.style.scale = new Scale(new Vector2(sc2, sc2)); } else e.style.scale = new Scale(Vector2.one); // §6.5: a refused Go pulses the holders
-                    // the tether ends on the ring (a holder outside it, on the exit lane) or at the car's foot (inside it)
+                    // Glyph r123 §2: no tether for a holder inside the hold ring (the ring, his no-entry disc and the lock's count say it); one only for
+                    // a holder out on the lane, 1 px thinner, at 60 %
+                    { var dh = hw0 - carW; dh.y = 0f; if (ringDrawn && dh.magnitude <= holdM) continue; }
                     if (!Proj(carW, out var eq)) continue; eq += (fq - eq).normalized * 15f; // Glyph r3: to the car marker's disc edge (its centre is carW; the seat pill hangs below it)
-                    var a = fq; var b = eq; float al = alpha;
-                    paints.Add(pp => // Glyph r3: a dotted tether (2.4 px cream dots every 7 px on ink), a rhythm unlike the lane's dashes, from the holder's feet to the car's disc
+                    var a = fq; var b = eq; float al = alpha * 0.6f;
+                    paints.Add(pp => // Glyph r3: a dotted tether (cream dots every 7 px on ink), a rhythm unlike the lane's dashes, from the holder's feet to the car's disc
                     {
                         float len = Vector2.Distance(a, b); if (len < 1f) return; var dir = (b - a) / len;
                         for (int pass = 0; pass < 2; pass++)
                         {
-                            pp.fillColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.7f * al) : new Color(Cream.r, Cream.g, Cream.b, al); float r0 = pass == 0 ? 2.3f : 1.3f;
+                            pp.fillColor = pass == 0 ? new Color(Ink.r, Ink.g, Ink.b, 0.7f * al) : new Color(Cream.r, Cream.g, Cream.b, al); float r0 = pass == 0 ? 1.8f : 0.8f;
                             for (float d0 = 0; d0 <= len; d0 += 7f) { var c0 = a + dir * d0; pp.BeginPath(); pp.MoveTo(c0 + new Vector2(r0, 0)); pp.Arc(c0, r0, Deg(0), Deg(360)); pp.Fill(); }
                         }
                     });

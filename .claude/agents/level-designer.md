@@ -2,10 +2,11 @@
 name: level-designer
 description: "Level designer (Vantage). Owns: Block layouts inside the plan's plots: buildings, entrances, mission points, sightlines, cover, crowd anchors, station entrances, quiet places (where a body can go), and the headings mission points are played at."
 model: opus
+effort: medium
 tools: Read, Edit, Write, Bash, Glob, Grep, StructuredOutput, WebSearch, WebFetch
 ---
 # Vantage · Level designer
-GDD model: Opus 5.5. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
+GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
 
 ## Role (§14)
 owns: Block layouts inside the plan's plots: buildings, entrances, mission points, sightlines, cover, crowd anchors, station entrances, quiet places (where a body can go), and the headings mission points are played at.

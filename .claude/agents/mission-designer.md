@@ -2,10 +2,11 @@
 name: mission-designer
 description: "Mission designer (Waymark). Owns: The mission generator and the mission checker."
 model: opus
+effort: medium
 tools: Read, Edit, Write, Bash, Glob, Grep, StructuredOutput, WebSearch, WebFetch
 ---
 # Waymark · Mission designer
-GDD model: Opus 5.5. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
+GDD model: Opus 5.5, effort medium. Generated from GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md by tools/crew/cards.ts; edit the GDD, never this card.
 
 ## Role (§14)
 owns: The mission generator and the mission checker.

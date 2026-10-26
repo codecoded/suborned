@@ -35,7 +35,7 @@ namespace Suborned.Play
             return null;
         }
 
-        Paint fireLayer; readonly List<Action<Painter2D>> firePaints = new();
+        Paint fireLayer; readonly List<Action<Painter2D>> firePaints = new(); readonly List<Rect> fireDiscs = new();
         VisualElement fireLine, fireIcon, fireDownIcon, fireHeldIcon, fireCapX, fireCapLmb; const float FireDisc = 32f; Label fireHead, fireDown, fireHeld, fireStop;
         bool fireBuilt;
         static readonly Color FlameA = new(1f, 0.62f, 0.18f), FlameB = new(1f, 0.86f, 0.42f), Smoke = new(0.42f, 0.45f, 0.45f);
@@ -94,11 +94,13 @@ namespace Suborned.Play
         {
             if (marks == null || host?.Game == null) return;
             if (!fireBuilt) BuildFire();
-            firePaints.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
+            firePaints.Clear(); fireDiscs.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
             var cam = host.View;
             if (live && cam) { ShotFx(now); FireMarks(now); Reticle(now); CarFx(now); } // Sky 2026-10-26: no tracers (the facing says who shoots whom)
-            fireLayer.MarkDirtyRepaint(); if (fireLayer.parent.IndexOf(fireLayer) != fireLayer.parent.childCount - 1) fireLayer.BringToFront();
+            fireLayer.MarkDirtyRepaint(); // its place in the marks (above every mark but the speech and the pops): StepAside
+            RivalsForCarMarks(live && cam && !host.Following); // Glyph r123 §3: the car disc over each rival walking for the held car
             FireLineFrame(W, H, live);
+            StepAside(H); // Glyph r123 F2: bubbles win; the fire pill, the clocks and the holders' plates step aside
             if (host.Aiming) Show(chip2, false);
             PortraitFire(live);
         }
@@ -148,21 +150,26 @@ namespace Suborned.Play
         /// overhead view's per-shot lines and the follow view's hostile streaks are gone); the flash, the shooter's facing and the spark say it.
         /// ShotFlashes: the frames a muzzle flash was drawn in so far (the proof reads it).</summary>
         public static int ShotFlashes { get; private set; }
+        /// <summary>The frames a hostile's (anyone not the cell's) muzzle flash was drawn in so far (Glyph r123 G1: the proof reads it).</summary>
+        public static int ShotFlashesHostile { get; private set; }
         void ShotFx(float now)
         {
             foreach (var s in host.ShotFx)
             {
                 float age = now - s.born; if (age > 0.25f) continue;
                 bool cell = s.side == "cell";
-                if (!Proj(s.from, out var a) || !Proj(s.to, out var b)) continue;
-                var d = (b - a); var u = d.sqrMagnitude > 1f ? d.normalized : Vector2.right; var n = new Vector2(-u.y, u.x);
-                if (age < 0.09f) { ShotFlashes++; firePaints.Add(pp =>
+                // Glyph r123 G1 (the follow view's 0 flashes): the flash needs only the shooter on screen; its way is the shot's own, taken 0.5 m
+                // along it when the target is off the view (behind the third-person camera); the spark needs the target
+                if (!Proj(s.from, out var a)) continue; bool toOn = Proj(s.to, out var b);
+                var wd = s.to - s.from; Vector2 d = toOn ? b - a : wd.sqrMagnitude > 1e-4f && Proj(s.from + wd.normalized * 0.5f, out var ah) ? ah - a : Vector2.right;
+                var u = d.sqrMagnitude > 1f ? d.normalized : Vector2.right; var n = new Vector2(-u.y, u.x);
+                if (age < 0.09f) { ShotFlashes++; if (!cell) ShotFlashesHostile++; firePaints.Add(pp =>
                 {   // the muzzle flash: a four-point star on an ink underlay, its long point the way the barrel faces (toward the target)
                     float r = cell ? 9f : 7f;
                     void Star(Color c, float rr) { pp.fillColor = c; pp.BeginPath(); pp.MoveTo(a + u * rr * 1.8f); pp.LineTo(a + n * rr * 0.4f); pp.LineTo(a + n * rr); pp.LineTo(a - u * rr * 0.4f); pp.LineTo(a - n * rr); pp.LineTo(a - n * rr * 0.4f); pp.ClosePath(); pp.Fill(); }
                     Star(new Color(Ink.r, Ink.g, Ink.b, 0.6f), r + 2f); Star(new Color(1f, 0.97f, 0.86f), r);
                 }); }
-                if (age < 0.2f) firePaints.Add(pp =>
+                if (age < 0.2f && toOn) firePaints.Add(pp =>
                 {
                     float t = age / 0.2f;
                     if (s.hit)
@@ -194,6 +201,7 @@ namespace Suborned.Play
                 var t = host.Views?.Find("op/" + Op.Name((OpId)k)); if (!t || !t.gameObject.activeInHierarchy) continue;
                 if (!Proj(t.position + Vector3.up * 2.25f, out var c)) continue;
                 bool ret = fs.Mode == "return", hollow = fs.Hollow || !fs.Firing, mine = k == driven, locked = fs.Mode == "lock";
+                fireDiscs.Add(new Rect(c.x - 13f, c.y - 13f, 26f, 26f)); // StepAside: plates keep off the discs
                 firePaints.Add(pp =>
                 {
                     float r = 12f;
