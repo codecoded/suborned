@@ -137,6 +137,9 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- host reads (brief 054 §3.1), nothing hashed
 
+        /// <summary>Engine 0.34.0 (brief 067, Pulse's note 4): the way person `id` faces now as the engine reads it (walking: the way they walk; at a stop
+        /// on the street: the stop's facing, StopFace), security included; null when it knows none. Read-only, never hashed.</summary>
+        public Pt? FacingNow(string id) => PersonById(id) is Person p ? FacingOf(p) : null;
         /// <summary>The shape person `id` sees by now (wedge, ring or none). Read-only.</summary>
         public PersonSight PersonCone(string id)
         {

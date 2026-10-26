@@ -1,11 +1,11 @@
-// The proof set (tools/game/proofset.ts): the r059 pictures are in the HUD budget and the 2x crops (briefs/067/splice.md item 3). Each rule has a failing example.
+// The proof set (tools/game/proofset.ts): the r059 and r067 pictures are in the HUD budget and the 2x crops (briefs/067/splice.md item 3 and follow-up 2). Each rule has a failing example.
 // Run: bun test tools/game/proofset.test.ts
 import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { encodePng } from '../hud-budget/png';
-import { cropRects, downscale, faults, judgeProofBudget, loadProofSet, locate, stageForBudget, STANDING, writeCrops, type BudgetRun } from './proofset';
+import { cropRects, downscale, faults, judgeProofBudget, loadProofSet, locate, pickSets, stageForBudget, STANDING, writeCrops, type BudgetRun } from './proofset';
 
 const root = join(import.meta.dir, '..', '..'), read = (rel: string) => readFileSync(join(root, rel), 'utf8');
 const live = loadProofSet(), r059 = live.sets.r059!;
@@ -156,5 +156,118 @@ describe('the 2x crops', () => {
   test('the 2160 set is held to 3840x2160: a 1080p proof is a fault on the sheet', () => {
     const dir = proof(must, { size: [192, 108] }), out = mkdtempSync(join(tmpdir(), 'crops-'));
     try { const r = writeCrops(dir, 'r059', out); expect(r.problems.join()).toContain('wanted 3840x2160'); mkdirSync(out, { recursive: true }); } finally { rmSync(dir, { recursive: true, force: true }); rmSync(out, { recursive: true, force: true }); }
+  });
+});
+
+// ---------------------------------------------------------------- r067 (Proof067.cs, Sky's notes on 0.2.122)
+
+const r067 = live.sets.r067!, all067 = r067.frames.map(f => f.name), must067 = r067.frames.filter(f => !f.optional).map(f => f.name);
+
+describe('the r067 set', () => {
+  test('names the thirty-three pictures of Proof067, two of them optional (the crowd and a second rival decide), none twice, each with a line saying what it shows', () => {
+    expect(r067.section).toBe('r067');
+    expect(all067.length).toBe(33);
+    expect(new Set(all067).size).toBe(33);
+    expect(r067.frames.filter(f => f.optional).map(f => f.name)).toEqual(['r067-stack-tab', 'r067-reticle-handoff']);
+    for (const f of r067.frames) expect(f.what.length, f.name).toBeGreaterThan(20);
+  });
+
+  test('every picture is one Proof067.cs takes, and every r067 picture it takes is in the set (the third-person pair is named from its loop\'s pass: -1 and -2)', () => {
+    const cs = read(r067.source), literal = [...cs.matchAll(/"(r067-[a-z0-9-]+)"/g)].map(m => m[1]!);
+    const looped = [...cs.matchAll(/\$"(r067-[a-z0-9-]+-)\{pass \+ 1\}"/g)].flatMap(m => [1, 2].map(n => `${m[1]}${n}`));
+    expect(cs).toContain('for (int pass = 0; pass < 2; pass++)'); // the pair is two passes; a third pass would be a third picture the set must name
+    expect(looped).toEqual(['r067-tp-entry-1', 'r067-tp-entry-2']);
+    expect([...new Set([...literal, ...looped])].sort()).toEqual([...all067].sort());
+  });
+
+  test('the two optional pictures are the two Proof067.cs takes only when the scene decides (the crowd at the door, a second rival in view)', () => {
+    const cs = read(r067.source);
+    expect(cs).toMatch(/if \(h\.HoverStackCount >= 2\) yield return Shoot\(h, dir, "r067-stack-tab"/); // "logged, not gated: the crowd decides"
+    expect(cs).toMatch(/if \(r2\.HasValue\) \{.*"r067-reticle-handoff"/); // a second rival in view
+  });
+
+  test('crop names a part the proof writes (the roster) and only the pictures of the portrait pulse, the selection and the boarded squad take it', () => {
+    expect(r067.frames.filter(f => f.crop).map(f => [f.name, f.crop])).toEqual([['r067-portrait-pulse', ['roster']], ['r067-portrait-framed', ['roster']], ['r067-board-pending', ['roster']], ['r067-board-landed', ['roster']]]);
+    expect(live.sets.r059!.frames.some(f => f.crop)).toBe(false);
+    expect(STANDING.test('roster')).toBe(true); // standing furniture, so left out of every other picture's crops
+  });
+
+  test('a crop that is empty, not a list of names or not a key of the schema is refused with the file named', () => {
+    const dir = mkdtempSync(join(tmpdir(), 'proofset-file-')), f = join(dir, 'p.json');
+    const load = (frame: object) => { writeFileSync(f, JSON.stringify({ schema: 'suborned.proofset/1', note: 'n', sets: { x: { section: 'x', source: 's', frames: [{ name: 'r067-a', what: 'a picture of something', ...frame }] } } })); return () => loadProofSet(f); };
+    expect(load({ crop: ['roster'] })).not.toThrow();
+    expect(load({ crop: [] })).toThrow(/p\.json/);
+    expect(load({ crop: 'roster' })).toThrow(/p\.json/);
+    expect(load({ crop: [1] })).toThrow(/p\.json/);
+    expect(load({ cropped: ['roster'] })).toThrow(/p\.json/);
+    rmSync(dir, { recursive: true, force: true });
+  });
+});
+
+describe('every set judges the same way (r059 and r067)', () => {
+  for (const [name, set] of Object.entries(live.sets)) {
+    const must = set.frames.filter(f => !f.optional).map(f => f.name), optional = set.frames.filter(f => f.optional).map(f => f.name);
+    const pass = (names: string[]): BudgetRun => () => ({ code: 0, out: [...names.map(n => `PASS  ${n}.png`), `${names.length}/${names.length} within budget`].join('\n') });
+
+    test(`${name}: a whole proof is judged at 1920x1080 over its pictures, their HUD layers and manifests, and passes; the pictures the run did not take are said`, () => {
+      const dir = proof(must, { size: [1920, 1080] }), stage = mkdtempSync(join(tmpdir(), 'stage-'));
+      try {
+        let seen: string[] = [];
+        const r = judgeProofBudget(dir, name, stage, d => { seen = readdirSync(d).sort(); return pass(must)(d); });
+        expect(r.ok).toBe(true);
+        expect(r.judged).toBe(must.length); expect(r.pass).toBe(must.length);
+        expect(r.detail).toContain(`${must.length} of ${must.length} pictures within budget`);
+        for (const o of optional) expect(r.detail).toContain(o);
+        expect(seen.length).toBe(must.length * 3);
+      } finally { rmSync(dir, { recursive: true, force: true }); rmSync(stage, { recursive: true, force: true }); }
+    });
+
+    test(`${name}: a picture the proof did not take, and one over budget, each fail the set with the picture named`, () => {
+      const stage = mkdtempSync(join(tmpdir(), 'stage-')), dir = proof(must.slice(1), { size: [1920, 1080] }), whole = proof(must, { size: [1920, 1080] });
+      try {
+        let ran = false;
+        const a = judgeProofBudget(dir, name, stage, () => { ran = true; return { code: 0, out: '' }; });
+        expect(a.ok).toBe(false); expect(a.problems).toContain(`${must[0]}: not taken by the proof`); expect(ran).toBe(false);
+        const b = judgeProofBudget(whole, name, stage, () => ({ code: 1, out: `FAIL  ${must[2]}.png  active HUD 24.1% of the screen (limit 22%)` }));
+        expect(b.ok).toBe(false); expect(b.problems.join('\n')).toContain(`FAIL  ${must[2]}.png`);
+      } finally { rmSync(dir, { recursive: true, force: true }); rmSync(whole, { recursive: true, force: true }); rmSync(stage, { recursive: true, force: true }); }
+    });
+
+    test(`${name}: the 2160 proof is cut into crops, one sheet names each picture and what it shows, and the pictures of a standing part have it cropped too`, () => {
+      const dir = proof(must, { size: [384, 216], parts: { pill: [284, 2, 96, 9], roster: [2, 2, 18, 80] } }), out = mkdtempSync(join(tmpdir(), 'crops-'));
+      try {
+        const r = writeCrops(dir, name, out, { size: [384, 216] });
+        expect(r.problems).toEqual([]);
+        expect(r.frames).toBe(must.length);
+        expect(r.crops).toBe(set.frames.filter(f => !f.optional).reduce((n, f) => n + 3 + (f.crop?.includes('roster') ? 1 : 0), 0)); // the picture at a quarter, its middle and its pill; the roster where the picture is of it
+        const html = readFileSync(r.sheet, 'utf8');
+        expect(html).toContain(`<title>2x crops · ${name}</title>`);
+        for (const f of set.frames.filter(x => !x.optional)) { expect(html).toContain(f.name); expect(existsSync(join(out, `${f.name}--frame.png`)), f.name).toBe(true); expect(existsSync(join(out, `${f.name}--roster.png`)), f.name).toBe(!!f.crop?.includes('roster')); }
+      } finally { rmSync(dir, { recursive: true, force: true }); rmSync(out, { recursive: true, force: true }); }
+    });
+  }
+});
+
+describe('cropRects: standing parts a picture is of', () => {
+  const parts = { roster: [28, 28, 172, 831], 'portrait-2': [52, 69, 123, 123], scope: [28, 1868, 424, 264], pill: [2915, 28, 897, 88] };
+  test('without `also` the standing parts are left out; with it the named ones are cropped, padded, and the others stay out', () => {
+    expect(cropRects(parts, [3840, 2160]).map(c => c.name)).toEqual(['middle', 'pill']);
+    expect(cropRects(parts, [3840, 2160], { also: ['roster'] }).map(c => c.name)).toEqual(['middle', 'roster', 'pill']);
+    expect(cropRects(parts, [3840, 2160], { also: ['roster'] })[1]!.rect).toEqual({ x: 4, y: 4, w: 220, h: 879 }); // pad 24 each side, held to the picture
+    expect(cropRects(parts, [3840, 2160], { also: ['keys'] }).map(c => c.name)).toEqual(['middle', 'pill']); // a part the picture lacks adds nothing
+  });
+});
+
+describe('pickSets: which sets the command runs on a folder', () => {
+  const folder = (names: string[]) => proof(names, { size: [192, 108] });
+  test('every set the folder has a picture of, the others said as an older build\'s; a named set runs even when the folder lacks it (its pictures are then faults)', () => {
+    const only67 = folder(must067.slice(0, 2)), both = folder([...must.slice(0, 1), ...must067.slice(0, 1)]), none = folder([]);
+    try {
+      expect(pickSets(only67)).toEqual({ run: ['r067'], skipped: ['r059'] });
+      expect(pickSets(both)).toEqual({ run: ['r059', 'r067'], skipped: [] });
+      expect(pickSets(none)).toEqual({ run: [], skipped: ['r059', 'r067'] });
+      expect(pickSets(none, 'r067')).toEqual({ run: ['r067'], skipped: [] });
+      expect(() => pickSets(none, 'r118')).toThrow(/no set r118 in .*proofset\.json \(r059, r067\)/);
+    } finally { for (const d of [only67, both, none]) rmSync(d, { recursive: true, force: true }); }
   });
 });

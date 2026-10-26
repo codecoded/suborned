@@ -253,7 +253,7 @@ namespace Suborned.Play
         Transform Visual(string key, GameObject model)
         {
             if (model == null || !things.TryGetValue(key, out var th)) return null;
-            var t = th.t; var inst = Object.Instantiate(model, t, false); inst.name = "model"; MarkPerson(key, inst); /* brief 056 F: a robot is a person to the silhouettes; a car is not */
+            var t = th.t; var inst = Object.Instantiate(model, t, false); inst.name = "model"; modelSource[key] = model.name; MarkPerson(key, inst); /* brief 056 F: a robot is a person to the silhouettes; a car is not */
             // until it moves, a car stands along its street, never nose to the kerb: the getaway car along its exit lane; the official car by the
             // engine's heading (engine 0.33.1: Game.CarHeading always answers, its bay's long axis at the pickup). The host's own rule (across the
             // line from the car to "d:Meet driver") is gone (Suture's 0.2.122 finding: since the driver's point moved along the bay it laid the
@@ -271,6 +271,8 @@ namespace Suborned.Play
             return inst.transform;
         }
         readonly Dictionary<string, Transform> carModels = new();
+        /// <summary>The kit asset each view's model was made from (Visual), for the proofs (brief 067 L: the rival car is DK_Sedan_Rival).</summary>
+        readonly Dictionary<string, string> modelSource = new();
         readonly Dictionary<string, (Suborned.Robots.RobotIdle idle, bool alarmed)> robotHeads = new();
         static readonly List<string> robotKeys = new();
 

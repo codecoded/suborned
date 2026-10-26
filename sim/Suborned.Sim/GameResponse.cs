@@ -497,17 +497,28 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- check-in marks (Motive §5.1)
 
         /// <summary>A staff person's post now or next in their routine (a stop at a staffed door's place), and its shift (contiguous stops
-        /// there). The cast guard's post is the mission's (he holds it all mission).</summary>
+        /// there). The cast guard's post is the mission's (he holds it all mission). Engine 0.34.0 (brief 067 L, Pulse's note 3; GDD §05:
+        /// every staff post checks in every 90 s from its shift start): a stop at a post's waiting point (the people file's `beside`) is a stop
+        /// at the door it stands beside, so the relief who stands beside a post a cast person holds keeps her marks; a stop there right
+        /// before a stop at that door is a relief's wait (the last minute of her walk), not her shift.</summary>
         (string place, Pt at, int from, int to)? PostOf(Person p, int tick)
         {
             if (!IsStaff(p)) return null;
             var stops = StopsOf(p); if (stops == null) return null;
+            string PostAt(int k)
+            {
+                var pl = stops[k].place;
+                if (People2 == null || !People2.Beside.TryGetValue(pl, out var door)) return pl;
+                bool wait = k + 1 < stops.Count && stops[k + 1].place == door && stops[k + 1].from == stops[k].to;
+                return wait ? "" : door;
+            }
             for (int i = 0; i < stops.Count; i++)
             {
-                var (place, from, to, _) = stops[i];
+                var (_, from, to, _) = stops[i]; var place = PostAt(i);
+                if (place.Length == 0) continue;
                 Pt? door = null; foreach (var (id, at, kind) in S.Refuges) if (kind == "door" && id == "door:" + place) door = at;
                 if (!door.HasValue) continue;
-                int j = i; while (j + 1 < stops.Count && stops[j + 1].place == place && stops[j + 1].from == stops[j].to) j++;
+                int j = i; while (j + 1 < stops.Count && PostAt(j + 1) == place && stops[j + 1].from == stops[j].to) j++;
                 int end = p == GuardP ? INF : stops[j].to;
                 if (end > tick) return (place, door.Value, from, end);
                 i = j;
@@ -590,7 +601,7 @@ namespace Suborned.Sim
                         Note("person.missed", $"{Who(p)} expected {Who(q)} at {place} and grows suspicious.");
                         var at = PosOfPerson(p) ?? placeAt;
                         if (IsStaff(p) || PosOfPerson(p) == null) AddRep(a, "missing", p.Id, p, placeAt, Tick + T(IsStaff(p) ? R.PostCallS : R.CallS), "radio");
-                        else WalkToPhone(a, p, WalkerOf(p), "missing", at, opSpeed, Tick, placeAt, "");
+                        else WalkToPhone(a, p, WalkerOf(p), "missing", at, peopleWalk, Tick, placeAt, "");
                     }
                 }
             }

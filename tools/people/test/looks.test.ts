@@ -76,12 +76,15 @@ describe('the rules', () => {
     expect(faults(gone, crowd).some(f => f.rule === 'L-2' && /councillor/.test(f.what))).toBe(true);
     expect(personFigure({ pools: new Map() }, 'p-x', 'guard')).toBeNull();
   });
-  test('L-3, the models role figures share with the crowd, named: nobody but the driver wears Commuter D2 (brief 067 took it out of the passers\' pools), the rival is still Worker D5 and the officer the guard', () => {
+  test('L-3, the models role figures share with the crowd, named: nobody but the driver wears Commuter D2 (brief 067 took it out of the passers\' pools), the rival crew is Commuter D4 in three violet colourways and Commuter C6 in a fourth (brief 067 W1, Forma) and the officer the guard', () => {
     const by = Object.fromEntries(sharedModels(m).map(x => [x.role, x]));
-    expect(Object.keys(by).sort()).toEqual(['driver', 'rival', 'security']); // (the councillor was listed as a recolour of D4 until brief 067 dropped the stale entry: Vale C has his own model, brief 063)
+    expect(Object.keys(by).sort()).toEqual(['driver', 'rival', 'rival_b', 'rival_c', 'rival_d', 'security']); // (the councillor was listed as a recolour of D4 until brief 067 dropped the stale entry: Vale C has his own model, brief 063)
     expect(by.driver).toMatchObject({ model: 'd2m', crowd: [] });
     expect(by.security).toMatchObject({ model: 'guard', crowd: ['family/guard'] });
-    expect(by.rival!.model).toBe('workers_d5'); expect(by.rival!.crowd).toContain('family/passer'); // the open one: Forma gives the rival a figure of his own
+    // the rivals left Worker D5 (hard hat, amber trim, a dark uniform: the police to the eye) for D4's body, which the clerks draw too, and C6's, which three residents draw, so the colour alone tells a rival from a clerk: violet and pale, no cap, no gold
+    for (const id of ['rival', 'rival_b', 'rival_c']) { expect(by[id]!.model, id).toBe('d4'); expect(by[id]!.crowd, id).toContain('family/office'); }
+    expect(by.rival_d!.model).toBe('c6'); expect(by.rival_d!.crowd).toContain('family/passer');
     expect(crowd.filter(c => c.figure === 'd2m')).toEqual([]); // no keeper and no resident is in the driver's uniform and visor helmet
+    expect(crowd.filter(c => ['rival', 'rival_b', 'rival_c', 'rival_d'].includes(c.figure))).toEqual([]); // and no passer-by is in the crew's violet: the pool role/rival is the crew's alone
   });
 });

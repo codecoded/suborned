@@ -247,7 +247,7 @@ namespace Suborned.Sim
                         break;
                     case "safe":
                         if (Tick - Math.Max(LastShotTick, c.Until) < T(R.CrowdQuietS)) break;
-                        c.Run = RouteOf(c.At, c.Home); c.RunStart = Tick; c.Speed = opSpeed; c.St = "returning";
+                        c.Run = RouteOf(c.At, c.Home); c.RunStart = Tick; c.Speed = peopleWalk; c.St = "returning";
                         break;
                 }
             }

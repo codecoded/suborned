@@ -97,7 +97,9 @@ namespace Suborned.Play
         public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
         /// <summary>The fail camera's words (Fable, less.failcam): caption and tip by "fail|why"; {by} by the culprit's kind.</summary>
         public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
-        public string ObjGo = "Drive off in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind";
+        public string ObjGo = "Leave in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind"; // Fable 067: "Drive" is the Drive order's word now; Go leaves
+        /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): the Alt line of the Go wedge while Vale is not aboard (Go then withdraws the cell).</summary>
+        public string GoNoVale = "Go without Vale calls off the attempt. The cell gets away to try again.";
         public readonly Dictionary<string, string> GoWhy = new() { ["downed"] = "down", ["fighting"] = "fighting", ["sealed"] = "sealed", ["walked"] = "walks out" }, GoFate = new() { ["captured"] = "{who} would be captured.", ["walked"] = "{who} would walk out." };
         public readonly Dictionary<string, (string one, string many)> Holders = new() { ["mixed"] = ("hostiles", "hostiles") };
         /// <summary>A port of text.schema.ts roleOfId: the role of an id the engine names in Answer.ids.</summary>
@@ -281,7 +283,7 @@ namespace Suborned.Play
             }
             if (l.Opt("go") is JNode go) // brief 018 §6.5: the Go card and the roster flag
             {
-                GoNone = S(go, "none") ?? GoNone; GoLeaves = S(go, "leaves") ?? GoLeaves; GoSeen = S(go, "seen") ?? GoSeen; GoFlag = S(go, "flag") ?? GoFlag;
+                GoNone = S(go, "none") ?? GoNone; GoLeaves = S(go, "leaves") ?? GoLeaves; GoSeen = S(go, "seen") ?? GoSeen; GoFlag = S(go, "flag") ?? GoFlag; GoNoVale = S(go, "noVale") ?? GoNoVale;
                 if (go.Opt("why") is JNode gw) foreach (var kv in gw.Entries) GoWhy[kv.Key] = kv.Value.Str();
                 if (go.Opt("fate") is JNode gf) foreach (var kv in gf.Entries) GoFate[kv.Key] = kv.Value.Str();
             } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it

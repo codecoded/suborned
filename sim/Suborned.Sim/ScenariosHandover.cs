@@ -73,6 +73,22 @@ namespace Suborned.Sim
             var g = r.G;
             for (int k = 0; k < 120 && g.Preview("pressure", Inez).Witnesses == 0 && !g.Over; k++) r.To(g.Tick + T(1));
         }
+        /// <summary>Engine 0.34.0 (brief 067 A, Sky: the patrol "to the side of the service entrance"): the front routes waited for the forecourt
+        /// sweep to come onto the public door before they called (from 3:48 in route A, so the loop and the call ran over a sweep they then
+        /// waited out at the door); the sweep is the service yard's now and never sees the door, so they call at `from`. On a site whose sweep
+        /// sees the door they still wait for it. Bounded: a run that ends first ends the wait (S10 spun for ever on the yard site).</summary>
+        static void ToSweepAtDoor(Run r, int from = 0)
+        {
+            var g = r.G; r.To(Math.Max(g.Tick, from));
+            if (!g.SweepCoversEntrance) return;
+            ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): the yard sweep never sees the door, so no wait
+        }
+        /// <summary>Until the Enforcer may enter: the sweep (where it ever sees the door) is off it and the loop holds the entrance camera; bounded by the run's end.</summary>
+        static void ToEntryOpening(Run r, bool walkDone = false)
+        {
+            var g = r.G; var door = r.At("d:Office entrance");
+            while (!g.Over && (g.PatrolWatching(door) || !g.LoopOn || (walkDone && r.Op(Enf).Walk != null))) g.Step();
+        }
         static void RouteA(Run r, bool reroute = false)
         {
             var g = r.G;
@@ -83,12 +99,13 @@ namespace Suborned.Sim
             r.Done(Scout); HelpUntilTurned(r, Inez);
             // engine 0.28.0 (brief 055, the drawn walk): the Fixer's walks are shorter round the drawn solids and Inez is turned at 3:27, not 3:48; the
             // route still calls at the first sweep opening from 3:48, as it did, so Vale comes out at 5:53 and not at 4:32, when guard 74 crosses the
-            // service lane on his new way round the police post (he would see the carry and radio it: Alert 2, the patrol's fight)
-            while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick)) g.Step();
+            // service lane on his new way round the police post (he would see the carry and radio it: Alert 2, the patrol's fight). Engine 0.34.0: the
+            // yard sweep never sees the door, so it calls at 3:48, the tick the forecourt sweep's opening gave (its phase 28 s was on the door)
+            ToSweepAtDoor(r, T(228));
             r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:16 by the tether)
             r.Do(Fixer, "call", Inez);
             r.To(r.Send(Enf, "d:Office entrance"));
-            while (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn) g.Step();
+            ToEntryOpening(r); // engine 0.34.0: bounded by the run's end
             r.Do(Enf, "enter");
             if (reroute) r.Do(Tech, "reroute", "patrol");
             r.Done(Enf);
@@ -200,8 +217,10 @@ namespace Suborned.Sim
                 r.Eq(r.Op(Enf).BusyEnd - g.Tick, T(g.R.EnterS + g.R.EnterAlarmS), "Alert ≥ 2: the staff hide Vale, Enter takes 30 s longer");
                 // Changed (Sky 2026-10-15 fights): the response unit waits at the service lane; the Fixer and the Tech cover the exit
                 r.To(Max(r.SendTo(Fixer, LanePostA), r.SendTo(Tech, LanePostB)));
-                r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Fixer, Tech);
-                r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
+                // engine 0.34.0: the Fixer and the Tech fight the unit down even once Vale is out (on brief 067's data the second officer falls 1.4 s
+                // after Vale comes out, 5 s after at the cell's 1.8 m/s, which starts the Enter 5 s sooner; on 0.33.1 he fell 5.7 s before it)
+                r.FightOff(() => g.SecurityDown, 120, Fixer, Tech);
+                r.Is(g.SecurityDown, "the cell downs the response unit at the service lane");
                 r.Done(Enf);
                 r.Send(Enf, "d:Getaway bay");
                 while (!g.Over && !g.AtGetaway(r.Op(Enf).Pos)) g.Step(); // engine 0.33.1: at the car's body (car.footprint.reach)
@@ -263,7 +282,7 @@ namespace Suborned.Sim
                 ShotFrom(r, CauseIs(r, "vale-dead", "shot", true, Enf, "op", Enf), Enf, Vale); // the fail camera (ScenariosFailCause.cs): the Enforcer who fired, then Vale
             });
 
-            Add("S10", "140", "Route A, quiet: arriving shows nothing; Watch doesn't reveal the debt; Listen; loop; Help; call; wait out the patrol's sweep; enter; to the car. Calm, no shots, one contact.", r =>
+            Add("S10", "140", "Route A, quiet: arriving shows nothing; Watch doesn't reveal the debt; Listen; loop; Help; call; enter while the guard is at the café (engine 0.34.0, brief 067 A: the patrol sweeps the service yard and never sees the public door, so nothing at the door is timed to it); out by the service lane, which the yard sweep watches but where no machine sees an escorted Vale; to the car. Calm, no shots, one contact.", r =>
             {
                 var g = r.G;
                 r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
@@ -276,23 +295,27 @@ namespace Suborned.Sim
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700)); // the Enforcer waits east of the door, out of the guard's cone
                 r.Done(Scout);
                 HelpUntilTurned(r, Inez); // as many Helps as the card asks (the cast's temperament, §04)
-                while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick) || g.SweepSeesEntrance(g.Tick - 1)) g.Step(); // call as the patrol's sweep comes onto the door, from 3:48, so the Enforcer arrives under it and waits it out (engine 0.30.0: Pulse's sweep of 2026-10-24 covers the door 0-29.2 s and 70.9-100 s of its period, 6.4 s more than the old line's 0-26 and 74.1-100; at 3:48, phase 28.0, the old "covers now" call left 1.2 s, so he arrived into the opening)
-                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter (it was held from 0:34 by the tether)
+                // engine 0.34.0 (brief 067 A): 0.33.1 called as the forecourt sweep came onto the door (from 3:48: 4:30.9), so the Enforcer arrived
+                // under it and waited it out. The yard sweep never sees the door: the call is at 3:48, as route A's (RouteA), and nothing waits for it
+                r.Is(!g.SweepCoversEntrance, "the patrol's sweep is the service yard's: at no point of its round does it see the public door (brief 067 A)");
+                r.To(Math.Max(g.Tick, T(228)));
+                r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                r.Is(g.PatrolWatching(r.At("d:Office entrance")), "the patrol covers the entrance at the first opening");
-                while (g.PatrolWatching(r.At("d:Office entrance"))) g.Step();
-                r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "waiting for its cone to pass makes an opening");
+                r.Is(!g.PatrolWatching(r.At("d:Office entrance")), "at the door: the patrol is in the yard, not on the door");
+                ToEntryOpening(r); // the loop lands and holds the entrance camera
                 r.Do(Enf, "enter"); r.Done(Enf);
                 r.To(r.Send(Enf, "d:Getaway bay"));
                 r.Extract();
                 r.Eq(g.Result, Outcome.Success, "route A wins");
                 r.Eq(g.Gunfire, 0, "no shots");
+                r.Is(!g.Log.Exists(l => l.Code == "attention.reporting" || l.Code == "patrol.breaks"), "the yard sweep reports nobody and never breaks: an escorted Vale is seen by no machine (§07, ScanEscort)");
                 var d = Debrief.Of(g);
                 r.Eq(d.Contacts, 1, "one contact");
                 r.Eq(d.PublicSecurity, "calm", "calm streets");
                 r.Eq(d.InvestigationCause, "staged-distraction", "Inez's staged distraction can be traced");
-                r.Is(d.Route.Contains("entry-timed-between-sweeps"), "the route summary: entry timed between sweeps");
+                r.Is(!d.Route.Contains("entry-timed-between-sweeps") && !d.Route.Contains("patrol-diverted"), "the route summary claims no sweep gap at the door and no diversion: the patrol had no part in the entry (engine 0.34.0: RouteBot \"\")");
+                r.Is(d.Route.Contains("waitress-pulls-guard-away") && d.Route.Contains("entrance-camera-looped"), "the route summary: Inez pulls the guard away, the camera is looped");
             });
 
             Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; success. The Enforcer hit, Raised.", r =>
@@ -409,7 +432,7 @@ namespace Suborned.Sim
                 r.Is(g.SecurityArrives < shot, "here it is sooner than the shot's 45 s");
             });
 
-            Add("S16", "259", "Gunfire brings the rivals in 16 s; a patrol within 30 m breaks off to chase, cone visible.", r =>
+            Add("S16", "259", "Gunfire brings the rivals in 16 s; only a patrol within 30 m breaks off to chase (engine 0.34.0, brief 067 A: the patrol sweeps the service yard, beyond 30 m of a shot at the public door, so it keeps its sweep and its cone; N186 shows the chase from the yard).", r =>
             {
                 var g = r.G;
                 r.To(r.Send(Enf, "d:Office approach"));
@@ -417,11 +440,10 @@ namespace Suborned.Sim
                 r.Fire(Enf, GuardR);
                 r.Is(r.Until(() => g.Gunfire > 0, T(10)), "the first shot");
                 r.Eq(g.RivalAt, g.Tick + T(16), "gunfire draws the rivals in ahead of schedule");
-                r.Is(g.PatrolChasing, "the patrol nearby breaks its sweep to pursue");
+                var e = r.Op(Enf).Pos;
+                r.Is(!G.Within(before, e, g.R.PatrolBreakCm) && !g.PatrolChasing, $"the patrol, {G.Dist(before, e) / 100} m off in the service yard (beyond {g.R.PatrolBreakCm / 100} m), keeps its sweep");
                 r.Wait(T(1));
-                var after = g.PatrolPose()!.Value.pos; var e = r.Op(Enf).Pos;
-                r.Is(G.D2(after, e) < G.D2(before, e) || g.PatrolTracking, "the patrol turns on the shooter: it closes in, or with him in reach it stops to engage (Pulse §3.6)");
-                r.Is(g.PatrolPose().HasValue && !g.PatrolDown, "the pursuing patrol keeps a visible cone");
+                r.Is(g.PatrolPose().HasValue && !g.PatrolDown && !g.PatrolChasing, "and its sweep's cone");
             });
 
             Add("S17", "274", "A rerouted patrol doesn't chase; the rivals still come from the east street, spot the Enforcer and fire after their 2 s react.", r =>
@@ -476,6 +498,9 @@ namespace Suborned.Sim
                 // starts (it lands at 1:19, before the shot), so the shot comes before 1:45 and the unit, not the mark, is the shot's
                 r.Do(Tech, "reroute", "patrol");
                 r.Do(Fixer, "call", Inez);
+                // engine 0.34.0 (M067-B1): at 1.8 m/s the shot would come at 0:55.8, before his 1:00 mark, which would then call the unit itself: the
+                // Enforcer lets the mark pass first, as N10 does, so the unit is the shot's (45 s), before the 2:30 mark
+                { int mk = g.NextMarkOf(g.GuardP, g.Tick); if (mk - g.Tick < T(45)) r.To(mk + 1); }
                 // wait for a shot from behind: in range, out of his cone, and a clear line (the atom fountain blocks sight since the cover's blockers, Pulse §5.4)
                 bool Shot() { var gp = g.GuardPose()!.Value.pos; return gp.X < 2500 && !G.Within(gp, r.At("d:Café door"), 1400) && G.Within(r.Op(Enf).Pos, gp, 1400) && !g.GuardWatching(r.Op(Enf).Pos) && g.S.Sight(r.Op(Enf).Pos, gp, g.R.Eye); }
                 while (!g.Over && g.GuardPose()!.Value.phase == "walking to café" && !Shot()) g.Step();
@@ -690,7 +715,7 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 r.Send(Scout, "d:Café door");
-                while (!G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ActReachCm)) g.Step();
+                while (!g.Over && !G.Within(r.Op(Scout).Pos, g.PersonPos(g.Inez)!.Value, g.R.ActReachCm)) g.Step(); // engine 0.34.0: bounded by the run's end
                 r.Is(r.Op(Scout).Walk != null, "the Scout is still approaching");
                 r.Do(Scout, "watch", Inez);
                 r.Is(r.Op(Scout).Walk == null, "engaging nearby stops movement");
@@ -1093,6 +1118,7 @@ namespace Suborned.Sim
             SquadFireCases(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
             Pickup059(); // engine 0.32.0 (brief 059): route B at the service door, the rival crew of five, Drive, Sky's S1–S3 both ways (ScenariosPickup059.cs)
             Always059(); // engine 0.33.0 (brief 059, Sky's S1 = no): the gate, the late spring, the floor, crew destroyed, the crew as people, Motive's balance (ScenariosAlways059.cs)
+            Pace067(); // engine 0.34.0 (brief 067): the walk split, the run seen and suspicious, hiding in a held car loses, Go needs a driver, Pulse's posts (ScenariosPace067.cs)
         }
     }
 }

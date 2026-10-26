@@ -269,7 +269,7 @@ test('wave 2 is deterministic', () => {
 
 test('civic furniture stands at person scale; the monument planters are kit pieces (Latch round 3); the steward robot is gone from the block, and the generator still dresses it for a pinned older block', () => {
   for (const m of w.civic.filter(x => /cafe-(table|palm)-\d+$/.test(x.id))) expect(m.kit!.scale, m.id).toEqual([1, 1, 1]);
-  // 2026-10-26 (Sky on 0.2.122, briefs/067 J: "a butler robot fixed to the north of the Records building: it needs to go"): tools/plan/block.ts no longer exports the steward monument,
+  // 2026-10-26 (Sky on 0.2.122, briefs/067 J: "a butler robot fixed to the north of the Records building: it needs to go"): civic-block.adjust.json removes the steward monument from the block,
   // so no civic mass of the live world is the robot, and none draws a butler (the two service butlers of the capstone are street items at office doors, not civic masses)
   expect(w.civic.some(m => m.id === 'civic/foreground-civic-robot' || /^RobotButler/.test(m.kit?.id ?? ''))).toBe(false);
   // a pinned older block (a recorded run's) still has its monument and the generator still dresses it: civic-look.json swaps the 16k-triangle RobotButler for its 2.6k play copy

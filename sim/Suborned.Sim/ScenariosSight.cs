@@ -49,7 +49,7 @@ namespace Suborned.Sim
                 var q0 = g.QuoteMove(Scout, door);
                 r.Is(q0.RunSeenBy.Contains("camera:entrance"), "the engine's truth: the entrance camera would see the run");
                 r.Is(q0.Seen.Seen == "?" && q0.Seen.SeenBy.Count == 0 && q0.Seen.MaybeSeenBy.Contains("camera:entrance"), $"the card shows '?' (seen {q0.Seen.Seen}, maybe {string.Join(",", q0.Seen.MaybeSeenBy)})");
-                r.Eq(q0.Seen.AlertIfSeen, g.R.RunAlert, "and the Alert a seen run would raise");
+                r.Eq(q0.Seen.AlertIfSeen, g.Alert, "and the Alert a seen run would raise: the Alert now (engine 0.34.0, brief 067, Motive M067-B2: cell.runAlert is retired; a run is noticed on the watchers' clocks, attention.run)");
                 var far = g.QuoteMove(Scout, r.Stand("crew:fixer"));
                 r.Is(!far.Seen.MaybeSeenBy.Contains("camera:entrance"), "a route no camera could see, whatever its facing, shows no '?' for it");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Tech, Do = "watch", Target = "camera:entrance" }).code, "too-far", "the Tech watches the machines too (Sky 2026-10-18), but not from the start: too far"); // was only-scout before Sky 2026-10-18

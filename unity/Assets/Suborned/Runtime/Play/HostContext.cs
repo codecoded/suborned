@@ -159,12 +159,12 @@ namespace Suborned.Play
             var rs = new RingState { Plan = plan, OpenedAt = Time.unscaledTime, ByE = byE };
             var ch = plan.Choice; bool drawn = AnyDrawn();
             // brief 067 E2 (Glyph; Suture's 0.2.122 findings §2, Sky: "there are times I couldn't perform action on Inez"): with no calm way open
-            // for the selection, its locked calm ways are the ring's first wedges, shut (struck, dim, the short lock), at most four, the best-ranked
+            // for the selection, its locked calm ways are the ring's first wedges, shut (struck, dim, the short lock), at most five, the best-ranked
             // at 12 o'clock; the open violent ways follow, last and dashed, keeping at least one slot. The open ring is never widened
             bool calmOpen = ch.Order.Exists(w => plan.Row(w)?.I?.Order is Order co && !ContextRank.Violent(new ContextRank.Way { Do = co.Do }));
             if (!calmOpen)
             {
-                var shut = ShutCalmSegs(plan); int cap = Math.Min(4, RingMaxWays - (ch.Order.Count > 0 ? 1 : 0));
+                var shut = ShutCalmSegs(plan); int cap = RingMaxWays - (ch.Order.Count > 0 ? 1 : 0); // Glyph 067 Rev 2 E2: up to the ring's five ways (the open violent ways keep at least one slot)
                 for (int i = 0; i < shut.Count && i < cap; i++) rs.Segs.Add(shut[i]);
             }
             foreach (var w in ch.Order)
@@ -176,7 +176,7 @@ namespace Suborned.Play
                 s.Draws = o.Do == "fire" && !drawn; // the draw is in the price (brief 030 §5): the pill's "draws 0.6 s" (DrawS)
                 s.Harmful = Harmful(o, plan.T, drawn); // brief 038 §4.3: never lit, never taken by the second click
                 s.HoldWedge = HoldOn ? o.Do == "fire" : o.Do == "takedown" && o.How == "kill" || o.Do == "fire" && !Combatant(plan.T); // brief 041 (Sky): Kill and Knock out are on a click in the ring; only Fire is held // brief 024 rule 2, brief 038 §4.3: Kill and Fire on a non-combatant take the 0.5 s hold
-                if (o.Do == "go" && r.I.Outcome == "withdraw") { s.Violent = true; s.Harmful = true; s.HoldWedge = true; s.Obj = "badges/npc_councillor"; s.ObjStruck = true; } // brief 067 C5b (Glyph): Go before Vale ends the attempt: last, never lit, dashed, a struck Vale cameo, the 0.5 s hold
+                if (o.Do == "go" && r.I.Outcome == "withdraw") { s.Harmful = true; s.HoldWedge = true; s.Obj = "badges/npc_councillor"; s.ObjStruck = true; } // brief 067 C5b (Glyph Rev 2, Aster 2026-10-26): Go before Vale ends the attempt: last (ContextRank tier 9), never lit, a struck Vale cameo, the 0.5 s hold; no dashed outline and no loud mark (those are the violent ways')
                 s.Key = r.Key >= 0 && Selected[(int)r.By] ? r.Key : -1;
                 rs.Segs.Add(s);
             }

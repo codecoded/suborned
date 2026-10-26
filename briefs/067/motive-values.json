@@ -118,10 +118,11 @@
    "id": "M067-K3",
    "kind": "rule",
    "key": "the end of a fight the cell can no longer fight (BAL-YARD-AT-WILL: the Enforcer downed in the car with Vale at 7:30.0, the run idle to 8:30)",
-   "value": "(a) Hiding in a held car loses [S]: in the safe fight, with Vale in the getaway car and no operative standing outside it (every one down, or every standing one in the car), the rivals up and not broken, the blocker excepted (he keeps his lane), walk to the car, firing as they walk; the first within car-reach of its body takes Vale (fail rivals-reach-vale, as today). An operative standing outside again stops it: they go back to cover (how they walk, there and back, is Pulse's, as the press for the Vale holder; the probe models the walk there only). (b) The cell down [S]: once every operative is down (in the car or not), the mission fails at once (fail cell-down: 'The whole cell is down'), the fail camera on the last to fall. (c) Go needs a driver [S]: Go is taken only with a standing operative in the car; with only the downed aboard it is refused (car-no-driver: 'nobody aboard can drive'); any standing operative may still give it, from anywhere, once one is aboard. No new timer: the safe fight still ends by the cell's acts, (a), (b), Withdraw, or (loud) the seal.",
+   "value": "(a) Hiding in a held car loses [S]: in the safe fight, with Vale in the getaway car, the car held (a holder stands: Game.CarHolders not empty) and no operative standing outside it (every one down, or every standing one in the car), the rivals up and not broken, the blocker excepted (he keeps his lane), walk to the car, firing as they walk; the first within car-reach of its body takes Vale (fail rivals-reach-vale, as today). An operative standing outside again stops it: they go back to cover (how they walk, there and back, is Pulse's, as the press for the Vale holder; the probe models the walk there only). (b) The cell down [S]: once every operative is down (in the car or not), the mission fails at once (fail cell-down: 'The whole cell is down'), the fail camera on the last to fall. (c) Go needs a driver [S]: Go is taken only with a standing operative in the car; with only the downed aboard it is refused (car-no-driver: 'nobody aboard can drive'); any standing operative may still give it, from anywhere, once one is aboard. No new timer: the safe fight still ends by the cell's acts, (a), (b), Withdraw, or (loud) the seal.",
    "tag": "S",
    "reason": "GDD §06 makes the Enforcer 'any op' once Vale is in the car and says hiding in a held car loses; the engine had no way to lose that way: the rivals hold cover, the downed Enforcer can't be shot dead, the Tech in the car is no foe under ai.intent.final agent, and Go stays refused (car-held: rival-3). Measured on the probe (results/yard-at-will-0.33.1.txt, yard-at-will-k3.txt): 0.33.1 ends None at 8:30.0 (the script's end); with (a)-(c) the Scout falls at 7:38.3, rival-1 and rival-2 go for the car at 7:38.4 and rival-1 reaches it at 7:46.5: rivals-reach-vale. On every script of HEAD's route set and of the candidate set, (a)-(c) move no outcome; route-a-board's final hash moves at its Go tick (2675), where the three's boards land, the rivals' walk starts and Go is taken in one tick (read the condition after the tick's orders, and no hash moves).",
-   "checks": "BAL-YARD-AT-WILL: fails rivals-reach-vale (probe 7:46.5), the rivals' walk logged when the last operative outside goes down (7:38.3). K3-CELL-DOWN: every operative down with Vale in the car: fail cell-down that tick. K3-DRIVER: Go with only the downed Enforcer and Vale aboard is refused car-no-driver; the Scout boards (1 s) and Go is taken. Text for Fable: cell-down (fail), car-no-driver (refusal), the rivals' walk to the car (log)."
+   "checks": "BAL-YARD-AT-WILL: fails rivals-reach-vale (probe 7:46.5), the rivals' walk logged when the last operative outside goes down (7:38.3). K3-CELL-DOWN: every operative down with Vale in the car: fail cell-down that tick. K3-DRIVER: Go with only the downed Enforcer and Vale aboard is refused car-no-driver; the Scout boards (1 s) and Go is taken. Text for Fable: cell-down (fail), car-no-driver (refusal), the rivals' walk to the car (log).",
+   "amended": "2026-10-26, briefs/067/motive-square.md §4: (a) applies only while the car is held. A free car with the cell aboard waits for Go, and the rivals don't walk to it. As first given (no 'held'), route-a-board on round 1's square lost 0/8: the whole cell boarded a free car (rival-4 at 8.9 m), the walk began the tick Vale boarded (4:15.5) and put rival-4 inside the hold before the plan's Go a second later. With 'held' (probe PROBE_K3=2) and M067-SQ1/SQ2 it wins 8/8. BAL-YARD-AT-WILL is a held car (rival-3), so it still fails rivals-reach-vale (7:43.0 on round 1's site, the same with or without 'held')."
   },
   {
    "id": "M067-K4",
@@ -131,6 +132,26 @@
    "tag": "S",
    "reason": "The mismatch is in the GDD text, not between the two runs: §06 'cost' says +2 T per person hit and +2 T if they go down, 'a dropped guard = 4 T'; the rulebook also charges gunfire-trail +2 T once per shooting (the first shot at each target, hit or miss: Motive's fights addendum Q1, Sky-approved 2026-10-15), so the engine's dropped guard is 6 T (gunfire:guard 2, hit:guard 2, down:guard 2).",
    "gdd": "§06 cost: '+2 T once per shooting (the first shot at each target, hit or miss), +2 T per person hit (once), +2 T more if they go down (a dropped guard = 6 T)'; §02 Trail: 'people shot at or hit by gunfire'."
+  },
+  {
+   "id": "M067-SQ1",
+   "kind": "rule",
+   "owner": "Pulse (the motion) -> Keel (lands it)",
+   "key": "the hold is entered only on purpose (fight.hold; ai answers to fire; the walk to a post)",
+   "value": "In the final fight a hostile's answer to fire never ends inside the getaway car's hold (fight-hold-m of the car) or on its exit lane: a rival's step out of a shooter's line (the shielding cover, else the nearest free spot within 8 m with no line to him), a rival's step to cover while engaged, a police body's cover or close. If no spot outside serves, it stays where it stands. A walk to a post goes round the hold (the route with the hold's ground closed), unless the post or the walker is already inside it. Exceptions: the blocker (his lane is the road: he comes for the car) and the rivals walking to a held car with nobody outside (M067-K3 a). An advance on the car or on an operative may enter the hold: that is coming for the car, and it holds.",
+   "tag": "S",
+   "reason": "MC-11's own principle: only a hostile that comes for the car holds it. Without the planters, rival-4 (the late car's man) walks from the rival car to ambush-4 straight past the car (7.3 m at 4:15.0) after the whole cell has boarded a free car, and holds it; with K3 (a) the rivals then take Vale. route-a-board 8/8 -> 0/8 on round 1's square; with this rule (walk round the hold, probe bit 2) and K3 (a) on a held car, 8/8. Answers to fire (bit 1) measured no outcome in this set, but my tree067 run had a kite step end in the hold (motive.md §3): it is the same principle, kept as a guard.",
+   "checks": "SQ1-WALK: on round 1's site, route-a-board: rival-4's walk to ambush-4 keeps 8.9 m or more from the car; the car is free at Go; success 4:15.5. SQ1-STEP: a rival shot at from the car's side whose nearest blind spot lies inside the hold steps to the nearest one outside it (or stands). MC-11 clause 3 (Waymark): no car.held.answer or car.held.post in any played script."
+  },
+  {
+   "id": "M067-SQ2",
+   "kind": "rule",
+   "owner": "Pulse (the motion) -> Keel (lands it)",
+   "key": "the safe fight can't stall (ai: hold -> advance)",
+   "value": "In the final fight a rival with no foe in his effective reach for ai-engage-lapse-s (1 s, today's value: 'a body that has lost every foe from reach and sight stays stopped 1 s before it advances again') advances again, from hold as from engage: on the nearest operative standing on the street that he has cause to fire on (the Vale holder counts), to the cover that shields him from that operative, else to his stop point of that operative (ai-stop-reach-pct of his effective reach), not of the car's point. No new value. Police and the blocker hold their posts as built.",
+   "tag": "S",
+   "reason": "A rival in hold never advanced again, and an advance without cover stopped at 90 % of 15 m from the car's point, while the cell stands round the car: on round 1's square the last rivals held 14.6-17.6 m out (15.3 m from the nearest operative, just past the pistol's 15 m) from 4:23 to the end, with 2 of 5 down, so the crew never broke and fight.over never came. The planters were their cover to advance to. ra-h3 0/8 -> 8/8 (over 4:22.9, win 4:37.3-4:41.2), route-g-kill (rgk-h3) 0/8 -> 8/8 (5:56.9-5:58.9; it never won at 1.8 before). Keeping a rival at cover where he stands (only the open ones advance) brings rgk-h3's stall back.",
+   "checks": "SQ2-NO-STALL: on round 1's site, ra-h3 reaches fight.over (probe 4:22.9) and wins; a rival left in the open with nobody in reach logs his advance 1 s later; one at cover with a foe in reach keeps firing from it."
   }
  ],
  "keep": [
@@ -261,5 +282,12 @@
   "back": "route B needs the Reroute (+1 T) and the Enforcer's arrival after it lands: then 7:32.2, 4 T, A 0, and MC-1, 2, 4, 5, 6, 8-12 hold; MC-3 fails (entry seen by patrol unreachable), MC-7 as before",
   "splice": "tools/sim/site.ts hard-codes patrol.facing [0, 100] (east, away from the Office) and rerouteFacing [0, -100]; Vantage's points need [0, -100] and [-100, 0]",
   "fullSite": "with K's planters gone, route-a-board's cell is aboard at 4:15.5 and Go is refused to 5:16 (car-held: rival-4, whose kite step out of the Tech's line ended inside the 8 m hold); K3 (a) turns it into rivals-reach-vale; the square's board-and-go plans need re-composing on the final site (Waymark), and a kite step should not end inside the getaway car's hold (Vantage, Pulse)"
- }
+ },
+ "amendments": [
+  {
+   "date": "2026-10-26",
+   "doc": "briefs/067/motive-square.md",
+   "what": "M067-K3 (a) on a held car only; new M067-SQ1 (the hold is entered only on purpose) and M067-SQ2 (no stall); the square needs no new cover"
+  }
+ ]
 }

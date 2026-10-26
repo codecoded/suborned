@@ -34,8 +34,8 @@ namespace Suborned.Sim
             var ru = n["rules"]; ru.Only("file", "sha256", "paceCmPerS", "lingerS", "closeCm", "clearCm", "partS", "settleS", "stayS", "chanceStayS");
             d.LingerS = ru["lingerS"].Int(); d.CloseCm = ru["closeCm"].Int(); d.ClearCm = ru["clearCm"].Int(); d.PartS = ru["partS"].Int(); d.StayS = ru["stayS"].Int(); d.PaceCmPerS = ru["paceCmPerS"].Int();
             // the baked numbers are the rulebook's (Motive confirms them there): a file baked from other numbers is rejected
-            if (d.LingerS != r.RoundsLingerS || d.CloseCm != r.PartnersCloseCm || d.ClearCm != r.PartnersClearCm || d.PartS != r.PartnersPartS || d.StayS != r.SummonStayS || d.PaceCmPerS != r.CellSpeed)
-                throw new FormatException("rounds.rules (lingerS, closeCm, clearCm, partS, stayS, paceCmPerS) are not the rulebook's rounds.linger, rounds.close, rounds.clear, rounds.part, summon.stay and cell.speed: rebake (bun run rounds)");
+            if (d.LingerS != r.RoundsLingerS || d.CloseCm != r.PartnersCloseCm || d.ClearCm != r.PartnersClearCm || d.PartS != r.PartnersPartS || d.StayS != r.SummonStayS || d.PaceCmPerS != r.PeopleWalk) // engine 0.34.0 (brief 067, M067-B1): the city's walk (crowd.walk), not the cell's
+                throw new FormatException("rounds.rules (lingerS, closeCm, clearCm, partS, stayS, paceCmPerS) are not the rulebook's rounds.linger, rounds.close, rounds.clear, rounds.part, summon.stay and crowd.walk: rebake (bun run rounds)");
             if (n["meetings"].Items.Count > 0) throw new FormatException("rounds.meetings: chance meetings are not played yet (brief 022 §2.6): unknown = reject");
             foreach (var kv in n["servers"].Entries)
             {

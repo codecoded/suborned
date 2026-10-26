@@ -12,7 +12,7 @@
       "src": "Sky 2026-10-18 (the waitress walks the tables); briefs/014/pulse-cafe.md (a door is one person's post, so one server is drawn at the café door and she is the one who works the terrace)",
       "reason": "keyed by job and stop, never by id: any server who stands a door with tables beside it works them, in any café the plan draws. A server who works inside is not drawn, so she has no round."
     },
-    "pace": { "cmPerS": 140, "of": "values.op-speed-cm-s", "src": "life.json pedestrians.walkSpeed 1.4 m/s; rulebook op-speed-cm-s [S]", "reason": "the world's one walking pace, so Latch plays the one walk clip and a leg's seconds are its length over 1.4 m/s, rounded up to a whole second (never faster than the cell)." },
+    "pace": { "cmPerS": 140, "of": "values.people-walk-cm-s", "src": "life.json pedestrians.walkSpeed 1.4 m/s; rulebook people-walk-cm-s [S] (crowd.walk: the city's walk, split from the cell's op-speed-cm-s in engine 0.34.0, brief 067 M067-B1; Keel moved this pointer with it)", "reason": "the city's one walking pace, so Latch plays one walk clip for the city and a leg's seconds are its length over 1.4 m/s, rounded up to a whole second (never faster than the cell, which walks 1.8 m/s)." },
     "opening": {
       "settleS": 30,
       "src": "briefs/022-living-cafe.md consequences; GDD §07 schedule: 0:00 routines run, the camera opens on the cell",

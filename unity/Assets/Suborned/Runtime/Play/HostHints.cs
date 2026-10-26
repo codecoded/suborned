@@ -23,7 +23,13 @@ namespace Suborned.Play
         const string HintsPref = "Suborned.Play.Hints", LearnedPref = "Suborned.Play.HintsLearned";
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
-        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", H13Door, "H17" };
+        static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", H13Door, "H17", "H21", "H22" };
+        /// <summary>Fable's control tips (brief 067; Glyph D5 and F9): H21 "Cease fire: press X." at the first lasting fire order, H22 "Scroll to
+        /// switch." the first time two or more things are under the cursor. Each shows at once (no 8 s idle wait), over any hint, rings nothing,
+        /// once a run: spent when the HUD has shown and folded its line (or its moment passed before it showed), retired for good when the input
+        /// is used (a Cease, a step through the stack). Its line shows in play, not only under Alt (it rings nothing: the line is the hint).</summary>
+        public static readonly HashSet<string> TipHints = new() { "H21", "H22" };
+        bool tipSeen; int tipStepsAt, tipCeaseAt;
         static HashSet<string> learned;
         static HashSet<string> Learned() => learned ??= new(PlayerPrefs.GetString(LearnedPref, "").Split(',', StringSplitOptions.RemoveEmptyEntries));
         static void Learn(string id)
@@ -40,7 +46,7 @@ namespace Suborned.Play
         public float ToastUntil { get; private set; }
         bool runSeenPending, runSeenShown;
 
-        void ResetHints() { hintsDone.Clear(); HintNow = null; hintOrdersAt = 0; lastOrderTick = 0; Toast = null; runSeenPending = runSeenShown = false; }
+        void ResetHints() { hintsDone.Clear(); HintNow = null; hintOrdersAt = 0; lastOrderTick = 0; Toast = null; runSeenPending = runSeenShown = false; tipSeen = false; tipStepsAt = 0; tipCeaseAt = 0; }
 
         /// <summary>An order was taken (the player's): the idle clock restarts, and a pending toast shows.</summary>
         void OrderTaken()
@@ -57,6 +63,24 @@ namespace Suborned.Play
         {
             if (Text == null || Game.Over || Game.Tick % 5 != 0) return;
             if (!HintsOn) { HintNow = null; return; }
+            // Fable's tips (brief 067): one on show runs its own course (TipHints); else the first whose moment has come cuts in at once
+            if (HintNow != null && TipHints.Contains(HintNow.Id))
+            {
+                if (Gone(HintNow.Id)) { hintsDone.Add(HintNow.Id); Learn(HintNow.Id); HintNow = null; } // the input used: retired for good
+                else if (HintLineShowing) tipSeen = true;
+                else if (tipSeen || TipOver(HintNow.Id)) { hintsDone.Add(HintNow.Id); HintNow = null; } // shown and folded, or its moment passed: spent for the run
+                return;
+            }
+            if (!ShowBriefing)
+            {
+                var knownTips = Learned();
+                foreach (var h in Text.Hints2)
+                {
+                    if (!TipHints.Contains(h.Id) || hintsDone.Contains(h.Id) || knownTips.Contains(h.Id) || h.Line.Length == 0) continue;
+                    if (!Trigger(h.Id, out var tr, out var tp)) continue;
+                    HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = tr, Portrait = tp }; hintOrdersAt = Game.Orders.Count; tipSeen = false; tipStepsAt = StackSteps; tipCeaseAt = CeaseKeys; return;
+                }
+            }
             // GDD v0.24 (H13's door cause): the first time the public door is the next step and a wall hides it, the turn hint cuts in at
             // once, over any hint and without the idle wait; it is spent only by the door standing in clear view (DoorViewFrame)
             if (!ShowBriefing && HintNow is not { Id: "H13", Cause: "door" } && Trigger("H13", out var dr, out var dp) && trigCause == "door" && Text.Hints2.Find(x => x.Id == "H13") is { } h13)
@@ -66,7 +90,7 @@ namespace Suborned.Play
                 var learnedNow = Learned();
                 foreach (var h in Text.Hints2)
                 {
-                    if (h.Priority >= 0) break; if (hintsDone.Contains(h.Id) || learnedNow.Contains(h.Id) || h.Line.Length == 0) continue;
+                    if (h.Priority >= 0) break; if (TipHints.Contains(h.Id) || hintsDone.Contains(h.Id) || learnedNow.Contains(h.Id) || h.Line.Length == 0) continue;
                     if (!Trigger(h.Id, out var r2, out var p2)) continue;
                     HintNow = new HintShown { Id = h.Id, Line = h.Line, Ring = r2, Portrait = p2, Who = trigWho }; hintOrdersAt = Game.Orders.Count; return;
                 }
@@ -82,6 +106,7 @@ namespace Suborned.Play
             var known = Learned();
             foreach (var h in Text.Hints2)
             {
+                if (TipHints.Contains(h.Id)) continue; // the tips cut in above, never after the idle wait
                 if (h.Id != "H13" && (hintsDone.Contains(h.Id) || known.Contains(h.Id)) || h.Line.Length == 0) continue; // H13: each cause keeps its own spent state (Trigger)
                 if (!Trigger(h.Id, out var ring, out var portrait)) continue;
                 HintNow = new HintShown { Id = h.Id, Line = h.Id == "H13" && trigCause == "door" && h.DoorLine.Length > 0 ? h.DoorLine : h.Line, Ring = ring, Portrait = portrait, Who = trigWho, Cause = h.Id == "H13" ? trigCause : "" }; hintOrdersAt = Game.Orders.Count;
@@ -211,6 +236,10 @@ namespace Suborned.Play
                     if (!AttnHint(out ring, out portrait)) return false;
                     foreach (var (w, view, st, op) in Cues()) if (st >= 1) { trigWho = op; break; } // rings nothing: the watcher's own cue shows it
                     return true;
+                case "H21": // Fable 067 (Glyph D5; Sky on 0.2.122: "I wasn't sure whether to be pressing just X or hold RMB"): a lasting fire order stands and X was never used this run; rings nothing (the lock reticle shows it)
+                    return AnyFireOrder() && CeaseKeys == 0;
+                case "H22": // Fable 067 (Glyph F9): two or more things under the cursor (the stack tab is up) and no step yet this run; rings nothing (the tab and the dashed rings show it)
+                    return HoverStackCount >= 2 && StackSteps == 0;
                 case "H11": // brief 018 §6.6: anyone a Go would leave captured (a downed one not carried rings first, else the first standing one)
                     if (g.FightBranch.Length == 0 && !g.FightOn) return false;
                     foreach (var (name, fate, why) in LeftBehindNow()) // brief 018: anyone not in the car stays behind (LeftBehind); a downed one not carried is the warning's ring
@@ -247,8 +276,16 @@ namespace Suborned.Play
                 case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.InCar;
                 case "H20": return Given(o => o.Do == "drive-car", from) || g.CurStand != g.S.Stands[0];
                 case "H19": { foreach (var c in Cues()) if (c.stage >= 1) return false; return true; } // the agent moved on or out of sight, and the watcher cooled
+                case "H21": return CeaseKeys > tipCeaseAt; // X pressed (a Cease fire order sent): never the host's own cease when a new order replaces a fire
+                case "H22": return StackSteps > tipStepsAt; // a step with the wheel, Z or Tab
             }
             return false;
         }
+
+        /// <summary>A tip whose moment passed before the HUD could show it (the objective line held the slot): H21 once no lasting fire order
+        /// stands, H22 once the cursor left the stack.</summary>
+        bool TipOver(string id) => id switch { "H21" => !AnyFireOrder(), "H22" => HoverStackCount < 2, _ => true };
+        /// <summary>Some agent holds a lasting fire order now (the engine's Gun.Order).</summary>
+        bool AnyFireOrder() { for (int k = 0; k < 4; k++) if (Game.Ops[k].Gun.Order.Length > 0) return true; return false; }
     }
 }

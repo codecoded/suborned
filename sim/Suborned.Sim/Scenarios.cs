@@ -105,10 +105,10 @@ namespace Suborned.Sim
             Is(ok, $"{op} can {(run ? "run" : "walk")} to {place}{(ok ? "" : ": " + why)}");
             return Arrival(op);
         }
-        public int SendTo(string op, Pt at)
+        public int SendTo(string op, Pt at, bool run = false)
         {
-            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "move", Point = at });
-            Is(ok, $"{op} can walk to {at}{(ok ? "" : ": " + why)}");
+            var (ok, why) = G.Issue(new Order { Tick = G.Tick, Op = op, Do = "move", Point = at, Run = run });
+            Is(ok, $"{op} can {(run ? "run" : "walk")} to {at}{(ok ? "" : ": " + why)}");
             return Arrival(op);
         }
         public int Arrival(string op)
@@ -273,12 +273,23 @@ namespace Suborned.Sim
         static List<Scenario>? all;
         public static List<Scenario> All { get { if (all == null) { all = new List<Scenario>(); Handover(); } return all; } }
         public static Scenario? Find(string id) { foreach (var s in All) if (string.Equals(s.Id, id, StringComparison.OrdinalIgnoreCase)) return s; return null; }
-        public static Run Run(Engine.Inputs i, Scenario s)
+        public static Run Run(Engine.Inputs i, Scenario s) => Bounded(() =>
         {
             var r = new Run(Engine.New(i, s.Start)) { Inputs = i };
             s.Body(r);
             r.G.Finish();
             return r;
+        });
+        /// <summary>Engine 0.34.0 (brief 067: S10 spun for ever once the patrol's sweep left the public door): the most Step calls any game a
+        /// scenario (or an order script in the CLI) makes answers, a finished run's included: 100 minutes of mission clock, about 12 times the
+        /// longest run any scenario makes today (5,101 calls, BAL-YARD-FOCUS; `suborned-sim check` prints the most used) and 11 times a script
+        /// played to the 8:30 close; a spin past a run's end reaches it in milliseconds, a run that never ends in seconds.</summary>
+        public const int StepLimit = 60_000;
+        /// <summary>Run f with every game made on this thread bounded by `limit` Step calls (Game.HarnessStepLimit), as before once f ends.</summary>
+        public static T Bounded<T>(Func<T> f, int limit = StepLimit)
+        {
+            int was = Game.HarnessStepLimit; Game.HarnessStepLimit = limit;
+            try { return f(); } finally { Game.HarnessStepLimit = was; }
         }
         static Scenario Add(string id, string proto, string intent, Action<Run> body, Start? start = null)
         {

@@ -361,9 +361,9 @@ namespace Suborned.Sim
                 r.Is(Mem(r, 3).Gun.Down && g.BodyById("rival-3") != null && !g.Acts.Last().Kill, $"rival-3 is out at {Report.Clock(down)} (a body, brief 013)");
                 r.Send(Enf, "d:Office entrance"); // away from him before he wakes: he would shoot the man who took him down on sight (M059-3.4)
                 Tip059(r);
-                while (!g.Over && !g.SweepSeesEntrance(g.Tick)) g.Step();
+                ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): the yard sweep never sees the door, so no wait
                 r.Do(Tech, "loop", "entrance"); r.Do(Fixer, "call", Inez);
-                while (!g.Over && (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn || r.Op(Enf).Walk != null)) g.Step();
+                ToEntryOpening(r, walkDone: true);
                 r.Do(Enf, "enter"); r.Done(Enf);
                 r.Is(LogTick(g, "rivals.see-takedown") < 0, "no crewmate saw the takedown");
                 if (!r.Is(g.FightBranch == "safe", $"the safe fight ({g.FightBranch} {g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, Alert {g.Alert})")) return;
@@ -611,11 +611,11 @@ namespace Suborned.Sim
             r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
             r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
             r.Done(Scout); HelpUntilTurned(r, Inez);
-            while (g.Tick < T(228) || !g.SweepSeesEntrance(g.Tick)) g.Step();
+            ToSweepAtDoor(r, T(228)); // engine 0.34.0 (brief 067 A): bounded; the yard sweep never sees the door, so it calls at 3:48
             r.Do(Tech, "loop", "entrance");
             r.Do(Fixer, "call", Inez);
             r.To(r.Send(Enf, "d:Office entrance"));
-            while (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn) g.Step();
+            ToEntryOpening(r); // engine 0.34.0: bounded by the run's end
             r.Do(Enf, "enter");
             while (!g.Over && g.FightBranch.Length == 0)
             {

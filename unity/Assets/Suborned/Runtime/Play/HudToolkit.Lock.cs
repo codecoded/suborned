@@ -18,6 +18,8 @@ namespace Suborned.Play
         sealed class LockMark
         {
             public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr; public Paint Ring; public readonly List<int> Shooters = new();
+            /// <summary>Glyph 067 D3: when each shooter joined the lock (a later one's cameo slides into the row in 0.15 s; the set's own don't).</summary>
+            public readonly Dictionary<int, float> Joined = new();
             public float Born = -9f, Gone = -1f, Given = -9f, PulseAt = -9f; public bool Locked, Seen; public Vector2 At; public bool OnScreen;
         }
         readonly Dictionary<string, LockMark> reticles = new(); readonly List<string> reticleGone = new();
@@ -68,6 +70,8 @@ namespace Suborned.Play
                 else if (r.Gone >= 0f) { r.Gone = -1f; r.Born = now; r.Given = given; fresh.Add(r); } // set again
                 else if (given > r.Given + 0.05f) { r.Given = given; r.PulseAt = now; } // the same target given again: one pulse
                 r.Seen = true; r.Locked = locked; r.Shooters.Clear(); r.Shooters.AddRange(shooters);
+                bool setNow = now - r.Born < 0.01f; foreach (var k in shooters) if (!r.Joined.ContainsKey(k) || setNow) r.Joined[k] = setNow ? -9f : now; // the set beat brings its own faces; a later shooter slides in
+                if (r.Joined.Count > shooters.Count) foreach (var k in new List<int>(r.Joined.Keys)) if (!shooters.Contains(k)) r.Joined.Remove(k);
             }
             foreach (var r in reticles.Values) if (!r.Seen && r.Gone < 0f) r.Gone = now;
             // a re-target: an old reticle released this frame that shares a shooter with a new one: the hand-off line
@@ -92,7 +96,12 @@ namespace Suborned.Play
                     r.Disc.style.opacity = r.Locked || age >= 0f ? 1f : 0.7f; r.Cross.style.opacity = r.Locked || age >= 0f ? 1f : 0.55f;
                     // the shooters' faces under the disc
                     while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = Cameo(r.Faces, 12f, 2f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -4; }
-                    for (int i = 0; i < r.Faces.childCount; i++) { bool has = i < r.Shooters.Count; Show(r.Faces[i], has); if (has) CameoOf(r.Faces[i], r.Shooters[i]); }
+                    for (int i = 0; i < r.Faces.childCount; i++)
+                    {
+                        bool has = i < r.Shooters.Count; Show(r.Faces[i], has); if (!has) continue; CameoOf(r.Faces[i], r.Shooters[i]);
+                        float js = r.Joined.TryGetValue(r.Shooters[i], out var ja) && ja > 0f ? Mathf.Clamp01((now - ja) / 0.15f) : 1f, je = 1f - (1f - js) * (1f - js); // Glyph 067 D3: one more shooter's cameo slides into the row in 0.15 s
+                        r.Faces[i].style.translate = new Translate(Mathf.Lerp(10f, 0f, je), 0f); r.Faces[i].style.opacity = je;
+                    }
                     float fw = Mathf.Min(4, r.Shooters.Count) * 12f + 4f; r.Faces.style.left = ReticleD / 2f - fw / 2f;
                     r.Ring.MarkDirtyRepaint(); r.Root.BringToFront();
                 }

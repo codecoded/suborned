@@ -30,11 +30,11 @@ namespace Suborned.Sim
             Add("N79", "—", "Telling a tie needs a phone (Aster 2026-10-16, brief 013 E1; GDD §01: calls are voice, no networks). Waymark's early driver route: guard 29 killed beside the car at 2:31 (he sees it coming and struggles: brief 054 §3.3); the driver sees it and, a Mercenary at Alert 0, keeps quiet. His workmate (clerk 39) is indoors and nobody of his is within speaking range, so he must reach a phone first: the same walk as a report (the official entrance's desk), and the same stop. The Enforcer kills him at 2:40, before the call: nobody is told.", r =>
             {
                 var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] { Act(1510, Enf, "takedown", Guard29, "kill") }).ToArray());
+                Orders(r, DriverOpening().Concat(new[] { Act(400, Tech, "reroute", "patrol"), Act(1510, Enf, "takedown", Guard29, "kill") }).ToArray()); // engine 0.34.0 (brief 067 A): at its sweep's south end the yard patrol looks along the Office's south face to the official entrance; the Tech reroutes it over the kill (lands 1:25, away to 3:20)
                 var a = ActOn(r, Guard29);
                 r.Is(a.Noticed.Contains(g.Driver.Id) && !g.Reps.Exists(x => x.P == g.Driver && x.Kind != "tell"), "the driver saw it and reports nothing");
                 var tell = g.Reps.SingleOrDefault(x => x.P == g.Driver && x.Kind == "tell");
-                r.Is(tell != null && tell.Phase == "walk" && tell.LandAt == T(163) + 2, $"he goes to the official entrance's phone: react, the walk, the call at 2:43.2 (engine 0.33.1: he steps off his car's ground and walks round its tail; 2:42 before) ({(tell == null ? "none" : Report.Clock(tell.LandAt))})");
+                r.Is(tell != null && tell.Phase == "walk" && tell.LandAt == T(163) + 1, $"he goes to the official entrance's phone: react, the walk, the call at 2:43.1 (engine 0.33.1: he steps off his car's ground and walks round its tail; 2:42 before; engine 0.34.0, brief 067 L: 'Meet driver' 0.5 m off the car's tail, his walk 0.1 s shorter) ({(tell == null ? "none" : Report.Clock(tell.LandAt))})");
                 var c39 = g.PersonById(Clerk39)!;
                 r.Is(!ToldBy(c39, g.Driver) && !g.Log.Exists(l => l.Code == "witness.told"), "nobody is told at the sight");
                 Orders(r, MvTo(1570, Enf, new Pt(7690, -3370)), Act(1600, Enf, "takedown", Driver, "kill")); // engine 0.28.0 (brief 054 §3.3): guard 29, facing his post's way, sees him coming and struggles (+3 s): the driver's kill 3 s later
@@ -47,7 +47,7 @@ namespace Suborned.Sim
             Add("N80", "—", "The same walk, not stopped (brief 013 E1): the driver sees guard 29 killed at 2:31, walks to the official entrance's desk and calls his workmate clerk 39 at 2:42: the told entry lands with the call, not at the sight, and the log says by phone. Clerk 39, a Mercenary, keeps it to himself.", r =>
             {
                 var g = r.G;
-                Orders(r, DriverOpening().Concat(new[] { Act(1510, Enf, "takedown", Guard29, "kill") }).ToArray());
+                Orders(r, DriverOpening().Concat(new[] { Act(400, Tech, "reroute", "patrol"), Act(1510, Enf, "takedown", Guard29, "kill") }).ToArray()); // engine 0.34.0 (brief 067 A): at its sweep's south end the yard patrol looks along the Office's south face to the official entrance; the Tech reroutes it over the kill (lands 1:25, away to 3:20)
                 var tell = g.Reps.Single(x => x.P == g.Driver && x.Kind == "tell");
                 var c39 = g.PersonById(Clerk39)!;
                 r.To(tell.LandAt - 1);
@@ -127,7 +127,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio"), T(200)), $"a passer-by finds him and radios it ({Report.Clock(g.Tick)})");
                 var rep = g.Reps.FirstOrDefault(x => x.Act == a.Id && x.P != null && x.Kind == "down" && x.Phase == "radio");
                 if (rep == null) return; // the check above has failed: a clear failure, not a LINQ throw (the suite's whole-scenario tests read every run)
-                r.Eq((rep.P!.Id, Report.Clock(rep.LandAt)), ("p-records-office-73", "5:06.1"), "guard 73 radios it, landing at 5:06.1 (engine 0.28.0, brief 055 §7: the drawn door planting cuts her first look at the landing; was 5:02.1, Waymark 2026-10-19)");
+                r.Eq((rep.P!.Id, Report.Clock(rep.LandAt)), ("p-records-office-73", "5:03.6"), "guard 73 radios it, landing at 5:03.6 (engine 0.28.0, brief 055 §7: the drawn door planting cuts her first look at the landing; was 5:02.1, Waymark 2026-10-19; engine 0.34.0, brief 067 L: she walks to her waiting point beside the door, Pulse's, not onto the door, and looks at the landing 2.5 s sooner: 5:06.1 before)");
                 r.To(rep.LandAt);
                 r.Is(!g.DoorHeld(g.EnterDoor), "the unit is not there yet");
                 Orders(r, Act(3021, Enf, "enter"));
@@ -198,8 +198,8 @@ namespace Suborned.Sim
             {
                 var g = r.G;
                 OrdersWhileOn(r, DriverOpening().Concat(new[] {
-                    Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10 and 4:05, blind from 0:36 to 6:25 as the held loop was */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
-                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), Act(1960, Scout, "mislead", "rivals"), Act(1960, Tech, "reroute", "patrol"), // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
+                    Act(400, Tech, "reroute", "patrol") /* engine 0.34.0 (brief 067 A): the yard patrol would see the kills at the official car and the carry into the yard: rerouted over them (lands 1:25, away to 3:20) */, Act(1300, Tech, "loop", "pickup") /* Loop v2 (engine 0.31.0): re-spliced at 2:10 and 4:05, blind from 0:36 to 6:25 as the held loop was */, MvTo(1400, Enf, new Pt(7690, -3370)), Act(1510, Enf, "takedown", Driver, "kill"), MvTo(1540, Enf, new Pt(7625, -2880)), Act(1557, Enf, "takedown", Guard29, "kill"),
+                    Act(1617, Enf, "carry", Driver), MvTo(1647, Enf, ServiceDoor), Act(1875, Enf, "stash", ServiceDoorId), Act(1960, Scout, "mislead", "rivals"), /* engine 0.34.0: the 3:16 reroute is dropped: the 0:40 one, given as the Tech walks in, lands 2:02.6 and covers to 3:57.6 */ // engine 0.30.0 (the face margin): the carry reaches the door later, the stashes 6 s later
                     new Order { Tick = 1975, Op = Enf, Do = "move", Point = new Pt(7625, -2880), Run = true }, // engine 0.30.0: guard 29 now sees the driver's takedown and radios it (the face margin moved his walk), so he lies where he fell: no second carry
                     MvTo(2279, Enf, new Pt(7625, -2880)), Mv(2410, Scout, "crew:scout"), Act(2450, Tech, "loop", "pickup"), Act(3400, Enf, "takedown", Guard74, "knockout"), MvTo(3490, Enf, new Pt(7700, -3100)), Act(3700, Enf, "take"), // engine 0.28.0 (brief 054 §3.3): guard 74 sees him coming and struggles (+3 s): the move 3 s later
                     MvTo(4080, Enf, new Pt(2400, -6000)) }).ToArray()); // brief 018 (c018): no panic: without the final fight no fight is on

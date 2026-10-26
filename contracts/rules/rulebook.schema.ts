@@ -255,7 +255,7 @@ export const Rulebook = z.strictObject({
   // The cell's other verbs, security's answer to gunfire, and the cones that see (brief 011 A; Suture M-2, M-3): numbers only, every one a ref
   // (but loop.targets: the cameras the cabinet loops, brief 013 D).
   cell: ground({
-    speed: Ref, runSpeed: Ref, runAlert: Ref, reach: Ref, atReach: Ref,
+    speed: Ref, runSpeed: Ref, runAlert: Ref.optional() /* retired in engine 0.34.0 (brief 067, Motive M067-B2: a run is no found fault; attention.run counts it); optional only for runs pinned before it */, reach: Ref, atReach: Ref,
     // engine 0.31.0 (brief 058 §2, Loop v2): `run` (the tape plays loop-run-s from the landing, then the feed returns) replaces `tether`; exactly one of
     // the two (refined below). tether is kept optional only so runs pinned before 0.31.0 parse; rulebook.test.ts holds the live rulebook to run
     loop: z.strictObject({ s: Ref, trail: Ref, tether: Ref.optional(), run: Ref.optional(), targets: z.array(id).nonempty().optional() }) // targets: site camera ids, or 'world' (the city's own cameras); optional only for runs pinned before brief 013 (rulebook.test.ts holds the live one to it)
@@ -308,7 +308,7 @@ export const Rulebook = z.strictObject({
     cover: z.strictObject({ snap: Ref, qFull: Ref, qPartial: Ref, modPartial: Ref, retreat: Ref, stepCloser: Ref, stepGap: Ref, leave: Ref, stepFires: z.boolean().optional() }),
     engageLapse: Ref, reacquire: Ref, stopReach: Ref, overflow: Ref,
     seek: z.strictObject({ rival: Ref, police: Ref, response: Ref, ally: Ref, guard: Ref }),
-    rivalGone: Ref, guardReturn: Ref, patrolResume: Ref, rule: text,
+    rivalGone: Ref, guardReturn: Ref, patrolResume: Ref, noStall: text.optional() /* engine 0.34.0 (Motive M067-SQ2); optional only for runs pinned before it */, rule: text,
     // Pulse hostile-initiative.md with Sky's answers (engine 0.19.0): who a hostile fires on, per agent; optional only so a rulebook pinned before it parses
     intent: ground({
       police: z.strictObject({ foes: z.array(IntentFoe), face: Ref, warn: z.strictObject({ ticks: Ref, alert: Ref, maxAlert: Ref, perWatcher: Ref, trail: Ref }), closeIn: Ref, closeLevel: Ref }),
@@ -318,7 +318,7 @@ export const Rulebook = z.strictObject({
     }).optional(),
   }),
   // The crowd in a fight (Pulse §4): every number a ref.
-  crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
+  crowd: ground({ scatter: Ref, startle: Ref, startleFearful: Ref, run: Ref, walk: Ref.optional() /* engine 0.34.0 (Motive M067-B1): the city's walking pace, split from cell.speed; optional only for runs pinned before it */, fleeMax: Ref, quiet: Ref, occlude: Ref, pace: Ref.optional(), rule: text }), // pace (brief 023, Pulse): optional only so runs pinned before it parse (dialogue r017-r019); rulebook.test.ts holds the live rulebook to it
   // The summons (Motive, motive-lovers.md §1.3): numbers only, every one a ref.
   // together: retired in engine 0.29.0 (brief 054 §9.2); optional only so runs pinned before it parse (rulebook.test.ts holds the live one to none)
   summon: ground({ stay: Ref, walkMax: Ref, alertMax: Ref, perShift: Ref, together: Ref.optional(), rule: text }),
@@ -328,6 +328,7 @@ export const Rulebook = z.strictObject({
     turn: z.enum(['aborted', 'lost']), loop: z.literal('lost'), loopHeld: z.literal('ends').optional() /* retired in engine 0.31.0 with the tether (brief 058 §6); optional only for runs pinned before it */, reroute: z.literal('lost'), mislead: z.literal('lost'),
     enter: z.enum(['staff-report', 'quiet']), take: z.enum(['vale-reports', 'quiet']), carry: z.literal('lost'), carrying: z.literal('put-down'),
     takedown: z.literal('released').optional(), body: z.literal('lost').optional(), // brief 013 (optional only for runs pinned before it)
+    driveCar: z.literal('drives-on').optional(), // engine 0.33.1: a Drive under way is no cancel (optional only for runs pinned before it)
     rule: text,
   }),
   perception: ground({
@@ -377,6 +378,9 @@ export const Rulebook = z.strictObject({
     sense: z.strictObject({ camera: z.literal('cone'), patrol: z.literal('cone'), robot: z.literal('cone'), guard: z.enum(['cone', 'near']), officer: z.enum(['cone', 'near']) }),
     near: Ref, alert: Ref,
     report: z.strictObject({ scan: Ref, call: Ref }),
+    // engine 0.34.0 (brief 067, Motive M067-B2): a run in a clock-keeping watcher's sight lifts its clock to the notice mark, then counts as
+    // standing still; optional only for runs pinned before it (rulebook.test.ts holds the live rulebook to it)
+    run: ground({ at: z.literal('notice'), counts: z.literal('still'), rule: text }).optional(),
     rule: text,
   }).optional(),
   // Brief 013 (Sky 2026-10-16): takedowns, bodies, the people who report them, the response dial and what the campaign keeps. Optional here
@@ -429,6 +433,7 @@ export const Rulebook = z.strictObject({
   car: ground({ drive: text, pace: z.strictObject({ road: Ref, yard: Ref }).optional(), paceRule: text.optional(),
     // brief 059 K1–K4 (engine 0.32.0): Vale gets into his car at the official bay; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     pickup: z.strictObject({ valeIn: Ref, rule: text }).optional(),
+    footprint: z.strictObject({ len: Ref, w: Ref, clear: Ref, reach: Ref, rule: text }).optional(), // engine 0.33.1 (optional only for runs pinned before it)
     target: z.strictObject({ health: Ref, disabledAt: Ref, burn: Ref, blast: z.strictObject({ m: Ref, damage: Ref }), rule: text, src: text }).optional() }).optional(),
   fight: ground({
     // brief 059 (engine 0.32.0, Motive M059-3.7): `minus` is retired (the −1s are people who have left); optional only so runs pinned before it parse, and
@@ -438,6 +443,8 @@ export const Rulebook = z.strictObject({
     loud: z.strictObject({ officers: Ref, alert: Ref, civilian: Ref, entry: z.enum(['response', 'nearest']).optional() }),
     openRule: text.optional(), // brief 059: Sky's open questions S1–S3, each a value
     alwaysRule: text.optional(), // engine 0.33.0: the final fight always comes (Sky's S1 = no; Motive M059-S1.2 to S1.5)
+    unguarded: text.optional(), // engine 0.34.0 (Motive M067-K3): hiding in a held car loses, the cell down fails, Go needs a driver; optional only for runs pinned before it
+    holdRule: text.optional(), // engine 0.34.0 (Motive M067-SQ1): the hold is entered only on purpose; optional only for runs pinned before it
     hold: Ref, traced: z.boolean(), tracedReason: text, rule: text,
     block: Ref.optional(), blockers: Ref.optional(), blockNear: Ref.optional(), blockFar: Ref.optional(), // brief 018 §1: the exit lane's length and the blockers; optional only for runs pinned before it
     // Sky 2026-10-16 (fight.public): the default when a mission's rivals name none; optional so a rulebook pinned before it parses

@@ -149,7 +149,7 @@ namespace Suborned.Play
             var list = new List<Order>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && Drawn(k)) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
             if (list.Count == 0) { PopKey("not-drawn", null, SelectedWorld(), Feedback.Info, "No weapon drawn."); return; }
-            Send(list, null, SelectedWorld());
+            Send(list, null, SelectedWorld()); CeaseKeys++; // Fable 067: H21's gone-when
         }
 
         static readonly string[] Stances = { "hold", "return", "free" };

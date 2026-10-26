@@ -433,7 +433,7 @@ namespace Suborned.Sim
                 var path = route == null ? null : new Path(route);
                 if (path == null || path.Length == 0) { p.Refused = p.DistanceCm > w.MaxCm ? "out-of-range" : "no-clear-line"; return p; }
                 p.Walk = true; p.WalkTo = wk!.Value;
-                p.WalkS = (int)((path.Length + opSpeed * Hz - 1) / (opSpeed * Hz));
+                p.WalkS = (int)((path.Length + cellWalk * Hz - 1) / (cellWalk * Hz));
                 // the engine's walk, tick by tick at a walk (CloseIn: PaceOf walking): it stops at the first tick's position inside the ring with a line
                 int pace = PaceOf(op, false), k = 0; Pt q2 = op.Pos; var exposed = new SortedSet<string>(StringComparer.Ordinal); var foes = Combatants();
                 while (true)

@@ -136,10 +136,25 @@ namespace Suborned.Play
                 bool right = dir.x > 0.2f, left = dir.x < -0.2f;
                 float x = right ? at.x : left ? at.x - pw : at.x - pw / 2f, y = at.y - 15f + (Mathf.Abs(dir.x) <= 0.2f ? (dir.y < 0 ? -14f : 14f) : 0f);
                 w.Pill.style.left = x; w.Pill.style.top = y;
+                if (s.ObjStruck && s.Row?.I?.Order?.Do == "go") { altAt = new Vector2(x + pw / 2f, y + 30f + 4f); altLine = s.Row.I.Does; } // Fable 067 less.go.noVale: Go before Vale's Alt line
             }
+            RingAltFrame(host.Peeking ? altLine : "", altAt); altLine = "";
             ringFor = rs; ringPaint.MarkDirtyRepaint();
             RingFocusFrame();
         }
+
+        VisualElement ringAlt; Label ringAltText; string altLine = ""; Vector2 altAt;
+        /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): with Alt, the long line of the Go wedge before Vale is aboard (the ring's last, never
+        /// lit way with the struck Vale cameo) on a plate_dark under its pill, as the locked pill's Alt line (LockAltFrame); "" hides it.</summary>
+        void RingAltFrame(string line, Vector2 under)
+        {
+            if (ringAlt == null) { if (string.IsNullOrEmpty(line)) return; ringAlt = PlateDark(ringRoot, 26f, 0.3f); ringAlt.style.position = Position.Absolute; ringAlt.style.paddingLeft = 12; ringAlt.style.paddingRight = 12; ringAltText = Words(ringAlt, 12.5f); ringAltText.style.whiteSpace = WhiteSpace.Normal; ringAltText.style.maxWidth = 360; manifest.Add((ringAlt, "line", () => ringAltText.text)); }
+            bool on = !string.IsNullOrEmpty(line); Show(ringAlt, on); if (!on) return;
+            Text(ringAltText, line); float aw = float.IsNaN(ringAlt.resolvedStyle.width) ? 300f : ringAlt.resolvedStyle.width;
+            ringAlt.style.left = under.x - aw / 2f; ringAlt.style.top = under.y; ringAlt.BringToFront();
+        }
+        /// <summary>The proof reads it: the ring's Alt line now ("" hidden).</summary>
+        public static string RingAltShown => live?.ringAlt != null && live.ringAlt.resolvedStyle.display != DisplayStyle.None ? live.ringAltText.text : "";
 
         VisualElement ringFocusEl;
         /// <summary>The thing a hovered wedge names, shown in the world (Sky 2026-10-22: "looping what?"): a pulsing turquoise-light ring round

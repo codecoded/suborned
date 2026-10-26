@@ -276,7 +276,7 @@ namespace Suborned.Play
                 {
                     var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
                     if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, "rival"); } // engine 0.33.0: a rival taken down is a body like anyone's, in his own clothes
-                    else { Person(key, Family(job), shape: Shape(job)); Dress(key, PersonFigure(p)); }
+                    else { Person(key, Family(job), shape: Shape(job)); Dress(key, BodyFigure(p)); }
                 }
                 bool down = p.Down || b.Seizing;
                 if (down) // the person's own view hides; the body draws
@@ -290,6 +290,22 @@ namespace Suborned.Play
                 if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); carriers[key] = OpKeys[(int)b.Carrier.Value]; continue; } // over the carrier's shoulder
                 Set(key, b.At, true, Radius);                                            // where they fell, or were put down
             }
+        }
+
+        /// <summary>Pulse 067 (briefs/067/pulse.md §1.3): a body wears the figure its person was drawn in: a walker's is DressCrowd's (re-picked when
+        /// walkers who set out together drew the same), not the plain pick, so nobody changes clothes when knocked out (16 of the 126 did); the
+        /// cast and anyone not drawn yet take the plain pick.</summary>
+        string BodyFigure(Person p) => walkerIndex.TryGetValue(p, out var bw) && bw < crowdKeys.Length && figs.TryGetValue(crowdKeys[bw], out var wf) ? wf.id : PersonFigure(p);
+        /// <summary>For the proofs (Pulse 067): the walkers whose body would change figure under the plain pick (DressCrowd re-picked them), and how
+        /// many bodies drawn now wear another figure than their walker did (0 since the fix).</summary>
+        public (int repicked, int bodiesChanged) BodyFigureCheck()
+        {
+            var g = host.Game; int re = 0, changed = 0; if (g == null) return (0, 0);
+            if (walkerIndex.Count == 0) for (int i = 0; i < g.Walkers.Count; i++) walkerIndex[g.Walkers[i].P] = i;
+            for (int i = 0; i < g.Walkers.Count && i < crowdKeys.Length; i++) if (figs.TryGetValue(crowdKeys[i], out var wf) && PersonFigure(g.Walkers[i].P) != wf.id) re++;
+            foreach (var b in g.Bodies)
+                if (walkerIndex.TryGetValue(b.P, out var bi) && bi < crowdKeys.Length && figs.TryGetValue(crowdKeys[bi], out var w) && figs.TryGetValue("body/" + KeyOf(b.P), out var bf) && bf.id != w.id) changed++;
+            return (re, changed);
         }
 
         static readonly Color RobotColour = new(0.78f, 0.8f, 0.82f);

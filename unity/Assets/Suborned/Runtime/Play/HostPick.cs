@@ -34,17 +34,26 @@ namespace Suborned.Play
             foreach (var (n, x) in views.All())
             {
                 if (!x || !x.gameObject.activeInHierarchy) continue;
-                if (n.StartsWith("crowd/") || n.StartsWith("act/")) continue;
+                if (n.StartsWith("act/") || n.StartsWith("crowd/") && !CrowdSecurityView(n)) continue; // Pulse 067 W2: the crowd's shift guards are pickables ("Guard"); passers-by never
                 var t = TargetOf(x); if (t == null) continue;
-                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
+                float up = t.Kind is "op" or "person" or "bystander" or "hostile" or "rivals" or "security" or "patrol" or "unit" || t.Security ? 1.0f : t.Kind == "car" ? 0.8f : t.Kind is "body" or "stash" ? 0.25f : 0f;
                 pickables.Add(new Pickable { T = t, Anchor = x.position + Vector3.up * up, Name = OneWord(t) });
             }
             return pickables;
         }
 
+        /// <summary>Pulse 067 W2: a crowd view whose walker is security (Person.Civilian false), from its key alone (no target built).</summary>
+        bool CrowdSecurityView(string n)
+        {
+            if (Game == null || n.Length <= 6) return false; int ci = 0;
+            for (int i = 6; i < n.Length; i++) { char c = n[i]; if (c < '0' || c > '9') return false; ci = ci * 10 + (c - '0'); } // "crowd/<n>", parsed without a string a view
+            return ci < Game.Walkers.Count && !Game.Walkers[ci].P.Civilian;
+        }
+
         /// <summary>A target's one-word name for the hover chip.</summary>
         public string OneWord(Target t) => t.Kind switch
         {
+            "crowd" when t.Security => FirstWord(t.Label.StartsWith("an ") ? t.Label[3..] : t.Label.StartsWith("a ") ? t.Label[2..] : t.Label), // Pulse 067 W2: "Guard"
             "op" => char.ToUpperInvariant(t.Key[0]) + t.Key[1..],
             "person" => FirstWord(Name(t.Key)),
             "camera" => "Camera", "cabinet" => "Cabinet", "door" => "Door", "car" => "Car", "patrol" => "Patrol", "rivals" => "Rivals",
@@ -81,7 +90,7 @@ namespace Suborned.Play
         /// <summary>Set by PointerHover: the hovered thing's anchor and name for the HUD.</summary>
         void HoverFeedback(Target t)
         {
-            if (t == null || t.Kind is "crowd") { HoverAnchor = null; HoverName = ""; return; }
+            if (t == null || Passer(t)) { HoverAnchor = null; HoverName = ""; return; } // Pulse 067 W2: a shift guard is named on hover ("Guard"); a passer-by never
             foreach (var p in Pickables()) if (p.T.Kind == t.Kind && p.T.Key == t.Key) { HoverAnchor = p.Anchor; HoverName = p.Name; return; }
             var w = TargetWorld(t); HoverAnchor = w; HoverName = w.HasValue ? OneWord(t) : "";
         }
@@ -97,15 +106,15 @@ namespace Suborned.Play
         /// <summary>Brief 067 F8 (Glyph): a candidate under the cursor ranked for hover and the right button: first whether the selection has an
         /// open calm way on it (0), else any row (1), else none (2), then its kind (a being 0, a body or a downed agent 1, a camera 2, the car or a
         /// stand 3, the door marker, the cabinet or a stash 4, a passer-by 9). The rows are the selection's own (ContextFor), asked once a tick
-        /// for each candidate (a crowded spot has two to four).</summary>
+        /// for each candidate (a crowded spot has two to four). Pulse 067 W2: a shift guard in the crowd is a being (0), ranked by its rows.</summary>
         float PickRank(Target t, bool rows = true)
         {
             int kind = t.Kind switch
             {
                 "person" or "hostile" or "patrol" or "rivals" or "security" or "unit" or "bystander" => 0, "body" => 1, "op" => 1, "camera" => 2, "car" or "stand" => 3,
-                "door" or "cabinet" or "stash" => 4, "crowd" => 9, _ => 5,
+                "door" or "cabinet" or "stash" => 4, "crowd" => t.Security ? 0 : 9, _ => 5,
             };
-            if (t.Kind == "crowd") return 3 * 10 + kind; // a passer-by: never before anything with a row
+            if (Passer(t)) return 3 * 10 + kind; // a passer-by: never before anything with a row
             return (rows ? RowRank(t) * 10 : 0) + kind;
         }
         /// <summary>0: the selection has an open calm way on t; 1: a row (locked, or only violent); 2: none. Cached a tick, a selection and an order count.</summary>
@@ -140,10 +149,12 @@ namespace Suborned.Play
             return stack.Count == 0 ? null : stack[stackIndex % stack.Count];
         }
 
+        /// <summary>Steps through an overlap stack this run (the wheel, Z, Tab): H22's gone-when (Fable 067).</summary>
+        public int StackSteps { get; private set; }
         /// <summary>Tab or the wheel over overlapping things: the next one is what a right click hits (its name on the chip).</summary>
         void StepStack(bool back = false)
         {
-            if (stack.Count < 2) return; stackIndex = (stackIndex + (back ? stack.Count - 1 : 1)) % stack.Count; intentKey = ""; PointerHover(stackAt);
+            if (stack.Count < 2) return; stackIndex = (stackIndex + (back ? stack.Count - 1 : 1)) % stack.Count; intentKey = ""; StackSteps++; PointerHover(stackAt);
             Status = $"{OneWord(stack[stackIndex])} ({stackIndex + 1} of {stack.Count})";
         }
 

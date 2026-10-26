@@ -131,7 +131,7 @@
       "rule": "G-2b",
       "from": 122,
       "to": 118,
-      "reason": "Lowered (Splice, briefs/067 J; Sky on build 0.2.122: \"There's a butler robot fixed to the north of the Records building: it needs to go\"): tools/plan/block.ts no longer exports the steward monument (nav solid foreground-civic-robot), so the block, the world, the walk grid, the cover file and the site lose it: the 4 cells G-2b counted at the monument (a blocked cell whose solid was drawn narrower than the sim's 1.5 m footprint) are gone."
+      "reason": "Lowered (Splice, briefs/067 J; Sky on build 0.2.122: \"There's a butler robot fixed to the north of the Records building: it needs to go\"): civic-block.adjust.json removes the steward monument (nav solid foreground-civic-robot) from the block, so the block, the world, the walk grid, the cover file and the site lose it: the 4 cells G-2b counted at the monument (a blocked cell whose solid was drawn narrower than the sim's 1.5 m footprint) are gone."
     },
     {
       "date": "2026-10-26",

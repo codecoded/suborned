@@ -68,7 +68,7 @@ namespace Suborned.Sim
         public string Seen = "no";                              // yes: a known watcher sees it; ?: none known does, an unknown one could; no
         public readonly List<string> SeenBy = new List<string>();      // known watchers that see it now (the true answer)
         public readonly List<string> MaybeSeenBy = new List<string>(); // unknown watchers that could (in their farthest sight, on a clear line): "?"
-        public int AlertIfSeen;                                 // Alert if a run is seen (cell.runAlert), for "yes" and "?" alike
+        public int AlertIfSeen;                                 // Alert if a run is seen, for "yes" and "?" alike: the Alert now since engine 0.34.0 (cell.runAlert retired; attention.run)
     }
 
     public sealed partial class Game
@@ -777,7 +777,7 @@ namespace Suborned.Sim
         /// watching now (looped, rerouted) shows nothing: the cell did that. The outcome never reads this; only the card does.</summary>
         public SeenQuote SeenAt(IReadOnlyList<Pt> points)
         {
-            var q = new SeenQuote { AlertIfSeen = Math.Max(Alert, R.RunAlert) };
+            var q = new SeenQuote { AlertIfSeen = Alert }; // engine 0.34.0 (brief 067, Motive M067-B2): a run seen raises no Alert by itself (attention.run notices it)
             foreach (var w in WatcherIds())
             {
                 var sh = ShapeOf(w); if (!sh.HasValue || !sh.Value.Live) continue;

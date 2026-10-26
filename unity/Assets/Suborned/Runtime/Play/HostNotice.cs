@@ -99,7 +99,8 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The person id under the cursor when it is a civilian or a security person on the street (never the cell, the door guard or Vale).</summary>
+        /// <summary>The person id under the cursor when it is a civilian or a security person on the street (never the cell, the door guard or Vale;
+        /// a shift guard in the crowd is one: Pulse 067 W2).</summary>
         string HoverPersonId()
         {
             var t = Hover; if (t == null) return "";
@@ -115,6 +116,9 @@ namespace Suborned.Play
         /// <summary>For the perf probe: cones built (BuildCone) and point tests made since the last read.</summary>
         public static int ConeBuilds, ConeQueries;
 
+        /// <summary>Pulse 067 W2: the act a shift guard's hover ring is read for when nothing is armed. Security notices every witness.notice act
+        /// all round within reach on a clear line (Game.NoticesAt), so any act draws the same ring; the takedown is the one the cell fears most.</summary>
+        const string SecuritySightAct = "takedown";
         readonly List<(string id, string act, float alpha, bool body)> coneWant = new();
         readonly List<(long d, string id)> coneNear = new();
         static readonly string[] ConeCast = { "waitress", "driver" };
@@ -140,6 +144,10 @@ namespace Suborned.Play
                 string act = "";
                 if (armed is { } a && (g.CaresAbout(hid, a.act) || a.eyes.Contains(hid))) act = a.act;
                 else foreach (var (la, lp) in LiveActs()) if (g.NoticesNow(hid, la, lp)) { act = la; break; }
+                // Pulse 067 W2 (Sky on 0.2.122: "guard characters being used that aren't guards"): a shift guard in the crowd, hovered, shows his sight
+                // (security sees every act all round within reach: the engine's ring) once the cell has learned the guard's (a Watch on the door guard),
+                // as the door guard's cone shows on hover (brief 067 F rule 1); nothing armed is needed. Unlearned: only the act rules above
+                if (act.Length == 0 && Hover is { Kind: "crowd", Security: true } && g.Known("guard") is { Sight: true }) act = SecuritySightAct;
                 if (act.Length > 0) want.Add((hid, act, 1f, armed is { } ab && ab.act == act && ab.body));
             }
             if (Peeking && armed is { } aa)

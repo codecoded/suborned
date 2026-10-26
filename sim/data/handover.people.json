@@ -144,10 +144,10 @@
   "cafe-table-7-seat-1": [100,-4],
   "cafe-table-7-seat-2": [-46,89],
   "office-bay": "kerb",
-  "office-entrance": "door",
+  "office-entrance": "kerb",
   "office-entrance-stand-00": "kerb",
   "office-entrance-stand-01": "kerb",
-  "official-entrance": "door",
+  "official-entrance": "kerb",
   "official-entrance-stand-00": "kerb",
   "official-entrance-stand-01": "kerb",
   "s1-gardens": "kerb",
@@ -180,6 +180,13 @@
   "t1-records-stand-23": "kerb"
  },
  "facesFrame": "face = how a person stands at the place (brief 054 §3.3): [x, y] a direction (a seat, its chair's face), \"door\" out of the place's entrance, \"to:<place>\" toward that place, \"kerb\" toward the nearest carriageway; a home has none (inside)",
+ "beside": {
+  "office-entrance-stand-00": "office-entrance",
+  "office-entrance-stand-01": "office-entrance",
+  "official-entrance-stand-00": "official-entrance",
+  "official-entrance-stand-01": "official-entrance"
+ },
+ "besideFrame": "beside = a post's waiting point and the staffed door it stands beside (brief 067 L, Pulse): a guard whose shift is at the point holds that door's post (her check-in marks, engine 0.34.0); a stop there right before a stop at the door is a relief's wait, not her shift",
  "needs": {
   "sizes": ["large","small","standard"],
   "records": {

@@ -75,7 +75,7 @@ namespace Suborned.Sim
                 GuardAlly = !GuardDown && GuardGun.Health == GuardGun.Max && !GuardEngaged && !SawCell(GuardP);
                 if (GuardAlly) FightWhy.Add("guard-fights-them");
                 rivalsAbsorbed = true; // the crew is the ambush now
-                Note("fight.safe", $"The final fight: the rival crew ({Hostiles.Count}) lies in wait for the extraction.");
+                if (FightOverTick != Tick) Note("fight.safe", $"The final fight: the rival crew ({Hostiles.Count}) lies in wait for the extraction."); // engine 0.34.0: not when the crew is destroyed at the fight's start (rivals.wiped is the one line, CrewFloor)
             }
         }
 

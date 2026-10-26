@@ -268,7 +268,7 @@ namespace Suborned.Sim
             // brief 054 §2.1 (engine 0.28.0): a Watch on a person that would show nothing the cell can act on, free; the host draws no row
             "nothing-to-see",
             // brief 018 (Sky 2026-10-18): Board and Go
-            "board-running", "board-tethered", "in-car", "car-empty", "fire-carrying-vale",
+            "board-running", "board-tethered", "in-car", "car-empty", "car-no-driver", "fire-carrying-vale",
             // brief 023 (Motive 2026-10-19, rulebook fight.over): no fire order on a final-fight hostile once the final fight is over
             "fight-over",
             // brief 027 (EXPERIMENTAL, fight.lab): a volley or the field the agent's charge can't pay (with charge off: no volleys left this fight)

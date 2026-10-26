@@ -376,8 +376,9 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
   test('tuning.md §8.3 (Sky 2026-10-21): fire on the move, the tables for every shooter; a running target ×850 past point blank, never with cover', () => {
     const t = (d: number, mods: R.AccMod[]) => R.accuracy(rb, people, 'pistol', d, mods);
     // trained: point blank, effective, long × stand, walk, run toward or across, run away
-    expect([4, 12, 15.5].map((d) => [t(d, []), t(d, ['moving']), t(d, ['running']), t(d, ['runningAway'])])).toEqual([[1000, 500, 250, 125], [750, 375, 187, 93], [400, 200, 100, 50]]);
-    expect([4, 12, 15.5].map((d) => [t(d, ['untrained']), t(d, ['moving', 'untrained']), t(d, ['running', 'untrained']), t(d, ['runningAway', 'untrained'])])).toEqual([[750, 375, 187, 93], [562, 281, 140, 69], [300, 150, 75, 37]]);
+    // engine 0.34.0 (brief 067, Motive: mod-running 250 -> 375): a run toward or across fires at three-eighths (was a quarter)
+    expect([4, 12, 15.5].map((d) => [t(d, []), t(d, ['moving']), t(d, ['running']), t(d, ['runningAway'])])).toEqual([[1000, 500, 375, 125], [750, 375, 281, 93], [400, 200, 150, 50]]);
+    expect([4, 12, 15.5].map((d) => [t(d, ['untrained']), t(d, ['moving', 'untrained']), t(d, ['running', 'untrained']), t(d, ['runningAway', 'untrained'])])).toEqual([[750, 375, 281, 93], [562, 281, 210, 69], [300, 150, 112, 37]]);
     expect(t(12, ['targetRunning'])).toBe(637); expect(t(4, ['targetRunning'])).toBe(1000); // not at point blank
     expect(t(12, ['targetRunning', 'cover'])).toBe(637); // one step, never stacked with cover
     expect(t(4, ['cover'])).toBe(1000); // tuning.md §8.4 (Sky 2026-10-21): inside point blank cover doesn't count, as in the lab
@@ -398,7 +399,7 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     const h = rb.weapons.health, n = (r: string) => num(rb, people, r);
     expect([h.enforcer, h.op, h.guard, h.officer, h.rival, h.patrol, h.civilian, h.responseOfficers].map(n)).toEqual([6, 4, 3, 3, 3, 4, 2, 2]);
     expect([rb.weapons.costs.hit, rb.weapons.costs.down, rb.alert.gunfire, rb.weapons.costs.drawSeenSecurity, rb.weapons.costs.drawSeenPeople].map(n)).toEqual([2, 2, 2, 2, 1]);
-    expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([280, 30, 5]);
+    expect([rb.cell.runSpeed, rb.cell.enter.alarm, rb.weapons.costs.loudHold].map(n)).toEqual([360, 30, 5]); // engine 0.34.0 (brief 067, Motive): the run 2.8 -> 3.6 m/s, twice the cell's 1.8 walk
   });
   test('brief 030: a fire order out of reach walks in, outside the lab too; a gun the fight drew holsters 4 s after it (Sky 2026-10-20)', () => {
     expect(rb.weapons.close).toBe(true);
@@ -575,10 +576,24 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(rb.memory.acts['saw-getaway']).toEqual({ facts: ['cell-car', 'place-time'] }); // Motive M059-2.4
   });
 
+  test('engine 0.34.0 (brief 067, Motive M067-B1, B2, K3, SQ1, SQ2): the walk split, the run seen and suspicious, hiding in a held car loses', () => {
+    expect([n(rb.cell.speed), n(rb.crowd.walk!), n(rb.cell.runSpeed)]).toEqual([180, 140, 360]); // the cell 1.8 m/s; the city keeps 1.4 (crowd.walk); the run twice the cell's walk
+    expect(n(rb.cell.runSpeed)).toBe(2 * n(rb.cell.speed));
+    expect(n(rb.crowd.run)).toBeLessThan(n(rb.cell.runSpeed)); // a fleeing person is never faster than the cell
+    expect(rb.cell.runAlert).toBeUndefined(); expect(rb.values['run-alert']).toBeUndefined(); // retired: a run is no found fault on its own (kept optional in the schema only for pinned runs)
+    expect(rb.attention?.run).toMatchObject({ at: 'notice', counts: 'still' });
+    expect(n(rb.weapons.mod.running!)).toBe(375); // three-eighths: stand 1000 > walk 500 > run 375 > run away 125
+    expect(n(rb.weapons.mod.moving)).toBeGreaterThan(n(rb.weapons.mod.running!)); expect(n(rb.weapons.mod.running!)).toBeGreaterThan(n(rb.weapons.mod.runningAway!));
+    expect(rb.fight.unguarded).toMatch(/car-no-driver/); expect(rb.fight.unguarded).toMatch(/cell-down/); expect(rb.fight.unguarded).toMatch(/the car held/); // M067-K3, amended: a held car only
+    expect(rb.fight.holdRule).toMatch(/only on purpose/); expect(rb.ai.noStall).toMatch(/can't stall/); // M067-SQ1, SQ2
+    const old = structuredClone(raw); old.cell.runAlert = 'v:op-speed-cm-s';
+    expect(Rulebook.safeParse(old).success).toBe(true); // a rulebook pinned before 0.34.0 still parses (the engine of today refuses it)
+  });
+
   test('the takedown: Motive §7.1, read by ref', () => {
     expect([td.ko, td.kill, td.struggle, td.wake, td.stagger, td.restrain, td.free, td.callOut].map(n)).toEqual([6, 3, 3, 120, 4, 8, 3, 10]);
     expect(td.reach).toBe(rb.cell.atReach); // hands: the same reach as an act at a device
-    expect([td.carry.untrained, td.carry.drop, td.stash.container, td.stash.door].map(n)).toEqual([70, 1, 5, 10]);
+    expect([td.carry.untrained, td.carry.drop, td.stash.container, td.stash.door].map(n)).toEqual([90, 1, 5, 10]); // engine 0.34.0 (brief 067, Motive): 0.7 -> 0.9 m/s, half the cell's walk
     expect(n(td.carry.untrained) * 2).toBe(n(rb.cell.speed)); // half the walk; only the Enforcer carries at a walk
     expect([n(td.service.period), n(td.service.dwell)]).toEqual([900, 20]);
     // the act's Trail: a knockout is a hit and a down (+4), a kill +2 more (+6): a quiet takedown is 2 T cheaper than shooting

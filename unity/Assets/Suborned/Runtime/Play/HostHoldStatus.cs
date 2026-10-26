@@ -354,11 +354,13 @@ namespace Suborned.Play
             // the fire: a lasting order ceases; under weapons free a drawn agent stands down (it picks again once shot at: engine 0.19 cease)
             var list = new List<Order>(); var who = new List<int>();
             for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && (Game.Ops[k].Gun.Order.Length > 0 || Game.WeaponsFree && Drawn(k))) { list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" }); who.Add(k); }
-            if (list.Count > 0) { Send(list, null, null); fireStoppedAt = Time.unscaledTime; HoldStops++; }
+            if (list.Count > 0) { Send(list, null, null); fireStoppedAt = Time.unscaledTime; HoldStops++; CeaseKeys++; }
             LocksDrop(who);
         }
 
         public int HoldStops { get; private set; }
+        /// <summary>X pressed and a fire ceased (either preset), this run: H21's gone-when (Fable 067). Never the host's own cease (a new order's).</summary>
+        public int CeaseKeys { get; private set; }
         public int FreeToggles { get; private set; }
         bool escTaken;
 
@@ -397,7 +399,7 @@ namespace Suborned.Play
             bool inStack = stick != null && (SameTarget(t, stick) || stack.Exists(x => SameTarget(x, stick)));
             if (inStack) stickSeenAt = now;
             if (stick != null && !SameTarget(t, stick) && (inStack || now - stickSeenAt < 0.15f)) return stick;
-            stick = t != null && t.Kind != "crowd" ? t : null; stickSeenAt = now; return t;
+            stick = t != null && !Passer(t) ? t : null; stickSeenAt = now; return t; // Pulse 067 W2: a shift guard holds the pill like anyone with a name
         }
 
         /// <summary>The hovered thing's main calm act (the pill's offer), its plan and its doers; the stand spot's "seen there"; the Watch's reach.</summary>

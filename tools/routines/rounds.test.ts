@@ -28,7 +28,7 @@ describe('the rules (contracts/people/routines.rules.json)', () => {
     expect(() => parseRules(JSON.stringify({ ...raw, rounds: { ...raw.rounds, rest: { ...raw.rounds.rest, proposed: true, reason: undefined } } }))).toThrow(); // a proposed rule gives its reason
   });
   test('the numbers that copy the rulebook equal it', () => {
-    expect(rules.rounds.pace.cmPerS).toBe(rulebook['op-speed-cm-s']!.v);
+    expect(rules.rounds.pace.cmPerS).toBe(rulebook['people-walk-cm-s']!.v); // the city's walk (crowd.walk), split from the cell's in engine 0.34.0 (brief 067)
     expect(rules.partners.summoned.stay.s).toBe(rulebook['lover-stay-s']!.v);
     expect(rules.partners.closeCm.v).toBe(rulebook['partners-close-cm']!.v); // the engine's rounds.close (brief 054 §9.2 retired together-m: a Watch never teaches a secret)
     if (rulebook['partners-clear-cm']) expect(rules.partners.clearCm.v).toBe(rulebook['partners-clear-cm'].v); // Keel adds the value with the reader (brief 022 addendum)

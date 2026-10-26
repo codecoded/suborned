@@ -8,6 +8,7 @@
 // faces (brief 008 B2, Vantage), so the four door points in MOVED follow them; 2026-10-19 (Sky, door option b) the public door is on the wing's west face and the service door on its east face (Splice: MOVED and PLACES re-pinned; Waymark owns the file's words); 'Steps' is 'Terrace gate' (the café door is
 // flush, there are no steps; the point has not moved). No time moved: the schedule is GDD §07's clock offsets and names no
 // leg and no walking pace, so none follows from a length that changed.
+// Re-pinned 2026-10-26 (Splice, briefs/067/vantage.md L): 'Meet driver' and 'Boarding pavilion' off the pickup car's ground (the two last rows of MOVED).
 // Any other change still fails: PLACES pins the bytes as they are, and undoing MOVED and RENAMED must give back WAS, the
 // bytes moved out of the world, so a further change has to be declared here before it passes.
 import { describe, expect, setDefaultTimeout, test } from 'bun:test';
@@ -39,7 +40,7 @@ const ADDED_ROUTES = ['getaway-service', 'rivals'];
 const places = (s: string) => ADDED_ROUTES.reduce((t, id) => t.replace(new RegExp(`,\\n  \\{\\n   "id": "${id}",[\\s\\S]*?\\n  \\}(?=,\\n  \\{|\\n \\])`), ''), s.slice(s.indexOf('\n "destinations": ['))).replace(/(?:,\n {3}"(?:yaw|hidden|level|on|floor)": (?:-?\d+(?:\.\d+)?|"(?:[^"\\]|\\.)*"))+(?=\n)/g, '');
 const sha = (s: string) => createHash('sha256').update(s).digest('hex');
 const WAS = 'db183672fada0e2cebc2328a37ed7623af55374085ce68f25a2c8ba00fa31e9d'; // sha256 of places() at commit 15af5dd (suborned.mission/1): as moved out of the world
-const PLACES = '4f9fbebf0ee133e8a0dba471cf8ced9887cd56137ce02eec280f741d5b4ef39c'; // sha256 of places() now: WAS with MOVED and RENAMED applied
+const PLACES = '63af1d5f7ff52e2858fdf6ba91237222f0462196ae6d18cba06aa134ef000e13'; // sha256 of places() now: WAS with MOVED and RENAMED applied
 /** Every point re-sited since WAS: name, from, to (block frame, m). */
 const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   // door option b (Sky 2026-10-19; Vantage, brief 023): the public door and forecourt moved from tower-public's north face onto the Office wing's west face, onto Rocket Lane
@@ -56,6 +57,10 @@ const MOVED: [name: string, from: [number, number], to: [number, number]][] = [
   ['Tech', [2.368, -49.666], [1.2, -44.6]],
   ['Scout', [3.568, -49.666], [-1.6, -44.3]],
   ['Enforcer', [4.768, -49.666], [2.7, -47.6]],
+  // brief 067 L (Vantage 2026-10-26, Keel's ask; Splice re-pinned): engine 0.33.1 parks Vale's car at the pickup with its footprint (1.82 x 4.73 m, car-clear-cm 50), so it blocks x 76.79-79.61, y -33.865 to -28.135;
+  // the two points that stood on that ground move off it, both still in officeBay and 100 % seen (V-1). The names stay: routes and scenarios read them (briefs/067/vantage.md L)
+  ['Meet driver', [78.1, -33.7], [78.1, -34.2]], // 0.84 m off the parked car's tail corner (it was 0.34 m)
+  ['Boarding pavilion', [78.3, -31], [76.75, -34.25]], // from the middle of the car to the pavement at its tail, 1.35 m from the driver; a free cell now (it loses its `on` and `floor` keys, which PLACES leaves out)
 ];
 /** Every point renamed since WAS, in place: from, to. */
 const RENAMED: [from: string, to: string][] = [['Steps', 'Terrace gate']];
@@ -157,7 +162,7 @@ describe('handover mission file', () => {
     expect(win).toMatchObject({ rule: 'summon', walk: { from: 'Office entrance', to: 'Café door' } });
     expect(Object.keys(win)).not.toContain('stayS'); // no number the rules hold is restated
     const sr = summonRules();
-    expect([sr.stayS, sr.walkMaxS, sr.paceCmS]).toEqual([60, 90, 140]); // rulebook summon: stay 60 s, at most 90 s away; cell.speed 1.4 m/s
+    expect([sr.stayS, sr.walkMaxS, sr.paceCmS]).toEqual([60, 90, 140]); // rulebook summon: stay 60 s, at most 90 s away; the city's walk 1.4 m/s (crowd.walk; cell.speed before engine 0.34.0)
     const walkS = engineWalkS(win.walk.from, win.walk.to); // the engine's grid walk: the one number (Keel, Aster 2026-10-15)
     if (Bun.which('dotnet')) { expect(walkS).toBeGreaterThan(40); expect(walkS!).toBeLessThanOrEqual(sr.walkMaxS!); } // about 46 s: within the summons' reach
     const gdd = readdirSync(resolve(root, 'GDD')).find(f => /^the-suborned-agent-gdd-v.*\.md$/.test(f))!;

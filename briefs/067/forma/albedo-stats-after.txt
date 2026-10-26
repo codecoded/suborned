@@ -1,0 +1,15 @@
+base /Users/sky/Projects/suborned/out/people-models/People/Figures
+figure      median V dark <.35  violet  amber  navy  mint silver   (shares of the clothing pixels)
+rival           0.55      0.29    0.51   0.01  0.00  0.00   0.10
+rival_b         0.52      0.30    0.50   0.00  0.00  0.00   0.09
+rival_c         0.64      0.21    0.51   0.00  0.00  0.00   0.17
+rival_d         0.54      0.20    0.76   0.00  0.00  0.00   0.08
+guard           0.47      0.30    0.00   0.00  0.25  0.00   0.26
+security        0.32      0.68    0.00   0.21  0.00  0.00   0.00
+driver          0.55      0.31    0.00   0.04  0.00  0.56   0.00
+workers_d5      0.35      0.50    0.00   0.40  0.32  0.00   0.02
+d4              0.27      0.69    0.00   0.02  0.47  0.00   0.03
+d4b             0.24      0.81    0.00   0.01  0.01  0.00   0.00
+d5c             0.67      0.04    0.00   0.02  0.00  0.03   0.27
+
+spec (brief 067 W1): OK, every rival colourway inside it

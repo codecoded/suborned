@@ -4,7 +4,7 @@
 // engine keeps its per-thread scratch ThreadStatic, so no play can see another). The output of one script is exactly the line
 // `play <script> --json` prints (same bytes), so a batch is a faster `play`, not a different one.
 //
-//   batch <path | dir | scenario id | -> ...  [--list f] [--no-replay] [--jobs n] [--out f]
+//   batch <path | dir | scenario id | -> ...  [--list f] [--no-replay] [--jobs n] [--out f] [--timeout s]
 //       items: a script file, a directory (its *.json, sorted by name), a scenario id, `-` for paths on stdin (one a line), `--list f` for
 //       paths in a file (one a line; blank lines and # lines skipped). Output: one JSON line per item, in item order, to stdout or --out.
 //       A script that cannot be played gives {"id":..,"error":..} and the batch goes on. Exit 0 when every item played, passed its checks and
@@ -12,6 +12,8 @@
 //       --no-replay leaves out the second, self-checking run of each game (about half the sim cost; see briefs/042-fast-checks.md): the line
 //       then reads "replayIdentical": null. The default checks every play, as `play` does.
 //       --jobs n: worker threads (default every core; env SUBORNED_SIM_JOBS).
+//       --timeout s: a play still running after s seconds of wall time ends the batch, exit 3, its name on stderr (default 300; 0 = off;
+//       engine 0.34.0, Watchdog.cs). Every game is bounded in Step calls too (Scenarios.StepLimit): a script that never ends is an error line.
 //   batch --serve
 //       the same as a server for a caller that asks in rounds (the mission composer): stdin lines `tag<TAB>replay|noreplay<TAB>path`, stdout
 //       lines `tag<TAB>json` as each play finishes (any order). The server ends at the end of stdin.
@@ -32,7 +34,8 @@ static class BatchCli
     /// <summary>One play: a scenario id or an order script, played to its end; with `replay` the game is replayed from its own orders and compared
     /// checkpoint by checkpoint (Same), which costs a second run of the sim (Splice, brief 042: `batch --no-replay` leaves it out).</summary>
     internal sealed class Played { public string Id = ""; public Game G = null!; public List<(bool ok, string what)> Checks = new List<(bool, string)>(); public bool Same; public bool Replayed; public bool Passed => Checks.TrueForAll(c => c.ok); }
-    internal static Played PlayOne(Engine.Inputs inputs, string root, string what, bool replay = true)
+    internal static Played PlayOne(Engine.Inputs inputs, string root, string what, bool replay = true) => Scenarios.Bounded(() => PlayBounded(inputs, root, what, replay)); // engine 0.34.0: every game bounded
+    static Played PlayBounded(Engine.Inputs inputs, string root, string what, bool replay)
     {
         var p = new Played { Replayed = replay }; string record = "";
         var sc = Scenarios.Find(what);
@@ -102,7 +105,7 @@ static class BatchCli
         {
             var a = args[i];
             if (a == "--no-replay" || a == "--serve") continue;
-            if (a == "--jobs" || a == "--out") { i++; continue; }
+            if (a == "--jobs" || a == "--out" || a == "--timeout") { i++; continue; }
             if (a == "--list")
             {
                 if (i + 1 >= args.Length) throw new ArgumentException("--list which file?");
@@ -131,6 +134,7 @@ static class BatchCli
         int n = items.Count, claimed = -1, wrote = 0, bad = 0;
         var lines = new string?[n]; var oks = new bool[n]; var gate = new object(); var sw = Stopwatch.StartNew();
         var errors = new ConcurrentQueue<Exception>();
+        using var dog = new Watchdog(Watchdog.Seconds(args)); // engine 0.34.0: a play still running after --timeout s ends the batch, named
         void work()
         {
             try
@@ -138,7 +142,9 @@ static class BatchCli
                 while (true)
                 {
                     int i = Interlocked.Increment(ref claimed); if (i >= n) return;
+                    dog.Start(i, items[i]);
                     var line = Line(inputs, root, items[i], replay, out var ok);
+                    dog.Stop(i);
                     lock (gate)
                     {
                         lines[i] = line; oks[i] = ok;

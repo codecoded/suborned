@@ -2327,10 +2327,10 @@
  "patrol": {
   "a": "patrol-a",
   "b": "patrol-b",
-  "facing": [0,100],
+  "facing": [0,-100],
   "reroute": "patrol-reroute",
-  "rerouteFacing": [0,-100],
-  "src": "the top-down test: the patrol faces the building it guards; the public door is on the Office's west face (Sky 2026-10-19, option b), the sweep runs along the forecourt in a straight line between patrol-a and patrol-b (mission.json points, read there: Game.SweepPos walks the line between them) and the patrol faces east, toward the door"
+  "rerouteFacing": [-100,0],
+  "src": "the top-down test: the patrol faces the building it guards. Sky 2026-10-26 (brief 067 A, playing 0.2.122: \"maybe to the side of the service entrance\"; Vantage's points): the sweep runs across the service yard, parallel to the Office wing's east face, in a straight line between patrol-a and patrol-b (mission.json points, read there: Game.SweepPos walks the line between them), and the patrol faces west, toward that face and the service door; rerouted, it waits at patrol-reroute on the office plot's north edge facing north, away from the yard (2026-10-19 to 10-26: the forecourt, facing east toward the public door, the reroute south)"
  },
  "guard": {
   "post": "d:Office entrance",

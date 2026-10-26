@@ -250,12 +250,13 @@ namespace Suborned.Sim
 
         // numbers read once from the rules and the site
         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
-        readonly int opSpeed, secSpeed, rivSpeed, chaseSpeed;
+        readonly int cellWalk, peopleWalk, secSpeed, rivSpeed, chaseSpeed; // engine 0.34.0 (brief 067, Motive M067-B1): the cell's walk (cell.speed) and the city's (crowd.walk)
         int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
 
         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
         {
             R = rules; S = site; Start = start ?? new Start(); People2 = crowd; Range = site.IsRange;
+            StepLimit = HarnessStepLimit; // engine 0.34.0: a harness's bound (0 in the host)
             FollowLock = Start.FollowLock ?? false; // tuning.md §11.5
             WeaponsFree = Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0)
             if (crowd != null) foreach (var w in crowd.Walkers) Walkers.Add(w.Fresh());
@@ -265,7 +266,7 @@ namespace Suborned.Sim
             ResolveStopFaces(); // brief 054 §3.3: every on-street stop's facing, or the start is rejected
             actReach = R.ActReachCm; approachReach = R.ApproachReachCm; listenReach = R.ListenReachCm;
             witnessRange = R.WitnessRangeCm;
-            opSpeed = R.CellSpeed; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
+            cellWalk = R.CellSpeed; peopleWalk = R.PeopleWalk; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
             rivalsArriveS = S.RivalsArrive; driverLastS = S.DriverLast; valeExitsS = S.ValeExits; valeAtCarS = S.ValeAtCar; overS = S.Over;
             blockMoveT = T(S.BlockMoveS); blockHoldT = T(S.BlockHoldS);
 
@@ -356,10 +357,23 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- the tick
 
+        /// <summary>Engine 0.34.0 (brief 067: S10 spun for ever once the patrol left the forecourt): the most Step calls a game made on this
+        /// thread answers, a finished run's included, while a headless harness runs (Scenarios.Run, the CLI's script plays); 0 = no limit.
+        /// A game copies it when made, so every game a scenario body makes is bounded too. The host never sets it: its Step never throws.</summary>
+        [ThreadStatic] public static int HarnessStepLimit;
+        /// <summary>This game's limit on Step calls (HarnessStepLimit when it was made); past it Step throws RunawayException. Never hashed.</summary>
+        public int StepLimit;
+        int stepCalls;
+        /// <summary>Step calls so far, a finished run's included (never hashed): a caller that keeps stepping a finished run waits for nothing.</summary>
+        public int StepCalls => stepCalls;
+
         /// <summary>One tick. It never throws: rules and site are checked at load (Redline E1); if the engine itself fails, the run ends
-        /// as a failure with code engine-error and the reason in the log, deterministically, instead of taking the host (Unity) down.</summary>
+        /// as a failure with code engine-error and the reason in the log, deterministically, instead of taking the host (Unity) down.
+        /// The one exception is a harness's StepLimit (0 in the host): a caller that waits for something that can never come (a scenario's
+        /// loop on a condition, stepping a run that has ended) gets RunawayException instead of spinning for ever.</summary>
         public void Step()
         {
+            if (StepLimit > 0 && ++stepCalls > StepLimit) throw new RunawayException(this);
             if (Over) return;
             try { StepInner(); }
             catch (Exception e) when (!(e is OutOfMemoryException))
@@ -376,13 +390,14 @@ namespace Suborned.Sim
             Tick++;
             CarEpochStep(); // engine 0.33.1 (car.footprint): the standing cars as this tick starts, for the crowd's legs that set out now
             if (!Range) { GuardTimeline(); CarTimeline(); CrewStep(); ValeTimeline(); PatrolTimeline(); } // brief 029: the range has no schedule; brief 059: the crew's step (GameCrew.cs)
+            UnguardedStep(); // engine 0.34.0 (Motive M067-K3 a, GameUnguarded.cs): the rivals go for a car nobody guards from outside, read after the last tick's orders
             foreach (var op in Ops)
             {
                 op.StepFrom = op.Pos; // tuning.md §8.3: the gait's direction is this tick's step
                 if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
                 if (op.Walk != null)
                 {
-                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; op.Pos = op.Walk.At(op.WalkMm);
+                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm);
                     if (op.Running) RunAttention(op);
                     if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
                 }
@@ -484,7 +499,7 @@ namespace Suborned.Sim
         /// returns to the sweep on this tick); before, only PatrolAwayUntil passing said so. The window marker's closing code.</summary>
         void PatrolTimeline()
         {
-            if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on the entrance sweep.");
+            if (PatrolAwayUntil > 0 && Tick == PatrolAwayUntil && !PatrolDown) Note("patrol.returns", "The false orders run out. The patrol is back on its sweep."); // engine 0.34.0: no place named (brief 067 A)
         }
         void ValeTimeline()
         {
@@ -758,6 +773,17 @@ namespace Suborned.Sim
         {
             var pos = SweepPos(t); var door = S.At(S.GuardPost);
             return InSweepCone(pos, S.PatrolFacing, door) && EyeSees(pos, R.MountPatrolCm, door);
+        }
+        int sweepCovers = -1;
+        /// <summary>Engine 0.34.0 (brief 067 A: the sweep left the forecourt for the service yard): does the sweep see the public door at any tick
+        /// of its round? False on today's site, so no route is "timed between sweeps" at the door. Derived from the inputs once; never hashed.</summary>
+        public bool SweepCoversEntrance
+        {
+            get
+            {
+                if (sweepCovers < 0) { sweepCovers = 0; for (int t = 0, n = T(R.PatrolPeriodS); t < n; t++) if (SweepSeesEntrance(t)) { sweepCovers = 1; break; } }
+                return sweepCovers == 1;
+            }
         }
         public bool SecurityWatching(Pt p)
         {

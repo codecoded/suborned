@@ -522,6 +522,7 @@ namespace Suborned.Sim
             if (op.Carrying.HasValue) { OpOf(op.Carrying.Value).CarriedBy = null; op.Carrying = null; }
             if (op.CarryBody.Length > 0) PutDown(op, name + " down");
             Note(name + ".down", op.InCar ? $"The {name} is down in the car." : $"The {name} is down. Carry them into the car, or they are captured.");
+            CellDown(name); // engine 0.34.0 (Motive M067-K3 b): the last of the cell down fails the mission at once
         }
 
         void GuardHit(bool down, string by)
@@ -637,10 +638,11 @@ namespace Suborned.Sim
 
         /// <summary>The attention a run draws, a tick at a time (motive-fights.md §1.1; engine 0.22.0, Sky 2026-10-22: only security notices
         /// a run): security staff within witness range on a clear line (the door guard, a job in witness.staff) remember where and when (and
-        /// the face: memory by the operative); anyone else on the street doesn't; a security watcher that sees it (a live camera, the guard
-        /// by his cone, the patrol, the response's robots and police, and a crowd guard, not turned, who sees it by the guard's sight rule, StaffSees:
-        /// "a guard is a guard")
-        /// counts a found fault, Alert to cell.runAlert, once a run. No Trail, no standing.
+        /// the face: memory by the operative); anyone else on the street doesn't. Engine 0.34.0 (brief 067, Sky playing 0.2.122: "Running
+        /// shouldn't be that badly punished"; Motive M067-B2, attention.run): a run is seen and suspicious, never a found fault on its own
+        /// (cell.runAlert is retired): the first security watcher that sees it (a live camera, the guard by his cone, the patrol, the response's
+        /// robots and police) or crowd guard (not turned, by the guard's sight rule, StaffSees: "a guard is a guard") logs the sighting once a run
+        /// (run.seen); the watchers that keep a clock count the run on it (AttentionStep). No Alert, no Trail, no standing.
         /// Running is free once a fight is on or the run is loud.</summary>
         void RunAttention(Op op)
         {
@@ -661,19 +663,17 @@ namespace Suborned.Sim
                 staffSaw ??= p;
             }
             if (!GuardDown && !GuardAlly && GuardWatching(op.Pos) && op.RunSeen.Add(GuardP.Id)) Remember(GuardP, "saw-runner", name, true);
-            if (op.RunAlerted) return;
+            if (op.RunAlerted) return; // the sighting is logged once a run
             var w = SecurityWatcherOf(op.Pos);
             if (w == null && staffSaw != null)
             {
                 op.RunAlerted = true;
-                RaiseAlert(R.RunAlert, $"runner-seen:{staffSaw.Id}:{name}");
-                Note("run.seen", $"The {(staffSaw.Job.Length > 0 ? staffSaw.Job : "guard")} {staffSaw.Name} sees the {name} running: a found fault. Alert {Alert}.");
+                Note("run.seen", $"The {(staffSaw.Job.Length > 0 ? staffSaw.Job : "guard")} {staffSaw.Name} sees the {name} running.");
                 return;
             }
             if (w == null) return;
             op.RunAlerted = true;
-            RaiseAlert(R.RunAlert, $"runner-seen:{w}:{name}");
-            Note("run.seen", $"The {w.Replace("camera:", "")} {(w.StartsWith("camera", StringComparison.Ordinal) ? "camera" : "")} sees the {name} running: a found fault. Alert {Alert}.".Replace("  ", " "));
+            Note("run.seen", $"The {w.Replace("camera:", "")} {(w.StartsWith("camera", StringComparison.Ordinal) ? "camera" : "")} sees the {name} running.".Replace("  ", " "));
         }
 
         /// <summary>Engine 0.22.0: a security-staff person on the street (not the door guard) sees a point by the door guard's sight rule on his
@@ -968,7 +968,7 @@ namespace Suborned.Sim
             var route = Walk.Free(to) ? Walk.Route(op.Pos, to) : null;
             if (route == null) { q.RunRefused = q.RunRefused.Length > 0 ? q.RunRefused : "no walk there"; return q; }
             var path = new Path(route);
-            q.WalkS = (int)((path.Length + opSpeed * Hz - 1) / (opSpeed * Hz));
+            q.WalkS = (int)((path.Length + cellWalk * Hz - 1) / (cellWalk * Hz));
             q.RunS = (int)((path.Length + R.RunSpeed * Hz - 1) / (R.RunSpeed * Hz));
             { var at = new List<Pt>(); for (long mm = 0; ; mm += 1000) { at.Add(path.At(Math.Min(mm, path.Length))); if (mm >= path.Length) break; } q.Seen = SeenAt(at); } // the same samples as below
             q.RunFree = RunFree(op); q.AlertIfRun = Alert;
@@ -997,7 +997,7 @@ namespace Suborned.Sim
                 if (mm >= path.Length) break;
             }
             q.RunPeople = people.Count;
-            if (q.RunSeenBy.Count > 0) q.AlertIfRun = Math.Max(Alert, R.RunAlert);
+            // engine 0.34.0 (brief 067, Motive M067-B2): a run seen raises no Alert by itself (AlertIfRun stays the Alert now); RunSeenBy notice it (attention.run)
             return q;
         }
 

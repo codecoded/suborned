@@ -6,7 +6,8 @@ namespace Suborned.Play
 {
     /// <summary>Brief 059 K8 (engine 0.32.0/0.33.0; Sky on 0.2.122: "rivals just suddenly appeared when near car, they should be coming in from
     /// somewhere when the chime comes"): the rival crew drawn from the engine's one read, Game.RivalPoses(): five people (rival-1..rival-5, each
-    /// its own view keyed by its engine id) and their car (car/rivals, Vela's sedan in a rival stand-in trim until her rival sedan lands). Nobody
+    /// its own view keyed by its engine id) and their car (car/rivals, Vela's Sedan_Rival: brief 067 L, the plum car with the ink bubble, so it never
+    /// reads as Vale's teal-and-ivory sedan or the cell's coral one; the box when the kit is not copied). Nobody
     /// of the crew is drawn before the car turns in (the engine lists none); a member aboard rides unseen in the car; on foot he is drawn where
     /// the engine has him, facing as it says; in the final fight the same view keeps drawing him (the engine's fight body starts where he stood,
     /// M059-B1), so nobody vanishes and nobody new appears at the ambush spots (059 §2 point 1); down, he lies where he fell, or his body view
@@ -17,9 +18,6 @@ namespace Suborned.Play
         public static readonly string[] RivalKeys = { "rival-1", "rival-2", "rival-3", "rival-4", "rival-5" };
         /// <summary>A crew member's engine id (rival-1..rival-5): the Handover's crew, never the range's spawned rivals.</summary>
         public static bool IsCrewId(string id) => System.Array.IndexOf(RivalKeys, id) >= 0;
-        /// <summary>The rival car's stand-in trim (Vela's sedan multiplied, until her rival sedan lands): a cool dusk tone, so it never reads as Vale's
-        /// cream car or the cell's; the signal violet stays on the ground marks and rings only (Glyph 059 §1).</summary>
-        static readonly Color RivalTrim = new(0.46f, 0.43f, 0.55f, 1f);
         /// <summary>Each member's mode now ("aboard", "walking", "posted", "talking", "boarding", "fight", "down"; absent: off the map).</summary>
         public readonly Dictionary<string, string> RivalModes = new();
         /// <summary>The rival car's state ("off" while it is not on the map), its heading as a world direction.</summary>
@@ -29,20 +27,15 @@ namespace Suborned.Play
         void RivalViewsInit()
         {
             foreach (var k in RivalKeys) Person(k, host.rivalBodyColour);
-            Box("car/rivals", new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true);
-            if (Visual("car/rivals", host.sedanOfficial) is Transform sr) { carModels["car/rivals"] = sr; Trim(sr, RivalTrim); }
+            Box("car/rivals", new Vector3(1.8f, 1.4f, 4.6f), host.carColour, true); // the click box (1.8 x 1.4 x 4.6 m) as the sedans'
+            // brief 067 L (Sky on 0.2.122; Vela's briefs/067/vela.md): Vela's Sedan_Rival on the sedans' footprint, pivot and nose (carNose stays
+            // identity), its own nine materials as built. The official sedan in a multiplied "stand-in trim" is gone: one property block per renderer
+            // wrote slot 0's teal to all ten slots, so it read as Vale's car in flat navy (Vela's finding). No model: the box stays the car
+            if (Visual("car/rivals", host.sedanRival) is Transform sr) carModels["car/rivals"] = sr;
         }
 
-        /// <summary>A model's paint multiplied by `c` (a property block per renderer; the shared materials are untouched).</summary>
-        static void Trim(Transform model, Color c)
-        {
-            var mpb = new MaterialPropertyBlock();
-            foreach (var r in model.GetComponentsInChildren<Renderer>(true))
-            {
-                var baseC = r.sharedMaterial && r.sharedMaterial.HasProperty("_BaseColor") ? r.sharedMaterial.GetColor("_BaseColor") : Color.white;
-                r.GetPropertyBlock(mpb); mpb.SetColor("_BaseColor", new Color(baseC.r * c.r, baseC.g * c.g, baseC.b * c.b, baseC.a)); r.SetPropertyBlock(mpb);
-            }
-        }
+        /// <summary>For the proofs: the kit model drawn for a car's view ("" when it is the box).</summary>
+        public string CarModelName(string key) => modelSource.TryGetValue(key, out var n) ? n : "";
 
         /// <summary>Per tick: the five and the car from RivalPoses(); a member with a body (taken down) is left to the body view.</summary>
         void RivalViews(Game g)

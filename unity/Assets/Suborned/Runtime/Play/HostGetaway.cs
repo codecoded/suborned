@@ -188,6 +188,7 @@ namespace Suborned.Play
             }
             var by = order.Count > 0 ? (OpId)order[0] : Agent;
             var gv = GoIntent(by); var goName = gv.Label; Words(gv, t); gv.Name = goName; var gl = GoLock(); // the row is the Go card's one line
+            if (gv.Outcome == "withdraw" && Text?.GoNoVale is { Length: > 0 } nv) gv.Does = nv; // Fable 067 less.go.noVale: before Vale is aboard, Go calls the attempt off (the engine's Leave: Withdrawn)
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow); // a free Go tops the card
             CarDriveRows(pn, order);
@@ -228,16 +229,20 @@ namespace Suborned.Play
         /// other stand. -1 when none is open (the pill then shows the lock).</summary>
         int CarMainWay(ContextPlan plan)
         {
-            // Glyph 067 C5c: Board while a selected agent is outside and able (every one: DoersOf); else Drive when exactly one stand is open, Vale
-            // is not aboard and the car is free; else nothing (a click opens the ring: with two stands open the ring decides). Go is never a hold.
-            int b = -1, d = -1, drives = 0;
+            // Glyph 067 C5c (Rev 2) and GDD §10 ("the getaway car: Board for the selection, Go once aboard"): Board while a selected agent is outside
+            // and able (every one: DoersOf); else Go once Vale is aboard and the car is free (the Go card's 0.5 s hold still commits it when anyone
+            // would be left: GoGive); else Drive when exactly one stand is open, Vale is not aboard and the car is free; else nothing (a click opens
+            // the ring: with two stands open the ring decides). Go before Vale (a withdraw) is never a hold
+            int b = -1, d = -1, go = -1, drives = 0;
             foreach (var w in plan.Choice.Order)
             {
                 var r = plan.Row(w); if (r?.Available != true) continue; var o = r.I?.Order; if (o == null) continue;
                 if (o.Do == "board" && b < 0 && plan.Givers[w].Exists(x => Selected[(int)x])) b = w;
+                if (o.Do == "go" && go < 0 && r.I.Outcome == "win") go = w;
                 if (o.Do == "drive-car") { drives++; if (d < 0) d = w; }
             }
             if (b >= 0) return b;
+            if (go >= 0) return go;
             return drives == 1 && Game.Vale != ValeAt.Car ? d : -1;
         }
 
@@ -266,12 +271,10 @@ namespace Suborned.Play
             if (!board && !fire) return ("", "", 0f);
             bool useBoard = board && (!fire || ab <= af); string code = useBoard ? boardRefused[k] : fireRefused[k]; float age = useBoard ? ab : af;
             var op = Game.Ops[k]; if (op.InCar || op.Busy != null || op.Act != null || pending[k] != null) return ("", "", 0f);
-            string words = useBoard ? Text?.DoneWord("board." + code, null) ?? BoardWhyWords(code) : FireRefusalWord(k) is { Length: > 0 } fw ? fw : Text?.DoneWord("fire." + code, null) ?? code.Replace('-', ' ');
+            string words = useBoard ? Text?.DoneWord("board." + code, null) ?? code.Replace('-', ' ') : FireRefusalWord(k) is { Length: > 0 } fw ? fw : Text?.DoneWord("fire." + code, null) ?? code.Replace('-', ' '); // Fable 067: less.done.board.* (down, inside, stop first, hands full, looping, busy, too far, mission over, restart)
             string icon = code switch { "agent-down" => "s_downed", "enforcer-inside" => "s_inside", "already-carrying" or "fire-carrying" or "fire-carrying-vale" or "carry-vale" => "s_carrying", "board-tethered" => "s_looping", "board-running" => "run", _ => "refused" };
             return (icon, words, Mathf.Clamp01((FireRefusalS + 0.3f - age) / 0.3f));
         }
-        /// <summary>Glyph's words for Fable (less.done.board.*), the host's until text.json carries them.</summary>
-        static string BoardWhyWords(string code) => code switch { "agent-down" => "down", "enforcer-inside" => "inside", "board-running" => "stop first", "already-carrying" => "hands full", "board-tethered" => "looping", _ => code.Replace('-', ' ') };
 
         /// <summary>The proof reads them: squad Boards given (every selected agent who could), and the refusals said.</summary>
         public int SquadBoards { get; private set; }

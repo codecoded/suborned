@@ -90,7 +90,7 @@ namespace Suborned.Sim
             if (op.Down) { c.Refused = "agent-down"; return c; }
             if (op.Inside) { c.Refused = "enforcer-inside"; return c; }
             var path = RouteOf(op.Pos, to);
-            int pace = carrier == OpId.Enforcer ? opSpeed : R.CarryUntrainedSpeed; // mm a tick (= cm/s)
+            int pace = carrier == OpId.Enforcer ? cellWalk : R.CarryUntrainedSpeed; // mm a tick (= cm/s)
             c.PaceCmS = pace;
             int ticks = (int)((path.Length + pace - 1) / pace); c.S = (ticks + Hz - 1) / Hz;
             CarryStretch? cur = null;

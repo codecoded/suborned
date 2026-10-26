@@ -66,7 +66,9 @@ namespace Suborned.Sim
         {
             var g = r.G;
             // brief 059: the crew's first bodies on the street are the posted three, round the cell's car at the square
-            r.To(r.SendTo(Enf, new Pt(2400, -3600)));
+            // engine 0.34.0 (brief 067 K): he waits at (20, -30), 7 m nearer the café terrace than (24, -36): without the square's planters the
+            // crew's walks to their posts and the crowd's legs no longer pass (24, -36), and nobody of the city is within 30 m of it when he fires
+            r.To(r.SendTo(Enf, new Pt(2000, -3000)));
             r.Is(r.Until(() => g.Crew[1].Mode == CrewMode.Posted, T(200)), $"the rival crew posts round our car at {Report.Clock(g.Tick)}");
             r.Do(Enf, "draw");
             r.Fire(Enf, "rivals");

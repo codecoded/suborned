@@ -17,7 +17,7 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- names
 
-        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : p.Job == Person.RivalJob ? Text?.HoldersPhrase(p.Id) ?? "a rival" : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by"; // engine 0.33.0: a member of the crew is "a rival"
+        public string PersonName(Person p) => p.Role.Length > 0 ? Name(p.Role) : p.Job == Person.RivalJob ? Text?.HoldersPhrase(p.Id) ?? "a rival" : !p.Civilian ? CrowdSecurityName(p) : Text?.TargetName("crowd", "a passer-by") ?? "a passer-by"; // engine 0.33.0: a member of the crew is "a rival"; Pulse 067 W2: a shift guard is "a guard" (his body too)
         public string StashName(StashPlace st) => Text?.TargetName(st.Kind == "door" ? "stash-door" : "stash-bin", st.Kind == "door" ? "the service door" : "the bin") ?? st.Id;
         public string CameraName(string id) => id == "entrance" || id == "pickup" ? Text?.TargetName("camera-" + id, $"the {id} camera") ?? $"the {id} camera"
             : Text != null && Text.TargetNames.TryGetValue("camera-" + id, out var n) ? n : "the square's mast camera";
@@ -257,7 +257,7 @@ namespace Suborned.Play
             pn.Before.Add(("p_unknown", q.Aware == "no" ? "From behind: they will not see you coming." : q.Aware == "yes" ? (q.Armed ? "They see you coming: a fight." : "They see you coming: a struggle, others may hear.") : "Whether they see you coming: ?"));
             if (q.People.Count > 0)
             {
-                var ws = q.People.ConvertAll(x => { var wp = Game.PersonById(x.id); string nm = wp != null && wp.Role.Length > 0 ? Name(wp.Role) : "a passer-by"; return x.verb == "?" ? $"{nm}: ?" : x.landS >= 0 ? $"{nm}: {x.verb}, lands in {x.landS} s" : $"{nm}: {x.verb}"; });
+                var ws = q.People.ConvertAll(x => { var wp = Game.PersonById(x.id); string nm = wp != null ? PersonName(wp) : "a passer-by"; /* Pulse 067 W2: a shift guard is "a guard" */ return x.verb == "?" ? $"{nm}: ?" : x.landS >= 0 ? $"{nm}: {x.verb}, lands in {x.landS} s" : $"{nm}: {x.verb}"; });
                 pn.Before.Add(("listen", $"{q.People.Count} {(q.People.Count == 1 ? "person" : "people")} within 13 m. {string.Join("; ", ws)}"));
             }
             else pn.Before.Add(("listen", "Nobody within 13 m."));

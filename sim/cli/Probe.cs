@@ -10,7 +10,7 @@ static class Probe
         var g = Engine.New(i); var s = i.SiteData;
         string[] from = { "crew:scout", "crew:fixer", "crew:tech", "crew:enforcer" };
         string[] to = { "d:Courtyard", "beside-inez", "cabinet", "d:Office approach", "d:Office entrance", "d:Meet driver", "d:Service lane", "rival-park", "d:Getaway bay", "d:Café door" };
-        int speed = i.Rules.CellSpeed;
+        int speed = i.Rules.CellSpeed, city = i.Rules.PeopleWalk; // engine 0.34.0 (brief 067, M067-B1): the cell's walk and the city's
         foreach (var f in from) foreach (var t in to)
         {
             var r = s.Grid.Route(s.Stand(f), s.Stand(t));
@@ -19,7 +19,8 @@ static class Probe
         }
         foreach (var (a, b) in new[] { ("d:Service lane", "d:Getaway bay"), ("d:Office entrance", "d:Café door"), ("d:Café door", "d:Office entrance"), ("d:Official entrance", "d:Service lane"), ("d:Meet driver", "rival-park"), ("d:Courtyard", "d:Office approach") })
         {
-            var p = new Path(s.Grid.Route(s.Stand(a), s.Stand(b))!); Console.WriteLine($"{a} → {b}: {p.Length / 1000.0:0.0} m {(p.Length + speed - 1) / speed / 10.0:0.0} s");
+            var p = new Path(s.Grid.Route(s.Stand(a), s.Stand(b))!); Console.WriteLine($"{a} → {b}: {p.Length / 1000.0:0.0} m {(p.Length + city - 1) / city / 10.0:0.0} s"); // the city's walk (the summoned guard's: tools/missions/handover/summon.ts reads this line)
+            Console.WriteLine($"  at the cell's walk: {(p.Length + speed - 1) / speed / 10.0:0.0} s");
         }
         Console.Write("sweep sees the public door at t mod 100 (s): ");
         for (int t = 0; t < 100; t++) Console.Write(g.SweepSeesEntrance(t * 10) ? "#" : ".");

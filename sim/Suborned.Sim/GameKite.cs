@@ -116,7 +116,7 @@ namespace Suborned.Sim
             }
             foreach (var h in Hostiles)
             {
-                if (h.Down || !h.Present || h.Gun.St == "break" || h.Gun.St == "gone") continue;
+                if (h.Down || !h.Present || h.Gun.St == "break" || h.Gun.St == "gone" || forCar.Contains(h.Id)) continue; // engine 0.34.0 (M067-K3 a): the walk to the car takes no kite step
                 KiteBody(h.Gun, h.Pos(Tick), h, -1);
             }
             if (unitDisp.Count > 0) { var stale = new List<string>(); foreach (var kv in unitDisp) { var su = KiteUnit(kv.Key); if (su == null || su.Gun.Down || !UnitStill(su)) stale.Add(kv.Key); } foreach (var x in stale) unitDisp.Remove(x); } // it walks on (or back): its own route starts where it stood
@@ -181,8 +181,8 @@ namespace Suborned.Sim
             if (h == null || Tick - g.StepAt < T(R.CoverStepGapS) || Protected(pos, sp)) return;
             if (h.Blocker) return; // Motive M059-B2 (engine 0.33.0; GDD §06): a rival blocker keeps its lane and answers only from it, as the police blocker does
             g.StepAt = Tick;
-            var dest = KiteHide(g, pos, sp, Car, out var c);
-            if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter
+            var dest = KiteHideOut(g, pos, sp, Car, out var c); // engine 0.34.0 (Motive M067-SQ1): the step out of a line never ends in the car's hold or lane
+            if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos && !HoldsCar(sp2)) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter (SQ1: not into the hold; else it stands)
             if (!dest.HasValue) return;
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(c != null ? $"out of the line to {c.Id}" : "out of the line")}.");
             g.KiteLast = Tick;
@@ -201,7 +201,7 @@ namespace Suborned.Sim
             CoverPoint? best = null; long bk = long.MaxValue;
             foreach (var c in LiveCover)
             {
-                if (taken.Contains(c.Id) || c.Q < R.CoverQPartial || !c.Present(sec)) continue;
+                if (taken.Contains(c.Id) || c.Q < R.CoverQPartial || !c.Present(sec) || HoldsCar(c.At)) continue; // engine 0.34.0 (Motive M067-SQ1): never in the car's hold or lane
                 long d = G.Dist(pos, c.At); if (d > R.SeekPoliceCm || G.Dist(c.At, Car) > lim || !CoverRules.Protects(c, sp, sec, R.PointBlankCm)) continue;
                 long key = d - c.Q;
                 if (key < bk || (key == bk && best != null && string.CompareOrdinal(c.Id, best.Id) < 0)) { best = c; bk = key; }
@@ -248,15 +248,15 @@ namespace Suborned.Sim
             int sec = Tick / Hz; var taken = Taken(); CoverPoint? best = null; long bk = long.MaxValue;
             foreach (var c in LiveCover)
             {
-                if (taken.Contains(c.Id) || c.Q < R.CoverQPartial || !c.Present(sec)) continue;
+                if (taken.Contains(c.Id) || c.Q < R.CoverQPartial || !c.Present(sec) || HoldsCar(c.At)) continue; // engine 0.34.0 (Motive M067-SQ1): never in the hold or lane
                 long d = G.Dist(stop, c.At); if (d > R.SeekPoliceCm || !CoverRules.Protects(c, sp, sec, R.PointBlankCm)) continue;
                 long key = d - c.Q;
                 if (key < bk || (key == bk && best != null && string.CompareOrdinal(c.Id, best.Id) < 0)) { best = c; bk = key; }
             }
-            var to = best?.At ?? stop; if (to == pos) return;
+            var to = best?.At ?? stop; if (to == pos || HoldsCar(to)) return; // SQ1: with no spot outside the hold it stays where it stands
             Note("ai.kite", $"{g.Id} is still fired on by {g.KiteBy} beyond its reach: it closes {(best != null ? $"to cover at {best.Id}" : "to its ring")} ({G.Dist(pos, sp) / 100} m out).");
             g.KiteLast = Tick; g.StepAt = Tick;
-            if (h != null) { if (best != null) { ReleaseCover(g); TakeCover(g, best); } h.Home = to; MoveTo(h, to); g.St = "advance"; return; }
+            if (h != null) { if (best != null) { ReleaseCover(g); TakeCover(g, best); } MoveTo(h, to); h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; } // engine 0.34.0: its stand is where the walk ends (the free cell nearest the point), so it holds there
             var path = KitePath(pos, to, int.MaxValue / 20); if (path == null) return;
             unitDisp[u!.Id] = new KiteDisp { P = path, Start = Tick, Face = Facing(path.End, sp) };
         }
@@ -268,11 +268,11 @@ namespace Suborned.Sim
         void KiteFightClose(Gun g, Pt pos, Pt sp, Hostile? h, Unit? u)
         {
             if (g.W == null) return;
-            var to = StopPoint(pos, sp, g.W.EffCm); if (to == pos) return;
+            var to = StopPoint(pos, sp, g.W.EffCm); if (to == pos || HoldsCar(to)) return; // engine 0.34.0 (Motive M067-SQ1): never into the car's hold or lane; it stays
             if (h != null)
             {
                 if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");
-                g.KiteLast = Tick; h.Home = to; MoveTo(h, to); g.St = "advance"; return;
+                g.KiteLast = Tick; MoveTo(h, to); h.Home = h.Run?.End ?? h.At; g.St = "advance"; return; // engine 0.34.0: its stand is where the walk ends (the free cell nearest its stop point)
             }
             var path = KitePath(pos, to, int.MaxValue / 20); if (path == null) return;
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} is fired on by {g.KiteBy} out of its reach and has no cover: first shot at {Sim.Report.Clock(g.KiteAt)}, it closes to its ring ({Tick - g.KiteAt} ticks).");

@@ -1,8 +1,8 @@
 // suborned-sim: the engine headless (brief 011 A).
 //   play <scenario id | script.json> [--json]   play a scenario (S01…S28, N8…) or an order script; print outcome, log, checksums
-//   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
+//   batch [paths | dir | - ] [--list f] [--no-replay] [--jobs n] [--out f] [--timeout s]   many scripts in one process (inputs loaded once, every core): one `play --json` line each, in order
 //   batch --serve                               the same as a server: lines `tag<TAB>replay|noreplay<TAB>path` on stdin, `tag<TAB>json` out as each finishes (tools/missions/check/engine.ts)
-//   check [ids] [--no-replay]                   every scenario (or the named): failed checks and a bit-for-bit replay, in one process on every core
+//   check [ids] [--no-replay] [--timeout s]     every scenario (or the named): failed checks and a bit-for-bit replay, in one process on every core
 //   list                                        the scenarios
 //   script <scenario>                           the scenario's start state and orders as an order script (suborned.sim.script/1)
 //   perf [runs]                                 sim-seconds per wall-second over route A
@@ -80,7 +80,7 @@ static class Program
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
         }
-        catch (Exception e) { Console.Error.WriteLine(e.Message); return 1; }
+        catch (Exception e) { Console.Error.WriteLine(Environment.GetEnvironmentVariable("SUBORNED_SIM_TRACE") == "1" ? e.ToString() : e.Message); return 1; } // SUBORNED_SIM_TRACE=1: the stack too
     }
 
     static int Play(Engine.Inputs inputs, string root, string what, bool json)
@@ -106,10 +106,13 @@ static class Program
         string st = startText ?? i.Hash.ToString(CultureInfo.InvariantCulture);
         var w = new JWriter().Obj().Prop("inputs", i.Hash.ToString(CultureInfo.InvariantCulture)).Prop("startText", st);
         void put(string id, Game g) { w.OpenArr(id); foreach (var (t, h) in g.Checkpoints) w.Str(t.ToString(CultureInfo.InvariantCulture) + ":" + Hash.Hex(h)); w.Str("result:" + g.Result + ":" + g.FailCode); w.EndArr(); }
+        int was = Game.HarnessStepLimit; Game.HarnessStepLimit = Scenarios.StepLimit; // engine 0.34.0: every game here bounded, as in check and batch
+        try
+        {
         foreach (var sc in Scenarios.All)
         {
             var r = new Run(new Game(i.Rules, i.SiteData, sc.Start, st, i.Crowd));
-            try { sc.Body(r); } catch (Exception e) when (e is InvalidOperationException || e is FormatException || e is NullReferenceException) { w.OpenArr(sc.Id); w.Str("threw:" + e.GetType().Name + ": " + e.Message); w.EndArr(); continue; } // brief 055: a body that throws under another start text is a move, not the end of the list
+            try { sc.Body(r); } catch (Exception e) when (e is InvalidOperationException || e is FormatException || e is NullReferenceException || e is RunawayException) { w.OpenArr(sc.Id); w.Str("threw:" + e.GetType().Name + ": " + e.Message); w.EndArr(); continue; } // brief 055: a body that throws under another start text is a move, not the end of the list
             r.G.Finish(); put(sc.Id, r.G);
         }
         var files = new List<string>();
@@ -128,6 +131,8 @@ static class Program
             g.RunTo(until); g.Finish();
             put(System.IO.Path.GetRelativePath(root, f), g);
         }
+        }
+        finally { Game.HarnessStepLimit = was; }
         return w.EndObj().ToString();
     }
 

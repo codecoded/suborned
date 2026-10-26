@@ -588,3 +588,88 @@ Sources: Aster's task, briefs/067-sky-play-0122.md, briefs/027/keel/host-interfa
 - **Fable:** `less.done.board.<code>` (the host uses Glyph's words until then), the "X stops fire." and "Scroll to switch." hints, `ring-turn`, the goal line's clash with Drive ("Go in the car"), `less.pop.fire-lapses` (the host says "No line").
 - **Aster:** Glyph's §C open questions (the Go-before-Vale hold and rank are built as he proposes; boarded agents always leave the selection); GDD lines (§10 left click, getaway, select, conversation scene; §06 the fire offer only in a fight).
 - **Vantage / Keel:** the patrol's sweep is moved in mission.json but not yet in sim/data/handover.site.json; `r067-patrol-post` logs the engine's patrol against the mission's line.
+
+## Batch 0.2.123 host round 3 (Latch, 2026-10-26; code only: no player build, no batch, no shots)
+Sources: Aster's round-3 task (and its calls on round 2), briefs/067/vela.md, pulse.md, fable.md, glyph.md (Rev 2), GDD v0.25.0 §10. Nothing in sim/, contracts/, tools/ or StreamingAssets was edited. Paths are under unity/Assets/Suborned/.
+
+**1 · The rival car (Vela 067 L; adopted by Aster, copied by `bun run kit`)**
+- `HandoverHost.sedanRival` (HandoverHost.cs:39); PlayInstall loads `Kit("Vehicles/DK_Sedan_Rival.fbx")` and warns when it is missing (PlayInstall.cs:119).
+- The `car/rivals` view draws Sedan_Rival with its own nine materials (HostViews.Rivals.cs:34). `Trim()` and `RivalTrim` are gone, with the stand-in. As Vela found, one property block per renderer had written slot 0's teal to all ten slots. No model means the box stays the car. `Scorch` (the range's burning cars) is kept.
+- `HostViews.CarModelName(key)` gives the kit asset a view's model came from (HostViews.Rivals.cs:38; recorded in Visual, HostViews.Figures.cs:256), for the proof.
+- Unity imported the FBX with KitImport's settings (its .meta is new, git-ignored). The material remap and its Generated prefab come from the batch's world build: HarbourWorldBuilder → `KitImport.Generated`. All nine of its materials are in Kit/Materials.
+- The range's cars (`RangeCars`, HostViews.cs:330) keep the official model. They are the range's own cars, not the crew's.
+
+**2 · Pulse (briefs/067/pulse.md W2, §1.3, §2.5)**
+- W2, the Office's shift guards in the crowd (`Person.Civilian` false):
+  - `Target.Security` is set in TargetOf. They are labelled "a guard", read from `names.targets["crowd-guard"]` with that fallback, and any other security job is "an officer" (HandoverHost.cs:142-146, :789). The hover intent (:811), `PersonName` (HostTakedown.cs:20) and the takedown panel's witness list (:260) say the same.
+  - They are pickables with the one word "Guard" (HostPick.cs:46, :56) and get the hover name and anchor (:93).
+  - They rank as beings under the cursor (PickRank :115; TargetAt keeps them in the stack, HandoverHost.cs:753-763). Only passers-by give way.
+  - They hold the hover (Sticky, HostHoldStatus.cs:400) and wear the hover ring in the Built preset (HudModel.cs:194). An empty sheet reads "Guard".
+  - Their sight shows on hover once the guard's sight is learned (`Known("guard").Sight`). It is the engine's security ring (all round within reach), with nothing armed needed, under 067 F rule 1 (HostNotice.cs:121, :150).
+  - The Fire offer and the takedown rules are unchanged: they keep `Kind == "crowd"`.
+- The bodies: a body is dressed in its walker's DressCrowd figure, else the plain pick (`BodyFigure`, HostViews.cs:298). Pulse counted 16 of 126 walkers that changed figure when knocked out. `BodyFigureCheck()` (:301) is for the proof.
+- The relief's step: when someone has stood still for two or more ticks and their engine point then jumps more than 0.5 m and up to 1.5 m in one tick, the jump goes into the drawn spread offset, which eases back at StepCm (14 cm a tick, a walk) (HostCrowdSpread.cs:58-69). Pulse proposed 0.4 s, but 1.2 m in 0.4 s is 3 m/s and would play the run clip; at a walk it takes about 0.9 s on the walk clip.
+
+**3 · Fable (briefs/067/fable.md)**
+- `less.done.board.*` is read through DoneFlat, and the host's own copy (`BoardWhyWords`) is gone (HostGetaway.cs:274).
+- `less.go.noVale` is `PlayText.GoNoVale` (PlayText.cs:102, :286). It is the line of the Go row before Vale is aboard (HostGetaway.cs:191), and with Alt, the line under the Go-before-Vale wedge (`RingAltFrame`, HudToolkit.Ring.cs:141, :149).
+- `PlayText.ObjGo`'s fallback is now "Leave in the [car]." (PlayText.cs:100).
+- H21 "Cease fire: press X." and H22 "Scroll to switch." (`TipHints`, HostHints.cs:31, :63-83, :239-241, :279-287):
+  - Each shows at once, over any hint, rings nothing, and its line shows in play (HudToolkit.Less.cs:423).
+  - It is spent for the run once the HUD has shown and folded it, or once its moment passed: H21 when no lasting fire order stands, H22 when the cursor leaves the stack.
+  - It is retired for good when the input is used. That is `CeaseKeys` for H21: an X that sent a cease (HostHoldStatus.cs:357, HostFight.cs:152), never the host's own cease when a new order replaces a fire. For H22 it is `StackSteps`: a step by the wheel, Z or Tab (HostPick.cs:157). Both are ControlHints.
+  - The cease tip wears the fire glyph (HudModel AtlasIcon).
+- `ring-turn` was already read (the merged shut Turn wedge).
+- A lapsed fire order still says "No line": the pop is `less.pop.fire-lapses`, else `less.done.fire.no-clear-line`. Fable has given no lapse word.
+- Glossary:
+  - `Words()` and `ActName()` name a person's verb by the text's `withTarget` ("Listen to the guard", "Pay Inez", "Fire at the police"), so the two "Listen to" special cases and "Fire on" are gone (HandoverHost.cs:1254, HostActivity.cs:104).
+  - Verb()'s two Watch labels use `withTarget` too.
+  - TargetOf says `Name("security")` ("the police") and `names.targets["car-official"]` ("Vale's car") (HandoverHost.cs:782, :793). `Name()`'s fallback is "the police".
+  - PanelGuard's sample targets now use the same labels.
+
+**4 · Forma:** no briefs/067/forma.md when this round closed (his folder holds two road renders; tools/figures is mid-edit). The manifest reinstall and the FigureLibrary rebuild are left for the batch pre-flight. The crowd's figures will reshuffle when the pools move (Pulse §1.3), and `BodyFigure` follows whatever DressCrowd picks.
+
+**5 · Glyph's small animations**
+- The locked pill becomes the offer with a 0.15 s cross-fade when the lock lapses under the cursor: it comes up from 45 % of the locked alpha (HudToolkit.Hold.cs:124).
+- A stack step glides the pill's tail to the next thing in 0.12 s (:125).
+- One more shooter's cameo slides into the reticle row in 0.15 s, 10 px and fading in. The set beat's own faces do not slide (HudToolkit.Lock.cs:21, :102).
+
+**6 · Round-2 port gaps against Glyph's Rev 2 (fixed; Aster accepted his Go-without-Vale hold)**
+- C5b: Go before Vale has no dashed outline and no loud mark. It stays last, never lit, with the struck Vale cameo and the 0.5 s hold (HostContext.cs:179).
+- C5c, and GDD §10's "the getaway car: Board for the selection, Go once aboard": the car's hold is Board, then Go once Vale is aboard and the car is free (the Go card's hold still commits it when anyone would be left), then Drive (HostGetaway.cs:229-245). Round 2 had built Rev 1's "Go is never a hold".
+- E2: the shut ring takes up to the ring's five ways, not four (HostContext.cs:167).
+- F2: a Listen is no cone cause (HostSight.cs:104; OrderWatcher).
+- H1 is the shot ladder (HostConvo.cs:174-264):
+  - First the profile two-shot for a pair up to 6 m apart. It sits at fit = clamp(1.44 × sep, 3.6, 8) m: the perpendicular, then ±12°, then ±25°, then the same at 0.8 × fit (never under 2.8 m). At each angle it tries the side the camera was on first, else the side the subject faces.
+  - A lens is clear when the lines to both heads and chests are 0.4 m clear, nobody shows more than 115° of back, and no solid stands within 1.6 m.
+  - Else the high two-shot: the play pitch from 7 m with the same field, at the yaw the player left. The lens is orthographic and standing off as the map does, so the cut and the silhouettes hold (H4). The cut is sized to the two speakers, the frame opened to hold them both (:348-375), and it pushes in by its size.
+  - Past 6 m, the intercut: each speaker alone, 2.6 m from where they face, cut hard with the bubble, the occluders re-hidden per shot (:320-330).
+  - The over-the-shoulder fallback is gone. `ConvoForceShot` is for the proofs.
+  - Silhouettes are off in the low shots (perspective lenses take no cut) and on in the high one, per Aster's call.
+
+**7 · Tests and proofs**
+- `TpInputMapTests.TheRowsOfTheBrief` had been stale since brief 041 and item 33: E hold rang, left tap acted, right tap rang at the target. It fails with HEAD's code too (HostAim.cs's table and HostClicks.cs's `HoldRing` are untouched this round; round 2 ran only ContextRankTests). It now asserts the table as built in both presets, as ProofFire does.
+- Proof067:
+  - board: Go is last, struck and held with no dashes; `r067-car-ring-go-alt` shows its Alt line (gated: `goAlt`).
+  - convo: each scene's shot is logged and gated. The two-shots must hold both heads and the intercut the speaker. The driver's Listen is forced into the high two-shot (H5).
+  - people (new, gated): a shift guard hovered after the guard's Watch reads "a guard", "Guard", pickable, with his ring (`r067-crowd-guard-hover`). Every eased step from 5:28 to 5:34 draws at most 0.25 m a tick. No body is in another figure than its walker. The rival car is DK_Sedan_Rival.
+
+**Evidence**
+- `bun out/scratch/latch/tools/compile3.ts` compiles Runtime/** and then Editor/World/** headless against the project's own engine DLL (Sim/Plugins, engine 0.33.1): "compile3 runtime: OK", "compile3 editor: OK (0 warnings)". The one runtime warning (HostNotice.cs:273 `Dead`) is HEAD's.
+- Unity 6000.6.2f1 batchmode through `bun run guard` (`-runTests -testPlatform EditMode`, every test, no filter):
+  - Scripts compiled with 0 `error CS` and no new warnings (out/scratch/latch/r3/editmode2.log). DK_Sedan_Rival.fbx was imported.
+  - 35/35 passed (out/scratch/latch/r3/editmode2.xml): ContextRank 26, ModalGate 4, TpInputMap 3, SimScenario 1 (82.5 s) and PanelGuard 1.
+  - PanelGuard: 0 faults over 5,385 panels and 25,848 hovers, 32 moments; crowd 200 includes the shift guards.
+  - The first run, before the TpInputMap fix, was 34/35 (editmode.xml).
+- `bun run typecheck`: clean.
+
+**Open**
+- **Batch sim step (Splice/Keel):** StreamingAssets/sim/text.json is still round 2's (c5fa275e4422); the tree's is Fable's 36dd13526f5e. H21, H22, `less.go.noVale`, `less.done.board.*` and "Leave in the [car]." show once `tools/sim/unity.ts` copies it. I didn't run that step, since the engine and site are moving under Keel's round 3. Round 2's open point stands: the committed rulebook schema doesn't know 0.33.1's keys (Fable's patch: briefs/067/fable/rulebook-schema-0.33.1.patch).
+- **Forma (batch pre-flight):** the manifest reinstall and the FigureLibrary rebuild (item 4).
+- **Fable:** a `names.targets` word for a shift guard ("crowd-guard"; the host says "a guard" until it lands). The lapse word is still open (`less.pop.fire-lapses`; the host says "No line").
+- **Glyph:**
+  - In the hold preset (the pill alone: no hover ring, name chip or disc) a hovered shift guard shows only his ring once learned, since he has no calm way. Say if he needs a mark.
+  - H22 has no icon of its own (`step-target` takes the default glyph).
+  - Please 2x-review the new shots: `r067-crowd-guard-hover`, `r067-car-ring-go-alt` and the high and intercut convo frames.
+- **Vela / Glint:** the rival car hasn't been seen in a frame yet. The r059 set (2:35 turn-in, 2:46 drop, 3:10 park) shows it in the batch, and r067's people gate checks the model name.
+- **Aster:** GDD §15 "stand-ins" still says "the rivals' sedan in rival trim" (now Sedan_Rival). Also please confirm the H1 ladder, the car's Go hold and the walk-paced step (the round-2 gaps above).

@@ -201,9 +201,12 @@ namespace Suborned.Sim
                 r.Is(g.PatrolPose()!.Value.pos == backAt && g.Log.Exists(l => l.Code == "patrol.returns" && l.Tick == until), $"back on its sweep at {Report.Clock(until)} where the plan said ({backAt}), patrol.returns: the Reroute buys what it bought");
                 r.Is(stepMax <= g.R.RerouteWalkCmS / Game.Hz + 2, $"walking out and back it never steps more than its pace in a tick ({stepMax} cm; the pace {g.R.RerouteWalkCmS} cm/s)");
                 Go(until + T(20));
-                // a chase: S16's shot from the Office approach brings the patrol off its sweep, on the grid toward the shot's origin
-                Go(r.Send(Enf, "d:Office approach"));
-                r.Fire(Enf, GuardR); int chaseBy = g.Tick + T(15);
+                // a chase: a weapon drawn in its sight brings the patrol off its sweep, on the grid toward the operative (engine 0.34.0, brief 067 A: the
+                // sweep is the service yard's, beyond 30 m of S16's shot at the public door, so the Scout draws 8 m in front of it in the yard)
+                var pp0 = g.PatrolPose()!.Value; var front = g.Walk.NearestFree(pp0.pos + new Pt(pp0.facing.X * 8, pp0.facing.Y * 8)) ?? pp0.pos;
+                Go(r.SendTo(Scout, front)); Go(g.Tick + 1);
+                { int seeBy = g.Tick + T(100); while (!g.Over && g.Tick < seeBy && !g.PatrolWatching(r.Op(Scout).Pos)) Step(); } // until its cone has her
+                r.Do(Scout, "draw"); int chaseBy = g.Tick + T(15);
                 while (!g.Over && g.Tick < chaseBy && !g.PatrolChasing) Step();
                 if (r.Is(g.PatrolChasing, $"the shot breaks the sweep: the patrol chases ({Report.Clock(g.Tick)})"))
                 {

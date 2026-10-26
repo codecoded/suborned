@@ -225,28 +225,37 @@ describe('the batch shots rotate in one place (brief 050)', () => {
   });
 });
 
-// briefs/067/splice.md item 3: the proof's r059 pictures are in the HUD budget (tools/game/proofset.json), judged by the batch's budget step.
+// briefs/067/splice.md item 3 and follow-up 2: the proof's r059 and r067 pictures are in the HUD budget (tools/game/proofset.json), judged by the batch's budget step.
 describe('the proof sets in the budget step', () => {
   const ok = (name: string) => ({ ok: true, detail: `proof set ${name}: 13 of 13 pictures within budget`, problems: [], judged: 13, pass: 13 });
+  const older = (name: string) => ({ name, ok: true, judged: 0, detail: `proof set ${name}: not in this proof (an older build)` });
   test('the plan names the sets and where their pictures are', () => {
     const plan = STEPS.find(s => s.id === 'budget')!.plan(ctx({ shotsOut: '/o/shots' })).join('\n');
-    expect(plan).toContain('tools/game/proofset.json'); expect(plan).toContain('r059'); expect(plan).toContain('out/build/play/proof'); expect(plan).toContain('1920x1080');
+    expect(plan).toContain('tools/game/proofset.json'); expect(plan).toContain('r059'); expect(plan).toContain('r067'); expect(plan).toContain('out/build/play/proof'); expect(plan).toContain('1920x1080');
   });
-  test('a proof with an r059 section has its set judged, at the proof folder, under the stage folder', () => {
+  test('a proof with an r059 section has its set judged, at the proof folder, under the stage folder; the set whose section it lacks is an older build\'s', () => {
     const seen: string[][] = [];
     const rows = judgeProofSets({ frames: { r059: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
     expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059']]);
-    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, older('r067')]);
   });
-  test('a proof from a build with no r059 section is an older build: said, not judged, not failed', () => {
+  test('a proof with both sections has both judged, r059 then r067, each under its own stage folder', () => {
+    const seen: string[][] = [];
+    const rows = judgeProofSets({ frames: { r059: { ok: true }, r067: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
+    expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059'], ['/p/proof', 'r067', '/o/stage/r067']]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, { name: 'r067', ok: true, judged: 13 }]);
+  });
+  test('a proof from a build with neither section is an older build: said, not judged, not failed', () => {
     let ran = false;
     const rows = judgeProofSets({ frames: { r118: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return ok(name); });
     expect(ran).toBe(false);
-    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 0, detail: 'proof set r059: not in this proof (an older build)' }]);
-    expect(judgeProofSets(undefined, '/p', '/o', () => ok('x'))[0]!.ok).toBe(true);
+    expect(rows).toMatchObject([older('r059'), older('r067')]);
+    expect(judgeProofSets(undefined, '/p', '/o', () => ok('x')).every(r => r.ok)).toBe(true);
   });
-  test('a set the judge fails fails the row with its problems', () => {
-    const rows = judgeProofSets({ frames: { r059: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => ({ ok: false, detail: `proof set ${name}: 2 faults`, problems: ['r059-310-park: not taken by the proof'], judged: 0, pass: 0 }));
-    expect(rows[0]).toMatchObject({ ok: false, problems: ['r059-310-park: not taken by the proof'] });
+  test('a set the judge fails fails its row with its problems, and only its row', () => {
+    const rows = judgeProofSets({ frames: { r059: { ok: true }, r067: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => name === 'r067'
+      ? { ok: false, detail: `proof set ${name}: 2 faults`, problems: ['r067-patrol-post: not taken by the proof'], judged: 0, pass: 0 } : ok(name));
+    expect(rows[0]).toMatchObject({ name: 'r059', ok: true });
+    expect(rows[1]).toMatchObject({ name: 'r067', ok: false, problems: ['r067-patrol-post: not taken by the proof'] });
   });
 });

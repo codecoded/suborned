@@ -143,7 +143,7 @@ namespace Suborned.Sim
         }
 
         /// <summary>A move's pace: walking (cell.speed) or running (cell.runSpeed). Who may not run is RunRefusal's (GameCombat.cs).</summary>
-        int PaceOf(Op op, bool run) => run ? R.RunSpeed : op.CarryBody.Length > 0 && op.Id != OpId.Enforcer ? R.CarryUntrainedSpeed : opSpeed; // brief 013: only the Enforcer carries a body at a walk
+        int PaceOf(Op op, bool run) => run ? R.RunSpeed : op.CarryBody.Length > 0 && op.Id != OpId.Enforcer ? R.CarryUntrainedSpeed : cellWalk; // brief 013: only the Enforcer carries a body at a walk
 
         // ---------------------------------------------------------------- the person events (rulebook scout.*, turn.*)
 
@@ -300,7 +300,7 @@ namespace Suborned.Sim
                     PlanRerouteWalk(rerouteFrom);
                     if (PatrolUnit() is Unit pu) { pu.St = "gone"; PatrolAlarmed = false; } // false orders override the alarm too
                     AddTrail(R.RerouteTrail, "reroute"); Actions.Add("reroute"); Chain.Add("patrol-rerouted");
-                    Note("patrol.rerouted", "The patrol follows false orders and leaves the entrance sweep."); break;
+                    Note("patrol.rerouted", "The patrol follows false orders and leaves its sweep."); break; // engine 0.34.0: the sweep is the yard's now (brief 067 A), so the words name no place
                 case "mislead": // brief 059 F3: it lands on the parked car and its wheelman
                     if (!TipLands()) { Note("mislead.missed", "The rival car is gone before the tip lands."); break; }
                     RivalsDelayMethod = "mislead"; MisledOnce();
@@ -594,12 +594,12 @@ namespace Suborned.Sim
             if (at.HasValue && ServerOf(p) != null && !G.Within(op.Pos, at.Value, approachReach)) // brief 022: aim the walk at where her round will have her
             {
                 var st = Walk.NearestFree(at.Value); var rt = st.HasValue ? Walk.Route(op.Pos, st.Value) : null;
-                if (rt != null) { int k = (int)(new Path(rt).Length / Math.Max(1, opSpeed)); var ahead = PoseAhead(p, k); if (ahead.HasValue) at = ahead.Value.pos; }
+                if (rt != null) { int k = (int)(new Path(rt).Length / Math.Max(1, cellWalk)); var ahead = PoseAhead(p, k); if (ahead.HasValue) at = ahead.Value.pos; }
             }
             if (at.HasValue && !G.Within(op.Pos, at.Value, approachReach))
             {
                 var stand = Walk.NearestFree(at.Value); var route = stand.HasValue ? Walk.Route(op.Pos, stand.Value) : null;
-                if (route != null) { long mm = Math.Max(0, new Path(route).Length - approachReach * 10L); q.WalkS = (int)((mm + opSpeed * Hz - 1) / (opSpeed * Hz)); }
+                if (route != null) { long mm = Math.Max(0, new Path(route).Length - approachReach * 10L); q.WalkS = (int)((mm + cellWalk * Hz - 1) / (cellWalk * Hz)); }
             }
             // seen by (rulebook sight.unknown): where the operative stands for the act, its own place when already within reach, else the person's
             if (at.HasValue) q.Seen = SeenAt(G.Within(op.Pos, at.Value, approachReach) ? op.Pos : at.Value);
@@ -653,7 +653,7 @@ namespace Suborned.Sim
             var to = ServerOf(caller) is RoundsData.Server csv && !caller.Down ? csv.At : PersonPos(caller); if (!to.HasValue) return ("summon-off-street", "she isn't on the street"); // brief 022: the summons reads her post, never her pose
             var route = Walk.Route(Walk.NearestFree(at.Value.pos) ?? at.Value.pos, Walk.NearestFree(to.Value) ?? to.Value);
             if (route == null) return ("summon-too-far", "no walk between them");
-            long len = new Path(route).Length; walkTicks = (int)((len + opSpeed - 1) / opSpeed); // at walking pace (cell.speed)
+            long len = new Path(route).Length; walkTicks = (int)((len + peopleWalk - 1) / peopleWalk); // at the city's walking pace (crowd.walk; engine 0.34.0: cell.speed before)
             if (walkTicks > T(R.SummonWalkMaxS)) return ("summon-too-far", $"too far: {walkTicks / Hz} s away");
             return (null, "");
         }
@@ -717,7 +717,7 @@ namespace Suborned.Sim
                 var toSide = side.HasValue ? Walk.Route(Walk.NearestFree(from) ?? from, side.Value) : null;
                 if (toSide != null) guardOut = new Path(toSide);
                 else guardOut = guardOut.Cut(Math.Max(0, guardOut.Length - R.PartnersCloseCm * 10L)); // the file holds no stop: the old stop, on his route
-                walkT = (int)((guardOut.Length + opSpeed - 1) / opSpeed);
+                walkT = (int)((guardOut.Length + peopleWalk - 1) / peopleWalk); // engine 0.34.0: the city's walk (crowd.walk)
                 cafeFace = to - guardOut.End;
                 RoundCall(p, Tick + walkT, Tick + walkT + stayT, guardOut.End);
             }
@@ -765,7 +765,7 @@ namespace Suborned.Sim
             if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned.", () => With(Because("seen", true, Locate("guard", "saw", op.Pos)), "enforcer")); return ""; }
             if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("camera:entrance", "saw", op.Pos)), "enforcer")); return ""; }
             if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
-            RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : "gap"; // a takedown is no shooting (brief 013 E4)
+            RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : SweepCoversEntrance ? "gap" : ""; // a takedown is no shooting (brief 013 E4); engine 0.34.0: no sweep at the door, no patrol in the front route (brief 067 A)
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
             AtEntry = new RouteFacts { Lured = LureTick >= 0 && !GuardHeld, Looped = LoopOn && LoopCam == "entrance", PatrolAway = !PatrolDown && PatrolAwayUntil > Tick,
                 PatrolSweeping = !PatrolDown && PatrolAwayUntil <= Tick && !PatrolChasing && PatrolUnit() == null }; // engine 0.30.0 (brief 060 #8): the debrief's route lines, output only

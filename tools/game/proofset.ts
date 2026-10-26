@@ -1,10 +1,12 @@
-// The proof pictures the HUD budget judges and Glyph reviews at 2x (Splice, 2026-10-26; briefs/067/splice.md item 3). tools/game/proofset.json names them by section of the
-// player's proof (r059: brief 059's rival car, Watch, Drive and Take). Three uses:
+// The proof pictures the HUD budget judges and Glyph reviews at 2x (Splice, 2026-10-26; briefs/067/splice.md items 3 and follow-up 2). tools/game/proofset.json names them by section of
+// the player's proof (r059: brief 059's rival car, Watch, Drive and Take; r067: Sky's notes on 0.2.122, the square, cones, camera, locked ways, Board and Drive, conversations, reticle). Three uses:
 //   check   <proofdir> [--size 1920x1080]   each picture is there with its HUD layer (<name>.hud.png), manifest and parts, at that size; exit 1 if one is not
 //   budget  <proofdir>                      the 1x pictures through tools/hud-budget (what `bun run batch` does in its budget step, judgeProofBudget below); exit 1 over budget
 //   crops   <proof2160dir> [--out dir]      the 2160 proof (-gameProof -capture-size 3840x2160) cut for the 2x review: each frame at 1/4 for where things sit, its middle at its own pixels, and
-//                                           each HUD part that is not standing furniture (the roster, the scope, the keys, the history) at its own pixels: PNGs and one html sheet beside them
-// usage: bun tools/game/proofset.ts <check|budget|crops> <dir> [--set r059] [--size WxH] [--out dir]
+//                                           each HUD part that is not standing furniture (the roster, the scope, the keys, the history) at its own pixels, the standing ones too where
+//                                           the picture is of them (`crop` in the set file): PNGs and one html sheet beside them
+// Every set the folder has pictures of is run (a set with none is an older build's: said, skipped); --set names one.
+// usage: bun tools/game/proofset.ts <check|budget|crops> <dir> [--set r059|r067] [--size WxH] [--out dir]
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { z } from 'zod';
@@ -14,7 +16,7 @@ import { pngFileSize } from './shots';
 export const ROOT = resolve(import.meta.dir, '../..');
 export const PROOFSET_FILE = join(ROOT, 'tools/game/proofset.json');
 
-const Frame = z.strictObject({ name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, 'kebab-case'), what: z.string().min(10), optional: z.boolean().optional() });
+const Frame = z.strictObject({ name: z.string().regex(/^[a-z0-9][a-z0-9-]*$/, 'kebab-case'), what: z.string().min(10), optional: z.boolean().optional(), crop: z.array(z.string().min(1)).min(1).optional() });
 export const ProofSet = z.strictObject({
   schema: z.literal('suborned.proofset/1'), note: z.string(),
   sets: z.record(z.string(), z.strictObject({ section: z.string(), source: z.string(), frames: z.array(Frame).min(1) })),
@@ -91,13 +93,14 @@ export function judgeProofBudget(dir: string, set: string, stage: string, run: B
 export const STANDING = /^(roster|portrait-\d+|roster-(weapon|dots)-\d+|keys|scope|history|history-key)$/;
 export type Rect = { x: number; y: number; w: number; h: number };
 
-/** The crops of one picture: its middle (the camera is put on the subject, so this is what the frame is of) and each part of `parts` ([x, y, w, h] at the picture's own pixels) that is not standing furniture, padded and held to the picture. */
-export function cropRects(parts: Record<string, number[]>, size: [number, number], o: { pad?: number; middle?: [number, number]; min?: number } = {}): { name: string; rect: Rect }[] {
+/** The crops of one picture: its middle (the camera is put on the subject, so this is what the frame is of) and each part of `parts` ([x, y, w, h] at the picture's own pixels) that is not standing furniture, padded and held to the picture.
+ *  `also`: standing parts this picture is of (the roster, for a picture of the portrait pulse), cropped here too. */
+export function cropRects(parts: Record<string, number[]>, size: [number, number], o: { pad?: number; middle?: [number, number]; min?: number; also?: readonly string[] } = {}): { name: string; rect: Rect }[] {
   const [W, H] = size, pad = o.pad ?? Math.round(W / 160), [mw, mh] = o.middle ?? [Math.round(W / 3), Math.round(H / 3)], min = o.min ?? Math.round(W / 80);
   const clamp = (r: Rect): Rect => { const x = Math.max(0, Math.min(W - 1, Math.floor(r.x))), y = Math.max(0, Math.min(H - 1, Math.floor(r.y))); return { x, y, w: Math.max(1, Math.min(W - x, Math.ceil(r.w))), h: Math.max(1, Math.min(H - y, Math.ceil(r.h))) }; };
   const out: { name: string; rect: Rect }[] = [{ name: 'middle', rect: clamp({ x: (W - mw) / 2, y: (H - mh) / 2, w: mw, h: mh }) }];
   for (const [name, p] of Object.entries(parts)) {
-    if (STANDING.test(name) || p.length !== 4 || p.some(v => !Number.isFinite(v))) continue;
+    if ((STANDING.test(name) && !o.also?.includes(name)) || p.length !== 4 || p.some(v => !Number.isFinite(v))) continue;
     const [x, y, w, h] = p as [number, number, number, number];
     if (w < min || h < min || x + w < 0 || y + h < 0 || x > W || y > H) continue; // off screen (a bubble above the top edge) or too small to be a thing
     out.push({ name, rect: clamp({ x: x - pad, y: y - pad, w: w + 2 * pad, h: h + 2 * pad }) });
@@ -135,7 +138,7 @@ export function writeCrops(dir: string, set: string, out: string, o: { size?: [n
     const state = f.manifest ? (JSON.parse(readFileSync(f.manifest, 'utf8')) as { state?: string }).state ?? '' : '';
     const tile = (name: string, png: Uint8Array, shown: number, caption: string) => { const file = `${f.frame.name}--${name}.png`; writeFileSync(join(out, file), png); crops++; return `<figure><img src="${file}" width="${shown}" alt="${esc(name)}"><figcaption>${esc(name)} · ${esc(caption)}</figcaption></figure>`; };
     const thumb = downscale(im, 4); // the whole frame at a quarter of its size, first: where the crops sit
-    const tiles = tile('frame', encodePng(thumb), thumb.w, `the whole picture at 1/4 (${im.w}×${im.h})`) + cropRects(parts, [im.w, im.h]).map(c => {
+    const tiles = tile('frame', encodePng(thumb), thumb.w, `the whole picture at 1/4 (${im.w}×${im.h})`) + cropRects(parts, [im.w, im.h], { also: f.frame.crop }).map(c => {
       const cut = cropImage(im, c.rect); // at the picture's own pixels: the 2x review is a look at these
       return tile(c.name, encodePng(cut), Math.min(cut.w, 640), `${c.rect.w}×${c.rect.h} at ${c.rect.x},${c.rect.y}`);
     }).join('');
@@ -146,26 +149,44 @@ export function writeCrops(dir: string, set: string, out: string, o: { size?: [n
   return { sheet, frames: j.found.length, crops, problems };
 }
 
+/** Which sets a command runs on `dir`: the one asked for with --set (it must be in the file), or every set the folder has at least one picture of. A set with no picture in the folder is
+ *  an older build's: said and skipped, not a fault (the batch does the same by the proof's sections). */
+export function pickSets(dir: string, requested?: string, file = PROOFSET_FILE): { run: string[]; skipped: string[] } {
+  const sets = loadProofSet(file).sets;
+  if (requested) { if (!sets[requested]) throw new Error(`no set ${requested} in ${file} (${Object.keys(sets).join(', ')})`); return { run: [requested], skipped: [] }; }
+  const has = (n: string) => sets[n]!.frames.some(f => existsSync(join(dir, `${f.name}.png`)));
+  const names = Object.keys(sets);
+  return { run: names.filter(has), skipped: names.filter(n => !has(n)) };
+}
+
 if (import.meta.main) {
   const args = process.argv.slice(2), at = (k: string) => { const i = args.indexOf(k); return i >= 0 ? args[i + 1] : undefined; };
-  const cmd = args[0], dir = args[1] && !args[1].startsWith('--') ? resolve(args[1]) : undefined, set = at('--set') ?? 'r059';
-  if (!['check', 'budget', 'crops'].includes(cmd ?? '') || !dir) { console.error('usage: bun tools/game/proofset.ts <check|budget|crops> <proof dir> [--set r059] [--size WxH] [--out dir]'); process.exit(2); }
-  const proof = loadProofSet().sets[set]; if (!proof) { console.error(`no set ${set} in tools/game/proofset.json (${Object.keys(loadProofSet().sets).join(', ')})`); process.exit(2); }
-  if (cmd === 'check') {
-    const sz = (at('--size') ?? '1920x1080').split('x').map(Number) as [number, number], j = locate(dir, proof.frames, sz), bad = faults(j);
-    for (const f of j.found) console.log(`ok    ${f.frame.name}  ${f.size?.join('x') ?? '?'}  ${f.hud && f.manifest ? 'HUD layer and manifest' : 'NO HUD layer or manifest'}`);
-    for (const n of j.optionalMissing) console.log(`--    ${n}  (optional: not taken this run)`);
-    for (const b of bad) console.log(`FAIL  ${b}`);
-    console.log(`${j.found.length} of ${proof.frames.length} pictures of set ${set} in ${dir}${bad.length ? `; ${bad.length} fault${bad.length === 1 ? '' : 's'}` : ''}`);
-    process.exit(bad.length ? 1 : 0);
-  } else if (cmd === 'budget') {
-    const r = judgeProofBudget(dir, set, join(ROOT, 'out/scratch/splice/proofset', set));
-    console.log(r.detail); for (const p of r.problems) console.log(`FAIL  ${p}`);
-    process.exit(r.ok ? 0 : 1);
-  } else {
-    const r = writeCrops(dir, set, resolve(at('--out') ?? join(ROOT, 'out/scratch/splice/proofset', `crops-${set}`)));
-    for (const p of r.problems) console.log(`FAIL  ${p}`);
-    console.log(`${r.crops} crops of ${r.frames} pictures → ${r.sheet}`);
-    process.exit(r.problems.length ? 1 : 0);
+  const cmd = args[0], dir = args[1] && !args[1].startsWith('--') ? resolve(args[1]) : undefined;
+  if (!['check', 'budget', 'crops'].includes(cmd ?? '') || !dir) { console.error('usage: bun tools/game/proofset.ts <check|budget|crops> <proof dir> [--set r059|r067: default every set the folder has pictures of] [--size WxH] [--out dir]'); process.exit(2); }
+  let picked: ReturnType<typeof pickSets>;
+  try { picked = pickSets(dir, at('--set')); } catch (e) { console.error((e as Error).message); process.exit(2); }
+  for (const s of picked.skipped) console.log(`--    set ${s}: no picture of it in ${dir} (an older build)`);
+  if (!picked.run.length) { console.log(`FAIL  no picture of any set (${Object.keys(loadProofSet().sets).join(', ')}) in ${dir}`); process.exit(1); }
+  let code = 0;
+  for (const set of picked.run) {
+    const proof = loadProofSet().sets[set]!;
+    if (cmd === 'check') {
+      const sz = (at('--size') ?? '1920x1080').split('x').map(Number) as [number, number], j = locate(dir, proof.frames, sz), bad = faults(j);
+      for (const f of j.found) console.log(`ok    ${f.frame.name}  ${f.size?.join('x') ?? '?'}  ${f.hud && f.manifest ? 'HUD layer and manifest' : 'NO HUD layer or manifest'}`);
+      for (const n of j.optionalMissing) console.log(`--    ${n}  (optional: not taken this run)`);
+      for (const b of bad) console.log(`FAIL  ${b}`);
+      console.log(`${j.found.length} of ${proof.frames.length} pictures of set ${set} in ${dir}${bad.length ? `; ${bad.length} fault${bad.length === 1 ? '' : 's'}` : ''}`);
+      if (bad.length) code = 1;
+    } else if (cmd === 'budget') {
+      const r = judgeProofBudget(dir, set, join(ROOT, 'out/scratch/splice/proofset', set));
+      console.log(r.detail); for (const p of r.problems) console.log(`FAIL  ${p}`);
+      if (!r.ok) code = 1;
+    } else {
+      const r = writeCrops(dir, set, resolve(at('--out') ?? join(ROOT, 'out/scratch/splice/proofset', `crops-${set}`)));
+      for (const p of r.problems) console.log(`FAIL  ${p}`);
+      console.log(`${r.crops} crops of ${r.frames} pictures → ${r.sheet}`);
+      if (r.problems.length) code = 1;
+    }
   }
+  process.exit(code);
 }

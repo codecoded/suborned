@@ -58,6 +58,7 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
   const kindsIn = people.places as unknown as { id: string; kind: string; plot?: string; beside?: string }[];
   const seats = JSON.parse(readFileSync(join(root, SEATS_FILE), 'utf8')) as { tables: Record<string, { chairs: { chair: number; face: V }[] }> };
   const faces: Record<string, number[] | string> = {};
+  const beside: Record<string, string> = {}; // engine 0.34.0 (brief 067 L, Pulse note 3): a post's waiting point and the staffed door it stands beside (PostOf reads it)
   for (const p of [...kindsIn].sort((a, b) => (a.id < b.id ? -1 : 1))) {
     if (p.kind === 'home') continue;
     if (p.kind === 'seat') {
@@ -65,10 +66,17 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
       if (!chair) throw new Error(`${p.id}: a seat ${SEATS_FILE} has no chair for`);
       faces[p.id] = chair.face; continue;
     }
+    // engine 0.34.0 (brief 067, Pulse's note 4; GDD §05: a stop's facing is out of a door or toward the kerb): a staffed post's door (a door with
+    // waiting points beside it: the Office's public and official doors) faces the kerb as its waiting points do, which at both Office doors is
+    // straight out of the door; "door" read the entrance's stand, the nearest free cell 25 cm off, a quarter turn off there (along the wall)
+    if (p.kind === 'door' && kindsIn.some((q) => q.beside === p.id)) { faces[p.id] = 'kerb'; continue; }
     if (p.kind === 'door') { faces[p.id] = 'door'; continue; }
     // a post's waiting point (brief 067 L, Pulse): beside a staffed door of the Office, whose plot has several doors, so no one door to face; it faces the kerb, which is out of the door
     // (at both Office doors the nearest carriageway is straight out from the face: 9 m west of the public door, 4 m south of the official entrance)
-    if (p.kind === 'stand' && p.beside) { faces[p.id] = 'kerb'; continue; }
+    if (p.kind === 'stand' && p.beside) {
+      if (!kindsIn.some((q) => q.id === p.beside && q.kind === 'door')) throw new Error(`${p.id}: beside ${p.beside}, which is no door of the people file`);
+      faces[p.id] = 'kerb'; beside[p.id] = p.beside; continue;
+    }
     if (p.kind === 'stand' && p.plot) {
       const doors = kindsIn.filter((q) => q.kind === 'door' && q.plot === p.plot);
       if (doors.length !== 1) throw new Error(`${p.id}: a stand on ${p.plot} faces its unit's door, and the plot has ${doors.length} doors`);
@@ -104,6 +112,8 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
     places,
     faces,
     facesFrame: 'face = how a person stands at the place (brief 054 §3.3): [x, y] a direction (a seat, its chair\'s face), "door" out of the place\'s entrance, "to:<place>" toward that place, "kerb" toward the nearest carriageway; a home has none (inside)',
+    beside,
+    besideFrame: 'beside = a post\'s waiting point and the staffed door it stands beside (brief 067 L, Pulse): a guard whose shift is at the point holds that door\'s post (her check-in marks, engine 0.34.0); a stop there right before a stop at the door is a relief\'s wait, not her shift',
 
     needs: {
       sizes: Object.keys(needs.rules.sizes).sort(),

@@ -64,7 +64,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 r.Until(() => g.Over, T(60));
                 r.Eq(g.FailCode, "sealed", "sealed, the fixture's failure");
-                r.Eq(g.Tick, T(376) + 5, "at 6:16.5 (the dial's seal: no final fight, brief 018; 6:12 before 2026-10-19: the unit's walk to the post on the west face confirms him 4 s later; engine 0.33.1: the unit walks round Vale's car, 0.5 s)");
+                r.Eq(g.Tick, T(379) + 2, "at 6:19.2 (the dial's seal: no final fight, brief 018; 6:12 before 2026-10-19: the unit's walk to the post on the west face confirms him 4 s later; engine 0.33.1: the unit walks round Vale's car, 0.5 s; engine 0.34.0, brief 067 L: guard 74 walking past the door radios the body at 3:47.1 and the unit, which no longer trades shots with the Enforcer on its way, confirms him at 3:54.2, 2.7 s later than 3:51.5)");
                 var fc = CauseIs(r, "sealed", "sealed", false, "", "", Enf); // the fail camera (ScenariosFailCause.cs): no single culprit; the report the confirmation sealed on
                 var o = fc?.Origin;
                 r.Is(o != null && o.Because == "confirmed" && o.Report.StartsWith("report:dead:", StringComparison.Ordinal) && o.Reporter?.Id == "camera:entrance" && o.Confirmer != null && o.Confirmer.Placed, $"the origin: the entrance camera's report of the dead guard, confirmed by a unit (got {o?.Report}, {o?.Because}, {o?.Reporter}, {o?.Confirmer})");
@@ -154,18 +154,18 @@ namespace Suborned.Sim
                 r.Eq(g.Reported, 1, "one reported incident");
             }, new Start { ValeWaits = true }); // brief 059: Vale waits at his car past 6:13 (test only)
 
-            Add("N71", "—", "A later report at the same Alert sends nothing (one incident, one dispatch): route G-KO, the guard knocked out unseen after his 2:30 mark and left at the post. His 4:00 mark lands (Alert 1: the level's robots); guard 74 finds him and radios it: a knockout stays Alert 1, so his report lands and the robots out stay out, with no second dispatch. A later report that raises the Alert tops the same dispatch up to the new level's counts (N62: the dead guard's report, Alert 1 to 2). His report is the body found, so its scene unit comes (rev 4, N74): that is the lockdown, not a dispatch.", r =>
+            Add("N71", "—", "A later report at the same Alert sends nothing (one incident, one dispatch): route G-KO, the guard knocked out unseen after his 2:30 mark and left at the post. Engine 0.34.0 (brief 067 L): guard 74, walking past the door to her post, finds him first (about 3:40): Alert 1, the one dispatch (the level's robots, and the found body's scene unit). The unit brings him round before his 4:00 mark, which he makes; to 4:30 the same knockout's later words (his statement, the mark) send nothing: no second dispatch, no robot sent twice, the destinations stand. (0.33.1: his 4:00 mark landed first and guard 74 found him later.)", r =>
             {
                 var g = r.G;
                 GuardQuiet(r);
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 r.SendTo(Enf, BesideDoor);
-                r.To(T(240));
                 var a = ActOn(r, GuardId);
-                r.Is(a.MarkMissed && g.Alert == 1, "the 4:00 mark lands: Alert 1");
+                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Phase == "landed"), T(240) - g.Tick), $"a passer-by's report of the body lands first ({Report.Clock(g.Tick)}: guard 74 on her way past the door)");
+                r.Is(g.Alert == 1 && g.Log.Count(l => l.Code == "alarm.dispatches") == 1, "Alert 1, one dispatch");
                 int robots = g.Units.Count(u => u.Robot); var dests = g.AlarmDestinations.ToList();
-                r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches"), 1, "one dispatch");
-                r.Is(r.Until(() => g.Reps.Exists(x => x.Act == a.Id && x.P != null && x.Phase == "landed"), T(60)), "a passer-by's report of the body lands");
+                r.To(T(270));
+                r.Is(!a.MarkMissed, "brought round by the scene unit, he makes his 4:00 mark");
                 r.Eq(g.Alert, 1, "a knockout stays Alert 1");
                 r.Eq(g.Log.Count(l => l.Code == "alarm.dispatches"), 1, "no second dispatch");
                 r.Eq(g.Units.Count(u => u.Robot), robots, "no robot sent twice");
@@ -282,7 +282,7 @@ namespace Suborned.Sim
                 r.Is(G.Within(r.Op(Enf).Pos, r.Stand(g.S.GuardPost), 100) && g.Log.Exists(l => l.Code == "enter.out" && l.Text.Contains("public door")), "out by the public door, not through the held service door");
             }, new Start { Holds = { ("office-service-door", 270, 420) } });
 
-Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storeroom and holds 3 bodies (takedown.stash.doorHolds), the Dumpster 1 (its site entry). Two guards knocked out unseen in the lane: both go through the service door; the Dumpster, holding one, refuses a second.", r =>
+Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storeroom and holds 3 bodies (takedown.stash.doorHolds), the Dumpster 1 (its site entry). Two guards knocked out unseen: the door guard after his 2:30 mark and guard 74 on her walk to the official entrance, just before she reaches the public door (engine 0.34.0, brief 067 L: she walks it at 3:47 now; at 4:10 she is in front of the pickup camera, guard 29 and the driver); the Dumpster, holding one, refuses the second, and the service door takes him.", r =>
             {
                 var g = r.G;
                 r.Is(g.S.Stashes.All(s => g.HoldsOf(s) == (s.Kind == "door" ? 3 : 1)), "every service door holds 3, the Dumpster 1");
@@ -292,14 +292,14 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 r.To(r.SendTo(Enf, Dumpster)); r.Body(Enf, "stash", DumpsterId); r.Done(Enf);
                 r.Is(g.BodyById("guard")!.Stash == DumpsterId, "the guard is in the Dumpster");
                 var w = WalkerById(r, "p-records-office-74");
-                r.To(MeetFromBehind(r, w, T(250)));
+                r.To(MeetFromBehind(r, w, T(222))); // engine 0.34.0 (brief 067 L, A): she walks past the public door at 3:47 now, so he meets her before it, under the loop and the reroute (at 4:10 she is in front of the pickup camera, guard 29 and the driver, and the yard patrol back on its sweep sees the carry)
                 r.Is(r.Until(() => g.CrowdPos(w) is Pt p && G.Within(p, r.Op(Enf).Pos, g.R.TakedownReachCm), T(30)), "guard 74 walks into reach");
                 r.Takedown("p-records-office-74", "knockout"); r.Done(Enf);
                 r.Body(Enf, "carry", "p-records-office-74"); r.Done(Enf);
                 r.To(r.SendTo(Enf, Dumpster));
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Enf, Do = "stash", Target = DumpsterId }).code, "stash-full", "the Dumpster holds one");
                 r.To(r.SendTo(Enf, ServiceDoor)); r.Body(Enf, "stash", ServiceDoorId); r.Done(Enf);
-                r.Is(g.BodyById("p-records-office-74")!.Stash == ServiceDoorId, "the service door takes him");
+                r.Is(g.BodyById("p-records-office-74")?.Stash == ServiceDoorId, "the service door takes him");
             });
 
             Add("N77", "—", "Route B under rev 4 (Motive R4.2; Sky 2026-10-16), Waymark's route-b orders: the Take at Vale's own car with its driver turned happens inside the car, off-screen: no witness window, though the clerks fill the lane at 6:10; the turned driver is the act's accomplice, never its witness. The escort to the getaway car (by the lane's south end, as the route walks it) is seen only by Vale's kin, or by anyone within 3 m who sees the grip: nobody. 7:39, 3 T (the Pay is private since Sky 2026-10-16; 4 T before), Alert 0.", r =>
@@ -307,9 +307,13 @@ Add("N76", "—", "Stash capacity (rev 4 R4.3): a service door opens on a storer
                 var g = r.G;
                 // c025 (Waymark 2026-10-21, engine 0.14.1; brief 031): route-b re-pinned: the Scout watches the driver from the SW corner and tips the
                 // rivals from (8600, -3400), 2.8 m outside the pickup cone; the three's posts by the car within 15 m of the ambush
-                Orders(r, Mv(0, Enf, "d:Service lane"), MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), /* engine 0.28.0: the driver's Watch (0:62) dropped: no Watch to give on him, brief 054 §2.1 */
+                // engine 0.34.0 (brief 067 A; Motive's rb-rr): the patrol sweeps the service yard and reports the Enforcer loitering at 'Service lane' from
+                // 0:00 (1:53): he waits at his start and comes at 5:50, and the Tech reroutes the patrol from the cabinet at 5:00 (lands 5:45, away to
+                // 7:40), then runs to the car for the drive round
+                Orders(r, new Order { Tick = 0, Op = Tech, Do = "move", To = "cabinet", Run = true },
+                    MvTo(0, Scout, new Pt(7950, -4000)), MvTo(0, Fixer, new Pt(7950, -3850)), /* engine 0.28.0: the driver's Watch (0:62) dropped: no Watch to give on him, brief 054 §2.1 */
                     Mv(760, Fixer, "d:Boarding pavilion"), Mv(820, Scout, "d:Meet driver"), new Order { Tick = 820, Op = Fixer, Do = "turn", Target = Driver, Approach = "pay" }, Act(838, Scout, "listen", Driver),
-                    MvTo(1270, Scout, TipPt), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals") /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it; brief 059: the tip at the rival car where it parks */, MvTo(2340, Scout, new Pt(1175, -4825)), MvTo(2340, Tech, new Pt(675, -4625)));
+                    MvTo(1270, Scout, TipPt), MvTo(1320, Fixer, new Pt(1025, -4625)), Act(1900, Scout, "mislead", "rivals") /* 0.28.0: the Listen ends at 2:06.7 without the Watch before it; brief 059: the tip at the rival car where it parks */, MvTo(2340, Scout, new Pt(1175, -4825)), Act(3000, Tech, "reroute", "patrol"), new Order { Tick = 3460, Op = Tech, Do = "move", Point = new Pt(675, -4625), Run = true }, Mv(3500, Enf, "d:Service lane"));
                 r.To(T(370) + T(g.R.ValeInS)); r.Until(() => g.PickupService, T(60)); // brief 059: Vale gets in at 6:13 and is driven round
                 r.Is(g.PickupService && g.TakeInCar, "Vale at his own car in the service bay, its driver turned");
                 int near = 0; var vp = g.ValePos()!.Value; foreach (var w in g.Walkers) if (g.CrowdPos(w) is Pt p && G.Within(p, vp, g.R.WitnessRangeCm)) near++;

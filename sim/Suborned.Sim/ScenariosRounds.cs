@@ -83,7 +83,7 @@ namespace Suborned.Sim
                 r.Do(Fixer, "call", Inez);
                 g.Step(); r.Eq(PhaseOf(g), "to post", "the call: she walks back to her post");
                 int arrive = g.LureTick + g.VisitWalkTicks;
-                var st0 = g.S.Rounds!.GuardStops[0]; int cut = (g.S.Rounds.GuardStopWalkCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed, full = (g.S.Rounds.GuardWalkCm * 10 + g.R.CellSpeed - 1) / g.R.CellSpeed;
+                var st0 = g.S.Rounds!.GuardStops[0]; int cut = (g.S.Rounds.GuardStopWalkCm * 10 + g.R.PeopleWalk - 1) / g.R.PeopleWalk, full = (g.S.Rounds.GuardWalkCm * 10 + g.R.PeopleWalk - 1) / g.R.PeopleWalk; // engine 0.34.0 (M067-B1): the summoned guard walks at the city's pace (crowd.walk), not the cell's
                 r.Is(Math.Abs(g.VisitWalkTicks - cut) <= 3 && g.VisitWalkTicks < full + T(1), $"his walk is to his stop at her side: {g.VisitWalkTicks / Game.Hz} s (to her post it was {full / Game.Hz} s)");
                 r.To(arrive + 1);
                 var gp = g.GuardPose()!.Value; var post = g.S.Stand(g.Inez.Place);

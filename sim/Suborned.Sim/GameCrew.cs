@@ -215,7 +215,7 @@ namespace Suborned.Sim
         void StartWalk(CrewMember m, Pt from, Pt to, string goal, int speed)
         {
             var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
-            var route = Walk.Route(a, b) ?? new[] { a, b };
+            var route = (goal == "spot" ? RouteRoundHold(a, b) : null) ?? Walk.Route(a, b) ?? new[] { a, b }; // engine 0.34.0 (Motive M067-SQ1): to his post round the car's hold
             m.Walk = new Path(route); m.WalkStart = Tick; m.Speed = Math.Max(1, speed); m.Goal = goal; m.Mode = CrewMode.Walking; m.ModeTick = Tick; m.Disp = null;
             if (m.Walk.Length == 0) ArriveWalk(m);
         }
@@ -582,7 +582,7 @@ namespace Suborned.Sim
         void MoveToFight(Hostile h, Pt to)
         {
             var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
-            var route = Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; }
+            var route = RouteRoundHold(a, b) ?? Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; } // engine 0.34.0 (Motive M067-SQ1): to his spot round the car's hold
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; if (h.Run.Length == 0) h.Run = null;
         }
         /// <summary>F6: a rider steps out at the fight's stand (or a member still on foot when the fight takes him): his body joins the fight, walking

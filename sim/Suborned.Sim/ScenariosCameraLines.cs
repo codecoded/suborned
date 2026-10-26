@@ -77,7 +77,7 @@ namespace Suborned.Sim
                 r.Is(g.LoopOn && g.LoopCam == "pickup", "then the pickup camera loops");
             });
 
-            Add("DIS-REPORT", "—", "Disable (brief 058 §2, rulebook cell.disable; Sky 2026-10-25: an incident): the Tech cuts the entrance camera at 0:20 (10 s, +2 T): dead to the end. Its report is a missed check-in that lands at the desk's next scan of that screen + post-call-s: Alert 1, the dial's Alert-1 robots to the camera, standing down 60 s after; no scene held, no face, no Standing. The guard knocked out unseen after his 2:30 mark: his 4:00 missed mark is the second incident, Alert 2.", r =>
+            Add("DIS-REPORT", "—", "Disable (brief 058 §2, rulebook cell.disable; Sky 2026-10-25: an incident): the Tech cuts the entrance camera at 0:20 (10 s, +2 T): dead to the end. Its report is a missed check-in that lands at the desk's next scan of that screen + post-call-s: Alert 1, the dial's Alert-1 robots to the camera, standing down 60 s after; no scene held, no face, no Standing. The guard knocked out unseen after his 2:30 mark: engine 0.34.0 (brief 067 L), guard 74 walking past the door to her post finds him before his 4:00 mark, and her report is the second incident, Alert 2 (0.33.1: the 4:00 missed mark was).", r =>
             {
                 var g = r.G; if (!r.Is(g.R.DisableOn, "cell.disable in the rulebook")) return; var cam = g.S.Cameras.First(c => c.Id == "entrance"); var door = r.Stand("d:Office entrance");
                 TechAtCabinet(r);
@@ -118,8 +118,10 @@ namespace Suborned.Sim
                 r.Eq(g.Alert, 1, "unseen: still Alert 1 (the dead camera sees nothing)");
                 int next = g.NextMarkOf(g.GuardP, g.Tick);
                 r.Eq(Report.Clock(next), "4:00.0", "his next mark: 4:00");
-                r.To(next);
-                r.Is(g.Alert == 2 && g.Reported == 2 && g.Ledger.Exists(l => l.what == "alert" && l.cause == "report:mark:" + GuardId && l.tick == next), $"his {Report.Clock(next)} missed mark is the second incident: Alert 2");
+                // engine 0.34.0 (brief 067 L): guard 74, walking past the door to her post (a minute sooner since Pulse's waiting points), finds him
+                // first: her radio is the second reported incident, before the mark (0.33.1: the 4:00 missed mark was)
+                r.Is(r.Until(() => g.Alert >= 2, next - g.Tick), $"before his mark a second report lands ({Report.Clock(g.Tick)})");
+                r.Is(g.Alert == 2 && g.Reported == 2 && g.Ledger.Exists(l => l.what == "alert" && l.tick == g.Tick && l.cause.Contains(GuardId)), $"guard 74's report of him is the second incident: Alert 2 ({string.Join(", ", g.Ledger.Where(l => l.what == "alert").Select(l => l.cause))})");
                 r.Is(g.CameraDark("entrance"), "the camera is dead to the end");
             });
 

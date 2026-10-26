@@ -86,7 +86,7 @@ namespace Suborned.Play
             _ when Game != null && Game.S.StandById(key) != null => Text?.TargetName("stand-" + key, "the " + key) ?? key, // brief 059 K6: a car stand (Fable's targets.stand-*)
             _ when Game != null && !IsOpName(key) && key is not ("waitress" or "driver" or "guard" or "councillor") && Game.PersonById(key) is Person cp => PersonName(cp), // a passer-by (brief 013)
             _ when Game != null && Game.S.Stashes.Find(x => x.Id == key) is StashPlace sp => StashName(sp),
-            _ => Text?.TargetName(key, key.StartsWith("security") ? "the response unit" : "the " + key) ?? key,
+            _ => Text?.TargetName(key, key.StartsWith("security") ? "the police" : "the " + key) ?? key, // Fable 067 (the glossary): the police, never "the response unit"
         };
 
         string ActPlaceName(int k, Order q) => q.Do switch
@@ -101,7 +101,7 @@ namespace Suborned.Play
             var key = verb == "turn" ? approach : verb;
             var label = Text?.Action(key, target).label ?? key;
             bool person = target is "waitress" or "driver" or "guard" or "councillor";
-            return withTarget && person && verb != "take" ? $"{(label == "Listen" ? "Listen to" : label)} {Name(target)}" : label;
+            return withTarget && person && verb != "take" ? Text?.WithTarget(key, Name(target)) ?? $"{label} {Name(target)}" : label; // Fable 067: the text's withTarget ("Listen to Inez")
         }
 
         /// <summary>The roster's line for an act in progress: "Watching Inez", "Paying the driver", "Looping the camera".</summary>

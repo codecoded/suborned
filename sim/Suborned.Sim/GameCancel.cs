@@ -53,7 +53,7 @@ namespace Suborned.Sim
             if (op.Act != null) // engine 0.23.0 (rulebook cell.approach): walking in to a person act; the act's verb, the walk's phase
             {
                 var o = op.Act; a.Verb = o.Do; a.Target = o.Target; a.Phase = "walking"; string act = o.Do == "turn" ? o.Approach : o.Do;
-                if (op.Walk != null) { long left = op.Walk.Length - op.WalkMm; int speed = op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length); }
+                if (op.Walk != null) { long left = op.Walk.Length - op.WalkMm; int speed = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length); }
                 else a.TicksLeft = -1;
                 a.OnDone = $"in reach, the {act} starts";
                 a.CanCancel = true; a.CancelCost = "stop"; a.CancelText = $"stops where they stand; the {act} is not given";
@@ -62,7 +62,7 @@ namespace Suborned.Sim
             if (op.Walk != null)
             {
                 a.Verb = "move"; a.Phase = op.Running ? "running" : "walking"; a.Target = $"{op.Walk.End.X},{op.Walk.End.Y}";
-                int speed = op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; long left = op.Walk.Length - op.WalkMm;
+                int speed = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; long left = op.Walk.Length - op.WalkMm;
                 a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length);
                 a.OnDone = "arrives";
                 a.CanCancel = true; a.CancelCost = "stop"; a.CancelText = "stops where they stand";

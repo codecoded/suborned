@@ -192,7 +192,7 @@ function check(): boolean {
 /** Latch 2026-10-21 (ProofInput.cs): the input checks the proof ran through the Input System's devices. ok false fails the check; ok null
  *  (the fight gave no hostile in range) is reported, not failed. */
 function inputChecks(pj: any): boolean {
-  const g = judgeGates(pj?.frames); // tools/game/proofgates.ts: the sections that gate, r059 (brief 059) among them since 2026-10-26
+  const g = judgeGates(pj?.frames); // tools/game/proofgates.ts: the sections that gate, r059 (brief 059) and r067 (brief 067) among them since 2026-10-26
   for (const l of g.lines) console.log(l);
   return g.ok;
 }

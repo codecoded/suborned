@@ -420,7 +420,7 @@ namespace Suborned.Play
             }
             // Glyph's 0.2.94 review #4 (brief 049 row 15; "no sentences in play"): a hint's line shows only under Alt (the detail layer); in play
             // the hint is its ring and verb disc on the noun in the street, fading as the line would
-            if (hintAlpha > 0f && line != null && !host.Peeking && !goalHover) { line = null; cameo = null; glyph = null; }
+            if (hintAlpha > 0f && line != null && !host.Peeking && !goalHover && !HandoverHost.TipHints.Contains(host.HintNow?.Id ?? "")) { line = null; cameo = null; glyph = null; } // Fable 067: a tip (H21, H22) rings nothing, so its short line shows in play
             if (line == null && !hintQOn && !PlateOn && !host.rangeMode && host.FirstActDue && hintAlpha <= 0f) { line = t.FirstActHint; glyph = "p_unknown"; } // brief 030: Fable's one hint, until a right click is used (per profile)
             host.HintLineShowing = hintAlpha > 0f;
             Show(hintQ, hintQOn && !show0(line)); if (hintQOn) hintQ.style.left = (W - 26) / 2;
@@ -702,7 +702,7 @@ namespace Suborned.Play
                 Show(sheetBadge, m.PanelBadge.Length > 0); if (m.PanelBadge.Length > 0) Bg(sheetBadge, m.PanelBadge);
                 Text(sheetName, OneName(pn.T));
                 bool none = pn.Rows.Count == 0; Show(sheetNote, none);
-                Text(sheetNote, pn.T.Kind == "crowd" ? (host.Text != null && host.Text.Pops.TryGetValue("passer-by", out var pb) ? pb : "Passer-by") : (host.Text != null && host.Text.Pops.TryGetValue("nothing-here", out var nh) ? nh : "Nothing here"));
+                Text(sheetNote, pn.T.Kind == "crowd" && pn.T.Security ? host.OneWord(pn.T) : pn.T.Kind == "crowd" ? (host.Text != null && host.Text.Pops.TryGetValue("passer-by", out var pb) ? pb : "Passer-by") : (host.Text != null && host.Text.Pops.TryGetValue("nothing-here", out var nh) ? nh : "Nothing here")); // Pulse 067 W2: a shift guard's sheet says "Guard"
                 while (rows.Count < pn.Rows.Count) NewRow();
                 bool many = false; for (int i = 1; i < pn.Rows.Count; i++) if (pn.Rows[i].By != pn.Rows[0].By) many = true;
                 // Sky 2026-10-16 (Inez's card wrapped "Pa / y", "100,00 / 0"): fixed column slots per field across the card, each the widest value

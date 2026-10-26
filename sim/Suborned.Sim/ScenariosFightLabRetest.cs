@@ -133,8 +133,8 @@ namespace Suborned.Sim
                 Pt? lastR = null; int still = 0;
                 r.Until(() => { var p = g.MemberPose(g.Crew[0])?.pos; still = p == lastR ? still + 1 : 0; lastR = p; return still >= 2 || !g.Crew[0].OnFoot; }, T(150));
                 var rp = g.MemberPose(g.Crew[0])?.pos; if (!r.Is(rp.HasValue && still >= 2, "rival-1 stands at the Office")) return;
-                if (!g.PatrolDown) { var up = new[] { Scout, Fixer }.Where(op => !r.Op(op).Down).ToArray(); foreach (var op in up) r.Do(op, "draw"); r.Wait(g.DrawT + 1); foreach (var op in up) r.Fire(op, "patrol"); r.Until(() => g.PatrolDown || g.Over || up.All(op => r.Op(op).Down), T(90)); } // the patrol, which turns toward gunfire, out of the stage
-                if (!r.Is(g.PatrolDown && !g.Over, "the patrol is down")) return;
+                if (!g.PatrolDown && g.PatrolChasing) { var up = new[] { Scout, Fixer }.Where(op => !r.Op(op).Down).ToArray(); foreach (var op in up) r.Do(op, "draw"); r.Wait(g.DrawT + 1); foreach (var op in up) r.Fire(op, "patrol"); r.Until(() => g.PatrolDown || g.Over || up.All(op => r.Op(op).Down), T(90)); } // engine 0.34.0 (brief 067 A): only if it came for the gunfire // the patrol, which turns toward gunfire, out of the stage
+                if (!r.Is((g.PatrolDown || !g.PatrolChasing) && !g.Over, "the patrol is down, or out of the fight (engine 0.34.0: the yard patrol, beyond 30 m of the gunfire at the front, keeps its sweep)")) return;
                 if (!r.Is(g.MemberPose(g.Crew[0]).HasValue, "the crew still stands")) return; rp = g.MemberPose(g.Crew[0])!.Value.pos;
                 int eff = g.Crew[0].Gun.W!.EffCm; var (o1, o2) = st!.Value; var rpos = rp!.Value;
                 Pt? tp = null;

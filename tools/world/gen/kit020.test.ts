@@ -72,5 +72,5 @@ test('each tram shelter faces its own track (its open front is yaw + 90 degrees)
     expect(Math.cos(s.yaw + Math.PI / 2) * toTrack[0]! + Math.sin(s.yaw + Math.PI / 2) * toTrack[1]!, s.id).toBeGreaterThan(0.9);
   }
   expect(new Set(shelters.map(s => s.yaw)).size).toBeGreaterThan(1); // a stop's two platforms no longer share one yaw
-  expect(w.civic.find(m => m.id === 'civic/foreground-civic-robot')).toBeUndefined(); // the 2.6k-triangle copy (RobotButler_Play) stood there on its plinth until the block stopped exporting the monument; wave2.test.ts keeps the dress for a pinned older block
+  expect(w.civic.find(m => m.id === 'civic/foreground-civic-robot')).toBeUndefined(); // the 2.6k-triangle copy (RobotButler_Play) stood there on its plinth until the adjust file removed the monument from the block; wave2.test.ts keeps the dress for a pinned older block
 });

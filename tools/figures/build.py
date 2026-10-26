@@ -119,11 +119,20 @@ def _box(a, r):
     return (c[n:, n:] - c[:-n, n:] - c[n:, :-n] + c[:-n, :-n]) / (n * n)
 
 
+def uv_mask(path, w, h):
+    """A white-on-black map in the figure's UV space (tools/figures/keepmask.py, zmask.py: made from the mesh) as a bool array [h, w] in the image's own row order (bottom row first),
+    resized to this albedo. {"mask": path, "invert": true} reads it the other way round."""
+    mi = bpy.data.images.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), path)); mi.colorspace_settings.name = 'Non-Color'; mi.scale(w, h)
+    mp = np.empty(w * h * 4, dtype=np.float32); mi.pixels.foreach_get(mp); bpy.data.images.remove(mi)
+    return (mp.reshape(h, w, 4)[..., 0] > 0.5)
+
+
 def repair_albedo(img, op):
     """Fix a generator's baked-in defect in an sRGB albedo (Glint, briefs/020/figures-render.md items 3 and 4; sizes are for a 1024 map and scale with it).
     spots: dark specks inside a colour field (hue window `hue`, `minSat`, `minVal`): a pixel below `dark` value whose neighbourhood (radius `r`) is at least
     `field` that colour is painted over with the field's local mean (normalised convolution, mask grown by `grow`).
-    recolour: pixels inside a hue / saturation / value window are set to `to` (sRGB) keeping their light and dark by `keep` (0 = flat, 1 = as it was)."""
+    recolour: pixels inside a hue / saturation / value window are set to `to` (sRGB) keeping their light and dark by `keep` (0 = flat, 1 = as it was); `exact` keeps the thinnest lines; `protect` / `only` are lists of UV masks
+    ({"mask": "masks/x.png", "invert": bool}, made from the mesh by zmask.py) the recolour never touches / is limited to (brief 067)."""
     w, h = img.size; k = w / 1024.0
     px = np.empty(w * h * 4, dtype=np.float32); img.pixels.foreach_get(px); px = px.reshape(h, w, 4)
     hd, sa, va = _hsv(px.reshape(-1, 4)); hd, sa, va = hd.reshape(h, w), sa.reshape(h, w), va.reshape(h, w)
@@ -151,7 +160,11 @@ def repair_albedo(img, op):
     elif op['op'] == 'recolour':
         h0, h1 = op['hue']; s0, s1 = op['sat']; v0, v1 = op['val']
         sel = (hd >= h0) & (hd <= h1) & (sa >= s0) & (sa <= s1) & (va >= v0) & (va <= v1)
-        sel = _box(sel.astype(np.float32), 1) > 0.5
+        if not op.get('exact'): sel = _box(sel.astype(np.float32), 1) > 0.5    # `exact`: every pixel in the window, thin lines included (a zip, a seam); the default drops specks
+        for k in op.get('protect', []):   # UV regions the recolour never touches: {"mask": "masks/x.png"} (white = protected); {"mask": ..., "invert": true} protects the black
+            m_ = uv_mask(k['mask'], w, h); sel &= (m_ if k.get('invert') else ~m_)
+        for k in op.get('only', []):   # UV regions it is limited to: {"mask": "masks/x.png"} (white = where it works); {"mask": ..., "invert": true} works on the black
+            m_ = uv_mask(k['mask'], w, h); sel &= (~m_ if k.get('invert') else m_)
         if op.get('boxes'):   # only inside these atlas rectangles ([x0, y0, x1, y1] as shares of the map, origin top left): a hue window alone also takes pale skin elsewhere
             inside = np.zeros((h, w), dtype=bool)
             for x0, y0, x1, y1 in op['boxes']:
@@ -195,7 +208,8 @@ def apply_tint(img, t):
                 # a white-on-black map in the figure's UV space (tools/figures/keepmask.py makes it from the mesh); resized to this albedo
                 mi = bpy.data.images.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), k['mask'])); mi.scale(w, h)
                 mp = np.empty(w * h * 4, dtype=np.float32); mi.pixels.foreach_get(mp); bpy.data.images.remove(mi)
-                sel &= ~(mp.reshape(-1, 4)[:, 0] > 0.5)
+                inside = (mp.reshape(-1, 4)[:, 0] > 0.5)
+                sel &= (inside if k.get('invert') else ~inside)
             elif 'ellipse' in k:
                 cx, cy, rx, ry = k['ellipse']; sel &= ~((((xf - cx) / rx) ** 2 + ((yf - cy) / ry) ** 2) <= 1.0)
             elif 'box' in k:

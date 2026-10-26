@@ -105,11 +105,11 @@ namespace Suborned.Sim
                 r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
                 r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
                 r.Done(Scout); HelpUntilTurned(r, Inez);
-                while (!g.SweepSeesEntrance(g.Tick)) g.Step();
+                ToSweepAtDoor(r); // engine 0.34.0 (brief 067 A): bounded; the yard sweep never sees the door, so no wait
                 r.Do(Tech, "loop", "entrance"); // Loop v2 (engine 0.31.0, brief 058 §4): planted with the call, so its 2:00 runs over the Enter
                 r.Do(Fixer, "call", Inez);
                 r.To(r.Send(Enf, "d:Office entrance"));
-                while (g.PatrolWatching(r.At("d:Office entrance")) || !g.LoopOn) g.Step();
+                ToEntryOpening(r); // engine 0.34.0: bounded by the run's end
                 r.Do(Enf, "enter"); r.Wait(T(10));
                 var a = g.ActivityOf(OpId.Enforcer);
                 r.Eq((a.Verb, a.CancelCost), ("enter", "staff-report"), "the HUD reads Enter and the cancel's cost");

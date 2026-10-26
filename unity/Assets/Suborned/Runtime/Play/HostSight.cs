@@ -71,8 +71,8 @@ namespace Suborned.Play
         /// <summary>Per frame: which learned fans draw (brief 067 F, Glyph; Sky on 0.2.122: "the vision cones on the police, rivals etc. are too
         /// much, making the map too busy"). A learned cone is drawn only when it matters now, never "at rest" (the plot scope keeps every learned
         /// cone): (1) it is the hovered thing's, lingering 0.15 s; (2) the order being set names it (a ring wedge, the hold's charge or the pill
-        /// on a Watch, Loop, Disable, Reroute or Listen, the open panel's target), 0.15 s; (3) it can see a selected agent now or is about to
-        /// (within 4 s), 1 s; (4) a selected agent is acting on it (a busy Watch, Loop, Disable, Reroute or Listen), a running loop's camera, the
+        /// on a Watch, Loop, Disable or Reroute, the open panel's target), 0.15 s; (3) it can see a selected agent now or is about to
+        /// (within 4 s), 1 s; (4) a selected agent is acting on it (a busy Watch, Loop, Disable or Reroute; Glyph Rev 2: never a Listen), a running loop's camera, the
         /// patrol while it is away, and 3 s after a Watch teaches it (the reveal); (5) a walk being ordered or under way crosses it, 1 s; (6) Alt
         /// shows every learned cone. In a fight (or with a selected agent drawn) the combatants' cones (officers, robots, rivals, an engaged guard
         /// and patrol) take only rules 1, 2, 4 and Alt: the target rings say who aims at whom; cameras keep every rule. Strength is 0 or 1, in
@@ -101,7 +101,7 @@ namespace Suborned.Play
                 if (focus != null && g.Known(focus) is { Sight: true }) FocusWatcher = focus;
                 // (4) acted on: a selected agent's busy act on it, the running loop's camera, the patrol while away
                 actedNow.Clear();
-                for (int k = 0; k < 4; k++) { if (!Selected[k]) continue; var b = g.Ops[k].Busy; if (b != null && b.Do is "watch" or "loop" or "disable" or "reroute" or "listen" && OrderWatcher(b) is string aw) actedNow.Add(aw); }
+                for (int k = 0; k < 4; k++) { if (!Selected[k]) continue; var b = g.Ops[k].Busy; if (b != null && b.Do is "watch" or "loop" or "disable" or "reroute" && OrderWatcher(b) is string aw) actedNow.Add(aw); } // Glyph 067 Rev 2 F2: Listen is no cone cause
                 if (g.LoopOn && g.LoopCam.Length > 0) actedNow.Add("camera:" + g.LoopCam);
                 if (g.PatrolAwayUntil > g.Tick) actedNow.Add("patrol");
                 bool fight = g.FightOn || AnyDrawn();
@@ -133,7 +133,8 @@ namespace Suborned.Play
         /// <summary>Brief 067 F: the cones' memory starts again with a run (the reveal never fires for what the cell knew at the start).</summary>
         void ResetCones() { fanUntil.Clear(); fanReveal.Clear(); fanLearned.Clear(); fanLearnedInit = false; }
 
-        /// <summary>The watcher an order is about: a Watch's target, a Loop's or Disable's camera, a Reroute's patrol, a Listen's guard; else null.</summary>
+        /// <summary>The watcher an order is about: a Watch's target, a Loop's or Disable's camera, a Reroute's patrol; else null (Glyph 067 Rev 2 F2:
+        /// a Listen draws no cone, it learns the person, not the sight).</summary>
         string OrderWatcher(Order o)
         {
             if (o == null || Game == null) return null;
@@ -142,7 +143,6 @@ namespace Suborned.Play
                 case "watch": return Game.WatcherKind(o.Target).Length > 0 ? o.Target : null;
                 case "loop": case "disable": return o.Target.Length > 0 ? (o.Target.StartsWith("camera:") ? o.Target : "camera:" + o.Target) : null;
                 case "reroute": return "patrol";
-                case "listen": return o.Target == "guard" ? "guard" : null;
             }
             return null;
         }

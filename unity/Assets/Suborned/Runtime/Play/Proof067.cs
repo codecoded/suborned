@@ -26,11 +26,15 @@ namespace Suborned.Play
     ///    on the shut wedge (its pop, the ring closed); the Tech's click on the guard: the who-can pop, no walk (gated).
     ///  · board (C): three selected, one running: the squad Board pill (the givers' faces), the ring's one Board wedge taken (one order each in
     ///    the same tick), the running Tech's why chip, the pending and filled pips, the boarded out of the selection; then with nobody selected the
-    ///    car's Drive pill (its stand live) and ring (Drive, Go last and dashed), the Drive taken and parked (gated).
+    ///    car's Drive pill (its stand live) and ring (Drive, Go last with the struck Vale cameo and the hold, no dashes; its Alt line Fable's
+    ///    less.go.noVale), the Drive taken and parked (gated).
     ///  · convo (H): Inez (the Fixer's Help) and the driver (the Fixer's Pay, the Scout's Listen) from the ground view at two headings each: both
-    ///    speakers idle and facing, both heads in the frame, the view back exactly (gated).
+    ///    speakers idle and facing, the shot the ladder took (Glyph Rev 2 H1: profile, high, intercut) holding both heads (the intercut the one
+    ///    speaking), the Listen forced into the high two-shot (H5), the view back exactly (gated).
     ///  · reticle (D): a lasting fire order on a rival walking to his post: the reticle set, following him, the edge chip off screen, a re-target's
     ///    hand-off (gated: the reticle stays on him while he moves).
+    ///  · people (Pulse 067 W2, §2.5; Vela 067 L): a shift guard in the crowd hovered once the guard's sight is learned: "a guard", a pickable
+    ///    "Guard", his ring; the relief's 1.2 m step at 5:30 walked; no body in another figure than its walker's; the rival car Sedan_Rival (gated).
     ///  · sidecar (E): the host record beside the session script has lines (gated).</summary>
     public static class Proof067
     {
@@ -219,23 +223,24 @@ namespace Suborned.Play
                 HandoverHost.PointerWorld = h.GetawayWorld + Vector3.up * 0.6f; yield return Frames(8); yield return new WaitForSecondsRealtime(0.3f);
                 string drivePill = HudToolkit.PillWords, standsHover = HudToolkit.StandsShown; yield return Shoot(h, dir, "r067-drive-pill-car", log, "active");
                 if (Screen(h, h.GetawayWorld + Vector3.up * 0.6f) is Vector2 cs2) { h.LeftClickScripted(cs2); yield return Frames(3); }
-                string ring2 = h.RingWords; bool goLast = h.Ring != null && h.Ring.Segs.FindLastIndex(s => !s.More) is int gl && gl >= 0 && h.Ring.Segs[gl].Row?.I?.Order?.Do == "go" && h.Ring.Segs[gl].Violent && h.Ring.Segs[gl].ObjStruck;
+                string ring2 = h.RingWords; bool goLast = h.Ring != null && h.Ring.Segs.FindLastIndex(s => !s.More) is int gl && gl >= 0 && h.Ring.Segs[gl].Row?.I?.Order?.Do == "go" && !h.Ring.Segs[gl].Violent && h.Ring.Segs[gl].HoldWedge && h.Ring.Segs[gl].ObjStruck; // Glyph Rev 2 C5b: last, a struck Vale cameo, the 0.5 s hold, no dashes
+                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.35f); yield return Frames(3); string goAlt = HudToolkit.RingAltShown; yield return Shoot(h, dir, "r067-car-ring-go-alt", log, "alt"); h.PeekLatch = false; yield return Frames(2); // Fable's less.go.noVale under Alt
                 yield return Shoot(h, dir, "r067-car-ring-drive", log, "active");
                 if (h.RingWedgeScreen("drive-car") is Vector2 wd) { HandoverHost.PointerOverride = wd; yield return Frames(6); }
                 string standsWedge = HudToolkit.StandsShown; yield return Shoot(h, dir, "r067-car-ring-drive-hover", log, "active");
                 HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null; bool driveTaken = h.RingTakeScripted("drive-car"); yield return Frames(2);
                 driveTaken &= g.GetawayDriving; yield return WaitSim(h, () => !g.GetawayDriving, 60 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f); h.LookAt(h.GetawayWorld); yield return Frames(3);
                 bool parked = !g.GetawayDriving && g.CurStand != g.S.Stands[0]; yield return Shoot(h, dir, "r067-drive-parked", log, "active");
-                bool cOk = boardPill.Contains("Board") && faces == 2 && h.SquadBoards > sq0 && sameTick.Count == 1 && ww.Length > 0 && leftSel && aboard && drivePill.Contains("Drive") && standsHover.Contains(":hover") && goLast && driveTaken && parked;
+                bool cOk = boardPill.Contains("Board") && faces == 2 && h.SquadBoards > sq0 && sameTick.Count == 1 && ww.Length > 0 && leftSel && aboard && drivePill.Contains("Drive") && standsHover.Contains(":hover") && goLast && goAlt.Length > 0 && driveTaken && parked;
                 ok &= cOk;
-                parts.Add($"\"board\": {{\"ok\": {B(cOk)}, \"pill\": \"{J(boardPill)}\", \"faces\": {faces}, \"ring\": \"{J(ring1)}\", \"sameTick\": \"{string.Join(",", sameTick)}\", \"techWhy\": \"{J(why)}\", \"leftSelection\": {B(leftSel)}, \"pending\": \"{pendWords}\", \"filled\": \"{filledWords}\", \"drivePill\": \"{J(drivePill)}\", \"standsOnHover\": \"{J(standsHover)}\", \"driveRing\": \"{J(ring2)}\", \"goLastDashedStruck\": {B(goLast)}, \"standsOnWedge\": \"{J(standsWedge)}\", \"driven\": {B(driveTaken)}, \"parked\": {B(parked)}}}");
-                log.Add($"r067 board: {(cOk ? "ok" : "FAILED")}: pill [{boardPill}] faces {faces}; ring [{ring1}]; orders on ticks [{string.Join(",", sameTick)}]; Tech why [{why}]; left selection {leftSel}; pips pending {pendWords} filled {filledWords}; drive pill [{drivePill}] stands [{standsHover}]; ring [{ring2}] go last {goLast}; wedge stands [{standsWedge}]; driven {driveTaken} parked {parked}");
+                parts.Add($"\"board\": {{\"ok\": {B(cOk)}, \"pill\": \"{J(boardPill)}\", \"faces\": {faces}, \"ring\": \"{J(ring1)}\", \"sameTick\": \"{string.Join(",", sameTick)}\", \"techWhy\": \"{J(why)}\", \"leftSelection\": {B(leftSel)}, \"pending\": \"{pendWords}\", \"filled\": \"{filledWords}\", \"drivePill\": \"{J(drivePill)}\", \"standsOnHover\": \"{J(standsHover)}\", \"driveRing\": \"{J(ring2)}\", \"goLastStruckHeld\": {B(goLast)}, \"goAlt\": \"{J(goAlt)}\", \"standsOnWedge\": \"{J(standsWedge)}\", \"driven\": {B(driveTaken)}, \"parked\": {B(parked)}}}");
+                log.Add($"r067 board: {(cOk ? "ok" : "FAILED")}: pill [{boardPill}] faces {faces}; ring [{ring1}]; orders on ticks [{string.Join(",", sameTick)}]; Tech why [{why}]; left selection {leftSel}; pips pending {pendWords} filled {filledWords}; drive pill [{drivePill}] stands [{standsHover}]; ring [{ring2}] go last {goLast} alt [{goAlt}]; wedge stands [{standsWedge}]; driven {driveTaken} parked {parked}");
             }
 
             // ---- convo (H): the ground view, Inez and the driver, two headings each
             {
                 h.controls.conversations = ConversationScenes.Always; var scenes = new List<string>(); bool hOk = true;
-                IEnumerator Scene(string name, string agent)
+                IEnumerator Scene(string name, string agent, string wantShot = "")
                 {
                     var g = h.Game;
                     for (int i = 0; i < 120 * Suborned.Sim.Game.Hz && !h.ConvoPending && !h.ConvoOn && !g.Over; i++) { h.RunTo(g.Tick + 1); if (i % 10 == 0) yield return null; }
@@ -248,12 +253,15 @@ namespace Suborned.Play
                     bool idle = sa.StartsWith("idle") && sb.StartsWith("idle");
                     float facing = pa.HasValue && pb.HasValue ? Mathf.Abs(Mathf.DeltaAngle(ya, Mathf.Atan2(pb.Value.x - pa.Value.x, pb.Value.z - pa.Value.z) * Mathf.Rad2Deg)) + Mathf.Abs(Mathf.DeltaAngle(yb, Mathf.Atan2(pa.Value.x - pb.Value.x, pa.Value.z - pb.Value.z) * Mathf.Rad2Deg)) : 999f;
                     bool InFrame(Vector3? p) { if (!p.HasValue) return false; var v = cam.WorldToViewportPoint(p.Value + Vector3.up * 1.6f); return v.z > 0f && v.x > 0.04f && v.x < 0.96f && v.y > 0.06f && v.y < 0.94f; }
-                    bool both = InFrame(pb) && (h.ConvoNow.Single || InFrame(pa));
+                    // Glyph 067 Rev 2 H1: the two-shots hold both heads; the intercut the one speaking now; never one person for the whole scene
+                    var cn = h.ConvoNow; string shot = cn?.Shot ?? "";
+                    bool both = shot == "intercut" ? InFrame(cn.Framed == 0 ? pa : pb) : shot == "single" ? InFrame(pb) : InFrame(pa) && InFrame(pb);
+                    bool shotOk = wantShot.Length == 0 ? shot is "profile" or "high" or "intercut" or "single" : shot == wantShot;
                     yield return Shoot(h, dir, name, log);
                     h.ConvoSkip(); for (int i = 0; i < 60 && h.ConvoOn; i++) yield return null;
                     bool back = h.ConvoLast.Contains("bit-identical");
-                    bool sOk = idle && facing < 30f && both && back; hOk &= sOk;
-                    scenes.Add($"{name}: {(sOk ? "ok" : "FAILED")} {h.ConvoLast}; {ka} {sa}, {kb} {sb}; facing off {F(facing)} deg; both in frame {both}{(h.ConvoNow != null && h.ConvoNow.Single ? " (single)" : "")}");
+                    bool sOk = idle && facing < 30f && both && back && shotOk; hOk &= sOk;
+                    scenes.Add($"{name}: {(sOk ? "ok" : "FAILED")} {shot}{(wantShot.Length > 0 ? " (forced " + wantShot + ")" : "")} {h.ConvoLast}; {ka} {sa}, {kb} {sb}; facing off {F(facing)} deg; in frame {both}");
                 }
                 // Inez: route A's opening (the Scout watches and listens), then the Fixer's Help from the ground view; a second Help from her other side
                 yield return Fresh(h); var g0 = h.Game; List<Order> ra = null; try { ra = Route("route-a"); } catch (Exception e) { scenes.Add("route-a: " + e.Message); hOk = false; }
@@ -282,10 +290,12 @@ namespace Suborned.Play
                     h.GiveScripted(new Order { Op = "fixer", Do = "turn", Target = "driver", Approach = "pay" }); yield return Scene("r067-convo-driver-1", "fixer");
                     h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.8f);
                     h.Select(OpId.Scout, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.7f);
-                    h.GiveScripted(new Order { Op = "scout", Do = "listen", Target = "driver" }); yield return Scene("r067-convo-driver-2", "scout");
+                    HandoverHost.ConvoForceShot = "high"; // Glyph 067 H5: one scene forced into the high two-shot (the cut and the silhouettes on)
+                    h.GiveScripted(new Order { Op = "scout", Do = "listen", Target = "driver" }); yield return Scene("r067-convo-driver-2", "scout", "high");
+                    HandoverHost.ConvoForceShot = "";
                     h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.8f);
                 }
-                h.controls.conversations = keepConvo;
+                h.controls.conversations = keepConvo; HandoverHost.ConvoForceShot = "";
                 ok &= hOk;
                 parts.Add($"\"convo\": {{\"ok\": {B(hOk)}, \"scenes\": \"{J(string.Join(" ; ", scenes))}\"}}");
                 log.Add($"r067 convo: {(hOk ? "ok" : "FAILED")}: {string.Join(" ; ", scenes)}");
@@ -310,6 +320,46 @@ namespace Suborned.Play
                 ok &= dOk;
                 parts.Add($"\"reticle\": {{\"ok\": {B(dOk)}, \"set\": {B(set)}, \"follows\": {B(follows)}, \"edge\": {B(edge)}, \"handoff\": {B(handoff)}, \"shown\": \"{J(words)}\"}}");
                 log.Add($"r067 reticle: {(dOk ? "ok" : "FAILED")}: set {set} follows {follows} [{words}] edge {edge} hand-off {handoff}");
+            }
+
+            // ---- people (Pulse 067 W2 and §2.5, Vela 067 L): a shift guard in the crowd, hovered once the guard's sight is learned, is "a guard",
+            //      a pickable named "Guard", wearing his ring; the relief's step onto the official entrance at 5:30 is walked (no drawn step over
+            //      0.25 m a tick); bodies keep their walker's figure (logged); the rival car is Vela's Sedan_Rival
+            {
+                yield return Fresh(h); var g = h.Game; int hz = Suborned.Sim.Game.Hz;
+                h.GiveWatchScripted(OpId.Scout, "guard"); To(h, 5 * 600 + 28 * hz);
+                int eased0 = h.Views.StepEases; h.Views.StepEased.Clear(); var last = new Dictionary<string, Vector3>(); float worst = 0f; string worstKey = "";
+                for (int t = 0; t < 6 * hz && !g.Over; t++)
+                {
+                    h.RunTo(g.Tick + 1);
+                    for (int i = 0; i < g.Walkers.Count; i++)
+                    {
+                        string k = "crowd/" + i; var v = ViewAt(h, k); if (!v.HasValue) { last.Remove(k); continue; }
+                        if (h.Views.StepEased.Contains(k) && last.TryGetValue(k, out var lp)) { float d = Flat(lp, v.Value); if (d > worst) { worst = d; worstKey = k; } } // the drawn step a tick of an eased person, from the tick before its jump
+                        last[k] = v.Value;
+                    }
+                }
+                int eased = h.Views.StepEases - eased0; bool stepOk = eased == 0 || worst <= 0.25f;
+                // a shift guard on the street now (they leave the official door from 5:30), on screen at play zoom
+                To(h, 5 * 600 + 45 * hz); yield return Settle(h); h.Select(OpId.Scout, false);
+                string gkey = ""; for (int i = 0; i < g.Walkers.Count && gkey.Length == 0; i++) if (!g.Walkers[i].P.Civilian && ViewAt(h, "crowd/" + i).HasValue) gkey = "crowd/" + i;
+                string label = "", name = "", kind = "", cones = ""; bool picked = false, ring = false, sec = false;
+                if (gkey.Length > 0 && ViewAt(h, gkey) is Vector3 gp)
+                {
+                    h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(gp); yield return Frames(3);
+                    HandoverHost.PointerWorld = (ViewAt(h, gkey) ?? gp) + Vector3.up * 1.0f; yield return Frames(8); yield return new WaitForSecondsRealtime(0.3f); yield return Frames(4);
+                    var hv = h.Hover; kind = hv?.Kind ?? ""; sec = hv?.Security == true; label = hv?.Label ?? ""; name = h.HoverName;
+                    picked = h.Pickables().Any(pk => pk.T.Kind == "crowd" && pk.T.Key == gkey && pk.Name.Length > 0);
+                    var pid = hv?.Id ?? ""; ring = pid.Length > 0 && h.PersonCones.Exists(c => c.Id == pid && c.Kind == "ring"); cones = HudToolkit.ConesShown;
+                    yield return Shoot(h, dir, "r067-crowd-guard-hover", log, "active");
+                    HandoverHost.PointerWorld = null;
+                }
+                var (repicked, bodiesChanged) = h.Views.BodyFigureCheck(); string rivalCar = h.Views.CarModelName("car/rivals");
+                bool guardOk = gkey.Length > 0 && kind == "crowd" && sec && label.Contains("guard") && name == "Guard" && picked && ring;
+                bool pOk = guardOk && stepOk && bodiesChanged == 0 && rivalCar.Contains("Sedan_Rival");
+                ok &= pOk;
+                parts.Add($"\"people\": {{\"ok\": {B(pOk)}, \"guard\": {{\"ok\": {B(guardOk)}, \"key\": \"{gkey}\", \"kind\": \"{kind}\", \"security\": {B(sec)}, \"label\": \"{J(label)}\", \"name\": \"{J(name)}\", \"pickable\": {B(picked)}, \"ring\": {B(ring)}, \"cones\": \"{J(cones)}\"}}, \"step\": {{\"ok\": {B(stepOk)}, \"eased\": {eased}, \"worstM\": {F(worst)}, \"worstKey\": \"{worstKey}\"}}, \"bodies\": {{\"repicked\": {repicked}, \"changed\": {bodiesChanged}}}, \"rivalCar\": \"{J(rivalCar)}\"}}");
+                log.Add($"r067 people: {(pOk ? "ok" : "FAILED")}: shift guard {gkey} hovered {kind} security {sec} [{label}] name [{name}] pickable {picked} ring {ring} cones [{cones}]; step eased {eased} worst {F(worst)} m a tick ({worstKey}); bodies: {repicked} walkers re-picked by DressCrowd, {bodiesChanged} bodies in another figure; rival car [{rivalCar}]");
             }
 
             // ---- sidecar (E): the host record beside the session script

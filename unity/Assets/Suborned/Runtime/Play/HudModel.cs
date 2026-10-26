@@ -191,7 +191,7 @@ namespace Suborned.Play
             foreach (var (id, gun) in h.Fighters()) { var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
             for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip
-            var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it
+            var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || hov.Security || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it; Pulse 067 W2: a shift guard wears the hover ring as the door guard does
             Cursor = h.AimLine != null ? (h.AimNoLine ? 3 : 2) : act ? 1 : 0;
             if (h.Frozen && h.TargetFreeze && !h.controls.actionPlate && !ended) Cursor = 2; // brief 030 (no plate): target mode is a crosshair cursor
             HoverRing = act ? h.TargetWorld(hov) : null;
@@ -473,7 +473,7 @@ namespace Suborned.Play
         {
             "turn" => approach is "ask" or "pay" or "help" or "pressure" ? approach : "ask",
             "watch" or "listen" or "mislead" or "loop" or "disable" or "reroute" or "enter" or "take" or "fire" or "call" or "ask" or "pay" or "help" or "pressure" => verb,
-            "act" => "enter", "board" or "go" or "drive-car" or "ride" => "car", /* brief 059 K6: Drive, and riding in the car */ "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" => "fire",
+            "act" => "enter", "board" or "go" or "drive-car" or "ride" => "car", /* brief 059 K6: Drive, and riding in the car */ "carry" => "s_carrying", "move" => "s_moving", "draw" or "holster" or "cease" => "fire", /* Fable 067 H21: the cease tip wears the fire glyph */
             "takedown" or "drop" or "stash" or "restrain" => verb, // Glyph's 013 glyphs
             "turn-view" => "turn_view", // brief 016's turn hint (H13): Glyph's turn glyph (briefs/014/glyph/glyphs/turn_view)
             _ => phase == "holding" ? "s_looping" : "s_ready",

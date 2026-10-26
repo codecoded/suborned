@@ -145,7 +145,7 @@ namespace Suborned.Sim
             if (w.St.Length > 0)
             {
                 if (w.Run != null && (w.St == "fleeing" || w.St == "returning" || w.St == "reporting" || w.St == "checking") && Tick >= w.RunStart)
-                { long mm = (long)(Tick - w.RunStart) * (w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : opSpeed); if (mm < w.Run.Length) return w.Run.Heading(mm); }
+                { long mm = (long)(Tick - w.RunStart) * (w.Pace > 0 ? w.Pace : w.St == "fleeing" ? R.CrowdRunSpeed : peopleWalk); if (mm < w.Run.Length) return w.Run.Heading(mm); }
                 // brief 054 §3.3 (cone): the startled face what startled them
                 if (stopFace != null && w.St == "startled" && lastShooterFor.TryGetValue(w.P.Id, out var src)) { var d = src - w.At; if (d != new Pt(0, 0)) return d; }
                 return null;
@@ -547,13 +547,13 @@ namespace Suborned.Sim
             if (mode == "radio") { AddRep(a, kind, p.Id, p, ActAt(a, b), Tick + react + T(R.PostCallS), "radio"); Note("report.started", $"{Who(p)} radios it in."); return; }
             if (mode == "check" && b != null)
             {
-                var to = BodyPos(b); var path = RouteOf(from, to); int speed = opSpeed;
+                var to = BodyPos(b); var path = RouteOf(from, to); int speed = peopleWalk;
                 int arrive = Tick + react + (int)((Math.Max(0, path.Length - near * 10L) + speed - 1) / speed);
                 if (w != null) { w.St = "checking"; w.At = from; w.Run = path; w.RunStart = Tick + react; w.Pace = speed; }
                 var r = new Rep { Seq = repSeq++, Act = a.Id, Kind = "down", By = p.Id, P = p, W = w, Place = to, Sev = SevOf("down"), LandAt = INF, Phase = "check", PhaseUntil = arrive + T(R.BodyCheckS) };
                 Reps.Add(r); Note("report.started", $"{Who(p)} goes to look."); return;
             }
-            WalkToPhone(a, p, w, kind, from, mode == "run" ? R.CrowdRunSpeed : opSpeed, Tick + react, ActAt(a, b), "");
+            WalkToPhone(a, p, w, kind, from, mode == "run" ? R.CrowdRunSpeed : peopleWalk, Tick + react, ActAt(a, b), "");
         }
         void WalkToPhone(TdAct a, Person p, Walker? w, string kind, Pt from, int pace, int start, Pt place, string stash)
         {
@@ -563,7 +563,7 @@ namespace Suborned.Sim
             if (w != null && rp != null) { w.St = "reporting"; w.At = from; w.Run = rp.Value.path; w.RunStart = start; w.Pace = pace; w.Refuge = rp.Value.id; }
             AddRep(a, kind, p.Id, p, place, land, "walk", stash);
             if (kind == "tell") Note("witness.to-phone", $"{Who(p)} walks to {(rp?.id ?? "a phone")} to tell someone (calls {Sim.Report.Clock(land)}).");
-            else Note("report.started", $"{Who(p)} {(pace > opSpeed ? "runs" : "walks")} to {(rp?.id ?? "a phone")} to report it (lands {Sim.Report.Clock(land)}).");
+            else Note("report.started", $"{Who(p)} {(pace > peopleWalk ? "runs" : "walks")} to {(rp?.id ?? "a phone")} to report it (lands {Sim.Report.Clock(land)}).");
         }
 
         /// <summary>One tick of the reports: a reporter taken down or carried drops his report; a checker who reaches the body learns its
@@ -593,7 +593,7 @@ namespace Suborned.Sim
                     string kind = there && b!.Dead ? "dead" : "down";
                     var from = PosOfWalkerNow(r.W) ?? r.Place;
                     r.Phase = "stopped"; // the check is done: the report walks on as a new one (it keeps its place in the cap)
-                    WalkToPhone(Acts[r.Act], r.P!, r.W, kind, from, opSpeed, Tick, r.Place, "");
+                    WalkToPhone(Acts[r.Act], r.P!, r.W, kind, from, peopleWalk, Tick, r.Place, "");
                     continue;
                 }
                 if (r.Phase == "walk" && r.W != null && r.W.St == "reporting" && r.W.Run != null && Tick >= r.W.RunStart && (long)(Tick - r.W.RunStart) * r.W.Pace >= r.W.Run.Length)
@@ -679,7 +679,7 @@ namespace Suborned.Sim
             {
                 var qw = WalkerOf(q); var qp = PosOfPerson(q);
                 if (indoors) AddRep(a, "down", q.Id, q, a.Scene, Tick + T(R.CallS) + T(R.CallS), "radio"); // hears the call, then calls the desk
-                else if (qp.HasValue) WalkToPhone(a, q, qw, "down", qp.Value, opSpeed, Tick + T(R.WitnessReactS), a.Scene, "");
+                else if (qp.HasValue) WalkToPhone(a, q, qw, "down", qp.Value, peopleWalk, Tick + T(R.WitnessReactS), a.Scene, "");
             }
             return true;
         }
@@ -712,7 +712,7 @@ namespace Suborned.Sim
             if (People2 == null || !People2.Ties.TryGetValue(p.Id, out var ts) || a.Told.Contains(p.Id) || (IsCellPerson(p) && !IsKin(p, a.P))) return;
             if (TieToTell(a, ts, from, true).q == null) return; // nobody indoors to call either
             if (fled && w != null) { AddRep(a, "tell", p.Id, p, from, INF, "flee"); return; }
-            WalkToPhone(a, p, w, "tell", from, opSpeed, Tick + T(R.WitnessReactS), from, "");
+            WalkToPhone(a, p, w, "tell", from, peopleWalk, Tick + T(R.WitnessReactS), from, "");
         }
         /// <summary>Is `at` at a phone: within near of a report point (a staffed door, a call box)?</summary>
         bool AtPhone(Pt at)
@@ -840,9 +840,9 @@ namespace Suborned.Sim
             if (IsCellPerson(p)) return; // a contact who owes the cell says nothing (Pulse §5)
             int start = Tick + T(R.StaggerS);
             if (IsStaff(p)) { AddRep(a, "woken", p.Id, p, at, start + T(R.PostCallS), "radio"); return; }
-            var rp = ReportPoint(at); int walk = rp == null ? 0 : (int)((rp.Value.path.Length + opSpeed - 1) / opSpeed);
+            var rp = ReportPoint(at); int walk = rp == null ? 0 : (int)((rp.Value.path.Length + peopleWalk - 1) / peopleWalk);
             AddRep(a, "woken", p.Id, p, at, start + walk + T(R.CallS), "walk");
-            if (w != null && rp != null) { w.Run = rp.Value.path; w.Pace = opSpeed; w.Refuge = rp.Value.id; w.RunStart = start; }
+            if (w != null && rp != null) { w.Run = rp.Value.path; w.Pace = peopleWalk; w.Refuge = rp.Value.id; w.RunStart = start; }
         }
 
         /// <summary>A hidden, awake, untied victim calls out (Motive §3.3): heard within witness.scream with no line; a hearer who would report
@@ -857,7 +857,7 @@ namespace Suborned.Sim
                 a.Noticed.Add(p.Id); Remember(p, "heard-alarm", "", false);
                 string verb = Decide(a, p, "body");
                 if (verb == "radio") AddRep(a, "noise", p.Id, p, at, Tick + T(R.WitnessReactS) + T(R.PostCallS), "radio", b.Stash);
-                else if (verb == "report" || verb == "check") WalkToPhone(a, p, WalkerOf(p), "noise", wp, opSpeed, Tick + T(R.WitnessReactS), at, b.Stash);
+                else if (verb == "report" || verb == "check") WalkToPhone(a, p, WalkerOf(p), "noise", wp, peopleWalk, Tick + T(R.WitnessReactS), at, b.Stash);
             }
         }
 

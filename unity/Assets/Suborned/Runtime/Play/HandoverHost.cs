@@ -35,8 +35,8 @@ namespace Suborned.Play
         public Material litTemplate, unlitTemplate;
         [Tooltip("Brief 020: the stand-in figures (Forma); null = capsules everywhere.")]
         public FigureLibrary figures;
-        [Tooltip("Brief 020 (Vela's kit pick): the cars and the response robots as kit models; null = the boxes and drums.")]
-        public GameObject sedanOfficial, sedanGetaway, robotPorter;
+        [Tooltip("Brief 020 (Vela's kit pick): the cars and the response robots as kit models; null = the boxes and drums. Brief 067 L: sedanRival is Vela's Sedan_Rival (plum, ink bubble, pearl stripes), the rivals' own car.")]
+        public GameObject sedanOfficial, sedanGetaway, sedanRival, robotPorter;
         [Tooltip("The patrol robot's model (brief 031: Vela's PatrolRobot, its head the attention face M_RobotFace); null = the capsule.")]
         [UnityEngine.Serialization.FormerlySerializedAs("serviceRobot")] public GameObject patrolRobot;
         [Tooltip("Brief 055: the mission cameras' poles, Vela's CCTVPole (the world's pole-camera piece) scaled to the plan's 5.5 m mount, lens at 4.79 m; null = the 3.2 m stand-in.")]
@@ -139,7 +139,11 @@ namespace Suborned.Play
         public Rect? BoxScreen { get; private set; }
         Vector2 dragFrom, lastGround, lastRight, orbitLast; bool dragging, orbiting; float lastGroundAt = -10f, lastAgentKeyAt = -10f; int lastAgentKey = -1;
 
-        public sealed class Target { public string Kind = "", Key = "", Label = "", Id = ""; } // Id: the person a crowd capsule or body is (engine id or role), a stash id // person (role) · door · cabinet · camera (id) · car · patrol · rivals · security · hostile
+        public sealed class Target { public string Kind = "", Key = "", Label = "", Id = ""; /** Pulse 067 W2: a crowd person who is security (Person.Civilian false: the Office's shift guards), drawn as the door guard: named "a guard", hovered and picked as a being; the crowd's orders (the Enforcer's takedown, forced fire) stay as they are */ public bool Security; } // Id: the person a crowd capsule or body is (engine id or role), a stash id // person (role) · door · cabinet · camera (id) · car · patrol · rivals · security · hostile
+        /// <summary>A passer-by: a crowd person who is not security (Pulse 067 W2). Only they give way under the cursor to everything else.</summary>
+        static bool Passer(Target t) => t != null && t.Kind == "crowd" && !t.Security;
+        /// <summary>Pulse 067 W2: a crowd security person in the player's words ("a guard"; any other security job "an officer").</summary>
+        string CrowdSecurityName(Person p) => p.Job == "guard" ? Text?.TargetName("crowd-guard", "a guard") ?? "a guard" : Text?.TargetName("crowd-officer", "an officer") ?? "an officer";
         /// <summary>What a right click on the hovered thing would do now, and its price (the chip).</summary>
         public sealed class Intent
         {
@@ -744,19 +748,19 @@ namespace Suborned.Play
                 // cursor sorts by (the selection has an open calm way on it, else any row; then the kind: a being 0, a body 1, a camera 2, the car
                 // or a stand 3, the door, the cabinet or a stash 4, a passer-by 9; then the ray). A passer-by never covers a person, the door, a
                 // camera or the car. A left click (agents) keeps its own order: your own agent first.
-                float score = agents ? (t.Kind == "op" ? 0 : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "body" or "unit" ? 1 : t.Kind == "crowd" ? 3 : 2) * 10000f + hit.distance
+                float score = agents ? (t.Kind == "op" ? 0 : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "body" or "unit" || t.Security ? 1 : t.Kind == "crowd" ? 3 : 2) * 10000f + hit.distance
                     : PickRank(t, false) * 10000f + hit.distance - Prefer(t);
                 int at = found.FindIndex(x => x.t.Kind == t.Kind && x.t.Key == t.Key);
                 if (at < 0) found.Add((t, score)); else if (score < found[at].score) found[at] = (t, score);
             }
             // the rows decide only where two or more things overlap under the cursor (each asked once a second: ContextFor prices every way)
-            if (!agents && found.FindAll(x => x.t.Kind != "crowd").Count >= 2)
-                for (int i = 0; i < found.Count; i++) { var (ft, fs) = found[i]; if (ft.Kind == "crowd") continue; found[i] = (ft, fs + RowRank(ft) * 100000f); }
+            if (!agents && found.FindAll(x => !Passer(x.t)).Count >= 2)
+                for (int i = 0; i < found.Count; i++) { var (ft, fs) = found[i]; if (Passer(ft)) continue; found[i] = (ft, fs + RowRank(ft) * 100000f); }
             // brief 016 (Sky: "hard to select areas, like a camera"): nothing under the ray, or only a passer-by: the nearest thing within the pick
             // radius of the cursor wins over the ground (HostPick)
-            if (found.Count == 0 || found.TrueForAll(x => x.t.Kind == "crowd")) { var np = NearestPick(screen, agents); if (np != null) found.Insert(0, (np, -1f)); }
+            if (found.Count == 0 || found.TrueForAll(x => Passer(x.t))) { var np = NearestPick(screen, agents); if (np != null) found.Insert(0, (np, -1f)); }
             found.Sort((a, b) => a.score.CompareTo(b.score));
-            var list = new List<Target>(); foreach (var x in found) if (x.t.Kind != "crowd" || list.Count == 0 || found.TrueForAll(y => y.t.Kind == "crowd")) list.Add(x.t);
+            var list = new List<Target>(); foreach (var x in found) if (!Passer(x.t) || list.Count == 0 || found.TrueForAll(y => Passer(y.t))) list.Add(x.t); // Pulse 067 W2: a shift guard is a being, not a passer-by: it stays in the stack
             return Stacked(screen, list, agents);
         }
 
@@ -775,18 +779,18 @@ namespace Suborned.Play
                     return new Target { Kind = md == "fight" ? "hostile" : "rivals", Key = n, Id = n, Label = Text?.HoldersPhrase(n) ?? "a rival" };
                 }
                 if (n == "car/rivals") return new Target { Kind = "rivals", Key = "car:rivals", Id = "car:rivals", Label = Name("rivals") }; // the rival car: Watch, the false tip, Fire
-                if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = "the response unit" };
+                if (n.StartsWith("security/")) return new Target { Kind = "security", Key = "security", Label = Name("security") }; // Fable 067 (the glossary): "the police"
                 if (n.StartsWith("hostile/"))
                 {
                     int i = int.Parse(n[8..]); if (i >= Game.Hostiles.Count || Game.Hostiles[i].Down) return null;
                     var id = Game.Hostiles[i].Id;
                     return new Target { Kind = "hostile", Key = id, Label = id.StartsWith("rival") ? "a rival" : "an officer" };
                 }
-                if (n.StartsWith("crowd/")) { int ci = int.Parse(n[6..]); var cp = ci < Game.Walkers.Count ? Game.Walkers[ci].P : null; return new Target { Kind = "crowd", Key = n, Label = "a passer-by", Id = cp?.Id ?? "" }; }
+                if (n.StartsWith("crowd/")) { int ci = int.Parse(n[6..]); var cp = ci < Game.Walkers.Count ? Game.Walkers[ci].P : null; bool sec = cp != null && !cp.Civilian; return new Target { Kind = "crowd", Key = n, Label = sec ? CrowdSecurityName(cp) : "a passer-by", Id = cp?.Id ?? "", Security = sec }; } // Pulse 067 W2: a shift guard is "a guard", never "a passer-by"
                 if (n.StartsWith("body/")) { var bp = Game.PersonById(n[5..]) ?? Game.BodyById(n[5..])?.P; return bp == null ? null : new Target { Kind = "body", Key = n[5..], Id = n[5..], Label = PersonName(bp) }; } // engine 0.33.0: a rival's body (BodyById finds the crew; PersonById the cast and the crowd)
                 if (n.StartsWith("stash/")) { var st = Game.S.Stashes.Find(x => x.Id == n[6..]); return st == null ? null : new Target { Kind = "stash", Key = st.Id, Id = st.Id, Label = StashName(st) }; }
                 if (n.StartsWith("unit/")) return new Target { Kind = "unit", Key = n[5..], Label = n.Contains("robot") ? "a response robot" : "an officer" };
-                if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = "the official car" };
+                if (n == "car/official") return new Target { Kind = "car", Key = "official", Label = Text?.TargetName("car-official", "Vale's car") ?? "Vale's car" }; // Fable 067 (the glossary): "Vale's car"
                 if (n.StartsWith("stand/")) return StandTarget(n); // brief 059 K6: a stand of the getaway car (its Drive)
                 if (n.StartsWith("car/range-")) { var rc = Game.RangeCars().Find(c => c.Id == "car:" + n[4..]); return rc == null || rc.State == "wrecked" ? null : new Target { Kind = "car", Key = n[4..], Label = "the car" }; } // engine 0.18: a range car (a wreck is no target)
                 if (n.StartsWith("bystander/")) { var bl = Game.RangeBystanders(); int bi = int.Parse(n[10..]); if (bi >= bl.Count || bl[bi].Down || bl[bi].State == "safe") return null; return new Target { Kind = "bystander", Key = bl[bi].Id, Id = bl[bi].Id, Label = "a passer-by" }; } // engine 0.18: a range bystander
@@ -804,7 +808,7 @@ namespace Suborned.Play
             if (t.Kind == "op") return null;
             if (Picked < 0 && !controls.panelOnRight) return ContextIntent(t); // brief 030: the chip says what the quick click does (ContextRank)
             if (t.Kind == "unit") return new Intent { Label = t.Label };
-            if (t.Kind == "crowd" && !Selected[(int)OpId.Enforcer]) return new Intent { Label = "a passer-by" }; // takes no orders but the Enforcer's takedown (brief 013): a hover says nothing (Fable A8)
+            if (t.Kind == "crowd" && !Selected[(int)OpId.Enforcer]) return new Intent { Label = t.Label }; // takes no orders but the Enforcer's takedown (brief 013): a hover says nothing (Fable A8); Pulse 067 W2: a shift guard is "a guard"
             if (t.Kind is "body" or "stash") { Intent b = null; Guard("price", () => { var l = BodyIntents(Agent, t); b = l.Count > 0 ? l[0] : new Intent { Label = t.Label, Hint = WhoCan(t) }; }); return b; }
             Intent got = null;
             if (IsGetaway(t)) { Guard("price", () => got = Game.Ops[(int)Agent].InCar || (Game.AnyInCar && BoardLock(Agent).code is "in-car" or "agent-down") ? GoIntent(Agent) : BoardIntent(Agent)); if (got != null) { if (got.Order?.Do == "board" && got.WalkS == 0) Guard("walk", () => { var aw = ActPlace(Agent, got.Order, t); if (aw != null) got.WalkS = aw.Seconds; }); return got; } } // brief 018: Board, or Go from the car
@@ -878,12 +882,12 @@ namespace Suborned.Play
                 case "watch" when t.Kind == "rivals": // brief 059 §2.2: a Watch on the rival car teaches their timetable (RivalNext), once; on the car, never a member
                     {
                         if (t.Key != "car:rivals" || g.RivalsWatched || !g.RivalCarPose().HasValue) return null;
-                        var i = I("watch", "car:rivals", "", $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "their timetable"; return i;
+                        var i = I("watch", "car:rivals", "", Text?.WithTarget("watch", t.Label) ?? $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "their timetable"; return i;
                     }
                 case "watch" when t.Kind is "camera" or "patrol": // a watcher: its sight is learned (rulebook sight.watch: within the agent's reach, on a clear line)
                     {
                         var w = t.Kind == "camera" ? "camera:" + t.Key : "patrol";
-                        var i = I("watch", w, "", $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "its sight"; return i;
+                        var i = I("watch", w, "", Text?.WithTarget("watch", t.Label) ?? $"Watch {t.Label}"); i.Time = $"{R.SightWatchS} s"; i.Trail = "T +0"; i.Outcome = "its sight"; return i;
                     }
                 case "watch": case "listen":
                     if (t.Kind != "person" || (id == "listen" && by != OpId.Scout) || CastOf(t.Key) is not Person sp) return null; // brief 031: every agent watches a cast person; Listen stays the Scout's
@@ -1132,7 +1136,7 @@ namespace Suborned.Play
             if (Text != null && KnownPerson(t) && Text.TargetAbout.TryGetValue(TextKey(t), out var about)) pn.About = about; // a person's about only once the Scout has heard them
             if (t.Kind == "crowd")
             {
-                pn.Note = "passer-by — not yet known to the cell";
+                pn.Note = t.Security ? t.Label : "passer-by — not yet known to the cell"; // Pulse 067 W2: a shift guard is security, not a passer-by
                 // brief 030: the Enforcer's takedown on a passer-by is in the ring (never a quick click): both ways, priced
                 int e = (int)OpId.Enforcer; var ep = Selected[e] && Able(e) ? PlateOf(OpId.Enforcer) : null; // item 29: never a downed agent's
                 if (ep != null) Guard("panel", () =>
@@ -1245,7 +1249,9 @@ namespace Suborned.Play
             // an approach's own line for this person names their debt or secret: only once the cell knows them (§04), else the generic line
             var (label, does) = Text != null ? Text.Action(key, o.Do == "turn" && !KnownPerson(t) ? null : TextKey(t), o.Op) : (key, "");
             bool person = t.Kind == "person" && o.Do != "take";
-            v.Name = person ? $"{(label == "Listen" ? "Listen to" : label)} {Name(t.Key)}" : o.Do == "fire" ? $"{label} on {t.Label}" : label;
+            // Fable 067 (the glossary; Suture: the pill read "Listen the guard"): a verb names its target by the text's own withTarget ("Listen to the
+            // guard", "Pay Inez", "Fire at the police"), never "{label} {target}" or "Fire on"
+            v.Name = person ? Text?.WithTarget(key, Name(t.Key)) ?? $"{label} {Name(t.Key)}" : o.Do == "fire" ? Text?.WithTarget("fire", t.Label) ?? $"Fire at {t.Label}" : label;
             v.Does = does;
         }
 

@@ -60,14 +60,21 @@ namespace Suborned.Sim
                 r.Is(c?.Origin == null, "a single culprit: no origin");
             });
 
-            Add("N120", "—", "The fail camera: entry seen by the patrol (§07; route fail-entry-seen-patrol): route A without the reroute, the Enter at 4:40.4 while the sweep covers the door. The culprit is the patrol robot where its sweep stands at that tick, facing along it.", r =>
+            Add("N120", "—", "Entry and the patrol (§07 fail entry-seen-patrol). Engine 0.34.0 (brief 067 A): the patrol sweeps the service yard and never sees the public door, sweeping or rerouted, so the fail can't be reached on this site: route A without the reroute enters as soon as the guard is away and the loop holds, and no patrol sees it. Whether the fail line stays is Sky's call (Motive briefs/067/motive.md §3; MC-3); a Disable's alarm walks the patrol to the camera's place but it holds facing the way it came, not the door. The fail camera's patrol culprit (FailCause) is unplayed until then. (0.33.1: the Enter at 4:40.4 under the forecourt sweep failed entry-seen-patrol.)", r =>
             {
                 var g = r.G;
-                Script(r, "[{\"tick\":0,\"op\":\"scout\",\"do\":\"move\",\"to\":\"d:Courtyard\"},{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\"},{\"tick\":283,\"op\":\"scout\",\"do\":\"watch\",\"target\":\"waitress\"},{\"tick\":345,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":803,\"op\":\"scout\",\"do\":\"move\",\"to\":\"beside-inez\"},{\"tick\":813,\"op\":\"scout\",\"do\":\"listen\",\"target\":\"waitress\"},{\"tick\":813,\"op\":\"fixer\",\"do\":\"move\",\"to\":\"d:Courtyard\"},{\"tick\":813,\"op\":\"enforcer\",\"do\":\"move\",\"to\":[6925,-4250]},{\"tick\":1233,\"op\":\"fixer\",\"do\":\"turn\",\"target\":\"waitress\",\"approach\":\"help\"},{\"tick\":1500,\"op\":\"tech\",\"do\":\"loop\",\"target\":\"entrance\"},{\"tick\":1733,\"op\":\"fixer\",\"do\":\"turn\",\"target\":\"waitress\",\"approach\":\"help\"},{\"tick\":2233,\"op\":\"fixer\",\"do\":\"call\",\"target\":\"waitress\"},{\"tick\":2233,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Office entrance\"},{\"tick\":2804,\"op\":\"enforcer\",\"do\":\"enter\"}]"); // c022 (2026-10-19, the door on the west face): the loop at 0:34.5, the Enforcer waits at (69.5, -42.5)
-                r.Eq(g.FailCode, "entry-seen-patrol", "the patrol's sweep sees the entry");
-                var c = CauseIs(r, "entry-seen-patrol", "seen", true, "patrol", "patrol", Enf);
-                var pp = g.PatrolPose()!.Value;
-                PosedAs(r, c?.Culprits.FirstOrDefault(), pp.pos, pp.facing, "the patrol on its sweep");
+                r.Is(!g.SweepCoversEntrance, "on its sweep the patrol never sees the public door (the service yard's)");
+                r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
+                r.Do(Scout, "watch", Inez); r.Done(Scout);
+                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
+                r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
+                r.Done(Scout); HelpUntilTurned(r, Inez);
+                r.To(Math.Max(g.Tick, T(228))); r.Do(Tech, "loop", "entrance"); r.Do(Fixer, "call", Inez);
+                r.To(r.Send(Enf, "d:Office entrance"));
+                r.Until(() => g.Over || (g.LoopOn && !g.GuardAtDoor), T(60));
+                r.Is(!g.PatrolWatching(g.S.At(g.S.GuardPost)) && g.PatrolAwayUntil <= g.Tick, "the patrol is on its sweep in the yard, not rerouted, and does not see the door");
+                r.Do(Enf, "enter"); r.Done(Enf);
+                r.Is(g.FailCode != "entry-seen-patrol" && r.Op(Enf).Inside == false && g.Vale == ValeAt.WithEnforcer, $"the Enter lands: Vale is with the Enforcer, no patrol saw it ({g.Result} {g.FailCode})");
             });
 
             Add("N121", "—", "The fail camera: the abduction seen by the pickup camera (§07; route fail-take-seen-camera): the driver unturned, the rivals sent away, the Take at the official car under the live pickup camera. The culprit is the pickup camera, facing the car; Vale is the second, where he stood.", r =>

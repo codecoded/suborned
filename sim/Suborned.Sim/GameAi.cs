@@ -19,6 +19,7 @@ namespace Suborned.Sim
         {
             var keys = new List<string>(coverTaken.Keys); keys.Sort(StringComparer.Ordinal);
             foreach (var k in keys) { foreach (var c in k) i(c); foreach (var c in coverTaken[k]) i(c); i(-1); }
+            if (forCar.Count > 0) { i(-67); foreach (var id in forCar) { foreach (var c in id) i(c); i(-1); } } // engine 0.34.0 (M067-K3 a): only while any walk to the car
             for (int k = 0; k < SecGuns.Length; k++) i(secJoined[k] ? 1 : 0);
             i(patrolOrigin.X); i(patrolOrigin.Y); i(patrolReturning ? 1 : 0);
             var so = new List<string>(standOverflow.Keys); so.Sort(StringComparer.Ordinal);
@@ -172,6 +173,7 @@ namespace Suborned.Sim
             var g = h.Gun;
             if (g.Down) { ReleaseCover(g); return; }
             if (!h.Present || g.St == "gone") return;
+            if (ForCarBody(h)) return; // engine 0.34.0 (Motive M067-K3 a): going for the unguarded car, firing as he walks
             var pos = h.Pos(Tick); var w = g.W!;
             Func<Pt, bool> sees = p => Sees(pos, p);
             var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
@@ -202,8 +204,13 @@ namespace Suborned.Sim
                     else g.NoFoeSince = -1;
                     break;
                 case "hold":
-                    if (foes.Count > 0) g.St = "engage";
+                    if (foes.Count > 0) { g.St = "engage"; g.NoFoeSince = -1; }
                     else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { g.St = "advance"; Advance(h); }
+                    else if (!IsHolder(h) && IsRival(h.Id) && !moving && FightBranch == "safe") // engine 0.34.0 (Motive M067-SQ2): no stall
+                    {
+                        if (g.NoFoeSince < 0) g.NoFoeSince = Tick;
+                        else if (Tick - g.NoFoeSince >= T(R.EngageLapseS)) { g.NoFoeSince = -1; AdvanceOnOp(h, pos); }
+                    }
                     break;
                 case "break":
                     if (G.Within(pos, h.BreakTo ?? S.Stand(S.RivalsPark), R.RivalGoneCm) || !moving) { g.St = "gone"; h.Present = false; Note("ai.gone", $"{h.Id} is gone."); }
@@ -226,7 +233,7 @@ namespace Suborned.Sim
             }
             if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
             {
-                var c = SelectCover(pos, Car, at, R.SeekRivalCm);
+                var c = SelectCoverOut(pos, Car, at, R.SeekRivalCm); // engine 0.34.0 (Motive M067-SQ1): never a cover point in the hold or the lane
                 if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
             }
             AimAt(g, t, false);

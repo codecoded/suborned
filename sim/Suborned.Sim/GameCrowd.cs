@@ -85,10 +85,12 @@ namespace Suborned.Sim
         public readonly Dictionary<string, Pt> FaceVec = new Dictionary<string, Pt>(StringComparer.Ordinal);
         public readonly Dictionary<string, string> FaceRule = new Dictionary<string, string>(StringComparer.Ordinal);
         public readonly Dictionary<string, List<(string place, int from, int to, bool outside)>> Stops = new Dictionary<string, List<(string, int, int, bool)>>(StringComparer.Ordinal);
+        /// <summary>Engine 0.34.0 (brief 067 L, Pulse): a post's waiting point and the staffed door it stands beside (the people file's `beside`).</summary>
+        public readonly Dictionary<string, string> Beside = new Dictionary<string, string>(StringComparer.Ordinal);
         public Crowd(string json, Rules rules, ICollection<string> cast)
         {
             var n = JNode.Parse(json, "people");
-            n.Only("schema", "from", "scope", "frame", "startsAt", "places", "faces", "facesFrame", "needs", "people");
+            n.Only("schema", "from", "scope", "frame", "startsAt", "places", "faces", "facesFrame", "beside", "besideFrame", "needs", "people");
             if (n["schema"].Str() != "suborned.sim.people/2") throw new FormatException("people schema is not suborned.sim.people/2");
             // the need records (brief 017): every record's kind is a rules need and its size one the need kinds name (unknown = reject)
             var nd = n["needs"]; nd.Only("sizes", "records", "frame");
@@ -116,6 +118,14 @@ namespace Suborned.Sim
                         FaceRule[kv.Key] = f;
                     }
                     else { var v = Pt.Of(kv.Value); if (v == new Pt(0, 0)) throw new FormatException($"people faces.{kv.Key}: a facing can't be zero"); FaceVec[kv.Key] = v; }
+                }
+            if (n.Opt("beside") is JNode bs) // engine 0.34.0 (brief 067 L, Pulse): a post's waiting point and the staffed door it stands beside (Game.PostOf)
+                foreach (var kv in bs.Entries)
+                {
+                    var door = kv.Value.Str();
+                    if (!Places.ContainsKey(kv.Key) || !Places.ContainsKey(door)) throw new FormatException($"people beside.{kv.Key}: '{kv.Key}' and '{door}' are places of the file (unknown = reject)");
+                    if (kv.Key == door) throw new FormatException($"people beside.{kv.Key}: a waiting point beside itself");
+                    Beside[kv.Key] = door;
                 }
             foreach (var p in n["people"].Items)
             {

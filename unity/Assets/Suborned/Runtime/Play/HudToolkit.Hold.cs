@@ -40,6 +40,8 @@ namespace Suborned.Play
 
         /// <summary>Brief 067 E3 (Glyph): the locked pill's opacity.</summary>
         public static float LockPillAlpha = 0.80f;
+        /// <summary>Glyph 067 E3 / F9: the pill's last state and target (a lock lapsing into the offer), the stack steps seen, the step glide.</summary>
+        (string state, HandoverHost.Target t) pillWas = ("", null); int stepsWas; Vector2? pillQWas; Vector2 glideFrom; float glideAt = -9f, lockLapseAt = -9f;
         VisualElement lockAlt; Label lockAltText;
         /// <summary>Brief 067 E3: with Alt, the locked pill's long line (Fable's lock `line`) on a plate_dark under the pill; "" hides it.</summary>
         void LockAltFrame(string line)
@@ -114,11 +116,20 @@ namespace Suborned.Play
             // that element, so the order reads pill, marker or disc, camera head (it covered "1:59", the desk's "14" and the disc)
             if (show) { string camKey = t?.Kind == "camera" ? "camera/" + t.Key : anchorId.StartsWith("camera/") ? anchorId : anchorId.StartsWith("camera:") ? "camera/" + anchorId[7..] : null; if (camKey != null) q.y = Mathf.Min(q.y, CameraMarkTop(camKey) - 6f); }
             if (show) q.y = Mathf.Min(q.y, ReticleTop(anchorId.Length > 0 ? anchorId : h.FireIdFor(t)) - 6f); // brief 067 D (Glyph): the pill's tail 6 px above a lock reticle
-            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); return; }
+            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); pillWas = ("", null); pillQWas = null; return; }
             PillLook(text, icon, harm, faces, seen, fill, state);
-            vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : state == "lock" ? LockPillAlpha : 1f; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px); brief 067 E3: the locked pill at 80 % (nothing to hold)
+            // Glyph 067 E3: a lock that lapses under the cursor turns the locked pill into the offer with a 0.15 s cross-fade (the new pill comes
+            // up from the locked one's dimness); F9: a step through the stack (the wheel, Z, Tab) glides the pill's tail to the next thing in 0.12 s
+            float nowP = Time.unscaledTime;
+            if (pillWas.state == "lock" && state == "offer" && t != null && pillWas.t != null && t.Kind == pillWas.t.Kind && t.Key == pillWas.t.Key) lockLapseAt = nowP;
+            if (h.StackSteps != stepsWas && pillQWas.HasValue) { glideFrom = pillQWas.Value; glideAt = nowP; }
+            stepsWas = h.StackSteps; pillWas = (state, t);
+            float lapse = Mathf.Clamp01((nowP - lockLapseAt) / 0.15f), lapseA = state == "offer" && lapse < 1f ? Mathf.Lerp(LockPillAlpha * 0.45f, 1f, 1f - (1f - lapse) * (1f - lapse)) : 1f;
+            vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : state == "lock" ? LockPillAlpha : lapseA; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px); brief 067 E3: the locked pill at 80 % (nothing to hold)
             LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : "");
             vpill.style.scale = state == "ready" ? new Scale(new Vector3(ReadyScale, ReadyScale, 1f)) : new Scale(Vector3.one); // full: the pill pops while it says "Let go"
+            float glide = Mathf.Clamp01((nowP - glideAt) / 0.12f); if (glide < 1f) q = Vector2.Lerp(glideFrom, q, 1f - (1f - glide) * (1f - glide));
+            pillQWas = q;
             PillPlace(q, out _);
             StackTabFrame(state); // brief 067 F9 (Glyph): two or more under the cursor: the stack tab on the pill, a dashed ring at the others' feet
             // brief 043: the cancel tag over the pill, and the lit pip of an act that just opened

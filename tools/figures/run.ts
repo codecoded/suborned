@@ -2,6 +2,8 @@
 //   bun tools/figures/run.ts [--out <dir>] [--only id,id] [--install]   (the held props in props.json are built with every run)
 // --install keeps Assets/Suborned/People/Generated (Latch's FigureBuild output: the library and the controller). Default out: out/people-models/People (generated, git-ignored). --install mirrors it to unity/Assets/Suborned/People (git-ignore that folder like Kit/).
 // Needs Blender (BLENDER or /Applications/Blender.app) and the store (SUBORNED_STORE, default ~/Projects/the-suborned-store) with source-art/ and characters/.
+// Beside it (brief 067): tools/figures/proof_run.py lays figures at true size on the game's road in the game's light (proof.py in Blender, proof_post.py the grade); turn.py gives a figure's close views; albedo_stats.py says how dark and
+// what colour its clothing is (--check holds the rival crew to the spec of Pulse's W1); zmask.py makes the UV masks by place on the body that a recolour needs (tools/figures/masks). None of them installs anything.
 import { existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { homedir } from 'node:os';
