@@ -34,10 +34,10 @@
    "################################################################............########################################################################################",
    "################################################################............########################################################################################",
    "################################################################............########################################################################################",
-   "##############################.##################################...........########################################################################################",
-   "..##################...........##################################..............#################################################............######..................",
-   "..####################...###..................#####............................##################.........................######............######..................",
-   "..##....##############...###..................#####............................##################.........................#####.............####....................",
+   "#################################################################...........########################################################################################",
+   "..###############################################################..............#################################################............######..................",
+   "..##################..........................#####............................##################.........................######............######..................",
+   ".........###########..........................#####............................##################.........................#####.............####....................",
    ".........####..#####...........................####.............................###.......................................#####.............####....................",
    "..........###...###........................................................................................................###...............###....................",
    "....................................................................................................................................................................",
@@ -349,12 +349,12 @@
    "....####.......................................####................................................................................................................."
   ],
   "floor": [[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,164],[0,8,-18,7,0,2,-18,47,-16,16,-18,84],[0,8,-18,5,0,1,-18,50,-16,16,-18,84],[0,8,-18,4,0,1,-18,51,-16,16,-18,84],[0,8,-18,3,0,1,-18,53,-16,14,-18,85],[0,8,-18,2,0,1,-18,54,-16,14,-18,85],[0,8,-18,1,0,1,-18,56,-16,12,-18,86],[0,8,-18,59,-16,10,-18,87],[0,9,-18,60,-16,6,-18,89],[0,9,-18,155],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,26,0,80,-18,35,0,15],[0,8,-18,25,0,82,-18,31,0,18],[0,8,-18,24,0,84,-18,29,0,19],[0,8,-18,24,0,84,-18,28,0,20],[0,8,-18,24,0,84,-18,27,0,21],[0,8,-18,24,0,84,-18,26,0,22],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,-16,1,0,83,-18,24,0,24],[0,8,-18,24,-16,5,0,79,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,5,0,79,-18,24,0,24],[0,8,-18,24,-16,1,0,83,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,26,0,22],[0,8,-18,24,0,84,-18,27,0,21],[0,8,-18,24,0,84,-18,28,0,20],[0,8,-18,24,0,84,-18,29,0,19],[0,8,-18,25,0,82,-18,31,0,18],[0,8,-18,26,0,80,-18,35,0,15],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,26,0,104,-18,26],[0,8,-18,25,0,106,-18,25],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,25,-16,26,0,16,-16,6,0,35,-18,24],[0,8,-18,24,0,24,-16,28,0,15,-16,6,0,35,-18,24],[0,8,-18,24,0,24,-16,28,0,15,-16,6,0,35,-18,24],[0,8,-18,24,0,24,-16,28,0,15,-16,6,0,35,-18,24],[0,8,-18,25,0,22,-16,30,0,14,-16,6,0,34,-18,25],[0,8,-18,26,0,20,-16,32,0,52,-18,26],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,33,0,123],[0,8,-18,30,0,126],[0,8,-18,29,0,127],[0,8,-18,28,0,128],[0,8,-18,27,0,129],[0,8,-18,26,0,130],[0,8,-18,25,0,131],[0,8,-18,25,0,131],[0,8,-18,25,0,131],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132]],
-  "collide": "5ad721e9e36f908a540b195716c4d104a4d0532090f86a1f6b5047b426a048cc",
+  "collide": "1533fc80aa918afdae51d56cc8cf9c59be4852076a63896b20031d9957b87367",
   "drawn": {
    "walk": true,
    "sight": true,
-   "walkCells": 2594,
-   "sightOccluders": 222
+   "walkCells": 2593,
+   "sightOccluders": 220
   },
   "src": "tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block's ground solids, BODY clearance), and, with drawn.walk, the drawn solids (tools/sim/solids.ts: every piece the world places, with its kit.collide.json volumes; a building's face by the cell centre, every other solid BODY clear, where it blocks a walker at the cell's floor; drawn.walkCells counts the cells they block, held or not), and the mission cameras' poles the host stands (tools/missions/handover/legs.ts cameraPoles, kit.collide.json CCTVPole at the host's scale; engine 0.30.0): a cell is free when its centre is. floor: per row, run-length pairs [cm, cells], block z (the pavement 0, the carriageway -18): the ground drawn there or the floor civic-block.json declares (tools/plan/civic.ts floorAt)"
  },
@@ -362,7 +362,7 @@
   {
    "id": "cafe",
    "z": 0,
-   "h": 2040,
+   "h": 1680,
    "poly": [[-2200,-4000],[-2100,-4000],[-2000,-4000],[-1900,-4000],[-1800,-4000],[-1700,-4000],[-1600,-4000],[-1497,-3990],[-1397,-3960],[-1305,-3911],[-1225,-3845],[-1159,-3765],[-1110,-3673],[-1080,-3573],[-1070,-3470],[-1070,-3375],[-1070,-3280],[-1070,-3185],[-1070,-3090],[-1070,-2995],[-1070,-2900],[-1070,-2805],[-1070,-2710],[-1070,-2615],[-1070,-2520],[-1070,-2425],[-1070,-2330],[-1080,-2227],[-1110,-2127],[-1159,-2035],[-1225,-1955],[-1305,-1889],[-1397,-1840],[-1497,-1810],[-1600,-1800],[-1700,-1800],[-1800,-1800],[-1900,-1800],[-2000,-1800],[-2100,-1800],[-2200,-1800]],
    "src": "civic-block.json buildings.cafe"
   },
@@ -969,430 +969,367 @@
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#0",
+   "id": "solid:bld/garden-row-east/0/f10#0",
    "z": 0,
    "h": 627,
    "poly": [[-1121,880],[-1121,890],[-1960,890],[-1960,880]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#1",
+   "id": "solid:bld/garden-row-east/0/f10#1",
    "z": 0,
    "h": 627,
    "poly": [[-1121,890],[-1121,1719],[-1132,1719],[-1132,890]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#2",
+   "id": "solid:bld/garden-row-east/0/f10#2",
    "z": 0,
    "h": 627,
    "poly": [[-1152,890],[-1152,1719],[-1163,1719],[-1163,890]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#3",
+   "id": "solid:bld/garden-row-east/0/f10#3",
    "z": 0,
    "h": 627,
    "poly": [[-1163,911],[-1163,921],[-1681,921],[-1681,911]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#4",
+   "id": "solid:bld/garden-row-east/0/f10#4",
    "z": 0,
    "h": 627,
    "poly": [[-1681,890],[-1681,1118],[-1691,1118],[-1691,890]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#5",
+   "id": "solid:bld/garden-row-east/0/f10#5",
    "z": 0,
    "h": 627,
    "poly": [[-1867,890],[-1867,1098],[-1878,1098],[-1878,890]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#6",
+   "id": "solid:bld/garden-row-east/0/f10#6",
    "z": 0,
    "h": 627,
    "poly": [[-1950,890],[-1950,1098],[-1960,1098],[-1960,890]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#7",
+   "id": "solid:bld/garden-row-east/0/f10#7",
    "z": 0,
    "h": 2545,
    "poly": [[-1753,1481],[-1753,1491],[-1774,1491],[-1774,1481]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f11#8",
+   "id": "solid:bld/garden-row-east/0/f10#8",
    "z": 0,
    "h": 2545,
    "poly": [[-1722,1512],[-1722,1533],[-1732,1533],[-1732,1512]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#0",
+   "id": "solid:bld/garden-row-east/0/f15#0",
    "z": 0,
    "h": 627,
    "poly": [[2620,1879],[2610,1879],[2610,1040],[2620,1040]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#1",
+   "id": "solid:bld/garden-row-east/0/f15#1",
    "z": 0,
    "h": 627,
    "poly": [[2589,1837],[2579,1837],[2579,1319],[2589,1319]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#2",
+   "id": "solid:bld/garden-row-east/0/f15#2",
    "z": 0,
    "h": 627,
    "poly": [[2610,1319],[2382,1319],[2382,1309],[2610,1309]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#3",
+   "id": "solid:bld/garden-row-east/0/f15#3",
    "z": 0,
    "h": 627,
    "poly": [[2610,1133],[2402,1133],[2402,1122],[2610,1122]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#4",
+   "id": "solid:bld/garden-row-east/0/f15#4",
    "z": 0,
    "h": 627,
    "poly": [[2610,1050],[2402,1050],[2402,1040],[2610,1040]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#5",
+   "id": "solid:bld/garden-row-east/0/f15#5",
    "z": 0,
    "h": 2545,
    "poly": [[2019,1247],[2009,1247],[2009,1226],[2019,1226]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
-   "id": "solid:bld/garden-row-east/0/f17#6",
+   "id": "solid:bld/garden-row-east/0/f15#6",
    "z": 0,
    "h": 2545,
    "poly": [[1988,1278],[1967,1278],[1967,1268],[1988,1268]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
+   "id": "solid:bld/garden-row-east/0/f16#0",
+   "z": 0,
+   "h": 414,
+   "poly": [[-359,2500],[-414,2500],[-414,1024],[-359,1024]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f16#1",
+   "z": 0,
+   "h": 414,
+   "poly": [[-1019,2475],[-1019,2475],[-1019,1050],[-1019,1050]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f16#2",
+   "z": 0,
+   "h": 414,
+   "poly": [[-414,1413],[-991,1413],[-991,1361],[-414,1361]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f16#3",
+   "z": 0,
+   "h": 414,
+   "poly": [[-964,2475],[-991,2475],[-991,1413],[-964,1413]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f16#4",
+   "z": 0,
+   "h": 414,
+   "poly": [[-414,1102],[-991,1102],[-991,1076],[-414,1076]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f16#5",
+   "z": 0,
+   "h": 414,
+   "poly": [[-964,1361],[-991,1361],[-991,1102],[-964,1102]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f17#0",
+   "z": 0,
+   "h": 414,
+   "poly": [[301,2500],[246,2500],[246,1024],[301,1024]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f17#1",
+   "z": 0,
+   "h": 414,
+   "poly": [[-359,2475],[-359,2475],[-359,1050],[-359,1050]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f17#2",
+   "z": 0,
+   "h": 414,
+   "poly": [[246,1413],[-331,1413],[-331,1361],[246,1361]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f17#3",
+   "z": 0,
+   "h": 414,
+   "poly": [[-304,2475],[-331,2475],[-331,1413],[-304,1413]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f17#4",
+   "z": 0,
+   "h": 414,
+   "poly": [[246,1102],[-331,1102],[-331,1076],[246,1076]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/garden-row-east/0/f17#5",
+   "z": 0,
+   "h": 414,
+   "poly": [[-304,1361],[-331,1361],[-331,1102],[-304,1102]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
    "id": "solid:bld/garden-row-east/0/f18#0",
    "z": 0,
-   "h": 370,
-   "poly": [[-359,2345],[-414,2345],[-414,1027],[-359,1027]],
+   "h": 414,
+   "poly": [[961,2500],[906,2500],[906,1024],[961,1024]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f18#1",
    "z": 0,
-   "h": 370,
-   "poly": [[-1019,2322],[-1019,2322],[-1019,1050],[-1019,1050]],
+   "h": 414,
+   "poly": [[301,2475],[301,2475],[301,1050],[301,1050]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f18#2",
    "z": 0,
-   "h": 370,
-   "poly": [[-414,1374],[-991,1374],[-991,1327],[-414,1327]],
+   "h": 414,
+   "poly": [[906,1413],[329,1413],[329,1361],[906,1361]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f18#3",
    "z": 0,
-   "h": 370,
-   "poly": [[-964,2322],[-991,2322],[-991,1374],[-964,1374]],
+   "h": 414,
+   "poly": [[356,2475],[329,2475],[329,1413],[356,1413]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f18#4",
    "z": 0,
-   "h": 370,
-   "poly": [[-414,1096],[-991,1096],[-991,1073],[-414,1073]],
+   "h": 414,
+   "poly": [[906,1102],[329,1102],[329,1076],[906,1076]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f18#5",
    "z": 0,
-   "h": 370,
-   "poly": [[-964,1327],[-991,1327],[-991,1096],[-964,1096]],
+   "h": 414,
+   "poly": [[356,1361],[329,1361],[329,1102],[356,1102]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f19#0",
    "z": 0,
-   "h": 370,
-   "poly": [[301,2345],[246,2345],[246,1027],[301,1027]],
+   "h": 414,
+   "poly": [[1621,2500],[1566,2500],[1566,1024],[1621,1024]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f19#1",
    "z": 0,
-   "h": 370,
-   "poly": [[-359,2322],[-359,2322],[-359,1050],[-359,1050]],
+   "h": 414,
+   "poly": [[961,2475],[961,2475],[961,1050],[961,1050]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f19#2",
    "z": 0,
-   "h": 370,
-   "poly": [[246,1374],[-331,1374],[-331,1327],[246,1327]],
+   "h": 414,
+   "poly": [[1566,1413],[989,1413],[989,1361],[1566,1361]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f19#3",
    "z": 0,
-   "h": 370,
-   "poly": [[-304,2322],[-331,2322],[-331,1374],[-304,1374]],
+   "h": 414,
+   "poly": [[1016,2475],[989,2475],[989,1413],[1016,1413]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f19#4",
    "z": 0,
-   "h": 370,
-   "poly": [[246,1096],[-331,1096],[-331,1073],[246,1073]],
+   "h": 414,
+   "poly": [[1566,1102],[989,1102],[989,1076],[1566,1076]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/garden-row-east/0/f19#5",
    "z": 0,
-   "h": 370,
-   "poly": [[-304,1327],[-331,1327],[-331,1096],[-304,1096]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f20#0",
-   "z": 0,
-   "h": 370,
-   "poly": [[961,2345],[906,2345],[906,1027],[961,1027]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f20#1",
-   "z": 0,
-   "h": 370,
-   "poly": [[301,2322],[301,2322],[301,1050],[301,1050]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f20#2",
-   "z": 0,
-   "h": 370,
-   "poly": [[906,1374],[329,1374],[329,1327],[906,1327]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f20#3",
-   "z": 0,
-   "h": 370,
-   "poly": [[356,2322],[329,2322],[329,1374],[356,1374]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f20#4",
-   "z": 0,
-   "h": 370,
-   "poly": [[906,1096],[329,1096],[329,1073],[906,1073]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f20#5",
-   "z": 0,
-   "h": 370,
-   "poly": [[356,1327],[329,1327],[329,1096],[356,1096]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f21#0",
-   "z": 0,
-   "h": 370,
-   "poly": [[1621,2345],[1566,2345],[1566,1027],[1621,1027]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f21#1",
-   "z": 0,
-   "h": 370,
-   "poly": [[961,2322],[961,2322],[961,1050],[961,1050]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f21#2",
-   "z": 0,
-   "h": 370,
-   "poly": [[1566,1374],[989,1374],[989,1327],[1566,1327]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f21#3",
-   "z": 0,
-   "h": 370,
-   "poly": [[1016,2322],[989,2322],[989,1374],[1016,1374]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f21#4",
-   "z": 0,
-   "h": 370,
-   "poly": [[1566,1096],[989,1096],[989,1073],[1566,1073]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/garden-row-east/0/f21#5",
-   "z": 0,
-   "h": 370,
-   "poly": [[1016,1327],[989,1327],[989,1096],[1016,1096]],
+   "h": 414,
+   "poly": [[1016,1361],[989,1361],[989,1102],[1016,1102]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f3#0",
    "z": 0,
-   "h": 401,
-   "poly": [[-5797,-6289],[-5797,-6337],[-4426,-6337],[-4426,-6289]],
+   "h": 414,
+   "poly": [[-5900,-6000],[-5900,-6054],[-4424,-6054],[-4424,-6000]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f3#1",
    "z": 0,
-   "h": 401,
-   "poly": [[-4786,-6337],[-4786,-6843],[-4738,-6843],[-4738,-6337]],
+   "h": 414,
+   "poly": [[-5875,-6650],[-5875,-6650],[-4450,-6650],[-4450,-6650]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f3#2",
    "z": 0,
-   "h": 401,
-   "poly": [[-4330,-6409],[-4330,-6457],[-4281,-6457],[-4281,-6409]],
+   "h": 414,
+   "poly": [[-4813,-6054],[-4813,-6623],[-4761,-6623],[-4761,-6054]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f3#3",
    "z": 0,
-   "h": 401,
-   "poly": [[-4330,-6698],[-4330,-6746],[-4281,-6746],[-4281,-6698]],
+   "h": 414,
+   "poly": [[-5875,-6596],[-5875,-6623],[-4813,-6623],[-4813,-6596]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f3#4",
    "z": 0,
-   "h": 582,
-   "poly": [[-4498,-6313],[-4498,-6843],[-4474,-6843],[-4474,-6313]],
+   "h": 414,
+   "poly": [[-4761,-6596],[-4761,-6623],[-4502,-6623],[-4502,-6596]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/lamplight-south-w/13/f3#5",
+   "z": 0,
+   "h": 627,
+   "poly": [[-4502,-6027],[-4502,-6623],[-4476,-6623],[-4476,-6027]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f4#0",
    "z": 0,
-   "h": 401,
-   "poly": [[-5797,-5711],[-5797,-5759],[-4426,-5759],[-4426,-5711]],
+   "h": 414,
+   "poly": [[-5900,-5350],[-5900,-5404],[-4424,-5404],[-4424,-5350]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f4#1",
    "z": 0,
-   "h": 401,
-   "poly": [[-5773,-6289],[-5773,-6289],[-4450,-6289],[-4450,-6289]],
+   "h": 414,
+   "poly": [[-5875,-6000],[-5875,-6000],[-4450,-6000],[-4450,-6000]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f4#2",
    "z": 0,
-   "h": 401,
-   "poly": [[-4786,-5759],[-4786,-6265],[-4738,-6265],[-4738,-5759]],
+   "h": 414,
+   "poly": [[-4813,-5404],[-4813,-5973],[-4761,-5973],[-4761,-5404]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f4#3",
    "z": 0,
-   "h": 401,
-   "poly": [[-5773,-6241],[-5773,-6265],[-4786,-6265],[-4786,-6241]],
+   "h": 414,
+   "poly": [[-5875,-5946],[-5875,-5973],[-4813,-5973],[-4813,-5946]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f4#4",
    "z": 0,
-   "h": 401,
-   "poly": [[-4738,-6241],[-4738,-6265],[-4498,-6265],[-4498,-6241]],
+   "h": 414,
+   "poly": [[-4761,-5946],[-4761,-5973],[-4502,-5973],[-4502,-5946]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
    "id": "solid:bld/lamplight-south-w/13/f4#5",
    "z": 0,
-   "h": 401,
-   "poly": [[-4330,-5831],[-4330,-5880],[-4281,-5880],[-4281,-5831]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f4#6",
-   "z": 0,
-   "h": 401,
-   "poly": [[-4330,-6120],[-4330,-6169],[-4281,-6169],[-4281,-6120]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f4#7",
-   "z": 0,
-   "h": 582,
-   "poly": [[-4498,-5735],[-4498,-6265],[-4474,-6265],[-4474,-5735]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#0",
-   "z": 0,
-   "h": 401,
-   "poly": [[-5797,-5133],[-5797,-5181],[-4426,-5181],[-4426,-5133]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#1",
-   "z": 0,
-   "h": 401,
-   "poly": [[-5773,-5711],[-5773,-5711],[-4450,-5711],[-4450,-5711]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#2",
-   "z": 0,
-   "h": 401,
-   "poly": [[-4786,-5181],[-4786,-5687],[-4738,-5687],[-4738,-5181]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#3",
-   "z": 0,
-   "h": 401,
-   "poly": [[-5773,-5663],[-5773,-5687],[-4786,-5687],[-4786,-5663]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#4",
-   "z": 0,
-   "h": 401,
-   "poly": [[-4738,-5663],[-4738,-5687],[-4498,-5687],[-4498,-5663]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#5",
-   "z": 0,
-   "h": 401,
-   "poly": [[-4330,-5254],[-4330,-5302],[-4281,-5302],[-4281,-5254]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#6",
-   "z": 0,
-   "h": 401,
-   "poly": [[-4330,-5543],[-4330,-5591],[-4281,-5591],[-4281,-5543]],
-   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
-  },
-  {
-   "id": "solid:bld/lamplight-south-w/13/f5#7",
-   "z": 0,
-   "h": 582,
-   "poly": [[-4498,-5157],[-4498,-5687],[-4474,-5687],[-4474,-5157]],
+   "h": 627,
+   "poly": [[-4502,-5377],[-4502,-5973],[-4476,-5973],[-4476,-5377]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
@@ -1753,6 +1690,13 @@
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
+   "id": "solid:bld/garden-row-east/0/e0-1/front",
+   "z": 0,
+   "h": 460,
+   "poly": [[2510,1650],[2510,2250],[2450,2250],[2450,1650]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
    "id": "solid:bld/garden-row-east/0/e3-0/front",
    "z": 0,
    "h": 460,
@@ -1823,6 +1767,34 @@
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
+   "id": "solid:bld/rocket-west/19/e0-0/front",
+   "z": 0,
+   "h": 460,
+   "poly": [[5050,-6790],[4450,-6790],[4450,-6850],[5050,-6850]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/rocket-west/19/e0-0/door",
+   "z": 0,
+   "h": 240,
+   "poly": [[4630,-6770],[4630,-6790],[4870,-6790],[4870,-6770]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/rocket-west/19/e0-3/front",
+   "z": 0,
+   "h": 460,
+   "poly": [[3550,-6790],[2950,-6790],[2950,-6850],[3550,-6850]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/rocket-west/19/e0-3/door",
+   "z": 0,
+   "h": 240,
+   "poly": [[3130,-6770],[3130,-6790],[3370,-6790],[3370,-6770]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
    "id": "solid:bld/rocket-west/19/e0-4/front",
    "z": 0,
    "h": 460,
@@ -1890,6 +1862,20 @@
    "z": 0,
    "h": 240,
    "poly": [[-3320,-6770],[-3320,-6790],[-3080,-6790],[-3080,-6770]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/lamplight-south-w/13/e0-2/front",
+   "z": 0,
+   "h": 460,
+   "poly": [[-4390,-5600],[-4390,-5000],[-4450,-5000],[-4450,-5600]],
+   "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
+  },
+  {
+   "id": "solid:bld/lamplight-south-w/13/e0-2/door",
+   "z": 0,
+   "h": 240,
+   "poly": [[-4390,-5420],[-4370,-5420],[-4370,-5180],[-4390,-5180]],
    "src": "contracts/world/kit.collide.json volumes spanning eye height (rulebook eye-cm 160), placed as the world places the piece"
   },
   {
@@ -2840,13 +2826,13 @@
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "a8a67bf9bae2cd134d553aeffecd36675ddce7c24f367c30ff40f597b46aed48",
+  "sha256": "00e804f28c66d72644c2bb9b52396ba0cb20d951084736d02969306fc564fa7b",
   "startsAt": "17:24:30",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "2390f2ce5e992b11c6fc5d384b12b584c3069b5d909d86731749bf06b304d3a2",
+  "sha256": "fa6858f88d2c6f71a4c60e3f247423dcaed55f51762e692dd5b61caf9e4005ed",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {
