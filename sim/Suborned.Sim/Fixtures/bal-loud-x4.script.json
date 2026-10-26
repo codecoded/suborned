@@ -96,12 +96,6 @@
   {
    "tick": 2251,
    "op": "scout",
-   "do": "stance",
-   "stance": "free"
-  },
-  {
-   "tick": 2251,
-   "op": "scout",
    "do": "fire",
    "target": "security-2"
   },
@@ -113,12 +107,6 @@
   {
    "tick": 2251,
    "op": "fixer",
-   "do": "stance",
-   "stance": "free"
-  },
-  {
-   "tick": 2251,
-   "op": "fixer",
    "do": "fire",
    "target": "security-2"
   },
@@ -126,12 +114,6 @@
    "tick": 2251,
    "op": "tech",
    "do": "draw"
-  },
-  {
-   "tick": 2251,
-   "op": "tech",
-   "do": "stance",
-   "stance": "free"
   },
   {
    "tick": 2251,

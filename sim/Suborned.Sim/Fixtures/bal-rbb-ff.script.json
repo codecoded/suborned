@@ -147,11 +147,6 @@
    "target": "car"
   },
   {
-   "tick": 4453,
-   "op": "cell",
-   "do": "panic"
-  },
-  {
    "tick": 4480,
    "op": "scout",
    "do": "fire",
