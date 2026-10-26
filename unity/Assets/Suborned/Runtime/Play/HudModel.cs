@@ -27,7 +27,7 @@ namespace Suborned.Play
             public bool Done; internal bool WasActing; internal int LastEnd = -1; internal float DoneAt = -10f; }
         /// <summary>How long a finished act's ring stays, full, with its tick (unscaled seconds: it holds through a pause).</summary>
         public const float DoneSeconds = 1.2f;
-        public struct Pips { public Vector3 World; public int Hp, Max; public bool Cell; }
+        public struct Pips { public Vector3 World; public int Hp, Max; public bool Cell; public string Id; }
         public struct Downed { public Vector3 World; public string Line; }
         /// <summary>One person in Intel (Glyph's intel_panel): what the cell knows of them, and the secret and the lover tie only once known.</summary>
         public sealed class IntelRow { public string Role = "", Name = "", Job = "", NeedIcon = "p_unknown", NeedMark = "unk", TempIcon = "p_unknown", Next = "", NextIcon = "", Secret = ""; public bool Turned, Known; }
@@ -157,6 +157,7 @@ namespace Suborned.Play
                 var m = Marks[i]; m.World = on ? t.position : null; m.Num = Nums[i]; m.Selected = h.Selected[i];
                 m.Verb = op.Busy != null ? HandoverHost.Glyph(op.Busy.Do, op.Busy.Approach) : op.Walk != null ? (op.Running ? "»" : "›") : "✓";
                 var r = Rings[i]; bool busyRing = on && d.Busy && d.Phase != "down" && !ended;
+                if (h.OneInput && (d.Phase is "drawing" or "aiming" or "firing" || d.Verb is "draw" or "holster" or "fire")) busyRing = false; // Glyph G2 (0.2.135, b-final): draw, holster and fire show on the body and the portrait's sidearm mark, never a gun disc on the street
                 // the beat after an act: it was acting (not walking to it) and the engine's end tick has come, so it ran out, not cancelled
                 bool acting = busyRing && !(d.Phase is "walking" or "running") && op.Busy != null;
                 if (r.WasActing && !acting && r.LastEnd >= 0 && g.Tick >= r.LastEnd && !op.Down) r.DoneAt = Time.unscaledTime;
@@ -189,7 +190,7 @@ namespace Suborned.Play
             // the fight
             Fighters.Clear(); Down.Clear();
             HashSet<string> focus = null; if (h.OneInput && g.FightOn) { focus = new HashSet<string>(); for (int k = 0; k < 4; k++) if (g.Ops[k].Gun.Order.Length > 0 && !g.Ops[k].Down) focus.Add(g.Ops[k].Gun.Order); } // engine 0.35 (Glyph b-final): pips over the focus only; the cell's on the roster
-            foreach (var (id, gun) in h.Fighters()) { if (focus != null && !focus.Contains(id)) continue; var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
+            foreach (var (id, gun) in h.Fighters()) { if (focus != null && !focus.Contains(id)) continue; var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { Id = id, World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
             for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip
             var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || hov.Security || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it; Pulse 067 W2: a shift guard wears the hover ring as the door guard does

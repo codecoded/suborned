@@ -188,9 +188,14 @@ namespace Suborned.Play
             return Text?.DoneWord("focus." + state, fb) ?? fb;
         }
 
+        /// <summary>Whether agent k's plate shows its fire's time to down ("45 s" under one input, PlateWords): the plate's icon is the downed mark.</summary>
+        public bool PlateFireDown(int k) => k >= 0 && k < 4 && plateFireDown[k];
+        readonly bool[] plateFireDown = new bool[4];
+
         /// <summary>The words on agent k's plate (ui.js orderWords): "queued", "drawing", "aiming", "firing", "walking 9 s", "watching 12 s"; "" idle.</summary>
         public string PlateWords(int k)
         {
+            if (k >= 0 && k < 4) plateFireDown[k] = false;
             if (Game == null || k < 0 || k > 3) return "";
             if (Plan.Exists(x => x.K == k)) return "queued";
             if (DoneTone(k) == "cancel" && DonePlate(k) is { Length: > 0 } cw) return cw; // brief 043: a dropped act says "cancelled" on the plate first, even as the new order starts
@@ -199,6 +204,7 @@ namespace Suborned.Play
             if (FireRefusalWord(k) is { Length: > 0 } fr) return fr; // item 13: why this agent took no part in the squad's fire order (two words)
             string fid = op.Gun.Order.Length > 0 ? op.Gun.Order : Driving && k == dAgent && TriggerDown ? TriggerTarget : FireNow[k].Firing ? FireNow[k].Target : "";
             // at most two words (the HUD budget: three are running text): the plate's icon says walk, run or the act, the words its time
+            if (fid.Length > 0 && op.Busy == null && OneInput && FireOne(k, fid).phase == "fire" && FireDownS(k) is int dn && dn >= 0) { plateFireDown[k] = true; return $"{dn} s"; } // Glyph G1 (0.2.135): the fire line's time to down, on the shooter's portrait chip (the plate's icon: the downed mark)
             if (fid.Length > 0 && op.Busy == null) { var (ph, wd) = FireOne(k, fid); return ph == "blocked" ? (wd == "Too far" ? Text?.DoneWord("fire.out-of-range", "too far") ?? "too far" : Text?.DoneWord("fire.no-clear-line", "no line") ?? "no line") : wd; }
             if (op.Busy != null) return $"{ActLeftS(k)} s";
             if (op.Act != null) return WalkPlate(op.Act); // engine 0.23 walk-in (Fable less.done.walk.plate): "→ Inez"; the seconds stay on the pill

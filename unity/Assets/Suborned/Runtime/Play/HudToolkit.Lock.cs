@@ -27,6 +27,9 @@ namespace Suborned.Play
         /// <summary>The proof reads it: the reticles drawn now, "id:state:shooters" each.</summary>
         public static string ReticlesShown { get; private set; } = "";
         public const float ReticleD = 26f, ReticleUp = 2.55f;
+        /// <summary>Glyph G3 (0.2.135): the focus's pips sit 4 px under the lock disc's held ring (the disc's foot is 6 px above its anchor, the dashed
+        /// ring 3.75 px past it; the pips' ink rim 3.6 px), and the wait plate 4 px under them.</summary>
+        const float RingPast = 3.75f, PipsUnderDisc = -6f + RingPast + 4f + 3.6f, PipsH = 7.2f;
 
         LockMark NewReticle(string id)
         {
@@ -98,7 +101,7 @@ namespace Suborned.Play
                     // engine 0.35 (one input, Glyph b-final: "no cameos under it"): the focus disc alone, and why it waits under it
                     bool one = h.OneInput; Show(r.Faces, !one);
                     string why = one && !r.Locked && r.Gone < 0f ? h.FocusWhy(r.Id, r.Shooters) : ""; Show(r.WhyPlate, why.Length > 0);
-                    if (why.Length > 0) { Text(r.Why, why); float ww = float.IsNaN(r.WhyPlate.resolvedStyle.width) ? 80f : r.WhyPlate.resolvedStyle.width; r.WhyPlate.style.left = ReticleD / 2f - ww / 2f; }
+                    if (why.Length > 0) { bool pips = false; foreach (var f in m.Fighters) if (f.Id == r.Id) pips = true; r.WhyPlate.style.top = ReticleD + RingPast + 4f + (pips ? PipsH + 4f : 0f); Text(r.Why, why); float ww = float.IsNaN(r.WhyPlate.resolvedStyle.width) ? 80f : r.WhyPlate.resolvedStyle.width; r.WhyPlate.style.left = ReticleD / 2f - ww / 2f; }
                     // the shooters' faces under the disc
                     while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = Cameo(r.Faces, 12f, 2f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -4; }
                     for (int i = 0; i < r.Faces.childCount; i++)

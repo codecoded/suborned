@@ -341,6 +341,7 @@ namespace Suborned.Play
                 var (head, down, stopped, drawn) = host.FireLine(k);
                 if (host.controls.HoldActs && host.FireStatus() != null) head = ""; // brief 041: the pill says it when a hold or a lock is on
                 bool aimChip = head.Length == 0 && host.Aiming && host.AimId.Length > 0 && !(host.controls.HoldActs && host.FireHold != null);
+                if (host.OneInput && !host.Aiming) head = ""; // Glyph G1 (0.2.135): under one input the fire line is off the street (it sat on the focus's lock disc and pips); the time to down rides on the shooter's portrait chip (HostHoldStatus.PlateWords); the cursor's own chip while aiming stays
                 if (head.Length > 0 || aimChip)
                 {
                     show = true;

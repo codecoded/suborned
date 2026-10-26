@@ -24,7 +24,7 @@ namespace Suborned.Play
         /// <summary>The hints that teach a control (hover a price, right click a contact, N, carry): the only place a control is taught (Fable's
         /// control-hint rule, calm-down batch 1). Once the player has done what one teaches, it is retired for good (PlayerPrefs, per profile).</summary>
         static readonly HashSet<string> ControlHints = new() { "H3", "H5", "H7", "H11", "H12", "H13", H13Door, "H17", "H21", "H22" };
-        /// <summary>Fable's control tips (brief 067; Glyph D5 and F9): H21 "Cease fire: press X." at the first lasting fire order, H22 "Scroll to
+        /// <summary>Fable's control tips (brief 067; Glyph D5 and F9): H21 "Holster to stop firing: press F." (one input; "Cease fire: press X." before) at the first lasting fire order, H22 "Scroll to
         /// switch." the first time two or more things are under the cursor. Each shows at once (no 8 s idle wait), over any hint, rings nothing,
         /// once a run: spent when the HUD has shown and folded its line (or its moment passed before it showed), retired for good when the input
         /// is used (a Cease, a step through the stack). Its line shows in play, not only under Alt (it rings nothing: the line is the hint).</summary>
@@ -247,7 +247,7 @@ namespace Suborned.Play
                     foreach (var (w, view, st, op) in Cues()) if (st >= 1) { trigWho = op; break; } // rings nothing: the watcher's own cue shows it
                     return true;
                 case "H21": // Fable 067 (Glyph D5; Sky on 0.2.122: "I wasn't sure whether to be pressing just X or hold RMB"): a lasting fire order stands and X was never used this run; rings nothing (the lock reticle shows it)
-                    return !OneInput && AnyFireOrder() && CeaseKeys == 0; // engine 0.35: X is retired (one input): the tip would teach a key that does nothing (Fable to reword: "To stop, holster: F")
+                    return OneInput ? AnyFireOrder() : AnyFireOrder() && CeaseKeys == 0; // engine 0.35 one input (Fable 0.35.2): "Holster to stop firing: press F." at the first fire order; a holster ends the order, so the trigger stops holding
                 case "H22": // Fable 067 (Glyph F9): two or more things under the cursor (the stack tab is up) and no step yet this run; rings nothing (the tab and the dashed rings show it)
                     return HoverStackCount >= 2 && StackSteps == 0;
                 case "H11": // brief 018 §6.6: anyone a Go would leave captured (a downed one not carried rings first, else the first standing one)
@@ -286,7 +286,7 @@ namespace Suborned.Play
                 case "H16": return Given(o => o.Do == "take", from) || g.Vale != ValeAt.InCar;
                 case "H20": return Given(o => o.Do == "drive-car", from) || g.CurStand != g.S.Stands[0];
                 case "H19": { foreach (var c in Cues()) if (c.stage >= 1) return false; return true; } // the agent moved on or out of sight, and the watcher cooled
-                case "H21": return CeaseKeys > tipCeaseAt; // X pressed (a Cease fire order sent): never the host's own cease when a new order replaces a fire
+                case "H21": return OneInput ? Given(o => o.Do == "holster", from) : CeaseKeys > tipCeaseAt; // one input: a Holster given (F); else X pressed (a Cease fire order sent): never the host's own cease when a new order replaces a fire
                 case "H22": return StackSteps > tipStepsAt; // a step with the wheel, Z or Tab
             }
             return false;

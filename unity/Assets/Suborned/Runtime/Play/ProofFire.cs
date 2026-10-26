@@ -256,20 +256,25 @@ namespace Suborned.Play
             int mism = 0, frames = 0, firingFrames = 0, followFrames = 0; float firstFire = -1f, pressAt = Time.realtimeSinceStartup;
             h.TriggerScripted(T, true);
             bool pressTaken = h.TriggerDown; parts.Add($"\"triggerPressTaken\": {B(pressTaken)}"); ok &= pressTaken;
-            var fd = new List<float>(); bool shotTaken = false, followerShot = false;
-            while (Time.realtimeSinceStartup - pressAt < 4f && !g.Over)
+            var fd = new List<float>(); bool shotTaken = false, followerShot = false, fixerAway = false;
+            float holdS = g.OneInputOn ? 3f : 4f; // engine 0.35 (one input): 3 s, so the car (10) still stands for the second lock after the commander's Fixer, the follow and the run
+            while (Time.realtimeSinceStartup - pressAt < holdS && !g.Over)
             {
                 yield return null; frames++; fd.Add(Time.unscaledDeltaTime * 1000f); Point();
                 var eng = g.FireStateOf(OpId.Enforcer); var host = h.FireNow[E];
                 if (eng.Firing != host.Firing || eng.Mode != host.Mode || eng.Target != host.Target) mism++; // the host's marks read the engine's state (same frame)
                 if (host.Firing) { firingFrames++; if (firstFire < 0f) firstFire = Time.realtimeSinceStartup - pressAt; }
                 if (h.Followers.Count > 0) followFrames++;
+                if (g.OneInputOn && !fixerAway && followFrames >= 30) { h.Issue(new Order { Op = "fixer", Do = "holster" }); fixerAway = true; } // engine 0.35 (one input, no cease): the follower proved (30 frames), the Fixer holsters, so the car outlasts the hold, the run and the tap for the second lock (0.2.136: down 0/10 before it with him following the whole hold)
                 if (!shotTaken && host.Firing && h.ShotFx.Count > 0 && h.ShotFx[h.ShotFx.Count - 1].side == "cell" && Time.unscaledTime - h.ShotFx[h.ShotFx.Count - 1].born < 0.05f) { shotTaken = true; yield return Shoot(dir, "tp-firing", "rest", log); }
                 else if (!followerShot && shotTaken && h.FireNow[S].Mode == "follow" && h.FireNow[S].Firing) { followerShot = true; yield return Shoot(dir, "tp-follower", "rest", log); }
             }
             if (fd.Count > 10) { fd.Sort(); rows.Add($"{{\"spot\": \"fire-third\", \"frames\": {fd.Count}, \"meanMs\": {F(fd.Average())}, \"fps\": {F(1000f / fd.Average())}, \"p99Ms\": {F(fd[(int)(fd.Count * 0.99f)])}, \"gpuMs\": -1}}"); }
             parts.Add($"\"framesHeld\": {frames}, \"firingFrames\": {firingFrames}, \"firstFiringS\": {F(firstFire)}, \"stateMismatchFrames\": {mism}, \"followerFrames\": {followFrames}, \"followers\": \"{string.Join(",", h.Followers)}\"");
             ok &= mism == 0 && firingFrames > frames / 2 && followFrames > 0;
+            // engine 0.35 (one input): the follower is proved; now the Fixer holsters (no cease), so four guns don't blow the car before the tap and
+            // the second lock (0.2.135: secondLock empty, the car down under the Enforcer, the Scout and the following Fixer); the lock draws him again
+            if (g.OneInputOn && !fixerAway) { h.Issue(new Order { Op = "fixer", Do = "holster" }); h.RunTo(g.Tick + 1); }
             // done-check 4 and 5: at a walk the trigger plants the agent; a runner keeps moving and firing at worse odds; the camera holds its distance and pitch
             {
                 var camT = h.View.transform; float dist0 = (camT.position - h.Views.DrivePos).magnitude, pitch0 = camT.eulerAngles.x; float set0 = h.FollowDistSet; bool pulled0 = h.FollowPulledIn;
@@ -291,20 +296,22 @@ namespace Suborned.Play
             var (head, _, stopped, _) = h.FireLine(E); bool cut = !h.FireNow[E].Firing;
             parts.Add($"\"releaseCut\": {B(cut)}, \"releaseLine\": \"{head}\""); ok &= cut && stopped;
             yield return new WaitForSecondsRealtime(0.15f); yield return Shoot(dir, "tp-stopped", "rest", log);
-            // a tap: one press, released the next frame: one shot when the cadence allows (a buffer of one)
-            yield return new WaitForSecondsRealtime(2.4f);
-            int tapLog0 = g.Log.Count; bool up = !(g.CarOf(T) is { Blown: true });
-            if (up) { h.TriggerScripted(T, true); yield return null; h.TriggerScripted(T, false); yield return new WaitForSecondsRealtime(1.4f); }
-            int tapShots = 0; for (int i = tapLog0; i < g.Log.Count; i++) if (g.Log[i].Code.StartsWith("shot.") && g.Log[i].Text.StartsWith("enforcer fires on")) tapShots++;
-            parts.Add($"\"tapShots\": {tapShots}"); ok &= !up || tapShots == 1;
             // a lock on a second agent (the commander's lasting order on the Fixer) while the driven agent fires
-            h.Issue(new Order { Op = "fixer", Do = "fire", Target = T }); if (placed) h.Issue(new Order { Op = "scout", Do = "fire", Target = T }); h.RunTo(g.Tick + 1); // the Scout's own lock (placed off the follow ring, above)
-            string fixLock = g.LockOf(OpId.Fixer); yield return Frames(2);
-            parts.Add($"\"secondLock\": \"{fixLock}\", \"secondMode\": \"{h.FireNow[X].Mode}\""); ok &= fixLock == T && h.FireNow[X].Mode == "lock";
+            string carBefore = g.CarOf(T) is { } cb0 ? $"{(cb0.Blown ? "blown" : cb0.Gun != null && cb0.Gun.Down ? "down" : "up")} {cb0.Gun?.Health ?? -1}/{cb0.Gun?.Max ?? -1}" : "none";
+            bool fixTaken = h.Issue(new Order { Op = "fixer", Do = "fire", Target = T }); string fixWhy = fixTaken ? "" : h.Status; if (placed && !g.OneInputOn) h.Issue(new Order { Op = "scout", Do = "fire", Target = T }); h.RunTo(g.Tick + 1); // the Scout's own lock (placed off the follow ring, above); one input: not given, so the car stands while the Fixer draws for his
+            string fixLock = g.LockOf(OpId.Fixer); if (g.OneInputOn) { int w0 = g.Tick; while (g.Tick < w0 + 2 * Suborned.Sim.Game.Hz && h.FireNow[X].Mode != "lock" && !g.Over) h.RunTo(g.Tick + 1); } yield return Frames(2); // one input: the lock draws him first (FireStateOf reads lock once drawn)
+            parts.Add($"\"secondLock\": \"{fixLock}\", \"secondMode\": \"{h.FireNow[X].Mode}\", \"secondTaken\": {B(fixTaken)}, \"secondWhy\": \"{fixWhy.Replace("\"", "'")}\", \"carBeforeSecond\": \"{carBefore}\""); ok &= fixLock == T && h.FireNow[X].Mode == "lock";
             h.TriggerScripted(T, true); yield return new WaitForSecondsRealtime(1.2f); Point();
             yield return Shoot(dir, "tp-lock", "rest", log);
             yield return new WaitForSecondsRealtime(0.8f);
-            h.TriggerScripted(T, false); h.AimScripted(false); HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
+            h.TriggerScripted(T, false); yield return null;
+            // a tap (after the second lock since engine 0.35: one input has no cease, so the car is spent sooner; a car already down skips it): one press, released the next frame: one shot when the cadence allows (a buffer of one)
+            yield return new WaitForSecondsRealtime(2.4f);
+            int tapLog0 = g.Log.Count; bool up = !(g.CarOf(T) is { } ct && (ct.Blown || ct.Gun != null && ct.Gun.Down)); // a car shot down (not yet blown) takes no shot
+            if (up) { h.TriggerScripted(T, true); yield return null; h.TriggerScripted(T, false); yield return new WaitForSecondsRealtime(1.4f); }
+            int tapShots = 0; for (int i = tapLog0; i < g.Log.Count; i++) if (g.Log[i].Code.StartsWith("shot.") && g.Log[i].Text.StartsWith("enforcer fires on")) tapShots++;
+            parts.Add($"\"tapShots\": {tapShots}"); ok &= !up || tapShots == 1;
+            h.AimScripted(false); HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null;
             yield return new WaitForSecondsRealtime(1.4f); // the gun lowers
             h.DriveLetGoToMap(); yield return null;
             h.SetPaused(true);

@@ -1,6 +1,6 @@
 // Brief 070: the briefing page's stills are derived from the mission's data (tools/game/briefstills.ts), one per pinned place, never by hand.
 import { describe, expect, test } from 'bun:test';
-import { derive, faceRuns, nearestFace, POSTED_KEY, POSTED_TURN, shotsFile, WAIT_SHIFT, WAIT_ZOOM } from './briefstills';
+import { derive, faceRuns, nearestFace, PLAN_MIN_M, POSTED_KEY, POSTED_TURN, shortSide, shotsFile, WAIT_SHIFT, WAIT_ZOOM } from './briefstills';
 
 describe('the briefing stills (brief 070)', () => {
   const s = derive('handover');
@@ -26,6 +26,7 @@ describe('the briefing stills (brief 070)', () => {
     const [x0, y0, x1, y1] = s.plan.bounds;
     for (const p of s.pins) { expect(p.at[0]).toBeGreaterThan(x0); expect(p.at[0]).toBeLessThan(x1); expect(p.at[1]).toBeGreaterThan(y0); expect(p.at[1]).toBeLessThan(y1); }
     expect(s.plan.buildings.map(b => b.name).sort()).toEqual(['Corner café', 'Records Office']);
+    for (const g of s.plan.green) expect(shortSide(g)).toBeGreaterThanOrEqual(PLAN_MIN_M); // Glyph G8: no stray ticks
   });
   test('nearestFace: the outward normal of the closest edge', () => {
     const sq: [number, number][] = [[0, 0], [10, 0], [10, 10], [0, 10]];

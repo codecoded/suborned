@@ -45,6 +45,30 @@ namespace Suborned.Play
             return best;
         }
 
+        /// <summary>Glyph G5 (0.2.135): a speech bubble never covers an attention callout (its face, its ring 8 px round the disc). One that would moves
+        /// to the nearest free spot just above, below, left or right of the callouts (6 px clear, clear of the other bubbles), at most BubbleReach px;
+        /// else it hides for the frame (the feed carries the line). Run after the callouts are placed and before the tails and leaders are drawn.</summary>
+        void BubblesOffCallouts(float W, float H)
+        {
+            var calls = new List<Rect>();
+            foreach (var md in medals) if (md != null && md.Root.style.display != DisplayStyle.None) { float d = (md.Docked ? DockD : MedalD) + 16f; calls.Add(new Rect(md.At.x - d / 2f, md.At.y - d / 2f, d, d)); }
+            if (calls.Count == 0) return;
+            for (int i = 0; i < bubbleLeads.Count; i++)
+            {
+                var (tail, box, head) = bubbleLeads[i]; var r = tail.parent; if (r == null || r.style.display == DisplayStyle.None) continue;
+                bool hit = false; foreach (var c in calls) if (Grow(c, AsideGap).Overlaps(box)) hit = true; if (!hit) continue;
+                var avoid = new List<Rect>(calls); for (int j = 0; j < bubbleLeads.Count; j++) if (j != i) avoid.Add(bubbleLeads[j].box);
+                bool Free(Rect x) { if (x.yMin < 112f || x.yMax > H - 120f || x.xMin < 8f || x.xMax > W - 8f) return false; foreach (var o in avoid) if (Grow(o, AsideGap).Overlaps(x)) return false; return true; }
+                Rect? best = null; float bestD = BubbleReach;
+                foreach (var c in calls)
+                    foreach (var cand in new[] { new Rect(box.x, c.yMin - AsideGap - box.height, box.width, box.height), new Rect(box.x, c.yMax + AsideGap, box.width, box.height), new Rect(c.xMin - AsideGap - box.width, box.y, box.width, box.height), new Rect(c.xMax + AsideGap, box.y, box.width, box.height) })
+                    { float d = Vector2.Distance(cand.position, box.position); if (d <= bestD && Free(cand)) { bestD = d; best = cand; } }
+                if (best is Rect b2) { r.style.left = b2.x; r.style.top = b2.y; bubbleLeads[i] = (tail, b2, head); if (i < bubbleRects.Count) bubbleRects[i] = b2; }
+                else { Show(r, false); Show(tail, false); }
+            }
+        }
+        const float BubbleReach = 140f;
+
         void StepAside(float H)
         {
             if (marks == null) return;

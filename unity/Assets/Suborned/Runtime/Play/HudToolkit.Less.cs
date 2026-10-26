@@ -272,7 +272,7 @@ namespace Suborned.Play
                         continue;
                     }
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
-                    Icon(ic, s.Down ? "s_downed" : host.FireRefusalWord(i).Length > 0 ? "refused" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" or "holding" ? "fire" : hw == "under fire" ? "bang" : host.controls.HoldActs && host.PlateDoneTone(i) is { Length: > 0 } dtn ? (dtn == "ok" ? "check" : dtn == "soft" ? "asked" : dtn == "cancel" ? "close_x" : "refused") : s.Icon, running ? TurqLight : Cream); // brief 043: the plate's word after a landing or a cancel
+                    Icon(ic, s.Down ? "s_downed" : host.FireRefusalWord(i).Length > 0 ? "refused" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" or "holding" ? "fire" : host.PlateFireDown(i) ? "s_downed" : hw == "under fire" ? "bang" : host.controls.HoldActs && host.PlateDoneTone(i) is { Length: > 0 } dtn ? (dtn == "ok" ? "check" : dtn == "soft" ? "asked" : dtn == "cancel" ? "close_x" : "refused") : s.Icon, running ? TurqLight : Cream); // brief 043: the plate's word after a landing or a cancel
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
                     string eye = running ? host.RunEye(i) : ""; var eb = busyEyes[i]; Show(eb, eye.Length > 0); // a run is noticed: who could see it, as on the price line
                     if (eye.Length > 0) Icon(eb[0], "eye_" + eye, eye == "open" ? new Color(0.878f, 0.227f, 0.184f) : Cream);
@@ -289,6 +289,7 @@ namespace Suborned.Play
                     bool iconOnly = (s.Progress < 0 || s.Down || hwWord) && tx.text.Length == 0 && hwShown.Length == 0; // no end ("holding the loop"), down, or a word: the icon alone (Glyph §1)
                     float cw = iconOnly ? IconOnlyW : ChipW; if (hwShown.Length > 0) { r.style.width = StyleKeyword.Auto; r.style.minWidth = ChipW; float rw = r.resolvedStyle.width; if (!float.IsNaN(rw) && rw > cw) cw = rw; } else { r.style.minWidth = StyleKeyword.Null; r.style.width = cw; } Show(bar, !iconOnly); Show(tx, !iconOnly); // one width: the bar takes what the eye does not
                     if (carry && hw.Length == 0 && !s.Down) { Show(bar, false); r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 8; } // Glyph's 0.2.104 review #7: carrying, the plate is its icon and pace (no empty bar slot between them)
+                    else if (host.PlateFireDown(i) && !s.Down) { Show(bar, false); r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 8; tx.style.unityTextAlign = TextAnchor.MiddleLeft; } // Glyph G1 follow-up (0.2.137): the time to down is the downed mark and its seconds, snug (the empty bar slot left "6 s" at the plate's far end)
                     else tx.style.marginLeft = StyleKeyword.Null;
                     { // Aster's call (brief 062 "Portraits and ids"): the Enforcer's plate names who he carries: Vale's model cameo, 14 px (18 and 15 failed the rim audit), before the pace
                         var g0 = host.Game; bool vale = i == (int)OpId.Enforcer && g0 != null && !s.Down && (g0.Vale == ValeAt.WithEnforcer || g0.Ops[i].CarryBody.Length > 0 && host.CastOf("councillor") is Person vp && g0.Ops[i].CarryBody == vp.Id);
@@ -344,6 +345,7 @@ namespace Suborned.Play
             RingFrame(); CursorFrame(); // brief 030: the ring, the cursor's mark
             StreetLess(alt, cam);
             AttentionHud(W, H); // brief 031: the Watch ring, the person watchers' marks, the callouts (HudToolkit.Attention)
+            BubblesOffCallouts(W, H); // Glyph G5 (0.2.135): speech steps aside from the attention callouts (before the tails and leaders are drawn)
             FightLabLayer(alt, cam); // brief 027: Glyph's finished fight HUD (HudToolkit.FightLab), with the lab preset
             Pips(cam); BubbleTails();
             foreach (var (br, _, _) in bubbleEls) if (br.resolvedStyle.display != DisplayStyle.None) br.BringToFront(); // Glyph 016 r2 B: speech above the pins
@@ -922,7 +924,7 @@ namespace Suborned.Play
 
         VisualElement WorldEl(string cls, float w, float h)
         {
-            while (worldEls.Count <= worldUsed) { var e = E(marks, null, 0, 0, w, h); var g = E(e, null, 0, 0, w, h); g.name = "g"; worldEls.Add(e); }
+            while (worldEls.Count <= worldUsed) { var e = E(marks, null, 0, 0, w, h); var g = E(e, null, 0, 0, w, h); g.name = "g"; worldEls.Add(e); manifest.Add((e, "image", () => "street mark")); } // Glyph G2 (0.2.135): every street mark in the manifest
             var el = worldEls[worldUsed++]; Show(el, true); el.ClearClassList(); if (cls != null) foreach (var c in cls.Split(' ')) el.AddToClassList(c);
             el.style.width = w; el.style.height = h; el.style.opacity = 1; el.style.unityBackgroundImageTintColor = Color.white; el.style.backgroundImage = StyleKeyword.Null; el.style.scale = StyleKeyword.Null;
             if (el.Q<Label>("num") is Label nl0) Show(nl0, false);
@@ -1050,6 +1052,7 @@ namespace Suborned.Play
             if (!g.Lab) foreach (var f in m.Fighters) // brief 027: with the lab the segment bars over the heads replace these pips (Glyph frame B)
             {
                 if (!Proj(f.World + Vector3.up * 2.1f, out var q)) continue; int hp = f.Hp, mx = f.Max; bool cell = f.Cell;
+                if (host.OneInput && f.Id != null && reticles.TryGetValue(f.Id, out var rf) && rf.Gone < 0f && host.DrawnAt(f.Id) is Vector3 rw && Proj(rw + Vector3.up * (f.Id.StartsWith("car:") ? 1.9f : ReticleUp), out var rq) && InView(rq)) q = new Vector2(rq.x, rq.y + PipsUnderDisc); // Glyph G3 (0.2.135): the focus's stack, top to bottom: lock disc, pips, wait plate, 4 px apart
                 paints.Add(pp => { for (int k = 0; k < mx; k++) { var c = new Vector2(q.x + (k - (mx - 1) / 2f) * 8, q.y); if (!cell) { pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.55f); pp.BeginPath(); pp.Arc(c, 3.6f, Deg(0), Deg(360)); pp.Fill(); } pp.fillColor = k < hp ? (cell ? Cream : new Color(0.78f, 0.27f, 0.25f)) : new Color(1, 1, 1, 0.25f); pp.BeginPath(); pp.Arc(c, 2.6f, Deg(0), Deg(360)); pp.Fill(); } /* Glyph 022: a hostile's pips a deep red on an ink rim (the pale pink washed out on the paving) */ });
             }
             foreach (var dn in m.Down) { if (!Proj(dn.World + Vector3.up * 1.0f, out var q)) continue; var e = WorldEl("s-disc_dark_24", 22, 22); e.style.left = q.x - 11; e.style.top = q.y - 11; Icon(e.Q("g"), "s_downed", Cream); }
@@ -1589,6 +1592,7 @@ namespace Suborned.Play
                     var (hw0, lost) = kv.Value; if (!holderIds.Contains(kv.Key) && lost < 0) { lost = now; holderSeen[kv.Key] = (hw0, lost); }
                     float alpha = lost < 0 ? 1f : 1f - (now - lost) / 0.4f; if (alpha <= 0f || !ring) { gone.Add(kv.Key); continue; }
                     if (!Proj(hw0 + Vector3.up * 2.4f, out var hq) || !Proj(hw0, out var fq)) continue;
+                    if (host.OneInput && host.FightOnNow) continue; // Glyph G6 (0.2.135): in a fight the holders' no-entry discs (and their tethers) are a cut kind: the car's lock and count say it is held; the focus wears the lock disc
                     var e = HolderEl(); e.style.left = hq.x - 13; e.style.top = hq.y - 13; e.style.opacity = alpha; // Glyph r2: the blocked chip's no-entry sign, 18 px on a dark disc
                     { var nl = e.Q<Label>("n"); string rw = kv.Key == "car:rivals" ? host.RivalsHoldShort() : ""; bool rOn = rw.Length > 0; if (nl == null && rOn) { var pl = PlateDark(e, 22f, 0.3f); pl.name = "np"; pl.style.position = Position.Absolute; pl.style.left = 27; pl.style.top = 2; pl.style.paddingLeft = 7; pl.style.paddingRight = 7; nl = Words(pl, 13.5f); nl.name = "n"; }
                       if (e.Q("np") is VisualElement np) { Show(np, rOn); if (rOn) Text(nl, rw); } } // engine 0.33.0: the rival car holds the car until its first rider steps out; Fable's fillLockShort for car-held by the rival car: "Rivals coming · 18 s", "Rivals coming" while it drives in

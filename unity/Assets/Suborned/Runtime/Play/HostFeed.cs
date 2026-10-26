@@ -360,8 +360,8 @@ namespace Suborned.Play
                 case "rivals.see-takedown": return "A rival saw his crewmate go down and opened fire. It's loud now.";
                 case "rivals.wakes": return "He is up again and goes for the Enforcer on sight.";
                 case "rivals.frees": return "A crewmate found him tied and untied him.";
-                case "rivals.for-car": return "Nobody is outside the held car: they walk to it, firing, to take Vale."; // engine 0.34.0 (M067-K3 a), host words until Fable's
-                case "rivals.back-to-cover": return t.Contains("no longer held") ? "The car is free: they go back to cover." : "The cell is outside the car again: they go back to cover.";
+                case "rivals.for-car": return Text?.CardFor("rivals.for-car")?.Result is { Length: > 0 } rf ? rf : "No gun is drawn outside the car, so they come for Vale. Draw one there (F)."; // engine 0.35.2: only a drawn op guards a held car (Fable's card first)
+                case "rivals.back-to-cover": return t.Contains("no longer held") ? "The car is free: they go back to cover." : "A gun is drawn outside the car again: they go back to cover."; // engine 0.35.2: "sees the cell drawn outside the car again"
                 case "captured": return t;
             }
             return l.Code.EndsWith(".down") ? "Another agent can carry them." : "";

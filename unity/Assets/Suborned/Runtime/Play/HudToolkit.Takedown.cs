@@ -113,9 +113,12 @@ namespace Suborned.Play
             foreach (var b in m.Bodies)
             {
                 if (!Proj(b.World, out var p)) continue;
-                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "s-disc_dark_24", 44, 44); k.Plate.style.left = 10; k.Plate.style.top = 10; k.Plate.style.width = 24; k.Plate.style.height = 24; k.Glyph.style.left = 4; k.Glyph.style.top = 4; Ring(k, 16, 22, 22, 15, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "s-disc_dark_24", 30, 0, 16, 16); Icon(E(k.Second, null, 3, 3, 10, 10), "restrain", Cream); }
+                if (bodyMarks.Count <= bi) { var k = NewMark(bodyMarks, "s-disc_dark_24", 44, 44); k.Plate.style.left = 10; k.Plate.style.top = 10; k.Plate.style.width = 24; k.Plate.style.height = 24; k.Glyph.style.left = 4; k.Glyph.style.top = 4; Ring(k, 16, 22, 22, 15, 3.2f); Outer(k, 12, 22, 22, 20, 3f); k.Second = E(k.Root, "s-disc_dark_24", 30, 0, 16, 16); Icon(E(k.Second, null, 3, 3, 10, 10), "restrain", Cream); manifest.Add((k.Root, "image", () => "body")); }
                 var u = bodyMarks[bi++]; Show(u.Root, true); Place(u.Root, p, 44, 44);
                 Class(u.Plate, "s-disc_dark_24", !b.Dead); Class(u.Plate, "s-plate_dark", b.Dead); Round(u.Plate, b.Dead ? 4 : 12);
+                // Glyph G4 (0.2.135): a kill's square plate is 30 px at slice 0.3 with its glyph 14 px centred (a 24 px plate_dark at 0.5 left no 16 px glyph 4 px clear of its rim)
+                float pd = b.Dead ? 30f : 24f, gd = b.Dead ? 14f : 16f; u.Plate.style.left = u.Plate.style.top = (44f - pd) / 2f; u.Plate.style.width = u.Plate.style.height = pd;
+                u.Plate.style.unitySliceScale = b.Dead ? new StyleFloat(0.3f) : new StyleFloat(StyleKeyword.Null); u.Glyph.style.left = u.Glyph.style.top = (pd - gd) / 2f; u.Glyph.style.width = u.Glyph.style.height = gd;
                 Icon(u.Glyph, b.Dead ? "body_dead" : "body_out", Cream);
                 Fill(u, b.Wake, !b.Dead);
                 if (!b.Dead && b.Pulse) foreach (var d in u.Ring) d.style.opacity = 0.5f + 0.5f * pulse; else foreach (var d in u.Ring) d.style.opacity = 1f;

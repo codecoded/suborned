@@ -69,7 +69,8 @@
         { "name": "r123-looks-320", "what": "3:18: the lookout (rival-4, in rival_c) posted at the rival car; the crew over 40 m apart, framed as wide as they need" },
         { "name": "r123-fight-safe", "what": "4:15 at the square (sq-ra-h3), zoom 14, yaw 30: the fight with no tracer or shot lines, every shooter facing its target, the flash at the gun, the five rivals in their four looks" },
         { "name": "r123-fight-loud", "what": "3:46 (bal-loud-x4), zoom 14: the loud fight, the seal clock under the clock bar, the reticle, no cones drawn, a refusal pop over the Enforcer" },
-        { "name": "r123-fight-ground", "what": "the Scout's third person 1.2 s into the safe fight: the fight from the ground, shooters facing their targets" }
+        { "name": "r123-fight-ground", "what": "the Scout's third person 1.2 s into the safe fight: the fight from the ground, shooters facing their targets" },
+        { "name": "r123-body-safe", "what": "the safe fight read on the body (Glyph G7): the clock run until a fighter is pinned behind cover (else cowering, else kneeling), zoom 14, yaw 30, on his cover point" }
       ]
     }
   }

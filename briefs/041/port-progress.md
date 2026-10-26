@@ -1499,3 +1499,67 @@ Next owner: Glyph (2x of the page and the two fight shots), then Aster.
 **Hold-one-input:** a lab frame, so the FIGHT RANGE panel's flat styling is fine there. G2 shows there too.
 
 Next owner: Latch, for G1–G5 and G7 (G6 identify, G8 low). Then one targeted rebuild and the two fight shots plus the pinned shot. Then Glyph at 2x, then Aster to Sky.
+
+## Batch 0.35.2 (Latch, 2026-10-27): BATCH OK on build 0.2.137 (c039, e80b1d45+)
+Glyph's G1–G8 from the 0.2.135 review, the fire proof's second lock, the H21 tip and HostFeed words for 0.35.2, built with the 3-storey café, the lifted getaway and Vale's cars, and Keel's rebuilt site. Waymark's c039 (e80b1d45) shipped before the build.
+
+**What changed**
+- **G1 (fire line).** Under one input the fire line is off the street (HudToolkit.Fire.cs FireLineFrame). The cursor's own chip still shows while aiming. The time to down now sits on the shooter's portrait chip as "6 s" with the downed mark (HostHoldStatus.PlateWords / PlateFireDown; HudToolkit.Less.cs icon).
+- **G2 (gun discs).** The discs were the activity rings (HudModel Rings: a busy ring for the draw, aim and fire phases). Under one input there's no ring for draw, holster or fire. Every pooled street mark (WorldEl) is now in the manifest as an `image` "street mark".
+- **G3 (focus stack).** The focus's pips now sit 4 px under the lock disc's held ring, and the wait plate sits 4 px under the pips (HudToolkit.Lock.cs PipsUnderDisc/RingPast; HudToolkit.Less.cs pips; HudModel Pips.Id).
+- **G4 (kill plate).** A kill's body plate is 30 × 30 px at slice 0.3, with its glyph 14 px and centred. The root is manifested as `image` "body" (HudToolkit.Takedown.cs).
+- **G5 (speech and callouts).**
+  - Speech moves off the attention callouts: new BubblesOffCallouts, run after the callouts are placed and before the tails. A bubble moves up, down, left or right, at most 140 px, or hides for the frame.
+  - Callouts treat each focus (its figure up to the top of its lock disc) like an agent and keep clear of it (HudToolkit.Attention.cs).
+- **G6 (red marks on non-focus hostiles).**
+  - Identified: the barred red discs are the car's **holder** marks (HolderEl: `badges/mark_no` on `disc_dark_24`, one for each hostile holding the car). The red pips under one of them were the **focus's** health pips, sitting under the fire line that hid its lock disc.
+  - Cut: in a fight under one input, the holder discs and their tethers are gone. The car's lock and count still say the car is held. This goes against Glyph's own count, which keeps "holder" as a getaway mark: Glyph and Aster to confirm.
+- **G7 (body read).** New proof picture `r123-body-safe` (Proof123.BodyShot; listed in proofset.json). The clock runs until a fighter is pinned, trying pinned-cover first, then pinned-open, then kneel. The camera frames him at zoom 14, yaw 30.
+- **G8 (plan ticks).** Plan green shapes with a short side under 1.1 m aren't drawn: the palm tubs and the monument's two 1 m beds (tools/game/briefstills.ts PLAN_MIN_M, plus a test).
+- **Fire proof (ProofFire.cs).**
+  - Under one input:
+    - The trigger hold is 3 s.
+    - The Fixer holsters once following is proved (30 frames).
+    - The Scout's own lock isn't given.
+  - The second lock now comes before the tap. A tap on a car already down is skipped, as a blown one was. The run also logs whether the order was taken, the reason if not, and the car's state before the order.
+  - On 0.2.136 the order was refused "no car:official to fire at", with the car down 0/10. On 0.2.137 the car was up 5/10, the lock was set and the mode was `lock`.
+- **The focus-wait plate's `marker` tag** is built.
+- **H21 (Fable 0.35.2).** Under one input the tip shows at the first fire order, and it's gone when a Holster is given (HostHints.cs).
+- **HostFeed.** The `rivals.for-car` words use Fable's card, with "No gun is drawn outside the car…" as the fallback. `back-to-cover` now reads "A gun is drawn outside the car again".
+- **0.35.2 host notes.** No API change. The `no longer held` branch still matches the engine text. The host has no free-on dedupe to remove.
+
+**Evidence** (git-ignored: briefs/041/build/0137/)
+- `bun run batch --from sim` (logs/batch-0352.log):
+  - sim 360/360, compile, kit, world, unity-world 46 s, unity-match 457/457, **build 0.2.136**.
+  - game-check FAILED on `fire` only (secondLock: the car was down 0/10 before it).
+- One targeted rerun, `--from game-build` (logs/batch-0352-rerun.log): **build 0.2.137, BATCH OK**.
+  - game-check: every section ok, including `fire` (secondLock `car:official`, mode `lock`, car up 5/10).
+  - Shots: 13.
+  - Budget: 12/12 within budget, audit 12/12 clean.
+  - Proof sets: r059 13/13, r067 32/32, r123 6/6.
+  - Page: PASS, 208 words (at most 220), 0 faults.
+  - Late-fight: loud-fight worst 21.4 ms, p99 6.3 ms.
+  - tp-long: ok.
+  - The machine was noisy (solana-test-validator at 88 %).
+- r123 body: rival-4 pinned-open, clip `cower`, at 4:20 (tick 2602). No pinned-cover came within 8 s.
+- Front end at 1080 and 2160: status ok (stills 5/5, 5 stations).
+- `bun run typecheck` clean. `bun test tools/game tools/hud-budget`: 285 pass. runtime-compile clean.
+- Pictures:
+  - shots/fight-safe-body.png and shots/fight-loud-body.png
+  - proof/r123-body-safe.png (+ .hud and manifest)
+  - frontend-1080/briefing.png and frontend-2160/briefing.png
+  - stills/brief-getaway.jpg (the lifted car sits on the road)
+  - My 2x/4x crops are in out/scratch/latch/0137/.
+
+**Seen at 2x (for Glyph)**
+- Safe fight: lock disc → pips → "no line" stack clear.
+- No gun discs, no fire line and no holder discs in either fight.
+- Loud: "Behind the wall, officers!" is now clear of the callout's face. The callout sits beside the focus, not on it.
+
+**Open**
+- In the tree, not built: the time-to-down chip drew bar-wide, with "6 s" at the plate's far end (r123-body-safe roster). It's now snug, with no bar slot (HudToolkit.Less.cs). This needs the next build.
+- G7 shows a cower in the open, not the hump behind cover: no pinned-cover with 0.8 s left came in the safe run's 8 s. Glyph to say whether it's enough. If not, Keel to suggest a fixture tick with a pinned-cover.
+- In r123-body-safe, the cowering focus (red ring) has no lock disc over it, and two "?" eye discs stand over the rivals. Both predate this round; Glyph to say whether either is a cut kind.
+- G6 holder cut: Glyph and Aster to confirm.
+
+Next owner: Glyph (2x of fight-safe-body, fight-loud-body, r123-body-safe and the page), then Aster.

@@ -178,6 +178,11 @@ namespace Suborned.Play
             var size = new Vector2(W, H); var hud = live ? HudRects() : null; var claimed = new List<Vector2>();
             var agents = new List<Rect>(); var agentAt = new Vector2?[4];
             if (live) for (int k = 0; k < 4; k++) if (host.Views?.Find("op/" + Op.Name((OpId)k)) is Transform at && at.gameObject.activeSelf && FigureBox(at.position, 1.85f) is Rect ar) { agents.Add(ar); agentAt[k] = ar.center; }
+            // Glyph G5 (0.2.135): a callout never sits on the man the fight is about: each focus (a lock reticle's target) is kept clear as an agent is,
+            // from his feet (the focus ring) to the top of his lock disc
+            if (live) foreach (var rf in reticles.Values)
+                if (rf.Gone < 0f && host.DrawnAt(rf.Id) is Vector3 fw && FigureBox(fw, 1.85f) is Rect fr)
+                    agents.Add(rf.OnScreen ? Rect.MinMaxRect(Mathf.Min(fr.xMin, rf.At.x - ReticleD / 2f), Mathf.Min(fr.yMin, rf.At.y - ReticleD - 6f), Mathf.Max(fr.xMax, rf.At.x + ReticleD / 2f), fr.yMax) : fr);
             float now = Time.unscaledTime, dt = Mathf.Min(Time.unscaledDeltaTime, 0.1f); int floating = 0;
             for (int i = 0; i < medals.Length; i++)
             {

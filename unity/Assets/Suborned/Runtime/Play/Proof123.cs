@@ -132,6 +132,34 @@ namespace Suborned.Play
                         result["shots"] = shotSeen.Count.ToString(); result["hostileShots"] = shotSeen.Count(x => x.side != "cell").ToString(); result["hostileFlashes"] = (HudToolkit.ShotFlashesHostile - hflash0).ToString();
         }
 
+        /// <summary>Glyph G7 (0.2.135): one picture of the fight read on the body. The clock runs (at most 8 s) until a fighter is pinned with at least
+        /// 0.8 s of his pin left (pinned-cover first: the hump behind cover; else pinned-open, the cower; else a kneel), runs 0.4 s more for the
+        /// clip's cross-fade, then pauses and frames him at play zoom (yaw 30, zoom 14) on his cover point; `r123-body-&lt;name&gt;` with its HUD layer
+        /// and manifest. Logs the tick, the fighter, the posture and the clip drawn.</summary>
+        static IEnumerator BodyShot(HandoverHost h, string dir, string name, string shot, List<string> log, Dictionary<string, string> result)
+        {
+            var g = h.Game; string key = "", kind = ""; int rank = 9; h.SetPaused(false); float t0 = Time.realtimeSinceStartup;
+            while (Time.realtimeSinceStartup - t0 < 8f && !g.Over && rank > 0)
+            {
+                yield return null;
+                foreach (var kv in h.Views.Postures)
+                {
+                    var p = kv.Value; int r = p.Kind == "pinned-cover" && p.PinLeft >= Suborned.Sim.Game.Hz * 4 / 5 ? 0 : p.Kind == "pinned-open" && p.PinLeft >= Suborned.Sim.Game.Hz * 4 / 5 ? 1 : p.Kind == "kneel" ? 2 : 9;
+                    if (r < rank && h.Views.Find(kv.Key) is Transform ft && ft.gameObject.activeInHierarchy) { rank = r; key = kv.Key; kind = p.Kind; }
+                }
+                if (rank <= 1) break;
+            }
+            if (key.Length > 0) yield return new WaitForSecondsRealtime(0.4f);
+            h.SetPaused(true); yield return Frames(2);
+            if (key.Length == 0 || h.Views.Find(key) is not Transform t || !t.gameObject.activeInHierarchy) { result["ok"] = "false"; result["why"] = "no fighter kneeling or pinned in 8 s"; log.Add($"r123 body {name}: FAILED: no fighter kneeling or pinned in 8 s"); yield break; }
+            string now = h.Views.Postures.TryGetValue(key, out var pz) ? pz.Kind : "none";
+            h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(t.position); yield return Frames(3);
+            var (clip, _) = h.Views.FigureClip(key); string at = HandoverHost.MissionClock(g.Tick);
+            yield return Shoot(h, dir, shot, log);
+            result["ok"] = "true"; result["key"] = key; result["found"] = kind; result["now"] = now; result["clip"] = clip; result["at"] = at; result["tick"] = g.Tick.ToString();
+            log.Add($"r123 body {name}: {key} {kind} (now {now}), clip {clip}, at {at} (tick {g.Tick}); picture {shot}");
+        }
+
         /// <summary>The crew's five as drawn now: id, its look (the body's when he is down), the look it should wear, its mode.</summary>
         static (string words, bool ok, int looks) Looks(HandoverHost h)
         {
@@ -199,8 +227,14 @@ namespace Suborned.Play
                     log.Add($"r123 fight ground: {(gOk ? "ok" : "FAILED")}: following {h.Following}; {gr["frames"]} frames, {gr["badFrames"]} with a shooter over 25 deg, worst {gr["worst"]} deg ({gr["worstKey"]}); shooters [{gr["shooters"]}]; flashes {gr["flashes"]} ({gr["hostileFlashes"]} hostile) for {gr["shots"]} shots ({gr["hostileShots"]} hostile)");
                     h.DriveLetGoToMap(); yield return new WaitForSecondsRealtime(0.4f);
                 }
+                string body = "";
+                if (name == "safe" && !g.Over)
+                {   // Glyph G7: the body read, one picture on a pinned fighter's cover point (not gated: a picture for Glyph's 2x)
+                    var br = new Dictionary<string, string>(); yield return BodyShot(h, dir, name, "r123-body-safe", log, br);
+                    body = br.TryGetValue("key", out var bk) ? $", \"body\": {{\"key\": \"{bk}\", \"found\": \"{br["found"]}\", \"now\": \"{br["now"]}\", \"clip\": \"{br["clip"]}\", \"at\": \"{br["at"]}\", \"tick\": {br["tick"]}}}" : $", \"body\": {{\"why\": \"{J(br.TryGetValue("why", out var bw) ? bw : "")}\"}}";
+                }
                 bool on = branch.Length > 0 && g.FightStart < int.MaxValue / 8, oneOk = on && fr["badFrames"] == "0" && fr["shooters"].Length > 0; fOk &= oneOk;
-                fights.Add($"\"{name}\": {{\"ok\": {B(oneOk)}, \"fixture\": \"{fixture}\", \"at\": \"{HandoverHost.MissionClock(g.Tick)}\", \"branch\": \"{branch}\", \"frames\": {fr["frames"]}, \"badFrames\": {fr["badFrames"]}, \"worstDeg\": {fr["worst"]}, \"worstKey\": \"{fr["worstKey"]}\", \"shooters\": \"{fr["shooters"]}\", \"flashes\": {fr["flashes"]}, \"shots\": {fr["shots"]}, \"hostileShots\": {fr["hostileShots"]}, \"hostileFlashes\": {fr["hostileFlashes"]}, \"reticles\": \"{J(HudToolkit.ReticlesShown)}\", \"cones\": \"{J(fans)}\", \"looks\": \"{J(words)}\", \"distinctLooks\": {n}{ground}}}");
+                fights.Add($"\"{name}\": {{\"ok\": {B(oneOk)}, \"fixture\": \"{fixture}\", \"at\": \"{HandoverHost.MissionClock(g.Tick)}\", \"branch\": \"{branch}\", \"frames\": {fr["frames"]}, \"badFrames\": {fr["badFrames"]}, \"worstDeg\": {fr["worst"]}, \"worstKey\": \"{fr["worstKey"]}\", \"shooters\": \"{fr["shooters"]}\", \"flashes\": {fr["flashes"]}, \"shots\": {fr["shots"]}, \"hostileShots\": {fr["hostileShots"]}, \"hostileFlashes\": {fr["hostileFlashes"]}, \"reticles\": \"{J(HudToolkit.ReticlesShown)}\", \"cones\": \"{J(fans)}\", \"looks\": \"{J(words)}\", \"distinctLooks\": {n}{ground}{body}}}");
                 log.Add($"r123 fight {name}: {(oneOk ? "ok" : "FAILED")}: {fixture} at {HandoverHost.MissionClock(g.Tick)}, branch {(branch.Length > 0 ? branch : "none")}; {fr["frames"]} frames, {fr["badFrames"]} with a shooter over 25 deg, worst {fr["worst"]} deg ({fr["worstKey"]}); shooters [{fr["shooters"]}]; flashes {fr["flashes"]}; reticles [{HudToolkit.ReticlesShown}]; crew {words}");
             }
             ok &= fOk;
