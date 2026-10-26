@@ -21,6 +21,8 @@ const plan: Plan = read('contracts/world/harbour-district.plan.json'), d = deriv
 const kit: Kit = read('contracts/world/kit.json'), by = new Map(kit.assets.map(a => [a.id, a]));
 const { world: w, gen } = worldOf(plan, d, civ), B = plan.standards.buildings;
 const H = (n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown;
+const areaOf = new Map(d.plots.map(p => [p.id, p.area])), play = (bld: string) => !!(B.caps as Record<string, { play?: boolean }>)[areaOf.get(bld.split('/')[1]!) ?? '']?.play;
+const coping = (id: string) => ({ '2': 12.9, '3': 16.3, '4': 19.7 } as Record<string, number>)[/_(\d+)[WL]?$/.exec(id)![1]!] ?? 6.1 + 3.4 * Number(/_(\d+)[WL]?$/.exec(id)![1]);
 
 test('every facade piece is adopted, within its scale range and its building\'s H(n)', () => {
   expect(w.facades.length).toBeGreaterThan(300);
@@ -31,6 +33,16 @@ test('every facade piece is adopted, within its scale range and its building\'s 
     expect(sx / sy).toBeGreaterThanOrEqual(a.tags.squash - 1e-3);
     if (f.form === 'bay') expect(Math.abs(a.size[1] * sy - H(f.storeys)) / H(f.storeys), f.id).toBeLessThanOrEqual(0.081);
   }
+});
+
+test('play streets (brief 066): every kit piece on a 3- or 4-storey play-street building carries the building\'s own storey code', () => {
+  const fs = w.facades.filter(f => play(f.building));
+  expect(fs.length).toBeGreaterThan(200);
+  for (const f of fs) { expect(f.storeys, f.id).toBeGreaterThanOrEqual(3); expect(f.storeys, f.id).toBeLessThanOrEqual(4); expect(/_(\d+)[WL]?$/.exec(f.kit.id)?.[1], f.id).toBe(String(f.storeys)); }
+  // a bay's top is its coping (nothing over the roof line): no arcade (folded roof and mast), no porthole bay with its fin and beacon over the parapet, only the low ones
+  for (const f of fs.filter(x => x.form === 'bay')) { expect(f.kit.id, f.id).not.toMatch(/^ArcadeBay_|^PortholeBay_\d+$/); expect(Math.abs(by.get(f.kit.id)!.size[1] - coping(f.kit.id)), f.id).toBeLessThanOrEqual(0.4); }
+  expect(fs.some(f => /^PortholeBay_\dL$/.test(f.kit.id))).toBe(true);
+  for (const f of w.facades.filter(x => !play(x.building))) expect(f.kit.id, f.id).not.toMatch(/^PortholeBay_\dL$/); // built for the cap, placed nowhere else
 });
 
 test('no adjacent duplicate facade: buildings sharing a wall never carry the same bay piece', () => {
@@ -303,9 +315,10 @@ test('colour life (grammar §2a): accent roles, 20-30% lower share on the facade
   const roles = new Set(ACCENT_ROLES.map(r => r[0])), tg = w.skins.filter(k => k.share.target);
   expect(tg.length).toBeGreaterThan(150);
   for (const k of w.skins) { expect(roles.has(k.accent)).toBe(true); expect(roles.has(k.accent2)).toBe(true); expect(k.accent2).not.toBe(k.accent); expect(k.trim).toBe('accent_gold'); }
-  // never over the band, but one: harbour-boulevard/13 (porthole family) at its lightest (no piers, no spandrels, bulkhead 0.6) is faience 0.134 + porthole panels (3a)
-  // 0.110 + entrance fins 0.093 = 0.338, every element mandatory under §2a; open with Vela (which gives: the panels, the fins or a lower bulkhead)
-  expect(tg.filter(k => k.share.lower! > 0.3).map(k => k.building)).toEqual(['bld/harbour-boulevard/13']);
+  // never over the band. harbour-boulevard/13 was over (0.338) and, under the height cap, boulevard-west/0 (0.384): both counted the bulkhead of a shop that runs on
+  // behind a kit bay at its whole width over a short procedural remnant. Vela (brief 066): a bulkhead counts only over the face's procedural spans (KitCover hides the
+  // rest with the wall), which puts them at 0.28 and 0.23.
+  expect(tg.filter(k => k.share.lower! > 0.3).map(k => k.building)).toEqual([]);
   expect(tg.filter(k => k.share.lower! < 0.2).map(k => k.building)).toEqual([]); // §2a 3a: the porthole panels lift the 12 fronts at 0.15-0.2 of round 3; none is left under
   for (const k of w.skins) { expect(k.porthole.panel).toEqual({ w: 1.5, h: 1.5, surface: k.accent }); if (k.faces.some(f => f.bays.includes('P') || f.portholes.length)) expect(k.share.elements).toContain('porthole-panels'); }
   expect(tg.filter(k => k.share.elements.length >= 4).length / tg.length).toBeGreaterThanOrEqual(0.95);

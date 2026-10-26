@@ -1,0 +1,15 @@
+{
+ "tag": "cap", "scene": "Assets/Scenes/probe-066-cap.unity", "method": "renderers enabled, active, in the camera's culling mask, bounds inside the frustum; LODGroups count only the LOD the frame selects (QualitySettings.lodBias); triangles = that mesh's index count / 3 (skinned and static); shadow-only renderers excluded",
+ "frames": [
+  {"frame": "cap-cafe-y030", "renderers": 249, "triangles": 685287},
+  {"frame": "cap-cafe-y120", "renderers": 257, "triangles": 762082},
+  {"frame": "cap-cafe-y210", "renderers": 254, "triangles": 692550},
+  {"frame": "cap-cafe-y300", "renderers": 249, "triangles": 756306},
+  {"frame": "cap-follow-fixer-cafe", "renderers": 1652, "triangles": 2384304},
+  {"frame": "cap-office-y030", "renderers": 203, "triangles": 579438},
+  {"frame": "cap-office-y120", "renderers": 220, "triangles": 644818},
+  {"frame": "cap-office-y210", "renderers": 199, "triangles": 552910},
+  {"frame": "cap-office-y300", "renderers": 200, "triangles": 609906},
+  {"frame": "cap-follow-vale-office", "renderers": 1563, "triangles": 2219246}
+ ]
+}

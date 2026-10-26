@@ -3,9 +3,9 @@
 import { expect, setDefaultTimeout, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { civic } from '../../plan/civic';
+import { civic, toPlanFn } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
-import { worldOf } from '../build';
+import { civicMasses, worldOf } from '../build';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -29,7 +29,9 @@ test('no roof item is a bare box in the building\'s enamel: the vents are finned
 
 test('the civic block\'s two buildings carry a roof terrace of their own (the office wing: deck, border line, troughs, two vents), low enough to hide nothing the wing does not', () => {
   const roofs = w.roofs.filter(r => r.building.startsWith('civic/'));
-  expect(roofs.map(r => r.building).sort()).toEqual(['civic/cafe', 'civic/civic-office']);
+  // brief 066 (Vela): the café's body above its ground storey is a kit piece (CafeUpper_3 or _4) whose crown is its own planted terrace and solarium, so only the office takes a generated one
+  expect(roofs.map(r => r.building).sort()).toEqual(['civic/civic-office']);
+  const cafe = w.civic.find(c => c.id === 'civic/cafe')!; expect(cafe.kit?.id).toMatch(/^CafeUpper_[34]$/);
   for (const r of roofs) {
     const m = w.civic.find(c => c.id === r.building)!;
     expect(r.z).toBeCloseTo(m.base + m.height, 3);
@@ -50,4 +52,20 @@ test('the Boulevard\'s tram reservation is lawn track: one flat per stretch betw
     expect(f.level, f.id).toBeLessThan(w.transit.tram[0]!.level); // the rails (level 0.04) lie on it
     expect(f.surface).toBe('median'); // look.json ground/median: DK_Ground_Lawn
   }
+});
+
+test('brief 066: the café keeps its storey count; its body piece is the one built to the block\'s height, and the other count has its piece too', () => {
+  const B = plan.standards.buildings, H = (n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown, kit = read('contracts/world/kit.json') as { assets: { id: string; size: number[]; status: string }[] };
+  const cafe = w.civic.find(c => c.id === 'civic/cafe')!, ground = w.civic.find(c => c.id === cafe.groundBy)!;
+  expect(cafe.base + cafe.height - ground.base).toBeCloseTo(civ.buildings.find(b => b.id === 'cafe')!.height, 3); // the block's height, untouched
+  expect(cafe.kit!.base).toBeCloseTo(cafe.base, 3); // the piece's lowest point stands on the body's base (FacadeKit.Civic: PivotForLowest)
+  expect(cafe.kit!.at).toEqual(ground.kit!.at); expect(cafe.kit!.yaw).toBe(ground.kit!.yaw);
+  for (const n of [3, 4]) { const a = kit.assets.find(x => x.id === `CafeUpper_${n}`)!; expect(a.status).toBe('adopted'); expect(a.size[1]).toBeCloseTo(H(n) - (ground.height), 2); }
+});
+
+test('brief 066: at 3 storeys (main\'s recommendation, not yet Sky\'s pick) the same block draws CafeUpper_3 to H(3)', () => {
+  const B = plan.standards.buildings, H3 = B.plinth + B.groundStorey + 2 * B.upperStorey + B.roofCrown;
+  const low = { ...civ, buildings: civ.buildings.map(b => (b.id === 'cafe' ? { ...b, height: H3 } : b)) };
+  const cafe = civicMasses(low, toPlanFn(plan.civic)).find(m => m.id === 'civic/cafe')!;
+  expect(cafe.kit?.id).toBe('CafeUpper_3'); expect(cafe.base + cafe.height - 0.18).toBeCloseTo(H3, 3);
 });

@@ -97,11 +97,15 @@ export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSki
     // per face: its kit spans, the procedural length, the zone height it carries (lower storeys) and its whole height
     const fx = street.map(f => { const m = massOf.get(f.mass)!, L = dist(f.a, f.b), sp = kitSpans(f.a, f.b, fac), Lp = Math.max(0, L - coverLen(sp)), top = m.base + m.height;
       return { f, m, L, sp, Lp, hz: overlapZ(m.base, top, pav, zone1), hw: overlapZ(m.base, top, pav, top), ground: m.base < 1 }; });
-    // shopfront metres per face (street frontages of this building not under a kit facade, on the face's line)
+    // shopfront metres per face: the street frontages of this building not under a kit facade, on the face's line, counted only over the face's procedural spans
+    // (Vela, brief 066: a shop that runs on behind a kit bay has its bulkhead hidden there with the wall; counting its whole width put the short procedural
+    // remnant of boulevard-west/0, 3 storeys under the cap, at 0.38 of accent)
     const shopW = (f: SkinFace, sp: Span[]) => {
-      const u = norm(sub(f.b, f.a)); let w = 0;
+      const u = norm(sub(f.b, f.a)), L = dist(f.a, f.b); let w = 0;
       for (const t of frB.get(b.id) ?? []) { if (t.facade || t.lobby) continue; const mid: V = [(t.a[0] + t.b[0]) / 2, (t.a[1] + t.b[1]) / 2], s = dot(sub(mid, f.a), u);
-        if (Math.abs(cross(u, sub(mid, f.a))) < 1.2 && s > 0 && s < dist(f.a, f.b) && !covered(sp, s)) w += t.w; }
+        if (!(Math.abs(cross(u, sub(mid, f.a))) < 1.2 && s > 0 && s < L && !covered(sp, s))) continue;
+        const s0 = Math.max(0, Math.min(dot(sub(t.a, f.a), u), dot(sub(t.b, f.a), u))), s1 = Math.min(L, Math.max(dot(sub(t.a, f.a), u), dot(sub(t.b, f.a), u)));
+        w += Math.max(0, s1 - s0 - sp.reduce((n, [a, c]) => n + overlapZ(a, c, s0, s1), 0)); }
       return w;
     };
     // fins: corners of the building line (convex, both edges street, not a kit corner) and lobby entrances

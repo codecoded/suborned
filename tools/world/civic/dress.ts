@@ -56,6 +56,14 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
     return { id, surface: 'trim', ring: (o.ring ?? arcRing(a, kit) ?? footOf(a, kit)).map(rv), base: r3(base), height: o.height ?? r3(a.size[1] * kit.scale[1]), source: 'kit', kit, ...(fade.has(name) ? { fade: true as const } : {}) };
   };
   const mass = (id: string) => out.find(m => m.id === id);
+  /** civic-look.json `upper` (brief 066, Vela): the piece that draws a building's body above its ground-storey piece, the one of the listed pieces whose height is the
+   *  body's (the café at 3 or 4 storeys: CafeUpper_3 or _4), at the ground piece's pivot and yaw. The body keeps its id, ring and heights (the sim's faces and the roof
+   *  line); kit.base is the body's base, where the piece's lowest point stands (FacadeKit.Civic: PivotForLowest). No piece of that height adopted: the plain mass. */
+  const upperOf = (body: Mass, p: { piece: string; at: V; yawDeg: number }, pivotBase: number): Mass | undefined => {
+    const a = (look.upper?.[p.piece] ?? []).map(n => adoptedBy(n)).find(x => !!x && Math.abs(x.size[1] - body.height) < 0.05); if (!a) return undefined;
+    const k = put(body.id, a.id, p.at, p.yawDeg, pivotBase); if (!k) return undefined;
+    return { ...body, source: 'kit', kit: { ...k.kit!, base: body.base }, ...(fade.has(a.id) ? { fade: true as const } : {}) };
+  };
   const add: Mass[] = [], keep = (m: Mass | undefined) => { if (m) add.push(m); };
 
   /** The pieces that go with `p` (civic-look.json companions: the café terrace with the café bay): the same pivot and yaw, on the same ground. */
@@ -71,7 +79,8 @@ export function dressCivic(civ: Civic, toPlan: (p: V) => V, masses: Mass[], pav:
     if (g) {
       const b = mass(`civic/${g.building}`); if (!b) throw new Error(`civic dressing: ${p.piece} stands under ${g.building}, which the block lacks`);
       const ground = put(id, p.piece, p.at, p.yawDeg, b.base, { ring: b.ring, height: g.top }); if (!ground) continue;
-      out.splice(out.indexOf(b), 1, { ...b, base: r3(b.base + g.top), height: r3(b.height - g.top), groundBy: id }, ground);
+      const body: Mass = { ...b, base: r3(b.base + g.top), height: r3(b.height - g.top), groundBy: id };
+      out.splice(out.indexOf(b), 1, upperOf(body, p, b.base) ?? body, ground);
       along(p, b.base);
       continue;
     }

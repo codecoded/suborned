@@ -15,7 +15,7 @@ import { type Ring, edgeN, pointInRing } from './geo';
 import { isStreetClass } from './grammar';
 
 /** What the generator knows of a building before its masses are built. */
-export type FacadeBld = { id: string; use: string; n: number; ring: Ring };
+export type FacadeBld = { id: string; use: string; n: number; ring: Ring; /** in a play-street area (standards.buildings.playStreets): storey-true pieces only */ play?: boolean };
 export type FacadeOut = { facades: Facade[]; kitFaced: Set<string>; metres: Map<string, { street: number; kit: number }>; why: Map<string, string> };
 
 const BODY = 14, BAY = 6, CELL = 8; // m: body depth, bay width, corner cell (kit frame)
@@ -23,7 +23,12 @@ const TOL = 0.08, MIN_SY = 0.9, CORNER_SPARE = 0.3; // CORNER_SPARE: a face take
 /** The bay height each storey code was built to (the end and corner pieces stand to their code's bay height, their masts and piers aside). */
 const CODE: Record<string, number> = { '2': 12.9, '3': 16.3, '4': 19.7, '6': 26.5, '9': 36.7, '10': 43.6 };
 
-type Piece = { a: KitAsset; form: 'bay' | 'end' | 'corner'; code: string; body: number; canopy: number };
+type Piece = { a: KitAsset; form: 'bay' | 'end' | 'corner'; code: string; body: number; canopy: number; /** the body to its coping: the stone box the storeys stand in, without the fin, the folded roof or the mast over it */ coping: number };
+/** The coping of a DecoKit frontage of storey code c: skyline.py's ground floor (5.0) + c floors of 3.4 + the 0.95 parapet + its 0.15 cap (16.3 at 3, 19.7 at 4). */
+const copingOf = (code: string): number => CODE[code] ?? 6.1 + 3.4 * Number(code);
+/** The play streets' own pieces (PortholeBay_3L, _4L): built for the height cap, placed nowhere else. */
+const LOW = /^PortholeBay_\d+L$/;
+const COPING_TOL = 0.4; // m: a bay whose top is within this of its coping stands nothing over its roof line
 const codeOf = (id: string): string => (/^(Stream|Deco)(Bay|End|Corner)_(\d+)/.exec(id)?.[3]) ?? '';
 
 /** The adopted facade pieces, grouped: bays (any family), ends and corners by storey code. */
@@ -33,7 +38,7 @@ function catalogue(): { bays: Piece[]; ends: Map<string, Piece[]>; corners: Map<
     const form = a.tags.form; if (!form || !(a.tags.use.includes('facade') || a.tags.use.includes('skyline'))) continue;
     if (a.id.startsWith('CornerTower')) continue; // 67 m junction landmark: it stands at no plot building (see report)
     const bay = /Bay_/.test(a.id), code = bay && !/^(Stream|Deco)Bay_/.test(a.id) ? /_(\d+)/.exec(a.id)![1]! : codeOf(a.id); // Porthole/Balcony/Arcade bays: their own height decides
-    const piece: Piece = { a, form, code, body: form === 'bay' ? a.size[1] : CODE[codeOf(a.id)] ?? a.size[1], canopy: form === 'corner' ? a.size[0] - CELL : a.size[2] - BODY };
+    const piece: Piece = { a, form, code, body: form === 'bay' ? a.size[1] : CODE[codeOf(a.id)] ?? a.size[1], canopy: form === 'corner' ? a.size[0] - CELL : a.size[2] - BODY, coping: code ? copingOf(code) : a.size[1] };
     if (form === 'bay') bays.push(piece);
     else { const m = form === 'end' ? ends : corners, k = codeOf(a.id); if (k) (m.get(k) ?? m.set(k, []).get(k)!).push(piece); }
   }
@@ -67,18 +72,22 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     metres.set(b.id, { street: p.reduce((s, _, i) => s + (street[i] ? edgeLen(i) : 0), 0), kit: 0 });
     if (b.n < 2 || b.n > 11 || !street.some(Boolean)) { why.set(b.id, b.n < 2 || b.n > 11 ? `storeys ${b.n}` : 'no street face'); continue; }
     // a piece's scale: height from H(n) within TOL, width at least the height scale times the squash tag
+    // Play streets (brief 066, Vela): at 3 and 4 storeys every floor line reads at play zoom, so a bay carries the building's own storey code (a 4-storey piece squashed
+    // onto 3 storeys, or a 3-storey porthole or arcade bay stretched onto 4, stood a floor more or less beside its neighbours), and its top is its coping: nothing of it
+    // stands over the roof line (the porthole bays' fin and beacon, the arcade's folded roof and mast do, so the play streets take PortholeBay_3L / _4L and no arcade).
     const scaleOf = (x: Piece): [number, number, number] | null => {
       const [lo, hi] = x.a.tags.scale, sy = Math.min(hi, Math.max(lo, MIN_SY, h / x.body));
       if (Math.abs(sy * x.body - h) > TOL * h) return null;
       return [r3(Math.min(hi, Math.max(sy * x.a.tags.squash, sy))), r3(sy), r3(sy)];
     };
-    const fit = bays.map(x => ({ x, k: scaleOf(x) })).filter((o): o is { x: Piece; k: [number, number, number] } => !!o.k);
+    const storeyTrue = (x: Piece) => x.code === String(b.n) && Math.abs(x.a.size[1] - x.coping) <= COPING_TOL;
+    const fit = bays.filter(x => (b.play ? storeyTrue(x) : !LOW.test(x.a.id))).map(x => ({ x, k: scaleOf(x) })).filter((o): o is { x: Piece; k: [number, number, number] } => !!o.k);
     if (!fit.length) { why.set(b.id, `no bay fits H(${b.n})`); continue; }
     const taken = new Set(near(b.id).map(id => chosen.get(id)).filter((x): x is string => !!x));
     const fresh = fit.filter(o => !taken.has(o.x.a.id));
     if (!fresh.length) { why.set(b.id, 'no contrasting bay'); continue; } // no contrasting piece: this frontage stays procedural
     const pick = fresh[Math.floor(rng(`facade/${b.id}`).f() * fresh.length)]!, bay = pick.x, k = pick.k;
-    const code = Object.keys(CODE).filter(q => ends.has(q) || corners.has(q)).sort((x, y) => Math.abs(h / CODE[x]! - 1) - Math.abs(h / CODE[y]! - 1))[0] ?? ''; // the end and corner code whose bay height is nearest H(n)
+    const code = b.play ? String(b.n) : Object.keys(CODE).filter(q => ends.has(q) || corners.has(q)).sort((x, y) => Math.abs(h / CODE[x]! - 1) - Math.abs(h / CODE[y]! - 1))[0] ?? ''; // the end and corner code whose bay height is nearest H(n); the building's own in the play streets
     const endP = (ends.get(code) ?? []).find(e => e.a.id.endsWith('W') === bay.a.id.endsWith('W')) ?? (ends.get(code) ?? [])[0];
     const cornP = (corners.get(code) ?? [])[0], kc = cornP ? scaleOf(cornP) : null, ke = endP ? scaleOf(endP) : null;
     const inside = (q: V) => pointInRing(q, p);

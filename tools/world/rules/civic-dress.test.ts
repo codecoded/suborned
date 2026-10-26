@@ -65,7 +65,9 @@ describe('civic dressing: what is placed', () => {
   });
   test('the parasols, the frontages, the shelter and the cypresses take the architecture fade; lamps, bollards and planters do not', () => {
     const faded = new Set(base.w.civic.filter(m => m.fade).map(m => m.kit!.id));
-    expect([...faded].sort()).toEqual([...look.fade].sort());
+    const spare = new Set(Object.values(look.upper ?? {}).flat().filter(id => !faded.has(id))); // brief 066: the café's body piece of the other storey count is listed, never placed
+    expect([...faded].sort()).toEqual(look.fade.filter(id => !spare.has(id)).sort());
+    expect(spare.size).toBe(1);
     expect(base.w.civic.filter(m => m.fade && /\/parasol$/.test(m.id))).toHaveLength(7);
   });
   test('crossings: nine civic landings are built, each paired across the carriageway; x-apron-w and the two left out stay dropped', () => {

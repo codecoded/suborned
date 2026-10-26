@@ -1,0 +1,15 @@
+{
+ "tag": "today", "scene": "Assets/Scenes/probe-066-today.unity", "method": "renderers enabled, active, in the camera's culling mask, bounds inside the frustum; LODGroups count only the LOD the frame selects (QualitySettings.lodBias); triangles = that mesh's index count / 3 (skinned and static); shadow-only renderers excluded",
+ "frames": [
+  {"frame": "today-cafe-y030", "renderers": 260, "triangles": 724411},
+  {"frame": "today-cafe-y120", "renderers": 262, "triangles": 778862},
+  {"frame": "today-cafe-y210", "renderers": 264, "triangles": 730126},
+  {"frame": "today-cafe-y300", "renderers": 254, "triangles": 834476},
+  {"frame": "today-follow-fixer-cafe", "renderers": 1648, "triangles": 2874652},
+  {"frame": "today-office-y030", "renderers": 215, "triangles": 622150},
+  {"frame": "today-office-y120", "renderers": 230, "triangles": 694068},
+  {"frame": "today-office-y210", "renderers": 202, "triangles": 602306},
+  {"frame": "today-office-y300", "renderers": 200, "triangles": 609936},
+  {"frame": "today-follow-vale-office", "renderers": 1565, "triangles": 2852731}
+ ]
+}

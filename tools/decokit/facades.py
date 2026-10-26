@@ -298,11 +298,11 @@ def fin_plan(x0, x1, y0, y1):
     return ccw([(x0, y1), (x0, y0 + r)] + arc(x0 + r, y0 + r, r, 180, 360, 8)[1:-1] + [(x1, y0 + r), (x1, y1)])
 
 
-def porthole_bay(n, roof=True):
-    return lambda s: _porthole_bay(s, n, pal.Render_White, roof)
+def porthole_bay(n, roof=True, low=False):
+    return lambda s: _porthole_bay(s, n, pal.Render_White, roof, low)
 
 
-def _porthole_bay(s, n, body, roof):
+def _porthole_bay(s, n, body, roof, low=False):
     zt = top_of(n)
     shopfront(s, body)
     ground_trims(s, ST, pal.Enamel_Teal)
@@ -321,6 +321,11 @@ def _porthole_bay(s, n, body, roof):
         skin(s, -HW + 0.06, HW - 0.06, zc + h, zb + FH, body)
         skin(s, -HW + 0.06, xs[0] - h, zc - h, zc + h, body)
         skin(s, xs[-1] + h, HW - 0.06, zc - h, zc + h, body)
+    if low:  # the play streets' piece (brief 066, lowrise.py): the fin stops at the coping, its chrome rings on the top storey, no beacon: nothing over the roof line
+        s.extrude(fin_plan(2.62, 2.98, -0.95, 0.3), 4.0, zt + 0.95, pal.Enamel_Teal)
+        for z in (zt - 1.0, zt - 0.5, zt):
+            s.extrude(fin_plan(2.6, 2.995, -0.97, 0.3), z, z + 0.18, pal.Chrome)
+        return
     # teal fin on the +X joint: rounded nose, chrome rings over the parapet, beacon
     s.extrude(fin_plan(2.62, 2.98, -0.95, 0.3), 4.0, zt + 3.2, pal.Enamel_Teal)
     for z in (zt + 1.5, zt + 2.0, zt + 2.5):

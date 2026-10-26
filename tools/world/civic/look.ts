@@ -19,6 +19,8 @@ export type Look = {
   place: Record<string, string>;
   /** A piece that is a building's ground storey: the building above starts at `top` m. */
   ground: Record<string, { building: string; top: number }>;
+  /** brief 066: a ground-storey piece → the pieces that may draw the building's body above it, one per storey count (the one whose height is the body's is placed). */
+  upper?: Record<string, string[]>;
   /** Pieces whose body is overhead (a parasol's canopy, 2.07 m clear): over a table or a Handover point is allowed, only the pole stands on the ground. */
   overhead: string[];
   /** Pieces the play camera's architecture fade may thin (they stand between the camera and a person). */

@@ -248,7 +248,7 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
   }
   // wave 2: kit facades on the street faces, then each building's tiers (plain behind a kit facade, the space-age grammar otherwise)
   const solid = pend.filter(p => !p.shed), nearOf = (id: string) => { const me = solid.find(p => p.id === id)!; return solid.filter(p => p.id !== id && p.plot === me.plot && adjacent(me.ring, p.ring)).map(p => p.id); };
-  const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring })), ctx.pav, nearOf);
+  const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play })), ctx.pav, nearOf);
   for (const p of pend) {
     const kit = fac.kitFaced.has(p.id), t = !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed });
     for (const x of t.tiers) masses.push({ id: `${p.id}/${x.part}`, surface: x.surface, ring: x.ring.map(rv), base: x.base, height: x.height });

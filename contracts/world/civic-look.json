@@ -79,6 +79,12 @@
    "top": 4.7
   }
  },
+ "upper": {
+  "CafeBay_v2": [
+   "CafeUpper_3",
+   "CafeUpper_4"
+  ]
+ },
  "overhead": [
   "Parasol_Stripe",
   "Parasol_Testbed"
@@ -90,7 +96,9 @@
   "RecordsEntrance",
   "RecordsEntrance_Official",
   "BoardingPavilion_TB_Square",
-  "CafeInterior_Testbed"
+  "CafeInterior_Testbed",
+  "CafeUpper_3",
+  "CafeUpper_4"
  ],
  "companions": {
   "CafeBay_v2": [
