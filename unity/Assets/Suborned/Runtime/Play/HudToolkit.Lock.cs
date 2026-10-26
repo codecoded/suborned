@@ -18,7 +18,7 @@ namespace Suborned.Play
     {
         sealed class LockMark
         {
-            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr; public Paint Ring; public readonly List<int> Shooters = new();
+            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr, WhyPlate; public Label Why; public Paint Ring; public readonly List<int> Shooters = new();
             /// <summary>Glyph 067 D3: when each shooter joined the lock (a later one's cameo slides into the row in 0.15 s; the set's own don't).</summary>
             public readonly Dictionary<int, float> Joined = new();
             public float Born = -9f, Gone = -1f, Given = -9f, PulseAt = -9f; public bool Locked, Seen; public Vector2 At; public bool OnScreen;
@@ -40,6 +40,10 @@ namespace Suborned.Play
             var ed = E(r.Edge, "s-disc_dark_24", w: 16, h: 16); ed.style.flexShrink = 0; Bg(E(ed, null, 3, 3, 10, 10), "overlays/crosshair", Cream);
             r.EdgePtr = E(r.Edge, null, w: 14, h: 14); r.EdgePtr.style.marginLeft = 6; r.EdgePtr.style.flexShrink = 0; Icon(r.EdgePtr, "pointer", Cream);
             manifest.Add((r.Root, "image", () => "lock reticle")); manifest.Add((r.Edge, "image", () => "lock edge chip"));
+            // engine 0.35 (the sticky focus): why it waits, one or two words on a plate_dark under the disc (GDD §10: "aiming, walking in, no line")
+            r.WhyPlate = PlateDark(r.Root, 22f, 0.3f); r.WhyPlate.style.position = Position.Absolute; r.WhyPlate.style.top = ReticleD + 4f; r.WhyPlate.style.paddingLeft = 9; r.WhyPlate.style.paddingRight = 9; r.WhyPlate.pickingMode = PickingMode.Ignore;
+            r.Why = Words(r.WhyPlate, 12.5f); r.Why.style.whiteSpace = WhiteSpace.NoWrap; Show(r.WhyPlate, false);
+            manifest.Add((r.WhyPlate, "marker", () => r.Why.text)); // a world marker on the focus disc (at most two words), shown at rest in a fight: never the lock pill's kind
             return r;
         }
 
@@ -91,6 +95,10 @@ namespace Suborned.Play
                     r.Root.style.left = r.At.x - ReticleD / 2f; r.Root.style.top = r.At.y - ReticleD - 6f; // 6 px above the head bar's point
                     r.Disc.style.scale = new Scale(new Vector3(scale, scale, 1f)); r.Root.style.opacity = fade;
                     r.Disc.style.opacity = r.Locked || age >= 0f ? 1f : 0.7f; r.Cross.style.opacity = r.Locked || age >= 0f ? 1f : 0.55f;
+                    // engine 0.35 (one input, Glyph b-final: "no cameos under it"): the focus disc alone, and why it waits under it
+                    bool one = h.OneInput; Show(r.Faces, !one);
+                    string why = one && !r.Locked && r.Gone < 0f ? h.FocusWhy(r.Id, r.Shooters) : ""; Show(r.WhyPlate, why.Length > 0);
+                    if (why.Length > 0) { Text(r.Why, why); float ww = float.IsNaN(r.WhyPlate.resolvedStyle.width) ? 80f : r.WhyPlate.resolvedStyle.width; r.WhyPlate.style.left = ReticleD / 2f - ww / 2f; }
                     // the shooters' faces under the disc
                     while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = Cameo(r.Faces, 12f, 2f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -4; }
                     for (int i = 0; i < r.Faces.childCount; i++)
@@ -109,7 +117,7 @@ namespace Suborned.Play
                     float k = Mathf.Min((size.x / 2f - 40f) / Mathf.Max(1e-3f, Mathf.Abs(d.x)), (size.y / 2f - 24f) / Mathf.Max(1e-3f, Mathf.Abs(d.y)));
                     var at = c + d * k; r.Edge.style.left = at.x - 26f; r.Edge.style.top = at.y - 11f; r.EdgePtr.style.rotate = new Rotate(new Angle(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg, AngleUnit.Degree));
                 }
-                bits.Add($"{r.Id}:{(r.Gone >= 0f ? "released" : now - r.Born < 0.18f ? "set" : r.Locked ? "locked" : "held")}:{string.Join(",", r.Shooters)}{(r.OnScreen ? "" : ":edge")}");
+                bits.Add($"{r.Id}:{(r.Gone >= 0f ? "released" : now - r.Born < 0.18f ? "set" : r.Locked ? "locked" : "held")}:{string.Join(",", r.Shooters)}{(r.OnScreen ? "" : ":edge")}{(r.WhyPlate != null && r.WhyPlate.resolvedStyle.display != DisplayStyle.None && r.Why.text.Length > 0 ? ":why=" + r.Why.text : "")}");
             }
             foreach (var id in reticleGone) { var r = reticles[id]; r.Root.RemoveFromHierarchy(); r.Edge.RemoveFromHierarchy(); reticles.Remove(id); }
             ReticlesShown = string.Join(" ", bits);

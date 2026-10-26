@@ -50,8 +50,17 @@ namespace Suborned.World.People
             EditorApplication.Exit(code);
         }
 
-        /// <summary>The library, built from the installed manifest (null when the figures are not installed: the capsules stay).</summary>
-        public static FigureLibrary Library() => File.Exists(Path.Combine(Root, "manifest.json")) ? AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath) ?? Build() : null;
+        /// <summary>The library, built from the installed manifest (null when the figures are not installed: the capsules stay).
+        /// Brief 039 B: rebuilt whenever the installed manifest is newer than the controller (new clips, Forma's additive layers), so a player
+        /// build never bakes a controller that lacks the installed clips.</summary>
+        public static FigureLibrary Library()
+        {
+            var mpath = Path.Combine(Root, "manifest.json"); if (!File.Exists(mpath)) return null;
+            var lib = AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath);
+            bool stale = lib == null || !File.Exists(ControllerPath) || File.GetLastWriteTimeUtc(mpath) > File.GetLastWriteTimeUtc(ControllerPath);
+            if (stale) Debug.Log($"People: the figure library is {(lib == null ? "missing" : "older than the installed manifest")}: rebuilt");
+            return stale ? Build() : lib;
+        }
 
         /// <summary>Forma's testbed cell (briefs/020/people/cell-generic/manifest-cell.json): Generic figures on their own skeletons. Each gets an
         /// AnimatorOverrideController over the shared controller, every state's clip replaced by the same-named clip of its own FBX (the shared
@@ -81,6 +90,28 @@ namespace Suborned.World.People
             if (log.Count > 0) Debug.Log("People: testbed cell overrides: " + string.Join(", ", log));
         }
 
+        /// <summary>Brief 039 B (Forma's install note, briefs/039/forma/pin-poses.md §D "Host"): two additive layers, no mask. "react" (weight 1):
+        /// an empty default state plus flinch_add and kick_add, each back to empty at its end with no blend; the host restarts one per event
+        /// (Play(state, react, 0)). "peek" (its weight driven by the host every frame): pin_peek_add looping. States on these layers don't write
+        /// defaults (an additive layer adds only its clip). A clip missing from the manifest leaves its state out; the layers stay.</summary>
+        static void AdditiveLayers(AnimatorController ctl, Dictionary<string, AnimationClip> clips)
+        {
+            ctl.AddLayer("react"); ctl.AddLayer("peek");
+            var layers = ctl.layers;
+            for (int i = 1; i < layers.Length; i++) { layers[i].blendingMode = AnimatorLayerBlendingMode.Additive; layers[i].defaultWeight = layers[i].name == "react" ? 1f : 0f; }
+            ctl.layers = layers;
+            var react = ctl.layers[1].stateMachine; var empty = react.AddState("empty"); empty.writeDefaultValues = false; react.defaultState = empty;
+            foreach (var n in new[] { "flinch_add", "kick_add" })
+            {
+                if (!clips.TryGetValue(n, out var clip)) continue;
+                var st = react.AddState(n); st.motion = clip; st.writeDefaultValues = false;
+                var tr = st.AddTransition(empty); tr.hasExitTime = true; tr.exitTime = 1f; tr.duration = 0f; tr.hasFixedDuration = true;
+            }
+            var peek = ctl.layers[2].stateMachine;
+            if (clips.TryGetValue("pin_peek_add", out var pc)) { var st = peek.AddState("pin_peek_add"); st.motion = pc; st.writeDefaultValues = false; peek.defaultState = st; }
+            else { var e2 = peek.AddState("empty"); e2.writeDefaultValues = false; peek.defaultState = e2; }
+        }
+
         public static FigureLibrary Build()
         {
             var mpath = Path.Combine(Root, "manifest.json"); if (!File.Exists(mpath)) { Debug.LogWarning("People: no installed figures (bun tools/figures/run.ts --install)"); return null; }
@@ -90,15 +121,18 @@ namespace Suborned.World.People
             AssetDatabase.DeleteAsset(ControllerPath);
             var ctl = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
             var sm = ctl.layers[0].stateMachine; var speedStates = new List<string>(); var speeds = new List<float>();
+            var additive = new Dictionary<string, AnimationClip>();
             foreach (var c in J.A(m, "clips").OrderBy(c => J.S(c, "name") == "idle" ? 0 : 1))
             {
                 string name = J.S(c, "name"), file = Path.Combine(Root, J.S(c, "file"));
                 var clip = AssetDatabase.LoadAllAssetsAtPath(file).OfType<AnimationClip>().FirstOrDefault(a => !a.name.StartsWith("__preview__"));
                 if (clip == null) throw new InvalidDataException($"People: no clip in {file}");
+                if (J.Get(c, "additive") is bool ad && ad) { additive[name] = clip; continue; } // brief 039 B (Forma): additive rows stay off the base layer
                 var st = sm.AddState(name); st.motion = clip; st.writeDefaultValues = true;
                 if (J.Get(c, "naturalSpeedMs") is double ns) { speedStates.Add(name); speeds.Add((float)ns); }
             }
             sm.defaultState = sm.states.First(s => s.state.name == "idle").state;
+            AdditiveLayers(ctl, additive);
             // the figures, their LOD heights and the pools
             var lib = AssetDatabase.LoadAssetAtPath<FigureLibrary>(LibraryPath);
             if (lib == null) { lib = ScriptableObject.CreateInstance<FigureLibrary>(); AssetDatabase.CreateAsset(lib, LibraryPath); }

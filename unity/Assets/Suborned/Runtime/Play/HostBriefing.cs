@@ -176,6 +176,8 @@ namespace Suborned.Play
                 {
                     var pin = new Pin { Id = S(p, "id") ?? "", Way = S(p, "way") ?? "", N = S(p, "n") ?? "", File = S(p, "file") ?? "", At = V(p.Opt("at")) };
                     var key = S(p, "text") ?? ""; pin.Caption = key.Length > 0 && tx != null && tx.TargetNames.TryGetValue(key, out var nm) ? Cap1(nm) : "";
+                    var place = S(p, "place") ?? ""; if (place.StartsWith("d:", StringComparison.Ordinal)) place = place[2..];
+                    if (place.Length > 0 && tx != null && tx.PageCaptions.TryGetValue(place, out var pcap) && pcap.Length > 0) pin.Caption = pcap; // Fable N11/R6: briefing.page.captions[place] before the target's play name
                     var file = Path.Combine(dir, pin.File); b.StillsWanted++;
                     if (pin.File.Length > 0 && File.Exists(file)) { var t = new Texture2D(2, 2, TextureFormat.RGB24, false) { name = "brief-still " + pin.Id, wrapMode = TextureWrapMode.Clamp }; if (t.LoadImage(File.ReadAllBytes(file), true)) { pin.Still = t; b.StillsFound++; } }
                     pins.Add(pin);
@@ -205,7 +207,7 @@ namespace Suborned.Play
             if (tx != null)
                 foreach (var at in tx.PageClock)
                 {
-                    var lab = tx.Timeline.Find(x => x.at == at).label ?? ""; float s = Secs(at); if (s < 0f) continue;
+                    var lab = tx.PageStations.TryGetValue(at, out var pst) && pst.Length > 0 ? pst : tx.Timeline.Find(x => x.at == at).label ?? ""; float s = Secs(at); if (s < 0f) continue; // Fable R1: briefing.page.stations[at] before the timeline's label
                     b.Clock.Add(new Station { At = at, Label = lab, S = s, Lit = b.TargetName.Length > 0 && lab.Contains(b.TargetName.Split(' ')[^1]) });
                 }
             b.Sources.Add($"clock: briefing.page.clock ({b.Clock.Count} stations)");

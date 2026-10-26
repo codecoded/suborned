@@ -135,11 +135,11 @@ namespace Suborned.Play
                 var s = Slots[i]; var op = g.Ops[i]; var d = h.DoingOf(i);
                 s.Key = h.AgentKeyLabel(i); s.Name = Names[i]; s.Selected = h.Selected[i]; s.HintRing = h.HintNow != null && h.HintNow.Portrait == i;
                 s.Hp = h.Seg(op.Gun.Health); s.HpMax = h.Seg(Mathf.Max(op.Gun.Max, op.Gun.Health)); s.Armed = op.Gun.W != null; s.Drawn = op.Gun.Drawn && op.Gun.HolsterAt < 0; // brief 027: one segment per 10 with the lab (Latch 2026-10-21: Armed and Drawn had slipped into this comment, so the sidearm mark never showed)
-                s.Stance = op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down;
+                s.Stance = h.OneInput ? "" : op.Gun.Stance == "hold" ? "H" : op.Gun.Stance == "free" ? "A" : "R"; s.Down = op.Down; // engine 0.35: one input has no stance
                 s.Busy = d.Busy; s.Phase = d.Phase; s.Glyph = d.Phase is "walking" or "running" ? (d.Phase == "running" ? "»" : "›") : d.Glyph; s.Label = d.Label; s.Progress = d.Progress;
                 s.Left = d.TicksLeft >= 0 && d.Busy ? $"{(d.TicksLeft + Game.Hz - 1) / Game.Hz} s" : d.Phase == "firing" ? (h.FireDownS(i) is int fs && fs >= 0 ? $"{fs} s" : "?") : ""; // firing: until the target is down at the present odds, "?" while the line is broken (Glyph fight r1 #6)
                 s.Under = op.Down ? "" : d.Queued.Length > 0 ? d.Queued : d.Busy && d.OnDone.Length > 0 ? "→ " + d.OnDone
-                    : s.Armed && op.Gun.Drawn ? $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
+                    : s.Armed && op.Gun.Drawn ? (h.OneInput ? "drawn" : $"drawn · {HandoverHost.StanceName(op.Gun.Stance)}") : "";
                 s.CanCancel = d.CanCancel && !ended; s.CancelTip = $"Cancel {d.CancelVerb} — {d.CancelText}";
                 s.Role = Op.Name((OpId)i); s.Hurt = op.Gun.Health < op.Gun.Max && !op.Down; s.CancelTitle = $"Cancel {d.CancelVerb}"; s.CancelBody = d.CancelText;
                 s.InCar = op.InCar && !ended; s.LeftFate = "";
@@ -151,7 +151,7 @@ namespace Suborned.Play
                 if (carries) s.Icon = "s_carrying";
                 s.Queued = d.Queued.StartsWith("then: ") ? "then " + d.Queued[6..] : d.Queued;
                 // state, never a control (Fable C2, C4; the controls are taught once, by the hints)
-                s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}" : "";
+                s.HintLine = op.Down ? "" : s.Hurt ? $"Health {op.Gun.Health} of {op.Gun.Max}" : s.Armed && s.Drawn ? (h.OneInput ? "Drawn" : $"Drawn · {HandoverHost.StanceName(op.Gun.Stance)}") : "";
                 // under the agent: number and verb; over a busy one: the ring
                 var t = h.Views?.Find("op/" + Op.Name((OpId)i)); bool on = t && t.gameObject.activeSelf;
                 var m = Marks[i]; m.World = on ? t.position : null; m.Num = Nums[i]; m.Selected = h.Selected[i];
@@ -188,7 +188,8 @@ namespace Suborned.Play
             VerbLit = h.LitSlot; VerbCaption = $"{Names[(int)h.Agent]}: {(h.LitSlot >= 0 && h.LitSlot < slots.Length ? slots[h.LitSlot].Label : "")}";
             // the fight
             Fighters.Clear(); Down.Clear();
-            foreach (var (id, gun) in h.Fighters()) { var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
+            HashSet<string> focus = null; if (h.OneInput && g.FightOn) { focus = new HashSet<string>(); for (int k = 0; k < 4; k++) if (g.Ops[k].Gun.Order.Length > 0 && !g.Ops[k].Down) focus.Add(g.Ops[k].Gun.Order); } // engine 0.35 (Glyph b-final): pips over the focus only; the cell's on the roster
+            foreach (var (id, gun) in h.Fighters()) { if (focus != null && !focus.Contains(id)) continue; var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
             for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip
             var hov = h.Hover; bool act = hov != null && (hov.Kind != "crowd" || hov.Security || h.HoverAct.glyph.Length > 0 || h.HoverAct.more) && hov.Kind != "op" && !ended; // a passer-by only when the selection can act on them (the Enforcer's takedown): the marker says it; Pulse 067 W2: a shift guard wears the hover ring as the door guard does

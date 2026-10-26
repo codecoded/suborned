@@ -104,6 +104,7 @@ namespace Suborned.Play
         {
             var since = new Dictionary<string, (Vector3 at, float t)>(); float worst = 0f; string worstKey = ""; int frames = 0, badFrames = 0; var shooters = new HashSet<string>();
             int flash0 = HudToolkit.ShotFlashes, hflash0 = HudToolkit.ShotFlashesHostile; float t0 = Time.realtimeSinceStartup, u0 = Time.unscaledTime; h.SetPaused(false);
+            int kn0 = h.BodyKneels, pn0 = h.BodyPinned, fl0 = h.BodyFlinches; var clips = new HashSet<string>(); // engine 0.35 (brief 039 B): the body's reads in the window
             var shotSeen = new HashSet<(string side, float born)>(); // Glyph r123 G1: the shots logged in the window (ShotFx keeps the last 24), to tell no flash from no shot
             while (Time.realtimeSinceStartup - t0 < seconds && !h.Game.Over)
             {
@@ -120,13 +121,15 @@ namespace Suborned.Play
                     if (err > 25f) bad = true;
                 }
                 foreach (var k in since.Keys.ToList()) if (!h.Views.Aim.ContainsKey(k)) since.Remove(k);
+                foreach (var pk in h.Views.Postures.Keys) { var (st, _) = h.Views.FigureClip(pk); if (st is "cover_in" or "cover_kneel" or "cover_pin" or "cover_fire" or "cover_out" or "cower" or "hit_large") clips.Add(st); }
                 foreach (var fx in h.ShotFx) if (fx.born >= u0) shotSeen.Add((fx.side, fx.born));
                 if (bad) badFrames++;
             }
             h.SetPaused(true); yield return Frames(2);
             result["frames"] = frames.ToString(); result["badFrames"] = badFrames.ToString(); result["worst"] = F(worst); result["worstKey"] = worstKey;
             result["shooters"] = string.Join(",", shooters.OrderBy(x => x)); result["flashes"] = (HudToolkit.ShotFlashes - flash0).ToString();
-            result["shots"] = shotSeen.Count.ToString(); result["hostileShots"] = shotSeen.Count(x => x.side != "cell").ToString(); result["hostileFlashes"] = (HudToolkit.ShotFlashesHostile - hflash0).ToString();
+            result["bodyTicks"] = $"kneel {h.BodyKneels - kn0}, pinned {h.BodyPinned - pn0}, flinches {h.BodyFlinches - fl0}"; result["bodyClips"] = string.Join(",", clips.OrderBy(x => x));
+                        result["shots"] = shotSeen.Count.ToString(); result["hostileShots"] = shotSeen.Count(x => x.side != "cell").ToString(); result["hostileFlashes"] = (HudToolkit.ShotFlashesHostile - hflash0).ToString();
         }
 
         /// <summary>The crew's five as drawn now: id, its look (the body's when he is down), the look it should wear, its mode.</summary>
@@ -184,6 +187,7 @@ namespace Suborned.Play
                 yield return Shoot(h, dir, shot, log);
                 log.Add($"r123 fight {name} picture: cones drawn [{fans}]");
                 var fr = new Dictionary<string, string>(); yield return FacingHold(h, 1.5f, fr); // then the clock runs 1.5 s, every shooter's facing sampled each frame
+                log.Add($"r123 fight {name} body (engine 0.35, brief 039 B): {fr["bodyTicks"]}; clips [{fr["bodyClips"]}]; one input {h.OneInput}");
                 string ground = "";
                 if (name == "safe" && !g.Over && !g.Ops[(int)OpId.Scout].Down && !g.Ops[(int)OpId.Scout].InCar)
                 {   // the ground view: the Scout's third person, the clock running 1.2 s, the same measure

@@ -237,7 +237,7 @@ namespace Suborned.Play
                 {   // brief 070: the offset in the door's frame (x along the face, y up, z out along its outward normal), not the view's axes; heights from
                     // the ground the place stands on (a landing's 0.75 m), where the view's own point may sit at the street
                     var n = DoorNormal(h, s); var side = s.doorS != null && s.doorS.Length == 2 ? BlockDir(h, s, s.doorS) : Vector3.Cross(Vector3.up, n); var o = t.position; o.y = Mathf.Max(o.y, h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)).y);
-                    var lo = p.lookOffset.Length == 3 ? V(p.lookOffset) : new Vector3(0f, 0.9f, 0f); look = o + lo;
+                    var lo = p.lookOffset.Length == 3 ? V(p.lookOffset) : new Vector3(0f, 0.9f, 0f); look = o + side * lo.x + Vector3.up * lo.y + n * lo.z; // brief 070 R7: the aim in the door's frame too (x along the face, z out along the normal)
                     poseCam.transform.position = o + side * p.offset[0] + Vector3.up * p.offset[1] + n * p.offset[2];
                 }
                 else poseCam.transform.position = t.TransformPoint(V(p.offset));

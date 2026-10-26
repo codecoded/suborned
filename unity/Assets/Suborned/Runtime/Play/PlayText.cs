@@ -62,6 +62,9 @@ namespace Suborned.Play
         public readonly Dictionary<string, (string when, string line)> PageWays = new();
         public readonly List<string> PageClock = new();
         public readonly Dictionary<string, string> PageCell = new();
+        /// <summary>Brief 070 (Fable N11, R1, R6): the page's own words for a still's caption by the pin's place (briefing.page.captions, the place
+        /// without "d:") and for a clock station by its m:ss (briefing.page.stations), each taken before the play words (targets, the timeline).</summary>
+        public readonly Dictionary<string, string> PageCaptions = new(), PageStations = new();
         /// <summary>Brief 070 (Glyph N6, N10; Fable's briefing.page.heads): the page's section heads, flat: "ways.2" (keyed by how many ways), "where", "clock", "heat".</summary>
         public readonly Dictionary<string, string> PageHeads = new();
         /// <summary>Brief 031: the briefing's Heat word by band (briefing.heat: unknown, noticed, wanted, infamous).</summary>
@@ -173,6 +176,8 @@ namespace Suborned.Play
                     if (pg.Opt("ways") is JNode pw) foreach (var kv in pw.Entries) PageWays[kv.Key] = (S(kv.Value, "when") ?? "", S(kv.Value, "line") ?? "");
                     if (pg.Opt("clock") is JNode pc) PageClock.AddRange(pc.Strs());
                     if (pg.Opt("cell") is JNode pce) foreach (var kv in pce.Entries) PageCell[kv.Key] = kv.Value.Str();
+                    if (pg.Opt("captions") is JNode pcap) foreach (var kv in pcap.Entries) if (kv.Value.Kind == JKind.Str) PageCaptions[kv.Key] = kv.Value.Str();
+                    if (pg.Opt("stations") is JNode pst) foreach (var kv in pst.Entries) if (kv.Value.Kind == JKind.Str) PageStations[kv.Key] = kv.Value.Str();
                     if (pg.Opt("heads") is JNode hd) foreach (var kv in hd.Entries) { if (kv.Value.Kind == JKind.Str) PageHeads[kv.Key] = kv.Value.Str(); else if (kv.Value.Kind == JKind.Obj) foreach (var k2 in kv.Value.Entries) if (k2.Value.Kind == JKind.Str) PageHeads[kv.Key + "." + k2.Key] = k2.Value.Str(); }
                 }
                 if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) { Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool())); if (S(x, "short") is string sh) TimelineShort[x["at"].Str()] = sh; }
@@ -529,7 +534,7 @@ namespace Suborned.Play
             t.Fails.AddRange(new[]
             {
                 ("vale-dead", "Vale is killed."), ("vale-leaves", "Vale drives off in the official car."), ("rivals-reach-vale", "The rival crew reaches Vale first."),
-                ("sealed", "The district seals."), ("enforcer-down", "The Enforcer goes down."), ("entry-seen-guard", "Your entry is seen by the guard, a live camera or the patrol."),
+                ("sealed", "The district seals."), ("enforcer-down", "The Enforcer goes down."), ("entry-seen-guard", "Your entry is seen by the guard or a live camera."), /* engine 0.34.2: the patrol seeing the Enter is a report, no fail */
                 ("cell-down", "The whole cell is down."), // engine 0.34.0 (Motive M067-K3 b)
             });
             t.Hints.Add("The front door: Inez at the café can draw the door guard away, if she's on your side.");

@@ -45,6 +45,8 @@ const TICKS = 10; // the engine's ticks per second (rulebook tick 0.1 s)
 /** The posted role's still (Glyph N1): degrees off the door's normal, and the key light's intensity. A waiting contact's (Glyph N3): the play zoom (a third
  *  of the height for a person 1.8 m tall at the play pitch) and how far in from the face the look point moves (the door behind the car). [S] */
 export const POSTED_TURN = 45, POSTED_KEY = 30, WAIT_ZOOM = 2.1, WAIT_SHIFT = 1.4;
+/** m: the getaway still aims this far past the car's middle, away from the camera, toward the bay's kerb end (Glyph R7). */
+export const CAR_AIM_PAST = 1.5;
 
 /** Whether a point lies inside a polygon (even-odd). */
 export function inside(p: V2, pg: V2[] | undefined): boolean {
@@ -144,16 +146,26 @@ export function derive(mission = 'handover', root = ROOT): Stills {
   const xs = pins.map(p => p.at[0]), ys = pins.map(p => p.at[1]), M = 6;
   const bounds: [number, number, number, number] = [Math.min(...xs) - M, Math.min(...ys) - M, Math.max(...xs) + M, Math.max(...ys) + M];
   const kind = (o: Json, re: RegExp) => re.test(String(o.kind ?? '') + ' ' + String(o.id ?? ''));
+  const fountains: { polygon: V2[]; c: V2 }[] = (block.objects ?? []).filter((o: Json) => Array.isArray(o.polygon) && /fountain|pool/i.test(String(o.kind ?? ''))) // by kind: the beds round it are named fountain-garden-*
+    .map((o: Json): { polygon: V2[]; c: V2 } => ({ polygon: o.polygon as V2[], c: centroid(o.polygon as V2[]) }));
   const plan: Plan = {
     bounds, buildings,
     ground: [...(block.bays ?? []), ...(block.drives ?? [])].filter((o: Json) => Array.isArray(o.polygon)).map((o: Json) => o.polygon),
-    green: (block.objects ?? []).filter((o: Json) => Array.isArray(o.polygon) && kind(o, /planter|bed|lawn|hedge/i)).map((o: Json) => o.polygon),
-    water: (block.objects ?? []).filter((o: Json) => Array.isArray(o.polygon) && kind(o, /fountain|pool/i)).map((o: Json) => o.polygon),
+    // Glyph R8 (0.2.133): a fountain is one plain filled shape; the beds that ring it (all within FOUNTAIN_GARDEN of its middle) are its garden and
+    // are not drawn on their own (four arcs round a disc read as a HUD reticle on the plan)
+    green: (block.objects ?? []).filter((o: Json) => Array.isArray(o.polygon) && kind(o, /planter|bed|lawn|hedge/i) && !fountains.some(f => ringsFountain(o.polygon, f))).map((o: Json) => o.polygon),
+    water: fountains.map(f => f.polygon),
   };
   const tAt = typeof brief.target === 'object' ? brief.target?.at as string | undefined : undefined;
   const targetDoor = tAt ? { place: tAt, at: placeAt(tAt), normal: face(placeAt(tAt))?.normal ?? null } : null;
   return { schema: 'suborned.brief-stills/1', mission, size: [1920, 1080], pins, plan, targetDoor, sources };
 }
+
+/** m: a bed whose every point lies within this of a fountain's middle is that fountain's garden (Glyph R8). */
+export const FOUNTAIN_GARDEN = 8;
+const centroid = (pg: V2[]): V2 => [pg.reduce((a, q) => a + q[0], 0) / pg.length, pg.reduce((a, q) => a + q[1], 0) / pg.length];
+/** Whether a bed rings a fountain: every point of it within FOUNTAIN_GARDEN m of the fountain's middle. */
+export const ringsFountain = (pg: V2[], f: { c: V2 }): boolean => pg.length > 0 && pg.every(q => Math.hypot(q[0] - f.c[0], q[1] - f.c[1]) <= FOUNTAIN_GARDEN);
 
 /** The shot runner's rows (ShotRunner.cs ShotSpec; suborned.shots.resolved/1), grouped by route so each run goes on while its ticks rise. */
 export function shotsFile(s: Stills, outDir: string, root = ROOT): Json {
@@ -166,9 +178,11 @@ export function shotsFile(s: Stills, outDir: string, root = ROOT): Json {
       // door's outward side and 1.25 m along the face (ShotRunner: doorN makes the offset the door's frame), 1.9 m up, aimed 0.55 m lower (8° down
       // at 3.6 m), a 16° field (35° frames the whole figure at 3.6 m)
       // a posted role (`turn`): the same 3.6 m, turned that many degrees off the normal toward `side`
-      // the car: 11.5 m off its end, 1.8 m to the side, 5.8 m up, aimed 0.4 m up its middle: 25° down (Glyph N5: the shape reads, the untextured surface does not), a 32° field
+      // the car: 11.5 m off its end, 1.8 m to the side, 5.8 m up, aimed 0.4 m up and 1.5 m past its middle toward the bay's far (kerb) end, so the car and
+      // Vale fill the tall print's middle (Glyph R7, 0.2.133: 40 % of it was road below the car): 25° down (Glyph N5), a 32° field
+      // (ShotRunner: with doorN, lookOffset is in the door's frame like offset: x along the face, y up, z out along the normal)
       const pc = p.camera.kind === 'person' ? p.camera : null, turn = (pc?.turn ?? 0) * Math.PI / 180;
-      const pose = p.camera.kind === 'car' ? { on: true, view: p.camera.view, pos: [], look: [], offset: [1.8, 5.8, 11.5], lookOffset: [0, 0.4, 0], fov: 32 }
+      const pose = p.camera.kind === 'car' ? { on: true, view: p.camera.view, pos: [], look: [], offset: [1.8, 5.8, 11.5], lookOffset: [0, 0.4, -CAR_AIM_PAST], fov: 32 }
         : person ? { on: true, view: (p.camera as { view: string }).view, pos: [], look: [], offset: turn ? [+(3.6 * Math.sin(turn)).toFixed(3), 1.9, +(3.6 * Math.cos(turn)).toFixed(3)] : [1.25, 1.9, 3.38], lookOffset: [0, 1.35, 0], fov: 16 } : { on: false, view: '', pos: [], look: [], offset: [], lookOffset: [], fov: 39.6 };
       const cam = p.camera.kind === 'play' ? p.camera : null;
       return {

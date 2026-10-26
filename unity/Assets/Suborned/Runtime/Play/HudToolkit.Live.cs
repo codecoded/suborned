@@ -59,7 +59,7 @@ namespace Suborned.Play
             Show(w.Glyph, armed);
             if (armed) { Icon(w.Glyph.Q("g"), ArmedIcon(), Cream); w.Glyph.style.opacity = host.PlateKeysDim ? 0.4f : 1f; }
             // the stance inside the drawn mark when it is not the default (return)
-            bool showStance = s.Armed && s.Drawn && host.Game.Ops[i].Gun.Stance != "return";
+            bool showStance = s.Armed && s.Drawn && host.Game.Ops[i].Gun.Stance != "return" && !host.OneInput; // engine 0.35: one input has no stance
             if (w.GunIcon != null) Show(w.GunIcon, !showStance); Show(w.StanceIn, showStance); if (showStance) w.StanceIn.MarkDirtyRepaint();
             return true;
         }

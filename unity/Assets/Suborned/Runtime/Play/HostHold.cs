@@ -467,6 +467,7 @@ namespace Suborned.Play
         void EndLasting(int k)
         {
             if (Game == null || !Armed(k) || Game.Ops[k].Gun.Order.Length == 0) return;
+            if (OneInput) { LocksDrop(new[] { k }); return; } // engine 0.35 (sticky focus): the engine ends the focus on an act itself; no cease
             Send(new List<Order> { new Order { Op = Op.Name((OpId)k), Do = "cease" } }, null, null); LocksDrop(new[] { k });
         }
 

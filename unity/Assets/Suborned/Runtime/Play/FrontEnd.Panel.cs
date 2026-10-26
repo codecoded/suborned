@@ -356,7 +356,7 @@ namespace Suborned.Play
             ("Command", PlayAction.Hints, "Hints"), ("Command", PlayAction.Acknowledge, "Acknowledge"), ("Command", PlayAction.Peek, "Detail (hold)"), ("Command", PlayAction.AllStrips, "All strips"), ("Command", PlayAction.Restart, "Play again"),
             ("Camera", PlayAction.PanUp, "Pan up"), ("Camera", PlayAction.PanDown, "Pan down"), ("Camera", PlayAction.PanLeft, "Pan left"), ("Camera", PlayAction.PanRight, "Pan right"),
             ("Camera", PlayAction.TurnLeft, "Turn left"), ("Camera", PlayAction.TurnRight, "Turn right"), ("Camera", PlayAction.TurnDrag, "Free turn (middle drag)"), ("Camera", PlayAction.FollowView, "Follow view"),
-            ("Fights", PlayAction.Draw, "Draw or holster"), ("Fights", PlayAction.Cease, "Cease fire"), ("Fights", PlayAction.Stance, "Stance"), ("Fights", PlayAction.Force, "Force fire"),
+            ("Fights", PlayAction.Draw, "Draw or holster"), ("Fights", PlayAction.Force, "Force fire"), // engine 0.35 (one input, GDD v0.30.1 §10): Cease (X) and Stance (V) are retired: no rows
             ("Fights", PlayAction.TargetMode, "Target mode"), ("Fights", PlayAction.StepTarget, "Step target"),
             ("Third person", PlayAction.Act, "Act"),
             ("Debug", PlayAction.Debug, "Debug"), ("Debug", PlayAction.HudView, "HUD view"), ("Debug", PlayAction.CameraLab, "Camera lab"),

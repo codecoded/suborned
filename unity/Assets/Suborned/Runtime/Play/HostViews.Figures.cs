@@ -11,7 +11,13 @@ namespace Suborned.Play
     /// and draws its weapon in a fight. View only: nothing here is read by the engine. Keys with no figure keep their capsule.</summary>
     public sealed partial class HostViews
     {
-        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; }
+        sealed class Fig { public Transform model, tray; public Animator anim; public string id = "", state = ""; public bool female; public float yaw, yawVel; public float phase; public int sitTick = -1; public bool seated; public Dictionary<string, Transform> bones; public Vector3 lastPos; public float ground; /** brief 024 fire placeholder: shots seen, the last one's time, the draw's start, drawn last frame */ public int shots; public float shotAt = -10f, drawAt = -10f; public bool drawn; /** engine 0.35 (brief 039 B): the posture's clip timing, the body events seen, the peek layer's weight, the additive layers (-2 unread) */ public float coverAt = -10f, flinchSeen = -10f, staggerUntil = -10f, peek; public int reactL = -2, peekL = -2; }
+        /// <summary>Engine 0.35 (brief 039 B): each fighter's posture this tick, by view key (HandoverHost.BodyRead; empty without one input).</summary>
+        public readonly Dictionary<string, Posture> Postures = new();
+        readonly Dictionary<string, (float at, bool stagger)> bodyShot = new();
+        /// <summary>A round that landed on (or near, pinned) the body of view `key`: a flinch on its react layer; a carbine hit staggers.</summary>
+        public void BodyShot(string key, bool stagger) { if (!string.IsNullOrEmpty(key)) bodyShot[key] = (Time.unscaledTime, stagger); }
+        static bool CoverState(string s) => s is "cover_in" or "cover_kneel" or "cover_pin" or "cover_fire";
         /// <summary>Brief 060 (-bot): each figure drawn now: its key, the model's feet, and whether the feet checks skip it (seated, lifted, laid down
         /// or carried: the feet are not on the floor by design).</summary>
         public IEnumerable<(string key, Vector3 feet, bool skip)> FigureFeet()
@@ -194,16 +200,68 @@ namespace Suborned.Play
                 else if (aiming || aimPose) state = shotRecent && Has(f, "shoot") ? "shoot" : AimClip(f, key, g); // standing on a target: the aim, the shot when one was fired
                 else state = armed && g.FightOn ? "aim_pistol" : f.phase > 0.5f ? "idle_alt" : "idle";
                 if (talking && !down && !carried && state is not ("idle" or "idle_alt")) state = f.phase > 0.5f && Has(f, "idle_alt") ? "idle_alt" : "idle"; // brief 067 H: a speaker stands idle (not serving, not seated at the wheel)
+                float fadeOv = -1f, strideOv = -1f; Posture pz = default;
+                if (!down && !carried && !talking && Postures.TryGetValue(key, out pz) && Has(f, "cover_kneel")) (state, fadeOv, strideOv) = BodyState(f, key, state, pz, speed, shotRecent, nowU); // engine 0.35: the fight on the body
+                else if (CoverState(f.state) && !down && !carried && speed < 0.15f && Has(f, "cover_out")) { state = "cover_out"; fadeOv = 0.1f; f.coverAt = nowU; } // no posture left (the fight over): he stands up
+                else if (f.state == "cover_out" && nowU - f.coverAt < 1.4f && !down && !carried && speed < 0.15f && state is "idle" or "idle_alt" or "aim_pistol" or "aim") state = "cover_out";
                 natural = host.figures.Speed(f.id, state); if (natural <= 0f && state == "carry_shoulder") natural = 1.29f; // Forma: the walk's legs
                 float stride = natural > 0f ? Mathf.Clamp(speed / natural, 0.4f, 1.8f) : 1f; // the floor was 0.6: a 0.52 m/s walker's legs walked 0.59 m/s and slid (crowd/33, brief 024 anim-fix)
                 if (state == "draw") stride = DrawClipS / Mathf.Max(0.2f, host.DrawS); // the draw clip fits the rulebook's draw time
+                if (strideOv > 0f) stride = strideOv;
                 f.anim.speed = (key == DriveKey ? 1f : pace) * stride; // the driven agent walks in an explore pause too
                 Tray(f, state is "serve" or "serve_walk");
                 if (state == "shoot" && shotNew && f.state == "shoot") f.anim.CrossFadeInFixedTime("shoot", 0.03f, 0, 0f); // the next shot: the recoil again from its start
+                else if (state != f.state && fadeOv >= 0f) { f.anim.CrossFadeInFixedTime(state, fadeOv, 0, state == "cower" ? 9f / 30f : 0f); f.state = state; } // engine 0.35: Forma's cross-fades (pin-poses.md §D); the duck plays frames 9→46, then holds its last (the clip doesn't loop)
                 else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 || talking ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
+                Layers(f, key, state, pz, shotNew, nowU);
                 if (AnimLog != null && opIdx >= 0) LogFigure(key, f, state, shotNew, speed, opIdx);
             }
         }
+
+        /// <summary>Engine 0.35 (brief 039 B, Forma's pin-poses.md §D; Glyph b-final): the base clip a fighter's posture asks for. In cover he
+        /// kneels (cover_in on arrival, 1.0 s, then cover_kneel), half-rises to fire (cover_fire while his shots run), and ducks behind the prop
+        /// while pinned (cover_pin); pinned in the open he ducks (cower, held); a carbine hit standing staggers (hit_large, 0.6 s). Returns the
+        /// state, its cross-fade (-1: the built rule) and its stride (-1: the built rule).</summary>
+        (string state, float fade, float stride) BodyState(Fig f, string key, string state, Posture pz, float speed, bool shotRecent, float now)
+        {
+            if (bodyShot.TryGetValue(key, out var bs) && bs.stagger && bs.at > f.flinchSeen - 0.001f && pz.Kind == "stand" && speed < 0.3f && Has(f, "hit_large")) f.staggerUntil = Mathf.Max(f.staggerUntil, bs.at + 0.6f);
+            switch (pz.Kind)
+            {
+                case "pinned-cover": return ("cover_pin", 0.12f, -1f);
+                case "kneel":
+                    if (shotRecent && Has(f, "cover_fire")) return ("cover_fire", f.state == "cover_pin" ? 0.12f : 0.3f, -1f);
+                    if (f.state is "cover_kneel" or "cover_pin" or "cover_fire") return ("cover_kneel", 0.3f, -1f);
+                    if (f.state == "cover_in") return now - f.coverAt < 1.0f ? ("cover_in", -1f, -1f) : ("cover_kneel", 0.1f, -1f);
+                    f.coverAt = now; return Has(f, "cover_in") ? ("cover_in", 0.15f, -1f) : ("cover_kneel", 0.15f, -1f);
+                case "pinned-open": if (speed < 0.3f && Has(f, "cower")) return ("cower", 0.1f, 1.4f); break; // frames 9→46 in ~0.9 s
+            }
+            if (CoverState(f.state)) { if (speed < 0.15f && Has(f, "cover_out")) { f.coverAt = now; return ("cover_out", 0.1f, -1f); } return (state, 0.2f, -1f); } // leaving cover: stand up, or walk straight off
+            if (f.state == "cover_out" && now - f.coverAt < 1.4f && speed < 0.15f) return ("cover_out", -1f, -1f);
+            if (f.state == "cower" && pz.Kind == "stand") return (state, 0.25f, -1f); // the pin ends in the open: back up
+            if (now < f.staggerUntil && speed < 0.3f) return ("hit_large", 0.06f, -1f);
+            return (state, -1f, -1f);
+        }
+
+        /// <summary>Engine 0.35: Forma's additive layers. "react": kick_add on each of his own shots (not over the carbine's own shoot clip), flinch_add
+        /// on each round that lands on him (or near him, pinned), restarted per event. "peek": in cover_pin, the head comes up as the pin runs out:
+        /// 0 until 1.2 s after the last round, up to 1 over 0.6 s (smoothstep), back to 0 over 0.3 s at the pin's end. No layers, nothing.</summary>
+        void Layers(Fig f, string key, string state, Posture pz, bool shotNew, float now)
+        {
+            if (f.reactL == -2) { f.reactL = f.anim.GetLayerIndex("react"); f.peekL = f.anim.GetLayerIndex("peek"); }
+            if (f.reactL >= 0)
+            {
+                if (bodyShot.TryGetValue(key, out var bs) && bs.at > f.flinchSeen) { f.flinchSeen = bs.at; if (f.anim.HasState(f.reactL, FlinchH)) f.anim.Play(FlinchH, f.reactL, 0f); }
+                else if (shotNew && state != "shoot" && f.anim.HasState(f.reactL, KickH)) f.anim.Play(KickH, f.reactL, 0f);
+            }
+            if (f.peekL >= 0)
+            {
+                float want = 0f;
+                if (state == "cover_pin" && pz.PinLeft > 0 && host.Game != null) { float since = (host.Game.R.PinS * Game.Hz - pz.PinLeft) / (float)Game.Hz, u = Mathf.Clamp01((since - 1.2f) / 0.6f); want = u * u * (3f - 2f * u); }
+                f.peek = want >= f.peek ? want : Mathf.MoveTowards(f.peek, want, Time.unscaledDeltaTime / 0.3f);
+                f.anim.SetLayerWeight(f.peekL, f.peek);
+            }
+        }
+        static readonly int FlinchH = Animator.StringToHash("flinch_add"), KickH = Animator.StringToHash("kick_add");
 
         /// <summary>Forma round 2: the tray on the server's right hand (the library's prop, seated per figure), shown only while she serves or
         /// carries it to and from the table.</summary>
@@ -305,7 +363,7 @@ namespace Suborned.Play
             {
                 var (idle, was) = robotHeads[key]; if (!idle) continue;
                 bool shown = things.TryGetValue(key, out var th) && th.shown;
-                bool alarmed = shown && (key == "patrol" ? g.Alert >= 2 && !g.PatrolDown : key.StartsWith("unit/"));
+                bool alarmed = shown && (key == "patrol" ? (g.Alert >= 2 || g.EntryReport.state == "pending") && !g.PatrolDown : key.StartsWith("unit/")); // engine 0.34.2: the patrol that saw the Enter radios it in (entry.seen → entry.reported): its alarm face while the report is pending
                 Transform suspect = null; float best = 25f * 25f;
                 if (alarmed) for (int i = 0; i < 4; i++) if (things.TryGetValue(OpKeys[i], out var op) && op.shown) { float d = (op.t.position - idle.transform.position).sqrMagnitude; if (d < best) { best = d; suspect = op.t; } }
                 if (alarmed && !was) idle.Alarm(suspect, Time.time);
@@ -359,6 +417,7 @@ namespace Suborned.Play
             for (int k = 0; k < 4; k++)
             {
                 var (t, _, _, shown) = things[OpKeys[k]]; bool on = shown && figs.ContainsKey(OpKeys[k]) && t.gameObject.activeInHierarchy;
+                if (on && FightQuiet && !host.Selected[k]) on = false; // engine 0.35 (Glyph b-final): in a fight only the selected agent's own ring
                 if (cellRings[k] == null)
                 {
                     var go = new GameObject("cellring/" + k); go.transform.SetParent(root, false); var lr = go.AddComponent<LineRenderer>();
@@ -382,6 +441,7 @@ namespace Suborned.Play
         void RivalRings()
         {
             var g = host.Game; int used = 0;
+            if (FightQuiet) { for (int i = 0; i < rivalRings.Count; i++) if (rivalRings[i].gameObject.activeSelf) rivalRings[i].gameObject.SetActive(false); return; } // engine 0.35 (Glyph b-final): no rings under the rivals in a fight
             void Ring(string key)
             {
                 if (!things.TryGetValue(key, out var th) || !th.shown || !th.t.gameObject.activeInHierarchy || lifted.ContainsKey(key) || host.TargetRingKeys.Contains(key)) return; // a downed rival lies without one; a target ring replaces it (brief 049)
@@ -402,6 +462,10 @@ namespace Suborned.Play
             if (g != null && g.Range) for (int i = 0; i < hostileKeys.Length && i < g.Hostiles.Count; i++) if (g.Hostiles[i].Id.StartsWith("rival")) Ring(hostileKeys[i]); // the range's spawned rivals
             for (int i = used; i < rivalRings.Count; i++) if (rivalRings[i].gameObject.activeSelf) rivalRings[i].gameObject.SetActive(false);
         }
+
+        /// <summary>Engine 0.35 (brief 039 B, Glyph b-final "what stays on the street"): one input plays and a fight is on, so the street keeps only
+        /// the selected agent's ring and the focus's (the rest of the cell's rings and the rivals' go: the body carries the fight).</summary>
+        bool FightQuiet => host.Game != null && host.OneInput && host.Game.FightOn;
 
         bool Armed(string key, Game g)
         {

@@ -96,7 +96,7 @@ namespace Suborned.Play
             if (!fireBuilt) BuildFire();
             firePaints.Clear(); fireDiscs.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
             var cam = host.View;
-            if (live && cam) { ShotFx(now); FireMarks(now); Reticle(now); CarFx(now); } // Sky 2026-10-26: no tracers (the facing says who shoots whom)
+            if (live && cam) { ShotFx(now); if (!host.OneInput) FireMarks(now); Reticle(now); CarFx(now); } // engine 0.35 (Glyph b-final, cut): no firing discs over the shooters: they face him and fire // Sky 2026-10-26: no tracers (the facing says who shoots whom)
             fireLayer.MarkDirtyRepaint(); // its place in the marks (above every mark but the speech and the pops): StepAside
             RivalsForCarMarks(live && cam && !host.Following); // Glyph r123 §3: the car disc over each rival walking for the held car
             FireLineFrame(W, H, live);
@@ -182,7 +182,20 @@ namespace Suborned.Play
                             pp.strokeColor = new Color(1f, 0.95f, 0.75f, 1 - t); pp.lineWidth = 2.2f; pp.BeginPath(); pp.MoveTo(b + dir * r0); pp.LineTo(b + dir * r1); pp.Stroke();
                         }
                     }
-                    else { pp.strokeColor = new Color(Cream.r, Cream.g, Cream.b, 0.8f * (1 - t)); pp.lineWidth = 1.6f; pp.BeginPath(); pp.Arc(b, 3f + 7f * t, Deg(0), Deg(360)); pp.Stroke(); } // a miss: a small puff where it lands
+                    else if (s.covered)
+                    {   // engine 0.35 (ShotEvent.Covered; GDD §10 "a round cover takes chips the prop"): five stone chips flying off the prop, no ring
+                        pp.lineCap = LineCap.Round;
+                        for (int i = 0; i < 5; i++)
+                        {
+                            float ang = (i * 72f + 40f + (s.born * 997f % 30f)) * Mathf.Deg2Rad; var dir = new Vector2(Mathf.Cos(ang), Mathf.Sin(ang) - 0.6f); var q = b + dir * (4f + 14f * t) + new Vector2(0, 10f * t * t);
+                            pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.55f * (1 - t)); pp.BeginPath(); pp.Arc(q, 2.4f, Deg(0), Deg(360)); pp.Fill();
+                            pp.fillColor = new Color(Cream.r, Cream.g, Cream.b, 1 - t); pp.BeginPath(); pp.Arc(q, 1.5f, Deg(0), Deg(360)); pp.Fill();
+                        }
+                    }
+                    else
+                    {   // a miss (Glyph b-final, cut: the miss ring): a dust puff on the paving past him, three soft filled blobs spreading and fading
+                        for (int i = 0; i < 3; i++) { var q = b + new Vector2((i - 1) * (3f + 5f * t), -2f * t - (i == 1 ? 2f : 0f)); pp.fillColor = new Color(Smoke.r, Smoke.g, Smoke.b, 0.55f * (1 - t)); pp.BeginPath(); pp.Arc(q, 2.5f + 4.5f * t, Deg(0), Deg(360)); pp.Fill(); }
+                    }
                 });
             }
         }

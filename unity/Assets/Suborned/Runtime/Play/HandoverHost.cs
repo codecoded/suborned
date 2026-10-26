@@ -330,12 +330,12 @@ namespace Suborned.Play
         bool StepOnce()
         {
             if (BeforeStep != null) { BeforeStep(this); if (Game.Over) { Drain(); return true; } }
-            double t0 = Now(); int log0 = Game.Log.Count;
+            double t0 = Now(); int log0 = Game.Log.Count; int tick0 = Game.Tick;
             DriveTick(); // brief 025: the driven agent's sample for this tick, before the step (HostDrive)
             bool ok = Guard("step", () => Game.Step());
             double ms = Now() - t0; stepMs += ms; steps++; if (ms > StepMsMax) StepMsMax = ms;
             double a0 = 0; if (PerfTiming) { PerfStepMs += ms; a0 = Now(); }
-            if (ok) { DriveAfterStep(); views.Tick(); FollowUp(); Track(); Notice(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); FeedClock(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; FreezeScan(log0); }
+            if (ok) { Guard("body", () => BodyRead(tick0)); DriveAfterStep(); views.Tick(); FollowUp(); Track(); Notice(); ClockBeats(); UpdateAim(); Hints(); CityBeats(); FeedClock(); if (MoveChip != null && Game.Tick % 10 == 0) moveChipDirty = true; FreezeScan(log0); }
             Drain();
             if (PerfTiming) PerfAfterMs += Now() - a0;
             return ok;
@@ -420,13 +420,13 @@ namespace Suborned.Play
                 if (c.Down(kb, PlayAction.DialogueLog)) FeedHistoryOpen = !FeedHistoryOpen; // L: the feed's history (the old dialogue log is the ticker now)
                 if (!HoldOn && c.Down(kb, PlayAction.Cancel)) CancelSelected(); // brief 041 (hold): C is the camera's follow, X stops (HoldKeys)
                 if (Loud == null && c.Down(kb, PlayAction.Draw)) DrawOrHolster();
-                if (!HoldOn && c.Down(kb, PlayAction.Cease)) CeaseFire();
+                if (!HoldOn && !OneInput && c.Down(kb, PlayAction.Cease)) CeaseFire(); // engine 0.35: one input retires X (to stop, holster)
                 escTaken = false; if (HoldOn) HoldKeys(kb, shift); // brief 041: 1–4 (Shift or Ctrl toggles), 5 and Ctrl/Cmd+A, C follow, X stop, Tab steps the overlap
-                if (c.Down(kb, PlayAction.Stance)) CycleStance();
+                if (!OneInput && c.Down(kb, PlayAction.Stance)) CycleStance(); // engine 0.35: one input retires V (no stances)
                 if (c.Down(kb, PlayAction.Hints)) { if (shift) RelearnHints(); else if (HintNow != null && !HintLineShowing && HintsOn) HintReopenAt = Time.unscaledTime; else ToggleHints(); } // H: a folded hint comes back, else the layer on or off; Shift+H: the retired control hints come back
                 if (c.Down(kb, PlayAction.Intel)) IntelOpen = !IntelOpen;
                 if (c.Down(kb, PlayAction.Response)) { if (rangeMode) Begin(); else ResponseOpen = !ResponseOpen; } // brief 029: in the fight range R restarts
-                if (c.Down(kb, PlayAction.Gait) && !Driving && !HoldOn) ToggleGaitSelected(); // brief 041 (hold): G is weapons free (HoldKeys) // driven: G latches the run (HostDrive)
+                if (c.Down(kb, PlayAction.Gait) && !Driving && (!HoldOn || OneInput)) ToggleGaitSelected(); // engine 0.35: with weapons free gone, G is walk/run in the hold preset too (GDD §10) // brief 041 (hold): G is weapons free (HoldKeys) // driven: G latches the run (HostDrive)
                 if (c.Down(kb, PlayAction.AllStrips)) ShowAllStrips = !ShowAllStrips;
                 if (c.Down(kb, PlayAction.HudView)) controls.view = controls.view == HudView.Kit ? HudView.Imgui : HudView.Kit;
                 if (c.Down(kb, PlayAction.Acknowledge)) AcknowledgeNewest();
@@ -461,7 +461,7 @@ namespace Suborned.Play
             var p = PointerWorld is Vector3 pw && cam ? (Vector2)cam.WorldToScreenPoint(pw) : PointerOverride ?? mouse.position.ReadValue(); // PointerWorld: the proof's pointer held on a world point (whatever the window's size)
             // both buttons together: panic, read only once a fight is on (outside one they are just two clicks: no order, no refusal, no card);
             // the drag and the right click's own act give way
-            if (!Driving && Game.FightOn && Ring == null && !(HoldOn && Charge != null) && ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed))) // third person: the right button aims and the left fires (HostAim)
+            if (!Driving && !OneInput && Game.FightOn && Ring == null && !(HoldOn && Charge != null) && ((mouse.leftButton.wasPressedThisFrame && mouse.rightButton.isPressed) || (mouse.rightButton.wasPressedThisFrame && mouse.leftButton.isPressed))) // third person: the right button aims and the left fires (HostAim)
             { dragging = false; BoxScreen = null; if (Loud == null) Panic(p); return; }
             if (!HoldOn) Sweep(p, mouse.rightButton.isPressed); // brief 041 (hold): a hold keeps its target
             if (!turnDragging && !Following) Grab(p, mouse.middleButton.wasPressedThisFrame, mouse.middleButton.isPressed);

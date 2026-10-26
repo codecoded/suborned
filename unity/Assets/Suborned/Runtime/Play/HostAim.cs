@@ -291,7 +291,7 @@ namespace Suborned.Play
         {
             if (dAgent < 0) return;
             DriveTakeBack(); // Sky after 0.2.56: a trailed agent (T kept its work) is taken by the player's own trigger: the trigger is the driven agent's
-            if (Game.Ops[dAgent].Gun.Order.Length > 0) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)dAgent), Do = "cease" })); // brief 024: the player's trigger replaces a standing fire order (T alone keeps it)
+            if (Game.Ops[dAgent].Gun.Order.Length > 0 && !OneInput) Guard("drive", () => Game.Issue(new Order { Tick = Game.Tick, Op = Op.Name((OpId)dAgent), Do = "cease" })); // brief 024: the player's trigger replaces a standing fire order (T alone keeps it)
             var o = new Order { Op = Op.Name((OpId)dAgent), Do = "trigger", On = true, Target = id, Force = force };
             bool ok = Issue(o, screen, DrawnAt(id));
             FireLogAdd($"trigger\t{o.Op}\ton\t{id}\t{(ok ? "taken" : "refused")}");
@@ -464,12 +464,13 @@ namespace Suborned.Play
         void CommanderHoldFireFrame(UnityEngine.InputSystem.Mouse mouse)
         {
             if (!holdFireOn || mouse == null) return;
+            if (OneInput) { holdFireOn = false; holdFireAgents.Clear(); return; } // engine 0.35: no cease (a focus stands until down, a new focus, an act or F)
             if (mouse.rightButton.isPressed || Loud != null) return;
             holdFireOn = false; var list = new List<Order>();
             foreach (var k in holdFireAgents) if (Armed(k) && Drawn(k) && Game.Ops[k].Gun.Order.Length > 0) list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" });
             holdFireAgents.Clear(); if (list.Count > 0) Send(list, null, SelectedWorld());
         }
-        void CommanderHoldFireBegin() { if (!controls.commanderHoldFire || Driving) return; holdFireOn = true; holdFireAgents.Clear(); for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) holdFireAgents.Add(k); }
+        void CommanderHoldFireBegin() { if (!controls.commanderHoldFire || Driving || OneInput) return; holdFireOn = true; holdFireAgents.Clear(); for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k)) holdFireAgents.Add(k); }
 
         // ---------------------------------------------------------------- the follow setting (Keel's logged follow order)
 

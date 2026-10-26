@@ -162,7 +162,22 @@ namespace Suborned.Play
             bool Clear(Rect r) { foreach (var f in feed) if (Grow(f, 8f).Overlaps(r)) return false; var n = new Vector2(Mathf.Clamp(c.x, r.xMin, r.xMax), Mathf.Clamp(c.y, r.yMin, r.yMax)); return (n - c).sqrMagnitude >= rim * rim; }
             float lx = Mathf.Clamp(c.x + under.x - aw / 2f, 14f, Mathf.Max(14f, W - aw - 14f));
             Rect below = new(lx, c.y + under.y, aw, ah), above = new(lx, c.y + altTop - ah, aw, ah);
-            var at = Clear(below) ? below : Clear(above) ? above : below;
+            // Splice (brief 067 altline): below, else above, else the above spot slid outward from the ring's centre in 8 px steps until it clears
+            // the feed and the rim (kept on screen); if none clears, it is said (RingAltPlacement "unplaced" and one warning), never a silent fallback
+            Rect at; string how;
+            if (Clear(below)) { at = below; how = "below"; }
+            else if (Clear(above)) { at = above; how = "above"; }
+            else
+            {
+                at = below; how = "unplaced"; var out0 = above.center - c; if (out0.sqrMagnitude < 1f) out0 = Vector2.up * -1f; var dir = out0.normalized; float H = root.layout.height > 0 ? root.layout.height : 1080f;
+                for (int i = 1; i <= 40; i++)
+                {
+                    var r = above; r.position += dir * (8f * i); r.x = Mathf.Clamp(r.x, 14f, Mathf.Max(14f, W - aw - 14f)); r.y = Mathf.Clamp(r.y, 14f, Mathf.Max(14f, H - ah - 14f));
+                    if (Clear(r)) { at = r; how = $"above+{8 * i}px"; break; }
+                }
+                if (how == "unplaced" && RingAltPlacement != "unplaced") Debug.LogWarning($"HUD: the ring's Alt line '{line}' clears no spot (below, above, or slid outward 320 px): shown below, over what it meets");
+            }
+            RingAltPlacement = how;
             ringAlt.style.left = at.x - c.x; ringAlt.style.top = at.y - c.y; ringAlt.BringToFront();
         }
         /// <summary>The feed's cards and the story beats on screen (panel space): the Alt line keeps off them.</summary>
@@ -174,6 +189,8 @@ namespace Suborned.Play
             foreach (var e in new VisualElement[] { historyKey2, history, beatsBox, feedTitle }) if (e != null && Visible(e) && e.worldBound.width > 1) l.Add(e.worldBound); // after 0.2.126: the history drawer is the feed card the Alt line sat on; batch 0.2.128 (Aster): the feed's title line too
             return l;
         }
+        /// <summary>Where the ring's Alt line went last: "below", "above", "above+Npx" (slid outward), or "unplaced" (nothing cleared: shown below).</summary>
+        public static string RingAltPlacement { get; private set; } = "";
         /// <summary>The proof reads it: the ring's Alt line now ("" hidden).</summary>
         public static string RingAltShown => live?.ringAlt != null && live.ringAlt.resolvedStyle.display != DisplayStyle.None ? live.ringAltText.text : "";
 

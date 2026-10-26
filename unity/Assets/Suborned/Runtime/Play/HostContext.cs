@@ -285,7 +285,7 @@ namespace Suborned.Play
         /// <summary>Brief 030 (no plate): the stance fan on a portrait's sidearm mark: that one agent's stance (hold, return, free), an engine order as V gives.</summary>
         public void SetStanceAgent(int k, string stance)
         {
-            if (Game == null || k < 0 || k > 3 || Loud != null || !ModalGate.AllowsClicks(Modal) || Array.IndexOf(Stances, stance) < 0) return;
+            if (Game == null || k < 0 || k > 3 || Loud != null || !ModalGate.AllowsClicks(Modal) || Array.IndexOf(Stances, stance) < 0 || OneInput) return; // engine 0.35: no stances
             var at = frame.World(Game.Ops[k].Pos);
             if (!Armed(k)) { PopKey("unarmed", null, at, Feedback.Info, "Unarmed."); return; }
             if (Game.Ops[k].Gun.Stance == stance) return;

@@ -123,6 +123,10 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- the orders
 
         bool Armed(int k) { var op = Game.Ops[k]; return op.Gun.W != null && !op.Down && !op.Inside; }
+        /// <summary>Engine 0.35 (brief 039, GDD v0.30.1 §06/§10): one input plays this run. F draws or holsters, a drawn agent fights on his own, a
+        /// right hold sets the focus; cease, stance, panic and weapons free are retired (the engine refuses them: unknown-verb), so the host never
+        /// gives them, never binds X, V or both buttons to them, and draws no stance, no free toggle. The fight lab keeps the old controls.</summary>
+        public bool OneInput => Game != null && Game.OneInputOn;
         bool Drawn(int k) { var g = Game.Ops[k].Gun; return g.Drawn && g.HolsterAt < 0; }
 
         /// <summary>F: draw the selection's weapons, or holster them if any is drawn.</summary>
@@ -219,6 +223,7 @@ namespace Suborned.Play
                 var op = Game.Ops[k];
                 bool walkIn = Driving && k == dAgent && at.HasValue && (!G.Within(op.Pos, at.Value, op.Gun.W.MaxCm) || !Game.S.Sight(op.Pos, at.Value, Game.R.Eye)); // Sky 2026-10-20: driven and out of reach, the lab's close walks it in
                 if (walkIn) { DriveAutoBegin(); list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force }); continue; }
+                if (OneInput) { list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force, Focus = Game.FightOn }); continue; } // engine 0.35 (GDD §06 group fire): every selected agent who can fire takes it; out of reach or line the engine walks him in, the focus waits
                 if (at.HasValue && !G.Within(op.Pos, at.Value, op.Gun.W.MaxCm)) { why = $"out of range ({G.Isqrt(G.D2(op.Pos, at.Value)) / 100} m, max {op.Gun.W.MaxCm / 100} m): walk closer"; continue; }
                 if (at.HasValue && !Game.S.Sight(op.Pos, at.Value, Game.R.Eye)) { why = "no clear line"; continue; }
                 list.Add(new Order { Op = Op.Name((OpId)k), Do = "fire", Target = id, Force = force });
@@ -462,7 +467,9 @@ namespace Suborned.Play
                 dst = toD + aim * 1.8f + side; dst.y = toD.y + 0.05f;
             }
             string shotSide = by is "scout" or "fixer" or "tech" or "enforcer" ? "cell" : by.StartsWith("rival") ? "rival" : "guard";
-            ShotFx.Add((src, dst, hit, shotSide, Time.unscaledTime)); while (ShotFx.Count > 24) ShotFx.RemoveAt(0); // brief 024 Firing: the flash and the spark (HudToolkit.Fire), both views
+            bool covered = !hit && coveredNow.Contains((by, t));
+            if (covered) { dst = toD - aim * 0.75f; dst.y = toD.y + 0.6f; } // engine 0.35 (ShotEvent.Covered): cover took it: the chips fly off the prop, between him and the shooter
+            ShotFx.Add((src, dst, hit, shotSide, Time.unscaledTime, covered)); while (ShotFx.Count > 24) ShotFx.RemoveAt(0); // brief 024 Firing: the flash and the spark (HudToolkit.Fire), both views
             { var e = frame.Engine(from.Value); views.LastShotFrom = new Pt((int)System.Math.Round(e.X / 100.0) * 100, (int)System.Math.Round(e.Y / 100.0) * 100); } // brief 023: the startled turn away from it (1 m, so a frame's easing never moves it)
             if (hit) { Pulses.Add((toD, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: its puff is enough
         }
@@ -486,7 +493,42 @@ namespace Suborned.Play
 
         readonly Dictionary<string, (string t, float at)> lastShot = new();
         /// <summary>Each shot the engine logged (muzzle, where it went, hit, side, unscaled time): the HUD's muzzle flash and hit spark.</summary>
-        public readonly List<(Vector3 from, Vector3 to, bool hit, string side, float born)> ShotFx = new();
+        public readonly List<(Vector3 from, Vector3 to, bool hit, string side, float born, bool covered)> ShotFx = new();
+
+        // ---------------------------------------------------------------- engine 0.35: fights read on the body (brief 039 B; GDD v0.30.1 §10)
+
+        /// <summary>The rounds cover took on this step (ShotEvent.Covered), by (shooter, target): Shot draws chips on the prop for them, not dust.</summary>
+        readonly HashSet<(string, string)> coveredNow = new();
+        /// <summary>For the proof: postures and body events read this run (kneel, pinned-cover, pinned-open, flinches).</summary>
+        public int BodyKneels { get; private set; }
+        public int BodyPinned { get; private set; }
+        public int BodyFlinches { get; private set; }
+
+        /// <summary>Once a step, after Game.Step and before the log drains (one input only): each fighter's posture (Game.PostureOf: stand, kneel,
+        /// pinned-cover, pinned-open) for its view's clips, and the rounds that landed (Game.ShotsThisTick) for the flinch and the stagger on the body
+        /// and chips on cover. Read only: nothing reaches the engine.</summary>
+        void BodyRead(int tick0)
+        {
+            coveredNow.Clear(); var g = Game; if (g == null || views == null) return;
+            if (!OneInput) { if (views.Postures.Count > 0) views.Postures.Clear(); return; }
+            IReadOnlyList<ShotEvent> shots = null; Guard("shots", () => shots = g.ShotsThisTick);
+            bool fight = g.FightOn || g.FreeFightOn || shots != null && shots.Count > 0;
+            views.Postures.Clear(); if (!fight) return;
+            void P(string id) { if (string.IsNullOrEmpty(id)) return; Posture p = default; if (!Guard("posture", () => p = g.PostureOf(id)) || p.Kind.Length == 0 || p.Kind == "down") return; views.Postures[ViewKey(id)] = p; if (p.Kind == "kneel") BodyKneels++; else if (p.Kind.StartsWith("pinned")) BodyPinned++; }
+            for (int k = 0; k < 4; k++) if (!g.Ops[k].InCar && !g.Ops[k].Inside) P(Op.Name((OpId)k));
+            foreach (var h in g.Hostiles) if (h.Present) P(h.Id);
+            foreach (var s in g.SecGuns) P(s.Id);
+            foreach (var u in g.Units) if (!u.Legacy && u.OnStreet(g.Tick)) P(u.Id);
+            if (!g.Range) { P("guard"); foreach (var rid in HostViews.RivalKeys) if (!g.Hostiles.Exists(x => x.Id == rid)) P(rid); }
+            if (shots == null) return;
+            foreach (var e in shots)
+            {
+                if (e.Tick < tick0 || e.Covering) continue;
+                if (e.Covered) coveredNow.Add((e.By, e.Target));
+                var key = ViewKey(e.Target); bool pinned = views.Postures.TryGetValue(key, out var tp) && tp.PinLeft > 0;
+                if (!e.Down && (e.Hit || pinned)) { views.BodyShot(key, e.Hit && e.Damage >= 2); BodyFlinches++; } // a hit flinches (a carbine hit staggers); a round near a pinned man flinches him, hit or miss
+            }
+        }
         const float AimAfterShotS = 1.2f;
 
         /// <summary>Sky 2026-10-20 (the fight range): "when they shoot they need to be facing their target!", then "same for anything shooting at

@@ -247,7 +247,7 @@ namespace Suborned.Play
                     foreach (var (w, view, st, op) in Cues()) if (st >= 1) { trigWho = op; break; } // rings nothing: the watcher's own cue shows it
                     return true;
                 case "H21": // Fable 067 (Glyph D5; Sky on 0.2.122: "I wasn't sure whether to be pressing just X or hold RMB"): a lasting fire order stands and X was never used this run; rings nothing (the lock reticle shows it)
-                    return AnyFireOrder() && CeaseKeys == 0;
+                    return !OneInput && AnyFireOrder() && CeaseKeys == 0; // engine 0.35: X is retired (one input): the tip would teach a key that does nothing (Fable to reword: "To stop, holster: F")
                 case "H22": // Fable 067 (Glyph F9): two or more things under the cursor (the stack tab is up) and no step yet this run; rings nothing (the tab and the dashed rings show it)
                     return HoverStackCount >= 2 && StackSteps == 0;
                 case "H11": // brief 018 §6.6: anyone a Go would leave captured (a downed one not carried rings first, else the first standing one)

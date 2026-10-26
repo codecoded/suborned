@@ -229,7 +229,7 @@ namespace Suborned.Play
                 string drivePill = HudToolkit.PillWords, standsHover = HudToolkit.StandsShown; yield return Shoot(h, dir, "r067-drive-pill-car", log, "active");
                 if (Screen(h, h.GetawayWorld + Vector3.up * 0.6f) is Vector2 cs2) { h.LeftClickScripted(cs2); yield return Frames(3); }
                 string ring2 = h.RingWords; bool goLast = h.Ring != null && h.Ring.Segs.FindLastIndex(s => !s.More) is int gl && gl >= 0 && h.Ring.Segs[gl].Row?.I?.Order?.Do == "go" && !h.Ring.Segs[gl].Violent && h.Ring.Segs[gl].HoldWedge && h.Ring.Segs[gl].ObjStruck; // Glyph Rev 2 C5b: last, a struck Vale cameo, the 0.5 s hold, no dashes
-                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.35f); yield return Frames(3); string goAlt = HudToolkit.RingAltShown; yield return Shoot(h, dir, "r067-car-ring-go-alt", log, "alt"); h.PeekLatch = false; yield return Frames(2); // Fable's less.go.noVale under Alt
+                h.PeekLatch = true; yield return new WaitForSecondsRealtime(0.35f); yield return Frames(3); string goAlt = HudToolkit.RingAltShown; log.Add($"r067 go alt line: '{goAlt}' placed {HudToolkit.RingAltPlacement}"); yield return Shoot(h, dir, "r067-car-ring-go-alt", log, "alt"); h.PeekLatch = false; yield return Frames(2); // Fable's less.go.noVale under Alt
                 yield return Shoot(h, dir, "r067-car-ring-drive", log, "active");
                 if (h.RingWedgeScreen("drive-car") is Vector2 wd) { HandoverHost.PointerOverride = wd; yield return Frames(6); }
                 string standsWedge = HudToolkit.StandsShown; yield return Shoot(h, dir, "r067-car-ring-drive-hover", log, "active");

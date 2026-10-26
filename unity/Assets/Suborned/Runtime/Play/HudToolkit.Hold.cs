@@ -230,7 +230,9 @@ namespace Suborned.Play
             }
             else if (dragGhost != null) Show(dragGhost, false);
             FreeToggleFrame(on && m.Dock == RosterDock.Left && !h.Following);
-            UnderFireMarks(); KnownFaceMarks(on); LockReticles(on); // brief 067 D: the lock reticles over the fire orders' targets
+            if (!h.OneInput) UnderFireMarks(); // engine 0.35 (Glyph b-final, cut): no under-fire arcs; the portrait's under-fire state says it
+            KnownFaceMarks(on); LockReticles(on); // brief 067 D: the lock reticles over the fire orders' targets
+            CoverSnapMarks(on); // engine 0.35: the snapped move ring's shield, and the struck shield over a flanked focus's cover
             for (int i = gu; i < ghostEls.Count; i++) Show(ghostEls[i].root, false);
             for (int i = cu; i < clockEls.Count; i++) Show(clockEls[i].root, false);
         }
@@ -255,7 +257,7 @@ namespace Suborned.Play
                 freeWord = Words(freePlate, 13f); freeWord.style.marginBottom = 1;
                 manifest.Add((freePlate, "line", () => freeWord.text));
             }
-            bool fon = h.Game != null && h.Game.WeaponsFree; Show(freeBtn, show && h.Game != null);
+            bool fon = h.Game != null && h.Game.WeaponsFree; show &= !h.OneInput; Show(freeBtn, show && h.Game != null); // engine 0.35: weapons free is always on: no toggle
             if (show) { Icon(freeIcon, "fire", fon ? LookLive : LookHead); freeBtn.style.opacity = 1f; } // opaque in both states (review 9): on, the gun lit in the live accent; off, dim. (A tick badge broke the audit's 4 px rim rule in a 38 px plate.)
             bool said = show && Time.unscaledTime - h.FreeSaidAt < 1.6f; Show(freePlate, said); if (said) Text(freeWord, fon ? "Weapons free" : "Return fire only");
         }

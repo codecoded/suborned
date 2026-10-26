@@ -238,7 +238,9 @@ namespace Suborned.Play
             if (!cShot) yield return Shoot(dir, "commander-firing", "rest", log);
             if (cd.Count > 10) { cd.Sort(); rows.Add($"{{\"spot\": \"fire-commander\", \"frames\": {cd.Count}, \"meanMs\": {F(cd.Average())}, \"fps\": {F(1000f / cd.Average())}, \"p99Ms\": {F(cd[(int)(cd.Count * 0.99f)])}, \"gpuMs\": -1}}"); }
             parts.Add($"\"commanderFixerFiring\": {B(cFiring)}"); ok &= cFiring;
-            h.Issue(new Order { Op = "fixer", Do = "cease" }); h.SetPaused(true);
+            if (g.OneInputOn) { h.Issue(new Order { Op = "fixer", Do = "holster" }); h.RunTo(g.Tick + 6); h.Issue(new Order { Op = "fixer", Do = "draw" }); h.RunTo(g.Tick + 11); } // engine 0.35 (one input): no cease; the lock ends by a holster (the sticky focus), and he draws again, free to follow
+            else h.Issue(new Order { Op = "fixer", Do = "cease" });
+            h.SetPaused(true);
             // Sky after 0.2.56 (replaces brief 024's "no fire order survives taking control"): T keeps the fire order, the agent trailed; the
             // trigger press below takes the stick back (DriveTakeBack)
             h.Issue(new Order { Op = "enforcer", Do = "fire", Target = T }); bool hadOrder = g.Ops[E].Gun.Order.Length > 0;

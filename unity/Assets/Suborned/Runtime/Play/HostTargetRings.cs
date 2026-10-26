@@ -15,7 +15,7 @@ namespace Suborned.Play
     {
         public enum RingSide { Civilian, Guard, Rival }
         public enum RingReach { In, Long, Out }
-        public sealed class TargetRing { public string Id = "", Key = ""; public Vector3 At; public RingSide Side; public RingReach Reach; public bool Hover, Ours, Aim, Fire; public float ShotAt = -10f; }
+        public sealed class TargetRing { public string Id = "", Key = ""; public Vector3 At; public RingSide Side; public RingReach Reach; public bool Hover, Ours, Aim, Fire, /** engine 0.35: the focus's ring (one red line, no ticks, no pulse) */ Focus; public float ShotAt = -10f; }
         /// <summary>This frame's target rings (HudToolkit.TargetRings draws them).</summary>
         public readonly List<TargetRing> TargetRings = new();
         /// <summary>The view keys wearing a target ring this frame (HostViews.RivalRings leaves those out).</summary>
@@ -75,6 +75,7 @@ namespace Suborned.Play
                 bool aim = threatAim.Contains(id), fire = threatShot.TryGetValue(id, out var last) && g.Tick - last <= Game.Hz;
                 bool hover = id == hoverId; bool ours = false; for (int k = 0; k < 4; k++) if (FireNow[k].Target == id && !string.IsNullOrEmpty(FireNow[k].Mode)) ours = true;
                 if (!(aim || fire || ours || hover || combatant && combat)) return;
+                if (OneInput && g.FightOn && !(ours || hover)) return; // engine 0.35 (Glyph b-final, "in a fight, at most this"): one ring under the focus, and the cursor's hover; none under the rest. At rest, as built
                 var key = ViewKey(id); var tr = views.Find(key); if (!tr || !tr.gameObject.activeInHierarchy) return;
                 // GunOf only for a combatant: on a person of the crowd it MAKES a gun the first time it is named (engine state: a hover must never
                 // change the run); PosOf is read-only and gives null for anyone down or off the street
@@ -82,7 +83,7 @@ namespace Suborned.Play
                 var at = g.PosOf(id); if (!at.HasValue) return;
                 if (threatShot.TryGetValue(id, out var lt) && (!shotTick.TryGetValue(id, out var seen) || seen != lt)) { shotTick[id] = lt; shotSeen[id] = now; } // the kick, once a shot
                 var r = used < ringPool.Count ? ringPool[used] : null; if (r == null) { r = new TargetRing(); ringPool.Add(r); } used++;
-                r.Id = id; r.Key = key; r.At = tr.position; r.Side = side; r.Hover = hover; r.Ours = ours; r.Aim = aim; r.Fire = fire;
+                r.Id = id; r.Key = key; r.At = tr.position; r.Side = side; r.Hover = hover; r.Ours = ours; r.Aim = aim; r.Fire = fire; r.Focus = OneInput && g.FightOn && ours;
                 r.ShotAt = shotSeen.TryGetValue(id, out var sa) ? sa : -10f;
                 r.Reach = shooters.Count > 0 ? ReachOf(id, at.Value, shooters) : RingReach.Out;
                 TargetRings.Add(r); TargetRingKeys.Add(key);

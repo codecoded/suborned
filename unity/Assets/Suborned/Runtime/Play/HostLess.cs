@@ -321,6 +321,9 @@ namespace Suborned.Play
             /// <summary>Brief 027 B5 (lab, cover snap): the move ends on a cover point instead of the cursor's ground. At is moved to the point;
             /// SnapFrom keeps the cursor's ground for the tether; SnapId names the point (its mark lights). Null / "" when it doesn't snap.</summary>
             public Vector3? SnapFrom; public string SnapId = "";
+            /// <summary>Engine 0.35 (Glyph b-final, "when cover marks show"): the snapped end flanks the focus's cover (Game.PreviewMoveSnap: the focus
+            /// holds a cover that no longer counts from that end): where that cover's kneel point is, for one struck shield disc. Null when not.</summary>
+            public Vector3? FlankAt;
         }
 
         /// <summary>The ring's state and the route's glow for a walk from agent k to `to` (the engine's card-only SeenAt per route sample; read-only).</summary>

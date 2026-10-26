@@ -62,6 +62,18 @@ namespace Suborned.Play
             }
             if (runTo > h.Game.Tick && !h.Game.Over) h.RunTo(runTo);
         }
+        /// <summary>The route's orders, tick by tick, until `done` holds (or the route's last order, then up to `limit`): a proof that waits for an
+        /// outcome (an agent down) rather than a tick an engine version fixed.</summary>
+        internal static void PlayUntil(HandoverHost h, List<Order> orders, System.Func<bool> done, int limit)
+        {
+            int i = 0;
+            while (!h.Game.Over && !done() && h.Game.Tick < limit)
+            {
+                while (i < orders.Count && orders[i].Tick <= h.Game.Tick) { var c = Copy(orders[i++]); if (c.Do is "watch" or "listen" or "turn" or "call") h.GiveScripted(c); else h.Issue(c); }
+                if (done()) break;
+                h.RunTo(h.Game.Tick + 1);
+            }
+        }
         static string RingWords(HandoverHost h) => h.Ring == null ? "" : string.Join(" | ", h.Ring.Segs.ConvertAll(x => x.More ? "⋯" : x.Word + "<" + string.Join("+", x.By.ConvertAll(b => Suborned.Sim.Op.Name(b))) + ">"));
 
         /// <summary>A world-only picture from a free camera (the play view's lens copied, perspective), as TpLongRun's road pictures.</summary>
@@ -213,7 +225,7 @@ namespace Suborned.Play
             // ---- an agent down (items 29, 31)
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
-                var g = h.Game; Play(h, Route("loud-left-downed"), 2876, 2876);
+                var g = h.Game; PlayUntil(h, Route("loud-left-downed"), () => g.Ops[0].Down, 5100); // engine 0.35.1 (one input, Waymark's re-record): the Scout goes down at her own tick, not 0.34's 4:47.6
                 for (int i = 0; i < 60 && !g.Ops[0].Down && !g.Over; i++) h.RunTo(g.Tick + 1);
                 bool down = g.Ops[0].Down; string carRing = "", bodyRing = "", beside = "", carried = "", putDown = ""; bool scoutGives = true, carryTaken = false, carryingNow = false, laid = false, knob1 = false;
                 if (down && !g.Over)

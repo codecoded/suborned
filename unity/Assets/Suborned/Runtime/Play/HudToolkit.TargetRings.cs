@@ -44,6 +44,7 @@ namespace Suborned.Play
             foreach (var r in h.TargetRings)
             {
                 var c = r.At; bool threat = r.Fire || r.Aim;
+                if (r.Focus) { GroundRingM(c, RingR, RingThreat, 0.10f, 0, EdgeAlpha); continue; } // engine 0.35 (Glyph b-final): the focus ring, one red line, no ticks
                 var side = r.Side == HandoverHost.RingSide.Rival ? RingViolet : r.Side == HandoverHost.RingSide.Guard ? RingAmber : Cream;
                 float rad = !threat && r.Hover ? RingHoverR : RingR, line; int dashes = 0; float alpha = 1f, edge = EdgeAlpha;
                 if (threat) line = 0.12f;

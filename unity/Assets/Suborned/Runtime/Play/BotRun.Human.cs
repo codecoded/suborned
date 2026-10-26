@@ -80,7 +80,7 @@ namespace Suborned.Play
         }
         /// <summary>Ready but for the agent (blocked: past its tick, its agent's earlier step done, the agent not free).</summary>
         bool Due(int i) { var s = hs.Steps[i]; if (hs.Resolved[i] || hs.InFlight(i)) return false; if (s.opPrev >= 0 && !hs.Resolved[s.opPrev]) return false; var e = Earliest(i); return e != null && h.Game.Tick >= e; }
-        bool Ready(int i) => Due(i) && OpFree(hs.Steps[i].op) && (hs.Steps[i].act != "panic" || h.Game.FightOn) && !hs.OpInFlight(hs.Steps[i].op);
+        bool Ready(int i) => Due(i) && OpFree(hs.Steps[i].op) && (hs.Steps[i].act != "panic" || h.Game.FightOn || h.OneInput) && !hs.OpInFlight(hs.Steps[i].op);
         int NextStep(out int over)
         {
             over = -1; int first = Array.IndexOf(hs.Resolved, false); if (first < 0) return -1;
@@ -235,6 +235,12 @@ namespace Suborned.Play
                     if (k < 0 || g.Ops[k].Gun.W == null) { res.Why = "unarmed"; res.Hard = true; yield break; }
                     if (g.Ops[k].Gun.Drawn) { res.Given = res.Done = true; yield break; } // F would holster
                     yield return SelectOp(k, false); res.Mark = g.Orders.Count; res.MarkTick = g.Tick; yield return HoldKey(Key.F, 0.15f); res.Given = true; yield break;
+                case "stance" when h.OneInput: case "free" when h.OneInput: case "cease" when h.OneInput: res.Given = res.Done = true; yield break; // engine 0.35 (one input; Keel's oneinput.py): retired, weapons free is always on
+                case "panic" when h.OneInput:
+                {   // engine 0.35: the panic is F on each of the four (oneinput.py): select all, F draws every holstered one
+                    for (int i = 0; i < 4; i++) if (g.Ops[i].Gun.W != null && !g.Ops[i].Down && !g.Ops[i].Gun.Drawn) { yield return SelectOp(i, false); res.Mark = g.Orders.Count; res.MarkTick = g.Tick; yield return HoldKey(Key.F, 0.15f); }
+                    res.Given = res.Done = true; yield break;
+                }
                 case "stance":
                     if (k < 0 || g.Ops[k].Gun.W == null) { res.Why = "unarmed"; res.Hard = true; yield break; }
                     yield return SelectOp(k, false);

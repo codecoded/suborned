@@ -355,14 +355,22 @@ namespace Suborned.Play
             string ufWhy = ufK >= 0 ? string.Join(",", h.FireWhyNow[ufK].Select(x => x.by + ":" + x.main)) : ""; ufOk &= ufWhy.Length > 0; // engine 0.25.0: why each shooter fires (data)
             parts.Add($"\"underFire\": {{\"ok\": {B(ufOk)}, \"agent\": {ufK}, \"by\": \"{ufBy}\", \"face\": \"{ufFace}\", \"why\": \"{J(ufWhy)}\", \"drawnBefore\": {B(ufK >= 0 && g.Ops[ufK].Gun.Drawn)}}}"); ok &= ufOk;
             log.Add($"holdRange under fire: {(ufOk ? "ok" : "FAILED")}: agent {ufK} shot at by [{ufBy}], face {ufFace}");
-            bool wf0 = g.WeaponsFree; n0 = g.Orders.Count; Keys(Key.G); yield return null; Keys(); yield return Frames(3); bool wf1 = g.WeaponsFree; string freeWord = h.Status;
-            h.SetPaused(true); yield return Shoot(dir, "hold-free-toggle", log); h.SetPaused(false);
-            Keys(Key.G); yield return null; Keys(); yield return Frames(3); bool wf2 = g.WeaponsFree; var freeOrders = OrdersSince(h, n0);
-            h.SelectAll(); yield return null; n0 = g.Orders.Count; Keys(Key.X); yield return null; Keys(); yield return Frames(3); var xs = OrdersSince(h, n0);
-            int stood = Enumerable.Range(0, 4).Count(k => g.StandDownOf((OpId)k) >= 0);
-            bool freeOk = wf0 && !wf1 && wf2 && freeOrders.Count(o => o.StartsWith("cell:free")) == 2 && freeWord == "Return fire only" && (!g.FreeFightOn || xs.Exists(o => o.EndsWith(":cease")) && stood > 0);
-            parts.Add($"\"weaponsFree\": {{\"ok\": {B(freeOk)}, \"states\": \"{wf0},{wf1},{wf2}\", \"orders\": \"{string.Join(",", freeOrders)}\", \"word\": \"{J(freeWord)}\", \"x\": \"{string.Join(",", xs)}\", \"stoodDown\": {stood}, \"fightOnAtX\": {B(g.FreeFightOn)}}}"); ok &= freeOk;
-            log.Add($"holdRange weapons free: {(freeOk ? "ok" : "FAILED")}: {wf0}→{wf1}→{wf2} [{string.Join(",", freeOrders)}] '{freeWord}'; X [{string.Join(",", xs)}] stood down {stood}");
+            // 3c · one input (engine 0.35, brief 039; GDD v0.30.1 §06/§10): weapons free is always on and has no toggle; G is walk/run, X and V
+            // give nothing to the fight (no cease, stance, free or panic ever sent: the engine refuses them as retired), F holsters the drawn
+            // selection and that ends every fire order; no agent has a move (weapons.moves.on false: Mark, Talk down, Steam, Covering fire never offered)
+            bool wf0 = g.WeaponsFree; n0 = g.Orders.Count; h.SelectAll(); yield return null;
+            Keys(Key.G); yield return null; Keys(); yield return Frames(2); Keys(Key.X); yield return null; Keys(); yield return Frames(2); Keys(Key.V); yield return null; Keys(); yield return Frames(3);
+            bool wf1 = g.WeaponsFree; var gxv = OrdersSince(h, n0);
+            h.SetPaused(true); yield return Shoot(dir, "hold-one-input", log); h.SetPaused(false);
+            int drawnBefore = Enumerable.Range(0, 4).Count(k => g.Ops[k].Gun.Drawn && g.Ops[k].Gun.HolsterAt < 0); n0 = g.Orders.Count;
+            Keys(Key.F); yield return null; Keys(); yield return Frames(3); h.RunTo(g.Tick + 8); var fo = OrdersSince(h, n0);
+            int ordersAfter = Enumerable.Range(0, 4).Count(k => g.Ops[k].Gun.Order.Length > 0); int drawnAfter = Enumerable.Range(0, 4).Count(k => g.Ops[k].Gun.Drawn && g.Ops[k].Gun.HolsterAt < 0);
+            bool retiredSent = false; for (int i = 0; i < g.Orders.Count; i++) if (g.Orders[i].order.Do is "cease" or "stance" or "free" or "panic") retiredSent = true;
+            var moves = Enumerable.Range(0, 4).Select(k => g.MoveOf((OpId)k).Verb).Where(v => v.Length > 0).ToList();
+            bool freeOk = g.OneInputOn && wf0 && wf1 && !gxv.Exists(o => o.Contains(":cease") || o.Contains(":stance") || o.Contains(":free") || o.Contains(":panic")) && !retiredSent
+                && (drawnBefore == 0 || fo.Exists(o => o.Contains(":holster")) && ordersAfter == 0 && drawnAfter == 0) && moves.Count == 0;
+            parts.Add($"\"oneInput\": {{\"ok\": {B(freeOk)}, \"weaponsFree\": \"{wf0},{wf1}\", \"gxv\": \"{string.Join(",", gxv)}\", \"f\": \"{string.Join(",", fo)}\", \"drawn\": \"{drawnBefore}->{drawnAfter}\", \"fireOrdersAfterF\": {ordersAfter}, \"retiredSent\": {B(retiredSent)}, \"moves\": \"{string.Join(",", moves)}\"}}"); ok &= freeOk;
+            log.Add($"holdRange one input: {(freeOk ? "ok" : "FAILED")}: weapons free {wf0}→{wf1}; G/X/V [{string.Join(",", gxv)}]; F [{string.Join(",", fo)}] drawn {drawnBefore}→{drawnAfter}, fire orders after F {ordersAfter}; retired sent {retiredSent}; moves [{string.Join(",", moves)}]");
             // 4 · the Tech's portrait dragged onto an officer: a lock (a lasting fire order), the world at ¼ speed while dragging and 0.5 s after
             yield return Fresh(h); g = h.Game; h.Select(OpId.Scout, false); h.SetPaused(false);
             hw = Hostile(h); hid = HostileId(h); var ps = HudToolkit.PortraitScreen(2); bool slow = false; var lockOrders = new List<string>(); int tickA = 0, tickB = 0; float realA = 0, realB = 0;

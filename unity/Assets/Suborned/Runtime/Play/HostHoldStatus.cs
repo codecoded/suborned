@@ -168,9 +168,24 @@ namespace Suborned.Play
                 var op = g.Ops[k]; var id = op.Gun.Order; if (id.Length == 0 || op.Down || op.Inside || op.InCar) continue;
                 int at = l.FindIndex(x => x.Item1 == id);
                 if (at < 0) { float given = -9f; foreach (var fl in FireLocks) if (fl.Id == id && fl.Start > given) given = fl.Start; l.Add((id, new List<int>(), false, given)); at = l.Count - 1; }
-                var e = l[at]; e.Item2.Add(k); var (ph, _) = FireOne(k, id); if (ph is "aim" or "fire") e.Item3 = true; l[at] = e;
+                var e = l[at]; e.Item2.Add(k);
+                if (OneInput) { FocusRead fr = default; if (Guard("focus", () => fr = g.FocusOf((OpId)k)) && fr.State == "firing") e.Item3 = true; } // engine 0.35: the focus is set only while he fires; aiming, walking in, out of reach and no line wait
+                else { var (ph, _) = FireOne(k, id); if (ph is "aim" or "fire") e.Item3 = true; }
+                l[at] = e;
             }
             return l;
+        }
+
+        /// <summary>Engine 0.35 (the sticky focus, GDD §10: "while it waits it dims, a dashed ring turning, and says why: aiming, walking in, no
+        /// line"): why the focus on `id` waits, in the player's words, from the engine's FocusOf of the first of its shooters that is not firing
+        /// ("" when one of them fires, or none waits). Fable's less.done.focus.&lt;state&gt; first, else the built words. Read only.</summary>
+        public string FocusWhy(string id, List<int> shooters)
+        {
+            var g = Game; if (g == null || !OneInput || shooters == null) return ""; string state = "";
+            foreach (var k in shooters) { FocusRead fr = default; if (!Guard("focus", () => fr = g.FocusOf((OpId)k)) || fr.Target != id) continue; if (fr.State == "firing") return ""; if (state.Length == 0) state = fr.State; }
+            if (state.Length == 0) return "";
+            string fb = state switch { "walking-in" => "walking in", "aiming" => "aiming", "no-line" => Text?.DoneWord("fire.no-clear-line", "no line") ?? "no line", "out-of-reach" => Text?.DoneWord("fire.out-of-range", "too far") ?? "too far", _ => state.Replace('-', ' ') };
+            return Text?.DoneWord("focus." + state, fb) ?? fb;
         }
 
         /// <summary>The words on agent k's plate (ui.js orderWords): "queued", "drawing", "aiming", "firing", "walking 9 s", "watching 12 s"; "" idle.</summary>
@@ -339,7 +354,7 @@ namespace Suborned.Play
             if (c.Down(kb, PlayAction.Cancel)) { camFollow = !camFollow; centreGoal = null; Status = camFollow ? "Camera follows" : "Camera free"; }
             if (c.Down(kb, PlayAction.Cease)) HoldStop();
             if (c.Down(kb, PlayAction.CycleAgent) && Ring == null) HoldTab();
-            if (c.Down(kb, PlayAction.Gait)) ToggleFree(); // brief 041 (Sky): G toggles weapons free (a run is a double click or Shift)
+            if (c.Down(kb, PlayAction.Gait) && !OneInput) ToggleFree(); // brief 041 (Sky): G toggles weapons free (a run is a double click or Shift); engine 0.35: retired (G is walk/run: Controls)
             if (kb.escapeKey.wasPressedThisFrame && Charge is { Done: false }) { CancelHold(); escTaken = true; } // Esc cancels a hold (and does nothing else this frame)
         }
 
@@ -353,7 +368,7 @@ namespace Suborned.Play
             Plan.RemoveAll(x => Selected[x.K]);
             // the fire: a lasting order ceases; under weapons free a drawn agent stands down (it picks again once shot at: engine 0.19 cease)
             var list = new List<Order>(); var who = new List<int>();
-            for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && (Game.Ops[k].Gun.Order.Length > 0 || Game.WeaponsFree && Drawn(k))) { list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" }); who.Add(k); }
+            if (!OneInput) for (int k = 0; k < 4; k++) if (Selected[k] && Armed(k) && (Game.Ops[k].Gun.Order.Length > 0 || Game.WeaponsFree && Drawn(k))) { list.Add(new Order { Op = Op.Name((OpId)k), Do = "cease" }); who.Add(k); } // engine 0.35: no cease (one input): X stops walks and acts; the fire stops by F
             if (list.Count > 0) { Send(list, null, null); fireStoppedAt = Time.unscaledTime; HoldStops++; CeaseKeys++; }
             LocksDrop(who);
         }
@@ -368,7 +383,7 @@ namespace Suborned.Play
         /// pick their own targets in a fight; off, they only return fire (Fable: "Return fire only").</summary>
         public void ToggleFree()
         {
-            if (Game == null || Game.Over || Fault != null) return; bool on = !Game.WeaponsFree;
+            if (Game == null || Game.Over || Fault != null || OneInput) return; bool on = !Game.WeaponsFree; // engine 0.35: weapons free is always on
             if (Issue(new Order { Op = "cell", Do = "free", On = on }, null, null)) { FreeToggles++; Status = on ? "Weapons free" : "Return fire only"; FreeSaidAt = Time.unscaledTime; FireLogAdd($"free\t{on}"); }
         }
         /// <summary>When G was last pressed (the toggle's word shows for a moment).</summary>

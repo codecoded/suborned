@@ -1361,3 +1361,96 @@ Glyph's N1 to N4 and N6 to N9, N5's interim camera and N10's heads, plus Redline
 - Forma and Vela: the getaway car model (N5).
 
 Next owner: Glyph (2x recheck of the page and the stills), then Aster.
+
+## Glyph 2x (0.2.133) briefing page (Glyph, 2026-10-26; review only, no code, no Unity)
+**Verdict: SHIP the page,** once two text-only items land: Fable's cut to 220 words and Splice's two-word exemption. Neither changes the layout. The done-check is `--state page` passing with 0 faults on the next build. Sky doesn't need to see another round from me before that.
+
+**Looked at**
+- frontend-1080/briefing.png and frontend-2160/briefing.png. The 2160 shot downscaled differs from the 1080 shot in 0.58 % of pixels, all antialiasing.
+- My 2x crops of the 2160 page: plan, guard, driver, getaway, clock, band, top. They're in out/scratch/glyph/r133/.
+- start-1-begin.png.
+- budget/briefing-day.budget.txt and the manifest's plan labels and pins.
+
+**0.2.130 nits, rechecked**
+- **N1, the guard: pass.** The background is his own glass door (handles, frame), not a void, and he is lit. It's still the darkest still on the page, but it reads.
+- **N2, the plan label: pass.** "Records / Office" sits inside the outline. In the manifest it keeps 6 px from pin 2 and 10 px from pin 3.
+- **N3, the driver: pass.** He's about 35 % of the still's height, with the car's near end beside him and the Office door and Vale behind.
+- **N4, world marks: pass.** No rings, route, wait box or cones on any still.
+- **N5, the getaway car: interim accepted.** The shape reads at 25°. The model is still Forma's and Vela's job.
+- **N6 and N10, the heads: pass.** HEAT, TWO WAYS IN, WHERE and THE CLOCK are all present and tracked as the mock has them.
+- **N7, the widow: pass.** The front door now ends on "and loop his camera."
+- **N8, the manifest: pass.** Each face is its own image, every piece has its part, and the state is `page`.
+- **N9, the slide: pass.** In start-1-begin the page is whole and moving up, never half there.
+- **At 2x:** nothing clips, touches or leaves the 48 px safe frame. Band, plates and pins sit square.
+
+**Remaining nits (owner, fix)**
+- **R1 · Words, 225 > 220. (Fable.)**
+  - The cheapest cut also fixes R2. Make the 6:10 station "Vale's car leaves" (−6, giving 219). 5:40's "Last chance to turn the driver" already carries the condition.
+  - A spare cut if needed: the top-right line "Civic Records Office, the civic block · …". Drop "the civic block" (−3).
+- **R2 · The 6:10 label wraps "…unless turned, the / driver leaves". (Fable, through R1.)**
+  - The no-widow rule pulls "driver leaves" down, but it leaves the article "the" stranded at the end of row 1.
+  - R1's 3-word label removes the problem.
+  - If the long label stays, Latch should also keep a trailing article (the, a, an, his, her) with the next word.
+- **R3 · The widow rule for two-word labels. (Splice, as Aster has said.)**
+  - Exempt elements of two words or fewer from 2.8, so "Records / Office" passes.
+- **R4 · The budget line disagrees with itself. (Splice.)**
+  - briefing-day.budget.txt's header says "225 words (at most 200)", but its fault line says "at most 220". Use one cap, read from one constant.
+- **R5 · My budget doc is out of date. (Glyph.)**
+  - briefs/070/glyph-page-budget.md §2.7 still caps the page at 200. Aster's 220 stands. I'll correct the doc to 220 when Aster says so, so the doc and the tool agree.
+- **R6 · N11 hasn't landed. (Fable; low.)**
+  - Still 4's caption and legend entry say "Vale's car". Make them "At the service bay" so they match the pickup's words.
+  - It's word-neutral if "Vale's car" (2 words) goes to "Service bay" (2 words). I'd take that.
+- **R7 · Optional: the getaway still's framing. (Latch; low.)**
+  - About 40 % of the tall slot is empty road below the car.
+  - Aim the camera about 1.5 m further toward the kerb end, so the car and Vale fill the middle.
+- **R8 · Optional: the plaza mark on the plan. (Latch; low; it was there in 0.2.130 too.)**
+  - The dashed ring with a dot near the café reads like a HUD reticle, and the legend doesn't explain it.
+  - Draw it as a plain filled circle (the fountain), like the other street shapes, or drop it.
+
+Next owner:
+- Fable (R1, R6);
+- Splice (R3, R4);
+- Latch: a text-only rebuild, with R2 only if Fable keeps the long label, and R7/R8 if cheap;
+- then Aster: `--state page` 0 faults, then show Sky.
+
+## Batch 0.35.1 port (Latch, 2026-10-27): build 0.2.135, game-check red on one proof part (fire, secondLock), budget red on my manifest tag (fixed in the tree)
+Engine 0.35.1 at 7c27e980 (fight B, one input, sticky focus, cover and pin, moves off, the cell never pinned) into the host, Forma's B clips, the page items and the capped world. Note: briefs/027/keel/host-interface.md has no 0.35.x section (it ends at 0.34.2), so the port reads the engine's own API (GameCoverPin.cs: PostureOf, ShotsThisTick, PreviewMoveSnap, FocusOf, MoveOf, OneInputOn) and Motive's rulings-0.35.md / 0.35.1.md.
+
+**What changed**
+1. **One input** (gated on `Game.OneInputOn`; the fight lab keeps the old controls):
+   - X (cease), V (stance), both buttons (panic) and G's weapons-free toggle give nothing; in the hold preset G is walk/run (GDD §10) and X still stops walks and acts, with no cease. The free toggle, the stance glyph and badge, the stance fan and "drawn · <stance>" words are gone; Controls lists no Cease or Stance row.
+   - No host path sends cease, stance, free or panic: a new act drops the lock only (the engine ends the focus), the drive trigger and the commander hold-fire send no cease, a squad fire goes to every selected armed agent (the engine walks them in). The bot runner reads a plan's panic as F on each of the four and skips stance/free/cease (Keel's oneinput.py).
+   - The H21 tip ("press X") stays silent under one input (Fable: reword to the holster).
+   - The sticky focus: the lock disc's held state reads `FocusOf`; under it a two-word plate says why it waits ("aiming", "walking in", "no line", "too far"; Fable's `less.done.focus.<state>` first). No shooters' cameos under it.
+   - Cover snap: out of the lab the move ring stands on the kneel point (`PreviewMoveSnap`) with a shield inside it; if that end flanks the focus's cover, one struck shield disc over that cover. Nothing else of cover is drawn.
+   - 0.34.2: PlayText's `entry-seen-guard` line drops the patrol; the patrol robot wears its alarm face while `EntryReport` is pending. The three codes are text.json cards already.
+   - No move reads: no Mark, Talk down, Steam or Covering fire UI or ring entry; the proof checks `MoveOf` is empty for all four.
+2. **Fights on the body** (Glyph b-final, Forma pin-poses.md §D):
+   - The 8 clips installed into unity/Assets/Suborned/People (FBX, meta, manifest rows only; the rest of out/people-models differs and was not mirrored). FigureBuild keeps additive rows off the base layer and adds two additive layers: `react` (flinch_add, kick_add, restarted per event) and `peek` (pin_peek_add, weight from the pin's time left). The library now rebuilds whenever the installed manifest is newer than the controller.
+   - The host reads `PostureOf` and `ShotsThisTick` once a step (HandoverHost.BodyRead): kneel = cover_in then cover_kneel, firing from cover = cover_fire, pinned in cover = cover_pin with the peek, pinned in the open = cower held; a hit (or a round near a pinned man) flinches; a carbine hit standing staggers (hit_large); each own shot kicks. Forma's cross-fade table.
+   - A miss is a dust puff on the paving (no ring); a round cover took chips the prop.
+   - In a fight: only the selected agent's ring and the focus's (one red line, no ticks); no rings under the unselected cell or the rivals; pips over the focus only; no firing discs over shooters; no under-fire arcs. At rest everything is as built.
+3. **Proofs**: holdRange's weapons-free part is now `oneInput` (G/X/V send nothing retired; F holsters the four and every fire order ends; moves empty). r29 `down` plays the route until the Scout falls (0.35.1: tick 2878) instead of a 0.34 tick. ProofFire ends the Fixer's commander lock by holster and redraw. r123 logs the body's reads per fight.
+4. **Page**: `briefing.page.captions[place]` and `briefing.page.stations[at]` before the defaults ("Service bay", "Vale's car leaves"). R7: the getaway still aims 1.5 m past the car toward the kerb end (ShotRunner's lookOffset now in the door's frame). R8: a fountain is one filled shape; the beds within 8 m of it are its garden and aren't drawn (fountains matched by kind: the beds' ids had drawn them as water arcs). The Go Alt line goes below, else above, else the above spot slid outward 8 px at a time until it clears, else "unplaced" with a warning (`RingAltPlacement`).
+5. **World**: `bun run world` with Vela's play-street pieces in the tree (PortholeBay_3L 27, PortholeBay_4L 47 placed), then the Unity world build.
+- Two new shots: `fight-safe-body` (route-g-board 3:50) and `fight-loud-body` (loud 3:47.5).
+
+**Evidence** (on disk, git-ignored: briefs/041/build/0135/)
+- Full batch (logs/latch-batch-0351.log): sim 357/357, compile, kit, world, unity-world 49 s, unity-match 454/454, game-build **0.2.134**; game-check FAILED on `rings` (my cut also hid the at-rest combatant rings) and `fire` (followerFrames 0: the proof's `cease` on the Fixer is refused under one input). Both fixed.
+- One targeted rerun `--from game-build` (logs/latch-batch-0351-rerun.log): **build 0.2.135**. game-check FAILED on `fire` only: `secondLock` empty (the Fixer now follows, so the car likely takes enough hits to be down before the proof's second lock; not probed). rings ok, holdRange ok (oneInput ok, focus ok), r29 ok (down ok), r059, r067, r118 ok.
+- The steps that never ran, on 0.2.135, no rebuild: shots ok (13); budget 10/12 and audit 11/12: the two reds are my focus-wait plate tagged `lock` (the lock pill's kind) in a rest frame. Fixed in the tree (tagged `marker`); the same two shots re-judged with the retagged manifests both PASS (out/scratch/latch/budget-recheck). Proof sets r059 13/13, r067 32/32. late-fight ok (loud-fight worst 24 ms, p99 6.9 ms), tp-long ok (all under the gates). NOISY MACHINE.
+- r123 body: safe "kneel 45, pinned 15, flinches 1; clips cover_fire, cover_kneel, cower"; loud "kneel 45, pinned 0, flinches 2; clips cover_fire, cover_kneel".
+- Page: front end at 1080 and 2160 status ok (briefing up, stills 5/5, 5 stations, Begin then yaw 30). **`--state page`: PASS, 208 words (at most 220), 0 faults** (budget/briefing-day.page.txt).
+- Pictures: fight shots/fight-safe-body.png, shots/fight-loud-body.png, proof/r123-fight-safe.png, proof/r123-fight-loud.png, proof/hold-one-input.png; the page frontend-1080/briefing.png, frontend-2160/briefing.png; stills/brief-getaway.jpg.
+- `bun run typecheck` clean; `bun test tools/game` 221 pass; runtime-compile clean.
+
+**Open**
+- Latch: the `fire` proof's second lock under one input (probe the car's health at that point; give the second lock a target that outlasts four guns, or holster the Fixer for the run). The marker tag needs a build.
+- Audit (new shot, not new code): fight-loud-body, a 16 px glyph in a 24 px plate not 4 px clear of its rim (hud/VisualElement[1]/VisualElement[51]/VisualElement[0]/glyph). Glyph to name the piece.
+- Fable: H21's words under one input; `less.done.focus.<state>` for the wait plate (fallbacks in use).
+- Keel: the 0.35.x section of host-interface.md.
+- Glyph: the range checks b-final asks for (other headings, the real planters, Unity's pixels for kneel and duck); the cover snap's shield and struck disc have no proof picture yet (no proof drives a move in a fight).
+- Forma: the rest of out/people-models differs from the installed figures (carry, sit, serve, run_lean clips; c6 and councillor materials): not installed here. Side falls (Standing_React_Death_Left/Right) not wired.
+- Environment: front-end captures hung while the display slept (Metal waiting to present); `caffeinate -u` fixed it.
+
+Next owner: Glyph (2x of the page and the two fight shots), then Aster.
