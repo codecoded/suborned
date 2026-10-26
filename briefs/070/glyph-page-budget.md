@@ -62,10 +62,10 @@ Counted as glyph-budget §0. The 0.2.130 count is in brackets.
 | purse | 1 figure | $100,000 |
 | heat | 1 word from {Unknown, Noticed, Wanted, Infamous}, plus the head word "Heat" | Unknown |
 | Begin | 1 word | Begin |
-| **the page** | **≤ 200 words** (about a minute's reading) | 182 |
+| **the page** | **≤ 220 words** (about a minute's reading; Aster 2026-10-26: heads, role names and plan labels count, and Sky approved the page as mocked) | 219 after Fable's cut |
 
 - Ways: 1 to 3 rows, each with 1 to 3 stills.
-- The total cap is the one that keeps "the reading is too much" from creeping back. A generated mission with three ways must still fit 200 words, so Fable's lines get shorter, not the page longer.
+- The total cap is the one that keeps "the reading is too much" from creeping back. A generated mission with three ways must still fit 220 words, so Fable's lines get shorter, not the page longer.
 
 ### 2.8 No widows
 - A wrapped text element doesn't end on a line of one word. Fail: "widow".
