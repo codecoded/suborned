@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.28.0, 2026-10-26)
+## Open for Sky (as of v0.29.0, 2026-10-26)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -35,6 +35,10 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.29.0 (2026-10-26; Sky's correction on brief 039)
+- Sky, 2026-10-26: "don't think I agreed to the special moves at this stage of the dev process. Saw it, but never agreed fully as it is. lot of logic to add to deal with". v0.28.0 over-read "up to you" (main's reading). Agreed: option B, cover and pin, and the one-input controls (F draws and holsters, a right hold sets the focus, sticky focus). Not agreed: the one move each (Mark, Talk down, Steam, Covering fire), so calls (b) and (c) fall with them. The moves leave the GDD (§03, §06, §10, §14) and go to briefs/parked.md as proposed, not agreed; engine 0.35.1 turns them off.
+- Motive, 2026-10-26 (briefs/039/motive/rulings-0.35.md): the pin applies to hostiles only, the cell is never pinned; agents fight on their own from the spring (§06).
 
 ## v0.28.0 (2026-10-26; Sky's answers of ~20:20, relayed by main)
 - Sky, 2026-10-26 (brief 039): the fight, "up to you"; main picked option B, Cover and pin, without C's slow-down beats, with the three calls as recommended: one input (F draws and holsters, a right hold sets the focus; X, V stances, panic and weapons-free retired; the focus waits out of reach instead of ending); Covering fire allowed while the Enforcer holds Vale (it pins, never hits); the Fixer can Talk down the car blocker (2 s in the open). Fights read on the body (Sky: "Simplify the visuals, it's way too crowded"). Numbers [S] from Motive's proposal (§03, §06, §10, §14). Order: Forma's pose proof, Glyph's judgement, then Keel, Latch, Chime.
