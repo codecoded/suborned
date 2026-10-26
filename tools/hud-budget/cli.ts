@@ -8,6 +8,7 @@ import { existsSync, readdirSync, readFileSync, statSync, writeFileSync } from '
 import { basename, join } from 'node:path';
 import { analyse, debugImage, fromParts, maskOf, type Manifest, type Options, type Rect, type Report, type State } from './budget';
 import { decodePng, encodePng } from './png';
+import { PAGE } from './page';
 
 const args = process.argv.slice(2), flag = (n: string) => { const i = args.indexOf(n); return i < 0 ? undefined : args[i + 1]; };
 const target = args[0]?.startsWith('--') ? undefined : args[0];
@@ -39,7 +40,7 @@ for (const s of shots) {
   if (args.includes('--skip-unmasked') && unmasked(s)) { skipped++; continue; } // a capture with no HUD layer (a world study): listed in the total, not judged
   const { rep, opts } = one(s, s.replace(/\.png$/, ''), shots.length > 1 ? { state: force.state, rects: force.rects } : force); all[s] = rep; if (!rep.pass) bad++;
   if (!args.includes('--json')) {
-    if (rep.state === 'page') console.log(`${rep.pass ? 'PASS' : 'FAIL'}  ${basename(s).padEnd(34)} page   ${rep.pageWords} words (at most 200), ${rep.failures.length} fault${rep.failures.length === 1 ? '' : 's'}; coverage not judged  [${rep.mask} mask]`);
+    if (rep.state === 'page') console.log(`${rep.pass ? 'PASS' : 'FAIL'}  ${basename(s).padEnd(34)} page   ${rep.pageWords} words (at most ${PAGE.words}), ${rep.failures.length} fault${rep.failures.length === 1 ? '' : 's'}; coverage not judged  [${rep.mask} mask]`);
     else console.log(`${rep.pass ? 'PASS' : 'FAIL'}  ${basename(s).padEnd(34)} ${rep.state.padEnd(6)} HUD ${rep.coveragePct.toFixed(1).padStart(5)}% of the screen (limit ${rep.limitPct}%, footprint ${rep.footprintPct.toFixed(0)}%)  running text ${rep.sentences.length} line${rep.sentences.length === 1 ? '' : 's'}, ${rep.blocks.length} block${rep.blocks.length === 1 ? '' : 's'}; speech ${rep.speech.length}, beats ${rep.beats.length}  [${rep.mask} mask]`);
     for (const f of rep.failures) console.log(`      - ${f}`); for (const f of rep.warnings) console.log(`      ~ ${f}`);
   }

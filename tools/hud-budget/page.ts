@@ -8,7 +8,7 @@
 //   2.5 type size   body lines at least 20 px tall at 1080; headings taller than the body
 //   2.6 pins        each still one pin; each still's pin once on the plan and once in the legend; numbered 1..n in way order, the ending's the car
 //   2.7 words       caps per part (glyph-budget §0 counting), the page at most 220 words (Aster 2026-10-26: Sky approved the page as mocked; it reads 214 counted this way)
-//   2.8 widows      a wrapped text element never ends on a line of one word
+//   2.8 widows      a wrapped text element never ends on a line of one word; a label of two words or fewer (the plan's "Corner café", "Records Office") is exempt (Aster 2026-10-26)
 // Today's manifests (0.2.130) carry the page's words as `hud` and its pictures as `image` with no `part`: the parts are read from their text and layout (pageParts) until the host tags them.
 import type { Image } from './png';
 import { glyphWords, isClock, textRuns, type Element, type Rect } from './budget';
@@ -24,7 +24,7 @@ export type PagePart =
 
 /** Glyph's caps for the page (glyph-page-budget §2), [S] starting values. Sizes are at 1080 and scale with the frame's height. */
 export const PAGE = {
-  safe: 48, footSafePct: 3, gap: 4, bodyLine: 20, words: 220, flatPct: 5,
+  safe: 48, footSafePct: 3, gap: 4, bodyLine: 20, words: 220, flatPct: 5, widowLabel: 2,
   title: { lines: 1, words: 3 }, hook: { sentences: 1, words: 8 }, objective: { sentences: 1, words: 10 },
   targetName: { words: 3 }, fact: { n: 2, lines: 1, words: 8 },
   wayName: { words: 3 }, when: { words: 2 }, way: { sentences: 2, words: 30 }, ways: { min: 1, max: 3 }, stills: { min: 1, max: 3 },
@@ -213,6 +213,8 @@ export function checkPage(shot: Image, mask: Uint8Array, elements: Element[], pa
   const total = texts.reduce((a, e) => a + words(e), 0); if (total > PAGE.words) failures.push(`the page reads ${total} words (at most ${PAGE.words}, about a minute's reading)`);
   for (const e of texts.filter(e => e.part === 'text')) warnings.push(`${name(e)} at ${box(e)} is not a part the page knows: its words count, its caps wait for the host's \`part\``);
   // 2.8 widows
-  for (const e of texts) { const r = ink.get(e)?.rows ?? [], n = e.rows?.length ?? r.length; if (n >= 2 && lastRowWords(e.text!, r, e.rows) === 1) failures.push(`${name(e)} ends on a widow: its last line is one word`); }
+  // A label of PAGE.widowLabel words or fewer is exempt: two words over two lines always end on one, and that is a label stacked, not a widow (Aster 2026-10-26).
+  const label = (e: Element) => (e.text ?? '').trim().split(/\s+/).filter(Boolean).length <= PAGE.widowLabel;
+  for (const e of texts) { if (label(e)) continue; const r = ink.get(e)?.rows ?? [], n = e.rows?.length ?? r.length; if (n >= 2 && lastRowWords(e.text!, r, e.rows) === 1) failures.push(`${name(e)} ends on a widow: its last line is one word`); }
   return { failures, warnings, words: total, parts: all };
 }

@@ -120,6 +120,12 @@ describe('the page rules, each with a failing example (glyph-page-budget §2)', 
     expect(lastRowWords('Turn her to call him off the door, and loop the camera that watches it.', [{ x0: 500, x1: 741 }, { x0: 500, x1: 749 }, { x0: 500, x1: 513 }])).toBe(1);
     expect(lastRowWords('Turn him before 5:40, and he brings Vale round to the service bay and waits.', [{ x0: 500, x1: 711 }, { x0: 500, x1: 738 }, { x0: 500, x1: 605 }])).toBe(3);
   });
+  test('2.8 widows: a label of two words or fewer is exempt ("Corner café", "Records Office" stacked on the plan); a three-word label stacked to a one-word line still fails', () => {
+    const stack = (from: string, rows: string[]) => edit(e => e.map(x => (x.text === from ? { ...x, h: 30, rows } : x)));
+    expect(fails(stack('Corner café', ['Corner', 'café']))).not.toContain('widow');
+    expect(fails(stack('Records Office', ['Records', 'Office']))).not.toContain('widow');
+    expect(fails(stack('The getaway car', ['The getaway', 'car']))).toContain('the legend "The getaway car" ends on a widow');
+  });
 });
 
 describe('build 0.2.130\'s briefing page (fixtures/page-130: briefing-day as shot, photographs flattened)', () => {
