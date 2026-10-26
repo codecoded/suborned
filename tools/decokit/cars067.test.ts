@@ -51,7 +51,7 @@ test('Sedan_Rival is catalogued beside the other two: a generated Vehicles piece
   expect(Math.abs(r.size[0] - o.size[0]) / o.size[0], 'width').toBeLessThan(0.005); expect(Math.abs(r.size[2] - o.size[2]) / o.size[2], 'length').toBeLessThan(0.01); // the sim's car footprint (rulebook car-len-cm, car-w-cm) is the same for every car
   expect(Math.abs((r.pivotOffset?.[1] ?? 0) - (o.pivotOffset?.[1] ?? 0)), 'pivot offset (m)').toBeLessThan(0.05); expect(r.front).toBe(o.front); expect(r.pivot).toBe(o.pivot);
   expect(r.lods, 'full detail: no LODs').toBeUndefined(); expect(r.files.filter(f => f.role === 'lod')).toEqual([]);
-  expect(r.tris, 'a car is one view in the host: character over triangles').toBeGreaterThan(o.tris);
+  expect(r.tris, 'a car is one view in the host: character over triangles (the old sedans\' 3,408; the official car is finished too since brief 070)').toBeGreaterThan(3408);
   for (const f of r.files) { const p = join(GEN_ROOT, f.path); if (f.root === 'generated') { expect(existsSync(p), f.path).toBe(true); expect(new Bun.CryptoHasher('sha256').update(readFileSync(p)).digest('hex'), f.path).toBe(f.sha256); } }
   for (const m of ['DK_Enamel_Plum', 'DK_Enamel_Ink', 'DK_Enamel_Pearl']) expect(r.files.some(f => f.path === `Materials/${m}.mat` && f.root === 'generated'), m).toBe(true); // its own livery travels with it into Unity
 });

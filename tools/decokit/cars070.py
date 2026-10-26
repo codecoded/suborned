@@ -12,7 +12,8 @@ blank slab. This is the same car brought to Sedan_Rival's finish, keeping what m
 
 Same chassis as cars020 (TUB heights and half-widths, SIDES, WHEELS_Y, the 0.92 scale), so the footprint, the pivot and the wheel stations are unchanged and nothing in the sim or the world moves;
 everything added stays inside the old bounds (x +-0.986, y -2.66..2.48, z <= 1.40 in model units). Length along Y, nose at -Y, pivot = footprint centre on the ground. Full detail (nolod).
-Only the getaway is catalogued (Sedan_Getaway_v2, candidate); sedan_v2() takes any livery, so Vale's car can follow (Sedan_Official_v2 is render-only until asked)."""
+Adopted 2026-10-27 (Sky: "fine for now - I'll improve later"), swapped in place: Sedan_Getaway and Sedan_Official are built here (cars020 keeps the chassis and the old builder, no longer
+registered), so the host's paths (DK_Sedan_Getaway.fbx, DK_Sedan_Official.fbx) are unchanged. Sedan_Getaway_v2, the candidate, is retired (no use tag, status rejected)."""
 
 import math
 
@@ -217,10 +218,23 @@ def sedan_v2(s, body, roof):
         _sedan_v2(s, car_enamel(body), car_enamel(roof))
 
 
-@asset("Sedan_Getaway_v2", "Vehicles", bevel=0.0)
-def sedan_getaway_v2(s):
-    """The cell's getaway car, finished (brief 070): coral, seafoam roof and flash, chrome."""
+@asset("Sedan_Getaway", "Vehicles", bevel=0.0)
+def sedan_getaway(s):
+    """The cell's getaway car (brief 070, adopted 2026-10-27, Sky: "fine for now"): coral, seafoam roof and flash, chrome."""
     sedan_v2(s, "DK_Accent_Coral", "DK_Enamel_Seafoam")
 
 
-REGISTRY["Sedan_Getaway_v2"]["nolod"] = True  # full detail (Sky): no decimated levels, as Sedan_Rival
+@asset("Sedan_Official", "Vehicles", bevel=0.0)
+def sedan_official(s):
+    """Vale's official car, the same lift (brief 070, 2026-10-27): deep teal, ivory roof, posts and flash, chrome."""
+    sedan_v2(s, "DK_Enamel_Teal", "DK_Enamel_Ivory")
+
+
+@asset("Sedan_Getaway_v2", "Vehicles", bevel=0.0, retired="swapped in place: Sedan_Getaway is built by this builder since 2026-10-27 (brief 070 route 1); no use tag, status rejected")
+def sedan_getaway_v2(s):
+    """The brief 070 candidate, kept only as the record of the proposal: the same build as Sedan_Getaway."""
+    sedan_v2(s, "DK_Accent_Coral", "DK_Enamel_Seafoam")
+
+
+for _n in ("Sedan_Getaway", "Sedan_Official", "Sedan_Getaway_v2"):
+    REGISTRY[_n]["nolod"] = True  # full detail (Sky): no decimated levels, as Sedan_Rival; the adopted pair lose their old L1 and L2 (Sky's OK, 2026-10-27)

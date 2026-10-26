@@ -59743,30 +59743,18 @@
     0.083
    ],
    "front": "+Z",
-   "tris": 3408,
+   "tris": 14876,
    "materials": [
-    "DK_Accent_Coral",
+    "DK_CarEnamel_Coral",
+    "DK_Rubber",
     "DK_GlassDark",
-    "DK_Enamel_Seafoam",
+    "DK_CarEnamel_Seafoam",
     "DK_Chrome",
     "DK_Enamel_Charcoal",
     "DK_Lamp",
     "DK_Beacon_Rose",
     "DK_Steel",
-    "DK_Rubber",
     "DK_Whitewall"
-   ],
-   "lods": [
-    {
-     "file": "Models/Vehicles/DK_Sedan_Getaway_L1.fbx",
-     "tris": 842,
-     "screen": 0.008
-    },
-    {
-     "file": "Models/Vehicles/DK_Sedan_Getaway_L2.fbx",
-     "tris": 200,
-     "screen": 0.003
-    }
    ],
    "lodCategory": "street",
    "files": [
@@ -59774,21 +59762,33 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Vehicles/DK_Sedan_Getaway.fbx",
-     "sha256": "84099b30ffbd0fe0c52ddfed200e618ac4c245f3768e53cb07d99218f9d33a3f",
-     "bytes": 97516
+     "sha256": "6c135e37442bff48ceecd59cd1ca7f8e4a753bf5ec2faa5a9720cb6b463e4feb",
+     "bytes": 396364
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Accent_Coral.mat",
-     "sha256": "347acaecb65eb0d77f743dc438586fed3b51573d4c7132daace7497fe72c66dd",
-     "bytes": 3834
+     "path": "Materials/DK_CarEnamel_Coral.mat",
+     "sha256": "6e0aacd288a2d618e5db545cdee6d4413a91706467994f839f9a49cfaa619d3f",
+     "bytes": 3968
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Accent_Coral.mat.meta",
-     "sha256": "6505249a3135215305fa4f5de64958508d04cbde5a476fe4d92a3c41b0b9672d",
+     "path": "Materials/DK_CarEnamel_Coral.mat.meta",
+     "sha256": "d501e9d29e445f685f3476f045f2e8024264d1f5ba94abfc88b045d3efad25d7",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Rubber.mat",
+     "sha256": "65e2d79d299f142fd752a1617eb0005107c93cb431cb3fd95dc0b460b69fb482",
+     "bytes": 3931
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Rubber.mat.meta",
+     "sha256": "b1ac403a36b061bae1b6683811948d4dd6dd4ff7395606a5899c6ca2d8d649a0",
      "bytes": 188
     },
     {
@@ -59806,15 +59806,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Seafoam.mat",
-     "sha256": "0a8d923eaefc10e2bf6b7d2097f7397e9f289a1e10b6ab17d795f0434d8f6b43",
-     "bytes": 3854
+     "path": "Materials/DK_CarEnamel_Seafoam.mat",
+     "sha256": "4c268d02bca42f935c6ac03c5c7790f5f930848c571044794206ddef78373a86",
+     "bytes": 3970
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Seafoam.mat.meta",
-     "sha256": "76ed38fd07788956339cae17c5f59888d551ffbccfc4a2b3763688c4034c1820",
+     "path": "Materials/DK_CarEnamel_Seafoam.mat.meta",
+     "sha256": "18c89294d767fe4a1c9cf4a6887fc21a0e5a47fe7ed76a10d9aeb5c81a586e08",
      "bytes": 188
     },
     {
@@ -59881,18 +59883,6 @@
     },
     {
      "role": "material",
-     "path": "Materials/DK_Rubber.mat",
-     "sha256": "65e2d79d299f142fd752a1617eb0005107c93cb431cb3fd95dc0b460b69fb482",
-     "bytes": 3931
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Rubber.mat.meta",
-     "sha256": "b1ac403a36b061bae1b6683811948d4dd6dd4ff7395606a5899c6ca2d8d649a0",
-     "bytes": 188
-    },
-    {
-     "role": "material",
      "path": "Materials/DK_Whitewall.mat",
      "sha256": "b35f327cdf4d4d907c0d015fe663b4c4361899efe0e2c8e407a7f4ee932026c4",
      "bytes": 3930
@@ -59905,17 +59895,31 @@
     },
     {
      "root": "generated",
-     "role": "lod",
-     "path": "Models/Vehicles/DK_Sedan_Getaway_L1.fbx",
-     "sha256": "6509b26b4fa78ac017ac012156e066d40cd3272c5fa639959094155f49fcca0d",
-     "bytes": 53804
+     "role": "texture",
+     "path": "Textures/car_enamel_detail_v1.png",
+     "sha256": "3326f27afe6437660bafd6ce60971f11bca0c4cdb0128204f721bf8d137da43c",
+     "bytes": 161282
     },
     {
      "root": "generated",
-     "role": "lod",
-     "path": "Models/Vehicles/DK_Sedan_Getaway_L2.fbx",
-     "sha256": "0d671fb90ee2b3f113ba8192cca0de4c00b0f32648441a580d9ba75fdcb1fd76",
-     "bytes": 33756
+     "role": "texture-meta",
+     "path": "Textures/car_enamel_detail_v1.png.meta",
+     "sha256": "01c35ab24bebe85a67a33e246ac2725786cd81781e59b00dd71d1510c4c33f28",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/car_enamel_detail_v1_normal.png",
+     "sha256": "4237fea6938b3d55ea871a866f8f0b95ef42ccf3e1309dbb1a4b6e40f6f994d8",
+     "bytes": 395183
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/car_enamel_detail_v1_normal.png.meta",
+     "sha256": "93312cd607cc8dacfd371b744e418ca132ab91b91b5284192d3db790cf9e8150",
+     "bytes": 2715
     }
    ],
    "tags": {
@@ -60127,9 +60131,7 @@
     }
    ],
    "tags": {
-    "use": [
-     "vehicle:car-getaway"
-    ],
+    "use": [],
     "scale": [
      1,
      1
@@ -60138,7 +60140,7 @@
     "wave": 2,
     "sight": "open"
    },
-   "status": "candidate",
+   "status": "rejected",
    "source": "generated"
   },
   {
@@ -60155,30 +60157,18 @@
     0.083
    ],
    "front": "+Z",
-   "tris": 3408,
+   "tris": 14876,
    "materials": [
-    "DK_Enamel_Teal",
+    "DK_CarEnamel_Teal",
+    "DK_Rubber",
     "DK_GlassDark",
-    "DK_Enamel_Ivory",
+    "DK_CarEnamel_Ivory",
     "DK_Chrome",
     "DK_Enamel_Charcoal",
     "DK_Lamp",
     "DK_Beacon_Rose",
     "DK_Steel",
-    "DK_Rubber",
     "DK_Whitewall"
-   ],
-   "lods": [
-    {
-     "file": "Models/Vehicles/DK_Sedan_Official_L1.fbx",
-     "tris": 842,
-     "screen": 0.008
-    },
-    {
-     "file": "Models/Vehicles/DK_Sedan_Official_L2.fbx",
-     "tris": 200,
-     "screen": 0.003
-    }
    ],
    "lodCategory": "street",
    "files": [
@@ -60186,19 +60176,33 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Vehicles/DK_Sedan_Official.fbx",
-     "sha256": "873008ec93f669ea137c1af8592cc25ef53c73bdb85ccf28e4df134f63fa60d6",
-     "bytes": 97516
+     "sha256": "54d4fb803f536fc5436bf8f3080c8aaf45460d9d7be5d3194b7bdaa6d6e12d22",
+     "bytes": 396364
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_CarEnamel_Teal.mat",
+     "sha256": "87c235599d527b8cd20bf13425abd673ad5328fd9bfc9a06c68134eef03b58e6",
+     "bytes": 3967
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_CarEnamel_Teal.mat.meta",
+     "sha256": "607169847a5be78c7e10e5a868ae706c1664f45eaffc7003fc65cfc07837ccf7",
+     "bytes": 188
     },
     {
      "role": "material",
-     "path": "Materials/DK_Enamel_Teal.mat",
-     "sha256": "b4aaf9df4d9d6e6d78b45bdcf7bdcd8daa79b89b43f2e709cd1bc4da33ca9c92",
-     "bytes": 3854
+     "path": "Materials/DK_Rubber.mat",
+     "sha256": "65e2d79d299f142fd752a1617eb0005107c93cb431cb3fd95dc0b460b69fb482",
+     "bytes": 3931
     },
     {
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Teal.mat.meta",
-     "sha256": "a70a4359fb1102bee640740027c6ccba8b741c65b93f8d4af2acb6db8bd36f5a",
+     "path": "Materials/DK_Rubber.mat.meta",
+     "sha256": "b1ac403a36b061bae1b6683811948d4dd6dd4ff7395606a5899c6ca2d8d649a0",
      "bytes": 188
     },
     {
@@ -60216,15 +60220,17 @@
      "bytes": 188
     },
     {
+     "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Enamel_Ivory.mat",
-     "sha256": "f70e90e05d1a0953f72c0ff4dc3ccad28199f00b28d5370bc5cc2afda0629b03",
-     "bytes": 3852
+     "path": "Materials/DK_CarEnamel_Ivory.mat",
+     "sha256": "beccc642c31d72e403142d8ba142140b2d1c9214a16c38202a7304453c63e6cc",
+     "bytes": 3967
     },
     {
+     "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Enamel_Ivory.mat.meta",
-     "sha256": "631111bbf64b77d5f6f289e8233a50d23f222070525c881a69d2db9c838992f8",
+     "path": "Materials/DK_CarEnamel_Ivory.mat.meta",
+     "sha256": "cbe651d37834380f74a0cffeb296d01d9e2314cde1bd5750c7a191d64b5ee046",
      "bytes": 188
     },
     {
@@ -60291,18 +60297,6 @@
     },
     {
      "role": "material",
-     "path": "Materials/DK_Rubber.mat",
-     "sha256": "65e2d79d299f142fd752a1617eb0005107c93cb431cb3fd95dc0b460b69fb482",
-     "bytes": 3931
-    },
-    {
-     "role": "material-meta",
-     "path": "Materials/DK_Rubber.mat.meta",
-     "sha256": "b1ac403a36b061bae1b6683811948d4dd6dd4ff7395606a5899c6ca2d8d649a0",
-     "bytes": 188
-    },
-    {
-     "role": "material",
      "path": "Materials/DK_Whitewall.mat",
      "sha256": "b35f327cdf4d4d907c0d015fe663b4c4361899efe0e2c8e407a7f4ee932026c4",
      "bytes": 3930
@@ -60315,17 +60309,31 @@
     },
     {
      "root": "generated",
-     "role": "lod",
-     "path": "Models/Vehicles/DK_Sedan_Official_L1.fbx",
-     "sha256": "c95bd2a92e5471e237f908c166774a2d1c6bd1efc953ef213eea0fe71f43b9bf",
-     "bytes": 53804
+     "role": "texture",
+     "path": "Textures/car_enamel_detail_v1.png",
+     "sha256": "3326f27afe6437660bafd6ce60971f11bca0c4cdb0128204f721bf8d137da43c",
+     "bytes": 161282
     },
     {
      "root": "generated",
-     "role": "lod",
-     "path": "Models/Vehicles/DK_Sedan_Official_L2.fbx",
-     "sha256": "a4e47164f1a848190ea3f6e42af21cd9c5cdc8712d81ec9b037790d716f810db",
-     "bytes": 33756
+     "role": "texture-meta",
+     "path": "Textures/car_enamel_detail_v1.png.meta",
+     "sha256": "01c35ab24bebe85a67a33e246ac2725786cd81781e59b00dd71d1510c4c33f28",
+     "bytes": 2715
+    },
+    {
+     "root": "generated",
+     "role": "texture",
+     "path": "Textures/car_enamel_detail_v1_normal.png",
+     "sha256": "4237fea6938b3d55ea871a866f8f0b95ef42ccf3e1309dbb1a4b6e40f6f994d8",
+     "bytes": 395183
+    },
+    {
+     "root": "generated",
+     "role": "texture-meta",
+     "path": "Textures/car_enamel_detail_v1_normal.png.meta",
+     "sha256": "93312cd607cc8dacfd371b744e418ca132ab91b91b5284192d3db790cf9e8150",
+     "bytes": 2715
     }
    ],
    "tags": {

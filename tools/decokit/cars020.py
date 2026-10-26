@@ -6,7 +6,6 @@ Sedan_Official is deep teal with an ivory roof (Vale's car), Sedan_Getaway coral
 import math
 
 from geo import Shape  # noqa: F401
-from kit import asset
 from mats import pal
 from vehicles_parts import lamp, vloft, wheel
 
@@ -47,13 +46,4 @@ def _sedan(s, body, roof):
             wheel(s, (sg * 0.84, y, 0.34), 0.34, 0.2, white=(0.21, 0.29), hub=0.5, rim=pal.Steel, seg=14, side=sg)
 
 
-@asset("Sedan_Official", "Vehicles", bevel=0.0)
-def sedan_official(s):
-    """Vale's official car: deep teal, ivory roof."""
-    sedan(s, pal.Enamel_Teal, pal.Enamel_Ivory)
-
-
-@asset("Sedan_Getaway", "Vehicles", bevel=0.0)
-def sedan_getaway(s):
-    """The cell's getaway car: coral, seafoam roof."""
-    sedan(s, pal.Accent_Coral, pal.Enamel_Seafoam)
+# Sedan_Official and Sedan_Getaway are registered in cars070.py since 2026-10-27 (brief 070, adopted: the finished sedan swapped in place); sedan() above is the old build, kept for comparison.
