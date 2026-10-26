@@ -1,0 +1,16 @@
+cell-v3-cover            base       hostiles down 0 (last -) break None cell down - hits taken 0 last shot 0
+cell-v3-cover            nocell     hostiles down 0 (last -) break None cell down - hits taken 0 last shot 0
+cell-v3-near             base       hostiles down 2 (last 6.6) break 6.6 cell down - hits taken 3 last shot 6.6
+cell-v3-near             nocell     hostiles down 2 (last 5.1) break 5.1 cell down - hits taken 3 last shot 5.1
+cell-v4-police-cover     base       hostiles down 0 (last -) break None cell down - hits taken 0 last shot 0
+cell-v4-police-cover     nocell     hostiles down 0 (last -) break None cell down - hits taken 0 last shot 0
+cell-v4-police-eff       base       hostiles down 4 (last 13.3) break None cell down - hits taken 12 last shot 13.3
+cell-v4-police-eff       nocell     hostiles down 4 (last 8.2) break None cell down - hits taken 8 last shot 8.2
+cell-v5-near             base       hostiles down 4 (last 14.1) break 14.1 cell down - hits taken 15 last shot 14.1
+cell-v5-near             nocell     hostiles down 5 (last 8.1) break 8.1 cell down - hits taken 10 last shot 8.1
+cell-v5-rivals-eff       base       hostiles down 2 (last 43.1) break None cell down - hits taken 3 last shot 59.1
+cell-v5-rivals-eff       nocell     hostiles down 3 (last 41.1) break 41.1 cell down - hits taken 3 last shot 41.1
+enf-v3-near              base       hostiles down 0 (last -) break None cell down ['enf@7.0', 'tec@14.5', 'fix@16.0', 'sco@20.5'] hits taken 25 last shot 20.5
+enf-v3-near              nocell     hostiles down 2 (last 8.1) break 8.1 cell down - hits taken 7 last shot 8.1
+none-v3-near             base       hostiles down 0 (last -) break None cell down ['tec@13.0', 'fix@13.0', 'enf@17.5', 'sco@20.5'] hits taken 24 last shot 20.5
+none-v3-near             nocell     hostiles down 0 (last -) break None cell down ['tec@13.0', 'fix@13.0', 'enf@17.5', 'sco@20.5'] hits taken 24 last shot 20.5

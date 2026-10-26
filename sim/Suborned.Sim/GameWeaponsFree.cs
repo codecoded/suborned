@@ -48,7 +48,9 @@ namespace Suborned.Sim
 
         /// <summary>Weapons free picks for a drawn agent: a fight is on by contact (wfFrom), or, with one input (brief 039; GDD v0.28.0 §06: a drawn
         /// op fights on his own, against the final fight's hostiles, who are combatants), the final fight has sprung or gone loud.</summary>
-        bool FreeApplies => WeaponsFree && (wfFrom >= 0 || (OneInputOn && (FightSprung != INF || FightBranch == "loud")));
+        bool FreeApplies => WeaponsFree && (wfFrom >= 0 || FinalFree);
+        /// <summary>One input in the final fight: from the spring (or a loud run) drawn agents fight on their own, contact or not.</summary>
+        bool FinalFree => OneInputOn && (FightSprung != INF || FightBranch == "loud");
 
         /// <summary>A hostile `id` is attacking `op`: its gun aims at it, or it is the agent's last shooter within weapons.lineLapse.</summary>
         bool Attacks(Op op, string id)
@@ -124,7 +126,7 @@ namespace Suborned.Sim
             if (Tick - wfLast < T(R.FreeSettleS)) return;
             wfFrom = -1; wfLast = -1;
             foreach (var op in Ops) op.Gun.StandDown = -1;
-            if (WeaponsFree) Note("fire.free-off", "No contact: the fight is off. Drawn agents hold their fire.");
+            if (WeaponsFree && !FinalFree) Note("fire.free-off", "No contact: the fight is off. Drawn agents hold their fire."); // engine 0.35.1 (Motive's ruling 1): never in the final fight under one input, where drawn agents fight on their own from the spring
         }
 
         /// <summary>Weapons free's state for the checkpoint hash: the setting when it is not the start's, the fight's ticks while one is on.</summary>

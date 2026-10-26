@@ -1,0 +1,1540 @@
+$ bun tools/game/playing.ts bun run test
+$ bun test --parallel=8 --timeout=60000
+bun test v1.4.3 (c6da4a4d3) 8x PARALLEL
+
+tools/gen/test/unfinished.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/unfinished.test.ts:30:21)
+(fail) a run that did not finish > an ERROR run, or a folder with no run.json, is reported as not completed and is not a failure [122.09ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/unfinished.test.ts:41:21)
+(fail) a run that did not finish > --continue takes an ERROR run from its last complete round, with its open faults [82.27ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/unfinished.test.ts:55:21)
+(fail) the spend ceiling > a call whose estimate would pass --max-usd is not made: the run ends INCOMPLETE and says why [81.92ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/unfinished.test.ts:64:21)
+(fail) the spend ceiling > a run with no complete round has nothing to continue from [77.59ms]
+
+tools/rag/rag.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at loadCorpus (/Users/sky/Projects/suborned/tools/rag/corpus.ts:97:25)
+      at <anonymous> (/Users/sky/Projects/suborned/tools/rag/rag.test.ts:21:26)
+(fail) corpus > the live corpus covers every agent GDD section, the human GDD and the plan [0.69ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at loadCorpus (/Users/sky/Projects/suborned/tools/rag/corpus.ts:97:25)
+      at <anonymous> (/Users/sky/Projects/suborned/tools/rag/rag.test.ts:29:26)
+(fail) corpus > a cast-table query finds the café: its trade, hours and staff, its entrance and its employer [0.19ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at loadCorpus (/Users/sky/Projects/suborned/tools/rag/corpus.ts:97:25)
+      at <anonymous> (/Users/sky/Projects/suborned/tools/rag/rag.test.ts:36:26)
+(fail) corpus > agent GDD chunks point at their true file lines [0.14ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at loadCorpus (/Users/sky/Projects/suborned/tools/rag/corpus.ts:97:25)
+      at <anonymous> (/Users/sky/Projects/suborned/tools/rag/rag.test.ts:48:45)
+(fail) skyline and kit chunks (chunker v3) > the chunker version is 5 (4 + the people-rules knowledge, mix, introduces and readBy blocks), and the live plan yields a chunk per signature, megastructure and tower site [1.34ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at loadCorpus (/Users/sky/Projects/suborned/tools/rag/corpus.ts:97:25)
+      at <anonymous> (/Users/sky/Projects/suborned/tools/rag/rag.test.ts:85:24)
+(fail) skyline and kit chunks (chunker v3) > loadCorpus reads the kit through the override map, so a pinned digest stands in for kit.json [0.40ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at loadCorpus (/Users/sky/Projects/suborned/tools/rag/corpus.ts:97:25)
+      at <anonymous> (/Users/sky/Projects/suborned/tools/rag/rag.test.ts:107:22)
+(fail) agent GDD chunking > the live corpus has the boarding rule as its own chunk [0.21ms]
+
+tools/missions/check/check.test.ts:
+249 | });
+250 | 
+251 | describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on the working tree)', () => {
+252 |   test('route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships', async () => {
+253 |     const c = await check(L, engineAt('tree'), () => {}, { slack: false }); // the working tree's engine, rules, site and people: the route scripts are written against Keel's brief 018 engine (0.7.0: Board and Go), not yet committed; once it is, HEAD and the tree agree
+254 |     expect([c.plays['route-a']!.outcome, c.plays['route-b']!.outcome]).toEqual(['success', 'success']);
+                                                                             ^
+error: expect(received).toEqual(expected)
+
+@@ -1,3 +1,3 @@
+  [
+-   "success",
++   "failure",
+    "success",
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/missions/check/check.test.ts:254:72)
+(fail) the Handover, played headless (Keel's engine on the working tree) > route A and route B win quietly, the loud route costs more Trail than every quiet win, every fail is reached, and the check ships [4662.02ms]
+
+tools/route-diff/route-diff.test.ts:
+ 98 |     const side = resolveSide('tree'), a = await playRoutes(side, same, undefined, false), b = await playRoutes(side, late, undefined, false);
+ 99 |     const m = compareAll(a, b), r = m.find(x => x.id === 'route-a-board')!;
+100 |     expect(m.find(x => x.id === 'withdraw')!.status).toBe('same');
+101 |     expect(r.status).toBe('moved'); expect(r.scriptChanged).toBe(true);
+102 |     expect(r.divergence?.at).toBeGreaterThanOrEqual(0);
+103 |     expect(a.get('route-a-board')!.outcome).toBe('success');
+                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: "success"
+Received: "failure"
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/route-diff/route-diff.test.ts:103:45)
+(fail) the real engine > a route script made 5 s late moves, and the move is found [2852.43ms]
+
+tools/gen/test/engine.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:67:21)
+(fail) generation engine, a toy objective > a failed deterministic check goes to its owner only; the other builder is reused; the run replays; a tampered output fails replay [78.66ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:77:21)
+(fail) generation engine, a toy objective > the critic's fault goes to the owner it names: the earliest owner with a fault reruns, and every builder after it [80.09ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:93:21)
+(fail) loop rule 2: Keel judges only a candidate that passed the checks > a candidate the check failed goes straight back to its owner: no critic call, no keel.json, and the round counts toward the cap [74.56ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:102:21)
+(fail) loop rule 2: Keel judges only a candidate that passed the checks > rounds without a critic call still use up the 3 rounds: a run whose checks never pass ends REJECTED having never called Keel [79.13ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:108:21)
+(fail) loop rule 2: Keel judges only a candidate that passed the checks > a code fault gates the critic as the checker does: an uncited-source fault goes to its owner first [77.41ms]
+
+tools/goals/test/campaign-loop.test.ts:
+[goals] evidence: runs/goals/2026-10-26T16-46-06-189Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-26T16-46-06-203Z-discovery; latest local GDD 0.24.0
+[goals] inspect second-price (priority 14)
+
+tools/gen/test/engine.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:113:21)
+(fail) loop rule 2: Keel judges only a candidate that passed the checks > the old rule (loop 1) still runs and replays: Keel judges the failed candidate; a run without the field is loop 1 [78.96ms]
+
+tools/goals/test/campaign-loop.test.ts:
+[goals] evidence: runs/goals/2026-10-26T16-46-06-220Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-26T16-46-06-231Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-26T16-46-06-244Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+
+tools/gen/test/engine.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:125:21)
+(fail) loop rule 2: Keel judges only a candidate that passed the checks > replay recomputes the gate from the record: a forged criticRan, or a keel.json the round says was never made, fails [76.66ms]
+
+tools/goals/test/campaign-loop.test.ts:
+[goals] evidence: runs/goals/2026-10-26T16-46-06-260Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+[goals] evidence: runs/goals/2026-10-26T16-46-06-302Z-discovery; latest local GDD 0.24.0
+[goals] inspect first-price (priority 18)
+
+tools/gen/test/engine.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:142:21)
+(fail) continuing a rejected run > round 1 starts from the last candidate and the open faults: the owner is asked again with its previous proposal, the others are reused as they were [75.45ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:157:21)
+(fail) continuing a rejected run > the new run replays alone, without its parent; tampering with what it inherited, or with the parent it names, fails [77.93ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:170:21)
+(fail) continuing a rejected run > a fault on the first builder reruns everything from it; the critic's cited passage is pinned into the new run's retrieval [80.72ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:180:22)
+(fail) continuing a rejected run > a run that is not REJECTED, or is not the same objective, is refused with the reason, and nothing is written [85.02ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:193:21)
+(fail) continuing a rejected run > a parent is replayed first: faults.json gone or miscounted, or a record that no longer replays, is refused [85.52ms]
+
+tools/goals/test/loop.test.ts:
+[goals] round 1: watch; 18 priority
+
+tools/gen/test/engine.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:214:21)
+(fail) the kit digest is pinned into every run > replay rebuilds the corpus from the pinned digest, so a later adoption in kit.json does not break an earlier run [77.72ms]
+
+tools/goals/test/loop.test.ts:
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 1: watch; 18 priority
+[goals] round 2: watch; 18 priority
+[goals] round 1: watch; 18 priority
+
+tools/gen/test/engine.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async run (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:53:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:231:21)
+(fail) the civic look is pinned into every run > the run folder holds the look and run.json its hash; replay checks the copy, whatever the file on disk says now [73.66ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/engine.test.ts:261:21)
+(fail) a call that is shown pictures > the model gets the bytes, the record keeps only sha256 pins, the run stays small and replays with the pictures present, changed, or gone [81.89ms]
+
+tools/gen/test/forged.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/forged.test.ts:32:21)
+(fail) a rejected run edited to look accepted > the honest run is REJECTED and replays [78.83ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/forged.test.ts:39:21)
+(fail) a rejected run edited to look accepted > zero faults, verdict pass and outcome ACCEPTED in run.json: faults.json still holds the fault [82.78ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/forged.test.ts:50:21)
+(fail) a rejected run edited to look accepted > a fault Keel listed that faults.json does not carry [93.31ms]
+
+tools/cover/cover.test.ts:
+102 | });
+103 | 
+104 | describe('the Handover\'s cover file', () => {
+105 |   const made = buildCover();
+106 |   test('is what the plan, the block, the kit and the site make today (bun run cover)', () => {
+107 |     expect(read(COVER_FILE)).toBe(made.json);
+                                   ^
+error: expect(received).toBe(expected)
+
+@@ -6,3 +6,3 @@
+    "block": "777d0e14e031f4f7c08e3c4f324d45f002be5cf3f7a513e535243bb7fbf89aa9",
+-   "site": "1b1a08b5e256a0c221bf472a1c3e244be768ce0bc5221afb65637bc10eb01afb",
++   "site": "880dbbc92b7a552565549ad5d3b06fd382db31d5f26525f50805e56b5dd8b753",
+    "kit": "21a71be61f5780cb5c9137142f6e1e65307e0eaf4b17d51653321c845c9e7b03",
+
+- Expected  - 1
++ Received  + 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/cover/cover.test.ts:107:30)
+(fail) the Handover's cover file > is what the plan, the block, the kit and the site make today (bun run cover) [0.39ms]
+107 |     expect(read(COVER_FILE)).toBe(made.json);
+108 |     expect(buildCover().json).toBe(made.json); // twice
+109 |     expect(Cover.safeParse(JSON.parse(read(COVER_FILE))).success).toBe(true);
+110 |   });
+111 |   const rules = () => checkCover(JSON.parse(read(COVER_FILE)), { free: freeCm, placeAt, inputs: today() });
+112 |   test('CV-1 holds', () => { expect(rules().find(c => c.id === 'CV-1')!.ok).toBe(true); });
+                                                                                  ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/cover/cover.test.ts:112:77)
+(fail) the Handover's cover file > CV-1 holds [2.24ms]
+
+tools/gen/test/forged.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/forged.test.ts:63:21)
+(fail) a round Keel failed > "Keel was not called" with a passing verdict and no keel.json is not a way out [97.86ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/forged.test.ts:75:21)
+(fail) a round Keel failed > a loop-2 round that leaves out a gate field is moved onto an older path: refused [102.54ms]
+
+tools/cover/cover.test.ts:
+187 | describe('the rules, each with a failing example', () => {
+188 |   const good = () => clone(JSON.parse(read(COVER_FILE))) as Cover;
+189 |   const run1 = (c: Cover, inputs = today()) => checkCover(c, { free: freeCm, placeAt, inputs });
+190 |   const failing = (c: Cover, id: string) => run1(c).find(x => x.id === id)!;
+191 |   test('CV-1: a point on blocked ground, a faces that is not a unit, a wrong cos or quality, a stale input, a car with no window', () => {
+192 |     expect(failing(good(), 'CV-1').ok).toBe(true);
+                                             ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/cover/cover.test.ts:192:40)
+(fail) the rules, each with a failing example > CV-1: a point on blocked ground, a faces that is not a unit, a wrong cos or quality, a stale input, a car with no window [2.73ms]
+
+tools/gen/test/forged.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/forged.test.ts:86:21)
+(fail) a round whose checks were never rerun > checks that passed in the record, with nothing rerun to confirm them, fail [90.25ms]
+
+tools/crew/cards.test.ts:
+42 |     expect(config).toEqual({ agents: { enabled: true, max_concurrent_threads_per_session: 3 } });
+43 |   });
+44 | 
+45 |   test('both generated sets match the current GDD', () => {
+46 |     const result = Bun.spawnSync(['bun', 'tools/crew/cards.ts', '--check'], { cwd: root });
+47 |     expect(result.stderr.toString()).toBe('');
+                                          ^
+error: expect(received).toBe(expected)
+
+- ""
++ "Crew cards need regeneration: .claude/agents/lead... (1215 bytes truncated) ...odex/agents/audio-designer.toml. Run bun run crew.
++ "
+
+- Expected  - 1
++ Received  + 2
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/crew/cards.test.ts:47:38)
+(fail) GDD crew in both clients > both generated sets match the current GDD [21.66ms]
+
+tools/gen/test/hooks.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/hooks.test.ts:17:21)
+(fail) retrieval query hook > a plug-in's query for a member is appended to its objective's queries, per round [73.64ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/hooks.test.ts:39:17)
+(fail) the corpus a run checks once > the first retrieval checks the disk against the index; every later one is told the hash it returned [84.08ms]
+
+tools/decokit/fit.test.ts:
+piece                              order      built W×D×tip          tip≤     fits
+DiscTower@avenue-gate-e            f6ca4370   22.1 × 22.1 × 165.6    165.6    yes
+DiscTower@avenue-gate-w            65e37915   22.1 × 22.1 × 165.6    165.6    yes
+Skyport_Tower_Portal               2ab0a017   44.0 × 46.0 × 108.0    108      yes
+SpaceHQ_Portal                     8b49241c   80.0 × 80.0 × 252.0    252      yes
+Tower_Atom@crescent-tower          02c63f61   24.0 × 24.0 × 99.2     99.4     yes
+Tower_Lantern@lantern-beacon       a2e5c906   16.0 × 16.0 × 86.0     86.1     yes
+Tower_Needle@avenue-needle         20e2a45a   18.0 × 18.7 × 167.8    167.8    yes
+Tower_Saucer@harbour-hotel         e81d6201   30.0 × 14.7 × 106.0    106      yes
+Tower_Starburst@avenue-starburst   524d94f5   19.6 × 18.6 × 194.3    194.3    yes
+Tower_Stepped@parade-gate-n        d419a422   24.0 × 24.0 × 75.0     75       yes
+Tower_Stepped@parade-gate-s        567b04ec   24.0 × 24.0 × 75.0     75       yes
+Tower_Terrace@crescent-terrace     3ac82e0f   24.0 × 22.0 × 122.7    122.7    yes
+
+tools/gen/test/hooks.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/hooks.test.ts:51:21)
+(fail) tokens in run.json > each call records its token counts; replay accepts runs with and without them and refuses a malformed one [82.14ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/hooks.test.ts:67:21)
+(fail) the critic gate recomputed from the proposals > replay recomputes the apply faults itself: a record that hides one fails, an honest record passes [88.00ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/hooks.test.ts:83:21)
+(fail) prompt preview > runs round 1 with the real task texts and no model: stand-ins answer, nothing costs, the prompts are written [79.89ms]
+92 |   test('an objective without stand-ins cannot be previewed', async () => {
+93 |     const bare: Plugin<null> = { ...toy, standIn: undefined };
+94 |     const old = { ...process.env };
+95 |     process.env.LEVELS_RUNS = join(scratch, 'bare', 'runs'); process.env.LEVELS_OUT = join(scratch, 'bare', 'out');
+96 |     try {
+97 |       await expect(generate(bare, { input: 'toy', rounds: 1, retriever: lexical, preview: true })).rejects.toThrow('has no stand-in proposal for a');
+                                                                                                                ^
+error: expect(received).toThrow(expected)
+
+Expected substring: "has no stand-in proposal for a"
+Received message: "GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery."
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/hooks.test.ts:97:108)
+(fail) prompt preview > an objective without stand-ins cannot be previewed [83.39ms]
+
+tools/gen/test/records.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/records.test.ts:14:19)
+(fail) each call records the hashes of its brief, prompt and schema and its effort; run.json the commit [89.33ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/records.test.ts:33:19)
+(fail) who approved a run is recorded in run.json [77.79ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/records.test.ts:38:19)
+(fail) replay tells an edited brief from an intact one, and a record without the hashes still replays [79.45ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/records.test.ts:53:19)
+(fail) the commit and the dirty flag are read before the run folder exists (r011 recorded dirty from a clean tree) [9.00ms]
+
+tools/gen/test/silent.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/silent.test.ts:12:19)
+(fail) a fail with no faults tells every builder what the critic wrote; the run goes on to a better round [74.56ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runToy (/Users/sky/Projects/suborned/tools/gen/test/toy.ts:74:21)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/gen/test/silent.test.ts:33:19)
+(fail) with no summary either, the fault says that the critic gave no reason [71.76ms]
+
+tools/routines/rounds.test.ts:
+239 |       taken.push({ o, tick, waited: tick - o.tick - shift }); shift = tick - o.tick;
+240 |     }
+241 |     return taken;
+242 |   }
+243 |   test('there are recorded routes that touch Inez, and each of their orders is taken at its recorded tick', () => {
+244 |     expect(scripts.length).toBe(9); // route A (Help, Pressure, and their board variants), the three fail-entry-* routes, and brief 058's route-a-disable and careless-loop-runs-out (Waymark, 2026-10-25)
+                                 ^
+error: expect(received).toBe(expected)
+
+Expected: 9
+Received: 8
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/routines/rounds.test.ts:244:28)
+(fail) what the quiet play can reach (recorded routes, taken against the reference) > there are recorded routes that touch Inez, and each of their orders is taken at its recorded tick [0.21ms]
+
+tools/missions/handover/mission.test.ts:
+118 |   // entry is retimed against §07 any more; it adds the guards' check-in line, a routine with no single offset. Every entry that
+119 |   // opens on an m:ss is a timeline entry, word for word; the check-in line is checked against what the engine reads (the cast
+120 |   // guard's post in the people file, the rulebook's check-in-period-s), and is not a timeline entry (the pill doesn't show it).
+121 |   test('the timeline is GDD §07\'s schedule, entry for entry; its check-in line is the engine\'s guard marks', async () => {
+122 |     const gdd = readdirSync(resolve(root, 'GDD')).filter(f => /^the-suborned-agent-gdd-v.*\.md$/.test(f));
+123 |     expect(gdd).toHaveLength(1);
+                      ^
+error: expect(received).toHaveLength(expected)
+
+Expected length: 1
+Received length: 2
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/missions/handover/mission.test.ts:123:17)
+(fail) handover mission file > the timeline is GDD §07's schedule, entry for entry; its check-in line is the engine's guard marks [0.48ms]
+
+tools/levels/dialogue/test/dialogue.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runPreview (/Users/sky/Projects/suborned/tools/gen/preview-run.ts:27:23)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:46:57)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:27:15)
+(fail) dialogue plug-in > --preview: round 1 with no model; writes both prompts and an estimate; the prompt asks for the scope's cells [1746.51ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:63:25)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:27:15)
+(fail) dialogue plug-in > a stand-in run of the lexicon scope is ACCEPTED, and replays offline [1786.62ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:63:25)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:27:15)
+(fail) dialogue plug-in > a stand-in run of the scenes scope is ACCEPTED, and replays offline [1619.95ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:63:25)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:27:15)
+(fail) dialogue plug-in > a stand-in run of the street scope is ACCEPTED, and replays offline [1664.81ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:63:25)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/dialogue/test/dialogue.test.ts:27:15)
+(fail) dialogue plug-in > a stand-in run of the civic scope is ACCEPTED, and replays offline [1728.65ms]
+
+tools/levels/people/test/people.test.ts:
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async runPreview (/Users/sky/Projects/suborned/tools/gen/preview-run.ts:27:23)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/people/test/people.test.ts:38:25)
+(fail) people plug-in > --preview: round 1 with no model; writes both prompts and an estimate [331.17ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at generate (/Users/sky/Projects/suborned/tools/gen/loop.ts:51:53)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/people/test/people.test.ts:52:23)
+(fail) people plug-in > a stand-in run is ACCEPTED, and replays offline [206.84ms]
+
+tools/drift-auto/drift-auto.test.ts:
+70 |     expect(judgeRun(run(['ok    GDD v0.22.0', 'ok    outcome ACCEPTED']), base).moved).toBe(true);
+71 |   });
+72 |   test('the GDD line is the one tools/gen/replay.ts prints (a real replay of r011)', () => {
+73 |     const r = Bun.spawnSync(['bun', 'tools/levels/replay.ts', 'r011', 'harbour-district'], { cwd: root, stdout: 'pipe', stderr: 'pipe' });
+74 |     const first = (r.stdout.toString() + r.stderr.toString()).split('\n').find(l => /^ok\s+GDD /.test(l));
+75 |     expect(first).toMatch(GDD_NOW); expect(signature([first!])[0]).toContain('now <current GDD>: GDD drift is labelled');
+                       ^
+error: Received value must be a string: undefined
+      at <anonymous> (/Users/sky/Projects/suborned/tools/drift-auto/drift-auto.test.ts:75:19)
+(fail) comparing a replay with the base state's > the GDD line is the one tools/gen/replay.ts prints (a real replay of r011) [84.34ms]
+
+tools/storage/storage.test.ts:
+PRUNE DRY RUN (nothing is deleted; --yes to delete)
+
+    8 KB  scratch: agent and brief scratch folders not touched for a while (out/<agent><n>, out/<brief>, model and concept runs)   [1 units, 1 files]
+      8 KB        1 files  out/keel030   agent-scratch; nothing changed for 14+ d
+  HELD KEEP:     8 KB        2 files  out/glint030   KEEP file in out/glint030
+
+WOULD FREE 8 KB in 1 files (1 units); held back 8 KB
+PRUNE (deleting)
+
+    8 KB  scratch: agent and brief scratch folders not touched for a while (out/<agent><n>, out/<brief>, model and concept runs)   [1 units, 1 files]
+      8 KB        1 files  out/keel030   agent-scratch; nothing changed for 14+ d
+  HELD KEEP:     8 KB        2 files  out/glint030   KEEP file in out/glint030
+
+FREEING 8 KB in 1 files (1 units); held back 8 KB
+deleted 1 paths, about 8 KB; 0 refused or failed; log out/storage/pruned-2026-10-26T16-46-35-492Z.json
+
+tools/drift-auto/drift-auto.test.ts:
+118 |   });
+119 |   test('an edit that changes what D-7 says is refused, with the rule shown, and nothing is written', () => {
+120 |     keep('tools/dialogue/check.ts');
+121 |     edit('tools/dialogue/check.ts', s => s.replace("out.push({ id: 'D-7', rule: RULES['D-7']!, bad });", "out.push({ id: 'D-7', rule: RULES['D-7']!, bad: [...bad, 'drift-auto test'] });"));
+122 |     const before = ledger(), r = cli();
+123 |     expect(r.out).toContain('CHECKER CODE changed fails dialogue'); expect(r.out).toContain('REFUSED'); expect(r.out).toContain('tools/dialogue/check.ts'); expect(r.out).toContain('checker rerun differs from checks.json');
+                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "CHECKER CODE changed fails dialogue"
+Received: "3 runs replayed (0 s): no CHECKER CODE failure, nothing to declare\n"
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/drift-auto/drift-auto.test.ts:123:19)
+(fail) end to end on a scratch copy > an edit that changes what D-7 says is refused, with the rule shown, and nothing is written [93.06ms]
+127 |   test('an edit to the people checker that moves P-3 is refused with the rule named', () => {
+128 |     keep('tools/people/check.ts');
+129 |     edit('tools/people/check.ts', s => s.replace("bad: [...new Set(bad)], value: `${cast.rows.length} rows, ${P.length} people` });", "bad: [...new Set(bad), 'probe'], value: `${cast.rows.length} rows, ${P.length} people` });"));
+130 |     const ledgers = ['tools/levels/people/drift.json', 'tools/levels/drift.json', 'tools/levels/skyline/drift.json'].map(f => readFileSync(resolve(box, f), 'utf8'));
+131 |     const r = sh(['bun', 'tools/drift-auto/cli.ts', '--objective', 'people']);
+132 |     expect(r.out).toContain('REFUSED'); expect(r.out).toContain('tools/people/check.ts'); expect(r.out).toMatch(/rules whose result differs and no declared cause names: .*P-3/); expect(r.code).toBe(1);
+                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "REFUSED"
+Received: "5 runs replayed (0 s): no CHECKER CODE failure, nothing to declare\n"
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/drift-auto/drift-auto.test.ts:132:19)
+(fail) end to end on a scratch copy > an edit to the people checker that moves P-3 is refused with the rule named [112.93ms]
+135 |   });
+136 |   test('a harmless edit: --check names the file and writes nothing; the real run declares it and the replays pass', () => {
+137 |     keep('tools/dialogue/rules.ts');
+138 |     edit('tools/dialogue/rules.ts', s => s + '\n// drift-auto test: a comment moves the hash and nothing else\n');
+139 |     const before = ledger(), c = cli('--check');
+140 |     expect(c.out).toContain('tools/dialogue/rules.ts'); expect(c.out).toContain('not written'); expect(c.code).toBe(1); expect(ledger()).toBe(before);
+                        ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "tools/dialogue/rules.ts"
+Received: "3 runs replayed (0 s): no CHECKER CODE failure, nothing to declare\n"
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/drift-auto/drift-auto.test.ts:140:19)
+(fail) end to end on a scratch copy > a harmless edit: --check names the file and writes nothing; the real run declares it and the replays pass [105.76ms]
+
+tools/figures/sway.test.ts:
+[sway] the Unity install is not reinstalled yet (8 clips): cover_kneel: missing, cover_in: missing, cover_out: missing, cover_pin: missing, cover_fire: missing, flinch_add: missing, kick_add: missing, pin_peek_add: missing
+
+tools/levels/test/levels.test.ts:
+58 |     }
+59 |   });
+60 | 
+61 |   test('a full run: round 1 fails the checker (Keel is not called), the owner repairs it, round 2 is ACCEPTED; replay passes', async () => {
+62 |     const r = await levels();
+63 |     expect(r.stdout).toContain('r001 ACCEPTED (0.2.0-r001.2)'); expect(r.code).toBe(0);
+                          ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "r001 ACCEPTED (0.2.0-r001.2)"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:63:22)
+(fail) levels transit, stubbed > a full run: round 1 fails the checker (Keel is not called), the owner repairs it, round 2 is ACCEPTED; replay passes [269.41ms]
+76 |     const res = await withRuns(() => replay('harbour-district', 'r001'));
+77 |     expect(res.lines.filter(l => l.startsWith('FAIL'))).toEqual([]); expect(res.ok).toBe(true);
+78 |   });
+79 | 
+80 |   test('gdd is recorded from the loaded files; a different GDD version is labelled drift, the same version with a changed card still FAILs', async () => {
+81 |     const src = join(runs, 'harbour-district', 'r001'), run = await Bun.file(join(src, 'run.json')).json(), cur = (await readdir(resolve(root, 'GDD'))).filter(f => f.includes('agent-gdd') && f.endsWith('.md')).sort().at(-1)!;
+                                                                                                         ^
+ENOENT: no such file or directory, open '/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs/harbour-district/r001/run.json'
+    path: "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs/harbour-district/r001/run.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:81:101)
+(fail) levels transit, stubbed > gdd is recorded from the loaded files; a different GDD version is labelled drift, the same version with a changed card still FAILs [0.39ms]
+91 |     expect(older.lines.join('\n')).toContain('round-1/datum: card .claude/agents/world-planner.md changed since the run (recorded against GDD v0.0.1)');
+92 |     const inferred = await mk('runs-inferred', j => { delete j.gdd; }); expect(inferred.ok).toBe(false); // no record, hits name the current GDD: same version, so strict
+93 |     expect(inferred.lines.join('\n')).toContain('(inferred from retrieved sources)');
+94 |   });
+95 |   test('chunker: a run records it; a different (or missing = v1) chunker labels corpus hash and GDD passage changes as drift, the same chunker still FAILs', async () => {
+96 |     const run = await Bun.file(join(runs, 'harbour-district', 'r001', 'run.json')).json(); expect(run.chunker).toBe(CHUNKER);
+                                                                                        ^
+ENOENT: no such file or directory, open '/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs/harbour-district/r001/run.json'
+    path: "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs/harbour-district/r001/run.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:96:84)
+(fail) levels transit, stubbed > chunker: a run records it; a different (or missing = v1) chunker labels corpus hash and GDD passage changes as drift, the same chunker still FAILs [0.24ms]
+108 |     if (old.g) expect(old.res.lines.join('\n')).toMatch(/retrieved GDD text no longer matches the corpus \(\d+ missing, \d+ changed of \d+\) \(recorded with chunker/);
+109 |     const none = await mk('runs-chunk-none', j => { j.corpusHash = '0'.repeat(64); delete j.chunker; }); expect(fails(none.res)).toEqual([]); expect(none.res.lines.join('\n')).toContain('recorded with chunker v1');
+110 |   });
+111 |   test('a seeded run is labelled everywhere and ends with the correction', async () => {
+112 |     const r = await levels('--seed', 'station-on-plot');
+113 |     expect(r.stdout).toContain('[SEEDED station-on-plot]'); expect(r.stdout).toContain('r002 ACCEPTED');
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "[SEEDED station-on-plot]"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:113:22)
+(fail) levels transit, stubbed > a seeded run is labelled everywhere and ends with the correction [203.65ms]
+118 |     expect((await withRuns(() => replay('harbour-district', 'r002'))).ok).toBe(true);
+119 |   });
+120 | 
+121 |   test('seed fare-claim lands only in round-1 Pulse notes, is labelled, and leaves lines, journeys, the checker and the derived timetable alone', async () => {
+122 |     const base1 = await levels(), r = await levels('--seed', 'fare-claim'), id = (x: string) => x.match(/(r\d{3}) ACCEPTED/)![1]!;
+123 |     expect(r.stdout).toContain('[SEEDED fare-claim]'); expect(r.stdout).toContain('ACCEPTED');
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "[SEEDED fare-claim]"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:123:22)
+(fail) levels transit, stubbed > seed fare-claim lands only in round-1 Pulse notes, is labelled, and leaves lines, journeys, the checker and the derived timetable alone [376.58ms]
+148 |     expect(FARE_CLAIM.length).toBeLessThan(400);
+149 |   });
+150 | 
+151 |   test('tampering one byte of a recorded plan, or breaking a schema, fails replay', async () => {
+152 |     const copy = join(scratch, 'tampered'); await cp(runs, copy, { recursive: true });
+153 |     const file = join(copy, 'harbour-district', 'r001', 'round-2', 'plan.json'), bytes = Buffer.from(await Bun.file(file).arrayBuffer());
+                                                                                                                                ^
+ENOENT: no such file or directory, open '/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/tampered/harbour-district/r001/round-2/plan.json'
+    path: "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/tampered/harbour-district/r001/round-2/plan.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:153:123)
+(fail) levels transit, stubbed > tampering one byte of a recorded plan, or breaking a schema, fails replay [1.99ms]
+165 | describe('levels, hardening', () => {
+166 |   test('replay uses the recorded raw input plan: editing the plan after the run does not break it; a changed checker is drift to label, and a changed result under it fails', async () => {
+167 |     const plans = join(scratch, 'plans'), rr = join(scratch, 'runs-raw'), file = join(plans, 'harbour-district.plan.json');
+168 |     await mkdir(plans, { recursive: true }); await Bun.write(file, JSON.stringify(base, null, 1));
+169 |     const r = await levelsWith({ SUBORNED_PLANS: plans, LEVELS_RUNS: rr }, file);
+170 |     expect(r.stdout).toContain('r001 ACCEPTED');
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "r001 ACCEPTED"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:170:22)
+(fail) levels, hardening > replay uses the recorded raw input plan: editing the plan after the run does not break it; a changed checker is drift to label, and a changed result under it fails [193.74ms]
+189 |   });
+190 | 
+191 |   test('the civic block is pinned per run; replay uses the pinned bytes even if the block on disk changes', async () => {
+192 |     const rr = join(scratch, 'runs-pin'), blk = join(scratch, 'block.json'), pf = join(scratch, 'plan-pin.json'), real = resolve(root, base.civic.block);
+193 |     await Bun.write(blk, Bun.file(real)); await Bun.write(pf, JSON.stringify({ ...base, civic: { ...base.civic, block: blk } }));
+194 |     const r = await levelsWith({ LEVELS_RUNS: rr }, pf); expect(r.code).toBe(0);
+                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:194:73)
+(fail) levels, hardening > the civic block is pinned per run; replay uses the pinned bytes even if the block on disk changes [179.64ms]
+206 |     } finally { delete process.env.LEVELS_RUNS; }
+207 |   });
+208 | 
+209 |   test('a run with no pinned block is superseded drift: fails, or warns with --allow-drift; no throw, no checker rerun', async () => {
+210 |     const copy = join(scratch, 'runs-old'); await cp(runs, copy, { recursive: true });
+211 |     const dir = join(copy, 'harbour-district', 'r001'), f = join(dir, 'run.json'), j = await Bun.file(f).json(); delete j.inputBlock; await Bun.write(f, JSON.stringify(j));
+                                                                                                               ^
+ENOENT: no such file or directory, open '/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs-old/harbour-district/r001/run.json'
+    path: "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs-old/harbour-district/r001/run.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:211:106)
+(fail) levels, hardening > a run with no pinned block is superseded drift: fails, or warns with --allow-drift; no throw, no checker rerun [1.19ms]
+222 |     const fx = join(scratch, 'fixtures'), rr = join(scratch, 'runs-fillet'); await cp(join(here, 'fixtures'), fx, { recursive: true });
+223 |     const good = await Bun.file(join(fx, 'transit-lines.1.json')).json(); await Bun.write(join(fx, 'transit-lines.2.json'), JSON.stringify(good));
+224 |     const bad = structuredClone(good); bad.lines[0].paths.push({ id: 'kink', role: bad.lines[0].mode === 'tram' ? 'running' : 'line', double: false, pts: [[0, 0], [10, 0, 50], [10, 10]] });
+225 |     await Bun.write(join(fx, 'transit-lines.1.json'), JSON.stringify(bad));
+226 |     const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr }, planFile);
+227 |     expect(r.stdout).toContain('SKIPPED'); expect(r.stdout).toContain('r001 ACCEPTED'); expect(r.code).toBe(0);
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "SKIPPED"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:227:22)
+(fail) levels, hardening > an impossible fillet is a Datum problem: the line is not applied, the checker and Pulse are skipped that round, and the run goes on [183.36ms]
+237 |     // Keel sees only a clean candidate: round 1 uses the clean stops, and Keel's verdict on it names two owners
+238 |     await Bun.write(join(fx, 'transit-stops.1.json'), await Bun.file(join(fx, 'transit-stops.2.json')).text());
+239 |     const pass = await Bun.file(join(fx, 'transit-critic.1.json')).text(), k = V1_FAIL();
+240 |     k.faults.push({ owner: 'Datum', rule: 'N-R1', fault: 'No stop can fix this reach gap.', fix: 'Extend a line.', chunks: ['__CHUNK__'] });
+241 |     await Bun.write(join(fx, 'transit-critic.1.json'), JSON.stringify(k)); await Bun.write(join(fx, 'transit-critic.2.json'), pass);
+242 |     const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr }, planFile); expect(r.code).toBe(0);
+                                                                                                       ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:242:98)
+(fail) levels, hardening > Keel's named owner wins: a fault {rule:'N-R1', owner:'Datum'} routes to Datum, who reruns next round [269.60ms]
+250 |   test('hand-offs: a blocking one reaches its owner as a fault and feedback, a non-blocking one is only recorded; replay passes', async () => {
+251 |     const fx = join(scratch, 'fixtures-hand'), rr = join(scratch, 'runs-hand'); await cp(join(here, 'fixtures'), fx, { recursive: true });
+252 |     const d = await Bun.file(join(fx, 'transit-lines.1.json')).json();
+253 |     d.handoffs = [{ owner: 'Vantage', blocking: true, ask: 'BLOCKASK keep stops off the new loop' }, { owner: 'Pulse', blocking: false, ask: 'SOFTASK check the loop headway' }];
+254 |     await Bun.write(join(fx, 'transit-lines.1.json'), JSON.stringify(d));
+255 |     const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_OUT: join(scratch, 'out-hand') }, planFile); expect(r.code).toBe(0);
+                                                                                                                                              ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:255:137)
+(fail) levels, hardening > hand-offs: a blocking one reaches its owner as a fault and feedback, a non-blocking one is only recorded; replay passes [272.76ms]
+270 |   test('hand-offs: a same-round blocking hand-off that the owner answers done: true is not a fault; the answer is checked on replay', async () => {
+271 |     const fx = join(scratch, 'fixtures-ans'), rr = join(scratch, 'runs-ans'); await cp(join(here, 'fixtures'), fx, { recursive: true });
+272 |     const d = await Bun.file(join(fx, 'transit-lines.1.json')).json(), ask = 'ANSASK place the T2 stops';
+273 |     d.handoffs = [{ owner: 'Vantage', blocking: true, ask }]; await Bun.write(join(fx, 'transit-lines.1.json'), JSON.stringify(d));
+274 |     const v = await Bun.file(join(fx, 'transit-stops.1.json')).json(); v.answers = [{ from: 'Datum', ask, done: true, note: 'placed' }]; await Bun.write(join(fx, 'transit-stops.1.json'), JSON.stringify(v));
+275 |     const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_OUT: join(scratch, 'out-ans') }, planFile); expect(r.code).toBe(0);
+                                                                                                                                             ^
+error: expect(received).toBe(expected)
+
+Expected: 0
+Received: 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:275:136)
+(fail) levels, hardening > hand-offs: a same-round blocking hand-off that the owner answers done: true is not a fault; the answer is checked on replay [185.59ms]
+283 |   });
+284 | 
+285 |   test('a synthesized N-R1 (reach) goes to both Datum and Vantage when Keel names no owner for it', async () => {
+286 |     const p = JSON.parse(JSON.stringify(base)), pf = join(scratch, 'plan-reach.json'), rr = join(scratch, 'runs-reach'); p.standards.transit.reach = 1; await Bun.write(pf, JSON.stringify(p));
+287 |     const r = await levelsWith({ LEVELS_RUNS: rr }, pf, '--rounds', '1'); expect(r.code).not.toBe(2);
+288 |     const f = await Bun.file(join(rr, 'harbour-district', 'r001', 'round-1', 'faults.json')).json();
+                                                                                                   ^
+ENOENT: no such file or directory, open '/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs-reach/harbour-district/r001/round-1/faults.json'
+    path: "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs-reach/harbour-district/r001/round-1/faults.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:288:94)
+(fail) levels, hardening > a synthesized N-R1 (reach) goes to both Datum and Vantage when Keel names no owner for it [189.59ms]
+289 |     expect(f.filter((x: any) => x.rule === 'N-R1' && x.synthesized).map((x: any) => x.owner).sort()).toEqual(['Datum', 'Vantage']);
+290 |   });
+291 | 
+292 |   test('--rounds is clamped to 1..3 and NaN means 3', async () => {
+293 |     const rr = join(scratch, 'runs-rounds'), one = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '0');
+294 |     expect(one.stdout).toContain('r001 REJECTED'); expect((await Bun.file(join(rr, 'harbour-district', 'r001', 'run.json')).json()).rounds).toHaveLength(1);
+                             ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "r001 REJECTED"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:294:24)
+(fail) levels, hardening > --rounds is clamped to 1..3 and NaN means 3 [187.53ms]
+303 |   test('the old rule (loop 1) still runs: Keel judges a candidate the checker failed, no gate fields; a run without the field replays as loop 1', async () => {
+304 |     const rr = join(scratch, 'runs-v1'), fx = await fixturesWith('fixtures-v1', async d => {
+305 |       await Bun.write(join(d, 'transit-critic.2.json'), await Bun.file(join(d, 'transit-critic.1.json')).text()); await Bun.write(join(d, 'transit-critic.1.json'), JSON.stringify(V1_FAIL()));
+306 |     });
+307 |     const r = await levelsWith({ STUB_FIXTURES: fx, LEVELS_RUNS: rr, LEVELS_LOOP: '1' }, planFile);
+308 |     expect(r.stdout).toContain('round 1: Keel fail'); expect(r.stdout).toContain('r001 ACCEPTED (0.2.0-r001.2)');
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "round 1: Keel fail"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:308:22)
+(fail) levels, loop rule and continuation > the old rule (loop 1) still runs: Keel judges a candidate the checker failed, no gate fields; a run without the field replays as loop 1 [178.96ms]
+319 |   });
+320 | 
+321 |   test('--continue starts from the rejected run: its last candidate and open faults, a link pinned by hash; the new run replays alone', async () => {
+322 |     const rr = join(scratch, 'runs-cont'), out2 = join(scratch, 'out-cont');
+323 |     const parent = await levelsWith({ LEVELS_RUNS: rr }, planFile, '--rounds', '1');
+324 |     expect(parent.stdout).toContain('r001 REJECTED'); expect(parent.code).toBe(1);
+                                ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "r001 REJECTED"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:324:27)
+(fail) levels, loop rule and continuation > --continue starts from the rejected run: its last candidate and open faults, a link pinned by hash; the new run replays alone [186.51ms]
+358 |     const pf = join(withParent, 'harbour-district', 'r001', 'run.json'), pj = await Bun.file(pf).json(); pj.date = '2000-01-01'; await Bun.write(pf, JSON.stringify(pj));
+359 |     const d = await replayIn(withParent); expect(d.ok).toBe(false); expect(d.lines.join('\n')).toContain('parent r001 on disk differs from the run inherited from');
+360 |   });
+361 | 
+362 |   test('--continue refuses what it cannot continue, says why, and writes nothing', async () => {
+363 |     const rr = join(scratch, 'runs-refuse'), accepted = await levelsWith({ LEVELS_RUNS: rr }, planFile); expect(accepted.stdout).toContain('r001 ACCEPTED');
+                                                                                                                                       ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "r001 ACCEPTED"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:363:130)
+(fail) levels, loop rule and continuation > --continue refuses what it cannot continue, says why, and writes nothing [187.56ms]
+416 |     expect(deriveTimetable({ ...pulse([]), lines: [lines(7)[0]!] }, plan, report).faults.join()).toContain('line S1 has no speed');
+417 |   });
+418 |   test('applyDerived feeds the derived timetable to apply; a run records timetable derived and replays by recomputation', async () => {
+419 |     const { d, v } = await candidate(), r = await applyDerived(base, { datum: d, vantage: v, pulse: pulse([{ legs: [{ from: 'T1/circus', to: 'T1/comet' }] }]) }, '0.2.0-r001.1');
+420 |     expect(r.problems).toEqual([]); expect(r.plan.timetable.journeys[0].sec).toBe(r.timetable!.journeys[0]!.sec);
+421 |     const run = await Bun.file(join(runs, 'harbour-district', 'r001', 'run.json')).json(); expect(run.timetable).toBe('derived');
+                                                                                         ^
+ENOENT: no such file or directory, open '/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs/harbour-district/r001/run.json'
+    path: "/var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/levels-piUf3F/runs/harbour-district/r001/run.json",
+ syscall: "open",
+   errno: -2,
+    code: "ENOENT"
+
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:421:84)
+(fail) derived timetable > applyDerived feeds the derived timetable to apply; a run records timetable derived and replays by recomputation [520.10ms]
+20 |     if (!top) throw new Error(`No versioned ${kind} GDD found`);
+21 |     if (files[1] && compareVersions(top.version, files[1].version) === 0) throw new Error(`Ambiguous latest ${kind} GDD v${top.version}: multiple files`);
+22 |     return top;
+23 |   };
+24 |   const agent = latest('agent'), human = latest('human');
+25 |   if (compareVersions(agent.version, human.version)) throw new Error(`GDD version mismatch: agent v${agent.version}, human v${human.version}. Update both before discovery.`);
+                                                                    ^
+error: GDD version mismatch: agent v0.30.0, human v0.29.0. Update both before discovery.
+      at selectLatestGdd (/Users/sky/Projects/suborned/tools/rag/gdd-sources.ts:25:64)
+      at agentGdd (/Users/sky/Projects/suborned/tools/rag/corpus.ts:39:42)
+      at currentGdd (/Users/sky/Projects/suborned/tools/gen/gdd.ts:6:62)
+      at replayRun (/Users/sky/Projects/suborned/tools/gen/replay.ts:75:15)
+      at async <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/levels.test.ts:428:75)
+(fail) derived timetable > runs recorded before derivation (r002-r005) still replay as recorded [2.62ms]
+
+tools/lint/comments.test.ts:
+43 | 
+44 | describe('the repository', () => {
+45 |   test('no C# or TS line has code swallowed into a comment, a commented-out statement or an unclosed /*', () => {
+46 |     const r = lint();
+47 |     expect(r.files).toBeGreaterThan(500);
+48 |     expect(r.hits.map(h => `${h.file}:${h.line} ${h.kind}: ${h.text.slice(0, 160)}`)).toEqual([]);
+                                                                                           ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "unity/Assets/Suborned/Runtime/Play/ProofFire.cs:117 swallowed: Keys(Key.E); yield return new WaitForSecondsRealtime(0.32f); for (int w = 0; w < 30 && h.Ring == null; w++) yield return null; bool ringByHold = h.Ring != null;",
++ ]
+
+- Expected  - 1
++ Received  + 3
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/lint/comments.test.ts:48:87)
+(fail) the repository > no C# or TS line has code swallowed into a comment, a commented-out statement or an unclosed /* [175.20ms]
+
+tools/people/test/trust.test.ts:
+37 |     expect(People.safeParse({ ...gen.people, inputs: { ...gen.people.inputs, tools: 'x' } }).success).toBe(true); // `bun run people` adds the tools hash
+38 |   });
+39 |   test('another mission or plan text is another file', () => {
+40 |     const other = world({ ...texts, mission: texts.mission.replace('"startsAt": "17:24:30"', '"startsAt": "17:00"') }, 'civic-block');
+41 |     expect(other.hashes('x').mission).not.toBe(w.hashes('x').mission);
+42 |     expect(world({ ...texts, plan: texts.plan.replace('"version": "0.3.0"', '"version": "0.3.1"') }, 'civic-block').hashes('x').plan).not.toBe(w.hashes('x').plan);
+                                                                                                                                               ^
+error: expect(received).not.toBe(expected)
+
+Expected: not "07fce8ecb3057970ac55e7f31b81b7014eac89506b854b0c46f05e2c0a87f996"
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/people/test/trust.test.ts:42:139)
+(fail) the people file carries what it was made from > another mission or plan text is another file [307.36ms]
+
+tools/levels/skyline/test/skyline.test.ts:
+ 99 |     'skyline-datum.1.json': tidy(plan), 'skyline-vantage.1.json': vantage({ stops: stations(plan) }),
+100 |     'skyline-critic.1.json': PASS,
+101 |   };
+102 |   test('ACCEPTED in round 1: Keel passes; every call was shown the sheets; replay passes', async () => {
+103 |     const r = await skyline(await fixtureSet('accept', accept));
+104 |     expect(r.stdout).toContain('r001 ACCEPTED (0.3.0-r001.1)'); expect(r.code).toBe(0);
+                           ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "r001 ACCEPTED (0.3.0-r001.1)"
+Received: "[01-skyline-datum] 8 passages; world-planner attempt 1\n[02-skyline-vantage] 8 passages; level-designer attempt 1\nround 1 0.3.0-r001.1: checker FAIL C-0\nround 1: Keel not called (the checks failed), 1 fault(s) → Datum\n[03-skyline-datum] 8 passages; world-planner attempt 1\n[04-skyline-vantage] 8 passages; level-designer attempt 1\nround 2 0.3.0-r001.2: checker FAIL C-0\nround 2: Keel not called (the checks failed), 1 fault(s) → Datum\n[05-skyline-datum] 8 passages; world-planner attempt 1\n[06-skyline-vantage] 8 passages; level-designer attempt 1\nround 3 0.3.0-r001.3: checker FAIL C-0\nround 3: Keel not called (the checks failed), 1 fault(s) → Datum\nr001 REJECTED (0.3.0-r001.3) → /var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/skyline-DFJGbg/runs/harbour-district/r001\n"
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/skyline/test/skyline.test.ts:104:22)
+(fail) levels skyline, stubbed > ACCEPTED in round 1: Keel passes; every call was shown the sheets; replay passes [31540.25ms]
+
+tools/levels/test/checker.test.ts:
+26 |   const rerun = await inProcess(plan, true, block, { world: true, ...pin }), planOnly = await inProcess(plan, true, block);
+27 |   expect(recorded.checks.find(c => c.id === 'CD-3')?.limit, 'the CLI built the world from the pinned look').toBe(`≤ ${gate.toLocaleString('en-GB')}`);
+28 |   expect(recorded.checks.filter(c => !c.ok).map(c => c.id)).toContain('B-1');
+29 |   expect(code).toBe(1);
+30 |   expect(recorded.checks).toEqual(JSON.parse(JSON.stringify(rerun.checks)));
+31 |   expect(planOnly.checks.every(c => c.ok)).toBe(true); // the plan rules alone, which the transit checker ran before, called it clean
+                                                ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/test/checker.test.ts:31:44)
+(fail) a transit candidate that breaks a world rule fails the CLI, and the in-process rerun lists the same rules with the same results, on the pinned kit and look [17521.31ms]
+
+tools/world/gen/wave2.test.ts:
+303 |   const roles = new Set(ACCENT_ROLES.map(r => r[0])), tg = w.skins.filter(k => k.share.target);
+304 |   expect(tg.length).toBeGreaterThan(150);
+305 |   for (const k of w.skins) { expect(roles.has(k.accent)).toBe(true); expect(roles.has(k.accent2)).toBe(true); expect(k.accent2).not.toBe(k.accent); expect(k.trim).toBe('accent_gold'); }
+306 |   // never over the band, but one: harbour-boulevard/13 (porthole family) at its lightest (no piers, no spandrels, bulkhead 0.6) is faience 0.134 + porthole panels (3a)
+307 |   // 0.110 + entrance fins 0.093 = 0.338, every element mandatory under §2a; open with Vela (which gives: the panels, the fins or a lower bulkhead)
+308 |   expect(tg.filter(k => k.share.lower! > 0.3).map(k => k.building)).toEqual(['bld/harbour-boulevard/13']);
+                                                                          ^
+error: expect(received).toEqual(expected)
+
+@@ -1,2 +1,3 @@
+  [
++   "bld/boulevard-west/0",
+    "bld/harbour-boulevard/13",
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/world/gen/wave2.test.ts:308:69)
+(fail) colour life (grammar §2a): accent roles, 20-30% lower share on the facades held to it, >= 4 elements, fabric never red [0.52ms]
+
+tools/levels/skyline/test/units.test.ts:
+109 |     for (const r of ['SG-1', 'SK-1', 'SK-2', 'P-1', 'S-C1', 'B-3', 'MS-2']) expect(ownersOf(r), r).toEqual(['Datum']);
+110 |   });
+111 | 
+112 |   test('the critic reads failed rules and the skyline groups in full, other passes by id', async () => {
+113 |     const c = await checkCandidate(plan, block, { kit: KIT }), text = reportText(c, []);
+114 |     expect(c.ok).toBe(true);
+                       ^
+error: expect(received).toBe(expected)
+
+Expected: true
+Received: false
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/skyline/test/units.test.ts:114:18)
+(fail) skyline checks > the critic reads failed rules and the skyline groups in full, other passes by id [9428.93ms]
+
+tools/levels/skyline/test/skyline.test.ts:
+150 |     expect(r.stdout).toContain('r002 REJECTED (0.3.0-r002.2)'); expect(r.code).toBe(1);
+151 |     expect(r.stdout.match(/Keel not called \(the checks failed\)/g)).toHaveLength(2);
+152 |     const run = await read<Run>('r002', 'run.json');
+153 |     expect(run.outcome).toBe('REJECTED'); expect(run.cost.calls).toBe(4); // datum and vantage, twice; Keel never
+154 |     const row = (x: Round) => [x.checkerOk, x.failedChecks, x.assessFaults, x.criticRan, x.keelVerdict, x.faultOwners];
+155 |     expect(run.rounds.map(row)).toEqual([
+                                      ^
+error: expect(received).toEqual(expected)
+
+@@ -3,3 +3,5 @@
+      false,
+-     [],
++     [
++       "C-0",
++     ],
+      1,
+@@ -14,2 +16,3 @@
+      [
++       "C-0",
+        "SK-1",
+
+- Expected  - 1
++ Received  + 4
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/skyline/test/skyline.test.ts:155:33)
+(fail) levels skyline, stubbed > REJECTED: a bad tile, then SK-1; each goes back to Datum, Keel is not called; replay passes [20829.05ms]
+
+tools/levels/skyline/test/units.test.ts:
+154 |     return checkCandidate(a.plan, block, { kit: KIT });
+155 |   };
+156 | 
+157 |   test('Gardens labelled "inside SpaceHQ" fails SK-3, and nothing else', async () => {
+158 |     const c = await check(labelled('gardens', 'signatures/space-hq'));
+159 |     expect(c.checks.filter(x => !x.ok).map(x => x.id)).toEqual(['SK-3']);
+                                                             ^
+error: expect(received).toEqual(expected)
+
+@@ -1,2 +1,3 @@
+  [
++   "C-0",
+    "SK-3",
+
+- Expected  - 0
++ Received  + 1
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/skyline/test/units.test.ts:159:56)
+(fail) a station label (SK-3, brief 007 F) > Gardens labelled "inside SpaceHQ" fails SK-3, and nothing else [8181.39ms]
+
+tools/levels/skyline/test/skyline.test.ts:
+173 |   test("--continue: starts from the rejected run's last candidate and open fault, and replays alone", async () => {
+174 |     const fix = datum({ towerSites: [site(plan, 'avenue-needle')] });
+175 |     const fixtures = await fixtureSet('continue', { ...accept, 'skyline-datum.1.json': fix });
+176 |     const r = await skyline(fixtures, '--continue', 'r002');
+177 |     expect(r.stdout)
+178 |       .toContain('continuing harbour-district/r002 (round 2, 1 open fault(s)); round 1 reruns from datum');
+             ^
+error: expect(received).toContain(expected)
+
+Expected to contain: "continuing harbour-district/r002 (round 2, 1 open fault(s)); round 1 reruns from datum"
+Received: ""
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/skyline/test/skyline.test.ts:178:8)
+(fail) levels skyline, stubbed > --continue: starts from the rejected run's last candidate and open fault, and replays alone [18336.55ms]
+227 |     const ledger = join(ledgers, 'skyline.json'), now = await skylineHash(code);
+228 |     // the run wrote its own code state into the ledger when it ended
+229 |     const made = (await read<{ toolsHash: string }>('r001', 'run.json')).toolsHash;
+230 |     expect(Object.keys((await Bun.file(ledger).json()).recorded)).toContain(made.slice(0, 16));
+231 |     const res = await replayIn(runs, 'r001', again);
+232 |     expect(fails(res)).toEqual([]); expect(res.ok).toBe(true);
+                             ^
+error: expect(received).toEqual(expected)
+
+- []
++ [
++   "FAIL  corpus hash changed: recorded 7f5373d7ae2c, now 7702e069dfdf",
++   "FAIL  round-1/datum: card .claude/agents/world-planner.md changed since the run",
++   "FAIL  round-1/vantage: card .claude/agents/level-designer.md changed since the run",
++   "FAIL  round-1/vantage: retrieved GDD text no longer matches the corpus (0 missing, 1 changed of 8)",
++   "FAIL  round-2/datum: card .claude/agents/world-planner.md changed since the run",
++   "FAIL  round-2/datum: retrieved GDD text no longer matches the corpus (0 missing, 2 changed of 8)",
++   "FAIL  round-2/vantage: card .claude/agents/level-designer.md changed since the run",
++   "FAIL  round-2/vantage: retrieved GDD text no longer matches the corpus (0 missing, 1 changed of 8)",
++   "FAIL  round-3/datum: card .claude/agents/world-planner.md changed since the run",
++   "FAIL  round-3/datum: retrieved GDD text no longer matches the corpus (0 missing, 2 changed of 8)",
++   "FAIL  round-3/vantage: card .claude/agents/level-designer.md changed since the run",
++   "FAIL  round-3/vantage: retrieved GDD text no longer matches the corpus (0 missing, 1 changed of 8)",
++ ]
+
+- Expected  - 1
++ Received  + 14
+
+      at <anonymous> (/Users/sky/Projects/suborned/tools/levels/skyline/test/skyline.test.ts:232:24)
+(fail) levels skyline, stubbed > the generator moves: a comment-only edit replays with the drift labelled; a changed result needs a cause [21666.93ms]
+[01-skyline-datum] 8 passages; world-planner attempt 1
+[02-skyline-vantage] 8 passages; level-designer attempt 1
+[PREVIEW, no model] round 1 0.3.0-r001.1: checker FAIL C-0
+[03-skyline-critic] 8 passages; simulation-engineer attempt 1
+[PREVIEW, no model] round 1: Keel pass, 1 fault(s) → Datum
+[PREVIEW, no model] r001 REJECTED (0.3.0-r001.1) → /var/folders/5y/595f_jgj3cl49sf602140y8c0000gn/T/skyline-DFJGbg/preview/runs/harbour-district/r001
+
+ 2038 pass
+ 3 skip
+ 92 fail
+ 506370 expect() calls
+Ran 2133 tests across 160 files. [307.94s]
+error: script "test" exited with code 1
+error: script "guard" exited with code 1

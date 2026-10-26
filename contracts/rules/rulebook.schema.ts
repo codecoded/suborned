@@ -307,6 +307,7 @@ export const Rulebook = z.strictObject({
     takeCover: z.strictObject({ snap: Ref, reach: Ref, rule: text }).optional(),
     pin: z.strictObject({ s: Ref, mod: Ref, hold: z.boolean(), cell: z.boolean(), rule: text }).optional(),
     moves: z.strictObject({
+      on: z.boolean().optional(), // engine 0.35.1 (Sky 2026-10-26): false takes the four moves out of play (unknown-verb); absent reads as on
       ready: Ref,
       mark: z.strictObject({ reach: Ref, s: Ref }),
       talk: z.strictObject({ reach: Ref, s: Ref, down: Ref, hurt: z.boolean() }),

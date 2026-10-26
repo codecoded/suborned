@@ -406,8 +406,9 @@ describe('§06 weapons: the cost moves from the shot to the victim (Sky 2026-10-
     expect(w.oneInput?.on).toBe(true); expect(w.oneInput?.rule).toMatch(/cease, stance, panic and free orders are retired/);
     expect(w.focus?.sticky).toBe(true); expect(w.focus?.rule).toMatch(/it waits: no fire\.out-of-range, no fire\.lapses/);
     expect([n(w.takeCover!.snap), n(w.takeCover!.reach)]).toEqual([150, 10]); // 1.5 m, cover within 10 m
-    expect([n(w.pin!.s), n(w.pin!.mod), w.pin!.hold, w.pin!.cell]).toEqual([2, 500, true, true]); // the probe's B: 2 s, at half, holds; the cell too (Motive sets it)
+    expect([n(w.pin!.s), n(w.pin!.mod), w.pin!.hold, w.pin!.cell]).toEqual([2, 500, true, false]); // the probe's B: 2 s, at half, holds; the cell spared (engine 0.35.1, Motive's ruling 7)
     const m = w.moves!;
+    expect(m.on).toBe(false); expect(m.rule).toMatch(/Out of play from engine 0\.35\.1/); // Sky 2026-10-26: the four moves out of play, the values kept
     expect(n(m.ready)).toBe(20);
     expect([n(m.mark.reach), n(m.mark.s)]).toEqual([30, 10]);
     expect([n(m.talk.reach), n(m.talk.s), n(m.talk.down), m.talk.hurt]).toEqual([12, 2, 1, true]);

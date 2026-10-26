@@ -1,0 +1,20 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "range",
+ "start": {},
+ "orders": [
+  {
+   "tick": 0,
+   "do": "spawn",
+   "target": "rivals",
+   "to": "near",
+   "count": 3
+  },
+  {
+   "tick": 0,
+   "op": "enforcer",
+   "do": "draw"
+  }
+ ],
+ "until": 600
+}

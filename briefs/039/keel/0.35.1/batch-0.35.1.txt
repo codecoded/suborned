@@ -1,0 +1,3 @@
+$ bun tools/game/playing.ts dotnet "sim/cli/bin/Release/net10.0/suborned-sim.dll" batch "out/scratch/keel/0351/routes-1input" --out "out/scratch/keel/0351/batch-routes.jsonl"
+batch: 43 played in 2.8 s on 18 threads; 1 not ok
+error: script "guard" exited with code 1

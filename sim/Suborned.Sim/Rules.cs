@@ -589,7 +589,7 @@ namespace Suborned.Sim
             }
             if (wp.Opt("moves") is JNode mv)
             {
-                mv.Only("ready", "mark", "talk", "steam", "cover", "rule"); MovesOn = true; MoveReadyS = RI(mv["ready"]);
+                mv.Only("on", "ready", "mark", "talk", "steam", "cover", "rule"); MovesOn = mv.Opt("on") is JNode mon ? mon.Bool() : true; MoveReadyS = RI(mv["ready"]); // engine 0.35.1 (Sky 2026-10-26, via Main): `on` false takes the four moves out of play, the values kept
                 var mk = mv["mark"]; mk.Only("reach", "s"); MarkReachCm = RI(mk["reach"]) * 100; MarkS = RI(mk["s"]);
                 var tlk = mv["talk"]; tlk.Only("reach", "s", "down", "hurt"); TalkReachCm = RI(tlk["reach"]) * 100; TalkShoutS = RI(tlk["s"]); TalkNeedsDown = RI(tlk["down"]); TalkHurt = tlk["hurt"].Bool();
                 var sm = mv["steam"]; sm.Only("reach", "r", "s"); SteamReachCm = RI(sm["reach"]) * 100; SteamRCm = RI(sm["r"]) * 100; SteamS = RI(sm["s"]);
