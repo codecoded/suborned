@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.30.0, 2026-10-26)
+## Open for Sky (as of v0.30.1, 2026-10-26)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -35,6 +35,9 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.30.1 (2026-10-26; brief 071 §6, Motive)
+- Motive, 2026-10-26 (briefs/071/motive/rules.md §6, following Sky's Option A and S1 = no; no value changes): every op still on the map down fails only while Vale is on the map, after which they are left behind (§06); only the car a fight is at ends it by leaving, and a public fight is judged when it ends, when its car leaves or when the mission ends (§04, §06); T11 redrafted for two cars (§13). Keel adds SPLIT-PUBLIC to the split round.
 
 ## v0.30.0 (2026-10-26; briefs 066 and 071)
 - Sky, 2026-10-26 (brief 066): the height cap, "yes". Datum's plan 0.4.0: every area within 150 m of a mission's site at 3–4 storeys (16.8–20.4 m), the café a 4-storey corner at 20.4 m, the Records Office the one tall landmark, the tall city as backdrop, the 24 m concourse line the edge of the play streets (§09, §10 occlusion and skyline, §14 Vela, §15). Main's call: no hand pin for rocket-west/18 and /20 (systems > scripts). Open: the café's fourth storey hides the getaway bay at yaw 210 (Vantage); a 3-storey café shows it.
