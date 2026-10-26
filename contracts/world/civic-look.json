@@ -145,11 +145,6 @@
   "civic/civic-service-cabinet-1": {
    "DK_Enamel_Mustard": "DK_Enamel_Seafoam"
   },
-  "civic/foreground-civic-robot": {
-   "DK_Signal_Amber": "DK_Glow_Seafoam",
-   "DK_Face_Amber": "DK_Face_Teal",
-   "DK_RobotEnamel_Coral": "DK_Enamel_Coral17"
-  },
   "civic/fountain-garden-north-east": {
    "DK_Faience_Teal": "DK_Enamel_Seafoam",
    "DK_Leaf_CoreShrub": "DK_Leaf_CivicDark",

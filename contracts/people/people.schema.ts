@@ -9,8 +9,9 @@ const minute = z.number().int().min(0).max(1440);
 const v2 = z.array(z.number()).length(2);
 
 export const Place = z.object({
-  id, kind: z.enum(['door', 'bay', 'stop', 'seat', 'stand', 'home']).describe('seat: a chair of a café set the world draws; stand: a standing point beside the café that keeps every keep-clear zone clear (tools/people/seats.ts)'), name: z.string().min(1), at: v2.describe('plan frame, metres'),
+  id, kind: z.enum(['door', 'bay', 'stop', 'seat', 'stand', 'home']).describe('seat: a chair of a café set the world draws; stand: a standing point beside the café that keeps every keep-clear zone clear (tools/people/seats.ts), or a post\'s waiting point (`beside`)'), name: z.string().min(1), at: v2.describe('plan frame, metres'),
   area: id, plot: id.optional(),
+  beside: id.optional().describe('a post\'s waiting point (brief 067 L, tools/people/seats.ts postStandingPoints): the staffed door this stand waits beside, along its building\'s face. Whoever relieves that post waits here until it falls free, and a post a cast person holds through the mission is never taken: its relief stands here for her shift. It stands on the ground the door\'s own keep-clear zone keeps clear, and faces the kerb (tools/sim/people.ts)'),
 });
 export const Stop = z.object({
   place: z.union([id, z.literal('beyond')]).describe('"beyond" = off the sheet (lives beyond it, between the tram and home)'),

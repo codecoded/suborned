@@ -275,6 +275,9 @@ namespace Suborned.Play
             ["run.seen"] = ("warning", "Runner seen", ""), ["report"] = ("warning", "Reported", ""), ["fight.loud"] = ("fight", "Police coming in", "security/0"), ["fight.safe"] = ("fight", "The rivals wait at the car", "car/getaway"),
             ["fight.ambush"] = ("fight", "Ambush", "car/getaway"), ["fight.over"] = ("fight", "The fight is over", "car/getaway"), ["captured"] = ("fight", "Captured", ""),
             ["scout.down"] = ("fight", "Scout is down", "op/scout"), ["fixer.down"] = ("fight", "Fixer is down", "op/fixer"), ["tech.down"] = ("fight", "Tech is down", "op/tech"),
+            // engine 0.33.0 (brief 059): the crew's new codes, Fable's titles (cards.items), for a text without them
+            ["rivals.recalled"] = ("fight", "Rivals called back", "car/rivals"), ["rivals.wiped"] = ("fight", "The rival crew is finished", "car/getaway"), ["rivals.see-takedown"] = ("warning", "A crewmate saw it", ""),
+            ["rivals.wakes"] = ("warning", "A rival is awake", ""), ["rivals.frees"] = ("city", "A rival is untied", ""),
         };
         /// <summary>City scenes' card titles by the text's event id (Fable's table D).</summary>
         static readonly Dictionary<string, string> SceneTitles = new() { ["rivals-arrive"] = "Rival car arrives", ["chime"] = "Handover chime", ["guard-at-cafe"] = "The guard is at the café" };
@@ -286,6 +289,7 @@ namespace Suborned.Play
         /// keeps the same sight rule: an event whose scenes are all in-sight only, or that happens at a place, makes no card when no agent sees it.</summary>
         void FeedEvent(LogLine l)
         {
+            if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
             bool hidden = false;
             if (Text != null)
                 foreach (var e in Text.Events.Values)
@@ -305,6 +309,14 @@ namespace Suborned.Play
             lastEvent = c;
         }
         FeedCard lastEvent;
+        /// <summary>Engine 0.33.0: the crew is destroyed at the safe fight's start (`rivals.wiped` logged on that tick, before or after `fight.safe`;
+        /// Keel may stop logging fight.safe then, and either way the one card is the wiped one).</summary>
+        bool CrewWipedAt(int tick)
+        {
+            var log = Game.Log;
+            for (int i = log.Count - 1; i >= 0; i--) { var x = log[i]; if (x.Tick < tick) break; if (x.Tick == tick && x.Code == "rivals.wiped") return true; }
+            return false;
+        }
         /// <summary>The last log line whose card or scene the cell can't see: its spoken lines stay quiet too (Fable: a line follows its card's sight).</summary>
         LogLine? quiet;
 
@@ -333,6 +345,11 @@ namespace Suborned.Play
                 case "fight.safe": return $"{Num()} of them. The car can't leave while they stand.";
                 case "fight.ambush": return t.Contains("warning") ? "Inez's warning came in time. You saw it first." : "The rivals open fire at the car.";
                 case "fight.over": return Text?.CardFor("fight.over")?.Result is { Length: > 0 } fo ? fo : "The last of them is down or gone. Fire orders end. The car can go."; // Fable's card (text.json cards.items["fight.over"].result)
+                case "rivals.recalled": return "Rivals who were away are coming back for the fight."; // engine 0.33.0: Fable's results (cards.items), for a text without them
+                case "rivals.wiped": return "None of them can fight. Nothing holds the car. Go when you are ready.";
+                case "rivals.see-takedown": return "A rival saw his crewmate go down and opened fire. It's loud now.";
+                case "rivals.wakes": return "He is up again and goes for the Enforcer on sight.";
+                case "rivals.frees": return "A crewmate found him tied and untied him.";
                 case "captured": return t;
             }
             return l.Code.EndsWith(".down") ? "Another agent can carry them." : "";

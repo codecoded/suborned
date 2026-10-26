@@ -27,7 +27,7 @@ namespace Suborned.Play
             public string Id = ""; public Stand St; public Vector3 At, Fwd; public bool Here, Shut, Hover, Struck, Crawl; public float OpenedAt = -10f;
             public readonly List<Vector3> Route = new();
         }
-        public sealed class DriveMarks { public bool On; public readonly List<StandGhost> Ghosts = new(); public string Driver = ""; }
+        public sealed class DriveMarks { public bool On, Live; public readonly List<StandGhost> Ghosts = new(); public string Driver = ""; public float LiveK; /** brief 067 C5a: 0 rest, 1 live, eased 0.25 s */ }
         public readonly DriveMarks Drive = new();
         public sealed class ValeRouteMarks
         {
@@ -50,9 +50,26 @@ namespace Suborned.Play
         {
             var g = Game; if (g == null) return -1;
             for (int k = 0; k < 4; k++) if (Selected[k] && g.Ops[k].InCar && !g.Ops[k].Down) return k;
-            bool carOpen = Ring?.Plan?.T is { } rt && IsGetaway(rt) || Panel?.T is { } pt && IsGetaway(pt);
-            if (carOpen) for (int k = 0; k < 4; k++) if (g.Ops[k].InCar && !g.Ops[k].Down) return k;
+            for (int k = 0; k < 4; k++) if (g.Ops[k].InCar && !g.Ops[k].Down) return k; // brief 067 C1.4 (Glyph): else the first aboard (the car answers with no selection)
             return -1;
+        }
+
+        /// <summary>Brief 067 C5a (Glyph): the stands draw live (full, the centre disc, the hovered route) while an aboard agent is selected, the car
+        /// or a stand is hovered, the car's ring or panel is open, a Drive wedge is lit or hovered, or the pill or a hold is on a Drive; else at rest.</summary>
+        bool StandsLive()
+        {
+            var g = Game; for (int k = 0; k < 4; k++) if (Selected[k] && g.Ops[k].InCar && !g.Ops[k].Down) return true;
+            if (Hover != null && (IsGetaway(Hover) || Hover.Kind == "stand")) return true;
+            if (Ring?.Plan?.T is { } rt && (IsGetaway(rt) || rt.Kind == "stand") || Panel?.T is { } pt && (IsGetaway(pt) || pt.Kind == "stand")) return true;
+            return DriveNamed() != null;
+        }
+        /// <summary>The stand a Drive names now: the ring's hovered (else lit) Drive wedge, the hold's charge on a Drive, or the pill's offer of one.</summary>
+        string DriveNamed()
+        {
+            if (Ring is { } rs) { int i = rs.Hover >= 0 ? rs.Hover : rs.Lit; if (i >= 0 && i < rs.Segs.Count && rs.Segs[i].Row?.I?.Order is Order ro && ro.Do == "drive-car") return ro.Target; }
+            if (Charge is { Done: false, Fire: false, Plan: not null } c && c.Plan.Row(c.Way)?.I?.Order is Order co && co.Do == "drive-car") return co.Target;
+            if (HoverIntent?.Order is Order ho && ho.Do == "drive-car" && HoverIntent.Actionable) return ho.Target;
+            return null;
         }
 
         /// <summary>The yard is "after Vale's car" (Glyph 2026-10-26 §1): the stand by the service bay while the turned driver has not parked there yet.</summary>
@@ -134,16 +151,17 @@ namespace Suborned.Play
         /// <summary>Per frame, after the views: the ghosts and Vale's car's route.</summary>
         void DriveMarksFrame()
         {
-            var d = Drive; d.On = false; d.Ghosts.Clear(); d.Driver = "";
+            var d = Drive; d.On = false; d.Live = false; d.Ghosts.Clear(); d.Driver = "";
             var g = Game; if (g == null || g.Range || views == null || Ending.Length > 0 || g.Over) { StandColliders(false); ValeRoute.On = false; return; }
             int drv = DriverAgent();
-            d.On = g.R.DriveCarOn && g.S.Stands.Count > 1 && !FightStarted && drv >= 0;
+            d.On = g.R.DriveCarOn && g.S.Stands.Count > 1 && !FightStarted && g.AnyInCar; // brief 067 C1.4 (Glyph): whenever anyone is aboard (Vale counts), not only with an aboard agent selected
+            d.Live = d.On && StandsLive(); var named = d.On ? DriveNamed() : null;
             StandColliders(d.On);
             // the yard opening (Glyph §2): the tick Vale's car parks
             if (g.ValeCarParked && !valeParkedSeen) valeParkedAt = Time.unscaledTime; valeParkedSeen = g.ValeCarParked;
             if (d.On)
             {
-                d.Driver = Op.Name((OpId)drv);
+                d.Driver = drv >= 0 ? Op.Name((OpId)drv) : "";
                 List<string> holders = null; Guard("car holders", () => holders = g.CarHolders()); bool held = holders != null && holders.Count > 0;
                 bool valeDriving = g.Driver.Turned && g.Vale == ValeAt.InCar && !g.PickupService && g.CarInBayTick >= 0;
                 foreach (var st in g.S.Stands)
@@ -153,12 +171,13 @@ namespace Suborned.Play
                     gh.Here = st == g.CurStand && !g.GetawayDriving;
                     gh.Shut = !gh.Here && StandAfterVale(st); gh.Crawl = gh.Shut && valeDriving;
                     gh.Struck = !gh.Here && held;
-                    gh.Hover = Hover != null && Hover.Kind == "stand" && Hover.Key == st.Id;
+                    gh.Hover = Hover != null && Hover.Kind == "stand" && Hover.Key == st.Id || named == st.Id; // brief 067 C5b-c: a hovered or lit Drive wedge, a Drive charge or the car's Drive pill light its stand
                     gh.OpenedAt = StandAfterValeOnce(st) ? valeParkedAt : -10f;
                     if (gh.Hover && !gh.Here && !gh.Struck) gh.Route.AddRange(StandRoute(g.CurStand, st));
                     d.Ghosts.Add(gh);
                 }
             }
+            d.LiveK = Mathf.MoveTowards(d.LiveK, d.Live ? 1f : 0f, Time.unscaledDeltaTime / 0.25f);
             ValeRouteFrame();
         }
 

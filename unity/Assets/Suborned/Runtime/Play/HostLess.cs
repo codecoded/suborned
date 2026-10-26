@@ -183,16 +183,45 @@ namespace Suborned.Play
         /// <summary>A refusal's pop: the code's short form with {m} {usd} {tick} filled (as the long line), else the host's own short.</summary>
         string ShortOf(Order o, Answer a)
         {
-            var s = Text?.ShortLock(a.code, TargetKindOf(o.Target));
+            var s = Text?.ShortLock(a.code, LockVariant(a, TargetKindOf(o.Target)));
             if (s == null) return null;
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
-            string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
+            string tick = a.tick >= 0 ? LockTick(a.code, a.tick) : "?";
             s = s.Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick).Replace("{holders}", Text?.HoldersPhrase(a.ids) ?? "hostiles").Replace("{op}", o.Op.Length > 0 && IsOpName(o.Op) ? AgentNames[(int)Op.Parse(o.Op)] : "The agent");
             // Sky, route B: too early for Take says when Vale comes to his car (the briefing's timeline mark)
             if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
             return s;
         }
+
+        /// <summary>A port of text.schema.ts `lockVariant` (engine 0.33.0, Fable): car-held with the rival car among its holders (Answer.ids) is
+        /// worded by `rival-car` when the engine sends its first rider's step-out tick, `rival-car-driving` when it sends none (-1: the car still
+        /// driving in); any other answer keeps the caller's (the target's kind: "machine", or null for the person case).</summary>
+        static string LockVariant(Answer a, string targetKind)
+        {
+            if (a.code != "car-held" || string.IsNullOrEmpty(a.ids)) return targetKind;
+            foreach (var id in a.ids.Split(',')) if (id.Trim() == "car:rivals") return a.tick >= 0 ? "rival-car" : "rival-car-driving";
+            return targetKind;
+        }
+        /// <summary>{tick} in a lock's words (text.schema.ts tickAs): the mission clock ("6:13"), or for a lock marked `tickAs: left` the seconds
+        /// still to wait from now ("18 s": ceil, never below 0), as ctx.left says it.</summary>
+        string LockTick(string code, int tick)
+        {
+            if (Game != null && Text?.LockByCode(code ?? "") is PlayText.LockText l && l.TickAs == "left") return $"{Math.Max(0, (tick - Game.Tick + Game.Hz - 1) / Game.Hz)} s";
+            return MissionClock(tick);
+        }
+        /// <summary>The getaway car's holder chip when the rival car holds it (engine 0.33.0, Fable's fillLockShort): "Rivals coming · 18 s" with
+        /// the step-out tick, "Rivals coming" while it still drives in; "" when the rival car holds nothing. Asked once a tick.</summary>
+        public string RivalsHoldShort()
+        {
+            var g = Game; if (g == null || g.Range) return "";
+            if (rivalsHoldTick == g.Tick && rivalsHoldOrders == g.Orders.Count) return rivalsHold;
+            rivalsHoldTick = g.Tick; rivalsHoldOrders = g.Orders.Count; rivalsHold = "";
+            var a = GoLock(); if (a.code != "car-held" || !(a.ids ?? "").Contains("car:rivals")) return rivalsHold;
+            rivalsHold = ShortOf(new Order { Op = Op.Name(Agent), Do = "go" }, a) ?? (a.tick >= 0 ? $"{Math.Max(0, (a.tick - g.Tick + Game.Hz - 1) / Game.Hz)} s" : "");
+            return rivalsHold;
+        }
+        int rivalsHoldTick = -1, rivalsHoldOrders = -1; string rivalsHold = "";
 
         /// <summary>Fable 019's `byTarget` key for an order's target: "machine" for a camera (by its id or "camera:" key), the patrol robot or a
         /// response robot; else null (the base line, the person case).</summary>
@@ -210,7 +239,7 @@ namespace Suborned.Play
             string s = Text != null && Text.Pops.TryGetValue(key, out var p) ? p : Text?.ShortLock(key) ?? key;
             if (fill != null) s = s.Replace("{op}", fill).Replace("{m}", fill);
             s = s.Replace("{m}", "?");
-            Pop(s, screen, world, kind, 2f, PopIcon(key), longLine);
+            popCode = key; Pop(s, screen, world, kind, 2f, PopIcon(key), longLine);
         }
 
         /// <summary>Where the camera opens a run (block cm; Aster/Waymark 2026-10-16): Unity x -170.5, z -227.5.</summary>
@@ -298,7 +327,7 @@ namespace Suborned.Play
             mp.State = whole == null || whole.Seen == "no" ? "safe" : whole.Seen == "?" ? "unk" : carrying ? "alert" : "seen";
             if (whole != null) foreach (var w in whole.MaybeSeenBy) if (WatcherAt(w) is Vector3 wp) mp.Unwatched.Add(wp + Vector3.up * 3f);
             if (whole == null || whole.SeenBy.Count == 0) return;
-            var route = g.S.Grid.Route(g.Ops[k].Pos, to); if (route == null) return;
+            var route = MoveRoute(g.Ops[k].Pos, to); if (route == null) return; // engine 0.33.1: round the standing cars
             var pts = new List<Pt>(); for (int i = 1; i < route.Length; i++) { Pt a = route[i - 1], c = route[i]; int n = Math.Max(1, G.Dist(a, c) / 60); for (int j = 0; j < n; j++) pts.Add(G.Lerp(a, c, j, n)); } pts.Add(route[^1]);
             string prev = ""; Pt from = pts[0];
             for (int i = 0; i < pts.Count; i++)

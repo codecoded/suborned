@@ -53,6 +53,31 @@ export function standingPoints(civ: Civic, door: V, chairs: V[], free: (p: V) =>
   return out.sort((a, b) => dist(a, door) - dist(b, door) || a[0] - b[0] || a[1] - b[1]).slice(0, count);
 }
 
+/** Waiting points beside a staffed door [S] (brief 067 L; Keel and Suture, Sky's 0.2.122 play: the shift guards 29, 39, 61 and 74 on one point at the official door from 5:11, a relief on the door
+ *  guard's own post): along the building's face, either side of the door, `spacing` m apart and no farther than `reach` m from it, the nearest `count` that are free. A guard stands a
+ *  door a little off the wall (0.75 m at both Office doors), so the wall clearance is `wall`, not the café's 0.8; the ground solids keep their body clearance. */
+export const POST_STAND = { spacing: 1.2, count: 2, reach: 3.6, wall: 0.45 };
+
+/** The waiting points beside `door`: its building's nearest face gives the line, the points run along it both ways (nearest first, ties by x then y). `free`: walkable ground;
+ *  `clear`: outside every bay and every keep-clear zone but the ones that keep the door itself clear (the landing, the pavement at its foot: where its staff stand); `solid`: the
+ *  clearance from the block's ground solids (the plan's body clearance). Pure: no file is read here. */
+export function postStandingPoints(civ: Civic, door: V, free: (p: V) => boolean, clear: (p: V) => boolean, solid: number, o: { spacing: number; count: number; reach: number; wall: number } = POST_STAND): V[] {
+  const solids = new Solids(civ.solids ?? []), walls = footprints(civ), ground = civ.solids ?? [];
+  const edge = (polys: V[][], p: V) => Math.min(...polys.flatMap(poly => poly.map((a, i) => segDist(p, a, poly[(i + 1) % poly.length]!))));
+  let nearest = Infinity, tan: V = [1, 0];
+  for (const poly of walls) poly.forEach((a, i) => {
+    const b = poly[(i + 1) % poly.length]!, d = segDist(door, a, b), l = Math.hypot(b[0] - a[0], b[1] - a[1]);
+    if (l > 0 && d < nearest - 1e-9) { nearest = d; tan = [(b[0] - a[0]) / l, (b[1] - a[1]) / l]; }
+  });
+  const out: V[] = [];
+  for (let k = 1; k * o.spacing <= o.reach + 1e-9; k++) for (const sign of [1, -1]) {
+    const p: V = [r3(door[0] + sign * k * o.spacing * tan[0]), r3(door[1] + sign * k * o.spacing * tan[1])];
+    if (!free(p) || !clear(p) || solids.inside(p) || walls.some(w => inPoly(p, w)) || edge(ground, p) < solid || edge(walls, p) < o.wall) continue;
+    out.push(p);
+  }
+  return out.sort((a, b) => dist(a, door) - dist(b, door) || a[0] - b[0] || a[1] - b[1]).slice(0, o.count);
+}
+
 /** The day-clock parts of a stop given in absolute minutes (a stop may run past midnight). */
 export const dayParts = (from: number, to: number): [number, number][] => {
   const k = Math.floor(from / 1440) * 1440, f = from - k, t = to - k;

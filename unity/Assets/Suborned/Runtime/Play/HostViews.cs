@@ -247,7 +247,7 @@ namespace Suborned.Play
                 if (d.sqrMagnitude < 70f * 70f) d = d.sqrMagnitude < 1f ? r * (walker >= 0 && walker < idHash.Length && (idHash[walker] & 1) != 0 ? -70f : 70f) : d.normalized * 70f;
                 if (d == d0) continue; // not in the way: the point stands
                 var c = cp.Value; Pt At(Vector2 v) => new Pt(c.X + Mathf.RoundToInt(v.x), c.Y + Mathf.RoundToInt(v.y));
-                var grid = g.S.Grid; var pushed = At(d);
+                var grid = host.CarWalk; var pushed = At(d); // engine 0.33.1 (Keel's addendum): the free test sees the standing cars
                 if (grid.Free(pushed)) { p = pushed; continue; }
                 var mirror = At(d - 2f * r * Vector2.Dot(d, r)); if (grid.Free(mirror)) { p = mirror; continue; }
                 var behind = At(f * 100f); if (grid.Free(behind)) { p = behind; continue; }
@@ -582,7 +582,7 @@ namespace Suborned.Play
         /// <summary>The proof reads it: each drawn fan's watcher and strength now ("camera:entrance=0.00").</summary>
         /// <summary>The proof reads it: the watchers whose drawn fan is looped (hollow, dashed all round).</summary>
         public string LoopedFans { get { var l = new List<string>(); foreach (var kv in fanBy) if (kv.Value.Go.activeSelf && kv.Value.Looped) l.Add(kv.Key); return string.Join(" ", l); } }
-        public string FanStrengths { get { var l = new List<string>(); foreach (var kv in fanBy) if (kv.Value.Go.activeSelf) l.Add($"{kv.Key}={kv.Value.Strength:0.00}"); return string.Join(" ", l); } }
+        public string FanStrengths { get { var l = new List<string>(); foreach (var kv in fanBy) l.Add($"{kv.Key}={(kv.Value.Go.activeSelf ? kv.Value.Strength : 0f):0.00}"); return string.Join(" ", l); } } // brief 067 F: a cone gone from the street (0, hidden) still lists at 0
 
         /// <summary>The fans to draw this frame (every learned one at rest, the ones that matter strong); the rest hide. Each mesh is rebuilt
         /// when the engine hands back a different Fan (its cache keeps one per pose), its Live flag flips, or its strength moves.</summary>
@@ -595,9 +595,11 @@ namespace Suborned.Play
                 if (CameraDead(f.Watcher)) continue; // Glyph 058 §2: a camera cut or shot out has no cone (its dead disc stays)
                 if (!seen.Add(key)) continue;
                 if (!fanBy.TryGetValue(key, out var d)) fanBy[key] = d = NewFan(key);
-                if (!d.Go.activeSelf) { d.Go.SetActive(true); d.Strength = -1f; }
                 d.Want = strong == null ? 1f : i < strong.Count && strong[i] ? 1f : 0f;
-                d.Strength = d.Strength < 0f ? d.Want : Mathf.MoveTowards(d.Strength, d.Want, dt / (d.Want > d.Strength ? InS : OutS));
+                // brief 067 F3 (Glyph): no rest strength: a cone that stops mattering leaves the street (out over 0.6 s), one that starts comes in over 0.25 s
+                if (!d.Go.activeSelf) { if (d.Want <= 0f) continue; d.Go.SetActive(true); d.Strength = 0f; d.For = null; }
+                d.Strength = Mathf.MoveTowards(d.Strength, d.Want, dt / (d.Want > d.Strength ? InS : OutS));
+                if (d.Strength <= 0f && d.Want <= 0f) { d.Go.SetActive(false); d.For = null; continue; }
                 if (!ReferenceEquals(d.For, f) || d.Live != f.Live || d.Looped != LoopedFan(f)) Build(d, f);
                 else if (Mathf.Abs(d.Strength - d.BuiltAt) > 0.02f || (d.Strength == d.Want && d.BuiltAt != d.Strength)) Restrength(d);
             }
@@ -704,12 +706,15 @@ namespace Suborned.Play
             var f = d.For; if (f == null) return; float s = Mathf.Clamp01(d.Strength < 0f ? 1f : d.Strength); d.BuiltAt = s;
             var c = f.Live || d.Looped ? KindColour(f.Kind) : Grey;
             void Mat(Renderer r, Material m) { if (r.sharedMaterial != m) r.sharedMaterial = m; } // brief 045 F6: no material set when it is the same (a set flags the renderer for the GPU Resident Drawer)
-            float aHub = Mathf.Lerp(RestHub, StrongHub, s), aFar = Mathf.Lerp(RestFar, StrongFar, s);
+            // brief 067 F3 (Glyph): one look, the strong one, faded by the strength (0 is not drawn): fill 34 % to 14 % by distance, the strong rim
+            // (its alpha in tenths, so a fade uses at most ten materials a colour); the rest rim is retired
+            float aHub = StrongHub * s, aFar = StrongFar * s;
             if (d.Looped) { aHub = 0f; aFar = 0f; } // looped: hollow (no fill), the rim at 50 % whatever its strength
             cols.Clear(); foreach (var t in d.FillT) cols.Add(new Color(1f, 1f, 1f, Mathf.Lerp(aHub, aFar, t)));
             if (cols.Count == d.Fill.vertexCount) d.Fill.SetColors(cols);
-            Mat(d.FillR, FillMat(c)); Mat(d.RimR, FanMat(c, d.Looped ? LoopRimA : RestRimA)); Mat(d.RimSR, FanMat(c, d.Looped ? LoopRimA : 1f));
-            bool strong = s > 0.5f; if (d.RimR.enabled == strong) d.RimR.enabled = !strong; if (d.RimSR.enabled != strong) d.RimSR.enabled = strong;
+            float rimA = Mathf.Max(0.1f, Mathf.Round((d.Looped ? LoopRimA : 1f) * s * 10f) / 10f);
+            Mat(d.FillR, FillMat(c)); Mat(d.RimSR, FanMat(c, rimA));
+            if (d.RimR.enabled) d.RimR.enabled = false; bool on = s > 0.01f; if (d.RimSR.enabled != on) d.RimSR.enabled = on;
         }
 
         /// <summary>Glyph 058 §2: a looped cone's rim, dashed all round (0.13 m on, 0.10 m off: 5 px on, 4 off at play zoom), the phase carried.</summary>

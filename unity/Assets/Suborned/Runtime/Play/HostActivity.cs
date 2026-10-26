@@ -242,12 +242,12 @@ namespace Suborned.Play
             var l = (a.code ?? "").Length > 0 ? Text.LockByCode(a.code) : null;
             l ??= Text.LockOf(a.why ?? "");
             if (l == null || l.Line.Length == 0) return null;
-            var line = TargetKindOf(o.Target) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; // Fable 019: "Scout or Tech" on a machine
+            var line = LockVariant(a, TargetKindOf(o.Target)) is string tk && l.ByTarget.TryGetValue(tk, out var bv) ? bv.line : l.Line; // Fable 019: "Scout or Tech" on a machine; engine 0.33.0: car-held by the rival car (rival-car, rival-car-driving)
             string who = o.Target.Length > 0 ? Name(o.Target) : "them";
             string op = o.Op.Length > 0 && o.Op != "cell" ? AgentNames[(int)Op.Parse(o.Op)] : "The agent";
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
-            string tick = a.tick >= 0 ? MissionClock(a.tick) : "?";
+            string tick = a.tick >= 0 ? LockTick(l.Code, a.tick) : "?"; // engine 0.33.0 (Fable's tickAs): car-held's {tick} is the time still to wait
             line = line.Replace("{holders}", Text.HoldersPhrase(a.ids)); // brief 018: car-held names what blocks the car (Answer.ids)
             return line.Replace("{who}", who).Replace("{op}", op).Replace("{m}", m).Replace("{usd}", usd).Replace("{tick}", tick);
         }

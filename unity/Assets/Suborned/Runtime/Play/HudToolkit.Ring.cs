@@ -113,6 +113,7 @@ namespace Suborned.Play
                 Text(w.Word, s.Word); Show(w.Draw, s.Draws);
                 Show(w.Obj, s.Obj.Length > 0);
                 if (s.Obj.Length > 0) { var fc = w.Obj.Q("face"); if (s.Obj.StartsWith("icon:")) { fc.style.backgroundImage = StyleKeyword.None; if (fc.childCount == 0) E(fc, null, 1.5f, 1.5f, 9, 9); Icon(fc[0], s.Obj[5..], Cream); } else { if (fc.childCount > 0) Show(fc[0], false); Bg(fc, s.Obj, Color.white); } }
+                { var sk = w.Obj.Q("strike"); if (sk == null && s.ObjStruck) { sk = E(w.Obj, null, -2f, 6f, 20f, 2f); sk.name = "strike"; sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); sk.pickingMode = PickingMode.Ignore; } if (sk != null) Show(sk, s.ObjStruck && s.Obj.Length > 0); } // brief 067 C5b (Glyph): Go before Vale: Vale's cameo struck (a 2 px cream diagonal)
                 Show(w.Held, s.Shut); Show(w.Fields, !s.Shut || s.ShutText.Length > 0); // a shut Loop (one loop at a time) keeps one field: when the running loop ends
                 w.Pill.style.opacity = s.Shut ? 0.75f : 1f; w.Icon.style.opacity = s.Shut ? 0.45f : 1f;
                 if (s.Shut)
@@ -123,10 +124,10 @@ namespace Suborned.Play
                     for (int k = 1; k < w.Held.childCount; k++) { bool has = k - 1 < ids.Count; Show(w.Held[k], has); if (has) Bg(w.Held[k].Q("face"), "badges/" + (PlayText.RoleOfId(ids[k - 1]) == "rival" || ids[k - 1] == "car:rivals" ? "signal_rival" : "signal_police"), Color.white); } // engine 0.33.0: the rival car holds while its riders are still to come
                 }
                 var fs = s.Shut ? new List<HudModel.PField>() : HudModel.PriceLine(host, s.Row.I);
-                if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = s.ShutText });
+                if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = s.ShutIcon, Text = s.ShutText }); // brief 067 E: a shut way's short lock (no icon: the lock leads the pill)
                 else if (s.Shut && host.RivalsComingS() is int rcs && rcs >= 0 && s.Holders.Contains("car:rivals")) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = $"{rcs} s" }); // engine 0.33.0 (Motive M059-S1.7): the countdown to the first rider's step-out
                 if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
-                Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false);
+                Fields(w.Fields, fs, s.Shut && s.ShutIcon.Length == 0 ? Dim : Cream, ref w.FieldsKey, false, small: false); // brief 067 E2 (Glyph): a shut way's short lock in --text-dim
                 Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);
                 Show(w.Key, false); // Sky: no key legends (Aster 2026-10-22: the ⇧1 / ⇧2 caps on the plates); the wedge is the click
                 w.Pill.style.unityBackgroundImageTintColor = lit ? new Color(0.75f, 1f, 1f) : Color.white;

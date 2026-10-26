@@ -156,6 +156,9 @@ namespace Suborned.Play
             return (int)OpId.Enforcer;
         }
 
+        /// <summary>The proof reads it: lasting fire orders the engine lapsed for a broken line (fire.lapses), each said over its agent.</summary>
+        public int LapsePops { get; private set; }
+
         static int AgentIn(string text, int fallback)
         {
             var t = (text ?? "").ToLowerInvariant(); int best = -1, at = int.MaxValue;
@@ -181,6 +184,9 @@ namespace Suborned.Play
             {
                 var l = g.Log[i]; var c = l.Code ?? "";
                 if (c == "fire.out-of-range") { int k = AgentIn(l.Text.Split(':')[0], -1); if (k >= 0) { LocksDrop(new[] { k }); PopKey("fire-out-of-range", null, AgentWorld(k), Feedback.Info); OutOfRangePops++; } continue; }
+                // brief 067 D (Sky: "when the rivals move I kept losing the target"): the engine lapses a lasting order whose line stays broken for
+                // line-lapse-s once the player's move spent its walk-in; that is said over the agent (it was silent: the lock just went)
+                if (c == "fire.lapses") { int k = AgentIn(l.Text.Split(' ')[0], -1); if (k >= 0) { LocksDrop(new[] { k }); var w = Text != null && Text.Pops.TryGetValue("fire-lapses", out var fl) ? fl : Text?.DoneWord("fire.no-clear-line", null) is string nl ? char.ToUpperInvariant(nl[0]) + nl[1..] : "No line"; popCode = "fire-lapses"; Pop(w, null, AgentWorld(k), Feedback.Info, 2f, PopIcon("no-line")); LapsePops++; } continue; }
                 if (c == "order.dropped") { DroppedPop(l); continue; }
                 if (c == "order.walk-in-ends") { int k = AgentIn(l.Text.Split(':')[0], -1); if (k >= 0 && now - cancelPopAt[k] > 0.5f && actSeen[k] != null) ActCancelPop(k, actSeen[k], ""); continue; }
                 if (Ending.Length > 0) continue;

@@ -59,7 +59,11 @@
   "home-rocket-west": [3225,-6100],
   "office-bay": [7850,-3100],
   "office-entrance": [6400,-4125],
+  "office-entrance-stand-00": [6520,-4125],
+  "office-entrance-stand-01": [6280,-4125],
   "official-entrance": [7625,-3000],
+  "official-entrance-stand-00": [7625,-3120],
+  "official-entrance-stand-01": [7625,-2880],
   "s1-gardens": [-23000,-3000],
   "service-bay": [6375,-1500],
   "square-bay": [850,-4850],
@@ -141,7 +145,11 @@
   "cafe-table-7-seat-2": [-46,89],
   "office-bay": "kerb",
   "office-entrance": "door",
+  "office-entrance-stand-00": "kerb",
+  "office-entrance-stand-01": "kerb",
   "official-entrance": "door",
+  "official-entrance-stand-00": "kerb",
+  "official-entrance-stand-01": "kerb",
   "s1-gardens": "kerb",
   "service-bay": "kerb",
   "square-bay": "kerb",
@@ -800,7 +808,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-07"],["regular","p-cafe-14"],["lover","p-cafe-14"]],
-   "stops": [["home-rocket-west",-62670,-29610,0],["cafe-table-1-seat-0",-29490,-28590,1],["office-entrance",-28470,-15270,1],["office-entrance",-15270,-13470,1],["office-entrance",-13470,330,1],["cafe-table-3-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29610,0],["cafe-table-1-seat-0",-29490,-28590,1],["office-entrance-stand-00",-28530,-28470,1],["office-entrance",-28470,-15270,1],["office-entrance",-15270,-13470,1],["office-entrance",-13470,330,1],["cafe-table-3-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
   },
   {
    "id": "p-records-office-02",
@@ -1220,7 +1228,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-05"],["family","p-records-office-47"],["workmate","p-records-office-18"]],
-   "stops": [["home-rocket-west",-62670,-29850,0],["cafe-table-1-seat-1",-29550,-28650,1],["official-entrance",-28470,-12870,1],["official-entrance",-12870,-11070,1],["official-entrance",-11070,330,1],["cafe-table-2-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
+   "stops": [["home-rocket-west",-62670,-29850,0],["cafe-table-1-seat-1",-29550,-28650,1],["official-entrance-stand-00",-28530,-28470,1],["official-entrance",-28470,-12870,1],["official-entrance",-12870,-11070,1],["official-entrance",-11070,330,1],["cafe-table-2-seat-0",510,3210,1],["home-rocket-west",3330,23730,0]]
   },
   {
    "id": "p-records-office-30",
@@ -1880,7 +1888,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-16"],["regular","p-cafe-11"],["family","p-cafe-07"],["workmate","p-records-office-34"]],
-   "stops": [["office-entrance",-62670,-57270,1],["cafe-table-4-seat-0",-57090,-54390,1],["home-rocket-west",-54270,-930,0],["cafe-table-1-seat-0",-690,210,1],["office-entrance",330,13890,1],["office-entrance",13890,15690,1],["office-entrance",15690,23730,1]]
+   "stops": [["office-entrance-stand-00",-62670,-57270,1],["cafe-table-4-seat-0",-57090,-54390,1],["home-rocket-west",-54270,-930,0],["cafe-table-1-seat-0",-690,210,1],["office-entrance-stand-00",330,13890,1],["office-entrance-stand-00",13890,15690,1],["office-entrance-stand-00",15690,23730,1]]
   },
   {
    "id": "p-records-office-74",
@@ -1895,7 +1903,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-11"]],
-   "stops": [["official-entrance",-62670,-57270,1],["cafe-table-3-seat-0",-57090,-54390,1],["home-rocket-west",-54270,-1230,0],["cafe-table-1-seat-1",-750,150,1],["official-entrance",330,13530,1],["official-entrance",13530,15330,1],["official-entrance",15330,23730,1]]
+   "stops": [["official-entrance",-62670,-57270,1],["cafe-table-3-seat-0",-57090,-54390,1],["home-rocket-west",-54270,-1230,0],["cafe-table-1-seat-1",-750,150,1],["official-entrance-stand-00",270,330,1],["official-entrance",330,13530,1],["official-entrance",13530,15330,1],["official-entrance",15330,23730,1]]
   },
   {
    "id": "p-records-office-75",
@@ -1910,7 +1918,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["regular","p-cafe-05"],["workmate","p-records-office-76"],["lover","p-cafe-05"]],
-   "stops": [["home-rocket-west",-62670,-57750,0],["office-entrance",-57270,-42750,1],["office-entrance",-42750,-40950,1],["office-entrance",-40950,-28470,1],["cafe-table-7-seat-0",-28290,-25590,1],["home-rocket-west",-25470,23730,0]]
+   "stops": [["home-rocket-west",-62670,-57750,0],["office-entrance-stand-01",-57330,-57270,1],["office-entrance",-57270,-42750,1],["office-entrance",-42750,-40950,1],["office-entrance",-40950,-28470,1],["cafe-table-7-seat-0",-28290,-25590,1],["home-rocket-west",-25470,23730,0]]
   },
   {
    "id": "p-records-office-76",
@@ -1925,7 +1933,7 @@
    "holder": "beyond",
    "start": [0,0,0,0],
    "ties": [["workmate","p-records-office-05"],["workmate","p-records-office-09"],["workmate","p-records-office-75"]],
-   "stops": [["home-rocket-west",-62670,-57450,0],["official-entrance",-57270,-42810,1],["official-entrance",-42810,-41010,1],["official-entrance",-41010,-28470,1],["cafe-table-4-seat-0",-28290,-25590,1],["home-rocket-west",-25470,23730,0]]
+   "stops": [["home-rocket-west",-62670,-57450,0],["official-entrance-stand-00",-57330,-57270,1],["official-entrance",-57270,-42810,1],["official-entrance",-42810,-41010,1],["official-entrance",-41010,-28470,1],["cafe-table-4-seat-0",-28290,-25590,1],["home-rocket-west",-25470,23730,0]]
   },
   {
    "id": "p-rocket-west-01",

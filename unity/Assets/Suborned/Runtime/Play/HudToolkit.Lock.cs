@@ -1,0 +1,122 @@
+using System.Collections.Generic;
+using Suborned.Sim;
+using UnityEngine;
+using UnityEngine.UIElements;
+
+namespace Suborned.Play
+{
+    /// <summary>Brief 067 D (Glyph, Sky on 0.2.122: "when the rivals move I kept losing the target on them"): the lock reticle. A lasting fire
+    /// order already follows its target in the engine (Gun.Order); what was lost was the eye: the 049 ring is a ground decal, hidden by cover
+    /// and legs among a fight's rings. So a screen-space mark rides over the target's head, never depth-tested: the kit's `disc_dark_24` drawn
+    /// 26 px with `overlays/crosshair` 16 px cream, and under it the shooters' cameos (12 px in the chrome ring, overlapped 4 px, up to 4).
+    /// States by shape and motion only: set (1.8 → 1.0 in 0.18 s and one ring leaving), locked (still), held (the disc 70 %, the crosshair
+    /// 55 %, a dashed cream ring turning 0.25 turn/s: drawing, walking in, out of range, no line), released (fades, 1.0 → 0.8, 0.25 s). A
+    /// target off screen: an edge chip (plate_dark 22 × 52, the lock disc and a pointer turned toward it). A re-target: a hand-off line from
+    /// the old to the new for 0.25 s. The same target given again: one 0.25 s pulse. View only.</summary>
+    public sealed partial class HudToolkit
+    {
+        sealed class LockMark
+        {
+            public string Id = ""; public VisualElement Root, Disc, Cross, Faces, Edge, EdgePtr; public Paint Ring; public readonly List<int> Shooters = new();
+            public float Born = -9f, Gone = -1f, Given = -9f, PulseAt = -9f; public bool Locked, Seen; public Vector2 At; public bool OnScreen;
+        }
+        readonly Dictionary<string, LockMark> reticles = new(); readonly List<string> reticleGone = new();
+        readonly List<(Vector2 from, string to, float at)> handoffs = new();
+        /// <summary>The proof reads it: the reticles drawn now, "id:state:shooters" each.</summary>
+        public static string ReticlesShown { get; private set; } = "";
+        public const float ReticleD = 26f, ReticleUp = 2.55f;
+
+        LockMark NewReticle(string id)
+        {
+            var r = new LockMark { Id = id };
+            r.Root = E(marks, null, 0, 0, ReticleD, ReticleD + 18f); r.Root.pickingMode = PickingMode.Ignore; r.Root.style.overflow = Overflow.Visible;
+            r.Ring = P(r.Root, -12, -12, ReticleD + 24, ReticleD + 24, (p, rc) => ReticleRing(r, p, rc));
+            r.Disc = E(r.Root, "s-disc_dark_24", 0, 0, ReticleD, ReticleD); r.Disc.pickingMode = PickingMode.Ignore;
+            r.Cross = E(r.Disc, null, (ReticleD - 16f) / 2f, (ReticleD - 16f) / 2f, 16, 16); Bg(r.Cross, "overlays/crosshair", Cream);
+            r.Faces = E(r.Root, null, 0, ReticleD + 1f, float.NaN, 16); r.Faces.style.flexDirection = FlexDirection.Row; r.Faces.pickingMode = PickingMode.Ignore;
+            r.Edge = PlateDark(marks, 22f, 0.3f); r.Edge.style.position = Position.Absolute; r.Edge.style.width = 52; r.Edge.style.flexDirection = FlexDirection.Row; r.Edge.style.alignItems = Align.Center; r.Edge.style.paddingLeft = 7;
+            var ed = E(r.Edge, "s-disc_dark_24", w: 16, h: 16); ed.style.flexShrink = 0; Bg(E(ed, null, 3, 3, 10, 10), "overlays/crosshair", Cream);
+            r.EdgePtr = E(r.Edge, null, w: 14, h: 14); r.EdgePtr.style.marginLeft = 6; r.EdgePtr.style.flexShrink = 0; Icon(r.EdgePtr, "pointer", Cream);
+            manifest.Add((r.Root, "image", () => "lock reticle")); manifest.Add((r.Edge, "image", () => "lock edge chip"));
+            return r;
+        }
+
+        /// <summary>The set beat's ring leaving, the held state's turning dashed ring, the same-target pulse (painted round the disc).</summary>
+        void ReticleRing(LockMark r, Painter2D p, Rect rc)
+        {
+            float now = Time.unscaledTime, rad = ReticleD / 2f; var c = new Vector2(rc.width / 2f, ReticleD / 2f + 12f);
+            float set = (now - r.Born) / 0.18f;
+            if (set >= 0f && set < 1.6f) { float u = Mathf.Clamp01(set / 1.6f); p.strokeColor = new Color(Cream.r, Cream.g, Cream.b, 0.9f * (1f - u)); p.lineWidth = 3f; p.BeginPath(); p.Arc(c, rad + 2f + 9f * u, Deg(0), Deg(360)); p.Stroke(); } // one 3 px ring leaving it
+            if (!r.Locked && r.Gone < 0f)
+            {   // held: a dashed cream ring (3 on / 3 off, 1.5 px) turning 0.25 turn/s
+                float circ = 2f * Mathf.PI * (rad + 3f); int n = Mathf.Max(6, Mathf.RoundToInt(circ / 6f)); float rot = now * 90f;
+                p.strokeColor = Cream; p.lineWidth = 1.5f;
+                for (int i = 0; i < n; i++) { float a0 = rot + i * 360f / n; p.BeginPath(); p.Arc(c, rad + 3f, Deg(a0), Deg(a0 + 180f / n)); p.Stroke(); }
+            }
+        }
+
+        /// <summary>Per frame (the hold preset's marks): the reticles over the lasting fire orders' targets.</summary>
+        void LockReticles(bool on)
+        {
+            var h = host; float now = Time.unscaledTime; var bits = new List<string>();
+            var live = on && !m.Ended && h.Game != null ? h.FireLockTargets() : new List<(string id, List<int> shooters, bool locked, float given)>();
+            foreach (var r in reticles.Values) r.Seen = false;
+            var fresh = new List<LockMark>();
+            foreach (var (id, shooters, locked, given) in live)
+            {
+                if (!reticles.TryGetValue(id, out var r)) { r = NewReticle(id); reticles[id] = r; r.Born = now; r.Given = given; fresh.Add(r); }
+                else if (r.Gone >= 0f) { r.Gone = -1f; r.Born = now; r.Given = given; fresh.Add(r); } // set again
+                else if (given > r.Given + 0.05f) { r.Given = given; r.PulseAt = now; } // the same target given again: one pulse
+                r.Seen = true; r.Locked = locked; r.Shooters.Clear(); r.Shooters.AddRange(shooters);
+            }
+            foreach (var r in reticles.Values) if (!r.Seen && r.Gone < 0f) r.Gone = now;
+            // a re-target: an old reticle released this frame that shares a shooter with a new one: the hand-off line
+            foreach (var nr in fresh) foreach (var old in reticles.Values) if (old != nr && old.Gone >= 0f && now - old.Gone < 0.1f && old.OnScreen && old.Shooters.Exists(nr.Shooters.Contains)) handoffs.Add((old.At, nr.Id, now));
+            reticleGone.Clear();
+            foreach (var r in reticles.Values)
+            {
+                float age = r.Gone >= 0f ? now - r.Gone : -1f; if (age > 0.25f) { reticleGone.Add(r.Id); continue; }
+                float up = r.Id.StartsWith("car:") ? 1.9f : ReticleUp;
+                var w = h.DrawnAt(r.Id); Vector2 q = default; bool proj = w.HasValue && Proj(w.Value + Vector3.up * up, out q) && InView(q);
+                if (proj) { r.At = q; r.OnScreen = true; }
+                else if (w.HasValue && h.View) r.OnScreen = false;
+                // the disc over the head
+                Show(r.Root, r.OnScreen); Show(r.Edge, !r.OnScreen && w.HasValue && r.Gone < 0f);
+                if (r.OnScreen)
+                {
+                    float set = Mathf.Clamp01((now - r.Born) / 0.18f), ease = 1f - (1f - set) * (1f - set), scale = Mathf.Lerp(1.8f, 1f, ease);
+                    float pl = now - r.PulseAt; if (pl >= 0f && pl < 0.25f) scale *= 1f + 0.15f * Mathf.Sin(pl / 0.25f * Mathf.PI);
+                    float fade = age >= 0f ? 1f - age / 0.25f : 1f; if (age >= 0f) scale *= Mathf.Lerp(1f, 0.8f, age / 0.25f);
+                    r.Root.style.left = r.At.x - ReticleD / 2f; r.Root.style.top = r.At.y - ReticleD - 6f; // 6 px above the head bar's point
+                    r.Disc.style.scale = new Scale(new Vector3(scale, scale, 1f)); r.Root.style.opacity = fade;
+                    r.Disc.style.opacity = r.Locked || age >= 0f ? 1f : 0.7f; r.Cross.style.opacity = r.Locked || age >= 0f ? 1f : 0.55f;
+                    // the shooters' faces under the disc
+                    while (r.Faces.childCount < r.Shooters.Count && r.Faces.childCount < 4) { var f = Cameo(r.Faces, 12f, 2f); f.style.marginLeft = r.Faces.childCount == 1 ? 0 : -4; }
+                    for (int i = 0; i < r.Faces.childCount; i++) { bool has = i < r.Shooters.Count; Show(r.Faces[i], has); if (has) CameoOf(r.Faces[i], r.Shooters[i]); }
+                    float fw = Mathf.Min(4, r.Shooters.Count) * 12f + 4f; r.Faces.style.left = ReticleD / 2f - fw / 2f;
+                    r.Ring.MarkDirtyRepaint(); r.Root.BringToFront();
+                }
+                else if (r.Edge.resolvedStyle.display != DisplayStyle.None && w.HasValue && h.View is UnityEngine.Camera cam)
+                {   // the edge chip: at the screen edge on the line from the centre toward the target, its pointer turned to it
+                    var sp = cam.WorldToScreenPoint(w.Value); var size = root.panel.visualTree.layout.size; var c = new Vector2(size.x / 2f, size.y / 2f);
+                    var d = new Vector2(sp.x - Screen.width / 2f, Screen.height / 2f - sp.y); if (sp.z < 0f) d = -d; if (d.sqrMagnitude < 1f) d = Vector2.up;
+                    float k = Mathf.Min((size.x / 2f - 40f) / Mathf.Max(1e-3f, Mathf.Abs(d.x)), (size.y / 2f - 24f) / Mathf.Max(1e-3f, Mathf.Abs(d.y)));
+                    var at = c + d * k; r.Edge.style.left = at.x - 26f; r.Edge.style.top = at.y - 11f; r.EdgePtr.style.rotate = new Rotate(new Angle(Mathf.Atan2(d.y, d.x) * Mathf.Rad2Deg, AngleUnit.Degree));
+                }
+                bits.Add($"{r.Id}:{(r.Gone >= 0f ? "released" : now - r.Born < 0.18f ? "set" : r.Locked ? "locked" : "held")}:{string.Join(",", r.Shooters)}{(r.OnScreen ? "" : ":edge")}");
+            }
+            foreach (var id in reticleGone) { var r = reticles[id]; r.Root.RemoveFromHierarchy(); r.Edge.RemoveFromHierarchy(); reticles.Remove(id); }
+            // the hand-off lines: cream 1.6 px over ink-deep 4 px at 60 %, from the old reticle to the new, fading with the set (0.25 s)
+            for (int i = handoffs.Count - 1; i >= 0; i--)
+            {
+                var (from, to, at) = handoffs[i]; float u = (now - at) / 0.25f; if (u >= 1f || !reticles.TryGetValue(to, out var nr) || !nr.OnScreen) { handoffs.RemoveAt(i); continue; }
+                var b = nr.At + new Vector2(0f, -ReticleD / 2f - 6f); var a0 = from + new Vector2(0f, -ReticleD / 2f - 6f); float al = 1f - u;
+                paints.Add(pp => { pp.lineCap = LineCap.Round; pp.strokeColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.6f * al); pp.lineWidth = 4f; pp.BeginPath(); pp.MoveTo(a0); pp.LineTo(b); pp.Stroke(); pp.strokeColor = new Color(Cream.r, Cream.g, Cream.b, al); pp.lineWidth = 1.6f; pp.BeginPath(); pp.MoveTo(a0); pp.LineTo(b); pp.Stroke(); });
+            }
+            ReticlesShown = string.Join(" ", bits);
+        }
+
+        /// <summary>The top (panel y) of the reticle over `id` now, +inf when none: the verb pill's tail stands 6 px above it.</summary>
+        float ReticleTop(string id) => id != null && reticles.TryGetValue(id, out var r) && r.OnScreen && r.Gone < 0f ? r.At.y - ReticleD - 6f : float.PositiveInfinity;
+    }
+}

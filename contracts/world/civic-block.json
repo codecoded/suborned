@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "5c54a6507583ba35b7437f694171c1c4aa638266e90e28fd2cbb1e5f2aa04c73",
+  "sha256": "3fd052439866781b898af9a179c8ead0906fcbd7b06dd8bbb22061a34f2461cb",
   "owner": "Vantage",
   "applied": [
    {
@@ -295,7 +295,7 @@
      [67, -13.5],
      [60.5, -13.5]
     ],
-    "reason": "Sky 2026-10-19, service door east face, quiet back way; Sky's rule that things go where a real city would put them: a service yard behind an office has a bay for a van or car, reached from the nearest road. One car, 6.5 x 3 m (the lay-bys are 3 m deep), parallel to the wing's east face, 3 m off it (y -16.5..-13.5), x 60.5..67, beside the Dumpster (which stands against the wall in the door strip, y -19.5..-18.2) and the door. The driver's car pulls in nose first along -x from Apron Road down the reserved drive (keep-clear service-drive, x 67..80, y -16.5..-13.5) and stops at (63.75, -15.0); 'Service lane' (62.5, -16.8), 2.1 m out from the service door, is the car's kerbside door. Quiet: no camera cone, the guard's door cone or the patrol's sweep reaches the yard, and the Apron Road pavement (x 76..80) is 14.2 m from the stopped car and 15.6 m from 'Service lane', beyond the 13 m witness range. A bay is carriageway level (plan 0); until the block can state the drive (Splice, brief 023), the world has no lowered way between it and Apron Road."
+    "reason": "Sky 2026-10-19, service door east face, quiet back way; Sky's rule that things go where a real city would put them: a service yard behind an office has a bay for a van or car, reached from the nearest road. One car, 6.5 x 3 m (the lay-bys are 3 m deep), parallel to the wing's east face, 3 m off it (y -16.5..-13.5), x 60.5..67, beside the Dumpster (which stands against the wall in the door strip, y -19.5..-18.2) and the door. The driver's car pulls in nose first along -x from Apron Road down the reserved drive (keep-clear service-drive, x 67..80, y -16.5..-13.5) and stops at (63.75, -15.0); 'Service lane' (62.5, -16.8), 2.1 m out from the service door, is the car's kerbside door. Quiet: no camera cone, the guard's door cone or the patrol's sweep reaches the yard, and the Apron Road pavement (x 76..80) is 14.2 m from the stopped car and 15.6 m from 'Service lane', beyond the 13 m witness range. A bay is carriageway level (plan 0); until the block can state the drive (Splice, brief 023), the world has no lowered way between it and Apron Road. Since 2026-10-26 (Sky playing 0.2.122, brief 067 A) the patrol's sweep has moved off the Office front into this yard (mission.json patrol-a and patrol-b: a line 11.65 m out from the service door, facing it), so the yard is quiet only once the Tech's Reroute sends the patrol away or between its passes; the camera cones and the guard's door cone still do not reach it."
    },
    {
     "op": "addDrive",
@@ -566,31 +566,6 @@
    ],
    "z": 0,
    "height": 1.26
-  },
-  {
-   "id": "foreground-civic-robot",
-   "name": "Civic steward monument",
-   "category": "civic-monument",
-   "polygon": [
-    [26.16, -19],
-    [26.102, -18.709],
-    [25.937, -18.463],
-    [25.691, -18.298],
-    [25.4, -18.24],
-    [25.109, -18.298],
-    [24.863, -18.463],
-    [24.698, -18.709],
-    [24.64, -19],
-    [24.698, -19.291],
-    [24.863, -19.537],
-    [25.109, -19.702],
-    [25.4, -19.76],
-    [25.691, -19.702],
-    [25.937, -19.537],
-    [26.102, -19.291]
-   ],
-   "z": 0,
-   "height": 2.22
   },
   {
    "id": "office-boarding-pavilion",
@@ -2264,7 +2239,9 @@
        "at": [20.5, -8.5]
       }
      ]
-    },
+    }
+   ],
+   "removed": [
     {
      "id": "run-sq-south",
      "line": [
@@ -2282,7 +2259,7 @@
        "at": [20.5, -40]
       }
      ],
-     "reason": "Vantage 2026-10-15 (brief 011, fight cover; Pulse CV-2): the square's south-west quarter was bare paving between the fountain court and the south kerb, so the safe fight's ambush-3 (22, -42) stood in the open. Two modules east-west at x 20.5 (y -46.15..-37.85), 1.1 m high: waist cover the rivals take facing the getaway car (its south-face points shield toward it, 12-15 m off), and the cell answers from the car's own side. Under eye height (1.6 m), so no sightline the quiet routes use is cut (the guard at the door, the cameras, the patrol); 2.5 m clear of run-sq-west, 3 m off the kerb run, 10.6 m outside the court-walk ring; no keep-clear zone that bars planters."
+     "reason": "Removed 2026-10-26 (Vantage, brief 067 K; Sky playing 0.2.122: 'some odd planters in the fountain area near the car that make no sense to be there'). Placed 2026-10-15 (brief 011, Pulse CV-2) only as fight cover for ambush-1 and ambush-3: two freestanding modules across the open paving of the square's south-west quarter, 12.7 m and 14.5 m from the getaway car, tied to no kerb, wall, bed or walk, which is what reads as odd from the play camera. No edge nearby could take them and still shield a post from the car (the car stands on the square's own kerb, so a kerb run lies along the line of fire, not across it), so they go rather than move. The blocker's post at the square stand is not here: it is the kerb run run-west-south's road-side point (cv-072, 11.0 m from the car, inside the exit lane), which stays. ambush-1 and ambush-3 now lurk in the open (Motive re-measures the square's safe fight); CV-2 holds with ambush-5 moved to the café's terrace wall (mission.json)."
     },
     {
      "id": "run-sq-west",
@@ -2297,7 +2274,7 @@
        "at": [15.5, -39.5]
       }
      ],
-     "reason": "Vantage 2026-10-15 (brief 011, fight cover; Pulse CV-2): ambush-5 (14, -36) stands 9.6 m from the fountain, inside the court-walk ring that bars planters, with nothing between it and the car. One module north-south at y -39.5 (x 13.35..17.65), outside the ring (11.4 m from the pool centre at its nearest), 3 m from the post: its east-face point shields toward the car. With run-sq-south it reads as one L-shaped planted corner, the square's south-west answer to the café terrace's planting. 1.1 m: cover from fire, never from sight."
+     "reason": "Removed with run-sq-south (2026-10-26, Vantage, brief 067 K; Sky's 'odd planters'): one module beside lamp-court-w's ring at the fountain court's south-west edge, placed only to shield ambush-5 (14, -36) from the car. ambush-5 moves to (-3.25, -34.75), outside the front-west corner of the café's terrace wall, where the wall's car-facing point cv-032 already covers it (mission.json), so CV-2 stays at 3 of 5 hostile posts covered at the square stand."
     }
    ],
    "reason": "On the square's two street kerbs (plot edges y -50 and y -8), 0.16 m inside the edge: they close the square to the two streets and leave the ways in the crowd should use: on the west the café flank (north of x -14.4) and the crew and getaway kerb (x -4.6..16.6); on the east the café flank, the fountain axis (x 3.5..9.5) and the south corner (x 22.5..31). Twelve 4 m modules. None on the office plot or between the two plazas: a run on the forecourt's east side (x 44.9, y -21.5..-9.5) cut the walk from 'South walkway' to the official door, and the planter ring and the nine civic-* beds already hold the middle."

@@ -59110,6 +59110,173 @@
    "source": "generated"
   },
   {
+   "id": "Sedan_Rival",
+   "category": "Vehicles",
+   "size": [
+    1.8142,
+    1.5359,
+    4.7268
+   ],
+   "pivot": "origin-ground",
+   "pivotOffset": [
+    0,
+    0.077
+   ],
+   "front": "+Z",
+   "tris": 9994,
+   "materials": [
+    "DK_Enamel_Ink",
+    "DK_Enamel_Plum",
+    "DK_Rubber",
+    "DK_Chrome",
+    "DK_Beacon_Rose",
+    "DK_Lamp",
+    "DK_Enamel_Pearl",
+    "DK_Steel",
+    "DK_Whitewall"
+   ],
+   "lodCategory": "street",
+   "files": [
+    {
+     "root": "generated",
+     "role": "fbx",
+     "path": "Models/Vehicles/DK_Sedan_Rival.fbx",
+     "sha256": "d8239fd434c4f299db6d16716e393f801ad3507876e21b438d657581a151c708",
+     "bytes": 262412
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Ink.mat",
+     "sha256": "3e61f64f7e613c6d35480ee55f21446d60bbf14d03fc0cfeaa9c18643f67a2ce",
+     "bytes": 3832
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Ink.mat.meta",
+     "sha256": "66c707828df9f129efe068c1155b1137c99d9a6ccd44577a2bbade0482beca37",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Plum.mat",
+     "sha256": "1e12a8e35795ca72843ecaf46efe2e2b32ed45ce8ede3a39966b9610c4b82eae",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Plum.mat.meta",
+     "sha256": "add76d4b0b3a9f533219a79da10bfea1e92bb0a4033b06c055a8b3136976f858",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Rubber.mat",
+     "sha256": "65e2d79d299f142fd752a1617eb0005107c93cb431cb3fd95dc0b460b69fb482",
+     "bytes": 3931
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Rubber.mat.meta",
+     "sha256": "b1ac403a36b061bae1b6683811948d4dd6dd4ff7395606a5899c6ca2d8d649a0",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Chrome.mat",
+     "sha256": "3fb42a0dc9c5288e1a4cd3fd54e281aba73d0369506e7bb631e47900328a3269",
+     "bytes": 3929
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Chrome.mat.meta",
+     "sha256": "4c894cf78eb05e94d210de5d4f10603033ae87f67a5ff31c9ac6c3f2371620f7",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Beacon_Rose.mat",
+     "sha256": "2dacf9e3914c1fa57a77a28fc9eba82272f04c550bf14f92912a67cfbaf492a8",
+     "bytes": 3947
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Beacon_Rose.mat.meta",
+     "sha256": "59a36a5faa060d3b3897dea4537f7909d9a555e8fe4512338129eb9eb0844347",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Lamp.mat",
+     "sha256": "f35da018b5d56f91e64049c4ce70c3d48a7b76cc78bd3ebefab87c41661f016e",
+     "bytes": 3939
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Lamp.mat.meta",
+     "sha256": "58fc02cb67741a67edfc68661fe4d37c611506e5ea562b4ec40ca0cb422bf945",
+     "bytes": 188
+    },
+    {
+     "root": "generated",
+     "role": "material",
+     "path": "Materials/DK_Enamel_Pearl.mat",
+     "sha256": "9742c5d8d873e0d5a3a709856a35dcd4254d84c776a7cab189c30bd7660475de",
+     "bytes": 3833
+    },
+    {
+     "root": "generated",
+     "role": "material-meta",
+     "path": "Materials/DK_Enamel_Pearl.mat.meta",
+     "sha256": "300dfd6d8aac5e2854f29c75a656c17788955bc6c47c5db06ecc5a03a8d5424b",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Steel.mat",
+     "sha256": "2e91b8a259d374eb12df3fde03c73a7c1f9c764726ac1040c43a0e18916b6628",
+     "bytes": 3925
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Steel.mat.meta",
+     "sha256": "90705e570329a713c62606f7bc755da3c0463dceb889c5e0e0de8b1dd9e218a9",
+     "bytes": 188
+    },
+    {
+     "role": "material",
+     "path": "Materials/DK_Whitewall.mat",
+     "sha256": "b35f327cdf4d4d907c0d015fe663b4c4361899efe0e2c8e407a7f4ee932026c4",
+     "bytes": 3930
+    },
+    {
+     "role": "material-meta",
+     "path": "Materials/DK_Whitewall.mat.meta",
+     "sha256": "99323152ddcd30d38469ea062bcf05606daa92e78a23fbe7b7448a2e95c128e0",
+     "bytes": 188
+    }
+   ],
+   "tags": {
+    "use": [
+     "vehicle:car-rivals"
+    ],
+    "scale": [
+     1,
+     1
+    ],
+    "squash": 1,
+    "wave": 2,
+    "sight": "open"
+   },
+   "status": "candidate",
+   "source": "generated"
+  },
+  {
    "id": "ServiceRobot_Play",
    "category": "Vehicles",
    "size": [

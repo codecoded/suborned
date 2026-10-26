@@ -94,6 +94,9 @@ namespace Suborned.Play
             vpillDot = Words(vpill, 15.5f, new Color(LookHead.r, LookHead.g, LookHead.b, HeadDotAlpha)); vpillDot.text = "·"; vpillDot.style.marginLeft = 5; vpillDot.style.marginRight = 5;
             vpillDown = E(vpill, null, w: 16, h: 16); vpillDown.style.flexShrink = 0; Icon(vpillDown, "s_downed", Cream); Show(vpillDown, false); // brief 049 row 4: "down in" is this icon
             vpillText = Words(vpill, 15.5f); vpillText.style.marginLeft = 9;
+            // brief 067 E3 (Glyph): the locked pill's tail: a dim dot, then the short lock in --text-dim
+            vpillLockDot = Words(vpill, 15.5f, new Color(LookHead.r, LookHead.g, LookHead.b, HeadDotAlpha)); vpillLockDot.text = "·"; vpillLockDot.style.marginLeft = 5; vpillLockDot.style.marginRight = 5; Show(vpillLockDot, false);
+            vpillLock = Words(vpill, 15.5f, Dim); Show(vpillLock, false);
             BuildPillPred(); // engine 0.28: the likely / worse plate after the price, before the faces (hud29 predictionMarks)
             vpillFaces = E(vpill); vpillFaces.style.flexDirection = FlexDirection.Row; vpillFaces.style.marginLeft = 10; vpillFaces.style.flexShrink = 0;
             for (int i = 0; i < 4; i++) { var f = Cameo(vpillFaces, FaceSize); f.style.marginLeft = i == 0 ? 0 : -7; faceEls.Add(f); }
@@ -128,10 +131,12 @@ namespace Suborned.Play
         /// <summary>The prediction mark for the next PillLook (set by its caller from the intent: Intent.PredMark).</summary>
         string pillPredNow = "";
 
+        Label vpillLockDot, vpillLock;
         void PillLook(string text, string icon, bool harm, IReadOnlyList<int> faces, bool seen, float fill, string state)
         {
             bool ready = state == "ready";
-            string key = text + "|" + icon + "|" + harm + "|" + seen + "|" + (faces == null ? "" : string.Join(",", faces)) + "|" + ready + "|" + pillPredNow + "|" + PredForce + "|" + pillAfterNow;
+            string lockShort = ""; int lsAt = text.IndexOf('\u0001'); if (lsAt >= 0) { lockShort = text[(lsAt + 1)..]; text = text[..lsAt]; } // brief 067 E3: the locked pill's short lock, drawn dim after a dot
+            string key = text + "|" + lockShort + "|" + icon + "|" + harm + "|" + seen + "|" + (faces == null ? "" : string.Join(",", faces)) + "|" + ready + "|" + pillPredNow + "|" + PredForce + "|" + pillAfterNow;
             if (key != vpillKey)
             {
                 vpillKey = key; vpillLine = text; string head = "", rest = text;
@@ -139,6 +144,7 @@ namespace Suborned.Play
                 if (head.Length == 0 && text.StartsWith("to ") && text.IndexOf(" · ", System.StringComparison.Ordinal) is int wi and > 3) { head = text[..wi]; rest = text[(wi + 3)..]; } // review 4: the walk-in's "to Inez" is a head word, dim like "Hold"
                 bool downed = rest.StartsWith(HandoverHost.DownMark); if (downed) { rest = rest[HandoverHost.DownMark.Length..]; vpillLine = (head.Length > 0 ? head + " · " : "") + rest; } // brief 049 row 4: the downed icon, then the seconds
                 Text(vpillHead, head); Show(vpillHead, head.Length > 0); Show(vpillDot, head.Length > 0); Text(vpillText, rest); vpillText.style.marginLeft = head.Length > 0 || downed ? 0 : DiscGap;
+                Show(vpillLockDot, lockShort.Length > 0); Show(vpillLock, lockShort.Length > 0); Text(vpillLock, lockShort); if (lockShort.Length > 0) vpillLine = text + " · " + lockShort;
                 Show(vpillDown, downed); vpillDown.style.marginLeft = head.Length > 0 ? 0 : DiscGap; vpillDown.style.marginRight = 5;
                 vpillHead.style.color = ready ? LookLive : LookHead;
                 Show(vpillDisc, icon.Length > 0); if (icon.Length > 0) ActDiscOf(vpillDisc, icon, harm);

@@ -69,7 +69,7 @@ namespace Suborned.Play
                 rerouteKey = key; rerouteHaveKey = true; rerouteKeyTick = g.Tick; rerouteFull.Clear();
                 var er = EngineRoute(); rerouteFromEngine = er != null && er.Length >= 2;
                 Pt start = m.Live && haveSweep ? lastSweepAt : pose.Value.pos;
-                var pts = rerouteFromEngine ? er : S.Grid.Route(start, to);
+                var pts = rerouteFromEngine ? er : CarWalk.Route(start, to); // engine 0.33.1: the patrol walks round the standing cars too
                 if (pts == null || pts.Length < 2) pts = new[] { start, to };
                 foreach (var q in pts) rerouteFull.Add(frame.World(q));
             }

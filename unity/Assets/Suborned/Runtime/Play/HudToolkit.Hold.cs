@@ -18,6 +18,37 @@ namespace Suborned.Play
         static Color Hex(int rgb) => new(((rgb >> 16) & 255) / 255f, ((rgb >> 8) & 255) / 255f, (rgb & 255) / 255f);
 
         string holdKey = "";
+        VisualElement stackTab; readonly List<VisualElement> stackDots = new();
+        /// <summary>The proof reads it: the stack tab's dots now ("2/3": the active one and the count), "" hidden.</summary>
+        public static string StackShown { get; private set; } = "";
+        /// <summary>Brief 067 F9 (Glyph): with two or more things under the cursor, a plate_dark 16 px seated on the pill's top edge (overlapping its
+        /// chrome 6 px), one dot a candidate (6 px, 9 px pitch), the active one filled cream, the others a 1.4 px cream ring; and a dashed cream ring
+        /// (0.5 m, 1.8 px over ink-deep, 60 %) at each other candidate's feet. Z, Shift+Z, Tab and the wheel (rested 0.3 s) step.</summary>
+        void StackTabFrame(string state)
+        {
+            var h = host; int n = h.HoverStackCount; bool on = n >= 2 && state is "offer" or "lock" or "fire" && vpill != null && vpill.resolvedStyle.display != DisplayStyle.None;
+            if (stackTab == null) { if (!on) { StackShown = ""; return; } stackTab = PlateDark(marks, 16f, 0.3f); stackTab.style.position = Position.Absolute; stackTab.style.paddingLeft = 6; stackTab.style.paddingRight = 6; stackTab.style.alignItems = Align.Center; manifest.Add((stackTab, "image", () => "stack tab")); }
+            Show(stackTab, on); if (!on) { StackShown = ""; return; }
+            int act = h.HoverStackIndex, shown = Mathf.Min(n, 6);
+            while (stackDots.Count < shown) { var d = E(stackTab, null, w: 6, h: 6); d.style.marginLeft = stackDots.Count == 0 ? 0 : 3; Round(d, 3); d.style.flexShrink = 0; stackDots.Add(d); }
+            for (int i = 0; i < stackDots.Count; i++) { bool has = i < shown; Show(stackDots[i], has); if (!has) continue; bool a = i == act; stackDots[i].style.backgroundColor = a ? Cream : Color.clear; Border(stackDots[i], a ? 0f : 1.4f, Cream); }
+            float pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, tw = shown * 9f + 12f;
+            stackTab.style.left = vpill.style.left.value.value + pw / 2f - tw / 2f; stackTab.style.top = vpill.style.top.value.value - 16f + 6f; stackTab.BringToFront();
+            var list = h.HoverStack; for (int i = 0; i < list.Count; i++) if (i != act && h.TargetWorld(list[i]) is Vector3 w) Circle(w, 0.5f, new Color(Cream.r, Cream.g, Cream.b, 0.6f), 1.8f, true);
+            StackShown = $"{act + 1}/{n}";
+        }
+
+        /// <summary>Brief 067 E3 (Glyph): the locked pill's opacity.</summary>
+        public static float LockPillAlpha = 0.80f;
+        VisualElement lockAlt; Label lockAltText;
+        /// <summary>Brief 067 E3: with Alt, the locked pill's long line (Fable's lock `line`) on a plate_dark under the pill; "" hides it.</summary>
+        void LockAltFrame(string line)
+        {
+            if (lockAlt == null) { if (line.Length == 0) return; lockAlt = PlateDark(marks, 26f, 0.3f); lockAlt.style.position = Position.Absolute; lockAlt.style.paddingLeft = 12; lockAlt.style.paddingRight = 12; lockAltText = Words(lockAlt, 12.5f); lockAltText.style.whiteSpace = WhiteSpace.Normal; lockAltText.style.maxWidth = 420; manifest.Add((lockAlt, "line", () => lockAltText.text)); }
+            bool on = line.Length > 0 && vpill != null && vpill.resolvedStyle.display != DisplayStyle.None; Show(lockAlt, on); if (!on) return;
+            Text(lockAltText, line); float pl = vpill.style.left.value.value, pt = vpill.style.top.value.value, pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, aw = float.IsNaN(lockAlt.resolvedStyle.width) ? 300f : lockAlt.resolvedStyle.width;
+            lockAlt.style.left = pl + pw / 2f - aw / 2f; lockAlt.style.top = pt + PillH + TailH + 4f; lockAlt.BringToFront();
+        }
 
         static string LowerFirst(string s) => string.IsNullOrEmpty(s) ? s : char.ToLowerInvariant(s[0]) + s[1..];
 
@@ -49,7 +80,7 @@ namespace Suborned.Play
                     // Fable's wording row 3-6 (decision 1: the price stays while you hold): one line, its first word swaps: "Hold · …" filling, "Let go · …" full
                     t = ch.T; fill = ch.Progress; state = ch.Ready ? "ready" : "charge"; string head = ch.Ready ? "Let go · " : ch.Fire ? "Right hold · " : "Hold · ";
                     if (ch.Fire) { var fo = t != null ? h.FireOfferFor(t) : null; text = head + (fo != null ? PillLine(h, fo) : $"Fire at {(t?.Label ?? "")}" + (ch.Extra.Length > 0 ? " · " + ch.Extra : "")); harm = true; icon = "fire"; faces.AddRange(h.FireShooters(t)); } // item 8: the price on the charge too (Trail a hit, Alert)
-                    else { var r = ch.Plan.Row(ch.Way); var o = r.I.Order; text = head + PillLine(h, r.I); pillPredNow = r.I.PredMark; harm = Harmful(o); icon = r.I.Lead.Length > 0 ? r.I.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""); faces.AddRange(ch.Doers ?? h.DoersOf(ch.Plan, ch.Way)); }
+                    else { var r = ch.Plan.Row(ch.Way); var pi = ch.PillI ?? r.I; var o = pi.Order; text = head + PillLine(h, pi); pillPredNow = pi.PredMark; harm = Harmful(o); icon = pi.Lead.Length > 0 ? pi.Lead : HudModel.AtlasIcon(o.Do, o.Approach, ""); faces.AddRange(ch.Doers ?? h.DoersOf(ch.Plan, ch.Way)); } // brief 067 C2: a group Board's own pill (the slowest time)
                 }
                 else
                 {
@@ -69,6 +100,11 @@ namespace Suborned.Play
                         text = (h.HoverFire ? (h.FightOnNow ? "" : "Right hold · ") : "Hold · ") + PillLine(h, hi); if (!h.HoverFire) pillPredNow = hi.PredMark; faces.AddRange(h.HoverFire ? h.FireShooters(on) : h.HoverDoers); seen = h.HoverSeen; // in a fight a right click fires: no "Right hold" (the quiet fight pill)
                         pillAfterNow = hi.Order.Do == "drive-car" && hi.Outcome == "after Vale's car"; // Glyph 2026-10-26 §3: the yard before Vale's car parks: the caution plate
                     }
+                    else if (on != null && h.HoverIntent is { Locked: true } lk && on.Kind != "op")
+                    {   // brief 067 E3 (Glyph; Suture's 0.2.122 findings §2a): the locked pill: the lock disc, the way with its target in cream, a dim dot and
+                        // the short lock in --text-dim, the doer's face; no "Hold" head, no sweep; 80 %. Alt: the long line under it (LockAltFrame)
+                        state = "lock"; t = on; icon = "lock"; text = lk.Label + (lk.LockShort.Length > 0 ? "\u0001" + lk.LockShort : ""); if (lk.Doer >= 0) faces.Add(lk.Doer);
+                    }
                 }
             }
             Vector3? at = null;
@@ -77,11 +113,14 @@ namespace Suborned.Play
             // Glyph's N9 (0.2.122): on a camera with a window marker (the loop's clock, the desk's) or a dead disc, the pill's tail stands 6 px above
             // that element, so the order reads pill, marker or disc, camera head (it covered "1:59", the desk's "14" and the disc)
             if (show) { string camKey = t?.Kind == "camera" ? "camera/" + t.Key : anchorId.StartsWith("camera/") ? anchorId : anchorId.StartsWith("camera:") ? "camera/" + anchorId[7..] : null; if (camKey != null) q.y = Mathf.Min(q.y, CameraMarkTop(camKey) - 6f); }
-            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; return; }
+            if (show) q.y = Mathf.Min(q.y, ReticleTop(anchorId.Length > 0 ? anchorId : h.FireIdFor(t)) - 6f); // brief 067 D (Glyph): the pill's tail 6 px above a lock reticle
+            Show(vpill, show); Show(vpillTail, show); PillState = show ? state : ""; if (!show) { CancelTagFrame("", null, false); PipShown = false; SweepShownNow = -1f; StackTabFrame(""); return; }
             PillLook(text, icon, harm, faces, seen, fill, state);
-            vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : 1f; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px)
+            vpill.style.opacity = state is "charge" or "ready" ? h.HoldDim : state == "lock" ? LockPillAlpha : 1f; vpillTail.style.opacity = vpill.style.opacity; // the hold dims as the cursor pulls away (it cancels at 80 px); brief 067 E3: the locked pill at 80 % (nothing to hold)
+            LockAltFrame(state == "lock" && h.Peeking ? (h.HoverIntent?.LockLong ?? "") : "");
             vpill.style.scale = state == "ready" ? new Scale(new Vector3(ReadyScale, ReadyScale, 1f)) : new Scale(Vector3.one); // full: the pill pops while it says "Let go"
             PillPlace(q, out _);
+            StackTabFrame(state); // brief 067 F9 (Glyph): two or more under the cursor: the stack tab on the pill, a dashed ring at the others' feet
             // brief 043: the cancel tag over the pill, and the lit pip of an act that just opened
             bool fireish = state == "fire" || h.Charge is { Fire: true } || state == "offer" && h.HoverFire;
             CancelTagFrame(state, faces, fireish);
@@ -179,7 +218,7 @@ namespace Suborned.Play
             }
             else if (dragGhost != null) Show(dragGhost, false);
             FreeToggleFrame(on && m.Dock == RosterDock.Left && !h.Following);
-            UnderFireMarks(); KnownFaceMarks(on);
+            UnderFireMarks(); KnownFaceMarks(on); LockReticles(on); // brief 067 D: the lock reticles over the fire orders' targets
             for (int i = gu; i < ghostEls.Count; i++) Show(ghostEls[i].root, false);
             for (int i = cu; i < clockEls.Count; i++) Show(clockEls[i].root, false);
         }

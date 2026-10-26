@@ -260,19 +260,19 @@
  ],
  "coverage": {
   "report": {
-   "samples": 2850,
+   "samples": 2858,
    "worstM": 36.2,
    "medianM": 16.6,
    "within": 1000,
-   "baselineWithin": 650,
+   "baselineWithin": 652,
    "baselineWorstM": 67.2
   },
   "origin": {
-   "samples": 2850,
+   "samples": 2858,
    "worstM": 39,
    "medianM": 17,
    "within": 1000,
-   "baselineWithin": 634,
+   "baselineWithin": 632,
    "baselineWorstM": 68
   }
  },

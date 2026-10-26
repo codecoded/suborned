@@ -37,6 +37,7 @@ namespace Suborned.Play
 
         public const float ConvoSingleM = 3f, ConvoSingleDist = 2.6f, ConvoDist = 3.6f, ConvoHeight = 1.9f, ConvoPitch = 8f, ConvoFov = 35f, ConvoPush = 0.08f, ConvoDipS = 0.12f, ConvoEndBeatS = 0.4f;
 
+        static readonly int[] ConvoAngles = { 0, 15, -15, 30, -30, 45, -45 };
         readonly HashSet<string> convoMet = new(StringComparer.Ordinal);
         (int k, string verb, string target, FeedCard card, int tick)? convoWant;
         readonly (int tick, string text)[] lastAck = new (int, string)[4], lastArrive = new (int, string)[4];
@@ -74,6 +75,15 @@ namespace Suborned.Play
             if (target.Length == 0 || ConvoView(target) is not Transform t || !t.gameObject.activeInHierarchy) return "unseen";
             if (CastOf(target) is Person p && p.Down) return "person";
             return null;
+        }
+
+        /// <summary>Brief 067 H: the scene's two speakers as view keys (the cell member's, the person's), for the figures: both stand idle and face
+        /// each other while it plays (no walk or run clip on a held clock, no slide). Null when no scene plays.</summary>
+        public (string a, string b)? ConvoViewKeys()
+        {
+            var c = ConvoNow; if (c == null || views == null || c.OutAt >= 0f && !cvCut) return null;
+            string K(string k) => k switch { "scout" or "fixer" or "tech" or "enforcer" => "op/" + k, "rivals" => views.RivalAnchorKey(), _ => k };
+            return (K(c.KeyA), K(c.KeyB));
         }
 
         Transform ConvoView(string key) => views == null ? null : key switch
@@ -151,7 +161,11 @@ namespace Suborned.Play
             var tb = ConvoView(c.KeyB); var ta = ConvoView(c.KeyA); if (!tb) return false;
             Vector3 b = tb.position, a = ta && ta.gameObject.activeInHierarchy ? ta.position : b;
             var ab = b - a; ab.y = 0f; float sep = ab.magnitude;
-            Vector3 face = tb.forward; face.y = 0f; if (face.sqrMagnitude < 1e-4f) face = Vector3.forward; face.Normalize();
+            // brief 067 H: the person turns to the cell member while the scene plays (HostViews.Figures), so the shot is framed on that facing (the
+            // view's own transform never turns: the figure inside it does); the two speakers apart less than 0.2 m: the figure's drawn facing
+            Vector3 face = a - b; face.y = 0f;
+            if (face.sqrMagnitude < 0.04f && views.FigureYaw(c.KeyB is "scout" or "fixer" or "tech" or "enforcer" ? "op/" + c.KeyB : c.KeyB) is float fy) face = Quaternion.Euler(0f, fy, 0f) * Vector3.forward;
+            if (face.sqrMagnitude < 1e-4f) face = Vector3.forward; face.Normalize();
             if (sep > ConvoSingleM || sep < 0.2f)
             {   // the person alone, from where they face (else the nearest clear bearing to it, 30° steps; none clear: from where they face)
                 c.Single = true; c.Look = b + Vector3.up * 1.45f; c.Dist = ConvoSingleDist; c.Side = face;
@@ -167,13 +181,17 @@ namespace Suborned.Play
             }
             var mid = (a + b) / 2f; var dir = ab / sep; var perp = new Vector3(-dir.z, 0f, dir.x);
             float dist = Mathf.Clamp(Mathf.Max(ConvoDist, sep / 1.1f / Mathf.Tan(Mathf.Atan(Mathf.Tan(ConvoFov * 0.5f * Mathf.Deg2Rad) * 16f / 9f))), ConvoDist, 6f);
-            var sides = Vector3.Dot(perp, face) >= 0f ? new[] { perp, -perp } : new[] { -perp, perp }; // the person's face toward the camera first
-            foreach (var s in sides)
-            {
-                var from = mid + s * dist; from.y = mid.y + ConvoHeight;
-                if (!ConvoClear(mid + Vector3.up * 1.6f, from)) continue;
-                c.Side = s; c.Dist = dist; c.From = from; c.Look = from - s * dist + Vector3.down * Mathf.Tan(ConvoPitch * Mathf.Deg2Rad) * dist; return true;
-            }
+            // brief 067 H: both in profile, so the side is the one the camera is on now (the cut never crosses the line: from the map or from behind
+            // the agent in third person alike); Glyph's spec may move it
+            var here = cam.transform.position - mid; here.y = 0f;
+            var sides = Vector3.Dot(perp, here) >= 0f ? new[] { perp, -perp } : new[] { -perp, perp };
+            foreach (var s0 in sides)
+                foreach (int deg in ConvoAngles) // brief 067 H (Glyph's board 04): the perpendicular first, then ±15, ±30, ±45 degrees, before the other side
+                {
+                    var s = Quaternion.Euler(0f, deg, 0f) * s0; var from = mid + s * dist; from.y = mid.y + ConvoHeight;
+                    if (!ConvoClear(mid + Vector3.up * 1.6f, from)) continue;
+                    c.Side = s; c.Dist = dist; c.From = from; c.Look = from - s * dist + Vector3.down * Mathf.Tan(ConvoPitch * Mathf.Deg2Rad) * dist; return true;
+                }
             // neither side clear: over the shoulder behind the cell member, 2.2 m back, 0.5 m to the side, 1.9 m high
             var right = new Vector3(dir.z, 0f, -dir.x);
             c.From = a - dir * 2.2f + right * 0.5f; c.From.y = a.y + ConvoHeight; c.Look = b + Vector3.up * 1.5f; c.Side = -dir; c.Dist = Vector3.Distance(c.From, c.Look); return true;

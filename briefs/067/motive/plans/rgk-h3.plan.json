@@ -1,0 +1,191 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "probe 067: route-g-kill with the Enforcer holding Vale at (20.0, -65.0). Route G, kill (brief 013 D; Motive 013 \u00a76.1 G-kill): route G with a kill (3 s) instead of a knockout; the body is carried at a walk to the Office's service door and put through it (10 s, off-screen), the Dumpster beside it being emptied at 5:22. Nobody sees the act or the carry; the 4:00 mark is missed (Alert 1) and at Alert 1 nobody opens the door. In the debrief the guard is a missing person: +2 T, no Menace, his lover's worry, +1 guard and +1 camera on the block for 3 missions, and an open case. Brief 023 (Waymark, 2026-10-19; engine 0.8.2 crowd.pace): guard 74 (p-records-office-74) walks from the caf\u00e9 round the Office's north-east corner and past the service lane at 4:33, on the escort's line, and sees the carry within near-m 3 m (Alert 2 at 4:20 when the Enforcer went in at 3:30). The careful player waits at the public door and goes in at 4:04, so Vale comes out at 4:42 with 74 6 m south of the lane and walking away: nobody sees the escort (A 1, 2 T, Standing +3 with the fight), 34 s slower than going in at once. Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md \u00a710.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
+ "start": {},
+ "until": 5100,
+ "steps": [
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true,
+   "why": "to the control cabinet"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    5650,
+    -4750
+   ],
+   "why": "brief 031 (Waymark): to wait on the forecourt 9.8 m from the public door, behind the entrance camera's cone and the patrol's sweep, outside the guard's door cone and more than 3 m from him (2.4 m clear of every cone at any time before 3:20): by the door, in the camera's view until the loop lands, it grew wary of him (29 s; reported at 54 s on the loud route)"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    3800,
+    -5000
+   ],
+   "why": "brief 031: to watch the guard from 27.4 m, beyond his door cone (26 m) and behind the entrance camera and the sweep: from the Office approach, inside his cone, the Watch made him wary of the Scout"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    725,
+    -5025
+   ],
+   "why": "no one to turn on this route: the Fixer waits armed at the getaway car; tuning.md \u00a77.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the fixer fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke) Brief 027 (Waymark, engine 0.18.0): the post is now the getaway car's south side, west end (cv-002), the car between him and the ambush spots by the square; at the pavilion pier (cv-093) he is downed."
+  },
+  {
+   "op": "scout",
+   "do": "watch",
+   "target": "guard",
+   "why": "once there (the walk is about 29 s): a Watch in reach starts where the Scout stands",
+   "gap": 31
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    725,
+    -4625
+   ],
+   "why": "the watch done, to the getaway car; tuning.md \u00a77.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the scout fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke) Brief 027 (Waymark, engine 0.18.0): the post is now the getaway car's north side, west end (cv-003): from the car's east end (cv-006), with both sides firing on the move, the rivals down the Scout and the Fixer and the Tech is captured fighting when the car leaves."
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "at": "1:25",
+   "why": "brief 058 (Waymark, engine 0.31.0, Loop v2): ordered at 1:25, not 1:46, so the Tech is free to plant the loop as the patrol leaves (2:10); the patrol is away 2:10-4:05 and walks back after that (the Enter can slip 25 s): the kill, the carry and the stash all fall inside it",
+   "label": "reroute"
+  },
+  {
+   "op": "tech",
+   "do": "loop",
+   "target": "entrance",
+   "label": "loop",
+   "why": "the entrance camera sees the guard's post all mission; brief 058 (Loop v2): planted as the patrol leaves (ordered 2:10, live 2:30 to 4:30): it must land before the blow (2:31) and still run at the Enter (4:04), so it is ordered between 1:44 and 2:11; one loop covers the kill, the carry round the cypresses and the Enter",
+   "after": [
+    "reroute"
+   ],
+   "when": "patrol.rerouted"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6520,
+    -4110
+   ],
+   "why": "brief 031: from the forecourt to the guard's blind side, 1.2 m from him on the door's south side, about 8 s on foot: there by 2:28, so he stands beside the guard less than the 8 s that would get him noticed, and is not walking in the guard's cone when the blow is given at 2:31",
+   "at": "2:20"
+  },
+  {
+   "op": "enforcer",
+   "do": "takedown",
+   "target": "guard",
+   "how": "kill",
+   "at": "2:31",
+   "label": "td",
+   "why": "just after his 2:30 mark: 3 s"
+  },
+  {
+   "op": "enforcer",
+   "do": "carry",
+   "target": "guard",
+   "why": "lift him (3 s): a dead guard left at the door is found by guard 74 at 4:13, a found killing (Alert 2)"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    6275,
+    -1875
+   ],
+   "why": "at a walk round the Office's north end to its service door on the east face (Sky, 2026-10-19), with the entrance camera still looped"
+  },
+  {
+   "op": "enforcer",
+   "do": "stash",
+   "target": "stash/office-service-door/door",
+   "why": "through the service door (10 s, off-screen): not the Dumpster, which the round empties at 5:22; brief 055 (Waymark, engine 0.27.0): the carry round the four Office-front cypresses, walk solids since then, is longer, so the composer takes the stash at 3:07.1, not 3:06.4 (given at 3:06.4 it landed before he stood at the door and the run in that followed was refused)"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Office entrance",
+   "run": true,
+   "why": "nobody on the square to notice the run"
+  },
+  {
+   "op": "enforcer",
+   "do": "enter",
+   "clear": 1,
+   "label": "enter",
+   "at": "4:04",
+   "why": "the careful player waits at the door for guard 74 (p-records-office-74), who walks from the caf\u00e9 round the Office's north-east corner and past the service lane at 4:33 on his way to the official door (Vale's escort is seen by anyone within near-m 3 m): in at 4:04, out at 4:42, with 74 already 6 m south of the lane and walking away (in at 3:58 he still sees the carry; brief 023, engine 0.8.2 crowd.pace). The patrol is away until 4:26, the entrance camera still looped"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ],
+   "after": [
+    "enter"
+   ],
+   "why": "the loop is no longer needed once the Enforcer is inside; tuning.md \u00a77.9 (the 16 m sidearm, the kite response): to a post by the getaway car the loud route takes, within 15 m of the ambush spots, so the tech fires from inside his sidearm's reach (from the car's own crew spot the far rivals stood 16-25 m off and the crew no longer broke)"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": [
+    2000,
+    -6500
+   ],
+   "after": [
+    "enter"
+   ],
+   "why": "probe 067: the hold at (20.0, -65.0), 20 m or more from every ambush spot (beyond the pistol max 16 m), as ra-h3"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "enter"
+   ],
+   "why": "the ambush: the armed cell fires at will"
+  },
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "fight.over",
+   "label": "out",
+   "why": "the last rival down: to the car"
+  },
+  {
+   "op": "enforcer",
+   "do": "board",
+   "target": "car",
+   "after": [
+    "out"
+   ],
+   "label": "in",
+   "why": "Vale into the car first (Board, 4 s carrying; brief 018 \u00a72)"
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "in"
+   ],
+   "why": "fight it out: the crew is broken and the car free, so the car leaves at once; the three walk out on a calm street (brief 018 \u00a73), which costs nothing, so they do not spend time boarding"
+  }
+ ]
+}

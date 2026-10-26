@@ -76,7 +76,10 @@ const buildings = [
 const structures: Item[] = [
   ...nav.solids.filter((s: any) => s.kind === 'pavilion-support').map((s: any) => from(s, { name: s.id, category: 'pavilion-support' })),
   ...nav.solids.filter((s: any) => s.kind === 'service-cabinet').map((s: any) => from(s, { name: s.id, category: 'service-cabinet' })),
-  from(solid('foreground-civic-robot'), { name: 'Civic steward monument', category: 'civic-monument' }),
+  // Not exported: the nav solid `foreground-civic-robot`, the "Civic steward monument" (a RobotButler on a plinth, 2.22 m, 26 m north of the Records Office tower, on the
+  // square's south edge). Sky, 2026-10-26, on build 0.2.122 (briefs/067-sky-play-0122.md J): "There's a butler robot fixed to the north of the Records building: it needs
+  // to go." Dropped here, where the block is made, so the walk, the cover, the sight blockers, the site and the world never see it; the Oct 9 source still has it.
+  // (A pinned older block, block/2 to block/4 of a recorded run, keeps its monument and the generator still dresses it: tools/world/build.ts CIVIC_KIT.)
 ];
 const objects: Item[] = nav.solids
   .filter((s: any) => ['fountain', 'planter', 'table'].includes(s.kind))
@@ -180,5 +183,5 @@ const kinds = (a: Item[]) => Object.entries(a.reduce<Record<string, number>>((m,
 console.log(`block → ${OUT} (${Buffer.byteLength(text)} bytes)`);
 console.log(`sources: ${sources.map(s => `${s.path} ${s.sha256.slice(0, 12)}`).join('; ')}`);
 console.log(`buildings ${buildings.length} (cafe ${cx1 - cx0} x ${r3(cy1 - cy0)} x ${CAFE.height}; office ${r3(ox1 - ox0)} x ${r3(oy1 - oy0)}, wings ${OFFICE.wings}, crown ${OFFICE.crown}), structures ${structures.length} [${kinds(structures)}], objects ${objects.length} [${kinds(objects)}], bays ${bays.length}, drives ${drives.length}, floors ${floors.length}, entrances ${buildings.flatMap(b => b.entrances).length}`);
-console.log(`omitted from ${nav.solids.length} nav solids: cars, sentries, globes, lamps, chairs, parasols, street props, access ramps (not exported before; add when a consumer needs them)`);
+console.log(`omitted from ${nav.solids.length} nav solids: cars, sentries, globes, lamps, chairs, parasols, street props, access ramps (not exported before; add when a consumer needs them), the steward robot (foreground-civic-robot: exported until 2026-10-26, dropped on Sky's call, briefs/067 J)`);
 console.log(`adjustments applied: ${adj.adjustments.length} (${adj.owner})`);

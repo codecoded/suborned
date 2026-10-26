@@ -11,7 +11,8 @@ namespace Suborned.Play
     /// verb, briefs/025/keel-host-interface.md; Glyph's keys, brief 024 §1, §6, §7). T drops from the map into the selected agent (the follow
     /// view behind them) and hands them to a character controller: WASD camera-relative, Shift (or G latched) to run, at the rulebook's pace
     /// times the playground pace. The controller collides against the engine's own walk grid (Game.S.Grid, x then y, as the engine resolves a
-    /// step) and keeps the people gap; each tick before the step its position goes in as a drive sample (an order in the log, so a session
+    /// step; engine 0.33.1: and the standing cars' ground, Game.Walk, which the engine's drive step does not read: the host is the stricter)
+    /// and keeps the people gap; each tick before the step its position goes in as a drive sample (an order in the log, so a session
     /// replays exactly); after the step the engine's pose pulls it back if the sample was not taken whole. The agent is drawn from the
     /// controller. E acts on the nearest thing in front (the price chip shows on it; one way acts at once, more open the panel), judged from
     /// where the agent stands: no walk to reach while driven. Tab or F1-F4 swap the agent; T again lets go (release) and the map opens centred on
@@ -75,8 +76,9 @@ namespace Suborned.Play
 
         /// <summary>T: take control of the selected agent, or let go.</summary>
         public void DriveToggle() { if (Driving) DriveExit(true); else DriveEnter(); }
-        /// <summary>T while driven (the player's own switch): let go and back to the map.</summary>
-        public void DriveLetGoToMap() { if (Driving) DriveExit(true, true); }
+        /// <summary>T while driven (the player's own switch): let go and back to the map, centred on the agent at play zoom, at the yaw it was left
+        /// at (brief 067 G3); `glide` (T itself): by Glyph's 0.5 s glide; scripts get the map at once.</summary>
+        public void DriveLetGoToMap(bool glide = false) { if (Driving) DriveExit(true, true, glide); }
 
         void DriveEnter()
         {
@@ -126,14 +128,14 @@ namespace Suborned.Play
             dKeyLatch = !dNoLatch;
             // brief 024 dropped the standing fire order here ("the trigger is the player's now"); Sky after 0.2.56: the switch never ends work (DriveTrailIfBusy)
             var op = Game.Ops[k]; dAgent = k; dCm = new Vector2(op.Pos.X, op.Pos.Y); dVel = Vector2.zero; dSent = null; dSentFace = -1; dMoving = false; DriveCorrections = 0;
-            dYaw = Following ? fYaw : yawNow;
+            dYaw = AgentYaw(k, Following ? fYaw : yawNow); // brief 067 G: the agent keeps the heading it had (it no longer turns to the camera's yaw on a take)
             if (views != null) { views.DriveKey = "op/" + Op.Name((OpId)k); views.DrivePos = CmWorld(dCm); views.DriveYaw = dYaw; views.DriveSpeed = 0f; }
         }
 
         void DriveRelease(int k) { if (k >= 0 && Game != null && Game.DrivePoseOf((OpId)k).Driven) Guard("drive", () => Game.Issue(Game.DriveRelease((OpId)k))); }
 
         /// <summary>Let go (release: the engine's onRelease applies) or lose control (the engine ended it); the map opens centred on the agent.</summary>
-        void DriveExit(bool release, bool toMap = false)
+        void DriveExit(bool release, bool toMap = false, bool glide = false)
         {
             if (!Driving) return;
             int k = dAgent; AimEnd(); if (release) DriveRelease(k);
@@ -143,7 +145,8 @@ namespace Suborned.Play
             if (views != null) views.DriveKey = null;
             // Sky 2026-10-20: no automatic view switch: a freeze, target mode, the engine ending the drive or the agent going down leave the
             // ground view as a plain follow; only T (DriveLetGoToMap) goes back to the map
-            if (toMap && Following) FollowExit();
+            if (toMap && Following && glide) FollowExitGlide(k); // brief 067 G3 (Sky on 0.2.122, Glyph): back on the map by a 0.5 s glide, centred on the agent at play zoom, at the quarter-step yaw it was left at (HostFollow)
+            else if (toMap && Following) { FollowExit(); if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); centreGoal = null; centreStart = -1f; camFollow = false; } } // a script's let-go: the same map view at once (LookAt below)
             if (k >= 0 && views?.Find("op/" + Op.Name((OpId)k)) is Transform t) { if (!Following) LookAt(t.position); PopKey("take-control", null, t.position, Feedback.Info); }
             Status = Following ? "Follow view" : "Overhead view";
         }
@@ -273,17 +276,22 @@ namespace Suborned.Play
         Vector2 DriveSlide(Vector2 from, Vector2 to)
         {
             var g = Game.S.Grid;
+            // engine 0.33.1 (rulebook car.footprint): the controller also stops at a standing car's ground (Game.Walk), stricter than the engine's
+            // drive step (which reads the site's grid), so every sample is still one the engine takes whole; stood on a car's ground already (a
+            // car stopped on the agent), the site's grid until it steps off, so it is never trapped
+            var wg = CarWalk; bool onCar = wg.CarCovers(new Pt(Mathf.RoundToInt(from.x), Mathf.RoundToInt(from.y)));
+            bool Open(int i, int j) => onCar ? g.FreeCell(i, j) : wg.FreeCell(i, j);
             float AxisX(Vector2 p, float x)
             {
                 int j = g.CJ(Mathf.RoundToInt(p.y)), i0 = g.CI(Mathf.RoundToInt(p.x)), i1 = g.CI(Mathf.RoundToInt(x));
                 if (i1 == i0) return x; int step = i1 > i0 ? 1 : -1;
-                for (int i = i0 + step; ; i += step) { if (!g.FreeCell(i, j)) return step > 0 ? g.X0 + i * g.Cell - 1.5f : g.X0 + (i + 1) * g.Cell + 0.5f; if (i == i1) return x; }
+                for (int i = i0 + step; ; i += step) { if (!Open(i, j)) return step > 0 ? g.X0 + i * g.Cell - 1.5f : g.X0 + (i + 1) * g.Cell + 0.5f; if (i == i1) return x; }
             }
             float AxisY(Vector2 p, float y)
             {
                 int i = g.CI(Mathf.RoundToInt(p.x)), j0 = g.CJ(Mathf.RoundToInt(p.y)), j1 = g.CJ(Mathf.RoundToInt(y));
                 if (j1 == j0) return y; int step = j1 > j0 ? 1 : -1;
-                for (int j = j0 + step; ; j += step) { if (!g.FreeCell(i, j)) return step > 0 ? g.Y0 + j * g.Cell - 1.5f : g.Y0 + (j + 1) * g.Cell + 0.5f; if (j == j1) return y; }
+                for (int j = j0 + step; ; j += step) { if (!Open(i, j)) return step > 0 ? g.Y0 + j * g.Cell - 1.5f : g.Y0 + (j + 1) * g.Cell + 0.5f; if (j == j1) return y; }
             }
             var a = new Vector2(AxisX(from, to.x), from.y); a = new Vector2(a.x, AxisY(a, to.y));
             int gap = DriveGapCm(); if (gap <= 0 || Exploring) return a;

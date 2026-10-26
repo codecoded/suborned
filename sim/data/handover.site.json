@@ -148,35 +148,35 @@
    ".....................................######.................#########......#########.............................####...................................############",
    "....###..............................######..................########......########..............................####...................................############",
    "....####.............................######...................#######......#######...............................####...................................############",
-   "....###..............................#####..........##.........#####........#####................................####...................................############",
-   ".....##............................................####.........###..........###.................................####.......................####........############",
-   "...................................................####..........#............#..................................####.......................####........############",
-   ".................................................######......................................###.................####.......................####........############",
-   "................................................#######.....................................####.................####.......................####........############",
-   "................................................#######.....................................####.................####...................................############",
-   "................................##................#####.......................................#..................####.................................##############",
-   "...............................####................####..........................................................####.................................##############",
-   "...............................####................####..........................................................####.................................##############",
-   ".....###.......................####................####..........................................................####.................................##############",
-   ".....####......................####................####..........................................................####.................................##############",
-   ".....####......................####.................##...........................................................####.................................##############",
+   "....###..............................#####.....................#####........#####................................####...................................############",
+   ".....##.........................................................###..........###.................................####.......................####........############",
+   ".................................................................#............#..................................####.......................####........############",
+   ".................................................###.........................................###.................####.......................####........############",
+   "................................................####........................................####.................####.......................####........############",
+   "................................................####........................................####.................####...................................############",
+   "................................##................#...........................................#..................####.................................##############",
+   "...............................####..............................................................................####.................................##############",
+   "...............................####..............................................................................####.................................##############",
+   ".....###.......................####..............................................................................####.................................##############",
+   ".....####......................####..............................................................................####.................................##############",
+   ".....####......................####..............................................................................####.................................##############",
    ".....###.......................####..............................................................................####.................................##############",
    "...............................####..............................................................................####................................###############",
-   "...............................####....##################........................................................####................................###############",
-   "...............................####...####################.......................................................####................................###############",
-   "...............................####...####################.......................................................####................................###############",
-   "...............................####....##################........................................................####................................###############",
+   "...............................####..............................................................................####................................###############",
+   "...............................####..............................................................................####................................###############",
+   "...............................####..............................................................................####................................###############",
+   "...............................####..............................................................................####................................###############",
    "...............................####..............................................................................####................................###############",
    "...............................####.............................................................................#####................................###############",
    "...............................####.............................................................................#####.................................##############",
    "...............................####.............................................................................#####..............................#################",
    "....###........................####.............................................................................#####..............................#################",
-   "....####.......................####.........................................................####....######......#####..............................#################",
-   "....###........................####....................................................#########....######......#####...............................##..############",
-   ".....##........................####....................................................##########..#######......#####...................................############",
-   "...............................####....................................................##########...######......#####...................................############",
-   "...............................####....................................................#########.....###................................................############",
-   "...............................####..........................................................##.....................................................................",
+   "....####.......................####.................................................................######......#####..............................#################",
+   "....###........................####....................................................######.......######......#####...............................##..############",
+   ".....##........................####....................................................######......#######......#####...................................############",
+   "...............................####....................................................######.......######......#####...................................############",
+   "...............................####....................................................#####.........###................................................############",
+   "...............................####.................................................................................................................................",
    "...............................####.........................###..................###................................................................................",
    "...............................####.........................####................####................................................................................",
    "...............................####.........................###.................####................................................................................",
@@ -349,11 +349,11 @@
    "....####.......................................####................................................................................................................."
   ],
   "floor": [[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,64,-16,16,0,84],[0,164],[0,8,-18,7,0,2,-18,47,-16,16,-18,84],[0,8,-18,5,0,1,-18,50,-16,16,-18,84],[0,8,-18,4,0,1,-18,51,-16,16,-18,84],[0,8,-18,3,0,1,-18,53,-16,14,-18,85],[0,8,-18,2,0,1,-18,54,-16,14,-18,85],[0,8,-18,1,0,1,-18,56,-16,12,-18,86],[0,8,-18,59,-16,10,-18,87],[0,9,-18,60,-16,6,-18,89],[0,9,-18,155],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,26,0,80,-18,35,0,15],[0,8,-18,25,0,82,-18,31,0,18],[0,8,-18,24,0,84,-18,29,0,19],[0,8,-18,24,0,84,-18,28,0,20],[0,8,-18,24,0,84,-18,27,0,21],[0,8,-18,24,0,84,-18,26,0,22],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,-16,1,0,83,-18,24,0,24],[0,8,-18,24,-16,5,0,79,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,6,0,78,-18,24,0,24],[0,8,-18,24,-16,5,0,79,-18,24,0,24],[0,8,-18,24,-16,1,0,83,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,24,0,24],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,25,0,23],[0,8,-18,24,0,84,-18,26,0,22],[0,8,-18,24,0,84,-18,27,0,21],[0,8,-18,24,0,84,-18,28,0,20],[0,8,-18,24,0,84,-18,29,0,19],[0,8,-18,25,0,82,-18,31,0,18],[0,8,-18,26,0,80,-18,35,0,15],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,26,0,104,-18,26],[0,8,-18,25,0,106,-18,25],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,108,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,12,13,1,25,1,38,1,63,1,75,3,0,48,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,67,-16,6,0,35,-18,24],[0,8,-18,24,0,25,-16,26,0,16,-16,6,0,35,-18,24],[0,8,-18,24,0,24,-16,28,0,15,-16,6,0,35,-18,24],[0,8,-18,24,0,24,-16,28,0,15,-16,6,0,35,-18,24],[0,8,-18,24,0,24,-16,28,0,15,-16,6,0,35,-18,24],[0,8,-18,25,0,22,-16,30,0,14,-16,6,0,34,-18,25],[0,8,-18,26,0,20,-16,32,0,52,-18,26],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,156],[0,8,-18,33,0,123],[0,8,-18,30,0,126],[0,8,-18,29,0,127],[0,8,-18,28,0,128],[0,8,-18,27,0,129],[0,8,-18,26,0,130],[0,8,-18,25,0,131],[0,8,-18,25,0,131],[0,8,-18,25,0,131],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132],[0,8,-18,24,0,132]],
-  "collide": "b7006981bdeb0d195b81bf0ef8fe5ce7bab1ef58b8017a3cb890f1e44f1a038a",
+  "collide": "274d9cde2167561a0769f038870ad9ba3eb8956bf1ac41aee507e2eb5318e8b6",
   "drawn": {
    "walk": true,
    "sight": true,
-   "walkCells": 2607,
+   "walkCells": 2608,
    "sightOccluders": 228
   },
   "src": "tools/plan/walk.ts blockersOf (built plots behind their building lines, civic footprints and towers, water, landmarks) and walk-solids.ts (the block's ground solids, BODY clearance), and, with drawn.walk, the drawn solids (tools/sim/solids.ts: every piece the world places, with its kit.collide.json volumes; a building's face by the cell centre, every other solid BODY clear, where it blocks a walker at the cell's floor; drawn.walkCells counts the cells they block, held or not), and the mission cameras' poles the host stands (tools/missions/handover/legs.ts cameraPoles, kit.collide.json CCTVPole at the host's scale; engine 0.30.0): a cell is free when its centre is. floor: per row, run-length pairs [cm, cells], block z (the pavement 0, the carriageway -18): the ground drawn there or the floor civic-block.json declares (tools/plan/civic.ts floorAt)"
@@ -2079,7 +2079,7 @@
    "src": "mission.json destinations \"Office approach\""
   },
   "d:Boarding pavilion": {
-   "at": [7830,-3100],
+   "at": [7675,-3425],
    "src": "mission.json destinations \"Boarding pavilion\""
   },
   "d:Office entrance": {
@@ -2095,7 +2095,7 @@
    "src": "mission.json destinations \"Meet Vale\""
   },
   "d:Meet driver": {
-   "at": [7810,-3370],
+   "at": [7810,-3420],
    "src": "mission.json destinations \"Meet driver\""
   },
   "crew:fixer": {
@@ -2117,7 +2117,7 @@
   "cabinet": {
    "at": [4650,-4450],
    "src": "civic-block.json structures civic-control-cabinet (x 44.55-45.45, y -45.34 to -43.66; moved with the public door 2026-10-19, civic-block.adjust.json, Vantage, brief 023, Sky's door option (b)); Waymark 2026-10-15 (Aster, after Pulse): the point a Tech stands at, on free ground, not the cabinet's centre inside its solid",
-   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, at the office plot's north-west corner, 17.8 m from the public door and 6.5 m behind the entrance camera's pole, outside every cone (the camera's, the door guard's and the patrol's sweep, which ends at x 54.2, 7.7 m short of it, facing east, away from it). Was in the square 28 m from the old north door (moved 2026-10-19 with the door, Sky's option (b)). The point stands 1.05 m off its south face (x 45.45), centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell."
+   "reason": "the Tech's cabinet (§03 Loop, Reroute): the block's one control cabinet, at the office plot's north-west corner, 17.8 m from the public door and 6.5 m behind the entrance camera's pole, outside every cone (the camera's and the door guard's; the patrol's sweep, which ended at x 54.2, 7.7 m short of it, facing east, away from it, has swept the service yard on the east face since 2026-10-26, brief 067, so the Tech reroutes it from here without seeing it). Was in the square 28 m from the old north door (moved 2026-10-19 with the door, Sky's option (b)). The point stands 1.05 m off its south face (x 45.45), centred on it, on ground the walk grid holds free with 0.5 m to spare, so the engine's 1.5 m device reach and 2 m tether are measured from where the Tech stands, with no snap to the nearest free cell."
   },
   "beside-inez": {
    "at": [-820,-2900],
@@ -2140,19 +2140,19 @@
    "reason": "§07's \"west street\" is the top-down test's compass. The real block is built on its west side (y < −62); its one street on the café and getaway side is the north street (block x < −38, y −36 to −28), so the response unit enters there."
   },
   "patrol-a": {
-   "at": [6775,-4625],
-   "src": "the top-down test: the patrol sweeps 11 units in front of the public door, from 4 to one side of it to 16 to the other",
-   "reason": "the sweep's south end: the patrol walks the forecourt's outer edge, a straight line (the engine walks it as one: Game.SweepPos) from patrol-b (54.25, -43.25) to here, 3.75 m south of the door axis x 64, 5.0 m out from the public door on the wing's west face; it crosses the Office approach both ways each round. Both ends stand on cell centres of the walk grid, so the line the engine walks (Site.Stand is the point itself) is the line the geometry audit measures (it stands the ends on the cell centre). Re-sited 2026-10-24 (Pulse; Sky playing 0.2.99: the patrol went through the camera pole): the old line y -44.8 ran through the entrance camera's pole at (53, -44.5) and 0.13 m from the east service cabinet (57.0..58.4, -45.6..-44.9), so it falls from y -43.25 to -46.25 and keeps 0.70 m or more (the body 0.65 m + 0.05 m) from every solid: 0.70 m from the service cabinet, 0.93 m from the public door's east cheek wall (G-1d measured 0.63 m on the first re-site, whose ends the audit stood on the cell centres), 1.4 m from the south cabinet (69.0..70.4), 1.26 m from the pole (r 0.48 m at the host's scale), 1.4 m from the lamp; the door is in the patrol's cone 0-29.2 s and 70.9-100 s of each 100 s period, as the first re-site had it (the old line: 0-26 s and 74.1-100 s). Moved 2026-10-19 with the door (Sky's option (b); Vantage, brief 023), was (40.75, -34) in front of the old north door: the top-down test's sweep in front of the door, shortened to the forecourt between the camera pole and the service door."
+   "at": [6125,-725],
+   "src": "Sky 2026-10-26 (brief 067 A, playing 0.2.122: 'moving the patrol robot would be quite a big improvement', 'maybe to the side of the service entrance'): the sweep leaves the Office front for the service yard on the wing's east face; placed by Vantage. Still the top-down test's sweep (a straight line in front of the door it guards, facing the door), as the forecourt's was",
+   "reason": "the sweep's north end, in the open yard 11.65 m out from the service door (62.5, -18.9), opposite it (x 61.25 against the door's 62.5), with serviceBay and the low bed civic-office-west between. The patrol walks the straight line (Game.SweepPos) from here to patrol-b (76.25, -7.25), 15 m along the yard parallel to the wing's east face (y -19.5), and faces that face (west: site patrol.facing [0, -100], tools/sim/site.ts, the building it guards), so its cone (patrol-depth-m 24, 2 m + 0.65 of the depth either side) holds the service door, 'Service lane', serviceBay, the service drive and the yard getaway stand. The period is unchanged (100 s), and the windows are the forecourt's: 'Service lane' is in the cone 0-31 s and 69-100 s of each round (63 %; the public door was 0-29 s and 71-100 s), the service door 73 %, Vale's rear door (rival-vale-door) 77 %, the yard stand service-drive 93 %, the yard's neck by the Dumpster (58.25, -17.25), where every walk into the yard from the north passes, 37 %, and nothing at the front ('Office entrance', 'Office approach', the cabinet: 0 %). Behind it (east of y -7.25) and north of the neck the cell waits unseen; its 30 m gunfire break (patrol-break-m) takes in the whole yard, so the yard fight wakes it unless the Tech has rerouted it. Measured with the engine's own cone and eye (InSweepCone, EyeSees at mount-patrol-cm, no crowd) on a scratch copy of engine 0.33.1 (out/scratch/vantage/067, VantageProbe.cs). On a cell centre of the walk grid (Site.Stand is the point itself), 2.9 m from the bed and 3.0 m from its tufts (G-1d: body 0.65 m + 0.05 m), 1.12 m from svc-ambush-2. V-1 at yaw 210, the heading the yard is played at: 100 % (also 100 % at 30, 120 and 300). Was (67.75, -46.25), the forecourt's south end (Pulse 2026-10-24, after Vantage 2026-10-19 and the top-down test's (40.75, -34))."
   },
   "patrol-b": {
-   "at": [5425,-4325],
+   "at": [7625,-725],
    "src": "as patrol-a",
-   "reason": "the sweep's north end, short of the entrance camera's pole (53, -44.5): 1.77 m from its foot, 1.26 m clear of the pole itself (r 0.48 m) beyond the 0.65 m body, and 10.0 m from the public door; on a cell centre of the walk grid (see patrol-a). Moved 2026-10-19 with the door (was (40.75, -14)), then 2026-10-24 (Pulse; Sky playing 0.2.99) from (52, -44.8), 1 m past the pole and 0.3 m off its centre line, so the patrol walked through it every sweep. The sweep ends 2.2 m further south than before and 1.5 m further east; it is 14.2 m long (was 16)."
+   "reason": "the sweep's south end, 3.75 m in from Apron Road's kerb (x 80): 10.4 m from the yard stand service-drive (69.35, -15.0), which the line passes at 7.75 m, 1.33 m clear of svc-ambush-1 (77.35, -8.0), 3.2 m from the police post and 4.5 m from the call box on the kerb strip; on a cell centre of the walk grid (see patrol-a). The line between the ends keeps 6.25 m off the service drive and 2.9 m off the bed, so no car, Vale walk or carry crosses it, and it stays out of the neck by the Dumpster that the escort from 'Service lane', the response unit and the yard police walk through. The sweep is 15 m long (the forecourt's was 14.2). V-1 at yaw 210: 100 % (30 100 %, 120 0 %, 300 100 %); the sweep's ground, a figure every metre, 100 % at 210. Was (54.25, -43.25), short of the entrance camera's pole."
   },
   "patrol-reroute": {
-   "at": [1920,-4700],
-   "src": "the top-down test: a rerouted patrol waits at the far corner from the door",
-   "reason": "the square's south-east edge by Rocket Lane, on the pavement off the carriageway (was (20, -58), on the road), 45 m up the street from the public door, which faces Rocket Lane: far from the door and the service door, so the entry and the carry-out go unseen by it while it stands here. 10.8 m from the getaway bay on the way the carry comes in, and 1.6 m from guard-ally. Moved 2026-10-19 (Vantage, brief 023; the common fix of briefs/011/vantage/study.ts, then tuned). Seen at the play camera (V-1), so it no longer declares itself hidden."
+   "at": [4625,-925],
+   "src": "the top-down test: a rerouted patrol waits at the far corner from the door; re-sited with the sweep (brief 067 A, Vantage 2026-10-26)",
+   "reason": "the office plot's north edge by Orbit Walk (kerb x 44), 2.25 m in on the pavement, round the corner of the yard from the service door: off every walk the back way uses (the escort from 'Service lane' to the square passes 13.8 m away, the response unit's walk into the yard 7.5 m) and about 10 m from the rival car's way down Orbit Walk. From any point of the sweep the false orders' walk out and back (cell.reroute.walk at patrol-chase-cm-s, 85 cm/s, on the walk grid) takes 41-66 s of reroute-away-s 115 s, so the robot always reaches it and waits 49-74 s before it walks back onto its sweep (the engine's PlanRerouteWalk, measured on the scratch probe). It faces north (site patrol.rerouteFacing [-100, 0], away from the yard). A free cell of the walk grid with nothing solid within 6 m. V-1 at yaw 210: 100 % (also 100 % at 30, 120, 300). Was (19.2, -47.0), the square's south-east edge: from the yard sweep the walk there and back is 121-141 m, 142-166 s, so the robot would turn back short of it and wander across the square."
   },
   "service-bay": {
    "at": [6375,-1500],
@@ -2162,12 +2162,12 @@
   "block-spot": {
    "at": [7725,-3375],
    "src": "GDD §07 route B: driver blocks pickup camera 2:30",
-   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, 78.2, -31) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed."
+   "reason": "where the turned driver's car stands to block the pickup camera: in the office bay, pulled 2.9 m forward from the pickup (Official drop-off, 78.2, -31) on the bay's first drive row, a drive cell, so engine 0.8.2's car.drive parks it exactly here. Re-sited 2026-10-19 (Waymark, brief 023; Aster: the solid block, blockMoveS 8 s kept). The car (1.81 x 4.73 m, kit Sedan_Official) stands across both of the camera's lines from its pole (74, -40): to the car at the pickup a chord of 4.0 m, and to the kerb side where Vale boards (77.3, -31) 2.4 m, drawn along the bay; 4.8 m and 2.8 m drawn at the heading it drove in on, which the host keeps when it stops. Was (75.7, -36.4) on the pavement, then (77.25, -36.25), where only the car's corner clipped the pickup line and the boarding line missed. Retired in play since brief 059 (the driver's camera block is gone: Game BlockedFrom stays INF, no car drives here). It lies 0.4 m behind the tail corner of Vale's car parked at the pickup, on the car's ground (car-clear-cm 50; Keel's car.footprint probe, engine 0.33.1). Not moved (Vantage, brief 067 L, 2026-10-26): tools/sim/site.ts (car.block, and blockFacing, the heading Vale's car keeps in the bay) and Site.cs (CarBlock) still read it, and the scenarios N57 and N57b send the Enforcer 3 m off it, so moving it would move them; Keel and Splice retire it (the heading from the bay itself, the scenarios' wait as its own point), then this entry goes."
   },
   "ambush-1": {
    "at": [2175,-4425],
-   "src": "GDD §07 safe: rivals ambush extraction; cover: Vantage's planter run run-sq-south (contracts/world/civic-block.cover.json)",
-   "reason": "Moved 2026-10-15 (Waymark) from (20, -56) on rocket-lane, the road, where nothing shields it from the car: onto the square behind run-sq-south's first planter, 13.8 m from the getaway car, the planter between them. The five ambush spots stand 12-18 m round the car with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe)."
+   "src": "GDD §07 safe: rivals ambush extraction; its cover was Vantage's planter run run-sq-south, removed 2026-10-26 (brief 067 K, Sky's 'odd planters'; civic-block.adjust.json planterRuns.removed)",
+   "reason": "Moved 2026-10-15 (Waymark) from (20, -56) on rocket-lane, the road, where nothing shields it from the car: onto the square behind run-sq-south's first planter, 13.8 m from the getaway car, the planter between them. The five ambush spots stand 12-18 m round the car with a clear line to it; the crew takes the first n, n from the rulebook (fight.safe): the three dropped at rival-drop post at the stand's first three spots (ambush-1, -2, -3, by the shortest walk), the lookout at the 4th and the wheelman at the 5th (GameCrew.cs SpotFor). Since run-sq-south went (2026-10-26) it lurks in the open: nothing on the square's south-west quarter shields a post from the car (the car stands on the square's own kerb, so the kerb runs lie along the line of fire), and the spot is kept where the dropped rival walks to (14.5 m from rival-drop), for Motive to re-measure the square's safe fight with it uncovered."
   },
   "ambush-2": {
    "at": [-575,-3775],
@@ -2178,7 +2178,7 @@
   "ambush-3": {
    "at": [2200,-4200],
    "src": "GDD §07 safe: rivals ambush extraction",
-   "reason": "as ambush-1, beside Vantage's planter run run-sq-south."
+   "reason": "as ambush-1, beside Vantage's planter run run-sq-south until 2026-10-26; in the open since it went (brief 067 K)."
   },
   "ambush-4": {
    "at": [-600,-4400],
@@ -2186,9 +2186,9 @@
    "reason": "as ambush-1; by the café's west wall arc."
   },
   "ambush-5": {
-   "at": [1400,-3600],
-   "src": "GDD §07 safe: rivals ambush extraction",
-   "reason": "as ambush-1; by run-sq-west."
+   "at": [-325,-3475],
+   "src": "GDD §07 safe: rivals ambush extraction; re-sited 2026-10-26 by Vantage (brief 067 K) when run-sq-west, its cover, was removed (Sky's 'odd planters')",
+   "reason": "The wheelman's spot in the square's safe fight (the stand's 5th; GameCrew.cs SpotFor): he walks to it from the rival car's stop, rival-drop (34, -38), when the car pulls up for the fight. Was (14, -36) by run-sq-west on the fountain court's edge; with that planter gone nothing there shields it from the car, and the square's safe fight would keep cover for 2 of its 5 hostile posts (ambush-2, ambush-4), under CV-2's half (tools/cover). Here, outside the front-west corner of the café's terrace wall, 3.9 m from ambush-2, the wall's car-facing point cv-032 (q 589, 2.7 m) is within hostileReach 6 m, so CV-2 holds at 3 of 5. 17.9 m from the getaway car (8.5, -48.2) with a clear line to it at eye height (the engine's Site.Sight), outside fight-hold 8 m and the exit lane (MC-11). His walk from rival-drop is 38.4 m on the grid (20.1 m to the old spot) and keeps 12.4 m from the car; spots tried by the wall's south arc, (-7.25, -46.75) and round it, put that walk 4.7 m past the car, where he reached Vale in the board-and-go (route-g-board, scratch probe on engine 0.33.1), or lost the car behind the boarding pavilion's west pier. 1.5 m from the terrace pot top-terrace-w, 5.8 m from 'Terrace gate'; a free cell of the walk grid. V-1 at yaw 30: 100 %."
   },
   "police-1": {
    "at": [-775,-4125],
@@ -2882,13 +2882,13 @@
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "0d94907acba0188bc7d78b73b49a720631ddcda511907bfcc2950401f02894e7",
+  "sha256": "d48669f7573d6c537951b1daa26a95843bf18d8139e292dd0ffbaf1d6df33a0a",
   "startsAt": "17:24:30",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "be09206526f825da2d8a130e4d4e521b87ac584bba6973fcf6be075da51ce543",
+  "sha256": "9c1e63aa1efc4fb5bd690f2a4b355b38cc87a20927fc02b720edef73daf81310",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {
@@ -3639,78 +3639,6 @@
    },
    {
     "id": "cv-062",
-    "at": [1925,-4425],
-    "faces": [1000,0],
-    "arc": 54,
-    "cos": 587,
-    "h": 106,
-    "against": "fire",
-    "q": 740,
-    "kind": "planter-run",
-    "of": "civic/run-sq-south/0"
-   },
-   {
-    "id": "cv-063",
-    "at": [2175,-4425],
-    "faces": [-1000,0],
-    "arc": 54,
-    "cos": 587,
-    "h": 106,
-    "against": "fire",
-    "q": 740,
-    "kind": "planter-run",
-    "of": "civic/run-sq-south/0"
-   },
-   {
-    "id": "cv-064",
-    "at": [1925,-4025],
-    "faces": [1000,0],
-    "arc": 54,
-    "cos": 587,
-    "h": 118,
-    "against": "fire",
-    "q": 740,
-    "kind": "planter-run",
-    "of": "civic/run-sq-south/1"
-   },
-   {
-    "id": "cv-065",
-    "at": [2175,-4025],
-    "faces": [-1000,0],
-    "arc": 54,
-    "cos": 587,
-    "h": 118,
-    "against": "fire",
-    "q": 740,
-    "kind": "planter-run",
-    "of": "civic/run-sq-south/1"
-   },
-   {
-    "id": "cv-066",
-    "at": [1525,-3825],
-    "faces": [0,-1000],
-    "arc": 55,
-    "cos": 573,
-    "h": 112,
-    "against": "fire",
-    "q": 749,
-    "kind": "planter-run",
-    "of": "civic/run-sq-west/0"
-   },
-   {
-    "id": "cv-067",
-    "at": [1625,-4075],
-    "faces": [0,1000],
-    "arc": 48,
-    "cos": 669,
-    "h": 112,
-    "against": "fire",
-    "q": 680,
-    "kind": "planter-run",
-    "of": "civic/run-sq-west/0"
-   },
-   {
-    "id": "cv-068",
     "at": [-1175,-5075],
     "faces": [0,1000],
     "arc": 55,
@@ -3722,7 +3650,7 @@
     "of": "civic/run-west-cafe/0"
    },
    {
-    "id": "cv-069",
+    "id": "cv-063",
     "at": [-1175,-4825],
     "faces": [0,-1000],
     "arc": 55,
@@ -3734,7 +3662,7 @@
     "of": "civic/run-west-cafe/0"
    },
    {
-    "id": "cv-070",
+    "id": "cv-064",
     "at": [-775,-5075],
     "faces": [0,1000],
     "arc": 54,
@@ -3746,7 +3674,7 @@
     "of": "civic/run-west-cafe/1"
    },
    {
-    "id": "cv-071",
+    "id": "cv-065",
     "at": [-775,-4825],
     "faces": [0,-1000],
     "arc": 54,
@@ -3758,7 +3686,7 @@
     "of": "civic/run-west-cafe/1"
    },
    {
-    "id": "cv-072",
+    "id": "cv-066",
     "at": [1925,-5075],
     "faces": [0,1000],
     "arc": 54,
@@ -3770,7 +3698,7 @@
     "of": "civic/run-west-south/0"
    },
    {
-    "id": "cv-073",
+    "id": "cv-067",
     "at": [1925,-4825],
     "faces": [0,-1000],
     "arc": 54,
@@ -3782,7 +3710,7 @@
     "of": "civic/run-west-south/0"
    },
    {
-    "id": "cv-074",
+    "id": "cv-068",
     "at": [2325,-5075],
     "faces": [0,1000],
     "arc": 55,
@@ -3794,7 +3722,7 @@
     "of": "civic/run-west-south/1"
    },
    {
-    "id": "cv-075",
+    "id": "cv-069",
     "at": [2325,-4825],
     "faces": [0,-1000],
     "arc": 55,
@@ -3806,7 +3734,7 @@
     "of": "civic/run-west-south/1"
    },
    {
-    "id": "cv-076",
+    "id": "cv-070",
     "at": [2725,-5075],
     "faces": [0,1000],
     "arc": 54,
@@ -3818,7 +3746,7 @@
     "of": "civic/run-west-south/2"
    },
    {
-    "id": "cv-077",
+    "id": "cv-071",
     "at": [2725,-4825],
     "faces": [0,-1000],
     "arc": 54,
@@ -3830,7 +3758,7 @@
     "of": "civic/run-west-south/2"
    },
    {
-    "id": "cv-078",
+    "id": "cv-072",
     "at": [1025,-4625],
     "faces": [1000,0],
     "arc": 18,
@@ -3842,7 +3770,7 @@
     "of": "civic/square-pavilion-support-0"
    },
    {
-    "id": "cv-079",
+    "id": "cv-073",
     "at": [1175,-4775],
     "faces": [0,1000],
     "arc": 29,
@@ -3854,7 +3782,7 @@
     "of": "civic/square-pavilion-support-0"
    },
    {
-    "id": "cv-080",
+    "id": "cv-074",
     "at": [1325,-4625],
     "faces": [-1000,0],
     "arc": 17,
@@ -3866,7 +3794,7 @@
     "of": "civic/square-pavilion-support-0"
    },
    {
-    "id": "cv-081",
+    "id": "cv-075",
     "at": [375,-4625],
     "faces": [1000,0],
     "arc": 17,
@@ -3878,7 +3806,7 @@
     "of": "civic/square-pavilion-support-1"
    },
    {
-    "id": "cv-082",
+    "id": "cv-076",
     "at": [525,-4775],
     "faces": [0,1000],
     "arc": 29,
@@ -3890,7 +3818,7 @@
     "of": "civic/square-pavilion-support-1"
    },
    {
-    "id": "cv-083",
+    "id": "cv-077",
     "at": [675,-4625],
     "faces": [-1000,0],
     "arc": 18,
@@ -3903,12 +3831,6 @@
    }
   ],
   "blockers": [
-   {
-    "id": "civic/foreground-civic-robot",
-    "z": 0,
-    "h": 222,
-    "poly": [[2616,-1900],[2610,-1871],[2594,-1846],[2569,-1830],[2540,-1824],[2511,-1830],[2486,-1846],[2470,-1871],[2464,-1900],[2470,-1929],[2486,-1954],[2511,-1970],[2540,-1976],[2569,-1970],[2594,-1954],[2610,-1929]]
-   },
    {
     "id": "civic/square-pavilion-support-0",
     "z": 0,

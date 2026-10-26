@@ -63,7 +63,7 @@ test('the café: the block names CafeBay, the world draws CafeBay_v2 with its ro
   expect(w.civic.some(m => m.kit?.id === 'CafeBay')).toBe(false);
 });
 
-test('each tram shelter faces its own track (its open front is yaw + 90 degrees) and the civic robot is the 2.6k-triangle copy', () => {
+test('each tram shelter faces its own track (its open front is yaw + 90 degrees) and the block has no steward robot (2026-10-26, Sky: briefs/067 J)', () => {
   const tracks = d.tram.map(p => p.samples.map(s => s.p as [number, number]));
   const shelters = kinds('tram-shelter'); expect(shelters.length).toBe(20);
   for (const s of shelters) {
@@ -72,5 +72,5 @@ test('each tram shelter faces its own track (its open front is yaw + 90 degrees)
     expect(Math.cos(s.yaw + Math.PI / 2) * toTrack[0]! + Math.sin(s.yaw + Math.PI / 2) * toTrack[1]!, s.id).toBeGreaterThan(0.9);
   }
   expect(new Set(shelters.map(s => s.yaw)).size).toBeGreaterThan(1); // a stop's two platforms no longer share one yaw
-  expect(w.civic.find(m => m.id === 'civic/foreground-civic-robot')!.kit!.id).toBe('RobotButler_Play');
+  expect(w.civic.find(m => m.id === 'civic/foreground-civic-robot')).toBeUndefined(); // the 2.6k-triangle copy (RobotButler_Play) stood there on its plinth until the block stopped exporting the monument; wave2.test.ts keeps the dress for a pinned older block
 });

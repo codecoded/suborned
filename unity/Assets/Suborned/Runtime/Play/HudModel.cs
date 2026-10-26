@@ -359,11 +359,26 @@ namespace Suborned.Play
                 var route = ids.ConvertAll(id => h.Text != null && h.Text.Route.TryGetValue(id, out var rw) ? rw : RouteWords(id)).FindAll(x => x != null);
                 if (!string.IsNullOrEmpty(sealStory)) route.Add(sealStory); // "Police held the car." / "Go was never given." after "Vale reached the getaway car."
                 if (route.Count > 0) EndLines.Add(string.Join(" ", route));
-                if (d.FightBranch.Length > 0) EndLines.Add($"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.");
+                if (d.FightBranch.Length > 0) EndLines.Add(FightLine(h, d));
                 var kept = d.Assets.ConvertAll(AssetWords).FindAll(x => x != null); if (kept.Count > 0) EndLines.Add("Kept: " + string.Join(" ", kept));
                 Getaway(h, d);
             }
             if (h.ShowDebug) EndLines.Add(h.Ending);
+        }
+
+        /// <summary>The end card's Final fight line (Fable's debrief.fight by branch, {n} hostiles and {hits} taken; the host's words without the
+        /// text), then engine 0.33.0's why (Debrief.FightWhy, the ids sim FightWhy.Add gives) as Fable's debrief.fightWhy clauses, each a sentence,
+        /// in the engine's order, an id without a clause left out.</summary>
+        static string FightLine(HandoverHost h, Debrief d)
+        {
+            var t = h.Text;
+            string line = t != null && t.DebriefFight.TryGetValue(d.FightBranch, out var fl) && fl.Length > 0
+                ? fl.Replace("{n}", d.FightHostiles.ToString()).Replace("{hits}", d.FightHits.ToString())
+                : $"Final fight: {(d.FightBranch == "loud" ? "the police" : "the rivals")}, {d.FightHostiles} against you, {d.FightHits} hit{(d.FightHits == 1 ? "" : "s")} taken.";
+            if (t == null) return line;
+            var seen = new System.Collections.Generic.HashSet<string>();
+            foreach (var id in d.FightWhy) if (seen.Add(id) && t.FightWhy.TryGetValue(id, out var w) && w.Length > 0) line += " " + w;
+            return line;
         }
 
         /// <summary>Brief 018 §3 (Fable's debrief.between and debrief.getaway): who was left behind and their fate, each captive (talks in n, or

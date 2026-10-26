@@ -65,7 +65,6 @@
    "el1",
    "sh2",
    "workers_d5",
-   "d2m",
    "d4",
    "d4b",
    "d5c"
@@ -92,7 +91,6 @@
    "el1",
    "sh2",
    "workers_d5",
-   "d2m",
    "d4",
    "d4b",
    "d5c"
@@ -107,7 +105,6 @@
    "workers_d5"
   ],
   "job/service": [
-   "d2m",
    "workers_d5"
   ],
   "job/trade": [
@@ -129,7 +126,6 @@
  "variantOf": {
   "security": "guard",
   "driver": "d2m",
-  "councillor": "d4",
   "rival": "workers_d5",
   "d4b": "d4"
  },

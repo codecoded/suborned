@@ -91,6 +91,36 @@ namespace Suborned.Play
         Vector2 stackAt = new(-1e6f, -1e6f); int stackIndex; readonly List<Target> stack = new();
         /// <summary>How many things overlap under the cursor now, and which one a right click hits (0 = the best).</summary>
         public int HoverStackCount => stack.Count; public int HoverStackIndex => stack.Count == 0 ? 0 : stackIndex % stack.Count;
+        /// <summary>Brief 067 F9: the overlap stack under the cursor (best first), for the stack tab and the others' rings.</summary>
+        public IReadOnlyList<Target> HoverStack => stack;
+
+        /// <summary>Brief 067 F8 (Glyph): a candidate under the cursor ranked for hover and the right button: first whether the selection has an
+        /// open calm way on it (0), else any row (1), else none (2), then its kind (a being 0, a body or a downed agent 1, a camera 2, the car or a
+        /// stand 3, the door marker, the cabinet or a stash 4, a passer-by 9). The rows are the selection's own (ContextFor), asked once a tick
+        /// for each candidate (a crowded spot has two to four).</summary>
+        float PickRank(Target t, bool rows = true)
+        {
+            int kind = t.Kind switch
+            {
+                "person" or "hostile" or "patrol" or "rivals" or "security" or "unit" or "bystander" => 0, "body" => 1, "op" => 1, "camera" => 2, "car" or "stand" => 3,
+                "door" or "cabinet" or "stash" => 4, "crowd" => 9, _ => 5,
+            };
+            if (t.Kind == "crowd") return 3 * 10 + kind; // a passer-by: never before anything with a row
+            return (rows ? RowRank(t) * 10 : 0) + kind;
+        }
+        /// <summary>0: the selection has an open calm way on t; 1: a row (locked, or only violent); 2: none. Cached a tick, a selection and an order count.</summary>
+        int RowRank(Target t)
+        {
+            if (Game == null) return 2; int mask = 0; for (int k = 0; k < 4; k++) if (Selected[k]) mask |= 1 << k;
+            var key = $"{t.Kind}/{t.Key}/{t.Id}"; var stamp = (Game.Tick / Game.Hz, mask, Game.Orders.Count); // once a second
+            if (rowRanks.TryGetValue(key, out var c) && c.stamp.Equals(stamp)) return c.rank;
+            int rank = 2; ContextPlan plan = null;
+            if (Guard("pick rank", () => plan = ContextFor(t, lastHover)) && plan?.Pn != null && plan.Pn.Rows.Count > 0)
+                rank = plan.Choice.Order.Exists(w => plan.Row(w)?.I?.Order is Order o && !ContextRank.Violent(new ContextRank.Way { Do = o.Do })) ? 0 : 1;
+            if (rowRanks.Count > 64) rowRanks.Clear();
+            rowRanks[key] = (stamp, rank); return rank;
+        }
+        readonly Dictionary<string, ((int, int, int) stamp, int rank)> rowRanks = new();
 
         /// <summary>How much the selected agent wants this target in a tie: Vale at his car for the Enforcer's Take most, then anything the
         /// agent's verbs act on.</summary>

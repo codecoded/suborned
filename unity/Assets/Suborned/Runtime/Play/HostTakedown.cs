@@ -410,10 +410,10 @@ namespace Suborned.Play
                 "rival-car" => Game.RivalCarPose()?.pos, "vale-car" => Game.CarPos(), // brief 059 (Fable's cards): the rival car, Vale's car
                 _ => null,
             };
-            // Aster's 059 routing (Sky on 0.2.122): the rival car's arrival is the 2:35 beat wherever the cell stands (it turns in off Orbit Walk, out of
-            // everyone's sight); the card points at it, so a click or N shows it coming. Its in-sight rule is Fable's for the rest
-            bool heard = l.Code == "rivals.coming";
-            if (c.Sight == "in-sight" && !heard && !(at.HasValue && CellSees(at.Value))) { hidden = true; return true; }
+            // `sight` in-sight: only when an agent sees the place; `always` (Fable 2026-10-26, brief 067: the rival car turning in off Orbit Walk is
+            // heard wherever the cell stands) shows anywhere, its `at` only what the card points at (a click or N shows it). The host's own override
+            // for rivals.coming (the 059 port) is gone with it
+            if (c.Sight == "in-sight" && !(at.HasValue && CellSees(at.Value))) { hidden = true; return true; }
             if (c.Needs == "routine" && !(who?.KRoutine ?? false)) { hidden = true; return true; }
             string result = c.Result;
             if (c.Results.Count > 0) result = c.Results.TryGetValue(CardPick(l, who), out var r) ? r : new List<string>(c.Results.Values)[0];

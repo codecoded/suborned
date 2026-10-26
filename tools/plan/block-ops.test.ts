@@ -33,6 +33,13 @@ describe('the committed block', () => {
     expect(block.adjustments.applied.every((a: any) => a.reason.length > 20)).toBe(true);
   });
 
+  test('does not export the steward monument (nav solid foreground-civic-robot): Sky, 2026-10-26, briefs/067 J, "a butler robot fixed to the north of the Records building: it needs to go"', () => {
+    expect(block.structures.map((s: any) => s.id)).not.toContain('foreground-civic-robot');
+    expect(block.structures.some((s: any) => s.category === 'civic-monument')).toBe(false);
+    expect(footprints(civic(plan.civic, block)).length).toBe(4); // the buildings and their towers, as before: nothing else of the block is a footprint
+    expect(civic(plan.civic, block).solidIds).not.toContain('foreground-civic-robot'); // so the walk, the cover and the sim's sight blockers never see the spot
+  });
+
   test('is the block the adjust file makes (run bun run block after editing it)', () => {
     expect(block.adjustments.sha256).toBe(createHash('sha256').update(readFileSync(resolve(root, ADJ))).digest('hex'));
   });

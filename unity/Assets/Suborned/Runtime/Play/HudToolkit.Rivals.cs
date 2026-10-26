@@ -160,6 +160,9 @@ namespace Suborned.Play
             GroundCircleDash(c, 0.95f, A(RivalViolet, 0.82f), 1.8f, 3.5f, 3.5f, 3.6f, 0.5f);
         }
 
+        /// <summary>Brief 067 C5a (Glyph): the stands' footprint alpha at rest.</summary>
+        public static float StandRestAlpha = 0.55f;
+
         void DriveDraw()
         {
             var h = host; var d = h.Drive; StandsShown = ""; ValeRouteShown = ""; if (marks == null) return;
@@ -168,6 +171,7 @@ namespace Suborned.Play
                 foreach (var gh in d.Ghosts)
                 {
                     float alpha = gh.Struck ? 0.45f : gh.Shut ? (gh.Hover ? 0.7f : 0.5f) : 1f;
+                    float liveK = gh.Hover ? 1f : d.LiveK; alpha *= Mathf.Lerp(StandRestAlpha, 1f, liveK); // brief 067 C5a (Glyph): at rest (anyone aboard, nothing live) the footprint at 55 %, no disc, no route; live eases in over 0.25 s
                     float open = now - gh.OpenedAt; bool opening = open >= 0f && open < 0.85f;
                     float scale = opening && open > 0.25f ? 1f + 0.04f * Mathf.Sin(Mathf.Clamp01((open - 0.25f) / 0.6f) * Mathf.PI) : 1f;
                     var fp = Footprint(gh.At, gh.Fwd, 4.6f * scale, 1.9f * scale);
@@ -178,10 +182,10 @@ namespace Suborned.Play
                     ChevronAt(gh.At + gh.Fwd * 2.05f * scale, gh.Fwd, 7f, A(col, alpha));
                     if (gh.Route.Count >= 2) { GroundDashes(gh.Route, LookGround, 2.4f, 7f, 6f, 4.4f, 0.6f); foreach (var (p, f) in Every(gh.Route, 3f)) ChevronAt(p, f, 6f, LookGround); }
                     // the disc at the centre (none under the car), the shut plate above the far edge
-                    if (!gh.Here && !gh.Struck && Proj(gh.At, out var q) && InView(q))
+                    if (!gh.Here && !gh.Struck && liveK > 0.01f && Proj(gh.At, out var q) && InView(q))
                     {
                         while (standDiscs.Count <= used) { var r = E(marks, "s-disc_dark_24", 0, 0, 24, 24); r.pickingMode = PickingMode.Ignore; var gl = E(r, null, 5, 5, 14, 14); gl.name = "g"; standDiscs.Add((r, gl)); manifest.Add((r, "image", () => "stand disc")); }
-                        var (dr, dg) = standDiscs[used++]; Show(dr, true); dr.style.left = q.x - 12; dr.style.top = q.y - 12; dr.style.opacity = gh.Shut ? 0.5f : 1f; Icon(dg, "car", Cream);
+                        var (dr, dg) = standDiscs[used++]; Show(dr, true); dr.style.left = q.x - 12; dr.style.top = q.y - 12; dr.style.opacity = (gh.Shut ? 0.5f : 1f) * liveK; Icon(dg, "car", Cream);
                     }
                     if (gh.Shut || opening && gh.OpenedAt > 0f)
                     {
@@ -197,7 +201,7 @@ namespace Suborned.Play
                             var p2 = standPlates[plates++]; Show(p2, true); Icon(p2.Q("g"), "nextevent", Cream); p2.style.left = pq.x - 30; p2.style.top = pq.y - 26 - 14; p2.style.opacity = fade;
                         }
                     }
-                    bits.Add(gh.Id + (gh.Here ? ":here" : gh.Shut ? ":after-vale" : gh.Struck ? ":struck" : "") + (gh.Hover ? ":hover" : "") + (gh.Route.Count >= 2 ? ":route" : ""));
+                    bits.Add(gh.Id + (gh.Here ? ":here" : gh.Shut ? ":after-vale" : gh.Struck ? ":struck" : "") + (gh.Hover ? ":hover" : "") + (gh.Route.Count >= 2 ? ":route" : "") + (liveK < 0.5f ? ":rest" : ""));
                 }
             for (int i = used; i < standDiscs.Count; i++) Show(standDiscs[i].root, false);
             for (int i = plates; i < standPlates.Count; i++) Show(standPlates[i], false);

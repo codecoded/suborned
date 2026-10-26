@@ -141,8 +141,10 @@ describe('the Handover fix', () => {
     expect(c.detail).toMatch(/councillor: none of the 11 who fit .* has a routine that reaches Meet driver by 6:10/);
   });
 
-  test('one guard at the public door every minute from 17:20 to 17:35: the day\'s until 17:30, the watch\'s from 17:30', () => {
-    const at = (t: number) => by(fixGen.people, p => p.work?.role === 'guard' && p.work.place === 'office-entrance' && p.work.post === 'door' && stopAt(p, t)?.place === 'office-entrance' && stopAt(p, t)?.doing === 'work').map(p => p.id);
+  test('one guard at the public door every minute from 17:20 to 17:35: the day\'s until 17:30, the watch\'s from 17:30 (beside the door: the cast guard holds it through the mission, brief 067 L)', () => {
+    // at the door: on it, or at a waiting point beside it (a post one cast person holds through the mission is never taken: its relief stands beside it for her shift)
+    const here = (place: string | undefined) => place === 'office-entrance' || w.scope.places.find(x => x.id === place)?.beside === 'office-entrance';
+    const at = (t: number) => by(fixGen.people, p => p.work?.role === 'guard' && here(p.work.place) && p.work.post === 'door' && here(stopAt(p, t)?.place) && stopAt(p, t)?.doing === 'work' && (t >= day(17, 30) || stopAt(p, t)!.place === 'office-entrance')).map(p => p.id);
     for (let t = day(17, 20); t <= day(17, 35); t++) expect(at(t), hm(t)).toHaveLength(1);
     expect(at(day(17, 29))[0]).not.toBe(at(day(17, 30))[0]);
     const out = by(fixGen.people, p => p.id === at(day(17, 29))[0])[0]!, inn = by(fixGen.people, p => p.id === at(day(17, 30))[0])[0]!;

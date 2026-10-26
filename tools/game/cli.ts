@@ -6,8 +6,8 @@
 //   Editor open:   through the Editor (`unity cmd editor invoke_menu --path "Suborned/Build Game"`), only when it is stopped and not compiling; in Play it
 //                  refuses and says so (a build would end the session). Either way the result is out/build/play/build.json.
 // Staleness is by content (Splice, 2026-10-21): the app is rebuilt only when an input (unity/Assets, ProjectSettings, Packages, the icon, the engine
-// DLL) differs from what the last build read (out/build/play/inputs.json, a fingerprint of blob ids); a commit that only records built files
-// changes nothing. After a rebuild for play only the short draw check runs (`-drawCheck`: one frame, windowed, a few seconds); `--check` is the
+// DLL, and what the sim step stages in StreamingAssets/sim: the engine's inputs, the words, the seats, the audio cues; fingerprint.ts) differs from what the
+// last build read (out/build/play/inputs.json, a fingerprint of blob ids and hashes); a commit that only records built files changes nothing. After a rebuild for play only the short draw check runs (`-drawCheck`: one frame, windowed, a few seconds); `--check` is the
 // full proof. A running game is never built under: it says to close it.
 // `--dry-run` (Splice, 2026-10-26; a `--send --dry-run` once started a real Unity build): with any other flag it prints what would be built, checked, packed, sent or opened and exits 0.
 // It builds nothing, starts no Unity, signs, zips and sends nothing and writes nothing under out/build or runs/builds; the spawn wrapper below refuses (exit 3) to start
@@ -21,8 +21,10 @@
 import { appendFileSync, existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, join, relative, resolve } from 'node:path';
 import { spawnSync as realSpawnSync, type SpawnSyncOptions, type SpawnSyncReturns } from 'node:child_process';
-import { createHash } from 'node:crypto';
 import { usageGate } from '../gen/flags';
+import { INPUTS, fingerprint, ignoredFiles } from './fingerprint';
+import { judgeGates } from './proofgates';
+import { appShips } from './ships';
 
 const ROOT = join(import.meta.dir, '..', '..');
 const UNITY = join(ROOT, 'unity');
@@ -73,15 +75,12 @@ function spawnSync(cmd: string, a: string[], opts: SpawnSyncOptions = {}): Spawn
 const run = (cmd: string, a: string[], opts: { quiet?: boolean } = {}) => spawnSync(cmd, a, { cwd: ROOT, encoding: 'utf8', stdio: opts.quiet ? 'pipe' : 'inherit' });
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-/** What a build reads (Splice, 2026-10-21): the Unity project's Assets, ProjectSettings and Packages, and the icon. tools/game/version.json is an
- *  output of a build (its counter), so it is not here. */
-const INPUTS = ['unity/Assets', 'unity/ProjectSettings', 'unity/Packages', 'tools/game/app-icon.png'];
-/** The engine DLL and its inputs are git-ignored but part of the app, so they are read by content too. */
-const IGNORED_INPUTS = [join(UNITY, 'Assets', 'Suborned', 'Sim')];
+/** What a build reads, and what the app carries that git does not hold (the engine DLL and what the sim step stages in StreamingAssets/sim, the audio cues among it),
+ *  read by content: tools/game/fingerprint.ts (Splice, 2026-10-21; the staged files from 2026-10-26, briefs/067/splice.md item 2). */
 const INPUTS_JSON = join(DIR, 'inputs.json');
 
 /** A fingerprint of the inputs by content, not by time (a commit that only records files already built changes nothing): every git file under
- *  INPUTS by its blob id (the index's, or the working file's when it differs or is untracked), plus the ignored engine files by sha256. */
+ *  INPUTS by its blob id (the index's, or the working file's when it differs or is untracked), plus the ignored files the app carries (the engine DLL, the staged StreamingAssets/sim copies; fingerprint.ts) by sha256. */
 function inputFiles(): Map<string, string> {
   const git = (a: string[], input?: string) => spawnSync('git', a, { cwd: ROOT, encoding: 'utf8', input, maxBuffer: 1 << 28 }).stdout ?? '';
   const files = new Map<string, string>();
@@ -90,18 +89,8 @@ function inputFiles(): Map<string, string> {
   const live = dirty.filter(f => existsSync(join(ROOT, f)));
   for (const f of dirty) if (!live.includes(f)) files.set(f, 'deleted');
   if (live.length) { const ids = git(['hash-object', '--stdin-paths'], live.join('\n') + '\n').trim().split('\n'); live.forEach((f, i) => files.set(f, ids[i])); }
-  const walk = (d: string) => {
-    if (!existsSync(d)) return;
-    for (const e of readdirSync(d, { withFileTypes: true })) {
-      const p = join(d, e.name);
-      if (e.isDirectory()) walk(p); else files.set(relative(ROOT, p), 'sha256:' + createHash('sha256').update(readFileSync(p)).digest('hex'));
-    }
-  };
-  for (const d of IGNORED_INPUTS) walk(d);
+  for (const [f, h] of ignoredFiles(ROOT)) files.set(f, h);
   return files;
-}
-function fingerprint(files: Map<string, string>): string {
-  return createHash('sha256').update([...files].sort(([a], [b]) => (a < b ? -1 : 1)).map(([f, h]) => `${f}\t${h}`).join('\n')).digest('hex');
 }
 /** Written after every successful build: the fingerprint of the inputs the app was built from (and the files, to say what changed later). */
 function recordInputs(): void {
@@ -194,21 +183,18 @@ function check(): boolean {
   const pj = airFrames(first.pj), status = first.status; // the pictures are 1920x1080; the frame times are the Air's size
   const drive = driveReplay(pj) && driveReplay(pj, 'fireSession', 'fire-session.script.json'); // brief 024: the trigger session (press, hold, release, tap, a lock) replays too
   const inputs = inputChecks(pj);
-  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs;
+  // the app carries the audio cue file the sim step staged (briefs/067/splice.md item 2): only a build that has the cues code (the r059 proof section) is asked for it
+  const ships = pj?.frames?.r059 === undefined ? { ok: true, lines: ['game: audio cues: not asked of this build (no r059 section: an older build)'] } : appShips(APP, ROOT);
+  for (const l of ships.lines) console.log(l);
+  return !!sj?.passed && s.status === 0 && pj?.status === 'ok' && status === 0 && drive && inputs && ships.ok;
 }
 
 /** Latch 2026-10-21 (ProofInput.cs): the input checks the proof ran through the Input System's devices. ok false fails the check; ok null
  *  (the fight gave no hostile in range) is reported, not failed. */
 function inputChecks(pj: any): boolean {
-  let pass = true;
-  for (const k of ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29', 'r118']) {
-    const r = pj?.frames?.[k];
-    if (r === undefined) { console.log(`game: ${k}: not in this proof (an older build)`); continue; }
-    const { ok, ...rest } = r ?? {};
-    console.log(`game: ${k} ${ok === true ? 'ok' : ok === false ? 'FAILED' : 'not reached'}: ${JSON.stringify(rest).slice(0, 600)}`);
-    if (ok === false || r === null) pass = false;
-  }
-  return pass;
+  const g = judgeGates(pj?.frames); // tools/game/proofgates.ts: the sections that gate, r059 (brief 059) among them since 2026-10-26
+  for (const l of g.lines) console.log(l);
+  return g.ok;
 }
 
 /** Brief 025: the driven session the proof saved in the built player (take control of the Scout, E on Inez, let go) replays headless on

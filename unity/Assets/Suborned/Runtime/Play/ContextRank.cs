@@ -43,7 +43,8 @@ namespace Suborned.Play
 
         static int Sub(Way w) => w.Do switch
         {
-            "go" => -1, // brief 057 §4.2: once Vale is aboard, Go is the car's first way (before another agent's Board)
+            "go" => w.Outcome == "withdraw" ? 9 : -1, // brief 057 §4.2: once Vale is aboard, Go is the car's first way (before another agent's Board); brief 067 C1.5 (Glyph): Go before Vale (a withdraw) is last
+            "board" => 0, "drive-car" => 1, // brief 067 C1.5: on the car, Board before Drive (both tier 1: without these the hold fell to the ring)
             "watch" => 0, "listen" => 1,
             "disable" => 1, // engine 0.31.0 (Glyph 058 §1): Loop leads on a camera; Disable after the cabinet's loops and Reroute
             "carry" => 0, "stash" => 1, "restrain" => 2, "drop" => 3,

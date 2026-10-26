@@ -1,0 +1,26 @@
+{
+  "schema": "suborned.proofset/1",
+  "note": "The pictures the built player's proof (-gameProof) takes that the HUD budget judges in the batch and that Glyph reviews at 2x (the 2160 set: the same proof at -capture-size 3840x2160). A set names its section of proof.json `frames`, the C# file that takes the pictures and each picture (<name>.png with <name>.hud.png, <name>.manifest.json and <name>.parts.json beside it). tools/game/proofset.test.ts holds every name to the C# source, so a renamed picture is a failing test, not a picture quietly dropped from the budget. `optional`: a picture only some runs take. Add a section's pictures here when its proof lands; `bun tools/game/proofset.ts` says what it does with them.",
+  "sets": {
+    "r059": {
+      "section": "r059",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof059.cs",
+      "frames": [
+        { "name": "r059-235-turns-in", "what": "2:35, the rival car at its entry, framed at the first quarter yaw where the cell's car does not cover it; nobody of the crew on foot yet" },
+        { "name": "r059-235-square", "what": "2:35, the opening view of the square: the edge chip for the car that is off screen" },
+        { "name": "r059-246-drop", "what": "2:46, the three step out at the drop and walk (each first drawn within 5 m of the car, never at a post)" },
+        { "name": "r059-310-park", "what": "3:10, the car parked across from Vale's car, at the Records Office yaw (210)" },
+        { "name": "r059-320-lookout", "what": "3:20, the lookout posted" },
+        { "name": "r059-watch-alt", "what": "the Scout's Watch on the rival car with Alt held: the next-move marker and the spring ring round the cell's stand" },
+        { "name": "r059-yard-after-vale", "what": "5:40, the Tech selected aboard the getaway car: the yard drawn 'after Vale's car'" },
+        { "name": "r059-613-round", "what": "6:13, Vale driven round: the route and its times" },
+        { "name": "r059-625-parked", "what": "6:26, Vale's car parked: the wait marker and the hand-off ring" },
+        { "name": "r059-drive-hover", "what": "the Drive hovered at the stand: the route preview and the pill" },
+        { "name": "r059-drive-parked", "what": "the getaway car has arrived at the stand: the 'Parked' chip" },
+        { "name": "r059-drive-here", "what": "a Drive to the stand the car is at: the drive-here pop at the stand" },
+        { "name": "r059-take-back-seat", "what": "the Enforcer takes Vale from the back seat: Vale is not drawn on the street" },
+        { "name": "r059-fight-start", "what": "the fight's first frame, when it starts in the pickup run: the rivals drawn the tick before are drawn after, not appeared", "optional": true }
+      ]
+    }
+  }
+}

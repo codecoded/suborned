@@ -18,10 +18,15 @@ def sedan(s, body, roof):
         _sedan(s, body, roof)
 
 
+# the chassis the sedans share (brief 067: Sedan_Rival, cars067.py, takes the same tub section heights and half-widths, side stations and wheel stations: one footprint for every car in the sim)
+SIDES = [0, 0.3, 0.7, 1]
+TUB = [(0.28, 0.80, -2.12, 2.02, 0.36, 0.30), (0.42, 0.90, -2.2, 2.08, 0.42, 0.36), (0.74, 0.92, -2.22, 2.10, 0.44, 0.38), (0.90, 0.90, -2.15, 2.04, 0.46, 0.40),
+       (0.98, 0.84, -1.95, 1.90, 0.50, 0.44)]
+WHEELS_Y = (-1.38, 1.4)
+
+
 def _sedan(s, body, roof):
-    sides = [0, 0.3, 0.7, 1]
-    tub = [(0.28, 0.80, -2.12, 2.02, 0.36, 0.30), (0.42, 0.90, -2.2, 2.08, 0.42, 0.36), (0.74, 0.92, -2.22, 2.10, 0.44, 0.38), (0.90, 0.90, -2.15, 2.04, 0.46, 0.40),
-           (0.98, 0.84, -1.95, 1.90, 0.50, 0.44)]
+    sides, tub = SIDES, TUB
     vloft(s, tub, body, sides, nc=12, e=2.6)
     cab = [(0.98, 0.80, -0.50, 1.46, 0.55, 0.60), (1.18, 0.75, -0.30, 1.34, 0.55, 0.60), (1.34, 0.66, -0.05, 1.12, 0.52, 0.56), (1.40, 0.63, 0.05, 1.04, 0.50, 0.54)]
     vloft(s, cab, pal.GlassDark, sides, nc=12, e=2.6, paint=lambda i, j, c: roof if i == len(cab) - 2 else None, caps=((0, None), (-1, roof)))
@@ -38,7 +43,7 @@ def _sedan(s, body, roof):
         lamp(s, (sg * 0.62, -2.2, 0.72), (0, -1, 0), 0.1, depth=0.05, seg=10)
         lamp(s, (sg * 0.66, 2.12, 0.8), (0, 1, 0.1), 0.06, lens=pal.Signal_Red, depth=0.03, seg=8)
     for sg in (-1, 1):
-        for y in (-1.38, 1.4):
+        for y in WHEELS_Y:
             wheel(s, (sg * 0.84, y, 0.34), 0.34, 0.2, white=(0.21, 0.29), hub=0.5, rim=pal.Steel, seg=14, side=sg)
 
 

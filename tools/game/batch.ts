@@ -7,9 +7,9 @@
 //   unity-world  Unity reimport + HarbourWorldBuilder rebuild from the export      (Editor open: its menu, through the Unity CLI; closed: batchmode)
 //   unity-match  Unity's scenarios against headless (Suborned/Sim/Run Scenarios)   (same two ways)
 //   game-build   bun tools/game/cli.ts --build           the player (it proves the first frame draws); SKIPPED, no build number spent, when nothing under unity/Assets, ProjectSettings or Packages is newer than the app (--rebuild forces it)
-//   game-check   bun tools/game/cli.ts --check           scenarios, the proof with frame times, the driven session replayed headless
+//   game-check   bun tools/game/cli.ts --check           scenarios, the proof with frame times (every gated section ok: tools/game/proofgates.ts, r059 among them), the driven session replayed headless, the app carrying cues.json
 //   shots        the built player with -shots            tools/game/shots.json: each shot, its HUD layer and manifest, clips (ShotRunner.cs)
-//   budget       tools/hud-budget + the layout audit     every HUD shot within budget; every audit clean
+//   budget       tools/hud-budget + the layout audit     every HUD shot within budget; every audit clean; and the proof's pictures of each set in tools/game/proofset.json (r059) the proof has, at 1920x1080
 //   late-fight   the built player with -late             tools/game/late.json: loud-fight and Sky's lagging session played to the last 60 s, then on at real time with the script's orders, 1080p; a frame over 50 ms tied to a save, order or the end, p99 over 16.7 ms, over 100 ms at the end: a row with findings is run once more and fails only if the same kind returns; the machine's load is recorded (brief 045; tools/game/late.ts)
 //   tp-long      the built player with -tplong          tools/game/tplong.json: the two third-person views (Sky's street, the worst heading) and the play view at 2880x1864, ~40 s: triangles, SetPass, shadow casters, renderers drawn and far, mean and p99 against the gates in tplong.ts (brief 048); SKIPPED, with the reason, until the built player has the hook
 //   perf064      the built player with -perf064         (opt-in: --perf064 or --only perf064, ~3 minutes) Redline's scene at 2880x1864, four 20 s windows, before/after: frame ms, the host's cone cost, the CPU/GPU split and each window's load when the build writes them (brief 064 R7; tools/game/perfrow.ts). Counts are the gate; ms only on a quiet machine
@@ -19,7 +19,7 @@
 // --dry-run prints what each step would run and touches nothing (no Unity, no build, nothing written under out/): only the steps' plan() texts run, plus read-only pgrep to see whether the Editor is open (tests: batch.test.ts). Exit 0 only if every step that ran passed.
 import { copyFileSync, existsSync, mkdirSync, readdirSync, readFileSync, renameSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { cpus, homedir, loadavg } from 'node:os';
-import { join, resolve } from 'node:path';
+import { dirname, join, resolve } from 'node:path';
 import { compile as runtimeCompile } from './runtime-compile';
 import { guardConfig, takeGuardFlags, timeoutText, waitForSky } from './playing';
 import { GATES, MARKER as TPLONG_MARKER, judgeTpLong, resolveTpLong, type TpLongReport } from './tplong';
@@ -27,6 +27,8 @@ import { LIMITS, loadText, noisy as loadNoisy, resolveLate, runLate, type End, t
 import { perf064Lines, spanEnd, spanStart, spanText, type LoadSpan, type Perf064Report } from './perfrow';
 import { build as buildEngine, engineAt } from '../missions/check/engine';
 import { DEFAULT_FILE, ROOT, expectedFiles, fileResolver, pngFileSize, resolveShots, type ResolvedFile } from './shots';
+import { judgeProofBudget, loadProofSet, type ProofBudget } from './proofset';
+import { walkFileState } from './walkfile';
 
 const UNITY = join(ROOT, 'unity'), OUT = process.env.SUBORNED_BATCH_OUT ? resolve(process.env.SUBORNED_BATCH_OUT) : join(ROOT, 'out/batch'), /* SUBORNED_BATCH_OUT: the tests' scratch folder */ APP = join(ROOT, 'out/build/play/The Suborned.app'), PROOF = join(ROOT, 'out/build/play/proof/proof.json');
 const SCENE = join(UNITY, 'Assets/Scenes/HarbourDistrict.unity'), MATCH = join(ROOT, 'out/sim-unity/unity-editor.json');
@@ -139,8 +141,19 @@ export const STEPS: Step[] = [
     async run() { const r = await sh('kit', ['bun', 'run', 'kit']); return r.code === 0 ? { ok: true, detail: tail(r.out, 1).slice(0, 110) } : fail('bun run kit failed', r); },
   },
   {
-    id: 'world', title: 'plan to world export', plan: () => ['bun run world'],
-    async run() { const r = await sh('world', ['bun', 'run', 'world']); return r.code === 0 ? { ok: true, detail: tail(r.out, 1).slice(0, 110) } : fail('bun run world failed', r); },
+    id: 'world', title: 'plan to world export', plan: () => ['bun run world', 'then, only when out/world/harbour-district.walk.json is not made from that export (the Unity step refuses a stale one): bun tools/geometry/cli.ts --no-shots'],
+    async run() {
+      const r = await sh('world', ['bun', 'run', 'world']);
+      if (r.code !== 0) return fail('bun run world failed', r);
+      let walk = walkFileState(ROOT), mended = '';
+      if (!walk.fresh) { // a world run that moved the export leaves the walk file behind; geometry writes it again (2 s with the kit cached)
+        const was = walk.why, g = await sh('world', ['bun', 'tools/geometry/cli.ts', '--no-shots'], { append: true });
+        walk = walkFileState(ROOT);
+        if (g.code !== 0 || !walk.fresh) return fail(`the walk file was stale (${was}) and bun tools/geometry/cli.ts --no-shots did not mend it (${walk.why})`, g);
+        mended = ` (stale: ${was}; geometry wrote it again)`;
+      }
+      return { ok: true, detail: `${tail(r.out, 1).slice(0, 80)}; walk file ${walk.why}${mended}` };
+    },
   },
   {
     id: 'unity-world', title: 'Unity reimport + world rebuild',
@@ -219,15 +232,17 @@ export const STEPS: Step[] = [
     },
   },
   {
-    id: 'budget', title: 'HUD budget + layout audit', plan: c => [`bun tools/hud-budget/cli.ts ${rel(c.shotsOut)} --skip-unmasked`, 'the layout audit recorded with each HUD shot (HudToolkit.AuditText)'],
+    id: 'budget', title: 'HUD budget + layout audit', plan: c => [`bun tools/hud-budget/cli.ts ${rel(c.shotsOut)} --skip-unmasked`, 'the layout audit recorded with each HUD shot (HudToolkit.AuditText)', `the proof's pictures of each set in tools/game/proofset.json whose section the proof has (${Object.keys(loadProofSet().sets).join(', ')}), from ${rel(dirname(PROOF))} at 1920x1080: bun tools/game/proofset.ts budget`],
     async run(c) {
       const rep = c.facts.shots as Report | undefined;
       if (!rep) return fail('no shots report (the shots step did not run in this batch)');
       const r = await sh('budget', ['bun', 'tools/hud-budget/cli.ts', c.shotsOut, '--skip-unmasked']);
       const lines = r.out.split('\n'), pass = lines.filter(l => l.startsWith('PASS')).length, bad = lines.filter(l => l.startsWith('FAIL'));
       const audited = rep.shots.filter(s => s.audit), dirty = audited.filter(s => !s.audit!.clean);
-      const problems = [...bad.map(l => l.slice(0, 160)), ...dirty.flatMap(s => s.audit!.issues.slice(0, 3).map(i => `audit ${s.name}: ${i}`))];
-      return problems.length ? fail(`budget ${pass} pass, ${bad.length} over; audit ${audited.length - dirty.length}/${audited.length} clean\n${problems.slice(0, 10).join('\n')}`) : { ok: r.code === 0, detail: `budget ${pass} shots within budget; layout audit ${audited.length}/${audited.length} clean` };
+      const sets = judgeProofSets(readJson(PROOF) ?? c.facts.proof);
+      const problems = [...bad.map(l => l.slice(0, 160)), ...dirty.flatMap(s => s.audit!.issues.slice(0, 3).map(i => `audit ${s.name}: ${i}`)), ...sets.flatMap(x => x.problems.map(p => `${x.name}: ${p}`))];
+      const proofText = sets.map(x => x.detail).join('; ');
+      return problems.length ? fail(`budget ${pass} pass, ${bad.length} over; audit ${audited.length - dirty.length}/${audited.length} clean${proofText ? `; ${proofText}` : ''}\n${problems.slice(0, 10).join('\n')}`) : { ok: r.code === 0, detail: `budget ${pass} shots within budget; layout audit ${audited.length}/${audited.length} clean${proofText ? `; ${proofText}` : ''}` };
     },
   },
   {
@@ -328,6 +343,14 @@ function unityExe(): string {
 }
 const rel = (p: string) => p.startsWith(ROOT + '/') ? p.slice(ROOT.length + 1) : p;
 const readJson = (f: string): any => { try { return JSON.parse(readFileSync(f, 'utf8')); } catch { return undefined; } };
+
+/** The proof sets (tools/game/proofset.json) the proof has a section for, judged at 1x by the HUD budget; a set whose section the proof lacks is an older build's, said and not failed.
+ *  `proof` is proof.json; `dir` the folder its pictures are in. */
+export function judgeProofSets(proof: any, dir = dirname(PROOF), stage = join(OUT, 'proofset'), judge: typeof judgeProofBudget = judgeProofBudget): (ProofBudget & { name: string })[] {
+  return Object.entries(loadProofSet().sets).map(([name, s]) => proof?.frames?.[s.section] === undefined
+    ? { name, ok: true, detail: `proof set ${name}: not in this proof (an older build)`, problems: [], judged: 0, pass: 0 }
+    : { name, ...judge(dir, name, join(stage, name)) });
+}
 
 /** Unity's scenarios against headless, from the file the match wrote after `since`. */
 export function matchResult(file: string, since: number): StepResult {

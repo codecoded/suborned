@@ -59,7 +59,7 @@ namespace Suborned.Play
             turnDragging = false; grabbing = false;
             left = new Overhead { pos = cam.transform.position, rot = cam.transform.rotation, focus = focus, ortho = cam.orthographic, size = cam.orthographicSize, fov = cam.fieldOfView, near = cam.nearClipPlane, far = cam.farClipPlane, shadows = shadows && shadows.enabled };
             fAgent = FollowWho(); fPivot = FollowPoint(fAgent) ?? focus; fPivotVel = Vector3.zero;
-            fYaw = fYawFrom = fYawTo = yawNow; fTurnStart = -1f; fDist = fDist > 0f ? fDist : followDistance; fDistNow = fDist; fDragging = false; fHasLast = false; fHeadVel = Vector3.zero; fChaseVel = 0f; fLookUntil = -1f; // Sky: the zoom is the player's setting, kept between visits // behind the agent, looking the way the overhead view looked
+            fYaw = fYawFrom = fYawTo = AgentYaw(fAgent, yawNow); fTurnStart = -1f; // brief 067 G (Sky on 0.2.122): in behind the agent, facing their heading (the figure's drawn facing), not the map's yaw fDist = fDist > 0f ? fDist : followDistance; fDistNow = fDist; fDragging = false; fHasLast = false; fHeadVel = Vector3.zero; fChaseVel = 0f; fLookUntil = -1f; // Sky: the zoom is the player's setting, kept between visits // behind the agent, looking the way the overhead view looked
             fSwingFromPos = cam.transform.position; fSwingFromRot = cam.transform.rotation; fSwingStart = Time.unscaledTime;
             cam.orthographic = false; cam.fieldOfView = followFov; cam.nearClipPlane = 0.2f; cam.farClipPlane = Mathf.Min(followFar, DistanceHaze.FarClip > 0f ? DistanceHaze.FarClip : followFar); // brief 048: the clip is the haze's far (350 m)
             if (shadows) shadows.enabled = true; // brief 048: TacticalShadows fits a perspective camera itself (110 m, 2 cascades, split 22 m, last 30 % faded)
@@ -69,9 +69,45 @@ namespace Suborned.Play
             Status = $"Follow view: {Suborned.Sim.Op.Name((Suborned.Sim.OpId)fAgent)} ({controls.Label(PlayAction.FollowView)} for the overhead view)";
         }
 
+        // ---------------------------------------------------------------- brief 067 G3 (Glyph): back to the map by an eased glide
+
+        /// <summary>Seconds the glide back to the map takes (smoothstep), and the share at its end over which the world marks fade back in.</summary>
+        public const float FollowExitS = 0.5f, MarksFadeS = 0.2f;
+        float fExitStart = -1f; Vector3 fExitFromPos; Quaternion fExitFromRot; int fExitAgent = -1;
+        /// <summary>The world marks' opacity (the HUD's `marks` layer): hidden through the glide back to the map (the follow view hides them), then
+        /// faded in over 0.2 s once the map view stands (so they never pop in, nor draw against the moving perspective camera).</summary>
+        public float MarksFade => fExitStart >= 0f ? 0f : Mathf.Clamp01((Time.unscaledTime - marksFadeFrom) / MarksFadeS);
+        float marksFadeFrom = -9f;
+        /// <summary>The proof reads it: a glide back to the map is under way.</summary>
+        public bool FollowExiting => fExitStart >= 0f;
+
+        /// <summary>T back to the map (Sky on 0.2.122; Glyph 067 G3): instead of the hard restore, a 0.5 s smoothstep glide up the line the swing came
+        /// down (from the chase camera to a point high on the map view's line through the agent), then the map view exactly as it was left but
+        /// centred on the agent at play zoom 14, at the quarter-step yaw it was left at. The world marks fade back in over the glide's last 0.2 s.</summary>
+        void FollowExitGlide(int k)
+        {
+            if (!Following || !cam) return;
+            fExitStart = Time.unscaledTime; fExitFromPos = cam.transform.position; fExitFromRot = cam.transform.rotation; fExitAgent = k; fDragging = false;
+        }
+        /// <summary>Per frame while gliding back (FollowFrame): the camera eased toward the map's line over the agent; at its end the map view.</summary>
+        void FollowExitFrame()
+        {
+            var at = fExitAgent >= 0 && FollowPoint(fExitAgent) is Vector3 p ? p : fPivot;
+            float u = Mathf.Clamp01((Time.unscaledTime - fExitStart) / Mathf.Max(0.01f, FollowExitS)), s = u * u * (3f - 2f * u);
+            var toRot = left.rot; var toPos = new Vector3(at.x, 0f, at.z) - toRot * Vector3.forward * 60f; // high on the map view's line through the agent (the swing's start)
+            cam.transform.SetPositionAndRotation(Vector3.Lerp(fExitFromPos, toPos, s), Quaternion.Slerp(fExitFromRot, toRot, s));
+            if (u < 1f) return;
+            fExitStart = -1f; FollowExit(); marksFadeFrom = Time.unscaledTime;
+            if (cam) { cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); centreGoal = null; centreStart = -1f; camFollow = false; LookAt(at); }
+            FollowExitGlides++;
+        }
+        /// <summary>The proof reads it: glides back to the map completed.</summary>
+        public int FollowExitGlides { get; private set; }
+
         void FollowExit()
         {
             if (!Following) return;
+            fExitStart = -1f;
             Following = false; fAgent = -1; fDragging = false; FollowUnhide(); dResume = false;
             cam.orthographic = left.ortho; cam.orthographicSize = left.size; cam.fieldOfView = left.fov; cam.nearClipPlane = left.near; cam.farClipPlane = left.far;
             cam.transform.SetPositionAndRotation(left.pos, left.rot);
@@ -79,6 +115,12 @@ namespace Suborned.Play
             if (shadows) { shadows.enabled = left.shadows; shadows.focusDepth = standOff; }
             intentKey = ""; Status = "Overhead view";
         }
+
+        /// <summary>Brief 067 G: agent k's heading as drawn (its figure's yaw, Unity degrees: the follow camera's own convention), else `fallback`.</summary>
+        float AgentYaw(int k, float fallback) => k >= 0 && k < 4 && views?.FigureYaw("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)k)) is float y ? y : fallback;
+        /// <summary>The proof reads it: the follow camera's yaw now (Unity degrees), and the followed agent's drawn heading.</summary>
+        public float FollowYaw => fYaw;
+        public float FollowAgentYaw => AgentYaw(fAgent, float.NaN);
 
         /// <summary>The selected agent (the hotbar's), else the first selected, else the Scout.</summary>
         int FollowWho() { int a = (int)Agent; if (Selected[a]) return a; for (int k = 0; k < 4; k++) if (Selected[k]) return k; return 0; }
@@ -94,6 +136,7 @@ namespace Suborned.Play
         /// <summary>The keys and the wheel in the follow view (T toggles in either view: see FollowKey).</summary>
         void FollowInput(Keyboard kb, UnityEngine.InputSystem.Mouse mouse, bool overHud)
         {
+            if (fExitStart >= 0f) return; // brief 067 G3: no turn or distance while gliding back to the map
             if (kb != null && !fDragging && !Driving) // driven: E acts and the drag orbits (HostDrive)
             {
                 if (controls.Down(kb, PlayAction.TurnLeft)) FollowTurn(-1);
@@ -256,7 +299,7 @@ namespace Suborned.Play
         {
             if (!controls.Down(kb, PlayAction.FollowView)) return false;
             if (controls.HoldActs && Driving && controls.Held(kb, PlayAction.AddToGroup)) { DriveNextAgent(); return true; } // brief 041: Shift+T takes the next agent; T lets go (Esc stays the pause menu)
-            if (Driving) DriveLetGoToMap(); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter();
+            if (Driving) DriveLetGoToMap(true); else if (Following) FollowExit(); else if (Modal == ModalGate.Modal.None) DriveToggle(); else FollowEnter(); // brief 067 G3: T glides back to the map
             return true;
         }
 
@@ -264,6 +307,7 @@ namespace Suborned.Play
         void FollowFrame()
         {
             if (!Following || !cam) return;
+            if (fExitStart >= 0f) { FollowExitFrame(); return; } // brief 067 G3: the glide back to the map
             int who = FollowWho(); if (who != fAgent) fAgent = who;
             FollowPlace(false);
         }

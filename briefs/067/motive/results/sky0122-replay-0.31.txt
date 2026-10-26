@@ -1,0 +1,164 @@
+handover-20261026-024947.script.json: Failure (enforcer-down) at 8:10.5  cash 10000  trail 17  alert 3  shots 3
+  0:00.0  start                        Vale is inside. His official car will collect him later. The city is already moving.
+  0:00.9  order.move                   scout heads for (330,-3985).
+  0:05.7  order.watch                  scout watch waitress (20 s)
+  0:11.1  order.move                   fixer heads for (-13,-3402).
+  0:18.5  order.move                   tech heads for (2293,-3758).
+  0:25.7  scout.watch.watched          Inez Nikolaou (waitress): cell.watch → watched.
+  0:46.4  order.move                   tech heads for cabinet.
+  0:57.4  cancel.move                  tech stops where they stand.
+  0:57.4  order.move                   tech heads for cabinet.
+  0:59.7  order.disable                tech disable entrance (10 s)
+  1:09.7  camera.cut                   The Tech cuts the entrance camera's line. The desk will see a dead screen at 1:14.6.
+  1:17.6  camera.cut-reported          The desk sees the entrance camera's screen dead: a missed check-in. Alert 1.
+  1:17.6  alarm.dispatches             The desk sends the response (level 2, watchful): 1 robot, 0 units, on the street 1:27.6.
+  1:21.6  patrol.alarm                 The patrol leaves its sweep for the alarm.
+  1:29.3  order.move                   enforcer heads for (5127,-4294).
+  1:29.6  attention.noticed            patrol notices the tech standing still in its sight.
+  1:40.4  order.watch                  tech watch camera:entrance (20 s)
+  1:41.6  attention.wary               patrol is wary of the tech for the rest of the mission.
+  1:55.1  order.walk-in                scout walks to waitress to listen.
+  1:59.8  order.watch                  enforcer watch camera:entrance (20 s)
+  2:00.4  tech.watch.watched           The Tech has watched the entrance camera: its sight is known, and its routine.
+  2:06.4  order.listen                 scout listen waitress (42 s)
+  2:06.6  attention.reporting          patrol reports the tech loitering (lands 2:09.6).
+  2:07.7  attention.noticed            patrol notices the enforcer standing still in its sight.
+  2:09.6  attention.landed             patrol's report lands: the tech loitering. Alert 1.
+  2:09.6  alarm.dispatches             The desk sends the response (level 2, watchful): 1 robot, 0 units, on the street 2:19.6.
+  2:19.7  attention.wary               patrol is wary of the enforcer for the rest of the mission.
+  2:19.8  enforcer.watch.watched       The Enforcer has watched the entrance camera: its sight is known, and its routine.
+  2:26.2  order.move                   tech heads for (4375,-4375).
+  2:34.5  order.move                   tech heads for cabinet.
+  2:38.3  order.reroute                tech reroute patrol (45 s)
+  2:39.1  order.watch                  enforcer watch patrol (20 s)
+  2:44.7  attention.reporting          patrol reports the enforcer loitering (lands 2:47.7).
+  2:47.7  attention.landed             patrol's report lands: the enforcer loitering. Alert 1.
+  2:47.7  alarm.dispatches             The desk sends the response (level 2, watchful): 1 robot, 0 units, on the street 2:57.7.
+  2:48.4  scout.listen.heard           Inez Nikolaou (waitress): scout.listen → heard.
+  2:59.1  enforcer.watch.watched       The Enforcer has watched the patrol: its sight is known (20 of 40 s toward its routine).
+  3:10.0  rivals.arrive                A rival car parks near Vale's pickup. Its crew starts watching the building.
+  3:17.7  order.walk-in                fixer walks to waitress to help.
+  3:22.7  order.turn                   fixer turn waitress (50 s)
+  3:23.3  patrol.rerouted              The patrol follows false orders and leaves the entrance sweep.
+  4:12.7  turn.help.not-yet            Inez Nikolaou (waitress): turn.help → not-yet.
+  4:14.8  order.walk-in                scout walks to guard to watch.
+  4:28.5  order.move                   tech heads for (5850,-4400).
+  4:37.2  order.watch                  tech watch camera:pickup (20 s)
+  4:55.9  order.move                   enforcer heads for (4690,-4638).
+  4:57.2  tech.watch.watched           The Tech has watched the pickup camera: its sight is known, and its routine.
+  4:59.9  order.watch                  enforcer watch patrol (20 s)
+  5:00.9  order.watch                  scout watch guard (20 s)
+  5:18.3  patrol.returns               The false orders run out. The patrol is back on the entrance sweep.
+  5:19.9  enforcer.watch.watched       The Enforcer has watched the patrol: its sight is known, and its routine.
+  5:20.9  scout.watch.watched          Folake Okafor (guard): cell.watch → watched.
+  5:25.6  order.walk-in                fixer walks to waitress to ask.
+  5:26.8  order.turn                   fixer turn waitress (25 s)
+  5:48.9  order.move                   scout heads for (4683,-4023).
+  5:50.0  vale.exits                   Vale steps out of the official entrance and walks to his car.
+  5:51.8  turn.ask.refused             Inez Nikolaou (waitress): turn.ask → refused.
+  5:57.8  order.turn                   fixer turn waitress (50 s)
+  6:03.7  order.move                   scout heads for (297,-3710).
+  6:04.8  order.move                   scout heads for (375,-3725).
+  6:07.7  order.move                   scout heads for (6565,-4443).
+  6:10.0  vale.at-car                  Vale reaches the official car under the pickup camera.
+  6:11.8  order.walk-in                scout walks to guard to listen.
+  6:20.2  order.move                   tech heads for cabinet.
+  6:23.2  order.move                   enforcer heads for (7313,-4135).
+  6:23.8  order.listen                 scout listen guard (42 s)
+  6:29.0  order.reroute                tech reroute patrol (45 s)
+  6:38.8  order.move                   enforcer heads for (8418,-3582).
+  6:47.8  turn.help.turned             Inez Nikolaou (waitress): turn.help → turned.
+  6:51.9  fire.rivals                  enforcer fires on rivals until down.
+  6:53.9  round.ends                   gunfire: Inez Nikolaou walks back to her post and stays there.
+  6:53.9  shot.hit                     enforcer fires on rivals at 5 m (750 ‰): hit.
+  6:53.9  witness.crowd                Mei Zhou sees the rivals shot at.
+  6:53.9  witness.crowd                Efua Vale sees the rivals shot at.
+  6:53.9  rivals.drawn                 The rivals hear gunfire and head for the Office.
+  6:53.9  patrol.breaks                The patrol breaks its route and turns toward the gunfire.
+  6:53.9  security.called              The firefight with the rivals is reported. Security is coming from the north street.
+  6:53.9  seal.starts                  The response is called: the district seals 145 s after the unit is on the street (7:26.9), at 9:51.9, from gunfire:rivals (reported by heard).
+  6:53.9  doors.lock                   Lockdown: the Office doors are locked.
+  6:53.9  rivals.hit                   The rival crew takes a hit.
+  6:53.9  fire.free-on                 A fight is on: drawn agents fire on their own.
+  6:54.4  ai.cover                     rivals takes cover at cv-013 (car car/rivals, q 562).
+  6:54.4  ai.kite                      rivals answer enforcer: first shot at 6:53.9, move at 6:54.4 (5 ticks), out of the line to cv-013.
+  6:55.9  shot.hit                     enforcer fires on rivals at 6 m (750 ‰): hit.
+  6:55.9  witness.crowd                Astrid Eriksen sees the rivals shot at.
+  6:55.9  witness.crowd                Efua Desai sees the rivals shot at.
+  6:55.9  witness.crowd                Karim Jaber sees the rivals shot at.
+  6:55.9  rivals.retreat               The rivals retreat for now.
+  6:56.0  fire.done                    enforcer: rivals is gone. The fire order ends.
+  6:58.0  drawn.seen                   The patrol sees the enforcer's weapon drawn. Alert 3.
+  6:58.0  security.called              The patrol reports a drawn weapon. Security is coming from the north street.
+  6:58.0  seal.starts                  The response is called: the district seals 145 s after the unit is on the street (7:14.0), at 9:39.0, from drawn-seen:enforcer (reported by patrol).
+  6:58.1  witness.weapon-drawn         2 see the enforcer's weapon drawn.
+  6:58.9  fire.free-off                No contact: the fight is off. Drawn agents hold their fire.
+  7:01.0  ai.why                       patrol takes the enforcer as its target: fired, drawn, face.
+  7:03.0  shot.miss                    patrol fires on enforcer at 14 m (375 ‰): miss.
+  7:03.0  fire.free-on                 A fight is on: drawn agents fire on their own.
+  7:03.1  fire.free                    enforcer picks patrol (weapons free).
+  7:03.3  order.move                   enforcer heads for (8181,-3487).
+  7:04.1  shot.miss                    enforcer fires on patrol at 14 m (375 ‰): miss.
+  7:04.5  shot.hit                     patrol fires on enforcer at 14 m (375 ‰): hit.
+  7:04.5  enforcer.hit.patrol          patrol hits the enforcer. 5 health left.
+  7:04.6  order.take                   enforcer take (38 s)
+  7:04.6  witness.react                driver sees the takedown: report.
+  7:04.6  report.started               driver runs to door:official-entrance to report it (lands 7:14.2).
+  7:04.6  witness.camera               The pickup camera records it; its watcher reads the screen at 7:15.2.
+  7:05.8  scout.listen.heard           Folake Okafor (guard): scout.listen → heard.
+  7:06.0  shot.miss                    patrol fires on enforcer at 14 m (375 ‰): miss.
+  7:07.5  shot.hit                     patrol fires on enforcer at 14 m (375 ‰): hit.
+  7:07.5  enforcer.hit.patrol          patrol hits the enforcer. 4 health left.
+  7:09.0  shot.miss                    patrol fires on enforcer at 14 m (375 ‰): miss.
+  7:10.5  shot.miss                    patrol fires on enforcer at 14 m (375 ‰): miss.
+  7:12.0  shot.hit                     patrol fires on enforcer at 14 m (375 ‰): hit.
+  7:12.0  enforcer.hit.patrol          patrol hits the enforcer. 3 health left.
+  7:13.5  shot.miss                    patrol fires on enforcer at 14 m (375 ‰): miss.
+  7:13.7  attention.noticed            guard notices the scout standing still in its sight.
+  7:14.0  patrol.rerouted              The patrol follows false orders and leaves the entrance sweep.
+  7:14.2  report.landed                driver's report lands: seen (councillor). Alert 3.
+  7:14.2  alarm.dispatches             The desk sends the response (level 2, watchful): 2 robots, 2 units, on the street 7:24.2.
+  7:18.2  report.landed                the camera pickup's report lands: seen (councillor). Alert 3.
+  7:18.5  fire.free-off                No contact: the fight is off. Drawn agents hold their fire.
+  7:25.7  attention.wary               guard is wary of the scout for the rest of the mission.
+  7:31.5  report.landed                councillor's report lands: woken (councillor). Alert 3.
+  7:31.5  cancel.take                  enforcer stops: take (vale-reports: Vale is let go at his car and reports the attempt (a reported incident)).
+  7:31.5  order.move                   enforcer heads for (8256,-3626).
+  7:33.2  order.move                   enforcer heads for (8160,-3510).
+  7:34.3  order.take                   enforcer take (38 s)
+  7:34.3  witness.react                p-records-office-30 sees the takedown: radio.
+  7:34.3  report.started               p-records-office-30 radios it in.
+  7:34.3  witness.react                p-records-office-67 sees the takedown: radio.
+  7:34.3  report.started               p-records-office-67 radios it in.
+  7:39.3  report.landed                p-records-office-30's report lands: seen (councillor). Alert 3.
+  7:39.3  report.landed                p-records-office-67's report lands: seen (councillor). Alert 3.
+  7:43.5  fight.judged                 The fight (6:53.9-7:13.5) is over: the street judges it security (-1 Standing).
+  7:47.5  holster.auto                 enforcer holsters: the fight is over.
+  7:47.5  order.move                   fixer heads for (-975,-2875).
+  7:48.5  order.move                   fixer heads for (-975,-2875).
+  7:49.8  order.move                   fixer heads for (-975,-2875).
+  7:51.0  order.move                   fixer heads for (-325,-3175).
+  7:52.4  order.move                   fixer heads for (-975,-2875).
+  7:53.5  order.move                   fixer heads for (-530,-3101).
+  7:58.9  order.move                   fixer heads for (-975,-2875).
+  8:00.0  order.move                   fixer heads for (-975,-2875).
+  8:00.4  order.move                   fixer heads for (-975,-2925).
+  8:01.2  order.move                   fixer heads for (-763,-2925).
+  8:04.5  attention.reporting          guard reports the scout loitering (lands 8:07.5).
+  8:06.9  response.reinforces          Another unit is sent (3 of 3).
+  8:07.0  ai.why                       police-3 takes the enforcer as its target: fired, face.
+  8:07.5  attention.landed             guard's report lands: the scout loitering. Alert 3.
+  8:07.5  alarm.dispatches             The desk sends the response (level 2, watchful): 2 robots, 3 units, on the street 8:17.5.
+  8:08.5  ai.why                       police-4 takes the enforcer as its target: fired, face.
+  8:09.0  shot.hit                     police-3 fires on enforcer at 5 m (750 ‰): hit.
+  8:09.0  enforcer.hit.police-3        police-3 hits the enforcer. 2 health left.
+  8:09.0  fire.free-on                 A fight is on: drawn agents fire on their own.
+  8:10.5  shot.hit                     police-3 fires on enforcer at 5 m (750 ‰): hit.
+  8:10.5  enforcer.hit.police-3        police-3 hits the enforcer. 1 health left.
+  8:10.5  shot.hit                     police-4 fires on enforcer at 5 m (750 ‰): hit.
+  8:10.5  enforcer.hit.police-4        police-4 hits the enforcer. 0 health left.
+  8:10.5  fail.enforcer-down           The Enforcer is down.
+  8:10.5  fight.judged                 The fight (8:09.0-8:10.5) is over: the street judges it none (0 Standing).
+  [ok] the replay matches its record (inputs, engine, start, every checkpoint, outcome)
+  cause {"fail":"enforcer-down","why":"shot","tick":4905,"clock":"8:10.5","single":true,"culprits":[{"id":"police-4","kind":"officer","role":"shot","x":7820,"y":-3100,"level":0,"fx":340,"fy":-410},{"id":"enforcer","kind":"op","role":"victim","x":8160,"y":-3510,"level":0}],"ops":["enforcer"]}
+  start ffdcd1129960fb37  final 6c75f2fbf9c3765d  checkpoints 50  replay identical

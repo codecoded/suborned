@@ -55,7 +55,7 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
   // entrance); a stand on a plot with one door toward that door (the café's stands: "to:<door>"); a stand off a plot, a stop and a bay the kerb
   // ("kerb": the engine reads the nearest carriageway); a home is inside (no facing). A place of any other kind, or a seat the seats file lacks,
   // is an error here: unknown = reject. Pulse owns these rules (pulse-witnesses.md §2.2); this writes them as the engine reads them.
-  const kindsIn = people.places as unknown as { id: string; kind: string; plot?: string }[];
+  const kindsIn = people.places as unknown as { id: string; kind: string; plot?: string; beside?: string }[];
   const seats = JSON.parse(readFileSync(join(root, SEATS_FILE), 'utf8')) as { tables: Record<string, { chairs: { chair: number; face: V }[] }> };
   const faces: Record<string, number[] | string> = {};
   for (const p of [...kindsIn].sort((a, b) => (a.id < b.id ? -1 : 1))) {
@@ -66,6 +66,9 @@ export function buildPeople(src: { people: string; fixture?: string } = { people
       faces[p.id] = chair.face; continue;
     }
     if (p.kind === 'door') { faces[p.id] = 'door'; continue; }
+    // a post's waiting point (brief 067 L, Pulse): beside a staffed door of the Office, whose plot has several doors, so no one door to face; it faces the kerb, which is out of the door
+    // (at both Office doors the nearest carriageway is straight out from the face: 9 m west of the public door, 4 m south of the official entrance)
+    if (p.kind === 'stand' && p.beside) { faces[p.id] = 'kerb'; continue; }
     if (p.kind === 'stand' && p.plot) {
       const doors = kindsIn.filter((q) => q.kind === 'door' && q.plot === p.plot);
       if (doors.length !== 1) throw new Error(`${p.id}: a stand on ${p.plot} faces its unit's door, and the plot has ${doors.length} doors`);

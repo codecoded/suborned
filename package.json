@@ -25,6 +25,7 @@
     "game:pack": "bun tools/game/cli.ts --pack",
     "game:send": "bun tools/game/cli.ts --send",
     "game:signing-check": "bun tools/game/cli.ts --signing-check",
+    "proofset": "bun tools/game/proofset.ts",
     "causes": "bun tools/levels/causes.ts",
     "kit": "bun tools/kit/cli.ts",
     "decokit": "bun tools/decokit/run.ts",

@@ -139,8 +139,8 @@ describe('the Handover\'s cover file', () => {
     expect(fs[0]!.nearest).toBeDefined();
     if (fs[0]!.proposal) expect(fs[0]!.proposal.thenShielded).toBe(true);
   });
-  test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the robot, the pavilion piers (not the fountain: its basin is 0.5 m)', () => {
-    expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/foreground-civic-robot', 'civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
+  test('the objects at eye height or more are the sight blockers the engine adds to its occluders: the pavilion piers (not the fountain: its basin is 0.5 m; the steward robot left the block on 2026-10-26, Sky, briefs/067 J)', () => {
+    expect(made.cover.blockers.map(b => b.id)).toEqual(['civic/square-pavilion-support-0', 'civic/square-pavilion-support-1']);
     expect(made.cover.blockers.every(b => b.h >= made.cover.rules.eyeCm && b.poly.length >= 3)).toBe(true);
     expect(made.cover.points.filter(p => p.against === 'fire+sight').every(p => made.cover.blockers.some(b => b.id === p.of) || /wall|car/.test(p.kind))).toBe(true);
   });

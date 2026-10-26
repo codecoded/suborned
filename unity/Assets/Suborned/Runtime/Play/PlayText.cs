@@ -18,7 +18,7 @@ namespace Suborned.Play
     {
         public sealed class ActionText
         {
-            public string Label = "", Does = ""; public readonly Dictionary<string, string> OnTarget = new(); public readonly Dictionary<string, Dictionary<string, string>> OnTargetBy = new();
+            public string Label = "", Does = "", WithTarget = ""; /* Fable 2026-10-26 (brief 067): the hold pill's name with its target, "Listen to {target}" */ public readonly Dictionary<string, string> OnTarget = new(); public readonly Dictionary<string, Dictionary<string, string>> OnTargetBy = new();
             /// <summary>A verb's ways (brief 013: the takedown's knockout and kill), each its own label and line.</summary>
             public readonly Dictionary<string, (string label, string does)> Ways = new();
         }
@@ -38,8 +38,11 @@ namespace Suborned.Play
             return best;
         }
         public sealed class LockText { public string Code = "", Line = "", Short = ""; public readonly List<Regex> Match = new();
-            /// <summary>Fable 019: a lock's wording by the kind of target (`byTarget.machine`: a camera or a robot); the base line is the person case.</summary>
-            public readonly Dictionary<string, (string line, string shortText)> ByTarget = new(); }
+            /// <summary>Fable 019: a lock's wording by the kind of target (`byTarget.machine`: a camera or a robot); the base line is the person case.
+            /// Engine 0.33.0 (brief 059): `rival-car` and `rival-car-driving` word car-held when the rival car is among its holders (text.schema.ts lockVariant).</summary>
+            public readonly Dictionary<string, (string line, string shortText)> ByTarget = new();
+            /// <summary>How {tick} is filled (text.schema.ts tickAs): "clock" (the mission clock, the default) or "left" (the seconds still to wait, "18 s").</summary>
+            public string TickAs = "clock"; }
         public sealed class EventText { public string Id = "", Kind = "", Clock = ""; public readonly List<string> Log = new(), Speakers = new(); }
         public sealed class Entry { public string Event = "", Verb, Speaker = "", Outcome, Temperament, About; public readonly List<string> Lines = new(); }
         public struct Query { public string Event, Verb, Speaker, Outcome, Temperament, About; }
@@ -88,6 +91,9 @@ namespace Suborned.Play
         /// <summary>Brief 018 (Fable, 019 Part 2): the Go card's words, the holders' phrases by role (names.holders), the objective's go step.</summary>
         /// <summary>Brief 018 §3 (Fable): debrief.between's lines (left-behind, captive, car-seen) and debrief.getaway's fills.</summary>
         public readonly Dictionary<string, string> DebriefBetween = new(), GetawayFate = new(), GetawayWhy = new(), GetawayBy = new();
+        /// <summary>Engine 0.33.0 (brief 059, Fable): the end card's Final fight line by branch (debrief.fight: loud, safe; {n} {hits}), the clause
+        /// for each id the debrief's finalFight.why carries (debrief.fightWhy), and a hostile's fire cause in words (less.why: the under-fire cue).</summary>
+        public readonly Dictionary<string, string> DebriefFight = new(), FightWhy = new(), WhyWords = new();
         public string GetawayHoldsOut = "{who}: held at {held-at}. Holding out. Rescue within {rescue-until}.", GetawayPost = "the post";
         /// <summary>The fail camera's words (Fable, less.failcam): caption and tip by "fail|why"; {by} by the culprit's kind.</summary>
         public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
@@ -157,7 +163,7 @@ namespace Suborned.Play
             if (n.Opt("actions") is JNode acts)
                 foreach (var kv in acts.Entries)
                 {
-                    var a = new ActionText { Label = S(kv.Value, "label") ?? kv.Key, Does = S(kv.Value, "does") ?? "" };
+                    var a = new ActionText { Label = S(kv.Value, "label") ?? kv.Key, Does = S(kv.Value, "does") ?? "", WithTarget = S(kv.Value, "withTarget") ?? "" };
                     if (kv.Value.Opt("onTarget") is JNode ot) foreach (var o in ot.Entries) a.OnTarget[o.Key] = o.Value.Str();
                     if (kv.Value.Opt("onTargetBy") is JNode ob) foreach (var ag in ob.Entries) { var d = a.OnTargetBy[ag.Key] = new Dictionary<string, string>(); foreach (var o in ag.Value.Entries) d[o.Key] = o.Value.Str(); } // Fable: the Tech's own lines on machines
                     if (kv.Value.Opt("ways") is JNode wy) foreach (var w in wy.Entries) a.Ways[w.Key] = (S(w.Value, "label") ?? w.Key, S(w.Value, "does") ?? "");
@@ -168,6 +174,7 @@ namespace Suborned.Play
                 {
                     var lt = new LockText { Code = kv.Key, Line = S(kv.Value, "line") ?? "", Short = S(kv.Value, "short") ?? "" };
                     if (kv.Value.Opt("byTarget") is JNode bt && bt.Kind == JKind.Obj) foreach (var v in bt.Entries) lt.ByTarget[v.Key] = (S(v.Value, "line") ?? lt.Line, S(v.Value, "short") ?? lt.Short);
+                    if (S(kv.Value, "tickAs") is "left" or "clock") lt.TickAs = S(kv.Value, "tickAs"); // engine 0.33.0 (Fable): car-held counts down to the rival crew's first step-out
                     Locks.Add(lt);
                 }
             else if (n.Opt("locks") is JNode ls)
@@ -225,6 +232,8 @@ namespace Suborned.Play
                 foreach (var (k, into) in new[] { ("fate", GetawayFate), ("why", GetawayWhy), ("by", GetawayBy) }) if (dga.Opt(k) is JNode m) foreach (var kv in m.Entries) into[kv.Key] = kv.Value.Str();
             }
             if (n.Opt("debrief")?.Opt("route") is JNode dr && dr.Kind == JKind.Obj) foreach (var kv in dr.Entries) if (kv.Value.Kind == JKind.Str) Route[kv.Key] = kv.Value.Str();
+            if (n.Opt("debrief")?.Opt("fight") is JNode dfi && dfi.Kind == JKind.Obj) foreach (var kv in dfi.Entries) if (kv.Value.Kind == JKind.Str) DebriefFight[kv.Key] = kv.Value.Str(); // the Final fight line by branch (loud, safe)
+            if (n.Opt("debrief")?.Opt("fightWhy") is JNode dfw && dfw.Kind == JKind.Obj) foreach (var kv in dfw.Entries) if (kv.Value.Kind == JKind.Str) FightWhy[kv.Key] = kv.Value.Str(); // engine 0.33.0: a clause per id of finalFight.why
             if (n.Opt("toasts") is JNode to) foreach (var kv in to.Entries) Toasts[kv.Key] = S(kv.Value, "line") ?? "";
             if (n.Opt("goingLoud") is JNode gl) { LoudCaptured = S(gl, "captured") ?? ""; if (gl.Opt("fails") is JNode glf) foreach (var kv in glf.Entries) LoudFails[kv.Key] = kv.Value.Str(); }
             if (n.Opt("cancelCosts") is JNode cc) foreach (var kv in cc.Entries) CancelCosts[kv.Key] = kv.Value.Str();
@@ -259,6 +268,7 @@ namespace Suborned.Play
         {
             static float F(JNode n, string k, float d) => n?.Opt(k) is JNode x && x.Kind == JKind.Num && float.TryParse(x.NumberText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : d;
             if (l.Opt("pop") is JNode p) foreach (var kv in p.Entries) Pops[kv.Key] = kv.Value.Str();
+            if (l.Opt("why") is JNode wy && wy.Kind == JKind.Obj) foreach (var kv in wy.Entries) if (kv.Value.Kind == JKind.Str) WhyWords[kv.Key] = kv.Value.Str(); // engine 0.33.0 (Fable): a hostile's fire cause in one to three words (the under-fire cue)
             if (l.Opt("intel") is JNode inl) foreach (var grp in inl.Entries) if (grp.Value.Kind == JKind.Obj) foreach (var kv in grp.Value.Entries) if (kv.Value.Kind == JKind.Str) Intel[grp.Key + "." + kv.Key] = kv.Value.Str(); // Fable's Intel fragments: need.debt, secret.affair-named, verb.watch
             if (l.Opt("cancel") is JNode c) foreach (var kv in c.Entries) CancelShort[kv.Key] = kv.Value.Str();
             if (l.Opt("done") is JNode dn) DoneFlat(dn, ""); // brief 043 §6b (Fable): plate.<outcome>, gain.<id>, close.<kind>, cancel.*, walk.*
@@ -347,6 +357,9 @@ namespace Suborned.Play
                 : target != null && a.OnTarget.TryGetValue(target, out var on) ? on : a.Does; // onTargetBy[agent][target] first (Fable, the Tech's Watch)
             return (a.Label, does);
         }
+
+        /// <summary>A verb's name with its target (actions.*.withTarget, "Listen to {target}"), filled; null when the text has none.</summary>
+        public string WithTarget(string verb, string target) => verb != null && Actions.TryGetValue(verb, out var a) && a.WithTarget.Length > 0 && !string.IsNullOrEmpty(target) ? a.WithTarget.Replace("{target}", target) : null;
 
         /// <summary>What unlocks a refusal or a locked row: the first lock whose pattern matches its text; null when none does.</summary>
         /// <summary>The lock for an engine refusal code (Answer.code), or null when the text has none.</summary>

@@ -1,0 +1,100 @@
+# ens w200 · RB=op-run-speed-cm-s=400 run-alert=0 carry-untrained-cm-s=100 · PROBE_OPWALK=200 PROBE_RUNCLOCK=2
+plan	k	outcome	fail	end	T	A	St	vale-in	spring	composed
+route-a	0.4	none		8:30.0	5	0	2	-	3:58.6	no: step 20 (enforcer move): not taken between 2111 and 5100
+route-a	1.2	none		8:30.0	5	0	2	-	3:59.4	no: step 20 (enforcer move): not taken between 2119 and 5100
+route-a	1.6	none		8:30.0	5	0	2	-	3:59.8	no: step 20 (enforcer move): not taken between 2123 and 5100
+route-a	0	none		8:30.0	5	0	2	-	3:58.2	no: step 20 (enforcer move): not taken between 2107 and 5100
+route-a	2	none		8:30.0	5	0	2	-	4:00.2	no: step 20 (enforcer move): not taken between 2127 and 5100
+route-a	0.8	none		8:30.0	5	0	2	-	3:59.0	no: step 20 (enforcer move): not taken between 2115 and 5100
+route-a-board	0	success		4:11.3	5	0	2	4:11.3	3:58.2	yes
+route-a-board	0.8	success		4:12.1	5	0	2	4:12.1	3:59.0	yes
+route-a-board	0.4	success		4:11.7	5	0	2	4:11.7	3:58.6	yes
+route-a-board	1.2	success		4:12.5	5	0	2	4:12.5	3:59.4	yes
+route-a-board	1.6	success		4:12.9	5	0	2	4:12.9	3:59.8	yes
+route-a	3	none		8:30.0	5	0	2	-	4:01.2	no: step 20 (enforcer move): not taken between 2137 and 5100
+route-a-pressure	0	success		3:30.6	7	0	2	3:04.6	2:51.5	yes
+route-a-pressure	0.4	success		3:29.2	7	0	2	3:05.0	2:51.9	yes
+route-a-pressure	0.8	success		3:33.1	7	0	2	3:05.4	2:52.3	yes
+route-a-board	2	success		4:13.3	5	0	2	4:13.3	4:00.2	yes
+route-a-board	3	success		4:14.3	5	0	2	4:14.3	4:01.2	yes
+route-a-pressure	1.2	success		3:21.6	7	0	2	3:05.8	2:52.7	yes
+route-a-pressure	1.6	success		3:23.5	7	0	2	3:06.2	2:53.1	yes
+route-a-pressure-board	0	success		3:07.7	7	0	1	3:04.6	2:51.5	yes
+route-a-pressure-board	0.4	success		3:07.9	7	0	1	3:05.0	2:51.9	yes
+route-a-pressure-board	0.8	success		3:08.2	7	0	1	3:05.4	2:52.3	yes
+route-a-pressure	2	none		8:30.0	7	0	2	3:06.6	2:53.5	no: step 20 (cell go): not taken between 1826 and 5100
+route-a-pressure	3	none		8:30.0	7	0	1	3:07.6	2:54.5	no: step 20 (cell go): not taken between 1836 and 5100
+route-a-pressure-board	1.2	success		3:08.5	7	0	1	3:05.8	2:52.7	yes
+route-a-pressure-board	1.6	success		3:08.9	7	0	1	3:06.2	2:53.1	yes
+route-a-pressure-board	2	success		3:09.3	7	0	1	3:06.6	2:53.5	yes
+route-a-pressure-board	3	success		3:12.5	7	0	1	3:07.6	2:54.5	yes
+route-a-disable	0	none		8:30.0	6	1	2	-	3:58.2	no: step 20 (enforcer move): not taken between 2107 and 5100
+route-a-disable	0.4	none		8:30.0	6	1	2	-	3:58.6	no: step 20 (enforcer move): not taken between 2111 and 5100
+route-a-disable	0.8	none		8:30.0	6	1	2	-	3:59.0	no: step 20 (enforcer move): not taken between 2115 and 5100
+route-a-disable	1.2	none		8:30.0	6	1	2	-	3:59.4	no: step 20 (enforcer move): not taken between 2119 and 5100
+route-a-disable	1.6	none		8:30.0	6	1	2	-	3:59.8	no: step 20 (enforcer move): not taken between 2123 and 5100
+route-a-disable	2	none		8:30.0	6	1	2	-	4:00.2	no: step 20 (enforcer move): not taken between 2127 and 5100
+route-b	0	none		8:30.0	3	0	3	7:29.0	7:23.0	no: step 23 (cell go): not taken between 4450 and 5100
+route-b	0.4	none		8:30.0	3	0	3	7:29.4	7:23.4	no: step 23 (cell go): not taken between 4454 and 5100
+route-a-disable	3	none		8:30.0	6	1	2	-	4:01.2	no: step 20 (enforcer move): not taken between 2137 and 5100
+route-b	0.8	none		8:30.0	3	0	3	7:29.8	7:23.8	no: step 23 (cell go): not taken between 4458 and 5100
+route-b	1.2	none		8:30.0	3	0	3	7:30.2	7:24.2	no: step 23 (cell go): not taken between 4462 and 5100
+route-b	1.6	none		8:30.0	3	0	3	7:30.6	7:24.6	no: step 23 (cell go): not taken between 4466 and 5100
+route-b	2	none		8:30.0	3	0	3	7:31.0	7:25.0	no: step 23 (cell go): not taken between 4470 and 5100
+route-b	3	none		8:30.0	3	0	3	7:32.0	7:26.0	no: step 23 (cell go): not taken between 4480 and 5100
+route-b-board	0	none		8:30.0	3	0	3	7:29.0	7:23.0	no: step 25 (fixer move): not taken between 4450 and 5100
+route-b-board	0.4	none		8:30.0	3	0	3	7:29.4	7:23.4	no: step 25 (fixer move): not taken between 4454 and 5100
+route-b-board	0.8	none		8:30.0	3	0	3	7:29.8	7:23.8	no: step 25 (fixer move): not taken between 4458 and 5100
+route-b-board	1.2	none		8:30.0	3	0	3	7:30.2	7:24.2	no: step 25 (fixer move): not taken between 4462 and 5100
+route-b-board	1.6	none		8:30.0	3	0	3	7:30.6	7:24.6	no: step 25 (fixer move): not taken between 4466 and 5100
+route-b-board	2	none		8:30.0	3	0	3	7:31.0	7:25.0	no: step 25 (fixer move): not taken between 4470 and 5100
+route-b-board	3	none		8:30.0	3	0	3	7:32.0	7:26.0	no: step 25 (fixer move): not taken between 4480 and 5100
+route-g	0	success		3:58.6	6	1	3	3:55.6	3:42.5	yes
+route-g	0.4	success		3:59.0	6	1	3	3:56.0	3:42.9	yes
+route-g	0.8	success		3:59.4	6	1	3	3:56.4	3:43.3	yes
+route-g	1.2	success		3:59.8	6	1	3	3:56.8	3:43.7	yes
+route-g	1.6	success		4:00.2	6	1	3	3:57.2	3:44.1	yes
+route-g	2	success		4:00.6	6	1	3	3:57.6	3:44.5	yes
+route-g	3	success		4:01.6	6	1	3	3:58.6	3:45.5	yes
+route-g-board	0	success		3:55.6	6	1	2	3:55.6	3:42.5	yes
+route-g-board	0.4	success		3:56.0	6	1	2	3:56.0	3:42.9	yes
+route-g-board	0.8	success		3:56.4	6	1	2	3:56.4	3:43.3	yes
+route-g-board	1.2	success		3:56.8	6	1	2	3:56.8	3:43.7	yes
+route-g-board	1.6	success		3:57.2	6	1	2	3:57.2	3:44.1	yes
+route-g-board	2	success		3:57.6	6	1	2	3:57.6	3:44.5	yes
+route-g-board	3	success		3:58.6	6	1	2	3:58.6	3:45.5	yes
+route-g-fast	0	success		2:59.5	6	1	3	2:50.1	2:37.0	yes
+route-g-fast	0.4	success		2:59.5	6	1	3	2:50.5	2:37.4	yes
+route-g-fast	0.8	success		2:59.5	6	1	3	2:50.9	2:37.8	yes
+route-g-fast	1.2	success		2:59.5	6	1	3	2:51.3	2:38.2	yes
+route-g-fast	1.6	success		2:59.5	6	1	3	2:51.7	2:38.6	yes
+route-g-fast	2	success		2:59.5	6	1	3	2:52.1	2:39.0	yes
+route-g-fast	3	success		2:59.5	6	1	3	2:53.1	2:40.0	yes
+route-g-fast-board	0	success		2:59.6	6	1	2	2:50.1	2:37.0	yes
+route-g-fast-board	0.4	success		2:59.6	6	1	2	2:50.5	2:37.4	yes
+route-g-fast-board	0.8	success		2:59.6	6	1	2	2:50.9	2:37.8	yes
+route-g-fast-board	1.2	success		2:59.6	6	1	2	2:51.3	2:38.2	yes
+route-g-fast-board	1.6	success		2:59.6	6	1	2	2:51.7	2:38.6	yes
+route-g-fast-board	2	success		2:59.6	6	1	2	2:52.1	2:39.0	yes
+route-g-kill	0	none		8:30.0	2	1	2	-	5:09.5	no: step 19 (enforcer move): not taken between 2820 and 5100
+route-g-kill	0.4	none		8:30.0	2	1	2	-	5:09.9	no: step 19 (enforcer move): not taken between 2824 and 5100
+route-g-fast-board	3	success		2:59.6	6	1	2	2:53.1	2:40.0	yes
+route-g-kill	0.8	none		8:30.0	2	1	2	-	5:10.3	no: step 19 (enforcer move): not taken between 2828 and 5100
+route-g-kill	1.2	none		8:30.0	2	1	2	-	5:10.7	no: step 19 (enforcer move): not taken between 2832 and 5100
+route-g-kill	1.6	none		8:30.0	2	1	2	-	5:11.1	no: step 19 (enforcer move): not taken between 2836 and 5100
+route-g-kill	2	none		8:30.0	2	1	2	-	5:11.5	no: step 19 (enforcer move): not taken between 2840 and 5100
+route-g-kill-board	0	success		5:22.6	2	1	2	5:22.6	5:09.5	yes
+route-g-kill-board	0.4	success		5:23.0	2	1	2	5:23.0	5:09.9	yes
+route-g-kill	3	none		8:30.0	2	1	2	-	5:12.5	no: step 19 (enforcer move): not taken between 2850 and 5100
+route-g-kill-board	0.8	success		5:23.4	2	1	2	5:23.4	5:10.3	yes
+route-g-kill-board	1.2	success		5:23.8	2	1	2	5:23.8	5:10.7	yes
+route-g-kill-board	1.6	success		5:24.2	2	1	2	5:24.2	5:11.1	yes
+route-g-kill-board	2	success		5:24.6	2	1	2	5:24.6	5:11.5	yes
+route-g-kill-board	3	success		5:25.6	2	1	2	5:25.6	5:12.5	yes
+loud	0	success		4:57.0	27	2	-1	4:55.9	-	yes
+loud	0.4	success		4:57.4	27	2	-1	4:56.3	-	yes
+loud	0.8	success		4:57.8	27	2	-1	4:56.7	-	yes
+loud	1.2	success		4:58.2	27	2	-1	4:57.1	-	yes
+loud	1.6	success		4:58.6	27	2	-1	4:57.5	-	yes
+loud	2	success		4:59.0	27	2	-1	4:57.9	-	yes
+loud	3	success		5:00.0	27	2	-1	4:58.9	-	yes

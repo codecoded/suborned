@@ -306,6 +306,8 @@ namespace Suborned.Play
         /// <summary>Elements that are not HUD for the budget (the letterbox bars, the dip): the HUD layer of a shot is drawn without them.</summary>
         readonly List<VisualElement> notHud = new();
 
+        /// <summary>The proof reads it: the scene's bubble stands under its speaker's head (flipped) this frame.</summary>
+        public static bool ConvoBubbleFlipped { get; private set; }
         bool ConvoHud()
         {
             var c = host.ConvoNow; bool on = c != null;
@@ -348,8 +350,12 @@ namespace Suborned.Play
                 float bw = convoBubble.resolvedStyle.width, bh = convoBubble.resolvedStyle.height; if (float.IsNaN(bw) || bw < 1) bw = 280; if (float.IsNaN(bh) || bh < 1) bh = 36;
                 Vector2 at = default; bool tail = host.ConvoHead(who) is Vector3 hw && Proj(hw, out at) && InView(at);
                 if (!tail) at = new Vector2(W * 0.3f, H * 0.62f);
-                float x = Mathf.Clamp(at.x - bw / 2, 24, W - bw - 24), y = Mathf.Clamp(at.y - bh - 10, H * 0.06f + 56, H * 0.94f - bh - 60);
-                convoBubble.style.left = x; convoBubble.style.top = y; Show(convoTail, tail); if (tail) { convoTail.style.left = Mathf.Clamp(at.x - x, 16, bw - 16); convoTail.style.marginLeft = -6; }
+                // Glyph 067 H1.2: clamped to the frame less the bars and a 4 % margin; a bubble that would leave the frame above flips under the head, its tail up
+                float mx = Mathf.Max(24f, W * 0.04f), top = Mathf.Max(H * 0.06f + 56, H * 0.10f), bottom = H * 0.94f - Mathf.Max(60f, H * 0.04f);
+                bool flip = tail && at.y - bh - 10 < top;
+                float x = Mathf.Clamp(at.x - bw / 2, mx, W - bw - mx), y = Mathf.Clamp(flip ? at.y + 16 : at.y - bh - 10, top, bottom - bh);
+                convoBubble.style.left = x; convoBubble.style.top = y; Show(convoTail, tail); if (tail) { convoTail.style.left = Mathf.Clamp(at.x - x, 16, bw - 16); convoTail.style.marginLeft = -6; convoTail.style.top = flip ? Length.Percent(0) : Length.Percent(100); convoTail.style.marginTop = flip ? -4 : -8; }
+                ConvoBubbleFlipped = flip;
                 convoBubble.style.opacity = Mathf.Clamp01((Time.unscaledTime - c.BeatAt) / 0.12f);
             }
             // the row of dots under the pair (the played ones filled)

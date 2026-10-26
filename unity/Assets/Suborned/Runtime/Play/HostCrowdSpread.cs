@@ -39,7 +39,7 @@ namespace Suborned.Play
         static float U01(uint h) => (h & 0xFFFFFF) / 16777216f;
         static Vector2 V(Pt p) => new(p.X, p.Y);
         static Pt P(Vector2 v) => new(Mathf.RoundToInt(v.x), Mathf.RoundToInt(v.y));
-        bool FreeAt(Game g, Vector2 v) => g.S.Grid.Free(P(v));
+        bool FreeAt(Game g, Vector2 v) => host.CarWalk.Free(P(v)); // engine 0.33.1: a spot is never drawn on a standing car's ground (Game.Walk); the walls (Wall) stay the site's
 
         /// <summary>The crowd's drawn points this tick (engine cm), and each person's wanted facing (engine axes) where the spread sets one.</summary>
         void Spread(Game g)

@@ -1,0 +1,186 @@
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/Game.cs b/sim/Suborned.Sim/Game.cs
+--- a/sim/Suborned.Sim/Game.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/Game.cs	2026-10-26 05:39:47
+@@ -250,7 +250,7 @@
+ 
+         // numbers read once from the rules and the site
+         readonly int eye, near, actReach, approachReach, listenReach, witnessRange;
+-        readonly int opSpeed, secSpeed, rivSpeed, chaseSpeed;
++        readonly int opSpeed, secSpeed, rivSpeed, chaseSpeed, cellWalk; // probe 067: cellWalk = the cell's own walk (PROBE_OPWALK), opSpeed the city's
+         int walkT, stayT; readonly int rivalsArriveS, driverLastS, valeExitsS, valeAtCarS, overS, blockMoveT, blockHoldT;
+ 
+         public Game(Rules rules, Site site, Start? start = null, string? startText = null, Crowd? crowd = null)
+@@ -265,7 +265,7 @@
+             ResolveStopFaces(); // brief 054 §3.3: every on-street stop's facing, or the start is rejected
+             actReach = R.ActReachCm; approachReach = R.ApproachReachCm; listenReach = R.ListenReachCm;
+             witnessRange = R.WitnessRangeCm;
+-            opSpeed = R.CellSpeed; secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
++            opSpeed = R.CellSpeed; cellWalk = PEnvInt("PROBE_OPWALK", R.CellSpeed); secSpeed = R.SecuritySpeed; rivSpeed = R.RivalsSpeed; chaseSpeed = R.PatrolChase;
+             rivalsArriveS = S.RivalsArrive; driverLastS = S.DriverLast; valeExitsS = S.ValeExits; valeAtCarS = S.ValeAtCar; overS = S.Over;
+             blockMoveT = T(S.BlockMoveS); blockHoldT = T(S.BlockHoldS);
+ 
+@@ -382,7 +382,7 @@
+                 if (op.Busy != null && op.BusyEnd <= Tick) { var o = op.Busy; op.Busy = null; Land(op, o); if (Over) break; }
+                 if (op.Walk != null)
+                 {
+-                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; op.Pos = op.Walk.At(op.WalkMm);
++                    op.WalkMm += op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; op.Pos = op.Walk.At(op.WalkMm);
+                     if (op.Running) RunAttention(op);
+                     if (op.WalkMm >= op.Walk.Length) { op.Walk = null; op.WalkMm = 0; op.Running = false; }
+                 }
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameAi.cs b/sim/Suborned.Sim/GameAi.cs
+--- a/sim/Suborned.Sim/GameAi.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameAi.cs	2026-10-26 06:00:37
+@@ -186,7 +186,7 @@
+                     }
+                     break;
+                 case "advance":
+-                    if (foes.Count > 0) { if (!h.Blocker) Stop(h); g.St = "engage"; moving = h.Moving(Tick); } // a blocker keeps walking to the road (brief 018 §1)
++                    if (foes.Count > 0) { if (!h.Blocker && !probeCarPress.Contains(h.Id)) Stop(h); g.St = "engage"; moving = h.Moving(Tick); } // a blocker keeps walking to the road (brief 018 §1); probe 067 K3a: a car-pressing rival keeps walking
+                     else if (!moving) g.St = "hold";
+                     break;
+                 case "engage":
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameAttention.cs b/sim/Suborned.Sim/GameAttention.cs
+--- a/sim/Suborned.Sim/GameAttention.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameAttention.cs	2026-10-26 05:39:47
+@@ -86,6 +86,7 @@
+                     int c = row.C[k];
+                     if (seen && AttnInAct(op)) { } // an act holds it (L1): the act's own seen-rules apply
+                     else if (seen && !moving) c++;
++                    else if (seen && op.Running && ProbeRunClock > 0 && !RunLoud(op) && !RunFree(op)) { if (ProbeRunClock == 2) c = Math.Max(c, nT) + 1; else c += ProbeRunClock == 3 ? 2 : 1; } // probe 067: a run in its sight is suspicious
+                     else c = Math.Max(row.Wary[k] ? wT : 0, c - 1);
+                     row.C[k] = c;
+                     if (c >= wT) row.Wary[k] = true;
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameCancel.cs b/sim/Suborned.Sim/GameCancel.cs
+--- a/sim/Suborned.Sim/GameCancel.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameCancel.cs	2026-10-26 05:39:47
+@@ -53,7 +53,7 @@
+             if (op.Act != null) // engine 0.23.0 (rulebook cell.approach): walking in to a person act; the act's verb, the walk's phase
+             {
+                 var o = op.Act; a.Verb = o.Do; a.Target = o.Target; a.Phase = "walking"; string act = o.Do == "turn" ? o.Approach : o.Do;
+-                if (op.Walk != null) { long left = op.Walk.Length - op.WalkMm; int speed = op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length); }
++                if (op.Walk != null) { long left = op.Walk.Length - op.WalkMm; int speed = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length); }
+                 else a.TicksLeft = -1;
+                 a.OnDone = $"in reach, the {act} starts";
+                 a.CanCancel = true; a.CancelCost = "stop"; a.CancelText = $"stops where they stand; the {act} is not given";
+@@ -62,7 +62,7 @@
+             if (op.Walk != null)
+             {
+                 a.Verb = "move"; a.Phase = op.Running ? "running" : "walking"; a.Target = $"{op.Walk.End.X},{op.Walk.End.Y}";
+-                int speed = op.WalkSpeed > 0 ? op.WalkSpeed : opSpeed; long left = op.Walk.Length - op.WalkMm;
++                int speed = op.WalkSpeed > 0 ? op.WalkSpeed : cellWalk; long left = op.Walk.Length - op.WalkMm;
+                 a.TicksLeft = (int)((left + speed - 1) / speed); a.Progress = op.Walk.Length == 0 ? 1000 : (int)(op.WalkMm * 1000 / op.Walk.Length);
+                 a.OnDone = "arrives";
+                 a.CanCancel = true; a.CancelCost = "stop"; a.CancelText = "stops where they stand";
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameCombat.cs b/sim/Suborned.Sim/GameCombat.cs
+--- a/sim/Suborned.Sim/GameCombat.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameCombat.cs	2026-10-26 05:39:47
+@@ -968,7 +968,7 @@
+             var route = Walk.Free(to) ? Walk.Route(op.Pos, to) : null;
+             if (route == null) { q.RunRefused = q.RunRefused.Length > 0 ? q.RunRefused : "no walk there"; return q; }
+             var path = new Path(route);
+-            q.WalkS = (int)((path.Length + opSpeed * Hz - 1) / (opSpeed * Hz));
++            q.WalkS = (int)((path.Length + cellWalk * Hz - 1) / (cellWalk * Hz));
+             q.RunS = (int)((path.Length + R.RunSpeed * Hz - 1) / (R.RunSpeed * Hz));
+             { var at = new List<Pt>(); for (long mm = 0; ; mm += 1000) { at.Add(path.At(Math.Min(mm, path.Length))); if (mm >= path.Length) break; } q.Seen = SeenAt(at); } // the same samples as below
+             q.RunFree = RunFree(op); q.AlertIfRun = Alert;
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameFight.cs b/sim/Suborned.Sim/GameFight.cs
+--- a/sim/Suborned.Sim/GameFight.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameFight.cs	2026-10-26 06:00:55
+@@ -106,7 +106,16 @@
+             JoinResponse();
+             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
+             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
++            if (ProbeK3 && Vale == ValeAt.Car && Array.TrueForAll(Ops, o => o.Down)) { Fail("cell-down", "The whole cell is down."); return; } // probe 067 K3b
+             var e = Enforcer; var car = Car;
++            if (ProbeK3 && FightBranch == "safe" && Vale == ValeAt.Car && !Array.Exists(Ops, o => !o.Down && !o.InCar && !o.Inside)) // probe 067 K3a: nobody standing outside the car
++                foreach (var h in Hostiles)
++                {
++                    if (!IsRival(h.Id) || !h.Present || h.Down || h.Blocker || h.Gun.St == "break" || h.Gun.St == "gone") continue;
++                    if (!probeCarPress.Add(h.Id)) { if (!h.Moving(Tick) && !AtGetaway(h.Pos(Tick))) MoveTo(h, probeCarTo); continue; }
++                    probeCarTo = Walk.Nearest(Car, q => AtGetaway(q), 400) ?? Car; MoveTo(h, probeCarTo); h.Gun.St = "advance";
++                    Note("probe.carpress", $"{h.Id} sees nobody left to guard the car and goes for Vale.");
++                }
+             if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car
+             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+             if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameFightLab.cs b/sim/Suborned.Sim/GameFightLab.cs
+--- a/sim/Suborned.Sim/GameFightLab.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameFightLab.cs	2026-10-26 05:39:47
+@@ -433,7 +433,7 @@
+                 var path = route == null ? null : new Path(route);
+                 if (path == null || path.Length == 0) { p.Refused = p.DistanceCm > w.MaxCm ? "out-of-range" : "no-clear-line"; return p; }
+                 p.Walk = true; p.WalkTo = wk!.Value;
+-                p.WalkS = (int)((path.Length + opSpeed * Hz - 1) / (opSpeed * Hz));
++                p.WalkS = (int)((path.Length + cellWalk * Hz - 1) / (cellWalk * Hz));
+                 // the engine's walk, tick by tick at a walk (CloseIn: PaceOf walking): it stops at the first tick's position inside the ring with a line
+                 int pace = PaceOf(op, false), k = 0; Pt q2 = op.Pos; var exposed = new SortedSet<string>(StringComparer.Ordinal); var foes = Combatants();
+                 while (true)
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameGetaway.cs b/sim/Suborned.Sim/GameGetaway.cs
+--- a/sim/Suborned.Sim/GameGetaway.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameGetaway.cs	2026-10-26 06:05:26
+@@ -221,6 +221,7 @@
+         {
+             if (o.Op.Length > 0 && o.Op != "cell" && !IsOpId(o.Op)) return No("target-unknown", $"'{o.Op}' gives no Go: the cell or an operative does");
+             if (!AnyInCar) { goRefusedAt = Tick; goRefused = "car-empty"; return No("car-empty", "nobody is in the car"); }
++            if (ProbeK3 && !Array.Exists(Ops, x => x.InCar && !x.Down)) { goRefusedAt = Tick; goRefused = "car-no-driver"; return No("car-empty", "probe 067 K3c: nobody standing in the car to drive it"); }
+             var hs = CarHolders();
+             if (hs.Count > 0) { goRefusedAt = Tick; goRefused = "car-held"; GateHolders(out int until); return No("car-held", HeldWords(hs, until), tick: hs.Contains("car:rivals") ? until : -1, ids: string.Join(",", hs)); }
+             Leave();
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameHudReads.cs b/sim/Suborned.Sim/GameHudReads.cs
+--- a/sim/Suborned.Sim/GameHudReads.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameHudReads.cs	2026-10-26 05:39:47
+@@ -90,7 +90,7 @@
+             if (op.Down) { c.Refused = "agent-down"; return c; }
+             if (op.Inside) { c.Refused = "enforcer-inside"; return c; }
+             var path = RouteOf(op.Pos, to);
+-            int pace = carrier == OpId.Enforcer ? opSpeed : R.CarryUntrainedSpeed; // mm a tick (= cm/s)
++            int pace = carrier == OpId.Enforcer ? cellWalk : R.CarryUntrainedSpeed; // mm a tick (= cm/s)
+             c.PaceCmS = pace;
+             int ticks = (int)((path.Length + pace - 1) / pace); c.S = (ticks + Hz - 1) / Hz;
+             CarryStretch? cur = null;
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/GameOrders.cs b/sim/Suborned.Sim/GameOrders.cs
+--- a/sim/Suborned.Sim/GameOrders.cs	2026-10-26 06:14:25
++++ b/sim/Suborned.Sim/GameOrders.cs	2026-10-26 05:39:47
+@@ -143,7 +143,7 @@
+         }
+ 
+         /// <summary>A move's pace: walking (cell.speed) or running (cell.runSpeed). Who may not run is RunRefusal's (GameCombat.cs).</summary>
+-        int PaceOf(Op op, bool run) => run ? R.RunSpeed : op.CarryBody.Length > 0 && op.Id != OpId.Enforcer ? R.CarryUntrainedSpeed : opSpeed; // brief 013: only the Enforcer carries a body at a walk
++        int PaceOf(Op op, bool run) => run ? R.RunSpeed : op.CarryBody.Length > 0 && op.Id != OpId.Enforcer ? R.CarryUntrainedSpeed : cellWalk; // brief 013: only the Enforcer carries a body at a walk
+ 
+         // ---------------------------------------------------------------- the person events (rulebook scout.*, turn.*)
+ 
+@@ -594,12 +594,12 @@
+             if (at.HasValue && ServerOf(p) != null && !G.Within(op.Pos, at.Value, approachReach)) // brief 022: aim the walk at where her round will have her
+             {
+                 var st = Walk.NearestFree(at.Value); var rt = st.HasValue ? Walk.Route(op.Pos, st.Value) : null;
+-                if (rt != null) { int k = (int)(new Path(rt).Length / Math.Max(1, opSpeed)); var ahead = PoseAhead(p, k); if (ahead.HasValue) at = ahead.Value.pos; }
++                if (rt != null) { int k = (int)(new Path(rt).Length / Math.Max(1, cellWalk)); var ahead = PoseAhead(p, k); if (ahead.HasValue) at = ahead.Value.pos; }
+             }
+             if (at.HasValue && !G.Within(op.Pos, at.Value, approachReach))
+             {
+                 var stand = Walk.NearestFree(at.Value); var route = stand.HasValue ? Walk.Route(op.Pos, stand.Value) : null;
+-                if (route != null) { long mm = Math.Max(0, new Path(route).Length - approachReach * 10L); q.WalkS = (int)((mm + opSpeed * Hz - 1) / (opSpeed * Hz)); }
++                if (route != null) { long mm = Math.Max(0, new Path(route).Length - approachReach * 10L); q.WalkS = (int)((mm + cellWalk * Hz - 1) / (cellWalk * Hz)); }
+             }
+             // seen by (rulebook sight.unknown): where the operative stands for the act, its own place when already within reach, else the person's
+             if (at.HasValue) q.Seen = SeenAt(G.Within(op.Pos, at.Value, approachReach) ? op.Pos : at.Value);
+diff -ruN --exclude=bin --exclude=obj a/sim/Suborned.Sim/ProbeEnv.cs b/sim/Suborned.Sim/ProbeEnv.cs
+--- a/sim/Suborned.Sim/ProbeEnv.cs	1970-01-01 07:00:00
++++ b/sim/Suborned.Sim/ProbeEnv.cs	2026-10-26 06:00:37
+@@ -0,0 +1,14 @@
++// Motive brief 067 probe (scratch only, never sim/): environment switches. Every switch unset = engine 0.33.1.
++using System;
++using System.Globalization;
++namespace Suborned.Sim
++{
++    public sealed partial class Game
++    {
++        static string PEnv(string k) => Environment.GetEnvironmentVariable(k) ?? "";
++        static int PEnvInt(string k, int d) => PEnv(k).Length > 0 ? int.Parse(PEnv(k), CultureInfo.InvariantCulture) : d;
++        static readonly int ProbeRunClock = PEnvInt("PROBE_RUNCLOCK", 0);
++        static readonly bool ProbeK3 = PEnv("PROBE_K3") == "1";
++        readonly System.Collections.Generic.HashSet<string> probeCarPress = new System.Collections.Generic.HashSet<string>(StringComparer.Ordinal); Pt probeCarTo;
++    }
++}

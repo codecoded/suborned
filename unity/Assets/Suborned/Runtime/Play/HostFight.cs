@@ -405,7 +405,7 @@ namespace Suborned.Play
             if (!force && cell == moveChipAt) return;
             if (Time.unscaledTime - moveChipTime < 0.2f && !force) { moveChipDirty = true; return; } // at most five quotes a second (an A* and a sweep each)
             moveChipAt = cell; moveChipTime = Time.unscaledTime; moveChipDirty = false;
-            Pt? to = Game.S.Grid.Free(at) ? at : Game.S.Grid.NearestFree(at);
+            var wg = CarWalk; Pt? to = wg.Free(at) ? at : wg.NearestFree(at); // engine 0.33.1: round the standing cars
             string NoWay() => Text != null && Text.Pops.TryGetValue("no-way", out var nw) ? nw : "No way";
             if (!to.HasValue || G.Dist(to.Value, at) > 300) { MoveChip = "can't walk there"; MoveNow = new MoveParts { Refused = NoWay() }; return; }
             MoveQuote q = null; if (!Guard("move quote", () => q = Game.QuoteMove(Op.Name((OpId)k), to.Value))) return;

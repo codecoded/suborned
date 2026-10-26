@@ -32,6 +32,10 @@
   "2026-10-25": {
    "calls": 13,
    "usd": 3.75
+  },
+  "2026-10-26": {
+   "calls": 1,
+   "usd": 0.0
   }
  },
  "by_model": {
@@ -48,7 +52,7 @@
    "usd": 16.80114
   },
   "codex:image_gen": {
-   "calls": 32,
+   "calls": 33,
    "usd": 0.0
   },
   "google:4@2": {
@@ -80,7 +84,7 @@
    "usd": 1.35
   }
  },
- "calls": 280,
+ "calls": 281,
  "failed": 14,
  "jobs": {
   "007-concepts": {
@@ -560,6 +564,35 @@
    "failed": 2,
    "ok": 6,
    "total_usd": 2.4,
+   "unknown_cost_calls": 0,
+   "used": 0,
+   "used_usd": 0.0
+  },
+  "067-rival-car": {
+   "blocked": 0,
+   "by_day": {
+    "2026-10-26": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_model": {
+    "codex:image_gen": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "by_pass": {
+    "1": {
+     "calls": 1,
+     "usd": 0.0
+    }
+   },
+   "calls": 1,
+   "cost_per_used": null,
+   "failed": 0,
+   "ok": 1,
+   "total_usd": 0.0,
    "unknown_cost_calls": 0,
    "used": 0,
    "used_usd": 0.0

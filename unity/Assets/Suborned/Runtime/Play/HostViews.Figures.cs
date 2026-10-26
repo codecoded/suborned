@@ -86,6 +86,7 @@ namespace Suborned.Play
         {
             if (figs.Count == 0) return;
             var g = host.Game; float pace = host.Paused || g.Over ? 0f : host.Speed;
+            var convo = host.ConvoViewKeys(); // brief 067 H (Sky on 0.2.122): a conversation scene holds the clock: nobody walks or runs on the spot (no slide), the two speakers stand idle facing each other
             carrying.Clear(); if (g.Vale == ValeAt.WithEnforcer) carrying.Add("op/enforcer"); // who has someone on the shoulder this frame
             foreach (var kv in carriers) if (lifted.TryGetValue(kv.Key, out var lc) && lc > 0.5f && things.TryGetValue(kv.Key, out var bt) && bt.shown) carrying.Add(kv.Value);
             for (int pass = 0; pass < 2; pass++) // the carried after everyone else: they sit on their carrier's shoulders as he stands this frame
@@ -98,7 +99,20 @@ namespace Suborned.Play
                 if (t.localScale != Vector3.one) t.localScale = Vector3.one;            // the capsule's cower squash: the figure crouches instead
                 bool down = lifted.TryGetValue(key, out var lift); if (down && t.localRotation != Quaternion.identity) t.localRotation = Quaternion.identity; // laid flat is the capsule's: the figure lies
                 var d = to - from; d.y = 0f; float speed = d.magnitude / 0.1f;          // the engine's step is a tenth of a second
-                if (key == DriveKey)
+                bool talking = false, frozen = false;
+                if (convo is (string ca, string cb))
+                {
+                    speed = 0f; // the clock is held: never a walk or run in place
+                    if (key == ca || key == cb)
+                    {   // Glyph 067 H1: each speaker is set (no turn, no cross-fade) to idle, feet planted, facing the other, under the cut's dip
+                        var other = key == ca ? cb : ca;
+                        if (other != null && other != key && things.TryGetValue(other, out var ov) && ov.shown) { var fd = ov.t.position - t.position; fd.y = 0f; if (fd.sqrMagnitude > 0.01f) f.yaw = Mathf.Atan2(fd.x, fd.z) * Mathf.Rad2Deg; }
+                        talking = true;
+                    }
+                    else frozen = true; // Glyph 067 H2: everyone else is held as the clock holds them (the pose they had)
+                    f.lastPos = t.position;
+                }
+                else if (key == DriveKey)
                 {
                     // Sky 2026-10-20 ("legs / feet all over the place"): the driven agent's legs follow the ground she really covers, never only the
                     // controller's wish: blocked by a planter she stood running on the spot. Smoothed over ~0.1 s so a walk never flickers to idle.
@@ -151,6 +165,7 @@ namespace Suborned.Play
                 // Pulse's seats (HostSeats): a café customer standing on their chair within their span sits on it, facing the table (Forma's sit)
                 var seat = !down && !carried && !startled && speed < 0.15f && Has(f, "sit") ? SeatNow(key, t.position, g) : null;
                 f.seated = seat is { }; /* Suture's triage: the feet checks read this, not sitTick (negative for 2.3 s for those seated at the opening) */ if (seat is { } st) { f.yaw = st.yaw; f.model.SetPositionAndRotation(st.at, Quaternion.Euler(0f, st.yaw, 0f)); } else f.sitTick = -1;
+                if (frozen) { f.anim.speed = 0f; continue; }
                 string state; float natural = 0f;
                 if (carried) state = Has(f, "carried_drape") ? "carried_drape" : "carried"; // Forma: never the flat "carried" when the drape is there
                 else if (carrying.Contains(key) && Has(f, "carry_shoulder")) state = speed > 0.15f ? "carry_shoulder" : "carry_shoulder_idle"; // nobody runs carrying
@@ -165,13 +180,14 @@ namespace Suborned.Play
                 else if (opIdx >= 0 && drawing && Has(f, "draw")) state = "draw"; // the raise: the draw clip over the rulebook's draw time
                 else if (aiming || aimPose) state = shotRecent && Has(f, "shoot") ? "shoot" : AimClip(f, key, g); // standing on a target: the aim, the shot when one was fired
                 else state = armed && g.FightOn ? "aim_pistol" : f.phase > 0.5f ? "idle_alt" : "idle";
+                if (talking && !down && !carried && state is not ("idle" or "idle_alt")) state = f.phase > 0.5f && Has(f, "idle_alt") ? "idle_alt" : "idle"; // brief 067 H: a speaker stands idle (not serving, not seated at the wheel)
                 natural = host.figures.Speed(f.id, state); if (natural <= 0f && state == "carry_shoulder") natural = 1.29f; // Forma: the walk's legs
                 float stride = natural > 0f ? Mathf.Clamp(speed / natural, 0.4f, 1.8f) : 1f; // the floor was 0.6: a 0.52 m/s walker's legs walked 0.59 m/s and slid (crowd/33, brief 024 anim-fix)
                 if (state == "draw") stride = DrawClipS / Mathf.Max(0.2f, host.DrawS); // the draw clip fits the rulebook's draw time
                 f.anim.speed = (key == DriveKey ? 1f : pace) * stride; // the driven agent walks in an explore pause too
                 Tray(f, state is "serve" or "serve_walk");
                 if (state == "shoot" && shotNew && f.state == "shoot") f.anim.CrossFadeInFixedTime("shoot", 0.03f, 0, 0f); // the next shot: the recoil again from its start
-                else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
+                else if (state != f.state) { bool lower = f.state is "aim_pistol" or "aim" or "shoot" && state is "idle" or "idle_alt"; f.anim.CrossFadeInFixedTime(state, f.state.Length == 0 || talking ? 0f : state == "shoot" ? 0.04f : lower ? 0.3f : f.state == "draw" ? 0.08f : 0.15f, 0, f.state.Length == 0 || (state is "sit" or "sit_alt" or "sit_talk" && f.state != "stand_to_sit") ? f.phase * 5f : 0f); f.state = state; } // Forma: seconds, not a share of the clip (an 8.8 s idle took 1.3 s to blend); lowering the gun eases over 0.3 s
                 if (AnimLog != null && opIdx >= 0) LogFigure(key, f, state, shotNew, speed, opIdx);
             }
         }
@@ -208,6 +224,8 @@ namespace Suborned.Play
         const float ShootHoldS = 0.45f, DrawClipS = 2.0f;
         /// <summary>A figure's drawn yaw (Unity degrees), else null: the muzzle the HUD's tracer starts from.</summary>
         public float? FigureYaw(string key) => figs.TryGetValue(key, out var f) ? f.yaw : null;
+        /// <summary>Brief 067 H (the proof): a figure's clip state now ("idle", "walk", …) and its animator speed; "" for a key with no figure.</summary>
+        public (string state, float speed) FigureClip(string key) => figs.TryGetValue(key, out var f) && f.anim ? (f.state, f.anim.speed) : ("", 0f);
 
         /// <summary>The per-frame animation log (player-animation-verification): on when not null; one TSV row per cell figure per frame.</summary>
         public List<string> AnimLog;
@@ -236,12 +254,13 @@ namespace Suborned.Play
         {
             if (model == null || !things.TryGetValue(key, out var th)) return null;
             var t = th.t; var inst = Object.Instantiate(model, t, false); inst.name = "model"; MarkPerson(key, inst); /* brief 056 F: a robot is a person to the silhouettes; a car is not */
-            // until it moves, a car stands along its street, never nose to the kerb: the getaway car along its exit lane; the official car
-            // across the line from it to the driver's meeting point (the pavement beside it)
+            // until it moves, a car stands along its street, never nose to the kerb: the getaway car along its exit lane; the official car by the
+            // engine's heading (engine 0.33.1: Game.CarHeading always answers, its bay's long axis at the pickup). The host's own rule (across the
+            // line from the car to "d:Meet driver") is gone (Suture's 0.2.122 finding: since the driver's point moved along the bay it laid the
+            // car across the bay, rear on the kerb by the official door, and the crowd walked through its drawn tail)
             var S = host.Game.S; Vector3 along = Vector3.zero;
             if (key == "car/getaway" && S.ExitLane.Length >= 2) along = frame.World(S.ExitLane[S.ExitLane.Length - 1]) - frame.World(S.ExitLane[0]);
-            else if (key == "car/official" && CarFacing() is Vector3 cf) along = cf; // the engine's heading where it gives one (brief 023)
-            else if (key == "car/official" && S.HasPlace("d:Meet driver")) { var side = frame.World(S.At("d:Meet driver")) - frame.World(host.Game.CarPos()); along = new Vector3(-side.z, 0f, side.x); }
+            else if (key == "car/official" && CarFacing() is Vector3 cf) along = cf; // the engine's heading (brief 023; engine 0.33.1 never null)
             along.y = 0f; if (along.sqrMagnitude > 0.01f) inst.transform.localRotation = Quaternion.LookRotation(along.normalized, Vector3.up);
             if (t.Find("body")?.GetComponent<MeshRenderer>() is MeshRenderer mr) mr.enabled = false;
             foreach (var r in inst.GetComponentsInChildren<Renderer>()) r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
@@ -298,7 +317,8 @@ namespace Suborned.Play
             }
         }
 
-        /// <summary>The engine's heading for the official car, as a world direction, else null (the host's own rule: its motion, or along its street).</summary>
+        /// <summary>The engine's heading for the official car, as a world direction (engine 0.33.1: Game.CarHeading always answers; null only on an
+        /// engine fault or a zero heading, when the car keeps the rotation it has).</summary>
         Vector3? CarFacing()
         {
             var g = host.Game; if (g == null) return null;
@@ -329,7 +349,9 @@ namespace Suborned.Play
                 }
                 var r = cellRings[k]; if (r.gameObject.activeSelf != on) r.gameObject.SetActive(on); if (!on) continue;
                 bool sel = host.Selected[k]; r.transform.position = t.position + Vector3.up * 0.04f; r.widthMultiplier = sel ? 0.11f : 0.045f;
-                var c = new Color(0.376f, 0.878f, 0.918f, sel ? 1f : 0.7f); r.startColor = r.endColor = c;
+                float pt = Time.unscaledTime - host.RingPulseAt[k], pu = pt >= 0f && pt < 0.4f ? Mathf.Sin(pt / 0.4f * Mathf.PI) : 0f; // brief 067 G1 (Glyph): a portrait click's cue: 1.0 → 1.3 → 1.0, alpha 1 → 0.6 → 1, 0.4 s
+                r.transform.localScale = Vector3.one * (1f + 0.3f * pu);
+                var c = new Color(0.376f, 0.878f, 0.918f, (sel ? 1f : 0.7f) * (1f - 0.4f * pu)); r.startColor = r.endColor = c;
                 var disc = things[SelKeys[k]].t; if (disc.gameObject.activeSelf) disc.gameObject.SetActive(false); // the ring is the selection
             }
         }

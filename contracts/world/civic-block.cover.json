@@ -3,9 +3,9 @@
  "mission": "handover",
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
-  "block": "db919206b8cdbfa103d74b52906a5133f1f77e04e253e45d28415e8356ab4257",
-  "site": "b60a66c67f1ad7562fd24493be500711cd2ab6edd001c7c14be0ac6a26b9a8ec",
-  "kit": "10cda6dc11638e5c68ee4d04077f6e4f064f64effb8c73e898e56715381449f5",
+  "block": "1bc3620f355b40cac801439e06e765b00f62420fccc235edb263641e2228020a",
+  "site": "db0f3ba21c8e647d36dcce1a067fb673c6f4b98de052a3b94806314e8e80672e",
+  "kit": "92c377690b39bd308e245bf9d5e14615fcc6685ff2cee76fde639c830d0f4dd2",
   "plan": "67b17343184a3522689928ce7013443117076cc67ed68e9a202fd9c86d232db8"
  },
  "rules": {
@@ -1178,115 +1178,115 @@
   {
    "id": "cv-062",
    "at": [
-    1925,
-    -4425
+    -1175,
+    -5075
    ],
    "faces": [
-    1000,
-    0
+    0,
+    1000
    ],
-   "arc": 54,
-   "cos": 587,
-   "h": 106,
+   "arc": 55,
+   "cos": 573,
+   "h": 112,
    "against": "fire",
-   "q": 740,
+   "q": 749,
    "kind": "planter-run",
-   "of": "civic/run-sq-south/0"
+   "of": "civic/run-west-cafe/0"
   },
   {
    "id": "cv-063",
    "at": [
-    2175,
-    -4425
+    -1175,
+    -4825
    ],
    "faces": [
-    -1000,
-    0
+    0,
+    -1000
    ],
-   "arc": 54,
-   "cos": 587,
-   "h": 106,
+   "arc": 55,
+   "cos": 573,
+   "h": 112,
    "against": "fire",
-   "q": 740,
+   "q": 749,
    "kind": "planter-run",
-   "of": "civic/run-sq-south/0"
+   "of": "civic/run-west-cafe/0"
   },
   {
    "id": "cv-064",
    "at": [
-    1925,
-    -4025
+    -775,
+    -5075
    ],
    "faces": [
-    1000,
-    0
+    0,
+    1000
    ],
    "arc": 54,
    "cos": 587,
-   "h": 118,
+   "h": 106,
    "against": "fire",
    "q": 740,
    "kind": "planter-run",
-   "of": "civic/run-sq-south/1"
+   "of": "civic/run-west-cafe/1"
   },
   {
    "id": "cv-065",
    "at": [
-    2175,
-    -4025
+    -775,
+    -4825
    ],
    "faces": [
-    -1000,
-    0
+    0,
+    -1000
    ],
    "arc": 54,
    "cos": 587,
-   "h": 118,
+   "h": 106,
    "against": "fire",
    "q": 740,
    "kind": "planter-run",
-   "of": "civic/run-sq-south/1"
+   "of": "civic/run-west-cafe/1"
   },
   {
    "id": "cv-066",
    "at": [
-    1525,
-    -3825
+    1925,
+    -5075
    ],
    "faces": [
     0,
-    -1000
+    1000
    ],
-   "arc": 55,
-   "cos": 573,
-   "h": 112,
+   "arc": 54,
+   "cos": 587,
+   "h": 118,
    "against": "fire",
-   "q": 749,
+   "q": 740,
    "kind": "planter-run",
-   "of": "civic/run-sq-west/0"
+   "of": "civic/run-west-south/0"
   },
   {
    "id": "cv-067",
    "at": [
-    1625,
-    -4075
+    1925,
+    -4825
    ],
    "faces": [
     0,
-    1000
+    -1000
    ],
-   "arc": 48,
-   "cos": 669,
-   "h": 112,
+   "arc": 54,
+   "cos": 587,
+   "h": 118,
    "against": "fire",
-   "q": 680,
+   "q": 740,
    "kind": "planter-run",
-   "of": "civic/run-sq-west/0"
+   "of": "civic/run-west-south/0"
   },
   {
    "id": "cv-068",
    "at": [
-    -1175,
+    2325,
     -5075
    ],
    "faces": [
@@ -1299,12 +1299,12 @@
    "against": "fire",
    "q": 749,
    "kind": "planter-run",
-   "of": "civic/run-west-cafe/0"
+   "of": "civic/run-west-south/1"
   },
   {
    "id": "cv-069",
    "at": [
-    -1175,
+    2325,
     -4825
    ],
    "faces": [
@@ -1317,12 +1317,12 @@
    "against": "fire",
    "q": 749,
    "kind": "planter-run",
-   "of": "civic/run-west-cafe/0"
+   "of": "civic/run-west-south/1"
   },
   {
    "id": "cv-070",
    "at": [
-    -775,
+    2725,
     -5075
    ],
    "faces": [
@@ -1335,12 +1335,12 @@
    "against": "fire",
    "q": 740,
    "kind": "planter-run",
-   "of": "civic/run-west-cafe/1"
+   "of": "civic/run-west-south/2"
   },
   {
    "id": "cv-071",
    "at": [
-    -775,
+    2725,
     -4825
    ],
    "faces": [
@@ -1353,118 +1353,10 @@
    "against": "fire",
    "q": 740,
    "kind": "planter-run",
-   "of": "civic/run-west-cafe/1"
+   "of": "civic/run-west-south/2"
   },
   {
    "id": "cv-072",
-   "at": [
-    1925,
-    -5075
-   ],
-   "faces": [
-    0,
-    1000
-   ],
-   "arc": 54,
-   "cos": 587,
-   "h": 118,
-   "against": "fire",
-   "q": 740,
-   "kind": "planter-run",
-   "of": "civic/run-west-south/0"
-  },
-  {
-   "id": "cv-073",
-   "at": [
-    1925,
-    -4825
-   ],
-   "faces": [
-    0,
-    -1000
-   ],
-   "arc": 54,
-   "cos": 587,
-   "h": 118,
-   "against": "fire",
-   "q": 740,
-   "kind": "planter-run",
-   "of": "civic/run-west-south/0"
-  },
-  {
-   "id": "cv-074",
-   "at": [
-    2325,
-    -5075
-   ],
-   "faces": [
-    0,
-    1000
-   ],
-   "arc": 55,
-   "cos": 573,
-   "h": 112,
-   "against": "fire",
-   "q": 749,
-   "kind": "planter-run",
-   "of": "civic/run-west-south/1"
-  },
-  {
-   "id": "cv-075",
-   "at": [
-    2325,
-    -4825
-   ],
-   "faces": [
-    0,
-    -1000
-   ],
-   "arc": 55,
-   "cos": 573,
-   "h": 112,
-   "against": "fire",
-   "q": 749,
-   "kind": "planter-run",
-   "of": "civic/run-west-south/1"
-  },
-  {
-   "id": "cv-076",
-   "at": [
-    2725,
-    -5075
-   ],
-   "faces": [
-    0,
-    1000
-   ],
-   "arc": 54,
-   "cos": 587,
-   "h": 106,
-   "against": "fire",
-   "q": 740,
-   "kind": "planter-run",
-   "of": "civic/run-west-south/2"
-  },
-  {
-   "id": "cv-077",
-   "at": [
-    2725,
-    -4825
-   ],
-   "faces": [
-    0,
-    -1000
-   ],
-   "arc": 54,
-   "cos": 587,
-   "h": 106,
-   "against": "fire",
-   "q": 740,
-   "kind": "planter-run",
-   "of": "civic/run-west-south/2"
-  },
-  {
-   "id": "cv-078",
    "at": [
     1025,
     -4625
@@ -1482,7 +1374,7 @@
    "of": "civic/square-pavilion-support-0"
   },
   {
-   "id": "cv-079",
+   "id": "cv-073",
    "at": [
     1175,
     -4775
@@ -1500,7 +1392,7 @@
    "of": "civic/square-pavilion-support-0"
   },
   {
-   "id": "cv-080",
+   "id": "cv-074",
    "at": [
     1325,
     -4625
@@ -1518,7 +1410,7 @@
    "of": "civic/square-pavilion-support-0"
   },
   {
-   "id": "cv-081",
+   "id": "cv-075",
    "at": [
     375,
     -4625
@@ -1536,7 +1428,7 @@
    "of": "civic/square-pavilion-support-1"
   },
   {
-   "id": "cv-082",
+   "id": "cv-076",
    "at": [
     525,
     -4775
@@ -1554,7 +1446,7 @@
    "of": "civic/square-pavilion-support-1"
   },
   {
-   "id": "cv-083",
+   "id": "cv-077",
    "at": [
     675,
     -4625
@@ -1573,77 +1465,6 @@
   }
  ],
  "blockers": [
-  {
-   "id": "civic/foreground-civic-robot",
-   "z": 0,
-   "h": 222,
-   "poly": [
-    [
-     2616,
-     -1900
-    ],
-    [
-     2610,
-     -1871
-    ],
-    [
-     2594,
-     -1846
-    ],
-    [
-     2569,
-     -1830
-    ],
-    [
-     2540,
-     -1824
-    ],
-    [
-     2511,
-     -1830
-    ],
-    [
-     2486,
-     -1846
-    ],
-    [
-     2470,
-     -1871
-    ],
-    [
-     2464,
-     -1900
-    ],
-    [
-     2470,
-     -1929
-    ],
-    [
-     2486,
-     -1954
-    ],
-    [
-     2511,
-     -1970
-    ],
-    [
-     2540,
-     -1976
-    ],
-    [
-     2569,
-     -1970
-    ],
-    [
-     2594,
-     -1954
-    ],
-    [
-     2610,
-     -1929
-    ]
-   ]
-  },
   {
    "id": "civic/square-pavilion-support-0",
    "z": 0,
@@ -1761,10 +1582,7 @@
    "hostileCover": [
     {
      "post": "ambush-1",
-     "points": [
-      "cv-063",
-      "cv-065"
-     ]
+     "points": []
     },
     {
      "post": "ambush-2",
@@ -1776,10 +1594,7 @@
     },
     {
      "post": "ambush-3",
-     "points": [
-      "cv-063",
-      "cv-065"
-     ]
+     "points": []
     },
     {
      "post": "ambush-4",
@@ -1792,7 +1607,8 @@
     {
      "post": "ambush-5",
      "points": [
-      "cv-066"
+      "cv-027",
+      "cv-029"
      ]
     }
    ],
@@ -1801,8 +1617,8 @@
      "post": "ambush-1",
      "points": [
       "cv-001",
-      "cv-078",
-      "cv-081"
+      "cv-072",
+      "cv-075"
      ]
     },
     {
@@ -1815,23 +1631,23 @@
      "post": "ambush-3",
      "points": [
       "cv-001",
-      "cv-081"
+      "cv-075"
      ]
     },
     {
      "post": "ambush-4",
      "points": [
       "cv-006",
-      "cv-080",
-      "cv-083"
+      "cv-074",
+      "cv-077"
      ]
     },
     {
      "post": "ambush-5",
      "points": [
-      "cv-002",
-      "cv-004",
-      "cv-079"
+      "cv-006",
+      "cv-074",
+      "cv-077"
      ]
     }
    ]
@@ -1890,30 +1706,30 @@
      "post": "police-1",
      "points": [
       "cv-006",
-      "cv-080"
+      "cv-074"
      ]
     },
     {
      "post": "police-2",
      "points": [
       "cv-006",
-      "cv-080",
-      "cv-083"
+      "cv-074",
+      "cv-077"
      ]
     },
     {
      "post": "police-3",
      "points": [
       "cv-006",
-      "cv-080"
+      "cv-074"
      ]
     },
     {
      "post": "police-4",
      "points": [
       "cv-006",
-      "cv-080",
-      "cv-083"
+      "cv-074",
+      "cv-077"
      ]
     }
    ]

@@ -10,7 +10,8 @@ import { allowedTemperaments, positionsOf, type Rules } from './rules';
 import { atCafeSide, HOME_SAMPLE, type Scope, type Unit } from './scope';
 import { Holds, seatPicker, type Fit, type Pick, type Table } from './seats';
 import type { Walker } from './walk';
-import { fold, insideFromDoor, lingerOf, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post } from './day';
+import { fold, insideFromDoor, lingerOf, residentCycle, staffing, stopFeasible, variantMakes, workerCycle, workPlaceOf, type AimStop, type Cycle, type Post, type Wait } from './day';
+import { heldPlaces, inMission } from './posts';
 import { deriveKnowledge } from './knowledge';
 import { withSecrets } from './secrets';
 import { drawNeedRecord, drawSecretRecord, type Needs } from './needs';
@@ -20,6 +21,9 @@ export type Ctx = { scope: Scope; rules: Rules; cast: Cast; walk: Walker; planId
 const KEEPER = 'keeper';
 
 export const rowOf = (cast: Cast, area: string, occupation: string): Row | undefined => cast.rows.find(r => r.area === area && r.occupation === occupation);
+/** Whether the row promises `post` is one person's for `position`: it names it in `posts` (the one door guard, the one at the official entrance). A table that gives a position a door and no `posts`
+ *  puts the whole shift there by its own choice (the old casts), and nothing here holds it to one. */
+export const namesPost = (row: Row | undefined, position: string, post: string): boolean => (post === 'door' || post === 'official') && !!row?.positions.find(p => p.position === position)?.posts?.some(e => e.post === post);
 /** The aimed tie patterns of a row (a tie that names a position or a stop: `with`, `at`) that the person `id` of `position` carries, by pattern index. Each pattern has its own coin,
  *  so the day (which stops the variant makes) and the ties (who is tied to whom) are decided from the same draws, in any order. */
 export const aimedOf = (row: Row | undefined, id: string, position: string | undefined, post?: string) => (row?.ties ?? []).flatMap((t, i) =>
@@ -70,6 +74,8 @@ export function needWeightsOf(row: Row | undefined, position: string | undefined
 export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[] } {
   const { scope, rules } = c, cast = withSecrets(c.cast, rules), gaps: string[] = [], notes: string[] = [], persons: Person[] = [], names = new Set<string>();
   const homeWeights = scope.homes.map(h => ({ h, weight: h.residents }));
+  // a post is one person's (brief 067 L): the staffed doors a cast role holds through the mission, and who holds which waiting point beside a post when
+  const held = heldPlaces(scope, c.casting), postHolds = new Holds();
 
   const make = (id: string, row: Row, u: Unit | undefined, shift: { from: number; to: number } | undefined, position: string, post: Post, residentOf?: { plot: string; place: string }) => {
     const r = rng(id);
@@ -91,8 +97,18 @@ export function expand(c: Ctx): { people: People; gaps: string[]; notes: string[
     if (u && shift) {
       const spot = workPlaceOf(u, row, position, post);
       const civicRole = u.kind === 'civic';
-      work = { unit: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, ...(civicRole ? { role: position } : { position }), post, place: spot, shift };
-      cycle = workerCycle(c, r, u, shift, spot, home.place === 'beyond' ? scope.homes[0]!.place : home.place, v, post === 'inside' ? lingerOf(id, v) : 0);
+      // a civic employer's public door and official entrance are one person's post: whoever comes on to one waits at a standing point beside it for the minute before her shift and then
+      // steps on, and where a cast person holds the post through the mission (the door guard: the Handover plays him by his role past his shift's end) she stands beside it for her shift
+      let wait: Wait | undefined;
+      const stands = civicRole && namesPost(row, position, post) ? scope.postStands[spot]?.standing : undefined;
+      if (stands?.length) {
+        const keeps = held.has(spot) && inMission(shift.from, c.atMin, scope.missionMin), to = shift.to > shift.from ? shift.to : shift.to + 1440;
+        const [f, t] = keeps ? [shift.from, to] : [shift.from - 1, shift.from], place = stands.find(x => postHolds.free(x, f, t));
+        if (place) { postHolds.take(place, f, t); wait = { place, held: keeps }; }
+        else gaps.push(`${id}: every waiting point beside ${spot} is held at ${f}-${t}`);
+      }
+      work = { unit: u.id, plot: u.plot, area: u.area, trade: u.trade, employer: u.employer, ...(civicRole ? { role: position } : { position }), post, place: wait?.held ? wait.place : spot, shift };
+      cycle = workerCycle(c, r, u, shift, spot, home.place === 'beyond' ? scope.homes[0]!.place : home.place, v, post === 'inside' ? lingerOf(id, v) : 0, wait);
       if (home.place === 'beyond' && v.commute !== 'tram' && v.commute !== 'car') cycle = undefined;
     } else cycle = residentCycle(c, r, home.place, v, id);
     const allowKey = u ? (u.kind === 'civic' ? position : u.trade) : 'resident';

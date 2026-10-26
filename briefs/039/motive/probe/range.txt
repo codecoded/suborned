@@ -1,0 +1,16 @@
+today F14-4V4   [ok] LINE MISSED: Motive §14.1: clear 5.6 s, 0 down, 44 % (got 6.7 s, 0 down, 44 %)
+A F14-4V4   [ok] LINE MISSED: Motive §14.1: clear 5.6 s, 0 down, 44 % (got 10.8 s, 0 down, 57 %)
+B F14-4V4   [ok] LINE MISSED: Motive §14.1: clear 5.6 s, 0 down, 44 % (got 9.3 s, 0 down, 39 %)
+C F14-4V4   [ok] LINE MISSED: Motive §14.1: clear 5.6 s, 0 down, 44 % (got 6.7 s, 0 down, 34 %)
+today F11-FOCUS   [ok] line met: focus 5.6 s, none down (Motive; 5.6 s, 0 down)
+today F11-FOCUS   [ok] line met: split 7.1 s, one down (Motive; 7.1 s, 1 down)
+today F11-FOCUS   [ok] line met: focus beats split in today
+A F11-FOCUS   [ok] LINE MISSED: focus 5.6 s, none down (Motive; 7.1 s, 0 down)
+A F11-FOCUS   [ok] LINE MISSED: split 7.1 s, one down (Motive; 12.2 s, 1 down)
+A F11-FOCUS   [ok] line met: focus beats split in today
+B F11-FOCUS   [ok] LINE MISSED: focus 5.6 s, none down (Motive; 8.6 s, 0 down)
+B F11-FOCUS   [ok] LINE MISSED: split 7.1 s, one down (Motive; 10.1 s, 0 down)
+B F11-FOCUS   [ok] LINE MISSED: focus beats split in today
+C F11-FOCUS   [ok] line met: focus 5.6 s, none down (Motive; 5.6 s, 0 down)
+C F11-FOCUS   [ok] LINE MISSED: split 7.1 s, one down (Motive; 7.1 s, 0 down)
+C F11-FOCUS   [ok] LINE MISSED: focus beats split in today

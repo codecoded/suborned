@@ -135,7 +135,8 @@ describe('civic dressing: the terrace, the beds, the pool (brief 008 colour roun
     // DK_Accent_Gold is brass #99784D in the kit now, the same colour as DK_Brass_Civic: the slot swap is kept (it is in the export, and Latch builds from it), not needed for the colour
     for (const id of planters) expect(civicMass(base.w, id).materials).toMatchObject({ DK_Accent_Gold: 'DK_Brass_Civic', DK_Faience_Teal: 'DK_Enamel_Seafoam', DK_Leaf_CoreShrub: 'DK_Leaf_CivicDark' });
     expect(planters.map(id => civicMass(base.w, id).materials!.DK_Flower_Coral)).toEqual(['DK_Flower_CoralSoft', 'DK_Flower_Flamingo', 'DK_Flower_CoralSoft', 'DK_Flower_Flamingo']);
-    expect(civicMass(base.w, 'civic/foreground-civic-robot').materials).toEqual({ DK_Signal_Amber: 'DK_Glow_Seafoam', DK_Face_Amber: 'DK_Face_Teal', DK_RobotEnamel_Coral: 'DK_Enamel_Coral17' });
+    expect(base.w.civic.some(m => m.id === 'civic/foreground-civic-robot')).toBe(false); // the steward robot left the block (tools/plan/block.ts, 2026-10-26, Sky: briefs/067 J) and its override row left the look with it
+    expect(Object.keys(look.materials)).not.toContain('civic/foreground-civic-robot');
     expect(adoptedBy('AtomFountain')!.materials).toContain('DK_Water');
     expect(adoptedBy('PlanterArc')!.materials).toContain('DK_Accent_Gold');
   });

@@ -11,7 +11,9 @@ import { adjacent } from './facades';
 import { SIGN_OFF } from './frontage';
 import { HORIZON_CENTRE, ROCKETS, footprint, simple } from './horizon';
 import { ACCENT_ROLES, COLOUR, FABRIC_SURFACES } from './colour';
-import { civicClearance } from '../build';
+import { civicClearance, civicKit } from '../build';
+import { look } from '../civic/look';
+import type { Mass } from '../../../contracts/world/world.schema';
 
 setDefaultTimeout(120000);
 const root = resolve(import.meta.dir, '../../..'), read = (p: string) => JSON.parse(readFileSync(resolve(root, p), 'utf8'));
@@ -265,12 +267,17 @@ test('wave 2 is deterministic', () => {
   expect(JSON.stringify([again.facades, again.horizon, again.roofs, again.buildings, again.civic])).toBe(JSON.stringify([w.facades, w.horizon, w.roofs, w.buildings, w.civic]));
 });
 
-test('civic furniture and the steward stand at person scale; the monument planters and the robot are kit pieces (Latch round 3)', () => {
+test('civic furniture stands at person scale; the monument planters are kit pieces (Latch round 3); the steward robot is gone from the block, and the generator still dresses it for a pinned older block', () => {
   for (const m of w.civic.filter(x => /cafe-(table|palm)-\d+$/.test(x.id))) expect(m.kit!.scale, m.id).toEqual([1, 1, 1]);
-  const robot = w.civic.find(m => m.id === 'civic/foreground-civic-robot')!;
-  // civic-look.json swaps the 16k-triangle RobotButler for its 2.6k play copy (brief 020 follow-up)
+  // 2026-10-26 (Sky on 0.2.122, briefs/067 J: "a butler robot fixed to the north of the Records building: it needs to go"): tools/plan/block.ts no longer exports the steward monument,
+  // so no civic mass of the live world is the robot, and none draws a butler (the two service butlers of the capstone are street items at office doors, not civic masses)
+  expect(w.civic.some(m => m.id === 'civic/foreground-civic-robot' || /^RobotButler/.test(m.kit?.id ?? ''))).toBe(false);
+  // a pinned older block (a recorded run's) still has its monument and the generator still dresses it: civic-look.json swaps the 16k-triangle RobotButler for its 2.6k play copy
+  // (brief 020 follow-up), standing on a plinth to the monument's height
+  const old: Mass = { id: 'civic/foreground-civic-robot', surface: 'trim', ring: Array.from({ length: 16 }, (_, i) => [0.76 * Math.cos(i * Math.PI / 8), 0.76 * Math.sin(i * Math.PI / 8)] as [number, number]), base: 0.18, height: 2.22, source: 'procedural' };
+  const robot = civicKit(old, undefined, look);
   expect(robot.kit!.id).toBe('RobotButler_Play'); expect(robot.kit!.scale[0]).toBe(1);
-  expect(robot.kit!.base + by.get('RobotButler_Play')!.size[1]).toBeCloseTo(robot.base + robot.height, 2); // on a plinth to the monument's height
+  expect(robot.kit!.base + by.get('RobotButler_Play')!.size[1]).toBeCloseTo(robot.base + robot.height, 2);
   for (const id of ['civic/civic-monument-west', 'civic/civic-monument-east']) expect(w.civic.find(m => m.id === id)!.kit!.id).toBe('OvalPlanter');
   expect(civicClearance(w.civic)).toEqual([]); // round 3 wrap-up: the two palms whose fronds reached the café wall slide out (build.ts clearWalls)
   for (const id of ['civic/cafe-palm-0', 'civic/cafe-palm-1']) { // 0.35 m off the café's east wall (plan y -219.3), still the door's pair, inside the terrace before the table row

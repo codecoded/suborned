@@ -514,3 +514,77 @@ Ported from briefs/027/keel/host-interface.md "Engine 0.32.0" and "Engine 0.33.0
 - **Glyph:** not built: §3's Alt carry ("s_carrying 18 m" at the mouth ring) and the mouth's dashed hand-off ring on a shut stand's hover; the edge chip for Vale's route off screen; Glyph's 2x review of the r059 frames once the batch has them.
 - **Vela:** the rival sedan (the car is the official sedan in a dusk stand-in trim). **Forma:** `MemberBeat` (watch, lean, check-watch, read-paper, pace) is not played yet: posted members idle.
 - **Aster:** GDD §10's Drive line reads "Drive · 0:28"; the game prints seconds ("Drive · 28 s", Glyph's note).
+
+## Batch 0.2.123 host round 2 (Latch, 2026-10-26; code and proof shots wired, no player build, no batch)
+Sources: Aster's task, briefs/067-sky-play-0122.md, briefs/027/keel/host-interface.md "0.33.x addendum", Suture's "Sky's 0.2.122 play" in briefs/060-bot-playtests.md, Fable's text.json (tree, 05:46), Glyph's briefs/067/glyph.md and boards 01-04. Nothing in sim/, contracts/, tools/ or signals.json was edited. Paths are under unity/Assets/Suborned/. Every proof shot is Runtime/Play/Proof067.cs (JSON key `r067`, called after r059: GameBoot.cs:151).
+
+**1 · Engine 0.33.1** (copied into Unity by a scratch copy of tools/sim/unity.ts, see Open: the committed rulebook schema rejects 0.33.1's keys)
+- `CarWalk` (Game.Walk, built once a tick or order) and `MoveRoute` (a car's ground ends beside it, RouteBeside): HandoverHost.cs:1339, :1351. Used for every host test or preview of a walk: ActPlace (:1377 Board's "already there" is `g.AtGetaway`; a car's place walks to its side; Fits/NearestFree/Route on the walk grid), GroupWalk HostHold.cs:226, MoveSelection, Go(), the panel and ring route lines, NoWalkUnder, the move chip, the route preview (HostLess), the reroute fallback, GiveWay HostViews.cs:250, the crowd spread HostCrowdSpread.cs:42. Playable keeps the site grid on purpose (HandoverHost.cs:1011: a move onto a car is the engine's to end beside it). The driven agent's controller also stops at a standing car (HostDrive.cs:280; the engine's drive step reads only the site grid, so the host is the stricter).
+- The "d:Meet driver" heading fallback is deleted (HostViews.Figures.cs:259). Vale is drawn from `ValePos()` (the kerb-side door; hidden in the car as before).
+- Cancel for `drive-car` and `ride`: hidden by `CanCancel` false everywhere (ring ×, roster chip ×, X, PlateStop); no code change needed.
+- `StandingCars()` and `CarBodyCm()`: `FiguresInCars()` HostGetaway.cs:100 (figures whose feet stand inside a standing car's body). Proof: `r067-official-car` and the `square.inCars` gate (5:50-6:20, nobody inside).
+- Proof059's Tech now boards through the click path (walk beside the car, then Board: Proof059.cs:158), since Board is 1 m of the body now.
+
+**2 · Fable's text ports**
+- `tickAs`, the `rival-car` / `rival-car-driving` variants, `fillLockShort`: PlayText.cs:45 (TickAs), HostLess.cs:200 (LockVariant), :208 (LockTick), HostActivity LockLine; the holder chip over the getaway car reads `RivalsHoldShort()` HostLess.cs:215 ("Rivals coming · 18 s", "Rivals coming"): HudToolkit.Less.cs:1624.
+- `debrief.fight` + `debrief.fightWhy` on the end card: HudModel.cs:372.
+- `less.why` beside the under-fire cue: HostAim.cs:501 (main cause; Alt lists them all), drawn in the portrait's chip slot when it has no other chip (HudToolkit.Less.cs:259). Glyph has no spec for its place yet.
+- FeedEvents fallbacks for rivals.recalled, rivals.wiped, rivals.see-takedown, rivals.wakes, rivals.frees: HostFeed.cs:279; `fight.safe` suppressed when `rivals.wiped` is on the same tick (either order, or never logged): HostFeed.cs:292, :314.
+- Hold pill names from Fable's `withTarget` ("Listen to the guard"): PlayText.cs:362, HandoverHost.cs:894.
+
+**3 · E · locked ways** (Suture's four edits + Glyph E1-E6)
+- ClickRing opens on locked rows (HostHold.cs:129); a click on a thing the selection has no row on pops "who can" (faces: the selected struck, a pointer, who can; Alt the WhoCan line), never walks: HostHold.cs:416, HostHoldStatus.cs:447, HudToolkit.Less.cs:601.
+- The shut ring: with no calm way open, the locked calm ways first (merged by verb, target and lock; Ask/Pay/Help/Pressure under one lock as one Turn wedge; at most 4; ContextRank order), the open violent ways after, last and dashed: HostContext.cs:164, :226. A press pops the short lock with its icon at the wedge and closes the ring: HostAim.cs:407, :420.
+- The hover outside a fight: the offer, the locked pill, or nothing; never Fire (HostHoldStatus.cs:417 LockIntentOf; the locked pill: lock disc, cream name, dim dot and short lock in --text-dim, the doer's face, 80 %, the ring's dots for the cursor, Alt's long line under it: HudToolkit.ActMark.cs:134, HudToolkit.Hold.cs:45).
+- The host record `<script>.host.jsonl`: HostSidecar.cs:18 (selection, hover and pill state, ring open/open-shut/take/shut with its ways, every pop with its code, every hold-preset click and what it did), flushed with each save.
+- Proof shots: `r067-lock-pill-guard`, `r067-shut-ring-guard`, `r067-shut-pop`, `r067-who-can`, `r067-stack-tab` (when two or more are under the cursor at the door).
+
+**4 · C · squad boarding and Drive** (Glyph C1-C7)
+- DoersOf gives Board to every selected agent who can (HostHold.cs:109); one order each in the same frame; whoever boards leaves the selection, the whole squad too (HostHold.cs:173); BoardLock mirrors the engine's order (running, tethered, carrying, then down, inside, in car: HostGetaway.cs:54).
+- The car answers with nobody selected (its panel for the crew aboard: HandoverHost.cs:1156); Drive rows on the car for each other stand, icon `arrive` (HostGetaway.cs:201); the hold's way: Board, else Drive with one stand open and Vale not aboard, else none (HostGetaway.cs:229); ranking Go first only with Vale aboard, Board 0, Drive 1, Go before Vale last (ContextRank.cs:46), drawn dashed, never lit, a struck Vale cameo, the 0.5 s hold (HostContext.cs:179).
+- The group pill: the slowest doer's walk + act, every doer's face (HostGetaway.cs:219); the why chip on a refused portrait (cause icon + two words, 3 s, fading: HostGetaway.cs:261, HudToolkit.Less.cs:264); pending seat pips turning and the landing beat (HostGetaway.cs:88, HudToolkit.Less.cs:1548); the stands whenever anyone is aboard, at rest 55 % without disc or route, live on the car, a stand, an aboard selection or a Drive named by the ring, the hold or the pill (HostDriveCar.cs:59, HudToolkit.Rivals.cs:164).
+- Proof shots: `r067-squad-board-pill`, `r067-car-ring-board`, `r067-board-pending`, `r067-board-landed`, `r067-drive-pill-car`, `r067-car-ring-drive`, `r067-car-ring-drive-hover`, `r067-drive-parked`.
+
+**5 · D · sticky target** (host side; the engine is involved: see Open)
+- The fire hold's latch measures travel from the target's drawn point as well as the press (HostHold.cs:349); a right press beside a moving target (34 px), or on one that walked off the cursor in the last 0.4 s, takes it (HostHold.cs:358); a lapsed order is said over the agent ("No line"; it was silent: HostDone.cs:189).
+- Glyph's lock reticle over the head (set, locked, held, released; the shooters' faces; edge chip; hand-off line; the pill's tail 6 px above it): HostHoldStatus.cs:163 (FireLockTargets), HudToolkit.Lock.cs:59.
+- Proof shots: `r067-reticle-set`, `r067-reticle-moving`, `r067-reticle-edge`, `r067-reticle-handoff`.
+
+**6 · G · camera and roster**
+- A portrait click selects and frames (a 0.5 s smoothstep glide at the zoom it has; Shift/Ctrl adds without moving; a double click at play zoom; the ring pulses, the car or door marker for an agent aboard or inside): HandoverHost.cs:511, :527, HostHoldStatus.cs:319, HostViews.Figures.cs:352.
+- Third person enters behind the agent's drawn heading (HostFollow.cs:62); the agent keeps its heading on a take (HostDrive.cs:130).
+- T back: a 0.5 s glide up the map's line over the agent, then the map view at play zoom and the yaw it was left at, centred on the agent; nothing over the street during the glide, then the world marks fade in over 0.2 s (HostFollow.cs:87, :93, :310; HudToolkit.cs:1171). The T key glides (`DriveLetGoToMap(true)`); a script's let-go lands the same map view at once, so the older proofs that let go and go on are unchanged (HostDrive.cs DriveExit).
+- Proof shots: `r067-portrait-pulse`, `r067-portrait-framed`, `r067-tp-entry-1`, `r067-tp-entry-2`, `r067-back-to-plan`.
+
+**7 · H · the conversation from the ground view**
+- The two speakers are set to idle (no cross-fade), facing each other, while it plays; everyone else holds the pose the clock left them in (no walk in place): HostViews.Figures.cs:89, :168; HostConvo.cs:82 (ConvoViewKeys).
+- The shot: the side the camera is on first, the perpendicular then ±15°/30°/45° (HostConvo.cs:40); the single shot faces the person toward the agent; the bubble flips under the head when it would leave the frame (HudToolkit.Live.cs:355). Silhouettes stay off in the scene (Glyph H2; my first try turned them on and is reverted).
+- Proof shots: `r067-convo-inez-1`, `r067-convo-inez-2` (the Fixer's Help, two sides), `r067-convo-driver-1` (the Fixer's Pay), `r067-convo-driver-2` (the Scout's Listen), all from third person.
+
+**8 · Redline item 4:** PC_RPAsset `m_RequireOpaqueTexture` 1 → 0 (no shader reads `_CameraOpaqueTexture` or `SampleSceneColor`; every camera uses the pipeline's setting). The frame debugger check (no CopyColor) needs the Editor open: the batch's shots compare.
+
+**9 · rivals.coming:** Fable's card is `sight: always` now; the host override is gone (HostTakedown.cs:413).
+
+**F · cones on demand and click priority** (Glyph F1-F9)
+- WatcherOf: a member and a unit are their own watchers (HostSight.cs:30). The rules (hovered, named by the order, sees or is about to see a selected agent within 4 s, acted on, a walk crossing it, Alt; the reveal 3 s of mission clock after a Watch; combatants in a fight only on rules 1, 2, 4 and Alt): HostSight.cs:80, :151, :156. No rest strength: 0 or 1, in 0.25 s, out 0.6 s, hidden at 0 (HostViews.cs:599, :709).
+- Click priority: under the cursor, then the selection's open calm way, any row, none (asked only where two or more overlap, once a second), then the kind (beings, bodies, cameras, the car and stands, the door, cabinet and stashes, passers-by last): HostPick.cs:101, HandoverHost.cs:752. The stack tab and the others' dashed rings: HudToolkit.Hold.cs:27; the wheel steps only after the cursor rests 0.3 s (HandoverHost.cs:471).
+- Proof shots: `r067-cones-before` (Alt: every learned cone) and `r067-cones-after` at the Office front at 6:00.
+
+**10 · Other proof shots:** `r067-patrol-post` (mission.json's patrol-a/patrol-b at yaw 210, read at shot time), `r067-square-cleared` (the getaway car's square at play zoom, yaw 30).
+
+**Tests:** ContextRankTests.OnTheCarGoLeadsOnlyWithValeAboardAndTheWithdrawIsLast (Tests/Editor/ContextRankTests.cs:108).
+
+**Evidence**
+- `dotnet build sim/Suborned.Sim -o out/scratch/latch/sim067`: 0 errors. `bun out/scratch/latch/tools/compile067.ts` (Runtime/** against it): "compile067: OK". `dotnet build out/scratch/latch/compileEd067/ed.csproj` (Editor/World/**): "Build succeeded", 0 warnings.
+- `bun run guard bun out/scratch/latch/tools/unity067.ts`: engine d4361806 (0.33.1) into Plugins and StreamingAssets; headless 341/341, range 91/91 with identical replay; text.json c5fa275e4422 (out/scratch/latch/r067/sim-unity2.log).
+- Unity 6000.6.2f1 batchmode through `bun run guard` (`-runTests -testPlatform EditMode -testFilter Suborned.Play.Tests.ContextRankTests`), twice: scripts compiled, 0 `error CS`, no warning in the new or edited code; 26/26 passed (out/scratch/latch/r067/contextrank2.xml).
+- `bun run typecheck`: clean.
+
+**Open**
+- **Keel (blocker for the batch's sim step):** HEAD's contracts/rules/rulebook.schema.ts does not know 0.33.1's `car.footprint` and `cancel.driveCar`, so `bun test contracts/rules` fails and `tools/sim/unity.ts` stops at its zod check. I copied 0.33.1 into Unity with a scratch copy that patches only its work copy of the schema (out/scratch/latch/tools/unity067.ts); the batch needs the schema fixed.
+- **Keel / Motive (D, engine involved):** a lasting fire order ends when its target leaves the weapon's max once reached (fire.out-of-range: pistol 16 m) and lapses after line-lapse-s 3 s without a line once the player's move spent its walk-in (fire.lapses). Both lose a moving rival. The host now keeps the target through the hold, takes a moving target beside the cursor and says both ends ("Too far", "No line"); a truly sticky order would need the engine to walk in again rather than end. Also: the engine's drive step ignores the car mask (the host's controller is stricter).
+- **Splice:** gate `r067.ok` (and `r059.ok`) in the batch's proof reader; add the r067 pictures to the hud-budget and 2x crop sets.
+- **Glyph:** 2x review of every r067 frame; the place of `less.why` (built in the chip slot); not built: the locked pill's 0.15 s cross-fade when a lock lapses, the stack tab's tail glide, a new shooter's cameo sliding in. The Scout has no Fire row on the guard (only the Enforcer's knob gives one), so his shut ring there is Listen and the panel, not "Fire last" as board 02 shows.
+- **Fable:** `less.done.board.<code>` (the host uses Glyph's words until then), the "X stops fire." and "Scroll to switch." hints, `ring-turn`, the goal line's clash with Drive ("Go in the car"), `less.pop.fire-lapses` (the host says "No line").
+- **Aster:** Glyph's §C open questions (the Go-before-Vale hold and rank are built as he proposes; boarded agents always leave the selection); GDD lines (§10 left click, getaway, select, conversation scene; §06 the fire offer only in a fight).
+- **Vantage / Keel:** the patrol's sweep is moved in mission.json but not yet in sim/data/handover.site.json; `r067-patrol-post` logs the engine's patrol against the mission's line.

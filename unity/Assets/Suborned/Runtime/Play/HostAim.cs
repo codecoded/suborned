@@ -404,12 +404,23 @@ namespace Suborned.Play
         void RingTakeTry(int seg, string src)
         {
             var rs = Ring; if (rs == null || seg < 0 || seg >= rs.Segs.Count) return;
-            if (rs.Segs[seg].Shut && rs.Segs[seg].Row is PanelRow lh && lh.Lock.code == "loop-holds") { Pop(lh.Reason, null, rs.Plan?.Pn?.World, Feedback.Refused, 2f, PopIcon("loop-holds"), lh.Unlock); rs.Sticky = true; return; } /* engine 0.31.0: one loop at a time, with its end (Fable's short line, {tick} filled) */
-            if (rs.Segs[seg].Shut) { var sr = rs.Segs[seg].Row; HolderPulseAt = Time.unscaledTime; PopKey(sr?.Lock.code ?? "car-held", null, rs.Plan?.Pn?.World, Feedback.Refused, sr?.Reason ?? ""); rs.Sticky = true; return; } // brief 057 §4.2: a shut Go says why and pulses the holders; nothing taken
+            if (rs.Segs[seg].Shut) // brief 057 §4.2: a shut Go says why and pulses the holders; brief 058: a shut Loop its end; brief 067 E2 (Glyph): any shut way pops its short lock with the lock's own icon at the wedge (Alt: the long line), and the ring closes; nothing taken
+            {
+                var sr = rs.Segs[seg].Row; var at = WedgeScreen(rs, seg);
+                if (sr != null) { if (sr.Lock.code == "car-held") HolderPulseAt = Time.unscaledTime; var full = sr.Unlock.Length > 0 ? sr.Unlock : LockLine(sr.I.Order, sr.Lock) ?? sr.Reason; popCode = sr.Lock.code ?? ""; Pop(ShortOf(sr.I.Order, sr.Lock) ?? sr.Reason, at, null, Feedback.Refused, 2f, PopIcon(sr.Lock.code ?? ""), full); }
+                SideTake(rs.Segs[seg], rs.Plan?.T); CloseRing(); return;
+            }
             if (!rs.Segs[seg].HoldWedge) { RingTake(seg); return; }
             rs.Sticky = true; rs.Always = true; rs.FromHold = false;
             if (src == "release") { Status = "Hold to take it"; return; }
             if (rs.HoldSeg != seg) { rs.HoldSeg = seg; rs.HoldStart = Time.unscaledTime; rs.HoldSrc = src; }
+        }
+
+        /// <summary>Brief 067 E2: a wedge's middle on the screen (RingSegAt's geometry: 0 at 12 o'clock, clockwise, between the inner and outer radius).</summary>
+        static Vector2 WedgeScreen(RingState rs, int i)
+        {
+            int n = Mathf.Max(1, rs.Segs.Count); float r = (RingInner + RingOuter) * 0.5f * KitScale, a = i * 360f / n * Mathf.Deg2Rad;
+            return rs.Screen + new Vector2(Mathf.Sin(a) * r, Mathf.Cos(a) * r);
         }
 
         /// <summary>Per frame with a ring open: the harmful wedge's hold fills while its input is held over it; full, it takes (the going-loud card's
@@ -485,6 +496,16 @@ namespace Suborned.Play
         /// seen; live causes first, else the first ones). The cue's look waits for Glyph's lab and Sky's pick (brief 046).</summary>
         public readonly List<(string by, string main)>[] FireWhyNow = { new(), new(), new(), new() };
         readonly int[] fireWhyTick = { -1, -1, -1, -1 };
+        /// <summary>Engine 0.33.0 (Fable's less.why): the under-fire cue's words for agent k: its main cause (the strongest shooter's), one to three
+        /// words; with `all` (Alt) every cause on it, strongest first, joined; "" when nobody shoots at it. The main cause's code too (its icon).</summary>
+        public (string cause, string words) UnderFireWords(int k, bool all)
+        {
+            if (k < 0 || k > 3) return ("", ""); var fw = FireWhyNow[k]; if (fw.Count == 0) return ("", "");
+            string W(string c) => Text != null && Text.WhyWords.TryGetValue(c, out var w) && w.Length > 0 ? w : c;
+            if (!all) return (fw[0].main, W(fw[0].main));
+            var seen = new List<string>(); foreach (var (_, main) in fw) if (main.Length > 0 && !seen.Contains(main)) seen.Add(main);
+            return (fw[0].main, string.Join(" · ", seen.ConvertAll(W)));
+        }
         /// <summary>Not firing (the struct's default carries null strings).</summary>
         public static readonly FireState NoFire = new() { Mode = "", Target = "", Lead = "", NextShot = -1 };
         /// <summary>When each agent's fire last stopped (unscaled s) and on what: the line reads "Stopped" for 1 s.</summary>

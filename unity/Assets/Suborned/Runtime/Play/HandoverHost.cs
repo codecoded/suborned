@@ -116,6 +116,8 @@ namespace Suborned.Play
         bool? intelOpen, allStrips; // the remembered collapse states (PlayerPrefs), read once
         const string IntelPref = "Suborned.Hud.IntelOpen", StripsPref = "Suborned.Hud.AllStrips";
         public Camera View => cam;
+        /// <summary>The map view's ground focus (the proofs: the camera centred on an agent).</summary>
+        public Vector3 Focus => focus;
 
         // ---------------------------------------------------------------- verbs: four slots an agent, Q W E R
 
@@ -149,8 +151,13 @@ namespace Suborned.Play
             /// <summary>Brief 013: a takedown's way and the engine's quote (the card's full price); extra card rows (icon, text); the chip's lead icon
             /// and seen mark ("ok", "unk", "no").</summary>
             public string How = "", Lead = "", SeenMark = ""; public TakedownQuote Td; public SeenQuote SeenQ; public readonly List<(string icon, string text)> Rows = new();
-            /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can.</summary>
-            public bool Actionable => Order != null && !Move;
+            /// <summary>A verb the selected agent can give here (a right click acts); else Hint says who can. A lock or who-can intent (the hold
+            /// pill's lock state, brief 067 E) is never actionable.</summary>
+            public bool Actionable => Order != null && !Move && !Locked && !WhoCanHint;
+            /// <summary>Brief 067 E (Suture's 0.2.122 findings §2-§3): the hold pill's lock state: the thing's calm ways are all locked for the
+            /// selection; Label is the way with its target, LockShort its short lock ("Call Inez" · "Alarm up"), Doer the agent whose row it is.
+            /// WhoCanHint: no calm way for the selection at all, another agent has one (Fable's less.pop.who-can, "{op} can").</summary>
+            public bool Locked, WhoCanHint; public string LockShort = "", LockCode = "", LockLong = ""; public int Doer = -1;
             /// <summary>Brief 030: other ways are open (the chip ends with ⋯); the quick click opens the ring and takes nothing.</summary>
             public bool More, Opens;
             /// <summary>Engine 0.28 (brief 054 §4.3, hud29 predictionMarks): the mood favours this approach (Likely, a dashed tick and "likely") or hurts
@@ -178,7 +185,7 @@ namespace Suborned.Play
         public static double PerfStepMs, PerfAfterMs, PerfViewsMs;
         /// <summary>For the proof: the pointer held on a world point (its screen position each frame, so a window resize never moves it off).</summary>
         public static Vector3? PointerWorld;
-        string intentKey = ""; float hoverAt; GameObject background; Vector2 lastMouse = new(-1, -1), lastHover; readonly List<Camera> covered = new();
+        string intentKey = ""; float hoverAt, pointerRestSince; GameObject background; Vector2 lastMouse = new(-1, -1), lastHover; readonly List<Camera> covered = new();
         readonly Stopwatch sw = new();
 
         void Start()
@@ -229,7 +236,7 @@ namespace Suborned.Play
             Select(OpId.Scout, false);
             TriggerDown = false; AimEnd(); FireLog.Clear(); ShotFx.Clear(); CarBlownAt.Clear(); holdFireOn = false; for (int k = 0; k < 4; k++) { FireNow[k] = NoFire; FireStoppedAt[k] = -10f; FireStoppedOn[k] = ""; } // brief 024 Firing
             Text.ResetUses(); Talk.Clear(); ShowBriefing = true; LogOpen = false; Array.Clear(pendingAt, 0, 4); Loud = null; sweeping = false; AimLine = null; MoveChip = null; ResetHints(); ResetFeed(); beatAt.Clear(); crowdSt = null; sawCount.Clear();
-            ResetLess(); ResetAttention(); ResetConvo(); Track(); Notice(); lastWatchOrders = -1;
+            ResetLess(); ResetAttention(); ResetConvo(); ResetCones(); Track(); Notice(); lastWatchOrders = -1; // brief 067 F: the cones' memory
             ResetRound24(); // Redline 064 #9: the 2026-10-24 round's host state (rewalks, noticing, cones, reroute, seal span, the no-walk cell)
             // open on the cell (Waymark 2026-10-16: the four stand by the getaway car's boarding pavilion): centred on block (-2.5, -40.5), play zoom 14,
             // so the cell sits below the briefing card at any resolution; Replay opens the same way
@@ -295,6 +302,7 @@ namespace Suborned.Play
             Guard("rival marks", RivalMarksFrame); Guard("drive marks", DriveMarksFrame); RivalAudioFrame(); // brief 059: the rivals' approach, walks, posts and Watch reads; the stands and Vale's car round the back; the rivals' sounds
             FollowFrame(); // the test follow view (HostFollow): after the views moved
             CamFollowFrame(); Guard("hold status", HoldStatusFrame); // brief 041: C's follow and the eased centring; the pill's live words
+            SideFrame(); // brief 067 E: the host record beside the session script (selection, hover and pill, ring), with ticks
             Guard("fight lab", FightLabFrame); // brief 027: queued ghost lines and the hostiles' focus in a freeze
             FadePoints();
             DoorViewFrame(); // GDD v0.24: the Office door's clear-view clock (H13's door cause)
@@ -460,10 +468,10 @@ namespace Suborned.Play
                 if (e != Vector2.zero) Pan(e * KeyPanSpeed * Time.unscaledDeltaTime);
             }
             float wheel = mouse.scroll.ReadValue().y; // over the HUD the wheel scrolls the HUD (the action panel's cards), not the zoom
-            if (wheel != 0f && HoverStackCount > 1 && !OverHud(p)) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them
+            if (wheel != 0f && HoverStackCount > 1 && !OverHud(p) && (!HoldOn || Time.unscaledTime - pointerRestSince >= 0.3f)) { StepStack(); wheel = 0f; } // over overlapping things the wheel steps through them; brief 067 F9 (Glyph): in the hold preset only once the cursor has rested 0.3 s (else the wheel zooms)
             if (wheel != 0f && !Following && !OverHud(p)) OverheadWheel(wheel); // the follow view's wheel is its distance (FollowInput); stepped or proportional (brief 025)
             if (Driving && DriveFocus != null) lastMouse = p;             // driven: the chip is on what E acts on (HostDrive), not under the cursor
-            else if (p != lastMouse) { lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
+            else if (p != lastMouse) { if ((p - lastMouse).sqrMagnitude > 4f) pointerRestSince = Time.unscaledTime; lastMouse = p; PointerHover(p); }      // the price is redone only on change (Preview is ~500 KB a call)
             else if (intentKey.Length == 0 || HoldOn && Time.unscaledTime - hoverAt > 0.1f) { hoverAt = Time.unscaledTime; PointerHover(lastHover); } // the agent, the verb or the world changed under a still mouse (the hold preset: ten times a second, for the hover's 150 ms hold)
             bool onHud = OverHud(p);
             if (!onHud && (mouse.leftButton.wasPressedThisFrame || mouse.rightButton.wasPressedThisFrame)) WorldPresses++; // the proof's click-through check reads it
@@ -497,10 +505,26 @@ namespace Suborned.Play
             if (twice) CentreOn((OpId)i);
         }
 
-        /// <summary>A roster portrait clicked: as the agent's key (double click centres).</summary>
-        public void PortraitClick(int i, bool add) => AgentKey(i, add);
+        /// <summary>A roster portrait clicked (brief 067 G, Sky on 0.2.122: "a portrait click selects that agent and moves the camera to them"; GDD
+        /// §10's "a double click centres" is Aster's to change): one click selects and frames the agent, the camera gliding to them at the zoom it
+        /// has; Shift adds without moving. In third person the click takes control of that agent (DriveFrame) and the camera stays behind them.</summary>
+        public void PortraitClick(int i, bool add)
+        {
+            if (Game == null || i < 0 || i > 3) return;
+            bool twice = !add && lastPortrait == i && Time.unscaledTime - lastPortraitAt < controls.doubleSeconds; lastPortrait = i; lastPortraitAt = Time.unscaledTime;
+            Select((OpId)i, add); lastAgentKey = i; lastAgentKeyAt = Time.unscaledTime;
+            if (add || Following) return; // Glyph 067 G1: Shift or Ctrl adds or toggles and never moves the camera (a group can't be framed at play zoom)
+            if (twice && cam) cam.orthographicSize = Mathf.Clamp(Cam.overhead.zoom, zoomMin, zoomMax); // a double click frames at play zoom
+            CentreOn((OpId)i); PortraitFrames++;
+            var op = Game.Ops[i]; float now = Time.unscaledTime; if (op.InCar) CarPulseAt = now; else if (op.Inside) DoorPulseAt = now; else RingPulseAt[i] = now; // the cue: the agent's ring pulses once (aboard, the car marker; inside, the door marker)
+        }
+        int lastPortrait = -1; float lastPortraitAt = -9f;
+        /// <summary>The proof reads it: portrait clicks that framed their agent.</summary>
+        public int PortraitFrames { get; private set; }
+        /// <summary>Brief 067 G1 (Glyph): when each agent's ground ring last pulsed (a portrait click framing it), and the car and door markers' pulses.</summary>
+        public readonly float[] RingPulseAt = { -9f, -9f, -9f, -9f }; public float CarPulseAt { get; private set; } = -9f; public float DoorPulseAt { get; private set; } = -9f;
 
-        public void CentreOn(OpId id) { var op = Game.Ops[(int)id]; if (HoldOn) { camFollow = false; centreGoal = frame.World(op.Pos); } else LookAt(frame.World(op.Pos)); Status = $"centred on {Op.Name(id)}"; } // brief 041: an eased glide
+        public void CentreOn(OpId id) { var op = Game.Ops[(int)id]; var at = views?.Find("op/" + Op.Name(id)) is Transform vt && vt.gameObject.activeInHierarchy ? vt.position : frame.World(op.Pos); if (HoldOn) { camFollow = false; centreGoal = at; centreFrom = focus; centreStart = Time.unscaledTime; } else LookAt(at); Status = $"centred on {Op.Name(id)}"; } // brief 041: an eased glide; brief 067 G1 (Glyph): smoothstep, 0.5 s, at the current zoom
 
         static Rect GuiRect(Vector2 a, Vector2 b) => Rect.MinMaxRect(Mathf.Min(a.x, b.x), Screen.height - Mathf.Max(a.y, b.y), Mathf.Max(a.x, b.x), Screen.height - Mathf.Min(a.y, b.y));
 
@@ -600,7 +624,8 @@ namespace Suborned.Play
         {
             if (!ModalGate.AllowsHover(Modal)) { ClearHover(); return; } // nothing in the street answers under a modal
             lastHover = screen; Mouse = new Vector2(screen.x, (cam ? cam.pixelHeight : Screen.height) - screen.y); // GUI space: origin top left
-            var t = TargetAt(screen); if (HoldOn) t = Sticky(t, screen); // brief 041: the pill stays on the one you are on
+            var t = TargetAt(screen); if (t != null && t.Kind is not ("op" or "crowd")) { rawHover = t; rawHoverAt = Time.unscaledTime; } // brief 067 D: what the pointer was last on (a right press just after a rival walks off it)
+            if (HoldOn) t = Sticky(t, screen); // brief 041: the pill stays on the one you are on
             string key = $"{t?.Kind}:{t?.Key}:{Agent}:{Picked}:{Game.Orders.Count}:{(HoldOn ? Array.IndexOf(Selected, true) * 16 + (Selected[0] ? 1 : 0) + (Selected[1] ? 2 : 0) + (Selected[2] ? 4 : 0) + (Selected[3] ? 8 : 0) : 0)}";
             if (key == intentKey) { if (t == null) UpdateMoveChip(screen, false); return; }
             intentKey = key; Hover = t; HoverFeedback(t);
@@ -695,7 +720,7 @@ namespace Suborned.Play
                 // snap to the nearest walkable cell of the engine's grid within 3 m (the café terrace, planters, the fountain are solids), and
                 // send the snapped point, so the order is what the agent does and the replay is exact
                 var want = new Pt(at.X + (k % 2) * 90, at.Y + (k / 2) * 90); k++;
-                Pt? to = Game.S.Grid.Free(want) ? want : Game.S.Grid.NearestFree(want);
+                var wg = CarWalk; Pt? to = wg.Free(want) ? want : wg.NearestFree(want); // engine 0.33.1: a standing car's ground is not free (Game.Walk)
                 if (!to.HasValue || G.Dist(to.Value, want) > 300) { if (!said) PopKey("no-way", screen, null, Feedback.Refused, "Can't walk there."); said = true; continue; }
                 if (Issue(new Order { Op = Op.Name((OpId)n), Do = "move", Point = to.Value, Run = run }, screen, null)) // a walk needs no voice (Fable §4: move and run acks are silent)
                 { Pulses.Add((frame.World(to.Value), Feedback.Ok, Time.unscaledTime)); while (Pulses.Count > 8) Pulses.RemoveAt(0); } // the click's pulse at the destination
@@ -715,11 +740,18 @@ namespace Suborned.Play
             {
                 if (!hit.collider.transform.IsChildOf(viewRoot)) continue;
                 var t = TargetOf(hit.collider.transform); if (t == null) continue;
-                int r = t.Kind == "op" ? (agents ? 0 : 3) : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "body" or "unit" ? (agents ? 1 : 0) : t.Kind == "crowd" ? (agents ? 3 : 2) : (agents ? 2 : 1);
-                float score = r * 10000f + hit.distance - (agents ? 0 : Prefer(t));
+                // brief 067 F8 (Glyph, Sky on 0.2.122: "a lot of trying to click around things"): for hover and the right button, what is under the
+                // cursor sorts by (the selection has an open calm way on it, else any row; then the kind: a being 0, a body 1, a camera 2, the car
+                // or a stand 3, the door, the cabinet or a stash 4, a passer-by 9; then the ray). A passer-by never covers a person, the door, a
+                // camera or the car. A left click (agents) keeps its own order: your own agent first.
+                float score = agents ? (t.Kind == "op" ? 0 : t.Kind is "person" or "hostile" or "patrol" or "rivals" or "security" or "body" or "unit" ? 1 : t.Kind == "crowd" ? 3 : 2) * 10000f + hit.distance
+                    : PickRank(t, false) * 10000f + hit.distance - Prefer(t);
                 int at = found.FindIndex(x => x.t.Kind == t.Kind && x.t.Key == t.Key);
                 if (at < 0) found.Add((t, score)); else if (score < found[at].score) found[at] = (t, score);
             }
+            // the rows decide only where two or more things overlap under the cursor (each asked once a second: ContextFor prices every way)
+            if (!agents && found.FindAll(x => x.t.Kind != "crowd").Count >= 2)
+                for (int i = 0; i < found.Count; i++) { var (ft, fs) = found[i]; if (ft.Kind == "crowd") continue; found[i] = (ft, fs + RowRank(ft) * 100000f); }
             // brief 016 (Sky: "hard to select areas, like a camera"): nothing under the ray, or only a passer-by: the nearest thing within the pick
             // radius of the cursor wins over the ground (HostPick)
             if (found.Count == 0 || found.TrueForAll(x => x.t.Kind == "crowd")) { var np = NearestPick(screen, agents); if (np != null) found.Insert(0, (np, -1f)); }
@@ -858,7 +890,8 @@ namespace Suborned.Play
                     if (id == "watch" && !g.WatchOffered(t.Key)) return null; // engine 0.28/0.29 (brief 054 §2.2, hud29 watch.notOffered): no Watch to give, no row anywhere (panel, ring, verbs, ContextRank); once watched it stays absent until the mood changes (Aster, item 23)
                     {
                         var q = g.Quote(g.LearnEv(id), sp);
-                        var i = I(id, t.Key, "", $"{plate[slot].Label} {t.Label}"); i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Outcome = id == "watch" ? (t.Key == "guard" ? "routine" : "mood") : "need, temperament"; return i; // brief 054: a person's Watch reads the mood; the guard's his sight and marks
+                        // Fable 2026-10-26 (Suture: the pill read "Listen the guard"): the verb's withTarget names it with its target
+                        var i = I(id, t.Key, "", Text?.WithTarget(id, t.Label) ?? $"{(id == "listen" ? "Listen to" : plate[slot].Label)} {t.Label}"); i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Outcome = id == "watch" ? (t.Key == "guard" ? "routine" : "mood") : "need, temperament"; return i; // brief 054: a person's Watch reads the mood; the guard's his sight and marks
                     }
                 case "mislead":
                     if (t.Kind != "rivals" || t.Key != "car:rivals") return null; // brief 059 F3: the tip is given at the parked car, to its wheelman
@@ -867,7 +900,7 @@ namespace Suborned.Play
                     if (t.Kind != "person" || t.Key == "councillor" || CastOf(t.Key) == null) return null; // a turn is on a cast person only
                     {
                         var q = g.Preview(id, t.Key, OpId.Fixer);
-                        var i = I("turn", t.Key, id, $"{Slots[1][slot].Label} {t.Label}");
+                        var i = I("turn", t.Key, id, Text?.WithTarget(id, t.Label) ?? $"{Slots[1][slot].Label} {t.Label}");
                         i.Usd = q.WorstUsd > q.Usd ? $"${q.Usd:N0}–{q.WorstUsd:N0}" : $"${q.Usd:N0}";
                         i.Time = $"{q.S} s"; i.Trail = $"T +{q.Trail}"; i.Orders = q.Orders; i.Leverage = q.Leverage; // the walk is the card's own (Walk, WalkS)
                         i.Alert = q.Reports == "no" ? "A 0" : q.Reports == "yes" ? $"A →{q.AlertIfReported}" : $"A ?→{q.AlertIfReported}";
@@ -940,8 +973,8 @@ namespace Suborned.Play
                 "car" => g.CarPos(), "camera" => CameraAt(t.Key), _ => null,
             };
             if (!to.HasValue) return null;
-            if (place.Length == 0) to = s.Grid.NearestFree(to.Value); if (!to.HasValue) return null;
-            var route = s.Grid.Route(g.Ops[first].Pos, to.Value);
+            if (place.Length == 0) to = CarWalk.NearestFree(to.Value); if (!to.HasValue) return null; // engine 0.33.1: never onto a standing car's ground
+            var route = MoveRoute(g.Ops[first].Pos, to.Value);
             var i = new Intent { Move = true, Label = $"Go to {t.Label}", Order = place.Length > 0 ? new Order { Op = Op.Name((OpId)first), Do = "move", To = place } : new Order { Op = Op.Name((OpId)first), Do = "move", Point = to } };
             i.Time = route == null ? "no way" : $"{(new Sim.Path(route).Length + g.R.CellSpeed * Game.Hz - 1) / Math.Max(1, g.R.CellSpeed * Game.Hz)} s walk"; // CellSpeed: mm a tick
             return i;
@@ -975,6 +1008,8 @@ namespace Suborned.Play
             var g = Game; if (!IsOpName(o.Op)) return true; int k = (int)Op.Parse(o.Op); var op = g.Ops[k];
             if (o.Do == "move")
             {
+                // engine 0.33.1: the site's grid, not Game.Walk: a move onto a standing car's ground is the engine's to end beside the car, on the
+                // side the agent comes to (its order unchanged); only ground the site can't walk is re-pointed here
                 Pt? at = o.Point ?? (g.S.HasPlace(o.To) ? g.S.Stand(o.To) : (Pt?)null); if (!at.HasValue || g.S.Grid.Free(at.Value)) return true;
                 var nf = g.S.Grid.NearestFree(at.Value);
                 if (nf.HasValue && G.Dist(nf.Value, at.Value) <= 300) { o.Point = nf.Value; o.To = ""; return true; }
@@ -1118,6 +1153,7 @@ namespace Suborned.Play
             {
                 // Sky: "the action menu should only show the actions for the player(s) I've selected"
                 var order = new List<int>(); for (int k = 0; k < 4; k++) if (Selected[k] && Able(k)) order.Add(k); // item 29: a downed agent is no giver (its rows never exist: no wedge, no cameo)
+                if (order.Count == 0 && (IsGetaway(t) || t.Kind == "stand")) for (int k = 0; k < 4; k++) if (Game.Ops[k].InCar && Able(k)) order.Add(k); // brief 067 C1.3 (Glyph): the car (and a stand) answers with nobody selected: for the crew aboard, in cell order
                 if (order.Count == 0) { pn.Note = "Select an agent."; return; }
                 if (IsGetaway(t)) { CarRows(pn, order, t); KeyRows(pn); return; } // brief 018: Board for each selected agent, then Go
                 if (t.Kind == "stand") { StandRows(pn, order, t); KeyRows(pn); return; } // brief 059 K6: Drive the getaway car here
@@ -1175,7 +1211,7 @@ namespace Suborned.Play
             PanelHover = row;
             if (row < 0 || row >= Panel.Rows.Count || !Panel.World.HasValue) { views.ShowPath(null); return; }
             var rw = Panel.Rows[row]; var op = Game.Ops[(int)rw.By];
-            Pt[] route = null; Guard("path", () => { var aw = ActPlace(rw.By, rw.I.Order, Panel.T); route = aw == null ? null : Game.S.Grid.Route(op.Pos, aw.To); });
+            Pt[] route = null; Guard("path", () => { var aw = ActPlace(rw.By, rw.I.Order, Panel.T); route = aw == null ? null : MoveRoute(op.Pos, aw.To); }); // engine 0.33.1: round the standing cars
             var pts = new List<Vector3>();
             if (route != null) foreach (var p in route) pts.Add(frame.World(p) + Vector3.up * 0.08f);
             else { pts.Add(frame.World(op.Pos) + Vector3.up * 0.08f); pts.Add(Panel.World.Value + Vector3.up * 0.08f); }
@@ -1295,9 +1331,28 @@ namespace Suborned.Play
         /// walks the route until they are inside it (half a metre to spare), not onto the person. Null when the agent is already there.</summary>
         public sealed class ActWalk { public string Place = ""; public Pt To; public int Cm, Seconds; }
 
+        /// <summary>Engine 0.33.1 (rulebook car.footprint, briefs/027/keel/host-interface.md "0.33.x addendum"): the walk grid as the engine walks
+        /// it now, the standing cars' ground taken out (Game.Walk). Every host test or preview of a walk reads it: the click's free test and its
+        /// preview, ActPlace, the ring's and the panel's route lines, the crowd's give-way and spread. The site's own grid (Game.S.Grid) stays the
+        /// ground, the floors and the sight, and the move order's own test (Playable: a move onto a car's ground is the engine's to end beside it).
+        /// Built once a tick or an order (the cars stand still between them); read-only, never hashed.</summary>
+        public WalkGrid CarWalk
+        {
+            get
+            {
+                var g = Game; if (g == null) return default;
+                if (carWalkGame != g || carWalkTick != g.Tick || carWalkOrders != g.Orders.Count) { carWalkGame = g; carWalkTick = g.Tick; carWalkOrders = g.Orders.Count; carWalk = g.Walk; }
+                return carWalk;
+            }
+        }
+        WalkGrid carWalk; Game carWalkGame; int carWalkTick = -1, carWalkOrders = -1;
+        /// <summary>The walk a move order to `to` makes (engine 0.33.1): round the standing cars; a point on a car's ground ends beside the car, on
+        /// the side the walker comes to (WalkGrid.RouteBeside: a move never steps in). Null where the engine finds no way.</summary>
+        public Pt[] MoveRoute(Pt from, Pt to) { var w = CarWalk; return w.CarCovers(to) ? w.RouteBeside(from, to) : w.Route(from, to); }
+
         public ActWalk ActPlace(OpId by, Order o, Target t)
         {
-            var g = Game; var s = g.S; var R = g.R; var op = g.Ops[(int)by];
+            var g = Game; var s = g.S; var R = g.R; var op = g.Ops[(int)by]; var wg = CarWalk;
             string place = ""; int reach = 0; Pt? tp = null;
             switch (o.Do)
             {
@@ -1318,17 +1373,19 @@ namespace Suborned.Play
             }
             if (place.Length > 0)
             {
-                var st = s.Stand(place); if (G.Dist(op.Pos, st) <= 100) return null;
-                var r = s.Grid.Route(op.Pos, st); return r == null ? null : Walk(place, st, r);
+                var st = s.Stand(place);
+                if (o.Do == "board" ? g.AtGetaway(op.Pos) : G.Dist(op.Pos, st) <= 100) return null; // engine 0.33.1: Board's "already there" is the engine's own test (car-reach-cm of the car's body), never 1 m of its centre
+                var r = MoveRoute(op.Pos, st); if (r == null) return null;
+                return Walk(place, wg.CarCovers(st) ? r[^1] : st, r); // a car's place: the walk ends beside it (the move's end), not on its centre
             }
             if (!tp.HasValue) return null;
             // watching a camera or the patrol needs a clear line as well as reach (the engine's own check, Site.Sight at the rulebook's eye
             // height): the stand point is the first route point that has both, never one the engine then refuses with "no clear line"
             bool line = o.Do == "watch"; var aim = tp.Value; // brief 031: a person's Watch needs a clear line too
-            bool Fits(Pt q) => G.Dist(q, aim) <= reach - 50 && s.Grid.Free(q) && (!line || s.Sight(q, aim, R.Eye));
+            bool Fits(Pt q) => G.Dist(q, aim) <= reach - 50 && wg.Free(q) && (!line || s.Sight(q, aim, R.Eye)); // engine 0.33.1: never a stand spot on a car's ground
             if (G.Dist(op.Pos, aim) <= reach - 50 && (!line || s.Sight(op.Pos, aim, R.Eye))) return null;
-            var goal = s.Grid.NearestFree(aim); if (!goal.HasValue) return null;
-            var route = s.Grid.Route(op.Pos, goal.Value); if (route == null) return null;
+            var goal = wg.NearestFree(aim); if (!goal.HasValue) return null;
+            var route = wg.Route(op.Pos, goal.Value); if (route == null) return null;
             var cut = new List<Pt> { route[0] };
             for (int i = 1; i < route.Length; i++) // corners can be far apart: 25 cm steps, stop at the first free point within reach (and line)
             {
@@ -1341,7 +1398,7 @@ namespace Suborned.Play
                     for (int d = 0; d < 360; d += 15)
                     {
                         var q = new Pt(aim.X + (int)(rr * Math.Cos(d * Math.PI / 180)), aim.Y + (int)(rr * Math.Sin(d * Math.PI / 180)));
-                        if (Fits(q) && s.Grid.Route(op.Pos, q) is Pt[] rq) return Walk("", q, rq);
+                        if (Fits(q) && wg.Route(op.Pos, q) is Pt[] rq) return Walk("", q, rq);
                     }
             return Walk("", goal.Value, route);
         }
@@ -1443,7 +1500,9 @@ namespace Suborned.Play
         // ---------------------------------------------------------------- feedback: every click answers where it was made
 
         public enum Feedback { Info, Ok, Refused }
-        public sealed class PopUp { public string Text = "", Icon = "", Long = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born; }
+        public sealed class PopUp { public string Text = "", Icon = "", Long = ""; public Vector2? Screen; public Vector3? World; public Feedback Kind; public float Until, Born;
+            /// <summary>Brief 067 E4: a "who can" pop: the selected agents' faces struck, a pointer, then the faces of who can (no words).</summary>
+            public int[] Struck, Faces; }
         /// <summary>Pops the HUD draws (at the cursor, or over a world point), newest last; and ring pulses on targets.</summary>
         public readonly List<PopUp> Pops = new();
         public readonly List<(Vector3 world, Feedback kind, float born)> Pulses = new();
@@ -1453,6 +1512,7 @@ namespace Suborned.Play
             float now = Time.unscaledTime;
             var gui = screen.HasValue ? new Vector2(screen.Value.x, (cam ? cam.pixelHeight : Screen.height) - screen.Value.y) : (Vector2?)null;
             Pops.Add(new PopUp { Text = text, Icon = icon, Long = longLine.Length > 0 ? longLine : text, Screen = gui, World = world, Kind = kind, Born = now, Until = now + seconds });
+            SidePop(text, icon); // brief 067 E: the host record (HostSidecar)
             if (world.HasValue) Pulses.Add((world.Value, kind, now));
             while (Pops.Count > 6) Pops.RemoveAt(0);
             while (Pulses.Count > 6) Pulses.RemoveAt(0);
@@ -1504,7 +1564,7 @@ namespace Suborned.Play
                 bool swap = !Game.Over && !add && Game.OpenFight != null; (int tick, ulong hash) kept = swap ? cps[cps.Count - 1] : default;
                 if (add) cps.Add((Game.Tick, Game.OpenFight == null ? Hash.State(Game) : ClosingHash()));
                 if (swap) cps[cps.Count - 1] = (Game.Tick, ClosingHash());
-                try { File.WriteAllText(SessionPath, Script.Write(Game, PlayInputs.Hash) + "\n"); }
+                try { File.WriteAllText(SessionPath, Script.Write(Game, PlayInputs.Hash) + "\n"); try { side?.Flush(); } catch (Exception) { } } // brief 067 E: the host record flushed with the session
                 finally { if (add) cps.RemoveAt(cps.Count - 1); if (swap) cps[cps.Count - 1] = kept; }
             }
             catch (Exception e) { Debug.LogWarning($"Play: session not saved: {e.Message}"); }
@@ -1572,7 +1632,7 @@ namespace Suborned.Play
         }
         static float FollowDistanceFactor => Settings.Current.camera.thirdPersonDistance switch { "close" => 0.75f, "far" => 1.4f, _ => 1f };
 
-        void OnDestroy() { Settings.Changed -= PlayerSettingsChanged; if (Game != null) Save(); if (background) background.SetActive(true); foreach (var c in covered) if (c) c.enabled = true; }
+        void OnDestroy() { Settings.Changed -= PlayerSettingsChanged; if (Game != null) Save(); SideClose(); if (background) background.SetActive(true); foreach (var c in covered) if (c) c.enabled = true; }
 
         /// <summary>Every call into the engine passes here: an exception stops the host (the session is kept), never the Editor.</summary>
         bool Guard(string what, Action a)

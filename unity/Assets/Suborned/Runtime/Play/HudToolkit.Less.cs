@@ -255,8 +255,19 @@ namespace Suborned.Play
                 {
                     var s = m.Slots[i]; var (r, ic, tx, bar, fill, x) = busy[i];
                     string hw = host.controls.HoldActs ? host.PlateWords(i) : ""; // item 13 (d): a down agent's plate says "down" (it was the grey glyph alone) // brief 041: the plate says the pill's words (walking 9 s, watching 12 s, aiming, queued)
-                    bool on = (s.Busy || s.Pace.Length > 0 || hw.Length > 0) && !s.Down && !ended && !s.InCar; Show(r, on); if (!on) continue; /* Glyph's 0.2.104 review #7: a downed agent's portrait carries the downed mark; no second disc beside it */ // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
+                    var (whyIcon, whyWords, whyAlpha) = host.controls.HoldActs && !ended ? host.WhyChipOf(i) : ("", "", 0f); bool why = whyWords.Length > 0; // brief 067 C4 (Glyph): a refused squad order says why on the portrait's chip
+                    if (!why && !ended && !s.Down && !s.InCar && hw.Length == 0 && !s.Busy && host.UnderFireNow[i].Count > 0) { var (uc, uw) = host.UnderFireWords(i, alt); if (uw.Length > 0) { whyIcon = WhyIcon(uc) is { Length: > 0 } wi0 ? wi0 : "bang"; whyWords = uw; whyAlpha = 1f; why = true; } } // engine 0.33.0 (Fable's less.why): beside the under-fire cue, its main cause in words (Alt: every cause), in the chip slot when the agent has no other chip
+                    bool on = (s.Busy || s.Pace.Length > 0 || hw.Length > 0) && !s.Down && !ended && !s.InCar || why; Show(r, on); if (!on) continue; /* Glyph's 0.2.104 review #7: a downed agent's portrait carries the downed mark; no second disc beside it */ // brief 018 (Glyph r1): aboard, the in-car badge says it; no chip
                     float bx = i == a ? SelectedChipX(plateX, folded) : ColX + colW + 4; /* Glyph fight r1 #6: 6 px clear of the fold tab (it stands 16 px out of the plate) */ r.style.left = bx; r.style.top = WinMid(i) - ChipH / 2; // anchored to its portrait's row (or after the plate)
+                    r.style.opacity = why ? whyAlpha : 1f; tx.style.fontSize = why ? 12.5f : StyleKeyword.Null; tx.style.color = StyleKeyword.Null;
+                    if (why)
+                    {   // the why chip (Glyph 067 C4): the busy chip's frame, the cause's own icon (14 px cream), 6 px, two words (Jost 12.5 cream); no bar, no seconds, no ×
+                        Icon(ic, whyIcon, Cream); ic.style.width = 14; ic.style.height = 14; Text(tx, whyWords); Show(tx, true); Show(bar, false); Show(x, false); Show(busyEyes[i], false);
+                        tx.style.width = StyleKeyword.Auto; tx.style.marginLeft = 6; tx.style.paddingRight = 0; tx.style.unityTextAlign = TextAnchor.MiddleLeft;
+                        r.style.width = StyleKeyword.Auto; r.style.minWidth = StyleKeyword.Null; r.style.paddingLeft = 16; r.style.paddingRight = 16; r.style.unityBackgroundImageTintColor = Color.white;
+                        if (r.Q("vale-cameo") is VisualElement vc0) Show(vc0, false);
+                        continue;
+                    }
                     bool moving = s.Phase is "walking" or "running", running = s.Phase == "running";
                     Icon(ic, s.Down ? "s_downed" : host.FireRefusalWord(i).Length > 0 ? "refused" : hw == "queued" ? "nextevent" : moving ? (running ? "run" : "s_moving") : hw is "drawing" or "aiming" or "firing" or "holding" ? "fire" : hw == "under fire" ? "bang" : host.controls.HoldActs && host.PlateDoneTone(i) is { Length: > 0 } dtn ? (dtn == "ok" ? "check" : dtn == "soft" ? "asked" : dtn == "cancel" ? "close_x" : "refused") : s.Icon, running ? TurqLight : Cream); // brief 043: the plate's word after a landing or a cancel
                     r.style.unityBackgroundImageTintColor = running ? new Color(0.78f, 0.97f, 0.96f) : Color.white; fill.style.backgroundColor = running ? Cream : TurqLight; // run: a lighter plate and a cream bar (kit tones, never a signal)
@@ -585,6 +596,25 @@ namespace Suborned.Play
             }
         }
 
+        /// <summary>Brief 067 E4 (Glyph): a "who can" pop (PopUp.Faces): plate_dark 26 px, the selected agents' cameos (14 px) struck by a 2 px cream
+        /// diagonal, a `pointer` (12 px), then the cameos of who can (14 px, up to 3); no words (Alt shows the WhoCan line in their place).</summary>
+        void WhoCanFaces(VisualElement r, VisualElement ic, Label t, HandoverHost.PopUp pp, bool alt)
+        {
+            var row = r.Q("faces"); bool on = pp.Faces != null && pp.Faces.Length > 0 && !alt;
+            if (row == null) { if (!on) return; row = E(r); row.name = "faces"; row.style.flexDirection = FlexDirection.Row; row.style.alignItems = Align.Center; row.style.flexShrink = 0; }
+            Show(row, on); Show(ic, !on); Show(t, !on || alt); if (!on) return;
+            r.style.height = 26; var key = string.Join(",", pp.Struck ?? System.Array.Empty<int>()) + "|" + string.Join(",", pp.Faces);
+            if (row.userData as string == key) return; row.userData = key; row.Clear();
+            void Face(int k, bool struck, float left)
+            {
+                var c = Cameo(row, 14f, 1.5f); c.style.marginLeft = left; CameoOf(c, k);
+                if (struck) { var sk = E(c, null, -2f, 7f, 18f + 4f, 2f); sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); sk.pickingMode = PickingMode.Ignore; }
+            }
+            bool first = true; foreach (var k in pp.Struck ?? System.Array.Empty<int>()) { Face(k, true, first ? 0f : 3f); first = false; }
+            var pt = E(row, null, w: 12, h: 12); pt.style.marginLeft = 6; pt.style.marginRight = 6; pt.style.flexShrink = 0; Icon(pt, "pointer", Cream);
+            first = true; foreach (var k in pp.Faces) { Face(k, false, first ? 0f : 3f); first = false; }
+        }
+
         void Pops(Camera cam)
         {
             float now = Time.unscaledTime; bool alt = host.Peeking; var list = new List<HandoverHost.PopUp>();
@@ -607,6 +637,7 @@ namespace Suborned.Play
                 Art(ic, icon.Length > 0 ? icon : "badges/mark_no", icon.StartsWith("icons/") ? Cream : (Color?)null);
                 var sk = ic.Q("strike"); if (sk == null && struck) { sk = E(ic, null, -2f, Glyph / 2f - 1f, Glyph + 4f, 2f); sk.name = "strike"; sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); } if (sk != null) Show(sk, struck);
                 Text(t, alt && pp.Long.Length > 0 ? pp.Long : pp.Text); r.style.height = alt ? StyleKeyword.Auto : ChipH;
+                WhoCanFaces(r, ic, t, pp, alt); // brief 067 E4 (Glyph): the "who can" pop is faces, not words (Alt keeps the line)
                 float w = r.resolvedStyle.width; if (float.IsNaN(w)) w = 120;
                 float ph = r.resolvedStyle.height; if (float.IsNaN(ph)) ph = ChipH;
                 float py = pp.World.HasValue ? ClearOfSpeech(speech ??= SpeechRects(), at.x - w / 2, w, at.y + ph, ph) - ph : at.y; // brief 044: a pop on a thing sits above its speech, never under the leader
@@ -1433,6 +1464,7 @@ namespace Suborned.Play
             {
                 if (!on || !Proj(w, out var q)) { Show(e, false); return; }
                 Show(e, true); e.style.left = q.x - 13; e.style.top = q.y - 13; Icon(e.Q("g"), icon, iconCol);
+                { float pt = Time.unscaledTime - (e == carMark ? host.CarPulseAt : e == doorMark ? host.DoorPulseAt : -9f), pu = pt >= 0f && pt < 0.4f ? Mathf.Sin(pt / 0.4f * Mathf.PI) : 0f; e.style.scale = new Scale(Vector2.one * (1f + 0.3f * pu)); } // brief 067 G1 (Glyph): a portrait click on an agent aboard pulses the car marker (inside, the door marker)
                 // Glyph techwatch fix 4: the marker reads whole on a ghosted tower's dither: an ink halo under the disc, the dashes on an ink
                 // underlay (the 018 tethers' grammar), and the unknown eye 2 px smaller, so its "?" sits inside the bezel, not on it
                 var gl = e.Q("g"); bool small = icon == "eye_unk"; Show(gl, !small); Show(e.Q("flat"), small); if (e.Q("unk") is VisualElement uk) Show(uk, small); // flat ink under the unknown eye (the disc art's gloss ate the "?"); the eye and its "?" drawn as strokes (UnknownEye)
@@ -1496,9 +1528,9 @@ namespace Suborned.Play
                 else Show(heldMark, false);
                 // brief 018 §6.3: five seat pips under the car marker (Vale, then the Scout, Fixer, Tech, Enforcer), filled as each boards; shown with
                 // the marker, the held lock, or anyone in the car. Vale's pip is the larger.
-                if (live && (car || ring || g.AnyInCar) && Proj(carW, out var sq0))
+                if (live && (car || ring || g.AnyInCar || host.AnyBoardPending) && Proj(carW, out var sq0))
                 {
-                    var seats = host.Seats(); var sc = sq0 + new Vector2(0, 21);
+                    var (seats, seatPend, seatAt) = host.SeatState(); var sc = sq0 + new Vector2(0, 21); float pnow = Time.unscaledTime; // brief 067 C3 (Glyph): pending pips turn; a landing beats
                     paints.Add(pp =>
                     {
                         pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.9f); pp.BeginPath(); // Glyph r1: a dark backing pill, 4 px round the pips (they sat in the fade dither)
@@ -1507,7 +1539,17 @@ namespace Suborned.Play
                         {
                             var c = sc + new Vector2((k - 2) * 9f, 0); float r = k == 0 ? 3.6f : 2.9f;
                             pp.fillColor = new Color(Ink.r, Ink.g, Ink.b, 0.85f); pp.BeginPath(); pp.Arc(c, r + 1.4f, Deg(0), Deg(360)); pp.Fill();
-                            if (seats[k]) { pp.fillColor = TurqLight; pp.BeginPath(); pp.Arc(c, r, Deg(0), Deg(360)); pp.Fill(); }
+                            if (seats[k])
+                            {
+                                float bt = pnow - seatAt[k], beat = bt >= 0f && bt < 0.3f ? Mathf.Sin(bt / 0.3f * Mathf.PI) : 0f; // the landing: 1 → 1.6 → 1 over 0.3 s, and one ring leaving it
+                                pp.fillColor = TurqLight; pp.BeginPath(); pp.Arc(c, r * (1f + 0.6f * beat), Deg(0), Deg(360)); pp.Fill();
+                                if (bt >= 0f && bt < 0.3f) { float u = bt / 0.3f; pp.strokeColor = new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.8f * (1f - u)); pp.lineWidth = 1.2f; pp.BeginPath(); pp.Arc(c, r * (1f + 1.2f * u), Deg(0), Deg(360)); pp.Stroke(); }
+                            }
+                            else if (seatPend[k])
+                            {   // pending: a turquoise-light ring of three dashes turning once in 1.5 s
+                                float rot = pnow / 1.5f * 360f; pp.strokeColor = TurqLight; pp.lineWidth = 1.2f;
+                                for (int dsh = 0; dsh < 3; dsh++) { float a0 = rot + dsh * 120f; pp.BeginPath(); pp.Arc(c, r - 0.4f, Deg(a0), Deg(a0 + 70f)); pp.Stroke(); }
+                            }
                             else { pp.strokeColor = Cream; pp.lineWidth = 1.2f; pp.BeginPath(); pp.Arc(c, r - 0.4f, Deg(0), Deg(360)); pp.Stroke(); }
                         }
                     });
@@ -1579,8 +1621,8 @@ namespace Suborned.Play
                     float alpha = lost < 0 ? 1f : 1f - (now - lost) / 0.4f; if (alpha <= 0f || !ring) { gone.Add(kv.Key); continue; }
                     if (!Proj(hw0 + Vector3.up * 2.4f, out var hq) || !Proj(hw0, out var fq)) continue;
                     var e = HolderEl(); e.style.left = hq.x - 13; e.style.top = hq.y - 13; e.style.opacity = alpha; // Glyph r2: the blocked chip's no-entry sign, 18 px on a dark disc
-                    { var nl = e.Q<Label>("n"); int rcs = kv.Key == "car:rivals" ? host.RivalsComingS() : -1; if (nl == null && rcs >= 0) { var pl = PlateDark(e, 22f, 0.3f); pl.name = "np"; pl.style.position = Position.Absolute; pl.style.left = 27; pl.style.top = 2; pl.style.paddingLeft = 7; pl.style.paddingRight = 7; nl = Words(pl, 13.5f); nl.name = "n"; }
-                      if (e.Q("np") is VisualElement np) { Show(np, rcs >= 0); if (rcs >= 0) Text(nl, $"{rcs} s"); } } // engine 0.33.0: the rival car holds the car until its first rider steps out: the seconds to it
+                    { var nl = e.Q<Label>("n"); string rw = kv.Key == "car:rivals" ? host.RivalsHoldShort() : ""; bool rOn = rw.Length > 0; if (nl == null && rOn) { var pl = PlateDark(e, 22f, 0.3f); pl.name = "np"; pl.style.position = Position.Absolute; pl.style.left = 27; pl.style.top = 2; pl.style.paddingLeft = 7; pl.style.paddingRight = 7; nl = Words(pl, 13.5f); nl.name = "n"; }
+                      if (e.Q("np") is VisualElement np) { Show(np, rOn); if (rOn) Text(nl, rw); } } // engine 0.33.0: the rival car holds the car until its first rider steps out; Fable's fillLockShort for car-held by the rival car: "Rivals coming · 18 s", "Rivals coming" while it drives in
                     float pulse = now - host.HolderPulseAt; if (pulse >= 0 && pulse < 1f) { float sc2 = 1f + 0.3f * Mathf.Sin(pulse * Mathf.PI * 3f) * (1f - pulse); e.style.scale = new Scale(new Vector2(sc2, sc2)); } else e.style.scale = new Scale(Vector2.one); // §6.5: a refused Go pulses the holders
                     // the tether ends on the ring (a holder outside it, on the exit lane) or at the car's foot (inside it)
                     if (!Proj(carW, out var eq)) continue; eq += (fq - eq).normalized * 15f; // Glyph r3: to the car marker's disc edge (its centre is carW; the seat pill hangs below it)

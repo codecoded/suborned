@@ -1,0 +1,48 @@
+J (briefs/067/splice.md): the 41 recorded Handover route scripts (contracts/missions/handover/routes/*.json) played by one engine DLL (HEAD, 0.33.1, built from the working tree sim/) on two sets of inputs that differ only in the steward monument:
+  old = sim/data at HEAD d4361806 (monument a 1.5 m blocker, 3 cover blockers), new = the regenerated site and takedown files (monument gone, 21 grid cells freed, 2 cover blockers).
+  Same rulebook, people rules, people, provisional and rounds files on both sides. `dotnet suborned-sim.dll batch <scripts>` from a folder holding each set under sim/data (the CLI finds its root by walking up to contracts/rules/rulebook.json).
+
+script                                   old outcome@tick                         new outcome@tick                         start hash        final hash
+careless-body-found.json                 failure/enforcer-down@2123               failure/enforcer-down@2123               moved              moved
+careless-enforcer-watches-guard.json     failure/enforcer-down@1731               failure/enforcer-down@1731               moved              moved
+careless-g-disable.json                  failure/rivals-reach-vale@2517           failure/rivals-reach-vale@2517           moved              moved
+careless-guard-left-door-held.json       failure/vale-leaves@3730                 failure/vale-leaves@3730                 moved              moved
+careless-loop-runs-out.json              failure/entry-seen-camera@1734           failure/entry-seen-camera@1734           moved              moved
+careless-reporter-not-stopped.json       withdrawn@4880                           withdrawn@4880                           moved              moved
+careless-scout-idles-pickup.json         failure/rivals-reach-vale@3995           failure/rivals-reach-vale@3995           moved              moved
+careless-takedown-seen-camera.json       failure/entry-seen-camera@1570           failure/entry-seen-camera@1570           moved              moved
+careless-takedown-seen-crowd.json        failure/vale-leaves@3730                 failure/vale-leaves@3730                 moved              moved
+fail-district-seals.json                 failure/sealed@3050                      failure/sealed@3050                      moved              moved
+fail-enforcer-down.json                  failure/enforcer-down@1067               failure/enforcer-down@1067               moved              moved
+fail-entry-seen-camera.json              failure/entry-seen-camera@2829           failure/entry-seen-camera@2829           moved              moved
+fail-entry-seen-guard.json               failure/entry-seen-guard@2329            failure/entry-seen-guard@2329            moved              moved
+fail-entry-seen-patrol.json              failure/entry-seen-patrol@2804           failure/entry-seen-patrol@2804           moved              moved
+fail-rivals-reach-vale.json              failure/rivals-reach-vale@3995           failure/rivals-reach-vale@3995           moved              moved
+fail-take-seen-camera.json               failure/abduction-seen-camera@3700       failure/abduction-seen-camera@3700       moved              moved
+fail-vale-dead.json                      failure/vale-dead@3720                   failure/vale-dead@3720                   moved              moved
+fail-vale-leaves.json                    failure/vale-leaves@3730                 failure/vale-leaves@3730                 moved              moved
+fight-loud-enforcer-down.json            failure/enforcer-down@1790               failure/enforcer-down@1772               moved              moved
+fight-safe-rivals-reach-vale.json        failure/rivals-reach-vale@3995           failure/rivals-reach-vale@3995           moved              moved
+loud-fast.json                           failure/enforcer-down@2664               failure/enforcer-down@2664               moved              moved
+loud-fight.json                          failure/enforcer-down@2664               failure/enforcer-down@2664               moved              moved
+loud-left-downed.json                    failure/enforcer-down@2664               failure/enforcer-down@2664               moved              moved
+loud-left-standing.json                  failure/enforcer-down@2664               failure/enforcer-down@2664               moved              moved
+loud.json                                failure/enforcer-down@2664               failure/enforcer-down@2664               moved              moved
+route-a-board.json                       success@2679                             success@2679                             moved              moved
+route-a-disable.json                     success@2997                             success@2997                             moved              moved
+route-a-pressure-board.json              failure/rivals-reach-vale@1917           failure/rivals-reach-vale@1917           moved              moved
+route-a-pressure.json                    failure/rivals-reach-vale@2001           failure/rivals-reach-vale@2001           moved              moved
+route-a.json                             success@2997                             success@2997                             moved              moved
+route-b-block-board.json                 withdrawn@4645                           withdrawn@4645                           moved              moved
+route-b-block.json                       withdrawn@4880                           withdrawn@4880                           moved              moved
+route-b-board.json                       withdrawn@4645                           withdrawn@4645                           moved              moved
+route-b.json                             withdrawn@4880                           withdrawn@4880                           moved              moved
+route-g-board.json                       failure/rivals-reach-vale@2457           failure/rivals-reach-vale@2457           moved              moved
+route-g-fast-board.json                  failure/rivals-reach-vale@1852           failure/rivals-reach-vale@1852           moved              moved
+route-g-fast.json                        failure/rivals-reach-vale@1911           failure/rivals-reach-vale@1911           moved              moved
+route-g-kill-board.json                  failure/rivals-reach-vale@3302           failure/rivals-reach-vale@3302           moved              moved
+route-g-kill.json                        success@3717                             success@3717                             moved              moved
+route-g.json                             failure/rivals-reach-vale@2517           failure/rivals-reach-vale@2517           moved              moved
+withdraw.json                            withdrawn@300                            withdrawn@300                            moved              moved
+
+41 scripts: outcome and tick unchanged 40, outcome unchanged but a tick moved 1, outcome changed 0. Every start hash and final hash moves (the grid is part of the state): a re-record, not a regression.

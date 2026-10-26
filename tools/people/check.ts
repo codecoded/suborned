@@ -6,13 +6,14 @@ import { People as PeopleSchema, Person as PersonSchema, type Person } from '../
 import type { Check } from '../plan/checks';
 import type { V } from '../plan/geom';
 import { drawn, stepMin } from './day';
-import { expand, inShift, needsOf, needWeightsOf, routineMeet, rowOf, type Ctx } from './expand';
+import { expand, inShift, namesPost, needsOf, needWeightsOf, routineMeet, rowOf, type Ctx } from './expand';
 import { withSecrets } from './secrets';
 import { castHandover, type MissionIn } from './handover';
 import { deriveKnowledge } from './knowledge';
 import { pinnedByRole } from './roles';
 import { positionsOf, type Rules } from './rules';
-import { seatId, seatPoints, SEAT_TOL, STAND } from './seats';
+import { POST_STAND, seatId, seatPoints, SEAT_TOL, STAND } from './seats';
+import { earlyMin, heldPlaces } from './posts';
 import { atCafeSide, type Unit } from './scope';
 import { allowedTemperaments, isTalker } from './rules';
 import { checkNeeds, N_SRC } from './needs-check';
@@ -41,10 +42,10 @@ export const RULES_SRC: Record<string, string> = {
   'P-10': 'people.rules.json temperamentsBy.mix (P3): no temperament over rowMaxShare of a cast row; a unit of whenStaffAtLeast staff or more carries unitMinDistinct temperaments; GDD §09 risk: sameness',
   'P-11': 'people.rules.json knowledge (P5): a keeper\'s needsKnown derived from workmate and unit-regular ties; the cell is known by face only and nothing else at the start; GDD §03, §08',
   'P-12': 'people.rules.json person.readBy (P2): every field a person carries names the rule that reads it; GDD §09 risk: sameness (Legion\'s bios did nothing)',
-  'P-13': 'GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear',
+  'P-13': 'GDD §09 people checked by: reach their places, no impossible action (two people on one chair); brief 010 follow-up, Aster 2026-10-15: a seat is a chair of a café set the world draws (tools/world/build.ts civicMasses; chair geometry tools/decokit/furnish_cafe.py), a standing point keeps CD-1 clear; brief 067 L: a post\'s waiting point stands beside a staffed door within reach, on the ground that door\'s own keep-clear zone keeps clear',
   'P-14': 'people.rules.json ties.kinds.lover (Motive briefs/011/motive-lovers.md §1): mutual, one per person, met on their routines, never family, at most maxShare of the simulated people',
   'P-15': 'people.rules.json secrets (Motive briefs/011/motive-lovers.md §2): 0 or 1 per person from the closed list; affair exactly for everyone with a lover tie; the need secret retired into the record share',
-  'P-16': 'brief 014 (Sky 2026-10-16: five identical servers on one point): no two people are drawn on one place at once; a door, a bay or a standing point holds one person at a time, a post is one person\'s',
+  'P-16': 'brief 014 (Sky 2026-10-16: five identical servers on one point): no two people are drawn on one place at once; a door, a bay or a standing point holds one person at a time, a post is one person\'s; brief 067 L (Keel and Suture, Sky\'s 0.2.122 play: four guards on one point at the official door, a relief on the door guard\'s own post): a civic door or official entrance the row names in `posts` counts the minutes its relief walks early (rulebook crowd.pace) and a cast person holds his through the mission, so whoever relieves it waits at a standing point beside it (P-13)',
   ...N_SRC, // brief 017: open needs, N-1..N-8, run when the people were made with the need kinds and a catalogue
 };
 type R = { id: string; rule: string; bad: string[]; value?: string; limit?: string };
@@ -84,7 +85,9 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
       for (let i = 0; i < st.length; i++) {
         const a = st[i]!, b = st[(i + 1) % st.length]!, gap = (b.from - a.to + 1440) % 1440 || (st.length === 1 ? 0 : 0);
         if (a.place === b.place || a.place === 'beyond' || b.place === 'beyond' || !pl.has(a.place) || !pl.has(b.place)) continue;
-        const need = stepMin(c.walk, pl.get(a.place)!, pl.get(b.place)!);
+        // a walk into a post's waiting minute (brief 067 L: the stop beside the post, then the post at its end) is one minute shorter than the walk to the post: that minute is the wait
+        const wp = scope.places.find(x => x.id === b.place), after = st[(i + 2) % st.length]!, waits = !!wp?.beside && after.place === wp.beside && after.from === b.to;
+        const need = Math.max(0, stepMin(c.walk, pl.get(a.place)!, pl.get(b.place)!) - (waits ? 1 : 0));
         if (need === Infinity) bad.push(`${p.id}: no walk ${a.place} → ${b.place}`);
         else if (gap < need) bad.push(`${p.id}: ${a.place} (to ${a.to}) → ${b.place} (from ${b.from}) leaves ${gap} min, the walk needs ${need}`);
       }
@@ -366,10 +369,14 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     for (const id of real.keys()) if (!pl.has(id)) bad.push(`the chair ${id} the world draws is not a place`);
     const chairs = [...real.values()];
     for (const pa of scope.places.filter(x => x.kind === 'stand')) {
-      const z = scope.zones.find(x => x.test(pa.at as V)), near = chairs.find(q => Math.hypot(pa.at[0] - q[0], pa.at[1] - q[1]) < STAND.chair);
+      // a post's waiting point (brief 067 L) stands beside a staffed door, on the ground that door's own keep-clear zone keeps clear: its staff stand there, whoever else would not
+      const post = pa.beside ? pl.get(pa.beside) : undefined, own = post ? scope.zones.filter(x => x.test(post.at as V)).map(x => x.id) : [];
+      const z = scope.zones.find(x => x.test(pa.at as V) && !own.includes(x.id)), near = chairs.find(q => Math.hypot(pa.at[0] - q[0], pa.at[1] - q[1]) < STAND.chair);
       if (z) bad.push(`standing point ${pa.id} is in ${z.id}`);
       if (near) bad.push(`standing point ${pa.id} is on a chair (${near.join(', ')})`);
       if (!c.walk.free(pa.at as V)) bad.push(`standing point ${pa.id} is not walkable ground`);
+      if (pa.beside && (!post || post.kind !== 'door')) bad.push(`waiting point ${pa.id} is beside ${pa.beside}, which is no staffed door`);
+      else if (post && Math.hypot(pa.at[0] - post.at[0], pa.at[1] - post.at[1]) > POST_STAND.reach + 0.01) bad.push(`waiting point ${pa.id} is ${Math.hypot(pa.at[0] - post.at[0], pa.at[1] - post.at[1]).toFixed(1)} m from ${pa.beside}, beside means within ${POST_STAND.reach} m`);
     }
     out.push({ id: 'P-13', rule: 'No two people hold the same seat at once; every seat is a chair or table the world draws; every standing point keeps CD-1 clear', bad: [...new Set(bad)], value: `${stops} stops at ${held.size} seats and standing points`, limit: 'one holder at a time, every seat on a chair' });
   }
@@ -428,20 +435,42 @@ export function checkPeople(c: Ctx, mission: MissionIn | undefined, plan: { civi
     out.push({ id: 'P-15', rule: 'Secrets: 0 or 1 per person from the rules\' list; the affair exactly for everyone with a lover tie; the need secret retired', bad: [...new Set(bad)], value: S ? `${P.filter(p => p.secret === 'affair').length} affairs, ${P.filter(p => p.secret === 'record').length} records` : 'none in the rules', limit: S ? 'one each, listed' : 'none' });
   }
   // P-16 one drawn person to a place (brief 014): the café's door was five servers on one point. A place holds one drawn person at a time; the minutes of a commute at a stop or bay are a
-  // passer's (the car at the bay, the tram stop) and the seats and standing points are P-13's. A civic employer's door and bay are held to one by its row (`count`, `posts`) and by M-2's `alone`
-  // and `waitsFor`, which read the role the mission needs; the rule here covers every other unit's places and the places no unit owns.
+  // passer's (the car at the bay, the tram stop) and the seats and standing points are P-13's. A civic employer's bay and its inside posts are held to one by its row (`count`, `posts`) and by
+  // M-2's `alone` and `waitsFor`, which read the role the mission needs. Its public door and official entrance are counted here (brief 067 L; Keel and Suture, Sky's 0.2.122 play: four guards on
+  // one point at the official door from 5:11, a relief on the door guard's own post): a person walks a routine leg up to the rulebook's crowd.pace share faster than it is timed and waits at
+  // its end, so the relief who is due when the holder leaves is on the post that much earlier, and the cast person holds his post through the mission (the Handover plays him by his role past
+  // his shift's end). Whoever relieves a post waits at a standing point beside it (scope.postStands), which P-13 holds.
   {
-    const bad: string[] = [], hm = (t: number) => `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`, held = new Map<string, { who: string; from: number; to: number }[]>();
+    const bad: string[] = [], held = new Map<string, { who: string; from: number; to: number }[]>();
+    const clock = (t: number) => { const s = Math.round(((t % 1440) + 1440) % 1440 * 60); return `${Math.floor(s / 3600)}:${String(Math.floor(s / 60) % 60).padStart(2, '0')}${s % 60 ? ':' + String(s % 60).padStart(2, '0') : ''}`; };
     const kind = new Map(scope.places.map(x => [x.id, x.kind]));
-    for (const p of P) for (const s of p.routine.stops) {
-      if (!drawn(p, s) || s.doing === 'commute' || kind.get(s.place) === 'seat' || kind.get(s.place) === 'stand' || (p.work && unitOf.get(p.work.unit)?.kind === 'civic' && (s.doing === 'work' || s.doing === 'meal'))) continue;
-      held.set(s.place, [...(held.get(s.place) ?? []), { who: p.id, from: s.from, to: s.to }]);
+    const parts = (from: number, to: number): [number, number][] => {
+      if (to - from >= 1440) return [[0, 1440]];
+      const f = ((from % 1440) + 1440) % 1440, e = f + (to - from);
+      return e > 1440 ? [[f, 1440], [0, e - 1440]] : [[f, e]];
+    };
+    const meets = (a: { from: number; to: number }, b: { from: number; to: number }) => parts(a.from, a.to).some(([x, y]) => parts(b.from, b.to).some(([u, v]) => x < v && u < y));
+    for (const p of P) p.routine.stops.forEach((s, i, st) => {
+      if (!drawn(p, s) || s.doing === 'commute' || kind.get(s.place) === 'seat' || kind.get(s.place) === 'stand') return;
+      const u = p.work ? unitOf.get(p.work.unit) : undefined, civic = u?.kind === 'civic' && (s.doing === 'work' || s.doing === 'meal');
+      const post = civic && (s.place === u!.door || s.place === u!.official) && namesPost(rowOf(cast, p.work!.area, p.work!.trade), p.position, p.work!.post);
+      if (civic && !post) return;
+      const prev = st[(i + st.length - 1) % st.length]!, walked = post && prev.place !== s.place && prev.place !== 'beyond' ? (s.from - prev.to + 1440) % 1440 : 0;
+      held.set(s.place, [...(held.get(s.place) ?? []), { who: p.id, from: s.from - earlyMin(walked), to: s.to }]);
+    });
+    // only a civic employer's posts: the café's door is one person's by insideFromDoor (the host is the one the street knows, and the cast waitress is her), which the old tables (r014) did not give her
+    const posts = new Set(scope.units.filter(u => u.kind === 'civic').flatMap(u => [u.door, u.official].filter((x): x is string => !!x)));
+    const kept = heldPlaces(scope, mission ? { scope, mission, plan } : undefined), castOf = (place: string) => !posts.has(place) ? [] : (kept.get(place) ?? []).flatMap(r => { const h = handover.find(x => x.role === r)?.pinned; return h ? [h] : []; });
+    for (const [place, list] of held) {
+      for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
+        const a = list[i]!, b = list[j]!;
+        if (a.who !== b.who && meets(a, b)) bad.push(`${a.who} and ${b.who} are both drawn at ${place} (${clock(a.from)}-${clock(a.to)}, ${clock(b.from)}-${clock(b.to)})`);
+      }
+      // a cast person holds his post from the mission's start for as long as a mission runs: nobody else is drawn on it then
+      const win = { from: c.atMin, to: c.atMin + scope.missionMin };
+      for (const cast of castOf(place)) for (const x of list) if (x.who !== cast && meets(x, win)) bad.push(`${x.who} is drawn at ${place} (${clock(x.from)}-${clock(x.to)}) while ${cast} holds it through the mission (${clock(win.from)}-${clock(win.to)}): the Handover plays him there`);
     }
-    for (const [place, list] of held) for (let i = 0; i < list.length; i++) for (let j = i + 1; j < list.length; j++) {
-      const a = list[i]!, b = list[j]!;
-      if (a.from < b.to && b.from < a.to) bad.push(`${a.who} and ${b.who} are both drawn at ${place} (${hm(a.from)}-${hm(a.to)}, ${hm(b.from)}-${hm(b.to)})`);
-    }
-    out.push({ id: 'P-16', rule: 'No two people are drawn on one place at once (a door, a bay, a stop holds one at a time)', bad: [...new Set(bad)], value: `${held.size} places`, limit: 'one drawn person to a place' });
+    out.push({ id: 'P-16', rule: 'No two people are drawn on one place at once (a door, a bay, a stop holds one at a time; a post counts the minutes its relief walks early, and a cast person holds his through the mission)', bad: [...new Set(bad)], value: `${held.size} places`, limit: 'one drawn person to a place' });
   }
   // N-1..N-8 open needs (brief 017): only when the people were made with the need kinds and a catalogue (a pinned older run has neither)
   if (c.needs) for (const n of checkNeeds({ needs: c.needs, rules, cast, scope, people, mission, handover })) out.push(n);

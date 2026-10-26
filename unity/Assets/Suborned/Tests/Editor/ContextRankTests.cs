@@ -103,6 +103,17 @@ namespace Suborned.Play.Tests
             var b = new[] { W("go") }; Assert.AreEqual("go", Picked(C("car", b), b));
         }
 
+        /// <summary>Brief 067 C1.5 (Glyph): on the car Go leads only once Vale is aboard (its outcome "win"); Board before Drive (the two no longer
+        /// tie, so the hold has one way); Go before Vale (a withdraw) is last of the car's ways.</summary>
+        [Test] public void OnTheCarGoLeadsOnlyWithValeAboardAndTheWithdrawIsLast()
+        {
+            var won = new[] { W("board"), W("drive-car"), W("go", outcome: "win") };
+            var cw = C("car", won); Assert.AreEqual(2, cw.Order[0], "Vale aboard: Go first"); Assert.AreEqual(0, cw.Order[1]); Assert.AreEqual(1, cw.Order[2]);
+            var out0 = new[] { W("go", outcome: "withdraw"), W("drive-car"), W("board") };
+            var co = C("car", out0); Assert.AreEqual(new List<int> { 2, 1, 0 }, co.Order, "Vale not aboard: Board, Drive, then the withdraw last");
+            var bd = new[] { W("drive-car"), W("board") }; Assert.AreEqual("board", Picked(C("car", bd), bd), "Board and Drive no longer tie: Board is the quick way while someone is outside");
+        }
+
         [Test] public void ABodyIsCarriedNeverHidden()
         {
             var a = new[] { W("carry"), W("restrain") }; Assert.AreEqual("carry", Picked(C("body", a), a));

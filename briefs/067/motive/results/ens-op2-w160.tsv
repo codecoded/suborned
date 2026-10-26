@@ -1,0 +1,18 @@
+# ens op2-w160 · RB=op-run-speed-cm-s=320 run-alert=0 carry-untrained-cm-s=80 · PROBE_RUNCLOCK=2 PROBE_OPWALK=160
+plan	k	outcome	fail	end	T	A	St	vale-in	spring	composed
+rgk-h3	1	success		6:01.3	2	1	3	6:01.3	5:16.0	yes
+rgk-h3	3	success		6:02.8	2	1	3	6:02.8	5:17.5	yes
+rgk-h3	5	success		6:02.7	2	1	3	6:02.7	5:17.4	yes
+rgk-h3	4	success		6:03.3	2	1	3	6:03.3	5:18.0	yes
+rgk-h3	0	success		6:01.3	2	1	3	6:01.3	5:16.0	yes
+rgk-h3	2	success		6:02.5	2	1	3	6:02.5	5:17.2	yes
+rgk-h3	6	success		6:02.4	2	1	3	6:02.4	5:17.1	yes
+rgk-h3	7	success		6:02.2	2	1	3	6:02.2	5:16.9	yes
+rad-h3	0	success		4:34.2	6	1	3	4:34.2	4:05.1	yes
+rad-h3	1	success		4:34.6	6	1	3	4:34.6	4:05.5	yes
+rad-h3	2	success		4:35.5	6	1	3	4:35.5	4:06.3	yes
+rad-h3	3	success		4:34.4	6	1	3	4:34.4	4:05.3	yes
+rad-h3	4	success		4:34.5	6	1	3	4:34.5	4:05.4	yes
+rad-h3	5	success		4:35.5	6	1	3	4:35.5	4:06.3	yes
+rad-h3	7	success		4:36.0	6	1	3	4:36.0	4:06.8	yes
+rad-h3	6	success		4:34.4	6	1	3	4:34.4	4:05.3	yes

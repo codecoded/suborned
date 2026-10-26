@@ -55,10 +55,13 @@ namespace Suborned.Play
         {
             var g = Game; var op = g.Ops[(int)k];
             Answer No(string code, string why) => new Answer { ok = false, code = code, why = why, m = -1, cm = -1, usd = -1, tick = -1 };
-            if (op.InCar) return No("in-car", "already in the car");
-            if (op.Down) return No("agent-down", "down");
+            // brief 067 C1 (Glyph): the engine's Board tests in its order (GameGetaway.Board: running, tethered, carrying a body), then the host's own
             if (op.Running) return No("board-running", "running: stop first");
+            if (k == OpId.Tech && g.LoopOn && !g.R.LoopRuns) return No("board-tethered", "the Tech is tethered to the cabinet while the loop holds"); // the engine's Tethered (a loop with a tether; Loop v2 runs on its own)
             if (op.CarryBody.Length > 0) return No("already-carrying", "carrying a body");
+            if (op.Down) return No("agent-down", "down");
+            if (op.Inside) return No("enforcer-inside", "inside the Office");
+            if (op.InCar) return No("in-car", "already in the car");
             return new Answer { ok = true, code = "", why = "" };
         }
 
@@ -79,6 +82,36 @@ namespace Suborned.Play
         public bool InCar(int k) => Game != null && Game.Ops[k].InCar;
         /// <summary>The car marker's five seat pips: Vale, then the Scout, Fixer, Tech and Enforcer; true when in the car.</summary>
         public bool[] Seats() { var s = new bool[5]; if (Game == null) return s; s[0] = Game.Vale == ValeAt.Car; for (int k = 0; k < 4; k++) s[k + 1] = Game.Ops[k].InCar; return s; }
+        /// <summary>Brief 067 C3 (Glyph): the seat pips' states this frame: filled (Seats), pending (a Board ordered and not landed: the host's queued
+        /// Board, the engine's walk-in to it, or getting in; Vale's with the Enforcer's when he carries him), and when each seat last filled (the
+        /// 0.3 s landing beat). Read once a frame by the HUD.</summary>
+        public (bool[] filled, bool[] pending, float[] filledAt) SeatState()
+        {
+            var f = Seats(); var p = new bool[5]; if (Game == null) return (f, p, seatFilledAt);
+            for (int k = 0; k < 4; k++) { var op = Game.Ops[k]; p[k + 1] = !op.InCar && !op.Down && (pending[k]?.Do == "board" || op.Act?.Do == "board" || op.Busy?.Do == "board"); }
+            p[0] = !f[0] && p[(int)OpId.Enforcer + 1] && Game.Vale == ValeAt.WithEnforcer;
+            float now = Time.unscaledTime; for (int i = 0; i < 5; i++) { if (f[i] && !seatWas[i]) seatFilledAt[i] = now; seatWas[i] = f[i]; }
+            return (f, p, seatFilledAt);
+        }
+        readonly bool[] seatWas = new bool[5]; readonly float[] seatFilledAt = { -9f, -9f, -9f, -9f, -9f };
+        /// <summary>Engine 0.33.1 (rulebook car.footprint; Suture's 0.2.122 done-check "nobody but a boarding agent is inside any footprint"): the
+        /// drawn figures whose feet stand inside a standing car's body now (Game.StandingCars, Game.CarBodyCm 0), as "key@car" each; agents in
+        /// the car and a carried body are not drawn and never count. A host read for the proofs.</summary>
+        public List<string> FiguresInCars()
+        {
+            var l = new List<string>(); var g = Game; if (g == null || views == null || g.Range) return l;
+            List<Game.StandingCar> cars = null; Guard("standing cars", () => cars = g.StandingCars()); if (cars == null || cars.Count == 0) return l;
+            foreach (var (key, feet, skip) in views.FigureFeet())
+            {
+                if (skip) continue; var e = frame.Engine(feet);
+                foreach (var c in cars) { int d = -1; Guard("car body", () => d = g.CarBodyCm(c.Id, e)); if (d == 0) { l.Add($"{key}@{c.Id}"); break; } }
+            }
+            return l;
+        }
+
+        /// <summary>Brief 067 C3: a Board is ordered and not landed for some agent (the pips show with it).</summary>
+        public bool AnyBoardPending { get { if (Game == null) return false; for (int k = 0; k < 4; k++) { var op = Game.Ops[k]; if (!op.InCar && (pending[k]?.Do == "board" || op.Act?.Do == "board" || op.Busy?.Do == "board")) return true; } return false; } }
+
         /// <summary>Anyone in the car: the car marker offers Go.</summary>
         public bool GoAvailable => Game != null && !Game.Over && Game.AnyInCar;
 
@@ -157,8 +190,92 @@ namespace Suborned.Play
             var gv = GoIntent(by); var goName = gv.Label; Words(gv, t); gv.Name = goName; var gl = GoLock(); // the row is the Go card's one line
             var goRow = new PanelRow { By = by, Slot = -1, I = gv, Verb = gv.Name, Lock = gl, Reason = gl.ok ? "" : ShortOf(gv.Order, gl) ?? gl.why };
             if (gl.ok) pn.Rows.Insert(0, goRow); else pn.Rows.Add(goRow); // a free Go tops the card
+            CarDriveRows(pn, order);
             foreach (var r in pn.Rows) { r.Available = r.Reason.Length == 0; if (!r.Available) r.Unlock = LockLine(r.I.Order, r.Lock) ?? ""; }
         }
+
+        /// <summary>Brief 067 C (Sky on 0.2.122: "very annoying getting them into the car and then trying to make the car go"): once anyone is aboard,
+        /// the car's own ways include Drive to each of its other stands, by the agent who would drive (a selected agent aboard, else the first
+        /// aboard), so the car is one click for the whole getaway; the stands' footprints on the ground stay targets too. No Drive once the final
+        /// fight has started (drive-fight), as on the stands.</summary>
+        void CarDriveRows(ActionPanel pn, List<int> order)
+        {
+            var g = Game; if (g == null || g.Range || !g.R.DriveCarOn || g.S.Stands.Count < 2) return;
+            int drv = -1; foreach (var k in order) if (g.Ops[k].InCar && !g.Ops[k].Down) { drv = k; break; }
+            if (drv < 0) for (int k = 0; k < 4; k++) if (g.Ops[k].InCar && !g.Ops[k].Down) { drv = k; break; }
+            if (drv < 0) return;
+            foreach (var st in g.S.Stands)
+            {
+                if (st == g.CurStand && !g.GetawayDriving) continue; // the car is there already (drive-here): never a way
+                var v = DriveIntent((OpId)drv, st); var stName = Text?.TargetName("stand-" + st.Id, "the " + st.Id) ?? st.Id;
+                v.Name = Text?.WithTarget("drive-car", stName) ?? $"Drive to {stName}"; v.Label = v.Name; v.Lead = "arrive"; // Glyph 067 C: Drive's icon is arrive on the car's ring (three cars would read alike)
+                var lk = DriveLock((OpId)drv, st);
+                pn.Rows.Add(new PanelRow { By = (OpId)drv, Slot = -1, I = v, Verb = v.Name, Lock = lk, Reason = lk.ok ? "" : ShortOf(v.Order, lk) ?? lk.why });
+            }
+        }
+
+        /// <summary>Brief 067 C2 (Glyph): the group Board's pill: one number, the slowest doer's walk + act (Board 1 s, 4 s carrying), $0, 0 T, no
+        /// Alert; a copy (the panel's own rows are untouched).</summary>
+        Intent GroupBoardIntent(ContextPlan plan, int way, List<int> doers)
+        {
+            var i0 = plan.Row(way).I; int worst = 0;
+            foreach (var k in doers) { var r = RowFor(plan, way, k); if (r?.I == null) continue; int t = (int)ContextRank.Num(r.I.Time) + Math.Max(0, r.I.WalkS); if (t > worst) worst = t; }
+            return new Intent { Order = i0.Order, Slot = i0.Slot, Label = i0.Label, Name = i0.Name, Lead = i0.Lead, Does = i0.Does, Time = $"{worst} s", Usd = i0.Usd, Trail = i0.Trail, Alert = i0.Alert, Outcome = i0.Outcome, WalkS = 0 };
+        }
+
+        /// <summary>Brief 067 C: the car's one obvious way for the hold and the pill: Board while a selected agent is still outside (every one who
+        /// can: DoersOf), then Go once Vale is aboard (the win; Go without him is a withdraw and never the obvious way), else Drive to the first
+        /// other stand. -1 when none is open (the pill then shows the lock).</summary>
+        int CarMainWay(ContextPlan plan)
+        {
+            // Glyph 067 C5c: Board while a selected agent is outside and able (every one: DoersOf); else Drive when exactly one stand is open, Vale
+            // is not aboard and the car is free; else nothing (a click opens the ring: with two stands open the ring decides). Go is never a hold.
+            int b = -1, d = -1, drives = 0;
+            foreach (var w in plan.Choice.Order)
+            {
+                var r = plan.Row(w); if (r?.Available != true) continue; var o = r.I?.Order; if (o == null) continue;
+                if (o.Do == "board" && b < 0 && plan.Givers[w].Exists(x => Selected[(int)x])) b = w;
+                if (o.Do == "drive-car") { drives++; if (d < 0) d = w; }
+            }
+            if (b >= 0) return b;
+            return drives == 1 && Game.Vale != ValeAt.Car ? d : -1;
+        }
+
+        /// <summary>Brief 067 C4 (Glyph): after a squad Board, each selected agent it did not take (but one already aboard) says why on its portrait,
+        /// the why chip: the cause's own icon and two words for 3 s (WhyChipOf).</summary>
+        void BoardRefusals(ContextPlan plan, List<int> given)
+        {
+            if (plan?.Pn == null) return;
+            for (int k = 0; k < 4; k++)
+            {
+                if (!Selected[k] || given.Contains(k) || Game.Ops[k].InCar) continue;
+                var lk = BoardLock((OpId)k); if (lk.ok) continue;
+                boardRefused[k] = lk.code ?? ""; boardRefusedAt[k] = Time.unscaledTime; BoardRefused++;
+            }
+        }
+        readonly string[] boardRefused = { "", "", "", "" }; readonly float[] boardRefusedAt = { -99f, -99f, -99f, -99f };
+
+        /// <summary>Brief 067 C4 (Glyph): agent k's why chip now: the cause's kit icon and two words (Fable's less.done.board.&lt;code&gt;, else
+        /// less.done.fire.&lt;code&gt; for a squad fire refusal), the newest refusal within FireRefusalS (3 s, faded over 0.3 s after); ("", "", 0)
+        /// when none, or when the agent has had an order since (the busy chip takes the slot).</summary>
+        public (string icon, string words, float alpha) WhyChipOf(int k)
+        {
+            if (Game == null || k < 0 || k > 3) return ("", "", 0f);
+            float now = Time.unscaledTime, ab = now - boardRefusedAt[k], af = now - fireRefusedAt[k];
+            bool board = boardRefused[k].Length > 0 && ab < FireRefusalS + 0.3f, fire = fireRefused[k].Length > 0 && af < FireRefusalS + 0.3f;
+            if (!board && !fire) return ("", "", 0f);
+            bool useBoard = board && (!fire || ab <= af); string code = useBoard ? boardRefused[k] : fireRefused[k]; float age = useBoard ? ab : af;
+            var op = Game.Ops[k]; if (op.InCar || op.Busy != null || op.Act != null || pending[k] != null) return ("", "", 0f);
+            string words = useBoard ? Text?.DoneWord("board." + code, null) ?? BoardWhyWords(code) : FireRefusalWord(k) is { Length: > 0 } fw ? fw : Text?.DoneWord("fire." + code, null) ?? code.Replace('-', ' ');
+            string icon = code switch { "agent-down" => "s_downed", "enforcer-inside" => "s_inside", "already-carrying" or "fire-carrying" or "fire-carrying-vale" or "carry-vale" => "s_carrying", "board-tethered" => "s_looping", "board-running" => "run", _ => "refused" };
+            return (icon, words, Mathf.Clamp01((FireRefusalS + 0.3f - age) / 0.3f));
+        }
+        /// <summary>Glyph's words for Fable (less.done.board.*), the host's until text.json carries them.</summary>
+        static string BoardWhyWords(string code) => code switch { "agent-down" => "down", "enforcer-inside" => "inside", "board-running" => "stop first", "already-carrying" => "hands full", "board-tethered" => "looping", _ => code.Replace('-', ' ') };
+
+        /// <summary>The proof reads them: squad Boards given (every selected agent who could), and the refusals said.</summary>
+        public int SquadBoards { get; private set; }
+        public int BoardRefused { get; private set; }
 
         /// <summary>A right click on the car with more than one agent selected boards each of them (brief 018 §2: "boards each op in turn"); the
         /// ones that can't say why. True when it acted.</summary>
