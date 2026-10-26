@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.29.0, 2026-10-26)
+## Open for Sky (as of v0.30.0, 2026-10-26)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -35,6 +35,10 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.30.0 (2026-10-26; briefs 066 and 071)
+- Sky, 2026-10-26 (brief 066): the height cap, "yes". Datum's plan 0.4.0: every area within 150 m of a mission's site at 3–4 storeys (16.8–20.4 m), the café a 4-storey corner at 20.4 m, the Records Office the one tall landmark, the tall city as backdrop, the 24 m concourse line the edge of the play streets (§09, §10 occlusion and skyline, §14 Vela, §15). Main's call: no hand pin for rocket-west/18 and /20 (systems > scripts). Open: the café's fourth storey hides the getaway bay at yaw 210 (Vantage); a 3-storey café shows it.
+- Sky, 2026-10-26 (brief 071): the split getaway, option A: on the pickup way the Enforcer drives Vale off in Vale's car from the service bay and the other three escape in the cell's car; two Go's; the win is fixed when Vale's car leaves. Main's default, Sky may overturn it: the three left behind are captured while the rivals stand. Motive's drafts (briefs/071/motive/rules.md) in §01, §06, §07, §08, §14. Built after engine 0.35, behind getaway.split. Open for Motive: "once every op is down … the mission fails" against cell-down failing only while Vale is on the map; the public fight's judging with two cars; §13 T11.
 
 ## v0.29.0 (2026-10-26; Sky's correction on brief 039)
 - Sky, 2026-10-26: "don't think I agreed to the special moves at this stage of the dev process. Saw it, but never agreed fully as it is. lot of logic to add to deal with". v0.28.0 over-read "up to you" (main's reading). Agreed: option B, cover and pin, and the one-input controls (F draws and holsters, a right hold sets the focus, sticky focus). Not agreed: the one move each (Mark, Talk down, Steam, Covering fire), so calls (b) and (c) fall with them. The moves leave the GDD (§03, §06, §10, §14) and go to briefs/parked.md as proposed, not agreed; engine 0.35.1 turns them off.
