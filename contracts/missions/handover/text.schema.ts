@@ -268,7 +268,6 @@ export const Less = z.strictObject({
   }),
   briefing: z.strictObject({
     rule: z.string().min(1), goal: Short(32),
-    job: z.record(z.enum(AGENTS), Short(10)).describe('brief 062 (the briefing on the street): the dim word under each face on the cell strip, beside the agent\'s name (names.speakers): what that agent works on, one word, a noun'),
     begin: Short(12).describe('brief 062: the light-line item that starts the mission (always focused; Space begins)'),
     target: Short(12).describe('brief 062: the header of the file card'), fact: Short(12).describe('brief 062: the one fact on the file card, beside the take icon'),
     office: Short(24).describe('brief 062: the tag over the Office canopy'),

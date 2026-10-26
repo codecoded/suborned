@@ -54,6 +54,14 @@ namespace Suborned.Play
         /// <summary>The status pill's marks (briefing.timeline): m:ss, label, and whether the cell knows it before it happens.</summary>
         public readonly List<(string at, string label, bool known)> Timeline = new();
         public readonly Dictionary<string, string> Cell = new(), Speakers = new(), TargetNames = new(), TargetAbout = new();
+        /// <summary>Brief 070: briefing.hints by way id ("front-door": "Front door: Inez and the door guard are close.").</summary>
+        public readonly Dictionary<string, string> HintBy = new();
+        /// <summary>Brief 070 (Fable's briefing.page): the target's second fact, each way's `when` plate and second sentence, the ending's line,
+        /// the clock's stations (m:ss of briefing.timeline marks) and one line per face.</summary>
+        public string PageTarget = "", PageEnding = "";
+        public readonly Dictionary<string, (string when, string line)> PageWays = new();
+        public readonly List<string> PageClock = new();
+        public readonly Dictionary<string, string> PageCell = new();
         /// <summary>Brief 031: the briefing's Heat word by band (briefing.heat: unknown, noticed, wanted, infamous).</summary>
         public readonly Dictionary<string, string> Heat = new();
         public readonly Dictionary<string, ActionText> Actions = new();
@@ -156,7 +164,14 @@ namespace Suborned.Play
                 if (b.Opt("fails") is JNode fs) foreach (var kv in fs.Entries) Fails.Add((kv.Key, kv.Value.Str()));
                 if (b.Opt("clock") is JNode ck) { ClockLine = S(ck, "line") ?? ""; Close = S(ck, "close") ?? Close; }
                 if (b.Opt("purse") is JNode pu) PurseLine = S(pu, "line") ?? "";
-                if (b.Opt("hints") is JNode h) foreach (var kv in h.Entries) Hints.Add(kv.Value.Str());
+                if (b.Opt("hints") is JNode h) foreach (var kv in h.Entries) { Hints.Add(kv.Value.Str()); HintBy[kv.Key] = kv.Value.Str(); }
+                if (b.Opt("page") is JNode pg) // brief 070 (Fable): the briefing page's own lines
+                {
+                    PageTarget = S(pg, "target") ?? ""; PageEnding = S(pg, "ending") ?? "";
+                    if (pg.Opt("ways") is JNode pw) foreach (var kv in pw.Entries) PageWays[kv.Key] = (S(kv.Value, "when") ?? "", S(kv.Value, "line") ?? "");
+                    if (pg.Opt("clock") is JNode pc) PageClock.AddRange(pc.Strs());
+                    if (pg.Opt("cell") is JNode pce) foreach (var kv in pce.Entries) PageCell[kv.Key] = kv.Value.Str();
+                }
                 if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) { Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool())); if (S(x, "short") is string sh) TimelineShort[x["at"].Str()] = sh; }
                 if (b.Opt("cell") is JNode ce) foreach (var kv in ce.Entries) Cell[kv.Key] = kv.Value.Str();
                 if (b.Opt("heat") is JNode ht) foreach (var kv in ht.Entries) if (kv.Value.Kind == JKind.Str) Heat[kv.Key] = kv.Value.Str(); // brief 031
@@ -254,7 +269,7 @@ namespace Suborned.Play
                 }
         }
 
-        /// <summary>Brief 062 B (Fable's less.briefing): the briefing screen's labels flattened ("target", "fact", "office", "ways.pickup", "job.tech", "begin").</summary>
+        /// <summary>Brief 062 B (Fable's less.briefing): the briefing's labels flattened ("target", "ways.pickup", "begin"; brief 070 retired "day", "night" and "job.*").</summary>
         public readonly Dictionary<string, string> BriefWords = new();
         void BriefFlat(JNode n, string pre) { foreach (var kv in n.Entries) { if (kv.Value.Kind == JKind.Obj) BriefFlat(kv.Value, pre + kv.Key + "."); else if (kv.Value.Kind == JKind.Str) BriefWords[pre + kv.Key] = kv.Value.Str(); } }
         /// <summary>A briefing label by key, else the fallback.</summary>
@@ -287,7 +302,7 @@ namespace Suborned.Play
                 if (go.Opt("why") is JNode gw) foreach (var kv in gw.Entries) GoWhy[kv.Key] = kv.Value.Str();
                 if (go.Opt("fate") is JNode gf) foreach (var kv in gf.Entries) GoFate[kv.Key] = kv.Value.Str();
             } // the steps' `when` is prose: HandoverHost.ObjectiveKey keeps it
-            if (l.Opt("briefing") is JNode br) { BriefGoal = S(br, "goal") ?? BriefGoal; BriefFlat(br, ""); } // brief 062 B (Fable): the briefing's labels, "target", "ways.front-door", "job.scout"
+            if (l.Opt("briefing") is JNode br) { BriefGoal = S(br, "goal") ?? BriefGoal; BriefFlat(br, ""); } // brief 062 B (Fable): the briefing's labels, "target", "ways.front-door", "begin"
             if (l.Opt("end") is JNode en) { EndWin = S(en, "win") ?? EndWin; EndWithdraw = S(en, "withdraw") ?? EndWithdraw; if (en.Opt("fail") is JNode ef) foreach (var kv in ef.Entries) EndFail[kv.Key] = kv.Value.Str(); }
             if (l.Opt("feed") is JNode fd) { FeedMax = (int)F(fd, "maxOnScreen", FeedMax); FeedS = F(fd, "seconds", FeedS); FeedDedupeS = F(fd, "dedupeSeconds", FeedDedupeS); BubbleMax = (int)F(fd, "bubblesAtOnce", BubbleMax); BubbleS = F(fd, "bubbleSeconds", BubbleS); CityBeats = (int)F(fd, "cityBeats", CityBeats); }
             if (l.Opt("hint") is JNode hn) { HintShowS = F(hn, "showSeconds", HintShowS); HintReturnS = F(hn, "returnSeconds", HintReturnS); HintMaxShows = (int)F(hn, "maxShows", HintMaxShows); if (hn.Opt("firstAct") is JNode fa && fa.Kind == JKind.Str) FirstActHint = fa.Str(); }
@@ -498,7 +513,7 @@ namespace Suborned.Play
                 Title = "The Handover",
                 Objective = "Take Councillor Vale alive and get him into your getaway car.",
                 Win = "Vale, alive, in your getaway car.",
-                ClockLine = "Clock 0:00 is 17:24:30. The chime is at 5:30, Vale leaves at 5:50, the district closes at 8:30.",
+                ClockLine = "Handover chime at 5:30. Vale's driver takes him away at 6:10, or 8:30 if turned.", // brief 070: Fable's briefing.clock.line, true whether or not the driver is turned
                 PurseLine = "$100,000 for the whole job. Every payment can be traced.",
                 Tracker = "Take Vale alive to the getaway car · closes {close}",
             };

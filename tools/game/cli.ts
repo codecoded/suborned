@@ -164,7 +164,19 @@ async function build(): Promise<boolean> {
   recordInputs();
   const j = JSON.parse(readFileSync(STAMP, 'utf8'));
   console.log(`game: built ${j.version ? `Build ${j.version} (${j.recording}, sim ${j.sim}, ${j.sha}${j.dirty ? '+' : ''}) ` : ''}in ${j.seconds} s, engine ${j.engine}; ${j.post}`);
+  briefStills();
   return true;
+}
+
+/** Brief 070: the briefing page's stills, captured by the new player from a replay of the mission's reference routes (tools/game/briefstills.ts), put
+ *  into the app's StreamingAssets/missions/<mission>/stills before any proof runs; the app is signed ad hoc again. A failure is reported, not fatal:
+ *  the page then shows its pins on blank prints, and the proof's briefing state says how many stills it read. */
+function briefStills(): boolean {
+  console.log('game: the briefing\'s stills (tools/game/briefstills.ts; log out/build/play/stills/handover/player.log)…');
+  const r = spawnSync(process.execPath, [join(ROOT, 'tools/game/briefstills.ts'), '--app', APP, '--out', join(DIR, 'stills', 'handover')], { cwd: ROOT, encoding: 'utf8', timeout: 900000 });
+  for (const l of (r.stdout ?? '').trim().split('\n').filter(Boolean)) console.log(`game: ${l}`);
+  if (r.status !== 0) console.error(`game: the briefing's stills FAILED (exit ${r.status}): ${(r.stderr ?? '').trim().split('\n').slice(-4).join(' | ')}`);
+  return r.status === 0;
 }
 
 /** The proof: -runScenarios (headless, the Editor's SimCheck), then -gameProof (the briefing, play, the menu; frame times; Quit). */

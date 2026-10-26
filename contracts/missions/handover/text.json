@@ -1650,9 +1650,8 @@
    "showSeconds": 6
   },
   "briefing": {
-   "rule": "Brief 062 (Sky, 2026-10-25: pick B, on the street). The hook and the objective are the only two lines of story and live in brief.json (hook, dossier.objective). The rest is labels: the file card's header and one fact, the Office tag, the way names, the cell strip's job word under each face (the agent's name is names.speakers), and Begin. Brief 070 (Sky, 2026-10-26): Day and Night are retired (night is not a toggle); the page's sentences are briefing.page. The goal line shows once play starts. The sentences, the fails and the two ways in are Alt.",
+   "rule": "Brief 062 (Sky, 2026-10-25: pick B, on the street). The hook and the objective are the only two lines of story and live in brief.json (hook, dossier.objective). The rest is labels: the file card's header and one fact, the Office tag, the way names, and Begin. Brief 070 (Sky, 2026-10-26): Day and Night are retired (night is not a toggle); the page's sentences are briefing.page. The cell strip's one-word jobs (job) are retired with the street overlay: the page says one line per face (briefing.page.cell). The goal line shows once play starts. The sentences, the fails and the two ways in are Alt.",
    "goal": "Take [Vale] alive to the [car].",
-   "job": {"scout": "Eyes", "fixer": "People", "tech": "Machines", "enforcer": "Force"},
    "begin": "Begin",
    "target": "Target", "fact": "Alive", "office": "Records Office",
    "ways": {"front-door": "Front door", "pickup": "Pickup"}

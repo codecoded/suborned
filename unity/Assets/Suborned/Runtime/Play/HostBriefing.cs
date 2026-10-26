@@ -8,10 +8,9 @@ using UnityEngine.InputSystem;
 
 namespace Suborned.Play
 {
-    /// <summary>Brief 062 B, "on the street" (Sky 2026-10-25: "Your recommendation seem good"; Glyph's spec, briefs/062-briefing-and-start.md
-    /// §4, §5): the briefing is the game. The run opens with the play camera on the mission's briefing frame (brief.camera, else the pickup
-    /// as the board's `overhead-pickup`: the Office door right of centre, the opening yaw, play zoom), the briefing screen over the live,
-    /// paused street (Briefing.cs). Begin starts the start sequence: 0 to 0.3 s the screen lifts away; 0.3 to 3.3 s the camera glides to the
+    /// <summary>Brief 070 (GDD v0.27.0 §10 briefing), after brief 062 B's start: the run opens with the briefing page over the paused street and the
+    /// play camera standing at the target's door (brief.target.at, the quarter step facing its outward side, play zoom), hidden under the page
+    /// (Briefing.cs). Begin starts the start sequence: 0 to 0.3 s the page lifts away onto that camera; 0.3 to 3.3 s the camera glides to the
     /// cell (eased in and out; any key or click lands it at once); 3.3 s the four ground rings pulse and the roster slides in (0.25 s); 3.6 s
     /// the clock bar fades in and the clock starts at 0:00, the goal line up. View only: the engine sees the clock start, as before.
     /// Scripts and proofs that call StartClock or SetPaused(false) skip the sequence and land the camera on the opening view at once.</summary>
@@ -48,8 +47,19 @@ namespace Suborned.Play
             if (Brief == null || !cam || !ShowBriefing) return;
             if (GameBoot.Automation && !BriefCamInAutomation) return; // proofs, shots and the bot keep the opening view after Begin (they assume it); the front-end proof turns it on
             TurnInit();
-            yawNow = yawFrom = yawTo = baseYaw + Brief.YawFromOpening; turnStart = -1f; cam.transform.rotation = Quaternion.Euler(pitch, yawNow, 0f);
+            yawNow = yawFrom = yawTo = baseYaw + BriefYaw(); turnStart = -1f; cam.transform.rotation = Quaternion.Euler(pitch, yawNow, 0f);
             LookAt(Brief.CameraAt); BriefCamOn = true;
+        }
+
+        /// <summary>Brief 070: the quarter step (from the opening yaw) whose view looks most squarely onto the target door's outward side (stills.json
+        /// targetDoor.normal, block frame); brief.camera.yaw without it.</summary>
+        float BriefYaw()
+        {
+            if (Brief.TargetNormal is not Vector2 n) return Brief.YawFromOpening;
+            var wn = new Vector3(frame.axisX.x * n.x + frame.axisY.x * n.y, 0f, frame.axisX.y * n.x + frame.axisY.y * n.y).normalized;
+            float best = 0f, bestDot = float.NegativeInfinity;
+            for (int k = 0; k < 4; k++) { float y = (baseYaw + 90f * k) * Mathf.Deg2Rad; float d = Vector3.Dot(new Vector3(Mathf.Sin(y), 0f, Mathf.Cos(y)), -wn); if (d > bestDot + 1e-4f) { bestDot = d; best = 90f * k; } }
+            return best;
         }
 
         /// <summary>The camera from the briefing frame to the opening view at once (a script's StartClock, Esc or B closing the briefing).</summary>
@@ -96,27 +106,30 @@ namespace Suborned.Play
         public void StartSeek(float t) { if (StartT < 0f) return; StartT = Mathf.Max(0f, t); ApplyGlide(); if (StartT >= BriefPlayAt) { StartT = -1f; BriefCamOn = false; StartClock(); SequencePlayedAt = Time.unscaledTime; } }
     }
 
-    /// <summary>Brief 062 B: what the briefing shows, read from the mission (nothing hand-authored for the screen): the title, hook and
-    /// objective from brief.json (variants[pick]); the target from the mission's roles (brief.target, else the councillor) with its file
-    /// photograph (Forma's portrait; the npc badge until it lands); the ways from mission brief.ways[] (Waymark), else derived from the
-    /// roles, ties and windows; the clock marks from brief.clock[], else the timeline (0:00, the chime, the end); the camera from
-    /// brief.camera, else the pickup.
-    /// The shape agreed by Glyph, Fable and Waymark (briefs/062-briefing-and-start.md "Portraits and ids"), in brief.json next to variants
-    /// (mission.json `brief` is read too): ways[]: { "id": "front-door", "contact": "waitress", "steps": ["badges/signal_guard", "enter"] };
-    /// the name is text.json less.briefing.ways[id]; the contact's face is portraits/face_&lt;contact&gt; in a Cameo; a step is a kit single
-    /// (icons/singles/&lt;name&gt;) or a badges/ path; "at" (optional: "door", "car" or a place id) is where its leader goes (front-door: the
-    /// door, pickup: the car). clock[]: { "id": "start" | "chime" | "over", "at": "5:30" (optional: from the timeline by id), "icon", "lit" }.
-    /// camera: { "place": "d:Meet driver", "offsetCm": [500, -500], "yaw": 0 } (yaw from the opening view). target: a role id. The file
-    /// photograph is portraits/card_&lt;target&gt; (Glyph's duotone), the npc badge when it is missing.</summary>
+    /// <summary>Brief 070 (GDD v0.27.0 §10 briefing; Glyph's mock briefs/070/glyph): what the briefing page shows, read from the mission's data, nothing
+    /// hand-authored for the screen. brief.json: the title, place and time, variants[pick] hook and objective, the target (role, at) and the ways in
+    /// (id, contact). text.json: the way names (less.briefing.ways), the first sentence of each way (briefing.hints, after "Name: "), and the page's
+    /// own lines (briefing.page: the target's second fact, each way's `when` and second sentence, the ending, the clock's stations, one line per
+    /// face); each station's label from briefing.timeline; the stills' captions from targets.&lt;key&gt;.name; Heat from briefing.heat. The stills, their
+    /// pins and the plan come from the build's stills folder (tools/game/briefstills.ts: StreamingAssets/missions/&lt;m&gt;/stills/stills.json and one
+    /// JPEG per pin; in the Editor out/build/play/stills/&lt;m&gt;/). Begin lifts the page onto the camera at the target's door (brief.target.at,
+    /// the quarter step facing its outward side), then the glide to the cell.</summary>
     public sealed class BriefScreen
     {
-        public sealed class Way { public string Name = ""; public readonly List<string> Steps = new(); public Vector3? At; }
-        public sealed class Mark { public string At = "", Icon = ""; public bool Lit; public float S; }
-        public string Title = "", Hook = "", Objective = "", TargetRole = "councillor", TargetName = "", TargetFact = "Alive", TargetPhoto = "", TargetBadge = "badges/npc_councillor";
-        public Vector3? TargetAt, OfficeAt; public string OfficeName = "Records Office";
-        public readonly List<Way> Ways = new(); public readonly List<Mark> Clock = new();
-        public float EndS = 510f; public Vector3 CameraAt; public float YawFromOpening;
-        /// <summary>Where each part came from ("mission brief.ways", "derived from roles", ...): the proof logs it.</summary>
+        public sealed class Pin { public string Id = "", Way = "", N = "", Caption = "", File = ""; public Vector2 At; public Texture2D Still; }
+        public sealed class Way { public string Id = "", Name = "", When = ""; public readonly List<string> Lines = new(); public readonly List<Pin> Pins = new(); }
+        public sealed class Station { public string At = "", Label = ""; public bool Lit; public float S; }
+        public string Title = "", Place = "", Time = "", Hook = "", Objective = "", TargetRole = "councillor", TargetName = "", TargetFact = "", TargetFact2 = "", TargetPhoto = "", TargetBadge = "badges/npc_councillor";
+        public string Ending = "";
+        public Pin EndPin;
+        public Vector3? TargetAt; public Vector2? TargetNormal;
+        public readonly List<Way> Ways = new(); public readonly List<Station> Clock = new();
+        public readonly Dictionary<string, string> CellLines = new();
+        /// <summary>The plan (block metres, x south, y east): its bounds, the buildings (name, polygon), the bays and drives, the green and the water.</summary>
+        public Rect PlanBounds; public readonly List<(string name, Vector2[] poly)> PlanBuildings = new(); public readonly List<Vector2[]> PlanGround = new(), PlanGreen = new(), PlanWater = new();
+        public Vector3 CameraAt; public float YawFromOpening;
+        public int StillsFound, StillsWanted;
+        /// <summary>Where each part came from: the proof logs it.</summary>
         public readonly List<string> Sources = new();
 
         /// <summary>The mission's JSON file (contracts/missions/&lt;m&gt;/&lt;file&gt; in the Editor; StreamingAssets/missions/&lt;m&gt;/&lt;file&gt; in a build), or null.</summary>
@@ -125,93 +138,82 @@ namespace Suborned.Play
             string path = Application.isEditor ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "contracts", "missions", mission, file)) : Path.Combine(Application.streamingAssetsPath, "missions", mission, file);
             try { return File.Exists(path) ? JNode.Parse(File.ReadAllText(path), file) : null; } catch (Exception e) { Debug.LogWarning($"Briefing: {path}: {e.Message}"); return null; }
         }
+        /// <summary>The build's stills folder (tools/game/briefstills.ts): in the app's StreamingAssets, or the last build's out/ folder in the Editor.</summary>
+        public static string StillsDir(string mission = "handover") => Application.isEditor ? Path.GetFullPath(Path.Combine(Application.dataPath, "..", "..", "out", "build", "play", "stills", mission)) : Path.Combine(Application.streamingAssetsPath, "missions", mission, "stills");
 
         static string S(JNode n, string k) => n?.Opt(k) is JNode v && v.Kind == JKind.Str ? v.Str() : null;
         static float Secs(string mss) { if (string.IsNullOrEmpty(mss)) return -1f; var p = mss.Split(':'); return p.Length == 2 && int.TryParse(p[0], out var m) && float.TryParse(p[1], System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var s) ? m * 60f + s : -1f; }
+        static float F(JNode n) => n != null && n.Kind == JKind.Num && float.TryParse(n.NumberText, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out var v) ? v : 0f;
+        static Vector2 V(JNode n) => n != null && n.Kind == JKind.Arr && n.Items.Count == 2 ? new Vector2(F(n.Items[0]), F(n.Items[1])) : Vector2.zero;
+        static Vector2[] Poly(JNode n) { var l = new List<Vector2>(); if (n != null && n.Kind == JKind.Arr) foreach (var x in n.Items) l.Add(V(x)); return l.ToArray(); }
+        static string Cap1(string s) => string.IsNullOrEmpty(s) ? "" : char.ToUpperInvariant(s[0]) + s[1..];
 
         public static BriefScreen Load(HandoverHost h)
         {
-            var b = new BriefScreen(); var g = h.Game; var site = g.S;
+            var b = new BriefScreen(); var g = h.Game; var site = g.S; var tx = h.Text;
             var fb = FrontEnd.LoadBrief(); var v = fb.Picked;
-            b.Title = (fb.title ?? "").ToUpperInvariant(); b.Hook = v.hook ?? ""; b.Objective = v.dossier?.objective ?? "";
+            b.Title = fb.title ?? ""; b.Place = fb.place ?? ""; b.Time = fb.time ?? ""; b.Hook = v.hook ?? ""; b.Objective = v.dossier?.objective ?? "";
             var mission = MissionFile("mission.json"); var bj = MissionFile("brief.json");
             JNode Brief(string k) => bj?.Opt(k) ?? mission?.Opt("brief")?.Opt(k);
-            // the target: brief.target, else the councillor; its name from the dossier's target line ("Councillor Vale. Holds…"), else the text's
-            // brief.target: a role id, or (Waymark, 0.2.123) { "role", "at" }: "at" is where the target leader ends (Glyph's N1: Vale leaves by the official
-            // entrance under the canopy, not the guard's public door)
+            // the target: brief.target { role, at }; the name and first fact from the dossier's target line ("Councillor Vale. Holds the file on you.")
             var tnode = Brief("target"); string targetAt = tnode != null && tnode.Kind != JKind.Str ? S(tnode, "at") : null;
             b.TargetRole = tnode is JNode tr && tr.Kind == JKind.Str ? tr.Str() : S(tnode, "role") ?? "councillor";
             string dt = v.dossier?.target ?? ""; int dot = dt.IndexOf('.');
-            b.TargetName = dot > 0 ? dt[..dot] : h.Text?.TargetName(b.TargetRole, "Vale") ?? "Vale";
+            b.TargetName = dot > 0 ? dt[..dot] : tx?.TargetName(b.TargetRole, "Vale") ?? "Vale";
+            b.TargetFact = dot > 0 ? dt[(dot + 1)..].Trim() : ""; b.TargetFact2 = tx?.PageTarget ?? "";
             b.TargetPhoto = $"portraits/card_{b.TargetRole}"; b.TargetBadge = HudModel.PersonBadge(b.TargetRole);
-            b.TargetFact = h.Text?.BriefWord("fact", "Alive") ?? "Alive"; b.OfficeName = h.Text?.BriefWord("office", "Records Office") ?? "Records Office";
             Vector3 W(Pt p) => h.frame.World(p);
-            Vector3? Place(string id) { try { return id == "door" ? W(site.At(site.GuardPost)) : id == "car" ? W(g.CarPos()) : site.HasPlace(id) ? W(site.At(id)) : site.HasPlace("d:" + id) ? W(site.At("d:" + id)) : null; } catch (Exception) { return null; } }
-            // Glyph's N1: the Target leader and the Office tag (over the canopy) at brief.target.at; the Front door way keeps "door" (the guard's post)
-            b.TargetAt = (targetAt != null ? Place(targetAt) : null) ?? Place("door"); b.OfficeAt = b.TargetAt;
-            b.Sources.Add(targetAt != null ? $"target at: brief.target.at {targetAt}{(Place(targetAt).HasValue ? "" : " (no such place: the door)")}" : "target at: the door (brief.target.at absent)");
-            // the ways
-            string WayName(string id) => h.Text?.BriefWord("ways." + id, null) ?? (id == "front-door" ? "Front door" : id == "pickup" ? "Pickup" : id);
-            if (Brief("ways") is JNode wl && wl.Kind == JKind.Arr)
+            Vector3? Place(string id) { try { return site.HasPlace(id) ? W(site.At(id)) : site.HasPlace("d:" + id) ? W(site.At("d:" + id)) : null; } catch (Exception) { return null; } }
+            b.TargetAt = (targetAt != null ? Place(targetAt) : null) ?? (site.HasPlace(site.GuardPost) ? W(site.At(site.GuardPost)) : null);
+            b.Sources.Add(targetAt != null ? $"target at: brief.target.at {targetAt}" : "target at: the door (brief.target.at absent)");
+            // the stills, their pins and the plan (the build's stills folder)
+            var dir = StillsDir(); JNode st = null;
+            try { var f = Path.Combine(dir, "stills.json"); if (File.Exists(f)) st = JNode.Parse(File.ReadAllText(f), "stills.json"); } catch (Exception e) { Debug.LogWarning($"Briefing: {dir}/stills.json: {e.Message}"); }
+            var pins = new List<Pin>();
+            if (st != null)
             {
+                foreach (var p in st["pins"].Items)
+                {
+                    var pin = new Pin { Id = S(p, "id") ?? "", Way = S(p, "way") ?? "", N = S(p, "n") ?? "", File = S(p, "file") ?? "", At = V(p.Opt("at")) };
+                    var key = S(p, "text") ?? ""; pin.Caption = key.Length > 0 && tx != null && tx.TargetNames.TryGetValue(key, out var nm) ? Cap1(nm) : "";
+                    var file = Path.Combine(dir, pin.File); b.StillsWanted++;
+                    if (pin.File.Length > 0 && File.Exists(file)) { var t = new Texture2D(2, 2, TextureFormat.RGB24, false) { name = "brief-still " + pin.Id, wrapMode = TextureWrapMode.Clamp }; if (t.LoadImage(File.ReadAllBytes(file), true)) { pin.Still = t; b.StillsFound++; } }
+                    pins.Add(pin);
+                }
+                if (st.Opt("plan") is JNode pl)
+                {
+                    var bd = pl["bounds"].Items; b.PlanBounds = Rect.MinMaxRect(F(bd[0]), F(bd[1]), F(bd[2]), F(bd[3]));
+                    foreach (var x in pl["buildings"].Items) b.PlanBuildings.Add((S(x, "name") ?? "", Poly(x.Opt("polygon"))));
+                    foreach (var (k, into) in new[] { ("ground", b.PlanGround), ("green", b.PlanGreen), ("water", b.PlanWater) }) if (pl.Opt(k) is JNode arr) foreach (var x in arr.Items) into.Add(Poly(x));
+                }
+                if (st.Opt("targetDoor") is JNode td && td.Kind == JKind.Obj && td.Opt("normal") is JNode tn && tn.Kind == JKind.Arr) b.TargetNormal = V(tn);
+                b.Sources.Add($"stills: {b.StillsFound}/{b.StillsWanted} from {dir}");
+            }
+            else b.Sources.Add($"stills: none ({dir}/stills.json absent: bun tools/game/briefstills.ts after the build)");
+            // the ways: brief.json ways[] (id) → the name (less.briefing.ways), the two sentences (briefing.hints after "Name: ", briefing.page.ways.<id>.line), the plate (when), the pins
+            if (Brief("ways") is JNode wl && wl.Kind == JKind.Arr)
                 foreach (var w in wl.Items)
                 {
-                    string id = S(w, "id") ?? ""; var way = new Way { Name = S(w, "name") ?? WayName(id) }; if (S(w, "contact") is string c) way.Steps.Add("face:" + c);
-                    if (w.Opt("steps") is JNode st && st.Kind == JKind.Arr) foreach (var x in st.Items) if (x.Kind == JKind.Str && way.Steps.Count < 3) way.Steps.Add(x.Str());
-                    way.At = Place(S(w, "at") ?? (id == "pickup" ? "car" : "door")); b.Ways.Add(way);
+                    string id = S(w, "id") ?? ""; var way = new Way { Id = id, Name = tx?.BriefWord("ways." + id, null) ?? Cap1(id.Replace('-', ' ')) };
+                    if (tx != null && tx.HintBy.TryGetValue(id, out var hint)) { int c = hint.IndexOf(": ", StringComparison.Ordinal); way.Lines.Add(Cap1(c >= 0 ? hint[(c + 2)..] : hint)); }
+                    if (tx != null && tx.PageWays.TryGetValue(id, out var pw)) { way.When = pw.when; if (pw.line.Length > 0) way.Lines.Add(pw.line); }
+                    foreach (var p in pins) if (p.Way == id) way.Pins.Add(p);
+                    b.Ways.Add(way);
                 }
-                b.Sources.Add(bj?.Opt("ways") != null ? "ways: brief.json ways" : "ways: mission brief.ways");
-            }
-            else
-            {   // derived: each window's role and the role tied to it (route A: Inez, her lover the guard, the door); the official driver's pickup
-                var roles = new Dictionary<string, JNode>(); if (mission?.Opt("roles") is JNode rl) foreach (var r in rl.Items) if (S(r, "id") is string id) roles[id] = r;
-                if (mission?.Opt("windows") is JNode ws)
-                    foreach (var w in ws.Items)
-                    {
-                        string role = S(w, "role") ?? ""; string contact = null;
-                        foreach (var kv in roles) if (kv.Value.Opt("tiedTo") is JNode tt) foreach (var t in tt.Items) if (S(t, "role") == role) contact = kv.Key;
-                        var way = new Way { Name = WayName(S(w, "id") ?? ""), At = Place("door") };
-                        if (contact != null) way.Steps.Add("face:" + contact); way.Steps.Add(HudModel.PersonBadge(role)); way.Steps.Add("enter");
-                        b.Ways.Add(way);
-                    }
-                if (roles.ContainsKey("driver") && roles.ContainsKey(b.TargetRole)) { var way = new Way { Name = WayName("pickup"), At = Place("car") }; way.Steps.Add("face:driver"); way.Steps.Add("car"); way.Steps.Add("take"); b.Ways.Add(way); }
-                b.Sources.Add("ways: derived from mission roles and windows (brief.ways absent)");
-            }
-            // the clock
-            b.EndS = Mathf.Max(60f, g.R != null ? CloseS(h) : 510f);
-            var tl = new List<(float s, string at, string what)>();
-            if (mission?.Opt("timeline") is JNode tln) foreach (var t in tln.Items) { var at = S(t, "at"); float s = Secs(at); if (s >= 0f) tl.Add((s, at, S(t, "what") ?? "")); }
-            string ById(string id) => tl.Count == 0 ? "" : id == "start" ? tl[0].at : id == "over" ? tl[tl.Count - 1].at : id == "chime" ? tl.Find(x => x.what.Contains("chime")).at ?? "" : "";
-            if (Brief("clock") is JNode cl && cl.Kind == JKind.Arr)
-            {
-                foreach (var c in cl.Items) { string id = S(c, "id") ?? ""; var mk = new Mark { At = S(c, "at") ?? ById(id), Icon = S(c, "icon") ?? "p_time", Lit = c.Opt("lit") is JNode lt && lt.Kind == JKind.Bool ? lt.Bool() : id == "chime" }; mk.S = Secs(mk.At); if (mk.S >= 0f) b.Clock.Add(mk); }
-                b.Sources.Add("clock: brief clock");
-            }
-            else
-            {
-                if (tl.Count > 0)
+            b.EndPin = pins.Find(p => p.Way.Length == 0); b.Ending = tx?.PageEnding ?? "";
+            // the clock: briefing.page.clock's stations, each worded by its briefing.timeline label; a station that names the target is lit
+            if (tx != null)
+                foreach (var at in tx.PageClock)
                 {
-                    b.Clock.Add(new Mark { At = tl[0].at, S = tl[0].s, Icon = "p_time" });
-                    var chime = tl.Find(x => x.what.Contains("chime")); if (chime.at != null) b.Clock.Add(new Mark { At = chime.at, S = chime.s, Icon = "enter", Lit = true });
-                    var last = tl[tl.Count - 1]; if (last.s > tl[0].s) b.Clock.Add(new Mark { At = last.at, S = last.s, Icon = "car" });
+                    var lab = tx.Timeline.Find(x => x.at == at).label ?? ""; float s = Secs(at); if (s < 0f) continue;
+                    b.Clock.Add(new Station { At = at, Label = lab, S = s, Lit = b.TargetName.Length > 0 && lab.Contains(b.TargetName.Split(' ')[^1]) });
                 }
-                b.Sources.Add("clock: derived from mission timeline (brief.clock absent)");
-            }
-            if (b.Clock.Count > 0) b.EndS = Mathf.Max(b.EndS, b.Clock[b.Clock.Count - 1].S);
-            // the camera: brief.camera, else the pickup (the board's overhead-pickup frame: 5 m on from the driver's meeting point)
-            Vector3? camAt = null;
-            if (Brief("camera") is JNode cm)
-            {
-                var p = S(cm, "place"); var off = cm.Opt("offsetCm") is JNode o && o.Kind == JKind.Arr && o.Items.Count == 2 ? new Pt(o.Items[0].Int(), o.Items[1].Int()) : new Pt(0, 0);
-                if (p != null && site.HasPlace(p)) { var a = site.At(p); camAt = W(new Pt(a.X + off.X, a.Y + off.Y)); }
-                if (cm.Opt("yaw") is JNode y && y.Kind == JKind.Num) b.YawFromOpening = y.Int();
-                b.Sources.Add("camera: mission brief.camera");
-            }
-            if (!camAt.HasValue && site.HasPlace("d:Meet driver")) { var md = site.At("d:Meet driver"); camAt = W(new Pt(md.X + 500, md.Y - 500)); b.Sources.Add("camera: the pickup (brief.camera absent)"); }
-            b.CameraAt = camAt ?? W(HandoverHost.OpeningFocus);
+            b.Sources.Add($"clock: briefing.page.clock ({b.Clock.Count} stations)");
+            if (tx != null) foreach (var kv in tx.PageCell) b.CellLines[kv.Key] = kv.Value;
+            // the camera after Begin lifts the page: the target's door at the quarter step facing its outward side (the page's camera); else brief.camera
+            if (Brief("camera") is JNode cm && cm.Opt("yaw") is JNode y && y.Kind == JKind.Num) b.YawFromOpening = y.Int();
+            b.CameraAt = b.TargetAt ?? W(HandoverHost.OpeningFocus);
             return b;
         }
-
-        static float CloseS(HandoverHost h) { var c = h.Text?.Close ?? "8:30"; float s = Secs(c); return s > 0f ? s : 510f; }
     }
 }

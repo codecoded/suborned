@@ -94,7 +94,6 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
   // briefs 058, 059, 062 (GDD v0.25.0): the briefing's labels, and the words waiting for the engine (`pending`), held to the same limits as the live ones
-  for (const [k, x] of Object.entries(t.less.briefing.job)) push(`less.briefing.job.${k}`, x, false, 10);
   for (const k of ['begin', 'target', 'fact', 'office'] as const) push(`less.briefing.${k}`, t.less.briefing[k], false, 24);
   for (const [k, x] of Object.entries(t.less.briefing.ways)) push(`less.briefing.ways.${k}`, x, false, 16);
   const pe = t.pending;
@@ -1607,10 +1606,9 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
       expect(l.short.length, c).toBeLessThan(l.line.length); expect(/\{(m|usd|tick)\}/.test(l.short), c).toBe(/\{(m|usd|tick)\}/.test(l.line));
     }
   });
-  test('the briefing (brief 062): a one-word job under each face, Begin, and the file card\'s labels', () => {
+  test('the briefing (brief 062): Begin and the file card\'s labels; the cell strip\'s jobs and Day / Night retired (brief 070)', () => {
     const b = L.briefing;
-    expect(Object.keys(b.job).sort()).toEqual([...AGENTS].sort());
-    for (const [k, x] of Object.entries(b.job)) { expect(x.trim().split(/\s+/).length, k).toBe(1); expect(x, k).not.toMatch(GENDER); }
+    expect(b as Record<string, unknown>).not.toHaveProperty('job'); // brief 070: the page says one line per face (briefing.page.cell)
     expect([b.begin, b.target, b.fact, b.office]).toEqual(['Begin', 'Target', 'Alive', 'Records Office']);
     expect(b as Record<string, unknown>).not.toHaveProperty('day'); expect(b as Record<string, unknown>).not.toHaveProperty('night'); // brief 070 (Sky): night is not a toggle
     expect(Object.keys(b.ways).sort()).toEqual(['front-door', 'pickup']);

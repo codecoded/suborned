@@ -19,6 +19,9 @@ namespace Suborned.Play
         public string hover = ""; public bool mark = true;
         public string name = "", scriptPath = "", checkpoint = "", preset = "today", agent = "scout", face = "", focus = "", state = "rest", select = "", arm = "";
         public int tick, yaw = -1; public bool night, setNight, briefing, follow, hasAt, hud = true, hasPointer, intel;
+        /// <summary>Brief 070 (the briefing's stills, tools/game/briefstills.ts): `nocut` turns the play camera's architecture cut off for the capture; `doorN`
+        /// (a block-frame unit normal, x south, y east) with yaw -1 picks the quarter step that best faces that outward side.</summary>
+        public bool nocut; public float[] doorN = new float[0];
         public float atX, atY, zoom, px, py, settle = 0.35f, perf, clipSeconds; public int clipFps = 30, w = 1920, h = 1080; public bool jpg; public ShotPose pose = new ShotPose();
     }
     [Serializable] public sealed class ShotFile { public string schema = "", outDir = ""; public ShotSpec[] shots = new ShotSpec[0]; }
@@ -110,6 +113,8 @@ namespace Suborned.Play
                     h.ClearHover();
                     if (s.select.Length > 0) h.Select(Suborned.Sim.Op.Parse(s.select), false);
                     if (!s.pose.on) Camera_(h, s);
+                    if (fadeOff != null) { fadeOff.fade = fadeWas; fadeOff = null; }
+                    if (s.nocut && h.View && h.View.GetComponent<ArchitectureFade>() is ArchitectureFade af) { fadeOff = af; fadeWas = af.fade; af.fade = false; }
                     HudToolkit.ActMarkOff = !s.mark;
                     if (s.hover.Length > 0) // the pointer on a view key (after the camera stands): what a hover shows
                     {
@@ -162,10 +167,13 @@ namespace Suborned.Play
                 else if (res.Error.Length > 0) res.Status = "note";
                 else if (res.Audited && !res.AuditClean) res.Status = "audit";
             }
+            if (fadeOff != null) { fadeOff.fade = fadeWas; fadeOff = null; }
             h.controls.conversations = keep; HandoverHost.PointerOverride = null; HudToolkit.ActMarkOff = false;
             bool ok = results.All(r => r.Status is "ok" or "note");
             Write(ok ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(ok ? 0 : 1);
         }
+
+        ArchitectureFade fadeOff; bool fadeWas;
 
         /// <summary>The camera a still wants: overhead (a view key or a point to look at, a quarter turn, a zoom) or the follow view behind an agent.</summary>
         static void Camera_(HandoverHost h, ShotSpec s)
@@ -180,9 +188,22 @@ namespace Suborned.Play
             }
             if (h.Following) h.FollowToggle();
             if (s.yaw >= 0) h.TurnSnap(s.yaw);
+            else if (s.doorN != null && s.doorN.Length == 2 && h.View)
+            {   // brief 070: the quarter step whose view looks most squarely onto the outward side (camera forward against the face's normal)
+                var n = DoorNormal(h, s); int best = 0; float bestDot = float.NegativeInfinity;
+                for (int k = 0; k < 4; k++) { h.TurnSnap(k); var f = h.View.transform.forward; f.y = 0f; float d = Vector3.Dot(f.normalized, -n); if (d > bestDot + 1e-4f) { bestDot = d; best = k; } }
+                h.TurnSnap(best);
+            }
             if (s.zoom > 0 && h.View) h.View.orthographicSize = s.zoom;
             if (s.focus.Length > 0) h.LookAt(At(s.focus));
             else if (s.hasAt) h.LookAt(h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)));
+        }
+
+        /// <summary>Brief 070: the shot's door normal (block frame) as a horizontal world direction.</summary>
+        static Vector3 DoorNormal(HandoverHost h, ShotSpec s)
+        {
+            var a = h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)); var b = h.frame.World(new Suborned.Sim.Pt((int)(s.atX + s.doorN[0] * 100f), (int)(s.atY + s.doorN[1] * 100f)));
+            return new Vector3(b.x - a.x, 0f, b.z - a.z).normalized;
         }
 
         // ---- a free pose camera: the world only (what out/latch/gamecap2.cs did by hand)
@@ -199,7 +220,16 @@ namespace Suborned.Play
             if (p.view.Length > 0)
             {
                 var t = h.Views.Find(p.view); if (t == null) throw new InvalidOperationException($"no view '{p.view}' for the pose camera");
-                poseCam.transform.position = t.TransformPoint(V(p.offset)); poseCam.transform.LookAt(t.TransformPoint(p.lookOffset.Length == 3 ? V(p.lookOffset) : new Vector3(0f, 0.9f, 0f)));
+                var look = t.TransformPoint(p.lookOffset.Length == 3 ? V(p.lookOffset) : new Vector3(0f, 0.9f, 0f));
+                if (s.doorN != null && s.doorN.Length == 2)
+                {   // brief 070: the offset in the door's frame (x along the face, y up, z out along its outward normal), not the view's axes; heights from
+                    // the ground the place stands on (a landing's 0.75 m), where the view's own point may sit at the street
+                    var n = DoorNormal(h, s); var side = Vector3.Cross(Vector3.up, n); var o = t.position; o.y = Mathf.Max(o.y, h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)).y);
+                    var lo = p.lookOffset.Length == 3 ? V(p.lookOffset) : new Vector3(0f, 0.9f, 0f); look = o + lo;
+                    poseCam.transform.position = o + side * p.offset[0] + Vector3.up * p.offset[1] + n * p.offset[2];
+                }
+                else poseCam.transform.position = t.TransformPoint(V(p.offset));
+                poseCam.transform.LookAt(look);
             }
             else { poseCam.transform.position = V(p.pos); poseCam.transform.LookAt(V(p.look)); }
             var rt = new RenderTexture(s.w, s.h, 24); var tex = new Texture2D(s.w, s.h, TextureFormat.RGB24, false);

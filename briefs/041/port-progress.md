@@ -1104,3 +1104,60 @@ The budget limits for Splice are in `briefs/067/glyph-budget.md`. They give new 
 - The Go Alt line overlapping `feedTitle` (fix above, not built).
 - The clock bar's next-mark word against glyph-budget §5 (Glyph's call, unchanged).
 - N8, N9 and N10 are still open.
+
+## Briefing page (brief 070) (Latch, 2026-10-26): build 0.2.130
+
+**What changed**
+- The page replaces brief 062's street overlay (`Briefing.cs`, rewritten). It is a full-screen page on a 1920 × 1080 grid, scaled as one. It follows Glyph's mock: cream stone paper, a seafoam band with a brass hairline, the header (title, hook, objective, place and time), the target card (photograph, name, two facts), two way rows (name, `when` plate, two sentences, two stills with numbered pins and arrows), the getaway car as the shared ending, a plan of the block drawn from data with pins and a legend, the clock's five stations, and the band (four faces with a line each, the purse, Heat as one word, Begin). Day / Night is gone.
+- All words come from data (`BriefScreen` in `HostBriefing.cs`):
+  - brief.json: title, place, time, hook, objective, the target, the ways;
+  - text.json: `less.briefing.ways` / `target` / `begin`, `briefing.hints` (the part after "Name: "), `briefing.page.*`, the `briefing.timeline` labels, `targets.<key>.name` for the captions, `briefing.heat`.
+  - A clock station is filled when its label names the target (5:50, 6:10).
+- Begin lifts the page (0.3 s) onto the camera at `brief.target.at`, d:Official entrance, at the quarter step facing its outward side. The existing glide then runs as before.
+- `PlayText`: added `HintBy` and the `Page*` fields; the backup ClockLine now matches Fable's. Retired: `less.briefing.job` (text.json, schema and test), and the `day` / `night` fallbacks along with the Day / Night words.
+- **Stills, taken at build time** (`tools/game/briefstills.ts` + `briefstills.test.ts`):
+  - The pins are derived from mission data: brief.json ways; mission.json roles, windows, timeline and points; routes.json primary scripts and contacts; civic-block.json faces and bays.
+  - The player takes them from replays of route-a-board / route-b-board (c038) through the shot runner, HUD off, as JPEG.
+  - They are copied into the app's `StreamingAssets/missions/handover/stills/` and the app is signed ad hoc again.
+  - `cli.ts build()` runs this after every build, before any proof. It takes about 15 s.
+- ShotRunner gained `nocut` and `doorN`: the quarter yaw facing a face's outward side, and pose offsets in the door's frame, lifted to the landing's height.
+- **Deviations from the README capture table**, from looking at the pictures:
+  - Inez and the guard use the conversation profile off their door (3.6 m, 1.9 m, 8°, 16° field).
+    - The guard's overhead yaw 210 with the cut off was blocked by the buildings across Rocket Lane.
+    - Inez is taken at 0:03, before the Scout stands in front of her. At 0:30 the Scout fills the frame.
+  - The getaway car uses a low camera off its end. From above, the boarding pavilion's canopy hides it at every yaw.
+
+**Evidence** (git-ignored, on disk: briefs/070/build/0130/)
+- `bun run batch --from sim`: build 0.2.129. game-check STOPPED on `hudClick`: one press through at s-plate_dark@2816,64 (logs/proof-0129-hudclick-flake).
+  - A rerun of `bun tools/game/cli.ts --check` on the same build passed, exit 0, hudClick ok. I take it as a flake.
+- `--from shots` on 0.2.129: budget red, including my bug: the page's manifest rows were duplicated on a refill (40 sentences), and two plate icons sat inside the 4 px rim clearance. Both are fixed.
+- `bun run batch --from game-build` → **Build 0.2.130**:
+
+| step | result |
+|---|---|
+| game-build | ok; stills 5/5 in 15 s, ad hoc signature ok |
+| game-check | ok (scenarios 356/356, every gate) |
+| shots | ok (11) |
+| budget | FAILED: audit 10/10 clean; briefing-day and the old r067-car-ring-go-alt, both below |
+| late-fight, tp-long | skipped on purpose (main, on Sky's OK: this build changes only the page before Begin, the feedTitle line and Fable's words; the full batch runs once at the end of the round) |
+
+- **Targeted checks on 0.2.130:**
+  - Front end at 1080 and 2160 (`-frontEndShots -capture-size`, status ok): newGameBriefing, briefingAfter ("up|page|… stills: 5/5 … clock (5 stations)"), startHeld and startPlays (yaw 30) all ok. So the page is modal until Begin, and Begin lifts and then glides to the cell.
+  - The 8:30 mark in play: route B at 7:00 shows "▶▶ 8:30" on the clock bar (play-830/). Its words ("Close: a turned driver gives up and drives Vale away") ship in the app's text.json and show on pill hover; I have not captured the hover.
+  - Run: bun test tools/game + contracts/missions/handover (380 pass), typecheck clean.
+- **Pictures:**
+  - the page: frontend-1080/briefing.png and frontend-2160/briefing.png;
+  - the lift: frontend-1080/start-1-begin.png;
+  - the stills: stills/brief-waitress.jpg, brief-guard.jpg, brief-driver.jpg, brief-service-bay.jpg and brief-getaway.jpg (stills.json has the derivation of each).
+
+**Still red / open**
+- **Briefing budget (for Splice and Glyph, not loosened):**
+  - HUD covers 37.3 % against the briefing's 18 % limit (footprint 62 %): the stills, the photograph and the plates count. The paper and the band are marked not-HUD.
+  - The briefing reads 20 sentences and 182 words against BRIEFING_READING's 3 and 20.
+  - GDD v0.27.0 says the reading limits don't apply to the page, so tools/hud-budget needs a page state or an exemption; that is Splice's call.
+- **Go Alt line (not new; red since 0.2.128):** "Calls off the attempt; try again" (altline 1513,965 183×26) still overlaps the feed card's "In the car" title (beat 1590,987) on 0.2.130. The committed feedTitle line doesn't clear it (go-alt-crop.png).
+- **Nits for Glyph's 2x:**
+  - The plan's "Records Office" label still touches pin 2: both faces of the Office carry pins. A fix would put the name inside the outline.
+  - The page has no "Two ways in / Where / The clock" heads, because text.json has no words for them (Fable).
+  - The guard's still has a dark glass background.
+- `less.briefing.fact` ("Alive") and `office` are no longer read by the page (Fable may retire them).
