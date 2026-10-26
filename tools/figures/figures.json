@@ -1301,7 +1301,7 @@
    "id": "rival_d",
    "role": "rival",
    "kind": "transfer",
-   "label": "Rival crew D: Commuter C6's hooded jacket in violet velvet, deep-violet lining, pale dress, pearl boots; the crew's woman; bare head (the hood is down), no cap, no gold",
+   "label": "Rival crew D: Commuter C6's hooded jacket in violet velvet, deep-violet lining, pale dress, pearl boots; the crew's woman; the hood is up, no cap, no gold",
    "donor": "Citizens3D/rigged/corporation_C1__meshy7_walk.glb",
    "noMetal": true,
    "source": "Citizens3D/bakeoff/commuters_C6__hunyuan_pro.glb (50k, decimated here to 8000, 3000 and 1500; Hunyuan 3.1 pro, static; skinned from the C1 Meshy rig); recoloured here: violet hooded jacket, deep-violet lining and skirt hem, white dress, pearl boots",

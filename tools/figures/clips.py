@@ -32,7 +32,7 @@ for c in spec['clips']:
     sp.sort(); nat = round(sp[len(sp) // 2], 2) if len(sp) > 3 else 0.0
     name = c['name']; rel = f'Clips/{name}.fbx'; dst = os.path.join(out, rel)
     shutil.copyfile(src, dst)
-    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', 0, f1 - f0, c.get('loop', False), feet=c.get('feet', False)))
+    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', 0, f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c)))
     rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
     if 'author' in c: rows[-1]['authoredBy'] = c['author']

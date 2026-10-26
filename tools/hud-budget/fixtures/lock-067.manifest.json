@@ -1,0 +1,22 @@
+{
+ "state": "active",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 416, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "line", "x": 890, "y": 1026, "w": 141, "h": 40, "text": "Take Vale alive."},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "speech", "x": 844, "y": 381, "w": 233, "h": 25, "text": "It's not generous. I don't work for free."},
+  {"kind": "speech", "x": 1392, "y": 615, "w": 151, "h": 25, "text": "Generous of the Office."},
+  {"kind": "image", "x": 947, "y": 499, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 947, "y": 416, "w": 26, "h": 26, "text": "pip guard"},
+  {"kind": "image", "x": 1454, "y": 650, "w": 26, "h": 26, "text": "pip driver"},
+  {"kind": "line", "x": 786, "y": 333, "w": 349, "h": 38, "text": "Listen to the guard · Already heard"},
+  {"kind": "image", "x": 14, "y": 438, "w": 86, "h": 30, "text": "squad button"},
+  {"kind": "image", "x": 106, "y": 435, "w": 38, "h": 36, "text": "weapons free toggle"},
+  {"kind": "image", "x": 707, "y": 362, "w": 26, "h": 44, "text": "lock reticle"},
+  {"kind": "image", "x": 945, "y": 323, "w": 27, "h": 16, "text": "stack tab"},
+  {"kind": "beat", "x": 1590, "y": 972, "w": 36, "h": 16, "text": "Listen"},
+  {"kind": "speech", "x": 1590, "y": 991, "w": 288, "h": 17, "text": "Guard: It's not generous. I don't work for free."},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

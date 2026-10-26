@@ -46,7 +46,7 @@ namespace Suborned.Play
         /// <summary>Brief 067 E3: with Alt, the locked pill's long line (Fable's lock `line`) on a plate_dark under the pill; "" hides it.</summary>
         void LockAltFrame(string line)
         {
-            if (lockAlt == null) { if (line.Length == 0) return; lockAlt = PlateDark(marks, 26f, 0.3f); lockAlt.style.position = Position.Absolute; lockAlt.style.paddingLeft = 12; lockAlt.style.paddingRight = 12; lockAltText = Words(lockAlt, 12.5f); lockAltText.style.whiteSpace = WhiteSpace.Normal; lockAltText.style.maxWidth = 420; manifest.Add((lockAlt, "line", () => lockAltText.text)); }
+            if (lockAlt == null) { if (line.Length == 0) return; lockAlt = PlateDark(marks, 26f, 0.3f); lockAlt.style.position = Position.Absolute; lockAlt.style.paddingLeft = 12; lockAlt.style.paddingRight = 12; lockAltText = Words(lockAlt, 12.5f); lockAltText.style.whiteSpace = WhiteSpace.Normal; lockAltText.style.maxWidth = 420; manifest.Add((lockAlt, "altline", () => lockAltText.text)); } // Glyph budget §4: an Alt line, its own kind
             bool on = line.Length > 0 && vpill != null && vpill.resolvedStyle.display != DisplayStyle.None; Show(lockAlt, on); if (!on) return;
             Text(lockAltText, line); float pl = vpill.style.left.value.value, pt = vpill.style.top.value.value, pw = float.IsNaN(vpill.resolvedStyle.width) ? 300f : vpill.resolvedStyle.width, aw = float.IsNaN(lockAlt.resolvedStyle.width) ? 300f : lockAlt.resolvedStyle.width;
             lockAlt.style.left = pl + pw / 2f - aw / 2f; lockAlt.style.top = pt + PillH + TailH + 4f; lockAlt.BringToFront();

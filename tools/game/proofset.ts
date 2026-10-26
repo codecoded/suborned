@@ -10,7 +10,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { z } from 'zod';
-import { popsFromParts, type Manifest } from '../hud-budget/budget';
+import { fromParts, type Manifest } from '../hud-budget/budget';
 import { decodePng, encodePng, type Image } from '../hud-budget/png';
 import { pngFileSize } from './shots';
 
@@ -73,8 +73,8 @@ export function stageForBudget(found: Located[], out: string): void {
   rmSync(out, { recursive: true, force: true }); mkdirSync(out, { recursive: true });
   for (const f of found) {
     for (const src of [f.png, f.hud]) if (src) copyFileSync(src, join(out, basename(src)));
-    if (f.manifest) { // the manifest as the build wrote it, plus the refusal pops its parts name (`pop-N`) that it does not: a `pop` is held to one line of four words, never read as running text (tools/hud-budget popsFromParts)
-      const m = JSON.parse(readFileSync(f.manifest, 'utf8')) as Manifest, pops = f.parts && f.size ? popsFromParts(JSON.parse(readFileSync(f.parts, 'utf8')) as Record<string, number[]>, m, { w: f.size[0], h: f.size[1] }) : [];
+    if (f.manifest) { // the manifest as the build wrote it, plus what its parts name that it does not (tools/hud-budget fromParts): the refusal pops (`pop-N`, one line of four words), the done chips (`gain-chip-N`, glyph-budget §3) and the clock bar (`pill`, one row at play size)
+      const m = JSON.parse(readFileSync(f.manifest, 'utf8')) as Manifest, pops = f.parts && f.size ? fromParts(JSON.parse(readFileSync(f.parts, 'utf8')) as Record<string, number[]>, m, { w: f.size[0], h: f.size[1] }) : [];
       if (pops.length) writeFileSync(join(out, basename(f.manifest)), JSON.stringify({ ...m, elements: [...m.elements, ...pops] }, null, 1) + '\n'); else copyFileSync(f.manifest, join(out, basename(f.manifest)));
     }
   }

@@ -67,16 +67,29 @@ namespace Suborned.Play
         string Manifest(string state, int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
+            bool pillUp = vpill != null && Visible(vpill) && PillWords.Length > 0;
+            if (state == "rest" && pillUp) state = "active"; // Glyph budget §1: the state from the pill, not the view (r123-fight-ground: the follow view's Board pill was a `rest` frame)
             var sb = new StringBuilder(); sb.Append("{\n \"state\": \"").Append(state).Append("\",\n \"elements\": [");
             bool first = true;
-            foreach (var (e, kind, text) in manifest)
+            foreach (var (e, kind0, text) in manifest)
             {
                 if (!Visible(e)) continue; var b = e.worldBound; if (b.width < 1 || b.height < 1) continue;
-                string t = text?.Invoke() ?? ""; if (kind is "speech" or "beat" or "line" && t.Length == 0) continue;
+                string kind = e == vpill ? (PillState == "lock" ? "lock" : "pill") : kind0; // Glyph budget §1, §2: the order pill and the lock pill, their own kinds
+                string t = text?.Invoke() ?? ""; if (kind is "speech" or "beat" or "line" or "lock" && t.Length == 0) continue;
                 sb.Append(first ? "\n" : ",\n"); first = false;
                 sb.Append("  {\"kind\": \"").Append(kind).Append("\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k))
                   .Append(", \"text\": \"").Append(t.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", " ")).Append("\"}");
             }
+            // Glyph budget §3: each done chip on screen, its rows spelled (facts, verbs), never one joined text
+            foreach (var c in chipEls)
+            {
+                if (c.Id < 0 || !Visible(c.Root)) continue; var b = c.Root.worldBound; if (b.width < 1 || b.height < 1) continue;
+                static string Arr(List<string> xs) { var o = new StringBuilder("["); for (int i = 0; i < xs.Count; i++) o.Append(i == 0 ? "\"" : ", \"").Append(xs[i].Replace("\\", "\\\\").Replace("\"", "\\\"")).Append('"'); return o.Append(']').ToString(); }
+                sb.Append(first ? "\n" : ",\n"); first = false;
+                sb.Append("  {\"kind\": \"chip\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k)).Append(", \"facts\": ").Append(Arr(c.Facts)).Append(", \"verbs\": ").Append(Arr(c.Verbs)).Append('}');
+            }
+            // Glyph budget §5: the clock bar (the status pill top right), its rect only: its figures are read off the picture (the next mark's label is a word, see the report)
+            if (pill != null && Visible(pill) && pill.worldBound.width >= 1) { var pb = pill.worldBound; sb.Append(first ? "\n" : ",\n").Append("  {\"kind\": \"bar\", \"x\": ").Append(R(pb.x * k)).Append(", \"y\": ").Append(R(pb.y * k)).Append(", \"w\": ").Append(R(pb.width * k)).Append(", \"h\": ").Append(R(pb.height * k)).Append('}'); first = false; }
             // the pill's Alert lamps and pause glyph: icons by construction (the checker reads the lamp rings and the pause bars as strokes)
             var group = new[] { lamps[0], lamps[1], lamps[2], pauseIcon };
             Rect u = default; bool any = false; foreach (var e in group) if (e != null && Visible(e)) { var b = e.worldBound; u = any ? Rect.MinMaxRect(Mathf.Min(u.xMin, b.xMin), Mathf.Min(u.yMin, b.yMin), Mathf.Max(u.xMax, b.xMax), Mathf.Max(u.yMax, b.yMax)) : b; any = true; }

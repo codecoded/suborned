@@ -10,9 +10,9 @@
   },
   {
    "name": "idle_alt",
-   "src": "Anim/mixamo_library/Breathing_Idle__c9c6d0d5.fbx",
+   "src": "Anim/mixamo_library/Standing_Idle__c9c831cf.fbx",
    "loop": true,
-   "use": "second idle so a crowd does not breathe in step",
+   "use": "second idle so a crowd does not breathe in step (6 s; hips 1.1 cm sideways). Was Breathing_Idle, whose 18.8 cm weight shift slid the planted feet in 0.2.122 and still swayed 7 px at play zoom once baked (brief 067, forma-sway.md)",
    "loco": false,
    "feet": true
   },
@@ -126,7 +126,8 @@
    "loop": false,
    "use": "hit reaction, large (staggers)",
    "loco": false,
-   "feet": true
+   "feet": true,
+   "travelsM": 1.371
   },
   {
    "name": "panic",
@@ -142,7 +143,8 @@
    "loop": false,
    "use": "duck and cover (1.5 s); hold the last frame",
    "loco": false,
-   "feet": true
+   "feet": true,
+   "travelsM": 0.412
   },
   {
    "name": "crouch",
@@ -166,7 +168,8 @@
    "loop": false,
    "use": "stunned, staggers and drops",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.073
   },
   {
    "name": "knockout",
@@ -174,7 +177,8 @@
    "loop": false,
    "use": "knocked out: the victim goes down and ends lying (5.6 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.388
   },
   {
    "name": "knockout_alt",
@@ -182,7 +186,8 @@
    "loop": false,
    "use": "knocked out, second variant (5 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.485
   },
   {
    "name": "kill_victim",
@@ -190,7 +195,8 @@
    "loop": false,
    "use": "killed: falls and ends lying (4.4 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 0.344
   },
   {
    "name": "kill_victim_back",
@@ -198,7 +204,8 @@
    "loop": false,
    "use": "killed from the front: falls backward (3.7 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 0.902
   },
   {
    "name": "kill_attacker",
@@ -206,7 +213,8 @@
    "loop": false,
    "use": "the Enforcer kills (5 s); pairs with kill_victim by eye, not by sync",
    "loco": false,
-   "feet": true
+   "feet": true,
+   "travelsM": 1.464
   },
   {
    "name": "struggle",
@@ -222,7 +230,8 @@
    "loop": false,
    "use": "being choked, goes limp (17 s)",
    "loco": false,
-   "feet": false
+   "feet": false,
+   "travelsM": 1.192
   },
   {
    "name": "carry",

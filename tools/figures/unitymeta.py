@@ -320,9 +320,21 @@ def model_meta(rel, materials=None, avatar_source_guid=None):
     return text
 
 
-def clip_meta(rel, name, take, first, last, loop, feet=False):
-    """A clip-only FBX (Mixamo library file): Humanoid, its own avatar, one clip `name` from take `take`, looping or not."""
+def bakes_xz(c):
+    """Root Transform Position (XZ) Bake Into Pose for a clips.json entry: every clip that stays in place. Not locomotion (`loco`: the sim moves the object and
+    the treadmill legs are timed to it) and not a one-shot whose body ends somewhere else (`travelsM`, measured: the falls and staggers; baked, the body would
+    end that far from the object and jump back on the next clip). Held by tools/figures/sway.test.ts."""
+    return not c.get('loco', False) and not c.get('travelsM')
+
+
+def clip_meta(rel, name, take, first, last, loop, feet=False, bake_xz=True):
+    """A clip-only FBX (Mixamo library file): Humanoid, its own avatar, one clip `name` from take `take`, looping or not.
+    bake_xz: Root Transform Position (XZ) Bake Into Pose, based on Original. The figures play with applyRootMotion off, so an unbaked clip has its root's
+    sideways travel stripped: the body's centre is held still and the planted feet slide (Sky on 0.2.122, idles sliding left and right; Breathing_Idle
+    shifts the hips 18.8 cm). Every clip that stays in place bakes it (the hips sway, the feet stay put); locomotion (clips.json `loco`) and the one-shots
+    that travel (`travelsM`) do not: bakes_xz above (brief 067, briefs/067/forma-sway.md)."""
     lp = 1 if loop else 0
+    xz = 1 if bake_xz else 0
     body = f"""
     - serializedVersion: 19
       name: {name}
@@ -340,7 +352,7 @@ def clip_meta(rel, name, take, first, last, loop, feet=False):
       loopBlend: {lp}
       loopBlendOrientation: 1
       loopBlendPositionY: 1
-      loopBlendPositionXZ: 0
+      loopBlendPositionXZ: {xz}
       keepOriginalOrientation: 1
       keepOriginalPositionY: {{orig_y}}
       keepOriginalPositionXZ: 1

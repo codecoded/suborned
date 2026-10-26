@@ -234,8 +234,9 @@ export const STEPS: Step[] = [
   {
     id: 'budget', title: 'HUD budget + layout audit', plan: c => [`bun tools/hud-budget/cli.ts ${rel(c.shotsOut)} --skip-unmasked`, 'the layout audit recorded with each HUD shot (HudToolkit.AuditText)', `the proof's pictures of each set in tools/game/proofset.json whose section the proof has (${Object.keys(loadProofSet().sets).join(', ')}), from ${rel(dirname(PROOF))} at 1920x1080: bun tools/game/proofset.ts budget`],
     async run(c) {
-      const rep = c.facts.shots as Report | undefined;
-      if (!rep) return fail('no shots report (the shots step did not run in this batch)');
+      // `--only budget` / `--from budget` re-judge the last shots without retaking them (Splice, 2026-10-26): the report the shots step left in the shots folder
+      const rep = (c.facts.shots ?? readJson(join(c.shotsOut, 'shots.json'))) as Report | undefined;
+      if (!rep) return fail(`no shots report (the shots step did not run in this batch, and ${rel(c.shotsOut)} has no shots.json)`);
       const r = await sh('budget', ['bun', 'tools/hud-budget/cli.ts', c.shotsOut, '--skip-unmasked']);
       const lines = r.out.split('\n'), pass = lines.filter(l => l.startsWith('PASS')).length, bad = lines.filter(l => l.startsWith('FAIL'));
       const audited = rep.shots.filter(s => s.audit), dirty = audited.filter(s => !s.audit!.clean);

@@ -13,7 +13,7 @@ namespace Suborned.Play
     /// cursor's mark (a crosshair where a press fires, three dots where a hold opens a ring) and the chip's ⋯.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud, Obj, Held; public Label Word, KeyText; public VisualElement Fields; public string FieldsKey = "", HeldKey = null; public readonly System.Collections.Generic.List<string> HeldIds = new(); }
+        sealed class Wedge { public VisualElement Icon, Pill, Key, Cameos, Draw, Loud, Obj, Held, Strike; public Label Word, KeyText; public string ShutLine = ""; public VisualElement Fields; public string FieldsKey = "", HeldKey = null; public readonly System.Collections.Generic.List<string> HeldIds = new(); }
         VisualElement ringRoot; Paint ringPaint; readonly List<Wedge> wedges = new(); HandoverHost.RingState ringFor; VisualElement cursorMark; Paint cursorDots;
 
         void BuildRing()
@@ -45,6 +45,8 @@ namespace Suborned.Play
             w.Fields = E(w.Pill); w.Fields.style.flexDirection = FlexDirection.Row; w.Fields.style.alignItems = Align.Center;
             w.Loud = E(w.Pill, null, w: 14, h: 14); w.Loud.style.marginLeft = 8;
             w.Key = E(w.Pill, "s-plate_light", w: float.NaN, h: 18); w.Key.style.marginLeft = 8; w.Key.style.minWidth = 22; w.KeyText = L(w.Key, "keycap"); w.KeyText.style.paddingLeft = 4; w.KeyText.style.paddingRight = 4; w.KeyText.style.unityTextAlign = TextAnchor.MiddleCenter;
+            w.Strike = E(w.Pill, null, 0, 0, 0, 1.5f); w.Strike.style.position = Position.Absolute; w.Strike.style.backgroundColor = Dim; w.Strike.pickingMode = PickingMode.Ignore; Show(w.Strike, false); // Glyph N3: the shut way's word struck (a sibling over the word: a child of the Label broke its measured width and the lock sat on the word, 0.2.127)
+            manifest.Add((w.Pill, "lock", () => w.ShutLine)); // a shut wedge's plate ("Listen · Already heard") is the lock pill's twin (Glyph budget §2); "" when the wedge is open: not listed
             wedges.Add(w); return w;
         }
 
@@ -115,7 +117,10 @@ namespace Suborned.Play
                 if (s.Obj.Length > 0) { var fc = w.Obj.Q("face"); if (s.Obj.StartsWith("icon:")) { fc.style.backgroundImage = StyleKeyword.None; if (fc.childCount == 0) E(fc, null, 1.5f, 1.5f, 9, 9); Icon(fc[0], s.Obj[5..], Cream); } else { if (fc.childCount > 0) Show(fc[0], false); Bg(fc, s.Obj, Color.white); } }
                 { var sk = w.Obj.Q("strike"); if (sk == null && s.ObjStruck) { sk = E(w.Obj, null, -2f, 6f, 20f, 2f); sk.name = "strike"; sk.style.backgroundColor = Cream; sk.style.rotate = new Rotate(-45f); sk.pickingMode = PickingMode.Ignore; } if (sk != null) Show(sk, s.ObjStruck && s.Obj.Length > 0); } // brief 067 C5b (Glyph): Go before Vale: Vale's cameo struck (a 2 px cream diagonal)
                 Show(w.Held, s.Shut); Show(w.Fields, !s.Shut || s.ShutText.Length > 0); // a shut Loop (one loop at a time) keeps one field: when the running loop ends
-                w.Pill.style.opacity = s.Shut ? 0.75f : 1f; w.Icon.style.opacity = s.Shut ? 0.45f : 1f;
+                w.Pill.style.opacity = 1f; w.Icon.style.opacity = s.Shut ? 0.45f : 1f; // Glyph N3 (0.2.125): a shut wedge's plate is solid plate_dark like the others (it was 75 %: the reason read at about half contrast over the chip)
+                w.Word.style.color = s.Shut ? Dim : Cream; // N3: the way word struck in dim #b0cdc7; the reason stays cream
+                Show(w.Strike, s.Shut); if (s.Shut) { var wl = w.Word.layout; if (!float.IsNaN(wl.width) && wl.width > 0) { w.Strike.style.left = wl.x; w.Strike.style.width = wl.width; w.Strike.style.top = wl.y + wl.height * 0.54f; } }
+                w.ShutLine = s.Shut ? s.Word + (s.ShutText.Length > 0 ? " · " + s.ShutText : "") : "";
                 if (s.Shut)
                 {   // the lock, then one police badge a holder (brief 057 §4.2): the same holders the world marks
                     if (w.HeldKey != s.Holders) { w.HeldKey = s.Holders; w.HeldIds.Clear(); foreach (var hx in s.Holders.Split(",")) if (hx.Trim().Length > 0) w.HeldIds.Add(hx.Trim()); } var ids = w.HeldIds; /* Redline 064 #6: split once a ring, not a frame */
@@ -127,7 +132,7 @@ namespace Suborned.Play
                 if (s.Shut && s.ShutText.Length > 0) fs.Add(new HudModel.PField { Kind = "time", Icon = s.ShutIcon, Text = s.ShutText }); // brief 067 E: a shut way's short lock (no icon: the lock leads the pill)
                 else if (s.Shut && host.RivalsComingS() is int rcs && rcs >= 0 && s.Holders.Contains("car:rivals")) fs.Add(new HudModel.PField { Kind = "time", Icon = "p_time", Text = $"{rcs} s" }); // engine 0.33.0 (Motive M059-S1.7): the countdown to the first rider's step-out
                 if (s.Draws) fs.Insert(0, new HudModel.PField { Kind = "time", Icon = "", Text = $"draws {host.DrawS:0.0#} s" });
-                Fields(w.Fields, fs, s.Shut && s.ShutIcon.Length == 0 ? Dim : Cream, ref w.FieldsKey, false, small: false); // brief 067 E2 (Glyph): a shut way's short lock in --text-dim
+                Fields(w.Fields, fs, Cream, ref w.FieldsKey, false, small: false); // Glyph N3 (0.2.125): the reason in cream (the struck way word is the dim one)
                 Show(w.Loud, s.Violent); if (s.Violent) Icon(w.Loud, "bang", Cream);
                 Show(w.Key, false); // Sky: no key legends (Aster 2026-10-22: the ⇧1 / ⇧2 caps on the plates); the wedge is the click
                 w.Pill.style.unityBackgroundImageTintColor = lit ? new Color(0.75f, 1f, 1f) : Color.white;
@@ -136,22 +141,38 @@ namespace Suborned.Play
                 bool right = dir.x > 0.2f, left = dir.x < -0.2f;
                 float x = right ? at.x : left ? at.x - pw : at.x - pw / 2f, y = at.y - 15f + (Mathf.Abs(dir.x) <= 0.2f ? (dir.y < 0 ? -14f : 14f) : 0f);
                 w.Pill.style.left = x; w.Pill.style.top = y;
-                if (s.ObjStruck && s.Row?.I?.Order?.Do == "go") { altAt = new Vector2(x + pw / 2f, y + 30f + 4f); altLine = s.Row.I.Does; } // Fable 067 less.go.noVale: Go before Vale's Alt line
+                if (s.ObjStruck && s.Row?.I?.Order?.Do == "go") { altAt = new Vector2(x + pw / 2f, y + 30f + 4f); altTop = y - 4f; altLine = s.Row.I.Does; } // Fable 067 less.go.noVale: Go before Vale's Alt line
             }
             RingAltFrame(host.Peeking ? altLine : "", altAt); altLine = "";
             ringFor = rs; ringPaint.MarkDirtyRepaint();
             RingFocusFrame();
         }
 
-        VisualElement ringAlt; Label ringAltText; string altLine = ""; Vector2 altAt;
-        /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): with Alt, the long line of the Go wedge before Vale is aboard (the ring's last, never
-        /// lit way with the struck Vale cameo) on a plate_dark under its pill, as the locked pill's Alt line (LockAltFrame); "" hides it.</summary>
+        VisualElement ringAlt; Label ringAltText; string altLine = ""; Vector2 altAt; float altTop;
+        /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): with Alt, the line of the Go wedge before Vale is aboard (the ring's last, never
+        /// lit way with the struck Vale cameo) on a plate_dark under its pill; "" hides it. Glyph N5 (0.2.125): the plate sizes to its text on one
+        /// line (no wrap), under the wedge's plate, clear of the feed card and the ring's rim; it flips above the wedge's plate when it meets them.</summary>
         void RingAltFrame(string line, Vector2 under)
         {
-            if (ringAlt == null) { if (string.IsNullOrEmpty(line)) return; ringAlt = PlateDark(ringRoot, 26f, 0.3f); ringAlt.style.position = Position.Absolute; ringAlt.style.paddingLeft = 12; ringAlt.style.paddingRight = 12; ringAltText = Words(ringAlt, 12.5f); ringAltText.style.whiteSpace = WhiteSpace.Normal; ringAltText.style.maxWidth = 360; manifest.Add((ringAlt, "line", () => ringAltText.text)); }
+            if (ringAlt == null) { if (string.IsNullOrEmpty(line)) return; ringAlt = PlateDark(ringRoot, 26f, 0.3f); ringAlt.style.position = Position.Absolute; ringAlt.style.paddingLeft = 12; ringAlt.style.paddingRight = 12; ringAltText = Words(ringAlt, 12.5f); ringAltText.style.whiteSpace = WhiteSpace.NoWrap; manifest.Add((ringAlt, "altline", () => ringAltText.text)); }
             bool on = !string.IsNullOrEmpty(line); Show(ringAlt, on); if (!on) return;
-            Text(ringAltText, line); float aw = float.IsNaN(ringAlt.resolvedStyle.width) ? 300f : ringAlt.resolvedStyle.width;
-            ringAlt.style.left = under.x - aw / 2f; ringAlt.style.top = under.y; ringAlt.BringToFront();
+            Text(ringAltText, line); float aw = float.IsNaN(ringAlt.resolvedStyle.width) ? 220f : ringAlt.resolvedStyle.width; const float ah = 26f;
+            var c = new Vector2(ringRoot.style.left.value.value, ringRoot.style.top.value.value); float W = root.layout.width > 0 ? root.layout.width : 1920f, rim = HandoverHost.RingOuter + 8f;
+            var feed = FeedRects();
+            bool Clear(Rect r) { foreach (var f in feed) if (Grow(f, 8f).Overlaps(r)) return false; var n = new Vector2(Mathf.Clamp(c.x, r.xMin, r.xMax), Mathf.Clamp(c.y, r.yMin, r.yMax)); return (n - c).sqrMagnitude >= rim * rim; }
+            float lx = Mathf.Clamp(c.x + under.x - aw / 2f, 14f, Mathf.Max(14f, W - aw - 14f));
+            Rect below = new(lx, c.y + under.y, aw, ah), above = new(lx, c.y + altTop - ah, aw, ah);
+            var at = Clear(below) ? below : Clear(above) ? above : below;
+            ringAlt.style.left = at.x - c.x; ringAlt.style.top = at.y - c.y; ringAlt.BringToFront();
+        }
+        /// <summary>The feed's cards and the story beats on screen (panel space): the Alt line keeps off them.</summary>
+        List<Rect> FeedRects()
+        {
+            var l = new List<Rect>();
+            foreach (var (b, _, _) in beatEls) if (b != null && Visible(b) && b.worldBound.width > 1) l.Add(b.worldBound);
+            foreach (var cd in cards) if (cd?.Root != null && Visible(cd.Root) && cd.Root.worldBound.width > 1) l.Add(cd.Root.worldBound);
+            foreach (var e in new[] { historyKey2, history, beatsBox }) if (e != null && Visible(e) && e.worldBound.width > 1) l.Add(e.worldBound); // after 0.2.126: the history drawer is the feed card the Alt line sat on
+            return l;
         }
         /// <summary>The proof reads it: the ring's Alt line now ("" hidden).</summary>
         public static string RingAltShown => live?.ringAlt != null && live.ringAlt.resolvedStyle.display != DisplayStyle.None ? live.ringAltText.text : "";

@@ -16,7 +16,7 @@ namespace Suborned.Play
     /// It reads the host only: replays are untouched.</summary>
     public sealed partial class HudToolkit
     {
-        sealed class ChipEl { public VisualElement Root, Face, Mark, Lines, Unl; public readonly List<(VisualElement row, VisualElement icon, Label word)> Rows = new(); public readonly List<(VisualElement pill, VisualElement icon, Label word, VisualElement strike)> Pills = new(); public int Id = -1; }
+        sealed class ChipEl { public VisualElement Root, Face, Mark, Lines, Unl; public readonly List<(VisualElement row, VisualElement icon, Label word)> Rows = new(); public readonly List<(VisualElement pill, VisualElement icon, Label word, VisualElement strike)> Pills = new(); public int Id = -1; public readonly List<string> Facts = new(), Verbs = new(); }
         readonly List<ChipEl> chipEls = new();
         readonly List<(VisualElement root, VisualElement icon, Label num, VisualElement face, VisualElement under)> winEls = new();
         VisualElement cancelTag; Label cancelTagText; Vector2 restAt; float restSince;
@@ -113,7 +113,7 @@ namespace Suborned.Play
                     var c = used < chipEls.Count ? chipEls[used] : NewChip(); used++; Show(c.Root, true);
                     if (c.Id != ch.Id)
                     {
-                        c.Id = ch.Id; CameoOf(c.Face, ch.Agent);
+                        c.Id = ch.Id; CameoOf(c.Face, ch.Agent); c.Facts.Clear(); c.Verbs.Clear(); foreach (var l in ch.Lines) if (c.Facts.Count < 3) c.Facts.Add(l.Word); foreach (var u in ch.Unlocks) if (c.Verbs.Count < 3) c.Verbs.Add(u.Word); // Glyph budget §3: the manifest spells the chip's rows
                         Bg(c.Mark, ch.Tone == "ok" ? "badges/mark_ok" : ch.Tone == "soft" ? "badges/mark_half" : "badges/mark_no", Color.white); // the tone only picks the kit's badge
                         for (int i = 0; i < 3; i++)
                         {
@@ -133,7 +133,8 @@ namespace Suborned.Play
                     float x = q.x - cw / 2f, bottom = (stackTop.TryGetValue(ch.AnchorKey, out var st0) ? st0 - 6f : markTop.TryGetValue(ch.AnchorKey, out var mt) ? mt - 8f : q.y - 10f) - rise; // over its window's marker
                     bottom = ClearOfSpeech(bubbles, x, cw, bottom, chh);
                     // lift clear of the pill when they share the thing (the playground's hover lift)
-                    if (pill.width > 0 && x < pill.xMax && x + cw > pill.xMin && bottom > pill.yMin - 8f && bottom - chh < pill.yMax) bottom = pill.yMin - 8f;
+                    float pillClear = stackTab != null && stackTab.style.display != DisplayStyle.None ? 10f + 4f : 8f; // Glyph N4 (0.2.125): 4 px clear of the stack tab seated 10 px up on the pill's top edge
+                    if (pill.width > 0 && x < pill.xMax && x + cw > pill.xMin && bottom > pill.yMin - pillClear && bottom - chh < pill.yMax) bottom = pill.yMin - pillClear;
                     float W = root.layout.width > 0 ? root.layout.width : 1920f; x = Mathf.Clamp(x, 14f, Mathf.Max(14f, W - cw - 14f));
                     float ctop = Mathf.Max(8f, bottom - chh); // Glyph's N11: never cut by the top of the frame
                     c.Root.style.left = x; c.Root.style.top = ctop; stackTop[ch.AnchorKey] = ctop + rise; c.Root.style.opacity = Mathf.Min(1f, Mathf.Min(age / 0.12f, (HandoverHost.DoneChipS - age) / 0.5f)); c.Root.BringToFront();

@@ -1720,7 +1720,7 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
     expect(t.hints.items.H18!.short).toBe('Go: leave in the [car].'); expect(marked(t.hints.items.H18!.short)).toEqual(['car']);
     // no label or goal line the player reads starts "Drive off": the Drive order owns the word (story and speech keep their own voice)
     for (const [path, x] of [['actions.go.does', go.does], ['actions.go.withTarget', go.withTarget!], ['less.objective.go', L.objective.go], ['hints.H18.short', t.hints.items.H18!.short], ['hints.H18.line', t.hints.items.H18!.line]] as const) expect(x, path).not.toMatch(/\bdrive off\b/i);
-    expect(L.go.noVale).toBe('Go without Vale calls off the attempt. The cell gets away to try again.');
+    expect(L.go.noVale).toBe('Calls off the attempt; try again'); expect(words(L.go.noVale)).toBeLessThanOrEqual(6); expect(L.go.noVale).not.toMatch(/[.!?]/); // Glyph budget `altline`: one line, a fragment
     expect(L.go.noVale.length).toBeLessThanOrEqual(MAX_LINE); expect(t.actions.withdraw!.does).toMatch(/Call off the attempt/);
     if (haveSim) expect(simFile('GameGetaway.cs')).toMatch(/Result = Outcome\.Withdrawn; Withdrew\(true\); Chain\.Add\("car-leaves-without-vale"\)/); // the engine: a Go without Vale is the cell withdrawing
   });

@@ -99,7 +99,7 @@ namespace Suborned.Play
         public readonly Dictionary<string, string> FailCaption = new(), FailTip = new(), FailBy = new();
         public string ObjGo = "Leave in the [car].", GoNone = "Go", GoLeaves = "Go · leaves {list}", GoSeen = "+{trail} T if seen", GoFlag = "Left behind"; // Fable 067: "Drive" is the Drive order's word now; Go leaves
         /// <summary>Fable's less.go.noVale (brief 067, Glyph C5b): the Alt line of the Go wedge while Vale is not aboard (Go then withdraws the cell).</summary>
-        public string GoNoVale = "Go without Vale calls off the attempt. The cell gets away to try again.";
+        public string GoNoVale = "Calls off the attempt; try again"; // Fable (Glyph N5): text.json less.go.noVale, one fragment of at most 6 words
         public readonly Dictionary<string, string> GoWhy = new() { ["downed"] = "down", ["fighting"] = "fighting", ["sealed"] = "sealed", ["walked"] = "walks out" }, GoFate = new() { ["captured"] = "{who} would be captured.", ["walked"] = "{who} would walk out." };
         public readonly Dictionary<string, (string one, string many)> Holders = new() { ["mixed"] = ("hostiles", "hostiles") };
         /// <summary>A port of text.schema.ts roleOfId: the role of an id the engine names in Answer.ids.</summary>

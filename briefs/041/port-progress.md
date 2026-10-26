@@ -850,3 +850,215 @@ Three player builds. 0.2.123 (the full batch) failed game-check on six gated sec
 - **Glyph:** the 2x review of crops-2160; the "1 s · 1 s" Board pill; whether the chips belong in the manifest as a new kind.
 - **Keel and Motive:** the fire proof's Scout no longer needs a patrol to come. Nothing for the engine.
 - **Item 8:** add `ForCarShown` to a proof frame.
+
+## Glyph 2x (0.2.125) (Glyph, 2026-10-26; review only, no code, no Unity)
+**Verdict: NOT SHIP yet. One short code round (N1 to N6), then `--from game-build`.** Every one of Sky's asks is built and reads. But six faults sit on the frames Sky will judge first:
+- the Board price shows the time twice, against the GDD hold "walk + act as one time";
+- a refusal pop covers speech;
+- the open ring covers the done chips;
+- the cutaway HUD draws at 2x on a 1080 screen;
+- the Go Alt line overflows its plate;
+- an off-screen bubble draws behind the roster.
+
+All are small and HUD-only: no engine or content change except N5's words.
+
+The budget limits for Splice are in `briefs/067/glyph-budget.md`. They give new kinds `pill`, `lock`, `chip`, `altline` and the optional `bar`, all counted, nothing hidden. With them, six of the nine stopped frames pass. Three still fail rightly until N1, N5 and N4 land.
+
+**Looked at:**
+- crops-r059/r067/r123.html and proof-2160 at full size: my crops are in out/scratch/glyph/r125/.
+- `bun run proofset budget briefs/041/build/0312/proof-1080`: r059 12/13, r067 25/32, r123 4/5.
+- `bun tools/hud-budget/cli.ts <shot> --json` on each of the nine failures. That gave the exact failures, all from the missing kinds or the faults below.
+
+### Sky's asks
+- **No aim or fire lines: pass.**
+  - fight-safe, fight-loud and fight-ground draw no tracer or shot line.
+  - The reds are target rings with band ticks and a flash at the gun.
+  - The dashed turquoise lines are walk lanes and the exit lane.
+  - The violet line at 2:35 is the rival car's route ahead, a route cue, not a shot.
+- **The rival car arriving: passes, with framing notes.**
+  - 2:35: the car turns in, violet route line ahead.
+  - 2:46 (frame clock 2:49): the car stops in the lane, and one rival walks a dotted violet path to a dashed post ring.
+  - 3:10 (frame 3:17): parked at the kerb, the lookout on her post ring.
+  - The 2:46 caption promises three stepping out, but one is in frame (N9).
+  - At 3:10/3:20 the car is half hidden behind the Office tower at yaw 210. The cut opens round the terrace figure, not the car (N9).
+- **Shut rings and the locked pill: built, with a crowding fault.**
+  - The pill "Listen to the guard · Already heard" is right at 2x: lock disc, way, dim reason, the Scout's face.
+  - The shut ring opens with its one struck wedge.
+  - But the shut wedge's plate is translucent and low contrast, and sits on the second chip's rim (N3).
+  - The press's pop covers the guard's bubble (N2).
+- **Squad board and Drive: works, one price fault.**
+  - Board pill "Hold · Board · 8 s" with the two givers' faces.
+  - The Board wedge, pending pips, the "stop first" why chip on the running Tech, two "Aboard" chips, seat pips filled.
+  - Drive pill "Hold · Drive · 29 s", the stand on hover, parked.
+  - The ring's Board plate reads "Board · walk 7 s · act 1 s", and the follow view's pill reads "Hold · Board · 1 s · 1 s" (N1).
+  - The open car ring covers the second "Aboard" chip (N4).
+- **Cones on demand: pass.** With Alt held at 6:00: the guard's amber cone, the camera's red outline and the patrol's dashed cone, each its own shape. Let go: none. Exact.
+- **The conversation from the ground: the shots pass, the HUD scale fails.**
+  - Both heads in every frame; both idle and facing; no over-the-shoulder; the bubble on the speaker.
+  - At 1080 the whole cutaway HUD is 2x (N6).
+  - convo-inez-1 frames the pair through the Scout standing between them (N10, minor).
+- **The rival looks: pass on data (3 and 4 distinct), weak by eye (N11).** At zoom 14 the rivals read as one costume (violet top, grey trousers) told apart only by hair. rival_d's hooded cape reads well, but it is a flowing hem.
+
+### Nits (owner, exact fix)
+**N1 · The price shows the time twice. (Latch.)** GDD §14 hold: walk + act as one time.
+- Ring plate: "Board · [walk] 7 s · [clock] 1 s".
+- Hold pill: "Hold · Board · 1 s · 1 s" (r123-fight-ground).
+- Fix: one figure, the sum, with the clock icon; walk and act apart only under Alt. Apply it in the ring wedge plate and the hold pill builder, for every way with a walk (Board, Help, Listen…), not Board only.
+- The squad pill's "8 s" is already right.
+- Also tag r123-fight-ground's state `active` while a pill is up (glyph-budget §1).
+
+**N2 · A refusal pop covers speech and chips. (Latch.)**
+- r067-shut-pop: "Already heard" sits on "…I don't work for free."
+- r067-who-can: it sits on the second chip's Pay pill.
+- r059-drive-here: "Already here" sits on the "Parked" chip's lower half.
+- F2 moved the fire pill and the clocks, but `StepAside` never moves a pop.
+- Fix: pops join the pass as movers. Each pop clears every bubble, chip, pill and ring plate by 16 px (`ClearOf(pop, bubbles + chips + pills, 16f, …)`), else it hides for the frame.
+- When the hovered lock pill already shows the same reason, drop the pop's words and keep its icon.
+
+**N3 · The shut wedge's plate is translucent. (Latch.)**
+- r067-shut-ring-guard: "Listen 🔒 Already heard" draws at about 50 % alpha over the chip and the world, so the reason is hard to read.
+- Fix: a solid `plate_dark` like the other wedge plates. The way word is struck in dim #b0cdc7; the reason is cream.
+- Place it with the ring's other plates, clear of chips (N4).
+
+**N4 · The open ring covers the done chips. (Latch.)**
+- r067-car-ring-drive: the second "Aboard" chip sits under the ring with its word clipped, and the "Drive 29 s" plate sits on the first chip.
+- r067-shut-ring-guard: the chip stack meets the ring's plate.
+- Fix: while a ring is open, hide the done chips anchored within the ring radius + 60 px; the feed already carries them. They come back on close if their 4.2 s is not over.
+- Also: the chips' stack tab overlaps the lower chip's rim (r067-stack-tab, r067-lock-pill-guard). Give it 4 px clear.
+
+**N5 · The Go Alt line overflows. (Fable + Latch.)**
+- r067-car-ring-go-alt: `less.go.noVale` is 14 words in two sentences.
+- At 2160 it wraps: the first line's tops are cut by the plate edge, and "again." falls under the plate onto the world. At 1080 it runs over the feed card.
+- Fable: at most 6 words, one fragment (glyph-budget §4).
+- Latch: the Alt plate sizes to its text (one line, no wrap). Place it under the wedge's plate, clear of the feed card and the ring rim, flipping above when it meets the feed.
+
+**N6 · The cutaway HUD is 2x at 1080. (Latch.)**
+- All four r067-convo frames at 1080 draw the bar, the bubble and Skip at about twice play size. The alert plate is 209 × 96, against 106 × 48 in play. At 2160 they are right.
+- So the cutaway's panel scale is fixed, not the play panel's reference scale.
+- Fix: the cutaway uses the play `PanelSettings` (or copies its scale mode and reference resolution). The bar sits in the top letterbox band at play size.
+- That clears r067-convo-inez-2's budget block with no tool change.
+
+**N7 · An off-screen speaker's bubble draws behind the roster. (Latch.)**
+- r067-crowd-guard-hover: the bubble at x −198 ("…Same as always.") pokes out from behind the roster plate.
+- The door marker, guard pip and edge cameo stack under the Squad button at x 27.
+- Fix:
+  - Hide a bubble whose speaker is off screen (the feed carries it).
+  - Clamp edge markers to the safe area right of the roster (x ≥ roster right + 12 px).
+  - Stack edge markers vertically 4 px apart, never on the Squad or weapons buttons.
+
+**N8 · r067-crowd-guard-hover misses its subject. (Latch, proof.)** The caption wants "a guard" in the pill and his ring, but neither is in frame: the camera is on the Office front with the hovered guard off screen. Frame the hovered shift guard, then retake.
+
+**N9 · Rival car framing in r059. (Latch, proof + cut.)**
+- 2:46 shows one of the three stepping out. Take the frame on the tick the third clears the car, or widen.
+- 3:10/3:20: the parked rival car is half behind the tower. Extend the occlusion cut to the rival car and the getaway car while either is a ring or pill subject or a beat's subject. The same goes for the getaway car under the roof edge in r067-squad-board-pill and r067-board-landed.
+- Glint owns the cut's look; Latch extends the subjects.
+
+**N10 · The convo ladder lets a third person split the pair. (Latch, minor.)** convo-inez-1: the Scout stands between the Fixer and Inez. Add "no third body on the line between the two" to the ladder's first-rung test; else take the next rung.
+
+**N11 · Rival looks at play zoom. (Forma.)**
+- rival and rival_b share violet top and grey trousers, with only hair to tell them apart at 50 px.
+- Fix: keep the violet block, but give each a silhouette change, as the art bible asks ("job readable at a distance by silhouette plus one colour block"): a cropped jacket vs a long vest, a cap, a skirt vs trousers.
+- rival_d's hooded cape is a flowing hem, which the art bible rules out. Shorten it to the hip, or make it a hood on a fitted top.
+
+**N12 · A pedestrian stands in the carriageway at 2:35. (Pulse, question.)** r059-235-turns-in: a civilian woman stands still in the road behind the rival car. If she is mid-crossing it's fine; if she is idling in the road, the walk graph has a stop in the lane.
+
+### Next
+- Splice: the kinds in `briefs/067/glyph-budget.md`, then `--from budget` on 0.2.125. Six frames go green; three stay red for N1, N5 and N6.
+- Latch: N1 to N9 in one code round.
+- Fable: N5's words. Forma: N11. Pulse: N12.
+- Then one batch `--from game-build` and a 2160 retake of r067 and r123-fight-ground for my recheck.
+
+## Batch 0.2.123 final (Latch, 2026-10-26): build 0.2.127, game-check FAILED on three hold proofs under load, budget 2 frames red (both my faults, fixed in the tree, not built)
+
+**Build of record: 0.2.127.** The batch `--from game-build` built 0.2.126. Its game-check then rebuilt as 0.2.127, because I had added an Editor-only script (`Editor/World/Review/HeightCap066.cs`, brief 066's renders) under `unity/Assets` during game-build. The player's runtime code is identical in both builds (Editor scripts don't ship). Everything below ran on 0.2.127.
+
+**Code (host and HUD only; no engine change):**
+- **N1, fixed.** HudModel.Less.cs PriceLine: Board no longer splits walk and act. Every way with a walk shows one figure, the sum, with the clock. The split stays in Alt (AltLine). Proof frames: "Hold · Board · 2 s" (r123-fight-ground; it was "1 s · 1 s"), "Hold · Board · 8 s". All 22 pill texts in the 1080 proof show one time.
+- **N1 tag, done.** The manifest's state becomes `active` while the pill is up (HudToolkit.Capture.cs Manifest). r123-fight-ground is `active`.
+- **N2, fixed.**
+  - Pops are movers in StepAside (HudToolkit.StepAside.cs). Each one clears every bubble, chip, pill (with its tail and stack tab), ring plate and the wheel by 16 px, up or down, at most 90 px; otherwise it hides for the frame.
+  - A pop that repeats the hovered lock pill's reason drops its words and keeps its icon (r067-shut-pop: the pop is icon-only beside "Listen to the guard · Already heard").
+  - 1080 proof: 21 pops, none on a bubble, chip or pill.
+- **N3, built with a fault (fixed in the tree).** The shut wedge's plate is solid and the reason cream. But I struck the way word with a child element inside the Label, which broke the label's measured width. In 0.2.127 the lock icon sits on "Listen" ("Li🔒en Already heard"), and a wedge slot that was once shut garbles later plates too ("Dr©29 s" on the car ring's Drive). **This is visible in 0.2.127 whenever a ring follows a shut ring.**
+  - In the tree: the strike is a sibling over the word, sized from its layout (`Wedge.Strike`).
+- **N4, fixed.** While a ring is open, done chips within the ring radius + 60 px, or under a wedge plate, hide (StepAside). They come back on close inside their 4.2 s. r067-car-ring-drive shows no "Aboard" chip under the ring. The stack tab keeps chips 4 px clear (DoneMarks lifts them 14 px over the pill when the tab shows).
+- **N5, partly.**
+  - Fable's words ship ("Calls off the attempt; try again", text.json in the tree, carried by `tools/sim/unity.ts --tree`).
+  - The Alt plate is one line with no wrap, placed under the wedge plate and clear of the rim, flipping above it when it meets the feed.
+  - But my feed rects missed the history drawer, so in r067-car-ring-go-alt it sits on the "In the car" card (budget: "overlaps the beat"). Fixed in the tree (`FeedRects` adds `history`, `beatsBox`).
+- **N6, fixed.** CrispScale now runs before the cutaway and the fail camera return (HudToolkit.cs LateUpdate). A 1080 capture inside the 2880 x 1864 run had kept scale 2. The cutaway's bar is 44 px tall at 1080 (it was 96), with the bubble and Skip at play size, in all four convo frames.
+- **N7, partly.**
+  - A speaker off screen has no bubble.
+  - Edge marks keep right of the roster's band (x ≥ roster right + 12) and off the Squad and weapons buttons (the edge cameo now sits right of the roster).
+  - r067-crowd-guard-hover still shows "…always." behind the roster: that speaker stands on screen under the column.
+  - In the tree: bubbles and pips count the roster band as off screen (`InPlay`).
+- **Manifest kinds (brief 067 glyph-budget).**
+  - The verb pill is `pill`, or `lock` in the lock state.
+  - Ring and lock Alt lines are `altline`.
+  - Each done chip is `chip` with `facts` and `verbs` lists.
+  - The clock bar is `bar`, as a rect only, without text. Its next mark's label is a word ("Chime", "The close"), so glyph-budget §5's "no letter words" would fail every frame. That needs Glyph's call.
+  - In the tree, not built: a shut wedge's plate is `lock` ("Listen · Already heard"). It was read as running text once N3 made it solid (r067-shut-ring-guard).
+- **Forma's idle fix.**
+  - Clips and manifest rsynced from out/people-models/People.
+  - FigureBuild.Cli re-run: idle_alt's take changed, so the controller had to be rebuilt; it now points at idle_alt.fbx, 180 frames = 6.0 s.
+  - 32 metas `loopBlendPositionXZ: 1`.
+  - `bun test tools/figures`: 23 pass, 0 `[sway]` warnings.
+  - One still can't show sliding. The café crowd (shots/cafe-front-day, follow-scout-cafe) stands on its marks.
+
+**Steps (0.2.127):**
+- sim (`tools/sim/unity.ts --tree`, for Fable's text): headless 356/356, range 91/91.
+- game-build: 0.2.126, 0 errors, 17 s. game-check rebuilt as 0.2.127 (11 s, see above).
+- **game-check: FAILED**, under a machine at load 11 to 23, mostly someone else's Blender (sandbox/mechs) at 880 to 1500 %.
+  - dblClick row "Inez, the Enforcer": rightHoldCharge and rightHoldFires false.
+  - holdActs holdLatch: ready "".
+  - holdRange: squadRightHold and focusInFight.
+  - Every other gated section ok: r059, r067, r118, r29, done, rings, levels, leash.
+  - A rerun of those sections on the same app (`-proofOnly frames,holdActs,holdRange`, rerun-holds-p1/): holdRange **passes**, but holdActs fails even its plain click (no ring), which passed in the batch.
+  - These are real-time holds under load, not this round's code: nothing changed touches input. **Not rerun again (Aster's rule).** It needs a quiet machine.
+- shots: ok, 11.
+- **budget: FAILED on 2 of 50.**
+  - r059 13/13; r067 30/32; r123 5/5; the batch's own 10/10; audit 10/10.
+  - The two reds are r067-car-ring-go-alt (Alt line over the history card, N5) and r067-shut-ring-guard (the solid shut plate read as running text, N3). Both are mine, both fixed in the tree, both unbuilt.
+  - The six Glyph expected green are green, and so are r123-fight-ground (N1) and r067-convo-inez-2 (N6).
+- late-fight: ok.
+  - loud-fight: worst 25.2 ms, p99 7.3 ms.
+  - loud-left-downed: worst 17.2 ms, p99 7.2 ms.
+  - NOISY MACHINE.
+- tp-long: ok.
+  - play-opening p99 5.5 ms; tp-street p99 5.2 ms; tp-worst p99 5.4 ms.
+  - 1.6 / 3.2 / 5 M tris.
+- 2160 retake for Glyph: `-gameProof -capture-size 3840x2160 -proofOnly r067` (r067 ok) and `-proof123`. Crops: crops-2160/crops-r067.html and crops-r123.html.
+- Headless compile (Runtime + Editor) clean after every edit, including the tree-only fixes after 0.2.127. EditMode tests not run this round.
+
+**Evidence** (git-ignored, on disk): briefs/041/build/0313/
+- proof-1080/ and shots/;
+- logs/ and late/;
+- batch-0313a/b/c logs;
+- rerun-holds-p1/;
+- proof-2160-r067/ (its player.log was overwritten by r123's, my slip; proof.json is intact) and proof-2160-r123/;
+- crops-2160/.
+
+**Key pictures:**
+- Board pill: proof-1080/r067-squad-board-pill.png ("Hold · Board · 8 s", two faces).
+- Conversation: proof-1080/r067-convo-inez-2.png (cutaway at play scale).
+- Idle crowd: shots/cafe-front-day.png and shots/follow-scout-cafe.png.
+
+**Not done, for the next batch:**
+- N8: frame the hovered guard in r067-crowd-guard-hover.
+- N9: the rival car's 2:46 frame, and the occlusion cut's subjects extended to the cars.
+- N10: no third body on the convo ladder's first rung.
+- The tree-only fixes above (N3 strike, N5 history, N7 roster band, shut wedge `lock`) need one `--from game-build`. The next game-check wants a quiet machine.
+
+**Brief 066 renders (after the batch; Vantage's check of the capped blocks was not done, rendered anyway):**
+- **Scenes.** Two scratch scenes, git-ignored: `Assets/Scenes/probe-066-today.unity` (out/scratch/datum/height-cap/today.world.json) and `probe-066-cap.unity` (the capped world), built by HarbourWorldBuilder with `-scene`. HarbourDistrict.unity and its assets are untouched (15:48 timestamps).
+- **Render.** `Suborned.World.Review.HeightCap066.Render`, a new Editor script. It stages fixer, tech, scout, enforcer, waitress, councillor, guard and driver figures in idle on Datum's points (out/scratch/latch/r066/points.*.json, from mission.json via tools/plan/civic.ts). The foci match Datum's (−168.1, −225.5) and (−165.6, −300.1).
+- **Play frames.** Orthographic zoom 14, 38°, 1920 x 1080, yaws 30/120/210/300, the scene's day look. The stand-off is capped at 600 m: at yaw 300 the clearance meets the horizon band 7.9 km back.
+- **Follow frames.** HostFollow's defaults: 5.5 m back, 3.06 m up, fov 55, far 350.
+- **Counts.** Per frame, from the frustum: enabled renderers whose bounds are in view, the LOD the frame selects, and their triangles. This is not the player's perf harness; no batches or SetPass.
+- **Triangles, today → capped:**
+  - café: −5.4 / −2.2 / −5.1 / −9.4 %;
+  - office: −6.9 / −7.1 / −8.2 / 0 %;
+  - follow Fixer: −17.1 %;
+  - follow Vale: −22.2 %.
+- Renderers drawn drop by 0 to 12 a frame.
+- **Output.** briefs/066/latch/ (22 PNGs, counts-today.json, counts-cap.json, compare.png).

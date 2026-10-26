@@ -1039,9 +1039,10 @@ namespace Suborned.Play
             if (want != on) { on = want; Show(root, on); }
             if (!on) return;
             GroundBegin(); // brief 046: this frame's ground marks (HudToolkit.Ground)
+            CrispScale(); // Glyph N6 (0.2.125): before the cutaway and the fail camera return, so they draw at the play panel's scale (a 1080 capture inside a 2880 x 1864 run kept scale 2: the cutaway's bar, bubble and Skip at 2x)
             if (FailCamHud()) return; // the fail camera: its caption alone
             if (ConvoHud()) return; // brief 032: the conversation scene: its bubble, dots, bars and Skip, the pill (HudToolkit.Live)
-            m.Frame(host); CrispScale();
+            m.Frame(host);
             // a folded hint rings nothing (Glyph #8: the ring only while the plate is open)
             if (m.Hint != null && !(Time.unscaledTime - hintAt < HintOpenS || hintHover || HintPinned) && m.Hint == hintSeen) { m.HintRing = null; for (int i = 0; i < 4; i++) m.Slots[i].HintRing = false; }
             // the pill

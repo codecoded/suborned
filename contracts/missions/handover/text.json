@@ -1778,7 +1778,7 @@
    "firstAct": "Click a thing to act."
   },
   "go": {
-   "rule": "Brief 018 (the getaway, section 6.5 and 6.6): the Go card and the roster flag. Nobody left: the card reads `none`. Someone left: `leaves`, with {list} the names in id order, each followed by its `why` in brackets when the fate is captured (\"Tech (down), Scout\"), and `seen` added when a police officer, a robot or the patrol would see the car leave. The roster shows `flag` on every agent not in the car while the Go card is open; Alt on a fate glyph is `fate`. `noVale` (brief 067, Glyph C5): the Alt line of the Go wedge while Vale is not aboard, the ring's last, never lit way with a struck Vale cameo, taken with the 0.5 s hold, and no other word; Go then withdraws the cell (the engine's Leave ends in Outcome.Withdrawn), the same call as the Withdraw order.",
+   "rule": "Brief 018 (the getaway, section 6.5 and 6.6): the Go card and the roster flag. Nobody left: the card reads `none`. Someone left: `leaves`, with {list} the names in id order, each followed by its `why` in brackets when the fate is captured (\"Tech (down), Scout\"), and `seen` added when a police officer, a robot or the patrol would see the car leave. The roster shows `flag` on every agent not in the car while the Go card is open; Alt on a fate glyph is `fate`. `noVale` (brief 067, Glyph C5): the Alt line of the Go wedge while Vale is not aboard, the ring's last, never lit way with a struck Vale cameo, taken with the 0.5 s hold, and no other word; Go then withdraws the cell (the engine's Leave ends in Outcome.Withdrawn), the same call as the Withdraw order. One line, at most 6 words, a fragment with no full stop (Glyph budget `altline`, brief 067).",
    "none": "Go",
    "leaves": "Go · leaves {list}",
    "why": {
@@ -1793,7 +1793,7 @@
     "captured": "{who} would be captured.",
     "walked": "{who} would walk out."
    },
-   "noVale": "Go without Vale calls off the attempt. The cell gets away to try again."
+   "noVale": "Calls off the attempt; try again"
   },
   "failcam": {
    "rule": "Sky 2026-10-18: on a fail the camera rewinds and orbits what failed the run, with one caption and one tip. The host reads Game.Cause (sim FailCause.cs): `caption[fail][why]` is the line (for `sealed`, why is the origin: desk or heard when the reporter is one of those, else origin.because: response, confirmed, loud-fight); `tip[fail][why]` is the next-time line. {by} is the first culprit in words (`by` for its kind; a camera is names.targets for its id, capitalised; an operative is its speaker name, e.g. The Fixer; a person with a cast role is names.targets, else a passer-by); {agent} is the first of Cause.ops as names.speakers says it (the Enforcer). A caption is at most six words once filled, a tip at most six. Nothing here is a rule.",

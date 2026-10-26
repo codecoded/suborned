@@ -64,7 +64,7 @@ Items 1 to 4 are done, and item 5 was there (Glyph's `briefs/067/glyph.md`, "Wor
 | 3 | `cards.items["rivals.coming"]` | `sight: "always"` (a new value), `at: "rival-car"` kept. The Scout's two lines speak of what he hears ("Car turning in. Orbit Walk, by the sound." · "Engine on Orbit Walk. Not ours."), since nobody sees the turn-in. The 2:46 drop and 3:10 park stay in sight |
 | 4 | `less.done.gain.timetable` | "Timetable" (a bare noun on the car, as "Rounds" is on the patrol) |
 | 5 | `less.done.board.*` (the why chip) | down · inside · stop first · hands full · looping, as Glyph wrote; busy, too far, mission over, restart for the other codes a Board can meet. Same words as the Fire table where the cause is shared. `in-car`: none |
-| 5 | `less.go.noVale` | "Go without Vale calls off the attempt. The cell gets away to try again." (the engine's Leave ends Withdrawn; same call as Withdraw) |
+| 5 | `less.go.noVale` | "Calls off the attempt; try again" (the engine's Leave ends Withdrawn; same call as Withdraw) |
 | 5 | `actions.ring-turn` | "Turn" |
 | 5 | H21 · H22 (priority -8, -9; shown at once, once, ring nothing) | "Cease fire: press X." (Glyph's "X stops fire.", made an imperative with the game's own verb) · "Scroll to switch." New dialogue verb `step-target`; `X` is allowed in the key test (PlayControls binds Cease to X) |
 | 5 | goal-line clash | `less.objective.go` "Leave in the [car]." · H18 "Go: leave in the [car]." · Go's `does` "Leave with whoever is in the car…", `withTarget` "Leave in {target}", `then` "leaves in {target}". "Drive" is the Drive order's label now; the briefing story and speech keep their own "drive off" |
@@ -75,3 +75,4 @@ For Latch (round 1, still open where noted)
 - **Drive cancel:** Cancel stays hidden (CanCancel false). `HostActivity` already prefers `cancelCosts[a.CancelCost]` to the engine's text. `car-driving` is what a new order to the driver or a rider meets when the host cancels first.
 - **Readers still to add:** `less.go.noVale` (the `go` block in `PlayText`); hints H21 and H22 (`HostHints` Trigger and Gone cases). `PlayText.ObjGo`'s fallback "Drive off in the [car]." is stale.
 - "Hide in the service door" (a door stash) reads oddly; "Hide behind the service door" needs a per-target label field. Left.
+- 2026-10-26 (Glyph N5, 0.2.125): `less.go.noVale` cut from 14 words in two sentences to "Calls off the attempt; try again" (6 words, a fragment: Glyph budget `altline`); it is the car ring's only Alt line (`HudToolkit.Ring.cs` draws one only for Go while Vale is struck); test pins the words, ≤ 6 and no full stop; dialogue hash unchanged (text.json is not hashed), no drift. Latch: the `PlayText.GoNoVale` fallback still holds the old line.

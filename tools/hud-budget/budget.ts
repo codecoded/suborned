@@ -9,14 +9,19 @@ import type { Image } from './png';
 
 export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing';
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface Element extends Rect { kind: 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud'; text?: string } // image: art with no text by construction (portraits, the plot scope): its strokes are not read. pop: a refusal pop (an icon and at most POP_MAX.words words, GDD §10). marker: a window marker (the seal: a lock and m:ss under the clock bar, GDD §10), never a goal or hint line
+export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar';
+/** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
+export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'pill' | 'lock' | 'chip' | 'altline';
+export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'pill', 'lock', 'chip', 'altline'];
+export interface Element extends Rect { kind: Kind; text?: string; facts?: string[]; verbs?: string[] } // image: art with no text by construction (portraits, the plot scope): its strokes are not read. pop: a refusal pop (an icon and at most POP_MAX.words words, GDD §10). marker: a window marker (the seal: a lock and m:ss under the clock bar, GDD §10), never a goal or hint line pill, lock, chip, altline, bar: the order pill, the lock pill, the done chip (`facts`, `verbs`), the Alt line and the clock bar (glyph-budget.md; PILL_MAX and the rest below)
 export interface Manifest { state?: State; elements: Element[] }
 export interface Options { state: State; hud?: Image; world?: Image; rects?: Rect[]; manifest?: Manifest }
-export interface Run { x: number; y: number; w: number; h: number; comps: number; words: number; kind: 'hud' | 'speech' | 'beat' | 'line' | 'pop' | 'marker' }
+export interface Run { x: number; y: number; w: number; h: number; comps: number; words: number; kind: 'hud' | TextKind }
 export interface Report {
   width: number; height: number; state: State; mask: 'hud' | 'world' | 'rects';
   coveragePct: number; footprintPct: number; limitPct: number;
   runs: Run[]; sentences: Run[]; blocks: Run[][]; speech: Run[]; beats: Run[]; lines: Run[]; pops: Run[]; markers: Run[];
+  pills: Run[]; locks: Run[]; chips: Run[]; altlines: Run[]; bars: Run[];
   failures: string[]; warnings: string[]; pass: boolean;
 }
 
@@ -42,6 +47,58 @@ export const POP_MAX = { lines: 1, words: 4, onScreen: 3 };
 export const MARKER_MAX = { words: 2 };
 /** A bare clock reading (m:ss or h:mm:ss). A `line` element whose text is only this is the seal's window marker emitted under the old kind: it is read as a marker, never as a second goal line. */
 export const isClock = (t: string | undefined) => /^\s*\d{1,2}:\d{2}(:\d{2})?\s*$/.test(t ?? '');
+
+// ---------------------------------------------------------------- the pieces of GDD v0.26.0 §10 with their own kinds (Glyph's limits, briefs/067/glyph-budget.md, 2026-10-26)
+// Each keeps its words in front of the reader (glyph-r4 §4: never hidden as `hud` or `image`) and is held to its own cap, as `pop` and `marker` are.
+/** The order pill (kind `pill`): the hold's one line on the doer, `<head> · <way> · <time>` plus price marks ("Hold · Drive into the service drive · 29 s"). One line, at most 8 words
+ *  (head 1 or 2, way at most 5, exactly one time figure, at most 2 price marks), `active` only. It shares one slot on screen with the lock pill. [S] */
+export const PILL_MAX = { lines: 1, words: 8, way: 5, times: 1, marks: 2 };
+/** The lock pill (kind `lock`, brief 067 E3): the shut way on hover, `<way> · <reason>` ("Listen to the guard · Already heard"). One line, at most 7 words (way 5, reason 2), `active` only. [S] */
+export const LOCK_MAX = { lines: 1, words: 7, way: 5, reason: 2 };
+/** One pointer, one held way: at most one `pill` or `lock` on screen, in total. */
+export const PILL_SLOT = 1;
+/** The done chip (kind `chip`): the learn chip (face, facts, ›, verb pills). Facts at most 3 rows of at most 2 words; verbs one row of at most 3 one-word pills; at most 9 words a chip; at most 2 chips
+ *  on screen; `rest` and `active`, and in `alt` never over a ring (an element whose text names a ring). Its rows are a list, not running text: inside a chip the sentence and block rules give way to these caps. [S] */
+export const CHIP_MAX = { facts: 3, factWords: 2, verbs: 3, verbWords: 1, words: 9, onScreen: 2, states: ['rest', 'active'] as State[] };
+/** A chip the manifest does not spell (`facts`/`verbs`; today's builds name it only in the parts, `gain-chip-N`): the reader counts its rows, at most 4 (3 facts and the verbs). Its words are
+ *  not capped by the reader: at 1080 the verb pills' rims and the plate's screws read as letters (a two-pill row of "Help", "Pressure" reads 10 words), so a reader cap would fail every chip.
+ *  Such a chip warns until the host spells it; spelled, its caps bite (CHIP_MAX). */
+export const CHIP_READ = { rows: 4 };
+/** The Alt line (kind `altline`): the consequence line under a hovered ring wedge in the Alt state. One line, at most 6 words, a fragment (no full stop inside it), one on screen, `alt` only,
+ *  and it never overlaps other HUD (any other manifest rect but its own ring). [S] */
+export const ALTLINE_MAX = { lines: 1, words: 6, onScreen: 1 };
+/** The clock bar (kind `bar`, the status pill top right): one row of figures and icons, no word of letters, one on screen, in every state, drawn at play size (48 px tall at 1080, the rim
+ *  included; the conversation cutaway too, Glyph §5). Its figures stay `hud` for the running-text rules; the bar adds its own. */
+export const BAR_MAX = { rows: 1, onScreen: 1, h: 48, slack: 1.1, cap: 24 }; // cap: the end caps' width at 1080 (the pill's 24 px padding, HudToolkit.cs), rim art
+
+const UNIT = /^(s|ms|m|%|px|x)$/;
+/** Words as Glyph counts them (glyph-budget §0) for the new kinds: as shown, a keycap one word, the separator `·` not a word, and a figure with its unit one word (`8 s`, `1:55`, `$20,000`,
+ *  `+2`); a segment that is only a label and a figure is one price mark (`siren 1`, `draws 1.0 s`). */
+export function glyphWords(text: string): number { return segments(text).reduce((a, g) => a + segWords(g), 0); }
+/** A pill's fields: its text split at the separator dots. */
+export const segments = (text: string) => text.replace(/<[A-Za-z]+>/g, 'K').split(/\s*·\s*/).map(t => t.trim()).filter(Boolean);
+export function segWords(seg: string): number {
+  const t = seg.split(/\s+/).filter(x => /[\p{L}\p{N}]/u.test(x)), fig = (x: string) => /\d/.test(x);
+  if (t.length >= 2 && t.length <= 3 && !fig(t[0]!) && fig(t[1]!) && (t.length === 2 || UNIT.test(t[2]!))) return 1; // `siren 1`, `draws 1.0 s`: one mark
+  let n = 0; for (let i = 0; i < t.length; i++) { n++; if (fig(t[i]!) && i + 1 < t.length && UNIT.test(t[i + 1]!)) i++; } return n;
+}
+/** A time figure as a pill shows it: `8 s`, `29 s`, `1:55`. */
+export const isTime = (seg: string) => /^\d+(\.\d+)?\s*s$/.test(seg.trim()) || isClock(seg);
+const HEAD = /^(Hold|Let go)$/;
+
+/** Today's manifests (0.2.125) carry the pills and the Alt line as `line`: they are recognised from their text shape until the host tags them (Latch, next build).
+ *  - an order pill: a `·`-separated line headed `Hold` or `Let go`, or ending in a figure ("Hold · Board · 8 s", the walk-in's "to Inez · Listen · 13 s", "Aiming · 1 s");
+ *  - a lock pill: any other `·`-separated line, ending in its reason ("Listen to the guard · Already heard"); the goal line and the hints never carry the dot;
+ *  - an Alt line: in the `alt` state, a line longer than the goal line's six words or holding a full stop before more text ("Go without Vale calls off the attempt. …").
+ *  A clock alone is the seal's marker (as before). Anything else stays a `line`. Its words are never hidden: each recognised piece keeps its text and its caps. */
+export function recognise(e: Element, state: State): Element {
+  if (e.kind !== 'line') return e;
+  const t = e.text ?? '';
+  if (isClock(t)) return { ...e, kind: 'marker' };
+  if (/·/.test(t)) { const g = segments(t); return { ...e, kind: HEAD.test(g[0] ?? '') || /\d/.test(g[g.length - 1] ?? '') ? 'pill' : 'lock' }; } // a lock ends in its reason, words ("Already heard"); a pill ends in its time or a price mark
+  if (state === 'alt' && (glyphWords(t) > LINE_MAX.words || /[.!?]\s+\S/.test(t))) return { ...e, kind: 'altline' };
+  return e;
+}
 
 export function rectMask(w: number, h: number, rects: Rect[]): Uint8Array {
   const m = new Uint8Array(w * h);
@@ -70,6 +127,22 @@ export function popsFromParts(parts: Record<string, number[]>, m: Manifest, size
   return Object.entries(parts).filter(([k]) => /^pop-\d+$/.test(k)).map(([, r]) => ({ kind: 'pop' as const, x: r[0]!, y: r[1]!, w: r[2]!, h: r[3]! }))
     .filter(e => e.w >= 1 && e.h >= 1 && e.x + e.w > 0 && e.y + e.h > 0 && e.x < size.w && e.y < size.h && !named.some(n => Math.abs(n.x - e.x) < 2 && Math.abs(n.y - e.y) < 2));
 }
+const onScreen = (e: Rect, size: { w: number; h: number }) => e.w >= 1 && e.h >= 1 && e.x + e.w > 0 && e.y + e.h > 0 && e.x < size.w && e.y < size.h;
+const overlaps = (a: Rect, b: Rect) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+/** The done chips a picture's parts name (`gain-chip-N`) that its manifest does not: `chip` elements with no `facts`/`verbs` (the reader counts their rows and words). Today's builds leave
+ *  the chips out of the manifest; until the host names them, their words are read, never as running text (glyph-budget §3). */
+export function chipsFromParts(parts: Record<string, number[]>, m: Manifest, size: { w: number; h: number }): Element[] {
+  const named = m.elements.filter(e => e.kind === 'chip');
+  return Object.entries(parts).filter(([k]) => /^gain-chip-\d+$/.test(k)).map(([, r]) => ({ kind: 'chip' as const, x: r[0]!, y: r[1]!, w: r[2]!, h: r[3]! }))
+    .filter(e => onScreen(e, size) && !named.some(n => overlaps(n, e)));
+}
+/** The clock bar the parts name (`pill`, the status pill) when the manifest has no `bar`: one `bar` element, held to one row at play size. */
+export function barFromParts(parts: Record<string, number[]>, m: Manifest, size: { w: number; h: number }): Element[] {
+  const r = parts.pill; if (!r || m.elements.some(e => e.kind === 'bar')) return [];
+  const e = { kind: 'bar' as const, x: r[0]!, y: r[1]!, w: r[2]!, h: r[3]! }; return onScreen(e, size) ? [e] : [];
+}
+/** Everything a picture's parts add to its manifest: the refusal pops, the done chips and the clock bar it does not name. */
+export const fromParts = (parts: Record<string, number[]>, m: Manifest, size: { w: number; h: number }): Element[] => [...popsFromParts(parts, m, size), ...chipsFromParts(parts, m, size), ...barFromParts(parts, m, size)];
 export function maskOf(shot: Image, o: Options): { mask: Uint8Array; how: Report['mask'] } {
   const { w, h } = shot, n = w * h;
   if (o.hud) {
@@ -186,15 +259,36 @@ export function stack(runs: Run[]): Run[][] {
   return blocks;
 }
 
+/** Text rows of a piece: runs whose centres lie within 8 px (at 1080) share a row. A row of a few strokes beside a row of a whole line is the panel's rim meeting a busy picture behind it
+ *  (dark foliage under a bright plate edge breaks into letter-sized strokes), not a second line: it needs a quarter of the strongest row's strokes, and at least three. A run under 0.6 of the
+ *  tallest is a fragment of the rim, not a line (Glyph's review). */
+export function rowsOf(runs: Run[], rim = true): { y: number; comps: number; words: number }[] {
+  const tall = Math.max(0, ...runs.map(r => r.h)), es = rim ? runs.filter(r => r.h >= 0.6 * tall) : runs; // rim = false: rows of different sizes (a chip's fact rows under its taller verb pills) all count
+  const rs = [...es].sort((a, b) => a.y + a.h / 2 - (b.y + b.h / 2)), rows: { y: number; comps: number; words: number }[] = [];
+  for (const r of rs) { const y = r.y + r.h / 2, last = rows[rows.length - 1]; if (last && y - last.y <= 8) { last.comps += r.comps; last.words += r.words; last.y = y; } else rows.push({ y, comps: r.comps, words: r.words }); }
+  const top = Math.max(0, ...rows.map(r => r.comps));
+  return rows.filter(r => r.comps >= Math.max(3, 0.25 * top));
+}
+/** Rows as bands: runs whose vertical extents overlap (chained) are one band. The bar's figures differ in size (the clock is larger) and its screws sit beside them, so a band, not a
+ *  centre within 8 px, is a row there; a wrapped bar has two bands with a clear gap between them. Runs of fewer than three strokes are not counted. */
+export function bands(runs: Run[]): number {
+  const rs = runs.filter(r => r.comps >= 3).sort((a, b) => a.y - b.y); let n = 0, end = -Infinity;
+  for (const r of rs) { if (r.y > end) { n++; end = r.y + r.h; } else end = Math.max(end, r.y + r.h); }
+  return n;
+}
+/** A done chip's words when the manifest spells it (facts and verbs); undefined when only the reader can count it. */
+export const chipWords = (e: Element): number | undefined => e.facts || e.verbs ? [...(e.facts ?? []), ...(e.verbs ?? [])].reduce((a, x) => a + glyphWords(x), 0) : undefined;
+
 export function analyse(shot: Image, o: Options): Report {
   const { w, h } = shot, { mask, how } = maskOf(shot, o); let n = 0; for (const v of mask) n += v;
   const coveragePct = (n / (w * h)) * 100, limitPct = LIMIT[o.state], failures: string[] = [], warnings: string[] = [];
-  const all = textRuns(shot, mask), els = (o.manifest?.elements ?? []).map(e => e.kind === 'line' && isClock(e.text) ? { ...e, kind: 'marker' as const } : e); // a clock alone in a goal-line slot is the seal's marker (GDD §10), not an objective
+  const all = textRuns(shot, mask), els = (o.manifest?.elements ?? []).map(e => recognise(e, o.state)); // today's pills, Alt line and seal clock arrive as `line`: read by their text shape (recognise)
   const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
   const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
-  for (const r of all) { const e = els.find(e => (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker') && inside(r, e)); if (e) { r.kind = e.kind as Run['kind']; } }
+  for (const r of all) { const e = els.find(e => TEXT_KINDS.includes(e.kind) && inside(r, e)); if (e) { r.kind = e.kind as TextKind; } }
   for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker')) for (const r of all) if (inside(r, e)) { r.words = wordsOf(e.text); owner.set(r, e); } }
-  const art = els.filter(e => e.kind === 'image'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line'), popRuns = all.filter(r => r.kind === 'pop'), markerRuns = all.filter(r => r.kind === 'marker');
+  for (const e of els) { const n = e.kind === 'chip' ? chipWords(e) : (e.kind === 'pill' || e.kind === 'lock' || e.kind === 'altline') && e.text ? glyphWords(e.text) : undefined; if (n !== undefined) for (const r of all) if (r.kind === e.kind && inside(r, e)) { r.words = n; owner.set(r, e); } } // the new kinds count as Glyph counts (glyph-budget §0)
+  const art = els.filter(e => e.kind === 'image'), pillRuns = all.filter(r => r.kind === 'pill'), lockRuns = all.filter(r => r.kind === 'lock'), chipRuns = all.filter(r => r.kind === 'chip'), altRuns = all.filter(r => r.kind === 'altline'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line'), popRuns = all.filter(r => r.kind === 'pop'), markerRuns = all.filter(r => r.kind === 'marker');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
   const sentences = READING.includes(o.state) ? [] : hudRuns.filter(isSentence); // the open history is read, so its lines are sentences by design
   const blocks = READING.includes(o.state) ? [] : stack(hudRuns.filter(r => r.words >= 2 && r.comps >= 6)).filter(b => b.length >= 2 && b.reduce((a, r) => a + r.words, 0) >= 4);
@@ -209,13 +303,7 @@ export function analyse(shot: Image, o: Options): Report {
   // Text rows of a line or beat: runs whose centres lie within 8 px share a row. A row of a few strokes beside a row of a whole line is the panel's rim
   // meeting a busy picture behind it (dark foliage under a bright plate edge breaks into letter-sized strokes), not a second line: it needs a quarter of
   // the strongest row's strokes, and at least three.
-  const lines = (all: Run[]) => {
-    const tall = Math.max(0, ...all.map(r => r.h)), es = all.filter(r => r.h >= 0.6 * tall); // a run under 0.6 of the tallest is a fragment of the rim, not a line (Glyph's review)
-    const rs = [...es].sort((a, b) => a.y + a.h / 2 - (b.y + b.h / 2)), rows: { y: number; comps: number }[] = [];
-    for (const r of rs) { const y = r.y + r.h / 2, last = rows[rows.length - 1]; if (last && y - last.y <= 8) { last.comps += r.comps; last.y = y; } else rows.push({ y, comps: r.comps }); }
-    const top = Math.max(0, ...rows.map(r => r.comps));
-    return rows.filter(r => r.comps >= Math.max(3, 0.25 * top)).length;
-  };
+  const lines = (rs: Run[]) => rowsOf(rs).length;
   if (speech.length && stack(speech).some(b => b.length > SPEECH_MAX.lines || wordsIn(b) > SPEECH_MAX.words)) failures.push(`a speech line is longer than ${SPEECH_MAX.lines} lines or ${SPEECH_MAX.words} words`);
   if (beats.length) {
     const bs = els.filter(e => e.kind === 'beat'); if (bs.length > BEAT_MAX.onScreen) failures.push(`${bs.length} story beats on screen (at most ${BEAT_MAX.onScreen})`);
@@ -235,7 +323,77 @@ export function analyse(shot: Image, o: Options): Report {
   }
   const bigMarker = els.find(e => e.kind === 'marker' && e.text && wordsOf(e.text) > MARKER_MAX.words);
   if (bigMarker) failures.push(`a window marker reads "${bigMarker.text}": a lock and m:ss, at most ${MARKER_MAX.words} words`);
-  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, failures, warnings, pass: failures.length === 0 };
+  // the order pill and the lock pill (glyph-budget §1, §2): one slot, one line each, active only
+  const pills = els.filter(e => e.kind === 'pill'), locks = els.filter(e => e.kind === 'lock'), sOf = (e: Element) => `"${e.text ?? '(no text)'}"`;
+  if (pills.length + locks.length > PILL_SLOT) failures.push(`${pills.length + locks.length} pills on screen (an order pill and a lock pill share one slot: at most ${PILL_SLOT})`);
+  for (const e of pills) {
+    const rs = pillRuns.filter(r => inside(r, e)), what = `the order pill ${sOf(e)}`;
+    if (o.state !== 'active') failures.push(`${what} shows in a ${o.state} frame (a pill is active only)`);
+    if (rs.length && lines(rs) > PILL_MAX.lines) failures.push(`${what} wraps over more than one line`);
+    if (e.text) {
+      const g = segments(e.text), head = HEAD.test(g[0] ?? '') ? 1 : 0, way = g[head], rest = g.slice(head + 1), times = rest.filter(isTime).length, marks = rest.length - times;
+      if (glyphWords(e.text) > PILL_MAX.words) failures.push(`${what} is ${glyphWords(e.text)} words (at most ${PILL_MAX.words})`);
+      if (way && segWords(way) > PILL_MAX.way) failures.push(`${what}: its way is ${segWords(way)} words (at most ${PILL_MAX.way})`);
+      if (times > PILL_MAX.times) failures.push(`${what} shows its time ${times} times (once only)`);
+      if (marks > PILL_MAX.marks) failures.push(`${what} carries ${marks} price marks (at most ${PILL_MAX.marks})`);
+    } else if (rs.some(r => r.words > PILL_MAX.words)) failures.push(`${what} is longer than ${PILL_MAX.words} words`);
+  }
+  for (const e of locks) {
+    const rs = lockRuns.filter(r => inside(r, e)), what = `the lock pill ${sOf(e)}`;
+    if (o.state !== 'active') failures.push(`${what} shows in a ${o.state} frame (a pill is active only)`);
+    if (rs.length && lines(rs) > LOCK_MAX.lines) failures.push(`${what} wraps over more than one line`);
+    if (e.text) {
+      const g = segments(e.text), n = glyphWords(e.text), way = g.length > 1 ? g.slice(0, -1).reduce((a, x) => a + segWords(x), 0) : n, reason = g.length > 1 ? segWords(g[g.length - 1]!) : 0;
+      if (n > LOCK_MAX.words) failures.push(`${what} is ${n} words (at most ${LOCK_MAX.words})`);
+      if (way > LOCK_MAX.way) failures.push(`${what}: its way is ${way} words (at most ${LOCK_MAX.way})`);
+      if (reason > LOCK_MAX.reason) failures.push(`${what}: its reason is ${reason} words (at most ${LOCK_MAX.reason})`);
+    } else if (rs.some(r => r.words > LOCK_MAX.words)) failures.push(`${what} is longer than ${LOCK_MAX.words} words`);
+  }
+  // the done chips (glyph-budget §3): a list of facts and verbs, never running text, held to their own caps
+  const chips = els.filter(e => e.kind === 'chip');
+  if (chips.length > CHIP_MAX.onScreen) failures.push(`${chips.length} done chips on screen (at most ${CHIP_MAX.onScreen})`);
+  const rings = els.filter(e => e.kind !== 'chip' && /\bring\b/i.test(e.text ?? '') && onScreen(e, { w, h }));
+  if (chips.length && o.state !== 'alt' && !CHIP_MAX.states.includes(o.state)) failures.push(`a done chip shows in a ${o.state} frame (rest and active only)`);
+  if (o.state === 'alt' && chips.some(c => rings.some(r => overlaps(c, r)))) failures.push('a done chip shows over a ring in the Alt state (never in alt over a ring)');
+  for (const e of chips) {
+    const at = `the done chip at ${e.x},${e.y}`;
+    if (e.facts || e.verbs) {
+      const f = e.facts ?? [], v = e.verbs ?? [];
+      if (f.length > CHIP_MAX.facts) failures.push(`${at} has ${f.length} fact rows (at most ${CHIP_MAX.facts})`);
+      for (const x of f) if (glyphWords(x) > CHIP_MAX.factWords) failures.push(`${at}: the fact "${x}" is ${glyphWords(x)} words (at most ${CHIP_MAX.factWords})`);
+      if (v.length > CHIP_MAX.verbs) failures.push(`${at} has ${v.length} verb pills (at most ${CHIP_MAX.verbs})`);
+      for (const x of v) if (glyphWords(x) > CHIP_MAX.verbWords) failures.push(`${at}: the verb pill "${x}" is ${glyphWords(x)} words (at most ${CHIP_MAX.verbWords})`);
+      const n = chipWords(e) ?? 0; if (n > CHIP_MAX.words) failures.push(`${at} is ${n} words (at most ${CHIP_MAX.words})`);
+    } else {
+      const rows = rowsOf(chipRuns.filter(r => inside(r, e)), false);
+      if (rows.length > CHIP_READ.rows) failures.push(`${at} reads as ${rows.length} rows (at most ${CHIP_MAX.facts} facts and the verbs)`);
+      warnings.push(`${at} is not spelled in the manifest (no facts or verbs): its rows are counted, its word caps wait for the host to name them`);
+    }
+  }
+  // the Alt line (glyph-budget §4): alt only, one line, a fragment of at most six words, never over other HUD
+  const alts = els.filter(e => e.kind === 'altline');
+  if (alts.length > ALTLINE_MAX.onScreen) failures.push(`${alts.length} Alt lines on screen (at most ${ALTLINE_MAX.onScreen}, for the hovered wedge)`);
+  for (const e of alts) {
+    const rs = altRuns.filter(r => inside(r, e)), what = `the Alt line ${sOf(e)}`;
+    if (o.state !== 'alt') failures.push(`${what} shows in a ${o.state} frame (Alt only)`);
+    if (rs.length && lines(rs) > ALTLINE_MAX.lines) failures.push(`${what} wraps over more than one line`);
+    if (e.text && glyphWords(e.text) > ALTLINE_MAX.words) failures.push(`${what} is ${glyphWords(e.text)} words (at most ${ALTLINE_MAX.words})`);
+    else if (!e.text && rs.some(r => r.words > ALTLINE_MAX.words)) failures.push(`${what} is longer than ${ALTLINE_MAX.words} words`);
+    if (e.text && /[.!?]\s*\S/.test(e.text)) failures.push(`${what} is a sentence: a full stop inside it (a fragment only)`);
+    const hit = els.filter(x => x !== e && !/\bring\b/i.test(x.text ?? '') && onScreen(x, { w, h }) && overlaps(x, e));
+    if (hit.length) failures.push(`${what} overlaps ${hit.map(x => `the ${x.kind} "${(x.text ?? '').slice(0, 30)}"`).join(', ')}`);
+  }
+  // the clock bar (glyph-budget §5): one row of figures, at play size, one on screen
+  const cap = BAR_MAX.cap * (h / 1080), inBar = (r: Run, e: Rect) => inside(r, e) && r.x + r.w / 2 > e.x + cap && r.x + r.w / 2 < e.x + e.w - cap; // the end caps' rims and screws are art, not figures
+  const bars = els.filter(e => e.kind === 'bar'), barRuns = all.filter(r => bars.some(e => inBar(r, e)) && !art.some(e => inside(r, e))); // the lamps and pause glyph are art too (the host's image rect)
+  if (bars.length > BAR_MAX.onScreen) failures.push(`${bars.length} clock bars on screen (at most ${BAR_MAX.onScreen})`);
+  for (const e of bars) {
+    const rows = bands(barRuns.filter(r => inBar(r, e))), scale = e.h / (BAR_MAX.h * (h / 1080));
+    if (scale > BAR_MAX.slack) failures.push(`the clock bar is drawn at ${scale.toFixed(1)}x play size (${e.h} px tall; play size is ${BAR_MAX.h} px at 1080)`);
+    if (rows > BAR_MAX.rows) failures.push(`the clock bar reads as ${rows} rows (one row of figures)`);
+    const word = e.text?.split(/\s+/).find(x => /\p{L}{2,}/u.test(x)); if (word) failures.push(`the clock bar carries the word "${word}" (figures and icons only)`);
+  }
+  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, pills: pillRuns, locks: lockRuns, chips: chipRuns, altlines: altRuns, bars: barRuns, failures, warnings, pass: failures.length === 0 };
 }
 
 /** Draw the check onto a copy of the screenshot: HUD mask tinted blue, text runs boxed (red = sentence, green = whitelisted speech or beat, yellow = short text). */

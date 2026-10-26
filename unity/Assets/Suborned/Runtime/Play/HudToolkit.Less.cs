@@ -358,6 +358,9 @@ namespace Suborned.Play
         }
 
         bool InView(Vector2 q) { var sz = root.panel.visualTree.layout.size; return q.x > 0 && q.y > 0 && q.x < sz.x && q.y < sz.y; }
+        /// <summary>Glyph N7 (0.2.125, after 0.2.127): on screen and clear of the roster's band (the column, the Squad and weapons buttons under it): a
+        /// speaker or a pip there would draw behind the roster.</summary>
+        bool InPlay(Vector2 q) => InView(q) && !(column != null && column.resolvedStyle.display != DisplayStyle.None && column.worldBound.width > 0 && q.x < column.worldBound.xMax + 12f && q.y < (squadBtn != null && squadBtn.resolvedStyle.display != DisplayStyle.None ? squadBtn.worldBound.yMax : column.worldBound.yMax) + 40f);
 
         /// <summary>The chips' rule (Sky 2026-10-16): plate_dark's chrome ends 6.5 px in (measured on the art at 1x); every glyph's whole box sits
         /// 4 px clear of it, so a chip is the glyph + 21 px tall; both ends pad alike. Busy chip: pad 16 | icon 14 | 8 | bar (the slack) | 8 |
@@ -537,6 +540,7 @@ namespace Suborned.Play
             {
                 var b = host.Bubbles[i]; if (now - b.Born > life) break;
                 if (host.BubbleWorld(b) is not Vector3 w || !Proj(w, out var p)) continue;
+                if (!InPlay(p) || !Proj(w - Vector3.up * 0.45f, out var hv) || !InPlay(hv)) continue; // Glyph N7 (0.2.125): a speaker off screen has no bubble (one at x -198 drew behind the roster); the feed carries the line
                 bool dup = false; foreach (var x in live) if (x.b.Speaker == b.Speaker) dup = true; if (dup) continue; // one bubble a speaker: the newest
                 live.Add((b, p, Proj(w - Vector3.up * 0.45f, out var hq) ? hq : p));
             }
@@ -1215,7 +1219,7 @@ namespace Suborned.Play
                 var (r, bd, nm) = pipEls[i]; var role = Cast[i];
                 // Glyph 022: a server at a table stands under its parasol: her pip sits on her head (2.05 m), not up at the canopy's height
                 const float lift = 2.3f; // Glyph 022: the served table's parasol is hidden, so the pip stands at its usual height; the stem says whose it is
-                bool on = !m.Ended && !m.BriefingOpen && KnownOf(role) && host.Views?.Find(role) is Transform t && t.gameObject.activeSelf && Proj(t.position + Vector3.up * lift, out var q) && InView(q);
+                bool on = !m.Ended && !m.BriefingOpen && KnownOf(role) && host.Views?.Find(role) is Transform t && t.gameObject.activeSelf && Proj(t.position + Vector3.up * lift, out var q) && InPlay(q); // Glyph N7: no pip behind the roster's band
                 if (!on) { Show(r, false); Show(nm, false); continue; }
                 Proj(host.Views.Find(role).position + Vector3.up * lift, out var at);
                 var rect = new Rect(at.x - 13, at.y - 26, 26, 26);
@@ -1630,8 +1634,10 @@ namespace Suborned.Play
             var placed = new List<Rect>();
             // the HUD groups an edge mark slides clear of (panel space), with 6 px air
             var blocks = new List<Rect>();
-            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, beatsBox, plateStub })
+            foreach (var e in new[] { column, verbPlate, pill, keys, scope, historyKey2, goal, respPill, intel, chip2, sheet, beatsBox, plateStub, squadBtn, freeBtn, freePlate })
                 if (e != null && e.resolvedStyle.display != DisplayStyle.None && e.worldBound.width > 0) { var b = e.worldBound; float air = e == goal ? 12 : e == pill ? 14 : 6; blocks.Add(Rect.MinMaxRect(b.xMin - air, b.yMin - air, b.xMax + air, b.yMax + air)); } // Glyph 016 r2 G: 12 px clear of the goal line; techwatch fix 1: 14 px clear of the status pill, the HUD groups' margin
+            // Glyph N7 (0.2.125): the left column's band is no place for an edge mark (the Squad and weapons buttons stand under the roster): edge marks keep x >= the roster's right + 12
+            if (column != null && column.resolvedStyle.display != DisplayStyle.None && column.worldBound.width > 0) blocks.Add(Rect.MinMaxRect(-100f, -100f, column.worldBound.xMax + 12f, H + 100f));
             // Glyph techwatch r2 A: the street's own marks win over the edge marks, which slide along the edge clear of them (4 px air): the people's
             // pips, the door, car and held markers and the door's next-step chip, and the other small world marks (OtherMarks)
             void WorldBlock(VisualElement e, float w, float h) { if (e == null || e.style.display.value == DisplayStyle.None || e.parent == null) return; float x = e.style.left.value.value, y = e.style.top.value.value; blocks.Add(new Rect(x - 4, y - 4, w + 8, h + 8)); }

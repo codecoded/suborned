@@ -1,0 +1,22 @@
+{
+ "state": "alt",
+ "elements": [
+  {"kind": "image", "x": 14, "y": 14, "w": 86, "h": 416, "text": "roster portraits"},
+  {"kind": "image", "x": 1803, "y": 66, "w": 103, "h": 36, "text": "known people"},
+  {"kind": "image", "x": 14, "y": 934, "w": 212, "h": 132, "text": "plot scope"},
+  {"kind": "image", "x": 2250, "y": 1558, "w": 26, "h": 26, "text": "door marker"},
+  {"kind": "image", "x": 947, "y": 526, "w": 26, "h": 26, "text": "car marker"},
+  {"kind": "image", "x": 14, "y": 438, "w": 86, "h": 30, "text": "squad button"},
+  {"kind": "image", "x": 106, "y": 435, "w": 38, "h": 36, "text": "weapons free toggle"},
+  {"kind": "image", "x": 707, "y": 362, "w": 26, "h": 44, "text": "lock reticle"},
+  {"kind": "image", "x": 1084, "y": -520, "w": 153, "h": 7, "text": "stash plate 1 rim"},
+  {"kind": "image", "x": 1084, "y": -491, "w": 153, "h": 7, "text": "stash plate 1 rim"},
+  {"kind": "image", "x": 2958, "y": 1142, "w": 153, "h": 7, "text": "stash plate 2 rim"},
+  {"kind": "image", "x": 2958, "y": 1171, "w": 153, "h": 7, "text": "stash plate 2 rim"},
+  {"kind": "image", "x": 2838, "y": 1117, "w": 116, "h": 7, "text": "stash plate 3 rim"},
+  {"kind": "image", "x": 2838, "y": 1146, "w": 116, "h": 7, "text": "stash plate 3 rim"},
+  {"kind": "beat", "x": 1590, "y": 987, "w": 54, "h": 16, "text": "In the car"},
+  {"kind": "line", "x": 1431, "y": 965, "w": 348, "h": 26, "text": "Go without Vale calls off the attempt. The cell gets away to try again."},
+  {"kind": "image", "x": 1802, "y": 12, "w": 106, "h": 48, "text": "alert lamps, pause, the pill's end"}
+ ]
+}

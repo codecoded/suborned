@@ -82,7 +82,8 @@ namespace Suborned.Play
                     case "time":
                         {
                             var m = Num.Match(i.Time ?? ""); if (!m.Success) break;
-                            if (o.Do == "board" && i.WalkS > 0) { F("walk", "s_moving", $"{i.WalkS} s"); F("time", "p_time", $"{m.Groups[1].Value} s"); break; } // Glyph r1: "9 s" was walk 8 + board 1; the walk and the boarding apart
+                            // Glyph N1 (0.2.125, GDD §14 hold: walk + act as one time): one figure, the sum, with the clock, for every way with a walk (Board too);
+                            // the walk and the act apart only under Alt (AltLine). It was "Board · walk 7 s · 1 s" on the ring and "Hold · Board · 1 s · 1 s" on the pill
                             int s = int.Parse(m.Groups[1].Value) + System.Math.Max(0, i.WalkS);
                             F("time", "p_time", $"{s} s");
                             break;
