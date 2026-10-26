@@ -106,6 +106,18 @@ const disc = (c: V, r: number, n = 12): V[] => Array.from({ length: n }, (_, i) 
 export type PieceShape = { id: string; parts: { ring: V[]; z0: number; z1: number }[] };
 
 /**
+ * Whether a civic mass is a building drawn by a kit piece rather than dressing beside one, read from the export's own links, never the piece's name:
+ * the body above a ground-storey piece carries `groundBy` (the café's body, drawn by CafeUpper_3 / _4 since brief 066), and the ground storey is the mass
+ * a body's `groundBy` names (CafeBay_v2). Such a mass blocks sight as the mass it is, whichever adopted piece draws it (the world places only adopted
+ * pieces: tools/world/civic/dress.ts `put`). tools/sim/solids.ts reads the same links for its faces. CafeBay stays named for worlds written before
+ * `groundBy` (pinned runs).
+ */
+export function dressesMass(civic: Mass[]): (m: Mass) => boolean {
+  const grounds = new Set(civic.flatMap(m => (m.groundBy ? [m.groundBy] : [])));
+  return m => !!m.groundBy || grounds.has(m.id) || m.kit?.id === 'CafeBay' || m.kit?.id === 'CafeBay_v2';
+}
+
+/**
  * Every blocker within `near` (plan box, x0 x1 y0 y1) of the generated world. `pieces`: shapes to use in place of named civic kit
  * masses (the Records Office entrances: their piers, cheeks and marquee from the block's dressing). Civic kit pieces not named and
  * not dressing that stands over people (cypress, parasol, shelter, fountain) are left out: lamps, bollards, planters, beds, tables, inlay.
@@ -118,15 +130,14 @@ export function blockersOf(w: World, near: [number, number, number, number], pie
   for (const ms of w.megastructures) for (const m of ms.parts) arch(m, true);
   for (const l of w.levels) for (const d of l.decks) if (l.height > 0 && inside(d.ring)) out.push({ id: d.id, ring: d.ring, z0: l.height - d.thickness, z1: l.height, fade: false, kind: 'architecture' });
   for (const m of [...w.transit.stations, ...w.transit.stops]) if (m.height > 2.2) arch(m, false);
-  const named = new Map(pieces.map(p => [p.id, p]));
+  const named = new Map(pieces.map(p => [p.id, p])), dressed = dressesMass(w.civic);
   for (const m of w.civic) {
     if (!inside(m.ring)) continue;
     const shape = named.get(m.id);
     if (shape) { shape.parts.forEach((q, i) => out.push({ id: `${m.id}#${i}`, ring: q.ring, z0: q.z0, z1: q.z1, fade: !!m.fade, kind: 'architecture' })); continue; }
-    if (!m.kit) { arch(m, true); continue; } // the café, the Office and its towers
+    if (!m.kit || dressed(m)) { arch(m, true); continue; } // the café (ground storey and body, whatever pieces draw them), the Office and its towers
     const k = m.kit.id, top = m.base + m.height;
-    if (k === 'CafeBay' || k === 'CafeBay_v2') arch(m, true); // the café's ground storey
-    else if (/^Cypress/.test(k)) out.push({ id: m.id, ring: ringScaled(m.ring, 0.55), z0: m.base + 0.8, z1: top, fade: !!m.fade, kind: 'dressing' });
+    if (/^Cypress/.test(k)) out.push({ id: m.id, ring: ringScaled(m.ring, 0.55), z0: m.base + 0.8, z1: top, fade: !!m.fade, kind: 'dressing' });
     else if (/^Parasol/.test(k)) out.push({ id: m.id, ring: m.ring, z0: m.base + 2.07, z1: top, fade: !!m.fade, kind: 'dressing' });
     else if (/^BoardingPavilion/.test(k)) out.push({ id: m.id, ring: m.ring, z0: top - 0.4, z1: top, fade: !!m.fade, kind: 'dressing' });
     else if (k === 'AtomFountain') out.push({ id: m.id, ring: ringScaled(m.ring, 0.25), z0: m.base, z1: top, fade: false, kind: 'dressing' });
