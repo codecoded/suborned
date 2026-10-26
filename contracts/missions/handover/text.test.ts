@@ -45,6 +45,9 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   push('briefing.page.target', b.page.target); push('briefing.page.ending', b.page.ending);
   for (const [k, w] of Object.entries(b.page.ways)) { push(`briefing.page.ways.${k}.when`, w.when, false, 16); push(`briefing.page.ways.${k}.line`, w.line); }
   for (const [k, s] of Object.entries(b.page.cell)) push(`briefing.page.cell.${k}`, s);
+  for (const [k, s] of Object.entries(b.page.heads.ways)) push(`briefing.page.heads.ways.${k}`, s, false, 16);
+  for (const k of ['where', 'clock', 'heat'] as const) push(`briefing.page.heads.${k}`, b.page.heads[k], false, 16);
+  for (const [k, s] of Object.entries(b.page.captions ?? {})) push(`briefing.page.captions.${k}`, s, false, 40);
   for (const [k, x] of Object.entries(t.targets)) {
     push(`targets.${k}.about`, x.about);
     if (x.watched) push(`targets.${k}.watched`, 'Learned: ' + x.watched); if (x.routine) push(`targets.${k}.routine`, 'Learned: ' + x.routine); if (x.heard) push(`targets.${k}.heard`, x.heard);
@@ -94,7 +97,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     for (const [g, m] of Object.entries({ need: L.intel.need, temperament: L.intel.temperament, secret: L.intel.secret, verb: L.intel.verb })) for (const [k, x] of Object.entries(m)) push(`less.intel.${g}.${k}`, x.replace('{name}', 'Inez'), false, 20); }
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
   // briefs 058, 059, 062 (GDD v0.25.0): the briefing's labels, and the words waiting for the engine (`pending`), held to the same limits as the live ones
-  for (const k of ['begin', 'target', 'fact', 'office'] as const) push(`less.briefing.${k}`, t.less.briefing[k], false, 24);
+  for (const k of ['begin', 'target'] as const) push(`less.briefing.${k}`, t.less.briefing[k], false, 24);
   for (const [k, x] of Object.entries(t.less.briefing.ways)) push(`less.briefing.ways.${k}`, x, false, 16);
   const pe = t.pending;
   if (pe) {
@@ -270,6 +273,24 @@ describe('times and numbers agree with the mission', () => {
     expect([...p.clock].sort((a, b) => marks.indexOf(a) - marks.indexOf(b))).toEqual(p.clock);
     expect(Object.keys(p.cell).sort()).toEqual([...AGENTS].sort());
     expect(JSON.stringify(t.briefing).replace(/"rule":"[^"]*"/g, '')).not.toMatch(/\b(day|night)\b/i);
+  });
+  test('the briefing page\'s heads (brief 070, Latch on 0.2.130): one for the mission\'s count of ways, from the data; Where, The clock, Heat; a few plain words, no sentence', () => {
+    const h = t.briefing.page.heads; const bj = json('contracts/missions/handover/brief.json') as { ways: { id: string }[] };
+    expect(h.ways[String(bj.ways.length)]).toBe('Two ways in');
+    for (const [n, x] of Object.entries(h.ways)) expect(x, n).toMatch(/^[A-Z][a-z]+ ways? in$/);
+    expect(h.ways['1']).toBe('One way in');
+    expect([h.where, h.clock, h.heat]).toEqual(['Where', 'The clock', 'Heat']);
+    for (const x of [...Object.values(h.ways), h.where, h.clock, h.heat]) { expect(x.split(/\s+/).length, x).toBeLessThanOrEqual(4); expect(x, x).not.toMatch(/[.!?:]/); }
+  });
+  test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 6:10 station is one fragment', () => {
+    const p = t.briefing.page; const m = json('contracts/missions/handover/mission.json') as { points: { id: string }[]; destinations: Record<string, unknown> };
+    expect(p.ways['front-door'].line).toBe('Turn her to call him off the door, and loop his camera.');
+    expect(p.ways['front-door'].line).not.toMatch(/\s\S{1,3}\.$/); // never ends on a lone short word ("it.")
+    expect(p.captions).toEqual({ 'service-bay': "Vale's car at the service bay" });
+    for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
+    expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/);
+    const at = t.briefing.timeline.find((x) => x.at === '6:10')!.label;
+    expect(at).toBe('Vale at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/);
   });
   test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 6:10, turned he waits until 8:30', () => {
     const c = t.briefing.clock.line; expect(c).toMatch(/6:10/); expect(c).toMatch(/8:30/); expect(c).toMatch(/turn/);
@@ -1609,7 +1630,8 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
   test('the briefing (brief 062): Begin and the file card\'s labels; the cell strip\'s jobs and Day / Night retired (brief 070)', () => {
     const b = L.briefing;
     expect(b as Record<string, unknown>).not.toHaveProperty('job'); // brief 070: the page says one line per face (briefing.page.cell)
-    expect([b.begin, b.target, b.fact, b.office]).toEqual(['Begin', 'Target', 'Alive', 'Records Office']);
+    expect([b.begin, b.target]).toEqual(['Begin', 'Target']);
+    for (const k of ['fact', 'office']) expect(b as Record<string, unknown>, k).not.toHaveProperty(k); // brief 070: the page reads neither (Latch)
     expect(b as Record<string, unknown>).not.toHaveProperty('day'); expect(b as Record<string, unknown>).not.toHaveProperty('night'); // brief 070 (Sky): night is not a toggle
     expect(Object.keys(b.ways).sort()).toEqual(['front-door', 'pickup']);
     expect(JSON.stringify(b)).not.toMatch(GENDER);

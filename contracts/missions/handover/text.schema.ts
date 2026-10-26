@@ -269,8 +269,7 @@ export const Less = z.strictObject({
   briefing: z.strictObject({
     rule: z.string().min(1), goal: Short(32),
     begin: Short(12).describe('brief 062: the light-line item that starts the mission (always focused; Space begins)'),
-    target: Short(12).describe('brief 062: the header of the file card'), fact: Short(12).describe('brief 062: the one fact on the file card, beside the take icon'),
-    office: Short(24).describe('brief 062: the tag over the Office canopy'),
+    target: Short(12).describe('brief 062: the header of the file card (brief 070: the page\'s Target head); `fact` and `office` (the street overlay\'s file-card fact and Office tag) are retired with it'),
     ways: z.record(code, Short(16)).describe('brief 062: the name of each way in on the two way cards, by the mission\'s way id (front-door, pickup)'),
   }),
   end: z.strictObject({
@@ -421,8 +420,15 @@ export const TextFile = z.strictObject({
       target: Line.describe('the line under the target\'s one fact on the file card'),
       ways: z.record(code, z.strictObject({ when: Short(16).describe('the plate beside the way\'s name: when it works'), line: Line.describe('the way\'s second sentence, after its hint') })),
       ending: Line.describe('the line under the getaway car\'s still: both ways end there'),
+      captions: z.record(code, Short(40)).optional().describe('brief 070 (Glyph N11): a still\'s caption by its pin\'s place (stills.json pins[].place, less any "d:"), where the target\'s name alone would not say where; a pin without one takes targets.<key>.name'),
       clock: z.array(clock).min(1).describe('the stations the page\'s clock shows, in order; each a briefing.timeline mark, worded by its label'),
       cell: z.record(z.enum(AGENTS), Line).describe('one line under each face, about this mission'),
+      heads: z.strictObject({
+        ways: z.record(z.string().regex(/^[1-9]$/), Short(16)).describe('the head over the ways in, keyed by how many ways the mission has (brief.json ways.length): "Two ways in"; the host picks the key, so the count comes from the data'),
+        where: Short(16).describe('the head over the plan of the block'),
+        clock: Short(16).describe('the head over the clock\'s stations'),
+        heat: Short(12).describe('the label beside the cell\'s Heat word (briefing.heat)'),
+      }).describe('brief 070 (Latch on 0.2.130: the page showed no heads): the page\'s section heads, Glyph\'s mock; the Target head is less.briefing.target'),
     }).describe('brief 070: the briefing as a full-screen page (Glyph\'s mock), modal until Begin; outside play'),
   }),
   targets: z.record(z.string(), Target),

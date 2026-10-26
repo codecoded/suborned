@@ -6,31 +6,41 @@
 // The text check looks only inside the HUD mask. Speech and story beats are whitelisted by a manifest (rects with a kind), because a screenshot cannot tell
 // a spoken line from a rule printed on a card. Without a manifest every running line fails, which is the safe answer.
 import type { Image } from './png';
+import { checkPage, type PagePart } from './page';
 
-export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing';
+/** `page`: a full-screen page outside play (the briefing page, GDD v0.27.0 §10), judged by its own checks (page.ts), never by coverage or the reading caps.
+ *  `briefing`: RETIRED with the street overlay (brief 062 B, gone in v0.27.0); kept only so the archived street-briefing fixtures still judge as they were shot. */
+export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing' | 'page';
 export interface Rect { x: number; y: number; w: number; h: number }
-export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar';
+export type Kind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud' | 'pill' | 'lock' | 'chip' | 'altline' | 'bar' | 'pin' | 'paper' | 'band'; // pin, paper, band: the page's (page.ts)
 /** The kinds whose words the reader takes from the manifest and holds to their own caps (never as running text). A `bar`'s figures stay `hud`: they still face the running-text rules. */
 export type TextKind = 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'pill' | 'lock' | 'chip' | 'altline';
 export const TEXT_KINDS: readonly Kind[] = ['speech', 'beat', 'line', 'pop', 'marker', 'pill', 'lock', 'chip', 'altline'];
-export interface Element extends Rect { kind: Kind; text?: string; facts?: string[]; verbs?: string[] } // image: art with no text by construction (portraits, the plot scope): its strokes are not read. pop: a refusal pop (an icon and at most POP_MAX.words words, GDD §10). marker: a window marker (the seal: a lock and m:ss under the clock bar, GDD §10), never a goal or hint line pill, lock, chip, altline, bar: the order pill, the lock pill, the done chip (`facts`, `verbs`), the Alt line and the clock bar (glyph-budget.md; PILL_MAX and the rest below)
+export interface Element extends Rect {
+  kind: Kind; text?: string; facts?: string[]; verbs?: string[];
+  /** The page's pieces (state `page`, page.ts): its part (read from text and layout when absent), a pin's number or `car`, the rows as wrapped, and an id a child names as its `parent`. */
+  part?: PagePart; n?: number | string; rows?: string[]; id?: string; parent?: string;
+} // image: art with no text by construction (portraits, the plot scope): its strokes are not read. pop: a refusal pop (an icon and at most POP_MAX.words words, GDD §10). marker: a window marker (the seal: a lock and m:ss under the clock bar, GDD §10), never a goal or hint line pill, lock, chip, altline, bar: the order pill, the lock pill, the done chip (`facts`, `verbs`), the Alt line and the clock bar (glyph-budget.md; PILL_MAX and the rest below)
 export interface Manifest { state?: State; elements: Element[] }
 export interface Options { state: State; hud?: Image; world?: Image; rects?: Rect[]; manifest?: Manifest }
 export interface Run { x: number; y: number; w: number; h: number; comps: number; words: number; kind: 'hud' | TextKind }
 export interface Report {
   width: number; height: number; state: State; mask: 'hud' | 'world' | 'rects';
-  coveragePct: number; footprintPct: number; limitPct: number;
+  coveragePct: number; footprintPct: number; /** null: the state has no coverage limit (`page`) */ limitPct: number | null;
   runs: Run[]; sentences: Run[]; blocks: Run[][]; speech: Run[]; beats: Run[]; lines: Run[]; pops: Run[]; markers: Run[];
   pills: Run[]; locks: Run[]; chips: Run[]; altlines: Run[]; bars: Run[];
   failures: string[]; warnings: string[]; pass: boolean;
+  /** state `page`: the words the page reads (glyph-budget §0), its cap is page.ts PAGE.words */
+  pageWords?: number;
 }
 
 /** Fail above this share of the screen at rest (brief 014: about 15%); an open order card and the Alt layer get more room. `log`: the history panel
  *  the player opens to read (Glyph; a reading surface, only while open): 18% (the open panel measures 17.0 to 17.5%), and its lines may be sentences.
- *  `briefing`: the full-screen briefing card before play (title and copy): the same room and the same freedom. */
-export const LIMIT: Record<State, number> = { rest: 15, active: 22, alt: 30, log: 18, briefing: 18 };
+ *  `briefing` (retired: the street overlay): the briefing card before play (title and copy): the same room and the same freedom. `page` has no limit: a full-screen page
+ *  is 100% by design (glyph-page-budget §1). */
+export const LIMIT: Record<Exclude<State, 'page'>, number> = { rest: 15, active: 22, alt: 30, log: 18, briefing: 18 };
 /** The states that are reading surfaces the player opens or meets before play (the history log; the briefing card): their lines are sentences by design. */
-export const READING: State[] = ['log', 'briefing'];
+export const READING: State[] = ['log', 'briefing', 'page'];
 /** The briefing's reading copy (its hook and objective: manifest `hud` elements of three or more words, on screen) is exempt from the running-text rule, so it gets its own cap: it is the one
  *  place the game may read a sentence, and a modal screen is where "the reading is too much" would creep back. Shipped 0.2.122: 2 lines, 13 words (hook 6, objective 7). [S] starting value. The
  *  objective is NOT a `line` here: a `line` is the in-play goal or hint (at most six words, one at a time); the briefing's objective is the dossier's sentence, and the play goal that follows Begin is the short line. */
@@ -281,8 +291,14 @@ export const chipWords = (e: Element): number | undefined => e.facts || e.verbs 
 
 export function analyse(shot: Image, o: Options): Report {
   const { w, h } = shot, { mask, how } = maskOf(shot, o); let n = 0; for (const v of mask) n += v;
-  const coveragePct = (n / (w * h)) * 100, limitPct = LIMIT[o.state], failures: string[] = [], warnings: string[] = [];
-  const all = textRuns(shot, mask), els = (o.manifest?.elements ?? []).map(e => recognise(e, o.state)); // today's pills, Alt line and seal clock arrive as `line`: read by their text shape (recognise)
+  const coveragePct = (n / (w * h)) * 100, failures: string[] = [], warnings: string[] = [];
+  const all = textRuns(shot, mask);
+  if (o.state === 'page') { // the page's own checks (page.ts): no coverage limit, no running-text, block or reading cap
+    const pg = checkPage(shot, mask, o.manifest?.elements ?? [], () => paperTexture(shot, mask));
+    if (!o.manifest) pg.failures.unshift('a page needs its manifest: every word on it is a manifest element');
+    return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct: null, runs: all, sentences: [], blocks: [], speech: [], beats: [], lines: [], pops: [], markers: [], pills: [], locks: [], chips: [], altlines: [], bars: [], failures: pg.failures, warnings: pg.warnings, pass: pg.failures.length === 0, pageWords: pg.words };
+  }
+  const limitPct = LIMIT[o.state], els = (o.manifest?.elements ?? []).map(e => recognise(e, o.state)); // today's pills, Alt line and seal clock arrive as `line`: read by their text shape (recognise)
   const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
   const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
   for (const r of all) { const e = els.find(e => TEXT_KINDS.includes(e.kind) && inside(r, e)); if (e) { r.kind = e.kind as TextKind; } }
@@ -294,6 +310,7 @@ export function analyse(shot: Image, o: Options): Report {
   const blocks = READING.includes(o.state) ? [] : stack(hudRuns.filter(r => r.words >= 2 && r.comps >= 6)).filter(b => b.length >= 2 && b.reduce((a, r) => a + r.words, 0) >= 4);
   if (coveragePct > limitPct) failures.push(`HUD covers ${coveragePct.toFixed(1)}% of the screen (limit ${limitPct}% ${o.state})`);
   else if (o.state === 'rest' && coveragePct > WARN_REST) warnings.push(`HUD covers ${coveragePct.toFixed(1)}% at rest (aim under ${WARN_REST}%)`);
+  if (o.state === 'briefing') warnings.push('the `briefing` state is retired with the street overlay (GDD v0.27.0 §10): the briefing page is tagged `page` and judged by its own checks');
   if (o.state === 'briefing' && o.manifest) { // the reading surface's own budget (see BRIEFING_READING); an element outside the screen (a hidden place label) is not on show
     const read = els.filter(e => e.kind === 'hud' && e.text && wordsOf(e.text) >= SENTENCE_WORDS && e.x < w && e.y < h && e.x + e.w > 0 && e.y + e.h > 0), words = read.reduce((a, e) => a + wordsOf(e.text!), 0);
     if (read.length > BRIEFING_READING.lines || words > BRIEFING_READING.words) failures.push(`the briefing reads ${read.length} sentence${read.length === 1 ? '' : 's'}, ${words} words (at most ${BRIEFING_READING.lines} and ${BRIEFING_READING.words})`);
@@ -394,6 +411,16 @@ export function analyse(shot: Image, o: Options): Report {
     const word = e.text?.split(/\s+/).find(x => /\p{L}{2,}/u.test(x)); if (word) failures.push(`the clock bar carries the word "${word}" (figures and icons only)`);
   }
   return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, pills: pillRuns, locks: lockRuns, chips: chipRuns, altlines: altRuns, bars: barRuns, failures, warnings, pass: failures.length === 0 };
+}
+
+/** The share (%) of the frame outside the HUD layer (and 2 px clear of it) that is textured, not flat: a page's paper reads about 1%, the street 25 to 45% (0.2.130). Sampled every 2 px. */
+export function paperTexture(shot: Image, mask: Uint8Array): number {
+  const W = shot.w, H = shot.h, L = (i: number) => 0.299 * shot.data[i * 4]! + 0.587 * shot.data[i * 4 + 1]! + 0.114 * shot.data[i * 4 + 2]!; let n = 0, tex = 0;
+  for (let y = 2; y < H - 2; y += 2) for (let x = 2; x < W - 2; x += 2) {
+    let hud = false; for (let dy = -2; dy <= 2 && !hud; dy++) for (let dx = -2; dx <= 2; dx++) if (mask[(y + dy) * W + x + dx]) { hud = true; break; }
+    if (hud) continue; n++; const i = y * W + x, l = L(i); let mx = 0; for (const d of [1, -1, W, -W, 2, -2, 2 * W, -2 * W]) mx = Math.max(mx, Math.abs(L(i + d) - l)); if (mx > 6) tex++;
+  }
+  return n ? (tex / n) * 100 : 0;
 }
 
 /** Draw the check onto a copy of the screenshot: HUD mask tinted blue, text runs boxed (red = sentence, green = whitelisted speech or beat, yellow = short text). */

@@ -52,3 +52,15 @@ The page shows each way as two sentences: the hint after "Name: ", then `ways.<i
 - `brief.json clock` (Waymark) still lights 5:30 and ends at 8:30. The page doesn't read it.
 - PlayText.cs:501 (Latch) has a fallback ClockLine ending "the district closes at 8:30". It only shows when text.json is missing.
 - `less.briefing.job` (Eyes, People, Machines, Force) is the old on-street cell strip. The page uses `briefing.page.cell` instead, so it can be retired once Latch's page lands.
+
+## 6. Section heads (Latch on 0.2.130: the page showed none) and two retired labels
+- New `briefing.page.heads` (all in text.json, schema `text.schema.ts`, test `text.test.ts`): `ways` is keyed by how many ways the mission has ("1" One way in · "2" Two ways in · "3" Three ways in · "4" Four ways in), so the page picks `heads.ways[brief.json ways.length]` and the count comes from the data. `where` "Where" (over the plan), `clock` "The clock" (over the stations), `heat` "Heat" (beside the Heat word, as on the mock; Glyph and Latch decide whether it shows next to the eye). The Target head stays where Briefing.cs already reads it: `less.briefing.target` "Target".
+- Retired: `less.briefing.fact` ("Alive") and `less.briefing.office` ("Records Office"). Nothing reads them: Briefing.cs takes only `target`, `begin` and `ways.*`, and the plan names its buildings from the stills data. The hud-budget fixture's "Records Office" is a recorded 0.2.122 manifest, not a reader.
+- Drift declared (a536dc833fa6, covers no rule). `bun test contracts/missions tools/dialogue`: 213 pass, 0 fail; `bun run typecheck` clean.
+- Latch: PlayText's BriefWords flattens only `less.briefing`, so it won't see the heads. Load them with the rest of `briefing.page` in HostBriefing BriefScreen.Load.
+
+## 7. Glyph's word nits on 0.2.130 (N7, N11, N12)
+- N7: `briefing.page.ways.front-door.line` "Turn her to call him off the door, and loop his camera." (no stranded "it.").
+- N11: new optional `briefing.page.captions`, keyed by the pin's place (stills.json `pins[].place`, less any "d:"): `service-bay` "Vale's car at the service bay". `targets.car-official` stays "Vale's car" (play uses it; the car also stops at the drive's mouth). Latch: in HostBriefing, take `captions[place]` before `Cap1(targets[key])`.
+- N12: `briefing.timeline` 6:10 label "Vale at his car; unless turned, the driver leaves" (one fragment; still matches tools/sim/site.ts `/Vale at his car/`; `short` unchanged).
+- Drift declared (d96ccff4efc7, covers no rule). `bun test contracts/missions/handover/`: 165 pass, 1 fail, which is not these words: "every engine log code is spoken" now sees `entry.seen`, `entry.stopped` and `entry.reported` from the uncommitted GameEntrySeen.cs, and the owner of that engine work has to word or silence them. `briefstills` + `tools/levels/dialogue`: 15 pass. `bun run typecheck` clean.

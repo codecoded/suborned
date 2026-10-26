@@ -72,7 +72,7 @@ describe('the 013 play HUD (before) and the 014 redesign (after)', () => {
   for (const k of ['04', '08', '12']) {
     test(`after ${k}: within budget, no running text outside the manifest`, () => {
       const m = json<Manifest>(`after-${k}.manifest.json`), r = analyse(png(`after-${k}.png`), { state: m.state!, hud: png(`after-${k}.hud.png`), manifest: m });
-      expect(r.failures).toEqual([]); expect(r.pass).toBe(true); expect(r.coveragePct).toBeLessThan(LIMIT[m.state!]); expect(r.sentences).toEqual([]);
+      expect(r.failures).toEqual([]); expect(r.pass).toBe(true); expect(r.coveragePct).toBeLessThan(LIMIT[m.state as keyof typeof LIMIT]); expect(r.sentences).toEqual([]);
     });
   }
   test('after 08 without its manifest: the beats are running text, so it fails (a screenshot cannot tell speech from a rule)', () => {
@@ -120,7 +120,9 @@ describe('a line drawn on the HUD layer is not text', () => {
   });
 });
 
-describe('the briefing card (a reading surface before play)', () => {
+// RETIRED rule (GDD v0.27.0 §10: the briefing is a page now, judged as `page` below). The `briefing` state stays only for these archived street-overlay captures, so the
+// old card and the 062 street briefing still judge as they were shot; no build emits it. Kept, not deleted: they prove the retired state did not loosen the in-play rules.
+describe('RETIRED: the briefing card (a reading surface before play)', () => {
   const f = join(import.meta.dir, '../../briefs/022/latch/briefing-turn-keys');
   test('its title and copy are not in-play running text: as briefing it passes, as rest it fails', () => {
     if (!existsSync(f + '.png') || !existsSync(f + '.hud.png')) return;
@@ -129,7 +131,7 @@ describe('the briefing card (a reading surface before play)', () => {
   });
 });
 
-describe('the street briefing (brief 062 B: a modal reading surface, scrim outside the HUD layer)', () => {
+describe('RETIRED: the street briefing (brief 062 B: a modal reading surface, scrim outside the HUD layer)', () => {
   // fixtures/briefing-b.manifest.json = batch 0.2.122's briefing-day.manifest.json (state briefing; hook 6 words and objective 7 as `hud`, a hidden place label off screen)
   const man = JSON.parse(readFileSync(join(import.meta.dir, 'fixtures/briefing-b.manifest.json'), 'utf8')) as Manifest, shot = flat(1920, 1080), rects = [{ x: 1448, y: 132, w: 408, h: 748 }, { x: 64, y: 58, w: 349, h: 108 }];
   const run = (m: Manifest, state: 'briefing' | 'rest' = 'briefing') => analyse(shot, { state, rects, manifest: m });

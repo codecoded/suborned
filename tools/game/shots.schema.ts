@@ -13,7 +13,7 @@
 //   briefing  true: tick 0 with the briefing card up (nothing starts the clock); otherwise the shot starts the clock and the card goes.
 //   night     the look of the district: day or night (look only; the run is the same).
 //   hud       true: the frame and its HUD layer, manifest and parts for the HUD budget, and the layout audit run on it; false: the world with no HUD, png only.
-//   state     the budget state of a HUD shot: rest, active or alt (briefing and log are chosen by the game itself).
+//   state     the budget state of a HUD shot: rest, active or alt (page, the briefing page, and log are chosen by the game itself).
 //   select / arm / pointer / intel   what the player has done before the shot: the selected agent, the verb armed (plate id), the cursor ([0..1, 0..1] of the screen), the Intel sheet open.
 //   hover     a view key the pointer rests on (its head, the camera's lens, a car's door height), placed after the camera: what a hover shows (the chip, the marker)
 //   mark      false: the hover marker's action disc is not drawn (a before shot for brief 038's marker); default true

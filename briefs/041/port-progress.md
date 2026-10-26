@@ -1161,3 +1161,121 @@ The budget limits for Splice are in `briefs/067/glyph-budget.md`. They give new 
   - The page has no "Two ways in / Where / The clock" heads, because text.json has no words for them (Fable).
   - The guard's still has a dark glass background.
 - `less.briefing.fact` ("Alive") and `office` are no longer read by the page (Fable may retire them).
+
+## Glyph 2x (0.2.130) briefing page (Glyph, 2026-10-26; review only, no code, no Unity)
+**Verdict: NOT SHIP yet. One short round (N1 to N8), then Sky sees it.**
+
+The page does what Sky asked for, and it's clearer than the street overlay was. It follows the mock and GDD v0.27.0 §10:
+- the title, hook and objective;
+- Vale's file card;
+- two ways, each with its words and stills;
+- the getaway car as the shared ending;
+- the plan with the same pins;
+- the five clock stations;
+- the four cell lines;
+- the purse and Heat;
+- Begin, with no Day / Night.
+
+It's the same layout at 1080 and 2160: the 2160 shot downscaled differs from the 1080 shot in 0.3 % of pixels, all antialiasing. At 2x nothing clips and the plates and band sit square.
+
+Four faults sit where Sky will look first:
+- the guard's still is a dark void;
+- the plan's label sits under a pin;
+- the driver is too small to find in his still;
+- world markers show in two "HUD off" stills.
+
+**Looked at:**
+- frontend-1080/briefing.png and frontend-2160/briefing.png against briefs/070/glyph/briefing-page-mock.png. My crops of the 2160 page (plan, front door, clock, right column, band) are in out/scratch/glyph/r130/.
+- start-1-begin.png and start-2-glide.png.
+- The five stills at full size, with stills.json.
+- budget/briefing-day.manifest.json and logs/budget.log.
+
+### The three changed framings
+- **Inez at 0:03: reads. Keep it.**
+  - Head to waist, facing us, café counter behind her, lit warm.
+  - This is the best still on the page.
+- **The guard from in front of his door: doesn't read (N1).**
+  - The person reads, but the place doesn't.
+  - Behind him is the open doorway, an interior we don't build: a flat blue-grey void between two brown posts.
+  - He's lit dim, and it's the one dark slab on a bright page.
+- **The getaway car, low off its end: reads, with a note (N5).**
+  - In the tall slot it reads at once as "our car at the kerb", and the plaza behind places it.
+  - But this is the closest any camera gets to the car. The model is a soft untextured peach shape with no chrome, so up close it looks like a stand-in.
+- **The driver** (unchanged rule, zoom 9): the scene reads, but the driver is about 18 px tall in the 372 px slot (N3).
+- **The service bay:** reads. The car is in the bay with the blue door beside it (N4 for the markers).
+
+### The lift (start-1-begin)
+- **Passes.** The page fades over the camera at the Records Office front, and the door with its awning is centred.
+- It's a dissolve rather than a lift. Mid-fade the page and the street are both half there, which looks muddy in a still. In motion it's under a second, so it's fine (N9, optional).
+
+### Nits (owner, exact fix)
+**N1 · The guard's still is a dark void. (Latch.)**
+- Keep the profile rule, but turn the camera 35 to 45° off the door's normal, toward the landing. Then the background is the lit Office façade and its doors, not the open doorway.
+- If that's blocked, close the door leaves for the still.
+- Same key light as Inez.
+
+**N2 · The plan's "Records Office" label sits under pin 2. (Latch.)**
+- Put the name inside the Office outline, centred, in two lines ("Records / Office"), as in the mock.
+- Give the label a 4 px keep-out from every pin.
+- Emit the plan's labels and pins as manifest elements (glyph-page-budget 2.2), so the tool catches this next time.
+
+**N3 · The driver is too small. (Latch.)**
+- brief-driver: zoom 9 → 5 or 6, centred on the driver and the car's near end. He should be at least a third of the still's height, with the car and the Office door still in frame.
+
+**N4 · World markers in HUD-off stills. (Latch.)**
+- brief-service-bay shows:
+  - the turquoise rings under four people;
+  - the dashed patrol route with its arrows;
+  - the dashed rounded wait box.
+- brief-getaway shows a ring under the far figure.
+- Stills turn off world-space overlays too: rings, route marks, bay outlines and cones. Only the 3D world remains.
+
+**N5 · The getaway car close up. (Aster → Forma/Vela; not for this round.)**
+- The car's model has no detail at still range. The ending's still is the page's largest picture.
+- For now, Latch can raise that camera to about 25° down and back off a step, so the shape reads and the surface doesn't.
+- Later, the car needs chrome trim and a body texture.
+
+**N6 · Heat has no head word. (Latch, words from Fable.)**
+- "Unknown" with an eye reads as "unknown what?".
+- Add the small tracked head "HEAT" before the word, as the mock has it, from text.json (`briefing.heat.label`, which Fable adds).
+
+**N7 · The front door's widow. (Latch; Fable if needed.)**
+- "...loop the camera that watches / it." leaves one word on the last line.
+- Latch: add a no-widow rule to the page's text layout: pull the last two words down together.
+- Or Fable: "Turn her to call him off the door, and loop his camera." (12 words).
+
+**N8 · The manifest hides the page. (Latch.)**
+- "cell faces" is one `image` of 1920 × 1080, so it covers the whole page and blanks the text check. Emit one 52 × 52 `image` per face.
+- Tag the page `state: "page"` once Splice adds it (glyph-page-budget §1).
+
+**N9 · Optional: the lift. (Latch.)**
+- Slide the page up off the top over about 0.35 s instead of fading it, so it's never half there.
+- Skip this if it costs more than a line.
+
+**N10 · Section heads. (Fable words, then Latch; low.)**
+- Add the three small tracked heads "TWO WAYS IN", "WHERE" and "THE CLOCK" from text.json, as the mock has them.
+- Without "WHERE", the plan reads as part of Vale's card.
+- These are 6 words, still under the page's 200.
+
+**N11 · The still captions name people, but the pickup's words name a place. (Fable; low.)**
+- The pickup sentence ends at "the service bay", but still 4's caption and its legend entry say "Vale's car". Nothing on the page says "service bay" except the sentence.
+- Caption it "Vale's car at the service bay" (5 words), as the mock has it, or "At the service bay".
+
+**N12 · The 6:10 station mixes a sentence and a fragment. (Fable; low.)**
+- "Vale at his car. Unless turned, his driver takes him away" has no full stop, and the other four stations are fragments.
+- Use "Vale at his car; unless turned, the driver leaves". It's 9 words and fits 2 rows.
+
+### Budget
+- The page's own limits for Splice are in **briefs/070/glyph-page-budget.md**.
+- They add a new state `page`, with no coverage check and no BRIEFING_READING. These checks replace them:
+  - opaque (no street shows);
+  - every word is in the manifest;
+  - nothing clipped or outside the 48 px safe frame;
+  - nothing touches (a 4 px gap; a pin may sit on its own still);
+  - body text at least 20 px at 1080;
+  - pins agree across still, plan and legend;
+  - word caps per part, and at most 200 on the page;
+  - no widows.
+- 0.2.130 under those rules would fail on N2, N6, N7 and N8 only.
+
+Next owner: Latch (N1 to N4, N6 to N9), Fable (N6 and N10 words, N11, N12), Splice (glyph-page-budget), Aster (N5 to Forma/Vela). Done-check: a rebuilt page and its stills, the 2x crop, and `--state page` passing.

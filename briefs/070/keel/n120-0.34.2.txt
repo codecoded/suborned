@@ -1,0 +1,78 @@
+N120: None at 5:33.4  cash 100000  trail 3  alert 1  shots 0
+  0:00.0  start                        Vale is inside. His official car will collect him later. The city is already moving.
+  0:00.0  order.move                   tech runs for cabinet.
+  0:00.0  order.move                   enforcer heads for (5650,-4750).
+  0:00.0  order.move                   scout heads for (3800,-5000).
+  0:00.0  order.move                   fixer heads for (725,-5025).
+  0:31.0  order.watch                  scout watch guard (20 s)
+  0:51.0  scout.watch.watched          Folake Okafor (guard): cell.watch → watched.
+  0:51.0  order.move                   scout heads for (725,-4625).
+  0:51.0  order.reroute                tech reroute patrol (45 s)
+  1:36.0  patrol.rerouted              The patrol follows false orders and leaves its sweep.
+  2:10.0  order.loop                   tech loop entrance (20 s)
+  2:20.0  order.move                   enforcer heads for (6520,-4110).
+  2:30.0  loop.on                      One feed repeats until 4:30.0. The Tech is free to go.
+  2:31.0  order.takedown               enforcer takedown guard (3 s)
+  2:31.0  takedown.starts              The Enforcer takes guard down (kill, 3 s).
+  2:34.0  takedown.dead                guard is dead. The body lies where it fell.
+  2:34.0  order.carry                  enforcer carry guard (3 s)
+  2:35.6  rivals.coming                A rival car turns in off Orbit Walk. It is after Vale too.
+  2:37.0  carry.body                   The enforcer lifts guard.
+  2:37.0  order.move                   enforcer heads for (6275,-1875).
+  2:46.4  rivals.drop                  The rival car stops by the square. Three men get out and walk to posts round our car.
+  2:58.9  rivals.post                  rival-1 takes his post round our car.
+  3:01.3  rivals.post                  rival-2 takes his post round our car.
+  3:01.5  order.stash                  enforcer stash stash/office-service-door/door (10 s)
+  3:10.0  rivals.arrive                A rival car parks across from Vale's car. A lookout gets out to watch the official door.
+  3:11.5  stash.door                   guard is hidden in the stash/office-service-door/door.
+  3:11.5  order.move                   enforcer runs for d:Office entrance.
+  3:18.2  rivals.post                  rival-4, the lookout, watches the official door.
+  3:28.8  rivals.post                  rival-3 takes his post round our car.
+  3:31.0  patrol.returns               The false orders run out. The patrol is back on its sweep.
+  4:00.0  post.missed                  guard misses his check-in at 4:00.0. The post is reported empty.
+  4:00.0  report.landed                desk's report lands: mark (guard). Alert 1.
+  4:00.0  alarm.dispatches             The desk sends the response (level 2, watchful): 2 robots, 0 units, on the street 4:10.0.
+  4:04.0  patrol.alarm                 The patrol leaves its sweep for the alarm.
+  4:30.0  loop.ends                    The entrance loop runs out. The camera feed returns.
+  4:30.0  order.loop                   tech loop entrance (20 s)
+  4:37.9  attention.noticed            the camera entrance notices the enforcer standing still in its sight.
+  4:47.4  report.unfounded             patrol finds nothing where guard was reported.
+  4:49.9  attention.wary               the camera entrance is wary of the enforcer for the rest of the mission.
+  4:50.0  loop.on                      One feed repeats until 6:50.0. The Tech is free to go.
+  4:55.4  entry.seen                   The patrol sees the Enforcer go in and radios it (lands 4:58.4).
+  4:55.4  order.enter                  enforcer enter (38 s)
+  4:55.4  enter.in                     The Enforcer is inside. Watch the service lane.
+  4:58.4  entry.reported               The patrol's report lands: someone went in at the public door. Alert 1.
+  4:58.4  alarm.dispatches             The desk sends the response (level 2, watchful): 2 robots, 0 units, on the street 5:08.4.
+  5:33.4  enter.out                    Vale and the Enforcer come out at the service lane.
+  5:33.4  round.ends                   final-fight: Inez Nikolaou walks back to her post and stays there.
+  5:33.4  fight.safe                   The final fight: the rival crew (4) lies in wait for the extraction.
+  [ok] on its sweep the patrol never sees the public door (the service yard's)
+  [ok] tech move cabinet taken at 0:00.0
+  [ok] enforcer move  taken at 0:00.0
+  [ok] scout move  taken at 0:00.0
+  [ok] fixer move  taken at 0:00.0
+  [ok] scout watch guard taken at 0:31.0
+  [ok] scout move  taken at 0:51.0
+  [ok] tech reroute patrol taken at 0:51.0
+  [ok] tech loop entrance taken at 2:10.0
+  [ok] enforcer move  taken at 2:20.0
+  [ok] enforcer takedown guard taken at 2:31.0
+  [ok] enforcer carry guard taken at 2:34.0
+  [ok] enforcer move  taken at 2:37.0
+  [ok] enforcer stash stash/office-service-door/door taken at 3:01.5
+  [ok] enforcer move d:Office entrance taken at 3:11.5
+  [ok] tech loop entrance taken at 4:30.0
+  [ok] the alarm brings the patrol round: it sees the door with the loop live (4:55.4)
+  [ok] no guard at the door, the camera looped: only the patrol sees the Enter
+  [ok] enforcer enter  taken at 4:55.4
+  [ok] the patrol's sight of the Enter is no fail (got None, want None)
+  [ok] the patrol sees it and radios it (entry.seen)
+  [ok] its report is on its way (got pending, want pending)
+  [ok] it lands attention.report.call later (by radio) (got 2984, want 2984)
+  [ok] the report lands (got landed, want landed)
+  [ok] a found fault: entry.reported, and the dial dispatches to the door
+  [ok] Alert at least 1 (Alert 1; was 1)
+  [ok] a sighting: the patrol saw the Enforcer at the door
+  [ok] the Enter lands: Vale is with the Enforcer (None )
+  start 0d6701e33015db5d  final ca5be2c680caf64e  checkpoints 34  replay identical
