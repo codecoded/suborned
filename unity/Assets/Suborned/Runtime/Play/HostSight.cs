@@ -258,7 +258,8 @@ namespace Suborned.Play
             Unknowns.Clear();
             List<Noticing> n = null; if (!Guard("detection", () => n = Game.Detection())) return;
             noticingNow.Clear(); foreach (var x in n) noticingNow.Add(x.Watcher); // brief 057 §3 (4): a watcher noticing someone draws strong
-            foreach (var x in n) { if (x.Known) continue; var at = frame.World(x.From) + Vector3.up * 3.2f; if (!Unknowns.Contains(at)) Unknowns.Add(at); }
+            bool fightEyes = OneInput && Game.FightOn; // Glyph N4 (0.2.137): a hostile in the fight (an officer, a unit, a rival, the guard and patrol once it is on) wears no "?": he is already hostile; cameras and the rest keep theirs
+            foreach (var x in n) { if (x.Known || fightEyes && CombatWatcher(x.Watcher)) continue; var at = frame.World(x.From) + Vector3.up * 3.2f; if (!Unknowns.Contains(at)) Unknowns.Add(at); }
         }
 
         /// <summary>"seen by" for a quote, in words (rulebook sight.unknown: never more than the cell knows): "" when no one, "?" when only an

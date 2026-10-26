@@ -74,6 +74,7 @@ namespace Suborned.Play
                 if (string.IsNullOrEmpty(id) || TargetRingKeys.Contains(ViewKey(id))) return; // one ring a view
                 bool aim = threatAim.Contains(id), fire = threatShot.TryGetValue(id, out var last) && g.Tick - last <= Game.Hz;
                 bool hover = id == hoverId; bool ours = false; for (int k = 0; k < 4; k++) if (FireNow[k].Target == id && !string.IsNullOrEmpty(FireNow[k].Mode)) ours = true;
+                if (OneInput && g.FightOn) ours = IsFocus(id); // Glyph N2 (0.2.137): in a fight the ring is the focus's, the same rule as its lock disc and pips
                 if (!(aim || fire || ours || hover || combatant && combat)) return;
                 if (OneInput && g.FightOn && !(ours || hover)) return; // engine 0.35 (Glyph b-final, "in a fight, at most this"): one ring under the focus, and the cursor's hover; none under the rest. At rest, as built
                 var key = ViewKey(id); var tr = views.Find(key); if (!tr || !tr.gameObject.activeInHierarchy) return;

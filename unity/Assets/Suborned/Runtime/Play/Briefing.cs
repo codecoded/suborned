@@ -20,6 +20,11 @@ namespace Suborned.Play
         VisualElement bf, bfPaper, bfPage, bfPlan; Label bfPurseText, bfHeatText;
         FrontEnd.LightWord bfBegin;
         BriefScreen bfFor;
+        /// <summary>The plan's pin discs (plan px), for PlanPaint's clearance (Glyph N7).</summary>
+        readonly List<Rect> bfPinBox = new();
+        /// <summary>Glyph N7 (0.2.137): a green shape is drawn only 4 px clear of every pin disc, and only when its drawn box is at least this
+        /// many px on its short side (the 7 x 11 px bean over pin 3 read as a stub; the beds kept are 9 px and up). Area: tools/game/briefstills.ts.</summary>
+        const float PlanKeepPx = 4f, PlanGreenMinPx = 8f;
         const float PgW = 1920f, PgH = 1080f, PgM = 56f;
         /// <summary>The briefing replaces the old card (the 0.2.117 card stays built, hidden; off brings it back, for comparison only).</summary>
         public static bool BriefOnStreet = true;
@@ -91,6 +96,7 @@ namespace Suborned.Play
             var pinsAll = new List<BriefScreen.Pin>(); foreach (var w in b.Ways) pinsAll.AddRange(w.Pins); if (b.EndPin != null) pinsAll.Add(b.EndPin);
             const float PlanPinD = 24f, Keep = 4f;
             var pinBox = new List<Rect>(); foreach (var p in pinsAll) { var q = PlanXY(b, p.At); pinBox.Add(new Rect(q.x - PlanPinD / 2f, q.y - PlanPinD / 2f, PlanPinD, PlanPinD)); }
+            bfPinBox.Clear(); bfPinBox.AddRange(pinBox); bfPlan?.MarkDirtyRepaint();
             foreach (var (name, poly) in b.PlanBuildings) if (poly.Length >= 3) PlanLabel(b, name, poly, pinBox, Keep);
             foreach (var p in pinsAll) { var at = PlanXY(b, p.At); var d = PinDisc(bfPlan, at.x, at.y, PlanPinD, p.N); Pg(d, "pin", () => "", "pin", p.N.Length > 0 ? p.N : "car"); }
             int numbered = 0; foreach (var p in pinsAll) if (p.N.Length > 0) numbered++;
@@ -302,6 +308,27 @@ namespace Suborned.Play
             return new Vector2(ox + (q.x - r.xMin) * s, oy + (q.y - r.yMin) * s);
         }
 
+        /// <summary>Glyph N7: whether a green shape is drawn: its box at least PlanGreenMinPx on the short side, and every edge PlanKeepPx clear of
+        /// every pin disc (the bed under pin 4 ran into its chrome ring).</summary>
+        bool GreenDrawn(BriefScreen b, Vector2[] pg)
+        {
+            if (pg.Length < 3) return false; var q = new Vector2[pg.Length]; float x0 = float.MaxValue, y0 = float.MaxValue, x1 = float.MinValue, y1 = float.MinValue;
+            for (int i = 0; i < pg.Length; i++) { q[i] = PlanXY(b, pg[i]); x0 = Mathf.Min(x0, q[i].x); y0 = Mathf.Min(y0, q[i].y); x1 = Mathf.Max(x1, q[i].x); y1 = Mathf.Max(y1, q[i].y); }
+            if (Mathf.Min(x1 - x0, y1 - y0) < PlanGreenMinPx) return false;
+            foreach (var pin in bfPinBox)
+            {
+                var c = pin.center; float r = pin.width / 2f + PlanKeepPx; bool inside = false;
+                for (int i = 0, j = q.Length - 1; i < q.Length; j = i++)
+                {
+                    var a = q[j]; var d = q[i] - a; float t = d.sqrMagnitude > 1e-6f ? Mathf.Clamp01(Vector2.Dot(c - a, d) / d.sqrMagnitude) : 0f;
+                    if (Vector2.Distance(c, a + d * t) < r) return false;
+                    if ((q[i].y > c.y) != (a.y > c.y) && c.x < (a.x - q[i].x) * (c.y - q[i].y) / (a.y - q[i].y) + q[i].x) inside = !inside;
+                }
+                if (inside) return false;
+            }
+            return true;
+        }
+
         /// <summary>The plan: pavement, the bays and drives in asphalt, green and water, the buildings in ivory with a deep-teal edge.</summary>
         void PlanPaint(Painter2D p, Rect r)
         {
@@ -313,7 +340,7 @@ namespace Suborned.Play
                 p.fillColor = fill; p.Fill(); if (edge is Color e) { p.strokeColor = e; p.lineWidth = 1.6f; p.lineJoin = LineJoin.Round; p.Stroke(); }
             }
             foreach (var g in b.PlanGround) Poly(g, PgAsphalt);
-            foreach (var g in b.PlanGreen) Poly(g, PgGreen);
+            foreach (var g in b.PlanGreen) if (GreenDrawn(b, g)) Poly(g, PgGreen);
             foreach (var g in b.PlanWater) Poly(g, PgSeafoam);
             foreach (var (_, g) in b.PlanBuildings) Poly(g, Ivory, PgDeepTeal);
         }

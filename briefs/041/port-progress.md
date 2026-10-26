@@ -1563,3 +1563,136 @@ Glyph's G1–G8 from the 0.2.135 review, the fire proof's second lock, the H21 t
 - G6 holder cut: Glyph and Aster to confirm.
 
 Next owner: Glyph (2x of fight-safe-body, fight-loud-body, r123-body-safe and the page), then Aster.
+
+## Glyph 2x (0.2.137) (Glyph, 2026-10-27; review only, no code, no Unity)
+**Verdict: the page SHIPS. The fight is NOT ready for Sky yet, but it's close.** The crowding is fixed: the car cluster in fight-loud-body went from about 14 marks to 5 (ring, lane, car marker, seat pips, and the Scout's ring), and G1 to G5 and G8 have all landed clean at 2x. It stops on three things. First, a GDD rule was cut: the holder marks (§10 getaway, and my own hold) are gone, so the car shows "held · 1" with nobody marked as the holder. Second, the body shot's focus has a ring with no disc, and the manifest lists a lock reticle that isn't drawn. Third, an unmanifested "noticed" word plate stands on the street. All three are host fixes, with no engine work. My crops are in out/scratch/glyph/0137/.
+
+**Rulings on Latch's open points**
+- **G6 holders: restore.** §10 lists "a holder mark over each holder with a tether line to the car (gone when the holder is downed or breaks, so the player sees the car come free)". My count kept it as a getaway mark. In 0.2.135 I read the barred discs as non-focus marks only because the fire line was hiding the lock disc, and G1 has fixed that. Without holders, the loud frame's "1" count points at nobody, and a refused Go's holder pulse (§6.5) has nothing to pulse.
+  - Fix: delete the `OneInput && FightOnNow` skip in HudToolkit.Less.cs (the holders loop, about line 1595). Keep the glyph (`mark_no` on `disc_dark_24`) and the tether rule as built (a tether only for a holder out on the lane).
+  - One new rule: when a holder is also the focus, his holder disc sits to the right of the lock disc, at the disc's height, 4 px clear. It never goes above the lock disc or under the pips.
+- **Cower in the open: enough for the pinned-open state; not enough to close "fights read on the body".** At 3x the bent-double rival reads as hit and afraid. The common case in play is a rival ducking behind cover, plus a cell agent kneeling at cover, and §06 and my hold both name them. Keel: please suggest a fixture tick in r123-safe with a pinned-cover rival and a kneeling agent inside one frame. Latch shoots it next build. This doesn't block Sky seeing the fight.
+- **Cowering focus with no lock disc: a bug, not a style.** The focus ring, lock disc and pips are one stack, and a ring never shows without its disc and pips. In r123-body-safe the manifest has a `lock reticle` at 1072,812 (26 × 44), but the frame is empty there (the .hud.png is blank too), and the red ring is at 957,530 with no disc and no pips. Either the reticle is placed for the wrong body or it's hidden and still manifested. Both are wrong.
+- **The two "?" eye discs over rivals: a cut kind in a fight.** §10's "?" is for a watcher not yet watched, a stealth question. A rival in the fight is already hostile, so his eye says nothing the fight doesn't. Under one input, while the fight is on, draw no eye over any hostile who is in the fight (fighting, pinned or broken). Eyes stay over watchers outside the fight (cameras, civilians who could report). The same mark shows in fight-safe-body at 1427,642. It floats about 50 px above the lower rival's head and lands on the upper rival's legs, so it reads as his.
+
+**Count of street-mark kinds per fight frame (b-final is 7; speech, HUD frame, edge cues and the getaway set not counted)**
+- fight-safe-body: 8 kinds. Running ring (the Enforcer, footprints disc), move ring with "4", focus ring, lock disc, pips, the "no line" wait plate (allowed as the stack's foot, G3), the star pip over Vale, and the "?" eye. Cutting the eye makes 7. No flash, spark or dust in the frame. The getaway set has ring, lane, car marker and seat pips, but no holder (see G6).
+- fight-loud-body: 6 kinds plus the callout. Selected ring, focus ring, lock disc, pips, the "noticed" plate, and a spinner ring over the car's roof (975,510). The attention callout is §10's own cue, outside the 7. After N3: 4 + flash, spark and dust.
+- r123-body-safe: 5 kinds. Focus ring (no disc), "?" eye ×2, selected ring, star pip, and the running ring at the Enforcer. After N2 and the eye cut: within 7.
+
+**Nits (owner, fix)**
+- **N1 · Restore holders. (Latch.)** As ruled above, with the side-by-side rule when the holder is the focus. Shot: fight-loud-body has one holder disc over the man who holds the car.
+- **N2 · The focus stack in r123-body-safe. (Latch.)** Draw the lock disc and pips over the man who wears the red ring. Never manifest an element that isn't drawn. If the cowering focus has no lock, draw the disc in its unlocked state (the dashed rim, as in fight-safe-body), not nothing.
+- **N3 · The "noticed" plate and the roof spinner in fight-loud-body. (Latch: identify, then cut or manifest.)**
+  - A `plate_dark` with the word "noticed" and a draining underline at about 990,495 sits over the Scout. A partial ring spinner sits at 975,510 on the car roof. Neither is in the manifest, which breaks G2's "every street mark manifested".
+  - If the plate is the agent's attention state, cut it from the street: "noticed" belongs to the live portrait and to the callout (§10), and it's a word in play. If the spinner is the cursor's hold sweep, it should be at the cursor, not on the car.
+- **N4 · The eye cut in fights. (Latch.)** As ruled above.
+- **N5 · Off-screen elements in the manifest. (Latch, low.)** fight-loud-body lists a `street mark` at 3038,1268 and a `body` at 2241,1526, 44 × 44, both outside 1920 × 1080. Cull off-screen marks from the manifest so the budget counts what's seen. Also check that the kill plate's root is 30 × 30 as G4 asked, not 44 × 44.
+- **N6 · The time-to-down chip is bar-wide. (Latch, already fixed in the tree.)** r123-body-safe's roster shows the "6 s" chip at full bar width. It needs the next build; check it at 2x then.
+- **N7 · The plan's last stubs. (Latch, low; the page still ships.)**
+  - At 2160 there's one teal bean about 8 × 14 px above pin 3 (685,88 in my crop). The teal bed under pin 4 runs into the pin's chrome ring.
+  - Also drop green shapes under about 2 m² in area, and keep plan shapes 4 px clear of the pins.
+
+**What passes**
+- G1: no fire line on the street, and the shooter's chip carries the time to down.
+- G2: no gun discs.
+- G3: the safe stack reads, top to bottom, lock disc, pips ("●●●"), "no line". Each is 4 px or more clear. Checked at 2x.
+- G5: "Behind the wall, officers!" clears the callout's face. The callout sits beside the focus with its tail about 8 px off the pips.
+- The cut list holds: no tracers, no cover or under-fire arcs, no miss rings.
+- The page at 1080 and 2160: no clipping, the band and Begin are square, G8's mid-plan ticks are gone, and the getaway still has the car seated on the road with Vale in frame.
+
+Next owner: Latch for N1–N5 (and N6, N7 in the same build). Keel for the pinned-cover tick (input: r123-safe's run; done-check: one tick with a rival pinned behind cover and an agent kneeling, both within one zoom-14 frame). Then one targeted rebuild with fight-safe-body, fight-loud-body and r123-body-safe (plus the cover tick when Keel has it), then Glyph at 2x, then Aster to Sky.
+
+## Glyph N1–N7 (0.2.138) (Latch, 2026-10-27): built as 0.2.139 (c039, d6bf4c4b+), BATCH OK
+Glyph's N1–N7 from the 0.2.137 review, plus the r123 cover picture from Keel's tick. There were two targeted builds:
+- **0.2.138** was every fix. At 2x it showed that a locked disc stood 8 px from the holder disc, not 4.
+- **0.2.139** carries that one-line fix. It's the build to review.
+
+**What changed**
+- **N1 · Holders restored (HudToolkit.Less.cs, holders loop).**
+  - G6's `OneInput && FightOnNow` skip is gone. The glyph and the tether rule are as built: a tether only for a holder out on the lane.
+  - When the holder is also the focus, his disc stands right of the lock disc at its height. It sits 4 px past the disc when locked, or 4 px past the dashed ring (RingPast 3.75) while it waits.
+- **N2 · One focus rule.**
+  - New `HandoverHost.IsFocus(id)` (HostHold.cs): an agent on foot (not down, inside or in a car) holds a lasting fire order (`Gun.Order`) on the target.
+  - The cause of the empty focus: the ring read `FireNow` (any fire, his own return fire too), while the disc and pips read `Gun.Order`. So the cowering rival wore a ring because the cell answered him, but nobody had him as a focus.
+  - The ring (HostTargetRings.cs) and the pips (HudModel.cs) now use `IsFocus`, the same as the disc (FireLockTargets).
+  - The phantom `lock reticle` at 1072,812 was a released reticle. It was off the panel but still in the manifest list, with its last rect.
+    - The manifest now skips any element with no panel (HudToolkit.Capture.cs Visible).
+    - A released reticle's entries are removed from the list (HudToolkit.Lock.cs).
+- **N3 · Identified: the "noticed" plate and the roof spinner are one mark, the attention clock (HudToolkit.Hold.cs, brief 044 §6).** It's a `plate_dark` word plate with its draining underline, and its ring arc 48 px to the left (the "spinner" on the car roof). It was over the Scout.
+  - **Cut** under one input while the fight is on: the live portrait and the callout say it.
+  - **Manifested** elsewhere as `marker` with its word.
+- **N4 · No "?" over hostiles in the fight.**
+  - HostSight.Notice skips a watcher that `CombatWatcher` names (security, rivals, and the guard and patrol once the fight is on) under one input while `FightOn`.
+  - On Alt, UnwatchedWatchers stops after the cameras in a fight.
+  - Cameras keep their "?".
+- **N5 · Off-screen marks and the kill plate.**
+  - The manifest drops any element whose rect misses the panel, chips included.
+  - A bare kill (not found, not tied) is manifested by its 30 × 30 plate. A knockout, or a found or tied body, keeps the 44 px root for its rings (HudToolkit.Takedown.cs: `Mark.Tight`, a null text skips an entry).
+- **N6.** The snug time-to-down chip is built (checked below).
+- **N7 · The plan's last stubs.**
+  - tools/game/briefstills.ts drops green shapes under 2 m² (`PLAN_MIN_M2`, `polyArea`, with a test).
+  - Briefing.cs `GreenDrawn` draws a green shape only if both hold:
+    - its drawn box is at least 8 px on the short side;
+    - every edge is 4 px clear of every pin disc.
+  - The bean over pin 3 (7 × 11 px), the 5.9 px bar by pin 3 and the strip under pin 4 are gone. The Office's two flank beds (9 and 9.7 px) stay.
+- **The cover picture `r123-body-cover` (Proof123.cs; proofset.json r123, optional; proofset test: seven pictures).**
+  - It reads Keel's `briefs/039/keel/sq-ra-h3-pin.script.json` straight from the brief, so it's not a sim fixture. sim/ is untouched.
+  - The run goes to 2457, then 0.4 s, then pauses. The camera is at yaw 30, zoom 14, on Keel's focus point (75, -4325).
+  - The picture is taken only when the script is in the tree.
+
+**Evidence** (git-ignored: briefs/041/build/0139/; logs in logs/)
+- `bun run guard bun run batch --from game-build` (batch-n1n7.log): **build 0.2.138, BATCH OK**.
+  - game-check: 360/360.
+  - Shots: 13.
+  - Budget: 12/12 within budget, audit 12/12 clean.
+  - Proof sets: r059 13/13, r067 32/32, r123 7/7.
+  - Late-fight: loud worst 24.3 ms, p99 6.7 ms.
+  - tp-long: ok.
+  - The machine was noisy (dotnet at 744 %).
+- `bun run guard bun run batch --only game-build,game-check,shots,budget` (batch-n1-gap.log): **build 0.2.139, BATCH OK**.
+  - game-check: 360/360.
+  - Shots: 13.
+  - Budget: 12/12 within budget, audit 12/12 clean.
+  - Proof sets: r123 7/7, with the r059 and r067 sets as above.
+- r123 results:
+  - Body: rival-4 pinned-open, clip `cower`, at 4:20 (tick 2602).
+  - Cover: rival-3 pinned-cover at cv-032, tech kneeling at cv-077, fixer kneeling at cv-002, at 4:06 (tick 2466).
+- Front end at 1080 and 2160 (`-frontEndShots -capture-size`, under guard + caffeinate): status ok at both sizes.
+- Page budget (`--state page`, proof briefing): PASS, 208 words, 0 faults.
+- `bun run typecheck` clean. `bun run test tools/game tools/hud-budget`: 285 pass. runtime-compile clean.
+- Pictures:
+  - shots/fight-safe-body.png and shots/fight-loud-body.png
+  - proof/r123-body-safe.png and proof/r123-body-cover.png (each with .hud.png, manifest and parts)
+  - frontend-1080/briefing.png and frontend-2160/briefing.png
+  - My crops are in out/scratch/latch/0138/ and 0139/.
+
+**Seen at 2x/3x (for Glyph)**
+- **fight-loud-body:**
+  - One holder disc right of the focus's locked disc, 4 px between the boxes.
+  - The dotted tether runs from the car to the holder.
+  - No "noticed" plate, no roof arc and no off-screen entries.
+  - Kinds: selected ring, focus ring, lock disc, pips, holder, plus the callout.
+- **fight-safe-body:**
+  - The waiting stack: dashed disc, pips, "no line".
+  - The holder disc sits 4 px past the dashed ring.
+  - The "?" over the rival is gone.
+- **r123-body-safe:**
+  - No focus ring, so no stack: nobody had rival-4 as a focus. The cell was answering his fire.
+  - No phantom reticle and no "?" discs.
+  - The roster chip reads icon + "6 s", snug (N6).
+- **r123-body-cover:**
+  - rival-3 ducks behind the café's west planter wall. Her focus ring, locked disc and pips (●●○) are over her.
+  - The Tech kneels by his pier, beside the Scout's selected ring.
+- **Kill plate:** 30 × 30 in car-blast's manifest (1085,518).
+
+**Open**
+- **The holder disc's gap is 4 px box to box, but about 10 px to the eye.** `disc_dark_24` drawn at 26 px has about 3 px of transparent rim. If Glyph means the visible discs, the fix is one constant (−3 px each side); it needs a build.
+- **Focus disc height over a ducking target.** The disc sits ReticleUp 2.55 m over the feet whatever the posture. Over rival-3's duck it floats about 60 px above her head. Glyph to say whether it should follow the posture.
+- **The body shot has no focus.** It shows the pinned-open cower, so N2's stack can only be read in r123-body-cover and the two fight shots.
+- **N7: the bays' grey still meets pins 3 and 4.** These are ground shapes, not green, and the pins mark those bays. I left them alone. Glyph to say whether "plan shapes" covered them.
+- **N3 outside fights.** The attention clock is now in the manifest, so a stealth frame that shows one counts it as a `marker`. All 12 shots and every proof set stayed within budget.
+- **The cover picture reads the script from briefs/039/keel.** If Keel files `sq-ra-h3-pin` as a sim fixture (his note asks for Aster's go-ahead), change FixtureAt to Fixture("sq-ra-h3-pin").
+- **The build's own edits.** unity/Assets/Scenes/FightRange.unity and the Generated/Range mats show as modified in git status. I edited no scene.
+
+Next owner: Glyph (2x of fight-safe-body, fight-loud-body, r123-body-safe, r123-body-cover and the page at 2160), then Aster.

@@ -195,7 +195,9 @@ namespace Suborned.Play
                 }
                 // the attention clock over an agent standing in a watcher's sight (the engine's Attention)
                 var (notice, wary, report) = g.AttentionMarks;
-                for (int k = 0; k < 4; k++)
+                // Glyph N3 (0.2.137): in a fight under one input the attention clock (its "noticed" plate and the ring arc beside it, which stood on the
+                // getaway car's roof in fight-loud-body) is a cut kind: the live portrait and the attention callout say it (GDD §10)
+                for (int k = 0; k < 4 && !(h.OneInput && g.FightOn); k++)
                 {
                     var op = g.Ops[k]; if (op.Inside || op.Down || op.InCar || op.Walk != null) continue; string nm = Op.Name((OpId)k); int ticks = 0;
                     foreach (var w in g.WatcherIds()) { var (st, who) = g.Attention(w); if (who == nm) ticks = Mathf.Max(ticks, g.AttentionTicks(w, nm)); }
@@ -207,7 +209,7 @@ namespace Suborned.Play
                         var r = PlateDark(marks, ClockH, 0.43f); r.style.position = Position.Absolute; r.style.width = 74; r.style.justifyContent = Justify.Center;
                         var l = Words(r, 12.5f); l.style.unityTextAlign = TextAnchor.MiddleCenter; l.style.marginBottom = 1;
                         var u = E(r, null, 11, ClockH - 8.5f, 0, 2.5f); u.name = "under"; Round(u, 1.25f);
-                        clockEls.Add((r, l)); // one or two words: no manifest line (the budget's line is the objective)
+                        clockEls.Add((r, l)); manifest.Add((r, "marker", () => l.text)); // Glyph N3 (0.2.137): a world marker, one word ("noticed"), in the manifest (G2: every street mark)
                     }
                     var (cr, cl) = clockEls[cu++]; Show(cr, true); Text(cl, word);
                     bool soon = word is "wary" or "reported"; float frac = report > 0 ? Mathf.Clamp01(s / report) : 0f;

@@ -1181,6 +1181,8 @@ namespace Suborned.Play
         {
             var g = host.Game;
             foreach (var c in g.S.Cameras) if (g.Known("camera:" + c.Id) is not { Sight: true }) yield return (host.frame.World(c.At) + Vector3.up * 3.6f, Red);
+            bool fight = host.OneInput && g.FightOn; // Glyph N4 (0.2.137): on Alt too, no "?" over the guard, the patrol or the rivals while the fight is on
+            if (fight) yield break; // the cameras above keep theirs
             if (g.Known("guard") is not { Sight: true } && g.GuardPose() is var gp && gp.HasValue && !g.GuardP.KRoutine) yield return (host.frame.World(gp.Value.pos) + Vector3.up * 2.9f, Amber);
             if (g.Known("patrol") is not { Sight: true } && g.PatrolPose() is var pp && pp.HasValue) yield return (host.frame.World(pp.Value.pos) + Vector3.up * 2.9f, Amber);
             if (g.RivalsPresent && !g.RivalsWatched && g.RivalCarPose() is var rp && rp.HasValue) yield return (host.frame.World(rp.Value.pos) + Vector3.up * 2.2f, Violet); // brief 059 §2.2: the Watch is on the car (RivalsWatched)
@@ -1592,8 +1594,10 @@ namespace Suborned.Play
                     var (hw0, lost) = kv.Value; if (!holderIds.Contains(kv.Key) && lost < 0) { lost = now; holderSeen[kv.Key] = (hw0, lost); }
                     float alpha = lost < 0 ? 1f : 1f - (now - lost) / 0.4f; if (alpha <= 0f || !ring) { gone.Add(kv.Key); continue; }
                     if (!Proj(hw0 + Vector3.up * 2.4f, out var hq) || !Proj(hw0, out var fq)) continue;
-                    if (host.OneInput && host.FightOnNow) continue; // Glyph G6 (0.2.135): in a fight the holders' no-entry discs (and their tethers) are a cut kind: the car's lock and count say it is held; the focus wears the lock disc
+                    // Glyph N1 (0.2.137, GDD §10 getaway): the holder marks and tethers stay in a fight (G6's cut undone). A holder who is also the
+                    // focus: his holder disc stands right of the lock disc, at its height, 4 px clear of the disc (of its dashed ring while it waits), never over it or under the pips
                     var e = HolderEl(); e.style.left = hq.x - 13; e.style.top = hq.y - 13; e.style.opacity = alpha; // Glyph r2: the blocked chip's no-entry sign, 18 px on a dark disc
+                    if (reticles.TryGetValue(kv.Key, out var hr) && hr.OnScreen && hr.Gone < 0f) { e.style.left = hr.At.x + ReticleD / 2f + (hr.Locked ? 0f : RingPast) + 4f; /* 4 px past the disc, or past its dashed ring while it waits (0.2.138: a locked disc stood 8 px off) */ e.style.top = hr.At.y - ReticleD - 6f; }
                     { var nl = e.Q<Label>("n"); string rw = kv.Key == "car:rivals" ? host.RivalsHoldShort() : ""; bool rOn = rw.Length > 0; if (nl == null && rOn) { var pl = PlateDark(e, 22f, 0.3f); pl.name = "np"; pl.style.position = Position.Absolute; pl.style.left = 27; pl.style.top = 2; pl.style.paddingLeft = 7; pl.style.paddingRight = 7; nl = Words(pl, 13.5f); nl.name = "n"; }
                       if (e.Q("np") is VisualElement np) { Show(np, rOn); if (rOn) Text(nl, rw); } } // engine 0.33.0: the rival car holds the car until its first rider steps out; Fable's fillLockShort for car-held by the rival car: "Rivals coming · 18 s", "Rivals coming" while it drives in
                     float pulse = now - host.HolderPulseAt; if (pulse >= 0 && pulse < 1f) { float sc2 = 1f + 0.3f * Mathf.Sin(pulse * Mathf.PI * 3f) * (1f - pulse); e.style.scale = new Scale(new Vector2(sc2, sc2)); } else e.style.scale = new Scale(Vector2.one); // §6.5: a refused Go pulses the holders

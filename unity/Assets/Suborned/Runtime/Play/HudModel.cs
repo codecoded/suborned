@@ -189,7 +189,7 @@ namespace Suborned.Play
             VerbLit = h.LitSlot; VerbCaption = $"{Names[(int)h.Agent]}: {(h.LitSlot >= 0 && h.LitSlot < slots.Length ? slots[h.LitSlot].Label : "")}";
             // the fight
             Fighters.Clear(); Down.Clear();
-            HashSet<string> focus = null; if (h.OneInput && g.FightOn) { focus = new HashSet<string>(); for (int k = 0; k < 4; k++) if (g.Ops[k].Gun.Order.Length > 0 && !g.Ops[k].Down) focus.Add(g.Ops[k].Gun.Order); } // engine 0.35 (Glyph b-final): pips over the focus only; the cell's on the roster
+            HashSet<string> focus = null; if (h.OneInput && g.FightOn) { focus = new HashSet<string>(); for (int k = 0; k < 4; k++) if (h.IsFocus(g.Ops[k].Gun.Order)) focus.Add(g.Ops[k].Gun.Order); } // Glyph N2: the ring's and the disc's rule // engine 0.35 (Glyph b-final): pips over the focus only; the cell's on the roster
             foreach (var (id, gun) in h.Fighters()) { if (focus != null && !focus.Contains(id)) continue; var w = h.WorldOf(id); if (w.HasValue) Fighters.Add(new Pips { Id = id, World = w.Value, Hp = h.Seg(gun.Health), Max = h.Seg(Mathf.Max(gun.Max, gun.Health)), Cell = id is "scout" or "fixer" or "tech" or "enforcer" }); }
             for (int i = 0; i < 4; i++) if (g.Ops[i].Down && Marks[i].World.HasValue) Down.Add(new Downed { World = Marks[i].World.Value, Line = $"{Names[i]} · down" }); // a state, not a control (Fable B1)
             // the cursor, the hover ring and the chip

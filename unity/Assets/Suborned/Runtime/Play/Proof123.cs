@@ -63,9 +63,10 @@ namespace Suborned.Play
             }
         }
         /// <summary>Keel's fixture (sim/Suborned.Sim/Fixtures/&lt;name&gt;.script.json, composed on the engine it ships with).</summary>
-        static Feed Fixture(string name)
+        static Feed Fixture(string name) => FixtureAt(Path.Combine(Root, "sim", "Suborned.Sim", "Fixtures", name + ".script.json"));
+        static Feed FixtureAt(string path)
         {
-            var sc = Suborned.Sim.Script.Parse(File.ReadAllText(Path.Combine(Root, "sim", "Suborned.Sim", "Fixtures", name + ".script.json")));
+            var sc = Suborned.Sim.Script.Parse(File.ReadAllText(path));
             return new Feed(sc.Orders.Select((o, i) => (o, i)).OrderBy(p => p.o.Tick).ThenBy(p => p.i).Select(p => p.o).ToList());
         }
 
@@ -239,6 +240,31 @@ namespace Suborned.Play
             }
             ok &= fOk;
             parts.Add($"\"fight\": {{\"ok\": {B(fOk)}, {string.Join(", ", fights)}}}");
+
+            // ---- the cover read (Glyph 0.2.137, Keel's cover tick, briefs/039/keel/cover-tick.md): sq-ra-h3 plus one Scout fire on rival-3 at 2412
+            //      (sq-ra-h3-pin, read from the brief: not a sim fixture), run to 2461: rival-3 pinned behind the café's west wall (cv-032), the
+            //      Tech kneeling at his pier (cv-077), at play zoom (yaw 30, zoom 14) on Keel's focus point. A picture only, never gated.
+            {
+                string pinPath = Path.Combine(Root, "briefs", "039", "keel", "sq-ra-h3-pin.script.json");
+                if (File.Exists(pinPath))
+                {
+                    yield return Fresh(h); var g = h.Game; Feed feed = null; string err = "";
+                    try { feed = FixtureAt(pinPath); } catch (Exception e) { err = e.Message; }
+                    if (feed == null) { parts.Add($"\"cover\": {{\"ok\": false, \"error\": \"{J(err)}\"}}"); log.Add($"r123 cover: no picture: sq-ra-h3-pin would not read ({err})"); }
+                    else
+                    {
+                        feed.To(h, 2457); h.Select(OpId.Scout, false);
+                        h.SetPaused(false); yield return new WaitForSecondsRealtime(0.4f); h.SetPaused(true); yield return Frames(2);
+                        h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(h.frame.World(new Suborned.Sim.Pt(75, -4325))); yield return Frames(3);
+                        string P(string id) => h.Views.Postures.TryGetValue(id, out var pz) ? $"{pz.Kind}{(string.IsNullOrEmpty(pz.Cover) ? "" : "@" + pz.Cover)}" : "none";
+                        string words = $"rival-3 {P("rival-3")}, tech {P("op/tech")}, fixer {P("op/fixer")}, rival-2 {P("rival-2")}"; string at = HandoverHost.MissionClock(g.Tick);
+                        yield return Shoot(h, dir, "r123-body-cover", log);
+                        parts.Add($"\"cover\": {{\"ok\": true, \"tick\": {g.Tick}, \"at\": \"{at}\", \"postures\": \"{J(words)}\"}}");
+                        log.Add($"r123 cover: {words} at {at} (tick {g.Tick}); picture r123-body-cover");
+                    }
+                }
+                else log.Add("r123 cover: no picture: briefs/039/keel/sq-ra-h3-pin.script.json is not in the tree");
+            }
 
             HandoverHost.PointerWorld = null; HandoverHost.PointerOverride = null; h.controls.conversations = keepConvo;
             h.SetPaused(false);

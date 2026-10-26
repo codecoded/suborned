@@ -60,6 +60,7 @@ namespace Suborned.Play
 
         static bool Visible(VisualElement e)
         {
+            if (e.panel == null) return false; // Glyph N2 (0.2.137): an element taken off the panel (a released lock reticle) keeps its last rect: never in the manifest
             for (var x = e; x != null; x = x.parent) { if (x.resolvedStyle.display == DisplayStyle.None || x.resolvedStyle.visibility == Visibility.Hidden || x.resolvedStyle.opacity < 0.05f) return false; }
             return true;
         }
@@ -72,12 +73,13 @@ namespace Suborned.Play
             bool pillUp = vpill != null && Visible(vpill) && PillWords.Length > 0;
             if (state == "rest" && pillUp) state = "active"; // Glyph budget §1: the state from the pill, not the view (r123-fight-ground: the follow view's Board pill was a `rest` frame)
             var sb = new StringBuilder(); sb.Append("{\n \"state\": \"").Append(state).Append("\",\n \"elements\": [");
-            bool first = true;
+            bool first = true; var lay = root.panel.visualTree.layout; var screen = new Rect(0f, 0f, lay.width, lay.height);
             foreach (var (e, kind0, text) in manifest)
             {
-                if (!Visible(e)) continue; var b = e.worldBound; if (b.width < 1 || b.height < 1) continue;
+                if (!Visible(e)) continue; var b = e.worldBound; if (b.width < 1 || b.height < 1 || !b.Overlaps(screen)) continue; // Glyph N5 (0.2.137): a mark off the frame is not counted
                 string kind = e == vpill ? (PillState == "lock" ? "lock" : "pill") : kind0; // Glyph budget §1, §2: the order pill and the lock pill, their own kinds
-                string t = text?.Invoke() ?? ""; if (kind is "speech" or "beat" or "line" or "lock" && t.Length == 0) continue;
+                string t0 = text?.Invoke(); if (text != null && t0 == null) continue; string t = t0 ?? ""; // a null text: the element stands for nothing now (a kill's body root: its plate is the mark)
+                if (kind is "speech" or "beat" or "line" or "lock" && t.Length == 0) continue;
                 sb.Append(first ? "\n" : ",\n"); first = false;
                 sb.Append("  {\"kind\": \"").Append(kind).Append("\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k))
                   .Append(", \"text\": \"").Append(J(t)).Append('"');
@@ -89,7 +91,7 @@ namespace Suborned.Play
             // Glyph budget §3: each done chip on screen, its rows spelled (facts, verbs), never one joined text
             foreach (var c in chipEls)
             {
-                if (c.Id < 0 || !Visible(c.Root)) continue; var b = c.Root.worldBound; if (b.width < 1 || b.height < 1) continue;
+                if (c.Id < 0 || !Visible(c.Root)) continue; var b = c.Root.worldBound; if (b.width < 1 || b.height < 1 || !b.Overlaps(screen)) continue;
                 static string Arr(List<string> xs) { var o = new StringBuilder("["); for (int i = 0; i < xs.Count; i++) o.Append(i == 0 ? "\"" : ", \"").Append(xs[i].Replace("\\", "\\\\").Replace("\"", "\\\"")).Append('"'); return o.Append(']').ToString(); }
                 sb.Append(first ? "\n" : ",\n"); first = false;
                 sb.Append("  {\"kind\": \"chip\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k)).Append(", \"facts\": ").Append(Arr(c.Facts)).Append(", \"verbs\": ").Append(Arr(c.Verbs)).Append('}');

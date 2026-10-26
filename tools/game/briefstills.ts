@@ -154,7 +154,7 @@ export function derive(mission = 'handover', root = ROOT): Stills {
     // Glyph R8 (0.2.133): a fountain is one plain filled shape; the beds that ring it (all within FOUNTAIN_GARDEN of its middle) are its garden and
     // are not drawn on their own (four arcs round a disc read as a HUD reticle on the plan)
     // Glyph G8 (0.2.135): a shape whose short side is under PLAN_MIN_M (the palm tubs, the monument's two beds) drew as an unlabelled 2 x 6 px tick: not drawn
-    green: (block.objects ?? []).filter((o: Json) => Array.isArray(o.polygon) && kind(o, /planter|bed|lawn|hedge/i) && !fountains.some(f => ringsFountain(o.polygon, f)) && shortSide(o.polygon) >= PLAN_MIN_M).map((o: Json) => o.polygon),
+    green: (block.objects ?? []).filter((o: Json) => Array.isArray(o.polygon) && kind(o, /planter|bed|lawn|hedge/i) && !fountains.some(f => ringsFountain(o.polygon, f)) && shortSide(o.polygon) >= PLAN_MIN_M && polyArea(o.polygon) >= PLAN_MIN_M2).map((o: Json) => o.polygon),
     water: fountains.map(f => f.polygon),
   };
   const tAt = typeof brief.target === 'object' ? brief.target?.at as string | undefined : undefined;
@@ -164,6 +164,10 @@ export function derive(mission = 'handover', root = ROOT): Stills {
 
 /** m: a plan shape narrower than this is not drawn (Glyph G8: the 1 m beds read as stray ticks at the page's scale); 1.1 so the plan's 1 m pieces (1.00, 1.05) go. */
 export const PLAN_MIN_M = 1.1;
+/** m²: a plan shape smaller than this is not drawn (Glyph N7, 0.2.137: the last stubs); the page also drops shapes under 8 px or within 4 px of a pin (Briefing.cs GreenDrawn). */
+export const PLAN_MIN_M2 = 2;
+/** A shape's area, m² (the shoelace). */
+export const polyArea = (pg: V2[]): number => Math.abs(pg.reduce((a, q, i) => { const r = pg[(i + 1) % pg.length]!; return a + q[0] * r[1] - r[0] * q[1]; }, 0)) / 2;
 /** The short side of a shape's box, m. */
 export const shortSide = (pg: V2[]): number => { const xs = pg.map(q => q[0]), ys = pg.map(q => q[1]); return Math.min(Math.max(...xs) - Math.min(...xs), Math.max(...ys) - Math.min(...ys)); };
 /** m: a bed whose every point lies within this of a fountain's middle is that fountain's garden (Glyph R8). */

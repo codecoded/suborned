@@ -122,7 +122,7 @@ namespace Suborned.Play
                 }
                 bits.Add($"{r.Id}:{(r.Gone >= 0f ? "released" : now - r.Born < 0.18f ? "set" : r.Locked ? "locked" : "held")}:{string.Join(",", r.Shooters)}{(r.OnScreen ? "" : ":edge")}{(r.WhyPlate != null && r.WhyPlate.resolvedStyle.display != DisplayStyle.None && r.Why.text.Length > 0 ? ":why=" + r.Why.text : "")}");
             }
-            foreach (var id in reticleGone) { var r = reticles[id]; r.Root.RemoveFromHierarchy(); r.Edge.RemoveFromHierarchy(); reticles.Remove(id); }
+            foreach (var id in reticleGone) { var r = reticles[id]; r.Root.RemoveFromHierarchy(); r.Edge.RemoveFromHierarchy(); manifest.RemoveAll(x => x.e == r.Root || x.e == r.Edge || x.e == r.WhyPlate); reticles.Remove(id); } // Glyph N2: a released reticle leaves the manifest too (it listed a reticle the frame did not draw)
             ReticlesShown = string.Join(" ", bits);
         }
 

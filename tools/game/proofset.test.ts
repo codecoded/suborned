@@ -274,8 +274,8 @@ describe('pickSets: which sets the command runs on a folder', () => {
 
 describe('r123 (batch 0.2.123 host round 4): in the budget and the crops, not gated', () => {
   const r123 = live.sets.r123!, names = r123.frames.map(f => f.name);
-  test('the six pictures of Proof123, each one the source takes, and the source takes no other r123 picture', () => {
-    expect(r123.section).toBe('r123'); expect(names).toEqual(['r123-looks-310', 'r123-looks-320', 'r123-fight-safe', 'r123-fight-loud', 'r123-fight-ground', 'r123-body-safe']);
+  test('the seven pictures of Proof123, each one the source takes, and the source takes no other r123 picture', () => {
+    expect(r123.section).toBe('r123'); expect(names).toEqual(['r123-looks-310', 'r123-looks-320', 'r123-fight-safe', 'r123-fight-loud', 'r123-fight-ground', 'r123-body-safe', 'r123-body-cover']);
     const cs = read(r123.source), taken = new Set([...cs.matchAll(/"(r123-[a-z0-9-]+)"/g)].map(m => m[1]!));
     expect([...taken].sort()).toEqual([...names].sort());
   });

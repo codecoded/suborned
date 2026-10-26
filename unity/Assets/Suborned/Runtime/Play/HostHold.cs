@@ -532,6 +532,17 @@ namespace Suborned.Play
         /// <summary>A fight is on (the engine's: contact, settling 3 s after the last; Sky's §14 note "ends on contact"): the focus click works.</summary>
         public bool FightOnNow => Game != null && Game.FreeFightOn;
 
+        /// <summary>Glyph N2 (0.2.137): the focus (GDD §10: "one ring under the focus … pips over the focus only"), one rule for the ring, the lock
+        /// disc and the pips: a target is a focus while an agent on foot (not down, inside or in a car) holds a lasting fire order on it (Gun.Order).
+        /// A target he fires at on his own (return fire, FireNow) is not a focus: before, the ring read FireNow and the disc Gun.Order, so a ring
+        /// stood with no disc over the rival he answered.</summary>
+        public bool IsFocus(string id)
+        {
+            var g = Game; if (g == null || string.IsNullOrEmpty(id)) return false;
+            for (int k = 0; k < 4; k++) { var op = g.Ops[k]; if (op.Gun.Order == id && !op.Down && !op.Inside && !op.InCar) return true; }
+            return false;
+        }
+
         /// <summary>A right click on a hostile while a fight is on: a focus target (its fire id). Not the cell, not Vale, not a calm person.</summary>
         bool FocusTarget(Target t, out string id, out bool force)
         {
