@@ -1454,3 +1454,48 @@ Engine 0.35.1 at 7c27e980 (fight B, one input, sticky focus, cover and pin, move
 - Environment: front-end captures hung while the display slept (Metal waiting to present); `caffeinate -u` fixed it.
 
 Next owner: Glyph (2x of the page and the two fight shots), then Aster.
+
+## Glyph 2x (0.2.135) (Glyph, 2026-10-27; review only, no code, no Unity)
+**Verdict: the page SHIPS. The fight does NOT ship to Sky yet.** The fight frames still carry 9 kinds of street mark, against b-final's 7. The car cluster in fight-loud-body has about 14 marks in a 200 × 300 px area, which is exactly Sky's "too crowded". There's also no picture yet that shows the fight reading on the body. G1 to G5 are host-only fixes, with no engine work.
+
+**Looked at:** shots/fight-safe-body, fight-loud-body (+ .hud, manifests); proof/r123-fight-safe, r123-fight-loud, hold-one-input; frontend-1080 and -2160 briefing; stills/brief-getaway; budget/briefing-day.page.txt. My 2x and 4x crops are in out/scratch/glyph/0135/.
+
+**What passes**
+- Cut list: there are no tracers, no under-fire or cover arcs, and no miss rings. The unselected cell and the rivals have no rings. The focus has one red ring, as specified.
+- The page: R7 (the getaway still now has the car and Vale in the middle of the tall print, with no road band) and R8 (the fountain is one filled disc, and the plan reads clean) both pass. N11/R6 "Service bay" has landed. `--state page` PASS, 208 words, 0 faults. At 2x on 2160, nothing clips or touches, and the band, plates and pins sit square. R5 is closed (my budget doc says 220).
+
+**Nits (owner, fix)**
+- **G1 · The fire line sits on the focus and covers its lock disc and pips. (Latch.)**
+  - In fight-loud-body, the plate [gun disc][downed] 8 s (HudToolkit.Fire.cs, fireLine at 1012,662, 99 × 38) covers the lock reticle and holder (1039,650 / 1039,673) and the red pips under them. In r123-fight-loud it sits over a rival.
+  - The fire line isn't one of b-final's 7 marks. Under one input, take it off the street: the time-to-down goes in the shooter's portrait chip (the chip slot already says "aiming / firing").
+  - If Aster wants it kept, it stands at least 4 px clear above the lock disc and never on top of it.
+- **G2 · Gun discs over the drawn cell agents. (Latch.)**
+  - Two dark discs with a cream gun and a faint halo stand over drawn agents in both fight shots and in hold-one-input. In loud they're at 1042,460 and 1020,528.
+  - b-final says draw and holster show on the body and in the portrait's sidearm mark, "never on the street". Cut them under one input.
+  - They aren't in the manifest, so the budget can't count them. Every street mark must be manifested.
+- **G3 · The focus wait plate ("no line") covers the focus's pips. (Latch.)**
+  - In fight-safe-body a red sliver of the pips shows between the lock disc (1084,577) and the plate (1069,607).
+  - The stack should run, top to bottom: lock disc, then pips, then the wait plate, each 4 px clear. Or put the plate on the focus's right at the disc's height.
+- **G4 · Latch's audit fault: the piece is the takedown body mark of a killed body. (Latch.)**
+  - HudToolkit.Takedown.cs:117–118: when `b.Dead`, the plate switches from `s-disc_dark_24` to `s-plate_dark` at 24 × 24, with the 16 px glyph from NewMark at (4,4). The path is marks [1] → mark root [51] → plate [0] → unnamed glyph.
+  - A 24 px plate_dark at slice 0.5 has its rim 6.5 px in, so no 16 px glyph can be 4 px clear of it.
+  - Fix: draw the kill plate at 30 × 30 with `unitySliceScale` 0.3 and the `body_dead` glyph at 14 px, centred (8,8). That clears the audit's inset of 7.6, and it stays square against the knockout's round disc. Give the root a manifest tag ("body").
+  - I couldn't find it in the picture, so it's probably under the car or callout stack. Confirm its spot from the frame. If it was under another mark, that is G5 too.
+- **G5 · Speech over the attention callout's face. (Latch.)**
+  - fight-loud-body: "Behind the wall, officers!" (972,629, 161 wide) runs across the callout's portrait (1078,592, 72). In r123-fight-loud the same callout covers the focus's red ring and body.
+  - Speech steps aside from the callout (add it to StepAside's blocks). The callout keeps clear of the focus ring: it should never sit on the man the fight is about.
+- **G6 · Barred red discs and red pips over the non-focus hostiles. (Latch to identify and cut.)**
+  - In r123-fight-loud there are two red "no" discs (about 690,400 and 648,500), with three red pips under one, over men who aren't the focus.
+  - b-final allows pips over the focus only. Whatever these are (the people's pips or a refused-lock state), they're a cut kind in a fight. Say which they are; if they're a lock state, they belong on the cursor, not the street.
+- **G7 · No picture of the body read. (Latch, for the next build.)**
+  - r123 counts kneels and pins (safe: kneel 45, pinned 15). In the two shots I can't see a kneel, a pinned hump or a cower; the hostiles by the hedge stand.
+  - Add one shot at a tick from r123-safe's pinned run, with the camera on the cover point. That is b-final's "Unity's pixels" check. Without it I can't sign off "fights read on the body".
+- **G8 · Low: the plan's small teal dashes. (Latch, low; page still ships.)**
+  - Three unlabelled 2 × 6 px teal ticks sit mid-plan between the fountain and the Office (2160: about 455,1600 and 455,1650). They're probably bollard or planter stubs.
+  - Drop shapes under 1 m from the plan, as I asked for the fountain's garden.
+
+**Count after G1, G2 and G6:** selected ring, focus ring, lock disc, focus pips, flash, hit spark, chips or dust. That's 7 kinds, which is b-final. The getaway's own marks (ring, lane, holder, seat pips, Go) are the hold's and stay.
+
+**Hold-one-input:** a lab frame, so the FIGHT RANGE panel's flat styling is fine there. G2 shows there too.
+
+Next owner: Latch, for G1–G5 and G7 (G6 identify, G8 low). Then one targeted rebuild and the two fight shots plus the pinned shot. Then Glyph at 2x, then Aster to Sky.

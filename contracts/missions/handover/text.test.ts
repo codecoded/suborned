@@ -520,10 +520,9 @@ describe('keys named in the words are the game\'s (briefs/011/play/HOW-TO-PLAY.m
     N: { action: 'next event', where: ['hints.H7'] },
     Q: { action: 'turn the view left', where: ['hints.H13'] },
     E: { action: 'turn the view right', where: ['hints.H13'] },
-    F: { action: 'draw or holster', where: ['locks.not-drawn'] },
+    F: { action: 'draw or holster', where: ['locks.not-drawn', 'hints.H21', 'cards.rivals.for-car'] }, // engine 0.35 one input: F's holster is the only way to stop firing (H21); 0.35.2: only a drawn op guards a held car
     Ctrl: { action: 'force fire', where: ['locks.civilian-target'] },
     Return: { action: 'play again', where: ['locks.mission-over'] },
-    X: { action: 'cease fire', where: ['hints.H21'] }, // brief 067: the one place the file teaches X (PlayControls binds PlayAction.Cease to Key.X)
   };
   const howTo = existsSync(join(root, 'briefs/011/play/HOW-TO-PLAY.md')) ? read('briefs/011/play/HOW-TO-PLAY.md') : '';
   const KEY = /\((?:[A-Z]|F\d+)\)|\bCtrl\b|\bShift-|\bAlt\b|\bEsc\b|\bTab\b|\bPress (?:Return|Space|Esc|Tab)\b|\bF\d{1,2}\b|\b[NCXVLBHFQWER]\b(?=[ ,.;:)]|$)/g;
@@ -1161,7 +1160,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Walk)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'drive-car': /^Drive\b/, 'turn-view': /^Turn (the view|twice)\b/, cease: /^Cease fire: press X\.$/, 'step-target': /^Scroll to switch\.$/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Walk)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'drive-car': /^Drive\b/, 'turn-view': /^Turn (the view|twice)\b/, holster: /^Holster to stop firing: press F\.$/, 'step-target': /^Scroll to switch\.$/ };
     const bad: string[] = [];
     const forms = Object.entries(t.hints.items).flatMap(([id, h]) => [{ id, h, short: h.short, line: h.line, ring: id === 'H13' || id === 'H19' || id === 'H21' || id === 'H22' ? 0 : 1 }, ...(h.door ? [{ id: `${id}.door`, h, short: h.door.short, line: h.door.line, ring: 0 }] : [])]);
     for (const { id, h, short, line, ring } of forms) {
@@ -1776,19 +1775,20 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
     expect(L.go.noVale.length).toBeLessThanOrEqual(MAX_LINE); expect(t.actions.withdraw!.does).toMatch(/Call off the attempt/);
     if (haveSim) expect(simFile('GameGetaway.cs')).toMatch(/Result = Outcome\.Withdrawn; Withdrew\(true\); Chain\.Add\("car-leaves-without-vale"\)/); // the engine: a Go without Vale is the cell withdrawing
   });
-  test('the control tips (Glyph D5, F9): X stops fire, the wheel switches; each is shown at once, once, rings nothing, and is the one place its input is taught', () => {
+  test('the control tips (Glyph D5, F9): the holster (F) stops fire under one input, the wheel switches; each is shown at once, once, rings nothing, and is the one place its input is taught', () => {
     const [h21, h22] = [t.hints.items.H21!, t.hints.items.H22!];
-    expect([h21.short, h22.short]).toEqual(['Cease fire: press X.', 'Scroll to switch.']);
-    expect([h21.verb, h22.verb]).toEqual(['cease', 'step-target']); expect(h21.agent).toBe('any'); expect(h22.agent).toBe('any');
-    expect(t.actions.cease!.label).toBe('Cease fire'); // the game's own name for the verb the key gives
+    expect([h21.short, h22.short]).toEqual(['Holster to stop firing: press F.', 'Scroll to switch.']);
+    expect([h21.verb, h22.verb]).toEqual(['holster', 'step-target']); expect(h21.agent).toBe('any'); expect(h22.agent).toBe('any');
+    expect(t.actions.holster!.label).toBe('Holster'); // the game's own name for the verb the key gives
+    for (const h of Object.values(t.hints.items)) expect(`${h.line} ${h.short}`).not.toMatch(/\bX\b|[Cc]ease/); // engine 0.35 one input: Cease fire and X are retired
     expect([h21.priority, h22.priority]).toEqual([-8, -9]);
     for (const h of [h21, h22]) { expect(words(h.short)).toBeLessThanOrEqual(6); expect(marked(h.short)).toEqual([]); expect(h.rings).toMatch(/^nothing/); expect(h.trigger).toMatch(/at once/); expect(h.goneWhen).toMatch(/retired for good/); }
     for (const h of Object.entries(t.hints.items).filter(([id]) => !['H21', 'H22'].includes(id)).map(([, x]) => x)) { expect(h21.priority).toBeLessThan(h.priority); expect(h22.priority).toBeLessThan(h.priority); }
-    expect(h21.line).toMatch(/\bX\b/); expect(h22.line).not.toMatch(/\b[A-Z]\b(?=[ ,.;:)]|$)/); // only the X hint names a key
+    expect(h21.line).toMatch(/\bF\b/); expect(h22.line).not.toMatch(/\b[A-Z]\b(?=[ ,.;:)]|$)/); // only the F hint names a key
     expect(t.hints.rules.tips).toMatch(/H21/); expect(t.hints.rules.tips).toMatch(/H22/);
-    // the key is the game's own: X is Cease in the controls and in HOW-TO-PLAY
+    // the key is the game's own: F is Draw (draw or holster) in the controls
     const controls = join(root, 'unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
-    if (existsSync(controls)) expect(read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs')).toMatch(/PlayAction\.Cease,\s*keys = new\[\] \{ Key\.X \}/);
+    if (existsSync(controls)) expect(read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs')).toMatch(/PlayAction\.Draw,\s*keys = new\[\] \{ Key\.F \}/);
   });
 });
 
@@ -1826,13 +1826,13 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
       if (haveSim) expect(simAll().join('\n'), log).toContain(`Note("${log}"`);
     }
     // the Scout says what is wrong when the rivals come: nobody is outside the car
-    for (const l of lookup(t, { event: 'rivals-for-car', speaker: 'scout' })!.lines) expect(l, l).toMatch(/outside|unguarded|get out/i);
+    for (const l of lookup(t, { event: 'rivals-for-car', speaker: 'scout' })!.lines) expect(l, l).toMatch(/outside|unguarded/i);
     // the host already makes a fallback card of both codes (HostFeed.FeedEvents), so the text carries their words: what, why and the fix, no sight rule (the cell is in the car), no beat (the feed is at its ten)
     const fc = t.cards.items['rivals.for-car']!, bc = t.cards.items['rivals.back-to-cover']!;
     expect(fc.title).toBe('Rivals going for Vale'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon');
-    expect(fc.result).toBe('Nobody is standing outside the car, so they come for Vale. Walk someone out.'); // "walk them out": locks.in-car's word for leaving the car
+    expect(fc.result).toBe('No gun is drawn outside the car, so they come for Vale. Draw one there (F).'); // engine 0.35.2 (GDD v0.30.2 section 06): only a drawn op guards a held car, so the fix is F
     expect(bc.title).toBe('Rivals back in cover'); expect(bc.fate).toBe('alt');
-    expect(bc.result).toBe('They fall back to cover: someone is standing outside, or nothing blocks the car.'); // "blocks", never "held" (GDD section 10)
+    expect(bc.result).toBe('They fall back to cover: a gun is drawn by the car, or nothing blocks it.'); // "blocks", never "held" (GDD section 10)
     for (const c of [fc, bc]) { expect(c.sight).toBeUndefined(); expect(c.beat).toBeUndefined(); expect(JSON.stringify(c)).not.toMatch(/\bheld\b/i); }
   });
   test('car.held.<how> is log only: one silent prefix with its reason, spoken by no event and no card', () => {

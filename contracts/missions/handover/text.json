@@ -604,8 +604,8 @@
    "rivals.see-takedown": {"kind":"warning","fate":"icon","title":"A crewmate saw it","result":"A rival saw his crewmate go down and opened fire. It's loud now."},
    "rivals.wakes": {"kind":"warning","fate":"icon","title":"A rival is awake","sight":"in-sight","at":"victim","result":"He is up again and goes for the Enforcer on sight."},
    "rivals.frees": {"kind":"city","fate":"alt","title":"A rival is untied","sight":"in-sight","at":"victim","result":"A crewmate found him tied and untied him."},
-   "rivals.for-car": {"kind":"warning","fate":"icon","title":"Rivals going for Vale","result":"Nobody is standing outside the car, so they come for Vale. Walk someone out."},
-   "rivals.back-to-cover": {"kind":"city","fate":"alt","title":"Rivals back in cover","result":"They fall back to cover: someone is standing outside, or nothing blocks the car."},
+   "rivals.for-car": {"kind":"warning","fate":"icon","title":"Rivals going for Vale","result":"No gun is drawn outside the car, so they come for Vale. Draw one there (F)."},
+   "rivals.back-to-cover": {"kind":"city","fate":"alt","title":"Rivals back in cover","result":"They fall back to cover: a gun is drawn by the car, or nothing blocks it."},
    "car.parks": {"kind":"city","fate":"icon","title":"Vale's car parks","result":"In the service bay. Take him from the back seat."},
    "car.blocked": {"kind":"warning","fate":"beat","beat":"Vale's car stops short.","title":"Vale's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
    "board.missed": {"kind":"warning","fate":"alt","title":"Nobody got in","result":"The car drove off first. Wait until it stops."},
@@ -796,8 +796,8 @@
   "ai-gone": {"kind":"world","trigger":"a rival reaches the car and is gone","speakers":["rivals","scout"],"log":["ai.gone"]},
   "ai-join": {"kind":"world","trigger":"the response unit on the street joins the loud fight","speakers":["security","fixer"],"log":["ai.join"]},
   "ai-advance": {"kind":"world","trigger":"a rival holding with nobody in reach for 1 s advances again, on the nearest agent he has cause to fire on (engine 0.34.0, Motive M067-SQ2; police and the blocker hold their posts)","speakers":["rivals","scout"],"log":["ai.advance"]},
-  "rivals-for-car": {"kind":"world","trigger":"the safe fight with Vale in a held car and nobody of the cell outside it: the rivals up and not broken walk to the car, firing as they go, and the first within 1 m of its body takes Vale (engine 0.34.0, Motive M067-K3 a; the engine logs one for each rival, the host speaks once)","speakers":["rivals","scout"],"log":["rivals.for-car"]},
-  "rivals-back-to-cover": {"kind":"world","trigger":"someone of the cell stands outside the car again, or the car is no longer held: the rivals who were walking to it go back to cover (engine 0.34.0, Motive M067-K3 a)","speakers":["rivals","scout"],"log":["rivals.back-to-cover"]},
+  "rivals-for-car": {"kind":"world","trigger":"the safe fight with Vale in a held car and nobody of the cell outside it with a gun drawn (engine 0.35.2, GDD v0.30.2 section 06: only a drawn op guards a held car; an undrawn agent beside it guards nothing): the rivals up and not broken walk to the car, firing as they go, and the first within 1 m of its body takes Vale (engine 0.34.0, Motive M067-K3 a; the engine logs one for each rival, the host speaks once)","speakers":["rivals","scout"],"log":["rivals.for-car"]},
+  "rivals-back-to-cover": {"kind":"world","trigger":"someone of the cell is outside the car again with a gun drawn (engine 0.35.2: a draw outside it, or a drawn agent stepping out), or the car is no longer held: the rivals who were walking to it go back to cover (engine 0.34.0, Motive M067-K3 a)","speakers":["rivals","scout"],"log":["rivals.back-to-cover"]},
   "guard-stands-down": {"kind":"world","trigger":"no foe in reach: the guard stands down","speakers":["guard","scout"],"log":["guard.stands-down"]},
   "patrol-resumes": {"kind":"world","trigger":"no foe in reach: the patrol turns back to its sweep","speakers":["patrol"],"log":["patrol.resumes"]},
   "patrol-sweep": {"kind":"world","trigger":"the patrol is back on its sweep","speakers":["patrol","scout"],"log":["patrol.sweep"]},
@@ -1022,7 +1022,7 @@
   "move.": "parked: moves off, Sky 2026-10-26. Engine 0.35.1: weapons.moves.on false, so Mark, Talk down, Steam and Covering fire are refused unknown-verb and none of move.mark, move.talk-down, move.steam, move.covering-fire or move.covering-fire-ends is logged. Their actions, locks (move-cooling, talk-police, talk-none-down, talk-not-hurt, steam-no-grille) and acks carry `parked` and are kept for when Sky takes the moves up. With the moves on (engine 0.35.0, brief 039) these logs stay silent: the body, the sound and the roster's move disc speak (Glyph b-final)",
   "shot.": "a shot (shot.hit, shot.miss): the tracer and the pips speak; no line per shot",
   "order.": "the order echo (Game.Note \"order.*\"): the agent's own ack and arrive lines speak for it",
-  "fire.free-on": "a fight comes on (weapons free): silent, once per fight. The street says it: the drawn agents fire, the hostile rings and the under-fire cue. The engine log keeps one line per fight; engine 0.35.1 logs it again after each lull in the final fight without a fire.free-off between (briefs/039/fable-fight-on.md, Keel)",
+  "fire.free-on": "a fight comes on (weapons free): silent, once per fight. The street says it: the drawn agents fire, the hostile rings and the under-fire cue. The engine log keeps one line per fight: since engine 0.35.2 it logs only when no fire.free-on stands since the last fire.free-off, so the 0.35.1 repeat after each lull in the final fight is gone (briefs/039/fable-fight-on.md, Keel)",
   "fire.free-off": "the fight goes off after the settle: silent; the drawn agents stop firing on the street. Never in the final fight under one input (engine 0.35.1, Motive ruling 1)",
   "fire.free-setting": "the free control turns weapons free on or off: silent; the control shows the setting",
   "fire.": "a fire order's progress (fire.done, fire.lapses, fire.cancelled, fire.out-of-range): bookkeeping; engine 0.21.0 (Sky 2026-10-22): fire.out-of-range (a lasting order's target left the weapon's max ring) shows as the pop less.pop.fire-out-of-range on the agent (PLACEHOLDER words, Keel; Fable to word), and fire.cancelled now also means a new act ended the order; the shots speak through the fight events. When the final fight is over (brief 023) every fire order on a final-fight hostile ends with fire.done: the fight.over card says \"Fire orders end\" and a new fire order there is refused as fight-over",
@@ -1107,7 +1107,7 @@
    "one": "One at a time, in priority order, lowest number first (H14, H16 and H15, the end steps, are -4 to -2: they win over every other hint, H17 and H13 included, when their trigger holds; their triggers never hold together; H20, Drive the car round (brief 059), is -7: it wins over H16 while the getaway car is still at the square, so the Take is not offered with a long carry ahead; H17, the fight hint, is -1, behind H15 so that Put Vale in the car wins while a fight holds the car, ahead of H13; H21 and H22, the control tips of brief 067, are -8 and -9: see `tips`).",
    "once": "Each fires once per run, and H hides the layer for good.",
    "idle": "A hint shows only after the cell has given no order for 8 s (H13's door cause, H21 and H22 show at once).",
-   "tips": "Brief 067 (Glyph, batch 0.2.123): H21 (Cease fire: press X) and H22 (Scroll to switch) are control tips, not steps. Each teaches one input at the moment the player has just met the need for it, shows once, at once (no 8 s idle wait: that would hide it for the whole fight or the whole crowd), rings nothing (the lock reticle and the stack tab are already on screen), and retires for good when the input is used. They are -8 and -9, below every other hint's number, so they show the moment their trigger holds; the idle flavour hints and the end steps return after them. H21 is the one place the file teaches the X key (text.test.ts holds it to the game's own binding).",
+   "tips": "Brief 067 (Glyph, batch 0.2.123): H21 (Holster to stop firing: press F; engine 0.35 one input, Cease fire and X retired) and H22 (Scroll to switch) are control tips, not steps. Each teaches one input at the moment the player has just met the need for it, shows once, at once (no 8 s idle wait: that would hide it for the whole fight or the whole crowd), rings nothing (the lock reticle and the stack tab are already on screen), and retires for good when the input is used. They are -8 and -9, below every other hint's number, so they show the moment their trigger holds; the idle flavour hints and the end steps return after them. H21 teaches F as the way to stop firing (text.test.ts holds it to the game's own binding); the file no longer names X.",
    "vanishes": "It vanishes the moment its gone-when act happens, or when its trigger stops holding.",
    "words": "Each line names an agent, a verb and a target, introduces one verb, and never names an approach, a time or a sequence.",
    "short": "Brief 014: the line at rest is `short` (one imperative, one [noun] ringed, no agent); this long line is Alt and the relearn key. See `less.hint` for when it shows and retires."
@@ -1340,13 +1340,13 @@
    "H21": {
     "priority": -8,
     "agent": "any",
-    "verb": "cease",
+    "verb": "holster",
     "target": "the target in the lock reticle",
-    "line": "Any agent can cease fire: press X. The weapon stays drawn.",
-    "short": "Cease fire: press X.",
-    "trigger": "an agent has been given a fire order for the first time this run (Ops[k].Gun.Order set) and X has not been pressed (brief 067, Glyph D5; Sky on 0.2.122: not sure whether to press X or hold right click). Shown at once, over any hint and without the 8 s idle wait, as H13's door cause is: it teaches the key for what the player has just done",
+    "line": "A drawn agent keeps firing on its own. To stop, holster: press F.",
+    "short": "Holster to stop firing: press F.",
+    "trigger": "an agent has been given a fire order for the first time this run (Ops[k].Gun.Order set) and no Holster has been given since (brief 067, Glyph D5; Sky on 0.2.122: not sure whether to press X or hold right click). Engine 0.35 one input: Cease fire and X are retired, weapons free is always on, and only a holster (F) ends the firing and the sticky focus. Shown at once, over any hint and without the 8 s idle wait, as H13's door cause is: it teaches the key for what the player has just done",
     "rings": "nothing: the lock reticle over the target shows it already",
-    "goneWhen": "X is pressed (a Cease fire order), or the fight ends; retired for good once X has been used"
+    "goneWhen": "a Holster is given (F on a drawn agent), or the fight ends; retired for good once F has holstered"
    },
    "H22": {
     "priority": -9,
@@ -1934,7 +1934,7 @@
      "beat-to-pickup": "The rivals head for the pickup.",
      "downed-enforcer": "Rivals shoot the one carrying Vale.",
      "reached-at-close": "Rivals take Vale at the close.",
-     "reached-car": "Rivals take a car nobody guards."
+     "reached-car": "Draw a gun by the car."
     },
     "vale-leaves": {
      "too-late": "Vale's car leaves on schedule."
@@ -1995,7 +1995,7 @@
    }
   },
   "done": {
-   "rule": "Brief 043 (the done moment; Sky 2026-10-22: it is not clear when a task has completed and what it gained). Labels and numbers, never sentences. The plate is the portrait plate's word for 2.2 s after a landing or a cancel, keyed by the engine's outcome (the last part of turn.<approach>.<outcome>) or `done`; kept reads as turned. The gain chip shows one icon-plus-word line per fact, at most three, and the facts a Watch or Listen teaches are Intel's own fragments (less.intel: the need's record label, the temperament, Loves {name}) so the chip and the Intel panel never disagree; only the words in `gain` are new. Brief 058 (Sky, 2026-10-25): a looped camera shows the desk a clean picture, so a loop is never \"dark\": `camera-looped` is the Loop chip (the 2:00 countdown rides the window marker), `camera-cut` the Disable chip, `camera-shot` the chip of a camera shot out, `parked` the chip of a car Drive that has arrived and `timetable` the chip of a Watch on the rival crew (brief 059: the street draws the three facts it teaches, the next move, the spring ring and the follow line, so the chip names them as one; a bare noun on the thing, as `rounds` is on the patrol). A window marker is an icon with a count or the doer's face; `close` is the pop on the thing when the window ends, by the marker's kind. Unlock-row pills are the verbs' own ring labels (actions.ring-*), shut ones struck through, so they carry no words here. Cancel: the tag before is `tag` or `tagCost`, the pop after `pop` or `popCost`, {verb} the ring label of the order dropped, {cost} one of `cost` by the engine's cancel cost (lost, aborted, released, staff-report, vale-reports, ends; the rest are free and show no cost; `drives-on` is no cancel at all, engine 0.33.1: a Drive under way is refused `car-driving`, so Cancel is hidden for the driver and the riders and no tag or pop shows), {s} the seconds spent. Walking in: the plate shows `walk.plate` with {who} from `walk.who`; the pill and Alt show `walk.line` with {target} from names.targets and {verb} the ring label. The old 'serving a table, back in {s} s' refusal is retired (engine 0.23: the agent walks up to the server at the table).",
+   "rule": "Brief 043 (the done moment; Sky 2026-10-22: it is not clear when a task has completed and what it gained). Labels and numbers, never sentences. The plate is the portrait plate's word for 2.2 s after a landing or a cancel, keyed by the engine's outcome (the last part of turn.<approach>.<outcome>) or `done`; kept reads as turned. The gain chip shows one icon-plus-word line per fact, at most three, and the facts a Watch or Listen teaches are Intel's own fragments (less.intel: the need's record label, the temperament, Loves {name}) so the chip and the Intel panel never disagree; only the words in `gain` are new. Brief 058 (Sky, 2026-10-25): a looped camera shows the desk a clean picture, so a loop is never \"dark\": `camera-looped` is the Loop chip (the 2:00 countdown rides the window marker), `camera-cut` the Disable chip, `camera-shot` the chip of a camera shot out, `parked` the chip of a car Drive that has arrived and `timetable` the chip of a Watch on the rival crew (brief 059: the street draws the three facts it teaches, the next move, the spring ring and the follow line, so the chip names them as one; a bare noun on the thing, as `rounds` is on the patrol). A window marker is an icon with a count or the doer's face; `close` is the pop on the thing when the window ends, by the marker's kind. Unlock-row pills are the verbs' own ring labels (actions.ring-*), shut ones struck through, so they carry no words here. Cancel: the tag before is `tag` or `tagCost`, the pop after `pop` or `popCost`, {verb} the ring label of the order dropped, {cost} one of `cost` by the engine's cancel cost (lost, aborted, released, staff-report, vale-reports, ends; the rest are free and show no cost; `drives-on` is no cancel at all, engine 0.33.1: a Drive under way is refused `car-driving`, so Cancel is hidden for the driver and the riders and no tag or pop shows), {s} the seconds spent. Walking in: the plate shows `walk.plate` with {who} from `walk.who`; the pill and Alt show `walk.line` with {target} from names.targets and {verb} the ring label. The old 'serving a table, back in {s} s' refusal is retired (engine 0.23: the agent walks up to the server at the table). Focus (engine 0.35 one input, the sticky focus, GDD section 10): the plate under a focus that waits, two lowercase words by the engine's FocusOf state (aiming, walking-in, no-line, out-of-reach; firing shows no plate); no-line and out-of-reach say what the fire refusals say.",
    "plate": {"done": "done", "turned": "turned", "kept": "turned", "not-yet": "not yet", "refused": "refused", "suspicious": "reported", "cancelled": "cancelled"},
    "gain": {
     "rounds": "Rounds", "cone": "Cone", "nothing-new": "Nothing new",
@@ -2023,6 +2023,12 @@
    "board": {
     "mission-over": "mission over", "agent-down": "down", "enforcer-inside": "inside", "agent-busy": "busy",
     "board-running": "stop first", "board-tethered": "looping", "already-carrying": "hands full", "stand-at-getaway": "too far", "engine-error": "restart"
+   },
+   "focus": {
+    "aiming": "taking aim",
+    "walking-in": "walking in",
+    "no-line": "no line",
+    "out-of-reach": "too far"
    },
    "walk": {
     "plate": "→ {who}",
@@ -2441,9 +2447,9 @@
   {"event":"guard-stands-down","speaker":"scout","lines":["The guard has stood down.","Guard's lowered his gun."]},
   {"event":"ai-advance","speaker":"rivals","lines":["Nobody in reach. Close the gap.","They won't come to us. Close in.","Too far to hit. Walk it in."]},
   {"event":"ai-advance","speaker":"scout","lines":["A rival is coming on.","One of them is closing in.","They're not waiting. One is moving up."]},
-  {"event":"rivals-for-car","speaker":"rivals","lines":["Nobody's outside. Take the car.","The car is unguarded. Take Vale.","They're all inside it. Rush the car."]},
-  {"event":"rivals-for-car","speaker":"scout","lines":["Nobody's outside. They're coming for the car.","Rivals are walking up. Someone get out there.","The car is unguarded. They know it."]},
-  {"event":"rivals-back-to-cover","speaker":"rivals","lines":["Someone's outside. Back to cover.","They've a man on the street. Get down.","Not yet. Back to cover."]},
+  {"event":"rivals-for-car","speaker":"rivals","lines":["No guns outside. Take the car.","The car is unguarded. Take Vale.","Nobody's covering it. Rush the car."]},
+  {"event":"rivals-for-car","speaker":"scout","lines":["No gun outside. They're coming for the car.","Rivals walking up. Draw on them outside.","The car is unguarded. They know it."]},
+  {"event":"rivals-back-to-cover","speaker":"rivals","lines":["A gun's out. Back to cover.","They've a gun on the street. Get down.","Not yet. Back to cover."]},
   {"event":"rivals-back-to-cover","speaker":"scout","lines":["They've pulled back to cover.","Rivals are back behind cover.","That held them. They're ducking back."]},
   {"event":"patrol-resumes","speaker":"patrol","lines":["Disturbance resolved. Resuming route.","Returning to sweep."]},
   {"event":"patrol-sweep","speaker":"patrol","lines":["Sweep resumed. Have a pleasant day.","Route restored. Thank you for walking."]},
