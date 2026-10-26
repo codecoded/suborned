@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.30.1, 2026-10-26)
+## Open for Sky (as of v0.30.2, 2026-10-27)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -35,6 +35,12 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.30.2 (2026-10-27; Sky's answers, relayed by main)
+- Sky, 2026-10-27: cell-down, "Sure": it stays a fail, covered by Keel's K3-CELL-DOWN scenario instead of a route (no natural play reaches it: 0 of 165 stands); fight-safe-cell-down becomes fight-safe-unguarded (§09 mission checker).
+- Sky, 2026-10-27: the stall fix, "yes": only a drawn op guards a held car, so the rivals take Vale past an undrawn cell (§06; Motive, briefs/039/motive/rulings-0.35.1.md). Engine 0.35.2.
+- Sky, 2026-10-27: the café, "3": a 3-storey corner at 16.8 m, so the getaway bay shows from the Office front at yaw 210 (§09; Datum applies it after the port batch; CLAUDE.md's café line is main's).
+- Sky, 2026-10-27: getaway car v2, "fine for now - I'll improve later": Vela's Sedan_Getaway_v2 adopted and Vale's car given the same lift (after the port batch).
 
 ## v0.30.1 (2026-10-26; brief 071 §6, Motive)
 - Motive, 2026-10-26 (briefs/071/motive/rules.md §6, following Sky's Option A and S1 = no; no value changes): every op still on the map down fails only while Vale is on the map, after which they are left behind (§06); only the car a fight is at ends it by leaving, and a public fight is judged when it ends, when its car leaves or when the mission ends (§04, §06); T11 redrafted for two cars (§13). Keel adds SPLIT-PUBLIC to the split round.
