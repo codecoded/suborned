@@ -299,3 +299,16 @@ Next batch, not this one: the shuffle during the warned ambush wait (Pulse/Motiv
 - 18:00: Fable is cutting the Go Alt line (N5) now; Latch's build should start from `--from sim` (not game-build) so the new text.json reaches StreamingAssets.
 - 19:05: 0.2.127 not shipped (garbled ring plates after a shut ring, fixed in the tree). Final build 0.2.128 running; ETA about 19:45.
 - 19:35: **0.2.128 is the build for Sky.** game-check all green, budget 49/50 (the Go Alt line touches the feed title under Alt; one-line fix: add feedTitle to FeedRects, HudToolkit.Ring.cs:169), shots, late-fight, tp-long ok. Evidence briefs/041/build/0314/.
+
+## Sky's answers of 2026-10-26 ~20:20: plan (Aster, 21:10)
+| item | owner, order | ETA |
+|---|---|---|
+| Briefing page | built in 0.2.130 (f84b8aa2); Glyph 2x, Splice's page budget state, Fable's section heads running | review ~22:00; fixes go in the next build |
+| GDD v0.28.0: 1080p bar, "entry seen by patrol" not a fail, fight B with calls a/b/c | helper drafting, Aster reviews; decision log; bun run crew | ~22:00 |
+| Patrol fail removed | Keel (engine, running) → Waymark (MC-3, fail list) | ~23:00 |
+| Air scripts at 1080p | Redline (running; no Air run) | ~21:45 |
+| Fight B | Forma's pose proof (main started) → Glyph judges → Keel engine → Latch host → Chime | engine and host over the next day after the verdict |
+| Split getaway (Sky's idea) | Motive (main started) + Waymark → picture and proposal for Sky; not built | tomorrow morning |
+| Height cap | Datum (main started, scratch) → Vantage → Vela → world export → Latch build; GDD lines then | the build ~tomorrow midday |
+| Held | the Air soak, night timing, the day–night cycle (6:30 on the mission clock when it comes); square police posts until fight B, then re-measure | — |
+Latch's order: the page's fixes ride the height-cap build; the fight's host work after Keel's engine. The order stands.
