@@ -590,6 +590,13 @@ describe('brief 013: takedowns, bodies, witnesses, the response dial (Sky 2026-1
     expect(Rulebook.safeParse(old).success).toBe(true); // a rulebook pinned before 0.34.0 still parses (the engine of today refuses it)
   });
 
+  test('engine 0.34.1 (Aster\'s ruling within M067-SQ2): an advance on an operative closes on him', () => {
+    expect(rb.ai.noStall).toMatch(/closes on him/); // a cover only if its walk to him is strictly shorter than the walk from where the rival stands
+    expect(rb.ai.noStall).toMatch(/strictly shorter/); expect(rb.ai.noStall).toMatch(/inside the rival's effective reach of him or nearer him/);
+    expect(rb.ai.noStall).toMatch(/With nowhere to go that closes he holds/); // else his stop point of him, else he holds
+    expect(rb.ai.noStall).toMatch(/takes no kite step out of a line/); // the advance is not turned back to cover (as K3's walk to a held car)
+  });
+
   test('the takedown: Motive §7.1, read by ref', () => {
     expect([td.ko, td.kill, td.struggle, td.wake, td.stagger, td.restrain, td.free, td.callOut].map(n)).toEqual([6, 3, 3, 120, 4, 8, 3, 10]);
     expect(td.reach).toBe(rb.cell.atReach); // hands: the same reach as an act at a device

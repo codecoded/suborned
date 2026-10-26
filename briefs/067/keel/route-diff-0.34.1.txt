@@ -1,0 +1,56 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a out/scratch/keel/pre-0.34.1/bin/suborned-sim.dll --a-root out/scratch/keel/pre-0.34.1 --b out/scratch/keel/bin341/suborned-sim.dll --scripts tree
+# A = engine 0.34.0 as reported green (the working tree before this change, snapshot out/scratch/keel/pre-0.34.1: its sim/, rulebook and sim/data); B = engine 0.34.1 (the working tree). Both play the working tree's route scripts (contracts/missions/handover/routes), not yet re-composed for 0.34.x.
+· engines ready (0.0 s); playing 41 routes on A and 41 on B
+A = suborned-sim.dll 62f18b90 on /Users/sky/Projects/suborned/out/scratch/keel/pre-0.34.1    B = suborned-sim.dll bc1ea03c on the working tree's inputs    (= means the value did not move)
+route                   outcome            fail                   end              Trail  Alert  health lost
+careless-g-disable      =                  =                      =                =      =      =
+    first log line apart (line 57):
+      A  3:50.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  3:51.0  shot.miss  rival-2 fires on enforcer at 13 m (281 ‰): miss.
+fail-entry-seen-patrol  =                  =                      =                =      =      =
+    first log line apart (line 65):
+      A  5:54.9  ai.cover  rival-3 takes cover at cv-037 (wall civic/cafe/wall-front-w, q 640).
+      B  5:54.9  shot.miss  rival-1 fires on guard at 8 m (562 ‰): miss.
+route-a                 =                  =                      =                =      =      =
+    first log line apart (line 78):
+      A  4:14.4  ai.cover  rival-3 takes cover at cv-030 (wall civic/cafe/wall-arc-w, q 709).
+      B  4:14.4  shot.miss  rival-2 fires on fixer at 12 m (562 ‰): miss.
+route-a-board           =                  =                      =                =      =      =
+    first log line apart (line 78):
+      A  4:14.4  ai.cover  rival-3 takes cover at cv-030 (wall civic/cafe/wall-arc-w, q 709).
+      B  4:14.4  shot.miss  rival-2 fires on scout at 7 m (562 ‰): miss.
+route-a-disable         =                  =                      =                =      =      =
+    first log line apart (line 81):
+      A  4:14.4  ai.cover  rival-3 takes cover at cv-030 (wall civic/cafe/wall-arc-w, q 709).
+      B  4:14.4  shot.miss  rival-2 fires on fixer at 12 m (562 ‰): miss.
+route-a-pressure        success → failure  - → rivals-reach-vale  3:53.7 → 3:17.2  =      =      72 % → 100 %
+    first log line apart (line 109):
+      A  3:10.3  shot.hit  rival-1 fires on fixer at 11 m (562 ‰): hit.
+      B  3:09.8  ai.why  rival-5 takes the tech as its target: drawn.
+route-g                 =                  =                      =                =      =      =
+    first log line apart (line 59):
+      A  3:50.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  3:51.0  shot.miss  rival-2 fires on enforcer at 13 m (281 ‰): miss.
+route-g-board           =                  =                      =                =      =      =
+    first log line apart (line 59):
+      A  3:50.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  3:51.0  shot.miss  rival-2 fires on enforcer at 13 m (281 ‰): miss.
+route-g-fast            =                  =                      =                =      =      =
+    first log line apart (line 57):
+      A  3:02.6  ai.kite  rival-5 answers fixer: first shot at 3:02.1, moves at 3:02.6 (5 ticks), out of the line.
+      B  3:02.9  ai.why  rival-2 takes the fixer as its target: drawn.
+route-g-fast-board      =                  =                      3:10.7 → 3:10.5  =      =      =
+    first log line apart (line 111):
+      A  3:08.8  ai.advance  rival-5 has had nobody in reach for 1 s: he advances on the fixer.
+      B  3:08.9  board.in  The fixer is in the car.
+route-g-kill            =                  =                      =                =      =      =
+    first log line apart (line 60):
+      A  5:17.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  5:18.0  shot.miss  rival-2 fires on enforcer at 13 m (281 ‰): miss.
+route-g-kill-board      =                  =                      =                =      =      =
+    first log line apart (line 60):
+      A  5:17.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  5:18.0  shot.miss  rival-2 fires on enforcer at 13 m (281 ‰): miss.
+
+41 routes: 12 moved, 29 unchanged
+(7.2 s)

@@ -50,9 +50,15 @@ export function codeFinding(lines: string[]): Finding {
   return f;
 }
 
-/** A replay's lines as they are compared across two code states: hashes out, the code line reduced to what it says about results. */
+/** The wording tools/gen/replay.ts gives the GDD line of a run recorded against an older GDD: `ok    GDD v0.18.0; now v0.26.0: GDD drift is labelled "recorded against GDD v0.18.0"`. A test pins it to that source. */
+export const GDD_NOW = /; now v\d+\.\d+\.\d+: (GDD drift is labelled)/;
+
+/**
+ * A replay's lines as they are compared across two code states: hashes out, the code line reduced to what it says about results, and the version of the GDD that is
+ * current out of the GDD line (it names which GDD the state holds, not what the replay found: a GDD published between the base and the tree would otherwise refuse every run).
+ */
 export function signature(lines: string[]): string[] {
-  const strip = (s: string) => s.replace(/\b[0-9a-f]{12,64}\b/g, '#');
+  const strip = (s: string) => s.replace(/\b[0-9a-f]{12,64}\b/g, '#').replace(GDD_NOW, '; now <current GDD>: $1');
   return lines.filter(l => l.trim()).map(l => {
     if (!CODE.test(l)) return strip(l);
     const f = codeFinding([l]);
@@ -84,6 +90,12 @@ export function judgeRun(now: RunReplay, base: RunReplay | undefined): RunVerdic
   if (diff.onlyBase.length || diff.onlyNow.length) return { id: now.id, objective: now.objective, moved: true, reason: 'its replay differs from the base state\'s', diff };
   return { id: now.id, objective: now.objective, moved: false };
 }
+
+/**
+ * The base state fails this run's code check itself: the ledger it was committed with declares nothing for its code (a checkpoint taken red, before the declaration). There is no replay
+ * of it to compare the tree with, so every run is refused for that, whatever the tree's edits did.
+ */
+export const baseIsRed = (v: RunVerdict): boolean => !!v.diff?.onlyBase.some(l => l.startsWith('CODE FAILED'));
 
 /** The cause words: the files behind the change, named. */
 export function causeText(objective: string, baseLabel: string, files: string[], runs: number): string {

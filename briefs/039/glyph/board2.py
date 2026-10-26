@@ -18,20 +18,20 @@ def mark_offer():
     fr = scene(); ring39(fr, R2F, threat=True, ours=False); cover_disc(fr, MARK_HG, False, "rival"); cover_arc(fr, R2F, 200, 70, False, CREAM); rival_pips(fr, "r2", 3, 3)
     brackets(fr, R2F, preview=True)
     pill39(fr, (R2F[0], R2H[1] - 20), "Hold", [("txt", "Mark · 1 s")], "mark", faces=[SCOUT])
-    return fit(fr, 1175, 338)
+    return fit(fr, 1175, 330, 400, 293)
 def mark_shown():
     fr = scene(); ring39(fr, R2F, threat=True, ours=True); cover_disc(fr, MARK_HG, False, "rival", struck=True); cover_arc(fr, R2F, 200, 70, False, CREAM, dim=True); rival_pips(fr, "r2", 3, 3)
     brackets(fr, R2F, frac=0.78); walk_to(fr, R2F, (1118, 452))
     bubble(fr, (HEAD["scout"][0] + 4, HEAD["scout"][1] - 6), "Left planter.") if False else None
     for a in ("tech", "fixer"): tracer(fr, gun(a), hit_pt("r2")); spark(fr, hit_pt("r2"), 0.25, 0.7)
-    return fit(fr, 1175, 338)
+    return fit(fr, 1175, 338, 400, 293)
 
 # ----------------------------------------------------------------------------- Talk down
 def talk_offer():
     fr = scene(); ring39(fr, R3F, threat=True); rival_pips(fr, "r3", 3, 1)
     offer_disc(fr, (R3H[0], R3H[1] - 18), "megaphone")
     pill39(fr, (R3H[0], R3H[1] - 36), "Hold", [("txt", "Talk down · 2 s")], "megaphone", faces=[FIXER])
-    return fit(fr, 1110, 600)
+    return fit(fr, 1110, 590, 400, 293)
 def talk_shown():
     fr = scene(); ring39(fr, R3F, side="rival", threat=False, reach="out"); rival_pips(fr, "r3", 3, 1)
     shout(fr, CELL["fixer"], 0.62, 12.0)
@@ -39,14 +39,16 @@ def talk_shown():
     lay = layer(fr); disc39(lay, R3H[0] + 4, R3H[1] - 22, 20, "run"); fr.hud.alpha_composite(lay)
     bubble(fr, (R3H[0], R3H[1] - 30), "Go, go!") if False else None
     crew_tally(fr, 1560, 112, 3, 1, broken=1, mark_at=1)
-    return fr.crop((800, 505, 1360, 735)).convert("RGB").resize((560, 230), Image.LANCZOS) if False else fit(fr, 1010, 640, 460, 337, (560, 410))
+    tile_im = fit(fr, 1010, 640, 460, 337, (560, 410))
+    tf = blank_frame(110, 44); crew_tally(tf, 10, 22, 3, 1, broken=1, mark_at=1)                      # the tally lives under the clock bar: shown here as an inset, on its own
+    ins = tf.hud.crop((int(6 * S), int(4 * S), int(96 * S), int(40 * S))); base = tile_im.convert("RGBA"); base.alpha_composite(ins, (560 - ins.width - 12, 12)); return base.convert("RGB")
 
 # ----------------------------------------------------------------------------- Steam
 def steam_offer():
     fr = scene(); grille(fr, GRILLE, lit=True, marker=True); ring_m(fr, GRILLE, 4.0, CREAM, dash=(6, 5), w=2.0, alpha=230)
     pill39(fr, (GRILLE[0], GRILLE[1] - 30 - 24), "Hold", [("txt", "Steam · 1 s")], "steam", faces=[TECH])
     ring39(fr, R3F, threat=True); rival_pips(fr, "r3", 3, 3)
-    return fit(fr, 1040, 600, 380, 278)
+    return fit(fr, 1040, 590, 400, 293)
 def steam_shown():
     fr = scene(); grille(fr, GRILLE, lit=False, marker=False); cloud(fr, GRILLE, 4.0, 3, 1.9, 1.15)
     ring_m(fr, GRILLE, 4.0, CREAM, dash=(3, 7), w=1.6, alpha=170)
@@ -65,7 +67,7 @@ def cover_offer():
     lay = layer(fr); disc39(lay, HEAD["enforcer"][0], HEAD["enforcer"][1] - 27, 24, "s_carrying"); fr.hud.alpha_composite(lay)
     aim_cursor(fr, (R3F[0], (R3F[1] + R3H[1]) / 2 + 4), odds=0.35, hold=0.0)
     pill39(fr, (R3H[0], R3H[1] - 22), "Right hold", [("txt", "Covering fire · 4 s")], "burst", faces=[ENF], harm=True)
-    return fit(fr, 1030, 640, 520, 381)
+    return fit(fr, 1100, 640, 420, 308)
 def cover_shown():
     fr = scene(); with_r3b(fr); ring39(fr, R3F, threat=True); rival_pips(fr, "r3", 3, 3)
     ring_m(fr, R3F, 3.0, CREAM, dash=(5, 5), w=1.8, alpha=200)
@@ -117,7 +119,7 @@ def build():
                dict(im=mark_hold(), cap="2 \u00b7 Hold on the target", small="Mark is the only calm way, so a left hold takes it: the pill's sweep fills, let go commits."),
                dict(im=mark_arm(), cap="3 \u00b7 Click the disc", small="The disc lights and every valid target wears the move's glyph; click one. Esc puts it back.")]
     return grid([row_off, row_shown, row_ro, row_how], OUTB + "board-2-the-four-moves.png", "039 · one move each · ordered and shown · the same in A, B and C",
-        "An order like any other (row 4 shows the three ways, Mark as the example). The Enforcer carrying Vale has no other fire: his right hold on a hostile is Covering fire. The roster disc says ready, cooling or shut; the busy chip takes its place while a move runs.")
+        "An order like any other (row 4 shows the three ways, Mark as the example). The Enforcer carrying Vale has no other fire: his right hold on a hostile is Covering fire. The roster disc says ready, cooling or shut; the busy chip takes its place while a move runs. Over the 0.2.122 opening square; rivals are stand-ins; the grille and the steam are mocks (Vela and Glint own the real ones); seconds are Motive's.")
 
 if __name__ == "__main__":
     for nm, fn in (("mo", mark_offer), ("ms", mark_shown), ("to", talk_offer), ("ts", talk_shown), ("so", steam_offer), ("ss", steam_shown), ("co", cover_offer), ("cs", cover_shown)):

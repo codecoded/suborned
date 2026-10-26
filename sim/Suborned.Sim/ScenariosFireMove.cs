@@ -377,7 +377,7 @@ namespace Suborned.Sim
                     Pt hot(Run rr) { F8Setup(rr, 6, 1400); rr.Until(() => Enumerable.Range(1, 6).All(k => H(rr, "officer-" + k).Gun.Target.Length > 0), Game.T(5)); for (int k = 0; k < 4; k++) FireOn(rr, Cell4R[k], "officer-" + (k + 1)); return rr.G.RangeSlot("near", 1); }
                     void brk(Run rr, int standTicks, bool cease)
                     {
-                        rr.Wait(standTicks); int end = rr.G.Tick + Game.T(20);
+                        rr.Wait(standTicks); int end = rr.G.Tick + Game.T(15); // engine 0.34.0 (op-run-speed-cm-s 360): 15 s of run is 54 m, about 0.33.1's 20 s at 2.8 m/s (56 m), so the lane holds it short of its end (20 s at 3.6 m/s is 72 m: the wall)
                         if (cease) foreach (var op in Cell4R) rr.G.Issue(new Order { Tick = rr.G.Tick, Op = op, Do = "cease" });
                         while (rr.G.Tick < end) { foreach (var op in Cell4R) { var o = rr.Op(op); if (o.Down || o.Walk != null) continue; var to = rr.G.S.Grid.NearestFree(new Pt(Math.Min(LaneEndCm, o.Pos.X + 1200), o.Pos.Y)) ?? o.Pos; if (to == o.Pos || G.Within(to, o.Pos, 100)) to = rr.G.S.Grid.NearestFree(new Pt(o.Pos.X, o.Pos.Y < 2000 ? Math.Max(200, o.Pos.Y - 800) : Math.Min(3800, o.Pos.Y + 800))) ?? o.Pos; Move(rr, op, to, run: true); } rr.G.Step(); }
                     }

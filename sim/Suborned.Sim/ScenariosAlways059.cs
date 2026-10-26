@@ -447,7 +447,8 @@ namespace Suborned.Sim
             });
 
             // route B at the yard: Motive's rb-ff (fight it out) and rbb-ff (board and go), composed on this engine (tools/sim/fixtures059.ts); their
-            // locks are the cell's fire orders: dropped, the play is at will (the cell's panic only); 3.0 s later, a slower player
+            // locks are the cell's fire orders: dropped, the play is at will (the cell's panic only); 3.0 s later, a slower player. Engine 0.34.0
+            // (brief 067 A): the fixtures are Motive's rb-rr and rbb-rr, the same plays with the Tech's Reroute at 5:00 (the patrol sweeps the yard)
             static List<Order> NoLocks(List<Order> os) => os.Where(o => o.Do != "fire").ToList();
             static List<Order> LateLocks(List<Order> os) => os.Select(o => { if (o.Do == "fire") o.Tick += T(3); return o; }).OrderBy(o => o.Tick).ToList();
             Add("BAL-YARD-AT-WILL", "059", "Motive M059-B7: route B at the yard (svc-ambush-1 at (77.35, -8.0)), Motive's rbb-ff with its locks dropped (the cell's panic only after the Take): the posted three shoot the carrying Enforcer down and the run fails rivals-reach-vale (probe 7:30.0). This is the price of not supporting the Enforcer.", r =>
@@ -466,18 +467,21 @@ namespace Suborned.Sim
                 // late: the plan's Go was composed for the locks on time, so it may come while the car is still held; the player then Goes
                 // once it is free (Motive's sweep counts a late lock that keeps Vale aboard and the Enforcer up as holding)
                 if (!PlayFixture(r, fx, late ? LateLocks : null, late ? (Action)(() => { if (g.Vale == ValeAt.Car && LogTick(g, "blocker.out") >= 0 && g.Tick % 5 == 0 && g.GoQuery().ok) g.Issue(Go(g)); }) : null)) return;
-                if (late && fx == "bal-rbb-ff") // board and go composed for locks on time: the Scout and Fixer board before the blocker is out, so nothing downs him; the gate holds the car, and the play holds (Vale aboard, the Enforcer up) as Motive's sweep counts it
-                    r.Is(g.Result != Outcome.Failure && g.Vale == ValeAt.Car, $"{fx} with its locks 3.0 s late holds: Vale aboard, no failure ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; Vale {g.Vale}, the Enforcer {(r.Op(Enf).Down ? "down" : "up")} in the car; the gate keeps the car until the blocker is down)");
+                if (late && fx == "bal-rbb-ff") // board and go composed for locks on time: the Scout boards and the Fixer falls before the blocker is out
+                    // engine 0.34.0 (Motive M067-K3 a, hiding in a held car loses): 0.33.1 held here (Vale aboard, the Enforcer up, the gate keeping the
+                    // car until the blocker was down: Motive's sweep counted it as holding). Now nobody stands outside a held car: the rivals walk to it,
+                    // down the Enforcer in it and take Vale (rivals.for-car 7:33.3, rivals-reach-vale 7:42.2): 3 s of slack no longer holds this play
+                    r.Is(g.FailCode == "rivals-reach-vale" && g.Log.Exists(l => l.Code == "rivals.for-car"), $"{fx} with its locks 3.0 s late loses: nobody outside the held car, the rivals walk to it and take Vale (M067-K3 a; {g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; Vale {g.Vale}, the Enforcer {(r.Op(Enf).Down ? "down" : "up")})");
                 else r.Eq(g.Result, Outcome.Success, $"{fx}{(late ? " with its locks 3.0 s late" : "")} wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)})");
-                r.Line(g.Trail == 3 && g.Alert == 0 && g.Standing == 3, $"{fx}: T {g.Trail}, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)} (Motive: 3 T, A 0, Standing +3; rb-ff 7:32.2, rbb-ff 7:36.0)");
+                r.Line(g.Trail == 4 && g.Alert == 0 && g.Standing == 3, $"{fx}: T {g.Trail}, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)} (Motive: 4 T with the Reroute, A 0, Standing +3; rb-rr 7:32.2, rbb-rr 7:36.1: briefs/067/motive-square.md §5.2, vantage.md A)");
             }
-            Add("BAL-YARD-FOCUS", "059", "Motive M059-B4, B7: route B at the yard with svc-ambush-1 at (77.35, -8.0); from the spring the Scout and the Fixer lock rival-1 then rival-2 (focus fire): Motive's rb-ff (fight it out) and rbb-ff (board and go) both win (probe 7:32.2 and 7:36.0, 3 T, A 0, Standing +3).", r =>
+            Add("BAL-YARD-FOCUS", "059", "Motive M059-B4, B7: route B at the yard with svc-ambush-1 at (77.35, -8.0); from the spring the Scout and the Fixer lock rival-1 then rival-2 (focus fire): Motive's rb-ff (fight it out) and rbb-ff (board and go) both win (probe 7:32.2 and 7:36.0, 3 T, A 0, Standing +3). Engine 0.34.0 (brief 067 A: the patrol sweeps the service yard): as Motive's rb-rr and rbb-rr, with the Tech's Reroute at 5:00 (away 5:45 to 7:40) and the Enforcer at the service lane from 5:50: 4 T.", r =>
             {
                 Focus(r, "bal-rb-ff", false);
                 if (r.Inputs == null) return;
                 var b = Alt(r, r.Inputs); Focus(b, "bal-rbb-ff", false); foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff] " + c.what);
             });
-            Add("BAL-YARD-FOCUS-LATE", "059", "Motive M059-B4: BAL-YARD-FOCUS with every lock 3.0 s late (a slower player): rb-ff still wins (the player Goes once the car is free); rbb-ff holds (Vale aboard, the Enforcer up), as Motive's sweep counts it: 3 s of slack at the moved point.", r =>
+            Add("BAL-YARD-FOCUS-LATE", "059", "Motive M059-B4: BAL-YARD-FOCUS with every lock 3.0 s late (a slower player): rb-ff still wins (the player Goes once the car is free); rbb-ff held on 0.33.1 (Vale aboard, the Enforcer up), as Motive's sweep counted it, and loses on 0.34.0: with the Scout aboard and the Fixer down nobody stands outside the held car, so the rivals walk to it and take Vale (M067-K3 a).", r =>
             {
                 Focus(r, "bal-rb-ff", true);
                 if (r.Inputs == null) return;

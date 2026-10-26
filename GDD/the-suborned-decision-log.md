@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.25.0, 2026-10-25)
+## Open for Sky (as of v0.26.0, 2026-10-26)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -28,7 +28,32 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 23. (brief 059 S1) **Answered, Sky 2026-10-25: no.** A prepared cell never leaves without a final fight ("no, it's to demonstrate the features of the games"). Motive defines the rule that holds it (the A-pressure leave before the rivals post; takedowns thinning the crew to none); it stays a rule value.
 24. (brief 059 S2) **Answered, Sky 2026-10-25: yes.** Loud police come from the entry nearest the getaway car's stand (the north street for the square, the official entrance for the service drive).
 25. (brief 059 S3) **Answered, Sky 2026-10-25: run.** The posted rivals run after a Driven car.
+26. (brief 059 B10, Motive 2026-10-26) The yard's exit lane starts at the car (the drive at its own width, then the road): board-and-go wins at the yard and the blocker's post sits 10 m out at the drive's mouth, for 2 s of route-b-board slack instead of 3. Needs a §06 clause. Today's lane stands until Sky rules.
+27. (brief 039, 2026-10-26) The fight proposal: option A, B or C, with the visuals simplified to "the agent facing who they're shooting" (Glyph's redraw); then the one input model, sticky focus and the signature moves.
+28. (brief 064, Redline 2026-10-26) The Air soak (briefs/064/air-0122/soak-air.sh: about 25 min of load and `brew install macmon` on the Air) to confirm thermal throttling and measure the warm frame.
+29. (brief 064, Redline 2026-10-26) §11 says 60 fps at 1080p, but every Air row ran at the panel's 2880×1864: which is the bar? And render scale (0.75 or 0.62 saves about 4.5–8.5 ms warm) is a look call.
+30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
+31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.26.0 (2026-10-26; brief 067, Sky's play notes on 0.2.122)
+- Sky, 2026-10-26 (brief 067; played 0.2.122 on the Air about seven times, finished once; relayed by main; "a focused capstone round the Office door is fine"):
+  - "Very annoying getting them into the car and then trying to make the car go. I wanted the whole squad to just get in the car": one order boards every selected agent who can, one Board each in the same tick; Drive is one action on the car once anyone is aboard (§06 getaway, §10 the getaway; Glyph's spec, briefs/067/glyph.md C).
+  - "when the rivals move I kept losing the target on them": the fire hold follows a moving target (host); the input model ("X or hold RMB") goes to the fight proposal, brief 039.
+  - "very busy vision cones" · "The vision cones on the police, rivals etc. are too much": cones on demand, Alt shows all, police and rivals in a fight drop cones for the target rings (§10 world markers; Glyph F).
+  - "Moving the patrol robot would be quite a big improvement", "maybe to the side of the service entrance": the patrol sweeps the service yard (Vantage's points); the Tech's Reroute clears it for route B; optional on A and G (§07 cast, places, routes; §10 views).
+  - "Players move pretty slowly and I think maybe the game is too punishing. Running shouldn't be that badly punished": the cell walks 1.8 m/s (the city keeps 1.4), runs 3.6 m/s; a run is seen and noticed, never an Alert by itself; Sky's 054 call (civilians remember a runner from Alert 2) stands (§03, §05 running and attention, §06 modifiers, §10 ground view; Motive's values, briefs/067/motive.md, built in engine 0.34.0).
+  - Camera and roster: a portrait click selects and frames; third person enters behind the agent's heading; back to the map centred on that agent at play zoom and the same yaw (§10 select, ground view).
+  - "I see guard characters being used that aren't guards": only security wears a security look; the rival crew gets its own violet set (Forma) and its own sedan (Vela's Sedan_Rival, adopted by Aster for the batch, pictures to Sky) (§10 readability, §15).
+  - "There's a butler robot fixed to the north of the Records building: it needs to go" and "some odd planters in the fountain area near the car": the civic steward monument and the two freestanding planter runs leave the block (adjust ops with Sky's words); the §07 blocker's kerb planter stays (world, no GDD rule).
+  - Conversation scenes in third person: both speakers idle and facing, the camera holds both (§10 conversation scene; Glyph H's shot ladder).
+  - "Simplify the visuals, it's way too crowded. Just having the agent facing who they're shooting should be enough": no aim or target lines in 0.2.123; the fight proposal is redrawn on that line before Sky picks (brief 039).
+- Sky, 2026-10-26: the asset-quality review is a new look brief after batch 0.2.123; the height-cap mock (brief 066) is drawn for Sky to judge; parked cars as cover, "not yet" (parked.md).
+- Motive, 2026-10-26 (briefs/067/motive.md, motive-square.md; engine 0.34.0): the held car (hiding in a held car loses; the whole cell down fails; Go needs a standing op aboard); SQ1 (no hostile step or walk to a post ends inside the hold), SQ2 (in the final fight a rival with nobody in reach for 1 s advances again, closing on the op; Keel 0.34.1 ends the cover ping-pong); the run's attention rule and the new modifiers (§06).
+- GDD text brought up to Sky's earlier answers (Motive found them unwritten): +2 T once per person, camera or car shot at (Sky, 2026-10-15, brief 011 addendum Q1; a dropped guard is 6 T) and hostiles firing on the move, the blocker too (Sky, 2026-10-21, brief 027 tuning §9.7 answer 3) (§02, §06).
+- Keel and Motive, 2026-10-26 (engine 0.33.1): standing cars are solid and reach is measured from the car's body (Board within 1 m); a Drive under way can't be stopped (§06 getaway).
+- Glyph, accepted by Aster, 2026-10-26 (briefs/067/glyph.md): a thing whose ways are all locked opens its ring shut, never a silent walk; outside a fight the pill never offers Fire; Go without Vale last with the 0.5 s hold; boarded agents leave the selection (§06, §10).
+- Aster, 2026-10-26: the mission check counts a fail only where the site places its watcher, and no hostile's step or walk ends inside the hold (§09); route B reroutes the patrol by 5:00 (§07); MC-11's new clause counts only mission-placed posts and ambush spots; the two guards in uniform at the café table from 0:00 stay (real security, off duty).
 
 ## v0.25.0 (2026-10-25; briefs 017–063; review sheet briefs/035-gdd-v0.25.md)
 - Motive, 2026-10-25 (brief 059, S1 = no in rules; briefs/059/motive/s1-rulings.json): fight-always (Go with Vale refused until the blocker is down or gone, or the fight ends) and rivals-floor 3 (away crew recalled, no spawns); §07 hostiles 3–5, fewer only after crew killed or bound (§06 getaway, §07 final fight).

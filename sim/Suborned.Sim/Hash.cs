@@ -114,7 +114,7 @@ namespace Suborned.Sim
             var sp = g.SecurityPose(); h.Z(sp.HasValue); if (sp.HasValue) h.P(sp.Value.pos);
             h.Z(g.InezWitnessedShooting).S(g.InezMethod).S(g.RouteKind).S(g.RouteGuard).S(g.RouteBot).S(g.RouteRival);
             h.S(g.FightBranch).I(g.FightStart).I(g.FightSprung).I(g.FightOverTick).Z(g.FightWarned).Z(g.GuardAlly).I(g.FightHits).I(g.FightShots).I(g.DownedByEnforcer).I(g.DownedByGuard).I(g.DownedByCell);
-            foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); }
+            foreach (var x in g.Hostiles) { h.S(x.Id).P(x.Pos(g.Tick)).Z(x.Present); Gun(h, x.Gun); if (x.Closing) h.S("closing"); } // engine 0.34.1: only an advance on an operative under way adds bytes
             foreach (var x in g.Captured) h.S(x);
             foreach (var x in g.Hostiles) h.P(x.Home);
             g.HashAi(h.I); h.I(g.LastShotTick);

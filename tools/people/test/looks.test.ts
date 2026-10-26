@@ -1,15 +1,48 @@
 // Who wears which figure (Pulse, brief 067 I): tools/people/looks.ts replays the host's choice of a figure for every person; this holds the rules the mapping is held to (only guards wear
-// the duty suit; every key has a figure) and pins the replay to the host's own source, so a change to HostViews.Figures.cs fails here and the audit is made again, not trusted.
+// the duty suit; every key has a figure; the crew's looks are the crew's) and pins the replay to the host's own source, so a change to HostViews*.cs or the hover's names fails here and the
+// audit is made again, not trusted. The host's views are listed call by call: a new place that dresses a view is a place the audit does not replay, and fails the list.
 import { describe, expect, test } from 'bun:test';
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { dressCrowd, faults, famOf, fnv, klassOf, loadMapping, loadPeople, modelOf, personFigure, poolOf, roleFigure, SECURITY_JOBS, sharedModels } from '../looks';
+import { bodyFigure, CREW_KEYS, CREW_POOL, crewPlan, crowdLabel, dressCrowd, faults, famOf, fnv, hostileFigure, klassOf, loadMapping, loadPeople, modelOf, personFigure, personFigureOf, poolOf, rangeBystanderFigure, roleFigure, SECURITY_JOBS, sharedModels } from '../looks';
 
 const root = join(import.meta.dir, '..', '..', '..');
-const host = readFileSync(join(root, 'unity/Assets/Suborned/Runtime/Play/HostViews.Figures.cs'), 'utf8'), views = readFileSync(join(root, 'unity/Assets/Suborned/Runtime/Play/HostViews.cs'), 'utf8');
-const library = readFileSync(join(root, 'unity/Assets/Suborned/Runtime/Play/FigureLibrary.cs'), 'utf8'), build = readFileSync(join(root, 'unity/Assets/Suborned/Editor/World/People/FigureBuild.cs'), 'utf8');
-const model = readFileSync(join(root, 'sim/Suborned.Sim/Model.cs'), 'utf8');
+const play = join(root, 'unity/Assets/Suborned/Runtime/Play');
+const src = (f: string) => readFileSync(join(root, f), 'utf8');
+const host = readFileSync(join(play, 'HostViews.Figures.cs'), 'utf8'), views = readFileSync(join(play, 'HostViews.cs'), 'utf8');
+const allViews = readdirSync(play).filter(f => /^HostViews.*\.cs$/.test(f)).sort().map(f => readFileSync(join(play, f), 'utf8')).join('\n');
+const hostUi = readFileSync(join(play, 'HandoverHost.cs'), 'utf8');
+const library = src('unity/Assets/Suborned/Runtime/Play/FigureLibrary.cs'), build = src('unity/Assets/Suborned/Editor/World/People/FigureBuild.cs');
+const model = src('sim/Suborned.Sim/Model.cs');
 const m = loadMapping(), { walkers, cast } = loadPeople(), crowd = dressCrowd(m, walkers);
+
+/** A C# source without its comments (a string or char literal is kept whole: a `//` inside one is not a comment). */
+function code(s: string): string {
+  let out = '', i = 0;
+  while (i < s.length) {
+    const c = s[i]!;
+    if (c === '/' && s[i + 1] === '/') { while (i < s.length && s[i] !== '\n') i++; continue; }
+    if (c === '/' && s[i + 1] === '*') { const e = s.indexOf('*/', i + 2); i = e < 0 ? s.length : e + 2; continue; }
+    if (c === '"' || c === "'") { out += c; i++; while (i < s.length && s[i] !== c) { if (s[i] === '\\') { out += s[i]!; i++; } out += s[i] ?? ''; i++; } out += c; i++; continue; }
+    out += c; i++;
+  }
+  return out;
+}
+/** The arguments, as written, of every call `name(…)` in the code of a C# source (a declaration, `void name(` or `string name(`, is not a call), whitespace made one space, sorted. */
+function calls(s: string, name: string): string[] {
+  const text = code(s), out: string[] = [], re = new RegExp(`(?<![\\w.])${name.replace(/\./g, '\\.')}\\(`, 'g');
+  for (let hit: RegExpExecArray | null; (hit = re.exec(text)); ) {
+    if (/\b(void|string|bool|int)\s+$/.test(text.slice(0, hit.index))) continue;
+    let depth = 1, j = hit.index + hit[0].length, quote = ''; const from = j;
+    for (; j < text.length && depth > 0; j++) {
+      const c = text[j]!;
+      if (quote) { if (c === '\\') j++; else if (c === quote) quote = ''; continue; }
+      if (c === '"' || c === "'") quote = c; else if (c === '(') depth++; else if (c === ')') depth--;
+    }
+    out.push(text.slice(from, j - 1).replace(/\s+/g, ' ').trim());
+  }
+  return out.sort();
+}
 
 describe('the replay is the host\'s choice (each line of it pinned to the source)', () => {
   test('RoleFigure: the cell, the cast, the response and the rivals have the figures the audit says', () => {
@@ -19,6 +52,13 @@ describe('the replay is the host\'s choice (each line of it pinned to the source
     expect(roleFigure('patrol')).toBeNull();
     expect(roleFigure('unit/police-3')).toBe('security'); expect(roleFigure('security/1')).toBe('security');
     expect(roleFigure('rival-4')).toBe('rival'); expect(roleFigure('body/rival-2')).toBe('rival'); expect(roleFigure('crowd/7')).toBeNull();
+    expect(views).toContain('foreach (var k in new List<string>(things.Keys)) if (RoleFigure(k) is string fid) Dress(k, fid);');
+    // the crew's five views are made (RivalViewsInit) before the fixed keys are dressed, so each is dressed `rival` at the start
+    const rivals = src('unity/Assets/Suborned/Runtime/Play/HostViews.Rivals.cs');
+    expect(rivals).toContain('public static readonly string[] RivalKeys = { "rival-1", "rival-2", "rival-3", "rival-4", "rival-5" };');
+    expect(rivals).toContain('foreach (var k in RivalKeys) Person(k, host.rivalBodyColour);');
+    expect(views.indexOf('RivalViewsInit();')).toBeGreaterThan(0); expect(views.indexOf('RivalViewsInit();')).toBeLessThan(views.indexOf('RoleFigure(k) is string fid'));
+    expect(CREW_KEYS).toEqual(['rival-1', 'rival-2', 'rival-3', 'rival-4', 'rival-5']);
   });
   test('PersonFigure: a person\'s job gives a family, the family a pool, the person\'s id the figure', () => {
     expect(host).toContain('string fam = job is "server" or "cook" or "waitress" ? "cafe" : job is "clerk" or "attendant" or "councillor" ? "office" : job == "guard" ? "guard" : job is "driver" or "official-driver" ? "driver" : "passer";');
@@ -28,12 +68,15 @@ describe('the replay is the host\'s choice (each line of it pinned to the source
     expect(library).toContain('uint h = 2166136261; foreach (var c in seed ?? "") { h ^= c; h *= 16777619; }');
     expect(library).toContain('return ids[h % (uint)ids.Length];');
     expect(fnv('')).toBe(2166136261); expect(fnv('a')).toBe(0xe40c292c); // FNV-1a 32 of "a"
+    expect(personFigureOf(m, { id: 'p-x', job: 'server', role: 'waitress' })).toBe('waitress'); expect(personFigureOf(m, { id: 'p-x', job: 'clerk' })).toBe(personFigure(m, 'p-x', 'clerk'));
   });
-  test('the pools are the manifest\'s: `family/<first word>` for each family, each job block as written', () => {
+  test('the pools are the manifest\'s: `family/<first word>` for each family, each job block as written (the crew\'s `role/rival` among them, drawn from by no job)', () => {
     expect(build).toContain('keys.Add("family/" + kv.Key.Split(\' \')[0])');
     expect(build).toContain('foreach (var kv in J.O(J.Get(m, "jobBlocks"))) { keys.Add(kv.Key);');
     expect([...m.pools.keys()].filter(k => k.startsWith('family/')).sort()).toEqual(['family/cafe', 'family/driver', 'family/guard', 'family/office', 'family/passer']);
     expect(poolOf(m, 'resident')).toBe('job/resident'); expect(poolOf(m, 'clerk')).toBe('family/office'); expect(poolOf(m, 'keeper')).toBe('family/passer');
+    expect(m.pools.has(CREW_POOL)).toBe(true); expect(poolOf(m, 'rival')).toBe('family/passer'); // the engine's crew job is `rival`: a job with no pool of its own, so nothing draws a crew member from the crowd's pools by job; the host never asks (below)
+    expect(calls(allViews, 'RoleFigure')).toEqual(['k', 'p.Role']); expect(code(allViews)).not.toContain(CREW_POOL);
   });
   test('DressCrowd: a re-pick (`#1`..`#7`) stays in the person\'s own pool, so a clerk is never a guard and a guard never a clerk', () => {
     expect(host).toContain('string grp = w.Place.Length > 0 && w.From.Length > 0 ? w.Place[0] + "@" + w.From[0] : "";');
@@ -43,11 +86,50 @@ describe('the replay is the host\'s choice (each line of it pinned to the source
     // the group is the day's first stop, which everyone who lives at one home shares at 0:00, so most re-picks only shuffle a job's own few looks (the office pool has two)
     expect(crowd.filter(c => c.figure !== c.first).length).toBeGreaterThan(0);
   });
-  test('the response, the rivals and the bodies are dressed as the audit says', () => {
-    expect(views).toContain('Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security")');
-    expect(views).toContain('else { Person(key, Family(job), shape: Shape(job)); Dress(key, PersonFigure(p)); }'); // a body takes the plain pick: no DressCrowd salt
-    expect(views).toContain('if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, "rival"); }');
+  test('every place the host dresses a view is one the audit replays: a new `Dress(` or figure pick fails this list', () => {
+    expect(calls(allViews, 'Dress')).toEqual([
+      'crowdKeys[i], fid',                                                // DressCrowd (HostViews.Figures.cs): the walkers
+      'hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"',  // the fight's hostiles: the range's rivals and the response's officers (two sites: the range, the Handover)
+      'hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"',
+      'k, fid',                                                           // the fixed keys, RoleFigure
+      'key, "rival"',                                                     // a crew member's body
+      'key, "security"',                                                  // a response unit's officer
+      'key, BodyFigure(p)',                                               // any other body
+      'key, host.figures.Pick("family/passer", b.Id)',                    // the range's bystanders
+    ].sort());
+    expect(calls(allViews, 'lib.Pick')).toEqual(['"family/" + fam, p.Id + salt', '"job/" + job, p.Id + salt']);
+    expect(calls(allViews, 'host.figures.Pick')).toEqual(['"family/passer", b.Id']);
+    expect(calls(allViews, 'figures.Find').concat(calls(allViews, 'lib.Find'))).toEqual(['id']); // the one place a figure is looked up by name: Dress
+  });
+  test('the response, the rivals, the bodies and the range\'s passers are dressed as the audit says', () => {
+    const hostile = 'Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security")';
+    expect(views.split(hostile).length - 1).toBe(2);
+    expect(hostileFigure('rival-9')).toBe('rival'); expect(hostileFigure('security-1')).toBe('security'); expect(hostileFigure('hostile-0')).toBe('security');
+    expect(views).toContain('if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, "rival"); }'); // a crew member's body is the crew's
     expect(views).toContain('else { Person(key, host.securityColour); Dress(key, "security"); }'); // a response unit's officer
+    expect(views).toContain('if (host.figures != null) Dress(key, host.figures.Pick("family/passer", b.Id));');
+    for (const id of ['b-1', 'b-2', 'b-3', 'b-4', 'b-5', 'b-6']) expect(m.pools.get('family/passer'), id).toContain(rangeBystanderFigure(m, id)!);
+  });
+  test('BodyFigure: a body wears the figure its walker was drawn in, so nobody changes clothes when knocked out', () => {
+    expect(views).toContain('else { Person(key, Family(job), shape: Shape(job)); Dress(key, BodyFigure(p)); }');
+    expect(views).toContain('string BodyFigure(Person p) => walkerIndex.TryGetValue(p, out var bw) && bw < crowdKeys.Length && figs.TryGetValue(crowdKeys[bw], out var wf) ? wf.id : PersonFigure(p);');
+    expect(views).toContain('if (walkerIndex.Count == 0) for (int i = 0; i < g.Walkers.Count; i++) walkerIndex[g.Walkers[i].P] = i;'); // the walkers are indexed before the first body is dressed
+    const repicked = crowd.filter(c => c.figure !== c.first);
+    expect(repicked.length).toBeGreaterThan(0); // the people the plain pick would have changed: DressCrowd gave them another figure than their own
+    for (const c of crowd) expect(bodyFigure(m, crowd, { id: c.id, job: c.job }), c.id).toBe(c.figure);
+    for (const c of repicked) expect(personFigureOf(m, { id: c.id, job: c.job }), c.id).not.toBe(c.figure);
+    // the cast by their role, a crew member as the crew, anyone not drawn by their plain pick
+    expect(bodyFigure(m, crowd, { id: 'p-x', job: 'server', role: 'waitress' })).toBe('waitress'); expect(bodyFigure(m, crowd, { id: 'p-y', job: 'guard', role: 'guard' })).toBe('guard');
+    expect(bodyFigure(m, crowd, { id: 'p-z', job: 'official-driver', role: 'driver' })).toBe('driver'); expect(bodyFigure(m, crowd, { id: 'p-v', job: 'councillor', role: 'councillor' })).toBe('councillor');
+    expect(bodyFigure(m, crowd, { id: 'rival-3', job: 'rival' })).toBe('rival');
+    expect(bodyFigure(m, crowd, { id: 'p-nobody', job: 'clerk' })).toBe(personFigure(m, 'p-nobody', 'clerk'));
+  });
+  test('the hover names a crowd person by Person.Civilian: "a guard" for a guard, "an officer" for any other security job, "a passer-by" for everyone else (Latch, on the audit\'s W2)', () => {
+    expect(hostUi).toContain('string CrowdSecurityName(Person p) => p.Job == "guard" ? Text?.TargetName("crowd-guard", "a guard") ?? "a guard" : Text?.TargetName("crowd-officer", "an officer") ?? "an officer";');
+    expect(hostUi).toContain('bool sec = cp != null && !cp.Civilian; return new Target { Kind = "crowd", Key = n, Label = sec ? CrowdSecurityName(cp) : "a passer-by", Id = cp?.Id ?? "", Security = sec };');
+    expect(crowdLabel('guard')).toBe('a guard'); expect(crowdLabel('investigator')).toBe('an officer'); expect(crowdLabel('clerk')).toBe('a passer-by'); expect(crowdLabel('keeper')).toBe('a passer-by');
+    // the look and the name agree: everyone drawn in the duty suit is named a guard, and nobody else is
+    for (const c of crowd) expect(crowdLabel(c.job) !== 'a passer-by', `${c.id} (${c.job}) wears ${c.figure}`).toBe(modelOf(m, c.figure) === 'guard');
   });
   test('the engine\'s security jobs are the ones the audit holds to the duty suit', () => {
     expect(model).toContain('public bool Civilian => Job != "guard" && Job != "patrol-officer" && Job != "investigator" && Job != "watcher" && Role != "guard" && Job != RivalJob;');
@@ -56,7 +138,7 @@ describe('the replay is the host\'s choice (each line of it pinned to the source
 });
 
 describe('the rules', () => {
-  test('L-1 and L-2: only guards wear the duty suit; every key and every pool names a figure that exists', () => {
+  test('L-1, L-2 and L-4: only guards wear the duty suit; every key and every pool names a figure that exists; the crew\'s looks are the crew\'s', () => {
     expect(faults(m, crowd)).toEqual([]);
     for (const c of crowd) expect(modelOf(m, c.figure) === 'guard', `${c.id} (${c.job}) wears ${c.figure}`).toBe(SECURITY_JOBS.includes(c.job));
     expect(crowd.filter(c => c.job === 'guard').length).toBe(15); // the Office's other guards: 16 less the door guard, who is played by his role
@@ -76,6 +158,17 @@ describe('the rules', () => {
     expect(faults(gone, crowd).some(f => f.rule === 'L-2' && /councillor/.test(f.what))).toBe(true);
     expect(personFigure({ pools: new Map() }, 'p-x', 'guard')).toBeNull();
   });
+  test('L-4 fails on its examples: a crew look in a passers\' pool, on a clerk, as a recolour of the duty suit, outside its pool, or no pool at all', () => {
+    const has = (fs: ReturnType<typeof faults>, re: RegExp) => fs.some(f => f.rule === 'L-4' && re.test(f.what));
+    const clerk = crowd.find(c => c.job === 'clerk')!, crew = m.pools.get(CREW_POOL)!;
+    expect(has(faults({ ...m, pools: new Map(m.pools).set('family/passer', [...m.pools.get('family/passer')!, 'rival_b']) }, crowd), /family\/passer holds rival_b, a look of the crew/)).toBe(true);
+    expect(has(faults(m, [{ ...clerk, figure: 'rival_c' }]), /clerk\) wears rival_c, a look of the crew/)).toBe(true);
+    expect(has(faults({ ...m, variantOf: { ...m.variantOf, rival_c: 'guard' } }, crowd), /rival_c is a recolour of the duty suit/)).toBe(true);
+    expect(has(faults({ ...m, figures: new Map(m.figures).set('rival_z', { id: 'rival_z', role: 'rival', label: 'x' }) }, crowd), /rival_z is a rival figure outside role\/rival/)).toBe(true);
+    expect(has(faults({ ...m, pools: new Map([...m.pools].filter(([k]) => k !== CREW_POOL)) }, crowd), /no pool role\/rival/)).toBe(true);
+    expect(has(faults({ ...m, pools: new Map(m.pools).set(CREW_POOL, [...crew, 'd5c']) }, crowd), /role\/rival holds d5c, whose role is townsperson/)).toBe(true);
+    expect(has(faults({ ...m, pools: new Map(m.pools).set(CREW_POOL, ['rival_b', 'rival_c']) }, crowd), /rival-1 is drawn as rival, which is not in role\/rival/)).toBe(true); // the host's `rival` must be one of the pool's looks
+  });
   test('L-3, the models role figures share with the crowd, named: nobody but the driver wears Commuter D2 (brief 067 took it out of the passers\' pools), the rival crew is Commuter D4 in three violet colourways and Commuter C6 in a fourth (brief 067 W1, Forma) and the officer the guard', () => {
     const by = Object.fromEntries(sharedModels(m).map(x => [x.role, x]));
     expect(Object.keys(by).sort()).toEqual(['driver', 'rival', 'rival_b', 'rival_c', 'rival_d', 'security']); // (the councillor was listed as a recolour of D4 until brief 067 dropped the stale entry: Vale C has his own model, brief 063)
@@ -86,5 +179,12 @@ describe('the rules', () => {
     expect(by.rival_d!.model).toBe('c6'); expect(by.rival_d!.crowd).toContain('family/passer');
     expect(crowd.filter(c => c.figure === 'd2m')).toEqual([]); // no keeper and no resident is in the driver's uniform and visor helmet
     expect(crowd.filter(c => ['rival', 'rival_b', 'rival_c', 'rival_d'].includes(c.figure))).toEqual([]); // and no passer-by is in the crew's violet: the pool role/rival is the crew's alone
+  });
+  test('the crew\'s table by member (roles.json playViews) is documentation the host does not read: it names the pool\'s looks, three different ones for the three posted; the host draws every member as `rival`', () => {
+    const plan = crewPlan(m), pool = m.pools.get(CREW_POOL)!;
+    expect(Object.keys(plan)).toEqual(CREW_KEYS);
+    for (const k of CREW_KEYS) expect(pool, k).toContain(plan[k]);
+    expect(new Set(['rival-1', 'rival-2', 'rival-3'].map(k => plan[k])).size).toBe(3);
+    for (const k of CREW_KEYS) expect(roleFigure(k), k).toBe('rival'); // until the host has Forma's RivalFigure (briefs/067/forma.md §4): the pin on RoleFigure above fails when it does, and this goes with it
   });
 });

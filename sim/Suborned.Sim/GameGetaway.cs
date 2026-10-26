@@ -59,9 +59,47 @@ namespace Suborned.Sim
                 bool any = false; foreach (var id in Blockers) { var b = HostileOf(id); if (b != null && Up(b)) any = true; }
                 if (!any) { blockerOut = true; var b0 = HostileOf(Blockers[0])!; Note("blocker.out", $"{b0.Id}, on the road, is {(b0.Down ? "down" : "gone")}: nobody blocks the lane now."); }
             }
-            bool held = CarHeld();
+            var holders = CarHolders(); bool held = holders.Count > 0;
+            if (held) NoteNewHolders(holders); // engine 0.34.0 (Motive M067-SQ1): car.held.<how>
             if (carWasHeld && !held) Note("car.free", "Nothing holds the getaway car: it can go.");
             carWasHeld = held;
+        }
+
+        /// <summary>Engine 0.34.0 (Motive briefs/067/motive-square.md §2, M067-SQ1; Waymark's MC-11 clause 3: no played script logs car.held.answer
+        /// or car.held.post): the first tick a body holds the getaway car at this stand, car.held.&lt;how&gt; says why it is there: blocker (his lane),
+        /// press (for the held car, K3 a, or the drawn crew for the Vale holder), advance (on the car or an operative), answer (a step out of a
+        /// line, to cover, a close), post (a walk to a stand, spot or post). A body in the hold or on the exit lane, or a named blocker wherever he
+        /// stands (the gate); a gate hold by whoever is coming before a blocker is named is no body in the hold and logs nothing. Once a body a
+        /// stand. Log only: nothing reads it.</summary>
+        readonly HashSet<string> heldLogged = new HashSet<string>(StringComparer.Ordinal);
+        void NoteNewHolders(List<string> holders)
+        {
+            foreach (var id in holders)
+            {
+                string key = CurStand.Id + "/" + id; if (heldLogged.Contains(key)) continue;
+                var h = HostileOf(id); bool blocker = h != null && h.Blocker; var at = PosOf(id);
+                if (!blocker && !(at.HasValue && HoldsCar(at.Value))) continue; // a gate hold (fight.alwaysRule): no body in the hold
+                heldLogged.Add(key);
+                string how = HeldHow(id, h);
+                Note("car.held." + how, how switch
+                {
+                    "blocker" => $"{id} holds the getaway car from the road: the blocker.",
+                    "press" => $"{id} holds the getaway car: he came for it.",
+                    "advance" => $"{id} holds the getaway car: his advance took him within {R.HoldCm / 100} m of it.",
+                    "answer" => $"{id} holds the getaway car: his answer to fire took him within {R.HoldCm / 100} m of it.",
+                    _ => $"{id} holds the getaway car: he stands at his post, or on his way to it, within {R.HoldCm / 100} m of it.",
+                });
+            }
+        }
+        /// <summary>Why a holder is in the hold (car.held.&lt;how&gt;): a final-fight body by its walk's Why; a member of the crew before the fight by
+        /// his displacement (the press, a kite step); the patrol by its chase; anyone else is at his own post. Read-only.</summary>
+        string HeldHow(string id, Hostile? h)
+        {
+            if (h != null) return h.Blocker ? "blocker" : forCar.Contains(id) ? "press" : h.Why;
+            if (CrewOf(id) is CrewMember m) return m.Disp == null ? "post" : m.Disp.Press ? "press" : "answer";
+            if (id == "patrol") return PatrolChasing ? "advance" : "post";
+            int k = SecIndex(id);
+            return unitDisp.ContainsKey(id) || (k >= 0 && secDisp.ContainsKey(k)) ? "answer" : "post";
         }
         /// <summary>The tick the getaway car left (INF while it hasn't).</summary>
         public int CarLeftTick = INF;
@@ -326,7 +364,7 @@ namespace Suborned.Sim
                 var (_, _, h) = scored[i];
                 var post = BlockPost(h.Pos(Tick), out var cv); Pt to = cv != null ? post : Walk.NearestFree(post) ?? post;
                 if (cv != null) TakeCover(h.Gun, cv); else ReleaseCover(h.Gun); // the cover it held before (a joined officer's) is free again
-                h.Blocker = true; h.Home = to; MoveTo(h, to); Blockers.Add(h.Id);
+                h.Blocker = true; h.Home = to; MoveTo(h, to); h.Why = "blocker"; Blockers.Add(h.Id);
                 Note("fight.blocker", $"{h.Id} goes for the road ({(cv != null ? "cover at " + cv.Id : "the lane, in the open")}).");
             }
         }

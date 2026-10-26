@@ -34,6 +34,7 @@ namespace Suborned.Sim
 
         void MoveTo(Hostile h, Pt to)
         {
+            h.Closing = false; // engine 0.34.1: AdvanceOnOp sets it again for its own walk
             var from = h.Pos(Tick);
             var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
             var route = Walk.Route(a, b);
@@ -41,7 +42,7 @@ namespace Suborned.Sim
             h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End;
             if (h.Run.Length == 0) { h.Run = null; }
         }
-        void Stop(Hostile h) { h.At = h.Pos(Tick); h.Run = null; }
+        void Stop(Hostile h) { h.At = h.Pos(Tick); h.Run = null; h.Closing = false; }
 
         void TakeCover(Gun g, CoverPoint c) { ReleaseCover(g); coverTaken[c.Id] = g.Id; g.Cover = c.Id; g.UnprotSince = -1; Note("ai.cover", $"{g.Id} takes cover at {c.Id} ({c.Kind} {c.Of}, q {c.Q})."); }
         void ReleaseCover(Gun g) { if (g.Cover.Length > 0 && coverTaken.TryGetValue(g.Cover, out var who) && who == g.Id) coverTaken.Remove(g.Cover); g.Cover = ""; }
@@ -171,7 +172,7 @@ namespace Suborned.Sim
         void FightBody(Hostile h)
         {
             var g = h.Gun;
-            if (g.Down) { ReleaseCover(g); return; }
+            if (g.Down) { ReleaseCover(g); h.Closing = false; return; }
             if (!h.Present || g.St == "gone") return;
             if (ForCarBody(h)) return; // engine 0.34.0 (Motive M067-K3 a): going for the unguarded car, firing as he walks
             var pos = h.Pos(Tick); var w = g.W!;
@@ -189,7 +190,7 @@ namespace Suborned.Sim
                     break;
                 case "advance":
                     if (foes.Count > 0) { if (!h.Blocker) Stop(h); g.St = "engage"; moving = h.Moving(Tick); } // a blocker keeps walking to the road (brief 018 §1)
-                    else if (!moving) g.St = "hold";
+                    else if (!moving) { g.St = "hold"; h.Closing = false; } // engine 0.34.1: the advance on an operative has ended
                     break;
                 case "engage":
                     if (foes.Count == 0)
@@ -234,7 +235,7 @@ namespace Suborned.Sim
             if (!prot && IsRival(h.Id) && !h.Blocker && Tick - g.StepAt >= T(R.CoverStepGapS))
             {
                 var c = SelectCoverOut(pos, Car, at, R.SeekRivalCm); // engine 0.34.0 (Motive M067-SQ1): never a cover point in the hold or the lane
-                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
+                if (c != null) { g.StepAt = Tick; TakeCover(g, c); MoveTo(h, c.At); h.Why = "answer"; if (h.Moving(Tick) && ((Lab && !LabFireMoving) || !R.CoverStepFires)) return; }
             }
             AimAt(g, t, false);
             if (Tick >= g.NextShot) Shoot(h.Id, g, pos, t, at, Dist(pos, at), h.Moving(Tick) ? Gait.Walk : Gait.Stand, false);
@@ -253,9 +254,9 @@ namespace Suborned.Sim
         void Advance(Hostile h)
         {
             var g = h.Gun; var pos = h.Pos(Tick);
-            if (IsHolder(h)) { MoveTo(h, h.Home); return; }
+            if (IsHolder(h)) { if (h.Blocker) { MoveTo(h, h.Home); h.Why = "blocker"; } else MoveToFight(h, h.Home); return; } // engine 0.34.0 (Motive M067-SQ1): back to its stand round the car's hold (the blocker's lane is the road)
             Pt foe = !Enforcer.Inside && !Enforcer.Down ? Enforcer.Pos : Car;
-            var c = SelectCover(pos, Car, foe, R.SeekRivalCm);
+            var c = SelectCover(pos, Car, foe, R.SeekRivalCm); h.Why = "advance";
             if (c != null) { TakeCover(g, c); MoveTo(h, c.At); return; }
             MoveTo(h, StopPoint(pos, Car, g.W!.EffCm));
         }
@@ -302,7 +303,7 @@ namespace Suborned.Sim
             {
                 if (!Crew(h) || h.Down || h.Gun.St == "break" || h.Gun.St == "gone") continue;
                 if (!h.Present) { h.Gun.St = "gone"; if (CrewOf(h.Id) is CrewMember gm && !gm.Fight) { gm.Mode = CrewMode.Gone; gm.ModeTick = Tick; } continue; } // still lying in wait, or still in the car: it never comes
-                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); any = true;
+                ReleaseCover(h.Gun); LoseTarget(h.Gun); h.Gun.St = "break"; h.Speed = rivSpeed; h.BreakTo = carAt; MoveTo(h, carAt); h.Why = "break"; any = true;
             }
             if (any) { FightWhy.Add("rivals-break"); Note("ai.break", "More than half the crew is down: the rivals break for their car."); }
         }
@@ -346,7 +347,7 @@ namespace Suborned.Sim
                 var h = new Hostile { Id = gun.Id, At = from, Speed = secSpeed, Present = true, Gun = gun, Home = home };
                 Hostiles.Add(h); secJoined[k] = true;
                 if (cov.Length > 0) TakeCover(gun, CoverById(cov)!);
-                MoveTo(h, home);
+                MoveToFight(h, home); // engine 0.34.0 (Motive M067-SQ1): to its stand round the car's hold (h.Why "post")
                 Note("ai.join", $"{gun.Id} of the response unit joins the fight at {(taken ? (cov.Length > 0 ? cov : "a slot beside " + stand) : stand)}.");
             }
         }

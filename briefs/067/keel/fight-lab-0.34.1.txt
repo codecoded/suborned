@@ -1,0 +1,10 @@
+$ python3 -I out/scratch/keel/tools/flcmp.py <fight-lab.json on 0.34.0> briefs/027/keel/fight-lab.json   (after: bun tools/game/playing.ts dotnet out/scratch/keel/bin341/suborned-sim.dll fight-lab)
+# fight-lab matrix: suborned.sim/0.34.0 -> suborned.sim/0.34.1 (inputs abf4771f358a24eb -> 5b230996fba6b7f9)
+wins 23 -> 23 of 294 rows; rows only before 0, only after 0
+rows that moved (outcome, end or Trail): 3
+  today           P-G                                              failure rivals-reach-vale 3:10.7 6 T -> failure rivals-reach-vale 3:10.5 6 T
+  today           P-G:reset                                        failure rivals-reach-vale 3:10.7 6 T -> failure rivals-reach-vale 3:10.5 6 T
+  today           P-G:runfire                                      failure rivals-reach-vale 3:10.7 6 T -> failure rivals-reach-vale 3:10.5 6 T
+
+wrote briefs/027/keel/fight-lab.json; checkpoints CP-LOUD at 1:43.3, CP-SAFE at 4:47.1 (briefs/027/checkpoints)
+every run replays identically from its order log

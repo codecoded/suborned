@@ -102,6 +102,10 @@ namespace Suborned.Sim
                 r.Do(Tech, "reroute", "patrol"); r.Done(Tech);
                 int mark = g.NextMarkOf(g.GuardP, g.Tick); r.To(mark + 1);
                 r.To(r.SendTo(Enf, BesideGuard));
+                // engine 0.34.0 (M067-B1): at the cell's 1.8 m/s he is beside the guard 1.1 s sooner, 0.3 s before the desk's scan of the entrance
+                // screen (2:34.6), which would read the takedown at once and land it before he is out; he lets that scan pass, so the next read is
+                // a period later, as on 0.33.1 (the fixture's point: the Enter fails on the camera's live view, before its report lands)
+                while (!g.Over && g.CutNoticedAt("entrance") <= g.Tick + T(g.R.KoS + 1)) g.Step();
                 r.Takedown("guard", "knockout"); r.Done(Enf);
                 var a = ActOn(r, GuardId);
                 var rep = g.Reps.Single(x => x.Act == a.Id && x.By == "camera:entrance");

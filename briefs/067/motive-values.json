@@ -39,7 +39,7 @@
    "tag": "S",
    "proposed": true,
    "src": "Sky 2026-10-15 (run at twice the walk, briefs/011/motive-fights.md Q2); brief 067 item 6",
-   "reason": "Twice the walk, as before, so the chip reads half the time. Faster than the crowd's flight (2.6), the posted rivals running after a Driven car (2.8) and the response unit (2.2): the police's threat stays cones, guns and the seal, never a foot race (Vale can't run). Measured: no fight-lab kite row wins with it (results/fight-lab-today.txt).",
+   "reason": "Twice the walk, as before, so the chip reads half the time. Faster than the crowd's flight (2.6), the posted rivals running after a Driven car (2.8) and the response unit (2.2): the police's threat stays cones, guns and the seal, never a foot race (Vale can't run). Measured on 0.33.1 (planters in): no fight-lab kite row wins with it (results/fight-lab-today.txt). On engine 0.34.0's bare square one today row does, heavy: L3:tight-enfgo-carfree-runkite 3:54.2, 30 T, A 2, Standing 2 -> -1, the Tech down and captured, 61 % lost, failing only 6.4.8a (officer-1 and officer-2 hold police-1 and police-2, 17.7 and 19.4 m from the car, beyond their 15 m ring: today's police don't contest the walk, Sky 2026-10-20, tuning.md §7.8). At 320 and at 280 it loses (enforcer-down 3:05.7, 3:03.7). Kept at 360: a heavy loud win by a 0.3 m-margin perfect player is inside tuning.md §10.3 (briefs/067/motive-flips.md §4).",
    "fallback": 320
   },
   {
@@ -74,7 +74,7 @@
    "tag": "S",
    "proposed": true,
    "src": "Sky 2026-10-21 (build 0.2.19: fire on the move), Motive briefs/027/motive/tuning.md §8.3; brief 067 routing B (\"a lighter running modifier\")",
-   "reason": "A run toward or across fires at three-eighths: the ladder stays stand 1000 > walk 500 > run 375 > run away 125, so firing on the run is allowed and never the best way to fight. Untrained at the effective ring 140 -> 211 per mille (about 1 in 5 instead of 1 in 7); trained 187 -> 281. Measured: on the fight lab's today matrix (43 rows) 375 and 500 move no outcome (circle-kite 30 -> 28 T; charge 49 -> 49/53 T); no loud row or kite becomes a win, at the old pace or the new (results/fight-lab-today.txt). mod-running-away 125 and mod-target-running 850 stay."
+   "reason": "A run toward or across fires at three-eighths: the ladder stays stand 1000 > walk 500 > run 375 > run away 125, so firing on the run is allowed and never the best way to fight. Untrained at the effective ring 140 -> 211 per mille (about 1 in 5 instead of 1 in 7); trained 187 -> 281. Measured: on the fight lab's today matrix (43 rows) 375 and 500 move no outcome (circle-kite 30 -> 28 T; charge 49 -> 49/53 T); no loud row or kite becomes a win, at the old pace or the new (results/fight-lab-today.txt, on 0.33.1). On 0.34.0, 250 and 375 give the same result on the three today rows measured (the kite win, P-A, L3; motive-flips.md §4): the one kite win is the run speed's and the police posts', not this modifier's. mod-running-away 125 and mod-target-running 850 stay."
   }
  ],
  "rules": [
@@ -288,6 +288,11 @@
    "date": "2026-10-26",
    "doc": "briefs/067/motive-square.md",
    "what": "M067-K3 (a) on a held car only; new M067-SQ1 (the hold is entered only on purpose) and M067-SQ2 (no stall); the square needs no new cover"
+  },
+  {
+   "date": "2026-10-26",
+   "doc": "briefs/067/motive-flips.md",
+   "what": "engine 0.34.0's outcome flips judged: no value moves. op-run-speed-cm-s and mod-running reasons corrected (their fight-lab measurements were on 0.33.1's planted square; on 0.34.0 one today kite row wins heavy)"
   }
  ]
 }

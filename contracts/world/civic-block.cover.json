@@ -3,9 +3,9 @@
  "mission": "handover",
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
-  "block": "1bc3620f355b40cac801439e06e765b00f62420fccc235edb263641e2228020a",
-  "site": "db0f3ba21c8e647d36dcce1a067fb673c6f4b98de052a3b94806314e8e80672e",
-  "kit": "92c377690b39bd308e245bf9d5e14615fcc6685ff2cee76fde639c830d0f4dd2",
+  "block": "2a5c00e22ee5ee0ac34667e644c3abda0f83feab9ea6911ce9bb9a2da9502976",
+  "site": "880dbbc92b7a552565549ad5d3b06fd382db31d5f26525f50805e56b5dd8b753",
+  "kit": "0690e2c1cc57b91e278e2a5a9c6ef3d1a27129e6cd6bdcac794dfeb4eb8cfe6e",
   "plan": "67b17343184a3522689928ce7013443117076cc67ed68e9a202fd9c86d232db8"
  },
  "rules": {
@@ -1607,8 +1607,7 @@
     {
      "post": "ambush-5",
      "points": [
-      "cv-027",
-      "cv-029"
+      "cv-032"
      ]
     }
    ],
@@ -1645,9 +1644,7 @@
     {
      "post": "ambush-5",
      "points": [
-      "cv-006",
-      "cv-074",
-      "cv-077"
+      "cv-002"
      ]
     }
    ]

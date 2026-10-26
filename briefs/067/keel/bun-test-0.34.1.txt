@@ -1,0 +1,8 @@
+$ bun tools/game/playing.ts bun test tools/sim contracts/rules
+bun test v1.4.3 (c6da4a4d3)
+
+ 121 pass
+ 0 fail
+ 3061 expect() calls
+Ran 121 tests across 7 files. [13.68s]
+exit 0

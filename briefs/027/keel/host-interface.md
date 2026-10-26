@@ -519,3 +519,100 @@ One bump. The rulebook moved (`car.footprint` with values `car-len-cm` 473, `car
 **The "x2" over Vale's car.** Two (up to four) security people on one spot, all crowd: from 5:11 to 5:30 the shift guards p-records-office-29, -39, -61 and -74 stand on `official-entrance` (7625, -3000) together (the relief comes early on its leg and waits on the point); from 5:19 to 6:13 the relief guard p-records-office-73 stands on `office-entrance`, the cast guard's post (Suture's finding). The engine puts everyone at a stop on the stop's point; separate stands are Pulse's (handover.people.json), the drawing's spread is yours (`GiveWay`).
 
 **Test only.** None new.
+
+## Engine 0.34.0: the cell walks faster, a run is noticed not punished, hiding in a held car loses, the square's two rules, the patrol in the yard (brief 067, Sky playing 0.2.122; Motive motive-values.json and motive-square.md; Pulse, Vantage and Splice in briefs/067)
+One bump. The rulebook moved: values `op-speed-cm-s` 180, the new `people-walk-cm-s` 140, `op-run-speed-cm-s` 360, `carry-untrained-cm-s` 90 and `mod-running` 375; `cell.runAlert` retired; `crowd.walk`, `attention.run`, `ai.noStall`, `fight.unguarded` and `fight.holdRule` new. The site moved too: the patrol sweeps the service yard, the square's planters are gone, Vale's car points moved. The people file moved (Pulse's waiting points, `beside`). So every inputs hash and most routes move (route diff against e17d8ca7: `briefs/067/keel/route-diff-0.34.0.txt`). Scenarios PACE-SPLIT, RUN-*, K3-*, SQ1-WALK, SQ1-STEP, SQ2-NO-STALL, FACT-PATROL, POST-BESIDE and DOOR-KERB (`sim/Suborned.Sim/ScenariosPace067.cs`) show each rule.
+
+**The walk split (M067-B1): what your previews read.**
+- `R.CellSpeed` (cell.speed) is the cell's walk only, now 180 cm/s (was 140).
+- `R.PeopleWalk` (crowd.walk, 140) is the city's walk. It covers the summoned partner, reporters and tellers walking to a phone, a witness walking to a body, the crowd walking back from shelter, and the rounds bake's pace.
+- The other paces: `R.RunSpeed` 360, `R.CarryUntrainedSpeed` 90; the Enforcer carries at `R.CellSpeed`.
+- Every engine read that quotes an operative's walk now uses the cell's pace:
+  - the move quote (`WalkS`, `RunS`);
+  - the approach card (`WalkS`);
+  - `QuoteCarry` (`PaceCmS`, `S`);
+  - the fire order's walk into reach;
+  - `ActivityOf` (`TicksLeft`).
+- Your own previews that divide by `R.CellSpeed` show 1.8 m/s with no change on your side:
+  - HandoverHost's intent time and `ActWalk.Seconds`;
+  - `HostHold.WalkSeconds` and `HostHoldStatus.WalkLeftS`;
+  - HostSight's 4 s ahead;
+  - HudModel's and HostTakedown's "walk only · m/s" rows;
+  - HostDrive's pace and DriveCheck.
+- None of those may stand in for a person of the city, who walks at `R.PeopleWalk`. The engine's poses are the truth for people.
+- `VisitWalkTicks` (the summoned guard's walk to Inez) is the city's pace. It is unchanged, so Inez's call window is as on 0.33.1.
+
+**The run (M067-B2).** A run is seen and suspicious, never an Alert on its own.
+- `cell.runAlert` is retired and `R.RunAlert` is gone: drop any read of it.
+- `MoveQuote.AlertIfRun` and `SeenQuote.AlertIfSeen` are now the Alert as it stands: a run never raises them.
+  - HostFight.cs:418-421 still prints a run as "seen by … (Alert N)". The words should now say that a watcher notices it (Fable words it, Glyph cues it).
+  - `RunSeenBy` and `Seen` still say who would see it.
+- Which watchers count it: a watcher that keeps an attention clock (a live camera, the door guard not turned to your side, the patrol, the response's officers and robots).
+- What they do:
+  - On the run's first tick in its sight, the watcher's clock jumps to the noticed mark: `attention.noticed`, "… notices the {op} running in its sight.". Show its noticed cue on that tick.
+  - After that, each tick of the run in its sight counts as standing still does, so it turns wary and reports as for a loiterer.
+- `run.seen` still logs the sighting once a run, without "a found fault. Alert N".
+- Unchanged: a run is free at Alert 2 and above, when it is loud, and under fire; from Alert 2, ordinary people who see a run remember it (Sky's 054 call).
+
+**The held car (Motive M067-K3, as amended in motive-square.md §4).**
+- **(a) The walk to the car.**
+  - When: the safe fight, with Vale in the getaway car, the car held (`CarHolders()` not empty), and no operative standing outside it.
+  - The rivals up and not broken (not the blocker) walk to the car, firing as they walk (`rivals.for-car`). The first to come within 1 m of its body takes Vale (`rivals-reach-vale`).
+  - An operative standing outside again, or the car no longer held, sends them back to cover (`rivals.back-to-cover`).
+  - A free car with the cell aboard waits for Go: nothing walks to it.
+  - New read: `Game.RivalsForCar`, the ids walking for the car now (sorted). Draw them as coming for the car (Glyph's cue).
+- **(b) The cell down.** The tick the last operative goes down, in the car or not, the mission fails `cell-down` ("The whole cell is down."). The fail camera is the shot that downed the last to fall: why `shot`, the shooter first, then the operative (as for `enforcer-down`).
+- **(c) Go needs a driver.**
+  - With only the downed aboard, Go is refused `car-no-driver` ("nobody aboard can drive: only the downed are in the car"). `GoQuery()` answers the same.
+  - Once a standing operative is aboard, any standing operative may give Go from anywhere.
+
+**The square's two rules (M067-SQ1, SQ2).**
+- **SQ1, the hold is entered only on purpose.**
+  - An answer to fire never ends within 8 m of the car or on its exit lane. That covers a rival's step out of a line or to cover, and a police body's cover or close. When nothing outside serves, the body stands where it is.
+  - A walk to a post goes round the hold: the rival crew walking to its spots, police and the response unit walking to their stands. On screen they bend round the car at about 8 m.
+  - New log codes: `car.held.<how>` marks the first tick each body holds the car at a stand. `<how>` is one of `blocker`, `press`, `advance`, `answer`, `post`. These are log only: the holder list (`CarHolders()`, Go's `car-held` ids) is unchanged.
+- **SQ2, no stall.**
+  - A rival holding with nobody in his reach for 1 s advances again (`ai.advance`, "{id} has had nobody in reach for 1 s: he advances on the {op}[ to {cover}].").
+  - He goes for an operative he has cause to fire on: to the cover that shields him from that operative, else to the first point of the walk to him that has a clear line to him.
+  - Police and the blocker hold their posts.
+
+**The patrol in the service yard (brief 067 A).**
+- The sweep runs between patrol-a (61.25, -7.25) and patrol-b (76.25, -7.25), facing west toward the wing's east face and the service door. Rerouted, it waits at (46.25, -9.25) facing north.
+- It never sees the public door: `SweepSeesEntrance(t)` is false at every tick. The new reads `Game.SweepCoversEntrance` and `Game.PatrolWatchesEntry` (with `SweepSecondsOnEntry`; also `suborned-sim facts`) are false on this site.
+- Anything you time to the sweep at the front door has nothing to show there now; the yard is where the patrol matters.
+- The debrief never says `entry-timed-between-sweeps` on this site. It still says `patrol-diverted` when the patrol was rerouted at the Enter.
+- `patrol.rerouted` and `patrol.returns` now name no place: "leaves its sweep", "is back on its sweep".
+
+**Pulse's posts (brief 067 L).**
+- A relief waits at a point beside a staffed door and steps on at the change (the people file's `beside`).
+- `PostOf` reads that waiting point as her post, so she keeps her check-in marks (guard 73 from 5:30).
+- Guards posted at the Office's doors face out of them, toward the kerb.
+- At the change (5:30:00) a standing person can move up to 1.2 m in one tick. Ease that step (Pulse's note to you).
+- New read: `Game.FacingNow(id)`, the way a person faces now as the engine reads it.
+
+**Harness only.**
+- `Game.HarnessStepLimit` (static, 0 = off) bounds every game a harness makes; past it, `RunawayException`. Never set it from the host: a played session has no step limit.
+- `check` and `batch` take `--timeout s` (default 300).
+
+**Codes for Fable** (text.json, not edited here).
+- New log codes: `rivals.for-car`, `rivals.back-to-cover`, `ai.advance`, `car.held.blocker`, `car.held.press`, `car.held.advance`, `car.held.answer`, `car.held.post`, `fail.cell-down`.
+- New fail code: `cell-down`.
+- New refusal: `car-no-driver`. `Answer.Codes` lists it.
+- Changed texts: `run.seen` (no found fault, no Alert), `attention.noticed` (also "… running in its sight"), `patrol.rerouted` and `patrol.returns` (no "entrance sweep").
+- text.json still says the patrol watches the square or the door in these places:
+  - `patrol.about` and `watched` ("sweeps the square", "reaches the door at times");
+  - line 1123 ("A patrol sweeps this door … N shows when it comes round") and line 1851 ("The patrol sweeps past the door");
+  - line 2247 ("Mind the entrance");
+  - the watch reads on the patrol, lines 2088, 2089 and 2095 ("I know when it sees the door", "The door is clear between sweeps");
+  - `patrol-returns`'s trigger, line 735 ("its entrance sweep").
+- No log code is retired.
+
+**Retired.** `cell.runAlert` (`R.RunAlert`) and the `runner-seen:` Alert cause.
+
+**Fixtures.**
+- `bal-rb-ff` and `bal-rbb-ff` are now Motive's rb-rr and rbb-rr (the same plays, with the Tech's Reroute at 5:00).
+- New: `sq-route-a-board` and `sq-ra-h3`, the square's reference plays.
+- Re-compose them with `bun tools/sim/fixtures059.ts` when the engine moves. DP1's drive session is re-recorded on 0.34.0.
+
+## Engine 0.34.1: an advance closes on its operative (brief 067; Aster's ruling within M067-SQ2)
+No API change: a rival advancing on an operative now takes a cover only if it is strictly nearer him by walk (and inside or nearer the rival's reach of him), else walks to his stop point of him taking no kite step on the way (`Hostile.Closing`, hashed only when set), else holds, so the rivals no longer shuffle between two covers (ra-h3's rival-3, cv-030 and cv-029); the rulebook's `ai.noStall` text moved, so the inputs hash moves (DP1's drive session, CP-LOUD and CP-SAFE are re-recorded; scenario SQ2-CLOSES; route diff from 0.34.0: `briefs/067/keel/route-diff-0.34.1.txt`).

@@ -297,10 +297,10 @@ def sidearm_button(fr, k, x=122):
     y = ROW_Y[k] + 1; fr.hud.alpha_composite(_BTN["im"], (int(round((x - 15) * S)), int(round((y - 15) * S))))
 
 MOVE_ICON = ("mark", "megaphone", "steam", "burst"); MOVE_NAME = ("Mark", "Talk down", "Steam", "Covering fire")
-def move_disc(fr, k, state="ready", frac=1.0, x=156):
+def move_disc(fr, k, state="ready", frac=1.0, x=156, y=None):
     """the roster's move disc (a fight only): the kit's dark disc 26 px, the move's icon. ready = turquoise-light ring; cooling = icon 50 % and a turquoise-light arc filling over the 20 s;
-    shut = the kit's lock at its corner (no one down yet, nothing in reach)"""
-    y = ROW_Y[k]; lay = layer(fr); d = kd.sprite("markers/disc_dark_24", game_h=26); lay.alpha_composite(d, (int(round(x * S - d.width / 2)), int(round(y * S - d.height / 2))))
+    shut = the kit's lock at its corner (no one down yet, nothing in reach). y = a board key's own row (default: agent k's portrait row)"""
+    y = ROW_Y[k] if y is None else y; lay = layer(fr); d = kd.sprite("markers/disc_dark_24", game_h=26); lay.alpha_composite(d, (int(round(x * S - d.width / 2)), int(round(y * S - d.height / 2))))
     if state == "armed": stroke(lay, circ((x, y), 12.6, 36), (31, 108, 103), 0.1, closed=True, fill=(31, 108, 103))
     ico(lay, MOVE_ICON[k], x, y, 16, CREAM, alpha=255 if state in ("ready", "armed") else 125); r = 15.2
     if state == "ready": stroke(lay, circ((x, y), r, 36), TURQL, 2.0, closed=True)

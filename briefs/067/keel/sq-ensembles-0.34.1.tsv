@@ -1,0 +1,161 @@
+engine	plan	k	outcome	fail	end	T	A	St	fight.over	composed
+0.34.0	ra-h3	0	success		4:37.3	5	0	3	4:22.9	yes
+0.34.0	ra-h3	4	success		4:37.6	5	0	3	4:23.2	yes
+0.34.0	ra-h3	1	success		4:37.7	5	0	3	4:23.3	yes
+0.34.0	ra-h3	3	success		4:37.5	5	0	3	4:23.1	yes
+0.34.0	ra-h3	5	success		4:40.7	5	0	3	4:26.3	yes
+0.34.0	ra-h3	2	success		4:40.7	5	0	3	4:26.3	yes
+0.34.0	ra-h3	6	success		4:37.5	5	0	3	4:23.1	yes
+0.34.0	ra-h3	7	success		4:41.2	5	0	3	4:26.8	yes
+0.34.0	route-a-board	0	success		4:15.5	5	0	2	-	yes
+0.34.0	route-a-board	1	success		4:15.9	5	0	2	-	yes
+0.34.0	route-a-board	2	success		4:16.7	5	0	2	-	yes
+0.34.0	route-a-board	3	success		4:15.7	5	0	2	-	yes
+0.34.0	rgk-h3	0	success		5:56.9	2	1	3	5:42.5	yes
+0.34.0	route-a-board	4	success		4:15.8	5	0	2	-	yes
+0.34.0	route-a-board	5	success		4:16.7	5	0	2	-	yes
+0.34.0	rgk-h3	1	success		5:56.9	2	1	3	5:42.5	yes
+0.34.0	route-a-board	7	success		4:17.2	5	0	2	-	yes
+0.34.0	route-a-board	6	success		4:15.7	5	0	2	-	yes
+0.34.0	rgk-h3	2	success		5:58.1	2	1	3	5:43.7	yes
+0.34.0	rgk-h3	3	success		5:58.4	2	1	3	5:44.0	yes
+0.34.0	rgk-h3	4	success		5:58.9	2	1	3	5:44.5	yes
+0.34.0	rgk-h3	5	success		5:58.3	2	1	3	5:43.9	yes
+0.34.0	rgk-h3	6	success		5:58.0	2	1	3	5:43.6	yes
+0.34.0	rgk-h3	7	success		5:57.8	2	1	3	5:43.4	yes
+0.34.0	rgkb-bo	0	success		5:36.1	2	1	2	-	yes
+0.34.0	rgkb-bo	2	success		5:37.3	2	1	2	-	yes
+0.34.0	rgkb-bo	1	success		5:36.1	2	1	2	-	yes
+0.34.0	rgkb-bo	3	success		5:37.6	2	1	2	-	yes
+0.34.0	rgkb-bo	4	success		5:38.1	2	1	2	-	yes
+0.34.0	rgkb-bo	5	success		5:37.5	2	1	2	-	yes
+0.34.0	rgkb-bo	6	success		5:37.2	2	1	2	-	yes
+0.34.0	rgkb-bo	7	success		5:37.0	2	1	2	-	yes
+0.34.0	rgkb-h3	0	failure	rivals-reach-vale	5:19.2	2	1	2	-	no: step 20 (enforcer board car): not taken between 3122 and 5100
+0.34.0	rgkb-h3	1	failure	rivals-reach-vale	5:19.2	2	1	2	-	no: step 20 (enforcer board car): not taken between 3122 and 5100
+0.34.0	rgkb-h3	2	failure	rivals-reach-vale	5:20.4	2	1	2	-	no: step 20 (enforcer board car): not taken between 3134 and 5100
+0.34.0	rgkb-h3	3	failure	rivals-reach-vale	5:20.7	2	1	2	-	no: step 20 (enforcer board car): not taken between 3137 and 5100
+0.34.0	rgkb-h3	4	failure	rivals-reach-vale	5:21.2	2	1	2	-	no: step 20 (enforcer board car): not taken between 3142 and 5100
+0.34.0	rgkb-h3	5	failure	rivals-reach-vale	5:20.6	2	1	2	-	no: step 20 (enforcer board car): not taken between 3136 and 5100
+0.34.0	route-a	0	success		4:36.5	5	0	3	4:22.6	yes
+0.34.0	route-a	1	success		4:36.9	5	0	3	4:23.0	yes
+0.34.0	rgkb-h3	7	failure	rivals-reach-vale	5:20.1	2	1	2	-	no: step 20 (enforcer board car): not taken between 3131 and 5100
+0.34.0	rgkb-h3	6	failure	rivals-reach-vale	5:20.3	2	1	2	-	no: step 20 (enforcer board car): not taken between 3133 and 5100
+0.34.0	route-a	2	success		4:38.3	5	0	3	4:24.4	yes
+0.34.0	route-a	3	success		4:36.7	5	0	3	4:22.8	yes
+0.34.0	route-a	4	success		4:36.8	5	0	3	4:22.9	yes
+0.34.0	route-a	5	success		4:38.3	5	0	3	4:24.4	yes
+0.34.0	route-a	7	success		4:38.8	5	0	3	4:24.9	yes
+0.34.0	route-a	6	success		4:36.7	5	0	3	4:22.8	yes
+0.34.0	route-a-pressure	2	success		3:25.8	7	0	2	3:11.9	yes
+0.34.0	route-a-pressure	0	failure	rivals-reach-vale	3:09.4	7	0	1	-	no: step 18 (enforcer move): not taken between 1440 and 5100
+0.34.0	route-a-pressure	1	failure	rivals-reach-vale	3:09.4	7	0	1	-	no: step 18 (enforcer move): not taken between 1444 and 5100
+0.34.0	route-a-pressure	5	success		3:25.8	7	0	2	3:11.9	yes
+0.34.0	route-a-pressure	3	failure	rivals-reach-vale	3:09.4	7	0	1	-	no: step 18 (enforcer move): not taken between 1442 and 5100
+0.34.0	route-a-pressure	4	failure	rivals-reach-vale	3:09.4	7	0	1	-	no: step 18 (enforcer move): not taken between 1443 and 5100
+0.34.0	route-a-pressure	7	success		3:25.8	7	0	2	3:11.9	yes
+0.34.0	route-a-pressure	6	failure	rivals-reach-vale	3:09.4	7	0	1	-	no: step 18 (enforcer move): not taken between 1442 and 5100
+0.34.0	route-a-pressure-board	0	failure	rivals-reach-vale	3:06.0	7	0	1	-	no: step 19 (enforcer board car): not taken between 1745 and 5100
+0.34.0	route-a-pressure-board	1	failure	rivals-reach-vale	3:03.4	7	0	1	-	no: step 19 (enforcer board car): not taken between 1749 and 5100
+0.34.0	route-a-pressure-board	2	failure	rivals-reach-vale	3:04.3	7	0	1	-	no: step 19 (enforcer board car): not taken between 1757 and 5100
+0.34.0	route-a-pressure-board	3	failure	rivals-reach-vale	3:06.0	7	0	1	-	no: step 19 (enforcer board car): not taken between 1747 and 5100
+0.34.0	route-a-pressure-board	4	failure	rivals-reach-vale	3:03.3	7	0	1	-	no: step 19 (enforcer board car): not taken between 1748 and 5100
+0.34.0	route-g	0	success		4:14.5	6	1	3	4:00.6	yes
+0.34.0	route-g	1	success		4:14.5	6	1	3	4:00.6	yes
+0.34.0	route-a-pressure-board	5	failure	rivals-reach-vale	3:04.3	7	0	1	-	no: step 19 (enforcer board car): not taken between 1757 and 5100
+0.34.0	route-g	2	success		4:15.7	6	1	3	4:01.8	yes
+0.34.0	route-a-pressure-board	6	failure	rivals-reach-vale	3:06.0	7	0	1	-	no: step 19 (enforcer board car): not taken between 1747 and 5100
+0.34.0	route-a-pressure-board	7	failure	rivals-reach-vale	3:08.2	7	0	1	-	no: step 19 (enforcer board car): not taken between 1762 and 5100
+0.34.0	route-g	3	success		4:16.0	6	1	3	4:02.1	yes
+0.34.0	route-g	4	success		4:16.5	6	1	3	4:02.6	yes
+0.34.0	route-g	5	success		4:15.9	6	1	3	4:02.0	yes
+0.34.0	route-g	6	success		4:15.6	6	1	3	4:01.7	yes
+0.34.0	route-g	7	success		4:15.4	6	1	3	4:01.5	yes
+0.34.0	route-g-fast-board	0	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	1	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	2	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	3	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	4	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	5	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	6	success		3:07.4	6	1	2	-	yes
+0.34.0	route-g-fast-board	7	success		3:07.4	6	1	2	-	yes
+0.34.1	ra-h3	0	success		4:37.3	5	0	3	4:22.9	yes
+0.34.1	ra-h3	1	success		4:37.7	5	0	3	4:23.3	yes
+0.34.1	ra-h3	2	success		4:39.2	5	0	3	4:24.8	yes
+0.34.1	ra-h3	3	success		4:37.5	5	0	3	4:23.1	yes
+0.34.1	ra-h3	4	success		4:37.6	5	0	3	4:23.2	yes
+0.34.1	ra-h3	5	success		4:39.2	5	0	3	4:24.8	yes
+0.34.1	ra-h3	6	success		4:37.5	5	0	3	4:23.1	yes
+0.34.1	ra-h3	7	success		4:39.7	5	0	3	4:25.3	yes
+0.34.1	route-a-board	0	success		4:15.5	5	0	2	-	yes
+0.34.1	route-a-board	1	success		4:15.9	5	0	2	-	yes
+0.34.1	route-a-board	2	success		4:16.7	5	0	2	-	yes
+0.34.1	route-a-board	3	success		4:15.7	5	0	2	-	yes
+0.34.1	route-a-board	4	success		4:15.8	5	0	2	-	yes
+0.34.1	route-a-board	5	success		4:16.7	5	0	2	-	yes
+0.34.1	route-a-board	6	success		4:15.7	5	0	2	-	yes
+0.34.1	route-a-board	7	success		4:17.2	5	0	2	-	yes
+0.34.1	rgk-h3	0	success		5:43.3	2	1	3	5:28.9	yes
+0.34.1	rgk-h3	1	success		5:43.3	2	1	3	5:28.9	yes
+0.34.1	rgk-h3	2	success		5:44.5	2	1	3	5:30.1	yes
+0.34.1	rgk-h3	3	success		5:44.8	2	1	3	5:30.4	yes
+0.34.1	rgk-h3	4	success		5:45.3	2	1	3	5:30.9	yes
+0.34.1	rgk-h3	5	success		5:44.7	2	1	3	5:30.3	yes
+0.34.1	rgk-h3	6	success		5:44.4	2	1	3	5:30.0	yes
+0.34.1	rgk-h3	7	success		5:44.2	2	1	3	5:29.8	yes
+0.34.1	rgkb-bo	0	success		5:36.1	2	1	3	5:28.9	yes
+0.34.1	rgkb-bo	1	success		5:36.1	2	1	3	5:28.9	yes
+0.34.1	rgkb-bo	2	success		5:37.3	2	1	3	5:30.1	yes
+0.34.1	rgkb-bo	3	success		5:37.6	2	1	3	5:30.4	yes
+0.34.1	rgkb-bo	4	success		5:38.1	2	1	3	5:30.9	yes
+0.34.1	rgkb-bo	5	success		5:37.5	2	1	3	5:30.3	yes
+0.34.1	rgkb-bo	6	success		5:37.2	2	1	3	5:30.0	yes
+0.34.1	rgkb-bo	7	success		5:37.0	2	1	3	5:29.8	yes
+0.34.1	rgkb-h3	0	failure	rivals-reach-vale	5:19.2	2	1	2	-	no: step 20 (enforcer board car): not taken between 3122 and 5100
+0.34.1	rgkb-h3	1	failure	rivals-reach-vale	5:19.2	2	1	2	-	no: step 20 (enforcer board car): not taken between 3122 and 5100
+0.34.1	rgkb-h3	2	failure	rivals-reach-vale	5:20.4	2	1	2	-	no: step 20 (enforcer board car): not taken between 3134 and 5100
+0.34.1	rgkb-h3	3	failure	rivals-reach-vale	5:20.7	2	1	2	-	no: step 20 (enforcer board car): not taken between 3137 and 5100
+0.34.1	rgkb-h3	5	failure	rivals-reach-vale	5:20.6	2	1	2	-	no: step 20 (enforcer board car): not taken between 3136 and 5100
+0.34.1	rgkb-h3	4	failure	rivals-reach-vale	5:21.2	2	1	2	-	no: step 20 (enforcer board car): not taken between 3142 and 5100
+0.34.1	route-a	0	success		4:36.5	5	0	3	4:22.6	yes
+0.34.1	route-a	1	success		4:36.9	5	0	3	4:23.0	yes
+0.34.1	rgkb-h3	6	failure	rivals-reach-vale	5:20.3	2	1	2	-	no: step 20 (enforcer board car): not taken between 3133 and 5100
+0.34.1	route-a	2	success		4:38.3	5	0	3	4:24.4	yes
+0.34.1	rgkb-h3	7	failure	rivals-reach-vale	5:20.1	2	1	2	-	no: step 20 (enforcer board car): not taken between 3131 and 5100
+0.34.1	route-a	3	success		4:36.7	5	0	3	4:22.8	yes
+0.34.1	route-a	4	success		4:36.8	5	0	3	4:22.9	yes
+0.34.1	route-a	5	success		4:38.3	5	0	3	4:24.4	yes
+0.34.1	route-a	6	success		4:36.7	5	0	3	4:22.8	yes
+0.34.1	route-a	7	success		4:38.8	5	0	3	4:24.9	yes
+0.34.1	route-a-pressure	0	failure	rivals-reach-vale	3:08.9	7	0	1	-	no: step 18 (enforcer move): not taken between 1440 and 5100
+0.34.1	route-a-pressure	1	failure	rivals-reach-vale	3:08.5	7	0	1	-	no: step 18 (enforcer move): not taken between 1444 and 5100
+0.34.1	route-a-pressure	2	success		3:27.1	7	0	2	3:13.2	yes
+0.34.1	route-a-pressure	5	success		3:27.1	7	0	2	3:13.2	yes
+0.34.1	route-a-pressure	3	failure	rivals-reach-vale	3:08.8	7	0	1	-	no: step 18 (enforcer move): not taken between 1442 and 5100
+0.34.1	route-a-pressure	4	failure	rivals-reach-vale	3:08.5	7	0	1	-	no: step 18 (enforcer move): not taken between 1443 and 5100
+0.34.1	route-a-pressure	7	success		3:27.0	7	0	2	3:13.1	yes
+0.34.1	route-a-pressure	6	failure	rivals-reach-vale	3:08.8	7	0	1	-	no: step 18 (enforcer move): not taken between 1442 and 5100
+0.34.1	route-a-pressure-board	0	failure	rivals-reach-vale	3:06.0	7	0	1	-	no: step 19 (enforcer board car): not taken between 1745 and 5100
+0.34.1	route-a-pressure-board	1	failure	rivals-reach-vale	3:03.4	7	0	1	-	no: step 19 (enforcer board car): not taken between 1749 and 5100
+0.34.1	route-a-pressure-board	2	failure	rivals-reach-vale	3:04.3	7	0	1	-	no: step 19 (enforcer board car): not taken between 1757 and 5100
+0.34.1	route-a-pressure-board	4	failure	rivals-reach-vale	3:03.3	7	0	1	-	no: step 19 (enforcer board car): not taken between 1748 and 5100
+0.34.1	route-a-pressure-board	3	failure	rivals-reach-vale	3:06.0	7	0	1	-	no: step 19 (enforcer board car): not taken between 1747 and 5100
+0.34.1	route-g	0	success		4:14.5	6	1	3	4:00.6	yes
+0.34.1	route-a-pressure-board	5	failure	rivals-reach-vale	3:04.3	7	0	1	-	no: step 19 (enforcer board car): not taken between 1757 and 5100
+0.34.1	route-g	1	success		4:14.5	6	1	3	4:00.6	yes
+0.34.1	route-a-pressure-board	6	failure	rivals-reach-vale	3:06.0	7	0	1	-	no: step 19 (enforcer board car): not taken between 1747 and 5100
+0.34.1	route-g	2	success		4:15.7	6	1	3	4:01.8	yes
+0.34.1	route-a-pressure-board	7	failure	rivals-reach-vale	3:08.2	7	0	1	-	no: step 19 (enforcer board car): not taken between 1762 and 5100
+0.34.1	route-g	3	success		4:16.0	6	1	3	4:02.1	yes
+0.34.1	route-g	5	success		4:15.9	6	1	3	4:02.0	yes
+0.34.1	route-g	4	success		4:16.5	6	1	3	4:02.6	yes
+0.34.1	route-g	6	success		4:15.6	6	1	3	4:01.7	yes
+0.34.1	route-g	7	success		4:15.4	6	1	3	4:01.5	yes
+0.34.1	route-g-fast-board	1	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	0	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	2	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	3	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	4	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	5	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	6	success		3:07.4	6	1	2	-	yes
+0.34.1	route-g-fast-board	7	success		3:07.4	6	1	2	-	yes

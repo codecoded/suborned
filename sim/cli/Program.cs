@@ -11,6 +11,7 @@
 //   drive-session [out]                         record the driven session the DP1 scenario replays (brief 025; Fixtures/drive-session.script.json)
 //   range list|play|script|hashes               brief 029's fight range on its own site (sim/cli/Range.cs)
 //   codes                                       every refusal code an order can get (Fable's text.json locks read these)
+//   facts                                       the site's facts a mission check reads, as JSON: patrolWatchesEntry (MC-3's needs, brief 067)
 //   cover-vectors                               the cover each fight post would take (car as foe, and advancing), for tools/cover/select.ts to agree
 //   fans [tick] [--crowd]                       every watcher's sight fan at a tick of an idle run (Game.ConeFan), with its cost
 //   hashes [--start-text <t>] [--legacy-start]  every scenario's and route script's checkpoint hashes as JSON; --legacy-start leaves a fixed
@@ -77,6 +78,13 @@ static class Program
                     Console.WriteLine(Hashes(inputs, root, k > 0 ? args[k + 1] : null)); return 0;
                 }
                 case "codes": { var w = new JWriter().Arr(); foreach (var c in Answer.Codes) w.Str(c); Console.WriteLine(w.EndArr().ToString()); return 0; }
+                case "facts": // engine 0.34.0 (Motive briefs/067/motive-square.md §5.3): the site's facts a mission check reads (Waymark's MC-3 needs)
+                {
+                    var g = Engine.New(inputs);
+                    Console.WriteLine(new JWriter().Obj().Prop("engine", Engine.Version).Prop("inputs", inputs.Hash.ToString(CultureInfo.InvariantCulture))
+                        .Prop("patrolWatchesEntry", g.PatrolWatchesEntry).Prop("sweepSecondsOnEntry", g.SweepSecondsOnEntry).Prop("sweepPeriodS", g.R.PatrolPeriodS).EndObj().ToString());
+                    return 0;
+                }
                 default: Console.Error.WriteLine($"unknown command {args[0]}"); return 2;
             }
         }

@@ -14,6 +14,15 @@ namespace Suborned.Sim
         public int Wave; // brief 029: the range's spawn it came with (a crew breaks by its own spawn)
         public bool Blocker; // brief 018 §1: it went for the road, and holds its point in the exit lane as police hold a stand
         public Pt? BreakTo; // brief 059: where a broken rival runs to (his car where it stood when the crew broke); not hashed (his walk is)
+        /// <summary>Engine 0.34.0 (Motive M067-SQ1, car.held.&lt;how&gt;): why its current walk started: "post" (to its stand, spot or post: the
+        /// spawn walk too), "advance" (on the car or an operative), "answer" (to fire: a step out of a line, to cover, a close), "press" (for the
+        /// held car, K3 a), "blocker" (to the road), "break". Read only by the car.held log; not hashed (no rule reads it).</summary>
+        public string Why = "post";
+        /// <summary>Engine 0.34.1 (Aster's ruling within M067-SQ2: an advance closes on its operative): walking an advance on an operative
+        /// (AdvanceOnOp). While he walks it (St advance) he takes no kite step out of a line, as on K3's walk to the car: the step would turn
+        /// the advance back to cover that does not close. A foe in reach still stops him (advance → engage). Every new walk or stop clears it.
+        /// Hashed only when set.</summary>
+        public bool Closing;
         public bool Down => Gun.Down; public int Health => Gun.Health;
         public Pt Pos(int tick) => Run == null ? At : Run.At((long)Math.Max(0, tick - RunStart) * Speed);
         public bool Moving(int tick) => Run != null && (long)Math.Max(0, tick - RunStart) * Speed < Run.Length;
@@ -49,13 +58,13 @@ namespace Suborned.Sim
                 var stands = CurStand.Police; // brief 059 K6: the stand's police stands
                 for (int i = 0; i < n && i < stands.Length; i++)
                 {
-                    var route = Walk.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) };
+                    var route = RouteRoundHold(entry, S.Stand(stands[i])) ?? Walk.Route(entry, S.Stand(stands[i])) ?? new[] { entry, S.Stand(stands[i]) }; // engine 0.34.0 (Motive M067-SQ1): a walk to a post goes round the car's hold
                     var gun = NewGun($"officer-{i + 1}", PistolW, true, R.HealthOfficer); gun.Engaged = true; gun.St = "advance"; // summoned: no alert delay (Pulse §3.2)
                     var home = S.Stand(stands[i]);
                     if (Lab && i < Labr!.PoliceContest) // brief 027 retest R1 (lab; Pulse retest-fixes.md §2, Motive tuning.md §7.2): its stand pulled into its ring of the car
                     {
                         var cp = StopPoint(home, Car, gun.W!.EffCm);
-                        if (cp != home) { Note("ai.kite", $"{gun.Id} comes for the car: its stand is {G.Dist(cp, Car) / 100} m from it, not {G.Dist(home, Car) / 100} m."); home = cp; route = Walk.Route(entry, home) ?? new[] { entry, home }; }
+                        if (cp != home) { Note("ai.kite", $"{gun.Id} comes for the car: its stand is {G.Dist(cp, Car) / 100} m from it, not {G.Dist(home, Car) / 100} m."); home = cp; route = RouteRoundHold(entry, home) ?? Walk.Route(entry, home) ?? new[] { entry, home }; }
                     }
                     Hostiles.Add(new Hostile { Id = gun.Id, At = home, Home = home, Run = new Path(route), RunStart = Tick, Speed = secSpeed, Present = true, Gun = gun });
                 }

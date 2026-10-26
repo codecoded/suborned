@@ -131,7 +131,7 @@ namespace Suborned.Sim
                 r.Until(() => { var p = g.MemberPose(g.Crew[0])?.pos; still = p == lastR ? still + 1 : 0; lastR = p; return still >= 2 || !g.Crew[0].OnFoot; }, T(150));
                 var rp = g.MemberPose(g.Crew[0])?.pos;
                 if (!r.Is(rp.HasValue && still >= 2, "rival-1 stands at the Office")) return;
-                int eff = g.Crew[0].Gun.W!.EffCm;
+                int eff = g.Crew[0].Gun.W!.EffCm, max = g.Crew[0].Gun.W!.MaxCm;
                 var (o1, o2) = st!.Value; var rpos = rp!.Value;
                 Pt? tp = null; // 72 bearings × three radii (15.5, 16.5, 17.5 m), in order: the first free point that meets the stage
                 for (int rr = eff + 50; rr <= eff + 250 && tp == null; rr += 100)
@@ -148,6 +148,13 @@ namespace Suborned.Sim
                 if (!r.Is(r.Until(() => r.Shots().Any(s => s.by == "tech" && s.target == "rival-1"), T(3)), "the Tech's shot goes")) return;
                 int t0 = r.Shots().First(s => s.by == "tech" && s.target == "rival-1").tick;
                 r.Do(Tech, "holster");
+                // engine 0.34.0 (brief 067 K and A, the square and the patrol moved): the crew posts at the Office approach, the volley walks the Tech in
+                // to 14 m (the fire's walk into reach) and he would stand within the crew's max of its lean-out point, on its line, so by Pulse §5.2 (no
+                // lean-out into a shooter still there) rival-1 would never lean out and walk on at kite.hideMax: the Tech steps back out, 4 m beyond
+                // that max, the way he came, and the lean-out point is no longer covered
+                var tpos = r.Op(Tech).Pos; long td = Math.Max(1, G.Dist(tpos, rpos));
+                var stepBack = new Pt(rpos.X + (int)((tpos.X - rpos.X) * (max + 400) / td), rpos.Y + (int)((tpos.Y - rpos.Y) * (max + 400) / td));
+                r.SendTo(Tech, g.Walk.NearestFree(stepBack) ?? stepBack);
                 r.To(t0 + g.Labr!.KiteReact + 2);
                 r.Is(g.MemberPose(g.Crew[0])?.pos != at && g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 answers", StringComparison.Ordinal)), "the crew moves out of the line after kite.react");
                 var ans = g.Log.Where(l => l.Code == "ai.kite" && l.Text.StartsWith("rival-1 answers", StringComparison.Ordinal)).ToList();

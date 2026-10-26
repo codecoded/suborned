@@ -1,8 +1,8 @@
 {
  "schema": "suborned.text/1",
  "mission": "handover",
- "author": "Fable (brief 011; GDD v0.22.0 §04, §07, §09, §10, §14; briefs 058, 059, 062: GDD v0.25.0)",
- "gdd": "the-suborned-agent-gdd-v0.25.0-2026-10-25.md",
+ "author": "Fable (brief 011; GDD v0.22.0 §04, §07, §09, §10, §14; briefs 058, 059, 062: GDD v0.25.0; brief 067: GDD v0.26.0)",
+ "gdd": "the-suborned-agent-gdd-v0.26.0-2026-10-26.md",
  "rule": "The words of the Handover, made at build time and read by the Unity host; nothing here is written live and no line decides anything (GDD §09: text is a light layer, history is what the systems record). The host finds a line with lookup() and picks a variant with pickIndex() (contracts/missions/handover/text.schema.ts): same seed and same run, same words. Keys follow the engine: verbs are the panel verb ids, outcomes the rulebook outcomes (`suspicious` when the person reports the approach), refusals are text codes found by lockOf() because the engine returns free text. People are named only Inez and Vale; everyone else is a role. Civilians are never the payload: no line asks a civilian to die, fight or be used as a weapon. Lines that name Halcyon are pending Sky (a Story proposal): ship the `unnamed` cliffhanger until Sky decides. Inez and the door guard are lovers (the Story spine; Sky, 2026-10-15): her debt is her need (Help), her secret is the guard (Pressure threatens to expose it). Written plainly and with tact, never explicit.",
  "tone": {
   "world": "An alternate 1950s that found atomic power centuries ago: 1950s manners and speech, centuries-ahead machines, no thinking machines or networks. Optimistic on the surface, coercive underneath: the city is polite, orderly and watching. Speech is plain, short and spoken; no period slang to dress it up, no modern internet speech.",
@@ -16,7 +16,7 @@
    "guard": "the door guard: officialese, clipped, the post and the rules; a mercenary one talks bonuses and \"off the clock\"",
    "councillor": "Vale: formal and pompous, then frightened; loyal blusters, mercenary bargains, fearful begs",
    "rivals": "cold and businesslike: a contract, a schedule, no names",
-   "patrol": "a clockwork patrol: fixed polite phrases that mean orders (\"Walking is encouraged. Running is reported.\")",
+   "patrol": "a clockwork patrol: fixed polite phrases that mean orders (\"Walking is encouraged. Running is noted.\")",
    "security": "the response unit: crisp, loud, procedural",
    "watcher": "a person in the camera room, speaking into a handset: reports what the camera shows",
    "crowd": "passers-by: startled, short, human; they never fight and are never used"
@@ -117,6 +117,8 @@
    "security": "the police",
    "hostile": "a hostile",
    "crowd": "a passer-by",
+   "crowd-guard": "a guard",
+   "crowd-officer": "an officer",
    "stash-bin": "the bin",
    "stash-door": "the service door"
   },
@@ -207,6 +209,7 @@
    "rivals-reach-vale": "The rival crew got to Vale first.",
    "sealed": "The getaway car hadn't left when security sealed the district.",
    "enforcer-down": "The Enforcer is down. Nobody else can carry Vale.",
+   "cell-down": "The whole cell is down. Nobody is left to get Vale out.",
    "entry-seen-guard": "The guard saw the Enforcer go in. Vale was warned.",
    "entry-seen-camera": "The entrance camera saw the Enforcer go in. The Office locked down.",
    "entry-seen-patrol": "The patrol saw the Enforcer go in. The Office locked down.",
@@ -301,7 +304,7 @@
   "car-official": {"name":"Vale's car","about":"Vale's car. The driver waits with it."},
   "stand-square": {"name":"The square's bay","about":"Where the getaway car starts."},
   "stand-service-drive": {"name":"The service drive","about":"The bay in the service drive, nose out. A short carry from Vale's car."},
-  "patrol": {"name":"The patrol","about":"A clockwork patrol sweeps the square. Gunfire turns it against you.","watched":"Its cone sweeps the square and reaches the door at times.","routine":"It turns at each end of its sweep. The door is clear between sweeps."},
+  "patrol": {"name":"The patrol","about":"A clockwork patrol sweeps the service yard. Gunfire turns it against you.","watched":"Its cone sweeps the yard and the service door.","routine":"It turns at each end. The service door is clear at the far end."},
   "rivals": {"name":"Rival crew","about":"Another crew after Vale, on their own schedule.","watched":"Five in one car. Three post round our car. It follows Vale's car."},
   "security": {"name":"Police","about":"Police and robots sent when the alarm goes up."},
   "hostile": {"name":"Hostile","about":"Armed and in the fight. Shoot to stop them."},
@@ -341,7 +344,7 @@
   "stash": {"label":"Hide body","by":["scout","fixer","tech","enforcer"],"engine":{"do":"stash"},"does":"Hide the body you carry in a bin or behind a service door.","onTarget":{"stash-bin":"Lift the lid and hide the body. A search, a bin round or a call finds it.","stash-door":"Take the body in by the service door. Slower than a bin."},"withTarget":"Hide in {target}","then":"hides the body in {target}"},
   "restrain": {"label":"Tie up","by":["scout","fixer","tech","enforcer"],"engine":{"do":"restrain"},"does":"Tie a knocked-out person where they lie. Tied, they can't call out.","onTarget":{"guard":"Tie the guard once down. A tied guard still misses the post's check-ins.","driver":"Tie the driver once down. Slow work, but quiet."},"withTarget":"Tie up {target}","then":"ties up {target}"},
   "move": {"label":"Walk","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Walk there. Quiet, and the only pace while carrying Vale.","withTarget":"Walk to {target}","then":"walks to {target}"},
-  "run": {"label":"Run","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Run there. Twice as fast. Only guards, police, patrols and cameras notice.","withTarget":"Run to {target}","then":"runs to {target}"},
+  "run": {"label":"Run","by":["scout","fixer","tech","enforcer"],"engine":{"do":"move"},"does":"Run there, twice as fast. Watchers notice it; it raises no Alert by itself.","withTarget":"Run to {target}","then":"runs to {target}"},
   "cancel": {"label":"Cancel","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cancel"},"does":"Stop what this agent is doing. Some stops cost something: check the price."},
   "ring-watch": {"label":"Watch","by":["scout","fixer","tech","enforcer"],"engine":{"do":"watch"},"does":"The ring's word for this verb."},
   "ring-listen": {"label":"Listen","by":["scout"],"engine":{"do":"listen"},"does":"The ring's word for this verb."},
@@ -488,6 +491,7 @@
   "drive-here": {"line":"The car is at that bay already. Pick the other bay.","short":"Already here","verbs":["*"]},
   "drive-fight": {"line":"The fight has started. Fight it out here, or Go.","short":"Fight or Go","verbs":["*"]},
   "car-empty": {"line":"Nobody is in the car. Board first.","short":"Car is empty","verbs":["go"]},
+  "car-no-driver": {"line":"Nobody aboard can drive. Board someone who isn't down, then Go.","short":"Nobody can drive","verbs":["go"]},
   "board-running": {"line":"{op} is running. Stop first, then Board.","short":"Stop running first","verbs":["board"]},
   "board-tethered": {"line":"The Tech is keeping the camera looped. Stop the loop to Board.","short":"Busy looping","verbs":["board"]},
   "in-car": {"line":"That agent is in the car. Walk them out first.","short":"In the car","verbs":["*"]},
@@ -568,6 +572,8 @@
    "rivals.see-takedown": {"kind":"warning","fate":"icon","title":"A crewmate saw it","result":"A rival saw his crewmate go down and opened fire. It's loud now."},
    "rivals.wakes": {"kind":"warning","fate":"icon","title":"A rival is awake","sight":"in-sight","at":"victim","result":"He is up again and goes for the Enforcer on sight."},
    "rivals.frees": {"kind":"city","fate":"alt","title":"A rival is untied","sight":"in-sight","at":"victim","result":"A crewmate found him tied and untied him."},
+   "rivals.for-car": {"kind":"warning","fate":"icon","title":"Rivals going for Vale","result":"Nobody is standing outside the car, so they come for Vale. Walk someone out."},
+   "rivals.back-to-cover": {"kind":"city","fate":"alt","title":"Rivals back in cover","result":"They fall back to cover: someone is standing outside, or nothing blocks the car."},
    "car.parks": {"kind":"city","fate":"icon","title":"Vale's car parks","result":"In the service bay. Take him from the back seat."},
    "car.blocked": {"kind":"warning","fate":"beat","beat":"Vale's car stops short.","title":"Vale's car stops short","sight":"in-sight","at":"vale-car","result":"Our car is on the service drive, so his stops at the road. Take him there."},
    "board.missed": {"kind":"warning","fate":"alt","title":"Nobody got in","result":"The car drove off first. Wait until it stops."},
@@ -583,7 +589,7 @@
    "camera.cut-reported": {"kind":"warning","fate":"alt","title":"The desk sees a dead camera","result":{"sent":"Someone is coming to look.","none":"No one is near enough to look."},"pick":"none when the alarm.dispatches line of the same tick says 0 robots and 0 units, else sent"},
    "security.called": {"kind":"warning","fate":"beat","beat":"Police coming.","title":"Police are coming","result":"From the north street."},
    "patrol.breaks": {"kind":"warning","fate":"alt","title":"The patrol turns on you","result":"It saw a weapon or heard shots."},
-   "run.seen": {"kind":"warning","fate":"alt","title":"Seen running","result":"{who} saw {agent} run. Alert {alert}."},
+   "run.seen": {"kind":"warning","fate":"alt","title":"Seen running","result":"{who} noticed {agent} running."},
    "report": {"kind":"warning","fate":"beat","beat":"Reported.","title":"Reported","result":"{who} reported the attempt. Alert {alert}."},
    "fight.loud": {"kind":"fight","fate":"beat","beat":"Police coming.","title":"Police coming in","result":"{n} officers, from the north street. Police seal the district at {clock}."},
    "fight.safe": {"kind":"fight","fate":"alt","title":"The rivals wait at the car","result":"{n} of them. They block the car until they're beaten."},
@@ -732,9 +738,9 @@
   "camera-reported": {"kind":"world","trigger":"the desk's next scan finds a cut camera dead; outcome nobody-sent when the same tick's alarm.dispatches says 0 robots and 0 units, else no outcome","speakers":["watcher","scout"],"log":["camera.cut-reported"]},
   "loop-ends": {"kind":"world","trigger":"the loop runs out (2:00 from its landing), or a Disable on that camera cuts it; a re-splice of the same camera is loop.on, not an end","speakers":["tech","scout"],"log":["loop.ends"]},
   "patrol-rerouted": {"kind":"world","trigger":"the patrol takes the false orders","speakers":["patrol","tech"],"log":["patrol.rerouted"]},
-  "patrol-returns": {"kind":"world","trigger":"the false orders run out and the patrol is back on its entrance sweep (engine 0.24.0: patrol.returns, once)","speakers":["tech","scout"],"log":["patrol.returns"]},
+  "patrol-returns": {"kind":"world","trigger":"the false orders run out and the patrol is back on its sweep (engine 0.24.0: patrol.returns, once; since 0.34.0 the engine names no place)","speakers":["tech","scout"],"log":["patrol.returns"]},
   "patrol-breaks": {"kind":"world","trigger":"the patrol breaks its route to gunfire or a drawn weapon","speakers":["patrol"],"log":["patrol.breaks"]},
-  "run-seen": {"kind":"world","trigger":"security sees an agent running: a found fault (Alert 1)","speakers":["guard","patrol","watcher","security","crowd"],"log":["run.seen"]},
+  "run-seen": {"kind":"world","trigger":"a watcher sees an agent running: it is noticed and noted, with no found fault and no Alert (engine 0.34.0, Motive M067-B2); logged once a run","speakers":["guard","patrol","watcher","security","crowd"],"log":["run.seen"]},
   "drawn-seen": {"kind":"world","trigger":"a drawn weapon is seen (Alert 2 for security; a witnessed incident for people); or an armed target sees a takedown coming and draws (takedown.fails): the same lines","speakers":["guard","patrol","watcher","security","crowd"],"log":["drawn.seen","witness.weapon-drawn","takedown.fails"]},
   "gunfire": {"kind":"world","trigger":"a shot is seen or heard by people nearby","speakers":["crowd","waitress","guard"],"log":["witness.crowd","witness.waitress"]},
   "alarm": {"kind":"world","trigger":"a report calls the response unit; the seal clock runs","speakers":["security","watcher","fixer","scout"],"log":["security.called","report","guard.check-in"]},
@@ -754,6 +760,9 @@
   "ai-break": {"kind":"world","trigger":"more than half the rival crew is down: the rivals break for their car","speakers":["rivals","scout"],"log":["ai.break"]},
   "ai-gone": {"kind":"world","trigger":"a rival reaches the car and is gone","speakers":["rivals","scout"],"log":["ai.gone"]},
   "ai-join": {"kind":"world","trigger":"the response unit on the street joins the loud fight","speakers":["security","fixer"],"log":["ai.join"]},
+  "ai-advance": {"kind":"world","trigger":"a rival holding with nobody in reach for 1 s advances again, on the nearest agent he has cause to fire on (engine 0.34.0, Motive M067-SQ2; police and the blocker hold their posts)","speakers":["rivals","scout"],"log":["ai.advance"]},
+  "rivals-for-car": {"kind":"world","trigger":"the safe fight with Vale in a held car and nobody of the cell outside it: the rivals up and not broken walk to the car, firing as they go, and the first within 1 m of its body takes Vale (engine 0.34.0, Motive M067-K3 a; the engine logs one for each rival, the host speaks once)","speakers":["rivals","scout"],"log":["rivals.for-car"]},
+  "rivals-back-to-cover": {"kind":"world","trigger":"someone of the cell stands outside the car again, or the car is no longer held: the rivals who were walking to it go back to cover (engine 0.34.0, Motive M067-K3 a)","speakers":["rivals","scout"],"log":["rivals.back-to-cover"]},
   "guard-stands-down": {"kind":"world","trigger":"no foe in reach: the guard stands down","speakers":["guard","scout"],"log":["guard.stands-down"]},
   "patrol-resumes": {"kind":"world","trigger":"no foe in reach: the patrol turns back to its sweep","speakers":["patrol"],"log":["patrol.resumes"]},
   "patrol-sweep": {"kind":"world","trigger":"the patrol is back on its sweep","speakers":["patrol","scout"],"log":["patrol.sweep"]},
@@ -966,7 +975,7 @@
   "witness.": "witness bookkeeping (camera, patrol, told); the spoken reactions are witness-reacts and witness-screams, the visible ones the feed cards",
   "fail.": "the fail text is the `fail` event, keyed by code",
   "scout.": "scout.watch.watched and scout.listen.heard: spoken by `read`",
-  "attention.noticed": "a watcher notices a loiterer: its cue shows it, and hint H19 teaches it once",
+  "attention.noticed": "a watcher notices a loiterer or, since engine 0.34.0, a runner in its sight: its cue shows it, and hint H19 teaches it once",
   "attention.wary": "a watcher turns wary: its cue shows it",
   "attention.stopped": "a watcher cools: its cue shows it",
   "attention.landed": "the loiterer report reaches the desk: report.landed speaks",
@@ -995,6 +1004,7 @@
   "captured": "an agent left behind and captured: told in the debrief (left-behind, captive), not spoken",
   "blocker.out": "the road blocker is down or gone: the street shows it, and car.free speaks if that frees the car",
   "car.free": "the car is free to go: the feed card says it",
+  "car.held.": "engine 0.34.0 (brief 067, Motive M067-SQ1): log only. The first tick a body holds the getaway car at a stand, and why (car.held.blocker, press, advance, answer, post). The hold ring on the car and Go's car-held refusal already say that something holds it, and nothing reads the code",
   "car.hit": "a car is hit: the tracer and the pips speak; no line per shot",
   "car.disabled": "a car is shot dead: smoke on it shows it, and the fail card speaks if it was the getaway car",
   "car.out": "the driver or Vale gets out of the stopped official car: the street shows it",
@@ -1120,7 +1130,7 @@
     "agent": "tech",
     "verb": "reroute",
     "target": "the patrol",
-    "line": "A patrol sweeps this door. The Tech can Reroute it, and N shows when it comes round.",
+    "line": "A patrol sweeps the service yard. The Tech can Reroute it, and N shows when it comes round.",
     "short": "Reroute the [patrol].",
     "trigger": "the patrol's cone will cover the public door within the next 15 s, and the Enforcer stands within 10 m of it, not inside",
     "rings": "the patrol's cone",
@@ -1175,7 +1185,7 @@
     "agent": "any",
     "verb": "move",
     "target": "the walk's destination",
-    "line": "A long walk? Press G and the agent runs there instead. A run can be seen.",
+    "line": "A long walk? Press G and the agent runs there instead. Watchers notice a run, but it raises no Alert.",
     "short": "Run to the [mark]: press G.",
     "trigger": "an agent has a walk of 5 s or more still to go, is not running or carrying, and is not inside (brief 014, Latch/Sky 2026-10-16; not in Motive's table)",
     "rings": "the walk's destination",
@@ -1256,11 +1266,11 @@
     "agent": "any",
     "verb": "move",
     "target": "the watcher that noticed",
-    "line": "A watcher has noticed an agent standing still. Keep moving, or step out of its sight.",
-    "short": "Keep moving, or leave its sight.",
+    "line": "A watcher has noticed an agent standing still or running. Walk, or step out of its sight.",
+    "short": "Walk, or leave its sight.",
     "trigger": "the first time a security watcher's attention reaches noticed for any agent (brief 031); shown once",
     "rings": "nothing: the watcher's own cue shows it",
-    "goneWhen": "the agent moves out of sight, or the watcher cools"
+    "goneWhen": "the agent walks or moves out of its sight, or the watcher cools"
    },
    "H20": {
     "priority": -7,
@@ -1300,7 +1310,7 @@
  "toasts": {
   "run-seen": {
    "trigger": "the first `run.seen` of the run (Motive §8: shown on the next order)",
-   "line": "Security saw someone run and is checking it out (Alert 1)."
+   "line": "A watcher noticed an agent running. Walk, or keep out of its sight, to stay quiet."
   }
  },
  "goingLoud": {
@@ -1397,7 +1407,7 @@
      "hiddenWhen": "it traces nothing"
     },
     "alert": {
-     "shows": "the Alert mark and the Alert the order raises when it goes wrong (seen, reported, found, fired): 1, 3, or \"≥2\" for gunfire; a Disable adds when the desk will notice it (▲1 in 14 s, from the desk's next scan)",
+     "shows": "the Alert mark and the Alert the order raises when it goes wrong (seen, reported, found, fired): 1, 3, or \"≥2\" for gunfire; a Disable adds when the desk will notice it (▲1 in 14 s, from the desk's next scan). A run raises none (engine 0.34.0: it is noticed, never an Alert on its own), so its line has no Alert field",
      "hiddenWhen": "it raises none"
     },
     "lasts": {
@@ -1405,7 +1415,7 @@
      "hiddenWhen": "the effect has no end"
     },
     "eye": {
-     "shows": "the eye mark and who could see it: none, ? (a watcher the Scout has not learned could), or the watchers. A move or run at Alert 2 or more also counts the passers-by who would keep the runner's face (the engine's RunRememberedBy):: the same eye mark, with their number after the watchers",
+     "shows": "the eye mark and who could see it: none, ? (a watcher the Scout has not learned could), or the watchers. A move or run at Alert 2 or more also counts the passers-by who would keep the runner's face (the engine's RunRememberedBy):: the same eye mark, with their number after the watchers. For a run the watchers are the ones that would notice it",
      "hiddenWhen": "the order cannot be seen (a Call, a Watch from range)"
     },
     "learns": {
@@ -1640,6 +1650,7 @@
     "rivals-reach-vale": "Rivals took Vale.",
     "sealed": "District sealed.",
     "enforcer-down": "Enforcer down.",
+    "cell-down": "Whole cell down.",
     "entry-seen-guard": "The guard saw you.",
     "entry-seen-camera": "A camera saw you.",
     "entry-seen-patrol": "The patrol saw you.",
@@ -1675,6 +1686,8 @@
    "camera-dark": "Camera shot out",
    "camera-hit": "Camera hit",
    "fire-out-of-range": "Too far",
+   "fire-lapses": "Lost the target",
+   "door-seen": "Seen there",
    "stand-after-vale": "After Vale's car"
   },
   "why": {
@@ -1823,6 +1836,9 @@
     "enforcer-down": {
      "shot": "{by} shot {agent}."
     },
+    "cell-down": {
+     "shot": "{by} shot {agent}."
+    },
     "driver-shot": {
      "shot": "{by} shot the driver."
     },
@@ -1848,7 +1864,7 @@
      "seen": "This camera covers the door."
     },
     "entry-seen-patrol": {
-     "seen": "The patrol sweeps past the door."
+     "seen": "The patrol was watching the door."
     },
     "abduction-seen-camera": {
      "seen": "This camera covers Vale's car."
@@ -1868,6 +1884,9 @@
     },
     "enforcer-down": {
      "shot": "Enemy fire goes for the Enforcer."
+    },
+    "cell-down": {
+     "shot": "Keep someone outside the car."
     },
     "driver-shot": {
      "shot": "Keep shots away from the driver."
@@ -1939,6 +1958,7 @@
     "no-weapon": "no gun", "fire-carrying": "carrying", "fire-carrying-vale": "has Vale", "no-target": "no target", "fire-on-cell": "own side",
     "target-unknown": "bad target", "civilian-target": "civilian", "out-of-range": "too far", "no-clear-line": "no line", "engine-error": "restart"
    },
+   "run": {"noticed": "noticed by {who}", "unknown": "noticed by: ?"},
    "board": {
     "mission-over": "mission over", "agent-down": "down", "enforcer-inside": "inside", "agent-busy": "busy",
     "board-running": "stop first", "board-tethered": "looping", "already-carrying": "hands full", "stand-at-getaway": "too far", "engine-error": "restart"
@@ -1946,7 +1966,7 @@
    "walk": {
     "plate": "→ {who}",
     "line": "to {target} · {verb}",
-    "who": {"waitress": "Inez", "driver": "driver", "guard": "guard", "councillor": "Vale", "door": "door", "cabinet": "cabinet", "camera-entrance": "camera", "camera-pickup": "camera", "camera-mast-314": "camera", "car-getaway": "car", "car-official": "car", "patrol": "patrol", "rivals": "rivals", "crowd": "passer-by"}
+    "who": {"waitress": "Inez", "driver": "driver", "guard": "guard", "councillor": "Vale", "door": "door", "cabinet": "cabinet", "camera-entrance": "camera", "camera-pickup": "camera", "camera-mast-314": "camera", "car-getaway": "car", "car-official": "car", "patrol": "patrol", "rivals": "rivals", "crowd": "passer-by", "crowd-guard": "guard", "crowd-officer": "officer"}
    }
   }
  },
@@ -2085,14 +2105,14 @@
   {"event":"read","verb":"watch","speaker":"scout","about":"councillor","lines":["Vale's inside until the chime.","Vale stays in. Out at handover.","Nothing from Vale. Not yet."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"camera-entrance","lines":["Entrance camera. It covers the door and the steps.","Fixed lens on the door. The steps are in its cone.","It doesn't pan. Door and steps, nothing past them."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"camera-pickup","lines":["Pickup camera. It covers Vale's car at the bay.","Fixed on the bay. His car sits inside its cone.","It doesn't pan. The bay is its whole world."]},
-  {"event":"read","verb":"watch","speaker":"scout","about":"patrol","outcome":"sight","lines":["Its cone is mapped. The rounds need a longer look.","I have what it sees. The timing needs more watching.","It sweeps the square. I need longer for its turns."]},
-  {"event":"read","verb":"watch","speaker":"scout","about":"patrol","outcome":"routine","lines":["I have its rounds. I know when it sees the door.","Rounds learned. The door is clear between sweeps.","Turns at each end, and I have the timing."]},
+  {"event":"read","verb":"watch","speaker":"scout","about":"patrol","outcome":"sight","lines":["Its cone is mapped. The rounds need a longer look.","I have what it sees. The timing needs more watching.","It sweeps the yard. I need longer for its turns."]},
+  {"event":"read","verb":"watch","speaker":"scout","about":"patrol","outcome":"routine","lines":["I have its rounds. I know when it sees the service door.","Rounds learned. The service door is clear at the far end.","Turns at each end, and I have the timing."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"camera-entrance","lines":["Entrance camera. Fixed lens, door and steps.","Door and steps. Nothing past the kerb.","No pan, no zoom. The door is its job."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"camera-mast-314","lines":["Mast camera. It covers the square.","It turns between three views. I have the square.","The mast pans. The square is its whole job."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"camera-pickup","lines":["Pickup camera. Fixed on the bay.","Vale's car sits in its cone. Nothing else.","One lens, one bay. No pan."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"camera-mast-314","lines":["Mast camera. Three views, one lens.","It pans the square. I have the turns.","One lens on a slow pan. I know its views."]},
-  {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"sight","lines":["Cone mapped. The turns need more time.","I have its sight. The timing, not yet.","Sweeps the square. Give me longer for the turns."]},
-  {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"routine","lines":["Clockwork. I have the full round.","Turns at each end. Timing logged.","Full round logged. Door's clear between sweeps."]},
+  {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"sight","lines":["Cone mapped. The turns need more time.","I have its sight. The timing, not yet.","Sweeps the yard. Give me longer for the turns."]},
+  {"event":"read","verb":"watch","speaker":"tech","about":"patrol","outcome":"routine","lines":["Clockwork. I have the full round.","Turns at each end. Timing logged.","Full round logged. Service door's clear at the far end."]},
   {"event":"read","verb":"watch","speaker":"scout","about":"rivals","lines":["Five in one car. Three post by ours.","Their car follows Vale's. I have the timings.","Posted three, a lookout, a wheelman. All timed."]},
   {"event":"read","verb":"watch","speaker":"tech","about":"rivals","lines":["Five aboard. They tail Vale's car round.","I have their timetable. Three go for our car.","Timed to the minute. Their car follows Vale's."]},
   {"event":"read","verb":"listen","speaker":"scout","temperament":"idealist","about":"waitress","lines":["Debt. And she's seeing the door guard. Proud.","Owes a lender, meets the guard quietly. Won't be bought."]},
@@ -2244,11 +2264,11 @@
   {"event":"loop-ends","speaker":"scout","lines":["The loop is over.","Loop's done."]},
   {"event":"patrol-rerouted","speaker":"patrol","lines":["New orders received. Proceeding.","Route amended. Thank you."]},
   {"event":"patrol-rerouted","speaker":"tech","lines":["It took the orders. It always does.","Patrol's gone. Fixed routines are easy."]},
-  {"event":"patrol-returns","speaker":"tech","lines":["The false orders ran out. Patrol's back.","Patrol's back on its sweep. Mind the entrance."]},
-  {"event":"patrol-returns","speaker":"scout","lines":["Patrol is back on the entrance.","Sweep has started again. Keep clear."]},
+  {"event":"patrol-returns","speaker":"tech","lines":["The false orders ran out. Patrol's back.","Patrol's back on its sweep. Mind the yard."]},
+  {"event":"patrol-returns","speaker":"scout","lines":["Patrol is back in the yard.","Sweep has started again. Keep clear."]},
   {"event":"patrol-breaks","speaker":"patrol","lines":["Disturbance. Proceeding to the source.","Commotion detected. Please stand clear."]},
   {"event":"run-seen","speaker":"guard","lines":["You there! Walk, please.","Hold it! No running in the square!"]},
-  {"event":"run-seen","speaker":"patrol","lines":["Citizen. Walking is encouraged. Running is reported.","Running noted. Please walk."]},
+  {"event":"run-seen","speaker":"patrol","lines":["Citizen. Walking is encouraged. Running is noted.","Running noted. Please walk."]},
   {"event":"run-seen","speaker":"watcher","lines":["Camera two. Runner at the steps.","Runner by the Office. Log it."]},
   {"event":"run-seen","speaker":"security","lines":["Runner on the square. Eyes open.","Why is he running? Watch him."]},
   {"event":"run-seen","speaker":"crowd","lines":["Why is he running?","Somebody's in a hurry."]},
@@ -2306,6 +2326,8 @@
   {"event":"fail","speaker":"security","outcome":"sealed","lines":["District sealed. Nobody leaves.","Cordon complete. Hold everyone."]},
   {"event":"fail","speaker":"fixer","outcome":"enforcer-down","lines":["Our heavy's hit. We can't finish.","He's down. Nobody else can carry Vale."]},
   {"event":"fail","speaker":"scout","outcome":"enforcer-down","lines":["Enforcer's down. It's finished.","He's hit. We can't take Vale without him."]},
+  {"event":"fail","speaker":"fixer","outcome":"cell-down","lines":["That's all of us. It's over.","Nobody left standing. I'm sorry."]},
+  {"event":"fail","speaker":"scout","outcome":"cell-down","lines":["Everyone's down. Nobody can drive.","The whole cell is down. It's finished."]},
   {"event":"fail","speaker":"fixer","outcome":"entry-seen-guard","lines":["The guard saw him. Vale's warned.","Too soon. The guard was back."]},
   {"event":"fail","speaker":"guard","outcome":"entry-seen-guard","lines":["Intruder at the door! Alarm!","You! Stop right there!"]},
   {"event":"fail","speaker":"fixer","outcome":"entry-seen-camera","lines":["The camera caught him at the door.","Seen on the entrance feed."]},
@@ -2354,6 +2376,12 @@
   {"event":"ai-join","speaker":"fixer","lines":["More police. They're joining in.","The response unit's here. Careful."]},
   {"event":"guard-stands-down","speaker":"guard","lines":["Quiet again. Back to the door.","All clear. Standing down."]},
   {"event":"guard-stands-down","speaker":"scout","lines":["The guard has stood down.","Guard's lowered his gun."]},
+  {"event":"ai-advance","speaker":"rivals","lines":["Nobody in reach. Close the gap.","They won't come to us. Close in.","Too far to hit. Walk it in."]},
+  {"event":"ai-advance","speaker":"scout","lines":["A rival is coming on.","One of them is closing in.","They're not waiting. One is moving up."]},
+  {"event":"rivals-for-car","speaker":"rivals","lines":["Nobody's outside. Take the car.","The car is unguarded. Take Vale.","They're all inside it. Rush the car."]},
+  {"event":"rivals-for-car","speaker":"scout","lines":["Nobody's outside. They're coming for the car.","Rivals are walking up. Someone get out there.","The car is unguarded. They know it."]},
+  {"event":"rivals-back-to-cover","speaker":"rivals","lines":["Someone's outside. Back to cover.","They've a man on the street. Get down.","Not yet. Back to cover."]},
+  {"event":"rivals-back-to-cover","speaker":"scout","lines":["They've pulled back to cover.","Rivals are back behind cover.","That held them. They're ducking back."]},
   {"event":"patrol-resumes","speaker":"patrol","lines":["Disturbance resolved. Resuming route.","Returning to sweep."]},
   {"event":"patrol-sweep","speaker":"patrol","lines":["Sweep resumed. Have a pleasant day.","Route restored. Thank you for walking."]},
   {"event":"patrol-sweep","speaker":"scout","lines":["Patrol's back on its sweep.","The patrol is walking its round again."]},
@@ -2466,7 +2494,7 @@
   "items": [
    {"kind":"overheard","verb":"watch","about":"waitress","learns":["routine"],"result":"Learned: where {who} goes, and when.","variants":[{"beats":[{"speaker":"keeper","line":"Inez, window table, then the door."},{"speaker":"waitress","line":"Door and tables, all evening. Same as always."},{"speaker":"customer","line":"Another coffee, miss, when you can."},{"speaker":"waitress","line":"Coming. I can see the steps from there."}]},{"beats":[{"speaker":"guard","line":"The usual, Inez."},{"speaker":"waitress","line":"You're early. Sit. Two minutes, then you're late."},{"speaker":"guard","line":"Two minutes is plenty."},{"speaker":"waitress","line":"Hush, and drink it before it cools."}]}]},
    {"kind":"overheard","verb":"watch","about":"driver","learns":["routine"],"result":"Learned: where {who} goes, and when.","variants":[{"beats":[{"speaker":"clerk","line":"Is the Councillor's car ready?"},{"speaker":"driver","line":"Engine's been warm since four."},{"speaker":"clerk","line":"He'll be down at the chime."},{"speaker":"driver","line":"Then I wait. I'm good at waiting."}]},{"beats":[{"speaker":"guard","line":"Still parked? Your man isn't out yet."},{"speaker":"driver","line":"Not until the chime. I never leave the bay."},{"speaker":"guard","line":"Quiet round the front, at least."},{"speaker":"driver","line":"Quiet is how the Councillor likes it."}]}]},
-   {"kind":"overheard","verb":"watch","about":"guard","learns":["routine"],"result":"Learned: where {who} goes, and when.","variants":[{"beats":[{"speaker":"clerk","line":"Quiet on the door?"},{"speaker":"guard","line":"The patrol comes round, then nothing for minutes."},{"speaker":"clerk","line":"And your break?"},{"speaker":"guard","line":"The café, before I go off. Same as always."}]},{"beats":[{"speaker":"waitress","line":"You're at my door again."},{"speaker":"guard","line":"Coffee before the shift ends. Regulations."},{"speaker":"waitress","line":"Regulations. Of course. Sit."},{"speaker":"guard","line":"Five minutes. Then back on the steps."}]}]},
+   {"kind":"overheard","verb":"watch","about":"guard","learns":["routine"],"result":"Learned: where {who} goes, and when.","variants":[{"beats":[{"speaker":"clerk","line":"Quiet on the door?"},{"speaker":"guard","line":"The patrol keeps to the yard. Nothing here for minutes."},{"speaker":"clerk","line":"And your break?"},{"speaker":"guard","line":"The café, before I go off. Same as always."}]},{"beats":[{"speaker":"waitress","line":"You're at my door again."},{"speaker":"guard","line":"Coffee before the shift ends. Regulations."},{"speaker":"waitress","line":"Regulations. Of course. Sit."},{"speaker":"guard","line":"Five minutes. Then back on the steps."}]}]},
    {"kind":"overheard","verb":"watch","about":"councillor","learns":["routine"],"result":"Learned: where {who} goes, and when.","variants":[{"beats":[{"speaker":"clerk","line":"Councillor, shall I send for the car?"},{"speaker":"councillor","line":"Not before the chime. I have a file to finish."},{"speaker":"clerk","line":"And then the official door?"},{"speaker":"councillor","line":"Yes. Quietly. No fuss."}]},{"beats":[{"speaker":"clerk","line":"Will you go out by the front, Councillor?"},{"speaker":"councillor","line":"The official door, as always."},{"speaker":"clerk","line":"I'll tell the driver."},{"speaker":"councillor","line":"Tell him I leave at the handover."}]}]},
    {"kind":"overheard","verb":"listen","about":"waitress","temperament":"idealist","learns":["need","temperament","secret"],"result":"Learned: Inez is in debt · {temperament} · Secret: she's seeing the door guard.","variants":[{"beats":[{"speaker":"guard","line":"I'll come by after my shift, Inez."},{"speaker":"waitress","line":"Hush. The whole café has ears."},{"speaker":"guard","line":"Is the lender still hounding you?"},{"speaker":"waitress","line":"Every week. I'll pay him honestly. No shortcuts."},{"speaker":"guard","line":"I could help."},{"speaker":"waitress","line":"No. I won't be bought. Not even by you."}]},{"beats":[{"speaker":"waitress","line":"Don't look at me like that. Customers stare."},{"speaker":"guard","line":"Let them. I'll see you at closing."},{"speaker":"waitress","line":"Bring nothing. I'll earn the lender's money myself."},{"speaker":"guard","line":"Stubborn woman."},{"speaker":"waitress","line":"Honest woman. Go, before the owner notices."}]}]},
    {"kind":"overheard","verb":"listen","about":"waitress","temperament":"mercenary","learns":["need","temperament","secret"],"result":"Learned: Inez is in debt · {temperament} · Secret: she's seeing the door guard.","variants":[{"beats":[{"speaker":"guard","line":"Shall I come by after my shift?"},{"speaker":"waitress","line":"If you tip well, officer."},{"speaker":"guard","line":"I'll bring a little something."},{"speaker":"waitress","line":"Bring cash. The lender's man takes no smiles."},{"speaker":"guard","line":"You drive a hard bargain."},{"speaker":"waitress","line":"I have a hard debt."}]},{"beats":[{"speaker":"waitress","line":"Two coffees, one smile. That's my price."},{"speaker":"guard","line":"For you? Cheap."},{"speaker":"waitress","line":"Not cheap. Clear the lender, then we'll talk."},{"speaker":"guard","line":"Then I'll see you after my shift."},{"speaker":"waitress","line":"Quietly. Everybody counts everything here."}]}]},
@@ -2560,8 +2588,8 @@
    {"kind":"call","verb":"call","about":"waitress","beat":"Inez called the guard.","temperament":"loyal","result":"Inez called the guard over. The guard has left the door for her.","variants":[{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Officer. A moment at the café, please."},{"speaker":"guard","line":"Inez calling me over? Five minutes."},{"speaker":"waitress","line":"Forgive me. Café rules: I clean it."}]},{"beats":[{"speaker":"fixer","ref":"ack"},{"speaker":"waitress","ref":"confirm"},{"speaker":"waitress","line":"Over here, if you've a minute."},{"speaker":"guard","line":"Inez needs me. The door can spare me."},{"speaker":"waitress","line":"A spill. Sit, I'll see to it."}]}]},
    {"kind":"city","title":"Rival car arrives","event":"rivals-arrive","sight":"in-sight","result":"A rival crew has parked near the pickup. They are after Vale too.","variants":[{"beats":[{"speaker":"rivals","line":"That's the Office. Same door as the file."},{"speaker":"rivals","line":"He leaves at the chime."},{"speaker":"rivals","line":"Then we wait."},{"speaker":"rivals","line":"Nobody touches him but us."}]},{"beats":[{"speaker":"rivals","line":"Engine off. Windows down."},{"speaker":"rivals","line":"The contract says tonight."},{"speaker":"rivals","line":"And anyone else watching?"},{"speaker":"rivals","line":"Then we watch them back."}]}]},
    {"kind":"city","title":"Handover chime","event":"chime","sight":"always","result":"The handover chime. Vale leaves the Office soon.","variants":[{"beats":[{"speaker":"crowd","line":"There is the chime. Time to go home."},{"speaker":"crowd","line":"Mind the steps, everyone."},{"speaker":"crowd","line":"Handover already? The day flew."}]},{"beats":[{"speaker":"crowd","line":"Chime! Shift's over at the Office."},{"speaker":"crowd","line":"Doors open. Here come the clerks."},{"speaker":"crowd","line":"Walk, please. Walking is encouraged."}]}]},
-   {"kind":"city","title":"Shift change at the Office","event":"chime","sight":"in-sight","result":"The Office is changing shift. The driver is ready at the pickup.","variants":[{"beats":[{"speaker":"clerk","line":"Chime, driver. The Councillor is coming down."},{"speaker":"driver","line":"Engine's warm. Tell him I'm ready."},{"speaker":"clerk","line":"He's finishing the file."},{"speaker":"driver","line":"He always is."}]},{"beats":[{"speaker":"clerk","line":"Shift's over. The door is yours, officer."},{"speaker":"guard","line":"Quiet day. Quiet door."},{"speaker":"clerk","line":"Mind the patrol on the steps."},{"speaker":"guard","line":"It minds me, more like."}]}]},
-   {"kind":"city","title":"The guard is at the café","event":"guard-at-cafe","sight":"in-sight","result":"The guard is at the café, away from the door.","variants":[{"beats":[{"speaker":"guard","line":"The usual, please."},{"speaker":"waitress","line":"You're early today."},{"speaker":"guard","line":"Quiet on the door. The patrol is due round."},{"speaker":"waitress","line":"Then sit. Two minutes."}]},{"beats":[{"speaker":"waitress","line":"Sit. You've a long evening."},{"speaker":"guard","line":"Not so long. I'll come by after."},{"speaker":"waitress","line":"Hush, and eat."},{"speaker":"guard","line":"Yes, ma'am."}]}]},
+   {"kind":"city","title":"Shift change at the Office","event":"chime","sight":"in-sight","result":"The Office is changing shift. The driver is ready at the pickup.","variants":[{"beats":[{"speaker":"clerk","line":"Chime, driver. The Councillor is coming down."},{"speaker":"driver","line":"Engine's warm. Tell him I'm ready."},{"speaker":"clerk","line":"He's finishing the file."},{"speaker":"driver","line":"He always is."}]},{"beats":[{"speaker":"clerk","line":"Shift's over. The door is yours, officer."},{"speaker":"guard","line":"Quiet day. Quiet door."},{"speaker":"clerk","line":"Mind the patrol, if you go round the back."},{"speaker":"guard","line":"It minds me, more like."}]}]},
+   {"kind":"city","title":"The guard is at the café","event":"guard-at-cafe","sight":"in-sight","result":"The guard is at the café, away from the door.","variants":[{"beats":[{"speaker":"guard","line":"The usual, please."},{"speaker":"waitress","line":"You're early today."},{"speaker":"guard","line":"Quiet on the door. The patrol is out in the yard."},{"speaker":"waitress","line":"Then sit. Two minutes."}]},{"beats":[{"speaker":"waitress","line":"Sit. You've a long evening."},{"speaker":"guard","line":"Not so long. I'll come by after."},{"speaker":"waitress","line":"Hush, and eat."},{"speaker":"guard","line":"Yes, ma'am."}]}]},
    {"kind":"city","title":"Vale's driver is missing","about":"driver","event":"person-missed","sight":"in-sight","result":"Vale is looking for the driver. Expect a report.","variants":[{"beats":[{"speaker":"councillor","line":"Half past and no driver. Unacceptable."},{"speaker":"councillor","line":"You there. Have you seen my driver?"},{"speaker":"guard","line":"Not this shift, Councillor."},{"speaker":"councillor","line":"Then something is very wrong."},{"speaker":"guard","line":"Post to desk. The Councillor's driver is missing."}]},{"beats":[{"speaker":"councillor","line":"Where is that car? Where is the driver?"},{"speaker":"guard","line":"Councillor? Is something the matter?"},{"speaker":"councillor","line":"My driver was here. Now there is nobody."},{"speaker":"guard","line":"I'll radio the desk. Stay by the car."}]}]},
    {"kind":"city","title":"Someone raises the alarm","outcome":"report","event":"witness-reacts","sight":"in-sight","result":"A passer-by is calling it in. Alert will rise.","variants":[{"beats":[{"speaker":"crowd","line":"Look! There, by the wall!"},{"speaker":"crowd","line":"Is that someone lying there?"},{"speaker":"crowd","line":"Fetch the police! Run!"}]},{"beats":[{"speaker":"crowd","line":"That's not right. That's not right."},{"speaker":"crowd","line":"Somebody hurt them. Look!"},{"speaker":"crowd","line":"I'm calling it in. Now!"}]}]},
    {"kind":"city","title":"Someone freezes","outcome":"flee","event":"witness-reacts","sight":"in-sight","result":"A passer-by saw and is frightened. They may talk.","variants":[{"beats":[{"speaker":"crowd","line":"Oh no. Did you see that?"},{"speaker":"crowd","line":"Hush. I saw nothing. Nothing."},{"speaker":"crowd","line":"Walk. Just walk. Don't turn round."}]},{"beats":[{"speaker":"crowd","line":"Don't stare. Don't stare."},{"speaker":"crowd","line":"They'll see us looking."},{"speaker":"crowd","line":"Go home. Say nothing. Please."}]}]},

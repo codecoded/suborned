@@ -42,7 +42,7 @@ def shots_common(fr, hits=True):
 def hero_A(fr):
     """A: the same fight with bodies that last. Rivals five pips, the cell six, the Enforcer ten. Nothing else is new on the street."""
     ring39(fr, R1F); ring39(fr, R2F, threat=True, ours=True); ring39(fr, R3F, threat=True, ours=True)
-    rest_marks(fr); cover_disc(fr, MARK_PL, True, "rival"); cover_disc(fr, MARK_HG, False, "rival")
+    rest_marks(fr); cover_disc(fr, MARK_PL, True, "rival"); cover_arc(fr, R1F, 185, 60, True, CREAM); cover_disc(fr, MARK_HG, False, "rival"); cover_arc(fr, R2F, 200, 70, False, CREAM)
     shots_common(fr); cell_in_fight(fr, 6, (6, 4, 6, 10), 10)
     rival_pips(fr, "r1", 5, 5); rival_pips(fr, "r2", 5, 4, flash=1); rival_pips(fr, "r3", 5, 3, flash=2)
     focus(fr, "r2", cams=(SCOUT,))
@@ -50,23 +50,25 @@ def hero_A(fr):
     crew_tally(fr, 1560, 112, 3, 0, mark_at=1)
 
 # ----------------------------------------------------------------------------- B, cover and pin
-def hero_B(fr):
-    """B: cover is worth something. R2 behind the hedge is marked (his shield struck, shots land, next move shown); R3 in the open is pinned by the Tech's fire; R1 holds the planter."""
+def hero_B(fr, marked=True):
+    """B: cover is worth something. R2 behind the hedge is marked (his shield struck, shots land, next move shown); R3 in the open is pinned by the Tech's fire; R1 holds the planter.
+    marked=False leaves the Scout's Mark out (it is every option's move), so the pick board compares what B adds and nothing else."""
     ring39(fr, R1F); ring39(fr, R2F, threat=True, ours=True); ring39(fr, R3F, threat=True, ours=True)
-    rest_marks(fr); cover_disc(fr, MARK_PL, True, "rival"); cover_arc(fr, R1F, 185, 60, True, CREAM); cover_disc(fr, MARK_HG, False, "rival", struck=True)
-    brackets(fr, R2F, frac=0.72); walk_to(fr, R2F, (1118, 452))
+    rest_marks(fr); cover_disc(fr, MARK_PL, True, "rival"); cover_arc(fr, R1F, 185, 60, True, CREAM); cover_disc(fr, MARK_HG, False, "rival", struck=marked)
+    if marked: brackets(fr, R2F, frac=0.72); walk_to(fr, R2F, (1118, 452))
+    else: cover_arc(fr, R2F, 200, 70, False, CREAM)
     shots_common(fr); cell_in_fight(fr, 5, (5, 4, 5, 8), 8)
     rival_pips(fr, "r1", 3, 3); rival_pips(fr, "r2", 3, 2, flash=1); rival_pips(fr, "r3", 3, 2, flash=1)
     pin_disc(fr, (R3H[0] + 31, R3H[1] - 11), 0.78); pin_disc(fr, (R2H[0] + 31, R2H[1] - 11), 0.5)
     focus(fr, "r2", cams=(SCOUT,))
-    roster_in_fight(fr, (5, 5, 5, 8), (5, 4, 5, 8), moves=("cooling", "ready", "ready", "ready"), fracs=(0.15, 1, 1, 1), flash_k=1)
+    roster_in_fight(fr, (5, 5, 5, 8), (5, 4, 5, 8), moves=("cooling" if marked else "ready", "ready", "ready", "ready"), fracs=(0.15, 1, 1, 1), flash_k=1)
     crew_tally(fr, 1560, 112, 3, 0, mark_at=1)
 
 # ----------------------------------------------------------------------------- C, showdown beats
 def hero_C(fr, cause="rival"):
     """C: a hostile arrives and the clock drops to a quarter for 2 s of game time. The subject is ringed and carries the window marker; who aims at whom is drawn; every move refills."""
     ring39(fr, R1F); ring39(fr, R2F, threat=True); ring39(fr, R3F, threat=True)
-    rest_marks(fr); cover_disc(fr, MARK_PL, True, "rival"); cover_disc(fr, MARK_HG, False, "rival")
+    rest_marks(fr); cover_disc(fr, MARK_PL, True, "rival"); cover_arc(fr, R1F, 185, 60, True, CREAM); cover_disc(fr, MARK_HG, False, "rival"); cover_arc(fr, R2F, 200, 70, False, CREAM)
     for a, b in (((R1F[0] - 10, R1F[1] - 38), (HEAD["enforcer"][0] + 8, HEAD["enforcer"][1] + 26)), ((R2F[0] - 10, R2F[1] - 36), (HEAD["fixer"][0] + 8, HEAD["fixer"][1] + 24)), ((R3F[0] - 12, R3F[1] - 36), (HEAD["tech"][0] + 8, HEAD["tech"][1] + 24))): threat(fr, a, b)
     volley(fr, "scout", "r2", True); volley(fr, "tech", "r3", False)
     cell_in_fight(fr, 5, (5, 5, 5, 8), 8)

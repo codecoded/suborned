@@ -129,10 +129,13 @@ namespace Suborned.Sim
                 r.Until(() => g.Over, T(120));
                 r.Eq(g.FailCode, "enforcer-down", "the Enforcer is down");
                 // Changed 2026-10-19 (the door on the west face): which of the two officers drops him is the block's (it was security-1, it is
-                // security-2 from the new forecourt); the test is that the culprit is whoever landed the last hit on him, an officer
+                // security-2 from the new forecourt); the test is that the culprit is whoever landed the last hit on him. Engine 0.34.0 (brief 067
+                // A): the patrol sweeps the service yard and no longer breaks into the guard fight at the first shot, so the Enforcer, at 4 of 6
+                // health after the guard, stands at the approach until the rival crew arrives (1:10.9) and a rival drops him (1:30.5), before the
+                // response unit fires: the culprit is a rival (the fail camera's kind follows: rival, or officer for the response unit)
                 var last = r.Shots().FindLast(s => s.hit && s.target == Enf).by ?? "";
-                r.Is(last.StartsWith("security-", StringComparison.Ordinal), $"a response officer drops him ({last})");
-                var c = CauseIs(r, "enforcer-down", "shot", true, last, "officer", Enf);
+                r.Is(last.StartsWith("security-", StringComparison.Ordinal) || last.StartsWith("rival-", StringComparison.Ordinal), $"a response officer or a rival drops him ({last})");
+                var c = CauseIs(r, "enforcer-down", "shot", true, last, last.StartsWith("rival-", StringComparison.Ordinal) ? "rival" : "officer", Enf);
                 ShotFrom(r, c, last, Enf);
                 r.Is(r.Shots().FindLast(s => s.hit).by == last, "the last hit of the run is the culprit's");
             });

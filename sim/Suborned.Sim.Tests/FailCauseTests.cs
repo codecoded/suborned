@@ -11,7 +11,7 @@ public class FailCauseTests
 {
     static readonly Engine.Inputs I = Repo.Inputs;
     static readonly string Root = Engine.FindRoot(AppContext.BaseDirectory);
-    static readonly string[] Fails = { "vale-dead", "vale-leaves", "rivals-reach-vale", "sealed", "enforcer-down", "entry-seen-guard", "entry-seen-camera", "entry-seen-patrol", "abduction-seen-camera", "driver-shot", "getaway-lost", "engine-error" };
+    static readonly string[] Fails = { "vale-dead", "vale-leaves", "rivals-reach-vale", "sealed", "enforcer-down", "entry-seen-guard", "entry-seen-camera", "entry-seen-patrol", "abduction-seen-camera", "driver-shot", "getaway-lost", "cell-down", "engine-error" }; // cell-down: engine 0.34.0 (Motive M067-K3 b)
     static readonly string[] Kinds = { "camera", "guard", "patrol", "officer", "robot", "rival", "person", "vale", "op", "car", "desk", "heard" };
 
     /// <summary>The cause's shape, whatever the ending: it matches the result, it is at the last tick, a single culprit is named and placed
@@ -78,10 +78,14 @@ public class FailCauseTests
         // engine-error is never reached by play (EngineErrorNamesNoCulprit); brief 018's rival at the car is a fixture (ARivalAtTheCar…).
         // Brief 059 (engine 0.32.0; GDD v0.25.0 §07): reached-at-close is retired (at the close Vale's driver always drives him on: vale-leaves);
         // the tail (the wheelman at Vale's door) and driven-away (an unturned driver at 6:13) are new.
-        var want = new[] { "abduction-seen-camera/seen", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "entry-seen-patrol/seen", "getaway-lost/wrecked",
+        // Engine 0.34.0 (brief 067 A): entry-seen-patrol is reached only on a site whose sweep watches the public door (Game.PatrolWatchesEntry,
+        // Waymark's MC-3 needs); the service yard's sweep never does, so no scenario can end there on this site. cell-down (Motive M067-K3 b) is new.
+        var g0 = Engine.New(I);
+        var want = new[] { "abduction-seen-camera/seen", "cell-down/shot", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "getaway-lost/wrecked",
             "rivals-reach-vale/beat-to-pickup", "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/tail", "sealed/sealed", "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
-            "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" };
+            "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" }.Concat(g0.PatrolWatchesEntry ? new[] { "entry-seen-patrol/seen" } : Array.Empty<string>());
         foreach (var w in want) Assert.True(seen.Contains(w), $"no scenario ends in {w} (seen: {string.Join(", ", seen)})");
+        if (!g0.PatrolWatchesEntry) Assert.DoesNotContain("entry-seen-patrol/seen", seen); // the fact holds: nothing reaches it
     }
 
     [Fact]
@@ -124,11 +128,15 @@ public class FailCauseTests
         // brief 018 §1 (GameFight.FightStep): Vale in the car, a rival within cell.atReach of it, no operative standing within reach. No route
         // reaches it on today's data (the rivals stop at cover or their weapon's reach), so the state is placed: a fixture, not a scenario.
         // The whole cell is in the car (boarded, Go refused while the car is held): nobody stands beside it.
+        // Engine 0.34.0 (Motive M067-K3 a): the same state now comes in play too (the rivals walk to a held car nobody stands outside: K3-PRESS,
+        // BAL-YARD-AT-WILL). Each rival stands on a free walk cell beside the car's body (since 0.33.1's car.footprint nobody stands on its
+        // ground; K3's walk starts from the free cell nearest, so a body placed on the ground would be read there)
         var g = Engine.New(I); var car = g.S.At(g.S.GetawayCar);
         foreach (var o in g.Ops) o.InCar = true;
         g.Vale = ValeAt.Car; g.FightBranch = "safe";
-        var at = car + new Pt(100, 0);
-        g.Hostiles.Add(new Hostile { Id = "rival-2", At = at + new Pt(20, 0), Home = at, Present = true, Gun = new Gun("rival-2") { W = g.R.Pistol, Health = 2, Max = 2 } });
+        var at = g.Walk.NearestFree(car + new Pt(100, 0))!.Value; var at2 = g.Walk.NearestFree(at + new Pt(60, 0))!.Value;
+        Assert.True(g.AtGetaway(at) && G.D2(at2, car) > G.D2(at, car), $"the fixture's points: {at} at the car, {at2} farther");
+        g.Hostiles.Add(new Hostile { Id = "rival-2", At = at2, Home = at2, Present = true, Gun = new Gun("rival-2") { W = g.R.Pistol, Health = 2, Max = 2 } });
         g.Hostiles.Add(new Hostile { Id = "rival-1", At = at, Home = at, Present = true, Gun = new Gun("rival-1") { W = g.R.Pistol, Health = 2, Max = 2 } });
         g.Step();
         Assert.Equal((Outcome.Failure, "rivals-reach-vale"), (g.Result, g.FailCode));

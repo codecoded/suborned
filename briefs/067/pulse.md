@@ -2,6 +2,8 @@
 
 2026-10-26. Items I and L of `briefs/067-sky-play-0122.md`; A skipped on Vantage's word (below). Nothing edited in `sim/`, `unity/`, `mission.json`, `text.json`.
 
+*Second pass, same day (Forma's Velvet Set and Latch's body figure and "a guard" label): the mirror and pins are brought to the tree and the looks audit is re-run in **§7**. It closes §1.3 W1, W2 and the bodies fault, with two conditions (7.5): the install, and the host's one rival look.*
+
 ## 0 · The short answer
 
 | item | what I found | what I did | who is next |
@@ -204,3 +206,94 @@ Scratch (kept): `out/scratch/pulse/` (`probe-stand`, `probe-trace`, `probe-face`
 | **Latch** | label and pick the crowd guards (W2); the body's figure; manifest and library after Forma; the 1.2 m step ease | a hover on guard 73 says "Guard"; a knocked-out `d4` clerk stays `d4`; proof frame at 3:10 and 5:30 |
 | **Keel** | the five items in §2.5; re-record | `suborned-sim cars` prints no overlap longer than one reading; hashes re-recorded |
 | **Aster** | GDD words; decide W5 | v0.26.0 |
+
+---
+
+## 7 · Second pass, 2026-10-26: the mirror and the pins brought to the host and to Forma's crew, the audit re-run
+
+Aster's follow-up. Forma built the rivals' Velvet Set (`rival`, `rival_b`, `rival_c`, `rival_d`, pool `role/rival`: `briefs/067/forma.md`) and Latch changed the host's body figure (`HostViews.BodyFigure`: a knocked-out walker keeps their figure) and named the crowd's guards "a guard" (`HandoverHost.CrowdSecurityName`). My `looks.ts` mirror and its pin of `HostViews.cs` disagreed with the tree (the one red test). Both are brought to the tree as it is now, and the audit is run again. Nothing edited in `sim/`, `tools/sim`, `unity/` or `tools/figures`; `sim/data` not regenerated; nothing committed. This closes §1.3 W1, W2 and "one more host fault" (bodies), on the two conditions in 7.5 (the install, and the host's one rival look).
+
+### 7.0 · The short answer
+
+| claim | result | evidence |
+|---|---|---|
+| **Only real security wears the guard's look** | **Holds.** L-1 has 0 faults both ways over the 126 walkers, every fixed key and every pool. The 15 crowd guards wear `guard` and the hover names them "a guard"; nobody else wears it or is named so. A knocked-out walker keeps their figure (0 of 126 change clothes; the plain pick would have changed 16). The test now lists every `Dress(`, `RoleFigure(` and figure `Pick(` call in `HostViews*.cs`, so a new place that dresses a view fails there instead of going unmirrored | `pulse/looks-audit.txt` |
+| **The rivals meet my spec** | **Forma's build does; the game does not yet.** Median V 0.52 to 0.64, violet 0.50 to 0.76, dark 0.20 to 0.30, amber 0.003 to 0.006 (bright amber or gold 0.0001), navy 0.002 to 0.003, trousers V 0.65 to 0.71, no brimmed cap. But the Unity install still holds the old rival (V 0.27, amber 0.030, navy 0.28, hard hat), and the host draws all five rivals as `rival`: one look (7.5, 1) | `pulse/albedo-stats-velvet.txt`, 7.2 |
+| **No clerk reads as a guard** | **Holds at true size.** `d4` (grey bomber, navy legs, bare head), `d4b` and `d5c` (mint dress, cloche, bare legs, white boots) are told from the guard (white limbs banded in navy, blue-grey peaked cap) in every view I looked at: both camera yaws, sun and shade, two headings. The two nearest by colour are **`c6` and `d5c`**: a watch list, not a fault (7.3) | `pulse/look-matrix.txt`, `look-matrix-summary.txt`, two boards |
+
+### 7.1 · What changed (paths)
+
+| path | change |
+|---|---|
+| `tools/people/looks.ts` | The mirror follows the host: `bodyFigure` (`Bodies` and `BodyFigure`: a crew member's body is `rival`, a walker's is the figure `DressCrowd` gave them, the cast's their role's, anyone else the plain pick), `hostileFigure`, `rangeBystanderFigure` (the range's passers, from `family/passer`), `crowdLabel` (the hover's names), `personFigureOf` (a role first), `crewPlan` (Forma's table by member). New rule **L-4**: the crew's looks are the crew's (pool `role/rival` holds figures of role rival and no other, none a recolour of the duty suit's model, none in another pool or on a walker, and the host's crew keys and rival bodies are drawn in one of them). The audit prints the hover's name for each job, "0 of 126 change clothes", the crew's four looks beside what the host draws, and the range's passers. The CSV has one new last column, "named in the hover"; the first 11 columns of all 126 rows are byte-identical to the committed CSV |
+| `tools/people/test/looks.test.ts` | 10 tests become 15. New pins: the exact list of `Dress(` calls (8) and figure `Pick(` calls (3) and `RoleFigure(` calls (2) in `HostViews*.cs`, read with comments stripped; `BodyFigure` and the walker index it needs; the two lines that name a crowd person (`CrowdSecurityName`, `TargetOf`), with the check that everyone drawn in the duty suit is named a guard and nobody else is; the crew's views exist before the fixed keys are dressed; L-4 on seven failing examples; the crew's table by member as documentation (three different looks for the three posted, all in the pool, the host reading none of it). Forma's one edit of this file (L-3) is kept |
+| `briefs/067/pulse-figures.csv` | regenerated (the new column only) |
+| `briefs/067/pulse/` | `look-matrix.py` (renders the figures at true size through Forma's `proof_run.py`, unchanged, and measures upper, lower and head colour blocks against the guard and the police), `run-look-matrix.sh` and `look-matrix.txt` (8 views for the build, 8 for the install; a re-render is byte-identical), `look-matrix-summary.py` and `.txt` (the ranking), `looks-audit.txt`, `albedo-stats-velvet.txt`, `mutate-looks-test.sh` (below), and the pictures (`looks-velvet-near-guard-yaw210@3x.png`, `…yaw30@3x.png`, `rival_d-hood-up-forma-render.png`; images are git-ignored, on disk) |
+
+**The pins bite.** `sh briefs/067/pulse/mutate-looks-test.sh` reads the same test from a copy of the host's source with one change each: a new unmirrored `Dress(` call; bodies back to `PersonFigure(p)`; the crowd guard named a passer-by again; `RoleFigure` given Forma's `RivalFigure`; a rival's body given it; the range's passers drawn from `family/guard`; a hostile officer dressed `guard`. Each fails the test that names it (1 or 2 tests each); the unchanged copy passes 15 of 15. Exit 0.
+
+### 7.2 · The rivals against the spec
+
+On Forma's build (`out/people-models/People`, 26 figures, not installed), by `tools/figures/albedo_stats.py` (the measure of §1.3, unchanged) and three checks of my own:
+
+| figure | median V (≥ .45) | violet (≥ .40) | dark (≤ .40) | amber (≤ .01) | bright amber or gold | navy | head | trousers or dress |
+|---|---|---|---|---|---|---|---|---|
+| `rival` | **0.545** | **0.507** | 0.289 | 0.0055 | 0.0001 | 0.002 | bare, dark hair | ivory, median V 0.68 |
+| `rival_b` | **0.522** | **0.498** | 0.300 | 0.0048 | 0.0001 | 0.003 | bare, platinum | pale grey, V 0.65 |
+| `rival_c` | **0.639** | **0.512** | 0.208 | 0.0048 | 0.0001 | 0.002 | bare, auburn | pearl, V 0.71 |
+| `rival_d` | **0.537** | **0.764** | 0.196 | 0.0029 | 0.0000 | 0.002 | hood in the jacket's violet, no brim | no trousers: white dress, lilac chevrons, bare legs, white boots |
+| old `rival` (**installed**) | 0.267 | 0.412 | 0.856 | 0.0298 | 0.0144 | 0.277 | hard hat | navy jeans |
+| `guard` / `security` | 0.475 / 0.318 | 0 / 0 | 0.303 / 0.679 | 0.003 / 0.211 | 0 / 0.0006 | 0.248 / 0 | cap | |
+
+- **Amber.** Forma's last tint darkened the deep browns of skin and hair that my rule (hue 20 to 70, S above .3, V above .3) was counting. I checked that this is not a way round the rule: the amber-band texels that remain have median colour (86, 68, 53), hue 29, which is brown shade; bright amber or gold (V from .55) is 0.0001 of the clothing, against the old rival's 0.0144. The police's 0.211 is their olive-gold trim, which is the thing the crew must not have.
+- **Trousers.** Measured under Forma's leg masks (`d4_legs` less `d4_boots`), clothing texels only: median V 0.68, 0.65, 0.71 against my floor of 0.6. The woman has no trousers; the clause's point, no navy or charcoal legs, holds (navy 0.002).
+- **No brimmed cap, and the hood (Forma's question).** The three D4 looks are bare-headed (the boards, `forma/rival-concept-and-figures.png`). `rival_d`'s hood is up, soft and rounded, brimless, in the jacket's own violet (`pulse/rival_d-hood-up-forma-render.png`, Forma's front, side and back): the "knit cap in the jacket's violet" my spec allowed. **Accepted.** Her `figures.json` label says "bare head (the hood is down)", which the picture contradicts: the hood is up. Forma to correct the words; the figure is right.
+- **From the police.** The old rival was 25 dE from the police (upper plus lower colour blocks, shade, yaw 30), nearer than `d4` (33) or `d5c` (53); the new four are 61 to 72 from them and 45 to 55 from the guard (`look-matrix-summary.txt`). In the true-size boards (Forma's `rival-rows-before-after.png` and mine) they read as a violet crew in the sun and in shade, at both camera yaws.
+
+### 7.3 · Clerks against the guard
+
+- **By the mapping:** the office pool is `d5c` and `d4` (the civic job block adds `d4b`); the 58 clerks are `d4` ×29 and `d5c` ×29; none is the duty suit's model, in the people file or in any pool.
+- **At true size** (the play camera, the game's sun and grade, Forma's `proof_run.py`; yaw 210, the Office front, and yaw 30, the opening; sun and shade; each figure facing the camera and at heading 75): the guard is the only figure with white limbs banded in navy under a blue-grey peaked cap. `d4` is a grey-white bomber over solid navy legs with a bare head; `d4b` a peach bomber over charcoal; `d5c` a mint dress with a pale cloche, bare legs and white boots. None is mistakable for him in any of the 8 views, nor is `c6` (grey hooded jacket over a white and orange patterned dress, bare legs).
+- **By colour** (`look-matrix-summary.txt`; each figure's smallest dE from the guard over the 8 views, upper plus lower block, then with the head block added): `c6` 18 and **28**, `d5c` 20 and **38**, `d4` 18 (its navy legs against the guard's panelled legs, in shade, one view) and 51, `cafe_w2` 20 and 57, `fixer` 24 and 53, `enforcer` 26 and 52, the rest further; the crew 45 to 55 and 70 to 83. With the head block counted (where a cap or a hood shows), **`c6` and `d5c` stand apart from the rest**, which are all 48 or more: both share the guard's pale value and a pale head.
+- **What the number can't do.** It sees colour, not silhouette (a hood against a cap, a dress against trousers). The old rival sat 25 from the police, which I judged a confusion in Sky's frames (§1.3 W1), and the clerks and `c6` sit 18 to 20 from the guard in their nearest view, which I do not judge one in the boards; so I claim no threshold from it. The claim rests on the boards; the number only says who to watch.
+- **If Sky still sees guards among the clerks or residents:** `d5c` (29 clerks, 2 attendants, 2 residents, 1 keeper) and `c6` (3 residents) are the two to recolour, one tint each (a darker or coral cloche, a coloured hood), as Forma said of `d5c`; both change several people's look, so I have not asked for it. The check is Latch's 5:30 frame at the Office with the rings off: `guard`, `d4`, `d5c` and `c6` side by side at true size.
+
+### 7.4 · Evidence (commands, run in the shared tree)
+
+```
+bun tools/people/looks.ts > briefs/067/pulse/looks-audit.txt        rules L-1, L-2, L-4: no fault; 126 walkers; 16 re-picked by DressCrowd, 0 change clothes in a body
+bun tools/people/looks.ts --csv briefs/067/pulse-figures.csv        126 rows, first 11 columns byte-identical to before
+bun test tools/people tools/figures                                 273 pass, 1 skip (people-graph live server), 0 fail; 13 files (the filter also takes tools/people-view and tools/people-graph)
+bun test tools/people/test/looks.test.ts                            15 pass
+bun test tools/figures                                              15 pass (rival.test.ts: its albedo spec is read from the build, the first figures folder it finds)
+bun run typecheck                                                   clean (exit 0)
+bun tools/lint/comments.ts                                          0 hits
+python3 -I tools/figures/albedo_stats.py --base out/people-models/People/Figures --check    spec OK, every rival colourway inside it
+python3 -I tools/figures/albedo_stats.py --base unity/Assets/Suborned/People/Figures        the old rival: V 0.27, amber 0.03, navy 0.28
+sh briefs/067/pulse/mutate-looks-test.sh                            control passes (15), 7 of 7 changes caught
+bun run guard sh briefs/067/pulse/run-look-matrix.sh                look-matrix.txt (16 renders, under a minute, byte-identical on a second run)
+python3 -I briefs/067/pulse/look-matrix-summary.py                  look-matrix-summary.txt
+bun run guard python3 -I tools/figures/proof_run.py --people out/people-models/People --yaw 210 / 30 --light both ...    the two boards
+```
+
+Not run: Unity. What this says of the host is the C# text pinned, not a frame; Latch's proof frames and `Proof067`'s `r067 people` line (which should report 16 walkers re-picked and 0 bodies changed, as the mirror does) remain the check in the game.
+
+### 7.5 · Open issues
+
+1. **The game still draws the old rival, and then one look. Latch.** The Unity install holds the old `rival` (`unity/Assets/Suborned/People/manifest.json`: 23 figures, no `role/rival`); Forma's build is 26. Install the whole build (`bun tools/figures/run.ts --install`, or `forma.md` §4's rsync), rebuild the FigureLibrary, and add `rival_d` to `FigureBuild.Women` (line 22) so she walks with `walk_f`. Then the host: `RoleFigure` returns `rival` for every crew key and rival body, and the hostile and body sites say `"rival"` too, so all five are the mid-violet bomber, ivory trousers and dark hair: five clones. My W1 asked for three colourways for five people; the figures have them, the game will not until Latch adds Forma's `RivalFigure` by member number (`forma.md` §4: one helper, four sites). When he does, the pin on `RoleFigure` and the list of `Dress(` calls fail, and I re-mirror (`crewPlan` already reads the table from `roles.json`).
+2. **`figures.json`, `rival_d`'s label: "the hood is down".** It is up (7.2). Forma, one word; the audit prints that label, so it shows there until changed.
+3. **W5, off-duty guards in uniform at the café table from 0:00 (73 and 74), still Aster's** (§1.3). They are real security, named and drawn as such; whether they should look off duty is a figure the guard model does not have.
+4. **`looks.ts` is inside three verdict hashes.** Every non-test `.ts` under `tools/people` is in the transit, skyline and people tool hashes (`tools/levels/toolhash.ts`, `…/people/hash.ts`, `…/skyline/hash.ts`), though no verdict reads this audit, so any edit of it (this one included) moves them: with it the skyline hash goes `3064b3434ff2` to `0734db5326a4` and the people hash `5b41afe605a3` to `7e8a66c24b29` (one file listed each, `tools/people/looks.ts`; dialogue's `b4c40a103058` stays). I did not run `drift:auto`: before my edit `bun run drift:auto --check` at HEAD already refused all three ledgers, and it refuses the same three, the same runs, after it (skyline r011, people r012 to r016, dialogue r017 to r019: "a person declares a change that moves a rule", `files changed since HEAD: none listed`), and that is a person's declaration, not mine to make mid-round. The audit is my file: I can move it out of `tools/people` so it stops entering the hash (the paths `forma.md`, §1 and the test headers quote would change). Aster's call.
+5. **The engine-dependent tests.** `tools/people-view`, `day` and `trust` build the working tree's engine for M-2's measured walk. Two of my runs of `bun test tools/people tools/figures` had failures in them (5 besides the pin I was asked to fix, before my edit, and 5 after); the second run's output shows why: `dotnet build sim/cli failed: ScenariosFightLabKite.cs(164,21) CS0128 …`, Keel's file mid-edit (it was changed a minute before). When the tree compiled they passed (those three files 73 of 73, then the whole set: 273 pass). A red there while `sim/` is mid-edit is his tree, not the looks; `git status` showed 8 `sim/` sources of his modified at that minute (more by the end of this pass).
+6. **The crew shares bodies with the crowd** (Forma §5 item 1: D4 is the clerks', C6 three residents'). The colour alone tells a rival from a clerk (violet over pale, against grey over navy), L-3 names it, and the numbers above hold; new bodies are Aster's call on Forma's $0.675 a take.
+7. **Red tests in the tree that are not this work** (from a wider run, `bun test tools/levels tools/drift-auto tools/lint tools/gen`: 192 pass, 3 fail). `tools/drift-auto/drift-auto.test.ts` ×2 ("nothing changed: nothing to declare", "a harmless edit"): the committed drift ledgers do not declare the committed code. I built the test's scratch copy from a pristine `HEAD` archive (no edit of mine in it) and `drift:auto --check` refuses the same runs with the same skyline hash `3064b3434ff2` (item 4). `tools/levels/skyline/test/fixture.test.ts` ("the kit digest fixture lists every piece kit.json has adopted"): `Sedan_Rival` is adopted in `contracts/world/kit.json` (Vela's, brief 067 L) and `kit.digest.json` is behind; the failure prints the regenerate command. Splice or Vela.
+
+### 7.6 · Next owner
+
+| to | what | done when |
+|---|---|---|
+| **Latch** | install Forma's build and rebuild the library; `Women` += `rival_d`; `RivalFigure` by member in the four sites if the crew is to be a crew; the 3:10 and 5:30 proof frames (the crew round the car; the guard beside `d4`, `d5c`, `c6`, rings off) | `albedo_stats.py --base unity/Assets/Suborned/People/Figures --check` prints OK; three different violet looks round the car; no clerk or resident reads as the guard |
+| **Forma** | correct `rival_d`'s label; if the frame still shows a pale clerk or resident as the guard, tint `d5c` and `c6` | `bun test tools/figures` green |
+| **Pulse** | re-mirror when the host reads the crew's table (the pins fail when it does) | `bun test tools/people` green |
+| **Keel** | at the end of the engine round: `bun run people` and `sim:site` as planned; whoever lands last then runs `drift:auto` and `verify` (the people tool hash moved with this edit as it did with my last; 7.5, 4) | VERIFY OK |
+| **Aster** | W5; the GDD words in §2.5 (the rivals "violet, no cap, no gold"); new bodies for the crew or not | decision logged |

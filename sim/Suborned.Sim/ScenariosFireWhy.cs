@@ -41,7 +41,8 @@ namespace Suborned.Sim
             r.Is(once, "once a pair"); r.Is(cause, "every line names a cause"); r.Is(match, "each line is FireWhyFirst's (tick and causes)");
         }
 
-        /// <summary>Route fight-loud-enforcer-down's orders (contracts/missions/handover/routes, 2026-10-22), copied so the case stands alone.</summary>
+        /// <summary>Route fight-loud-enforcer-down's orders (contracts/missions/handover/routes, 2026-10-22), copied so the case stands alone; engine
+        /// 0.34.0: the last walk is to the car, not into the police (FW-VALE reads the rivals' cause, and the rivals must get a line on him first).</summary>
         static readonly string[] FightLoudOrders =
         {
             "{\"tick\":0,\"op\":\"tech\",\"do\":\"move\",\"to\":\"cabinet\",\"run\":true}",
@@ -51,7 +52,7 @@ namespace Suborned.Sim
             "{\"tick\":1236,\"op\":\"enforcer\",\"do\":\"fire\",\"target\":\"guard\"}",
             "{\"tick\":1276,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Office entrance\",\"run\":true}",
             "{\"tick\":1312,\"op\":\"enforcer\",\"do\":\"enter\"}",
-            "{\"tick\":1992,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"police-1\"}",
+            "{\"tick\":1992,\"op\":\"enforcer\",\"do\":\"move\",\"to\":\"d:Getaway bay\"}", // engine 0.34.0: to the car (the route walked him at police-1: at 1.8 m/s he reached the police before a rival had a line on him, and the police took him first, fired and Vale)
         };
 
         static void FireWhyCases()
@@ -83,7 +84,10 @@ namespace Suborned.Sim
                 var gw = Why(r, Enf, GuardR);
                 r.Is(gw.HasValue && gw.Value.Since >= t0 && gw.Value.First.SequenceEqual(new[] { "drawn", "face" }), $"the guard took him as the fire order drew his weapon: drawn, face ({(gw.HasValue ? Cs(gw.Value.First) : "-")})");
                 r.Is(gw.HasValue && gw.Value.Causes.Length > 0 && gw.Value.Causes[0] == "fired", $"once he has fired, the guard's strongest cause is that he fired ({(gw.HasValue ? Cs(gw.Value.Causes) : "-")}); Main {(gw.HasValue ? gw.Value.Main : "-")}");
-                r.Is(r.Until(() => WhyAny(r, Enf, x => x.By != GuardR && x.Since >= t0) != null || g.Over, T(30)), "another hostile takes him");
+                // engine 0.34.0 (brief 067 A): up to 120 s (was 30): the patrol sweeps the service yard, beyond 30 m of the shot, so it no longer
+                // breaks at the first shot (0:47.7 on the forecourt); sent to the scene by the guard's radio at 0:48.6, it reaches the approach and
+                // takes him at 1:30.1, fired first
+                r.Is(r.Until(() => WhyAny(r, Enf, x => x.By != GuardR && x.Since >= t0) != null || g.Over, T(120)), "another hostile takes him");
                 var w = WhyAny(r, Enf, x => x.By != GuardR && x.Since >= t0);
                 r.Is(w.HasValue && w.Value.First.Length > 0 && w.Value.First[0] == "fired", $"{(w.HasValue ? w.Value.By : "-")} takes the Enforcer: fired first ({(w.HasValue ? Cs(w.Value.First) : "-")})");
                 FireWhyLog(r);

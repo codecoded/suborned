@@ -1,15 +1,20 @@
 // Engine 0.34.0 (brief 067, Sky playing 0.2.122): Motive's pace and punishment values and his rulings on Keel's 0.33.1 items
 // (briefs/067/motive-values.json), Pulse's two notes (briefs/067/pulse.md §2.5), each shown by the rule it is.
 //    PACE-SPLIT     M067-B1: the cell walks at cell.speed (1.8 m/s), the city at crowd.walk (1.4 m/s): the call's walk, the rounds file
-//    RUN-NOTICED    M067-B2: a run in a camera's sight is noticed at once, wary 11.9 s and reported 36.9 s of run in sight later (Heat 0)
-//    RUN-NOT-ALERT  M067-B2: route A's opening runs past the shift guards: sighted and remembered, no Alert (0.33.1: Alert 1)
-//    RUN-FREE       M067-B2: at Alert 2 a run moves no clock and logs no sighting
+//    PACE-RUN-NOTICED   M067-B2 (Motive's RUN-NOTICED; a Handover id never starts with R, the range's letter): a run in a camera's sight is noticed at once, wary 11.9 s and reported 36.9 s of run in sight later (Heat 0)
+//    PACE-RUN-NOT-ALERT M067-B2 (Motive's RUN-NOT-ALERT): route A's opening runs past the shift guards: sighted and remembered, no Alert (0.33.1: Alert 1)
+//    PACE-RUN-FREE      M067-B2 (Motive's RUN-FREE): at Alert 2 a run moves no clock and logs no sighting
 //    K3-PRESS       M067-K3 (a): the cell all in the held car: the rivals walk to it and take Vale (rivals-reach-vale)
 //    K3-CELL-DOWN   M067-K3 (b): the cell shot down by the car with Vale in it: cell-down the tick the last falls
 //    K3-BACK        M067-K3 (a): an operative standing outside again sends them back to cover
 //    K3-DRIVER      M067-K3 (c): Go with only the downed aboard is refused car-no-driver; a standing operative boards and Go is taken
 //    POST-BESIDE    Pulse note 3: the relief who stands beside the cast guard's post keeps her check-in marks (PostOf reads the waiting point)
 //    DOOR-KERB      Pulse note 4: a guard posted at an Office door faces out of it (kerb), not along the wall
+//    SQ1-WALK       M067-SQ1, K3 (a) held only: route-a-board, the cell boards a free car and goes; rival-4 walks to his spot round the hold
+//    SQ1-STEP       M067-SQ1: on the square's plays every answer to fire ends outside the hold; none logs car.held.answer
+//    SQ2-NO-STALL   M067-SQ2: ra-h3, the rivals left with nobody in reach advance, the fight ends 4:22.9, the run wins 4:37.3
+//    SQ2-CLOSES     engine 0.34.1, Aster's ruling within SQ2: every advance closes on its operative; no rival changes cover twice without closing
+//    FACT-PATROL    motive-square.md §5.3: patrolWatchesEntry is false on the yard sweep's site (MC-3's needs)
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +23,13 @@ namespace Suborned.Sim
 {
     public static partial class Scenarios
     {
+        /// <summary>The walk (cm) from a to b as a body walks it (from the free cell nearest each end, round the standing cars); a large number
+        /// for none. SQ2-CLOSES measures with it, apart from the engine's own reckoning.</summary>
+        static long WalkCm(Game g, Pt a, Pt b)
+        {
+            var w = g.Walk; var route = w.Route(w.NearestFree(a) ?? a, w.NearestFree(b) ?? b);
+            return route == null ? long.MaxValue / 4 : new Path(route).Length / 10;
+        }
         /// <summary>Every operative in `ops` walks to the getaway car (unless at it) and boards (BoardVale's walk, no Go).</summary>
         static void BoardAll(Run r, params string[] ops)
         {
@@ -124,7 +136,7 @@ namespace Suborned.Sim
             });
 
             // Motive's run-camera script (briefs/067/motive/plans/run-camera.script.json): the Scout runs 16 legs of 10 m across the entrance camera's view
-            Add("RUN-NOTICED", "067", "Motive M067-B2 (attention.run, engine 0.34.0): the Scout runs back and forth across the entrance camera's view. At the run's first tick in its sight the camera notices her (its clock jumps to the notice mark), the sighting is logged (run.seen) and Alert stays 0; each tick of run in sight counts as standing still, so at Heat 0 it is wary 11.9 s later and reports her 36.9 s later; the report lands at its watcher's next scan as a loiterer's: Alert 1.", r =>
+            Add("PACE-RUN-NOTICED", "067", "Motive's RUN-NOTICED, M067-B2 (attention.run, engine 0.34.0): the Scout runs back and forth across the entrance camera's view. At the run's first tick in its sight the camera notices her (its clock jumps to the notice mark), the sighting is logged (run.seen) and Alert stays 0; each tick of run in sight counts as standing still, so at Heat 0 it is wary 11.9 s later and reports her 36.9 s later; the report lands at its watcher's next scan as a loiterer's: Alert 1.", r =>
             {
                 var g = r.G; var a = new Pt(6000, -4500);
                 var bq = CameraLeg(r, a); if (!r.Is(bq.HasValue, $"a run leg the entrance camera sees end to end from {a}")) return; var b = bq!.Value;
@@ -145,7 +157,7 @@ namespace Suborned.Sim
                 r.Is(g.Log.Where(l => l.Code == "attention.noticed" || l.Code == "attention.wary" || l.Code == "attention.reporting").All(l => l.Tick <= reporting), "every stage while she runs in its sight");
             });
 
-            Add("RUN-NOT-ALERT", "067", "Motive M067-B2: route A's opening (the Scout runs to Inez, the Tech to the cabinet, the Fixer to the courtyard) runs past the Office's shift guards. Engine 0.34.0: they remember the runners and the sighting is logged (run.seen), but a run is no found fault: Alert 0 (0.33.1: Alert 1 at 0:02.8).", r =>
+            Add("PACE-RUN-NOT-ALERT", "067", "Motive's RUN-NOT-ALERT, M067-B2: route A's opening (the Scout runs to Inez, the Tech to the cabinet, the Fixer to the courtyard) runs past the Office's shift guards. Engine 0.34.0: they remember the runners and the sighting is logged (run.seen), but a run is no found fault: Alert 0 (0.33.1: Alert 1 at 0:02.8).", r =>
             {
                 var g = r.G;
                 g.Issue(new Order { Tick = 0, Op = Scout, Do = "move", To = "beside-inez", Run = true });
@@ -160,7 +172,7 @@ namespace Suborned.Sim
                 r.Is(!g.Ledger.Exists(l => l.cause.StartsWith("runner-seen:", StringComparison.Ordinal)), "no found fault");
             });
 
-            Add("RUN-FREE", "067", "Motive M067-B2: from Alert 2 security is free of a run (cell.run's free case, as built): the Enforcer draws where the entrance camera sees it (Alert 2, no shot, no fight); then the Scout runs across the camera's view: no clock moves for her, no sighting is logged.", r =>
+            Add("PACE-RUN-FREE", "067", "Motive's RUN-FREE, M067-B2: from Alert 2 security is free of a run (cell.run's free case, as built): the Enforcer draws where the entrance camera sees it (Alert 2, no shot, no fight); then the Scout runs across the camera's view: no clock moves for her, no sighting is logged.", r =>
             {
                 var g = r.G; var a = new Pt(6000, -4500);
                 var bq = CameraLeg(r, a); if (!r.Is(bq.HasValue, $"a run leg the entrance camera sees end to end from {a}")) return; var b = bq!.Value;
@@ -222,7 +234,7 @@ namespace Suborned.Sim
                 r.Is(walk < 0, $"someone of the cell stood outside until the last fell: the rivals never walked to the car ({(walk < 0 ? "-" : Report.Clock(walk))})");
                 r.Eq(g.FailCode, "cell-down", $"the whole cell down fails the mission ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
                 r.Eq(g.Tick, last, $"at once: the tick the last operative went down ({Report.Clock(last)})");
-                r.Is(g.Cause != null && g.Cause.Why == "cell-down" && g.Cause.Culprits.Count >= 2 && g.Cause.Culprits[0].Kind == "rival" && g.Cause.Culprits[1].Kind == "op", $"the fail camera: the shooter, then the last to fall ({string.Join(" ", g.Cause?.Culprits.Select(c => c.ToString()) ?? new string[0])})");
+                r.Is(g.Cause != null && g.Cause.Why == "shot" && g.Cause.Culprits.Count >= 2 && g.Cause.Culprits[0].Kind == "rival" && g.Cause.Culprits[1].Kind == "op", $"the fail camera: the shooter, then the last to fall ({string.Join(" ", g.Cause?.Culprits.Select(c => c.ToString()) ?? new string[0])})");
             }, new Start { WeaponsFree = false });
 
             Add("K3-BACK", "067", "Motive M067-K3 (a): as K3-PRESS until the rivals go for the car; then the Scout steps out of it (she never drew: no foe of theirs). An operative standing outside again sends them back to cover (rivals.back-to-cover); none of them takes Vale while she stands.", r =>
@@ -284,6 +296,122 @@ namespace Suborned.Sim
                 var c = g.PersonCone("p-records-office-29"); var f = g.FacingNow("p-records-office-29");
                 r.Is(c.At == g.S.Grid.NearestFree(c.At) || c.At.X > 0, $"guard 29 stands at the official entrance ({c.At})");
                 r.Is(f.HasValue && f.Value.X > 0 && Math.Abs(f.Value.Y) * 4 < f.Value.X, $"he faces south, out of the door: {f}");
+            });
+
+            // Motive briefs/067/motive-square.md §2-§4 and §5.3 (engine 0.34.0): the square without its planters, on the plays Motive measured
+            Add("SQ1-WALK", "067", "Motive M067-SQ1 (the hold is entered only on purpose) and M067-K3 (a) on a held car only: route A, board and go (route-a-board's plan, composed on this engine: tools/sim/fixtures059.ts). The whole cell boards a free car and Go is taken (Motive 4:15.5); rival-4, the late car's man, walks from the rival car to his spot round the getaway car's hold, 8.9 m or more from it all run (Motive); the rivals never walk to the free car; the only hold is the blocker's (car.held.blocker, once).", r =>
+            {
+                var g = r.G; long min4 = long.MaxValue;
+                if (!PlayFixture(r, "sq-route-a-board", null, () =>
+                {
+                    var h = g.Hostiles.Find(x => x.Id == "rival-4");
+                    if (h != null && h.Present && !h.Down) min4 = Math.Min(min4, G.Dist(h.Pos(g.Tick), g.GetawayCarPos())); // the hold's centre (Game.Car)
+                })) return;
+                r.Eq((g.Result, Report.Clock(g.Tick)), (Outcome.Success, "4:15.5"), "the cell aboard a free car goes: success at 4:15.5 (Motive)");
+                r.Is(min4 != long.MaxValue && min4 > g.R.HoldCm, FormattableString.Invariant($"rival-4 keeps out of the hold: {min4 / 100.0:0.0} m or more from the car, beyond fight.hold's {g.R.HoldCm / 100} m (Motive's probe 8.9 m; 7.3 m on 0.33.1's straight walk past it)"));
+                r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car"), "a free car with the cell aboard waits for Go: no walk to it (K3 a on a held car only)");
+                var held = g.Log.Where(l => l.Code.StartsWith("car.held.", StringComparison.Ordinal)).Select(l => l.Code + " " + l.Text.Substring(0, l.Text.IndexOf(' '))).ToList();
+                r.Eq(string.Join(", ", held), "car.held.blocker rival-2", "the one hold is the blocker's, logged once");
+            });
+
+            Add("SQ1-STEP", "067", "Motive M067-SQ1: an answer to fire never ends inside the getaway car's hold or on its exit lane (a rival's step out of a line, a step to cover while engaged, a police body's cover or close). On the square's plays (route A board and go, route A fought out, route B fought out and board and go, loud with the four on foot): every walk an answer starts ends beyond fight.hold of the car, and no answer holds it (car.held.answer).", r =>
+            {
+                var fxs = new[] { "sq-ra-h3", "sq-route-a-board", "bal-rb-ff", "bal-rbb-ff", "bal-loud-x4" };
+                foreach (var fx in fxs)
+                {
+                    if (fx != fxs[0] && r.Inputs == null) break; // a harness run with no inputs to make more games from (RoundsTests): its own play only
+                    var b = fx == fxs[0] ? r : Alt(r, r.Inputs!); var g = b.G; int answers = 0, inHold = 0; var seen = new Dictionary<string, Path?>(StringComparer.Ordinal);
+                    if (!PlayFixture(b, fx, null, () =>
+                    {
+                        var car = g.GetawayCarPos(); // the hold's centre (Game.Car)
+                        foreach (var h in g.Hostiles)
+                        {
+                            seen.TryGetValue(h.Id, out var was);
+                            if (h.Run != null && !ReferenceEquals(h.Run, was) && h.Why == "answer") { answers++; if (G.Within(h.Run.End, car, g.R.HoldCm)) inHold++; }
+                            seen[h.Id] = h.Run;
+                        }
+                    })) { r.Is(false, $"[{fx}] the fixture plays"); continue; }
+                    r.Is(inHold == 0, $"[{fx}] {answers} answers to fire, none ending within {g.R.HoldCm / 100} m of the car ({inHold})");
+                    r.Is(!g.Log.Exists(l => l.Code == "car.held.answer"), $"[{fx}] no answer holds the car (car.held.answer)");
+                }
+            });
+
+            Add("SQ2-NO-STALL", "067", "Motive M067-SQ2 (the safe fight can't stall): route A, the cell fights it out at the square (Motive's ra-h3, composed on this engine). A rival holding with nobody in his reach advances again ai.engageLapse later, on an operative he has cause to fire on (ai.advance), never while he has a target; the fight ends (Motive: fight.over 4:22.9; 0.33.1 stalled to the script's end) and the run wins (4:37.3).", r =>
+            {
+                var g = r.G; var idle = new Dictionary<string, int>(StringComparer.Ordinal); int bad = 0, advances = 0, lastLog = 0;
+                if (!PlayFixture(r, "sq-ra-h3", null, () =>
+                {
+                    for (int k = lastLog; k < g.Log.Count; k++)
+                    {
+                        var l = g.Log[k]; if (l.Code != "ai.advance") continue;
+                        advances++; string id = l.Text.Substring(0, l.Text.IndexOf(' '));
+                        if (!idle.TryGetValue(id, out int since) || g.Tick - since < T(g.R.EngageLapseS)) bad++; // he had a target within the lapse
+                    }
+                    lastLog = g.Log.Count;
+                    foreach (var h in g.Hostiles) { if (h.Gun.Target.Length > 0 || h.Down) idle.Remove(h.Id); else if (!idle.ContainsKey(h.Id)) idle[h.Id] = g.Tick; }
+                })) return;
+                r.Is(advances > 0 && bad == 0, $"{advances} advances, each by a rival with no target for ai.engageLapse ({g.R.EngageLapseS} s) at least ({bad} sooner)");
+                r.Eq(LogTick(g, "fight.over") is int fo && fo >= 0 ? Report.Clock(fo) : "-", "4:22.9", "the fight ends (Motive 4:22.9)");
+                r.Eq((g.Result, Report.Clock(g.Tick)), (Outcome.Success, "4:37.3"), "and the run wins (Motive 4:37.3)");
+                r.Is(g.Log.Where(l => l.Code == "ai.advance").All(l => l.Text.StartsWith("rival-", StringComparison.Ordinal)), "only rivals advance (police and the blocker hold)");
+            });
+
+            Add("SQ2-CLOSES", "067", "Aster's ruling within Motive M067-SQ2 (engine 0.34.1): an advance closes on its operative. On the square's fights and route B's (SQ1-STEP's plays: ra-h3 fought out, route-a-board, rb-rr, rbb-rr, loud-x4), measured here from the walk grid, not read from the engine: every advance on an operative (ai.advance) that takes a cover ends strictly nearer him by walk than where the rival stood, and inside his effective reach of him or nearer him than he stood; one with no cover walks to a point nearer him by walk; and no rival changes cover twice without closing: of any two steps to cover in a row by one rival (ai.cover) once he is out of the warned ambush's wait (alerted: there the kite answer steps him out of lines as before, counted, not judged), the second leaves him within his effective reach of the operative nearest him, or strictly nearer that operative by walk than where he stood at the first. 0.34.0: ra-h3's rival-3 went cv-030, cv-029, cv-030 … every 1.8 s (4:13.9-4:21.1), 15.2-15.3 m from the Tech and never nearer; with the advance's cover rule alone (Aster's), a kite step turned each walk out back to cv-029 (every 2.2-2.5 s), so an advance on an operative takes no kite step on the way (Hostile.Closing, as on K3's walk to the car).", r =>
+            {
+                var fxs = new[] { "sq-ra-h3", "sq-route-a-board", "bal-rb-ff", "bal-rbb-ff", "bal-loud-x4" };
+                foreach (var fx in fxs)
+                {
+                    if (fx != fxs[0] && r.Inputs == null) break; // a harness run with no inputs to make more games from (RoundsTests): its own play only
+                    var b = fx == fxs[0] ? r : Alt(r, r.Inputs!); var g = b.G;
+                    var next = new Dictionary<string, Pt>(StringComparer.Ordinal); // where each body stands at the coming tick, as that tick's fight AI reads it
+                    var prev = new Dictionary<string, (int tick, Pt from, string cover)>(StringComparer.Ordinal); // each rival's last step to cover
+                    var bad = new List<string>(); int advances = 0, steps = 0, pairs = 0, waits = 0, logAt = 0;
+                    Op? Named(string text, string after) { int at = text.IndexOf(after, StringComparison.Ordinal); if (at < 0) return null; at += after.Length; int end = at; while (end < text.Length && char.IsLetter(text[end])) end++; var name = text.Substring(at, end - at); foreach (var o in g.Ops) if (Op.Name(o.Id) == name) return o; return null; }
+                    Op? Nearest(Pt p) { Op? best = null; long bd = long.MaxValue; foreach (var o in g.Ops) { if (o.Down || o.Inside || o.InCar) continue; long d = G.D2(p, o.Pos); if (d < bd) { bd = d; best = o; } } return best; }
+                    string M(long cm) => FormattableString.Invariant($"{cm / 100.0:0.0} m");
+                    if (!PlayFixture(b, fx, null, () =>
+                    {
+                        for (int k = logAt; k < g.Log.Count; k++)
+                        {
+                            var l = g.Log[k]; bool adv = l.Code == "ai.advance", cov = l.Code == "ai.cover";
+                            if (!(adv || cov) || g.FightBranch != "safe" || !l.Text.StartsWith("rival-", StringComparison.Ordinal)) continue;
+                            string id = l.Text.Substring(0, l.Text.IndexOf(' ')); var h = g.Hostiles.Find(x => x.Id == id); if (h == null || !next.TryGetValue(id, out var from)) continue;
+                            long eff = h.Gun.W!.EffCm;
+                            if (adv)
+                            {
+                                var o = Named(l.Text, "advances on the "); if (o == null) { bad.Add($"{Report.Clock(l.Tick)} {id}: no operative named in \"{l.Text}\""); continue; }
+                                advances++; int at = l.Text.IndexOf(" to cv-", StringComparison.Ordinal);
+                                var to = at >= 0 ? g.S.Cover.Find(x => x.Id == l.Text.Substring(at + 4).TrimEnd('.'))?.At : h.Run?.End;
+                                if (!to.HasValue) { bad.Add($"{Report.Clock(l.Tick)} {id}: the advance goes nowhere (\"{l.Text}\")"); continue; }
+                                long wf = WalkCm(g, from, o.Pos), wt = WalkCm(g, to.Value, o.Pos), df = G.Dist(from, o.Pos), dt = G.Dist(to.Value, o.Pos);
+                                if (!(wt < wf && (at < 0 || dt <= eff || dt < df))) bad.Add($"{Report.Clock(l.Tick)} {id} advances on the {Op.Name(o.Id)}{(at >= 0 ? " to " + l.Text.Substring(at + 4).TrimEnd('.') : "")}: walk {M(wt)} from there, {M(wf)} from where he stood; {M(dt)} straight (reach {M(eff)}, {M(df)} from where he stood)");
+                            }
+                            else
+                            {
+                                steps++; var cv = l.Text.Substring(l.Text.IndexOf(" at ", StringComparison.Ordinal) + 4); cv = cv.Substring(0, cv.IndexOf(' ')); var c = g.S.Cover.Find(x => x.Id == cv);
+                                if (c == null) { bad.Add($"{Report.Clock(l.Tick)} {id}: no cover point {cv}"); continue; }
+                                if (h.Gun.St == "alerted") { waits++; prev.Remove(id); continue; } // the warned wait: the kite answer's steps, as before 0.34.1
+                                if (prev.TryGetValue(id, out var p1))
+                                {
+                                    pairs++; var o = Nearest(from);
+                                    if (o != null && !(G.Dist(c.At, o.Pos) <= eff || WalkCm(g, c.At, o.Pos) < WalkCm(g, p1.from, o.Pos)))
+                                        bad.Add($"{id} changes cover twice without closing: {p1.cover} at {Report.Clock(p1.tick)}, {cv} at {Report.Clock(l.Tick)}; the {Op.Name(o.Id)} (nearest) is {M(G.Dist(c.At, o.Pos))} from {cv} (reach {M(eff)}), walk {M(WalkCm(g, c.At, o.Pos))} from it, {M(WalkCm(g, p1.from, o.Pos))} from where he stood at {Report.Clock(p1.tick)}");
+                                }
+                                prev[id] = (l.Tick, from, cv);
+                            }
+                        }
+                        logAt = g.Log.Count;
+                        foreach (var h in g.Hostiles) next[h.Id] = h.Pos(g.Tick + 1);
+                    })) { r.Is(false, $"[{fx}] the fixture plays"); continue; }
+                    r.Is(bad.Count == 0, $"[{fx}] {advances} advances on an operative and {steps} steps to cover by the rivals ({waits} in the warned wait, {pairs} after another): " + (bad.Count == 0 ? "every advance closes on him, and no second step of two leaves a rival neither in reach nor nearer" : $"{bad.Count} that don't close: " + string.Join("; ", bad.Take(6)) + (bad.Count > 6 ? $" (+{bad.Count - 6})" : "")));
+                }
+            });
+
+            Add("FACT-PATROL", "067", "Motive briefs/067/motive-square.md §5.3 (for Waymark's MC-3 needs: \"patrol-watches-entry\"): the site fact patrolWatchesEntry (suborned-sim facts) is false on this site: the sweep in the service yard sees the public door at no second of its round (59 s of 100 on 0.33.1's forecourt site), so no line of the mission that needs it can be reached.", r =>
+            {
+                var g = r.G; r.Wait(1); // a run at tick 0 has no checkpoint to replay to
+                r.Is(!g.PatrolWatchesEntry && g.SweepSecondsOnEntry == 0, $"patrolWatchesEntry false: {g.SweepSecondsOnEntry} s of {g.R.PatrolPeriodS}");
+                r.Is(!g.SweepCoversEntrance, "and at no tick of the round (SweepCoversEntrance, the debrief's sweep gap)");
             });
         }
     }

@@ -75,12 +75,12 @@
    "run": true
   },
   {
-   "tick": 1577,
+   "tick": 1571,
    "op": "enforcer",
    "do": "enter"
   },
   {
-   "tick": 1577,
+   "tick": 1571,
    "op": "tech",
    "do": "move",
    "to": [
@@ -89,82 +89,82 @@
    ]
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "scout",
    "do": "draw"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "scout",
    "do": "stance",
    "stance": "free"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "scout",
    "do": "fire",
    "target": "security-2"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "fixer",
    "do": "draw"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "fixer",
    "do": "stance",
    "stance": "free"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "fixer",
    "do": "fire",
    "target": "security-2"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "tech",
    "do": "draw"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "tech",
    "do": "stance",
    "stance": "free"
   },
   {
-   "tick": 2257,
+   "tick": 2251,
    "op": "tech",
    "do": "fire",
    "target": "security-2"
   },
   {
-   "tick": 2279,
+   "tick": 2271,
    "op": "scout",
    "do": "fire",
    "target": "security-1"
   },
   {
-   "tick": 2279,
+   "tick": 2271,
    "op": "fixer",
    "do": "fire",
    "target": "security-1"
   },
   {
-   "tick": 2279,
+   "tick": 2271,
    "op": "tech",
    "do": "fire",
    "target": "security-1"
   },
   {
-   "tick": 2294,
+   "tick": 2286,
    "op": "scout",
    "do": "fire",
    "target": "rivals"
   },
   {
-   "tick": 2294,
+   "tick": 2286,
    "op": "scout",
    "do": "move",
    "to": [
@@ -173,13 +173,13 @@
    ]
   },
   {
-   "tick": 2294,
+   "tick": 2286,
    "op": "fixer",
    "do": "fire",
    "target": "rivals"
   },
   {
-   "tick": 2294,
+   "tick": 2286,
    "op": "fixer",
    "do": "move",
    "to": [
@@ -188,31 +188,31 @@
    ]
   },
   {
-   "tick": 2585,
+   "tick": 2513,
    "op": "scout",
    "do": "fire",
    "target": "rival-2"
   },
   {
-   "tick": 2585,
+   "tick": 2513,
    "op": "fixer",
    "do": "fire",
    "target": "rival-2"
   },
   {
-   "tick": 2645,
+   "tick": 2573,
    "op": "scout",
    "do": "fire",
    "target": "rival-3"
   },
   {
-   "tick": 2645,
+   "tick": 2573,
    "op": "fixer",
    "do": "fire",
    "target": "rival-3"
   },
   {
-   "tick": 2686,
+   "tick": 2614,
    "op": "scout",
    "do": "move",
    "to": [
@@ -221,7 +221,7 @@
    ]
   },
   {
-   "tick": 2686,
+   "tick": 2614,
    "op": "fixer",
    "do": "move",
    "to": [
@@ -230,55 +230,55 @@
    ]
   },
   {
-   "tick": 2686,
+   "tick": 2614,
    "op": "enforcer",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3134,
+   "tick": 2966,
    "op": "enforcer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 3174,
+   "tick": 3006,
    "op": "scout",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3174,
+   "tick": 3006,
    "op": "fixer",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3174,
+   "tick": 3006,
    "op": "tech",
    "do": "move",
    "to": "d:Getaway bay"
   },
   {
-   "tick": 3174,
+   "tick": 3006,
    "op": "fixer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 3174,
-   "op": "tech",
-   "do": "board",
-   "target": "car"
-  },
-  {
-   "tick": 3175,
+   "tick": 3007,
    "op": "scout",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 3185,
+   "tick": 3007,
+   "op": "tech",
+   "do": "board",
+   "target": "car"
+  },
+  {
+   "tick": 3017,
    "op": "cell",
    "do": "go"
   }

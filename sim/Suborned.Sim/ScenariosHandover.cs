@@ -318,14 +318,16 @@ namespace Suborned.Sim
                 r.Is(d.Route.Contains("waitress-pulls-guard-away") && d.Route.Contains("entrance-camera-looped"), "the route summary: Inez pulls the guard away, the camera is looped");
             });
 
-            Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; success. The Enforcer hit, Raised.", r =>
+            Add("S11", "171", "The front, loud: the loop holds while the Tech reroutes the patrol; the guard fight; Enter +30 s with the alarm up; the cell downs the response unit, then breaks the rival crew before Vale comes out (engine 0.34.0); success. The Enforcer hit, Raised.", r =>
             {
                 var g = r.G;
                 // brief 031: the Enforcer no longer waits at the Office approach while the Tech works (the guard, the entrance camera and the
                 // sweep would report him loitering): he sets off once the reroute is under way, so he arrives as the patrol leaves
                 r.To(r.Send(Tech, "cabinet"));
                 r.Do(Tech, "loop", "entrance"); r.Done(Tech);
-                r.Is(g.PatrolWatching(r.At("d:Office entrance")) || g.SweepSeesEntrance(g.Tick + T(45)), "the patrol covers the door on its sweep");
+                // engine 0.34.0 (brief 067 A): the sweep is the service yard's and never sees the public door; the Reroute takes the patrol off the
+                // yard from 1:31 to 3:26, through the guard fight and the response unit's, as a loud front still would
+                r.Is(!g.SweepCoversEntrance && !g.PatrolWatching(r.At("d:Office entrance")), "the patrol sweeps the service yard, not the door (brief 067 A)");
                 r.Do(Tech, "reroute", "patrol"); r.To(r.Op(Tech).BusyEnd - 8); // engine 0.33.1: he walks round the getaway car (0.8 s), so he sets off 0.8 s before the reroute lands and reaches the approach when he did on 0.33.0
                 int there = r.Send(Enf, "d:Office approach"); r.Done(Tech); r.To(there);
                 r.Is(g.LoopOn, "the Tech holds the loop while diverting the patrol");
@@ -343,6 +345,11 @@ namespace Suborned.Sim
                 r.To(Max(r.SendTo(Scout, S11Post), r.SendTo(Fixer, S11Post + new Pt(-250, 0)), r.SendTo(Tech, S11Post + new Pt(0, -250))));
                 r.FightOff(() => g.SecurityDown || !r.Op(Enf).Inside, 120, Scout, Fixer, Tech);
                 r.Is(g.SecurityDown, "the cell downs the response unit before Vale comes out");
+                // engine 0.34.0 (M067-B1, brief 067 K): the rivals drawn by the guard fight stand on Rocket Lane by the Office front from 2:41.5; at
+                // the cell's 1.8 m/s the three were at their posts 17 s before Vale came out with nothing to do, and the four pressing the
+                // Enforcer as he walked Vale to the car downed him by one hit (3:33.5; 0.33.1 left him at 1 health). They go at the rivals once the
+                // unit is down, as a player would, and break the crew before Vale comes out
+                r.Engage(r.CityGunmen, () => !r.Op(Enf).Inside, 120, new[] { Scout, Fixer, Tech }, false);
                 r.Done(Enf);
                 // engine 0.19.0 (ai.intent.rivals.press, Pulse hostile-initiative.md §2.2): the rivals drawn by the gunfire press for the Vale
                 // holder, who can't fire walking Vale: the others go after them while he walks to the car
@@ -766,7 +773,11 @@ namespace Suborned.Sim
                 var d = Debrief.Of(g);
                 r.Eq(d.FightBranch, "loud", "the debrief names the loud fight");
                 r.Is(g.Log.Exists(l => l.Code == "ai.join"), "the response unit on the street joins the loud fight (Pulse §3.3)");
-                r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick)), "police hold their stand: none left it (Pulse §3.2)");
+                // engine 0.34.0: an officer fired on from beyond his reach with no cover closes to his ring (brief 027 R4, KiteFightClose) and stops
+                // on the first foe in reach on the way (advance → engage): at 1.8 m/s the Scout fires on both from beyond their reach at 3:01.7, and at the
+                // run's end (3:20.6) they stand engaged short of the point they were closing to. That is holding, not a chase
+                bool closed(string id) => g.Log.Exists(l => l.Code == "ai.kite" && l.Text.StartsWith(id + " ", StringComparison.Ordinal) && l.Text.Contains("it closes"));
+                r.Is(g.Hostiles.TrueForAll(h => !h.Id.StartsWith("officer-", StringComparison.Ordinal) || h.Down || h.Pos(g.Tick) == h.Home || h.Moving(g.Tick) || (closed(h.Id) && h.Gun.St == "engage")), "police hold their stand: none left it but to close to its ring when fired on from beyond it (Pulse §3.2; brief 027 R4)");
                 r.Is(g.Tick - g.FightStart >= T(30) || d.FightDownedByEnforcer == d.FightHostiles || g.FailCode == "enforcer-down", "the fight took its time (brief 059: the drawn crew, four on foot, presses the Enforcer and may down him sooner)");
                 if (!won) return;
                 // brief 018 §10 (Pulse): a final-fight officer sees the car go within the pistol's 25 m on a clear line: officer-2 at his stand, 19.4 m

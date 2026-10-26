@@ -1,0 +1,39 @@
+$ bun tools/game/playing.ts bun briefs/067/keel/ens341.ts briefs/067/keel/sq-ensembles-0.34.1.tsv briefs/067/motive/plans/ra-h3 contracts/missions/handover/routes/plans/route-a-board briefs/067/motive/plans/rgk-h3 out/scratch/motive/067sq/plans/rgkb-bo briefs/067/motive/plans/rgkb-h3 contracts/missions/handover/routes/plans/route-a contracts/missions/handover/routes/plans/route-a-pressure contracts/missions/handover/routes/plans/route-a-pressure-board contracts/missions/handover/routes/plans/route-g contracts/missions/handover/routes/plans/route-g-fast-board  (each .plan.json)
+# Motive's per-operative jitter ensemble (briefs/067/motive/sq/ens.ts, JMODE=op: each operative's first step and clock-pinned steps 0-2 s late,
+# FNV-1a of "k:op"; k0 as composed), each plan composed afresh on each engine and played: 0.34.0 = the working tree as reported green
+# (snapshot out/scratch/keel/pre-0.34.1), 0.34.1 = the working tree now. rgkb-bo is Motive's scratch plan (out/scratch/motive/067sq/plans).
+# Motive's numbers on his probe (motive-square.md §1.4): ra-h3 8/8 4:37.3-4:41.2 (fight to 4:22.9); route-a-board 8/8 4:15.5-4:17.2; rgk-h3 8/8
+# 5:56.9-5:58.9; rgkb-bo 8/8 5:36.1-5:38.1; rgkb-h3 and route-a-pressure-board 0/8. 0.34.0 gives each of them exactly.
+
+plan                     engine  wins  win ends         fight.over       losses                        Standing (wins)
+ra-h3                    0.34.0  8/8   4:37.3-4:41.2    4:22.9-4:26.8    -                             3:8
+ra-h3                    0.34.1  8/8   4:37.3-4:39.7    4:22.9-4:25.3    -                             3:8
+
+route-a-board            0.34.0  8/8   4:15.5-4:17.2    -                -                             2:8
+route-a-board            0.34.1  8/8   4:15.5-4:17.2    -                -                             2:8
+
+route-a                  0.34.0  8/8   4:36.5-4:38.8    4:22.6-4:24.9    -                             3:8
+route-a                  0.34.1  8/8   4:36.5-4:38.8    4:22.6-4:24.9    -                             3:8
+
+rgk-h3                   0.34.0  8/8   5:56.9-5:58.9    5:42.5-5:44.5    -                             3:8
+rgk-h3                   0.34.1  8/8   5:43.3-5:45.3    5:28.9-5:30.9    -                             3:8
+
+rgkb-bo                  0.34.0  8/8   5:36.1-5:38.1    -                -                             2:8
+rgkb-bo                  0.34.1  8/8   5:36.1-5:38.1    5:28.9-5:30.9    -                             3:8
+
+rgkb-h3                  0.34.0  0/8   -                -                rivals-reach-vale 8           -
+rgkb-h3                  0.34.1  0/8   -                -                rivals-reach-vale 8           -
+
+route-a-pressure         0.34.0  3/8   3:25.8-3:25.8    3:11.9-3:11.9    rivals-reach-vale 5           2:3
+route-a-pressure         0.34.1  3/8   3:27.0-3:27.1    3:13.1-3:13.2    rivals-reach-vale 5           2:3
+
+route-a-pressure-board   0.34.0  0/8   -                -                rivals-reach-vale 8           -
+route-a-pressure-board   0.34.1  0/8   -                -                rivals-reach-vale 8           -
+
+route-g                  0.34.0  8/8   4:14.5-4:16.5    4:00.6-4:02.6    -                             3:8
+route-g                  0.34.1  8/8   4:14.5-4:16.5    4:00.6-4:02.6    -                             3:8
+
+route-g-fast-board       0.34.0  8/8   3:07.4-3:07.4    -                -                             2:8
+route-g-fast-board       0.34.1  8/8   3:07.4-3:07.4    -                -                             2:8
+
+route-a-pressure's 5 losses on both engines don't compose past step 18 (the Enforcer's move: not taken by 5100), as on 0.34.0: Waymark's re-compose list.

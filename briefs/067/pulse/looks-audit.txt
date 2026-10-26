@@ -1,0 +1,61 @@
+# bun tools/people/looks.ts  (Pulse, brief 067 I, re-run 2026-10-26 after Forma's Velvet Set and Latch's BodyFigure)
+the host's fixed keys (HostViews.RoleFigure) and the others it dresses (hostiles, units, bodies):
+  op/scout                   scout      cell · model scout · Scout S1-2
+  op/fixer                   fixer      cell · model fixer · Fixer P4-6
+  op/tech                    tech       cell · model tech · Tech F2-1
+  op/enforcer                enforcer   cell · model enforcer · Enforcer G2
+  waitress                   waitress   cast · model waitress · Inez, café waitress W6
+  guard                      guard      security · model guard · Door guard P1
+  driver                     driver     cast · model d2m · Official driver
+  councillor                 councillor cast · model councillor · Councillor Vale C
+  security/<0..1>            security   security · model guard · Security officer
+  unit/<officer>             security   security · model guard · Security officer
+  hostile/<n> officers       security   security · model guard · Security officer
+  rival-1..5                 rival      rival · model d4 · Rival crew A
+  body/rival-<n>             rival      rival · model d4 · Rival crew A
+  hostile/<n> rival (range)  rival      rival · model d4 · Rival crew A
+  patrol                     (a robot prefab, no human figure) 
+  range bystanders           from the pool family/passer, by the bystander's id (sh2, d4b, d6, workers_d5, d5c, el1 for b-1..b-6)
+
+the 126 walkers of the people file (4 cast people are played by their role), by job → figure (PersonFigure + DressCrowd), and what the hover names them (HandoverHost.TargetOf):
+  attendant → d4                 2  civilian · pool family/office · "a passer-by"
+  attendant → d5c                2  civilian · pool family/office · "a passer-by"
+  clerk → d4                    29  civilian · pool family/office · "a passer-by"
+  clerk → d5c                   29  civilian · pool family/office · "a passer-by"
+  cook → cafe_w2                 2  staff · pool family/cafe · "a passer-by"
+  cook → cafe_w3                 3  staff · pool family/cafe · "a passer-by"
+  cook → cafe_w5                 4  staff · pool family/cafe · "a passer-by"
+  guard → guard                 15  security · pool family/guard · "a guard"
+  keeper → d4b                   1  civilian · pool family/passer · "a passer-by"
+  keeper → d5c                   1  civilian · pool family/passer · "a passer-by"
+  keeper → d6                    1  civilian · pool family/passer · "a passer-by"
+  resident → c6                  3  civilian · pool job/resident · "a passer-by"
+  resident → d4                  2  civilian · pool job/resident · "a passer-by"
+  resident → d4b                 3  civilian · pool job/resident · "a passer-by"
+  resident → d5c                 2  civilian · pool job/resident · "a passer-by"
+  resident → d6                  4  civilian · pool job/resident · "a passer-by"
+  resident → el1                 4  civilian · pool job/resident · "a passer-by"
+  resident → sh2                 3  civilian · pool job/resident · "a passer-by"
+  resident → workers_d5          3  civilian · pool job/resident · "a passer-by"
+  server → cafe_w2               2  staff · pool family/cafe · "a passer-by"
+  server → cafe_w3               6  staff · pool family/cafe · "a passer-by"
+  server → cafe_w5               5  staff · pool family/cafe · "a passer-by"
+
+16 of 126 walkers wear another figure than their own pick, because someone who sets out from the same place at the same time had it (DressCrowd); a body is drawn in the walker's figure (HostViews.BodyFigure), so 0 of 126 change clothes when knocked out (the plain pick would have changed 16).
+
+the crew's looks (pool role/rival; the host draws every crew key, rival body and range rival as `rival`: HostViews.RoleFigure has no table by member):
+  rival    model d4 · Rival crew A (the Velvet Set): Commuter D4's bomber in mid-violet velvet, deep-violet ribbing and tunic, ivory trousers, pearl boots, dark hair; bare head, no cap, no gold
+  rival_b  model d4 · Rival crew B: Commuter D4's bomber in deep violet (violet_set #6b4f8f), plum ribbing and tunic, pale grey trousers, platinum hair; bare head, no cap, no gold
+  rival_c  model d4 · Rival crew C: Commuter D4's bomber in lavender-violet velvet, mid-violet ribbing and tunic, pearl trousers, auburn hair; bare head, no cap, no gold
+  rival_d  model c6 · Rival crew D: Commuter C6's hooded jacket in violet velvet, deep-violet lining, pale dress, pearl boots; the crew's woman; bare head (the hood is down), no cap, no gold
+  roles.json playViews, the table by member (documentation: nothing reads it at run time):  rival-1 rival, rival-2 rival_b, rival-3 rival_d, rival-4 rival_c, rival-5 rival
+
+rules L-1, L-2 and L-4: no fault: only guards wear the duty suit, and nobody who is a guard wears anything else; the crew's looks are worn by no one else
+
+L-3 shared models (a role figure that is a recolour of a figure the crowd draws):
+  security   is guard, which the pools family/guard draw
+  driver     is d2m, which no pool draws
+  rival      is d4, which the pools family/office, family/passer, job/civic, job/resident, job/cinema, job/lobby draw
+  rival_b    is d4, which the pools family/office, family/passer, job/civic, job/resident, job/cinema, job/lobby draw
+  rival_c    is d4, which the pools family/office, family/passer, job/civic, job/resident, job/cinema, job/lobby draw
+  rival_d    is c6, which the pools family/passer, job/kiosk, job/resident, job/retail draw

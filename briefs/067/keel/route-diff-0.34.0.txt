@@ -1,0 +1,83 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a "e17d8ca7" --b tree
+· engines ready (4.3 s); playing 41 routes on A and 41 on B
+A = e17d8ca7f247    B = the working tree    (= means the value did not move)
+route                     outcome  fail  end  Trail  Alert  health lost
+careless-g-disable        =        =     =    =      =      =
+    first log line apart (line 54):
+      A  3:49.5  crowd.startled  1 on the street are startled and run.
+      B  3:49.5  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+fail-entry-seen-patrol    =        =     =    =      =      =
+    first log line apart (line 54):
+      A  5:52.3  witness.react  guard sees a body carried: radio.
+      B  5:46.4  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+fight-loud-enforcer-down  =        =     =    =      =      =
+    first log line apart (line 62):
+      A  2:37.1  order.move  enforcer heads for police-1.
+      B  2:37.1  car.held.blocker  security-2 holds the getaway car from the road: the blocker.
+loud                      =        =     =    =      =      =
+    first log line apart (line 58):
+      A  3:45.7  order.draw  scout draws (1.0 s).
+      B  3:45.7  car.held.blocker  security-1 holds the getaway car from the road: the blocker.
+loud-fast                 =        =     =    =      =      =
+    first log line apart (line 58):
+      A  3:45.7  order.draw  scout draws (1.0 s).
+      B  3:45.7  car.held.blocker  security-1 holds the getaway car from the road: the blocker.
+loud-fight                =        =     =    =      =      =
+    first log line apart (line 58):
+      A  3:45.7  order.draw  scout draws (1.0 s).
+      B  3:45.7  car.held.blocker  security-1 holds the getaway car from the road: the blocker.
+loud-left-downed          =        =     =    =      =      =
+    first log line apart (line 58):
+      A  3:45.7  order.draw  scout draws (1.0 s).
+      B  3:45.7  car.held.blocker  security-1 holds the getaway car from the road: the blocker.
+loud-left-standing        =        =     =    =      =      =
+    first log line apart (line 58):
+      A  3:45.7  order.draw  scout draws (1.0 s).
+      B  3:45.7  car.held.blocker  security-1 holds the getaway car from the road: the blocker.
+route-a                   =        =     =    =      =      =
+    first log line apart (line 48):
+      A  4:10.6  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:05.9  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-a-board             =        =     =    =      =      =
+    first log line apart (line 48):
+      A  4:10.6  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:05.9  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-a-disable           =        =     =    =      =      =
+    first log line apart (line 51):
+      A  4:10.6  order.panic  Panic: 4 armed operatives fire at will.
+      B  4:05.9  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-a-pressure          =        =     =    =      =      =
+    first log line apart (line 47):
+      A  3:00.7  shot.miss  rival-2 fires on enforcer at 10 m (281 ‰): miss.
+      B  2:59.6  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-a-pressure-board    =        =     =    =      =      =
+    first log line apart (line 47):
+      A  3:00.7  shot.miss  rival-2 fires on enforcer at 10 m (281 ‰): miss.
+      B  2:59.6  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-g                   =        =     =    =      =      =
+    first log line apart (line 56):
+      A  3:49.5  crowd.startled  1 on the street are startled and run.
+      B  3:49.5  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-g-board             =        =     =    =      =      =
+    first log line apart (line 56):
+      A  3:49.5  crowd.startled  1 on the street are startled and run.
+      B  3:49.5  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-g-fast              =        =     =    =      =      =
+    first log line apart (line 39):
+      A  2:57.3  shot.hit  rival-1 fires on enforcer at 11 m (281 ‰): hit.
+      B  2:56.6  car.held.blocker  rival-1 holds the getaway car from the road: the blocker.
+route-g-fast-board        =        =     =    =      =      =
+    first log line apart (line 40):
+      A  2:57.4  shot.hit  rival-1 fires on enforcer at 12 m (281 ‰): hit.
+      B  2:56.6  car.held.blocker  rival-1 holds the getaway car from the road: the blocker.
+route-g-kill              =        =     =    =      =      =
+    first log line apart (line 59):
+      A  5:17.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  5:16.5  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+route-g-kill-board        =        =     =    =      =      =
+    first log line apart (line 59):
+      A  5:17.7  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the enforcer to cv-032.
+      B  5:16.5  car.held.blocker  rival-2 holds the getaway car from the road: the blocker.
+
+41 routes: 19 moved, 22 unchanged
+(11.6 s)

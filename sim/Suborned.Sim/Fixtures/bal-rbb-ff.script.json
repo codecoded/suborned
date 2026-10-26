@@ -5,12 +5,6 @@
  "orders": [
   {
    "tick": 0,
-   "op": "enforcer",
-   "do": "move",
-   "to": "d:Service lane"
-  },
-  {
-   "tick": 0,
    "op": "scout",
    "do": "move",
    "to": [
@@ -31,7 +25,8 @@
    "tick": 0,
    "op": "tech",
    "do": "move",
-   "to": "d:Getaway bay"
+   "to": "cabinet",
+   "run": true
   },
   {
    "tick": 620,
@@ -74,10 +69,23 @@
    "target": "rivals"
   },
   {
-   "tick": 3300,
+   "tick": 3000,
    "op": "tech",
-   "do": "board",
-   "target": "car"
+   "do": "reroute",
+   "target": "patrol"
+  },
+  {
+   "tick": 3450,
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "run": true
+  },
+  {
+   "tick": 3500,
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane"
   },
   {
    "tick": 3550,
@@ -98,6 +106,12 @@
    ]
   },
   {
+   "tick": 3561,
+   "op": "tech",
+   "do": "board",
+   "target": "car"
+  },
+  {
    "tick": 3859,
    "op": "tech",
    "do": "drive-car",
@@ -107,12 +121,6 @@
    "tick": 4050,
    "op": "enforcer",
    "do": "take"
-  },
-  {
-   "tick": 4430,
-   "op": "scout",
-   "do": "fire",
-   "target": "rival-1"
   },
   {
    "tick": 4430,
@@ -127,13 +135,19 @@
    "to": "service-drive"
   },
   {
-   "tick": 4459,
+   "tick": 4435,
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-1"
+  },
+  {
+   "tick": 4453,
    "op": "enforcer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 4459,
+   "tick": 4453,
    "op": "cell",
    "do": "panic"
   },
@@ -168,17 +182,17 @@
    "to": "service-drive"
   },
   {
-   "tick": 4551,
+   "tick": 4544,
    "op": "fixer",
    "do": "board",
    "target": "car"
   },
   {
-   "tick": 4561,
+   "tick": 4554,
    "op": "cell",
    "do": "go"
   }
  ],
  "until": 5100,
- "note": "Composed by tools/sim/fixtures059.ts from briefs/059/motive/balance/probe-plans/rbb-ff.plan.json on the working tree's engine: BAL-YARD-AT-WILL (its locks dropped), BAL-YARD-FOCUS, BAL-YARD-FOCUS-LATE (M059-B4, B7): route B at the yard, board and go with the locks. Re-compose when the engine moves."
+ "note": "Composed by tools/sim/fixtures059.ts from briefs/067/motive/plans/rbb-rr.plan.json on the working tree's engine: BAL-YARD-AT-WILL (its locks dropped), BAL-YARD-FOCUS, BAL-YARD-FOCUS-LATE (M059-B4, B7): route B at the yard, the Tech reroutes the patrol at 5:00 (brief 067), board and go with the locks. Re-compose when the engine moves."
 }

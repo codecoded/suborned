@@ -8,7 +8,7 @@ import { resolve } from 'node:path';
 import { codeLine } from '../gen/replay-code';
 import type { Code } from '../gen/plugin';
 import { root } from '../rag/config';
-import { causeText, codeFinding, diffSignatures, judgeRun, signature } from './core';
+import { baseIsRed, causeText, codeFinding, diffSignatures, GDD_NOW, judgeRun, signature } from './core';
 
 setDefaultTimeout(600_000);
 const h = (c: string) => c.repeat(64), NOW = h('a'), THEN = h('b');
@@ -55,6 +55,32 @@ describe('comparing a replay with the base state\'s', () => {
     expect(v.moved).toBe(true); expect(v.failLines?.[0]).toContain('CHECKER CODE changed');
   });
   test('a run the base does not have only has to pass', () => { expect(judgeRun(run(['ok    x']), undefined).moved).toBe(false); });
+  // 2026-10-26: the GDD went v0.25.0 → v0.26.0 in the tree while HEAD held v0.25.0, and the only line of any run's replay that differed between the two states was
+  // `ok    GDD v0.22.0; now v0.2x.0: GDD drift is labelled ...`: all nine runs were refused for the name of the GDD that is current.
+  const gdd = (now: string, recorded = 'v0.22.0') => `ok    GDD ${recorded}; now ${now}: GDD drift is labelled "recorded against GDD ${recorded}"`;
+  test('which GDD is current is not a result of the replay: a GDD published between the two states refuses nothing', () => {
+    const base = run([gdd('v0.25.0'), line(code({ [NOW]: [{ cause: 'c', rules: ['P-6'] }] }), { rerunDiffers: true, changed: ['P-6'] }), 'ok    outcome ACCEPTED']);
+    const now = run([gdd('v0.26.0'), base.lines[1]!, 'ok    outcome ACCEPTED']);
+    expect(judgeRun(now, base)).toEqual({ id: 'r016', objective: 'people', moved: false });
+    expect(signature(now.lines)[0]).toBe(signature(base.lines)[0]);
+  });
+  test('the GDD line still counts for what it says of the run: another recorded GDD, or no label, is a difference', () => {
+    const base = run([gdd('v0.25.0'), 'ok    outcome ACCEPTED']);
+    expect(judgeRun(run([gdd('v0.26.0', 'v0.21.0'), 'ok    outcome ACCEPTED']), base).moved).toBe(true);
+    expect(judgeRun(run(['ok    GDD v0.22.0', 'ok    outcome ACCEPTED']), base).moved).toBe(true);
+  });
+  test('the GDD line is the one tools/gen/replay.ts prints (a real replay of r011)', () => {
+    const r = Bun.spawnSync(['bun', 'tools/levels/replay.ts', 'r011', 'harbour-district'], { cwd: root, stdout: 'pipe', stderr: 'pipe' });
+    const first = (r.stdout.toString() + r.stderr.toString()).split('\n').find(l => /^ok\s+GDD /.test(l));
+    expect(first).toMatch(GDD_NOW); expect(signature([first!])[0]).toContain('now <current GDD>: GDD drift is labelled');
+  });
+  test('a base that fails the code check itself is named, so its refusals are not read as the tree\'s', () => {
+    const red = run([line(code({}), { rerunDiffers: true, changed: ['P-6'] })], false), moved = run([line(code({ [NOW]: [{ cause: 'c', rules: ['P-9'] }] }), { rerunDiffers: true, changed: ['P-9'] })]);
+    const against = (base: ReturnType<typeof run>) => judgeRun(run([line(code({ [NOW]: [{ cause: 'c', rules: [] }] }))]), base);
+    expect(baseIsRed(against(red))).toBe(true);
+    expect(baseIsRed(judgeRun(moved, run([line(code({}))])))).toBe(false); // the tree moved a rule, the base was fine
+    expect(baseIsRed(against(run([line(code({}))])))).toBe(false); // same code line on both sides: nothing moved, nothing to name
+  });
   test('diffSignatures is a multiset difference', () => { expect(diffSignatures(['a', 'a', 'b'], ['a', 'c'])).toEqual({ onlyBase: ['a', 'b'], onlyNow: ['c'] }); });
 });
 

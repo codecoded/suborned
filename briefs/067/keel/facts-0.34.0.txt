@@ -1,0 +1,7 @@
+# suborned-sim facts (engine 0.34.0) on three sites: the tree's rulebook and people rules with each commit's sim/data
+tree (brief 067 A, the service yard's sweep):
+{"engine":"suborned.sim/0.34.0","inputs":"12390659450729014507","patrolWatchesEntry":false,"sweepSecondsOnEntry":0,"sweepPeriodS":100}
+71bf4032 (round 1: the yard points, the old east facing):
+{"engine":"suborned.sim/0.34.0","inputs":"12252336164119422271","patrolWatchesEntry":false,"sweepSecondsOnEntry":0,"sweepPeriodS":100}
+d4361806 (engine 0.33.1's forecourt sweep):
+{"engine":"suborned.sim/0.34.0","inputs":"3005347554872747948","patrolWatchesEntry":true,"sweepSecondsOnEntry":59,"sweepPeriodS":100}

@@ -2882,13 +2882,13 @@
    "lover": ""
   },
   "from": "out/people/harbour-district.people.json",
-  "sha256": "d48669f7573d6c537951b1daa26a95843bf18d8139e292dd0ffbaf1d6df33a0a",
+  "sha256": "a8a67bf9bae2cd134d553aeffecd36675ddce7c24f367c30ff40f597b46aed48",
   "startsAt": "17:24:30",
   "src": "tools/missions/handover/cast.ts castRoles with { play: true }, as rule M-2 casts it (brief 011, Aster): every role there when needed, tied and placed as mission.json asks"
  },
  "cover": {
   "from": "contracts/world/civic-block.cover.json",
-  "sha256": "9c1e63aa1efc4fb5bd690f2a4b355b38cc87a20927fc02b720edef73daf81310",
+  "sha256": "2857ebb23fbd2d139816214706854ab9fa718f89b1584d92ad59f924cdacbe0f",
   "src": "brief 011 fight AI (Pulse): cover points (where a body stands, the direction it shields against, the cone, the quality, present for cars) and the objects at eye height and up that block sight",
   "points": [
    {

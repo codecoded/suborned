@@ -98,7 +98,12 @@ namespace Suborned.Sim
                     else if (stand.HasValue) r.Is(cv.Q >= g.R.CoverQPartial, $"{id}, the contest officer, answers as any police body (tuning.md §7.11.1, no longer held to the car): it takes {cid}, real cover ({G.Dist(cv.At, car) / 100} m from the car)");
                     else r.Is(G.Dist(cv.At, car) <= G.Dist(h.Home, car) + g.R.SeekPoliceCm, $"{id} takes {cid} on its way ({G.Dist(cv.At, car) / 100} m from the car)");
                 }
-                r.Is(cover.Count > 0, $"{cover.Count} police bodies fired on from beyond their reach took cover ({answers.Count - cover.Count} closed in, no cover)");
+                // engine 0.34.0 (Motive M067-SQ1, on the square without its planters, brief 067 K): a police body's cover is never in the car's hold
+                // or lane, and no farther from the car than its stand (13 and 17 m): officer-1 and officer-2, fired on by the Scout from beyond their
+                // reach at 3:00.1, find no cover in that band (the car's own, cv-004 and cv-006, is in the hold; on 0.33.1 the response unit's
+                // security-1 took cv-074, then the car) and close to their ring. The case's rule is that each answers by cover or a close and none
+                // chases: some must have answered
+                r.Is(answers.Count > 0, $"{answers.Count} police bodies fired on from beyond their reach answered: {cover.Count} took cover, {answers.Count - cover.Count} closed in (no cover outside the hold)");
             }, LabStart(s => s.Security = 1));
 
             Add("N162", "—", "Brief 027 retest R3 (Pulse retest-fixes.md §4): a brief-013 police unit holding at its scene, shot by the Fixer from beyond its ring with a clear line, moves within 1.0 s (or fires on him), and the shot alarms the other unit of its dispatch.", r =>

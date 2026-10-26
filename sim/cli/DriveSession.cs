@@ -1,6 +1,6 @@
 // suborned-sim drive-session [out.json]: record the driven session DP1 replays (brief 025). A stand-in for the Unity host, deliberately
 // host-shaped: a float controller (double metres) moved per frame at a jittered 60 fps by camera-relative keys (yaw 30, the opening view),
-// walk 1.4 m/s or run 2.8 m/s, with no collision of its own (worse than Latch's grid-backed mover, so the engine corrects it often); each tick
+// at the cell's walk or run (the rulebook's cell.speed and cell.runSpeed, as the host's HostDrive reads them), with no collision of its own (worse than Latch's grid-backed mover, so the engine corrects it often); each tick
 // it hands the engine its position rounded to centimetres, one drive sample, then pulls itself back to the engine's pose if they differ by more
 // than 5 cm. Floats never reach the engine: the record holds only the samples. Writes sim/Suborned.Sim/Fixtures/drive-session.script.json.
 using System;
@@ -28,7 +28,7 @@ static class DriveSession
             {
                 // camera-relative: forward is the camera's heading on the ground, right its perpendicular (block frame: x south, y east)
                 double fx = Math.Cos(yaw), fy = Math.Sin(yaw), rx = -fy, ry = fx;
-                double vx = f * fx + rt * rx, vy = f * fy + rt * ry, len = Math.Sqrt(vx * vx + vy * vy), sp = run ? 2.8 : 1.4;
+                double vx = f * fx + rt * rx, vy = f * fy + rt * ry, len = Math.Sqrt(vx * vx + vy * vy), sp = (run ? g.R.RunSpeed : g.R.CellSpeed) / 100.0; // engine 0.34.0: the rulebook's paces, as HostDrive reads them (1.8 and 3.6 m/s; 0.33.1 hard-coded 1.4 and 2.8)
                 cx += vx / len * sp * dt; cy += vy / len * sp * dt;
             }
             while (acc >= 0.1)

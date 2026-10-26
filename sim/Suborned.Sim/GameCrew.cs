@@ -579,11 +579,14 @@ namespace Suborned.Sim
             }
             return S.Stand(st.Ambush[Math.Min(m.N - 1, st.Ambush.Length - 1)]);
         }
+        /// <summary>A final-fight body's walk to its stand, spot or post (Why "post"), round the car's hold where it can (Motive M067-SQ1:
+        /// RouteRoundHold), else the plain walk; it stands where it is when there is no walk at all. The rival crew to its spots, police and the
+        /// response unit to their stands (engine 0.34.0).</summary>
         void MoveToFight(Hostile h, Pt to)
         {
             var from = h.Pos(Tick); var a = Walk.NearestFree(from) ?? from; var b = Walk.NearestFree(to) ?? to;
             var route = RouteRoundHold(a, b) ?? Walk.Route(a, b); if (route == null || route.Length < 2) { h.At = from; h.Run = null; return; } // engine 0.34.0 (Motive M067-SQ1): to his spot round the car's hold
-            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; if (h.Run.Length == 0) h.Run = null;
+            h.Run = new Path(route); h.RunStart = Tick; h.At = h.Run.End; h.Why = "post"; h.Closing = false; if (h.Run.Length == 0) h.Run = null;
         }
         /// <summary>F6: a rider steps out at the fight's stand (or a member still on foot when the fight takes him): his body joins the fight, walking
         /// to his spot. False when there is no fight for him.</summary>

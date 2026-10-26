@@ -785,6 +785,14 @@ namespace Suborned.Sim
                 return sweepCovers == 1;
             }
         }
+        /// <summary>Engine 0.34.0 (Motive briefs/067/motive-square.md §5.3, for Waymark's MC-3 `needs: "patrol-watches-entry"`): the site fact
+        /// patrolWatchesEntry: the sweep, not rerouted, sees the public door (S.GuardPost) by its cone at its eye, the crowd aside, at one whole
+        /// second of its round at least (SweepSeesEntrance at each second of one period). A rerouted patrol watches nothing (PatrolWatching), so
+        /// its wait adds nothing. False on the service yard's sweep (brief 067 A), true on 0.33.1's forecourt. Derived from the inputs alone;
+        /// never hashed. Read-only (suborned-sim facts).</summary>
+        public bool PatrolWatchesEntry => SweepSecondsOnEntry > 0;
+        /// <summary>The whole seconds of the sweep's round (rulebook patrol.period) at which it sees the public door: PatrolWatchesEntry's count.</summary>
+        public int SweepSecondsOnEntry { get { int n = 0; for (int s = 0; s < R.PatrolPeriodS; s++) if (SweepSeesEntrance(T(s))) n++; return n; } }
         public bool SecurityWatching(Pt p)
         {
             for (int k = 0; k < SecGuns.Length; k++) if (SecOfficerWatching(k, p)) return true;

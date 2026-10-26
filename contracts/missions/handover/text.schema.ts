@@ -56,8 +56,8 @@ export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; //
 export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'step-target', 'extract'] as const;
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
-/** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. */
-export const FAILS = ['abduction-seen-camera', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard', 'entry-seen-patrol',
+/** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. `cell-down` (engine 0.34.0, brief 067): every operative is down. */
+export const FAILS = ['abduction-seen-camera', 'cell-down', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard', 'entry-seen-patrol',
   'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
 export const NAMED = ['Inez', 'Vale'] as const; // the only people the words may name (people.rules names.pinned); others by role
 /** Speakers only a scene has: the people around the target (the café's owner, a customer, an Office clerk). */
@@ -345,6 +345,7 @@ export const Less = z.strictObject({
       cost: z.record(code, Short(16)).describe('the cost word by the engine\'s cancel cost; a cancel cost with no entry is free'),
     }).describe('brief 043: the warning before a cancelling order and the pop after it; {verb} the ring label, {cost} one of cost, {s} seconds spent'),
     fire: z.record(code, Short(12)).describe('engine 0.26.0 (Game.FireQuery): the portrait plate\'s two words when a squad fire order skips this agent, by the refusal code; no punctuation, a name may keep its capital (has Vale)'),
+    run: z.strictObject({ noticed: Line, unknown: Line }).describe('engine 0.34.0 (brief 067, Motive M067-B2): the Alt chip of a run on the ground, which says who would notice it and no longer an Alert (a run is noticed, never an Alert on its own): `noticed` follows "run 6 s · " with {who} the watchers as the host names them ("the guard, a guard"), `unknown` stands for a watcher the Scout has not learned (the "?" of rulebook sight.unknown). The host reads less.done.run.noticed (RunNoticedWords)'),
     board: z.record(code, Short(12)).describe('brief 067 (Glyph C4): the same chip for a squad Board that skips this agent, by the refusal code a Board can meet (the host\'s BoardLock and the engine\'s Board); an agent already in the car is skipped silently, so `in-car` has no entry'),
     walk: z.strictObject({
       plate: Short(16).describe('the plate while an agent walks to act: {who} from `who`'),

@@ -71,7 +71,15 @@ static class Probe
                 foreach (var wk in hg.Walkers) if (wk.P.Job == "guard" || wk.P.Job == "patrol-officer" || wk.P.Job == "watcher") Put($"{wk.P.Id} ({wk.P.Job})", hg.CrowdPos(wk));
                 foreach (var kv in at) if (kv.Value.Count > 1) { var k = $"{kv.Key}"; if (!spans.TryGetValue(k, out var sp)) sp = (hg.Tick, hg.Tick, 0, ""); spans[k] = (sp.from, hg.Tick, Math.Max(sp.most, kv.Value.Count), kv.Value.Count > sp.most ? string.Join(" + ", kv.Value) : sp.who); }
             }
-            foreach (var kv in spans) Console.WriteLine($"security people on one spot {kv.Key}: from {Report.Clock(kv.Value.from)} to {Report.Clock(kv.Value.to)} (read each second), at most {kv.Value.most}: {kv.Value.who}");
+            // engine 0.34.0 (Pulse briefs/067/pulse.md §2.5 Keel 2): a span of one reading is the change-over instant at a post (one steps off, the
+            // next steps on the same second): no overlap. Only spans of two readings or more are printed; the instants are counted
+            int instants = 0;
+            foreach (var kv in spans)
+            {
+                if (kv.Value.to == kv.Value.from) { instants++; continue; }
+                Console.WriteLine($"security people on one spot {kv.Key}: from {Report.Clock(kv.Value.from)} to {Report.Clock(kv.Value.to)} (read each second), at most {kv.Value.most}: {kv.Value.who}");
+            }
+            Console.WriteLine($"security people on one spot for one reading only (a change-over at a post, no overlap): {instants}");
             // the cars' other places (not in the crowd's legs: they are made once, round the start's cars)
             var other = new List<(string, Pt, Pt)> { ("rival car at the drop", s.CarStand(s.RivalCarDrop), s.RivalFacingDrop), ("rival car at the park", s.CarStand(s.RivalsPark), s.RivalFacingPark),
                 ("rival car at the tail", s.CarStand(s.RivalCarTail), s.RivalFacingTail), ("rival car at the front stop", s.CarStand(s.RivalCarFront), s.RivalFacingFront),

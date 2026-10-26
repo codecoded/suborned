@@ -7,7 +7,7 @@
 //  N184 ready: N115's quiet G-kill without the final fight; the Enforcer boards with Vale, nobody gives Go; sealed with the car free.
 //       The seal window from the first seal-clock tick to the seal, its origin the cause's.
 //  N185 held: N111's ambush; the Enforcer boards with Vale while the blocker holds the lane, Go refused car-held; sealed, held, the
-//       holders exactly CarHolders() at the seal.
+//       holders exactly CarHolders() at the seal (engine 0.34.0: the two who fought board too, the Tech stands outside as nobody's foe).
 //  N186 the patrol's path: route A's reroute, the walk out, the wait, the walk back, then a chase: after every tick the robot stands on the
 //       path read before it, and never steps more than its pace in a tick.
 using System;
@@ -114,7 +114,7 @@ namespace Suborned.Sim
                 r.Is(d.Route.Contains("vale-reaches-getaway-car") && d.Route.Contains("vale-taken-through-office"), $"the debrief: through the Office, and he reached the car (route: {string.Join(", ", d.Route)})");
             }, NoFight());
 
-            Add("N185", "—", "The seal's car state, held (brief 057 §4): N111's fixture (route A, quiet, the ambush springs; one rival goes for the road and holds the exit lane). The three by the car fight on and spare the blocker; the Enforcer walks Vale in and boards. Go is refused car-held, naming the holders. The district seals with Vale aboard and the car held: FailCause.Car held, its holders exactly CarHolders() at the seal (the hold Go names), the refused Go recorded.", r =>
+            Add("N185", "—", "The seal's car state, held (brief 057 §4): N111's fixture (route A, quiet, the ambush springs; one rival goes for the road and holds the exit lane). The Scout and the Fixer fight on and spare the blocker; the Enforcer walks Vale in and boards, and the two board after him (engine 0.34.0: the Tech, never drawn, stands outside, so K3's walk to the car stays off, and with no operative a rival has cause to fire on outside the rivals hold: M067-SQ2). Go is refused car-held, naming the holders. The district seals with Vale aboard and the car held: FailCause.Car held, its holders exactly CarHolders() at the seal (the hold Go names), the refused Go recorded.", r =>
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
@@ -125,13 +125,26 @@ namespace Suborned.Sim
                 if (!r.Is(b != null && !g.Over, $"the ambush springs and one goes for the road ({Report.Clock(g.Tick)})")) return;
                 // engine 0.33.0 (Motive M059-B1, B7): the crew fights from where it stands and shoots the carrier, so the three support him (focus
                 // fire on whoever fires on him), sparing the blocker
+                // engine 0.34.0 (Motive M067-SQ2, K3): the Scout and the Fixer cover him; the Tech, who never draws, stands outside. A rival with nobody
+                // in reach now advances on an operative he has cause to fire on, so three firing at the car would break the crew (the blocker leaves
+                // with it) or be shot down (then K3's walk to the car takes Vale): neither leaves the car held at the seal. Once Vale is aboard the
+                // two board too; the Tech, outside and nobody's foe, keeps K3 off, and with no operative to advance on the rivals hold
                 r.Focus = true;
-                r.Engage(() => Targets(g, true), () => g.Over || (r.Op(Enf).Walk == null && r.Op(Enf).Busy == null && g.Vale == ValeAt.WithEnforcer), 120, new[] { Scout, Fixer, Tech }, false, advance: false);
+                r.Engage(() => Targets(g, true), () => g.Over || (r.Op(Enf).Walk == null && r.Op(Enf).Busy == null && g.Vale == ValeAt.WithEnforcer), 120, new[] { Scout, Fixer }, false, advance: false);
                 r.Focus = false;
                 r.Is(!g.Over && r.Op(Enf).Walk == null && g.Vale == ValeAt.WithEnforcer, $"the Enforcer at the car with Vale ({Report.Clock(g.Tick)}; {g.Result} {g.FailCode})");
                 if (!r.Is(r.Do(Enf, "board", "car"), "he boards with Vale")) return;
                 r.Done(Enf); g.Step();
                 r.Is(g.Vale == ValeAt.Car, "Vale is in the car");
+                var two = new[] { Scout, Fixer }; var boarded = new HashSet<string>();
+                foreach (var s0 in two) if (!r.Op(s0).Down) { g.Issue(new Order { Tick = g.Tick, Op = s0, Do = "cease" }); r.Send(s0, "d:Getaway bay"); }
+                for (int k = 0; k < T(30) && !g.Over && two.Any(s0 => !r.Op(s0).Down && !r.Op(s0).InCar); k++)
+                {
+                    foreach (var s0 in two) { var o = r.Op(s0); if (!o.Down && !o.InCar && !boarded.Contains(s0) && o.Busy == null && g.AtGetaway(o.Pos)) { boarded.Add(s0); r.Do(s0, "board", "car"); } }
+                    g.Step();
+                }
+                r.Is(two.All(s0 => r.Op(s0).Down || r.Op(s0).InCar), $"the two who fought are aboard ({string.Join(", ", two.Select(s0 => s0 + (r.Op(s0).InCar ? " in the car" : r.Op(s0).Down ? " down" : " outside")))})");
+                r.Is(!r.Op(Tech).Down && !r.Op(Tech).InCar && !r.Op(Tech).Gun.Drawn && !r.Op(Tech).Gun.Fired, "the Tech stands outside, never drawn: nobody's foe");
                 r.Until(() => g.Over || g.CarHolders().Contains(b!.Id), T(60));
                 var a = g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "go" });
                 r.Eq((a.ok, a.code), (false, "car-held"), $"Go is refused while the car is held ({a.ids})");

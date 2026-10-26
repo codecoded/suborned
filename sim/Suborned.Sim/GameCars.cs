@@ -1,8 +1,8 @@
 // Cars are targets (Sky 2026-10-21, tuning.md §9.7: "shootable, as in Syndicate"; Motive tuning.md §10.7, engine 0.16.0; both presets).
 // Every car the Handover simulates is a target by its own id: "car:getaway" (the cell's, at its bay), "car:official" (Vale's, where CarPos
-// puts it) and "car:rivals" (the rival crew's, parked at rivals.park once it has parked; a crew drawn by gunfire comes on foot and parks
-// none); the range's cars are its own spawns (spawn:car:<n>, GameRangeKinds.cs). There are no other cars: the host draws only these (engine
-// 0.34.0, Aster: the street has no parked or passing dressing cars), so every car on the street is simulated, a target and solid (car.footprint).
+// puts it) and "car:rivals" (the rival crew's, from its entry wherever it drives: to rivals.park, or, drawn by gunfire, to its stop on Rocket
+// Lane by the Office front; brief 059 K7); the range's cars are its own spawns (spawn:car:<n>, GameRangeKinds.cs). These are all the cars
+// there are: the street has no dressing cars, parked or passing, so every car a player sees is one of them, a target and solid (car.footprint).
 //  · A car has car.target.health (×healthScale in the lab). At or below car.target.disabledAt (×healthScale) it is disabled: it stops where
 //    it is and never drives again; its occupants get out. At 0 it burns (its blast ring shows) and car.target.burn seconds later explodes.
 //  · The blast: everyone within car.target.blast.m of the car with a line to it takes car.target.blast.damage (×healthScale), the cell

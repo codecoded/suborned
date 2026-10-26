@@ -18,10 +18,14 @@ def t_live():
     rival_pips(fr, "r1", 3, 3); rival_pips(fr, "r2", 3, 3)
     return tile(fr, box(1240, 455))
 def t_snap():
-    fr = scene(); rest_marks(fr)
-    cover_arc(fr, BENCH_K, 0, 75, True, TURQL); tether(fr, (1034, 776), (BENCH_K[0], BENCH_K[1] + 4)); move_ring(fr, (BENCH_K[0], BENCH_K[1] + 4), 0.05)
-    cover_disc(fr, BENCH, True, "cell", lit=True); cursor_arrow(fr, (1030, 778))
-    return tile(fr, box(990, 700))
+    """the cursor is 1.2 m from the kneel point behind the bench: the move ring stands on the point, the lit shield lifts over it, a dashed tether runs from the cursor's ground (as built, HudToolkit.Cover)"""
+    fr = scene(); rest_marks(fr); k = BENCH_K
+    phi = math.degrees(math.atan2((BENCH[1] - k[1]) / SQ, BENCH[0] - k[0]))        # the side it shields: toward the bench
+    cover_arc(fr, k, phi, 62, True, CREAM, r_m=1.2)
+    cur = (1046, 792); tether(fr, cur, (k[0] + 10, k[1] + 5)); move_ring(fr, k, 0.1, r_m=0.62)
+    stroke(fr.world, circ(cur, 3.2, 12), CREAM, 0.1, closed=True, fill=CREAM)
+    cover_disc(fr, (k[0], k[1] - 46), True, "cell", lit=True); cursor_arrow(fr, (cur[0] + 6, cur[1] + 4))
+    return tile(fr, box(1000, 718))
 def t_flank():
     fr = scene(); ring39(fr, R2F, threat=True); cover_disc(fr, MARK_HG, False, "rival", struck=True); cover_arc(fr, R2F, 200, 70, False, CREAM, dim=True); rival_pips(fr, "r2", 3, 3)
     ring = (1272, 430); sight(fr, ring, (R2F[0] + 10, R2F[1] - 4)); move_ring(fr, ring, 0.55)
@@ -79,8 +83,8 @@ def key():
 
 def build():
     row1 = [dict(im=t_quiet(), cap="Quiet until it matters", small="Within 10 m of a drawn agent: a small shield disc at 55 %. No arc."),
-            dict(im=t_live(), cap="Live when someone holds it", small="The disc grows a ring in the holder's colour and the arc shows the side it shields: solid full, dashed partial."),
-            dict(im=t_snap(), cap="The snap", small="Within 1.5 m the move ring leaps to the point, wears the shield, and the disc lights."),
+            dict(im=t_live(), cap="Live when someone holds it", small="The disc grows a ring in the holder's colour and an arc on the ground shows the side it shields: a heavy arc is full cover, a thin one partial."),
+            dict(im=t_snap(), cap="The snap", small="Within 1.5 m of cover the move ring leaps to its kneel point, a dashed line joins it to the cursor, and the shield lights over it."),
             dict(im=t_flank(), cap="The flank, before you walk", small="A dotted line of fire from where the move ends: his disc flips to struck, because it comes from outside his arc.")]
     row2 = [dict(im=cursors(), cap="The cursor says it", small="The shield badge: counts, counts half, does not count. The ticks open as the odds fall."),
             dict(im=lands(), cap="Where a round lands", small="On him (a spark and a pip pops), past him (a ring: a miss), on the cover (stone chips and the disc's ring leaves once).")]

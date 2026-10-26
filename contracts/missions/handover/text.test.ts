@@ -79,6 +79,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
     { const D = L.done; for (const [k, x] of Object.entries(D.plate)) push(`less.done.plate.${k}`, x, false, 12); for (const [k, x] of Object.entries(D.gain)) push(`less.done.gain.${k}`, x.replace('{s}', '120'), false, 16);
       for (const [k, x] of Object.entries(D.close)) push(`less.done.close.${k}`, x, false, 16); for (const [k, x] of Object.entries(D.cancel.cost)) push(`less.done.cancel.cost.${k}`, x.replace('{s}', '120'), false, 16);
       for (const [k, x] of Object.entries(D.fire)) push(`less.done.fire.${k}`, x, false, 12);
+      for (const [k, x] of Object.entries(D.run)) push(`less.done.run.${k}`, x); // engine 0.34.0: the Alt chip of a run, an Alt line
       push('less.done.walk.plate',D.walk.plate.replace('{who}', 'passer-by'), false, 16); for (const [k, x] of Object.entries(D.walk.who)) push(`less.done.walk.who.${k}`, x, false, 12); }
     for (const [k, x] of Object.entries(L.alt.outcome)) push(`less.alt.outcome.${k}`, x);
     for (const [k, x] of Object.entries(L.alt.mood)) push(`less.alt.mood.${k}`, x);
@@ -455,7 +456,9 @@ describe('training hints, the run toast, the going-loud card', () => {
   });
   test('the run toast and the loss line exist; the loss line says what Motive asked', () => {
     expect(t.toasts['run-seen']!.line).toMatch(/run/i);
-    expect(t.toasts['run-seen']!.line).toContain('Alert 1');
+    // engine 0.34.0 (brief 067, Motive M067-B2): a run is noticed, never an Alert on its own, so the toast says so and names no Alert
+    expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
+    expect(t.toasts['run-seen']!.line).not.toMatch(/Alert/);
     expect(t.goingLoud.captured.toLowerCase()).toBe('anyone left behind in a fight is captured.');
   });
 });
@@ -843,7 +846,9 @@ describe('feed cards for engine events no scene covers', () => {
       expect(x.title, c).not.toMatch(/[a-z]+-[a-z]+|\./);
       for (const r of typeof x.result === 'string' ? [x.result] : Object.values(x.result ?? {})) { expect(r, c).not.toMatch(/found fault|\btick\b|operative|engine/i); expect(r).toMatch(/^[A-Z{]/); }
     }
-    for (const c of ['run.seen', 'report']) { expect(items[c]!.result as string).toContain('{who}'); expect(items[c]!.result as string).toContain('{alert}'); }
+    expect(items.report!.result as string).toContain('{who}'); expect(items.report!.result as string).toContain('{alert}');
+    // engine 0.34.0 (brief 067, Motive M067-B2): a run is noticed and noted, never an Alert on its own, so its card names who saw whom and no Alert
+    expect(items['run.seen']!.result as string).toContain('{who}'); expect(items['run.seen']!.result as string).toContain('{agent}'); expect(items['run.seen']!.result as string).not.toMatch(/\{alert\}|Alert/);
     expect(items['fight.loud']!.result as string).toMatch(/\{n\}.*\{clock\}/);
     expect(items['fight.safe']!.result as string).toContain('{n}');
     expect(items.captured!.result as string).toContain('{agent}');
@@ -877,7 +882,7 @@ describe('feed cards for engine events no scene covers', () => {
     expect(Object.keys(items['stash.']!.result as object).sort()).toEqual(['container', 'door']);
   });
   test('cardResult and fillCard fill the placeholders and capitalise the start', () => {
-    expect(fillCard(cardResult(t, 'run.seen')!, { who: 'the entrance camera', agent: 'the Scout', alert: 1 })).toBe('The entrance camera saw the Scout run. Alert 1.');
+    expect(fillCard(cardResult(t, 'run.seen')!, { who: 'the entrance camera', agent: 'the Scout', alert: 1 })).toBe('The entrance camera noticed the Scout running.');
     expect(fillCard(cardResult(t, 'fight.loud')!, { n: 5, clock: '7:10' })).toBe('5 officers, from the north street. Police seal the district at 7:10.');
     expect(cardResult(t, 'vale.exits')).toBe('Walking to his car.'); expect(cardResult(t, 'vale.exits', 'service')).toBe('Walking to his car.'); // brief 059: one row, no service branch
   });
@@ -1105,7 +1110,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     expect(mine.filter((s) => GENDER.test(s.text)).map((s) => `${s.path}: ${s.text}`)).toEqual([]);
   });
   test('the Next Step is one imperative with one ringed noun, at most six words, no agent, no approach, no time and no sequence', () => {
-    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Keep moving)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'drive-car': /^Drive\b/, 'turn-view': /^Turn (the view|twice)\b/, cease: /^Cease fire: press X\.$/, 'step-target': /^Scroll to switch\.$/ };
+    const lead: Record<string, RegExp> = { enter: /^Go in\b/, board: /^Board\b/, go: /^Go:/, take: /^Take\b/, move: /^(Run|Walk)\b/, watch: /^Watch\b/, listen: /^Listen\b/, turn: /^(Turn|Call)\b/, loop: /^Loop\b/, call: /^Call\b/, reroute: /^Reroute\b/, mislead: /^Give\b.*false tip/, fire: /^(Cover|Fire at)\b/, carry: /^Carry\b/, 'drive-car': /^Drive\b/, 'turn-view': /^Turn (the view|twice)\b/, cease: /^Cease fire: press X\.$/, 'step-target': /^Scroll to switch\.$/ };
     const bad: string[] = [];
     const forms = Object.entries(t.hints.items).flatMap(([id, h]) => [{ id, h, short: h.short, line: h.line, ring: id === 'H13' || id === 'H19' || id === 'H21' || id === 'H22' ? 0 : 1 }, ...(h.door ? [{ id: `${id}.door`, h, short: h.door.short, line: h.door.line, ring: 0 }] : [])]);
     for (const { id, h, short, line, ring } of forms) {
@@ -1287,7 +1292,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     const ways: Record<string, string[]> = {
       'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'entry-seen-patrol': ['seen'], 'abduction-seen-camera': ['seen'],
       'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
-      'enforcer-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
+      'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
     for (const [f, ws] of Object.entries(ways)) expect(Object.keys(F.caption[f]!).sort(), f).toEqual([...ws].sort());
     for (const f of FAILS) expect(f in F.caption, f).toBe(true);
@@ -1295,7 +1300,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [f, ws] of Object.entries(ways)) if (f !== 'engine-error') expect(Object.keys(F.tip[f]!).sort(), f).toEqual([...ws].sort());
     expect('engine-error' in F.tip).toBe(false);
     // words once filled (the HUD line limit is six): {by} is two words ("The guard") except where a camera or a police officer can be the culprit (three)
-    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'driver-shot.shot', 'vale-dead.shot']);
+    const three = new Set(['entry-seen-camera.seen', 'abduction-seen-camera.seen', 'sealed.response', 'sealed.confirmed', 'enforcer-down.shot', 'cell-down.shot', 'driver-shot.shot', 'vale-dead.shot']);
     const bad: string[] = [];
     for (const [f, m] of Object.entries(F.caption)) for (const [w, x] of Object.entries(m)) {
       const filled = x.replace(/\{by\}/g, three.has(`${f}.${w}`) ? 'The entrance camera' : 'The guard').replace(/\{agent\}/g, 'the Enforcer');
@@ -1327,9 +1332,9 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(75); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0)
+    expect(Object.keys(t.cards.items).length).toBe(77); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
-    expect(t.toasts['run-seen']!.line).toMatch(/Alert 1/);
+    expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
   });
 });
 
@@ -1732,5 +1737,108 @@ describe('brief 067: engine 0.33.1, the beat heard anywhere, the Watch on the ri
     // the key is the game's own: X is Cease in the controls and in HOW-TO-PLAY
     const controls = join(root, 'unity/Assets/Suborned/Runtime/Play/PlayControls.cs');
     if (existsSync(controls)) expect(read('unity/Assets/Suborned/Runtime/Play/PlayControls.cs')).toMatch(/PlayAction\.Cease,\s*keys = new\[\] \{ Key\.X \}/);
+  });
+});
+
+// ---------------------------------------------------------------- brief 067 (batch 0.2.123, round 2): engine 0.34.x
+describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals walk to a held car, the patrol in the yard, a run is noticed, three words the host made up', () => {
+  const L = t.less;
+  const wc = (x: string) => x.replace(/\{[a-z-]+\}/g, '').replace(/[·▲👁✓✗½[\]]/gu, ' ').split(/\s+/).filter((w) => /\p{L}/u.test(w)).length;
+  test('Go needs a driver: car-no-driver says what, and the fix, in a pop of three words; the engine gives it from Go and from the Go card', () => {
+    const lk = t.locks['car-no-driver']!;
+    expect(lk.verbs).toEqual(['go']);
+    expect(lk.line).toBe("Nobody aboard can drive. Board someone who isn't down, then Go."); // "down" is the glossary's word for a downed agent
+    expect(lk.short).toBe('Nobody can drive'); expect(wc(lk.short)).toBeLessThanOrEqual(4);
+    expect(lk.line).not.toContain('{'); // the engine sends no number with it
+    expect(fillLock(t, { code: 'car-no-driver' })).toBe(lk.line); expect(fillLockShort(t, { code: 'car-no-driver' })).toBe('Nobody can drive');
+    if (haveSim) expect((simFile('GameGetaway.cs').match(/No\("car-no-driver"/g) ?? []).length).toBeGreaterThanOrEqual(2); // Go and GoQuery
+  });
+  test('the whole cell down is a fail with words wherever a fail has them: the sentence, the end card, the fail camera and two voices', () => {
+    expect(FAILS).toContain('cell-down');
+    expect(t.briefing.fails['cell-down']).toBe('The whole cell is down. Nobody is left to get Vale out.');
+    expect(L.end.fail['cell-down']).toBe('Whole cell down.');
+    expect(L.failcam.caption['cell-down']).toEqual({ shot: '{by} shot {agent}.' }); // why shot: the shooter first, then the operative, as for enforcer-down
+    expect(L.failcam.tip['cell-down']).toEqual({ shot: 'Keep someone outside the car.' });
+    for (const sp of ['fixer', 'scout'] as const) expect(lookup(t, { event: 'fail', speaker: sp, outcome: 'cell-down' })?.outcome, sp).toBe('cell-down');
+    if (haveSim) expect(simAll().join('\n')).toContain('Fail("cell-down"');
+  });
+  test('the rivals walk to a held car with nobody outside it, go back to cover when someone is, and a rival with nobody in reach advances: each log code is an event, the rival and the Scout speak, and no line names the Alert', () => {
+    for (const [log, id] of [['rivals.for-car', 'rivals-for-car'], ['rivals.back-to-cover', 'rivals-back-to-cover'], ['ai.advance', 'ai-advance']] as const) {
+      const ev = t.events[id]!;
+      expect(ev.log, id).toEqual([log]); expect(ev.speakers, id).toEqual(['rivals', 'scout']);
+      for (const sp of ev.speakers) {
+        const e = lookup(t, { event: id, speaker: sp });
+        expect(e?.event, `${id}/${sp}`).toBe(id); expect(e!.lines.length, `${id}/${sp}`).toBeGreaterThanOrEqual(2);
+        for (const l of e!.lines) expect(l, l).not.toMatch(/alert/i);
+      }
+      if (haveSim) expect(simAll().join('\n'), log).toContain(`Note("${log}"`);
+    }
+    // the Scout says what is wrong when the rivals come: nobody is outside the car
+    for (const l of lookup(t, { event: 'rivals-for-car', speaker: 'scout' })!.lines) expect(l, l).toMatch(/outside|unguarded|get out/i);
+    // the host already makes a fallback card of both codes (HostFeed.FeedEvents), so the text carries their words: what, why and the fix, no sight rule (the cell is in the car), no beat (the feed is at its ten)
+    const fc = t.cards.items['rivals.for-car']!, bc = t.cards.items['rivals.back-to-cover']!;
+    expect(fc.title).toBe('Rivals going for Vale'); expect(fc.kind).toBe('warning'); expect(fc.fate).toBe('icon');
+    expect(fc.result).toBe('Nobody is standing outside the car, so they come for Vale. Walk someone out.'); // "walk them out": locks.in-car's word for leaving the car
+    expect(bc.title).toBe('Rivals back in cover'); expect(bc.fate).toBe('alt');
+    expect(bc.result).toBe('They fall back to cover: someone is standing outside, or nothing blocks the car.'); // "blocks", never "held" (GDD section 10)
+    for (const c of [fc, bc]) { expect(c.sight).toBeUndefined(); expect(c.beat).toBeUndefined(); expect(JSON.stringify(c)).not.toMatch(/\bheld\b/i); }
+  });
+  test('car.held.<how> is log only: one silent prefix with its reason, spoken by no event and no card', () => {
+    expect(t.silentLogs['car.held.']).toMatch(/log only/);
+    expect(Object.values(t.events).some((e) => (e.log ?? []).some((c) => c.startsWith('car.held')))).toBe(false);
+    expect(Object.keys(t.cards.items).some((c) => c.startsWith('car.held'))).toBe(false);
+    if (haveSim) { const g = simFile('GameGetaway.cs'); expect(g).toContain('Note("car.held." + how'); for (const how of ['blocker', 'press', 'advance', 'answer', 'post']) expect(g, how).toContain(`"${how}"`); }
+  });
+  test('the patrol sweeps the service yard (brief 067 A): no line puts its sweep on the square, the steps or the public door', () => {
+    const P = t.targets.patrol!;
+    expect(P.about).toMatch(/service yard/); expect(P.about).not.toMatch(/square|door/i); // a told line: no cone, door or reach (GDD section 04)
+    expect(P.watched).toMatch(/yard/); expect(P.watched).toMatch(/service door/);
+    expect(P.routine).toMatch(/service door/); expect(P.routine).not.toMatch(/between sweeps/);
+    expect(t.hints.items.H7!.line).toMatch(/service yard/);
+    expect(t.events['patrol-returns']!.trigger).not.toMatch(/entrance/);
+    // every line about the patrol (its own text, or in an entry or scene about it) says the yard: none puts it on the front
+    const bad = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\bpatrol\b/i.test(s.text) || /patrol/.test(s.path))
+      .filter((s) => /\b(entrance|square|steps|forecourt)\b|sweeps? (this|past) (the )?door|due round|between sweeps/i.test(s.text)).map((s) => `${s.path}: ${s.text}`);
+    expect(bad).toEqual([]);
+    // "entry seen by the patrol" can still happen if the patrol has left its sweep, so its fail keeps its words, and the tip says only what is true then
+    expect(L.failcam.tip['entry-seen-patrol']).toEqual({ seen: 'The patrol was watching the door.' });
+  });
+  test('a run is noticed, never an Alert on its own (Motive M067-B2): no line says running raises the Alert; the card, the toast and the hint say who noticed and what to do', () => {
+    const hits = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\b(runs?|running|runner)\b/i.test(s.text) && /\balert\b/i.test(s.text)).map((s) => s.path);
+    expect(hits).toEqual(['actions.run.does', 'hints.H12']); // the Run verb and the hint that teaches it: both say a run raises no Alert
+    for (const x of [t.actions.run!.does, t.hints.items.H12!.line]) expect(x).toMatch(/raises no Alert/);
+    expect(t.cards.items['run.seen']!.result).toBe('{who} noticed {agent} running.');
+    expect(t.events['run-seen']!.trigger).not.toMatch(/Alert 1|a found fault \(/);
+    expect(t.toasts['run-seen']!.line).toBe('A watcher noticed an agent running. Walk, or keep out of its sight, to stay quiet.');
+    // H19 teaches the notice cue once, and a runner meets it too: Walk, where "Keep moving" would tell a runner to run on
+    const h = t.hints.items.H19!;
+    expect(h.line).toMatch(/standing still or running/); expect(h.short).toBe('Walk, or leave its sight.');
+    expect(JSON.stringify(h)).not.toMatch(/Keep moving/);
+    // the patrol's phrase is "noted": a first sighting is a note, and only a long run in sight is reported
+    expect(t.tone.voices.patrol).toMatch(/Running is noted/);
+    expect(t.dialogue.filter((e) => e.event === 'run-seen').flatMap((e) => e.lines).join(' ')).not.toMatch(/reported/);
+    expect(t.silentLogs['attention.noticed']).toMatch(/runner/);
+    // the price line of a run keeps name, time and eye: no Alert field
+    expect(L.price.verbs.run).toEqual(['name', 'time', 'eye']); expect(L.price.verbs.move).toEqual(['name', 'time', 'eye']);
+  });
+  test('the Alt chip of a run says who would notice it, in the words of the rule (a run is noticed, never an Alert), and the host reads that key', () => {
+    expect(L.done.run).toEqual({ noticed: 'noticed by {who}', unknown: 'noticed by: ?' });
+    expect(JSON.stringify(L.done.run)).not.toMatch(/seen by|alert/i);
+    expect(L.done.run.noticed).toContain('{who}'); expect(L.done.run.unknown).not.toContain('{'); // {who} is the watchers as the host names them
+    const fight = 'unity/Assets/Suborned/Runtime/Play/HostFight.cs';
+    if (existsSync(join(root, fight))) expect(read(fight)).toContain('DoneWord("run.noticed"');
+  });
+  test('three words the host made up are the text\'s now: a crowd guard, a crowd officer and a fire order that lapsed', () => {
+    expect(t.names.targets['crowd-guard']).toBe('a guard'); expect(t.names.targets['crowd-officer']).toBe('an officer');
+    expect(L.done.walk.who['crowd-guard']).toBe('guard'); expect(L.done.walk.who['crowd-officer']).toBe('officer');
+    expect(L.pop['fire-lapses']).toBe('Lost the target'); expect(wc(L.pop['fire-lapses']!)).toBeLessThanOrEqual(3);
+    expect(L.pop['door-seen']).toBe('Seen there'); // HostValeSteps.PopKey("door-seen") had no word, so the pop would have printed its key
+    // the host reads these keys (Latch): TargetName("crowd-guard") and ("crowd-officer"), and Pops["fire-lapses"] when a lasting fire order lapses
+    const host = 'unity/Assets/Suborned/Runtime/Play/HandoverHost.cs', done = 'unity/Assets/Suborned/Runtime/Play/HostDone.cs';
+    if (existsSync(join(root, host))) { const h = read(host); expect(h).toContain('"crowd-guard"'); expect(h).toContain('"crowd-officer"'); }
+    if (existsSync(join(root, done))) expect(read(done)).toContain('"fire-lapses"');
+    const steps = 'unity/Assets/Suborned/Runtime/Play/HostValeSteps.cs';
+    if (existsSync(join(root, steps))) expect(read(steps)).toContain('PopKey("door-seen"');
+    if (haveSim) expect(simAll().join('\n')).toContain('Note("fire.lapses"');
   });
 });

@@ -3,7 +3,8 @@
 //    F15_RANGE   every range run hashes the same both ways (the range always reads every)
 //    F15_SWEEP   the fight-lab matrix's eight rows under today and the lab hash the same both ways
 //    F15_ROUTES  every route script hashes the same both ways, but the 5 loud rows and 3 failure rows Motive lists (§15.2); outcome and
-//                fail code stay everywhere, Trail and Alert too but on the failure rows (fewer hits can cost less Trail)
+//                fail code stay everywhere, Trail and Alert too but on the failure rows (fewer hits can cost less Trail). Engine 0.34.0: a
+//                safe fight where a rival advances (M067-SQ2, which reads the intent) is left out: it differs both ways by the rule
 // F15-CLEAN, F15-DRAWN and F15-FACE are scenarios (Suborned.Sim/ScenariosFinalIntent.cs).
 using System;
 using System.Collections.Generic;
@@ -85,6 +86,12 @@ public class FinalIntentTests
         var script = Script.Parse(File.ReadAllText(Path.Combine(Root, "contracts/missions/handover/routes", name + ".json")));
         var a = Engine.Play(Agent, script.Start, script.Orders, script.Until);
         var b = Engine.Play(Every, script.Start, script.Orders, script.Until);
+        // engine 0.34.0 (Motive M067-SQ2, ai.noStall): a rival with nobody in reach advances on an operative he has cause to fire on, which is
+        // the intent's own reading (agent: provoked; every: anyone), so a safe fight where a rival advances runs differently both ways, its
+        // outcome too (route-a-pressure: rivals-reach-vale under agent, a win under every). Those rows say only that the advance is the safe
+        // fight's: both runs are safe fights, and one of them advanced
+        bool advanced(Game g) => g.Log.Exists(l => l.Code == "ai.advance");
+        if (advanced(a) || advanced(b)) { Assert.Equal(("safe", "safe"), (a.FightBranch, b.FightBranch)); return; }
         Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode));
         if (!name.StartsWith("careless-", StringComparison.Ordinal) && !name.StartsWith("fight-", StringComparison.Ordinal) && !Moves.Contains(name)) Assert.Equal((a.Trail, a.Alert), (b.Trail, b.Alert)); // the failure rows' Trail may fall (fight-loud-enforcer-down 9 -> 8: fewer hits)
         else if (Moves.Contains(name)) { Assert.Equal(a.Alert, b.Alert); Assert.True(a.Trail <= b.Trail, $"{name}: Trail {a.Trail} under agent, {b.Trail} under every"); } // engine 0.33.1 (car.footprint): on the loud rows the agents who did nothing are no longer shot, and the Trail may differ too (12 under agent, 14 under every)

@@ -114,8 +114,10 @@ namespace Suborned.Sim
                 r.Is(g.GunOf(first)?.Down == true, $"{first} goes down");
                 int downAt = g.Tick; r.Wait(T(3));
                 r.Eq(r.Op(Scout).Gun.Stance, "free", "then free: back to at will");
-                // engine 0.33.0 (M059-B1): the crew fights from where it stands, so the next rival may be a few seconds out of the Scout's line
-                r.Until(() => r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first) || g.FightOverTick != Never, T(15));
+                // engine 0.33.0 (M059-B1): the crew fights from where it stands, so the next rival may be a few seconds out of the Scout's line.
+                // Engine 0.34.0: up to 60 s (was 15): the cell at 1.8 m/s stands where none of the rest is in his line for 15 s, and the rivals
+                // left with nobody in reach advance on the Enforcer (M067-SQ2) and take Vale (5:33.6) before one comes into it
+                r.Until(() => r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first) || g.FightOverTick != Never || g.Over, T(60));
                 bool firedOn = r.Shots().Exists(s => s.by == "scout" && s.tick > downAt && s.target != first);
                 bool newOrder = g.Orders.Exists(o => o.order.Op == Scout && o.order.Do == "fire" && o.order.Tick > firedAt);
                 // engine 0.33.1: with the walks round the cars the rest of the crew takes other cover, out of the Scout's reach, and the run ends

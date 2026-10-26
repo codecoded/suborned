@@ -86,7 +86,9 @@ namespace Suborned.Sim
                 AddRange("LF-RUN" + sfx, preset, "open", "Sky 2026-10-22 (\"same for running\"): a lasting fire order keeps firing through a run, at the run's chance, while the target stays in range", r =>
                 {
                     var o = LfSetup(r);
-                    r.Is(Move(r, "scout", LfPoint(r, o, -800, 0), run: true).ok, "an 8 m run taken toward the officer (head first)");
+                    // engine 0.34.0 (M067-B1, op-run-speed-cm-s 360): 10.5 m, so the run lasts about as long as 0.33.1's 8 m at 2.8 m/s (2.9 s): an 8 m
+                    // run at 3.6 m/s ends after its first shot (0:04.6), before the weapon's next
+                    r.Is(Move(r, "scout", LfPoint(r, o, -1050, 0), run: true).ok, "a 10.5 m run taken toward the officer (head first)");
                     r.Is(o.Walk != null && o.Running, "it runs");
                     ShotAtGait(r, "scout", "officer-1", Gait.Run, () => o.Walk == null);
                     int shots = LfMoveKeeps(r, o, Game.T(10));
