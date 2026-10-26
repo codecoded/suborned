@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.26.0, 2026-10-26)
+## Open for Sky (as of v0.27.0, 2026-10-26)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -35,6 +35,10 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.27.0 (2026-10-26; brief 070, the briefing page)
+- Sky, 2026-10-26 (brief 070, Glyph's mock briefs/070/glyph/): the page replaces the on-street overlay of brief 062 ("Yes"); keep the drawn plan, no wide photo ("plan ok"); the clock shows five stations, 2:35 the rival car, 5:30 the chime, 5:40 the last chance to turn the driver, 5:50 Vale leaves the Office, 6:10 Vale reaches his car ("cut"); Inez's hint stays but in good English ("Think it's bad english - but given this is a tutorial think ok"; Fable); night is not a toggle ("No, I think night shouldn't be a toggle"): Day / Night comes off the briefing (§10 briefing, look).
+- Sky, 2026-10-26: "we have natural day / night cycle if that's easy enough, have it dark by 6:30pm perhaps?" Glint and Latch assess cost and what blends first (brief 070); Sky decides from that. Night stays a look only.
 
 ## v0.26.0 (2026-10-26; brief 067, Sky's play notes on 0.2.122)
 - Sky, 2026-10-26 (brief 067; played 0.2.122 on the Air about seven times, finished once; relayed by main; "a focused capstone round the Office door is fine"):
