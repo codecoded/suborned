@@ -321,3 +321,9 @@ Latch's order: the page's fixes ride the height-cap build; the fight's host work
 - Correction (Sky, 2026-10-26): the special moves were never agreed. Engine 0.35.1 turns them off (Keel); Latch's 0.35 port builds no move UI, ring entries or cooldowns (ignore those parts of briefs/039/glyph/b-final.md); Vantage's Steam grilles cancelled; move words unused. GDD v0.29.0 takes them out (parked.md). Fight B = cover and pin + one input + sticky focus; the cell isn't pinned; agents fight on their own from the spring.
 - Keel's split round adds SPLIT-PUBLIC (briefs/071/motive/rules.md §6 fix 2): Go on Vale's car with the rearguard not sprung judges nothing; board and go at the square judged 0; its twin breaking the crew +1.
 - Next engine round (not this build): Keel's fight-on log fix (briefs/039/fable-fight-on.md: log 'A fight is on' once per fight; changes 11 route hashes, no outcomes), then Waymark re-records those 11. Latch checks the game doesn't offer the parked moves.
+
+## After the 0.35.1 port batch (Aster, 2026-10-27; Sky's answers in GDD v0.30.2)
+1. Merge Keel's worktree (engine 0.35.2: only drawn ops guard a held car; K3-CELL-DOWN covers cell-down; the fight-on log once; his fixture and BAL edits).
+2. Datum applies the café at 3 storeys (prepared in scratch); Vela's facades land; Vela adopts Sedan_Getaway_v2 and lifts Vale's car; then Keel reruns cover and sim:site.
+3. Waymark renames fight-safe-cell-down → fight-safe-unguarded, counts cell-down by the scenario (MC-0 42/42, MC-3 8/8), re-records on 0.35.2.
+4. Latch's next build carries all of it.
