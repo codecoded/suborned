@@ -228,7 +228,7 @@
   },
   "hints": {
    "front-door": "Front door: Inez and the door guard are close.",
-   "pickup": "Pickup: Vale rides from the official bay, and his driver is short of cash."
+   "pickup": "Pickup: Vale rides from the official bay; his driver is short of cash."
   },
   "tracker": "Take Vale alive to the getaway car · closes 8:30",
   "heat": {"unknown":"Unknown","noticed":"Noticed","wanted":"Wanted","infamous":"Infamous"},
@@ -292,17 +292,17 @@
    "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11: the pickup's words end at the service bay, so its still does too); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
    "target": "Comes out at 5:50 and leaves by car.",
    "ways": {
-    "front-door": {"when": "Before 5:50", "line": "Turn her to call him off the door, and loop his camera."},
-    "pickup": {"when": "From 6:10", "line": "Turn him before 5:40, and he brings Vale round to the service bay and waits."}
+    "front-door": {"when": "Before 5:50", "line": "Turn her to call him off and loop his camera."},
+    "pickup": {"when": "From 6:10", "line": "Turn him before 5:40 and he brings Vale to the service bay."}
    },
    "ending": "Both ways end here: Vale in the getaway car as it leaves.",
    "captions": {"service-bay": "Vale's car at the service bay"},
    "clock": ["2:35", "5:30", "5:40", "5:50", "6:10"],
    "cell": {
-    "scout": "Listens to Inez and the driver. Can send the rivals the wrong way.",
+    "scout": "Listens to Inez and the driver. Gives the rivals a false tip.",
     "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
-    "tech": "Loops the door camera. Moves the patrol and drives our car round.",
-    "enforcer": "Goes in for Vale, or takes him at the car. Only he can carry him."
+    "tech": "Loops the door camera, moves the patrol, drives our car round.",
+    "enforcer": "Takes Vale inside or at his car. Only he can carry him."
    },
    "heads": {
     "ways": {"1": "One way in", "2": "Two ways in", "3": "Three ways in", "4": "Four ways in"},
@@ -556,6 +556,7 @@
   "talk-police": {"line":"The police don't back down. Only a rival can be talked down.","short":"Not police","verbs":["talk-down"]},
   "talk-none-down": {"line":"None of the crew is down yet. Drop one first.","short":"None down yet","verbs":["talk-down"]},
   "talk-not-hurt": {"line":"He isn't hurt yet. Hurt him first.","short":"Not hurt","verbs":["talk-down"]},
+  "talk-not-pressed": {"line":"He isn't hurt or under fire. Shoot at him first.","short":"Not under fire","verbs":["talk-down"]},
   "steam-no-grille": {"line":"No heat main within the Tech's reach.","short":"No grille","verbs":["steam"]},
   "stand-beside-op": {"line":"Walk within {m} m of the downed agent first.","short":"Too far · {m} m","verbs":["carry"]},
   "summon-busy": {"line":"The guard is down, busy or away from the door. Try when the guard is back.","short":"Not now","verbs":["call"]},

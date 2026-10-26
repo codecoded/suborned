@@ -70,3 +70,16 @@ The page shows each way as two sentences: the hint after "Name: ", then `ways.<i
 - Worded the three log codes as feed cards, each with a "card only" silent-log line. `entry.seen`: icon, in sight of the patrol, "The patrol saw the entry" / "The patrol is radioing it in." `entry.reported`: the report.landed card again ("Reported." beat, "Security has it. Alert {alert}."), so there's no new beat, and as a city answer it never says who reported or why. `entry.stopped`: alt, "A report stopped" / "The patrol won't be making that call." Cards: 77 → 80.
 - Drift declared (4eb77f084957, covers no rule). r017–r019 replay OK. `bun run typecheck` clean. `bun test contracts/missions tools/dialogue`: 210 pass, 4 fail. All four come from the 0.35.0 fight-B engine in sim/ (orders `mark` and `steam`; locks `move-cooling`, `steam-no-grille`, `talk-*`; logs `move.*`), not these words. Keel words or silences those.
 - Latch: PlayText.cs:532's `entry-seen-guard` line still says "or the patrol" (drop it). The `entry.seen` icon is the patrol's radio mark, drawn as for report.started. Waymark/Suture: tools/qa/checks/warn.ts PREVIEW_WARNED still lists `entry-seen-patrol`.
+
+## 9. The page cut to 220 words (Aster, 2026-10-26: 0133 read 225)
+- contracts/missions/handover/text.json, counted by tools/hud-budget's rule (glyphWords; text elements only):
+  - `briefing.page.ways.front-door.line` "Turn her to call him off and loop his camera." (12 → 10)
+  - `briefing.hints.pickup` "Pickup: Vale rides from the official bay; his driver is short of cash." (13 → 12 on the page; the glossary's "short of cash" stays)
+  - `briefing.page.ways.pickup.line` "Turn him before 5:40 and he brings Vale to the service bay." (15 → 12; the 6:10 station already says an unturned driver leaves)
+  - `briefing.page.cell.scout` "Listens to Inez and the driver. Gives the rivals a false tip." (13 → 12; the verb's own name)
+  - `briefing.page.cell.tech` "Loops the door camera, moves the patrol, drives our car round." (12 → 11)
+  - `briefing.page.cell.enforcer` "Takes Vale inside or at his car. Only he can carry him." (15 → 12)
+  - Kept: Inez's hint, every clock label, the fixer's line, `captions.service-bay` "Vale's car at the service bay".
+- Count: 0133's manifest with these lines and still 4's caption → 218 (225 − 11 cut + 4 for the caption). The frame has not been rebuilt, so this is the tool's rule run on the 0133 manifest (out/scratch/fable/recount.ts).
+- text.test.ts pins the new front-door line, the scout's "false tip" and the enforcer's carry rule. `bun test contracts/missions tools/dialogue`: 214 pass, 0 fail. No hashed dialogue file changed (text.json and tests are outside the hash), so no drift to declare; the current dialogue hash 4b45f9eaa698 is undeclared from committed work that isn't mine (drift:auto calls HEAD red).
+- Open (Glyph, Aster): the caption cap is 5 words (page.ts PAGE.caption) and "Vale's car at the service bay" is 6, so 2.7 will fail on it once Latch wires `captions`. Either raise the cap to 6 or take "Vale's car, service bay" (4). The page's widow on the plan label "Records Office" is layout (Latch).

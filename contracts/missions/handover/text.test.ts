@@ -284,7 +284,8 @@ describe('times and numbers agree with the mission', () => {
   });
   test('the briefing page\'s words (Glyph N7, N11, N12 on 0.2.130): no stranded word, the pickup still says where, the 6:10 station is one fragment', () => {
     const p = t.briefing.page; const m = json('contracts/missions/handover/mission.json') as { points: { id: string }[]; destinations: Record<string, unknown> };
-    expect(p.ways['front-door'].line).toBe('Turn her to call him off the door, and loop his camera.');
+    expect(p.ways['front-door'].line).toBe('Turn her to call him off and loop his camera.'); // Aster 2026-10-26: the page cut to 220 words
+    expect(p.cell.scout).toMatch(/false tip/); expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
     expect(p.ways['front-door'].line).not.toMatch(/\s\S{1,3}\.$/); // never ends on a lone short word ("it.")
     expect(p.captions).toEqual({ 'service-bay': "Vale's car at the service bay" });
     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
