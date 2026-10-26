@@ -1062,3 +1062,45 @@ The budget limits for Splice are in `briefs/067/glyph-budget.md`. They give new 
   - follow Vale: −22.2 %.
 - Renderers drawn drop by 0 to 12 a frame.
 - **Output.** briefs/066/latch/ (22 PNGs, counts-today.json, counts-cap.json, compare.png).
+
+**Build 0.2.128 (Latch, 2026-10-26 evening): the tree fixes built. game-check passes, holds included. Budget has 1 red of 50 (the Go Alt line, my N5 fix missed the card it sits on).**
+- **Run.** `bun run batch --from game-build` at load 3 to 12 on 18 cores. Shots, late-fight and tp-long were noisy. I added no Editor scripts during the build, made no code edits and added no features.
+- **game-build: ok.** 0.2.128 (c038, e1ec58a3+) in 17 s, 0 errors.
+- **game-check: ok, 80 s.**
+  - Scenarios 356/356 match headless.
+  - Every gated section is ok: r059, r067, r118, r29, done, rings, levels, leash, and the three real-time hold proofs (dblClick, holdActs, holdRange), so no `-proofOnly` rerun was needed.
+  - Play zoom at 2880x1864: 254.5 fps, p99 5.7 ms. Slowest spot: fire-commander, p99 8 ms.
+- **shots: ok.** 11 shots in 21 s.
+- **budget: FAILED, 1 of 50.**
+  - Results: the batch's own 10/10, audit 10/10, r059 13/13, r067 31/32, r123 5/5.
+  - The red is **r067-car-ring-go-alt**: "the Alt line 'Calls off the attempt; try again' overlaps the beat 'In the car'". This is not new. The card it sits on is the collapsed feed's title, `feedTitle` (HudToolkit.cs:921). `FeedRects` (HudToolkit.Ring.cs:169) lists beats, cards, history and beatsBox, but not `feedTitle`, so the fix in 0.2.128 doesn't see it. Reported, not fixed (Aster's rule for this run). The fix is one line: add `feedTitle` to FeedRects.
+  - Not taken at 1080: r067-reticle-handoff. It is only shot when rival-2 is in view at that moment (Proof067.cs:325), so it depends on run timing. It was taken at 2160.
+- **late-fight: ok** (`--only late-fight,tp-long`, because the batch stops at the first failure).
+  - loud-fight: worst 21.4 ms, p99 6.6 ms.
+  - loud-left-downed: worst 18.3 ms, p99 6.6 ms.
+  - NOISY MACHINE (load peaked at 12.5).
+- **tp-long: ok.**
+  - p99: play-opening 5.3 ms, tp-street 5.3 ms, tp-worst 5.6 ms.
+  - Triangles: 1.6 / 3.2 / 5 M.
+- **2160 retake for Glyph.** Both proofs ran through `bun tools/game/playing.ts`: `-gameProof -capture-size 3840x2160 -proofOnly r067` (r067 ok, 32 pictures) and `-proof123`. The crops came from `bun run proofset crops`: 246 for r067 and 46 for r123.
+- **What the tree fixes show in 0.2.128:**
+  - Strike: r067-shut-ring-guard reads "Listen" (struck), the lock icon, then "Already heard", with the strike over the word and the lock beside it. The car ring after it reads "Drive · 29 s", no longer garbled (r067-car-ring-drive, r067-car-ring-drive-hover).
+  - Shut plate as `lock`: the manifest has `lock` "Listen · Already heard", and it is no longer running text.
+  - Roster band: r067-crowd-guard-hover has no bubble behind the roster column. The only speech in the frame is at x 1590.
+  - Alt line: still on the feed title (see the budget red above).
+
+**Evidence** (git-ignored, on disk): briefs/041/build/0314/
+- batch logs: batch-0314a-from-game-build.log and batch-0314b-late-tplong.log;
+- logs/, proof-1080/, shots/, late/ and tplong/;
+- proof-2160-r067/ and proof-2160-r123/, each with its own player.log and guard log;
+- crops-2160/: crops-r067.html and crops-r123.html.
+
+**Key pictures:**
+- A ring opened after a shut ring: proof-1080/r067-car-ring-drive.png (and r067-shut-ring-guard.png before it).
+- The Go Alt line: proof-1080/r067-car-ring-go-alt.png (still on the "In the car" title).
+- The conversation: proof-1080/r067-convo-inez-2.png.
+
+**Still red / open:**
+- The Go Alt line overlapping `feedTitle` (fix above, not built).
+- The clock bar's next-mark word against glyph-budget §5 (Glyph's call, unchanged).
+- N8, N9 and N10 are still open.
