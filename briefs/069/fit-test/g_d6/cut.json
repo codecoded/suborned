@@ -1,0 +1,41 @@
+{
+ "fit": "d6",
+ "labels": {
+  "skirt": 6442,
+  "hat": 1728,
+  "hair": 2670
+ },
+ "pieces": {
+  "skirt": {
+   "srcFaces": 10294,
+   "tris": 1600,
+   "seconds": 10.54,
+   "srcVerts": 6442,
+   "tucked": 17
+  },
+  "hat": {
+   "srcFaces": 2823,
+   "tris": 1199,
+   "seconds": 0.61,
+   "srcVerts": 1728
+  },
+  "hair": {
+   "srcFaces": 3357,
+   "tris": 900,
+   "seconds": 0.59,
+   "srcVerts": 2670
+  },
+  "suit": {
+   "wrapped": 2388,
+   "verts": 6378,
+   "pctWrapped": 37.4,
+   "tris": 8300,
+   "seconds": 48.94
+  }
+ },
+ "seconds": {
+  "body": 0.7,
+  "classify": 0.12,
+  "pieces": 60.69
+ }
+}

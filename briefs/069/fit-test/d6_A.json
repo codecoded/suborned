@@ -1,0 +1,72 @@
+{
+ "id": "d6",
+ "approach": "A",
+ "sex": "f",
+ "macros": {
+  "weight": 0.3594,
+  "muscle": 0.5,
+  "proportions": 0.6078,
+  "height": 0.5
+ },
+ "lodTris": [
+  11591,
+  4500,
+  1499
+ ],
+ "srcTris": 49964,
+ "bones": 52,
+ "attach": [
+  "Attach_Back",
+  "Attach_HipRight",
+  "Attach_LeftHand",
+  "Attach_RightHand",
+  "Attach_ShoulderLeft"
+ ],
+ "materials": 1,
+ "texture": [
+  4096,
+  4096
+ ],
+ "transfer": {
+  "matched": 6208,
+  "inpainted": 4444,
+  "pctInpainted": 41.7,
+  "unanchored": 833
+ },
+ "crumbsDropped": 927,
+ "sourceParts": 550,
+ "looseRules": {
+  "hat": 619,
+  "skirt": 1268,
+  "hair": 1193
+ },
+ "labels": {
+  "hat": 619,
+  "skirt": 1997,
+  "hair": 1193
+ },
+ "restLegs": {
+  "Left": {
+   "abductionDeg": 0.0,
+   "ankleOutM": 0.0,
+   "footYawDeg": -0.0,
+   "footPitchDeg": 27.83
+  },
+  "Right": {
+   "abductionDeg": 0.0,
+   "ankleOutM": 0.0,
+   "footYawDeg": 0.0,
+   "footPitchDeg": 27.83
+  }
+ },
+ "seconds": {
+  "body": 0.39,
+  "lod0": 0.12,
+  "transfer": 2.31,
+  "rules": 0.0,
+  "rest": 0.03,
+  "lods": 0.07,
+  "export": 0.06
+ },
+ "heightM": 1.697
+}

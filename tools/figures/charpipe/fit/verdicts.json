@@ -1,0 +1,263 @@
+{
+ "note": "The fit test's judgement, written by Forma after reading the videos and the tables (brief 069). report.py puts it in fit-test.html. pass / part / fail.",
+ "date": "2026-10-27",
+ "verdicts": [
+  {
+   "category": "plain",
+   "input": "sh2, guard",
+   "A": [
+    "pass",
+    "Keeps the generated look exactly: face, print, belt, boots. Robust weights hold through all seven clips; the clip videos show no tears. The metrics still flag it: the armpit and crotch webs of an A-posed mesh stretch (p99 1.0 to 1.3) and flip triangles (210 to 225 at worst), and the sh2 shorts web makes 386 thigh-thigh pairs."
+   ],
+   "G": [
+    "pass",
+    "Holds as well, with about half A's flips (97 to 109) and stretch (p99 0.64 to 0.75). But the face and body are the MPFB proxy with the source's colours painted on: it reads the same at play zoom and softer in close-up."
+   ],
+   "read": "For plain clothes A is enough and keeps more of the look. G gains nothing here, except that the same person can then be any body."
+  },
+  {
+   "category": "coat",
+   "input": "c6 (hooded jacket, mini dress)",
+   "A": [
+    "pass",
+    "The short jacket rides the torso and arms. Walk and run read well. Worst: crouch and carried, with 486 flipped triangles at peak and hem self-intersection up to 207 pairs (46 at rest)."
+   ],
+   "G": [
+    "part",
+    "The jacket follows every slider, but its open front shows the suit underneath, coloured from the jacket's lining (the only surface the generator made there). It is bound to the body, so its hem stretches across the thighs in a stride (stretch p99 1.65, and 3.0 on the heaviest body). 39 % of the covered suit vertices cross the coat's inner wall."
+   ],
+   "read": "A wins for a short coat on one body. For G to pass, the coat's lower part must bind to MakeHuman's skirt helper as the skirt does, and the generator must make the clothes under it (a separate intake)."
+  },
+  {
+   "category": "skirt / dress",
+   "input": "d6 (A-line shift dress)",
+   "A": [
+    "pass",
+    "The lateral-blend rule for the hem holds the dress through walk, run and sit. The hem self-intersects heavily, though (473 pairs at worst, 63 at rest), and legs show through in crouch and sit."
+   ],
+   "G": [
+    "pass",
+    "The skirt is bound to MakeHuman's helper-skirt and fitted on every body. The hem barely self-intersects (25 pairs). 16 % of the covered leg vertices cross the skirt's inner wall at worst (sit, crouch), and 25 % on the heaviest body."
+   ],
+   "read": "Both work for an A-line dress above the knee. G's hem is cleaner and survives every body size. Long or full skirts were not tested: the intake prompt already rules them out."
+  },
+  {
+   "category": "cape",
+   "input": "c1 (short cape, helmet, ponytail)",
+   "A": [
+    "part",
+    "With the 'side' rule (cape on Spine2 and the shoulders, never the arms) the cape no longer slits. It stays tidy in walk and run, but smears and webs in crouch and sit: 915 arm-torso pairs at worst, 184 at rest, because the A-posed cape fills the armpit."
+   ],
+   "G": [
+    "fail",
+    "The three-bone chain with lag keeps the cape off the arms, but the arms pass through it: 40 to 57 % of the covered vertices cross. It flares out in crouch, and the remeshed shell shows dark patches inside. It looks worse than A in the videos."
+   ],
+   "read": "Neither is reliable. A short cape is fine as A with the side rule, kept to walk and run. Anything that must hold in crouch, sit or carried needs cloth (Unity Cloth or Magica Cloth on a bound cape mesh) or an authored cape rig with arm colliders."
+  },
+  {
+   "category": "hats",
+   "input": "guard (peaked cap), d6 (cloche), c1 (helmet), sh2 (visor), c6 (hood)",
+   "A": [
+    "pass",
+    "Hats ride Head rigidly (the 'rigid' rule) and never deform; hair below the hat stays as generated. A hat is welded to its one person, though: no swapping, no resizing."
+   ],
+   "G": [
+    "pass",
+    "The hat rides Head, scaled by the wearer's head at the brow (0.91 to 1.15 across the extremes) and seated on the crown. The hair-under-hat rule pulls 47 to 55 scalp vertices inside the guard's cap on every body. The person's own hair (ponytail, bob) is a separate rigid piece. Hat penetration is 0.3 to 1.6 % on cap, cloche and helmet. The visor reads 5 to 9.5 % (no crown: the scalp shows by design), and the hood 5.4 %."
+   ],
+   "read": "G passes and is what makes hats a wardrobe item. A hood joined to a coat becomes two pieces whose neck seam can open in turns (not seen in these clips)."
+  },
+  {
+   "category": "props and attachment points",
+   "input": "all G figures",
+   "A": [
+    "part",
+    "The skeleton is the same, so the same attachment bones apply. They were not exercised on A."
+   ],
+   "G": [
+    "part",
+    "Attachment bones (Attach_RightHand, Attach_LeftHand, Attach_HipRight, Attach_Back, Attach_ShoulderLeft) are placed by rule on every body and follow exactly. The cross-body bag and the tray go with them. But the strap clips the chest (128 to 232 prop-body pairs at rest, 400 to 850 at worst), and a tray on a hand that runs, crouches or aims sweeps through the body."
+   ],
+   "read": "The mechanism passes; the prop placement fails. Straps need a rule for the gap off the body sized to the body, and held props need prop clips (a tray carry, a case carry), not walk and aim clips."
+  },
+  {
+   "category": "body extremes",
+   "input": "all five",
+   "A": [
+    "fail",
+    "By design: A is one body per generated mesh. Another size means generating another person."
+   ],
+   "G": [
+    "pass",
+    "Every piece follows every slider through MPFB's own clothes fitting, from 1.35 to 2.08 m and from the slightest to the heaviest soft body, with no hand tuning. The heaviest bodies collide: up to 280 arm-torso pairs. The arm-out layer at 28\u00b0 cuts that by 56 to 85 %. The leg-out layer barely helps the thighs (-32 to +4 %); inner-thigh contact needs corrective shapes."
+   ],
+   "read": "G is the only way to the body variety Sky asked for. The layer is worth keeping for the arms."
+  }
+ ],
+ "summary": [
+  "Short answer to Sky: A is not a horrible mess once its weights are done properly. The 'mess' seen in the first run (shards flying off in crouch and sit) came from parts of the generated mesh that the weight inpainting could not reach, and a closest-point fallback fixed it (about 1,000 vertices per Hunyuan mesh). After that, A holds through all seven clips for plain clothes, a short coat, a dress and a hat, and keeps the generated look better than G. Its real limits are that it fixes one person to one body, and that a cape or anything bridging the arms smears in crouch and sit.",
+  "G does what A can't: the same person on every body, hats sized to any head, and attachment points by rule. It also halves the triangle flips and stretch. But it costs detail (the face and skin become the MPFB proxy with the colours painted on), and the generator never made the clothes under an open coat, so G shows guessed colour there. Capes fail in both: they need cloth or an authored cape rig.",
+  "Recommended: a hybrid. A as the default for each generated person (fast: about 20 s), with G's pieces for what must vary: hats and hair as rigid head pieces, the attachment points, and dresses and skirts bound to the skirt helper when that person must exist on several bodies. Capes are kept short and treated as cloth. The arm-out layer goes in for heavy bodies."
+ ],
+ "fitNote": "The fit places the MPFB proxy inside the generated mesh by a coordinate search over 21 parameters (scale, offset, spine lean, weight, muscle, proportions, height, and per side the arm's drop, swing and elbow and the leg's spread, swing and knee). The loss is the signed distance from a 1 cm grid (sign by majority ray parity). The height macro never moves, since it trades against scale. Fingers are left out (the generated hands are mittens). The tighter sex is a check only: the slimmer female body always hides more easily (it won on sh2 and guard, both men), so sex comes from the input row, as the intake prompt's person slot names it. The 5 to 11 % of proxy vertices outside are fingertips, toes and d6's very thin legs.",
+ "notes": {
+  "c1": "In the clip videos the 'carried' pose (Being_Carried, made for a carrier's shoulder) lays both figures down and they overlap. Read that clip from the numbers.",
+  "c6": "The coat's stretch on the heaviest body (p99 3.0) is the hem bound to the body group across both thighs: the skirt-helper binding the skirt uses would fix it.",
+  "d6": "A's dress uses the lateral-blend rule (Hips + both UpLegs by side). G's skirt is MakeHuman's helper-skirt binding. Their hem numbers (473 and 25 pairs) are the clearest A-against-G difference in the test.",
+  "guard": "The cap's hair-under-hat rule moves 52 scalp vertices on the fitted body and 47 to 55 on the extremes.",
+  "sh2": "The visor has no crown, so the scalp is visible by design; its 'hat penetration' (5 to 9.5 %) is the scalp touching the band, not hair through a hat."
+ },
+ "layerRead": "Arms: worth it. 28 degrees out at full weight takes 56 to 85 % of the arm-torso intersections off the heaviest bodies, summed over the clips. Stretch stays about the same except d6 (p99 1.13 to 1.43: the dress's armhole pulls). Legs: 8 degrees does little (thighs -32 to +4 %), because most thigh contact comes from the pose (crouch, carried, sit), not the stance. That needs corrective shapes on the inner thigh, driven by the weight slider and the hip angle, which MPFB does not give us.",
+ "method": [
+  {
+   "head": "Shared: the fit (tools/figures/charpipe/fit/basis.py, fit_body.py)",
+   "items": [
+    "basis.py builds MPFB samples per sex (the ref body, and each of weight, muscle, proportions and height at 0 and 1), so the fit can blend proxy, basemesh and joints linearly in numpy (11 s, once).",
+    "fit_body.py imports the glb and normalises it by rule: up is the long axis, front is where the feet point, feet at 0, a nominal 1.75 m. It builds a signed-distance grid, then fits sliders and pose so the body sits inside the mesh: outside is costly, a gap is cheap and capped, so a dress, cape or hat never pulls the body. 12 to 18 s per person.",
+    "The real MPFB body is then rebuilt at the fitted macros and posed with the same aims (lib.fitted_human); its posed basemesh is the weight donor."
+   ]
+  },
+  {
+   "head": "A: keep the generated mesh (build_a.py)",
+   "items": [
+    "The source is decimated to 12k tris (LOD0) and keeps its own UVs and base-colour texture as one matte material; specks under 0.05 % of the vertices are dropped.",
+    "Weights by Abdrashitov et al. 2023 (robust skin weights transfer via weight inpainting). A vertex takes the donor's weights at its closest surface point when it is within 3 % of the height and within 35\u00b0 of the body's normal (either side). The rest are inpainted by minimising the Dirichlet energy (cotangent Laplacian, conjugate gradient in numpy; no scipy), then smoothed. Added because image-to-3D meshes are hundreds of shells: unanchored shells get the closest-point weights.",
+    "Loose rules by the garment classifier's regions: hat and hair rigid on Head; cape on Spine2 and the shoulders by side, never the arms; skirt and coat hems below the crotch blend Hips and both thighs by lateral position.",
+    "The fitted pose becomes the rest, then the standard rest is posed and applied: the reference Mixamo T-pose for the upper body, with Latch's neutral legs (measured after: abduction 0\u00b0, ankle offset 0, foot yaw 0\u00b0). Then the rig goes back to the fitted macros' own size. LOD1 and LOD2 (4.5k, 1.5k) are decimated from LOD0. 2 to 5 s per person."
+   ]
+  },
+  {
+   "head": "G: garments on the base (build_g.py)",
+   "items": [
+    "Classify: every source vertex gets its distance to the fitted body and its nearest bone. Loose (over 2.2 cm) plus region rules in fit.json give hat, cape, coat, skirt and the person's own loose hair, each grown 2 rings into the tight part as a seam overlap.",
+    "Deforming garments (coat, skirt, cape) are cut, solidified 6 mm, voxel-remeshed at 8 mm, smoothed and decimated to budget (coat 2.4k, skirt and cape 1.6k tris), UV'd, and their colour transferred by closest point. Their top band is tucked under the suit. Rigid pieces (hat, hair) keep the source surface and UVs, decimated.",
+    "Suit: the MPFB proxy, subdivided once and wrapped onto the source where it is tight (a ray along the normal, both ways, up to 4 cm; hands are not wrapped). Under garments it stays on the body. It is decimated to the budget left over, with the colour transferred at 2048 px.",
+    "Bind: every piece is un-posed to MPFB's rest by inverse skinning and bound to the basemesh with MPFB's own MakeClothes matching (create_mhclo_from_clothes_matching): an .mhclo plus .obj per piece. The suit, coat and cape bind to the body group, the skirt to MakeHuman's helper-skirt. Each body variant is rebuilt from the .mhclo files with MPFB's add_mhclo_asset, which fits the piece to the sliders and interpolates its weights from the base.",
+    "Hat rule: rigid on Head, scaled by the head's width and depth at the brow against the head it was made on, and seated on the new crown. Hair under the hat: any scalp or hair vertex at or beyond the hat's inner wall, seen from the head's centre, is pulled 4 mm inside it.",
+    "Cape: three shared bones (Cape_1 to 3) down the centre back from the collar to the hem, parented to Spine2. The cape is weighted along them and blended to Spine2 at the collar. In the clips each link lags its parent (0.55), is pulled down (0.25) and is kept behind the back plane.",
+    "Attachment points: non-deforming bones placed by rule from each body (palm centres, right hip, centre back, top of the left shoulder). The props are a cross-body bag (strap weighted from the nearest suit point, the bag body on Hips) and a tray rigid on the left hand."
+   ]
+  },
+  {
+   "head": "Clips and measures (animate.py)",
+   "items": [
+    "Fresh Mixamo clips: Walk__c9ccf814, Run__c9c72c68, Crouch_Walking__c9c92c49, Sitting_Idle__c9cb95c1, Pistol_Aim__c9c8b958, Carrying__c9c82dfa, Being_Carried__c9c81d97. These are under Adobe's Mixamo terms: royalty-free in a game, the raw files never redistributed.",
+    "Retarget as Humanoid does with Latch's shared neutral reference. Each clip's zero is its own Mixamo T-pose with neutral legs, never its frame 0. Each figure's zero is its rest, built with neutral legs. A bone's world turn from the clip's zero is applied to the figure's rest; the hips move by the hip-height ratio.",
+    "24 sampled frames per clip (12 for the extremes and the layer runs). Measured: edge stretch and compression (p99 and max, edges over 2 mm), the minimum triangle area ratio and flips (the rest normal carried by the dominant bone), and interpenetration. A's interpenetration is the hidden donor body crossing the source surface; G's is suit vertices crossing a garment's inner wall, counting only those not already crossed at rest. Also hem self-intersection (BVH overlap, neighbouring faces excluded), arm-torso and thigh-thigh pairs on the body layer, and prop-body pairs. Thresholds are in fit.json; a rest row gives the baseline."
+   ]
+  }
+ ],
+ "time": [
+  [
+   "fit (both approaches)",
+   "12 to 18 per person",
+   "signed-distance grid 2 to 3 s, search 12 to 16 s"
+  ],
+  [
+   "A build",
+   "2 to 5 per person",
+   "body 0.5, decimate 0.1, weight transfer and inpaint 1 to 3, rest and LODs 0.2, export 0.1"
+  ],
+  [
+   "A total",
+   "about 20 per person",
+   "fit plus build, single thread"
+  ],
+  [
+   "G garment: cut, remesh, decimate, colour",
+   "coat 3.5, skirt 10.5, cape 6.9",
+   "the colour transfer by closest point dominates"
+  ],
+  [
+   "G garment: bind (MPFB MakeClothes matching)",
+   "about 20 per garment",
+   "pure-Python matcher; the same cost for the suit"
+  ],
+  [
+   "G rigid piece (hat, hair)",
+   "0.1 to 0.7",
+   "decimate only"
+  ],
+  [
+   "G suit: wrap, decimate, colour 2048 px",
+   "about 49 per person",
+   "the Python texel loop: the obvious thing to speed up (numpy or a GPU bake)"
+  ],
+  [
+   "G total, first body",
+   "about 100 to 120 per person",
+   "fit 15 + cut 50 to 60 + bind 22 to 41 + variant 0.7"
+  ],
+  [
+   "G each further body of the same person",
+   "0.5 to 0.8",
+   "rebuild from the .mhclo files at new macros"
+  ],
+  [
+   "clip runs (7 clips, metrics and renders)",
+   "about 65 per A-and-G pair",
+   "five runs in parallel took about 3 minutes for all 20"
+  ]
+ ],
+ "failures": {
+  "head": "The worst failures, with numbers",
+  "items": [
+   "G cape (c1): 40 to 57 % of the covered vertices cross the cape's inner wall in every clip (57 % on the heaviest body). It flares out in crouch and shows the remeshed shell's dark inside.",
+   "A cape (c1): 915 arm-torso pairs at worst (184 at rest). The A-posed cape fills the armpit and webs in crouch and sit.",
+   "A hem self-intersection: d6 473 pairs, c6 207, c1 163 (at rest 63, 46, 41). G: 25, 86, 0.",
+   "A triangle flips: 210 to 486 at worst (c6 486 in crouch walk). G: 66 to 152.",
+   "Edge stretch p99 is over the 0.35 threshold in both, for every input: A 1.0 to 1.4, G 0.64 to 1.65 (2.6 to 3.0 on c6's heaviest coat). Most is the armpit band going from the T-pose rest to arms-down clips. The threshold is right for cloth but too tight for an armpit, so read it per region.",
+   "G coat (c6): the suit under the open front is coloured from the jacket's lining. 39 % coat inner-wall crossing.",
+   "G props: the bag strap intersects the chest at rest (128 to 232 pairs) and at worst 400 to 850. The tray sweeps through the body in run, crouch and aim (it has no carry clip).",
+   "Heavy bodies (G): arm-torso up to 287 pairs and thighs up to 95, against 1 to 13 and 20 to 71 at rest.",
+   "Both: d6's thin legs leave 11 % of proxy vertices more than 5 mm outside the source at the fit, so A's donor shows through as 5 to 7 % body interpenetration."
+  ]
+ },
+ "fixes": {
+  "head": "What would make the failing cases pass",
+  "items": [
+   "Capes: cloth on the bound cape mesh (Unity Cloth, or Magica Cloth 2 with the arm and torso capsules as colliders), with the 3-bone chain as its anchor. Or keep capes above the elbow, as the intake prompt already says, and ship them as A.",
+   "G coat: bind the coat's lower part to helper-skirt (as the skirt does) and the upper to the body. Ask the generator for the inner layer (a second intake of the person without the coat) so the suit under an open coat is real, not guessed.",
+   "A hems and webs: a 'bridge' rule that deletes the A-pose armpit web and the inner hem bridge before transfer and caps them. Or simply generate in the intake A-pose, which already asks for gaps under the arms and between the legs. The inputs here predate that prompt.",
+   "Props: offset the strap path from the body by the body's local thickness plus the strap radius (not a fixed 2 cm), and give the bag its own collision-free seat. Held props need their own clips (tray carry, case carry) and a two-bone IK target on the attachment point.",
+   "Heavy bodies: the arm-out layer at 28\u00b0 (keep it). For the thighs, corrective blend shapes driven by the weight slider and the hip flexion, which MPFB has no target for.",
+   "Speed: the suit colour transfer (about 49 s) and the MakeClothes matcher (about 20 s per piece) are both pure Python and would drop to about 2 s in numpy or with a GPU bake."
+  ]
+ },
+ "unity": {
+  "head": "Importing into Unity (for Latch; nothing in unity/ was touched)",
+  "items": [
+   "Files: fit-test/a/<id>_A.fbx (Armature + <id>_A_LOD0..2) and fit-test/g/<id>/<id>_G_<variant>.fbx (Armature + the pieces, LOD0 unsuffixed, then _LOD1 and _LOD2 copies + prop_bag, prop_tray). Metres, -Z forward, Y up, the pinned FBX header (build.py's export_fbx).",
+   "Rig: Humanoid, avatar created from this model, auto-mapping (Mixamo names: Hips ... RightHandPinky3, 52 deforming bones; c1's G adds Cape_1 to 3). The extra bones (Attach_*, Cape_*) are not Humanoid: keep Optimize Game Objects off, or list them under Extra Transforms to Expose.",
+   "Neutral legs: every figure's rest is built with Latch's rule, measured after the build: UpLeg abduction 0\u00b0, ankle offset 0, foot yaw 0\u00b0, foot pitch the body's own (about 28\u00b0). So Latch's NeutralLegs(importer, null) on the figure meta is a no-op check; still run it, so every figure carries the same humanDescription.skeleton write with auto-mapping off.",
+   "Clips: one shared Mixamo clip avatar with neutral legs (Latch's option (a): avatarSetup Copy From Other, sourceAvatar = that avatar) for all seven clips here. Foot IK off, as the game's states have it.",
+   "LOD: a LODGroup of LOD0, 1 and 2. A is one mesh per LOD. G is several pieces per LOD: suit, garments, hat, hair; props stay on LOD0 only.",
+   "Cape: the Cape_* chain needs a runtime lag (the Blender take used a 0.55 lag and 0.25 gravity), for example a small spring script or Magica Cloth bone cloth. Without it the cape is rigid on Spine2.",
+   "Materials: A is one matte material on the source's 4096 base colour. G has 4 to 6 (suit 2048 px, each garment 1024 px, head pieces on the source atlas) plus 2 for the props. A real run would atlas G into one material.",
+   "Unity takes were not made: they are Latch's scratch-scene step."
+  ]
+ },
+ "reproduce": {
+  "head": "Reproduce (Blender headless, --factory-startup, the scratch MPFB user dir via blender.sh)",
+  "items": [
+   "B=out/scratch/forma/char-pipeline/blender.sh",
+   "$B -P tools/figures/charpipe/fit/basis.py",
+   "$B -P tools/figures/charpipe/fit/fit_body.py -- sh2 c6 d6 c1 guard",
+   "$B -P tools/figures/charpipe/fit/build_a.py -- sh2 c6 d6 c1 guard",
+   "bun run guard tools/figures/charpipe/fit/run_g.sh sh2 c6 d6 c1 guard   (G: cut, bind and five bodies each, in parallel)",
+   "bun run guard tools/figures/charpipe/fit/run_anim.sh   (every spec in fit-test/specs: A and G, play zoom, extremes, layer)",
+   "$B -P tools/figures/charpipe/fit/lineup.py -- <out prefix> <label=blend> ...   (rest lineups)",
+   "python3 tools/figures/charpipe/fit/media.py && python3 tools/figures/charpipe/fit/report.py"
+  ]
+ },
+ "notdone": {
+  "head": "Not done, or done only in part",
+  "items": [
+   "Swapping a hat or garment between two different people: the hat rule was exercised across five body sizes per person, not across people.",
+   "Determinism was not re-checked byte for byte in this test (the FBX export is pinned, and the fit has no randomness).",
+   "Cloth simulation was not tried; it is named as the fix for capes.",
+   "No Unity takes and no frame-cost numbers: Latch and Redline.",
+   "The A-pose intake prompt (being written in parallel) was not used: these inputs are today's older generations. A clean intake A-pose should cut A's armpit and hem webs, the main source of A's flips."
+  ]
+ }
+}

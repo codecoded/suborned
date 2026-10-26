@@ -1,0 +1,1650 @@
+[
+ {
+  "id": "c6",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "c6_LOD0",
+    "tris": 2995,
+    "verts": 1500,
+    "gpuVerts": 3340,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "c6_LOD1",
+    "tris": 1499,
+    "verts": 752,
+    "gpuVerts": 1939,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 516428
+ },
+ {
+  "id": "d6",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "d6_LOD0",
+    "tris": 2990,
+    "verts": 1494,
+    "gpuVerts": 3305,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "d6_LOD1",
+    "tris": 1500,
+    "verts": 749,
+    "gpuVerts": 1949,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 515324
+ },
+ {
+  "id": "el1",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "el1_LOD0",
+    "tris": 3000,
+    "verts": 1485,
+    "gpuVerts": 2459,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "el1_LOD1",
+    "tris": 1500,
+    "verts": 735,
+    "gpuVerts": 1454,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 468172
+ },
+ {
+  "id": "sh2",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "sh2_LOD0",
+    "tris": 3000,
+    "verts": 1472,
+    "gpuVerts": 2604,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "sh2_LOD1",
+    "tris": 1500,
+    "verts": 722,
+    "gpuVerts": 1557,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 472476
+ },
+ {
+  "id": "workers_d5",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "workers_d5_LOD0",
+    "tris": 3000,
+    "verts": 1490,
+    "gpuVerts": 3762,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "workers_d5_LOD1",
+    "tris": 1500,
+    "verts": 740,
+    "gpuVerts": 2221,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 541180
+ },
+ {
+  "id": "d4",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "d4_LOD0",
+    "tris": 3000,
+    "verts": 1482,
+    "gpuVerts": 3682,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "d4_LOD1",
+    "tris": 1500,
+    "verts": 732,
+    "gpuVerts": 2147,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 533868
+ },
+ {
+  "id": "d4b",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "d4b_LOD0",
+    "tris": 3000,
+    "verts": 1482,
+    "gpuVerts": 3682,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "d4b_LOD1",
+    "tris": 1500,
+    "verts": 732,
+    "gpuVerts": 2147,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 533868
+ },
+ {
+  "id": "d5c",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "d5c_LOD0",
+    "tris": 2982,
+    "verts": 1491,
+    "gpuVerts": 3393,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "d5c_LOD1",
+    "tris": 1498,
+    "verts": 749,
+    "gpuVerts": 2025,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 522364
+ },
+ {
+  "id": "cafe_w2",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "cafe_w2_LOD0",
+    "tris": 4499,
+    "verts": 2200,
+    "gpuVerts": 3599,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "cafe_w2_LOD1",
+    "tris": 1499,
+    "verts": 700,
+    "gpuVerts": 1596,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 588140
+ },
+ {
+  "id": "cafe_w3",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "cafe_w3_LOD0",
+    "tris": 4499,
+    "verts": 2244,
+    "gpuVerts": 3505,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "cafe_w3_LOD1",
+    "tris": 1499,
+    "verts": 744,
+    "gpuVerts": 1531,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 592908
+ },
+ {
+  "id": "cafe_w5",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "cafe_w5_LOD0",
+    "tris": 4499,
+    "verts": 2182,
+    "gpuVerts": 3587,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "cafe_w5_LOD1",
+    "tris": 1499,
+    "verts": 682,
+    "gpuVerts": 1583,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 589340
+ },
+ {
+  "id": "guard",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "guard_LOD0",
+    "tris": 11417,
+    "verts": 5702,
+    "gpuVerts": 7166,
+    "materials": 1,
+    "groups": 23
+   },
+   {
+    "name": "guard_LOD1",
+    "tris": 4499,
+    "verts": 2243,
+    "gpuVerts": 3232,
+    "materials": 1,
+    "groups": 23
+   },
+   {
+    "name": "guard_LOD2",
+    "tris": 1499,
+    "verts": 743,
+    "gpuVerts": 1345,
+    "materials": 1,
+    "groups": 23
+   }
+  ],
+  "bytes": 1460652
+ },
+ {
+  "id": "security",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "security_LOD0",
+    "tris": 4499,
+    "verts": 2243,
+    "gpuVerts": 3232,
+    "materials": 1,
+    "groups": 23
+   },
+   {
+    "name": "security_LOD1",
+    "tris": 1499,
+    "verts": 743,
+    "gpuVerts": 1345,
+    "materials": 1,
+    "groups": 23
+   }
+  ],
+  "bytes": 570428
+ },
+ {
+  "id": "rival",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "rival_LOD0",
+    "tris": 8000,
+    "verts": 3982,
+    "gpuVerts": 7837,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_LOD1",
+    "tris": 3000,
+    "verts": 1482,
+    "gpuVerts": 3665,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_LOD2",
+    "tris": 1500,
+    "verts": 732,
+    "gpuVerts": 2172,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 1258316
+ },
+ {
+  "id": "rival_b",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "rival_b_LOD0",
+    "tris": 8000,
+    "verts": 3982,
+    "gpuVerts": 7837,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_b_LOD1",
+    "tris": 3000,
+    "verts": 1482,
+    "gpuVerts": 3665,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_b_LOD2",
+    "tris": 1500,
+    "verts": 732,
+    "gpuVerts": 2172,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 1258348
+ },
+ {
+  "id": "rival_c",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "rival_c_LOD0",
+    "tris": 8000,
+    "verts": 3982,
+    "gpuVerts": 7837,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_c_LOD1",
+    "tris": 3000,
+    "verts": 1482,
+    "gpuVerts": 3665,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_c_LOD2",
+    "tris": 1500,
+    "verts": 732,
+    "gpuVerts": 2172,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 1258348
+ },
+ {
+  "id": "rival_d",
+  "kind": "today",
+  "bones": 23,
+  "lods": [
+   {
+    "name": "rival_d_LOD0",
+    "tris": 7995,
+    "verts": 4000,
+    "gpuVerts": 7178,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_d_LOD1",
+    "tris": 2999,
+    "verts": 1502,
+    "gpuVerts": 3307,
+    "materials": 1,
+    "groups": 22
+   },
+   {
+    "name": "rival_d_LOD2",
+    "tris": 1499,
+    "verts": 752,
+    "gpuVerts": 1955,
+    "materials": 1,
+    "groups": 22
+   }
+  ],
+  "bytes": 1220700
+ },
+ {
+  "id": "cp_commuter_01",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_01_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1889,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_01_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 949,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 436348
+ },
+ {
+  "id": "cp_commuter_02",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_02_LOD0",
+    "tris": 3652,
+    "verts": 1971,
+    "gpuVerts": 2133,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_02_LOD1",
+    "tris": 1660,
+    "verts": 913,
+    "gpuVerts": 1049,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 465452
+ },
+ {
+  "id": "cp_commuter_03",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_03_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1873,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_03_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 941,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435420
+ },
+ {
+  "id": "cp_commuter_04",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_04_LOD0",
+    "tris": 3456,
+    "verts": 1821,
+    "gpuVerts": 2023,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_04_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 989,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 452972
+ },
+ {
+  "id": "cp_commuter_05",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_05_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 2020,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_05_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 1008,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445644
+ },
+ {
+  "id": "cp_commuter_06",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_06_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1870,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_06_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 941,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435852
+ },
+ {
+  "id": "cp_commuter_07",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_07_LOD0",
+    "tris": 3596,
+    "verts": 1916,
+    "gpuVerts": 2105,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_07_LOD1",
+    "tris": 1638,
+    "verts": 884,
+    "gpuVerts": 1064,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 459452
+ },
+ {
+  "id": "cp_commuter_08",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_08_LOD0",
+    "tris": 3444,
+    "verts": 1849,
+    "gpuVerts": 2009,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_08_LOD1",
+    "tris": 1600,
+    "verts": 873,
+    "gpuVerts": 1009,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449132
+ },
+ {
+  "id": "cp_commuter_09",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_09_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1979,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_09_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 1011,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449452
+ },
+ {
+  "id": "cp_commuter_10",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_10_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1853,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_10_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 921,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435388
+ },
+ {
+  "id": "cp_commuter_11",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_11_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1988,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_11_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 998,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445020
+ },
+ {
+  "id": "cp_commuter_12",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_12_LOD0",
+    "tris": 3652,
+    "verts": 1971,
+    "gpuVerts": 2121,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_12_LOD1",
+    "tris": 1660,
+    "verts": 913,
+    "gpuVerts": 1033,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 465388
+ },
+ {
+  "id": "cp_commuter_13",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_13_LOD0",
+    "tris": 3276,
+    "verts": 1713,
+    "gpuVerts": 1865,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_13_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 921,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 439148
+ },
+ {
+  "id": "cp_commuter_14",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_14_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1869,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_14_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 941,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 436044
+ },
+ {
+  "id": "cp_commuter_15",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_15_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1853,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_15_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 921,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435788
+ },
+ {
+  "id": "cp_commuter_16",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_16_LOD0",
+    "tris": 3820,
+    "verts": 2080,
+    "gpuVerts": 2282,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_16_LOD1",
+    "tris": 1718,
+    "verts": 956,
+    "gpuVerts": 1092,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 475500
+ },
+ {
+  "id": "cp_commuter_17",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_17_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1975,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_17_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 995,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449420
+ },
+ {
+  "id": "cp_commuter_18",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_18_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1857,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_18_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 935,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435292
+ },
+ {
+  "id": "cp_commuter_19",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_19_LOD0",
+    "tris": 3456,
+    "verts": 1821,
+    "gpuVerts": 1997,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_19_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 969,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 452860
+ },
+ {
+  "id": "cp_commuter_20",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_20_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1975,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_20_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 995,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449548
+ },
+ {
+  "id": "cp_commuter_21",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_21_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1975,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_21_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 995,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449964
+ },
+ {
+  "id": "cp_commuter_22",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_22_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1979,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_22_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 1011,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449308
+ },
+ {
+  "id": "cp_commuter_23",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_23_LOD0",
+    "tris": 3820,
+    "verts": 2080,
+    "gpuVerts": 2272,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_23_LOD1",
+    "tris": 1718,
+    "verts": 956,
+    "gpuVerts": 1095,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 475180
+ },
+ {
+  "id": "cp_commuter_24",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_24_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1873,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_24_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 941,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435900
+ },
+ {
+  "id": "cp_commuter_25",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_25_LOD0",
+    "tris": 3652,
+    "verts": 1971,
+    "gpuVerts": 2123,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_25_LOD1",
+    "tris": 1660,
+    "verts": 913,
+    "gpuVerts": 1031,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 465420
+ },
+ {
+  "id": "cp_commuter_26",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_commuter_26_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1869,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_commuter_26_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 941,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435932
+ },
+ {
+  "id": "cp_guard_01",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_01_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1991,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_01_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 986,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445868
+ },
+ {
+  "id": "cp_guard_02",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_02_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 2036,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_02_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 1037,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 446204
+ },
+ {
+  "id": "cp_guard_03",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_03_LOD0",
+    "tris": 3820,
+    "verts": 2080,
+    "gpuVerts": 2259,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_03_LOD1",
+    "tris": 1718,
+    "verts": 956,
+    "gpuVerts": 1102,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 475660
+ },
+ {
+  "id": "cp_guard_04",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_04_LOD0",
+    "tris": 3820,
+    "verts": 2080,
+    "gpuVerts": 2325,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_04_LOD1",
+    "tris": 1718,
+    "verts": 956,
+    "gpuVerts": 1138,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 476044
+ },
+ {
+  "id": "cp_guard_05",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_05_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1972,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_05_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 976,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 446380
+ },
+ {
+  "id": "cp_guard_06",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_06_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1989,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_06_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 988,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445788
+ },
+ {
+  "id": "cp_guard_07",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_07_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1926,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_07_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 1000,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435868
+ },
+ {
+  "id": "cp_guard_08",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_guard_08_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1863,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_guard_08_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 939,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 434860
+ },
+ {
+  "id": "cp_rival_01",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_01_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1847,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_01_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 923,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435788
+ },
+ {
+  "id": "cp_rival_02",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_02_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1847,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_02_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 923,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 434540
+ },
+ {
+  "id": "cp_rival_03",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_03_LOD0",
+    "tris": 3596,
+    "verts": 1916,
+    "gpuVerts": 2111,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_03_LOD1",
+    "tris": 1638,
+    "verts": 884,
+    "gpuVerts": 1065,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 458796
+ },
+ {
+  "id": "cp_rival_04",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_04_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1977,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_04_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 1011,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449244
+ },
+ {
+  "id": "cp_rival_05",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_05_LOD0",
+    "tris": 3472,
+    "verts": 1863,
+    "gpuVerts": 2023,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_05_LOD1",
+    "tris": 1600,
+    "verts": 873,
+    "gpuVerts": 1003,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 450908
+ },
+ {
+  "id": "cp_rival_06",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_06_LOD0",
+    "tris": 3652,
+    "verts": 1971,
+    "gpuVerts": 2167,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_06_LOD1",
+    "tris": 1660,
+    "verts": 913,
+    "gpuVerts": 1059,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 466076
+ },
+ {
+  "id": "cp_rival_07",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_07_LOD0",
+    "tris": 3652,
+    "verts": 1971,
+    "gpuVerts": 2113,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_07_LOD1",
+    "tris": 1660,
+    "verts": 913,
+    "gpuVerts": 1027,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 465644
+ },
+ {
+  "id": "cp_rival_08",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_rival_08_LOD0",
+    "tris": 3428,
+    "verts": 1807,
+    "gpuVerts": 1987,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_rival_08_LOD1",
+    "tris": 1580,
+    "verts": 841,
+    "gpuVerts": 1011,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 449948
+ },
+ {
+  "id": "cp_cafe_01",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_01_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1995,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_01_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 995,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445484
+ },
+ {
+  "id": "cp_cafe_02",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_02_LOD0",
+    "tris": 3276,
+    "verts": 1713,
+    "gpuVerts": 1869,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_02_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 917,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 438700
+ },
+ {
+  "id": "cp_cafe_03",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_03_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1975,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_03_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 975,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445708
+ },
+ {
+  "id": "cp_cafe_04",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_04_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1869,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_04_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 941,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435868
+ },
+ {
+  "id": "cp_cafe_05",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_05_LOD0",
+    "tris": 3652,
+    "verts": 1971,
+    "gpuVerts": 2129,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_05_LOD1",
+    "tris": 1660,
+    "verts": 913,
+    "gpuVerts": 1035,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 466060
+ },
+ {
+  "id": "cp_cafe_06",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_06_LOD0",
+    "tris": 3472,
+    "verts": 1863,
+    "gpuVerts": 2021,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_06_LOD1",
+    "tris": 1600,
+    "verts": 873,
+    "gpuVerts": 997,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 451676
+ },
+ {
+  "id": "cp_cafe_07",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_07_LOD0",
+    "tris": 3416,
+    "verts": 1808,
+    "gpuVerts": 1998,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_07_LOD1",
+    "tris": 1578,
+    "verts": 844,
+    "gpuVerts": 994,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 445820
+ },
+ {
+  "id": "cp_cafe_08",
+  "kind": "new",
+  "bones": 52,
+  "lods": [
+   {
+    "name": "cp_cafe_08_LOD0",
+    "tris": 3248,
+    "verts": 1699,
+    "gpuVerts": 1869,
+    "materials": 1,
+    "groups": 52
+   },
+   {
+    "name": "cp_cafe_08_LOD1",
+    "tris": 1520,
+    "verts": 801,
+    "gpuVerts": 937,
+    "materials": 1,
+    "groups": 50
+   }
+  ],
+  "bytes": 435948
+ }
+]

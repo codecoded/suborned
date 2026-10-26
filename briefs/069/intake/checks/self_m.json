@@ -1,0 +1,122 @@
+{
+ "still": "mannequin_m.png",
+ "base": "silhouette_m.png",
+ "verdict": {
+  "pass": true,
+  "fails": [],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 0.2,
+   "arm_screenLeft": 46.3,
+   "arm_screenRight": 45.9,
+   "armGapRows": 1.0,
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1298,
+   "feetSpacingH_base": 0.1297,
+   "legSplayDeg": 0.2,
+   "footLengthH": 0.1005,
+   "footYawDegEst": [
+    -1.0,
+    -3.1
+   ],
+   "backgroundFlatness": 0.2
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 238,
+   "bottom": 789,
+   "heightPx": 551,
+   "left": 31,
+   "right": 480,
+   "touchesEdge": false,
+   "armGapRows": 1.0,
+   "armDownFromHorizontal": {
+    "screenLeft": 46.3,
+    "screenRight": 45.9
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1298,
+   "footWidthH": 0.0467,
+   "legSplayDeg": 0.2,
+   "footOutwardH": [
+    -0.0009,
+    -0.0027
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 237,
+   "bottom": 789,
+   "heightPx": 552,
+   "left": 198,
+   "right": 286,
+   "touchesEdge": false,
+   "footLengthH": 0.1005,
+   "x0": 512
+  },
+  "back": {
+   "top": 237,
+   "bottom": 789,
+   "heightPx": 552,
+   "left": 31,
+   "right": 480,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 31,
+   "right": 480,
+   "touchesEdge": false,
+   "armGapRows": 1.0,
+   "armDownFromHorizontal": {
+    "screenLeft": 46.0,
+    "screenRight": 46.0
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1297,
+   "footWidthH": 0.0493,
+   "legSplayDeg": 0.0,
+   "footOutwardH": [
+    -0.0018,
+    -0.0023
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 198,
+   "right": 287,
+   "touchesEdge": false,
+   "footLengthH": 0.132,
+   "x0": 512
+  },
+  "back": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 31,
+   "right": 480,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "footYawDeg": 12.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0,
+  "legSplayDeg": 4.0,
+  "feetSpacingHLoose": 0.06
+ }
+}

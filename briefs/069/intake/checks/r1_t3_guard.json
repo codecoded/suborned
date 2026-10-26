@@ -1,0 +1,122 @@
+{
+ "still": "/Users/sky/Projects/suborned/paid/069-intake/codex/r1_t3_guard.png",
+ "base": "silhouette_f.png",
+ "verdict": {
+  "pass": true,
+  "fails": [],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 0.3,
+   "arm_screenLeft": 48.3,
+   "arm_screenRight": 48.2,
+   "armGapRows": 0.965,
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1302,
+   "feetSpacingH_base": 0.1248,
+   "legSplayDeg": 0.6,
+   "footLengthH": 0.1466,
+   "footYawDegEst": [
+    3.8,
+    3.8
+   ],
+   "backgroundFlatness": 1.0
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 137,
+   "bottom": 855,
+   "heightPx": 718,
+   "left": 19,
+   "right": 503,
+   "touchesEdge": false,
+   "armGapRows": 0.965,
+   "armDownFromHorizontal": {
+    "screenLeft": 48.3,
+    "screenRight": 48.2
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1302,
+   "footWidthH": 0.0543,
+   "legSplayDeg": 0.6,
+   "footOutwardH": [
+    0.0049,
+    0.0049
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 139,
+   "bottom": 855,
+   "heightPx": 716,
+   "left": 176,
+   "right": 302,
+   "touchesEdge": false,
+   "footLengthH": 0.1466,
+   "x0": 512
+  },
+  "back": {
+   "top": 137,
+   "bottom": 855,
+   "heightPx": 718,
+   "left": 7,
+   "right": 491,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 51,
+   "right": 459,
+   "touchesEdge": false,
+   "armGapRows": 0.964,
+   "armDownFromHorizontal": {
+    "screenLeft": 45.2,
+    "screenRight": 45.2
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1248,
+   "footWidthH": 0.0439,
+   "legSplayDeg": 0.7,
+   "footOutwardH": [
+    -0.0018,
+    -0.0018
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 192,
+   "right": 284,
+   "touchesEdge": false,
+   "footLengthH": 0.1103,
+   "x0": 512
+  },
+  "back": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 51,
+   "right": 459,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "footYawDeg": 12.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0,
+  "legSplayDeg": 4.0,
+  "feetSpacingHLoose": 0.06
+ }
+}

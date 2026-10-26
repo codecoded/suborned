@@ -1,0 +1,1004 @@
+{
+ "A/new60": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1,
+   "min": 0.899,
+   "max": 1.396,
+   "p95": 1.932
+  },
+  "cpuMain": {
+   "median": 0.996,
+   "min": 0.895,
+   "max": 1.328,
+   "p95": 1.575
+  },
+  "cpuRender": {
+   "median": 0.356,
+   "min": 0.33,
+   "max": 0.413,
+   "p95": 0.452
+  },
+  "gpu": {
+   "median": 0.807,
+   "min": 0.776,
+   "max": 1.038,
+   "p95": 2.794
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.117,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.27,
+  "Animators.Update": 0.331,
+  "Animator.EvaluateRetargeter": 0.157,
+  "Animator.ProcessGraph": 0.14,
+  "Animator.ProcessAnimations": 0.129,
+  "Animator.EvaluateIK": 0.142,
+  "Animator.EvaluateTwistBone": 0.098,
+  "Animator.WriteTransforms": 0.059,
+  "Director.ProcessFrame": 0.331,
+  "Director.PrepareFrameJob": 0.088,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.059,
+  "MeshSkinning.Update": 0.058,
+  "MeshSkinning.CalcMatrices": 0.071,
+  "MeshSkinning.SkinOnGPU": 0.061,
+  "MeshSkinning.GPUBatchedSkin": 0.046,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.312,
+  "Inl_UniversalRenderTotal": 0.301,
+  "Update.ScriptRunBehaviourUpdate": 0.04,
+  "PlayerLoop": 0.996,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/new60cpu": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1.408,
+   "min": 1.342,
+   "max": 1.438,
+   "p95": 2.398
+  },
+  "cpuMain": {
+   "median": 1.313,
+   "min": 1.297,
+   "max": 1.325,
+   "p95": 1.833
+  },
+  "cpuRender": {
+   "median": 0.496,
+   "min": 0.496,
+   "max": 0.502,
+   "p95": 0.617
+  },
+  "gpu": {
+   "median": 1.073,
+   "min": 0.78,
+   "max": 1.516,
+   "p95": 3.695
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.15,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.316,
+  "Animators.Update": 0.403,
+  "Animator.EvaluateRetargeter": 0.198,
+  "Animator.ProcessGraph": 0.204,
+  "Animator.ProcessAnimations": 0.107,
+  "Animator.EvaluateIK": 0.148,
+  "Animator.EvaluateTwistBone": 0.108,
+  "Animator.WriteTransforms": 0.076,
+  "Director.ProcessFrame": 0.403,
+  "Director.PrepareFrameJob": 0.136,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.063,
+  "MeshSkinning.Update": 0.062,
+  "MeshSkinning.CalcMatrices": 0.056,
+  "MeshSkinning.SkinOnGPU": 0,
+  "MeshSkinning.GPUBatchedSkin": 0,
+  "MeshSkinning.Skin": 1.358,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.482,
+  "Inl_UniversalRenderTotal": 0.421,
+  "Update.ScriptRunBehaviourUpdate": 0.05,
+  "PlayerLoop": 1.402,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/new60gpu": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1.187,
+   "min": 1.1,
+   "max": 1.46,
+   "p95": 1.716
+  },
+  "cpuMain": {
+   "median": 1.17,
+   "min": 1.095,
+   "max": 1.39,
+   "p95": 1.615
+  },
+  "cpuRender": {
+   "median": 0.379,
+   "min": 0.368,
+   "max": 0.426,
+   "p95": 0.453
+  },
+  "gpu": {
+   "median": 0.856,
+   "min": 0.832,
+   "max": 1.379,
+   "p95": 2.32
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.141,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.284,
+  "Animators.Update": 0.359,
+  "Animator.EvaluateRetargeter": 0.181,
+  "Animator.ProcessGraph": 0.199,
+  "Animator.ProcessAnimations": 0.121,
+  "Animator.EvaluateIK": 0.141,
+  "Animator.EvaluateTwistBone": 0.105,
+  "Animator.WriteTransforms": 0.066,
+  "Director.ProcessFrame": 0.36,
+  "Director.PrepareFrameJob": 0.13,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.077,
+  "MeshSkinning.Update": 0.077,
+  "MeshSkinning.CalcMatrices": 0.073,
+  "MeshSkinning.SkinOnGPU": 0.141,
+  "MeshSkinning.GPUBatchedSkin": 0,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0.114,
+  "PostLateUpdate.FinishFrameRendering": 0.37,
+  "Inl_UniversalRenderTotal": 0.356,
+  "Update.ScriptRunBehaviourUpdate": 0.045,
+  "PlayerLoop": 1.18,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/new60mask": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": true,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1.103,
+   "min": 0.903,
+   "max": 1.412,
+   "p95": 1.93
+  },
+  "cpuMain": {
+   "median": 1.097,
+   "min": 0.899,
+   "max": 1.405,
+   "p95": 1.699
+  },
+  "cpuRender": {
+   "median": 0.374,
+   "min": 0.33,
+   "max": 0.42,
+   "p95": 0.469
+  },
+  "gpu": {
+   "median": 0.831,
+   "min": 0.776,
+   "max": 0.834,
+   "p95": 2.429
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.143,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.286,
+  "Animators.Update": 0.362,
+  "Animator.EvaluateRetargeter": 0.187,
+  "Animator.ProcessGraph": 0.203,
+  "Animator.ProcessAnimations": 0.122,
+  "Animator.EvaluateIK": 0.144,
+  "Animator.EvaluateTwistBone": 0.104,
+  "Animator.WriteTransforms": 0.061,
+  "Director.ProcessFrame": 0.363,
+  "Director.PrepareFrameJob": 0.133,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.066,
+  "MeshSkinning.Update": 0.066,
+  "MeshSkinning.CalcMatrices": 0.081,
+  "MeshSkinning.SkinOnGPU": 0.067,
+  "MeshSkinning.GPUBatchedSkin": 0.05,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.344,
+  "Inl_UniversalRenderTotal": 0.331,
+  "Update.ScriptRunBehaviourUpdate": 0.043,
+  "PlayerLoop": 1.098,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/new60norec": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1.143,
+   "min": 0.714,
+   "max": 1.148,
+   "p95": 1.987
+  },
+  "cpuMain": {
+   "median": 1.096,
+   "min": 0.705,
+   "max": 1.104,
+   "p95": 1.41
+  },
+  "cpuRender": {
+   "median": 0.408,
+   "min": 0.337,
+   "max": 0.411,
+   "p95": 0.48
+  },
+  "gpu": {
+   "median": 1.058,
+   "min": 0.9,
+   "max": 1.905,
+   "p95": 3.003
+  }
+ },
+ "A/new60opt": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": true,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 0,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 0.907,
+   "min": 0.8,
+   "max": 1,
+   "p95": 1.557
+  },
+  "cpuMain": {
+   "median": 0.903,
+   "min": 0.796,
+   "max": 0.993,
+   "p95": 1.493
+  },
+  "cpuRender": {
+   "median": 0.349,
+   "min": 0.317,
+   "max": 0.363,
+   "p95": 0.451
+  },
+  "gpu": {
+   "median": 0.872,
+   "min": 0.797,
+   "max": 0.887,
+   "p95": 2.284
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.131,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.245,
+  "Animators.Update": 0.316,
+  "Animator.EvaluateRetargeter": 0.174,
+  "Animator.ProcessGraph": 0.164,
+  "Animator.ProcessAnimations": 0.112,
+  "Animator.EvaluateIK": 0.144,
+  "Animator.EvaluateTwistBone": 0.1,
+  "Animator.WriteTransforms": 0.032,
+  "Director.ProcessFrame": 0.317,
+  "Director.PrepareFrameJob": 0.1,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.025,
+  "MeshSkinning.Update": 0.025,
+  "MeshSkinning.CalcMatrices": 0,
+  "MeshSkinning.SkinOnGPU": 0.124,
+  "MeshSkinning.GPUBatchedSkin": 0.05,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.315,
+  "Inl_UniversalRenderTotal": 0.304,
+  "Update.ScriptRunBehaviourUpdate": 0.033,
+  "PlayerLoop": 0.904,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/new60sw2": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "TwoBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 52,
+   "transformsPerPersonBeforeOptimize": 56,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 1.416,
+   "min": 1.299,
+   "max": 1.511,
+   "p95": 2.104
+  },
+  "cpuMain": {
+   "median": 1.353,
+   "min": 1.291,
+   "max": 1.408,
+   "p95": 1.776
+  },
+  "cpuRender": {
+   "median": 0.415,
+   "min": 0.41,
+   "max": 0.436,
+   "p95": 0.49
+  },
+  "gpu": {
+   "median": 0.911,
+   "min": 0.855,
+   "max": 2.37,
+   "p95": 3.294
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.16,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.318,
+  "Animators.Update": 0.407,
+  "Animator.EvaluateRetargeter": 0.205,
+  "Animator.ProcessGraph": 0.22,
+  "Animator.ProcessAnimations": 0.131,
+  "Animator.EvaluateIK": 0.143,
+  "Animator.EvaluateTwistBone": 0.109,
+  "Animator.WriteTransforms": 0.074,
+  "Director.ProcessFrame": 0.408,
+  "Director.PrepareFrameJob": 0.166,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.072,
+  "MeshSkinning.Update": 0.071,
+  "MeshSkinning.CalcMatrices": 0.074,
+  "MeshSkinning.SkinOnGPU": 0.082,
+  "MeshSkinning.GPUBatchedSkin": 0.063,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.447,
+  "Inl_UniversalRenderTotal": 0.428,
+  "Update.ScriptRunBehaviourUpdate": 0.05,
+  "PlayerLoop": 1.406,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/newnf60": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 120,
+   "distinctMaterials": 1,
+   "maxBonesPerSmr": 22,
+   "transformsPerPersonBeforeOptimize": 26,
+   "trisLOD0Sum": 205072,
+   "trisOtherLODsSum": 94674,
+   "visibleSmrsByLod": {
+    "LOD1": 60
+   }
+  },
+  "frame": {
+   "median": 0.91,
+   "min": 0.801,
+   "max": 1.537,
+   "p95": 2.053
+  },
+  "cpuMain": {
+   "median": 0.904,
+   "min": 0.798,
+   "max": 1.428,
+   "p95": 1.535
+  },
+  "cpuRender": {
+   "median": 0.349,
+   "min": 0.323,
+   "max": 0.438,
+   "p95": 0.454
+  },
+  "gpu": {
+   "median": 0.818,
+   "min": 0.794,
+   "max": 2.212,
+   "p95": 3.105
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.131,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.235,
+  "Animators.Update": 0.302,
+  "Animator.EvaluateRetargeter": 0.134,
+  "Animator.ProcessGraph": 0.174,
+  "Animator.ProcessAnimations": 0.144,
+  "Animator.EvaluateIK": 0.079,
+  "Animator.EvaluateTwistBone": 0.091,
+  "Animator.WriteTransforms": 0.023,
+  "Director.ProcessFrame": 0.302,
+  "Director.PrepareFrameJob": 0.114,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.059,
+  "MeshSkinning.Update": 0.059,
+  "MeshSkinning.CalcMatrices": 0.055,
+  "MeshSkinning.SkinOnGPU": 0.055,
+  "MeshSkinning.GPUBatchedSkin": 0.042,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.293,
+  "Inl_UniversalRenderTotal": 0.283,
+  "Update.ScriptRunBehaviourUpdate": 0.033,
+  "PlayerLoop": 0.906,
+  "SetPass Calls Count": 32,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 189976,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/old60": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 23,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 1.004,
+   "min": 0.895,
+   "max": 1.493,
+   "p95": 1.509
+  },
+  "cpuMain": {
+   "median": 0.997,
+   "min": 0.89,
+   "max": 1.451,
+   "p95": 1.493
+  },
+  "cpuRender": {
+   "median": 0.366,
+   "min": 0.337,
+   "max": 0.442,
+   "p95": 0.446
+  },
+  "gpu": {
+   "median": 0.916,
+   "min": 0.789,
+   "max": 0.926,
+   "p95": 2.171
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.125,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.23,
+  "Animators.Update": 0.298,
+  "Animator.EvaluateRetargeter": 0.117,
+  "Animator.ProcessGraph": 0.176,
+  "Animator.ProcessAnimations": 0.131,
+  "Animator.EvaluateIK": 0.068,
+  "Animator.EvaluateTwistBone": 0.087,
+  "Animator.WriteTransforms": 0.028,
+  "Director.ProcessFrame": 0.298,
+  "Director.PrepareFrameJob": 0.1,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.06,
+  "MeshSkinning.Update": 0.059,
+  "MeshSkinning.CalcMatrices": 0.06,
+  "MeshSkinning.SkinOnGPU": 0.057,
+  "MeshSkinning.GPUBatchedSkin": 0.043,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.338,
+  "Inl_UniversalRenderTotal": 0.326,
+  "Update.ScriptRunBehaviourUpdate": 0.038,
+  "PlayerLoop": 1,
+  "SetPass Calls Count": 33,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 180578,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/old60cpu": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 23,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 1.466,
+   "min": 1.295,
+   "max": 1.516,
+   "p95": 2.314
+  },
+  "cpuMain": {
+   "median": 1.388,
+   "min": 1.148,
+   "max": 1.39,
+   "p95": 1.886
+  },
+  "cpuRender": {
+   "median": 0.541,
+   "min": 0.506,
+   "max": 0.547,
+   "p95": 0.645
+  },
+  "gpu": {
+   "median": 1.231,
+   "min": 0.721,
+   "max": 1.94,
+   "p95": 2.796
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.167,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.289,
+  "Animators.Update": 0.383,
+  "Animator.EvaluateRetargeter": 0.165,
+  "Animator.ProcessGraph": 0.207,
+  "Animator.ProcessAnimations": 0.129,
+  "Animator.EvaluateIK": 0.104,
+  "Animator.EvaluateTwistBone": 0.094,
+  "Animator.WriteTransforms": 0.039,
+  "Director.ProcessFrame": 0.384,
+  "Director.PrepareFrameJob": 0.178,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.061,
+  "MeshSkinning.Update": 0.061,
+  "MeshSkinning.CalcMatrices": 0.042,
+  "MeshSkinning.SkinOnGPU": 0,
+  "MeshSkinning.GPUBatchedSkin": 0,
+  "MeshSkinning.Skin": 2.257,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.494,
+  "Inl_UniversalRenderTotal": 0.448,
+  "Update.ScriptRunBehaviourUpdate": 0.048,
+  "PlayerLoop": 1.451,
+  "SetPass Calls Count": 33,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 180578,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/old60gpu": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 23,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 1.004,
+   "min": 0.906,
+   "max": 1.292,
+   "p95": 1.79
+  },
+  "cpuMain": {
+   "median": 0.996,
+   "min": 0.902,
+   "max": 1.203,
+   "p95": 1.532
+  },
+  "cpuRender": {
+   "median": 0.367,
+   "min": 0.348,
+   "max": 0.399,
+   "p95": 0.446
+  },
+  "gpu": {
+   "median": 0.891,
+   "min": 0.866,
+   "max": 1.71,
+   "p95": 2.744
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.123,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.229,
+  "Animators.Update": 0.294,
+  "Animator.EvaluateRetargeter": 0.11,
+  "Animator.ProcessGraph": 0.143,
+  "Animator.ProcessAnimations": 0.131,
+  "Animator.EvaluateIK": 0.066,
+  "Animator.EvaluateTwistBone": 0.086,
+  "Animator.WriteTransforms": 0.027,
+  "Director.ProcessFrame": 0.294,
+  "Director.PrepareFrameJob": 0.09,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.064,
+  "MeshSkinning.Update": 0.064,
+  "MeshSkinning.CalcMatrices": 0.045,
+  "MeshSkinning.SkinOnGPU": 0.126,
+  "MeshSkinning.GPUBatchedSkin": 0,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0.105,
+  "PostLateUpdate.FinishFrameRendering": 0.332,
+  "Inl_UniversalRenderTotal": 0.321,
+  "Update.ScriptRunBehaviourUpdate": 0.037,
+  "PlayerLoop": 1,
+  "SetPass Calls Count": 33,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 180578,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/old60norec": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": false
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 23,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 0.804,
+   "min": 0.712,
+   "max": 0.937,
+   "p95": 1.595
+  },
+  "cpuMain": {
+   "median": 0.796,
+   "min": 0.665,
+   "max": 0.892,
+   "p95": 1.183
+  },
+  "cpuRender": {
+   "median": 0.359,
+   "min": 0.337,
+   "max": 0.371,
+   "p95": 0.439
+  },
+  "gpu": {
+   "median": 1.255,
+   "min": 1.243,
+   "max": 1.521,
+   "p95": 2.845
+  }
+ },
+ "A/old60opt": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "FourBones",
+   "cull": "CullCompletely",
+   "optimize": true,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 0,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 0.901,
+   "min": 0.8,
+   "max": 0.997,
+   "p95": 1.694
+  },
+  "cpuMain": {
+   "median": 0.896,
+   "min": 0.795,
+   "max": 0.988,
+   "p95": 1.401
+  },
+  "cpuRender": {
+   "median": 0.344,
+   "min": 0.328,
+   "max": 0.36,
+   "p95": 0.448
+  },
+  "gpu": {
+   "median": 0.881,
+   "min": 0.839,
+   "max": 0.979,
+   "p95": 2.632
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.13,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.225,
+  "Animators.Update": 0.295,
+  "Animator.EvaluateRetargeter": 0.13,
+  "Animator.ProcessGraph": 0.164,
+  "Animator.ProcessAnimations": 0.119,
+  "Animator.EvaluateIK": 0.085,
+  "Animator.EvaluateTwistBone": 0.087,
+  "Animator.WriteTransforms": 0.019,
+  "Director.ProcessFrame": 0.295,
+  "Director.PrepareFrameJob": 0.102,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.024,
+  "MeshSkinning.Update": 0.023,
+  "MeshSkinning.CalcMatrices": 0,
+  "MeshSkinning.SkinOnGPU": 0.112,
+  "MeshSkinning.GPUBatchedSkin": 0.043,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.309,
+  "Inl_UniversalRenderTotal": 0.299,
+  "Update.ScriptRunBehaviourUpdate": 0.03,
+  "PlayerLoop": 0.897,
+  "SetPass Calls Count": 33,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 180578,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ },
+ "A/old60sw2": {
+  "runs": 3,
+  "levers": {
+   "count": 60,
+   "skinWeights": "TwoBones",
+   "cull": "CullCompletely",
+   "optimize": false,
+   "mask": false,
+   "animOff": false,
+   "rec": true
+  },
+  "scene": {
+   "people": 60,
+   "skinnedMeshRenderers": 126,
+   "distinctMaterials": 37,
+   "maxBonesPerSmr": 23,
+   "transformsPerPersonBeforeOptimize": 27.1,
+   "trisLOD0Sum": 222209,
+   "trisOtherLODsSum": 109473,
+   "visibleSmrsByLod": {
+    "LOD1": 54,
+    "LOD2": 6
+   }
+  },
+  "frame": {
+   "median": 1.402,
+   "min": 1.005,
+   "max": 1.482,
+   "p95": 1.989
+  },
+  "cpuMain": {
+   "median": 1.316,
+   "min": 1,
+   "max": 1.395,
+   "p95": 1.731
+  },
+  "cpuRender": {
+   "median": 0.425,
+   "min": 0.369,
+   "max": 0.426,
+   "p95": 0.488
+  },
+  "gpu": {
+   "median": 1.072,
+   "min": 0.819,
+   "max": 2.546,
+   "p95": 2.879
+  },
+  "PreLateUpdate.DirectorUpdateAnimationBegin": 0.155,
+  "PreLateUpdate.DirectorUpdateAnimationEnd": 0.264,
+  "Animators.Update": 0.353,
+  "Animator.EvaluateRetargeter": 0.138,
+  "Animator.ProcessGraph": 0.211,
+  "Animator.ProcessAnimations": 0.142,
+  "Animator.EvaluateIK": 0.091,
+  "Animator.EvaluateTwistBone": 0.092,
+  "Animator.WriteTransforms": 0.036,
+  "Director.ProcessFrame": 0.353,
+  "Director.PrepareFrameJob": 0.139,
+  "PostLateUpdate.UpdateAllSkinnedMeshes": 0.062,
+  "MeshSkinning.Update": 0.062,
+  "MeshSkinning.CalcMatrices": 0.049,
+  "MeshSkinning.SkinOnGPU": 0.076,
+  "MeshSkinning.GPUBatchedSkin": 0.058,
+  "MeshSkinning.Skin": 0,
+  "MeshSkinning.SkinOnGPUNonBatched": 0,
+  "PostLateUpdate.FinishFrameRendering": 0.493,
+  "Inl_UniversalRenderTotal": 0.471,
+  "Update.ScriptRunBehaviourUpdate": 0.048,
+  "PlayerLoop": 1.396,
+  "SetPass Calls Count": 33,
+  "Standard Draw Calls Count": 124,
+  "Triangles Count": 180578,
+  "Shadow Casters Count": 62,
+  "Visible Skinned Meshes Count": 60
+ }
+}

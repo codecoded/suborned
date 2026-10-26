@@ -1,0 +1,658 @@
+"""Brief 069 fit test: shared Blender-side helpers (MPFB bodies, the numpy rig model, signed distance, weights, clips, renders).
+Loaded by the stage scripts with importlib; never run on its own. Reuses tools/figures/charpipe/build.py (read only) for the rig prune, aim and FBX export."""
+import bpy, bmesh, addon_utils, json, os, sys, math, time, importlib.util
+import numpy as np
+from mathutils import Vector, Matrix, Quaternion
+from mathutils.bvhtree import BVHTree
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+CP = os.path.dirname(HERE)
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CP)))
+SCR = os.path.join(ROOT, 'out/scratch/forma/char-pipeline/fit-test')
+D = json.load(open(os.path.join(HERE, 'fit.json')))
+MPFB = os.environ.get('MPFBDATA', '')
+P = 'mixamorig:'
+
+
+def _load(name, path):
+    sp = importlib.util.spec_from_file_location(name, path); m = importlib.util.module_from_spec(sp); sp.loader.exec_module(m); return m
+
+
+bp = _load('cp_build', os.path.join(CP, 'build.py'))      # read only: prune, aim, apply_rest, export_fbx, ctx
+KEEP = bp.KEEP
+
+
+def store(p): return os.path.join(os.path.expanduser(D['store']), p)
+
+
+def ensure(p): os.makedirs(p, exist_ok=True); return p
+
+
+def log(*a): print('FIT', *a, flush=True)
+
+
+class Timer:
+    def __init__(self): self.t = {}; self.t0 = time.time()
+
+    def lap(self, k):
+        now = time.time(); self.t[k] = round(self.t.get(k, 0) + now - self.t0, 2); self.t0 = now
+
+
+# ------------------------------------------------------------------ MPFB bodies
+def reset():
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    addon_utils.enable('bl_ext.user_default.mpfb', default_set=True, persistent=False)
+
+
+def human(macros, sex, keep_basemesh=True, proxy=True):
+    """An MPFB human at `macros` in MPFB's own rest: the 52-bone rig (prefix stripped), the basemesh (shape keys kept, helpers masked) and the LOD0 proxy."""
+    from bl_ext.user_default.mpfb.services.humanservice import HumanService
+    from bl_ext.user_default.mpfb.services.targetservice import TargetService
+    m = TargetService.get_default_macro_info_dict(); m.update(D['basis']['ref']); m.update(macros); m['gender'] = 1.0 if sex == 'm' else 0.0
+    b = HumanService.create_human(scale=0.1, macro_detail_dict=m)
+    arm = HumanService.add_builtin_rig(b, 'mixamo_unity')
+    px = None
+    if proxy:
+        px = HumanService.add_mhclo_asset(f"{MPFB}/proxymeshes/{D['basis']['proxy'][sex]}/{D['basis']['proxy'][sex]}.proxy", b, asset_type='Proxymeshes', subdiv_levels=0)
+        bp.bake_world(px, arm)
+    meshes = [x for x in (b, px) if x is not None]
+    bp.prune(arm, meshes, KEEP)
+    if not keep_basemesh: bpy.data.objects.remove(b, do_unlink=True); b = None
+    return arm, b, px
+
+
+def eval_co(o, armature=True):
+    """World vertex positions of o as evaluated (shape keys; the armature modifier on or off; the helper mask always off)."""
+    saved = []
+    for md in o.modifiers:
+        if md.type == 'MASK' or (md.type == 'ARMATURE' and not armature): saved.append((md, md.show_viewport)); md.show_viewport = False
+    dg = bpy.context.evaluated_depsgraph_get(); ev = o.evaluated_get(dg); me = ev.to_mesh()
+    co = np.empty(len(me.vertices) * 3, np.float64); me.vertices.foreach_get('co', co); co = co.reshape(-1, 3)
+    ev.to_mesh_clear()
+    for md, s in saved: md.show_viewport = s
+    M = np.array(o.matrix_world); return co @ M[:3, :3].T + M[:3, 3]
+
+
+def faces_of(o):
+    return [tuple(p.vertices) for p in o.data.polygons]
+
+
+def tris_of(o):
+    o.data.calc_loop_triangles(); t = np.empty(len(o.data.loop_triangles) * 3, np.int64); o.data.loop_triangles.foreach_get('vertices', t); return t.reshape(-1, 3)
+
+
+def weights_of(o, names):
+    """dense (n verts x len(names)) weights, normalised."""
+    idx = {g.index: names.index(g.name) for g in o.vertex_groups if g.name in names}
+    W = np.zeros((len(o.data.vertices), len(names)))
+    for v in o.data.vertices:
+        for g in v.groups:
+            j = idx.get(g.group)
+            if j is not None: W[v.index, j] += g.weight
+    s = W.sum(1, keepdims=True); s[s == 0] = 1; return W / s
+
+
+def set_weights(o, W, names, maxinf=4):
+    for g in list(o.vertex_groups): o.vertex_groups.remove(g)
+    gs = [o.vertex_groups.new(name=n) for n in names]
+    W = limit(W, maxinf)
+    for j, g in enumerate(gs):
+        nz = np.nonzero(W[:, j] > 1e-4)[0]
+        for i in nz: g.add([int(i)], float(W[i, j]), 'REPLACE')
+
+
+def limit(W, k):
+    W = W.copy()
+    if W.shape[1] > k:
+        cut = np.argsort(-W, axis=1)[:, k:]; np.put_along_axis(W, cut, 0.0, axis=1)
+    W[W < 1e-3] = 0; s = W.sum(1, keepdims=True); s[s == 0] = 1; return W / s
+
+
+def bones_of(arm, names):
+    Mw = arm.matrix_world; B = arm.data.bones
+    H = np.array([list(Mw @ B[n].head_local) for n in names]); T = np.array([list(Mw @ B[n].tail_local) for n in names])
+    par = [names.index(B[n].parent.name) if B[n].parent else -1 for n in names]
+    return H, T, par
+
+
+# ------------------------------------------------------------------ the numpy rig: world rotations by aim, as build.aim does in Blender
+def sa(a, b):
+    """shortest-arc rotation matrix taking unit a to unit b."""
+    a = a / np.linalg.norm(a); b = b / np.linalg.norm(b); v = np.cross(a, b); c = float(np.dot(a, b))
+    if c < -0.999999:
+        ax = np.cross(a, [1, 0, 0]);
+        if np.linalg.norm(ax) < 1e-6: ax = np.cross(a, [0, 1, 0])
+        ax /= np.linalg.norm(ax); return 2 * np.outer(ax, ax) - np.eye(3)
+    K = np.array([[0, -v[2], v[1]], [v[2], 0, -v[0]], [-v[1], v[0], 0]]); return np.eye(3) + K + K @ K / (1 + c)
+
+
+def rotx(a): c, s = math.cos(a), math.sin(a); return np.array([[1, 0, 0], [0, c, -s], [0, s, c]])
+
+
+def roty(a): c, s = math.cos(a), math.sin(a); return np.array([[c, 0, s], [0, 1, 0], [-s, 0, c]])
+
+
+def rotaxis(ax, a):
+    ax = np.asarray(ax, float); ax = ax / np.linalg.norm(ax); K = np.array([[0, -ax[2], ax[1]], [ax[2], 0, -ax[0]], [-ax[1], ax[0], 0]])
+    return np.eye(3) + math.sin(a) * K + (1 - math.cos(a)) * K @ K
+
+
+class Rig:
+    def __init__(self, names, H, T, par):
+        self.n = names; self.H = H; self.T = T; self.par = par; self.ix = {k: i for i, k in enumerate(names)}
+        depth = []
+        for i in range(len(names)):
+            d, p = 0, par[i]
+            while p >= 0: d += 1; p = par[p]
+            depth.append(d)
+        self.order = sorted(range(len(names)), key=lambda i: (depth[i], names[i]))
+
+    def pose(self, aims, pre=None):
+        """aims: {bone: world direction} (shortest arc from the parent-carried rest direction, as build.aim); pre: {bone: world rotation applied
+        before the aim, carried to the children} (spine lean). Bones with neither inherit their parent's rotation. Returns R (n,3,3), posed heads (n,3)."""
+        n = len(self.n); R = np.zeros((n, 3, 3)); Hp = np.zeros((n, 3))
+        for i in self.order:
+            p = self.par[i]; Rp = R[p] if p >= 0 else np.eye(3)
+            Hp[i] = self.H[i] if p < 0 else Hp[p] + Rp @ (self.H[i] - self.H[p])
+            Ri = Rp
+            if pre and self.n[i] in pre: Ri = pre[self.n[i]] @ Ri
+            if self.n[i] in aims:
+                cur = Ri @ (self.T[i] - self.H[i]); Ri = sa(cur, np.asarray(aims[self.n[i]], float)) @ Ri
+            R[i] = Ri
+        return R, Hp
+
+
+def lbs(V, W, R, H, Hp):
+    """linear blend skinning: sum_b w_b (R_b (v - h_b) + h'_b)."""
+    out = np.zeros_like(V)
+    for b in np.nonzero(W.sum(0) > 0)[0]:
+        w = W[:, b:b + 1]; out += w * ((V - H[b]) @ R[b].T + Hp[b])
+    return out
+
+
+def lbs_inv(Vp, W, R, H, Hp):
+    """inverse LBS per vertex: v = (sum w R)^-1 (v' - sum w (h' - R h))."""
+    A = np.einsum('vb,bij->vij', W, R); c = np.einsum('vb,bi->vi', W, Hp - np.einsum('bij,bj->bi', R, H))
+    return np.linalg.solve(A, (Vp - c)[..., None])[..., 0]
+
+
+# ------------------------------------------------------------------ Blender rig posing that matches Rig.pose exactly
+def pose_blender(arm, aims, pre=None):
+    bp.ctx(arm, 'POSE'); Pb = arm.pose.bones
+    for pb in Pb: pb.rotation_mode = 'QUATERNION'; pb.rotation_quaternion = (1, 0, 0, 0); pb.location = (0, 0, 0)
+    bpy.context.view_layer.update()
+    def depth(b): return 0 if b.parent is None else 1 + depth(b.parent)
+    Mi = arm.matrix_world.inverted()
+    for pb in sorted(Pb, key=lambda b: (depth(b), b.name)):
+        if pre and pb.name in pre:
+            head = pb.head.copy(); Rw = Matrix([list(r) for r in pre[pb.name]]).to_4x4()
+            Ra = Mi.to_3x3().to_4x4() @ Rw @ arm.matrix_world.to_3x3().to_4x4()
+            pb.matrix = Matrix.Translation(head) @ Ra @ Matrix.Translation(-head) @ pb.matrix; bpy.context.view_layer.update()
+        if pb.name in aims:
+            want = (Mi.to_3x3() @ Vector(aims[pb.name])).normalized(); bp.aim(pb, want)
+    bp.ctx(arm, 'OBJECT')
+
+
+def apply_rest(arm, meshes):
+    bp.apply_rest(arm, meshes)
+
+
+# ------------------------------------------------------------------ signed distance grid of a closed-ish mesh
+class SDF:
+    """Unsigned distance by BVH nearest on a voxel grid, sign by majority ray parity along x, y and z. Trilinear lookup in numpy."""
+    def __init__(self, V, F, h, pad=0.06):
+        self.bvh = BVHTree.FromPolygons([Vector(v) for v in V], [list(f) for f in F], all_triangles=False, epsilon=0.0)
+        lo = V.min(0) - pad; hi = V.max(0) + pad; self.lo = lo; self.h = h
+        self.shape = tuple(int(math.ceil((hi[k] - lo[k]) / h)) + 1 for k in range(3))
+        nx, ny, nz = self.shape
+        gx = lo[0] + np.arange(nx) * h; gy = lo[1] + np.arange(ny) * h; gz = lo[2] + np.arange(nz) * h
+        votes = np.zeros(self.shape, np.int8)
+        for axis in range(3):
+            votes += self._parity(axis, gx, gy, gz)
+        inside = votes >= 2
+        dist = np.empty(self.shape)
+        fn = self.bvh.find_nearest
+        for i in range(nx):
+            for j in range(ny):
+                for k in range(nz):
+                    r = fn(Vector((gx[i], gy[j], gz[k])))
+                    dist[i, j, k] = r[3] if r[0] is not None else 1.0
+        self.d = np.where(inside, -dist, dist)
+
+    def _parity(self, axis, gx, gy, gz):
+        g = [gx, gy, gz]; out = np.zeros(self.shape, np.int8)
+        a, b = [k for k in range(3) if k != axis]
+        d = Vector([1.0 if k == axis else 0.0 for k in range(3)])
+        start = g[axis][0] - 0.01
+        for ia, va in enumerate(g[a]):
+            for ib, vb in enumerate(g[b]):
+                o = [0.0, 0.0, 0.0]; o[a] = va; o[b] = vb; o[axis] = start; o = Vector(o)
+                hits = []; cur = o.copy(); guard = 0
+                while guard < 64:
+                    loc, nrm, idx, dd = self.bvh.ray_cast(cur, d)
+                    if loc is None: break
+                    hits.append(loc[axis]); cur = loc + d * 1e-5; guard += 1
+                if len(hits) < 2: continue
+                cells = g[axis]; cnt = np.searchsorted(np.array(hits), cells)     # crossings before each cell
+                ins = (cnt % 2 == 1)
+                sl = [0, 0, 0]; sl[a] = ia; sl[b] = ib; sl[axis] = slice(None)
+                out[tuple(sl)] = ins.astype(np.int8)
+        return out
+
+    def __call__(self, X):
+        u = (X - self.lo) / self.h; i0 = np.floor(u).astype(int); f = u - i0
+        for k in range(3):
+            bad = (i0[:, k] < 0) | (i0[:, k] >= self.shape[k] - 1)
+            i0[:, k] = np.clip(i0[:, k], 0, self.shape[k] - 2); f[:, k] = np.where(bad, np.clip(f[:, k], 0, 1), f[:, k])
+        out = np.zeros(len(X))
+        for dx in (0, 1):
+            for dy in (0, 1):
+                for dz in (0, 1):
+                    w = (f[:, 0] if dx else 1 - f[:, 0]) * (f[:, 1] if dy else 1 - f[:, 1]) * (f[:, 2] if dz else 1 - f[:, 2])
+                    out += w * self.d[i0[:, 0] + dx, i0[:, 1] + dy, i0[:, 2] + dz]
+        far = np.any((u < 0) | (u > np.array(self.shape) - 1), axis=1)
+        out[far] = np.maximum(out[far], 0.05)
+        return out
+
+
+# ------------------------------------------------------------------ mesh Laplacian (cotangent, clamped) and CG
+def laplacian(V, T):
+    """returns (rows, cols, vals) of L (positive semi-definite: L = D - W) and the lumped mass."""
+    n = len(V); I = []; J = []; Wv = []
+    a, b, c = V[T[:, 0]], V[T[:, 1]], V[T[:, 2]]
+    def cot(p, q, r):
+        u = q - p; v = r - p; cr = np.linalg.norm(np.cross(u, v), axis=1); return np.einsum('ij,ij->i', u, v) / np.maximum(cr, 1e-12)
+    ca = cot(a, b, c); cb = cot(b, c, a); cc = cot(c, a, b)
+    for (i, j, w) in ((T[:, 1], T[:, 2], ca), (T[:, 2], T[:, 0], cb), (T[:, 0], T[:, 1], cc)):
+        w = np.clip(0.5 * w, 1e-4, 50.0); I += [i, j]; J += [j, i]; Wv += [w, w]
+    I = np.concatenate(I); J = np.concatenate(J); Wv = np.concatenate(Wv)
+    diag = np.bincount(I, Wv, n)
+    area = np.linalg.norm(np.cross(b - a, c - a), axis=1) / 2; M = np.bincount(T.ravel(), np.repeat(area / 3, 3), n)
+    return I, J, Wv, diag, M
+
+
+def lap_mul(I, J, Wv, diag, X):
+    out = diag[:, None] * X
+    np.subtract.at(out, I, Wv[:, None] * X[J]) if False else None
+    acc = np.zeros_like(X)
+    for k in range(X.shape[1]): acc[:, k] = np.bincount(I, Wv * X[J, k], len(X))
+    return out - acc
+
+
+def inpaint(V, T, known, Wk, iters=600):
+    """minimise the Dirichlet energy of the weights with the known rows fixed (Abdrashitov et al. 2023, eq. 3): solve L_uu X_u = -L_uk X_k by CG."""
+    n = len(V); I, J, Wv, diag, M = laplacian(V, T)
+    unk = np.nonzero(~known)[0]
+    if len(unk) == 0: return Wk
+    X = Wk.copy(); X[unk] = 0.0
+    def Lmul(Y):
+        full = np.zeros((n, Y.shape[1])); full[unk] = Y; return lap_mul(I, J, Wv, diag, full)[unk]
+    full = X.copy(); full[unk] = 0; rhs = -lap_mul(I, J, Wv, diag, full)[unk]
+    Dg = diag[unk][:, None] + 1e-9
+    x = np.full((len(unk), X.shape[1]), 0.0); r = rhs - Lmul(x); z = r / Dg; p = z.copy(); rz = (r * z).sum(0)
+    for it in range(iters):
+        Ap = Lmul(p); alpha = rz / np.maximum((p * Ap).sum(0), 1e-30); x += alpha * p; r -= alpha * Ap
+        if np.abs(r).max() < 1e-7: break
+        z = r / Dg; rz2 = (r * z).sum(0); p = z + (rz2 / np.maximum(rz, 1e-30)) * p; rz = rz2
+    X[unk] = np.clip(x, 0, 1); s = X.sum(1, keepdims=True); s[s == 0] = 1
+    return X / s
+
+
+def smooth_rows(T, X, rows_mask, iters):
+    n = len(X); E = np.concatenate([T[:, [0, 1]], T[:, [1, 2]], T[:, [2, 0]]]); E = np.concatenate([E, E[:, ::-1]])
+    deg = np.bincount(E[:, 0], minlength=n).astype(float); deg[deg == 0] = 1
+    for _ in range(iters):
+        acc = np.zeros_like(X)
+        for k in range(X.shape[1]): acc[:, k] = np.bincount(E[:, 0], X[E[:, 1], k], n)
+        avg = acc / deg[:, None]; X = np.where(rows_mask[:, None], avg, X)
+    s = X.sum(1, keepdims=True); s[s == 0] = 1; return X / s
+
+
+def closest_on(Vsrc, Tsrc, P):
+    """closest point on the source triangles for each P: (face, barycentric, point, distance, face normal) via BVH."""
+    bvh = BVHTree.FromPolygons([Vector(v) for v in Vsrc], [list(t) for t in Tsrc], all_triangles=True)
+    F = np.zeros(len(P), int); B = np.zeros((len(P), 3)); Q = np.zeros((len(P), 3)); Dd = np.zeros(len(P)); N = np.zeros((len(P), 3))
+    for i, p in enumerate(P):
+        loc, nrm, idx, d = bvh.find_nearest(Vector(p))
+        F[i] = idx; Q[i] = loc; Dd[i] = d; N[i] = nrm
+    a, b, c = Vsrc[Tsrc[F, 0]], Vsrc[Tsrc[F, 1]], Vsrc[Tsrc[F, 2]]
+    v0 = b - a; v1 = c - a; v2 = Q - a
+    d00 = (v0 * v0).sum(1); d01 = (v0 * v1).sum(1); d11 = (v1 * v1).sum(1); d20 = (v2 * v0).sum(1); d21 = (v2 * v1).sum(1)
+    den = np.maximum(d00 * d11 - d01 * d01, 1e-18); v = (d11 * d20 - d01 * d21) / den; w = (d00 * d21 - d01 * d20) / den; u = 1 - v - w
+    B = np.clip(np.stack([u, v, w], 1), 0, 1); B /= B.sum(1, keepdims=True)
+    return F, B, Q, Dd, N
+
+
+def vnormals(V, T):
+    fn = np.cross(V[T[:, 1]] - V[T[:, 0]], V[T[:, 2]] - V[T[:, 0]])
+    N = np.zeros_like(V)
+    for k in range(3): np.add.at(N, T[:, k], fn)
+    return N / np.maximum(np.linalg.norm(N, axis=1, keepdims=True), 1e-12)
+
+
+# ------------------------------------------------------------------ mesh objects from numpy
+def mesh_obj(name, V, F, coll=None):
+    me = bpy.data.meshes.new(name); me.from_pydata([tuple(v) for v in V], [], [tuple(int(i) for i in f) for f in F]); me.update()
+    o = bpy.data.objects.new(name, me); (coll or bpy.context.scene.collection).objects.link(o); return o
+
+
+def set_co(o, V):
+    o.data.vertices.foreach_set('co', np.asarray(V, np.float64).ravel()); o.data.update()
+
+
+# ------------------------------------------------------------------ input normalisation
+def import_glb(path):
+    before = set(bpy.data.objects)
+    bpy.ops.import_scene.gltf(filepath=path)
+    new = [o for o in bpy.data.objects if o not in before]
+    ms = [o for o in new if o.type == 'MESH']
+    for o in new:
+        if o.type != 'MESH': continue
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in ms: o.select_set(True)
+    bpy.context.view_layer.objects.active = ms[0]
+    if len(ms) > 1: bpy.ops.object.join()
+    o = bpy.context.view_layer.objects.active
+    o.parent = None
+    o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4)
+    for x in new:
+        if x is not o and x.name in bpy.data.objects: bpy.data.objects.remove(x, do_unlink=True)
+    return o
+
+
+def normalise(o):
+    """Up = the longest bbox axis (its sign: the feet are the end with the narrowest slab), front-back = the shorter of the others, front = the way
+    the feet point. Returns the 4x4 applied (to Blender's Z up, front -Y, feet at z = 0, centred in x and y on the feet)."""
+    V = np.array([list(v.co) for v in o.data.vertices]); N = D['normalise']
+    ext = V.max(0) - V.min(0); up = int(np.argmax(ext)); rest = [k for k in range(3) if k != up]
+    fb = rest[int(np.argmin(ext[rest]))]; lr = [k for k in rest if k != fb][0]
+    h = ext[up]; lo = V[:, up].min(); hi = V[:, up].max()
+    # sign of up: the head end is narrower in the left-right extent than the arm-span band? use the slabs: the 5 % at each end; the feet end is two blobs wide, the head end one
+    def width(sel): return np.ptp(V[sel][:, lr]) if sel.any() else 0
+    s_lo = width(V[:, up] < lo + 0.05 * h); s_hi = width(V[:, up] > hi - 0.05 * h)
+    upsign = 1.0 if s_lo > s_hi else -1.0
+    z = (V[:, up] - (lo if upsign > 0 else hi)) * upsign
+    foot = z < N['footSlabFrac'] * h; shin = (z > N['shinSlabFrac'][0] * h) & (z < N['shinSlabFrac'][1] * h)
+    fwdsign = 1.0 if V[foot][:, fb].mean() > V[shin][:, fb].mean() else -1.0
+    # new axes: X = left-right (sign set so the frame is right handed), -Y = front, Z = up
+    ez = np.zeros(3); ez[up] = upsign; ey = np.zeros(3); ey[fb] = -fwdsign; ex = np.cross(ey, ez)
+    Rm = np.stack([ex, ey, ez])           # rows: new axes in old coords
+    W = (V - V.mean(0)) @ Rm.T
+    W[:, 2] -= W[:, 2].min()
+    f = W[:, 2] < N['footSlabFrac'] * h
+    W[:, 0] -= W[f][:, 0].mean(); W[:, 1] -= W[f][:, 1].mean() * 0 + np.median(W[W[:, 2] < 0.5 * h][:, 1])
+    # scale to a nominal 1.75 m for the fit (the final scale comes after the fit)
+    k = 1.75 / h; W *= k
+    set_co(o, W)
+    return {'up': up, 'fb': fb, 'upsign': upsign, 'fwdsign': fwdsign, 'scale': k, 'heightRaw': float(h)}
+
+
+# ------------------------------------------------------------------ texture helpers
+def base_color_image(o):
+    for m in o.data.materials:
+        if not m or not m.use_nodes: continue
+        for n in m.node_tree.nodes:
+            if n.type == 'BSDF_PRINCIPLED':
+                l = n.inputs['Base Color'].links
+                if l and l[0].from_node.type == 'TEX_IMAGE': return l[0].from_node.image
+    return None
+
+
+def simple_material(name, image=None, colour=(0.8, 0.8, 0.8, 1), rough=0.8):
+    m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; b = nt.nodes['Principled BSDF']
+    b.inputs['Roughness'].default_value = rough
+    if image is not None:
+        t = nt.nodes.new('ShaderNodeTexImage'); t.image = image; nt.links.new(t.outputs['Color'], b.inputs['Base Color'])
+    else: b.inputs['Base Color'].default_value = colour
+    return m
+
+
+def flat_material(o, image):
+    """one plain material with the source's base colour only (normal and ORM dropped, as the game's figures are matte)."""
+    m = simple_material(o.name + '_mat', image)
+    o.data.materials.clear(); o.data.materials.append(m); return m
+
+
+def decimate_to(o, tris):
+    n = len(tris_of(o))
+    if n <= tris: return n
+    md = o.modifiers.new('dec', 'DECIMATE'); md.ratio = tris / n; md.use_collapse_triangulate = True
+    with bpy.context.temp_override(object=o, active_object=o):
+        bpy.ops.object.modifier_move_to_index(modifier=md.name, index=0); bpy.ops.object.modifier_apply(modifier=md.name)
+    return len(tris_of(o))
+
+
+# ------------------------------------------------------------------ landmarks, the loose-part classifier, the standard rest, attachment points
+def landmarks(arm, body_co):
+    W = arm.matrix_world; B = arm.data.bones; hz = lambda n: (W @ B[n].head_local).z
+    hip = (hz('LeftUpLeg') + hz('RightUpLeg')) / 2; crown = float(body_co[:, 2].max()); head = hz('Head')
+    return {'knee': (hz('LeftLeg') + hz('RightLeg')) / 2, 'hip': hip, 'crotch': hip - 0.04 * (crown / 1.75), 'waist': hz('Spine1'), 'chest': hz('Spine2'),
+            'neck': hz('Neck'), 'head': head, 'crown': crown, 'brow': head + D['garments']['kinds']['hat']['browFrac'] * (crown - head)}
+
+
+def grow(mask, T, rings):
+    E = np.concatenate([T[:, [0, 1]], T[:, [1, 2]], T[:, [2, 0]]])
+    for _ in range(rings):
+        m2 = mask.copy(); m2[E[mask[E[:, 0]], 1]] = True; m2[E[mask[E[:, 1]], 0]] = True; mask = m2
+    return mask
+
+
+def classify(Vt, Tt, dist, nearest_bone, lm, wears):
+    """the garment kind of each target vertex ('' = tight/suit), by fit.json garments.kinds; only the kinds the person wears."""
+    G = D['garments']; loose = dist > G['looseM']; z = Vt[:, 2]; nb = np.asarray(nearest_bone)
+    kinds = {}
+    def isin(names): return np.isin(nb, names)
+    head = isin(['Head', 'Neck'])
+    if 'hat' in wears: kinds['hat'] = loose & (z > lm['brow']) & head
+    top = isin(['Spine1', 'Spine2', 'LeftShoulder', 'RightShoulder', 'LeftArm', 'RightArm', 'Neck'])
+    if 'cape' in wears: kinds['cape'] = loose & (z > lm['waist']) & top & ~kinds.get('hat', np.zeros(len(z), bool))
+    low = isin(['Hips', 'Spine', 'LeftUpLeg', 'RightUpLeg', 'LeftLeg', 'RightLeg'])
+    if 'skirt' in wears: kinds['skirt'] = loose & (z < lm['waist']) & (z > lm['knee'] - 0.1) & low
+    if 'coat' in wears:
+        kinds['coat'] = loose & (z < lm['chest']) & (z > lm['knee'] - 0.1) & (low | isin(['Spine1', 'Spine2', 'LeftArm', 'RightArm', 'LeftForeArm', 'RightForeArm']))
+    used = np.zeros(len(z), bool)
+    for k in kinds.values(): used |= k
+    kinds['hair'] = loose & head & ~used & (z > lm['neck'] - 0.02)
+    lab = np.array([''] * len(z), dtype=object)
+    for k in ('hair', 'coat', 'skirt', 'cape', 'hat'):                       # later kinds win where two overlap
+        if k in kinds: lab[grow(kinds[k], Tt, 0)] = k
+    # drop specks: a kind needs at least 1 % of the mesh, and grow each by growRings into the tight part
+    out = np.array([''] * len(z), dtype=object)
+    for k in ('hair', 'coat', 'skirt', 'cape', 'hat'):
+        m = lab == k
+        if m.sum() < 0.01 * len(z): continue
+        out[grow(m, Tt, G['growRings'])] = k
+    return out
+
+
+def loose_rules(W, names, Vt, lab, lm, arm):
+    """overwrite the weights of loose vertices by fit.json transfer.loose (A); returns the count per rule."""
+    R = D['transfer']['loose']; ix = {n: i for i, n in enumerate(names)}; Mw = arm.matrix_world; Bn = arm.data.bones
+    knee = {s: np.array(Mw @ Bn[s + 'Leg'].head_local) for s in ('Left', 'Right')}
+    hipj = {s: np.array(Mw @ Bn[s + 'UpLeg'].head_local) for s in ('Left', 'Right')}
+    counts = {}
+    for k, rule in R.items():
+        if k == 'note': continue
+        m = lab == k
+        if rule.get('below') == 'crotch': m &= Vt[:, 2] < lm['crotch']
+        if not m.any(): continue
+        rows = np.nonzero(m)[0]; W[rows] = 0
+        if rule['rule'] == 'rigid': W[rows, ix[rule['bones'][0]]] = 1
+        elif rule['rule'] == 'side':
+            cx = Vt[rows, 0]; half = max(np.abs(cx).max(), 1e-3); t = np.clip(np.abs(cx) / half, 0, 1)
+            cs = rule['centreShare']; W[rows, ix['Spine2']] = cs + (1 - cs) * (1 - t)
+            W[rows, ix['LeftShoulder']] = np.where(cx > 0, (1 - cs) * t, 0); W[rows, ix['RightShoulder']] = np.where(cx <= 0, (1 - cs) * t, 0)
+        elif rule['rule'] == 'lateralBlend':
+            # the hem follows both thighs: the share of each thigh by lateral position between the two thigh axes at that height; the hips' share fades in toward the crotch
+            p = Vt[rows]
+            def axis_x(s):
+                a, b = hipj[s], knee[s]; t = np.clip((p[:, 2] - a[2]) / (b[2] - a[2]), 0, 1); return a[0] + t * (b[0] - a[0])
+            xl, xr = axis_x('Left'), axis_x('Right'); u = np.clip((p[:, 0] - xr) / np.maximum(xl - xr, 1e-3), 0, 1)
+            u = u * u * (3 - 2 * u)
+            hs = rule['hipShare'] * np.clip((p[:, 2] - lm['knee']) / max(lm['crotch'] - lm['knee'], 1e-3), 0, 1)
+            W[rows, ix['Hips']] = hs; W[rows, ix['LeftUpLeg']] = (1 - hs) * u; W[rows, ix['RightUpLeg']] = (1 - hs) * (1 - u)
+        counts[k] = int(len(rows))
+    return W, counts
+
+
+def standard_aims(arm):
+    """the standard rest: the reference T-pose directions for the upper body, Latch's neutral legs (straight down, feet forward at their own pitch, toes level)."""
+    ref = json.load(open(os.path.join(ROOT, D['rest']['reference'])))['directions']
+    aims = {k: list(v) for k, v in ref.items() if k in arm.pose.bones and 'Leg' not in k}
+    Mw = arm.matrix_world
+    for s in ('Left', 'Right'):
+        aims[s + 'UpLeg'] = [0, 0, -1]; aims[s + 'Leg'] = [0, 0, -1]
+        pb = arm.pose.bones[s + 'Foot']; v = (Mw.to_3x3() @ (pb.tail - pb.head)); pitch = math.atan2(-v.z, math.hypot(v.x, v.y))
+        aims[s + 'Foot'] = [0, -math.cos(pitch), -math.sin(pitch)]; aims[s + 'ToeBase'] = [0, -1, 0]
+    return aims
+
+
+def rest_leg_report(arm):
+    Mw = arm.matrix_world; B = arm.data.bones; out = {}
+    for s in ('Left', 'Right'):
+        up = Mw @ B[s + 'UpLeg'].head_local; kn = Mw @ B[s + 'Leg'].head_local; an = Mw @ B[s + 'Foot'].head_local; to = Mw @ B[s + 'ToeBase'].head_local
+        d = kn - up; f = to - an
+        out[s] = {'abductionDeg': round(math.degrees(math.atan2(abs(d.x), -d.z)), 2), 'ankleOutM': round(abs(an.x - up.x), 4),
+                  'footYawDeg': round(math.degrees(math.atan2(f.x, -f.y)), 2), 'footPitchDeg': round(math.degrees(math.atan2(-f.z, math.hypot(f.x, f.y))), 2)}
+    return out
+
+
+def add_attach(arm, body_co):
+    """fit.json attach.points as non-deforming bones placed by rule from the rest skeleton and body; returns their rest heads."""
+    bp.ctx(arm, 'EDIT'); eb = arm.data.edit_bones; Mi = arm.matrix_world.inverted(); Mw = arm.matrix_world
+    def wh(n): return Mw @ eb[n].head
+    out = {}
+    def mk(name, parent, head, tail):
+        b = eb.new(name); b.head = Mi @ head; b.tail = Mi @ tail; b.parent = eb[parent]; b.use_deform = False; out[name] = list(head)
+    for s, sx in (('Right', -1), ('Left', 1)):
+        h = wh(s + 'Hand'); m1 = wh(s + 'HandMiddle1'); i1 = wh(s + 'HandIndex1'); p1 = wh(s + 'HandPinky1')
+        palm = h + (m1 - h) * 0.5; nrm = (i1 - h).cross(p1 - h).normalized() * (1 if s == 'Left' else -1)
+        w = (i1 - p1).length; c = palm - nrm * 0.25 * w
+        if f'Attach_{s}Hand' in D['attach']['points']: mk(f'Attach_{s}Hand', s + 'Hand', c, c + (m1 - h).normalized() * 0.05)
+    hips = wh('Hips'); hz = (wh('LeftUpLeg').z + wh('RightUpLeg').z) / 2
+    sl = body_co[np.abs(body_co[:, 2] - hz) < 0.02]; sl = sl[np.abs(sl[:, 0]) < 0.3]
+    wx = float(np.abs(sl[:, 0]).max()) if len(sl) else 0.18
+    mk('Attach_HipRight', 'Hips', Vector((-(wx + 0.01), hips.y, hz)), Vector((-(wx + 0.01), hips.y, hz - 0.05)))
+    s2 = wh('Spine2'); band = body_co[np.abs(body_co[:, 2] - s2.z) < 0.02]; band = band[np.abs(band[:, 0]) < 0.12]
+    by = float(band[:, 1].max()) if len(band) else s2.y + 0.12
+    mk('Attach_Back', 'Spine2', Vector((0, by + 0.01, s2.z)), Vector((0, by + 0.06, s2.z)))
+    sh = wh('LeftShoulder'); ar = wh('LeftArm'); top = (sh + ar) / 2
+    near = body_co[(np.linalg.norm(body_co[:, [0, 1]] - np.array([top.x, top.y]), axis=1) < 0.04)]
+    tz = float(near[:, 2].max()) if len(near) else top.z + 0.06
+    mk('Attach_ShoulderLeft', 'LeftShoulder', Vector((top.x, top.y, tz)), Vector((top.x, top.y, tz + 0.05)))
+    bp.ctx(arm, 'OBJECT')
+    return out
+
+
+def fitted_human(fit, keep_basemesh=True):
+    """the real MPFB body at the fit's sex and macros, scaled and moved as fitted, posed into the source's pose (the fit's aims). Returns arm, basemesh, proxy,
+    and the donor (posed basemesh body: V, tris, W) with the bone names."""
+    arm, b, px = human(fit['macros'], fit['sex'])
+    p = fit['params']; arm.matrix_world = Matrix.Translation((p['tx'], p['ty'], p['tz'])) @ Matrix.Scale(p['s'], 4)
+    bpy.ops.object.select_all(action='DESELECT')
+    for o in (arm, b, px): o.select_set(True)
+    bpy.context.view_layer.objects.active = arm
+    bpy.ops.object.transform_apply(location=True, rotation=True, scale=True)
+    pose_blender(arm, {k: v for k, v in fit['aims'].items()}, {k: np.array(v) for k, v in fit['pre'].items()})
+    names = list(KEEP)
+    full = eval_co(b, armature=True); body = np.array([any(g.group == b.vertex_groups['body'].index and g.weight > 0.5 for g in v.groups) for v in b.data.vertices])
+    T = tris_of(b); keep = body[T].all(1); T = T[keep]; remap = -np.ones(len(full), int); remap[np.nonzero(body)[0]] = np.arange(body.sum())
+    donor = {'V': full[body], 'T': remap[T], 'W': weights_of(b, names)[body], 'names': names}
+    if not keep_basemesh: bpy.data.objects.remove(b, do_unlink=True); b = None
+    return arm, b, px, donor
+
+
+def transfer(donor, Vt, Tt, height):
+    """robust weight transfer (Abdrashitov et al. 2023): closest-point match where confident, Dirichlet inpainting for the rest. Returns W, stats, distance, nearest bone."""
+    X = D['transfer']; Vd, Td, Wd = donor['V'], donor['T'], donor['W']
+    F, Bc, Q, dist, Nd = closest_on(Vd, Td, Vt)
+    Wm = np.einsum('vk,vkb->vb', Bc, Wd[Td[F]])
+    Nt = vnormals(Vt, Tt); cosang = np.abs((Nt * Nd).sum(1))
+    ok = (dist < X['maxDistFrac'] * height) & (cosang > math.cos(math.radians(X['maxNormalDeg'])))
+    W = inpaint(Vt, Tt, ok, Wm * ok[:, None], X['cgIters'])
+    W = smooth_rows(Tt, W, ~ok, X['smoothIters'])
+    empty = W.sum(1) < 0.5; W[empty] = Wm[empty]
+    nb = np.array(donor['names'])[np.argmax(Wm, 1)]
+    return W, {'matched': int(ok.sum()), 'inpainted': int((~ok).sum()), 'pctInpainted': round(100 * float((~ok).mean()), 1), 'unanchored': int(empty.sum())}, dist, nb
+
+
+def separate_tris_mask(o, keep_faces):
+    """split the faces in keep_faces (bool per polygon) into a new object; returns it."""
+    bpy.ops.object.select_all(action='DESELECT'); bp.ctx(o, 'EDIT'); bpy.ops.mesh.select_all(action='DESELECT'); bp.ctx(o, 'OBJECT')
+    for p in o.data.polygons: p.select = bool(keep_faces[p.index])
+    bp.ctx(o, 'EDIT'); before = set(bpy.data.objects); bpy.ops.mesh.separate(type='SELECTED'); bp.ctx(o, 'OBJECT')
+    new = [x for x in bpy.data.objects if x not in before]; return new[0] if new else None
+
+
+def tag(o, role, lod=0):
+    o['fit_role'] = role; o['fit_lod'] = lod
+
+
+# ------------------------------------------------------------------ texture transfer by closest point (replaces a cage bake: no missed rays)
+def _uv_tris(o):
+    me = o.data; me.calc_loop_triangles(); lt = me.loop_triangles
+    li = np.empty(len(lt) * 3, np.int64); lt.foreach_get('loops', li); vi = np.empty(len(lt) * 3, np.int64); lt.foreach_get('vertices', vi)
+    uv = np.empty(len(me.loops) * 2); me.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
+    return vi.reshape(-1, 3), uv[li].reshape(-1, 3, 2)
+
+
+def image_array(img):
+    w, h = img.size; a = np.empty(w * h * 4, np.float32); img.pixels.foreach_get(a); return a.reshape(h, w, 4)
+
+
+def texture_transfer(target, source, src_img, px, margin=4):
+    """For each texel of target's UV layout: its 3D point, the closest point on source, the source's UV there, the source image's colour (bilinear).
+    Returns a Blender image (px x px)."""
+    Tv, Tuv = _uv_tris(target); Vt = np.array([list(v.co) for v in target.data.vertices])
+    Sv, Suv = _uv_tris(source); Vs = np.array([list(v.co) for v in source.data.vertices])
+    bvh = BVHTree.FromPolygons([Vector(v) for v in Vs], [list(t) for t in Sv], all_triangles=True)
+    S = image_array(src_img); sh, sw = S.shape[:2]
+    out = np.zeros((px, px, 4), np.float32); filled = np.zeros((px, px), bool)
+    for t in range(len(Tv)):
+        uv = Tuv[t] * px; lo = np.floor(uv.min(0)).astype(int); hi = np.ceil(uv.max(0)).astype(int)
+        lo = np.clip(lo, 0, px - 1); hi = np.clip(hi, 0, px - 1)
+        xs, ys = np.meshgrid(np.arange(lo[0], hi[0] + 1) + 0.5, np.arange(lo[1], hi[1] + 1) + 0.5); P = np.stack([xs.ravel(), ys.ravel()], 1)
+        a, b, c = uv; v0 = b - a; v1 = c - a; den = v0[0] * v1[1] - v1[0] * v0[1]
+        if abs(den) < 1e-12: continue
+        d = P - a; l1 = (d[:, 0] * v1[1] - v1[0] * d[:, 1]) / den; l2 = (v0[0] * d[:, 1] - d[:, 0] * v0[1]) / den; l0 = 1 - l1 - l2
+        ins = (l0 >= -1e-3) & (l1 >= -1e-3) & (l2 >= -1e-3)
+        if not ins.any(): continue
+        X = l0[ins, None] * Vt[Tv[t, 0]] + l1[ins, None] * Vt[Tv[t, 1]] + l2[ins, None] * Vt[Tv[t, 2]]
+        pix = np.floor(P[ins]).astype(int)
+        for k in range(len(X)):
+            loc, nrm, fi, dist = bvh.find_nearest(Vector(X[k]))
+            if loc is None: continue
+            A, B, C = Vs[Sv[fi]]; q = np.array(loc)
+            e0 = B - A; e1 = C - A; e2 = q - A; d00 = e0 @ e0; d01 = e0 @ e1; d11 = e1 @ e1; d20 = e2 @ e0; d21 = e2 @ e1; dn = d00 * d11 - d01 * d01
+            if dn < 1e-18: m1 = m2 = 1 / 3
+            else: m1 = (d11 * d20 - d01 * d21) / dn; m2 = (d00 * d21 - d01 * d20) / dn
+            m0 = 1 - m1 - m2; suv = m0 * Suv[fi, 0] + m1 * Suv[fi, 1] + m2 * Suv[fi, 2]
+            sx = (suv[0] % 1.0) * sw - 0.5; sy = (suv[1] % 1.0) * sh - 0.5; x0 = int(np.floor(sx)); y0 = int(np.floor(sy)); fx = sx - x0; fy = sy - y0
+            x0c, x1c = np.clip([x0, x0 + 1], 0, sw - 1); y0c, y1c = np.clip([y0, y0 + 1], 0, sh - 1)
+            col = (S[y0c, x0c] * (1 - fx) * (1 - fy) + S[y0c, x1c] * fx * (1 - fy) + S[y1c, x0c] * (1 - fx) * fy + S[y1c, x1c] * fx * fy)
+            out[pix[k, 1], pix[k, 0]] = col; filled[pix[k, 1], pix[k, 0]] = True
+    for _ in range(margin):                                  # grow the islands into the gutters
+        grown = out.copy(); g2 = filled.copy()
+        for dy, dx in ((0, 1), (0, -1), (1, 0), (-1, 0)):
+            sh_ = np.roll(np.roll(out, dy, 0), dx, 1); sf = np.roll(np.roll(filled, dy, 0), dx, 1); m = sf & ~g2
+            grown[m] = sh_[m]; g2 |= m
+        out, filled = grown, g2
+    out[..., 3] = 1.0
+    img = bpy.data.images.new(target.name + '_tex', px, px, alpha=False); img.pixels.foreach_set(out.ravel()); img.update()
+    return img
+
+
+def drop_crumbs(o, pct):
+    """delete connected parts under pct % of the vertices; returns how many vertices went."""
+    bm = bmesh.new(); bm.from_mesh(o.data); bm.verts.ensure_lookup_table(); seen = set(); comps = []
+    for v in bm.verts:
+        if v.index in seen: continue
+        st = [v]; c = []
+        while st:
+            x = st.pop()
+            if x.index in seen: continue
+            seen.add(x.index); c.append(x); st.extend(e.other_vert(x) for e in x.link_edges)
+        comps.append(c)
+    lim = pct / 100.0 * len(bm.verts); gone = [v for c in comps if len(c) < lim for v in c]
+    bmesh.ops.delete(bm, geom=gone, context='VERTS'); bm.to_mesh(o.data); bm.free(); o.data.update()
+    return len(gone), len(comps)

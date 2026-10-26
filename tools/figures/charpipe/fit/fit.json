@@ -1,0 +1,395 @@
+{
+ "schema": "suborned.charpipe.fittest/1",
+ "brief": "069 fit test (Sky, 2026-10-26: 'Option A ... might sound fine on paper but in practice it makes a horrible mess'; how do hats, accessories and body sizes work?)",
+ "note": "All the fit test's numbers live here; the scripts carry no per-figure case. An input row says only where the paid-for mesh is and what the person wears (the outfit slot of the intake prompt: which loose garments to cut for G). Everything else (facing, scale, sliders, pose, garment regions) is measured.",
+ "store": "~/Projects/the-suborned-store/source-art/Citizens3D",
+ "inputs": [
+  {
+   "id": "sh2",
+   "category": "plain",
+   "src": "bench/shoppers_D2__h3t12.glb",
+   "figure": "sh2",
+   "wears": [
+    "hat"
+   ],
+   "label": "Shopper D2: print shirt and shorts, visor cap",
+   "sex": "m"
+  },
+  {
+   "id": "c6",
+   "category": "coat",
+   "src": "bakeoff/commuters_C6__hunyuan_pro.glb",
+   "figure": "c6",
+   "wears": [
+    "coat",
+    "hat"
+   ],
+   "label": "Commuter C6: hooded jacket (hood up) over a mini dress (the hood counts as headwear)",
+   "sex": "f"
+  },
+  {
+   "id": "d6",
+   "category": "skirt",
+   "src": "citizens/commuters_D6__hunyuan_pro.glb",
+   "figure": "d6",
+   "wears": [
+    "skirt",
+    "hat"
+   ],
+   "label": "Commuter D6: A-line shift dress, cloche hat",
+   "sex": "f"
+  },
+  {
+   "id": "c1",
+   "category": "cape",
+   "src": "bakeoff/corporation_C1__hunyuan_pro.glb",
+   "figure": "c1",
+   "wears": [
+    "cape",
+    "hat"
+   ],
+   "label": "Corporation C1: short cape, helmet, ponytail",
+   "sex": "f"
+  },
+  {
+   "id": "guard",
+   "category": "hat",
+   "src": "bench/guard_P1__apose_0__h3t12.glb",
+   "figure": "guard",
+   "wears": [
+    "hat"
+   ],
+   "label": "Door guard P1: duty suit, peaked cap",
+   "sex": "m"
+  }
+ ],
+ "normalise": {
+  "note": "The generated mesh has no true scale or facing. Up = the bbox's longest axis; front-back = the shorter of the other two; front = the side the feet point to (foot slab centroid vs the shin centroid). Final size: both approaches end at the fitted macros' own MPFB height (the fit's global scale is taken back out), so A and G compare like for like; a person's height is the height slider's job.",
+  "footSlabFrac": 0.035,
+  "shinSlabFrac": [
+   0.15,
+   0.25
+  ]
+ },
+ "basis": {
+  "note": "MPFB samples per sex: the ref body and each macro at both ends. The fit and the extremes blend them linearly (piecewise either side of 0.5); the final bodies are always rebuilt by MPFB at the picked macros.",
+  "ref": {
+   "age": 0.5,
+   "muscle": 0.5,
+   "weight": 0.5,
+   "height": 0.5,
+   "proportions": 0.5
+  },
+  "macros": [
+   "weight",
+   "muscle",
+   "proportions",
+   "height"
+  ],
+  "proxy": {
+   "m": "male1591",
+   "f": "female1605"
+  }
+ },
+ "fit": {
+  "note": "Body inside the mesh: signed distance of every proxy vertex to the generated mesh (sign from a voxel parity grid). Outside costs outsideW per m^2; a gap wider than gapFreeM costs gapW, capped at gapCapM so loose clothes (dress, cape, hat) do not pull the body. Sliders are clamped to the widened ranges below. Sex comes from the input row (the intake prompt's person slot names it); the fit also reports which sex fits tighter, as a check only (a slimmer body always hides more easily).",
+  "voxelM": 0.01,
+  "outsideW": 40.0,
+  "gapW": 1.0,
+  "gapFreeM": 0.006,
+  "gapCapM": 0.035,
+  "iterations": 7,
+  "ranges": {
+   "weight": [
+    0.0,
+    1.0
+   ],
+   "muscle": [
+    0.0,
+    1.0
+   ],
+   "proportions": [
+    0.0,
+    1.0
+   ],
+   "height": [
+    0.0,
+    1.0
+   ]
+  }
+ },
+ "extremes": {
+  "note": "Round 1's role ranges were weight 0.3-0.85, muscle 0.3-0.85, height m 0.38-0.66 / f 0.33-0.60 (about 1.68-1.92 m men, 1.56-1.78 m women). Widened to the sliders' ends: G is built on each; the weight and height ends are the stress cases. MPFB's height macro is steep (man: 0 -> 1.37 m, 0.5 -> 1.73 m, 1 -> 2.43 m; woman 1.24 / 1.59 / 2.29 m), so the height ends are 0.15 and 0.75 (man about 1.47 and 2.08 m, woman about 1.34 and 1.94 m). MPFB does not extrapolate: any macro outside 0..1 is silently reset to the default (measured: weight 1.5, 2 and -0.5 all give the ref body). So 'widened' means the full 0..1 range; the soft-heavy end is weight 1 with muscle 0 and proportions 0 (man's waist 0.28 -> 0.46 m wide, 0.19 -> 0.37 m deep), far past round 1's weight 0.85 / muscle >= 0.3.",
+  "bodies": {
+   "heaviest": {
+    "weight": 1.0,
+    "muscle": 0.0,
+    "proportions": 0.0
+   },
+   "slightest": {
+    "weight": 0.0,
+    "muscle": 0.5,
+    "proportions": 0.5
+   },
+   "tallest": {
+    "height": 0.75
+   },
+   "shortest": {
+    "height": 0.15
+   }
+  }
+ },
+ "transfer": {
+  "note": "A's weights: Abdrashitov et al. 2023 (robust skin weights transfer via weight inpainting). A target vertex takes the donor body's weights at its closest surface point when it lies within maxDistFrac x height and its normal is within maxNormalDeg of the body's (or flipped, for inner faces); the rest are inpainted by minimising the Dirichlet energy over the target mesh (Laplacian, numpy CG), then smoothed smoothIters times on the inpainted set only. Loose rules then overwrite by region. Two additions the paper does not need (it assumes one connected mesh): vertices whose connected part has no confident match end the inpainting with no weights (they would stay behind in the world while the body moves: A's flying shards), so they take the closest-point weights; and source islands under crumbPct % of the vertices (generation specks) are deleted first. Image-to-3D meshes are hundreds of separate shells (c1: 804 after decimation), so the cut is kept tiny: at 0.5 % it deleted half of c1.",
+  "maxDistFrac": 0.03,
+  "maxNormalDeg": 35.0,
+  "smoothIters": 6,
+  "cgIters": 600,
+  "maxInfluences": 4,
+  "loose": {
+   "note": "Rules for loose parts, by the garment classifier's kinds (the same regions G cuts). Inpainting alone gives a hem the waist's weights only (it is far from both legs), so a hem bridging the legs would stay rigid with the hips while the thighs swing through it.",
+   "hat": {
+    "rule": "rigid",
+    "bones": [
+     "Head"
+    ]
+   },
+   "cape": {
+    "rule": "side",
+    "bones": [
+     "Spine2",
+     "LeftShoulder",
+     "RightShoulder"
+    ],
+    "centreShare": 0.6
+   },
+   "skirt": {
+    "rule": "lateralBlend",
+    "below": "crotch",
+    "bones": [
+     "Hips",
+     "LeftUpLeg",
+     "RightUpLeg"
+    ],
+    "hipShare": 0.35,
+    "rampM": 0.12
+   },
+   "coat": {
+    "rule": "lateralBlend",
+    "below": "crotch",
+    "bones": [
+     "Hips",
+     "LeftUpLeg",
+     "RightUpLeg"
+    ],
+    "hipShare": 0.35,
+    "rampM": 0.12
+   },
+   "hair": {
+    "rule": "rigid",
+    "bones": [
+     "Head"
+    ]
+   }
+  },
+  "crumbPct": 0.05
+ },
+ "rest": {
+  "note": "The standard rest: CharPipe/Clips/reference_tpose.json (the clips' own Mixamo T-pose directions), with Latch's neutral legs written by construction: UpLeg and Leg straight down, Foot->ToeBase along the hips' facing at the body's own flat-foot pitch, toe level.",
+  "reference": "out/scratch/forma/char-pipeline/CharPipe/Clips/reference_tpose.json"
+ },
+ "lods": {
+  "tris": [
+   12000,
+   4500,
+   1500
+  ],
+  "tex": [
+   2048,
+   1024,
+   512
+  ]
+ },
+ "garments": {
+  "note": "G's cut rules. Loose = farther than looseM from the fitted body. A garment is the loose region of its kind, grown growRings edge rings into the tight part (the seam overlap), then remeshed at voxelM, decimated to its share of the LOD0 budget and re-baked from the source. Rigid pieces (retopo false: hat, hair) keep the source surface, only decimated, with the source's own UVs and texture (they never bend, so their topology does not matter).",
+  "looseM": 0.022,
+  "growRings": 2,
+  "voxelM": 0.008,
+  "bakePx": 1024,
+  "cageM": 0.05,
+  "kinds": {
+   "hat": {
+    "region": "above the brow plane (Head bone at browFrac of its length) and farther than looseM from the skull",
+    "browFrac": 0.42,
+    "tris": 1200,
+    "rigid": "Head",
+    "retopo": false
+   },
+   "cape": {
+    "region": "above the waist, nearest body part torso/shoulder/upper arm, farther than looseM, and behind the arm or over the shoulder",
+    "tris": 1600,
+    "retopo": true
+   },
+   "coat": {
+    "region": "between the knee and the chest, nearest body part torso/hips/thigh/upper arm, farther than looseM",
+    "tris": 2400,
+    "retopo": true
+   },
+   "skirt": {
+    "region": "between the knee and the waist, nearest body part hips/thigh, farther than looseM",
+    "tris": 1600,
+    "retopo": true
+   },
+   "hair": {
+    "region": "loose, nearest body part Head or Neck, below the hat (a bun, ponytail, a hood's volume when no hat is worn): always cut, the person's own; rigid on Head",
+    "rigid": "Head",
+    "tris": 900,
+    "retopo": false
+   }
+  },
+  "suit": {
+   "note": "the body layer under the garments: the MPFB proxy, subdivided suitSubdiv times, wrapped onto the source where it is tight (ray along the normal, both ways, up to wrapMaxM) and left on the body (+ suitPadM) where a garment covers it. Hands are not wrapped (the source's hands are mittens: wrapping glues the fingers); their colour is baked.",
+   "suitSubdiv": 1,
+   "wrapMaxM": 0.04,
+   "suitPadM": 0.004,
+   "smooth": 4,
+   "noWrap": [
+    "LeftHand",
+    "RightHand"
+   ]
+  },
+  "hat": {
+   "note": "the hat rides Head, scaled by the wearer's head size (head width and depth at the brow against the source's) and seated at the wearer's crown; hair under the hat is pushed inside the hat's inner shell (the hair-under-hat rule).",
+   "hairPushM": 0.004
+  },
+  "cape": {
+   "note": "a minimal shared chain: three bones down the centre back from Spine2 to the hem, the cape weighted along it and blended to Spine2 at the collar. In motion each link lags its parent (lag) and keeps clear of the back (a gravity pull, gravity).",
+   "bones": 3,
+   "lag": 0.55,
+   "gravity": 0.25
+  },
+  "solidifyM": 0.006,
+  "suitBakePx": 2048,
+  "bindGroup": {
+   "note": "MakeClothes matches a garment vertex only to basemesh faces of the same vertex group: the group each piece binds to. helper-skirt is MakeHuman's own skirt surface between the legs, made for skirts (its weights already blend the thighs).",
+   "suit": "body",
+   "coat": "body",
+   "cape": "body",
+   "skirt": "helper-skirt"
+  },
+  "seam": {
+   "note": "seam tuck: a deforming garment's vertices within bandM of its top edge (the overlap grown into the tight part) are pulled to just under the suit's surface (insetM), fading out over the band, so the seam never stands proud of the body layer.",
+   "bandM": 0.05,
+   "insetM": 0.004
+  }
+ },
+ "attach": {
+  "note": "Named attachment points on the skeleton (extra non-deforming bones, so they ride along in Unity as transforms under the Humanoid; Humanoid ignores them). Placed by rule from the body.",
+  "points": {
+   "Attach_RightHand": {
+    "parent": "RightHand",
+    "rule": "palm: hand head + 0.5 x (middle1 head - hand head), out of the palm by 0.25 x hand width"
+   },
+   "Attach_LeftHand": {
+    "parent": "LeftHand",
+    "rule": "as RightHand, mirrored"
+   },
+   "Attach_HipRight": {
+    "parent": "Hips",
+    "rule": "right hip: hip joint height, lateral at the body's width + 1 cm"
+   },
+   "Attach_Back": {
+    "parent": "Spine2",
+    "rule": "centre back at Spine2 height, behind the body by 1 cm"
+   },
+   "Attach_ShoulderLeft": {
+    "parent": "LeftShoulder",
+    "rule": "top of the left shoulder, half way out"
+   }
+  },
+  "props": {
+   "bag": {
+    "at": "Attach_ShoulderLeft",
+    "hangTo": "Attach_HipRight",
+    "note": "a shoulder bag: strap from the left shoulder, bag at the right hip (cross-body)",
+    "size": [
+     0.26,
+     0.08,
+     0.2
+    ],
+    "strapOffsetM": 0.022
+   },
+   "case": {
+    "at": "Attach_RightHand",
+    "note": "a held case",
+    "size": [
+     0.4,
+     0.09,
+     0.3
+    ]
+   },
+   "tray": {
+    "at": "Attach_LeftHand",
+    "note": "a held tray, flat, palm up in the carry pose; in the clips the hand moves and the tray goes with it",
+    "size": [
+     0.36,
+     0.36,
+     0.02
+    ]
+   }
+  }
+ },
+ "layers": {
+  "note": "The arm-out / leg-out layer: an additive pose driven by the weight slider (deg per unit of weight above 0.5) on the upper arm (away from the torso, about the hips' forward axis) and the thigh (out, the same). Applied after the clip, as Unity would with an additive layer or a muscle offset. Tried at 24 / 8 deg per unit (12 / 4 deg at weight 1: arm-torso intersections down 23-65 %, thighs 6-32 %, kept as *_layer24.metrics.json) and at 56 / 16 (28 / 8 deg at weight 1), the run reported.",
+  "armOutDegPerWeight": 56.0,
+  "legOutDegPerWeight": 16.0
+ },
+ "clips": {
+  "note": "Fresh from the Mixamo library (Adobe Mixamo terms: royalty-free in games, the raw files not redistributed on their own). Retargeted in Blender as Humanoid does with Latch's shared neutral reference: every clip's zero is the Mixamo T-pose with straight legs (the FBX bind pose, which has them), never its own frame 0.",
+  "lib": "~/Projects/the-suborned-store/source-art/Anim/mixamo_library",
+  "list": {
+   "walk": "Walk__c9ccf814.fbx",
+   "run": "Run__c9c72c68.fbx",
+   "crouch_walk": "Crouch_Walking__c9c92c49.fbx",
+   "sit": "Sitting_Idle__c9cb95c1.fbx",
+   "aim_pistol": "Pistol_Aim__c9c8b958.fbx",
+   "carry": "Carrying__c9c82dfa.fbx",
+   "carried": "Being_Carried__c9c81d97.fbx"
+  },
+  "frames": 24
+ },
+ "thresholds": {
+  "note": "Flag levels. Edge ratio = posed length / rest length. Worst-triangle area ratio = posed area / rest area. Interpenetration = share of covered body vertices that end up outside their garment. Intersections = overlapping polygon pairs (BVH overlap, faces sharing a vertex left out).",
+  "edgeStretchP99": 0.35,
+  "edgeCompressP99": 0.35,
+  "edgeStretchMax": 1.0,
+  "edgeCompressMax": 0.7,
+  "triAreaMin": 0.2,
+  "triAreaMax": 3.0,
+  "triFlipped": 0,
+  "penetrationPct": 2.0,
+  "hemSelfPairs": 20,
+  "armTorsoPairs": 30,
+  "thighPairs": 30,
+  "propBodyPairs": 10
+ },
+ "render": {
+  "close": {
+   "w": 640,
+   "h": 720,
+   "fovDeg": 35,
+   "distM": 3.4,
+   "heightM": 1.35,
+   "orbitDeg": 120
+  },
+  "play": {
+   "pitchDeg": 38,
+   "yawDeg": 30,
+   "ppm": 38.571,
+   "w": 200,
+   "h": 120,
+   "upscale": 3
+  },
+  "fps": 24
+ }
+}

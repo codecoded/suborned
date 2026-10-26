@@ -1,0 +1,108 @@
+{
+ "still": "silhouette_f.png",
+ "base": "silhouette_f.png",
+ "verdict": {
+  "pass": true,
+  "fails": [],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 0.0,
+   "arm_screenLeft": 45.2,
+   "arm_screenRight": 45.3,
+   "armGapRows": 0.966,
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1246,
+   "feetSpacingH_base": 0.1246,
+   "footLengthH": 0.1077,
+   "footYawDegEst": 0.0,
+   "footWidthH": 0.0412,
+   "backgroundFlatness": 0.2
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 216,
+   "bottom": 810,
+   "heightPx": 594,
+   "left": 36,
+   "right": 474,
+   "touchesEdge": false,
+   "armGapRows": 0.966,
+   "armDownFromHorizontal": {
+    "screenLeft": 45.2,
+    "screenRight": 45.3
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1246,
+   "footWidthH": 0.0412,
+   "x0": 0
+  },
+  "side": {
+   "top": 216,
+   "bottom": 810,
+   "heightPx": 594,
+   "left": 188,
+   "right": 287,
+   "touchesEdge": false,
+   "footLengthH": 0.1077,
+   "x0": 512
+  },
+  "back": {
+   "top": 216,
+   "bottom": 810,
+   "heightPx": 594,
+   "left": 36,
+   "right": 474,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 216,
+   "bottom": 810,
+   "heightPx": 594,
+   "left": 36,
+   "right": 474,
+   "touchesEdge": false,
+   "armGapRows": 0.966,
+   "armDownFromHorizontal": {
+    "screenLeft": 45.2,
+    "screenRight": 45.3
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1246,
+   "footWidthH": 0.0412,
+   "x0": 0
+  },
+  "side": {
+   "top": 216,
+   "bottom": 810,
+   "heightPx": 594,
+   "left": 188,
+   "right": 287,
+   "touchesEdge": false,
+   "footLengthH": 0.1077,
+   "x0": 512
+  },
+  "back": {
+   "top": 216,
+   "bottom": 810,
+   "heightPx": 594,
+   "left": 36,
+   "right": 474,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "feetSpacingH": 0.03,
+  "footYawDeg": 10.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0
+ }
+}

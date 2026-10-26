@@ -1,0 +1,129 @@
+{
+ "still": "mannequin_m_wrong.png",
+ "base": "silhouette_m.png",
+ "verdict": {
+  "pass": false,
+  "fails": [
+   "a figure runs past its third of the sheet",
+   "screenLeft arm at 31.5 deg below horizontal (base 46.0, tolerance 8.0)",
+   "screenRight arm at 31.4 deg below horizontal (base 46.0, tolerance 8.0)",
+   "feet 0.2799 H apart (base 0.1297, loose tolerance 0.06)",
+   "legs lean out 6.5 deg (straight is 0; base 0.0, tolerance 4.0)",
+   "feet turned out about 37 deg (tolerance 12.0)"
+  ],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 0.2,
+   "arm_screenLeft": 31.5,
+   "arm_screenRight": 31.4,
+   "armGapRows": 0.682,
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.2799,
+   "feetSpacingH_base": 0.1297,
+   "legSplayDeg": 6.5,
+   "footLengthH": 0.0696,
+   "footYawDegEst": [
+    36.7,
+    36.7
+   ],
+   "backgroundFlatness": 0.3
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 236,
+   "bottom": 788,
+   "heightPx": 552,
+   "left": 0,
+   "right": 511,
+   "touchesEdge": true,
+   "armGapRows": 0.682,
+   "armDownFromHorizontal": {
+    "screenLeft": 31.5,
+    "screenRight": 31.4
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.2799,
+   "footWidthH": 0.0643,
+   "legSplayDeg": 6.5,
+   "footOutwardH": [
+    0.0208,
+    0.0208
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 235,
+   "bottom": 788,
+   "heightPx": 553,
+   "left": 200,
+   "right": 286,
+   "touchesEdge": false,
+   "footLengthH": 0.0696,
+   "x0": 512
+  },
+  "back": {
+   "top": 235,
+   "bottom": 788,
+   "heightPx": 553,
+   "left": 0,
+   "right": 511,
+   "touchesEdge": true,
+   "x0": 1024
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 31,
+   "right": 480,
+   "touchesEdge": false,
+   "armGapRows": 1.0,
+   "armDownFromHorizontal": {
+    "screenLeft": 46.0,
+    "screenRight": 46.0
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1297,
+   "footWidthH": 0.0493,
+   "legSplayDeg": 0.0,
+   "footOutwardH": [
+    -0.0018,
+    -0.0023
+   ],
+   "x0": 0
+  },
+  "side": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 198,
+   "right": 287,
+   "touchesEdge": false,
+   "footLengthH": 0.132,
+   "x0": 512
+  },
+  "back": {
+   "top": 237,
+   "bottom": 790,
+   "heightPx": 553,
+   "left": 31,
+   "right": 480,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "footYawDeg": 12.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0,
+  "legSplayDeg": 4.0,
+  "feetSpacingHLoose": 0.06
+ }
+}

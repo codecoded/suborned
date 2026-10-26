@@ -1,0 +1,68 @@
+{
+ "id": "guard",
+ "approach": "A",
+ "sex": "m",
+ "macros": {
+  "weight": 0.4578,
+  "muscle": 0.5859,
+  "proportions": 0.5,
+  "height": 0.5
+ },
+ "lodTris": [
+  11657,
+  4500,
+  1500
+ ],
+ "srcTris": 11675,
+ "bones": 52,
+ "attach": [
+  "Attach_Back",
+  "Attach_HipRight",
+  "Attach_LeftHand",
+  "Attach_RightHand",
+  "Attach_ShoulderLeft"
+ ],
+ "materials": 1,
+ "texture": [
+  4096,
+  4096
+ ],
+ "transfer": {
+  "matched": 5458,
+  "inpainted": 2104,
+  "pctInpainted": 27.8,
+  "unanchored": 13
+ },
+ "crumbsDropped": 54,
+ "sourceParts": 129,
+ "looseRules": {
+  "hat": 294
+ },
+ "labels": {
+  "hat": 294
+ },
+ "restLegs": {
+  "Left": {
+   "abductionDeg": 0.0,
+   "ankleOutM": 0.0,
+   "footYawDeg": -0.0,
+   "footPitchDeg": 26.75
+  },
+  "Right": {
+   "abductionDeg": 0.0,
+   "ankleOutM": 0.0,
+   "footYawDeg": 0.0,
+   "footPitchDeg": 26.75
+  }
+ },
+ "seconds": {
+  "body": 0.39,
+  "lod0": 0.0,
+  "transfer": 0.89,
+  "rules": 0.0,
+  "rest": 0.03,
+  "lods": 0.06,
+  "export": 0.05
+ },
+ "heightM": 1.727
+}

@@ -1,0 +1,114 @@
+{
+ "still": "/Users/sky/Projects/the-suborned-store/concepts/Citizens/model_sheets/commuters_C6.png",
+ "base": "mannequin_f.png",
+ "verdict": {
+  "pass": false,
+  "fails": [
+   "views not at one scale (43.3 % apart)",
+   "a figure runs past its third of the sheet",
+   "screenRight arm at 88.7 deg below horizontal (base 73.4, tolerance 8.0)",
+   "legs not apart (gap on 0.0 of the shin and knee rows; base 1.0)",
+   "two feet not found at the soles"
+  ],
+  "numbers": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 43.3,
+   "arm_screenLeft": 68.9,
+   "arm_screenRight": 88.7,
+   "armGapRows": 0.453,
+   "legGapRows": 0.0,
+   "feetSpacingH": null,
+   "feetSpacingH_base": 0.1216,
+   "footLengthH": 0.038,
+   "footYawDegEst": null,
+   "footWidthH": null,
+   "backgroundFlatness": 1.3
+  }
+ },
+ "still_views": {
+  "front": {
+   "top": 477,
+   "bottom": 1866,
+   "heightPx": 1389,
+   "left": 81,
+   "right": 340,
+   "touchesEdge": true,
+   "armGapRows": 0.453,
+   "armDownFromHorizontal": {
+    "screenLeft": 68.9,
+    "screenRight": 88.7
+   },
+   "legGapRows": 0.0,
+   "feetSpacingH": null,
+   "footWidthH": null,
+   "x0": 0
+  },
+  "side": {
+   "top": 133,
+   "bottom": 1894,
+   "heightPx": 1761,
+   "left": 0,
+   "right": 340,
+   "touchesEdge": true,
+   "footLengthH": 0.038,
+   "x0": 341
+  },
+  "back": {
+   "top": 374,
+   "bottom": 1516,
+   "heightPx": 1142,
+   "left": 0,
+   "right": 284,
+   "touchesEdge": true,
+   "x0": 682
+  }
+ },
+ "base_views": {
+  "front": {
+   "top": 187,
+   "bottom": 841,
+   "heightPx": 654,
+   "left": 15,
+   "right": 496,
+   "touchesEdge": false,
+   "armGapRows": 0.992,
+   "armDownFromHorizontal": {
+    "screenLeft": 65.8,
+    "screenRight": 73.4
+   },
+   "legGapRows": 1.0,
+   "feetSpacingH": 0.1216,
+   "footWidthH": 0.0191,
+   "x0": 0
+  },
+  "side": {
+   "top": 188,
+   "bottom": 841,
+   "heightPx": 653,
+   "left": 185,
+   "right": 289,
+   "touchesEdge": false,
+   "footLengthH": 0.0689,
+   "x0": 512
+  },
+  "back": {
+   "top": 187,
+   "bottom": 841,
+   "heightPx": 654,
+   "left": 15,
+   "right": 497,
+   "touchesEdge": false,
+   "x0": 1024
+  }
+ },
+ "tolerances": {
+  "viewsFound": 3,
+  "viewHeightSpreadPct": 4.0,
+  "armAngleDeg": 8.0,
+  "armGapRowsMin": 0.12,
+  "feetSpacingH": 0.03,
+  "footYawDeg": 10.0,
+  "legGapRowsMin": 0.15,
+  "backgroundFlatness": 12.0
+ }
+}
