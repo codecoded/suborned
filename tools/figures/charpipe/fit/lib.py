@@ -10,6 +10,11 @@ CP = os.path.dirname(HERE)
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CP)))
 SCR = os.path.join(ROOT, 'out/scratch/forma/char-pipeline/fit-test')
 D = json.load(open(os.path.join(HERE, 'fit.json')))
+SET = os.environ.get('FIT_SET', 'fittest')          # 'e2e': the same stages on brief 069's end-to-end people (e2e.json), written to its out folder
+if SET == 'e2e':
+    E2E = json.load(open(os.path.join(HERE, 'e2e.json')))
+    SCR = os.path.join(ROOT, os.environ.get('FIT_OUT', E2E['out']))
+    D['inputs'] = [dict(r, src=os.path.join(ROOT, r['src'])) for r in E2E['people']]
 MPFB = os.environ.get('MPFBDATA', '')
 P = 'mixamorig:'
 
@@ -22,7 +27,7 @@ bp = _load('cp_build', os.path.join(CP, 'build.py'))      # read only: prune, ai
 KEEP = bp.KEEP
 
 
-def store(p): return os.path.join(os.path.expanduser(D['store']), p)
+def store(p): return p if os.path.isabs(p) else os.path.join(os.path.expanduser(D['store']), p)
 
 
 def ensure(p): os.makedirs(p, exist_ok=True); return p
@@ -355,6 +360,9 @@ def import_glb(path):
     o = bpy.context.view_layer.objects.active
     o.parent = None
     o.data.transform(o.matrix_world); o.matrix_world = Matrix.Identity(4)
+    # glTF brings custom split normals; once the mesh is re-posed they no longer turn with it and shade as light and dark slivers (found in the
+    # brief 069 end-to-end test): clear them and shade smooth from the geometry
+    if not (SET == 'e2e' and E2E.get('lod0', {}).get('mode') == 'source'): clean_normals(o)
     for x in new:
         if x is not o and x.name in bpy.data.objects: bpy.data.objects.remove(x, do_unlink=True)
     return o
@@ -537,7 +545,8 @@ def add_attach(arm, body_co):
     by = float(band[:, 1].max()) if len(band) else s2.y + 0.12
     mk('Attach_Back', 'Spine2', Vector((0, by + 0.01, s2.z)), Vector((0, by + 0.06, s2.z)))
     sh = wh('LeftShoulder'); ar = wh('LeftArm'); top = (sh + ar) / 2
-    near = body_co[(np.linalg.norm(body_co[:, [0, 1]] - np.array([top.x, top.y]), axis=1) < 0.04)]
+    nz = wh('Neck').z                                     # the shoulder's top lies below the neck base (above it, the search finds the head)
+    near = body_co[(np.linalg.norm(body_co[:, [0, 1]] - np.array([top.x, top.y]), axis=1) < 0.04) & (body_co[:, 2] < nz + 0.02)]
     tz = float(near[:, 2].max()) if len(near) else top.z + 0.06
     mk('Attach_ShoulderLeft', 'LeftShoulder', Vector((top.x, top.y, tz)), Vector((top.x, top.y, tz + 0.05)))
     bp.ctx(arm, 'OBJECT')
@@ -572,6 +581,8 @@ def transfer(donor, Vt, Tt, height):
     W = inpaint(Vt, Tt, ok, Wm * ok[:, None], X['cgIters'])
     W = smooth_rows(Tt, W, ~ok, X['smoothIters'])
     empty = W.sum(1) < 0.5; W[empty] = Wm[empty]
+    if X.get('smoothAllIters', 0): W = smooth_rows(Tt, W, np.ones(len(W), bool), X['smoothAllIters'])
+    if X.get('spatialMergeM', 0): W = spatial_merge(Vt, W, X['spatialMergeM'], X.get('spatialMergePasses', 2))
     nb = np.array(donor['names'])[np.argmax(Wm, 1)]
     return W, {'matched': int(ok.sum()), 'inpainted': int((~ok).sum()), 'pctInpainted': round(100 * float((~ok).mean()), 1), 'unanchored': int(empty.sum())}, dist, nb
 
@@ -656,3 +667,177 @@ def drop_crumbs(o, pct):
     lim = pct / 100.0 * len(bm.verts); gone = [v for c in comps if len(c) < lim for v in c]
     bmesh.ops.delete(bm, geom=gone, context='VERTS'); bm.to_mesh(o.data); bm.free(); o.data.update()
     return len(gone), len(comps)
+
+
+def props(arm, att, suit):
+    """a cross-body bag (strap from the left shoulder over the chest to a bag at the right hip) and a tray in the left hand; weights from the nearest suit point."""
+    A = D['attach']['props']; out = []
+    Vs = eval_co(suit); Ts = tris_of(suit); names = [g.name for g in suit.vertex_groups]; Ws = weights_of(suit, names)
+    sb = BVHTree.FromPolygons([Vector(v) for v in Vs], [list(t) for t in Ts], all_triangles=True)
+    # bag
+    hip = np.array(att['Attach_HipRight']); sx, sy, sz = A['bag']['size']
+    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+    for v in bm.verts: v.co = Vector((v.co.x * sy, v.co.y * sx, v.co.z * sz))
+    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.015, segments=2, affect='EDGES')
+    me = bpy.data.meshes.new('bag'); bm.to_mesh(me); bm.free(); bag = bpy.data.objects.new('prop_bag', me); bpy.context.scene.collection.objects.link(bag)
+    bag.location = Vector(hip) + Vector((-sy / 2 - 0.02, 0, -0.05)); bp.ctx(bag); bpy.ops.object.transform_apply(location=True)
+    # strap: points on the line shoulder -> bag top, each pushed out of the body by 1 cm along the front
+    sh = np.array(att['Attach_ShoulderLeft']); end = hip + np.array([0, 0, sz / 2 - 0.05])
+    pts = []; Mw = arm.matrix_world; ctr = Mw @ arm.data.bones['Spine2'].head_local
+    for k in range(13):
+        # the strap point sits outside the body's OUTERMOST surface along the line from the spine axis (generated meshes have inner shells,
+        # whose nearest normals point inward), plus strapOffsetM
+        q = sh + (end - sh) * k / 12; o = Vector((ctr.x, ctr.y, q[2]))
+        d = (Vector((q[0] - o.x, 0, 0)) * 2.0 + Vector((0, -1, 0))).normalized()     # a cross-body strap crosses the chest's front, tilted to its side
+        far = None; cur = o
+        for _ in range(64):
+            loc, nr, fi, dd = sb.ray_cast(cur, d, 1.0)
+            if loc is None or (far is not None and (loc - far).length > 0.05): break      # a gap: the next hit is another part (an arm), not this surface
+            far = loc; cur = loc + d * 1e-4
+        q2 = np.array(far + d * A['bag']['strapOffsetM']) if far is not None else q
+        if k == 0: q2 = np.maximum(q2, sh) if False else q2
+        pts.append(q2)
+    cu = bpy.data.curves.new('strap', 'CURVE'); cu.dimensions = '3D'; sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
+    for i, q in enumerate(pts): sp.points[i].co = (*q, 1)
+    cu.bevel_depth = 0.008; cu.bevel_resolution = 1
+    so = bpy.data.objects.new('prop_strap', cu); bpy.context.scene.collection.objects.link(so); bp.ctx(so); bpy.ops.object.convert(target='MESH'); strap = bpy.context.view_layer.objects.active
+    bpy.ops.object.select_all(action='DESELECT'); bag.select_set(True); strap.select_set(True); bpy.context.view_layer.objects.active = bag; bpy.ops.object.join()
+    # tray: a disc at the left palm, flat across the palm
+    ar = arm.data.bones; Mw = arm.matrix_world
+    h = Mw @ ar['LeftHand'].head_local; m1 = Mw @ ar['LeftHandMiddle1'].head_local; i1 = Mw @ ar['LeftHandIndex1'].head_local; p1 = Mw @ ar['LeftHandPinky1'].head_local
+    nrm = (i1 - h).cross(p1 - h).normalized(); tx, ty, tz = A['tray']['size']
+    bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=True, segments=24, radius1=tx / 2, radius2=tx / 2, depth=tz)
+    me = bpy.data.meshes.new('tray'); bm.to_mesh(me); bm.free(); tray = bpy.data.objects.new('prop_tray', me); bpy.context.scene.collection.objects.link(tray)
+    # the tray clears the hand: its centre sits past the hand's own depth on the palm side (measured from the body's hand vertices), not a fixed gap
+    hand_ix = [i for i, n in enumerate(names) if n.startswith('LeftHand')]; ap = np.array(att['Attach_LeftHand'])
+    hv = Vs[(Ws[:, hand_ix].sum(1) > 0.5) & (np.linalg.norm(Vs - ap, axis=1) < 0.15)] if hand_ix else Vs[:0]
+    depth = float(max(0.0, ((hv - ap) @ -np.array(nrm)).max())) if len(hv) else 0.01
+    R = Vector((0, 0, 1)).rotation_difference(nrm).to_matrix().to_4x4(); c = Vector(att['Attach_LeftHand']) - nrm * (depth + tz / 2 + A['tray'].get('clearM', 0.004))
+    tray.matrix_world = Matrix.Translation(c) @ R; bp.ctx(tray); bpy.ops.object.transform_apply(location=True, rotation=True)
+    m = simple_material('prop_chrome', None, (0.78, 0.78, 0.8, 1), 0.35)
+    for o, rule in ((bag, 'nearest'), (tray, 'LeftHand')):
+        o.data.materials.clear(); o.data.materials.append(m if o is tray else simple_material('prop_bag', None, (0.12, 0.35, 0.42, 1), 0.6))
+        V = np.array([list(v.co) for v in o.data.vertices])
+        if rule == 'nearest':
+            W = np.zeros((len(V), len(names)))
+            for i, q in enumerate(V):
+                loc, nr, fi, d = sb.find_nearest(Vector(q)); W[i] = Ws[Ts[fi]].mean(0)
+            # the bag body itself rides the hips only (a rigid box), the strap blends
+            body = V[:, 2] < hip[2] + sz / 2 - 0.04; W[body] = 0; W[body, names.index('Hips')] = 1
+            set_weights(o, W, names, 4)
+        else:
+            W = np.zeros((len(V), 1)); W[:, 0] = 1; set_weights(o, W, [rule], 1)
+        o.parent = arm; md = o.modifiers.new('Armature', 'ARMATURE'); md.object = arm; tag(o, 'prop'); out.append(o)
+    return out
+
+
+
+
+def hair_under_hat(hat, objs, centre, brow):
+    """any vertex of the head pieces above the brow that lies at or beyond the hat's inner wall (seen from the head's centre) is pulled inside it."""
+    Vh = np.array([list(v.co) for v in hat.data.vertices]); Th = tris_of(hat)
+    bvh = BVHTree.FromPolygons([Vector(v) for v in Vh], [list(t) for t in Th], all_triangles=True)
+    pad = D['garments']['hat']['hairPushM']; moved = 0; c = Vector(centre)
+    for o in objs:
+        V = np.array([list(v.co) for v in o.data.vertices]); ch = False
+        for i in np.nonzero(V[:, 2] > brow)[0]:
+            v = Vector(V[i]); d = v - c; r = d.length
+            if r < 1e-6: continue
+            loc, nrm, fi, dist = bvh.ray_cast(c, d.normalized(), r + 0.05)
+            if loc is not None and dist < r + pad:
+                V[i] = list(c + d.normalized() * max(dist - pad, 0.0)); moved += 1; ch = True
+        if ch: set_co(o, V)
+    return moved
+
+
+
+
+
+def spatial_merge(V, W, r, passes):
+    """weights averaged over every vertex within r in space (not along the surface): layers of an image-to-3D mesh that lie on top of each other
+    without sharing edges (cloth over an inner layer) then deform as one and do not z-fight once posed."""
+    from mathutils.kdtree import KDTree
+    kd = KDTree(len(V))
+    for i, v in enumerate(V): kd.insert(Vector(v), i)
+    kd.balance()
+    nb = [[j for (_, j, _) in kd.find_range(Vector(v), r)] for v in V]
+    for _ in range(passes):
+        W = np.array([W[n].mean(0) for n in nb])
+    s = W.sum(1, keepdims=True); s[s == 0] = 1; return W / s
+
+
+
+def clean_normals(o):
+    """glTF brings custom split normals; once the mesh is re-posed they no longer turn with it: clear them, shade smooth from the geometry."""
+    if o.data.has_custom_normals:
+        with bpy.context.temp_override(object=o, active_object=o): bpy.ops.mesh.customdata_custom_splitnormals_clear()
+    o.data.shade_smooth()
+
+
+def export_fbx(path, objs, active):
+    """build.py's pinned FBX export (fixed header time and object ids), but without the tangent space: MikkTSpace on these decimated image-to-3D
+    meshes gives different binormals run to run (found by the brief 069 end-to-end determinism check; every other array was identical). Unity
+    recomputes tangents on import (the model meta: tangents = Calculate Mikktspace), so nothing is lost."""
+    bp.pin_fbx()
+    # the header's ApplicationNativeFile is the open .blend's full path: written as its bare name, so the same build gives the same bytes in any folder
+    from io_scene_fbx import export_fbx_bin as eb
+    pinned = eb.fbx_header_elements
+    def header(root, scene_data, time=None):
+        pinned(root, scene_data, time)
+        def walk(e):
+            if e.id == b'P' and e.props and e.props[0][4:].endswith(b'ApplicationNativeFile'):   # 'Original|ApplicationNativeFile'; strings carry a 4-byte length prefix
+                nm = os.path.basename(bpy.data.filepath).encode(); e.props[-1] = len(nm).to_bytes(4, 'little') + nm
+            for c in e.elems: walk(c)
+        walk(root)
+    eb.fbx_header_elements = header
+    # texture file names: the exporter writes <output folder>/<image name> (absolute); written as the bare name, so they point beside the FBX
+    enc = eb.encode_bin; write0 = enc.write
+    def write(fn, root, version):
+        def walk(e):
+            for k, (t, v) in enumerate(zip(e.props_type, e.props)):
+                if t == ord('S') and v[4:5] == b'/':                    # any absolute path (texture FileName, Filename, Path, Url): its bare name
+                    nm = os.path.basename(v[4:].decode('utf8', 'replace')).encode(); e.props[k] = len(nm).to_bytes(4, 'little') + nm
+            for c in e.elems: walk(c)
+        walk(root); return write0(fn, root, version)
+    enc.write = write
+    try:
+        bpy.ops.object.select_all(action='DESELECT')
+        for x in objs: x.select_set(True)
+        bpy.context.view_layer.objects.active = active
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        bpy.ops.export_scene.fbx(filepath=path, use_selection=True, object_types={'ARMATURE', 'MESH'}, use_mesh_modifiers=False,
+                                 add_leaf_bones=False, bake_anim=False, axis_forward='-Z', axis_up='Y', apply_unit_scale=True,
+                                 apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False, primary_bone_axis='Y', secondary_bone_axis='X',
+                                 armature_nodetype='NULL', mesh_smooth_type='FACE', use_tspace=False, path_mode='STRIP', embed_textures=False)
+    finally:
+        eb.fbx_header_elements = pinned; enc.write = write0
+
+
+
+def work(*p):
+    """working files (.blend): not deliverables, never compared byte for byte (see e2e.json deliverables)."""
+    return os.path.join(ensure(os.path.join(SCR, 'work')), *p)
+
+
+def src_blend(fid):
+    w = os.path.join(SCR, 'work', f'{fid}_src.blend'); return w if os.path.exists(w) else os.path.join(SCR, 'fit', f'{fid}_src.blend')
+
+
+def rest_mode():
+    return E2E.get('rest', {}).get('mode', 'tpose') if SET == 'e2e' else D['rest'].get('mode', 'tpose')
+
+
+
+def armpit_merge(V, W, names):
+    """e2e.json armpit: spatial weight averaging inside the armpit band only."""
+    if not (SET == 'e2e' and 'armpit' in E2E): return W, 0
+    A = E2E['armpit']; ix = {n: i for i, n in enumerate(names)}
+    armw = W[:, ix['LeftArm']] + W[:, ix['RightArm']]; torw = sum(W[:, ix[n]] for n in ('Spine1', 'Spine2', 'LeftShoulder', 'RightShoulder'))
+    band = (armw > A['band'][0]) & (armw < A['band'][1]) & (torw > A['torsoMin'])
+    from mathutils.kdtree import KDTree
+    kd = KDTree(len(V))
+    for i, v in enumerate(V): kd.insert(Vector(v), i)
+    kd.balance(); W2 = W.copy()
+    for i in np.nonzero(band)[0]:
+        nb = [j for (_, j, _) in kd.find_range(Vector(V[i]), A['mergeM'])]; W2[i] = W[nb].mean(0)
+    s = W2.sum(1, keepdims=True); s[s == 0] = 1; return W2 / s, int(band.sum())

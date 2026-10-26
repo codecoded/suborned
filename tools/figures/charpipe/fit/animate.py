@@ -89,11 +89,13 @@ def retarget(fig, clip):
     def depth(b): return 0 if b.parent is None else 1 + depth(b.parent)
     order = [b.name for b in sorted(fb, key=depth) if b.name in clip.map]
     fr = {n: FW @ fb[n].matrix_local for n in order}; fa = {n: fb[n].matrix_local for n in order}
+    zero = json.loads(arm['fit_zero']) if 'fit_zero' in arm else None        # the Humanoid zero when the rest is the source pose (e2e)
+    fz = {n: (FW @ Matrix(zero[n])) if zero and n in zero else fr[n] for n in order}
     ratio = fr['Hips'].translation.z / max(clip.rest['Hips'].translation.z, 1e-6)
     pose = {}
     for n in order:
         cp = clip.world(n); D3 = cp.to_3x3() @ clip.rest[n].to_3x3().inverted()
-        rot_a = FWi.to_3x3() @ (D3 @ fr[n].to_3x3()); par = fb[n].parent
+        rot_a = FWi.to_3x3() @ (D3 @ fz[n].to_3x3()); par = fb[n].parent
         if par is None or par.name not in pose:
             dw = cp.translation - clip.rest[n].translation; head_a = FWi @ (fr[n].translation + dw * ratio)
             M = Matrix.Translation(head_a) @ rot_a.to_4x4(); basis = fa[n].inverted() @ M
@@ -178,7 +180,14 @@ class Meter:
             for o in objs:
                 if role == 'donor' and not SPEC.get('metrics', True): continue
                 T, E = tri_data(o); V = co(o); dom, names, W = dom_bone(o, T)
-                self.parts[o.name] = {'role': role, 'o': o, 'T': T, 'E': E, 'V0': V, 'L0': np.linalg.norm(V[E[:, 0]] - V[E[:, 1]], axis=1),
+                ix = {n: i for i, n in enumerate(names)}
+                armw = np.zeros(len(V)); torw = np.zeros(len(V))
+                for n in ('LeftArm', 'RightArm'):
+                    if n in ix: armw = armw + W[:, ix[n]]
+                for n in ('Spine1', 'Spine2', 'LeftShoulder', 'RightShoulder'):
+                    if n in ix: torw = torw + W[:, ix[n]]
+                pit = (armw > 0.1) & (armw < 0.9) & (torw > 0.1)
+                self.parts[o.name] = {'pitE': pit[E].all(1), 'pitT': pit[T].all(1),'role': role, 'o': o, 'T': T, 'E': E, 'V0': V, 'L0': np.linalg.norm(V[E[:, 0]] - V[E[:, 1]], axis=1),
                                       'A0': areas(V, T), 'N0': tnormals(V, T), 'dom': dom, 'kind': o.get('fit_kind', role)}
         self.setup_cover()
 
@@ -238,7 +247,7 @@ class Meter:
         out = {}
         Vt = {n: co(p['o']) for n, p in self.parts.items()}
         worst = []
-        st_p99 = cp_p99 = st_max = cp_max = 0.0; flips = 0; amin = 9; amax = 0
+        st_p99 = cp_p99 = st_max = cp_max = 0.0; flips = 0; amin = 9; amax = 0; pit_st = pit_cp = 0.0; pit_fl = 0; pit_n = 0
         for n, p in self.parts.items():
             if p['role'] in ('donor',): continue
             V = Vt[n]; Lr = np.linalg.norm(V[p['E'][:, 0]] - V[p['E'][:, 1]], axis=1) / np.maximum(p['L0'], 1e-9)
@@ -257,6 +266,11 @@ class Meter:
                     pb = self.fig.arm.pose.bones[b]; M = (pb.matrix @ self.fig.arm.data.bones[b].matrix_local.inverted()).to_3x3(); R[b] = np.array(M)
             Nr = np.array([R.get(b, np.eye(3)) @ nn for b, nn in zip(p['dom'], p['N0'])])
             fl = ((Nn * Nr).sum(1) < -0.2) & big; flips += int(fl.sum())
+            if p['role'] in ('body', 'suit'):
+                pe = p['pitE'] & ok
+                if pe.any():
+                    pit_st = max(pit_st, float(np.percentile(Lr[pe], 99) - 1)); pit_cp = max(pit_cp, float(1 - np.percentile(Lr[pe], 1)))
+                pit_fl += int((fl & p['pitT']).sum()); pit_n = max(pit_n, int(pe.sum()))
             if big.any():
                 amin = min(amin, float(A[big].min())); amax = max(amax, float(A[big].max()))
                 for fi in np.argsort(A[big])[:3]:
@@ -264,7 +278,7 @@ class Meter:
                 for fi in np.argsort(-A[big])[:2]:
                     idx = np.nonzero(big)[0][fi]; worst.append((float(A[idx]), n, int(idx), str(p['dom'][idx])))
         out.update({'stretchP99': st_p99, 'compressP99': cp_p99, 'stretchMax': st_max, 'compressMax': cp_max, 'triAreaMin': amin, 'triAreaMax': amax, 'flipped': flips,
-                    'worst': sorted(worst, key=lambda w: min(w[0], 1 / max(w[0], 1e-9)))[:5]})
+                    'armpitStretchP99': pit_st, 'armpitCompressP99': pit_cp, 'armpitFlipped': pit_fl, 'armpitEdges': pit_n, 'worst': sorted(worst, key=lambda w: min(w[0], 1 / max(w[0], 1e-9)))[:5]})
         # interpenetration
         pen = {}
         for c in self.cover:
@@ -374,7 +388,7 @@ def main():
                     if p.get('hem') is not None and len(p['hem']): pass
                 per[f.label].append(r)
             if SPEC.get('close', True):
-                k = frames.index(fr); a = math.radians(-20 + RD['close']['orbitDeg'] * (ci + k / max(1, len(frames) - 1)) / max(1, len(clips)) * 1.0)
+                k = frames.index(fr); a = math.radians(RD['close']['orbitFromDeg'] + RD['close']['orbitDeg'] * (ci + k / max(1, len(frames) - 1)) / max(1, len(clips)))
                 eye = (centre + dist * math.sin(a), -dist * math.cos(a), RD['close']['heightM'])
                 look.look_at(cam, eye, (centre, 0, 0.9)); cam.data.type = 'PERSP'; cam.data.sensor_fit = 'VERTICAL'; cam.data.angle_y = math.radians(RD['close']['fovDeg'])
                 sc.render.resolution_x = int(RD['close']['w'] * (1 if len(figs) == 1 else 0.62 * len(figs)))
@@ -394,7 +408,7 @@ def main():
         for cname, rows in res[f.label].items():
             if not rows: continue
             agg = {}
-            for k in ('stretchP99', 'compressP99', 'stretchMax', 'compressMax', 'triAreaMax', 'flipped', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs'):
+            for k in ('stretchP99', 'compressP99', 'stretchMax', 'compressMax', 'triAreaMax', 'flipped', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'armpitStretchP99', 'armpitCompressP99', 'armpitFlipped'):
                 v = [r[k] for r in rows]; i = int(np.argmax(v)); agg[k] = {'max': round(float(v[i]), 3), 'frame': rows[i]['frame']}
             v = [r['triAreaMin'] for r in rows]; i = int(np.argmin(v)); agg['triAreaMin'] = {'min': round(float(v[i]), 3), 'frame': rows[i]['frame']}
             kinds = sorted(set(k for r in rows for k in r['penetrationPct']))

@@ -33,6 +33,25 @@ The record of the proof so far: what was tried, what was measured, what Sky deci
 ## The direction now: generate → fit (the hybrid)
 Concept-led Codex still (the intake prompt, mannequin pose reference, plus the commuters style board) → image-to-3D, textured, not rigged → fit the MPFB base inside it (sliders, then joints) → A by default: the generated mesh keeps its look, takes the base skeleton and weights, and every unmatched shell takes its nearest body weights → G's pieces for what must vary (hats and hair, attachment points, skirts that must fit several bodies) → the standard rest with neutral legs → the shared neutral clip avatar → role rules and seed by id → LOD'd FBX and manifest rows.
 
+## End-to-end test (2026-10-27)
+Four intake stills (coat, dress, guard, Sky's flamingo commuter) became meshes with Hunyuan3D 3.1 Pro on Runware: $2.70 in total, within the $5.40 pass (ledger `paid/069-e2e/`). Sky's pick for future meshes is Tripo 3.1. The meshes were fitted by the hybrid. The static check (raw mesh beside the fitted figure; `out/scratch/forma/char-pipeline/e2e/models.png`, `shoulders.png`) now matches. Evidence: `e2e/`.
+- **Our processing introduced three defects, and Forma fixed them:**
+  - Specks: a step that deleted small loose pieces was removing real surface, because the meshes are hundreds of pieces. That step is now off.
+  - The shoulder crease: sleeve and body took different weights. Weights near the armpit are now averaged over everything within 1.5 cm. The rest is now the A-pose the figure was generated in, and the T-pose avatar is a separate skeleton-only FBX.
+  - A stray strap: props now go in their own FBX.
+- **Determinism:** 31/31 deliverables are byte-identical. The `.blend` working files aren't deterministic (Blender's internal order) and moved to `work/`. Tangents are no longer exported, keys are sorted, and FBX paths are bare.
+- **The intake pose helps** (`e2e/old_vs_new.json`, medians, old fit-test meshes → intake-pose meshes):
+
+  | | old | new |
+  |---|---|---|
+  | hem self-intersections | 166 | 4.5 |
+  | arm–torso intersections | 364 | 120 |
+  | flipped triangles per clip | 203 | 138 |
+  | armpit stretch p99 | 2.46 | 1.98 |
+
+- **Hats:** the guard's cap cut cleanly into a separate rigid piece. The flamingo's pillbox shares shells with the hair, so it stays welded.
+- **Open:** LOD0 is the full generated mesh (47–50k faces, about 4× today's 12k), and the reduction level is Sky's call with Redline's numbers. Arms raised to horizontal still leave a mild fold at the shoulder. Clips, metrics and Unity takes wait for Sky's OK on the static check.
+
 ## Where the rest is (on disk, not in git)
 - Round 1 proof: `out/scratch/forma/char-pipeline/proof.html`; sign-off sheet: `signoff/signoff.html`.
 - Unity frames and videos: `out/scratch/latch/char-pipeline/frames/` (incl. `video/leftfoot_unity*.mp4`, `bowleg_unity*.mp4`); the scratch Unity project at `out/scratch/latch/char-pipeline/unity/`.

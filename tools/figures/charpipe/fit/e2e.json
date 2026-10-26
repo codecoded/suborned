@@ -1,0 +1,112 @@
+{
+ "schema": "suborned.charpipe.e2e/1",
+ "brief": "069 end-to-end (Sky, 2026-10-27: 'yes'): four intake stills -> Hunyuan 3D 3.1 Pro -> the hybrid fit -> clips, measures, Latch's hand-off",
+ "out": "out/scratch/forma/char-pipeline/e2e",
+ "job": "069-e2e",
+ "pass": "meshes",
+ "budgetUsd": 5.4,
+ "note": "Sky's OK 2026-10-27 covers this budget only; at most one retry per mesh, for a clear failure",
+ "model": {
+  "id": "tencent:hunyuan-3d@3.1-pro",
+  "settings": {
+   "generateType": "Normal",
+   "pbr": false,
+   "faceCount": 50000
+  },
+  "estUsd": 0.825,
+  "viewOrder": [
+   "front",
+   "left",
+   "right",
+   "back"
+  ],
+  "note": "Runware's page (https://runware.ai/docs/models/tencent-hunyuan-3d-3-1-pro): image-to-3d $0.525 textured, $0.825 with PBR; the game's figures are matte, so no PBR. The estimate is held at the PBR price, so the budget stop is conservative if multi-view costs more. faceCount 50000 as today's D-cast (PROVENANCE.json)."
+ },
+ "crop": {
+  "marginPx": 24,
+  "sizePx": 1024
+ },
+ "people": [
+  {
+   "id": "e2e_coat",
+   "sheet": "paid/069-intake/codex/r2_t2_commuter_coat.png",
+   "sex": "m",
+   "category": "coat",
+   "wears": [
+    "coat"
+   ],
+   "label": "commuter, man, belted tunic coat",
+   "today": "c6",
+   "src": "paid/069-e2e/meshes/e2e_coat__hy31pro_mv_t1.glb"
+  },
+  {
+   "id": "e2e_dress",
+   "sheet": "paid/069-intake/codex/r2_t1_commuter_skirt.png",
+   "sex": "f",
+   "category": "skirt",
+   "wears": [
+    "skirt"
+   ],
+   "label": "commuter, woman, shift dress",
+   "today": "cafe_w5",
+   "src": "paid/069-e2e/meshes/e2e_dress__hy31pro_mv_t1.glb"
+  },
+  {
+   "id": "e2e_guard",
+   "sheet": "paid/069-intake/codex/r2_t3_guard.png",
+   "sex": "f",
+   "category": "hat",
+   "wears": [
+    "hat"
+   ],
+   "label": "guard, woman, peaked cap, bun",
+   "today": "guard",
+   "src": "paid/069-e2e/meshes/e2e_guard__hy31pro_mv_t1.glb"
+  },
+  {
+   "id": "e2e_flamingo",
+   "sheet": "paid/069-intake/codex/sky1_flamingo_pose_board.png",
+   "sex": "f",
+   "category": "hat",
+   "wears": [
+    "coat",
+    "hat"
+   ],
+   "label": "Sky's art-bible commuter, woman, flamingo coat, pillbox",
+   "today": "d6",
+   "src": "paid/069-e2e/meshes/e2e_flamingo__hy31pro_mv_t1.glb"
+  }
+ ],
+ "hat": {
+  "note": "the hybrid's hat, cut by whole shells: image-to-3D meshes are hundreds of separate shells, and a hat is usually its own shells sitting on the hair. A shell is the hat's when at least shellShare of its faces are hat-labelled; the cut takes those whole shells. Clean = they hold at least minOwnShells of the hat-labelled faces (most of the hat is its own shells, so no surface is cut) and the hat-labelled faces left in shared shells have their cut rim under the hat (inside its horizontal outline grown by rimM, below its top). Not clean: the hat stays welded in the A mesh, rigid on Head.",
+  "shellShare": 0.6,
+  "minOwnShells": 0.8,
+  "rimM": 0.01
+ },
+ "props": true,
+ "rest": {
+  "mode": "source",
+  "note": "Sky via Aster, 2026-10-27: the rest is the pose the person was generated in (the intake A-pose), not a T-pose: the mesh is never re-posed at rest, so it matches the raw mesh exactly. The Humanoid reference (the reference T-pose with Latch's neutral legs) is not baked into the mesh: it is a separate armature-only FBX (<id>_H_avatarT.fbx) for Unity's avatar (Copy From Other Avatar), and the same zero is stored on the armature (fit_zero) for the Blender retarget."
+ },
+ "deliverables": {
+  "note": "What the determinism check compares byte for byte: everything a later stage or Unity reads (basis, fit, a: FBX, JSON, labels, textures). Found and fixed on the way: the FBX tangent space (MikkTSpace binormals differ run to run on these meshes: not exported, Unity recomputes); dict order from Python sets in the stats (keys sorted); wall-clock timings (moved to work/); the FBX header's ApplicationNativeFile and the texture FileName/RelativeFilename/Path (absolute paths: written as bare names, so the same build gives the same bytes in any folder). The .blend files are working files under work/: Blender writes pointer-keyed lists in an order that varies between processes even with a fixed Python hash seed (measured), so they are never a deliverable.",
+  "dirs": [
+   "basis",
+   "fit",
+   "a"
+  ]
+ },
+ "lod0": {
+  "mode": "source",
+  "note": "GDD \u00a701 house rule: models ship at full detail, no decimation without Sky's sign-off. LOD0 is the generated mesh as delivered (50k faces, its own normals, valid because the rest is the source pose); LOD1 and LOD2 (4.5k, 1.5k) are decimated from it as today's figures' LOD chain does. The fit test decimated LOD0 to 12k and cleared the normals: that is what made the faces facet."
+ },
+ "armpit": {
+  "mergeM": 0.015,
+  "band": [
+   0.05,
+   0.95
+  ],
+  "torsoMin": 0.05,
+  "note": "in the armpit band (upper-arm weight within band, at least torsoMin on Spine1, Spine2 or a shoulder) weights are averaged over every vertex within mergeM in space, so the sleeve shell and the body shell (separate shells in image-to-3D meshes) move as one: an arm raised to horizontal opened a slit between them (e2e_coat) and crumpled the sleeve (e2e_guard)."
+ }
+}

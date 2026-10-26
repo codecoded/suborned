@@ -1,3 +1,4 @@
 #!/bin/sh
-R=/Users/sky/Projects/suborned; S=$R/out/scratch/forma/char-pipeline/fit-test
-$R/out/scratch/forma/char-pipeline/blender.sh -P $R/tools/figures/charpipe/fit/animate.py -- "$1" > $S/logs/anim_$(basename "$1" .json).log 2>&1
+# one animate spec; its log goes to the spec folder's sibling logs/
+R=/Users/sky/Projects/suborned; D=$(dirname $(dirname "$1"))
+$R/out/scratch/forma/char-pipeline/blender.sh -P $R/tools/figures/charpipe/fit/animate.py -- "$1" > $D/logs/anim_$(basename "$1" .json).log 2>&1

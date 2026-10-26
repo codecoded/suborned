@@ -146,11 +146,13 @@ def main():
                'params': {p[0]: round(float(x[i]), 5) for i, p in enumerate(PARAMS)}, 'macros': {m: round(float(x[PI[m]]), 4) for m in body.macros},
                'aims': {k: [round(float(c), 6) for c in v] for k, v in aims.items()}, 'pre': {k: v.tolist() for k, v in pre.items()},
                'quality': parts, 'srcTris': int(len(Tm)), 'seconds': {'import': round(t_imp, 2), 'sdf': round(t_sdf, 2), 'search': round(time.time() - t0 - t_imp - t_sdf, 2)}}
-        json.dump(out, open(os.path.join(OUT, f'{fid}.fit.json'), 'w'), indent=1)
+        if L.SET == 'e2e':      # wall-clock timings are not deliverables: they go to work/, so the fit file is byte-identical run to run
+            json.dump(out.pop('seconds'), open(L.work(f'{fid}.fit.seconds.json'), 'w'), indent=1)
+        json.dump(out, open(os.path.join(OUT, f'{fid}.fit.json'), 'w'), indent=1, sort_keys=True)
         # the posed proxy as a check mesh next to the source
         L.mesh_obj(f'{fid}_fitproxy', Vp, body.tris)
-        bpy.ops.wm.save_as_mainfile(filepath=os.path.join(OUT, f'{fid}_src.blend'), compress=True)
-        L.log('DONE', fid, sex, out['macros'], parts, out['seconds'])
+        bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_src.blend'), compress=True)
+        L.log('DONE', fid, sex, out['macros'], parts)
 
 
 main()

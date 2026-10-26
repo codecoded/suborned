@@ -127,10 +127,10 @@ def tuck(pieces, suit):
 
 def main_cut():
     fit = json.load(open(os.path.join(L.SCR, 'fit', f'{FID}.fit.json'))); row = {r['id']: r for r in L.D['inputs']}[FID]
-    bpy.ops.wm.open_mainfile(filepath=os.path.join(L.SCR, 'fit', f'{FID}_src.blend'))
+    bpy.ops.wm.open_mainfile(filepath=L.src_blend(FID))
     for o in list(bpy.data.objects):
         if o.name.endswith('_fitproxy'): bpy.data.objects.remove(o, do_unlink=True)
-    src = bpy.data.objects[f'{FID}_src']; img = L.base_color_image(src); L.flat_material(src, img)
+    src = bpy.data.objects[f'{FID}_src']; img = L.base_color_image(src); L.clean_normals(src); L.flat_material(src, img)
     L.addon_utils.enable('bl_ext.user_default.mpfb', default_set=True, persistent=False)
     arm, b, px, donor = L.fitted_human(fit); TM.lap('body')
     lm = L.landmarks(arm, donor['V'])
@@ -254,21 +254,7 @@ def hat_rule(hat, head_old, head_new):
     return {'kx': round(kx, 3), 'ky': round(ky, 3), 'kz': round(kz, 3)}
 
 
-def hair_under_hat(hat, objs, centre, brow):
-    """any vertex of the head pieces above the brow that lies at or beyond the hat's inner wall (seen from the head's centre) is pulled inside it."""
-    Vh = np.array([list(v.co) for v in hat.data.vertices]); Th = L.tris_of(hat)
-    bvh = BVHTree.FromPolygons([Vector(v) for v in Vh], [list(t) for t in Th], all_triangles=True)
-    pad = G['hat']['hairPushM']; moved = 0; c = Vector(centre)
-    for o in objs:
-        V = np.array([list(v.co) for v in o.data.vertices]); ch = False
-        for i in np.nonzero(V[:, 2] > brow)[0]:
-            v = Vector(V[i]); d = v - c; r = d.length
-            if r < 1e-6: continue
-            loc, nrm, fi, dist = bvh.ray_cast(c, d.normalized(), r + 0.05)
-            if loc is not None and dist < r + pad:
-                V[i] = list(c + d.normalized() * max(dist - pad, 0.0)); moved += 1; ch = True
-        if ch: L.set_co(o, V)
-    return moved
+def hair_under_hat(hat, objs, centre, brow): return L.hair_under_hat(hat, objs, centre, brow)
 
 
 def cape_chain(arm, cape, n):
@@ -290,54 +276,7 @@ def cape_chain(arm, cape, n):
     L.set_weights(cape, W, names, 4)
 
 
-def props(arm, att, suit):
-    """a cross-body bag (strap from the left shoulder over the chest to a bag at the right hip) and a tray in the left hand; weights from the nearest suit point."""
-    A = L.D['attach']['props']; out = []
-    Vs = L.eval_co(suit); Ts = L.tris_of(suit); names = [g.name for g in suit.vertex_groups]; Ws = L.weights_of(suit, names)
-    sb = BVHTree.FromPolygons([Vector(v) for v in Vs], [list(t) for t in Ts], all_triangles=True)
-    # bag
-    hip = np.array(att['Attach_HipRight']); sx, sy, sz = A['bag']['size']
-    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
-    for v in bm.verts: v.co = Vector((v.co.x * sy, v.co.y * sx, v.co.z * sz))
-    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.015, segments=2, affect='EDGES')
-    me = bpy.data.meshes.new('bag'); bm.to_mesh(me); bm.free(); bag = bpy.data.objects.new('prop_bag', me); bpy.context.scene.collection.objects.link(bag)
-    bag.location = Vector(hip) + Vector((-sy / 2 - 0.02, 0, -0.05)); L.bp.ctx(bag); bpy.ops.object.transform_apply(location=True)
-    # strap: points on the line shoulder -> bag top, each pushed out of the body by 1 cm along the front
-    sh = np.array(att['Attach_ShoulderLeft']); end = hip + np.array([0, 0, sz / 2 - 0.05])
-    pts = []
-    for k in range(13):
-        q = sh + (end - sh) * k / 12; loc, nrm, fi, d = sb.find_nearest(Vector(q))
-        q2 = np.array(loc) + np.array(nrm) * A['bag']['strapOffsetM'] if loc is not None else q
-        if k == 0: q2 = sh + np.array([0, 0, 0.01])
-        pts.append(q2)
-    cu = bpy.data.curves.new('strap', 'CURVE'); cu.dimensions = '3D'; sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
-    for i, q in enumerate(pts): sp.points[i].co = (*q, 1)
-    cu.bevel_depth = 0.008; cu.bevel_resolution = 1
-    so = bpy.data.objects.new('prop_strap', cu); bpy.context.scene.collection.objects.link(so); L.bp.ctx(so); bpy.ops.object.convert(target='MESH'); strap = bpy.context.view_layer.objects.active
-    bpy.ops.object.select_all(action='DESELECT'); bag.select_set(True); strap.select_set(True); bpy.context.view_layer.objects.active = bag; bpy.ops.object.join()
-    # tray: a disc at the left palm, flat across the palm
-    ar = arm.data.bones; Mw = arm.matrix_world
-    h = Mw @ ar['LeftHand'].head_local; m1 = Mw @ ar['LeftHandMiddle1'].head_local; i1 = Mw @ ar['LeftHandIndex1'].head_local; p1 = Mw @ ar['LeftHandPinky1'].head_local
-    nrm = (i1 - h).cross(p1 - h).normalized(); tx, ty, tz = A['tray']['size']
-    bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=True, segments=24, radius1=tx / 2, radius2=tx / 2, depth=tz)
-    me = bpy.data.meshes.new('tray'); bm.to_mesh(me); bm.free(); tray = bpy.data.objects.new('prop_tray', me); bpy.context.scene.collection.objects.link(tray)
-    R = Vector((0, 0, 1)).rotation_difference(nrm).to_matrix().to_4x4(); c = Vector(att['Attach_LeftHand']) - nrm * (tz / 2 + 0.01)
-    tray.matrix_world = Matrix.Translation(c) @ R; L.bp.ctx(tray); bpy.ops.object.transform_apply(location=True, rotation=True)
-    m = L.simple_material('prop_chrome', None, (0.78, 0.78, 0.8, 1), 0.35)
-    for o, rule in ((bag, 'nearest'), (tray, 'LeftHand')):
-        o.data.materials.clear(); o.data.materials.append(m if o is tray else L.simple_material('prop_bag', None, (0.12, 0.35, 0.42, 1), 0.6))
-        V = np.array([list(v.co) for v in o.data.vertices])
-        if rule == 'nearest':
-            W = np.zeros((len(V), len(names)))
-            for i, q in enumerate(V):
-                loc, nr, fi, d = sb.find_nearest(Vector(q)); W[i] = Ws[Ts[fi]].mean(0)
-            # the bag body itself rides the hips only (a rigid box), the strap blends
-            body = V[:, 2] < hip[2] + sz / 2 - 0.04; W[body] = 0; W[body, names.index('Hips')] = 1
-            L.set_weights(o, W, names, 4)
-        else:
-            W = np.zeros((len(V), 1)); W[:, 0] = 1; L.set_weights(o, W, [rule], 1)
-        o.parent = arm; md = o.modifiers.new('Armature', 'ARMATURE'); md.object = arm; L.tag(o, 'prop'); out.append(o)
-    return out
+def props(arm, att, suit): return L.props(arm, att, suit)
 
 
 def variant(vname, macros, bind, fit):
@@ -394,7 +333,7 @@ def variant(vname, macros, bind, fit):
     arm.name = 'Armature'; arm['fit_weight'] = macros.get('weight', 0.5)
     path = os.path.join(OUT, f'{FID}_G_{vname}')
     bpy.ops.wm.save_as_mainfile(filepath=path + '.blend', compress=True)
-    L.bp.export_fbx(path + '.fbx', [arm] + lods, arm)
+    L.export_fbx(path + '.fbx', [arm] + lods, arm)
     info.update({'tris': tri0, 'trisProps': sum(len(L.tris_of(o)) for o in pr), 'pieces': {k: len(L.tris_of(o)) for k, o in objs.items() if not k.endswith('_head')},
                  'materials': len(set(m.name for o in meshes + pr for m in o.data.materials)), 'bones': len([b for b in arm.data.bones if b.use_deform]),
                  'attach': sorted(att), 'seconds': round(time.time() - t0, 2)})

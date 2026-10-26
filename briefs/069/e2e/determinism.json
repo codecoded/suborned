@@ -1,0 +1,164 @@
+{
+ "run1": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/e2e/det_run1",
+ "run2": "/Users/sky/Projects/suborned/out/scratch/forma/char-pipeline/e2e/det1",
+ "files": 31,
+ "same": 31,
+ "different": 0,
+ "rows": [
+  {
+   "file": "a/e2e_coat_H.fbx",
+   "result": "identical",
+   "sha256": "29348dd598c68a56da199eaec0965a13f998d92eeaa0809d58c3c0ae967d246d"
+  },
+  {
+   "file": "a/e2e_coat_H.json",
+   "result": "identical",
+   "sha256": "80cffdbcffc2a87dd0822eec602eb2a536412c05fefecc87235ff434b1a18e88"
+  },
+  {
+   "file": "a/e2e_coat_H_albedo.png",
+   "result": "identical",
+   "sha256": "3d353caea84c545a79e01f8ce88500b997f28e724453e4b5e6ebc39ad649849d"
+  },
+  {
+   "file": "a/e2e_coat_H_avatarT.fbx",
+   "result": "identical",
+   "sha256": "980bc16a25e90c0f5ef33637550a3c7c8d80f018f702d9c324e28e96344afcf9"
+  },
+  {
+   "file": "a/e2e_coat_H_labels.npy",
+   "result": "identical",
+   "sha256": "1063e9a5c4396865e09897c7e158e090a89efca356d32cbe9dea4bdd4dd4d34f"
+  },
+  {
+   "file": "a/e2e_coat_H_props.fbx",
+   "result": "identical",
+   "sha256": "aa19708b6410bba0bd98239ee8df4e9cb278a8d9b0610f834399489ecb8dc89d"
+  },
+  {
+   "file": "a/e2e_dress_H.fbx",
+   "result": "identical",
+   "sha256": "0ac91c99a6fe56ff2dd6ad8b8f967fc67f0ac32cfd141d46ea9550b8a11e9e72"
+  },
+  {
+   "file": "a/e2e_dress_H.json",
+   "result": "identical",
+   "sha256": "511ff8f4b7c6022353d3a49916e54803512ee135e7456a3821ee6f072cf0e9db"
+  },
+  {
+   "file": "a/e2e_dress_H_albedo.png",
+   "result": "identical",
+   "sha256": "5be3667262d266210fc468c21a7eb43a4bac1e63ee589101282828cda8bb7e80"
+  },
+  {
+   "file": "a/e2e_dress_H_avatarT.fbx",
+   "result": "identical",
+   "sha256": "03d23f4223bcbf346b4d0863be5f87b81906ef47ac6a4e3d528ad5fe86d6285f"
+  },
+  {
+   "file": "a/e2e_dress_H_labels.npy",
+   "result": "identical",
+   "sha256": "e1569e18542e1e7859cf0c68fee83bb347fa3819efb3e658be7327b1610f2d57"
+  },
+  {
+   "file": "a/e2e_dress_H_props.fbx",
+   "result": "identical",
+   "sha256": "cce4c05a22e349e36f5ed8e39c5c3242388aeacaadb8bca76dff4aaaba916376"
+  },
+  {
+   "file": "a/e2e_flamingo_H.fbx",
+   "result": "identical",
+   "sha256": "65ee3a8302a62a35c812e7dce68a858ceaca354d91665a4e5262303165f3fc72"
+  },
+  {
+   "file": "a/e2e_flamingo_H.json",
+   "result": "identical",
+   "sha256": "d97683687756ee4936f35f4e6e62ce4d07981eea6cfb2c2833bfbce35ef4559e"
+  },
+  {
+   "file": "a/e2e_flamingo_H_albedo.png",
+   "result": "identical",
+   "sha256": "46dbdf4e3914481871c2a5d54ec073f15cd89757747225d0b1a557f85f0eeb43"
+  },
+  {
+   "file": "a/e2e_flamingo_H_avatarT.fbx",
+   "result": "identical",
+   "sha256": "005c9b19d815ae45c14995fe782f0adf16592dca79d24a10afec0f5de24b21b7"
+  },
+  {
+   "file": "a/e2e_flamingo_H_labels.npy",
+   "result": "identical",
+   "sha256": "7ff78ec5ba7e4b0b1e8439a70b7aad2e5bede64568d833f0869270803d748059"
+  },
+  {
+   "file": "a/e2e_flamingo_H_props.fbx",
+   "result": "identical",
+   "sha256": "e811ce82b5aeee63d681897f73439bd848c2b457000f18b247259493c44eb692"
+  },
+  {
+   "file": "a/e2e_guard_H.fbx",
+   "result": "identical",
+   "sha256": "5e9dcd174141c05f0000d48704b20caaefa285c8721308e5baeb27761fee71f7"
+  },
+  {
+   "file": "a/e2e_guard_H.json",
+   "result": "identical",
+   "sha256": "db6d7caf11d1ced7656e0b4c61a84017a205d66e236eee13d4d92454d6c4eae3"
+  },
+  {
+   "file": "a/e2e_guard_H_albedo.png",
+   "result": "identical",
+   "sha256": "51d99cc060dca1af12bf621044d4c88a67ac1cc4d6f97a97858864a8138d0bd8"
+  },
+  {
+   "file": "a/e2e_guard_H_avatarT.fbx",
+   "result": "identical",
+   "sha256": "a694f8fdc87511e52ad86daa23df6d3f0a4f394785f911513d44fe08efacb2af"
+  },
+  {
+   "file": "a/e2e_guard_H_labels.npy",
+   "result": "identical",
+   "sha256": "dfa1966a8ca2d22a245101e07f8cda07440e0486f8a496066af45599a9bb763a"
+  },
+  {
+   "file": "a/e2e_guard_H_props.fbx",
+   "result": "identical",
+   "sha256": "637d9f471e4a8b0126beaec53fc485ac9747bc6ce65ac83510dbe46f47378bf7"
+  },
+  {
+   "file": "a/textures.json",
+   "result": "identical",
+   "sha256": "2bd205aa37243f56989bef556e623046152fd4778ad34ee33dd8b1040ce58069"
+  },
+  {
+   "file": "basis/basis_f.npz",
+   "result": "identical",
+   "sha256": "108fb8f4218177366b221b0b5113a687366f4b21a04b1dc872ce2fc207039539"
+  },
+  {
+   "file": "basis/basis_m.npz",
+   "result": "identical",
+   "sha256": "5433438b5228f131593368aaa10fe17404f0017870a7acb65a6067c561b4263a"
+  },
+  {
+   "file": "fit/e2e_coat.fit.json",
+   "result": "identical",
+   "sha256": "5fb0996ca38ff4af492b1c62afd3e3eb1f2e497bb0441051191fbbca45dc7566"
+  },
+  {
+   "file": "fit/e2e_dress.fit.json",
+   "result": "identical",
+   "sha256": "cc8dad876bad1413e0006f0afad6a014b878f1898edf3511139f08b673c0ae7b"
+  },
+  {
+   "file": "fit/e2e_flamingo.fit.json",
+   "result": "identical",
+   "sha256": "645cb44d769adae2020f5728bb3d5dc3f94176c3e2da1c1a65df7a6348023666"
+  },
+  {
+   "file": "fit/e2e_guard.fit.json",
+   "result": "identical",
+   "sha256": "8626390a867e1282663bb6ed9ebea509ed8b506e2b268c9e428a40fb4a07c3ed"
+  }
+ ]
+}

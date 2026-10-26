@@ -140,7 +140,7 @@
   }
  },
  "transfer": {
-  "note": "A's weights: Abdrashitov et al. 2023 (robust skin weights transfer via weight inpainting). A target vertex takes the donor body's weights at its closest surface point when it lies within maxDistFrac x height and its normal is within maxNormalDeg of the body's (or flipped, for inner faces); the rest are inpainted by minimising the Dirichlet energy over the target mesh (Laplacian, numpy CG), then smoothed smoothIters times on the inpainted set only. Loose rules then overwrite by region. Two additions the paper does not need (it assumes one connected mesh): vertices whose connected part has no confident match end the inpainting with no weights (they would stay behind in the world while the body moves: A's flying shards), so they take the closest-point weights; and source islands under crumbPct % of the vertices (generation specks) are deleted first. Image-to-3D meshes are hundreds of separate shells (c1: 804 after decimation), so the cut is kept tiny: at 0.5 % it deleted half of c1.",
+  "note": "A's weights: Abdrashitov et al. 2023 (robust skin weights transfer via weight inpainting). A target vertex takes the donor body's weights at its closest surface point when it lies within maxDistFrac x height and its normal is within maxNormalDeg of the body's (or flipped, for inner faces); the rest are inpainted by minimising the Dirichlet energy over the target mesh (Laplacian, numpy CG), then smoothed smoothIters times on the inpainted set only. Loose rules then overwrite by region. Two additions the paper does not need (it assumes one connected mesh): vertices whose connected part has no confident match end the inpainting with no weights (they would stay behind in the world while the body moves: A's flying shards), so they take the closest-point weights; and nothing is deleted (crumbPct 0): image-to-3D meshes are hundreds of separate shells, and after decimation even the tiny ones are pieces of the visible surface. At 0.5 % the speck cut deleted half of c1; at 0.05 % it opened holes all over the end-to-end flamingo coat (found 2026-10-27).",
   "maxDistFrac": 0.03,
   "maxNormalDeg": 35.0,
   "smoothIters": 6,
@@ -192,7 +192,7 @@
     ]
    }
   },
-  "crumbPct": 0.05
+  "crumbPct": 0.0
  },
  "rest": {
   "note": "The standard rest: CharPipe/Clips/reference_tpose.json (the clips' own Mixamo T-pose directions), with Latch's neutral legs written by construction: UpLeg and Leg straight down, Foot->ToeBase along the hips' facing at the body's own flat-foot pitch, toe level.",
@@ -304,14 +304,14 @@
    },
    "Attach_ShoulderLeft": {
     "parent": "LeftShoulder",
-    "rule": "top of the left shoulder, half way out"
+    "rule": "top of the left shoulder, half way out, searched below the neck base + 2 cm (bug found in the end-to-end test: without the cap the search reached the head and put the strap's anchor above it)"
    }
   },
   "props": {
    "bag": {
     "at": "Attach_ShoulderLeft",
     "hangTo": "Attach_HipRight",
-    "note": "a shoulder bag: strap from the left shoulder, bag at the right hip (cross-body)",
+    "note": "a shoulder bag: strap from the left shoulder, bag at the right hip (cross-body) The strap runs outside the body's outermost surface, found by a ray from the spine axis (nearest-point normals of image-to-3D meshes point into inner shells: 60-90 pairs at rest).",
     "size": [
      0.26,
      0.08,
@@ -330,12 +330,13 @@
    },
    "tray": {
     "at": "Attach_LeftHand",
-    "note": "a held tray, flat, palm up in the carry pose; in the clips the hand moves and the tray goes with it",
+    "note": "a held tray, flat, palm up in the carry pose; in the clips the hand moves and the tray goes with it Placed past the hand's measured depth on the palm side + clearM (the fit test's fixed 1 cm gap cut the fingers: 180 pairs at rest).",
     "size": [
      0.36,
      0.36,
      0.02
-    ]
+    ],
+    "clearM": 0.004
    }
   }
  },
@@ -371,7 +372,10 @@
   "hemSelfPairs": 20,
   "armTorsoPairs": 30,
   "thighPairs": 30,
-  "propBodyPairs": 10
+  "propBodyPairs": 10,
+  "armpit": {
+   "note": "the armpit band: vertices with an upper-arm weight between 0.1 and 0.9 and at least 0.1 on Spine1, Spine2 or a shoulder; edges with both ends in the band. Reported as their own stretch p99 and flips, so the T-pose-to-arms-down stretch is read where it happens."
+  }
  },
  "render": {
   "close": {
@@ -380,7 +384,9 @@
    "fovDeg": 35,
    "distM": 3.4,
    "heightM": 1.35,
-   "orbitDeg": 120
+   "orbitDeg": 100,
+   "orbitFromDeg": -50,
+   "note": "the camera orbits from orbitFromDeg through orbitDeg over the whole run, so figures standing side by side never line up along the view (the fit test orbited -20 to 100 deg: in the last clip, carried, the camera looked down the row and G hid A; A was posed and measured all along)"
   },
   "play": {
    "pitchDeg": 38,
