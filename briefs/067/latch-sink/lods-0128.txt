@@ -1,0 +1,8 @@
+sink lods: fixer lods idle@0.25: fixer_LOD0=+0.002 fixer_LOD1=+0.002 fixer_LOD2=+0.000
+sink lods: tech lods idle@0.25: tech_LOD0=-0.001 tech_LOD1=+0.000 tech_LOD2=+0.001
+sink lods: scout lods idle@0.25: scout_LOD0=+0.000 scout_LOD1=+0.000 scout_LOD2=+0.000
+sink lods: enforcer lods idle@0.25: enforcer_LOD0=-0.005 enforcer_LOD1=-0.004 enforcer_LOD2=-0.006
+sink lods: inez lods idle@0.25: waitress_LOD0=+0.004 waitress_LOD1=+0.004 waitress_LOD2=+0.007
+sink lods: guard lods idle@0.25: guard_LOD0=-0.001 guard_LOD1=+0.000 guard_LOD2=-0.004
+sink lods: crowd1:c6 lods idle@0.25: c6_LOD0=-0.971 c6_LOD1=-0.971
+sink lods: crowd2:workers_d5 lods idle@0.25: workers_d5_LOD0=-0.001 workers_d5_LOD1=+0.001

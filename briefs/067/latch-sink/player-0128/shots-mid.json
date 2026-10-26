@@ -1,0 +1,261 @@
+{
+ "schema": "suborned.shots/1",
+ "note": "brief 067 sink probe (Latch): runtime frames of standing figures at ground level",
+ "defaults": {
+  "hud": false
+ },
+ "shots": [
+  {
+   "name": "rt-follow-enforcer-s150",
+   "tick": 150,
+   "view": "follow",
+   "agent": "enforcer",
+   "face": "op/fixer",
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-tech-s150",
+   "tick": 150,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-scout-s150",
+   "tick": 150,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-fixer-s150",
+   "tick": 150,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-enforcer-s150",
+   "tick": 150,
+   "pose": {
+    "view": "op/enforcer",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-follow-enforcer-s400",
+   "tick": 400,
+   "view": "follow",
+   "agent": "enforcer",
+   "face": "op/fixer",
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-tech-s400",
+   "tick": 400,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-scout-s400",
+   "tick": 400,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-fixer-s400",
+   "tick": 400,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-enforcer-s400",
+   "tick": 400,
+   "pose": {
+    "view": "op/enforcer",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-follow-enforcer-s700",
+   "tick": 700,
+   "view": "follow",
+   "agent": "enforcer",
+   "face": "op/fixer",
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-tech-s700",
+   "tick": 700,
+   "pose": {
+    "view": "op/tech",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-scout-s700",
+   "tick": 700,
+   "pose": {
+    "view": "op/scout",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-fixer-s700",
+   "tick": 700,
+   "pose": {
+    "view": "op/fixer",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  },
+  {
+   "name": "rt-feet-enforcer-s700",
+   "tick": 700,
+   "pose": {
+    "view": "op/enforcer",
+    "offset": [
+     1.6,
+     0.25,
+     0.4
+    ],
+    "lookOffset": [
+     0,
+     0.2,
+     0
+    ],
+    "fov": 30
+   },
+   "script": "route-a-board"
+  }
+ ]
+}

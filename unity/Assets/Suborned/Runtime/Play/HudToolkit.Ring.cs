@@ -171,7 +171,7 @@ namespace Suborned.Play
             var l = new List<Rect>();
             foreach (var (b, _, _) in beatEls) if (b != null && Visible(b) && b.worldBound.width > 1) l.Add(b.worldBound);
             foreach (var cd in cards) if (cd?.Root != null && Visible(cd.Root) && cd.Root.worldBound.width > 1) l.Add(cd.Root.worldBound);
-            foreach (var e in new[] { historyKey2, history, beatsBox }) if (e != null && Visible(e) && e.worldBound.width > 1) l.Add(e.worldBound); // after 0.2.126: the history drawer is the feed card the Alt line sat on
+            foreach (var e in new VisualElement[] { historyKey2, history, beatsBox, feedTitle }) if (e != null && Visible(e) && e.worldBound.width > 1) l.Add(e.worldBound); // after 0.2.126: the history drawer is the feed card the Alt line sat on; batch 0.2.128 (Aster): the feed's title line too
             return l;
         }
         /// <summary>The proof reads it: the ring's Alt line now ("" hidden).</summary>

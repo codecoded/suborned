@@ -1,0 +1,74 @@
+rest: scout          sole +0.000 hips 1.009
+rest: tech           sole +0.000 hips 0.960
+rest: enforcer       sole +0.000 hips 0.942
+rest: guard          sole +0.000 hips 0.983
+rest: waitress       sole +0.000 hips 0.945
+rest: c6             sole +0.000 hips 0.946
+rest: d6             sole +0.000 hips 0.946
+rest: c1             sole +0.000 hips 0.946
+rest: d5c            sole +0.000 hips 0.946
+rest: d2m            sole +0.000 hips 0.946
+rest: workers_d5     sole +0.000 hips 0.946
+rest: d4             sole +0.001 hips 0.946
+rest: d4b            sole +0.001 hips 0.946
+rest: el1            sole +0.000 hips 0.946
+rest: sh2            sole +0.001 hips 0.946
+rest: cafe_w2        sole +0.000 hips 0.946
+rest: cafe_w3        sole +0.000 hips 0.946
+rest: cafe_w5        sole +0.001 hips 0.989
+rest: fixer          sole +0.000 hips 0.946
+rest: security       sole +0.000 hips 0.983
+rest: driver         sole +0.000 hips 0.946
+rest: councillor     sole +0.000 hips 0.946
+rest: rival          sole +0.000 hips 0.946
+rest: rival_b        sole +0.000 hips 0.946
+rest: rival_c        sole +0.000 hips 0.946
+rest: rival_d        sole +0.000 hips 0.946
+seq: scout     idle      run                sole +0.000 hips 1.009 state True
+seq: scout     idle      paused-from-start  sole -0.002 hips 1.007 state True
+seq: scout     idle      run-then-pause     sole +0.000 hips 1.009 state True
+seq: scout     idle      paused-then-run    sole +0.000 hips 1.008 state True
+seq: scout     idle_alt  run                sole -0.005 hips 1.006 state True
+seq: scout     idle_alt  paused-from-start  sole -0.005 hips 1.006 state True
+seq: scout     idle_alt  run-then-pause     sole -0.005 hips 1.006 state True
+seq: scout     idle_alt  paused-then-run    sole -0.005 hips 1.006 state True
+seq: fixer     idle      run                sole +0.002 hips 0.947 state True
+seq: fixer     idle      paused-from-start  sole -0.001 hips 0.945 state True
+seq: fixer     idle      run-then-pause     sole +0.001 hips 0.947 state True
+seq: fixer     idle      paused-then-run    sole +0.002 hips 0.947 state True
+seq: fixer     idle_alt  run                sole -0.003 hips 0.945 state True
+seq: fixer     idle_alt  paused-from-start  sole -0.002 hips 0.945 state True
+seq: fixer     idle_alt  run-then-pause     sole -0.003 hips 0.945 state True
+seq: fixer     idle_alt  paused-then-run    sole -0.002 hips 0.945 state True
+seq: tech      idle      run                sole -0.001 hips 0.962 state True
+seq: tech      idle      paused-from-start  sole -0.002 hips 0.960 state True
+seq: tech      idle      run-then-pause     sole -0.001 hips 0.961 state True
+seq: tech      idle      paused-then-run    sole +0.000 hips 0.961 state True
+seq: tech      idle_alt  run                sole -0.009 hips 0.959 state True
+seq: tech      idle_alt  paused-from-start  sole -0.008 hips 0.959 state True
+seq: tech      idle_alt  run-then-pause     sole -0.008 hips 0.959 state True
+seq: tech      idle_alt  paused-then-run    sole -0.008 hips 0.959 state True
+seq: enforcer  idle      run                sole -0.004 hips 0.941 state True
+seq: enforcer  idle      paused-from-start  sole -0.008 hips 0.938 state True
+seq: enforcer  idle      run-then-pause     sole -0.005 hips 0.940 state True
+seq: enforcer  idle      paused-then-run    sole -0.005 hips 0.940 state True
+seq: enforcer  idle_alt  run                sole -0.011 hips 0.937 state True
+seq: enforcer  idle_alt  paused-from-start  sole -0.009 hips 0.937 state True
+seq: enforcer  idle_alt  run-then-pause     sole -0.011 hips 0.937 state True
+seq: enforcer  idle_alt  paused-then-run    sole -0.010 hips 0.937 state True
+seq: waitress  idle      run                sole +0.004 hips 0.946 state True
+seq: waitress  idle      paused-from-start  sole +0.003 hips 0.944 state True
+seq: waitress  idle      run-then-pause     sole +0.004 hips 0.946 state True
+seq: waitress  idle      paused-then-run    sole +0.005 hips 0.946 state True
+seq: waitress  idle_alt  run                sole -0.002 hips 0.944 state True
+seq: waitress  idle_alt  paused-from-start  sole -0.001 hips 0.944 state True
+seq: waitress  idle_alt  run-then-pause     sole -0.002 hips 0.944 state True
+seq: waitress  idle_alt  paused-then-run    sole -0.001 hips 0.944 state True
+seq: guard     idle      run                sole +0.000 hips 0.984 state True
+seq: guard     idle      paused-from-start  sole -0.001 hips 0.982 state True
+seq: guard     idle      run-then-pause     sole -0.001 hips 0.983 state True
+seq: guard     idle      paused-then-run    sole +0.000 hips 0.983 state True
+seq: guard     idle_alt  run                sole -0.010 hips 0.981 state True
+seq: guard     idle_alt  paused-from-start  sole -0.010 hips 0.981 state True
+seq: guard     idle_alt  run-then-pause     sole -0.010 hips 0.981 state True
+seq: guard     idle_alt  paused-then-run    sole -0.009 hips 0.981 state True
