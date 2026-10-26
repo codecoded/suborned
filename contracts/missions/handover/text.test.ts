@@ -14,7 +14,7 @@ import { readTexts, world } from '../../../tools/people/inputs.ts';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, RETIRED_FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, RETIRED_FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, MOVE_VERBS, OUTCOMES, PARKED, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -1898,5 +1898,31 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     const steps = 'unity/Assets/Suborned/Runtime/Play/HostValeSteps.cs';
     if (existsSync(join(root, steps))) expect(read(steps)).toContain('PopKey("door-seen"');
     if (haveSim) expect(simAll().join('\n')).toContain('Note("fire.lapses"');
+  });
+});
+
+describe('engine 0.35.1: the four moves parked, the fight-on line silent', () => {
+  const MOVE_LOCKS = ['move-cooling', 'talk-police', 'talk-none-down', 'talk-not-hurt', 'steam-no-grille'];
+  test('while weapons.moves.on is false, every move word is parked with the reason, and nothing else is', () => {
+    const on = (rb as { weapons: { moves?: { on?: boolean } } }).weapons.moves?.on ?? true;
+    const parkedActions = Object.entries(t.actions).filter(([, a]) => 'parked' in a && a.parked).map(([k]) => k).sort();
+    const parkedLocks = Object.entries(t.locks).filter(([, l]) => l.parked).map(([k]) => k).sort();
+    const parkedLines = t.dialogue.filter((e) => e.parked).map(lineKey).sort();
+    if (on) { expect(parkedActions).toEqual([]); expect(parkedLocks).toEqual([]); expect(parkedLines).toEqual([]); return; }
+    expect(parkedActions).toEqual([...MOVE_VERBS].sort());
+    expect(parkedLocks).toEqual([...MOVE_LOCKS].sort());
+    // a parked lock is one only the moves can return
+    for (const c of MOVE_LOCKS) expect(t.locks[c]!.verbs.every((v) => (MOVE_VERBS as readonly string[]).includes(v)), c).toBe(true);
+    const acks = t.dialogue.filter((e) => e.event === 'ack' && (MOVE_VERBS as readonly string[]).includes(e.verb ?? ''));
+    expect(acks.length).toBe(MOVE_VERBS.length);
+    expect(parkedLines).toEqual(acks.map(lineKey).sort());
+    for (const x of [...parkedActions.map((k) => (t.actions as Record<string, { parked?: string }>)[k]!.parked), ...parkedLocks.map((k) => t.locks[k]!.parked), ...acks.map((e) => e.parked)]) expect(x!.startsWith(PARKED)).toBe(true);
+    expect(t.silentLogs['move.']!.startsWith(PARKED)).toBe(true);
+  });
+  test('the fight-on, fight-off and setting logs are silent by name, and no event speaks them', () => {
+    for (const c of ['fire.free-on', 'fire.free-off', 'fire.free-setting']) expect(t.silentLogs[c], c).toMatch(/^(a|the) [^:]*: silent/);
+    expect(t.silentLogs['fire.free-on']).toMatch(/once per fight/);
+    const spoken = Object.values(t.events).flatMap((e) => e.log ?? []);
+    expect(spoken.filter((c) => c.startsWith('fire.free'))).toEqual([]);
   });
 });
