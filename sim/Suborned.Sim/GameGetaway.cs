@@ -393,7 +393,7 @@ namespace Suborned.Sim
             bool rival = false;
             foreach (var h in Hostiles) if (IsRival(h.Id) && h.Present && Up(h) && AtGetaway(h.Pos(Tick))) rival = true;
             if (!rival) return false;
-            foreach (var op in Ops) if (!op.Down && !op.InCar && !op.Inside && G.Within(op.Pos, Car, actReach)) return false;
+            foreach (var op in Ops) if (Guards(op) && G.Within(op.Pos, Car, actReach)) return false; // engine 0.35.2 (Motive rulings-0.35.1 §2): a drawn op only
             return true;
         }
 

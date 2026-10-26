@@ -118,7 +118,7 @@ namespace Suborned.Sim
             foreach (var op in Ops) { var g = op.Gun; if (g.StandDown >= 0 && g.ShotByTick > g.StandDown) g.StandDown = -1; }
             if (wfShot == Tick)
             {
-                if (wfFrom < 0) { wfFrom = Tick; if (WeaponsFree) Note("fire.free-on", "A fight is on: drawn agents fire on their own."); }
+                if (wfFrom < 0) { wfFrom = Tick; if (WeaponsFree && !FreeOnSaid()) Note("fire.free-on", "A fight is on: drawn agents fire on their own."); } // engine 0.35.2 (Fable, briefs/039/fable-fight-on.md): one line per fight
                 wfLast = Tick; return;
             }
             if (wfFrom < 0) return;
@@ -127,6 +127,14 @@ namespace Suborned.Sim
             wfFrom = -1; wfLast = -1;
             foreach (var op in Ops) op.Gun.StandDown = -1;
             if (WeaponsFree && !FinalFree) Note("fire.free-off", "No contact: the fight is off. Drawn agents hold their fire."); // engine 0.35.1 (Motive's ruling 1): never in the final fight under one input, where drawn agents fight on their own from the spring
+        }
+
+        /// <summary>Engine 0.35.2 (Fable, briefs/039/fable-fight-on.md): the fight-on line was said and no fight-off since, so a lull in the final
+        /// fight (no fire.free-off under one input) doesn't say it again. Read back from the log: no new state to hash or snapshot. Log only.</summary>
+        bool FreeOnSaid()
+        {
+            for (int i = Log.Count - 1; i >= 0; i--) { var c = Log[i].Code; if (c == "fire.free-on") return true; if (c == "fire.free-off") return false; }
+            return false;
         }
 
         /// <summary>Weapons free's state for the checkpoint hash: the setting when it is not the start's, the fight's ticks while one is on.</summary>

@@ -11,6 +11,10 @@
 //      movement (an advance to a point), not a routine: nothing for Pulse's data.
 //  (b) The cell down: the tick the last operative goes down (OpHit), the mission fails cell-down.
 //  (c) Go needs a driver: refused car-no-driver with only the downed aboard (Go, GoQuery).
+// Engine 0.35.2 (Motive briefs/039/motive/rulings-0.35.1.md §2; Sky's yes 2026-10-27): "an operative standing outside the car" in (a) and in
+// RivalReachesVale's "no operative within cell.reach of the car" counts a drawn one only (gun out or drawing, not holstering: Guards). An
+// undrawn agent standing by is no guard, so a cell that never draws beside a held car with Vale aboard loses rivals-reach-vale (0.35.1: the
+// run idled to its close with no outcome). Pressing F answers it: a drawn agent outside sends the walkers back to cover.
 using System;
 using System.Collections.Generic;
 
@@ -23,8 +27,12 @@ namespace Suborned.Sim
         /// <summary>K3 (a), read-only: the rivals walking to the getaway car now because nobody of the cell stands outside it (ids, sorted).</summary>
         public IReadOnlyCollection<string> RivalsForCar => forCar;
 
-        /// <summary>K3 (a): nobody of the cell stands outside the getaway car, held (a holder stands), with Vale in it, in the safe fight still on.</summary>
-        bool CarUnguarded() => !Range && FightBranch == "safe" && FightOverTick == INF && Vale == ValeAt.Car && !Array.Exists(Ops, o => !o.Down && !o.InCar && !o.Inside) && CarHeld();
+        /// <summary>Engine 0.35.2 (Motive rulings-0.35.1 §2): an operative who guards the car: up, on the street outside it, and drawn (gun out
+        /// or drawing; a gun being holstered doesn't guard). An undrawn agent standing by is no guard.</summary>
+        static bool Guards(Op o) => !o.Down && !o.InCar && !o.Inside && o.Gun.Drawn && o.Gun.HolsterAt < 0;
+
+        /// <summary>K3 (a): no drawn operative stands outside the getaway car, held (a holder stands), with Vale in it, in the safe fight still on.</summary>
+        bool CarUnguarded() => !Range && FightBranch == "safe" && FightOverTick == INF && Vale == ValeAt.Car && !Array.Exists(Ops, Guards) && CarHeld();
 
         /// <summary>K3 (a), once a tick as it starts: the rivals go for the unguarded car, or back to cover once it is guarded again.</summary>
         void UnguardedStep()
@@ -33,12 +41,12 @@ namespace Suborned.Sim
             if (!CarUnguarded())
             {
                 if (forCar.Count == 0) return;
-                bool outside = Array.Exists(Ops, o => !o.Down && !o.InCar && !o.Inside);
+                bool outside = Array.Exists(Ops, Guards);
                 foreach (var id in forCar)
                 {
                     var h = HostileOf(id); if (h == null || !Up(h) || !h.Present) continue; // the fight over: the walkers are down or broken
                     h.Gun.St = "advance"; Advance(h); // as an advancing rival: the cover the data give with the Enforcer (or the car) as its foe, else its stop point
-                    Note("rivals.back-to-cover", outside ? $"{h.Id} sees the cell outside the car again and goes back to cover." : $"{h.Id} sees the car is no longer held and goes back to cover.");
+                    Note("rivals.back-to-cover", outside ? $"{h.Id} sees the cell drawn outside the car again and goes back to cover." : $"{h.Id} sees the car is no longer held and goes back to cover.");
                 }
                 forCar.Clear();
                 return;
@@ -50,7 +58,7 @@ namespace Suborned.Sim
                 if (h.Blocker) { if (forCar.Contains(h.Id)) (quit ??= new List<string>()).Add(h.Id); continue; } // he keeps his lane (picked blocker later: he goes back to it)
                 if (forCar.Contains(h.Id)) { if (!h.Moving(Tick) && !AtGetaway(h.Pos(Tick))) ToCar(h); continue; } // stopped short (a walk round a body or a car): on again
                 forCar.Add(h.Id); ReleaseCover(h.Gun); h.Gun.St = "engage"; ToCar(h);
-                Note("rivals.for-car", $"{h.Id} sees nobody of the cell left outside the car and goes for Vale.");
+                Note("rivals.for-car", $"{h.Id} sees nobody of the cell guarding the car and goes for Vale.");
             }
             if (quit != null) foreach (var id in quit) forCar.Remove(id);
         }

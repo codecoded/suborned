@@ -48,6 +48,15 @@ public class GateC037Tests
         // the same end with another hash: fight-always 1 also carries the late spring (M059-S1.3: a member who steps out after the spring fires
         // weapons.aimNew after; the blocker waits for the first on foot), which moves a run's state only where a rider stepped out after the spring
         int spring = Tick(a, "fight.ambush");
+        // engine 0.35.2 (Motive rulings-0.35.1 §2): with the gate on the spring names a blocker who holds the car; a cell that never draws
+        // beside the held car is no guard there, so the rivals walk to it and take Vale (fight-safe-cell-down, the never-draws script). With
+        // the gate off (0.32.0's fight) no blocker is named, the car is never held, and the run idles to the close. That is the gate's hold,
+        // not a leak: every checkpoint before the spring is the same
+        if (a.FailCode == "rivals-reach-vale" && a.Log.Exists(l => l.Code == "rivals.for-car") && spring >= 0 && b.Result == Outcome.None && Tick(b, "fight.blocker") < 0)
+        {
+            Assert.Equal(a.Checkpoints.Where(c => c.tick < spring), b.Checkpoints.Where(c => c.tick < spring));
+            return;
+        }
         if (sameEnd) { Assert.True(spring >= 0 && a.Log.Exists(l => l.Code == "rivals.joins" || l.Code == "rivals.late"), $"{id}: the same end, another final hash, and no rider stepped out into the fight"); return; } // the riders' step-out ticks follow the car (rivals.late); their aimNew lands after the spring
         // the gate's leak: with it off the car left with Vale while the fight was on and its blocker not yet out
         int bOut = Tick(b, "blocker.out"), go = b.CarLeftTick;

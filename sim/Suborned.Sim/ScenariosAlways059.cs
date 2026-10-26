@@ -19,6 +19,7 @@
 //                         at the Board on board and go loses (rivals-reach-vale, rivals.for-car)
 //    BAL-YARD-FOCUS       M059-B4, B7: the same with the Scout and Fixer locking rival-1 then rival-2 from the spring: wins; and with both
 //                         locks 3.0 s late
+//    BAL-YARD-NEVER-DRAWN engine 0.35.2 (Motive rulings-0.35.1 §2): rb-ff and rbb-ff never drawn: the rivals take Vale from the held car
 //    BAL-YARD-POST        M059-B9: the yard's blocker (svc-ambush-1's man) walks ~9.16 m to (86, -5) within the carry and Board
 //    BAL-LOUD-BREAK       M059-B5: loud, the four drawn on foot: no break at 1 or 2 down, the break at the third
 //    BAL-NOPRESS          M059-B3: after that break no member presses for the Enforcer who walks Vale out
@@ -517,6 +518,25 @@ namespace Suborned.Sim
                 Focus(r, "bal-rb-ff", true);
                 if (r.Inputs == null) return;
                 var b = Alt(r, r.Inputs); Focus(b, "bal-rbb-ff", true); foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff] " + c.what);
+            });
+
+            // engine 0.35.2 (Motive rulings-0.35.1 §2 and §3's last row, Sky's yes 2026-10-27): the yard plays with their locks dropped and no F at
+            // all. 0.35.1: none at 8:30 (the stall: an undrawn cell by a held car with Vale aboard was a guard, never shot, never pressed)
+            void NeverDrawn(Run r, string fx)
+            {
+                var g = r.G;
+                if (!PlayFixture(r, fx, NoLocks)) return;
+                r.Is(!g.Log.Exists(l => l.Code == "order.draw"), $"{fx}: nobody of the cell draws");
+                int forCar = LogTick(g, "rivals.for-car");
+                r.Is(g.FailCode == "rivals-reach-vale" && forCar >= 0, $"{fx}, never drawn, loses: the rivals walk to the held car past the undrawn cell and take Vale ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; rivals.for-car {(forCar >= 0 ? Report.Clock(forCar) : "-")})");
+                r.Is(g.Tick < T(g.S.Over), $"{fx}: an outcome before the close, no stall ({Report.Clock(g.Tick)})");
+            }
+            Add("BAL-YARD-NEVER-DRAWN", "059", "Engine 0.35.2 (Motive rulings-0.35.1 §2, Sky's yes 2026-10-27: only a drawn agent guards a held car): route B at the yard, Motive's rb-ff and rbb-ff with their locks dropped and nobody pressing F. An undrawn agent standing by is no guard: the rivals walk to the held car with Vale aboard and take him (rivals-reach-vale with rivals.for-car). 0.35.1: none at 8:30, the run idled to the close.", r =>
+            {
+                NeverDrawn(r, "bal-rb-ff");
+                if (r.Inputs == null) return;
+                var b = Alt(r, r.Inputs); NeverDrawn(b, "bal-rbb-ff"); foreach (var c in b.Checks) r.Is(c.ok, "[rbb-ff] " + c.what);
+                r.Line(true, $"bal-rb-ff never drawn: {r.G.FailCode} at {Report.Clock(r.G.Tick)}; bal-rbb-ff: {b.G.FailCode} at {Report.Clock(b.G.Tick)}");
             });
 
             Add("BAL-YARD-POST", "059", "Motive M059-B9 (the build as it stands): in rb-ff's run the yard's blocker is svc-ambush-1's man; he walks about 9.16 m to the open post (86, -5) and is there within the carry and Board from Vale's car (the Enforcer's carry at the cell's pace plus Board carrying, read from the rules and the run).", r =>

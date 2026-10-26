@@ -1,0 +1,1840 @@
+{
+ "a": "7c27e980565a",
+ "b": "the working tree",
+ "routes": [
+  {
+   "id": "careless-body-found",
+   "status": "moved",
+   "a": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2123,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "8f8338919e3bab25",
+    "scriptSha": "9bc6c80a67b977298d8c2fd00c5ab57807350ceb962b10e830d26d7b9e071a20"
+   },
+   "b": {
+    "id": "careless-body-found",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2123,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "fa7c750343567076",
+    "scriptSha": "9bc6c80a67b977298d8c2fd00c5ab57807350ceb962b10e830d26d7b9e071a20"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 67,
+    "a": "2048\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2051\twitness.react\tp-records-office-74 finds a body: radio.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "careless-enforcer-watches-guard",
+   "status": "same",
+   "a": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1751,
+    "trail": 1,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "b0b412992b1595a9",
+    "scriptSha": "269bd2b5e30d222b4f6a8a14410cc7dae788083402fd2b7487068b94ad39ddde"
+   },
+   "b": {
+    "id": "careless-enforcer-watches-guard",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1751,
+    "trail": 1,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "b1e791e2f6100316",
+    "scriptSha": "269bd2b5e30d222b4f6a8a14410cc7dae788083402fd2b7487068b94ad39ddde"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-g-disable",
+   "status": "same",
+   "a": {
+    "id": "careless-g-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "96f5d764398a0ff4",
+    "scriptSha": "1290693fc2d9c9938b1b1a0f4e63bbf58d677b5472659c762544818b7d4057ad"
+   },
+   "b": {
+    "id": "careless-g-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 3,
+    "alert": 2,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "591e84c685ea676f",
+    "scriptSha": "1290693fc2d9c9938b1b1a0f4e63bbf58d677b5472659c762544818b7d4057ad"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-guard-left-door-held",
+   "status": "same",
+   "a": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "82b270105db94e64",
+    "scriptSha": "11f165ee275a541e859eb0054b43827b0945475b6d54116e555b35330513723c"
+   },
+   "b": {
+    "id": "careless-guard-left-door-held",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 6,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "9f14eeb9b91fb769",
+    "scriptSha": "11f165ee275a541e859eb0054b43827b0945475b6d54116e555b35330513723c"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-loop-runs-out",
+   "status": "same",
+   "a": {
+    "id": "careless-loop-runs-out",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1729,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "8a4030bcfa5706e7",
+    "scriptSha": "d97041f1d4c2e1b7780568066dc8ed500a0195688b04488223d6e348243b108e"
+   },
+   "b": {
+    "id": "careless-loop-runs-out",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1729,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "d14259839dc328bc",
+    "scriptSha": "d97041f1d4c2e1b7780568066dc8ed500a0195688b04488223d6e348243b108e"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-reporter-not-stopped",
+   "status": "same",
+   "a": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "9008ffe9b5352ebe",
+    "scriptSha": "ec18a0f061b0ef8178e56b27a85fb395f6e04bb99f57be3bc12c58e4d907aba2"
+   },
+   "b": {
+    "id": "careless-reporter-not-stopped",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "7e0eb7b044c72615",
+    "scriptSha": "ec18a0f061b0ef8178e56b27a85fb395f6e04bb99f57be3bc12c58e4d907aba2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-scout-idles-pickup",
+   "status": "same",
+   "a": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "fb214c35c099ced9",
+    "scriptSha": "281fd89569505827d49cfd2c025dc384d72abff7dafa833aef9d80e8b9a428bb"
+   },
+   "b": {
+    "id": "careless-scout-idles-pickup",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "a04a0ebafe3effc2",
+    "scriptSha": "281fd89569505827d49cfd2c025dc384d72abff7dafa833aef9d80e8b9a428bb"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "cf41a2477cf8cbea",
+    "scriptSha": "e9d24627212baf87acbb0b42dfb6ef2bb1e1b6f5c0da11b0bbc53bc01b34224f"
+   },
+   "b": {
+    "id": "careless-takedown-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 1570,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "9a1849095b46109b",
+    "scriptSha": "e9d24627212baf87acbb0b42dfb6ef2bb1e1b6f5c0da11b0bbc53bc01b34224f"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-takedown-seen-crowd",
+   "status": "same",
+   "a": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "c79188b9b25bf4d9",
+    "scriptSha": "38bac22cebe7a53e2475f95a661fae67c49ee011d0351960626d0d3513b05c68"
+   },
+   "b": {
+    "id": "careless-takedown-seen-crowd",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 0,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "3289c9e546fab0c8",
+    "scriptSha": "38bac22cebe7a53e2475f95a661fae67c49ee011d0351960626d0d3513b05c68"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "careless-thin-all",
+   "status": "same",
+   "a": {
+    "id": "careless-thin-all",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4493,
+    "trail": 19,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "48ef9b28eb47e349",
+    "scriptSha": "9424230b31a101f6a942541c7483ee254fc6c39d4da167a6e98abcc3dcae0b21"
+   },
+   "b": {
+    "id": "careless-thin-all",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4493,
+    "trail": 19,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "7e1adebd45391d1c",
+    "scriptSha": "9424230b31a101f6a942541c7483ee254fc6c39d4da167a6e98abcc3dcae0b21"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-district-seals",
+   "status": "same",
+   "a": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "902406bb7ad5dfe4",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "b": {
+    "id": "fail-district-seals",
+    "outcome": "failure",
+    "fail": "sealed",
+    "tick": 3050,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "cafa82056f16e8e7",
+    "scriptSha": "9deb10c590bb875a542dde9f1a251bb4d976cd004f9691815c135cf011f08405"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-enforcer-down",
+   "status": "same",
+   "a": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1336,
+    "trail": 6,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "0bcce0848de2cfc1",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "b": {
+    "id": "fail-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1336,
+    "trail": 6,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "feec54d8c45214e4",
+    "scriptSha": "b641713c7a4febdd933453193a625ffd94b3d8f14aabbd8693151761cefa4499"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "2907d15954db9afe",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "b": {
+    "id": "fail-entry-seen-camera",
+    "outcome": "failure",
+    "fail": "entry-seen-camera",
+    "tick": 2829,
+    "trail": 3,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "22bcc7132150da6b",
+    "scriptSha": "a2520f5e89fc7c3c055fad2ef54c9bc0e3a8bf3187ab535600fba4b69a24d02a"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-entry-seen-guard",
+   "status": "same",
+   "a": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "7e59cea3f569ce85",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "b": {
+    "id": "fail-entry-seen-guard",
+    "outcome": "failure",
+    "fail": "entry-seen-guard",
+    "tick": 2329,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "be78cf1eab20c9bc",
+    "scriptSha": "acbb800def01fa77728fe5fda74e33773b9612daf381f3779ac6e3176984f6e4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "3cf57c6ceff90473",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "b": {
+    "id": "fail-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "1457dfc104359606",
+    "scriptSha": "8c046545648f97f32db46deb36e98793317e5e67ba626d135ba991677f9f6d7d"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-take-seen-camera",
+   "status": "same",
+   "a": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "d1095663a9f6535f",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "b": {
+    "id": "fail-take-seen-camera",
+    "outcome": "failure",
+    "fail": "abduction-seen-camera",
+    "tick": 3700,
+    "trail": 1,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "00f3c757b627e11c",
+    "scriptSha": "8e814b445521d3458ada266e9374307a946a54bc5af8c32cdf1d2d8a04a6c3f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-dead",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "c6756111865a07cc",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "b": {
+    "id": "fail-vale-dead",
+    "outcome": "failure",
+    "fail": "vale-dead",
+    "tick": 3720,
+    "trail": 7,
+    "alert": 3,
+    "gunfire": 1,
+    "standing": 1,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "1cc8b37889395efb",
+    "scriptSha": "336407708111896a0f16737caa4b58ce30ac67cdffb7e89217add50baf4dd9f4"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fail-vale-leaves",
+   "status": "same",
+   "a": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "999d937d5cf3487b",
+    "scriptSha": "40370c6ad1bd58aee7e707c121ae201481cb7ac087867da4457fde525f5b21e7"
+   },
+   "b": {
+    "id": "fail-vale-leaves",
+    "outcome": "failure",
+    "fail": "vale-leaves",
+    "tick": 3730,
+    "trail": 1,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "50bb303b2dc658a8",
+    "scriptSha": "40370c6ad1bd58aee7e707c121ae201481cb7ac087867da4457fde525f5b21e7"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-loud-enforcer-down",
+   "status": "same",
+   "a": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1955,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "3e668874cc08b8dd",
+    "scriptSha": "644913bceb41c319321ab9242770f43f28058ed3f526beba7c76d8cb2316f4a5"
+   },
+   "b": {
+    "id": "fight-loud-enforcer-down",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 1955,
+    "trail": 9,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": -1,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "b5f5af5f9281a91c",
+    "scriptSha": "644913bceb41c319321ab9242770f43f28058ed3f526beba7c76d8cb2316f4a5"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-loud-wait-square",
+   "status": "same",
+   "a": {
+    "id": "fight-loud-wait-square",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2407,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "472b7eda03aae7fd",
+    "scriptSha": "ca85b4a0cf2d73058a803e90a31f03f78d92d4555da4613f66aa787b6fa72a7b"
+   },
+   "b": {
+    "id": "fight-loud-wait-square",
+    "outcome": "failure",
+    "fail": "enforcer-down",
+    "tick": 2407,
+    "trail": 8,
+    "alert": 2,
+    "gunfire": 2,
+    "standing": 0,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "028b745472866d82",
+    "scriptSha": "ca85b4a0cf2d73058a803e90a31f03f78d92d4555da4613f66aa787b6fa72a7b"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-loud-wait-yard",
+   "status": "same",
+   "a": {
+    "id": "fight-loud-wait-yard",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 4495,
+    "trail": 9,
+    "alert": 3,
+    "gunfire": 4,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "7a5177617799991c",
+    "scriptSha": "f17a4abc5a492a2e8338701b784d8efbae2b9bfebc025e6fcb088bc407f44c3f"
+   },
+   "b": {
+    "id": "fight-loud-wait-yard",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 4495,
+    "trail": 9,
+    "alert": 3,
+    "gunfire": 4,
+    "standing": 2,
+    "health": {
+     "lost": 8,
+     "total": 23,
+     "pct": 34
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "e7e1c10267078d97",
+    "scriptSha": "f17a4abc5a492a2e8338701b784d8efbae2b9bfebc025e6fcb088bc407f44c3f"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "fight-safe-cell-down",
+   "status": "moved",
+   "a": {
+    "id": "fight-safe-cell-down",
+    "outcome": "none",
+    "fail": "",
+    "tick": 5100,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "efdb933f89cb5bd6",
+    "scriptSha": "c938a2e4697bc3bb6eb785d006cfea9a958b62003a26ab029a19606c958795d8"
+   },
+   "b": {
+    "id": "fight-safe-cell-down",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 1897,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "aedfc671f5cf3545",
+    "scriptSha": "c938a2e4697bc3bb6eb785d006cfea9a958b62003a26ab029a19606c958795d8"
+   },
+   "cols": [
+    "outcome",
+    "fail",
+    "end"
+   ],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 41,
+    "a": "1747\torder.move\tenforcer move (1 s)",
+    "b": "1747\trivals.for-car\trival-2 sees nobody of the cell guarding the car and goes for Vale.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "fight-safe-rivals-reach-vale",
+   "status": "same",
+   "a": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "7d339894a160b677",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "b": {
+    "id": "fight-safe-rivals-reach-vale",
+    "outcome": "failure",
+    "fail": "rivals-reach-vale",
+    "tick": 3995,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "facd831594afdcf4",
+    "scriptSha": "630e33491448b10bf43ad7719851ace30727570d0ad20de24af0fc691fce2c2e"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "loud",
+   "status": "moved",
+   "a": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3017,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "c35a8de14c6e2b12",
+    "scriptSha": "07067901e2e40df6a7dbc3e0839b1276af529702a78957dbfa22d1f82217d576"
+   },
+   "b": {
+    "id": "loud",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3017,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "65c3d17f37639c88",
+    "scriptSha": "07067901e2e40df6a7dbc3e0839b1276af529702a78957dbfa22d1f82217d576"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 112,
+    "a": "2468\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2469\tcrowd.sheltered\t1 reach shelter.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-fight",
+   "status": "moved",
+   "a": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3068,
+    "trail": 26,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "e20df6b5746ebfa5",
+    "scriptSha": "847447904c0eb1861e7641a44047481a352c89c5fa6a4ee4a2fafb161723dec9"
+   },
+   "b": {
+    "id": "loud-fight",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3068,
+    "trail": 26,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "3d70f240d3ee28a9",
+    "scriptSha": "847447904c0eb1861e7641a44047481a352c89c5fa6a4ee4a2fafb161723dec9"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 112,
+    "a": "2468\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2469\tcrowd.sheltered\t1 reach shelter.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-downed",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3047,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 7,
+     "total": 23,
+     "pct": 30
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "0c2409746f7a56c2",
+    "scriptSha": "b82a2b3f56f4ade49436dba4705b250fad85ddd587000c4d66cc2f0b2826cbf3"
+   },
+   "b": {
+    "id": "loud-left-downed",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3047,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 7,
+     "total": 23,
+     "pct": 30
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "5cccaea27b1e7ee3",
+    "scriptSha": "b82a2b3f56f4ade49436dba4705b250fad85ddd587000c4d66cc2f0b2826cbf3"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 112,
+    "a": "2468\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2469\tcrowd.sheltered\t1 reach shelter.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "loud-left-standing",
+   "status": "moved",
+   "a": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3047,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "17ed5d2bf8242629",
+    "scriptSha": "3e084073f99eb158df3110c15506389379582312995fee17bd506e212768be86"
+   },
+   "b": {
+    "id": "loud-left-standing",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3047,
+    "trail": 27,
+    "alert": 2,
+    "gunfire": 20,
+    "standing": -1,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "c4ceb424d68f3e08",
+    "scriptSha": "3e084073f99eb158df3110c15506389379582312995fee17bd506e212768be86"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 112,
+    "a": "2468\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2469\tcrowd.sheltered\t1 reach shelter.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a",
+   "status": "moved",
+   "a": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2773,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "a993f59172dff1aa",
+    "scriptSha": "59d0a01e9457662eb4b6a9ba02ba934bfd48913f56bb7377aed7cfbc45ded5f7"
+   },
+   "b": {
+    "id": "route-a",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2773,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "87f52e1cceed12ff",
+    "scriptSha": "59d0a01e9457662eb4b6a9ba02ba934bfd48913f56bb7377aed7cfbc45ded5f7"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 82,
+    "a": "2535\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2539\tai.advance\trival-3 has had nobody in reach for 1 s: he advances on the tech.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-board",
+   "status": "same",
+   "a": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2555,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "d0667f87edadb611",
+    "scriptSha": "0b420534d0a102d55ffecf9b65ccbfb7c3234cae4f9e65ef41f79ddb7c48fbb5"
+   },
+   "b": {
+    "id": "route-a-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2555,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "8c19d57c1b66ac3e",
+    "scriptSha": "0b420534d0a102d55ffecf9b65ccbfb7c3234cae4f9e65ef41f79ddb7c48fbb5"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-a-disable",
+   "status": "moved",
+   "a": {
+    "id": "route-a-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2773,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "5a70103ea4b4d2ba",
+    "scriptSha": "f7a762460049c23c75306e85c6ebd612f830ac3e8df63b12135eb163bf9ecf84"
+   },
+   "b": {
+    "id": "route-a-disable",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2773,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 2,
+     "total": 23,
+     "pct": 8
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "fb12554b11cf7bab",
+    "scriptSha": "f7a762460049c23c75306e85c6ebd612f830ac3e8df63b12135eb163bf9ecf84"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 88,
+    "a": "2535\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2539\tai.advance\trival-3 has had nobody in reach for 1 s: he advances on the tech.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure",
+   "status": "moved",
+   "a": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2715,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "1659e8c3fb434e64",
+    "scriptSha": "54d2db32933a877cac215a8cbc02bbf08f773d05268bc21f3bc92ab106acb613"
+   },
+   "b": {
+    "id": "route-a-pressure",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2715,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "9491a007c4f174fb",
+    "scriptSha": "54d2db32933a877cac215a8cbc02bbf08f773d05268bc21f3bc92ab106acb613"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 109,
+    "a": "2439\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "2441\tshot.miss\tscout fires on rival-3 at 15 m (300 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-a-pressure-board",
+   "status": "same",
+   "a": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2538,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "0ff03054ae26ded7",
+    "scriptSha": "bea128e2ab627f78da1d35eb8ebd9f707052a1577c7d0d4c2aecf59fc462ba16"
+   },
+   "b": {
+    "id": "route-a-pressure-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2538,
+    "trail": 6,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "69cd911c747276f6",
+    "scriptSha": "bea128e2ab627f78da1d35eb8ebd9f707052a1577c7d0d4c2aecf59fc462ba16"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-b",
+   "status": "same",
+   "a": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "3ce0e518f728b3a3",
+    "scriptSha": "4739d9848ecd957ac66e545b9ee5a83d7e93daeff19fd64209b28cf7bc07adb7"
+   },
+   "b": {
+    "id": "route-b",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "bafb6929b3be9d6a",
+    "scriptSha": "4739d9848ecd957ac66e545b9ee5a83d7e93daeff19fd64209b28cf7bc07adb7"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-b-board",
+   "status": "same",
+   "a": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4554,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "ebad2d0a81e4a5c5",
+    "scriptSha": "fc04508e790a1fbb32a56e5f80ce0e88f91b0441239450af764318598caf0a75"
+   },
+   "b": {
+    "id": "route-b-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4554,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "c58668548d42df40",
+    "scriptSha": "fc04508e790a1fbb32a56e5f80ce0e88f91b0441239450af764318598caf0a75"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-b-thin",
+   "status": "same",
+   "a": {
+    "id": "route-b-thin",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "8bcb641c049bdb53",
+    "scriptSha": "f1b1f86fc67a4d461b723120121915659d76610a405fe72529b382277aefb29c"
+   },
+   "b": {
+    "id": "route-b-thin",
+    "outcome": "success",
+    "fail": "",
+    "tick": 4522,
+    "trail": 4,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 4,
+     "total": 23,
+     "pct": 17
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "c20238e6099401ee",
+    "scriptSha": "f1b1f86fc67a4d461b723120121915659d76610a405fe72529b382277aefb29c"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-g",
+   "status": "same",
+   "a": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "5e7691da99bbf938",
+    "scriptSha": "5954418feb2cea39c5d36ce3651d345790ddc0eda81b694c5e17b6d41483da1f"
+   },
+   "b": {
+    "id": "route-g",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 5,
+     "total": 23,
+     "pct": 21
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "8aa8b5c69a430615",
+    "scriptSha": "5954418feb2cea39c5d36ce3651d345790ddc0eda81b694c5e17b6d41483da1f"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-g-board",
+   "status": "same",
+   "a": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 23,
+     "pct": 13
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "41e26557a723386f",
+    "scriptSha": "57896344db11f8c8be08c7a265d067870ca5e0c274719e6721a26e0f32707018"
+   },
+   "b": {
+    "id": "route-g-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 2396,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 23,
+     "pct": 13
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "18de83cc9a731ae0",
+    "scriptSha": "57896344db11f8c8be08c7a265d067870ca5e0c274719e6721a26e0f32707018"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-g-fast",
+   "status": "same",
+   "a": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1786,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 23,
+     "pct": 4
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "65d9891d96babcde",
+    "scriptSha": "5ee4b5ebfb4421e4cf2d19189ae30e96fffde4c9d1e8a6ec8566e680b12ca7a9"
+   },
+   "b": {
+    "id": "route-g-fast",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1786,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 1,
+     "total": 23,
+     "pct": 4
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "8178e672eef9f941",
+    "scriptSha": "5ee4b5ebfb4421e4cf2d19189ae30e96fffde4c9d1e8a6ec8566e680b12ca7a9"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-g-fast-board",
+   "status": "same",
+   "a": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1820,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 1,
+     "total": 23,
+     "pct": 4
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "e67896c247d39e94",
+    "scriptSha": "eeab400a08367c1e58ee76d720d0b320376ce4fb4d5df89132e7df37e62686d8"
+   },
+   "b": {
+    "id": "route-g-fast-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 1820,
+    "trail": 5,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 1,
+     "total": 23,
+     "pct": 4
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "bc939cb98e2dee41",
+    "scriptSha": "eeab400a08367c1e58ee76d720d0b320376ce4fb4d5df89132e7df37e62686d8"
+   },
+   "cols": [],
+   "scriptChanged": false
+  },
+  {
+   "id": "route-g-kill",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3470,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 23,
+     "pct": 13
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "0f32b9e48413d6f7",
+    "scriptSha": "d8e55fd99f31a3b667902828263bc700744d493324787af781b8e66daa768b15"
+   },
+   "b": {
+    "id": "route-g-kill",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3470,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 3,
+    "health": {
+     "lost": 3,
+     "total": 23,
+     "pct": 13
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "eb9f8a20db45ac14",
+    "scriptSha": "d8e55fd99f31a3b667902828263bc700744d493324787af781b8e66daa768b15"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 106,
+    "a": "3246\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "3248\tai.why\trival-5 takes the enforcer as its target: vale, drawn.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "route-g-kill-board",
+   "status": "moved",
+   "a": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3361,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "0b0c0676b6486113",
+    "scriptSha": "f1e0d88c373f74d53d07bc7bae3dbfccd0a3406dc693f7131123b0e38c1ac4bd"
+   },
+   "b": {
+    "id": "route-g-kill-board",
+    "outcome": "success",
+    "fail": "",
+    "tick": 3361,
+    "trail": 2,
+    "alert": 1,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 6,
+     "total": 23,
+     "pct": 26
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "db1ed8315d2851be",
+    "scriptSha": "f1e0d88c373f74d53d07bc7bae3dbfccd0a3406dc693f7131123b0e38c1ac4bd"
+   },
+   "cols": [],
+   "scriptChanged": false,
+   "divergence": {
+    "at": 140,
+    "a": "3335\tfire.free-on\tA fight is on: drawn agents fire on their own.",
+    "b": "3340\tshot.miss\trival-4 fires on enforcer at 14 m (562 ‰): miss.",
+    "checkpointTick": 100
+   }
+  },
+  {
+   "id": "withdraw",
+   "status": "same",
+   "a": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "2e6a3de9784d2fcc",
+    "finalHash": "d8cd4c721d41de7f",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "b": {
+    "id": "withdraw",
+    "outcome": "withdrawn",
+    "fail": "",
+    "tick": 300,
+    "trail": 0,
+    "alert": 0,
+    "gunfire": 0,
+    "standing": 2,
+    "health": {
+     "lost": 0,
+     "total": 23,
+     "pct": 0
+    },
+    "startHash": "cc9dd4ac410d6cf0",
+    "finalHash": "70ef341abb6f7c10",
+    "scriptSha": "ba3f06e59e802202a4a1d54154c82ed1fb95293148e83d73383a3e7aec4c6cb2"
+   },
+   "cols": [],
+   "scriptChanged": false
+  }
+ ]
+}
