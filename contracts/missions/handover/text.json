@@ -355,6 +355,10 @@
   "fire": {"label":"Fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"fire"},"does":"Shoot to stop them. Gunfire raises Alert, and every hit adds Trail.","onTarget":{"hostile":"Fire until this one is down. Shots in this fight add no Trail.","councillor":"Never fire at Vale. Shooting Vale fails the mission.","camera-entrance":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.","camera-pickup":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail.","camera-mast-314":"Shoot this camera out for good. Gunfire raises Alert at once. Adds Trail."},"withTarget":"Fire at {target}","then":"fires at {target}"},
   "draw": {"label":"Draw weapon","by":["scout","fixer","tech","enforcer"],"engine":{"do":"draw"},"does":"Draw a weapon. Anyone who sees it may raise the alarm."},
   "holster": {"label":"Holster","by":["scout","fixer","tech","enforcer"],"engine":{"do":"holster"},"does":"Put the weapon away. It doesn't undo what was seen."},
+  "mark": {"label":"Mark","by":["scout"],"engine":{"do":"mark"},"does":"Point him out. For 10 s his cover doesn't count, and his next move shows."},
+  "talk-down": {"label":"Talk down","by":["fixer"],"engine":{"do":"talk-down"},"does":"Shout a hurt rival out of the fight. He walks off. Two seconds in the open."},
+  "steam": {"label":"Steam","by":["tech"],"engine":{"do":"steam"},"does":"Open a heat main. For 8 s no line passes near the grille."},
+  "covering-fire": {"label":"Covering fire","by":["enforcer"],"engine":{"do":"covering-fire"},"does":"Four seconds of fire: everyone near him ducks. Never hits. Works with Vale."},
   "cease": {"label":"Cease fire","by":["scout","fixer","tech","enforcer"],"engine":{"do":"cease"},"does":"Stop firing. The weapon stays drawn."},
   "volley": {"label":"Volley","by":["scout","fixer","tech","enforcer"],"engine":{"do":"volley"},"does":"Fire a set number of shots at one target. Each shot spends charge.","onTarget":{"hostile":"Fire 1 to 6 shots here. Charge pays; unfired shots come back."},"withTarget":"Volley at {target}","then":"volleys at {target}"},
   "field": {"label":"Field","by":["enforcer"],"engine":{"do":"field"},"does":"Raise a shield that soaks hits for a moment. You can't fire while it's up."},
@@ -548,6 +552,11 @@
   "keeps-vale": {"line":"Cancel can't put Vale down. Walk Vale to the car.","short":"Walk Vale","verbs":["cancel"]},
   "holstering": {"line":"Holstering finishes in a moment. Nothing to cancel.","short":"Holstering","verbs":["cancel"]},
   "car-driving": {"line":"The car is driving and can't be stopped. Wait until it parks.","short":"Car driving · wait","verbs":["cancel"]},
+  "move-cooling": {"line":"{op}'s move is ready again at {tick}.","short":"Ready {tick}","verbs":["mark","talk-down","steam","covering-fire"]},
+  "talk-police": {"line":"The police don't back down. Only a rival can be talked down.","short":"Not police","verbs":["talk-down"]},
+  "talk-none-down": {"line":"None of the crew is down yet. Drop one first.","short":"None down yet","verbs":["talk-down"]},
+  "talk-not-hurt": {"line":"He isn't hurt yet. Hurt him first.","short":"Not hurt","verbs":["talk-down"]},
+  "steam-no-grille": {"line":"No heat main within the Tech's reach.","short":"No grille","verbs":["steam"]},
   "stand-beside-op": {"line":"Walk within {m} m of the downed agent first.","short":"Too far · {m} m","verbs":["carry"]},
   "summon-busy": {"line":"The guard is down, busy or away from the door. Try when the guard is back.","short":"Not now","verbs":["call"]},
   "summon-came-once": {"line":"The guard already came once this shift and won't leave the post twice.","short":"Came once","verbs":["call"]},
@@ -729,7 +738,7 @@
   }
  },
  "events": {
-  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","drive-car","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw"]},
+  "ack": {"kind":"order","trigger":"an order is taken (the engine accepts it)","speakers":["scout","fixer","tech","enforcer"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","call","loop","disable","reroute","enter","take","board","go","drive-car","spawn","fire","volley","field","draw","holster","cease","stance","panic","carry","takedown","drop","stash","restrain","move","run","cancel","withdraw","mark","talk-down","steam","covering-fire"]},
   "arrive": {"kind":"order","trigger":"the agent has walked into reach and begins the act","speakers":["scout","fixer","tech","enforcer"],"log":["takedown.starts"],"verbs":["watch","listen","mislead","ask","pay","help","pressure","loop","disable","reroute","enter","take","takedown"],"note":"takedown: outcome struggle when the target sees it coming (the engine's text says so); else none"},
   "done": {"kind":"order","trigger":"the order lands (the engine logs scout.*, turn.*, loop.on, camera.cut, patrol.rerouted, rivals.misled, enter.out, take.done, takedown.out, takedown.dead, stash.*, restrain.done)","speakers":["scout","fixer","tech","enforcer"],"log":["loop.on","camera.cut","rivals.misled","enter.out","take.done","takedown.out","takedown.dead","stash.","restrain.done"],"verbs":["mislead","loop","disable","reroute","enter","take","turn","takedown","stash","restrain"],"note":"outcome on `turn`: how the approach went (turned, refused, not-yet, kept, suspicious); takedown: outcome knockout (takedown.out) or kill (takedown.dead), else none"},
   "reply": {"kind":"reply","trigger":"a turn order lands on a person: their answer, by the rulebook outcome (suspicious when the approach is reported)","speakers":["waitress","driver","guard"],"verbs":["ask","pay","help","pressure"],"note":"one answer per turn order; the contact's temperament picks the voice"},
@@ -911,6 +920,18 @@
   "holster": [
    "ack"
   ],
+  "mark": [
+   "ack"
+  ],
+  "talk-down": [
+   "ack"
+  ],
+  "steam": [
+   "ack"
+  ],
+  "covering-fire": [
+   "ack"
+  ],
   "cease": [
    "ack"
   ],
@@ -997,6 +1018,7 @@
   "ai.why": "engine 0.25.0, worded at 0.33.0 (brief 059): a hostile first takes an agent as its target; silent here: the under-fire cue shows the main cause and Alt lists them all, in the words of less.why (one per fire cause, crewmate included). The log line is bookkeeping",
   "ai.kite": "a hostile side answers fire from beyond its ring (brief 027 lab, Pulse kite-response): police running in and rivals ducking to cover speak for it on the street",
   "fight.judged": "a fight ends and the street judges it (fight.public, Sky 2026-10-16): the debrief's Standing line speaks for it, by its cause",
+  "move.": "engine 0.35.0 (brief 039): the four moves (move.mark, move.talk-down, move.steam, move.covering-fire, move.covering-fire-ends): the body, the sound and the roster's move disc speak (Glyph b-final); Keel's draft, Fable to confirm",
   "shot.": "a shot (shot.hit, shot.miss): the tracer and the pips speak; no line per shot",
   "order.": "the order echo (Game.Note \"order.*\"): the agent's own ack and arrive lines speak for it",
   "fire.": "a fire order's progress (fire.done, fire.lapses, fire.cancelled, fire.out-of-range): bookkeeping; engine 0.21.0 (Sky 2026-10-22): fire.out-of-range (a lasting order's target left the weapon's max ring) shows as the pop less.pop.fire-out-of-range on the agent (PLACEHOLDER words, Keel; Fable to word), and fire.cancelled now also means a new act ended the order; the shots speak through the fight events. When the final fight is over (brief 023) every fire order on a final-fight hostile ends with fire.done: the fight.over card says \"Fire orders end\" and a new fire order there is refused as fight-over",
@@ -1566,6 +1588,20 @@
     "holster": [
      "name"
     ],
+    "mark": [
+     "name"
+    ],
+    "talk-down": [
+     "name",
+     "time"
+    ],
+    "steam": [
+     "name"
+    ],
+    "covering-fire": [
+     "name",
+     "time"
+    ],
     "cease": [
      "name"
     ],
@@ -2033,6 +2069,10 @@
   {"event":"ack","verb":"holster","speaker":"fixer","lines":["Putting it away.","Better. Now smile."]},
   {"event":"ack","verb":"holster","speaker":"tech","lines":["Stowed.","Weapon away."]},
   {"event":"ack","verb":"holster","speaker":"enforcer","lines":["Back it goes.","Done with that."]},
+  {"event":"ack","verb":"mark","speaker":"scout","lines":["Marked.","Got him. Watch his cover."]},
+  {"event":"ack","verb":"talk-down","speaker":"fixer","lines":["Walk away.","It's over. Go."]},
+  {"event":"ack","verb":"steam","speaker":"tech","lines":["Opening the main.","Steam coming."]},
+  {"event":"ack","verb":"covering-fire","speaker":"enforcer","lines":["Heads down!","Covering."]},
   {"event":"ack","verb":"volley","speaker":"scout","lines":["Counting shots.","Short burst."]},
   {"event":"ack","verb":"volley","speaker":"fixer","lines":["A few, then.","Only these."]},
   {"event":"ack","verb":"volley","speaker":"tech","lines":["Set. Firing.","Measured burst."]},

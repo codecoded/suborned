@@ -78,14 +78,30 @@ public class FailCauseTests
         // engine-error is never reached by play (EngineErrorNamesNoCulprit); brief 018's rival at the car is a fixture (ARivalAtTheCar…).
         // Brief 059 (engine 0.32.0; GDD v0.25.0 §07): reached-at-close is retired (at the close Vale's driver always drives him on: vale-leaves);
         // the tail (the wheelman at Vale's door) and driven-away (an unturned driver at 6:13) are new.
-        // Engine 0.34.0 (brief 067 A): entry-seen-patrol is reached only on a site whose sweep watches the public door (Game.PatrolWatchesEntry,
-        // Waymark's MC-3 needs); the service yard's sweep never does, so no scenario can end there on this site. cell-down (Motive M067-K3 b) is new.
-        var g0 = Engine.New(I);
+        // Engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is no failure; rulebook cell.enter.seen.patrol report): no live run ends in
+        // entry-seen-patrol on any site; the code stays for rulebooks pinned before 0.34.2 (APinnedRulebookStillFailsAnEntryThePatrolSees).
+        // cell-down (Motive M067-K3 b) is new in 0.34.0.
         var want = new[] { "abduction-seen-camera/seen", "cell-down/shot", "driver-shot/shot", "enforcer-down/shot", "entry-seen-camera/seen", "entry-seen-guard/seen", "getaway-lost/wrecked",
             "rivals-reach-vale/beat-to-pickup", "rivals-reach-vale/downed-enforcer", "rivals-reach-vale/tail", "sealed/sealed", "vale-dead/killed", "vale-dead/shot", "vale-leaves/too-late",
-            "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" }.Concat(g0.PatrolWatchesEntry ? new[] { "entry-seen-patrol/seen" } : Array.Empty<string>());
+            "vale-leaves/driven-away", "withdraw/car-left-without-vale", "withdraw/withdrew" };
         foreach (var w in want) Assert.True(seen.Contains(w), $"no scenario ends in {w} (seen: {string.Join(", ", seen)})");
-        if (!g0.PatrolWatchesEntry) Assert.DoesNotContain("entry-seen-patrol/seen", seen); // the fact holds: nothing reaches it
+        Assert.DoesNotContain("entry-seen-patrol/seen", seen); // engine 0.34.2: the patrol's sight of an Enter is a report, never a fail
+    }
+
+    [Fact]
+    public void APinnedRulebookStillFailsAnEntryThePatrolSees()
+    {
+        // Engine 0.34.2: N120's Enter, seen by the patrol robot alone, is a report on today's rulebook; on one pinned before 0.34.2 (no
+        // cell.enter.seen) it fails entry-seen-patrol as it did, and the fail camera names the patrol where it stood (FailCause "patrol").
+        var at = I.Rulebook.IndexOf("\"seen\": {\"patrol\": \"report\"", StringComparison.Ordinal);
+        Assert.True(at > 0, "the live rulebook has cell.enter.seen.patrol report");
+        var pinned = Engine.FromTexts(I.Rulebook.Replace("\"seen\": {\"patrol\": \"report\"", "\"seen\": {\"patrol\": \"fail\""), I.PeopleRules, I.Site, I.People, I.Provisional.Length > 0 ? I.Provisional : null, I.Takedown.Length > 0 ? I.Takedown : null, I.Rounds.Length > 0 ? I.Rounds : null);
+        var g = Scenarios.Run(pinned, Scenarios.Find("N120")!).G;
+        Assert.Equal(Outcome.Failure, g.Result); Assert.Equal("entry-seen-patrol", g.FailCode);
+        WellFormed(g, "N120 pinned");
+        Assert.Equal("seen", g.Cause!.Why); Assert.Equal("patrol", g.Cause.Culprits[0].Kind); Assert.Equal("saw", g.Cause.Culprits[0].Role);
+        var live = Scenarios.Run(I, Scenarios.Find("N120")!).G;
+        Assert.NotEqual("entry-seen-patrol", live.FailCode); Assert.Equal("landed", live.EntryReport.state);
     }
 
     [Fact]

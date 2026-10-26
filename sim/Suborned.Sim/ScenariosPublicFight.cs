@@ -175,7 +175,7 @@ namespace Suborned.Sim
                 r.Eq((f.OnRivals, f.OnSecurity, f.RivalsFirst, f.Outcome, f.Delta), (true, false, "cell", "none", 0), "the cell fired first on feared rivals and did not break them: 0");
                 r.Is(g.RivalsDelayMethod != "fire", "the crew was not driven back");
                 r.Eq(FightMoves(g).Count, 0, "no fight move");
-            }, new Start { FinalFight = false });
+            }, new Start { FinalFight = false, OneInput = false }); // brief 039: the old controls (cease)
 
             Add("N97", "—", "Firing first on rivals nobody fears (rulebook fight.public; a scenario fixes rivals.public neutral): N96's orders exactly. The cell fired the first shot between it and the crew: Standing −1 when the fight ends, cause seen-fight-first.", r =>
             {
@@ -190,7 +190,7 @@ namespace Suborned.Sim
                 r.Eq((f.Public, f.RivalsFirst, f.Outcome, f.Delta, f.Cause), (true, "cell", "first", -1, "seen-fight-first"), "the cell fired first on neutral rivals: −1");
                 var m = FightMoves(g);
                 r.Eq((m.Count, m[0].tick, m[0].who), (1, f.End, "rivals"), "once, when the fight ends (here, with the mission)");
-            }, new Start { FinalFight = false, RivalsPublic = "neutral" });
+            }, new Start { FinalFight = false, RivalsPublic = "neutral", OneInput = false }); // brief 039: the old controls (cease)
 
             Add("N98", "—", "A fight with security (rulebook fight.public): the Enforcer shoots the patrol robot down from the walk north of the service yard at 4:30 (engine 0.34.0; the walk north of the Office before), people of the city within 30 m. Standing −1 once, not at the first shot but when the fight ends, 30 s (crowd.quiet) after the last shot by or at the cell; cause seen-fight-security, naming the patrol. Trail and Alert are the shots' own, as before; the district ends at +1.", r =>
             {

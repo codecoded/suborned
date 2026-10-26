@@ -36,6 +36,7 @@ namespace Suborned.Sim
         public static Start RangePreset(string name)
         {
             if (name == "today") return new Start();
+            if (name == "pre039") return new Start { Pre039 = true }; // brief 039: today's fight before B (test only), for the scenarios of its mechanics
             if (name != "lab") throw new FormatException($"preset '{name}' (today, lab)");
             var s = new Start { FightLabOn = true, LabHealthScale = 10, LabPips = true, LabStances = "three", LabThen = "free", LabClose = true, LabCharge = true, LabField = false, LabWarn = true, LabFireMoving = true, LabCoverSnap = true, LabKite = true };
             s.LabLoadout[0] = "sidearm"; s.LabLoadout[1] = "sidearm"; s.LabLoadout[2] = "sidearm"; s.LabLoadout[3] = "carbine";
@@ -132,7 +133,7 @@ namespace Suborned.Sim
                 r.Eq(g.Result, Outcome.None, "and the range does not fail: the Enforcer is any agent here");
             });
 
-            AddRange("R03", "today", "open", "cover changes the hit chance (today): none in the open, full beside the box, the chance halved, the next shot at the line's chance", r => CoverChanges(r, false));
+            AddRange("R03", "pre039", "open", "cover changes the hit chance (today): none in the open, full beside the box, the chance halved, the next shot at the line's chance", r => CoverChanges(r, false));
             AddRange("R04", "lab", "open", "cover changes the hit chance (lab): one pip less beside cover, the next shot at the line's chance", r => CoverChanges(r, true));
 
             AddRange("R05", "today", "open", "the response unit walks in from the far end and stops to engage the first agent in its reach", r =>
@@ -149,7 +150,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => r.Shots().Exists(s => s.by == "response-1"), Game.T(10)), "and fires");
             });
 
-            AddRange("R06", "today", "open", "rivals wait their aim, engage, and break for the far corner when more than half their spawn is down", r =>
+            AddRange("R06", "pre039", "open", "rivals wait their aim, engage, and break for the far corner when more than half their spawn is down", r =>
             {
                 var g = r.G;
                 Spawned(r, "rivals", "eff", 3);
@@ -235,7 +236,7 @@ namespace Suborned.Sim
                 r.Is(wrong == 0, $"an officer the Enforcer shoots from inside its max ring turns to him: its next shot is at him ({checkedN} checked, {wrong} not)");
             });
 
-            AddRange("R12", "today", "open", "return fire in the band (Motive tuning.md §7.10 rule 1): an officer in cover shot at 15.5 m, inside its 16 m max but beyond its 15 m effective ring, fires back within kite.react plus its aim, and doesn't move", r =>
+            AddRange("R12", "pre039", "open", "return fire in the band (Motive tuning.md §7.10 rule 1): an officer in cover shot at 15.5 m, inside its 16 m max but beyond its 15 m effective ring, fires back within kite.react plus its aim, and doesn't move", r =>
             {
                 var g = r.G;
                 Spawned(r, "police", "cover", 1);
@@ -295,6 +296,7 @@ namespace Suborned.Sim
             LastingFireRange(); // engine 0.21.0 (Sky 2026-10-22): the lasting fire order on the move, out of range (ScenariosLastingFire.cs)
             FireWhyRange(); // engine 0.25.0: the range's cause (ScenariosFireWhy.cs)
             SquadFireRange(); // engine 0.26.0 (Sky playing 0.2.65): the squad fire order agent by agent, FireQuery (ScenariosSquadFire.cs)
+            FightBRange(); // engine 0.35.0 (brief 039 B): one input, the pin, the sticky focus, the snap, the four moves (ScenariosFightB.cs)
             AddRange("R10", "lab", "open", "replay: the run as a script (mission range, the spawn's count) replays and verifies its record", r =>
             {
                 var g = r.G;

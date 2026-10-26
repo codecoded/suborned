@@ -243,7 +243,7 @@ public class RulesTests
         Assert.False(g.Issue(new Order { Tick = 0, Op = "fixer", Do = "draw" }).ok);
         var all = New();                                                        // the Handover issues three (site arms)
         Assert.All(all.Ops, o => Assert.NotNull(o.Gun.W));
-        Assert.Equal(new[] { 4, 4, 4, 6 }, all.Ops.Select(o => o.Gun.Health).ToArray());
+        Assert.Equal(new[] { 5, 5, 5, 8 }, all.Ops.Select(o => o.Gun.Health).ToArray()); // brief 039: the floor (ops 5, Enforcer 8)
     }
 
     [Fact]
@@ -277,7 +277,7 @@ public class RulesTests
         Assert.Equal(750, r.Accuracy(r.Pistol, 1200, false, false, false, false));
         Assert.Equal(750, r.Accuracy(r.Pistol, 400, false, false, false, true));
         Assert.Equal(375, r.Accuracy(r.Pistol, 1200, true, false, false, false));
-        Assert.Equal(187, r.Accuracy(r.Pistol, 1200, true, true, false, false));
+        Assert.Equal(93, r.Accuracy(r.Pistol, 1200, true, true, false, false)); // brief 039 B: full cover ×250 (was ×500: 187)
         Assert.Equal(400, r.Accuracy(r.Pistol, 1550, false, false, false, false)); // the long band: 15–16 m since tuning.md §7.9 (was 15–25)
         Assert.Equal(0, r.Accuracy(r.Pistol, 1700, false, false, false, false));
         Assert.Equal(750, r.Accuracy(r.Carbine, 1800, false, false, false, false));

@@ -113,6 +113,7 @@ namespace Suborned.Sim
                 if (seenMask != 0) attnSeen[w] = seenMask;
             }
             AttentionReports();
+            if (!Over) EntryReports(); // engine 0.34.2: the patrol's report of an Enter (GameEntrySeen.cs)
         }
 
         /// <summary>Whether the watcher that made a report is down or gone before it lands (a camera's report is on its tape: it lands).</summary>

@@ -1,7 +1,6 @@
-$ bun tools/game/playing.ts bun test tools/sim contracts/rules "--timeout=120000"
 bun test v1.4.3 (c6da4a4d3)
 
  122 pass
  0 fail
  3068 expect() calls
-Ran 122 tests across 7 files. [32.58s]
+Ran 122 tests across 7 files. [17.72s]

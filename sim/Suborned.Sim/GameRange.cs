@@ -79,7 +79,7 @@ namespace Suborned.Sim
         /// <summary>This run is on a fight range site (brief 029): the mission's rules are off, the fight's are on.</summary>
         public readonly bool Range;
         /// <summary>The verbs the range takes; any other is refused unknown-verb.</summary>
-        public static readonly string[] RangeVerbs = { "move", "drive", "cancel", "draw", "holster", "cease", "stance", "fire", "volley", "field", "panic", "carry", "spawn", "withdraw", "trigger", "follow", "free" }; // engine 0.19.0: free (tuning.md §14)
+        public static readonly string[] RangeVerbs = { "move", "drive", "cancel", "draw", "holster", "cease", "stance", "fire", "volley", "field", "panic", "carry", "spawn", "withdraw", "trigger", "follow", "free", "mark", "talk-down", "steam", "covering-fire" }; // engine 0.19.0: free (tuning.md §14)
         public static readonly string[] RangeSides = { "police", "rivals", "response" };
         public static readonly string[] RangePlacements = { "near", "eff", "beyond", "cover" };
         public const int RangeSlots = 6;

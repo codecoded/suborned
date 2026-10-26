@@ -47,7 +47,8 @@ export const WATCHED = ['camera-entrance', 'camera-pickup', 'camera-mast-314', '
 export const SPEAKERS = [...AGENTS, ...PEOPLE, ...OTHERS] as const;
 /** The action panel's verbs: one id each (the host's Slots ids; `ask`…`pressure` are the Fixer's `turn` with an approach). */
 export const VERBS = ['watch', 'listen', 'mislead', 'ask', 'pay', 'help', 'pressure', 'call', 'loop', 'disable', 'reroute', 'enter', 'take',
-  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field'] as const;
+  'board', 'go', 'drive-car', 'spawn', 'fire', 'draw', 'holster', 'cease', 'stance', 'panic', 'carry', 'takedown', 'drop', 'stash', 'restrain', 'move', 'run', 'cancel', 'withdraw', 'volley', 'field',
+  'mark', 'talk-down', 'steam', 'covering-fire'] as const; // brief 039 (engine 0.35.0): one move each (Keel's draft words in text.json, Fable to confirm)
 /** brief 025 (the playground): `drive` is a control, not a panel order. The player moves an agent by hand and `release` hands control back (both are Order.Do "drive"); it has an action entry (label, Alt line) but no acknowledgement, no exchange and no price line, since a sample goes in every tick. */
 export const CONTROL_VERBS = ['drive', 'trigger', 'follow', 'free'] as const; // free: weapons free (engine 0.19.0, tuning.md §14)
 /** `turn` stands for any of the four approaches (the Fixer's reaction to how it went). `turn-view` is the camera hint H13 (brief 016): a control, not an order, so it is no engine verb.

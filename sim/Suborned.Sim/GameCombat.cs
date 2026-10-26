@@ -182,12 +182,14 @@ namespace Suborned.Sim
         /// applied together at the end (accumulators at the decision, then damage, then down).</summary>
         void Combat()
         {
-            pending.Clear();
+            pending.Clear(); shotEvents.Clear(); // brief 039: the host's shot events are this tick's
             foreach (var op in Ops) { var g = op.Gun; if (g.HolsterAt >= 0 && Tick >= g.HolsterAt) { g.Drawn = false; g.HolsterAt = -1; g.DrawnBy = ""; } }
             if (Lab) { LabCharges(); foreach (var op in Ops) LabTidy(op); } // brief 027 (EXPERIMENTAL): charge back while resting; orders cleared elsewhere
             else foreach (var op in Ops) if (op.CloseWalk && op.Gun.Order.Length == 0) { op.CloseWalk = false; op.Walk = null; op.WalkMm = 0; } // brief 030: a walk into range whose fire order ended elsewhere stops
+            if (!Lab && CoverSnapOn) foreach (var op in Ops) KeepCover(op); // brief 039 (weapons.takeCover): a snapped agent keeps its point while it walks to it or stands by it
             AutoHolster(); // brief 030 (weapons.autoHolster)
             IntentTick(); IntentEngage(); // engine 0.19.0 (ai.intent): what the crew sees; the guard or patrol engaging a known face
+            CoveringFireStep(); // brief 039 (weapons.moves.cover): the Enforcer's covering fire, its pins and its rounds (GameCoverPin.cs)
             foreach (var op in Ops) CellShooter(op);
             if (GuardAlly && FightSprung != INF) AllyBody();
             var security = new List<string>();
@@ -243,13 +245,19 @@ namespace Suborned.Sim
                     Note("fire.done", $"{name}: the fight is over. The fire order on {g.Order} ends.");
                     OrderEnd(op, true);
                 }
-                else if (g.Reached && PosOf(g.Order) is Pt rp && !G.Within(op.Pos, rp, g.W.MaxCm)) // engine 0.21.0 (Sky 2026-10-22, brief 041): a lasting order keeps firing on the move, walk or run, until the target is out of range
+                else if (StickyOn && HostileOf(g.Order) is Hostile bh && (bh.Gun.St == "break" || bh.Gun.St == "gone")) // brief 039 (weapons.focus): a broken target ends it
+                {
+                    Note("fire.done", $"{name}: {g.Order} is broken. The fire order ends.");
+                    OrderEnd(op, true);
+                }
+                else if (!StickyOn && g.Reached && PosOf(g.Order) is Pt rp && !G.Within(op.Pos, rp, g.W.MaxCm)) // brief 039: the sticky focus waits instead; engine 0.21.0 (Sky 2026-10-22, brief 041): a lasting order keeps firing on the move, walk or run, until the target is out of range
                 {
                     Note("fire.out-of-range", $"{name}: {g.Order} is out of range ({g.W.MaxCm / 100} m). The fire order ends.");
                     OrderEnd(op, false);
                 }
             }
             if (op.CloseWalk && g.Order.Length > 0 && PosOf(g.Order) is Pt cp && G.Within(op.Pos, cp, g.W.EffCm) && SeesId(op.Pos, g.Order, cp)) { op.Walk = null; op.WalkMm = 0; op.CloseWalk = false; } // brief 027 fire.close: in the ring with a line, stand (even while still drawing: PreviewFire.StopAt)
+            if (op.Id == OpId.Enforcer && cfT.Length > 0) return; // brief 039: his covering fire is his fire while it runs (CoveringFireStep)
             if (op.Busy != null || op.Carrying.HasValue || op.CarryBody.Length > 0 || CarriesVale(op) || !Ready(g)) return; // brief 018: walking Vale, the Enforcer doesn't fire; tuning.md §8.2 (engine 0.15.0): a runner fires, at its gait
             if (Lab && op.FieldUntil > Tick) return; // brief 027: the field holds, nothing fires
             if (!R.CoverStepFires && op.Walk != null && op.Gun.Cover.Length > 0 && CoverById(op.Gun.Cover) is CoverPoint sc && G.Within(op.Walk.End, sc.At, R.CoverSnapCm)) return; // tuning.md §8.3 fallback: a cover-snap walk fires nothing (the lab's snap)
@@ -271,6 +279,15 @@ namespace Suborned.Sim
             {
                 if (trig && g.TrigTap && Tick >= g.NextShot) { g.TrigTap = false; Note("fire.tap-lost", $"{name} has no line on {t}: the shot is not fired."); } // §11.4: ready, nothing to fire at
                 if (trig || follow) return; // never walked to join, never lapses: it fires once it has reach and a line
+                if (t == g.Order && StickyOn && (g.Reached || op.CloseSpent || !CloseOn)) // brief 039 (weapons.focus): the focus waits, the agent fights on its own
+                {
+                    if (g.LostAt < 0) { g.LostAt = Tick; Note("fire.focus-waits", $"{name}: {t} is {(d > g.W.MaxCm ? "out of reach" : "out of line")}. The focus waits; {name} fights on."); }
+                    var t2 = FreeApplies ? FreeTarget(op) : BaseStanceTarget(op);
+                    if (t2.Length == 0 || t2 == t || !(PosOf(t2) is Pt at2)) return;
+                    long d2 = Dist(op.Pos, at2); if (d2 > g.W.MaxCm || !SeesId(op.Pos, t2, at2)) return;
+                    Aim(g, t2, false); if (Tick >= g.NextShot) { Shoot(name, g, op.Pos, t2, at2, d2, OpGait(op, at2), op.Id == OpId.Enforcer && Vale == ValeAt.WithEnforcer); opShotTick[(int)op.Id] = Tick; }
+                    return;
+                }
                 if (t == g.Order)
                 {
                     if (CloseOn && !op.CloseSpent) { if (op.Walk == null && !op.Driven && Tick >= op.CloseAt && !CloseIn(op, at)) op.CloseAt = Tick + Hz; return; } // brief 027 fire.close: walk into range; no lapse (a run goes on first: tuning.md §8.2 rule 2)
@@ -332,7 +349,7 @@ namespace Suborned.Sim
 
         // ---------------------------------------------------------------- a shot
 
-        sealed class PendingShot { public string By = "", T = ""; public Gun G = null!; public Pt At, From; public long D; public int Acc, Dmg; public bool Hit; }
+        sealed class PendingShot { public string By = "", T = ""; public Gun G = null!; public Pt At, From; public long D; public int Acc, Dmg; public bool Hit, Covering; } // Covering: brief 039's covering fire, a round that never hits
         readonly List<PendingShot> pending = new List<PendingShot>();
 
         /// <summary>A body fires: the accumulator moves now (it is the shooter's), the shot lands with the others at the end of the tick.</summary>
@@ -363,13 +380,16 @@ namespace Suborned.Sim
                 RoundsEnd("gunfire"); // brief 022: any shot ends the round
                 FightShot(s.By, s.T, s.From); // the public hears it: one fight, judged when it ends (fight.public)
                 if (IsOpId(s.T)) CellFiredOn = true;
-                Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
+                if (s.Covering) Note("shot.covering", $"{s.By} lays covering fire on {s.T} at {s.D / 100} m.");
+                else Note(s.Hit ? "shot.hit" : "shot.miss", $"{s.By} fires on {s.T} at {s.D / 100} m ({s.Acc} ‰): {(s.Hit ? "hit" : "miss")}.");
+                int ev = shotEvents.Count; shotEvents.Add(new ShotEvent { Tick = Tick, By = s.By, Target = s.T, From = s.From, At = s.At, Hit = s.Hit, Covering = s.Covering, Damage = s.Hit ? s.Dmg : 0, Covered = !s.Hit && !s.Covering && s.D > R.PointBlankCm && CoverMod(s.T, s.At, s.From) < 1000 }); // brief 039: the host's events (output only)
                 if (FightBranch == "safe" && FightSprung == INF && IsOpId(s.By) && IsRival(s.T) && IsFightHostile(s.T)) Spring(true); // brief 059: the crew lurks in plain sight; a shot at one of them springs the ambush
                 bool cell = IsOpId(s.By), untraced = cell && (Range || IsFightHostile(s.T) && !R.FightTraced && FightOverTick == INF); // brief 029: nothing in the range is traced; tuning.md §9.1: after fight.over a hostile is an ordinary person again (traced)
                 if (cell) CellGunfire(OpOf(Sim.Op.Parse(s.By)), s.T, s.At, untraced);
                 else if (!IsFightHostile(s.By) && !(s.By == "guard" && GuardAlly)) RaiseAlert(R.GunfireAlert, "gunfire:" + s.By); // any gunfire (§05)
                 if (Over) return;
                 if (s.Hit && !tg.Down) Damage(s.T, tg, IsOpId(s.T) ? Absorb(OpOf(Sim.Op.Parse(s.T)), s.Dmg) : s.Dmg, s.By, cell, untraced); // brief 027: damage at the distance (the riot gun's near band), the field first
+                if (tg.Down && ev < shotEvents.Count) { var e = shotEvents[ev]; e.Down = true; shotEvents[ev] = e; }
             }
             resolving = null;
             pending.Clear();
@@ -740,6 +760,7 @@ namespace Suborned.Sim
             var g = op.Gun;
             if (!g.Drawn || g.HolsterAt >= 0) return No("not-drawn", "no weapon drawn");
             g.HolsterAt = Tick + R.HolsterTicks; g.Order = ""; g.Force = false; g.Target = ""; ClearTrigger(g); // tuning.md §11: holstering drops the aim
+            if (op.Id == OpId.Enforcer) EndCoveringFire("holstered"); // brief 039
             if (Lab) LabTidy(op);
             Note("order.holster", $"{Sim.Op.Name(op.Id)} holsters.");
             return "";
@@ -851,6 +872,7 @@ namespace Suborned.Sim
                 g.Then = o.Then;
             }
             if (!g.Drawn || g.HolsterAt >= 0) { StartDraw(op); g.DrawnBy = "fire"; } // brief 030: drawn by the fight, holstered after it
+            if (op.Id == OpId.Enforcer) EndCoveringFire("a fire order"); // brief 039: a new fire order is his fire now
             g.Order = t; g.Force = o.Force; g.LostAt = -1; g.OrderTick = Tick; g.StandDown = -1; g.Reached = false; // tuning.md §14: a fire order ends a stand-down
             if (g.TrigT.Length > 0 || g.Trig || g.TrigTap) ClearTrigger(g); // tuning.md §11: a fire order given to the driven agent ends its trigger
             lockLead[(int)op.Id] = "";
@@ -869,6 +891,7 @@ namespace Suborned.Sim
             if (Lab) g.Then = "";
             if (!g.Drawn || g.HolsterAt >= 0) { StartDraw(op); g.DrawnBy = "fire"; }
             if (op.CloseWalk) { op.CloseWalk = false; op.Walk = null; op.WalkMm = 0; }
+            if (op.Id == OpId.Enforcer) EndCoveringFire("a focus"); // brief 039
             g.Order = t; g.Force = o.Force; g.LostAt = -1; g.OrderTick = Tick; g.StandDown = -1; g.Reached = false;
             op.CloseSpent = true;
             if (g.TrigT.Length > 0 || g.Trig || g.TrigTap) ClearTrigger(g);

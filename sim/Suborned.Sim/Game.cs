@@ -36,6 +36,20 @@ namespace Suborned.Sim
         /// <summary>Tuning.md §14 (engine 0.19.0): weapons free at the start. Null: the rulebook's weapons.free.start (on). Logged as a free order
         /// when it changes in play. Hashed into the start state when set.</summary>
         public bool? WeaponsFree;
+        /// <summary>Brief 039 (engine 0.35.0): whether the cell's agents are pinned by hostile fire for this run, over the rulebook's
+        /// weapons.pin.cell (Motive's open question; the range and Sky's test can try both). Null: the rulebook's. Hashed into the start when set.</summary>
+        public bool? PinCell;
+        /// <summary>Test only (brief 039, engine 0.35.0): false plays the controls before brief 039 (cease, stance, panic and free taken; weapons
+        /// free from the start or the rulebook), as a rulebook pinned before 0.35.0 does, for the scenarios whose scripted player needs them
+        /// (one shot then cease, weapons free off). Never in a route or a session; null, the rulebook's weapons.oneInput; hashed when set.</summary>
+        public bool? OneInput;
+        /// <summary>Test only (brief 039, engine 0.35.0): true plays the fight before brief 039 (weapons.oneInput, focus, takeCover, pin and moves
+        /// all off; the values stay the rulebook's), as a rulebook pinned before 0.35.0 plays it, for the scenarios of that fight's mechanics (the
+        /// fire order's lapse and out-of-range end, the stances, cease, panic, weapons free off). Never in a route or a session; hashed when set.</summary>
+        public bool Pre039;
+        /// <summary>Test only (brief 039, engine 0.35.0): heat-main grilles for the Tech's Steam, by id and point, until the site carries which grates
+        /// are heat mains (Motive, Vantage). Never in a route or a session; empty, every start hashes as before.</summary>
+        public readonly List<(string id, Pt at)> Grilles = new List<(string, Pt)>();
         /// <summary>Brief 022: the server's round. Null: the mission's data decides (on when the site carries a rounds file). false: off, the
         /// migration gate only (rounds off plays exactly as before the round existed); no recorded route sets it.</summary>
         public bool? Rounds;
@@ -67,7 +81,7 @@ namespace Suborned.Sim
         public static Start Parse(JNode? n)
         {
             var s = new Start(); if (n == null) return s;
-            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "valeWaits", "crewGone");
+            n.Only("rivalsAt", "turned", "known", "temperament", "cash", "finalFight", "crowd", "arms", "untie", "security", "standing", "rivalsPublic", "rounds", "holds", "drive", "fightLab", "heat", "followLock", "weaponsFree", "pinCell", "grilles", "oneInput", "pre039", "valeWaits", "crewGone");
             if (n.Opt("valeWaits") is JNode vw) s.ValeWaits = vw.Bool(); // brief 059: test only
             if (n.Opt("crewGone") is JNode cg) foreach (var x in cg.Items) { var id = x.Str(); if (!id.StartsWith("rival-", StringComparison.Ordinal) || s.CrewGone.Contains(id)) throw new FormatException($"{x.Path}: crewGone names rival-1..rival-5, once each"); s.CrewGone.Add(id); } // engine 0.33.0: test only
             if (n.Opt("fightLab") is JNode fl) // brief 027 (EXPERIMENTAL): the fight lab's switches; the rulebook checks the weapon ids when the game starts
@@ -105,6 +119,10 @@ namespace Suborned.Sim
             if (n.Opt("rivalsPublic") is JNode rp) { s.RivalsPublic = rp.Str(); if (Array.IndexOf(Rules.RivalsPublics, s.RivalsPublic) < 0) throw new FormatException($"{rp.Path}: rivalsPublic is one of {string.Join(", ", Rules.RivalsPublics)}"); }
             if (n.Opt("followLock") is JNode fk) s.FollowLock = fk.Bool(); // tuning.md §11.5
             if (n.Opt("weaponsFree") is JNode wf) s.WeaponsFree = wf.Bool(); // tuning.md §14
+            if (n.Opt("pinCell") is JNode pc) s.PinCell = pc.Bool(); // brief 039
+            if (n.Opt("oneInput") is JNode oin) s.OneInput = oin.Bool(); // brief 039, test only
+            if (n.Opt("pre039") is JNode p39) s.Pre039 = p39.Bool(); // brief 039, test only
+            if (n.Opt("grilles") is JNode gr) foreach (var x in gr.Items) { x.Only("id", "at"); var id = x["id"].Str(); if (id.Length == 0 || s.Grilles.Exists(q => q.id == id)) throw new FormatException($"{x.Path}: a grille has a unique id"); s.Grilles.Add((id, Pt.Of(x["at"]))); } // brief 039, test only
             if (n.Opt("heat") is JNode ht) { s.Heat = ht.Int(); if (s.Heat < 0 || s.Heat > 1000) throw new FormatException($"{ht.Path}: heat 0..1000"); } // brief 031
             if (n.Opt("standing") is JNode st) { s.Standing = st.Int(); if (s.Standing < -1000 || s.Standing > 1000) throw new FormatException($"{st.Path}: standing -1000..1000"); }
             if (n.Opt("untie") is JNode un) s.Untie.AddRange(un.Strs());
@@ -137,6 +155,10 @@ namespace Suborned.Sim
             if (Heat.HasValue) w.Prop("heat", Heat.Value); // brief 031: likewise
             if (FollowLock.HasValue) w.Prop("followLock", FollowLock.Value); // tuning.md §11.5: likewise
             if (WeaponsFree.HasValue) w.Prop("weaponsFree", WeaponsFree.Value); // tuning.md §14: likewise
+            if (PinCell.HasValue) w.Prop("pinCell", PinCell.Value); // brief 039: likewise
+            if (OneInput.HasValue) w.Prop("oneInput", OneInput.Value); // brief 039, test only: likewise
+            if (Pre039) w.Prop("pre039", true); // brief 039, test only: likewise
+            if (Grilles.Count > 0) { w.OpenArr("grilles"); foreach (var (id, at) in Grilles) w.Obj().Prop("id", id).Key("at").Raw($"[{at.X.ToString(System.Globalization.CultureInfo.InvariantCulture)},{at.Y.ToString(System.Globalization.CultureInfo.InvariantCulture)}]").EndObj(); w.EndArr(); } // brief 039, test only: likewise
             if (Rounds.HasValue) w.Prop("rounds", Rounds.Value); // brief 022: likewise
             if (DrivePace.HasValue || DriveGap.HasValue || DriveOnBusy != null || DriveOnRelease != null) // brief 025: only a playground start adds bytes
             {
@@ -258,7 +280,7 @@ namespace Suborned.Sim
             R = rules; S = site; Start = start ?? new Start(); People2 = crowd; Range = site.IsRange;
             StepLimit = HarnessStepLimit; // engine 0.34.0: a harness's bound (0 in the host)
             FollowLock = Start.FollowLock ?? false; // tuning.md §11.5
-            WeaponsFree = Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0)
+            WeaponsFree = (Start.OneInput ?? R.OneInput) && !Start.FightLabOn && !Start.Pre039 ? true : Start.WeaponsFree ?? R.FreeStart; // tuning.md §14 (engine 0.19.0); brief 039 (weapons.oneInput): always on, out of the lab
             if (crowd != null) foreach (var w in crowd.Walkers) Walkers.Add(w.Fresh());
             StartHash = Hash.Of(startText ?? "") ^ Hash.Of(Start.Canonical());
             eye = R.Eye; near = R.NearCm;
@@ -704,13 +726,14 @@ namespace Suborned.Sim
 
         /// <summary>A person's sight from `from` to `to` (rulebook perception; brief 055 §7 perception.mount: from the eye above its floor to the
         /// target's head or chest above its own, in 3D; off: one eye height over a flat datum). Fire lines read it too.</summary>
-        bool Sees(Pt from, Pt to) => R.MountOn ? SeesFrom(from, FloorAt(from) + eye, to) : S.Sight(from, to, eye);
+        bool Sees(Pt from, Pt to) => !Steamed(from, to) && (R.MountOn ? SeesFrom(from, FloorAt(from) + eye, to) : S.Sight(from, to, eye)); // brief 039: the Tech's steam
         /// <summary>The floor under p, block z cm (site grid.floor; brief 055).</summary>
         int FloorAt(Pt p) => S.Grid.FloorAt(p);
         /// <summary>Brief 055 §7: from an eye at height z (block cm) at `from`, the line to the target's head (its floor + eye) or its chest (its
         /// floor + chest) is clear: either is enough. own: the eye is a camera's lens, whose own piece never blocks it.</summary>
         bool SeesFrom(Pt from, int z, Pt to, bool own = false)
         {
+            if (Steamed(from, to)) return false; // brief 039: the Tech's steam blocks every line, a camera's too
             int f = FloorAt(to);
             return S.Sight3(from, z, to, f + eye, own) || S.Sight3(from, z, to, f + R.MountChestCm, own);
         }
@@ -720,7 +743,7 @@ namespace Suborned.Sim
         /// anything else is a person's head or chest (Sees).</summary>
         bool SeesId(Pt from, string id, Pt at)
         {
-            if (R.MountOn && id.StartsWith("camera:", StringComparison.Ordinal)) { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return S.Sight3(from, FloorAt(from) + eye, c.At, LensZ(c), false, true); }
+            if (R.MountOn && id.StartsWith("camera:", StringComparison.Ordinal)) { var cid = id.Substring(7); foreach (var c in S.Cameras) if (c.Id == cid) return !Steamed(from, c.At) && S.Sight3(from, FloorAt(from) + eye, c.At, LensZ(c), false, true); } // brief 039: the steam too
             return Sees(from, at);
         }
         bool CrowdId(Pt from, string id, Pt at)

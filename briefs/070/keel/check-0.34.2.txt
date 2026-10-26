@@ -1,4 +1,3 @@
-$ bun tools/game/playing.ts dotnet run --project sim/cli -c Release -- check
 S01: ok
 S02: ok
 S03: ok
@@ -355,4 +354,4 @@ SQ1-STEP: ok
 SQ2-NO-STALL: ok
 SQ2-CLOSES: ok
 FACT-PATROL: ok
-356/356 ok · most Step calls 5100 (N124; limit 60000) · slowest 7.1 s (N187)
+356/356 ok · most Step calls 5100 (N124; limit 60000) · slowest 15.2 s (N187)

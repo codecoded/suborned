@@ -179,13 +179,14 @@ namespace Suborned.Sim
             Func<Pt, bool> sees = p => Sees(pos, p);
             var foes = g.St == "break" ? new List<(string, Pt)>() : FoesInReach(h.Id, g, pos, sees, true);
             bool moving = h.Moving(Tick);
+            bool pinHold = PinHolds(g); // brief 039 (weapons.pin.hold): a pinned body holds, it doesn't advance
             switch (g.St) // one transition a tick (Pulse §1.4)
             {
                 case "alerted":
                     if (Tick >= g.Until)
                     {
                         if (foes.Count > 0) { g.St = "engage"; var t0 = ChooseTarget(h.Id, g, pos, foes); g.Target = t0; g.Acc = AccFor(g, t0); g.NextShot = Math.Max(g.NextShot, Tick); } // the wait was the aim
-                        else { g.St = "advance"; Advance(h); }
+                        else if (!pinHold) { g.St = "advance"; Advance(h); } // brief 039: pinned, it waits where it is
                     }
                     break;
                 case "advance":
@@ -199,15 +200,15 @@ namespace Suborned.Sim
                         else if (Tick - g.NoFoeSince >= T(R.EngageLapseS))
                         {
                             g.NoFoeSince = -1; LoseTarget(g);
-                            if (IsHolder(h) && pos == h.Home) g.St = "hold"; else if (IsHolder(h) && KiteHolds(g)) g.St = "hold"; else { g.St = "advance"; Advance(h); } // brief 027 F2: no walk home while alarmed
+                            if (IsHolder(h) && pos == h.Home) g.St = "hold"; else if (IsHolder(h) && KiteHolds(g)) g.St = "hold"; else if (pinHold) g.St = "hold"; else { g.St = "advance"; Advance(h); } // brief 027 F2: no walk home while alarmed; brief 039: pinned, it holds
                         }
                     }
                     else g.NoFoeSince = -1;
                     break;
                 case "hold":
                     if (foes.Count > 0) { g.St = "engage"; g.NoFoeSince = -1; }
-                    else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { g.St = "advance"; Advance(h); }
-                    else if (!IsHolder(h) && IsRival(h.Id) && !moving && FightBranch == "safe") // engine 0.34.0 (Motive M067-SQ2): no stall
+                    else if (IsHolder(h) && pos != h.Home && !moving && !KiteHolds(g)) { if (!pinHold) { g.St = "advance"; Advance(h); } } // brief 039: pinned, it holds
+                    else if (!IsHolder(h) && IsRival(h.Id) && !moving && FightBranch == "safe" && !pinHold) // engine 0.34.0 (Motive M067-SQ2): no stall; brief 039: not while pinned
                     {
                         if (g.NoFoeSince < 0) g.NoFoeSince = Tick;
                         else if (Tick - g.NoFoeSince >= T(R.EngageLapseS)) { g.NoFoeSince = -1; AdvanceOnOp(h, pos); }
@@ -295,7 +296,7 @@ namespace Suborned.Sim
         {
             int n = 0, down = 0;
             bool Crew(Hostile h) => IsRival(h.Id) && (!Range || who == null || h.Wave == who.Wave); // brief 029: in the range a crew is one spawn
-            foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down) down++; }
+            foreach (var h in Hostiles) if (Crew(h)) { n++; if (h.Down || talked.Contains(h.Id)) down++; } // brief 039: a rival talked down counts as one down
             if (down * 2 <= n) return;
             bool any = false;
             var carAt = Range ? S.Stand(S.RivalsPark) : RivalCarPose() is var rcp && rcp.HasValue ? Walk.NearestFree(rcp.Value.pos) ?? rcp.Value.pos : S.Stand(S.RivalsPark); // brief 059: they run for their car where it stands

@@ -150,6 +150,8 @@ namespace Suborned.Sim
             g.HashGetaway(h);
             if (g.AutoHolsterDue >= 0) h.S("auto-holster").I(g.AutoHolsterDue); // brief 030: only while one is due
             g.HashAttention(h); // brief 031: no bytes until a watcher's clock has moved
+            g.HashEntrySeen(h); // engine 0.34.2: no bytes until the patrol has reported an Enter
+            g.HashCoverPin(h); // engine 0.35.0 (brief 039): no bytes until a pin, a move, a mark, steam, covering fire or a talk-down is live
             g.HashStashWatch(h); // container rounds learned by Watch (§05): no bytes until one is learned
             if (g.Lab) g.HashLab(h);
             else { g.HashKiteToday(h); g.HashCloseToday(h); } // tuning.md §7.9 the kite in today; brief 030 the walk-in in today // brief 027: only a run with the fight lab on adds bytes

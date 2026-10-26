@@ -327,12 +327,14 @@ def bakes_xz(c):
     return not c.get('loco', False) and not c.get('travelsM')
 
 
-def clip_meta(rel, name, take, first, last, loop, feet=False, bake_xz=True):
+def clip_meta(rel, name, take, first, last, loop, feet=False, bake_xz=True, additive_ref=None):
     """A clip-only FBX (Mixamo library file): Humanoid, its own avatar, one clip `name` from take `take`, looping or not.
     bake_xz: Root Transform Position (XZ) Bake Into Pose, based on Original. The figures play with applyRootMotion off, so an unbaked clip has its root's
     sideways travel stripped: the body's centre is held still and the planted feet slide (Sky on 0.2.122, idles sliding left and right; Breathing_Idle
     shifts the hips 18.8 cm). Every clip that stays in place bakes it (the hips sway, the feet stay put); locomotion (clips.json `loco`) and the one-shots
-    that travel (`travelsM`) do not: bakes_xz above (brief 067, briefs/067/forma-sway.md)."""
+    that travel (`travelsM`) do not: bakes_xz above (brief 067, briefs/067/forma-sway.md).
+    additive_ref: for a clip played on an additive layer (clips.json `additive`), the take's frame used as its Additive Reference Pose (brief 039: the authored
+    flinch_add, kick_add, pin_peek_add hold their reference at frame 0, so they add only their turns); None = the clip's own first frame, as before."""
     lp = 1 if loop else 0
     xz = 1 if bake_xz else 0
     body = f"""
@@ -347,7 +349,7 @@ def clip_meta(rel, name, take, first, last, loop, feet=False, bake_xz=True):
       level: 0
       cycleOffset: 0
       loop: 0
-      hasAdditiveReferencePose: 0
+      hasAdditiveReferencePose: {{has_ref}}
       loopTime: {lp}
       loopBlend: {lp}
       loopBlendOrientation: 1
@@ -364,8 +366,9 @@ def clip_meta(rel, name, take, first, last, loop, feet=False, bake_xz=True):
       transformMask: []
       maskType: 3
       maskSource: {{instanceID: 0}}
-      additiveReferencePoseFrame: 0"""
+      additiveReferencePoseFrame: {{ref_frame}}"""
     body = body.replace('{orig_y}', '0' if feet else '1').replace('{from_feet}', '1' if feet else '0')
+    body = body.replace('{has_ref}', '0' if additive_ref is None else '1').replace('{ref_frame}', '0' if additive_ref is None else _f(additive_ref))
     return _MODEL_HEAD.format(guid=guid(rel), externals="", clips=body, import_anim=1, avatar_setup=1).replace("  externalObjects:\n  materials:", "  externalObjects: {}\n  materials:")
 
 

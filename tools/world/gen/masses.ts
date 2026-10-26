@@ -2,7 +2,7 @@
 // a body, a setback and, at standards.buildings.towers.sites, a tower. Heights come from H(n), the bands and the caps.
 import { type V, add, cross, dist, dot, len, mul, norm, sub } from '../../plan/geom';
 import type { Mass } from '../../../contracts/world/world.schema';
-import { type Ctx, type Rng, heightOf, r3, rng, rv, storeysUnder } from './common';
+import { type Ctx, type Rng, bandFor, heightOf, r3, rng, rv, storeysUnder } from './common';
 import { buildingLine, kindOf, plotRing } from './edges';
 import { type Rect, type Ring, areaOf, fit, insetBoth, insetRing, isSimple, bbox, clipHalf, growRect, inset, offsetPts, rectPts, subtractRect } from './geo';
 import { signatureGrounds } from './signatures';
@@ -115,8 +115,12 @@ function slabs(ctx: Ctx, piece: Ring, r: Rng): Ring[] {
 }
 
 function storeysFor(ctx: Ctx, use: string, area: string, ring: Ring, r: Rng): number {
-  const band = ctx.B.bands[use], [lo, hi] = band.storeys as [number, number];
+  const band = ctx.B.bands[use], [lo, hi] = band.storeys as [number, number], cb = bandFor(ctx.B, use, area);
   const cap = ctx.B.caps?.[area]?.m as number | undefined, parkEdge = ring.c.some(c => kindOf(c) === 'park');
+  if (cb.capped) { // brief 066: the play-street band (no park-edge storey over the cap)
+    const n = r.weighted(Array.from({ length: cb.hi - cb.lo + 1 }, (_, i) => cb.lo + i), k => 1 + 5 * Math.exp(-((k - cb.mode) ** 2) / 2));
+    return cap ? Math.min(n, storeysUnder(ctx.B, cap)) : n;
+  }
   let n = r.weighted(Array.from({ length: hi - lo + 1 }, (_, i) => lo + i), k => 1 + 5 * Math.exp(-((k - band.mode) ** 2) / 2));
   if (use === 'residential' && parkEdge) n = Math.min(hi, n + 1);
   return cap ? Math.min(n, storeysUnder(ctx.B, cap)) : n;
@@ -221,9 +225,9 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
         n = storeysFor(ctx, use, plot.area, ring, br);
         const same = mine.filter(m => !m.shed && m.n === n && adjacent(m.ring, ring));
         if (same.length) { // neighbour contrast: re-draw from the same weights without the neighbours' storeys (kept if the band offers nothing else)
-          const band = ctx.B.bands[use], [lo, hi] = band.storeys as [number, number], cap = ctx.B.caps?.[plot.area]?.m as number | undefined, top = cap ? Math.min(hi, storeysUnder(ctx.B, cap)) : hi;
+          const cb = bandFor(ctx.B, use, plot.area), lo = cb.lo, top = cb.hi; // brief 066: the play-street band where it applies
           const others = Array.from({ length: top - lo + 1 }, (_, i) => lo + i).filter(x => !mine.some(m => !m.shed && adjacent(m.ring, ring) && m.n === x));
-          if (others.length) n = rng(`${id}/contrast`).weighted(others, x => 1 + 5 * Math.exp(-((x - band.mode) ** 2) / 2));
+          if (others.length) n = rng(`${id}/contrast`).weighted(others, x => 1 + 5 * Math.exp(-((x - cb.mode) ** 2) / 2));
         }
       }
       if (use === 'port' && !shed) kind = 'office';

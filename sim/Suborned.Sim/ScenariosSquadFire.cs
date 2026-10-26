@@ -145,7 +145,7 @@ namespace Suborned.Sim
             });
             cant.Start.Arms = 1;
 
-            AddRange("QF-FOCUS", "today", "lane", "the focus click in a fight: a focus out of reach is taken and never walks in, so the Scout 20 m off never fires and its lock lapses; a fire order walks in (the others hold, so officer-2 stays up)", r =>
+            AddRange("QF-FOCUS", "pre039", "lane", "the focus click in a fight: a focus out of reach is taken and never walks in, so the Scout 20 m off never fires and its lock lapses; a fire order walks in (the others hold, so officer-2 stays up)", r =>
             {
                 var g = r.G; var h = g.RangeSlot("near", 1);
                 var posts = new (string op, double deg, int cm)[] { ("enforcer", -10, 1200), ("fixer", -4, 1200), ("scout", 2, 2000), ("tech", 8, 1200) };

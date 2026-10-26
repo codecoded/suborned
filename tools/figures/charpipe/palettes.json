@@ -1,0 +1,356 @@
+{
+ "schema": "suborned.charpipe.palettes/1",
+ "brief": "069 (proof, scratch)",
+ "note": "Every colour a figure may wear, by name, with its source. The generator lays them out in this order as 16 px cells of one shared 256 x 256 palette texture (cp_palette_albedo.png, sRGB, no mips, point filter) and points each face's UV at the cell centre of its colour: one material for every figure and LOD. metal/smooth go into cp_palette_metal.png (R metallic, G occlusion 1, A smoothness) for the same cell. Brass is a thin line only (hem bands), never a panel. Amber and violet are world colours on cloth (GDD §15: signals don't own them). Round 2 (Glyph's read): the commuter block pool holds no yellow, orange or gold (guards) and no violet or magenta (rivals); commuters wear one block on a cream, ivory or ink base, never head to toe; guards a deeper amber over ivory or ink; cafe seafoam with a white apron and a chrome line, never peach. D is the dark step every figure carries (belt, yoke, band or boots).",
+ "colours": {
+  "cream_stone": {
+   "hex": "#e4e0d3",
+   "src": "style contract palette / GDD §15 concept sheets"
+  },
+  "paper_cream": {
+   "hex": "#f3eadb",
+   "src": "GDD §15 concept sheets"
+  },
+  "warm_sand": {
+   "hex": "#dac9b2",
+   "src": "GDD §15 concept sheets"
+  },
+  "stone_shadow": {
+   "hex": "#a2937e",
+   "src": "GDD §15 concept sheets"
+  },
+  "ivory_uniform": {
+   "hex": "#f0efed",
+   "src": "GDD §15 concept sheets (security + institutions: ivory)"
+  },
+  "ink_black": {
+   "hex": "#292628",
+   "src": "GDD §15 concept sheets (security: ink black)"
+  },
+  "haze_teal": {
+   "hex": "#a7c2cb",
+   "src": "GDD §15 concept sheets"
+  },
+  "sky_cerulean": {
+   "hex": "#719fb5",
+   "src": "style contract palette"
+  },
+  "zenith_cobalt": {
+   "hex": "#296587",
+   "src": "GDD §15 concept sheets"
+  },
+  "teal_enamel": {
+   "hex": "#94a9a3",
+   "src": "style contract palette"
+  },
+  "mint_enamel": {
+   "hex": "#9fd1c9",
+   "src": "GDD §15 concept sheets"
+  },
+  "coral_transit": {
+   "hex": "#c8835e",
+   "src": "style contract palette"
+  },
+  "vermilion": {
+   "hex": "#b8432f",
+   "src": "GDD §15 concept sheets"
+  },
+  "accent_teal": {
+   "hex": "#36b0a8",
+   "src": "harbour.json accent_teal"
+  },
+  "accent_turquoise": {
+   "hex": "#1cb9c6",
+   "src": "harbour.json accent_turquoise"
+  },
+  "accent_coral": {
+   "hex": "#fc9c84",
+   "src": "harbour.json accent_coral"
+  },
+  "accent_flamingo": {
+   "hex": "#e8609a",
+   "src": "harbour.json accent_flamingo"
+  },
+  "accent_mint": {
+   "hex": "#7fd0b8",
+   "src": "harbour.json accent_mint"
+  },
+  "accent_peach": {
+   "hex": "#fcc4ac",
+   "src": "harbour.json accent_peach (cafe peach)"
+  },
+  "enamel_cobalt": {
+   "hex": "#2f84e8",
+   "src": "harbour.json enamel"
+  },
+  "sign_sunshine": {
+   "hex": "#fdeb8c",
+   "src": "harbour.json sign"
+  },
+  "navy": {
+   "hex": "#23365e",
+   "src": "concept commuters__spaceage_bold (navy suit, sampled by eye)"
+  },
+  "mustard": {
+   "hex": "#d9a634",
+   "src": "concept commuters__spaceage_bold (mustard shift dress, sampled by eye)"
+  },
+  "guard_amber": {
+   "hex": "#f0a020",
+   "src": "GDD §15 guard amber, as a world colour on cloth"
+  },
+  "guard_amber_deep": {
+   "hex": "#c97d14",
+   "src": "guard amber, one step darker (uniform variety)"
+  },
+  "guard_amber_sand": {
+   "hex": "#e3b25a",
+   "src": "guard amber toward warm_sand (uniform variety; concept security__spaceage_duty_2 tan suit)"
+  },
+  "violet_set": {
+   "hex": "#6b4f8f",
+   "src": "GDD §15 violet_set (Velvet Set)"
+  },
+  "violet_signal_cloth": {
+   "hex": "#8a4fd0",
+   "src": "GDD §15 rivals violet, as a world colour on cloth"
+  },
+  "violet_deep": {
+   "hex": "#45305e",
+   "src": "violet_set, one step darker (crew variety)"
+  },
+  "violet_plum": {
+   "hex": "#7b3f73",
+   "src": "violet_set toward flamingo (crew variety)"
+  },
+  "chrome": {
+   "hex": "#cbc6c3",
+   "src": "GDD §15 chrome",
+   "metal": 0.6,
+   "smooth": 0.45
+  },
+  "silver_boot": {
+   "hex": "#d8d8dc",
+   "src": "concept commuters (silver boots)",
+   "metal": 0.5,
+   "smooth": 0.4
+  },
+  "brass_line": {
+   "hex": "#99784d",
+   "src": "GDD §15 brass, thin line only",
+   "metal": 0.5,
+   "smooth": 0.35
+  },
+  "boot_white": {
+   "hex": "#f2f0ea",
+   "src": "GDD §15 people: white boots"
+  },
+  "skin_1": {
+   "hex": "#f1d3bf",
+   "src": "skin range, Forma (proof)"
+  },
+  "skin_2": {
+   "hex": "#e3b598",
+   "src": "skin range, Forma (proof)"
+  },
+  "skin_3": {
+   "hex": "#c99273",
+   "src": "skin range, Forma (proof)"
+  },
+  "skin_4": {
+   "hex": "#a86d4e",
+   "src": "skin range, Forma (proof)"
+  },
+  "skin_5": {
+   "hex": "#7d4b33",
+   "src": "skin range, Forma (proof)"
+  },
+  "skin_6": {
+   "hex": "#563322",
+   "src": "skin range, Forma (proof)"
+  },
+  "hair_black": {
+   "hex": "#1e1a19",
+   "src": "hair range, Forma (proof)"
+  },
+  "hair_dark": {
+   "hex": "#3b2a21",
+   "src": "hair range"
+  },
+  "hair_brown": {
+   "hex": "#6a4630",
+   "src": "hair range"
+  },
+  "hair_auburn": {
+   "hex": "#8c4a2b",
+   "src": "hair range"
+  },
+  "hair_blond": {
+   "hex": "#c9a46a",
+   "src": "hair range"
+  },
+  "hair_grey": {
+   "hex": "#9a9590",
+   "src": "hair range"
+  },
+  "hair_white": {
+   "hex": "#dcd8d0",
+   "src": "hair range"
+  },
+  "eye_dark": {
+   "hex": "#2a2224",
+   "src": "eyes at play zoom: one dark cell"
+  },
+  "seafoam_band": {
+   "hex": "#7fc8b8",
+   "src": "civic block: seafoam enamel bands (GDD §15 civic, CLAUDE.md look), nearest kit tone harbour.json accent_mint #7fd0b8 darkened by eye"
+  },
+  "deep_teal": {
+   "hex": "#1f5c5a",
+   "src": "civic block: deep teal enamel bands (agent art bible, civic block)"
+  },
+  "guard_amber_cloth": {
+   "hex": "#e08a14",
+   "src": "GDD §15 guard amber #f0a020 as cloth, one step deeper so it lands near #f0a020 once lit (Glyph's read, round 1: the lit #ffc040 drifted toward sunshine)"
+  }
+ },
+ "sets": {
+  "skin": [
+   "skin_1",
+   "skin_2",
+   "skin_3",
+   "skin_4",
+   "skin_5",
+   "skin_6"
+  ],
+  "hair_young": [
+   "hair_black",
+   "hair_dark",
+   "hair_brown",
+   "hair_auburn",
+   "hair_blond"
+  ],
+  "hair_old": [
+   "hair_grey",
+   "hair_white",
+   "hair_dark"
+  ],
+  "commuter_block": [
+   "accent_turquoise",
+   "accent_teal",
+   "enamel_cobalt",
+   "zenith_cobalt",
+   "sky_cerulean",
+   "mint_enamel",
+   "accent_mint",
+   "vermilion"
+  ],
+  "commuter_base": [
+   "paper_cream",
+   "cream_stone",
+   "ivory_uniform",
+   "ink_black",
+   "navy",
+   "warm_sand"
+  ],
+  "commuter_trim": [
+   "chrome",
+   "ivory_uniform",
+   "ink_black"
+  ],
+  "commuter_boots": [
+   "boot_white",
+   "silver_boot",
+   "ink_black",
+   "boot_white"
+  ],
+  "guard_main": [
+   "guard_amber_cloth",
+   "guard_amber_cloth",
+   "guard_amber_deep"
+  ],
+  "guard_second": [
+   "ivory_uniform",
+   "ink_black"
+  ],
+  "guard_trim": [
+   "chrome",
+   "ivory_uniform"
+  ],
+  "guard_hat": [
+   "ivory_uniform",
+   "guard_amber_cloth"
+  ],
+  "guard_boots": [
+   "boot_white",
+   "ink_black"
+  ],
+  "rival_main": [
+   "violet_set",
+   "violet_deep",
+   "violet_plum",
+   "violet_signal_cloth"
+  ],
+  "rival_second": [
+   "ink_black",
+   "violet_deep",
+   "stone_shadow"
+  ],
+  "rival_trim": [
+   "chrome",
+   "ink_black"
+  ],
+  "rival_boots": [
+   "ink_black",
+   "silver_boot"
+  ],
+  "cafe_main": [
+   "seafoam_band",
+   "mint_enamel",
+   "accent_teal"
+  ],
+  "cafe_second": [
+   "ivory_uniform",
+   "paper_cream"
+  ],
+  "cafe_trim": [
+   "chrome"
+  ],
+  "cafe_boots": [
+   "boot_white",
+   "paper_cream"
+  ],
+  "clerk_main": [
+   "seafoam_band",
+   "deep_teal",
+   "ivory_uniform"
+  ],
+  "clerk_second": [
+   "ivory_uniform",
+   "paper_cream",
+   "deep_teal"
+  ],
+  "clerk_trim": [
+   "chrome",
+   "brass_line"
+  ],
+  "commuter_line": [
+   "chrome",
+   "ivory_uniform",
+   "brass_line"
+  ],
+  "commuter_bag": [
+   "chrome",
+   "ivory_uniform",
+   "ink_black",
+   "paper_cream"
+  ],
+  "cafe_apron": [
+   "ivory_uniform",
+   "boot_white"
+  ],
+  "dark": [
+   "ink_black"
+  ]
+ }
+}

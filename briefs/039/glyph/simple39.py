@@ -58,16 +58,18 @@ import count39 as C39
 _REG = C39.REG
 def _m(kind, group="street"): _REG.append((kind, group))
 
+BUILT_RING = (94, 208, 212)        # the selected agent's ring in the 0.2.122 capture: a 0.1 m band on the ground, centre-line 0.40 m (fitted: 15.5 x 9.3 px, 4 px wide at its sides)
 def ring_sel(fr, feet):
-    """the selected agent's ring on the ground (as built: the capture's bold cyan ring; the unselected cell have none): one line, turquoise-light"""
-    _m("ring"); stroke(fr.world, ellipse_pts(feet, 0.47), TURQL, 2.6, closed=True)
+    """the selected agent's ring on the ground, as built (the capture's own: a 0.1 m band, its colour); the unselected agents' thin rings are gone"""
+    _m("ring"); out = ellipse_pts(feet, 0.45, 0, 360, 72); inn = ellipse_pts(feet, 0.35, 0, 360, 72)[::-1]
+    stroke(fr.world, out + inn, BUILT_RING, 0.1, closed=True, fill=BUILT_RING, fill_alpha=245)
 
 def ring_focus(fr, feet):
     """the ring under the focus: the threat red of 049's rings (he fires on the cell), one line; no ticks (the body shows the exchange)"""
     _m("ring"); gline(fr, ellipse_pts(feet, 0.54), RED, 3.0, closed=True)
 
-def focus_marker(fr, head, cams=(SCOUT,)):
-    """the lock disc over the focus (067 D, as built), above his head in screen space, with the cameo of who holds it"""
+def focus_marker(fr, head, cams=()):
+    """the lock disc over the focus (067 D, as built), above his head in screen space. No cameos under it: the shooters face him"""
     _m("disc"); reticle39(fr, (head[0], head[1] - 50), "locked", cams=list(cams))
 
 def focus_pips(fr, head, n, left, flash=0):
@@ -76,11 +78,14 @@ def focus_pips(fr, head, n, left, flash=0):
 def fx_flash(fr, at, ang=-5): _m("flash"); muzzle(fr, at, ang=ang)
 def fx_spark(fr, at, t=0.25): _m("spark"); spark(fr, at, t)
 def fx_chips(fr, at):
-    """cover took the round: stone chips and a ring on the prop, with the ink underlay the other effects wear (the hedge's stone is as pale as the chips)"""
+    """cover took the round: a few stone chips and a puff of dust off the prop (a particle effect, as a spark is; no ring), each with the ink underlay the other effects wear (the hedge's stone is as pale as the chips)"""
     _m("puff")
-    for dx, dy, r in ((-5, -3, 2.4), (4, -6, 2.0), (5, 3, 2.2), (-2, 5, 1.8)):
-        c = (at[0] + dx, at[1] + dy); stroke(fr.hud, circ(c, r + 1.1, 12), INKDEEP, 0.1, closed=True, fill=INKDEEP, fill_alpha=170); stroke(fr.hud, circ(c, r, 12), CREAM, 0.1, closed=True, fill=CREAM)
-    stroke(fr.hud, circ(at, 8.5, 24), INKDEEP, 3.4, alpha=150, closed=True); stroke(fr.hud, circ(at, 8.5, 24), CREAM, 1.5, alpha=220, closed=True)
+    lay_ = layer(fr)
+    stroke(lay_, circ(at, 7.5, 24), (255, 250, 238), 0.1, closed=True, fill=(255, 250, 238), fill_alpha=70)
+    for dx, dy, r in ((-7, -4, 1.6), (-3, -8, 2.2), (4, -7, 1.7), (8, -1, 2.3), (6, 5, 1.5), (-2, 6, 2.0), (-8, 3, 1.4)):
+        c = (at[0] + dx, at[1] + dy); stroke(lay_, circ(c, r + 1.0, 12), INKDEEP, 0.1, closed=True, fill=INKDEEP, fill_alpha=190); stroke(lay_, circ(c, r, 12), (255, 250, 238), 0.1, closed=True, fill=(255, 250, 238))
+    fr.hud.alpha_composite(lay_)
+
 def fx_beat(fr, head, face=RIVAL): _m("plate"); beat_marker(fr, head[0], head[1] - 47, "bang", 0.8, face=face)
 
 def muzzle_pt(feet, heading, ahead=0.85, rise=1.3):
@@ -101,12 +106,15 @@ def extra_moving(fr, cell, riv):
     cursor_arrow(fr, (D_FLANK[0] + 10, D_FLANK[1] + 8))
 
 def hud_in_fight(fr, opt):
-    """the roster column and the crew tally: as built (health pips, weapon slot, draw button, the one move each); nothing new here, the move discs live in the roster"""
+    """the roster column and the crew tally: as built (health pips, weapon slot, draw button, the one move each, the under-fire spikes on whoever a rival shoots); nothing new here, the move discs live in the roster.
+    Returns the number of marks drawn: counted by the code that draws them (count39.py wraps g39's roster functions); the tally plate is added by hand."""
     pips_by = {"A": (6, 6, 6, 10), "B": (5, 5, 5, 8), "C": (5, 5, 5, 8)}[opt]; hp = {"A": (6, 4, 6, 10), "B": (5, 4, 5, 8), "C": (5, 5, 5, 8)}[opt]
     moves = ("cooling", "ready", "ready", "ready") if opt == "B" else ("ready",) * 4; fracs = (0.15, 1, 1, 1) if opt == "B" else (1, 1, 1, 1)
-    under = (1,) if opt in "AB" else ()
+    under = {"A": (1,), "B": (1,), "C": (2,)}[opt]
+    before = sum(1 for k, g in _REG if g == "hud")
     roster_in_fight(fr, pips_by, hp, moves=moves, fracs=fracs, flash_k=1 if opt in "AB" else None, under_fire=under)
-    crew_tally(fr, 1560, 112, 3, 0, mark_at=1)
+    crew_tally(fr, 1560, 112, 3, 0, mark_at=1); _m("plate", "hud")
+    return sum(1 for k, g in _REG if g == "hud") - before
 
 def hero(opt, with_hud=True, extra=None, overrides=None, skip=()):
     """the frame of one option: the bodies (lay_option) and what is left over them"""
@@ -131,9 +139,8 @@ def hero(opt, with_hud=True, extra=None, overrides=None, skip=()):
     if extra: extra(fr, cell, riv)
     street = dict(C39.collections.Counter(k for k, g in _REG if g == "street"))
     n_street = sum(1 for k, g in _REG if g == "street")
-    if with_hud:
-        before = len(_REG); hud_in_fight(fr, opt)
-    return fr, dict(street=n_street, street_by_kind=street, cell=cell, riv=riv)
+    n_hud = hud_in_fight(fr, opt) if with_hud else 0
+    return fr, dict(street=n_street, street_by_kind=street, hud=n_hud, cell=cell, riv=riv)
 
 if __name__ == "__main__":
     for o in (sys.argv[1:] or ["A", "B", "C"]):

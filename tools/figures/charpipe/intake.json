@@ -1,0 +1,112 @@
+{
+ "schema": "suborned.charpipe.intake/1",
+ "brief": "069 v2: generate -> wrap (Sky, 2026-10-26: 'I want to make sure I have a very precise prompt for wrapping')",
+ "note": "The intake stage's data: the pose every generated person stands in (numbers), the sheet, the prompt template with its slots, what clothing may be asked for, the image-to-3D settings for later, and the pose check's tolerances. The pose is the wrap target: the skeleton stage poses the MPFB base into it (intake_pose.py), the same numbers are rendered as a grey mannequin reference sheet that goes to the image model with the prompt, and the pose check measures a still against that same mannequin's silhouette. MPFB's own rest is not used as-is: its elbows are bent 39-47 degrees, its legs splay 5-6 degrees (ankles 1.8x the hip-joint width) and its palms turn out and up, all hard to ask an image model for and bad to wrap onto (intake/base_pose.json, measured).",
+ "pose": {
+  "name": "intake A-pose",
+  "armDownFromHorizontalDeg": 45,
+  "armForwardDeg": 0,
+  "elbowBendDeg": 0,
+  "wristBendDeg": 0,
+  "palms": "facing the body (the palm's normal points down and in, toward the thigh)",
+  "fingers": "straight, spread about 10 degrees apart, thumbs pointing forward",
+  "legs": "straight, knees locked, parallel: each ankle straight below its hip joint (ankle spacing = hip-joint width)",
+  "footYawDeg": 0,
+  "footPitch": "flat on the floor",
+  "trunk": "upright",
+  "head": "level, looking straight ahead, neutral face, mouth closed"
+ },
+ "sheet": {
+  "size": "1536x1024",
+  "views": [
+   "front",
+   "left side",
+   "back"
+  ],
+  "layout": "three views of the one person in a row, left to right: front (facing the viewer), the person's own left side (the person turned 90 degrees so they face the left edge of the image), back (facing away). Each view gets a third of the width, the figure centred in its third.",
+  "scale": "all three views at exactly the same scale: the tops of the heads level, the soles of the feet on one baseline at the same height, each figure a little over half the image height (about 54 percent), so that the outstretched fingertips stay well inside its own third of the width with background between every figure, and a wide margin above the head and below the feet",
+  "projection": "an orthographic look: straight-on, eye level at the waist, no perspective (no foreshortening of the feet or head)",
+  "background": "one flat, even, mid-grey ground (about RGB 120,120,120) everywhere, no floor line, no gradient, no vignette",
+  "light": "soft, even studio light from the front, no cast shadows, no contact shadows, no rim light, no strong highlights",
+  "style": "a photoreal 3D character render (as for a game character model sheet), crisp edges, true colours, every garment resolved identically in all three views",
+  "figureHeightFraction": 0.54
+ },
+ "prompt": {
+  "template": "A character model sheet for 3D modelling of one person, shown three times in a row on one image at exactly the same scale: {views}. {scale}. {projection}.\n\nThe pose, identical in all three views and exactly as in the grey mannequin reference image, which shows only the pose, the layout and the scale (not the person, not the clothes): {pose_words}\n\nThe person: {person}\n\nWhat they wear: {outfit} {palette} {rules}\n\n{background}. {light}. {style}. Original design, not resembling any real person. No text, no letters, no numbers, no logos, no watermark.",
+  "pose_words": "The person stands perfectly straight and still, facing the viewer in the front view. Both arms are held out to the sides, perfectly straight with the elbows locked, each arm angled exactly halfway between hanging down and held straight out to the side: a 45-degree angle below the horizontal, in line with the shoulders, not forward and not back. The wrists are straight. The palms face the body, toward the thighs; the fingers are straight and slightly spread with a clear gap between each finger; the thumbs point forward. There is a wide gap of background between each arm and the body all the way down, and the hands hang well away from the hips, level with the hips. The legs are straight with the knees locked, parallel, and each foot is directly below its own hip, the stance no wider than the hips, the inner edges of the feet one hand's width apart, with a clear gap of background between the legs from the crotch to the floor. Both feet point straight forward, toward the viewer in the front view, exactly parallel to each other, NOT turned out, both flat on the floor. The head is level and looks straight ahead; neutral face, mouth closed.",
+  "views_words": "front view on the left, the person's own left side view in the middle (facing the left edge of the image), back view on the right",
+  "rules_words": "Everything is worn, nothing is held: the hands are empty and open (bags, cases and tools are separate items, not in this image). Hems end at or above the knee. Garments sit close to the body and do not hang in front of the arms or between the legs. Long hair is tied back or up, off the shoulders.",
+  "people_rule": "People prompts carry no date or decade (CLAUDE.md: a date pulls the clothes into period dress). The city's people wear space-age couture as street clothing (GDD \u00a715: bright block on cream, white boots, two space-age markers, no present-day street items). The cell are visitors from a nearby timeline: sharper and cleaner, matte technical fabrics, fitted layers, no deco motifs, gold trim or 1950s tailoring."
+ },
+ "slots": {
+  "person": "who they are, the body: sex, age, height and build, skin, hair (e.g. 'a tall, heavy-set man in his fifties with light brown skin and a short grey crop')",
+  "outfit": "the role's clothing in plain words, one bold colour block on a cream, ivory or ink base, with one or two space-age details",
+  "palette": "the colours by name from palettes.json for the role (guards: a deep amber jacket over ivory or ink; rivals: violet over ink; cafe: seafoam with a white apron and a chrome line; commuters: one bold cool or red block on cream, ivory or ink)"
+ },
+ "clothing": {
+  "allowed": [
+   "fitted and structured tops, jackets, tunics, jumpsuits",
+   "trousers to the ankle, skirts and shift dresses to the knee or above",
+   "stand collars, short structured shoulder pieces",
+   "hats, caps and helmets (they ride the head)",
+   "gloves",
+   "boots and flat shoes",
+   "close hair, crops, bobs, an afro, buns and tied-back hair"
+  ],
+  "flagged": {
+   "long coat (hem below the knee)": "wrap risk: the hem bridges the legs, the wrap fuses it to both thighs and it tears in a stride. Ask for a hem at mid-thigh or above; anything longer is a separate garment piece later (its own mesh, cloth or bones).",
+   "full or flared skirt": "wrap risk: the skirt fills the space between the legs. Ask for an A-line or straight skirt above the knee; the wrap gives the skirt its own hem weights (hips and thighs), as the shelved wardrobe's tube did.",
+   "cape, cloak or cape collar": "wrap risk: it hangs over the arms, so the wrap binds it to the arms and it moves with them. Allowed only as a short collar above the elbow; a longer cape is a separate garment piece with its own bones.",
+   "big or loose hair, long hair down": "wrap risk: it covers the neck and shoulders and fuses to them. Ask for hair tied back or up; an afro or a volume on the head is fine (it rides the head).",
+   "wide sleeves, sleeves that hang below the wrist": "wrap risk: they fuse to the hips in an A-pose. Ask for fitted sleeves ending at the wrist.",
+   "bulky gear (backpacks, holsters, pouches)": "allowed when strapped to the body, but better as attachments: a separate prop on a bone."
+  },
+  "forbidden": [
+   "anything held in the hands (props are attachments)",
+   "trailing, sheer or cloak-like garments (GDD \u00a715)",
+   "hems below the knee",
+   "period dress: fedoras, trilbies, tea dresses, Americana (GDD \u00a715)",
+   "present-day street items"
+  ]
+ },
+ "imageTo3D": {
+  "note": "for the wrap test later (nothing paid in this stage). The three views are cropped from the sheet and sent as a multi-view set, so the back is modelled from the back view, not invented.",
+  "first": {
+   "model": "tencent:hunyuan-3d@3.1-pro (Runware)",
+   "input": "front, left and back crops of the sheet, background removed",
+   "settings": {
+    "texture": true,
+    "pbr": false,
+    "faces": 30000,
+    "symmetry": "off"
+   },
+   "estUsd": 0.675,
+   "why": "the cheapest model with multi-view input we have used (ledger: 2 calls, $1.35)"
+  },
+  "fallback": {
+   "model": "tripo3d h3.1 multiview-to-3d",
+   "settings": {
+    "texture": true,
+    "texture_quality": "detailed",
+    "face_limit": 30000,
+    "quad": false
+   },
+   "why": "today's figures came from Tripo h3.1 image-to-3d (people manifest provenance); its multi-view mode takes the same crops"
+  }
+ },
+ "check": {
+  "note": "intake_check.py: a gate on a still, not a dial. Each metric is measured the same way on the still and on the base's own mannequin sheet (intake_pose.py renders it), and compared in units of the figure's height or in degrees. Leg splay (shin centres at 8 % of the height against the feet centres) and foot yaw (how far each foot's blob sits outward of its own shin line: half the foot length x sin(yaw), so boots and bare feet read the same) don't depend on the build; the feet's spacing against the reference body is only a loose check (heavier bodies stand wider).",
+  "tolerances": {
+   "viewsFound": 3,
+   "viewHeightSpreadPct": 4.0,
+   "armAngleDeg": 8.0,
+   "armGapRowsMin": 0.12,
+   "footYawDeg": 12.0,
+   "legGapRowsMin": 0.15,
+   "backgroundFlatness": 12.0,
+   "legSplayDeg": 4.0,
+   "feetSpacingHLoose": 0.06
+  },
+  "calibration": "negative test (intake_pose.py --wrong: feet out 20 deg, arms 30 deg, legs leaning out 6.8 deg) fails on arms, feet spacing, splay and yaw. The yaw estimate over-reads (the 20 deg turn reads about 44, since leaning legs also push the feet out) and booted straight feet read 2-9 (a boot's toe box), so the yaw gate is 12; leg splay is measured between 24 % and 8.5 % of the height, above any boot's flare, and judged against straight (0), gate 4 (Latch's bow legs were 5-6)."
+ }
+}

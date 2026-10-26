@@ -46,7 +46,9 @@ namespace Suborned.Sim
             return "";
         }
 
-        bool FreeApplies => WeaponsFree && wfFrom >= 0;
+        /// <summary>Weapons free picks for a drawn agent: a fight is on by contact (wfFrom), or, with one input (brief 039; GDD v0.28.0 §06: a drawn
+        /// op fights on his own, against the final fight's hostiles, who are combatants), the final fight has sprung or gone loud.</summary>
+        bool FreeApplies => WeaponsFree && (wfFrom >= 0 || (OneInputOn && (FightSprung != INF || FightBranch == "loud")));
 
         /// <summary>A hostile `id` is attacking `op`: its gun aims at it, or it is the agent's last shooter within weapons.lineLapse.</summary>
         bool Attacks(Op op, string id)

@@ -157,6 +157,7 @@ namespace Suborned.Sim
             if (side != 2)
             {
                 if (u != null && !UnitStill(u)) return; // a unit on its way keeps its walk
+                if (PinHolds(g)) return; // brief 039 (weapons.pin.hold): pinned, police don't close in (a step to cover still comes)
                 if (g.KiteCapped && Tick - g.KiteCapTick >= Kr.KiteRearm) { g.KiteCapped = false; g.KiteWalked = 0; Note("ai.kite", $"{g.Id} closes again: {g.KiteBy} is still firing."); } // Pulse §1c
                 if (g.KiteCapped) return;
                 if (moving && g.KiteLast >= 0 && Tick - g.KiteLast < Kr.KiteReplan) return;
@@ -183,7 +184,7 @@ namespace Suborned.Sim
             if (h.Blocker) return; // Motive M059-B2 (engine 0.33.0; GDD §06): a rival blocker keeps its lane and answers only from it, as the police blocker does
             g.StepAt = Tick;
             var dest = KiteHideOut(g, pos, sp, Car, out var c); // engine 0.34.0 (Motive M067-SQ1): the step out of a line never ends in the car's hold or lane
-            if (!dest.HasValue) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos && !HoldsCar(sp2)) dest = sp2; } // retest R4 (Pulse §5): no hide, it advances to its ring of the shooter (SQ1: not into the hold; else it stands)
+            if (!dest.HasValue && !PinHolds(g)) { var sp2 = StopPoint(pos, sp, eff); if (sp2 != pos && !HoldsCar(sp2)) dest = sp2; } // brief 039: pinned, no advance; retest R4 (Pulse §5): no hide, it advances to its ring of the shooter (SQ1: not into the hold; else it stands)
             if (!dest.HasValue) return;
             if (g.KiteLast < 0) Note("ai.kite", $"{g.Id} answers {g.KiteBy}: first shot at {Sim.Report.Clock(g.KiteAt)}, moves at {Sim.Report.Clock(Tick)} ({Tick - g.KiteAt} ticks), {(c != null ? $"out of the line to {c.Id}" : "out of the line")}.");
             g.KiteLast = Tick;

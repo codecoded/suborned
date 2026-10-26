@@ -1,0 +1,676 @@
+{
+ "schema": "suborned.charpipe.roles/1",
+ "brief": "069 (proof, scratch)",
+ "extends": "tools/figures/roles.json",
+ "note": "Role rules for the generated people. Each role says which of tools/figures/roles.json's keys it would serve once Sky picks (serves: playViews, families and jobBlocks keys, read from that file, never edited here), the body ranges (MakeHuman macros, 0..1), what each slot may hold with weights (a weight may be split by sex: {m, f}), and where each colour role draws from (palettes.json sets, or 'same:X' to reuse another role's pick, or a list of colour names). The seed is the person's id: every pick is sha256(id/key), so the same id gives the same person on any machine and any run. A body range may be split by sex ({m: [lo, hi], f: [lo, hi]}): MPFB's height macro is steep (0.27 -> 1.56 m, 0.84 -> 2.20 m for a man), so the ranges aim at about 1.68-1.92 m for men and 1.56-1.78 m for women. Round 2: each role has a silhouette part the others never wear (guards the peaked cap, ink yoke and duty belt; cafe the apron and pillbox; rivals the hood; commuters shifts, collars and a case on a strap) and its own colour rule (palettes.json note). A slot whose top part covers the legs (dress_shift) leaves the legs slot empty.",
+ "roles": {
+  "commuter": {
+   "serves": [
+    "families: passer (everyone else)",
+    "families: office (clerk, attendant, councillor)",
+    "jobBlocks: job/civic, job/kiosk, job/resident, job/retail, job/market, job/service, job/trade, job/cinema, job/nightlife, job/lobby"
+   ],
+   "look": "space-age couture as street clothing: one bold block (top, dress or coat) on a cream, ivory or ink base, white or silver boots, a dark belt or band; collars, A-line shifts, cases on a strap; no guard ambers or rival violets",
+   "body": {
+    "sex": {
+     "m": 0.5,
+     "f": 0.5
+    },
+    "height": {
+     "m": [
+      0.38,
+      0.66
+     ],
+     "f": [
+      0.33,
+      0.6
+     ]
+    },
+    "weight": [
+     0.3,
+     0.85
+    ],
+    "muscle": [
+     0.3,
+     0.7
+    ],
+    "proportions": [
+     0.4,
+     0.65
+    ],
+    "age": {
+     "young": [
+      0.42,
+      0.7,
+      0.75
+     ],
+     "old": [
+      0.78,
+      0.95,
+      0.25
+     ]
+    }
+   },
+   "slots": {
+    "top": {
+     "top_tunic": {
+      "m": 0.45,
+      "f": 0.25
+     },
+     "top_jacket": {
+      "m": 0.55,
+      "f": 0.3
+     },
+     "dress_shift": {
+      "m": 0,
+      "f": 0.45
+     }
+    },
+    "legs": {
+     "legs_trousers": {
+      "m": 1,
+      "f": 0.45
+     },
+     "legs_skirt": {
+      "m": 0,
+      "f": 0.55
+     }
+    },
+    "coat": {
+     "coat_car": 0.25,
+     "none": 0.75
+    },
+    "bag": {
+     "bag_case": 0.45,
+     "none": 0.55
+    },
+    "hair": {
+     "hair_crop": {
+      "m": 0.6,
+      "f": 0.2
+     },
+     "hair_bob": {
+      "m": 0.05,
+      "f": 0.55
+     },
+     "hair_puff": {
+      "m": 0.15,
+      "f": 0.2
+     },
+     "buzz": {
+      "m": 0.2,
+      "f": 0.05
+     }
+    },
+    "hat": {
+     "hat_cap": 0.2,
+     "none": 0.8
+    },
+    "gloves": {
+     "none": 0.85,
+     "gloves": 0.15
+    }
+   },
+   "colours": {
+    "M": "commuter_block",
+    "B": "commuter_base",
+    "T": "commuter_trim",
+    "TL": "commuter_line",
+    "BT": "commuter_boots",
+    "H": [
+     "ivory_uniform",
+     "chrome",
+     "paper_cream"
+    ],
+    "S": "skin",
+    "HR": "hair",
+    "L": {
+     "same:B": 1
+    },
+    "LT": {
+     "same:S": 0.5,
+     "same:B": 0.5
+    },
+    "G": [
+     "ivory_uniform",
+     "ink_black"
+    ],
+    "E": [
+     "eye_dark"
+    ],
+    "D": "dark",
+    "AP": [
+     "ivory_uniform"
+    ],
+    "BG": "commuter_bag"
+   }
+  },
+  "guard": {
+   "serves": [
+    "playViews: guard, security/0..1, unit/<officer>, hostile/<n> (officers)",
+    "families: guard"
+   ],
+   "look": "the city's guard: one deeper amber jacket (or the senior's coat), an ink yoke, a broad ink duty belt with a chrome buckle and a holster case, ivory or ink below, a peaked service cap with a dark visor; uniform, and every one a different person",
+   "body": {
+    "sex": {
+     "m": 0.6,
+     "f": 0.4
+    },
+    "height": {
+     "m": [
+      0.38,
+      0.66
+     ],
+     "f": [
+      0.33,
+      0.6
+     ]
+    },
+    "weight": [
+     0.3,
+     0.8
+    ],
+    "muscle": [
+     0.45,
+     0.85
+    ],
+    "proportions": [
+     0.45,
+     0.65
+    ],
+    "age": {
+     "young": [
+      0.42,
+      0.72,
+      0.85
+     ],
+     "old": [
+      0.75,
+      0.88,
+      0.15
+     ]
+    }
+   },
+   "slots": {
+    "top": {
+     "top_jacket": 1
+    },
+    "legs": {
+     "legs_trousers": {
+      "m": 1,
+      "f": 0.6
+     },
+     "legs_skirt": {
+      "m": 0,
+      "f": 0.4
+     }
+    },
+    "coat": {
+     "coat_car": 0.2,
+     "none": 0.8
+    },
+    "yoke": {
+     "guard_yoke": 0.65,
+     "none": 0.35
+    },
+    "belt": {
+     "duty_belt": 1
+    },
+    "hair": {
+     "hair_crop": {
+      "m": 0.8,
+      "f": 0.4
+     },
+     "hair_bob": {
+      "m": 0,
+      "f": 0.5
+     },
+     "buzz": {
+      "m": 0.2,
+      "f": 0.1
+     }
+    },
+    "hat": {
+     "hat_peaked": 0.85,
+     "none": 0.15
+    },
+    "gloves": {
+     "gloves": 0.5,
+     "none": 0.5
+    }
+   },
+   "colours": {
+    "M": "guard_main",
+    "B": "guard_second",
+    "T": [
+     "chrome"
+    ],
+    "TL": [
+     "chrome",
+     "ivory_uniform"
+    ],
+    "BT": "guard_boots",
+    "H": "guard_hat",
+    "S": "skin",
+    "HR": "hair",
+    "L": {
+     "same:B": 1
+    },
+    "LT": {
+     "same:B": 0.6,
+     "same:S": 0.4
+    },
+    "G": [
+     "ink_black"
+    ],
+    "E": [
+     "eye_dark"
+    ],
+    "D": "dark",
+    "AP": [
+     "ivory_uniform"
+    ],
+    "BG": "dark"
+   }
+  },
+  "rival": {
+   "serves": [
+    "playViews: rivals/0..2, hostile/<n> (id starts rival), rival-1..5",
+    "jobBlocks: role/rival"
+   ],
+   "look": "the Velvet Set: violet, each in their own violet and cut; most wear a hood (nobody else does), ink below, a chrome line, dark boots, bare heads",
+   "body": {
+    "sex": {
+     "m": 0.6,
+     "f": 0.4
+    },
+    "height": {
+     "m": [
+      0.38,
+      0.66
+     ],
+     "f": [
+      0.33,
+      0.6
+     ]
+    },
+    "weight": [
+     0.25,
+     0.7
+    ],
+    "muscle": [
+     0.4,
+     0.8
+    ],
+    "proportions": [
+     0.45,
+     0.7
+    ],
+    "age": {
+     "young": [
+      0.4,
+      0.65,
+      1.0
+     ]
+    }
+   },
+   "slots": {
+    "top": {
+     "top_jacket": 0.7,
+     "top_tunic": 0.3
+    },
+    "legs": {
+     "legs_trousers": {
+      "m": 1,
+      "f": 0.7
+     },
+     "legs_skirt": {
+      "m": 0,
+      "f": 0.3
+     }
+    },
+    "coat": {
+     "coat_car": 0.25,
+     "none": 0.75
+    },
+    "hair": {
+     "hair_crop": {
+      "m": 0.5,
+      "f": 0.25
+     },
+     "hair_bob": {
+      "m": 0.05,
+      "f": 0.55
+     },
+     "hair_puff": {
+      "m": 0.15,
+      "f": 0.15
+     },
+     "buzz": {
+      "m": 0.3,
+      "f": 0.05
+     }
+    },
+    "hat": {
+     "none": 1
+    },
+    "gloves": {
+     "gloves": 0.4,
+     "none": 0.6
+    },
+    "hood": {
+     "hood": 0.6,
+     "none": 0.4
+    }
+   },
+   "colours": {
+    "M": "rival_main",
+    "B": {
+     "ink_black": 0.7,
+     "violet_deep": 0.3
+    },
+    "T": [
+     "chrome"
+    ],
+    "BT": "rival_boots",
+    "H": [
+     "violet_deep",
+     "ink_black"
+    ],
+    "S": "skin",
+    "HR": "hair",
+    "L": {
+     "same:B": 0.8,
+     "same:M": 0.2
+    },
+    "LT": {
+     "same:B": 1
+    },
+    "G": [
+     "ink_black"
+    ],
+    "E": [
+     "eye_dark"
+    ],
+    "TL": [
+     "chrome"
+    ],
+    "D": "dark",
+    "AP": [
+     "ivory_uniform"
+    ],
+    "BG": "dark"
+   }
+  },
+  "cafe": {
+   "serves": [
+    "families: cafe (server, cook, waitress)",
+    "jobBlocks: job/food"
+   ],
+   "look": "cafe staff: a seafoam tunic with a chrome line and a dark belt, a white apron (bib and front panel), cream or seafoam below, white boots, often a pillbox",
+   "body": {
+    "sex": {
+     "m": 0.4,
+     "f": 0.6
+    },
+    "height": {
+     "m": [
+      0.38,
+      0.66
+     ],
+     "f": [
+      0.33,
+      0.6
+     ]
+    },
+    "weight": [
+     0.3,
+     0.8
+    ],
+    "muscle": [
+     0.3,
+     0.6
+    ],
+    "proportions": [
+     0.4,
+     0.65
+    ],
+    "age": {
+     "young": [
+      0.42,
+      0.7,
+      0.8
+     ],
+     "old": [
+      0.75,
+      0.9,
+      0.2
+     ]
+    }
+   },
+   "slots": {
+    "top": {
+     "top_tunic": 1
+    },
+    "legs": {
+     "legs_trousers": {
+      "m": 1,
+      "f": 0.45
+     },
+     "legs_skirt": {
+      "m": 0,
+      "f": 0.55
+     }
+    },
+    "coat": {
+     "none": 1
+    },
+    "apron": {
+     "apron": 1
+    },
+    "hair": {
+     "hair_crop": {
+      "m": 0.7,
+      "f": 0.25
+     },
+     "hair_bob": {
+      "m": 0,
+      "f": 0.55
+     },
+     "hair_puff": {
+      "m": 0.1,
+      "f": 0.15
+     },
+     "buzz": {
+      "m": 0.2,
+      "f": 0.05
+     }
+    },
+    "hat": {
+     "hat_pillbox": 0.6,
+     "none": 0.4
+    },
+    "gloves": {
+     "none": 1
+    }
+   },
+   "colours": {
+    "M": "cafe_main",
+    "B": "cafe_second",
+    "T": "cafe_trim",
+    "TL": "cafe_trim",
+    "BT": "cafe_boots",
+    "H": [
+     "ivory_uniform",
+     "seafoam_band"
+    ],
+    "S": "skin",
+    "HR": "hair",
+    "L": {
+     "same:B": 0.6,
+     "same:M": 0.4
+    },
+    "LT": {
+     "same:S": 0.5,
+     "same:B": 0.5
+    },
+    "G": [
+     "ivory_uniform"
+    ],
+    "E": [
+     "eye_dark"
+    ],
+    "D": "dark",
+    "AP": "cafe_apron",
+    "BG": "dark"
+   }
+  },
+  "clerk": {
+   "serves": [
+    "families: office (clerk, attendant, councillor)",
+    "jobBlocks: job/civic"
+   ],
+   "look": "Records Office clerks: the civic block's seafoam or deep teal with ivory, a chrome or brass line, bare-headed, sometimes the over-tabard",
+   "body": {
+    "sex": {
+     "m": 0.5,
+     "f": 0.5
+    },
+    "height": {
+     "m": [
+      0.38,
+      0.66
+     ],
+     "f": [
+      0.33,
+      0.6
+     ]
+    },
+    "weight": [
+     0.3,
+     0.75
+    ],
+    "muscle": [
+     0.3,
+     0.6
+    ],
+    "proportions": [
+     0.4,
+     0.65
+    ],
+    "age": {
+     "young": [
+      0.42,
+      0.7,
+      0.6
+     ],
+     "old": [
+      0.75,
+      0.95,
+      0.4
+     ]
+    }
+   },
+   "slots": {
+    "top": {
+     "top_jacket": 0.6,
+     "top_tunic": 0.4
+    },
+    "legs": {
+     "legs_trousers": {
+      "m": 1,
+      "f": 0.5
+     },
+     "legs_skirt": {
+      "m": 0,
+      "f": 0.5
+     }
+    },
+    "coat": {
+     "none": 1
+    },
+    "over": {
+     "none": 1
+    },
+    "hair": {
+     "hair_crop": {
+      "m": 0.7,
+      "f": 0.3
+     },
+     "hair_bob": {
+      "m": 0.05,
+      "f": 0.65
+     },
+     "buzz": {
+      "m": 0.25,
+      "f": 0.05
+     }
+    },
+    "hat": {
+     "none": 1
+    },
+    "gloves": {
+     "none": 1
+    },
+    "bag": {
+     "bag_case": 0.3,
+     "none": 0.7
+    }
+   },
+   "colours": {
+    "M": "clerk_main",
+    "B": "clerk_second",
+    "T": [
+     "chrome",
+     "ivory_uniform"
+    ],
+    "BT": [
+     "boot_white",
+     "ink_black"
+    ],
+    "H": [
+     "ivory_uniform"
+    ],
+    "S": "skin",
+    "HR": "hair",
+    "L": {
+     "same:B": 0.8,
+     "same:M": 0.2
+    },
+    "LT": {
+     "same:S": 0.5,
+     "same:B": 0.5
+    },
+    "G": [
+     "ivory_uniform"
+    ],
+    "E": [
+     "eye_dark"
+    ],
+    "TL": [
+     "chrome",
+     "brass_line"
+    ],
+    "D": "dark",
+    "AP": [
+     "ivory_uniform"
+    ],
+    "BG": "commuter_bag"
+   }
+  }
+ },
+ "proofCast": {
+  "commuter": 26,
+  "guard": 8,
+  "rival": 8,
+  "cafe": 8
+ },
+ "lod": {
+  "LOD0": "male1591 / female1605 (MakeHuman CC0 proxies, fingers)",
+  "LOD1": "proxy741 (CC0)",
+  "screenHeights": [
+   0.08,
+   0.012
+  ]
+ }
+}

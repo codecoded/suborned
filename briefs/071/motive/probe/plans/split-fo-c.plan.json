@@ -1,0 +1,200 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "rearguard: fight it out (board once the fight is over)",
+ "start": {},
+ "until": 5400,
+ "steps": [
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane",
+   "at": "5:50"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7950,
+    -4000
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "gap": 62
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "driver",
+   "label": "heard",
+   "gap": 5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Boarding pavilion",
+   "gap": 62
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "pay",
+   "by": "5:40",
+   "label": "turned"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8600,
+    -3400
+   ],
+   "after": [
+    "heard"
+   ],
+   "gap": 52
+  },
+  {
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals",
+   "at": "3:10",
+   "label": "tip"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "at": "5:00",
+   "label": "rr"
+  },
+  {
+   "op": "enforcer",
+   "do": "take",
+   "when": "car.parks",
+   "label": "take"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "cabinet",
+   "after": [
+    "tip"
+   ],
+   "at": "5:55"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "cabinet",
+   "after": [
+    "turned"
+   ],
+   "at": "5:55"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "split.vale-out",
+   "label": "scout-walk"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "split.vale-out",
+   "label": "fixer-walk"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "when": "split.vale-out",
+   "label": "tech-walk"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "when": "fight.ambush",
+   "label": "pan"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "pan"
+   ],
+   "when": "fight.over"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "pan"
+   ],
+   "when": "fight.over"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "pan"
+   ],
+   "when": "fight.over"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in",
+    "tech-in"
+   ],
+   "gap": 1,
+   "every": 0.5
+  }
+ ]
+}

@@ -145,7 +145,7 @@ namespace Suborned.Sim
         /// place), and inside point blank no cover unless weapons.pointBlankCover. Pips 0 inside the max ring is the pip0 rung (a runner's).</summary>
         int ShotAcc(Gun g, string t, Pt from, Pt at, long d, Gait gait, bool vale, out int pips)
         {
-            int cov = CoverMod(t, at, from);
+            int cov = MarkedFor(g, t) ? 1000 : CoverMod(t, at, from); // brief 039: Mark, his cover doesn't count against the cell
             if (!R.PointBlankCover && d <= R.PointBlankCm) cov = 1000; // Sky 2026-10-21 (tuning.md §8.4, §9.7): can't miss at arm's length, as the lab
             bool running = TargetRunning(t);
             if (Lab && LabPipsOn)
@@ -155,7 +155,7 @@ namespace Suborned.Sim
                 int c = Labr.Chance[pips];
                 return running && d > R.PointBlankCm ? c * R.ModTargetRunning / 1000 : c;
             }
-            pips = 0; return R.Accuracy(g.W!, d, gait, cov, vale, !g.Trained, running);
+            pips = 0; return PinAcc(g, R.Accuracy(g.W!, d, gait, cov, vale, !g.Trained, running)); // brief 039: a pinned shooter fires at weapons.pin.mod
         }
 
         /// <summary>Tuning.md §8.3: an operative's gait this tick against a target at `at`: stand (no step), walk (a walk, a walk-in, a driven
@@ -499,10 +499,12 @@ namespace Suborned.Sim
         // ---------------------------------------------------------------- cover snap (B5)
 
         /// <summary>coverSnap is on for this run (the lab and its switch).</summary>
-        public bool CoverSnapOn => Lab && LabSnap;
+        public bool CoverSnapOn => Lab ? LabSnap : R.TakeCover && !Start.Pre039; // brief 039 (weapons.takeCover): out of the lab, the rulebook's
         /// <summary>The snap radius and the marks' reach, in cm (0 with the snap off).</summary>
-        public int CoverSnapCm => CoverSnapOn ? Labr!.CoverSnapCm : 0;
-        public int CoverMarksCm => CoverSnapOn ? Labr!.CoverMarksCm : 0;
+        public int CoverSnapCm => !CoverSnapOn ? 0 : Lab ? Labr!.CoverSnapCm : R.TakeCoverSnapCm;
+        public int CoverMarksCm => !CoverSnapOn ? 0 : Lab ? Labr!.CoverMarksCm : R.TakeCoverReachCm;
+        /// <summary>Brief 039: out of the lab the snap and the marks are a fight's (a shot by or at the cell, or the final fight).</summary>
+        bool SnapFightOk => Lab || FightOn || FreeFightOn;
 
         /// <summary>Who holds a cover point ("" free): a hostile that took it (GameAi) or an operative that snapped to it.</summary>
         string CoverHolder(string id) => coverTaken.TryGetValue(id, out var who) ? who : "";
@@ -538,14 +540,14 @@ namespace Suborned.Sim
         /// itself). The one that shields against the nearest combatant first, then the nearest to `to`, then the lower id.</summary>
         CoverPoint? SnapPoint(Op op, Pt to)
         {
-            if (!CoverSnapOn || LiveCover.Count == 0 || op.Driven || !op.Gun.Drawn || op.Gun.W == null) return null; // a drawn agent's move only (P7: the marks show for a drawn agent)
-            int sec = Tick / Hz; long r2 = (long)Labr!.CoverSnapCm * Labr.CoverSnapCm; string me = Sim.Op.Name(op.Id);
+            if (!CoverSnapOn || LiveCover.Count == 0 || op.Driven || !op.Gun.Drawn || op.Gun.W == null || !SnapFightOk) return null; // a drawn agent's move only (P7: the marks show for a drawn agent); brief 039: in a fight
+            int sec = Tick / Hz; long r2 = (long)CoverSnapCm * CoverSnapCm, reach2 = Lab ? long.MaxValue : (long)CoverMarksCm * CoverMarksCm; string me = Sim.Op.Name(op.Id);
             string foe = NearestCombatant(to); Pt? fp = foe.Length > 0 ? PosOf(foe) : null;
             CoverPoint? best = null; int bestShield = 2; long bestD = long.MaxValue;
             foreach (var c in LiveCover)
             {
                 if (!c.Present(sec) || c.Q < R.CoverQPartial) continue;
-                long d = G.D2(to, c.At); if (d > r2) continue;
+                long d = G.D2(to, c.At); if (d > r2 || G.D2(op.Pos, c.At) > reach2) continue; // brief 039: a cover point within takeCover.reach of him
                 var who = CoverHolder(c); if (who.Length > 0 && who != me) continue; // retest §7.5: never onto a point a hostile stands on or walks to
                 if (!Walk.LineFree(to, c.At)) continue;
                 int shield = fp.HasValue && CoverRules.Protects(c, fp.Value, sec, R.PointBlankCm) ? 0 : 1;
@@ -583,8 +585,8 @@ namespace Suborned.Sim
         public List<CoverMark> CoverMarks(OpId opId)
         {
             var l = new List<CoverMark>(); if (!CoverSnapOn) return l;
-            var op = OpOf(opId); if (op.Down || !op.Gun.Drawn) return l; // P7: marks for a drawn agent
-            int sec = Tick / Hz; long m2 = (long)Labr!.CoverMarksCm * Labr.CoverMarksCm;
+            var op = OpOf(opId); if (op.Down || !op.Gun.Drawn || !SnapFightOk) return l; // P7: marks for a drawn agent; brief 039: in a fight
+            int sec = Tick / Hz; long m2 = (long)CoverMarksCm * CoverMarksCm;
             var foe = NearestCombatant(op.Pos); Pt? fp = foe.Length > 0 ? PosOf(foe) : null;
             foreach (var c in LiveCover)
             {

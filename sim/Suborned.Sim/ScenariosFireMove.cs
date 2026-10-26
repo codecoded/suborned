@@ -212,7 +212,7 @@ namespace Suborned.Sim
                     var a = FireOn(r, "scout", "officer-1"); r.Is(a.ok, $"fire taken ({a.code})");
                     r.Is(o.CloseWalk && o.Walk != null && G.Within(o.Walk.End, hp, o.Gun.W.EffCm), "the walk-in replaces the walk, into the effective ring");
                 });
-                AddRange("F8-O3" + sfx, preset, "open", "§8.2 rule 2: a runner given a fire order keeps its run and fires at the run's chance (today mod.running; lab −2 pips)", r =>
+                AddRange("F8-O3" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.2 rule 2: a runner given a fire order keeps its run and fires at the run's chance (today mod.running; lab −2 pips)", r =>
                 {
                     var g = r.G; r.Do("scout", "draw"); r.Wait(Game.T(2)); Hold(r, "scout"); Spawned(r, "police", "eff", 1);
                     var o = r.Op("scout"); var end = new Pt(o.Pos.X, 3200);
@@ -221,7 +221,7 @@ namespace Suborned.Sim
                     r.Is(o.Walk != null && o.Running && o.Walk.End == end, "the run goes on to its end");
                     ShotAtGait(r, "scout", "officer-1", Gait.Run, () => o.Walk == null);
                 });
-                AddRange("F8-O4" + sfx, preset, "open", "§8.2 rule 4: fire, then a walk: it walks and fires at the walk's chance", r =>
+                AddRange("F8-O4" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.2 rule 4: fire, then a walk: it walks and fires at the walk's chance", r =>
                 {
                     var g = r.G; r.Do("scout", "draw"); r.Wait(Game.T(2)); Hold(r, "scout"); Spawned(r, "police", "eff", 1);
                     var o = r.Op("scout"); r.Is(FireOn(r, "scout", "officer-1").ok, "fire taken standing");
@@ -257,7 +257,7 @@ namespace Suborned.Sim
                     var next = r.Shots().First(x => x.by == "scout" && x.tick > end);
                     r.Is(next.tick >= end + g.AimNewT, $"no sooner than aimNew after the run ({next.tick - end} ticks)");
                 });
-                AddRange("F8-O6" + sfx, preset, "open", "§8.2 rule 4: a walk-in, then a player move that ends out of reach: no second walk-in; the order lapses line-lapse after the move ends", r =>
+                AddRange("F8-O6" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.2 rule 4: a walk-in, then a player move that ends out of reach: no second walk-in; the order lapses line-lapse after the move ends", r =>
                 {
                     var g = r.G; r.Do("scout", "draw"); r.Wait(Game.T(2)); Hold(r, "scout"); Spawned(r, "police", "beyond", 1);
                     var o = r.Op("scout");
@@ -273,7 +273,7 @@ namespace Suborned.Sim
                     r.Is(o.Gun.Order.Length == 0 && g.Log.Exists(l => l.Code == "fire.lapses"), $"and lapses {g.R.LineLapseS} s after the move ends");
                     r.Is(FireOn(r, "scout", "officer-1").ok && o.CloseWalk, "a new fire order walks in again");
                 });
-                AddRange("F8-O7" + sfx, preset, "open", "§8.2 rule 3: a driven run fires at the run's chance; driven with no key held, as standing", r =>
+                AddRange("F8-O7" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.2 rule 3: a driven run fires at the run's chance; driven with no key held, as standing", r =>
                 {
                     var g = r.G; r.Do("scout", "draw"); r.Wait(Game.T(2)); Hold(r, "scout"); Spawned(r, "police", "eff", 1);
                     var o = r.Op("scout"); r.Is(FireOn(r, "scout", "officer-1").ok, "fire taken");
@@ -282,7 +282,7 @@ namespace Suborned.Sim
                     ShotAtGait(r, "scout", "officer-1", Gait.Stand, () => false, () => g.Issue(g.DriveSample(OpId.Scout, o.Pos, false, 90)));
                     r.Eq(g.PreviewFire(OpId.Scout, "officer-1").Gait, "stand", "the chip reads stand");
                 });
-                AddRange("F8-O8" + sfx, preset, "open", "§8.3: the away cone (60°, the edge is away): straight away fires at mod.runningAway (lab 0 pips); the integer predicate either side of 60° and at 61°", r =>
+                AddRange("F8-O8" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.3: the away cone (60°, the edge is away): straight away fires at mod.runningAway (lab 0 pips); the integer predicate either side of 60° and at 61°", r =>
                 {
                     var g = r.G;
                     // exact 60° is not reachable by integer vectors (tan 60° is irrational); the predicate is ≥, so the edge counts as away
@@ -305,7 +305,7 @@ namespace Suborned.Sim
                     if (acc >= 0) r.Eq(acc, lab ? g.Labr!.Chance[0] : band * g.R.ModRunningAway / 1000 * g.R.ModUntrained / 1000, "a run straight away: mod.runningAway (lab: 0 pips)");
                     else r.Is(false, "it fired while running away");
                 });
-                AddRange("F8-O10" + sfx, preset, "open", "§8.3: a hostile walking in a fight fires at the walk's chance (today too): rivals stepping to cover", r =>
+                AddRange("F8-O10" + sfx, preset == "today" ? "pre039" : preset, "open", "§8.3: a hostile walking in a fight fires at the walk's chance (today too): rivals stepping to cover", r =>
                 {
                     var g = r.G; r.Do("cell", "panic"); Spawned(r, "rivals", "eff", 3);
                     int moving = 0, bad = 0; string ex = "";

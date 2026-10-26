@@ -227,7 +227,7 @@ namespace Suborned.Sim
                 r.Eq(d.LeftBehind.Count, 3, "the debrief carries who was left");
                 var fc = CauseIs(r, "withdraw", "car-left-without-vale", false, "getaway-car", "car", ""); // the fail camera (ScenariosFailCause.cs): the car that left without him
                 r.Is(fc != null && fc.Culprits[0].At == r.At(g.S.GetawayCar) && d.Cause == fc, "at the getaway bay; the debrief carries the same cause");
-            });
+            }, new Start { OneInput = false }); // brief 039: the old controls (stance hold)
 
             Add("N113", "—", "§4's twin of N95 (brief 018 §4): route A, quiet, the feared rivals' ambush; the three by the car down the blocker and draw the fire while the Enforcer walks Vale in, and the car goes with the crew unbroken. The final fight is judged when the car leaves: public, but no outcome holds (driven off needs the crew broken): Standing 0 from the fight, cause none; Inez's word still adds +1 between missions (+2 → +3). The three left by the car are captured fighting: the captures move nothing. The blocker is not replaced.", r =>
             {
@@ -260,7 +260,7 @@ namespace Suborned.Sim
                 r.Eq((l.From, l.End, l.Word, l.To), (2, 2, 1, 3), "2 + 0 the fight + 1 Inez's word = +3 (Motive's board-and-go row)");
                 r.Eq(next.Captives.Count, 3, "three captives");
                 r.Is(next.Captives.TrueForAll(c => c.Holds >= 1 && c.Facts.Contains("contact:" + g.Inez.Id)), $"each is held a mission or more and would give Inez as a contact ({string.Join(", ", next.Captives.Select(c => c.Holds))})");
-            });
+            }, new Start { OneInput = false }); // brief 039: the old controls (DrawFire: one shot, then cease)
 
             Add("N114", "—", "Left behind, walked (brief 018 §3 row 4): route A fought out until the crew breaks (FightItOutAll; with the blocker on the road, the car comes free before the crew breaks), the Enforcer boards with Vale and the car goes before the guard's missed check-in (the rivals downed him) calls security. The fight is over and no seal runs: the three left walk out, nobody is captured, no captive in the debrief. The fight +1 (the crew driven off).", r =>
             {
@@ -332,7 +332,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => r.Op(Scout).Down, T(30)), "the guard downs the Scout");
                 r.Is(g.Do(new Order { Tick = g.Tick, Op = "cell", Do = "withdraw" }), "withdraw");
                 r.Eq((g.Result, g.Captured.Count, g.LeftBehindAtGo.Count), (Outcome.Withdrawn, 0, 0), "a free abort: nobody captured");
-            });
+            }, new Start { OneInput = false }); // brief 039: the old controls (stance hold)
         }
 
         /// <summary>N10's loud route to the car: the guard shot, the Enforcer in and out with Vale, the cell drawn, the Enforcer walking Vale to the car.</summary>

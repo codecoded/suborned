@@ -219,7 +219,9 @@ describe('the proposed rulebook values (briefs/011/pulse-fight-ai.values.json)',
     expect(ids.length).toBe(28);
     for (const id of ids) {
       const e = doc.values[id]; expect(typeof e.v === 'number' && e.unit && e.tag === 'S' && e.src && e.reason, id).toBeTruthy();
-      if (rulebook[id]) expect(rulebook[id].v, `${id}: the rulebook has ${rulebook[id].v}, the proposal ${e.v}`).toBe(e.v);
+      const later: Record<string, string> = { 'mod-cover-partial': 'brief 039 B (GDD v0.28.0 §06): partial cover ×500' }; // a value a later design moved on from the proposal
+      if (rulebook[id] && !(id in later)) expect(rulebook[id].v, `${id}: the rulebook has ${rulebook[id].v}, the proposal ${e.v}`).toBe(e.v);
+      if (id in later) expect(rulebook[id].src, `${id}: the rulebook names the design that moved it`).toMatch(/brief 039/);
     }
     expect(ids.filter(id => rulebook[id]).length).toBeGreaterThanOrEqual(20); // not yet adopted: the guard's leash and the crowd's values
   });

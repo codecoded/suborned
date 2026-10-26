@@ -62,6 +62,7 @@ namespace Suborned.Sim
             if (o.Do == "spawn") return Range ? Spawn(o) : No("unknown-verb", "spawn is the fight range's (brief 029): unknown = reject"); // GameRange.cs
             if (Range && Array.IndexOf(RangeVerbs, o.Do) < 0) return No("unknown-verb", $"verb '{o.Do}' is not the fight range's (brief 029: {string.Join(", ", RangeVerbs)})");
             if (o.Do == "withdraw") { Result = Outcome.Withdrawn; Withdrew(false); Note("withdraw", "The cell withdraws. The attempt ends."); return ""; }
+            if (OneInputOn && (o.Do == "panic" || o.Do == "free" || o.Do == "cease" || o.Do == "stance")) return No("unknown-verb", $"'{o.Do}' is retired (weapons.oneInput, brief 039): F draws or holsters, a right hold focuses"); // unknown = reject
             if (o.Do == "panic") return Panic(o);
             if (o.Do == "follow") return FollowSet(o); // tuning.md §11.5 (engine 0.17.0): the follow setting, op "cell"
             if (o.Do == "free") return FreeSet(o); // tuning.md §14 (engine 0.19.0): weapons free, op "cell"
@@ -104,6 +105,7 @@ namespace Suborned.Sim
                 case "drop": return Drop(op, o);
                 case "stash": return Stash(op, o);
                 case "restrain": return Restrain(op, o);
+                case "mark": case "talk-down": case "steam": case "covering-fire": return MoveOrder(op, o); // brief 039: one move each (GameCoverPin.cs)
                 default: return No("unknown-verb", $"verb '{o.Do}' is unknown (unknown = reject)");
             }
         }
@@ -113,6 +115,7 @@ namespace Suborned.Sim
             if (seconds < 1) seconds = 1; // the rulebook bounds every duration to 1 s or more at load (Redline E3); a 1 s floor is the belt
 
             op.Walk = null; op.WalkMm = 0; // engaging stops the approach walk
+            if (op.Id == OpId.Enforcer) EndCoveringFire("an act"); // brief 039: an act ends it, as it ends a fire order
             if (op.Gun.Order.Length > 0) { Note("fire.cancelled", $"{Sim.Op.Name(op.Id)} stops firing on {op.Gun.Order} for the {o.Do}."); OrderEnd(op, false); } // engine 0.21.0 (Sky 2026-10-22, brief 041): a new act ends a lasting fire order (a walk or a run keeps it)
             op.Busy = o; op.BusyStart = Tick; op.BusyEnd = Tick + T(seconds);
             Note("order." + o.Do, $"{Sim.Op.Name(op.Id)} {o.Do}{(o.Target.Length > 0 ? " " + o.Target : "")} ({seconds} s)");
@@ -764,7 +767,11 @@ namespace Suborned.Sim
             op.Walk = null;
             if (GuardAtDoor) { Fail("entry-seen-guard", "The guard is back at the door. Vale is warned.", () => With(Because("seen", true, Locate("guard", "saw", op.Pos)), "enforcer")); return ""; }
             if (CameraWatching("entrance", op.Pos)) { Fail("entry-seen-camera", "The entrance camera reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("camera:entrance", "saw", op.Pos)), "enforcer")); return ""; }
-            if (PatrolWatching(S.At(S.GuardPost))) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
+            if (PatrolWatching(S.At(S.GuardPost)))
+            {
+                if (!R.EnterPatrolReports) { Fail("entry-seen-patrol", "The patrol reports the breach. Vale is locked down.", () => With(Because("seen", true, Locate("patrol", "saw", S.At(S.GuardPost))), "enforcer")); return ""; }
+                EntrySeenByPatrol(S.At(S.GuardPost)); // engine 0.34.2 (Sky 2026-10-26: not a failure): a seen act, reported (GameEntrySeen.cs)
+            }
             RouteKind = "front"; RouteGuard = BodyOf(GuardP) is Body gb ? (gb.Dead ? "killed" : "knocked-out") : GuardDown ? "shot" : "waitress"; RouteBot = SweepSeesEntrance(Tick) ? "rerouted" : SweepCoversEntrance ? "gap" : ""; // a takedown is no shooting (brief 013 E4); engine 0.34.0: no sweep at the door, no patrol in the front route (brief 067 A)
             EntryInProgress = true; op.Inside = true; Chain.Add("enforcer-reaches-vale");
             AtEntry = new RouteFacts { Lured = LureTick >= 0 && !GuardHeld, Looped = LoopOn && LoopCam == "entrance", PatrolAway = !PatrolDown && PatrolAwayUntil > Tick,

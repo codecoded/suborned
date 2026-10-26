@@ -260,7 +260,7 @@ namespace Suborned.Sim
                 r.Eq(g.Trail - trail, g.R.GunfireTrail + g.R.HitTrail + g.R.DownTrail, "+2 T the shooting (once), +2 T hit, +2 T down: not per shot (Motive addendum Q1)");
                 r.Eq(g.Gunfire, 4, "four shots fired");
                 r.Is(!r.Op(Scout).Down, $"the guard fired back but the Scout stands ({r.Op(Scout).Gun.Health}/{r.Op(Scout).Gun.Max})");
-            });
+            }, new Start { PinCell = false }); // brief 039: unpinned, the Scout's count stays 750 a shot (the guard fires back: pinned she fires at half, N-PIN's case)
 
             Add("N23", "—", "A drawn weapon is an act (motive-fights.md §2.3): drawn among people out of security's sight, one witnessed incident (+1 T, Alert 1), and they hold the Fixer's face; drawn in the guard's cone, Alert 2, he engages and calls it in.", r =>
             {
@@ -328,7 +328,7 @@ namespace Suborned.Sim
                 r.Is(r.Until(() => g.GuardDown, T(20)), "the guard is down");
                 r.Is(r.Shots().Exists(x => x.by == Scout && x.target == GuardR) && r.Shots().Exists(x => x.by == Enf && x.target == GuardR), "the Scout and the Enforcer fired on him without a fire order");
                 r.Is(!r.Shots().Exists(x => x.by != GuardR && x.target == "patrol"), "at will is at combatants only: nobody fired on the patrol, which never engaged");
-            });
+            }, new Start { OneInput = false }); // brief 039: panic, stance and their refusals are the controls before one input (weapons.oneInput)
 
             var pressure = new Start(); pressure.Known[Inez] = new List<string> { "routine", "need", "temperament" };
             Add("N36", "—", "The safe fight lost (Motive addendum Q7): unprepared (Inez pressured, so no warning; the guard saw the Enforcer, so no ally), the Enforcer alone at the car goes down, and the fail is the rivals' goal: they take Vale.", r =>
@@ -535,7 +535,7 @@ namespace Suborned.Sim
                 r.Eq(r.Op(Fixer).BusyEnd - g.Tick, T(g.R.BoardS + g.R.CarryS), "boarding carrying: 1 s + 3 s");
                 r.Done(Fixer);
                 r.Is(r.Op(Fixer).InCar && r.Op(Scout).InCar && !g.LeftBehind().Exists(x => x.op == Scout || x.op == Fixer), "both in the car: neither is left behind");
-            }, new Start { RivalsAtS = 480 }); // engine 0.33.1: the carry is the case, not the rival crew; on 0.33.0 the Fixer boarded 1 s before the crew posted round the car downed him, and the walk round the car (car.footprint) puts him 0.7 s later: the crew comes at 8:00 here
+            }, new Start { RivalsAtS = 480, OneInput = false }); // brief 039: the old controls (stance hold); engine 0.33.1: the carry is the case, not the rival crew; on 0.33.0 the Fixer boarded 1 s before the crew posted round the car downed him, and the walk round the car (car.footprint) puts him 0.7 s later: the crew comes at 8:00 here
         }
     }
 }

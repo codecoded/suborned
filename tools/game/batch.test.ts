@@ -4,7 +4,7 @@ import { describe, expect, test } from 'bun:test';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, writeFileSync, utimesSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { appCurrent, frameLines, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, pick, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
+import { appCurrent, frameLines, installRunner, judgeProofSets, judgeShots, logProblems, matchResult, onlyRows, pick, playerCommand, playerHasTpLong, rotateShots, runSteps, screen, STEPS, type Ctx, type Report, type Step } from './batch';
 import { resolveShots, type Resolver } from './shots';
 
 const ctx = (over: Partial<Ctx> = {}): Ctx => ({ dry: false, mode: 'batchmode', shotsFile: '', shotsOut: '', facts: {}, say: () => {}, ...over });
@@ -257,5 +257,28 @@ describe('the proof sets in the budget step', () => {
       ? { ok: false, detail: `proof set ${name}: 2 faults`, problems: ['r067-patrol-post: not taken by the proof'], judged: 0, pass: 0 } : ok(name));
     expect(rows[0]).toMatchObject({ name: 'r059', ok: true });
     expect(rows[1]).toMatchObject({ name: 'r067', ok: false, problems: ['r067-patrol-post: not taken by the proof'] });
+  });
+});
+
+describe('one player launch per step (brief 042, Splice 2026-10-26)', () => {
+  test('the player opens windowed at the step\'s size from its first frame; --behind goes through open -g and waits', () => {
+    const d = playerCommand(['-late', 'f.json', 'out', '-novsync'], [1920, 1080], false, '/a/G.app');
+    expect(d).toEqual(['/a/G.app/Contents/MacOS/The Suborned', '-screen-fullscreen', '0', '-screen-width', '1920', '-screen-height', '1080', '-late', 'f.json', 'out', '-novsync']);
+    const b = playerCommand(['-tplong', 'f.json'], [2880, 1864], true, '/a/G.app');
+    expect(b.slice(0, 6)).toEqual(['open', '-g', '-n', '-W', '/a/G.app', '--args']); expect(b.slice(6)).toEqual(d.slice(1, 3).concat(['-screen-width', '2880', '-screen-height', '1864', '-tplong', 'f.json']));
+  });
+  test('each player step names the whole list once in its plan', () => {
+    for (const id of ['shots', 'late-fight', 'tp-long', 'perf064']) expect(STEPS.find(s => s.id === id)!.plan(ctx({ perf064: true })).filter(l => l.includes('MacOS/The Suborned')).length).toBe(1);
+  });
+  test('the screen says how many launches each player step made', () => {
+    const t = screen([], { when: 'w', mode: 'batchmode', shotsOut: '/o', launches: { 'late-fight': 1, 'tp-long': 1 } });
+    expect(t).toContain('players late-fight 1 launch · tp-long 1 launch');
+    expect(screen([], { when: 'w', mode: 'batchmode', shotsOut: '/o', launches: {} })).not.toContain('players');
+  });
+  test('--rows cuts a list to the named rows in file order, and refuses a name the file lacks', () => {
+    const f = { schema: 'x', rows: [{ name: 'a' }, { name: 'b' }, { name: 'c' }] };
+    expect(onlyRows(f).rows.length).toBe(3);
+    expect(onlyRows(f, ['c', 'a']).rows.map(r => r.name)).toEqual(['a', 'c']);
+    expect(() => onlyRows(f, ['z'])).toThrow('no row z');
   });
 });

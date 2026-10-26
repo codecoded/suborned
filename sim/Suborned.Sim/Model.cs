@@ -279,6 +279,9 @@ namespace Suborned.Sim
             "drive-held", "drive-no-driver", "unknown-stand", "drive-busy", "drive-here", "drive-fight", "driver-brings-vale", "car-not-parked",
             // engine 0.33.1 (rulebook cancel.driveCar): a cancel of a Drive under way, the driver's or a rider's
             "car-driving",
+            // brief 039 (engine 0.35.0, weapons.moves): a move not ready yet (with the tick it is), Talk down never on police, not before one of the
+            // crew is down, not on a rival still unhurt; Steam with no heat-main grille in reach
+            "move-cooling", "talk-police", "talk-none-down", "talk-not-hurt", "steam-no-grille",
         };
     }
 

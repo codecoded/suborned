@@ -59,7 +59,7 @@ namespace Suborned.Sim
                 var g = r.G; var off = new Start { FightLabOn = false }; off.LabPips = false;
                 r.Eq(off.Canonical(), new Start().Canonical(), "the today preset adds nothing to the start state");
                 r.Is(g.Lab && g.HealthScale == 10, "the lab is on, health ×10");
-                r.Eq((r.Op(Enf).Gun.Max, r.Op(Scout).Gun.Max, g.GuardGun.Max, g.PatrolGun.Max), (60, 40, 30, 40), "health ×10: Enforcer 60, an op 40, the guard 30, the patrol 40");
+                r.Eq((r.Op(Enf).Gun.Max, r.Op(Scout).Gun.Max, g.GuardGun.Max, g.PatrolGun.Max), (g.R.HealthEnforcer * 10, g.R.HealthOp * 10, g.R.HealthGuard * 10, g.R.HealthPatrol * 10), $"health ×10 of weapons.health: Enforcer {g.R.HealthEnforcer * 10}, an op {g.R.HealthOp * 10}, the guard 30, the patrol 40 (brief 039: the floor, ops 5, Enforcer 8)");
                 r.Eq((r.Op(Scout).Gun.W!.Id, r.Op(Fixer).Gun.W!.Id, r.Op(Tech).Gun.W!.Id, r.Op(Enf).Gun.W!.Id), ("sidearm", "sidearm", "sidearm", "carbine"), "the Handover issue: three sidearms and the carbine");
                 r.Eq((g.GuardGun.W!.Id, g.PatrolGun.W!.Id, g.DrawT, g.AimNewT), ("sidearm", "sidearm", g.R.Lab!.DrawTicks, g.R.Lab.AimNewTicks), "everyone else carries the lab sidearm; draw and aim are the lab's");
                 r.Eq(g.ChargeOf(OpId.Enforcer), 100, "a full charge bar");
@@ -202,9 +202,11 @@ namespace Suborned.Sim
                 r.Do(Scout, "draw"); r.Eq(r.Op(Scout).Gun.Stance, "free", "drawn means at will");
                 r.Eq(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "return" }).code, "stance-unknown", "return is no stance with two");
                 r.Is(g.Issue(new Order { Tick = g.Tick, Op = Scout, Do = "stance", Stance = "hold" }).ok, "hold is");
-                var today = Twin(g, new Start());
+                var today = Twin(g, new Start { OneInput = false }); // brief 039: today's stances are the controls before one input
                 today.Issue(new Order { Tick = 0, Op = Scout, Do = "draw" });
-                r.Is(today.OpOf(OpId.Scout).Gun.Stance == "return" && today.Issue(new Order { Tick = 0, Op = Scout, Do = "stance", Stance = "return" }).ok, "today: a draw is return, and return is taken");
+                r.Is(today.OpOf(OpId.Scout).Gun.Stance == "return" && today.Issue(new Order { Tick = 0, Op = Scout, Do = "stance", Stance = "return" }).ok, "today before one input: a draw is return, and return is taken");
+                var one = Twin(g, new Start()); one.Issue(new Order { Tick = 0, Op = Scout, Do = "draw" });
+                r.Eq(one.Issue(new Order { Tick = 0, Op = Scout, Do = "stance", Stance = "return" }).code, "unknown-verb", "today with one input (brief 039): the stance order is retired");
                 r.Is(g.Issue(new Order { Tick = g.Tick, Op = "cell", Do = "panic" }).ok, "with the lab, panic is taken outside a fight");
                 r.Wait(1);
             }, LabStart(s => s.LabStances = "two")); // stances two is a lab option; the lab's own is three since tuning.md §13.4 (engine 0.18.0)

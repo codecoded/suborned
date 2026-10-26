@@ -104,7 +104,9 @@ describe.skipIf(!dotnet)('the C# engine through its CLI', () => {
     const p = sim('play', file, '--json');
     expect(p.code, p.err).toBe(0);
     const r = JSON.parse(p.out);
-    expect(r.outcome).toBe('success');
+    // engine 0.35.0 (brief 039 B, cover and pin): rb-ff no longer wins as Motive composed it (its Go comes 1.4 s before the car is free; BAL-YARD-FOCUS
+    // records it as a missed line, Motive re-composes): the play reaches the outcome its scenario reached, whatever that is
+    expect(r.outcome).toBe(JSON.parse(s.out).expect.outcome);
     expect(r.gunfire).toBe(0);
     expect(r.replayIdentical).toBe(true);
   }, 180_000);

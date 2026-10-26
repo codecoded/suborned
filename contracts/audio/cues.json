@@ -1,6 +1,6 @@
 {
  "schema": "suborned.audio-cues/1",
- "note": "Chime (audio designer), brief 059, 2026-10-26. The one place the game reads for which sound plays on which event. Clips are in unity/Assets/Suborned/Resources/Audio/ (made by tools/audio/synth.ts; their hashes are in clips.json). A cue is keyed by a sim log code; a loop by what the car does. Unity: Resources.Load<AudioClip>(clip); there is no AudioMixer asset yet, so `buses` are named gain groups the host multiplies (db) until Latch makes a mixer from them.",
+ "note": "Chime (audio designer), brief 059, 2026-10-26. rivals-coming is muted (volume 0, was 0.85) on Sky's word, 2026-10-26: \"just turn it off for now - I'll do a proper audio pass later\" (the foghorn); the cue still fires, so proofs that read CuesPlayed are unchanged. The one place the game reads for which sound plays on which event. Clips are in unity/Assets/Suborned/Resources/Audio/ (made by tools/audio/synth.ts; their hashes are in clips.json). A cue is keyed by a sim log code; a loop by what the car does. Unity: Resources.Load<AudioClip>(clip); there is no AudioMixer asset yet, so `buses` are named gain groups the host multiplies (db) until Latch makes a mixer from them.",
  "buses": {
   "master": { "db": 0 },
   "cues": { "parent": "master", "db": 0, "note": "timing and consequence cues: the clock's sounds, always 2D, never ducked" },
@@ -20,7 +20,7 @@
    "on": { "log": "rivals.coming", "at": "2:35 on the Handover; also the drawn entry (racing for the gunfire) and the late entry (F5, F6), same code, same cue" },
    "clip": "Audio/rivals_coming",
    "bus": "cues",
-   "volume": 0.85,
+   "volume": 0,
    "pitch": 1,
    "spatial": { "blend": 0, "pan": "optional: stereo pan toward the side of the screen the car enters from (Orbit Walk), pan = clamp(dot(cameraRight, entry - cameraFocus) / 40 m, -0.6, 0.6); no distance fade", "reason": "a clock cue is heard wherever the camera is; the pan says which way to look" },
    "priority": 40,

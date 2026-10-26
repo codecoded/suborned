@@ -29,7 +29,9 @@ public class FinalIntentTests
         // c038 (Waymark, brief 067 §5.1): the loud-wait twins. Outcome, fail code, Trail and Alert agree both ways; under every the final
         // fight's police fire on the cell in the car who gave them no cause (square: security-1/-2 take the fixer, "final", and shoot him
         // down in the car at 3:49.1; yard: officer-2/-3 take the scout, aboard since 6:57.6 and never fired, at 7:27.5). Keel, 2026-10-26
-        "fight-loud-wait-square", "fight-loud-wait-yard",
+        "fight-loud-wait-square",
+        // fight-loud-wait-yard left the set with engine 0.35.0 (brief 039 B, one input): its drawn cell fights on its own once the loud final fight
+        // comes (4 shots before the Enforcer boards at 7:29.3), so every officer has cause both ways and the two runs agree; Waymark re-records it
         // loud-fast left the set with c038: the route is retired (Waymark, brief 067)
         // careless-takedown-seen-crowd left the set with engine 0.28.0: guard 73's radio locks the doors before the Enter, so the run has no
         // final fight and the agent and every rules cannot differ (Aster via Waymark, 2026-10-24)

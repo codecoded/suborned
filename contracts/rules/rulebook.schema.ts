@@ -265,7 +265,8 @@ export const Rulebook = z.strictObject({
     reroute: z.strictObject({ s: Ref, trail: Ref, away: Ref, walk: Ref.optional() }), // engine 0.30.0 (brief 057 §2): the rerouted patrol walks out and back at this pace; absent, it is placed (0.29.0)
     mislead: z.strictObject({ s: Ref, trail: Ref, away: Ref }),
     call: z.strictObject({ trail: Ref }),
-    enter: z.strictObject({ s: Ref, alarm: Ref }),
+    // engine 0.34.2 (Sky 2026-10-26): who sees an Enter and what it does; optional only for runs pinned before it (absent: the patrol's sight fails entry-seen-patrol)
+    enter: z.strictObject({ s: Ref, alarm: Ref, seen: z.strictObject({ patrol: z.enum(['fail', 'report']), rule: text, ...grounded }).optional() }),
     carry: z.strictObject({ s: Ref }),
     board: z.strictObject({ s: Ref }).optional(), // brief 018 (Board, step out); optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
     // brief 059 K6 (engine 0.32.0): the getaway car's Drive between the mission's car stands; optional only for runs pinned before it (rulebook.test.ts holds the live one to it)
@@ -299,6 +300,20 @@ export const Rulebook = z.strictObject({
     // brief 030 (Sky 2026-10-20): a fire order out of reach walks in; a weapon drawn by a fire order or panic holsters `autoHolster` after the fight.
     // Optional here only so runs pinned before it parse; the engine requires them and rulebook.test.ts holds the live rulebook to having them.
     close: z.boolean().optional(), autoHolster: Ref.optional(),
+    // brief 039 B, cover and pin (engine 0.35.0; GDD v0.28.0 §06): one input, the sticky focus, readable cover, the pin and one move each.
+    // Optional here only so runs pinned before 0.35.0 parse; rulebook.test.ts holds the live rulebook to having them.
+    oneInput: z.strictObject({ on: z.boolean(), rule: text }).optional(),
+    focus: z.strictObject({ sticky: z.boolean(), rule: text }).optional(),
+    takeCover: z.strictObject({ snap: Ref, reach: Ref, rule: text }).optional(),
+    pin: z.strictObject({ s: Ref, mod: Ref, hold: z.boolean(), cell: z.boolean(), rule: text }).optional(),
+    moves: z.strictObject({
+      ready: Ref,
+      mark: z.strictObject({ reach: Ref, s: Ref }),
+      talk: z.strictObject({ reach: Ref, s: Ref, down: Ref, hurt: z.boolean() }),
+      steam: z.strictObject({ reach: Ref, r: Ref, s: Ref }),
+      cover: z.strictObject({ s: Ref, r: Ref, every: Ref }),
+      rule: text,
+    }).optional(),
     health: z.strictObject({ enforcer: Ref, op: Ref, guard: Ref, officer: Ref, rival: Ref, patrol: Ref, civilian: Ref, camera: Ref.optional(), responseOfficers: Ref }),
     costs: z.strictObject({ hit: Ref, down: Ref, gunfire: Ref, drawWindow: Ref, drawSeenSecurity: Ref, drawSeenPeople: Ref, loudHold: Ref }),
     rule: text,

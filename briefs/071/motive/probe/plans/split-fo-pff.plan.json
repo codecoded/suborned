@@ -1,0 +1,256 @@
+{
+ "schema": "suborned.mission.plan/1",
+ "mission": "handover",
+ "note": "rearguard at the car, focus fire on the blocker: fo",
+ "start": {},
+ "until": 5400,
+ "steps": [
+  {
+   "op": "enforcer",
+   "do": "move",
+   "to": "d:Service lane",
+   "at": "5:50"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    7950,
+    -4000
+   ]
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    7950,
+    -3850
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Meet driver",
+   "gap": 62
+  },
+  {
+   "op": "scout",
+   "do": "listen",
+   "target": "driver",
+   "label": "heard",
+   "gap": 5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Boarding pavilion",
+   "gap": 62
+  },
+  {
+   "op": "fixer",
+   "do": "turn",
+   "target": "driver",
+   "approach": "pay",
+   "by": "5:40",
+   "label": "turned"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    8600,
+    -3400
+   ],
+   "after": [
+    "heard"
+   ],
+   "gap": 52
+  },
+  {
+   "op": "scout",
+   "do": "mislead",
+   "target": "rivals",
+   "at": "3:10",
+   "label": "tip"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "cabinet",
+   "run": true
+  },
+  {
+   "op": "tech",
+   "do": "reroute",
+   "target": "patrol",
+   "at": "5:00",
+   "label": "rr"
+  },
+  {
+   "op": "enforcer",
+   "do": "take",
+   "when": "car.parks",
+   "label": "take"
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": [
+    1175,
+    -4825
+   ],
+   "after": [
+    "tip"
+   ],
+   "at": "4:30"
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": [
+    1025,
+    -4625
+   ],
+   "after": [
+    "turned"
+   ],
+   "at": "4:30"
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": [
+    675,
+    -4625
+   ],
+   "after": [
+    "rr"
+   ]
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "scout-l2",
+   "every": 0.5,
+   "when": "fight.ambush"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "fixer-l2",
+   "every": 0.5,
+   "when": "fight.ambush"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-2",
+   "label": "tech-l2",
+   "every": 0.5,
+   "when": "fight.ambush"
+  },
+  {
+   "op": "scout",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "scout-l1",
+   "every": 0.5,
+   "after": [
+    "scout-l2"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "fixer",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "fixer-l1",
+   "every": 0.5,
+   "after": [
+    "fixer-l2"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "tech",
+   "do": "fire",
+   "target": "rival-1",
+   "label": "tech-l1",
+   "every": 0.5,
+   "after": [
+    "tech-l2"
+   ],
+   "when": "fight.down"
+  },
+  {
+   "op": "cell",
+   "do": "panic",
+   "after": [
+    "scout-l1"
+   ],
+   "label": "pan",
+   "every": 0.5
+  },
+  {
+   "op": "scout",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "pan"
+   ],
+   "when": "fight.over"
+  },
+  {
+   "op": "scout",
+   "do": "board",
+   "target": "car",
+   "label": "scout-in",
+   "every": 0.5
+  },
+  {
+   "op": "fixer",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "pan"
+   ],
+   "when": "fight.over"
+  },
+  {
+   "op": "fixer",
+   "do": "board",
+   "target": "car",
+   "label": "fixer-in",
+   "every": 0.5
+  },
+  {
+   "op": "tech",
+   "do": "move",
+   "to": "d:Getaway bay",
+   "after": [
+    "pan"
+   ],
+   "when": "fight.over"
+  },
+  {
+   "op": "tech",
+   "do": "board",
+   "target": "car",
+   "label": "tech-in",
+   "every": 0.5
+  },
+  {
+   "op": "cell",
+   "do": "go",
+   "after": [
+    "scout-in",
+    "fixer-in",
+    "tech-in"
+   ],
+   "gap": 1,
+   "every": 0.5
+  }
+ ]
+}

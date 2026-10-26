@@ -60,21 +60,30 @@ namespace Suborned.Sim
                 r.Is(c?.Origin == null, "a single culprit: no origin");
             });
 
-            Add("N120", "—", "Entry and the patrol (§07 fail entry-seen-patrol). Engine 0.34.0 (brief 067 A): the patrol sweeps the service yard and never sees the public door, sweeping or rerouted, so the fail can't be reached on this site: route A without the reroute enters as soon as the guard is away and the loop holds, and no patrol sees it. Whether the fail line stays is Sky's call (Motive briefs/067/motive.md §3; MC-3); a Disable's alarm walks the patrol to the camera's place but it holds facing the way it came, not the door. The fail camera's patrol culprit (FailCause) is unplayed until then. (0.33.1: the Enter at 4:40.4 under the forecourt sweep failed entry-seen-patrol.)", r =>
+            Add("N120", "—", "Entry and the patrol (§07; engine 0.34.2, Sky 2026-10-26: \"entry seen by patrol\" is \"no, not a failure\"; rulebook cell.enter.seen). The patrol robot that sees the Enter no longer fails the mission: the Enter goes on and the robot radios a report of the seen act, which lands attention.report.call later as a found fault (Alert at least 1, no Trail, a sighting, the dial's dispatch to the door). The yard sweep never sees the public door (brief 067 A), so the robot is brought there by an alarm: route G-kill with the reroute at 0:51 (the patrol back on its sweep at 3:31, after the carry), the guard's missed 4:00 mark walks it round to his post; it finds nothing (report.unfounded) and, standing down, faces the door. The Tech plants a second loop as the first runs out (4:30, live 4:50), and the Enforcer, waiting at the door, enters the first tick the patrol sees it. (0.33.1-0.34.1: entry-seen-patrol, a fail; a rulebook pinned before 0.34.2 still fails there: FailCauseTests.)", r =>
             {
-                var g = r.G;
+                var g = r.G; var door = g.S.At(g.S.GuardPost);
                 r.Is(!g.SweepCoversEntrance, "on its sweep the patrol never sees the public door (the service yard's)");
-                r.To(Max(r.Send(Scout, "d:Courtyard"), r.Send(Tech, "cabinet")));
-                r.Do(Scout, "watch", Inez); r.Done(Scout);
-                r.To(r.Send(Scout, "beside-inez")); r.Do(Scout, "listen", Inez);
-                r.Send(Fixer, "d:Courtyard"); r.SendTo(Enf, new Pt(4900, -1700));
-                r.Done(Scout); HelpUntilTurned(r, Inez);
-                r.To(Math.Max(g.Tick, T(228))); r.Do(Tech, "loop", "entrance"); r.Do(Fixer, "call", Inez);
-                r.To(r.Send(Enf, "d:Office entrance"));
-                r.Until(() => g.Over || (g.LoopOn && !g.GuardAtDoor), T(60));
-                r.Is(!g.PatrolWatching(g.S.At(g.S.GuardPost)) && g.PatrolAwayUntil <= g.Tick, "the patrol is on its sweep in the yard, not rerouted, and does not see the door");
-                r.Do(Enf, "enter"); r.Done(Enf);
-                r.Is(g.FailCode != "entry-seen-patrol" && r.Op(Enf).Inside == false && g.Vale == ValeAt.WithEnforcer, $"the Enter lands: Vale is with the Enforcer, no patrol saw it ({g.Result} {g.FailCode})");
+                Orders(r, Mv(0, Tech, "cabinet", true), MvTo(0, Enf, new Pt(5650, -4750)), MvTo(0, Scout, new Pt(3800, -5000)), MvTo(0, Fixer, new Pt(725, -5025)),
+                    Act(310, Scout, "watch", "guard"), MvTo(510, Scout, new Pt(725, -4625)), Act(340, Tech, "reroute", "patrol"), Act(1300, Tech, "loop", "entrance"), MvTo(1400, Enf, new Pt(6520, -4110)),
+                    Act(1510, Enf, "takedown", "guard", "kill"), Act(1540, Enf, "carry", "guard"), MvTo(1570, Enf, new Pt(6275, -1875)), Act(1815, Enf, "stash", "stash/office-service-door/door"),
+                    Mv(1915, Enf, "d:Office entrance", true));
+                r.To(T(270)); r.Do(Tech, "loop", "entrance"); // the second loop as the first runs out (4:30), live 4:50 to 6:50
+                r.Is(r.Until(() => g.LoopOn && g.PatrolWatching(door), T(60)), $"the alarm brings the patrol round: it sees the door with the loop live ({Report.Clock(g.Tick)})");
+                r.Is(!g.GuardAtDoor && !g.CameraWatching("entrance", r.Op(Enf).Pos), "no guard at the door, the camera looped: only the patrol sees the Enter");
+                int alert0 = g.Alert, sight0 = g.Sightings.Count;
+                r.Do(Enf, "enter");
+                r.Eq(g.Result, Outcome.None, "the patrol's sight of the Enter is no fail");
+                r.Is(g.Log.Exists(l => l.Code == "entry.seen" && l.Tick == g.Tick), "the patrol sees it and radios it (entry.seen)");
+                r.Eq(g.EntryReport.state, "pending", "its report is on its way");
+                r.Eq(g.EntryReport.landAt, g.Tick + T(g.R.AttnCallS), "it lands attention.report.call later (by radio)");
+                r.Wait(T(g.R.AttnCallS));
+                r.Eq(g.EntryReport.state, "landed", "the report lands");
+                r.Is(g.Log.Exists(l => l.Code == "entry.reported") && g.Log.Exists(l => l.Code == "alarm.dispatches" && l.Tick == g.Tick), "a found fault: entry.reported, and the dial dispatches to the door");
+                r.Is(g.Alert >= Math.Max(alert0, g.R.AttnAlert), $"Alert at least {g.R.AttnAlert} (Alert {g.Alert}; was {alert0})");
+                r.Is(g.Sightings.Count == sight0 + 1 && g.Sightings[^1].Watcher == "patrol" && g.Sightings[^1].Op == Enf && g.Sightings[^1].At == door, "a sighting: the patrol saw the Enforcer at the door");
+                r.Done(Enf);
+                r.Is(g.FailCode != "entry-seen-patrol" && g.Vale == ValeAt.WithEnforcer, $"the Enter lands: Vale is with the Enforcer ({g.Result} {g.FailCode})");
             });
 
             Add("N121", "—", "The fail camera: the abduction seen by the pickup camera (§07; route fail-take-seen-camera): the driver unturned, the rivals sent away, the Take at the official car under the live pickup camera. The culprit is the pickup camera, facing the car; Vale is the second, where he stood.", r =>
@@ -166,7 +175,7 @@ namespace Suborned.Sim
                 r.Is(o != null && o.Tick < g.Tick && g.Log.Exists(l => l.Tick == o.Tick && l.Code == "security.called"), "at the tick the response was called");
                 var m = c?.LastMove;
                 r.Is(m != null && m.Report == "post-empty:guard" && m.Reporter?.Id == "desk" && m.Reporter.At == r.Stand(g.S.GuardPost) && m.Tick > o!.Tick, "the last move: the desk's report of the empty post, at the post");
-            });
+            }, new Start { OneInput = false }); // brief 039: the recorded fixture's stance hold
 
             Add("N128", "—", "The fail camera: the seal of a loud final fight (route careless-body-found): the guard killed at his post and left there, the Enter at once; the Tech leaves the cabinet and the entrance camera's watcher reads the dead guard (Alert 2). The Enforcer comes out into the loud fight, whose seal clock runs out at 5:37. No single culprit: the origin is what made the fight loud, the camera's report that raised Alert to 2, where the camera stands.", r =>
             {
@@ -180,7 +189,7 @@ namespace Suborned.Sim
                 PosedAs(r, o?.Reporter, cam.At, cam.Facing, "its reporter, the entrance camera");
                 r.Is(o != null && g.Ledger.Exists(l => l.tick == o.Tick && l.what == "alert" && l.now >= 2 && l.now - l.delta < 2), "it raised Alert to 2 at that tick");
                 r.Is(c?.LastMove == null, "nothing moved the clock after the fight set it");
-            }, new Start { Security = 4 }); // tuning.md §7.9 (2026-10-20): at the Handover's level 2 the officers now reach him before its 2:25 seal; level 4 (swarm) seals in 1:30
+            }, new Start { Security = 4, OneInput = false }); // brief 039: the recorded fixture's stance hold; tuning.md §7.9 (2026-10-20): at the Handover's level 2 the officers now reach him before its 2:25 seal; level 4 (swarm) seals in 1:30
 
             Add("N129", "—", "The fail camera: a withdrawal has no culprit (the cell pulled out at 0:30).", r =>
             {

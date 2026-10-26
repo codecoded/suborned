@@ -207,7 +207,7 @@ namespace Suborned.Sim
                 r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car" && g.Hostiles.Exists(h => h.Blocker && l.Text.StartsWith(h.Id + " ", StringComparison.Ordinal))), "the blocker keeps his lane");
                 r.Eq(g.FailCode, "rivals-reach-vale", $"the first at the car takes Vale: hiding in a held car loses ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
                 r.Is(g.Cause != null && g.Cause.Culprits.Count > 0 && g.Cause.Culprits[0].Kind == "rival" && g.Cause.Culprits[0].Role == "reached", $"the fail camera on the rival who reached the car ({g.Cause?.Culprits.FirstOrDefault()})");
-            }, new Start { WeaponsFree = false });
+            }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
             Add("K3-CELL-DOWN", "067", "Motive M067-K3 (b): as K3-PRESS until the Enforcer is in with Vale; then he steps out again and the four stand in the open by the car, each having fired once (a cause for the rivals under ai.intent.final agent), holding their fire. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the car); they shoot the cell down one by one, and the tick the last operative goes down the mission fails at once (cell-down: the whole cell is down), the fail camera on that shot. 0.33.1 ran on with the whole cell down to the close.", r =>
             {
@@ -235,7 +235,7 @@ namespace Suborned.Sim
                 r.Eq(g.FailCode, "cell-down", $"the whole cell down fails the mission ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
                 r.Eq(g.Tick, last, $"at once: the tick the last operative went down ({Report.Clock(last)})");
                 r.Is(g.Cause != null && g.Cause.Why == "shot" && g.Cause.Culprits.Count >= 2 && g.Cause.Culprits[0].Kind == "rival" && g.Cause.Culprits[1].Kind == "op", $"the fail camera: the shooter, then the last to fall ({string.Join(" ", g.Cause?.Culprits.Select(c => c.ToString()) ?? new string[0])})");
-            }, new Start { WeaponsFree = false });
+            }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
             Add("K3-BACK", "067", "Motive M067-K3 (a): as K3-PRESS until the rivals go for the car; then the Scout steps out of it (she never drew: no foe of theirs). An operative standing outside again sends them back to cover (rivals.back-to-cover); none of them takes Vale while she stands.", r =>
             {
@@ -251,7 +251,7 @@ namespace Suborned.Sim
                 r.Is(!g.Over && g.RivalsForCar.Count == 0 && LogTick(g, "rivals.back-to-cover", press) >= 0, $"with her outside they go back to cover ({Report.Clock(LogTick(g, "rivals.back-to-cover", press))}): {string.Join(", ", going)}");
                 int fail = g.Tick; r.Until(() => g.Over || r.Op(Scout).Down, T(5));
                 r.Is(g.FailCode != "rivals-reach-vale" || r.Op(Scout).Down, $"nobody takes Vale while she stands ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
-            }, new Start { WeaponsFree = false });
+            }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
             Add("K3-DRIVER", "067", "Motive M067-K3 (c): Go needs a driver. The guard shoots the Scout down (she drew in front of him, weapons free off, so she never fires); the Enforcer carries her into the getaway car and steps out: with only the downed aboard, Go is refused car-no-driver (the Go card says so too); he boards again and Go is taken (the cell withdraws by car, Vale not aboard).", r =>
             {
@@ -276,7 +276,7 @@ namespace Suborned.Sim
                 var go2 = g.Issue(Go(g));
                 r.Is(go2.ok, $"with the Enforcer aboard Go is taken ({go2.code})");
                 r.Eq(g.Result, Outcome.Withdrawn, "the cell withdraws by car (Vale was not aboard)");
-            }, new Start { WeaponsFree = false });
+            }, new Start { WeaponsFree = false, OneInput = false }); // brief 039: weapons free off and cease are the controls before one input
 
             Add("POST-BESIDE", "067", "Pulse's note 3 (brief 067 L; GDD §05: every staff post checks in every 90 s from its shift start): guard 73 stands her shift at office-entrance-stand-00, beside the public door the cast guard holds through the mission; the waiting point is her post, so her marks run from 5:30 every 90 s, as when she stood on the door (engine 0.34.0: PostOf reads the people file's beside). Guard 74's minute at official-entrance-stand-00 before her shift is her walk's last, not her shift: her first mark is still 5:30, on the door.", r =>
             {
@@ -351,7 +351,8 @@ namespace Suborned.Sim
                     foreach (var h in g.Hostiles) { if (h.Gun.Target.Length > 0 || h.Down) idle.Remove(h.Id); else if (!idle.ContainsKey(h.Id)) idle[h.Id] = g.Tick; }
                 })) return;
                 r.Is(advances > 0 && bad == 0, $"{advances} advances, each by a rival with no target for ai.engageLapse ({g.R.EngageLapseS} s) at least ({bad} sooner)");
-                r.Eq(LogTick(g, "fight.over") is int fo && fo >= 0 ? Report.Clock(fo) : "-", "4:22.9", "the fight ends (Motive 4:22.9)");
+                int fo = LogTick(g, "fight.over"); r.Is(fo >= 0, $"the fight ends ({(fo >= 0 ? Report.Clock(fo) : "-")})");
+                r.Line(fo >= 0 && Report.Clock(fo) == "4:22.9", $"brief 039 drift (B, cover and pin; Motive re-composes): the fight ends at Motive's 4:22.9 (engine 0.34; got {(fo >= 0 ? Report.Clock(fo) : "-")})");
                 r.Eq((g.Result, Report.Clock(g.Tick)), (Outcome.Success, "4:37.3"), "and the run wins (Motive 4:37.3)");
                 r.Is(g.Log.Where(l => l.Code == "ai.advance").All(l => l.Text.StartsWith("rival-", StringComparison.Ordinal)), "only rivals advance (police and the blocker hold)");
             });

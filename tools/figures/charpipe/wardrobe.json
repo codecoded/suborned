@@ -1,0 +1,838 @@
+{
+ "schema": "suborned.charpipe.wardrobe/2",
+ "brief": "069 (proof, scratch), round 2",
+ "note": "The parts in slots. Every part is a recipe on the base body, not a mesh: it runs on whichever proxy topology a LOD uses, after the person's sliders and in the T-pose rest, so it fits every build and height by construction. Every border a paint region draws (a z on the torso, neck or head; a t across a limb; a panel's maxX) is first cut into the mesh as a plane, so colour edges are straight lines. Kinds: paint = body faces given to the part and pushed out by offsetMm (no triangles added, nothing pokes through); tube = rings hung from a landmark (skirt, coat skirt, A-line shift; halfDeg < 180 makes an open front panel: the apron), weights by Data Transfer from the body blended toward the hips and thighs (legsFront at the front, legsBack at the back, so the back panel doesn't flare and the front follows the forward thigh); collar = a short double-walled ring at the neck; curtain = hair hung round the back and sides; hood = over the head and down the back of the neck, open at the face, riding the head above the chin and the chest below it; bag = a strap across the body front and back to a case at the right hip; dome = a rounded cap with a visor, or a hair puff; peaked = a service cap (band, a crown wider than the band, a visor); pillbox = a small flat cylinder on the crown. Caps and hats are built after the paint is pushed out and every ring clears the head and hair above it. Regions: seg (torso, neck, head, arm, forearm, hand, thigh, shin, foot), t = fraction along that bone, z = between landmarks (feet, ankle, knee, hip, crotch, waist, chest, neckbase, chin, eye, crown; 'a+0.03' metres scaled to height, 'a..b@0.6'), side = front/back/lateral/medial within deg, maxX = a panel within that half-width of the middle line. Colour roles: S skin, E eyes, HR hair, BT boots, M main block, B base, T trim (painted strips; never brass), TL thin line (hem bands and rims, 1-2 cm; brass allowed), H hat, L legs, LT legs under a skirt, G gloves, D the dark step (ink), AP apron, BG bag. skipIf on a region or tube drops it when the outfit holds a named part; onlyIf keeps it only then. Later layers paint over earlier ones. lod0Only marks a region too fine to see at play zoom (zip, placket, buckle, chest ring): LOD1 leaves it out, cut and paint, to stay inside its 1,500 triangles.",
+ "landmarks": "from the person's own rest skeleton after the sliders: ankle = Foot head, knee = Leg head, hip = UpLeg head, crotch = hip - 0.07, waist = Spine1 head, chest = Spine2 head, neckbase = Neck head, chin = Head head, eye = the basemesh eye joints, crown = top of the head; all z in metres, feet on 0",
+ "base": {
+  "body": {
+   "layer": 0,
+   "kind": "paint",
+   "regions": [
+    {
+     "all": true,
+     "role": "S"
+    }
+   ],
+   "offsetMm": 0
+  },
+  "eyes": {
+   "layer": 90,
+   "kind": "eyes",
+   "role": "E",
+   "browRole": "HR"
+  },
+  "boots": {
+   "layer": 10,
+   "kind": "paint",
+   "offsetMm": 5,
+   "regions": [
+    {
+     "seg": "shin",
+     "t": [
+      0.72,
+      1.5
+     ],
+     "role": "BT"
+    },
+    {
+     "seg": "foot",
+     "role": "BT"
+    }
+   ]
+  },
+  "gloves": {
+   "layer": 60,
+   "kind": "paint",
+   "offsetMm": 2,
+   "regions": [
+    {
+     "seg": "hand",
+     "role": "G"
+    }
+   ]
+  }
+ },
+ "parts": {
+  "legs_trousers": {
+   "slot": "legs",
+   "layer": 20,
+   "label": "slim trousers",
+   "kind": "paint",
+   "offsetMm": 4,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "feet",
+      "waist+0.01"
+     ],
+     "role": "L"
+    },
+    {
+     "seg": "thigh",
+     "role": "L"
+    },
+    {
+     "seg": "shin",
+     "t": [
+      -1.0,
+      0.72
+     ],
+     "role": "L"
+    }
+   ]
+  },
+  "legs_skirt": {
+   "slot": "legs",
+   "layer": 20,
+   "label": "A-line skirt above the knee, tights or bare legs",
+   "kind": "paint",
+   "offsetMm": 3,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "feet",
+      "waist+0.01"
+     ],
+     "role": "L"
+    },
+    {
+     "seg": "thigh",
+     "t": [
+      -1.0,
+      0.6
+     ],
+     "role": "L",
+     "skipIf": [
+      "coat_car"
+     ]
+    },
+    {
+     "seg": "thigh",
+     "t": [
+      -1.0,
+      0.6
+     ],
+     "role": "LT",
+     "onlyIf": [
+      "coat_car"
+     ]
+    },
+    {
+     "seg": "thigh",
+     "t": [
+      0.6,
+      1.5
+     ],
+     "role": "LT"
+    },
+    {
+     "seg": "shin",
+     "t": [
+      -1.0,
+      0.72
+     ],
+     "role": "LT"
+    }
+   ],
+   "tubes": [
+    {
+     "name": "skirt",
+     "top": "waist",
+     "bottom": "hip..knee@0.72",
+     "flare": 0.3,
+     "rings": [
+      4,
+      2
+     ],
+     "segs": [
+      18,
+      10
+     ],
+     "band": 0.02,
+     "role": "L",
+     "bandRole": "TL",
+     "legsFront": 0.8,
+     "legsBack": 0.35,
+     "skipIf": [
+      "coat_car"
+     ]
+    }
+   ]
+  },
+  "top_tunic": {
+   "slot": "top",
+   "layer": 30,
+   "label": "mandarin-collar tunic, cap sleeves with a line, front placket line, dark belt",
+   "kind": "paint",
+   "offsetMm": 6,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "hip-0.05",
+      "crown"
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "neck",
+     "t": [
+      -1.0,
+      0.25
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "arm",
+     "t": [
+      -1.0,
+      0.36
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "arm",
+     "t": [
+      0.3,
+      0.36
+     ],
+     "role": "TL"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "waist+0.015",
+      "neckbase-0.02"
+     ],
+     "side": "front",
+     "deg": 90,
+     "maxX": 0.012,
+     "role": "T",
+     "lod0Only": true
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "waist-0.03",
+      "waist+0.015"
+     ],
+     "role": "D"
+    }
+   ],
+   "collar": {
+    "height": 0.035,
+    "flare": 0.05,
+    "role": "M",
+    "bandRole": "TL"
+   }
+  },
+  "top_jacket": {
+   "slot": "top",
+   "layer": 30,
+   "label": "jacket, long sleeves, ribbed hem and cuffs in the base colour, stand collar with a line, front zip line",
+   "kind": "paint",
+   "offsetMm": 8,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "hip-0.03",
+      "crown"
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "neck",
+     "t": [
+      -1.0,
+      0.25
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "arm",
+     "role": "M"
+    },
+    {
+     "seg": "forearm",
+     "t": [
+      -1.0,
+      0.93
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "hip-0.03",
+      "hip+0.02"
+     ],
+     "role": "B"
+    },
+    {
+     "seg": "forearm",
+     "t": [
+      0.84,
+      0.93
+     ],
+     "role": "B"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "hip+0.02",
+      "neckbase-0.02"
+     ],
+     "side": "front",
+     "deg": 90,
+     "maxX": 0.01,
+     "role": "T",
+     "lod0Only": true
+    }
+   ],
+   "collar": {
+    "height": 0.05,
+    "flare": 0.02,
+    "role": "B",
+    "bandRole": "TL"
+   }
+  },
+  "dress_shift": {
+   "slot": "top",
+   "layer": 30,
+   "label": "A-line shift dress above the knee, cap sleeves, stand collar with a line, hem line",
+   "kind": "paint",
+   "offsetMm": 6,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "feet",
+      "crown"
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "neck",
+     "t": [
+      -1.0,
+      0.25
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "arm",
+     "t": [
+      -1.0,
+      0.3
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "thigh",
+     "t": [
+      -1.0,
+      0.6
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "thigh",
+     "t": [
+      0.6,
+      1.5
+     ],
+     "role": "LT"
+    },
+    {
+     "seg": "shin",
+     "t": [
+      -1.0,
+      0.72
+     ],
+     "role": "LT"
+    }
+   ],
+   "tubes": [
+    {
+     "name": "shift",
+     "top": "waist+0.02",
+     "bottom": "hip..knee@0.78",
+     "flare": 0.42,
+     "rings": [
+      4,
+      2
+     ],
+     "segs": [
+      18,
+      10
+     ],
+     "band": 0.018,
+     "role": "M",
+     "bandRole": "TL",
+     "legsFront": 0.8,
+     "legsBack": 0.35
+    }
+   ],
+   "collar": {
+    "height": 0.03,
+    "flare": 0.0,
+    "role": "M",
+    "bandRole": "TL"
+   }
+  },
+  "coat_car": {
+   "slot": "coat",
+   "layer": 40,
+   "label": "belted car coat to mid-thigh, funnel collar, shoulder line, button line, dark belt, thin hem line",
+   "kind": "paint",
+   "offsetMm": 12,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "waist-0.04",
+      "crown"
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "neck",
+     "t": [
+      -1.0,
+      0.3
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "arm",
+     "role": "M"
+    },
+    {
+     "seg": "forearm",
+     "t": [
+      -1.0,
+      0.9
+     ],
+     "role": "M"
+    },
+    {
+     "seg": "forearm",
+     "t": [
+      0.82,
+      0.9
+     ],
+     "role": "B"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "waist-0.03",
+      "waist+0.015"
+     ],
+     "role": "D"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "waist+0.015",
+      "neckbase-0.03"
+     ],
+     "side": "front",
+     "deg": 90,
+     "maxX": 0.01,
+     "role": "T",
+     "lod0Only": true
+    }
+   ],
+   "shoulders": {
+    "offsetMm": 24,
+    "z": [
+     "chest+0.02",
+     "crown"
+    ],
+    "minX": 0.13
+   },
+   "tubes": [
+    {
+     "name": "coatskirt",
+     "top": "waist-0.02",
+     "bottom": "hip..knee@0.5",
+     "flare": 0.18,
+     "rings": [
+      4,
+      2
+     ],
+     "segs": [
+      18,
+      10
+     ],
+     "band": 0.012,
+     "role": "M",
+     "bandRole": "TL",
+     "legsFront": 0.85,
+     "legsBack": 0.4
+    }
+   ],
+   "collar": {
+    "height": 0.065,
+    "flare": 0.22,
+    "role": "M",
+    "bandRole": "M"
+   }
+  },
+  "guard_yoke": {
+   "slot": "yoke",
+   "layer": 35,
+   "label": "guard's shoulder yoke in ink over the amber, front and back, a straight line across the chest",
+   "kind": "paint",
+   "offsetMm": 10,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "chest+0.05",
+      "crown"
+     ],
+     "role": "D"
+    },
+    {
+     "seg": "arm",
+     "t": [
+      -1.0,
+      0.18
+     ],
+     "role": "D"
+    }
+   ]
+  },
+  "duty_belt": {
+   "slot": "belt",
+   "layer": 45,
+   "label": "guard's duty belt: a broad dark belt, a chrome buckle, a holster case at the right hip",
+   "kind": "paint",
+   "offsetMm": 14,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "hip+0.005",
+      "hip+0.05"
+     ],
+     "role": "D"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "hip+0.005",
+      "hip+0.05"
+     ],
+     "side": "front",
+     "deg": 90,
+     "maxX": 0.022,
+     "role": "T",
+     "lod0Only": true
+    }
+   ],
+   "bag": {
+    "strap": 0.0,
+    "offset": 0.0,
+    "strapRole": "D",
+    "case": [
+     0.11,
+     0.13,
+     0.05
+    ],
+    "role": "D",
+    "noStrap": true
+   }
+  },
+  "over_tabard": {
+   "slot": "over",
+   "layer": 36,
+   "label": "ink over-tabard, front and back panels open at the sides, a chrome ring on the chest",
+   "kind": "paint",
+   "offsetMm": 15,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "hip-0.08",
+      "neckbase-0.015"
+     ],
+     "maxX": 0.115,
+     "role": "D"
+    },
+    {
+     "seg": "torso",
+     "z": [
+      "chest-0.02",
+      "chest+0.05"
+     ],
+     "side": "front",
+     "deg": 40,
+     "maxX": 0.04,
+     "role": "T",
+     "lod0Only": true
+    }
+   ]
+  },
+  "apron": {
+   "slot": "apron",
+   "layer": 38,
+   "label": "cafe apron: a bib and a front panel to the knee, in white",
+   "kind": "paint",
+   "offsetMm": 9,
+   "regions": [
+    {
+     "seg": "torso",
+     "z": [
+      "waist-0.02",
+      "chest+0.07"
+     ],
+     "side": "front",
+     "deg": 90,
+     "maxX": 0.085,
+     "role": "AP"
+    }
+   ],
+   "tubes": [
+    {
+     "name": "apron",
+     "top": "waist-0.02",
+     "bottom": "hip..knee@0.85",
+     "flare": 0.05,
+     "rings": [
+      3,
+      2
+     ],
+     "segs": [
+      10,
+      6
+     ],
+     "halfDeg": 62,
+     "band": 0.0,
+     "role": "AP",
+     "bandRole": "AP",
+     "legsFront": 0.75,
+     "legsBack": 0.75
+    }
+   ]
+  },
+  "bag_case": {
+   "slot": "bag",
+   "layer": 46,
+   "label": "a shoulder strap across the body to a flat case at the right hip",
+   "kind": "paint",
+   "offsetMm": 0,
+   "regions": [],
+   "bag": {
+    "strap": 0.032,
+    "offset": 0.012,
+    "strapRole": "BG",
+    "case": [
+     0.2,
+     0.15,
+     0.055
+    ],
+    "role": "BG"
+   }
+  },
+  "hair_crop": {
+   "slot": "hair",
+   "layer": 70,
+   "label": "short crop",
+   "kind": "paint",
+   "offsetMm": 9,
+   "regions": [
+    {
+     "seg": "head",
+     "z": [
+      "eye+0.04",
+      "crown+1"
+     ],
+     "role": "HR"
+    },
+    {
+     "seg": "head",
+     "z": [
+      "eye-0.035",
+      "crown+1"
+     ],
+     "side": "back",
+     "deg": 110,
+     "role": "HR"
+    }
+   ]
+  },
+  "hair_bob": {
+   "slot": "hair",
+   "layer": 70,
+   "label": "jaw-length bob with a fringe",
+   "kind": "paint",
+   "offsetMm": 14,
+   "regions": [
+    {
+     "seg": "head",
+     "z": [
+      "eye+0.022",
+      "crown+1"
+     ],
+     "role": "HR"
+    },
+    {
+     "seg": "head",
+     "z": [
+      "eye-0.05",
+      "crown+1"
+     ],
+     "side": "back",
+     "deg": 115,
+     "role": "HR"
+    }
+   ],
+   "curtain": {
+    "top": "eye+0.035",
+    "bottom": "chin-0.012",
+    "openFrontDeg": 62,
+    "pad": 0.016,
+    "flare": 0.3,
+    "rings": [
+     3,
+     2
+    ],
+    "segs": [
+     14,
+     8
+    ],
+    "role": "HR"
+   }
+  },
+  "hair_puff": {
+   "slot": "hair",
+   "layer": 70,
+   "label": "a full rounded natural (afro) or a high puff: a dome of hair over the scalp",
+   "kind": "dome",
+   "base": "eye+0.02",
+   "pad": 0.03,
+   "lift": 0.04,
+   "band": 0.0,
+   "segs": [
+    16,
+    10
+   ],
+   "rings": [
+    4,
+    2
+   ],
+   "role": "HR",
+   "paint": {
+    "regions": [
+     {
+      "seg": "head",
+      "z": [
+       "eye+0.02",
+       "crown+1"
+      ],
+      "role": "HR"
+     },
+     {
+      "seg": "head",
+      "z": [
+       "eye-0.035",
+       "crown+1"
+      ],
+      "side": "back",
+      "deg": 110,
+      "role": "HR"
+     }
+    ]
+   }
+  },
+  "hat_cap": {
+   "slot": "hat",
+   "layer": 80,
+   "label": "rounded cap with a short visor and a band (commuters)",
+   "kind": "dome",
+   "base": "eye+0.04",
+   "pad": 0.006,
+   "lift": 0.012,
+   "visor": 0.055,
+   "visorDropDeg": 12,
+   "band": 0.014,
+   "segs": [
+    16,
+    10
+   ],
+   "rings": [
+    4,
+    2
+   ],
+   "role": "H",
+   "bandRole": "TL"
+  },
+  "hat_peaked": {
+   "slot": "hat",
+   "layer": 80,
+   "label": "guard's peaked service cap: a dark band and visor, a crown wider than the band",
+   "kind": "peaked",
+   "base": "eye+0.03",
+   "pad": 0.006,
+   "bandH": 0.045,
+   "crownLift": 0.022,
+   "crownFlare": 1.2,
+   "visor": 0.06,
+   "visorDropDeg": 18,
+   "visorDeg": 65,
+   "segs": [
+    16,
+    10
+   ],
+   "role": "H",
+   "bandRole": "D",
+   "visorRole": "D",
+   "band": 0.018
+  },
+  "hat_pillbox": {
+   "slot": "hat",
+   "layer": 80,
+   "label": "cafe pillbox: a small flat cylinder on the crown with a line",
+   "kind": "pillbox",
+   "sink": 0.03,
+   "height": 0.035,
+   "scale": 0.82,
+   "band": 0.012,
+   "back": 0.01,
+   "segs": [
+    14,
+    8
+   ],
+   "role": "H",
+   "bandRole": "TL"
+  },
+  "hood": {
+   "slot": "hood",
+   "layer": 75,
+   "label": "rival's hood: over the head and down the back of the neck, open at the face (round 1's cape collar went through the arms once the rest became a T-pose)",
+   "kind": "paint",
+   "offsetMm": 0,
+   "regions": [],
+   "hood": {
+    "bottom": "neckbase-0.06",
+    "pad": 0.018,
+    "openFrontDeg": 58,
+    "segs": [
+     16,
+     10
+    ],
+    "role": "M"
+   },
+   "replaces": [
+    "hair_puff",
+    "hair_bob"
+   ]
+  }
+ }
+}

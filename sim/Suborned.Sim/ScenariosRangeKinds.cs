@@ -133,7 +133,7 @@ namespace Suborned.Sim
                 r.Eq(sc.Verify(Engine.Play(inputs, sc.Start, sc.Orders, sc.Until), inputs.Hash), "", "the replay matches its record");
             });
 
-            AddRange("RK-BY-FLEE", "today", "open", "bystanders as the street's crowd: a drawn weapon in witness range startles them, they run for the far end, are safe off the floor, witness the agent they saw fire, and walk back crowd.quiet after the last shot", r =>
+            AddRange("RK-BY-FLEE", "pre039", "open", "bystanders as the street's crowd: a drawn weapon in witness range startles them, they run for the far end, are safe off the floor, witness the agent they saw fire, and walk back crowd.quiet after the last shot", r =>
             {
                 var g = r.G; var R = g.R;
                 Spawned(r, "bystanders", "near", 2);

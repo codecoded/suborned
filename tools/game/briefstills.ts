@@ -15,8 +15,12 @@
 //   tick      the contact: its shift start + 0:30, or, when it waits for the target (roles[].waitsFor), the target's leavesTo.by (Vale at his car);
 //             the window's role: 1:00, on his post before any call; a timeline place: its m:ss + 1 s; the ending: 0:00
 //   camera    a person at a door: the conversation camera's profile rule (3.6 m off the door's outward side, 1.9 m up, 8° down), framed head to
-//             waist; a place with a car: the play camera at the quarter-step yaw that best faces the nearest building face's outward side
-//             (civic-block.json), the play pitch, zoom 9, the architecture cut off; the ending: a low camera square onto the getaway car's side
+//             waist; the window's role (a guard on his post) turned POSTED_TURN off the door's normal toward the face's shorter run, so the façade
+//             fills the ground behind him, never the open doorway (Glyph N1, 0.2.130), and a warm key light on him (he stands in his door's shade; URP spot intensity, inverse-square at 3.6 m);
+//             a contact who waits at the target's car: the play camera at the quarter-step yaw that best faces the nearest building face's outward
+//             side, zoom WAIT_ZOOM, on the midpoint of him and the car moved WAIT_SHIFT in toward the door, so he stands a third of the still's height with the car's end beside him (Glyph N3);
+//             a place with a car: the same yaw rule, the play pitch, zoom 9, the architecture cut off; the ending: a camera off the getaway car's
+//             end, 25° down (Glyph N5). Every still is the 3D world only: no rings, route marks, bay outlines or cones (Glyph N4, `bare`)
 import { copyFileSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -27,7 +31,8 @@ type Json = any;
 
 export type Pin = {
   id: string; way: string; n: string; text: string; place: string; at: V2; tick: number; route: string; file: string;
-  camera: { kind: 'person' | 'car'; view: string; normal: V2 | null } | { kind: 'play'; yaw: number; zoom: number; normal: V2 | null };
+  camera: { kind: 'person' | 'car'; view: string; normal: V2 | null; turn?: number; side?: V2 | null; key?: number }
+    | { kind: 'play'; yaw: number; zoom: number; normal: V2 | null; focus?: string; focus2?: string; shift?: number };
   why: string;
 };
 export type Plan = { bounds: [number, number, number, number]; buildings: { name: string; polygon: V2[] }[]; ground: V2[][]; green: V2[][]; water: V2[][] };
@@ -37,6 +42,9 @@ export type Stills = { schema: 'suborned.brief-stills/1'; mission: string; size:
 
 const secs = (mss: string) => { const m = /^(\d+):(\d{2})$/.exec(mss.trim()); return m ? Number(m[1]) * 60 + Number(m[2]) : NaN; };
 const TICKS = 10; // the engine's ticks per second (rulebook tick 0.1 s)
+/** The posted role's still (Glyph N1): degrees off the door's normal, and the key light's intensity. A waiting contact's (Glyph N3): the play zoom (a third
+ *  of the height for a person 1.8 m tall at the play pitch) and how far in from the face the look point moves (the door behind the car). [S] */
+export const POSTED_TURN = 45, POSTED_KEY = 30, WAIT_ZOOM = 2.1, WAIT_SHIFT = 1.4;
 
 /** Whether a point lies inside a polygon (even-odd). */
 export function inside(p: V2, pg: V2[] | undefined): boolean {
@@ -45,20 +53,28 @@ export function inside(p: V2, pg: V2[] | undefined): boolean {
   return c;
 }
 
-/** The outward normal of the building face nearest `p` (block metres), with its distance; null when no building. */
-export function nearestFace(p: V2, buildings: { polygon: V2[] }[]): { normal: V2; d: number } | null {
-  let best: { normal: V2; d: number } | null = null;
+/** The outward normal of the building face nearest `p` (block metres), with its distance and the building's index; null when no building. */
+export function nearestFace(p: V2, buildings: { polygon: V2[] }[]): { normal: V2; d: number; b: number } | null {
+  let best: { normal: V2; d: number; b: number } | null = null; let bi = -1;
   for (const b of buildings) {
-    const pg = b.polygon, n = pg.length; let cx = 0, cy = 0; for (const q of pg) { cx += q[0] / n; cy += q[1] / n; }
+    bi++; const pg = b.polygon, n = pg.length; let cx = 0, cy = 0; for (const q of pg) { cx += q[0] / n; cy += q[1] / n; }
     for (let i = 0; i < n; i++) {
       const a = pg[i]!, c = pg[(i + 1) % n]!, ex = c[0] - a[0], ey = c[1] - a[1], L = Math.hypot(ex, ey); if (L < 1e-6) continue;
       const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / (L * L)));
       const d = Math.hypot(p[0] - (a[0] + ex * t), p[1] - (a[1] + ey * t));
       let nx = ey / L, ny = -ex / L; const mx = (a[0] + c[0]) / 2 - cx, my = (a[1] + c[1]) / 2 - cy; if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
-      if (!best || d < best.d - 1e-6) best = { normal: [nx + 0, ny + 0], d }; // + 0: no -0 in the file
+      if (!best || d < best.d - 1e-6) best = { normal: [nx + 0, ny + 0], d, b: bi }; // + 0: no -0 in the file
     }
   }
   return best;
+}
+
+/** How far the building's face runs from the door `p` each way along it (metres, probed 0.3 m inside the face every 0.25 m, up to 30 m): [along +t, along -t],
+ *  t the face's direction (the normal turned a quarter). */
+export function faceRuns(p: V2, buildings: { polygon: V2[] }[]): { t: V2; runs: [number, number] } | null {
+  const f = nearestFace(p, buildings); if (!f) return null; const pg = buildings[f.b]!.polygon, n = f.normal, t: V2 = [-n[1] + 0, n[0] + 0], back = f.d + 0.3;
+  const run = (sg: number) => { let k = 0; while (k < 30 && inside([p[0] - n[0] * back + t[0] * sg * (k + 0.25), p[1] - n[1] * back + t[1] * sg * (k + 0.25)], pg)) k += 0.25; return k; };
+  return { t, runs: [run(1), run(-1)] };
 }
 
 export function derive(mission = 'handover', root = ROOT): Stills {
@@ -78,6 +94,12 @@ export function derive(mission = 'handover', root = ROOT): Stills {
   const pins: Pin[] = []; let n = 0;
   const play = (at: V2, zoom: number) => ({ kind: 'play' as const, yaw: -1, zoom, normal: face(at)?.normal ?? null });
   const person = (view: string, at: V2) => ({ kind: 'person' as const, view, normal: face(at)?.normal ?? null });
+  // the window's role on his post: POSTED_TURN off his door toward the face's shorter run, so the longer run of façade is behind him, and a warm key
+  // light (POSTED_KEY) beside the camera: he stands in his door's shade, where Inez stands in the sun
+  const posted = (view: string, at: V2) => {
+    const fr = faceRuns(at, buildings), side: V2 | null = fr ? (fr.runs[0] >= fr.runs[1] ? [-fr.t[0] + 0, -fr.t[1] + 0] : fr.t) : null;
+    return { kind: 'person' as const, view, normal: face(at)?.normal ?? null, turn: POSTED_TURN, side, key: POSTED_KEY };
+  };
   for (const w of brief.ways ?? []) {
     const win = (m.windows ?? []).find((x: Json) => x.id === w.id);
     const named = (routes.contacts ?? []).find((c: Json) => c.role === w.contact)?.who as string | undefined;
@@ -89,13 +111,13 @@ export function derive(mission = 'handover', root = ROOT): Stills {
     const cTick = waits ? secs(target.leavesTo.by) : (secs(c.shift?.from ?? '0:00') || 0) + 3;
     const cAt = placeAt('d:' + c.at);
     pins.push({ id: `${w.id}-${w.contact}`, way: w.id, n: String(++n), text: textKey(w.contact), place: 'd:' + c.at, at: cAt, tick: cTick * TICKS, route: script, file: `brief-${w.contact}.jpg`,
-      camera: waits ? play(cAt, 9) : person(w.contact, cAt),
+      camera: waits ? { ...play(cAt, WAIT_ZOOM), focus: w.contact, focus2: 'car/official', shift: WAIT_SHIFT } : person(w.contact, cAt),
       why: waits ? `roles[${w.contact}].waitsFor ${targetRole}: at the target's leavesTo.by ${target.leavesTo.by}` : `roles[${w.contact}].shift.from ${c.shift?.from ?? '0:00'} + 0:03, on her post before the cell walks over` });
     // the second place: the window's role, else where the timeline moves the target's car after the turn
     if (win?.role && roles[win.role]) {
       const r = roles[win.role], at = placeAt('d:' + r.at);
       pins.push({ id: `${w.id}-${win.role}`, way: w.id, n: String(++n), text: textKey(win.role), place: 'd:' + r.at, at, tick: 60 * TICKS, route: script, file: `brief-${win.role}.jpg`,
-        camera: person(win.role, at), why: `windows[${w.id}].role ${win.role}: 1:00, on his post before any call` });
+        camera: posted(win.role, at), why: `windows[${w.id}].role ${win.role}: 1:00, on his post before any call` });
     } else {
       const hit = (m.timeline ?? []).map((t: Json) => ({ t, p: Object.keys(pts).find(id => new RegExp(`${id.replace(/-/g, '[ -]')} \\((\\d+:\\d{2})\\)`).test(t.what ?? '')) })).find((x: Json) => x.p);
       if (hit) {
@@ -143,14 +165,17 @@ export function shotsFile(s: Stills, outDir: string, root = ROOT): Json {
       // the conversation camera's profile rule (HostConvo ConvoDist 3.6, ConvoHeight 1.9, ConvoPitch 8°), framed head to waist: 3.6 m off, out along the
       // door's outward side and 1.25 m along the face (ShotRunner: doorN makes the offset the door's frame), 1.9 m up, aimed 0.55 m lower (8° down
       // at 3.6 m), a 16° field (35° frames the whole figure at 3.6 m)
-      // the car: 9.5 m off its end, 1.8 m to the side, 3 m up, aimed at its middle, a 32° field (the whole car in the print's tall centre)
-      const pose = p.camera.kind === 'car' ? { on: true, view: p.camera.view, pos: [], look: [], offset: [1.8, 3.0, 9.5], lookOffset: [0, 0.4, 0], fov: 32 }
-        : person ? { on: true, view: (p.camera as { view: string }).view, pos: [], look: [], offset: [1.25, 1.9, 3.38], lookOffset: [0, 1.35, 0], fov: 16 } : { on: false, view: '', pos: [], look: [], offset: [], lookOffset: [], fov: 39.6 };
+      // a posted role (`turn`): the same 3.6 m, turned that many degrees off the normal toward `side`
+      // the car: 11.5 m off its end, 1.8 m to the side, 5.8 m up, aimed 0.4 m up its middle: 25° down (Glyph N5: the shape reads, the untextured surface does not), a 32° field
+      const pc = p.camera.kind === 'person' ? p.camera : null, turn = (pc?.turn ?? 0) * Math.PI / 180;
+      const pose = p.camera.kind === 'car' ? { on: true, view: p.camera.view, pos: [], look: [], offset: [1.8, 5.8, 11.5], lookOffset: [0, 0.4, 0], fov: 32 }
+        : person ? { on: true, view: (p.camera as { view: string }).view, pos: [], look: [], offset: turn ? [+(3.6 * Math.sin(turn)).toFixed(3), 1.9, +(3.6 * Math.cos(turn)).toFixed(3)] : [1.25, 1.9, 3.38], lookOffset: [0, 1.35, 0], fov: 16 } : { on: false, view: '', pos: [], look: [], offset: [], lookOffset: [], fov: 39.6 };
       const cam = p.camera.kind === 'play' ? p.camera : null;
       return {
         name: p.file.replace(/\.jpg$/, ''), scriptPath: join(root, p.route), checkpoint: '', preset: 'today', tick: p.tick,
-        night: false, setNight: false, briefing: false, follow: false, agent: 'scout', face: '', focus: '', hasAt: !person, atX: Math.round(p.at[0] * 100), atY: Math.round(p.at[1] * 100),
-        yaw: cam ? cam.yaw : -1, zoom: cam ? cam.zoom : 0, nocut: !!cam && cam.yaw < 0, doorN: p.camera.normal ?? [],
+        night: false, setNight: false, briefing: false, follow: false, agent: 'scout', face: '', focus: cam?.focus ?? '', focus2: cam?.focus2 ?? '', hasAt: !person, atX: Math.round(p.at[0] * 100), atY: Math.round(p.at[1] * 100),
+        yaw: cam ? cam.yaw : -1, zoom: cam ? cam.zoom : 0, nocut: !!cam && cam.yaw < 0, doorN: p.camera.normal ?? [], bare: true,
+        doorS: pc?.side ?? [], keyLight: pc?.key ?? 0, shift: cam?.shift ?? 0,
         hud: false, state: 'rest', select: '', arm: '', hasPointer: false, px: 0, py: 0, intel: false, hover: '', mark: false, settle: 0.6, perf: 0,
         pose, w: s.size[0], h: s.size[1], jpg: true, clipSeconds: 0, clipFps: 30,
       };

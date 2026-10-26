@@ -162,7 +162,7 @@ namespace Suborned.Sim
                 r.Eq(r.Op("scout").Pos, stop, "and it never walked back in");
             });
 
-            AddRange("F11-REPLAY", "today", "lane", "§11.5: a hold, tap, release and follow-setting session replays hash-identical from its start and its orders", r =>
+            AddRange("F11-REPLAY", "pre039", "lane", "§11.5: a hold, tap, release and follow-setting session replays hash-identical from its start and its orders", r =>
             {
                 r.Wait(1); // the outer run plays a tick, so its own replay (to its last tick) is a run too
                 var b = PlayRangeBody(r.Inputs!, r.G.Start, rb =>
@@ -183,7 +183,7 @@ namespace Suborned.Sim
             });
 
             // ---------------------------------------------------------------- §12.2: the police answer everyone shooting them
-            AddRange("F12-ROT", "today", "lane", "§12.2: three shooters 15.3 m from one officer (past its 15 m effective ring, inside its 16 m max), firing in turn: it keeps its target and fires on cadence", r =>
+            AddRange("F12-ROT", "pre039", "lane", "§12.2: three shooters 15.3 m from one officer (past its 15 m effective ring, inside its 16 m max), firing in turn: it keeps its target and fires on cadence", r =>
             {
                 var g = r.G; var h = g.RangeSlot("near", 1); var ops = new[] { "scout", "fixer", "tech" };
                 int t = r.SendTo("enforcer", Ray(r, h, 0, 3500)); // the Enforcer out of everyone's way, holstered
@@ -278,7 +278,7 @@ namespace Suborned.Sim
             });
 
             // ---------------------------------------------------------------- §13 (engine 0.18.0)
-            AddRange("F13-HOLD", "today", "lane", "§13.2: a holding agent in the ring neither follows (follow off) nor is locked by a press (follow on); set to return, it is again", r =>
+            AddRange("F13-HOLD", "pre039", "lane", "§13.2: a holding agent in the ring neither follows (follow off) nor is locked by a press (follow on); set to return, it is again", r =>
             {
                 var g = r.G; F11Near(r);
                 r.Is(g.Issue(new Order { Tick = g.Tick, Op = "scout", Do = "stance", Stance = "hold" }).ok, "the Scout (7.9 m, drawn) holds");
@@ -297,7 +297,7 @@ namespace Suborned.Sim
                 r.Eq(g.LockOf(OpId.Scout), "officer-1", "returning fire with nobody on it, the press locks it");
             });
 
-            AddRange("F13-RELOCK", "today", "lane", "a lock whose target falls ends: a press the tick after locks that agent on the next target, and so does a press in the tick it falls", r =>
+            AddRange("F13-RELOCK", "pre039", "lane", "a lock whose target falls ends: a press the tick after locks that agent on the next target, and so does a press in the tick it falls", r =>
             {
                 r.Wait(1); // the outer run plays a tick, so its own replay (to its last tick) is a run too
                 int fell = -1;

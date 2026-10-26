@@ -66,7 +66,7 @@ namespace Suborned.Sim
                 r.Is(!d.Route.Contains("vale-reaches-getaway-car"), $"the debrief does not say Vale reached the getaway car (route: {string.Join(", ", d.Route)})");
                 r.Is(d.Route.Contains("vale-taken-through-office"), "it says he was taken through the Office (enter.out)");
                 r.Is(d.Route.Contains("guard-killed"), "and how the door was cleared");
-            }, new Start { Security = 4 });
+            }, new Start { Security = 4, OneInput = false }); // brief 039: N128's fixture (stance hold)
 
             Add("N184", "—", "The seal's car state, ready (brief 057 §4), and the seal in Windows(): N115's fixture (route G-kill without the final fight: the dead guard read by the entrance camera when the Tech leaves the cabinet, Alert 2, the seal clock running; nobody fights). The Enforcer comes out with Vale, walks him to the getaway car and boards; nobody gives Go. While the clock runs, Windows() lists seal:district until Lockdown, from the tick the clock was last set or moved, its origin the report whose time is running. The district seals with Vale aboard and the car free: FailCause.Car ready, aboard at his board.in, no Go refused; the debrief says Vale reached the getaway car (true), every line backed.", r =>
             {

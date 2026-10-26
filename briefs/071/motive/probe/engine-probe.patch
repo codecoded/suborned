@@ -1,0 +1,37 @@
+--- a/sim/Suborned.Sim/GameOrders.cs
++++ b/sim/Suborned.Sim/GameOrders.cs
+@@ -337,7 +337,9 @@
+                 case "take":
+                     Vale = ValeAt.WithEnforcer; op.Gun.Order = ""; op.Gun.Force = false; op.Gun.Target = ""; // brief 018: walking Vale, he doesn't fire
+                     if (!Driver.Turned) AddTrail(R.TakeTrailUnturned, "take:unturned-driver");
+-                    Chain.Add("vale-taken-outside"); Note("take.done", "Vale is with the Enforcer. Get to the car."); StartFight(); break;
++                    Chain.Add("vale-taken-outside"); Note("take.done", "Vale is with the Enforcer. Get to the car."); StartFight();
++                    if (ProbeSplit && TakeInCar) { op.Inside = true; SplitOutTick = Tick; Note("split.vale-out", "PROBE: the Enforcer drives Vale off in Vale's own car."); }
++                    break;
+             }
+         }
+ 
+--- a/sim/Suborned.Sim/GameFight.cs
++++ b/sim/Suborned.Sim/GameFight.cs
+@@ -116,7 +116,9 @@
+             if (FightBranch == "loud" && !blockersPicked && pickFrom.Length == 0) pickFrom = "police"; // brief 018 §1: the first officer to arrive takes the lane (picked after this tick's fire)
+             if (RivalReachesVale()) { Fail("rivals-reach-vale", "A rival reaches the car with nobody beside it and takes Vale out.", RivalsAtCar); return; }
+             var e = Enforcer; var car = Car;
+-            if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car))) Spring(false); // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car
++            if (FightBranch == "safe" && FightSprung == INF && ((Vale == ValeAt.WithEnforcer && !e.Inside && G.Within(e.Pos, car, R.SafeAmbushCm)) || (R.FightAlways && Vale == ValeAt.Car))) Spring(false); // probe below
++            if (ProbeSplit && SplitOutTick != INF && FightBranch == "safe" && FightSprung == INF && SplitOpNear(car)) { Note("split.spring", "PROBE: the posted crew springs on the cell coming for its car."); Spring(false); }
++            // engine 0.33.0 (Motive M059-S1.3): or Vale already in the car
+             bool anyUp = false; foreach (var h in Hostiles) if (!h.Down && h.Gun.St != "break" && h.Gun.St != "gone") anyUp = true;
+             if (!anyUp && FightBranch == "safe" && CrewDue()) anyUp = true; // brief 059: a wheelman coming back on the car is still to come
+             if (!anyUp && Hostiles.Count > 0) { FightOverTick = Tick; Note("fight.over", "The last of them is down or gone. The car can go."); return; }
+@@ -165,6 +167,10 @@
+         }
+ 
+ 
++        // PROBE (Motive brief 071, split getaway): environment switch only; unset = the engine as committed
++        static readonly bool ProbeSplit = System.Environment.GetEnvironmentVariable("PROBE_SPLIT") == "1";
++        public int SplitOutTick = INF;
++        bool SplitOpNear(Pt car) { foreach (var o in Ops) if (!o.Inside && !o.InCar && !o.Down && G.Within(o.Pos, car, R.SafeAmbushCm)) return true; return false; }
+         void MisledOnce() { misledOnce = true; }
+         /// <summary>A false tip has landed this mission (brief 059: the safe fight counts the wheelman away, not this; a read for the debrief).</summary>
+         public bool MisledEver => misledOnce;

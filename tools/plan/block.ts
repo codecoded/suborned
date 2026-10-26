@@ -25,6 +25,8 @@ type Item = { id: string; name?: string; kind?: string; category?: string; polyg
 // HandoverCafe.cs:18  X = 11, Front = -1.3, Back = 10   corner | bay | corner = 22 m wide, 11.3 m deep
 // HandoverCafe.cs:19  Arc = 5.3                        corner radius
 // HandoverCafe.cs:20  Floor = .45, Ceiling = 4.6, Height = 34.8
+//   34.8 is the source's height, written as is; the block's café height is whatever civic-block.adjust.json says after it (a buildingHeight
+//   adjustment: brief 066's play-street cap puts the café at H(3) 16.8), and C-0 holds the block to plan.civic.scale.cafe.height, either one
 const CAFE = { width: 22, depth: 11.3, height: 34.8, cornerArc: 5.3, terrace: 0.45, ceiling: 4.6 };
 // HandoverKit.cs:20,24,25,99  "footprints are the nav's; heights are the city's": the Records Office is the Hall set at
 // x0.75 in plan (HallScale) and x1.4 in height (HallRise); entrance towers x2 (TowerRise); giant order 12 m (ColumnRise).
@@ -85,7 +87,7 @@ const objects: Item[] = nav.solids
 
 // ---- adjustments ----
 type Adj = {
-  op: 'addBay' | 'addDrive' | 'addStructure' | 'edit' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing' | 'floor'; reason: string;
+  op: 'addBay' | 'addDrive' | 'addStructure' | 'edit' | 'buildingHeight' | 'towerFootprint' | 'moveEntrance' | 'addEntrance' | 'remove' | 'dressing' | 'floor'; reason: string;
   id?: string; polygon?: P[]; item?: Item; move?: P; z?: number; height?: number;
   building?: string; tower?: string; to?: P | string; on?: string; face?: string; // towerFootprint, moveEntrance, addEntrance; addDrive: `to` = the bay it reaches
   road?: string; kerb?: [P, P]; // addDrive: the plan road it leaves and the segment of that road's kerb it crosses (block frame)
@@ -121,6 +123,9 @@ for (const a of adj.adjustments) {
     if (a.move) it.polygon = it.polygon.map(([x, y]) => [r3(x + a.move![0]), r3(y + a.move![1])] as P);
     if (a.z !== undefined) it.z = a.z;
     if (a.height !== undefined) it.height = a.height;
+  } else if (a.op === 'buildingHeight') { // brief 066: a building's height, stated (the café under the play-street cap); its footprint, entrances and interior stay the source's
+    if (typeof a.height !== 'number' || a.height <= 0) throw new Error(`adjustment buildingHeight ${a.building}: needs a height`);
+    building(a).height = a.height;
   } else if (a.op === 'remove') {
     const it = all.get(a.id!); if (!it) throw new Error(`adjustment remove ${a.id}: no such item (stale adjustment?)`);
     all.delete(a.id!);

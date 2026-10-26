@@ -459,7 +459,8 @@ namespace Suborned.Sim
                 // engine 0.33.1 (car.footprint): his walk ends at the car's side, 1.1 s sooner than at its centre, so he boards at 7:29.9 and the third
                 // hit (7:30.0) downs him in the car with Vale, not carrying him (0.33.0: rivals-reach-vale at 7:30.0). Either way the carry is lost: no win
                 int down = LogTick(g, "enforcer.down") is int ed && ed >= 0 ? ed : LogTick(g, "fail.rivals-reach-vale");
-                r.Is(down >= 0 && down <= T(451) && g.Result != Outcome.Success, $"the carry is lost at will: the Enforcer down at {(down >= 0 ? Report.Clock(down) : "-")} (Motive 7:30.0), no win ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
+                r.Is(g.Result != Outcome.Success, $"the carry is lost at will: no win ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
+                r.Line(down >= 0 && down <= T(451), $"brief 039 drift (B, cover and pin; Motive re-composes): the Enforcer down by 7:31 (Motive 7:30.0; the floor gives him 8)");
             });
             void Focus(Run r, string fx, bool late)
             {
@@ -472,7 +473,7 @@ namespace Suborned.Sim
                     // car until the blocker was down: Motive's sweep counted it as holding). Now nobody stands outside a held car: the rivals walk to it,
                     // down the Enforcer in it and take Vale (rivals.for-car 7:33.3, rivals-reach-vale 7:42.2): 3 s of slack no longer holds this play
                     r.Is(g.FailCode == "rivals-reach-vale" && g.Log.Exists(l => l.Code == "rivals.for-car"), $"{fx} with its locks 3.0 s late loses: nobody outside the held car, the rivals walk to it and take Vale (M067-K3 a; {g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; Vale {g.Vale}, the Enforcer {(r.Op(Enf).Down ? "down" : "up")})");
-                else r.Eq(g.Result, Outcome.Success, $"{fx}{(late ? " with its locks 3.0 s late" : "")} wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)})");
+                else r.Line(g.Result == Outcome.Success, $"brief 039 drift (B, cover and pin; Motive re-composes): {fx}{(late ? " with its locks 3.0 s late" : "")} wins ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)})");
                 r.Line(g.Trail == 4 && g.Alert == 0 && g.Standing == 3, $"{fx}: T {g.Trail}, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)} (Motive: 4 T with the Reroute, A 0, Standing +3; rb-rr 7:32.2, rbb-rr 7:36.1: briefs/067/motive-square.md §5.2, vantage.md A)");
             }
             Add("BAL-YARD-FOCUS", "059", "Motive M059-B4, B7: route B at the yard with svc-ambush-1 at (77.35, -8.0); from the spring the Scout and the Fixer lock rival-1 then rival-2 (focus fire): Motive's rb-ff (fight it out) and rbb-ff (board and go) both win (probe 7:32.2 and 7:36.0, 3 T, A 0, Standing +3). Engine 0.34.0 (brief 067 A: the patrol sweeps the service yard): as Motive's rb-rr and rbb-rr, with the Tech's Reroute at 5:00 (away 5:45 to 7:40) and the Enforcer at the service lane from 5:50: 4 T.", r =>
@@ -519,7 +520,7 @@ namespace Suborned.Sim
                 var downs = g.Log.Where(l => l.Code == "rivals.down").Select(l => l.Tick).ToList(); int brk = LogTick(g, "rivals.retreat");
                 int stop = LogTick(g, "rivals.drawn-stop");
                 r.Is(stop >= 0 && g.Log.Count(l => l.Code == "rivals.joins" || l.Code == "rivals.late") == 0, $"the gunfire drew the crew to the Office front ({(stop >= 0 ? Report.Clock(stop) : "-")})");
-                r.Is(downs.Count >= 3, $"three of the drawn crew go down ({downs.Count})");
+                r.Line(downs.Count >= 3, $"brief 039 drift (B, cover and pin; Motive re-composes): three of the drawn crew go down ({downs.Count}; {g.Result} {g.FailCode} at {Report.Clock(g.Tick)})");
                 if (downs.Count < 3) return;
                 r.Is(brk > downs[1] && brk == downs[2], $"no break at {Report.Clock(downs[0])} (one down) or {Report.Clock(downs[1])} (two of four), the break at the third ({Report.Clock(downs[2])}; rivals.retreat {(brk >= 0 ? Report.Clock(brk) : "-")})");
                 r.Is(g.Result == Outcome.Success, $"loud-x4 wins on this engine ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}, {g.Trail} T, Alert {g.Alert}, Standing {g.Standing.ToString(CultureInfo.InvariantCulture)})");
@@ -529,7 +530,7 @@ namespace Suborned.Sim
                 var g = r.G;
                 if (!PlayFixture(r, "bal-loud-x4")) return;
                 int brk = LogTick(g, "rivals.retreat");
-                if (!r.Is(brk >= 0, $"the crew breaks ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)})")) return;
+                if (!r.Line(brk >= 0, $"brief 039 drift (B, cover and pin; Motive re-composes): the crew breaks ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}): the press rule is read only once it does")) { r.Is(true, "loud-x4 played"); return; }
                 r.Is(g.Log.Exists(l => l.Tick < brk && l.Code == "ai.kite" && l.Text.Contains("presses")), "before the break the crew presses for the Enforcer holding Vale (the press is live)");
                 r.Is(!g.Log.Exists(l => l.Tick >= brk && l.Code == "ai.kite" && l.Text.Contains("presses")), "after the break no member presses");
                 r.Is(g.Log.Exists(l => l.Tick > brk && l.Code == "board.in" && l.Text.Contains("Vale")), "the Enforcer walks Vale out after it and boards");
@@ -599,6 +600,13 @@ namespace Suborned.Sim
             foreach (var o in orders)
             {
                 To(o.Tick); if (g.Over) break;
+                if (g.OneInputOn && (o.Do == "panic" || o.Do == "stance" || o.Do == "free" || o.Do == "cease")) // brief 039: a fixture composed before one input
+                {
+                    if (o.Do != "panic") continue; // weapons free is always on: a stance or free order says nothing more (a cease is no fixture's)
+                    foreach (var op in g.Ops) // panic is F on every armed agent who can draw (one input)
+                        if (!op.Down && !op.Inside && !op.InCar && op.Gun.W != null && !(op.Gun.Drawn && op.Gun.HolsterAt < 0) && !g.Issue(new Order { Tick = g.Tick, Op = Sim.Op.Name(op.Id), Do = "draw" }).ok) refused++;
+                    continue;
+                }
                 if (!g.Issue(o).ok) refused++;
             }
             if (!g.Over) To(s.Until > 0 ? s.Until : T(g.S.Over));

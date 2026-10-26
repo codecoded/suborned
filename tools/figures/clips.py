@@ -13,7 +13,7 @@ os.makedirs(f'{out}/Clips', exist_ok=True)
 for c in spec['clips']:
     if 'author' in c:   # posed here, on the donor clip's skeleton (tools/figures/author_clips.py); the donor is the recorded source
         os.makedirs(f'{out}/.authored', exist_ok=True); src = f"{out}/.authored/{c['name']}.fbx"
-        (author_clips.make_testbed if c.get('kind') == 'testbed' else author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make)(c, STORE, src); c['src'] = c['donor']
+        (author_clips.make_testbed if c.get('kind') == 'testbed' else author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make_layer if c.get('kind') == 'layer' else author_clips.make_additive if c.get('kind') == 'additive' else author_clips.make)(c, STORE, src); c['src'] = c['donor']
     else:
         src = c['src'] if os.path.isabs(c['src']) else os.path.join(STORE, c['src'])
     clean(); new = load(src); arm, _ = rigs(new)
@@ -32,10 +32,12 @@ for c in spec['clips']:
     sp.sort(); nat = round(sp[len(sp) // 2], 2) if len(sp) > 3 else 0.0
     name = c['name']; rel = f'Clips/{name}.fbx'; dst = os.path.join(out, rel)
     shutil.copyfile(src, dst)
-    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', 0, f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c)))
+    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', c.get('first', 0), f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None))
     rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
+    if c.get('additive'): rows[-1]['additive'] = True; rows[-1]['additiveReferencePoseFrame'] = c.get('refPose', 0); rows[-1]['firstFrame'] = c.get('first', 0)
+    if 'upper' in c: rows[-1]['upperFrom'] = c['upper']; rows[-1]['upperFromSha256'] = hashlib.sha256(open(os.path.join(STORE, c['upper']), 'rb').read()).hexdigest()
     if 'glb' in c: rows[-1]['retargetedFrom'] = c['glb'] + ':' + c['clip']; rows[-1]['retargetedFromSha256'] = hashlib.sha256(open(os.path.join(STORE, '..', c['glb']), 'rb').read()).hexdigest()
     if 'pin' in c: rows[-1]['pinnedTo'] = c['pin']; rows[-1]['pinnedToSha256'] = hashlib.sha256(open(os.path.join(STORE, c['pin']), 'rb').read()).hexdigest(); rows[-1]['seat'] = c.get('seat')
     print('CLIP', name, rows[-1]['frames'], 'f', 'speed', nat)

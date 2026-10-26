@@ -75,7 +75,7 @@ namespace Suborned.Sim
                 r.Eq(flips, 0, "it changed target only when the one in hand was down");
             });
 
-            AddRange("F14-X", "today", "lane", "§14.1: cease (X) stands the agent down from weapons free until it is shot at", r =>
+            AddRange("F14-X", "pre039", "lane", "§14.1: cease (X) stands the agent down from weapons free until it is shot at", r =>
             {
                 var g = r.G; F8Setup(r, 1, 1400); var f = r.Op("fixer");
                 r.Is(FireOn(r, "enforcer", "officer-1").ok, "the opening order");
@@ -90,7 +90,7 @@ namespace Suborned.Sim
                 else r.Is(off.Down, "the officer fell to the others first");
             });
 
-            var offStart = RangePreset("today"); offStart.WeaponsFree = false;
+            var offStart = RangePreset("pre039"); offStart.WeaponsFree = false; // brief 039: the fight before B (its stances, lapse and ends; unpinned chances)
             range!.Add(new Scenario { Id = "F14-OFF", Proto = "brief 029", Layout = "lane", Start = offStart, Intent = "§14.1: weapons free off, a drawn agent nobody fires on holds its fire (0.18.0's return; the BASE gate proves the bytes: briefs/027/keel)", Body = r =>
             {
                 var g = r.G; r.Is(!g.WeaponsFree, "weapons free is off at the start");
@@ -132,7 +132,7 @@ namespace Suborned.Sim
                 r.Line(clear == 56 && DownOf(r) == 0 && lost * 100 / max == 44, $"Motive §14.1: clear 5.6 s, 0 down, 44 % (got {(clear / 10.0):0.0} s, {DownOf(r)} down, {lost * 100 / max} %)");
             });
 
-            AddRange("F14-REPLAY", "today", "lane", "§14.4: weapons free toggled mid-fight (off, then on) and an X replay hash-identical from the start and the orders", r =>
+            AddRange("F14-REPLAY", "pre039", "lane", "§14.4: weapons free toggled mid-fight (off, then on) and an X replay hash-identical from the start and the orders", r =>
             {
                 r.Wait(1);
                 var b = PlayRangeBody(r.Inputs!, r.G.Start, rb =>

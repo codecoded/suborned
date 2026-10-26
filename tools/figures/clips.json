@@ -469,6 +469,231 @@
    "use": "the cell's run (double-click): a leaning sprint, longer stride and flight than run (the old web testbed's run, retargeted); keep run for the crowd and panic",
    "loco": true,
    "feet": true
+  },
+  {
+   "name": "cover_kneel",
+   "src": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "loop": true,
+   "use": "in cover, not shot at: kneels behind the prop, pistol up, head and gun hands over it (brief 039 B)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cover_in",
+   "src": "Anim/mixamo_library/Pistol_Stand_To_Kneel__c9cdc166.fbx",
+   "loop": false,
+   "use": "arriving at a cover point: stand to kneel, pistol up (1.0 s; hips 7 cm, stays in place) (brief 039 B)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cover_out",
+   "src": "Anim/mixamo_library/Pistol_Kneel_To_Stand__c9cdc2f1.fbx",
+   "loop": false,
+   "use": "leaving cover: kneel to stand, pistol up (1.4 s; hips 7 cm, stays in place) (brief 039 B)",
+   "loco": false,
+   "feet": true
+  },
+  {
+   "name": "cover_pin",
+   "author": "tools/figures/author_clips.py",
+   "kind": "layer",
+   "donor": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "legs": {
+    "range": [
+     1,
+     115
+    ]
+   },
+   "upper": "Anim/mixamo_library/Ducking__c9c8aef4.fbx",
+   "upperFrames": {
+    "hold": 22,
+    "shiver": 2.5,
+    "cycles": 8
+   },
+   "loop": true,
+   "loco": false,
+   "feet": true,
+   "use": "pinned in cover: the kneel's legs, the upper body curled over with the hands over the head (the library duck at its frame 22, a 0.48 s shiver); a hump of back and elbows over the prop, no face (brief 039 B)"
+  },
+  {
+   "name": "cover_fire",
+   "author": "tools/figures/author_clips.py",
+   "kind": "layer",
+   "donor": "Anim/mixamo_library/Pistol_Kneel_To_Stand__c9cdc2f1.fbx",
+   "legs": {
+    "hold": 18
+   },
+   "upper": "Anim/mixamo_library/Pistol_Aim__c9c8b958.fbx",
+   "upperFrames": {
+    "range": [
+     1,
+     214
+    ]
+   },
+   "turns": [
+    [
+     "Spine1",
+     "yaw",
+     15
+    ],
+    [
+     "Spine2",
+     "yaw",
+     15
+    ],
+    [
+     "Neck",
+     "yaw",
+     -15
+    ],
+    [
+     "Head",
+     "yaw",
+     -15
+    ]
+   ],
+   "reach": {
+    "right": [
+     1.0,
+     -0.06,
+     -0.03
+    ],
+    "left": [
+     1.0,
+     -0.08,
+     0.03
+    ],
+    "straight": 0.99,
+    "pole": [
+     0.6,
+     -1.0
+    ],
+    "handUp": 0.05
+   },
+   "loop": true,
+   "loco": false,
+   "feet": true,
+   "use": "firing from cover: the half-rise (kneel to stand at its frame 18, held), the pistol aim on the upper body, its bladed shoulders squared 30 degrees to the cover and both arms straight out to a two-handed grip at shoulder height, so a line of forearms shows over the prop (Glyph, b-final.md) (brief 039 B)"
+  },
+  {
+   "name": "flinch_add",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "refFrame": 1,
+   "additive": true,
+   "refPose": 0,
+   "turns": [
+    [
+     "Spine",
+     "pitch",
+     14
+    ],
+    [
+     "Spine1",
+     "pitch",
+     8
+    ],
+    [
+     "Head",
+     "pitch",
+     15
+    ],
+    [
+     "LeftShoulder",
+     "roll",
+     -6
+    ],
+    [
+     "RightShoulder",
+     "roll",
+     6
+    ]
+   ],
+   "env": {
+    "attack": 0.0667,
+    "tau": 0.16,
+    "length": 0.5,
+    "tail": 0.12
+   },
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "use": "additive: a round lands near a pinned man (in cover or the open): spine and head curl, shoulders up, 2 frames in, out by 0.5 s; restarted per round (brief 039 B)"
+  },
+  {
+   "name": "kick_add",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Aim__c9c8b958.fbx",
+   "refFrame": 1,
+   "additive": true,
+   "refPose": 0,
+   "turns": [
+    [
+     "Spine1",
+     "pitch",
+     -7
+    ],
+    [
+     "Head",
+     "pitch",
+     -4
+    ],
+    [
+     "RightArm",
+     "pitch",
+     -10
+    ],
+    [
+     "LeftArm",
+     "pitch",
+     -10
+    ]
+   ],
+   "env": {
+    "attack": 0.0333,
+    "tau": 0.09,
+    "length": 0.3,
+    "tail": 0.08
+   },
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "use": "additive: one shot's kick (muzzle climb) over aim_pistol, cover_fire or the one-handed fire: 1 frame in, out by 0.3 s; restarted per shot (brief 039 B)"
+  },
+  {
+   "name": "pin_peek_add",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Kneeling_Idle__c9cdc22d.fbx",
+   "refFrame": 1,
+   "additive": true,
+   "refPose": 0,
+   "first": 1,
+   "pose": 10,
+   "turns": [
+    [
+     "Spine",
+     "pitch",
+     -22
+    ],
+    [
+     "Neck",
+     "pitch",
+     -15
+    ],
+    [
+     "Head",
+     "pitch",
+     -20
+    ]
+   ],
+   "loop": true,
+   "loco": false,
+   "feet": true,
+   "use": "additive pose: the pinned man's head comes up as the pin runs out; the host drives its layer weight 0 to 1 from 1.2 s after the last round, over 0.6 s, back to 0 at the pin's end (brief 039 B)"
   }
  ]
 }

@@ -218,6 +218,8 @@ namespace Suborned.Sim
         public readonly Weapon Pistol, Carbine;
         // cancel (Sky 2026-10-15 playtest): the lines that may change; the rest are checked to say what the engine does
         public readonly string CancelTurn, CancelEnter, CancelTake;
+        /// <summary>Engine 0.34.2 (rulebook cell.enter.seen.patrol): the patrol robot that sees an Enter reports it (a seen act, attention's found fault) instead of failing the mission.</summary>
+        public readonly bool EnterPatrolReports;
         // the summons and the secret (Motive, briefs/011/motive-lovers.md)
         public readonly int SummonStayS, SummonWalkMaxS, SummonAlertMax, SummonsPerShift;
         public readonly HashSet<string> SecretIds = new HashSet<string>(StringComparer.Ordinal);
@@ -255,6 +257,12 @@ namespace Suborned.Sim
         /// <summary>Tuning.md §14 (engine 0.19.0; Sky, brief 041 "Syndicate fights"): weapons free at the start (weapons.free.start), the settle
         /// after the last contact before a fight is off (weapons.free.settle, line-lapse-s), and the rule text.</summary>
         public readonly bool FreeStart; public readonly int FreeSettleS; public readonly string FreeRule = "";
+        /// <summary>Brief 039 B, cover and pin (engine 0.35.0; GDD v0.28.0 §06; rulebook weapons.oneInput, focus, takeCover, pin, moves). Each
+        /// block absent (a rulebook pinned before 0.35.0) reads as off, so such a run plays as engine 0.34: OneInput (cease, stance, panic, free
+        /// retired; weapons free always on), StickyFocus (a fire order waits out of reach or line), TakeCover (the snap out of the lab: snap and
+        /// reach, cm), the pin (PinS 0: off; its mod, hold, and whether the cell is pinned), and the four moves (MovesOn).</summary>
+        public readonly bool OneInput, StickyFocus, TakeCover, PinHold, PinCell, MovesOn, TalkHurt;
+        public readonly int TakeCoverSnapCm, TakeCoverReachCm, PinS, PinMod, MoveReadyS, MarkReachCm, MarkS, TalkReachCm, TalkShoutS, TalkNeedsDown, SteamReachCm, SteamRCm, SteamS, CoverFireS, CoverFireRCm, CoverFireEveryTicks;
         /// <summary>Pulse hostile-initiative.md with Sky's answers (engine 0.19.0; rulebook ai.intent): who a hostile fires on, per agent.</summary>
         public readonly IntentRules Intent = null!;
         public readonly int HealthCamera; // tuning.md §9.2 gap 2 (Sky 2026-10-21): a camera's health (one sidearm hit; ×healthScale in the lab)
@@ -526,7 +534,10 @@ namespace Suborned.Sim
             RerouteWalkCmS = c["reroute"].Opt("walk") is JNode rw ? RI(rw) : 0; // engine 0.30.0 (brief 057 §2, Sky 2026-10-24): the rerouted patrol walks; absent, it is placed (0.29.0)
             c["mislead"].Only("s", "trail", "away"); MisleadS = RI(c["mislead"]["s"]); MisleadTrail = RI(c["mislead"]["trail"]); MisleadAwayS = RI(c["mislead"]["away"]);
             c["call"].Only("trail"); CallTrail = RI(c["call"]["trail"]);
-            c["enter"].Only("s", "alarm"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
+            c["enter"].Only("s", "alarm", "seen"); EnterS = RI(c["enter"]["s"]); EnterAlarmS = RI(c["enter"]["alarm"]);
+            // engine 0.34.2 (Sky 2026-10-26: "entry seen by patrol" is "no, not a failure"): the patrol robot's sight of an Enter is a report, not a
+            // fail; absent (a rulebook pinned before 0.34.2), it fails entry-seen-patrol as it did
+            if (c["enter"].Opt("seen") is JNode es) { es.Only("patrol", "rule", "tag", "src", "proposed", "reason"); EnterPatrolReports = OneOf(es["patrol"], new[] { "fail", "report" }) == "report"; }
             c["carry"].Only("s"); CarryS = RI(c["carry"]["s"]);
             c["board"].Only("s"); BoardS = RI(c["board"]["s"]); // brief 018 §2: Board, and stepping out
             if (BoardS < 1) throw new FormatException("cell.board.s is at least 1 s");
@@ -538,7 +549,7 @@ namespace Suborned.Sim
             SecuritySpeed = RI(se["speed"]);
             se["rivals"].Only("speed", "drawn", "retreat"); RivalsSpeed = RI(se["rivals"]["speed"]); RivalsDrawnS = RI(se["rivals"]["drawn"]); RivalsRetreatS = RI(se["rivals"]["retreat"]);
             se["patrol"].Only("breakTo", "period", "chase"); PatrolBreakCm = RI(se["patrol"]["breakTo"]) * 100; PatrolPeriodS = RI(se["patrol"]["period"]); PatrolChase = RI(se["patrol"]["chase"]);
-            var wp = b["weapons"]; wp.Only("pistol", "carbine", "pointBlank", "pointBlankCover", "runAwayCone", "acc", "mod", "draw", "holster", "aimNew", "settle", "trigger", "follow", "free", "react", "lineLapse", "sidearmArms", "close", "autoHolster", "health", "costs", "rule", "tag", "src", "proposed", "reason");
+            var wp = b["weapons"]; wp.Only("pistol", "carbine", "pointBlank", "pointBlankCover", "runAwayCone", "acc", "mod", "draw", "holster", "aimNew", "settle", "trigger", "follow", "free", "react", "lineLapse", "sidearmArms", "close", "autoHolster", "health", "costs", "oneInput", "focus", "takeCover", "pin", "moves", "rule", "tag", "src", "proposed", "reason");
             WeaponsSettle = wp.Opt("settle")?.Str() ?? throw new FormatException("weapons.settle is missing: engine 0.16.0 settles a shooter whose run ends (tuning.md §10.2)"); if (WeaponsSettle.Length == 0) throw new FormatException("weapons.settle is empty");
             WeaponsTrigger = wp.Opt("trigger")?.Str() ?? throw new FormatException("weapons.trigger is missing: engine 0.17.0 reads the driven agent's trigger (tuning.md §11)"); if (WeaponsTrigger.Length == 0) throw new FormatException("weapons.trigger is empty");
             FollowCm = RI(wp.Opt("follow") ?? throw new FormatException("weapons.follow: engine 0.17.0 reads the follow ring (tuning.md §11.1, follow-m)")) * 100; if (FollowCm < 100) throw new FormatException("weapons.follow is 1 m or more");
@@ -563,6 +574,29 @@ namespace Suborned.Sim
             if (ResponseOfficers < 1) throw new FormatException("weapons.health.responseOfficers must be at least 1");
             var co = wp["costs"]; co.Only("hit", "down", "gunfire", "drawWindow", "drawSeenSecurity", "drawSeenPeople", "loudHold");
             HitTrail = RI(co["hit"]); DownTrail = RI(co["down"]); GunfireTrail = RI(co["gunfire"]); DrawWindowS = RI(co["drawWindow"]); DrawSeenSecurity = RI(co["drawSeenSecurity"]); DrawSeenPeople = RI(co["drawSeenPeople"]); LoudHoldTicks = RI(co["loudHold"]);
+            // brief 039 B (engine 0.35.0): each block optional, absent = off (a rulebook pinned before it plays as 0.34); unknown = reject
+            if (wp.Opt("oneInput") is JNode oi) { oi.Only("on", "rule"); OneInput = oi["on"].Bool(); if (oi["rule"].Str().Length == 0) throw new FormatException("weapons.oneInput.rule is empty"); }
+            if (wp.Opt("focus") is JNode fcs) { fcs.Only("sticky", "rule"); StickyFocus = fcs["sticky"].Bool(); if (fcs["rule"].Str().Length == 0) throw new FormatException("weapons.focus.rule is empty"); }
+            if (wp.Opt("takeCover") is JNode tc)
+            {
+                tc.Only("snap", "reach", "rule"); TakeCover = true; TakeCoverSnapCm = RI(tc["snap"]); TakeCoverReachCm = RI(tc["reach"]) * 100;
+                if (TakeCoverSnapCm < 1 || TakeCoverReachCm < TakeCoverSnapCm || tc["rule"].Str().Length == 0) throw new FormatException("weapons.takeCover: snap at least 1 cm, reach at least snap, the rule written");
+            }
+            if (wp.Opt("pin") is JNode pn)
+            {
+                pn.Only("s", "mod", "hold", "cell", "rule"); PinS = RI(pn["s"]); PinMod = RI(pn["mod"]); PinHold = pn["hold"].Bool(); PinCell = pn["cell"].Bool();
+                if (PinS < 1 || PinMod < 0 || PinMod > 1000 || pn["rule"].Str().Length == 0) throw new FormatException("weapons.pin: s at least 1, mod 0..1000 per mille, the rule written");
+            }
+            if (wp.Opt("moves") is JNode mv)
+            {
+                mv.Only("ready", "mark", "talk", "steam", "cover", "rule"); MovesOn = true; MoveReadyS = RI(mv["ready"]);
+                var mk = mv["mark"]; mk.Only("reach", "s"); MarkReachCm = RI(mk["reach"]) * 100; MarkS = RI(mk["s"]);
+                var tlk = mv["talk"]; tlk.Only("reach", "s", "down", "hurt"); TalkReachCm = RI(tlk["reach"]) * 100; TalkShoutS = RI(tlk["s"]); TalkNeedsDown = RI(tlk["down"]); TalkHurt = tlk["hurt"].Bool();
+                var sm = mv["steam"]; sm.Only("reach", "r", "s"); SteamReachCm = RI(sm["reach"]) * 100; SteamRCm = RI(sm["r"]) * 100; SteamS = RI(sm["s"]);
+                var cf = mv["cover"]; cf.Only("s", "r", "every"); CoverFireS = RI(cf["s"]); CoverFireRCm = RI(cf["r"]) * 100; CoverFireEveryTicks = RI(cf["every"]);
+                if (MoveReadyS < 1 || MarkS < 1 || TalkShoutS < 1 || SteamS < 1 || CoverFireS < 1 || CoverFireEveryTicks < 1 || TalkNeedsDown < 0 || mv["rule"].Str().Length == 0)
+                    throw new FormatException("weapons.moves: every duration at least 1, talk.down 0 or more, the rule written");
+            }
             var ai = b["ai"]; ai.Only("cover", "engageLapse", "reacquire", "stopReach", "overflow", "seek", "rivalGone", "guardReturn", "patrolResume", "noStall", "intent", "rule", "tag", "src", "proposed", "reason");
             if (ai.Opt("noStall") is not JNode nst || nst.Str().Length == 0) throw new FormatException("ai.noStall is missing: engine 0.34.0 plays Motive's M067-SQ2 (a holding rival with nobody in reach advances again)");
             var aic = ai["cover"]; aic.Only("snap", "qFull", "qPartial", "modPartial", "retreat", "stepCloser", "stepGap", "leave", "stepFires"); CoverStepFires = (aic.Opt("stepFires") ?? throw new FormatException("ai.cover.stepFires: engine 0.15.0 reads it (tuning.md §8.3 fallback)")).Bool();
