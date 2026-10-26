@@ -10,6 +10,7 @@
 import { copyFileSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, join, resolve } from 'node:path';
 import { z } from 'zod';
+import { popsFromParts, type Manifest } from '../hud-budget/budget';
 import { decodePng, encodePng, type Image } from '../hud-budget/png';
 import { pngFileSize } from './shots';
 
@@ -67,10 +68,16 @@ export const faults = (j: Judged): string[] => [...j.missing.map(n => `${n}: not
 export type BudgetRun = (dir: string) => { code: number; out: string };
 const runBudget: BudgetRun = dir => { const r = Bun.spawnSync(['bun', join(ROOT, 'tools/hud-budget/cli.ts'), dir], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }); return { code: r.exitCode, out: r.stdout.toString() + r.stderr.toString() }; };
 
-/** Copy each picture with its HUD layer and manifest into `out` (emptied first): the folder tools/hud-budget judges one picture at a time. */
+/** Copy each picture with its HUD layer and manifest (and the refusal pops its parts name, added to the manifest) into `out` (emptied first): the folder tools/hud-budget judges one picture at a time. */
 export function stageForBudget(found: Located[], out: string): void {
   rmSync(out, { recursive: true, force: true }); mkdirSync(out, { recursive: true });
-  for (const f of found) for (const src of [f.png, f.hud, f.manifest]) if (src) copyFileSync(src, join(out, basename(src)));
+  for (const f of found) {
+    for (const src of [f.png, f.hud]) if (src) copyFileSync(src, join(out, basename(src)));
+    if (f.manifest) { // the manifest as the build wrote it, plus the refusal pops its parts name (`pop-N`) that it does not: a `pop` is held to one line of four words, never read as running text (tools/hud-budget popsFromParts)
+      const m = JSON.parse(readFileSync(f.manifest, 'utf8')) as Manifest, pops = f.parts && f.size ? popsFromParts(JSON.parse(readFileSync(f.parts, 'utf8')) as Record<string, number[]>, m, { w: f.size[0], h: f.size[1] }) : [];
+      if (pops.length) writeFileSync(join(out, basename(f.manifest)), JSON.stringify({ ...m, elements: [...m.elements, ...pops] }, null, 1) + '\n'); else copyFileSync(f.manifest, join(out, basename(f.manifest)));
+    }
+  }
 }
 
 export type ProofBudget = { ok: boolean; detail: string; problems: string[]; judged: number; pass: number };

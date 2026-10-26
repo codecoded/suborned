@@ -237,19 +237,19 @@ describe('the proof sets in the budget step', () => {
     const seen: string[][] = [];
     const rows = judgeProofSets({ frames: { r059: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
     expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059']]);
-    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, older('r067')]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, older('r067'), older('r123')]);
   });
   test('a proof with both sections has both judged, r059 then r067, each under its own stage folder', () => {
     const seen: string[][] = [];
     const rows = judgeProofSets({ frames: { r059: { ok: true }, r067: { ok: true } } }, '/p/proof', '/o/stage', (dir, name, stage) => { seen.push([dir, name, stage]); return ok(name); });
     expect(seen).toEqual([['/p/proof', 'r059', '/o/stage/r059'], ['/p/proof', 'r067', '/o/stage/r067']]);
-    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, { name: 'r067', ok: true, judged: 13 }]);
+    expect(rows).toMatchObject([{ name: 'r059', ok: true, judged: 13 }, { name: 'r067', ok: true, judged: 13 }, older('r123')]);
   });
   test('a proof from a build with neither section is an older build: said, not judged, not failed', () => {
     let ran = false;
     const rows = judgeProofSets({ frames: { r118: { ok: true } } }, '/p/proof', '/o/stage', (_d, name) => { ran = true; return ok(name); });
     expect(ran).toBe(false);
-    expect(rows).toMatchObject([older('r059'), older('r067')]);
+    expect(rows).toMatchObject([older('r059'), older('r067'), older('r123')]);
     expect(judgeProofSets(undefined, '/p', '/o', () => ok('x')).every(r => r.ok)).toBe(true);
   });
   test('a set the judge fails fails its row with its problems, and only its row', () => {

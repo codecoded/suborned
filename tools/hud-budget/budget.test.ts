@@ -3,7 +3,7 @@
 import { describe, expect, test } from 'bun:test';
 import { existsSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
-import { analyse, BRIEFING_READING, footprint, LIMIT, maskOf, rectMask, stack, type Manifest, type Rect } from './budget';
+import { analyse, BRIEFING_READING, footprint, isClock, LIMIT, MARKER_MAX, maskOf, POP_MAX, popsFromParts, rectMask, stack, type Manifest, type Rect } from './budget';
 import { decodePng, encodePng, type Image } from './png';
 
 const fx = (f: string) => join(import.meta.dir, 'fixtures', f);
@@ -147,5 +147,51 @@ describe('the street briefing (brief 062 B: a modal reading surface, scrim outsi
     const long: Manifest = { ...man, elements: [...man.elements, para('Take him alive before it reaches Security or the whole block will know who sent you here today.', 170)] };
     expect(run(long).failures.join()).toContain(`at most ${BRIEFING_READING.lines} and ${BRIEFING_READING.words}`);
     expect(run(more, 'rest').failures.join()).not.toContain('the briefing reads');
+  });
+});
+
+describe('the seal marker and the refusal pop (batch 0.2.123 r123-fight-loud; GDD v0.26.0 §10)', () => {
+  // fixtures/loud-123.* = Latch's round-4 r123-fight-loud (the HUD layer, its manifest and parts as shot; the world outside the HUD flattened to keep the file small).
+  // The frame shows the goal line "Get Vale to the car.", the seal clock "1:55" under the clock bar (the manifest has it as a `line`), and the refusal pop "Pick when to fire" (stance-unknown) over the Enforcer.
+  const man = json<Manifest>('loud-123.manifest.json'), parts = json<Record<string, number[]>>('loud-123.parts.json'), shot = png('loud-123.png'), hud = png('loud-123.hud.png');
+  const run = (m: Manifest, withParts = true) => analyse(shot, { state: 'rest', hud, manifest: withParts ? { ...m, elements: [...m.elements, ...popsFromParts(parts, m, shot)] } : m });
+  const clock = man.elements.find(e => e.text === '1:55')!, goal = man.elements.find(e => /^Get Vale/.test(e.text ?? ''))!;
+  test('the manifest as shot: the clock is emitted as a `line` beside the goal line, and its pop is not named', () => {
+    expect(clock.kind).toBe('line'); expect(goal.kind).toBe('line'); expect(man.elements.some(e => e.kind === 'pop')).toBe(false); expect(Object.keys(parts).filter(k => /^pop-\d+$/.test(k)).length).toBe(3);
+  });
+  test('the seal clock is a window marker, not a second goal line: one goal line on screen, no "second line" failure', () => {
+    const r = run(man); expect(r.failures).toEqual([]); expect(r.pass).toBe(true);
+    expect(r.lines.map(l => l.words)).toEqual([5]); expect(r.markers.length).toBe(1); expect(r.markers[0]!.words).toBe(1); expect(r.coveragePct).toBeLessThan(LIMIT.rest);
+  });
+  test('a clock reading is only a clock: "1:55" is one, a line that holds a time is not', () => {
+    expect(['1:55', '0:09', ' 12:30 ', '1:02:03'].every(isClock)).toBe(true); expect(['Get there by 1:55', '1:5', 'Take Vale', '', undefined].some(isClock)).toBe(false);
+  });
+  test('the marker kind works as emitted: the same frame with the clock as `marker` passes the same', () => {
+    const r = run({ ...man, elements: man.elements.map(e => (e === clock ? { ...e, kind: 'marker' as const } : e)) }); expect(r.failures).toEqual([]); expect(r.markers.length).toBe(1);
+  });
+  test('a real second goal line still fails (the rule is not loosened)', () => {
+    const second = { kind: 'line' as const, x: clock.x, y: clock.y, w: clock.w, h: clock.h, text: 'Reach the car' };
+    expect(run({ ...man, elements: [...man.elements.filter(e => e !== clock), second] }).failures.join()).toContain('2 objective or hint lines on screen');
+  });
+  test('a marker is a lock and m:ss: one that reads a sentence fails', () => {
+    const sentence = { ...clock, kind: 'marker' as const, text: 'Police hold the car now' };
+    expect(MARKER_MAX.words).toBe(2); expect(run({ ...man, elements: man.elements.map(e => (e === clock ? sentence : e)) }).failures.join()).toContain('a window marker reads');
+  });
+  test('the refusal pop "Pick when to fire" is four words in one line: allowed as a pop, running text when it is not named', () => {
+    const r = run(man); expect(r.pops.length).toBe(1); expect(r.pops[0]!.words).toBe(4); expect(r.sentences).toEqual([]);
+    const un = run(man, false); expect(un.sentences.length).toBe(1); expect(un.failures.join()).toContain('running text'); // without the parts the pop is read as text, the old verdict
+  });
+  test('the three pops drawn on one spot are one place; a fifth word, or four places, fail', () => {
+    const named = man.elements.concat(popsFromParts(parts, man, shot)), pop = named.find(e => e.kind === 'pop')!;
+    expect(popsFromParts(parts, man, shot).length).toBe(3); expect(run(man).failures).toEqual([]); expect(POP_MAX).toEqual({ lines: 1, words: 4, onScreen: 3 });
+    const long = analyse(shot, { state: 'rest', hud, manifest: { ...man, elements: [...man.elements, { ...pop, text: 'Pick when you want to fire' }] } });
+    expect(long.failures.join()).toContain('a refusal pop is longer than 4 words');
+    const four = analyse(shot, { state: 'rest', hud, manifest: { ...man, elements: [...man.elements, ...[0, 1, 2, 3].map(i => ({ ...pop, x: pop.x + i * 400 }))] } });
+    expect(four.failures.join()).toContain('refusal pops on screen');
+  });
+  test('a pop the parts name off the screen, or the manifest already names, is not added twice', () => {
+    expect(popsFromParts({ 'pop-1': [908, -310, 104, 36] }, man, shot)).toEqual([]);
+    const named: Manifest = { ...man, elements: [...man.elements, { kind: 'pop', x: 608, y: 202, w: 150, h: 36, text: 'Pick when to fire' }] }; expect(popsFromParts(parts, named, shot)).toEqual([]);
+    expect(run(named, false).failures).toEqual([]);
   });
 });

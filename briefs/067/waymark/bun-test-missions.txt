@@ -1,0 +1,7 @@
+$ bun tools/game/playing.ts bun test tools/missions
+bun test v1.4.3 (c6da4a4d3)
+
+ 74 pass
+ 0 fail
+ 519 expect() calls
+Ran 74 tests across 7 files. [53.77s]

@@ -1,6 +1,6 @@
 {
   "schema": "suborned.proofset/1",
-  "note": "The pictures the built player's proof (-gameProof) takes that the HUD budget judges in the batch and that Glyph reviews at 2x (the 2160 set: the same proof at -capture-size 3840x2160). A set names its section of proof.json `frames`, the C# file that takes the pictures and each picture (<name>.png with <name>.hud.png, <name>.manifest.json and <name>.parts.json beside it). tools/game/proofset.test.ts holds every name to the C# source, so a renamed picture is a failing test, not a picture quietly dropped from the budget. `optional`: a picture only some runs take. `crop`: HUD parts that stand on every frame (the roster, its portraits, the scope, the keys, the history) and so are left out of the 2x crops, but that this picture is of: they are cropped here. Add a section's pictures here when its proof lands; `bun tools/game/proofset.ts` says what it does with them.",
+  "note": "The pictures the built player's proof (-gameProof) takes that the HUD budget judges in the batch and that Glyph reviews at 2x (the 2160 set: the same proof at -capture-size 3840x2160). A set names its section of proof.json `frames`, the C# file that takes the pictures and each picture (<name>.png with <name>.hud.png, <name>.manifest.json and <name>.parts.json beside it). tools/game/proofset.test.ts holds every name to the C# source, so a renamed picture is a failing test, not a picture quietly dropped from the budget. `optional`: a picture only some runs take. `crop`: HUD parts that stand on every frame (the roster, its portraits, the scope, the keys, the history) and so are left out of the 2x crops, but that this picture is of: they are cropped here. Add a section's pictures here when its proof lands; `bun tools/game/proofset.ts` says what it does with them. r123 (batch 0.2.123 host round 4, Latch; Proof123.cs) is in the budget and the 2x crops from 2026-10-26 but NOT gated: its section is not in tools/game/proofgates.ts GATED until Glyph agrees its density (briefs/067/splice.md item 5, Aster's note).",
   "sets": {
     "r059": {
       "section": "r059",
@@ -59,6 +59,17 @@
         { "name": "r067-reticle-edge", "what": "the rival off screen: the reticle's edge chip" },
         { "name": "r067-reticle-handoff", "what": "a re-target to the second rival: the reticle handed on to him", "optional": true },
         { "name": "r067-crowd-guard-hover", "what": "5:45, a shift guard in the crowd hovered once the guard's sight is learned: 'a guard' in the pill, his ring, and he is pickable as Guard" }
+      ]
+    },
+    "r123": {
+      "section": "r123",
+      "source": "unity/Assets/Suborned/Runtime/Play/Proof123.cs",
+      "frames": [
+        { "name": "r123-looks-310", "what": "3:11 at zoom 14: the three rivals at the cell's car in their own looks (rival, rival_b, rival_d walking to her post)" },
+        { "name": "r123-looks-320", "what": "3:18: the lookout (rival-4, in rival_c) posted at the rival car; the crew over 40 m apart, framed as wide as they need" },
+        { "name": "r123-fight-safe", "what": "4:15 at the square (sq-ra-h3), zoom 14, yaw 30: the fight with no tracer or shot lines, every shooter facing its target, the flash at the gun, the five rivals in their four looks" },
+        { "name": "r123-fight-loud", "what": "3:46 (bal-loud-x4), zoom 14: the loud fight, the seal clock under the clock bar, the reticle, no cones drawn, a refusal pop over the Enforcer" },
+        { "name": "r123-fight-ground", "what": "the Scout's third person 1.2 s into the safe fight: the fight from the ground, shooters facing their targets" }
       ]
     }
   }

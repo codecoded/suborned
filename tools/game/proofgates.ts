@@ -4,7 +4,8 @@
 // Latch 2026-10-21 (ProofInput.cs) wrote the first of these; r118 is batch 0.2.118's (cameras, signals, Glint's frames); r059 is brief 059's (the rival car's way in, the Watch,
 // Vale driven round, the Take, the Drive; Proof059.cs, 0.2.123), gated from 2026-10-26 (Splice, briefs/067/splice.md item 3); r067 is brief 067's (Sky's notes on 0.2.122: the
 // square and the cars, cones on demand, the portrait and third person, locked ways, the squad Board and Drive, the conversation from the ground, the lock reticle, the host
-// record; Proof067.cs, 0.2.123, run after r059), gated the same day (briefs/067/splice.md follow-up 2).
+// record; Proof067.cs, 0.2.123, run after r059), gated the same day (briefs/067/splice.md follow-up 2). r123 (Proof123.cs: host round 4's looks and fights) is NOT gated: its pictures are in
+// tools/game/proofset.json (budget and 2x crops) from 2026-10-26, and its section joins GATED when Glyph agrees its density (Aster).
 
 /** The proof sections that gate the check, in the order GameBoot writes them. */
 export const GATED = ['driveClick', 'fireStop', 'ringCheck', 'inputMap', 'act', 'fire', 'cars', 'hudClick', 'dblClick', 'holdActs', 'holdRange', 'leash', 'done', 'rings', 'levels', 'r29', 'r118', 'r059', 'r067'] as const;

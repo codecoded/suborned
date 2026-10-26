@@ -34,9 +34,13 @@ run m0 HostViews.cs 'using System.Collections.Generic;' 'using System.Collection
 run m1 HostViews.cs 'Ring("sel/0");' 'Dress("crowd/0", "guard"); Ring("sel/0");' 'a new Dress call the audit does not replay'
 run m2 HostViews.cs 'Dress(key, BodyFigure(p)); }' 'Dress(key, PersonFigure(p)); }' 'bodies back to the plain pick (the 16 walkers change clothes again)'
 run m3 HandoverHost.cs 'p.Job == "guard" ? Text?.TargetName("crowd-guard", "a guard") ?? "a guard"' 'p.Job == "guard" ? Text?.TargetName("crowd-guard", "a passer-by") ?? "a passer-by"' 'the crowd guard named a passer-by again'
-run m4 HostViews.Figures.cs '_ when IsCrewId(key) || key.StartsWith("body/rival-") => "rival",' '_ when IsCrewId(key) || key.StartsWith("body/rival-") => RivalFigure(key),' "RoleFigure given Forma's RivalFigure (a look by member)"
-run m5 HostViews.cs 'Dress(key, "rival"); }' 'Dress(key, RivalFigure(p.Id)); }' "a rival's body given RivalFigure"
+run m4 HostViews.Figures.cs '_ when IsCrewId(key) || key.StartsWith("body/rival-") => RivalFigure(key),' '_ when IsCrewId(key) || key.StartsWith("body/rival-") => "rival",' "RoleFigure back to one look for the whole crew (five clones)"
+run m5 HostViews.cs 'Dress(key, RivalFigure(p.Id)); }' 'Dress(key, "rival"); }' "a rival's body back to the one look"
 run m6 HostViews.cs 'host.figures.Pick("family/passer", b.Id)' 'host.figures.Pick("family/guard", b.Id)' "the range's passers drawn from the guards' pool"
-run m7 HostViews.cs 'h.Id.StartsWith("rival") ? "rival" : "security")' 'h.Id.StartsWith("rival") ? "rival" : "guard")' 'a hostile officer dressed as the door guard'
+run m7 HostViews.cs 'h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security")' 'h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "guard")' 'a hostile officer dressed as the door guard'
+run m8 HostViews.Figures.cs '"rival", "rival_b", "rival_d", "rival_c", "rival" };' '"rival", "rival_b", "rival_c", "rival_d", "rival" };' "the crew's table by member changed (the woman is rival-4, no longer rival-3)"
+run m9 HostViews.cs 'else if (StillFacing(g, i) is { } ef) faces[crowdKeys[i]] = ef;' '' "the crowd's engine facing taken out (a person standing alone faces a default again)"
+run m10 HostViews.Figures.cs 'if (lib.Find(id) == null && id.StartsWith("rival_")) id = "rival";' '' "the fallback for a library without the crew's looks taken out"
+run m11 HostViews.cs 'Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"); }' 'Dress(hostileKeys[i], "security"); }' "a rival hostile dressed in the police look (the first site)"
 [ "$bad" = 0 ] && echo "every change caught, the control passes" || echo "SOMETHING IS WRONG (above)"
 exit $bad

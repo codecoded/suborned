@@ -23,7 +23,7 @@ export type Script = { schema: 'suborned.sim.script/1'; mission: 'handover'; not
 export type Play = {
   id: string; outcome: 'success' | 'failure' | 'withdrawn' | 'none'; fail: string; tick: number; cash: number; trail: number; alert: number; gunfire: number; standing: number;
   startHash: string; finalHash: string; replayIdentical: boolean; /* null (typed away) when played with replay: false */ checkpoints: { tick: number; hash: string }[];
-  orders: { order: Order; ok: boolean; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number; lines?: { line: string; who: string; detail: string }[] } };
+  orders: { order: Order; ok: boolean; code?: string; why?: string }[]; log: { tick: number; code: string; text: string }[]; debrief?: { route?: string[]; chain?: string[]; contacts?: number; loud?: boolean; publicSecurity?: string; nextMission?: { campaignTrail?: number; campaignStanding?: number; openCases?: number; lines?: { line: string; who: string; detail: string }[] } };
 };
 
 /** sha256 of the engine's source (library and CLI, .cs and .csproj, by path) under `dir` (the repo root or a pinned copy). */
@@ -137,7 +137,20 @@ function batchDll(e: EngineAt, dll: string): string | undefined {
   } catch { /* played a process each */ }
   hosts.set(e.dir, host);
   return host;
-}/** SUBORNED_SIM_STATS=1: at exit, how many plays this process asked of the engine and how it played them. */
+}
+
+/** The site's facts a mission check reads (`suborned-sim facts`, engine 0.34.0+; brief 067, Motive briefs/067/motive-square.md §5.3): today
+ *  `patrolWatchesEntry` (the patrol's sweep, or its reroute wait, sees the public door), read by MC-3's `needs`. An engine without the
+ *  command (a pinned commit before 0.34.0) gives {}: a fail line that needs a fact is then counted, as before facts existed. */
+export type Facts = { patrolWatchesEntry?: boolean; [k: string]: unknown };
+export function facts(e: EngineAt = engineAt()): Facts {
+  const r = Bun.spawnSync(['dotnet', build(e), 'facts'], { cwd: e.dir, env, stdout: 'pipe', stderr: 'pipe' }), out = r.stdout.toString().trim();
+  if (r.exitCode !== 0 || !out.startsWith('{')) return {};
+  const f = JSON.parse(out) as Facts & { engine?: unknown; inputs?: unknown };
+  return Object.fromEntries(Object.entries(f).filter(([k]) => k !== 'engine' && k !== 'inputs')) as Facts;
+}
+
+/** SUBORNED_SIM_STATS=1: at exit, how many plays this process asked of the engine and how it played them. */
 let asked = 0;
 if (process.env.SUBORNED_SIM_STATS) process.on('exit', () => console.error(`engine: ${asked} plays (${process.env.SUBORNED_SIM_BATCH === '0' ? 'a process each' : 'batch server'})`));
 

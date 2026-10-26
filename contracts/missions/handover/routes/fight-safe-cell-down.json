@@ -1,0 +1,32 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "§07 fail 'the cell down (every op down)' (GDD v0.26.0; Motive M067-K3 b; Keel K3-CELL-DOWN), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell will not fight at the car: the three draw (a cause for the rivals, §06) and hold their fire, and the Enforcer walks Vale in, boards him and steps out again to stand by the car, drawn, holding fire. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the held car, K3 a); with nobody in reach they advance on the four (SQ2) and shoot them down one by one, and the mission fails the tick the last falls.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[1025,-4625]},
+  {"tick":127,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":770,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":860,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"},
+  {"tick":920,"op":"enforcer","do":"enter"},
+  {"tick":920,"op":"tech","do":"move","to":[675,-4625]},
+  {"tick":1300,"op":"enforcer","do":"move","to":[2400,-6000]},
+  {"tick":1605,"op":"scout","do":"draw"},
+  {"tick":1605,"op":"scout","do":"stance","stance":"hold"},
+  {"tick":1605,"op":"fixer","do":"draw"},
+  {"tick":1605,"op":"fixer","do":"stance","stance":"hold"},
+  {"tick":1605,"op":"tech","do":"draw"},
+  {"tick":1605,"op":"tech","do":"stance","stance":"hold"},
+  {"tick":1605,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":1706,"op":"enforcer","do":"board","target":"car"},
+  {"tick":1747,"op":"enforcer","do":"move","to":[850,-4520]},
+  {"tick":1758,"op":"enforcer","do":"draw"},
+  {"tick":1758,"op":"enforcer","do":"stance","stance":"hold"}
+ ],
+ "until": 5100
+}

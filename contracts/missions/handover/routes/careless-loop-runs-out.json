@@ -1,7 +1,7 @@
 {
  "schema": "suborned.sim.script/1",
  "mission": "handover",
- "note": "Careless (brief 058 §6; Waymark 2026-10-25, engine 0.31.0, Loop v2: a loop runs 2:00 from its landing): route A with the loop planted first, before the Reroute, as soon as the Tech reaches the cabinet. It runs out at 2:36.5 and the Enter at 2:53.4 is seen by the entrance camera (entry-seen-camera). The careful twin is route-a (the loop planted at 1:25, live 1:45 to 3:45, then the Reroute). The script ends at the Enter, where it fails; route-a's steps after it are dropped. Route-a's own note follows. Route A, the front door, quiet (GDD §07; Keel N11): watch and listen to Inez, loop the entrance camera, help Inez as often as the card asks (twice: the r016 cast's Inez is Fearful, §04) and have her call the guard away, enter while the door is unwatched, take Vale out by the service door, and fight the rivals' ambush at the getaway car with the whole armed cell (Arms 3). The cell runs where a player in a hurry would (to the café, the cabinet and the door): a run is noticed (Alert 1 at most), which the quiet route can afford. Brief 027 (Waymark, 2026-10-21; engine 0.18.0, tuning.md §10.5): fighting it out from the old posts (the Scout at the car's east end, the Fixer at the pavilion pier) left the three captured once both sides fire on the move; the Scout and the Fixer now wait at the car's north-west and south-west corners (cv-003, cv-002), the Tech at the pier as before. Measured with a scripted at-will player: 38 of 48 half-metre and metre moves of one wait stay clean on route G (0 of 48 from the old posts), 48 of 48 on route A, 45 of 48 on route B (briefs/027/waymark/quiet-robust-0.18.txt). The board-and-go twins keep the old posts: with these they win at the same time and Trail, but the crew no longer breaks before the car leaves (Standing 2 for 3).",
+ "note": "Careless timing (brief 058 §6; Loop v2: a loop runs 2:00 from its landing), the twin of route-a: route-a with the loop planted first, as soon as the Tech reaches the cabinet (live 0:32.7 to 2:32.7), not at 1:25: it has run out 20 s before the Enter at about 2:53, and the entrance camera sees it (entry seen by a live camera).",
  "start": {},
  "orders": [
   {"tick":0,"op":"scout","do":"move","to":"beside-inez","run":true},
@@ -9,15 +9,14 @@
   {"tick":0,"op":"fixer","do":"move","to":"d:Courtyard","run":true},
   {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
   {"tick":90,"op":"scout","do":"watch","target":"waitress"},
-  {"tick":165,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":127,"op":"tech","do":"loop","target":"entrance"},
   {"tick":290,"op":"scout","do":"listen","target":"waitress"},
-  {"tick":365,"op":"tech","do":"reroute","target":"patrol"},
+  {"tick":327,"op":"enforcer","do":"move","to":[6925,-4250]},
   {"tick":710,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
-  {"tick":815,"op":"enforcer","do":"move","to":[6925,-4250]},
   {"tick":1210,"op":"fixer","do":"turn","target":"waitress","approach":"help"},
   {"tick":1710,"op":"fixer","do":"call","target":"waitress"},
   {"tick":1710,"op":"enforcer","do":"move","to":"d:Office entrance","run":true},
-  {"tick":1734,"op":"enforcer","do":"enter"}
+  {"tick":1729,"op":"enforcer","do":"enter"}
  ],
  "until": 5100
 }

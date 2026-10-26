@@ -27,15 +27,20 @@ describe('the Handover route manifest and scripts', () => {
     // §07: route A and route B quiet, a loud route, every fail listed, both final-fight branches played (N10, N11 landed)
     const by = (k: string) => L.manifest.scripts.filter(s => s.kind === k).map(s => s.id);
     // brief 018 §5: each quiet route as fight it out (the id) and board and go (<id>-board)
-    expect(by('quiet')).toEqual(['route-a', 'route-a-board', 'route-a-pressure', 'route-a-pressure-board', 'route-a-disable', 'route-b', 'route-b-board', 'route-b-block', 'route-b-block-board', 'route-g', 'route-g-board', 'route-g-fast', 'route-g-fast-board', 'route-g-kill', 'route-g-kill-board']);
-    expect(by('loud')).toEqual(['loud', 'loud-fight', 'loud-fast']);
-    expect(by('outcome')).toEqual(['withdraw', 'loud-left-downed', 'loud-left-standing']); // brief 018 §5: an op left downed, an op left standing
-    expect(L.manifest.scripts.filter(s => s.expects.left).map(s => `${s.id} ${JSON.stringify(s.expects.left)}`)).toEqual(['loud-left-downed {"scout":"captured downed"}', 'loud-left-standing {"scout":"captured fighting"}', 'careless-g-disable {"scout":"captured fighting","fixer":"captured downed","tech":"captured fighting"}']); // brief 058: Disable on route G lifts the final fight to Alert 2, and the three who would walk out are captured
+    // brief 059 (c038): the driver's Call is retired (route-b-block and its twin go), route-b-thin shows a posted rival thinned; loud-fast
+    // goes (on engine 0.32+ the cheapest loud win must break the crew gunfire draws, so it is loud itself)
+    expect(by('quiet')).toEqual(['route-a', 'route-a-board', 'route-a-pressure', 'route-a-pressure-board', 'route-a-disable', 'route-b', 'route-b-board', 'route-b-thin', 'route-g', 'route-g-board', 'route-g-fast', 'route-g-fast-board', 'route-g-kill', 'route-g-kill-board']);
+    expect(by('loud')).toEqual(['loud', 'loud-fight']);
+    expect(by('outcome')).toEqual(['fight-loud-wait-yard', 'withdraw', 'loud-left-downed', 'loud-left-standing']); // brief 018 §5: an op left downed, an op left standing; brief 059 MC-13: the yard's loud-wait twin withdraws once its Go is refused
+    expect(L.manifest.scripts.filter(s => s.expects.left).map(s => `${s.id} ${JSON.stringify(s.expects.left)}`)).toEqual(['loud-left-downed {"scout":"captured downed"}', 'loud-left-standing {"scout":"captured fighting"}', 'careless-thin-all {"scout":"captured downed","fixer":"captured fighting"}']); // brief 059: over-thinning goes loud, and the car goes once the police blocker is down, without the two
+    expect(L.manifest.scripts.filter(s => s.holds).map(s => `${s.id} ${s.holds}`)).toEqual(['fight-loud-wait-square square', 'fight-loud-wait-yard service-drive']); // brief 059 MC-13: one loud-wait twin per stand
     expect(Object.values(L.scripts).some(s => s.orders.some(o => o.do === 'extract'))).toBe(false); // brief 018: extract is retired into Board and Go
-    expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held', 'careless-enforcer-watches-guard', 'careless-scout-idles-pickup', 'careless-g-disable', 'careless-loop-runs-out']); // brief 013 D; brief 031; brief 058 (Loop v2, Disable)
-    expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in official car', 'rivals reach Vale', 'district seals', 'Enforcer down', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
-    expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual([]);
-    expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale']);
+    expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held', 'careless-enforcer-watches-guard', 'careless-scout-idles-pickup', 'careless-g-disable', 'careless-loop-runs-out', 'careless-thin-all']); // brief 013 D; brief 031; brief 058 (Loop v2, Disable); brief 059 S1
+    // GDD v0.26.0 §07's fail line, in its order; brief 067: the patrol line needs a patrol that watches an entry (MC-3 counts it only there)
+    expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in his car', 'rivals reach Vale', 'district seals', 'Enforcer down before Vale is in the car', 'the cell down (every op down)', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
+    expect(L.manifest.fails.filter(f => f.needs).map(f => `${f.id} ${f.needs}`)).toEqual(['entry-seen-patrol patrol-watches-entry']);
+    expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual(['fail-entry-seen-patrol']); // brief 067 A: the patrol sweeps the service yard, watching no entry
+    expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale', 'fight-safe-cell-down', 'fight-loud-wait-square', 'fight-loud-wait-yard']);
     // the close: 8:30 (Sky 2026-10-15), mission.json's last timeline entry; route B closes on it
     expect(L.manifest.closing.at).toBe('8:30');
     expect(L.manifest.scripts.filter(s => s.closes).map(s => `${s.id} ${s.closes!.at} ${s.closes!.secured}`)).toEqual(['route-a-board 5:50 enter.in', 'route-b-board 8:30 take.done', 'route-g-fast-board 5:50 enter.in']);
@@ -78,13 +83,14 @@ describe('blocker.out and car.free (brief 018 §1), the engine\'s own codes', ()
 });
 
 describe('the §09 conditions, each with a failing example', () => {
-  const win = (tick: number, trail: number, marks: Record<string, number> = {}): Digest => ({ outcome: 'success', fail: '', tick, cash: 60000, trail, alert: 0, gunfire: 4, startHash: 's', finalHash: 'f', replayIdentical: true, rejected: 0, scriptSha: 'x', marks, shots: 0, fight: 'safe' });
-  const fail = (code: string): Digest => ({ ...win(4800, 0), outcome: 'failure', fail: code });
+  // brief 059 (MC-14): every win Goes after blocker.out, so a good win is free 5 s before it leaves
+  const win = (tick: number, trail: number, marks: Record<string, number> = {}): Digest => ({ outcome: 'success', fail: '', tick, cash: 60000, trail, alert: 0, gunfire: 4, startHash: 's', finalHash: 'f', replayIdentical: true, rejected: 0, scriptSha: 'x', marks, shots: 0, fight: 'safe', carFreeS: 5 });
+  const fail = (code: string): Digest => ({ ...win(4800, 0), outcome: 'failure', fail: code, carFreeS: undefined });
   /** Plays that meet every condition: A and B win, loud wins dearer, each fail is reached, each contact leaves the other route. */
   const good = (): Plays => {
     const p: Plays = {
-      'route-a': win(3097, 3, { 'enter.in': 2329 }), 'route-a-pressure': win(3097, 6), 'route-b': win(4468, 2, { 'take.done': 4080 }), 'route-b-block': win(4468, 3),
-      loud: { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud' }, 'loud-fight': { ...win(3220, 9), alert: 2, shots: 2, fight: 'loud' }, 'loud-fast': { ...win(3100, 9, { captured: 3100 }), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4 }, withdraw: { ...win(300, 0), outcome: 'withdrawn' },
+      'route-a': win(3097, 3, { 'enter.in': 2329 }), 'route-a-pressure': win(3097, 6), 'route-b': win(4468, 2, { 'take.done': 4080 }), 'route-b-thin': { ...win(4468, 3), takedownS: 6 },
+      loud: { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud' }, 'loud-fight': { ...win(3220, 9), alert: 2, shots: 2, fight: 'loud' }, withdraw: { ...win(300, 0), outcome: 'withdrawn', carFreeS: undefined },
       'loud-left-downed': { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4, left: { scout: 'captured downed' } }, 'loud-left-standing': { ...win(3200, 9), alert: 2, shots: 2, fight: 'loud', campaignTrail: 4, left: { scout: 'captured fighting' } },
     };
     for (const s of L.manifest.scripts.filter(s => s.kind === 'fail' && !s.pending)) p[s.id] = fail(s.expects.fail!);
@@ -92,34 +98,42 @@ describe('the §09 conditions, each with a failing example', () => {
     // brief 013 D: route G takes the guard out (no contact); careless twins fail or win only loud and dearer
     p['route-g'] = { ...win(2474, 2), campaignTrail: 4, alert: 1, takedownS: 6 }; p['route-g-fast'] = { ...win(2170, 2, { 'enter.in': 1270 }), campaignTrail: 4, alert: 1, takedownS: 6 };
     p['route-g-kill'] = { ...win(2843, 2), campaignTrail: 2, alert: 1, takedownS: 34.4, openCases: 1 };
-    p['careless-takedown-seen-camera'] = fail('entry-seen-camera'); p['careless-takedown-seen-crowd'] = fail('enforcer-down'); p['careless-body-found'] = fail('enforcer-down');
-    p['careless-reporter-not-stopped'] = { ...win(4604, 14), alert: 2 }; p['careless-guard-left-door-held'] = fail('rivals-reach-vale');
+    p['careless-takedown-seen-camera'] = fail('entry-seen-camera'); p['careless-takedown-seen-crowd'] = fail('vale-leaves'); p['careless-body-found'] = fail('enforcer-down');
+    p['careless-reporter-not-stopped'] = { ...win(4522, 13), alert: 1 }; p['careless-guard-left-door-held'] = fail('vale-leaves');
     for (const s of ['route-a', 'route-a-pressure']) p[`${s}~no-waitress`] = fail('entry-seen-guard');
-    for (const s of ['route-b', 'route-b-block']) p[`${s}~no-driver`] = fail('abduction-seen-camera');
+    for (const s of ['route-b', 'route-b-thin']) p[`${s}~no-driver`] = fail('vale-leaves');
     // brief 031: the Enforcer watching the guard from his side is sensed, and the blow fails; the Scout idling in the pickup camera's view is reported
     p['careless-enforcer-watches-guard'] = fail('enforcer-down'); p['careless-scout-idles-pickup'] = { ...win(4739, 3, { 'attention.reporting': 1553 }), alert: 1 };
-    // brief 058: route A with Disable wins one Trail dearer; route G with Disable wins at Alert 2 with the three captured; a loop planted first runs out before the Enter
-    p['route-a-disable'] = win(3097, 4, { 'enter.in': 2329 }); p['careless-g-disable'] = { ...win(2847, 12), alert: 2, campaignTrail: 12, left: { scout: 'captured fighting', fixer: 'captured downed', tech: 'captured fighting' } };
+    // brief 058: route A with Disable wins one Trail dearer; route G with Disable wins at Alert 2; a loop planted first runs out before the Enter
+    p['route-a-disable'] = win(3097, 4, { 'enter.in': 2329 }); p['careless-g-disable'] = { ...win(2396, 7), alert: 2, campaignTrail: 4 };
     p['careless-loop-runs-out'] = fail('entry-seen-camera'); p['route-a-disable~no-waitress'] = fail('entry-seen-guard');
+    // brief 059: over-thinning goes loud and leaves two behind; the stands' loud-wait twins (MC-13): the square's is lost before Vale is in, the yard's Go is refused
+    p['careless-thin-all'] = { ...win(4493, 19), alert: 2, campaignTrail: 8, left: { scout: 'captured downed', fixer: 'captured fighting' } };
+    p['fight-loud-wait-square'] = { ...fail('enforcer-down'), fight: 'loud' };
+    p['fight-loud-wait-yard'] = { ...win(4495, 9), outcome: 'withdrawn', carFreeS: undefined, fight: 'loud', valeIn: 4493, goRefused: [{ tick: 4494, code: 'car-held' }] };
     for (const s of L.manifest.scripts) if (s.expects.alert !== undefined && p[s.id]) p[s.id] = { ...p[s.id]!, alert: s.expects.alert }; // each ends at the Alert its manifest states
     return p;
   };
   /** Brief 018 §5: each board-and-go twin (<route>-board, the primary of A, B and G) plays as its fight-it-out route here, so a test
    *  edits the route and the twin follows (the closing marks reach the primaries). */
   const mirror = (p: Plays): Plays => { const q = { ...p }; for (const [k, v] of Object.entries(p)) { const m = k.match(/^(route-[a-z-]+?)(~.*)?$/); if (m && !m[1]!.endsWith('-board')) q[`${m[1]}-board${m[2] ?? ''}`] = v; } return q; };
-  const J = (p: Plays, o: Parameters<typeof judge>[4] = {}) => judge(L.manifest, L.scripts, mirror(p), [], o);
-  const ids = (p: Plays) => J(p).conditions.filter(c => !c.ok).map(c => c.id);
-  test('the good plays pass every condition', () => expect(ids(good())).toEqual([]));
+  // brief 067: today's site places no patrol on an entry (suborned-sim facts), so its fail line is not counted unless a test says so
+  const J = (p: Plays, o: Parameters<typeof judge>[4] = {}) => judge(L.manifest, L.scripts, mirror(p), [], { facts: { patrolWatchesEntry: false }, ...o });
+  const ids = (p: Plays, o: Parameters<typeof judge>[4] = {}) => J(p, o).conditions.filter(c => !c.ok).map(c => c.id);
+  /** the two stands of the Handover's site (brief 059 K6), as getawayAt reads them: the square's bay and the service drive */
+  const square: Getaway = { id: 'square', car: [850, -4820], holdCm: 800, lane: [[850, -5600], [3850, -5600]], laneHalfCm: 600, posts: [{ id: 'ambush-1', at: [2175, -4425] }, { id: 'police-1', at: [-775, -4125] }] };
+  const yard: Getaway = { id: 'service-drive', car: [6935, -1500], holdCm: 800, lane: [[8600, -1500], [8600, 1500]], laneHalfCm: 600, posts: [{ id: 'svc-ambush-1', at: [7735, -800] }, { id: 'svc-police-2', at: [5575, -1425] }] };
+  test('the good plays pass every condition', () => { expect(ids(good())).toEqual([]); expect(ids(good(), { getaway: [square, yard] })).toEqual([]); });
   test('MC-0: a script that does not do what its manifest says', () => { const p = good(); p['fail-vale-dead'] = fail('sealed'); expect(ids(p)).toContain('MC-0'); });
-  test('MC-1: one quiet route', () => { const p = good(); for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = fail('entry-seen-camera'); p['route-b'] = fail('vale-leaves'); p['route-b-block'] = fail('vale-leaves'); expect(ids(p)).toContain('MC-1'); });
+  test('MC-1: one quiet route', () => { const p = good(); for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = fail('entry-seen-camera'); p['route-b'] = fail('vale-leaves'); p['route-b-thin'] = fail('vale-leaves'); expect(ids(p)).toContain('MC-1'); });
   test('MC-1: a shot before the final fight makes a win loud; the fight\'s own shots do not', () => {
-    const p = good(); p['route-b'] = { ...p['route-b']!, shots: 1, fight: 'loud' }; p['route-b-block'] = { ...p['route-b-block']!, shots: 1 }; for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = { ...p[g]!, shots: 1 };
+    const p = good(); p['route-b'] = { ...p['route-b']!, shots: 1, fight: 'loud' }; p['route-b-thin'] = { ...p['route-b-thin']!, shots: 1 }; for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = { ...p[g]!, shots: 1 };
     expect(ids(p)).toContain('MC-1');
     expect(good()['route-a']!.gunfire).toBeGreaterThan(0); // the good plays fire in the fight and still count as quiet
   });
   test('MC-6: loud faster than every informed quiet win (T2); a loud win that leaves someone captured is not raced', () => {
     const p = good(); p.loud = { ...p.loud!, tick: 2000 }; expect(ids(p)).toEqual(['MC-6']);
-    const q = good(); q['loud-fast'] = { ...q['loud-fast']!, tick: 2000 }; expect(ids(q)).toEqual([]); // the capture variant is faster, and doesn't count
+    const q = good(); q['loud-fight'] = { ...q['loud-fight']!, tick: 2000, marks: { captured: 2000 }, campaignTrail: 4 }; expect(ids(q)).toEqual([]); // the capture variant is faster, and doesn't count
   });
   test('MC-2: a quiet variant (Pressure) as dear as loud fails, not only the primary routes', () => { const p = good(); p['route-a-pressure'] = { ...p['route-a-pressure']!, trail: 9 }; expect(ids(p)).toEqual(['MC-2', 'MC-10']); });
   test('MC-2: the loud route no dearer than a quiet one', () => { const p = good(); p.loud = { ...p.loud!, trail: 3 }; expect(ids(p)).toContain('MC-2'); });
@@ -127,25 +141,53 @@ describe('the §09 conditions, each with a failing example', () => {
   // brief 018 §5: quiet beats loud on Trail (a captive's +4 T is campaign Trail), Alert, Standing and the seal, against every loud win
   test('MC-10: a quiet win dearer than a loud variant, as alert, lower in Standing, or under a seal clock is not better', () => {
     const t = good(); t['loud-fight'] = { ...t['loud-fight']!, trail: 6 }; expect(ids(t)).toEqual(['MC-10']); // a loud variant, not the primary: MC-2 holds
-    const a = good(); a['route-b-block'] = { ...a['route-b-block']!, alert: 2 }; expect(ids(a)).toEqual(['MC-0', 'MC-10']); // and not the Alert its manifest states
+    const a = good(); a['route-b-thin'] = { ...a['route-b-thin']!, alert: 2 }; expect(ids(a)).toEqual(['MC-0', 'MC-10']); // and not the Alert its manifest states
     const st = good(); st.loud = { ...st.loud!, standing: 3 }; st['route-a'] = { ...st['route-a']!, standing: 2 }; expect(ids(st)).toEqual(['MC-10']);
     const se = good(); se['route-g-kill'] = { ...se['route-g-kill']!, marks: { 'seal.starts': 2600 } }; expect(ids(se)).toEqual(['MC-10']);
-    const cap = good(); cap['loud-fast'] = { ...cap['loud-fast']!, trail: 2 }; expect(ids(cap)).toEqual(['MC-10']); // 2 + the captive's 4 = 6: route-a-pressure's 6 is not under it
+    const cap = good(); cap['loud-fight'] = { ...cap['loud-fight']!, trail: 2, campaignTrail: 4 }; expect(ids(cap)).toEqual(['MC-10']); // 2 + the captive's 4 = 6: route-a-pressure's 6 is not under it
   });
   test('MC-0: a run that leaves behind someone other than its manifest says', () => {
     const p = good(); p['loud-left-standing'] = { ...p['loud-left-standing']!, left: { scout: 'captured sealed' } }; expect(ids(p)).toEqual(['MC-0']);
     const q = good(); q['loud-left-downed'] = { ...q['loud-left-downed']!, left: { scout: 'captured downed', tech: 'walked' } }; expect(ids(q)).toEqual(['MC-0']);
   });
-  test('MC-11: an ambush spot or police stand inside the hold ring or the exit lane holds the car', () => {
-    const g: Getaway = { car: [850, -4820], holdCm: 800, lane: [[850, -5600], [3850, -5600]], laneHalfCm: 600, posts: [{ id: 'ambush-1', at: [2175, -4425] }, { id: 'police-1', at: [-775, -4125] }] };
-    const free = (p: Plays) => { for (const k of Object.keys(p)) if (p[k]!.outcome === 'success' && p[k]!.fight) p[k] = { ...p[k]!, carFreeS: 5 }; return p; };
-    expect(J(free(good()), { getaway: g }).conditions.filter(c => !c.ok).map(c => c.id)).toEqual([]);
-    const near = { ...g, posts: [...g.posts, { id: 'ambush-2', at: [1300, -4500] as [number, number] }] }; // 5.5 m from the car
-    expect(J(free(good()), { getaway: near }).conditions.filter(c => !c.ok).map(c => c.id)).toEqual(['MC-11']);
-    const lane = { ...g, posts: [...g.posts, { id: 'police-2', at: [3000, -5900] as [number, number] }] }; // 24 m out, but on the exit lane
-    expect(J(free(good()), { getaway: lane }).conditions.find(c => c.id === 'MC-11')!.detail).toContain('police-2 at 24.1 m HOLDS the car (in the exit lane)');
-    expect(J(good(), { getaway: g }).conditions.filter(c => !c.ok).map(c => c.id)).toEqual(['MC-11']); // no blocker out logged: not free when it left
-    expect(inLane(g, [3850, -5000])).toBe(true); expect(inLane(g, [3900, -5600])).toBe(false); expect(inLane(g, [850, -4820])).toBe(false);
+  test('MC-11: an ambush spot or police stand inside the hold ring or the exit lane of any stand holds the car', () => {
+    expect(ids(good(), { getaway: square })).toEqual([]);
+    const near = { ...square, posts: [...square.posts, { id: 'ambush-2', at: [1300, -4500] as [number, number] }] }; // 5.5 m from the car
+    expect(ids(good(), { getaway: near })).toEqual(['MC-11']);
+    const lane = { ...square, posts: [...square.posts, { id: 'police-2', at: [3000, -5900] as [number, number] }] }; // 24 m out, but on the exit lane
+    expect(J(good(), { getaway: lane }).conditions.find(c => c.id === 'MC-11')!.detail).toContain('square police-2 at 24.1 m HOLDS the car (in the exit lane)');
+    const yardNear = { ...yard, posts: [...yard.posts, { id: 'svc-ambush-9', at: [6935, -1000] as [number, number] }] }; // brief 059 K6: the yard's posts are read too, against its own car
+    expect(J(good(), { getaway: [square, yardNear] }).conditions.find(c => c.id === 'MC-11')!.detail).toContain('service-drive svc-ambush-9 at 5.0 m HOLDS the car');
+    const unfree = good(); for (const k of Object.keys(unfree)) if (unfree[k]!.outcome === 'success') unfree[k] = { ...unfree[k]!, carFreeS: undefined };
+    expect(ids(unfree, { getaway: square })).toEqual(['MC-11', 'MC-14']); // no blocker out logged: not free when it left (and the fight never came)
+    expect(inLane(square, [3850, -5000])).toBe(true); expect(inLane(square, [3900, -5600])).toBe(false); expect(inLane(square, [850, -4820])).toBe(false);
+  });
+  test('MC-11 (brief 067, M067-SQ1): a hold logged by a body that did not come for the car fails; the blocker, a press, an advance and the response unit\'s join do not', () => {
+    const at = (held: NonNullable<Digest['held']>) => { const p = good(); p['route-a'] = { ...p['route-a']!, held }; return ids(p, { getaway: square }); };
+    expect(at([{ tick: 2400, how: 'blocker', who: 'rival-2' }, { tick: 2410, how: 'press', who: 'rival-1' }, { tick: 2420, how: 'advance', who: 'rival-5' }])).toEqual([]);
+    expect(at([{ tick: 2400, how: 'answer', who: 'rival-4' }])).toEqual(['MC-11']); // an answer to fire never comes for the car
+    expect(at([{ tick: 2400, how: 'post', who: 'rival-4' }])).toEqual(['MC-11']); // a rival at, or on his way to, his ambush spot
+    expect(at([{ tick: 2400, how: 'post', who: 'officer-1' }])).toEqual(['MC-11']); // a final-fight officer to his police stand
+    expect(at([{ tick: 2400, how: 'post', who: 'security-2', join: 'cv-033' }])).toEqual([]); // the response unit's join point: the cell waited at the car
+    expect(at([{ tick: 2400, how: 'post', who: 'police-1' }])).toEqual([]); // a search unit at the stash it opens: no post the mission places
+    expect(at([{ tick: 2400, how: 'answer', who: 'police-1' }])).toEqual(['MC-11']); // an answer to fire always counts
+  });
+  test('MC-13 (brief 059 M059-5.3): every stand needs a loud-wait twin that is held: lost before Vale is in, or its Go refused car-held with Vale aboard', () => {
+    const both = { getaway: [square, yard] };
+    const p = good(); p['fight-loud-wait-yard'] = { ...p['fight-loud-wait-yard']!, goRefused: [] }; expect(ids(p, both)).toEqual(['MC-13']); // Vale aboard and no Go refused
+    const q = good(); q['fight-loud-wait-yard'] = { ...q['fight-loud-wait-yard']!, goRefused: [{ tick: 4490, code: 'car-held' }] }; expect(ids(q, both)).toEqual(['MC-13']); // refused before Vale was in: a withdrawal's refusal, not the hold at his Board
+    const w = good(); w['fight-loud-wait-square'] = { ...win(2400, 8), alert: 2, fight: 'loud' }; expect(ids(w, both)).toEqual(['MC-0', 'MC-13']); // the square's twin wins: an unfought loud exit
+    const n = good(); expect(ids(n, { getaway: [square, yard, { ...yard, id: 'pier' }] })).toEqual(['MC-13']); // a stand with no loud-wait twin
+    expect(J(good(), both).conditions.find(c => c.id === 'MC-13')!.value).toBe('2/2 stands held');
+  });
+  test('MC-14 (brief 059 S1): a win that Goes before blocker.out, or with none logged, left unfought; variations count too', () => {
+    const p = good(); p['route-g'] = { ...p['route-g']!, carFreeS: -2.5 }; expect(ids(p)).toEqual(['MC-14']);
+    const q = good(); q['route-a~no-waitress'] = { ...win(3200, 3), carFreeS: undefined }; expect(ids(q)).toEqual(['MC-14']); // a variation's win the same
+    expect(J(p).conditions.find(c => c.id === 'MC-14')!.detail).toContain('route-g: Go 2.5 s before blocker.out (UNFOUGHT)');
+  });
+  test('MC-15 (brief 059 M059-S1.5): a reference route that destroys the rival crew (rivals.wiped) fails; a careless one may', () => {
+    const p = good(); p['route-g-kill'] = { ...p['route-g-kill']!, marks: { 'rivals.wiped': 2600 } }; expect(ids(p)).toEqual(['MC-15']);
+    const q = good(); q['careless-thin-all'] = { ...q['careless-thin-all']!, marks: { 'rivals.wiped': 4400 } }; expect(ids(q)).toEqual([]);
   });
   test('MC-7: a careless takedown that wins quietly, or at Alert 2 no dearer than its twin, is not worse', () => {
     const p = good(); p['careless-reporter-not-stopped'] = { ...p['careless-reporter-not-stopped']!, alert: 0 }; expect(ids(p)).toContain('MC-7'); // at its twin's Alert
@@ -161,7 +203,7 @@ describe('the §09 conditions, each with a failing example', () => {
     const r = good(); r['careless-scout-idles-pickup'] = { ...r['careless-scout-idles-pickup']!, alert: 0 }; expect(ids(r)).toEqual(['MC-0', 'MC-12']); // a win at its twin's Alert
   });
   test('MC-8: takedown routes that win only above Alert 1, or cost the Enforcer no time, are not viable', () => {
-    const p = good(); for (const s of ['route-g', 'route-g-fast', 'route-g-kill']) p[s] = { ...p[s]!, alert: 2 }; expect(ids(p)).toContain('MC-8');
+    const p = good(); for (const s of ['route-g', 'route-g-fast', 'route-g-kill', 'route-b-thin']) p[s] = { ...p[s]!, alert: 2 }; expect(ids(p)).toContain('MC-8');
     const q = good(); q['route-g'] = { ...q['route-g']!, takedownS: 0 }; expect(ids(q)).toContain('MC-8');
   });
   test('MC-9 prices an open case (case-trail-eq): a hidden kill as fast and cheap as every turning win stops dominating at 3 T a case', () => {
@@ -171,8 +213,15 @@ describe('the §09 conditions, each with a failing example', () => {
   });
   test('MC-9: a takedown win as fast and as cheap as every turning win dominates them', () => { const p = good(); p['route-g-fast'] = { ...p['route-g-fast']!, tick: 2000, trail: 0, campaignTrail: 1 }; expect(ids(p)).toEqual(['MC-9']); });
   test('MC-3: a fail no script reaches', () => { const p = good(); p['fail-district-seals'] = fail('enforcer-down'); expect(ids(p)).toContain('MC-3'); });
+  test('MC-3 (brief 067): a fail line that needs a site fact counts only where it holds; with no facts (an engine before 0.34.0) it counts', () => {
+    const c = (o: Parameters<typeof judge>[4]) => J(good(), o).conditions.find(x => x.id === 'MC-3')!;
+    expect([c({}).ok, c({}).value]).toEqual([true, '8/8 (1 not on this site)']);
+    expect(c({}).detail).toContain('entry seen by patrol: not on this site (no patrol watches an entry)');
+    expect([c({ facts: { patrolWatchesEntry: true } }).ok, c({ facts: { patrolWatchesEntry: true } }).value]).toEqual([false, '8/9']); // a patrol on the entry: its script is pending, so nothing reaches it
+    expect(c({ facts: {} }).ok).toBe(false);
+  });
   test('MC-4: a contact without whom no quiet route wins', () => {
-    const p = good(); p['route-b~no-waitress'] = fail('vale-leaves'); p['route-b-block~no-waitress'] = fail('vale-leaves'); for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = fail('entry-seen-camera'); 
+    const p = good(); p['route-b~no-waitress'] = fail('vale-leaves'); p['route-b-thin~no-waitress'] = fail('vale-leaves'); for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = fail('entry-seen-camera');
     const r = J(p);
     expect(r.conditions.find(c => c.id === 'MC-4')!.ok).toBe(false);
     expect(r.contacts.find(c => c.role === 'waitress')!.routesWithout).toEqual([]);
@@ -197,18 +246,19 @@ describe.skipIf(!hasDotnet())('the Handover, played headless (Keel\'s engine on 
     expect(c.report.conditions.filter(x => !x.ok).map(x => x.id)).toEqual([]);
     expect(c.plays.loud!.trail).toBeGreaterThan(c.plays['route-a-pressure']!.trail); // MC-2 against every quiet variant (Motive's addendum)
     // brief 018 §5: the board-and-go primaries leave nobody behind; the fight-it-out references leave three to walk out; loud leaves nobody
-    for (const id of ['route-a-board', 'route-b-board', 'route-g-fast-board', 'loud', 'loud-fast', 'loud-fight']) expect([id, c.plays[id]!.left]).toEqual([id, undefined]); // brief 027: loud-fight's locks and the pier save the Tech again
-    for (const id of ['route-a', 'route-a-pressure', 'route-b', 'route-b-block', 'route-g', 'route-g-fast', 'route-g-kill']) expect([id, c.plays[id]!.left]).toEqual([id, { scout: 'walked', fixer: 'walked', tech: 'walked' }]); // brief 027 (tuning.md §10.5): fought out from the car's west corners, the three walk out
+    for (const id of ['route-a-board', 'route-b-board', 'route-g-fast-board', 'loud', 'loud-fight']) expect([id, c.plays[id]!.left]).toEqual([id, undefined]); // c038: loud-fight's whole cell, the Enforcer's carbine too, downs the two officers before it boards
+    for (const id of ['route-a', 'route-a-pressure', 'route-g', 'route-g-fast', 'route-g-kill']) expect([id, c.plays[id]!.left]).toEqual([id, { scout: 'walked', fixer: 'walked', tech: 'walked' }]); // brief 027 (tuning.md §10.5): fought out from the car's west corners, the three walk out
+    for (const id of ['route-b', 'route-b-thin']) expect([id, c.plays[id]!.left]).toEqual([id, { scout: 'walked', fixer: 'walked' }]); // brief 059: at the yard the Tech drove the car round and is in it
     expect([c.plays['loud-left-downed']!.left, c.plays['loud-left-downed']!.campaignTrail]).toEqual([{ scout: 'captured downed' }, 4]);
     expect(Object.values(c.plays).every(p => p.replayIdentical)).toBe(true);
   });
   // The latest check pinned to a commit. Checks recorded on the working tree (c007-c011: the r016 cast, Keel's engine uncommitted)
   // replay only while the tree holds, and any uncommitted rule edit breaks them (c007 broke on the rulebook's sight section), so a
-  // test pins a committed record: c012, brief 013 as committed in 306b15e (rev 4 engine, route G). On the next engine commit, record
-  // the check against that commit and point this at it.
-  test('the latest commit-pinned check (c012, pinned to 306b15e) replays to its recorded hashes', async () => {
-    const r = await replay(join(runsDir('handover'), 'c012'));
+  // test pins a committed record: c038, brief 067 as committed in cb1604f6 (engine 0.34.1, GDD v0.26.0; c012 before it). On the next
+  // engine commit, record the check against that commit and point this at it.
+  test('the latest commit-pinned check (c038, pinned to cb1604f6) replays to its recorded hashes', async () => {
+    const r = await replay(join(runsDir('handover'), 'c038'));
     expect(r.lines.filter(l => l.startsWith('FAIL'))).toEqual([]);
     expect(r.ok).toBe(true);
-  }, 420_000); // 3,010 plays (with route G's variations): about 150 s on the Air, against c006's 2,131
+  }, 420_000); // about 900 plays (the slack scans included): about 25 s on the Studio
 });

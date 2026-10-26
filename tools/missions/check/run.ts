@@ -9,7 +9,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Routes } from '../../../contracts/missions/routes.schema';
-import { ROOT, engineAt, engineInputs, playAll, type EngineAt, type Script } from './engine';
+import { ROOT, engineAt, engineInputs, facts as factsOf, playAll, type EngineAt, type Facts, type Script } from './engine';
 import { digest, judge, clock, caseTrailEqOf, type Getaway, type Plays, type Report, type Slack } from './judge';
 import { contactsOf, lateFrom, stepsOf, withoutContact } from './vary';
 
@@ -33,7 +33,7 @@ export function load(dir: string): Loaded {
   return { mission: manifest.mission, manifest, texts, scripts };
 }
 
-export type Check = { mission: string; engine: EngineAt; inputs: Record<string, string>; tool: string; scripts: Record<string, string>; plays: Plays; slack: Slack[]; report: Report };
+export type Check = { mission: string; engine: EngineAt; inputs: Record<string, string>; tool: string; scripts: Record<string, string>; facts: Facts; plays: Plays; slack: Slack[]; report: Report };
 
 /** Play the base scripts and the contact variations, then scan each primary quiet route's steps for slack. */
 export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string) => void = () => {}, o: { slack?: boolean } = {}): Promise<Check> {
@@ -68,8 +68,8 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
   }
   // what the engine read (at its commit), and the working tree's mission file the site was made from
   const inputs = { ...Object.fromEntries(engineInputs(e.dir).map(f => [f, sha(readFileSync(join(e.dir, f)))])), [`tree:contracts/missions/${L.mission}/mission.json`]: sha(readFileSync(join(ROOT, 'contracts/missions', L.mission, 'mission.json'))) };
-  const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n'));
-  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), plays, slack, report: judge(L.manifest, L.scripts, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission) }) };
+  const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n')), fx = factsOf(e);
+  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), facts: fx, plays, slack, report: judge(L.manifest, L.scripts, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx }) };
 }
 
 // ---------------------------------------------------------------- record and replay
@@ -77,16 +77,21 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
 /** `case-trail-eq` from the rulebook the engine read (0 if it has none: a check recorded before rev 4). */
 export const caseTrailEqAt = (dir: string) => { const f = join(dir, 'contracts/rules/rulebook.json'); return existsSync(f) ? caseTrailEqOf(JSON.parse(readFileSync(f, 'utf8'))) : 0; };
 
-/** The getaway the engine read (brief 018 §1): the car, fight-hold-m, the site's exit lane and the final fight's posts; undefined for an
- *  engine without an exit lane (a check recorded before brief 018), which MC-11 then leaves out. */
-export function getawayAt(dir: string, mission: string): Getaway | undefined {
+/** The getaway the engine read (brief 018 §1; brief 059 K6: every stand): for each stand, its car, fight-hold-m, its exit lane and the
+ *  final fight's posts there; a site before brief 059 (no getaway.stands) gives its one car with the fight's posts. Undefined for an engine
+ *  without an exit lane (a check recorded before brief 018), which MC-11 and MC-13 then leave out. */
+export function getawayAt(dir: string, mission: string): Getaway[] | undefined {
   const sf = join(dir, 'sim/data', `${mission}.site.json`), rf = join(dir, 'contracts/rules/rulebook.json');
   if (!existsSync(sf) || !existsSync(rf)) return undefined;
   const site = JSON.parse(readFileSync(sf, 'utf8')), hold = JSON.parse(readFileSync(rf, 'utf8')).values?.['fight-hold-m']?.v, exit = site.getaway?.exit;
   if (!exit || typeof hold !== 'number') return undefined;
   const at = (id: string): [number, number] => { const p = site.places?.[id]?.at; if (!p) throw new Error(`${mission}.site.json: no place ${id} (unknown = reject)`); return p; };
-  const posts = [...(site.fight?.ambush ?? []), ...(site.fight?.police ?? [])].map((id: string) => ({ id, at: at(id) }));
-  return { car: at(site.getaway.car), holdCm: Math.round(hold * 100), lane: exit.polyline, laneHalfCm: Math.round(exit.w * 50), posts };
+  type Stand = { id: string; car: string; exit: { polyline: [number, number][]; w: number }; ambush?: string[]; police?: string[] };
+  const stands: Stand[] = site.getaway.stands ?? [{ id: 'square', car: site.getaway.car, exit, ambush: site.fight?.ambush, police: site.fight?.police }];
+  return stands.map(st => {
+    if (!st.exit?.polyline) throw new Error(`${mission}.site.json: stand ${st.id} has no exit lane (unknown = reject)`);
+    return { id: st.id, car: at(st.car), holdCm: Math.round(hold * 100), lane: st.exit.polyline, laneHalfCm: Math.round(st.exit.w * 50), posts: [...(st.ambush ?? []), ...(st.police ?? [])].map(id => ({ id, at: at(id) })) };
+  });
 }
 
 export const runsDir = (mission: string) => join(ROOT, 'runs/missions', mission);
@@ -99,7 +104,7 @@ export function record(c: Check, L: Loaded, note: string): string {
   for (const [f, t] of Object.entries(L.texts)) writeFileSync(join(dir, 'routes', f), t);
   const run = {
     schema: 'suborned.mission.check/1', id, mission: c.mission, note, verdict: c.report.ok ? 'SHIPS' : 'HOLDS',
-    engine: { commit: c.engine.commit, sourceSha256: c.engine.hash, inputs: c.engine.inputs }, tool: c.tool, inputs: c.inputs, routes: c.scripts,
+    engine: { commit: c.engine.commit, sourceSha256: c.engine.hash, inputs: c.engine.inputs }, tool: c.tool, inputs: c.inputs, facts: c.facts, routes: c.scripts,
     conditions: c.report.conditions, slack: c.slack, plays: c.plays,
   };
   // one play per line: the record stays readable and diffable without growing a line per field
@@ -144,7 +149,9 @@ export async function replay(dir: string, log: (m: string) => void = () => {}): 
   });
   lines.push(`${same === names.length ? 'ok   ' : 'FAIL '} ${same}/${names.length} plays land on their recorded final hash`);
   const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n'));
-  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[], { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission) }).ok ? 'SHIPS' : 'HOLDS';
+  const fx = (run.facts as Facts | undefined) ?? factsOf(e), fxNow = factsOf(e);
+  if (run.facts && JSON.stringify(fxNow) !== JSON.stringify(run.facts)) lines.push(`drift facts ${JSON.stringify(fxNow)}, recorded ${JSON.stringify(run.facts)}`);
+  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[], { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx }).ok ? 'SHIPS' : 'HOLDS';
   if (verdictNow === run.verdict) lines.push(`ok    verdict ${run.verdict}${tool === run.tool ? '' : ' (judged by the current checker; its code changed since the check)'}`);
   else lines.push(`${tool === run.tool ? 'FAIL ' : 'drift'} verdict ${verdictNow} by the current checker, recorded ${run.verdict}${tool === run.tool ? '' : ' (the checker\'s code changed since the check)'}`);
   return { ok: !lines.some(l => l.startsWith('FAIL')), lines };
@@ -161,7 +168,7 @@ export function html(c: Check, id: string, note?: string): string {
   return `<!doctype html><meta charset="utf-8"><title>Mission check ${esc(c.mission)} ${id}</title>
 <style>body{font:14px/1.4 -apple-system,sans-serif;margin:24px;max-width:1200px}table{border-collapse:collapse;margin:8px 0 20px}td,th{border:1px solid #ccc;padding:4px 8px;text-align:left;vertical-align:top}tr.bad td{background:#fde8e8}tr.ok td:nth-child(2){color:#17663a}.d{font-size:12px}code{font-size:12px}</style>
 <h1>Mission check: ${esc(c.mission)} · ${id} · ${r.ok ? 'SHIPS' : 'HOLDS'}</h1>
-<p>GDD §09 mission checker (brief 011 B). Engine <code>${c.engine.commit.slice(0, 12)}</code> (source ${c.engine.hash.slice(0, 12)}); ${Object.keys(c.plays).length} plays. Replay: <code>bun run missions:check replay ${esc(c.mission)} ${id}</code>.</p>
+<p>GDD §09 mission checker (brief 011 B). Engine <code>${c.engine.commit.slice(0, 12)}</code> (source ${c.engine.hash.slice(0, 12)}); ${Object.keys(c.plays).length} plays; site facts <code>${esc(JSON.stringify(c.facts ?? {}))}</code>. Replay: <code>bun run missions:check replay ${esc(c.mission)} ${id}</code>.</p>
 ${note ? `<h2>Note</h2><p>${esc(note)}</p>` : ''}
 <h2>Conditions</h2><table><tr><th>id</th><th></th><th>rule</th><th>value</th><th>detail</th></tr>${cond}</table>
 <h2>Scripts</h2><table><tr><th>script</th><th>kind</th><th>route</th><th>expects</th><th>got</th><th>at</th><th>T</th><th>A</th><th>shots before the fight</th><th>final fight</th><th>cash</th><th>replay</th></tr>${rows}</table>

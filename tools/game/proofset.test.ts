@@ -204,7 +204,7 @@ describe('the r067 set', () => {
   });
 });
 
-describe('every set judges the same way (r059 and r067)', () => {
+describe('every set judges the same way (r059, r067 and r123)', () => {
   for (const [name, set] of Object.entries(live.sets)) {
     const must = set.frames.filter(f => !f.optional).map(f => f.name), optional = set.frames.filter(f => f.optional).map(f => f.name);
     const pass = (names: string[]): BudgetRun => () => ({ code: 0, out: [...names.map(n => `PASS  ${n}.png`), `${names.length}/${names.length} within budget`].join('\n') });
@@ -263,11 +263,34 @@ describe('pickSets: which sets the command runs on a folder', () => {
   test('every set the folder has a picture of, the others said as an older build\'s; a named set runs even when the folder lacks it (its pictures are then faults)', () => {
     const only67 = folder(must067.slice(0, 2)), both = folder([...must.slice(0, 1), ...must067.slice(0, 1)]), none = folder([]);
     try {
-      expect(pickSets(only67)).toEqual({ run: ['r067'], skipped: ['r059'] });
-      expect(pickSets(both)).toEqual({ run: ['r059', 'r067'], skipped: [] });
-      expect(pickSets(none)).toEqual({ run: [], skipped: ['r059', 'r067'] });
+      expect(pickSets(only67)).toEqual({ run: ['r067'], skipped: ['r059', 'r123'] });
+      expect(pickSets(both)).toEqual({ run: ['r059', 'r067'], skipped: ['r123'] });
+      expect(pickSets(none)).toEqual({ run: [], skipped: ['r059', 'r067', 'r123'] });
       expect(pickSets(none, 'r067')).toEqual({ run: ['r067'], skipped: [] });
-      expect(() => pickSets(none, 'r118')).toThrow(/no set r118 in .*proofset\.json \(r059, r067\)/);
+      expect(() => pickSets(none, 'r118')).toThrow(/no set r118 in .*proofset\.json \(r059, r067, r123\)/);
     } finally { for (const d of [only67, both, none]) rmSync(d, { recursive: true, force: true }); }
+  });
+});
+
+describe('r123 (batch 0.2.123 host round 4): in the budget and the crops, not gated', () => {
+  const r123 = live.sets.r123!, names = r123.frames.map(f => f.name);
+  test('the five pictures of Proof123, each one the source takes, and the source takes no other r123 picture', () => {
+    expect(r123.section).toBe('r123'); expect(names).toEqual(['r123-looks-310', 'r123-looks-320', 'r123-fight-safe', 'r123-fight-loud', 'r123-fight-ground']);
+    const cs = read(r123.source), taken = new Set([...cs.matchAll(/"(r123-[a-z0-9-]+)"/g)].map(m => m[1]!));
+    expect([...taken].sort()).toEqual([...names].sort());
+  });
+  test('its section is not in the proof gates until Glyph agrees its density (Aster, 2026-10-26): the budget judges the pictures, the gate does not read r123', () => {
+    expect(read('tools/game/proofgates.ts')).not.toMatch(/GATED = \[[^\]]*'r123'/);
+    expect(live.note).toContain('NOT gated');
+  });
+  test('staged for the budget, a picture\'s refusal pops (its parts, not its manifest) are added to its manifest as `pop` elements, and the stage is still three files a picture', () => {
+    const dir = proof(['r123-fight-loud'], { size: [192, 108], parts: { roster: [1, 1, 10, 40], 'pop-1': [20, 20, 50, 12], 'pop-2': [20, 20, 50, 12], 'pop-3': [20, -40, 50, 12] } }), stage = mkdtempSync(join(tmpdir(), 'stage-'));
+    try {
+      const j = locate(dir, r123.frames.filter(f => f.name === 'r123-fight-loud'));
+      stageForBudget(j.found, stage);
+      expect(readdirSync(stage).sort()).toEqual(['r123-fight-loud.hud.png', 'r123-fight-loud.manifest.json', 'r123-fight-loud.png']);
+      const m = JSON.parse(readFileSync(join(stage, 'r123-fight-loud.manifest.json'), 'utf8'));
+      expect(m.elements.filter((e: { kind: string }) => e.kind === 'pop')).toEqual([{ kind: 'pop', x: 20, y: 20, w: 50, h: 12 }, { kind: 'pop', x: 20, y: 20, w: 50, h: 12 }]); // the one above the picture is not on show
+    } finally { rmSync(dir, { recursive: true, force: true }); rmSync(stage, { recursive: true, force: true }); }
   });
 });

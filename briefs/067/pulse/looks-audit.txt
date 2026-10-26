@@ -1,4 +1,3 @@
-# bun tools/people/looks.ts  (Pulse, brief 067 I, re-run 2026-10-26 after Forma's Velvet Set and Latch's BodyFigure)
 the host's fixed keys (HostViews.RoleFigure) and the others it dresses (hostiles, units, bodies):
   op/scout                   scout      cell · model scout · Scout S1-2
   op/fixer                   fixer      cell · model fixer · Fixer P4-6
@@ -11,9 +10,13 @@ the host's fixed keys (HostViews.RoleFigure) and the others it dresses (hostiles
   security/<0..1>            security   security · model guard · Security officer
   unit/<officer>             security   security · model guard · Security officer
   hostile/<n> officers       security   security · model guard · Security officer
-  rival-1..5                 rival      rival · model d4 · Rival crew A
-  body/rival-<n>             rival      rival · model d4 · Rival crew A
-  hostile/<n> rival (range)  rival      rival · model d4 · Rival crew A
+  rival-1                    rival      rival · model d4 · Rival crew A
+  rival-2                    rival_b    rival · model d4 · Rival crew B
+  rival-3                    rival_d    rival · model c6 · Rival crew D
+  rival-4                    rival_c    rival · model d4 · Rival crew C
+  rival-5                    rival      rival · model d4 · Rival crew A
+  body/rival-<n> (as the key) rival_b    rival · model d4 · Rival crew B
+  hostile/<n> rival (range: rival-9) rival_c    rival · model d4 · Rival crew C
   patrol                     (a robot prefab, no human figure) 
   range bystanders           from the pool family/passer, by the bystander's id (sh2, d4b, d6, workers_d5, d5c, el1 for b-1..b-6)
 
@@ -43,12 +46,13 @@ the 126 walkers of the people file (4 cast people are played by their role), by 
 
 16 of 126 walkers wear another figure than their own pick, because someone who sets out from the same place at the same time had it (DressCrowd); a body is drawn in the walker's figure (HostViews.BodyFigure), so 0 of 126 change clothes when knocked out (the plain pick would have changed 16).
 
-the crew's looks (pool role/rival; the host draws every crew key, rival body and range rival as `rival`: HostViews.RoleFigure has no table by member):
+the crew's looks (pool role/rival; the host dresses every crew key, rival body and rival hostile by member number: HostViews.RivalFigure):
   rival    model d4 · Rival crew A (the Velvet Set): Commuter D4's bomber in mid-violet velvet, deep-violet ribbing and tunic, ivory trousers, pearl boots, dark hair; bare head, no cap, no gold
   rival_b  model d4 · Rival crew B: Commuter D4's bomber in deep violet (violet_set #6b4f8f), plum ribbing and tunic, pale grey trousers, platinum hair; bare head, no cap, no gold
   rival_c  model d4 · Rival crew C: Commuter D4's bomber in lavender-violet velvet, mid-violet ribbing and tunic, pearl trousers, auburn hair; bare head, no cap, no gold
   rival_d  model c6 · Rival crew D: Commuter C6's hooded jacket in violet velvet, deep-violet lining, pale dress, pearl boots; the crew's woman; bare head (the hood is down), no cap, no gold
-  roles.json playViews, the table by member (documentation: nothing reads it at run time):  rival-1 rival, rival-2 rival_b, rival-3 rival_d, rival-4 rival_c, rival-5 rival
+  by member (HostViews.RivalLooks):  rival-1 rival, rival-2 rival_b, rival-3 rival_d, rival-4 rival_c, rival-5 rival  (4 looks for 5 people; roles.json playViews, Forma's table, the same)
+  as a body and as a fight hostile:  rival-1 rival/rival, rival-2 rival_b/rival_b, rival-3 rival_d/rival_d, rival-4 rival_c/rival_c, rival-5 rival/rival; the range's rival-9 rival_c, rival-12 rival_b
 
 rules L-1, L-2 and L-4: no fault: only guards wear the duty suit, and nobody who is a guard wears anything else; the crew's looks are worn by no one else
 

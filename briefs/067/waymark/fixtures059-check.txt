@@ -1,0 +1,7 @@
+$ bun run guard bun tools/sim/fixtures059.ts --check
+ok   bal-loud-x4
+ok   bal-rb-ff
+ok   bal-rbb-ff
+DIFF sq-route-a-board
+ok   sq-ra-h3
+(route-a-board.plan.json takes no Reroute in c038; the embedded fixture still plays, SQ1-WALK passes in the suite)

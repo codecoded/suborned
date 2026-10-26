@@ -9,14 +9,14 @@ import type { Image } from './png';
 
 export type State = 'rest' | 'active' | 'alt' | 'log' | 'briefing';
 export interface Rect { x: number; y: number; w: number; h: number }
-export interface Element extends Rect { kind: 'speech' | 'beat' | 'line' | 'image' | 'hud'; text?: string } // image: art with no text by construction (portraits, the plot scope): its strokes are not read
+export interface Element extends Rect { kind: 'speech' | 'beat' | 'line' | 'pop' | 'marker' | 'image' | 'hud'; text?: string } // image: art with no text by construction (portraits, the plot scope): its strokes are not read. pop: a refusal pop (an icon and at most POP_MAX.words words, GDD §10). marker: a window marker (the seal: a lock and m:ss under the clock bar, GDD §10), never a goal or hint line
 export interface Manifest { state?: State; elements: Element[] }
 export interface Options { state: State; hud?: Image; world?: Image; rects?: Rect[]; manifest?: Manifest }
-export interface Run { x: number; y: number; w: number; h: number; comps: number; words: number; kind: 'hud' | 'speech' | 'beat' | 'line' }
+export interface Run { x: number; y: number; w: number; h: number; comps: number; words: number; kind: 'hud' | 'speech' | 'beat' | 'line' | 'pop' | 'marker' }
 export interface Report {
   width: number; height: number; state: State; mask: 'hud' | 'world' | 'rects';
   coveragePct: number; footprintPct: number; limitPct: number;
-  runs: Run[]; sentences: Run[]; blocks: Run[][]; speech: Run[]; beats: Run[]; lines: Run[];
+  runs: Run[]; sentences: Run[]; blocks: Run[][]; speech: Run[]; beats: Run[]; lines: Run[]; pops: Run[]; markers: Run[];
   failures: string[]; warnings: string[]; pass: boolean;
 }
 
@@ -36,6 +36,12 @@ export const HUD_ALPHA = 24, WORLD_DIFF = 10;
 /** A line of three or more words is running text; a block is two or more stacked lines of them. Alt allows fragments of up to ALT_WORDS words. */
 export const SENTENCE_WORDS = 3, SENTENCE_COMPS = 14, ALT_WORDS = 5;
 export const SPEECH_MAX = { lines: 2, words: 10 }, BEAT_MAX = { lines: 1, words: 6, onScreen: 2 }, LINE_MAX = { lines: 1, words: 6, onScreen: 1 }; // line = the objective or the Next Step hint: one imperative, at most six words, one at a time
+/** A refusal pop (GDD §10 "Refusals: one pop of an icon and ≤ 4 words"): one line, at most four words, never a sentence of running text. The host keeps a pool of three, so three at once is the most a frame can show. [S] */
+export const POP_MAX = { lines: 1, words: 4, onScreen: 3 };
+/** A window marker (the seal clock, GDD §10: "a lock and m:ss under the clock bar"): a clock reading, not a line. At most MARKER_MAX.words words of text; it never counts as a goal or hint line. */
+export const MARKER_MAX = { words: 2 };
+/** A bare clock reading (m:ss or h:mm:ss). A `line` element whose text is only this is the seal's window marker emitted under the old kind: it is read as a marker, never as a second goal line. */
+export const isClock = (t: string | undefined) => /^\s*\d{1,2}:\d{2}(:\d{2})?\s*$/.test(t ?? '');
 
 export function rectMask(w: number, h: number, rects: Rect[]): Uint8Array {
   const m = new Uint8Array(w * h);
@@ -58,6 +64,12 @@ function close(m: Uint8Array, w: number, h: number, r: number): Uint8Array {
   return pass(pass(m, true), false);
 }
 
+/** The refusal pops a picture's parts name (`pop-N`) that its manifest does not: `pop` elements, left out when off screen or already named. */
+export function popsFromParts(parts: Record<string, number[]>, m: Manifest, size: { w: number; h: number }): Element[] {
+  const named = m.elements.filter(e => e.kind === 'pop');
+  return Object.entries(parts).filter(([k]) => /^pop-\d+$/.test(k)).map(([, r]) => ({ kind: 'pop' as const, x: r[0]!, y: r[1]!, w: r[2]!, h: r[3]! }))
+    .filter(e => e.w >= 1 && e.h >= 1 && e.x + e.w > 0 && e.y + e.h > 0 && e.x < size.w && e.y < size.h && !named.some(n => Math.abs(n.x - e.x) < 2 && Math.abs(n.y - e.y) < 2));
+}
 export function maskOf(shot: Image, o: Options): { mask: Uint8Array; how: Report['mask'] } {
   const { w, h } = shot, n = w * h;
   if (o.hud) {
@@ -177,12 +189,12 @@ export function stack(runs: Run[]): Run[][] {
 export function analyse(shot: Image, o: Options): Report {
   const { w, h } = shot, { mask, how } = maskOf(shot, o); let n = 0; for (const v of mask) n += v;
   const coveragePct = (n / (w * h)) * 100, limitPct = LIMIT[o.state], failures: string[] = [], warnings: string[] = [];
-  const all = textRuns(shot, mask), els = o.manifest?.elements ?? [];
+  const all = textRuns(shot, mask), els = (o.manifest?.elements ?? []).map(e => e.kind === 'line' && isClock(e.text) ? { ...e, kind: 'marker' as const } : e); // a clock alone in a goal-line slot is the seal's marker (GDD §10), not an objective
   const owner = new Map<Run, Element>(); // the manifest element a run lies in: a bubble's words are counted once, however many runs it breaks into (a pin's stem crossing it made two)
   const wordsIn = (b: Run[]) => { const seen = new Set<Element>(); let n = 0; for (const r of b) { const e = owner.get(r); if (e) { if (!seen.has(e)) { seen.add(e); n += r.words; } } else n += r.words; } return n; };
-  for (const r of all) { const e = els.find(e => (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line') && inside(r, e)); if (e) { r.kind = e.kind as Run['kind']; } }
-  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line')) for (const r of all) if (inside(r, e)) { r.words = wordsOf(e.text); owner.set(r, e); } }
-  const art = els.filter(e => e.kind === 'image'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line');
+  for (const r of all) { const e = els.find(e => (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker') && inside(r, e)); if (e) { r.kind = e.kind as Run['kind']; } }
+  for (const e of els) { if (e.text && (e.kind === 'speech' || e.kind === 'beat' || e.kind === 'line' || e.kind === 'pop' || e.kind === 'marker')) for (const r of all) if (inside(r, e)) { r.words = wordsOf(e.text); owner.set(r, e); } }
+  const art = els.filter(e => e.kind === 'image'), hudRuns = all.filter(r => r.kind === 'hud' && !art.some(e => inside(r, e))), speech = all.filter(r => r.kind === 'speech'), beats = all.filter(r => r.kind === 'beat'), lineRuns = all.filter(r => r.kind === 'line'), popRuns = all.filter(r => r.kind === 'pop'), markerRuns = all.filter(r => r.kind === 'marker');
   const isSentence = (r: Run) => (o.state === 'alt' ? r.words > ALT_WORDS : r.words >= SENTENCE_WORDS && r.comps >= SENTENCE_COMPS);
   const sentences = READING.includes(o.state) ? [] : hudRuns.filter(isSentence); // the open history is read, so its lines are sentences by design
   const blocks = READING.includes(o.state) ? [] : stack(hudRuns.filter(r => r.words >= 2 && r.comps >= 6)).filter(b => b.length >= 2 && b.reduce((a, r) => a + r.words, 0) >= 4);
@@ -215,7 +227,15 @@ export function analyse(shot: Image, o: Options): Report {
     if (lineRuns.some(r => r.words > LINE_MAX.words)) failures.push(`the objective or hint line is longer than ${LINE_MAX.words} words`);
     if (lines(lineRuns) > LINE_MAX.lines) failures.push('the objective or hint line runs over more than one line');
   }
-  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, failures, warnings, pass: failures.length === 0 };
+  if (popRuns.length) {
+    const ps = els.filter(e => e.kind === 'pop'), seen = new Set(ps.map(e => `${e.x},${e.y},${e.w},${e.h}`)); // pops drawn on one spot are one place to read
+    if (seen.size > POP_MAX.onScreen) failures.push(`${seen.size} refusal pops on screen (at most ${POP_MAX.onScreen})`);
+    if (ps.some(e => wordsIn(popRuns.filter(r => inside(r, e))) > POP_MAX.words)) failures.push(`a refusal pop is longer than ${POP_MAX.words} words`);
+    if (ps.some(e => popRuns.filter(r => inside(r, e)).length > POP_MAX.lines && lines(popRuns.filter(r => inside(r, e))) > POP_MAX.lines)) failures.push('a refusal pop runs over more than one line');
+  }
+  const bigMarker = els.find(e => e.kind === 'marker' && e.text && wordsOf(e.text) > MARKER_MAX.words);
+  if (bigMarker) failures.push(`a window marker reads "${bigMarker.text}": a lock and m:ss, at most ${MARKER_MAX.words} words`);
+  return { width: w, height: h, state: o.state, mask: how, coveragePct, footprintPct: footprint(mask, w, h), limitPct, runs: hudRuns, sentences, blocks, speech, beats, lines: lineRuns, pops: popRuns, markers: markerRuns, failures, warnings, pass: failures.length === 0 };
 }
 
 /** Draw the check onto a copy of the screenshot: HUD mask tinted blue, text runs boxed (red = sentence, green = whitelisted speech or beat, yellow = short text). */

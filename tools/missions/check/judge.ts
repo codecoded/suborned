@@ -23,6 +23,21 @@
 // MC-12 loitering costs (brief 031): no quiet script has a watcher report an agent loitering (the attention clock's report: a found
 //      fault, Alert ≥ 1), and each careless-loiter script (its careful twin with an agent left standing in a watcher's sight) is
 //      reported and fails, or ends at a higher Alert, where its twin wins.
+// MC-13 every stand's loud-wait twin is held (brief 059, Motive M059-5.3): for each getaway stand the site places, a loud run whose cell
+//      waits in the car while the Enforcer brings Vale out (`holds: <stand>`) never wins: with Vale aboard its Go is refused car-held (the
+//      car held at his Board), or it is lost before he gets Vale in (the square: the Enforcer alone is shot down on the long walk), so no
+//      stand opens an unfought loud exit.
+// MC-14 the fight always comes (brief 059, Motive M059-S1.2; Sky 2026-10-25, S1 = no): on every win the checker plays (variations too),
+//      Go comes at or after `blocker.out`.
+// MC-15 no reference route reaches crew-wiped (brief 059, Motive M059-S1.5): no quiet or loud script logs `rivals.wiped` (the crew
+//      destroyed, the fight over unfought).
+// MC-3 counts a fail line that `needs` a site fact (brief 067: `patrol-watches-entry`, from `suborned-sim facts`) only where the fact holds
+//      (§09: a fail that needs a watcher the site doesn't place is not counted); its script stays in the manifest, pending.
+// MC-11 reads every stand of the site (brief 059 K6: each with its own car, exit lane, ambush spots and police stands), and (brief 067,
+//      Motive M067-SQ1, Aster's clause with Motive's refinement) no played script logs a hold that did not come for the car:
+//      `car.held.answer` (an answer to fire) always counts; `car.held.post` counts when the holder's post is one the mission places (a rival
+//      at or on his way to an ambush spot, a final-fight officer to a police stand), never a response-unit member's join point (`ai.join`: a
+//      loud cell waiting at the car causes that hold itself) or a search unit at the stash it opens; blocker, press and advance came for it.
 // Trail is compared in total (brief 013): the mission's own Trail plus what the debrief carries into the campaign (a knockout's
 // statement, a missing person's file), plus `case-trail-eq` T for each open case it leaves (rulebook, rev 4 R4.4), so a body hidden
 // until the debrief is not cheaper than it is.
@@ -30,7 +45,7 @@
 //      event (route A: inside before Vale exits at 5:50; route B: Vale taken before the 8:00 close). Each route's extraction time
 //      against the mission's close, and how late each of its steps can be before it stops winning, are reported beside it.
 import type { Routes, RouteScript } from '../../../contracts/missions/routes.schema';
-import type { Play, Script } from './engine';
+import type { Facts, Play, Script } from './engine';
 import { blockerOut } from './blocker';
 
 /** What the record keeps of a play: enough to judge and to replay against. */
@@ -50,6 +65,12 @@ export type Digest = Pick<Play, 'outcome' | 'fail' | 'tick' | 'cash' | 'trail' |
   carFreeS?: number;
   /** brief 018 §3: everyone the car left behind, op → "captured <why>" or "walked" (the debrief's left-behind lines) */
   left?: Record<string, string>;
+  /** brief 067 (MC-11, M067-SQ1): each body's first hold of the car (`car.held.<how>`: who, how, when), and for a response-unit member
+   *  the join point it was walking to (its `ai.join`); a base script's only */
+  held?: { tick: number; how: string; who: string; join?: string }[];
+  /** brief 059 (MC-13): the script's Go orders the engine refused, with the refusal code (car-held: a held car), and when Vale was aboard
+   *  (board.in "… with Vale"); a base script's only */
+  goRefused?: { tick: number; code: string }[]; valeIn?: number;
 };
 /** Trail in total: the mission's and what the debrief carries into the campaign (brief 013). */
 export const totalTrailOf = (d: Digest, caseTrailEq = 0) => d.trail + (d.campaignTrail ?? 0) + (d.openCases ?? 0) * caseTrailEq;
@@ -62,6 +83,14 @@ export const digest = (p: Play, scriptSha: string, keepMarks = true): Digest => 
   if (keepMarks) for (const l of p.log) if (!(l.code in marks) && !l.code.startsWith('order.')) marks[l.code] = l.tick;
   const fightAt = p.log.find(l => l.code === 'fight.safe' || l.code === 'fight.loud');
   const shots = p.log.filter(l => l.code.startsWith('fire.') && l.code !== 'fire.hostiles' && (!fightAt || l.tick < fightAt.tick)).length;
+  const held: NonNullable<Digest['held']> = [], joins = new Map<string, string>();
+  if (keepMarks) for (const l of p.log) {
+    const j = l.code === 'ai.join' ? l.text.match(JOIN) : null;
+    if (j) joins.set(j[1]!, j[2]!);
+    if (l.code.startsWith('car.held.')) { const who = l.text.split(' ')[0]!, join = joins.get(who); held.push({ tick: l.tick, how: l.code.slice('car.held.'.length), who, ...(join ? { join } : {}) }); }
+  }
+  const goRefused = keepMarks ? p.orders.filter(o => o.order.do === 'go' && !o.ok).map(o => ({ tick: o.order.tick, code: o.code ?? 'refused' })) : [];
+  const valeIn = keepMarks ? p.log.find(l => l.code === 'board.in' && / with Vale\.$/.test(l.text))?.tick : undefined;
   const free = blockerOut(p.log), nm = p.debrief?.nextMission, left = Object.fromEntries((nm?.lines ?? []).filter(l => l.line === 'left-behind').map(l => [l.who, l.detail.startsWith('walked') ? 'walked' : l.detail.replace(/^captured \((\w+)\)$/, 'captured $1')])), tdFrom = p.log.find(l => l.code === 'takedown.starts')?.tick, tdTo = p.log.filter(l => TD_END.test(l.code)).at(-1)?.tick;
   return {
     outcome: p.outcome, fail: p.fail, tick: p.tick, cash: p.cash, trail: p.trail, alert: p.alert, gunfire: p.gunfire, startHash: p.startHash, finalHash: p.finalHash, replayIdentical: p.replayIdentical,
@@ -70,8 +99,15 @@ export const digest = (p: Play, scriptSha: string, keepMarks = true): Digest => 
     ...(tdFrom !== undefined && tdTo !== undefined && tdTo >= tdFrom ? { takedownS: (tdTo - tdFrom) / 10 } : {}),
     ...(Object.keys(left).length ? { left } : {}),
     ...(free !== undefined && p.outcome === 'success' ? { carFreeS: (p.tick - free) / 10 } : {}),
+    ...(held.length ? { held } : {}), ...(goRefused.length ? { goRefused } : {}), ...(valeIn !== undefined ? { valeIn } : {}),
   };
 };
+/** the engine's ai.join line (GameAi.cs): "<id> of the response unit joins the fight at <stand or cover>." */
+const JOIN = /^(\S+) of the response unit joins the fight at (.+)\.$/;
+/** the bodies the final fight sends to the posts the mission places at a stand (GameFight.cs, GameCrew.cs): the rival crew to its ambush
+ *  spots, the loud fight's officers to its police stands; the response unit (security-n) joins where it stands, a search unit (police-n)
+ *  goes to its stash. */
+const MISSION_POST = /^(rival|officer)-\d+$/;
 /** Every play the checker made, by name: `<script>`, `<script>~no-<role>`, `<script>~late@<tick>+<s>s`. */
 export type Plays = Record<string, Digest>;
 /** How late each planned step of a primary route can be (its steps up to the one that secures Vale; the final fight after it is
@@ -79,7 +115,7 @@ export type Plays = Record<string, Digest>;
 export type Slack = { script: string; steps: { tick: number; orders: string; slackS: number; breaksAs?: string }[]; maxS: number };
 
 /** The getaway as the engine's site and rulebook give it (brief 018 §1): the car, the hold ring, the exit lane, the fight's posts. */
-export type Getaway = { car: [number, number]; holdCm: number; lane: [number, number][]; laneHalfCm: number; posts: { id: string; at: [number, number] }[] };
+export type Getaway = { id?: string; car: [number, number]; holdCm: number; lane: [number, number][]; laneHalfCm: number; posts: { id: string; at: [number, number] }[] };
 /** The engine's Site.InExitLane: within the lane's half width of a segment, between its ends, or of an inner joint. */
 export function inLane(g: Getaway, p: [number, number]): boolean {
   const L = g.lane;
@@ -110,7 +146,7 @@ const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.exp
 /** brief 018: a script that names who is left behind must leave exactly them, so (as `want`) */
 const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && (!s.expects.left || leftOf(s.expects.left) === leftOf(d.left)) && (s.expects.alert === undefined || d.alert === s.expects.alert) && d.replayIdentical;
 
-export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway } = {}): Report {
+export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway | Getaway[]; facts?: Facts } = {}): Report {
   const eq = o.caseTrailEq ?? 0, totalTrail = (d: Digest) => totalTrailOf(d, eq);
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
   const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: gotA(s, d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
@@ -136,8 +172,13 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
   });
 
   const reached = (f: Routes['fails'][number]) => live.filter(s => s.kind === 'fail' && s.reaches === f.id && plays[s.id]?.outcome === 'failure' && f.codes.includes(plays[s.id]!.fail)).map(s => s.id);
-  const missing = r.fails.filter(f => !reached(f).length);
-  C.push({ id: 'MC-3', rule: 'Every §07 fail is reached by a played script', ok: !missing.length, value: `${r.fails.length - missing.length}/${r.fails.length}`, detail: [...r.fails.map(f => `${f.gdd}: ${reached(f).join(', ') || 'NOT REACHED'}`), ...(pending.length ? [`pending (not played): ${pending.join(', ')}`] : [])].join('; ') });
+  // brief 067 (§09: a fail that needs a watcher the site doesn't place is not counted): a line with `needs` counts only where the site's fact
+  // holds; an engine that states no facts (before 0.34.0) counts it, as before
+  const FACT = { 'patrol-watches-entry': 'patrolWatchesEntry' } as const, NOT_ON = { 'patrol-watches-entry': 'no patrol watches an entry' } as const;
+  const onSite = (f: Routes['fails'][number]) => !f.needs || o.facts?.[FACT[f.needs]] !== false;
+  const counted = r.fails.filter(onSite), missing = counted.filter(f => !reached(f).length);
+  C.push({ id: 'MC-3', rule: 'Every §07 fail is reached by a played script', ok: !missing.length, value: `${counted.length - missing.length}/${counted.length}${counted.length < r.fails.length ? ` (${r.fails.length - counted.length} not on this site)` : ''}`,
+    detail: [...r.fails.map(f => onSite(f) ? `${f.gdd}: ${reached(f).join(', ') || 'NOT REACHED'}` : `${f.gdd}: not on this site (${NOT_ON[f.needs!]})`), ...(pending.length ? [`pending (not played): ${pending.join(', ')}`] : [])].join('; ') });
 
   const contacts: ContactRow[] = r.contacts.map(c => {
     const without = quiet.filter(s => quietWin(plays[`${s.id}~no-${c.role}`] ?? plays[s.id]));
@@ -218,18 +259,26 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
     value: quietAll.length && loudWon.length ? `quiet ${Math.min(...quietAll.map(q => totalTrail(plays[q.id]!)))}-${maxQuiet} T, A ≤ ${Math.max(...quietAll.map(q => plays[q.id]!.alert))}, Standing ≥ ${Math.min(...quietAll.map(q => st(plays[q.id]!)))}; loud ${Math.min(...loudWon.map(l => totalTrail(plays[l.id]!)))}-${Math.max(...loudWon.map(l => totalTrail(plays[l.id]!)))} T, A ≥ ${Math.min(...loudWon.map(l => plays[l.id]!.alert))}, Standing ≤ ${Math.max(...loudWon.map(l => st(plays[l.id]!)))}` : 'no quiet or no loud win',
     detail: [...loudLine, ...beats.filter(b => b.off.length).map(b => `${b.q.id} NOT BETTER: ${b.off.join(', ')}`), ...loudWon.filter(l => !sealed(plays[l.id]!)).map(l => `${l.id}: no seal clock (NOT LOUD)`)].join('; '),
   });
-  // MC-11 (brief 018 §1, §5): no stop holds the car
-  const g = o.getaway;
-  if (g) {
-    const near = (p: [number, number]) => Math.hypot(p[0] - g.car[0], p[1] - g.car[1]) <= g.holdCm;
-    const posts = g.posts.map(x => ({ ...x, m: Math.hypot(x.at[0] - g.car[0], x.at[1] - g.car[1]) / 100, holds: near(x.at) || inLane(g, x.at) }));
+  // MC-11 (brief 018 §1, §5; brief 059 K6: every stand; brief 067 M067-SQ1: no hold that did not come for the car): no stop holds the car
+  const stands = o.getaway === undefined ? [] : Array.isArray(o.getaway) ? o.getaway : [o.getaway];
+  if (stands.length) {
+    const posts = stands.flatMap(g => g.posts.map(x => ({ ...x, stand: g.id, m: Math.hypot(x.at[0] - g.car[0], x.at[1] - g.car[1]) / 100, holds: Math.hypot(x.at[0] - g.car[0], x.at[1] - g.car[1]) <= g.holdCm || inLane(g, x.at), lane: inLane(g, x.at) })));
     const refs = live.filter(s => (s.kind === 'quiet' || s.kind === 'loud') && plays[s.id]?.outcome === 'success' && plays[s.id]!.fight);
     const late = refs.filter(s => { const d = plays[s.id]!; return d.carFreeS === undefined || d.carFreeS < 0; });
+    // every hold a played script logged: blocker, press and advance came for the car; an answer to fire never did; a walk to (or a stand at)
+    // a post the mission places (a rival's ambush spot, a final-fight officer's police stand) did not; any other post (a response-unit
+    // member's join point, a search unit at its stash) is not the mission's, and is listed, not counted
+    const placed = (who: string) => MISSION_POST.test(who);
+    const holds = live.flatMap(s => (plays[s.id]?.held ?? []).map(h => ({ s, h })));
+    const bad = holds.filter(({ h }) => h.how === 'answer' || (h.how === 'post' && placed(h.who))), joined = holds.filter(({ h }) => h.how === 'post' && !placed(h.who));
+    const rule = stands.length > 1 ? `every ambush spot and police stand of each of the ${stands.length} stands lies beyond fight-hold ${stands[0]!.holdCm / 100} m of its car and outside its exit lane` : `every ambush spot and police stand lies beyond fight-hold ${stands[0]!.holdCm / 100} m of the car and outside the exit lane`;
     C.push({
-      id: 'MC-11', rule: `No stop holds the car: every ambush spot and police stand lies beyond fight-hold ${g.holdCm / 100} m of the car and outside the exit lane, and every reference win's car was free when it left`, ok: posts.every(x => !x.holds) && !late.length,
-      value: `${posts.filter(x => !x.holds).length}/${posts.length} posts clear (nearest ${Math.min(...posts.map(x => x.m)).toFixed(1)} m); ${refs.length - late.length}/${refs.length} reference wins free at Go`,
-      detail: [...posts.filter(x => x.holds).map(x => `${x.id} at ${x.m.toFixed(1)} m HOLDS the car${inLane(g, x.at) ? ' (in the exit lane)' : ''}`),
-        ...refs.map(s => { const d = plays[s.id]!; return `${s.id}: ${d.carFreeS === undefined ? 'no blocker out logged (NOT FREE)' : `blocker out ${d.carFreeS.toFixed(1)} s before Go`}`; })].join('; '),
+      id: 'MC-11', rule: `No stop holds the car: ${rule}, every reference win's car was free when it left, and no played script logs a hold that did not come for the car (car.held.answer, or car.held.post at a post the mission places)`, ok: posts.every(x => !x.holds) && !late.length && !bad.length,
+      value: `${posts.filter(x => !x.holds).length}/${posts.length} posts clear (nearest ${Math.min(...posts.map(x => x.m)).toFixed(1)} m); ${refs.length - late.length}/${refs.length} reference wins free at Go; ${holds.length - bad.length - joined.length}/${holds.length - joined.length} holds by bodies that came for the car${joined.length ? ` (${joined.length} more at posts the mission does not place, not counted)` : ''}`,
+      detail: [...posts.filter(x => x.holds).map(x => `${x.stand ? `${x.stand} ` : ''}${x.id} at ${x.m.toFixed(1)} m HOLDS the car${x.lane ? ' (in the exit lane)' : ''}`),
+        ...refs.map(s => { const d = plays[s.id]!; return `${s.id}: ${d.carFreeS === undefined ? 'no blocker out logged (NOT FREE)' : `blocker out ${d.carFreeS.toFixed(1)} s before Go`}`; }),
+        ...bad.map(({ s, h }) => `${s.id}: ${h.who} holds the car by ${h.how === 'answer' ? 'an answer to fire' : 'standing at or walking to his post'} at ${clock(h.tick)} (car.held.${h.how}, NOT FOR THE CAR)`),
+        ...joined.map(({ s, h }) => `${s.id}: ${h.who} holds the car at ${clock(h.tick)} ${h.join ? `on its way to the response unit's join point ${h.join}` : 'at a post the mission does not place'} (not counted)`)].join('; '),
     });
   }
   // MC-12 (brief 031): loitering in a watcher's sight is reported, so the quiet routes stand out of sight
@@ -240,6 +289,35 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
     value: `${live.filter(s => s.kind === 'quiet').length - quietRep.length}/${live.filter(s => s.kind === 'quiet').length} quiet scripts unreported; ${loiterRows.filter(x => x.ok).length}/${loiter.length} loiter twins dearer`,
     detail: [...quietRep.map(s => `${s.id}: a loiterer reported at ${clock(plays[s.id]!.marks['attention.reporting']!)} (NOT QUIET)`),
       ...loiterRows.map(x => `${x.s.id}: ${loiterReported(x.d) ? `reported at ${clock(x.d.marks['attention.reporting']!)}` : 'never reported'}, ${got(x.d)} at A ${x.d.alert} against ${x.s.twin}'s ${x.tw ? `${got(x.tw)} at A ${x.tw.alert}` : '?'}${x.ok ? '' : ' (NOT DEARER)'}`)].join('; ') || 'no careless-loiter script',
+  });
+  // MC-13 (brief 059, Motive M059-5.3): every stand's loud-wait twin is held: the cell waits in the car and fights nobody, so it may never win;
+  // with Vale aboard its Go is refused car-held (the car held at the Enforcer's Board), or it is lost before he gets Vale in
+  if (stands.length) {
+    const heldAt = (d: Digest) => (d.goRefused ?? []).find(g => g.code === 'car-held' && d.valeIn !== undefined && g.tick >= d.valeIn);
+    const how = (d: Digest) => d.outcome === 'success' ? 'WINS' : heldAt(d) ? `Go refused car-held at ${clock(heldAt(d)!.tick)} with Vale aboard` : d.valeIn === undefined ? 'lost before Vale is aboard' : 'NOT HELD: Vale aboard and no Go refused';
+    const rows13 = stands.map(g => {
+      const twins = live.filter(s => s.holds === g.id), held = twins.filter(s => { const d = plays[s.id]; return !!d && d.fight === 'loud' && d.outcome !== 'success' && (!!heldAt(d) || d.valeIn === undefined); });
+      return { g, twins, held };
+    });
+    C.push({
+      id: 'MC-13', rule: 'Every stand\'s loud-wait twin is held: a loud run whose cell waits in the car while the Enforcer brings Vale out never wins; with Vale aboard its Go is refused car-held', ok: rows13.every(x => x.held.length > 0),
+      value: `${rows13.filter(x => x.held.length).length}/${rows13.length} stands held`,
+      detail: rows13.map(({ g, twins, held }) => `${g.id ?? 'the stand'}: ${twins.length ? twins.map(s => { const d = plays[s.id]!; return `${s.id} ${held.includes(s) ? 'held' : 'NOT HELD'} (${how(d)}: ${got(d)} at ${clock(d.tick)}, ${d.fight ?? 'no'} fight)`; }).join(', ') : 'NO loud-wait script'}`).join('; '),
+    });
+  }
+  // MC-14 (brief 059, Motive M059-S1.2; Sky 2026-10-25): the fight always comes: every win the checker played Goes at or after blocker.out
+  const winsAll = Object.entries(plays).filter(([, d]) => d.outcome === 'success'), early = winsAll.filter(([, d]) => d.carFreeS === undefined || d.carFreeS < 0);
+  C.push({
+    id: 'MC-14', rule: 'The fight always comes: every win Goes at or after blocker.out (variations too)', ok: !early.length,
+    value: `${winsAll.length - early.length}/${winsAll.length} wins Go after blocker.out`,
+    detail: early.slice(0, 12).map(([k, d]) => `${k}: ${d.carFreeS === undefined ? 'no blocker.out logged' : `Go ${(-d.carFreeS).toFixed(1)} s before blocker.out`} (UNFOUGHT)`).join('; ') + (early.length > 12 ? `; and ${early.length - 12} more` : '')
+      || (winsAll.length ? `the closest Go to blocker.out: ${Math.min(...winsAll.map(([, d]) => d.carFreeS!)).toFixed(1)} s after it` : 'no win'),
+  });
+  // MC-15 (brief 059, Motive M059-S1.5): no reference route reaches crew-wiped
+  const refsAll = live.filter(s => s.kind === 'quiet' || s.kind === 'loud'), wiped = refsAll.filter(s => 'rivals.wiped' in (plays[s.id]?.marks ?? {}));
+  C.push({
+    id: 'MC-15', rule: 'No reference route reaches crew-wiped (the rival crew destroyed, the fight over unfought)', ok: !wiped.length,
+    value: `${refsAll.length - wiped.length}/${refsAll.length} reference scripts`, detail: wiped.map(s => `${s.id}: rivals.wiped at ${clock(plays[s.id]!.marks['rivals.wiped']!)}`).join('; ') || 'none',
   });
   return { ok: C.every(c => c.ok), conditions: C, scripts: rows, contacts, informed, slack, pending };
 }

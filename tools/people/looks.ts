@@ -3,16 +3,16 @@
 // the same person always the same figure, by their id) and the pools the figures' manifest gives (tools/figures/roles.json `families`, `jobBlocks`). This is that choice, replayed
 // from the people file `bun run people` writes (through sim/data/handover.people.json) and the figures' own data, and the rules the mapping is held to. Every place the host dresses
 // a view is here, and tools/people/test/looks.test.ts lists the host's `Dress(` calls and fails on one this does not have:
-//   fixed keys   RoleFigure, at start          the cell, the cast, security/*, unit/*, and the crew's rival-1..5
+//   fixed keys   RoleFigure, at start          the cell, the cast, security/*, unit/*, and the crew's rival-1..5, each in his own look (RivalFigure, by the number in the id)
 //   the crowd    PersonFigure + DressCrowd     a job's family or job pool, by the person's id, re-picked for walkers who set out together
-//   a body       BodyFigure (Latch, after the audit)  a walker's body wears the figure the walker was drawn in; the cast's their role's; a crew member's `rival`
-//   the response unit/<officer> and a hostile officer: `security`; the range's rival hostiles: `rival`
+//   a body       BodyFigure (Latch, after the audit)  a walker's body wears the figure the walker was drawn in; the cast's their role's; a crew member's own look (RivalFigure)
+//   the response unit/<officer> and a hostile officer: `security`; the range's rival hostiles: the look of their number (RivalFigure)
 //   the range    its bystanders, from family/passer by their id
 // Rules:
 //   L-1 only security wears the P1 duty suit (the `guard` and `security` figures): no civilian, staff, clerk or rival is mapped to it, in a role key or a pool, and every security person wears it;
 //   L-2 every role key has a figure, and every figure a pool names exists;
 //   L-3 a role figure that is a recolour of a figure the crowd draws is named (the driver of D2, the rivals of D4 and C6, the officer of the guard): the model is shared, so the colour alone tells them apart;
-//   L-4 the crew keeps to itself (brief 067 W1, Forma's Velvet Set): the pool `role/rival` holds figures of role rival and no other, none a recolour of the duty suit's model, none in any other pool or on any walker, and the host draws a crew key in one of them.
+//   L-4 the crew keeps to itself (brief 067 W1, Forma's Velvet Set): the pool `role/rival` holds figures of role rival and no other, none a recolour of the duty suit's model, none in any other pool or on any walker, the host draws a crew key, a rival body and a rival hostile in one of them, the five in four different looks (RivalFigure, brief 067 W1, host round 4).
 // What the data cannot say (median value, violet share, no brimmed cap, no amber, pale trousers, who reads as the guard at 53 px) is measured on the figures: tools/figures/albedo_stats.py
 // and briefs/067/pulse/look-matrix.py, and held by tools/figures/rival.test.ts.
 // Pure, no model call. `bun tools/people/looks.ts [--csv <file>]` prints the audit (the table briefs/067/pulse.md carries); tools/people/test/looks.test.ts holds the rules and pins this mirror to the host's source.
@@ -47,12 +47,19 @@ export const CREW_POOL = 'role/rival';
 /** HostViews.RivalKeys: the Handover's crew, rival-1..rival-5 (HostViews.IsCrewId). */
 export const CREW_KEYS = ['rival-1', 'rival-2', 'rival-3', 'rival-4', 'rival-5'];
 const isCrewId = (key: string) => CREW_KEYS.includes(key);
-/** HostViews.RoleFigure: the figure of a fixed view key, else null. Every crew key and rival body is `rival`: the host has no table by member (see crewPlan). */
+/** HostViews.RivalLooks (Forma 067 W1, the Velvet Set; installed in host round 4): the crew dressed by member number, never by hash: rival-1 mid violet, -2 deep violet, -3 the woman, -4 the lookout in lavender, -5 the wheelman in mid violet. */
+export const RIVAL_LOOKS = ['rival', 'rival_b', 'rival_d', 'rival_c', 'rival'];
+/** HostViews.RivalFigure: the look of an id by its trailing digits ("rival-3", "body/rival-3", a range hostile's "rival-12"), 1 when it has none; the table wraps. */
+export function rivalFigure(id: string): string {
+  const m = /(\d+)$/.exec(id ?? ''), v = m ? parseInt(m[1]!, 10) : 1;
+  return RIVAL_LOOKS[(Math.max(v, 1) - 1) % RIVAL_LOOKS.length]!;
+}
+/** HostViews.RoleFigure: the figure of a fixed view key, else null. A crew key and a rival body are in the look of their number (RivalFigure). */
 export function roleFigure(key: string): string | null {
   const fixed: Record<string, string | null> = { 'op/scout': 'scout', 'op/fixer': 'fixer', 'op/tech': 'tech', 'op/enforcer': 'enforcer', waitress: 'waitress', guard: 'guard', driver: 'driver', councillor: 'councillor', patrol: null };
   if (key in fixed) return fixed[key]!;
   if (key.startsWith('security/') || key.startsWith('unit/')) return 'security';
-  if (isCrewId(key) || key.startsWith('body/rival-')) return 'rival';
+  if (isCrewId(key) || key.startsWith('body/rival-')) return rivalFigure(key);
   return null;
 }
 /** HostViews.PersonFigure's family of a job. */
@@ -83,20 +90,20 @@ export function dressCrowd(m: Mapping, walkers: Walker[]): Dressed[] {
   return out;
 }
 
-/** HostViews.Bodies and BodyFigure (Latch, on the audit's finding that 16 of the 126 walkers changed clothes when knocked out): the figure a body is drawn in. A crew member's is the crew's
- *  (`Dress(key, "rival")`); a walker's is the figure DressCrowd gave them, so nobody changes clothes; the cast and anyone not drawn take PersonFigure's plain pick (a role's figure first). */
+/** HostViews.Bodies and BodyFigure (Latch, on the audit's finding that 16 of the 126 walkers changed clothes when knocked out): the figure a body is drawn in. A crew member's is his own look
+ *  (`Dress(key, RivalFigure(p.Id))`); a walker's is the figure DressCrowd gave them, so nobody changes clothes; the cast and anyone not drawn take PersonFigure's plain pick (a role's figure first). */
 export function bodyFigure(m: Pick<Mapping, 'pools'>, crowd: Dressed[], p: { id: string; job: string; role?: string }): string | null {
   if (isCrewId(p.id)) return roleFigure(p.id);
   const w = crowd.find(c => c.id === p.id);
   return w ? w.figure : personFigureOf(m, p);
 }
-/** HostViews.Dress(hostileKeys[i], …): a hostile whose id starts `rival` is dressed `rival` (the range's spawned rivals; the Handover's crew draws by its own views), any other `security`. */
-export const hostileFigure = (id: string): string => (id.startsWith('rival') ? 'rival' : 'security');
+/** HostViews.Dress(hostileKeys[i], …): a hostile whose id starts `rival` is dressed in the look of his number (the range's spawned rivals, the fight's crew; RivalFigure), any other `security`. A library without the look dresses `rival` (Dress). */
+export const hostileFigure = (id: string): string => (id.startsWith('rival') ? rivalFigure(id) : 'security');
 /** HostViews.RangeBystanders: the fight range's passers-by, from the passers' pool by the bystander's id. */
 export const rangeBystanderFigure = (m: Pick<Mapping, 'pools'>, id: string): string | null => pick(m, 'family/passer', id);
 /** HandoverHost.TargetOf and CrowdSecurityName: what the hover names a crowd person: security (`!Person.Civilian`) by their job, everyone else "a passer-by". */
 export const crowdLabel = (job: string): string => (SECURITY_JOBS.includes(job) ? (job === 'guard' ? 'a guard' : 'an officer') : 'a passer-by');
-/** Forma's table by member (roles.json `playViews["rival-1..5, body/rival-<n>"]`): documentation until the host reads it. HostViews.RoleFigure gives every crew key `rival`. */
+/** Forma's table by member (roles.json `playViews["rival-1..5, body/rival-<n>"]`): the host reads it as HostViews.RivalLooks (the test holds the two the same). */
 export function crewPlan(m: Pick<Mapping, 'playViews'>): Record<string, string> {
   const t = m.playViews['rival-1..5, body/rival-<n>']; return t && typeof t === 'object' ? (t as Record<string, string>) : {};
 }
@@ -146,7 +153,14 @@ export function faults(m: Mapping, crowd: Dressed[]): Fault[] {
   for (const [pool, ids] of m.pools) if (pool !== CREW_POOL) for (const id of ids) if (crew.includes(id)) out.push({ rule: 'L-4', what: `${pool} holds ${id}, a look of the crew` });
   for (const c of crowd) if (crew.includes(c.figure)) out.push({ rule: 'L-4', what: `${c.id} (${c.job}) wears ${c.figure}, a look of the crew` });
   for (const key of [...CREW_KEYS, 'body/rival-1']) { const f = roleFigure(key); if (!f || !crew.includes(f)) out.push({ rule: 'L-4', what: `${key} is drawn as ${f}, which is not in ${CREW_POOL}` }); }
-  if (!crew.includes(hostileFigure('rival-9'))) out.push({ rule: 'L-4', what: `a rival hostile is drawn as ${hostileFigure('rival-9')}, which is not in ${CREW_POOL}` });
+  for (const id of ['rival-1', 'rival-2', 'rival-3', 'rival-4', 'rival-5', 'rival-9', 'rival-12', 'rival']) if (!crew.includes(hostileFigure(id))) out.push({ rule: 'L-4', what: `a rival hostile ${id} is drawn as ${hostileFigure(id)}, which is not in ${CREW_POOL}` });
+  for (const k of CREW_KEYS) if (roleFigure(`body/${k}`) !== roleFigure(k) || hostileFigure(k) !== roleFigure(k)) out.push({ rule: 'L-4', what: `${k} is drawn as ${roleFigure(k)} alive, ${roleFigure(`body/${k}`)} down and ${hostileFigure(k)} in a fight` });
+  const looks = new Set(CREW_KEYS.map(k => roleFigure(k)));
+  if (looks.size < 4 || looks.size < crew.length) out.push({ rule: 'L-4', what: `the ${CREW_KEYS.length} crew keys wear ${looks.size} look(s) (${[...looks].join(', ')}), the pool has ${crew.length}: the crew is not a crew` });
+  if (new Set(CREW_KEYS.slice(0, 4).map(k => roleFigure(k))).size < 4) out.push({ rule: 'L-4', what: 'rival-1..4 do not wear four different looks' });
+  if (CREW_KEYS.slice(0, 5).some((k, i) => crewPlan(m)[k] !== RIVAL_LOOKS[i])) out.push({ rule: 'L-4', what: 'roles.json playViews (Forma) and the host table (RivalLooks) differ' });
+  // the women's walk: a look on the woman's body walks with walk_f (FigureBuild.Women), which the figures name
+  for (const k of CREW_KEYS) { const f = roleFigure(k); if (f && !m.figures.has(f)) out.push({ rule: 'L-2', what: `${k} is drawn as ${f}, which is no figure` }); }
   return out;
 }
 /** The role figures that are recolours of a figure the crowd draws (L-3): the model is shared, so only the colour tells a driver from a passer in coral, a rival from a clerk in grey and navy. */
@@ -171,7 +185,7 @@ export function audit(): string {
     ['op/scout', roleFigure('op/scout')], ['op/fixer', roleFigure('op/fixer')], ['op/tech', roleFigure('op/tech')], ['op/enforcer', roleFigure('op/enforcer')],
     ['waitress', roleFigure('waitress')], ['guard', roleFigure('guard')], ['driver', roleFigure('driver')], ['councillor', roleFigure('councillor')],
     ['security/<0..1>', roleFigure('security/0')], ['unit/<officer>', roleFigure('unit/officer')], ['hostile/<n> officers', hostileFigure('security-1')],
-    ['rival-1..5', roleFigure('rival-1')], ['body/rival-<n>', roleFigure('body/rival-2')], ['hostile/<n> rival (range)', hostileFigure('rival-9')], ['patrol', roleFigure('patrol')],
+    ...CREW_KEYS.map((k): [string, string | null] => [k, roleFigure(k)]), ['body/rival-<n> (as the key)', roleFigure('body/rival-2')], ['hostile/<n> rival (range: rival-9)', hostileFigure('rival-9')], ['patrol', roleFigure('patrol')],
   ];
   out.push('the host\'s fixed keys (HostViews.RoleFigure) and the others it dresses (hostiles, units, bodies):');
   for (const [k, f] of keys) out.push(row(k, f));
@@ -181,9 +195,10 @@ export function audit(): string {
   const moved = crowd.filter(c => c.figure !== c.first), changed = crowd.filter(c => bodyFigure(m, crowd, { id: c.id, job: c.job }) !== c.figure);
   out.push('', `${moved.length} of ${crowd.length} walkers wear another figure than their own pick, because someone who sets out from the same place at the same time had it (DressCrowd); a body is drawn in the walker's figure (HostViews.BodyFigure), so ${changed.length} of ${crowd.length} change clothes when knocked out (the plain pick would have changed ${moved.length}).`);
   const crew = m.pools.get(CREW_POOL) ?? [], plan = crewPlan(m);
-  out.push('', `the crew's looks (pool ${CREW_POOL}; the host draws every crew key, rival body and range rival as \`${roleFigure('rival-1')}\`: HostViews.RoleFigure has no table by member):`);
+  out.push('', `the crew's looks (pool ${CREW_POOL}; the host dresses every crew key, rival body and rival hostile by member number: HostViews.RivalFigure):`);
   for (const id of crew) out.push(`  ${id.padEnd(8)} model ${modelOf(m, id)} · ${m.figures.get(id)?.label ?? '(no figure)'}`);
-  out.push(`  roles.json playViews, the table by member (documentation: nothing reads it at run time):  ${CREW_KEYS.map(k => `${k} ${plan[k] ?? '?'}`).join(', ')}`);
+  out.push(`  by member (HostViews.RivalLooks):  ${CREW_KEYS.map(k => `${k} ${roleFigure(k)}`).join(', ')}  (${new Set(CREW_KEYS.map(k => roleFigure(k))).size} looks for ${CREW_KEYS.length} people; roles.json playViews, Forma's table, ${CREW_KEYS.every((k, i) => plan[k] === RIVAL_LOOKS[i]) ? 'the same' : 'DIFFERENT'})`);
+  out.push(`  as a body and as a fight hostile:  ${CREW_KEYS.map(k => `${k} ${roleFigure('body/' + k)}/${hostileFigure(k)}`).join(', ')}; the range's rival-9 ${hostileFigure('rival-9')}, rival-12 ${hostileFigure('rival-12')}`);
   const f = faults(m, crowd);
   out.push('', f.length ? `rules: ${f.length} fault(s)\n${f.map(x => `  ${x.rule} ${x.what}`).join('\n')}` : 'rules L-1, L-2 and L-4: no fault: only guards wear the duty suit, and nobody who is a guard wears anything else; the crew\'s looks are worn by no one else');
   out.push('', 'L-3 shared models (a role figure that is a recolour of a figure the crowd draws):');

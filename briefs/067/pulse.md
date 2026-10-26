@@ -297,3 +297,62 @@ Not run: Unity. What this says of the host is the C# text pinned, not a frame; L
 | **Pulse** | re-mirror when the host reads the crew's table (the pins fail when it does) | `bun test tools/people` green |
 | **Keel** | at the end of the engine round: `bun run people` and `sim:site` as planned; whoever lands last then runs `drift:auto` and `verify` (the people tool hash moved with this edit as it did with my last; 7.5, 4) | VERIFY OK |
 | **Aster** | W5; the GDD words in §2.5 (the rivals "violet, no cap, no gold"); new bodies for the crew or not | decision logged |
+
+---
+
+## 8 · Third pass, 2026-10-26: the mirror brought to host round 4 (the crew by member, the crowd's facing), the audit re-run
+
+Aster's follow-up after Latch's host round 4 (`briefs/041/port-progress.md`). As Forma foresaw (§7.5, 1), three pins failed because the host's text moved: `RoleFigure` for a crew key, the two hostile sites and a rival's body now say `RivalFigure(...)`. The mirror and the pins are brought to the tree as it stands. Nothing edited in `tools/missions`, `contracts/`, `sim/`, `unity/` or `tools/figures`; `sim/data` not regenerated; nothing committed.
+
+### 8.1 · The short answer
+
+| claim | result | evidence |
+|---|---|---|
+| **Only security wears the guard's look** | **Holds.** L-1 0 faults over the 126 walkers, every fixed key and every pool; the 15 crowd guards wear `guard` and are named "a guard"; 0 of 126 change clothes when knocked out | `pulse/looks-audit.txt` |
+| **The five rivals in four violet looks, none reading as police** | **Holds, in the install now.** `albedo_stats.py --base unity/Assets/Suborned/People/Figures --check`: "spec (brief 067 W1): OK" (the install is 26 figures, `rival` V 0.55, amber 0.00; the old rival is gone). By member: rival-1 `rival`, -2 `rival_b`, -3 `rival_d`, -4 `rival_c`, -5 `rival` (four looks for five people; Forma's table the same). The look matrix on the install is the build's, number for number. Nearest to the police by colour (upper plus lower): `rival_b` 61, `rival_d` 63, `rival_c` 71, `rival` 72, against 19 to 33 for the clerks and cafe staff; to the guard 45 to 55 | `pulse/look-matrix.txt` part B, `look-matrix-summary.txt` |
+| **No clerk as a guard** | **Holds.** The 58 clerks are `d4` and `d5c`, the 2 attendants likewise; none is the duty suit's model, in the people file or in any pool; the hover names only the 15 duty-suit people "a guard". The same two to watch as in §7.3, `c6` and `d5c` (28 and 38.5 with the head block): unchanged, no fault | `pulse/looks-audit.txt`, `look-matrix-summary.txt` |
+
+### 8.2 · What changed (paths)
+
+| path | change |
+|---|---|
+| `tools/people/looks.ts` | `RIVAL_LOOKS` and `rivalFigure(id)` mirror `HostViews.RivalLooks` / `RivalFigure` (the trailing digits of the id, 1 when none, wrapping at 5). `roleFigure` gives a crew key and `body/rival-<n>` its number's look; `hostileFigure` gives a `rival…` hostile the look of his number (the range's rival-9 is `rival_c`, rival-12 `rival_b`), any other `security`. L-4 now also fails when a rival hostile or body is drawn outside the pool, when a member is drawn differently alive, down and in a fight, when the five wear fewer than four looks (or fewer than the pool holds), when rival-1..4 do not wear four different looks, or when Forma's `playViews` table and the host's differ. The audit prints the table by member and the body and hostile looks beside it. `crewPlan` is no longer documentation: the host reads the same table. The crowd's facing is not mirrored (the audit dresses people, not turns them): it is pinned |
+| `tools/people/test/looks.test.ts` | 15 tests become 17, all green. The three stale pins are re-written to the new text (`RoleFigure ... => RivalFigure(key)`, the two `Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security")` sites, `Dress(key, RivalFigure(p.Id))`); the list of `Dress(` calls follows. New: **RivalFigure** (the four lines of the helper, the table `{ rival, rival_b, rival_d, rival_c, rival }`, ids with and without digits, the five wearing every look of the pool and none outside it, the library fallback `rival_` to `rival`, `rival_d` in `FigureBuild.Women` so she walks `walk_f`, and the four `RivalFigure(` call sites); **the crowd faces the way the engine says** (the order SpreadFace then StillFacing, the standing-only guard, the `Game.FacingNow` call and its source line in `GameNotice.cs`); the last test (the crew's table) now holds the table equal to the host's, four looks, the lookout and the wheelman not the same, every member the same alive, down and in a fight, and `rival_d` on C6's body. `figures.Find`/`lib.Find` is two calls (the fallback and the lookup), pinned |
+| `briefs/067/pulse/looks-audit.txt` | re-made |
+| `briefs/067/pulse/run-look-matrix.sh`, `look-matrix.txt`, `look-matrix-summary.txt` | part B now measures the install's full set (24 figures) against the guard and the police; re-run (the build's part A is byte-identical to before; B matches A) |
+| `briefs/067/pulse/mutate-looks-test.sh` | m4, m5 and m7 re-aimed at the new text (the crew back to one look, a rival's body back to `"rival"`, a hostile officer as the door guard); m8 (the table's order changed), m9 (the engine facing taken out), m10 (the library fallback taken out) and m11 (a rival hostile in the police look) added |
+| `briefs/067/pulse-figures.csv` | regenerated, byte-identical (the crowd did not change) |
+
+### 8.3 · Evidence
+
+```
+bun test tools/people tools/figures                                  275 pass, 1 skip (people-graph live server), 0 fail
+bun test tools/people/test/looks.test.ts                             17 pass
+bun run typecheck                                                    clean
+bun tools/people/looks.ts > briefs/067/pulse/looks-audit.txt         rules L-1, L-2 and L-4: no fault; 126 walkers; 0 change clothes in a body
+bun tools/people/looks.ts --csv briefs/067/pulse-figures.csv         byte-identical
+python3 -I tools/figures/albedo_stats.py --base unity/Assets/Suborned/People/Figures --check    spec (brief 067 W1): OK
+bun run guard sh briefs/067/pulse/run-look-matrix.sh                 wrote look-matrix.txt (87 s)
+python3 -I briefs/067/pulse/look-matrix-summary.py                   look-matrix-summary.txt
+sh briefs/067/pulse/mutate-looks-test.sh                             control passes (17); 11 of 11 changes caught
+bun tools/lint/comments.ts                                           0 hits
+```
+
+The first run of `bun test tools/people tools/figures` in this pass showed one "(unnamed)" failure besides the four pins (the tests that build the working tree's engine, §7.5, 5); it did not repeat once the pins were fixed and the tree's `sim/` compiled.
+
+### 8.4 · Open issues
+
+1. **`figures.json`, `rival_d`'s label still says "the hood is down"** (§7.5, 2; the audit prints it). It is up. Forma, one word.
+2. **The range's bystanders include `workers_d5`** (hard hat, amber 0.40, navy 0.32: the old rival's body, a passer's look in `family/passer`; `b-4` of the fight range). No walker of the Handover wears it, and the rule that holds is about security and the crew, so it is no fault; but in the range, beside police, it reads like them (the very look that made the old rival read as police). Latch or Forma, if Sky tries the range: take it out of `family/passer`, or leave it for the range.
+3. **The crowd's facing is pinned by text, not seen.** The pins say the standing-alone rule is in the host; whether the Office's door guards now face the kerb in a frame is Latch's proof (`r123-looks`), not this audit.
+4. **Tool hashes.** Editing `looks.ts` moves the same three verdict hashes as in §7.5, 4 (skyline, people, and the transit's); I did not run `drift:auto`, which refused at HEAD before this edit too. Whoever lands last declares it.
+5. **W5 (off-duty guards, 73 and 74) and new bodies for the crew** remain Aster's (§7.5, 3 and 6).
+
+### 8.5 · Next owner
+
+| to | what | done when |
+|---|---|---|
+| **Forma** | correct `rival_d`'s label | `bun test tools/figures` green |
+| **Latch** | if Sky plays the range, decide `workers_d5` among the passers; the 3:10 and 5:30 frames with rings off (the crew by member beside the guard, `d4`, `d5c`, `c6`) | frame read by Glyph |
+| **Aster** | W5; new bodies or not | decision logged |
+| **Pulse** | re-mirror when `RivalLooks`, `RoleFigure` or a `Dress(` site moves again | `bun test tools/people` green |

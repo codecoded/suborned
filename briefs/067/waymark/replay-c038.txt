@@ -1,0 +1,17 @@
+$ bun tools/game/playing.ts bun tools/missions/check/cli.ts replay handover "c038"
+· replaying 897 recorded plays on the engine at cb1604f66798
+ok    input contracts/rules/rulebook.json
+ok    input contracts/people/people.rules.json
+ok    input sim/data/handover.people.json
+ok    input sim/data/handover.provisional.json
+ok    input sim/data/handover.rounds.json
+ok    input sim/data/handover.site.json
+ok    input sim/data/handover.takedown.json
+ok    input sim/data/range-dense.site.json
+ok    input sim/data/range-lane.site.json
+ok    input sim/data/range.site.json
+ok    input tree:contracts/missions/handover/mission.json
+ok    engine cb1604f66798 source 3d1d1e138ef4
+ok    897/897 plays land on their recorded final hash
+ok    verdict SHIPS
+REPLAY OK handover c038

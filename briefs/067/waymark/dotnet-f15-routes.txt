@@ -1,0 +1,13 @@
+# Keel FinalIntentTests.F15_ROUTES on the c038 route scripts (a scratch copy of sim/ at HEAD: out/scratch/waymark/eng; nothing in sim/ was edited)
+## as committed (HEAD FinalIntent.cs)
+[xUnit.net 00:00:08.24]     FinalIntentTests.F15_ROUTES(name: "fight-loud-wait-square") [FAIL]
+Expected: [···, Tuple (2000, 17875050498407794320), Tuple (2100, 11225438703069867156), Tuple (2200, 14015976238647609202), Tuple (2300, 4353886154566729762), Tuple (2384, 4594096653211072999)]
+Actual:   [···, Tuple (2000, 17875050498407794320), Tuple (2100, 11225438703069867156), Tuple (2200, 14015976238647609202), Tuple (2300, 13326268268635228057), Tuple (2384, 9691446380006708034)]
+[xUnit.net 00:00:12.19]     FinalIntentTests.F15_ROUTES(name: "fight-loud-wait-yard") [FAIL]
+Expected: [···, Tuple (4100, 7815827740327113957), Tuple (4200, 1473142126700898804), Tuple (4300, 11213840415991233411), Tuple (4400, 18368745368434121639), Tuple (4495, 7954005051546008275)]
+Actual:   [···, Tuple (4100, 7815827740327113957), Tuple (4200, 1473142126700898804), Tuple (4300, 11213840415991233411), Tuple (4400, 18368745368434121639), Tuple (4495, 16935764966105372434)]
+Failed!  - Failed:     2, Passed:    41, Skipped:     0, Total:    43, Duration: 22 s - Suborned.Sim.Tests.dll (net10.0)
+## with "fight-loud-wait-square", "fight-loud-wait-yard" added to FinalIntentTests.Moves (the change for Keel)
+Passed!  - Failed:     0, Passed:    43, Skipped:     0, Total:    43, Duration: 22 s - Suborned.Sim.Tests.dll (net10.0)
+## the whole suite on the scratch copy with that change (dotnet test sim/Suborned.Sim.Tests)
+Passed!  - Failed:     0, Passed:  2518, Skipped:     0, Total:  2518, Duration: 5 m 15 s - Suborned.Sim.Tests.dll (net10.0)

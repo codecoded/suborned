@@ -1,0 +1,144 @@
+# c038 robustness (Waymark, 2026-10-26): every plan composed fresh on engine 0.34.1 (the working tree = cb1604f6), k0 as composed and k1..kn with each operative its own first-step delay 0-2 s (Motive briefs/067/motive/ens.ts JMODE=op stream).
+# $ JITTER=15 bun run guard bun briefs/067/waymark/tools/probe.ts <the 16 reference routes>
+route-b k0: success at 7:32.2 T 4 A 0 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-3@7:24.8 left scout:walked (walked),fixer:walked (walked)
+route-b: wins 16/16
+route-b-board k0: success at 7:35.4 T 4 A 0 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-3@7:24.8
+route-b-board: wins 16/16
+route-b-thin k0: success at 7:32.2 T 4 A 0 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-4@7:26.5 left scout:walked (walked),fixer:walked (walked)
+route-b-thin: wins 16/16
+route-a-pressure k0: success at 4:22.6 T 6 A 0 St 2 gun 0 | in 2:41.9 vale 4:22.6 fight safe 3:19.9 spring 3:50.1 bout 3:56.6 free 3:56.6 over 4:08.2 held blocker:rival-2@3:54.1,advance:rival-5@4:05.6,advance:rival-4@4:05.7 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+route-a-pressure: wins 16/16
+route-g-kill k0: success at 5:43.3 T 2 A 1 St 3 gun 0 | in 4:04.0 vale 5:43.3 fight safe 4:42.0 spring 5:12.2 bout 5:18.7 free 5:18.7 over 5:28.9 held blocker:rival-2@5:16.2,advance:rival-5@5:22.7,advance:rival-4@5:23.0 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+route-g-kill: wins 16/16
+route-a k0: success at 4:37.3 T 4 A 0 St 3 gun 0 | in 2:52.9 vale 4:37.3 fight safe 3:30.9 spring 4:01.1 bout 4:06.2 free 4:06.2 over 4:22.9 held blocker:rival-2@4:05.1 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+route-a: wins 16/16
+route-a-disable k0: success at 4:37.3 T 5 A 1 St 3 gun 0 | in 2:52.9 vale 4:37.3 fight safe 3:30.9 spring 4:01.1 bout 4:06.2 free 4:06.2 over 4:22.9 held blocker:rival-2@4:05.1 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+route-a-disable: wins 16/16
+route-a-board k0: success at 4:15.5 T 4 A 0 St 2 gun 0 | in 2:52.9 vale 4:15.5 fight safe 3:30.9 spring 4:01.4 bout 4:07.9 free 4:07.9 over - held blocker:rival-2@4:05.4
+route-a-board: wins 16/16
+route-a-pressure-board k0: success at 4:13.8 T 6 A 0 St 2 gun 0 | in 2:41.9 vale 4:13.8 fight safe 3:19.9 spring 3:50.4 bout 3:59.9 free 3:59.9 over 4:07.0 held blocker:rival-2@3:54.4
+route-a-pressure-board: wins 16/16
+route-g-kill-board k0: success at 5:36.1 T 2 A 1 St 3 gun 0 | in 4:04.0 vale 5:36.1 fight safe 4:42.0 spring 5:12.2 bout 5:21.7 free 5:21.7 over 5:28.9 held blocker:rival-2@5:16.2,advance:rival-5@5:22.7,advance:rival-4@5:23.1
+route-g-kill-board: wins 16/16
+loud k0: success at 5:01.7 T 27 A 2 St -1 gun 20 | in 2:37.1 vale 5:00.6 fight loud 3:45.1 spring - bout 3:48.6 free 3:48.6 over - held blocker:security-1@3:45.1,post:security-2@3:45.1
+loud: wins 16/16
+route-g-fast k0: success at 2:58.6 T 5 A 1 St 3 gun 0 | in 1:32.0 vale 2:54.6 fight safe 2:10.0 spring 2:40.5 bout 2:55.3 free 2:55.3 over 2:58.6 held blocker:rival-1@2:54.6 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+route-g-fast: wins 16/16
+loud-fight k0: success at 5:06.8 T 26 A 2 St -1 gun 20 | in 2:37.1 vale 5:00.6 fight loud 3:45.1 spring - bout 3:48.6 free 3:48.6 over 5:04.9 held blocker:security-1@3:45.1,post:security-2@3:45.1
+loud-fight: wins 16/16
+route-g k0: success at 3:59.6 T 5 A 1 St 3 gun 0 | in 2:37.0 vale 3:59.6 fight safe 3:15.0 spring 3:45.5 bout 3:47.6 free - over 3:52.3 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+route-g: wins 16/16
+route-g-fast-board k0: success at 3:02.0 T 5 A 1 St 2 gun 0 | in 1:32.0 vale 2:54.6 fight safe 2:10.0 spring 2:40.5 bout 2:55.3 free 2:55.3 over - held blocker:rival-1@2:54.6
+route-g-fast-board: wins 16/16
+route-g-board k0: success at 3:59.6 T 5 A 1 St 3 gun 0 | in 2:37.0 vale 3:59.6 fight safe 3:15.0 spring 3:45.5 bout 3:47.6 free - over 3:50.7
+route-g-board: wins 16/16
+
+# the other plan-composed scripts, 8 samples each (JITTER=7 LOG=1): the outcome of every sample
+careless-enforcer-watches-guard k0: failure enforcer-down at 2:53.6 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:08.7
+careless-enforcer-watches-guard k1: failure enforcer-down at 2:53.6 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:08.7
+careless-enforcer-watches-guard k2: failure enforcer-down at 2:54.8 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:09.9
+careless-enforcer-watches-guard k3: failure enforcer-down at 2:55.1 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:10.2
+careless-enforcer-watches-guard k4: failure enforcer-down at 2:55.6 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:10.7
+careless-enforcer-watches-guard k5: failure enforcer-down at 2:55.0 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:10.1
+careless-enforcer-watches-guard k6: failure enforcer-down at 2:54.7 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:09.8
+careless-enforcer-watches-guard k7: failure enforcer-down at 2:54.5 T 1 A 2 St 2 gun 0 | in - vale - fight - spring - bout - free - over - REPORT 2:09.6
+careless-enforcer-watches-guard: wins 0/8
+fight-loud-enforcer-down k0: failure enforcer-down at 3:14.2 T 9 A 2 St -1 gun 2 | in 1:24.5 vale - fight loud 2:32.5 spring - bout - free - over - held blocker:security-1@2:32.5,post:security-2@2:32.5
+fight-loud-enforcer-down k1: failure enforcer-down at 3:14.5 T 9 A 2 St -1 gun 2 | in 1:24.8 vale - fight loud 2:32.8 spring - bout - free - over - held blocker:security-1@2:32.8,post:security-2@2:32.8
+fight-loud-enforcer-down k2: failure enforcer-down at 3:14.6 T 9 A 2 St -1 gun 2 | in 1:24.9 vale - fight loud 2:32.9 spring - bout - free - over - held blocker:security-1@2:32.9,post:security-2@2:32.9
+fight-loud-enforcer-down k3: failure enforcer-down at 3:14.3 T 9 A 2 St -1 gun 2 | in 1:24.6 vale - fight loud 2:32.6 spring - bout - free - over - held blocker:security-1@2:32.6,post:security-2@2:32.6
+fight-loud-enforcer-down k4: failure enforcer-down at 3:15.1 T 9 A 2 St -1 gun 2 | in 1:25.4 vale - fight loud 2:33.4 spring - bout - free - over - held blocker:security-1@2:33.4,post:security-2@2:33.4
+fight-loud-enforcer-down k5: failure enforcer-down at 3:14.3 T 9 A 2 St -1 gun 2 | in 1:24.6 vale - fight loud 2:32.6 spring - bout - free - over - held blocker:security-1@2:32.6,post:security-2@2:32.6
+fight-loud-enforcer-down k6: failure enforcer-down at 3:14.6 T 9 A 2 St -1 gun 2 | in 1:24.9 vale - fight loud 2:32.9 spring - bout - free - over - held blocker:security-1@2:32.9,post:security-2@2:32.9
+fight-loud-enforcer-down k7: failure enforcer-down at 3:16.0 T 9 A 2 St -1 gun 2 | in 1:26.3 vale - fight loud 2:34.3 spring - bout - free - over - held blocker:security-1@2:34.3,post:security-2@2:34.3
+fight-loud-enforcer-down: wins 0/8
+fight-loud-wait-square k0: failure enforcer-down at 3:58.4 T 8 A 2 St 0 gun 2 | in 2:37.1 vale - fight loud 3:45.1 spring - bout - free - over - held blocker:security-1@3:45.1,post:security-2@3:45.1
+fight-loud-wait-square k1: failure enforcer-down at 3:58.4 T 8 A 2 St 0 gun 2 | in 2:37.1 vale - fight loud 3:45.1 spring - bout - free - over - held blocker:security-1@3:45.1,post:security-2@3:45.1
+fight-loud-wait-square k2: failure enforcer-down at 3:59.6 T 8 A 2 St 0 gun 2 | in 2:38.3 vale - fight loud 3:46.3 spring - bout - free - over - held blocker:security-1@3:46.3,post:security-2@3:46.3
+fight-loud-wait-square k3: failure enforcer-down at 3:59.9 T 8 A 2 St 0 gun 2 | in 2:38.6 vale - fight loud 3:46.6 spring - bout - free - over - held blocker:security-1@3:46.6,post:security-2@3:46.6
+fight-loud-wait-square k4: failure enforcer-down at 4:00.4 T 8 A 2 St 0 gun 2 | in 2:39.1 vale - fight loud 3:47.1 spring - bout - free - over - held blocker:security-1@3:47.1,post:security-2@3:47.1
+fight-loud-wait-square k5: failure enforcer-down at 3:59.8 T 8 A 2 St 0 gun 2 | in 2:38.5 vale - fight loud 3:46.5 spring - bout - free - over - held blocker:security-1@3:46.5,post:security-2@3:46.5
+fight-loud-wait-square k6: failure enforcer-down at 3:59.5 T 8 A 2 St 0 gun 2 | in 2:38.2 vale - fight loud 3:46.2 spring - bout - free - over - held blocker:security-1@3:46.2,post:security-2@3:46.2
+fight-loud-wait-square k7: failure enforcer-down at 3:59.3 T 8 A 2 St 0 gun 2 | in 2:38.0 vale - fight loud 3:46.0 spring - bout - free - over - held blocker:security-1@3:46.0,post:security-2@3:46.0
+fight-loud-wait-square: wins 0/8
+careless-loop-runs-out k0: failure entry-seen-camera at 2:52.9 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k1: failure entry-seen-camera at 2:53.3 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k2: failure entry-seen-camera at 2:54.1 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k3: failure entry-seen-camera at 2:53.1 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k4: failure entry-seen-camera at 2:53.2 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k5: failure entry-seen-camera at 2:54.1 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k6: failure entry-seen-camera at 2:53.1 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out k7: failure entry-seen-camera at 2:54.6 T 4 A 0 St 2 gun 0 | in - vale - fight - spring - bout - free - over -
+careless-loop-runs-out: wins 0/8
+fight-safe-cell-down k0: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:32.0 vale 2:54.6 fight safe 2:10.0 spring 2:40.5 bout - free - over - held blocker:rival-1@2:54.6,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k1: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:32.0 vale 2:54.6 fight safe 2:10.0 spring 2:40.5 bout - free - over - held blocker:rival-1@2:54.6,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k2: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:33.2 vale 2:55.8 fight safe 2:11.2 spring 2:41.7 bout - free - over - held blocker:rival-1@2:55.8,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k3: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:33.5 vale 2:56.1 fight safe 2:11.5 spring 2:42.0 bout - free - over - held blocker:rival-1@2:56.1,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k4: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:34.0 vale 2:56.6 fight safe 2:12.0 spring 2:42.5 bout - free - over - held blocker:rival-1@2:56.6,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k5: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:33.4 vale 2:56.0 fight safe 2:11.4 spring 2:41.9 bout - free - over - held blocker:rival-1@2:56.0,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k6: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:33.1 vale 2:55.7 fight safe 2:11.1 spring 2:41.6 bout - free - over - held blocker:rival-1@2:55.7,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down k7: failure cell-down at 3:20.9 T 5 A 1 St 2 gun 0 | in 1:32.9 vale 2:55.5 fight safe 2:10.9 spring 2:41.4 bout - free - over - held blocker:rival-1@2:55.5,advance:rival-2@3:14.5,advance:rival-5@3:18.9,advance:rival-3@3:19.0,advance:rival-4@3:19.0
+fight-safe-cell-down: wins 0/8
+careless-scout-idles-pickup k0: success at 7:32.2 T 4 A 1 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-3@7:24.8 REPORT 2:32.3 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k1: success at 7:32.2 T 4 A 1 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-3@7:24.8 REPORT 2:32.7 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k2: success at 7:33.4 T 4 A 1 St 3 gun 0 | in - vale 7:30.5 fight safe 7:24.2 spring 7:24.2 bout 7:33.3 free 7:33.3 over 7:33.4 held blocker:rival-3@7:26.0 REPORT 2:33.5 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k3: success at 7:33.7 T 4 A 1 St 3 gun 0 | in - vale 7:30.8 fight safe 7:24.5 spring 7:24.5 bout 7:33.6 free 7:33.6 over 7:33.7 held blocker:rival-3@7:26.3 REPORT 2:32.5 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k4: success at 7:34.2 T 4 A 1 St 3 gun 0 | in - vale 7:31.3 fight safe 7:25.0 spring 7:25.0 bout 7:34.1 free 7:34.1 over 7:34.2 held blocker:rival-3@7:26.8 REPORT 2:32.6 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k5: success at 7:33.6 T 4 A 1 St 3 gun 0 | in - vale 7:30.7 fight safe 7:24.4 spring 7:24.4 bout 7:33.5 free 7:33.5 over 7:33.6 held blocker:rival-3@7:26.2 REPORT 2:33.5 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k6: success at 7:33.3 T 4 A 1 St 3 gun 0 | in - vale 7:30.4 fight safe 7:24.1 spring 7:24.1 bout 7:33.2 free 7:33.2 over 7:33.3 held blocker:rival-3@7:25.9 REPORT 2:32.5 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup k7: success at 7:33.1 T 4 A 1 St 3 gun 0 | in - vale 7:30.2 fight safe 7:23.9 spring 7:23.9 bout 7:33.0 free 7:33.0 over 7:33.1 held blocker:rival-3@7:25.7 REPORT 2:34.0 left scout:walked (walked),fixer:walked (walked)
+careless-scout-idles-pickup: wins 8/8
+fight-loud-wait-yard k0: withdrawn at 7:29.5 T 9 A 3 St 2 gun 4 | in - vale 7:29.3 fight loud 7:23.0 spring - bout - free - over - held blocker:officer-1@7:29.3 rej 1
+fight-loud-wait-yard k1: withdrawn at 7:29.5 T 9 A 3 St 2 gun 4 | in - vale 7:29.3 fight loud 7:23.0 spring - bout - free - over - held blocker:officer-1@7:29.3 rej 1
+fight-loud-wait-yard k2: withdrawn at 7:30.7 T 9 A 3 St 2 gun 4 | in - vale 7:30.5 fight loud 7:24.2 spring - bout - free - over - held blocker:officer-1@7:30.5 rej 1
+fight-loud-wait-yard k3: withdrawn at 7:31.0 T 9 A 3 St 2 gun 4 | in - vale 7:30.8 fight loud 7:24.5 spring - bout - free - over - held blocker:officer-1@7:30.8 rej 1
+fight-loud-wait-yard k4: withdrawn at 7:31.5 T 9 A 3 St 2 gun 4 | in - vale 7:31.3 fight loud 7:25.0 spring - bout - free - over - held blocker:officer-1@7:31.3 rej 1
+fight-loud-wait-yard k5: withdrawn at 7:30.9 T 9 A 3 St 2 gun 4 | in - vale 7:30.7 fight loud 7:24.4 spring - bout - free - over - held blocker:officer-1@7:30.7 rej 1
+fight-loud-wait-yard k6: withdrawn at 7:30.6 T 9 A 3 St 2 gun 4 | in - vale 7:30.4 fight loud 7:24.1 spring - bout - free - over - held blocker:officer-1@7:30.4 rej 1
+fight-loud-wait-yard k7: withdrawn at 7:30.4 T 9 A 3 St 2 gun 4 | in - vale 7:30.2 fight loud 7:23.9 spring - bout - free - over - held blocker:officer-1@7:30.2 rej 1
+fight-loud-wait-yard: wins 0/8
+careless-reporter-not-stopped k0: success at 7:32.2 T 4 A 1 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-3@7:24.8 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k1: success at 7:32.2 T 4 A 1 St 3 gun 0 | in - vale 7:29.3 fight safe 7:23.0 spring 7:23.0 bout 7:32.1 free 7:32.1 over 7:32.2 held blocker:rival-3@7:24.8 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k2: success at 7:33.4 T 4 A 1 St 3 gun 0 | in - vale 7:30.5 fight safe 7:24.2 spring 7:24.2 bout 7:33.3 free 7:33.3 over 7:33.4 held blocker:rival-3@7:26.0 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k3: success at 7:33.7 T 4 A 1 St 3 gun 0 | in - vale 7:30.8 fight safe 7:24.5 spring 7:24.5 bout 7:33.6 free 7:33.6 over 7:33.7 held blocker:rival-3@7:26.3 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k4: success at 7:34.2 T 4 A 1 St 3 gun 0 | in - vale 7:31.3 fight safe 7:25.0 spring 7:25.0 bout 7:34.1 free 7:34.1 over 7:34.2 held blocker:rival-3@7:26.8 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k5: success at 7:33.6 T 4 A 1 St 3 gun 0 | in - vale 7:30.7 fight safe 7:24.4 spring 7:24.4 bout 7:33.5 free 7:33.5 over 7:33.6 held blocker:rival-3@7:26.2 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k6: success at 7:33.3 T 4 A 1 St 3 gun 0 | in - vale 7:30.4 fight safe 7:24.1 spring 7:24.1 bout 7:33.2 free 7:33.2 over 7:33.3 held blocker:rival-3@7:25.9 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped k7: success at 7:33.1 T 4 A 1 St 3 gun 0 | in - vale 7:30.2 fight safe 7:23.9 spring 7:23.9 bout 7:33.0 free 7:33.0 over 7:33.1 held blocker:rival-3@7:25.7 left scout:walked (walked),fixer:walked (walked)
+careless-reporter-not-stopped: wins 8/8
+careless-thin-all k0: success at 7:29.3 T 19 A 2 St 0 gun 2 | in - vale 7:29.3 fight loud 7:23.0 spring - bout 7:28.0 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k1: success at 7:29.3 T 19 A 2 St 0 gun 2 | in - vale 7:29.3 fight loud 7:23.0 spring - bout 7:28.0 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k2: success at 7:30.5 T 18 A 2 St 1 gun 2 | in - vale 7:30.5 fight loud 7:24.2 spring - bout 7:29.2 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k3: success at 7:30.8 T 18 A 2 St 1 gun 2 | in - vale 7:30.8 fight loud 7:24.5 spring - bout 7:29.5 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k4: success at 7:31.3 T 18 A 2 St 1 gun 2 | in - vale 7:31.3 fight loud 7:25.0 spring - bout 7:30.0 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k5: success at 7:30.7 T 18 A 2 St 1 gun 2 | in - vale 7:30.7 fight loud 7:24.4 spring - bout 7:29.4 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k6: success at 7:30.4 T 18 A 2 St 1 gun 2 | in - vale 7:30.4 fight loud 7:24.1 spring - bout 7:29.1 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all k7: success at 7:30.2 T 18 A 2 St 1 gun 2 | in - vale 7:30.2 fight loud 7:23.9 spring - bout 7:28.9 free - over - left scout:captured (downed),fixer:captured (fighting)
+careless-thin-all: wins 8/8
+loud-left-downed k0: success at 5:04.7 T 27 A 2 St -1 gun 20 | in 2:37.1 vale 5:00.6 fight loud 3:45.1 spring - bout 3:48.6 free 3:48.6 over - held blocker:security-1@3:45.1,post:security-2@3:45.1 left scout:captured (downed)
+loud-left-downed k1: success at 5:04.7 T 27 A 2 St -1 gun 20 | in 2:37.1 vale 5:00.6 fight loud 3:45.1 spring - bout 3:48.6 free 3:48.6 over - held blocker:security-1@3:45.1,post:security-2@3:45.1 left scout:captured (downed)
+loud-left-downed k2: success at 5:05.9 T 27 A 2 St -1 gun 20 | in 2:38.3 vale 5:01.8 fight loud 3:46.3 spring - bout 3:49.8 free 3:49.8 over - held blocker:security-1@3:46.3,post:security-2@3:46.3 left scout:captured (downed)
+loud-left-downed k3: success at 5:06.2 T 27 A 2 St -1 gun 20 | in 2:38.6 vale 5:02.1 fight loud 3:46.6 spring - bout 3:50.1 free 3:50.1 over - held blocker:security-1@3:46.6,post:security-2@3:46.6 left scout:captured (downed)
+loud-left-downed k4: success at 5:06.7 T 27 A 2 St -1 gun 20 | in 2:39.1 vale 5:02.6 fight loud 3:47.1 spring - bout 3:50.6 free 3:50.6 over - held blocker:security-1@3:47.1,post:security-2@3:47.1 left scout:captured (downed)
+loud-left-downed k5: success at 5:06.1 T 27 A 2 St -1 gun 20 | in 2:38.5 vale 5:02.0 fight loud 3:46.5 spring - bout 3:50.0 free 3:50.0 over - held blocker:security-1@3:46.5,post:security-2@3:46.5 left scout:captured (downed)
+loud-left-downed k6: success at 5:05.8 T 27 A 2 St -1 gun 20 | in 2:38.2 vale 5:01.7 fight loud 3:46.2 spring - bout 3:49.7 free 3:49.7 over - held blocker:security-1@3:46.2,post:security-2@3:46.2 left scout:captured (downed)
+loud-left-downed k7: success at 5:05.6 T 27 A 2 St -1 gun 20 | in 2:38.0 vale 5:01.5 fight loud 3:46.0 spring - bout 3:49.5 free 3:49.5 over - held blocker:security-1@3:46.0,post:security-2@3:46.0 left scout:captured (downed)
+loud-left-downed: wins 8/8
+loud-left-standing k0: success at 5:04.7 T 27 A 2 St -1 gun 20 | in 2:37.1 vale 5:00.6 fight loud 3:45.1 spring - bout 3:48.6 free 3:48.6 over - held blocker:security-1@3:45.1,post:security-2@3:45.1 left scout:captured (fighting)
+loud-left-standing k1: success at 5:04.7 T 27 A 2 St -1 gun 20 | in 2:37.1 vale 5:00.6 fight loud 3:45.1 spring - bout 3:48.6 free 3:48.6 over - held blocker:security-1@3:45.1,post:security-2@3:45.1 left scout:captured (fighting)
+loud-left-standing k2: success at 5:05.9 T 27 A 2 St -1 gun 20 | in 2:38.3 vale 5:01.8 fight loud 3:46.3 spring - bout 3:49.8 free 3:49.8 over - held blocker:security-1@3:46.3,post:security-2@3:46.3 left scout:captured (fighting)
+loud-left-standing k3: success at 5:06.2 T 27 A 2 St -1 gun 20 | in 2:38.6 vale 5:02.1 fight loud 3:46.6 spring - bout 3:50.1 free 3:50.1 over - held blocker:security-1@3:46.6,post:security-2@3:46.6 left scout:captured (fighting)
+loud-left-standing k4: success at 5:06.7 T 27 A 2 St -1 gun 20 | in 2:39.1 vale 5:02.6 fight loud 3:47.1 spring - bout 3:50.6 free 3:50.6 over - held blocker:security-1@3:47.1,post:security-2@3:47.1 left scout:captured (fighting)
+loud-left-standing k5: success at 5:06.1 T 27 A 2 St -1 gun 20 | in 2:38.5 vale 5:02.0 fight loud 3:46.5 spring - bout 3:50.0 free 3:50.0 over - held blocker:security-1@3:46.5,post:security-2@3:46.5 left scout:captured (fighting)
+loud-left-standing k6: success at 5:05.8 T 27 A 2 St -1 gun 20 | in 2:38.2 vale 5:01.7 fight loud 3:46.2 spring - bout 3:49.7 free 3:49.7 over - held blocker:security-1@3:46.2,post:security-2@3:46.2 left scout:captured (fighting)
+loud-left-standing k7: success at 5:05.6 T 27 A 2 St -1 gun 20 | in 2:38.0 vale 5:01.5 fight loud 3:46.0 spring - bout 3:49.5 free 3:49.5 over - held blocker:security-1@3:46.0,post:security-2@3:46.0 left scout:captured (fighting)
+loud-left-standing: wins 8/8
+careless-g-disable k0: success at 3:59.6 T 3 A 2 St 3 gun 0 | in 2:37.0 vale 3:59.6 fight safe 3:15.0 spring 3:45.5 bout 3:47.6 free - over 3:52.3 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k1: success at 3:59.6 T 3 A 2 St 3 gun 0 | in 2:37.0 vale 3:59.6 fight safe 3:15.0 spring 3:45.5 bout 3:47.6 free - over 3:52.3 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k2: success at 4:00.8 T 3 A 2 St 3 gun 0 | in 2:38.2 vale 4:00.8 fight safe 3:16.2 spring 3:46.7 bout 3:48.8 free - over 3:53.5 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k3: success at 4:01.1 T 3 A 2 St 3 gun 0 | in 2:38.5 vale 4:01.1 fight safe 3:16.5 spring 3:47.0 bout 3:49.1 free - over 3:53.8 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k4: success at 4:01.6 T 3 A 2 St 3 gun 0 | in 2:39.0 vale 4:01.6 fight safe 3:17.0 spring 3:47.5 bout 3:49.6 free - over 3:54.3 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k5: success at 4:01.0 T 3 A 2 St 3 gun 0 | in 2:38.4 vale 4:01.0 fight safe 3:16.4 spring 3:46.9 bout 3:49.0 free - over 3:53.7 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k6: success at 4:00.7 T 3 A 2 St 3 gun 0 | in 2:38.1 vale 4:00.7 fight safe 3:16.1 spring 3:46.6 bout 3:48.7 free - over 3:53.4 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable k7: success at 4:00.5 T 3 A 2 St 3 gun 0 | in 2:37.9 vale 4:00.5 fight safe 3:15.9 spring 3:46.4 bout 3:48.5 free - over 3:53.2 left scout:walked (walked),fixer:walked (walked),tech:walked (walked)
+careless-g-disable: wins 8/8
