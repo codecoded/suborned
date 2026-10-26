@@ -148,9 +148,11 @@ namespace Suborned.Play
                         h.Issue(new Order { Op = "fixer", Do = "move", Point = to }); yield return WaitSim(h, () => g.Ops[(int)OpId.Fixer].Walk == null, 15 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.6f);
                     }
                     float yawMap = h.Yaw, figYaw = h.Views.FigureYaw("op/fixer") ?? float.NaN;
-                    h.Select(OpId.Fixer, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.8f); yield return Frames(3);
-                    float camYaw = h.FollowYaw, d = Mathf.Abs(Mathf.DeltaAngle(camYaw, figYaw)); bool behind = h.Following && h.Driving && d < 12f; headsOk &= behind;
-                    heads.Add($"heading {F(figYaw)} camera {F(camYaw)} off {F(d)}"); yield return Shoot(h, dir, $"r067-tp-entry-{pass + 1}", log);
+                    h.Select(OpId.Fixer, false); h.DriveToggle(); var tr0 = h.FollowTrace; yield return null; float entryCam = h.FollowYaw, entryFig = h.FollowAgentYaw; { var trs = new List<string> { tr0, h.FollowTrace }; for (int f = 0; f < 4; f++) { yield return null; trs.Add(h.FollowTrace); } log.Add($"r067 camera trace pass {pass + 1}: {string.Join(" | ", trs)}"); } // the same frame: the camera against the figure's drawn heading as it enters
+                    yield return new WaitForSecondsRealtime(0.8f); yield return Frames(3);
+                    float camYaw = h.FollowYaw, figNow = h.FollowAgentYaw, d0 = Mathf.Abs(Mathf.DeltaAngle(entryCam, entryFig)), d = Mathf.Abs(Mathf.DeltaAngle(camYaw, figNow));
+                    bool behind = h.Following && h.Driving && d0 < 12f && d < 12f; headsOk &= behind;
+                    heads.Add($"heading {F(figYaw)} (map) {F(entryFig)} (entry) {F(figNow)} (0.8 s) camera {F(entryCam)} → {F(camYaw)} off {F(d0)} / {F(d)}"); yield return Shoot(h, dir, $"r067-tp-entry-{pass + 1}", log);
                     h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.9f); yield return Frames(4);
                     var fa = ViewAt(h, "op/fixer"); float off = fa.HasValue ? Flat(h.Focus, fa.Value) : 99f;
                     float playZoom = Mathf.Clamp(h.Cam.overhead.zoom, h.zoomMin, h.zoomMax);
@@ -200,7 +202,7 @@ namespace Suborned.Play
 
             // ---- board (C): one order boards the squad; the refused one says why; then the car's Drive with nobody selected
             {
-                yield return Fresh(h); var g = h.Game; To(h, 30); yield return Settle(h);
+                yield return Fresh(h); var g = h.Game; To(h, 30); yield return Settle(h); bool keepPlan = h.controls.planTogether; h.controls.planTogether = false; // orders given while paused go now (no "start together" queue), as Proof29
                 var carW = h.GetawayWorld; h.TurnSnap(0); h.View.orthographicSize = 14f; h.LookAt(carW); yield return Frames(3);
                 // the Tech runs off: his Board is refused (board-running); the Scout and the Fixer board
                 var tp = g.Ops[(int)OpId.Tech].Pos; var far = g.Walk.NearestFree(new Pt(tp.X + 1800, tp.Y)) ?? tp; h.Issue(new Order { Op = "tech", Do = "move", Point = far, Run = true }); h.RunTo(g.Tick + 3);
@@ -210,13 +212,16 @@ namespace Suborned.Play
                 if (Screen(h, carW + Vector3.up * 0.6f) is Vector2 cs) { h.LeftClickScripted(cs); yield return Frames(3); }
                 string ring1 = h.RingWords; yield return Shoot(h, dir, "r067-car-ring-board", log, "active");
                 int sq0 = h.SquadBoards, orders0 = g.Orders.Count, tick0 = g.Tick; h.RingTakeScripted("board"); HandoverHost.PointerWorld = null; yield return Frames(2);
-                var sameTick = g.Orders.Skip(orders0).Where(o => o.order.Do is "board" or "move" && o.order.Op is "scout" or "fixer").Select(o => o.order.Tick).Distinct().ToList();
                 var (wi, ww, _) = h.WhyChipOf((int)OpId.Tech); string why = $"{wi} {ww}".Trim();
                 bool leftSel = !h.Selected[(int)OpId.Scout] && !h.Selected[(int)OpId.Fixer];
                 h.RunTo(g.Tick + 10); yield return Settle(h, 0.3f); var (_, pend, _) = h.SeatState(); string pendWords = string.Join("", pend.Select(x => x ? "p" : "-"));
                 yield return Shoot(h, dir, "r067-board-pending", log, "active");
                 yield return WaitSim(h, () => g.Ops[0].InCar && g.Ops[1].InCar, 40 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f);
                 var (filled, _, _) = h.SeatState(); string filledWords = string.Join("", filled.Select(x => x ? "f" : "-")); bool aboard = g.Ops[0].InCar && g.Ops[1].InCar;
+                // read once they are aboard: the squad's Board may go out after the take's frame (a paused clock's plan-together queue), on one tick
+                // one order for the squad: each doer's first order (the walk-in's move, or the Board itself in reach) on the same tick; the Boards then go as each arrives
+                var sameTick = new[] { "scout", "fixer" }.Select(op => g.Orders.Skip(orders0).Where(o => o.order.Op == op && o.order.Do is "board" or "move").Select(o => o.order.Tick).DefaultIfEmpty(-1).First()).Where(t => t >= 0).Distinct().ToList();
+                log.Add($"r067 board orders: [{string.Join(",", g.Orders.Skip(orders0).Select(o => $"{o.order.Tick}:{o.order.Op}:{o.order.Do}:{(o.ok ? "taken" : o.code)}"))}]");
                 yield return Shoot(h, dir, "r067-board-landed", log, "active");
                 // nobody selected: the car answers (Drive is the hold with one stand open and Vale not aboard)
                 for (int k = 0; k < 4; k++) if (h.Selected[k]) h.Select((OpId)k, true); yield return Frames(2);
@@ -228,9 +233,10 @@ namespace Suborned.Play
                 yield return Shoot(h, dir, "r067-car-ring-drive", log, "active");
                 if (h.RingWedgeScreen("drive-car") is Vector2 wd) { HandoverHost.PointerOverride = wd; yield return Frames(6); }
                 string standsWedge = HudToolkit.StandsShown; yield return Shoot(h, dir, "r067-car-ring-drive-hover", log, "active");
-                HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null; bool driveTaken = h.RingTakeScripted("drive-car"); yield return Frames(2);
-                driveTaken &= g.GetawayDriving; yield return WaitSim(h, () => !g.GetawayDriving, 60 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f); h.LookAt(h.GetawayWorld); yield return Frames(3);
-                bool parked = !g.GetawayDriving && g.CurStand != g.S.Stands[0]; yield return Shoot(h, dir, "r067-drive-parked", log, "active");
+                HandoverHost.PointerOverride = null; HandoverHost.PointerWorld = null; int dOrders0 = g.Orders.Count; bool driveTaken = h.RingTakeScripted("drive-car"); yield return Frames(2);
+                bool driveTook = driveTaken; driveTaken &= g.GetawayDriving;
+                log.Add($"r067 board drive: take {driveTook}, driving {g.GetawayDriving}, paused {h.Paused}, orders [{string.Join(",", g.Orders.Skip(dOrders0).Select(o => $"{o.order.Op}:{o.order.Do}:{o.order.Target}:{(o.ok ? "taken" : o.code)}"))}]"); yield return WaitSim(h, () => !g.GetawayDriving, 60 * Suborned.Sim.Game.Hz); yield return Settle(h, 0.4f); h.LookAt(h.GetawayWorld); yield return Frames(3);
+                bool parked = !g.GetawayDriving && g.CurStand != g.S.Stands[0]; h.controls.planTogether = keepPlan; yield return Shoot(h, dir, "r067-drive-parked", log, "active");
                 bool cOk = boardPill.Contains("Board") && faces == 2 && h.SquadBoards > sq0 && sameTick.Count == 1 && ww.Length > 0 && leftSel && aboard && drivePill.Contains("Drive") && standsHover.Contains(":hover") && goLast && goAlt.Length > 0 && driveTaken && parked;
                 ok &= cOk;
                 parts.Add($"\"board\": {{\"ok\": {B(cOk)}, \"pill\": \"{J(boardPill)}\", \"faces\": {faces}, \"ring\": \"{J(ring1)}\", \"sameTick\": \"{string.Join(",", sameTick)}\", \"techWhy\": \"{J(why)}\", \"leftSelection\": {B(leftSel)}, \"pending\": \"{pendWords}\", \"filled\": \"{filledWords}\", \"drivePill\": \"{J(drivePill)}\", \"standsOnHover\": \"{J(standsHover)}\", \"driveRing\": \"{J(ring2)}\", \"goLastStruckHeld\": {B(goLast)}, \"goAlt\": \"{J(goAlt)}\", \"standsOnWedge\": \"{J(standsWedge)}\", \"driven\": {B(driveTaken)}, \"parked\": {B(parked)}}}");
@@ -267,15 +273,17 @@ namespace Suborned.Play
                 yield return Fresh(h); var g0 = h.Game; List<Order> ra = null; try { ra = Route("route-a"); } catch (Exception e) { scenes.Add("route-a: " + e.Message); hOk = false; }
                 if (ra != null)
                 {
-                    foreach (var o in ra) { if (o.Tick >= 700 || g0.Over) break; if (o.Tick > g0.Tick) To(h, o.Tick); Give(h, o); while (h.ConvoPending || h.ConvoOn) { yield return null; h.ConvoEndNow(); } }
-                    To(h, 700); for (int i = 0; i < 10; i++) { h.ConvoEndNow(); yield return null; } // the Scout's Listen scene (route A's opening) is not this proof's
+                    // the route's own Help ticks (c037: 700 and 1210; c038: 710 and 1210): before the first the Scout's Listen has not landed and the Help is refused
+                    var helps = ra.Where(o => o.Op == "fixer" && o.Do == "turn" && o.Approach == "help").Select(o => o.Tick).ToList(); int help1 = helps.Count > 0 ? helps[0] : 700, help2 = helps.Count > 1 ? helps[1] : 1210;
+                    foreach (var o in ra) { if (o.Tick >= help1 || g0.Over) break; if (o.Tick > g0.Tick) To(h, o.Tick); Give(h, o); while (h.ConvoPending || h.ConvoOn) { yield return null; h.ConvoEndNow(); } }
+                    To(h, help1); for (int i = 0; i < 10; i++) { h.ConvoEndNow(); yield return null; } // the Scout's Listen scene (route A's opening) is not this proof's
                     h.Select(OpId.Fixer, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.7f);
                     h.GiveScripted(new Order { Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }); yield return Scene("r067-convo-inez-1", "fixer");
                     yield return WaitSim(h, () => g0.Ops[(int)OpId.Fixer].Busy == null, 120 * Suborned.Sim.Game.Hz);
                     // her other side: the Fixer walks round her (let go, a move, take him again), then a second Help
                     h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.8f);
                     if (g0.PersonPos(g0.Inez) is Pt ip) { var fp = g0.Ops[(int)OpId.Fixer].Pos; var opp = new Pt(ip.X + (ip.X - fp.X), ip.Y + (ip.Y - fp.Y)); var to = g0.Walk.NearestFree(opp) ?? opp; h.Issue(new Order { Op = "fixer", Do = "move", Point = to }); yield return WaitSim(h, () => g0.Ops[(int)OpId.Fixer].Walk == null, 20 * Suborned.Sim.Game.Hz); }
-                    To(h, Math.Max(g0.Tick, 1210)); for (int i = 0; i < 10; i++) { h.ConvoEndNow(); yield return null; } // route A's second Help comes at 2:01
+                    To(h, Math.Max(g0.Tick, help2)); for (int i = 0; i < 10; i++) { h.ConvoEndNow(); yield return null; } // route A's second Help comes at 2:01
                     h.Select(OpId.Fixer, false); h.DriveToggle(); yield return new WaitForSecondsRealtime(0.7f);
                     h.GiveScripted(new Order { Op = "fixer", Do = "turn", Target = "waitress", Approach = "help" }); yield return Scene("r067-convo-inez-2", "fixer");
                     h.DriveLetGoToMap(true); yield return new WaitForSecondsRealtime(0.8f);

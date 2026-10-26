@@ -145,18 +145,18 @@ namespace Suborned.Play
             // ---- 5 · a cancelling order: the Scout watches the guard; a hold on the patrol says "Cancels Watch · n s lost" before the release, then pops
             h.Select(OpId.Scout, false); l0 = g.Log.Count; h.GiveScripted(new Order { Op = "scout", Do = "watch", Target = "guard" });
             StepUntil(h, () => g.Ops[0].Busy != null && g.Ops[0].Busy.Do == "watch", 900); h.RunTo(g.Tick + 40); yield return Frames(2);
-            var pat = h.Views.Find("patrol"); string tagPill = "", tagReady = "", cancelPop = ""; int pops0 = h.DoneCancelPops; var cancelOrders = new List<string>(); string cancelPlate = ""; bool busyBefore = g.Ops[0].Busy != null;
+            var pat = h.Views.Find("patrol"); string tagPill = "", tagReady = "", cancelPop = ""; int pops0 = h.DoneCancelPops; var cancelOrders = new List<string>(); string cancelPlate = "", cancelPend = ""; bool busyBefore = g.Ops[0].Busy != null;
             if (pat != null)
             {
                 h.LookAt(pat.position); yield return Frames(3); var pw = pat.position + Vector3.up * 1.0f; Aim(h, pw); yield return Frames(5); tagPill = HudToolkit.CancelTagState;
                 yield return Shoot(h, dir, "done-cancel-warn", log);
                 n0 = g.Orders.Count; var sp = Aim(h, pw); yield return Frames(2); Btn(sp, left: true); yield return new WaitForSecondsRealtime(0.6f); tagReady = HudToolkit.CancelTagState; Btn(Sp(h, pw)); yield return Frames(4);
-                cancelOrders = OrdersSince(h, n0); cancelPop = h.LastCancelPop; cancelPlate = h.PlateWords(0);
+                cancelOrders = OrdersSince(h, n0); cancelPop = h.LastCancelPop; cancelPlate = h.PlateWords(0); cancelPend = h.PendingOf(0).verb;
                 if (h.Views.Find("op/scout") is Transform st) h.LookAt(st.position); HandoverHost.PointerWorld = null; Btn(new Vector2(Screen.width * 0.5f, Screen.height * 0.12f)); yield return Frames(2);
                 yield return Shoot(h, dir, "done-cancel-pop", log);
             }
-            bool cancelOk = busyBefore && (HudToolkit.CancelTagOn ? tagPill.StartsWith("pill:Cancels Watch") : tagPill.Length == 0 && tagReady.Length == 0) /* brief 046: the tag is off; the pop and plate stay */ && h.DoneCancelPops > pops0 && cancelPop.StartsWith("Watch cancelled") && cancelPlate == "cancelled" && cancelOrders.Exists(o => o.StartsWith("scout:watch:patrol"));
-            parts.Add($"\"cancel\": {{\"ok\": {B(cancelOk)}, \"busyBefore\": {B(busyBefore)}, \"tag\": \"{J(tagPill)}\", \"tagReady\": \"{J(tagReady)}\", \"pop\": \"{J(cancelPop)}\", \"plate\": \"{J(cancelPlate)}\", \"orders\": \"{string.Join(",", cancelOrders)}\"}}"); ok &= cancelOk;
+            bool cancelOk = busyBefore && (HudToolkit.CancelTagOn ? tagPill.StartsWith("pill:Cancels Watch") : tagPill.Length == 0 && tagReady.Length == 0) /* brief 046: the tag is off; the pop and plate stay */ && h.DoneCancelPops > pops0 && cancelPop.StartsWith("Watch cancelled") && cancelPlate == "cancelled" && (cancelOrders.Exists(o => o.StartsWith("scout:watch:patrol")) || cancelOrders.Exists(o => o.StartsWith("scout:move")) && cancelPend == "watch"); // engine 0.34: the patrol sweeping out of reach, the host walks in with the Watch pending (HandoverHost rewalk)
+            parts.Add($"\"cancel\": {{\"ok\": {B(cancelOk)}, \"busyBefore\": {B(busyBefore)}, \"tag\": \"{J(tagPill)}\", \"tagReady\": \"{J(tagReady)}\", \"pop\": \"{J(cancelPop)}\", \"plate\": \"{J(cancelPlate)}\", \"orders\": \"{string.Join(",", cancelOrders)}\", \"pending\": \"{cancelPend}\"}}"); ok &= cancelOk;
             log.Add($"done cancel: {(cancelOk ? "ok" : "FAILED")}: tag '{tagPill}' / '{tagReady}', pop '{cancelPop}', [{string.Join(",", cancelOrders)}]");
             // ---- 6 · the Fixer helps Inez until she is a contact, then calls her: the guard's window (its seconds), then "Guard back"
             string turnOut = ""; for (int tries = 0; tries < 3 && !g.Inez.Turned; tries++)
@@ -175,6 +175,16 @@ namespace Suborned.Play
             bool winOk = called && winShown >= 1 && winWords.Contains("call:guard:") && lastChip != null && lastChip.AnchorKey == "guard";
             parts.Add($"\"callWindow\": {{\"ok\": {B(winOk)}, \"turns\": \"{turnOut}\", \"turnChip\": \"{J(turnChip)}\", \"canCall\": {B(canCall)}, \"windows\": \"{J(winWords)}\", \"chip\": \"{J(callChip)}\"}}"); ok &= winOk;
             log.Add($"done call window: {(winOk ? "ok" : "FAILED")}: turns [{turnOut}], markers '{winWords}', chip '{callChip}'");
+            // engine 0.34 (c038, brief 059): the unturned driver drives Vale off at 6:13 and the run ends. The call above comes too late for the
+            // guard's 2:55 away to end before that, so his return is read on a fresh run with route A's own orders to its call (2:51; no Enter):
+            // the guard is back near 5:46
+            {
+                h.Begin(); h.IntelOpen = false; h.StartClock(); yield return null; g = h.Game;
+                var ra = Proof29.Route("route-a"); int callT = ra.Find(o => o.Do == "call")?.Tick ?? 1710;
+                Proof29.Play(h, ra.Where(o => o.Op != "enforcer" && o.Tick <= callT).ToList(), callT + 1, callT + 1);
+                yield return Frames(3); // the host sees the window open (a close pops only for a window a frame saw open: HostDone.WindowsRead)
+                cw0 = h.WindowClosePops; log.Add($"done guard back: a fresh run to route A's call at tick {callT}: windows '{string.Join(",", h.Game.Windows().Select(w => w.Kind + ":" + w.Thing))}'");
+            }
             if (Still) // the window's last 10 s: the underline amber, the plate blinking
             {
                 bool soon = StepUntil(h, () => h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard" && w.Until >= 0 && w.Until - h.Game.Tick <= 7 * Suborned.Sim.Game.Hz), 600); yield return Frames(4); yield return new WaitForSecondsRealtime(0.3f); // the engine's window (the HUD's marks refresh per frame, not per step); Glyph 0.2.97 #2 / Latch 0.2.99: past the callouts' 0.15 s fade-in (a callout born in the synchronous step shot at ~0.06 s read as a milky ghost)
@@ -185,10 +195,10 @@ namespace Suborned.Play
             StepUntil(h, () => !h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard" && (w.Until < 0 || w.Until - h.Game.Tick > 2)), 3000); yield return Frames(2);
             bool back = StepUntil(h, () => !h.Game.Windows().Exists(w => w.Kind == "call" && w.Thing == "guard"), 3000); yield return Frames(3);
             if (Still) yield return new WaitForSecondsRealtime(0.3f); // Latch 0.2.99: past the callouts' fade-in (the robot's medallion shot half see-through)
-            string closeWord = h.LastClosePop; bool backOk = back && h.WindowClosePops > cw0 && closeWord == "Guard back";
+            string closeWord = h.Pops.Exists(x => x.Text == "Guard back") ? "Guard back" : h.LastClosePop; bool backOk = back && h.WindowClosePops > cw0 && closeWord == "Guard back"; // the loop's "Camera on" may close in the same frame (the fresh run steps without frames)
             yield return Shoot(h, dir, "done-guard-back", log);
             parts.Add($"\"guardBack\": {{\"ok\": {B(backOk)}, \"pop\": \"{J(closeWord)}\", \"closes\": {h.WindowClosePops - cw0}}}"); ok &= backOk;
-            log.Add($"done guard back: {(backOk ? "ok" : "FAILED")}: '{closeWord}'");
+            log.Add($"done guard back: {(backOk ? "ok" : "FAILED")}: '{closeWord}' (closed {back}, tick {h.Game.Tick}, over {h.Game.Over} {h.Game.FailCode}, ending '{h.Ending}', pops {h.WindowClosePops - cw0})");
             if (Still) { yield return WatchedSpot(h, dir, log); yield return LoopRing(h, dir, log); }
             // ---- 7 · third person (Keel's FL-KERB, Sky on 0.2.48): the Scout at the kerb before the Office, the calm patrol ahead, the cursor off it
             h.Begin(); h.IntelOpen = false; h.StartClock(); yield return null; g = h.Game;
@@ -203,7 +213,15 @@ namespace Suborned.Play
             var pp2 = g.PosOf("patrol"); string tpOffer = "", tpReady = "", focus = ""; var tpOrders = new List<string>(); bool tpLog = false;
             if (pp2.HasValue)
             {
-                var a = g.Ops[0].Pos; double dd = Math.Sqrt(Suborned.Sim.G.D2(a, pp2.Value)); if (dd > 650) { var near = new Pt(pp2.Value.X + (int)((a.X - pp2.Value.X) * 600 / dd), pp2.Value.Y + (int)((a.Y - pp2.Value.Y) * 600 / dd)); var to = g.S.Grid.Free(near) ? near : g.S.Grid.NearestFree(near); if (to.HasValue) { h.Issue(new Order { Op = "scout", Do = "move", Point = to.Value }); StepUntil(h, () => g.Ops[0].Walk == null, 300); } }
+                // engine 0.34 (brief 067 A): the patrol sweeps the service yard, behind the Office from this kerb, so the Scout walks to a spot about
+                // 6 m from it with a clear line (ProofFire.ApproachInSight), and once more if its sweep has taken it on by then
+                for (int tries = 0; tries < 4; tries++) // the sweep moves on while she walks (the 2160 run met it 10 m off after two)
+                {
+                    if (g.PosOf("patrol") is not Pt pn) break;
+                    if (Suborned.Sim.G.D2(g.Ops[0].Pos, pn) <= 700L * 700L && g.S.Sight(g.Ops[0].Pos, pn, g.R.Eye)) break;
+                    if (!ProofFire.ApproachInSight(h, 0, pn, 600)) break; StepUntil(h, () => g.Ops[0].Walk == null, 900);
+                }
+                log.Add($"done tp fire: the Scout {F(Mathf.Sqrt((float)Suborned.Sim.G.D2(g.Ops[0].Pos, g.PosOf("patrol") ?? pp2.Value)) / 100f)} m from the patrol at tick {g.Tick}, line {(g.PosOf("patrol") is Pt pl && g.S.Sight(g.Ops[0].Pos, pl, g.R.Eye))}");
                 h.Select(OpId.Scout, false); h.controls.tpRightFires = true; h.DriveToggle(); yield return new WaitForSecondsRealtime(0.8f);
                 var pw = h.frame.World(g.PosOf("patrol") ?? pp2.Value); h.FollowFace(pw); yield return new WaitForSecondsRealtime(0.4f);
                 var me = h.frame.World(g.Ops[0].Pos); var fwd = (pw - me); fwd.y = 0f; var side = Vector3.Cross(Vector3.up, fwd.normalized);

@@ -64,9 +64,10 @@ namespace Suborned.Play
             TargetRings.Clear(); TargetRingKeys.Clear(); var g = Game; if (g == null || views == null || Game.Over) return;
             ThreatsRead();
             var shooters = new List<int>(); for (int k = 0; k < 4; k++) if ((Selected[k] || Driving && k == dAgent) && Armed(k) && Drawn(k)) shooters.Add(k);
+            bool selDrawn = shooters.Count > 0; // a selected (or driven) agent with a weapon drawn: the hover ring shows (049 round 1, Glyph 0.2.94 #7)
             bool combat = shooters.Count > 0 || g.FightOn;
             if (shooters.Count == 0 && g.FightOn) for (int k = 0; k < 4; k++) if (Armed(k)) shooters.Add(k); // a fight on and nobody selected drawn: the cell's reach
-            string hoverId = ""; if (Hover != null && (HoverFire || Aiming)) { hoverId = FireIdOf(Hover, out _); }
+            string hoverId = ""; if (Hover != null && (HoverFire || Aiming || selDrawn)) { hoverId = FireIdOf(Hover, out _); } // batch 0.2.123: brief 067 E took Fire off the calm pill, so HoverFire is false on a passer-by; a drawn selection still rings what it hovers
             float now = Time.unscaledTime; int used = 0;
             void Add(string id, RingSide side, bool combatant)
             {

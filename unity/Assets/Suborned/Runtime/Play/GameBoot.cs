@@ -90,6 +90,11 @@ namespace Suborned.Play
             Destroy(t); return seen.Count > 16;
         }
 
+        /// <summary>`-proofOnly a,b,…` (scratch runs only, never the batch's): run just these sections (GATED names, plus `frames` for the follow, drive
+        /// and people spots); every other section stays null, so such a proof never passes the gate.</summary>
+        static readonly HashSet<string> only = GameBoot.ArgValue("-proofOnly") is string po ? new HashSet<string>(po.Split(',', StringSplitOptions.RemoveEmptyEntries)) : null;
+        static bool Only(string section) => only == null || only.Contains(section);
+
         IEnumerator Start()
         {
             Directory.CreateDirectory(Dir);
@@ -124,41 +129,41 @@ namespace Suborned.Play
             h.TurnSnap(0);
             // the test follow view (Sky 2026-10-18): frame times behind an agent at the café front, the pickup and mid-fight (FollowSpots)
             var follow = new List<string>();
-            yield return FollowSpots(h, Dir, log, follow);
+            if (Only("frames")) yield return FollowSpots(h, Dir, log, follow);
             // brief 025: take control of the Scout at street level (frame times while driven), E on Inez, let go; the session replays headless (game:check)
             var drive = new List<string>(); var session = new string[1];
-            yield return DriveSpot(h, Dir, log, drive, session);
+            if (Only("frames")) yield return DriveSpot(h, Dir, log, drive, session);
             // Latch 2026-10-21: the input checks (a ground click while driven, WASD taking the stick back; a fire order stopping a walk)
             var driveClick = new string[] { "null" }; var fireStop = new string[] { "null" };
             ProofInput.Focusless(true); log.Add($"input checks: focused {Application.isFocused}, background {UnityEngine.InputSystem.InputSystem.settings.backgroundBehavior}");
-            yield return ProofInput.DriveClick(h, log, driveClick);
-            yield return ProofInput.FireStop(h, log, fireStop);
+            if (Only("driveClick")) yield return ProofInput.DriveClick(h, log, driveClick);
+            if (Only("fireStop")) yield return ProofInput.FireStop(h, log, fireStop);
             // brief 041: the ring-on-press and hold-ring checks are the Built scheme's (0.2.34 as it was); the Double click scheme (the default) has its own (dblClick)
             h.controls.preset = ControlPreset.Built; h.ControlsChanged(); yield return null;
-            var ringCheck = new string[] { "null" }; yield return ProofInput.RingCheck(h, log, ringCheck); // brief 038's done-check
-            var act = new string[] { "null" }; yield return ProofFire.Act(h, Dir, log, act);
+            var ringCheck = new string[] { "null" }; if (Only("ringCheck")) yield return ProofInput.RingCheck(h, log, ringCheck); // brief 038's done-check
+            var act = new string[] { "null" }; if (Only("act")) yield return ProofFire.Act(h, Dir, log, act);
             h.controls.preset = ControlPreset.DoubleClick; h.ControlsChanged(); yield return null;
             // brief 024 (action-game controls, firing): the input map, the act on the prompt, the trigger and its marks and animation, the cars
             var inputMap = new string[] { "null" }; ProofFire.InputMap(log, inputMap);
             // brief 041's port: Click walks, hold acts (the default) from here on: its Handover proofs, then fire, cars and the click-through under it
             h.controls.preset = ControlPreset.HoldActs; h.ControlsChanged(); yield return null;
-            var dblClick = new string[] { "null" }; yield return ProofInput.DblClick(h, Dir, log, dblClick); // item 33 (in the default preset): a left click rings a thing, a double keeps it, the ground walks and runs; a right tap does nothing, a right hold fires
-            var holdActs = new string[] { "null" }; yield return ProofHold.Handover(h, Dir, log, holdActs);
-            var done = new string[] { "null" }; yield return ProofDone.Handover(h, Dir, log, done);
-            var levels = new string[] { "null" }; yield return ProofLevels.Handover(h, Dir, log, levels); // brief 055 step 1: people on the drawn floor (the Office landing and steps)
-            var r29 = new string[] { "null" }; yield return Proof29.Run(h, Dir, log, r29);
-            var r118 = new string[] { "null" }; yield return Proof118.Run(h, Dir, log, r118); // batch 0.2.118: engine 0.31.0's cameras (gated), Glint's H, R and V shots (pictures, measured by Glint) // engine 0.28/0.29 port round (next-batch 19-31): mood, cones, a downed agent, the patrol, the junction
-            var r059 = new string[] { "null" }; yield return Proof059.Run(h, Dir, log, r059);
-            var r067 = new string[] { "null" }; yield return Proof067.Run(h, Dir, log, r067); // batch 0.2.123: brief 067
-            var r123 = new string[] { "null" }; yield return Proof123.Run(h, Dir, log, r123); // batch 0.2.123 host round 4: the fight with no lines (each shooter's facing measured), the rival crew's four looks at 3:10 (not gated yet) (Sky's 0.2.122 notes, Glyph's spec): the square and the cars, cones on demand, portrait and third person, locked ways, squad Board and Drive, the conversation from the ground, the lock reticle, the host record // batch 0.2.123: brief 059 (the rival car seen arriving at 2:35, the drop at 2:46, the park at 3:10; the Watch; Vale driven round; the Take from the back seat; Drive)
-            var rings = new string[] { "null" }; yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
-            var fire = new string[] { "null" }; var fireSession = new string[1]; yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
-            var cars = new string[] { "null" }; yield return ProofFire.Cars(h, Dir, log, cars);
-            var hudClick = new string[] { "null" }; yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
+            var dblClick = new string[] { "null" }; if (Only("dblClick")) yield return ProofInput.DblClick(h, Dir, log, dblClick); // item 33 (in the default preset): a left click rings a thing, a double keeps it, the ground walks and runs; a right tap does nothing, a right hold fires
+            var holdActs = new string[] { "null" }; if (Only("holdActs")) yield return ProofHold.Handover(h, Dir, log, holdActs);
+            var done = new string[] { "null" }; if (Only("done")) yield return ProofDone.Handover(h, Dir, log, done);
+            var levels = new string[] { "null" }; if (Only("levels")) yield return ProofLevels.Handover(h, Dir, log, levels); // brief 055 step 1: people on the drawn floor (the Office landing and steps)
+            var r29 = new string[] { "null" }; if (Only("r29")) yield return Proof29.Run(h, Dir, log, r29);
+            var r118 = new string[] { "null" }; if (Only("r118")) yield return Proof118.Run(h, Dir, log, r118); // batch 0.2.118: engine 0.31.0's cameras (gated), Glint's H, R and V shots (pictures, measured by Glint) // engine 0.28/0.29 port round (next-batch 19-31): mood, cones, a downed agent, the patrol, the junction
+            var r059 = new string[] { "null" }; if (Only("r059")) yield return Proof059.Run(h, Dir, log, r059);
+            var r067 = new string[] { "null" }; if (Only("r067")) yield return Proof067.Run(h, Dir, log, r067); // batch 0.2.123: brief 067
+            var r123 = new string[] { "null" }; if (Only("r123")) yield return Proof123.Run(h, Dir, log, r123); // batch 0.2.123 host round 4: the fight with no lines (each shooter's facing measured), the rival crew's four looks at 3:10 (not gated yet) (Sky's 0.2.122 notes, Glyph's spec): the square and the cars, cones on demand, portrait and third person, locked ways, squad Board and Drive, the conversation from the ground, the lock reticle, the host record // batch 0.2.123: brief 059 (the rival car seen arriving at 2:35, the drop at 2:46, the park at 3:10; the Watch; Vale driven round; the Take from the back seat; Drive)
+            var rings = new string[] { "null" }; if (Only("rings")) yield return ProofRings.Handover(h, Dir, log, rings); // Glyph 0.2.79 #2: the plain target rings (brief 049) // brief 043: the done moment, the walk-in, the cancel, the window; next-batch item 7 (third person on the calm patrol)
+            var fire = new string[] { "null" }; var fireSession = new string[1]; if (Only("fire")) yield return ProofFire.Fire(h, Dir, log, fire, drive, fireSession);
+            var cars = new string[] { "null" }; if (Only("cars")) yield return ProofFire.Cars(h, Dir, log, cars);
+            var hudClick = new string[] { "null" }; if (Only("hudClick")) yield return ProofInput.HudClick(h, log, hudClick); // Sky on 0.2.34: a HUD click never reaches the street (the range's half runs last, below)
             ProofInput.Focusless(false);
             // brief 020: what the people cost: the opening (the square and its crowd) with the figures, then with capsules only, the same moment
             var people = new List<string>();
-            yield return PeopleCost(h, log, people, 6f, Dir);
+            if (Only("frames")) yield return PeopleCost(h, log, people, 6f, Dir);
             var frames = $"{{\"seconds\": 10, \"frames\": {dts.Count}, \"meanMs\": {F(mean)}, \"fps\": {F(1000f / mean)}, \"p95Ms\": {F(p95)}, \"p99Ms\": {F(p99)}, \"over20msFrames\": {slow}, \"vSyncCount\": {QualitySettings.vSyncCount}, \"targetFrameRate\": {Application.targetFrameRate}, \"zoom\": {F(cam ? cam.orthographicSize : -1)}, \"byYaw\": [{string.Join(", ", byYaw)}], \"follow\": [{string.Join(", ", follow)}], \"people\": [{string.Join(", ", people)}], \"drive\": [{string.Join(", ", drive)}], \"driveSession\": {(session[0] == null ? "null" : "\"" + session[0].Replace("\\", "/") + "\"")}, \"driveClick\": {driveClick[0]}, \"fireStop\": {fireStop[0]}, \"ringCheck\": {ringCheck[0]}, \"inputMap\": {inputMap[0]}, \"act\": {act[0]}, \"fire\": {fire[0]}, \"cars\": {cars[0]}, \"hudClick\": __HUDCLICK__, \"dblClick\": {dblClick[0]}, \"holdActs\": {holdActs[0]}, \"done\": {done[0]}, \"rings\": {rings[0]}, \"levels\": {levels[0]}, \"r29\": {r29[0]}, \"r118\": {r118[0]}, \"r059\": {r059[0]}, \"r067\": {r067[0]}, \"r123\": {r123[0]}, \"holdRange\": __HOLDRANGE__, \"leash\": __LEASH__, \"fireSession\": {(fireSession[0] == null ? "null" : "\"" + fireSession[0].Replace("\\", "/") + "\"")}}}";
             h.OpenMenu(); yield return null;
             log.Add($"menu: open {h.MenuOpen}, modal {h.Modal}, paused {h.Paused}");
@@ -168,9 +173,9 @@ namespace Suborned.Play
             var rangeClick = new string[] { "null" }; var leash = new string[] { "null" }; var holdRange = new string[] { "null" };
             {
                 ProofInput.Focusless(true);
-                h.SwitchRangeScene(); // the run saved, then the range scene (the pause menu's own switch)
+                if (Only("leash") || Only("holdRange") || Only("hudClick")) h.SwitchRangeScene(); // the run saved, then the range scene (the pause menu's own switch)
                 HandoverHost rh = null; float r0 = Time.realtimeSinceStartup;
-                while (((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
+                while ((Only("leash") || Only("holdRange") || Only("hudClick")) && ((rh = FindAnyObjectByType<HandoverHost>()) == null || !rh.rangeMode || rh.Game == null) && Time.realtimeSinceStartup - r0 < 60f) yield return null;
                 if (rh != null && rh.rangeMode && rh.Game != null) { yield return new WaitForSecondsRealtime(1.5f); yield return ProofInput.RangePanelClick(rh, log, rangeClick); yield return ProofInput.Leash(rh, Dir, log, leash); rh.controls.preset = ControlPreset.HoldActs; rh.ControlsChanged(); yield return ProofHold.Range(rh, Dir, log, holdRange); } // brief 041: the hold preset on the range // brief 041: the leash on the range's open floor
                 else log.Add("rangePanelClick: no range host after 60 s");
                 ProofInput.Focusless(false);

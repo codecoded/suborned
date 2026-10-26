@@ -37,7 +37,7 @@ namespace Suborned.Play
             log.Add($"{name}: " + HudToolkit.Shoot(Path.Combine(dir, name), state)); yield return null; while (HudToolkit.ShotBusy) yield return null;
             h.SetPaused(was);
         }
-        static List<Order> Route(string name)
+        internal static List<Order> Route(string name)
         {
             var path = Path.Combine(Path.GetDirectoryName(Path.GetDirectoryName(FightLab.Dir(""))), "contracts", "missions", "handover", "routes", name + ".json"); // the repo, found as the fight lab finds briefs/027 (a built app looks from its Contents)
             var sc = Suborned.Sim.Script.Parse(File.ReadAllText(path));
@@ -52,7 +52,7 @@ namespace Suborned.Play
         }
         static Order Copy(Order o) => new() { Tick = o.Tick, Op = o.Op, Do = o.Do, Target = o.Target, Approach = o.Approach, To = o.To, Point = o.Point, How = o.How, Run = o.Run };
         /// <summary>A route's orders given as the shot runner gives them, up to (not including) tick `until`; then the clock to `runTo`.</summary>
-        static void Play(HandoverHost h, List<Order> orders, int until, int runTo)
+        internal static void Play(HandoverHost h, List<Order> orders, int until, int runTo)
         {
             foreach (var o in orders)
             {
@@ -104,7 +104,9 @@ namespace Suborned.Play
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
                 var g = h.Game; int t0 = g.Tick; var izp = g.PersonByRole("waitress"); var start = g.PersonPos(izp);
-                h.RunTo(4590); var before = g.PersonPos(izp);
+                // engine 0.34 (c038, brief 059): with the driver unturned his car drives Vale off at 6:13 and the run ends before her 7:37 round; route B's
+                // opening (the Scout listens to the driver, the Fixer pays him, the false tip, all away from the café) keeps the run going to 8:10
+                Play(h, Route("route-b").Where(o => o.Op is "scout" or "fixer" && o.Tick <= 1900).ToList(), 1901, 4590); var before = g.PersonPos(izp);
                 var iz = h.Views.Find("waitress"); var door = h.frame.World(new Pt(-1030, -2900)); var table = h.frame.World(new Pt(-2017, -4173));
                 var mid = (door + table) * 0.5f; var along = table - door; along.y = 0f; var side = Vector3.Cross(Vector3.up, along.normalized);
                 // the camera stands on the open side (the square, away from the café's walls): the side whose point is farther from the café's centre
@@ -292,7 +294,7 @@ namespace Suborned.Play
             // ---- the reroute walk (brief 057 §2): the route drawn while in play, the patrol on it within 0.3 m, no jump
             {
                 h.Begin(); h.IntelOpen = false; h.StartClock(); h.SetPaused(true); yield return null;
-                var g = h.Game; var ra = Route("route-a"); int rr = ra.Find(o => o.Do == "reroute")?.Tick ?? 786; Play(h, ra, rr + 1, rr + 4); /* the Tech's Reroute, at its tick in route A (1:45 on c037; it was 1:18.5) */
+                var g = h.Game; var ra = Route("route-a"); if (!ra.Exists(o => o.Do == "reroute")) ra = Route("route-b"); int rr = ra.Find(o => o.Do == "reroute")?.Tick ?? 786; Play(h, ra, rr + 1, rr + 4); /* the Tech's Reroute at its tick in the first route that gives one: route A to c037 (1:45), route B from c038 (5:00; route A reroutes no more) */
                 for (int i = 0; i < 900 && !(g.PatrolAwayUntil > g.Tick) && !g.Over; i++) h.RunTo(g.Tick + 1);
                 int rolelessUnlocks = 0; h.UnattachedGates.Clear(); foreach (var dc in h.DoneChips) if (dc.Role.Length == 0 && dc.Unlocks.Count > 0) rolelessUnlocks++;
                 float maxOff = 0f, maxJump = 0f; int samples = 0, shots = 0; bool engine = false, live = false; Vector3? last = null; string shown = ""; List<Vector3> drawn = null; bool edgeShot = false, edgeSeen = false; // the route as first drawn when the reroute began: the robot must keep to it

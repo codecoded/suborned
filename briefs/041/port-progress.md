@@ -769,3 +769,84 @@ Sources: Aster's round-4 task; briefs/027/keel/host-interface.md "Engine 0.34.0"
   - At 1.8 m/s women walk with `walk` (above). A brisk walk_f clip would be better.
 - **Aster:** the 3:10 frame can't hold five: at 3:10 three are on foot round the cell's car, the lookout steps out at the park, and the wheelman stays aboard. The five together in four looks are in `r123-fight-safe`.
 - **Side effects of the builds** (generated, as a batch writes them): unity/Assets/Scenes/FightRange.unity and Generated/Range/*.mat (GameBuild rebuilds the range), and HarbourDistrict-grade-night.asset (the world build).
+
+## Batch 0.2.123 (Latch, 2026-10-26): STOPPED at budget on build 0.2.125 (c038, a762f850 + this round)
+
+Three player builds. 0.2.123 (the full batch) failed game-check on six gated sections. 0.2.124 (`--from game-build`) failed game-check on fire. 0.2.125 (`--from game-build`) passed game-check and shots, then failed **budget** on the r059, r067 and r123 proof sets. late-fight and tp-long ran on 0.2.125 with `--from late-fight` (BATCH OK for those two). The budget failures are a gap in the HUD-budget contract, not a build fault, so I stopped there (below).
+
+**Pre-flight (a762f850, out/scratch/latch/r5):** in, as briefs/067/glyph-r4.md asked:
+- F1: the hold ring and exit lane are depth-tested floor decals (`FloorRing`, `FloorPath`, `ClipToDisc` in HudToolkit.Ground.cs), never past 12 m of the car.
+- F2: StepAside lets bubbles win; the clock arc follows its plate; pops sit 16 px clear of speech.
+- Stacked pops: one pop per cause and place.
+- Tethers: none inside the ring; one at 60 % for a holder on the lane.
+- The fail camera's shot line only at the deciding moment (`FailAtMoment`).
+- G1, follow-view flashes: drawn with the target off view; `ShotFlashesHostile`.
+- Manifest kinds: the seal clock is `marker`, refusal pops are `pop`.
+- "Pick when to fire" shows the three stance marks.
+- Item 8, the rival-for-car disc (HudToolkit.RivalsForCar.cs): built, but no proof reads `ForCarShown` yet.
+- r5: EditMode 35/35, the budget clean on all five r123 frames.
+
+**late.json (Waymark §5.3):** only the notes changed. The step reads each end from the engine (loud-fight now ends at tick 3068, 5:06.8; loud-left-downed at 5:04.7, tick 3047). `bun test tools/game/late.test.ts` 22/22.
+
+**What failed on 0.2.123 and what I changed (host and proof code only):**
+- **r29 inezRound.** On 0.34 the unturned driver drives Vale off at 6:13 (tick 3730), before her 7:37 round. The round now replays route B's opening first (the Scout's Listen and the Fixer's Pay on the driver, the false tip), which keeps the run going to 8:10.
+- **r29 reroute.** c038's route A gives no Reroute any more. The reroute now comes from the first route that gives one (route B, 5:00).
+- **done cancel.** The patrol now sweeps out of reach. The host walks in (a move with the Watch pending, HandoverHost.cs:1036), and the check accepts that.
+- **done guardBack.** The guard's 2:55 away ended after 6:13. It is now read on a fresh run with route A's own orders up to its call (2:51, no Enter), with frames after the replay so the host sees the window open. "Guard back" is read among the live pops.
+- **done tpFire.** The Scout walks to within about 6 m of the sweeping patrol, with a clear line (ApproachInSight).
+- **holdRange ringHover, a host fault.** Since brief 067 E took Fire off the calm pill, `HoverFire` was false on a passer-by, so 049's hover ring never showed. HostTargetRings now rings what a drawn selection hovers.
+- **r067 camera and act, a host fault.** In `FollowEnter` (HostFollow.cs:62) the brief 067 G edit had put the follow view's resets (`fDist`, `fHasLast`, `fHeadVel`, `fChaseVel`, `fLookUntil`) inside its comment. So the last visit's heading velocity swung a new third-person view off the heading: −10° to −92° in the trace, and in act it turned Inez behind the camera. The resets are restored, and entering the view also ends any open map drag. With the camera fixed, the act check now waits for Inez's prompt before the E tap, as it already did before the E hold.
+- **r067 board.** The Drive was queued by plan-together on a paused clock; it is off for this part, as in Proof29. "One order for the squad" now compares each doer's first order tick: the moves go on one tick (36), and the Boards go as each arrives.
+- **r067 convo.** The first Help went at a hardcoded tick 700 (c037). It now goes at route A's own Help ticks.
+- **fire.**
+  - On 0.2.122 the Scout's shots were return fire at a patrol that came; on 0.34 it never comes.
+  - She now stands on her own line to the car, inside her reach, outside the blast ring and outside the follow ring, and fires her own lock with the Fixer's. With her following the trigger, three guns blew the car before the run, tap and lock checks.
+  - camHolds (0.2.124): with the camera now entering on the heading, a wall pulls the boom in after the sideways run. The camera holds when the player's set distance is unchanged (`FollowDistSet`, `FollowPulledIn`).
+- **Tooling:** `-proofOnly a,b` runs only the named proof sections, for scratch runs; every other section stays null, so such a proof never passes the gate.
+
+**Steps (final state):**
+- sim: ok, 356/356, DLL 5fe7665b7923.
+- compile: ok (1 warning).
+- kit: ok.
+- world: ok.
+- unity-world: ok, 50 s.
+- unity-match: ok, 447/447.
+- game-build: 0.2.125.
+- game-check: ok. 356/356 scenarios; driveSession and fireSession replay headless. Every gated section passes: driveClick, fireStop, ringCheck, inputMap, act, fire, cars, hudClick, dblClick, holdActs, holdRange, leash, done, rings, levels, r29, r118, r059, r067. r123 (not gated) passes too:
+  - looks: 3 and 4 distinct;
+  - safe 4:19: 0 bad frames, 17 flashes;
+  - loud 3:48: 0 bad, worst 19°, 48 flashes, cones 0;
+  - ground: 0 bad, 42 flashes (28 hostile);
+  - no reticles.
+- shots: ok, 11.
+- budget: FAILED.
+  - The batch's own shots: 10/10 within budget, audit 10/10.
+  - Proof sets: r059 12/13 (r059-fight-start, optional, not taken), r067 25/32 (r067-reticle-handoff not taken), r123 4/5.
+  - There is no r118 picture set in tools/game/proofset.json; r118 gates as a proof section only.
+- late-fight: ok, both rows.
+  - loud-fight: worst 22.6 ms (tick 3068, order+save+end), p99 6.9 ms.
+  - loud-left-downed: worst 18.2 ms, p99 7.8 ms.
+  - NOISY MACHINE: Blender at 1314 %.
+- tp-long: ok. play-opening p99 6.9 ms, tp-street p99 5.7 ms, tp-worst p99 5.7 ms.
+
+**Why budget fails (for Splice and Glyph; I did not retag to pass):** these are the first measurements of the r059 and r067 sets, and they show HUD pieces the budget has no kind for.
+- The **order pill** ("Hold · Drive into the service drive · 29 s", "Hold · Board · 8 s") and the **lock pill** ("Listen to the guard · Already heard") are tagged `line`. The tool counts them as an objective or hint line: at most one on screen with the goal, at most 6 words. Fails: r059-drive-hover, r067-drive-pill-car, r067-squad-board-pill, r067-lock-pill-guard, r067-shut-pop, r067-stack-tab, r123-fight-ground.
+- The **Alt line** on the car ring ("Go without Vale calls off the attempt. …") is a `line` in the alt state: r067-car-ring-go-alt.
+- The **Done chips** are not in the manifest. Their verb-pill rows (Help · Pressure, Listen · Pay) read as untagged 9 to 10 word running text plus a stacked block: r067-lock-pill-guard.
+- The **conversation cutaway's** scaled top bar ("$20,000" at about 1.7x) reads as one stacked block: r067-convo-inez-2.
+- Tagging the pills `hud` or the chips `image` would hide their words from the reader, which is the loosening Glyph ruled out (glyph-r4 §4). It needs kinds for the order pill, the lock pill, the chip and the Alt line, with Glyph's limits.
+- Separately, r123-fight-ground now shows a Board pill (the follow view enters facing the car), and it reads "Hold · Board · 1 s · 1 s", with the time twice.
+
+**Evidence** (git-ignored): briefs/041/build/0312/
+- batch-0312a…d logs;
+- logs/, proof-1080/, shots/, late/, proofset/;
+- proof-2160/ (`-gameProof -capture-size 3840x2160`, status ok);
+- crops-2160/ (`bun run proofset crops`: crops-r059.html, crops-r067.html, crops-r123.html).
+- On the 2160 run, act's E-hold ring and done's tpFire missed on timing (a loaded machine, slow 4K frames). Both are made robust in code after 0.2.125, so the next build carries them; the 1080 gate passed both.
+- Scratch iterations: out/scratch/latch/b123/ (p1 to p6 proofs, scratch builds 1 to 6, EditMode 35/35 after the HostFollow change).
+
+**Open:**
+- **Splice and Glyph:** the budget kinds above, then a `--from budget` rerun of 0.2.125 (no rebuild needed for budget alone).
+- **Glyph:** the 2x review of crops-2160; the "1 s · 1 s" Board pill; whether the chips belong in the manifest as a new kind.
+- **Keel and Motive:** the fire proof's Scout no longer needs a patrol to come. Nothing for the engine.
+- **Item 8:** add `ForCarShown` to a proof frame.

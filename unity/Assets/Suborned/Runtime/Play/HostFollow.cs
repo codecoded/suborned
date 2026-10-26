@@ -59,11 +59,13 @@ namespace Suborned.Play
             turnDragging = false; grabbing = false;
             left = new Overhead { pos = cam.transform.position, rot = cam.transform.rotation, focus = focus, ortho = cam.orthographic, size = cam.orthographicSize, fov = cam.fieldOfView, near = cam.nearClipPlane, far = cam.farClipPlane, shadows = shadows && shadows.enabled };
             fAgent = FollowWho(); fPivot = FollowPoint(fAgent) ?? focus; fPivotVel = Vector3.zero;
-            fYaw = fYawFrom = fYawTo = AgentYaw(fAgent, yawNow); fTurnStart = -1f; // brief 067 G (Sky on 0.2.122): in behind the agent, facing their heading (the figure's drawn facing), not the map's yaw fDist = fDist > 0f ? fDist : followDistance; fDistNow = fDist; fDragging = false; fHasLast = false; fHeadVel = Vector3.zero; fChaseVel = 0f; fLookUntil = -1f; // Sky: the zoom is the player's setting, kept between visits // behind the agent, looking the way the overhead view looked
+            fYaw = fYawFrom = fYawTo = AgentYaw(fAgent, yawNow); fTurnStart = -1f; // brief 067 G (Sky on 0.2.122): in behind the agent, facing their heading (the figure's drawn facing), not the map's yaw
+            fDist = fDist > 0f ? fDist : followDistance; fDistNow = fDist; fDragging = false; fHasLast = false; fHeadVel = Vector3.zero; fChaseVel = 0f; fLookUntil = -1f; // Sky: the zoom is the player's setting, kept between visits. Batch 0.2.123: these resets had slipped into 067 G's comment, so the last visit's heading velocity turned the new view off the heading (r067 camera)
             fSwingFromPos = cam.transform.position; fSwingFromRot = cam.transform.rotation; fSwingStart = Time.unscaledTime;
             cam.orthographic = false; cam.fieldOfView = followFov; cam.nearClipPlane = 0.2f; cam.farClipPlane = Mathf.Min(followFar, DistanceHaze.FarClip > 0f ? DistanceHaze.FarClip : followFar); // brief 048: the clip is the haze's far (350 m)
             if (shadows) shadows.enabled = true; // brief 048: TacticalShadows fits a perspective camera itself (110 m, 2 cascades, split 22 m, last 30 % faded)
             Following = true; intentKey = "";
+            dragging = false; orbiting = false; // batch 0.2.123: a left press made on the map (a drag still open) never orbits the view it enters
             fSwingFromPos = fPivot + (fSwingFromPos - focus).normalized * 60f; // the swing starts high on the overhead view's line through the agent
             FollowPlace(true);
             Status = $"Follow view: {Suborned.Sim.Op.Name((Suborned.Sim.OpId)fAgent)} ({controls.Label(PlayAction.FollowView)} for the overhead view)";
@@ -120,6 +122,10 @@ namespace Suborned.Play
         float AgentYaw(int k, float fallback) => k >= 0 && k < 4 && views?.FigureYaw("op/" + Suborned.Sim.Op.Name((Suborned.Sim.OpId)k)) is float y ? y : fallback;
         /// <summary>The proof reads it: the follow camera's yaw now (Unity degrees), and the followed agent's drawn heading.</summary>
         public float FollowYaw => fYaw;
+        /// <summary>The proof reads them: the follow view's set distance (the player's, kept between visits) and whether a wall has the boom pulled in now.</summary>
+        public float FollowDistSet => fDist; public bool FollowPulledIn => fDistNow < fDist - 0.05f;
+        /// <summary>The proof's trace of the follow camera's yaw inputs (batch 0.2.123: the r067 entry and the act click).</summary>
+        public string FollowTrace => $"yaw {fYaw:0.0} head {fHeadVel.x:0.00},{fHeadVel.z:0.00} idle {lIdle:0.00} drag {dragging} orbit {orbiting} fdrag {fDragging} modern {controls.Modern} look {fLookUntil - Time.unscaledTime:0.00} turn {fTurnStart:0.0} pressed {(UnityEngine.InputSystem.Mouse.current?.leftButton.isPressed ?? false)}";
         public float FollowAgentYaw => AgentYaw(fAgent, float.NaN);
 
         /// <summary>The selected agent (the hotbar's), else the first selected, else the Scout.</summary>
