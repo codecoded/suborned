@@ -42,6 +42,9 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, s] of Object.entries(b.fails)) push(`briefing.fails.${k}`, s);
   b.timeline.forEach((x, i) => push(`briefing.timeline[${i}]`, x.label));
   for (const [k, s] of Object.entries(b.cell)) push(`briefing.cell.${k}`, s);
+  push('briefing.page.target', b.page.target); push('briefing.page.ending', b.page.ending);
+  for (const [k, w] of Object.entries(b.page.ways)) { push(`briefing.page.ways.${k}.when`, w.when, false, 16); push(`briefing.page.ways.${k}.line`, w.line); }
+  for (const [k, s] of Object.entries(b.page.cell)) push(`briefing.page.cell.${k}`, s);
   for (const [k, x] of Object.entries(t.targets)) {
     push(`targets.${k}.about`, x.about);
     if (x.watched) push(`targets.${k}.watched`, 'Learned: ' + x.watched); if (x.routine) push(`targets.${k}.routine`, 'Learned: ' + x.routine); if (x.heard) push(`targets.${k}.heard`, x.heard);
@@ -92,7 +95,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   t.dialogue.forEach((e, i) => e.lines.forEach((s, j) => push(`dialogue[${i}].lines[${j}] ${lineKey(e)}`, s, true)));
   // briefs 058, 059, 062 (GDD v0.25.0): the briefing's labels, and the words waiting for the engine (`pending`), held to the same limits as the live ones
   for (const [k, x] of Object.entries(t.less.briefing.job)) push(`less.briefing.job.${k}`, x, false, 10);
-  for (const k of ['begin', 'day', 'night', 'target', 'fact', 'office'] as const) push(`less.briefing.${k}`, t.less.briefing[k], false, 24);
+  for (const k of ['begin', 'target', 'fact', 'office'] as const) push(`less.briefing.${k}`, t.less.briefing[k], false, 24);
   for (const [k, x] of Object.entries(t.less.briefing.ways)) push(`less.briefing.ways.${k}`, x, false, 16);
   const pe = t.pending;
   if (pe) {
@@ -254,6 +257,27 @@ describe('times and numbers agree with the mission', () => {
     expect(t.briefing.card.length).toBeLessThanOrEqual(5);
     expect(t.briefing.card[0]).toMatch(/^Councillor Vale has a file on us/);
     expect(t.briefing.card.join(' ')).toMatch(/alive/);
+  });
+  test('the briefing page (brief 070): two sentences a way, the five clock stations, a line for each face, nothing about Day or Night', () => {
+    const p = t.briefing.page; const sentences = (x: string) => x.split(/(?<=[.?])\s+/).filter(Boolean).length;
+    const bj = json('contracts/missions/handover/brief.json') as { ways: { id: string }[] };
+    expect(Object.keys(p.ways).sort()).toEqual(bj.ways.map((w) => w.id).sort());
+    for (const [id, w] of Object.entries(p.ways)) {
+      const hint = t.briefing.hints[id as 'front-door' | 'pickup'];
+      expect(hint, id).toMatch(/^[A-Z][a-z]+( [a-z]+)?: /); expect(sentences(hint.split(': ', 2)[1]!) + sentences(w.line), id).toBeLessThanOrEqual(2);
+    }
+    expect(p.clock).toEqual(['2:35', '5:30', '5:40', '5:50', '6:10']); // Sky, brief 070: five stations
+    const marks = t.briefing.timeline.map((x) => x.at); expect(p.clock.every((a) => marks.includes(a))).toBe(true);
+    expect([...p.clock].sort((a, b) => marks.indexOf(a) - marks.indexOf(b))).toEqual(p.clock);
+    expect(Object.keys(p.cell).sort()).toEqual([...AGENTS].sort());
+    expect(JSON.stringify(t.briefing).replace(/"rule":"[^"]*"/g, '')).not.toMatch(/\b(day|night)\b/i);
+  });
+  test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 6:10, turned he waits until 8:30', () => {
+    const c = t.briefing.clock.line; expect(c).toMatch(/6:10/); expect(c).toMatch(/8:30/); expect(c).toMatch(/turn/);
+    expect(t.briefing.card.at(-1)).toMatch(/6:10.*8:30.*turn/);
+    const at = (m: string) => t.briefing.timeline.find((x) => x.at === m)!.label;
+    expect(at('6:10')).toMatch(/[Uu]nless turned/); expect(at('8:30')).toMatch(/turned driver/);
+    expect(JSON.stringify(t.briefing)).not.toMatch(/At 8:30 Vale's driver|the driver drives Vale away/);
   });
   test('the hints name the two known approaches', () => {
     expect(t.briefing.hints['front-door']).toMatch(/Inez/);
@@ -1587,7 +1611,8 @@ describe('briefs 058, 059, 062: cameras, the pickup and rivals, the briefing', (
     const b = L.briefing;
     expect(Object.keys(b.job).sort()).toEqual([...AGENTS].sort());
     for (const [k, x] of Object.entries(b.job)) { expect(x.trim().split(/\s+/).length, k).toBe(1); expect(x, k).not.toMatch(GENDER); }
-    expect([b.begin, b.day, b.night, b.target, b.fact, b.office]).toEqual(['Begin', 'Day', 'Night', 'Target', 'Alive', 'Records Office']);
+    expect([b.begin, b.target, b.fact, b.office]).toEqual(['Begin', 'Target', 'Alive', 'Records Office']);
+    expect(b as Record<string, unknown>).not.toHaveProperty('day'); expect(b as Record<string, unknown>).not.toHaveProperty('night'); // brief 070 (Sky): night is not a toggle
     expect(Object.keys(b.ways).sort()).toEqual(['front-door', 'pickup']);
     expect(JSON.stringify(b)).not.toMatch(GENDER);
   });

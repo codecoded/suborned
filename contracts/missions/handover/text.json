@@ -199,7 +199,7 @@
    "At shift change he carries it out of the Civic Records Office.",
    "We take him alive, get him into our getaway car and drive off.",
    "Quietly, if we can. Others want him too, and this city notices noise.",
-   "We have $100,000, four people and until 8:30."
+   "We have $100,000, four people, and until 6:10, or 8:30 if we turn his driver."
   ],
   "objective": "Take Councillor Vale alive to the getaway car.",
   "win": "Vale in the getaway car when it leaves.",
@@ -221,14 +221,14 @@
   },
   "clock": {
    "close": "8:30",
-   "line": "Handover chime at 5:30. At 8:30 Vale's driver takes him away."
+   "line": "Handover chime at 5:30. Vale's driver takes him away at 6:10, or 8:30 if turned."
   },
   "purse": {
    "usd": 100000,
    "line": "Cash: $100,000. Paying people costs the most. Watching and listening are free."
   },
   "hints": {
-   "front-door": "Front door: the guard takes his coffee at Inez's café, and she is close to him.",
+   "front-door": "Front door: Inez and the door guard are close.",
    "pickup": "Pickup: Vale rides from the official bay, and his driver is short of cash."
   },
   "tracker": "Take Vale alive to the getaway car · closes 8:30",
@@ -272,13 +272,13 @@
    },
    {
     "at": "6:10",
-    "label": "Vale reaches his car. Unless turned, his driver drives off",
+    "label": "Vale at his car. Unless turned, his driver takes him away",
     "short": "Vale at car",
     "known": true
    },
    {
     "at": "8:30",
-    "label": "Close: the driver drives Vale away",
+    "label": "Close: a turned driver gives up and drives Vale away",
     "short": "Close",
     "known": true
    }
@@ -288,6 +288,22 @@
    "fixer": "Fixer: turns people (Ask, Pay, Help, Pressure) and can Call Inez to act.",
    "tech": "Tech: loops or cuts cameras and reroutes patrols from the control cabinet.",
    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
+  },
+  "page": {
+   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline), `cell` one line under each face, about this mission. Day and Night are off the page (Sky: night is not a toggle).",
+   "target": "Comes out at 5:50 and leaves by car.",
+   "ways": {
+    "front-door": {"when": "Before 5:50", "line": "Turn her to call him off the door, and loop the camera that watches it."},
+    "pickup": {"when": "From 6:10", "line": "Turn him before 5:40, and he brings Vale round to the service bay and waits."}
+   },
+   "ending": "Both ways end here: Vale in the getaway car as it leaves.",
+   "clock": ["2:35", "5:30", "5:40", "5:50", "6:10"],
+   "cell": {
+    "scout": "Listens to Inez and the driver. Can send the rivals the wrong way.",
+    "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
+    "tech": "Loops the door camera. Moves the patrol and drives our car round.",
+    "enforcer": "Goes in for Vale, or takes him at the car. Only he can carry him."
+   }
   }
  },
  "targets": {
@@ -1338,6 +1354,7 @@
    "briefing.timeline.at": "icon",
    "briefing.timeline.label": "alt",
    "briefing.cell": "alt",
+   "briefing.page": "label",
    "targets.name": "label",
    "targets.about": "alt",
    "targets.watched": "alt",
@@ -1633,10 +1650,10 @@
    "showSeconds": 6
   },
   "briefing": {
-   "rule": "Brief 062 (Sky, 2026-10-25: pick B, on the street). The hook and the objective are the only two lines of story and live in brief.json (hook, dossier.objective). The rest is labels: the file card's header and one fact, the Office tag, the way names, the cell strip's job word under each face (the agent's name is names.speakers), Day, Night and Begin. The goal line shows once play starts. The sentences, the fails and the two ways in are Alt.",
+   "rule": "Brief 062 (Sky, 2026-10-25: pick B, on the street). The hook and the objective are the only two lines of story and live in brief.json (hook, dossier.objective). The rest is labels: the file card's header and one fact, the Office tag, the way names, the cell strip's job word under each face (the agent's name is names.speakers), and Begin. Brief 070 (Sky, 2026-10-26): Day and Night are retired (night is not a toggle); the page's sentences are briefing.page. The goal line shows once play starts. The sentences, the fails and the two ways in are Alt.",
    "goal": "Take [Vale] alive to the [car].",
    "job": {"scout": "Eyes", "fixer": "People", "tech": "Machines", "enforcer": "Force"},
-   "begin": "Begin", "day": "Day", "night": "Night",
+   "begin": "Begin",
    "target": "Target", "fact": "Alive", "office": "Records Office",
    "ways": {"front-door": "Front door", "pickup": "Pickup"}
   },
