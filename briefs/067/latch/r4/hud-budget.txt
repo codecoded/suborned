@@ -1,0 +1,9 @@
+PASS  r123-fight-ground.png              rest   HUD   5.7% of the screen (limit 15%, footprint 10%)  running text 0 lines, 0 blocks; speech 1, beats 0  [hud mask]
+FAIL  r123-fight-loud.png                rest   HUD   7.6% of the screen (limit 15%, footprint 40%)  running text 1 line, 0 blocks; speech 2, beats 0  [hud mask]
+      - 1 line of running text that is not speech
+      - 2 objective or hint lines on screen (at most 1)
+      - the objective or hint line runs over more than one line
+PASS  r123-fight-safe.png                rest   HUD   7.3% of the screen (limit 15%, footprint 48%)  running text 0 lines, 0 blocks; speech 6, beats 1  [hud mask]
+PASS  r123-looks-310.png                 rest   HUD   6.0% of the screen (limit 15%, footprint 11%)  running text 0 lines, 0 blocks; speech 4, beats 1  [hud mask]
+PASS  r123-looks-320.png                 rest   HUD   5.6% of the screen (limit 15%, footprint 9%)  running text 0 lines, 0 blocks; speech 0, beats 1  [hud mask]
+4/5 within budget

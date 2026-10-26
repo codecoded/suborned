@@ -994,7 +994,6 @@ namespace Suborned.Play
                 var cc = host.coneColour; paints.Add(pp => { pp.fillColor = cc; pp.strokeColor = Cream; pp.lineWidth = 1.5f; pp.BeginPath(); pp.MoveTo(aq + new Vector2(0, -6)); pp.LineTo(aq + new Vector2(6, 0)); pp.LineTo(aq + new Vector2(0, 6)); pp.LineTo(aq + new Vector2(-6, 0)); pp.ClosePath(); pp.Fill(); pp.Stroke(); });
             }
             StepMarks(px, now);
-            ShotMarks();
             PickMarks(now);
             MovePreview(alt, px, now);
             // destinations (Sky 2026-10-16, replacing the route line): a ring at each moving agent's destination with its number, as the scope's
@@ -1298,38 +1297,14 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- picking (brief 016 queue: Sky, "hard to select areas, like a camera")
 
+        // Sky 2026-10-26 ("Simplify the visuals, it's way too crowded. Just having the agent facing who they're shooting should be enough to not
+        // need those lines everywhere"): the shots-in-flight lines (ShotMarks, Glyph fight r2) are gone; the muzzle flash and the hit spark stay
+        // (HudToolkit.Fire ShotFx, both views) and the shooter faces its target (HandoverHost.AimTargets).
+
         VisualElement nameChip; Label nameText; readonly List<VisualElement> targetEls = new();
         /// <summary>The hovered thing's soft rim (a cream circle round its pick anchor) and a one-word name chip over it; in target mode, a
         /// marker over every valid target in view (the verb's glyph in a disc over a dashed ring, the hint ring's grammar; the Tab focus ringed
         /// solid), each a click that gives the picked verb there.</summary>
-        /// <summary>Shots in flight (Glyph fight r2): each a 2 px line on a 1 px dark underlay with a small muzzle flash; the cell's cream core in
-        /// a turquoise glow, rivals violet, guards and police amber, so whose fire it is reads before the line ends. Fades over its short life.</summary>
-        void ShotMarks()
-        {
-            var v = host.Views; if (v == null || m.Ended) return; float now = Time.unscaledTime;
-            foreach (var sh in v.ShotLines)
-            {
-                if (!Proj(sh.From, out var a) || !Proj(sh.To, out var b)) continue;
-                float al = Mathf.Clamp01(1f - (now - sh.Born) / HostViews.ShotLife * 0.6f); string side = sh.Side;
-                Color core = side == "cell" ? Cream : side == "rival" ? Violet : Amber;
-                paints.Add(pp =>
-                {
-                    pp.lineCap = LineCap.Round;
-                    void Line(Color c, float w) { pp.strokeColor = c; pp.lineWidth = w; pp.BeginPath(); pp.MoveTo(a); pp.LineTo(b); pp.Stroke(); }
-                    if (side == "cell") Line(new Color(TurqLight.r, TurqLight.g, TurqLight.b, 0.45f * al), 7f); // the glow
-                    Line(new Color(Ink.r, Ink.g, Ink.b, 0.7f * al), 4f); Line(new Color(core.r, core.g, core.b, al), 2f);
-                    // the muzzle flash: a small four-point star at the muzzle, on the same underlay
-                    var d = (b - a).normalized; var n = new Vector2(-d.y, d.x);
-                    void Star(Color c, float r)
-                    {
-                        pp.fillColor = c; pp.BeginPath(); pp.MoveTo(a + d * r * 1.6f); pp.LineTo(a + n * r * 0.45f); pp.LineTo(a + n * r); pp.LineTo(a - d * r * 0.45f);
-                        pp.LineTo(a - n * r); pp.LineTo(a - n * r * 0.45f); pp.ClosePath(); pp.Fill();
-                    }
-                    Star(new Color(Ink.r, Ink.g, Ink.b, 0.6f * al), 6.5f); Star(new Color(1f, 0.97f, 0.86f, al), 5f);
-                });
-            }
-        }
-
         void PickMarks(float now)
         {
             if (nameChip == null) { nameChip = E(marks, "s-plate_dark", 0, 0, float.NaN, float.NaN); nameChip.style.paddingLeft = 8; nameChip.style.paddingRight = 8; nameChip.style.paddingTop = 4; nameChip.style.paddingBottom = 4; nameChip.style.minHeight = 22; nameChip.style.justifyContent = Justify.Center; nameText = L(nameChip, "verb-name"); manifest.Add((nameChip, "image", () => "name chip")); } // Glyph 016 r3: 8 px sideways, 4 px above and below

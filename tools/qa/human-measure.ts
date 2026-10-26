@@ -17,13 +17,22 @@
 // that reproduces its recorded checkpoints) and keeps the play under out/qa/human/plays/; only plays whose checkpoints all match are read for
 // refusals ("faithful"). Engines that were never committed (0.8.1, 0.10.0, 0.14.1, 0.20.0, 0.24.0, 0.25.0) leave their sessions unjudged.
 //
+// The engine's numbers. A move's landing (a straight walk from where the agent last stood) and an act's length are timed by the rules of the
+// engine the session was played on, read from that engine's rulebook and never written here (Aster 2026-10-26: engine 0.34.0 moved the cell's
+// walk from 1.4 to 1.8 m/s and its run from 2.8 to 3.6, and 0.31.0 the Loop from 62 to 20 s, so a constant mis-times every session on the other
+// side of a change). Which rulebook: the commit a replay matched; else the working tree when it is the session's version; else a commit of that
+// version (the newest at or before the session, else its first); else the last committed engine before it (engineBook). The cell's walk and
+// run are op-speed-cm-s and op-run-speed-cm-s; the city's walk (people-walk-cm-s) times nothing here, since only the cell's orders are timed.
+// An act lasts its rulebook value (ACT_KEYS; a takedown ko-s or kill-s by its `how`, a turn its approach's timeS in the people rules); the
+// call has no rulebook value and keeps the engine log's 10 s, as do the few acts an early rulebook did not hold yet (LOGGED_ACT_S).
+//
 // usage: bun run guard bun tools/qa/human-measure.ts [--replay] [--write] [--dirs a,b]
 //   --replay  replay Sky's sessions on their engines first (a few minutes: one engine build per version)
 //   --write   write tools/qa/human-profile.json and briefs/060/qa/human-measures.json (committed evidence)
 import { existsSync, mkdirSync, readdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { ROOT, engineAt, play } from '../missions/check/engine';
-import { SESSIONS_DIR } from './seeds';
+import { SESSIONS_DIR, sessionFolders } from './seeds';
 
 export const EDITOR_SESSIONS_DIR = join(ROOT, 'out/play');
 export const PLAYS_DIR = join(ROOT, 'out/qa/human/plays');
@@ -39,7 +48,6 @@ export const RULES = {
   gestureTicks: 3,     // orders within 0.3 s of the one before are one decision (a squad order, a double click, cancel + move)
   driveBoutGapTicks: 50, // drive samples on one agent more than 5 s apart start a new third-person stretch (WASD is held, tapped, let go)
   idleS: 15,           // a gap between decisions longer than this is an idle, not a hesitation
-  walkCmS: 140, runCmS: 280, // rulebook op-speed-cm-s, op-run-speed-cm-s
   redirectM: 3,        // a move replaced by a move more than this far from its point and off its heading is a change of mind (else a nudge)
   redirectDeg: 30,     // ... off its heading by more than this
   detourS: 6,          // A, then B, then A again within this: a switch that did not stick
@@ -47,8 +55,97 @@ export const RULES = {
   quickRestartS: 120,  // the next session started within this of the last save: a restart
 } as const;
 
-/** Act lengths (s) when the log does not say (rulebook values; turn and call from the engine's own log lines). */
-export const ACT_S: Record<string, number> = { watch: 20, listen: 42, turn: 50, loop: 62, reroute: 45, mislead: 44, enter: 38, takedown: 6, carry: 3, board: 1, call: 10, take: 38, draw: 1 };
+/** The rulebook value (values.<key>.v, seconds) each act lasts on the engine that played it, when the log does not say. A turn lasts its
+ *  approach's timeS in the people rules (approaches.<approach>.timeS); a takedown with how kill lasts kill-s. */
+export const ACT_KEYS: Record<string, string> = {
+  watch: 'watch-s', listen: 'listen-s', loop: 'loop-s', reroute: 'reroute-s', mislead: 'mislead-s', enter: 'enter-s', take: 'take-s', carry: 'carry-s', board: 'board-s',
+  takedown: 'ko-s', 'takedown:kill': 'kill-s',
+};
+/** Lengths (s) no rulebook value gives: the Fixer's call (the engine logs "order.call ... (10 s)") and a turn with no approach; and, on engines
+ *  whose rulebook did not hold them yet (0.3.0 to 0.6.2: ko-s, carry-s, board-s), the lengths the measure used before it read the rulebook. */
+export const LOGGED_ACT_S: Record<string, number> = { call: 10, turn: 50, takedown: 6, carry: 3, board: 1 };
+export const RULEBOOK = 'contracts/rules/rulebook.json', PEOPLE_RULES = 'contracts/people/people.rules.json';
+
+/** What the measure times a session's orders by: the rules of the engine it was played on. */
+export type EngineRules = {
+  /** the session's engine version, and where its rules were read: a commit, or "tree" */ engine: string; from: string;
+  /** the cell's walk and run, cm/s (op-speed-cm-s, op-run-speed-cm-s); undefined where that rulebook has none (the first 0.3.0 commits had no run) */ walkCmS?: number; runCmS?: number;
+  /** act lengths, s: by verb, and by verb:how or verb:approach where they differ (takedown:kill, turn:ask) */ actS: Record<string, number>;
+};
+
+/** A rulebook and its people rules (parsed JSON; either may be missing) as the measure's numbers. */
+export function engineRules(rulebook: unknown, people: unknown, engine: string, from: string): EngineRules {
+  const vals = (rulebook as { values?: Record<string, { v?: unknown }> } | undefined)?.values ?? {};
+  const v = (k: string) => { const x = vals[k]?.v; return typeof x === 'number' && Number.isFinite(x) && x > 0 ? x : undefined; };
+  const actS: Record<string, number> = { ...LOGGED_ACT_S };
+  for (const [act, key] of Object.entries(ACT_KEYS)) { const x = v(key); if (x !== undefined) actS[act] = x; }
+  const ways = (people as { approaches?: Record<string, { timeS?: unknown }> } | undefined)?.approaches ?? {};
+  for (const [a, w] of Object.entries(ways)) if (typeof w?.timeS === 'number' && w.timeS > 0) actS[`turn:${a}`] = w.timeS;
+  return { engine, from, walkCmS: v('op-speed-cm-s'), runCmS: v('op-run-speed-cm-s'), actS };
+}
+
+/** How long an act lasts on that engine; undefined: not an act the measure times (a move, a draw, a stance). */
+export function actLength(er: EngineRules, o: { do: string; approach?: string; how?: unknown }): number | undefined {
+  const variant = o.do === 'takedown' ? o.how : o.do === 'turn' ? o.approach : undefined;
+  return (typeof variant === 'string' ? er.actS[`${o.do}:${variant}`] : undefined) ?? er.actS[o.do];
+}
+
+/** Engine versions in order ("suborned.sim/0.34.1" after "0.4.0"). */
+export function verCmp(a: string, b: string): number {
+  const p = (s: string) => s.replace(/^suborned\.sim\//, '').split('.').map(n => Number(n) || 0), x = p(a), y = p(b);
+  for (let i = 0; i < Math.max(x.length, y.length); i++) { const d = (x[i] ?? 0) - (y[i] ?? 0); if (d) return d; }
+  return 0;
+}
+
+export type EngineCommit = { c: string; at: string; v: string };
+/** A session's rules: its engine version, its start (the session id, YYYYMMDD-HHMMSS) and the commit a replay of it matched, if any. */
+export type Book = (engine: string, at: string, commit?: string) => EngineRules;
+type RulesSrc = { rulebook: unknown; people: unknown };
+
+const gitShow = (c: string, path: string): string | undefined => {
+  const r = Bun.spawnSync(['git', 'show', `${c}:${path}`], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' });
+  return r.exitCode === 0 ? r.stdout.toString() : undefined;
+};
+/** The working tree's engine version (the string engineCommits reads at each commit) and its rules. */
+export function treeRules(root = ROOT): { version: string } & RulesSrc {
+  const dir = join(root, 'sim/Suborned.Sim'); let version = '';
+  for (const f of readdirSync(dir).filter(f => f.endsWith('.cs')).sort()) { const m = readFileSync(join(dir, f), 'utf8').match(/"(suborned\.sim\/[0-9.]+)"/); if (m) { version = m[1]!; break; } }
+  const read = (p: string) => { try { return JSON.parse(readFileSync(join(root, p), 'utf8')); } catch { return undefined; } };
+  return { version, rulebook: read(RULEBOOK), people: read(PEOPLE_RULES) };
+}
+
+/** The rules each session was played with, from the rulebook of its engine: the commit a replay of it matched; else the working tree when it is
+ *  that version (or no version is recorded); else a commit of that version (the newest at or before the session's start, else its first, as
+ *  replaySessions picks); else the newest commit of the last committed version before it; else the tree. Each source is read once. */
+export function engineBook(o: { commits?: () => EngineCommit[]; show?: (commit: string, path: string) => string | undefined; tree?: () => { version: string } & RulesSrc } = {}): Book {
+  const show = o.show ?? gitShow, src = new Map<string, RulesSrc>(), memo = new Map<string, EngineRules>();
+  let commits: EngineCommit[] | undefined, tree: ({ version: string } & RulesSrc) | undefined;
+  const cs = () => (commits ??= (o.commits ?? engineCommits)()), t = () => (tree ??= (o.tree ?? treeRules)());
+  const parse = (s: string | undefined) => { if (s === undefined) return undefined; try { return JSON.parse(s); } catch { return undefined; } };
+  const from = (c: string): RulesSrc => { let r = src.get(c); if (!r) { r = c === 'tree' ? t() : { rulebook: parse(show(c, RULEBOOK)), people: parse(show(c, PEOPLE_RULES)) }; src.set(c, r); } return r; };
+  const rules = (c: string, engine: string) => { const k = `${engine}@${c}`; let r = memo.get(k); if (!r) { const s = from(c); r = engineRules(s.rulebook, s.people, engine, c); memo.set(k, r); } return r; };
+  return (engine, at, commit) => {
+    if (commit) return rules(commit, engine);
+    if (!engine || engine === t().version) return rules('tree', engine);
+    const all = cs(), same = all.filter(c => c.v === engine);
+    if (same.length) return rules((same.filter(c => c.at <= at)[0] ?? same[same.length - 1]!).c, engine);
+    const before = all.filter(c => verCmp(c.v, engine) < 0).sort((a, b) => verCmp(b.v, a.v) || b.at.localeCompare(a.at))[0];
+    return rules(before ? before.c : 'tree', engine);
+  };
+}
+
+/** One engine's rules as the measure used them: its paces, where they were read and how many sessions they timed. */
+export type Pace = { engine: string; from: string; walkCmS?: number; runCmS?: number; sessions: number };
+/** The paces in words, grouped: "1.4 m/s walking, 2.8 running (engines 0.4.0 to 0.26.0); ...". */
+export function paceWords(ps: { engine: string; walkCmS?: number; runCmS?: number }[]): string {
+  const g = new Map<string, string[]>();
+  for (const p of ps) { const k = `${p.walkCmS ?? 0}|${p.runCmS ?? 0}`; g.set(k, [...(g.get(k) ?? []), p.engine.replace(/^suborned\.sim\//, '') || '?']); }
+  return [...g].map(([k, vs]) => {
+    const [w, run] = k.split('|').map(Number) as [number, number], u = [...new Set(vs)].sort(verCmp);
+    return `${w ? `${w / 100} m/s walking` : 'no walk in the rulebook'}, ${run ? `${run / 100} running` : 'no run'} (${u.length > 1 ? `engines ${u[0]} to ${u[u.length - 1]}` : `engine ${u[0]}`})`;
+  }).join('; ') || 'no sessions';
+}
+
 /** Verbs that commit to a line on a target (the end of the approach a Watch or Listen began). */
 const COMMIT = new Set(['turn', 'call', 'takedown', 'carry', 'loop', 'reroute', 'mislead', 'take', 'restrain', 'stash', 'enter', 'fire']);
 const LEARN = new Set(['watch', 'listen']);
@@ -153,11 +250,11 @@ const xy = (o: O): number[] | undefined => Array.isArray(o.to) && o.to.length >=
 
 // ---------------------------------------------------------------- the engine's word (faithful replays)
 
-export type Verdict = { faithful: boolean; orders: { order: O; ok: boolean; code?: string; why?: string }[]; log: { tick: number; code: string; text: string }[] };
+export type Verdict = { faithful: boolean; /** the engine commit the replay played on */ commit?: string; orders: { order: O; ok: boolean; code?: string; why?: string }[]; log: { tick: number; code: string; text: string }[] };
 export function loadVerdicts(dir = PLAYS_DIR): Map<string, Verdict> {
   const out = new Map<string, Verdict>(); if (!existsSync(dir)) return out;
   for (const f of readdirSync(dir).filter(f => f.endsWith('.json'))) {
-    try { const d = JSON.parse(readFileSync(join(dir, f), 'utf8')); out.set(d.id, { faithful: !!d.all, orders: d.play.orders, log: d.play.log }); } catch { /* skip */ }
+    try { const d = JSON.parse(readFileSync(join(dir, f), 'utf8')); out.set(d.id, { faithful: !!d.all, commit: typeof d.commit === 'string' ? d.commit : undefined, orders: d.play.orders, log: d.play.log }); } catch { /* skip */ }
   }
   return out;
 }
@@ -175,7 +272,7 @@ export function refusalFamily(code: string, why = ''): string {
 // ---------------------------------------------------------------- the measures
 
 export type Measures = ReturnType<typeof measure>;
-export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verdict> = new Map(), r = RULES) {
+export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verdict> = new Map(), r = RULES, book: Book = engineBook()) {
   const sky = cls.sky, hand = sky.filter(s => s.mode === 'handover'), range = sky.filter(s => s.mode === 'range');
   const gaps: number[] = [], gapsRange: number[] = [], first: number[] = [];
   let switches = 0, switchN = 0, squad = 0, decN = 0, detours = 0, detourN = 0, wrongAgent = 0;
@@ -184,7 +281,7 @@ export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verd
   let faithfulMoves = 0, unwalkable = 0, reclickN = 0, reclicked = 0;
   let actDecisions = 0, repeatSame = 0, otherWay = 0, wrongVerb = 0, retryN = 0, retried = 0;
   let lines = 0, abandoned = 0; const abandonedOn: Record<string, number> = {};
-  let runMoves = 0;
+  let runMoves = 0; const paces = new Map<string, Pace>();
   const boutS: number[] = []; let tpSessions = 0, driveTicks = 0, missionTicks = 0, boutsN = 0;
   const ends: Record<string, number> = {}; const quitAt: number[] = [], endAt: number[] = []; let restarts = 0;
   const refusals: Record<string, number> = {}; let judgedOrders = 0, refused = 0, judgedDecisions = 0, busyOrders = 0;
@@ -216,6 +313,9 @@ export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verd
 
     // per agent: cancels, replaced acts, redirected moves (a move's landing from where the agent stood: its last point or its drive)
     const v = verdicts.get(s.id), faithful = !!v?.faithful;
+    // the rules it was played with: its own engine's rulebook (the replay's commit when there is one), never today's
+    const er = book(s.engine, s.id, v?.commit), pk = `${er.engine}@${er.from}`, pc = paces.get(pk);
+    if (pc) pc.sessions++; else paces.set(pk, { engine: er.engine, from: er.from, walkCmS: er.walkCmS, runCmS: er.runCmS, sessions: 1 });
     const okOf = new Map<O, boolean>(); if (faithful) v!.orders.forEach((o, i) => { const mine = s.orders[i]; if (mine) okOf.set(mine, o.ok); });
     const pos = new Map<string, number[]>();
     for (const op of OPS) {
@@ -238,10 +338,10 @@ export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verd
         }
         if (o.do === 'move') {
           moves++; if (o.run) runMoves++;
-          const to = xy(o), from = pos.get(op);
-          if (to && from) {
+          const to = xy(o), from = pos.get(op), pace = o.run ? er.runCmS ?? er.walkCmS : er.walkCmS; // an engine with no run yet walked it
+          if (to && from && pace) {
             movesJudged++;
-            const len = dist(from, to), land = len / (o.run ? r.runCmS : r.walkCmS);
+            const len = dist(from, to), land = len / pace;
             if (nx && dt < land) {
               const no = nx.o, nt = no && xy(no);
               const here = [from[0]! + (to[0]! - from[0]!) * Math.min(1, dt / land), from[1]! + (to[1]! - from[1]!) * Math.min(1, dt / land)];
@@ -255,7 +355,7 @@ export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verd
           } else if (to) pos.set(op, to);
           continue;
         }
-        const len = ACT_S[o.do];
+        const len = actLength(er, o);
         if (len !== undefined && o.do !== 'draw') {
           acts++;
           // the act's start: the engine's own log line in a faithful replay (a walk-in delays it), else the order's tick
@@ -342,6 +442,8 @@ export function measure(all: Sess[], cls: Classified, verdicts: Map<string, Verd
     thirdPerson: { sessions: share(tpSessions, hand.length), bouts: boutsN, boutsPerDecision: share(boutsN, decN), boutS: quant(boutS), shareOfMission: r3(missionTicks ? driveTicks / missionTicks : 0) },
     mistakes: { judgedOrders, unwalkablePerMove: share(unwalkable, faithfulMoves), refused: share(refused, judgedOrders), byFamily: refusals, perDecision: share(refused, judgedDecisions), ordersOnBusyAgent: share(busyOrders, judgedOrders + acts) },
     ends: { by: ends, quit: share(ends['quit (no ending)'] ?? 0, hand.length), quitAtS: quant(quitAt), endedAtS: quant(endAt), restartsWithin2Min: share(restarts, hand.length) },
+    /** the rules each engine's sessions were timed by (paces in cm/s) and where they were read */
+    paces: [...paces.values()].sort((a, b) => verCmp(a.engine, b.engine) || a.from.localeCompare(b.from)),
   };
 }
 
@@ -384,7 +486,7 @@ export function toProfile(m: Measures, build = '') {
     thirdPersonS: d(m.thirdPerson.boutS, { p50: 3, p90: 8 }),
   };
   const source: Record<keyof typeof values, string> = {
-    cancelProb: `measured from ${n}: per order, undone before it landed: an act given another order (${c.actsReplacedBeforeLanding.k}) or cancelled (${c.actsCancelledBeforeLanding.k}) before its time was up, of ${c.actsReplacedBeforeLanding.n} acts (${r3((c.actsReplacedBeforeLanding.k + c.actsCancelledBeforeLanding.k) / Math.max(1, c.actsReplacedBeforeLanding.n))}); a move sent more than ${RULES.redirectM} m off and ${RULES.redirectDeg} degrees off its heading (${c.movesRedirected.k}) or stopped (${c.movesStopped.k}) before it arrived, of ${c.movesRedirected.n} judged moves (${r3((c.movesRedirected.k + c.movesStopped.k) / Math.max(1, c.movesRedirected.n))}). Steering along the way (${c.movesNudged.k}) and a walk cut short by the act it led to (${c.movesCutByAnAct.k}) are not counted. Arrival is a straight walk from the last known point at 1.4 m/s (2.8 running), so the move share is a floor`,
+    cancelProb: `measured from ${n}: per order, undone before it landed: an act given another order (${c.actsReplacedBeforeLanding.k}) or cancelled (${c.actsCancelledBeforeLanding.k}) before its time was up, of ${c.actsReplacedBeforeLanding.n} acts (${r3((c.actsReplacedBeforeLanding.k + c.actsCancelledBeforeLanding.k) / Math.max(1, c.actsReplacedBeforeLanding.n))}); a move sent more than ${RULES.redirectM} m off and ${RULES.redirectDeg} degrees off its heading (${c.movesRedirected.k}) or stopped (${c.movesStopped.k}) before it arrived, of ${c.movesRedirected.n} judged moves (${r3((c.movesRedirected.k + c.movesStopped.k) / Math.max(1, c.movesRedirected.n))}). Steering along the way (${c.movesNudged.k}) and a walk cut short by the act it led to (${c.movesCutByAnAct.k}) are not counted. Arrival is a straight walk from the last known point at the walk or the run of the engine the session was played on (its rulebook's op-speed-cm-s and op-run-speed-cm-s: ${paceWords(m.paces)}), so the move share is a floor`,
     cancelDelayS: `measured: time from the order to its cancel or replacement, pooled over acts (median ${c.actReplaceDelayS.p50} s), explicit cancels (${c.cancelDelayS.p50} s) and redirected moves (${c.moveRedirectDelayS.p50} s)`,
     reorderProb: `${ESTIMATES.reorderProb.why} Measured bound: the agent changes between Sky's decisions ${m.switching.agentChanges.p}`,
     repeatProb: `measured from ${n}: per act step on a target (moves excluded), the same agent giving the same act on the same target again (${m.reorders.sameAgainSameTarget.k} of ${m.reorders.sameAgainSameTarget.n}) or another approach of the same verb on it (${m.reorders.otherApproachSameTarget.k}): "the repeat Watch". ${Math.round(m.reorders.retryAfterRefusal.p * 100)}% of refused acts on a target were given again within 30 s`,
@@ -418,7 +520,7 @@ export function toProfile(m: Measures, build = '') {
 // ---------------------------------------------------------------- the replays (refusal codes from the engine Sky played)
 
 /** Committed engines by version, newest first: git log over the engine source, each commit's version string. */
-export function engineCommits(): { c: string; at: string; v: string }[] {
+export function engineCommits(): EngineCommit[] {
   const g = (...a: string[]) => Bun.spawnSync(['git', ...a], { cwd: ROOT, stdout: 'pipe', stderr: 'pipe' }).stdout.toString().trim();
   return g('log', '--format=%h %ad', '--date=format:%Y%m%d-%H%M%S', '--', 'sim/Suborned.Sim').split('\n').filter(Boolean).map(l => {
     const [c, at] = l.split(' '); const v = g('grep', '-h', '-o', '"suborned\\.sim/[0-9.]*"', c!, '--', 'sim/Suborned.Sim/*.cs').split('\n')[0]?.replace(/"/g, '') ?? '';
@@ -447,7 +549,7 @@ export async function replaySessions(sky: Sess[], say = (m: string) => console.e
 
 if (import.meta.main) {
   const a = process.argv.slice(2), val = (k: string) => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : undefined; };
-  const dirs = val('--dirs')?.split(',') ?? [SESSIONS_DIR, EDITOR_SESSIONS_DIR];
+  const dirs = val('--dirs')?.split(',') ?? [...sessionFolders(SESSIONS_DIR), EDITOR_SESSIONS_DIR]; // every folder the player has saved in, and the editor's
   const all = readSessions(dirs), cls = skySessions(all);
   if (a.includes('--replay')) await replaySessions(cls.sky);
   const m = measure(all, cls, loadVerdicts());

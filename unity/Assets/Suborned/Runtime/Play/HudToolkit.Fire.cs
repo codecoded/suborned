@@ -9,8 +9,9 @@ namespace Suborned.Play
     /// <summary>Brief 024 "Firing" (Sky 2026-10-21: "it's not clear I was firing at the agent (or that it was 'on')"; mockup tabs 4 and 5,
     /// briefs/024/action-controls/): firing is visible whatever the control model, drawn as light on the HUD (outside the post grade), every mark
     /// read from the engine's own fire state (HandoverHost.FireNow, Keel's FireStateOf), so it starts and stops in the frame the engine does.
-    ///  · the tracer: a dashed line marching from the muzzle to the target while the agent fires; thick for the driven agent, thin for an agent
-    ///    returning fire; a muzzle flash and a hit spark per shot (the engine's shot log); hostile fire a solid streak (shape, not colour);
+    ///  · per shot (the engine's shot log): a muzzle flash at the shooter's gun and a hit spark (or a miss puff) on the target. No line runs from a
+    ///    shooter to its target, lasting or per shot (Sky 2026-10-26: "Simplify the visuals, it's way too crowded. Just having the agent facing who
+    ///    they're shooting should be enough to not need those lines everywhere"): the shooter faces its target (HandoverHost.AimTargets);
     ///  · the firing mark over the agent (the gun with rays), the return mark (the gun with a back arrow), the hollow follow mark;
     ///  · one line: the gun disc, the downed mark and the seconds ("45 s"; brief 049 row 4), then "Stopped" for 1 s;
     ///  · while aiming: the reticle with its band ticks (wider when the odds drop), the 0.5 s hold's ring, the 8 m follow ring on the ground;
@@ -95,7 +96,7 @@ namespace Suborned.Play
             if (!fireBuilt) BuildFire();
             firePaints.Clear(); var g = host.Game; float now = Time.unscaledTime; bool live = !m.Ended && !m.BriefingOpen && host.Modal == ModalGate.Modal.None;
             var cam = host.View;
-            if (live && cam) { Tracers(now); ShotFx(now); FireMarks(now); Reticle(now); CarFx(now); }
+            if (live && cam) { ShotFx(now); FireMarks(now); Reticle(now); CarFx(now); } // Sky 2026-10-26: no tracers (the facing says who shoots whom)
             fireLayer.MarkDirtyRepaint(); if (fireLayer.parent.IndexOf(fireLayer) != fireLayer.parent.childCount - 1) fireLayer.BringToFront();
             FireLineFrame(W, H, live);
             if (host.Aiming) Show(chip2, false);
@@ -142,43 +143,11 @@ namespace Suborned.Play
             p.MoveTo(c + new Vector2(14, -6)); p.LineTo(c + new Vector2(18, -9)); p.MoveTo(c + new Vector2(15, -1)); p.LineTo(c + new Vector2(19.5f, -1)); p.MoveTo(c + new Vector2(14, 4)); p.LineTo(c + new Vector2(18, 7)); p.Stroke();
         }
 
-        Vector3 Muzzle(int k)
-        {
-            var key = "op/" + Op.Name((OpId)k); var t = host.Views?.Find(key); var at = t ? t.position : host.frame.World(host.Game.Ops[k].Pos);
-            float yaw = host.Views != null && host.Views.FigureYaw(key) is float y ? y : 0f; var fwd = Quaternion.Euler(0f, yaw, 0f) * Vector3.forward;
-            return at + Vector3.up * 1.32f + fwd * 0.42f;
-        }
-
-        /// <summary>The cell's tracers: from each firing agent's muzzle to its target, dashes marching toward the target; cut the frame the engine stops.</summary>
-        void Tracers(float now)
-        {
-            var g = host.Game; int driven = host.DriveAgent;
-            for (int k = 0; k < 4; k++)
-            {
-                var fs = host.FireNow[k]; if (!fs.Firing || string.IsNullOrEmpty(fs.Target)) continue;
-                if (host.DrawnAt(fs.Target) is not Vector3 tw) continue;
-                if (!Proj(Muzzle(k), out var a) || !Proj(tw + Vector3.up * 1.2f, out var b)) continue;
-                // brief 049 (Glyph): one quiet line only while a shot is being fired: a cream dashed line (9 on, 5 off, marching) over an
-                // ink-deep underlay at 35 %; the driven agent 1.5 px, an agent returning fire 1 px; no glow, no turquoise pass, no text
-                bool thin = fs.Mode == "return"; float core = thin ? 1f : 1.5f, under = 3.4f, dash = 9f, gap = 5f;
-                float phase = Mathf.Repeat(now * 60f, dash + gap);
-                firePaints.Add(pp =>
-                {
-                    var d = b - a; float len = d.magnitude; if (len < 4f) return; var u = d / len; pp.lineCap = LineCap.Butt;
-                    for (int pass = 0; pass < 2; pass++)
-                    {
-                        pp.strokeColor = pass == 0 ? new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.35f) : Cream;
-                        pp.lineWidth = pass == 0 ? under : core;
-                        pp.BeginPath();
-                        for (float s = phase - (dash + gap); s < len; s += dash + gap) { float s0 = Mathf.Max(0f, s), s1 = Mathf.Min(len, s + dash); if (s1 <= s0) continue; pp.MoveTo(a + u * s0); pp.LineTo(a + u * s1); }
-                        pp.Stroke();
-                    }
-                });
-            }
-        }
-
-        /// <summary>Per shot (the engine's shot log): the muzzle flash, a hit spark or a miss puff; in the follow view also the hostiles' solid streaks
-        /// (the overhead view draws those in ShotMarks).</summary>
+        /// <summary>Per shot (the engine's shot log): the muzzle flash at the shooter's gun, a hit spark on the target or a miss puff where the shot
+        /// lands; the same in both views. Sky 2026-10-26: no streak or tracer from the shooter to the target (the cell's lasting dashed tracer, the
+        /// overhead view's per-shot lines and the follow view's hostile streaks are gone); the flash, the shooter's facing and the spark say it.
+        /// ShotFlashes: the frames a muzzle flash was drawn in so far (the proof reads it).</summary>
+        public static int ShotFlashes { get; private set; }
         void ShotFx(float now)
         {
             foreach (var s in host.ShotFx)
@@ -187,13 +156,12 @@ namespace Suborned.Play
                 bool cell = s.side == "cell";
                 if (!Proj(s.from, out var a) || !Proj(s.to, out var b)) continue;
                 var d = (b - a); var u = d.sqrMagnitude > 1f ? d.normalized : Vector2.right; var n = new Vector2(-u.y, u.x);
-                if (age < 0.09f) firePaints.Add(pp =>
-                {   // the muzzle flash: a four-point star on an ink underlay, the length of the barrel's direction
+                if (age < 0.09f) { ShotFlashes++; firePaints.Add(pp =>
+                {   // the muzzle flash: a four-point star on an ink underlay, its long point the way the barrel faces (toward the target)
                     float r = cell ? 9f : 7f;
                     void Star(Color c, float rr) { pp.fillColor = c; pp.BeginPath(); pp.MoveTo(a + u * rr * 1.8f); pp.LineTo(a + n * rr * 0.4f); pp.LineTo(a + n * rr); pp.LineTo(a - u * rr * 0.4f); pp.LineTo(a - n * rr); pp.LineTo(a - n * rr * 0.4f); pp.ClosePath(); pp.Fill(); }
                     Star(new Color(Ink.r, Ink.g, Ink.b, 0.6f), r + 2f); Star(new Color(1f, 0.97f, 0.86f), r);
-                });
-                if (!cell && host.Following && age < 0.14f) firePaints.Add(pp => { pp.lineCap = LineCap.Round; pp.strokeColor = new Color(Ink.r, Ink.g, Ink.b, 0.6f); pp.lineWidth = 4.5f; pp.BeginPath(); pp.MoveTo(a); pp.LineTo(b); pp.Stroke(); pp.strokeColor = s.side == "rival" ? Violet : Amber; pp.lineWidth = 2.4f; pp.BeginPath(); pp.MoveTo(a); pp.LineTo(b); pp.Stroke(); });
+                }); }
                 if (age < 0.2f) firePaints.Add(pp =>
                 {
                     float t = age / 0.2f;

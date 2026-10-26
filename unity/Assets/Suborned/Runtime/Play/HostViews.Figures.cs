@@ -33,9 +33,21 @@ namespace Suborned.Play
         {
             "op/scout" => "scout", "op/fixer" => "fixer", "op/tech" => "tech", "op/enforcer" => "enforcer",
             "waitress" => "waitress", "guard" => "guard", "driver" => "driver", "councillor" => "councillor",
-            "patrol" => null, _ when key.StartsWith("security/") || key.StartsWith("unit/") => "security", _ when IsCrewId(key) || key.StartsWith("body/rival-") => "rival",
+            "patrol" => null, _ when key.StartsWith("security/") || key.StartsWith("unit/") => "security", _ when IsCrewId(key) || key.StartsWith("body/rival-") => RivalFigure(key),
             _ => null,
         };
+
+        /// <summary>Forma 067 (W1, the Velvet Set: briefs/067/forma.md §4): the rival crew dressed by member number, never by hash (a hash can put
+        /// three on one look): rival-1 mid violet (`rival`), rival-2 deep violet (`rival_b`), rival-3 the woman in the hooded jacket (`rival_d`),
+        /// rival-4 the lookout in lavender (`rival_c`), rival-5 the wheelman in mid violet (`rival`). The number is the id's trailing digits
+        /// ("rival-3", "body/rival-3", a range hostile's "rival-12"), 1 when it has none. A look the library lacks is dressed as `rival` (Dress).</summary>
+        static readonly string[] RivalLooks = { "rival", "rival_b", "rival_d", "rival_c", "rival" };
+        public static string RivalFigure(string id)
+        {
+            int i = id?.Length ?? 0; while (i > 0 && char.IsDigit(id[i - 1])) i--;
+            int n = i < (id?.Length ?? 0) && int.TryParse(id[i..], out var v) ? v : 1;
+            return RivalLooks[(Mathf.Max(n, 1) - 1) % RivalLooks.Length];
+        }
 
         /// <summary>A person's figure: the cast by role, anyone else from the pool for their job (the same person always the same figure).</summary>
         string PersonFigure(Person p, string salt = "")
@@ -67,6 +79,7 @@ namespace Suborned.Play
         void Dress(string key, string id)
         {
             var lib = host.figures; if (lib == null || id == null || !things.TryGetValue(key, out var th)) return;
+            if (lib.Find(id) == null && id.StartsWith("rival_")) id = "rival"; // a library built before Forma's Velvet Set has the one look (brief 067 W1)
             if (figs.TryGetValue(key, out var have)) { if (have.id == id) return; Object.Destroy(have.model.gameObject); figs.Remove(key); }
             var e = lib.Find(id); if (e?.model == null || lib.controller == null) return;
             var t = th.t; var inst = Object.Instantiate(e.model, t, false); inst.name = "figure"; MarkPerson(key, inst); /* brief 056 F: the silhouette bits */
@@ -172,7 +185,7 @@ namespace Suborned.Play
                 else if (down) state = "lying";
                 else if (startled && speed < 0.3f) state = "crouch";
                 else if (speed > 2.0f) state = armed ? "run_armed" : key.StartsWith("op/") && Has(f, "run_lean") ? "run_lean" : "run"; // Forma: the cell's double-click run leans (run_lean, 2.72 m/s natural); the crowd and its panic keep run
-                else if (speed > 0.15f) state = phases.TryGetValue(key, out var pw) && pw is "to table" or "from table" && Has(f, "serve_walk") ? "serve_walk" : f.female ? "walk_f" : "walk"; // Forma: walk_armed is a 2.44 m/s clip, slow motion at a walk; round 2: the tray carried to and from the table
+                else if (speed > 0.15f) state = phases.TryGetValue(key, out var pw) && pw is "to table" or "from table" && Has(f, "serve_walk") ? "serve_walk" : f.female && !((speed > WalkFMaxS || f.state == "walk" && speed > WalkFMaxS - 0.3f) && Has(f, "walk")) ? "walk_f" : "walk"; // Forma: walk_armed is a 2.44 m/s clip, slow motion at a walk; round 2: the tray carried to and from the table; engine 0.34.0: walk_f (0.99 m/s) only up to WalkFMaxS
                 else if (phases.TryGetValue(key, out var ph) && ph == "serving") state = Has(f, "serve") ? "serve" : "talk"; // brief 022: at the table she serves (faces it), the tray on her hand
                 else if (phases.TryGetValue(key, out var pt) && pt == "together") state = "talk"; // with the guard they talk
                 else if (seat is { } so) state = SeatState(f, so.from, so.to, g); // HostSeats: sit down, a seated loop, stand up
@@ -222,8 +235,13 @@ namespace Suborned.Play
         public void ShotEvent(string key) { if (string.IsNullOrEmpty(key)) return; shotEvents[key] = (shotEvents.TryGetValue(key, out var n) ? n : 0) + 1; }
         /// <summary>How long a shot holds the shoot clip (its 18 frames at 30 fps are 0.6 s; the next aim takes over after 0.45 s).</summary>
         const float ShootHoldS = 0.45f, DrawClipS = 2.0f;
-        /// <summary>A figure's drawn yaw (Unity degrees), else null: the muzzle the HUD's tracer starts from.</summary>
+        /// <summary>Engine 0.34.0's walk split (M067-B1: the city 1.4 m/s, the cell 1.8 m/s): the women's walk_f (natural 0.99 m/s) plays up to 1.5 m/s
+        /// (1.5x, the city's walk at 1.41x); faster (the cell's walk would be 1.82x, past the 1.8 stride cap) a woman walks with walk (1.29 m/s, 1.4x).</summary>
+        const float WalkFMaxS = 1.5f;
+        /// <summary>A figure's drawn yaw (Unity degrees), else null: the third person's entry, the conversation's shot, the proofs' facing check.</summary>
         public float? FigureYaw(string key) => figs.TryGetValue(key, out var f) ? f.yaw : null;
+        /// <summary>Brief 067 (the proof, Forma's Velvet Set): the library figure a view is dressed in now ("rival_b", "security", …); "" for none.</summary>
+        public string FigureId(string key) => figs.TryGetValue(key, out var f) ? f.id : "";
         /// <summary>Brief 067 H (the proof): a figure's clip state now ("idle", "walk", …) and its animator speed; "" for a key with no figure.</summary>
         public (string state, float speed) FigureClip(string key) => figs.TryGetValue(key, out var f) && f.anim ? (f.state, f.anim.speed) : ("", 0f);
 

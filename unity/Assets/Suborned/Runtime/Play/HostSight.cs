@@ -104,11 +104,15 @@ namespace Suborned.Play
                 for (int k = 0; k < 4; k++) { if (!Selected[k]) continue; var b = g.Ops[k].Busy; if (b != null && b.Do is "watch" or "loop" or "disable" or "reroute" && OrderWatcher(b) is string aw) actedNow.Add(aw); } // Glyph 067 Rev 2 F2: Listen is no cone cause
                 if (g.LoopOn && g.LoopCam.Length > 0) actedNow.Add("camera:" + g.LoopCam);
                 if (g.PatrolAwayUntil > g.Tick) actedNow.Add("patrol");
-                bool fight = g.FightOn || AnyDrawn();
+                bool fight = g.FightOn || AnyDrawn(); bool? watchLanded = null;
                 foreach (var f in g.KnownFans())
                 {
                     var w = f.Watcher; float until = fanUntil.TryGetValue(w, out var u) ? u : -9f;
-                    if (!fanLearned.Contains(w)) { fanLearned.Add(w); if (fanLearnedInit) fanReveal[w] = g.Tick + 3 * Suborned.Sim.Game.Hz; } // (4) the reveal: 3 s of the mission clock after a Watch teaches it (it holds while paused)
+                    // (4) the reveal: 3 s of the mission clock after a Watch teaches it (it holds while paused). Only a Watch's landing (an agent's
+                    // <op>.watch.watched within the last second) reveals: a fan that first appears because its watcher came (the response's officers,
+                    // whose sight is known when they come; a crew member's fight body) is not news, and at a fight's start those reveals drew every
+                    // combatant's cone at once (host round 4's loud fight frame: eight)
+                    if (!fanLearned.Contains(w)) { fanLearned.Add(w); if (fanLearnedInit && (watchLanded ??= WatchJustLanded(g))) fanReveal[w] = g.Tick + 3 * Suborned.Sim.Game.Hz; }
                     if (w == hovered) until = Mathf.Max(until, now + 0.15f);
                     if (namedNow.Contains(w) || actedNow.Contains(w)) until = Mathf.Max(until, now + 0.15f);
                     bool combat = fight && CombatWatcher(w);
@@ -132,6 +136,13 @@ namespace Suborned.Play
         readonly List<string> namedNow = new(), actedNow = new(); readonly Dictionary<string, float> fanUntil = new(); readonly Dictionary<string, int> fanReveal = new(); readonly HashSet<string> fanLearned = new(); bool fanLearnedInit;
         /// <summary>Brief 067 F: the cones' memory starts again with a run (the reveal never fires for what the cell knew at the start).</summary>
         void ResetCones() { fanUntil.Clear(); fanReveal.Clear(); fanLearned.Clear(); fanLearnedInit = false; }
+        /// <summary>An agent's Watch landed within the last second of the mission clock (the log's &lt;op&gt;.watch.watched): the cell just learned a
+        /// sight, so a fan appearing now is the reveal's news (F rule 4).</summary>
+        static bool WatchJustLanded(Suborned.Sim.Game g)
+        {
+            for (int i = g.Log.Count - 1; i >= 0; i--) { var l = g.Log[i]; if (l.Tick < g.Tick - Suborned.Sim.Game.Hz) break; if (l.Code.EndsWith(".watch.watched", StringComparison.Ordinal)) return true; }
+            return false;
+        }
 
         /// <summary>The watcher an order is about: a Watch's target, a Loop's or Disable's camera, a Reroute's patrol; else null (Glyph 067 Rev 2 F2:
         /// a Listen draws no cone, it learns the person, not the sight).</summary>
@@ -151,19 +162,20 @@ namespace Suborned.Play
         bool CombatWatcher(string w) { var k = Game.WatcherKind(w); return k is "security" or "rivals" || k is "guard" or "patrol" && Game.FightOn; }
 
         /// <summary>Brief 067 F2 rule 3 (Glyph): the fan can see a selected agent now (inside its polygon), or is about to: the agent within 4 s ×
-        /// (its speed + the watcher's) of the polygon (standing 0, walking 1.4, running 2.8 m/s; a camera 0, anyone else 1.3 m/s), with a 3 m floor
-        /// while it walks; or its walk ahead enters the polygon within 4 s of walking. Once a tick a fan.</summary>
+        /// (its speed + the watcher's) of the polygon, with a 3 m floor while it walks; or its walk ahead enters the polygon within 4 s of walking.
+        /// Engine 0.34.0's walk split (M067-B1): the agent's pace is the cell's (cell.speed 1.8 m/s walking, cell.runSpeed 3.6 m/s running, standing 0),
+        /// the watcher's the city's (crowd.walk 1.4 m/s; a camera 0). Once a tick a fan.</summary>
         bool SeesSelectedSoon(Fan f)
         {
             if (Game.Tick != seesTick) { seesSoon.Clear(); seesTick = Game.Tick; seesSel = SelMask(); }
             if (seesSel != SelMask()) { seesSoon.Clear(); seesSel = SelMask(); }
             if (seesSoon.TryGetValue(f.Watcher, out var v)) return v;
-            bool any = false; var g = Game; float vw = Game.WatcherKind(f.Watcher) == "camera" ? 0f : 1.3f;
+            bool any = false; var g = Game; float vw = Game.WatcherKind(f.Watcher) == "camera" ? 0f : g.R.PeopleWalk / 100f;
             for (int k = 0; k < 4 && !any; k++)
             {
                 if (!Selected[k]) continue; var op = g.Ops[k]; if (op.Down || op.Inside || op.InCar) continue;
                 if (InFan(f, op.Pos)) { any = true; break; }
-                float va = op.Walk == null ? 0f : op.Running ? 2.8f : 1.4f; int reach = (int)(400f * (va + vw)); if (op.Walk != null) reach = Mathf.Max(reach, 300);
+                float va = op.Walk == null ? 0f : (op.WalkSpeed > 0 ? op.WalkSpeed : op.Running ? g.R.RunSpeed : g.R.CellSpeed) / 100f; int reach = (int)(400f * (va + vw)); if (op.Walk != null) reach = Mathf.Max(reach, 300); // the walk's own pace (cm/s), else the rulebook's
                 if (reach > 0 && NearFan(f, op.Pos, reach)) { any = true; break; }
                 var w = op.Walk; if (w == null || w.Points.Length < 2) continue;
                 int sp = op.WalkSpeed > 0 ? op.WalkSpeed : g.R.CellSpeed; long ahead = (long)sp * Game.Hz * 4; // mm in 4 s

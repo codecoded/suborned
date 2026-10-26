@@ -512,6 +512,7 @@ namespace Suborned.Play
             {
                 ("vale-dead", "Vale is killed."), ("vale-leaves", "Vale drives off in the official car."), ("rivals-reach-vale", "The rival crew reaches Vale first."),
                 ("sealed", "The district seals."), ("enforcer-down", "The Enforcer goes down."), ("entry-seen-guard", "Your entry is seen by the guard, a live camera or the patrol."),
+                ("cell-down", "The whole cell is down."), // engine 0.34.0 (Motive M067-K3 b)
             });
             t.Hints.Add("The front door: Inez at the café can draw the door guard away, if she's on your side.");
             t.Hints.Add("The pickup: Vale's driver needs money. A turned driver can move the car or block the pickup camera.");
@@ -533,7 +534,7 @@ namespace Suborned.Play
             A("call", "Call", "ring a turned contact and ask for the favour now");
             A("loop", "Loop camera", "loop a camera for two minutes; once it is set, the Tech is free to go");
             A("disable", "Disable camera", "cut a camera for good; the desk soon notices, and that counts as a report");
-            A("reroute", "Reroute patrol", "send the patrol false orders: it leaves the entrance sweep for a while");
+            A("reroute", "Reroute patrol", "send the patrol false orders: it leaves its sweep for a while"); // engine 0.34.0: the patrol sweeps the service yard, not the entrance
             A("mislead", "False tip", "a false tip sends the rival crew elsewhere for a while");
             A("enter", "Enter", "slip in at the public door to reach Vale; anyone watching the door sees");
             A("take", "Take Vale", "seize Vale at his car");

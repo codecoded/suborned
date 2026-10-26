@@ -19,7 +19,7 @@ namespace Suborned.World.People
         public const string LibraryPath = Gen + "/FigureLibrary.asset", ControllerPath = Gen + "/Figures.controller";
         /// <summary>Who walks with walk_f (the manifest carries no gender): the women among the cell, the cast and the crowd, read from the
         /// contact sheets (briefs/020/people/cast.png, crowd.png).</summary>
-        static readonly HashSet<string> Women = new() { "scout", "fixer", "waitress", "cafe_w2", "cafe_w3", "cafe_w5", "el1", "d6", "sh2" };
+        static readonly HashSet<string> Women = new() { "scout", "fixer", "waitress", "cafe_w2", "cafe_w3", "cafe_w5", "el1", "d6", "sh2", "rival_d" }; // rival_d: Forma 067 (the crew's woman, on Commuter C6's body)
 
         [MenuItem("Suborned/People/Build Figure Library")]
         static void Menu()
@@ -28,6 +28,26 @@ namespace Suborned.World.People
             var host = Object.FindAnyObjectByType<HandoverHost>();
             if (host && lib) { host.figures = lib; EditorUtility.SetDirty(host); EditorSceneManager.MarkSceneDirty(host.gameObject.scene); EditorSceneManager.SaveScene(host.gameObject.scene); }
             Debug.Log($"People: figure library {(lib ? lib.figures.Length : 0)} figures; host {(host ? "baked" : "none open")}");
+        }
+
+        /// <summary>Batchmode (Editor closed): rebuild the library and the controller from the installed manifest, in place (the same asset paths,
+        /// so the scene's host keeps its reference), and log the figures and the pools. Unity -batchmode -quit -projectPath unity -executeMethod
+        /// Suborned.World.People.FigureBuild.Cli (brief 067: Forma's Velvet Set, 26 figures and the pool role/rival).</summary>
+        public static void Cli()
+        {
+            int code = 1;
+            try
+            {
+                var lib = Build();
+                if (lib)
+                {
+                    code = 0;
+                    var pools = new List<string>(); for (int i = 0; i < lib.poolKeys.Length; i++) if (lib.poolKeys[i].StartsWith("role/")) pools.Add($"{lib.poolKeys[i]}={lib.poolIds[i]}");
+                    Debug.Log($"People: figure library rebuilt: {lib.figures.Length} figures [{string.Join(" ", lib.figures.Select(f => f.id + (f.female ? "(f)" : "")))}]; {lib.speedStates.Length} clip speeds; pools {string.Join("; ", pools)}");
+                }
+            }
+            catch (System.Exception e) { Debug.LogException(e); }
+            EditorApplication.Exit(code);
         }
 
         /// <summary>The library, built from the installed manifest (null when the figures are not installed: the capsules stay).</summary>

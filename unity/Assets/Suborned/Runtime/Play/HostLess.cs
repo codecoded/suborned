@@ -176,6 +176,7 @@ namespace Suborned.Play
             // Glyph 2026-10-26 §5 (Drive's refusals): the fixable hold is the lock; the fight that has started is the car struck through
             "drive-held" => "icons/singles/lock", "drive-fight" => "icons/singles/car#struck", "drive-busy" or "stand-shut" => "icons/singles/p_time",
             "drive-no-driver" or "drive-here" or "driver-brings-vale" => "icons/singles/car", "unknown-stand" => "badges/mark_no", "car-not-parked" => "icons/singles/p_time", // brief 059 K3: the Take round the back
+            "car-no-driver" => "icons/singles/car", // engine 0.34.0 (M067-K3 c): Go with only the downed aboard
             "hints-on" or "hints-off" => "icons/singles/p_unknown",
             _ => "badges/mark_no",
         };
@@ -183,7 +184,7 @@ namespace Suborned.Play
         /// <summary>A refusal's pop: the code's short form with {m} {usd} {tick} filled (as the long line), else the host's own short.</summary>
         string ShortOf(Order o, Answer a)
         {
-            var s = Text?.ShortLock(a.code, LockVariant(a, TargetKindOf(o.Target)));
+            var s = Text?.ShortLock(a.code, LockVariant(a, TargetKindOf(o.Target))) ?? HostShort(a.code);
             if (s == null) return null;
             string m = a.m >= 0 ? a.m.ToString() : a.cm >= 0 ? Math.Round(a.cm / 100.0, MidpointRounding.AwayFromZero).ToString() : "?";
             string usd = a.usd >= 0 ? "$" + a.usd.ToString("N0", System.Globalization.CultureInfo.InvariantCulture) : "?";
@@ -193,6 +194,10 @@ namespace Suborned.Play
             if (a.code == "vale-not-at-car" && Text?.Timeline != null) foreach (var (at, label, _) in Text.Timeline) if (label.Contains("reaches his car")) { s += " · " + at; break; }
             return s;
         }
+
+        /// <summary>The host's own short for an engine refusal Fable's text does not word yet (a pop is never the engine's sentence); null for the rest.
+        /// Engine 0.34.0: car-no-driver (Go with only the downed aboard: Motive M067-K3 c).</summary>
+        static string HostShort(string code) => code switch { "car-no-driver" => "No driver aboard", _ => null };
 
         /// <summary>A port of text.schema.ts `lockVariant` (engine 0.33.0, Fable): car-held with the rival car among its holders (Answer.ids) is
         /// worded by `rival-car` when the engine sends its first rider's step-out tick, `rival-car-driving` when it sends none (-1: the car still

@@ -673,3 +673,99 @@ Sources: Aster's round-3 task (and its calls on round 2), briefs/067/vela.md, pu
   - Please 2x-review the new shots: `r067-crowd-guard-hover`, `r067-car-ring-go-alt` and the high and intercut convo frames.
 - **Vela / Glint:** the rival car hasn't been seen in a frame yet. The r059 set (2:35 turn-in, 2:46 drop, 3:10 park) shows it in the batch, and r067's people gate checks the model name.
 - **Aster:** GDD §15 "stand-ins" still says "the rivals' sedan in rival trim" (now Sedan_Rival). Also please confirm the H1 ladder, the car's Go hold and the walk-paced step (the round-2 gaps above).
+
+## Batch 0.2.123 host round 4 (Latch, 2026-10-26; code, the engine, Forma's figures, a scratch proof; no numbered build, no batch)
+Sources: Aster's round-4 task; briefs/027/keel/host-interface.md "Engine 0.34.0"; briefs/067/forma.md §4; Fable's text.json (committed in cb1604f6); Sky on the fight (2026-10-26). Nothing in sim/, contracts/ or tools/ was edited. Paths are under unity/Assets/Suborned/.
+
+**1 · Engine 0.34.0 (installed as 0.34.1, cb1604f6)**
+- The engine went in with `bun run guard bun tools/sim/unity.ts`: DLL 8901efb038ad, headless 356/356, range 91/91, text.json 81d8c074c334. The host compiled against it with no change: nothing read `R.RunAlert`.
+- **The run (M067-B2)**
+  - The move chip and MoveParts no longer put an Alert on a run (HostFight.cs:413-424). It says who notices it: Fable's `less.done.run.noticed` and `run.unknown`, else "noticed by {who}" (RunNoticedWords, :439).
+  - The Alt chip's Alert field drops with it.
+  - The `run.seen` fallback reads "noticed … running" (HostFeed.cs:352). Fable's card is read as before.
+  - The noticed cue on the run's first tick is the engine's attention clock. HostAttention follows `Game.Attention` every tick and filters no runner.
+- **The walk split (M067-B1)**
+  - Every host preview of an operative's walk already divided by `R.CellSpeed`: the intent time, ActWalk, NextMark, HostHold, HostHoldStatus, the "walk only" rows and HostDrive. The move ring and the price chip read the engine's MoveQuote.
+  - One preview had the old paces typed in: HostSight.SeesSelectedSoon (F rule 3) used 1.4/2.8 m/s for the agent and 1.3 m/s for a watcher. It now reads the walk's own pace (else cell.speed or cell.runSpeed) and crowd.walk for a person watcher (HostSight.cs:162-167).
+  - No host preview stands in for a city person's walk. Reports, the summoned guard and Vale's times all read the engine.
+  - At 1.8 m/s a woman's walk_f (0.99 m/s natural) would play at 1.82x, past the stride cap. Above 1.5 m/s she walks with `walk` instead (1.4x, with 0.3 m/s of hysteresis; HostViews.Figures.cs:188, WalkFMaxS :240). The run threshold (2.0 m/s) stays clear of 1.8.
+- **Hiding in a held car (M067-K3)**
+  - `rivals.for-car` and `rivals.back-to-cover` give one card a beat, though each member logs his own line (CrewBeatCodes, 3 s; HostFeed.cs:45, :301). They use Fable's `cards.items`, with host words as a fallback (:288, :363).
+  - `rivals.for-car` pulses the held car's holder marks once, using the existing refused-Go pulse. There is no new mark; Glyph's cue is to come.
+  - Fable's world events speak once a beat (HostActivity's 15 s world cooldown).
+- **`car-no-driver`:** PopIcon `car` (HostLess.cs:179). The pop, the shut wedge and the pill take Fable's `locks.car-no-driver` short through ShortOf, with a host short until the text has one (HostShort :200).
+- **`cell-down`**
+  - The fail camera runs as for enforcer-down.
+  - A fail code the text doesn't word yet shows the engine's fail sentence as its caption, never the bare code (HostFailCam.cs:392).
+  - When the last to fall is in the car (not drawn), the framing uses the car for him (:210).
+  - PlayText's placeholder has the line.
+- **Log only:** `ai.advance` and `car.held.*` (Fable's ai-advance world event speaks).
+- **The patrol in the yard:** H7 is gated on `Game.PatrolWatchesEntry`, read once a game (HostHints.cs:130, :177). It is false on this site, so H7 never shows. The placeholder reroute words drop "entrance".
+- **Pulse's posts:** a crowd person standing alone now faces `Game.FacingNow`, so the Office's door guards face out toward the kerb and the figure agrees with its cone (StillFacing, HostViews.cs:177, :286). Knots still face their middle.
+
+**2 · Forma's figures (briefs/067/forma.md §4)**
+- Installed whole with the install's own rsync from out/people-models/People/: 26 figures. `rival` was replaced; `rival_b`, `rival_c` and `rival_d` are new.
+- FigureLibrary rebuilt in batchmode with a new `FigureBuild.Cli` (Editor/World/People/FigureBuild.cs:36): 26 figures, pool `role/rival` = rival, rival_b, rival_c, rival_d. `rival_d` is in Women (:22) and walks walk_f.
+- Dressed by member with `HostViews.RivalFigure(id)` (HostViews.Figures.cs:44): rival-1 rival, -2 rival_b, -3 rival_d, -4 rival_c, -5 rival. Sites: RoleFigure (:36), the fight's and the range's hostiles (HostViews.cs:149, :192) and a rival's body (:267). A library without a look dresses `rival` (Dress :82).
+- `python3 -I tools/figures/albedo_stats.py --base unity/Assets/Suborned/People/Figures --check`: "spec (brief 067 W1): OK".
+
+**3 · The fight, simplified (Sky 2026-10-26)**
+- **Removed**
+  - The cell's lasting dashed tracer (HudToolkit.Fire Tracers).
+  - The overhead per-shot lines (HudToolkit.Less ShotMarks, HostViews.Tracer and ShotLines).
+  - The follow view's hostile streaks (ShotFx).
+  - The lock reticle's re-target hand-off line (HudToolkit.Lock).
+- **Kept:** the lock reticle, the muzzle flash, the hit spark and the miss puff. The host already had a flash and a spark, so the tracers went too. The flash and spark now sit on the drawn bodies: the flash at the shooter's gun along its facing (HostFight.cs:445-466).
+- **Facing:** AimTargets (HostFight.cs:497) turns to its target every gun aiming at one, every cell fire order and anyone who fired in the last 1.2 s. The proof measured it: no defect.
+- **The cones' reveal fix (Glyph F rule 4: "3 s after a Watch teaches it")**
+  - The host revealed every fan the first time it appeared. At a fight's start that drew every combatant's cone for 3 s: eight in the loud frame (the police on arrival, the members' fight bodies).
+  - Only a Watch's landing (`<op>.watch.watched` within the last second) now reveals (HostSight.cs:115, :141). The same frame then draws none.
+- **Not removed (no aim, target or fire line, or lab only):** the holder tethers, the exit lane and the 8 m hold ring, the under-fire arc, the fight lab's freeze-mode signal lines ([lab], off in "today"), the range panel's lines ([lab]) and the fail camera's one shot line (Glyph N125).
+
+**4 · Proof** (Runtime/Play/Proof123.cs: JSON `r123`, after r067 in -gameProof, not gated; alone with `-proof123 <dir>`, GameBoot.cs:49, CaptureSize.cs:50)
+- **The scratch player:** `GameBuild.CliScratch` (new, Editor/World/Play/GameBuild.cs:33) builds into out/scratch/latch/build and takes no number. The app says 0.2.123-scratch; version.json and out/build/play are untouched. The first build took 28 minutes on a cold shader cache (2,880 variants, the URP asset change of round 2); later builds take 16 s.
+- **The display was asleep** (19 h idle), so the player blocked on Metal's present. With `caffeinate -d -u` held it ran.
+- Pictures and logs are in briefs/067/latch/r4/ (proof123.json, proof123.log, hud-budget.txt).
+- **Looks**
+  - `r123-looks-310` (3:11, zoom 14): rival-1 rival, rival-2 rival_b, rival-3 rival_d walking to her post.
+  - `r123-looks-320` (3:18): the lookout rival-4 in rival_c, at the rival car.
+  - The wheelman rides aboard until the fight.
+  - All five, four up and one down, are in `r123-fight-safe` in their four looks.
+- **Fights**
+  - `r123-fight-safe` (sq-ra-h3, 4:15, zoom 14, yaw 30): 89 frames, 0 with a shooter over 25°, worst 0°, 9 flashes.
+  - `r123-fight-ground` (third person, 1.2 s): 71 frames, 0 over 25°.
+  - `r123-fight-loud` (bal-loud-x4, 3:46, zoom 14): 87 frames, 0 over 25°, worst 18.2° (hostile/2 turning), 23 flashes, cones drawn 0 (eight before the reveal fix).
+- **HUD budget:** 4/5 pass. `r123-fight-loud` fails, and not on a line of fire:
+  - The seal clock's plate ("1:55") is in the manifest as a `line`, so it counts as a second objective line beside "Get Vale to the car.".
+  - The hint pill "Pick when to fire" reads as running text.
+
+**Evidence**
+- `bun run guard bun tools/sim/unity.ts`: engine cb1604f6 (0.34.1), headless 356/356, range 91/91.
+- Headless compile (out/scratch/latch/tools/compile4.ts, against the installed DLL): runtime OK (the one warning is HEAD's HostNotice.cs:273), editor OK.
+- Unity 6000.6.2f1 batchmode through `bun run guard`:
+  - FigureBuild.Cli: 26 figures, role/rival pool.
+  - HarbourWorldBuilder.Build: from `bun run world`.
+  - GameBuild.CliScratch: Succeeded, 0 errors.
+  - `-runTests -testPlatform EditMode`: 0 `error CS`, 35/35 passed (out/scratch/latch/r4/editmode3.xml); PanelGuard 0 faults over 6,170 panels and 29,616 hovers.
+- `bun run typecheck`: clean.
+- `bun test tools/game/proofset.test.ts tools/game/proofgates.test.ts`: 43 pass.
+
+**Open**
+- **Pulse:** looks.test.ts pins the host text Forma §4 replaced, so three pins fail as Forma foresaw:
+  - `Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security")`
+  - `Dress(key, RivalFigure(p.Id))`
+  - RoleFigure `=> RivalFigure(key)`, with the RivalLooks table
+  `tools/people/looks.ts` roleFigure() needs the same table.
+- **Splice:** add an r123 set to tools/game/proofset.json (five pictures) and gate `r123` when Glyph agrees. The scratch app (out/scratch/latch/build, 828 MB) can go once read.
+- **Glyph:**
+  - The 2x density check of briefs/067/latch/r4.
+  - The loud frame's budget fault: the seal clock counted as a `line`, and the hint pill as running text.
+  - The cue for rivals walking to a held car: the holders pulse only.
+  - Whether the fail camera's shot line goes too.
+  - The exit lane and hold ring drawn across the Office roof at yaw 30.
+- **Forma:**
+  - The beat hookup (§3) is not done; it wasn't asked.
+  - c6 and d5c are still not in Women.
+  - At 1.8 m/s women walk with `walk` (above). A brisk walk_f clip would be better.
+- **Aster:** the 3:10 frame can't hold five: at 3:10 three are on foot round the cell's car, the lookout steps out at the park, and the wheelman stays aboard. The five together in four looks are in `r123-fight-safe`.
+- **Side effects of the builds** (generated, as a batch writes them): unity/Assets/Scenes/FightRange.unity and Generated/Range/*.mat (GameBuild rebuilds the range), and HarbourDistrict-grade-night.asset (the world build).

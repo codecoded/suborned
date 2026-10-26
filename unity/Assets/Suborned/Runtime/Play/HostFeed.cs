@@ -38,7 +38,13 @@ namespace Suborned.Play
         readonly FeedCard[] actCard = new FeedCard[4];
         int feedIds;
 
-        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; }
+        void ResetFeed() { Feed.Clear(); FeedHistory.Clear(); Array.Clear(actCard, 0, 4); feedIds = 0; lastEvent = null; crewCodeAt.Clear(); }
+
+        /// <summary>Engine 0.34.0: the crew's codes that each member logs for himself in the same beat (rivals.for-car, rivals.back-to-cover, the
+        /// floor's rivals.recalled): one card for the beat, not one a member. A code seen again within CrewBeatS of its last line makes no card.</summary>
+        static readonly HashSet<string> CrewBeatCodes = new() { "rivals.for-car", "rivals.back-to-cover", "rivals.recalled" };
+        const int CrewBeatS = 3;
+        readonly Dictionary<string, int> crewCodeAt = new();
 
         static readonly HashSet<string> FeedActs = new() { "watch", "listen", "turn", "loop", "reroute", "mislead", "enter", "take", "carry" };
         static bool IsRole(string s) => s is "waitress" or "driver" or "guard" or "councillor";
@@ -278,6 +284,8 @@ namespace Suborned.Play
             // engine 0.33.0 (brief 059): the crew's new codes, Fable's titles (cards.items), for a text without them
             ["rivals.recalled"] = ("fight", "Rivals called back", "car/rivals"), ["rivals.wiped"] = ("fight", "The rival crew is finished", "car/getaway"), ["rivals.see-takedown"] = ("warning", "A crewmate saw it", ""),
             ["rivals.wakes"] = ("warning", "A rival is awake", ""), ["rivals.frees"] = ("city", "A rival is untied", ""),
+            // engine 0.34.0 (Motive M067-K3 a): hiding in a held car loses; host titles until Fable's cards.items carry them
+            ["rivals.for-car"] = ("warning", "Rivals going for Vale", "car/getaway"), ["rivals.back-to-cover"] = ("city", "Rivals back in cover", "car/getaway"),
         };
         /// <summary>City scenes' card titles by the text's event id (Fable's table D).</summary>
         static readonly Dictionary<string, string> SceneTitles = new() { ["rivals-arrive"] = "Rival car arrives", ["chime"] = "Handover chime", ["guard-at-cafe"] = "The guard is at the café" };
@@ -290,6 +298,8 @@ namespace Suborned.Play
         void FeedEvent(LogLine l)
         {
             if (l.Code == "fight.safe" && CrewWipedAt(l.Tick)) { quiet = l; return; } // engine 0.33.0: every rival killed or tied, the safe fight is over at its start (rivals.wiped has the card): no "they wait at the car"
+            if (CrewBeatCodes.Contains(l.Code)) { bool again = crewCodeAt.TryGetValue(l.Code, out var was) && l.Tick - was < CrewBeatS * Game.Hz; crewCodeAt[l.Code] = l.Tick; if (again) return; } // one card a beat, not one a member
+            if (l.Code == "rivals.for-car") HolderPulseAt = Time.unscaledTime; // engine 0.34.0 (M067-K3 a): the held car's holder marks pulse once as the crew goes for Vale (an existing motion cue, no new mark; Glyph's cue to come)
             bool hidden = false;
             if (Text != null)
                 foreach (var e in Text.Events.Values)
@@ -339,7 +349,7 @@ namespace Suborned.Play
                 case "loop.ends": return "The camera sees again.";
                 case "security.called": return "From the north street.";
                 case "patrol.breaks": return t.Contains("gunfire") ? "Toward the gunfire." : "Toward the drawn weapon.";
-                case "run.seen": { var who = Between("The ", " sees"); var ag = Between("sees the ", " running"); return who != null && ag != null ? $"The {who} saw the {Cap(ag)} run. Alert {g.Alert}." : $"Someone saw a runner. Alert {g.Alert}."; }
+                case "run.seen": { var who = Between("The ", " sees"); var ag = Between("sees the ", " running"); return who != null && ag != null ? $"The {who} noticed the {Cap(ag)} running." : "Someone noticed a runner."; } // engine 0.34.0 (M067-B2): a run is noticed, never an Alert on its own
                 case "report": { var who = Between("The ", " reports"); return who != null ? $"The {who} reported the attempt. Alert {g.Alert}." : $"Reported. Alert {g.Alert}."; }
                 case "fight.loud": return $"{Num()} officers, from the north street." + (g.Lockdown < int.MaxValue / 8 ? $" The district seals at {MissionClock(g.Lockdown)}." : "");
                 case "fight.safe": return $"{Num()} of them. The car can't leave while they stand.";
@@ -350,6 +360,8 @@ namespace Suborned.Play
                 case "rivals.see-takedown": return "A rival saw his crewmate go down and opened fire. It's loud now.";
                 case "rivals.wakes": return "He is up again and goes for the Enforcer on sight.";
                 case "rivals.frees": return "A crewmate found him tied and untied him.";
+                case "rivals.for-car": return "Nobody is outside the held car: they walk to it, firing, to take Vale."; // engine 0.34.0 (M067-K3 a), host words until Fable's
+                case "rivals.back-to-cover": return t.Contains("no longer held") ? "The car is free: they go back to cover." : "The cell is outside the car again: they go back to cover.";
                 case "captured": return t;
             }
             return l.Code.EndsWith(".down") ? "Another agent can carry them." : "";

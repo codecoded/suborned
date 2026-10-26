@@ -89,18 +89,6 @@ namespace Suborned.Play
             return lr;
         }
 
-        /// <summary>A shot in flight, drawn by the HUD in screen pixels (Glyph fight r2): a 2 px line on a 1 px dark underlay, a small muzzle
-        /// flash, the cell's cream with a turquoise glow, rivals violet, guards and police amber. It lives ShotLife, shorter than any fire cadence,
-        /// so it never reads as a tether.</summary>
-        public sealed class ShotLine { public Vector3 From, To; public string Side = ""; public float Born; }
-        public readonly List<ShotLine> ShotLines = new();
-        public const float ShotLife = 0.1f;
-        public void Tracer(Vector3 from, Vector3 to, string side)
-        {
-            ShotLines.Add(new ShotLine { From = from, To = to, Side = side, Born = Time.unscaledTime });
-            while (ShotLines.Count > 16) ShotLines.RemoveAt(0);
-        }
-
         /// <summary>The weapon's effective range round agent k when its weapon is drawn and it is selected (radius in m; 0 hides).</summary>
         public void ShowRange(int k, Vector3 centre, float radius)
         {
@@ -158,7 +146,7 @@ namespace Suborned.Play
                 {
                     var h = i < g.Hostiles.Count ? g.Hostiles[i] : null; bool show = h != null && h.Present && !gone.Contains(h.Id);
                     Set(hostileKeys[i], show ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down);
-                    if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
+                    if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"); } // Forma 067: each member his own look
                 }
                 RangeCars(g); RangeBystanders(g); // engine 0.18: the range's cars and bystanders
                 return;
@@ -186,6 +174,7 @@ namespace Suborned.Play
                 if (!atNow[i].HasValue) { Set(crowdKeys[i], null); continue; }
                 Set(crowdKeys[i], GiveWay(g, SpreadAt(i), i));
                 if (SpreadFace(i) is { } sf) faces[crowdKeys[i]] = sf;
+                else if (StillFacing(g, i) is { } ef) faces[crowdKeys[i]] = ef; // engine 0.34.0 (Pulse 067 L): one standing alone faces the way the engine reads him (Game.FacingNow: the Office's door guards face out, toward the kerb), so the figure and its cone agree
                 // in a fight (Keel: startle, flee, shelter, return): a startled person cowers (squat and wide) where they stand, then runs for a
                 // refuge at the crowd's run speed and is off the street while sheltered (the engine gives no position), so the square empties
                 var ct = things[crowdKeys[i]].t; bool cower = g.Walkers[i].St == "startled";
@@ -200,7 +189,7 @@ namespace Suborned.Play
                 var h = i < g.Hostiles.Count ? g.Hostiles[i] : null;
                 if (h != null && IsCrewId(h.Id)) { Set(hostileKeys[i], null); continue; } // brief 059 (059 §2 point 1): a crew member's fight body is drawn by his own view (RivalViews), never popped onto a fresh one
                 Set(hostileKeys[i], h != null && h.Present ? h.Pos(g.Tick) : (Pt?)null, h != null && h.Down); // a downed hostile lies where it fell
-                if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? "rival" : "security"); }
+                if (h != null) { Tint(hostileKeys[i], h.Id.StartsWith("rival") ? host.rivalBodyColour : host.securityColour); Dress(hostileKeys[i], h.Id.StartsWith("rival") ? RivalFigure(h.Id) : "security"); } // Forma 067: each member his own look
             }
         }
 
@@ -275,7 +264,7 @@ namespace Suborned.Play
                 if (!things.ContainsKey(key))
                 {
                     var job = p.Role switch { "waitress" => "server", "driver" => "official-driver", "guard" => "guard", "councillor" => "councillor", _ => p.Job };
-                    if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, "rival"); } // engine 0.33.0: a rival taken down is a body like anyone's, in his own clothes
+                    if (IsCrewId(p.Id)) { Person(key, host.rivalBodyColour); Dress(key, RivalFigure(p.Id)); } // engine 0.33.0: a rival taken down is a body like anyone's, in his own clothes (Forma 067: his own look)
                     else { Person(key, Family(job), shape: Shape(job)); Dress(key, BodyFigure(p)); }
                 }
                 bool down = p.Down || b.Seizing;
@@ -290,6 +279,15 @@ namespace Suborned.Play
                 if (b.Carrier.HasValue) { Set(key, g.BodyPos(b), true, 1.15f); carriers[key] = OpKeys[(int)b.Carrier.Value]; continue; } // over the carrier's shoulder
                 Set(key, b.At, true, Radius);                                            // where they fell, or were put down
             }
+        }
+
+        /// <summary>Engine 0.34.0 (Game.FacingNow): crowd person i's facing as the engine reads it, while the view stands still this tick (a walker
+        /// faces where it walks, and the spread's knots face their middle: SpreadFace first); null when moving or the engine gives none.</summary>
+        Vector3? StillFacing(Game g, int i)
+        {
+            if (!things.TryGetValue(crowdKeys[i], out var th)) return null; var d = th.to - th.from; d.y = 0f; if (d.sqrMagnitude > 1e-4f) return null;
+            Pt? f = null; try { f = g.FacingNow(g.Walkers[i].P.Id); } catch (System.Exception) { return null; }
+            return f is Pt p && (p.X != 0 || p.Y != 0) ? frame.Dir(p) : null;
         }
 
         /// <summary>Pulse 067 (briefs/067/pulse.md §1.3): a body wears the figure its person was drawn in: a walker's is DressCrowd's (re-picked when
@@ -428,8 +426,6 @@ namespace Suborned.Play
         public static float FeetRaisedMax;
         public void Frame(float alpha)
         {
-            float now = Time.unscaledTime;
-            ShotLines.RemoveAll(x => now - x.Born > ShotLife);
             foreach (var kv in things)
             {
                 var (t, from, to, shown) = kv.Value;

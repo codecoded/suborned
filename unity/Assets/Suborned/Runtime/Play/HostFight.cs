@@ -12,9 +12,9 @@ namespace Suborned.Play
     /// return → at will) · both buttons together is panic, once a fight is on. The first order that would make the run loud opens the
     /// going-loud card (Game.GoingLoud) at the cursor: holding the same input for the rulebook's loudHold (0.5 s) commits it, releasing or
     /// Esc backs off, and the clock keeps running. Every order is an engine order, so a session replays as played.
-    /// Readability: the crosshair chip ("hits 3 in 4 · down in 5.5 s", the engine's own accuracy rule and accumulator), tracers from the
-    /// engine's shot log, health pips over everyone in a fight, the downed with a carry hint, and the walk-or-run chip on empty ground
-    /// (Game.QuoteMove).</summary>
+    /// Readability: the crosshair chip ("hits 3 in 4 · down in 5.5 s", the engine's own accuracy rule and accumulator), the muzzle flash and
+    /// hit spark from the engine's shot log (no tracer: the shooter faces its target, Sky 2026-10-26), health pips over everyone in a fight,
+    /// the downed with a carry hint, and the walk-or-run chip on empty ground (Game.QuoteMove).</summary>
     public sealed partial class HandoverHost
     {
         // ---------------------------------------------------------------- the going-loud gate
@@ -411,14 +411,17 @@ namespace Suborned.Play
             MoveQuote q = null; if (!Guard("move quote", () => q = Game.QuoteMove(Op.Name((OpId)k), to.Value))) return;
             if (q.WalkS == 0 && q.RunS == 0 && q.RunRefused.Length > 0) { MoveChip = q.RunRefused == "no walk there" ? "can't walk there" : q.RunRefused; MoveNow = new MoveParts { Refused = NoWay() }; return; }
             bool crowdGuard = !q.RunFree && CrowdGuardSees(q); // engine 0.22: a guard on the street sees the run (item 4: the price counts him)
-            MoveNow = new MoveParts { WalkS = q.WalkS, RunS = q.RunRefused.Length > 0 ? -1 : q.RunS, RunFree = q.RunFree, Eye = q.RunFree ? "" : crowdGuard ? "open" : EyeOf(q.Seen), Alert = q.RunFree || q.Seen.Seen == "no" && !crowdGuard ? "" : (crowdGuard ? Math.Max(q.AlertIfRun, q.Seen.AlertIfSeen) : q.Seen.AlertIfSeen).ToString() };
+            // engine 0.34.0 (Motive M067-B2): a run is seen and suspicious, never an Alert on its own (cell.runAlert retired; MoveQuote.AlertIfRun and
+            // SeenQuote.AlertIfSeen are the Alert as it stands), so the price has no Alert for a run: a watcher that sees it notices it (its clock
+            // jumps to the noticed mark, then counts the run as standing still), which the eye says
+            MoveNow = new MoveParts { WalkS = q.WalkS, RunS = q.RunRefused.Length > 0 ? -1 : q.RunS, RunFree = q.RunFree, Eye = q.RunFree ? "" : crowdGuard ? "open" : EyeOf(q.Seen), Alert = "" };
             // "seen by" is the engine's SeenQuote (rulebook sight.unknown): a known watcher's true answer, "?" for one the Scout hasn't watched that
             // could; never RunSeenBy, which knows every watcher (Sky 2026-10-16: sight is the Scout's skill)
             if (q.RunRefused.Length == 0 && q.RunRememberedBy.Count > 0) { MoveNow.Remembers = q.RunRememberedBy.Count; if (MoveNow.Eye is "" or "shut") MoveNow.Eye = "open"; } // engine 0.31.0: on edge, a passer-by who sees the run keeps the face (no Alert)
-            var seen = SeenWords(q.Seen); int runAlert = q.Seen.AlertIfSeen;
-            if (crowdGuard) { seen = seen.Length > 0 && seen != "?" ? seen + ", a guard" : "a guard"; runAlert = Math.Max(q.AlertIfRun, runAlert); }
+            var seen = SeenWords(q.Seen);
+            if (crowdGuard) seen = seen.Length > 0 && seen != "?" ? seen + ", a guard" : "a guard";
             string run = q.RunRefused.Length > 0 ? $"can't run: {q.RunRefused}" : q.RunFree ? $"run {q.RunS} s"
-                : $"run {q.RunS} s{(seen == "?" ? " · seen by: ?" : seen.Length > 0 ? $" · seen by {seen} (Alert {runAlert})" : "")}{(MoveNow.Remembers > 0 ? $" · {MoveNow.Remembers} remember the face" : "")}";
+                : $"run {q.RunS} s{(seen == "?" ? " · " + (Text?.DoneWord("run.unknown", null) ?? "seen by: ?") : seen.Length > 0 ? $" · {RunNoticedWords(seen)}" : "")}{(MoveNow.Remembers > 0 ? $" · {MoveNow.Remembers} remember the face" : "")}";
             MoveChip = $"{AgentNames[k]}: walk {q.WalkS} s · {run}";
             bool carrying = Game.Ops[k].CarryBody.Length > 0;
             if (carrying) { MoveChip = CarryChip(k, to.Value) ?? MoveChip; if (lastCarry != null) { MoveNow.CarryS = lastCarry.S; MoveNow.Eye = lastCarry.Seen == "?" ? "unk" : lastCarry.SeenS.Count > 0 ? "open" : "shut"; MoveNow.RunS = -1; } } // brief 013: carrying, the chip is the carry's (Glyph §4)
@@ -431,9 +434,14 @@ namespace Suborned.Play
         /// <summary>Brief 027 B5 (HostCover.cs, with Keel's cover snap): where the move will snap. A no-op without it.</summary>
         partial void CoverSnapPreview(int k, Pt to, MoveParts mp);
 
+        /// <summary>Engine 0.34.0 (M067-B2): who would see a run, said as what they do: they notice it (no Alert). Fable's less.done.run.noticed
+        /// ("noticed by {who}"; less.done.run.unknown "noticed by: ?" for a watcher the Scout has not learned), else the same words.</summary>
+        string RunNoticedWords(string who) => (Text?.DoneWord("run.noticed", null) ?? "noticed by {who}").Replace("{who}", who);
+
         // ---------------------------------------------------------------- shots, read from the engine's log
 
-        /// <summary>A shot in the log ("{by} fires on {t} at {d} m ({acc} ‰): hit."): a tracer and a flinch or a puff.</summary>
+        /// <summary>A shot in the log ("{by} fires on {t} at {d} m ({acc} ‰): hit."): the muzzle flash at the shooter's gun and a spark on the
+        /// target, or a puff where a miss lands. Sky 2026-10-26: no tracer or streak between them (the shooter faces the target: AimTargets).</summary>
         void Shot(LogLine l)
         {
             int f = l.Text.IndexOf(" fires on ", StringComparison.Ordinal), a = l.Text.IndexOf(" at ", f + 1, StringComparison.Ordinal);
@@ -443,18 +451,20 @@ namespace Suborned.Play
             var from = WorldOf(by); var to = WorldOf(t); if (!from.HasValue || !to.HasValue) return;
             bool hit = l.Code == "shot.hit"; HoldShotSeen(by, t, hit); // brief 041: the pill's hit or miss
             lastShot[by] = (t, Time.unscaledTime); // Sky 2026-10-20: the shooter turns to face it (AimTargets)
-            var src = from.Value + Vector3.up * 1.3f; var dst = to.Value + Vector3.up * 1.2f;
-            if (!hit) // a miss runs past and ends on the ground beside the target, never on the body
+            // where the player sees them: the drawn bodies (a view can stand off its engine point), so the flash is at the shooter's gun and the
+            // spark on the body hit; the gun 1.3 m up and 0.45 m out toward the target (the way the shooter turns to face)
+            var fromD = DrawnAt(by) ?? from.Value; var toD = DrawnAt(t) ?? to.Value;
+            var aim = toD - fromD; aim.y = 0f; aim = aim.sqrMagnitude > 0.01f ? aim.normalized : Vector3.forward;
+            var src = fromD + Vector3.up * 1.3f + aim * 0.45f; var dst = toD + Vector3.up * 1.2f;
+            if (!hit) // a miss ends on the ground beside the target, never on the body: its puff lands there
             {
-                var dir = (dst - src); dir.y = 0; dir = dir.sqrMagnitude > 0.01f ? dir.normalized : Vector3.forward;
-                var side = Vector3.Cross(Vector3.up, dir) * (((l.Tick + by.Length) & 1) == 0 ? 0.7f : -0.7f);
-                dst = to.Value + dir * 1.8f + side; dst.y = to.Value.y + 0.05f;
+                var side = Vector3.Cross(Vector3.up, aim) * (((l.Tick + by.Length) & 1) == 0 ? 0.7f : -0.7f);
+                dst = toD + aim * 1.8f + side; dst.y = toD.y + 0.05f;
             }
             string shotSide = by is "scout" or "fixer" or "tech" or "enforcer" ? "cell" : by.StartsWith("rival") ? "rival" : "guard";
-            views.Tracer(src, dst, shotSide); // the HUD draws it (Glyph fight r2)
             ShotFx.Add((src, dst, hit, shotSide, Time.unscaledTime)); while (ShotFx.Count > 24) ShotFx.RemoveAt(0); // brief 024 Firing: the flash and the spark (HudToolkit.Fire), both views
             { var e = frame.Engine(from.Value); views.LastShotFrom = new Pt((int)System.Math.Round(e.X / 100.0) * 100, (int)System.Math.Round(e.Y / 100.0) * 100); } // brief 023: the startled turn away from it (1 m, so a frame's easing never moves it)
-            if (hit) { Pulses.Add((to.Value, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: the tracer is enough
+            if (hit) { Pulses.Add((toD, Feedback.Refused, Time.unscaledTime)); while (Pulses.Count > 12) Pulses.RemoveAt(0); } // a miss: its puff is enough
         }
 
         /// <summary>Where a shooter or target stands in the world: the engine's position, else (down, gone) its view's last.</summary>

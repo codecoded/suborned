@@ -125,6 +125,15 @@ namespace Suborned.Play
         static readonly string[] Roles = { "waitress", "driver", "guard", "councillor" };
         Vector3? At(string viewKey) { var t = views.Find(viewKey); return t && t.gameObject.activeSelf ? t.position : (Vector3?)null; }
 
+        /// <summary>Engine 0.34.0 (brief 067 A): whether the patrol's sweep ever sees the public door on this site (Game.PatrolWatchesEntry, false on
+        /// the yard sweep); read once a game (it is the site's and the rulebook's, not the clock's). H7 needs it.</summary>
+        bool PatrolSeesDoor(Suborned.Sim.Game g)
+        {
+            if (!ReferenceEquals(patrolDoorGame, g)) { patrolDoorGame = g; patrolDoor = true; Guard("patrol watches entry", () => patrolDoor = g.PatrolWatchesEntry); }
+            return patrolDoor;
+        }
+        Suborned.Sim.Game patrolDoorGame; bool patrolDoor = true;
+
         /// <summary>Motive's trigger for a hint, from the engine's state, with what it rings.</summary>
         bool Trigger(string id, out Vector3? ring, out int portrait)
         {
@@ -165,6 +174,7 @@ namespace Suborned.Play
                     return false;
                 case "H7":
                     {
+                        if (!PatrolSeesDoor(g)) return false; // engine 0.34.0 (brief 067 A): the patrol sweeps the service yard and never sees the public door on this site
                         var en = g.Ops[(int)OpId.Enforcer]; var pp = g.PatrolPose(); var door = g.S.At(g.S.GuardPost);
                         if (en.Inside || pp == null || g.PatrolDown || g.PatrolAwayUntil > g.Tick) return false;
                         if (!G.Within(en.Pos, door, 1000) || !G.Within(pp.Value.pos, door, 2000)) return false;

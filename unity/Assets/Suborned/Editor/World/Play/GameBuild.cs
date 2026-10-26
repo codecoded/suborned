@@ -22,8 +22,20 @@ namespace Suborned.World.Play
     public static class GameBuild
     {
         public const string AppName = "The Suborned";
-        public static string Dir => Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "play");
+        public static string Dir => scratchDir ?? Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "build", "play");
         public static string AppPath => Path.Combine(Dir, AppName + ".app");
+        /// <summary>A scratch build's folder (CliScratch), else null: the game build's own out/build/play.</summary>
+        static string scratchDir;
+
+        /// <summary>A scratch player for a proof between batches (Latch, host round 4 of batch 0.2.123): the same build into `-scratchBuild &lt;dir&gt;`
+        /// (default out/scratch/latch/build), taking no build number: tools/game/version.json and out/build/play are untouched, the app says
+        /// "&lt;next&gt;-scratch". Batch (Editor closed): Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Play.GameBuild.CliScratch</summary>
+        public static void CliScratch()
+        {
+            var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-scratchBuild");
+            scratchDir = Path.GetFullPath(i >= 0 && i + 1 < a.Length ? a[i + 1] : Path.Combine(HarbourWorldBuilder.RepoRoot, "out", "scratch", "latch", "build"));
+            Cli();
+        }
 
         // A second player build in the same Editor domain ships a player whose URP pipeline fails to start (GPUResidentDrawer resources
         // null in GPUInstanceDataBuffer: a black screen; the build skips the shader pass, 1 warning and 1 MB lighter). The first build after
@@ -87,6 +99,7 @@ namespace Suborned.World.Play
 
             Directory.CreateDirectory(Dir); builtThisDomain = true;
             var ver = Version.Next(); // Sky 2026-10-19: "need to be upping build numbers now": 0.2.<build>, counted in tools/game/version.json
+            if (scratchDir != null) ver.Suffix = "-scratch"; // a scratch build takes no number (CliScratch)
             BuildReport report; var product = PlayerSettings.productName; bool timing = PlayerSettings.enableFrameTimingStats;
             var bundleVersion = PlayerSettings.bundleVersion; var buildNumber = PlayerSettings.macOS.buildNumber;
             try
@@ -112,7 +125,7 @@ namespace Suborned.World.Play
             AssetDatabase.SaveAssets();
             var s = report.summary; bool ok = s.result == BuildResult.Succeeded;
             string post = ok ? Finish(ver) : "";
-            if (ok) ver.Commit(); // only a build that succeeded takes the number
+            if (ok && scratchDir == null) ver.Commit(); // only a build that succeeded takes the number (a scratch build never does)
             var line = $"Game: build {ver.Full} ({ver.Recording}, sim {BuildStamp.Sim}, {ver.Sha}{(ver.Dirty ? "+" : "")}) {s.result} in {s.totalTime.TotalSeconds:F0}s, {s.totalSize / 1048576} MB, {s.totalErrors} errors, {s.totalWarnings} warnings -> {AppPath}; engine {b.Source}, DLL {b.DllSha[..12]}; {post}";
             File.WriteAllText(Path.Combine(Dir, "build.json"),
                 $"{{\n \"result\": \"{s.result}\",\n \"at\": \"{DateTime.UtcNow:o}\",\n \"seconds\": {s.totalTime.TotalSeconds:F0},\n \"app\": \"{Esc(AppPath)}\",\n \"version\": \"{ver.Full}\",\n \"build\": {ver.Build},\n \"recording\": \"{ver.Recording}\",\n \"sim\": \"{BuildStamp.Sim}\",\n \"sha\": \"{ver.Sha}\",\n \"dirty\": {(ver.Dirty ? "true" : "false")},\n \"engine\": \"{Esc(b.Source)}\",\n \"dllSha256\": \"{b.DllSha}\",\n \"errors\": {s.totalErrors},\n \"warnings\": {s.totalWarnings},\n \"post\": \"{Esc(post)}\"\n}}\n");
@@ -155,8 +168,8 @@ namespace Suborned.World.Play
         public sealed class Version
         {
             [Serializable] sealed class File { public string version = "0.2"; public int build; public string note = ""; }
-            public string Base = "0.2", Recording = "", Sha = "", Note = ""; public int Build; public bool Dirty;
-            public string Full => $"{Base}.{Build}";
+            public string Base = "0.2", Recording = "", Sha = "", Note = "", Suffix = ""; public int Build; public bool Dirty;
+            public string Full => $"{Base}.{Build}{Suffix}";
             public static string FilePath => Path.Combine(HarbourWorldBuilder.RepoRoot, "tools", "game", "version.json");
             const string Stamp = "Assets/StreamingAssets/" + BuildStamp.FileName;
 

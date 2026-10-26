@@ -4,13 +4,13 @@ Read `CLAUDE.md` first (the game and the rules), then this page. Lead: `claude -
 
 ## Where things are
 - **Branch:** `work/2026-10-21-fight-and-testbed`. `assignment-04` is frozen: never touch it.
-- **GDD:** v0.25.0 (2026-10-25). Files:
-  - `GDD/the-suborned-agent-gdd-v0.25.0-2026-10-25.md` (what agents load)
-  - `GDD/the-suborned-gdd-v0.25.0-2026-10-25.html` (wins on conflict)
+- **GDD:** v0.26.0 (2026-10-26). Files:
+  - `GDD/the-suborned-agent-gdd-v0.26.0-2026-10-26.md` (what agents load)
+  - `GDD/the-suborned-gdd-v0.26.0-2026-10-26.html` (wins on conflict)
   - `GDD/the-suborned-decision-log.md` (the why and when, plus the "Open for Sky" list)
 
   Older versions are in `~/Projects/the-suborned/GDD/`. After any GDD change, run `bun run crew`.
-- **Build:** 0.2.117 is the last build shipped to Sky. The next one is **batch 0.2.118**: `briefs/041/next-batch.md`, the section at the end. It has one list, code first, and one test pass.
+- **Build:** 0.2.122 is the last build shipped to Sky. The next one is **batch 0.2.123**: `briefs/041/next-batch.md`, the sections at the end; Sky's notes on 0.2.122 are routed in `briefs/067-sky-play-0122.md`. It has one list, code first, and one test pass.
 - **Machines:** all work happens on the Mac Studio. The 15-inch MacBook Air M4 is the 60 fps reference, so perf numbers count only when taken on the Air, warm, with the machine quiet. Air runs need Sky. Retrieval (SurrealDB) is served from the Studio over Tailscale; `bun run doctor` checks it.
 
 ## Session start

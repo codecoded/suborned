@@ -11,8 +11,9 @@ namespace Suborned.Play
     /// 26 px with `overlays/crosshair` 16 px cream, and under it the shooters' cameos (12 px in the chrome ring, overlapped 4 px, up to 4).
     /// States by shape and motion only: set (1.8 → 1.0 in 0.18 s and one ring leaving), locked (still), held (the disc 70 %, the crosshair
     /// 55 %, a dashed cream ring turning 0.25 turn/s: drawing, walking in, out of range, no line), released (fades, 1.0 → 0.8, 0.25 s). A
-    /// target off screen: an edge chip (plate_dark 22 × 52, the lock disc and a pointer turned toward it). A re-target: a hand-off line from
-    /// the old to the new for 0.25 s. The same target given again: one 0.25 s pulse. View only.</summary>
+    /// target off screen: an edge chip (plate_dark 22 × 52, the lock disc and a pointer turned toward it). A re-target: the old reticle releases
+    /// and the new one sets (Sky 2026-10-26, "way too crowded": the 0.25 s hand-off line between them is gone; no line in a fight). The same
+    /// target given again: one 0.25 s pulse. View only.</summary>
     public sealed partial class HudToolkit
     {
         sealed class LockMark
@@ -23,7 +24,6 @@ namespace Suborned.Play
             public float Born = -9f, Gone = -1f, Given = -9f, PulseAt = -9f; public bool Locked, Seen; public Vector2 At; public bool OnScreen;
         }
         readonly Dictionary<string, LockMark> reticles = new(); readonly List<string> reticleGone = new();
-        readonly List<(Vector2 from, string to, float at)> handoffs = new();
         /// <summary>The proof reads it: the reticles drawn now, "id:state:shooters" each.</summary>
         public static string ReticlesShown { get; private set; } = "";
         public const float ReticleD = 26f, ReticleUp = 2.55f;
@@ -63,19 +63,16 @@ namespace Suborned.Play
             var h = host; float now = Time.unscaledTime; var bits = new List<string>();
             var live = on && !m.Ended && h.Game != null ? h.FireLockTargets() : new List<(string id, List<int> shooters, bool locked, float given)>();
             foreach (var r in reticles.Values) r.Seen = false;
-            var fresh = new List<LockMark>();
             foreach (var (id, shooters, locked, given) in live)
             {
-                if (!reticles.TryGetValue(id, out var r)) { r = NewReticle(id); reticles[id] = r; r.Born = now; r.Given = given; fresh.Add(r); }
-                else if (r.Gone >= 0f) { r.Gone = -1f; r.Born = now; r.Given = given; fresh.Add(r); } // set again
+                if (!reticles.TryGetValue(id, out var r)) { r = NewReticle(id); reticles[id] = r; r.Born = now; r.Given = given; }
+                else if (r.Gone >= 0f) { r.Gone = -1f; r.Born = now; r.Given = given; } // set again
                 else if (given > r.Given + 0.05f) { r.Given = given; r.PulseAt = now; } // the same target given again: one pulse
                 r.Seen = true; r.Locked = locked; r.Shooters.Clear(); r.Shooters.AddRange(shooters);
                 bool setNow = now - r.Born < 0.01f; foreach (var k in shooters) if (!r.Joined.ContainsKey(k) || setNow) r.Joined[k] = setNow ? -9f : now; // the set beat brings its own faces; a later shooter slides in
                 if (r.Joined.Count > shooters.Count) foreach (var k in new List<int>(r.Joined.Keys)) if (!shooters.Contains(k)) r.Joined.Remove(k);
             }
             foreach (var r in reticles.Values) if (!r.Seen && r.Gone < 0f) r.Gone = now;
-            // a re-target: an old reticle released this frame that shares a shooter with a new one: the hand-off line
-            foreach (var nr in fresh) foreach (var old in reticles.Values) if (old != nr && old.Gone >= 0f && now - old.Gone < 0.1f && old.OnScreen && old.Shooters.Exists(nr.Shooters.Contains)) handoffs.Add((old.At, nr.Id, now));
             reticleGone.Clear();
             foreach (var r in reticles.Values)
             {
@@ -115,13 +112,6 @@ namespace Suborned.Play
                 bits.Add($"{r.Id}:{(r.Gone >= 0f ? "released" : now - r.Born < 0.18f ? "set" : r.Locked ? "locked" : "held")}:{string.Join(",", r.Shooters)}{(r.OnScreen ? "" : ":edge")}");
             }
             foreach (var id in reticleGone) { var r = reticles[id]; r.Root.RemoveFromHierarchy(); r.Edge.RemoveFromHierarchy(); reticles.Remove(id); }
-            // the hand-off lines: cream 1.6 px over ink-deep 4 px at 60 %, from the old reticle to the new, fading with the set (0.25 s)
-            for (int i = handoffs.Count - 1; i >= 0; i--)
-            {
-                var (from, to, at) = handoffs[i]; float u = (now - at) / 0.25f; if (u >= 1f || !reticles.TryGetValue(to, out var nr) || !nr.OnScreen) { handoffs.RemoveAt(i); continue; }
-                var b = nr.At + new Vector2(0f, -ReticleD / 2f - 6f); var a0 = from + new Vector2(0f, -ReticleD / 2f - 6f); float al = 1f - u;
-                paints.Add(pp => { pp.lineCap = LineCap.Round; pp.strokeColor = new Color(InkDeep.r, InkDeep.g, InkDeep.b, 0.6f * al); pp.lineWidth = 4f; pp.BeginPath(); pp.MoveTo(a0); pp.LineTo(b); pp.Stroke(); pp.strokeColor = new Color(Cream.r, Cream.g, Cream.b, al); pp.lineWidth = 1.6f; pp.BeginPath(); pp.MoveTo(a0); pp.LineTo(b); pp.Stroke(); });
-            }
             ReticlesShown = string.Join(" ", bits);
         }
 
