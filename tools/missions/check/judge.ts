@@ -34,6 +34,8 @@
 // MC-3 counts a fail line that `needs` a site fact (brief 067: `patrol-watches-entry`, from `suborned-sim facts`) only where the fact holds
 //      (§09: a fail that needs a watcher the site doesn't place is not counted); its script stays in the manifest, pending.
 //      Since GDD v0.28.0 (Sky 2026-10-26) no Handover line needs one: entry seen by patrol is a report (engine 0.34.2), not a fail.
+//      A line may name an engine scenario (`scenario`, brief 039, Keel's spec; Sky 2026-10-27): it is reached when `suborned-sim check
+//      <scenario>` prints "<scenario>: ok" (the Handover's cell down is K3-CELL-DOWN, not a route).
 // MC-11 reads every stand of the site (brief 059 K6: each with its own car, exit lane, ambush spots and police stands), and (brief 067,
 //      Motive M067-SQ1, Aster's clause with Motive's refinement) no played script logs a hold that did not come for the car:
 //      `car.held.answer` (an answer to fire) always counts; `car.held.post` counts when the holder's post is one the mission places (a rival
@@ -46,7 +48,7 @@
 //      event (route A: inside before Vale exits at 5:50; route B: Vale taken before the 8:00 close). Each route's extraction time
 //      against the mission's close, and how late each of its steps can be before it stops winning, are reported beside it.
 import type { Routes, RouteScript } from '../../../contracts/missions/routes.schema';
-import type { Facts, Play, Script } from './engine';
+import { scenarioOk, type Facts, type Play, type Scenarios, type Script } from './engine';
 import { blockerOut } from './blocker';
 
 /** What the record keeps of a play: enough to judge and to replay against. */
@@ -147,7 +149,7 @@ const want = (s: RouteScript) => (s.expects.fail ? `${s.expects.outcome} ${s.exp
 /** brief 018: a script that names who is left behind must leave exactly them, so (as `want`) */
 const met = (s: RouteScript, d?: Digest) => !!d && d.outcome === s.expects.outcome && (!s.expects.fail || d.fail === s.expects.fail) && (!s.expects.left || leftOf(s.expects.left) === leftOf(d.left)) && (s.expects.alert === undefined || d.alert === s.expects.alert) && d.replayIdentical;
 
-export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway | Getaway[]; facts?: Facts } = {}): Report {
+export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, slack: Slack[], o: { caseTrailEq?: number; getaway?: Getaway | Getaway[]; facts?: Facts; scenarios?: Scenarios } = {}): Report {
   const eq = o.caseTrailEq ?? 0, totalTrail = (d: Digest) => totalTrailOf(d, eq);
   const live = r.scripts.filter(s => !s.pending), pending = r.scripts.filter(s => s.pending).map(s => s.id);
   const rows: Row[] = live.map(s => { const d = plays[s.id]!; return { id: s.id, kind: s.kind, route: s.route, expects: want(s), got: gotA(s, d), ok: met(s, d), at: clock(d.tick), trail: d.trail, alert: d.alert, shots: d.shots, fightShots: d.gunfire - d.shots, fight: d.fight ?? '', cash: d.cash, replay: d.replayIdentical }; });
@@ -172,14 +174,16 @@ export function judge(r: Routes, scripts: Record<string, Script>, plays: Plays, 
       ...dear.map(s => `${s.id} (quiet) costs ${totalTrail(plays[s.id]!)} T, not less than the loud route's ${totalTrail(ld!)}`)].join('; '),
   });
 
-  const reached = (f: Routes['fails'][number]) => live.filter(s => s.kind === 'fail' && s.reaches === f.id && plays[s.id]?.outcome === 'failure' && f.codes.includes(plays[s.id]!.fail)).map(s => s.id);
+  // brief 039 (Keel's spec; Sky 2026-10-27): a line that names an engine scenario is reached, too, when `suborned-sim check <scenario>` prints ": ok"
+  const reached = (f: Routes['fails'][number]) => [...live.filter(s => s.kind === 'fail' && s.reaches === f.id && plays[s.id]?.outcome === 'failure' && f.codes.includes(plays[s.id]!.fail)).map(s => s.id),
+    ...(f.scenario && scenarioOk(o.scenarios, f.scenario) ? [`scenario ${f.scenario}`] : [])];
   // brief 067 (§09: a fail that needs a watcher the site doesn't place is not counted): a line with `needs` counts only where the site's fact
   // holds; an engine that states no facts (before 0.34.0) counts it, as before
   const FACT = { 'patrol-watches-entry': 'patrolWatchesEntry' } as const, NOT_ON = { 'patrol-watches-entry': 'no patrol watches an entry' } as const;
   const onSite = (f: Routes['fails'][number]) => !f.needs || o.facts?.[FACT[f.needs]] !== false;
   const counted = r.fails.filter(onSite), missing = counted.filter(f => !reached(f).length);
   C.push({ id: 'MC-3', rule: 'Every §07 fail is reached by a played script', ok: !missing.length, value: `${counted.length - missing.length}/${counted.length}${counted.length < r.fails.length ? ` (${r.fails.length - counted.length} not on this site)` : ''}`,
-    detail: [...r.fails.map(f => onSite(f) ? `${f.gdd}: ${reached(f).join(', ') || 'NOT REACHED'}` : `${f.gdd}: not on this site (${NOT_ON[f.needs!]})`), ...(pending.length ? [`pending (not played): ${pending.join(', ')}`] : [])].join('; ') });
+    detail: [...r.fails.map(f => onSite(f) ? `${f.gdd}: ${reached(f).join(', ') || `NOT REACHED${f.scenario ? ` (${o.scenarios?.[f.scenario] ?? `scenario ${f.scenario} not run`})` : ''}`}` : `${f.gdd}: not on this site (${NOT_ON[f.needs!]})`), ...(pending.length ? [`pending (not played): ${pending.join(', ')}`] : [])].join('; ') });
 
   const contacts: ContactRow[] = r.contacts.map(c => {
     const without = quiet.filter(s => quietWin(plays[`${s.id}~no-${c.role}`] ?? plays[s.id]));

@@ -9,7 +9,7 @@ import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Routes } from '../../../contracts/missions/routes.schema';
-import { ROOT, engineAt, engineInputs, facts as factsOf, playAll, type EngineAt, type Facts, type Script } from './engine';
+import { ROOT, engineAt, engineInputs, facts as factsOf, playAll, scenarios as scenariosOf, type EngineAt, type Facts, type Scenarios, type Script } from './engine';
 import { digest, judge, clock, caseTrailEqOf, type Getaway, type Plays, type Report, type Slack } from './judge';
 import { contactsOf, lateFrom, stepsOf, withoutContact } from './vary';
 
@@ -33,7 +33,7 @@ export function load(dir: string): Loaded {
   return { mission: manifest.mission, manifest, texts, scripts };
 }
 
-export type Check = { mission: string; engine: EngineAt; inputs: Record<string, string>; tool: string; scripts: Record<string, string>; facts: Facts; plays: Plays; slack: Slack[]; report: Report };
+export type Check = { mission: string; engine: EngineAt; inputs: Record<string, string>; tool: string; scripts: Record<string, string>; facts: Facts; scenarios: Scenarios; plays: Plays; slack: Slack[]; report: Report };
 
 /** Play the base scripts and the contact variations, then scan each primary quiet route's steps for slack. */
 export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string) => void = () => {}, o: { slack?: boolean } = {}): Promise<Check> {
@@ -69,8 +69,13 @@ export async function check(L: Loaded, e: EngineAt = engineAt(), log: (m: string
   // what the engine read (at its commit), and the working tree's mission file the site was made from
   const inputs = { ...Object.fromEntries(engineInputs(e.dir).map(f => [f, sha(readFileSync(join(e.dir, f)))])), [`tree:contracts/missions/${L.mission}/mission.json`]: sha(readFileSync(join(ROOT, 'contracts/missions', L.mission, 'mission.json'))) };
   const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n')), fx = factsOf(e);
-  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), facts: fx, plays, slack, report: judge(L.manifest, L.scripts, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx }) };
+  const scIds = scenarioIds(m); if (scIds.length) log(`checking the engine's scenarios the fail lines name: ${scIds.join(', ')}`);
+  const sc = scenariosOf(e, scIds);
+  return { mission: L.mission, engine: e, inputs, tool, scripts: Object.fromEntries(Object.entries(L.texts).map(([f, t]) => [f, sha(t)])), facts: fx, scenarios: sc, plays, slack, report: judge(L.manifest, L.scripts, plays, slack, { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx, scenarios: sc }) };
 }
+
+/** The engine scenarios a mission's fail lines name (brief 039), sorted, once each. */
+export const scenarioIds = (m: Routes) => [...new Set(m.fails.flatMap(f => f.scenario ? [f.scenario] : []))].sort();
 
 // ---------------------------------------------------------------- record and replay
 
@@ -104,7 +109,7 @@ export function record(c: Check, L: Loaded, note: string): string {
   for (const [f, t] of Object.entries(L.texts)) writeFileSync(join(dir, 'routes', f), t);
   const run = {
     schema: 'suborned.mission.check/1', id, mission: c.mission, note, verdict: c.report.ok ? 'SHIPS' : 'HOLDS',
-    engine: { commit: c.engine.commit, sourceSha256: c.engine.hash, inputs: c.engine.inputs }, tool: c.tool, inputs: c.inputs, facts: c.facts, routes: c.scripts,
+    engine: { commit: c.engine.commit, sourceSha256: c.engine.hash, inputs: c.engine.inputs }, tool: c.tool, inputs: c.inputs, facts: c.facts, scenarios: c.scenarios, routes: c.scripts,
     conditions: c.report.conditions, slack: c.slack, plays: c.plays,
   };
   // one play per line: the record stays readable and diffable without growing a line per field
@@ -151,7 +156,10 @@ export async function replay(dir: string, log: (m: string) => void = () => {}): 
   const tool = sha(TOOL.map(f => `${f}\n${readFileSync(join(ROOT, f), 'utf8')}`).join('\n'));
   const fx = (run.facts as Facts | undefined) ?? factsOf(e), fxNow = factsOf(e);
   if (run.facts && JSON.stringify(fxNow) !== JSON.stringify(run.facts)) lines.push(`drift facts ${JSON.stringify(fxNow)}, recorded ${JSON.stringify(run.facts)}`);
-  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[], { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx }).ok ? 'SHIPS' : 'HOLDS';
+  // brief 039: the scenarios the fail lines name are checked again on the recorded engine; one that no longer prints ": ok" fails the replay
+  const scNow = scenariosOf(e, scenarioIds(L.manifest)), scRec = (run.scenarios as Scenarios | undefined) ?? {};
+  for (const [id, l] of Object.entries(scNow)) lines.push(l === scRec[id] ? `ok    scenario ${l}` : `${scRec[id] === undefined ? 'drift' : 'FAIL '} scenario ${l}, recorded ${scRec[id] ?? 'none'}`);
+  const verdictNow = judge(L.manifest, L.scripts, now, run.slack as Slack[], { caseTrailEq: caseTrailEqAt(e.dir), getaway: getawayAt(e.dir, L.mission), facts: fx, scenarios: scNow }).ok ? 'SHIPS' : 'HOLDS';
   if (verdictNow === run.verdict) lines.push(`ok    verdict ${run.verdict}${tool === run.tool ? '' : ' (judged by the current checker; its code changed since the check)'}`);
   else lines.push(`${tool === run.tool ? 'FAIL ' : 'drift'} verdict ${verdictNow} by the current checker, recorded ${run.verdict}${tool === run.tool ? '' : ' (the checker\'s code changed since the check)'}`);
   return { ok: !lines.some(l => l.startsWith('FAIL')), lines };
@@ -168,7 +176,7 @@ export function html(c: Check, id: string, note?: string): string {
   return `<!doctype html><meta charset="utf-8"><title>Mission check ${esc(c.mission)} ${id}</title>
 <style>body{font:14px/1.4 -apple-system,sans-serif;margin:24px;max-width:1200px}table{border-collapse:collapse;margin:8px 0 20px}td,th{border:1px solid #ccc;padding:4px 8px;text-align:left;vertical-align:top}tr.bad td{background:#fde8e8}tr.ok td:nth-child(2){color:#17663a}.d{font-size:12px}code{font-size:12px}</style>
 <h1>Mission check: ${esc(c.mission)} · ${id} · ${r.ok ? 'SHIPS' : 'HOLDS'}</h1>
-<p>GDD §09 mission checker (brief 011 B). Engine <code>${c.engine.commit.slice(0, 12)}</code> (source ${c.engine.hash.slice(0, 12)}); ${Object.keys(c.plays).length} plays; site facts <code>${esc(JSON.stringify(c.facts ?? {}))}</code>. Replay: <code>bun run missions:check replay ${esc(c.mission)} ${id}</code>.</p>
+<p>GDD §09 mission checker (brief 011 B). Engine <code>${c.engine.commit.slice(0, 12)}</code> (source ${c.engine.hash.slice(0, 12)}); ${Object.keys(c.plays).length} plays; site facts <code>${esc(JSON.stringify(c.facts ?? {}))}</code>; engine scenarios <code>${esc(Object.values(c.scenarios ?? {}).join(', ') || 'none')}</code>. Replay: <code>bun run missions:check replay ${esc(c.mission)} ${id}</code>.</p>
 ${note ? `<h2>Note</h2><p>${esc(note)}</p>` : ''}
 <h2>Conditions</h2><table><tr><th>id</th><th></th><th>rule</th><th>value</th><th>detail</th></tr>${cond}</table>
 <h2>Scripts</h2><table><tr><th>script</th><th>kind</th><th>route</th><th>expects</th><th>got</th><th>at</th><th>T</th><th>A</th><th>shots before the fight</th><th>final fight</th><th>cash</th><th>replay</th></tr>${rows}</table>

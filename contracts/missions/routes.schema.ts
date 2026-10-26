@@ -12,7 +12,7 @@
 //   needs); a pending script is listed, never played;
 // - holds (brief 059, MC-13): the getaway stand at which this loud run's cell waits in the car while the Enforcer brings Vale out.
 // `fails` is the mission's fail list (GDD §07), each with the engine codes that reach it and (brief 067) the site fact it `needs`, if any
-// (MC-3 counts a line only where its fact holds); `contacts` the roles a route may turn.
+// (MC-3 counts a line only where its fact holds) or (brief 039) the engine scenario that reaches it; `contacts` the roles a route may turn.
 // `closing` is the mission's closing event; each primary quiet route names its own (`closes`): the fully informed player secures
 // Vale on it ≥ `informedSpareS` before (§09). Zod, loud on
 // failure: Routes.parse(json). Test: tools/missions/check/check.test.ts.
@@ -62,8 +62,12 @@ export const Routes = z.strictObject({
   contacts: z.array(z.strictObject({ role: id, who: z.string().min(1) })).min(1),
   /** A fail entry may need a fact of the site (brief 067, Motive briefs/067/motive-square.md §5.3): `patrol-watches-entry` (the engine's
    *  `suborned-sim facts` patrolWatchesEntry: the patrol's sweep, or its reroute wait, sees the public door) counts the line only where it holds
-   *  (§09: a fail that needs a watcher the site doesn't place is not counted). */
-  fails: z.array(z.strictObject({ id, gdd: z.string().min(1), codes: z.array(id).min(1), needs: z.enum(['patrol-watches-entry']).optional() })).min(1),
+   *  (§09: a fail that needs a watcher the site doesn't place is not counted).
+   *  A fail entry may instead be covered by one of the engine's scenarios (brief 039, Keel's spec; Sky 2026-10-27 "Sure": the cell down is
+   *  K3-CELL-DOWN, not a route): `scenario` names it, and MC-3 counts the line as reached when `suborned-sim check <scenario>` prints
+   *  "<scenario>: ok" (its checks and its replay hold). A route script that reaches the line still counts too. */
+  fails: z.array(z.strictObject({ id, gdd: z.string().min(1), codes: z.array(id).min(1), needs: z.enum(['patrol-watches-entry']).optional(),
+    scenario: z.string().regex(/^[A-Z0-9][A-Za-z0-9-]*$/).optional().describe('a suborned-sim check scenario id that reaches this fail') })).min(1),
   scripts: z.array(RouteScript).min(1),
 })
   .refine(r => new Set(r.scripts.map(s => s.id)).size === r.scripts.length, { path: ['scripts'], error: 'script ids are unique' })

@@ -150,6 +150,19 @@ export function facts(e: EngineAt = engineAt()): Facts {
   return Object.fromEntries(Object.entries(f).filter(([k]) => k !== 'engine' && k !== 'inputs')) as Facts;
 }
 
+/** The engine's own scenarios a mission's fail lines name (`scenario`, brief 039, Keel's spec): `suborned-sim check <id>…`, which plays each
+ *  scenario with its checks and its replay; each id maps to its line as printed ("K3-CELL-DOWN: ok", "…: FAIL …", "…: THREW …"), or
+ *  "<id>: not in this engine" when the engine prints no line for it (an unknown id, or a pinned commit before the scenario). MC-3 counts a
+ *  line reached only on exactly "<id>: ok". */
+export type Scenarios = Record<string, string>;
+export function scenarios(e: EngineAt, ids: string[]): Scenarios {
+  if (!ids.length) return {};
+  const r = Bun.spawnSync(['dotnet', build(e), 'check', ...ids], { cwd: e.dir, env, stdout: 'pipe', stderr: 'pipe' });
+  const lines = r.stdout.toString().split('\n').map(l => l.trim());
+  return Object.fromEntries(ids.map(id => [id, lines.find(l => l.startsWith(`${id}: `)) ?? `${id}: not in this engine`]));
+}
+export const scenarioOk = (s: Scenarios | undefined, id: string) => s?.[id] === `${id}: ok`;
+
 /** SUBORNED_SIM_STATS=1: at exit, how many plays this process asked of the engine and how it played them. */
 let asked = 0;
 if (process.env.SUBORNED_SIM_STATS) process.on('exit', () => console.error(`engine: ${asked} plays (${process.env.SUBORNED_SIM_BATCH === '0' ? 'a process each' : 'batch server'})`));

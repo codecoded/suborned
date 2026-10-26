@@ -43,7 +43,7 @@ describe('the Handover route manifest and scripts', () => {
     expect(L.manifest.fails.filter(f => f.needs)).toEqual([]);
     expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual([]);
     expect(L.manifest.scripts.some(s => s.id === 'fail-entry-seen-patrol')).toBe(false);
-    expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale', 'fight-safe-cell-down', 'fight-loud-wait-square', 'fight-loud-wait-yard']);
+    expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale', 'fight-safe-unguarded', 'fight-loud-wait-square', 'fight-loud-wait-yard']);
     // the close: 8:30 (Sky 2026-10-15), mission.json's last timeline entry; route B closes on it
     expect(L.manifest.closing.at).toBe('8:30');
     expect(L.manifest.scripts.filter(s => s.closes).map(s => `${s.id} ${s.closes!.at} ${s.closes!.secured}`)).toEqual(['route-a-board 5:50 enter.in', 'route-b-board 8:30 take.done', 'route-g-fast-board 5:50 enter.in']);
@@ -121,7 +121,9 @@ describe('the §09 conditions, each with a failing example', () => {
    *  edits the route and the twin follows (the closing marks reach the primaries). */
   const mirror = (p: Plays): Plays => { const q = { ...p }; for (const [k, v] of Object.entries(p)) { const m = k.match(/^(route-[a-z-]+?)(~.*)?$/); if (m && !m[1]!.endsWith('-board')) q[`${m[1]}-board${m[2] ?? ''}`] = v; } return q; };
   // brief 067: today's site places no patrol on an entry (suborned-sim facts), so its fail line is not counted unless a test says so
-  const J = (p: Plays, o: Parameters<typeof judge>[4] = {}) => judge(L.manifest, L.scripts, mirror(p), [], { facts: { patrolWatchesEntry: false }, ...o });
+  // brief 039: the cell-down line is covered by Keel's K3-CELL-DOWN scenario, which passes here unless a test says otherwise
+  const K3 = { 'K3-CELL-DOWN': 'K3-CELL-DOWN: ok' };
+  const J = (p: Plays, o: Parameters<typeof judge>[4] = {}) => judge(L.manifest, L.scripts, mirror(p), [], { facts: { patrolWatchesEntry: false }, scenarios: K3, ...o });
   const ids = (p: Plays, o: Parameters<typeof judge>[4] = {}) => J(p, o).conditions.filter(c => !c.ok).map(c => c.id);
   /** the two stands of the Handover's site (brief 059 K6), as getawayAt reads them: the square's bay and the service drive */
   const square: Getaway = { id: 'square', car: [850, -4820], holdCm: 800, lane: [[850, -5600], [3850, -5600]], laneHalfCm: 600, posts: [{ id: 'ambush-1', at: [2175, -4425] }, { id: 'police-1', at: [-775, -4125] }] };
@@ -224,11 +226,31 @@ describe('the §09 conditions, each with a failing example', () => {
   test('MC-3 (brief 067): a fail line that needs a site fact still counts only where it holds; with no facts (an engine before 0.34.0) it counts', () => {
     // the mechanism stays (§09: a fail that needs a watcher the site doesn't place is not counted), shown on a hypothetical line
     const m = structuredClone(L.manifest); m.fails.push({ id: 'patrol-line', gdd: 'a line that needs a patrol on an entry', codes: ['entry-seen-patrol'], needs: 'patrol-watches-entry' });
-    const c = (o: Parameters<typeof judge>[4]) => judge(m, L.scripts, mirror(good()), [], { facts: { patrolWatchesEntry: false }, ...o }).conditions.find(x => x.id === 'MC-3')!;
+    const c = (o: Parameters<typeof judge>[4]) => judge(m, L.scripts, mirror(good()), [], { facts: { patrolWatchesEntry: false }, scenarios: K3, ...o }).conditions.find(x => x.id === 'MC-3')!;
     expect([c({}).ok, c({}).value]).toEqual([true, '8/8 (1 not on this site)']);
     expect(c({}).detail).toContain('a line that needs a patrol on an entry: not on this site (no patrol watches an entry)');
     expect([c({ facts: { patrolWatchesEntry: true } }).ok, c({ facts: { patrolWatchesEntry: true } }).value]).toEqual([false, '8/9']);
     expect(c({ facts: {} }).ok).toBe(false);
+  });
+  test('MC-3 (brief 039, Keel\'s spec): the cell down is reached by K3-CELL-DOWN printing ": ok", and by nothing else', () => {
+    expect(L.manifest.fails.find(f => f.id === 'cell-down')!.scenario).toBe('K3-CELL-DOWN');
+    expect(L.manifest.scripts.filter(s => s.reaches === 'cell-down')).toEqual([]); // no route reaches it: the scenario covers it
+    const c = (o: Parameters<typeof judge>[4]) => J(good(), o).conditions.find(x => x.id === 'MC-3')!;
+    expect([c({}).ok, c({}).value]).toEqual([true, '8/8']);
+    expect(c({}).detail).toContain('the cell down (every op down): scenario K3-CELL-DOWN');
+    for (const line of ['K3-CELL-DOWN: FAIL DIFFERS', 'K3-CELL-DOWN: FAIL cell-down at the last fall', 'K3-CELL-DOWN: THREW InvalidOperationException: x', 'K3-CELL-DOWN: not in this engine', 'K3-CELL-DOWN: ok but']) {
+      const r = c({ scenarios: { 'K3-CELL-DOWN': line } }); expect([r.ok, r.value], line).toEqual([false, '7/8']); expect(r.detail).toContain(`the cell down (every op down): NOT REACHED (${line})`);
+    }
+    expect(c({ scenarios: {} }).detail).toContain('NOT REACHED (scenario K3-CELL-DOWN not run)');
+    // a route that reaches the line still counts, scenario or not
+    const m = structuredClone(L.manifest), s = m.scripts.find(x => x.id === 'fight-safe-unguarded')!; s.expects.fail = 'cell-down'; s.reaches = 'cell-down';
+    const p = good(); p['fight-safe-unguarded'] = fail('cell-down');
+    const r = judge(m, L.scripts, mirror(p), [], { facts: {}, scenarios: {} }).conditions.find(x => x.id === 'MC-3')!;
+    expect([r.ok, r.value]).toEqual([true, '8/8']);
+  });
+  test('the schema: a fail line\'s scenario is an engine scenario id', () => {
+    const m = structuredClone(JSON.parse(L.texts['routes.json']!)); m.fails.find((f: { id: string }) => f.id === 'cell-down').scenario = 'k3 cell down';
+    expect(() => Routes.parse(m)).toThrow();
   });
   test('MC-4: a contact without whom no quiet route wins', () => {
     const p = good(); p['route-b~no-waitress'] = fail('vale-leaves'); p['route-b-thin~no-waitress'] = fail('vale-leaves'); for (const g of ['route-g', 'route-g-fast', 'route-g-kill']) p[g] = fail('entry-seen-camera');
