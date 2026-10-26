@@ -31,7 +31,7 @@
  ],
  "adjustments": {
   "file": "contracts/world/civic-block.adjust.json",
-  "sha256": "69494af4510d4ea24407feb5939b27d0cbc22bca6b55d346d8f4fa2de1e06fea",
+  "sha256": "2b7b196060207e890dcb8721e99b870de2d88afd2337c15dd9d52de5433d929d",
   "owner": "Vantage",
   "applied": [
    {
@@ -360,8 +360,8 @@
    {
     "op": "buildingHeight",
     "building": "cafe",
-    "height": 20.4,
-    "reason": "brief 066 (Sky 2026-10-26: \"buildings too high for a 2.5D game\"; yes to the play-street cap): the café stands 4 storeys, H(4) 20.4 m, a corner at the top of the band so it never sinks between its 4-storey neighbours, under the Records Office crown 38, under standards.buildings.playStreets; was 34.8 (HandoverCafe.cs Height). Footprint 22 x 11.3, entrance, interior (floor 0.45, ceiling 4.6) and terrace unchanged; plan.civic.scale.cafe.height says 20.4 so C-0 holds it there"
+    "height": 16.8,
+    "reason": "brief 066 (Sky 2026-10-26: \"buildings too high for a 2.5D game\"; yes to the play-street cap), then Sky 2026-10-27: the café stands 3 storeys, H(3) 16.8 m, so the getaway bay (squareBay) shows at yaw 210; Vantage found the 4th storey hid it. Was H(4) 20.4 (the 4-storey corner, 2026-10-26) and before that 34.8 (HandoverCafe.cs Height). Read on the plain mass at yaw 210 (zoom 14, 38 deg): the bay's ground 8 % seen past architecture at 20.4, 60 % at 16.8; a 1.5 m car standing in it 21 % and 76 %; the rest is the square-bay canopy and the café's lower storeys. Still under the Records Office crown 38 and inside standards.buildings.playStreets (3 to 4 storeys). Footprint 22 x 11.3, entrance, interior (floor 0.45, ceiling 4.6) and terrace unchanged; Vela's CafeUpper_3 (adopted, 12.1 m over the 4.7 m ground storey) draws the body; plan.civic.scale.cafe.height says 16.8 so C-0 holds it there"
    },
    {
     "op": "dressing",
@@ -418,7 +418,7 @@
     [-22, -18]
    ],
    "z": 0,
-   "height": 20.4,
+   "height": 16.8,
    "interior": {
     "floor": 0.45,
     "ceiling": 4.6,
