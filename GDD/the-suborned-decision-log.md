@@ -1,7 +1,7 @@
 # THE SUBORNED · DECISION LOG
 Kept by Aster. Who decided what, when, and the brief it came from, newest first. The GDD says what the game is; this log says how it got there. Sky's words are quoted as said. "Aster" marks a reading or correction made by the crew, which Sky may strike.
 
-## Open for Sky (as of v0.27.0, 2026-10-26)
+## Open for Sky (as of v0.28.0, 2026-10-26)
 The GDD keeps a default for each (the draft's, or the build's) until Sky rules. Numbers are brief 035's questions.
 1. (035 Q1) Keep the decision log beside the GDD, out of it? Done that way in v0.25.0.
 2. (035 Q2) Promote take control / the ground view from [lab]? It would turn the tiebreaker "commander > avatar" into "commander and avatar": a pillar change.
@@ -35,6 +35,12 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 30. (brief 066) The low city round the play streets (3–4 storeys, the Records Office the one landmark): Sky decides from the pictures after batch 0.2.123.
 31. (brief 067) With the patrol in the service yard, "entry seen by patrol" can't happen on the Handover's site; it stays a general fail line, counted by the mission check only where a patrol watches an entry. Motive also offered a "way out seen by the patrol" fail; Aster held it (not built).
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
+
+## v0.28.0 (2026-10-26; Sky's answers of ~20:20, relayed by main)
+- Sky, 2026-10-26 (brief 039): the fight, "up to you"; main picked option B, Cover and pin, without C's slow-down beats, with the three calls as recommended: one input (F draws and holsters, a right hold sets the focus; X, V stances, panic and weapons-free retired; the focus waits out of reach instead of ending); Covering fire allowed while the Enforcer holds Vale (it pins, never hits); the Fixer can Talk down the car blocker (2 s in the open). Fights read on the body (Sky: "Simplify the visuals, it's way too crowded"). Numbers [S] from Motive's proposal (§03, §06, §10, §14). Order: Forma's pose proof, Glyph's judgement, then Keel, Latch, Chime.
+- Sky, 2026-10-26: "1080p probably ok": the 60 fps bar is measured at 1920×1080; render scale stays Sky's look call (§11, §14 Redline).
+- Sky, 2026-10-26: "entry seen by patrol" is "no, not a failure" (§07 fail, §09). Answers open item 31.
+- Sky, 2026-10-26: the square's police posts, "Ok": left until fight B is built, then re-measured. The Air soak: "another time". Night timing on the Air: "later", so the day–night cycle waits; "dark by 6:30" is read as 6:30 on the mission clock. The height cap (brief 066): "yes" (Datum, Vantage, Vela; its GDD lines come with Datum's plan). The yard exit lane: "Possibly", with a new idea: the Enforcer drives Vale off in Vale's car after the turned driver brings him to the service bay, and the rest leave in the getaway car (Motive and Waymark, brief 071; a proposal for Sky, not built).
 
 ## v0.27.0 (2026-10-26; brief 070, the briefing page)
 - Sky, 2026-10-26 (brief 070, Glyph's mock briefs/070/glyph/): the page replaces the on-street overlay of brief 062 ("Yes"); keep the drawn plan, no wide photo ("plan ok"); the clock shows five stations, 2:35 the rival car, 5:30 the chime, 5:40 the last chance to turn the driver, 5:50 Vale leaves the Office, 6:10 Vale reaches his car ("cut"); Inez's hint stays but in good English ("Think it's bad english - but given this is a tutorial think ok"; Fable); night is not a toggle ("No, I think night shouldn't be a toggle"): Day / Night comes off the briefing (§10 briefing, look).
