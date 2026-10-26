@@ -240,6 +240,25 @@ class RobotPal:
         return getattr(pal, key)
 
 
+# Car enamels (brief 070, Vela): DK_CarEnamel_<X> is a base enamel row (same kind and hex, so a later colour change follows) with car_tex.py's flake / film / orange-peel pair laid over it,
+# tiled 1 m on the 1 m box-projected UVs (isotropic, so it holds on every face). The cars draw these through car_enamel(); Unity writes them as the robot enamels are (unity_mats.robot_enamel_text).
+CAR_DETAIL = dict(detail="car_enamel_detail_v1.png", detailNormal="car_enamel_detail_v1_normal.png", tile=(1.0, 1.0), bump=0.25)
+
+
+def car_enamel(base):
+    """The car variant of an enamel row (base = 'DK_Accent_Coral' -> 'DK_CarEnamel_Coral'): registered on first ask; returns the Blender material."""
+    name = "DK_CarEnamel_" + base.split("_", 2)[-1]
+    if name not in LIB:
+        kind, hexstr, *extra = LIB[base]
+        LIB[name] = (kind, hexstr, *extra)
+    return get(name)
+
+
+def _detail_of(name):
+    """The detail pair a material carries: the robot enamels' or the car enamels', else None."""
+    return ROBOT_DETAIL if name.startswith("DK_RobotEnamel_") else CAR_DETAIL if name.startswith("DK_CarEnamel_") else None
+
+
 def register(name, kind, hexstr, *extra):
     """Family modules add their own materials at import time (never edit LIB from two places)."""
     LIB.setdefault(name, (kind, hexstr, *extra))
@@ -325,13 +344,14 @@ def get(name):
             nt.links.new(tex.outputs["Alpha"], b.inputs["Alpha"])
             m.surface_render_method = "DITHERED"
         _pbr_maps(nt, b, tex, TEXTURES[name][0])
-    if name.startswith("DK_RobotEnamel_"):  # the detail pair, as Unity reads it: albedo x2 around mid grey (linear), normal at the material's strength
+    dp = _detail_of(name)
+    if dp:  # the detail pair, as Unity reads it: albedo x2 around mid grey (linear), normal at the material's strength
         nt = m.node_tree
         uvn, mp = nt.nodes.new("ShaderNodeTexCoord"), nt.nodes.new("ShaderNodeMapping")
-        mp.inputs["Scale"].default_value = (1 / ROBOT_DETAIL["tile"][0], 1 / ROBOT_DETAIL["tile"][1], 1)
+        mp.inputs["Scale"].default_value = (1 / dp["tile"][0], 1 / dp["tile"][1], 1)
         nt.links.new(uvn.outputs["UV"], mp.inputs["Vector"])
         imgs = []
-        for f in (ROBOT_DETAIL["detail"], ROBOT_DETAIL["detailNormal"]):
+        for f in (dp["detail"], dp["detailNormal"]):
             t = nt.nodes.new("ShaderNodeTexImage")
             pth = tex_path(f)
             if pth is None:
@@ -351,7 +371,7 @@ def get(name):
         nt.links.new(g.outputs["Vector"], mul.inputs["B"])
         nt.links.new(mul.outputs["Result"], b.inputs["Base Color"])
         nm = nt.nodes.new("ShaderNodeNormalMap")
-        nm.inputs["Strength"].default_value = ROBOT_DETAIL["bump"]
+        nm.inputs["Strength"].default_value = dp["bump"]
         nt.links.new(imgs[1].outputs["Color"], nm.inputs["Color"])
         nt.links.new(nm.outputs["Normal"], b.inputs["Normal"])
     m.diffuse_color = col  # viewport solid colour
@@ -411,7 +431,7 @@ def export_json(path):
         rows.append(dict(name=name, kind=kind, color=list(srgb(hexstr)), smoothness=1 - rough, metallic=metal,
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
                          emission=extra[0] if extra else 0.0, **({"cutoff": extra[1]} if kind == "emitmap" and len(extra) > 1 else {}), texture=tex[0] if tex else "",
-                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": ROBOT_DETAIL} if name.startswith("DK_RobotEnamel_") else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
+                         tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": _detail_of(name)} if _detail_of(name) else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
     Path(path).parent.mkdir(parents=True, exist_ok=True)
     Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
 

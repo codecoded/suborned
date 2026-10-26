@@ -3,10 +3,10 @@
  "mission": "handover",
  "frame": "civic-block.json block frame in integer centimetres: x south, y east (as sim/data/handover.site.json). Mission clock in seconds from 0:00.",
  "from": {
-  "block": "2a5c00e22ee5ee0ac34667e644c3abda0f83feab9ea6911ce9bb9a2da9502976",
+  "block": "777d0e14e031f4f7c08e3c4f324d45f002be5cf3f7a513e535243bb7fbf89aa9",
   "site": "880dbbc92b7a552565549ad5d3b06fd382db31d5f26525f50805e56b5dd8b753",
-  "kit": "0690e2c1cc57b91e278e2a5a9c6ef3d1a27129e6cd6bdcac794dfeb4eb8cfe6e",
-  "plan": "67b17343184a3522689928ce7013443117076cc67ed68e9a202fd9c86d232db8"
+  "kit": "21a71be61f5780cb5c9137142f6e1e65307e0eaf4b17d51653321c845c9e7b03",
+  "plan": "07fce8ecb3057970ac55e7f31b81b7014eac89506b854b0c46f05e2c0a87f996"
  },
  "rules": {
   "eyeCm": 160,

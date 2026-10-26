@@ -22,6 +22,7 @@ const ct = Bun.spawnSync(['python3', resolve(import.meta.dir, 'cabinet_tex.py')]
 const pt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'pavilion_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (pt.exitCode) process.exit(pt.exitCode);
 const ft = Bun.spawnSync(['python3', resolve(import.meta.dir, 'fountain_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ft.exitCode) process.exit(ft.exitCode);
 const rt = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rt.exitCode) process.exit(rt.exitCode);
+const ca = Bun.spawnSync(['python3', resolve(import.meta.dir, 'car_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (ca.exitCode) process.exit(ca.exitCode); // brief 070: the car enamel detail pair (DK_CarEnamel_*)
 const sg = Bun.spawnSync(['python3', resolve(import.meta.dir, 'signal_tex.py')], { stdout: 'inherit', stderr: 'inherit' }); if (sg.exitCode) process.exit(sg.exitCode); // brief 061: the lens face atlas and the clock ring map
 const rf = Bun.spawnSync(['python3', resolve(import.meta.dir, 'robot_face_stage.py')], { stdout: 'inherit', stderr: 'inherit' }); if (rf.exitCode) process.exit(rf.exitCode);
 // Default: the plan's generated pieces and the plain pieces in orders.ts BUILD (full export + LODs), then LODs only for the adopted DecoKit pieces (their binaries stay the store's).

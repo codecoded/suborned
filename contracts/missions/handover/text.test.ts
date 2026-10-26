@@ -48,6 +48,7 @@ const push = (path: string, text: string, spoken = false, max?: number) => strin
   for (const [k, s] of Object.entries(b.page.heads.ways)) push(`briefing.page.heads.ways.${k}`, s, false, 16);
   for (const k of ['where', 'clock', 'heat'] as const) push(`briefing.page.heads.${k}`, b.page.heads[k], false, 16);
   for (const [k, s] of Object.entries(b.page.captions ?? {})) push(`briefing.page.captions.${k}`, s, false, 40);
+  for (const [k, s] of Object.entries(b.page.stations ?? {})) push(`briefing.page.stations.${k}`, s, false, 24);
   for (const [k, x] of Object.entries(t.targets)) {
     push(`targets.${k}.about`, x.about);
     if (x.watched) push(`targets.${k}.watched`, 'Learned: ' + x.watched); if (x.routine) push(`targets.${k}.routine`, 'Learned: ' + x.routine); if (x.heard) push(`targets.${k}.heard`, x.heard);
@@ -287,11 +288,14 @@ describe('times and numbers agree with the mission', () => {
     expect(p.ways['front-door'].line).toBe('Turn her to call him off and loop his camera.'); // Aster 2026-10-26: the page cut to 220 words
     expect(p.cell.scout).toMatch(/false tip/); expect(p.cell.enforcer).toMatch(/Only he can carry him/); // the glossary's verb; the carry rule stays
     expect(p.ways['front-door'].line).not.toMatch(/\s\S{1,3}\.$/); // never ends on a lone short word ("it.")
-    expect(p.captions).toEqual({ 'service-bay': "Vale's car at the service bay" });
+    expect(p.captions).toEqual({ 'service-bay': 'Service bay' }); // Glyph R6 on 0.2.133: still 4 and its legend; within the page's 5-word caption cap
     for (const k of Object.keys(p.captions ?? {})) expect(m.points.some((x) => x.id === k) || k in m.destinations, k).toBe(true);
-    expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/);
+    expect(p.ways.pickup.line).toMatch(/service bay/); expect(p.captions!['service-bay']).toMatch(/service bay$/i);
     const at = t.briefing.timeline.find((x) => x.at === '6:10')!.label;
-    expect(at).toBe('Vale at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/);
+    expect(at).toBe('Vale at his car; unless turned, the driver leaves'); expect(at).not.toMatch(/\.\s/); // play's timeline keeps the true label
+    expect(p.stations).toEqual({ '6:10': "Vale's car leaves" }); // Glyph R1 on 0.2.133: the page's station; 5:40 carries the condition
+    for (const k of Object.keys(p.stations ?? {})) expect(p.clock, k).toContain(k);
+    expect(t.briefing.timeline.find((x) => x.at === '5:40')!.label).toMatch(/turn the driver/);
   });
   test('the clock is true whether or not the driver is turned (brief 070): unturned he leaves at 6:10, turned he waits until 8:30', () => {
     const c = t.briefing.clock.line; expect(c).toMatch(/6:10/); expect(c).toMatch(/8:30/); expect(c).toMatch(/turn/);

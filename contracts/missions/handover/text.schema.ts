@@ -426,6 +426,7 @@ export const TextFile = z.strictObject({
       ending: Line.describe('the line under the getaway car\'s still: both ways end there'),
       captions: z.record(code, Short(40)).optional().describe('brief 070 (Glyph N11): a still\'s caption by its pin\'s place (stills.json pins[].place, less any "d:"), where the target\'s name alone would not say where; a pin without one takes targets.<key>.name'),
       clock: z.array(clock).min(1).describe('the stations the page\'s clock shows, in order; each a briefing.timeline mark, worded by its label'),
+      stations: z.record(clock, Short(24)).optional().describe('brief 070 (Glyph R1 on 0.2.133): a clock station worded for the page, keyed by its m:ss, where briefing.timeline\'s label (play\'s, kept whole and true) is too long for the page; other stations take the timeline label'),
       cell: z.record(z.enum(AGENTS), Line).describe('one line under each face, about this mission'),
       heads: z.strictObject({
         ways: z.record(z.string().regex(/^[1-9]$/), Short(16)).describe('the head over the ways in, keyed by how many ways the mission has (brief.json ways.length): "Two ways in"; the host picks the key, so the count comes from the data'),

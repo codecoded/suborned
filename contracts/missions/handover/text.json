@@ -289,15 +289,16 @@
    "enforcer": "Enforcer: goes in, takes Vale, takes people down. Only he carries Vale."
   },
   "page": {
-   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11: the pickup's words end at the service bay, so its still does too); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
+   "rule": "Brief 070 (Sky, 2026-10-26: the briefing as a full-screen page, modal until Begin; Glyph's mock briefs/070/glyph). Outside play, so the reading limits don't apply, but each way keeps to two sentences: its hint after the way's name (briefing.hints, the part after ': '), then `ways.<id>.line`. `when` is the plate beside the way's name, `target` the line under Vale's one fact (brief.json dossier.target), `ending` the line under the getaway car's still, `clock` the stations the page's clock shows (labels from briefing.timeline, unless `stations` words the mark for the page: Glyph R1 on 0.2.133, the 6:10 station is the short form, since the 5:40 station carries the condition; play's timeline keeps the full, true label), `cell` one line under each face, about this mission. `heads` the section heads (Glyph's mock; brief 070, Latch: the page showed none): `ways` keyed by how many ways the mission has (brief.json ways), so the head counts from the data; `where` over the plan, `clock` over the stations, `heat` beside the Heat word. `captions` a still's caption by its pin's place, where the target's name alone would not say where (Glyph N11 and R6: the pickup's words end at the service bay, so its still and legend name the service bay); other stills take targets.<key>.name. The target head stays less.briefing.target. Day and Night are off the page (Sky: night is not a toggle).",
    "target": "Comes out at 5:50 and leaves by car.",
    "ways": {
     "front-door": {"when": "Before 5:50", "line": "Turn her to call him off and loop his camera."},
     "pickup": {"when": "From 6:10", "line": "Turn him before 5:40 and he brings Vale to the service bay."}
    },
    "ending": "Both ways end here: Vale in the getaway car as it leaves.",
-   "captions": {"service-bay": "Vale's car at the service bay"},
+   "captions": {"service-bay": "Service bay"},
    "clock": ["2:35", "5:30", "5:40", "5:50", "6:10"],
+   "stations": {"6:10": "Vale's car leaves"},
    "cell": {
     "scout": "Listens to Inez and the driver. Gives the rivals a false tip.",
     "fixer": "Turns Inez or the driver, and calls Inez when it's time.",
@@ -556,7 +557,6 @@
   "talk-police": {"line":"The police don't back down. Only a rival can be talked down.","short":"Not police","verbs":["talk-down"]},
   "talk-none-down": {"line":"None of the crew is down yet. Drop one first.","short":"None down yet","verbs":["talk-down"]},
   "talk-not-hurt": {"line":"He isn't hurt yet. Hurt him first.","short":"Not hurt","verbs":["talk-down"]},
-  "talk-not-pressed": {"line":"He isn't hurt or under fire. Shoot at him first.","short":"Not under fire","verbs":["talk-down"]},
   "steam-no-grille": {"line":"No heat main within the Tech's reach.","short":"No grille","verbs":["steam"]},
   "stand-beside-op": {"line":"Walk within {m} m of the downed agent first.","short":"Too far · {m} m","verbs":["carry"]},
   "summon-busy": {"line":"The guard is down, busy or away from the door. Try when the guard is back.","short":"Not now","verbs":["call"]},
@@ -1019,7 +1019,7 @@
   "ai.why": "engine 0.25.0, worded at 0.33.0 (brief 059): a hostile first takes an agent as its target; silent here: the under-fire cue shows the main cause and Alt lists them all, in the words of less.why (one per fire cause, crewmate included). The log line is bookkeeping",
   "ai.kite": "a hostile side answers fire from beyond its ring (brief 027 lab, Pulse kite-response): police running in and rivals ducking to cover speak for it on the street",
   "fight.judged": "a fight ends and the street judges it (fight.public, Sky 2026-10-16): the debrief's Standing line speaks for it, by its cause",
-  "move.": "engine 0.35.0 (brief 039): the four moves (move.mark, move.talk-down, move.steam, move.covering-fire, move.covering-fire-ends): the body, the sound and the roster's move disc speak (Glyph b-final); Keel's draft, Fable to confirm",
+  "move.": "UNUSED from engine 0.35.1 (Sky 2026-10-26: the four moves are out of play, weapons.moves.on false, their orders refused unknown-verb; every mark, talk-down, steam and covering-fire word in this file, its actions, locks, acks and pending entries, is unused until Sky takes them up: Fable keeps or removes them). Engine 0.35.0 (brief 039): the four moves (move.mark, move.talk-down, move.steam, move.covering-fire, move.covering-fire-ends): the body, the sound and the roster's move disc speak (Glyph b-final); Keel's draft, Fable to confirm",
   "shot.": "a shot (shot.hit, shot.miss): the tracer and the pips speak; no line per shot",
   "order.": "the order echo (Game.Note \"order.*\"): the agent's own ack and arrive lines speak for it",
   "fire.": "a fire order's progress (fire.done, fire.lapses, fire.cancelled, fire.out-of-range): bookkeeping; engine 0.21.0 (Sky 2026-10-22): fire.out-of-range (a lasting order's target left the weapon's max ring) shows as the pop less.pop.fire-out-of-range on the agent (PLACEHOLDER words, Keel; Fable to word), and fire.cancelled now also means a new act ended the order; the shots speak through the fight events. When the final fight is over (brief 023) every fire order on a final-fight hostile ends with fire.done: the fight.over card says \"Fire orders end\" and a new fire order there is refused as fight-over",
