@@ -1696,3 +1696,36 @@ Glyph's N1–N7 from the 0.2.137 review, plus the r123 cover picture from Keel's
 - **The build's own edits.** unity/Assets/Scenes/FightRange.unity and the Generated/Range mats show as modified in git status. I edited no scene.
 
 Next owner: Glyph (2x of fight-safe-body, fight-loud-body, r123-body-safe, r123-body-cover and the page at 2160), then Aster.
+
+## Glyph 2x (0.2.139) (Glyph, 2026-10-27; review only, no code, no Unity)
+**Verdict: SHIP to Sky.** N1–N7 have landed clean at 2x. Every fight frame is at or under 7 street-mark kinds, nothing is unmanifested, and the page is as passed. The four nits below go in the next build and don't block Sky playing. My crops are in out/scratch/glyph/0139/.
+
+**Rulings on Latch's open points**
+- **Holder gap: I meant the visible rims.** Take the 3 px of transparent rim off each side, so there's 4 px between the drawn chrome rings (about 11 px to the eye now). The same goes for the dashed-ring case (about 7 px now). This is one constant, P1.
+- **Focus disc over a ducking target: follow posture.** Anchor the stack (disc, pips, "no line") to the top of the head, plus a fixed pixel gap, not to ReticleUp 2.55 m over the feet. It drops when the target ducks or kneels and rises when they stand, eased over about 0.2 s so it doesn't bob. Right now rival-3's disc floats about 85 px over her, with the pips about 55 px over her, above a café table. It reads as hers only because nothing else stands near. P2.
+- **r123-body-safe with no focus: fine.** That shot's job is the pinned-open cower, and it does it. The stack is proven in r123-body-cover, fight-safe-body (waiting) and fight-loud-body (locked). Nobody had rival-4 as a focus, so there's correctly no ring.
+- **Grey bays at pins 3 and 4: not covered, leave them.** My 4 px rule was for green and decorative shapes. A bay is the place the pin names, so the pin sitting on its bay's end reads as a map pin on its spot, the same as the getaway car's pin on its tabs.
+
+**Street-mark kinds per fight frame (limit 7; speech, the HUD frame, edge cues, the callout and the getaway set not counted)**
+- fight-safe-body: **7**. Vale's star pip, the running ring, the move ring "4", the focus ring, the dashed lock disc, the pips and "no line". It's at the limit, so add nothing to this state.
+- fight-loud-body: **4**. The selected ring, the focus ring, the locked disc and the pips. The holder and its tether are in the getaway set.
+- r123-body-cover: **6**. The selected ring, the focus ring, the locked disc, the pips, the person pips (waitress with ✓, guard) and the guard's amber badge.
+- r123-body-safe: **3**. The selected ring, Vale's star pip and the running ring. The crossing lens and the dot rows are world, not HUD.
+
+**Nits (owner, fix)**
+- **P1 · Holder gap to the visible rim. (Latch.)** As ruled above. Done-check: 4 px ±1 between the chrome rims at 2x in fight-loud-body.
+- **P2 · The focus stack follows posture. (Latch.)** As ruled above. Done-check: in r123-body-cover, the pips sit within about 12 px of rival-3's head.
+- **P3 · The Tech doesn't read as kneeling. (Forma for the clip, Latch for the 0.4 s blend; not HUD.)** At 6x in r123-body-cover, the Tech at cv-077 is upright in a wide stride by the pier, at full height, so it reads as side-stepping, not kneeling at cover. The Fixer (cv-002) isn't in frame to judge. The rival duck reads well. "Fights read on the body" is half-closed until a cell agent is plainly lower at cover: hips down, one knee to the ground, about 60 % of standing height. Re-shoot r123-body-cover a beat later if it's a blend-in. Otherwise the kneel clip needs fixing.
+- **P4 · fight-safe-body is at 7. (Waymark/Latch, watch only.)** Any new mark in the waiting-stack state pushes it over. The move ring "4" and the running ring are the first to merge if it ever has to give.
+
+**What passes**
+- N1: one holder disc beside the focus, tethered to the car. A refused Go has its holder to pulse.
+- N2: the ring, the disc and the pips agree in every frame. There's no phantom reticle.
+- N3: no "noticed" plate and no roof arc.
+- N4: no "?" over hostiles.
+- N5: no off-screen entries.
+- N6: the "6 s" chip is snug.
+- N7: the bean and stubs are gone at 2160.
+- The page has no clipping, the band and Begin are square, and the plan pins are clear of the green.
+
+Next owner: Aster to Sky (SHIP). Latch for P1–P2 and Forma for P3 in the next build after Sky's play, then Glyph at 2x on r123-body-cover.
