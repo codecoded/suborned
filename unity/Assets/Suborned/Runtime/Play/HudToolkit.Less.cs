@@ -72,6 +72,9 @@ namespace Suborned.Play
         int hoverRow = -1; bool lessBuilt;
         /// <summary>Elements for the manifest of a capture: (element, kind).</summary>
         readonly List<(VisualElement e, string kind, Func<string> text)> manifest = new();
+        /// <summary>Brief 070 (glyph-page-budget §2; tools/hud-budget/page.ts): a manifest element's page part, its pin number (or `car`) and its rows as wrapped.</summary>
+        readonly Dictionary<VisualElement, string> mfPart = new(), mfN = new();
+        readonly Dictionary<VisualElement, string[]> mfRows = new();
 
         void BuildLess()
         {

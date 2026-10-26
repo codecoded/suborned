@@ -15,6 +15,8 @@ namespace Suborned.Play
         sealed class GroundBatch { public Material Mat; public Mesh Mesh; public readonly List<Vector3> V = new(); public readonly List<int> T = new(); }
         readonly Dictionary<int, GroundBatch> groundBatches = new();
         const float GroundLift = 0.035f;
+        /// <summary>Brief 070 (Glyph N4): the briefing's stills show the 3D world only: no ground marks are drawn while it is on (ShotRunner `bare`).</summary>
+        public static bool WorldMarksOff;
 
         /// <summary>Metres per HUD pixel on the ground at the play camera's zoom (orthographic); a perspective view gets the play zoom's.</summary>
         float GroundPxM
@@ -183,7 +185,7 @@ namespace Suborned.Play
         /// <summary>End of the HUD's frame: this frame's marks to the play camera.</summary>
         void GroundFlush()
         {
-            var cam = host.View; if (!cam) return;
+            var cam = host.View; if (!cam || WorldMarksOff) return;
             foreach (var b in groundBatches.Values)
             {
                 if (b.V.Count == 0) continue;

@@ -8,12 +8,12 @@ namespace Suborned.Play
     /// that takes pictures (`-gameProof`, `-shots`, `-shots031`, `-shots033`) first sets the window to 1920 x 1080, windowed: the HUD's whole-number scale
     /// is then 1 (HudToolkit.CrispScale), which is the size the HUD budget and the layout audit are defined at, and every capture helper
     /// (HudToolkit.Shoot's frame and HUD layer, the proof's shots, the 031 and 033 routines, ShotRunner) captures at the screen's size, so all of them
-    /// follow. `-capture-size WxH` picks another size, `-capture-native` keeps the display's own. Frame times are another matter: the 60 fps limit is set on the
-    /// MacBook Air (2880 x 1864), so tools/game/cli.ts runs the proof with `-frames-size 2880x1864` (below) and labels the result. A Retina display may give a window twice the requested size in pixels; Apply measures what it got and asks again for the
-    /// size that gives exactly the one wanted. Frame times taken under a run are at that run's size: proof.json says which ("screen" the pictures, "framesAt" the frames).
-    /// One pass (Latch, 2026-10-21): `-frames-size WxH` keeps the window at that size for the run (the frame times: the proof at the Air's
-    /// 2880 x 1864) and HudToolkit.Shoot switches it to the picture size (1920 x 1080, or `-capture-size`) around each capture, then back
-    /// (ToPicture, ToRun). So one proof run gives pictures at 1080p and frames at the Air's size; game:check no longer runs it twice.</summary>
+    /// follow. `-capture-size WxH` picks another size, `-capture-native` keeps the display's own. Frame times are measured at 1920 x 1080 too: Sky
+    /// (2026-10-26) set 1080p as the 60 fps bar (GDD §11). A Retina display may give a window twice the requested size in pixels; Apply measures what it
+    /// got and asks again for the size that gives exactly the one wanted. Frame times taken under a run are at that run's size: proof.json says which
+    /// ("screen" the pictures, "framesAt" the frames). `-frames-size WxH` (Latch, 2026-10-21) keeps the window at another size for the run's frame times
+    /// and HudToolkit.Shoot switches it to the picture size (1920 x 1080, or `-capture-size`) around each capture, then back (ToPicture, ToRun), so one
+    /// run can give pictures at one size and frames at another.</summary>
     public sealed class CaptureSize : MonoBehaviour
     {
         public static readonly Vector2Int Default = new(1920, 1080);
@@ -49,7 +49,7 @@ namespace Suborned.Play
         /// sized (Latch 2026-10-21: a -shots033 run came out 6016x3384, the full screen arriving after Apply had found the window already 1920x1080).</summary>
         public static bool Captures => !GameBoot.Arg("-capture-native") && (GameBoot.Arg("-gameProof") || GameBoot.Arg("-shots") || GameBoot.Arg("-shots031") || GameBoot.Arg("-shots033") || GameBoot.Arg("-rangeShots") || GameBoot.Arg("-late") || GameBoot.Arg("-tplong") || GameBoot.Arg("-bot") || GameBoot.Arg("-perf064") || GameBoot.Arg("-proof123") || GameBoot.ArgValue("-capture-size") != null); // -bot, -perf064: sized here, never full screen (brief 060, 064) // brief 045: the late-fight check (LateRun)
 
-        static Vector2Int? Parse(string s)
+        public static Vector2Int? Parse(string s)
         {
             if (string.IsNullOrEmpty(s)) return null;
             var p = s.ToLowerInvariant().Split('x');

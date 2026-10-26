@@ -37,7 +37,7 @@ namespace Suborned.Play
             var full = ScreenCapture.CaptureScreenshotAsTexture();
             int w = full.width, h = full.height;
             File.WriteAllBytes(basePath + ".png", full.EncodeToPNG());
-            if (state == "rest" && host != null && host.ShowBriefing) state = "briefing"; // Splice's budget state for the briefing card (modal)
+            if (state == "rest" && host != null && host.ShowBriefing) state = BriefOnStreet ? "page" : "briefing"; // brief 070: the briefing page's own budget state (glyph-page-budget §1; the 0.2.117 card kept `briefing`)
             else if (state == "rest" && host != null && host.FeedHistoryOpen) state = "log"; // Splice's budget state for the open history panel (a reading surface, 18 %)
             File.WriteAllText(basePath + ".manifest.json", Manifest(state, h));
             File.WriteAllText(basePath + ".parts.json", Parts(h)); // brief 014 round 2: every visible HUD part's rect, for the 2x inspection crops
@@ -64,6 +64,8 @@ namespace Suborned.Play
             return true;
         }
 
+        static string J(string t) => (t ?? "").Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", " ");
+
         string Manifest(string state, int screenH)
         {
             float k = screenH / Mathf.Max(1f, root.panel.visualTree.layout.height);
@@ -78,7 +80,11 @@ namespace Suborned.Play
                 string t = text?.Invoke() ?? ""; if (kind is "speech" or "beat" or "line" or "lock" && t.Length == 0) continue;
                 sb.Append(first ? "\n" : ",\n"); first = false;
                 sb.Append("  {\"kind\": \"").Append(kind).Append("\", \"x\": ").Append(R(b.x * k)).Append(", \"y\": ").Append(R(b.y * k)).Append(", \"w\": ").Append(R(b.width * k)).Append(", \"h\": ").Append(R(b.height * k))
-                  .Append(", \"text\": \"").Append(t.Replace("\\", "\\\\").Replace("\"", "\\\"").Replace("\n", " ")).Append("\"}");
+                  .Append(", \"text\": \"").Append(J(t)).Append('"');
+                if (mfPart.TryGetValue(e, out var part)) sb.Append(", \"part\": \"").Append(part).Append('"'); // brief 070: the page's pieces (page.ts)
+                if (mfN.TryGetValue(e, out var pn)) sb.Append(", \"n\": \"").Append(J(pn)).Append('"');
+                if (mfRows.TryGetValue(e, out var rows)) { sb.Append(", \"rows\": ["); for (int i = 0; i < rows.Length; i++) sb.Append(i == 0 ? "\"" : ", \"").Append(J(rows[i])).Append('"'); sb.Append(']'); }
+                sb.Append('}');
             }
             // Glyph budget §3: each done chip on screen, its rows spelled (facts, verbs), never one joined text
             foreach (var c in chipEls)

@@ -15,7 +15,7 @@ namespace Suborned.Play
     /// The Scout watches the patrol and the Tech the entrance camera (their fans learned; the patrol sweeps on, so its fan moves every tick),
     /// the Enforcer is selected with Takedown armed, Alt is held (PeekLatch: the armed act's people get cones, up to 7), and the pointer stays
     /// on the walker nearest the café forecourt (its cone on hover, rebuilt as it walks); the camera on the forecourt at play zoom, the crowd on,
-    /// 2880 x 1864 (the Air's size). After a warm-up the probe runs four windows: before, after, before, after (HandoverHost.PerfLegacy on, off),
+    /// at `-capture-size` (1920 x 1080 by default: Sky 2026-10-26, 1080p is the 60 fps bar; `-capture-native` keeps the display's own). After a warm-up the probe runs four windows: before, after, before, after (HandoverHost.PerfLegacy on, off),
     /// each `seconds` long, and reports per window the frame times (mean, p99, max), the host's own cost a frame (ShowSight with the fans,
     /// PersonConesFrame, RerouteFrame: mean and max ms), cone builds and point tests a second, and fan geometry builds a second. Writes
     /// perf064.json and quits. Measures only: nothing here changes a rule, and PerfLegacy is never set in play.</summary>
@@ -43,7 +43,7 @@ namespace Suborned.Play
             HandoverHost h = null; float t0 = Time.realtimeSinceStartup; string note = "";
             while ((h = FindAnyObjectByType<HandoverHost>()) == null || h.Game == null) { if (Time.realtimeSinceStartup - t0 > 60f) { File.WriteAllText(Path.Combine(dir, "perf064.json"), "{\"status\": \"no host\"}\n"); Application.Quit(2); yield break; } yield return null; }
             yield return new WaitForSecondsRealtime(3f);
-            if (!GameBoot.Arg("-capture-native")) yield return CaptureSize.Apply(2880, 1864);
+            if (!GameBoot.Arg("-capture-native")) { var cs = CaptureSize.Parse(GameBoot.ArgValue("-capture-size")) ?? CaptureSize.Default; yield return CaptureSize.Apply(cs.x, cs.y); } // Redline 064 (1080p bar): the flag's size, else 1080p
             h.controls.conversations = ConversationScenes.Never; h.controls.planTogether = false;
             // the scene: fans learned, the takedown armed, Alt held, the forecourt in view
             Game g = null; Vector3 forecourt = default;

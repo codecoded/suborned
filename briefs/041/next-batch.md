@@ -312,3 +312,8 @@ Next batch, not this one: the shuffle during the warned ambush wait (Pulse/Motiv
 | Height cap | Datum (main started, scratch) → Vantage → Vela → world export → Latch build; GDD lines then | the build ~tomorrow midday |
 | Held | the Air soak, night timing, the day–night cycle (6:30 on the mission clock when it comes); square police posts until fight B, then re-measure | — |
 Latch's order: the page's fixes ride the height-cap build; the fight's host work after Keel's engine. The order stands.
+
+## Queue after 0.2.133 (Aster, 2026-10-26 late)
+- Page leftovers (running): Glyph's 2x recheck of 0.2.133; Fable cuts the page to ≤220 words and the still-4 caption; Splice exempts labels of two words or fewer from the widow rule (after his one-launch and height-cap work); Vela proposes a lifted getaway car (candidate, low priority).
+- Fight B, in order: Motive's 0.35 rulings (running) → Keel's value changes and DP1's re-record, **in its own worktree**, merged when green → Waymark re-records → Latch ports 0.35.0 (moves holdRange and r29 `down` to the one input, installs Forma's B clips, the react and peek layers, checks whether a proof leaves the History panel open for the r059/r067 budget reds), with the page fixes in the same build.
+- Then: split getaway (A) behind getaway.split; height cap when Datum's plan lands; GDD v0.29.0 for both.

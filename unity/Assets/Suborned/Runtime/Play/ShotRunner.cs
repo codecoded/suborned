@@ -17,11 +17,17 @@ namespace Suborned.Play
     [Serializable] public sealed class ShotSpec
     {
         public string hover = ""; public bool mark = true;
-        public string name = "", scriptPath = "", checkpoint = "", preset = "today", agent = "scout", face = "", focus = "", state = "rest", select = "", arm = "";
+        public string name = "", scriptPath = "", checkpoint = "", preset = "today", agent = "scout", face = "", focus = "", focus2 = "", state = "rest", select = "", arm = "";
         public int tick, yaw = -1; public bool night, setNight, briefing, follow, hasAt, hud = true, hasPointer, intel;
         /// <summary>Brief 070 (the briefing's stills, tools/game/briefstills.ts): `nocut` turns the play camera's architecture cut off for the capture; `doorN`
         /// (a block-frame unit normal, x south, y east) with yaw -1 picks the quarter step that best faces that outward side.</summary>
         public bool nocut; public float[] doorN = new float[0];
+        /// <summary>Brief 070 (Glyph N1, N4): `bare` takes the 3D world only, with no world marks (ground rings, route marks, bay outlines, cones, lines):
+        /// rendered once, by the camera, into a texture. `doorS` (block frame) is the pose offset's along-the-face axis instead of up x normal. `keyLight`
+        /// (intensity; 0 none) adds a warm key light beside the pose camera for this render only, on the person it looks at (a guard in his door's shade
+        /// lit as Inez is in the sun). `shift` moves the play camera's look point that many metres in from the door's outward side (the driver's still
+        /// takes in the Office door behind his car).</summary>
+        public bool bare; public float[] doorS = new float[0]; public float keyLight, shift;
         public float atX, atY, zoom, px, py, settle = 0.35f, perf, clipSeconds; public int clipFps = 30, w = 1920, h = 1080; public bool jpg; public ShotPose pose = new ShotPose();
     }
     [Serializable] public sealed class ShotFile { public string schema = "", outDir = ""; public ShotSpec[] shots = new ShotSpec[0]; }
@@ -141,7 +147,12 @@ namespace Suborned.Play
                 // 3 · the capture
                 var path = System.IO.Path.Combine(Dir, s.name);
                 if (s.clipSeconds > 0) { yield return Clip(h, s, res, path); }
-                else if (s.pose.on) { error = Guard(() => { RenderPose(h, s, path + Ext(s)); res.Files.Add(s.name + Ext(s)); }); }
+                else if (s.pose.on || s.bare)
+                {
+                    if (s.bare) { HudToolkit.WorldMarksOff = true; yield return null; yield return null; } // a frame with no ground marks queued
+                    error = Guard(() => { if (s.pose.on) RenderPose(h, s, path + Ext(s)); else RenderView(h, s, path + Ext(s)); res.Files.Add(s.name + Ext(s)); });
+                    HudToolkit.WorldMarksOff = false;
+                }
                 else if (s.hud)
                 {
                     while (HudToolkit.ShotBusy) yield return null;
@@ -168,7 +179,7 @@ namespace Suborned.Play
                 else if (res.Audited && !res.AuditClean) res.Status = "audit";
             }
             if (fadeOff != null) { fadeOff.fade = fadeWas; fadeOff = null; }
-            h.controls.conversations = keep; HandoverHost.PointerOverride = null; HudToolkit.ActMarkOff = false;
+            HudToolkit.WorldMarksOff = false; h.controls.conversations = keep; HandoverHost.PointerOverride = null; HudToolkit.ActMarkOff = false;
             bool ok = results.All(r => r.Status is "ok" or "note");
             Write(ok ? "ok" : "failed"); yield return new WaitForSecondsRealtime(0.5f); Application.Quit(ok ? 0 : 1);
         }
@@ -195,16 +206,17 @@ namespace Suborned.Play
                 h.TurnSnap(best);
             }
             if (s.zoom > 0 && h.View) h.View.orthographicSize = s.zoom;
-            if (s.focus.Length > 0) h.LookAt(At(s.focus));
+            if (s.focus.Length > 0) // brief 070: `focus2`, the midpoint of two views (the driver and his car); `shift`, in from the door's outward side
+            {
+                var f = s.focus2.Length > 0 ? (At(s.focus) + At(s.focus2)) / 2f : At(s.focus);
+                if (s.shift != 0f && s.doorN != null && s.doorN.Length == 2) f -= DoorNormal(h, s) * s.shift;
+                h.LookAt(f);
+            }
             else if (s.hasAt) h.LookAt(h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)));
         }
 
         /// <summary>Brief 070: the shot's door normal (block frame) as a horizontal world direction.</summary>
-        static Vector3 DoorNormal(HandoverHost h, ShotSpec s)
-        {
-            var a = h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)); var b = h.frame.World(new Suborned.Sim.Pt((int)(s.atX + s.doorN[0] * 100f), (int)(s.atY + s.doorN[1] * 100f)));
-            return new Vector3(b.x - a.x, 0f, b.z - a.z).normalized;
-        }
+        static Vector3 DoorNormal(HandoverHost h, ShotSpec s) => BlockDir(h, s, s.doorN);
 
         // ---- a free pose camera: the world only (what out/latch/gamecap2.cs did by hand)
         Camera poseCam;
@@ -224,7 +236,7 @@ namespace Suborned.Play
                 if (s.doorN != null && s.doorN.Length == 2)
                 {   // brief 070: the offset in the door's frame (x along the face, y up, z out along its outward normal), not the view's axes; heights from
                     // the ground the place stands on (a landing's 0.75 m), where the view's own point may sit at the street
-                    var n = DoorNormal(h, s); var side = Vector3.Cross(Vector3.up, n); var o = t.position; o.y = Mathf.Max(o.y, h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)).y);
+                    var n = DoorNormal(h, s); var side = s.doorS != null && s.doorS.Length == 2 ? BlockDir(h, s, s.doorS) : Vector3.Cross(Vector3.up, n); var o = t.position; o.y = Mathf.Max(o.y, h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)).y);
                     var lo = p.lookOffset.Length == 3 ? V(p.lookOffset) : new Vector3(0f, 0.9f, 0f); look = o + lo;
                     poseCam.transform.position = o + side * p.offset[0] + Vector3.up * p.offset[1] + n * p.offset[2];
                 }
@@ -232,10 +244,51 @@ namespace Suborned.Play
                 poseCam.transform.LookAt(look);
             }
             else { poseCam.transform.position = V(p.pos); poseCam.transform.LookAt(V(p.look)); }
+            Render(h, s, poseCam, file);
+        }
+
+        /// <summary>Brief 070 (Glyph N4): the play camera as it stands, rendered once into a texture with no world marks (ShotSpec.bare).</summary>
+        void RenderView(HandoverHost h, ShotSpec s, string file) { if (!h.View) throw new InvalidOperationException("no play camera"); Render(h, s, h.View, file); }
+
+        /// <summary>One render of `cam` at the shot's size into `file`: the world marks hidden for it when `bare`, a key light for it when `keyLight`; both put back.</summary>
+        void Render(HandoverHost h, ShotSpec s, Camera cam, string file)
+        {
+            var hidden = new List<Renderer>();
+            if (s.bare)
+            {
+                foreach (var lr in FindObjectsByType<LineRenderer>(FindObjectsSortMode.None)) if (lr.enabled) { lr.enabled = false; hidden.Add(lr); } // rings, paths, reach, route lines
+                foreach (var mr in FindObjectsByType<MeshRenderer>(FindObjectsSortMode.None)) if (mr.enabled && Marked(mr.transform)) { mr.enabled = false; hidden.Add(mr); } // the sight fans and cones
+            }
+            GameObject key = null;
+            if (s.keyLight > 0f)
+            {   // a warm key from beside the camera, 0.4 m up, onto what it looks at (no shadows: it only lifts the shade)
+                key = new GameObject("shot-key"); var kl = key.AddComponent<Light>(); kl.type = LightType.Spot; kl.spotAngle = 40f; kl.range = 14f; kl.intensity = s.keyLight; kl.color = new Color(1f, 0.93f, 0.84f); kl.shadows = LightShadows.None;
+                key.transform.position = cam.transform.position + Vector3.up * 0.4f + cam.transform.right * 0.6f; key.transform.rotation = Quaternion.LookRotation(cam.transform.position + cam.transform.forward * 4f - key.transform.position, Vector3.up);
+            }
             var rt = new RenderTexture(s.w, s.h, 24); var tex = new Texture2D(s.w, s.h, TextureFormat.RGB24, false);
-            poseCam.enabled = true; poseCam.targetTexture = rt; poseCam.Render(); poseCam.targetTexture = null; poseCam.enabled = false;
-            var prev = RenderTexture.active; RenderTexture.active = rt; tex.ReadPixels(new Rect(0, 0, s.w, s.h), 0, 0); tex.Apply(); RenderTexture.active = prev;
-            File.WriteAllBytes(file, Encode(tex, s)); Destroy(tex); rt.Release(); Destroy(rt);
+            var target = cam.targetTexture; bool was = cam.enabled;
+            try
+            {
+                cam.targetTexture = rt; cam.Render();
+                var prev = RenderTexture.active; RenderTexture.active = rt; tex.ReadPixels(new Rect(0, 0, s.w, s.h), 0, 0); tex.Apply(); RenderTexture.active = prev;
+                File.WriteAllBytes(file, Encode(tex, s));
+            }
+            finally
+            {
+                cam.targetTexture = target; cam.enabled = was; Destroy(tex); rt.Release(); Destroy(rt);
+                foreach (var r in hidden) if (r) r.enabled = true;
+                if (key != null) Destroy(key);
+            }
+        }
+
+        /// <summary>A world mark's renderer: under a sight fan ("fan/…"; the people's cones are ground marks).</summary>
+        static bool Marked(Transform t) { for (var x = t; x != null; x = x.parent) if (x.name.StartsWith("fan/")) return true; return false; }
+
+        /// <summary>Brief 070: a block-frame direction (x south, y east) at the shot's place as a horizontal world direction.</summary>
+        static Vector3 BlockDir(HandoverHost h, ShotSpec s, float[] v)
+        {
+            var a = h.frame.World(new Suborned.Sim.Pt((int)s.atX, (int)s.atY)); var b = h.frame.World(new Suborned.Sim.Pt((int)(s.atX + v[0] * 100f), (int)(s.atY + v[1] * 100f)));
+            return new Vector3(b.x - a.x, 0f, b.z - a.z).normalized;
         }
 
         /// <summary>Frames at real time: the clock runs and each frame advances the game 1/fps (Time.captureFramerate), n seconds of it, into the folder `path`.</summary>

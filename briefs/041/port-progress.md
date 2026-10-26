@@ -1279,3 +1279,85 @@ Four faults sit where Sky will look first:
 - 0.2.130 under those rules would fail on N2, N6, N7 and N8 only.
 
 Next owner: Latch (N1 to N4, N6 to N9), Fable (N6 and N10 words, N11, N12), Splice (glyph-page-budget), Aster (N5 to Forma/Vela). Done-check: a rebuilt page and its stills, the 2x crop, and `--state page` passing.
+
+## Briefing page (brief 070), round 2 (Latch, 2026-10-26): build 0.2.133
+Glyph's N1 to N4 and N6 to N9, N5's interim camera and N10's heads, plus Redline's 1080p items. Fable's words are as in text.json at build time: "loop his camera", the 6:10 label and `briefing.page.heads`.
+
+**What changed**
+- **N1, the guard's still:**
+  - The window's role (a guard on his post) is now taken 45° off his door's normal. It turns toward the face's shorter run, so the longer run of façade is behind him (`faceRuns` in briefstills.ts: the Office's west wing runs 6.8 m one way from the door, 5.1 m the other).
+  - A warm key light beside the camera lights him for that one render (`keyLight` 30). URP spot intensity falls off with distance squared, so 1.5 did nothing at 3.6 m.
+  - I looked at 40°, 45°, 50°, 55° and 65°, each with keys 20, 30 and 60 (contact sheets in `briefs/070/build/0133/guardtune*/grid.png`).
+    - At 40° to 45° the glass door leaves are still behind him. They read as his door (handles, frame, lit), not as a void.
+    - Only about 65° clears the doorway, and that is a profile. I kept 45°, inside Glyph's 35 to 45°.
+  - I did not turn the sun (I tried it in 0.2.131 and it changed nothing: he stands in the door's shade).
+- **N2, the plan's labels:**
+  - A building's name goes inside its outline, centred, on two lines split at the middle word ("Records / Office"). It sits there when that fits the outline's box and keeps 4 px from every pin. Otherwise it goes on one line over or under the outline, clear of the pins. The café keeps its one line over its outline.
+  - The labels go into the manifest as `plan-label` (with `rows`) and every pin as `pin` with `n` (1 to 4, or `car`): on the stills, on the plan and in the legend.
+- **N3, the driver:**
+  - The camera is the play camera at zoom 2.1, aimed at the midpoint of the driver and his car (ShotSpec `focus2`), moved 1.4 m in toward the face (`shift`).
+  - He is about 355 of 1080 px tall (a third), with the car's near end beside him and the Office door with Vale behind.
+  - Zoom 5 to 6 at the play pitch would make him about 13 % of the height: a third needs about 2.1.
+- **N4, world marks:** every still is `bare`.
+  - The ShotRunner renders the camera once into a texture, with the ground marks off (`HudToolkit.WorldMarksOff` skips GroundFlush) and the LineRenderers and sight-fan meshes hidden for that one render.
+  - The service bay and getaway stills have no rings, route, wait box or cones.
+- **N5 (interim):** the getaway car's camera is now at 25° down (offset 1.8, 5.8, 11.5 m). The car's model is still Forma's and Vela's job.
+- **N6, Heat:** the "HEAT" head word (`briefing.page.heads.heat`), then the eye and the word.
+- **N7, widows:**
+  - PgPara holds a paragraph's last two words together with a no-break space. Wraps now pull them down as one: the 6:10 label ends "the / driver leaves".
+  - The front door's line is now Fable's "loop his camera".
+- **N8, the manifest:**
+  - Each cell face is its own `image` (60 × 60 with its ring), and the 1920 × 1080 "cell faces" rect is gone.
+  - Every page piece carries a `part`. The paper is `paper` and the foot band is `band`. Headings, the role names and the Heat head word are listed with their source words.
+  - The manifest's state is `page` (Splice's tool has it now).
+- **N9:** Begin slides the page and its paper up off the top in 0.3 s (ease in), with no fade, so it is never half there.
+- **N10 heads:** TWO WAYS IN (from `heads.ways.<count>`), WHERE over the plan and THE CLOCK over the stations. They come from text.json through the new `PlayText.PageHeads` loader.
+- **Safe frame (page budget 2.3):** the title moves down to 48 px, and the band's pieces move up 8 px, so each ends 32 px above the foot.
+- **Redline 064 (1080p bar):**
+  - Perf064.cs:46 now sizes to `-capture-size` (default 1920 × 1080), and its summary no longer says 2880 × 1864.
+  - CaptureSize.cs's header says frame times are measured at 1920 × 1080 (Sky, 2026-10-26).
+  - `CaptureSize.Parse` is now public.
+- **Files:**
+  - unity/Assets/Suborned/Runtime/Play/: Briefing.cs, PlayText.cs, HudToolkit.Capture.cs, HudToolkit.Less.cs, HudToolkit.Ground.cs, ShotRunner.cs, Perf064.cs, CaptureSize.cs;
+  - tools/game/briefstills.ts and briefstills.test.ts.
+
+**Evidence** (on disk, git-ignored: briefs/070/build/0133/)
+- `bun run batch --from sim` stopped at sim on Keel's tree: headless 355/356, DP1 failing.
+  - The tree's DLL (engine 0.35.0, in progress) had already gone into Unity.
+  - I went on `--from compile`. unity-match then FAILED, though it reported 447/447: the headless file carries the DP1 fail.
+  - Then `--from game-build`, which was twice blocked for a while by Splice's `-late` runs on the shared app; I waited for them, killed nothing.
+- **Build 0.2.133**, game-build ok (stills 5/5, ad hoc signature ok). Steps on 0.2.133:
+
+| step | result |
+|---|---|
+| game-check | FAILED, not mine: holdRange weaponsFree ("'free' is retired (weapons.oneInput, brief 039)") and r29 `down`. Both come from Keel's 0.35.0 tree, and both failed the same way on 0.2.132. On 0.2.131 (engine 0.34.2) the drive replay failed instead: "inputs differ from the record", the tree's inputs changing under the build. |
+| shots | ok (11) |
+| budget | FAILED: audit 10/10 clean; briefing-day and getaway-car-yaw210 over; proof set r059 9/13, r067 16/32, r123 5/5 |
+| late-fight | ok: loud-fight p99 7.7, worst 37.7 ms (order+save) |
+| tp-long | ok: play-opening p99 5.5, tp-worst p99 5.8 ms |
+
+- **The page's budget** (`--state page`, Splice's tool): 2 faults, down from 21 on 0.2.132 and from 0.2.130's 2.2/2.4/2.7/2.8.
+  - **225 words** against the cap of 220. The total is now complete: it counts the heads, role names, plan labels and Heat head that 0.2.130 didn't list. Cutting it is for Fable and Glyph.
+  - **"Records Office" ends on a widow.** This is N2 against 2.8: a two-word name on two rows always ends on one word. Splice: exempt a plan label, or any element of two words or fewer.
+- **r059 and r067 proof pictures:** new reds on 0.2.133, all in drive, board and Alt frames ("running text", "stacked text"). In each failing frame the history panel (SCENES · HISTORY) is open in the proof.
+  - On 0.2.132 the same sets were 13/13 and 31/32, on the same engine. This round touched no play HUD.
+  - I take it as the proof leaving History open after the failing holdRange and r29 sections. I didn't loop on it.
+- **getaway-car-yaw210:** "1 block", also red on 0.2.130.
+- **Front end at 1080 and 2160** (`-frontEndShots`, `-capture-size`, scratch `-settings`): status ok, all checks.
+  - briefingAfter: "up|page|… stills: 5/5 … clock (5 stations)".
+  - startHeld and startPlays (yaw 30) ok.
+- `bun test tools/game contracts/missions/handover`: 387 pass. `bun run typecheck` clean. runtime-compile clean.
+
+**Pictures for Glyph's recheck**
+- the page: briefs/070/build/0133/frontend-1080/briefing.png and frontend-2160/briefing.png;
+- the slide: frontend-1080/start-1-begin.png;
+- the stills: briefs/070/build/0133/stills/brief-*.jpg (stills.json, stills.shots.json);
+- the budget run: budget/briefing-day.png, its manifest, and budget/briefing-day.budget.txt.
+
+**Open**
+- Fable: page words 225 > 220. N11 (the "Vale's car" caption) has not landed yet.
+- Splice: the 2.8 widow rule against a two-word plan label.
+- Keel: DP1, holdRange weaponsFree, r29 `down` on 0.35.0.
+- Forma and Vela: the getaway car model (N5).
+
+Next owner: Glyph (2x recheck of the page and the stills), then Aster.

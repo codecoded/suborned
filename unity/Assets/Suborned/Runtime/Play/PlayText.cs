@@ -62,6 +62,8 @@ namespace Suborned.Play
         public readonly Dictionary<string, (string when, string line)> PageWays = new();
         public readonly List<string> PageClock = new();
         public readonly Dictionary<string, string> PageCell = new();
+        /// <summary>Brief 070 (Glyph N6, N10; Fable's briefing.page.heads): the page's section heads, flat: "ways.2" (keyed by how many ways), "where", "clock", "heat".</summary>
+        public readonly Dictionary<string, string> PageHeads = new();
         /// <summary>Brief 031: the briefing's Heat word by band (briefing.heat: unknown, noticed, wanted, infamous).</summary>
         public readonly Dictionary<string, string> Heat = new();
         public readonly Dictionary<string, ActionText> Actions = new();
@@ -171,6 +173,7 @@ namespace Suborned.Play
                     if (pg.Opt("ways") is JNode pw) foreach (var kv in pw.Entries) PageWays[kv.Key] = (S(kv.Value, "when") ?? "", S(kv.Value, "line") ?? "");
                     if (pg.Opt("clock") is JNode pc) PageClock.AddRange(pc.Strs());
                     if (pg.Opt("cell") is JNode pce) foreach (var kv in pce.Entries) PageCell[kv.Key] = kv.Value.Str();
+                    if (pg.Opt("heads") is JNode hd) foreach (var kv in hd.Entries) { if (kv.Value.Kind == JKind.Str) PageHeads[kv.Key] = kv.Value.Str(); else if (kv.Value.Kind == JKind.Obj) foreach (var k2 in kv.Value.Entries) if (k2.Value.Kind == JKind.Str) PageHeads[kv.Key + "." + k2.Key] = k2.Value.Str(); }
                 }
                 if (b.Opt("timeline") is JNode tl) foreach (var x in tl.Items) { Timeline.Add((x["at"].Str(), x["label"].Str(), x["known"].Bool())); if (S(x, "short") is string sh) TimelineShort[x["at"].Str()] = sh; }
                 if (b.Opt("cell") is JNode ce) foreach (var kv in ce.Entries) Cell[kv.Key] = kv.Value.Str();
