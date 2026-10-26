@@ -100,6 +100,10 @@ public class FinalIntentTests
         // fight's: both runs are safe fights, and one of them advanced
         bool advanced(Game g) => g.Log.Exists(l => l.Code == "ai.advance");
         if (advanced(a) || advanced(b)) { Assert.Equal(("safe", "safe"), (a.FightBranch, b.FightBranch)); return; }
+        // engine 0.35.2 (Motive rulings-0.35.1 §2): the rivals walking to an unguarded held car fire as they walk at whoever the intent lets
+        // them (agent: a cell that never drew, nobody; every: anyone), so the walk's hashes differ both ways by the rule; the outcome does not
+        bool walked(Game g) => g.Log.Exists(l => l.Code == "rivals.for-car");
+        if (walked(a) || walked(b)) { Assert.Equal(("safe", "safe"), (a.FightBranch, b.FightBranch)); Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode)); return; }
         Assert.Equal((a.Result, a.FailCode), (b.Result, b.FailCode));
         if (!name.StartsWith("careless-", StringComparison.Ordinal) && !name.StartsWith("fight-", StringComparison.Ordinal) && !Moves.Contains(name)) Assert.Equal((a.Trail, a.Alert), (b.Trail, b.Alert)); // the failure rows' Trail may fall (fight-loud-enforcer-down 9 -> 8: fewer hits)
         else if (Moves.Contains(name)) { Assert.Equal(a.Alert, b.Alert); Assert.True(a.Trail <= b.Trail, $"{name}: Trail {a.Trail} under agent, {b.Trail} under every"); } // engine 0.33.1 (car.footprint): on the loud rows the agents who did nothing are no longer shot, and the Trail may differ too (12 under agent, 14 under every)

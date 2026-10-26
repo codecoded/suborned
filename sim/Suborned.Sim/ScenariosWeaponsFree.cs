@@ -11,6 +11,7 @@
 //    F14-FOCUS     a focus is a lock: lasting, it never walks in; the order round-trips
 //    F14-UNDER     the under-fire read: who, since when; a holstered agent fired on is never drawn
 //    F12-ROT-WF    F12-ROT under weapons free: the officer still keeps one target (§12.2)
+//    F-ON-ONCE     engine 0.35.2 (Fable): the fight-on line once per fight: fire.free-on never twice without a fire.free-off between
 //    HI-SCOUT      the Enforcer goes loud; the holstered Scout in their sight is never fired on
 //    HI-SCOUT-ACT  the same, but the Scout draws in their sight: he is
 //    HI-FACE       a drop-it warning heeded (+1 T) makes the Scout's face known: at Alert 2 the police fire on him holstered
@@ -237,6 +238,27 @@ namespace Suborned.Sim
                 { var q = ap + new Pt(dir.X * d, dir.Y * d); if (g.S.Grid.Free(q) && g.S.Grid.Route(r.Op(Scout).Pos, q) != null && g.GuardWatching(q, false) && !g.CameraWatching("entrance", q) && !g.CameraWatching("pickup", q)) return q; }
                 throw new InvalidOperationException("no post in the guard's cone beside the Office approach");
             }
+
+            // engine 0.35.2 (Fable briefs/039/fable-fight-on.md; log only): the fight-on line once per fight. 0.35.1 logged fire.free-on again after
+            // each lull in the final fight under one input (no fire.free-off there since Motive's ruling 1): 16 repeats over 11 routes
+            Add("F-ON-ONCE", "039", "Engine 0.35.2 (Fable, briefs/039/fable-fight-on.md; log only): under one input fire.free-on and fire.free-off alternate in the log, fire.free-on never twice without a fire.free-off between, on the loud fixture (bal-loud-x4: fights before the final one, then the final fight with its lulls) and the four quiet ones; every route script is held to the same in the xunit FightOnOnceTests.", r =>
+            {
+                static string Seq(Game g) => string.Join(" ", g.Log.Where(l => l.Code == "fire.free-on" || l.Code == "fire.free-off").Select(l => (l.Code == "fire.free-on" ? "on " : "off ") + Report.Clock(l.Tick)));
+                static int Repeats(Game g) { int n = 0; bool on = false; foreach (var l in g.Log) { if (l.Code == "fire.free-on") { if (on) n++; on = true; } else if (l.Code == "fire.free-off") on = false; } return n; }
+                static bool OffAfterOn(Game g) { bool on = false; foreach (var l in g.Log) { if (l.Code == "fire.free-on") on = true; else if (l.Code == "fire.free-off") { if (!on) return false; on = false; } } return true; }
+                void One(Run x, string fx)
+                {
+                    if (!PlayFixture(x, fx)) return;
+                    var g = x.G;
+                    x.Is(g.OneInputOn, $"{fx}: one input");
+                    x.Is(g.Log.Exists(l => l.Code == "fire.free-on"), $"{fx}: a fight comes on ({Seq(g)})");
+                    x.Eq(Repeats(g), 0, $"{fx}: no fight-on line twice without a fight-off between ({Seq(g)})");
+                    x.Is(OffAfterOn(g), $"{fx}: every fight-off follows a fight-on");
+                }
+                One(r, "bal-loud-x4");
+                if (r.Inputs == null) return;
+                foreach (var fx in new[] { "sq-ra-h3", "sq-route-a-board", "bal-rb-ff", "bal-rbb-ff" }) { var b = Alt(r, r.Inputs); One(b, fx); foreach (var c in b.Checks) r.Is(c.ok, $"[{fx}] " + c.what); }
+            });
 
             Add("HI-SCOUT", "—", "Sky 2026-10-21 (hostile-initiative.md answer 2): the Enforcer goes in wild; the holstered Scout in the hostiles' sight is never fired on", r =>
             {

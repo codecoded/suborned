@@ -6,8 +6,9 @@
 //       "vale-reaches-getaway-car" here (the scenario that fails 0.29.0's Debrief.Of).
 //  N184 ready: N115's quiet G-kill without the final fight; the Enforcer boards with Vale, nobody gives Go; sealed with the car free.
 //       The seal window from the first seal-clock tick to the seal, its origin the cause's.
-//  N185 held: N111's ambush; the Enforcer boards with Vale while the blocker holds the lane, Go refused car-held; sealed, held, the
-//       holders exactly CarHolders() at the seal (engine 0.34.0: the two who fought board too, the Tech stands outside as nobody's foe).
+//  N185 held: N111's ambush; the Enforcer boards with Vale while the blocker holds the lane, Go refused car-held. Engine 0.35.2 (Motive
+//       rulings-0.35.1 §2): the Tech standing outside undrawn is no guard, so the rivals take Vale before the seal (rivals-reach-vale);
+//       0.34.0 to 0.35.1 sealed here with the car held (FailCause.Car held, holders CarHolders()): that state has no play here now.
 //  N186 the patrol's path: route A's reroute, the walk out, the wait, the walk back, then a chase: after every tick the robot stands on the
 //       path read before it, and never steps more than its pace in a tick.
 using System;
@@ -114,7 +115,7 @@ namespace Suborned.Sim
                 r.Is(d.Route.Contains("vale-reaches-getaway-car") && d.Route.Contains("vale-taken-through-office"), $"the debrief: through the Office, and he reached the car (route: {string.Join(", ", d.Route)})");
             }, NoFight());
 
-            Add("N185", "—", "The seal's car state, held (brief 057 §4): N111's fixture (route A, quiet, the ambush springs; one rival goes for the road and holds the exit lane). The Scout and the Fixer fight on and spare the blocker; the Enforcer walks Vale in and boards, and the two board after him (engine 0.34.0: the Tech, never drawn, stands outside, so K3's walk to the car stays off, and with no operative a rival has cause to fire on outside the rivals hold: M067-SQ2). Go is refused car-held, naming the holders. The district seals with Vale aboard and the car held: FailCause.Car held, its holders exactly CarHolders() at the seal (the hold Go names), the refused Go recorded.", r =>
+            Add("N185", "—", "The held car with Vale aboard and the seal running (brief 057 §4), restated on engine 0.35.2 (Motive briefs/039/motive/rulings-0.35.1.md §2, Sky's yes 2026-10-27): N111's fixture (route A, quiet, the ambush springs; one rival goes for the road and holds the exit lane). The Scout and the Fixer fight on and spare the blocker; the Enforcer walks Vale in and boards, and the two board after him; the Tech, never drawn, stands outside. Go is refused car-held, naming the holders. 0.34.0 to 0.35.1: the undrawn Tech kept K3's walk off and the district sealed with the car held (FailCause.Car held). Now an undrawn agent standing by is no guard: the rivals up and not broken walk to the held car and take Vale before the seal (rivals-reach-vale). FailCause.Car held at the seal has no play here any more (a held car with Vale aboard now needs a drawn agent outside, who is fought): flagged to Motive.", r =>
             {
                 var g = r.G;
                 RouteA(r, reroute: true);
@@ -156,13 +157,12 @@ namespace Suborned.Sim
                     foreach (var s in new[] { Scout, Fixer, Tech }) { var o = r.Op(s); if (!o.Down && o.Gun.Target == b!.Id) g.Issue(new Order { Tick = g.Tick, Op = s, Do = "cease" }); }
                     last = g.CarHolders(); g.Step();
                 }
-                if (!r.Is(g.FailCode == "sealed", $"the run ends sealed ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; Lockdown {Report.Clock(g.Lockdown)})")) return;
-                var c = g.Cause!;
-                r.Eq(c.Car, "held", "FailCause.Car: held");
-                r.Eq(string.Join(",", c.Holders), string.Join(",", g.CarHolders()), "its holders are CarHolders() at the seal, in id order");
-                r.Is(c.Holders.Count > 0 && c.Holders.Contains(b!.Id), $"the blocker among them ({string.Join(",", c.Holders)})");
-                r.Is(c.GoRefusedAt >= refused && c.GoRefused == "car-held", $"the refused Go recorded ({c.GoRefusedAt}, {c.GoRefused})");
-                r.Is(c.Json().Contains("\"car\":\"held\"") && c.Json().Contains("\"holders\":[\""), "the fail camera's JSON carries the state and the holders");
+                // engine 0.35.2: the undrawn Tech outside is no guard (fight.unguarded a): the rivals walk to the held car and take Vale, before the seal
+                int walk = LogTick(g, "rivals.for-car", refused - 1);
+                r.Is(g.FailCode == "rivals-reach-vale" && walk >= 0, $"the rivals walk past the undrawn Tech to the held car and take Vale ({g.Result} {g.FailCode} at {Report.Clock(g.Tick)}; rivals.for-car {(walk >= 0 ? Report.Clock(walk) : "-")})");
+                r.Is(g.Tick < g.Lockdown, $"before the seal ({Report.Clock(g.Tick)}, Lockdown {Report.Clock(g.Lockdown)})");
+                r.Is(!r.Op(Tech).Down && !r.Op(Tech).InCar && !r.Op(Tech).Gun.Drawn, "the Tech still stands outside, undrawn, up");
+                r.Is(!g.Log.Exists(l => l.Code == "rivals.for-car" && l.Text.StartsWith(b!.Id + " ", StringComparison.Ordinal)), $"the blocker ({b!.Id}) keeps his lane");
                 RouteBacked(r);
             });
 

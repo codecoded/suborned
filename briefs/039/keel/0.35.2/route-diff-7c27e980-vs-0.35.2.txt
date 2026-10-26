@@ -1,0 +1,82 @@
+$ bun tools/game/playing.ts bun tools/route-diff/cli.ts --a "7c27e980" --b tree --scripts tree --all --json "briefs/039/keel/0.35.2/route-diff-7c27e980-vs-0.35.2.json"
+· engines ready (1.9 s); playing 42 routes on A and 42 on B
+A = 7c27e980565a    B = the working tree    (= means the value did not move)
+route                            outcome         fail                   end              Trail  Alert  health lost
+careless-body-found              =               =                      =                =      =      =
+    first log line apart (line 68):
+      A  3:24.8  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  3:25.1  witness.react  p-records-office-74 finds a body: radio.
+careless-enforcer-watches-guard  failure         enforcer-down          2:55.1           1      2      34 %
+careless-g-disable               success         -                      3:59.6           3      2      21 %
+careless-guard-left-door-held    failure         vale-leaves            6:13.0           6      1      0 %
+careless-loop-runs-out           failure         entry-seen-camera      2:52.9           4      0      0 %
+careless-reporter-not-stopped    success         -                      7:32.2           4      1      26 %
+careless-scout-idles-pickup      success         -                      7:32.2           4      1      26 %
+careless-takedown-seen-camera    failure         entry-seen-camera      2:37.0           1      1      0 %
+careless-takedown-seen-crowd     failure         vale-leaves            6:13.0           7      3      0 %
+careless-thin-all                success         -                      7:29.3           19     2      17 %
+fail-district-seals              failure         sealed                 5:05.0           8      2      0 %
+fail-enforcer-down               failure         enforcer-down          2:13.6           6      2      34 %
+fail-entry-seen-camera           failure         entry-seen-camera      4:42.9           3      1      0 %
+fail-entry-seen-guard            failure         entry-seen-guard       3:52.9           2      1      0 %
+fail-rivals-reach-vale           failure         rivals-reach-vale      6:39.5           2      1      0 %
+fail-take-seen-camera            failure         abduction-seen-camera  6:10.0           1      1      0 %
+fail-vale-dead                   failure         vale-dead              6:12.0           7      3      0 %
+fail-vale-leaves                 failure         vale-leaves            6:13.0           1      0      0 %
+fight-loud-enforcer-down         failure         enforcer-down          3:15.5           9      2      34 %
+fight-loud-wait-square           failure         enforcer-down          4:00.7           8      2      34 %
+fight-loud-wait-yard             withdrawn       -                      7:29.5           9      3      34 %
+fight-safe-cell-down             none → failure  - → rivals-reach-vale  8:30.0 → 3:09.7  =      =      =
+    first log line apart (line 42):
+      A  2:54.7  order.move  enforcer move (1 s)
+      B  2:54.7  rivals.for-car  rival-2 sees nobody of the cell guarding the car and goes for Vale.
+fight-safe-rivals-reach-vale     failure         rivals-reach-vale      6:39.5           2      1      0 %
+loud                             =               =                      =                =      =      =
+    first log line apart (line 113):
+      A  4:06.8  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:06.9  crowd.sheltered  1 reach shelter.
+loud-fight                       =               =                      =                =      =      =
+    first log line apart (line 113):
+      A  4:06.8  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:06.9  crowd.sheltered  1 reach shelter.
+loud-left-downed                 =               =                      =                =      =      =
+    first log line apart (line 113):
+      A  4:06.8  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:06.9  crowd.sheltered  1 reach shelter.
+loud-left-standing               =               =                      =                =      =      =
+    first log line apart (line 113):
+      A  4:06.8  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:06.9  crowd.sheltered  1 reach shelter.
+route-a                          =               =                      =                =      =      =
+    first log line apart (line 83):
+      A  4:13.5  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:13.9  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the tech.
+route-a-board                    success         -                      4:15.5           4      0      0 %
+route-a-disable                  =               =                      =                =      =      =
+    first log line apart (line 89):
+      A  4:13.5  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:13.9  ai.advance  rival-3 has had nobody in reach for 1 s: he advances on the tech.
+route-a-pressure                 =               =                      =                =      =      =
+    first log line apart (line 110):
+      A  4:03.9  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  4:04.1  shot.miss  scout fires on rival-3 at 15 m (300 ‰): miss.
+route-a-pressure-board           success         -                      4:13.8           6      0      21 %
+route-b                          success         -                      7:32.2           4      0      26 %
+route-b-board                    success         -                      7:35.4           4      0      26 %
+route-b-thin                     success         -                      7:32.2           4      0      17 %
+route-g                          success         -                      3:59.6           5      1      21 %
+route-g-board                    success         -                      3:59.6           5      1      13 %
+route-g-fast                     success         -                      2:58.6           5      1      4 %
+route-g-fast-board               success         -                      3:02.0           5      1      4 %
+route-g-kill                     =               =                      =                =      =      =
+    first log line apart (line 107):
+      A  5:24.6  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  5:24.8  ai.why  rival-5 takes the enforcer as its target: vale, drawn.
+route-g-kill-board               =               =                      =                =      =      =
+    first log line apart (line 141):
+      A  5:33.5  fire.free-on  A fight is on: drawn agents fire on their own.
+      B  5:34.0  shot.miss  rival-4 fires on enforcer at 14 m (562 ‰): miss.
+withdraw                         withdrawn       -                      0:30.0           0      0      0 %
+
+42 routes: 11 moved, 31 unchanged
+(7.2 s)

@@ -136,8 +136,23 @@
   },
   {
    "tick": 2411,
-   "op": "cell",
-   "do": "panic"
+   "op": "scout",
+   "do": "draw"
+  },
+  {
+   "tick": 2411,
+   "op": "fixer",
+   "do": "draw"
+  },
+  {
+   "tick": 2411,
+   "op": "tech",
+   "do": "draw"
+  },
+  {
+   "tick": 2411,
+   "op": "enforcer",
+   "do": "draw"
   },
   {
    "tick": 2629,
