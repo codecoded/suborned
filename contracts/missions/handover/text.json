@@ -212,7 +212,6 @@
    "cell-down": "The whole cell is down. Nobody is left to get Vale out.",
    "entry-seen-guard": "The guard saw the Enforcer go in. Vale was warned.",
    "entry-seen-camera": "The entrance camera saw the Enforcer go in. The Office locked down.",
-   "entry-seen-patrol": "The patrol saw the Enforcer go in. The Office locked down.",
    "abduction-seen-camera": "The pickup camera saw us. Vale was rescued.",
    "driver-shot": "The driver was shot. Security pulled Vale away.",
    "getaway-lost": "The getaway car is wrecked. We can't get Vale out.",
@@ -644,6 +643,9 @@
    "report.started": {"kind":"warning","fate":"icon","title":"Someone is reporting it","sight":"in-sight","at":"reporter","result":{"radio":"{who} is radioing it in.","look":"{who} goes to look first.","phone":"{who} is heading for a phone."},"pick":"radio when the engine's text says radios it in, look when it says goes to look, else phone"},
    "report.stopped": {"kind":"city","fate":"icon","title":"A report stopped","sight":"in-sight","at":"reporter","result":"{who} won't be making that call."},
    "report.landed": {"kind":"warning","fate":"beat","beat":"Reported.","title":"Security got a report","result":"Security has it. Alert {alert}."},
+   "entry.seen": {"kind":"warning","fate":"icon","title":"The patrol saw the entry","sight":"in-sight","at":"patrol","result":"The patrol is radioing it in."},
+   "entry.reported": {"kind":"warning","fate":"beat","beat":"Reported.","title":"Security got a report","result":"Security has it. Alert {alert}."},
+   "entry.stopped": {"kind":"city","fate":"alt","title":"A report stopped","sight":"in-sight","at":"patrol","result":"The patrol won't be making that call."},
    "report.unfounded": {"kind":"city","fate":"alt","title":"Nothing found","sight":"in-sight","at":"scene","result":"{who} found nothing where the report said."},
    "report.confirmed": {"kind":"warning","fate":"beat","beat":"Body found.","title":"Body found","sight":"in-sight","at":"scene","result":{"dead":"{who} found the body. Alert {alert}.","out":"{who} found the knocked-out body. Alert {alert}."},"pick":"dead or out by the engine's text"},
    "seal.starts": {"kind":"warning","fate":"beat","beat":"District sealing.","title":"The district will be sealed","result":"Police seal the district at {clock}."},
@@ -796,7 +798,7 @@
   "summon-refused": {"kind":"world","trigger":"the call is refused for a summon-* reason: the contact says why (Inez answers the Fixer; the guard, if he is within earshot)","speakers":["waitress","guard"],"note":"outcome is the refusal code; refused at no cost"},
   "agent-down": {"kind":"world","trigger":"an agent is hit down (not the Enforcer: that is a fail)","speakers":["scout","fixer","tech","enforcer"],"log":["scout.down","fixer.down","tech.down"]},
   "win": {"kind":"end","trigger":"the car leaves with Vale in it (Go)","speakers":["scout","fixer","tech","enforcer","councillor"],"log":["success"]},
-  "fail": {"kind":"end","trigger":"the mission fails; outcome is the fail code","speakers":["fixer","enforcer","scout","guard","watcher","patrol","councillor","rivals","security","crowd"],"log":["fail."]},
+  "fail": {"kind":"end","trigger":"the mission fails; outcome is the fail code","speakers":["fixer","enforcer","scout","guard","watcher","councillor","rivals","security","crowd"],"log":["fail."]},
   "withdraw": {"kind":"end","trigger":"the cell withdraws, or the car leaves without Vale","speakers":["fixer"],"log":["withdraw","withdraw.car"],"verbs":["withdraw"]},
   "cliffhanger": {"kind":"end","trigger":"the debrief: in the getaway car Vale names who else has a copy of the file (Story spine, ending beat; revised for the file story, Sky 2026-10-23). outcome named = Halcyon (pending Sky), unnamed = the safe version","speakers":["councillor","fixer"]},
   "takedown-seen": {"kind":"world","trigger":"a watcher with a weapon or a post sees a takedown or a carried body: Alert at sight, the Enforcer is a foe they engage","speakers":["guard","patrol","watcher","security","fixer","enforcer"],"log":["takedown.seen"]},
@@ -976,6 +978,9 @@
   "rivals.tip-leaves": "engine 0.32.0 (brief 059): silent: rivals.misled said they would go; the street shows the car leave the district",
   "rivals.back": "engine 0.32.0 (brief 059): card only: the rival car is back after a false tip",
   "rivals.wakes": "engine 0.33.0 (brief 059): card only: a knocked-out rival comes round; he makes no report and no statement (never victim.wakes), so the card says only that he will go for the Enforcer, and the street shows him stand",
+  "entry.seen": "engine 0.34.2 (Sky 2026-10-26: entry seen by the patrol is no fail): card only: the patrol saw the Enter and radios it in; the Enter goes on. Its radio mark over the patrol shows it, as report.started does",
+  "entry.reported": "engine 0.34.2: card only: the patrol's report of the Enter lands, a found fault (Alert at least 1). The beat is report.landed's (Reported.), and alarm.dispatches speaks for the response",
+  "entry.stopped": "engine 0.34.2: card only: the patrol was downed before its report of the Enter landed; history only, the downed patrol shows it",
   "rivals.frees": "engine 0.33.0 (brief 059): card only: a crewmate unties a tied rival (restrain.freed is the civilian finder's)",
   "rivals.gone": "engine 0.33.0 (brief 059): silent: a woken rival whose car is away walks off the map; the street shows him leave and no fact comes of it (as rivals.lookout-gone)",
   "rivals.warned": "engine 0.32.0 (brief 059): event rivals-warned and a card: the driver's word reached the lookout and he leaves",
@@ -1676,7 +1681,6 @@
     "cell-down": "Whole cell down.",
     "entry-seen-guard": "The guard saw you.",
     "entry-seen-camera": "A camera saw you.",
-    "entry-seen-patrol": "The patrol saw you.",
     "abduction-seen-camera": "Seen taking Vale.",
     "driver-shot": "Driver shot.",
     "getaway-lost": "Getaway car wrecked.",
@@ -1837,9 +1841,6 @@
     "entry-seen-camera": {
      "seen": "{by} saw {agent}."
     },
-    "entry-seen-patrol": {
-     "seen": "{by} saw {agent}."
-    },
     "abduction-seen-camera": {
      "seen": "{by} saw {agent}."
     },
@@ -1885,9 +1886,6 @@
     },
     "entry-seen-camera": {
      "seen": "This camera covers the door."
-    },
-    "entry-seen-patrol": {
-     "seen": "The patrol was watching the door."
     },
     "abduction-seen-camera": {
      "seen": "This camera covers Vale's car."
@@ -2355,8 +2353,6 @@
   {"event":"fail","speaker":"guard","outcome":"entry-seen-guard","lines":["Intruder at the door! Alarm!","You! Stop right there!"]},
   {"event":"fail","speaker":"fixer","outcome":"entry-seen-camera","lines":["The camera caught him at the door.","Seen on the entrance feed."]},
   {"event":"fail","speaker":"watcher","outcome":"entry-seen-camera","lines":["Camera one. Intruder at the door.","Entrance camera shows a breach. Lockdown!"]},
-  {"event":"fail","speaker":"fixer","outcome":"entry-seen-patrol","lines":["The patrol saw him go in.","A patrol spotted the entry."]},
-  {"event":"fail","speaker":"patrol","outcome":"entry-seen-patrol","lines":["Unauthorised entry. Lockdown initiated.","Breach detected. Alarm."]},
   {"event":"fail","speaker":"fixer","outcome":"abduction-seen-camera","lines":["The pickup camera caught it all.","Seen at the car. Vale's rescued."]},
   {"event":"fail","speaker":"watcher","outcome":"abduction-seen-camera","lines":["Camera two. Councillor seized!","Pickup camera. Abduction! Send everyone."]},
   {"event":"fail","speaker":"fixer","outcome":"driver-shot","lines":["Not the driver. We never meant that.","He's down. Security has Vale."]},

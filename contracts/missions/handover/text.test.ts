@@ -14,7 +14,7 @@ import { readTexts, world } from '../../../tools/people/inputs.ts';
 import { PeopleRules, TEMPERAMENTS, allowedTemperaments } from '../../people/people.rules.schema.ts';
 import { Rulebook } from '../../rules/rulebook.schema.ts';
 import * as R from '../../rules/rulebook.ref.ts';
-import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
+import { AGENTS, BEAT_MAX, CARD_FATES, CONTROL_VERBS, FAILS, FATES, RETIRED_FAILS, HINT_MAX, MAX_LINE, MAX_WORDS, OUTCOMES, PEOPLE, PRICE_FIELDS, SHORT_MAX, TextFile, VERBS, WATCHED, cardResult, fillCard, fillLock, fillLockShort, holdersPhrase, roleOfId, lineKey, lookup, lookupScene, marked, pickIndex, pickLine, playScene, sceneKey, scenesFor, wordCount } from './text.schema.ts';
 
 const root = join(import.meta.dir, '..', '..', '..');
 const read = (p: string) => readFileSync(join(root, p), 'utf8');
@@ -432,6 +432,8 @@ describe('verbs and refusals', () => {
     if (!haveSim) return;
     const codes = new Set<string>(['engine-error']);
     for (const src of simAll()) for (const m of src.matchAll(/Fail\("([a-z-]+)"/g)) codes.add(m[1]!);
+    // a retired fail stays in the engine only for rulebooks pinned before its change (engine 0.34.2: entry-seen-patrol); the live text words none
+    for (const c of RETIRED_FAILS) { codes.delete(c); expect(c in t.briefing.fails, c).toBe(false); expect(lookup(t, { event: 'fail', speaker: 'fixer', outcome: c }), c).toBeFalsy(); }
     expect([...codes].sort()).toEqual([...FAILS].sort());
     for (const c of codes) expect(t.briefing.fails[c], c).toBeTruthy();
     expect(Object.keys(t.briefing.fails).sort()).toEqual([...FAILS, 'withdraw'].sort());
@@ -905,7 +907,7 @@ describe('feed cards for engine events no scene covers', () => {
     const HEARD_AT: Record<string, string> = { 'rivals.coming': 'rival-car' };
     const SEEN_AT: Record<string, string> = { 'rivals.drop': 'rival-car', 'rivals.follows': 'rival-car', 'rivals.back': 'rival-car', 'rivals.warned': 'rival-lookout', 'rivals.no-warning': 'rival-lookout', 'rivals.wakes': 'victim', 'rivals.frees': 'victim',
       'rivals.at-vale': 'vale-car', 'car.blocked': 'vale-car', 'restrain.freed': 'victim', 'victim.wakes': 'victim', 'victim.statement': 'victim', 'victim.calls-out': 'stash', 'report.started': 'reporter', 'report.stopped': 'reporter',
-      'report.unfounded': 'scene', 'report.confirmed': 'scene', 'person.missed': 'person', 'guard.back-to-post': 'guard', 'alarm.reassigns': 'unit', 'doors.lock': 'door', 'patrol.alarm': 'patrol',
+      'report.unfounded': 'scene', 'report.confirmed': 'scene', 'person.missed': 'person', 'guard.back-to-post': 'guard', 'alarm.reassigns': 'unit', 'doors.lock': 'door', 'patrol.alarm': 'patrol', 'entry.seen': 'patrol', 'entry.stopped': 'patrol',
       'patrol.stands-down': 'patrol', 'stash.serviced': 'stash', 'stash.opened': 'stash' };
     for (const [c, x] of Object.entries(items)) {
       if (x.sight) expect([...SCENE_CARDS, ...Object.keys(SEEN_AT), ...Object.keys(HEARD_AT)], c).toContain(c);
@@ -1334,7 +1336,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
   test('brief 019: the fail camera has a caption of at most six words and a tip of at most six for every way a run can fail (Cause.fail and why), and the same keys in both', () => {
     const F = L.failcam;
     const ways: Record<string, string[]> = {
-      'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'entry-seen-patrol': ['seen'], 'abduction-seen-camera': ['seen'],
+      'entry-seen-guard': ['seen'], 'entry-seen-camera': ['seen'], 'abduction-seen-camera': ['seen'],
       'rivals-reach-vale': ['beat-to-pickup', 'downed-enforcer', 'reached-at-close', 'reached-car'], 'vale-leaves': ['too-late'], 'vale-dead': ['killed', 'shot'],
       'enforcer-down': ['shot'], 'cell-down': ['shot'], 'driver-shot': ['shot'], 'getaway-lost': ['wrecked'], 'sealed': ['response', 'confirmed', 'loud-fight', 'desk', 'heard'], 'engine-error': ['error'] };
     expect(Object.keys(F.caption).sort()).toEqual(Object.keys(ways).sort());
@@ -1376,7 +1378,7 @@ describe('brief 014: the short forms, the price line, the beats', () => {
     for (const [v, a] of Object.entries(t.actions)) expect(a.does.length, v).toBeGreaterThan(10);
     for (const l of Object.values(t.locks)) expect(l.line.length).toBeGreaterThan(l.short.length);
     for (const h of Object.values(t.hints.items)) expect(h.line.length).toBeGreaterThan(h.short.length);
-    expect(Object.keys(t.cards.items).length).toBe(77); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of)
+    expect(Object.keys(t.cards.items).length).toBe(80); // 58 + camera.cut and camera.cut-reported (brief 058, engine 0.31.0), less car.blocks (brief 059, engine 0.32.0: the driver's Call is retired, Motive M059-6.1), plus the eleven worded codes of the rival car and Vale's car (rivals.coming, drop, follow-car, follows, back, warned, no-warning, at-vale; car.parks, car.blocked; board.missed), plus the five of the rival crew as people and the floor (rivals.recalled, wiped, see-takedown, wakes, frees; engine 0.33.0), plus the two of the held car (rivals.for-car, rivals.back-to-cover; engine 0.34.0, which the host already makes fallback cards of), plus the three of the patrol's report of the Enter (entry.seen, entry.reported, entry.stopped; engine 0.34.2)
     expect(t.briefing.card.length).toBeGreaterThanOrEqual(3);
     expect(t.toasts['run-seen']!.line).toMatch(/noticed/);
   });
@@ -1845,8 +1847,14 @@ describe('brief 067, engine 0.34.x: Go needs a driver, the cell down, the rivals
     const bad = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\bpatrol\b/i.test(s.text) || /patrol/.test(s.path))
       .filter((s) => /\b(entrance|square|steps|forecourt)\b|sweeps? (this|past) (the )?door|due round|between sweeps/i.test(s.text)).map((s) => `${s.path}: ${s.text}`);
     expect(bad).toEqual([]);
-    // "entry seen by the patrol" can still happen if the patrol has left its sweep, so its fail keeps its words, and the tip says only what is true then
-    expect(L.failcam.tip['entry-seen-patrol']).toEqual({ seen: 'The patrol was watching the door.' });
+    // engine 0.34.2 (Sky 2026-10-26, GDD v0.28.0 section 07): the patrol seeing the Enter is no fail. Its fail words are gone, and it is a report: the patrol radios it, it lands, or it is stopped
+    for (const k of ['entry-seen-patrol', ...RETIRED_FAILS]) { expect(k in L.failcam.caption, k).toBe(false); expect(k in L.failcam.tip, k).toBe(false); expect(k in L.end.fail, k).toBe(false); expect(k in t.briefing.fails, k).toBe(false); }
+    expect(t.dialogue.filter((e) => e.event === 'fail' && e.outcome === 'entry-seen-patrol')).toEqual([]);
+    const C = t.cards.items;
+    expect(C['entry.seen']).toMatchObject({ fate: 'icon', sight: 'in-sight', at: 'patrol', result: 'The patrol is radioing it in.' });
+    expect(C['entry.reported']).toMatchObject({ fate: 'beat', beat: C['report.landed']!.beat, result: C['report.landed']!.result }); // the city's answer: no new beat, never who or why
+    expect(C['entry.stopped']).toMatchObject({ fate: 'alt', result: String(C['report.stopped']!.result).replace('{who}', 'The patrol') });
+    for (const c of ['entry.seen', 'entry.reported', 'entry.stopped']) expect(t.silentLogs[c], c).toMatch(/card only/);
   });
   test('a run is noticed, never an Alert on its own (Motive M067-B2): no line says running raises the Alert; the card, the toast and the hint say who noticed and what to do', () => {
     const hits = strings.filter((s) => !s.path.startsWith('pending')).filter((s) => /\b(runs?|running|runner)\b/i.test(s.text) && /\balert\b/i.test(s.text)).map((s) => s.path);

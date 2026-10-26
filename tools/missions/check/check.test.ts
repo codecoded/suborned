@@ -36,10 +36,13 @@ describe('the Handover route manifest and scripts', () => {
     expect(L.manifest.scripts.filter(s => s.holds).map(s => `${s.id} ${s.holds}`)).toEqual(['fight-loud-wait-square square', 'fight-loud-wait-yard service-drive']); // brief 059 MC-13: one loud-wait twin per stand
     expect(Object.values(L.scripts).some(s => s.orders.some(o => o.do === 'extract'))).toBe(false); // brief 018: extract is retired into Board and Go
     expect(by('careless')).toEqual(['careless-takedown-seen-camera', 'careless-takedown-seen-crowd', 'careless-body-found', 'careless-reporter-not-stopped', 'careless-guard-left-door-held', 'careless-enforcer-watches-guard', 'careless-scout-idles-pickup', 'careless-g-disable', 'careless-loop-runs-out', 'careless-thin-all']); // brief 013 D; brief 031; brief 058 (Loop v2, Disable); brief 059 S1
-    // GDD v0.26.0 §07's fail line, in its order; brief 067: the patrol line needs a patrol that watches an entry (MC-3 counts it only there)
-    expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in his car', 'rivals reach Vale', 'district seals', 'Enforcer down before Vale is in the car', 'the cell down (every op down)', 'entry seen by guard', 'entry seen by live camera', 'entry seen by patrol']);
-    expect(L.manifest.fails.filter(f => f.needs).map(f => `${f.id} ${f.needs}`)).toEqual(['entry-seen-patrol patrol-watches-entry']);
-    expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual(['fail-entry-seen-patrol']); // brief 067 A: the patrol sweeps the service yard, watching no entry
+    // GDD v0.28.0 §07's fail line, in its order: entry seen by patrol is no fail (Sky 2026-10-26; engine 0.34.2 makes it a report, Alert 1),
+    // so its line and its pending script go; no line needs a site fact today
+    expect(L.manifest.fails.map(f => f.gdd)).toEqual(['Vale killed', 'Vale leaves in his car', 'rivals reach Vale', 'district seals', 'Enforcer down before Vale is in the car', 'the cell down (every op down)', 'entry seen by guard', 'entry seen by live camera']);
+    expect(L.manifest.fails.some(f => f.id === 'entry-seen-patrol' || f.codes.includes('entry-seen-patrol'))).toBe(false);
+    expect(L.manifest.fails.filter(f => f.needs)).toEqual([]);
+    expect(L.manifest.scripts.filter(s => s.pending).map(s => s.id)).toEqual([]);
+    expect(L.manifest.scripts.some(s => s.id === 'fail-entry-seen-patrol')).toBe(false);
     expect(L.manifest.scripts.filter(s => s.id.startsWith('fight-')).map(s => s.id)).toEqual(['fight-loud-enforcer-down', 'fight-safe-rivals-reach-vale', 'fight-safe-cell-down', 'fight-loud-wait-square', 'fight-loud-wait-yard']);
     // the close: 8:30 (Sky 2026-10-15), mission.json's last timeline entry; route B closes on it
     expect(L.manifest.closing.at).toBe('8:30');
@@ -213,11 +216,18 @@ describe('the §09 conditions, each with a failing example', () => {
   });
   test('MC-9: a takedown win as fast and as cheap as every turning win dominates them', () => { const p = good(); p['route-g-fast'] = { ...p['route-g-fast']!, tick: 2000, trail: 0, campaignTrail: 1 }; expect(ids(p)).toEqual(['MC-9']); });
   test('MC-3: a fail no script reaches', () => { const p = good(); p['fail-district-seals'] = fail('enforcer-down'); expect(ids(p)).toContain('MC-3'); });
-  test('MC-3 (brief 067): a fail line that needs a site fact counts only where it holds; with no facts (an engine before 0.34.0) it counts', () => {
+  test('MC-3 counts the eight fails of GDD v0.28.0 §07, whatever the site facts say (no line needs one)', () => {
     const c = (o: Parameters<typeof judge>[4]) => J(good(), o).conditions.find(x => x.id === 'MC-3')!;
+    for (const o of [{}, { facts: { patrolWatchesEntry: true } }, { facts: {} }]) expect([c(o).ok, c(o).value]).toEqual([true, '8/8']);
+    expect(c({}).detail).not.toContain('entry seen by patrol');
+  });
+  test('MC-3 (brief 067): a fail line that needs a site fact still counts only where it holds; with no facts (an engine before 0.34.0) it counts', () => {
+    // the mechanism stays (§09: a fail that needs a watcher the site doesn't place is not counted), shown on a hypothetical line
+    const m = structuredClone(L.manifest); m.fails.push({ id: 'patrol-line', gdd: 'a line that needs a patrol on an entry', codes: ['entry-seen-patrol'], needs: 'patrol-watches-entry' });
+    const c = (o: Parameters<typeof judge>[4]) => judge(m, L.scripts, mirror(good()), [], { facts: { patrolWatchesEntry: false }, ...o }).conditions.find(x => x.id === 'MC-3')!;
     expect([c({}).ok, c({}).value]).toEqual([true, '8/8 (1 not on this site)']);
-    expect(c({}).detail).toContain('entry seen by patrol: not on this site (no patrol watches an entry)');
-    expect([c({ facts: { patrolWatchesEntry: true } }).ok, c({ facts: { patrolWatchesEntry: true } }).value]).toEqual([false, '8/9']); // a patrol on the entry: its script is pending, so nothing reaches it
+    expect(c({}).detail).toContain('a line that needs a patrol on an entry: not on this site (no patrol watches an entry)');
+    expect([c({ facts: { patrolWatchesEntry: true } }).ok, c({ facts: { patrolWatchesEntry: true } }).value]).toEqual([false, '8/9']);
     expect(c({ facts: {} }).ok).toBe(false);
   });
   test('MC-4: a contact without whom no quiet route wins', () => {

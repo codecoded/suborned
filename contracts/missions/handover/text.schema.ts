@@ -57,8 +57,11 @@ export const DIALOGUE_VERBS = [...VERBS, 'turn', 'turn-view', 'step-target', 'ex
 /** A target's reply: the rulebook's turn outcomes, and `suspicious` when the person reports the approach (rulebook `reports`). */
 export const OUTCOMES = ['turned', 'refused', 'not-yet', 'kept', 'suspicious'] as const;
 /** The engine's fail codes (Game.Fail), `withdraw` (an order) and `engine-error`. `cell-down` (engine 0.34.0, brief 067): every operative is down. */
-export const FAILS = ['abduction-seen-camera', 'cell-down', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard', 'entry-seen-patrol',
+export const FAILS = ['abduction-seen-camera', 'cell-down', 'driver-shot', 'enforcer-down', 'entry-seen-camera', 'entry-seen-guard',
   'getaway-lost', 'rivals-reach-vale', 'sealed', 'vale-dead', 'vale-leaves', 'engine-error'] as const;
+/** Fail codes the engine keeps only for rulebooks pinned before a change; live text words none of them. `entry-seen-patrol` (engine 0.34.2, Sky 2026-10-26,
+ *  GDD v0.28.0 section 07): the patrol seeing the Enter is a report (log entry.seen, entry.reported, entry.stopped), no fail. */
+export const RETIRED_FAILS = ['entry-seen-patrol'] as const;
 export const NAMED = ['Inez', 'Vale'] as const; // the only people the words may name (people.rules names.pinned); others by role
 /** Speakers only a scene has: the people around the target (the café's owner, a customer, an Office clerk). */
 export const SCENE_ONLY = ['keeper', 'clerk', 'customer'] as const;

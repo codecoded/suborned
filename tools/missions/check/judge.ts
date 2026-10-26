@@ -33,6 +33,7 @@
 //      destroyed, the fight over unfought).
 // MC-3 counts a fail line that `needs` a site fact (brief 067: `patrol-watches-entry`, from `suborned-sim facts`) only where the fact holds
 //      (§09: a fail that needs a watcher the site doesn't place is not counted); its script stays in the manifest, pending.
+//      Since GDD v0.28.0 (Sky 2026-10-26) no Handover line needs one: entry seen by patrol is a report (engine 0.34.2), not a fail.
 // MC-11 reads every stand of the site (brief 059 K6: each with its own car, exit lane, ambush spots and police stands), and (brief 067,
 //      Motive M067-SQ1, Aster's clause with Motive's refinement) no played script logs a hold that did not come for the car:
 //      `car.held.answer` (an answer to fire) always counts; `car.held.post` counts when the holder's post is one the mission places (a rival
