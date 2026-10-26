@@ -327,3 +327,4 @@ Latch's order: the page's fixes ride the height-cap build; the fight's host work
 2. Datum applies the café at 3 storeys (prepared in scratch); Vela's facades land; Vela adopts Sedan_Getaway_v2 and lifts Vale's car; then Keel reruns cover and sim:site.
 3. Waymark renames fight-safe-cell-down → fight-safe-unguarded, counts cell-down by the scenario (MC-0 42/42, MC-3 8/8), re-records on 0.35.2.
 4. Latch's next build carries all of it.
+- Keel's 0.35.2 is on branch worktree-agent-a22ec23e61ecc28b6 (42cfce1e, based on 7c27e980): merge after Latch's batch. Then Waymark: rename fight-safe-cell-down → fight-safe-unguarded (rivals-reach-vale), MC-3 counts cell-down by `scenario: "K3-CELL-DOWN"` (Keel's spec), re-record the 11 moved routes. Fable: text.json 607, 608, 799–800, 1025 for the drawn-only guard and the fight-on note. Motive: N185's sealed-with-the-car-held state has no play now. Latch: port 0.35.2 (HostFeed.cs 363–364).
