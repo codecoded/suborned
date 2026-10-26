@@ -1,0 +1,6 @@
+fight-safe-cell-down on engine 0.35.1 (Waymark, brief 039, 2026-10-27). Scripts in out/scratch/waymark/039/celldown/, played with suborned-sim batch (under bun run guard).
+the fight-safe-cell-down plan as re-composed (the cell never draws): none at 8:30.0, A 1; no rival fires all mission; car.held.blocker 2:54.6 with Vale aboard, the Enforcer standing outside.
+the 0.34 script (draw + stance hold), start {oneInput: false} or {pre039: true}: failure cell-down 3:24.0 (rivals: "takes the enforcer as its target: drawn").
+draw at the spring, holster 1.0 / 1.5 / 2.0 s later (the Enforcer: draw after stepping out, holster 2.0 s later): none at 8:30.0, 0 shots at the holstered three (the Enforcer gets one shot off).
+draw at 2:50.0 / 2:56.0 / 3:00.0 (the rivals in place and watching), holster 1.2 / 1.5 / 1.9 s later: none at 8:30.0 in all nine, 0-1 rival shots at the cell.
+why: rulebook ai.intent, final "agent" (PROVISIONAL): in the final fight a rival fires on an operative only for that operative's own causes (drawn, vale, seen); an undrawn or holstered operative gives none. weapons.oneInput: a drawn agent always fights on his own. So "the cell will not fight" is now also "the cell is not shot", and the safe fight with Vale aboard a held car runs to the 8:30 close with no outcome.

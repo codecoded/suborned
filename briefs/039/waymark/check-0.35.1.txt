@@ -1,0 +1,137 @@
+$ bun tools/game/playing.ts bun tools/missions/check/cli.ts handover --engine tree --inputs tree
+· playing 50 scripts and contact variations on the engine at the working tree
+· late from each of route-a-board's 9 planned steps, 1 s at a time to 120 s
+· late from each of route-b-board's 13 planned steps, 1 s at a time to 120 s
+· late from each of route-g-fast-board's 7 planned steps, 1 s at a time to 120 s
+FAIL  MC-0  Every script plays as the manifest expects and replays to identical checkpoints: 41/42
+        fight-safe-cell-down: expected failure cell-down at A 1, got none at A 1
+ok    MC-1  ≥ 2 quiet routes win (no shot before the final fight), counted by route: 3 (A, B, G)
+        route-a (route A) wins at 4:37.3, 4 T
+        route-a-board (route A) wins at 4:15.5, 4 T
+        route-a-pressure (route A) wins at 4:31.5, 6 T
+        route-a-pressure-board (route A) wins at 4:13.8, 6 T
+        route-a-disable (route A) wins at 4:37.3, 5 T
+        route-b (route B) wins at 7:32.2, 4 T
+        route-b-board (route B) wins at 7:35.4, 4 T
+        route-b-thin (route B) wins at 7:32.2, 4 T
+        route-g (route G) wins at 3:59.6, 5 T
+        route-g-board (route G) wins at 3:59.6, 5 T
+        route-g-fast (route G) wins at 2:58.6, 5 T
+        route-g-fast-board (route G) wins at 3:02, 5 T
+        route-g-kill (route G) wins at 5:47, 2 T
+        route-g-kill-board (route G) wins at 5:36.1, 2 T
+ok    MC-2  The loud route exists, wins, and costs more T than every quiet win (variants too): loud 27+3 (case) T vs quiet route-a 4, route-a-board 4, route-a-pressure 6, route-a-pressure-board 6, route-a-disable 5, route-b 4, route-b-board 4, route-b-thin 4, route-g 5, route-g-board 5, route-g-fast 5, route-g-fast-board 5, route-g-kill 2+2+3 (case), route-g-kill-board 2+2+3 (case) (mission+campaign+cases at 3 T)
+        loud: success, 27 T, 4 shots before the fight, A 2
+        loud-fight: success, 26 T, 4 shots before the fight, A 2
+FAIL  MC-3  Every §07 fail is reached by a played script: 7/8
+        Vale killed: fail-vale-dead
+        Vale leaves in his car: fail-vale-leaves
+        rivals reach Vale: fail-rivals-reach-vale, fight-safe-rivals-reach-vale
+        district seals: fail-district-seals
+        Enforcer down before Vale is in the car: fail-enforcer-down, fight-loud-enforcer-down, fight-loud-wait-square
+        the cell down (every op down): NOT REACHED
+        entry seen by guard: fail-entry-seen-guard
+        entry seen by live camera: fail-entry-seen-camera, fail-take-seen-camera
+ok    MC-4  No single contact is essential: without each, a quiet route still wins (a contact that leaves < 2 quiet routes is named): without waitress: B, G; without driver: A, G
+        waitress (Inez (route A: she calls the guard away)): route A depends on it
+        driver (the official driver (route B: he moves the pickup to the service lane)): route B depends on it
+ok    MC-5  The fully informed player secures Vale ≥ 1:00 before each primary quiet route's closing event: route A 2:57 early, route B 1:07 early, route G 4:18 early
+        route A (route-a-board): Vale secured at 2:52.9, 2:57 before 5:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 4:15.5, 4:14 before the mission's 8:30 close
+        every planned step can slip 7 s and still win
+        route B (route-b-board): Vale secured at 7:23, 1:07 before 8:30 rivals take Vale or the car leaves = over (GDD §07 schedule, the 8:30 close since Sky's 2026-10-15 ruling)
+        at the getaway car 7:35.4, 0:54 before the mission's 8:30 close
+        every planned step can slip 4 s and still win
+        route G (route-g-fast-board): Vale secured at 1:32, 4:18 before 5:50 Vale exits (GDD §07 route A: before 5:50), after which he is no longer inside
+        at the getaway car 3:02, 5:28 before the mission's 8:30 close
+        every planned step can slip 13 s and still win
+ok    MC-6  The fastest informed quiet win is not slower than the fastest loud win that leaves nobody captured (T2): route-g-fast 2:58.6 vs loud 5:01.7: 123.1 s faster
+        route-g-fast (quiet) 2:58.6
+        route-g-fast-board (quiet) 3:02
+        route-g (quiet) 3:59.6
+        route-g-board (quiet) 3:59.6
+        route-a-pressure-board (quiet) 4:13.8
+        route-a-board (quiet) 4:15.5
+        route-a-pressure (quiet) 4:31.5
+        route-a (quiet) 4:37.3
+        route-a-disable (quiet) 4:37.3
+        route-g-kill-board (quiet) 5:36.1
+        route-g-kill (quiet) 5:47
+        route-b (quiet) 7:32.2
+        route-b-thin (quiet) 7:32.2
+        route-b-board (quiet) 7:35.4
+        loud (loud) 5:01.7
+        loud-fight (loud) 5:06.8
+ok    MC-7  Careless violence is worse: a takedown seen, found or reported fails, or wins only at Alert ≥ 2 (or above its careful twin's) and dearer in total Trail than its careful twin: 8/8
+        careless-takedown-seen-camera: fails: entry-seen-camera
+        careless-takedown-seen-crowd: fails: vale-leaves
+        careless-body-found: fails: enforcer-down
+        careless-reporter-not-stopped: success at Alert 1, 13 T against route-b's 4 T at Alert 0
+        careless-guard-left-door-held: fails: vale-leaves
+        careless-enforcer-watches-guard: fails: enforcer-down
+        careless-g-disable: success at Alert 2, 7 T against route-g's 5 T at Alert 1
+        careless-thin-all: success
+        left: fixer captured fighting, scout captured fighting at Alert 2, 27 T against route-b's 4 T at Alert 0
+ok    MC-8  Takedown routes are viable with a real time cost: ≥ 1 quiet route that takes someone down wins at Alert ≤ 1, each spending Enforcer time on it: route-b-thin 7:32.2, 6 s of takedown, route-g 3:59.6, 6 s of takedown, route-g-board 3:59.6, 6 s of takedown, route-g-fast 2:58.6, 6 s of takedown, route-g-fast-board 3:02, 6 s of takedown, route-g-kill 5:47, 40.5 s of takedown, route-g-kill-board 5:36.1, 40.5 s of takedown
+        route-b-thin (route B): success at 7:32.2, 4 T, A 0, $30,000 left, takedown work 6 s
+        route-g (route G): success at 3:59.6, 5 T, A 1, $100,000 left, takedown work 6 s
+        route-g-board (route G): success at 3:59.6, 5 T, A 1, $100,000 left, takedown work 6 s
+        route-g-fast (route G): success at 2:58.6, 5 T, A 1, $100,000 left, takedown work 6 s
+        route-g-fast-board (route G): success at 3:02, 5 T, A 1, $100,000 left, takedown work 6 s
+        route-g-kill (route G): success at 5:47, 2+2+3 (case) T, A 1, $100,000 left, takedown work 40.5 s, 1 open case
+        route-g-kill-board (route G): success at 5:36.1, 2+2+3 (case) T, A 1, $100,000 left, takedown work 40.5 s, 1 open case
+ok    MC-9  Turning people stays competitive: no takedown win is at once as fast and as cheap in total Trail as every turning win: 7 takedown wins, none dominant over 8 turning wins
+        route-b-thin (7:32.2, 4 T): faster route-a, route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable
+        cheaper none
+        route-g (3:59.6, 5 T): faster none
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-thin
+        route-g-board (3:59.6, 5 T): faster none
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-thin
+        route-g-fast (2:58.6, 5 T): faster none
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-thin
+        route-g-fast-board (3:02, 5 T): faster none
+        cheaper route-a, route-a-board, route-b, route-b-board, route-b-thin
+        route-g-kill (5:47, 7 T): faster route-a, route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable
+        cheaper route-a, route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable, route-b, route-b-board, route-b-thin
+        route-g-kill-board (5:36.1, 7 T): faster route-a, route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable
+        cheaper route-a, route-a-board, route-a-pressure, route-a-pressure-board, route-a-disable, route-b, route-b-board, route-b-thin
+ok    MC-10  Quiet beats loud on every count: each quiet win costs less total Trail, stands at a lower Alert and no worse Standing than every loud win, with no seal clock: quiet 4-7 T, A ≤ 1, Standing ≥ 2; loud 29-30 T, A ≥ 2, Standing ≤ -1
+        loud 27+3 (case) T, A 2, Standing -1, seal clock
+        loud-fight 26+3 (case) T, A 2, Standing -1, seal clock
+ok    MC-11  No stop holds the car: every ambush spot and police stand of each of the 2 stands lies beyond fight-hold 8 m of its car and outside its exit lane, every reference win's car was free when it left, and no played script logs a hold that did not come for the car (car.held.answer, or car.held.post at a post the mission places): 18/18 posts clear (nearest 10.6 m); 16/16 reference wins free at Go; 32/32 holds by bodies that came for the car (6 more at posts the mission does not place, not counted)
+        route-a: blocker out 31.1 s before Go
+        route-a-board: blocker out 7.6 s before Go
+        route-a-pressure: blocker out 34.9 s before Go
+        route-a-pressure-board: blocker out 13.9 s before Go
+        route-a-disable: blocker out 31.1 s before Go
+        route-b: blocker out 0.1 s before Go
+        route-b-board: blocker out 3.3 s before Go
+        route-b-thin: blocker out 0.1 s before Go
+        route-g: blocker out 8.0 s before Go
+        route-g-board: blocker out 2.9 s before Go
+        route-g-fast: blocker out 3.3 s before Go
+        route-g-fast-board: blocker out 6.7 s before Go
+        route-g-kill: blocker out 28.3 s before Go
+        route-g-kill-board: blocker out 14.4 s before Go
+        loud: blocker out 73.1 s before Go
+        loud-fight: blocker out 78.2 s before Go
+        loud: security-2 holds the car at 3:45.1 on its way to the response unit's join point cv-033 (not counted)
+        loud-fight: security-2 holds the car at 3:45.1 on its way to the response unit's join point cv-033 (not counted)
+        fight-loud-enforcer-down: security-2 holds the car at 2:32.5 on its way to the response unit's join point cv-033 (not counted)
+        fight-loud-wait-square: security-2 holds the car at 3:45.1 on its way to the response unit's join point cv-033 (not counted)
+        loud-left-downed: security-2 holds the car at 3:45.1 on its way to the response unit's join point cv-033 (not counted)
+        loud-left-standing: security-2 holds the car at 3:45.1 on its way to the response unit's join point cv-033 (not counted)
+ok    MC-12  Loitering costs: no quiet route has a watcher report an agent loitering, and each careless-loiter twin is reported and fails or ends at a higher Alert than its careful twin: 14/14 quiet scripts unreported; 1/1 loiter twins dearer
+        careless-scout-idles-pickup: reported at 2:32.3, success at A 1 against route-b's success at A 0
+ok    MC-13  Every stand's loud-wait twin is held: a loud run whose cell waits in the car while the Enforcer brings Vale out never wins; with Vale aboard its Go is refused car-held: 2/2 stands held
+        square: fight-loud-wait-square held (lost before Vale is aboard: failure enforcer-down at 4:00.7, loud fight)
+        service-drive: fight-loud-wait-yard held (Go refused car-held at 7:29.4 with Vale aboard: withdrawn at 7:29.5, loud fight)
+ok    MC-14  The fight always comes: every win Goes at or after blocker.out (variations too): 836/836 wins Go after blocker.out
+        the closest Go to blocker.out: 0.1 s after it
+ok    MC-15  No reference route reaches crew-wiped (the rival crew destroyed, the fight over unfought): 16/16 reference scripts
+        none
+slack route-a-board: every planned step can slip 7 s (0:00 7 s → entry-seen-guard, 0:09 7 s → entry-seen-guard, 0:29 7 s → entry-seen-guard, 1:11 11 s → entry-seen-guard, 1:25 11 s → entry-seen-guard, 1:45 11 s → entry-seen-guard, 2:01 11 s → entry-seen-guard, 2:51 52 s → entry-seen-camera, 2:52 52 s → entry-seen-camera)
+slack route-b-board: every planned step can slip 4 s (0:00 104 s → vale-leaves, 1:02 104 s → vale-leaves, 1:07 104 s → vale-leaves, 1:59 104 s → vale-leaves, 3:10 104 s → vale-leaves, 5:00 4 s → rivals-reach-vale, 5:45 4 s → rivals-reach-vale, 5:50 4 s → rivals-reach-vale, 5:55 4 s → rivals-reach-vale, 5:56 4 s → rivals-reach-vale, 6:25 4 s → rivals-reach-vale, 6:45 4 s → rivals-reach-vale, 7:23 6 s → rivals-reach-vale)
+slack route-g-fast-board: every planned step can slip 13 s (0:00 13 s → rivals-reach-vale, 0:12 13 s → rivals-reach-vale, 0:31 13 s → rivals-reach-vale, 0:51 13 s → rivals-reach-vale, 1:17 13 s → rivals-reach-vale, 1:26 13 s → rivals-reach-vale, 1:32 13 s → rivals-reach-vale)
+HOLDS handover: 893 plays on engine tree in 23.0 s; report out/missions/handover/check.html
+error: script "guard" exited with code 1

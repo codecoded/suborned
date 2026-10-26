@@ -221,14 +221,6 @@
    "why": "Vale in first (Board, 4 s carrying)"
   },
   {
-   "op": "cell",
-   "do": "panic",
-   "after": [
-    "in"
-   ],
-   "why": "the ambush: the armed cell fires at will"
-  },
-  {
    "op": "scout",
    "do": "move",
    "to": "service-drive",

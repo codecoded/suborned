@@ -242,14 +242,6 @@
   },
   {
    "op": "cell",
-   "do": "panic",
-   "after": [
-    "in"
-   ],
-   "why": "the ambush: the armed cell fires at will"
-  },
-  {
-   "op": "cell",
    "do": "go",
    "after": [
     "in"

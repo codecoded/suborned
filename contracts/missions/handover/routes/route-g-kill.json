@@ -21,10 +21,13 @@
   {"tick":2440,"op":"enforcer","do":"enter"},
   {"tick":2440,"op":"tech","do":"move","to":[675,-4625]},
   {"tick":2820,"op":"enforcer","do":"move","to":[2000,-6500]},
-  {"tick":3122,"op":"cell","do":"panic"},
-  {"tick":3289,"op":"enforcer","do":"move","to":"d:Getaway bay"},
-  {"tick":3393,"op":"enforcer","do":"board","target":"car"},
-  {"tick":3433,"op":"cell","do":"go"}
+  {"tick":3122,"op":"scout","do":"draw"},
+  {"tick":3122,"op":"fixer","do":"draw"},
+  {"tick":3122,"op":"tech","do":"draw"},
+  {"tick":3122,"op":"enforcer","do":"draw"},
+  {"tick":3326,"op":"enforcer","do":"move","to":"d:Getaway bay"},
+  {"tick":3430,"op":"enforcer","do":"board","target":"car"},
+  {"tick":3470,"op":"cell","do":"go"}
  ],
  "until": 5100
 }

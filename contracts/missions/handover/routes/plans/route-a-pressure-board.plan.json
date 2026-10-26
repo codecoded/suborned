@@ -150,12 +150,44 @@
    "why": "out of the service door with Vale, to a point 19.5 m south-east of the car, off the rivals' posts: the ambush springs at 20 m, and the Enforcer holds there while the cell fights"
   },
   {
-   "op": "cell",
-   "do": "panic",
+   "op": "scout",
+   "do": "draw",
    "after": [
     "enter"
    ],
-   "why": "the ambush: the armed cell fires at will"
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "enforcer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
   },
   {
    "op": "enforcer",

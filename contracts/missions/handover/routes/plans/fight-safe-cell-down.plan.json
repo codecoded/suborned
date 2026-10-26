@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "§07 fail 'the cell down (every op down)' (GDD v0.26.0; Motive M067-K3 b; Keel K3-CELL-DOWN), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell will not fight at the car: the three draw (a cause for the rivals, §06) and hold their fire, and the Enforcer walks Vale in, boards him and steps out again to stand by the car, drawn, holding fire. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the held car, K3 a); with nobody in reach they advance on the four (SQ2) and shoot them down one by one, and the mission fails the tick the last falls.",
+ "note": "§07 fail 'the cell down (every op down)' (GDD v0.26.0; Motive M067-K3 b; Keel K3-CELL-DOWN), in the safe fight: route-g-fast-board to the spring (no contact touched), but the cell never draws (one input, engine 0.35.1, brief 039: with the stances gone a drawn agent always fights on his own, so 'draw and hold fire' is no longer a play; the cell that will not fight is the cell that never presses F). The Enforcer walks Vale in, boards him and steps out again to stand by the car. Someone of the cell always stands outside, so the rivals keep their cover (no walk to the held car, K3 a); they shoot the four down one by one, and the mission fails the tick the last falls.",
  "start": {},
  "until": 5100,
  "steps": [
@@ -113,54 +113,12 @@
    "why": "out of the service door with Vale, to the point south-east of the car where the Enforcer holds while the cell fights the ambush (as route A)"
   },
   {
-   "op": "scout",
-   "do": "draw",
-   "after": [
-    "enter"
-   ],
-   "when": "fight.ambush",
-   "why": "drawn (a cause for the rivals: §06 cause per agent), and holding fire"
-  },
-  {
-   "op": "scout",
-   "do": "stance",
-   "stance": "hold"
-  },
-  {
-   "op": "fixer",
-   "do": "draw",
-   "after": [
-    "enter"
-   ],
-   "when": "fight.ambush",
-   "why": "drawn, holding fire"
-  },
-  {
-   "op": "fixer",
-   "do": "stance",
-   "stance": "hold"
-  },
-  {
-   "op": "tech",
-   "do": "draw",
-   "after": [
-    "enter"
-   ],
-   "when": "fight.ambush",
-   "why": "drawn, holding fire"
-  },
-  {
-   "op": "tech",
-   "do": "stance",
-   "stance": "hold"
-  },
-  {
    "op": "enforcer",
    "do": "move",
    "to": "d:Getaway bay",
    "when": "fight.ambush",
    "label": "out",
-   "why": "the ambush springs, and the Enforcer walks Vale to the car under the rivals' fire, nobody answering it"
+   "why": "the ambush springs, and the Enforcer walks Vale to the car under the rivals' fire, nobody answering it (nobody draws: brief 039)"
   },
   {
    "op": "enforcer",
@@ -185,20 +143,6 @@
    "gap": 4.1,
    "label": "outside",
    "why": "Vale aboard, he steps out again (Vale stays in) and stands by the car: someone of the cell stands outside, so the rivals keep their cover and no K3 walk to the car begins"
-  },
-  {
-   "op": "enforcer",
-   "do": "draw",
-   "after": [
-    "outside"
-   ],
-   "gap": 1.1,
-   "why": "drawn, holding fire: the last of the four the rivals have cause to shoot"
-  },
-  {
-   "op": "enforcer",
-   "do": "stance",
-   "stance": "hold"
   }
  ]
 }

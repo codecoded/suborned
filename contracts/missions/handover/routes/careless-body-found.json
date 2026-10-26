@@ -19,11 +19,8 @@
   {"tick":1540,"op":"scout","do":"move","to":[1175,-4825]},
   {"tick":1540,"op":"fixer","do":"move","to":[1025,-4625]},
   {"tick":1920,"op":"scout","do":"draw"},
-  {"tick":1920,"op":"scout","do":"stance","stance":"free"},
   {"tick":1920,"op":"fixer","do":"draw"},
-  {"tick":1920,"op":"fixer","do":"stance","stance":"free"},
   {"tick":1920,"op":"tech","do":"draw"},
-  {"tick":1920,"op":"tech","do":"stance","stance":"free"},
   {"tick":1920,"op":"enforcer","do":"move","to":"d:Getaway bay"}
  ],
  "until": 5100

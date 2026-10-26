@@ -1,7 +1,7 @@
 {
  "schema": "suborned.mission.plan/1",
  "mission": "handover",
- "note": "Board and go (brief 018 §5), the twin of route-g: the same route to the ambush (no Reroute); then the Enforcer walks Vale to the car as it springs while the three lock rival-2 then rival-1, and once the blocker is down they board and the car leaves with the whole cell.",
+ "note": "Board and go (brief 018 §5), the twin of route-g: the same route to the ambush (no Reroute); then the Enforcer walks Vale to the car as it springs while the three draw and lock rival-2 (one lock, held: Motive's g-board-hold, engine 0.35.1's sticky focus), and once the blocker is down they board and the car leaves with the whole cell.",
  "start": {},
  "until": 5100,
  "steps": [
@@ -114,12 +114,44 @@
    "why": "out of the service door with Vale, to the point south-east of the car where the Enforcer holds while the cell fights the ambush (as route A)"
   },
   {
-   "op": "cell",
-   "do": "panic",
+   "op": "scout",
+   "do": "draw",
    "after": [
     "enter"
    ],
-   "why": "the ambush: the armed cell fires at will"
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "enforcer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
   },
   {
    "op": "scout",
@@ -130,7 +162,8 @@
    "when": "fight.ambush",
    "after": [
     "scout"
-   ]
+   ],
+   "why": "Motive's g-board-hold (briefs/039/motive/probe-0.35/routes/g-board-hold.json, engine 0.35.1): the three lock rival-2 and hold it; the focus is sticky (brief 039), so a second lock on rival-1 at its first fall (fight.down) took them off the blocker at 3:47.6 and the rivals reached Vale at 4:08.5; held, they fight on their own once rival-2 is down"
   },
   {
    "op": "fixer",
@@ -141,7 +174,8 @@
    "when": "fight.ambush",
    "after": [
     "fixer"
-   ]
+   ],
+   "why": "Motive's g-board-hold (briefs/039/motive/probe-0.35/routes/g-board-hold.json, engine 0.35.1): the three lock rival-2 and hold it; the focus is sticky (brief 039), so a second lock on rival-1 at its first fall (fight.down) took them off the blocker at 3:47.6 and the rivals reached Vale at 4:08.5; held, they fight on their own once rival-2 is down"
   },
   {
    "op": "tech",
@@ -152,40 +186,8 @@
    "when": "fight.ambush",
    "after": [
     "tech"
-   ]
-  },
-  {
-   "op": "scout",
-   "do": "fire",
-   "target": "rival-1",
-   "label": "scout-l2",
-   "every": 0.5,
-   "after": [
-    "scout-l1"
    ],
-   "when": "fight.down"
-  },
-  {
-   "op": "fixer",
-   "do": "fire",
-   "target": "rival-1",
-   "label": "fixer-l2",
-   "every": 0.5,
-   "after": [
-    "fixer-l1"
-   ],
-   "when": "fight.down"
-  },
-  {
-   "op": "tech",
-   "do": "fire",
-   "target": "rival-1",
-   "label": "tech-l2",
-   "every": 0.5,
-   "after": [
-    "tech-l1"
-   ],
-   "when": "fight.down"
+   "why": "Motive's g-board-hold (briefs/039/motive/probe-0.35/routes/g-board-hold.json, engine 0.35.1): the three lock rival-2 and hold it; the focus is sticky (brief 039), so a second lock on rival-1 at its first fall (fight.down) took them off the blocker at 3:47.6 and the rivals reached Vale at 4:08.5; held, they fight on their own once rival-2 is down"
   },
   {
    "op": "enforcer",
@@ -212,14 +214,16 @@
    "after": [
     "in"
    ],
-   "when": "blocker.out",
-   "why": "the three cover the Enforcer until he is in and the blocker is down, then go to the car (they board last, brief 018 §2)"
+   "why": "Motive's g-board-hold (engine 0.35.1): the three cover the Enforcer until his Board is given, then go to the car (they board last, brief 018 §2). Walking up to the car brings the blocker (rival-1, at the planter run east of the car) into their reach and they drop him on the way; held at their posts until blocker.out, as on 0.34, he stood out of their reach, the car stayed held to 4:36 and the Enforcer went down in it. They board once he is down."
   },
   {
    "op": "scout",
    "do": "board",
    "target": "car",
-   "label": "scout-in"
+   "label": "scout-in",
+   "when": "blocker.out",
+   "every": 0.5,
+   "why": "boarded once the blocker is down (blocker.out): in the car before he falls, nobody is left outside to drop him and the car stays held (Motive's g-board-hold boards at 3:56.7, 0.0 s before he falls; given at the first tick a Board is taken, 3:56.4, it lost)"
   },
   {
    "op": "fixer",
@@ -227,14 +231,15 @@
    "to": "d:Getaway bay",
    "after": [
     "in"
-   ],
-   "when": "blocker.out"
+   ]
   },
   {
    "op": "fixer",
    "do": "board",
    "target": "car",
-   "label": "fixer-in"
+   "label": "fixer-in",
+   "when": "blocker.out",
+   "every": 0.5
   },
   {
    "op": "tech",
@@ -242,14 +247,15 @@
    "to": "d:Getaway bay",
    "after": [
     "in"
-   ],
-   "when": "blocker.out"
+   ]
   },
   {
    "op": "tech",
    "do": "board",
    "target": "car",
-   "label": "tech-in"
+   "label": "tech-in",
+   "when": "blocker.out",
+   "every": 0.5
   },
   {
    "op": "cell",

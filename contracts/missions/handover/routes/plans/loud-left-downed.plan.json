@@ -126,13 +126,7 @@
    "after": [
     "enter"
    ],
-   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident)"
-  },
-  {
-   "op": "scout",
-   "do": "stance",
-   "stance": "free",
-   "why": "the final fight is on: once his locks are spent, fire at will (its shots are untraced)"
+   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident); drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
   },
   {
    "op": "scout",
@@ -148,13 +142,7 @@
    "after": [
     "enter"
    ],
-   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident)"
-  },
-  {
-   "op": "fixer",
-   "do": "stance",
-   "stance": "free",
-   "why": "the final fight is on: once his locks are spent, fire at will (its shots are untraced)"
+   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident); drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
   },
   {
    "op": "fixer",
@@ -170,13 +158,7 @@
    "after": [
     "enter"
    ],
-   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident)"
-  },
-  {
-   "op": "tech",
-   "do": "stance",
-   "stance": "free",
-   "why": "the final fight is on: once his locks are spent, fire at will (its shots are untraced)"
+   "why": "draws when the final fight opens, not before: holstered, he is passed by the response unit on its way to the door (a drawn weapon seen on the street is a witnessed incident); drawn, he fights on his own once his locks are spent (weapons free, always on: brief 039 retires the stance order; its shots are untraced)"
   },
   {
    "op": "tech",

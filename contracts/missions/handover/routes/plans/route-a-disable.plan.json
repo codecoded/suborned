@@ -154,12 +154,44 @@
    "why": "probe 067: the hold at (20.0, -65.0), 20 m or more from every ambush spot (beyond the pistol max 16 m), as ra-h3"
   },
   {
-   "op": "cell",
-   "do": "panic",
+   "op": "scout",
+   "do": "draw",
    "after": [
     "enter"
    ],
-   "why": "the ambush: the armed cell fires at will"
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "fixer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "tech",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
+  },
+  {
+   "op": "enforcer",
+   "do": "draw",
+   "after": [
+    "enter"
+   ],
+   "when": "fight.ambush",
+   "every": 0.5,
+   "why": "the ambush springs: F on each of the four (one input, brief 039: the panic order is retired); drawn, he fights on his own (weapons free, always on) until a lock is given"
   },
   {
    "op": "enforcer",
