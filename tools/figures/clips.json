@@ -2,7 +2,7 @@
  "avatar": {
   "reference": "walk",
   "footPitchDeg": 40,
-  "rule": "brief 069 (Latch, briefs/069/latch/leftfoot.md): every clip imports with Copy From Other Avatar from one shared reference avatar, so no clip's own frame 0 becomes its muscle zero. The reference is this clip's own Unity avatar (tools/figures/avatar.py, Unity's MakePoseValid) with neutral legs: each leg straight down, Foot->ToeBase along the hips' facing footPitchDeg down (the library's planted flat-foot pitch), the toe level; arms as Unity's T-pose."
+  "rule": "brief 069 (Latch, briefs/069/latch/leftfoot.md): every clip imports with Copy From Other Avatar from one shared reference avatar, so no clip's own frame 0 becomes its muscle zero. The reference is this clip's own Unity avatar (tools/figures/avatar.py, Unity's MakePoseValid) with neutral legs: each leg straight down, Foot->ToeBase along the hips' facing footPitchDeg down (the library's planted flat-foot pitch), the toe level; arms as Unity's T-pose. A clip that can't copy it only because its file has a lone root above the same bones (the clips authored in Blender, under `Armature`) gets its own avatar holding the same rest by bone name (tools/figures/avatar.py reference_rest), with Preserve Hierarchy on: one zero for every clip, never a clip's own frame 0."
  },
  "clips": [
   {

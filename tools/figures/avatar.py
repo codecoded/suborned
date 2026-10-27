@@ -421,3 +421,19 @@ def lone_root_above_hips(fbx_path):
     nodes = read_fbx(fbx_path, 'root'); tops = nodes[0].children
     if len(tops) != 1 or tops[0].name.split(':')[-1] == 'Hips': return None
     return tops[0].name if any(n.name.split(':')[-1] == 'Hips' for n in nodes if n is not tops[0]) else None
+
+
+def reference_rest(ref_nodes, fbx_path, root_name):
+    """The reference avatar's rest written into another file's own hierarchy (brief 069 A: the clips authored in Blender sit under an `Armature`
+    root, so they can't copy the reference avatar, and their own frame 0, a seated or crossed-leg pose, made a bad zero: a leg aimed straight down
+    from a crossed thigh keeps the cross's twist, and sit_talk played with its legs swapped). Their bones are the reference's bones (the same
+    Mixamo frames: every child offset points the same way, 0.0 degrees), so each bone takes the reference's world rotation by name, the Hips its
+    world position too; the file's own nodes above the Hips (Armature) and every local offset stay the file's. Returns (human rows, nodes)."""
+    nodes = read_fbx(fbx_path, root_name); ref = {n.name: n for n in ref_nodes}
+    for n in nodes[1:]:   # read_fbx lists parents first
+        r = ref.get(n.name)
+        if r is None: continue
+        n.rotation = r.rotation
+        if n.name.split(':')[-1] == 'Hips': n.position = r.position
+    b = map_bones(nodes)
+    return [(b[i].name, HUMAN[i]) for i in sorted(b)], nodes

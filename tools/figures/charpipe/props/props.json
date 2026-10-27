@@ -3,7 +3,7 @@
  "convention": {
   "units": "metres, true size",
   "origin": "the grip point: where the palm closes around the grip (for a prop without a grip, the point that rests in or on the hand)",
-  "axes": "Unity axes, left-handed: +Z forward along the prop's working line (a pistol's barrel, muzzle at +Z), +Y up (a pistol's slide, held level), +X the prop's right side. The FBX is written so Unity imports these axes with an identity root (Blender: barrel +Y, slide +Z before export; tools/figures/charpipe/fit/lib.export_fbx axis -Z forward, Y up)",
+  "axes": "Unity axes, left-handed: +Z forward along the prop's working line (a pistol's barrel, muzzle at +Z), +Y up (a pistol's slide, held level), +X the prop's right side. The FBX is written so Unity imports these axes with an identity root: in Blender the barrel is -Y and the slide +Z before export (Blender's FBX export puts Blender +Y at Unity -Z; the figures face -Y in Blender, +Z in Unity). prop_build.py reads the written FBX back in Unity's frame and fails if the bulk is not forward of the grip (+Z) and the slide above it (+Y).",
   "attach": "every Attach_* bone carries the same frame by rule (fit.json attach.frame): its own +Z (Unity) is the prop's working line there, its +Y the prop's up. So a prop sits at localPosition = offset, localRotation = identity under the bone, one offset per skeleton for every figure on it"
  },
  "props": {
@@ -86,7 +86,7 @@
      "offset": [
       0,
       0,
-      0.015
+      0.025
      ],
      "clips": [
       "draw",
@@ -102,9 +102,9 @@
      ],
      "turnFromClip": {
       "clip": "aim_pistol",
-      "rule": "the barrel lies along the forearm while aiming: over the aim frames (seat.aimFrames) of every figure shown, the forearm line (ForeArm -> Hand) is read in the bone's frame and averaged; the prop's one localRotation turns the bone's working line (+Z) onto it by the shortest arc. The clip's wrist is Mixamo's gun-holding wrist, so the number is the clip's, the same on every figure of the skeleton (the spread across figures is reported)"
+      "rule": "the barrel lies along the aim line while aiming: over the aim frames (seat.aimFrames) of every figure shown, the level line from between the shoulders out through the gun hand is read in the bone's frame and averaged; the prop's one localRotation turns the bone's working line (+Z) onto it by the shortest arc. It is the clip's aim, the same on every figure of the skeleton (the spread across figures is reported). Was the forearm line (ForeArm -> Hand), which in this bladed two-handed aim runs 55-60 degrees across the facing."
      },
-     "offsetNote": "1.5 cm forward along the barrel: the slide's rear clears the wrist (aim_pistol: 9-10 crossings with the forearm at 0)",
+     "offsetNote": "2.5 cm forward along the barrel: the slide's rear clears the wrist and sleeve (aim_pistol on the Fixer: 5-10 crossings with the forearm at 0 and 1.5 cm)",
      "show": {
       "bone": "Attach_RightHand",
       "onlyWhile": [
@@ -145,9 +145,8 @@
    },
    "seat": {
     "clip": "aim_pistol",
-    "barrelToForearmMaxDeg": 15,
     "propBodyMaxPairs": 0,
-    "rule": "fails loudly (exit 1): in aim_pistol at each aim frame the grip point lies within gripToPalmMaxM of the right hand's surface (the hands are rigid and open: no fist closes on it), the barrel (+Z) points along the forearm (ForeArm -> Hand) within barrelToForearmMaxDeg, and no prop triangle crosses the body outside the two hands (LOD0; the clip aims two-handed, so prop-hand crossings are counted and shown, not failed: the open fingers pass through the grip); holstered (roles with a visible holster) in walk, no prop triangle crosses the torso or legs",
+    "rule": "fails loudly (exit 1): in aim_pistol at each aim frame the grip point lies within gripToPalmMaxM of the right hand's surface (the hands are rigid and open: no fist closes on it), the barrel (+Z) points along the aim line (level, from between the shoulders out through the gun hand) within barrelToSightMaxDeg, and no prop triangle crosses the body outside the two hands (LOD0; the clip aims two-handed, so prop-hand crossings are counted and shown, not failed: the open fingers pass through the grip); holstered (roles with a visible holster) in walk, no prop triangle crosses the torso or legs. The angles to the forearm and to the hips' facing are reported: the clip aims bladed and two-handed, so its right forearm runs 55-60 degrees across the facing, and a barrel along the forearm pointed that far off the target (Latch's import measured the muzzle off the facing). A line from the eyes through the hand was tried and pointed 25-28 degrees at the ground: the clip holds the gun at chest height",
     "gripToPalmMaxM": 0.03,
     "aimFrames": {
      "handWithinM": 0.05,
@@ -187,7 +186,8 @@
       }
      ],
      "rule": "for each figure whose role shows the holster: the holstered prop crossing the torso or legs fails; crossings with the hanging arm are reported per trial (armOutDeg: the upper arm on the holster side turned out about the figure's facing, a fixed layer for holster roles; backM: the holster's offset behind the hip line), and the trial with the fewest is the one roles.guard and attach.holster carry"
-    }
+    },
+    "barrelToSightMaxDeg": 8
    }
   }
  },

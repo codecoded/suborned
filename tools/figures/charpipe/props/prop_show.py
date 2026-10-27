@@ -15,8 +15,9 @@ D = json.load(open(os.path.join(HERE, 'props.json'))); SPEC = AN.SPEC; PID = SPE
 PA = os.path.join(ROOT, 'out/scratch/forma/char-pipeline/props', PID, 'a'); OUT = L.ensure(SPEC['out'])
 GLB = os.path.join(ROOT, 'paid', P['mesh']['job'], 'meshes', f'{PID}_t1.glb')
 # Unity bone frame -> Blender bone frame: Unity +Y, +Z are the bone's own Y, Z; Unity +X is the bone's -X (the X mirror of the FBX import).
-# The prop's Blender axes: barrel +Y, up +Z, its right side -X. Unity's identity localRotation = barrel on the bone's Z, up on its Y.
-M_ROT = Matrix(((-1, 0, 0, 0), (0, 0, 1, 0), (0, 1, 0, 0), (0, 0, 0, 1)))   # prop (Blender) -> bone (Blender): X->-X, Y->Z, Z->Y
+# The prop's Blender axes: barrel -Y, up +Z, its right side (Unity +X) Blender -X. Unity's identity localRotation = barrel on the bone's Z,
+# up on its Y, right side on its Unity X (Blender -X): prop -> bone is X->X, -Y->Z, Z->Y, a -90 degree turn about X.
+M_ROT = Matrix(((1, 0, 0, 0), (0, 0, 1, 0), (0, -1, 0, 0), (0, 0, 0, 1)))
 
 
 def prop_material(o):
@@ -104,14 +105,25 @@ def seat_frame(fig, prop):
         hv = np.unique(T[np.array([str(b).startswith('RightHand') for b in td])])
         if len(hv): dmin = min(dmin, float(np.linalg.norm(V[hv] - origin, axis=1).min()))
     a = fig.arm; fa = a.matrix_world @ a.pose.bones['RightForeArm'].head; hd = a.matrix_world @ a.pose.bones['RightHand'].head
-    barrel = (prop.matrix_world.to_3x3() @ Vector((0, 1, 0))).normalized(); by = crossings(fig, prop)
-    return {'gripToHandM': round(dmin, 4), 'barrelToForearmDeg': round(math.degrees(barrel.angle((hd - fa).normalized())), 2),
+    barrel = (prop.matrix_world.to_3x3() @ Vector((0, -1, 0))).normalized(); by = crossings(fig, prop)
+    lr = (a.matrix_world @ a.pose.bones['LeftUpLeg'].head) - (a.matrix_world @ a.pose.bones['RightUpLeg'].head); lr.z = 0; face = lr.cross(Vector((0, 0, 1))).normalized()
+    flat = Vector((barrel.x, barrel.y, 0)); fa_ = (hd - fa).normalized(); ff = Vector((fa_.x, fa_.y, 0))
+    info = {'barrelToFacingGroundDeg': round(math.degrees(flat.angle(face)), 2), 'barrelPitchDeg': round(math.degrees(math.asin(max(-1, min(1, barrel.z)))), 2),
+            'forearmToFacingGroundDeg': round(math.degrees(ff.angle(face)), 2), 'forearmPitchDeg': round(math.degrees(math.asin(max(-1, min(1, fa_.z)))), 2)}
+    return {**info, 'gripToHandM': round(dmin, 4), 'barrelToForearmDeg': round(math.degrees(barrel.angle((hd - fa).normalized())), 2), 'barrelToSightDeg': round(math.degrees(barrel.angle(sight(a).normalized())), 2),
             'propBodyPairs': sum(v for k, v in by.items() if k not in ('RightHand', 'LeftHand')), 'crossings': by}
 
 
 def holster_frame(fig, prop):
     by = crossings(fig, prop); arm = ('RightHand', 'LeftHand', 'RightForeArm', 'LeftForeArm', 'RightArm', 'LeftArm')
     return {'propBodyPairs': sum(v for k, v in by.items() if k not in arm), 'armPairs': sum(v for k, v in by.items() if k in arm), 'crossings': by}
+
+
+def sight(a):
+    """the aim line in world: level, from between the shoulders out through the gun hand (the arms reach for the target; the clip holds the
+    gun at chest height, so a line from the eyes through the hand pointed 25-28 degrees at the ground)"""
+    mid = (a.matrix_world @ a.pose.bones['LeftArm'].head + a.matrix_world @ a.pose.bones['RightArm'].head) / 2
+    d = (a.matrix_world @ a.pose.bones['Attach_RightHand'].head) - mid; d.z = 0; return d
 
 
 def aim_frames(fig, clip, S):
@@ -134,10 +146,10 @@ def raw_vs_clean():
     raw = [x for x in bpy.data.objects if x not in before and x.type == 'MESH'][0]
     raw.data.transform(raw.matrix_world); raw.matrix_world = Matrix.Identity(4); raw.parent = None
     V = np.array([list(v.co) for v in raw.data.vertices]); s = P['size']['lengthM'] / (V[:, 1].max() - V[:, 1].min()); c = (V.max(0) + V.min(0)) / 2
-    raw.data.transform(Matrix.Scale(s, 4) @ Matrix.Translation(Vector(-c)))
+    raw.data.transform(Matrix.Rotation(math.pi, 4, 'Z') @ Matrix.Scale(s, 4) @ Matrix.Translation(Vector(-c)))   # shown the way the cleaned one faces (barrel -Y)
     for o, z in ((raw, 0.18), (clean, 0.0)): o.location = (0, 0, 0.12 + z)
     raw.location.z += 0.0; cv = np.array([list(v.co) for v in clean.data.vertices]); clean.location.z = 0.12 - (cv[:, 2].max() + cv[:, 2].min()) / 2
-    views = {'left': Vector((0.9, 0, 0)), 'right': Vector((-0.9, 0, 0)), 'threeq': Vector((0.55, 0.6, 0.35))}
+    views = {'left': Vector((-0.9, 0, 0)), 'right': Vector((0.9, 0, 0)), 'threeq': Vector((-0.55, -0.6, 0.35))}
     for vn, d in views.items():
         tgt = Vector((0, 0, 0.21)); look.look_at(cam, tgt + d, tgt); cam.data.type = 'ORTHO'; cam.data.ortho_scale = 0.5
         render(sc, cam, os.path.join(OUT, f'raw_vs_clean_{vn}.png'), 700, 800)
@@ -183,7 +195,7 @@ def main():
         for f in figs:
             AN.retarget(f, aim); bpy.context.view_layer.update(); a = f.arm
             B = (a.matrix_world @ a.pose.bones[A['hand']['bone']].matrix).to_3x3().normalized()
-            fore = (a.matrix_world @ a.pose.bones['RightHand'].head) - (a.matrix_world @ a.pose.bones['RightForeArm'].head)
+            fore = sight(a)   # the aim line: the eyes through the gun hand (attach.hand.turnFromClip)
             vs.setdefault(f.label, []).append(np.array(B.inverted() @ fore.normalized()))
     allv = np.concatenate([np.array(v) for v in vs.values()]); v = Vector(allv.mean(0)).normalized()
     TURN = Vector((0, 0, 1)).rotation_difference(v).to_matrix().to_4x4()
@@ -259,7 +271,7 @@ def main():
                     seat.setdefault(f.label, {}).setdefault(cname, []).append(r)
                     if mode == 'hand':
                         if r['gripToHandM'] > S['gripToPalmMaxM']: fails.append(f"{f.label} {cname} f{fr}: grip {r['gripToHandM'] * 100:.1f} cm from the hand")
-                        if r['barrelToForearmDeg'] > S['barrelToForearmMaxDeg']: fails.append(f"{f.label} {cname} f{fr}: barrel {r['barrelToForearmDeg']:.1f} deg off the forearm")
+                        if r['barrelToSightDeg'] > S['barrelToSightMaxDeg']: fails.append(f"{f.label} {cname} f{fr}: barrel {r['barrelToSightDeg']:.1f} deg off the aim line")
                     if r['propBodyPairs'] > S['propBodyMaxPairs']: fails.append(f"{f.label} {cname} f{fr}: prop crosses the body {dict((str(k), v) for k, v in r['crossings'].items())}")
             if fr not in fr_show: continue
             for f in figs:

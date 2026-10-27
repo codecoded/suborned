@@ -2,7 +2,7 @@
   out/scratch/forma/char-pipeline/blender.sh -P tools/figures/charpipe/props/prop_build.py -- <prop> [<glb>]
 Reads the Tripo GLB (default paid/<job>/meshes/<prop>_t1.glb), then by rule (props.json):
   axes   the longest horizontal extent is the barrel; the muzzle is the end away from the grip (the grip is the deepest part, in the rear);
-         turned so the barrel is Blender +Y (Unity +Z) and up is Blender +Z (Unity +Y)
+         turned so the barrel is Blender -Y (Unity +Z) and up is Blender +Z (Unity +Y); checked on the written FBX read as Unity reads it
   size   scaled so the barrel-axis length is size.lengthM (true size)
   origin the grip point (grip rule): the slide's underside is the lowest point of the front muzzleProbeFrac of the length; the grip is what lies
          below it in the rear rearFrac; the origin is the centre of the grip's section belowSlideFrac of the grip's height below the slide
@@ -73,12 +73,12 @@ def main():
     sec = grip[np.abs(grip[:, 2] - zg) < 0.004]
     origin = np.array([(sec[:, 0].min() + sec[:, 0].max()) / 2, (sec[:, 1].min() + sec[:, 1].max()) / 2, zg])
     V -= origin
+    # Blender's FBX export maps Blender +Y to Unity -Z (the figures face -Y in Blender and +Z in Unity): the barrel, worked out along +Y above,
+    # turns to Blender -Y so it is Unity +Z (Latch's import, 2026-10-27: the bounds sat at z -0.047, the gun lying back over the wrist)
+    FLIP = np.diag([-1.0, -1.0, 1.0]); V = V @ FLIP.T; R = FLIP @ R
     o.data.vertices.foreach_set('co', V.ravel()); o.data.update()
-    # the generated custom normals turn with the mesh: rotate them by R (scale and shift don't change normals)
-    if o.data.has_custom_normals:
-        o.data.calc_normals_split() if hasattr(o.data, 'calc_normals_split') else None
-        n = np.array([list(l.normal) for l in o.data.loops]) @ R.T
-        o.data.normals_split_custom_set([tuple(v) for v in n])
+    # the generated custom normals turn with the mesh by themselves (Blender stores them in each corner's own frame); turning them again
+    # by R doubled the turn once R was not the identity (the flip above: the cleaned gun rendered white, lit from inside)
     # maps at texPx
     px = P['texPx']; mat = o.data.materials[0]; nodes = {n.label or n.name: n for n in mat.node_tree.nodes}
     imgs = {}
@@ -121,12 +121,20 @@ def main():
                              mesh_smooth_type='FACE', use_tspace=False, path_mode='STRIP', embed_textures=False)
     open(fbx + '.meta', 'w').write(um.prop_meta(f'{REL}/{PID}.fbx', {PID: mrel}))
     V = verts(o); dims = (V.max(0) - V.min(0))
+    # the written FBX read back in Unity's frame (avatar.py's reader: x mirrored, file units): the bulk must lie forward of the grip (+Z) and the slide above it (+Y)
+    sys.path.append(FIG); import avatar as av
+    top, _ = av._fbx_parser().parse(fbx); geo = [e for e in next(e for e in top.elems if e.id == b'Objects').elems if e.id == b'Geometry'][0]
+    Vu = np.array(next(e for e in geo.elems if e.id == b'Vertices').props[0]).reshape(-1, 3) * np.array([-1.0, 1.0, 1.0])
+    gs = {p.props[0]: p.props[4:] for p in next(e for e in next(e for e in top.elems if e.id == b'GlobalSettings').elems if e.id == b'Properties70').elems}
+    Vu = Vu * gs[b'UnitScaleFactor'][0] * 0.01; cu = (Vu.max(0) + Vu.min(0)) / 2; ext_u = Vu.max(0) - Vu.min(0)
+    unity_check = {'boundsCentreM': [round(float(x), 4) for x in cu], 'boundsSizeM': [round(float(x), 4) for x in ext_u]}
+    if not (cu[2] > 0.01 and cu[1] > 0.0 and abs(ext_u[2] - P['size']['lengthM']) < 0.002): raise SystemExit(f'PROP AXES FAIL in Unity frame: {unity_check}')
     rep = {'id': PID, 'source': os.path.relpath(GLB, ROOT), 'sourceSha256': hashlib.sha256(open(GLB, 'rb').read()).hexdigest(),
            'rawTris': raw_tris, 'tris': len(L.tris_of(o)), 'sizeM': {'length': round(float(dims[1]), 4), 'height': round(float(dims[2]), 4), 'width': round(float(dims[0]), 4)},
            'axes': {'barrelAxisInSource': 'xy'[bar], 'muzzleSign': muzzle_sign, 'unity': '+Z barrel, +Y slide, origin the grip point'},
            'grip': {'slideBottomM': round(float(slide_bottom - origin[2]), 4), 'gripHeightM': round(float(gh), 4), 'sectionVerts': int(len(sec))},
            'texPx': px, 'textures': {k: {'file': v[0], 'sha256': v[1]} for k, v in tex.items()}, 'orm': orm_stats,
-           'fbx': f'{PID}.fbx', 'fbxSha256': hashlib.sha256(open(fbx, 'rb').read()).hexdigest()}
+           'unityFrame': unity_check, 'fbx': f'{PID}.fbx', 'fbxSha256': hashlib.sha256(open(fbx, 'rb').read()).hexdigest()}
     json.dump(rep, open(os.path.join(OUT, f'{PID}.json'), 'w'), indent=1, sort_keys=True)
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(L.ensure(os.path.join(OUT, '..', 'work')), f'{PID}.blend'))
     print('PROP', json.dumps(rep))

@@ -43,6 +43,23 @@ def legs(s):
     return out, len(re.findall(r'\n    - boneName: ', s)), len(order)
 
 
+def tree(s):
+    nodes = {}
+    for r in ROW.findall(s):
+        n = av.Node(r[0], nodes.get(r[1]) if r[1] else None)
+        n.lpos = np.array([float(x) for x in r[2:5]]); n.lrot = np.array([float(x) for x in r[5:9]]); n.lscl = np.array([float(x) for x in r[9:12]])
+        nodes[r[0]] = n
+    return nodes
+
+
+def same_rest(s, ref):
+    """the worst world-rotation difference (degrees) of the human bones between this meta's rest and the reference's"""
+    a, b = tree(s), tree(ref); names = re.findall(r'\n    - boneName: (.*)', s); worst = 0.0
+    for n in names:
+        qa, qb = a[n].rotation, b[n].rotation; worst = max(worst, math.degrees(2 * math.acos(min(1.0, abs(float(np.dot(qa, qb)))))))
+    return worst
+
+
 def own_ok(s, pitch=None):
     if field(s, 'autoGenerateAvatarMappingIfUnspecified') != '0' or field(s, 'avatarSetup') != '1': return False, 'not an own avatar with auto-mapping off'
     g, nh, ns = legs(s)
@@ -61,6 +78,12 @@ for f in sorted(glob.glob(os.path.join(P, 'Clips', '*.fbx'))):
         src = field(s, 'lastHumanDescriptionAvatarSource')
         if src == f'{{fileID: 9000000, guid: {REF_GUID}, type: 3}}': res['clips']['copied'].append(n)
         else: res['clips']['miss'][n] = f'copies {src}'
+    elif n in rows and rows[n].get('avatar', {}).get('restFrom'):
+        d = same_rest(s, open(os.path.join(P, 'Clips', f'{REF}.fbx.meta')).read()); info = {'restDegFromReference': round(d, 4)}
+        ok = d < 0.05 and field(s, 'autoGenerateAvatarMappingIfUnspecified') == '0' and field(s, '  preserveHierarchy') == '1'
+        if ok: res['clips']['own'].append(n)
+        else: res['clips']['miss'][n] = info
+        continue
     elif n in rows and rows[n].get('avatar', {}).get('own'):
         ok, info = own_ok(s, SPEC['avatar']['footPitchDeg'])
         hips_parent = re.search(r'\n    - name: mixamorig:Hips\n      parentName: (.*)', s).group(1)
