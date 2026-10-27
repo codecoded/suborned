@@ -211,3 +211,12 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   1. Accepted the artist hand pose at its current quality; Latch does the final take (the cell on Animation Rigging, guards on the Humanoid IK pass).
   2. The Enforcer's gold is swapped for satin chrome, keeping §15's cell rule; the sheet is `paid/069-enforcer/codex/enforcer_intake_chrome_1.png` (pose check PASS; prompts in `enforcer/`).
   3. His Tripo 3.1 mesh at 30k is approved ($1.00 pass).
+- **Final weapons take (Latch, scratch):**
+  - **Fixer pistol** (Animation Rigging): barrel 0.43–0.45° to target, hands on their sockets in draw and aim (the right hand drifts up to 3.8 cm in fire), hidden after the holster.
+  - **Fixer carbine:** barrel 0.72°, hands on, but the butt is 9–10 cm off the shoulder (it needs a shoulder-pull constraint).
+  - **Guard pistol** (Humanoid IK, optimised throughout): barrel 0.26–0.58°; the IK leaves the right hand up to 4.6 cm short and the left 1.5–8 cm from support.
+  - **All three:** 0 errors, deterministic.
+  - **Grip layer:** all 15 finger bones reach the artist pose.
+  - **Fire clips:** they use the aim clip's blade angle.
+  - **Enforcer:** Tripo was called once on the badge sheet before the hold landed ($0.60). Re-take (pass to $1.20) or paint the badge out is Sky's call.
+  - Evidence: `latch/weapons-final/final-check.txt`; videos in `out/scratch/latch/char-pipeline/weapons-final/video/`.
