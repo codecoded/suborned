@@ -1,7 +1,7 @@
 """Copy the Mixamo library clips the game uses into People/Clips with a Humanoid .meta, and measure each (frames, fps, natural speed of the
 treadmill). Blender: blender -b -P tools/figures/clips.py -- <clips.json> <People dir>. Writes People/Clips/clips.rows.json.
 The library files are clip-only FBX (Mixamo skeleton), in place (Hips do not travel), 30 fps."""
-import sys, os, json, shutil, hashlib
+import sys, os, json, shutil, hashlib, math
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from figlib import *
 import unitymeta as um
@@ -44,6 +44,21 @@ for c in spec['clips']:
             a_, b_ = P[s][k - 1], P[s][k]
             if a_.z <= ground + 0.04 and b_.z <= ground + 0.04: sp.append(Vector((b_.x - a_.x, b_.y - a_.y, 0)).length * sc.render.fps)
     sp.sort(); nat = round(sp[len(sp) // 2], 2) if len(sp) > 3 else 0.0
+    # brief 069: the fingers' mean bend (the two bends inside each of the four fingers, both hands, 13 samples): a clip below the reference's
+    # share (clips.json avatar.relaxedHand) has flat fingers, and the game lays the relaxed hand over them (its finger-masked layer)
+    fb = None
+    if not RG:
+        pre = 'mixamorig:' if any(b.name.startswith('mixamorig:') for b in arm.pose.bones) else ''
+        if f'{pre}LeftHandIndex4' in arm.pose.bones:
+            tot = []
+            for fn in range(f0, f1 + 1, max(1, (f1 - f0) // 12)):
+                sc.frame_set(fn); s_, n_ = 0.0, 0
+                for side in ('Left', 'Right'):
+                    for fg in ('Index', 'Middle', 'Ring', 'Pinky'):
+                        Pp = [arm.matrix_world @ arm.pose.bones[f'{pre}{side}Hand{fg}{i}'].head for i in (1, 2, 3, 4)]
+                        s_ += sum(math.degrees((Pp[i + 1] - Pp[i]).angle(Pp[i + 2] - Pp[i + 1])) for i in range(2)); n_ += 1
+                tot.append(s_ / n_)
+            fb = round(sum(tot) / len(tot), 1)
     name = c['name']; rel = f'Clips/{name}.fbx'; dst = os.path.join(out, rel)
     shutil.copyfile(src, dst)
     # a clip on the reference's rig copies its avatar; one whose hierarchy differs (the clips authored in Blender sit under an `Armature` node) can't, so it
@@ -70,9 +85,15 @@ for c in spec['clips']:
     if lone: rows[-1]['avatar']['preserveHierarchy'] = lone
     if RG: rows[-1]['rig'] = rk; rows[-1]['avatar']['restFrom'] = RG['restStack']; rows[-1]['firstFrame'] = first; rows[-1]['frames'] = f1 - f0 + 1 - first; rows[-1]['seconds'] = round(rows[-1]['frames'] / sc.render.fps, 3)
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
+    if fb is not None: rows[-1]['fingerBendDeg'] = fb
     if c.get('additive'): rows[-1]['additive'] = True; rows[-1]['additiveReferencePoseFrame'] = c.get('refPose', 0); rows[-1]['firstFrame'] = c.get('first', 0)
     if 'upper' in c: rows[-1]['upperFrom'] = c['upper']; rows[-1]['upperFromSha256'] = hashlib.sha256(open(os.path.join(STORE, c['upper']), 'rb').read()).hexdigest()
     if 'glb' in c: rows[-1]['retargetedFrom'] = c['glb'] + ':' + c['clip']; rows[-1]['retargetedFromSha256'] = hashlib.sha256(open(os.path.join(STORE, '..', c['glb']), 'rb').read()).hexdigest()
     if 'pin' in c: rows[-1]['pinnedTo'] = c['pin']; rows[-1]['pinnedToSha256'] = hashlib.sha256(open(os.path.join(STORE, c['pin']), 'rb').read()).hexdigest(); rows[-1]['seat'] = c.get('seat')
     print('CLIP', name, rows[-1]['frames'], 'f', 'speed', nat)
+RH = AV.get('relaxedHand')
+if RH:   # the flat-finger clips, against the reference clip's own bend
+    refb = next(r.get('fingerBendDeg') for r in rows if r['name'] == AV['reference'])
+    for r in rows:
+        if r.get('fingerBendDeg') is not None and r['name'] != RH['clip'] and not r.get('additive'): r['fingersFlat'] = r['fingerBendDeg'] < RH['flatBelowFracOfReference'] * refb
 json.dump(rows, open(f'{out}/Clips/clips.rows.json', 'w'), indent=1)

@@ -488,6 +488,41 @@ def reference_rest(ref_nodes, fbx_path, root_name):
     return [(b[i].name, HUMAN[i]) for i in sorted(b)], nodes
 
 
+HAND_BONES = ['Hand'] + [f'{f} {j}' for f in ('Thumb', 'Index', 'Middle', 'Ring', 'Little') for j in ('Proximal', 'Intermediate', 'Distal')]
+
+
+def _palm(b, s):
+    h = b[H[s + 'Hand']].position; ip = b[H[f'{s} Index Proximal']].position; lp = b[H[f'{s} Little Proximal']].position; mp = b[H[f'{s} Middle Proximal']].position
+    along = norm(mp - h); n = norm(np.cross(along, ip - lp)); return along, (-n if s == 'Left' else n)
+
+
+def reference_hands(b, ref_b):
+    """The clips' reference hand in a figure's Humanoid zero (brief 069, Sky: "hands pose looks unnatural"). Unity reads every hand and finger muscle
+    against the T-pose hand: its plane (wrist, knuckles) and each finger's line. A figure whose zero keeps its generated hand (another wrist roll:
+    the Fixer's palm 58 degrees off the walk reference's) plays every clip's hand turned and bent differently from the source. So, per side, in the
+    forearm's frame: the hand turns about its own line until its palm faces as the reference's, then every finger bone (parents first) aims along
+    the reference's finger line by the smallest turn. Positions follow; only the hand and finger bones change. b, ref_b: human maps {index: Node}."""
+    for s in ('Left', 'Right'):
+        fa, rfa = b.get(H[f'{s}LowerArm']), ref_b.get(H[f'{s}LowerArm'])
+        if fa is None or rfa is None or H[f'{s} Index Proximal'] not in b or H[f'{s} Index Proximal'] not in ref_b: continue
+        hand, rhand = b[H[s + 'Hand']], ref_b[H[s + 'Hand']]
+        to_fig = from_to(norm(rhand.position - rfa.position), norm(hand.position - fa.position))   # the reference's forearm onto the figure's
+        # 1. the hand's line, then its palm, as the reference's
+        ralong, rn = _palm(ref_b, s); along, _ = _palm(b, s)
+        hand.rotation = qmul(from_to(along, qrot(to_fig, ralong)), hand.rotation)
+        along, n = _palm(b, s); want = qrot(to_fig, rn); want = norm(want - along * np.dot(want, along)); n = norm(n - along * np.dot(n, along))
+        ang = math.atan2(np.dot(np.cross(n, want), along), np.dot(n, want)); hand.rotation = qmul(qaxis(along, math.degrees(ang)), hand.rotation)
+        # 2. each finger bone along the reference's line
+        for f in ('Thumb', 'Index', 'Middle', 'Ring', 'Little'):
+            for j in ('Proximal', 'Intermediate', 'Distal'):
+                i = H[f'{s} {f} {j}']
+                if i not in b or i not in ref_b: continue
+                bn, rbn = b[i], ref_b[i]
+                if not bn.children or not rbn.children: continue
+                cur = norm(bn.children[0].position - bn.position); tgt = qrot(to_fig, norm(rbn.children[0].position - rbn.position))
+                bn.rotation = qmul(from_to(cur, tgt), bn.rotation)
+
+
 def finger_limits(rule, human):
     """fit.json transfer.fingers.humanLimits expanded to every mapped right and left finger bone: {humanName: {'min', 'max'}}"""
     out = {}

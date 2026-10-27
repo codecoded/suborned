@@ -15,6 +15,19 @@ from mathutils import Vector, Matrix
 OUT = L.ensure(os.path.join(L.SCR, 'a'))
 
 
+_CLIP_REF = []
+def clip_reference():
+    """the clips' shared reference avatar (tools/figures/clips.json `avatar`) as the clip stage builds it: its human map {index: Node}"""
+    if not _CLIP_REF:
+        sys.path.append(os.path.dirname(os.path.dirname(HERE))); import avatar as av
+        root = os.path.dirname(os.path.dirname(HERE)); spec = json.load(open(os.path.join(root, 'clips.json'))); AV = spec['avatar']
+        ref = next(c for c in spec['clips'] if c['name'] == AV['reference'])
+        store = os.path.expanduser(os.environ.get('SUBORNED_STORE', '~/Projects/the-suborned-store')) + '/source-art'
+        _, nodes, _ = av.neutral_avatar(ref['src'] if os.path.isabs(ref['src']) else os.path.join(store, ref['src']), f"{AV['reference']}(Clone)", AV['footPitchDeg'])
+        _CLIP_REF.append(av.map_bones(nodes))
+    return _CLIP_REF[0]
+
+
 def write_avatar_meta(fid, path):
     """the _avatarT's Unity meta (Create From This Model, auto-mapping off): Unity's own T-pose for this file (tools/figures/avatar.py, MakePoseValid)
     and its human map, with the finger limits widened for finger-boned figures (fit.json transfer.fingers.humanLimits). Latch's import takes the
@@ -22,6 +35,7 @@ def write_avatar_meta(fid, path):
     sys.path.append(os.path.dirname(os.path.dirname(HERE))); import avatar as av, unitymeta as um
     row = {r['id']: r for r in L.D['inputs']}[fid]; F = L.D['transfer'].get('fingers', {})
     nodes = av.read_fbx(path, os.path.splitext(os.path.basename(path))[0] + '(Clone)'); b = av.map_bones(nodes); av.make_pose_valid(b)
+    if L.D['rest'].get('hands', {}).get('rule') == 'clipReference': av.reference_hands(b, clip_reference())   # the clips' own hand frame (brief 069)
     human = [(b[i].name, av.HUMAN[i]) for i in sorted(b)]
     tab = json.load(open(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(HERE))), '..', F['humanLimits']))) if F.get('humanLimits') else None
     lim = av.finger_limits(tab, human) if tab and L.budget(row)['skeleton'] in F.get('skeletons', []) else None
@@ -68,6 +82,7 @@ def build(fid, hybrid=False):
     L.apply_rest(arm, [px])                                     # the donor proxy keeps its fitted pose; the rig's rest becomes the fitted pose
     if L.SET in ('e2e', 'fixer', 'enforcer') and L.budget(row)['skeleton'] in L.D['transfer'].get('fingers', {}).get('skeletons', []):
         rule_counts['fingers'] = L.finger_fit(src, arm)         # the finger bones in the generated fingers, weighted from them (52-bone figures)
+    if L.SET in ('e2e', 'fixer', 'enforcer'): rule_counts['rigidHands'] = L.relax_rigid_hands(src, arm, L.budget(row)['skeleton'] == 22)   # a rigid hand: a relaxed curl in the mesh
     m = src.modifiers.new('Armature', 'ARMATURE'); m.object = arm
     if L.rest_mode() == 'tpose': L.pose_blender(arm, L.standard_aims(arm)); L.apply_rest(arm, [src, px])
     tm.lap('rest')

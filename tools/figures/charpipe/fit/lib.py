@@ -1284,6 +1284,63 @@ def finger_fit(src, arm):
     return out
 
 
+def relax_rigid_hands(src, arm, crowd):
+    """fit.json transfer.fingers.rigidRelax (brief 069, Sky: "hands pose looks unnatural"): a rigid hand (the crowd's 22-bone skeleton, or a
+    52-bone hand whose fingers are fused, so finger_fit left every vertex on Hand) keeps the generated pose's hand in every clip: straight and
+    spread. So its fingers are bent into a gentle relaxed curl in the mesh itself, in the rest (the fitted pose), before the LODs are made:
+      the hand: the vertices Hand leads, past the wrist; its line: their principal direction away from the forearm; its length: wrist to the
+      farthest of them; the palm side: the hand mesh's own plane (its thinnest principal axis), signed by the fitted base fingers' (Index1, Pinky1), as finger_fit;
+      the knuckle line: knuckleFrac of the length from the wrist (finger_fit's knuckle rule: the fingers are middleOfHandLength of the hand);
+      past it, every vertex bends about the line across the palm at the knuckles as a uniform arc of curlDeg over the finger length (toward the
+      palm), and its distance across the hand from the hand's line shrinks by togetherFrac at the tips (spread to together);
+      the custom normals turn with their vertices. Returns stats per hand."""
+    R = D['transfer'].get('fingers', {}).get('rigidRelax')
+    if not R: return {}
+    names = [g.name for g in src.vertex_groups]; W = weights_of(src, names); dom = np.argmax(W, 1)
+    Mw = np.array(src.matrix_world); V = np.array([list(v.co) for v in src.data.vertices]) @ Mw[:3, :3].T + Mw[:3, 3]
+    me = src.data; custom = me.has_custom_normals
+    if custom:
+        LN = np.empty(len(me.loops) * 3); me.corner_normals.foreach_get('vector', LN); LN = LN.reshape(-1, 3) @ Mw[:3, :3].T
+        LV = np.empty(len(me.loops), np.int64); me.loops.foreach_get('vertex_index', LV)
+    B = arm.data.bones; Am = arm.matrix_world; j = lambda n: np.array(Am @ B[n].head_local)
+    out = {}; Vn = V.copy(); rot = {}
+    for s in ('Left', 'Right'):
+        fing = [i for i, n in enumerate(names) if n.startswith(f'{s}Hand') and n != f'{s}Hand']
+        hi = names.index(f'{s}Hand') if f'{s}Hand' in names else None
+        if hi is None: continue
+        if not crowd and fing and W[:, fing].sum() > 1e-6: out[s] = {'rigid': False}; continue
+        h = j(f'{s}Hand'); fa = j(f'{s}ForeArm'); a0 = (h - fa) / np.linalg.norm(h - fa)
+        mine = (dom == hi) & (((V - h) @ a0) > 0)
+        if mine.sum() < 50: out[s] = {'rigid': True, 'relaxed': False, 'why': 'too few hand vertices'}; continue
+        Q = V[mine] - V[mine].mean(0); ax = np.linalg.svd(Q, full_matrices=False)[2][0]; ax = ax if ax @ a0 > 0 else -ax
+        nrm = np.cross(j(f'{s}HandIndex1') - h, j(f'{s}HandPinky1') - h); nrm /= np.linalg.norm(nrm); nrm = nrm if s == 'Left' else -nrm   # the palm side
+        n3 = np.linalg.svd(Q, full_matrices=False)[2][2]; nrm = n3 if n3 @ nrm > 0 else -n3   # the hand mesh's own plane (its thinnest axis), on the palm side
+        nrm = nrm - ax * (nrm @ ax); nrm /= np.linalg.norm(nrm); acr = np.cross(ax, nrm)
+        sv = (V - h) @ ax; L_ = float(sv[mine].max()); k0 = R['knuckleFrac'] * L_; Lf = L_ - k0
+        th = math.radians(R['curlDeg']); Rr = Lf / th
+        idx = np.nonzero(mine & (sv > k0))[0]
+        kn = h + ax * k0; c = V[mine].mean(0); c_acr = float((c - h) @ acr)
+        for i in idx:
+            d = V[i] - kn; u = float(d @ ax); w = float(d @ nrm); x = float(d @ acr)
+            phi = u / Rr; r = Rr - w
+            # the arc: centre on the palm side at Rr; distance along it u, off it -w
+            pu = r * math.sin(phi); pw = Rr - r * math.cos(phi)
+            t = min(1.0, u / Lf); x2 = c_acr + (x + float((kn - h) @ acr) - c_acr) * (1 - R['togetherFrac'] * t) - float((kn - h) @ acr)
+            Vn[i] = kn + ax * pu + nrm * pw + acr * x2
+            rot[i] = (ax, nrm, acr, phi)
+        out[s] = {'rigid': True, 'relaxed': True, 'verts': int(len(idx)), 'handLengthM': round(L_, 4), 'curlDeg': R['curlDeg']}
+    if rot:
+        set_co(src, (Vn - Mw[:3, 3]) @ np.linalg.inv(Mw[:3, :3]).T)
+        if custom:
+            for li, vi in enumerate(LV):
+                if vi in rot:
+                    ax, nrm, acr, phi = rot[vi]; n = LN[li]; a, b = n @ ax, n @ nrm
+                    LN[li] = ax * (a * math.cos(phi) - b * math.sin(phi)) + nrm * (a * math.sin(phi) + b * math.cos(phi)) + acr * (n @ acr)   # the arc's own turn at that vertex
+            LNo = LN @ np.linalg.inv(Mw[:3, :3]).T; LNo /= np.linalg.norm(LNo, axis=1, keepdims=True)
+            me.normals_split_custom_set([tuple(x) for x in LNo])
+    return out
+
+
 def coat_blend(V, W, names, lab, lm):
     """fit.json transfer.coatBlend: an open coat (its panels part at the front, so the band merge does not fire) is a standard game coat: the
     vertices labelled coat below the hip joints take hipShare of their weight from the hips (blended in from the hip line down over fadeM), the

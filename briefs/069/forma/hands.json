@@ -1,0 +1,599 @@
+{
+ "note": "Brief 069, Sky 2026-10-27: 'hands pose looks unnatural'. Unity probe out/scratch/forma/unityprobe/Assets/Editor/HandsProbe.cs: the walk on each figure and on its own skeleton (the source), foot IK off; per hand: each finger's bend (its base and three joints, degrees; the distal's line read the same way on every rig), the index-to-little spread, the palm normal in the figure's frame; -zero: every muscle 0.",
+ "limitsUnity": [
+  "Assets/T/walk.fbx importer: n=52 index1 default=False min=(0.00, -20.00, -120.00) max=(0.00, 20.00, 50.00) | thumb1 default=False min=(0.00, -45.00, -60.00) max=(0.00, 45.00, 30.00)",
+  "Assets/T/walk.fbx avatar: n=52 index1 default=False min=(0.00, -20.00, -120.00) max=(0.00, 20.00, 50.00) | thumb1 default=False min=(0.00, -45.00, -60.00) max=(0.00, 45.00, 30.00)",
+  "Assets/H_kept/fixer_v7_H_avatarT.fbx importer: n=52 index1 default=False min=(0.00, -20.00, -120.00) max=(0.00, 20.00, 50.00) | thumb1 default=False min=(0.00, -45.00, -60.00) max=(0.00, 45.00, 30.00)",
+  "Assets/H_kept/fixer_v7_H_avatarT.fbx avatar: n=52 index1 default=False min=(0.00, -20.00, -120.00) max=(0.00, 20.00, 50.00) | thumb1 default=False min=(0.00, -45.00, -60.00) max=(0.00, 45.00, 30.00)",
+  "Assets/H_kept/fixer_v7_H.fbx importer: n=52 index1 default=False min=(0.00, -20.00, -120.00) max=(0.00, 20.00, 50.00) | thumb1 default=False min=(0.00, -45.00, -60.00) max=(0.00, 45.00, 30.00)",
+  "Assets/H_kept/fixer_v7_H.fbx avatar: n=52 index1 default=False min=(0.00, -20.00, -120.00) max=(0.00, 20.00, 50.00) | thumb1 default=False min=(0.00, -45.00, -60.00) max=(0.00, 45.00, 30.00)",
+  "Assets/H_reset/fixer_v7_H_avatarT.fbx importer: n=52 index1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00) | thumb1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00)",
+  "Assets/H_reset/fixer_v7_H_avatarT.fbx avatar: n=52 index1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00) | thumb1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00)",
+  "Assets/H_reset/fixer_v7_H.fbx importer: n=52 index1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00) | thumb1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00)",
+  "Assets/H_reset/fixer_v7_H.fbx avatar: n=52 index1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00) | thumb1 default=True min=(0.00, 0.00, 0.00) max=(0.00, 0.00, 0.00)"
+ ],
+ "unityDefaultFingerLimits": [
+  "Right Thumb 1 Stretched default -20..20",
+  "Right Thumb Spread default -25..25",
+  "Right Thumb 2 Stretched default -40..35",
+  "Right Thumb 3 Stretched default -40..35",
+  "Right Index 1 Stretched default -50..50",
+  "Right Index Spread default -20..20",
+  "Right Index 2 Stretched default -45..45",
+  "Right Index 3 Stretched default -45..45",
+  "Right Middle 1 Stretched default -50..50",
+  "Right Middle Spread default -7.5..7.5",
+  "Right Middle 2 Stretched default -45..45",
+  "Right Middle 3 Stretched default -45..45",
+  "Right Ring 1 Stretched default -50..50",
+  "Right Ring Spread default -7.5..7.5",
+  "Right Ring 2 Stretched default -45..45",
+  "Right Ring 3 Stretched default -45..45",
+  "Right Little 1 Stretched default -50..50",
+  "Right Little Spread default -20..20",
+  "Right Little 2 Stretched default -45..45",
+  "Right Little 3 Stretched default -45..45"
+ ],
+ "zeroPose": {
+  "before_keptMeta": {
+   "fixer_v7_H": {
+    "L": {
+     "bend": [
+      44.807,
+      79.048,
+      77.765,
+      76.454,
+      76.47
+     ],
+     "spread": 16.946,
+     "palm": [
+      0.956,
+      -0.289,
+      -0.054
+     ]
+    },
+    "R": {
+     "bend": [
+      44.145,
+      78.702,
+      77.308,
+      75.769,
+      75.681
+     ],
+     "spread": 17.005,
+     "palm": [
+      -0.974,
+      -0.22,
+      -0.048
+     ]
+    }
+   },
+   "enforcer_v1_H": {
+    "L": {
+     "bend": [
+      51.716,
+      76.468,
+      75.111,
+      73.761,
+      73.82
+     ],
+     "spread": 16.786,
+     "palm": [
+      0.631,
+      -0.769,
+      -0.099
+     ]
+    },
+    "R": {
+     "bend": [
+      41.825,
+      79.693,
+      78.541,
+      77.478,
+      77.607
+     ],
+     "spread": 16.891,
+     "palm": [
+      -0.903,
+      -0.424,
+      -0.065
+     ]
+    }
+   },
+   "e2e_guard_H": {
+    "L": {
+     "bend": [
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "spread": null,
+     "palm": null
+    },
+    "R": {
+     "bend": [
+      null,
+      null,
+      null,
+      null,
+      null
+     ],
+     "spread": null,
+     "palm": null
+    }
+   },
+   "source": {
+    "L": {
+     "bend": [
+      76.994,
+      120.794,
+      119.399,
+      119.658,
+      121.657
+     ],
+     "spread": 17.032,
+     "palm": [
+      0.259,
+      -0.965,
+      0.038
+     ]
+    },
+    "R": {
+     "bend": [
+      64.97,
+      120.479,
+      119.62,
+      119.905,
+      119.908
+     ],
+     "spread": 16.219,
+     "palm": [
+      -0.509,
+      -0.86,
+      -0.048
+     ]
+    }
+   }
+  },
+  "trial_referenceHands": {
+   "fixer_v7_H": {
+    "L": {
+     "bend": [
+      94.956,
+      117.213,
+      115.998,
+      116.107,
+      118.268
+     ],
+     "spread": 17.224,
+     "palm": [
+      0.262,
+      -0.964,
+      0.056
+     ]
+    },
+    "R": {
+     "bend": [
+      92.128,
+      118.108,
+      117.039,
+      117.414,
+      118.025
+     ],
+     "spread": 16.25,
+     "palm": [
+      -0.501,
+      -0.864,
+      -0.047
+     ]
+    }
+   },
+   "enforcer_v1_H": {
+    "L": {
+     "bend": [
+      75.265,
+      117.212,
+      115.997,
+      116.107,
+      118.268
+     ],
+     "spread": 17.227,
+     "palm": [
+      0.262,
+      -0.964,
+      0.056
+     ]
+    },
+    "R": {
+     "bend": [
+      90.731,
+      118.106,
+      117.037,
+      117.415,
+      118.023
+     ],
+     "spread": 16.248,
+     "palm": [
+      -0.501,
+      -0.864,
+      -0.047
+     ]
+    }
+   },
+   "source": {
+    "L": {
+     "bend": [
+      77.006,
+      120.8,
+      119.397,
+      119.665,
+      121.66
+     ],
+     "spread": 17.032,
+     "palm": [
+      0.259,
+      -0.965,
+      0.038
+     ]
+    },
+    "R": {
+     "bend": [
+      64.963,
+      120.451,
+      119.623,
+      119.901,
+      119.903
+     ],
+     "spread": 16.207,
+     "palm": [
+      -0.508,
+      -0.86,
+      -0.048
+     ]
+    }
+   }
+  }
+ },
+ "walk": {
+  "before_resetRoute": {
+   "fixer_v7_H": {
+    "L": {
+     "bendDeg": {
+      "Thumb": 64.5,
+      "Index": 51.6,
+      "Middle": 66.2,
+      "Ring": 71.0,
+      "Little": 61.8
+     },
+     "spreadDeg": 9.6,
+     "palm": [
+      0.78,
+      -0.17,
+      0.6
+     ],
+     "palmVsSourceDeg": 51.2
+    },
+    "R": {
+     "bendDeg": {
+      "Thumb": 55.7,
+      "Index": 69.5,
+      "Middle": 77.3,
+      "Ring": 81.2,
+      "Little": 97.2
+     },
+     "spreadDeg": 23.7,
+     "palm": [
+      -0.8,
+      -0.28,
+      0.53
+     ],
+     "palmVsSourceDeg": 46.2
+    },
+    "fingerMuscleMeanAbsDiffVsSource": 0.0,
+    "curlMuscleMean": 0.284
+   },
+   "enforcer_v1_H": {
+    "L": {
+     "bendDeg": {
+      "Thumb": 72.3,
+      "Index": 49.5,
+      "Middle": 63.8,
+      "Ring": 68.7,
+      "Little": 59.9
+     },
+     "spreadDeg": 9.4,
+     "palm": [
+      0.98,
+      -0.15,
+      0.13
+     ],
+     "palmVsSourceDeg": 22.4
+    },
+    "R": {
+     "bendDeg": {
+      "Thumb": 53.3,
+      "Index": 71.0,
+      "Middle": 78.8,
+      "Ring": 83.2,
+      "Little": 99.5
+     },
+     "spreadDeg": 23.6,
+     "palm": [
+      -0.9,
+      -0.25,
+      0.36
+     ],
+     "palmVsSourceDeg": 34.7
+    },
+    "fingerMuscleMeanAbsDiffVsSource": 0.0,
+    "curlMuscleMean": 0.284
+   },
+   "e2e_guard_H": {
+    "L": null,
+    "R": null
+   },
+   "source": {
+    "L": {
+     "bendDeg": {
+      "Thumb": 75.3,
+      "Index": 63.2,
+      "Middle": 79.1,
+      "Ring": 85.9,
+      "Little": 74.5
+     },
+     "spreadDeg": 9.5,
+     "palm": [
+      0.94,
+      -0.25,
+      -0.25
+     ],
+     "palmVsSourceDeg": 0.0
+    },
+    "R": {
+     "bendDeg": {
+      "Thumb": 65.5,
+      "Index": 80.8,
+      "Middle": 88.6,
+      "Ring": 94.5,
+      "Little": 110.0
+     },
+     "spreadDeg": 23.3,
+     "palm": [
+      -0.96,
+      -0.17,
+      -0.23
+     ],
+     "palmVsSourceDeg": 0.0
+    },
+    "fingerMuscleMeanAbsDiffVsSource": 0.0,
+    "curlMuscleMean": 0.284
+   }
+  },
+  "after": {
+   "fixer_v7_H": {
+    "L": {
+     "bendDeg": {
+      "Thumb": 69.7,
+      "Index": 59.2,
+      "Middle": 75.4,
+      "Ring": 82.0,
+      "Little": 70.9
+     },
+     "spreadDeg": 9.6,
+     "palm": [
+      0.94,
+      -0.25,
+      -0.25
+     ],
+     "palmVsSourceDeg": 0.4
+    },
+    "R": {
+     "bendDeg": {
+      "Thumb": 71.9,
+      "Index": 77.5,
+      "Middle": 85.0,
+      "Ring": 91.3,
+      "Little": 107.9
+     },
+     "spreadDeg": 24.0,
+     "palm": [
+      -0.97,
+      -0.17,
+      -0.18
+     ],
+     "palmVsSourceDeg": 3.2
+    },
+    "fingerMuscleMeanAbsDiffVsSource": 0.0,
+    "curlMuscleMean": 0.284
+   },
+   "enforcer_v1_H": {
+    "L": {
+     "bendDeg": {
+      "Thumb": 61.7,
+      "Index": 59.2,
+      "Middle": 75.4,
+      "Ring": 82.0,
+      "Little": 70.9
+     },
+     "spreadDeg": 9.6,
+     "palm": [
+      0.94,
+      -0.25,
+      -0.25
+     ],
+     "palmVsSourceDeg": 0.5
+    },
+    "R": {
+     "bendDeg": {
+      "Thumb": 74.2,
+      "Index": 77.5,
+      "Middle": 85.0,
+      "Ring": 91.3,
+      "Little": 107.9
+     },
+     "spreadDeg": 24.0,
+     "palm": [
+      -0.97,
+      -0.17,
+      -0.18
+     ],
+     "palmVsSourceDeg": 3.3
+    },
+    "fingerMuscleMeanAbsDiffVsSource": 0.0,
+    "curlMuscleMean": 0.284
+   },
+   "e2e_guard_H": {
+    "L": null,
+    "R": null
+   },
+   "source": {
+    "L": {
+     "bendDeg": {
+      "Thumb": 75.3,
+      "Index": 63.2,
+      "Middle": 79.1,
+      "Ring": 85.9,
+      "Little": 74.5
+     },
+     "spreadDeg": 9.5,
+     "palm": [
+      0.94,
+      -0.25,
+      -0.25
+     ],
+     "palmVsSourceDeg": 0.0
+    },
+    "R": {
+     "bendDeg": {
+      "Thumb": 65.5,
+      "Index": 80.8,
+      "Middle": 88.6,
+      "Ring": 94.5,
+      "Little": 110.0
+     },
+     "spreadDeg": 23.3,
+     "palm": [
+      -0.96,
+      -0.17,
+      -0.23
+     ],
+     "palmVsSourceDeg": 0.0
+    },
+    "fingerMuscleMeanAbsDiffVsSource": 0.0,
+    "curlMuscleMean": 0.284
+   }
+  }
+ },
+ "clipFingerBendDeg": {
+  "aim": 114.9,
+  "aim_pistol": 44.8,
+  "beckon": 37.1,
+  "captor": 139.1,
+  "carried": 36.3,
+  "carried_drape": 0.0,
+  "carry": 37.4,
+  "carry_shoulder": 79.8,
+  "carry_shoulder_idle": 85.0,
+  "cover_fire": 44.8,
+  "cover_in": 107.7,
+  "cover_kneel": 107.7,
+  "cover_out": 107.7,
+  "cover_pin": 59.3,
+  "cower": 40.9,
+  "crouch": 69.6,
+  "crouch_walk": 89.9,
+  "draw": 34.0,
+  "flinch_add": 107.7,
+  "hit": 93.3,
+  "hit_large": 87.9,
+  "idle": 50.5,
+  "idle_alt": 11.9,
+  "kick_add": 52.0,
+  "kill_attacker": 108.0,
+  "kill_victim": 0.5,
+  "kill_victim_back": 59.8,
+  "knockout": 57.7,
+  "knockout_alt": 63.5,
+  "look_around": 34.7,
+  "lying": 36.3,
+  "melee": 166.8,
+  "melee_whip": 97.1,
+  "panic": 29.3,
+  "phone": 83.9,
+  "pickup": 60.9,
+  "pin_peek_add": 107.7,
+  "pistol_aim": 107.7,
+  "pistol_draw": 85.1,
+  "pistol_fire": 107.7,
+  "pistol_holster": 85.1,
+  "pistol_idle": 81.7,
+  "pistol_run": 93.4,
+  "pistol_walk": 107.7,
+  "point": 42.1,
+  "restrained": 65.7,
+  "rifle_aim": 103.6,
+  "rifle_fire": 105.8,
+  "rifle_idle": 103.6,
+  "rifle_lower": 83.1,
+  "rifle_raise": 83.1,
+  "rifle_run": 103.6,
+  "rifle_walk": 86.6,
+  "run": 31.4,
+  "run_armed": 93.4,
+  "run_lean": 156.7,
+  "search": 33.1,
+  "serve": 50.5,
+  "serve_walk": 15.1,
+  "shoot": 112.5,
+  "sit": 41.0,
+  "sit_alt": 39.6,
+  "sit_c": 26.6,
+  "sit_f1": 45.6,
+  "sit_f2": 33.2,
+  "sit_f3": 59.6,
+  "sit_talk": 41.4,
+  "sit_to_stand": 40.3,
+  "stand_to_sit": 41.0,
+  "struggle": 75.9,
+  "struggle_strangled": 83.1,
+  "stunned": 99.3,
+  "talk": 28.0,
+  "walk": 53.5,
+  "walk_armed": 107.7,
+  "walk_f": 15.1,
+  "walk_old": 18.9
+ },
+ "flatClips_relaxedHandLayer": [
+  "idle_alt",
+  "walk_f",
+  "walk_old",
+  "kill_victim",
+  "carried_drape",
+  "serve_walk"
+ ],
+ "determinism": {
+  "enforcer": "two rebuilds 11/11 identical",
+  "fixer": "rebuild vs main identical (main also has manifest.json)",
+  "e2e": "rebuild vs main 39/39 identical (main also has manifest.json)",
+  "clips": "clip stage twice: every meta identical, rows differ only in the authored clips sha256 (the exporter, pre-existing); every existing meta identical to out/people-models"
+ },
+ "changedFiles": {
+  "fixer": [
+   "fixer_v7_H_avatarT.fbx.meta",
+   "fixer_v7_H.json"
+  ],
+  "enforcer": [
+   "enforcer_v1_H.fbx (left glove curled)",
+   "enforcer_v1_H_avatarT.fbx (stance, earlier today)",
+   "enforcer_v1_H_avatarT.fbx.meta",
+   "enforcer_v1_H.json"
+  ],
+  "e2e": [
+   "every *_H.fbx (both hands curled)",
+   "every *_props.fbx (the guard tray clears the curled hand)",
+   "every *_H.json"
+  ]
+ }
+}

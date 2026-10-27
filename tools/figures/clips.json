@@ -2,7 +2,12 @@
  "avatar": {
   "reference": "walk",
   "footPitchDeg": 40,
-  "rule": "brief 069 (Latch, briefs/069/latch/leftfoot.md): every clip imports with Copy From Other Avatar from one shared reference avatar, so no clip's own frame 0 becomes its muscle zero. The reference is this clip's own Unity avatar (tools/figures/avatar.py, Unity's MakePoseValid) with neutral legs: each leg straight down, Foot->ToeBase along the hips' facing footPitchDeg down (the library's planted flat-foot pitch), the toe level; arms as Unity's T-pose. A clip that can't copy it only because its file has a lone root above the same bones (the clips authored in Blender, under `Armature`) gets its own avatar holding the same rest by bone name (tools/figures/avatar.py reference_rest), with Preserve Hierarchy on: one zero for every clip, never a clip's own frame 0."
+  "rule": "brief 069 (Latch, briefs/069/latch/leftfoot.md): every clip imports with Copy From Other Avatar from one shared reference avatar, so no clip's own frame 0 becomes its muscle zero. The reference is this clip's own Unity avatar (tools/figures/avatar.py, Unity's MakePoseValid) with neutral legs: each leg straight down, Foot->ToeBase along the hips' facing footPitchDeg down (the library's planted flat-foot pitch), the toe level; arms as Unity's T-pose. A clip that can't copy it only because its file has a lone root above the same bones (the clips authored in Blender, under `Armature`) gets its own avatar holding the same rest by bone name (tools/figures/avatar.py reference_rest), with Preserve Hierarchy on: one zero for every clip, never a clip's own frame 0.",
+  "relaxedHand": {
+   "clip": "hand_relaxed",
+   "flatBelowFracOfReference": 0.5,
+   "rule": "brief 069 (Sky, 2026-10-27: 'hands pose looks unnatural'): clips.py measures each clip's finger bend (fingerBendDeg in clips.rows.json: the two bends inside each finger, index to little, both hands, the clip's mean); one below this share of the reference walk's has flat fingers (fingersFlat). The game plays hand_relaxed on a finger-masked override layer over those clips (and always over a figure's rigid hand, which has no finger bones: a no-op there, its mesh carries the relaxed curl, fit.json transfer.fingers.rigidRelax)."
+  }
  },
  "clips": [
   {
@@ -926,6 +931,26 @@
    "set": "rifle",
    "use": "rifle: the raise played back, the aim's first frame eased to the unarmed idle",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "hand_relaxed",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+    "frame": 1
+   },
+   "frames": 2,
+   "loop": true,
+   "loco": false,
+   "feet": false,
+   "use": "the relaxed hand (brief 069): the reference walk's own hand held (its first frame, every bone; the game's layer masks it to the fingers) on a finger-masked override layer over the clips whose fingers are flat (clips.rows.json fingersFlat)",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx"
   }
  ]
 }

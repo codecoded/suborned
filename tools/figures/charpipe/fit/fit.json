@@ -236,6 +236,12 @@
    "knuckle": {
     "middleOfHandLength": 0.52,
     "rule": "the knuckle line: a finger's knuckle-to-tip length is middleOfHandLength x the hand's length (wrist to the middle fingertip) for the middle finger (anthropometry: the middle finger's MCP-to-tip length is about half the hand length; e.g. ANSUR II hand length and middle finger length) and the base skeleton's proportions for the others; the knuckle lies that far back from the tip along the finger's own line. Replaces the web rule (webFrac) for the four fingers; the thumb keeps webFrac (its first bone lies in the palm)."
+   },
+   "rigidRelax": {
+    "curlDeg": 65,
+    "knuckleFrac": 0.48,
+    "togetherFrac": 0.5,
+    "note": "brief 069 (Sky, 2026-10-27: 'hands pose looks unnatural'): lib.relax_rigid_hands. A rigid hand (the crowd's, or fused fingers) is bent in the mesh into a gentle relaxed curl: past the knuckle line (knuckleFrac of the wrist-to-fingertip length: 1 - the knuckle rule's 0.52) an arc of curlDeg toward the palm, the fingers drawn together by togetherFrac at the tips. A finger-boned hand is left to its bones."
    }
   },
   "coatBlend": {
@@ -256,6 +262,10 @@
    "rule": "keepOutward",
    "maxDeg": 6,
    "note": "brief 069 (Sky, 2026-10-27: 'our enforcer's feet are oddly placed'): the Humanoid zero's legs keep the figure's own outward stance (lib.stance_deg), so a design drawn with a wide stance plays wide; an inward rest stays straight down. Was: always straight down, which turned a wide-stance mesh's legs inward by its stance angle in every clip."
+  },
+  "hands": {
+   "rule": "clipReference",
+   "note": "brief 069 (Sky, 2026-10-27: 'hands pose looks unnatural'): the figure's avatar zero (the _avatarT meta) takes the clips' reference hand: per side, in the forearm's frame, the hand turned about its line until the palm faces as the reference's, each finger bone aimed along the reference's finger line (tools/figures/avatar.py reference_hands). Unity reads the hand and finger muscles against this frame; before, the zero kept the generated hand's wrist roll (the Fixer's palm 58 and 47 degrees off the reference's), so every clip played the hand turned and the fingers curled in another plane. Meta only (as MakePoseValid): the avatarT FBX keeps the armature's zero."
   }
  },
  "lods": {

@@ -257,3 +257,15 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Rule:** `fit.json` `rest.stance` keeps a figure's own outward stance (up to 6°); inward stays straight as before.
   - **Result:** walk ankles 16.0→20.8 cm apart, boot gap 5.4→10.3 cm, no overlaps. The Fixer and e2e figures are unchanged; byte-identical.
   - **Open:** the right foot's ~11° toe-out is the Mixamo walk's own gait, on every figure. Evidence: `forma/enforcer-feet.json`.
+- **Hands** (Sky: "hands pose looks unnatural"):
+  - **Causes:**
+    1. The figures' reference kept the generated wrist roll, so palms played 22–51° off the source.
+    2. The take-2 import dropped the figure's finger limits.
+    3. Rigid hands kept the generated straight, spread pose.
+  - **Rules:**
+    - `fit.json` `rest.hands` (`avatar.py` `reference_hands`): palm and finger lines matched to the clips' reference hand;
+    - the `kept` import (copy the human map from our `_avatarT` meta);
+    - `transfer.fingers.rigidRelax`: a 65° relaxed curl baked into rigid hands;
+    - flat-fingered clips flagged, plus a `hand_relaxed` clip for a fingers-only override layer.
+  - **Result:** palms within 3.3° of the source in walk, fingers within about 4°. Byte-identical.
+  - **Open:** the crowd's 22-bone palms. Evidence: `forma/hands.json`.
