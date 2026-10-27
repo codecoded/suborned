@@ -1,0 +1,18 @@
+{
+  "schema": "suborned.072-k6-check/1",
+  "building": "bld/lamplight-south-w/13",
+  "export": "out/scratch/latch/072/v4/v4.world.json sha256 a50c649a5c84b23ab799a32c9cff945fd77fde25a01013483ea0702c5fbb4fc2",
+  "corner": [-164, -185.5], "interiorAngleDeg": 45,
+  "method": "Every every-face module of the building whose L0 bounds come within 12 m of the acute corner: the wall it stands on (the edge nearer its pivot; a pier on the vertex stands on both and is not tested), then its L0 vertices above 0.3 m, within the other wall's length, measured past that wall's line along its outward normal. A fault = more than 0.05 m past (K-6's tolerance): the piece showing through the other face.",
+  "faults": 0,
+  "modules": [
+    {"module": "DK_ShopFill_4", "pivot": [-176.242, -185.5], "wall": "edge into the corner", "pastOtherWallM": -6.117, "at": "-174.8,4.324,-183.35", "fault": false},
+    {"module": "DK_ShopFill_4", "pivot": [-173.359, -185.5], "wall": "edge into the corner", "pastOtherWallM": -4.078, "at": "-171.917,4.324,-183.35", "fault": false},
+    {"module": "DK_ShopFill_4", "pivot": [-170.475, -185.5], "wall": "edge into the corner", "pastOtherWallM": -2.039, "at": "-169.033,4.324,-183.35", "fault": false},
+    {"module": "DK_ShopFill_4", "pivot": [-167.592, -185.5], "wall": "edge into the corner", "pastOtherWallM": 0, "at": "-166.15,4.324,-183.35", "fault": false},
+    {"module": "DK_SidePilaster_4", "pivot": [-165.288, -185.475], "wall": "edge into the corner", "pastOtherWallM": 0, "at": "-164.425,20.496,-185.075", "fault": false},
+    {"module": "DK_SideBay_4", "pivot": [-166.281, -183.255], "wall": "edge out of the corner", "pastOtherWallM": 0, "at": "-164.601,20.496,-185.5", "fault": false},
+    {"module": "DK_SideBay_4", "pivot": [-170.206, -179.33], "wall": "edge out of the corner", "pastOtherWallM": -3.925, "at": "-168.526,20.496,-181.575", "fault": false},
+    {"module": "DK_SideBay_4", "pivot": [-174.131, -175.405], "wall": "edge out of the corner", "pastOtherWallM": -7.85, "at": "-172.451,20.496,-177.65", "fault": false}
+  ]
+}

@@ -36,10 +36,10 @@ namespace Suborned.World.Review
     ///        Suborned/Review/072 Capture (after)  → briefs/072/latch/after    + briefs/072/shots/after.</summary>
     public static class Baseline072
     {
-        const int W = 1920, H = 1080, WarmRepaints = 6, CountRepaints = 12, WarmFrames = 8, TimedFrames = 30;
-        const float PlayZoom = 14f, PlayPitch = 38f, DefaultStandOff = 160f;
-        static readonly float[] Yaws = { 30f, 120f, 210f, 300f };
-        static readonly Vector2 OfficeFront = new(-160f, -281f), CellOpenFallback = new(-170.5f, -227.5f);
+        internal const int W = 1920, H = 1080; const int WarmRepaints = 6, CountRepaints = 12, WarmFrames = 8, TimedFrames = 30;
+        internal const float PlayZoom = 14f, PlayPitch = 38f, DefaultStandOff = 160f;
+        internal static readonly float[] Yaws = { 30f, 120f, 210f, 300f };
+        internal static readonly Vector2 OfficeFront = new(-160f, -281f), CellOpenFallback = new(-170.5f, -227.5f);
 
         [MenuItem("Suborned/Review/072 Capture (before)")]
         static void Before() => Start("baseline", "before");
@@ -93,7 +93,7 @@ namespace Suborned.World.Review
 
         static void Stop() { EditorApplication.update -= Tick; run = null; if (queue.Count > 0 || exitWhenDone) EditorApplication.delayCall += Next; }
 
-        sealed class View
+        internal sealed class View
         {
             public string Id, Label; public Vector2 Focus; public float Yaw;
             public Dictionary<string, double> Stats = new();
@@ -225,7 +225,7 @@ namespace Suborned.World.Review
 
         /// <summary>The planets framing: a perspective view from above the Records square toward the planet and moons, fitted to
         /// them. The camera is left posed; the caller puts it back.</summary>
-        static bool PlanetShot(RenderSession session, Camera cam, TacticalShadows shadows, string file, out string note)
+        internal static bool PlanetShot(RenderSession session, Camera cam, TacticalShadows shadows, string file, out string note)
         {
             var bodies = Planets(out note);
             if (bodies.Count == 0) return false;
@@ -262,7 +262,7 @@ namespace Suborned.World.Review
         }
 
         /// <summary>HandoverHost.PlaceCamera at the overhead preset: ortho 14, pitch 38, the yaw; focus on the street datum.</summary>
-        static void Pose(Camera cam, TacticalShadows shadows, ArchitectureFade fade, Vector2 f, float yaw, float standOff)
+        internal static void Pose(Camera cam, TacticalShadows shadows, ArchitectureFade fade, Vector2 f, float yaw, float standOff)
         {
             var focus = new Vector3(f.x, 0f, f.y);
             cam.orthographic = true; cam.orthographicSize = PlayZoom;
@@ -299,7 +299,7 @@ namespace Suborned.World.Review
         }
 
         /// <summary>Renderers the 16:9 frustum holds after an LOD pick (an estimate of what the camera draws), their triangles, by layer.</summary>
-        static void Census(Camera cam, View v, Dictionary<Mesh, long[]> meshTris)
+        internal static void Census(Camera cam, View v, Dictionary<Mesh, long[]> meshTris, List<Renderer> visibleOut = null, HashSet<Renderer> lodOut = null)
         {
             cam.aspect = (float)W / H;
             var planes = GeometryUtility.CalculateFrustumPlanes(cam);
@@ -331,6 +331,7 @@ namespace Suborned.World.Review
                 int pick = -1; for (int i = 0; i < lods.Length; i++) if (rel >= lods[i].screenRelativeTransitionHeight) { pick = i; break; }
                 for (int i = 0; i < lods.Length; i++) foreach (var r in lods[i].renderers) if (r) { if (i != pick) pickedOut.Add(r); else { pickedOut.Remove(r); lodOf[r] = i; } }
             }
+            if (lodOut != null) foreach (var r in pickedOut) if (!lodOf.ContainsKey(r)) lodOut.Add(r); // brief 072-E after: the renderers an LOD pick leaves out (the shadow census skips them too)
             foreach (var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude))
             {
                 if (!r.enabled || r.forceRenderingOff || (cam.cullingMask & (1 << r.gameObject.layer)) == 0) continue;
@@ -349,7 +350,7 @@ namespace Suborned.World.Review
                     }
                     foreach (var x in t) tris += x;
                 }
-                v.Visible++; v.VisibleTris += tris;
+                v.Visible++; v.VisibleTris += tris; visibleOut?.Add(r);
                 if (r.shadowCastingMode != ShadowCastingMode.Off) v.VisibleCasters++;
                 var key = Layer(r.transform);
                 v.ByLayer[key] = v.ByLayer.TryGetValue(key, out var e) ? (e.n + 1, e.tris + tris) : (1, tris);
