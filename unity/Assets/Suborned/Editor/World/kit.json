@@ -3,6 +3,10 @@
   "batchTile": 64,
   "fadeCell": 16,
   "shadowProxies": false,
+  "moduleShadowProxies": true,
+  "skyBodyHaze": 0.1,
+  "everyFaceToday": true,
+  "note072": "Brief 072-E (Latch, 2026-10-27). moduleShadowProxies: the every-face modules (export facades with a `family`) never cast; a shadows-only proxy carrying their L2 mesh casts for them (Redline's plan 3.4), independent of `shadowProxies`, which still holds the wave-2 kit facades and trees. skyBodyHaze: the planet's and moons' haze share, in place of the export's horizon `haze` (0.25) for the sky bodies only (Sky's decision 4: the old DecoKit colours read; Glint may tune it); they also always draw L0 (no LODGroup). everyFaceToday: the procedural walls and skin the modules replace are built too, under batches/buildings-today and batches/skins-today, off, for the perf harness's everyFace A/B (development builds only: a release build strips them).",
   "crossings": {
     "note": "How the export's crossings[] are drawn (metres; brief 009). A crossing's light-dot rows and signal heads (SignalLens, with its HaloRing clock ring placed at signal.halo; brief 061 retired the brass edge lines, kerb studs, inlay arcs, lit strip and SignalEye) are street items with kit refs, placed with the street and dressed by CrossingKit (casters, the clock ring, SignalHead and the live dot rows; the heads keep the export's faces yaw); nothing of it is paint. What is drawn here is its refuges: a refuge is its ring grown by `lip` and raised `lip` above its median, in its road's kerb surface (`surface` when the export names no road), in the ground batch of that surface that already reaches it: the one it grows least on plan, by no more than `reach`. Never a signal colour (GDD 15).",
     "lip": 0.02, "reach": 4, "surface": "kerb"

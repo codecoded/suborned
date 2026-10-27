@@ -23,7 +23,10 @@ namespace Suborned.Play
     {
         public const string Schema = "suborned.tplong.report/1";
 
-        [Serializable] public class Row { public string name = "", view = "follow", kind = "third", agent = "scout"; public float[] walk = { 0, 0 }; public float faceHeading = -1, yaw = 30, zoom = 14, settleSeconds = 1.5f, seconds = 6; public int w = 2880, h = 1864; }
+        [Serializable] public class Row { public string name = "", view = "follow", kind = "third", agent = "scout"; public float[] walk = { 0, 0 }; public float faceHeading = -1, yaw = 30, zoom = 14, settleSeconds = 1.5f, seconds = 6; public int w = 2880, h = 1864; public RowVariant variant = new(); }
+        /// <summary>Brief 072-E (Redline's tplong-072.json): the every-face A/B before a row. everyFace "on" | "off" (EveryFace; off needs the
+        /// development build's `today` walls), moduleShadows "proxy" | "lod0" (the modules' L2 proxies on, or the modules cast from their own LODs); "" = as built.</summary>
+        [Serializable] public class RowVariant { public string everyFace = "", moduleShadows = ""; }
         [Serializable] public class FileData { public string schema = "", outDir = ""; public Row[] rows; }
 
         sealed class Res
@@ -44,6 +47,25 @@ namespace Suborned.Play
             var r = go.AddComponent<TpLongRun>(); r.path = a[i + 1]; r.dir = a[i + 2];
         }
 
+        EveryFace everyFace; ShadowProxy[] moduleProxies; bool[] moduleProxiesBuilt;
+
+        /// <summary>Brief 072-E: sets the row's every-face switches (every row sets both, so the order of rows never matters).</summary>
+        void ApplyVariant(RowVariant v)
+        {
+            if (moduleProxies == null)
+            {
+                everyFace = FindAnyObjectByType<EveryFace>(FindObjectsInactive.Include);
+                moduleProxies = FindObjectsByType<ShadowProxy>(FindObjectsInactive.Include).Where(p => p.module).ToArray();
+                moduleProxiesBuilt = moduleProxies.Select(p => p.On).ToArray();
+            }
+            string ef = string.IsNullOrEmpty(v?.everyFace) ? "on" : v.everyFace, ms = v?.moduleShadows ?? "";
+            if (ef != "on" && ef != "off") throw new InvalidOperationException($"row variant everyFace `{ef}`: on or off");
+            if (ms != "" && ms != "proxy" && ms != "lod0") throw new InvalidOperationException($"row variant moduleShadows `{ms}`: proxy or lod0");
+            if (ef == "off" && (!everyFace || !everyFace.HasToday)) throw new InvalidOperationException("row variant everyFace off, but this player has no `today` walls (EveryFace; development builds only)");
+            if (everyFace) everyFace.Set(ef == "on");
+            for (int i = 0; i < moduleProxies.Length; i++) if (moduleProxies[i]) moduleProxies[i].Use(ms == "" ? moduleProxiesBuilt[i] : ms == "proxy");
+        }
+
         IEnumerator Start()
         {
             Directory.CreateDirectory(dir);
@@ -59,7 +81,9 @@ namespace Suborned.Play
             {
                 var res = new Res { Name = row.name }; results.Add(res);
                 yield return CaptureSize.Apply(row.w, row.h);
-                string err = Guard(() => { if (h.Following) h.FollowToggle(); h.Begin(); h.IntelOpen = false; h.StartClock(); });
+                string err = Guard(() => ApplyVariant(row.variant));
+                if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
+                err = Guard(() => { if (h.Following) h.FollowToggle(); h.Begin(); h.IntelOpen = false; h.StartClock(); });
                 if (err != null) { Fail(res, err); allOk = false; Write("running"); continue; }
                 yield return null; yield return null;
                 if (row.view == "follow")

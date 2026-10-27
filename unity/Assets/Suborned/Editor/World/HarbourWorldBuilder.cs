@@ -96,7 +96,8 @@ namespace Suborned.World
             var shops = new ShopKit(nodes, facade);
             var roofs = new RoofKit(nodes, facade);
             var megas = new MegaKit(nodes, facade, world);
-            var skyline = new SkylineKit(placer, look);
+            var skyline = new SkylineKit(placer, look) { SkyBodyHaze = kit.SkyBodyHaze };
+            ProcFacade.Today = kit.EveryFaceToday; ProcFacade.ShellWalls = 0; // brief 072-E
             var root = Nodes.Group(null, RootName);
             var stamp = root.gameObject.AddComponent<WorldStamp>(); // what this scene was built from (the walk tool reads it)
             stamp.source = world.Source; stamp.exportSha256 = world.Sha256;
@@ -138,6 +139,14 @@ namespace Suborned.World
             skyline.Signatures(Nodes.Group(root, "signatures"), world.Signatures, nodes);
             var batches = Nodes.Group(null, "batches");
             long verts = Combine.Flush(batches);
+            // brief 072-E: the every-face A/B switch (EveryFace, Redline's plan 5): `today` built off, the rest as built
+            var everyFace = root.gameObject.AddComponent<EveryFace>();
+            everyFace.modules = KitColumns.ModuleRoots.ToArray();
+            everyFace.every = Layer072.Every.Append(Layer072.Shell).Select(n => batches.Find(n)).Where(t => t).Select(t => t.gameObject).ToArray();
+            everyFace.today = Layer072.Today.Select(n => batches.Find(n)).Where(t => t).Select(t => t.gameObject).ToArray();
+            foreach (var t in everyFace.today) t.SetActive(false);
+            Debug.Log($"World: every-face switch: {everyFace.modules.Length} module roots, every [{string.Join(", ", everyFace.every.Select(g => $"{g.name} {g.transform.childCount}"))}], " +
+                $"today (off; development builds only) [{string.Join(", ", everyFace.today.Select(g => $"{g.name} {g.transform.childCount}"))}]; shadows-only shell on {ProcFacade.ShellWalls} masses");
             if (roadAlt != null) RoadFinishTwin.Install(root, batches);
             int renderers = batches.GetComponentsInChildren<MeshRenderer>().Length;
             Debug.Log($"World: tangents for {Combine.TangentMeshes} normal-mapped batches (brief 026: textured ground)");
@@ -150,8 +159,11 @@ namespace Suborned.World
             var (fadeKit, fadeBatches, fadeFlagged) = FadeTags.Apply(root, batches, facade.Spec.Atlas, flagged);
             Debug.Log($"World: architecture fade may thin {fadeKit} kit renderers and {fadeBatches} of {renderers} batch renderers (rendering-layer bit {ArchitectureFade.Layer}); " +
                 $"of the kit renderers {fadeFlagged} are on {flagged.Count} civic pieces the export flags `fade`");
-            var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
-            Debug.Log($"World: shadow proxies {proxies} ({proxyTris} LOD1 triangles), {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
+            var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies, KitColumns.ModuleGroups, kit.ModuleShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
+            Debug.Log($"World: shadow proxies {proxies} ({proxyTris} triangles), of them {ShadowProxies.Modules} every-face module proxies from L2 ({ShadowProxies.ModuleTris} triangles), {(kit.ModuleShadowProxies ? "on: no module LOD casts" : "built off")}; " +
+                $"kit facades and trees from LOD1 {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
+            var guard = KitLods.PlayZoomGuard(root); // brief 072 (Redline's plan 3.1): throws if a building-layer group switches to L1 nearer than 36 m
+            Debug.Log($"World: play-zoom guard: {guard.groups} LOD groups checked; nearest L1 switch on the building layers {guard.nearest:F1} m ({guard.nearestName}) >= {KitLods.GuardM} m; {guard.otherBelow} groups outside the facade layers switch nearer (warned above)");
             ProcKit.Report(world, facade);
             ContactShade.Build(look, world, root); // brief 026: contact shade at building feet, kerb feet and under street pieces (SSAO is blind at ortho play zoom)
             Nodes.Group(Nodes.Group(null, "source"), world.Source ?? Path.GetFileName(path));

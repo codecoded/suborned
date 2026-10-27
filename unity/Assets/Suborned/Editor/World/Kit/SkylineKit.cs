@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -21,10 +22,16 @@ namespace Suborned.World
 
         public SkylineKit(KitPlacer placer, Look look) { this.placer = placer; this.look = look; }
 
+        /// <summary>Brief 072 (Sky's decision 4): the sky bodies' haze share (builder kit.json `skyBodyHaze`), in place of the export's; NaN = the export's.</summary>
+        public float SkyBodyHaze = float.NaN;
+        public int SkyBodiesL0;
+
+        /// <summary>The facades layer: the wave-2 street pieces as placed pieces; brief 072's every-face modules too, those of one column baked into one
+        /// instance (KitColumns, Redline's plan 3.2).</summary>
         public void Facades(Transform layer, List<FacadeDto> facades)
         {
-            foreach (var f in facades)
-                placer.Place(Nodes.Element(layer, f.Id), layer.name, f.Kit, placer.PivotForCentre(f.Kit, f.Kit.At), f.Base, 0f);
+            KitColumns.Reset();
+            KitColumns.Place(layer, facades, placer, placer.ClassDistances("column"));
         }
 
         public static float SignatureZ(KitPlacer placer, SignatureDto s) => s.Kind == "skybridge" ? placer.PivotForLowest(s.Kit, s.Base) : s.Base;
@@ -60,16 +67,26 @@ namespace Suborned.World
                     t.rotation = Quaternion.FromToRotation(Vector3.up, to) * t.rotation;
                 }
                 bool sky = p.Ring is "planet" or "moon";
+                float share = sky && !float.IsNaN(SkyBodyHaze) ? SkyBodyHaze : p.Haze;
+                if (sky && t.TryGetComponent<LODGroup>(out _))
+                {   // brief 072: a sky body is a few thousand triangles at ~30 px; its L1/L2 read faceted, so it always draws L0: unpacked, no LODGroup, no far levels
+                    PrefabUtility.UnpackPrefabInstance(t.gameObject, PrefabUnpackMode.Completely, InteractionMode.AutomatedAction);
+                    Object.DestroyImmediate(t.GetComponent<LODGroup>());
+                    foreach (var c in t.GetComponentsInChildren<Transform>(true).Where(c => c != t && !KitLods.IsLod0(c, t)).Select(c => c.gameObject).ToList())
+                        if (c) Object.DestroyImmediate(c);
+                    SkyBodiesL0++;
+                }
                 foreach (var r in t.GetComponentsInChildren<MeshRenderer>(true))
                 {
                     r.shadowCastingMode = ShadowCastingMode.Off;
                     r.receiveShadows = false;
                     var mats = r.sharedMaterials;
-                    for (int i = 0; i < mats.Length; i++) mats[i] = Hazed(mats[i], haze, p.Haze, sky);
+                    for (int i = 0; i < mats.Length; i++) mats[i] = Hazed(mats[i], haze, share, sky);
                     r.sharedMaterials = mats;
-                    PrefabUtility.RecordPrefabInstancePropertyModifications(r);
+                    if (PrefabUtility.IsPartOfPrefabInstance(r)) PrefabUtility.RecordPrefabInstancePropertyModifications(r);
                 }
             }
+            Debug.Log($"World: sky bodies drawn at L0 always {SkyBodiesL0}, haze share {(float.IsNaN(SkyBodyHaze) ? "the export's" : SkyBodyHaze.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture) + " (builder kit.json skyBodyHaze; the export says " + string.Join("/", h.Pieces.Where(x => x.Ring is "planet" or "moon").Select(x => x.Haze.ToString("0.00", System.Globalization.CultureInfo.InvariantCulture)).Distinct()) + ")")}");
             Sea(seaRoot, h, ground, haze);
         }
 

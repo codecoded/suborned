@@ -15,6 +15,9 @@ namespace Suborned.World
         public readonly float BatchTile, FadeCell, Slab;
         /// <summary>Whether the shadow proxies (ShadowProxies) are on as built (kit.json `shadowProxies`).</summary>
         public readonly bool ShadowProxies;
+        /// <summary>Brief 072-E: module shadow proxies (L2) on; the sky bodies' haze share; whether the every-face A/B's `today` walls are built.</summary>
+        public readonly bool ModuleShadowProxies, EveryFaceToday;
+        public readonly float SkyBodyHaze;
         /// <summary>How a crossing's refuges are drawn (kit.json `crossings`; its lights, edge lines, studs, arcs and eyes are kit pieces the
         /// export places, brief 009): Lip = how far a refuge stands proud of its median, Reach = the most a kerb batch may grow to take a
         /// refuge in, Surface = the refuge's surface when the export names no road.</summary>
@@ -27,6 +30,9 @@ namespace Suborned.World
             BatchTile = J.F(o, "batchTile");
             FadeCell = J.F(o, "fadeCell");
             ShadowProxies = J.B(o, "shadowProxies");
+            ModuleShadowProxies = J.B(o, "moduleShadowProxies");
+            EveryFaceToday = J.B(o, "everyFaceToday");
+            SkyBodyHaze = J.Get(o, "skyBodyHaze") is double sh ? (float)sh : throw new InvalidDataException("World: kit.json has no `skyBodyHaze`");
             var con = J.Get(o, "connectors");
             Slab = J.F(con, "slab");
             foreach (var kv in J.O(J.Get(con, "surfaces"))) connectorSurfaces[kv.Key] = (string)kv.Value;

@@ -96,7 +96,7 @@ namespace Suborned.Perf
                 if (report.machineStart.busy) Debug.LogWarning("Perf: MACHINE BUSY, this run is not a reference measure: " + string.Join("; ", report.machineStart.warnings));
                 var proxies = new PerfProxies(); // the scene's baked shadow proxies (ShadowProxy), as built on or off
                 report.proxyRenderers = proxies.Count; report.proxyTriangles = proxies.Triangles; report.proxiesAsBuilt = proxies.BuiltOn;
-                switches = new PerfSwitches(cam, shadows, fade, proxies);
+                switches = new PerfSwitches(cam, shadows, fade, proxies, FindAnyObjectByType<EveryFace>(FindObjectsInactive.Include));
                 report.ssaoAsBuilt = switches.SsaoAsBuilt;
                 nan = new PerfNaN(cam, plan.width, plan.height);
                 drawer = new PerfDrawer();
@@ -254,7 +254,7 @@ namespace Suborned.Perf
             return stop.IsPath && stop.speed > 0f ? stop.path[^1].along / stop.speed : plan.passes[s.pass].recordSeconds;
         }
 
-        void Park(PerfStop s) { if (s.IsPath) Along(s, 0f); else Place(s.focus, s.standOff, s.zoom); }
+        void Park(PerfStop s) { if (s.IsPath) Along(s, 0f); else Place(s.focus, s.standOff, s.zoom, s.yaw); }
 
         /// <summary>The focus `d` metres along a pan's path (samples carry their stand-off, resolved in the Editor).</summary>
         void Along(PerfStop s, float d)
@@ -263,12 +263,12 @@ namespace Suborned.Perf
             int i = 0;
             while (i + 2 < p.Length && p[i + 1].along <= d) i++;
             float span = Mathf.Max(p[i + 1].along - p[i].along, 1e-4f), k = Mathf.Clamp01((d - p[i].along) / span);
-            Place(Vector3.Lerp(p[i].focus, p[i + 1].focus, k), Mathf.Lerp(p[i].standOff, p[i + 1].standOff, k), s.zoom);
+            Place(Vector3.Lerp(p[i].focus, p[i + 1].focus, k), Mathf.Lerp(p[i].standOff, p[i + 1].standOff, k), s.zoom, s.yaw);
         }
 
-        void Place(Vector3 focus, float standOff, float zoom)
+        void Place(Vector3 focus, float standOff, float zoom, float yaw = -1f)
         {
-            var rot = Quaternion.Euler(plan.pitch, plan.yaw, 0f);
+            var rot = Quaternion.Euler(plan.pitch, yaw >= 0f ? yaw : plan.yaw, 0f);
             cam.transform.SetPositionAndRotation(focus - rot * Vector3.forward * standOff, rot);
             cam.orthographicSize = zoom;
             cam.farClipPlane = standOff + plan.farMargin;

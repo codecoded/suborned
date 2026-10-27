@@ -17,6 +17,7 @@ namespace Suborned.Perf
         readonly TacticalShadows shadows;
         readonly ArchitectureFade fade;
         readonly PerfProxies proxies;
+        readonly EveryFace everyFace;
         readonly ScriptableRendererFeature ssao;
         readonly object ssaoSettings;
         readonly FieldInfo afterOpaque, source;
@@ -27,9 +28,9 @@ namespace Suborned.Perf
         /// <summary>What the player's SSAO is as built ("on, after opaque True, source Depth"), or why it cannot be switched.</summary>
         public string SsaoAsBuilt { get; }
 
-        public PerfSwitches(Camera cam, TacticalShadows shadows, ArchitectureFade fade, PerfProxies proxies)
+        public PerfSwitches(Camera cam, TacticalShadows shadows, ArchitectureFade fade, PerfProxies proxies, EveryFace everyFace = null)
         {
-            this.shadows = shadows; this.fade = fade; this.proxies = proxies;
+            this.shadows = shadows; this.fade = fade; this.proxies = proxies; this.everyFace = everyFace;
             data = cam.GetUniversalAdditionalCameraData();
             builtCascades = shadows.cascades; builtFade = fade.fade; builtWhole = fade.wholeTiles;
             try
@@ -67,6 +68,14 @@ namespace Suborned.Perf
             fade.wholeTiles = f switch { "tile" => true, "reach" => false, _ => builtWhole };
             if (v.UsesProxies && proxies is not { Count: > 0 }) throw new InvalidOperationException($"Perf: variant `{v.name}` switches shadow proxies, but this scene has none");
             if (proxies != null) proxies.Set(v.proxies == "on" || (v.proxies != "off" && proxies.BuiltOn));
+            // brief 072-E: the every-face A/B
+            string ef = string.IsNullOrEmpty(v.everyFace) ? "on" : v.everyFace, ms = string.IsNullOrEmpty(v.moduleShadows) ? "proxy" : v.moduleShadows;
+            if (ef != "on" && ef != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` everyFace `{ef}`: on or off");
+            if (ms != "proxy" && ms != "lod0") throw new InvalidOperationException($"Perf: variant `{v.name}` moduleShadows `{ms}`: proxy or lod0");
+            if (ef == "off" && (everyFace == null || !everyFace.HasToday)) throw new InvalidOperationException($"Perf: variant `{v.name}` switches every face off, but this player has no `today` walls (EveryFace; development builds only)");
+            if (v.moduleShadows == "lod0" && proxies is not { ModuleCount: > 0 }) throw new InvalidOperationException($"Perf: variant `{v.name}` switches module shadows, but this scene has no module proxies");
+            if (everyFace != null) everyFace.Set(ef == "on");
+            if (proxies != null) proxies.SetModules(string.IsNullOrEmpty(v.moduleShadows) ? proxies.ModulesBuiltOn : ms == "proxy");
         }
 
         public void Restore() => Apply(new PerfVariant { name = "as built" });

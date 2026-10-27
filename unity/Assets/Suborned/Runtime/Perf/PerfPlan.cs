@@ -59,12 +59,16 @@ namespace Suborned.Perf
     public sealed class PerfVariant
     {
         public string name, why, ssao = "", proxies = "", fade = "";
+        /// <summary>Brief 072-E (Redline's plan 5): everyFace "on" = the every-face modules (as built), "off" = the procedural walls and skin as
+        /// they were before them (EveryFace: development builds only); moduleShadows "proxy" = modules cast from their L2 proxy (as built),
+        /// "lod0" = the modules cast from their own LODs (L0 at play zoom), no module proxies.</summary>
+        public string everyFace = "", moduleShadows = "";
         public int cascades;
         public bool shadowsOff, fadeOff;
 
         public bool UsesProxies => proxies == "on" || proxies == "off";
 
-        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}";
+        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}, every face {(string.IsNullOrEmpty(everyFace) ? "as built" : everyFace)}, module shadows {(string.IsNullOrEmpty(moduleShadows) ? "as built" : moduleShadows)}";
     }
 
     [Serializable]
@@ -75,6 +79,8 @@ namespace Suborned.Perf
         public Vector3 focus;
         /// <summary>Orthographic size, and the distance back along the view that clears the frame column (Rig.StandOff).</summary>
         public float zoom, standOff;
+        /// <summary>Brief 072-E: the stop's own camera yaw (deg); negative = the plan's (the built play camera's). PerfBuild resolves the stand-off with it.</summary>
+        public float yaw = -1f;
         /// <summary>A pan: the focus moves along these samples at `speed` m/s while the stop records (one way; the record lasts
         /// the path). Empty = a parked camera at `focus`.</summary>
         public PerfPathPoint[] path = Array.Empty<PerfPathPoint>();

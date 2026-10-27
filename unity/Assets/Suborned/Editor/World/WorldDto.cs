@@ -100,7 +100,15 @@ namespace Suborned.World
     }
 
     /// <summary>A kit facade piece (bay, end or corner) on a generated building's street face A→B; Kit.At = the piece's footprint centre, Base = pavement top.</summary>
-    public sealed class FacadeDto { public string Id, Building, Form; public int Storeys, Edge; public KitRefDto Kit; public float Base; public Vector2 A, B; }
+    /// <summary>Brief 072-C/E: an every-face module carries Family (side | alley | stack-* | corner-* | pilaster; null on the wave-2 street pieces),
+    /// Column (the bay position its storey modules share; Latch bakes one mesh per column layout), Casts (proxy-l2: an L2 proxy casts, the module
+    /// does not), Colourway (the material slot set) and LodClass (kit.json lodClasses).</summary>
+    public sealed class FacadeDto
+    {
+        public string Id, Building, Form; public int Storeys, Edge; public KitRefDto Kit; public float Base; public Vector2 A, B;
+        public string Family, Column, Casts, Colourway, LodClass; public int ColumnStoreys;
+        public bool Module => Family != null;
+    }
 
     /// <summary>A plan signature structure (SpaceHQ, a tower site's regenerated piece, the SkyBridge, a sky rail station, the Parade gate block).
     /// Ground (signature only) = [xmin, xmax, ymin, ymax], where no plot geometry stands. Kit null = procedural (Why says why).</summary>

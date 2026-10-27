@@ -20,6 +20,7 @@ namespace Suborned.World
         /// <summary>The Generated/ prefab paths of rejected generated pieces (brief 061's retired crossing pieces): KitImport.Generated removes them.</summary>
         public IReadOnlyCollection<string> RejectedGenerated => rejectedGenerated;
         readonly Dictionary<string, List<(string file, float screen)>> lods = new();
+        readonly Dictionary<string, (string name, float[] distances)> lodClass = new(System.StringComparer.Ordinal);
         readonly List<(string, string)> uses = new();
         readonly Dictionary<string, GameObject> loaded = new();
         readonly Dictionary<string, int> placed = new();
@@ -31,6 +32,13 @@ namespace Suborned.World
             var categories = new Dictionary<string, (float l1, float l2)>();
             if (J.Get(root, "lodCategories") is Dictionary<string, object> cats)
                 foreach (var kv in cats) categories[kv.Key] = (J.F(kv.Value, "l1"), J.F(kv.Value, "l2"));
+            // brief 072 (Redline's plan 3.1): distance classes; a piece with `lodClass` switches by distance, not by its screen numbers
+            var classes = new Dictionary<string, float[]>(System.StringComparer.Ordinal);
+            if (J.Get(root, "lodClasses") is Dictionary<string, object> lcs)
+                foreach (var kv in lcs)
+                    classes[kv.Key] = J.Get(kv.Value, "distances") is List<object> ds ? ds.ConvertAll(d => (float)(double)d).ToArray()
+                        : throw new InvalidDataException($"World: kit.json lodClasses.{kv.Key} has no distances");
+            foreach (var kv in classes) classDistances[kv.Key] = kv.Value;
             foreach (var a in J.A(root, "assets"))
             {
                 if (J.S(a, "status") == "rejected" && J.S(a, "source") == "generated") // where its generated prefab stood (KitImport.Generated removes it)
@@ -58,6 +66,8 @@ namespace Suborned.World
                         l.Add((KitRoot + J.S(ls[i], "file"), screen));
                     }
                 lods[id] = l;
+                if (J.S(a, "lodClass") is { } lc)
+                    lodClass[id] = (lc, classes.TryGetValue(lc, out var dist) ? dist : throw new InvalidDataException($"World: kit `{id}` lodClass `{lc}` is not in kit.json lodClasses"));
                 categories_[id] = J.S(a, "category") ?? "";
                 if (J.Get(a, "tags") is { } tags && J.Get(tags, "use") is List<object> use) foreach (var u in use) uses.Add(((string)u, id));
             }
@@ -69,6 +79,11 @@ namespace Suborned.World
         public IReadOnlyDictionary<string, string> Sources => sources;
         /// <summary>id → LOD1, LOD2 files (asset paths) with their screen-relative switch heights (LOD0 = the source).</summary>
         public IReadOnlyDictionary<string, List<(string file, float screen)>> Lods => lods;
+        /// <summary>Brief 072: id → its distance class (kit.json `lodClass`) and that class's [L1, L2, cull] switch distances in metres (cull 0 = none).</summary>
+        public IReadOnlyDictionary<string, (string name, float[] distances)> LodClass => lodClass;
+        /// <summary>The class's distances by name (the column bake's `column` class).</summary>
+        public float[] ClassDistances(string name) => classDistances.TryGetValue(name, out var d) ? d : throw new InvalidDataException($"World: kit.json lodClasses has no `{name}`");
+        readonly Dictionary<string, float[]> classDistances = new(System.StringComparer.Ordinal);
         /// <summary>id → the catalogue's `category` (Street, Ground, Plants, ...; "" when it has none).</summary>
         public IReadOnlyDictionary<string, string> Categories => categories_;
         /// <summary>Generated pieces: id → FBX asset path.</summary>
@@ -161,6 +176,13 @@ namespace Suborned.World
             placed[layer] = Placed(layer) + 1;
             tris[layer] = (tris.TryGetValue(layer, out var k) ? k : 0) + n;
             return t;
+        }
+
+        /// <summary>Counts pieces placed some other way (KitColumns: one baked column instance stands for `pieces` export pieces).</summary>
+        public void Count(string layer, int pieces, int triangles)
+        {
+            placed[layer] = Placed(layer) + pieces;
+            tris[layer] = (tris.TryGetValue(layer, out var k) ? k : 0) + triangles;
         }
 
         /// <summary>The piece r baked into `layer`'s tile batches by material instead of standing as an instance (its LOD0, placed as

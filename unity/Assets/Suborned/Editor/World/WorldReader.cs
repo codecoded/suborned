@@ -131,6 +131,9 @@ namespace Suborned.World
             {
                 Id = Id(f), Building = J.S(f, "building"), Form = J.S(f, "form"), Storeys = (int)J.F(f, "storeys"), Edge = (int)J.F(f, "edge"),
                 Kit = Kit(J.Get(f, "kit")) ?? throw new InvalidDataException($"World: facade {Id(f)} has no kit"), Base = J.F(f, "base"), A = J.P(f, "a"), B = J.P(f, "b"),
+                Family = J.S(f, "family"), Casts = J.S(f, "casts"), Colourway = J.S(f, "colourway"),
+                Column = J.Get(f, "column") is { } col ? J.S(col, "id") : null, ColumnStoreys = J.Get(f, "column") is { } col2 ? (int)J.F(col2, "storeys") : 0,
+                LodClass = J.Get(f, "lod") is { } lod ? J.S(lod, "class") : null,
             });
             w.Signatures = Each(o, "signatures", x => new SignatureDto
             {

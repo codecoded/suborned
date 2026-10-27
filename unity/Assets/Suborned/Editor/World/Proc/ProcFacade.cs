@@ -8,7 +8,7 @@ namespace Suborned.World
     /// (radiused, chamfered, tower), cornice and string-course profiles, Googie crown lines. One mass in, one MeshKit out.</summary>
     public static class ProcFacade
     {
-        const float Cap = 0.9f, Parapet = 0.6f;
+        const float Cap = 0.9f, Parapet = 0.6f, CrownTol = 0.15f; // CrownTol: a kit top within this of the mass top is at the roof line
 
         public static void Mass(Nodes nodes, FacadeSpec spec, Transform el, MassDto m, Vector2[] ring, Host h)
         {
@@ -44,6 +44,16 @@ namespace Suborned.World
                 var bm = Corners.Round(h.BodyRing, g); sib = (g.Corner == "radius" || g.Corner == "chamfer") ? bm.Pts : h.BodyRing;
             }
             B.Cap(c.Roof, Cls.Matte, rr.Pts, c.Top);
+            // brief 072-E: a wall an every-face module stands on is drawn as it is now (`every`) and, when the build keeps the perf harness's A/B
+            // (Today), also as it was before the modules (`today`: only the wave-2 street pieces cover it), each into its own layer; a plain
+            // shadows-only shell stands behind the modules (Redline's plan 3.4: light-leak insurance where an L2 proxy has gaps)
+            Pb normalB = B, normalS = c.S, everyB = B, everyS = c.S, todayB = null, todayS = null;
+            MeshKit everyKit = null, everySkin = null, todayKit = null, todaySkin = null, shell = null;
+            if (Today && KitCover.HasCovers(hostId, KitCover.Which.Modules))
+            {
+                everyKit = new MeshKit(); everyB = new Pb(everyKit, spec.Atlas); todayKit = new MeshKit(); todayB = new Pb(todayKit, spec.Atlas);
+                if (c.S != null) { everySkin = new MeshKit(); everyS = new Pb(everySkin, spec.Atlas); todaySkin = new MeshKit(); todayS = new Pb(todaySkin, spec.Atlas); }
+            }
             for (int i = 0; i < rr.Pts.Length; i++)
             {
                 var a = rr.Pts[i]; var b = rr.Pts[(i + 1) % rr.Pts.Length];
@@ -52,22 +62,70 @@ namespace Suborned.World
                 float eL = Ext(rr, i, 0), eR = Ext(rr, (i + 1) % rr.Pts.Length, 1);
                 var spans = KitCover.Spans(hostId, w, c.Base);
                 if (spans.Count == 0) { Edge(c, spec, w, rr.Facet[i], eL, eR, floors, sib); continue; }
-                // kit facade pieces stand on part of this wall (brief 007 E): leave them that span up to their top
-                foreach (var (s0, s1, top) in KitCover.Split(spans, w.Len))
+                var modules = KitCover.Spans(hostId, w, c.Base, KitCover.Which.Modules);
+                if (modules.Count > 0)
                 {
-                    if (top >= c.Top + Parapet - 0.05f) continue;
-                    var sub = w.Sub(s0, s1);
-                    Edge(c, spec, sub, rr.Facet[i], s0 <= 0.01f ? eL : 0f, s1 >= w.Len - 0.01f ? eR : 0f, floors, sib, top);
+                    shell ??= new MeshKit();
+                    foreach (var (s0, s1, top) in KitCover.Split(modules, w.Len))
+                    {
+                        if (float.IsNegativeInfinity(top)) continue;
+                        Vector2 p0 = w.A + w.U * s0, p1 = w.A + w.U * s1; float hi = Mathf.Min(top, c.Top);
+                        shell.Wall(p0, p1, c.Base, hi).Wall(p1, p0, c.Base, hi); // both sides: a one-sided caster facing away from the sun casts nothing
+                    }
+                    if (todayB != null)
+                    {   // as it was: only the wave-2 street pieces cover this wall
+                        c.B = todayB; c.S = todayS;
+                        var street = KitCover.Spans(hostId, w, c.Base, KitCover.Which.Street);
+                        if (street.Count == 0) Edge(c, spec, w, rr.Facet[i], eL, eR, floors, sib);
+                        else Walls(c, spec, w, rr.Facet[i], eL, eR, floors, sib, street);
+                        c.B = everyB; c.S = everyS;
+                    }
                 }
+                // kit facade pieces stand on part of this wall (brief 007 E): leave them that span up to their top
+                Walls(c, spec, w, rr.Facet[i], eL, eR, floors, sib, spans);
+                c.B = normalB; c.S = normalS;
             }
             int vg = kit.VertexCount;
             bool kitFaced = KitCover.HasCovers(hostId); // its street faces are kit pieces with their own crowns and corners
+            bool streetFaced = KitCover.HasCovers(hostId, KitCover.Which.Street); // as it was before the every-face modules
             if ((!c.Podium || h.BodyRing == null) && !kitFaced) Googie(c, spec, rr.Pts, g);
             if (body && g.Corner == "tower" && c.Top - c.Base >= 7f && !kitFaced) CornerTower(c, spec, ring, g);
+            if (todayB != null && kitFaced && !streetFaced)
+            {   // the crown lines and corner tower the modules took away, in `today` only
+                c.B = todayB; c.S = todayS;
+                if (!c.Podium || h.BodyRing == null) Googie(c, spec, rr.Pts, g);
+                if (body && g.Corner == "tower" && c.Top - c.Base >= 7f) CornerTower(c, spec, ring, g);
+                c.B = normalB; c.S = normalS;
+            }
             ProcKit.Tally("googie+tower", c.D, vg, kit.VertexCount);
             ProcKit.VertsByTier[c.D] += kit.VertexCount; ProcKit.MassesByTier[c.D]++;
             nodes.Part(el, m.Id + "/walls", kit, spec.Atlas.Matte);
             if (skinKit != null) nodes.Part(ProcSkin.Element(c.Skin), m.Id + "/skin", skinKit, spec.Atlas.Matte);
+            if (everyKit != null)
+            {
+                if (!everyKit.Empty) Combine.Add(el, Layer072.BuildingsEvery, everyKit, spec.Atlas.Matte);
+                if (!todayKit.Empty) Combine.Add(el, Layer072.BuildingsToday, todayKit, spec.Atlas.Matte);
+                if (everySkin is { Empty: false }) Combine.Add(ProcSkin.Element(c.Skin), Layer072.SkinsEvery, everySkin, spec.Atlas.Matte);
+                if (todaySkin is { Empty: false }) Combine.Add(ProcSkin.Element(c.Skin), Layer072.SkinsToday, todaySkin, spec.Atlas.Matte);
+            }
+            if (shell is { Empty: false }) { Combine.Add(el, Layer072.Shell, shell, spec.Atlas.Matte); ShellWalls++; }
+        }
+
+        /// <summary>Brief 072-E: build the every-face A/B's `today` walls (builder kit.json everyFaceToday); set per build.</summary>
+        public static bool Today;
+        public static int ShellWalls;
+
+        /// <summary>One wall with kit pieces standing on parts of it: each sub-span drawn above the highest piece over it.</summary>
+        static void Walls(Pc c, FacadeSpec spec, in WallFrame w, bool facet, float eL, float eR, List<(float z0, float h)> floors, Vector2[] sib, List<(float s0, float s1, float top)> spans)
+        {
+            foreach (var (s0, s1, top) in KitCover.Split(spans, w.Len))
+            {
+                // brief 072-C: a kit piece that reaches the roof line owns the crown (its coping is the parapet): nothing procedural over it. Was c.Top + Parapet,
+                // which drew the procedural parapet over every storey-true piece (PortholeBay_3L/_4L, the every-face modules: their top is H(n), the mass top).
+                if (top >= c.Top - CrownTol) continue;
+                var sub = w.Sub(s0, s1);
+                Edge(c, spec, sub, facet, s0 <= 0.01f ? eL : 0f, s1 >= w.Len - 0.01f ? eR : 0f, floors, sib, top);
+            }
         }
 
         /// <summary>Mitre extension of a profile at the start (side 0) or end (side 1) of edge i: depth * tan(turn / 2) at convex corners.</summary>

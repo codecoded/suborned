@@ -47,41 +47,66 @@ namespace Suborned.World.Review
         [MenuItem("Suborned/Review/072 Capture (after)")]
         static void After() => Start("after", "after");
 
+        /// <summary>Brief 072-E phase 2: the same views with the GPU Resident Drawer on (the asset's own mode, in memory only; EditorDrawerGuard
+        /// takes it off again after). Counts and frame ms only (the shots are the drawer-off pass's); → briefs/072/latch/after/grd-on.</summary>
+        [MenuItem("Suborned/Review/072 Capture (after, GPU Resident Drawer on)")]
+        static void AfterGrd() => Start(Path.Combine("after", "grd-on"), null, grd: true);
+
+        /// <summary>Both after passes in a fresh Editor, then quit (exit 0 done, 1 failed). Not batchmode (the counts are the Game view's UnityStats):
+        ///   Unity -projectPath unity -executeMethod Suborned.World.Review.Baseline072.AfterCli [-grd off|on|both] -logFile &lt;log&gt;</summary>
+        public static void AfterCli()
+        {
+            var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-grd"); string grd = i >= 0 && i + 1 < a.Length ? a[i + 1] : "both";
+            exitWhenDone = true;
+            if (grd != "on") queue.Enqueue(() => Start("after", "after"));
+            if (grd != "off") queue.Enqueue(() => Start(Path.Combine("after", "grd-on"), null, grd: true));
+            EditorApplication.delayCall += () => EditorApplication.delayCall += Next; // after the scene and the Game view are up
+        }
+
+        static readonly Queue<Action> queue = new();
+        static bool exitWhenDone, failed;
+        static void Next()
+        {
+            if (queue.Count > 0) { queue.Dequeue()(); if (run == null) { failed = true; Next(); } return; }
+            if (exitWhenDone) { Debug.Log($"072: AfterCli {(failed ? "FAILED" : "done")}"); EditorApplication.Exit(failed ? 1 : 0); }
+        }
+
         static IEnumerator<object> run;
 
-        static void Start(string countsDir, string shotsDir)
+        static void Start(string countsDir, string shotsDir, bool grd = false)
         {
             if (Application.isBatchMode) { Debug.LogError("072: the capture reads the Game view's stats; run it in the Editor, not batchmode"); return; }
             if (EditorApplication.isPlayingOrWillChangePlaymode) { Debug.LogError("072: leave Play Mode first"); return; }
             if (run != null) { Debug.LogError("072: a capture is already running"); return; }
             if (!RenderSession.EnsureScene()) return;
             var root = HarbourWorldBuilder.RepoRoot;
-            run = Body(Path.Combine(root, "briefs", "072", "latch", countsDir), Path.Combine(root, "briefs", "072", "shots", shotsDir), shotsDir);
+            run = Body(Path.Combine(root, "briefs", "072", "latch", countsDir), shotsDir == null ? null : Path.Combine(root, "briefs", "072", "shots", shotsDir), shotsDir ?? "after-grd-on", grd);
             EditorApplication.update += Tick;
-            Debug.Log("072: capture started (Game view at 1920x1080; keep the Editor open until `072: done`)");
+            Debug.Log($"072: capture started (Game view at 1920x1080, GPU Resident Drawer {(grd ? "ON" : "off")}; keep the Editor open until `072: done`)");
         }
 
         static void Tick()
         {
             try { if (run == null || !run.MoveNext()) Stop(); }
-            catch (Exception e) { Debug.LogException(e); Stop(); }
+            catch (Exception e) { Debug.LogException(e); failed = true; Stop(); }
         }
 
-        static void Stop() { EditorApplication.update -= Tick; run = null; }
+        static void Stop() { EditorApplication.update -= Tick; run = null; if (queue.Count > 0 || exitWhenDone) EditorApplication.delayCall += Next; }
 
         sealed class View
         {
             public string Id, Label; public Vector2 Focus; public float Yaw;
             public Dictionary<string, double> Stats = new();
             public int Visible, VisibleCasters, LodCulled; public long VisibleTris;
+            public int ModColumns, ModModules, ModProxies; public long ModTris, ModProxyTris; // brief 072-E: every-face modules in the frustum (columns = placed instances)
             public Dictionary<string, (int n, long tris)> ByLayer = new();
             public double Median, P90;
             public string Shot;
         }
 
-        static IEnumerator<object> Body(string countsDir, string shotsDir, string phase)
+        static IEnumerator<object> Body(string countsDir, string shotsDir, string phase, bool grd = false)
         {
-            Directory.CreateDirectory(countsDir); Directory.CreateDirectory(shotsDir);
+            Directory.CreateDirectory(countsDir); if (shotsDir != null) Directory.CreateDirectory(shotsDir);
             var playGo = GameObject.Find("cameras/play") ?? throw new InvalidOperationException("072: no cameras/play in the scene");
             var cam = playGo.GetComponent<Camera>();
             var shadows = playGo.GetComponent<TacticalShadows>(); var fade = playGo.GetComponent<ArchitectureFade>();
@@ -108,7 +133,14 @@ namespace Suborned.World.Review
             void Seen(ScriptableRenderContext _, Camera c) { if (c == cam && c.cameraType == CameraType.Game && c.targetTexture == null) { seenW = c.pixelWidth; seenH = c.pixelHeight; } }
             RenderPipelineManager.beginCameraRendering += Seen;
             var urp = UniversalRenderPipeline.asset;
-            string drawer = urp ? $"{urp.gpuResidentDrawerMode} in the Editor (EditorDrawerGuard keeps it off; the asset and the player run {Play.EditorDrawerGuard.Own})" : "?";
+            var drawerWas = urp ? urp.gpuResidentDrawerMode : GPUResidentDrawerMode.Disabled;
+            if (grd && urp)
+            {   // the asset's own mode, in memory; EditorDrawerGuard.Off puts the Editor back after (finally below)
+                urp.gpuResidentDrawerMode = Play.EditorDrawerGuard.Own == GPUResidentDrawerMode.Disabled ? GPUResidentDrawerMode.InstancedDrawing : Play.EditorDrawerGuard.Own;
+                for (int i = 0; i < 30; i++) yield return null; // the drawer registers the scene's renderers over the next frames
+            }
+            string drawer = urp ? (grd ? $"{urp.gpuResidentDrawerMode} (switched on in memory for this pass; the asset and the player run {Play.EditorDrawerGuard.Own}; EditorDrawerGuard takes it off after)"
+                                       : $"{urp.gpuResidentDrawerMode} in the Editor (EditorDrawerGuard keeps it off; the asset and the player run {Play.EditorDrawerGuard.Own})") : "?";
             var meshTris = new Dictionary<Mesh, long[]>();
             string planetShot = null, planetNote = "";
             try
@@ -155,7 +187,8 @@ namespace Suborned.World.Review
                     finally { cam.targetTexture = saved.target; cam.ResetAspect(); UnityEngine.Object.DestroyImmediate(px); }
                 }
 
-                // shots
+                // shots (the drawer-off pass only)
+                if (shotsDir != null)
                 using (var session = new RenderSession())
                 {
                     Pose(cam, shadows, fade, views[0].Focus, views[0].Yaw, standOff);
@@ -179,9 +212,11 @@ namespace Suborned.World.Review
                 QualitySettings.lodBias = saved.lodBias;
                 if (people) people.SetActive(peopleWas);
                 foreach (var c in otherCams) if (c) c.enabled = true;
+                if (grd && urp) { urp.gpuResidentDrawerMode = drawerWas; Play.EditorDrawerGuard.Off(); }
             }
 
             var stamp = UnityEngine.Object.FindAnyObjectByType<WorldStamp>();
+            if (shotsDir == null) shotsDir = Path.Combine(HarbourWorldBuilder.RepoRoot, "briefs", "072", "shots", "after");
             var json = Json(views, phase, stamp, standOff, drawer, sizeNote, seenW, seenH, planetShot, planetNote, shotsDir);
             File.WriteAllText(Path.Combine(countsDir, "counts.json"), json);
             File.WriteAllText(Path.Combine(countsDir, "counts.md"), Table(views, phase, stamp, drawer, seenW, seenH));
@@ -269,6 +304,23 @@ namespace Suborned.World.Review
             cam.aspect = (float)W / H;
             var planes = GeometryUtility.CalculateFrustumPlanes(cam);
             cam.ResetAspect();
+            // brief 072-E: the every-face modules in the frustum (EveryFace.modules: a baked column stands for the n modules its name carries, Column_<n>_<hash>)
+            var ef = UnityEngine.Object.FindAnyObjectByType<EveryFace>(FindObjectsInactive.Include);
+            if (ef) foreach (var m in ef.modules)
+            {
+                if (!m || !m.activeInHierarchy) continue;
+                var lod0 = KitLods.Lod0(m).ToList(); if (lod0.Count == 0) continue;
+                var b = lod0[0].bounds; foreach (var r in lod0) b.Encapsulate(r.bounds);
+                if (!GeometryUtility.TestPlanesAABB(planes, b)) continue;
+                var mm = Regex.Match(m.name, @"^Column_(\d+)_");
+                v.ModColumns++; v.ModModules += mm.Success ? int.Parse(mm.Groups[1].Value) : 1;
+                foreach (var r in lod0) { var mesh = r.GetComponent<MeshFilter>().sharedMesh; for (int i = 0; i < mesh.subMeshCount; i++) v.ModTris += mesh.GetIndexCount(i) / 3; }
+            }
+            foreach (var sp in UnityEngine.Object.FindObjectsByType<ShadowProxy>(FindObjectsInactive.Exclude))
+            {
+                if (!sp.module || !sp.On || !sp.proxy) continue;
+                v.ModProxies++; var mesh = sp.proxy.GetComponent<MeshFilter>().sharedMesh; for (int i = 0; i < mesh.subMeshCount; i++) v.ModProxyTris += mesh.GetIndexCount(i) / 3;
+            }
             var pickedOut = new HashSet<Renderer>(); var lodOf = new Dictionary<Renderer, int>();
             foreach (var g in UnityEngine.Object.FindObjectsByType<LODGroup>(FindObjectsInactive.Exclude))
             {
@@ -401,7 +453,8 @@ namespace Suborned.World.Review
                 var v = views[i];
                 sb.Append($"    {{\"view\": \"{v.Id}\", \"label\": \"{Esc(v.Label)}\", \"focus\": [{F(v.Focus.x)}, {F(v.Focus.y)}], \"yaw\": {F(v.Yaw)},\n      \"stats\": {{");
                 sb.Append(string.Join(", ", v.Stats.Select(kv => $"\"{kv.Key}\": {F(Math.Round(kv.Value, 2))}")));
-                sb.Append($"}},\n      \"census\": {{\"visibleRenderers\": {v.Visible}, \"visibleCasters\": {v.VisibleCasters}, \"lodCulled\": {v.LodCulled}, \"triangles\": {v.VisibleTris}, \"byLayer\": {{");
+                sb.Append($"}},\n      \"modules\": {{\"columnsInFrustum\": {v.ModColumns}, \"modulesInFrustum\": {v.ModModules}, \"l0Triangles\": {v.ModTris}, \"proxiesOnInScene\": {v.ModProxies}, \"proxyTrianglesInScene\": {v.ModProxyTris}}}");
+                sb.Append($",\n      \"census\": {{\"visibleRenderers\": {v.Visible}, \"visibleCasters\": {v.VisibleCasters}, \"lodCulled\": {v.LodCulled}, \"triangles\": {v.VisibleTris}, \"byLayer\": {{");
                 sb.Append(string.Join(", ", v.ByLayer.OrderByDescending(kv => kv.Value.tris).Select(kv => $"\"{Esc(kv.Key)}\": {{\"renderers\": {kv.Value.n}, \"triangles\": {kv.Value.tris}}}")));
                 sb.Append($"}}}},\n      \"editorFrameMs\": {{\"median\": {F(Math.Round(v.Median, 2))}, \"p90\": {F(Math.Round(v.P90, 2))}}}, \"shot\": \"{v.Shot}\"}}{(i + 1 < views.Count ? "," : "")}\n");
             }
@@ -415,10 +468,10 @@ namespace Suborned.World.Review
             sb.Append($"# 072 capture ({phase}), {DateTime.Now:yyyy-MM-dd HH:mm}\n\n");
             sb.Append($"Scene from {(stamp ? stamp.exportPath + " sha256 " + stamp.exportSha256 : "?")}. Play camera (ortho 14, pitch 38), Game view {seenW}x{seenH}, GPU Resident Drawer {drawer}. ");
             sb.Append("Counts are UnityStats from the Game view (tris and verts include the shadow passes; draw calls = the Statistics window's Batches); renderers and census tris are the frustum + LOD estimate of the main view; ms is the Studio editor, indicative only.\n\n");
-            sb.Append("| view | yaw | tris | verts | SetPass | draw calls | shadow casters | visible renderers | census tris | editor ms median / p90 |\n");
-            sb.Append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n");
+            sb.Append("| view | yaw | tris | verts | SetPass | draw calls | shadow casters | visible renderers | census tris | modules in frustum (columns) | module L0 tris | editor ms median / p90 |\n");
+            sb.Append("|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|---:|\n");
             foreach (var v in views)
-                sb.Append($"| {v.Id} | {v.Yaw:0} | {S(v, "triangles"):N0} | {S(v, "vertices"):N0} | {S(v, "setPassCalls"):F0} | {S(v, "drawCalls"):F0} | {S(v, "shadowCasters"):F0} | {v.Visible} | {v.VisibleTris:N0} | {v.Median:F1} / {v.P90:F1} |\n");
+                sb.Append($"| {v.Id} | {v.Yaw:0} | {S(v, "triangles"):N0} | {S(v, "vertices"):N0} | {S(v, "setPassCalls"):F0} | {S(v, "drawCalls"):F0} | {S(v, "shadowCasters"):F0} | {v.Visible} | {v.VisibleTris:N0} | {v.ModModules} ({v.ModColumns}) | {v.ModTris:N0} | {v.Median:F1} / {v.P90:F1} |\n");
             return sb.ToString();
         }
     }

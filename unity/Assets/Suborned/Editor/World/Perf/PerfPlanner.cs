@@ -112,14 +112,15 @@ namespace Suborned.World.Perf
             {
                 var s = stops[i];
                 float z = s.zoom > 0f ? s.zoom : cam.orthographicSize;
-                var stop = new PerfStop { name = s.name, why = s.why, zoom = z, speed = s.speed };
+                var stop = new PerfStop { name = s.name, why = s.why, zoom = z, speed = s.speed, yaw = s.yaw >= 0f ? Mathf.Repeat(s.yaw, 360f) : -1f };
+                var srot = s.yaw >= 0f ? Quaternion.Euler(rot.eulerAngles.x, s.yaw, 0f) : rot; // brief 072-E: the stop's own yaw resolves its own stand-off
                 if (s.path is { Length: > 0 })
                 {
                     if (s.speed <= 0f || s.path.Length < 2) throw new InvalidDataException($"Perf: pan `{s.name}` needs two or more points and a speed");
-                    stop.path = Sample(s.path, p => Rig.StandOff(rot, p, z, aspect));
+                    stop.path = Sample(s.path, p => Rig.StandOff(srot, p, z, aspect));
                     stop.focus = stop.path[0].focus; stop.standOff = stop.path[0].standOff;
                 }
-                else { stop.focus = Vec(s.focus, s.name); stop.standOff = Rig.StandOff(rot, stop.focus, z, aspect); }
+                else { stop.focus = Vec(s.focus, s.name); stop.standOff = Rig.StandOff(srot, stop.focus, z, aspect); }
                 plan.stops[i] = stop;
             }
             return plan;
@@ -197,7 +198,7 @@ namespace Suborned.World.Perf
         }
 
         [Serializable]
-        sealed class StopDto { public string name, why; public float[] focus; public float zoom, speed; public PointDto[] path; }
+        sealed class StopDto { public string name, why; public float[] focus; public float zoom, speed, yaw = -1f; public PointDto[] path; } // yaw: brief 072-E, negative = the built camera's
 
         [Serializable]
         sealed class PointDto { public float[] at; }

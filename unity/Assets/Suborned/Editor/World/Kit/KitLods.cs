@@ -34,7 +34,7 @@ namespace Suborned.World
 
         public static void Build(KitPlacer kit)
         {
-            CullSmallCount = CullOnly = LevelsBelowCull = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
+            CullSmallCount = CullOnly = LevelsBelowCull = Classed = 0; RobotFaces = Groups = Levels = Colliders = ConcaveMesh = ConvexMesh = Boxes = OtherColliders = ExtraSlots = OldLodGroups = MissingPrefabs = MissingScripts = 0; ExtraSlotPieces.Clear();
             Folder(KitPlacer.BuiltRoot.TrimEnd('/'));
             var written = new Dictionary<string, string>(System.StringComparer.Ordinal); // built path → id
             foreach (var id in kit.Prefabs.Keys.OrderBy(k => k, System.StringComparer.Ordinal))
@@ -52,7 +52,7 @@ namespace Suborned.World
                 try
                 {
                     Strip(go);
-                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id]);
+                    Lod(id, kit.Categories.TryGetValue(id, out var cat) ? cat : "", go, kit.Lods[id], kit.LodClass.TryGetValue(id, out var lc) ? lc.distances : null);
                     if (RobotKit.Rig(go, id)) RobotFaces++; // brief 026: a service robot's face and head, from robots.json (view only)
                     if (!PrefabUtility.SaveAsPrefabAsset(go, path)) throw new IOException($"World: could not save {path}");
                 }
@@ -68,7 +68,7 @@ namespace Suborned.World
             Debug.Log($"World: kit built {written.Count} prefabs: {Groups} LODGroups ({Levels} LOD levels beyond LOD0; a cull level on each: {CullSmallCount} small pieces below {CullSmall:P0} of the screen or half their commander-view height, the rest below {CullLarge:P1}; {CullOnly} cull-only, {LevelsBelowCull} levels below their cull dropped); colliders stripped {Colliders} " +
                 $"(concave mesh {ConcaveMesh}, convex mesh {ConvexMesh}, box {Boxes}, other {OtherColliders}); LOD slots the LOD0 does not list {ExtraSlots} " +
                 $"({string.Join(", ", ExtraSlotPieces)}), all mapped; " +
-                $"removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts; robot faces rigged {RobotFaces}");
+                $"{Classed} switched by distance class (kit.json lodClasses, follow view {FollowFov}°); removed from the sources: {OldLodGroups} old LODGroups, {MissingPrefabs} missing nested prefabs, {MissingScripts} missing scripts; robot faces rigged {RobotFaces}");
         }
 
         static bool SameLods(List<(string file, float screen)> a, List<(string file, float screen)> b) => a.Count == b.Count && a.Zip(b, (x, y) => x == y).All(v => v);
@@ -105,17 +105,35 @@ namespace Suborned.World
         /// CommanderHalfMax is the widest play zoom (HostCameraLab.zoomMax, the orthographic half-height): no cull may come within half
         /// of the smallest height a piece has there, so the commander view never loses a piece.</summary>
         const float CullSmallM = 8f, CullSmall = 0.01f, CullLarge = 0.004f, CommanderHalfMax = 18.5f;
-        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods)
+        /// <summary>Brief 072 (Redline's plan 3.1): the follow view's vertical FOV the distance classes are set against, and the play-zoom guard:
+        /// no L1 switch nearer than GuardM, so the orthographic play camera (relative height = size / (2 · ortho size), at most zoom 18.5,
+        /// equal to perspective at 18.5 / tan 27.5° = 35.5 m) always draws L0.</summary>
+        public const float FollowFov = 55f, GuardM = 36f;
+        static float K => 2f * Mathf.Tan(FollowFov * 0.5f * Mathf.Deg2Rad); // 1.041
+        /// <summary>The screen-relative height at which a group of size s (m) switches at distance d (m), lodBias 1.</summary>
+        public static float ScreenAt(float s, float d) => s / (K * d);
+        /// <summary>The distance at which a group of size s switches at screen-relative height h.</summary>
+        public static float DistanceAt(float s, float h) => s / (K * h);
+        public static int Classed;
+
+        static void Lod(string id, string category, GameObject go, List<(string file, float screen)> lods, float[] dist = null)
         {
             var r0 = Lod0(go).ToArray();
             if (r0.Length == 0) { if (lods.Count == 0) return; throw new InvalidDataException($"World: kit `{id}` has no renderers for LOD0"); }
             var bounds = new Bounds(go.transform.position, Vector3.zero); foreach (var r in r0) bounds.Encapsulate(r.bounds);
             float size = Mathf.Max(bounds.size.x, bounds.size.y, bounds.size.z);
             bool small = size < CullSmallM;
+            if (dist != null)
+            {   // brief 072: switch by distance from the piece's own unscaled size (the LODGroup's size is its bounds' largest side), not the catalogue's screens
+                if (dist.Length < lods.Count) throw new InvalidDataException($"World: kit `{id}` has {lods.Count} LODs and its class {dist.Length} distances");
+                lods = lods.Select((l, i) => (l.file, ScreenAt(size, dist[i]))).ToList();
+                Classed++;
+            }
             // brief 048 (Redline's plan item 3): a small piece with no distance versions (planters, pots, robots, bike racks, kiosks' parts)
             // gets a cull-only group too; ground pieces never (a culled tile is a hole), nor a large piece (it would cull past the clip anyway)
             if (lods.Count == 0 && (!small || category == "Ground")) return;
             float cull = Mathf.Min(small ? CullSmall : CullLarge, 0.5f * size / (2f * CommanderHalfMax));
+            if (dist != null && dist.Length > lods.Count && dist[lods.Count] > 0f) cull = ScreenAt(size, dist[lods.Count]); // the class's cull distance (330 m for modules)
             // a level that would only switch in below the cull never shows: it goes (the street category's L2 at 0.003 had pulled the cull
             // down to 0.15 %, about 500 m for a bollard, so small pieces still drew to the 350 m clip)
             var kept = lods.Where(l => l.screen > cull).ToList(); LevelsBelowCull += lods.Count - kept.Count; lods = kept;
@@ -164,6 +182,37 @@ namespace Suborned.World
             lg.SetLODs(levels.ToArray());
             lg.RecalculateBounds();
             Groups++; if (small) CullSmallCount++;
+        }
+
+        /// <summary>Brief 072 build check (Redline's plan 3.1): the L1 switch distance of every placed LODGroup under the world root, from its world
+        /// size (LODGroup.size × the largest lossy scale, as Unity measures it). Under the layers that hold buildings (facades, civic,
+        /// signatures, landmarks, megastructures, frontages) one nearer than GuardM fails the build: the play camera would draw it below L0.
+        /// Elsewhere (roof crowns, street props, trees) it is counted and logged as a warning. Returns (groups checked, nearest L1 distance, failures).</summary>
+        public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root)
+        {
+            var strict = new HashSet<string>(System.StringComparer.Ordinal) { "facades", "civic", "signatures", "landmarks", "megastructures", "frontages" };
+            int n = 0, failed = 0, other = 0; float nearest = float.PositiveInfinity; string nearestName = "";
+            var bad = new List<string>(); var below = new SortedDictionary<string, (int n, float d)>(System.StringComparer.Ordinal);
+            foreach (var g in root.GetComponentsInChildren<LODGroup>(true))
+            {
+                var lods = g.GetLODs(); if (lods.Length < 2) continue; // a cull-only group never draws below L0
+                var t = g.transform; while (t.parent && t.parent != root) t = t.parent;
+                if (t.name == "horizon") continue; // the sky bodies draw L0 always; the band is 1–8 km out
+                var s = g.transform.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
+                float d = DistanceAt(size, lods[0].screenRelativeTransitionHeight * QualitySettings.lodBias);
+                n++;
+                bool isStrict = strict.Contains(t.name);
+                if (isStrict && d < nearest) { nearest = d; nearestName = g.name; }
+                if (d >= GuardM) continue;
+                if (isStrict) { failed++; if (bad.Count < 12) bad.Add($"{t.name}/{g.name} L1 at {d:F1} m"); }
+                else { other++; var k = $"{t.name}/{g.name}"; below[k] = below.TryGetValue(k, out var e) ? (e.n + 1, Mathf.Min(e.d, d)) : (1, d); }
+            }
+            // pieces outside the facade layers (roof crowns, street props, trees) that the play camera draws below L0: reported, not failed (072: the
+            // crowns' fixed `towers`/`signatures` switch predates the distance classes; Redline's rule covers the every-face modules and the building fronts)
+            if (below.Count > 0) Debug.LogWarning($"World: play-zoom guard: {other} groups outside the facade layers switch to L1 nearer than {GuardM} m (drawn below L0 at the widest play zoom): " +
+                string.Join("; ", below.Select(kv => $"{kv.Key} x{kv.Value.n} from {kv.Value.d:F1} m")));
+            if (failed > 0) throw new InvalidDataException($"World: play-zoom guard: {failed} LOD groups switch to L1 nearer than {GuardM} m (the play camera would draw them below L0): {string.Join("; ", bad)}");
+            return (n, nearest, nearestName, failed, other);
         }
 
         /// <summary>A part's name without its LOD tag or Blender's duplicate suffix (`DK_SignalLens_L1_Beam`, `DK_SignalLens_Beam.001` → `DK_SignalLens_Beam`).</summary>

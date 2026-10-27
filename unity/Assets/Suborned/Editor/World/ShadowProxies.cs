@@ -16,9 +16,14 @@ namespace Suborned.World
         /// <summary>Adds the proxies under `world`, on or off as built (kit.json `shadowProxies`); returns their count and LOD1 triangles.
         /// Idempotent (Redline 2026-10-15 L8): a piece whose renderers an existing proxy already casts for is skipped, so a second
         /// run neither doubles a proxy nor records the first run's Off as the pieces' own casting.</summary>
-        public static (int count, long triangles) Build(Transform world, bool on)
+        public static int Modules; public static long ModuleTris;
+
+        /// <summary>Brief 072-E (Redline's plan 3.4): `modules` (KitColumns.ModuleGroups, the every-face modules and baked columns) cast from
+        /// their L2 (the group's third level, else its last), on as `moduleOn` says, whatever `on` says for the kit facades and trees; their proxy
+        /// is flagged `module` so the perf harness switches the two apart (moduleShadows proxy | lod0).</summary>
+        public static (int count, long triangles) Build(Transform world, bool on, ICollection<LODGroup> modules = null, bool moduleOn = true)
         {
-            int count = 0; long tris = 0;
+            int count = 0; long tris = 0; Modules = 0; ModuleTris = 0;
             var proxied = new HashSet<Renderer>();
             foreach (var sp0 in world.GetComponentsInChildren<ShadowProxy>(true)) if (sp0.casters != null) foreach (var r in sp0.casters) if (r) proxied.Add(r);
             foreach (var g in world.GetComponentsInChildren<LODGroup>(true))
@@ -26,8 +31,10 @@ namespace Suborned.World
                 if (!Wanted(g.transform, world)) continue;
                 var lods = g.GetLODs();
                 if (lods.Length < 2) continue;
+                bool module = modules != null && modules.Contains(g);
+                int level = module ? Mathf.Min(2, lods.Length - 1) : 1;
                 Renderer src = null; Mesh mesh = null;
-                foreach (var r in lods[1].renderers)
+                foreach (var r in lods[level].renderers)
                     if (r && r.TryGetComponent<MeshFilter>(out var f) && f.sharedMesh) { src = r; mesh = f.sharedMesh; break; }
                 if (!src || proxied.Contains(src)) continue;
                 var casters = new List<Renderer>(); var was = new List<ShadowCastingMode>();
@@ -45,10 +52,11 @@ namespace Suborned.World
                 p.reflectionProbeUsage = ReflectionProbeUsage.Off;
                 p.renderingLayerMask = src.renderingLayerMask;
                 var sp = go.AddComponent<ShadowProxy>();
-                sp.proxy = p; sp.casters = casters.ToArray(); sp.was = was.ToArray();
-                sp.Use(on);
+                sp.proxy = p; sp.casters = casters.ToArray(); sp.was = was.ToArray(); sp.module = module;
+                sp.Use(module ? moduleOn : on);
                 count++;
-                for (int s = 0; s < mesh.subMeshCount; s++) tris += mesh.GetIndexCount(s) / 3;
+                long t = 0; for (int s = 0; s < mesh.subMeshCount; s++) t += mesh.GetIndexCount(s) / 3;
+                tris += t; if (module) { Modules++; ModuleTris += t; }
             }
             return (count, tris);
         }
