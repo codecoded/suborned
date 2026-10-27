@@ -66,10 +66,34 @@ def main():
     V = (V - (lo + hi) / 2) @ R.T
     s = P['size']['lengthM'] / (V[:, 1].max() - V[:, 1].min()); V *= s
     # grip point
-    G = P['grip']; L0, L1 = V[:, 1].min(), V[:, 1].max(); length = L1 - L0
+    G = P['gripPoint']; L0, L1 = V[:, 1].min(), V[:, 1].max(); length = L1 - L0
     slide_bottom = V[V[:, 1] > L1 - G['muzzleProbeFrac'] * length][:, 2].min()
     grip = V[(V[:, 1] < L0 + G['rearFrac'] * length) & (V[:, 2] < slide_bottom)]
-    gh = slide_bottom - grip[:, 2].min(); zg = slide_bottom - G['belowSlideFrac'] * gh
+    gh = slide_bottom - grip[:, 2].min()
+    fit_rep = None
+    if P.get('gripFit') and P.get('class'):
+        # the grip region fitted to the class's grip block (props.json spec.classes.<class>.grip, gripFit): the grip's centre line from the
+        # sections below the trigger guard, each vertex below the slide within the grip's half-depth (+ guardClearM) of it scaled about it,
+        # depth and width, blended in over blendM below the slide; the guard, slide and muzzle stay as designed
+        F = P['gripFit']; B = D['spec']['classes'][P['class']]['grip']; rear = V[:, 1] < L0 + G['rearFrac'] * length
+        lows = np.linspace(slide_bottom - 0.95 * gh, slide_bottom - 0.6 * gh, 8); cen = []
+        for zz in lows:
+            sc_ = V[rear & (np.abs(V[:, 2] - zz) < 0.003)]
+            if len(sc_) >= 3: cen.append((zz, (sc_[:, 1].min() + sc_[:, 1].max()) / 2, (sc_[:, 0].min() + sc_[:, 0].max()) / 2, sc_[:, 1].max() - sc_[:, 1].min(), sc_[:, 0].max() - sc_[:, 0].min()))
+        cen = np.array(cen); ky = np.polyfit(cen[:, 0], cen[:, 1], 1); kx = np.polyfit(cen[:, 0], cen[:, 2], 1)
+        zm = slide_bottom - 0.55 * gh; sm = V[rear & (np.abs(V[:, 2] - zm) < 0.003)]
+        cy, cx = np.polyval(ky, zm), np.polyval(kx, zm)
+        dep = float(np.ptp(sm[:, 1])); wid = float(np.ptp(sm[:, 0])); sd = B['depthM'] / dep; sw = B['widthM'] / wid
+        half = float(np.median(cen[:, 3])) / 2 + F['guardClearM']
+        for i in np.nonzero(V[:, 2] < slide_bottom)[0]:
+            z = V[i, 2]; c_y = np.polyval(ky, z); c_x = np.polyval(kx, z)
+            if abs(V[i, 1] - c_y) > half: continue                                 # the trigger guard and anything forward of the grip
+            w = min(1.0, (slide_bottom - z) / F['blendM'])
+            V[i, 1] = c_y + (V[i, 1] - c_y) * (1 + (sd - 1) * w); V[i, 0] = c_x + (V[i, 0] - c_x) * (1 + (sw - 1) * w)
+        sm2 = V[rear & (np.abs(V[:, 2] - zm) < 0.003)]
+        fit_rep = {'before': {'depthM': round(dep, 4), 'widthM': round(wid, 4)}, 'after': {'depthM': round(float(np.ptp(sm2[:, 1])), 4), 'widthM': round(float(np.ptp(sm2[:, 0])), 4)}, 'heightM': round(float(gh), 4), 'block': B}
+        grip = V[(V[:, 1] < L0 + G['rearFrac'] * length) & (V[:, 2] < slide_bottom)]
+    zg = slide_bottom - G['belowSlideFrac'] * gh
     sec = grip[np.abs(grip[:, 2] - zg) < 0.004]
     origin = np.array([(sec[:, 0].min() + sec[:, 0].max()) / 2, (sec[:, 1].min() + sec[:, 1].max()) / 2, zg])
     V -= origin
@@ -121,6 +145,16 @@ def main():
                              mesh_smooth_type='FACE', use_tspace=False, path_mode='STRIP', embed_textures=False)
     open(fbx + '.meta', 'w').write(um.prop_meta(f'{REL}/{PID}.fbx', {PID: mrel}))
     V = verts(o); dims = (V.max(0) - V.min(0))
+    # sockets (props.json spec.sockets) in the prop's Unity frame: grip (the pivot), muzzle (the front's centre), support (attach.support.rule)
+    Vu = np.stack([-V[:, 0], V[:, 2], -V[:, 1]], 1); fr = Vu[Vu[:, 2] > Vu[:, 2].max() - 0.004]
+    sockets = {'grip': {'position': [0, 0, 0], 'rotation': [0, 0, 0, 1]},
+               'muzzle': {'position': [round(float((fr[:, 0].min() + fr[:, 0].max()) / 2), 4), round(float((fr[:, 1].min() + fr[:, 1].max()) / 2), 4), round(float(Vu[:, 2].max()), 4)], 'rotation': [0, 0, 0, 1]}}
+    if P.get('attach', {}).get('support'):
+        sys.path.append(FIG); import avatar as av
+        SR = P['attach']['support']['rule']; sbu = slide_bottom - origin[2]; level = sbu - 0.55 * gh
+        sec = Vu[(np.abs(Vu[:, 1] - level) < 0.006) & (Vu[:, 1] < sbu)]
+        q = av.look_rotation(av.norm(np.array(SR['longAxis'], float)), np.array(SR['thumb'], float))
+        sockets['support'] = {'position': [round(float(sec[:, 0].min() - SR['fingerThicknessM']), 4), round(float(level), 4), round(float(sec[:, 2].max() - SR['frontInsetM']), 4)], 'rotation': [round(float(x), 6) for x in q]}
     # the written FBX read back in Unity's frame (avatar.py's reader: x mirrored, file units): the bulk must lie forward of the grip (+Z) and the slide above it (+Y)
     sys.path.append(FIG); import avatar as av
     top, _ = av._fbx_parser().parse(fbx); geo = [e for e in next(e for e in top.elems if e.id == b'Objects').elems if e.id == b'Geometry'][0]
@@ -134,7 +168,7 @@ def main():
            'axes': {'barrelAxisInSource': 'xy'[bar], 'muzzleSign': muzzle_sign, 'unity': '+Z barrel, +Y slide, origin the grip point'},
            'grip': {'slideBottomM': round(float(slide_bottom - origin[2]), 4), 'gripHeightM': round(float(gh), 4), 'sectionVerts': int(len(sec))},
            'texPx': px, 'textures': {k: {'file': v[0], 'sha256': v[1]} for k, v in tex.items()}, 'orm': orm_stats,
-           'unityFrame': unity_check, 'fbx': f'{PID}.fbx', 'fbxSha256': hashlib.sha256(open(fbx, 'rb').read()).hexdigest()}
+           'unityFrame': unity_check, 'gripFit': fit_rep, 'sockets': sockets, 'fbx': f'{PID}.fbx', 'fbxSha256': hashlib.sha256(open(fbx, 'rb').read()).hexdigest()}
     json.dump(rep, open(os.path.join(OUT, f'{PID}.json'), 'w'), indent=1, sort_keys=True)
     bpy.ops.wm.save_as_mainfile(filepath=os.path.join(L.ensure(os.path.join(OUT, '..', 'work')), f'{PID}.blend'))
     print('PROP', json.dumps(rep))

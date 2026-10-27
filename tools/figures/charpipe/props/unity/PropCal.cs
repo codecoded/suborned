@@ -70,7 +70,19 @@ public static class PropCal {
                     float reach = (tgt - B_(HumanBodyBones.LeftUpperArm).position).magnitude;
                     sup = $", \"supportReachRatio\": {reach / arm:0.###}, \"supportFromClipHandM\": {(tgt - la.position).magnitude:0.###}";
                 }
-                rows.Add($"   {{\"frame\": {k}, \"pitchDeg\": {pitch:0.##}, \"yawToAimDeg\": {yaw:0.##}, \"ownOffsetDegFromOne\": {own:0.##}{sup}}}");
+                string wr = "";
+                if (System.Array.IndexOf(a, "-wrap") >= 0) {   // the clip's own closed fingers round the grip: each chain (knuckle, joints, tip) turned about the grip line (the weapon's +Y through its pivot)
+                    var gp = at.TransformPoint(lp); var gax = (at.rotation * one) * Vector3.up; var parts = new List<string>();
+                    foreach (var (fn, b1) in new[] { ("Index", HumanBodyBones.RightIndexProximal), ("Middle", HumanBodyBones.RightMiddleProximal), ("Ring", HumanBodyBones.RightRingProximal), ("Little", HumanBodyBones.RightLittleProximal) }) {
+                        var t1 = an.GetBoneTransform(b1); if (!t1) continue; var t2 = an.GetBoneTransform(b1 + 1); var t3 = an.GetBoneTransform(b1 + 2);
+                        var tip = t3.childCount > 0 ? t3.GetChild(0).position : t3.position + (t3.position - t2.position);
+                        var pts = new[] { t1.position, t2.position, t3.position, tip }; float tot = 0;
+                        for (int q = 0; q < 3; q++) { var u = Vector3.ProjectOnPlane(pts[q] - gp, gax); var w = Vector3.ProjectOnPlane(pts[q + 1] - gp, gax); tot += Vector3.SignedAngle(u, w, gax); }
+                        parts.Add($"\"{fn}\": {Mathf.Abs(tot):0.#}");
+                    }
+                    wr = $", \"wrapDeg\": {{{string.Join(", ", parts)}}}";
+                }
+                rows.Add($"   {{\"frame\": {k}, \"pitchDeg\": {pitch:0.##}, \"yawToAimDeg\": {yaw:0.##}, \"ownOffsetDegFromOne\": {own:0.##}{sup}{wr}}}");
             }
             sb.Append($"  \"{f}\": [\n{string.Join(",\n", rows)}\n  ]{(fi < keep.Count - 1 ? "," : "")}\n"); fi++;
             g.Destroy(); Object.DestroyImmediate(go);

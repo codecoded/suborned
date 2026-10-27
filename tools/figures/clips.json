@@ -699,6 +699,116 @@
    "loco": false,
    "feet": true,
    "use": "additive pose: the pinned man's head comes up as the pin runs out; the host drives its layer weight 0 to 1 from 1.2 s after the last round, over 0.6 s, back to 0 at the pin's end (brief 039 B)"
+  },
+  {
+   "name": "pistol_idle",
+   "src": "Anim/mixamo_library/Pistol_Idle__c9c6b74c.fbx",
+   "loop": true,
+   "use": "pistol: armed idle at low ready, both hands on the gun (12 cm apart), right fingers closed (middle 163 deg)",
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "pistol_draw",
+   "src": "Anim/mixamo_library/Drawing_Gun__c9c83441.fbx",
+   "loop": false,
+   "use": "pistol: the draw (the game's draw clip)",
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "pistol_aim",
+   "src": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "loop": true,
+   "use": "pistol: aim hold, two-handed cup (hands 4 cm apart), right fingers closed (middle 184, ring 204 deg): the pistol pack's stance, the same grip as its walk and run",
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "pistol_fire",
+   "src": "Anim/mixamo_library/Shooting_Pistol__c9c81565.fbx",
+   "loop": false,
+   "use": "pistol: fire, two-handed (8 cm), right fingers closed (193/196 deg)",
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "pistol_walk",
+   "src": "Anim/mixamo_library/Pistol_Walk__c9cdb8f0.fbx",
+   "loop": true,
+   "use": "pistol: walk armed, aimed, in place; the pack's grip",
+   "loco": true,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "pistol_run",
+   "src": "Anim/mixamo_library/Pistol_Run__c9cdb75a.fbx",
+   "loop": true,
+   "use": "pistol: run armed, aimed, in place; the pack's grip",
+   "loco": true,
+   "feet": true,
+   "set": "pistol",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "rifle_idle",
+   "src": "Anim/mixamo_library/Rifle_Idle__c9cd4f94.fbx",
+   "loop": true,
+   "use": "rifle (carbine): idle at low ready, both hands closed on the weapon (right 183, left 168 deg), hands 29 cm apart (grip to handguard)",
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "rifle_aim",
+   "src": "Anim/mixamo_library/Rifle_Aiming_Idle__c9c84492.fbx",
+   "loop": true,
+   "use": "rifle: aim hold, shouldered, right 181/208, left 136 deg, hands 29 cm apart, in place",
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "rifle_fire",
+   "src": "Anim/mixamo_library/Firing_Rifle__c9c863fe.fbx",
+   "loop": false,
+   "use": "rifle: fire from the aim (the same pack and grip as rifle_aim and rifle_run)",
+   "loco": false,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "rifle_walk",
+   "src": "Anim/mixamo_library/Walk_With_Rifle__c9cc1182.fbx",
+   "loop": true,
+   "use": "rifle: walk with the rifle at low ready, both hands closed (183/183, left 147), in place",
+   "loco": true,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "rifle_run",
+   "src": "Anim/mixamo_library/Rifle_Run__c9c814a0.fbx",
+   "loop": true,
+   "use": "rifle: run, the aim pack's grip (181/208, left 136), in place",
+   "loco": true,
+   "feet": true,
+   "set": "rifle",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
   }
  ]
 }

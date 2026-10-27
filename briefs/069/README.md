@@ -183,3 +183,11 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - Mixamo weapon clip sets (pistol, rifle);
   - Unity's Animation Rigging (Multi-Aim, Two Bone IK, hand-pose override layers) in place of the custom job.
 - **The Enforcer's carbine:** Sky's hand-built model (`out/enforcer-lods-v1/`, LODs 2,499 / 997 / 400, 2K / 1K / 512 PBR) is brought in at **0.9 m** (Sky; the source is 1.594 m), with pivot at the grip, axes to spec, the ORM repacked for URP, and support and shoulder sockets.
+- **Weapon spec round (Forma):**
+  - **Spec in data:** Unity-frame axes, pivot at the grip, handgun grip block 5×3×10 cm (`research/weapon-grip-spec.md`), and sockets mapped to Animation Rigging constraints.
+  - **Pistol:** grip slimmed by rule to 5.0×3.0.
+  - **Mixamo weapon clip sets** for pistol and rifle, chosen by a survey of closed-hand clips (`props/weapon_clips_survey.json`), built into `out/people-models`, not installed in the game.
+  - **Carbine:** at 0.9 m, LODs as delivered, URP-repacked maps (clearcoat and anisotropy lost; coat shows as smoothness).
+  - **Gates still fail:** the fitted fingers bend at the web, so the closed hand's loop (about 2 cm inside) is smaller than the grip.
+  - **Also open:** pistol walk and run speeds read 2.5 and 4.4 m/s; the carbine's stock (grip to butt) is only 0.18 m at 0.9 m against a real carbine's about 0.33–0.36 m length of pull.
+- **Animation Rigging (Latch, scratch):** package 6.6.0. Multi-Parent, Multi-Aim and Two Bone IK put the barrel within 0.27° of the target and both hands on their sockets, deterministically. It doesn't work with Optimize Game Objects (Unity staff confirm). Standard split: the crowd stays optimised; the cell runs unoptimised with the rig; guards, rivals and security deoptimise on draw and re-optimise on holster (switch being proven).
