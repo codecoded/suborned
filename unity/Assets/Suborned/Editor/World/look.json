@@ -401,6 +401,36 @@
       "value": 1,
       "smoothness": 0.5
     },
+    "accent_tangerine": {
+      "detail": "enamel",
+      "palette": "harbour.accent_tangerine",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_plum": {
+      "detail": "enamel",
+      "palette": "harbour.accent_plum",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_cerulean": {
+      "detail": "enamel",
+      "palette": "harbour.accent_cerulean",
+      "value": 1,
+      "smoothness": 0.55
+    },
+    "accent_jade": {
+      "detail": "enamel",
+      "palette": "harbour.accent_jade",
+      "value": 1,
+      "smoothness": 0.55
+    },
+    "accent_lime": {
+      "detail": "enamel",
+      "palette": "harbour.accent_lime",
+      "value": 1,
+      "smoothness": 0.45
+    },
     "canvas": {
       "detail": "limestone",
       "palette": "harbour.canvas",
@@ -713,6 +743,21 @@
     },
     "harbour.accent_red": {
       "hex": "#c42a1f"
+    },
+    "harbour.accent_tangerine": {
+      "hex": "#f07a28"
+    },
+    "harbour.accent_plum": {
+      "hex": "#7a3b78"
+    },
+    "harbour.accent_cerulean": {
+      "hex": "#1f8fc4"
+    },
+    "harbour.accent_jade": {
+      "hex": "#1e9c78"
+    },
+    "harbour.accent_lime": {
+      "hex": "#b5d334"
     },
     "harbour.canvas": {
       "hex": "#f7f4ec"

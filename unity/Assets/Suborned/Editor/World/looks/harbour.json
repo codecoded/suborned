@@ -309,6 +309,31 @@
       "palette": "harbour.accent_cobalt",
       "value": 1,
       "smoothness": 0.5
+    },
+    "accent_tangerine": {
+      "palette": "harbour.accent_tangerine",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_plum": {
+      "palette": "harbour.accent_plum",
+      "value": 1,
+      "smoothness": 0.5
+    },
+    "accent_cerulean": {
+      "palette": "harbour.accent_cerulean",
+      "value": 1,
+      "smoothness": 0.55
+    },
+    "accent_jade": {
+      "palette": "harbour.accent_jade",
+      "value": 1,
+      "smoothness": 0.55
+    },
+    "accent_lime": {
+      "palette": "harbour.accent_lime",
+      "value": 1,
+      "smoothness": 0.45
     }
   },
   "sky": {
@@ -520,6 +545,21 @@
     },
     "harbour.accent_cobalt": {
       "hex": "#2f84e8"
+    },
+    "harbour.accent_tangerine": {
+      "hex": "#f07a28"
+    },
+    "harbour.accent_plum": {
+      "hex": "#7a3b78"
+    },
+    "harbour.accent_cerulean": {
+      "hex": "#1f8fc4"
+    },
+    "harbour.accent_jade": {
+      "hex": "#1e9c78"
+    },
+    "harbour.accent_lime": {
+      "hex": "#b5d334"
     }
   }
 }

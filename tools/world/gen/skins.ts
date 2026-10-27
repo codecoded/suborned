@@ -18,7 +18,7 @@ export const SKIN = {
   bay: 6, glassShare: 0.55, maxPane: 4, sill: 0.9, head: 2.6, reveal: 0.35, mullion: 1.3, frame: 0.45,
   porthole: { d: 0.9, ring: 0.1, perBay: 2 }, balcony: { door: 1.8, doorH: 2.4 }, minFace: 4, cap: 0.9,
 } as const;
-/** §2 accent roles (look.json `accent_*` surfaces, grammar round 3; brief 072-G adds red, royal and cobalt): the weights are colour.ts ACCENT_ROLES (gold is the trim). */
+/** §2 accent roles (look.json `accent_*` surfaces, grammar round 3; brief 072-G adds red, royal and cobalt; the second push tangerine, plum, cerulean, jade and lime): the weights are colour.ts ACCENT_ROLES (gold is the trim). */
 const ACCENTS = ACCENT_ROLES;
 const FAMILIES: Record<string, [Skin['family'], number][]> = {
   residential: [['balcony', 4], ['ribbon', 3], ['porthole', 2]], commercial: [['ribbon', 5], ['porthole', 2]], mixed: [['ribbon', 3], ['balcony', 2], ['porthole', 2]],

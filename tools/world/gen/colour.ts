@@ -17,8 +17,11 @@ import { SHOP_PIECE } from './faces';
 import type { BaseSkin } from './skins';
 
 /** §2 accent roles and weights (look.json surfaces); gold is the trim on every building, never its accent. Brief 072-G (Sky, 2026-10-27: "more reds / blues allowed as well"):
- *  enamel red, royal and cobalt join (reds coral + red + flamingo 36, blues royal + cobalt + turquoise 30, teal 24, mint and peach 10); was teal 35, coral 20, turquoise 15, mint 10, flamingo 10, peach 10. */
-export const ACCENT_ROLES: [string, number][] = [['accent_teal', 24], ['accent_coral', 18], ['accent_red', 12], ['accent_royal', 12], ['accent_turquoise', 10], ['accent_cobalt', 8], ['accent_mint', 6], ['accent_flamingo', 6], ['accent_peach', 4]];
+ *  enamel red, royal and cobalt join (reds coral + red + flamingo 36, blues royal + cobalt + turquoise 30, teal 24, mint and peach 10); was teal 35, coral 20, turquoise 15, mint 10, flamingo 10, peach 10.
+ *  Brief 072, second push (Sky, 2026-10-28: "yeah, I more colors needed"): tangerine, plum, cerulean, jade (teal-green) and lime join, so 14 roles share the district and
+ *  neighbours (skins.ts `fresh`) draw from a wider set: reds 27 + tangerine 9, blues 22 + cerulean 7, teal 13, plum 6, greens (mint, jade, lime) 13, peach 3. */
+export const ACCENT_ROLES: [string, number][] = [['accent_teal', 13], ['accent_coral', 12], ['accent_red', 9], ['accent_royal', 9], ['accent_tangerine', 9], ['accent_turquoise', 7], ['accent_cerulean', 7],
+  ['accent_cobalt', 6], ['accent_flamingo', 6], ['accent_plum', 6], ['accent_mint', 5], ['accent_jade', 5], ['accent_peach', 3], ['accent_lime', 3]];
 export const GOLD = 'accent_gold', CANVAS = 'canvas';
 /** The only fabric colours (accent roles + canvas). Red is free for the world since 2026-10-16 (signals draw unlit with their own cue), so the accent red is fabric too. */
 export const FABRIC_SURFACES = new Set([...ACCENT_ROLES.map(r => r[0]), GOLD, CANVAS]);
@@ -35,10 +38,10 @@ export const COLOUR = {
   /** §2a item 3a (Vela, round 3 wrap-up): a w x h accent panel behind every porthole, centred on it, its chrome ring proud of it; the porthole centre is the
    *  storey's sill-to-head midpoint (row + 1.75), under an eave at most `d/2 + ring + 0.1` below the top (ProcSkin.Overlay). */
   portholePanel: { w: 1.5, h: 1.5 },
-  fin: { w: 1.2, d: 0.6, bead: 0.08, roles: ['accent_coral', 'accent_teal', 'accent_red', 'accent_royal'] as const, minH: 3 },
+  fin: { w: 1.2, d: 0.6, bead: 0.08, roles: ['accent_coral', 'accent_teal', 'accent_red', 'accent_royal', 'accent_tangerine', 'accent_plum', 'accent_cerulean', 'accent_jade'] as const, minH: 3 },
   awning: { w: 2.4, d: 0.9, fall: 0.45, valance: 0.3, stripe: 0.4, share: 1 / 3, every: 2, at: 3.25 }, // `at`: back edge above the storey floor (head 2.6)
   banner: { w: 1.2, h: 6, border: 0.12, arm: 0.6, cornerShare: 1 / 3, over: 0.4 }, // `over`: bottom this far above the deck line
-  flag: { h: 8, pennant: [1.2, 1.8] as [number, number], pitch: 9, roles: ['accent_coral', 'accent_teal', 'accent_gold', 'accent_flamingo', 'accent_red', 'accent_royal'], r: 0.25 },
+  flag: { h: 8, pennant: [1.2, 1.8] as [number, number], pitch: 9, roles: ['accent_coral', 'accent_teal', 'accent_gold', 'accent_flamingo', 'accent_red', 'accent_royal', 'accent_tangerine', 'accent_cerulean', 'accent_lime', 'accent_plum'], r: 0.25 },
 };
 
 type Span = [number, number];
