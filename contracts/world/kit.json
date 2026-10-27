@@ -71717,7 +71717,7 @@
    "front": "+Z",
    "tris": 34,
    "materials": [
-    "DK_Brass_Civic",
+    "DK_Enamel_Charcoal",
     "DK_Cross_Light"
    ],
    "lods": [
@@ -71733,21 +71733,21 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_LightBar_4.fbx",
-     "sha256": "53feb4a8502b3f4506dbc3a4736d6f85bcc8b19deac0207c9a2ca4eb791f93cb",
+     "sha256": "fd4f49ada80ef8ce50417ef2bae6b55585d6993a79f4c1626044c6fbea644a61",
      "bytes": 16700
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Brass_Civic.mat",
-     "sha256": "b156b8c4533f44f780616cbcf6ee76239f4f61d81d1e089b322f01203dc3dbdc",
-     "bytes": 4042
+     "path": "Materials/DK_Enamel_Charcoal.mat",
+     "sha256": "4f538c712a86dec1250e31fee5c04576ca35c6ece211b326220f7057e560086a",
+     "bytes": 3982
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Brass_Civic.mat.meta",
-     "sha256": "89334b35085ac8266d87eac2eb45072b32c7ab791dfb1221b16b13622f32fb58",
+     "path": "Materials/DK_Enamel_Charcoal.mat.meta",
+     "sha256": "ce702950c476b32bd295b298169282db67ad3c1dbfe1a6f85b698a657d1a906b",
      "bytes": 188
     },
     {
@@ -71767,36 +71767,36 @@
     {
      "root": "generated",
      "role": "texture",
-     "path": "Textures/surface_metal_detail_v1.png",
-     "sha256": "b4e253548eb27ad5b9c6541e73e8a3ec743deef73aed90c8b25a491a51cecc18",
-     "bytes": 491305
+     "path": "Textures/surface_enamel_detail_v1.png",
+     "sha256": "a407da57c4a52fc85b1946b9f33f91f2ae1a1c5ff3d31fd2bebcc210d60fd147",
+     "bytes": 474006
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/surface_metal_detail_v1.png.meta",
-     "sha256": "1e8a51bb2ee18bdcdf08c2cc7cc9cb9c38873a5bf40b59d5971300f590bbe376",
+     "path": "Textures/surface_enamel_detail_v1.png.meta",
+     "sha256": "30eb7058ac45ff6a9f483843d9f9118b13b98ab96576ef30bd3233c6b64dd0d6",
      "bytes": 2718
     },
     {
      "root": "generated",
      "role": "texture",
-     "path": "Textures/surface_metal_detail_v1_normal.png",
-     "sha256": "5848fec158580a1bb23686e7112e59ee09bee832cc86f8e1a11532836f0a3891",
-     "bytes": 1613297
+     "path": "Textures/surface_enamel_detail_v1_normal.png",
+     "sha256": "45e4c502424bb43719e315020ffb03d7ac8dd5fb85658f978cd099d8d7d6af45",
+     "bytes": 1964610
     },
     {
      "root": "generated",
      "role": "texture-meta",
-     "path": "Textures/surface_metal_detail_v1_normal.png.meta",
-     "sha256": "818ae432cca438c26b951fcf6aef34251cd221041a400a710e920a89f4de6d42",
+     "path": "Textures/surface_enamel_detail_v1_normal.png.meta",
+     "sha256": "ff1f0ca0ac42c65a890f56d5f8aee70ad346771c991ed17c4174132622d09279",
      "bytes": 2718
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Ground/DK_LightBar_4_L1.fbx",
-     "sha256": "8ed877917c4edfcdb476f79103f68d1d9a72d89a07d32cc8056ac94ca40a181e",
+     "sha256": "48e0fb020cbf77494b7bb67b271ebb48bae67c8ed99710d6da98236c210bc04a",
      "bytes": 16284
     }
    ],
@@ -74418,7 +74418,7 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Ground/DK_PaveEdge_Pinstripe_6m.fbx",
-     "sha256": "f1b37d723c0f1324f46f8c5a8f04ec6aa380da74ef755dfe40bf7916d6ef9867",
+     "sha256": "633a51e8c88a20ffd1c36bb92acc2e0dc53915eecae60e4d0a1bd7fddc52ebf4",
      "bytes": 14828
     },
     {

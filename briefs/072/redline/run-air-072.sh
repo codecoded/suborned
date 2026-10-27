@@ -1,14 +1,17 @@
 #!/bin/zsh
-# The Suborned on the MacBook Air: the every-face A/B (Redline, brief 072-D, 2026-10-27). SPEC: NEEDS SKY'S OK; NOT RUN ANYWHERE.
-# Question: what do DecoKit on every face (and, once its switch exists, 072-F's surface detail) cost at play zoom, warm, at 1920x1080 (GDD §11's bar), and does the opening fit
-# 13.0 ms mean / 16.7 ms p99 (brief 064 A5) with SSAO off for the play camera? Verdict rules: briefs/072/redline/plan.md 4.3 and 5.
-# Needs a DEVELOPMENT build (the perf harness runs only there) with every face built in. Latch's switches are in (db30a0af: PerfStop.yaw,
-# PerfVariant.everyFace / moduleShadows, the tplong row `variant`); phase 2 (briefs/072/redline/phase2.md section 5) holds this run until the
-# 072-F textured build and 064 A3's no-look items are in the same player, so one Air sitting answers all three. Base: briefs/064/air-0122/soak-air.sh (controls, cold
-# gate, traces) and run-air.sh (rows, sizes). Kit folder beside this script: perf-072.resolved.json (PerfBuild's resolved plan),
-# tplong-072.resolved.json (rows with the player's paths), and "The Suborned.app" in ~/Downloads (or $1).
+# The Suborned on the MacBook Air: brief 072's one sitting (Redline, 072-D, 2026-10-27; phase 3 2026-10-28). SPEC: NEEDS SKY'S OK; NOT RUN ANYWHERE.
+# PRECONDITION (Sky 2026-10-27, "yeah wiat"): ask for this only once ONE development player holds 064 A3's no-look items 1 (SSAO off for the play
+# camera), 5 (depth texture by request, the sun flare off at play) and 7 (the signals overlay camera as a pass), every face with the holed L2 shadow
+# copies (F1, a5234fdb), 072-F with its surfaceDetail switch (79283d9f), 072-G, and after the Studio CPU check (phase2.md F5) has passed.
+# What it measures, warm, uncapped, 1920x1080 (GDD §11's bar), in that player: the as-shipped warm mean and p99 at the opening against 13.0 / 16.7 ms
+# (brief 064 A5; the first warm 1080 number, T0 included); every face's price (every-flat - today); 072-F's fetch price (every - every-flat; the
+# switch is a global float, so the extra variants' SetPass and interpolators are on both sides and not in this delta); A3 item 1's saving
+# (every-ssao - every, only if item 1 lets the perf switch win); the same at street level (tp-street, tp-worst; the holed L2s draw there); and the
+# missed-vblank rate as shipped (capped072). Verdict rules: briefs/072/redline/plan.md 4.3, phase2.md 4.3 and 5, phase3.md 4.
+# Base: briefs/064/air-0122/soak-air.sh (controls, cold gate, traces) and run-air.sh (rows, sizes). Kit folder beside this script:
+# perf-072.resolved.json (PerfBuild's resolved plan), tplong-072.resolved.json (rows with the player's paths), and "The Suborned.app" in ~/Downloads (or $1).
 # Copy to the Air by scp (sky@Skys-MacBook-Air.local, -o HostKeyAlias=skys-macbook-air-1), run over SSH; fetch the zip by scp. Not Taildrop.
-# Before: plug in, battery full, Low Power Mode off, every app quit, lid open on a hard desk, the Air left alone (~35 min).
+# Before: plug in, battery full, Low Power Mode off, every app quit, lid open on a hard desk, the Air left alone (~40 min).
 # Optional: ROOM_C=22 ./run-air-072.sh   (macmon, if Sky has allowed `brew install macmon`, traces the GPU clock; else thermal state only)
 set -u
 SIZE=1920x1080
@@ -17,6 +20,10 @@ APPDIR=${1:-$HOME/Downloads}
 APP="$APPDIR/The Suborned.app"; EXE="$APP/Contents/MacOS/The Suborned"
 [[ -x $EXE ]] || { echo "no app at $APP: unzip the development build there first (ditto -x -k <zip> ~/Downloads)"; exit 1; }
 for f in perf-072.resolved.json tplong-072.resolved.json; do [[ -f $KIT/$f ]] || { echo "kit file $f missing beside this script"; exit 1; }; done
+# JsonUtility drops unknown keys: an editor or player without surfaceDetail would run the texture A/B as a build against itself. Every variant of the
+# resolved plan and every tplong row must carry it (at least 4 variants, 8 rows), or nothing runs.
+nv=$(grep -c '"surfaceDetail"' $KIT/perf-072.resolved.json); nr=$(grep -c '"surfaceDetail"' $KIT/tplong-072.resolved.json)
+(( nv >= 4 && nr >= 8 )) || { echo "resolved kit lacks surfaceDetail (plan $nv of >= 4, tplong $nr of 8): rebuild the kit from a player and editor that have it (79283d9f)"; exit 1; }
 OUT=$HOME/Downloads/air-072-$(date +%Y%m%d-%H%M); mkdir -p $OUT/perf $OUT/tplong
 LOG=$OUT/machine.log
 xattr -dr com.apple.quarantine "$APP" 2>/dev/null
@@ -48,11 +55,14 @@ for i in {1..40}; do
   sleep 30
 done
 stamp idle-end
-echo "Running the every-face A/B (~35 min). The game opens and closes on its own; don't touch the Air."
-# 1. the perf harness: its own warm-up to a plateau (600-900 s), then ab072 (6 stops x 4 variants x 3 rotated repeats, +1) and capped072
+echo "Running brief 072's sitting (~40 min). The game opens and closes on its own; don't touch the Air."
+# 1. the perf harness: its own warm-up to a plateau (600-900 s), then ab072 (6 stops x 4 variants: today, every-flat, every, every-ssao; 3 rotated repeats, +1) and capped072 (today, every)
 sed -e "s#\"width\": *[0-9]*#\"width\": ${SIZE%x*}#" -e "s#\"height\": *[0-9]*#\"height\": ${SIZE#*x}#" $KIT/perf-072.resolved.json > $OUT/perf-072.resolved.json
 stamp perf-start; "$EXE" -perf $OUT/perf-072.resolved.json -perfOut $OUT/perf/perf-072.result.json -perfShots $OUT/perf/shots -logFile $OUT/perf/player.log >/dev/null 2>&1; echo "perf rc $?" | tee -a $LOG; stamp perf-end; atsize perf $OUT/perf/perf-072.result.json
-# 2. warm straight after: the tp-long rows, today and every interleaved, uncapped
+# the player echoes its PerfVariant whole in the result: no surfaceDetail there = the player dropped it, so the texture rows below would be void too
+grep -q '"surfaceDetail": *"off"' $OUT/perf/perf-072.result.json || { echo "STOP: the player's result has no surfaceDetail off: this player predates the switch; the run is void" | tee -a $LOG; exit 1; }
+grep -o '"ssaoAsBuilt": *"[^"]*"' $OUT/perf/perf-072.result.json | tee -a $LOG
+# 2. warm straight after: the tp-long rows, today / every / every-flat interleaved, uncapped
 AT=(-e "s/\"w\": *[0-9][0-9]*/\"w\": ${SIZE%x*}/" -e "s/\"h\": *[0-9][0-9]*/\"h\": ${SIZE#*x}/")
 sed -e "s#/Users/sky/Projects/suborned/out/batch/tplong#$OUT/tplong#" $AT $KIT/tplong-072.resolved.json > $OUT/tplong-072.resolved.json
 stamp tplong-start; "$EXE" -tplong $OUT/tplong-072.resolved.json $OUT/tplong -novsync -logFile $OUT/tplong/player.log >/dev/null 2>&1; echo "tplong rc $?" | tee -a $LOG; stamp tplong-end; atsize tplong $OUT/tplong/tplong.json

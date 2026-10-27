@@ -2,6 +2,8 @@
 5 cm wide on the bar, hairlines 3 cm, never a field (SF-21). Faces point up, 3 to 6 mm proud, no sides, nothing below z = 0.
 Brief 061 (Sky, 2026-10-25): LightDotRow_2 / _1 are re-cut without brass (a charcoal enamel seat under each light, UV x in metres along the row); CrossEdgeLine_1/2 and CrossInlayArc_R24_W08 are marked
 retired (their builders stay until Splice has re-cut the export); LightBar_4 is untouched (the A pick has no bar).
+Brief 072-G (Aster's ruling on GDD v0.31.0 §15, "none on the road edge"; brass is #C29A55 now and reads bright): LightBar_4's 5 cm frame is the dot rows' charcoal enamel seat, not brass,
+so no crossing piece in the carriageway carries brass whichever `form` the plan picks.
 
 Bar: LightBar_4 spans the strip (every crossing strip is 4 m wide); its long axis is X, centred, so yaw it to lie across the walking direction; pitch it 1.0 m.
 Dots: rows run along X, centred, in 2 m (4 dots) and 1 m (2 dots) modules at a 0.5 m pitch; end to end they join (no end frame), so any whole metre is a row.
@@ -21,13 +23,13 @@ R0, R1, HL = 2.0, 2.8, 0.03   # arc: inner and outer radius of the seafoam band,
 def bar(s, lod):
     hi = lod == 0
     outer, inner = (rrect(W, DP, 0.14, 2), rrect(W - 2 * F, DP - 2 * F, 0.09, 2)) if hi else (rrect(W, DP, 0, 1), rrect(W - 2 * F, DP - 2 * F, 0, 1))
-    strip(s, outer, inner, BRASS, pal.Brass_Civic, closed=True)
+    strip(s, outer, inner, BRASS, pal.Enamel_Charcoal, closed=True)   # 072-G: the charcoal seat (was DK_Brass_Civic); 6 mm, as before
     flat(s, inner, LIGHT, pal.Cross_Light)
 
 
 @asset("LightBar_4", "Ground", bevel=0.0, near=lambda s: bar(s, 1))
 def light_bar_4(s):
-    """Seafoam light bar 3.90 x 0.34 m in a 5 cm brass frame, 4.00 x 0.44 m overall, flush in the carriageway."""
+    """Seafoam light bar 3.90 x 0.34 m in a 5 cm charcoal enamel frame (072-G: was brass), 4.00 x 0.44 m overall, flush in the carriageway."""
     bar(s, 0)
 
 

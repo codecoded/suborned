@@ -14,7 +14,7 @@ Frame (all four): lying along +X, centred, z 0 = the carriageway top (flush: the
 far kerb). The ribbon is light the way the crossings are: emissive, drawn unlit (DK_Road_Lens); its state (off by day, warm at evening and night: testbed `setLighting`, auto / on / off) is the
 lighting rig's, not the piece's. The pool is a `glow` quad (alpha is what it adds; the fade across it is the shader's, as DK_Cross_Pool).
 
-Surface materials (ground set, textures from road_tex.py out of the testbed's art): DK_Ground_RoadEnamel (#AED0E6, the testbed's powder blue: the carriageway, Sky's pick of 20 Oct), DK_Ground_RoadPearl (#F1EEE6, kerb cap and lozenge stone). Gold of the testbed's kerb crown is DK_Brass_Civic here (brass, not gold, at street level).
+Surface materials (ground set, textures from road_tex.py out of the testbed's art): DK_Ground_RoadEnamel (#AED0E6, the testbed's powder blue: the carriageway, Sky's pick of 20 Oct), DK_Ground_RoadPearl (#F1EEE6, kerb cap and lozenge stone). The testbed's gold kerb crown is gone (brief 061: no brass on the road edge); the pavement pinstripe is retired (072-G).
 This family is not in kit.FAMILIES yet: add "road_ribbon" there to build the pieces (the review script loads it itself).
 """
 
@@ -145,9 +145,9 @@ def shoulder_arc8(s):
     shoulder(s, _arc(8.0, n=14))
 
 
-@asset("PaveEdge_Pinstripe_6m", "Ground", bevel=0.0)
+@asset("PaveEdge_Pinstripe_6m", "Ground", bevel=0.0, retired="072-G (GDD v0.31.0 §15: the lens alone is the road's edge, no brass pinstripe): the piece exists only to carry brass; no finish set lays it since brief 061, and a pearl or chrome copy would be the second parallel stripe Sky turned down (brief 055)")
 def pave_pinstripe(s):
-    """The brass pinstripe in the pavement 0.5 m from the kerb face: 6 m x 0.04 m, lying on the pavement (z 0 = the pavement top), centre line y 0."""
+    """Retired (072-G): the brass pinstripe in the pavement 0.5 m from the kerb face: 6 m x 0.04 m, lying on the pavement (z 0 = the pavement top), centre line y 0."""
     _band(s, _line(6.0, 1), -PINSTRIPE_W / 2, PINSTRIPE_W / 2, Z_PINSTRIPE, pal.Brass_Civic)
 
 

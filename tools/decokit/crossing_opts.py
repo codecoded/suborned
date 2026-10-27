@@ -64,16 +64,16 @@ def light_dot_band3_1(s):
 
 
 def bar_n(s, length, lod):
-    """crossing_flat.bar() at any module length: the 5 cm brass frame, the seafoam lens inside it."""
+    """crossing_flat.bar() at any module length: the 5 cm charcoal enamel frame (072-G: was brass, none on the road edge), the seafoam lens inside it."""
     hi = lod == 0
     outer, inner = (rrect(length, DP, 0.14, 2), rrect(length - 2 * F, DP - 2 * F, 0.09, 2)) if hi else (rrect(length, DP, 0, 1), rrect(length - 2 * F, DP - 2 * F, 0, 1))
-    strip(s, outer, inner, BRASS, pal.Brass_Civic, closed=True)
+    strip(s, outer, inner, BRASS, pal.Enamel_Charcoal, closed=True)
     flat(s, inner, LIGHT, pal.Cross_Light)
 
 
 @asset("LightBar_2", "Ground", bevel=0.0, near=lambda s: bar_n(s, 2.0, 1))
 def light_bar_2(s):
-    """2 m end module of LightBar_4: seafoam lens 1.90 x 0.34 m in the same 5 cm brass frame, 2.00 x 0.44 m overall."""
+    """2 m end module of LightBar_4: seafoam lens 1.90 x 0.34 m in the same 5 cm charcoal frame, 2.00 x 0.44 m overall."""
     bar_n(s, 2.0, 0)
 
 

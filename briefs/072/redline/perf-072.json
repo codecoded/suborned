@@ -1,6 +1,6 @@
 {
-  "note": "Redline 072-D (2026-10-27, phase 2): the every-face A/B plan for the perf harness (-perf, development players only). SPEC, NOT RUN. The fields it uses exist since db30a0af (PerfStop.yaw, PerfVariant.everyFace on | off, moduleShadows proxy | lod0). JsonUtility drops unknown keys silently: never add a variant field the player does not have (072-F's `surfaceDetail` waits for Latch's switch; phase2.md 5). PerfBuild resolves foci and stand-offs with each stop's own yaw. 1920x1080 windowed (GDD §11's bar, Sky 2026-10-26). Verdict rules: plan.md 4.3 and phase2.md 5.",
-  "content": "world + every-face modules; no vehicles or sim (as perf-stops.json)",
+  "note": "Redline 072-D (2026-10-27, phase 3 2026-10-28): the one Air sitting for brief 072 (perf harness, -perf, development players only). SPEC, NOT RUN. PRECONDITION (Sky 2026-10-27, 'yeah wiat'): ask for it only once ONE development player holds 064 A3's no-look items 1 (SSAO off for the play camera), 5 (depth texture by request + the sun flare off at play) and 7 (signals overlay camera as a pass), every face with the holed L2 shadow copies (F1, a5234fdb), 072-F with its surfaceDetail switch, and 072-G; and after the Studio CPU check (phase2 F5) passes. Fields used: PerfStop.yaw, PerfVariant.everyFace on|off, moduleShadows proxy|lod0 (db30a0af), surfaceDetail on|off (79283d9f: a global float, same materials and variants on both sides, so it measures the detail fetches and their ALU, not the extra variants' SetPass or interpolators), ssao. JsonUtility drops unknown keys silently: run-air-072.sh refuses a resolved plan or a player result whose variants lack surfaceDetail. PerfBuild resolves foci and stand-offs with each stop's own yaw. 1920x1080 windowed (GDD §11's bar). Verdict rules: plan.md 4.3, phase2.md 4.3 and 5, phase3.md 4.",
+  "content": "world + every-face modules (holed L2 shadow copies) + 072-F detail + 072-G look, built with 064 A3 items 1, 5, 7; no vehicles or sim (as perf-stops.json)",
   "width": 1920,
   "height": 1080,
   "warmup": {
@@ -12,33 +12,44 @@
   "variants": [
     {
       "name": "today",
-      "why": "the procedural walls and skin as today (modules hidden), everything else as built",
-      "everyFace": "off"
+      "why": "the procedural walls and skin as before 072 (modules hidden) and no surface detail: the nearest this player gets to T0 (072-G's colours and A3 stay in)",
+      "everyFace": "off",
+      "surfaceDetail": "off"
+    },
+    {
+      "name": "every-flat",
+      "why": "every face dressed (modules at L0, cast from their holed L2 proxy, ShadowsOnly shell), surface detail off: every - today = every face's price",
+      "everyFace": "on",
+      "moduleShadows": "proxy",
+      "surfaceDetail": "off"
     },
     {
       "name": "every",
-      "why": "every face dressed: modules at L0 (ortho), cast from their L2 proxy, ShadowsOnly mass shell",
+      "why": "as shipped: every face + 072-F detail on. every - every-flat = 072-F's fetch price; its absolute warm mean at cell-open-30 is the number held against 13.0 ms",
       "everyFace": "on",
-      "moduleShadows": "proxy"
+      "moduleShadows": "proxy",
+      "surfaceDetail": "on"
+    },
+    {
+      "name": "every-ssao",
+      "why": "as shipped with SSAO back on the play camera (depth source, as before A3 item 1): every-ssao - every = item 1's saving, measured. Valid only if Latch's item 1 lets the perf switch win over the play camera's per-camera toggle; otherwise drop this variant before the run",
+      "everyFace": "on",
+      "moduleShadows": "proxy",
+      "surfaceDetail": "on",
+      "ssao": "depth"
     },
     {
       "name": "every-l0cast",
-      "why": "the shadow policy's price: modules cast from their own LODs (L0 at play zoom), no proxies",
+      "why": "not in a pass this sitting (time): the shadow policy's price, modules cast from their own LODs; kept for a Studio check",
       "everyFace": "on",
-      "moduleShadows": "lod0"
-    },
-    {
-      "name": "every-ssaooff",
-      "why": "every + 064 A3 item 1 (SSAO off for the play camera): the projected shipping number at play zoom",
-      "everyFace": "on",
-      "moduleShadows": "proxy",
-      "ssao": "off"
+      "moduleShadows": "lod0",
+      "surfaceDetail": "on"
     }
   ],
   "passes": [
     {
       "name": "ab072",
-      "why": "every face against today, warm, uncapped, interleaved and rotated per stop; the first segment again at the end (noise gate: within 3 %)",
+      "why": "today / every-flat / every / every-ssao, warm, uncapped, interleaved and rotated per stop; the first segment again at the end (noise gate: within 3 %)",
       "vSync": 0,
       "window": "Windowed",
       "settleSeconds": 2,
@@ -55,9 +66,9 @@
       ],
       "variants": [
         "today",
+        "every-flat",
         "every",
-        "every-l0cast",
-        "every-ssaooff"
+        "every-ssao"
       ],
       "repeatFirst": true,
       "shots": true
@@ -129,7 +140,7 @@
     },
     {
       "name": "parade-210",
-      "why": "the most module shadow casters computed at zoom 14 (318 roots, upper-bound model; export v4)",
+      "why": "the most module shadow casters computed at zoom 14 (upper-bound model; export v4); the holed L2 copies weigh most here",
       "focus": [
         212,
         0,

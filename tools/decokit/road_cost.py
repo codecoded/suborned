@@ -13,7 +13,7 @@ from pathlib import Path
 
 P = json.loads(Path(sys.argv[1]).read_text())
 TRIS = {"RoadRibbon_Straight_6m": 16, "RoadShoulder_Straight_6m": 12, "PaveEdge_Pinstripe_6m": 2, "RoadMark_Lozenge": 4, "RoadMark_Seam": 2}
-MATS = {"RoadRibbon_Straight_6m": ["DK_Brass_Civic", "DK_Road_Lens", "DK_Road_Pool"], "RoadShoulder_Straight_6m": ["DK_Ground_RoadPearl", "DK_Chrome"], "PaveEdge_Pinstripe_6m": ["DK_Brass_Civic"], "RoadMark_Lozenge": ["DK_Brass_Civic", "DK_Ground_RoadPearl"], "RoadMark_Seam": ["DK_Chrome"]}
+MATS = {"RoadRibbon_Straight_6m": ["DK_Road_Lens", "DK_Road_Pool"], "RoadShoulder_Straight_6m": ["DK_Ground_RoadPearl", "DK_Road_Chrome"], "PaveEdge_Pinstripe_6m": ["DK_Brass_Civic"], "RoadMark_Lozenge": ["DK_Ground_RoadPearl"], "RoadMark_Seam": ["DK_Road_Chrome"]}  # as built (brief 061 took the ribbon's brass; the pinstripe is retired, 072-G)
 items = P["items"]
 TILE = 64.0
 
