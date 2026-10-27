@@ -8,7 +8,7 @@ legs, built that way). A bone's world turn away from the clip's zero is applied 
 Measured per sampled frame (fit.json thresholds): edge stretch and compression (p99, max), the worst triangles (area ratio, flips), interpenetration
 (covered body vertices that cross their garment's inner wall), self-intersection at the hems, arm-torso and thigh-thigh intersections, prop-body
 intersections. Writes <out>/<name>.metrics.json and frames under <out>/<name>/."""
-import os, sys, json, math, time, importlib.util
+import os, sys, json, math, time, glob, importlib.util
 import numpy as np
 HERE = os.path.dirname(os.path.abspath(__file__))
 L = importlib.util.module_from_spec(s := importlib.util.spec_from_file_location('fitlib', os.path.join(HERE, 'lib.py'))); s.loader.exec_module(L)
@@ -25,10 +25,37 @@ def bare(n): return n.split(':')[-1]
 
 
 # ------------------------------------------------------------------ figures
+def load_fbx_figure(f):
+    """an installed figure (unity/.../Figures/<id>/<id>.fbx, read only): its meshes tagged as body by LOD suffix, a matte material per slot from its own
+    albedo, and the Humanoid zero computed by the same rule the new figures carry (lib.standard_aims on a copy: reference T-pose, neutral legs)."""
+    before = set(bpy.data.objects); bpy.ops.import_scene.fbx(filepath=f['fbx']); objs = [o for o in bpy.data.objects if o not in before]
+    arm = next(o for o in objs if o.type == 'ARMATURE')
+    if arm.animation_data: arm.animation_data_clear()
+    tex = os.path.join(os.path.dirname(f['fbx']), 'Textures')
+    for o in objs:
+        if o.type != 'MESH': continue
+        n = o.name.rsplit('LOD', 1); o['fit_lod'] = int(n[1][:1]) if len(n) == 2 and n[1][:1].isdigit() else 0; o['fit_role'] = 'body'
+        for i, slot in enumerate(o.material_slots):
+            nm = slot.material.name.split('.')[0] if slot.material else ''
+            t = sorted(glob.glob(os.path.join(tex, nm + '_albedo.*')))
+            o.material_slots[i].material = L.simple_material(nm + '_view', bpy.data.images.load(t[0]) if t else None)
+    a2 = arm.copy(); a2.data = arm.data.copy(); bpy.context.scene.collection.objects.link(a2)
+    # limbs only: an installed rig's spine, neck and head already stand upright at rest, and its head bone need not point along the Mixamo head's
+    # direction (aiming it tipped today's Fixer's head back); arms, hands, fingers and legs take the reference T-pose and neutral legs
+    aims = {k: v for k, v in L.standard_aims(a2).items() if not (k.startswith('Spine') or k in ('Neck', 'Head', 'Hips'))}
+    L.pose_blender(a2, aims); L.bp.ctx(a2, 'POSE'); bpy.ops.pose.armature_apply(selected=False); L.bp.ctx(a2, 'OBJECT')
+    arm['fit_zero'] = json.dumps({b.name: [list(r) for r in (arm.matrix_world.inverted() @ a2.matrix_world @ b.matrix_local)] for b in a2.data.bones})
+    bpy.data.objects.remove(a2, do_unlink=True)
+    for o in objs: bpy.context.scene.collection.objects.unlink(o)
+    return objs
+
+
 class Fig:
     def __init__(self, f):
-        with bpy.data.libraries.load(f['blend'], link=False) as (src, dst): dst.objects = list(src.objects)
-        objs = [o for o in dst.objects if o is not None]
+        if 'fbx' in f: objs = load_fbx_figure(f)
+        else:
+            with bpy.data.libraries.load(f['blend'], link=False) as (src, dst): dst.objects = list(src.objects)
+            objs = [o for o in dst.objects if o is not None]
         col = bpy.data.collections.new(f['label']); bpy.context.scene.collection.children.link(col)
         for o in objs: col.objects.link(o)
         self.arm = next(o for o in objs if o.type == 'ARMATURE'); self.label = f['label']; self.layer = f.get('layer', False)
@@ -38,7 +65,7 @@ class Fig:
             if o.type != 'MESH': continue
             r = o.get('fit_role', 'body'); lod = o.get('fit_lod', 0)
             if lod != SPEC.get('lod', 0) and r != 'donor': o.hide_render = True; o.hide_viewport = True; continue
-            if r == 'donor': o.hide_render = True
+            if r in ('donor', 'prop'): o.hide_render = True          # props are measured, never in the beauty renders (Sky, 2026-10-27)
             self.meshes.setdefault(r, []).append(o)
         for pb in self.arm.pose.bones: pb.rotation_mode = 'QUATERNION'
         self.weight = float(self.arm.get('fit_weight', 0.5))
@@ -189,7 +216,43 @@ class Meter:
                 pit = (armw > 0.1) & (armw < 0.9) & (torw > 0.1)
                 self.parts[o.name] = {'pitE': pit[E].all(1), 'pitT': pit[T].all(1),'role': role, 'o': o, 'T': T, 'E': E, 'V0': V, 'L0': np.linalg.norm(V[E[:, 0]] - V[E[:, 1]], axis=1),
                                       'A0': areas(V, T), 'N0': tnormals(V, T), 'dom': dom, 'kind': o.get('fit_kind', role)}
-        self.setup_cover()
+        self.setup_cover(); self.setup_regions()
+
+    def setup_regions(self):
+        """fit.json measureRegions on the body layer: the skirt band, its leg-to-leg bridge edges, the ponytail."""
+        R = L.D['measureRegions']; self.reg = None; bn = self.body_part()
+        if not bn: return
+        p = self.parts[bn]; V = p['V0']; E = p['E']; T = p['T']; arm = self.fig.arm; Mw = arm.matrix_world; Bb = arm.data.bones
+        H = float(V[:, 2].max() - V[:, 2].min()); z0 = float(V[:, 2].min())
+        hip = float(np.mean([(Mw @ Bb[s + 'UpLeg'].head_local).z for s in ('Left', 'Right')]))
+        sk = (V[:, 2] > z0 + R['skirt']['zLoFrac'] * H) & (V[:, 2] < hip)
+        o = p['o']; names = [g.name for g in o.vertex_groups]; W = L.weights_of(o, names); dv = np.array(names)[np.argmax(W, 1)]
+        side = np.where(np.isin(dv, ['LeftUpLeg', 'LeftLeg', 'LeftFoot']), 1, np.where(np.isin(dv, ['RightUpLeg', 'RightLeg', 'RightFoot']), -1, 0))
+        bridge = sk[E].all(1) & (side[E[:, 0]] * side[E[:, 1]] == -1)
+        pony = np.zeros(len(V), bool)
+        dn = next((n for n, q in self.parts.items() if q['role'] == 'donor'), None)
+        if dn:
+            D = self.parts[dn]; bvh = BVHTree.FromPolygons([Vector(v) for v in D['V0']], [list(t) for t in D['T']], all_triangles=True)
+            dist = np.array([bvh.find_nearest(Vector(v))[3] or 0 for v in V])
+            sp = Mw @ Bb['Spine2'].head_local; nz = (Mw @ Bb['Neck'].head_local).z; wz = (Mw @ Bb['Spine1'].head_local).z
+            pr = R['ponytail']; pony = (dist > pr['looseM']) & (V[:, 1] > sp.y + pr['behindM']) & (V[:, 2] > wz) & (V[:, 2] < nz + pr['aboveNeckM'])
+        self.reg = {'part': bn, 'skE': sk[E].all(1), 'skT': sk[T].all(1), 'bridge': bridge, 'ponyE': pony[E].all(1), 'ponyT': pony[T].all(1),
+                    'counts': {'skirtVerts': int(sk.sum()), 'bridgeEdges': int(bridge.sum()), 'ponytailVerts': int(pony.sum())}}
+
+    def regions(self, Vt):
+        if not self.reg: return {}
+        r = self.reg; p = self.parts[r['part']]; V = Vt[r['part']]
+        Lr = np.linalg.norm(V[p['E'][:, 0]] - V[p['E'][:, 1]], axis=1) / np.maximum(p['L0'], 1e-9); ok = p['L0'] > 0.002
+        Nn = tnormals(V, p['T']); out = {}
+        def st(m, k):
+            m = m & ok
+            if m.any(): out[k + 'StretchP99'] = float(np.percentile(Lr[m], 99) - 1); out[k + 'StretchMax'] = float(Lr[m].max() - 1); out[k + 'CompressP99'] = float(1 - np.percentile(Lr[m], 1))
+            else: out[k + 'StretchP99'] = out[k + 'StretchMax'] = out[k + 'CompressP99'] = 0.0
+        st(r['skE'], 'skirt'); st(r['bridge'], 'skirtBridge'); st(r['ponyE'], 'pony')
+        A = areas(V, p['T']) / np.maximum(p['A0'], 1e-12); big = p['A0'] > 1e-6
+        out['skirtTriMin'] = float(A[r['skT'] & big].min()) if (r['skT'] & big).any() else 1.0
+        out['ponyBodyPairs'] = overlap_pairs(V, p['T'][r['ponyT']], V, p['T'][~r['ponyT']]) if r['ponyT'].any() else 0
+        return out
 
     def body_part(self):
         for k in ('suit', 'body'):
@@ -313,6 +376,7 @@ class Meter:
             for n2, p2 in self.parts.items():
                 if p2['role'] == 'prop': prop += overlap_pairs(Vt[n2], p2['T'], V, p['T'])
         out.update({'hemSelfPairs': hem, 'armTorsoPairs': at, 'thighPairs': th, 'propBodyPairs': prop})
+        out.update(self.regions(Vt))
         return out
 
 
@@ -408,7 +472,9 @@ def main():
         for cname, rows in res[f.label].items():
             if not rows: continue
             agg = {}
-            for k in ('stretchP99', 'compressP99', 'stretchMax', 'compressMax', 'triAreaMax', 'flipped', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'armpitStretchP99', 'armpitCompressP99', 'armpitFlipped'):
+            for k in ('stretchP99', 'compressP99', 'stretchMax', 'compressMax', 'triAreaMax', 'flipped', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'armpitStretchP99', 'armpitCompressP99', 'armpitFlipped',
+                      'skirtStretchP99', 'skirtStretchMax', 'skirtCompressP99', 'skirtBridgeStretchP99', 'skirtBridgeStretchMax', 'ponyStretchP99', 'ponyStretchMax', 'ponyBodyPairs'):
+                if k not in rows[0]: continue
                 v = [r[k] for r in rows]; i = int(np.argmax(v)); agg[k] = {'max': round(float(v[i]), 3), 'frame': rows[i]['frame']}
             v = [r['triAreaMin'] for r in rows]; i = int(np.argmin(v)); agg['triAreaMin'] = {'min': round(float(v[i]), 3), 'frame': rows[i]['frame']}
             kinds = sorted(set(k for r in rows for k in r['penetrationPct']))
@@ -419,7 +485,9 @@ def main():
         summary[f.label] = S
     for f in figs:
         if f.label in rest_rows:
-            r = rest_rows[f.label]; summary[f.label]['rest'] = {k: r[k] for k in ('penetrationPct', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'flipped')}
+            r = rest_rows[f.label]; summary[f.label]['rest'] = {k: r[k] for k in ('penetrationPct', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'flipped', 'ponyBodyPairs') if k in r}
+            m = next(mm for ff, mm in zip(figs, meters) if ff is f)
+            if m.reg: summary[f.label]['regions'] = m.reg['counts']
     json.dump({'name': NAME, 'figures': [x['label'] for x in SPEC['figures']], 'clips': clips, 'summary': summary,
                'frames': {f.label: res[f.label] for f in figs}, 'seconds': round(time.time() - t0, 1)}, open(os.path.join(OUT, f'{NAME}.metrics.json'), 'w'), indent=1, default=str)
     L.log('DONE', NAME, round(time.time() - t0, 1))

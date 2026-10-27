@@ -397,5 +397,16 @@
    "upscale": 3
   },
   "fps": 24
+ },
+ "measureRegions": {
+  "note": "region measures on the body layer at rest, judged in every sampled frame (brief 069 animation pass). skirt: vertices between zLoFrac of the height and the hip joints (a long skirt, or trousers on the others: comparable); its bridge edges join a vertex led by one leg (UpLeg/Leg/Foot of one side) to one led by the other: their stretch is the skirt stretching across the legs. ponytail: vertices farther than looseM from the fitted body (the hidden donor), behind the spine axis by behindM, between the waist and the neck + aboveNeckM: stretch, flips, and its triangles against the rest of the body (pairs). The cut-outs are read from the armpit band measures.",
+  "skirt": {
+   "zLoFrac": 0.1
+  },
+  "ponytail": {
+   "looseM": 0.022,
+   "behindM": 0.04,
+   "aboveNeckM": 0.08
+  }
  }
 }

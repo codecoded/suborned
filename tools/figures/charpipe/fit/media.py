@@ -1,5 +1,6 @@
 """Brief 069 fit test: labelled videos (ffmpeg, H.264) and play-zoom strips from the animate frames. System python (PIL).
-  python3 tools/figures/charpipe/fit/media.py"""
+  python3 tools/figures/charpipe/fit/media.py                                  (the fit test: every input's AG, ext and play)
+  python3 tools/figures/charpipe/fit/media.py <set dir> video:<name> ... play:<name> ...   (any set: <dir>/anim -> <dir>/media)"""
 import json, os, glob, subprocess, sys
 from PIL import Image, ImageDraw, ImageFont
 HERE = os.path.dirname(os.path.abspath(__file__)); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.dirname(HERE))))
@@ -50,6 +51,11 @@ def play(name):
     f = sorted(f for f in files if 'play_walk_' in f)[0]; Image.open(f).save(os.path.join(M, f'{name}_1x.png'))
 
 
-for i in [r['id'] for r in D['inputs']]:
-    for kind in ('AG', 'ext'): print(video(f'{i}_{kind}'))
-    play(f'{i}_play')
+if len(sys.argv) > 1:
+    A = os.path.join(sys.argv[1], 'anim'); M = os.path.join(sys.argv[1], 'media'); os.makedirs(M, exist_ok=True)
+    for job in sys.argv[2:]:
+        kind, name = job.split(':', 1); print(video(name) if kind == 'video' else play(name))
+else:
+    for i in [r['id'] for r in D['inputs']]:
+        for kind in ('AG', 'ext'): print(video(f'{i}_{kind}'))
+        play(f'{i}_play')

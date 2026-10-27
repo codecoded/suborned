@@ -82,3 +82,11 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
 - **Fit:** same scripts plus one data file (`tools/figures/charpipe/fit/fixer.json`). Byte-identical 9/9. The new Fixer stands 1.67 m against today's 1.75 m (the height slider can change it), with LOD0 at 18.8k triangles against today's 12k.
 - **Pictures:** `out/scratch/forma/char-pipeline/fixer/` (`models.png`, `beside.png`, `shoulders.png`, `play.png`). Evidence: `fixer/mesh/`.
 - **Remade at 30k** (Sky, 2026-10-27: "Player Models should be created at 30k triangles"). Tripo 3.1 `faceLimit: 30000` via Runware returned 29,116 triangles for $0.60. Runware does accept 30k, despite its docs page. The rule lives in data (`fixer.json` `faceLimitByKind.cell`), and the Fixer's spend totals $1.20. The extra triangles went mostly to the skirt and legs, the head and the feet. The ragged cut-out edges are in the texture, so they're the same at 20k and 30k. The 30k take has squared-off strands across the face and a pointed ear, both from the generator. Byte-identical: Fixer 9/9, e2e 31/31. Pictures: `out/scratch/forma/char-pipeline/fixer/compare_20k_30k.png`, `beside.png`.
+- **Animation pass** (seven clips, no extra bones; Sky: "try with existing model and see where we get to"):
+  - **The four e2e figures:** hold through all seven clips and can go to Unity.
+  - **The new Fixer:** the upper body, face, ponytail (walk and run) and painted cut-outs hold. The long wrap skirt tears in every moving clip: Tripo builds the wrap as overlapping folds of one surface, and with nearest-body weights each fold follows a different leg (`out/scratch/forma/char-pipeline/fixer/media/skirt_closeups.jpg`).
+  - **The fix, in order:**
+    1. Average weights within about 2 cm across the skirt band, the armpit tool used again, as a data change.
+    2. A skirt rig of about 8 chains × 3 bones on spring or bone cloth with leg colliders.
+    3. Or cloth simulation.
+  - **The ponytail:** sinks into her back in crouch and carried; a 3–4 bone chain later.
