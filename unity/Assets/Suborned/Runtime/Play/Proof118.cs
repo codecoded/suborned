@@ -111,7 +111,9 @@ namespace Suborned.Play
             if (!t || !h.View) return -1; var rs = t.GetComponentsInChildren<SkinnedMeshRenderer>(); if (rs.Length == 0) return -1;
             /* the bones, not the skinned bounds (those are loose: the driver read 114 px); each bone also 0.12 m up, for the crown */
             float lo = float.MaxValue, hi = float.MinValue;
-            foreach (var r in rs) foreach (var bn in r.bones) { if (!bn) continue; foreach (var c in new[] { bn.position, bn.position + Vector3.up * 0.12f }) { var s = h.View.WorldToScreenPoint(c); lo = Mathf.Min(lo, s.y); hi = Mathf.Max(hi, s.y); } }
+            var pts = rs.SelectMany(r => r.bones).Where(b => b).ToList();
+            if (pts.Count == 0) { pts.Add(t); foreach (var c in t.GetComponentsInChildren<Transform>(true)) if (c.name is "Head" or "Hips") pts.Add(c); } // brief 069 A: an optimised figure has no bone list: its feet (the root) and the exposed Head
+            foreach (var bn in pts) { foreach (var c in new[] { bn.position, bn.position + Vector3.up * 0.12f }) { var s = h.View.WorldToScreenPoint(c); lo = Mathf.Min(lo, s.y); hi = Mathf.Max(hi, s.y); } }
             if (lo > hi) return -1;
             return Mathf.RoundToInt((hi - lo) * 1080f / Mathf.Max(1, Screen.height));
         }

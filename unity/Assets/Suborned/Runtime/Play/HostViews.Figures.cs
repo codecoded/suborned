@@ -281,7 +281,8 @@ namespace Suborned.Play
         /// <summary>A bone by Humanoid role, or by name on a Generic rig (Forma's testbed cell: Mixamo names under Armature), cached per figure.</summary>
         static Transform Bone(Fig f, HumanBodyBones role, string name)
         {
-            if (f.anim.isHuman) return f.anim.GetBoneTransform(role);
+            if (f.anim.isHuman && f.anim.GetBoneTransform(role) is Transform hb) return hb;
+            // brief 069 A: an optimised figure (FigureBuild.Optimise) keeps only its exposed bones, as transforms named as the bone: found by name
             f.bones ??= new Dictionary<string, Transform>();
             if (f.bones.TryGetValue(name, out var t) && t) return t;
             foreach (var c in f.model.GetComponentsInChildren<Transform>(true)) if (c.name == name || c.name.EndsWith(":" + name) || c.name == "mixamorig:" + name) { f.bones[name] = c; return c; }

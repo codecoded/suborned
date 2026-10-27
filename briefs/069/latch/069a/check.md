@@ -1,0 +1,33 @@
+## Figures
+scout: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightShoulder]
+tech: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightShoulder]
+enforcer: avatar valid humanoid, 52 human bones; optimise True; exposed [Hips,Head,RightShoulder]
+guard: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+waitress: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightHand]
+c6: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+d6: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+c1: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+d5c: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+d2m: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+workers_d5: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+d4: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+d4b: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+el1: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+sh2: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+cafe_w2: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightHand]
+cafe_w3: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightHand]
+cafe_w5: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightHand]
+fixer: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head,RightShoulder]
+security: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+driver: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+councillor: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+rival: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+rival_b: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+rival_c: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+rival_d: avatar valid humanoid, 22 human bones; optimise True; exposed [Hips,Head]
+figures valid humanoid: 26/26
+
+## Clips
+CopyFromOther from walk: 42 [idle, idle_alt, walk_f, walk_old, run, walk_armed, run_armed, aim, aim_pistol, shoot, draw, melee, melee_whip, hit, hit_large, panic, cower, crouch, crouch_walk, stunned, knockout, knockout_alt, kill_victim, kill_victim_back, kill_attacker, struggle, struggle_strangled, carry, carried, lying, restrained, captor, phone, look_around, talk, point, beckon, search, pickup, cover_kneel, cover_in, cover_out]
+CreateFromThisModel: 17 [walk, carried_drape, carry_shoulder, carry_shoulder_idle, serve, serve_walk, sit, sit_alt, sit_talk, stand_to_sit, sit_to_stand, run_lean, cover_pin, cover_fire, flinch_add, kick_add, pin_peek_add]
+import messages (warnings and errors) while reimporting 59 clips: 0

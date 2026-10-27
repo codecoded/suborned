@@ -145,3 +145,10 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
 - **Clips:** `clips.json` `avatar` names `walk` as the shared neutral-leg reference. 42 clips copy it. 16 Blender-authored clips (under an extra `Armature` node) get their own avatar with the same neutral legs. 4 old `sit_c` / `sit_f1–3` leftovers are untouched: they're not in `clips.json`, nothing references them, and they're candidates to delete.
 - **Figures:** all 26 installed figures have the neutral-leg rest with auto-mapping off (`build.py`).
 - **Checks:** reinstalled with `run.ts --install`; `avatar_verify.py` reads the metas back. Tests 23/23, typecheck clean. Unity not run yet: next is Latch's build check plus Optimize Game Objects in `FigureBuild.cs`.
+- **Fix and build check, all green.**
+  - **The 16 lone-root clips:** they failed avatar creation (Unity folds a lone `Armature` root), which left `Figures.controller` half-built. Fixed by `preserveHierarchy: 1` by rule (b093984a). `FigureBuild.Cli` restored all 59 states.
+  - **Clips and figures:** 0 avatar errors; 42 clips copy walk, 17 have their own avatar, all 26 figures are valid.
+  - **Feet:** in the game, `c6`, `guard`, `d6` and the Enforcer plant within 1.5° of flat, yaw +1/−14, thighs about 2°.
+  - **Optimize Game Objects** in `FigureBuild.cs`: Head and Hips on all, RightShoulder on the agents, RightHand on the servers; `HostViews` finds exposed bones by name. The tray seats on all four servers.
+  - **Dev build 0.2.140**, not shipped: the proof passes, with before/after clips in `out/scratch/latch/069a/shots/video/`.
+  - **To look at:** `sit_talk` plays with the legs swapped (the crossed leg mirrored), and `cover_fire`'s stance shifts sideways. Evidence: `latch/069a/`.

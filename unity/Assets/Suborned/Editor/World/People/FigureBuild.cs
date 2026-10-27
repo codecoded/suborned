@@ -112,11 +112,47 @@ namespace Suborned.World.People
             else { var e2 = peek.AddState("empty"); e2.writeDefaultValues = false; peek.defaultState = e2; }
         }
 
+        /// <summary>Brief 069 A (Redline: about 15 % of a person's frame cost on today's figures): every installed figure imports with Optimize Game
+        /// Objects on, so its skeleton lives inside the Animator and only the bones the play scene reads stay as transforms. The rule, from the code
+        /// that reads bones (HostViews.Bone): Head and Hips on everyone (the attention cue and look-at read Head; a carried body, which can be anyone,
+        /// is seated by its Hips); RightShoulder on the cell (playRoles op/*: only an agent carries, HostViews.cs carriers); the tray's bone on the
+        /// figures that serve (manifest props[tray].attach.bone and perFigure). The paths are read from the model's own hierarchy (unoptimised first
+        /// when they change), so nothing is written per figure. Skipped when the meta already exposes exactly these names.</summary>
+        static void Optimise(object m)
+        {
+            var always = new[] { "Head", "Hips" };
+            var carriers = new HashSet<string>();
+            if (J.Get(m, "playRoles") is Dictionary<string, object> pr)
+                foreach (var kv in pr) if (kv.Key.StartsWith("op/") && kv.Value is List<object> ids) foreach (var x in ids) carriers.Add((string)x);
+            var hands = new Dictionary<string, string>();
+            if (J.Get(m, "props") != null)
+                foreach (var p in J.A(m, "props"))
+                    if (J.Get(p, "attach") is { } at && J.S(at, "bone") is string bone && J.Get(at, "perFigure") is Dictionary<string, object> pf)
+                        foreach (var id in pf.Keys) hands[id] = bone;
+            var log = new List<string>();
+            foreach (var f in J.A(m, "figures"))
+            {
+                string id = J.S(f, "id"), path = Path.Combine(Root, J.S(f, "fbx"));
+                if (AssetImporter.GetAtPath(path) is not ModelImporter imp) continue;
+                var want = always.Concat(carriers.Contains(id) ? new[] { "RightShoulder" } : new string[0]).Concat(hands.TryGetValue(id, out var hb) ? new[] { hb } : new string[0]).Distinct().OrderBy(x => x).ToArray();
+                var have = imp.extraExposedTransformPaths.Select(x => x.Split('/').Last()).OrderBy(x => x).ToArray();
+                if (imp.optimizeGameObjects && have.SequenceEqual(want)) continue;
+                if (imp.optimizeGameObjects) { imp.optimizeGameObjects = false; imp.extraExposedTransformPaths = new string[0]; imp.SaveAndReimport(); }
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+                var paths = model.GetComponentsInChildren<Transform>(true).Where(t => t != model.transform && want.Contains(t.name)).GroupBy(t => t.name).Select(g => PathOf(g.First(), model.transform)).ToArray();
+                imp.optimizeGameObjects = true; imp.extraExposedTransformPaths = paths; imp.SaveAndReimport();
+                log.Add($"{id} [{string.Join(",", paths.Select(x => x.Split('/').Last()))}]");
+            }
+            if (log.Count > 0) Debug.Log($"People: Optimize Game Objects on {log.Count} figures: " + string.Join("; ", log));
+        }
+        static string PathOf(Transform t, Transform root) { var s = t.name; while (t.parent && t.parent != root) { t = t.parent; s = t.name + "/" + s; } return s; }
+
         public static FigureLibrary Build()
         {
             var mpath = Path.Combine(Root, "manifest.json"); if (!File.Exists(mpath)) { Debug.LogWarning("People: no installed figures (bun tools/figures/run.ts --install)"); return null; }
             var m = Json.Parse(File.ReadAllText(mpath));
             if (!AssetDatabase.IsValidFolder(Gen)) AssetDatabase.CreateFolder(Root, "Generated");
+            Optimise(m);
             // one controller: a state per clip, named as the clip; idle first (the default)
             AssetDatabase.DeleteAsset(ControllerPath);
             var ctl = AnimatorController.CreateAnimatorControllerAtPath(ControllerPath);
