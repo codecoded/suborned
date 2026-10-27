@@ -65,3 +65,9 @@ Shared tree: never stash, checkout, reset or clean. Kill by PID only. No paid AP
 
 ## Status
 - 2026-10-27: brief, decision log and the planet/moon rebuild committed (96176fed). Phase A out: 072-A Vela (pieces), 072-B Vela (style proposal), 072-C Splice, 072-D Redline phase 1, 072-E Latch baseline.
+- 072-A done: 25 pieces adopted (briefs/072/pieces/pieces.md; the names grew: SidePilaster_*, CornerPier_*_Base/_Top), plus pass 2: ShopFill_3/_4 and ShopStack_Base for street-facing shop stretches, and opaque side windows (DK_Window_Film). Commits e8614ede, a405be1e.
+- 072-B done, waiting on Sky: briefs/072/style/proposal.html, rules.json (51 rows). Finding: only 4 of DecoKit's 113 materials differ; what holds the look back is the written rules (brass hairline cap, no blue glass, near-white walls), the flat walls, the grade and the powder-blue road.
+- 072-C done: --only never shrinks the tables; faces.ts dresses every wall (1,128 faces, 0 undressed, `bun run world:faces`); shopfront boxes clamped, then replaced by fillers (0 clashes); the skyline drift declared. Aster's rulings: shopfront awnings were never lost; the 603 balcony awnings on the old flat facades stay at 0 this round.
+- 072-D phase 1 done: briefs/072/redline/plan.md. Ortho play camera: LODs never switch at play zoom, so the frame bounds the cost (+11–53 k view tris at zoom 14); shadows are the risk (L0 casting +0.2–1.9 M), so modules cast from L2 proxies; no combining; stack columns baked. Projected warm Air mean at the opening ~12.5 ms (11.0–14.0) with 064 A3's no-look items, against 13.0.
+- 072-E: baseline captured (briefs/072/latch/baseline/); planet maps fixed (6d7772b2); builder plan in (db30a0af; trial build passes). The after capture waits for the Studio to be free (it needs a visible editor window, and Sky was using the Mac).
+- Keel: the Office's sim footprint is the block polygon (dd2d6cfe); the Handover ships (893 plays). c040 re-record (Waymark) once the kit settles.

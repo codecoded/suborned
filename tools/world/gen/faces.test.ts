@@ -9,7 +9,7 @@ import { civic } from '../../plan/civic';
 import { derive, type Plan } from '../../plan/plan';
 import { worldOf } from '../build';
 import { withKit } from './kitrefs';
-import { FACES, FACE_KIT, bandsOf, exposure, occOf, tile } from './faces';
+import { FACES, FACE_KIT, SHOP_PIECE, bandsOf, exposure, occOf, shopOverlap, shopTile, tile } from './faces';
 import { faceKitOff } from './faces.fixture';
 import { faceCoverage } from '../rules/faces-cover';
 import { ctxOf } from './common';
@@ -112,4 +112,26 @@ test('exposure: a neighbour as tall hides the shared wall; a lower one leaves th
   const ring: [number, number][] = [[10, 0], [20, 0], [20, 10], [10, 10]];
   expect(exposure([10, 10], [10, 0], 0, 20, [occOf('n', ring, 0, 20)], 'me')).toEqual([]);
   expect(exposure([10, 10], [10, 0], 0, 20, [occOf('n', ring, 0, 12)], 'me')).toEqual([{ s0: 0, s1: 10, from: 12 }]);
+});
+
+test('shop runs (pieces.md Pass 2): fillers 3 m nearest R / 3; a run on a tenancy\'s line (an arc\'s chord within 0.6 m) counts; every plot tenancy is linked to a piece', () => {
+  expect(shopTile(1.5)).toEqual({ k: 1, sx: 0.5 }); expect(shopTile(4.6).k).toBe(2); expect(shopTile(9).sx).toBeCloseTo(1, 6);
+  for (const R of [1.5, 2.2, 4.49, 4.51, 7.3, 13.1]) { const t = shopTile(R); expect(t.sx).toBeGreaterThanOrEqual(0.5); expect(t.sx).toBeLessThanOrEqual(1.7); }
+  const t = [{ host: 'h', a: [0, 0] as [number, number], b: [6, 0] as [number, number] }];
+  expect(shopOverlap([[[4, 0], [10, 0]]], t)).toBeCloseTo(2, 6);
+  expect(shopOverlap([[[0, 0.45], [3, 0.2]]], t)).toBeCloseTo(3, 6); // a chord across an arc
+  expect(shopOverlap([[[0, 2], [6, 2]]], t)).toBe(0); // another line
+  const shop = a.world.facades.filter(f => SHOP_PIECE.test(f.kit.id)), linked = new Set(a.world.frontages.map(f => f.facade).filter(Boolean));
+  expect(shop.length).toBeGreaterThan(0);
+  for (const f of shop) {
+    expect(f.form === 'side' || f.form === 'stack', f.id).toBe(true);
+    if (f.kit.id === FACE_KIT.shop.base) expect(f.base, f.id).toBeLessThan(0.2); // the ground row, from the pavement
+    else { const m = a.world.buildings.find(x => x.id.startsWith(f.building + '/'))!, p = fxBy.get(f.kit.id)!; expect(Math.abs(f.base + p.size[1] * f.kit.scale[1] - (m.base + m.height)), f.id).toBeLessThan(0.01); }
+  }
+  // every run of fillers has a tenancy linked to one of them; no own-shopfront tenancy of a plot building is left
+  const runs = new Map<string, string[]>(); for (const f of shop) (runs.get(f.face!) ?? runs.set(f.face!, []).get(f.face!)!).push(f.id);
+  for (const [face, ids] of runs) expect(ids.some(id => linked.has(id)), face).toBe(true);
+  expect(a.world.frontages.filter(f => f.level === 'street' && f.host.startsWith('bld/') && !f.facade).map(f => f.id)).toEqual([]);
+  // a stacked shop run has no base-band side module left under its row
+  for (const [face] of runs) expect(a.world.facades.filter(f => f.face === face && /^(SideBayStack|SidePilaster)_Base$/.test(f.kit.id)).map(f => f.id), face).toEqual([]);
 });

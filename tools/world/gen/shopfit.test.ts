@@ -35,3 +35,10 @@ test('linked tenancies, upper modules and pieces on another line are ignored; a 
   expect(t!.front.size[2]).toBe(4.6);
   expect(log.low).toEqual([{ id: 't', piece: 'SideBay_3', height: 2.38 }]);
 });
+
+test('a tenancy left unlinked before a shop filler stops under its fascia: ShopFill 4.0 x sy, ShopStack_Base 4.172 x sy', () => {
+  const { frontages: [t] } = fitShopfronts([tenancy('t')], [piece('p', 'ShopFill_3', 0.95, [0, 0], [6, 0])]);
+  expect(t!.front.base + t!.front.size[2]).toBeCloseTo(0.18 + 4.0 * 0.95 - FASCIA_CLEAR, 3);
+  const { frontages: [u] } = fitShopfronts([tenancy('u')], [piece('q', 'ShopStack_Base', 1.0, [0, 0], [6, 0], 'stack')]);
+  expect(u!.front.base + u!.front.size[2]).toBeCloseTo(0.18 + 4.172 - FASCIA_CLEAR, 3);
+});

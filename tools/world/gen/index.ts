@@ -18,7 +18,7 @@ import { activeMouths } from './street/footway';
 import { dressConnectors } from './dress';
 import { generateSkins } from './skins';
 import { adjacent } from './facades';
-import { type FacesOut, dressFaces, occOf } from './faces';
+import { type FacesOut, SHOP_PIECE, clip, dressFaces, occOf, quadOf } from './faces';
 import { catalogued } from './kitrefs';
 import { returnsOf, slabRing } from './kerbreturn';
 import { colourLife } from './colour';
@@ -45,15 +45,18 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
   const occ = [...masses.filter(m => !/\/band-\d+$/.test(m.id)).map(m => occOf(ownerOf(m.id), m.ring, m.base, m.base + m.height)),
     ...ctx.civ.buildings.flatMap(b => [occOf(`civic/${b.id}`, b.poly, ctx.pav + b.z, ctx.pav + b.z + b.height), ...(b.towers ?? []).filter(t => t.poly).map(t => occOf(`civic/${b.id}`, t.poly!, ctx.pav + b.z, ctx.pav + b.z + t.height))]),
     ...megaOut.flatMap(m => m.parts.map(p => occOf(m.id, p.ring, p.base, p.base + p.height)))];
-  const faces = dressFaces(ctx, { blds: blds.map(b => ({ id: b.id, plot: b.plot, area: b.area, use: b.use, kind: b.kind, n: b.n, ring: b.ring, tower: b.tower, play: !!ctx.B.caps?.[b.area]?.play, top: b.z })), masses, occ, facades: fac.facades, catalogue: catalogued });
+  // the tenancies come first: a side run an own-shopfront tenancy stands on is a shop run (pieces.md Pass 2); own shopfront = a street-level frontage the street bays do not link
+  const hosts: Host[] = [...blds.filter(b => !b.tower).flatMap(b => buildingHost(ctx, b) ?? []), ...megaOut.flatMap(m => m.hosts)];
+  const fronts = generateFrontages(ctx, hosts);
+  const tenancies = linkFacades(fronts, fac.facades).filter(t => !t.facade && t.level === 'street').map(t => ({ host: t.host, a: t.a, b: t.b }));
+  const faces = dressFaces(ctx, { blds: blds.map(b => ({ id: b.id, plot: b.plot, area: b.area, use: b.use, kind: b.kind, n: b.n, ring: b.ring, tower: b.tower, play: !!ctx.B.caps?.[b.area]?.play, top: b.z })), masses, occ, facades: fac.facades, catalogue: catalogued, tenancies });
   fac.facades.push(...faces.facades);
   const solids: V[][] = [...masses.filter(m => m.base < 1).map(m => m.ring), ...megaOut.flatMap(m => m.parts.filter(p => p.base < 1).map(p => p.ring))];
   const conn0 = generateConnectors(ctx, megaOut, stations, solids);
   // the dressed form of stair towers and open lifts (a lift inside a leg or a stair core keeps the enclosure as its face)
   const conn = { ...conn0, connectors: dressConnectors(conn0.connectors, megaOut.flatMap(m => m.parts.map(p => ({ ring: p.ring, z0: p.base, z1: p.base + p.height })))) };
   const decks: DeckRec[] = [...megaOut.flatMap(m => m.decks), ...conn.decks];
-  const hosts: Host[] = [...blds.filter(b => !b.tower).flatMap(b => buildingHost(ctx, b) ?? []), ...megaOut.flatMap(m => m.hosts)];
-  const fit = fitShopfronts(linkFacades(generateFrontages(ctx, hosts), fac.facades), fac.facades);
+  const fit = fitShopfronts(linkFacades(fronts, fac.facades), fac.facades);
   const frontages = signKit(ctx, fit.frontages, megaOut, masses);
   const roofs = generateRoofs(ctx, blds, megaOut.flatMap(m => m.terraces ?? []));
   // procedural skins (grammar §2-3) for every plot building; its speed bands carry the skin's accent
@@ -74,18 +77,29 @@ export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {
 }
 
 /** A DeckRec as the export's Deck. */
-/** A tenancy standing on a span a kit facade piece covers names that piece (its shopfront is in the piece; the sign stays). */
+/** A tenancy standing on a span a kit facade piece covers names that piece (its shopfront is in the piece; the sign stays): the street piece or shop filler
+ *  whose a→b holds the tenancy's midpoint; else (brief 072 pass 2: a midpoint on a corner piece's return or on a narrow pilaster between street pieces) the
+ *  piece whose footprint holds the midpoint 0.3 m inside the wall line, else, where such pieces' footprints stand behind at least half of it, the one whose footprint runs furthest along it (over 0.5 m). */
 function linkFacades(fronts: Frontage[], facades: Facade[]): Frontage[] {
   const by = new Map<string, Facade[]>();
-  // brief 072-C: only the street pieces carry a shopfront; under a side bay, service wall or stack module the tenancy keeps its own
-  for (const f of facades) if (f.form === 'bay' || f.form === 'end' || f.form === 'corner') (by.get(f.building) ?? by.set(f.building, []).get(f.building)!).push(f);
+  // brief 072-C: only the street pieces and the shop fillers (ShopFill_n, ShopStack_Base) carry a shopfront; under a side bay, service wall or stack module the tenancy keeps its own
+  for (const f of facades) if (f.form === 'bay' || f.form === 'end' || f.form === 'corner' || SHOP_PIECE.test(f.kit.id)) (by.get(f.building) ?? by.set(f.building, []).get(f.building)!).push(f);
   return fronts.map(f => {
-    const mid: V = [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2];
-    const hit = (by.get(f.host) ?? []).find(x => {
+    const mid: V = [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], mine = by.get(f.host) ?? [];
+    const hit = mine.find(x => {
       const u: V = [x.b[0] - x.a[0], x.b[1] - x.a[1]], L = Math.hypot(u[0], u[1]) || 1, s = ((mid[0] - x.a[0]) * u[0] + (mid[1] - x.a[1]) * u[1]) / L, d = Math.abs(((mid[0] - x.a[0]) * u[1] - (mid[1] - x.a[1]) * u[0]) / L);
       return d < 0.8 && s > -0.1 && s < L + 0.1;
     });
-    return hit ? { ...f, facade: hit.id } : f;
+    if (hit) return { ...f, facade: hit.id };
+    if (f.level !== 'street' || !mine.length) return f;
+    const inside: V = [mid[0] - f.normal[0] * 0.3, mid[1] - f.normal[1] * 0.3];
+    const body = mine.find(x => { const a = catalogued(x.kit.id); return !!a && inPolyV(inside, quadOf(x.kit.at, a.size, x.kit.scale, x.kit.yaw ?? 0)); });
+    if (body) return { ...f, facade: body.id };
+    // the pieces' footprints along the tenancy's line 0.3 m inside the wall (a corner piece's return counts where it stands)
+    const pa: V = [f.a[0] - f.normal[0] * 0.3, f.a[1] - f.normal[1] * 0.3], d: V = [f.b[0] - f.a[0], f.b[1] - f.a[1]], Lt = Math.hypot(d[0], d[1]) || 1;
+    let best: Facade | null = null, most = 0.5, sum = 0;
+    for (const x of mine) { const a = catalogued(x.kit.id); const t = a ? clip(quadOf(x.kit.at, a.size, x.kit.scale, x.kit.yaw ?? 0), pa, d) : null; if (!t) continue; const o = (t[1] - t[0]) * Lt; sum += o; if (o > most) { most = o; best = x; } }
+    return best && sum >= Lt / 2 ? { ...f, facade: best.id } : f; // only where the pieces carry most of the tenancy's shopfront
   });
 }
 

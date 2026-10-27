@@ -13,6 +13,7 @@ import { type Ctx, r3, r4, rng } from './common';
 import { edgeN, pointInRing } from './geo';
 import { isStreetClass } from './grammar';
 import { type Bld, floorTop } from './masses';
+import { SHOP_PIECE } from './faces';
 import type { BaseSkin } from './skins';
 
 /** §2 accent roles and weights (look.json surfaces); gold is the trim on every building, never its accent. */
@@ -81,6 +82,7 @@ const PP = COLOUR.portholePanel;
 export type ColourOut = { skins: Skin[]; awnings: Awning[]; banners: Banner[] };
 
 export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSkin[], facades: Facade[], frontages: Frontage[]): ColourOut {
+  const shopIds = new Set(facades.filter(f => SHOP_PIECE.test(f.kit.id)).map(f => f.id));
   const B = ctx.B, pav = ctx.pav, C = COLOUR, zone1 = pav + floorTop(B, C.zoneStoreys), deck = pav + floorTop(B, 2);
   const byB = new Map<string, Mass[]>(), facB = new Map<string, Facade[]>(), frB = new Map<string, Frontage[]>(), bld = new Map(blds.map(b => [b.id, b]));
   for (const m of masses) { const id = m.id.slice(0, m.id.lastIndexOf('/')); (byB.get(id) ?? byB.set(id, []).get(id)!).push(m); }
@@ -120,7 +122,7 @@ export function colourLife(ctx: Ctx, blds: Bld[], masses: Mass[], skins: BaseSki
       corners.push({ at: w, n, i });
       fins.push({ id: `${b.id}/fin/corner-${i}`, kind: 'corner', at: [r3(w[0]), r3(w[1])], normal: [r4(n[0]), r4(n[1])], w: C.fin.w, d: C.fin.d, z0: r3(pav + C.faience.plinth), z1: r3(z1), surface: finRole, bead: { surface: GOLD, w: C.fin.bead } });
     }
-    const lobbies = (frB.get(b.id) ?? []).filter(t => t.lobby && !t.facade);
+    const lobbies = (frB.get(b.id) ?? []).filter(t => t.lobby && (!t.facade || shopIds.has(t.facade))); // brief 072 pass 2: a lobby on a shop filler keeps its fin and banner (the filler is a wall module, not a street bay's front)
     for (const t of lobbies) {
       const mid: V = [(t.a[0] + t.b[0]) / 2, (t.a[1] + t.b[1]) / 2], n = t.normal, w = wallAt(mid, n, ground.ring), z1 = topAt([w[0] - n[0] * 0.5, w[1] - n[1] * 0.5], ms), z0 = t.canopy.base + t.canopy.size[2] + 0.3;
       if (z1 - z0 < C.fin.minH) continue;

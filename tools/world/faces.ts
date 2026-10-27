@@ -25,7 +25,7 @@ const log: FaceLog[] = existsSync(logFile) ? JSON.parse(readFileSync(logFile, 'u
 const why = new Map<string, FaceLog[]>(); for (const l of log) if (l.why) (why.get(l.building) ?? why.set(l.building, []).get(l.building)!).push(l);
 
 const fmt = (r: Record<string, number>) => Object.entries(r).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).map(([k, v]) => `${k} ${v}`).join(', ') || 'none';
-const FACE_PIECE = /^(SideBay|SideBayStack|CornerPier|AlleyWall|SidePilaster)_/;
+const FACE_PIECE = /^(SideBay|SideBayStack|CornerPier|AlleyWall|SidePilaster|ShopFill|ShopStack)_/;
 const sum = (r: Record<string, number>, f: (k: string) => boolean) => Object.entries(r).filter(([k]) => f(k)).reduce((s, [, v]) => s + v, 0);
 console.log(`faces: ${cov.faces} wall faces, ${cov.metres.toFixed(0)} m; dressed ${cov.dressedMetres.toFixed(0)} m (${((100 * cov.dressedMetres) / Math.max(1, cov.metres)).toFixed(1)}%); undressed faces ${cov.undressed.length} (play streets ${cov.undressed.filter(g => g.play).length})`);
 console.log(`modules, play streets: every-face ${sum(cov.perPiece.play, k => FACE_PIECE.test(k))}, all ${sum(cov.perPiece.play, () => true)}: ${fmt(cov.perPiece.play)}`);

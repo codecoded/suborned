@@ -5,7 +5,11 @@
 //   - AlleyWall_3 / _4 (one module in a run of two or more takes the dock variant _3D / _4D, seeded by the face id): only on service backs (SERVICE below);
 //   - SideBayStack_Base / _Mid / _Top: one module per storey band, on walls taller than 4 storeys (towers and the tall city beyond the play streets), on a
 //     tier that starts above the street (a setback's upper storeys) and on the part of a party wall that stands above a lower neighbour;
-//   - CornerPier_Out / _In (_3, _4, or _Base / _Mid / _Top per band): at every outside and inside corner between two dressed faces.
+//   - CornerPier_Out / _In (_3, _4, or _Base / _Mid / _Top per band): at every outside and inside corner between two dressed faces;
+//   - ShopFill_3 / _4 and ShopStack_Base (Vela's placement rule, briefs/072/pieces/pieces.md "Pass 2"): a side run that an own-shopfront street tenancy
+//     (FacesIn.tenancies) overlaps by more than 0.5 m is a shop run: its whole-wall column takes ShopFill_n for SideBay_n, its stacked column from the
+//     pavement lays a ShopStack_Base row in place of the base band; either tiles k fillers of 3 m nearest R / 3 (no pilaster); the generator then links
+//     each tenancy to the filler holding its midpoint (index.ts linkFacades), so its procedural shopfront is not drawn and its sign stays.
 // Modules are 6 m on plan, tiled at the piece's width scale (tags.scale, 0.85-1.15); a whole-wall piece's height scale puts its top on H(n), a stack
 // module's on its storey band. Only adopted pieces are placed (kitrefs.adopted): a face the adopted pieces cannot dress is logged as a gap with the
 // pieces that would dress it, and keeps its procedural wall; the coverage check (tools/world/faces.ts, `bun run world:faces`) fails on every such face.
@@ -45,7 +49,11 @@ export const FACE_KIT = {
     in: { whole: { 3: 'CornerPier_In_3', 4: 'CornerPier_In_4' } as Record<number, string>, base: 'CornerPier_In_Base', mid: 'CornerPier_In_Mid', top: 'CornerPier_In_Top' },
   },
   landmark: 'RecordsTower',
+  /** The shop fillers (Vela, briefs/072/pieces/pieces.md "Pass 2"): a shop run's whole-wall column (ShopFill_n for SideBay_n) and a stacked shop run's ground row. */
+  shop: { whole: { 3: 'ShopFill_3', 4: 'ShopFill_4' } as Record<number, string>, base: 'ShopStack_Base' },
 };
+/** A shop filler piece (linked to the tenancy in front of it as the street bays are). */
+export const SHOP_PIECE = /^(ShopFill_[34]|ShopStack_Base)$/;
 /** The rule's numbers. */
 export const FACES = {
   module: 6, // m: module width on plan (the pieces' 6 m bay)
@@ -59,12 +67,16 @@ export const FACES = {
   bandMin: 1.0, // m: a storey line within this of a face's foot or top starts no band
   topTol: 0.05, // m: heights that are the same
   hlodCell: 32, // m: Redline's step-2 HLOD cell (briefs/072/redline/plan.md §3.2)
+  shopOverlap: 0.5, // m: an own-shopfront tenancy overlapping a side run by more than this makes it a shop run
+  shopModule: 3, // m: the shop fillers' own width (k nearest R / 3, never FACES.module)
+  shopMin: 1.5, // m: a run shorter than this is too narrow for a shopfront and keeps its side pieces
+  shopTol: 0.6, // m: a run's part lies on a tenancy's line within this (shareTol, widened for a chord across an arc: avenue-court/19 stands 0.45 off)
 };
 
 export type Occ = { owner: string; ring: V[]; base: number; top: number; box: [number, number, number, number] };
 export type Cover = { quad: V[]; lo: number; hi: number; owner: string };
 export type FaceBld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; tower: boolean; play: boolean; top: number };
-export type FaceLog = { face: string; building: string; area: string; play: boolean; family: 'side' | 'service' | 'stack'; length: number; from: number; to: number; modules: number; why?: string; blocked?: string[]; /** the module ids that dress it (Redline's per-face coverage) */ dressedBy?: string[] };
+export type FaceLog = { face: string; building: string; area: string; play: boolean; family: 'side' | 'service' | 'stack'; length: number; from: number; to: number; modules: number; why?: string; blocked?: string[]; /** the module ids that dress it (Redline's per-face coverage) */ dressedBy?: string[]; /** a shop run: the shop filler modules on it (ShopFill_n or the ShopStack_Base row) */ shop?: number };
 export type FacesOut = { facades: Facade[]; log: FaceLog[]; piers: { placed: number; skipped: number; why: Record<string, number> } };
 
 const boxOf = (p: V[]): [number, number, number, number] => [Math.min(...p.map(q => q[0])), Math.max(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[1]))];
@@ -100,7 +112,7 @@ export function exposure(a: V, b: V, z0: number, z1: number, occ: Occ[], self: s
 }
 
 /** Cyrus–Beck: the part (t0, t1 in 0..1) of segment p + t·d inside convex quad q (either winding), or null. */
-function clip(q: V[], p: V, d: V): [number, number] | null {
+export function clip(q: V[], p: V, d: V): [number, number] | null {
   let t0 = 0, t1 = 1;
   const sgn = q.reduce((s, a, i) => s + cross(a, q[(i + 1) % q.length]!), 0) >= 0 ? 1 : -1;
   for (let i = 0; i < q.length; i++) {
@@ -228,7 +240,28 @@ const familyOf = (id: string, form: string): Facade['family'] => (form === 'pila
 /** The piece's footprint centre from its pivot, in kit axes (x, z). */
 const centreOf = (a: KitAsset): [number, number] => a.pivotOffset ?? [0, 0];
 
-export type FacesIn = { blds: FaceBld[]; masses: Mass[]; occ: Occ[]; facades: Facade[]; catalogue: (id: string) => KitAsset | undefined };
+/** An own-shopfront street tenancy (a street-level frontage of a plot building not linked to a street piece): host = its building id, a→b its shopfront line. */
+export type Tenancy = { host: string; a: V; b: V };
+export type FacesIn = { blds: FaceBld[]; masses: Mass[]; occ: Occ[]; facades: Facade[]; catalogue: (id: string) => KitAsset | undefined; tenancies?: Tenancy[] };
+
+/** The shop rule's widths: k fillers of the piece's own 3 m nearest R / 3, at sx = R / (3k) (always within 0.5-1.7 for R ≥ 1.5). */
+export const shopTile = (R: number): { k: number; sx: number } => { const k = Math.max(1, Math.round(R / FACES.shopModule)); return { k, sx: R / (k * FACES.shopModule) }; };
+
+/** Metres of the polyline parts (each a→b on one wall line) that own-shopfront tenancies overlap: a part counts where it lies on the tenancy's line (both
+ *  its ends within FACES.shopTol of it, parallel within FACES.chainTurn; a tenancy's chord across an arc stands off the arc's segments), by its projection. */
+export function shopOverlap(parts: [V, V][], ts: Tenancy[]): number {
+  let sum = 0;
+  for (const t of ts) {
+    const Lt = dist(t.a, t.b); if (Lt < 1e-6) continue;
+    const u = norm(sub(t.b, t.a)), off = (p: V) => Math.abs(cross(u, sub(p, t.a))), al = (p: V) => dot(u, sub(p, t.a));
+    for (const [a, b] of parts) {
+      if (dist(a, b) < 1e-6 || off(a) > FACES.shopTol || off(b) > FACES.shopTol || Math.abs(cross(u, norm(sub(b, a)))) > Math.sin((FACES.chainTurn * Math.PI) / 180)) continue;
+      const lo = Math.max(0, Math.min(al(a), al(b))), hi = Math.min(Lt, Math.max(al(a), al(b)));
+      if (hi > lo) sum += hi - lo;
+    }
+  }
+  return sum;
+}
 
 /** Is the every-face kit adopted (the side bay or its stack)? masses.ts then builds plain tiers for every building: the kit is the wall. */
 export function faceKitReady(): boolean {
@@ -240,6 +273,7 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
   const P: Pieces = new Map(adopted().map(a => [a.id, a])), pav = ctx.pav, out: Facade[] = [], log: FaceLog[] = [];
   const piers = { placed: 0, skipped: 0, why: {} as Record<string, number> }, skip = (w: string) => { piers.skipped++; piers.why[w] = (piers.why[w] ?? 0) + 1; };
   const byB = new Map<string, Facade[]>(); for (const f of inp.facades) (byB.get(f.building) ?? byB.set(f.building, []).get(f.building)!).push(f);
+  const tenB = new Map<string, Tenancy[]>(); for (const t of inp.tenancies ?? []) (tenB.get(t.host) ?? tenB.set(t.host, []).get(t.host)!).push(t);
   const coversOf = (fs: Facade[]): Cover[] => fs.flatMap(f => { const a = inp.catalogue(f.kit.id); return a ? [{ quad: quadOf(f.kit.at, a.size, f.kit.scale, f.kit.yaw ?? 0, 0.05), lo: f.base, hi: f.base + a.size[1] * f.kit.scale[1], owner: f.building }] : []; });
   const footprints = inp.blds.filter(b => !b.tower).map(b => ({ b, p: b.ring.p }));
   const yawOf = (n: V) => r4(Math.atan2(n[1], n[0]) - Math.PI / 2);
@@ -317,13 +351,15 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
         }
         r.endPier = r.from >= from - 0.01 ? rIn : 0; nx.startPier = nx.from >= from - 0.01 ? rOut : 0; piers.placed++; // the lower face of a corner beside a party wall runs on to the corner under the pier
       }
-      // tile each run
+      // tile each run (a second run on the same edge, split by street pieces between, takes the face id `#e.1`, so faces and columns stay unique)
+      const onEdge = new Map<number, number>();
       for (const r of runs) {
         const pts: V[] = [], lens: number[] = [];
         for (const s of r.parts) { const a = ring[s.e]!, t = T(s.e); if (!pts.length) pts.push([a[0] + t[0] * s.s0, a[1] + t[1] * s.s0]); pts.push([a[0] + t[0] * s.s1, a[1] + t[1] * s.s1]); lens.push(s.s1 - s.s0); }
         const total = lens.reduce((x, y) => x + y, 0), s0 = Math.min(r.startPier, total / 2), s1 = Math.max(s0, total - r.endPier), R = s1 - s0;
         const at = (s: number): V => { let acc = 0; for (let i = 0; i < lens.length; i++) { if (s <= acc + lens[i]! + 1e-9 || i === lens.length - 1) { const k = Math.min(1, Math.max(0, (s - acc) / (lens[i]! || 1))); return [pts[i]![0] + (pts[i + 1]![0] - pts[i]![0]) * k, pts[i]![1] + (pts[i + 1]![1] - pts[i]![1]) * k]; } acc += lens[i]!; } return pts[pts.length - 1]!; };
-        const face = `${m.id}#${r.parts[0]!.e}`, ent: FaceLog = { face, building: b.id, area: b.area, play: b.play, family: r.fam, length: r3(total), from: r3(r.from), to: z1, modules: 0 };
+        const e0 = r.parts[0]!.e, nth = onEdge.get(e0) ?? 0; onEdge.set(e0, nth + 1);
+        const face = `${m.id}#${e0}${nth ? `.${nth}` : ''}`, ent: FaceLog = { face, building: b.id, area: b.area, play: b.play, family: r.fam, length: r3(total), from: r3(r.from), to: z1, modules: 0 };
         log.push(ent);
         if (R < FACES.minFace) continue; // the corner piers cover it
         // the column: a whole-wall piece (3 or 4 storeys from the street), else the stack's bands
@@ -344,9 +380,37 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
         }
         if (!col) { ent.why = why; if (blocked.length) ent.blocked = blocked; continue; }
         ent.family = stacked ? 'stack' : r.fam;
-        // the pilaster column of the same wall, asked for only when no whole number of modules fills the run
+        // the shop rule (pieces.md Pass 2): a side run an own-shopfront tenancy overlaps by more than shopOverlap is a shop run; a whole-wall column takes
+        // ShopFill_n for SideBay_n, a stacked column from the pavement its ground row as a ShopStack_Base row (the base-band modules dropped)
+        let shopCol: Module | null = null, shopRow: Module | null = null;
+        if (r.fam === 'side' && R >= FACES.shopMin && tenB.has(b.id)) {
+          const parts = r.parts.map(s => { const a = ring[s.e]!, t = T(s.e); return [[a[0] + t[0] * s.s0, a[1] + t[1] * s.s0], [a[0] + t[0] * s.s1, a[1] + t[1] * s.s1]] as [V, V]; });
+          if (shopOverlap(parts, tenB.get(b.id)!) > FACES.shopOverlap) {
+            const c0 = col[0]!;
+            if (!stacked && code) { const a = P.get(FACE_KIT.shop.whole[code] ?? ''); if (a && Math.abs(a.size[1] - c0.a.size[1]) < 0.05 && inRange(a, c0.sy)) shopCol = { ...c0, id: a.id, a }; }
+            else if (stacked && c0.id === FACE_KIT.stack.base && c0.z <= pav + FACES.topTol) { const a = P.get(FACE_KIT.shop.base); if (a && Math.abs(a.size[1] - c0.a.size[1]) < 0.05 && inRange(a, c0.sy)) shopRow = { ...c0, id: a.id, a }; }
+          }
+        }
+        if (shopCol) col = [shopCol];
+        // the shop row: k fillers of 3 m nearest R / 3 along the run, each its own column (the Mid / Top columns above keep their 6 m joints)
+        if (shopRow) {
+          const st = shopTile(R), sw = FACES.shopModule * st.sx, [cx, cz] = centreOf(shopRow.a);
+          for (let i = 0; i < st.k; i++) {
+            const pa = at(s0 + i * sw), pb = at(s0 + (i + 1) * sw), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], sx = r3(st.sx);
+            const p: V = [c[0] - t[0] * cx * sx + n[0] * cz, c[1] - t[1] * cx * sx + n[1] * cz];
+            push({ form: 'stack', kit: { id: shopRow.id, scale: [sx, shopRow.sy, 1], yaw: yawOf(n), at: [r3(p[0]), r3(p[1])] }, base: shopRow.z, a: [r3(pa[0]), r3(pa[1])], b: [r3(pb[0]), r3(pb[1])], edge: r.parts[0]!.e, face,
+              family: familyOf(shopRow.id, 'stack'), normal: [r4(n[0]), r4(n[1])], column: { id: `${face}/s${i}`, storeys: 1 }, casts: 'proxy-l2' });
+            (ent.dressedBy ??= []).push(placed[placed.length - 1]!.id);
+            ent.modules++;
+          }
+          ent.shop = st.k;
+        }
+        const dropBase = (cl: Module[]) => (shopRow && cl[0] && cl[0].z <= pav + FACES.topTol && (cl[0].id === FACE_KIT.stack.base || cl[0].id === FACE_KIT.pilaster.base) ? cl.slice(1) : cl);
+        if (shopRow && dropBase(col).length === 0) continue; // the run was one base band: the shop row is all of it
+        // the pilaster column of the same wall, asked for only when no whole number of modules fills the run (a shop column tiles alone)
         const w = col[0]!.a.size[0], range = col[0]!.a.tags.scale;
-        let tl = tile(R, w, range), pcol: Module[] | null = null;
+        let tl = shopCol ? { ...shopTile(R), pil: [] as number[] } : tile(R, w, range), pcol: Module[] | null = null;
+        if (shopCol) ent.shop = tl!.k;
         if (!tl) {
           const PL = FACE_KIT.pilaster, pw = code ? P.get(PL.whole[code]!) : undefined;
           if (pw && inRange(pw, (z1 - foot) / pw.size[1])) pcol = [{ id: pw.id, z: r3(foot), sy: r3((z1 - foot) / pw.size[1]), a: pw }];
@@ -361,7 +425,7 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
         const svc = r.parts.find(x => x.svc)?.svc;
         for (const seg of widths) {
           const pa = at(sAt), pb = at(sAt + seg.w), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], yaw = yawOf(n);
-          const cl = seg.pil ? pcol! : col, sx = r3(seg.w / cl[0]!.a.size[0]);
+          const cl = dropBase(seg.pil ? pcol! : col), sx = cl.length ? r3(seg.w / cl[0]!.a.size[0]) : 1;
           for (const md0 of cl) {
             const md = !seg.pil && j === dock && cl.length === 1 ? { ...md0, id: variants[0]!.id, a: variants[0]! } : md0, [cx, cz] = centreOf(md.a);
             const p: V = [c[0] - t[0] * cx * sx + n[0] * cz, c[1] - t[1] * cx * sx + n[1] * cz]; // kit +X runs along -t (against the ring), +Z out along n
