@@ -49267,16 +49267,20 @@
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 704,
+   "tris": 2208,
    "materials": [
-    "DK_Moon_1",
-    "DK_Moon_2"
+    "DK_Horizon_Moon"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_Moon_L1.fbx",
-     "tris": 176,
+     "tris": 528,
      "screen": 0.2
+    },
+    {
+     "file": "Models/Horizon/DK_Horizon_Moon_L2.fbx",
+     "tris": 120,
+     "screen": 0.06
     }
    ],
    "lodCategory": "horizon",
@@ -49285,43 +49289,50 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_Moon.fbx",
-     "sha256": "d73a79e91a0f697931c1e8ac44ae5a0e6abe3d47ca58f59a49ef6d7013eba4ab",
-     "bytes": 29644
+     "sha256": "76ae56914c766f3504f92c677f45d7c3158958925c8e8e013bb93eeaf6b2c7f8",
+     "bytes": 58044
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Moon_1.mat",
-     "sha256": "b1213e3e30e880da11da959fa05c932db97d6112c8ef8a6b60d3ba3a0bfa137f",
-     "bytes": 3827
+     "path": "Materials/DK_Horizon_Moon.mat",
+     "sha256": "e1c596cb228a17fc2e7c64128614f3d0de5cb4060216c3fa2ef2ac2d258b6523",
+     "bytes": 3969
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Moon_1.mat.meta",
-     "sha256": "47d61482225cab342cc1d7b3b621db9da0b3e5f9425b75423cf50847567dc9a2",
+     "path": "Materials/DK_Horizon_Moon.mat.meta",
+     "sha256": "71ae1f405dfbf4894ee644f14e4e91cbd654eb317630ba2bb136d5998eb1b799",
      "bytes": 188
     },
     {
      "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Moon_2.mat",
-     "sha256": "7f98e0c0b73fe1e6552607b4ad82fc2d731fbc9128cdedf21ffbc3bd4ee9dff7",
-     "bytes": 3827
+     "role": "texture",
+     "path": "Textures/horizon_moon_v1.png",
+     "sha256": "134eb017ce7543d814b1497281241c00fb9de06ac173089a7f887843cf7d2fd7",
+     "bytes": 238679
     },
     {
      "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Moon_2.mat.meta",
-     "sha256": "20a9421c2434e56cda66257eb7913e49c325c124da75a14353161a25d0816c4c",
-     "bytes": 188
+     "role": "texture-meta",
+     "path": "Textures/horizon_moon_v1.png.meta",
+     "sha256": "52d8b2e9f636894fb2defd4b7aa86a4e826bd73138bf5185b94243ca57781783",
+     "bytes": 2718
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_Moon_L1.fbx",
-     "sha256": "940fcbbfae8d0bf7aaae84cde2b73be295cc17eaca45557b2f750b0eef6a82a3",
-     "bytes": 21628
+     "sha256": "627b34fead3223a69548ad7e482d334987e8761f539ec65127bc428e6c546581",
+     "bytes": 27596
+    },
+    {
+     "root": "generated",
+     "role": "lod",
+     "path": "Models/Horizon/DK_Horizon_Moon_L2.fbx",
+     "sha256": "d76a1e2e833a3e3be3e74fe715be88501ff1a9f6b7ee8aa196d9cee9d1ebd8b3",
+     "bytes": 20268
     }
    ],
    "tags": {
@@ -49342,29 +49353,26 @@
    "id": "Horizon_PlanetRinged",
    "category": "Horizon",
    "size": [
-    440,
-    199.8782,
-    418.9593
+    433.4961,
+    199.9615,
+    412.7737
    ],
    "pivot": "footprint-centre-ground",
    "front": "+Z",
-   "tris": 3232,
+   "tris": 6016,
    "materials": [
-    "DK_Planet_1",
-    "DK_Planet_3",
-    "DK_Planet_2",
-    "DK_Planet_4",
-    "DK_Planet_Ring"
+    "DK_Horizon_Planet",
+    "DK_Horizon_Ring"
    ],
    "lods": [
     {
      "file": "Models/Horizon/DK_Horizon_PlanetRinged_L1.fbx",
-     "tris": 808,
+     "tris": 1984,
      "screen": 0.2
     },
     {
      "file": "Models/Horizon/DK_Horizon_PlanetRinged_L2.fbx",
-     "tris": 193,
+     "tris": 736,
      "screen": 0.06
     }
    ],
@@ -49374,92 +49382,78 @@
      "root": "generated",
      "role": "fbx",
      "path": "Models/Horizon/DK_Horizon_PlanetRinged.fbx",
-     "sha256": "366d98864b23ca1cb3c6b4ac63e2d02699d69cc0f5667a37772ea00019152b04",
-     "bytes": 104796
+     "sha256": "4234a9fda45de718672268d21a65aac7e67ea53df9acff6ab7071b469daee4cb",
+     "bytes": 158812
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Planet_1.mat",
-     "sha256": "4875cb6a8c3882c279d1f3a4d4c36db1f57e9e2a211719dc797321053e4b7a3b",
-     "bytes": 3830
+     "path": "Materials/DK_Horizon_Planet.mat",
+     "sha256": "8235c525cc48ccd2f17b0236df0987331bcb28360665a072321373f93856052b",
+     "bytes": 3973
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Planet_1.mat.meta",
-     "sha256": "b8ef3217e506c59451ba0b8aa72f4fb87c24b2e2cc2ec516afa31308942d0282",
+     "path": "Materials/DK_Horizon_Planet.mat.meta",
+     "sha256": "ccf32943b76177146c10696af825eb03d2d5c31834f55a157ab0aab975058a4f",
      "bytes": 188
     },
     {
      "root": "generated",
      "role": "material",
-     "path": "Materials/DK_Planet_3.mat",
-     "sha256": "2a6afe281a8e4e707b38374689daf3c074ee8a79636eca1406a7bd963b841d29",
-     "bytes": 3830
+     "path": "Materials/DK_Horizon_Ring.mat",
+     "sha256": "cd81aa5c8aa10fe1ea2f59f465548ebfceba242461b1b0e286b8faa4eb36f27d",
+     "bytes": 3971
     },
     {
      "root": "generated",
      "role": "material-meta",
-     "path": "Materials/DK_Planet_3.mat.meta",
-     "sha256": "376d2f37ae78e28226ef3a1710fff06eb776b5dbe277031636bc27988950a378",
+     "path": "Materials/DK_Horizon_Ring.mat.meta",
+     "sha256": "8d67cd621d323b805f9c3f2c629874defb1b087928a1451cddfefaa89fd53a41",
      "bytes": 188
     },
     {
      "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Planet_2.mat",
-     "sha256": "a04bb34037cd3152646b60cea7ede54e49769f5ad290a010f690141eb89ecec3",
-     "bytes": 3830
+     "role": "texture",
+     "path": "Textures/horizon_planet_bands_v1.png",
+     "sha256": "b2e9d50e8d6381c8c054e51f977e111c67e5e737be575534a1bc767ed66c4198",
+     "bytes": 246314
     },
     {
      "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Planet_2.mat.meta",
-     "sha256": "89fb0f23927a14dd6ba9ef32281c782bd065e7211c8d23a628f937d23bcddb42",
-     "bytes": 188
+     "role": "texture-meta",
+     "path": "Textures/horizon_planet_bands_v1.png.meta",
+     "sha256": "1cdd34045b02968fa70005ea3f59e010667369ace6515ca8b0246ecfa8379e84",
+     "bytes": 2718
     },
     {
      "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Planet_4.mat",
-     "sha256": "a1ca66a9b747fe080d47254b8a695900fb399275a551775412144461945ddcd3",
-     "bytes": 3830
+     "role": "texture",
+     "path": "Textures/horizon_planet_ring_v1.png",
+     "sha256": "6df2eda8bc8de0e73d2ebb194e5540371730b3b57a73f99ac6b11fb821c96f84",
+     "bytes": 222
     },
     {
      "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Planet_4.mat.meta",
-     "sha256": "af73817de83b7708361af05ae29dec5084b127f2ac66aca1a02415faa520309a",
-     "bytes": 188
-    },
-    {
-     "root": "generated",
-     "role": "material",
-     "path": "Materials/DK_Planet_Ring.mat",
-     "sha256": "4feac6c07a0a19c7e6a650c411d6c6eaf6bc15c61c5cb8fbdf8fb5cbfcfd977e",
-     "bytes": 3833
-    },
-    {
-     "root": "generated",
-     "role": "material-meta",
-     "path": "Materials/DK_Planet_Ring.mat.meta",
-     "sha256": "70df82e5dfee9cd14e9bb3e36a9d8794fdcee13634f7a7a929efd62f489bf7d4",
-     "bytes": 188
+     "role": "texture-meta",
+     "path": "Textures/horizon_planet_ring_v1.png.meta",
+     "sha256": "3758e35b1d63a13ed38b6a61f26cfff14806c535a8a7c88a8728cc53c11eb12b",
+     "bytes": 2718
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_PlanetRinged_L1.fbx",
-     "sha256": "cd8ebb6e39a801ff68087ddbe9a71bc529711f593e6f89023d738ef227027ac6",
-     "bytes": 55164
+     "sha256": "dde69e45b938bcc5acd1d13df2b3df6dc92e45b1cf6f444eba91c867f6f03b6b",
+     "bytes": 66668
     },
     {
      "root": "generated",
      "role": "lod",
      "path": "Models/Horizon/DK_Horizon_PlanetRinged_L2.fbx",
-     "sha256": "f26466dd3a0336a942bdeabd863a2b6cb360a1170a4a7d1741eb14a650076977",
-     "bytes": 29436
+     "sha256": "5057cce9c4ce2b76e94a47284ec18ae48265127bd66ecb83125b54a9b1668ac7",
+     "bytes": 37580
     }
    ],
    "tags": {
