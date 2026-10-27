@@ -126,38 +126,65 @@ def hand_pose(fig, HP, blk):
     palm = np.nonzero((dom == 'RightHand') & (((V0 - np.array(h)) @ hax) < kn) & (Lb[:, 1] < HP['thenarY']))[0]
     c = Vector(Bm.translation); q = h + (m1 - h) * max(0.0, min(1.0, (c - h).dot(m1 - h) / (m1 - h).length_squared))
     out_b = (Bi.to_3x3() @ (c - q)).normalized(); off = Vector((0, 0, 0))
+    ca, sa = math.cos(math.radians(blk.get('rakeDeg', 0.0))), math.sin(math.radians(blk.get('rakeDeg', 0.0)))
     def inside(P):
+        # the block leans by the weapon's grip rake (its centre line's lean toward the barrel per height; the bone's Y up, Z the barrel)
         if len(P) == 0: return 0
-        L_ = np.array([list(Bi @ Vector(p)) for p in P]) - np.array(off)
+        L0 = np.array([list(Bi @ Vector(p)) for p in P]) - np.array(nonlocal_off[0])
+        L_ = L0.copy(); L_[:, 1] = ca * L0[:, 1] + sa * L0[:, 2]; L_[:, 2] = -sa * L0[:, 1] + ca * L0[:, 2]
         return int(((np.abs(L_[:, 0]) <= blk['widthM'] / 2) & (np.abs(L_[:, 2]) <= blk['depthM'] / 2) & (np.abs(L_[:, 1]) <= blk['heightM'] / 2)).sum())
-    best = None
-    for sg in (1, -1):                                   # out of the palm: whichever way along its normal clears it first
-        o_ = Vector((0, 0, 0)); k = 0
-        while True:
-            off = o_; n_ = inside(V0[palm])
-            if n_ == 0 or k >= HP['maxPushSteps']: break
-            o_ = o_ + out_b * sg * HP['stepM']; k += 1
-        if best is None or (n_, k) < best[:2]: best = (n_, k, Vector(o_), sg)
-    off = best[2]; k = best[1]
-    if os.environ.get('WDEBUG'):
-        L_ = np.array([list(Bi @ Vector(p)) for p in V0[palm]]) - np.array(off); m_ = (np.abs(L_[:, 0]) <= blk['widthM'] / 2) & (np.abs(L_[:, 2]) <= blk['depthM'] / 2) & (np.abs(L_[:, 1]) <= blk['heightM'] / 2)
-        Lall = np.array([list(Bi @ Vector(p)) for p in V0[palm]])
-        print('WDEBUG', fig.label, 'out_b', [round(x, 3) for x in out_b], 'sg', best[3], 'left', best[0], 'palm n', len(palm), 'palm extent x', np.round(Lall.min(0), 3), np.round(Lall.max(0), 3), 'inside pts', np.round(L_[m_][:5], 3).tolist())
-    ang = {}
-    for f in FINGERS + ('Thumb',):
-        ang[f] = []
-        for i in (1, 2, 3):
-            pb = a.pose.bones.get(f'RightHand{f}{i}')
-            if pb is None: ang[f].append(0.0); continue
-            ix = np.nonzero(np.isin(dom, [f'RightHand{f}{j}' for j in range(i, 4)]))[0]; got = 0.0; pb.rotation_mode = 'QUATERNION'
-            for t in np.arange(HP['stepDeg'], HP['maxDeg'][f][i - 1] + 1e-6, HP['stepDeg']):
-                pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(float(t))); bpy.context.view_layer.update()
-                if inside(AN.co(body)[ix]) > 0: break
-                got = float(t)
-            pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(got)); bpy.context.view_layer.update(); ang[f].append(got)
+    def push(o_):                                   # out of the palm along its normal (whichever way clears it first) from o_
+        best = None
+        for sg in (1, -1):
+            q_ = Vector(o_); kk = 0
+            while True:
+                nonlocal_off[0] = q_; n_ = inside(V0[palm])
+                if n_ == 0 or kk >= HP['maxPushSteps']: break
+                q_ = q_ + out_b * sg * HP['stepM']; kk += 1
+            if best is None or (n_, kk) < best[:2]: best = (n_, kk, Vector(q_), sg)
+        return best
+    def fingers():
+        ang = {}
+        for f in FINGERS + ('Thumb',):
+            ang[f] = []
+            for i in (1, 2, 3):
+                pb = a.pose.bones.get(f'RightHand{f}{i}')
+                if pb is None: ang[f].append(0.0); continue
+                ix = np.nonzero(np.isin(dom, [f'RightHand{f}{j}' for j in range(i, 4)]))[0]; got = 0.0; pb.rotation_mode = 'QUATERNION'
+                for t in np.arange(HP['stepDeg'], HP['maxDeg'][f][i - 1] + 1e-6, HP['stepDeg']):
+                    pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(float(t))); bpy.context.view_layer.update()
+                    if inside(AN.co(body)[ix]) > 0: break
+                    got = float(t)
+                pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(got)); bpy.context.view_layer.update(); ang[f].append(got)
+        return ang
+    def block_wrap():                               # each finger's chain turned about the block's own centre line (the bone's Y through it)
+        out = {}
+        for f in ('Middle', 'Ring'):
+            pts = [Bi @ (Mw @ a.pose.bones[f'RightHand{f}{i}'].head) for i in (1, 2, 3)] + [Bi @ (Mw @ a.pose.bones[f'RightHand{f}3'].tail)]
+            tot = 0.0
+            for p_, q_ in zip(pts, pts[1:]):
+                u = Vector((p_.x - nonlocal_off[0].x, 0, p_.z - nonlocal_off[0].z)); v = Vector((q_.x - nonlocal_off[0].x, 0, q_.z - nonlocal_off[0].z))
+                if u.length > 1e-6 and v.length > 1e-6: tot += math.degrees(math.atan2(u.cross(v).y, u.dot(v)))
+            out[f] = abs(tot)
+        return out
+    # the position search (spec.handPose.search): along the hand (the bone's working line) in steps, out of the palm at each, the fingers closed
+    # to contact; the best is the one whose middle and ring fingers wrap the block most (the smaller of the two), no palm vertex inside it
+    nonlocal_off = [Vector((0, 0, 0))]; trials = []
+    for dz in HP['search']['alongM']:
+        for pb in a.pose.bones: pb.matrix_basis = Matrix.Identity(4)
+        bpy.context.view_layer.update()
+        b_ = push(Vector((0, 0, dz)))
+        if b_[0] > 0: trials.append({'alongM': dz, 'palmLeft': b_[0]}); continue
+        nonlocal_off[0] = b_[2]; ang = fingers(); w_ = block_wrap()
+        trials.append({'alongM': dz, 'outSteps': b_[1], 'wrap': {k: round(v, 1) for k, v in w_.items()}, 'ang': ang, 'off': [round(x, 4) for x in b_[2]]})
+    ok = [t for t in trials if 'wrap' in t and t['outSteps'] > 0]   # the block against the palm: it started in the palm and was pushed just clear (a block clear of the palm from the start floats beyond it, and its 'wrap' is the fingers lying past it)
+    if not ok: raise SystemExit(f'{fig.label}: no block position clears the palm {trials}')
+    bt = max(ok, key=lambda t: (min(t['wrap'].values()), -abs(t['alongM'])))
+    ang = bt['ang']; off = Vector(bt['off']); k = [bt['outSteps'], bt['alongM'], 0]
+    if os.environ.get('WDEBUG'): print('WSEARCH', fig.label, [(t['alongM'], t.get('wrap'), t.get('outSteps')) for t in trials])
     for pb in a.pose.bones: pb.matrix_basis = Matrix.Identity(4)
     bpy.context.view_layer.update()
-    return ang, [round(-off.x, 4), round(off.y, 4), round(off.z, 4)], [k, best[3], best[0]]
+    return ang, [round(-off.x, 4), round(off.y, 4), round(off.z, 4)], {'outSteps': k[0], 'alongM': k[1], 'trials': [{x: t[x] for x in t if x != 'ang'} for t in trials]}
 
 
 def apply_pose(fig, ang):
@@ -189,8 +216,8 @@ def main():
         cs = D['clipSets'][P['class']]; clip = AN.Clip(os.path.join(lib, D['clipFiles'][cs['aim']]))
         for f in figs:
             w, _ = weapons[(f.label, pid)]; frames = aim_frames(f, clip, CK['aimFrames'])
-            HP = D['spec']['handPose']; blk = D['spec']['classes'][P['class']]['grip']
-            ang, seat_b, pushed = hand_pose(f, HP, blk); poses.setdefault(f.label, {})[P['class']] = {'curlDeg': ang, 'seat': seat_b, 'palmPushSteps': pushed}
+            HP = D['spec']['handPose']; blk = dict(D['spec']['classes'][P['class']]['grip']); blk['rakeDeg'] = -float((info.get('gripFit') or {}).get('rakeDeg', 0.0))   # the block leans as this weapon's grip does (a hand pose per weapon)
+            ang, seat_b, pushed = hand_pose(f, HP, blk); poses.setdefault(f.label, {})[pid] = {'curlDeg': ang, 'seat': seat_b, 'palmPushSteps': pushed}
             seats = []; radii = []; dirs = []
             for fr in frames:
                 sc.frame_set(fr); AN.retarget(f, clip); bpy.context.view_layer.update(); c_, r_ = circle_seat(f); seats.append(c_); radii.append(r_)

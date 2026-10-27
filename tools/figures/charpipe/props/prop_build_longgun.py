@@ -56,17 +56,22 @@ def main():
     c0 = (V0.max(0) + V0.min(0)) / 2; s = CL['lengthM'] / (hi - lo)
     for o in objs:
         V = (verts(o) - c0) @ R.T * s; o.data.vertices.foreach_set('co', V.ravel()); o.data.update()
-    V = verts(objs[0]); T = L.tris_of(objs[0]); bvh = BVHTree.FromPolygons([Vector(v) for v in V], [list(t) for t in T], all_triangles=True)
-    y0, y1 = V[:, 1].min(), V[:, 1].max(); n = 200; ys = np.linspace(y0, y1, n); top = np.full(n, np.nan); bot = np.full(n, np.nan)
-    for i, y in enumerate(ys):
-        h = bvh.ray_cast(Vector((0, y, 1.0)), Vector((0, 0, -1)), 2.0); top[i] = h[0].z if h[0] else np.nan
-        h = bvh.ray_cast(Vector((0, y, -1.0)), Vector((0, 0, 1)), 2.0); bot[i] = h[0].z if h[0] else np.nan
-    uu = (ys - y0) / (y1 - y0); Gs = P['gripSearch']
-    win = (uu >= Gs['from']) & (uu <= Gs['to']) & ~np.isnan(bot)
-    under = float(np.nanmedian(bot[(uu >= Gs['underFrom']) & (uu <= Gs['underTo'])]))      # the receiver's underside
-    run = win & (bot < under - Gs['dropM'])
-    if not run.any(): raise SystemExit('no pistol grip found')
-    idx = np.nonzero(run)[0]; ga, gb = ys[idx.min()], ys[idx.max()]; gbot = float(np.nanmin(bot[run]))
+    def profile():
+        V = verts(objs[0]); T = L.tris_of(objs[0]); bvh = BVHTree.FromPolygons([Vector(v) for v in V], [list(t) for t in T], all_triangles=True)
+        y0, y1 = V[:, 1].min(), V[:, 1].max(); n = 200; ys = np.linspace(y0, y1, n); top = np.full(n, np.nan); bot = np.full(n, np.nan)
+        for i, y in enumerate(ys):
+            h = bvh.ray_cast(Vector((0, y, 1.0)), Vector((0, 0, -1)), 2.0); top[i] = h[0].z if h[0] else np.nan
+            h = bvh.ray_cast(Vector((0, y, -1.0)), Vector((0, 0, 1)), 2.0); bot[i] = h[0].z if h[0] else np.nan
+        uu = (ys - y0) / (y1 - y0)
+        win = (uu >= Gs['from']) & (uu <= Gs['to']) & ~np.isnan(bot)
+        under = float(np.nanmedian(bot[(uu >= Gs['underFrom']) & (uu <= Gs['underTo'])]))      # the receiver's underside
+        run = win & (bot < under - Gs['dropM'])
+        if not run.any(): raise SystemExit('no pistol grip found')
+        idx = np.nonzero(run)[0]
+        return V, ys, top, bot, y0, y1, under, run, ys[idx.min()], ys[idx.max()], float(np.nanmin(bot[run]))
+    Gs = P['gripSearch']
+    V, ys, top, bot, y0, y1, under, run, ga, gb, gbot = profile()
+    lop = None
     # the grip fitted to the class's block: depth (along the barrel) and width, about its centre line, the region below the underside
     B = CL['grip']; Fb = P['gripFit']; grip_rep = None
     for o in objs:
@@ -108,10 +113,23 @@ def main():
             z = V[i, 2]; cy, cx = np.polyval(ky, z), np.polyval(kx, z); V[i, 1] = cy + (V[i, 1] - cy) * kd; V[i, 0] = cx + (V[i, 0] - cx) * kw
         o.data.vertices.foreach_set('co', V.ravel()); o.data.update()
     V = verts(objs[0]); d2, w2 = grip_size(V)
+    grip_rep['rakeDeg'] = round(float(math.degrees(math.atan(ky[0]))), 2)
     grip_rep['afterFirstPass'] = {'depthM': round(d1, 4), 'widthM': round(w1, 4)}
     grip_rep['after'] = {'heightM': round(float(under - gbot), 4), 'depthM': round(d2, 4), 'widthM': round(w2, 4), 'measure': 'median over the middle 60 % of the grip height'}
     zg = under - Gs['belowFrac'] * (under - gbot); sg = cut(V, T0, zg, ya, yb)
     origin = np.array([(sg[:, 0].min() + sg[:, 0].max()) / 2, (sg[:, 1].min() + sg[:, 1].max()) / 2, zg])
+    if CL.get('lengthOfPullM'):
+        # the class's length of pull (Sky, 2026-10-27, 'whatever suits': the standard 35 cm, the grip's pivot to the butt): the stock behind the
+        # grip stretched along the barrel to it, everything ahead of the grip shortened along the barrel to keep the overall length; heights,
+        # widths and the grip's own run as designed
+        oy = origin[1]; y0_, y1_ = verts(objs[0])[:, 1].min(), verts(objs[0])[:, 1].max(); ra, fb = ga - Fb['marginM'], gb + Fb['marginM']
+        r = (CL['lengthOfPullM'] - (oy - ra)) / (ra - y0_); fwd = (CL['lengthM'] - CL['lengthOfPullM'] - (fb - oy)) / (y1_ - fb)
+        for o in objs:
+            Vo = verts(o); m_ = Vo[:, 1] < ra; Vo[m_, 1] = ra - (ra - Vo[m_, 1]) * r
+            mf = Vo[:, 1] > fb; Vo[mf, 1] = fb + (Vo[mf, 1] - fb) * fwd
+            o.data.vertices.foreach_set('co', Vo.ravel()); o.data.update()
+        lop = {'stockFactor': round(float(r), 4), 'forwardFactor': round(float(fwd), 4), 'beforeM': round(float(oy - y0_), 4), 'afterM': CL['lengthOfPullM']}
+        V, ys, top, bot, y0, y1, under, run, ga_, gb_, gbot_ = profile()
     # sockets (in the +Y-barrel frame first)
     ys_ = origin[1] + P['support']['fromGripM']; k = int(np.argmin(np.abs(ys - ys_)))
     support = np.array([0.0, ys_, bot[k] - P['support']['belowM']])
@@ -143,7 +161,7 @@ def main():
     rot_support = av.look_rotation(av.norm(np.array(P['support']['longAxis'], float)), np.array(P['support']['thumb'], float))
     rep = {'id': PID, 'class': P['class'], 'sources': [{'file': os.path.relpath(p, ROOT), 'sha256': hashlib.sha256(open(p, 'rb').read()).hexdigest()} for p in src],
            'scale': round(float(s), 5), 'lengthM': CL['lengthM'], 'sizeM': {'length': round(float(dims[1]), 4), 'height': round(float(dims[2]), 4), 'width': round(float(dims[0]), 4)},
-           'lodTris': [len(L.tris_of(o)) for o in objs], 'gripFit': grip_rep,
+           'lodTris': [len(L.tris_of(o)) for o in objs], 'gripFit': grip_rep, 'lengthOfPull': lop,
            'sockets': {'grip': {'position': [0, 0, 0], 'rotation': [0, 0, 0, 1]},
                        'support': {'position': unity(support), 'rotation': [round(float(x), 6) for x in rot_support]},
                        'shoulder': {'position': unity(shoulder), 'rotation': [0, 0, 0, 1]},

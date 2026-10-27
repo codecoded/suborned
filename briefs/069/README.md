@@ -197,3 +197,8 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Knuckle rule:** knuckle-to-tip from the hand's length.
   - **Per-class hand pose:** solved against the grip block, but the gates still fail (block centred too far back on the palm).
   - **Guards on Unity's Humanoid IK pass** (scratch): stays optimised, barrel 0.03–0.16° to target, 0 errors, deterministic; the support hand lands 0.7–3.5 cm off. The deoptimise-on-draw switch was rejected: after rig constraints bind, re-optimising stops the Animator.
+- **Hands and grip, round 3 (Forma):**
+  - **Hand size:** the Fixer's wrist bone sits at the wrist crease, and the generated hand is genuinely about 12% small (16 cm against about 18.5 cm expected); the knuckle rule uses straight wrist-to-tip. Byte-identical 11/11.
+  - **Grip-block search:** still fails the gates (Fixer pistol middle/ring 105/77°, 238 crossings). The block's front sits ahead of the knuckles; next is seating it at the knuckle line.
+  - **Carbine:** 35 cm length of pull by rule (stock ×2.14, forward ×0.75, 0.9 m kept), but the butt is still about 18.5 cm short of the shoulder in `rifle_aim`.
+- **Sky's new Enforcer design** (`paid/069-enforcer/source/enforcer_design_sky.png`): converted to an intake sheet (`paid/069-enforcer/codex/enforcer_intake_1.png`, pose check PASS). Open: its heavy gold against §15's cell rule (no gold trim), and the Tripo mesh, which needs Sky's OK.

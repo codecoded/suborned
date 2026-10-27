@@ -91,7 +91,8 @@ def main():
             w = min(1.0, (slide_bottom - z) / F['blendM'])
             V[i, 1] = c_y + (V[i, 1] - c_y) * (1 + (sd - 1) * w); V[i, 0] = c_x + (V[i, 0] - c_x) * (1 + (sw - 1) * w)
         sm2 = V[rear & (np.abs(V[:, 2] - zm) < 0.003)]
-        fit_rep = {'before': {'depthM': round(dep, 4), 'widthM': round(wid, 4)}, 'after': {'depthM': round(float(np.ptp(sm2[:, 1])), 4), 'widthM': round(float(np.ptp(sm2[:, 0])), 4)}, 'heightM': round(float(gh), 4), 'block': B}
+        rake = math.degrees(math.atan(ky[0]))   # the grip's rake: its centre line's lean along the barrel per unit of height
+        fit_rep = {'rakeDeg': round(float(rake), 2), 'before': {'depthM': round(dep, 4), 'widthM': round(wid, 4)}, 'after': {'depthM': round(float(np.ptp(sm2[:, 1])), 4), 'widthM': round(float(np.ptp(sm2[:, 0])), 4)}, 'heightM': round(float(gh), 4), 'block': B}
         grip = V[(V[:, 1] < L0 + G['rearFrac'] * length) & (V[:, 2] < slide_bottom)]
     zg = slide_bottom - G['belowSlideFrac'] * gh
     sec = grip[np.abs(grip[:, 2] - zg) < 0.004]

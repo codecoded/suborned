@@ -1216,7 +1216,7 @@ def finger_fit(src, arm):
         if thumb is not None: fit['Thumb'] = thumb
         nrm = np.cross(base['Index'][0] - h, base['Pinky'][0] - h); nrm /= np.linalg.norm(nrm); nrm = nrm if s == 'Left' else -nrm   # the palm side
         lines = {}
-        hand_len = float(((V[fit['Middle'][0]] - h) @ ax).max())                                   # wrist to the middle fingertip, along the hand
+        hand_len = float(np.linalg.norm(V[fit['Middle'][0]] - h, axis=1).max())                    # wrist to the middle fingertip, straight (along the hand's own axis it read 2 cm short: the fingers curve)
         Lmid0 = sum(np.linalg.norm(wt(f'{s}HandMiddle{i}') - wh(f'{s}HandMiddle{i}')) for i in (1, 2, 3))
         for f, (c, cen) in fit.items():
             X = V[c]; d = np.linalg.svd(X - X.mean(0), full_matrices=False)[2][0]

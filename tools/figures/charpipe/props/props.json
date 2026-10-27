@@ -486,7 +486,9 @@
     "lengthM": 0.9,
     "lengthStatus": "Sky, 2026-10-27: 0.9 m (the delivered carbine is 1.594 m and is scaled to it)",
     "barrelToSupportHand": true,
-    "barrelNote": "a two-handed long gun's rotation in the right hand: its barrel along the class clip's own line from the right hand to the left (the clip holds a rifle that way); the handgun stays hand-seated (identity)"
+    "barrelNote": "a two-handed long gun's rotation in the right hand: its barrel along the class clip's own line from the right hand to the left (the clip holds a rifle that way); the handgun stays hand-seated (identity)",
+    "lengthOfPullM": 0.35,
+    "lengthOfPullNote": "Sky, 2026-10-27 ('whatever suits'): the standard length of pull, 35 cm from the grip to the butt; the stock stretched along the barrel to it and the forward section and barrel shortened to keep 0.9 m overall (prop_build_longgun.py)"
    }
   },
   "checks": {
@@ -530,8 +532,22 @@
      30
     ]
    },
-   "rule": "the standard hand pose per weapon class (Sky via Aster: 'official best practice'), sized to the class's grip block, for Latch's hand-override layer: solved per figure against the block itself (weapon_show.hand_pose): the block's centre on Attach_RightHand pushed out of the palm, each finger closed knuckle first to contact. The class pose is the angles per bone (about each bone's own X, toward the palm); checks.json handPoses has them per figure, and the seat (the grip socket's localPosition under Attach_RightHand).",
-   "thenarY": 0.015
+   "rule": "the standard hand pose per weapon class (Sky via Aster: 'official best practice'), sized to the class's grip block, for Latch's hand-override layer: solved per figure against the block itself (weapon_show.hand_pose): the block's centre on Attach_RightHand pushed out of the palm, each finger closed knuckle first to contact. The class pose is the angles per bone (about each bone's own X, toward the palm); checks.json handPoses has them per figure, and the seat (the grip socket's localPosition under Attach_RightHand). The block leans by the weapon's own grip rake (gripFit.rakeDeg), so the pose is per weapon (the 'hand pose per weapon' override).",
+   "thenarY": 0.015,
+   "search": {
+    "alongM": [
+     0.0,
+     0.01,
+     0.02,
+     0.03,
+     0.04,
+     0.05,
+     0.06,
+     0.07,
+     0.08
+    ],
+    "rule": "the block's centre tried at these offsets along the hand (the bone's working line, toward the fingers); kept only where the block touches the palm (it began inside the palm and was pushed just clear: further out it floats past the fingers and its winding reads high with the fingers straight); of those, the largest smaller-of-middle-and-ring wrap about the block's centre line"
+   }
   }
  },
  "clipSets": {
