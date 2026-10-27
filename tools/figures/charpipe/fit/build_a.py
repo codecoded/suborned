@@ -35,7 +35,11 @@ def build(fid, hybrid=False):
     lab = L.classify(Vt, Tt, dist, nb, lm, row['wears'])
     W, rule_counts = L.loose_rules(W, donor['names'], Vt, lab, lm, arm)
     W, pit_n = L.armpit_merge(Vt, W, donor['names']); rule_counts['armpitMerged'] = pit_n
-    W, bm = L.band_merge(Vt, W, lm); rule_counts['bandMerge'] = bm; tm.lap('rules')
+    W, bm = L.band_merge(Vt, W, lm); rule_counts['bandMerge'] = bm
+    if L.SET in ('e2e', 'fixer'):
+        W, rule_counts['hands'] = L.hand_rule(Vt, Tt, W, donor['names'], arm)
+        W, rule_counts['layerMerge'] = L.layer_merge(Vt, W)
+    tm.lap('rules')
     L.set_weights(src, W, donor['names'], L.D['transfer']['maxInfluences'])
     src.parent = arm; md = src.modifiers.new('Armature', 'ARMATURE'); md.object = arm
     KINDS = ['', 'hair', 'coat', 'skirt', 'cape', 'hat']
@@ -57,6 +61,7 @@ def build(fid, hybrid=False):
     body_co = L.eval_co(px); att = L.add_attach(arm, body_co)
     extra = []; hyb = {}
     if hybrid: extra, hyb = hybrid_parts(fid, src, arm, px, att)
+    rigs = L.garment_rigs(arm, src, px, bool(rule_counts.get('bandMerge', {}).get('applied'))) if L.SET in ('e2e', 'fixer') and os.environ.get('FIT_RIGS', 'on') != 'off' else []   # FIT_RIGS=off: the same figure without garment chains
     legs, avatar = humanoid_zero(fid, arm, hybrid)
     lab_now = np.empty(len(src.data.vertices), np.int32); src.data.attributes['fit_lab'].data.foreach_get('value', lab_now)
     np.save(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'), np.array(KINDS, dtype=object)[lab_now].astype(str))
@@ -71,7 +76,7 @@ def build(fid, hybrid=False):
     for o in [x for x in extra]:
         if o.get('fit_role') == 'garment':
             for k, t in enumerate(L.D['lods']['tris'][1:], 1):
-                c = o.copy(); c.data = o.data.copy(); bpy.context.scene.collection.objects.link(c); c.name = f'{o.name}_LOD{k}'
+                c = o.copy(); c.data = o.data.copy(); bpy.context.scene.collection.objects.link(c); c.name = o.name.replace('_LOD0', '') + f'_LOD{k}'
                 for m in list(c.modifiers):
                     if m.type == 'ARMATURE': c.modifiers.remove(m)
                 L.decimate_to(c, max(60, int(len(L.tris_of(o)) * t / L.D['lods']['tris'][0]))); m = c.modifiers.new('Armature', 'ARMATURE'); m.object = arm
@@ -89,7 +94,7 @@ def build(fid, hybrid=False):
     if props: L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_props.fbx'), [arm] + props, arm)
     tm.lap('export')
     stats = {'id': fid, 'approach': TAGN(hybrid), 'hybrid': hyb, 'sex': fit['sex'], 'macros': fit['macros'], 'lodTris': tris, 'srcTris': fit['srcTris'], 'bones': len([b for b in arm.data.bones if b.use_deform]),
-             'attach': sorted(att), 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
+             'attach': sorted(att), 'garmentRigs': rigs, 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
              'labels': {k: int((lab == k).sum()) for k in sorted(set(lab.tolist())) if k}, 'restLegs': legs, 'seconds': tm.t, 'heightM': round(height, 3)}
     if L.SET in ('e2e', 'fixer'): json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
     json.dump(stats, open(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.json'), 'w'), indent=1, sort_keys=True)
@@ -109,9 +114,13 @@ def humanoid_zero(fid, arm, hybrid):
     arm['fit_zero'] = json.dumps({b.name: [list(r) for r in b.matrix_local] for b in a2.data.bones}, sort_keys=True)
     path = None
     if L.rest_mode() == 'source':
-        a2.name = 'Armature_avatarT'; path = os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_avatarT.fbx')
-        a2.name = 'Armature'; arm.name = 'Armature_figure'          # the avatar file's armature carries the figure's own name, as Unity maps by path
-        L.export_fbx(path, [a2], a2); a2.name = 'Armature_avatarT'; arm.name = 'Armature'
+        path = os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_avatarT.fbx')
+        # the same node layout as the figure file (Latch's take 1): the figure's armature steps aside first, so this one is named 'Armature' (not
+        # 'Armature.001'), and a one-triangle marker mesh sits beside it as a second root, so Unity keeps root / Armature / Hips instead of folding a
+        # single root node into the prefab root
+        arm.name = 'Armature_figure'; a2.name = 'Armature'; a2.data.name = 'Armature'
+        mk = L.mesh_obj(f'{fid}_avatar_marker', [(0, 0, 0), (0.001, 0, 0), (0, 0.001, 0)], [(0, 1, 2)])
+        L.export_fbx(path, [a2, mk], a2); bpy.data.objects.remove(mk, do_unlink=True); a2.name = 'Armature_avatarT'; arm.name = 'Armature'
     bpy.data.objects.remove(a2, do_unlink=True)
     return legs, os.path.basename(path) if path else None
 
@@ -157,7 +166,7 @@ def hybrid_parts(fid, src, arm, px, att):
         hf = own | hf
         info = {'hatFaces': int(hf.sum()), 'hatInOwnShells': round(float(main), 3), 'hatShells': len(parts), 'rimVerts': len(rim), 'rimUnderHat': int(sum(rim_ok)), 'clean': bool(clean)}
         if clean:
-            hat = L.separate_tris_mask(src, hf); hat.name = f'{fid}_hat'
+            hat = L.separate_tris_mask(src, hf); hat.name = f'{fid}_hat_LOD0'          # every piece's LOD0 is named _LOD0 (Latch's take 1: an unsuffixed cap drew at every distance)
             for g in list(hat.vertex_groups): hat.vertex_groups.remove(g)
             L.set_weights(hat, np.ones((len(hat.data.vertices), 1)), ['Head'], 1)
             L.tag(hat, 'garment'); hat['fit_kind'] = 'hat'; out.append(hat)

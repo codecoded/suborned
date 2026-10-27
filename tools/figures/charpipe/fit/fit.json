@@ -203,6 +203,16 @@
    "passes": 1,
    "kneeDownFrac": 0.05,
    "kneeUpFrac": 0.03
+  },
+  "hands": {
+   "note": "Latch's Unity take 1 (2026-10-27): the e2e hands shredded into spikes in aim_pistol. A generated hand gets the base's finger weights only if its fingers are articulated: every base finger bone lies within alignM of the mesh along its length (the bones are in the fingers), and the mesh leaves a gap (no surface within gapM) half way between each pair of neighbouring fingers at the middle joints. Otherwise that hand's finger weights fold into Hand: a rigid hand, which can't shred.",
+   "alignM": 0.012,
+   "gapM": 0.003,
+   "samples": 5
+  },
+  "layerMerge": {
+   "note": "Latch's take 1: small white holes at the elbows in aim. Image-to-3D meshes carry coincident layers everywhere (not only in skirts); weights are averaged over all vertices within mergeM in space across the whole mesh, so a layer never separates from the one it sits on. 5 mm is under any real gap between body parts in the intake A-pose.",
+   "mergeM": 0.005
   }
  },
  "rest": {
@@ -419,5 +429,61 @@
    "behindM": 0.04,
    "aboveNeckM": 0.08
   }
+ },
+ "garmentRigs": {
+  "note": "secondary-motion rigs for loose garments and hair (brief 069 step 2), built by rule on any figure whose region is present, simulated at build time and baked per clip as bone curves (no runtime physics: every run replays exactly). ring: chains around the body from the hip line to the hem (a long skirt: present when transfer.bandMerge fires). strand: one chain down a loose strand behind the back (a ponytail: present when the measureRegions ponytail region holds at least minVerts). Weights: chain bones by the vertex's angle (ring) and height along the chain (hat functions), blended into the existing weights over the top blendTopFrac of the chain, and kept off skin that hugs the body (distance to the fitted body below tightM keeps its own weights, full chain weight from looseM); coincident folds are then averaged in space (mergeM). Solve: Verlet particles at the joints, the root pinned to the parent bone, each step: inertia (1 - damping), gravity, a spring toward the joint's rigid pose (stiffness), length constraints, capsule colliders (the bones listed, radius = the body's measured half-thickness there + marginM). Fixed step = the clip's frame; looping clips are pre-rolled one cycle and the recorded cycle's last loopBlendFrames are blended toward its first frame, so the loop closes exactly.",
+  "ring": {
+   "chains": 8,
+   "bones": 3,
+   "parent": "Hips",
+   "angleOffsetDeg": 0,
+   "insetFrac": 0.92,
+   "blendTopFrac": 0.3,
+   "tightM": -0.01,
+   "looseM": 0.0,
+   "mergeM": 0.02,
+   "stiffness": 0.35,
+   "damping": 0.25,
+   "gravity": 9.81,
+   "iterations": 6,
+   "colliders": [
+    "LeftUpLeg",
+    "RightUpLeg",
+    "LeftLeg",
+    "RightLeg"
+   ],
+   "marginM": 0.02,
+   "note": "tightM/looseM -0.01/0: every band vertex follows the chains. A first take kept skin hugging the body (the leg seen in the split, 6-20 mm) on its leg weights; on a single-surface image-to-3D mesh that skin IS the skirt's surface, so panel and skin tore apart. stiffness 0.35 / damping 0.25: the first take's 0.18 / 0.12 flailed (median 10 deg per frame in walk, 25 in run). Take 3: skin hugging the body keeps its own weights below the knee only (the asymmetric hem dropped leg skin under the high side into the band, and it was dragged into strips); above the knee the whole sheet follows the chains (the split's skin is the skirt's own surface there). Collider radii come from the fitted body (the hidden donor), not the figure's own mesh, whose thigh 'thickness' includes the skirt (it threw the sheet wide). Take 4: back to take 2's weights (the whole band on the chains: take 3's below-knee skin rule opened a weight boundary between skirt and leg on a single closed surface, dragging skin into strips). Colliders never push a joint further out than it sat at rest (colliderClampToRest): joints near the crotch start inside the thigh capsules, and pushing them out flared the skirt (aim).",
+   "tightBelowKneeOnly": false,
+   "colliderClampToRest": true
+  },
+  "strand": {
+   "bones": 4,
+   "parent": "Head",
+   "minVerts": 150,
+   "blendTopFrac": 0.2,
+   "tightM": 0.006,
+   "looseM": 0.015,
+   "mergeM": 0.015,
+   "stiffness": 0.2,
+   "damping": 0.15,
+   "gravity": 9.81,
+   "iterations": 6,
+   "colliders": [
+    "Spine1",
+    "Spine2",
+    "Neck"
+   ],
+   "marginM": 0.01,
+   "enabled": false,
+   "note": "off (2026-10-27): on the Fixer the 4-bone ponytail chain stretched the ponytail more than nearest-body weights did (stretch p99 1.5-4.6 against 0.2-1.1, ponytail-against-back pairs up to 92 against 28 in run). Ponytail strands are generated fused to the back of the head and neck, so a chain pulls the fused surface; it would need the strand cut free first, like the skirt."
+  },
+  "loopClips": [
+   "walk",
+   "run",
+   "crouch_walk"
+  ],
+  "loopBlendFrames": 6,
+  "colliderRadiusFrom": "donor"
  }
 }

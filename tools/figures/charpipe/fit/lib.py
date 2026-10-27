@@ -866,3 +866,183 @@ def band_merge(V, W, lm):
             nb = [j for (_, j, _) in kd.find_range(Vector(V[i]), R['mergeM'])]; W2[i] = W[nb].mean(0)
         W = W2
     s = W.sum(1, keepdims=True); s[s == 0] = 1; info['merged'] = int(len(idx)); return W / s, info
+
+
+# ------------------------------------------------------------------ garment rigs (fit.json garmentRigs): build by rule, simulate, bake
+def _hat(u, n):
+    """weights of n bones along a chain for parameter u in [0, 1] (hat functions centred on the bones' middles, clamped at the ends)."""
+    c = (np.arange(n) + 0.5) / n; w = np.clip(1 - np.abs(u[:, None] - c[None, :]) * n, 0, 1)
+    w[u <= c[0], 0] = 1; w[u >= c[-1], -1] = 1; s = w.sum(1, keepdims=True); s[s == 0] = 1; return w / s
+
+
+def _smooth(x): x = np.clip(x, 0, 1); return x * x * (3 - 2 * x)
+
+
+def spatial_avg(V, W, idx, r):
+    from mathutils.kdtree import KDTree
+    kd = KDTree(len(V))
+    for i, v in enumerate(V): kd.insert(Vector(v), i)
+    kd.balance(); W2 = W.copy()
+    for i in idx:
+        nb = [j for (_, j, _) in kd.find_range(Vector(V[i]), r)]; W2[i] = W[nb].mean(0)
+    s = W2.sum(1, keepdims=True); s[s == 0] = 1; return W2 / s
+
+
+def garment_rigs(arm, body, donor_obj, skirt_on):
+    """fit.json garmentRigs on a figure at rest: adds the chain bones to arm and their weights to body (and returns what it built)."""
+    G = D['garmentRigs']; Mw = arm.matrix_world; Bb = arm.data.bones
+    V = np.array([list(v.co) for v in body.data.vertices]); names = [g.name for g in body.vertex_groups]; W = weights_of(body, names)
+    Vd = eval_co(donor_obj); Td = tris_of(donor_obj)
+    bvh = BVHTree.FromPolygons([Vector(v) for v in Vd], [list(t) for t in Td], all_triangles=True)
+    dist = np.array([bvh.find_nearest(Vector(v))[3] or 0.0 for v in V])
+    z0 = float(V[:, 2].min()); H = float(V[:, 2].max()) - z0
+    hz = lambda n: (Mw @ Bb[n].head_local).z
+    hipZ = (hz('LeftUpLeg') + hz('RightUpLeg')) / 2; knee = (hz('LeftLeg') + hz('RightLeg')) / 2
+    built = []; chains = {}; new_cols = []
+    if skirt_on:
+        R = G['ring']; hp = Mw @ Bb['Hips'].head_local; c = np.array([hp.x, hp.y])
+        # the hem: from the knee down, the lowest height where the surface still crosses the centre line (the skirt joins the legs)
+        hem = knee
+        for z in np.arange(knee, z0, -0.005):
+            if ((np.abs(V[:, 2] - z) < 0.004) & (np.abs(V[:, 0] - c[0]) < D['transfer']['bandMerge']['centreM'])).any(): hem = z
+            else: break
+        band = (V[:, 2] > hem - 0.01) & (V[:, 2] < hipZ)
+        ang = np.arctan2(V[:, 0] - c[0], -(V[:, 1] - c[1]))            # 0 = front (-Y), + toward the figure's left
+        n, nb = R['chains'], R['bones']; th = np.radians(R['angleOffsetDeg']) + 2 * np.pi * np.arange(n) / n
+        bp.ctx(arm, 'EDIT'); eb = arm.data.edit_bones; Mi = Mw.inverted()
+        for k in range(n):
+            d = np.array([math.sin(th[k]), -math.cos(th[k])]); dang = np.abs(((ang - th[k] + np.pi) % (2 * np.pi)) - np.pi)
+            pts = []
+            for j in range(nb + 1):
+                z = hipZ + (hem - hipZ) * j / nb; sel = band & (dang < np.pi / n) & (np.abs(V[:, 2] - z) < 0.02)
+                rad = float(((V[sel][:, :2] - c) @ d).max()) if sel.any() else 0.1
+                pts.append(Vector((c[0] + d[0] * rad * R['insetFrac'], c[1] + d[1] * rad * R['insetFrac'], z)))
+            prev = eb[R['parent']]; names_k = []
+            for j in range(nb):
+                b = eb.new(f'Skirt_{k}_{j + 1}'); b.head = Mi @ pts[j]; b.tail = Mi @ pts[j + 1]; b.parent = prev; b.use_connect = j > 0; b.use_deform = True
+                prev = b; names_k.append(b.name)
+            chains[f'skirt_{k}'] = {'bones': names_k, 'parent': R['parent'], 'kind': 'ring'}
+        bp.ctx(arm, 'OBJECT')
+        # weights: angle between the two nearest chains, height along the chain, blended in at the top, kept off skin that hugs the body
+        idx = np.nonzero(band)[0]; u = np.clip((hipZ - V[idx, 2]) / max(hipZ - hem, 1e-3), 0, 1)
+        a = ((ang[idx] - th[0]) % (2 * np.pi)) / (2 * np.pi / n); k0 = np.floor(a).astype(int) % n; k1 = (k0 + 1) % n; fa = a - np.floor(a)
+        hat = _hat(u, nb); cols = [f'Skirt_{k}_{j + 1}' for k in range(n) for j in range(nb)]
+        Wc = np.zeros((len(idx), len(cols)))
+        for j in range(nb):
+            Wc[np.arange(len(idx)), k0 * nb + j] += (1 - fa) * hat[:, j]; Wc[np.arange(len(idx)), k1 * nb + j] += fa * hat[:, j]
+        keep = _smooth((dist[idx] - R['tightM']) / (R['looseM'] - R['tightM']))
+        if R.get('tightBelowKneeOnly'): keep = np.where(V[idx, 2] < knee, keep, 1.0)
+        share = _smooth(u / R['blendTopFrac']) * keep
+        new_cols += cols; W = np.hstack([W, np.zeros((len(V), len(cols)))]); base = W.shape[1] - len(cols)
+        W[idx, :base] *= (1 - share)[:, None]; W[idx, base:] = Wc * share[:, None]
+        W = spatial_avg(V, W, idx, R['mergeM'])
+        built.append({'rig': 'ring', 'chains': n, 'bones': nb, 'hemZ': round(float(hem - z0), 4), 'hipZ': round(float(hipZ - z0), 4), 'verts': int(len(idx)), 'meanShare': round(float(share.mean()), 3)})
+    # strand (ponytail)
+    S = G['strand']; R2 = D['measureRegions']['ponytail']; sp = Mw @ Bb['Spine2'].head_local; nz = hz('Neck'); wz = hz('Spine1')
+    pony = (dist > R2['looseM']) & (V[:, 1] > sp.y + R2['behindM']) & (V[:, 2] > wz) & (V[:, 2] < nz + R2['aboveNeckM'])
+    if S.get('enabled', True) and pony.sum() >= S['minVerts']:
+        P = V[pony]; top, bot = float(P[:, 2].max()), float(P[:, 2].min()); nb = S['bones']; pts = []
+        for j in range(nb + 1):
+            z = top + (bot - top) * j / nb; sel = np.abs(P[:, 2] - z) < max(0.02, (top - bot) / (2 * nb)); q = P[sel].mean(0) if sel.any() else P.mean(0)
+            pts.append(Vector((float(q[0]), float(q[1]), z)))
+        bp.ctx(arm, 'EDIT'); eb = arm.data.edit_bones; Mi = Mw.inverted(); prev = eb[S['parent']]; nm = []
+        for j in range(nb):
+            b = eb.new(f'Pony_{j + 1}'); b.head = Mi @ pts[j]; b.tail = Mi @ pts[j + 1]; b.parent = prev; b.use_connect = j > 0; b.use_deform = True; prev = b; nm.append(b.name)
+        bp.ctx(arm, 'OBJECT'); chains['ponytail'] = {'bones': nm, 'parent': S['parent'], 'kind': 'strand'}
+        idx = np.nonzero(pony)[0]; u = np.clip((top - V[idx, 2]) / max(top - bot, 1e-3), 0, 1); hat = _hat(u, nb)
+        share = _smooth(u / S['blendTopFrac']) * _smooth((dist[idx] - S['tightM']) / (S['looseM'] - S['tightM']))
+        W = np.hstack([W, np.zeros((len(V), nb))]); base = W.shape[1] - nb; new_cols += nm
+        W[idx, :base] *= (1 - share)[:, None]; W[idx, base:] = hat * share[:, None]
+        W = spatial_avg(V, W, idx, S['mergeM'])
+        built.append({'rig': 'strand', 'bones': nb, 'verts': int(len(idx)), 'meanShare': round(float(share.mean()), 3)})
+    if built:
+        set_weights(body, W, names + new_cols, D['transfer']['maxInfluences'])
+        arm['fit_chains'] = json.dumps(chains, sort_keys=True)
+    return built
+
+
+class ChainSim:
+    """the deterministic chain solve (fit.json garmentRigs): Verlet joints, root pinned to the parent bone, spring to the rigid pose, lengths, capsules.
+    Works in the armature's space; step() sets the chain bones' pose for the current frame and returns their basis quaternions."""
+    def __init__(self, arm, dt):
+        self.arm = arm; self.dt = dt; self.ch = json.loads(arm['fit_chains']); self.state = {}
+        B = arm.data.bones
+        self.rest = {}
+        for key, c in self.ch.items():
+            par = B[c['parent']]; P = par.matrix_local.inverted()
+            joints = [B[c['bones'][0]].head_local] + [B[b].tail_local for b in c['bones']]
+            self.rest[key] = ([P @ j for j in joints], [(B[b].tail_local - B[b].head_local).length for b in c['bones']])
+        # collider radii: the body's half-thickness around each listed bone, measured once at rest from the body mesh's vertices weighted to it
+        self.rad = {}; self.clamp = {}
+
+    @staticmethod
+    def _seg_dist(p, a, b):
+        ab = b - a; t = max(0.0, min(1.0, (p - a).dot(ab) / max(ab.length_squared, 1e-12))); return (p - (a + ab * t)).length
+
+    def set_radii(self, body, names_kind):
+        V = eval_co(body); names = [g.name for g in body.vertex_groups]; Wb = weights_of(body, names); Mw = self.arm.matrix_world
+        for kind, bones in names_kind.items():
+            for b in bones:
+                if b in self.rad or b not in names: continue
+                sel = Wb[:, names.index(b)] > 0.6
+                if not sel.any(): self.rad[b] = 0.06; continue
+                bn = self.arm.data.bones[b]; a = np.array(Mw @ bn.head_local); t = np.array(Mw @ bn.tail_local); ax = (t - a) / np.linalg.norm(t - a)
+                rel = V[sel] - a; perp = rel - np.outer(rel @ ax, ax); self.rad[b] = float(np.median(np.linalg.norm(perp, axis=1)))
+
+    def step(self):
+        G = D['garmentRigs']; arm = self.arm; bpy.context.view_layer.update(); Pb = arm.pose.bones; out = {}
+        for key, c in self.ch.items():
+            R = G['ring'] if c['kind'] == 'ring' else G['strand']
+            par = Pb[c['parent']].matrix; jr, lens = self.rest[key]; target = [par @ j for j in jr]
+            if key not in self.state: self.state[key] = ([t.copy() for t in target], [t.copy() for t in target])
+            p, pp = self.state[key]; g = Vector((0, 0, -R['gravity'] * self.dt * self.dt))
+            caps = [(Pb[b].head, Pb[b].tail, self.rad.get(b, 0.06) + R['marginM']) for b in R['colliders']]
+            if R.get('colliderClampToRest'):
+                if key not in self.clamp:                          # each joint's own rest distance from each capsule caps that capsule's radius for it
+                    self.clamp[key] = [[min(r, self._seg_dist(t, a, b) * 0.98) for (a, b, r) in caps] for t in target]
+                cl = self.clamp[key]
+            else: cl = None
+            q = [target[0].copy()]
+            for j in range(1, len(p)):
+                v = (p[j] - pp[j]) * (1 - R['damping']); x = p[j] + v + g; x = x + (target[j] - x) * R['stiffness']; q.append(x)
+            for _ in range(R['iterations']):
+                for j in range(1, len(q)):
+                    d = q[j] - q[j - 1]; L_ = d.length or 1e-9; q[j] = q[j - 1] + d * (lens[j - 1] / L_)
+                    for ci, (a, b, r) in enumerate(caps):
+                        if cl is not None: r = cl[j][ci]
+                        ab = b - a; t = max(0.0, min(1.0, (q[j] - a).dot(ab) / max(ab.length_squared, 1e-12))); cpt = a + ab * t; e = q[j] - cpt
+                        if e.length < r: q[j] = cpt + (e.normalized() if e.length > 1e-9 else Vector((0, -1, 0))) * r
+            self.state[key] = (q, p)
+            for j, bn in enumerate(c['bones']):
+                pb = Pb[bn]; bpy.context.view_layer.update(); bp.aim(pb, (q[j + 1] - q[j]).normalized())
+            bpy.context.view_layer.update()
+            for bn in c['bones']: out[bn] = tuple(round(x, 7) for x in Pb[bn].rotation_quaternion)
+        return out
+
+
+
+def hand_rule(V, T, W, names, arm):
+    """fit.json transfer.hands: keep finger weights only where the mesh's fingers are articulated; else fold them into Hand (per hand)."""
+    R = D['transfer'].get('hands')
+    if not R: return W, {}
+    bvh = BVHTree.FromPolygons([Vector(v) for v in V], [list(t) for t in T], all_triangles=True); Pb = arm.pose.bones; Mw = arm.matrix_world; out = {}
+    def near(p): r = bvh.find_nearest(Vector(p)); return r[3] if r[0] is not None else 1.0
+    for s_ in ('Left', 'Right'):
+        fing = ['Index', 'Middle', 'Ring', 'Pinky']; align = []
+        for f in fing + ['Thumb']:
+            for i in (1, 2, 3):
+                pb = Pb[f'{s_}Hand{f}{i}']; a = Mw @ pb.head; b = Mw @ pb.tail
+                for t in np.linspace(0, 1, R['samples']): align.append(near(a + (b - a) * float(t)))
+        gaps = [near((Mw @ Pb[f'{s_}Hand{a}2'].head + Mw @ Pb[f'{s_}Hand{b}2'].head) / 2) > R['gapM'] for a, b in zip(fing, fing[1:])]
+        ok = max(align) < R['alignM'] and all(gaps)
+        out[s_] = {'maxBoneToMeshM': round(float(max(align)), 4), 'gaps': sum(gaps), 'articulated': bool(ok)}
+        if not ok:
+            hi = names.index(f'{s_}Hand'); cols = [i for i, n in enumerate(names) if n.startswith(f'{s_}Hand') and n != f'{s_}Hand']
+            W = W.copy(); W[:, hi] += W[:, cols].sum(1); W[:, cols] = 0
+    return W, out
+
+
+def layer_merge(V, W):
+    R = D['transfer'].get('layerMerge')
+    if not R: return W, 0
+    return spatial_avg(V, W, np.arange(len(V)), R['mergeM']), int(len(V))

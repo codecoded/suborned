@@ -91,3 +91,13 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
     3. Or cloth simulation.
   - **The ponytail:** sinks into her back in crouch and carried; a 3–4 bone chain later.
 - **Skirt step 1 done:** a band merge (`fit.json` `transfer.bandMerge`; it fires only where a garment bridges the knee band, so only the Fixer's long skirt, with the e2e figures unchanged) stops the tearing in all seven clips. Leg-to-leg stretch p99 drops about 3.5× (walk 49→14, run 63→19). Walk, aim, sit and carry are acceptable for play. In run the sheet bulges around the forward thigh and the split can't open, so it still needs the skirt rig (step 2, about 8×3 bones with thigh colliders). Byte-identical: Fixer 9/9, e2e 31/31.
+- **Skirt rig (step 2), built but not adopted.** 8×3 chains, solved and baked per clip in Blender, deterministic, with loops closed by a 6-frame blend; data in `fit.json` `garmentRigs`. On this mesh it doesn't beat the band merge and is clearly worse in crouch, sit and carried (crouch: skirt p99 3.0→8.1, flips 446→2,816). Tripo modelled the skirt as a closed solid joined to the legs under the hem, so any free swing stretches skin-coloured faces to the shin. A free skirt needs the hem opened and real legs under it first (the G-path garment cut), and the rig code can be reused then. Recommended for now: the band-merge build (`fixer/variant_norig/`). The ponytail chain is off for the same reason.
+- **Latch's take-1 fixes, as rules:**
+  - The avatar FBX root layout (`Armature`, plus a marker root) works, but the meta-write route stays the recommended one.
+  - Every LOD0 is suffixed `_LOD0`.
+  - Hands: finger weights are kept only when the generated fingers line up with the bones; otherwise the hand goes rigid. All ten hands are rigid now: no shredding, no finger curl. Fitting the finger bones to the mesh is later hero work.
+  - A 5 mm stacked-layer merge for the elbow flecks.
+  - Per-clip speeds go in the manifest rows, with crouch walk measured relative to the hips. Latch's in-engine value is the one the game should use.
+  - Height must come from data (the person spec → the height slider); every woman built so far shares one skeleton.
+  - The coat man's hair speckle is in the Hunyuan texture.
+  - Byte-identical: e2e 31/31, Fixer 9/9.

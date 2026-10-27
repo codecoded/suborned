@@ -14,7 +14,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 L = importlib.util.module_from_spec(s := importlib.util.spec_from_file_location('fitlib', os.path.join(HERE, 'lib.py'))); s.loader.exec_module(L)
 sys.path.insert(0, HERE); import look
 import bpy
-from mathutils import Vector, Matrix
+from mathutils import Vector, Matrix, Quaternion
 from mathutils.bvhtree import BVHTree
 
 SPEC = json.load(open(sys.argv[sys.argv.index('--') + 1])); TH = L.D['thresholds']; RD = L.D['render']
@@ -70,6 +70,7 @@ class Fig:
         for pb in self.arm.pose.bones: pb.rotation_mode = 'QUATERNION'
         self.weight = float(self.arm.get('fit_weight', 0.5))
         self.cape = sorted([b.name for b in self.arm.data.bones if b.name.startswith('Cape_')])
+        self.chains = json.loads(self.arm['fit_chains']) if 'fit_chains' in self.arm else None
 
     def objs(self, role): return self.meshes.get(role, [])
 
@@ -252,6 +253,8 @@ class Meter:
         A = areas(V, p['T']) / np.maximum(p['A0'], 1e-12); big = p['A0'] > 1e-6
         out['skirtTriMin'] = float(A[r['skT'] & big].min()) if (r['skT'] & big).any() else 1.0
         out['ponyBodyPairs'] = overlap_pairs(V, p['T'][r['ponyT']], V, p['T'][~r['ponyT']]) if r['ponyT'].any() else 0
+        sk = np.array([d.startswith('Skirt_') for d in p['dom']]); lg = np.isin(p['dom'], ['LeftUpLeg', 'RightUpLeg', 'LeftLeg', 'RightLeg', 'LeftFoot', 'RightFoot'])
+        out['skirtLegPairs'] = overlap_pairs(V, p['T'][sk], V, p['T'][lg]) if sk.any() and lg.any() else 0
         return out
 
     def body_part(self):
@@ -418,6 +421,54 @@ def setup_render():
     return sc, cam
 
 
+def bake_chains(fig, clip, cname, sc):
+    """the garment chains' secondary motion for one clip (lib.ChainSim), solved on every clip frame at a fixed step; looping clips are pre-rolled one
+    cycle, then the recorded cycle's last loopBlendFrames are blended toward its first frame so the loop closes. Returns {frame: {bone: quat}} and seams."""
+    G = L.D['garmentRigs']; fps = sc.render.fps / sc.render.fps_base; sim = L.ChainSim(fig.arm, 1.0 / fps)
+    src = 'donor' if L.D['garmentRigs'].get('colliderRadiusFrom') == 'donor' and fig.objs('donor') else 'body'
+    body = next(iter(fig.objs(src)), None)                 # the fitted body: the figure's own mesh would count a skirt as thigh
+    if body is not None: sim.set_radii(body, {'ring': G['ring']['colliders'], 'strand': G['strand']['colliders']})
+    loop = cname in G['loopClips']; rec = {}
+    home = fig.arm.location.copy(); fig.arm.location = (0.0, 0.0, 0.0); bpy.context.view_layer.update()   # solve at the origin: the bake is then the same
+    for pas in range(2 if loop else 1):                                                                    # bytes wherever the figure stands in a scene
+        for fr in range(clip.f0, clip.f1 + 1):
+            sc.frame_set(fr); retarget(fig, clip); bpy.context.view_layer.update(); r = sim.step()
+            if pas == (1 if loop else 0): rec[fr] = r
+    fig.arm.location = home; bpy.context.view_layer.update()
+    seam = {}
+    if loop:
+        first, last = rec[clip.f0], rec[clip.f1]; B = G['loopBlendFrames']
+        ang = lambda a, b: math.degrees(Quaternion(a).rotation_difference(Quaternion(b)).angle)
+        seam['beforeDeg'] = round(max(ang(first[b], last[b]) for b in first), 2)
+        steps = [max(ang(rec[f][b], rec[f + 1][b]) for b in first) for f in range(clip.f0, clip.f1)]
+        seam['medianStepDeg'] = round(float(np.median(steps)), 2)
+        for i, fr in enumerate(range(clip.f1 - B + 1, clip.f1 + 1)):
+            t = (i + 1) / B
+            rec[fr] = {b: tuple(round(x, 7) for x in Quaternion(rec[fr][b]).slerp(Quaternion(first[b]), t)) for b in first}
+        seam['afterDeg'] = round(max(ang(rec[clip.f0][b], rec[clip.f1][b]) for b in first), 2)
+        steps = [max(ang(rec[f][b], rec[f + 1][b]) for b in first) for f in range(clip.f1 - B, clip.f1)]
+        seam['maxStepInBlendDeg'] = round(float(max(steps)), 2)
+    return rec, seam
+
+
+def foot_speed(P, fps, band=0.03):
+    """the in-place clip's planted-foot speed (as pipeline/clips.py audits a clip): frames where a foot is within band of its lowest height; the median
+    of its horizontal speed along the mean planted direction. This is how fast the figure must move for its feet not to slide."""
+    if len(P) < 3: return None
+    vs = []
+    for k in range(2):
+        z = P[:, k, 2]; low = z <= z.min() + band
+        for i in range(1, len(P)):
+            if low[i] and low[i - 1]: vs.append((P[i, k, :2] - P[i - 1, k, :2]) * fps)
+    if not vs: return None
+    vs = np.array(vs); m = vs.mean(0); n = np.linalg.norm(m)
+    return round(float(np.median(vs @ (m / n))), 4) if n > 1e-6 else 0.0
+
+
+def apply_bake(fig, rec, fr):
+    for b, q in rec.get(fr, {}).items(): fig.arm.pose.bones[b].rotation_quaternion = q
+
+
 def main():
     t0 = time.time()
     bpy.ops.wm.read_factory_settings(use_empty=True)
@@ -432,16 +483,31 @@ def main():
     span = max(f.arm.location.x for f in figs) - min(f.arm.location.x for f in figs)
     centre = sum((f.arm.location.x for f in figs), 0.0) / len(figs)
     dist = RD['close']['distM'] + span * 1.1
-    vid = 0
+    vid = 0; seams = {}; speeds = {}
     for ci, cname in enumerate(clips):
         clip = Clip(os.path.join(os.path.expanduser(L.D['clips']['lib']), L.D['clips']['list'][cname]))
         frames = sorted(set(int(round(x)) for x in np.linspace(clip.f0, clip.f1, nfr)))
-        sims = [CapeSim(f) for f in figs]
+        sims = [CapeSim(f) for f in figs]; feet = {}
+        bakes = {}
+        for f in figs:
+            fs_ = next(x for x in SPEC['figures'] if x['label'] == f.label)
+            if f.chains and fs_.get('bakeFrom'):          # the canonical bake (a solo, bake-only run): read, never re-solved, so every pass shows the same bytes
+                bj = json.load(open(os.path.join(fs_['bakeFrom'], f"bake_{fs_.get('bakeKey', 'fixer')}_{cname}.json")))
+                bakes[f.label] = {int(k): {b: tuple(q) for b, q in v.items()} for k, v in bj['rot'].items()}; seams.setdefault(f.label, {})[cname] = bj['seam']
+            elif f.chains:
+                rec, seam = bake_chains(f, clip, cname, sc); bakes[f.label] = rec; seams.setdefault(f.label, {})[cname] = seam
+                if fs_.get('bakeFrom'): continue
+                bdir = L.ensure(os.path.join(OUT, 'bake'))
+                json.dump({'figure': f.label, 'clip': cname, 'frames': [clip.f0, clip.f1], 'fps': sc.render.fps / sc.render.fps_base, 'seam': seam,
+                           'chains': f.chains, 'rot': {str(k): v for k, v in sorted(rec.items())}}, open(os.path.join(bdir, f'{NAME}_{f.label}_{cname}.json'.replace(' ', '_').replace("'", '')), 'w'), sort_keys=True)
         per = {f.label: [] for f in figs}; perl = {f.label: [] for f in figs}
         for fr in range(clip.f0, clip.f1 + 1):
             sc.frame_set(fr)
             for f, sim in zip(figs, sims):
                 retarget(f, clip); bpy.context.view_layer.update()
+                if f.label in bakes: apply_bake(f, bakes[f.label], fr)
+                hp = f.arm.matrix_world @ f.arm.pose.bones['Hips'].head          # feet relative to the hips in the ground plane: a clip with root motion (crouch walk) reads as in place
+                feet.setdefault(f.label, []).append([[*(f.arm.matrix_world @ f.arm.pose.bones[b].head - hp)[:2], (f.arm.matrix_world @ f.arm.pose.bones[b].head).z] for b in ('LeftToeBase', 'RightToeBase')])
                 if f.layer: layer(f)
                 if f.cape: sim.step()
             if fr not in frames: continue
@@ -464,6 +530,8 @@ def main():
                 sc.render.filepath = os.path.join(FR_DIR, f'play_{cname}_{frames.index(fr):02d}.png'); bpy.ops.render.render(write_still=True)
                 cam.data.type = 'PERSP'
         for f in figs: res[f.label][cname] = per[f.label]
+        fps = sc.render.fps / sc.render.fps_base
+        for f in figs: speeds.setdefault(f.label, {})[cname] = foot_speed(np.array(feet.get(f.label, [])), fps)
         clip.remove()
         L.log(NAME, cname, 'frames', len(frames), round(time.time() - t0, 1))
     summary = {}
@@ -473,7 +541,7 @@ def main():
             if not rows: continue
             agg = {}
             for k in ('stretchP99', 'compressP99', 'stretchMax', 'compressMax', 'triAreaMax', 'flipped', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'armpitStretchP99', 'armpitCompressP99', 'armpitFlipped',
-                      'skirtStretchP99', 'skirtStretchMax', 'skirtCompressP99', 'skirtBridgeStretchP99', 'skirtBridgeStretchMax', 'ponyStretchP99', 'ponyStretchMax', 'ponyBodyPairs'):
+                      'skirtStretchP99', 'skirtStretchMax', 'skirtCompressP99', 'skirtBridgeStretchP99', 'skirtBridgeStretchMax', 'ponyStretchP99', 'ponyStretchMax', 'ponyBodyPairs', 'skirtLegPairs'):
                 if k not in rows[0]: continue
                 v = [r[k] for r in rows]; i = int(np.argmax(v)); agg[k] = {'max': round(float(v[i]), 3), 'frame': rows[i]['frame']}
             v = [r['triAreaMin'] for r in rows]; i = int(np.argmin(v)); agg['triAreaMin'] = {'min': round(float(v[i]), 3), 'frame': rows[i]['frame']}
@@ -488,7 +556,7 @@ def main():
             r = rest_rows[f.label]; summary[f.label]['rest'] = {k: r[k] for k in ('penetrationPct', 'hemSelfPairs', 'armTorsoPairs', 'thighPairs', 'propBodyPairs', 'flipped', 'ponyBodyPairs') if k in r}
             m = next(mm for ff, mm in zip(figs, meters) if ff is f)
             if m.reg: summary[f.label]['regions'] = m.reg['counts']
-    json.dump({'name': NAME, 'figures': [x['label'] for x in SPEC['figures']], 'clips': clips, 'summary': summary,
+    json.dump({'name': NAME, 'figures': [x['label'] for x in SPEC['figures']], 'clips': clips, 'summary': summary, 'loopSeams': seams, 'footSpeedMs': speeds, 'figureIds': {x['label']: x.get('id') for x in SPEC['figures']},
                'frames': {f.label: res[f.label] for f in figs}, 'seconds': round(time.time() - t0, 1)}, open(os.path.join(OUT, f'{NAME}.metrics.json'), 'w'), indent=1, default=str)
     L.log('DONE', NAME, round(time.time() - t0, 1))
 
