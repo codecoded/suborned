@@ -207,3 +207,7 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Carbine:** placed the standard way, by the grip with the butt on the shoulder line (`placeBy` grip + shoulder). The shoulder gap is 2.1 cm (Blender) and 7.5 cm (Unity).
   - **Unity check tool:** `props/unity/WeaponCheck.cs`.
   - Picture: `out/scratch/forma/char-pipeline/props/weapons/sheet_weapons.png`.
+- **Sky (2026-10-27):**
+  1. Accepted the artist hand pose at its current quality; Latch does the final take (the cell on Animation Rigging, guards on the Humanoid IK pass).
+  2. The Enforcer's gold is swapped for satin chrome, keeping §15's cell rule; the sheet is `paid/069-enforcer/codex/enforcer_intake_chrome_1.png` (pose check PASS; prompts in `enforcer/`).
+  3. His Tripo 3.1 mesh at 30k is approved ($1.00 pass).
