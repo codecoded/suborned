@@ -1,0 +1,966 @@
+{
+ "note": "Brief 069 ActorCore free-clip test (Forma, 2026-10-27). Numbers only: no clip data. Clips read from the store (source-art/Anim/actorcore_free), built by tools/figures/clips.py with the rig profile tools/figures/bonemaps.json (actorcore_cc3) into out/scratch/forma/actorcore/run1, imported and played in the scratch Unity project (out/scratch/forma/unityprobe, Assets/Editor/ACPlay.cs) on fixer_v7_H and enforcer_v1_H, Humanoid, foot IK off, applyRootMotion off. Distances in cm in the figure root frame; speeds m/s.",
+ "clipStage": [
+  {
+   "name": "ac_walk_start",
+   "frames": 200,
+   "seconds": 6.667,
+   "firstFrame": 1,
+   "naturalSpeedMs": null,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_walk_loop",
+   "frames": 156,
+   "seconds": 5.2,
+   "firstFrame": 1,
+   "naturalSpeedMs": 0.59,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_walk_end",
+   "frames": 144,
+   "seconds": 4.8,
+   "firstFrame": 1,
+   "naturalSpeedMs": null,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_fastrun_start",
+   "frames": 74,
+   "seconds": 2.467,
+   "firstFrame": 1,
+   "naturalSpeedMs": null,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_fastrun_loop",
+   "frames": 20,
+   "seconds": 0.667,
+   "firstFrame": 1,
+   "naturalSpeedMs": 3.14,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_fastrun_end",
+   "frames": 86,
+   "seconds": 2.867,
+   "firstFrame": 1,
+   "naturalSpeedMs": null,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_shooting",
+   "frames": 119,
+   "seconds": 3.967,
+   "firstFrame": 1,
+   "naturalSpeedMs": null,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  },
+  {
+   "name": "ac_turn90",
+   "frames": 86,
+   "seconds": 2.867,
+   "firstFrame": 1,
+   "naturalSpeedMs": null,
+   "rig": "actorcore_cc3",
+   "avatar": {
+    "own": true,
+    "neutralLegs": true,
+    "footPitchDeg": 40,
+    "rigDifferences": [
+     "rig actorcore_cc3, not the reference skeleton"
+    ],
+    "preserveHierarchy": "root",
+    "restFrom": "0_T-Pose"
+   }
+  }
+ ],
+ "unityImport": {
+  "ac_fastrun_end": {
+   "avatar": "ac_fastrun_endAvatar",
+   "valid": true,
+   "human": true,
+   "length": 2.8333,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "hold_gun_fastrun_forward_end_279362",
+   "first": 1,
+   "last": 86,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_fastrun_loop": {
+   "avatar": "ac_fastrun_loopAvatar",
+   "valid": true,
+   "human": true,
+   "length": 0.6333,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "hold_gun_fastrun_forward_loop_279387",
+   "first": 1,
+   "last": 20,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_fastrun_start": {
+   "avatar": "ac_fastrun_startAvatar",
+   "valid": true,
+   "human": true,
+   "length": 2.4333,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "hold_gun_fastrun_forward_start_279410",
+   "first": 1,
+   "last": 74,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_shooting": {
+   "avatar": "ac_shootingAvatar",
+   "valid": true,
+   "human": true,
+   "length": 3.9333,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "hold_gun_shooting_279354",
+   "first": 1,
+   "last": 119,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_turn90": {
+   "avatar": "ac_turn90Avatar",
+   "valid": true,
+   "human": true,
+   "length": 2.8333,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "b09_hold_gun_turn90_r",
+   "first": 1,
+   "last": 86,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_walk_end": {
+   "avatar": "ac_walk_endAvatar",
+   "valid": true,
+   "human": true,
+   "length": 4.7667,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "walk-relaxed-3end-378968",
+   "first": 1,
+   "last": 144,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_walk_loop": {
+   "avatar": "ac_walk_loopAvatar",
+   "valid": true,
+   "human": true,
+   "length": 5.1667,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "walk-relaxed-2loop-378986",
+   "first": 1,
+   "last": 156,
+   "preserveHierarchy": true,
+   "mapped": 55
+  },
+  "ac_walk_start": {
+   "avatar": "ac_walk_startAvatar",
+   "valid": true,
+   "human": true,
+   "length": 6.6333,
+   "fps": 30,
+   "humanMotion": true,
+   "take": "walk-relaxed-1start-379003",
+   "first": 1,
+   "last": 200,
+   "preserveHierarchy": true,
+   "mapped": 55
+  }
+ },
+ "determinism": {
+  "clipStageTwice": "byte-identical (out/scratch/forma/actorcore/run1 vs run2)",
+  "unityDumpTwice": "byte-identical (play.json vs play2.json)",
+  "gameClipsRebuilt": "147 files compared with out/people-models: every .meta identical; the 23 Blender-authored FBX differ in bytes run to run (exporter, pre-existing, also between two runs today)"
+ },
+ "figures": {
+  "fixer_v7_H": {
+   "firstFrameHandReachM": {
+    "ac_fastrun_end": 0.187,
+    "ac_fastrun_loop": 0.186,
+    "ac_fastrun_start": 0.116,
+    "ac_shooting": 0.116,
+    "ac_turn90": 0.116,
+    "ac_walk_end": 0.301,
+    "ac_walk_loop": 0.262,
+    "ac_walk_start": 0.242,
+    "walk": 0.244
+   },
+   "loco": {
+    "ac_walk_loop": {
+     "naturalMs": 0.52,
+     "p10p90": [
+      0.43,
+      0.76
+     ],
+     "slipCmPerSecondAtConstantSpeed": 13.1
+    },
+    "ac_fastrun_loop": {
+     "naturalMs": 3.0,
+     "p10p90": [
+      2.28,
+      3.33
+     ],
+     "slipCmPerSecondAtConstantSpeed": 35.1
+    },
+    "walk": {
+     "naturalMs": 1.38,
+     "p10p90": [
+      1.23,
+      1.55
+     ],
+     "slipCmPerSecondAtConstantSpeed": 11.2
+    }
+   },
+   "inPlaceDrift": {
+    "ac_shooting": {
+     "L": {
+      "plantedRuns": 1,
+      "worstRunSlideCm": 24.4,
+      "runs": [
+       [
+        0,
+        118,
+        24.4
+       ]
+      ]
+     },
+     "R": {
+      "plantedRuns": 3,
+      "worstRunSlideCm": 19.0,
+      "runs": [
+       [
+        0,
+        3,
+        2.2
+       ],
+       [
+        9,
+        89,
+        19.0
+       ],
+       [
+        96,
+        118,
+        3.1
+       ]
+      ]
+     }
+    },
+    "ac_turn90": {
+     "L": {
+      "plantedRuns": 2,
+      "worstRunSlideCm": 15.8,
+      "runs": [
+       [
+        0,
+        39,
+        15.8
+       ],
+       [
+        47,
+        85,
+        5.6
+       ]
+      ]
+     },
+     "R": {
+      "plantedRuns": 2,
+      "worstRunSlideCm": 16.0,
+      "runs": [
+       [
+        0,
+        36,
+        16.0
+       ],
+       [
+        41,
+        85,
+        11.9
+       ]
+      ]
+     }
+    }
+   },
+   "turn90EndYawDeg": 90.5,
+   "groundSpeedProfileMs_per_0.33s": {
+    "ac_walk_start": [
+     0.05,
+     0.14,
+     0.3,
+     0.41,
+     0.41,
+     0.42,
+     0.55,
+     0.5,
+     0.56,
+     0.59,
+     0.57,
+     0.56,
+     0.57,
+     0.57,
+     0.68,
+     0.54,
+     0.63,
+     0.66,
+     0.57,
+     0.68
+    ],
+    "ac_walk_end": [
+     0.54,
+     0.63,
+     0.63,
+     0.47,
+     0.41,
+     0.36,
+     0.26,
+     0.19,
+     0.08,
+     0.0,
+     0.04,
+     0.03,
+     0.02,
+     0.02,
+     0.01
+    ],
+    "ac_fastrun_start": [
+     0.01,
+     0.01,
+     0.0,
+     0.12,
+     1.14,
+     2.22,
+     2.66,
+     3.06
+    ],
+    "ac_fastrun_end": [
+     3.58,
+     3.96,
+     3.39,
+     2.12,
+     0.59,
+     0.03,
+     0.01,
+     0.0,
+     0.0
+    ]
+   },
+   "joins": {
+    "walk start>loop": {
+     "LF": 2.0,
+     "RF": 3.3,
+     "LH": 3.0,
+     "RH": 2.0,
+     "Hips": 1.9,
+     "hipsHeightCm": -0.2,
+     "fingerMuscleMax": 0.019,
+     "hipsYawDeg": -0.3
+    },
+    "walk loop>loop (wrap)": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "walk loop>end": {
+     "LF": 0.5,
+     "RF": 1.9,
+     "LH": 7.5,
+     "RH": 5.4,
+     "Hips": 0.2,
+     "hipsHeightCm": 0.1,
+     "fingerMuscleMax": 0.102,
+     "hipsYawDeg": -0.1
+    },
+    "fastrun start>loop": {
+     "LF": 8.0,
+     "RF": 8.0,
+     "LH": 8.0,
+     "RH": 8.0,
+     "Hips": 8.0,
+     "hipsHeightCm": -0.1,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "fastrun loop>loop (wrap)": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "fastrun loop>end": {
+     "LF": 2.4,
+     "RF": 1.9,
+     "LH": 0.4,
+     "RH": 0.4,
+     "Hips": 0.1,
+     "hipsHeightCm": 0.1,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": -0.5
+    },
+    "game walk loop>loop (wrap, baseline)": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    }
+   },
+   "stance": {
+    "shooting first vs fastrun start first": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.001,
+     "hipsYawDeg": 0.0
+    },
+    "turn90 first vs fastrun start first": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "fastrun end last vs fastrun start first": {
+     "LF": 7.9,
+     "RF": 7.9,
+     "LH": 7.9,
+     "RH": 7.9,
+     "Hips": 7.9,
+     "hipsHeightCm": 0.1,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "shooting last vs shooting first": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "walk end last vs walk start first": {
+     "LF": 2.2,
+     "RF": 2.2,
+     "LH": 2.2,
+     "RH": 2.2,
+     "Hips": 2.2,
+     "hipsHeightCm": 0.3,
+     "fingerMuscleMax": 0.001,
+     "hipsYawDeg": -0.0
+    }
+   },
+   "fingers": {
+    "ac_fastrun_end": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_fastrun_loop": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_fastrun_start": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_shooting": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_turn90": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_walk_end": {
+     "clampedFrac": 0.0,
+     "min": -0.6,
+     "max": 0.44,
+     "rightCurlMean": 0.06
+    },
+    "ac_walk_loop": {
+     "clampedFrac": 0.0,
+     "min": -0.66,
+     "max": 0.42,
+     "rightCurlMean": 0.03
+    },
+    "ac_walk_start": {
+     "clampedFrac": 0.0,
+     "min": -0.65,
+     "max": 0.45,
+     "rightCurlMean": 0.01
+    },
+    "walk": {
+     "clampedFrac": 0.07,
+     "min": -1.18,
+     "max": 1.47,
+     "rightCurlMean": 0.22
+    }
+   }
+  },
+  "enforcer_v1_H": {
+   "firstFrameHandReachM": {
+    "ac_fastrun_end": 0.222,
+    "ac_fastrun_loop": 0.221,
+    "ac_fastrun_start": 0.163,
+    "ac_shooting": 0.163,
+    "ac_turn90": 0.163,
+    "ac_walk_end": 0.35,
+    "ac_walk_loop": 0.304,
+    "ac_walk_start": 0.277,
+    "walk": 0.286
+   },
+   "loco": {
+    "ac_walk_loop": {
+     "naturalMs": 0.57,
+     "p10p90": [
+      0.48,
+      0.78
+     ],
+     "slipCmPerSecondAtConstantSpeed": 14.2
+    },
+    "ac_fastrun_loop": {
+     "naturalMs": 3.52,
+     "p10p90": [
+      2.96,
+      3.67
+     ],
+     "slipCmPerSecondAtConstantSpeed": 24.8
+    },
+    "walk": {
+     "naturalMs": 1.5,
+     "p10p90": [
+      1.36,
+      1.69
+     ],
+     "slipCmPerSecondAtConstantSpeed": 11.5
+    }
+   },
+   "inPlaceDrift": {
+    "ac_shooting": {
+     "L": {
+      "plantedRuns": 1,
+      "worstRunSlideCm": 25.5,
+      "runs": [
+       [
+        0,
+        118,
+        25.5
+       ]
+      ]
+     },
+     "R": {
+      "plantedRuns": 3,
+      "worstRunSlideCm": 20.4,
+      "runs": [
+       [
+        0,
+        5,
+        6.4
+       ],
+       [
+        9,
+        89,
+        20.4
+       ],
+       [
+        96,
+        118,
+        3.4
+       ]
+      ]
+     }
+    },
+    "ac_turn90": {
+     "L": {
+      "plantedRuns": 2,
+      "worstRunSlideCm": 15.8,
+      "runs": [
+       [
+        0,
+        39,
+        15.8
+       ],
+       [
+        47,
+        85,
+        6.3
+       ]
+      ]
+     },
+     "R": {
+      "plantedRuns": 2,
+      "worstRunSlideCm": 16.3,
+      "runs": [
+       [
+        0,
+        36,
+        16.3
+       ],
+       [
+        41,
+        85,
+        12.9
+       ]
+      ]
+     }
+    }
+   },
+   "turn90EndYawDeg": 90.5,
+   "groundSpeedProfileMs_per_0.33s": {
+    "ac_walk_start": [
+     0.05,
+     0.14,
+     0.34,
+     0.45,
+     0.44,
+     0.46,
+     0.6,
+     0.56,
+     0.64,
+     0.67,
+     0.63,
+     0.62,
+     0.61,
+     0.65,
+     0.76,
+     0.6,
+     0.7,
+     0.73,
+     0.64,
+     0.75
+    ],
+    "ac_walk_end": [
+     0.59,
+     0.69,
+     0.69,
+     0.54,
+     0.45,
+     0.38,
+     0.29,
+     0.21,
+     0.1,
+     0.0,
+     0.04,
+     0.03,
+     0.02,
+     0.03,
+     0.01
+    ],
+    "ac_fastrun_start": [
+     0.01,
+     0.01,
+     0.0,
+     0.11,
+     1.24,
+     2.39,
+     2.94,
+     3.35
+    ],
+    "ac_fastrun_end": [
+     3.9,
+     4.42,
+     3.72,
+     2.26,
+     0.59,
+     0.03,
+     0.01,
+     0.0,
+     0.0
+    ]
+   },
+   "joins": {
+    "walk start>loop": {
+     "LF": 2.1,
+     "RF": 3.6,
+     "LH": 3.4,
+     "RH": 2.3,
+     "Hips": 2.1,
+     "hipsHeightCm": -0.3,
+     "fingerMuscleMax": 0.019,
+     "hipsYawDeg": -0.3
+    },
+    "walk loop>loop (wrap)": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "walk loop>end": {
+     "LF": 0.6,
+     "RF": 2.2,
+     "LH": 8.5,
+     "RH": 6.3,
+     "Hips": 0.1,
+     "hipsHeightCm": 0.1,
+     "fingerMuscleMax": 0.102,
+     "hipsYawDeg": -0.0
+    },
+    "fastrun start>loop": {
+     "LF": 8.6,
+     "RF": 8.6,
+     "LH": 8.6,
+     "RH": 8.6,
+     "Hips": 8.6,
+     "hipsHeightCm": -0.1,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "fastrun loop>loop (wrap)": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "fastrun loop>end": {
+     "LF": 2.6,
+     "RF": 2.2,
+     "LH": 0.5,
+     "RH": 0.4,
+     "Hips": 0.1,
+     "hipsHeightCm": 0.1,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": -0.4
+    },
+    "game walk loop>loop (wrap, baseline)": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    }
+   },
+   "stance": {
+    "shooting first vs fastrun start first": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.001,
+     "hipsYawDeg": 0.0
+    },
+    "turn90 first vs fastrun start first": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "fastrun end last vs fastrun start first": {
+     "LF": 8.5,
+     "RF": 8.5,
+     "LH": 8.5,
+     "RH": 8.5,
+     "Hips": 8.5,
+     "hipsHeightCm": 0.1,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "shooting last vs shooting first": {
+     "LF": 0.0,
+     "RF": 0.0,
+     "LH": 0.0,
+     "RH": 0.0,
+     "Hips": 0.0,
+     "hipsHeightCm": 0.0,
+     "fingerMuscleMax": 0.0,
+     "hipsYawDeg": 0.0
+    },
+    "walk end last vs walk start first": {
+     "LF": 2.3,
+     "RF": 2.3,
+     "LH": 2.3,
+     "RH": 2.3,
+     "Hips": 2.3,
+     "hipsHeightCm": 0.4,
+     "fingerMuscleMax": 0.001,
+     "hipsYawDeg": -0.0
+    }
+   },
+   "fingers": {
+    "ac_fastrun_end": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_fastrun_loop": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_fastrun_start": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_shooting": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_turn90": {
+     "clampedFrac": 0.05,
+     "min": -1.35,
+     "max": 0.53,
+     "rightCurlMean": -0.15
+    },
+    "ac_walk_end": {
+     "clampedFrac": 0.0,
+     "min": -0.6,
+     "max": 0.44,
+     "rightCurlMean": 0.06
+    },
+    "ac_walk_loop": {
+     "clampedFrac": 0.0,
+     "min": -0.66,
+     "max": 0.42,
+     "rightCurlMean": 0.03
+    },
+    "ac_walk_start": {
+     "clampedFrac": 0.0,
+     "min": -0.65,
+     "max": 0.45,
+     "rightCurlMean": 0.01
+    },
+    "walk": {
+     "clampedFrac": 0.07,
+     "min": -1.18,
+     "max": 1.47,
+     "rightCurlMean": 0.22
+    }
+   }
+  }
+ }
+}

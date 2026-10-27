@@ -146,7 +146,7 @@ def _euler_q(deg, order=0):
     return q
 
 
-def read_fbx(path, root_name):
+def read_fbx(path, root_name, stack=None):
     """The FBX as Unity imports it: one root GameObject (root_name) and every Model node under it, in file order, each with its local pose.
     A node's pose is its first animation key where the file animates it (a clip-only file: Unity's pose for it is frame 0, Latch's `walkAvatar`),
     else its Lcl values. Right-handed Y-up file to Unity: x mirrored (position -x; rotation y and z negated); positions in metres."""
@@ -167,13 +167,23 @@ def read_fbx(path, root_name):
         elif o.id == b'AnimationCurveNode':
             cnodes[o.props[0]] = {}
     parent, order, anim = {}, [], {}
-    cn_target = {}
+    cn_target = {}; keep_cn = None
+    if stack is not None:
+        # several takes in one file (ActorCore: '0_T-Pose' and the clip): only the curve nodes of the named stack's layers
+        stacks = {o.props[0]: o.props[1].split(b'\x00')[0].decode() for o in objs.elems if o.id == b'AnimationStack'}
+        layers = {o.props[0] for o in objs.elems if o.id == b'AnimationLayer'}; lay_of = {}; keep_l = set()
+        for c in el(top, b'Connections')[0].elems:
+            if c.props[0] == b'OO' and c.props[1] in layers and stacks.get(c.props[2]) == stack: keep_l.add(c.props[1])
+        keep_cn = set()
+        for c in el(top, b'Connections')[0].elems:
+            if c.props[0] == b'OO' and c.props[1] in cnodes and c.props[2] in keep_l: keep_cn.add(c.props[1])
     for c in el(top, b'Connections')[0].elems:
         kind, child, par = c.props[0], c.props[1], c.props[2]
         if kind == b'OO' and child in models and (par == 0 or par in models) and child not in parent: parent[child] = par; order.append(child)
         elif kind == b'OP' and child in curves and par in cnodes: cnodes[par][c.props[3]] = child
         elif kind == b'OP' and child in cnodes and par in models: cn_target[child] = (par, c.props[3])
     for cn, (m, prop) in cn_target.items():
+        if keep_cn is not None and cn not in keep_cn: continue
         vals = []
         for ax in (b'd|X', b'd|Y', b'd|Z'):
             cid = cnodes[cn].get(ax)
@@ -244,8 +254,12 @@ POSES = [Pose(UP, True, 15), Pose(v(-0.05, -1, 0), True, 15), Pose(v(0.05, -1, 0
 assert len(POSES) == 55 and len(HUMAN) == 55 and len(MIXAMO) == 55
 
 
-def map_bones(nodes):
-    """The human map: Unity's auto-mapper on a Mixamo rig ('mixamorig:' prefix or none). Returns {human index: node}."""
+def map_bones(nodes, bonemap=None):
+    """The human map: Unity's auto-mapper on a Mixamo rig ('mixamorig:' prefix or none), or a bone map in data ({human name: bone name},
+    tools/figures/bonemaps.json: what Unity's auto-mapper chose on that rig). Returns {human index: node}."""
+    if bonemap:
+        byf = {n.name: n for n in nodes[1:]}
+        return {i: byf[bonemap[h]] for i, h in enumerate(HUMAN) if h in bonemap and bonemap[h] in byf}
     by = {}
     for n in nodes[1:]:
         by.setdefault(n.name.split(':')[-1] if n.name.startswith('mixamorig:') else n.name, n)
@@ -346,10 +360,17 @@ def make_pose_valid(b):
 LEGS = ('UpLeg', 'Leg', 'Foot', 'ToeBase', 'Toe_End')
 
 
-def neutral_legs(nodes, pitch_deg=None):
+def neutral_legs(nodes, pitch_deg=None, b=None):
     """Each leg straight down; Foot->ToeBase along the hips' facing, pitch_deg down (None: the mean of this rest's own two pitches, a figure's
-    flat stance); ToeBase->Toe_End level along the facing. Only the leg bones change."""
+    flat stance); ToeBase->Toe_End level along the facing. Only the leg bones change. b: the human map (any rig); None: Mixamo names."""
     by = {(n.name.split(':')[-1]): n for n in nodes[1:]}
+    if b is not None:
+        for s_ in ('Left', 'Right'):
+            for k, h in (('UpLeg', 'UpperLeg'), ('Leg', 'LowerLeg'), ('Foot', 'Foot'), ('ToeBase', 'Toes')):
+                if H[s_ + h] in b: by[s_ + k] = b[H[s_ + h]]
+            t = by.get(s_ + 'ToeBase')
+            if t is not None and t.children: by[s_ + 'Toe_End'] = t.children[0]
+            elif s_ + 'Toe_End' in by: del by[s_ + 'Toe_End']
     F = lambda k: by[k]
     lr = F('RightUpLeg').position - F('LeftUpLeg').position; lr[1] = 0; fwd = norm(np.cross(lr, UP))
     def aim(bn, ch, d): bn.rotation = qmul(from_to(ch.position - bn.position, d), bn.rotation)
@@ -368,14 +389,15 @@ def neutral_legs(nodes, pitch_deg=None):
 
 # ---------------------------------------------------------------- the whole rule, and the meta text
 
-def neutral_avatar(fbx_path, root_name, pitch_deg=None):
-    """Unity's own avatar for this file, with neutral legs. Returns (human rows [(bone, human)], skeleton nodes, pitch used)."""
-    nodes = read_fbx(fbx_path, root_name)
-    b = map_bones(nodes)
+def neutral_avatar(fbx_path, root_name, pitch_deg=None, stack=None, bonemap=None):
+    """Unity's own avatar for this file, with neutral legs. Returns (human rows [(bone, human)], skeleton nodes, pitch used).
+    stack: the take whose first key is the rest (ActorCore's '0_T-Pose'); bonemap: the human map in data for a non-Mixamo rig."""
+    nodes = read_fbx(fbx_path, root_name, stack)
+    b = map_bones(nodes, bonemap)
     for k in ('Hips', 'LeftUpperLeg', 'RightUpperLeg', 'LeftLowerLeg', 'RightLowerLeg', 'LeftFoot', 'RightFoot', 'LeftToes', 'RightToes'):
         if H[k] not in b: raise ValueError(f'{fbx_path}: no bone for {k}')
     make_pose_valid(b)
-    p = neutral_legs(nodes, pitch_deg)
+    p = neutral_legs(nodes, pitch_deg, b if bonemap else None)
     return [(b[i].name, HUMAN[i]) for i in sorted(b)], nodes, p
 
 
@@ -427,12 +449,27 @@ def rig_differences(ref_nodes, fbx_path, tol_m=0.01):
     return out
 
 
-def lone_root_above_hips(fbx_path):
-    """The file's only top-level node, when it is not the hips but holds them (a Blender export's `Armature`); else None. Unity folds a lone root
-    into the prefab root unless Preserve Hierarchy is on, so an avatar written with that node in it fails to build (brief 069 A)."""
+def lone_root_above_hips(fbx_path, hips='Hips'):
+    """The file's only top-level node, when it is not the hips but holds them (a Blender export's `Armature`, ActorCore's `root`); else None. Unity
+    folds a lone root into the prefab root unless Preserve Hierarchy is on, so an avatar written with that node in it fails to build (brief 069 A).
+    hips: the hips bone's name (a bone map's 'Hips'; Mixamo's by default)."""
     nodes = read_fbx(fbx_path, 'root'); tops = nodes[0].children
-    if len(tops) != 1 or tops[0].name.split(':')[-1] == 'Hips': return None
-    return tops[0].name if any(n.name.split(':')[-1] == 'Hips' for n in nodes if n is not tops[0]) else None
+    is_hips = lambda n: n.name.split(':')[-1] == hips
+    if len(tops) != 1 or is_hips(tops[0]): return None
+    return tops[0].name if any(is_hips(n) for n in nodes if n is not tops[0]) else None
+
+
+def stacks(fbx_path):
+    """The file's takes (FBX AnimationStacks), in file order."""
+    fbx_bin = _fbx_parser(); top, _ = fbx_bin.parse(fbx_path)
+    objs = [e for e in top.elems if e.id == b'Objects'][0]
+    return [o.props[1].split(b'\x00')[0].decode() for o in objs.elems if o.id == b'AnimationStack']
+
+
+def rig_of(fbx_path, rigs):
+    """Which rig in data (bonemaps.json `rigs`) this file uses: the first whose `match` bone it has; None = Mixamo (the default rules)."""
+    names = {n.name for n in read_fbx(fbx_path, 'root')}
+    return next((k for k, r in rigs.items() if r['match'] in names), None)
 
 
 def reference_rest(ref_nodes, fbx_path, root_name):

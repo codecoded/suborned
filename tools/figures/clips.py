@@ -15,6 +15,7 @@ os.makedirs(f'{out}/Clips', exist_ok=True)
 AV = spec['avatar']; ref = next(c for c in spec['clips'] if c['name'] == AV['reference'])
 ref_src = ref['src'] if os.path.isabs(ref['src']) else os.path.join(STORE, ref['src'])
 ref_human, ref_nodes, _ = av.neutral_avatar(ref_src, f"{AV['reference']}(Clone)", AV['footPitchDeg'])
+RIGS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bonemaps.json')))['rigs']   # brief 069: rigs that aren't Mixamo, in data
 FL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'finger_limits.json')))   # brief 069: the same finger limits as finger-boned figures
 ref_h, ref_s = av.human_description(ref_human, ref_nodes, av.finger_limits(FL, ref_human))
 ref_rel = f"Clips/{AV['reference']}.fbx"
@@ -24,14 +25,19 @@ for c in spec['clips']:
         (author_clips.make_testbed if c.get('kind') == 'testbed' else author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make_layer if c.get('kind') == 'layer' else author_clips.make_blend if c.get('kind') == 'blend' else author_clips.make_additive if c.get('kind') == 'additive' else author_clips.make)(c, STORE, src); c['src'] = c['donor']
     else:
         src = c['src'] if os.path.isabs(c['src']) else os.path.join(STORE, c['src'])
+    rk = None if 'author' in c else av.rig_of(src, RIGS); RG = RIGS[rk] if rk else None
     clean(); new = load(src); arm, _ = rigs(new)
-    act = arm.animation_data.action; arm.animation_data.action = act
+    act = arm.animation_data.action
+    if RG: act = next(x for x in bpy.data.actions if RG['restStack'] not in x.name)   # the clip's take, never the rest take Blender makes active
+    arm.animation_data.action = act
     f0, f1 = int(act.frame_range[0]), int(act.frame_range[1]); sc = bpy.context.scene
+    first = c.get('first', RG['firstFrame'] if RG else 0)   # a rig whose take repeats its T-pose at frame 0 plays from its firstFrame
+    foot = (lambda s: RG['bones'][s + 'Foot']) if RG else (lambda s: f'mixamorig:{s}Foot')
     # natural speed: while a foot is planted (within 4 cm of the lowest the clip ever puts a foot) it runs backwards, in the hips' frame, at the body's speed
     P = {s: [] for s in ('Left', 'Right')}
-    for fn in range(f0, f1 + 1):
+    for fn in range(f0 + (first if RG else 0), f1 + 1):
         sc.frame_set(fn)
-        for s in P: P[s].append(arm.matrix_world @ arm.pose.bones[f'mixamorig:{s}Foot'].matrix.translation)
+        for s in P: P[s].append(arm.matrix_world @ arm.pose.bones[foot(s)].matrix.translation)
     ground = min(p.z for s in P for p in P[s]); sp = []
     for s in P:
         for k in range(1, len(P[s])):
@@ -42,10 +48,12 @@ for c in spec['clips']:
     shutil.copyfile(src, dst)
     # a clip on the reference's rig copies its avatar; one whose hierarchy differs (the clips authored in Blender sit under an `Armature` node) can't, so it
     # gets its own avatar with the same neutral legs (Latch's option b): the leg fix holds, its other bones keep their own frame-0 rest as today
-    rig = [] if name == AV['reference'] else av.rig_differences(ref_nodes, dst); own = name == AV['reference'] or bool(rig)
-    lone = av.lone_root_above_hips(dst)   # brief 069 A: Preserve Hierarchy keeps a lone `Armature` root, or the written avatar's Hips parent can't match
+    rig = [] if name == AV['reference'] else [f'rig {rk}, not the reference skeleton'] if RG else av.rig_differences(ref_nodes, dst); own = name == AV['reference'] or bool(rig)
+    lone = av.lone_root_above_hips(dst, RG['bones']['Hips'] if RG else 'Hips')   # brief 069 A: Preserve Hierarchy keeps a lone `Armature` root, or the written avatar's Hips parent can't match
     if own and name != AV['reference']:
-        if lone and all(r.startswith('Hips: parent ') for r in rig):
+        if RG:   # brief 069: its own T-pose (the rest take's first key), mapped by the rig's bone map, with the same neutral legs
+            c_human, c_nodes, _ = av.neutral_avatar(dst, f'{name}(Clone)', AV['footPitchDeg'], stack=RG['restStack'], bonemap=RG['bones']); kind = f'own avatar from {rk} {RG["restStack"]}, neutral legs'
+        elif lone and all(r.startswith('Hips: parent ') for r in rig):
             # only a lone root above the same bones: the reference's rest by bone name (one zero for every clip; their frame 0 is no zero)
             c_human, c_nodes = av.reference_rest(ref_nodes, dst, f'{name}(Clone)'); kind = 'the reference rest in its own hierarchy'
         else:
@@ -53,13 +61,14 @@ for c in spec['clips']:
         c_h, c_s = av.human_description(c_human, c_nodes, av.finger_limits(FL, c_human))
         print('AVATAR', name, kind, '|', '; '.join(rig[:3]), f'({len(rig)})')
     else: c_h, c_s = ref_h, ref_s
-    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', c.get('first', 0), f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None,
+    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, next(t for t in av.stacks(dst) if t != RG['restStack']) if RG else 'mixamo.com', first, f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None,
                                                 avatar={'human': c_h, 'skeleton': c_s, 'source': None if own else um.guid(ref_rel)}, preserve_hierarchy=bool(lone)))
     rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
-    rows[-1]['avatar'] = ({'own': True, 'neutralLegs': True, 'footPitchDeg': AV['footPitchDeg'], 'rigDifferences': rig} if name == AV['reference'] or not (lone and all(r.startswith('Hips: parent ') for r in rig))
+    rows[-1]['avatar'] = ({'own': True, 'neutralLegs': True, 'footPitchDeg': AV['footPitchDeg'], 'rigDifferences': rig} if name == AV['reference'] or RG or not (lone and all(r.startswith('Hips: parent ') for r in rig))
                           else {'own': True, 'restFrom': ref_rel, 'rigDifferences': rig}) if own else {'copiedFrom': ref_rel}
     if lone: rows[-1]['avatar']['preserveHierarchy'] = lone
+    if RG: rows[-1]['rig'] = rk; rows[-1]['avatar']['restFrom'] = RG['restStack']; rows[-1]['firstFrame'] = first; rows[-1]['frames'] = f1 - f0 + 1 - first; rows[-1]['seconds'] = round(rows[-1]['frames'] / sc.render.fps, 3)
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
     if c.get('additive'): rows[-1]['additive'] = True; rows[-1]['additiveReferencePoseFrame'] = c.get('refPose', 0); rows[-1]['firstFrame'] = c.get('first', 0)
     if 'upper' in c: rows[-1]['upperFrom'] = c['upper']; rows[-1]['upperFromSha256'] = hashlib.sha256(open(os.path.join(STORE, c['upper']), 'rb').read()).hexdigest()

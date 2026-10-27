@@ -239,3 +239,16 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - Strip: `out/scratch/forma/char-pipeline/props/sheet_rifle_set.png`.
 - **Carbine shoulder pull (Latch):** the weapon pivots at the butt, pulled into a shoulder pocket off the right clavicle, with Multi-Aim to the target. Butt to pocket 0.0 cm, barrel 0.00°. To reach, the support hand slides about 11 cm back along the handguard and the left clavicle turns forward. Feet move only in raise and lower (about 21 / 5 cm). Every take also has a front-on video. Evidence: `latch/weapons-final/final3-check.txt`.
 - **Animation library comparison:** `research/anim-packs.md`. Recommended: ActorCore clip by clip ($424.50, 38/50 covered).
+- **ActorCore free-clip test (Forma, $0):** 8 free clips (relaxed walk set, gun fastrun set, shooting, turn90) imported through our clip stage.
+  - **Bones:** Unity's auto-map works (55 bones). One bone-map rule in data (`tools/figures/bonemaps.json` `rigs.actorcore_cc3`, recognised by the `CC_Base_Hip` bone) covers every CC3+ clip. Frame 0 (T-pose) is the clip's own reference and is dropped from playback.
+  - **Determinism:** byte-identical.
+  - **Joins:** loops close exactly; start/loop/end joins are 2–8.6 cm (need about 0.15 s crossfades).
+  - **Shared stance:** "same pack = same stance" holds (shooting, turn90 and fastrun start share a first frame to 0.0 cm).
+  - **Caveats:**
+    - the relaxed walk is a stroll (0.59 m/s, outside the walk band);
+    - the fastrun's speed swings within each cycle (slip 25–35 cm/s at constant speed);
+    - the shooting clip is a step-in crouch, not a recoil loop;
+    - turn90 needs the character turned at its end;
+    - start and end clips need their ground-speed profile or root motion.
+  - **Pre-existing:** the 23 Blender-authored game clips aren't byte-identical across builds.
+  - Evidence: `forma/actorcore-test.json`.
