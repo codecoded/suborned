@@ -299,34 +299,30 @@ namespace Suborned.Play
 
         // ---------------------------------------------------------------- lines on the signal layer (Glyph's brief 027 hud.html, frame A, D)
 
-        /// <summary>The user layer the signals draw on: the play camera leaves it out, an overlay camera with no post-processing draws it on top
-        /// (its depth kept, so buildings still hide a line), so the grade never shifts a signal (GDD §10, §15: signals unlit and emissive).</summary>
+        /// <summary>The user layer the signals draw on (SignalsFeature.Layer): PC_Renderer's opaque and transparent filters leave it out, and
+        /// SignalsFeature draws it in the play camera's own frame after post, on a cleared depth of its own (brief 064 A3 item 7; it was an
+        /// overlay camera stacked on the play camera), so the grade never shifts a signal (GDD §10, §15: signals unlit and emissive).</summary>
         public const int SignalLayer = 8;
         public static readonly Color CellTurquoise = new(0x4f / 255f, 0xe3 / 255f, 0xe8 / 255f), RivalViolet = new(0x8a / 255f, 0x4f / 255f, 0xd0 / 255f), PoliceAmber = new(0xf0 / 255f, 0xa0 / 255f, 0x20 / 255f);
         public static Color SideColour(string id) => id is "scout" or "fixer" or "tech" or "enforcer" ? CellTurquoise : id.StartsWith("rival") ? RivalViolet : PoliceAmber;
 
         sealed class SigLine { public LineRenderer Body, Head; public float Offset; }
-        readonly List<SigLine> sigLines = new(); [NonSerialized] UnityEngine.Camera signalCam; [NonSerialized] Material oursMat, rivalMat, policeMat, headRival, headPolice, headOurs, ghostMat2; static Texture2D dashTex, dotTex;
+        readonly List<SigLine> sigLines = new(); [NonSerialized] Material oursMat, rivalMat, policeMat, headRival, headPolice, headOurs, ghostMat2; static Texture2D dashTex, dotTex;
         [NonSerialized] GameObject ghostRoot; readonly List<(GameObject body, LineRenderer ring)> ghosts = new();
         /// <summary>Badges the HUD draws at our lines' target ends this frame: F-number, shots, world point (chest).</summary>
         public readonly List<(string text, Vector3 at)> LineBadges = new();
 
-        /// <summary>The overlay camera for the signal layer, stacked on the play camera; the play camera stops drawing that layer.</summary>
+        /// <summary>Brief 064 A3 item 7: the play camera keeps the signal layer in its culling mask (SignalsFeature draws it after post; the
+        /// scene passes filter it out), and an overlay camera left by an older host is taken off the stack.</summary>
         void SignalCamera()
         {
             if (!cam) return;
-            if (!signalCam)
-            {
-                var go = new GameObject("signals camera"); go.transform.SetParent(cam.transform, false);
-                signalCam = go.AddComponent<UnityEngine.Camera>(); signalCam.cullingMask = 1 << SignalLayer; signalCam.clearFlags = CameraClearFlags.Nothing;
-                var d = go.AddComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
-                d.renderType = UnityEngine.Rendering.Universal.CameraRenderType.Overlay; d.renderPostProcessing = false; d.renderShadows = false; d.antialiasing = UnityEngine.Rendering.Universal.AntialiasingMode.SubpixelMorphologicalAntiAliasing;
-                var bd = cam.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>(); if (bd && !bd.cameraStack.Contains(signalCam)) bd.cameraStack.Add(signalCam);
-                cam.cullingMask &= ~(1 << SignalLayer);
-            }
-            signalCam.enabled = true; signalCam.orthographic = cam.orthographic; signalCam.orthographicSize = cam.orthographicSize; signalCam.fieldOfView = cam.fieldOfView;
-            signalCam.nearClipPlane = cam.nearClipPlane; signalCam.farClipPlane = cam.farClipPlane;
+            cam.cullingMask |= 1 << SignalLayer;
+            if (signalStackChecked) return; signalStackChecked = true;
+            var bd = cam.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalCameraData>();
+            if (bd) bd.cameraStack.RemoveAll(c => !c || c.name == "signals camera");
         }
+        [NonSerialized] bool signalStackChecked;
 
         static Texture2D Pattern(int on, int off) { var t = new Texture2D(on + off, 1, TextureFormat.RGBA32, false) { wrapMode = TextureWrapMode.Repeat, filterMode = FilterMode.Point }; var px = new Color32[on + off]; for (int i = 0; i < px.Length; i++) px[i] = new Color32(255, 255, 255, (byte)(i < on ? 255 : 0)); t.SetPixels32(px); t.Apply(); return t; }
 
@@ -446,6 +442,7 @@ namespace Suborned.Play
                 KiteAnswerFor(ref n, ref gh, LabFireAgent, LabFireTarget, LabFire.Walk ? LabFire.StopAt : (Pt?)null);
             }
             FreezeGrade(Frozen && !Fights.Hud.rimOnly);
+            if (n > 0 || gh > 0) SignalsFeature.Want(); // brief 064 A3 item 7: the pass runs only on a frame with a signal on the layer
             for (int i = n; i < sigLines.Count; i++) { sigLines[i].Body.enabled = false; sigLines[i].Head.enabled = false; }
             for (int i = gh; i < ghosts.Count; i++) { ghosts[i].body.SetActive(false); ghosts[i].ring.enabled = false; }
         }

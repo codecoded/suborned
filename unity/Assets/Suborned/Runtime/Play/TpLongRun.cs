@@ -330,7 +330,7 @@ namespace Suborned.Play
                     var rt = new RenderTexture(gw2, gh2, 24, RenderTextureFormat.ARGB32, RenderTextureReadWrite.sRGB); Color32[] px = null;
                     try
                     {
-                        for (int i = 0; i < 2; i++) { c.targetTexture = rt; c.Render(); } // the second frame: a camera made fresh gets its post on its second (AtmosphereLens)
+                        for (int i = 0; i < 2; i++) { c.targetTexture = rt; SignalsFeature.Want(); c.Render(); } // brief 064 A3 item 7: the signal layer draws after post when asked // the second frame: a camera made fresh gets its post on its second (AtmosphereLens)
                         var prev = RenderTexture.active; RenderTexture.active = rt; var tx = new Texture2D(gw2, gh2, TextureFormat.RGB24, false); tx.ReadPixels(new Rect(0, 0, gw2, gh2), 0, 0); tx.Apply(); RenderTexture.active = prev;
                         if (name != null) File.WriteAllBytes(Path.Combine(dir, name + ".png"), tx.EncodeToPNG()); else px = tx.GetPixels32(); Destroy(tx);
                     }

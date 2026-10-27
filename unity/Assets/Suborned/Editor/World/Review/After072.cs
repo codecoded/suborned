@@ -39,9 +39,10 @@ namespace Suborned.World.Review
     /// briefs/072/texture/area-after.json; `-tag before` writes texmem only to briefs/072/latch/textured/texmem-before.json.
     /// `-tag g` (072-G, the rebuild after the palette, holes and grade) writes shots to briefs/072/shots/g, counts, texmem and area-g.json to
     /// briefs/072/latch/g, and f1 to briefs/072/shots/f1g at the three walls recorded in briefs/072/shots/f1/f1.json.
+    /// `-tag a3 [-phase before|after]` (brief 064 A3 items 1, 5, 7): the no-look check only (After072.A3.cs) → briefs/072/shots/a3/.
     /// Everything changed is put back; nothing is saved.
-    ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.After072.Cli [-only shots,counts,area,k6,texmem] [-tag textured] -logFile &lt;log&gt;</summary>
-    public static class After072
+    ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.After072.Cli [-only shots,counts,area,k6,texmem] [-tag textured|g|a3] -logFile &lt;log&gt;</summary>
+    public static partial class After072
     {
         const int W = Baseline072.W, H = Baseline072.H, WarmFrames = 8, TimedFrames = 30;
         static readonly string[] Ids = { "office-front", "cell-open" };
@@ -67,6 +68,7 @@ namespace Suborned.World.Review
             string shotsDir = tag == null || tag == "before" ? Path.Combine(root, "briefs", "072", "shots", "after") : tag == "textured" ? Path.Combine(root, "briefs", "072", "shots", "textured") : g ? Path.Combine(root, "briefs", "072", "shots", "g") : Path.Combine(root, "out", "scratch", "latch", "072", tag);
             string countsDir = Path.Combine(root, "briefs", "072", "latch", tag == null ? "after" : g ? "g" : "textured");
             string areaFile = g ? Path.Combine(countsDir, "area-g.json") : Path.Combine(root, "briefs", "072", "texture", tag == "textured" ? "area-after.json" : "area.json");
+            if (tag == "a3") only = new HashSet<string> { "a3" }; // brief 064 A3 items 1, 5, 7: the no-look check (After072.A3.cs)
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var c = new Ctx();
             var playGo = GameObject.Find("cameras/play") ?? throw new InvalidOperationException("072: no cameras/play in the scene");
@@ -94,6 +96,7 @@ namespace Suborned.World.Review
             session.Grab(c.cam, 64, 64); // the first render after a load comes out flat
 
             if (only.Contains("texmem")) TexMem(Path.Combine(countsDir, tag == "before" ? "texmem-before.json" : "texmem.json"), exportLine, tag ?? "after");
+            if (only.Contains("a3")) A3(c, session, root, a);
             if (only.Contains("shots")) Shots(c, session, shotsDir);
             if (only.Contains("counts"))
             {

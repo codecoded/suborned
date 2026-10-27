@@ -263,7 +263,7 @@ namespace Suborned.Play
         {
             if (!cam || Time.frameCount % 15 != 1) return;
             foreach (var c in Resources.FindObjectsOfTypeAll<Camera>())
-                if (c != cam && c != signalCam && c.enabled && c.gameObject.activeInHierarchy && c.targetTexture == null && c.cameraType == CameraType.Game && c.depth >= cam.depth)
+                if (c != cam && c.enabled && c.gameObject.activeInHierarchy && c.targetTexture == null && c.cameraType == CameraType.Game && c.depth >= cam.depth)
                 { c.enabled = false; if (!covered.Contains(c)) covered.Add(c); }
         }
 

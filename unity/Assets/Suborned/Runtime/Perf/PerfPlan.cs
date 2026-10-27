@@ -49,7 +49,8 @@ namespace Suborned.Perf
     }
 
     /// <summary>A/B switches, each "" (or 0) = as built. ssao: "on" = as built, "depth" = after opaques from the depth texture (no
-    /// prepass; as built since B6), "normals" = before opaques from the depth-normals prepass (as built before B6), "off".
+    /// prepass; as built since B6), "normals" = before opaques from the depth-normals prepass (as built before B6), "off". Since 064 A3
+    /// item 1 the orthographic play camera renders without SSAO as built ("on" keeps that); "depth" and "normals" turn it back on there too.
     /// cascades: the play camera's shadow cascades (TacticalShadows; 2 as built since B6, 4 before). proxies: "on" = kit facades and
     /// street trees cast from their LOD1 shadow proxy (ShadowProxy) and no LOD casts its own (as built since B6), "off" = every LOD
     /// casts as before. fade: "tile" = the cut's discarding variant takes whole 64 m batch tiles (as built before B6), "reach" =

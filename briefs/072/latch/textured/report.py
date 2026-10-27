@@ -1,6 +1,7 @@
 # Brief 072-F (Latch): textured against untextured, same v4 export, same batchmode estimator.
 # Inputs: briefs/072/latch/after/offscreen.json (v4 untextured), briefs/072/latch/textured/offscreen.json (v4 textured),
-#         texmem-before.json / texmem.json (this folder), briefs/072/texture/area.json (before) and area-after.json (after).
+#         texmem-before.json / texmem.json (this folder), briefs/072/texture/area.json (before) and area-after.json (after),
+#         shaders.json (this folder; Shaders072: SRP batcher lines and texture reads per shader, 2026-10-28).
 # usage: python3 -I briefs/072/latch/textured/report.py   → report.md beside it
 import json, os
 here = os.path.dirname(os.path.abspath(__file__))
@@ -48,5 +49,18 @@ L += ["", f"Flat colour left (kinds flat + swatch-atlas without detail): {flat_b
       "Largest flat rows left:", "", "| material | shader | mean share |", "|---|---|---:|"]
 for m in [m for m in aa['materials'] if m['maps']['kind'] in ('flat', 'swatch-atlas')][:15]:
     L.append(f"| {m['material']} | {m['shader']} | {m['meanShare'] * 100:.2f} % |")
+sh = J('shaders.json')
+L += ["", f"## SRP batcher and texture reads per shader ({sh['when']}, Unity {sh['unity']})", "",
+      "Method: " + sh['method'] + ".", "",
+      "SRP batcher (the Inspector's line, per subshader):", ""]
+for x in sh['shaders']:
+    L.append(f"- `{x['shader']}` ({x.get('path', '')}): " + "; ".join(x.get('srpBatcher', ['missing'])))
+L += ["", "Texture reads in the forward fragment, per keyword set the materials use (play-view pipeline keywords added). "
+      "`shadow compares` are the main light's soft-shadow taps (High: a 7×7 tent, 16 compares); `samples` are the material's own maps and the detail fetches.", "",
+      "| shader | local keywords | materials | samples | shadow compares | total | textures bound |", "|---|---|---:|---:|---:|---:|---:|"]
+for x in sh['shaders']:
+    for v in x.get('variants', []):
+        if 'error' in v: L.append(f"| {x['shader']} | {v['localKeywords'] or '(none)'} | {v['materials']} | error: {v['error']} | | | |"); continue
+        L.append(f"| {x['shader']} | {v['localKeywords'] or '(none)'} | {v['materials']} | {v['samples']} | {v['shadowCompares']} | {v['total']} | {v['textureBindings']} |")
 open(os.path.join(here, 'report.md'), 'w').write('\n'.join(L) + '\n')
 print('\n'.join(L))

@@ -101,3 +101,66 @@ Items 2–4 are in now; items 1 and 5 are not.
 - **The `every-ssao` variant** depends on how item 1 is built (Latch).
 - **The unknown-key guard** lives only in my script. A PerfBuild / TpLongRun check that rejects unknown variant keys would close it at the source (Latch, low).
 - **T0** is still the largest error bar, ±0.75 ms. Only the sitting closes it.
+
+## 5. Addendum (Aster, 2026-10-28): per-building colourways on the kit walls (Vela's `applied2` finding)
+**Inputs:**
+- the export `out/world/harbour-district.world.json` (04:23): 17,827 kit facades, every one `colourway: base`; 16,903 of them are every-face modules in 4,654 roots;
+- `contracts/world/kit.json`;
+- `facade.json` areas (072 second push: 12 wall families, 8–11 per area);
+- KitColumns.cs, KitSlots.cs, ShadowProxies.cs.
+
+**Re-run** (2 s): `python3 -I briefs/072/redline/colourway_cost.py out/world/harbour-district.world.json contracts/world/kit.json unity/Assets/Suborned/Editor/World/facade.json out/scratch/redline/072p3/colourway_cost.json`
+
+**Model.** Everything is **computed**: no UnityStats, no Air.
+- Under the GPU Resident Drawer, a view issues one instanced draw per distinct (mesh variant, submesh material).
+- A colourway recolours three slots: wall `DK_Limestone_Tex` (16,903 modules), band `DK_Enamel_Seafoam` (14,288) and fascia `DK_Enamel_Teal` (14,632). Only those slots' draws split.
+- Film, chrome, ivory, gold and the other slots stay one draw across colourways.
+- Building → area comes from its most common frontage area. The family pick is a stand-in hash with facade.json's weights (FacadeKit's `Dice` is C#), so the distribution is right but the exact buildings are not.
+
+### 5.1 Draws and materials (module draws only; the rest of the frame is unchanged)
+| scheme | colourways (district) | module materials | district draw keys | play zoom 14 (32 views) | wide 18.5 (worst) | tp-street | tp-worst |
+|---|---:|---:|---:|---:|---:|---:|---:|
+| today (`base`) | 1 | 14 | 801 | 0–96 | 106 | 414 | 340 |
+| **one per wall family, shared district-wide** (wall + its band + its fascia) | 12 | 47 | 1,937 | **+0 to +14** | heaviest-210: 143 (**+37**) | 670 (**+256**) | 548 (**+208**) |
+| ≤ 4 per area, shared names | 10 | 41 | 1,568 | +0 to +12 | 143 (+37) | 619 (+205) | 519 (+179) |
+| ≤ 4 per area, area-scoped names (phase 1's cap, read literally) | 25 | 86 | 2,108 | +0 to +12 | 146 (+40) | 634 (+220) | 550 (+210) |
+| family × 2 enamel pairs | 24 | 83 | 2,502 | +0 to +14 | 146 (+40) | 695 (+281) | 576 (+236) |
+| per building (each its own wall, A and B) | 312 | 944 | 4,262 | +0 to +15 | 152 (+46) | 770 (+356) | 646 (+306) |
+
+- **The play views barely notice.** A play frame holds at most 7 module buildings at zoom 14 (9 at 18.5), so even per building adds at most +15 / +46 draws. The scheme matters only in the **ground view** (43–46 buildings in frustum), and growth flattens fast there: 12 families already give 72 % of the per-building growth.
+- **SetPass: +0**, if every tinted variant keeps the same shader and the same keywords and differs only in `_BaseColor` (and, for enamel, nothing else). Under the SRP batcher a material change inside one variant is a CBUFFER bind, not a SetPass. A variant that flips a keyword (`_NORMALMAP`, detail, emission) costs +1 SetPass per distinct keyword set. 072-F's detail switch is a global uniform, so it is safe.
+- **SRP batcher and instancing:** they stay compatible. UnityPerMaterial is unchanged, and the DK shaders keep DOTS instancing. Instances per draw fall: SideBayStack_Mid's 9,340 wall instances split up to 12 ways. That is the draw growth above, nothing more.
+- **Per pixel: 0.** Same shader, same fetches, same textures.
+- **Cost:**
+  - play views ≤ +0.03 ms GPU and ≤ +0.1 ms render thread, at ~1.5–3 µs CPU and ≤ 0.5 µs GPU per extra instanced draw (estimate);
+  - ground view (+208–256 draws): **+0.3–0.8 ms render thread** and ≤ +0.1 ms GPU. tp-worst is already brief 048's over-budget view, so this is the number to confirm in UnityStats.
+
+### 5.2 Three build choices that decide whether it stays this cheap
+1. **Tint by `_BaseColor` on the shared albedo. Never bake tinted textures.**
+   - `DK_Limestone_Tex` samples `facade_panel_v1.png` (2048², `_BaseColor` white today). Each tinted copy of a 2K albedo is ~2.7–5.3 MiB, so 12 copies would be 32–64 MiB, over 072's 24 MiB texture budget.
+   - **Vela's catch:** a multiply can only darken per channel, so sky, powder and lilac above the cream albedo's blue are out of reach. Either the shared albedo goes neutral (near-white, keeps its relief), or `_BaseColor` is allowed above 1. That is a look call; the cost is the same.
+2. **Swap materials per instance; never key the column mesh by colourway.**
+   - KitColumns' variant key starts with the colourway (KitColumns.cs:85). Kept as it is, the bake duplicates meshes: column variants go 81 → 297 (12 families) or 567 (per building), and baked triangles across all LODs 0.33 M → 0.98 M / 1.73 M, about +25–40 MB of vertex data for identical geometry.
+   - Instead, bake the mesh once per layout (no colourway in the key). Then remap the placed instance's `sharedMaterials` with `KitSlots.Swap` (recorded as a prefab override, as KitPlacer already does), or build one prefab variant per colourway that shares the mesh. Both cost the same draws.
+   - `Bakeable` (line 72) already refuses a column whose modules disagree. Keep that.
+3. **Shadow proxies keep the base materials.**
+   - ShadowProxies.cs:57 copies `src.sharedMaterials`. Left alone, every colourway also splits the L2 shadow draws, roughly the main view's growth again in each of 2 cascades, for no visible change (the caster pass ignores colour).
+   - Set the proxy's materials to the base colourway set (or one shared caster material per shader).
+
+### 5.3 The cap
+- **Replace phase 1's "≤ 4 colourways per piece per area".**
+  - The play views cannot exceed ~9 buildings, so that cap protects nothing there.
+  - Read with area-scoped names, it is the *worst* scheme for materials (86).
+  - Uncapped families give up to 11 per piece per area (computed), which is fine at play.
+- **The new cap:**
+  - **≤ 12 colourways district-wide, named once and shared by all areas.** One per wall family; each is (wall, band, fascia), ≤ 36 tinted materials, 47 module materials in all. Areas choose among them by weight; no area-local names.
+  - **≤ 24 if Vela wants enamel to vary inside a family:** at most 2 enamel pairs per family, 83 materials, +25 draws more than 12 at tp-street.
+  - **Never per building** (944 materials, +356 ground draws).
+  - **Per-building accent variety** comes from the parts that are already per building: the procedural skins' accents, shopfronts, roofs and fins.
+- **Hold it at the ground view:** UnityStats at tp-street and tp-worst, before against after, with module draws ≤ +260 and SetPass Δ 0. At play zoom: SetPass Δ 0, batches ≤ +40.
+- **The 924 non-module kit facades** (27 pieces, all `base`) can join under the same cap. They add their own split to the same draw count; it was not computed here.
+
+### 5.4 Against the A5 rule
+- **At play: frame-neutral.** GPU ≤ +0.03 ms, well inside ≤ +0.3.
+- **Ground view:** the render-thread figure (+0.3–0.8 ms) is the only real risk, and it lands on a view that is already over.
+- **Neither needs a new Air sitting of its own.** Add a `colourways` variant (`base` against `family`) to the existing ab072 stops and tp-worst, if the export and builder land before the sitting.

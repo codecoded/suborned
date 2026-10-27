@@ -44,7 +44,7 @@ namespace Suborned.Perf
                 builtActive = ssao.isActive; builtAfterOpaque = (bool)afterOpaque.GetValue(ssaoSettings); builtSource = source.GetValue(ssaoSettings);
                 depthSource = Enum.ToObject(source.FieldType, 0); // DepthSource.Depth
                 normalsSource = Enum.ToObject(source.FieldType, 1); // DepthSource.DepthNormals
-                SsaoAsBuilt = $"{(ssao.isActive ? "on" : "off")}, after opaque {builtAfterOpaque}, source {builtSource}";
+                SsaoAsBuilt = $"{(ssao.isActive ? "on" : "off")}, after opaque {builtAfterOpaque}, source {builtSource}; the orthographic play camera {(shadows.orthoSsao ? "keeps it" : "turns it off (064 A3 item 1; ssao depth|normals turns it back on)")}";
             }
             catch (Exception e) { SsaoAsBuilt = "cannot switch: " + e.Message; ssaoSettings = null; }
         }
@@ -60,6 +60,9 @@ namespace Suborned.Perf
                 afterOpaque.SetValue(ssaoSettings, mode switch { "depth" => true, "normals" => false, _ => builtAfterOpaque });
                 source.SetValue(ssaoSettings, mode switch { "depth" => depthSource, "normals" => normalsSource, _ => builtSource });
             }
+            // brief 064 A3 item 1: as built, TacticalShadows turns SSAO off while the orthographic play camera renders; an explicit depth or
+            // normals variant (Redline's every-ssao) brings it back there, so the variant measures the item's saving
+            shadows.orthoSsao = mode is "depth" or "normals";
             shadows.cascades = v.cascades > 0 ? v.cascades : builtCascades;
             data.renderShadows = !v.shadowsOff;
             string f = string.IsNullOrEmpty(v.fade) ? "on" : v.fade;

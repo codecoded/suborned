@@ -439,7 +439,7 @@ namespace Suborned
             vLong.weight = post && tier == DistanceHaze.Tier.Long ? 1f : 0f;
             float fl = !post ? 0f : tier == DistanceHaze.Tier.Follow ? data.flare.follow : tier == DistanceHaze.Tier.Long ? data.flare.@long : 0f;
             if (fl > 0f) EnsureFlare();
-            if (flare) flare.intensity = fl;
+            if (flare) { flare.intensity = fl; if (flare.enabled != fl > 0f) flare.enabled = fl > 0f; } // brief 064 A3 item 5: a registered flare with occlusion makes URP force the depth texture (CheckPostProcessForDepth), so it is off wherever it does not draw (the play view)
             Sky(on && tier != DistanceHaze.Tier.Play && !overlay, tier);
         }
 
@@ -450,8 +450,8 @@ namespace Suborned
         }
 
         /// <summary>Volumes and flare back to neutral, so a camera that is not ours (the Scene view, a probe) renders as built. Both are read while the
-        /// camera records, which is before this runs. The sky globals are set explicitly by every game camera's Begin (the last in a stack is the
-        /// signals overlay: zero), so they are only cleared when the component goes.</summary>
+        /// camera records, which is before this runs. The sky globals are set explicitly by every game camera's Begin, so they are only cleared
+        /// when the component goes. The flare stays enabled across follow and long frames and is disabled by the next Begin that does not draw it.</summary>
         void Reset(bool sky)
         {
             if (vNight) vNight.weight = 0f;
