@@ -41,6 +41,7 @@ Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out o
 - Sky, 2026-10-27: side walls, "a)": a calm frontage-style side bay wherever the public sees a wall; service walls (the AlleyWall family) only on true service backs.
 - Sky, 2026-10-27: scope, "every": DecoKit kit on every face of every building in the district; the flat procedural facade is not seen at play zoom, surviving at most as a far LOD or impostor if Redline shows it is needed. Replaces §10 "DecoKit kit where it counts, procedural fill to the same bar" and the §09 world row's "or procedural to the same bar".
 - Sky, 2026-10-27: the Records Office tower as a landmark kit piece, "yes".
+- Sky, 2026-10-27: texture, "Anywhere with a flat color, no texture, we need to give it one, as long as it doesn't hurt performance": every flat-colour surface gets a texture (shared tiling detail and normals, DecoKit's own maps), measured neutral or within 064 A5; colour stays under today's rules until the style proposal is OKed (brief 072 decision 5, objective 072-F).
 - Sky, 2026-10-27: "I think our style kit is too restrictive - the original decokit looked great, though I even loosened the desaturated hue as well a little": the old DecoKit planet colours stay; the loosening of the style kit is shown as pictures first (open item 32).
 - "I really miss the brilliance of DecoKit and quality we had there." · "DecoKit played fine though on the Air in FPS walking through the street" · "our play cam means we see a lot of the sides of the buildings" (the reasons given).
 

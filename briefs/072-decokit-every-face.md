@@ -13,6 +13,8 @@ Vela's finding (2026-10-27, files uncommitted in the tree, renders in `out/scrat
 3. Records Office tower as a landmark kit piece: **"yes"**.
 4. Planets and style: **"I think our style kit is too restrictive - the original decokit looked great, though I even loosened the desaturated hue as well a little"**. Keep the old DecoKit planet colours. Loosen the style kit back toward the original DecoKit (style contract palette_world, materials, notes; GDD §15; facade.json families and area palettes; restrictive rules such as no blue tint in glass). A design change: shown to Sky as pictures first; **no GDD or style-contract edit until Sky OKs them.** Kit work that does not depend on the palette goes ahead now.
 
+5. Texture, added the same day: **"Anywhere with a flat color, no texture, we need to give it one, as long as it doesn't hurt performance"**. Scope: every surface that renders as a flat colour with no texture: the procedural facade swatch atlas (FacadeLit, Atlas.cs: 16×16 point-sampled cells, still drawing far LODs, roofs, megastructures, gate towers and the civic style kit), untextured DecoKit rows (enamel, metal and emit materials that unity_mats.py writes with no maps), roads, ground, roofs, plinths, and any primitive or stand-in material. Performance is a hard condition: neutral, or measured within 064 A5. Shared tiling detail and normal maps or texture arrays come before unique textures; reuse DecoKit's maps (limestone, enamel, metal); keep the SRP batcher and instancing keys; no new SetPass per colour; stay inside a stated texture-memory budget. Colour stays under today's rules until Sky OKs the style proposal: this is texture, not palette (objective 072-F).
+
 GDD note (Aster): decision 2 replaces §10's "DecoKit kit where it counts, procedural fill to the same bar" and §09's "dressed by a DecoKit piece … or procedural to the same bar". The GDD change is held and made once, as one new version, together with the style loosening after Sky's OK on the pictures. The decision log carries all four now.
 
 ## Frame budget (read first)
@@ -57,6 +59,12 @@ Measure on the Studio (counts are machine-independent; ms are labelled Studio) t
 Rebuild `HarbourDistrict.unity` from the new export with the adopted kit (`bun run kit` copy), apply Redline's LOD/combine plan, Unity compile and console clean. Shots at play zoom 14 at 38°, yaw 30 and 210, from the café and Records Office front, plus one framing of the planets (Horizon_PlanetRinged, Horizon_Moon) in the sky. Before/after where possible. Shots in `briefs/072/shots/` (git-ignored).
 - Done-check: compile and console (0 errors, warnings listed); shots; Redline's counts taken on this scene.
 - Next: Redline (measure), Aster (Sky).
+
+### 072-F · Vela (textures, materials) + Latch (shader, builder) + Redline (cost) · no flat colour left
+1. The list first (Vela, with Latch's per-material screen area from the play views): material or shader · where it shows at play zoom · share of screen area at yaw 30/120/210/300 · has maps or not. Committed as briefs/072/texture/flat.json + flat.md.
+2. Texture the biggest-area surfaces first: one shared tiled detail and normal array indexed by surface class in FacadeLit (the swatch tint kept), DecoKit's own maps for the untextured kit rows, roads, ground, roofs, plinths.
+3. Redline measures before and after on the same scene: SetPass, batches, texture memory (budget stated up front), Studio ms; the Air A/B goes in the same Air run as every face.
+- Done-check: every row on the list textured or listed with a reason; counts neutral (no SetPass growth from colour, SRP batcher compatible); texture memory within the budget; play-zoom shots before and after.
 
 Datum or Vantage only if the plan or block layouts must change (they should not).
 
