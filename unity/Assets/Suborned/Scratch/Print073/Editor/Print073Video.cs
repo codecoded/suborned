@@ -27,6 +27,12 @@ namespace Suborned.Scratch
     ///   play  : play zoom (ortho 14 at 38), an eased pan from the cell's opening view to the Office front at yaw 30, then an eased quarter
     ///           turn to yaw 120 about the Office front, with the fight-lab signal frame (cones, lines; After072.SignalFrame) at the Office front;
     ///   night : the play clip at night (LightPhase night, the lamp cap following the focus).
+    ///   view-phase (round 3, Sky "also evening / night time"): tp-evening, tp-night, play-evening, play-night. The phase is set through the
+    ///           game's own day/night system (LightPhase.SetEvening held at full Dusk, LightPhase.Set(true) with the night floor and the lamp cap),
+    ///           and the per-frame parts edit mode does not run are stepped by hand every frame, plus one step and a warm grab after every switch:
+    ///           AtmosphereLens.Update (the evening grade), RoadLight (strip light, lit windows, people fill; a scratch instance, the runtime
+    ///           copies it makes are in memory only), SignalHead.Step on every head (phase colours; the cycle runs on the clip clock).
+    ///   Looks take "+stencil" (Print073.Protected: cones, crossing heads and dots, lamp heads skip every print pass).
     /// The runtime look is installed in memory first (AtmosphereLens as Glint072 does it, DistanceHaze for the perspective clip); the crowd
     /// is hidden. Water, the fountain and the crossing heads hold still (edit-mode time does not run). Per clip: mean synced-grab ms and a
     /// flicker measure (mean |L(t+1) - 2L(t) + L(t-1)| over the frame, and the share of pixels above 24 levels).
@@ -100,11 +106,15 @@ namespace Suborned.Scratch
                 sf.Invoke(null, sfArgs.ToArray());
                 var signalObjs = made.OfType<GameObject>().ToList();
                 cam.cullingMask |= 1 << SignalLayer;
+                InstallRoad(made, notes);
+                heads = Object.FindObjectsByType<SignalHead>(FindObjectsInactive.Exclude, FindObjectsSortMode.None).OrderBy(h => h.name, StringComparer.Ordinal).ToArray();
+                notes.Add($"signal heads stepped: {heads.Length}");
                 var want = Type.GetType("Suborned.SignalsFeature, Suborned.Runtime")?.GetMethod("Want");
 
                 // the walk: path + figure
                 Walk walk = null;
-                if (clips.Contains("tp")) { figure = Figure(made, notes); walk = Walk.Build(host.frame, notes); }
+                if (clips.Any(c => c.StartsWith("tp"))) { figure = Figure(made, notes); walk = Walk.Build(host.frame, notes); }
+                if (looks.Any(l => l.Contains("+stencil"))) ProtectList(signalObjs, notes);
 
                 foreach (var look in looks)
                 {
@@ -113,12 +123,15 @@ namespace Suborned.Scratch
                     {
                         foreach (var clip in clips)
                         {
-                            bool tp = clip == "tp", night = clip == "night";
+                            bool tp = clip.StartsWith("tp"); string ph = clip == "night" || clip.EndsWith("-night") ? "night" : clip.EndsWith("-evening") ? "evening" : "day";
+                            bool night = ph == "night";
                             float T = tp ? walk.Duration : 18f; if (secScale > 0f) T = Mathf.Min(T, secScale);
                             int frames = Mathf.RoundToInt(T * fps); float dt = 1f / fps;
                             foreach (var g in signalObjs) if (g) g.SetActive(!tp);
                             if (figure) figure.SetActive(tp);
-                            if (night) phase.Set(true);
+                            SetPhase(ph);
+                            if (tp) walk.Pose(cam, figure, 0f); else PlayPose(0f, T);
+                            StepFrame(0f, night); want?.Invoke(null, null); session.Grab(cam, 64, 64); // the one-frame step after the switch (RoadLight and the heads read LightPhase.Current once a frame)
                             var file = Path.Combine(outDir, $"{look.Replace('@', '-')}-{clip}.mp4");
                             var flick = new Flicker(); double grabMs = 0; int timed = 0;
                             using (var enc = new Encoder(file, fps))
@@ -127,7 +140,7 @@ namespace Suborned.Scratch
                                 {
                                     float t = Mathf.Max(0, f) * dt;
                                     if (tp) walk.Pose(cam, figure, t); else PlayPose(t, T);
-                                    if (night) typeof(LightPhase).GetMethod("Cap", Any).Invoke(phase, new object[] { true });
+                                    StepFrame(t, night);
                                     want?.Invoke(null, null);
                                     var sw = Stopwatch.StartNew();
                                     var tex = session.Grab(cam, W, H);
@@ -138,7 +151,7 @@ namespace Suborned.Scratch
                                     enc.Write(raw);
                                 }
                             }
-                            if (night) phase.Set(false);
+                            SetPhase("day"); StepFrame(0f, false);
                             var line = $"\"{look}-{clip}\": {{ \"frames\": {frames}, \"fps\": {fps}, \"grabMsMean\": {grabMs / Math.Max(1, timed):F2}, \"flickerMean\": {flick.Mean:F3}, \"flickerShare24\": {flick.Share:F5}, \"file\": \"{Path.GetFileName(file)}\" }}";
                             report.AppendLine(line); Debug.Log("video073: " + line);
                         }
@@ -160,6 +173,85 @@ namespace Suborned.Scratch
                 File.WriteAllText(Path.Combine(outDir, $"video073-{string.Join("_", looks).Replace('@', '-')}-{stamp}.jsonl"), report.ToString());
             }
             Debug.Log($"video073: done → {outDir}\n{report}");
+        }
+
+        // ---- round 3: phases ----
+        static RoadLight road; static SignalHead[] heads = Array.Empty<SignalHead>();
+        static readonly FieldInfo RoadFirst = typeof(RoadLight).GetField("first", Any), HeadFirst = typeof(SignalHead).GetField("first", Any),
+            HeadWrote = typeof(SignalHead).GetField("wroteHead", Any), DotsWrote = typeof(SignalHead).GetField("wroteDots", Any);
+        static readonly MethodInfo RoadUpdate = typeof(RoadLight).GetMethod("Update", Any), HeadStep = typeof(SignalHead).GetMethod("Step", Any),
+            LensUpdate = typeof(AtmosphereLens).GetMethod("Update", Any), PhaseCap = typeof(LightPhase).GetMethod("Cap", Any), PhaseDusk = typeof(LightPhase).GetMethod("ApplyDusk", Any);
+
+        /// <summary>day | evening | night through LightPhase, as the game does it; evening is held at full Dusk (the ease runs in Update, which edit mode does not call).</summary>
+        static void SetPhase(string ph)
+        {
+            var dusk = typeof(LightPhase).GetProperty("Dusk");
+            if (ph == "night") { phase.Set(true); return; }
+            if (ph == "evening") { phase.SetEvening(); dusk.SetValue(phase, 1f); }
+            else { phase.Set(false); dusk.SetValue(phase, 0f); }
+            PhaseDusk.Invoke(phase, null);
+        }
+
+        /// <summary>What play mode's frame would run for the look: the lens's evening grade, RoadLight (snapped, no ease), every signal head (snapped,
+        /// written), the night lamp cap at the focus. The heads' cycle runs on the clip clock (MissionSeconds = t).</summary>
+        static void StepFrame(float t, bool night)
+        {
+            var lens = AtmosphereLens.Instance; if (lens) LensUpdate?.Invoke(lens, null);
+            if (road) { RoadFirst.SetValue(road, true); RoadUpdate.Invoke(road, null); }
+            SignalHead.MissionSeconds = t;
+            foreach (var h in heads) { if (!h) continue; HeadFirst.SetValue(h, true); HeadWrote.SetValue(h, false); DotsWrote.SetValue(h, false); HeadStep.Invoke(h, null); }
+            if (night) PhaseCap.Invoke(phase, new object[] { true });
+        }
+
+        /// <summary>RoadLight as its Install does (play mode only: RuntimeInitializeOnLoadMethod, DontDestroyOnLoad), on a scratch object.</summary>
+        static void InstallRoad(List<Object> made, List<string> notes)
+        {
+            var text = Resources.Load<TextAsset>(RoadLight.ResourcePath) ?? throw new InvalidOperationException("video073: no roadlight.json");
+            var d = JsonUtility.FromJson<RoadLight.Data>(text.text);
+            var why = (string)typeof(RoadLight).GetMethod("Check", Any).Invoke(null, new object[] { d });
+            if (why != null) throw new InvalidDataException("video073: roadlight.json rejected: " + why);
+            var go = new GameObject("road light (video073)") { hideFlags = HideFlags.DontSave }; made.Add(go);
+            road = go.AddComponent<RoadLight>(); typeof(RoadLight).GetField("d", Any).SetValue(road, d);
+            notes.Add("road light installed (scratch)");
+        }
+
+        /// <summary>+stencil: the cones (the signal frame's world objects off the signal layer), every crossing head's parts and dot rows, and the
+        /// lamp heads (every submesh drawn with an emissive material of a DK_Streetlamp / DK_PlazaSphereLamp piece, anywhere in the scene, which
+        /// catches the civic square's batched lamps; plus the café's opal and lens lamp materials).</summary>
+        static void ProtectList(List<GameObject> signalObjs, List<string> notes)
+        {
+            var P = Print073.Protected; P.Clear();
+            int cones = 0, headParts = 0, lampSubs = 0;
+            foreach (var g in signalObjs) if (g) foreach (var r in g.GetComponentsInChildren<Renderer>(true)) if (r.gameObject.layer != SignalLayer) { P.Add((r, -1)); cones++; }
+            foreach (var h in heads)
+            {
+                foreach (var r in new[] { h.Rim, h.Figure, h.Tens, h.Units, h.Ring, h.Beam, h.Halo }) if (r) { P.Add((r, -1)); headParts++; }
+                foreach (var r in h.Dots) if (r) { P.Add((r, -1)); headParts++; }
+            }
+            static bool Emissive(Material m) => m && (m.IsKeywordEnabled("_EMISSION") || m.HasProperty("_EmissionColor") && m.GetColor("_EmissionColor").maxColorComponent > 0.05f);
+            var lampMats = new HashSet<Material>();
+            var all = Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+            foreach (var r in all)
+            {
+                bool lampPiece = false; for (var t = r.transform; t; t = t.parent) if (t.name.StartsWith("DK_Streetlamp") || t.name.StartsWith("DK_PlazaSphereLamp")) { lampPiece = true; break; }
+                foreach (var m in r.sharedMaterials)
+                    if (Emissive(m) && m.name != "DK_Road_Lens" && (lampPiece || System.Text.RegularExpressions.Regex.IsMatch(m.name, "Opal|Globe|LampHead|Lamp_Head|Uplight|Sphere_?Lamp", System.Text.RegularExpressions.RegexOptions.IgnoreCase))) lampMats.Add(m);
+            }
+            // the night lamps' own fixtures: every emissive material on a renderer whose bounds hold a lamp head (a lamp light's position + 0.4 m)
+            var heads0 = phase.lamps.Where(l => l).Select(l => l.transform.position + (l.name.StartsWith("street/") ? Vector3.up * 0.4f : Vector3.zero)).ToArray();
+            var near = new Dictionary<string, int>();
+            foreach (var r in all)
+            {
+                var b = r.bounds; b.Expand(0.3f); if (!heads0.Any(h => b.Contains(h))) continue;
+                foreach (var m in r.sharedMaterials) if (m) { var key = m.name + (Emissive(m) ? "*" : ""); near[key] = near.TryGetValue(key, out var n) ? n + 1 : 1; if (Emissive(m) && m.name != "DK_Road_Lens" && !m.name.StartsWith("DK_GlassDark")) lampMats.Add(m); }
+            }
+            notes.Add("materials at the lamp heads (* emissive): " + string.Join(", ", near.OrderByDescending(kv => kv.Value).Take(30).Select(kv => $"{kv.Key} {kv.Value}")));
+            foreach (var r in all)
+            {
+                var ms = r.sharedMaterials;
+                for (int i = 0; i < ms.Length; i++) if (ms[i] && lampMats.Contains(ms[i])) { P.Add((r, i)); lampSubs++; }
+            }
+            notes.Add($"+stencil protected: {cones} cone renderers, {headParts} crossing-head parts and dot rows ({heads.Length} heads), {lampSubs} lamp submeshes on [{string.Join(", ", lampMats.Select(m => m.name).OrderBy(n => n, StringComparer.Ordinal))}]");
         }
 
         static string Json(string s) => "\"" + s.Replace("\\", "\\\\").Replace("\"", "\\\"") + "\"";

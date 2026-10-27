@@ -4,10 +4,16 @@
 // as a picture moves under a printed screen.
 Shader "Hidden/Suborned/Scratch/Print073"
 {
+    Properties
+    {
+        // +stencil (073 round 3): 8 = Always (off); 6 = NotEqual (skip the pixels the Mark pass tagged with bit 64: cones, crossing heads and dots, lamp heads)
+        [HideInInspector] _P73StencilComp ("stencil comp", Float) = 8
+    }
     SubShader
     {
         Tags { "RenderPipeline" = "UniversalPipeline" }
         ZTest Always ZWrite Off Cull Off Blend Off
+        Stencil { Ref 64 ReadMask 64 Comp [_P73StencilComp] }
 
         HLSLINCLUDE
         #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
@@ -189,6 +195,33 @@ Shader "Hidden/Suborned/Scratch/Print073"
                 float4 src = LOAD_TEXTURE2D_X(_BlitTexture, px);
                 return half4(pow(saturate(acc / max(wsum, 1e-6)), 2.2), src.a);
             }
+            ENDHLSL
+        }
+
+        Pass
+        {
+            // 3: plain copy (no stencil test): fills the skipped pixels before a stencil-tested pass draws over the rest
+            Name "Print073 Copy"
+            Stencil { Comp Always }
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            half4 Frag(Varyings i) : SV_Target { return SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_PointClamp, i.texcoord, 0); }
+            ENDHLSL
+        }
+
+        Pass
+        {
+            // 4: mark: draws a protected renderer into the camera depth-stencil only (bit 64), depth-tested against the scene
+            Name "Print073 Mark"
+            ZTest LEqual ZWrite Off Cull Off ColorMask 0 Blend Zero One Offset -1, -1
+            Stencil { Ref 64 WriteMask 64 Comp Always Pass Replace }
+            HLSLPROGRAM
+            #pragma vertex MarkVert
+            #pragma fragment MarkFrag
+            struct MarkIn { float4 positionOS : POSITION; };
+            float4 MarkVert(MarkIn v) : SV_POSITION { return TransformObjectToHClip(v.positionOS.xyz); }
+            half4 MarkFrag() : SV_Target { return 0; }
             ENDHLSL
         }
     }

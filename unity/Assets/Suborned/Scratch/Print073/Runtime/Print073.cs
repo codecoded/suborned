@@ -22,7 +22,13 @@ namespace Suborned.Scratch
         public static string Preset { get; private set; }
 
         static GameObject volumeGo; static VolumeProfile profile; static Material mat;
-        static CapPass cap; static PrintPass print;
+        static CapPass cap; static PrintPass print; static MarkPass mark;
+        /// <summary>+stencil (073 round 3): the renderers (and submesh, -1 = all) whose pixels every print pass skips: cones, crossing heads and
+        /// dots, lamp heads. Tagged with stencil bit 64 in the camera depth-stencil after the transparents; the cap, paint and print passes
+        /// copy those pixels through untouched. The caller (the video) fills the list.</summary>
+        public static readonly System.Collections.Generic.List<(Renderer r, int sub)> Protected = new();
+        public static bool Stencil { get; private set; }
+        public const int StencilBit = 64;
         static float reflection0 = -1f;
 
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
@@ -33,10 +39,12 @@ namespace Suborned.Scratch
             Enable(i + 1 < a.Length && Array.IndexOf(Presets, a[i + 1]) >= 0 ? a[i + 1] : "default");
         }
 
-        /// <summary>preset[@ground]: "@ground" fixes the paper and dots to the ground on a pan (orthographic) instead of the screen.</summary>
+        /// <summary>preset[@ground][+stencil]: "@ground" fixes the paper and dots to the ground on a pan (orthographic) instead of the screen;
+        /// "+stencil" skips the Protected renderers' pixels in every print pass.</summary>
         public static void Enable(string preset)
         {
             Disable();
+            bool stencil = preset.Contains("+stencil"); preset = preset.Replace("+stencil", "");
             bool ground = preset.EndsWith("@ground"); if (ground) preset = preset[..^"@ground".Length];
             if (Array.IndexOf(Presets, preset) < 0) throw new ArgumentException("print073: unknown preset " + preset);
             var shader = Shader.Find("Hidden/Suborned/Scratch/Print073") ?? throw new InvalidOperationException("print073: shader missing");
@@ -49,9 +57,10 @@ namespace Suborned.Scratch
             var any = Object.FindAnyObjectByType<Volume>(); if (any) volumeGo.layer = any.gameObject.layer; // the layer the play camera's volume mask already sees
             var v = volumeGo.AddComponent<Volume>(); v.isGlobal = true; v.priority = 1000f; v.weight = 1f; v.sharedProfile = profile;
             reflection0 = RenderSettings.reflectionIntensity; RenderSettings.reflectionIntensity = reflection0 * refl;
-            cap = new CapPass(mat); print = new PrintPass(mat);
+            cap = new CapPass(mat); print = new PrintPass(mat); mark = new MarkPass(mat);
+            Stencil = stencil; mat.SetFloat(StencilCompId, stencil ? (float)CompareFunction.NotEqual : (float)CompareFunction.Always);
             RenderPipelineManager.beginCameraRendering += Begin;
-            Preset = ground ? preset + "@ground" : preset;
+            Preset = (ground ? preset + "@ground" : preset) + (stencil ? "+stencil" : "");
             Debug.Log($"print073: on ({preset}); reflections x{refl:F2}");
         }
 
@@ -62,7 +71,7 @@ namespace Suborned.Scratch
             if (volumeGo) Object.DestroyImmediate(volumeGo);
             if (profile) Object.DestroyImmediate(profile);
             if (mat) Object.DestroyImmediate(mat);
-            volumeGo = null; profile = null; mat = null; cap = null; print = null; Preset = null;
+            volumeGo = null; profile = null; mat = null; cap = null; print = null; mark = null; Preset = null; Stencil = false;
         }
 
         /// <summary>The three looks. Returns the reflection-intensity scale.</summary>
@@ -129,6 +138,7 @@ namespace Suborned.Scratch
             if (profile != null && profile.TryGet<Print073Grade>(out var own)) g = own;
             if (g == null || !g.IsActive()) return;
             cap.grade = g; print.grade = g; print.cam = cam;
+            if (Stencil) d.scriptableRenderer.EnqueuePass(mark);
             d.scriptableRenderer.EnqueuePass(cap);
             print.ConfigureInput(g.inkLines.value > 0f ? ScriptableRenderPassInput.Depth : ScriptableRenderPassInput.None);
             d.scriptableRenderer.EnqueuePass(print);
@@ -139,32 +149,62 @@ namespace Suborned.Scratch
             DotId = Shader.PropertyToID("_P73Dot"), PaperFxId = Shader.PropertyToID("_P73PaperFx"), ScreenId = Shader.PropertyToID("_P73Screen"),
             ClipId = Shader.PropertyToID("_P73Clip"), DepthId = Shader.PropertyToID("_P73Depth"),
             AnchorId = Shader.PropertyToID("_P73Anchor"), CelId = Shader.PropertyToID("_P73Cel"), HazeId = Shader.PropertyToID("_P73Haze"), HazeColId = Shader.PropertyToID("_P73HazeCol"),
-            PaintId = Shader.PropertyToID("_P73Paint");
+            PaintId = Shader.PropertyToID("_P73Paint"), StencilCompId = Shader.PropertyToID("_P73StencilComp");
 
         /// <summary>The anchor's sign on the screen's y (SV_Position runs top-down on Metal and D3D, WorldToScreenPoint bottom-up). Set by the video probe.</summary>
         public static float AnchorFlipY = -1f; // measured by Print073Video -probe on the Studio (Metal): -1 locks the pattern to a pan (error 0.0025 vs 0.040 screen-fixed)
         /// <summary>A world point near the civic block whose screen position the patterns follow when anchored.</summary>
         public static Vector3 AnchorWorld = new(-165f, 0f, -255f);
 
-        sealed class Data { public TextureHandle src, depth; public Material mat; public int pass; }
+        sealed class Data { public TextureHandle src, depth; public Material mat; public int pass; public bool stencil; }
 
         static void Blit(RenderGraph rg, UniversalResourceData res, Material m, int pass, string name, TextureHandle depth)
         {
             var src = res.activeColorTexture; if (!src.IsValid()) return;
             var desc = rg.GetTextureDesc(src); desc.name = "_" + name.Replace(' ', '_'); desc.clearBuffer = false; desc.msaaSamples = MSAASamples.None; desc.depthBufferBits = DepthBits.None;
             var dst = rg.CreateTexture(desc);
+            var ds = Stencil ? res.activeDepthTexture : TextureHandle.nullHandle;
             using (var b = rg.AddRasterRenderPass<Data>(name, out var d))
             {
-                d.src = src; d.mat = m; d.pass = pass; d.depth = depth;
+                d.src = src; d.mat = m; d.pass = pass; d.depth = depth; d.stencil = ds.IsValid();
                 b.UseTexture(src); if (depth.IsValid()) b.UseTexture(depth);
                 b.SetRenderAttachment(dst, 0, AccessFlags.Write);
+                if (ds.IsValid()) b.SetRenderAttachmentDepth(ds, AccessFlags.Read); // +stencil: the tested pass skips bit 64
                 b.SetRenderFunc(static (Data d, RasterGraphContext c) =>
                 {
                     if (d.depth.IsValid()) d.mat.SetTexture(DepthId, d.depth);
+                    if (d.stencil) Blitter.BlitTexture(c.cmd, d.src, new Vector4(1f, 1f, 0f, 0f), d.mat, 3); // the protected pixels, as they are
                     Blitter.BlitTexture(c.cmd, d.src, new Vector4(1f, 1f, 0f, 0f), d.mat, d.pass);
                 });
             }
             res.cameraColor = dst;
+        }
+
+        sealed class MarkData { public Material mat; public (Renderer r, int sub)[] list; }
+
+        /// <summary>+stencil: the Protected renderers drawn into the camera depth-stencil (bit 64 only, no colour, depth-tested), after the transparents.</summary>
+        sealed class MarkPass : ScriptableRenderPass
+        {
+            readonly Material m;
+            public MarkPass(Material m) { this.m = m; renderPassEvent = RenderPassEvent.AfterRenderingTransparents; }
+            public override void RecordRenderGraph(RenderGraph rg, ContextContainer frameData)
+            {
+                var res = frameData.Get<UniversalResourceData>(); var ds = res.activeDepthTexture; if (!ds.IsValid() || Protected.Count == 0) return;
+                using var b = rg.AddRasterRenderPass<MarkData>("Print073 mark", out var d);
+                d.mat = m; d.list = Protected.ToArray();
+                var col = res.activeColorTexture; if (col.IsValid()) b.SetRenderAttachment(col, 0, AccessFlags.ReadWrite); // bound but never written (ColorMask 0): a depth-only pass blacked the protected pixels on Metal
+                b.SetRenderAttachmentDepth(ds, AccessFlags.ReadWrite);
+                b.AllowPassCulling(false);
+                b.SetRenderFunc(static (MarkData d, RasterGraphContext c) =>
+                {
+                    foreach (var (r, sub) in d.list)
+                    {
+                        if (!r || !r.enabled || !r.gameObject.activeInHierarchy) continue;
+                        if (sub >= 0) c.cmd.DrawRenderer(r, d.mat, sub, 4);
+                        else { int n = r.sharedMaterials.Length; for (int i = 0; i < n; i++) c.cmd.DrawRenderer(r, d.mat, i, 4); }
+                    }
+                });
+            }
         }
 
         sealed class CapPass : ScriptableRenderPass
