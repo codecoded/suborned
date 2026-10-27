@@ -102,3 +102,98 @@ in the piece. At ground nothing stands more than 0.3 off the polygon but the ser
   Render_White) may want its side bays' Limestone_Tex slot swapped to DK_Render_White (KitSlots.Swap) — Vela's call on the pictures.
 - **Redline**: per-module L0 is 2.1–2.6k (bays), 2.1–2.4k (whole piers), 0.1–1.1k (stack modules), 3.8–5.3k (AlleyWall), 40.9k RecordsTower.
 - The contact sheet is Blender Eevee, not the game light; the in-game read is Latch's shots (072-E).
+
+---
+
+# Pass 2 (Vela, 2026-10-27): shop fillers and opaque side windows
+
+Aster's second piece pass. (1) Splice's finding: 248 own-shopfront tenancies stand in front of calm side modules (225 street remnants on buildings with street
+bays, 30 on sheds, 7 where no bay fits). Under Sky's "a)" a shopfront run keeps its shopfront, so these get frontage pieces. (2) Redline's look and cost item:
+the side pieces' windows are opaque. Builder: `tools/decokit/shopfill.py` (new family, in `kit.FAMILIES`), window change in `tools/decokit/sides.py`. Pictures:
+`fillers_sheet.png`, `fillers_close.png`, `fillers_lods.png` (Blender Eevee, sky over a warm street; not the game light).
+
+## Pieces
+
+| id | frame / band | width (kit x) | size [x, y, z] | tris L0 / L1 / L2 | mats | bounds | attaches |
+|---|---|---|---|---|---|---|---|
+| ShopFill_3 | ground + 3 (KIT, coping 16.3) | 3.0 nominal, scale 0.5-1.7 (1.5-5.1 m) | 3.0 × 16.3 × 3.78 | 1024 / 206 / 152 | 10 | −1.5, 1.5, −2.15, 1.63 | a shop run on a 3-storey wall (whole-wall column) |
+| ShopFill_4 | ground + 4 (KIT, coping 19.7) | same | 3.0 × 19.7 × 3.78 | 1174 / 234 / 166 | 10 | −1.5, 1.5, −2.15, 1.63 | same, 4 storeys |
+| ShopStack_Base | 5.65 (PLAN Base band) | same | 3.0 × 5.65 × 3.83 | 506 / 86 / 74 | 8 | −1.5, 1.5, −2.15, 1.68 | the ground row of a shop run on a stacked wall (over 4 storeys, sheds' stacks) |
+
+No single-storey shed piece: the 30 shed tenancies stand on sheds 12-18 m tall that already take SideBay_3 (sy 0.92-1.10) or a Base/Mid/Top stack, so ShopFill_3
+or ShopStack_Base covers them with the same column. Kit tags: use `face:shop` (never `facade`: facades.ts does not take them as street bays), scale 0.5-1.7,
+squash 0.2; lod category `facades`, lodClass `bay3` / `bay4` / `storey` (tools/kit/tags.ts, lod.ts).
+
+## What they are (and how they meet the fronts)
+
+- **ShopFill_3 / _4**: the street bays' ground storey as a wall module: granite plinth 0-0.45, a 0.4 half pier at each joint (a 0.8 pier forms against a street
+  bay or the next filler, as between StreamBays), glazed shop 0.45-4.0 at 0.3 behind the line (DK_GlassDark, brass frame and one mullion, transom 2.75), granite
+  shop floor, DK_Lobby back wall 2.0 m in, **teal fascia 4.0-5.0 with brass beads at 4.06 / 4.94, ivory canopy 3.85-4.0 reaching 1.6 m with a chrome nose**:
+  the exact heights and section of skyline.py `ground_trims` (PortholeBay_3L/_4L, StreamBay_3/_4). Above: per storey one window (1.5 m, centred) under the side
+  bays' seafoam sill band and the 0.45 ivory eyebrow, then the KIT parapet band and coping (sides.py modules, kind "one"): floor lines, eyebrows and coping meet
+  the side bays and the corner piers. Scaled with the building like every KIT piece: sy = H(n) / coping, so the fascia and canopy stay level with the street
+  bays' at the same sy.
+- **ShopStack_Base**: the same shopfront in the 5.65 m Base band. The tall street bays (PortholeBay_7, StreamBay_6/9, ...) stand at sy = H(n) / coping = 1.039-1.047
+  for 5-10 storeys, so the band carries their ground at sy 1.043: plinth 0-0.45, glass 0.45-4.17 (transom 2.87), **canopy 4.016-4.172 reaching 1.65 m**, and the
+  **fascia from 4.172 to the band top 5.65** with brass beads at 4.235 and 5.155 (the tall bays' two) and 5.59 (SideBayStack_Base's top bead). Its foot meets the
+  street bays' fascia and canopy, its top meets SideBayStack_Base, SidePilaster_Base and the CornerPier_*_Base fascias (4.65-5.65), so it sits against either.
+- L0 full detail. L1 / L2 hand-built: shop glass as an opaque DK_Stone_Dark quad (the dark shop at distance; no see-through, and a material of L0's set), fascia,
+  canopy, plinth and bands as boxes, the upper windows as in the side bays. Brass is beads and frames only.
+
+## Opaque side windows (Redline's item)
+
+SideBay_3/_4 and SideBayStack_Base/_Mid/_Top now draw their windows and portholes in **DK_Window_Film**, a new opaque enamel (#4F6B6B, clear coat), in place of
+the transparent DK_GlassDark film over a DK_Enamel_Charcoal back. Its colour is what the fronts' film shows at the play camera (DK_GlassSky: glaze #4A8588 lerped
+0.41 toward its street mirror #A78F78, alpha 0.72 over charcoal, about #5F726E unlit), a step darker because the enamel is lit. Being Complex Lit it takes the
+cutaway shader, so it fades with the wall in the occlusion cut (FadeTags skips transparent queues), and it drops the blended layer (Redline: 0.09-0.31 ms).
+L1: a chrome frame quad with the film inset; L2: the film quad. SideBay 9 → 8 materials (charcoal and GlassDark gone), the stacks 7 → 6. AlleyWall keeps
+DK_Window_Tower (its own look, unchanged). The pilasters and piers have no windows (unchanged, same hashes). The shop fillers' upper windows use the same film;
+their **shopfront glass stays DK_GlassDark like the street bays'**, so a shop run reads the same along its length (and has the same unfaded-glass behaviour in
+the cut as the street bays: open item for Redline / Latch below).
+
+## Pivot and facing
+
+As SideBay (above): pivot = the module's centre on the building line, at its foot; front +Z out of the wall; +X along it. The footprint runs from 2.15 into
+the building (the shop's back wall) to 1.63 / 1.68 out (the canopy's nose), so kit.json gives `pivotOffset` [0, −0.26] (ShopFill) and [0, −0.235]
+(ShopStack_Base): faces.ts `centreOf` already handles it. KIT pieces take the building's sy (scale [sx, sy, 1]); ShopStack_Base takes its band's sy.
+Nothing stands over the coping. The shop box (piers, head, floor, back wall) sits inside the mass where KitCover removes the procedural wall.
+
+## Placement rule (for Splice, tools/world/gen/faces.ts)
+
+1. **Shop run**: an every-face run (side, pilaster or stack modules today) on a face where an own-shopfront street tenancy stands: a street-level frontage of this
+   building with no `facade`, whose a→b lies on the run's line (within shareTol) and overlaps it by more than 0.5 m. The whole run becomes a shop run (tenancies
+   fill a street edge end to end, so the run is a shopfront run along its length).
+2. **Whole-wall column (3-4 storeys, sheds with SideBay_3/_4)**: keep the column the side run would take (same code, foot and sy = (z1 − foot) / coping) and use
+   ShopFill_n for SideBay_n. Tile R with ShopFill alone: k modules of 3 m × sx, **k nearest R / 3 (the piece's own 3 m, not FACES.module 6)**, sx in 0.5-1.7, so every
+   R ≥ 1.5 m tiles and no pilaster is needed. R under 1.5 m: SidePilaster_n as today (too narrow for a shopfront).
+3. **Stacked column (over 4 storeys, sheds on a Base/Mid/Top stack), foot on the pavement**: the ground row is laid on its own. Drop the run's base-band modules
+   (SideBayStack_Base, SidePilaster_Base) and tile the run's length with ShopStack_Base at z = the base band's foot, sy = the base module's sy, widths by the same
+   rule as 2 (k nearest R / 3, 0.5-1.7). Mid and Top columns stay as they are; their 6 m / 1.5 m joints need not meet the 3 m shop row (the canopy and fascia
+   run across the seam, as a shop row does under upper bays). A stacked run whose foot is above the pavement has no shop row.
+4. **Corner piers**: unchanged. A shop run starts and stops at a pier's 1.0 m leg like any run; its canopy ends against the pier.
+5. **Link the tenancy**: set `frontage.facade` to the shop module whose span holds the tenancy's midpoint (as the street bays do), so ProcShop draws no
+   procedural shell or canopy there and keeps the sign. Your shopfit clamp then applies only to tenancies left unlinked (if any). Fascia foot for the clamp table:
+   ShopFill 4.0 × sy, ShopStack_Base 4.172 × sy.
+6. Family / instancing: ShopFill → `side` by familyOf's default (or a new `shop`, your call), ShopStack_Base → `stack-base` by the regex; instance key piece|colourway
+   as for the rest. The face log can say `shop`.
+
+## Evidence (commands run)
+
+- `bun run decokit --only SideBay_3,SideBay_4,SideBayStack_Base,SideBayStack_Mid,SideBayStack_Top,ShopFill_3,ShopFill_4,ShopStack_Base` → exit 0, rows in the table;
+  then `--only ShopFill_3,ShopFill_4,ShopStack_Base` twice more (L1/L2 fixes); the materials table kept every row (275, DK_Window_Film added: Splice's merge).
+- `bun run kit` → kit.json written, 381 assets, adopted 295 (the three set adopted), copied into unity/Assets/Suborned/Kit (DK_Window_Film.mat written).
+- `bun run collide` → 333 pieces, 8 measured; `bun run collide --check` ok; `bun test tools/decokit/collide.test.ts` 6 pass.
+- Hashes moved: `bun run sim:site`, `bun run cover`, `bun run sim:site`; `bun run cover --check` exit 0 (cover changed only its site and kit hashes).
+- `bun run typecheck` exit 0. `bun tools/plan/cli.ts --overlay tools/missions/handover/overlay.ts` exit 0.
+- `bun test tools/kit tools/levels/skyline/test/fixture.test.ts` 15 pass (kit.digest fixture regenerated); `bun test tools/world/gen/{faces,kit020,kitrefs,shopfit}.test.ts
+  tools/sim tools/missions/check/check.test.ts` 119 pass.
+- Not mine, failing before and after: 5 of `tools/levels/skyline` (stubbed runs, units): C-0 fails on the test's pinned civic block (café height), not on kit.
+
+## Open (pass 2)
+
+- **Splice**: place by the rule above; then `bun run world`, `world:faces`, and the counts per piece. The world export does not place the shop pieces yet.
+- **Latch**: DK_Window_Film is a new Complex Lit enamel (unity_mats wrote the .mat); the SideBay/stack prefabs change materials (no GlassDark). Rebuild after Splice.
+- **Glint**: DK_Window_Film [S] #4F6B6B with the enamel clear coat: in Blender's test light the coat mirrors the world in shade and can glint near the mirror angle
+  (as DK_Window_Tower does); judge it against the fronts' film in the game light and tell me the value.
+- **Redline**: the shopfront glass of the shop pieces (as on the street bays) is still transparent DK_GlassDark at L0, so the cut leaves it unfaded on the ground
+  storey there too; if that shows, an opaque shop-glass variant is a one-line change for both the street bays and the fillers (a palette/look call, ask first).
