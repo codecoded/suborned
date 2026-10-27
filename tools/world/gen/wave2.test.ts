@@ -22,6 +22,8 @@ const kit: Kit = read('contracts/world/kit.json'), by = new Map(kit.assets.map(a
 const { world: w, gen } = worldOf(plan, d, civ), B = plan.standards.buildings;
 const H = (n: number) => B.plinth + B.groundStorey + (n - 1) * B.upperStorey + B.roofCrown;
 const areaOf = new Map(d.plots.map(p => [p.id, p.area])), play = (bld: string) => !!(B.caps as Record<string, { play?: boolean }>)[areaOf.get(bld.split('/')[1]!) ?? '']?.play;
+/** The wave-2 street pieces (bay, end, corner) apart from brief 072-C's every-face modules; EVERY: the every-face kit is adopted (faces.ts faceKitReady). */
+const STREET = new Set(['bay', 'end', 'corner']), EVERY = w.facades.some(f => !STREET.has(f.form));
 const coping = (id: string) => ({ '2': 12.9, '3': 16.3, '4': 19.7 } as Record<string, number>)[/_(\d+)[WL]?$/.exec(id)![1]!] ?? 6.1 + 3.4 * Number(/_(\d+)[WL]?$/.exec(id)![1]);
 
 test('every facade piece is adopted, within its scale range and its building\'s H(n)', () => {
@@ -36,7 +38,7 @@ test('every facade piece is adopted, within its scale range and its building\'s 
 });
 
 test('play streets (brief 066): every kit piece on a 3- or 4-storey play-street building carries the building\'s own storey code', () => {
-  const fs = w.facades.filter(f => play(f.building));
+  const fs = w.facades.filter(f => play(f.building) && STREET.has(f.form)); // the wave-2 street pieces; the every-face modules (brief 072-C) are held in faces.test.ts
   expect(fs.length).toBeGreaterThan(200);
   for (const f of fs) { expect(f.storeys, f.id).toBeGreaterThanOrEqual(3); expect(f.storeys, f.id).toBeLessThanOrEqual(4); expect(/_(\d+)[WL]?$/.exec(f.kit.id)?.[1], f.id).toBe(String(f.storeys)); }
   // a bay's top is its coping (nothing over the roof line): no arcade (folded roof and mast), no porthole bay with its fin and beacon over the parapet, only the low ones
@@ -69,7 +71,7 @@ test('adjacent plot buildings never repeat their storeys', () => {
 
 test('a facade piece stands on its building ring: its front is on a street edge', () => {
   const ring = new Map(gen.blds.map(b => [b.id, b.ring]));
-  for (const f of w.facades) {
+  for (const f of w.facades.filter(x => STREET.has(x.form))) { // the street pieces; an every-face module's `edge` is its tier ring's (faces.test.ts)
     const r = ring.get(f.building)!, i = f.edge, a = r.p[i]!, b = r.p[(i + 1) % r.p.length]!;
     const L = Math.hypot(b[0] - a[0], b[1] - a[1]), dd = (p: number[]) => Math.abs(((p[0]! - a[0]) * (b[1] - a[1]) - (p[1]! - a[1]) * (b[0] - a[0])) / L);
     expect(dd(f.a), f.id).toBeLessThan(0.05); expect(dd(f.b), f.id).toBeLessThan(0.05);
@@ -88,6 +90,8 @@ test('signs stand 0.8 m off the facade line, freestanding stalls and tower front
 
 test('streamline: street corners are kit corners or rounded arcs, bands stay on the line, setbacks step', () => {
   expect(w.facades.filter(f => f.form === 'corner').length).toBeGreaterThan(15);
+  // brief 072-C: with the every-face kit adopted the procedural grammar draws no building (every face is kit): its corners are corner piers, no speed band or step is left
+  if (EVERY) { expect(w.facades.filter(f => f.form === 'pier').length).toBeGreaterThan(300); expect(w.buildings.filter(m => /\/(band-\d+|step)$/.test(m.id))).toEqual([]); return; }
   // a procedural building (no kit facade) has no square street-street corner on its body ring where both faces can carry the arc
   const kitB = new Set(w.facades.map(f => f.building)), mass = new Map(w.buildings.map(m => [m.id, m]));
   for (const b of gen.blds) {
@@ -313,7 +317,7 @@ test('the four fountain-garden beds are PlanterArc (Vela round 3): pivot 6.12 m 
 
 test('colour life (grammar §2a): accent roles, 20-30% lower share on the facades held to it, >= 4 elements, fabric never red', () => {
   const roles = new Set(ACCENT_ROLES.map(r => r[0])), tg = w.skins.filter(k => k.share.target);
-  expect(tg.length).toBeGreaterThan(150);
+  expect(tg.length).toBeGreaterThan(EVERY ? -1 : 150); // brief 072-C: no procedural street face is left to hold to the band once every face is kit
   for (const k of w.skins) { expect(roles.has(k.accent)).toBe(true); expect(roles.has(k.accent2)).toBe(true); expect(k.accent2).not.toBe(k.accent); expect(k.trim).toBe('accent_gold'); }
   // never over the band. harbour-boulevard/13 was over (0.338) and, under the height cap, boulevard-west/0 (0.384): both counted the bulkhead of a shop that runs on
   // behind a kit bay at its whole width over a short procedural remnant. Vela (brief 066): a bulkhead counts only over the face's procedural spans (KitCover hides the
@@ -321,10 +325,10 @@ test('colour life (grammar §2a): accent roles, 20-30% lower share on the facade
   expect(tg.filter(k => k.share.lower! > 0.3).map(k => k.building)).toEqual([]);
   expect(tg.filter(k => k.share.lower! < 0.2).map(k => k.building)).toEqual([]); // §2a 3a: the porthole panels lift the 12 fronts at 0.15-0.2 of round 3; none is left under
   for (const k of w.skins) { expect(k.porthole.panel).toEqual({ w: 1.5, h: 1.5, surface: k.accent }); if (k.faces.some(f => f.bays.includes('P') || f.portholes.length)) expect(k.share.elements).toContain('porthole-panels'); }
-  expect(tg.filter(k => k.share.elements.length >= 4).length / tg.length).toBeGreaterThanOrEqual(0.95);
+  if (tg.length) expect(tg.filter(k => k.share.elements.length >= 4).length / tg.length).toBeGreaterThanOrEqual(0.95);
   for (const f of w.skins.flatMap(k => k.fins)) { expect(COLOUR.fin.roles).toContain(f.surface as 'accent_coral'); expect(f.bead.surface).toBe('accent_gold'); expect(f.z1 - f.z0).toBeGreaterThanOrEqual(3); }
   const F = w.fabric, deck = 0.18 + B.plinth + B.groundStorey + B.upperStorey;
-  expect(F.awnings.length).toBeGreaterThan(200); expect(F.banners.length).toBeGreaterThan(30); expect(F.flags.length).toBeGreaterThan(20);
+  expect(F.awnings.length).toBeGreaterThan(EVERY ? -1 : 200); expect(F.banners.length).toBeGreaterThan(30); expect(F.flags.length).toBeGreaterThan(20); // brief 072-C: the balcony awnings hang on the procedural balcony bays, none of which is left once every face is kit
   for (const s of [...F.awnings.flatMap(a => a.stripes), ...F.banners.flatMap(b => [b.surface, b.border.surface]), ...F.flags.map(f => f.surface)]) expect(FABRIC_SURFACES.has(s), s).toBe(true);
   for (const a of F.awnings) expect(gen.blds.find(b => b.id === a.building)!.use).toBe('residential');
   for (const b of F.banners) expect(b.z0).toBeGreaterThanOrEqual(deck); // above the deck line

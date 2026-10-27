@@ -33,6 +33,7 @@
     "block": "bun tools/plan/block.ts",
     "geometry": "bun tools/geometry/cli.ts",
     "world": "bun tools/world/export.ts",
+    "world:faces": "bun tools/world/faces.ts",
     "life": "bun tools/life/cli.ts",
     "crew": "bun tools/crew/cards.ts",
     "art:bible": "bun tools/art-bible/generate.ts",

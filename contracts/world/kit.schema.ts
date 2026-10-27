@@ -19,10 +19,13 @@ export type KitLod = { file: string; tris: number; screen: number };
 export type KitLodCategory = 'street' | 'trees' | 'facades' | 'towers' | 'signatures' | 'horizon';
 /** Switch points of a category as Unity LODGroup screen-relative heights at lodBias 1: LOD0 -> LOD1 below `l1`, LOD1 -> LOD2 below `l2`; no cull level. */
 export type KitLodSwitch = { l1: number; l2: number };
+/** Brief 072-D: distance classes of the every-face pieces (tools/kit/lod.ts LOD_CLASSES); `distances` = [L1, L2, cull] m from the follow camera (cull 0 = none). */
+export type KitLodClass = 'bay3' | 'bay4' | 'storey' | 'cornerStorey' | 'column' | 'landmark';
+export type KitLodClassSpec = { distances: [number, number, number] };
 /** pivot 'origin-ground' = the pivot is not the footprint centre (a lamp's pole): `pivotOffset` = [x, z] of the footprint centre from the pivot in kit axes, i.e. the piece's centre sits there when its pivot is placed. */
 export type KitAsset = {
   id: string; category: string; size: [number, number, number]; pivot: 'footprint-centre-ground' | 'origin-ground'; pivotOffset?: [number, number]; front: '+Z';
-  tris: number; materials: string[]; parts?: unknown; lod1?: unknown; lods?: KitLod[]; lodCategory: KitLodCategory; files: KitFile[]; tags: KitTags; status: KitStatus;
+  tris: number; materials: string[]; parts?: unknown; lod1?: unknown; lods?: KitLod[]; lodCategory: KitLodCategory; /** brief 072-D: its distance class (lodClasses), every-face pieces only */ lodClass?: KitLodClass; files: KitFile[]; tags: KitTags; status: KitStatus;
   source?: 'generated'; order?: KitOrder; built?: KitBuilt;
   /** The tools/decokit script that built a piece made without a plan order (brief 008 civic pieces). */
   sourceScript?: string;
@@ -31,4 +34,4 @@ export type KitAsset = {
 export type KitBuilt = { split: number; roof: number | null; lower: [number, number, number, number] | null; upper: [number, number, number, number] | null; crown: [number, number, number, number] | null; tip: number; tipPlan: number };
 export type KitOrder = { id: string; hash: string };
 /** lodCategories: the switch points per category (every asset's `lodCategory` names one); Latch builds one LODGroup per prefab from them at kit import. */
-export type Kit = { schema: 'suborned.kit/1'; source: { manifest: string; materials: string; manifestSha256: string; materialsSha256: string }; lodCategories: Record<KitLodCategory, KitLodSwitch>; assets: KitAsset[] };
+export type Kit = { schema: 'suborned.kit/1'; source: { manifest: string; materials: string; manifestSha256: string; materialsSha256: string }; lodCategories: Record<KitLodCategory, KitLodSwitch>; /** brief 072-D */ lodClasses?: Record<KitLodClass, KitLodClassSpec>; assets: KitAsset[] };

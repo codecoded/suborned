@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).parent))
 import kit  # noqa: E402
 import mats  # noqa: E402
 import regen  # noqa: E402
+import tables  # noqa: E402
 import unity_mats  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
@@ -60,7 +61,7 @@ def make_lods(n, cat, src, srcs, tris):
     out = []
     for tag, ratio, screen, floor in LOD_SPEC:
         hand = kit.REGISTRY[n].get({"L1": "near", "L2": "far"}[tag])  # a hand-built level (kit.asset near= / far=) replaces the collapse
-        if tris < floor and not (tag == "L1" and hand):  # a hand-built L1 is made whatever the piece's weight (brief 009)
+        if tris < floor and not hand:  # a hand-built level is made whatever the piece's weight (L1: brief 009; L2: brief 072, the per-storey stack modules; every other far= piece is over the floor)
             continue
         if hand:
             fobj = kit.build_lod(n, tag)
@@ -253,17 +254,16 @@ def main():
     if "SignalLens" in names:  # brief 061: the head's look data (state colours, cues, blink, the cycle, the atlas and ring tables) rides beside the manifest for Latch's SignalHead and Glint
         import crossing_lens
         crossing_lens.write_data(DST / "Data" / "signal-lens.json")
-    mats.export_json(DST / "decokit_materials.json")
-    table = json.loads((DST / "decokit_materials.json").read_text())
-    for row in table["materials"]:
+    rows = mats.material_rows()
+    for row in rows:
         _, row["normal"], row["mask"] = tex.get(row["name"], ("", "", ""))
-    (DST / "decokit_materials.json").write_text(json.dumps(table, indent=1))
+    partial = bool(only)  # brief 072-C: a partial run merges into the shared tables on disk, never shrinks them (tables.py)
+    rows, kept = tables.write_merged(DST / "decokit_materials.json", "materials", rows, partial)
+    if kept:
+        print(f"[DK-EXPORT] materials table: {kept} rows kept from the table on disk (not registered by this partial run)")
     written = unity_mats.write(DST / "decokit_materials.json", DST, mats.WORLD_RETUNE)  # Unity .mat for the new and retuned colours
     print(f"[DK-EXPORT] materials written ({len(written)}): {', '.join(written)}")
-    old = {m["name"]: m for m in json.loads((DST / "decokit_manifest.json").read_text())["assets"]} \
-        if only and (DST / "decokit_manifest.json").exists() else {}
-    old.update({m["name"]: m for m in manifest})
-    (DST / "decokit_manifest.json").write_text(json.dumps(dict(assets=list(old.values())), indent=1))
+    tables.write_merged(DST / "decokit_manifest.json", "assets", manifest, partial)
     print(f"[DK-EXPORT] {len(manifest)} assets -> {DST}")
 
 

@@ -35,5 +35,7 @@ const out = resolve(root, opt('--out') ?? `out/world/${plan.id}.world.json`);
 mkdirSync(dirname(out), { recursive: true });
 const text = JSON.stringify(w);
 writeFileSync(out, text);
+writeFileSync(out.replace(/\.world\.json$/, '.faces.json'), JSON.stringify({ piers: gen.faces.piers, log: gen.faces.log }, null, 1)); // brief 072-C: the every-face pass's log, read by `bun run world:faces`
+if (gen.shopFit.clamped || gen.shopFit.low.length) console.log(`shopfronts: ${gen.shopFit.clamped} boxes clamped under the fascia behind them; ${gen.shopFit.low.length} left as they were (clamping would make them under 3.2 m)${gen.shopFit.low.slice(0, 8).map(l => `\n  low ${l.id} behind ${l.piece}: ${l.height} m`).join('')}`); // brief 072-C ruling 2
 console.log(`world → ${out} (${(text.length / 1024).toFixed(0)} KiB)${failed.length || worldFailed.length ? ' [DEV: fails the checker]' : ''}`);
 report(w, gen, d);

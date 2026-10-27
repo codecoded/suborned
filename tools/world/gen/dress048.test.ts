@@ -30,7 +30,9 @@ test('no roof item is a bare box in the building\'s enamel: the vents are finned
 test('the civic block\'s two buildings carry a roof terrace of their own (the office wing: deck, border line, troughs, two vents), low enough to hide nothing the wing does not', () => {
   const roofs = w.roofs.filter(r => r.building.startsWith('civic/'));
   // brief 066 (Vela): the café's body above its ground storey is a kit piece (CafeUpper_3 or _4) whose crown is its own planted terrace and solarium, so only the office takes a generated one
-  expect(roofs.map(r => r.building).sort()).toEqual(['civic/civic-office']);
+  // brief 072 (Sky "yes"): once RecordsTower is adopted the office is that piece, whose roof terrace and rotunda are its own, so neither building takes a generated one
+  const office = w.civic.find(c => c.id === 'civic/civic-office')!;
+  expect(roofs.map(r => r.building).sort()).toEqual(office.kit?.id === 'RecordsTower' ? [] : ['civic/civic-office']);
   const cafe = w.civic.find(c => c.id === 'civic/cafe')!; expect(cafe.kit?.id).toMatch(/^CafeUpper_[34]$/);
   for (const r of roofs) {
     const m = w.civic.find(c => c.id === r.building)!;

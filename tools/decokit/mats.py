@@ -421,6 +421,12 @@ def metric_tiling(name, kind):
 
 
 def export_json(path):
+    Path(path).parent.mkdir(parents=True, exist_ok=True)
+    Path(path).write_text(json.dumps(dict(materials=material_rows()), indent=1))
+
+
+def material_rows():
+    """The material table rows for every LIB entry this process registered (export_kit merges them into the table on disk on a partial run: tables.py)."""
     rows = []
     for name, (kind, hexstr, *extra) in LIB.items():
         rough, metal, coat, coat_rough, alpha = KIND[kind]
@@ -432,6 +438,5 @@ def export_json(path):
                          coat=coat, coatSmoothness=1 - coat_rough, alpha=alpha,
                          emission=extra[0] if extra else 0.0, **({"cutoff": extra[1]} if kind == "emitmap" and len(extra) > 1 else {}), texture=tex[0] if tex else "",
                          tileMetres=tex[1] if tex and metric_tiling(name, kind) else 0.0, **({"pbr": GROUND[name]} if name in GROUND else {}), **({"film": dict(film, shader=GLASS_SHADER_GUID)} if film else {}), **({"robotDetail": _detail_of(name)} if _detail_of(name) else {}), **({"stage": {"property": "_Stage", "default": 0, "range": [0, 3], "by": "RobotFace.cs, from the rig's attention table (robot-faces.json)"}} if kind == "face" else {})))
-    Path(path).parent.mkdir(parents=True, exist_ok=True)
-    Path(path).write_text(json.dumps(dict(materials=rows), indent=1))
+    return rows
 

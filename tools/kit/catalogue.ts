@@ -5,7 +5,7 @@ import { join, relative } from 'node:path';
 import type { Kit, KitAsset, KitBuilt, KitFile, KitOrder, KitStatus } from '../../contracts/world/kit.schema';
 import { WAVE1, tagsOf } from './tags';
 import { generatedTags } from './generated';
-import { FULL_DETAIL, LOD_CATEGORIES, lodCategoryOf, lodScreens } from './lod';
+import { FULL_DETAIL, LOD_CATEGORIES, LOD_CLASSES, lodCategoryOf, lodClassOf, lodScreens } from './lod';
 
 type Lod = { file: string; tris: number; screen: number };
 type GenRow = { name: string; bounds?: [number, number, number, number]; lods?: Lod[]; category: string; fbx: string; tris: number; size: number[]; materials: string[]; parts?: unknown; order?: KitOrder; built?: KitBuilt };
@@ -101,5 +101,7 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files, tags, status: st, source, order, built, ...rest } = a; generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc, a.id) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
   generated.sort((a, b) => a.id.localeCompare(b.id));
   assets.push(...generated);
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, assets };
+  // brief 072-D: the every-face pieces' distance class (Redline's plan §3.1), after lodCategory so a piece keeps its category too
+  const classed = assets.map(a => { const c = lodClassOf(a.id); if (!c) return a; const { files, tags, status, ...rest } = a; return { ...rest, lodClass: c, files, tags, status } as KitAsset; });
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
 }

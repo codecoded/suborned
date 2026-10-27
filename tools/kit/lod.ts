@@ -1,7 +1,7 @@
 // LOD switch points per category (Vela, brief 007 round 3; source: out/review/lod-thresholds.html, generator out/vela/r3/tools/lod.ts).
 // Values = Unity LODGroup screen-relative heights at lodBias 1: L0 -> L1 below l1, L1 -> L2 below l2. No cull level for any category.
 // Each is sized so the category's smallest member still shows L0 at play zoom 14 (orthographic, 28 m of screen height).
-import type { KitLodCategory } from '../../contracts/world/kit.schema';
+import type { KitLodCategory, KitLodClass, KitLodClassSpec } from '../../contracts/world/kit.schema';
 
 export const LOD_CATEGORIES: Record<KitLodCategory, { l1: number; l2: number }> = {
   street: { l1: 0.008, l2: 0.003 }, // street props: smallest = DomeCamera at scale 0.6, 0.0094 at zoom 14
@@ -23,6 +23,8 @@ const BY_CATEGORY: Record<string, KitLodCategory> = {
 export function lodCategoryOf(id: string, category: string): KitLodCategory {
   if (/^Tower_/.test(id)) return 'towers';
   if (/^(Stream|Deco|Porthole|Balcony|Arcade)(Bay|End|Corner)_|^Hall(Bay|CornerWing|EntranceTower)$|^CornerTower_/.test(id)) return 'facades';
+  if (/^(SideBay_[34]|SideBayStack_(Base|Mid|Top)|CornerPier_(Out|In)_(3|4|Base|Mid|Top)|AlleyWall_[34]D?|SidePilaster_(3|4|Base|Mid|Top)|ShopFill_[34]|ShopStack_Base)$/.test(id)) return 'facades'; // brief 072-C: the every-face modules (6 m bays like the street bays)
+  if (id === 'RecordsTower') return 'signatures'; // brief 072: the Records Office landmark
   if (/^DiscTower|^SkyBridge|^Skylon|^SkyRailStation/.test(id)) return 'signatures';
   return BY_CATEGORY[category] ?? 'street';
 }
@@ -44,3 +46,21 @@ export const lodScreens = <T extends { screen: number }>(lods: T[] | undefined, 
 /** Pieces that ship at full detail at every distance, whatever the generator exported (Sky, brief 028: no model compression without his sign-off). A listed id gets no `lods` and no LOD files in the catalogue, so the built prefab
  *  carries no LODGroup and Unity draws L0 at every distance. Empty since 2026-10-22: CoconutPalm and CoconutPalm_Street were taken off after Sky approved Vela's palm levels. To hold a piece back: add its id here, then `bun run kit`. */
 export const FULL_DETAIL: ReadonlySet<string> = new Set<string>();
+
+/** Brief 072-D (Redline, briefs/072/redline/plan.md §3.1): the every-face pieces switch by distance per class, not by the category's screen heights (`facades` 0.2 / 0.07
+ *  would put a 6 m storey module at L1 at play zoom 18.5). `distances` [L1, L2, cull] m [S]; Latch's KitLods turns each into a screen height from the piece's own
+ *  unscaled size (s / (1.041 D)) and fails the build if any L1 distance is under 36 m (L0 at every play zoom). */
+export const LOD_CLASSES: Record<KitLodClass, KitLodClassSpec> = {
+  bay3: { distances: [45, 120, 330] }, bay4: { distances: [45, 120, 330] }, storey: { distances: [45, 120, 330] }, cornerStorey: { distances: [45, 120, 330] },
+  column: { distances: [45, 120, 330] }, // a baked stack column (Latch, plan §3.2)
+  landmark: { distances: [150, 400, 0] }, // RecordsTower: no cull (the 350 m haze clip)
+};
+/** The distance class of an every-face piece (undefined for every other piece: its category's screens hold). */
+export function lodClassOf(id: string): KitLodClass | undefined {
+  if (id === 'RecordsTower') return 'landmark';
+  if (/^(SideBay|AlleyWall|SidePilaster|ShopFill)_3D?$|^CornerPier_(Out|In)_3$/.test(id)) return 'bay3';
+  if (/^(SideBay|AlleyWall|SidePilaster|ShopFill)_4D?$|^CornerPier_(Out|In)_4$/.test(id)) return 'bay4';
+  if (/^SideBayStack_(Base|Mid|Top)$|^SidePilaster_(Base|Mid|Top)$|^ShopStack_Base$/.test(id)) return 'storey';
+  if (/^CornerPier_(Out|In)_(Base|Mid|Top)$/.test(id)) return 'cornerStorey';
+  return undefined;
+}

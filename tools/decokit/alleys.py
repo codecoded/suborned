@@ -15,6 +15,8 @@ duct run centred 0.7 under the roof deck, panel seams; the riser duct (x -2.45) 
 6 m. Every run is symmetric, so mirror X for variety.
 """
 
+import math
+
 from alleys_parts import (HW, SKIN, ALONG_X, ac_unit, antennas, band, cable_run, canopy, caged_lamp, catwalk, conduit,
                           door, drainpipe, duct_run, grille, porthole, rails, riser, round_poly, slab, straight,
                           vent_bank, window)
@@ -147,8 +149,9 @@ def ground_dock(s):
     return [("r", x0, zd, x1, zh, pal.Enamel_Ivory)], [("v", 2.45, 0.5, 4.6)]
 
 
-def service_wall(n, crown, ground):
-    """n floors over the ground floor; crown 'stream' (StreamBay parapet) or 'deco' (DecoBay parapet)."""
+def service_wall(n, crown, ground, low=False):
+    """n floors over the ground floor; crown 'stream' (StreamBay parapet) or 'deco' (DecoBay parapet). low (brief 072, the play streets): nothing over the
+    coping (the riser stops under it with a chrome cap ring, no cowl), and the family's trimmed material set (LOW_MATS)."""
     def build(s):
         zt = top_of(n)
         z1 = zt + 0.95
@@ -170,11 +173,35 @@ def service_wall(n, crown, ground):
         else:
             band(s, zt + 0.3, zt + 0.6, 0.12, pal.Enamel_Teal, 0.0)
         head = z1 + (0.15 if crown == "stream" else 0.0)
+        if low:
+            riser(s, XD, 0.45, head, [G + k * FH + 0.3 for k in range(1, n, 2)] + [3.0, head - 0.1])
+            remap(s, LOW_MATS)
+            return
         riser(s, XD, 0.45, head + 0.45, [G + k * FH + 0.3 for k in range(1, n, 2)] + [3.0, head + 0.3])
         cowl(s, XD, head + 0.45)
         if n >= 9:
             antennas(s, XD, SKIN - 0.18, head + 0.9)
     return build
+
+
+# Brief 072 A (Vela): the play-street service walls draw from the side bays' set where they can, 11 materials for the family (17 on AlleyWall_6): the groove floor
+# is the stone itself (the 4 cm groove's own shadow draws the seam), steel bars and brackets are chrome, the rubber buffers charcoal, the utility plates plain ivory
+# enamel, the blinds mustard and ivory. Kept: the stone, ivory, teal, seafoam, charcoal, mustard, granite, chrome, brass, the opaque window and the lamp.
+LOW_MATS = {"DK_Seam": "Limestone_Tex", "DK_Steel": "Chrome", "DK_Rubber": "Enamel_Charcoal", "DK_Decal_Transit": "Enamel_Ivory",
+            "DK_Blind_Coral": "Enamel_Mustard", "DK_Blind_Cream": "Enamel_Ivory"}
+
+
+def remap(s, table):
+    """Swap materials on a built shape by name (face indices follow, the slots stay unique)."""
+    new = []
+    for m in s.mats:
+        t = getattr(pal, table[m.name]) if m.name in table else m
+        if t not in new:
+            new.append(t)
+    idx = [new.index(getattr(pal, table[m.name]) if m.name in table else m) for m in s.mats]
+    for f in s.bm.faces:
+        f.material_index = idx[f.material_index]
+    s.mats = new
 
 
 def engineering(s, n, zt):
@@ -214,6 +241,52 @@ asset("AlleyWall_6", "Alleys", bevel=0.0)(service_wall(6, "stream", "door"))
 asset("AlleyWall_9", "Alleys", bevel=0.0)(service_wall(9, "stream", "door"))
 asset("AlleyWall_10", "Alleys", bevel=0.0)(service_wall(10, "deco", "door"))
 asset("AlleyWall_6D", "Alleys", bevel=0.0)(service_wall(6, "stream", "dock"))
+# Play-street service walls (Vela, 2026-10-27; Sky: "our play cam means we see a lot of the sides of the buildings"): the same wall at the play streets' storey codes, so a
+# 3- or 4-storey building's flanks and backs can be kit like its front. Coping 16.3 / 19.7 m = PortholeBay_3L / _4L and StreamBay_3 / _4 (top_of(n) + 0.95 + 0.15): floor lines,
+# ground band and parapet run on from the front round the corner. Candidates until Splice adopts them and the world places them on non-street faces.
+def service_lod(n, ground, lod):
+    """Hand-built L1 / L2 of the play-street service walls (the 25 % collapse of the carved slab threw shards off the wall): the slab as a box, its windows and
+    portholes as dark quads where L0 cuts them, the ground band, floor courses, top duct run, the riser and drainpipe, the door or dock, the parapet band and coping."""
+    def build(s):
+        zt = top_of(n)
+        z1 = zt + 0.95
+        s.box((-HW, SKIN, 0.0), (HW, 0.35, z1), pal.Limestone_Tex)
+        y = SKIN - 0.005
+        for k in range(n):
+            for h in floor_items(k, G + k * FH)[0]:
+                if h[0] == "c":
+                    _, x, z, r, _m = h
+                    s.face([(x + r * math.cos(math.pi * j / 4), y, z + r * math.sin(math.pi * j / 4)) for j in range(8)], pal.Window_Tower)
+                else:
+                    _, x0, za, x1, zb, m = h
+                    s.face([(x0, y, za), (x1, y, za), (x1, y, zb), (x0, y, zb)], pal.Window_Tower if m is pal.Enamel_Ivory else pal.Enamel_Charcoal)
+        s.box((-HW, SKIN - 0.06, 0.0), (HW, SKIN, 0.45), pal.Stone_Dark)
+        if ground == "dock":
+            s.box((-1.9, SKIN - 0.02, 0.95), (1.1, SKIN, 3.85), pal.Enamel_Mustard)
+            s.box((-2.1, SKIN - 1.2, 0.0), (1.3, SKIN, 0.95), pal.Stone_Dark)
+            if lod == 1:
+                s.box((-2.0, SKIN - 0.56, 3.85), (1.2, SKIN, 4.45), pal.Enamel_Ivory)
+        else:
+            s.box((-1.45, SKIN - 0.01, 0.15), (-0.35, SKIN, 2.4), pal.Enamel_Teal)
+            if lod == 1:
+                s.box((-1.85, SKIN - 0.85, 2.62), (0.05, SKIN, 2.75), pal.Enamel_Ivory)
+                s.face([(0.75, y, 1.9), (1.65, y, 1.9), (1.65, y, 2.7), (0.75, y, 2.7)], pal.Window_Tower)
+        s.box((-HW, SKIN - 0.07, G - 0.28), (HW, SKIN, G), pal.Enamel_Teal)
+        if lod == 1:
+            for k in range(1, n):
+                s.box((-HW, SKIN - 0.07, G + k * FH - 0.06), (HW, SKIN, G + k * FH + 0.06), pal.Enamel_Ivory)
+            s.box((-HW, SKIN - 0.4, zt - 0.92), (HW, SKIN - 0.02, zt - 0.48), pal.Enamel_Seafoam)
+            s.box((XP - 0.075, SKIN - 0.19, 0.5), (XP + 0.075, SKIN - 0.04, zt), pal.Enamel_Teal)
+        s.box((XD - 0.31, SKIN - 0.41, 0.45), (XD + 0.31, SKIN + 0.01, z1 + 0.15), pal.Enamel_Seafoam)
+        s.box((-HW, SKIN - 0.07, zt + 0.35), (HW, SKIN, zt + 0.6), pal.Enamel_Seafoam)
+        s.box((-HW, SKIN - 0.14, z1), (HW, 0.35, z1 + 0.15), pal.Enamel_Ivory)
+    return build
+
+
+# Brief 072 A: low=True keeps them under the coping and on the trimmed set (LOW_MATS); service backs only (Sky's "a)": publicly seen walls take SideBay, sides.py).
+for _n in (3, 4):
+    for _g, _sfx in (("door", ""), ("dock", "D")):
+        asset(f"AlleyWall_{_n}{_sfx}", "Alleys", bevel=0.0, near=service_lod(_n, _g, 1), far=service_lod(_n, _g, 2))(service_wall(_n, "stream", _g, low=True))
 
 
 # ----------------------------------------------------------------- fire stair

@@ -64,4 +64,4 @@ Datum or Vantage only if the plan or block layouts must change (they should not)
 Shared tree: never stash, checkout, reset or clean. Kill by PID only. No paid API calls (Codex stills are free). Checks under 10 minutes with `bun run test`. No heavy load while Sky plays (`bun run guard`). No deploy, no Air run without Sky. Crew don't commit; Aster commits checkpoints with this round's files only.
 
 ## Status
-(filled in as the round runs)
+- 2026-10-27: brief, decision log and the planet/moon rebuild committed (96176fed). Phase A out: 072-A Vela (pieces), 072-B Vela (style proposal), 072-C Splice, 072-D Redline phase 1, 072-E Latch baseline.

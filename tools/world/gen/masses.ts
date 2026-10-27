@@ -8,6 +8,7 @@ import { type Rect, type Ring, areaOf, fit, insetBoth, insetRing, isSimple, bbox
 import { signatureGrounds } from './signatures';
 import { GRAMMAR, isStreetClass, roundRing } from './grammar';
 import { type FacadeOut, adjacent, generateFacades } from './facades';
+import { faceKitReady } from './faces';
 
 /** A generated building, kept for roofs and frontages. `ring` = ground footprint with edge classes; `top` = highest roof polygon at z. */
 export type Bld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; top: V[]; z: number; tower: boolean; open: boolean };
@@ -170,7 +171,9 @@ function grammarTiers(ctx: Ctx, b: { id: string; use: string; ring: Ring; n: num
   return { tiers: out, top: top.p, z };
 }
 
-function tiers(ctx: Ctx, b: { use: string; ring: Ring; n: number; shed: number }): { tiers: Tier[]; top: V[]; z: number } {
+/** Plain tiers. `whole` (brief 072-C, the every-face kit adopted): no podium step on the street faces, the body stands on the building line, so the kit modules
+ *  that dress it all round stand on its walls (only the plan's setback above storey 9 remains, and is dressed as its own tier). */
+function tiers(ctx: Ctx, b: { use: string; ring: Ring; n: number; shed: number; whole?: boolean }): { tiers: Tier[]; top: V[]; z: number } {
   const B = ctx.B, pav = ctx.pav, use = b.use, p = b.ring.p, out: Tier[] = [];
   if (b.shed) { // industrial and port sheds: one body of heightM
     out.push({ part: 'body', ring: p, base: 0, height: r3(pav + b.shed), surface: use });
@@ -179,7 +182,7 @@ function tiers(ctx: Ctx, b: { use: string; ring: Ring; n: number; shed: number }
   const n = b.n, podium = B.bands[use].podium as number | undefined, streetD = (c: string) => (['party', 'court', 'none'].includes(kindOf(c)) ? 0 : 1);
   const podTop = pav + floorTop(B, 2), step = B.setback.above as number, full = pav + floorTop(B, Math.min(n, step));
   let base = 0, ring = p;
-  if (podium && n > podium) {
+  if (podium && n > podium && !b.whole) {
     out.push({ part: 'podium', ring: p, base: 0, height: r3(podTop), surface: 'limestone' });
     base = podTop;
     const body = inset(p, b.ring.c.map(c => streetD(c) * B.halfBay));
@@ -249,8 +252,9 @@ export function generateMasses(ctx: Ctx, sites: Site[]): MassOut {
   // wave 2: kit facades on the street faces, then each building's tiers (plain behind a kit facade, the space-age grammar otherwise)
   const solid = pend.filter(p => !p.shed), nearOf = (id: string) => { const me = solid.find(p => p.id === id)!; return solid.filter(p => p.id !== id && p.plot === me.plot && adjacent(me.ring, p.ring)).map(p => p.id); };
   const fac = generateFacades(ctx, solid.map(p => ({ id: p.id, use: p.use, n: p.n, ring: p.ring, play: !!ctx.B.caps?.[p.area]?.play })), ctx.pav, nearOf);
+  const whole = faceKitReady(); // brief 072-C: every face is kit, so every building takes plain tiers (the kit is the wall; no grammar)
   for (const p of pend) {
-    const kit = fac.kitFaced.has(p.id), t = !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed });
+    const kit = whole || fac.kitFaced.has(p.id), t = !kit && !p.shed && p.n >= GRAMMAR.roundFrom ? grammarTiers(ctx, p) : tiers(ctx, { use: p.use, ring: p.ring, n: p.n, shed: p.shed, whole });
     for (const x of t.tiers) masses.push({ id: `${p.id}/${x.part}`, surface: x.surface, ring: x.ring.map(rv), base: x.base, height: x.height });
     blds.push({ id: p.id, plot: p.plot, area: p.area, use: p.use, kind: p.kind, n: p.n, ring: p.ring, top: t.top, z: r3(t.z), tower: false, open: p.open });
   }

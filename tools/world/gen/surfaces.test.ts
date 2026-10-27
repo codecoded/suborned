@@ -76,7 +76,7 @@ test('every phone booth draws `booth` and every street palm tub `tub`; roof tubs
   expect(tubs.length).toBe(198); for (const s of tubs) expect(s.surface, s.id).toBe(TUB);
   expect(withKey(TUB).length).toBe(198); // nothing else in the world: not the 418 roof tubs
   const roofTubs = w.roofs.flatMap(r => r.parts).filter(p => /\/(tub|palm)-\d+$/.test(p.id));
-  expect(roofTubs.length).toBe(418 * 2); for (const p of roofTubs) expect(p.surface, p.id).toBe('trim');
+  expect(roofTubs.length).toBe((w.facades.some(f => f.form === 'side') ? 433 : 418) * 2); // brief 072-C: 433 roof tubs on the plain tiers the every-face kit stands on for (const p of roofTubs) expect(p.surface, p.id).toBe('trim');
 });
 
 test('a crossing\'s lights draw `glow` and its signal heads `orb`; no edge line, stud, arc or lit strip stands any more (brief 061); no slab is left to draw `crossing`', () => {

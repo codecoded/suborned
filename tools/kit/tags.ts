@@ -99,7 +99,15 @@ const PLAIN_USE: Record<string, string[]> = { 'LinerDock@liner-berth': ['landmar
   // the dot rows are the re-cut LightDotRow (no brass frame). SignalEye, KerbStud, CrossEdgeLine_1/2, CrossInlayArc_R24_W08 and LightField_1/2 are retired (status rejected in kit.json, no use tag: nothing places them).
   SignalLens: ['signal:lens'], HaloRing: ['signal:halo'], LightBar_4: ['crossing:bar'], LightDotRow_2: ['crossing:dots'], LightDotRow_1: ['crossing:dots'] };
 
+/** Brief 072-C (Sky 2026-10-27, "every" face; side walls "a)"): the every-face pieces (tools/world/gen/faces.ts places them by these names, never by a use tag the
+ *  wave-2 street bays read: `face:*` is not `facade`, so facades.ts never takes a side bay for a street bay). Width and height scale 0.85-1.15 (6 m modules tiled
+ *  along any face, a storey band's height), squash 0.7 (a narrow module on a tall band: 0.85 / 1.15). Vela's briefs/072/pieces/pieces.md is the final list. */
+const FACE_072 = /^(SideBay_[34]|SideBayStack_(Base|Mid|Top)|CornerPier_(Out|In)_(3|4|Base|Mid|Top)|AlleyWall_[34]D?|SidePilaster_(3|4|Base|Mid|Top)|ShopFill_[34]|ShopStack_Base)$/;
+const faceUse = (name: string): string[] => [/^Shop(Fill|Stack)/.test(name) ? 'face:shop' : /^SidePilaster/.test(name) ? 'face:pilaster' : /^SideBayStack/.test(name) ? 'face:stack' : /^SideBay/.test(name) ? 'face:side' : /^CornerPier_Out/.test(name) ? 'face:pier-out' : /^CornerPier_In/.test(name) ? 'face:pier-in' : 'face:service'];
+
 export function tagsOf(name: string, category: string): KitTags {
+  if (FACE_072.test(name)) return /^Shop(Fill|Stack)/.test(name) ? { use: faceUse(name), scale: [0.5, 1.7], squash: 0.2, wave: 2 } : /^SidePilaster/.test(name) ? { use: faceUse(name), scale: [0.33, 1.7], squash: 0.2, wave: 2 } : { use: faceUse(name), scale: [0.85, 1.15], squash: 0.7, wave: 2 }; // a pilaster takes 0.5-2.5 m of a run (1.5 m nominal); the shop fillers (Vela, 072 pass 2: 3 m nominal) 1.5-5.1 m, tiled at 0.5-1.7 so any run of 1.5 m or more takes whole modules
+  if (name === 'RecordsTower') return { use: ['landmark:records-tower'], scale: [1, 1], squash: 1, wave: 2 }; // brief 072: built to the Records Office (build.ts recordsTower), scale 1
   const form = /Corner/.test(name) ? 'corner' : /End/.test(name) ? 'end' : /Bay/.test(name) ? 'bay' : undefined;
   return {
     use: USE[name] ?? USE_020[name] ?? USE_026[name] ?? PLAIN_USE[name] ?? [USE_BY_CATEGORY[category] ?? category.toLowerCase()],

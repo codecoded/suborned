@@ -105,7 +105,22 @@ export type Roof = {
 };
 /** A kit facade piece on a building's street face. `a`→`b` is the span of the face it covers (a corner's `a`→`b` is its front cell; its side cell runs 8 m × scale from the vertex along the leaving edge); `kit.at` = footprint centre, `base` = pavement top.
  *  Bay: 6 m × x wide, body 14 m deep behind the face, a canopy (size z − 14) in front. End: closes a run at a party wall or court. Corner: 8 × 8 m quarter round at a convex 90° vertex. `edge` = index of the building ring's edge. */
-export type Facade = { id: string; building: string; form: 'bay' | 'end' | 'corner'; storeys: number; kit: KitRef & { at: V }; base: number; a: V; b: V; edge: number };
+export type Facade = {
+  id: string; building: string; form: FacadeForm; storeys: number; kit: KitRef & { at: V }; base: number; a: V; b: V; edge: number;
+  /** Brief 072-C (the every-face pass, tools/world/gen/faces.ts): the wall face this piece dresses, `<mass id>#<edge>` of that mass's ring (a pier: `#v<vertex>`). Absent on the wave-2 street pieces. */
+  face?: string;
+  /** Brief 072-C/D (briefs/072/redline/plan.md §6), the every-face modules: `family` (side | alley | stack-base | stack-mid | stack-top | corner-out | corner-in | pilaster),
+   *  `service` = the SERVICE rule that made it an AlleyWall (court | yard | back-to-back), `normal` = the face's outward normal, `column` = the bay position its storey modules share
+   *  (`id`, `storeys` = modules in it: Latch bakes one prefab per family, storeys and colourway), `casts` = its shadow policy (proxy-l2: an L2 proxy casts, the module does not). */
+  family?: 'side' | 'alley' | 'stack-base' | 'stack-mid' | 'stack-top' | 'corner-out' | 'corner-in' | 'pilaster'; service?: 'court' | 'yard' | 'back-to-back'; normal?: V; column?: { id: string; storeys: number }; casts?: 'proxy-l2' | 'none';
+  /** On every facade piece (tools/world/gen/faces.ts dressFields): `lod.set` = the piece whose L0..L2 chain draws it (`levels` of them), `category` = the catalogue's switch category, `class` = the
+   *  distance class of an every-face piece (kit.json `lodClasses`: bay3 | bay4 | storey | cornerStorey | landmark); `combine.block` = the plot (or tower site), `combine.cell` = the 32 m HLOD cell
+   *  [floor(x / 32), floor(y / 32)]; `colourway` = the material slot set (`base`); `instance` = the GPU instancing key, `<piece>|<colourway>`. */
+  lod?: { set: string; levels: number; category: string; class?: string }; combine?: { block: string; cell: [number, number] }; colourway?: string; instance?: string;
+};
+/** bay, end, corner: the wave-2 street pieces (facades.ts). Brief 072-C (faces.ts), `base` = the module's foot: side = a SideBay (a wall the public sees), service = an AlleyWall
+ *  (a service back), stack = one storey band of SideBayStack (walls over 4 storeys, upper tiers, party walls above a lower neighbour), pier = a CornerPier at a corner (`a` = `b` = the corner), pilaster = a SidePilaster taking the rest of a run no whole number of 6 m modules fills. */
+export type FacadeForm = 'bay' | 'end' | 'corner' | 'side' | 'service' | 'stack' | 'pier' | 'pilaster';
 /** A procedural facade skin (tools/world/gen/skins.ts). family: ribbon | porthole | balcony | shed (no curtain wall, ever). accent: the look surface of the
  *  building's one accent role (its speed bands carry it). glass: clear (`surface` 'glass'), ribbon width = share x bay width, never wider than maxPane, sill and
  *  head above each row's floor, set back `reveal`, chrome mullions every `mullion` m. pier: the stone between ribbons, with a chrome-or-stone `frame` round each. */

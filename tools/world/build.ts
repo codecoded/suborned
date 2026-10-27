@@ -9,7 +9,8 @@ import type { Circus, Drive, Flat, Landmark, Level, Mass, Road, SkyRail, Track, 
 import { FLAT_FOOT, LAND, ctxOf, rng } from './gen/common';
 import { type Generated, generate, toDeck } from './gen';
 import type { DeckRec } from './gen/types';
-import { adoptedBy, landmarkKit } from './gen/kitrefs';
+import { adoptedBy, catalogued, landmarkKit } from './gen/kitrefs';
+import { FACE_KIT, dressFields } from './gen/faces';
 import { horizonOf } from './gen/horizon';
 import { civicPorterGap, civicRobots } from './gen/street/capstone-civic';
 import { WATER_LEVEL } from './gen/signatures';
@@ -268,6 +269,23 @@ function landmarks(plan: Plan): Landmark[] {
   });
 }
 
+/** Redline's combine block of a facade's building: the plot of a plot building (`bld/<plot>/<k>`), the site of a tower complex. */
+const plotOf = (b: string) => (b.startsWith('bld/') ? b.split('/')[1]! : b);
+
+/** Brief 072 (Sky 2026-10-27, "yes"): the Records Office as one landmark piece, RecordsTower, once adopted. It stands on the landmark building (standards.buildings.playStreets.landmark,
+ *  the civic block's office) as Vela built it (tools/decokit/records_tower.py): pivot at the centre of the wing polygon's box (block (64, -30)), front (+Z) toward the public entrance (the
+ *  block's west, plan yaw = block yaw 0 + 90°). The wings mass carries it; the two tower masses stay as data (`hidden`: ids, footprints and clearance) and draw nothing. Not adopted: the office
+ *  stays as it is. The block (civic-block.json, C-0) is unchanged. */
+export function recordsTower(plan: Plan, civic: Mass[]): Mass[] {
+  const a = adoptedBy(FACE_KIT.landmark), id = `civic/${(plan.standards.buildings as any).playStreets?.landmark ?? 'civic-office'}`, office = civic.find(m => m.id === id);
+  if (!a || !office) return civic;
+  const towers = civic.filter(m => m.id.startsWith(`${id}/tower-`)), xs = office.ring.map(p => p[0]), ys = office.ring.map(p => p[1]);
+  const c: V = [(Math.min(...xs) + Math.max(...xs)) / 2, (Math.min(...ys) + Math.max(...ys)) / 2], door = civic.find(m => m.id === 'civic/office-public-entrance');
+  const e = door ? centroid(door.ring) : c, n = Math.hypot(e[0] - c[0], e[1] - c[1]) > 0.5 ? norm(sub(e, c)) : [0, -1] as V;
+  const yaw = r4(Math.atan2(n[1], n[0]) - Math.PI / 2);
+  return civic.map(m => (m === office ? { ...m, source: 'kit' as const, kit: { id: a.id, scale: [1, 1, 1] as [number, number, number], yaw, at: rv(c), base: office.base } } : towers.includes(m) ? { ...m, hidden: true as const } : m));
+}
+
 function gates(plan: Plan, d: Derived): Mass[] {
   const g = PROV.gate;
   return plan.gates.map(gt => {
@@ -292,13 +310,13 @@ export function worldOf(plan: Plan, d: Derived, civ: Civic): { world: World; gen
   if (fw.length) { g.footways = fw; for (const f of fw) g.flats.push({ id: f.table.id, surface: f.table.surface, ring: f.table.ring, level: f.level }); }
   for (const l of gen.roadFinish?.lawn ?? []) g.flats.push({ id: `reservation/${l.id}`, surface: 'median', ring: l.ring.map(rv), level: 0.02 }); // brief 028 (Vela): the tram reservation's lawn track, kerb face to kerb face, under the rails (level 0.04) and over the carriageway (0)
   if (gen.groundPieces?.length) g.pieces = gen.groundPieces; // brief 026: flat ground pieces (kerb, flags, pits, drains, manholes, tactile, terrazzo)
-  const civicM = civicMasses(civ, toPlanFn(plan.civic));
+  const civicM = recordsTower(plan, civicMasses(civ, toPlanFn(plan.civic)));
   if (gen.capstone) { gen.street.push(...civicRobots(ctxOf(plan, d, civ, PROV.pavement), civicM, gen.capstone)); civicPorterGap(gen.capstone, civ); } // brief 026: after the civic masses exist
   const sq = d.plots.find(p => p.civic === 'square')!;
   const w: Omit<World, 'counts'> = {
     schema: 'suborned.world/2', source: `${plan.id} v${plan.version} (${plan.date})`,
     view: { ...PROV.view, focus: rv(centroid(sq.polyV)) },
-    ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades, frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped, served: gen.crossingLog.coverage.served } } : {}),
+    ground: g, transit: t, buildings: gen.buildings, roofs: [...gen.roofs, ...civicRoofs(civicM)], skins: gen.skins, fabric: gen.fabric, facades: gen.facades.map(f => dressFields(f, catalogued(f.kit.id), plotOf)), frontages: gen.frontages, connectors: gen.connectors, street: gen.street, ...(gen.crossings ? { crossings: gen.crossings } : {}), ...(gen.crossingLog?.coverage ? { crossingRules: { sites: gen.crossingLog.coverage.sites, twins: gen.crossingLog.coverage.dedupe, moved: gen.crossingLog.coverage.moved, left: gen.crossingLog.coverage.skipped, served: gen.crossingLog.coverage.served } } : {}),
     levels: levelsOf(plan, gen.decks), megastructures: gen.megas, civic: civicM, ...(gen.takedown ? { takedown: gen.takedown } : {}), landmarks: landmarks(plan), signatures: gen.signatures, gates: gates(plan, d), horizon: horizonOf(plan, PROV.water, { level: PROV.beyond, bankBase: PROV.quayBase, bankDepth: 4 }),
   };
   const counts = {
