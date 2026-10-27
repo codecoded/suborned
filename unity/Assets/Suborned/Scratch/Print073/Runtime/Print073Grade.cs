@@ -41,6 +41,15 @@ namespace Suborned.Scratch
         [Tooltip("Fine grain (1-4 px at 1080p), multiplicative.")] public ClampedFloatParameter grain = new(0f, 0f, 0.2f);
         [Tooltip("Low-frequency mottling (45-140 px), multiplicative.")] public ClampedFloatParameter mottle = new(0f, 0f, 0.2f);
         public ClampedFloatParameter vignette = new(0f, 0f, 0.5f);
+        [Tooltip("0 = paper and dots fixed to the screen; 1 = they move with the ground on a pan (orthographic only: the offset of a world anchor's screen point).")]
+        public ClampedFloatParameter anchor = new(0f, 0f, 1f);
+
+        [Header("Siblings (073 videos): comic cel, pastel haze, gouache paint")]
+        [Tooltip("Cel bands on luminance (0 = off; 3..6 = flat comic shading).")] public ClampedFloatParameter cel = new(0f, 0f, 8f);
+        [Tooltip("Width of each cel step (0 = hard).")] public ClampedFloatParameter celSoft = new(0.15f, 0f, 0.5f);
+        [Tooltip("Haze toward the top of the frame (farther away at the play view), as a mix.")] public ClampedFloatParameter hazeTop = new(0f, 0f, 1f);
+        public ColorParameter hazeColour = new(new Color(0.96f, 0.90f, 0.86f));
+        [Tooltip("Kuwahara paint radius, px at 1080p (0 = off). Smoothed 4-sector filter; (r+1)^2 x 4 taps.")] public ClampedFloatParameter paint = new(0f, 0f, 8f);
 
         public bool IsActive() => strength.value > 0f;
     }

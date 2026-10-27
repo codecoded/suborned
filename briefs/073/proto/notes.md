@@ -65,7 +65,13 @@ Rerun: `bun run guard <Unity 6000.6.2f1> -batchmode -quit -projectPath unity -ex
 `rm -rf unity/Assets/Suborned/Scratch unity/Assets/Suborned/Scratch.meta` removes all of it. Nothing outside the folder references it. The folder holds:
 - Scratch.meta, Scratch/Print073.meta, Print073/README.txt(.meta)
 - Runtime/: Print073.Runtime.asmref (folds into Suborned.Runtime), Print073.cs, Print073Grade.cs (+ .meta, Runtime.meta)
-- Editor/: Print073.Editor.asmref (folds into Suborned.World.Editor), Print073Shots.cs (+ .meta, Editor.meta)
+- Editor/: Print073.Editor.asmref (folds into Suborned.World.Editor), Print073Shots.cs, Print073Video.cs (the videos, 2026-10-28) (+ .meta, Editor.meta)
 - Shaders/: Print073.shader (+ .meta, Shaders.meta)
 
-Evidence, git-ignored: `briefs/073/proto/` (shots, composites, this note). Scratch logs: `out/scratch/glint/073/`.
+Evidence, git-ignored: `briefs/073/proto/` (shots, composites, this note), `briefs/073/video/` (mp4s, about 2 GB: `rm -rf briefs/073/video`). The page `briefs/073/videos.html` goes with it. Scratch logs and the measuring scripts: `out/scratch/glint/073/`, `out/scratch/glint/073v/` (tools/flicker.py, tools/stick.py, strips/).
+
+## Videos (2026-10-28, round 2: Sky "third person and a video recording of the vintage print, and possibly others")
+- **Print073Video.cs** (Editor): offscreen batchmode, a fixed 1/30 s step, Capture's HDR path at 1920 × 1080, RGB24 piped into ffmpeg (H.264 CRF 14). Clips: `tp` is a scratch third-person presentation camera (perspective 55°, far 350, 3.6 m back and 2.3 m up; the Scout posed through her own Animator, walking the last 45 m of an A* path on the host frame's walk kinds from Plaza west to the Office approach). `play` is an eased pan from the opening view to the Office front at yaw 30, then a quarter turn to 120, with the fight-lab signal frame. `night` is the play clip at night. AtmosphereLens and DistanceHaze are installed in memory (edit mode). The crowd is hidden; water, fountain and crossing heads are still.
+- **New presets in Print073** (same volume component, same passes): `haze` (lifted lilac ink, pale paper, a top-of-frame peach haze, a Bloom override: threshold 0.9, intensity 0.42, scatter 0.85), `comic` (ink 1.0, 4 cel bands, a 70 % colour dot screen, saturation 1.3), `gouache` (pass 2: a smoothed 4-sector Kuwahara, r 4 px at 1080, plus a matte grade). New knobs: `cel`, `celSoft`, `hazeTop`, `hazeColour`, `paint`, `anchor`.
+- **`preset@ground`** fixes paper and dots to a world point's screen offset (the pan follows the ground, ortho only, translation only). The y sign was measured with `-probe` (Metal: AnchorFlipY −1, error 0.0025 vs 0.040 screen-fixed).
+- **Verdict**: the screen-fixed grain and dots read as a screen door in motion (5.2× today's unexplained frame change on the pan; comic 4.9×). Ground-anchored is 1.6×, from the 1.3 px grain aliasing and the depth ink stepping. Haze 1.14×, gouache 1.22×. Gouache erases the crossing dots and the head's icon; the print and haze fade the cones and crossing heads; at night the print lifts the base and caps the lamp-head glow. Page: `briefs/073/videos.html`.

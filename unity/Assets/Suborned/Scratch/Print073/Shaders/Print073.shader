@@ -21,6 +21,11 @@ Shader "Hidden/Suborned/Scratch/Print073"
         float4 _P73PaperFx;  // grain, mottle, vignette
         float4 _P73Screen;   // w, h, h/1080
         float4 _P73Clip;     // near, far
+        float4 _P73Anchor;   // screen px of the world anchor (0 = screen-fixed)
+        float4 _P73Cel;      // bands, soft
+        float4 _P73Haze;     // top mix
+        float4 _P73HazeCol;
+        float4 _P73Paint;    // radius px
         TEXTURE2D_X_FLOAT(_P73Depth);
         ENDHLSL
 
@@ -87,7 +92,7 @@ Shader "Hidden/Suborned/Scratch/Print073"
                 int2 px = int2(i.positionCS.xy);
                 float4 src = SAMPLE_TEXTURE2D_X_LOD(_BlitTexture, sampler_PointClamp, uv, 0);
                 float3 g = pow(saturate(src.rgb), 1.0 / 2.2);                // display gamma for the grade
-                float2 p = i.positionCS.xy / max(_P73Screen.z, 1e-3);          // 1080p-normalised px, screen-fixed
+                float2 p = (i.positionCS.xy - _P73Anchor.xy) / max(_P73Screen.z, 1e-3); // 1080p-normalised px, screen-fixed (or ground-anchored on a pan)
 
                 // ink lines: depth second difference (creases and silhouettes; flat planes are linear in ortho depth -> 0)
                 float edge = 0;
@@ -109,7 +114,17 @@ Shader "Hidden/Suborned/Scratch/Print073"
                 float sat = _P73Fade.y * (1.0 - _P73Fade.z * smoothstep(0.55, 1.0, y));
                 g = lerp(y.xxx, g, sat);
                 g *= float3(1.0 + _P73Fade.w, 1.0 + _P73Fade.w * 0.25, 1.0 - _P73Fade.w * 1.2);
+                // cel bands (comic): luminance quantised, hue kept
+                if (_P73Cel.x > 0.5)
+                {
+                    float yc = max(dot(g, float3(0.299, 0.587, 0.114)), 1e-4);
+                    float n = _P73Cel.x, t = yc * n, b = floor(t), f = t - b;
+                    float q = (b + smoothstep(0.5 - _P73Cel.y, 0.5 + _P73Cel.y, f)) / n;
+                    g *= q / yc;
+                }
                 g = lerp(g, _P73Ink.rgb + (_P73Paper.rgb - _P73Ink.rgb) * saturate(g), _P73Fade.x);
+                // pastel haze toward the top of the frame (farther at the play view)
+                if (_P73Haze.x > 0) g = lerp(g, _P73HazeCol.rgb, _P73Haze.x * smoothstep(0.15, 1.0, 1.0 - uv.y));
 
                 // ink line, laid in the ink colour
                 g = lerp(g, _P73Ink.rgb * 0.8, edge);
@@ -135,6 +150,44 @@ Shader "Hidden/Suborned/Scratch/Print073"
                 g = lerp(g, g * _P73Paper.rgb * 0.85, _P73PaperFx.z * saturate(pow(length(e) * 1.25, 3.0)));
 
                 return half4(pow(saturate(g), 2.2), src.a);
+            }
+            ENDHLSL
+        }
+            Pass
+        {
+            Name "Print073 Paint"
+            HLSLPROGRAM
+            #pragma vertex Vert
+            #pragma fragment Frag
+            // smoothed 4-sector Kuwahara (Papari-style weights 1/(sigma^q)): flat painted patches with kept edges; display-linear in and out
+            half4 Frag(Varyings i) : SV_Target
+            {
+                int r = (int)_P73Paint.x;
+                int2 px = int2(i.positionCS.xy);
+                int2 hi = int2(_P73Screen.xy) - 1;
+                float3 m[4] = { float3(0,0,0), float3(0,0,0), float3(0,0,0), float3(0,0,0) };
+                float3 s2[4] = { float3(0,0,0), float3(0,0,0), float3(0,0,0), float3(0,0,0) };
+                [loop] for (int y = -r; y <= r; y++)
+                [loop] for (int x = -r; x <= r; x++)
+                {
+                    float3 c = pow(saturate(LOAD_TEXTURE2D_X(_BlitTexture, clamp(px + int2(x, y), int2(0, 0), hi)).rgb), 1.0 / 2.2);
+                    float3 c2 = c * c;
+                    if (x <= 0 && y <= 0) { m[0] += c; s2[0] += c2; }
+                    if (x >= 0 && y <= 0) { m[1] += c; s2[1] += c2; }
+                    if (x <= 0 && y >= 0) { m[2] += c; s2[2] += c2; }
+                    if (x >= 0 && y >= 0) { m[3] += c; s2[3] += c2; }
+                }
+                float n = (r + 1) * (r + 1);
+                float3 acc = 0; float wsum = 0;
+                [unroll] for (int k = 0; k < 4; k++)
+                {
+                    float3 mu = m[k] / n; float3 v = abs(s2[k] / n - mu * mu);
+                    float sg = v.r + v.g + v.b;
+                    float w = 1.0 / (1.0 + pow(abs(sg) * 255.0, 4.0));
+                    acc += mu * w; wsum += w;
+                }
+                float4 src = LOAD_TEXTURE2D_X(_BlitTexture, px);
+                return half4(pow(saturate(acc / max(wsum, 1e-6)), 2.2), src.a);
             }
             ENDHLSL
         }
