@@ -691,8 +691,16 @@ def drop_crumbs(o, pct):
     return len(gone), len(comps)
 
 
+def serve_side():
+    """the hand the game's serving clips hold the tray in: the `arm` of every kind 'tray' clip in tools/figures/clips.json (they must agree)"""
+    spec = json.load(open(os.path.join(os.path.dirname(os.path.dirname(HERE)), 'clips.json')))
+    arms = {c['arm'] for c in spec['clips'] if c.get('kind') == 'tray' and c.get('arm')}
+    assert len(arms) == 1, f'the serving clips disagree on the tray hand: {sorted(arms)}'
+    return arms.pop()
+
+
 def props(arm, att, suit, skip=()):
-    """a cross-body bag (strap from the left shoulder over the chest to a bag at the right hip) and a tray in the left hand; weights from the nearest suit point.
+    """a cross-body bag (strap from the left shoulder over the chest to a bag at the right hip) and a tray in the serving hand (serve_side); weights from the nearest suit point.
     skip: props this person doesn't get (a role with a visible holster keeps the right hip free: no bag; charpipe/props/props.json roles)."""
     A = D['attach']['props']; out = []
     Vs = eval_co(suit); Ts = tris_of(suit); names = [g.name for g in suit.vertex_groups]; Ws = weights_of(suit, names)
@@ -727,20 +735,21 @@ def props(arm, att, suit, skip=()):
         cu.bevel_depth = 0.008; cu.bevel_resolution = 1
         so = bpy.data.objects.new('prop_strap', cu); bpy.context.scene.collection.objects.link(so); bp.ctx(so); bpy.ops.object.convert(target='MESH'); strap = bpy.context.view_layer.objects.active
         bpy.ops.object.select_all(action='DESELECT'); bag.select_set(True); strap.select_set(True); bpy.context.view_layer.objects.active = bag; bpy.ops.object.join()
-    # tray: a disc at the left palm, flat across the palm
-    ar = arm.data.bones; Mw = arm.matrix_world
-    h = Mw @ ar['LeftHand'].head_local; m1 = Mw @ ar['LeftHandMiddle1'].head_local; i1 = Mw @ ar['LeftHandIndex1'].head_local; p1 = Mw @ ar['LeftHandPinky1'].head_local
-    nrm = (i1 - h).cross(p1 - h).normalized(); tx, ty, tz = A['tray']['size']
+    # tray: a disc at the serving palm, flat across the palm. The serving hand is the one the game's serving clips hold the tray in (brief 069,
+    # Latch: the tray rode by the left hand while serve_walk raised an empty right palm): tools/figures/clips.json, the `arm` of every kind 'tray' clip
+    side = serve_side(); ar = arm.data.bones; Mw = arm.matrix_world
+    h = Mw @ ar[f'{side}Hand'].head_local; i1 = Mw @ ar[f'{side}HandIndex1'].head_local; p1 = Mw @ ar[f'{side}HandPinky1'].head_local
+    nrm = (i1 - h).cross(p1 - h).normalized() * (1 if side == 'Left' else -1); tx, ty, tz = A['tray']['size']   # the same side of the hand on either
     bm = bmesh.new(); bmesh.ops.create_cone(bm, cap_ends=True, segments=24, radius1=tx / 2, radius2=tx / 2, depth=tz)
     me = bpy.data.meshes.new('tray'); bm.to_mesh(me); bm.free(); tray = bpy.data.objects.new('prop_tray', me); bpy.context.scene.collection.objects.link(tray)
     # the tray clears the hand: its centre sits past the hand's own depth on the palm side (measured from the body's hand vertices), not a fixed gap
-    hand_ix = [i for i, n in enumerate(names) if n.startswith('LeftHand')]; ap = np.array(att['Attach_LeftHand'])
+    hand_ix = [i for i, n in enumerate(names) if n.startswith(f'{side}Hand')]; ap = np.array(att[f'Attach_{side}Hand'])
     hv = Vs[(Ws[:, hand_ix].sum(1) > 0.5) & (np.linalg.norm(Vs - ap, axis=1) < 0.15)] if hand_ix else Vs[:0]
     depth = float(max(0.0, ((hv - ap) @ -np.array(nrm)).max())) if len(hv) else 0.01
-    R = Vector((0, 0, 1)).rotation_difference(nrm).to_matrix().to_4x4(); c = Vector(att['Attach_LeftHand']) - nrm * (depth + tz / 2 + A['tray'].get('clearM', 0.004))
+    R = Vector((0, 0, 1)).rotation_difference(nrm).to_matrix().to_4x4(); c = Vector(att[f'Attach_{side}Hand']) - nrm * (depth + tz / 2 + A['tray'].get('clearM', 0.004))
     tray.matrix_world = Matrix.Translation(c) @ R; bp.ctx(tray); bpy.ops.object.transform_apply(location=True, rotation=True)
     m = simple_material('prop_chrome', None, (0.78, 0.78, 0.8, 1), 0.35)
-    for o, rule in [(o_, r_) for o_, r_ in ((bag, 'nearest'), (tray, 'LeftHand')) if o_ is not None]:
+    for o, rule in [(o_, r_) for o_, r_ in ((bag, 'nearest'), (tray, f'{side}Hand')) if o_ is not None]:
         o.data.materials.clear(); o.data.materials.append(m if o is tray else simple_material('prop_bag', None, (0.12, 0.35, 0.42, 1), 0.6))
         V = np.array([list(v.co) for v in o.data.vertices])
         if rule == 'nearest':

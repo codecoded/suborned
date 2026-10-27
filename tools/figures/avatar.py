@@ -466,6 +466,24 @@ def stacks(fbx_path):
     return [o.props[1].split(b'\x00')[0].decode() for o in objs.elems if o.id == b'AnimationStack']
 
 
+def takes(fbx_path, fps=30):
+    """The file's takes with their frame ranges, as Unity reads them: [(name, first frame, last frame)] from each AnimationStack's LocalStart and
+    LocalStop (FBX time: 46186158000 ticks a second), in file order. A Mixamo file's take is 'mixamo.com' from frame 0; Blender's exporter names
+    it after the scene ('Scene') and starts it at the scene's first frame (1)."""
+    fbx_bin = _fbx_parser(); top, _ = fbx_bin.parse(fbx_path)
+    objs = [e for e in top.elems if e.id == b'Objects'][0]; out = []
+    for o in objs.elems:
+        if o.id != b'AnimationStack': continue
+        name = o.props[1].split(b'\x00')[0].decode(); t = {}
+        for e in o.elems:
+            if e.id == b'Properties70':
+                for pp in e.elems:
+                    k = pp.props[0].decode() if isinstance(pp.props[0], bytes) else pp.props[0]
+                    if k in ('LocalStart', 'LocalStop'): t[k] = pp.props[-1]
+        out.append((name, round(t.get('LocalStart', 0) / 46186158000 * fps), round(t.get('LocalStop', 0) / 46186158000 * fps)))
+    return out
+
+
 def rig_of(fbx_path, rigs):
     """Which rig in data (bonemaps.json `rigs`) this file uses: the first whose `match` bone it has; None = Mixamo (the default rules)."""
     names = {n.name for n in read_fbx(fbx_path, 'root')}

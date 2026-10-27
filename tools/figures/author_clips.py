@@ -119,6 +119,7 @@ def make(entry, store, dst):
     sc.frame_start, sc.frame_end = 1, T + 1
     bpy.ops.object.mode_set(mode='OBJECT')
     bpy.ops.object.select_all(action='DESELECT'); arm.select_set(True); bpy.context.view_layer.objects.active = arm
+    _pin_fbx()
     bpy.ops.export_scene.fbx(filepath=dst, use_selection=True, object_types={'ARMATURE'}, add_leaf_bones=False, bake_anim=True,
                              bake_anim_use_all_actions=False, bake_anim_use_nla_strips=False, bake_anim_simplify_factor=SIMPLIFY, bake_anim_step=1.0,
                              axis_forward='-Z', axis_up='Y', apply_unit_scale=True, apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False,
@@ -415,6 +416,16 @@ def make_testbed(entry, store, dst):
 # Prototype and proof: briefs/039/forma/pin-poses.md (sections C and D).
 
 LEGS = ('Hips', 'LeftUpLeg', 'LeftLeg', 'LeftFoot', 'LeftToeBase', 'LeftToe_End', 'RightUpLeg', 'RightLeg', 'RightFoot', 'RightToeBase', 'RightToe_End')
+
+
+def _pin_fbx():
+    """the same bytes every build (brief 069, Latch: the authored clips differed run to run): the exporter's object ids hashed from their keys, not
+    random, and the header's creation time fixed, as the figures' export (charpipe/build.py pin_fbx)."""
+    import hashlib, datetime
+    from io_scene_fbx import export_fbx_bin as eb, fbx_utils
+    fbx_utils._key_to_uuid = lambda uuids, key: int.from_bytes(hashlib.sha256(repr(key).encode()).digest()[:8], 'big') >> 1 or 1
+    orig = getattr(eb, '_cp_orig_header', None) or eb.fbx_header_elements; eb._cp_orig_header = orig
+    eb.fbx_header_elements = lambda root, scene_data, time=None: orig(root, scene_data, datetime.datetime(2026, 1, 1))
 
 
 def _export(arm, dst, n):

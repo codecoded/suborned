@@ -595,5 +595,253 @@
    "every *_props.fbx (the guard tray clears the curled hand)",
    "every *_H.json"
   ]
+ },
+ "round2": {
+  "takes": "clips.py reads each FBX take name and frame range (avatar.py takes); the 23 Blender-authored clips were written as mixamo.com 0..N-1 against their real take Scene 1..N; now Scene 1..N (additive reference pose at the take start). author_clips export pinned (ids hashed, header time fixed): two clip-stage builds byte-identical, FBX included. Mixamo clip metas unchanged.",
+  "tray": {
+   "rule": "lib.serve_side: the arm of the kind tray clips in clips.json (Right)",
+   "unity_serve_walk_guard": [
+    {
+     "toRight": 0.046,
+     "toLeft": 0.72,
+     "faceUpDeg": 14.8,
+     "aboveRightPalm": 0.044,
+     "trayY": 1.078
+    }
+   ]
+  },
+  "raiseFeet": {
+   "note": "per foot, root frame, max from the segment start (Latch) = end from start here; foot IK off unless marked",
+   "enforcer": {
+    "rifle_raise": {
+     "frames": 18,
+     "maxFromStartCm": [
+      24.0,
+      3.8
+     ],
+     "endFromStartCm": [
+      24.0,
+      3.8
+     ],
+     "hipsMoveCm": 2.6,
+     "hipsYawDeg": [
+      7.5,
+      44.7
+     ],
+     "L0": "(-0.204, 0.042, 0.171)",
+     "Ln": "(-0.103, 0.115, 0.376)",
+     "R0": "(0.127, 0.082, -0.133)",
+     "Rn": "(0.159, 0.068, -0.118)"
+    },
+    "rifle_idle": {
+     "frames": 94,
+     "maxFromStartCm": [
+      1.3,
+      1.3
+     ],
+     "endFromStartCm": [
+      0.0,
+      0.0
+     ],
+     "hipsMoveCm": 0.0,
+     "hipsYawDeg": [
+      44.7,
+      44.7
+     ],
+     "L0": "(-0.103, 0.114, 0.376)",
+     "Ln": "(-0.103, 0.114, 0.376)",
+     "R0": "(0.159, 0.067, -0.118)",
+     "Rn": "(0.159, 0.067, -0.118)"
+    },
+    "rifle_aim": {
+     "frames": 94,
+     "maxFromStartCm": [
+      1.3,
+      1.3
+     ],
+     "endFromStartCm": [
+      0.0,
+      0.0
+     ],
+     "hipsMoveCm": 0.0,
+     "hipsYawDeg": [
+      44.7,
+      44.7
+     ],
+     "L0": "(-0.103, 0.114, 0.376)",
+     "Ln": "(-0.103, 0.114, 0.376)",
+     "R0": "(0.159, 0.067, -0.118)",
+     "Rn": "(0.159, 0.067, -0.118)"
+    }
+   },
+   "fixer": {
+    "rifle_raise": {
+     "frames": 18,
+     "maxFromStartCm": [
+      19.1,
+      7.4
+     ],
+     "endFromStartCm": [
+      19.1,
+      7.4
+     ],
+     "hipsMoveCm": 3.3,
+     "hipsYawDeg": [
+      6.2,
+      44.9
+     ],
+     "L0": "(-0.157, 0.046, 0.198)",
+     "Ln": "(-0.045, 0.099, 0.343)",
+     "R0": "(0.090, 0.078, -0.078)",
+     "Rn": "(0.162, 0.067, -0.070)"
+    },
+    "rifle_idle": {
+     "frames": 94,
+     "maxFromStartCm": [
+      1.1,
+      1.0
+     ],
+     "endFromStartCm": [
+      0.0,
+      0.0
+     ],
+     "hipsMoveCm": 0.0,
+     "hipsYawDeg": [
+      44.9,
+      44.9
+     ],
+     "L0": "(-0.045, 0.098, 0.343)",
+     "Ln": "(-0.045, 0.098, 0.343)",
+     "R0": "(0.162, 0.066, -0.070)",
+     "Rn": "(0.162, 0.066, -0.070)"
+    },
+    "rifle_aim": {
+     "frames": 94,
+     "maxFromStartCm": [
+      1.1,
+      1.0
+     ],
+     "endFromStartCm": [
+      0.0,
+      0.0
+     ],
+     "hipsMoveCm": 0.0,
+     "hipsYawDeg": [
+      44.9,
+      44.9
+     ],
+     "L0": "(-0.045, 0.098, 0.343)",
+     "Ln": "(-0.045, 0.098, 0.343)",
+     "R0": "(0.162, 0.066, -0.070)",
+     "Rn": "(0.162, 0.066, -0.070)"
+    }
+   },
+   "sourceSkeleton_walkAvatar": {
+    "rifle_raise": {
+     "frames": 18,
+     "maxFromStartCm": [
+      9.8,
+      10.9
+     ],
+     "endFromStartCm": [
+      9.8,
+      10.9
+     ],
+     "hipsMoveCm": 1.3,
+     "hipsYawDeg": [
+      6.2,
+      40.3
+     ],
+     "L0": "(-0.217, 0.073, 0.190)",
+     "Ln": "(-0.126, 0.071, 0.228)",
+     "R0": "(0.009, 0.071, -0.078)",
+     "Rn": "(0.049, 0.077, -0.179)"
+    },
+    "rifle_idle": {
+     "frames": 94,
+     "maxFromStartCm": [
+      0.3,
+      0.2
+     ],
+     "endFromStartCm": [
+      0.0,
+      0.0
+     ],
+     "hipsMoveCm": 0.0,
+     "hipsYawDeg": [
+      40.3,
+      40.3
+     ],
+     "L0": "(-0.126, 0.070, 0.228)",
+     "Ln": "(-0.126, 0.070, 0.228)",
+     "R0": "(0.049, 0.076, -0.179)",
+     "Rn": "(0.049, 0.076, -0.179)"
+    },
+    "rifle_aim": {
+     "frames": 94,
+     "maxFromStartCm": [
+      0.3,
+      0.2
+     ],
+     "endFromStartCm": [
+      0.0,
+      0.0
+     ],
+     "hipsMoveCm": 0.0,
+     "hipsYawDeg": [
+      40.3,
+      40.3
+     ],
+     "L0": "(-0.126, 0.070, 0.228)",
+     "Ln": "(-0.126, 0.070, 0.228)",
+     "R0": "(0.049, 0.076, -0.179)",
+     "Rn": "(0.049, 0.076, -0.179)"
+    }
+   },
+   "enforcer_footIK": {
+    "rifle_raise": {
+     "frames": 18,
+     "maxFromStartCm": [
+      9.9,
+      11.0
+     ],
+     "endFromStartCm": [
+      9.9,
+      11.0
+     ],
+     "hipsMoveCm": 2.6,
+     "hipsYawDeg": [
+      7.5,
+      44.7
+     ],
+     "L0": "(-0.220, 0.073, 0.193)",
+     "Ln": "(-0.128, 0.071, 0.231)",
+     "R0": "(0.010, 0.071, -0.079)",
+     "Rn": "(0.050, 0.077, -0.181)"
+    }
+   },
+   "fixer_footIK": {
+    "rifle_raise": {
+     "frames": 18,
+     "maxFromStartCm": [
+      9.2,
+      10.2
+     ],
+     "endFromStartCm": [
+      9.2,
+      10.2
+     ],
+     "hipsMoveCm": 3.3,
+     "hipsYawDeg": [
+      6.2,
+      44.9
+     ],
+     "L0": "(-0.203, 0.070, 0.179)",
+     "Ln": "(-0.118, 0.069, 0.214)",
+     "R0": "(0.009, 0.068, -0.073)",
+     "Rn": "(0.046, 0.074, -0.168)"
+    }
+   }
+  }
  }
 }

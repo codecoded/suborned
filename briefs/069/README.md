@@ -271,3 +271,7 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Open:** the crowd's 22-bone palms. Evidence: `forma/hands.json`.
 - **Reinstall with the `kept` import (Latch):** all six figures are valid, with their own limits. Walk palms within about 4.6° of the source; the `hand_relaxed` fingers-only layer gives 82.3° bend (source 84.6°) on the six flat clips; the Enforcer's ankles 20.8 cm, 0 boot overlaps. The weapons still pass (the carbine butt in the pocket at 0.0 cm, the support hand slid 8 cm).
 - **Bug found (game too):** the authored clips' metas say take `mixamo.com`, frames 0..N−1, but the FBX take is `Scene`, frames 1..N. `hand_relaxed` imports empty, and `serve_walk` and the new weapon blends lose their last frame. Forma is fixing it in the meta writer.
+- **Clip meta fix (Forma):** `clips.py` reads each FBX's real take and frame range (`avatar.takes()`), so authored clips import as `Scene` frames 1..N. The authored clips are now byte-identical across builds (random FBX IDs and timestamps pinned in `author_clips._pin_fbx`).
+  - **Not yet installed in the game:** a targeted install by rule is coming. It installs only the clips the game uses, keeps the game's finger limits until finger-boned figures arrive, and leaves Optimize as is.
+  - **Guard tray:** on the serving hand (`lib.serve_side`).
+  - **Raise/lower feet:** Unity is right. The bladed stance plants the left foot 11–15 cm forward with foot IK off; with foot IK on, both feet match the source. Recommended: foot IK on for standing weapon states.

@@ -76,9 +76,13 @@ for c in spec['clips']:
         c_h, c_s = av.human_description(c_human, c_nodes, av.finger_limits(FL, c_human))
         print('AVATAR', name, kind, '|', '; '.join(rig[:3]), f'({len(rig)})')
     else: c_h, c_s = ref_h, ref_s
-    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, next(t for t in av.stacks(dst) if t != RG['restStack']) if RG else 'mixamo.com', first, f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None,
+    # brief 069 (Latch): the take and its frames as the file has them, never assumed: a Mixamo file's take is 'mixamo.com' from frame 0, a clip
+    # authored here is Blender's 'Scene' from frame 1 (written as mixamo.com 0..N-1, Unity found no take: hand_relaxed had no curves, the others lost
+    # their last frame); a rig's rest take (ActorCore's T-pose) is never the clip's
+    take, t0, t1 = next(t for t in av.takes(dst) if not RG or t[0] != RG['restStack'])
+    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, take, t0 + first, t1, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=t0 + c.get('refPose', 0) if c.get('additive') else None,
                                                 avatar={'human': c_h, 'skeleton': c_s, 'source': None if own else um.guid(ref_rel)}, preserve_hierarchy=bool(lone)))
-    rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
+    rows.append({'name': name, 'file': rel, 'take': [take, t0, t1], 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
     rows[-1]['avatar'] = ({'own': True, 'neutralLegs': True, 'footPitchDeg': AV['footPitchDeg'], 'rigDifferences': rig} if name == AV['reference'] or RG or not (lone and all(r.startswith('Hips: parent ') for r in rig))
                           else {'own': True, 'restFrom': ref_rel, 'rigDifferences': rig}) if own else {'copiedFrom': ref_rel}
