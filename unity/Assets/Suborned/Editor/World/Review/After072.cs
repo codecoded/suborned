@@ -31,8 +31,14 @@ namespace Suborned.World.Review
     ///     once with every material and once opaque only. Each material says what maps it binds → briefs/072/texture/area.json.
     ///  4. K-6 at lamplight-south-w/13 (Keel's ShopFill_4 through SideBay_4 at the 45° corner): every module of the building near the corner,
     ///     its L0 vertices against the two walls' lines; plus a close and a play-zoom shot of the corner.
+    ///  1b. f1 (Redline phase 2 F1; only with -only f1): a sun-facing street SideBay wall at play zoom, module shadows from the L2 proxies against
+    ///     their own LODs, three walls → briefs/072/shots/f1/.
+    ///  5. 072-F: texture memory of the scene (texmem): every texture the scene's renderers bind, Profiler.GetRuntimeMemorySizeLong and the GPU
+    ///     size from its format, size, mips and layers → briefs/072/latch/&lt;tag&gt;/texmem.json.
+    /// `-tag textured` (072-F) writes shots to briefs/072/shots/textured, counts and texmem to briefs/072/latch/textured and the area census to
+    /// briefs/072/texture/area-after.json; `-tag before` writes texmem only to briefs/072/latch/textured/texmem-before.json.
     /// Everything changed is put back; nothing is saved.
-    ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.After072.Cli [-only shots,counts,area,k6] -logFile &lt;log&gt;</summary>
+    ///   Unity -batchmode -quit -projectPath unity -executeMethod Suborned.World.Review.After072.Cli [-only shots,counts,area,k6,texmem] [-tag textured] -logFile &lt;log&gt;</summary>
     public static class After072
     {
         const int W = Baseline072.W, H = Baseline072.H, WarmFrames = 8, TimedFrames = 30;
@@ -52,7 +58,11 @@ namespace Suborned.World.Review
             var t0 = DateTime.UtcNow;
             var a = Environment.GetCommandLineArgs(); int oi = Array.IndexOf(a, "-only");
             var only = oi >= 0 && oi + 1 < a.Length ? new HashSet<string>(a[oi + 1].Split(',')) : new HashSet<string> { "shots", "counts", "area", "k6" };
+            int ti = Array.IndexOf(a, "-tag"); var tag = ti >= 0 && ti + 1 < a.Length ? a[ti + 1] : null;
             var root = HarbourWorldBuilder.RepoRoot;
+            string shotsDir = tag == null || tag == "before" ? Path.Combine(root, "briefs", "072", "shots", "after") : tag == "textured" ? Path.Combine(root, "briefs", "072", "shots", "textured") : Path.Combine(root, "out", "scratch", "latch", "072", tag);
+            string countsDir = Path.Combine(root, "briefs", "072", "latch", tag == null ? "after" : "textured");
+            string areaFile = Path.Combine(root, "briefs", "072", "texture", tag == "textured" ? "area-after.json" : "area.json");
             EditorSceneManager.OpenScene(HarbourWorldBuilder.ScenePath, OpenSceneMode.Single);
             var c = new Ctx();
             var playGo = GameObject.Find("cameras/play") ?? throw new InvalidOperationException("072: no cameras/play in the scene");
@@ -79,16 +89,19 @@ namespace Suborned.World.Review
             Baseline072.Pose(c.cam, c.shadows, c.fade, c.views[0].Focus, c.views[0].Yaw, c.standOff);
             session.Grab(c.cam, 64, 64); // the first render after a load comes out flat
 
-            if (only.Contains("shots")) Shots(c, session, Path.Combine(root, "briefs", "072", "shots", "after"));
+            if (only.Contains("texmem")) TexMem(Path.Combine(countsDir, tag == "before" ? "texmem-before.json" : "texmem.json"), exportLine, tag ?? "after");
+            if (only.Contains("shots")) Shots(c, session, shotsDir);
             if (only.Contains("counts"))
             {
-                var dir = Path.Combine(root, "briefs", "072", "latch", "after"); Directory.CreateDirectory(dir);
+                var dir = countsDir; Directory.CreateDirectory(dir);
                 var every = Counts(c, "every face (as built)");
                 List<Count> today = null;
                 if (ef && ef.HasToday) { ef.Set(false); try { today = Counts(c, "today (EveryFace off, same build)"); } finally { ef.Set(true); } }
                 File.WriteAllText(Path.Combine(dir, "offscreen.json"), CountsJson(c, exportLine, every, today));
             }
-            if (only.Contains("area")) Area(c, session, Path.Combine(root, "briefs", "072", "texture", "area.json"), exportLine);
+            if (only.Contains("area")) Area(c, session, areaFile, exportLine);
+            if (only.Contains("sd")) SurfaceDetailCheck(c, session, Path.Combine(root, "out", "scratch", "latch", "072", "sd"));
+            if (only.Contains("f1")) F1(c, session, Path.Combine(root, "briefs", "072", "shots", "f1"), stamp);
             if (only.Contains("k6")) K6(c, session, Path.Combine(root, "briefs", "072", "latch", "after", "k6-lamplight-south-w-13.json"), Path.Combine(root, "briefs", "072", "shots", "after"), stamp);
             Debug.Log($"072 after: done in {(DateTime.UtcNow - t0).TotalSeconds:F0} s");
         }
@@ -107,6 +120,151 @@ namespace Suborned.World.Review
             if (Baseline072.PlanetShot(session, c.cam, c.shadows, Path.Combine(dir, "planets.png"), out var note)) Debug.Log($"072 after: planets ({note})");
             else Debug.LogWarning($"072 after: no planets shot ({note})");
             Debug.Log($"072 after: shots → {dir}");
+        }
+
+        // ---------------------------------------------------------------- 1b. F1: proxy against L0 shadows on a sun-facing side-bay wall
+
+        /// <summary>Redline phase 2 F1 (Glint's call): three street-level SideBay columns (one per building) whose outward normal faces the sun most
+        /// squarely, seen whole (no other building mass in the view ray of nine points on the wall) from a quarter yaw that looks at the face, nearest
+        /// the office front first; each at play zoom 14 with the wall's point 5 m up at the frame's centre,
+        /// twice: the modules casting from their L2 proxies (as built) and from their own LODs (L0 at play zoom; LookLab.SetModuleShadows),
+        /// plus a 2x crop (the middle 960 x 540) of each. The architecture fade is off for these frames (the wall nearest the focus would ghost);
+        /// the shell is in both. → briefs/072/shots/f1/ (f1-&lt;n&gt;-{proxy,l0}[-x2].png, f1.json).</summary>
+        static void F1(Ctx c, RenderSession session, string dir, WorldStamp stamp)
+        {
+            Directory.CreateDirectory(dir);
+            var sun = RenderSettings.sun;
+            if (!sun) foreach (var l in UnityEngine.Object.FindObjectsByType<Light>(FindObjectsInactive.Exclude)) if (l.type == LightType.Directional) { sun = l; break; }
+            if (!sun) { Debug.LogWarning("072 f1: no directional light"); return; }
+            var toSun3 = -sun.transform.forward; var toSun = new Vector2(toSun3.x, toSun3.z).normalized;
+            var path = stamp ? Path.Combine(HarbourWorldBuilder.RepoRoot, stamp.exportPath) : RenderSession.ExportPath;
+            var text = File.ReadAllText(path);
+            var rx = new Regex("\"id\":\"([^\"]+)\",\"building\":\"[^\"]*\"[^{}]*?\"kit\":\\{\"id\":\"(SideBay[^\"]*)\"[^{}]*?\"at\":\\[([-\\d.]+),([-\\d.]+)\\]\\},\"base\":([-\\d.]+)[^{}]*?\"normal\":\\[([-\\d.]+),([-\\d.]+)\\](?:[^{}]|\\{[^{}]*\\})*?\"casts\":\"proxy-l2\"");
+            var picks = new List<(string id, string kit, Vector2 at, Vector2 n, float dot, float dist)>();
+            foreach (Match m in rx.Matches(text))
+            {
+                float b = P(m.Groups[5].Value); if (b > 1f) continue; // street level: the column's foot
+                var at = new Vector2(P(m.Groups[3].Value), P(m.Groups[4].Value)); var n = new Vector2(P(m.Groups[6].Value), P(m.Groups[7].Value)).normalized;
+                picks.Add((m.Groups[1].Value, m.Groups[2].Value, at, n, Vector2.Dot(n, toSun), (at - Baseline072.OfficeFront).magnitude));
+            }
+            if (picks.Count == 0) { Debug.LogWarning("072 f1: no street-level SideBay facade with an L2 proxy in the export"); return; }
+            // the building masses (plan ring, base, height) to keep a wall another building hides out of the shot
+            var masses = new List<(string id, List<Vector2> ring, float lo, float hi)>();
+            foreach (Match m in Regex.Matches(text, "\"id\":\"(bld/[^\"]+)\",\"surface\":\"[^\"]*\",\"ring\":\\[((?:\\[[-\\d.]+,[-\\d.]+\\],?)+)\\],\"base\":([-\\d.]+),\"height\":([-\\d.]+)"))
+            {
+                var ring = Regex.Matches(m.Groups[2].Value, "\\[([-\\d.]+),([-\\d.]+)\\]").Select(x => new Vector2(P(x.Groups[1].Value), P(x.Groups[2].Value))).ToList();
+                float lo = P(m.Groups[3].Value); masses.Add((m.Groups[1].Value, ring, lo, lo + P(m.Groups[4].Value)));
+            }
+            float tanP = Mathf.Tan(Baseline072.PlayPitch * Mathf.Deg2Rad);
+            Vector2 Fwd(float y) => new(Mathf.Sin(y * Mathf.Deg2Rad), Mathf.Cos(y * Mathf.Deg2Rad));
+            // how many of nine points on the wall (±2 m along it, 2 / 5 / 8 m up, 0.3 m out) another building hides from a camera at this yaw
+            int Hidden(Vector2 at, Vector2 n, float yaw)
+            {
+                var f = Fwd(yaw); var along = new Vector2(-n.y, n.x); int hid = 0;
+                foreach (var u in new[] { -2f, 0f, 2f }) foreach (var h in new[] { 2f, 5f, 8f })
+                {
+                    var q0 = at + along * u + n * 0.3f;
+                    for (float t = 0.5f; t < 80f; t += 0.5f)
+                    {
+                        var q = q0 - f * t; float z = h + t * tanP; bool hit = false;
+                        foreach (var ms in masses) if (z >= ms.lo && z <= ms.hi && Inside(q, ms.ring)) { hit = true; break; }
+                        if (hit) { hid++; break; }
+                    }
+                }
+                return hid;
+            }
+            // squarely sunlit (to 0.02), seen whole from a quarter yaw that looks at the face, one wall per building, then nearest the office front
+            var chosen = new List<(string id, string kit, Vector2 at, Vector2 n, float dot, float dist, float yaw, int hidden)>();
+            var usedBuildings = new HashSet<string>();
+            foreach (var p in picks.Where(x => x.dot > 0.9f).OrderByDescending(x => Mathf.Round(x.dot * 50f)).ThenBy(x => x.dist))
+            {
+                var bld = p.id[..p.id.LastIndexOf('/')]; if (usedBuildings.Contains(bld)) continue;
+                var yaws = Baseline072.Yaws.Where(y => Vector2.Dot(Fwd(y), p.n) < -0.5f).OrderBy(y => Vector2.Dot(Fwd(y), p.n)).ToList();
+                foreach (var y in yaws)
+                {
+                    int hid = Hidden(p.at, p.n, y); if (hid > 0) continue;
+                    chosen.Add((p.id, p.kit, p.at, p.n, p.dot, p.dist, y, hid)); usedBuildings.Add(bld); break;
+                }
+                if (chosen.Count == 3) break;
+            }
+            if (chosen.Count == 0) { Debug.LogWarning("072 f1: every sun-facing SideBay wall is hidden from the quarter yaws"); return; }
+            bool fadeWas = c.fade && c.fade.fade;
+            var sb = new StringBuilder("{\n  \"schema\": \"suborned.072.f1/1\",\n");
+            sb.Append($"  \"when\": \"{DateTime.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\",\n  \"export\": \"{Esc(stamp ? $"{stamp.exportPath} sha256 {stamp.exportSha256}" : path)}\",\n");
+            sb.Append($"  \"sun\": {{ \"toSun\": [{F(toSun3.x)}, {F(toSun3.y)}, {F(toSun3.z)}], \"euler\": [{F(sun.transform.eulerAngles.x)}, {F(sun.transform.eulerAngles.y)}] }},\n");
+            sb.Append($"  \"note\": \"play zoom {Baseline072.PlayZoom}, pitch {Baseline072.PlayPitch}, 1920x1080 offscreen; fade off for these frames; shell inset {ProcFacade.ShellInset} m in both; proxy = module L2 proxies (as built), l0 = modules cast from their own LODs\",\n  \"shots\": [\n");
+            try
+            {
+                if (c.fade) c.fade.fade = false;
+                for (int i = 0; i < chosen.Count; i++)
+                {
+                    var p = chosen[i];
+                    // the wall's point 5 m up at the frame's centre: the ground focus lies that far behind it along the view
+                    float yaw = p.yaw;
+                    var focus = p.at + Fwd(yaw) * (5f / tanP);
+                    var names = new List<string>();
+                    foreach (var (tag, fromLods) in new[] { ("proxy", false), ("l0", true) })
+                    {
+                        LookLab.SetModuleShadows(fromLods);
+                        Baseline072.Pose(c.cam, c.shadows, c.fade, focus, yaw, c.standOff);
+                        session.Grab(c.cam, 64, 64); // settle the cascades on the new pose
+                        var tex = session.Grab(c.cam, W, H);
+                        var name = $"f1-{i + 1}-{tag}.png"; File.WriteAllBytes(Path.Combine(dir, name), tex.EncodeToPNG()); names.Add(name);
+                        var crop = new Texture2D(W / 2, H / 2, TextureFormat.RGBA32, false);
+                        crop.SetPixels(tex.GetPixels(W / 4, H / 4, W / 2, H / 2)); crop.Apply();
+                        var big = Upscale2(crop); var cname = $"f1-{i + 1}-{tag}-x2.png"; File.WriteAllBytes(Path.Combine(dir, cname), big.EncodeToPNG()); names.Add(cname);
+                        UnityEngine.Object.DestroyImmediate(crop); UnityEngine.Object.DestroyImmediate(big);
+                    }
+                    sb.Append($"    {{ \"facade\": \"{Esc(p.id)}\", \"kit\": \"{p.kit}\", \"at\": [{F(p.at.x)}, {F(p.at.y)}], \"normal\": [{F(p.n.x)}, {F(p.n.y)}], \"sunDot\": {F(p.dot)}, " +
+                              $"\"fromOfficeFront\": {F(p.dist, 1)}, \"yaw\": {yaw:0}, \"focus\": [{F(focus.x)}, {F(focus.y)}], \"files\": [{string.Join(", ", names.Select(x => $"\"{x}\""))}] }}{(i + 1 < chosen.Count ? "," : "")}\n");
+                    Debug.Log($"072 f1: {p.id} ({p.kit}) sun dot {p.dot:F2}, yaw {yaw:0}, {p.dist:F0} m from the office front");
+                }
+            }
+            finally { LookLab.SetModuleShadows(null); if (c.fade) c.fade.fade = fadeWas; }
+            sb.Append("  ]\n}\n");
+            File.WriteAllText(Path.Combine(dir, "f1.json"), sb.ToString());
+            Debug.Log($"072 f1: {chosen.Count} walls, proxy and L0 → {dir}");
+        }
+
+        static bool Inside(Vector2 p, List<Vector2> ring)
+        {
+            bool c = false;
+            for (int i = 0, j = ring.Count - 1; i < ring.Count; j = i++)
+                if ((ring[i].y > p.y) != (ring[j].y > p.y) && p.x < (ring[j].x - ring[i].x) * (p.y - ring[i].y) / (ring[j].y - ring[i].y) + ring[i].x) c = !c;
+            return c;
+        }
+
+        /// <summary>072-F switch check (only with -only sd): the eight views with the surface detail on and off (LookLab, the global float the perf
+        /// harness's surfaceDetail sets), the mean and largest per-pixel difference logged; shots to out/scratch (not evidence that ships).</summary>
+        static void SurfaceDetailCheck(Ctx c, RenderSession session, string dir)
+        {
+            Directory.CreateDirectory(dir);
+            try
+            {
+                foreach (var v in c.views)
+                {
+                    Baseline072.Pose(c.cam, c.shadows, c.fade, v.Focus, v.Yaw, c.standOff);
+                    LookLab.SetSurfaceDetail(true); session.Grab(c.cam, 64, 64); var on = session.Grab(c.cam, W, H).GetPixels32();
+                    LookLab.SetSurfaceDetail(false); session.Grab(c.cam, 64, 64); var offTex = session.Grab(c.cam, W, H); var off = offTex.GetPixels32();
+                    double sum = 0; int max = 0, changed = 0;
+                    for (int i = 0; i < on.Length; i++)
+                    {
+                        int d = Mathf.Abs(on[i].r - off[i].r) + Mathf.Abs(on[i].g - off[i].g) + Mathf.Abs(on[i].b - off[i].b);
+                        sum += d; if (d > max) max = d; if (d > 6) changed++;
+                    }
+                    File.WriteAllBytes(Path.Combine(dir, $"{v.Id}-y{v.Yaw:000}-off.png"), offTex.EncodeToPNG());
+                    Debug.Log($"072 sd: {v.Id} y{v.Yaw:000}: detail on vs off, mean |dRGB| {sum / on.Length:F2}, max {max}, pixels changed (>6) {100.0 * changed / on.Length:F1} %");
+                }
+            }
+            finally { LookLab.SetSurfaceDetail(true); }
+        }
+
+        /// <summary>Nearest-neighbour 2x (a crop read at 2x without smoothing).</summary>
+        static Texture2D Upscale2(Texture2D src)
+        {
+            int w = src.width, h = src.height; var a = src.GetPixels32(); var o = new Color32[w * h * 4];
+            for (int y = 0; y < h * 2; y++) for (int x = 0; x < w * 2; x++) o[y * w * 2 + x] = a[(y >> 1) * w + (x >> 1)];
+            var t = new Texture2D(w * 2, h * 2, TextureFormat.RGBA32, false); t.SetPixels32(o); t.Apply(); return t;
         }
 
         // ---------------------------------------------------------------- 2. counts
@@ -435,6 +593,9 @@ namespace Suborned.World.Review
             else if (!baseTex || baseTex.width * baseTex.height <= 64) kind = "flat";
             else kind = "textured";
             if (m.shader.name == "Suborned/FacadeLit" && !baseTex) kind = "swatch-atlas?";
+            // 072-F: a flat colour that now carries a colourless detail (FacadeLit's surface-detail array, or a detail pair under _DETAIL_MULX2)
+            if (kind.StartsWith("swatch-atlas") && m.HasProperty("_SurfaceDetail") && m.GetTexture("_SurfaceDetail")) kind = "swatch-atlas+detail";
+            else if (kind == "flat" && m.IsKeywordEnabled("_DETAIL_MULX2") && m.HasProperty("_DetailAlbedoMap") && m.GetTexture("_DetailAlbedoMap")) kind = "flat+detail";
             return (kind, string.Join("; ", bound), baseTex ? baseTex.name : "");
         }
 
@@ -458,6 +619,9 @@ namespace Suborned.World.Review
             sb.Append("  \"views\": [");
             sb.Append(string.Join(", ", Enumerable.Range(0, nv).Select(i => $"{{\"view\": \"{VName(i)}\", \"focus\": [{F(c.views[i].Focus.x)}, {F(c.views[i].Focus.y)}], \"sky\": {F(sky[i] / total, 4)}, \"unresolved\": {F(unresolved[i] / total, 5)}, \"skyOpaqueOnly\": {F(skyOpaque[i] / total, 4)}, \"unresolvedOpaqueOnly\": {F(unresolvedOpaque[i] / total, 5)}}}")));
             sb.Append("],\n");
+            // 072-F: mean share by map kind (flat and swatch-atlas = flat colour left; +detail = a flat colour now textured by a colourless detail)
+            var kinds = byMat.GroupBy(x => Maps(x.mat).kind).Select(g => (kind: g.Key, n: g.Count(), share: g.Sum(x => x.all.Average()))).OrderByDescending(k => k.share).ToList();
+            sb.Append("  \"byKind\": {" + string.Join(", ", kinds.Select(k => $"\"{k.kind}\": {{\"materials\": {k.n}, \"meanShare\": {F(k.share, 5)}}}")) + "},\n");
             // by shader
             var byShader = byMat.GroupBy(x => x.mat.shader ? x.mat.shader.name : "?").Select(g => new
             {
@@ -486,6 +650,62 @@ namespace Suborned.World.Review
             }
             sb.Append("  ]\n}\n");
             return sb.ToString();
+        }
+
+        // ---------------------------------------------------------------- 5. 072-F: texture memory
+
+        /// <summary>Every texture bound by a material of an enabled renderer in the open scene: Profiler.GetRuntimeMemorySizeLong (the Editor's
+        /// loaded size, which can hold a CPU copy for readable textures) and the GPU size from format, size, mip count and layers (what the
+        /// player would hold), summed and listed by texture.</summary>
+        static void TexMem(string file, string export, string tag)
+        {
+            Directory.CreateDirectory(Path.GetDirectoryName(file));
+            var tex = new Dictionary<Texture, HashSet<string>>();
+            foreach (var r in UnityEngine.Object.FindObjectsByType<Renderer>(FindObjectsInactive.Exclude))
+            {
+                if (!r.enabled) continue;
+                foreach (var m in r.sharedMaterials)
+                {
+                    if (!m) continue;
+                    foreach (var p in m.GetTexturePropertyNames())
+                    {
+                        Texture t; try { t = m.GetTexture(p); } catch { continue; }
+                        if (!t) continue;
+                        if (!tex.TryGetValue(t, out var by)) tex[t] = by = new HashSet<string>();
+                        by.Add(m.name);
+                    }
+                }
+            }
+            static long Gpu(Texture t)
+            {
+                int layers = t is Texture2DArray ta ? ta.depth : t is Cubemap ? 6 : t is Texture3D t3 ? t3.depth : 1;
+                long sum = 0; int w = t.width, h = t.height;
+                for (int i = 0; i < Mathf.Max(1, t.mipmapCount); i++)
+                {
+                    sum += (long)UnityEngine.Experimental.Rendering.GraphicsFormatUtility.ComputeMipmapSize(Mathf.Max(1, w), Mathf.Max(1, h), t.graphicsFormat);
+                    w >>= 1; h >>= 1;
+                }
+                return sum * layers;
+            }
+            var rows = tex.Select(kv => (t: kv.Key, path: AssetDatabase.GetAssetPath(kv.Key), runtime: UnityEngine.Profiling.Profiler.GetRuntimeMemorySizeLong(kv.Key), gpu: Gpu(kv.Key), by: kv.Value))
+                .OrderByDescending(x => x.gpu).ToList();
+            const double MiB = 1024.0 * 1024.0;
+            var surf = rows.Where(x => x.t.name.StartsWith("surface_", StringComparison.Ordinal)).ToList();
+            var sb = new StringBuilder("{\n");
+            sb.Append("  \"schema\": \"suborned.072-texmem/1\",\n");
+            sb.Append($"  \"tag\": \"{Esc(tag)}\",\n  \"when\": \"{DateTime.Now.ToString("yyyy-MM-dd HH:mm", CultureInfo.InvariantCulture)}\",\n  \"export\": \"{Esc(export)}\",\n");
+            sb.Append("  \"method\": \"Every texture bound by a material of an enabled renderer in the open HarbourDistrict scene (batchmode). runtimeBytes = Profiler.GetRuntimeMemorySizeLong in the Editor (can include a CPU copy of readable textures); gpuBytes = GraphicsFormatUtility.ComputeMipmapSize summed over the texture's mips x layers (what the GPU holds).\",\n");
+            sb.Append($"  \"textures\": {rows.Count}, \"runtimeMiB\": {F(rows.Sum(x => x.runtime) / MiB, 2)}, \"gpuMiB\": {F(rows.Sum(x => x.gpu) / MiB, 2)},\n");
+            sb.Append($"  \"surfaceSet\": {{\"textures\": {surf.Count}, \"runtimeMiB\": {F(surf.Sum(x => x.runtime) / MiB, 2)}, \"gpuMiB\": {F(surf.Sum(x => x.gpu) / MiB, 2)}}},\n");
+            sb.Append("  \"rows\": [\n");
+            for (int i = 0; i < rows.Count; i++)
+            {
+                var x = rows[i];
+                sb.Append($"    {{\"texture\": \"{Esc(x.t.name)}\", \"asset\": \"{Esc(string.IsNullOrEmpty(x.path) ? "(scene / memory)" : x.path)}\", \"type\": \"{x.t.GetType().Name}\", \"size\": [{x.t.width}, {x.t.height}], \"format\": \"{x.t.graphicsFormat}\", \"mips\": {x.t.mipmapCount}, \"runtimeBytes\": {x.runtime}, \"gpuBytes\": {x.gpu}, \"materials\": {x.by.Count}}}{(i + 1 < rows.Count ? "," : "")}\n");
+            }
+            sb.Append("  ]\n}\n");
+            File.WriteAllText(file, sb.ToString());
+            Debug.Log($"072 texmem ({tag}): {rows.Count} textures, runtime {rows.Sum(x => x.runtime) / MiB:F2} MiB, GPU {rows.Sum(x => x.gpu) / MiB:F2} MiB (surface set {surf.Sum(x => x.gpu) / MiB:F2} MiB) → {file}");
         }
 
         // ---------------------------------------------------------------- 4. K-6 at lamplight-south-w/13

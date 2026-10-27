@@ -4,7 +4,7 @@ hurt performance"). Texture, not palette: every map here is colourless (mean neu
 One set of surface layers, made from the old DecoKit's own maps (the store's source-art, read-only) where it has one, written twice:
 
   surface_detail_v1.png             the FacadeLit layer array: a vertical flipbook of LAYERS (1024 x 1024 each, 1024 x 6144 in all), imported by its .meta as ONE Texture2DArray
-                                    (textureShape 2, flipbookRows 6), LINEAR, BC7, mips, aniso 8, repeat. Channels: R albedo detail (x2: 128 = neutral), G height (0..1, for the
+                                    (textureShape 4 = Texture2DArray, flipbookRows 6, flipbookColumns 1), LINEAR, BC7, mips, aniso 8, repeat. Channels: R albedo detail (x2: 128 = neutral), G height (0..1, for the
                                     shader's existing derivative bump, so no tangents and no vertex change), B smoothness offset (128 = none), A 255 (spare).
                                     Indexed by surface class in FacadeLit (see LAYERS[...]["classes"]); the point-sampled swatch atlas keeps the colour.
   surface_<layer>_detail_v1.png     for the untextured DecoKit rows (URP Lit / Complex Lit): the same layer as a detail albedo (LINEAR, x2: 128 neutral, grey RGB) ...
@@ -144,7 +144,7 @@ def save(arr, path, mode):
 
 def array_meta(file, rows):
     t = meta_text(file, "da", (N, N * rows))
-    t = t.replace("  textureShape: 1\n", "  textureShape: 2\n").replace("  flipbookRows: 1\n", f"  flipbookRows: {rows}\n")
+    t = t.replace("  textureShape: 1\n", "  textureShape: 4\n").replace("  flipbookRows: 1\n", f"  flipbookRows: {rows}\n")
     t = t.replace("    aniso: 16\n", "    aniso: 8\n")
     return t.replace("  alphaUsage: 0\n", "  alphaUsage: 0\n", 1)
 

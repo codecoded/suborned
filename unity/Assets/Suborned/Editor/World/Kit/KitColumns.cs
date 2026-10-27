@@ -21,7 +21,7 @@ namespace Suborned.World
     public static class KitColumns
     {
         public const string Folder = KitPlacer.BuiltRoot + "Columns";
-        public static int Columns, Modules, Variants, Singles, Tris0;
+        public static int Columns, Modules, Variants, Singles, Tris0, Index16, Index32;
         /// <summary>The LOD groups of every placed module (baked columns and single modules): ShadowProxies casts them from L2.</summary>
         public static readonly HashSet<LODGroup> ModuleGroups = new();
         /// <summary>Every placed module root (the switch `everyFace` hides them).</summary>
@@ -32,7 +32,7 @@ namespace Suborned.World
 
         public static void Reset()
         {
-            Columns = Modules = Variants = Singles = Tris0 = 0; ModuleGroups.Clear(); ModuleRoots.Clear(); variants.Clear();
+            Columns = Modules = Variants = Singles = Tris0 = Index16 = Index32 = 0; ModuleGroups.Clear(); ModuleRoots.Clear(); variants.Clear();
             if (AssetDatabase.IsValidFolder(Folder)) AssetDatabase.DeleteAsset(Folder); // rebuilt from the export every build
             AssetDatabase.CreateFolder(KitPlacer.BuiltRoot.TrimEnd('/'), "Columns");
         }
@@ -63,7 +63,7 @@ namespace Suborned.World
                 done.Add(f);
             }
             AssetDatabase.SaveAssets();
-            Debug.Log($"World: every-face modules {Modules}: {Columns} baked columns ({Modules - Singles} modules) in {Variants} column layouts (Built/Columns, one LODGroup each, class `column` at {string.Join(" / ", columnDistances.Select(d => d.ToString("0", CultureInfo.InvariantCulture)))} m), {Singles} single modules placed as their piece");
+            Debug.Log($"World: every-face modules {Modules}: {Columns} baked columns ({Modules - Singles} modules) in {Variants} column layouts (Built/Columns, one LODGroup each, class `column` at {string.Join(" / ", columnDistances.Select(d => d.ToString("0", CultureInfo.InvariantCulture)))} m), {Singles} single modules placed as their piece; baked meshes {Index16} 16-bit and {Index32} 32-bit indices, saved not CPU-readable (F3)");
         }
 
         static bool Bakeable(List<FacadeDto> col)
@@ -168,13 +168,28 @@ namespace Suborned.World
                         one.CombineMeshes(parts.ToArray(), true, true);
                         temps.Add(one); perMat.Add(new CombineInstance { mesh = one, transform = Matrix4x4.identity }); matList.Add(mat);
                     }
+                    // Redline phase 2 F3: 16-bit indices when the column's vertices allow (all do today: the largest L0 is 23,768), and the asset
+                    // saved not CPU-readable, so the player keeps only the GPU copy (the builder reads only index counts, taken before).
+                    // CombineMeshes writes 32-bit indices when a source has them (the per-material meshes above may pass 65,535 before they are
+                    // trimmed), so the format is set after the combine and the indices put back in it.
                     var baked = new Mesh { name = $"{name}_L{i}", indexFormat = IndexFormat.UInt32 };
                     baked.CombineMeshes(perMat.ToArray(), false, false);
                     foreach (var t in temps) Object.DestroyImmediate(t);
+                    if (baked.vertexCount < 65535 && baked.indexFormat == IndexFormat.UInt32)
+                    {
+                        var subs = new int[baked.subMeshCount][];
+                        for (int s = 0; s < subs.Length; s++) subs[s] = baked.GetIndices(s);
+                        baked.indexFormat = IndexFormat.UInt16; // clears the index data and the submeshes
+                        baked.subMeshCount = subs.Length;
+                        for (int s = 0; s < subs.Length; s++) baked.SetIndices(subs[s], MeshTopology.Triangles, s, false, 0);
+                        for (int s = 0; s < subs.Length; s++) if (baked.GetIndexCount(s) != subs[s].Length) throw new InvalidDataException($"World: column {name} L{i} submesh {s} lost indices going 16-bit");
+                    }
                     baked.RecalculateBounds();
-                    baked.UploadMeshData(false);
-                    AssetDatabase.CreateAsset(baked, $"{Folder}/{name}_L{i}.asset");
+                    if (baked.indexFormat == IndexFormat.UInt16) Index16++; else Index32++;
                     if (i == 0) for (int s = 0; s < baked.subMeshCount; s++) tris0 += (int)baked.GetIndexCount(s) / 3;
+                    AssetDatabase.CreateAsset(baked, $"{Folder}/{name}_L{i}.asset");
+                    var so = new SerializedObject(baked); so.FindProperty("m_IsReadable").boolValue = false; so.ApplyModifiedPropertiesWithoutUndo();
+                    EditorUtility.SetDirty(baked);
                     var child = new GameObject(i == 0 ? name + "_L0" : "__LOD" + i);
                     child.transform.SetParent(go.transform, false);
                     GameObjectUtility.SetStaticEditorFlags(child, GameObjectUtility.GetStaticEditorFlags(template.gameObject));
@@ -195,7 +210,9 @@ namespace Suborned.World
                 var lods = new List<LOD>();
                 for (int i = 0; i < lodRenderers.Count; i++)
                 {
-                    float d = i < dist.Length ? dist[i] : 0f;
+                    // the class is [L1, L2, cull]: the last level ends at the cull (distances[2]) whatever the level count
+                    int di = i == lodRenderers.Count - 1 ? 2 : i;
+                    float d = di < dist.Length ? dist[di] : 0f;
                     float screen = d > 0f ? KitLods.ScreenAt(size, d) : 0.004f;
                     if (lods.Count > 0 && screen >= lods[^1].screenRelativeTransitionHeight) screen = lods[^1].screenRelativeTransitionHeight * 0.5f;
                     lods.Add(new LOD(screen, new[] { lodRenderers[i] }));

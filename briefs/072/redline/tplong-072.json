@@ -1,12 +1,89 @@
 {
   "schema": "suborned.tplong/1",
-  "note": "Redline 072-D (2026-10-27): the tp-long rows for the every-face A/B, at 1920x1080, -novsync. SPEC, NOT RUN: needs Latch's tplong row `variant` (PerfSwitches applied before the row: everyFace on | off, moduleShadows) in the same development build as perf-072.json. Rows interleave today / every so neither always runs warmer.",
+  "note": "Redline 072-D (2026-10-27, phase 2): the tp-long rows for the every-face A/B, at 1920x1080, -novsync. SPEC, NOT RUN. The row `variant` exists since db30a0af (everyFace on | off, moduleShadows). Rows interleave today / every so neither always runs warmer.",
   "rows": [
-    { "name": "play-opening-today", "view": "overhead", "yaw": 30, "w": 1920, "h": 1080, "variant": { "everyFace": "off" } },
-    { "name": "play-opening-every", "view": "overhead", "yaw": 30, "w": 1920, "h": 1080, "variant": { "everyFace": "on", "moduleShadows": "proxy" } },
-    { "name": "tp-street-every", "view": "follow", "agent": "scout", "walk": [0, -20], "faceHeading": 180, "w": 1920, "h": 1080, "variant": { "everyFace": "on", "moduleShadows": "proxy" } },
-    { "name": "tp-street-today", "view": "follow", "agent": "scout", "walk": [0, -20], "faceHeading": 180, "w": 1920, "h": 1080, "variant": { "everyFace": "off" } },
-    { "name": "tp-worst-today", "view": "follow", "agent": "scout", "walk": [-10, -25], "faceHeading": 90, "w": 1920, "h": 1080, "variant": { "everyFace": "off" } },
-    { "name": "tp-worst-every", "view": "follow", "agent": "scout", "walk": [-10, -25], "faceHeading": 90, "w": 1920, "h": 1080, "variant": { "everyFace": "on", "moduleShadows": "proxy" } }
+    {
+      "name": "play-opening-today",
+      "view": "overhead",
+      "yaw": 30,
+      "w": 1920,
+      "h": 1080,
+      "variant": {
+        "everyFace": "off"
+      }
+    },
+    {
+      "name": "play-opening-every",
+      "view": "overhead",
+      "yaw": 30,
+      "w": 1920,
+      "h": 1080,
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy"
+      }
+    },
+    {
+      "name": "tp-street-every",
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        0,
+        -20
+      ],
+      "faceHeading": 180,
+      "w": 1920,
+      "h": 1080,
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy"
+      }
+    },
+    {
+      "name": "tp-street-today",
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        0,
+        -20
+      ],
+      "faceHeading": 180,
+      "w": 1920,
+      "h": 1080,
+      "variant": {
+        "everyFace": "off"
+      }
+    },
+    {
+      "name": "tp-worst-today",
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        -10,
+        -25
+      ],
+      "faceHeading": 90,
+      "w": 1920,
+      "h": 1080,
+      "variant": {
+        "everyFace": "off"
+      }
+    },
+    {
+      "name": "tp-worst-every",
+      "view": "follow",
+      "agent": "scout",
+      "walk": [
+        -10,
+        -25
+      ],
+      "faceHeading": 90,
+      "w": 1920,
+      "h": 1080,
+      "variant": {
+        "everyFace": "on",
+        "moduleShadows": "proxy"
+      }
+    }
   ]
 }

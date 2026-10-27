@@ -5,7 +5,7 @@ import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import type { Kit } from '../../contracts/world/kit.schema';
-import { buildCatalogue } from './catalogue';
+import { buildCatalogue, refreshMatFiles } from './catalogue';
 import { copyAdopted } from './copy';
 import { fit } from './fit';
 import { GEN_ROOT, kitRoot } from './store';
@@ -152,4 +152,35 @@ test('signal textures carry real alpha and their metas import it (Alpha Source =
     }
     for (const p of pngs) expect(readFileSync(join(GEN_ROOT, p + '.meta'), 'utf8'), `generator ${p}.meta`).toContain('alphaUsage: 1'); // the exporter's own copy, not only what was copied
   } finally { rmSync(dest, { recursive: true, force: true }); }
+});
+
+test('brief 072-F: the surface-detail array and the three detail pairs ride as kit-wide textures, each with its meta, and the copy keeps them', () => {
+  const t = kit.textures ?? [], paths = new Set(t.map(f => f.path));
+  for (const n of ['surface_detail_v1', 'surface_enamel_detail_v1', 'surface_enamel_detail_v1_normal', 'surface_limestone_detail_v1', 'surface_limestone_detail_v1_normal', 'surface_metal_detail_v1', 'surface_metal_detail_v1_normal'])
+    for (const p of [`Textures/${n}.png`, `Textures/${n}.png.meta`]) expect(paths.has(p), p).toBe(true);
+  for (const f of t) { expect(f.root).toBe('generated'); expect(f.sha256).toMatch(/^[0-9a-f]{64}$/); }
+  const meta = join(GEN_ROOT, 'Textures/surface_detail_v1.png.meta');
+  if (existsSync(meta)) expect(readFileSync(meta, 'utf8')).toMatch(/textureShape: 4\n/); // Texture2DArray (TextureImporterShape: 2D=1, Cube=2, 2DArray=4)
+  const only: Kit = { ...kit, assets: [] }, dest = mkdtempSync(join(tmpdir(), 'kit-tex-'));
+  try { const r = copyAdopted(only, root, dest, GEN_ROOT); expect(r.errors).toEqual([]); expect(r.copied.length).toBe(t.length); expect(r.pruned).toEqual([]); }
+  finally { rmSync(dest, { recursive: true, force: true }); }
+});
+
+test('brief 072-F: a kept generated entry takes its material files fresh, so no path carries two hashes in the catalogue', () => {
+  const f = (role: Kit['assets'][number]['files'][number]['role'], path: string, sha256: string) => ({ root: 'generated' as const, role, path, sha256, bytes: 1 });
+  const prev = [f('fbx', 'Models/Plaza/DK_X.fbx', 'a'), f('material', 'Materials/M.mat', 'old'), f('material-meta', 'Materials/M.mat.meta', 'm'), f('material', 'Materials/Gone.mat', 'g'), f('lod', 'Models/Plaza/DK_X_L1.fbx', 'l')];
+  const fresh = [f('material', 'Materials/M.mat', 'new'), f('material-meta', 'Materials/M.mat.meta', 'm'), f('texture', 'Textures/t.png', 't')];
+  expect(refreshMatFiles(prev, fresh).map(x => `${x.path}:${x.sha256}`)).toEqual(['Models/Plaza/DK_X.fbx:a', 'Materials/M.mat:new', 'Materials/M.mat.meta:m', 'Textures/t.png:t', 'Materials/Gone.mat:g', 'Models/Plaza/DK_X_L1.fbx:l']);
+  const seen = new Map<string, string>(), twice: string[] = [];
+  for (const a of kit.assets.filter(x => x.status === 'adopted')) for (const x of a.files) { const o = seen.get(x.path); if (o && o !== x.sha256) twice.push(`${a.id} ${x.path}`); seen.set(x.path, x.sha256); }
+  for (const x of kit.textures ?? []) { const o = seen.get(x.path); if (o && o !== x.sha256) twice.push(`textures ${x.path}`); }
+  expect(twice).toEqual([]);
+});
+
+test('brief 072 F2: every roof crown switches by the crown distance class, L1 beyond the 36 m play-zoom guard, nothing culled or at L2 inside the 350 m clip', () => {
+  const crowns = kit.assets.filter(a => /^Crown_/.test(a.id));
+  expect(crowns.map(a => a.id).sort()).toEqual(['Crown_Antenna', 'Crown_Atom', 'Crown_Dish', 'Crown_Finial', 'Crown_Needle', 'Crown_Saucer', 'Crown_Starburst']);
+  for (const a of crowns) expect(a.lodClass, a.id).toBe('crown');
+  const [l1, l2] = kit.lodClasses!.crown.distances;
+  expect(l1).toBeGreaterThan(36); expect(l2).toBeGreaterThan(350);
 });

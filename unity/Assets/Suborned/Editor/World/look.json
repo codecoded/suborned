@@ -33,21 +33,25 @@
       "note": "brief 055 road test (Vela): the asphalt option's carriageway (plan roads.finish.set = asphalt, or the export's --road-finish asphalt); a kit material as it is, like road-enamel. No gutter strip, like the enamel (Layers.NoGutter)"
     },
     "pavement": {
+      "detail": "limestone",
       "palette": "harbour.pavement",
       "value": 1,
       "smoothness": 0.25
     },
     "quay": {
+      "detail": "limestone",
       "palette": "harbour.quay",
       "value": 1,
       "smoothness": 0.1
     },
     "foot": {
+      "detail": "limestone",
       "palette": "harbour.foot",
       "value": 1,
       "smoothness": 0.25
     },
     "open": {
+      "detail": "limestone",
       "palette": "harbour.open",
       "value": 1,
       "smoothness": 0.25
@@ -60,11 +64,13 @@
       "tile": 4
     },
     "circus/island": {
+      "detail": "limestone",
       "palette": "harbour.circus/island",
       "value": 1,
       "smoothness": 0.1
     },
     "park": {
+      "detail": "limestone",
       "palette": "harbour.park",
       "value": 1,
       "smoothness": 0.1
@@ -82,64 +88,76 @@
       "material": "DK_Leaf_CivicDark"
     },
     "median": {
+      "detail": "limestone",
       "palette": "harbour.median",
       "value": 1,
       "smoothness": 0.1
     },
     "beyond": {
+      "detail": "limestone",
       "palette": "harbour.beyond",
       "value": 1,
       "smoothness": 0.05
     },
     "beyond_ground": {
+      "detail": "limestone",
       "palette": "harbour.beyond_ground",
       "value": 1,
       "smoothness": 0.05
     },
     "beyond_green": {
+      "detail": "limestone",
       "palette": "harbour.beyond_green",
       "value": 1,
       "smoothness": 0.05
     },
     "beyond_hill": {
+      "detail": "limestone",
       "palette": "harbour.beyond_hill",
       "value": 1,
       "smoothness": 0.05
     },
     "bay": {
+      "detail": "limestone",
       "palette": "harbour.bay",
       "value": 1,
       "smoothness": 0.1
     },
     "track": {
+      "detail": "metal",
       "palette": "harbour.track",
       "value": 1,
       "smoothness": 0.3,
       "metallic": 0.1
     },
     "pylon": {
+      "detail": "metal",
       "palette": "harbour.pylon",
       "value": 1,
       "smoothness": 0.85,
       "metallic": 0.6
     },
     "column": {
+      "detail": "metal",
       "palette": "harbour.column",
       "value": 1,
       "smoothness": 0.85,
       "metallic": 0.6
     },
     "limestone": {
+      "detail": "limestone",
       "palette": "harbour.limestone",
       "value": 1,
       "smoothness": 0.3
     },
     "deck": {
+      "detail": "limestone",
       "palette": "harbour.deck",
       "value": 1,
       "smoothness": 0.15
     },
     "stair": {
+      "detail": "limestone",
       "palette": "harbour.stair",
       "value": 1,
       "smoothness": 0.15
@@ -159,6 +177,7 @@
       "alpha": 0.42
     },
     "trim": {
+      "detail": "metal",
       "palette": "harbour.trim",
       "value": 1,
       "smoothness": 0.7,
@@ -171,78 +190,92 @@
       "metallic": 0.7
     },
     "canopy": {
+      "detail": "metal",
       "palette": "harbour.column",
       "value": 1,
       "smoothness": 0.75,
       "metallic": 0.5
     },
     "plate": {
+      "detail": "metal",
       "palette": "harbour.pylon",
       "value": 1,
       "smoothness": 0.9,
       "metallic": 0.6
     },
     "hoop": {
+      "detail": "metal",
       "palette": "harbour.pylon",
       "value": 1,
       "smoothness": 0.9,
       "metallic": 0.6
     },
     "booth": {
+      "detail": "enamel",
       "palette": "harbour.accent_flamingo",
       "value": 1,
       "smoothness": 0.6,
       "metallic": 0
     },
     "tub": {
+      "detail": "limestone",
       "palette": "harbour.civic",
       "value": 1,
       "smoothness": 0.2,
       "metallic": 0
     },
     "crane": {
+      "detail": "enamel",
       "palette": "harbour.accent_coral",
       "value": 1,
       "smoothness": 0.5,
       "metallic": 0
     },
     "girder": {
+      "detail": "metal",
       "palette": "harbour.column",
       "value": 1,
       "smoothness": 0.5,
       "metallic": 0.6
     },
     "residential": {
+      "detail": "limestone",
       "palette": "harbour.residential",
       "value": 1,
       "smoothness": 0.1
     },
     "mixed": {
+      "detail": "limestone",
       "palette": "harbour.mixed",
       "value": 1,
       "smoothness": 0.15
     },
     "frontage": {
+      "detail": "limestone",
       "palette": "harbour.frontage",
       "value": 1,
       "smoothness": 0.3
     },
     "roof": {
+      "detail": "limestone",
       "palette": "harbour.roof",
       "value": 1,
       "smoothness": 0.2
     },
     "commercial": {
+      "detail": "limestone",
       "palette": "harbour.commercial",
       "value": 1,
       "smoothness": 0.4
     },
     "industrial": {
+      "detail": "limestone",
       "palette": "harbour.industrial",
       "value": 1,
       "smoothness": 0.3
     },
     "port": {
+      "detail": "limestone",
       "palette": "harbour.port",
       "value": 1,
       "smoothness": 0.3
@@ -253,88 +286,105 @@
       "smoothness": 0.6
     },
     "beam": {
+      "detail": "enamel",
       "palette": "harbour.beam",
       "value": 1,
       "smoothness": 0.4
     },
     "platform": {
+      "detail": "limestone",
       "palette": "harbour.platform",
       "value": 1,
       "smoothness": 0.3
     },
     "gate": {
+      "detail": "limestone",
       "palette": "harbour.gate",
       "value": 1,
       "smoothness": 0.3
     },
     "tower": {
+      "detail": "limestone",
       "palette": "harbour.tower",
       "value": 1,
       "smoothness": 0.6
     },
     "mega": {
+      "detail": "limestone",
       "palette": "harbour.mega",
       "value": 1,
       "smoothness": 0.4
     },
     "landmark": {
+      "detail": "metal",
       "palette": "harbour.landmark",
       "value": 1,
       "smoothness": 0.6,
       "metallic": 0.5
     },
     "enamel": {
+      "detail": "enamel",
       "palette": "harbour.enamel",
       "value": 1,
       "smoothness": 0.8
     },
     "sign": {
+      "detail": "enamel",
       "palette": "harbour.sign",
       "value": 1,
       "smoothness": 0.5
     },
     "awning": {
+      "detail": "limestone",
       "palette": "harbour.awning",
       "value": 1,
       "smoothness": 0.2
     },
     "accent_teal": {
+      "detail": "enamel",
       "palette": "harbour.accent_teal",
       "value": 1,
       "smoothness": 0.6
     },
     "accent_turquoise": {
+      "detail": "enamel",
       "palette": "harbour.accent_turquoise",
       "value": 1,
       "smoothness": 0.6
     },
     "accent_coral": {
+      "detail": "enamel",
       "palette": "harbour.accent_coral",
       "value": 1,
       "smoothness": 0.5
     },
     "accent_flamingo": {
+      "detail": "enamel",
       "palette": "harbour.accent_flamingo",
       "value": 1,
       "smoothness": 0.5
     },
     "accent_gold": {
+      "detail": "metal",
       "palette": "harbour.accent_gold",
       "value": 1,
       "smoothness": 0.7,
       "metallic": 0.5
     },
     "accent_mint": {
+      "detail": "enamel",
       "palette": "harbour.accent_mint",
       "value": 1,
       "smoothness": 0.5
     },
     "accent_peach": {
+      "detail": "enamel",
       "palette": "harbour.accent_peach",
       "value": 1,
       "smoothness": 0.4
     },
     "canvas": {
+      "detail": "limestone",
       "palette": "harbour.canvas",
       "value": 1,
       "smoothness": 0.2
@@ -426,6 +476,12 @@
       "material": "DK_Ground_Gutter",
       "tile": 1
     }
+  },
+  "details": {
+    "note": "brief 072-F (Vela's design, briefs/072/texture/design.md): the kit detail pairs a colour surface's `detail` names. Colourless (albedo x2 about 128 and a tangent normal), laid in URP Lit's own detail slots with _DETAIL_MULX2 on box-projected UVs in metres, so the colour stays the surface's. tile = metres per repeat, bump = _DetailNormalMapScale [S]. glass, water and crossing take none (transparent glazing, the Water shader, the signal-adjacent crossing).",
+    "limestone": { "albedo": "surface_limestone_detail_v1", "normal": "surface_limestone_detail_v1_normal", "tile": 2.0, "bump": 0.3 },
+    "enamel": { "albedo": "surface_enamel_detail_v1", "normal": "surface_enamel_detail_v1_normal", "tile": 1.0, "bump": 0.25 },
+    "metal": { "albedo": "surface_metal_detail_v1", "normal": "surface_metal_detail_v1_normal", "tile": 0.5, "bump": 0.15 }
   },
   "sky": {
     "palette": "harbour.sky",

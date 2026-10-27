@@ -143,7 +143,8 @@ namespace Suborned.World
                 var mesh = acc.Kit.Build($"{p[0]}/{go.name}");
                 // brief 026: a normal-mapped material (the textured ground, DK_Pave_Civic) needs tangents; the builder's meshes had none,
                 // so their normal maps lit from a zero tangent frame (the textured asphalt read near black)
-                if (acc.Mat && acc.Mat.IsKeywordEnabled("_NORMALMAP") && mesh.uv.Length == mesh.vertexCount) { mesh.RecalculateTangents(); TangentMeshes++; }
+                if (Look.NeedsBoxUv(acc.Mat)) { Look.BoxUv(mesh); TangentMeshes++; } // 072-F: a builder colour surface with a detail pair
+                else if (acc.Mat && (acc.Mat.IsKeywordEnabled("_NORMALMAP") || acc.Mat.IsKeywordEnabled("_DETAIL_MULX2")) && mesh.uv.Length == mesh.vertexCount) { mesh.RecalculateTangents(); TangentMeshes++; }
                 go.AddComponent<MeshFilter>().sharedMesh = mesh;
                 var mr = go.AddComponent<MeshRenderer>();
                 mr.sharedMaterial = acc.Mat;

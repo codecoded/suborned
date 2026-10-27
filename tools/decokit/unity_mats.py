@@ -219,11 +219,67 @@ def robot_enamel_text(row):
     return re.sub(r"(- _DetailNormalMapScale: )[0-9.]+", rf"\g<1>{_f(d['bump'])}", base)
 
 
+# Brief 072-F (Vela, Sky 2026-10-27: "Anywhere with a flat color, no texture, we need to give it one, as long as it doesn't hurt performance"): the untextured kit rows take
+# the colourless surface detail pair of their kind (surface_tex.py) in the slots the .mat already has (_DetailAlbedoMap x2 + _DetailNormalMap, keyword _DETAIL_MULX2), as the
+# robot and car enamels do. Texture, not palette: no new material, no colour, no other property changes; a legacy row keeps its legacy .mat text and guid, only the
+# detail is added. One extra variant per shader at most (Lit [_DETAIL_MULX2]; Complex Lit [_CLEARCOAT _DETAIL_MULX2] already exists for the robot enamels).
+# Tile (metres per repeat, m_Scale = 1 / tile on the kit's 1 m box-projected UVs) and bump come from surface_tex.py's report, so the maps and the .mat agree.
+SURFACE_PAIR = {"enamel": "enamel", "ceramic": "enamel", "metal": "metal", "chrome": "metal", "brass": "metal", "satin": "metal", "roadmetal": "metal",
+                "stone": "limestone", "rubber": "limestone", "fabric": "limestone"}
+SURFACE_BUMP = {"chrome": 0.5, "rubber": 0.5, "fabric": 0.5}  # x the pair's bump: chrome faint (polished), soft goods a matte grain until a fabric layer exists
+SURFACE_BUMP_NAME = ((r"^DK_Cloth_", 0.5),)                    # cloth registered as stone: the same half grain
+# Not this round, with the reason (flat.md lists them open or excluded): the census's own exclusions (emissive, glass, faces, sky bodies, water, foliage, café dressing),
+# and the opaque window stand-ins, which wait for Glint (a glaze mottle could read as dirty glass; judge in game light).
+SURFACE_HOLD = ((r"Window_(Film|Teal|Tower)", "open (Glint): opaque enamel standing in for glass; the enamel pair at half bump, or none, judged in game light"),
+                (r"^DK_Calib_", "a calibration swatch (18 % grey): stays flat by definition"))
+
+
+def surface_report():
+    """surface_tex.py's report (tile per layer, bump per kit pair): run.ts writes it before Blender. Missing = reject: the .mat would name maps nobody made."""
+    p = Path(os.environ.get("DECOKIT_GROUND") or Path(__file__).resolve().parents[2] / "out/decokit-ground") / "surface-tex.json"
+    if not p.exists():
+        raise SystemExit(f"[DK-EXPORT] no {p}: run python3 tools/decokit/surface_tex.py (bun run decokit does) before the .mat set")
+    d = json.loads(p.read_text())
+    return {l["name"]: l["tile"] for l in d["layers"]}, {k: v["bump"] for k, v in d["kitPairs"].items()}
+
+
+def surface_detail(row, report):
+    """The detail this row takes: dict(pair, tile, bump, albedo, normal), or None (textured, another path's row, not a kind with a pair, excluded or held)."""
+    from flat_census import EXCLUDE  # the census's exclusions, one list for both
+    n, kind = row["name"], row["kind"]
+    if row["texture"] or row.get("pbr") or row.get("film") or row.get("robotDetail") or kind not in SURFACE_PAIR:
+        return None
+    if any(re.search(p, n) for p, _ in EXCLUDE) or any(re.search(p, n) for p, _ in SURFACE_HOLD):
+        return None
+    tiles, bumps = report
+    pair = SURFACE_PAIR[kind]
+    k = next((f for p, f in SURFACE_BUMP_NAME if re.search(p, n)), SURFACE_BUMP.get(kind, 1.0))
+    return dict(pair=pair, tile=tiles[pair], bump=round(bumps[pair] * k, 4), albedo=f"surface_{pair}_detail_v1.png", normal=f"surface_{pair}_detail_v1_normal.png")
+
+
+def with_detail(text, det):
+    """`text` (a Lit or Complex Lit .mat) with the surface pair in its detail slots, _DETAIL_MULX2 and the pair's bump; nothing else changes."""
+    k = _f(1 / det["tile"])
+    for slot, file in (("_DetailAlbedoMap", det["albedo"]), ("_DetailNormalMap", det["normal"])):
+        old = f"    - {slot}:\n        m_Texture: {{fileID: 0}}\n        m_Scale: {{x: 1, y: 1}}\n"
+        assert old in text, slot
+        text = text.replace(old, f"    - {slot}:\n        m_Texture: {{fileID: 2800000, guid: {tex_guid(file)}, type: 3}}\n        m_Scale: {{x: {k}, y: {k}}}\n")
+    if "  m_ValidKeywords: []\n" in text:
+        text = text.replace("  m_ValidKeywords: []\n", "  m_ValidKeywords:\n  - _DETAIL_MULX2\n")
+    else:
+        m = re.search(r"  m_ValidKeywords:\n((?:  - \S+\n)+)", text)
+        kws = sorted(set(m.group(1).split()[1::2]) | {"_DETAIL_MULX2"})
+        text = text[:m.start()] + "  m_ValidKeywords:\n" + "".join(f"  - {w}\n" for w in kws) + text[m.end():]
+    assert re.search(r"- _DetailAlbedoMapScale: 1\n", text), "a scaled detail would need _DETAIL_SCALED (another variant)"
+    return re.sub(r"(- _DetailNormalMapScale: )[0-9.]+", rf"\g<1>{_f(det['bump'])}", text)
+
+
 def write(table_path, dst, retuned):
     """Write the .mat for the missing and retuned materials; returns the names."""
     rows = json.loads(Path(table_path).read_text())["materials"]
     legacy = legacy_mats()
-    out = []
+    report = surface_report()
+    out, detailed = [], {}
     for row in rows:
         n = row["name"]
         d = Path(dst) / "Materials"
@@ -267,6 +323,17 @@ def write(table_path, dst, retuned):
             (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
             out.append(n)
             continue
+        det = surface_detail(row, report)
+        if det:  # brief 072-F: the surface pair on an untextured row; a legacy row keeps its own .mat text (no colour change), a generated or retuned row its table's
+            own = n not in retuned and (legacy / f"{n}.mat").exists()
+            if not own and row["kind"] not in SUPPORTED:
+                continue
+            d.mkdir(parents=True, exist_ok=True)
+            (d / f"{n}.mat").write_text(with_detail((legacy / f"{n}.mat").read_text() if own else mat_text(row), det))
+            (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
+            out.append(n)
+            detailed[n] = {k: det[k] for k in ("pair", "tile", "bump")}
+            continue
         if row["texture"] or row["kind"] not in SUPPORTED:
             continue
         if n not in retuned and (legacy / f"{n}.mat").exists():
@@ -276,4 +343,6 @@ def write(table_path, dst, retuned):
         (d / f"{n}.mat").write_text(mat_text(row))
         (d / f"{n}.mat.meta").write_text(meta_text(n, legacy))
         out.append(n)
+    (Path(dst) / "surface-detail-mats.json").write_text(json.dumps(dict(schema="suborned.surfacedetail/1", brief="072-F", source="tools/decokit/unity_mats.py surface_detail",
+                                                                       materials=dict(sorted(detailed.items()))), indent=1) + "\n")
     return out

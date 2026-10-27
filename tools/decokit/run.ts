@@ -1,4 +1,4 @@
-// bun run decokit [--only a,b] [--cats X] [--out dir]: run the Blender DecoKit generator (export_kit.py) from this repo.
+// bun run decokit [--only a,b] [--cats X] [--mats-only] [--out dir]: (--mats-only builds no piece: textures, the merged materials table and the Unity .mat set only) run the Blender DecoKit generator (export_kit.py) from this repo.
 // Output: $DECOKIT_OUT, else out/decokit/ (never committed). Regen orders are read from the plan (orders.ts) and passed as --orders.
 // Env: BLENDER (default /Applications/Blender.app/Contents/MacOS/Blender), SUBORNED_STORE (source-art textures).
 import { mkdirSync, readFileSync } from 'node:fs';

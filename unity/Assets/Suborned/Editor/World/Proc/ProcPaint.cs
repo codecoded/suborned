@@ -13,11 +13,19 @@ namespace Suborned.World
         public readonly MeshKit K; readonly Atlas at;
         public Pb(MeshKit k, Atlas a) { K = k; at = a; }
 
-        static Color32 C(float ao, int cls) => new((byte)Mathf.RoundToInt(Mathf.Clamp01(ao) * 255f), 255, 255, (byte)Mathf.RoundToInt(255f * (1f - cls / 8f)));
+        /// <summary>Vertex colour: R = ambient occlusion, B = surface-detail layer override ((layer + 0.5) / 8; 255 = the class default,
+        /// brief 072-F), A = 1 - class / 8.</summary>
+        public static Color32 C(float ao, int cls, int layer = -1) =>
+            new((byte)Mathf.RoundToInt(Mathf.Clamp01(ao) * 255f), 255, layer >= 0 ? (byte)Mathf.RoundToInt((layer + 0.5f) / 8f * 255f) : (byte)255, (byte)Mathf.RoundToInt(255f * (1f - cls / 8f)));
+
+        /// <summary>Brief 072-F: the surface-detail layer every matte (class 0) face this painter draws takes (-1 = the class default:
+        /// roof on up-facing faces, render elsewhere). FabricKit sets 0, so a sloped awning never takes the roof layer.</summary>
+        public int MatteLayer = -1;
 
         void Tint(int from, int cls, params float[] ao)
         {
-            for (int i = from; i < K.VertexCount; i++) K.Colour(i, C(ao[Mathf.Min(i - from, ao.Length - 1)], cls));
+            int layer = cls == Cls.Matte ? MatteLayer : -1;
+            for (int i = from; i < K.VertexCount; i++) K.Colour(i, C(ao[Mathf.Min(i - from, ao.Length - 1)], cls, layer));
         }
 
         public void Quad(string sw, int cls, Vector3 a, Vector3 b, Vector3 c, Vector3 d, Vector3 outward, float ao0 = 1, float ao1 = 1, float ao2 = 1, float ao3 = 1)

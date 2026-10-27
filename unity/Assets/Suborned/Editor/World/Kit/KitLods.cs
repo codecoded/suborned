@@ -133,7 +133,9 @@ namespace Suborned.World
             // gets a cull-only group too; ground pieces never (a culled tile is a hole), nor a large piece (it would cull past the clip anyway)
             if (lods.Count == 0 && (!small || category == "Ground")) return;
             float cull = Mathf.Min(small ? CullSmall : CullLarge, 0.5f * size / (2f * CommanderHalfMax));
-            if (dist != null && dist.Length > lods.Count && dist[lods.Count] > 0f) cull = ScreenAt(size, dist[lods.Count]); // the class's cull distance (330 m for modules)
+            // the class's cull distance (330 m for modules): a class is always [L1, L2, cull], so the cull is distances[2] whatever number of LODs the
+            // piece has (Splice, 072: distances[lods.Count] read a one-LOD crown's L2 400 m as its cull); 0 = the default cull above
+            if (dist is { Length: >= 3 } && dist[2] > 0f) cull = ScreenAt(size, dist[2]);
             // a level that would only switch in below the cull never shows: it goes (the street category's L2 at 0.003 had pulled the cull
             // down to 0.15 %, about 500 m for a bollard, so small pieces still drew to the 350 m clip)
             var kept = lods.Where(l => l.screen > cull).ToList(); LevelsBelowCull += lods.Count - kept.Count; lods = kept;
@@ -186,11 +188,12 @@ namespace Suborned.World
 
         /// <summary>Brief 072 build check (Redline's plan 3.1): the L1 switch distance of every placed LODGroup under the world root, from its world
         /// size (LODGroup.size × the largest lossy scale, as Unity measures it). Under the layers that hold buildings (facades, civic,
-        /// signatures, landmarks, megastructures, frontages) one nearer than GuardM fails the build: the play camera would draw it below L0.
-        /// Elsewhere (roof crowns, street props, trees) it is counted and logged as a warning. Returns (groups checked, nearest L1 distance, failures).</summary>
+        /// signatures, landmarks, megastructures, frontages) and the roof crowns (roofs) one nearer than GuardM fails the build: the play camera would
+        /// draw it below L0. Elsewhere (street props, trees) it is counted and logged as a warning. Returns (groups checked, nearest L1 distance, failures).</summary>
         public static (int groups, float nearest, string nearestName, int failed, int otherBelow) PlayZoomGuard(Transform root)
         {
-            var strict = new HashSet<string>(System.StringComparer.Ordinal) { "facades", "civic", "signatures", "landmarks", "megastructures", "frontages" };
+            // `roofs` (Redline phase 2 F2): the roof crowns have their own `crown` class (L1 at 45 m) since 072, so a crown below L0 at play zoom fails too
+            var strict = new HashSet<string>(System.StringComparer.Ordinal) { "facades", "civic", "signatures", "landmarks", "megastructures", "frontages", "roofs" };
             int n = 0, failed = 0, other = 0; float nearest = float.PositiveInfinity; string nearestName = "";
             var bad = new List<string>(); var below = new SortedDictionary<string, (int n, float d)>(System.StringComparer.Ordinal);
             foreach (var g in root.GetComponentsInChildren<LODGroup>(true))
@@ -199,7 +202,8 @@ namespace Suborned.World
                 var t = g.transform; while (t.parent && t.parent != root) t = t.parent;
                 if (t.name == "horizon") continue; // the sky bodies draw L0 always; the band is 1–8 km out
                 var s = g.transform.lossyScale; float size = g.size * Mathf.Max(Mathf.Abs(s.x), Mathf.Abs(s.y), Mathf.Abs(s.z));
-                float d = DistanceAt(size, lods[0].screenRelativeTransitionHeight * QualitySettings.lodBias);
+                // Unity switches at size · lodBias / (K · d), so the distance grows with the bias (Redline phase 2 F6: it divided; same at bias 1)
+                float d = DistanceAt(size, lods[0].screenRelativeTransitionHeight / QualitySettings.lodBias);
                 n++;
                 bool isStrict = strict.Contains(t.name);
                 if (isStrict && d < nearest) { nearest = d; nearestName = g.name; }
@@ -207,8 +211,7 @@ namespace Suborned.World
                 if (isStrict) { failed++; if (bad.Count < 12) bad.Add($"{t.name}/{g.name} L1 at {d:F1} m"); }
                 else { other++; var k = $"{t.name}/{g.name}"; below[k] = below.TryGetValue(k, out var e) ? (e.n + 1, Mathf.Min(e.d, d)) : (1, d); }
             }
-            // pieces outside the facade layers (roof crowns, street props, trees) that the play camera draws below L0: reported, not failed (072: the
-            // crowns' fixed `towers`/`signatures` switch predates the distance classes; Redline's rule covers the every-face modules and the building fronts)
+            // pieces outside the strict layers (street props, trees) that the play camera draws below L0: reported, not failed
             if (below.Count > 0) Debug.LogWarning($"World: play-zoom guard: {other} groups outside the facade layers switch to L1 nearer than {GuardM} m (drawn below L0 at the widest play zoom): " +
                 string.Join("; ", below.Select(kv => $"{kv.Key} x{kv.Value.n} from {kv.Value.d:F1} m")));
             if (failed > 0) throw new InvalidDataException($"World: play-zoom guard: {failed} LOD groups switch to L1 nearer than {GuardM} m (the play camera would draw them below L0): {string.Join("; ", bad)}");

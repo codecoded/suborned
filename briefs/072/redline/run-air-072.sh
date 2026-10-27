@@ -1,9 +1,10 @@
 #!/bin/zsh
 # The Suborned on the MacBook Air: the every-face A/B (Redline, brief 072-D, 2026-10-27). SPEC: NEEDS SKY'S OK; NOT RUN ANYWHERE.
-# One question: what does DecoKit on every face cost at play zoom, warm, at 1920x1080 (GDD §11's bar), and does the opening fit
+# Question: what do DecoKit on every face (and, once its switch exists, 072-F's surface detail) cost at play zoom, warm, at 1920x1080 (GDD §11's bar), and does the opening fit
 # 13.0 ms mean / 16.7 ms p99 (brief 064 A5) with SSAO off for the play camera? Verdict rules: briefs/072/redline/plan.md 4.3 and 5.
-# Needs a DEVELOPMENT build (the perf harness runs only there) with every face built in and Latch's switches (perf-072.json's note):
-# PerfStop.yaw, PerfVariant.everyFace / moduleShadows, the tplong row `variant`. Base: briefs/064/air-0122/soak-air.sh (controls, cold
+# Needs a DEVELOPMENT build (the perf harness runs only there) with every face built in. Latch's switches are in (db30a0af: PerfStop.yaw,
+# PerfVariant.everyFace / moduleShadows, the tplong row `variant`); phase 2 (briefs/072/redline/phase2.md section 5) holds this run until the
+# 072-F textured build and 064 A3's no-look items are in the same player, so one Air sitting answers all three. Base: briefs/064/air-0122/soak-air.sh (controls, cold
 # gate, traces) and run-air.sh (rows, sizes). Kit folder beside this script: perf-072.resolved.json (PerfBuild's resolved plan),
 # tplong-072.resolved.json (rows with the player's paths), and "The Suborned.app" in ~/Downloads (or $1).
 # Copy to the Air by scp (sky@Skys-MacBook-Air.local, -o HostKeyAlias=skys-macbook-air-1), run over SSH; fetch the zip by scp. Not Taildrop.

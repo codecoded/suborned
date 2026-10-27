@@ -137,6 +137,17 @@ namespace Suborned.Play
 
             DriveSection();
 
+            // brief 072 (Redline phase 2 F1, 072-F): look switches for Glint, live, nothing saved
+            Head("Look (072)");
+            if (LookLab.ModuleCount > 0)
+            {
+                bool l0 = LookLab.ModuleShadowsFromLods, nl0 = GUILayout.Toggle(l0, " module shadows from L0 (off: the L2 proxies, as built)");
+                if (nl0 != l0) LookLab.SetModuleShadows(nl0);
+            }
+            else GUILayout.Label("no every-face module proxies in this scene", Small);
+            bool sd = LookLab.SurfaceDetail, nsd = GUILayout.Toggle(sd, " surface detail (072-F textures)");
+            if (nsd != sd) LookLab.SetSurfaceDetail(nsd);
+
             Head("Wheel and trackpad");
             changed |= Edit(ref w.proportional, GUILayout.Toggle(w.proportional, " proportional wheel (trackpad)"));
             if (w.proportional) changed |= Edit(ref w.rate, Slider("rate", w.rate, 0.005f, 0.5f, "0.000"));

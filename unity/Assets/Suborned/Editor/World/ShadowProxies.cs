@@ -17,13 +17,15 @@ namespace Suborned.World
         /// Idempotent (Redline 2026-10-15 L8): a piece whose renderers an existing proxy already casts for is skipped, so a second
         /// run neither doubles a proxy nor records the first run's Off as the pieces' own casting.</summary>
         public static int Modules; public static long ModuleTris;
+        /// <summary>Kit facade and tree groups (not modules) whose proxy level holds more than one mesh renderer: the proxy casts only the first.</summary>
+        public static int MultiLevel; public static readonly List<string> MultiLevelNames = new();
 
         /// <summary>Brief 072-E (Redline's plan 3.4): `modules` (KitColumns.ModuleGroups, the every-face modules and baked columns) cast from
         /// their L2 (the group's third level, else its last), on as `moduleOn` says, whatever `on` says for the kit facades and trees; their proxy
         /// is flagged `module` so the perf harness switches the two apart (moduleShadows proxy | lod0).</summary>
         public static (int count, long triangles) Build(Transform world, bool on, ICollection<LODGroup> modules = null, bool moduleOn = true)
         {
-            int count = 0; long tris = 0; Modules = 0; ModuleTris = 0;
+            int count = 0; long tris = 0; Modules = 0; ModuleTris = 0; MultiLevel = 0; MultiLevelNames.Clear();
             var proxied = new HashSet<Renderer>();
             foreach (var sp0 in world.GetComponentsInChildren<ShadowProxy>(true)) if (sp0.casters != null) foreach (var r in sp0.casters) if (r) proxied.Add(r);
             foreach (var g in world.GetComponentsInChildren<LODGroup>(true))
@@ -33,9 +35,16 @@ namespace Suborned.World
                 if (lods.Length < 2) continue;
                 bool module = modules != null && modules.Contains(g);
                 int level = module ? Mathf.Min(2, lods.Length - 1) : 1;
-                Renderer src = null; Mesh mesh = null;
+                Renderer src = null; Mesh mesh = null; int meshes = 0;
                 foreach (var r in lods[level].renderers)
-                    if (r && r.TryGetComponent<MeshFilter>(out var f) && f.sharedMesh) { src = r; mesh = f.sharedMesh; break; }
+                    if (r && r.TryGetComponent<MeshFilter>(out var f) && f.sharedMesh) { meshes++; if (!src) { src = r; mesh = f.sharedMesh; } }
+                // Redline phase 2 F4: the proxy is one renderer, so a level with several would lose the others' shadows. A module's L2 must be
+                // exactly one (a single module's FBX level, a baked column's per-level renderer); other groups are counted and logged
+                if (meshes > 1)
+                {
+                    if (module) throw new System.IO.InvalidDataException($"World: shadow proxy: module {g.name} has {meshes} mesh renderers in L{level}; its proxy casts one (Redline phase 2 F4)");
+                    MultiLevel++; if (MultiLevelNames.Count < 8) MultiLevelNames.Add($"{g.name} L{level} x{meshes}");
+                }
                 if (!src || proxied.Contains(src)) continue;
                 var casters = new List<Renderer>(); var was = new List<ShadowCastingMode>();
                 foreach (var lod in lods) foreach (var r in lod.renderers) if (r && !casters.Contains(r)) { casters.Add(r); was.Add(r.shadowCastingMode); }

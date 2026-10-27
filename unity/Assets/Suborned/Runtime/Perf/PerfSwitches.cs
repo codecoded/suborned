@@ -8,7 +8,7 @@ namespace Suborned.Perf
 {
     /// <summary>Applies a variant's A/B switches (Redline item 0) to the running player and puts everything back for "as built":
     /// SSAO (URP's feature settings are internal, so by reflection: AfterOpaque and Source), the play camera's shadow cascades
-    /// (TacticalShadows) and shadows, the architecture fade, and the shadow proxies. Each Apply sets every switch, so the order of
+    /// (TacticalShadows) and shadows, the architecture fade, the shadow proxies, every face and module shadows (072-E) and the surface detail (072-F). Each Apply sets every switch, so the order of
     /// variants never matters.</summary>
     public sealed class PerfSwitches
     {
@@ -76,6 +76,10 @@ namespace Suborned.Perf
             if (v.moduleShadows == "lod0" && proxies is not { ModuleCount: > 0 }) throw new InvalidOperationException($"Perf: variant `{v.name}` switches module shadows, but this scene has no module proxies");
             if (everyFace != null) everyFace.Set(ef == "on");
             if (proxies != null) proxies.SetModules(string.IsNullOrEmpty(v.moduleShadows) ? proxies.ModulesBuiltOn : ms == "proxy");
+            // brief 072-F: the texture A/B (a global float; as built = on)
+            string sd = string.IsNullOrEmpty(v.surfaceDetail) ? "on" : v.surfaceDetail;
+            if (sd != "on" && sd != "off") throw new InvalidOperationException($"Perf: variant `{v.name}` surfaceDetail `{sd}`: on or off");
+            LookLab.SetSurfaceDetail(sd == "on");
         }
 
         public void Restore() => Apply(new PerfVariant { name = "as built" });

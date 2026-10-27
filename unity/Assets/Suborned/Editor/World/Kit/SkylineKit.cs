@@ -157,9 +157,11 @@ namespace Suborned.World
         {
             var go = new GameObject(id) { isStatic = true };
             go.transform.SetParent(root, false);
-            go.AddComponent<MeshFilter>().sharedMesh = kit.Build(id);
+            var mesh = kit.Build(id); var mat = look.Mat(surface);
+            if (Look.NeedsBoxUv(mat)) Look.BoxUv(mesh); // 072-F: the horizon's colour surfaces carry a detail pair
+            go.AddComponent<MeshFilter>().sharedMesh = mesh;
             var mr = go.AddComponent<MeshRenderer>();
-            mr.sharedMaterial = look.Mat(surface);
+            mr.sharedMaterial = mat;
             mr.shadowCastingMode = ShadowCastingMode.Off;
         }
     }

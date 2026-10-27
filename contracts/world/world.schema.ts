@@ -114,7 +114,7 @@ export type Facade = {
    *  (`id`, `storeys` = modules in it: Latch bakes one prefab per family, storeys and colourway), `casts` = its shadow policy (proxy-l2: an L2 proxy casts, the module does not). */
   family?: 'side' | 'alley' | 'stack-base' | 'stack-mid' | 'stack-top' | 'corner-out' | 'corner-in' | 'pilaster'; service?: 'court' | 'yard' | 'back-to-back'; normal?: V; column?: { id: string; storeys: number }; casts?: 'proxy-l2' | 'none';
   /** On every facade piece (tools/world/gen/faces.ts dressFields): `lod.set` = the piece whose L0..L2 chain draws it (`levels` of them), `category` = the catalogue's switch category, `class` = the
-   *  distance class of an every-face piece (kit.json `lodClasses`: bay3 | bay4 | storey | cornerStorey | landmark); `combine.block` = the plot (or tower site), `combine.cell` = the 32 m HLOD cell
+   *  distance class of an every-face piece (kit.json `lodClasses`: bay3 | bay4 | storey | cornerStorey | landmark | crown); `combine.block` = the plot (or tower site), `combine.cell` = the 32 m HLOD cell
    *  [floor(x / 32), floor(y / 32)]; `colourway` = the material slot set (`base`); `instance` = the GPU instancing key, `<piece>|<colourway>`. */
   lod?: { set: string; levels: number; category: string; class?: string }; combine?: { block: string; cell: [number, number] }; colourway?: string; instance?: string;
 };

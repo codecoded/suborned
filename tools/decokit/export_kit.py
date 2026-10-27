@@ -31,6 +31,7 @@ REPO = Path(__file__).resolve().parents[2]
 DST = Path(os.environ.get("DECOKIT_OUT") or REPO / "out/decokit")  # generated binaries are never committed
 SRC = mats.SOURCE_ART
 ARGS = sys.argv[sys.argv.index("--") + 1:] if "--" in sys.argv else []
+MATS_ONLY = "--mats-only" in ARGS  # brief 072-F: no piece is built; the textures, the materials table (merged, never shrunk) and the Unity .mat set are rewritten
 LODS_ONLY, NO_LODS = "--lods-only" in ARGS, "--no-lods" in ARGS  # lods-only: adopted pieces keep their binaries, only LOD files are written
 # LOD1 ~25% and LOD2 ~6% of the triangles; a level is skipped when the piece is too light to be worth it. screen = Unity LOD transition height [S].
 LOD_SPEC = [("L1", 0.25, 0.35, 400), ("L2", 0.06, 0.12, 1500)]
@@ -207,7 +208,7 @@ def main():
     cats = [c for c in (ARGS[ARGS.index("--cats") + 1].split(",") if "--cats" in ARGS else []) if c]
     if cats:
         only = only + [n for n, spec in reg.items() if spec["cat"] in cats]
-    names = only or list(reg)
+    names = [] if MATS_ONLY else (only or list(reg))
     manifest = []
     for n in names:
         src = kit.build(n)
@@ -257,7 +258,7 @@ def main():
     rows = mats.material_rows()
     for row in rows:
         _, row["normal"], row["mask"] = tex.get(row["name"], ("", "", ""))
-    partial = bool(only)  # brief 072-C: a partial run merges into the shared tables on disk, never shrinks them (tables.py)
+    partial = bool(only) or MATS_ONLY  # brief 072-C: a partial run merges into the shared tables on disk, never shrinks them (tables.py)
     rows, kept = tables.write_merged(DST / "decokit_materials.json", "materials", rows, partial)
     if kept:
         print(f"[DK-EXPORT] materials table: {kept} rows kept from the table on disk (not registered by this partial run)")

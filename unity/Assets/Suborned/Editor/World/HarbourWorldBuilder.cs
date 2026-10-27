@@ -161,7 +161,8 @@ namespace Suborned.World
                 $"of the kit renderers {fadeFlagged} are on {flagged.Count} civic pieces the export flags `fade`");
             var (proxies, proxyTris) = ShadowProxies.Build(root, kit.ShadowProxies, KitColumns.ModuleGroups, kit.ModuleShadowProxies); // after FadeTags: proxies take their LOD1's fade bit
             Debug.Log($"World: shadow proxies {proxies} ({proxyTris} triangles), of them {ShadowProxies.Modules} every-face module proxies from L2 ({ShadowProxies.ModuleTris} triangles), {(kit.ModuleShadowProxies ? "on: no module LOD casts" : "built off")}; " +
-                $"kit facades and trees from LOD1 {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}");
+                $"kit facades and trees from LOD1 {(kit.ShadowProxies ? "on: kit facades and street trees cast from LOD1, no LOD of theirs casts" : "built off (kit.json shadowProxies): every LOD casts as before; the perf harness switches them")}; " +
+                $"every module's L2 is one renderer (F4); {ShadowProxies.MultiLevel} kit facade or tree groups have more than one in their proxy level, cast from the first{(ShadowProxies.MultiLevel > 0 ? ": " + string.Join(", ", ShadowProxies.MultiLevelNames) : "")}");
             var guard = KitLods.PlayZoomGuard(root); // brief 072 (Redline's plan 3.1): throws if a building-layer group switches to L1 nearer than 36 m
             Debug.Log($"World: play-zoom guard: {guard.groups} LOD groups checked; nearest L1 switch on the building layers {guard.nearest:F1} m ({guard.nearestName}) >= {KitLods.GuardM} m; {guard.otherBelow} groups outside the facade layers switch nearer (warned above)");
             ProcKit.Report(world, facade);

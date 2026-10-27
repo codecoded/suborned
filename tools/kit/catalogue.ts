@@ -18,6 +18,16 @@ function walk(dir: string, out: string[] = []): string[] {
   return out;
 }
 
+const MAT_ROLE = /^(material|texture)(-meta)?$/;
+/** brief 072-F: a kept generated entry (no longer in the generator's manifest) takes its materials' and textures' files fresh, so a material the generator
+ *  rewrote (Vela's detail maps) carries one hash across the catalogue; the entry's other files (fbx, LODs, data) stay, in order. A prior material or texture
+ *  file the fresh set lacks (gone from disk) is kept as it was. */
+export function refreshMatFiles(prev: KitFile[], fresh: KitFile[]): KitFile[] {
+  const freshPaths = new Set(fresh.map(f => f.path)), lead = prev.filter(f => /^fbx(-meta)?$/.test(f.role));
+  const kept = prev.filter(f => MAT_ROLE.test(f.role) && !freshPaths.has(f.path));
+  return [...lead, ...fresh, ...kept, ...prev.filter(f => !MAT_ROLE.test(f.role) && !/^fbx(-meta)?$/.test(f.role))];
+}
+
 export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
   const manifestText = readFileSync(join(root, 'decokit_manifest.json')), materialsText = readFileSync(join(root, 'decokit_materials.json'));
   const manifest = JSON.parse(manifestText.toString()).assets as { name: string; category: string; fbx: string; tris: number; size: number[]; materials: string[]; parts?: unknown; lod1?: unknown; lods?: Lod[] }[];
@@ -98,10 +108,14 @@ export function buildCatalogue(root: string, prior?: Kit, gen?: string): Kit {
     files.push(...matFiles(g.materials), ...lodsOf(g.name).files, ...dataFiles(g.name), ...(g.name === 'PatrolRobot' ? pair('texture', 'Textures/robot_face_stage_v1.png') : []));
     generated.push({ id: g.name, category: g.category, size: g.size as [number, number, number], ...pivotOf(g.name), front: '+Z', tris: g.tris, materials: g.materials, ...(g.parts ? { parts: g.parts } : {}), ...(g.lods?.length && !FULL_DETAIL.has(g.name) ? { lods: lodScreens(g.lods, lodCategoryOf(g.name, g.category), g.name) } : {}), lodCategory: lodCategoryOf(g.name, g.category), files, tags: tagsOf(g.name, g.category), status: status.get(g.name) ?? 'candidate', source: 'generated' });
   }
-  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files, tags, status: st, source, order, built, ...rest } = a; generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc, a.id) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
+  for (const a of prior?.assets ?? []) if (a.source === 'generated' && !plain.some(g => g.name === a.id) && !fresh.has(a.id) && !manifestIds.has(a.id)) { const lc = lodCategoryOf(a.id, a.category); const { files: prev, tags, status: st, source, order, built, ...rest } = a; const files = refreshMatFiles(prev, matFiles(a.materials)); generated.push({ ...rest, ...(a.lods ? { lods: lodScreens(a.lods, lc, a.id) } : {}), lodCategory: lc, files, tags, status: st, source, ...(order ? { order } : {}), ...(built ? { built } : {}) }); }
   generated.sort((a, b) => a.id.localeCompare(b.id));
   assets.push(...generated);
   // brief 072-D: the every-face pieces' distance class (Redline's plan §3.1), after lodCategory so a piece keeps its category too
   const classed = assets.map(a => { const c = lodClassOf(a.id); if (!c) return a; const { files, tags, status, ...rest } = a; return { ...rest, lodClass: c, files, tags, status } as KitAsset; });
-  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
+  // brief 072-F: kit-wide textures (surface_tex.py's `surface_*`, copied into the generator's Textures/ by export_kit): no material references them by guid,
+  // so they ride at the top level. No generator output with them: the prior catalogue's list is kept (copy then needs `bun run decokit`).
+  const surf = genTexDir && existsSync(genTexDir) ? readdirSync(genTexDir).filter(n => /^surface_.+\.png$/.test(n)).sort().flatMap(n => pair('texture', `Textures/${n}`)) : [];
+  const textures = surf.length ? surf : prior?.textures ?? []; // pair() marks them root 'generated' (the legacy DecoKit has no surface_*)
+  return { schema: 'suborned.kit/1', source: { manifest: 'decokit_manifest.json', materials: 'decokit_materials.json', manifestSha256: sha(manifestText), materialsSha256: sha(materialsText) }, lodCategories: LOD_CATEGORIES, ...(classed.some(a => a.lodClass) ? { lodClasses: LOD_CLASSES } : {}), ...(textures.length ? { textures } : {}), assets: classed }; // the classes ride once a classed piece is catalogued
 }

@@ -150,6 +150,55 @@ namespace Suborned.World
             return sc.x > 0f ? 1f / sc.x : 0f;
         }
 
+        public const string KitTextures = "Assets/Suborned/Kit/Textures";
+
+        /// <summary>Brief 072-F: a builder colour surface takes the kit detail pair of its kind (look.json `detail` → `details`: Vela's
+        /// surface_&lt;kind&gt;_detail_v1 albedo x2 and normal) in URP Lit's own detail slots with _DETAIL_MULX2: texture, not palette (the
+        /// base colour is untouched), and no new material. The meshes get box-projected UVs in metres at bake (BoxUv), so the slot's scale is
+        /// 1 / the pair's tile. Unknown pair or missing texture = reject.</summary>
+        void Detail(Material m, string surface, string pair)
+        {
+            var d = J.Get(Entry("details"), pair) ?? throw new InvalidDataException($"World: surface `{surface}`: detail `{pair}` not in look.json details");
+            Texture2D Tex(string key)
+            {
+                var name = J.S(d, key);
+                return UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2D>($"{KitTextures}/{name}.png")
+                    ?? throw new InvalidDataException($"World: surface `{surface}`: detail texture {name} missing in {KitTextures} (run `bun run kit`)");
+            }
+            float tile = J.F(d, "tile"), bump = J.F(d, "bump");
+            var scale = Vector2.one / Mathf.Max(0.01f, tile);
+            m.SetTexture("_DetailAlbedoMap", Tex("albedo")); m.SetTextureScale("_DetailAlbedoMap", scale);
+            m.SetTexture("_DetailNormalMap", Tex("normal")); m.SetTextureScale("_DetailNormalMap", scale);
+            m.SetFloat("_DetailAlbedoMapScale", 1f); m.SetFloat("_DetailNormalMapScale", bump);
+            // the DecoKit cutaway shader (without _DK_CUT it is URP Lit's own passes): its detail path reads the global surface-detail switch
+            // (DK_SurfaceDetail.hlsl, LookLab; Redline phase 2, 4.3), which URP Lit cannot. Same properties, same keywords; the
+            // [_DETAIL_MULX2] variant is the kit rows' own, so no new variant (a tagged batch took this shader anyway, FadeTags).
+            var cutaway = Shader.Find("DecoKit/Lit Cutaway") ?? throw new InvalidDataException("World: shader DecoKit/Lit Cutaway not found (Assets/Suborned/Shaders/DecoKit)");
+            m.shader = cutaway;
+            m.EnableKeyword("_DETAIL_MULX2");
+        }
+
+        /// <summary>A builder colour material carrying a detail pair (072-F): not a kit asset, _DETAIL_MULX2 on. Its meshes need UVs in
+        /// metres and tangents (BoxUv).</summary>
+        public static bool NeedsBoxUv(Material m) =>
+            m && m.IsKeywordEnabled("_DETAIL_MULX2") && !UnityEditor.AssetDatabase.Contains(m);
+
+        /// <summary>Box-projected UVs in world metres from each vertex's normal (the dominant axis picks the plane: walls run along their
+        /// face and up, tops lie on plan), then tangents, so a detail pair tiles at its real size on meshes the builder drew without UVs.</summary>
+        public static void BoxUv(Mesh mesh)
+        {
+            var v = mesh.vertices; var n = mesh.normals; var uv = new Vector2[v.Length];
+            for (int i = 0; i < v.Length; i++)
+            {
+                var a = new Vector3(Mathf.Abs(n[i].x), Mathf.Abs(n[i].y), Mathf.Abs(n[i].z));
+                uv[i] = a.y >= a.x && a.y >= a.z ? new Vector2(v[i].x, v[i].z)
+                      : a.x >= a.z ? new Vector2(v[i].z * Mathf.Sign(n[i].x), v[i].y)
+                      : new Vector2(-v[i].x * Mathf.Sign(n[i].z), v[i].y);
+            }
+            mesh.uv = uv;
+            mesh.RecalculateTangents();
+        }
+
         public Material Mat(string surface)
         {
             if (surface == null) throw new InvalidDataException("World: element has no surface");
@@ -164,6 +213,7 @@ namespace Suborned.World
             m.SetFloat("_Smoothness", J.Get(e, "smoothness") is double s ? (float)s : 0f);
             m.SetFloat("_Metallic", J.Get(e, "metallic") is double mt ? (float)mt : 0f);
             if (J.Get(e, "alpha") is double al) Transparent(m, (float)al); // glazing (the Parade gallery canopies)
+            else if (J.Get(e, "detail") is string pair) Detail(m, surface, pair);
             cache[surface] = m;
             return m;
         }

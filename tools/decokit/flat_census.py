@@ -9,6 +9,7 @@ Screen share per view comes from Latch's census, briefs/072/texture/area.json, w
 (material = the Unity material name: `facade`, `facade-gloss`, a look surface, a DK_ name). Until then `share` is null and `placements` (kit pieces placed in the
 world export that carry the material) is the ranking proxy for kit rows."""
 
+import hashlib
 import json
 import re
 from collections import Counter
@@ -66,6 +67,9 @@ LOOK_PROPOSAL = {
 }
 
 
+SURFACE_GUIDS = {hashlib.md5(f"suborned.decokit.tex/surface_{p}_detail_v1{n}.png".encode()).hexdigest(): p for p in ("enamel", "metal", "limestone") for n in ("", "_normal")}  # = unity_mats.tex_guid
+
+
 def kit_mats():
     rows = {}
     for f in sorted(KITMATS.glob("*.mat")):
@@ -73,7 +77,8 @@ def kit_mats():
         tex = len(re.findall(r"m_Texture: \{fileID: 2800000", t))
         g = re.search(r"m_Shader: \{fileID: \d+, guid: ([0-9a-f]+)", t)
         sh = g.group(1) if g else ""
-        rows[f.stem] = dict(textures=tex, shader=SHADERS.get(sh, SHADERS.get(sh[:6], sh[:8])))
+        surf = sorted({SURFACE_GUIDS[g] for g in re.findall(r"guid: ([0-9a-f]{32})", t) if g in SURFACE_GUIDS})  # 072-F: the surface pair (unity_mats.surface_detail) is detail, not a colour map
+        rows[f.stem] = dict(textures=tex, shader=SHADERS.get(sh, SHADERS.get(sh[:6], sh[:8])), surface=surf)
     return rows
 
 
@@ -132,19 +137,24 @@ def main():
                          proposal=LOOK_PROPOSAL.get(s, "facade masses: these keys colour the atlas swatches (FacadeSpec / MegaKit / ProcSkin), textured through the facade rows; a direct Look.Mat use gets the pair of its kind"),
                          status="excluded" if LOOK_PROPOSAL.get(s, "").startswith("excluded") else "texture"))
     for n, m in sorted(km.items(), key=lambda kv: (-per.get(kv[0], 0), kv[0])):
-        if m["textures"]:
+        if m["textures"] and not m["surface"]:
             continue
         kind = table.get(n, {}).get("kind")
+        if m["surface"]:  # 072-F step 2: the surface pair is bound (unity_mats.surface_detail); the textures it counts are that pair and nothing else
+            rows.append(dict(group="kit", material=n, shader=m["shader"], madeIn="tools/decokit/unity_mats.py (surface_detail)", showsAt=", ".join(f"{p} {c}" for p, c in pieces.get(n, Counter()).most_common(3)) or "not placed in the world export",
+                             placements=per.get(n, 0), share=(sh or {}).get(n), maps="surface detail pair", kind=kind, today=f"{kind or '?'} {table.get(n, {}).get('color', '')}",
+                             proposal=f"done: surface_{m['surface'][0]} pair bound (detail albedo x2 + normal); colour unchanged", status="done"))
+            continue
         why = next((r for p, r in EXCLUDE if re.search(p, n)), None)
         prop = f"excluded: {why}" if why else (PAIR.get(kind) or "review: kind unknown (legacy row), take the pair of its look")
         if n.startswith("DK_Cloth_"):  # soft goods (umbrellas, cushions): a weave belongs here, which DecoKit's set lacks
             prop = "surface_limestone pair at half bump (a matte grain) until a fabric layer exists"
         if re.search(r"Window_(Film|Teal|Tower)", n):  # opaque enamel standing in for glass: a glaze mottle could read as dirty glass
-            prop = "review (Glint): the surface_enamel pair at half bump on this opaque glass stand-in, or none; judge in game light"
+            prop = "open (Glint): the surface_enamel pair at half bump on this opaque glass stand-in, or none; judge in game light (held in unity_mats.SURFACE_HOLD)"
         top = ", ".join(f"{p} {c}" for p, c in pieces.get(n, Counter()).most_common(3))
         rows.append(dict(group="kit", material=n, shader=m["shader"], madeIn="tools/decokit/unity_mats.py (mats.LIB row)" if n in table else "legacy DecoKit .mat (store)",
                          showsAt=top or "not placed in the world export", placements=per.get(n, 0), share=(sh or {}).get(n), maps="none (colour only)", kind=kind,
-                         today=f"{kind or '?'} {table.get(n, {}).get('color', '')}", proposal=prop, status="excluded" if why else ("review" if prop.startswith("review") else "texture")))
+                         today=f"{kind or '?'} {table.get(n, {}).get('color', '')}", proposal=prop, status="excluded" if why else ("review" if prop.startswith("review") else "open" if prop.startswith("open") else "texture")))
     seen = {r["material"] for r in rows}
     for n, a in sorted((sh or {}).items()):  # anything the census saw drawn flat that the sources above missed (contact shades, the crossing glow, ...)
         if a["kind"] == "textured" or n in seen or n in ("facade", "facade-gloss"):
@@ -152,11 +162,11 @@ def main():
         why = ("crossing glow or dots (Cross Glow / signal shaders): light in the road, signal-adjacent" if "Cross" in (a["shader"] or "") or "cross" in n.lower() else None) \
             or ("contact shadow: a darkening decal, not a surface" if n.startswith("contact/") else None) or next((r for p, r in EXCLUDE if re.search(p, n)), None)
         note = {"DK_RobotEnamel_": "already detailed: the robot enamel detail pair (robot_tex.py) sits in the detail slots, which the census does not count as a colour map",
-                "DK_Fountain_": "has the fountain mask map (fountain_tex.py) but no colour map: add the surface_metal pair"}
+                "DK_Fountain_": "open (Glint): the testbed fountain's polished gold / silver (fountain_tex.py mask + polish normal on a 4 x 4 white albedo, the testbed's look); its UVs are the globe's 0..1, not metres, so the brushed metal pair would smear and read as brushed, not polished: Glint judges whether it needs grain at all"}
         hit = next((v for k, v in note.items() if n.startswith(k)), None)
         if hit and not why:
             rows.append(dict(group="census", material=n, shader=a["shader"], madeIn=a["layer"], showsAt=a["layer"], share=a, maps=a["kind"], today="seen by the census only",
-                             proposal=hit, status="done" if hit.startswith("already") else "texture"))
+                             proposal=hit, status="done" if hit.startswith("already") else "open" if hit.startswith("open") else "texture"))
             continue
         rows.append(dict(group="census", material=n, shader=a["shader"], madeIn=a["layer"], showsAt=a["layer"], share=a, maps=a["kind"], today="seen by the census only",
                          proposal=f"excluded: {why}" if why else "review: not in the kit tables or look.json", status="excluded" if why else "review"))

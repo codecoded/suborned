@@ -54,10 +54,15 @@ export const LOD_CLASSES: Record<KitLodClass, KitLodClassSpec> = {
   bay3: { distances: [45, 120, 330] }, bay4: { distances: [45, 120, 330] }, storey: { distances: [45, 120, 330] }, cornerStorey: { distances: [45, 120, 330] },
   column: { distances: [45, 120, 330] }, // a baked stack column (Latch, plan §3.2)
   landmark: { distances: [150, 400, 0] }, // RecordsTower: no cull (the 350 m haze clip)
+  // brief 072 F2 (Redline, briefs/072/redline/phase2.md): the roof crowns' `towers` 0.3 put Crown_Dish at L1 from 26.6 m (zoom 13.85), Finial 32.0, Starburst 33.9, Atom 34.7.
+  // L1 at 45 m keeps L0 at every play zoom (+6.4 k tris district-wide). The second distance is 400 m, past the 350 m haze clip, on purpose: six crowns have one LOD and
+  // KitLods reads `distances[lods.Count]` as the cull, so for them 400 m is the cull (none inside the clip); Atom (two LODs) holds L1 to the clip. Nothing culls or pops.
+  crown: { distances: [45, 400, 0] },
 };
 /** The distance class of an every-face piece (undefined for every other piece: its category's screens hold). */
 export function lodClassOf(id: string): KitLodClass | undefined {
   if (id === 'RecordsTower') return 'landmark';
+  if (/^Crown_/.test(id)) return 'crown'; // brief 072 F2: every roof crown (Crowns category)
   if (/^(SideBay|AlleyWall|SidePilaster|ShopFill)_3D?$|^CornerPier_(Out|In)_3$/.test(id)) return 'bay3';
   if (/^(SideBay|AlleyWall|SidePilaster|ShopFill)_4D?$|^CornerPier_(Out|In)_4$/.test(id)) return 'bay4';
   if (/^SideBayStack_(Base|Mid|Top)$|^SidePilaster_(Base|Mid|Top)$|^ShopStack_Base$/.test(id)) return 'storey';

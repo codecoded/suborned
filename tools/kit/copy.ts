@@ -13,6 +13,7 @@ export function copyAdopted(kit: Kit, root: string, dest: string, gen?: string):
     assets.push(a.id);
     for (const f of a.files) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); }
   }
+  for (const f of kit.textures ?? []) { const o = want.get(f.path); if (o && o.sha256 !== f.sha256) errors.push(`${f.path}: two hashes in the catalogue`); want.set(f.path, f); } // brief 072-F: kit-wide textures (surface detail)
   const staged: [string, string][] = [], r: CopyResult = { copied: [], skipped: [], bytes: 0, errors, assets, pruned: [] };
   for (const [path, f] of [...want].sort(([a], [b]) => a.localeCompare(b))) { // f.root = 'generated': from the generator's output
     const src = join(f.root === 'generated' ? (gen ?? root) : root, path), out = join(dest, path);

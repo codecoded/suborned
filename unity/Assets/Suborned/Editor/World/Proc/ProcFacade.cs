@@ -69,7 +69,8 @@ namespace Suborned.World
                     foreach (var (s0, s1, top) in KitCover.Split(modules, w.Len))
                     {
                         if (float.IsNegativeInfinity(top)) continue;
-                        Vector2 p0 = w.A + w.U * s0, p1 = w.A + w.U * s1; float hi = Mathf.Min(top, c.Top);
+                        // inset ShellInset behind the building line (Redline phase 2 F1): on the line it stood in front of every window pocket
+                        Vector2 p0 = w.A + w.U * s0 - w.N * ShellInset, p1 = w.A + w.U * s1 - w.N * ShellInset; float hi = Mathf.Min(top, c.Top);
                         shell.Wall(p0, p1, c.Base, hi).Wall(p1, p0, c.Base, hi); // both sides: a one-sided caster facing away from the sun casts nothing
                     }
                     if (todayB != null)
@@ -110,6 +111,11 @@ namespace Suborned.World
             }
             if (shell is { Empty: false }) { Combine.Add(el, Layer072.Shell, shell, spec.Atlas.Matte); ShellWalls++; }
         }
+
+        /// <summary>Brief 072 (Redline phase 2 F1): how far the shadows-only shell stands behind the building line (m, WallFrame.N is outward).
+        /// The module's window film sits 0.14 m in (sides.py SKIN -0.02 + REVEAL 0.2 - 0.04) and its slab's back at 0.35 m (BACKY): on the line,
+        /// the shell shadowed every pocket on a sunlit wall; at 0.36 m it is behind the slab and still catches a light leak at a proxy gap.</summary>
+        public const float ShellInset = 0.36f;
 
         /// <summary>Brief 072-E: build the every-face A/B's `today` walls (builder kit.json everyFaceToday); set per build.</summary>
         public static bool Today;

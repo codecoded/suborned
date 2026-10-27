@@ -63,12 +63,16 @@ namespace Suborned.Perf
         /// they were before them (EveryFace: development builds only); moduleShadows "proxy" = modules cast from their L2 proxy (as built),
         /// "lod0" = the modules cast from their own LODs (L0 at play zoom), no module proxies.</summary>
         public string everyFace = "", moduleShadows = "";
+        /// <summary>Brief 072-F (Redline phase 2, 4.3): the Air's texture A/B. "on" = the surface detail as built, "off" = FacadeLit's surface-detail
+        /// array and the DecoKit detail slots (kit rows and builder Look rows) skipped at runtime by the global _SubornedSurfaceDetailOff
+        /// (LookLab): same materials, same variants; measures the fetches and their ALU, not a different build. "" = as built (on).</summary>
+        public string surfaceDetail = "";
         public int cascades;
         public bool shadowsOff, fadeOff;
 
         public bool UsesProxies => proxies == "on" || proxies == "off";
 
-        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}, every face {(string.IsNullOrEmpty(everyFace) ? "as built" : everyFace)}, module shadows {(string.IsNullOrEmpty(moduleShadows) ? "as built" : moduleShadows)}";
+        public string Describe() => $"ssao {(string.IsNullOrEmpty(ssao) ? "as built" : ssao)}, cascades {(cascades > 0 ? cascades.ToString() : "as built")}, shadows {(shadowsOff ? "off" : "on")}, fade {(fadeOff ? "off" : string.IsNullOrEmpty(fade) ? "as built" : fade)}, proxies {(string.IsNullOrEmpty(proxies) ? "as built" : proxies)}, every face {(string.IsNullOrEmpty(everyFace) ? "as built" : everyFace)}, module shadows {(string.IsNullOrEmpty(moduleShadows) ? "as built" : moduleShadows)}, surface detail {(string.IsNullOrEmpty(surfaceDetail) ? "as built" : surfaceDetail)}";
     }
 
     [Serializable]

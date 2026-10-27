@@ -53,13 +53,16 @@ namespace Suborned.World.Review
         static void AfterGrd() => Start(Path.Combine("after", "grd-on"), null, grd: true);
 
         /// <summary>Both after passes in a fresh Editor, then quit (exit 0 done, 1 failed). Not batchmode (the counts are the Game view's UnityStats):
-        ///   Unity -projectPath unity -executeMethod Suborned.World.Review.Baseline072.AfterCli [-grd off|on|both] -logFile &lt;log&gt;</summary>
+        ///   Unity -projectPath unity -executeMethod Suborned.World.Review.Baseline072.AfterCli [-grd off|on|both] [-tag textured] -logFile &lt;log&gt;</summary>
         public static void AfterCli()
         {
             var a = Environment.GetCommandLineArgs(); int i = Array.IndexOf(a, "-grd"); string grd = i >= 0 && i + 1 < a.Length ? a[i + 1] : "both";
             exitWhenDone = true;
-            if (grd != "on") queue.Enqueue(() => Start("after", "after"));
-            if (grd != "off") queue.Enqueue(() => Start(Path.Combine("after", "grd-on"), null, grd: true));
+            // 072-F: `-tag textured` writes to briefs/072/latch/textured/unitystats (and shots to briefs/072/shots/textured-gameview)
+            int ti = Array.IndexOf(a, "-tag"); string tag = ti >= 0 && ti + 1 < a.Length ? a[ti + 1] : null;
+            string dir = tag == null ? "after" : Path.Combine(tag, "unitystats"), shots = tag == null ? "after" : tag + "-gameview";
+            if (grd != "on") queue.Enqueue(() => Start(dir, shots));
+            if (grd != "off") queue.Enqueue(() => Start(Path.Combine(dir, "grd-on"), null, grd: true));
             EditorApplication.delayCall += () => EditorApplication.delayCall += Next; // after the scene and the Game view are up
         }
 

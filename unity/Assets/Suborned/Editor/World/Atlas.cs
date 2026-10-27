@@ -11,6 +11,9 @@ namespace Suborned.World
     public sealed class Atlas
     {
         const int Grid = 16, Cell = 4;
+        public const string SurfaceDetail = "Assets/Suborned/Kit/Textures/surface_detail_v1.png";
+        /// <summary>Surface-detail array layers (FacadeSurface.hlsl) the builder can pick through the vertex blue channel.</summary>
+        public const int LayerRender = 0, LayerLimestone = 1, LayerEnamel = 2, LayerMetal = 3, LayerRoof = 4, LayerPanel = 5;
         readonly Dictionary<string, int> index = new();
         readonly List<Color32> colours = new();
         public Material Matte { get; private set; }
@@ -54,6 +57,9 @@ namespace Suborned.World
             m.SetColor("_BaseColor", Color.white);
             m.SetFloat("_Smoothness", smooth);
             m.SetFloat("_Metallic", 0f);
+            // brief 072-F: the shared surface-detail array (Vela's surface_detail_v1, copied into the kit by `bun run kit`); unknown = reject
+            m.SetTexture("_SurfaceDetail", UnityEditor.AssetDatabase.LoadAssetAtPath<Texture2DArray>(SurfaceDetail)
+                ?? throw new InvalidDataException($"World: {SurfaceDetail} missing or not imported as a Texture2DArray (run `bun run kit`)"));
             return m;
         }
     }
