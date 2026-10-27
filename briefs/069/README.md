@@ -58,3 +58,15 @@ Four intake stills (coat, dress, guard, Sky's flamingo commuter) became meshes w
 - Web reference of the raw walk: `out/scratch/aster/foot069/` (`leftfoot_web.mp4`, `bowleg_web_front.mp4`, `web/walk_web.html`).
 - Intake: `out/scratch/forma/char-pipeline/intake/intake.html`; stills: `paid/069-intake/codex/`.
 - Fit test: `out/scratch/forma/char-pipeline/fit-test/fit-test.html` and `media/`.
+
+## The Fixer redone (2026-10-27)
+Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the store) through the intake prompt, to bring back the long dress, and to join her sleeves. **Sky's pick: `paid/069-intake/codex/fixer_v4_set.png`** (Codex, $0).
+- **The dress:** the concept's long asymmetric ivory wrap to mid-calf, with an aubergine pinstripe inner panel and a deep split at her left hip at the front. The back of the skirt is closed in every view.
+- **The sleeves:** set into the dress, one garment from collar to wrist, with diagonal aubergine blades on each arm.
+- **Kept from the concept:** the open back with its halter straps, the top knot and ponytail, and the block-heel ankle boots.
+- **How it was made:** two passes. `fixer/prompt_v3_keyhole.txt` is the intake template with a hero exception for the long hem. `fixer/prompt_v4_set.txt` is an edit of that sheet. Regenerating from scratch kept the sleeves detached and put the back split on the wrong side; editing fixed both.
+- **For the mesh and rig:**
+  - The long hem is an art-bible exception (hems at the knee or above) for a hero, to be recorded at the next GDD change.
+  - The skirt and ponytail need extra bones or cloth.
+  - The pose check needs a long-skirt rule (measure from the visible ankles): the skirt hides the leg gap.
+- **Next:** the Tripo 3.1 mesh (about $0.60) waits for Sky's OK.
