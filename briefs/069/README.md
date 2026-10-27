@@ -177,3 +177,9 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Rebuilds:** Fixer 11/11 and e2e 39/39, byte-identical.
   - **The grip tidy failed:** the pistol's grip is 6.4–7.2 × 3.9 cm, about 1.5× a real compact pistol's, and the fitted fingers can't close round it without crossing. Fixed grip: 330 crossings, wrap passes. Contact solver: 60 crossings, wrap fails. A slimmer grip settles it: Sky's call.
 - **Latch's runtime job** (`PistolHold.cs`, scratch): grip muscles, level aim, the guard arm-out and the support-hand IK. The root yaw follows the barrel's per-frame blade, so the wrist correction is pitch only (−5…+17°) and the barrel lands within 0.3° of the target.
+- **Best-practice weapon route** (Sky, 2026-10-27: "we want official best practice"):
+  - a prop spec in data (standard grip block per class, pivot at the grip, Unity-frame axes, sockets `grip` / `support` / `shoulder` / `muzzle`);
+  - props fitted to it by rule (the pistol's grip slimmed);
+  - Mixamo weapon clip sets (pistol, rifle);
+  - Unity's Animation Rigging (Multi-Aim, Two Bone IK, hand-pose override layers) in place of the custom job.
+- **The Enforcer's carbine:** Sky's hand-built model (`out/enforcer-lods-v1/`, LODs 2,499 / 997 / 400, 2K / 1K / 512 PBR) is brought in at **0.9 m** (Sky; the source is 1.594 m), with pivot at the grip, axes to spec, the ORM repacked for URP, and support and shoulder sockets.
