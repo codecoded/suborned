@@ -37,6 +37,11 @@ The GDD keeps a default for each (the draft's, or the build's) until Sky rules. 
 32. (brief 072) **Answered, Sky 2026-10-27: "yep, more, more reds / blues allowed as well".** The loosened style kit (style contract, GDD §15, facade.json, the glass rule): Sky decides from Vela's before/after pictures (briefs/072/style/proposal.html); then one GDD version carries it with brief 072's decisions below.
 Q13 of brief 035 ("Vale exits north") is settled by brief 059: "Vale comes out of the official door".
 
+## After v0.31.0 (2026-10-28; Sky's answers, relayed by main)
+- Sky, 2026-10-28: "yeah, I more colors needed": Vela's extra colours stay and the district's colour range is pushed further (brief 072); the civic block keeps seafoam and teal, the road stays powder blue.
+- Sky, 2026-10-28: the queued crew items go ahead (064 A3 items 1, 5, 7; c040; the pinstripe retired).
+- Sky, 2026-10-28: the world is "a little too shiny / bright / clean". "Perhaps we add some pastel / 1950s comic book style effect to the atmosphere? Get some more concept work done on our world that sets the tone." Brief 073, concept art first; nothing changes until Sky picks.
+
 ## v0.31.0 (2026-10-28; brief 072, Sky's answers to Aster)
 - GDD: §09 world row and §10 capstone: DecoKit on every face, no flat procedural wall or untextured flat colour at play zoom; §15 city, world, palette (base, accents, facade roles, civic block, brass-gold, glass) and materials loosened toward the old DecoKit with more reds and blues; style contract v0.22.0 (Vela); the art bible regenerated.
 - Sky, 2026-10-27: side walls, "a)": a calm frontage-style side bay wherever the public sees a wall; service walls (the AlleyWall family) only on true service backs.

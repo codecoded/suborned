@@ -87,6 +87,10 @@ Shared tree: never stash, checkout, reset or clean. Kill by PID only. No paid AP
 4. Vela: window holes in the shadow copies; Redline measures.
 5. Latch: rebuild, offscreen capture only, the compare views.
 
+## Sky's answers, 2026-10-28
+- Vela's extra colours stay (oxblood plinths, blush and powder-blue walls, shop colours), and more: **"yeah, I more colors needed"**. Vela pushes the district's colour range further: more distinct hues across buildings and accents; the civic block keeps seafoam and teal, the road stays powder blue.
+- The queued crew items start now (Sky: yes): Latch builds 064 A3 items 1, 5, 7 (then Aster asks Sky for the Air sitting); Waymark re-records c040; Splice and Datum retire the pinstripe.
+
 ## Status
 - 2026-10-27: brief, decision log and the planet/moon rebuild committed (96176fed). Phase A out: 072-A Vela (pieces), 072-B Vela (style proposal), 072-C Splice, 072-D Redline phase 1, 072-E Latch baseline.
 - 072-A done: 25 pieces adopted (briefs/072/pieces/pieces.md; the names grew: SidePilaster_*, CornerPier_*_Base/_Top), plus pass 2: ShopFill_3/_4 and ShopStack_Base for street-facing shop stretches, and opaque side windows (DK_Window_Film). Commits e8614ede, a405be1e.
