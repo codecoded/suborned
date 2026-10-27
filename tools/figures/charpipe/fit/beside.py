@@ -19,6 +19,16 @@ with bpy.data.libraries.load(L.work(f'{NEW}_H.blend'), link=False) as (src, dst)
 new = [o for o in dst.objects if o is not None]
 for o in new: sc.collection.objects.link(o)
 narm = next(o for o in new if o.type == 'ARMATURE')
+# show what ships: the delivered albedo (budget size, merged props' colour patches painted in) on the figure's own material
+_tex = sorted(__import__('glob').glob(os.path.join(L.SCR, 'a', f'{NEW}_H_albedo.*')))
+if _tex:
+    _img = bpy.data.images.load(_tex[0])
+    for _o in new:
+        if _o.type == 'MESH' and _o.get('fit_role') in ('body', 'garment'):
+            for _m in _o.data.materials:
+                if _m and _m.use_nodes:
+                    for _n in _m.node_tree.nodes:
+                        if _n.type == 'TEX_IMAGE': _n.image = _img
 nmesh = {o.get('fit_lod', 0): [] for o in new if o.type == 'MESH' and o.get('fit_role') not in ('donor', 'prop')}
 for o in new:
     if o.type == 'MESH' and o.get('fit_role') not in ('donor', 'prop'): nmesh[o.get('fit_lod', 0)].append(o)

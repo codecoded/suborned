@@ -105,14 +105,41 @@ def init(body, Vm):
     return x
 
 
-def search(body, sdf, x):
-    steps = np.array([p[2] for p in PARAMS]); lo = np.array([p[3] for p in PARAMS]); hi = np.array([p[4] for p in PARAMS])
+def crown(body, mac):
+    V = body.shape(mac, 'base')[body.z['base_body']]; return float(V[:, 2].max() - V[:, 2].min())
+
+
+def height_macro(body, mac, target):
+    """the height slider value whose base body stands target metres to the crown (the other macros as given); bisection on the linear model."""
+    lo, hi = 0.0, 1.0
+    for _ in range(40):
+        mid = (lo + hi) / 2; m = dict(mac, height=mid)
+        if crown(body, m) < target: lo = mid
+        else: hi = mid
+    return (lo + hi) / 2
+
+
+def target_height(row, sex):
+    """fit.json heights: an explicit heightM, else the person text's keywords, else the default class."""
+    Hh = L.D['heights']
+    if row.get('heightM'): return float(row['heightM']), 'heightM'
+    t = (row.get('person') or '').lower()
+    for end in Hh.get('clauseEnd', []):
+        if end in t: t = t.split(end, 1)[0]
+    for cls, words in Hh['keywords']:
+        if any(w in t for w in words): return Hh[sex][cls], cls
+    return Hh[sex][Hh['default']], Hh['default']
+
+
+def search(body, sdf, x, fixed=()):
+    steps = np.array([0.0 if p[0] in fixed else p[2] for p in PARAMS]); lo = np.array([p[3] for p in PARAMS]); hi = np.array([p[4] for p in PARAMS])
     best = loss(body, sdf, x); evals = 1
     for rnd in range(FD['iterations']):
         improved = True; sweeps = 0
         while improved and sweeps < 40:
             improved = False; sweeps += 1
             for i in range(len(PARAMS)):
+                if steps[i] == 0: continue
                 for sgn in (1, -1):
                     y = x.copy(); y[i] = min(hi[i], max(lo[i], y[i] + sgn * steps[i]))
                     if y[i] == x[i]: continue
@@ -134,9 +161,17 @@ def main():
         t_imp = time.time() - t0
         sdf = L.SDF(Vm, Tm, FD['voxelM']); t_sdf = time.time() - t0 - t_imp
         res = {}
+        tgt, tcls = target_height(r, r['sex'])
         for sex in ('m', 'f'):
             body = Body(sex); x = init(body, Vm)
-            x, v, ev = search(body, sdf, x)
+            if sex == r['sex']:
+                # the height slider is held at the person's height (fit.json heights), solved again once the other sliders are fitted
+                x[PI['height']] = height_macro(body, {m: x[PI[m]] for m in body.macros if m != 'height'}, tgt)
+                x, v, ev = search(body, sdf, x, fixed=('height',))
+                x[PI['height']] = height_macro(body, {m: x[PI[m]] for m in body.macros if m != 'height'}, tgt)
+                x, v, ev2 = search(body, sdf, x, fixed=('height',)); ev += ev2
+            else:
+                x, v, ev = search(body, sdf, x)
             v, parts = loss(body, sdf, x, parts=True)
             res[sex] = (v, x, parts, ev)
             L.log(fid, sex, 'loss', round(v * 1e4, 3), parts, 'evals', ev)
@@ -145,7 +180,7 @@ def main():
         out = {'id': fid, 'src': r['src'], 'normalise': norm, 'sex': sex, 'loss': {k: round(res[k][0] * 1e4, 4) for k in res}, 'tighterSex': tighter,
                'params': {p[0]: round(float(x[i]), 5) for i, p in enumerate(PARAMS)}, 'macros': {m: round(float(x[PI[m]]), 4) for m in body.macros},
                'aims': {k: [round(float(c), 6) for c in v] for k, v in aims.items()}, 'pre': {k: v.tolist() for k, v in pre.items()},
-               'quality': parts, 'srcTris': int(len(Tm)), 'seconds': {'import': round(t_imp, 2), 'sdf': round(t_sdf, 2), 'search': round(time.time() - t0 - t_imp - t_sdf, 2)}}
+               'quality': parts, 'srcTris': int(len(Tm)), 'targetHeightM': tgt, 'heightClass': tcls, 'modelCrownM': round(crown(body, {m: float(x[PI[m]]) for m in body.macros}), 4), 'seconds': {'import': round(t_imp, 2), 'sdf': round(t_sdf, 2), 'search': round(time.time() - t0 - t_imp - t_sdf, 2)}}
         if L.SET in ('e2e', 'fixer'):      # wall-clock timings are not deliverables: they go to work/, so the fit file is byte-identical run to run
             json.dump(out.pop('seconds'), open(L.work(f'{fid}.fit.seconds.json'), 'w'), indent=1)
         json.dump(out, open(os.path.join(OUT, f'{fid}.fit.json'), 'w'), indent=1, sort_keys=True)

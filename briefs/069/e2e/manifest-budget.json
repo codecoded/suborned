@@ -1,0 +1,206 @@
+{
+ "rows": [
+  {
+   "avatarT": "e2e_coat_H_avatarT.fbx",
+   "bodyHeightM": 1.8483,
+   "chainClips": null,
+   "clipSpeedMs": {
+    "aim_pistol": 0.0049,
+    "carried": 0.1886,
+    "carry": 0.0,
+    "crouch_walk": 1.0026,
+    "run": 3.4537,
+    "sit": -0.0001,
+    "walk": 1.684
+   },
+   "clipSpeedSource": {
+    "aim_pistol": "blender (animate.py foot_speed)",
+    "carried": "blender (animate.py foot_speed)",
+    "carry": "blender (animate.py foot_speed)",
+    "crouch_walk": "Unity (Latch's import measure 0.932 m/s on the take-1 skeleton) x 1.0757 (new / old standing height)",
+    "run": "blender (animate.py foot_speed)",
+    "sit": "blender (animate.py foot_speed)",
+    "walk": "blender (animate.py foot_speed)"
+   },
+   "deformBones": 22,
+   "figure": "e2e_coat_H.fbx",
+   "garmentRigs": [],
+   "hands": {
+    "Left": {
+     "articulated": false,
+     "gaps": 2,
+     "maxBoneToMeshM": 0.0749
+    },
+    "Right": {
+     "articulated": false,
+     "gaps": 2,
+     "maxBoneToMeshM": 0.0768
+    }
+   },
+   "heightClass": "tall",
+   "id": "e2e_coat",
+   "kind": "crowd",
+   "lodTris": [
+    12000,
+    4500,
+    1500
+   ],
+   "props": "e2e_coat_H_props.fbx",
+   "targetHeightM": 1.86,
+   "texPx": 1024,
+   "texture": "e2e_coat_H_albedo.png"
+  },
+  {
+   "avatarT": "e2e_dress_H_avatarT.fbx",
+   "bodyHeightM": 1.5632,
+   "chainClips": null,
+   "clipSpeedMs": {
+    "aim_pistol": 0.0046,
+    "carried": 0.1102,
+    "carry": 0.0,
+    "crouch_walk": 0.8025,
+    "run": 2.764,
+    "sit": -0.0001,
+    "walk": 1.3452
+   },
+   "clipSpeedSource": {
+    "aim_pistol": "blender (animate.py foot_speed)",
+    "carried": "blender (animate.py foot_speed)",
+    "carry": "blender (animate.py foot_speed)",
+    "crouch_walk": "Unity (Latch's import measure 0.824 m/s on the take-1 skeleton) x 0.9740 (new / old standing height)",
+    "run": "blender (animate.py foot_speed)",
+    "sit": "blender (animate.py foot_speed)",
+    "walk": "blender (animate.py foot_speed)"
+   },
+   "deformBones": 22,
+   "figure": "e2e_dress_H.fbx",
+   "garmentRigs": [],
+   "hands": {
+    "Left": {
+     "articulated": false,
+     "gaps": 2,
+     "maxBoneToMeshM": 0.059
+    },
+    "Right": {
+     "articulated": false,
+     "gaps": 2,
+     "maxBoneToMeshM": 0.059
+    }
+   },
+   "heightClass": "short",
+   "id": "e2e_dress",
+   "kind": "crowd",
+   "lodTris": [
+    12000,
+    4500,
+    1500
+   ],
+   "props": "e2e_dress_H_props.fbx",
+   "targetHeightM": 1.55,
+   "texPx": 1024,
+   "texture": "e2e_dress_H_albedo.png"
+  },
+  {
+   "avatarT": "e2e_guard_H_avatarT.fbx",
+   "bodyHeightM": 1.6294,
+   "chainClips": null,
+   "clipSpeedMs": {
+    "aim_pistol": 0.0045,
+    "carried": 0.1443,
+    "carry": 0.0,
+    "crouch_walk": 0.8559,
+    "run": 2.8911,
+    "sit": -0.0001,
+    "walk": 1.4209
+   },
+   "clipSpeedSource": {
+    "aim_pistol": "blender (animate.py foot_speed)",
+    "carried": "blender (animate.py foot_speed)",
+    "carry": "blender (animate.py foot_speed)",
+    "crouch_walk": "Unity (Latch's import measure 0.831 m/s on the take-1 skeleton) x 1.0300 (new / old standing height)",
+    "run": "blender (animate.py foot_speed)",
+    "sit": "blender (animate.py foot_speed)",
+    "walk": "blender (animate.py foot_speed)"
+   },
+   "deformBones": 22,
+   "figure": "e2e_guard_H.fbx",
+   "garmentRigs": [],
+   "hands": {
+    "Left": {
+     "articulated": false,
+     "gaps": 1,
+     "maxBoneToMeshM": 0.0608
+    },
+    "Right": {
+     "articulated": false,
+     "gaps": 1,
+     "maxBoneToMeshM": 0.0595
+    }
+   },
+   "heightClass": "average",
+   "id": "e2e_guard",
+   "kind": "crowd",
+   "lodTris": [
+    12000,
+    4499,
+    1499
+   ],
+   "props": "e2e_guard_H_props.fbx",
+   "targetHeightM": 1.64,
+   "texPx": 1024,
+   "texture": "e2e_guard_H_albedo.png"
+  },
+  {
+   "avatarT": "e2e_flamingo_H_avatarT.fbx",
+   "bodyHeightM": 1.6247,
+   "chainClips": null,
+   "clipSpeedMs": {
+    "aim_pistol": 0.0043,
+    "carried": 0.1453,
+    "carry": 0.0,
+    "crouch_walk": 0.8493,
+    "run": 2.8812,
+    "sit": -0.0001,
+    "walk": 1.4145
+   },
+   "clipSpeedSource": {
+    "aim_pistol": "blender (animate.py foot_speed)",
+    "carried": "blender (animate.py foot_speed)",
+    "carry": "blender (animate.py foot_speed)",
+    "crouch_walk": "Unity (Latch's import measure 0.824 m/s on the take-1 skeleton) x 1.0307 (new / old standing height)",
+    "run": "blender (animate.py foot_speed)",
+    "sit": "blender (animate.py foot_speed)",
+    "walk": "blender (animate.py foot_speed)"
+   },
+   "deformBones": 22,
+   "figure": "e2e_flamingo_H.fbx",
+   "garmentRigs": [],
+   "hands": {
+    "Left": {
+     "articulated": false,
+     "gaps": 3,
+     "maxBoneToMeshM": 0.0685
+    },
+    "Right": {
+     "articulated": false,
+     "gaps": 3,
+     "maxBoneToMeshM": 0.0692
+    }
+   },
+   "heightClass": "average",
+   "id": "e2e_flamingo",
+   "kind": "crowd",
+   "lodTris": [
+    12000,
+    4500,
+    1500
+   ],
+   "props": "e2e_flamingo_H_props.fbx",
+   "targetHeightM": 1.64,
+   "texPx": 1024,
+   "texture": "e2e_flamingo_H_albedo.png"
+  }
+ ],
+ "schema": "suborned.charpipe.manifest/1",
+ "set": "e2e"
+}

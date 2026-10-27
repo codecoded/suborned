@@ -1,0 +1,54 @@
+{
+ "e2e_coat": {
+  "bytes": 987254,
+  "file": "e2e_coat_H_albedo.png",
+  "maxTextureSize": 1024,
+  "meta": "e2e_coat_H_albedo.png.meta",
+  "patches": 1,
+  "px": 1024,
+  "sha256": "e6c5b7e3de7096cb5974c5b76e555347dcede4a865da231e91c602c51b61cf09",
+  "sourcePx": [
+   4096,
+   4096
+  ]
+ },
+ "e2e_dress": {
+  "bytes": 1032727,
+  "file": "e2e_dress_H_albedo.png",
+  "maxTextureSize": 1024,
+  "meta": "e2e_dress_H_albedo.png.meta",
+  "patches": 1,
+  "px": 1024,
+  "sha256": "8b26cca61391a4a5d512a6a5aea8627bda358254287778bd1e82550c43fb3d0a",
+  "sourcePx": [
+   4096,
+   4096
+  ]
+ },
+ "e2e_flamingo": {
+  "bytes": 1033979,
+  "file": "e2e_flamingo_H_albedo.png",
+  "maxTextureSize": 1024,
+  "meta": "e2e_flamingo_H_albedo.png.meta",
+  "patches": 1,
+  "px": 1024,
+  "sha256": "31ad245fd29ea88c0eeb01fbc3008fd1aafa4e4c9867c05909989f2dacd01acb",
+  "sourcePx": [
+   4096,
+   4096
+  ]
+ },
+ "e2e_guard": {
+  "bytes": 1027612,
+  "file": "e2e_guard_H_albedo.png",
+  "maxTextureSize": 1024,
+  "meta": "e2e_guard_H_albedo.png.meta",
+  "patches": 1,
+  "px": 1024,
+  "sha256": "723157b1f609a4ec88abf83c66125adbffb59fe69181891a79e88f5cb73b3ea3",
+  "sourcePx": [
+   4096,
+   4096
+  ]
+ }
+}

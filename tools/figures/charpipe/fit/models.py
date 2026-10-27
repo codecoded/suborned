@@ -21,6 +21,16 @@ for o in fig:
     sc.collection.objects.link(o)
     if o.type == 'MESH' and (o.get('fit_lod', 0) > 0 or o.get('fit_role') in ('donor', 'prop')): o.hide_render = True
 arm = next(o for o in fig if o.type == 'ARMATURE')
+# show what ships: the delivered albedo (budget size, merged props' colour patches painted in) on the figure's own material
+_tex = sorted(__import__('glob').glob(os.path.join(L.SCR, 'a', f'{FID}_H_albedo.*')))
+if _tex:
+    _img = bpy.data.images.load(_tex[0])
+    for _o in fig:
+        if _o.type == 'MESH' and _o.get('fit_role') in ('body', 'garment'):
+            for _m in _o.data.materials:
+                if _m and _m.use_nodes:
+                    for _n in _m.node_tree.nodes:
+                        if _n.type == 'TEX_IMAGE': _n.image = _img
 # the raw mesh, placed as the figure was made from it
 raw = L.import_glb(row['src']); L.normalise(raw); p = fit['params']
 V = (np.array([list(v.co) for v in raw.data.vertices]) - np.array([p['tx'], p['ty'], p['tz']])) / p['s']; L.set_co(raw, V)

@@ -1,0 +1,56 @@
+{
+ "rows": [
+  {
+   "avatarT": "fixer_v7_H_avatarT.fbx",
+   "bodyHeightM": 1.7364,
+   "chainClips": null,
+   "clipSpeedMs": {
+    "aim_pistol": 0.0046,
+    "carried": 0.1518,
+    "carry": 0.0,
+    "crouch_walk": 0.9145,
+    "run": 3.1394,
+    "sit": -0.0001,
+    "walk": 1.5258
+   },
+   "clipSpeedSource": {
+    "aim_pistol": "blender (animate.py foot_speed)",
+    "carried": "blender (animate.py foot_speed)",
+    "carry": "blender (animate.py foot_speed)",
+    "crouch_walk": "Unity (Latch's import measure 0.832 m/s on the take-1 skeleton) x 1.0991 (new / old standing height)",
+    "run": "blender (animate.py foot_speed)",
+    "sit": "blender (animate.py foot_speed)",
+    "walk": "blender (animate.py foot_speed)"
+   },
+   "deformBones": 52,
+   "figure": "fixer_v7_H.fbx",
+   "garmentRigs": [],
+   "hands": {
+    "Left": {
+     "articulated": false,
+     "gaps": 2,
+     "maxBoneToMeshM": 0.052
+    },
+    "Right": {
+     "articulated": false,
+     "gaps": 2,
+     "maxBoneToMeshM": 0.0522
+    }
+   },
+   "heightClass": "heightM",
+   "id": "fixer_v7",
+   "kind": "cell",
+   "lodTris": [
+    29116,
+    4500,
+    1500
+   ],
+   "props": null,
+   "targetHeightM": 1.75,
+   "texPx": 2048,
+   "texture": "fixer_v7_H_albedo.jpg"
+  }
+ ],
+ "schema": "suborned.charpipe.manifest/1",
+ "set": "fixer"
+}

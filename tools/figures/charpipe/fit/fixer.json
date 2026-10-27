@@ -43,16 +43,19 @@
    "today": "fixer",
    "src": "paid/069-fixer/meshes/fixer_v7__tripo31_mv30k_t1.glb",
    "kind": "cell",
-   "src20k": "paid/069-fixer/meshes/fixer_v7__tripo31_mv_t1.glb"
+   "src20k": "paid/069-fixer/meshes/fixer_v7__tripo31_mv_t1.glb",
+   "heightM": 1.75,
+   "heightNote": "Sky, 2026-10-27: 1.75 m, as today's Fixer"
   }
  ],
  "looseRules": [],
  "looseRulesNote": "none: the ponytail and the long skirt take nearest-body weights for now (Aster, 2026-10-27); their extra bones are a later hero step",
  "hat": {
-  "note": "as e2e.json",
+  "note": "as e2e.json hairRule false: a person's own cap was generated with their own hair and already fits it; the hair-under-hat rule is for a hat moved onto another head (the G path). Applied here it pulled the guard's fringe under the brim into spikes, which the LOD0 reduction opened into dark cracks (2026-10-27).",
   "shellShare": 0.6,
   "minOwnShells": 0.8,
-  "rimM": 0.01
+  "rimM": 0.01,
+  "hairRule": false
  },
  "props": false,
  "rest": {
@@ -79,5 +82,13 @@
    "fit",
    "a"
   ]
+ },
+ "engineSpeeds": {
+  "path": "briefs/069/latch/e2e-unity-numbers.json",
+  "figureSuffix": "_H",
+  "clips": [
+   "crouch_walk"
+  ],
+  "note": "as e2e.json"
  }
 }

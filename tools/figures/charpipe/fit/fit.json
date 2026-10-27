@@ -338,7 +338,8 @@
      0.08,
      0.2
     ],
-    "strapOffsetM": 0.022
+    "strapOffsetM": 0.022,
+    "worn": true
    },
    "case": {
     "at": "Attach_RightHand",
@@ -357,8 +358,10 @@
      0.36,
      0.02
     ],
-    "clearM": 0.004
-   }
+    "clearM": 0.004,
+    "worn": false
+   },
+   "note": "worn props (the bag) merge into the body for crowd figures (budgets.mergeWorn); props that come and go (the tray, a pistol) stay separate on attachment points. A merged prop's colour comes from a small patch painted into an unused corner of the figure's texture, so the body keeps one material."
   }
  },
  "layers": {
@@ -453,9 +456,10 @@
     "RightLeg"
    ],
    "marginM": 0.02,
-   "note": "tightM/looseM -0.01/0: every band vertex follows the chains. A first take kept skin hugging the body (the leg seen in the split, 6-20 mm) on its leg weights; on a single-surface image-to-3D mesh that skin IS the skirt's surface, so panel and skin tore apart. stiffness 0.35 / damping 0.25: the first take's 0.18 / 0.12 flailed (median 10 deg per frame in walk, 25 in run). Take 3: skin hugging the body keeps its own weights below the knee only (the asymmetric hem dropped leg skin under the high side into the band, and it was dragged into strips); above the knee the whole sheet follows the chains (the split's skin is the skirt's own surface there). Collider radii come from the fitted body (the hidden donor), not the figure's own mesh, whose thigh 'thickness' includes the skirt (it threw the sheet wide). Take 4: back to take 2's weights (the whole band on the chains: take 3's below-knee skin rule opened a weight boundary between skirt and leg on a single closed surface, dragging skin into strips). Colliders never push a joint further out than it sat at rest (colliderClampToRest): joints near the crotch start inside the thigh capsules, and pushing them out flared the skirt (aim).",
+   "note": "tightM/looseM -0.01/0: every band vertex follows the chains. A first take kept skin hugging the body (the leg seen in the split, 6-20 mm) on its leg weights; on a single-surface image-to-3D mesh that skin IS the skirt's surface, so panel and skin tore apart. stiffness 0.35 / damping 0.25: the first take's 0.18 / 0.12 flailed (median 10 deg per frame in walk, 25 in run). Take 3: skin hugging the body keeps its own weights below the knee only (the asymmetric hem dropped leg skin under the high side into the band, and it was dragged into strips); above the knee the whole sheet follows the chains (the split's skin is the skirt's own surface there). Collider radii come from the fitted body (the hidden donor), not the figure's own mesh, whose thigh 'thickness' includes the skirt (it threw the sheet wide). Take 4: back to take 2's weights (the whole band on the chains: take 3's below-knee skin rule opened a weight boundary between skirt and leg on a single closed surface, dragging skin into strips). Colliders never push a joint further out than it sat at rest (colliderClampToRest): joints near the crotch start inside the thigh capsules, and pushing them out flared the skirt (aim). PARKED (enabled false, Sky 2026-10-27): on a generated closed-solid skirt it doesn't beat the band merge; it waits for the garment cut.",
    "tightBelowKneeOnly": false,
-   "colliderClampToRest": true
+   "colliderClampToRest": true,
+   "enabled": false
   },
   "strand": {
    "bones": 4,
@@ -485,5 +489,86 @@
   ],
   "loopBlendFrames": 6,
   "colliderRadiusFrom": "donor"
+ },
+ "budgets": {
+  "note": "Sky adopted Redline's budgets 2026-10-27 (briefs/069/redline/cost-e2e.md). A person row's kind picks its budget. lodTris: LOD0, LOD1, LOD2 triangles (null = the generated mesh as delivered). texPx: the delivered albedo's size (the 4K source stays in paid/) and the import max size written into its meta. skeleton: 52 (Humanoid with fingers) or 22 (fingers folded into Hand; attachment bones kept). mergeWorn: worn props (the bag) and garment pieces (the guard's cap) join the body mesh at each LOD, so a crowd figure is one skinned renderer per LOD.",
+  "crowd": {
+   "lodTris": [
+    12000,
+    4500,
+    1500
+   ],
+   "texPx": 1024,
+   "skeleton": 22,
+   "mergeWorn": true
+  },
+  "cell": {
+   "lodTris": [
+    null,
+    4500,
+    1500
+   ],
+   "texPx": 2048,
+   "skeleton": 52,
+   "mergeWorn": false
+  }
+ },
+ "reduction": {
+  "note": "how a LOD is reduced from the generated mesh: quadric collapse with the face (vertices led by Head or Neck, in front of the head bone) and the hands (Hand) protected by a vertex-group weight (protectFactor), then the generated mesh's own normals carried onto the reduced one (data transfer, nearest face, interpolated), so the reduced faces shade as the full ones (the fit test's 12k LOD0 with cleared normals looked faceted). The face and hands are protected at LOD0 only (protectLods): protected faces can't collapse, and at LOD1/LOD2 they set a floor of about 10k triangles; at play zoom (LOD2) they're a few pixels. A LOD's budget is the whole renderer's: merged pieces and worn props are counted first and the body takes the rest. weldSeams: coincident vertices (glTF's UV-seam splits) are welded on the copy before the reduction, so seams don't open into cracks (the guard's cheek, the coat's cuff). Garment pieces (the guard's cap) keep full detail at LOD0 (piecesFullAtLod0): a reduced cap's inner rim cut through the forehead as dark lines; the body takes the rest of the LOD0 budget. Protecting the whole head instead didn't help and broke the budget (13.6k). protectFactor 12 (from 4): at 4 the forehead collapsed into large flat triangles while the hair fringe (its own shell) kept its curve, so the fringe's dark underside showed in thin cracks (the guard).",
+  "protectFactor": 12.0,
+  "protect": [
+   "face",
+   "hands",
+   "boundaries"
+  ],
+  "tries": 6,
+  "protectLods": [
+   0
+  ],
+  "weldSeams": 1e-06,
+  "faceFrontOnly": true,
+  "piecesFullAtLod0": true,
+  "normalMapping": "POLYINTERP_LNORPROJ"
+ },
+ "heights": {
+  "note": "a person's standing height (the base body to the crown, barefoot, no hair or hat) from the person spec: an explicit heightM, else the intake prompt's person text (keywords, first match), else default; metres by sex. The fit fixes the height slider at the value that gives this height (it no longer floats at 0.5, where every woman shared one skeleton). The keywords are read only in the body clause: the person text up to the first ' with ' or ', ' (the slot is 'sex, age, height and build, skin, hair': a first try read 'a short sculpted bob' as a short woman).",
+  "m": {
+   "short": 1.68,
+   "average": 1.77,
+   "tall": 1.86
+  },
+  "f": {
+   "short": 1.55,
+   "average": 1.64,
+   "tall": 1.73
+  },
+  "keywords": [
+   [
+    "tall",
+    [
+     "tall"
+    ]
+   ],
+   [
+    "short",
+    [
+     "short",
+     "petite"
+    ]
+   ],
+   [
+    "average",
+    [
+     "average height",
+     "medium height",
+     "of average"
+    ]
+   ]
+  ],
+  "default": "average",
+  "clauseEnd": [
+   " with ",
+   ", "
+  ]
  }
 }

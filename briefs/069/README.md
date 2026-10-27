@@ -117,3 +117,18 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
     - worn props merged into the body per LOD;
     - Optimize Game Objects for crowd figures.
   - **Then:** one confirmation pass on Forma's rebuilt figures.
+- **Rebuilt to Sky's budgets** (2026-10-27, "yes and yes"):
+
+  | | Triangles (LOD0/1/2) | Bones | Texture |
+  |---|---|---|---|
+  | crowd (e2e four) | 12k / 4.5k / 1.5k | 22 | 1K |
+  | the cell (Fixer) | 29.1k / 4.5k / 1.5k | 52 | 2K |
+
+  - Worn props (cap, bag) are merged into the body per LOD.
+  - The reduction carries the high mesh's normals, so faces and hands no longer crack.
+  - Explicit texture import max size in the metas.
+  - Height from data: the Fixer 1.75 m (Sky); the crowd's tall/average/short comes from the intake text via a table in `fit.json`.
+  - Crouch-walk speeds are Latch's Unity values, scaled by height.
+  - The Fixer keeps the band-merge skirt; the rig is parked (`fixer/parked_rig/`).
+  - Byte-identical: e2e 35/35, Fixer 10/10.
+  - Evidence: `e2e/manifest-budget.json`, `e2e/textures-budget.json`, `fixer/mesh/manifest-budget.json`. Next: Latch take 3 (Optimize Game Objects), then Redline's confirmation pass.

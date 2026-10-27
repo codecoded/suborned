@@ -37,7 +37,9 @@
    ],
    "label": "commuter, man, belted tunic coat",
    "today": "c6",
-   "src": "paid/069-e2e/meshes/e2e_coat__hy31pro_mv_t1.glb"
+   "src": "paid/069-e2e/meshes/e2e_coat__hy31pro_mv_t1.glb",
+   "kind": "crowd",
+   "person": "A tall, heavy-set man in his fifties with light brown skin, a short grey crop and a clipped grey moustache."
   },
   {
    "id": "e2e_dress",
@@ -49,7 +51,9 @@
    ],
    "label": "commuter, woman, shift dress",
    "today": "cafe_w5",
-   "src": "paid/069-e2e/meshes/e2e_dress__hy31pro_mv_t1.glb"
+   "src": "paid/069-e2e/meshes/e2e_dress__hy31pro_mv_t1.glb",
+   "kind": "crowd",
+   "person": "A short, slight young woman in her twenties with deep brown skin and short natural black hair cropped close."
   },
   {
    "id": "e2e_guard",
@@ -61,7 +65,9 @@
    ],
    "label": "guard, woman, peaked cap, bun",
    "today": "guard",
-   "src": "paid/069-e2e/meshes/e2e_guard__hy31pro_mv_t1.glb"
+   "src": "paid/069-e2e/meshes/e2e_guard__hy31pro_mv_t1.glb",
+   "kind": "crowd",
+   "person": "An athletic woman of average height in her thirties, East Asian, black hair in a tight low bun."
   },
   {
    "id": "e2e_flamingo",
@@ -74,14 +80,17 @@
    ],
    "label": "Sky's art-bible commuter, woman, flamingo coat, pillbox",
    "today": "d6",
-   "src": "paid/069-e2e/meshes/e2e_flamingo__hy31pro_mv_t1.glb"
+   "src": "paid/069-e2e/meshes/e2e_flamingo__hy31pro_mv_t1.glb",
+   "kind": "crowd",
+   "person": "A woman in her forties of average height and medium build, with olive skin and glossy dark hair in a short sculpted bob."
   }
  ],
  "hat": {
-  "note": "the hybrid's hat, cut by whole shells: image-to-3D meshes are hundreds of separate shells, and a hat is usually its own shells sitting on the hair. A shell is the hat's when at least shellShare of its faces are hat-labelled; the cut takes those whole shells. Clean = they hold at least minOwnShells of the hat-labelled faces (most of the hat is its own shells, so no surface is cut) and the hat-labelled faces left in shared shells have their cut rim under the hat (inside its horizontal outline grown by rimM, below its top). Not clean: the hat stays welded in the A mesh, rigid on Head.",
+  "note": "the hybrid's hat, cut by whole shells: image-to-3D meshes are hundreds of separate shells, and a hat is usually its own shells sitting on the hair. A shell is the hat's when at least shellShare of its faces are hat-labelled; the cut takes those whole shells. Clean = they hold at least minOwnShells of the hat-labelled faces (most of the hat is its own shells, so no surface is cut) and the hat-labelled faces left in shared shells have their cut rim under the hat (inside its horizontal outline grown by rimM, below its top). Not clean: the hat stays welded in the A mesh, rigid on Head. hairRule false: a person's own cap was generated with their own hair and already fits it; the hair-under-hat rule is for a hat moved onto another head (the G path). Applied here it pulled the guard's fringe under the brim into spikes, which the LOD0 reduction opened into dark cracks (2026-10-27).",
   "shellShare": 0.6,
   "minOwnShells": 0.8,
-  "rimM": 0.01
+  "rimM": 0.01,
+  "hairRule": false
  },
  "props": true,
  "rest": {
@@ -108,5 +117,14 @@
   ],
   "torsoMin": 0.05,
   "note": "in the armpit band (upper-arm weight within band, at least torsoMin on Spine1, Spine2 or a shoulder) weights are averaged over every vertex within mergeM in space, so the sleeve shell and the body shell (separate shells in image-to-3D meshes) move as one: an arm raised to horizontal opened a slit between them (e2e_coat) and crumpled the sleeve (e2e_guard)."
+ },
+ "personNote": "person: the intake prompt's person slot, copied from paid/069-intake/ledger.jsonl (heights come from it by fit.json heights)",
+ "engineSpeeds": {
+  "path": "briefs/069/latch/e2e-unity-numbers.json",
+  "figureSuffix": "_H",
+  "clips": [
+   "crouch_walk"
+  ],
+  "note": "Unity-measured planted-foot speeds (Latch's import measure) replace the Blender value for these clips; scaled by the new skeleton's leg length against the measured one"
  }
 }

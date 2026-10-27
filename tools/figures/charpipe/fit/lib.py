@@ -899,7 +899,7 @@ def garment_rigs(arm, body, donor_obj, skirt_on):
     hz = lambda n: (Mw @ Bb[n].head_local).z
     hipZ = (hz('LeftUpLeg') + hz('RightUpLeg')) / 2; knee = (hz('LeftLeg') + hz('RightLeg')) / 2
     built = []; chains = {}; new_cols = []
-    if skirt_on:
+    if skirt_on and G['ring'].get('enabled', True):
         R = G['ring']; hp = Mw @ Bb['Hips'].head_local; c = np.array([hp.x, hp.y])
         # the hem: from the knee down, the lowest height where the surface still crosses the centre line (the skirt joins the legs)
         hem = knee
@@ -1046,3 +1046,58 @@ def layer_merge(V, W):
     R = D['transfer'].get('layerMerge')
     if not R: return W, 0
     return spatial_avg(V, W, np.arange(len(V)), R['mergeM']), int(len(V))
+
+
+def reduce_lod(full, tris, name, arm, lod=0):
+    """fit.json reduction: a copy of the full generated mesh reduced to tris by quadric collapse, the face and hands protected by a vertex-group
+    weight, then the full mesh's normals carried over (data transfer, nearest face interpolated). Vertex groups follow the collapse."""
+    R = D['reduction']; c = full.copy(); c.data = full.data.copy(); bpy.context.scene.collection.objects.link(c); c.name = name
+    for m in list(c.modifiers): c.modifiers.remove(m)
+    n = len(tris_of(c))
+    if tris is not None and n > tris:
+        if R.get('weldSeams'):
+            # glTF splits vertices along UV seams: the mesh is open there and collapse pulls the two sides apart (cracks). Welded, the surface is
+            # continuous and the seams live on as per-corner UVs.
+            bm = bmesh.new(); bm.from_mesh(c.data); bmesh.ops.remove_doubles(bm, verts=bm.verts, dist=R['weldSeams']); bm.to_mesh(c.data); bm.free(); c.data.update()
+        names = [g.name for g in c.vertex_groups]; W = weights_of(c, names); V = np.array([list(v.co) for v in c.data.vertices])
+        dom = np.array(names)[np.argmax(W, 1)] if names else np.array(['Hips'] * len(V))
+        prot = np.zeros(len(V))
+        if lod not in R.get('protectLods', [0, 1, 2]): pass
+        elif 'hands' in R['protect']: prot[np.array(['Hand' in d for d in dom])] = 1.0
+        if lod in R.get('protectLods', [0, 1, 2]) and 'face' in R['protect'] and 'Head' in arm.data.bones:
+            hd = arm.matrix_world @ arm.data.bones['Head'].head_local
+            face = np.isin(dom, ['Head', 'Neck'])
+            if R.get('faceFrontOnly', False): face &= V[:, 1] < hd.y
+            prot[face] = 1.0                                           # the whole head: face and hair are separate shells, and an unprotected hair shell opens dark cracks at the hairline
+        if lod in R.get('protectLods', [0, 1, 2]) and 'boundaries' in R['protect']:
+            # after the seam weld, the open edges left are real holes, such as the rim a cut-out cap leaves in the head (the cap hides it):
+            # moving that rim opens slivers of the inside below the brim
+            bm = bmesh.new(); bm.from_mesh(c.data)
+            for e in bm.edges:
+                if e.is_boundary:
+                    for v in e.verts: prot[v.index] = 1.0
+            bm.free()
+        g = c.vertex_groups.new(name='_protect'); idx = np.nonzero(prot > 0)[0]
+        if len(idx): g.add([int(i) for i in idx], 1.0, 'REPLACE')
+        # protected faces resist collapse, so one pass stops short of the budget: the ratio is cut by the overshoot and the reduction redone from the
+        # full mesh, up to `tries` times (deterministic: the same inputs give the same ratios)
+        base = c.data.copy(); ratio = tris / n
+        for _ in range(R.get('tries', 6)):
+            c.data = base.copy()
+            md = c.modifiers.new('dec', 'DECIMATE'); md.ratio = ratio; md.use_collapse_triangulate = True
+            md.vertex_group = '_protect'; md.invert_vertex_group = True; md.vertex_group_factor = R['protectFactor']
+            with bpy.context.temp_override(object=c, active_object=c): bpy.ops.object.modifier_apply(modifier=md.name)
+            got = len(tris_of(c))
+            if got <= tris * 1.02: break
+            ratio *= tris / got
+        bpy.data.meshes.remove(base)
+        c.vertex_groups.remove(c.vertex_groups['_protect'])
+        dt = c.modifiers.new('nrm', 'DATA_TRANSFER'); dt.object = full; dt.use_loop_data = True; dt.data_types_loops = {'CUSTOM_NORMAL'}
+        dt.loop_mapping = R.get('normalMapping', 'POLYINTERP_LNORPROJ')     # along each corner's own normal: the nearest face can be a shell's inner side
+        with bpy.context.temp_override(object=c, active_object=c): bpy.ops.object.modifier_apply(modifier=dt.name)
+    md = c.modifiers.new('Armature', 'ARMATURE'); md.object = arm; c.parent = arm
+    return c, len(tris_of(c))
+
+
+def budget(row):
+    return D['budgets'][row.get('kind', 'crowd')]

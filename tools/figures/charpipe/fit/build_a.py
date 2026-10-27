@@ -62,10 +62,45 @@ def build(fid, hybrid=False):
     extra = []; hyb = {}
     if hybrid: extra, hyb = hybrid_parts(fid, src, arm, px, att)
     rigs = L.garment_rigs(arm, src, px, bool(rule_counts.get('bandMerge', {}).get('applied'))) if L.SET in ('e2e', 'fixer') and os.environ.get('FIT_RIGS', 'on') != 'off' else []   # FIT_RIGS=off: the same figure without garment chains
+    if L.SET in ('e2e', 'fixer') and L.budget(row)['skeleton'] == 22:
+        # the crowd skeleton (fit.json budgets): the finger bones go (their weights are already in Hand: the hand rule), every other bone stays,
+        # the attachment bones included (build.py's crowd_skeleton prunes to the 22 core bones and would drop them)
+        import re
+        keep = [b.name for b in arm.data.bones if not re.match(r'(Left|Right)Hand(Thumb|Index|Middle|Ring|Pinky)[0-9]$', b.name)]
+        L.bp.prune(arm, [src, px] + [o for o in extra], keep, prefix='')
     legs, avatar = humanoid_zero(fid, arm, hybrid)
     lab_now = np.empty(len(src.data.vertices), np.int32); src.data.attributes['fit_lab'].data.foreach_get('value', lab_now)
     np.save(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'), np.array(KINDS, dtype=object)[lab_now].astype(str))
-    # LOD1, LOD2 from LOD0 (Blender's decimate carries the weights)
+    if L.SET in ('e2e', 'fixer'):
+        lods, tris, props, patches = budget_lods(fid, row, src, arm, extra, hybrid)
+        src = lods[0]
+        np.save(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'), lod_labels(src))
+    else:
+        lods, tris, props, patches = old_lods(fid, src, arm, extra)
+    src['fit_labels'] = os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'); arm['fit_weight'] = fit['macros']['weight']
+    L.tag(px, 'donor'); px.hide_render = True; px.name = f'{fid}_A_donor'
+    arm.name = 'Armature'; tm.lap('lods')
+    bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_{TAGN(hybrid)}.blend') if L.SET in ('e2e', 'fixer') else os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.blend'), compress=True)
+    if L.SET in ('e2e', 'fixer') and img is not None:       # the material points at the texture delivered beside the FBX (e2e_textures.py), by its file name
+        ext = {'JPEG': 'jpg', 'PNG': 'png', 'WEBP': 'webp'}.get(img.file_format, 'png')       # the glb's own image format (e2e_textures.py copies it as is)
+        img.name = f'{fid}_{TAGN(hybrid)}_albedo.{ext}'; img.filepath_raw = os.path.join(OUT, img.name)
+    L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.fbx'), [arm] + lods, arm)          # the figure: body, LODs and its own pieces; never the props
+    if props: L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_props.fbx'), [arm] + props, arm)
+    tm.lap('export')
+    stats = {'id': fid, 'approach': TAGN(hybrid), 'hybrid': hyb, 'sex': fit['sex'], 'macros': fit['macros'], 'lodTris': tris, 'srcTris': fit['srcTris'], 'bones': len([b for b in arm.data.bones if b.use_deform]),
+             'attach': sorted(att), 'garmentRigs': rigs, 'bodyHeightM': round(float(L.eval_co(px)[:, 2].max() - L.eval_co(px)[:, 2].min()), 4),
+             'targetHeightM': fit.get('targetHeightM'), 'heightClass': fit.get('heightClass'), 'colourPatches': patches, 'kind': row.get('kind'), 'texPx': L.budget(row)['texPx'] if L.SET in ('e2e', 'fixer') else None, 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
+             'labels': {k: int((lab == k).sum()) for k in sorted(set(lab.tolist())) if k}, 'restLegs': legs, 'seconds': tm.t, 'heightM': round(height, 3)}
+    if L.SET in ('e2e', 'fixer'): json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
+    json.dump(stats, open(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.json'), 'w'), indent=1, sort_keys=True)
+    L.log('DONE A', fid, tris, st, rule_counts)
+
+
+def TAGN(h): return 'H' if h else 'A'
+
+
+def old_lods(fid, src, arm, extra):
+    """the fit test's LODs: LOD0 as built, LOD1 and LOD2 decimated from it; pieces keep their own LOD copies."""
     lods = [src]; tris = [len(L.tris_of(src))]
     for k, t in enumerate(L.D['lods']['tris'][1:], 1):
         c = src.copy(); c.data = src.data.copy(); bpy.context.scene.collection.objects.link(c); c.name = f'{fid}_A_LOD{k}'
@@ -83,25 +118,85 @@ def build(fid, hybrid=False):
                 L.tag(c, 'garment', k); c['fit_kind'] = o['fit_kind']; lods.append(c)
     props = [o for o in extra if o.get('fit_role') == 'prop']
     lods += [o for o in extra if o.get('fit_role') != 'prop']
-    src['fit_labels'] = os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'); arm['fit_weight'] = fit['macros']['weight']
-    L.tag(px, 'donor'); px.hide_render = True; px.name = f'{fid}_A_donor'
-    arm.name = 'Armature'; tm.lap('lods')
-    bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_{TAGN(hybrid)}.blend') if L.SET in ('e2e', 'fixer') else os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.blend'), compress=True)
-    if L.SET in ('e2e', 'fixer') and img is not None:       # the material points at the texture delivered beside the FBX (e2e_textures.py), by its file name
-        ext = {'JPEG': 'jpg', 'PNG': 'png', 'WEBP': 'webp'}.get(img.file_format, 'png')       # the glb's own image format (e2e_textures.py copies it as is)
-        img.name = f'{fid}_{TAGN(hybrid)}_albedo.{ext}'; img.filepath_raw = os.path.join(OUT, img.name)
-    L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.fbx'), [arm] + lods, arm)          # the figure: body, LODs and its own pieces; never the props
-    if props: L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_props.fbx'), [arm] + props, arm)
-    tm.lap('export')
-    stats = {'id': fid, 'approach': TAGN(hybrid), 'hybrid': hyb, 'sex': fit['sex'], 'macros': fit['macros'], 'lodTris': tris, 'srcTris': fit['srcTris'], 'bones': len([b for b in arm.data.bones if b.use_deform]),
-             'attach': sorted(att), 'garmentRigs': rigs, 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
-             'labels': {k: int((lab == k).sum()) for k in sorted(set(lab.tolist())) if k}, 'restLegs': legs, 'seconds': tm.t, 'heightM': round(height, 3)}
-    if L.SET in ('e2e', 'fixer'): json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
-    json.dump(stats, open(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.json'), 'w'), indent=1, sort_keys=True)
-    L.log('DONE A', fid, tris, st, rule_counts)
+    return lods, tris, props, []
 
 
-def TAGN(h): return 'H' if h else 'A'
+def lod_labels(o):
+    KINDS = ['', 'hair', 'coat', 'skirt', 'cape', 'hat']
+    if 'fit_lab' not in o.data.attributes: return np.array([''] * len(o.data.vertices))
+    a = np.empty(len(o.data.vertices), np.int32); o.data.attributes['fit_lab'].data.foreach_get('value', a)
+    return np.array(KINDS, dtype=object)[np.clip(a, 0, len(KINDS) - 1)].astype(str)
+
+
+def free_cell(o, grid):
+    """the last grid cell (scanning from the texture's bottom-right) that no UV triangle of o touches: room for a merged prop's colour."""
+    me = o.data; uv = np.empty(len(me.loops) * 2); me.uv_layers.active.data.foreach_get('uv', uv); uv = uv.reshape(-1, 2)
+    me.calc_loop_triangles(); li = np.empty(len(me.loop_triangles) * 3, np.int64); me.loop_triangles.foreach_get('loops', li); tri = uv[li].reshape(-1, 3, 2)
+    used = np.zeros((grid, grid), bool)
+    lo = np.clip(np.floor(tri.min(1) * grid).astype(int), 0, grid - 1); hi = np.clip(np.floor(tri.max(1) * grid).astype(int), 0, grid - 1)
+    for (a, b), (c, d) in zip(lo, hi): used[a:c + 1, b:d + 1] = True              # [u cell, v cell]: conservative (bounding boxes)
+    for u in range(grid - 1, -1, -1):
+        for v in range(grid):
+            if not used[u, v] and (u == 0 or not used[u - 1, v]) and (u == grid - 1 or not used[u + 1, v]): return u, v
+    return None
+
+
+def budget_lods(fid, row, full, arm, extra, hybrid):
+    """fit.json budgets for an end-to-end figure: each LOD reduced from the full generated mesh (lib.reduce_lod: face and hands protected, the full
+    mesh's normals carried over); garment pieces the same; worn props and pieces merged into the body at each LOD for the crowd, so one renderer per
+    LOD; a merged prop takes its colour from a patch painted in a free corner of the figure's texture (e2e_textures.py paints it)."""
+    B = L.budget(row); full.name = f'{fid}_full'
+    pieces = [o for o in extra if o.get('fit_role') == 'garment']
+    worn = [o for o in extra if o.get('fit_role') == 'prop' and L.D['attach']['props'].get(o.name.replace('prop_', '').split('.')[0], {}).get('worn')]
+    loose = [o for o in extra if o.get('fit_role') == 'prop' and o not in worn]
+    patches = []
+    if B['mergeWorn'] and worn:
+        grid = 128; mat = full.data.materials[0]
+        for o in worn:
+            cell = free_cell(full, grid)
+            col = list(o.data.materials[0].node_tree.nodes['Principled BSDF'].inputs['Base Color'].default_value)[:3] if o.data.materials else [0.5, 0.5, 0.5]
+            if cell is None: continue
+            u, v = cell; uvv = ((u + 0.5) / grid, (v + 0.5) / grid)
+            uvl = o.data.uv_layers[0] if len(o.data.uv_layers) else o.data.uv_layers.new(name='UVMap')
+            uvl.data.foreach_set('uv', np.tile(uvv, len(o.data.loops)))
+            o.data.materials.clear(); o.data.materials.append(mat)
+            patches.append({'prop': o.name, 'grid': grid, 'cell': [int(u), int(v)], 'rgbLinear': [round(float(c), 4) for c in col]})
+    n0 = len(L.tris_of(full)); lods = []; tris = []; out_props = list(loose)
+    for k, t in enumerate(B['lodTris']):
+        share = (t if t is not None else n0) / n0
+        parts = []
+        for o in pieces:
+            keep_full = t is None or (k == 0 and L.D['reduction'].get('piecesFullAtLod0'))
+            pc, _ = L.reduce_lod(o, None if keep_full else max(60, int(len(L.tris_of(o)) * share)), o.name.replace('_LOD0', '') + f'_LOD{k}', arm, k)
+            pc['fit_kind'] = o.get('fit_kind', 'garment'); parts.append(pc)
+        extra_tris = sum(len(L.tris_of(x)) for x in parts) + (sum(len(L.tris_of(x)) for x in worn) if B['mergeWorn'] else 0)
+        if t is None:
+            body = full.copy(); body.data = full.data.copy(); bpy.context.scene.collection.objects.link(body); body.name = f'{fid}_A_LOD{k}'
+            for m in list(body.modifiers): body.modifiers.remove(m)
+            md = body.modifiers.new('Armature', 'ARMATURE'); md.object = arm; body.parent = arm; nb = n0
+        else:   # the LOD's budget is the renderer's: merged pieces and worn props first, the body takes the rest
+            body, nb = L.reduce_lod(full, max(200, t - extra_tris) if B['mergeWorn'] else t, f'{fid}_A_LOD{k}', arm, k)
+        wl = []
+        for o in worn:
+            c = o.copy(); c.data = o.data.copy(); bpy.context.scene.collection.objects.link(c); c.name = f'{o.name}_LOD{k}'; wl.append(c)
+        if B['mergeWorn']:
+            join = [x for x in parts + wl]
+            if join:
+                bpy.ops.object.select_all(action='DESELECT')
+                for x in join + [body]: x.select_set(True)
+                bpy.context.view_layer.objects.active = body; bpy.ops.object.join()
+            L.tag(body, 'body', k); lods.append(body)
+        else:
+            L.tag(body, 'body', k); lods.append(body)
+            for pc in parts: L.tag(pc, 'garment', k); lods.append(pc)
+            if k == 0: out_props += wl
+            else:
+                for c in wl: bpy.data.objects.remove(c, do_unlink=True)
+        tris.append(len(L.tris_of(body)))
+    # the full mesh stays only as the normal source: removed, with the pieces and worn props now inside the LODs
+    for o in pieces + worn: bpy.data.objects.remove(o, do_unlink=True)
+    lab = lod_labels(full); bpy.data.objects.remove(full, do_unlink=True)
+    return lods, tris, out_props, patches
 
 
 def humanoid_zero(fid, arm, hybrid):
@@ -171,7 +266,8 @@ def hybrid_parts(fid, src, arm, px, att):
             L.set_weights(hat, np.ones((len(hat.data.vertices), 1)), ['Head'], 1)
             L.tag(hat, 'garment'); hat['fit_kind'] = 'hat'; out.append(hat)
             hd = arm.matrix_world @ arm.data.bones['Head'].head_local; tl = arm.matrix_world @ arm.data.bones['Head'].tail_local
-            lm = L.landmarks(arm, L.eval_co(src)); info['hairUnderHatMoved'] = L.hair_under_hat(hat, [src], (np.array(hd) + np.array(tl)) / 2, lm['brow'])
+            lm = L.landmarks(arm, L.eval_co(src))
+            info['hairUnderHatMoved'] = L.hair_under_hat(hat, [src], (np.array(hd) + np.array(tl)) / 2, lm['brow']) if H.get('hairRule', True) else 0
         else: info['welded'] = 'the cut is not clean: the hat stays in the A mesh, rigid on Head (the loose rule)'
     if L.SET in ('e2e', 'fixer') and L.E2E.get('props'):
         pr = L.props(arm, att, src); out += pr; info['props'] = [o.name for o in pr]
