@@ -16,8 +16,9 @@ AV = spec['avatar']; ref = next(c for c in spec['clips'] if c['name'] == AV['ref
 ref_src = ref['src'] if os.path.isabs(ref['src']) else os.path.join(STORE, ref['src'])
 ref_human, ref_nodes, _ = av.neutral_avatar(ref_src, f"{AV['reference']}(Clone)", AV['footPitchDeg'])
 RIGS = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'bonemaps.json')))['rigs']   # brief 069: rigs that aren't Mixamo, in data
+TARGET = a[2] if len(a) > 2 else 'game'; TG = spec['targets'][TARGET]   # brief 069: the build's target (clips.json targets)
 FL = json.load(open(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'finger_limits.json')))   # brief 069: the same finger limits as finger-boned figures
-ref_h, ref_s = av.human_description(ref_human, ref_nodes, av.finger_limits(FL, ref_human))
+ref_h, ref_s = av.human_description(ref_human, ref_nodes, av.finger_limits(FL, ref_human) if TG['fingerLimits'] else None)
 ref_rel = f"Clips/{AV['reference']}.fbx"
 for c in spec['clips']:
     if 'author' in c:   # posed here, on the donor clip's skeleton (tools/figures/author_clips.py); the donor is the recorded source
@@ -73,7 +74,7 @@ for c in spec['clips']:
             c_human, c_nodes = av.reference_rest(ref_nodes, dst, f'{name}(Clone)'); kind = 'the reference rest in its own hierarchy'
         else:
             c_human, c_nodes, _ = av.neutral_avatar(dst, f'{name}(Clone)', AV['footPitchDeg']); kind = 'own neutral-leg avatar (rig differs)'
-        c_h, c_s = av.human_description(c_human, c_nodes, av.finger_limits(FL, c_human))
+        c_h, c_s = av.human_description(c_human, c_nodes, av.finger_limits(FL, c_human) if TG['fingerLimits'] else None)
         print('AVATAR', name, kind, '|', '; '.join(rig[:3]), f'({len(rig)})')
     else: c_h, c_s = ref_h, ref_s
     # brief 069 (Latch): the take and its frames as the file has them, never assumed: a Mixamo file's take is 'mixamo.com' from frame 0, a clip
@@ -90,6 +91,7 @@ for c in spec['clips']:
     if RG: rows[-1]['rig'] = rk; rows[-1]['avatar']['restFrom'] = RG['restStack']; rows[-1]['firstFrame'] = first; rows[-1]['frames'] = f1 - f0 + 1 - first; rows[-1]['seconds'] = round(rows[-1]['frames'] / sc.render.fps, 3)
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
     if fb is not None: rows[-1]['fingerBendDeg'] = fb
+    rows[-1]['game'] = c.get('game', True)
     if c.get('additive'): rows[-1]['additive'] = True; rows[-1]['additiveReferencePoseFrame'] = c.get('refPose', 0); rows[-1]['firstFrame'] = c.get('first', 0)
     if 'upper' in c: rows[-1]['upperFrom'] = c['upper']; rows[-1]['upperFromSha256'] = hashlib.sha256(open(os.path.join(STORE, c['upper']), 'rb').read()).hexdigest()
     if 'glb' in c: rows[-1]['retargetedFrom'] = c['glb'] + ':' + c['clip']; rows[-1]['retargetedFromSha256'] = hashlib.sha256(open(os.path.join(STORE, '..', c['glb']), 'rb').read()).hexdigest()

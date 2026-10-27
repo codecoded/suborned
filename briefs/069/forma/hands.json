@@ -843,5 +843,102 @@
     }
    }
   }
+ },
+ "round3_install": {
+  "rule": "clips.json targets (game: fingerLimits false, the clips without game: false; pipeline: all, limits on); clips.py <spec> <out> [target], run.ts builds game; assemble.py lists the game's clips; run.ts --install clips -> tools/figures/install_clips.py (only the game's clips, copied when bytes differ, the installed manifest keeps everything but its clip rows and totals; nothing deleted)",
+  "changedInGame": [
+   "Clips/carried_drape.fbx",
+   "Clips/carried_drape.fbx.meta",
+   "Clips/carry_shoulder.fbx",
+   "Clips/carry_shoulder.fbx.meta",
+   "Clips/carry_shoulder_idle.fbx",
+   "Clips/carry_shoulder_idle.fbx.meta",
+   "Clips/serve.fbx",
+   "Clips/serve.fbx.meta",
+   "Clips/serve_walk.fbx",
+   "Clips/serve_walk.fbx.meta",
+   "Clips/sit.fbx",
+   "Clips/sit.fbx.meta",
+   "Clips/sit_alt.fbx",
+   "Clips/sit_alt.fbx.meta",
+   "Clips/sit_talk.fbx",
+   "Clips/sit_talk.fbx.meta",
+   "Clips/stand_to_sit.fbx",
+   "Clips/stand_to_sit.fbx.meta",
+   "Clips/sit_to_stand.fbx",
+   "Clips/sit_to_stand.fbx.meta",
+   "Clips/run_lean.fbx",
+   "Clips/run_lean.fbx.meta",
+   "Clips/cover_pin.fbx",
+   "Clips/cover_pin.fbx.meta",
+   "Clips/cover_fire.fbx",
+   "Clips/cover_fire.fbx.meta",
+   "Clips/flinch_add.fbx",
+   "Clips/flinch_add.fbx.meta",
+   "Clips/kick_add.fbx",
+   "Clips/kick_add.fbx.meta",
+   "Clips/pin_peek_add.fbx",
+   "Clips/pin_peek_add.fbx.meta",
+   "manifest.json (clip rows: take, game, fingerBendDeg, fingersFlat on every row; sha256 of the 16)"
+  ],
+  "enforcerStandInOldVsNew_cm": {
+   "walk": {
+    "oldLength": 1.167,
+    "newLength": 1.167,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 0.0,
+    "maxGapNewVsOldOneFrameLaterCm": 1.58
+   },
+   "idle": {
+    "oldLength": 8.767,
+    "newLength": 8.767,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 0.0,
+    "maxGapNewVsOldOneFrameLaterCm": 0.16
+   },
+   "sit": {
+    "oldLength": 4.3,
+    "newLength": 4.3,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 0.08,
+    "maxGapNewVsOldOneFrameLaterCm": 0.02
+   },
+   "serve_walk": {
+    "oldLength": 1.267,
+    "newLength": 1.267,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 1.58,
+    "maxGapNewVsOldOneFrameLaterCm": 0.97
+   },
+   "flinch_add": {
+    "oldLength": 0.5,
+    "newLength": 0.5,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 7.39,
+    "maxGapNewVsOldOneFrameLaterCm": 0.0
+   },
+   "cover_pin": {
+    "oldLength": 3.8,
+    "newLength": 3.8,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 0.14,
+    "maxGapNewVsOldOneFrameLaterCm": 0.08
+   },
+   "carry_shoulder": {
+    "oldLength": 1.167,
+    "newLength": 1.167,
+    "oldCurves": 130,
+    "newCurves": 130,
+    "maxGapSameTimeCm": 1.58,
+    "maxGapNewVsOldOneFrameLaterCm": 0.74
+   }
+  },
+  "notTouched": "figures, props, Generated, the orphan sit_c/sit_f1..f3 clips (installed Oct 19, in no manifest or code)"
  }
 }

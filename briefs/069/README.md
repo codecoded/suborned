@@ -275,3 +275,9 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Not yet installed in the game:** a targeted install by rule is coming. It installs only the clips the game uses, keeps the game's finger limits until finger-boned figures arrive, and leaves Optimize as is.
   - **Guard tray:** on the serving hand (`lib.serve_side`).
   - **Raise/lower feet:** Unity is right. The bladed stance plants the left foot 11–15 cm forward with foot IK off; with foot IK on, both feet match the source. Recommended: foot IK on for standing weapon states.
+- **Targeted game install** (`run.ts --install clips`, `tools/figures/install_clips.py`):
+  - **Changed (33 files):** the 16 authored clips (take `Scene`, frames 1..N, pinned bytes) plus the manifest's clip rows.
+  - **Untouched:** figures, props, the 43 Mixamo clips and the 4 orphan `sit_c` / `sit_f1–3`.
+  - **By data:** `clips.json` marks the pistol, rifle and `hand_relaxed` clips `game: false`. Two targets: `game` (no finger limits, matching today's figures) and `pipeline` (built into `out/people-models-pipeline`).
+  - **Checks:** a second run changes 0 files; today's Enforcer walk and idle are identical.
+  - **Open:** `tools/figures/build.py` figures aren't byte-repeatable (FBX header time and ids).

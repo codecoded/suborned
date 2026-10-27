@@ -65,6 +65,7 @@ describe('the clips that stay in place bake Root Transform Position (XZ); locomo
     test.skipIf(!existsSync(dir))(`the metas in ${label} follow the rule`, () => {
       const wrong: string[] = [];
       for (const c of clips) {
+        if (label.startsWith('the Unity') && (c as any).game === false) continue;   // not for the game (clips.json game: false): never installed
         const p = join(dir, `${c.name}.fbx.meta`); if (!existsSync(p)) { wrong.push(`${c.name}: missing`); continue; }
         if (xzOf(readFileSync(p, 'utf8')) !== (stays(c) ? '1' : '0')) wrong.push(c.name);
       }

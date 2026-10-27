@@ -10,7 +10,7 @@ roles = json.load(open(f'{here}/roles.json'))
 rows = {}
 for p in sorted(glob.glob(f'{out}/.rows.*.json'), key=os.path.getmtime):   # the newest build of a figure wins
     for r in json.load(open(p)): rows[r['id']] = r
-clips = json.load(open(f'{out}/Clips/clips.rows.json'))
+clips = [c for c in json.load(open(f'{out}/Clips/clips.rows.json')) if c.get('game', True)]   # the game's clips only (clips.json `game: false` stay out)
 cspec = {c['name']: c for c in json.load(open(f'{here}/clips.json'))['clips']}
 speeds = json.load(open(f'{here}/speeds.json'))['speeds']
 for c in clips:

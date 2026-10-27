@@ -9,6 +9,17 @@
    "rule": "brief 069 (Sky, 2026-10-27: 'hands pose looks unnatural'): clips.py measures each clip's finger bend (fingerBendDeg in clips.rows.json: the two bends inside each finger, index to little, both hands, the clip's mean); one below this share of the reference walk's has flat fingers (fingersFlat). The game plays hand_relaxed on a finger-masked override layer over those clips (and always over a figure's rigid hand, which has no finger bones: a no-op there, its mesh carries the relaxed curl, fit.json transfer.fingers.rigidRelax)."
   }
  },
+ "targets": {
+  "note": "brief 069 (Aster, 2026-10-27: install only what the game uses, decided by data). A build of the clip stage is for one target (clips.py <spec> <out> [target]; run.ts builds 'game'). game: the clips without `game: false` reach the game's manifest and controller; the others (the pistol and rifle sets, hand_relaxed) are built beside them but stay out until weapons enter the game. fingerLimits: whether the clip avatars carry tools/figures/finger_limits.json; off for the game until finger-boned new-pipeline figures enter it (today's game figures have Unity's default limits, and both sides must match). pipeline: every clip, with the limits, for the new figures' checks (their _avatarT metas carry the same limits).",
+  "game": {
+   "fingerLimits": false,
+   "clips": "game"
+  },
+  "pipeline": {
+   "fingerLimits": true,
+   "clips": "all"
+  }
+ },
  "clips": [
   {
    "name": "idle",
@@ -713,7 +724,8 @@
    "loco": false,
    "feet": true,
    "set": "pistol",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "pistol_draw",
@@ -734,7 +746,8 @@
    "set": "pistol",
    "use": "pistol: the draw as the standard layered transition (the pistol pack has no draw in its stance): the idle's hands-down pose eased into the aim's first frame over 0.6 s, so it starts where idle is and ends where pistol_aim begins",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
-   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx"
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "game": false
   },
   {
    "name": "pistol_aim",
@@ -744,7 +757,8 @@
    "loco": false,
    "feet": true,
    "set": "pistol",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "pistol_fire",
@@ -781,7 +795,8 @@
    "feet": true,
    "set": "pistol",
    "use": "pistol: fire = the aim pose held with a recoil (the arms kick up 8 deg and settle in 0.4 s), the arms staying at aim height; a full clip from the aim's own frame 1, so aim and fire share the stance and the gun's direction",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "pistol_walk",
@@ -805,7 +820,8 @@
    "feet": true,
    "set": "pistol",
    "use": "pistol: walk armed: the game's walk on the legs (1.53 m/s natural), the pistol pack's two-handed aim held on the upper body. The pack's own Pistol_Walk is a brisk tactical walk (0.83 s cycle, 0.93 m stance stride: 2.51 m/s, the game's walk_armed note says the same), outside the walk band (clipSets.speedBands), so the walk takes the standard upper/lower split",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "pistol_run",
@@ -815,7 +831,8 @@
    "loco": true,
    "feet": true,
    "set": "pistol",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "rifle_idle",
@@ -825,7 +842,8 @@
    "loco": false,
    "feet": true,
    "set": "rifle",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "rifle_aim",
@@ -835,7 +853,8 @@
    "loco": false,
    "feet": true,
    "set": "rifle",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "rifle_fire",
@@ -845,7 +864,8 @@
    "loco": false,
    "feet": true,
    "set": "rifle",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "rifle_walk",
@@ -855,7 +875,8 @@
    "loco": true,
    "feet": true,
    "set": "rifle",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "rifle_run",
@@ -865,7 +886,8 @@
    "loco": true,
    "feet": true,
    "set": "rifle",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "pistol_holster",
@@ -887,7 +909,8 @@
    "set": "pistol",
    "use": "pistol: the holster, the draw played back (the aim's first frame eased to the idle's hands-down pose over 0.6 s)",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
-   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx"
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "game": false
   },
   {
    "name": "rifle_raise",
@@ -908,7 +931,8 @@
    "feet": true,
    "set": "rifle",
    "use": "rifle: the raise from the unarmed idle into the aim pack's stance, the standard 0.6 s blend into its first frame (as pistol_draw); its last frame is rifle_aim's first",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "rifle_lower",
@@ -930,7 +954,8 @@
    "feet": true,
    "set": "rifle",
    "use": "rifle: the raise played back, the aim's first frame eased to the unarmed idle",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "game": false
   },
   {
    "name": "hand_relaxed",
@@ -950,7 +975,8 @@
    "feet": false,
    "use": "the relaxed hand (brief 069): the reference walk's own hand held (its first frame, every bone; the game's layer masks it to the fingers) on a finger-masked override layer over the clips whose fingers are flat (clips.rows.json fingersFlat)",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
-   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx"
+   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "game": false
   }
  ]
 }
