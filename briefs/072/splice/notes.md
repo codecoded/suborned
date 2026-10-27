@@ -1,0 +1,3 @@
+# 072-C · Splice notes
+
+- 2026-10-27 · decokit `--only` fixed: a partial run (`--only`, `--cats`, `--lods-only`) now merges into `decokit_materials.json` and `decokit_manifest.json` (rows it built updated, every other row kept in place, new rows appended), never shrinks them (`tools/decokit/tables.py`, used by `export_kit.py`; test `tools/decokit/tables.test.ts`). Checked: `--only Bollard` into a copy of out/decokit kept 274/274 materials (4 rows the run itself never registered) and 248/248 manifest rows. A material dropped from `mats.LIB` on purpose now lingers in the table until a run without `--only`/`--cats` or the table file is deleted.

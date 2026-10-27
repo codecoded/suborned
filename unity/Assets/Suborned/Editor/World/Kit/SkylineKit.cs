@@ -13,7 +13,7 @@ namespace Suborned.World
     /// Placement: a facade piece's export point is its footprint centre (the piece is modelled with its pivot on the facade plane);
     /// a SkyBridge stands its lowest point on its base; every other piece stands its pivot on (at, base). Horizon pieces cast no
     /// shadows and take the export's haze share: ring pieces a lit copy of their materials mixed toward the haze colour, sky bodies
-    /// (planet, moons) Suborned/SkyBody (unlit, unfogged, haze mixed in).</summary>
+    /// (planet, moons) Suborned/SkyBody (unlit, unfogged, the kit's map and colour with the haze mixed over them).</summary>
     public sealed class SkylineKit
     {
         readonly KitPlacer placer; readonly Look look;
@@ -84,7 +84,19 @@ namespace Suborned.World
             {
                 m = new Material(Shader.Find("Suborned/SkyBody") ?? throw new InvalidDataException("World: shader Suborned/SkyBody not found (Assets/Suborned/Shaders)"))
                     { name = $"{src.name}/sky-haze{share:F2}" };
-                m.SetColor("_BaseColor", mixed);
+                // the kit's own map and colour (the old DecoKit planet bands, ring profile, moon; brief 072 decision 4), the haze mixed
+                // over them in the shader so the texture survives the mix
+                string map = src.HasTexture("_BaseMap") && src.GetTexture("_BaseMap") ? "_BaseMap" : src.HasTexture("_MainTex") && src.GetTexture("_MainTex") ? "_MainTex" : null;
+                if (map != null)
+                {
+                    m.SetTexture("_BaseMap", src.GetTexture(map));
+                    m.SetTextureScale("_BaseMap", src.GetTextureScale(map));
+                    m.SetTextureOffset("_BaseMap", src.GetTextureOffset(map));
+                }
+                c.a = 1f;
+                m.SetColor("_BaseColor", c);
+                m.SetColor("_HazeColor", haze);
+                m.SetFloat("_Haze", share);
             }
             else
             {   // the haze also lifts the shaded side (atmospheric perspective): emission of the haze at half the share

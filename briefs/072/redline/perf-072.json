@@ -1,0 +1,39 @@
+{
+  "note": "Redline 072-D (2026-10-27): the every-face A/B plan for the perf harness (-perf, development players only). SPEC, NOT RUN, and not runnable until Latch adds the fields marked new: PerfStop.yaw, PerfVariant.everyFace (on | off: the every-face modules, or today's procedural walls and skin kept under their own root in the development build), PerfVariant.moduleShadows (proxy | lod0). PerfBuild resolves foci and stand-offs (Rig.StandOff with each stop's own yaw) into the player's plan, as for perf-stops.json. 1920x1080 windowed (GDD §11's bar, Sky 2026-10-26). Verdict rules: briefs/072/redline/plan.md section 4.3 and 5.",
+  "content": "world + every-face modules; no vehicles or sim (as perf-stops.json)",
+  "width": 1920,
+  "height": 1080,
+  "warmup": { "minSeconds": 600, "maxSeconds": 900, "dwellSeconds": 10, "plateau": 0.02 },
+  "variants": [
+    { "name": "today", "why": "the procedural walls and skin as today (modules hidden), everything else as built", "everyFace": "off" },
+    { "name": "every", "why": "every face dressed: modules at L0 (ortho), cast from their L2 proxy, ShadowsOnly mass shell", "everyFace": "on", "moduleShadows": "proxy" },
+    { "name": "every-l0cast", "why": "the shadow policy's price: modules cast from their own LODs (L0 at play zoom), no proxies", "everyFace": "on", "moduleShadows": "lod0" },
+    { "name": "every-ssaooff", "why": "every + 064 A3 item 1 (SSAO off for the play camera): the projected shipping number at play zoom", "everyFace": "on", "moduleShadows": "proxy", "ssao": "off" }
+  ],
+  "passes": [
+    {
+      "name": "ab072",
+      "why": "every face against today, warm, uncapped, interleaved and rotated per stop; the first segment again at the end (noise gate: within 3 %)",
+      "vSync": 0, "window": "Windowed", "settleSeconds": 2, "recordSeconds": 10, "missMs": 17.5, "repeats": 3,
+      "stops": ["cell-open-30", "cell-open-120", "office-front-30", "office-front-210", "parade-210", "crown-circus-120"],
+      "variants": ["today", "every", "every-l0cast", "every-ssaooff"],
+      "repeatFirst": true, "shots": true
+    },
+    {
+      "name": "capped072",
+      "why": "as shipped (vSync on): missed vblanks past 25 ms at the opening, today against every",
+      "vSync": 1, "window": "Windowed", "settleSeconds": 2, "recordSeconds": 30, "missMs": 25, "repeats": 1,
+      "stops": ["cell-open-30"],
+      "variants": ["today", "every"],
+      "repeatFirst": false, "shots": false
+    }
+  ],
+  "stops": [
+    { "name": "cell-open-30", "why": "the cell's opening view (HandoverHost OpeningFocus; Latch's 072 baseline)", "focus": [-170.5, 0, -227.5], "zoom": 0, "yaw": 30 },
+    { "name": "cell-open-120", "why": "the opening focus turned once: most new modules of the opening (computed 21 at zoom 14)", "focus": [-170.5, 0, -227.5], "zoom": 0, "yaw": 120 },
+    { "name": "office-front-30", "why": "the Records Office front with the RecordsTower (Latch's 072 baseline)", "focus": [-160, 0, -281], "zoom": 0, "yaw": 30 },
+    { "name": "office-front-210", "why": "the service side, played at yaw 210 (GDD §10)", "focus": [-160, 0, -281], "zoom": 0, "yaw": 210 },
+    { "name": "parade-210", "why": "the most shadow casters computed (1,361 modules at zoom 14)", "focus": [212, 0, 0], "zoom": 0, "yaw": 210 },
+    { "name": "crown-circus-120", "why": "the most new view modules computed at zoom 14 (160)", "focus": [0, 0, 0], "zoom": 0, "yaw": 120 }
+  ]
+}

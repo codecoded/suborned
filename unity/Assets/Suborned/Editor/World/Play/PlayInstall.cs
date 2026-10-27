@@ -173,7 +173,8 @@ namespace Suborned.World.Play
         }
 
         public static string WalkPath => Path.Combine(HarbourWorldBuilder.RepoRoot, "out/world/harbour-district.walk.json");
-        public static string ExportPath => Path.Combine(HarbourWorldBuilder.RepoRoot, "out/world/harbour-district.world.json");
+        /// <summary>The export being built: batchmode's `-world` when given (a pinned export, brief 072), else the generated one.</summary>
+        public static string ExportPath => HarbourWorldBuilder.Arg("-world", Path.Combine(HarbourWorldBuilder.RepoRoot, "out/world/harbour-district.world.json"));
 
         /// <summary>Brief 055 step 1: the host's ground from `out/world/harbour-district.walk.json` (`suborned.walk/1`, Splice's `bun run geometry`):
         /// block frame, the site window, `cell` m cells (0.25), `floor` int16 LE cm base64 at i * ny + j (i along block x, j along y), the same
