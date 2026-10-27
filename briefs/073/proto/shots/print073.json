@@ -1,0 +1,20 @@
+{
+  "schema": "suborned.073.print/1",
+  "when": "2026-10-28 04:33",
+  "method": "Camera.Render into ARGBHalf (MSAA 1, the URP asset's), Graphics.Blit into ARGB32 sRGB, ReadPixels (Capture: Glint's honest path); 1920x1080; each frame rendered twice, the second kept",
+  "signals": "SignalsFeature in PC_Renderer (after post, own depth)",
+  "depthTextureForced": false,
+  "hdrProbe": [
+    { "view": "office-front-y030", "p50": 0.513, "p90": 1.224, "p99": 1.403, "p999": 1.804, "max": 2806.00, "over1": 0.2371, "over1.5": 0.0038, "over2": 0.0006, "over4": 0.0001 },
+    { "view": "office-front-y210", "p50": 0.519, "p90": 1.072, "p99": 1.361, "p999": 1.742, "max": 583.50, "over1": 0.1736, "over1.5": 0.0025, "over2": 0.0002, "over4": 0.0000 },
+    { "view": "cell-open-y030", "p50": 0.908, "p90": 1.196, "p99": 1.498, "p999": 1.889, "max": 170.13, "over1": 0.3947, "over1.5": 0.0097, "over2": 0.0007, "over4": 0.0001 }
+  ],
+  "grabMsEditor": { "off-office-front-y030": 9.7, "off-office-front-y210": 13.5, "off-cell-open-y030": 17.8, "off-cell-open-y210": 11.5, "subtle-office-front-y030": 21.0, "subtle-office-front-y210": 15.1, "subtle-cell-open-y030": 10.2, "subtle-cell-open-y210": 12.7, "default-office-front-y030": 17.5, "default-office-front-y210": 10.4, "default-cell-open-y030": 14.8, "default-cell-open-y210": 14.9, "strong-office-front-y030": 15.9, "strong-office-front-y210": 18.5, "strong-cell-open-y030": 10.6, "strong-cell-open-y210": 16.0 },
+  "syncedGrabMsMedian": { "off": 13.81, "subtle": 14.20, "default": 14.70, "strong": 16.55 },
+  "signalCheck": [
+    { "variant": "off", "signalPixels": 2210, "identicalToOff": 2210, "within2ToOff": 2210, "opaqueCorePixels": 1244, "opaqueCoreWithin1ToOff": 1244 },
+    { "variant": "subtle", "signalPixels": 2210, "identicalToOff": 1269, "within2ToOff": 1671, "opaqueCorePixels": 1244, "opaqueCoreWithin1ToOff": 1244 },
+    { "variant": "default", "signalPixels": 2210, "identicalToOff": 1246, "within2ToOff": 1415, "opaqueCorePixels": 1244, "opaqueCoreWithin1ToOff": 1244 },
+    { "variant": "strong", "signalPixels": 2210, "identicalToOff": 1244, "within2ToOff": 1352, "opaqueCorePixels": 1244, "opaqueCoreWithin1ToOff": 1244 }
+  ]
+}
