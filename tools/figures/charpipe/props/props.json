@@ -11,32 +11,219 @@
    "label": "The cell's sidearm, design 4 (Sky's pick, 2026-10-27): compact boxy body, glossy white and piano-black panels, polished chrome muzzle frame and side disc, one thin aubergine line",
    "concept": "paid/069-props/codex/pistol_v3_gloss_contrast.png",
    "sheet": "paid/069-props/codex/pistol_d4_sheet_1.png",
-   "sheetCells": {"cols": 3, "rows": 2, "views": {"right": [0, 0], "left": [0, 1], "threeQuarter": [0, 2], "muzzle": [1, 0], "rear": [1, 1], "top": [1, 2]},
-                  "note": "row, col on the sheet; 'left' = the gun's left side (muzzle to the image's right)"},
+   "sheetCells": {
+    "cols": 3,
+    "rows": 2,
+    "views": {
+     "right": [
+      0,
+      0
+     ],
+     "left": [
+      0,
+      1
+     ],
+     "threeQuarter": [
+      0,
+      2
+     ],
+     "muzzle": [
+      1,
+      0
+     ],
+     "rear": [
+      1,
+      1
+     ],
+     "top": [
+      1,
+      2
+     ]
+    },
+    "note": "row, col on the sheet; 'left' = the gun's left side (muzzle to the image's right)"
+   },
    "mesh": {
-    "job": "069-props", "pass": "pistol-mesh", "budgetUsd": 1.0, "estUsd": 0.6, "model": "tripo:v3.1@0",
-    "views": ["left", "muzzle", "right", "rear"],
+    "job": "069-props",
+    "pass": "pistol-mesh",
+    "budgetUsd": 1.0,
+    "estUsd": 0.6,
+    "model": "tripo:v3.1@0",
+    "views": [
+     "left",
+     "muzzle",
+     "right",
+     "rear"
+    ],
     "viewsNote": "Tripo multiview slots [front, left, back, right], 'left' being the object's own left (as the Fixer's take showed: her left side went in 'left'). With the gun's left side as the front, the object's own left (the viewer's right) is the muzzle end, its back is the gun's right side, its right is the rear. Each sheet cell is cut on the sheet's flat grey, recentred on the object at the sheet's one scale (no view is rescaled alone), 1024 px.",
-    "settings": {"texture": true, "pbr": true, "faceLimit": 3000, "geometryQuality": "standard", "textureQuality": "detailed", "orientation": "default"},
+    "settings": {
+     "texture": true,
+     "pbr": true,
+     "faceLimit": 3000,
+     "geometryQuality": "standard",
+     "textureQuality": "detailed",
+     "orientation": "default"
+    },
     "settingsNote": "pbr on: the finish is gloss (white enamel, piano black, chrome) and Tripo's metallic-roughness map carries it; the figures are matte, this prop is meant to shine. faceLimit 3000 for a 2-3k prop (the tray is 2.2k). Standard geometry: 'detailed' is for dense meshes and is cut to 3k anyway."
    },
-   "size": {"lengthM": 0.18, "axis": "barrel"},
-   "grip": {"belowSlideFrac": 0.4, "rearFrac": 0.5, "muzzleProbeFrac": 0.12,
-            "rule": "the slide's underside is the lowest point of the front muzzleProbeFrac of the length (only slide there); the grip is the part below it in the rear rearFrac; the grip point is the centre of the grip's section belowSlideFrac of the grip's height down from the slide"},
+   "size": {
+    "lengthM": 0.18,
+    "axis": "barrel"
+   },
+   "grip": {
+    "belowSlideFrac": 0.4,
+    "rearFrac": 0.5,
+    "muzzleProbeFrac": 0.12,
+    "rule": "the slide's underside is the lowest point of the front muzzleProbeFrac of the length (only slide there); the grip is the part below it in the rear rearFrac; the grip point is the centre of the grip's section belowSlideFrac of the grip's height down from the slide"
+   },
    "texPx": 1024,
-   "material": {"smoothnessFloor": 0.0, "note": "URP Lit from Tripo's PBR: albedo, and the metallic map packed R metallic / A smoothness (1 - roughness), as build.write_metal does"},
+   "material": {
+    "smoothnessFloor": 0.0,
+    "note": "URP Lit from Tripo's PBR: albedo, and the metallic map packed R metallic / A smoothness (1 - roughness), as build.write_metal does"
+   },
    "attach": {
-    "hand": {"bone": "Attach_RightHand", "offset": [0, 0, 0], "clips": ["aim_pistol", "idle"]},
-    "holster": {"bone": "Attach_HipRight", "offset": [0.018, 0, 0], "clips": ["walk", "run", "crouch_walk"],
-                "note": "offset along the bone's +X (out from the hip): half the pistol's thickness clear of the body. The bone hangs barrel down, slide forward."}
+    "hand": {
+     "bone": "Attach_RightHand",
+     "offset": [
+      0,
+      0,
+      0.015
+     ],
+     "clips": [
+      "draw",
+      "aim_pistol",
+      "aim",
+      "shoot",
+      "cover_in",
+      "cover_kneel",
+      "cover_fire",
+      "cover_out",
+      "run_armed",
+      "walk_armed"
+     ],
+     "turnFromClip": {
+      "clip": "aim_pistol",
+      "rule": "the barrel lies along the forearm while aiming: over the aim frames (seat.aimFrames) of every figure shown, the forearm line (ForeArm -> Hand) is read in the bone's frame and averaged; the prop's one localRotation turns the bone's working line (+Z) onto it by the shortest arc. The clip's wrist is Mixamo's gun-holding wrist, so the number is the clip's, the same on every figure of the skeleton (the spread across figures is reported)"
+     },
+     "offsetNote": "1.5 cm forward along the barrel: the slide's rear clears the wrist (aim_pistol: 9-10 crossings with the forearm at 0)",
+     "show": {
+      "bone": "Attach_RightHand",
+      "onlyWhile": [
+       "draw",
+       "aim_pistol",
+       "aim",
+       "shoot",
+       "cover_in",
+       "cover_kneel",
+       "cover_fire",
+       "cover_out",
+       "run_armed",
+       "walk_armed"
+      ],
+      "rule": "Sky, 2026-10-27: 'I would just hide the gun for now when holstered.' The pistol exists only in the right hand: SetActive(true) only while the figure's Animator state is one of onlyWhile, SetActive(false) in every other state (as the tray: tools/figures/props.json). The names are the game's states (HostViews.Figures.cs; tools/figures/clips.json): draw the raise, aim_pistol/aim the hold (an armed op standing in a fight plays aim_pistol), shoot the recoil, cover_in/cover_kneel/cover_out/cover_fire the cover set with the pistol up (cover_pin is hands over the head: hidden), run_armed the armed run, walk_armed the armed walk (in the clip set; the game walks an armed op with walk/walk_f today, so a drawn op walking shows no gun).",
+      "holster": "there is no holster clip: the Holster order plays no state of its own, so the gun shows until the figure leaves the drawn states above. If Latch wants it exact, the sim's Gun.Drawn (false once HolsterAt has passed) is the switch, gated by the same list."
+     }
+    },
+    "holster": {
+     "bone": "Attach_HipRight",
+     "offsetRule": {
+      "outM": "half the prop's width + clearM",
+      "clearM": 0.012,
+      "backM": 0.07,
+      "note": "Tried in walk on the Fixer before the roles split: at the hip line the hanging hand and forearm crossed it at 4 of 6 frames; 7 cm back 2; 2 cm back and 8 cm up 4; 12 cm back and 6 cm up 3. The guard's trials are in seat.holster.trials and the result",
+      "upM": 0.0
+     },
+     "clips": [
+      "walk",
+      "run",
+      "crouch_walk"
+     ],
+     "note": "Attach_HipRight (fit.json attach.frame: up forward, working line down): barrel down, slide forward, out from the hip by half the prop's width + clearM, backM behind the hip line. For roles with a hidden holster (the cell) it is unused.",
+     "wornHipProp": "a figure wearing a hip prop at Attach_HipRight (the crowd's cross-body bag) has no free holster point: the holster is not shown or checked on it, and the report says so",
+     "parked": false,
+     "usedBy": "roles whose holster is visible (roles.guard)"
+    }
    },
    "seat": {
-    "clip": "aim_pistol", "frames": [0.25, 0.5, 0.75],
-    "gripInsideHandM": 0.02,
+    "clip": "aim_pistol",
     "barrelToForearmMaxDeg": 15,
     "propBodyMaxPairs": 0,
-    "rule": "fails loudly (exit 1): at each frame of the clip the grip point lies within gripInsideHandM of the hand's palm centre (inside a rigid, open hand there is no closed fist to sit in), the barrel (+Z) points along the forearm (ForeArm -> Hand) within barrelToForearmMaxDeg, and no prop triangle crosses the body (LOD0) except the hand's own; holstered in walk, no prop triangle crosses the body"
+    "rule": "fails loudly (exit 1): in aim_pistol at each aim frame the grip point lies within gripToPalmMaxM of the right hand's surface (the hands are rigid and open: no fist closes on it), the barrel (+Z) points along the forearm (ForeArm -> Hand) within barrelToForearmMaxDeg, and no prop triangle crosses the body outside the two hands (LOD0; the clip aims two-handed, so prop-hand crossings are counted and shown, not failed: the open fingers pass through the grip); holstered (roles with a visible holster) in walk, no prop triangle crosses the torso or legs",
+    "gripToPalmMaxM": 0.03,
+    "aimFrames": {
+     "handWithinM": 0.05,
+     "count": 3,
+     "rule": "the clip's frames where the right hand is within handWithinM of its highest point above the hips (the clip raises the pistol, then lowers it), count of them evenly spaced"
+    },
+    "holster": {
+     "clip": "walk",
+     "frames": [
+      0.0,
+      0.17,
+      0.33,
+      0.5,
+      0.67,
+      0.83
+     ],
+     "trials": [
+      {
+       "armOutDeg": 0,
+       "backM": 0.07
+      },
+      {
+       "armOutDeg": 6,
+       "backM": 0.07
+      },
+      {
+       "armOutDeg": 10,
+       "backM": 0.07
+      },
+      {
+       "armOutDeg": 0,
+       "backM": 0.1
+      },
+      {
+       "armOutDeg": 6,
+       "backM": 0.1
+      }
+     ],
+     "rule": "for each figure whose role shows the holster: the holstered prop crossing the torso or legs fails; crossings with the hanging arm are reported per trial (armOutDeg: the upper arm on the holster side turned out about the figure's facing, a fixed layer for holster roles; backM: the holster's offset behind the hip line), and the trial with the fewest is the one roles.guard and attach.holster carry"
+    }
    }
+  }
+ },
+ "clipFiles": {
+  "note": "clips the prop pictures play that are not in fit.json clips.list (same Mixamo library, the game's own idle)",
+  "idle": "Neutral_Idle__c9c80e28.fbx"
+ },
+ "roles": {
+  "note": "Sky, 2026-10-27: the weapon and the holster per role are data. 'the enforcer will have their own carbine'; 'guards should have their weapon holstered as it's a extra visual cue they're a guard'. holster: hidden = the weapon exists only in the hand, shown in the drawn states only (props.<weapon>.attach.hand.show); visible = it hangs at Attach_HipRight at all times and moves to the hand in the drawn states. A role whose holster is visible keeps Attach_HipRight free: the crowd's test cross-body bag is not built on it (fit/lib.role_skips). A person's role is its row's `role` (fit/e2e.json, fit/fixer.json).",
+  "cell": {
+   "members": [
+    "scout",
+    "fixer",
+    "tech"
+   ],
+   "weapon": "pistol",
+   "holster": "hidden"
+  },
+  "enforcer": {
+   "members": [
+    "enforcer"
+   ],
+   "weapon": "carbine",
+   "holster": "hidden",
+   "status": "the carbine is a separate prop, to come"
+  },
+  "guard": {
+   "weapon": "pistol",
+   "weaponStatus": "placeholder: the cell's pistol or a city-style guard sidearm is open with Sky",
+   "holster": "visible",
+   "armOutDeg": 10,
+   "armOutNote": "the trial with no contact (seat.holster.trials, e2e guard in walk, 6 frames): arm out 0 deg 1,058 crossing pairs at 2 frames; 6 deg 216 at 2; 10 deg none; 10 cm back with 0 deg 942 at 2, with 6 deg 169 at 1. Holster 7 cm behind the hip line. In the game this is a small fixed layer on the right upper arm for holster roles (Latch)"
+  },
+  "citizen": {
+   "weapon": null,
+   "holster": null
   }
  }
 }

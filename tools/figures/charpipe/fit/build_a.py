@@ -270,7 +270,7 @@ def hybrid_parts(fid, src, arm, px, att):
             info['hairUnderHatMoved'] = L.hair_under_hat(hat, [src], (np.array(hd) + np.array(tl)) / 2, lm['brow']) if H.get('hairRule', True) else 0
         else: info['welded'] = 'the cut is not clean: the hat stays in the A mesh, rigid on Head (the loose rule)'
     if L.SET in ('e2e', 'fixer') and L.E2E.get('props'):
-        pr = L.props(arm, att, src); out += pr; info['props'] = [o.name for o in pr]
+        pr = L.props(arm, att, src, skip=L.role_skips({r['id']: r for r in L.D['inputs']}[fid])); out += pr; info['props'] = [o.name for o in pr]
     return out, info
 
 

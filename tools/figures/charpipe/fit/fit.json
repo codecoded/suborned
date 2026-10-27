@@ -309,15 +309,15 @@
   "points": {
    "Attach_RightHand": {
     "parent": "RightHand",
-    "rule": "palm: hand head + 0.5 x (middle1 head - hand head), out of the palm by 0.25 x hand width"
+    "rule": "palm: hand head + 0.5 x (middle1 head - hand head), out of the palm by 0.25 x hand width; frame: up the thumb side, working line along the forearm (attach.frame)"
    },
    "Attach_LeftHand": {
     "parent": "LeftHand",
-    "rule": "as RightHand, mirrored"
+    "rule": "as RightHand, mirrored; frame as RightHand (attach.frame)"
    },
    "Attach_HipRight": {
     "parent": "Hips",
-    "rule": "right hip: hip joint height, lateral at the body's width + 1 cm"
+    "rule": "right hip: hip joint height, lateral at the body's width + 1 cm; frame: up forward, working line down (attach.frame)"
    },
    "Attach_Back": {
     "parent": "Spine2",
@@ -362,7 +362,8 @@
     "worn": false
    },
    "note": "worn props (the bag) merge into the body for crowd figures (budgets.mergeWorn); props that come and go (the tray, a pistol) stay separate on attachment points. A merged prop's colour comes from a small patch painted into an unused corner of the figure's texture, so the body keeps one material."
-  }
+  },
+  "frame": "every Attach_* bone that takes a held prop carries one frame by rule, so one offset fits every figure on the skeleton: the bone points along the prop's up (the bone's +Y in Unity), its roll puts its Z on the prop's working line (+Z in Unity). Attach_RightHand / Attach_LeftHand: up = the thumb side across the palm (Index1 - Pinky1, square to the forearm), working line = along the forearm (ForeArm -> Hand). Attach_HipRight: up = the figure's facing, working line = straight down (a holstered pistol hangs barrel down, slide forward). charpipe/props/props.json convention."
  },
  "layers": {
   "note": "The arm-out / leg-out layer: an additive pose driven by the weight slider (deg per unit of weight above 0.5) on the upper arm (away from the torso, about the hips' forward axis) and the thigh (out, the same). Applied after the clip, as Unity would with an additive layer or a muscle offset. Tried at 24 / 8 deg per unit (12 / 4 deg at weight 1: arm-torso intersections down 23-65 %, thighs 6-32 %, kept as *_layer24.metrics.json) and at 56 / 16 (28 / 8 deg at weight 1), the run reported.",

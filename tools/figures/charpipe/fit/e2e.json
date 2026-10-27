@@ -39,7 +39,8 @@
    "today": "c6",
    "src": "paid/069-e2e/meshes/e2e_coat__hy31pro_mv_t1.glb",
    "kind": "crowd",
-   "person": "A tall, heavy-set man in his fifties with light brown skin, a short grey crop and a clipped grey moustache."
+   "person": "A tall, heavy-set man in his fifties with light brown skin, a short grey crop and a clipped grey moustache.",
+   "role": "citizen"
   },
   {
    "id": "e2e_dress",
@@ -53,7 +54,8 @@
    "today": "cafe_w5",
    "src": "paid/069-e2e/meshes/e2e_dress__hy31pro_mv_t1.glb",
    "kind": "crowd",
-   "person": "A short, slight young woman in her twenties with deep brown skin and short natural black hair cropped close."
+   "person": "A short, slight young woman in her twenties with deep brown skin and short natural black hair cropped close.",
+   "role": "citizen"
   },
   {
    "id": "e2e_guard",
@@ -67,7 +69,8 @@
    "today": "guard",
    "src": "paid/069-e2e/meshes/e2e_guard__hy31pro_mv_t1.glb",
    "kind": "crowd",
-   "person": "An athletic woman of average height in her thirties, East Asian, black hair in a tight low bun."
+   "person": "An athletic woman of average height in her thirties, East Asian, black hair in a tight low bun.",
+   "role": "guard"
   },
   {
    "id": "e2e_flamingo",
@@ -82,7 +85,8 @@
    "today": "d6",
    "src": "paid/069-e2e/meshes/e2e_flamingo__hy31pro_mv_t1.glb",
    "kind": "crowd",
-   "person": "A woman in her forties of average height and medium build, with olive skin and glossy dark hair in a short sculpted bob."
+   "person": "A woman in her forties of average height and medium build, with olive skin and glossy dark hair in a short sculpted bob.",
+   "role": "citizen"
   }
  ],
  "hat": {
@@ -107,7 +111,7 @@
  },
  "lod0": {
   "mode": "source",
-  "note": "GDD \u00a701 house rule: models ship at full detail, no decimation without Sky's sign-off. LOD0 is the generated mesh as delivered (50k faces, its own normals, valid because the rest is the source pose); LOD1 and LOD2 (4.5k, 1.5k) are decimated from it as today's figures' LOD chain does. The fit test decimated LOD0 to 12k and cleared the normals: that is what made the faces facet."
+  "note": "GDD §01 house rule: models ship at full detail, no decimation without Sky's sign-off. LOD0 is the generated mesh as delivered (50k faces, its own normals, valid because the rest is the source pose); LOD1 and LOD2 (4.5k, 1.5k) are decimated from it as today's figures' LOD chain does. The fit test decimated LOD0 to 12k and cleared the normals: that is what made the faces facet."
  },
  "armpit": {
   "mergeM": 0.015,

@@ -531,17 +531,24 @@ def add_attach(arm, body_co):
     bp.ctx(arm, 'EDIT'); eb = arm.data.edit_bones; Mi = arm.matrix_world.inverted(); Mw = arm.matrix_world
     def wh(n): return Mw @ eb[n].head
     out = {}
-    def mk(name, parent, head, tail):
+    def mk(name, parent, head, tail, work=None):
+        # work: the prop's working line there (a barrel). The bone's roll puts its Z on it, so in Unity the bone's +Y is the prop's up (the bone's
+        # direction) and its +Z the working line: every held prop sits at localRotation identity (charpipe/props/props.json convention, attach.frame)
         b = eb.new(name); b.head = Mi @ head; b.tail = Mi @ tail; b.parent = eb[parent]; b.use_deform = False; out[name] = list(head)
+        if work is not None:
+            up = (tail - head).normalized(); wk = (work - up * work.dot(up)).normalized(); b.align_roll(Mi.to_3x3() @ wk)
     for s, sx in (('Right', -1), ('Left', 1)):
         h = wh(s + 'Hand'); m1 = wh(s + 'HandMiddle1'); i1 = wh(s + 'HandIndex1'); p1 = wh(s + 'HandPinky1')
         palm = h + (m1 - h) * 0.5; nrm = (i1 - h).cross(p1 - h).normalized() * (1 if s == 'Left' else -1)
         w = (i1 - p1).length; c = palm - nrm * 0.25 * w
-        if f'Attach_{s}Hand' in D['attach']['points']: mk(f'Attach_{s}Hand', s + 'Hand', c, c + (m1 - h).normalized() * 0.05)
+        fore = (h - wh(s + 'ForeArm')).normalized(); thumb = (i1 - p1); thumb = (thumb - fore * thumb.dot(fore)).normalized()
+        if f'Attach_{s}Hand' in D['attach']['points']: mk(f'Attach_{s}Hand', s + 'Hand', c, c + thumb * 0.05, work=fore)   # up: the thumb side; work: along the forearm
     hips = wh('Hips'); hz = (wh('LeftUpLeg').z + wh('RightUpLeg').z) / 2
     sl = body_co[np.abs(body_co[:, 2] - hz) < 0.02]; sl = sl[np.abs(sl[:, 0]) < 0.3]
     wx = float(np.abs(sl[:, 0]).max()) if len(sl) else 0.18
-    mk('Attach_HipRight', 'Hips', Vector((-(wx + 0.01), hips.y, hz)), Vector((-(wx + 0.01), hips.y, hz - 0.05)))
+    lr = wh('LeftUpLeg') - wh('RightUpLeg'); lr.z = 0; fwd = lr.cross(Vector((0, 0, 1))).normalized()   # the figure's facing (the figures face -Y)
+    hp = Vector((-(wx + 0.01), hips.y, hz))
+    mk('Attach_HipRight', 'Hips', hp, hp + fwd * 0.05, work=Vector((0, 0, -1)))   # holster: up = forward, working line = down (barrel down, slide forward)
     s2 = wh('Spine2'); band = body_co[np.abs(body_co[:, 2] - s2.z) < 0.02]; band = band[np.abs(band[:, 0]) < 0.12]
     by = float(band[:, 1].max()) if len(band) else s2.y + 0.12
     mk('Attach_Back', 'Spine2', Vector((0, by + 0.01, s2.z)), Vector((0, by + 0.06, s2.z)))
@@ -670,39 +677,42 @@ def drop_crumbs(o, pct):
     return len(gone), len(comps)
 
 
-def props(arm, att, suit):
-    """a cross-body bag (strap from the left shoulder over the chest to a bag at the right hip) and a tray in the left hand; weights from the nearest suit point."""
+def props(arm, att, suit, skip=()):
+    """a cross-body bag (strap from the left shoulder over the chest to a bag at the right hip) and a tray in the left hand; weights from the nearest suit point.
+    skip: props this person doesn't get (a role with a visible holster keeps the right hip free: no bag; charpipe/props/props.json roles)."""
     A = D['attach']['props']; out = []
     Vs = eval_co(suit); Ts = tris_of(suit); names = [g.name for g in suit.vertex_groups]; Ws = weights_of(suit, names)
     sb = BVHTree.FromPolygons([Vector(v) for v in Vs], [list(t) for t in Ts], all_triangles=True)
-    # bag
-    hip = np.array(att['Attach_HipRight']); sx, sy, sz = A['bag']['size']
-    bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
-    for v in bm.verts: v.co = Vector((v.co.x * sy, v.co.y * sx, v.co.z * sz))
-    bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.015, segments=2, affect='EDGES')
-    me = bpy.data.meshes.new('bag'); bm.to_mesh(me); bm.free(); bag = bpy.data.objects.new('prop_bag', me); bpy.context.scene.collection.objects.link(bag)
-    bag.location = Vector(hip) + Vector((-sy / 2 - 0.02, 0, -0.05)); bp.ctx(bag); bpy.ops.object.transform_apply(location=True)
-    # strap: points on the line shoulder -> bag top, each pushed out of the body by 1 cm along the front
-    sh = np.array(att['Attach_ShoulderLeft']); end = hip + np.array([0, 0, sz / 2 - 0.05])
-    pts = []; Mw = arm.matrix_world; ctr = Mw @ arm.data.bones['Spine2'].head_local
-    for k in range(13):
-        # the strap point sits outside the body's OUTERMOST surface along the line from the spine axis (generated meshes have inner shells,
-        # whose nearest normals point inward), plus strapOffsetM
-        q = sh + (end - sh) * k / 12; o = Vector((ctr.x, ctr.y, q[2]))
-        d = (Vector((q[0] - o.x, 0, 0)) * 2.0 + Vector((0, -1, 0))).normalized()     # a cross-body strap crosses the chest's front, tilted to its side
-        far = None; cur = o
-        for _ in range(64):
-            loc, nr, fi, dd = sb.ray_cast(cur, d, 1.0)
-            if loc is None or (far is not None and (loc - far).length > 0.05): break      # a gap: the next hit is another part (an arm), not this surface
-            far = loc; cur = loc + d * 1e-4
-        q2 = np.array(far + d * A['bag']['strapOffsetM']) if far is not None else q
-        if k == 0: q2 = np.maximum(q2, sh) if False else q2
-        pts.append(q2)
-    cu = bpy.data.curves.new('strap', 'CURVE'); cu.dimensions = '3D'; sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
-    for i, q in enumerate(pts): sp.points[i].co = (*q, 1)
-    cu.bevel_depth = 0.008; cu.bevel_resolution = 1
-    so = bpy.data.objects.new('prop_strap', cu); bpy.context.scene.collection.objects.link(so); bp.ctx(so); bpy.ops.object.convert(target='MESH'); strap = bpy.context.view_layer.objects.active
-    bpy.ops.object.select_all(action='DESELECT'); bag.select_set(True); strap.select_set(True); bpy.context.view_layer.objects.active = bag; bpy.ops.object.join()
+    bag = None; hip = np.array(att['Attach_HipRight']); sz = A['bag']['size'][2]
+    if 'bag' not in skip:
+        # bag
+        hip = np.array(att['Attach_HipRight']); sx, sy, sz = A['bag']['size']
+        bm = bmesh.new(); bmesh.ops.create_cube(bm, size=1.0)
+        for v in bm.verts: v.co = Vector((v.co.x * sy, v.co.y * sx, v.co.z * sz))
+        bmesh.ops.bevel(bm, geom=list(bm.edges), offset=0.015, segments=2, affect='EDGES')
+        me = bpy.data.meshes.new('bag'); bm.to_mesh(me); bm.free(); bag = bpy.data.objects.new('prop_bag', me); bpy.context.scene.collection.objects.link(bag)
+        bag.location = Vector(hip) + Vector((-sy / 2 - 0.02, 0, -0.05)); bp.ctx(bag); bpy.ops.object.transform_apply(location=True)
+        # strap: points on the line shoulder -> bag top, each pushed out of the body by 1 cm along the front
+        sh = np.array(att['Attach_ShoulderLeft']); end = hip + np.array([0, 0, sz / 2 - 0.05])
+        pts = []; Mw = arm.matrix_world; ctr = Mw @ arm.data.bones['Spine2'].head_local
+        for k in range(13):
+            # the strap point sits outside the body's OUTERMOST surface along the line from the spine axis (generated meshes have inner shells,
+            # whose nearest normals point inward), plus strapOffsetM
+            q = sh + (end - sh) * k / 12; o = Vector((ctr.x, ctr.y, q[2]))
+            d = (Vector((q[0] - o.x, 0, 0)) * 2.0 + Vector((0, -1, 0))).normalized()     # a cross-body strap crosses the chest's front, tilted to its side
+            far = None; cur = o
+            for _ in range(64):
+                loc, nr, fi, dd = sb.ray_cast(cur, d, 1.0)
+                if loc is None or (far is not None and (loc - far).length > 0.05): break      # a gap: the next hit is another part (an arm), not this surface
+                far = loc; cur = loc + d * 1e-4
+            q2 = np.array(far + d * A['bag']['strapOffsetM']) if far is not None else q
+            if k == 0: q2 = np.maximum(q2, sh) if False else q2
+            pts.append(q2)
+        cu = bpy.data.curves.new('strap', 'CURVE'); cu.dimensions = '3D'; sp = cu.splines.new('POLY'); sp.points.add(len(pts) - 1)
+        for i, q in enumerate(pts): sp.points[i].co = (*q, 1)
+        cu.bevel_depth = 0.008; cu.bevel_resolution = 1
+        so = bpy.data.objects.new('prop_strap', cu); bpy.context.scene.collection.objects.link(so); bp.ctx(so); bpy.ops.object.convert(target='MESH'); strap = bpy.context.view_layer.objects.active
+        bpy.ops.object.select_all(action='DESELECT'); bag.select_set(True); strap.select_set(True); bpy.context.view_layer.objects.active = bag; bpy.ops.object.join()
     # tray: a disc at the left palm, flat across the palm
     ar = arm.data.bones; Mw = arm.matrix_world
     h = Mw @ ar['LeftHand'].head_local; m1 = Mw @ ar['LeftHandMiddle1'].head_local; i1 = Mw @ ar['LeftHandIndex1'].head_local; p1 = Mw @ ar['LeftHandPinky1'].head_local
@@ -716,7 +726,7 @@ def props(arm, att, suit):
     R = Vector((0, 0, 1)).rotation_difference(nrm).to_matrix().to_4x4(); c = Vector(att['Attach_LeftHand']) - nrm * (depth + tz / 2 + A['tray'].get('clearM', 0.004))
     tray.matrix_world = Matrix.Translation(c) @ R; bp.ctx(tray); bpy.ops.object.transform_apply(location=True, rotation=True)
     m = simple_material('prop_chrome', None, (0.78, 0.78, 0.8, 1), 0.35)
-    for o, rule in ((bag, 'nearest'), (tray, 'LeftHand')):
+    for o, rule in [(o_, r_) for o_, r_ in ((bag, 'nearest'), (tray, 'LeftHand')) if o_ is not None]:
         o.data.materials.clear(); o.data.materials.append(m if o is tray else simple_material('prop_bag', None, (0.12, 0.35, 0.42, 1), 0.6))
         V = np.array([list(v.co) for v in o.data.vertices])
         if rule == 'nearest':
@@ -1101,3 +1111,14 @@ def reduce_lod(full, tris, name, arm, lod=0):
 
 def budget(row):
     return D['budgets'][row.get('kind', 'crowd')]
+
+
+def role_props():
+    """the held-prop roles (charpipe/props/props.json roles): weapon and holster per role"""
+    return json.load(open(os.path.join(CP, 'props', 'props.json')))['roles']
+
+
+def role_skips(row):
+    """the test props a person doesn't get, by role: a role whose holster is visible keeps Attach_HipRight free (no cross-body bag there)"""
+    r = role_props().get(row.get('role', ''), {})
+    return ('bag',) if r.get('holster') == 'visible' else ()

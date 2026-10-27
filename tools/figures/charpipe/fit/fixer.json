@@ -45,7 +45,8 @@
    "kind": "cell",
    "src20k": "paid/069-fixer/meshes/fixer_v7__tripo31_mv_t1.glb",
    "heightM": 1.75,
-   "heightNote": "Sky, 2026-10-27: 1.75 m, as today's Fixer"
+   "heightNote": "Sky, 2026-10-27: 1.75 m, as today's Fixer",
+   "role": "cell"
   }
  ],
  "looseRules": [],

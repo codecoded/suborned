@@ -583,4 +583,4 @@ def flags(agg):
     return f
 
 
-main()
+if __name__ == '__main__': main()   # charpipe/props/prop_show.py imports the figure and clip machinery without running it

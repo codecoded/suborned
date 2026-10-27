@@ -152,3 +152,14 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Optimize Game Objects** in `FigureBuild.cs`: Head and Hips on all, RightShoulder on the agents, RightHand on the servers; `HostViews` finds exposed bones by name. The tray seats on all four servers.
   - **Dev build 0.2.140**, not shipped: the proof passes, with before/after clips in `out/scratch/latch/069a/shots/video/`.
   - **To look at:** `sit_talk` plays with the legs swapped (the crossed leg mirrored), and `cover_fire`'s stance shifts sideways. Evidence: `latch/069a/`.
+
+## Props (2026-10-27)
+- **The cell's pistol:** Sky picked design 4 with the glossy, more-black finish (`paid/069-props/codex/pistol_v3_gloss_contrast.png`; 3D sheet `pistol_d4_sheet_1.png`). The first Codex wording was moderation-blocked; framing it as a stylised game prop passed.
+  - **Mesh:** Tripo 3.1, $0.40, 2,631 triangles, 18 cm, 1K PBR gloss.
+  - **Rules** (`tools/figures/charpipe/props/props.json`): +Z along the barrel, +Y up the slide, origin at the grip. One offset per skeleton on `Attach_RightHand` (fixed attach frames by rule in `fit.json`), with a seat check that fails loudly.
+- **Holster per role** (Sky):
+  - **The cell** hides the holstered gun and shows it only in the drawn states (`draw`, `aim_pistol`, `aim`, `shoot`, `cover_in/kneel/fire/out`, `run_armed`, `walk_armed`).
+  - **Guards** wear it visibly as a guard cue, with no cross-body bag on that hip. A 10° arm-out on the holster side with the holster 7 cm back clears the walking arm (0 contacts).
+  - **The Enforcer** gets their own carbine (Sky will provide the art).
+  - **Guards get a distinct sidearm** (Sky): concepts in `paid/069-props/codex/guard_sidearm_1.png` and `_2.png`, awaiting Sky's pick.
+- **Hands:** the hands are rigid, so the pistol sits on an open palm. Sky approved the finger-fitting rule for all full-skeleton figures, next after Latch's game check.
