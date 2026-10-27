@@ -60,11 +60,15 @@ Four intake stills (coat, dress, guard, Sky's flamingo commuter) became meshes w
 - Fit test: `out/scratch/forma/char-pipeline/fit-test/fit-test.html` and `media/`.
 
 ## The Fixer redone (2026-10-27)
-Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the store) through the intake prompt, to bring back the long dress, and to join her sleeves. **Sky's pick: `paid/069-intake/codex/fixer_v4_set.png`** (Codex, $0).
+Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the store) through the intake prompt, to bring back the long dress, and to join her sleeves. **Sky's final pick: `paid/069-intake/codex/fixer_v7_cutout.png`** (Codex, $0). Each step is an edit of the one before. Sky's picks: set-in sleeves (v4_set) → "more aubergine": blocks (v5_blocks) → "combine" with the accents: take 2 (v6_combo_2) → the sleeves "lost that seductive look": cut-outs (v7_cutout).
+- **The final design:**
+  - ivory with aubergine blocks: the collar, shoulders, upper sleeves and side blades;
+  - aubergine piping on the wrap edge, the hem, the split and the back seam, plus a waist band and cuffs;
+  - the sleeves joined to the dress by an aubergine band over each shoulder, with a large pointed cut-out below it showing bare shoulder and upper arm.
 - **The dress:** the concept's long asymmetric ivory wrap to mid-calf, with an aubergine pinstripe inner panel and a deep split at her left hip at the front. The back of the skirt is closed in every view.
 - **The sleeves:** set into the dress, one garment from collar to wrist, with diagonal aubergine blades on each arm.
 - **Kept from the concept:** the open back with its halter straps, the top knot and ponytail, and the block-heel ankle boots.
-- **How it was made:** two passes. `fixer/prompt_v3_keyhole.txt` is the intake template with a hero exception for the long hem. `fixer/prompt_v4_set.txt` is an edit of that sheet. Regenerating from scratch kept the sleeves detached and put the back split on the wrong side; editing fixed both.
+- **How it was made:** two passes. `fixer/prompt_v3_keyhole.txt` is the intake template with a hero exception for the long hem. `fixer/prompt_v4_set.txt` is an edit of that sheet. Regenerating from scratch kept the sleeves detached and put the back split on the wrong side; editing fixed both. `prompt_v5_blocks.txt`, `prompt_v6_combo.txt` and `prompt_v7_cutout.txt` are the later edits.
 - **For the mesh and rig:**
   - The long hem is an art-bible exception (hems at the knee or above) for a hero, to be recorded at the next GDD change.
   - The skirt and ponytail need extra bones or cloth.
