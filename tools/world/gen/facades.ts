@@ -1,7 +1,7 @@
 // Facade wave 2 (brief 007 B): kit bays, ends and corners on the street faces of generated buildings, by storeys, use and corner.
 // A building takes ONE bay piece for its whole frontage (chosen from the adopted bays that fit H(n), seeded by id), with the matching
 // corner / end pieces of its storey code. Adjacent buildings never carry the same bay piece (neighbour contrast); if no contrasting piece
-// fits, the building keeps its procedural facade. A piece is placed only where its body stands inside the building ring.
+// fits, the building keeps its procedural facade. A piece is placed only where its body stands inside the building ring (within FIT).
 // Frame (tools/decokit, facades.py): the bay is 6 m wide (x), its body 14 m deep behind the facade plane and a canopy (size z − 14) in front;
 // the piece's front (+Z) faces yaw + 90°, so +X runs clockwise along the outside of a CCW ring (against the ring's direction).
 // A corner (8 × 8 m cell, quarter round) takes the head of the edge entering a convex 90° vertex and the tail of the one leaving it;
@@ -19,6 +19,7 @@ export type FacadeBld = { id: string; use: string; n: number; ring: Ring; /** in
 export type FacadeOut = { facades: Facade[]; kitFaced: Set<string>; metres: Map<string, { street: number; kit: number }>; why: Map<string, string> };
 
 const BODY = 14, BAY = 6, CELL = 8; // m: body depth, bay width, corner cell (kit frame)
+const FIT = 0.02; // m: a body corner tested this far inside its back and sides (a corner at a 45° slant then stands under 0.03 out; K-6 allows 0.05)
 const TOL = 0.08, MIN_SY = 0.9, CORNER_SPARE = 0.3; // CORNER_SPARE: a face takes a corner cell when it is at least the cell plus this long (the 9 m faces cornerKeep leaves at a corner) // height tolerance against H(n); the pieces' own tags.scale range is read from the kit
 /** The bay height each storey code was built to (the end and corner pieces stand to their code's bay height, their masts and piers aside). */
 const CODE: Record<string, number> = { '2': 12.9, '3': 16.3, '4': 19.7, '6': 26.5, '9': 36.7, '10': 43.6 };
@@ -91,7 +92,9 @@ export function generateFacades(ctx: Ctx, blds: FacadeBld[], pav: number, near: 
     const endP = (ends.get(code) ?? []).find(e => e.a.id.endsWith('W') === bay.a.id.endsWith('W')) ?? (ends.get(code) ?? [])[0];
     const cornP = (corners.get(code) ?? [])[0], kc = cornP ? scaleOf(cornP) : null, ke = endP ? scaleOf(endP) : null;
     const inside = (q: V) => pointInRing(q, p);
-    const rect = (v: V, t: V, nrm: V, w: number, d: number): boolean => [[0.3, 0.3], [w - 0.3, 0.3], [w - 0.3, d - 0.3], [0.3, d - 0.3]].every(([s, e]) => inside([v[0] + t[0] * s! - nrm[0] * e!, v[1] + t[1] * s! - nrm[1] * e!]));
+    // the body w × d behind the wall from v along t: its back and sides within FIT of the ring (K-6, brief 072: a body 0.3 m short of its sides and back let a
+    // bay's back corner stand up to 0.43 m out through a slanted side wall), its front corners 0.3 m behind the wall line
+    const rect = (v: V, t: V, nrm: V, w: number, d: number): boolean => [[FIT, 0.3], [w - FIT, 0.3], [w - FIT, d - FIT], [FIT, d - FIT]].every(([s, e]) => inside([v[0] + t[0] * s! - nrm[0] * e!, v[1] + t[1] * s! - nrm[1] * e!]));
     // vertices: a corner where two street faces meet at a convex right angle with room for the cell on both
     const cornerAt: (boolean)[] = p.map((v, i) => {
       if (!kc || !cornP) return false;

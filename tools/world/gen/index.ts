@@ -84,6 +84,9 @@ function linkFacades(fronts: Frontage[], facades: Facade[]): Frontage[] {
   const by = new Map<string, Facade[]>();
   // brief 072-C: only the street pieces and the shop fillers (ShopFill_n, ShopStack_Base) carry a shopfront; under a side bay, service wall or stack module the tenancy keeps its own
   for (const f of facades) if (f.form === 'bay' || f.form === 'end' || f.form === 'corner' || SHOP_PIECE.test(f.kit.id)) (by.get(f.building) ?? by.set(f.building, []).get(f.building)!).push(f);
+  // brief 072 K-6: a shop run pulled back from an acute corner ends in a pilaster at the ground; it counts toward the half a tenancy needs behind it (never linked itself)
+  const ends = new Map<string, Facade[]>(), shopFaces = new Set(facades.filter(g => g.face && SHOP_PIECE.test(g.kit.id)).map(g => g.face));
+  for (const f of facades) if (f.form === 'pilaster' && f.base < 1 && shopFaces.has(f.face)) (ends.get(f.building) ?? ends.set(f.building, []).get(f.building)!).push(f);
   return fronts.map(f => {
     const mid: V = [(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2], mine = by.get(f.host) ?? [];
     const hit = mine.find(x => {
@@ -98,7 +101,7 @@ function linkFacades(fronts: Frontage[], facades: Facade[]): Frontage[] {
     // the pieces' footprints along the tenancy's line 0.3 m inside the wall (a corner piece's return counts where it stands)
     const pa: V = [f.a[0] - f.normal[0] * 0.3, f.a[1] - f.normal[1] * 0.3], d: V = [f.b[0] - f.a[0], f.b[1] - f.a[1]], Lt = Math.hypot(d[0], d[1]) || 1;
     let best: Facade | null = null, most = 0.5, sum = 0;
-    for (const x of mine) { const a = catalogued(x.kit.id); const t = a ? clip(quadOf(x.kit.at, a.size, x.kit.scale, x.kit.yaw ?? 0), pa, d) : null; if (!t) continue; const o = (t[1] - t[0]) * Lt; sum += o; if (o > most) { most = o; best = x; } }
+    for (const x of [...mine, ...(ends.get(f.host) ?? [])]) { const a = catalogued(x.kit.id); const t = a ? clip(quadOf(x.kit.at, a.size, x.kit.scale, x.kit.yaw ?? 0), pa, d) : null; if (!t) continue; const o = (t[1] - t[0]) * Lt; sum += o; if (o > most && x.form !== 'pilaster') { most = o; best = x; } }
     return best && sum >= Lt / 2 ? { ...f, facade: best.id } : f; // only where the pieces carry most of the tenancy's shopfront
   });
 }

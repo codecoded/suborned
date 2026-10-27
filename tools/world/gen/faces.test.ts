@@ -132,6 +132,13 @@ test('shop runs (pieces.md Pass 2): fillers 3 m nearest R / 3; a run on a tenanc
   const runs = new Map<string, string[]>(); for (const f of shop) (runs.get(f.face!) ?? runs.set(f.face!, []).get(f.face!)!).push(f.id);
   for (const [face, ids] of runs) expect(ids.some(id => linked.has(id)), face).toBe(true);
   expect(a.world.frontages.filter(f => f.level === 'street' && f.host.startsWith('bld/') && !f.facade).map(f => f.id)).toEqual([]);
-  // a stacked shop run has no base-band side module left under its row
-  for (const [face] of runs) expect(a.world.facades.filter(f => f.face === face && /^(SideBayStack|SidePilaster)_Base$/.test(f.kit.id)).map(f => f.id), face).toEqual([]);
+  // a stacked shop run has no base-band side module left under its row (K-6, brief 072: at an acute corner the row stops short and a pilaster base takes the
+  // corner, beside the row, never under it)
+  for (const [face, ids] of runs) {
+    const row = a.world.facades.filter(f => ids.includes(f.id) && f.kit.id === FACE_KIT.shop.base); if (!row.length) continue;
+    const o = row[0]!.a, u = [row[0]!.b[0] - o[0], row[0]!.b[1] - o[1]], l = Math.hypot(u[0]!, u[1]!), s = (p: number[]) => ((p[0]! - o[0]) * u[0]! + (p[1]! - o[1]) * u[1]!) / l;
+    const lo = Math.min(...row.flatMap(f => [s(f.a), s(f.b)])), hi = Math.max(...row.flatMap(f => [s(f.a), s(f.b)]));
+    const under = a.world.facades.filter(f => f.face === face && /^(SideBayStack|SidePilaster)_Base$/.test(f.kit.id) && s([(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2]) > lo + 0.01 && s([(f.a[0] + f.b[0]) / 2, (f.a[1] + f.b[1]) / 2]) < hi - 0.01);
+    expect(under.map(f => f.id), face).toEqual([]);
+  }
 });

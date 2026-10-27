@@ -70,13 +70,14 @@ export const FACES = {
   shopOverlap: 0.5, // m: an own-shopfront tenancy overlapping a side run by more than this makes it a shop run
   shopModule: 3, // m: the shop fillers' own width (k nearest R / 3, never FACES.module)
   shopMin: 1.5, // m: a run shorter than this is too narrow for a shopfront and keeps its side pieces
+  acuteTol: 0.5, // deg: a corner within this of square is square (K-6: no pull-back)
   shopTol: 0.6, // m: a run's part lies on a tenancy's line within this (shareTol, widened for a chord across an arc: avenue-court/19 stands 0.45 off)
 };
 
 export type Occ = { owner: string; ring: V[]; base: number; top: number; box: [number, number, number, number] };
 export type Cover = { quad: V[]; lo: number; hi: number; owner: string };
 export type FaceBld = { id: string; plot: string; area: string; use: string; kind: string; n: number; ring: Ring; tower: boolean; play: boolean; top: number };
-export type FaceLog = { face: string; building: string; area: string; play: boolean; family: 'side' | 'service' | 'stack'; length: number; from: number; to: number; modules: number; why?: string; blocked?: string[]; /** the module ids that dress it (Redline's per-face coverage) */ dressedBy?: string[]; /** a shop run: the shop filler modules on it (ShopFill_n or the ShopStack_Base row) */ shop?: number };
+export type FaceLog = { face: string; building: string; area: string; play: boolean; family: 'side' | 'service' | 'stack'; length: number; from: number; to: number; modules: number; why?: string; blocked?: string[]; /** the module ids that dress it (Redline's per-face coverage) */ dressedBy?: string[]; /** a shop run: the shop filler modules on it (ShopFill_n or the ShopStack_Base row) */ shop?: number; /** a shop run given back to its side pieces: too short once pulled back from an acute corner */ shopCut?: string; /** stretches left bare at an acute corner (m): narrower than any piece that fits there */ bare?: number[] };
 export type FacesOut = { facades: Facade[]; log: FaceLog[]; piers: { placed: number; skipped: number; why: Record<string, number> } };
 
 const boxOf = (p: V[]): [number, number, number, number] => [Math.min(...p.map(q => q[0])), Math.max(...p.map(q => q[0])), Math.min(...p.map(q => q[1])), Math.max(...p.map(q => q[1]))];
@@ -239,6 +240,10 @@ const familyOf = (id: string, form: string): Facade['family'] => (form === 'pila
 
 /** The piece's footprint centre from its pivot, in kit axes (x, z). */
 const centreOf = (a: KitAsset): [number, number] => a.pivotOffset ?? [0, 0];
+/** How far the piece reaches behind its wall plane (kit -Z from the pivot; the catalogue's footprint: size and pivotOffset). */
+export const backOf = (a: KitAsset): number => Math.max(0, a.size[2] / 2 - (a.pivotOffset?.[1] ?? 0));
+/** cot of the interior angle at a corner of a CCW ring between edge directions t0 → t1, where it is sharper than square (a turn over 90°); else 0. */
+export const cotAcute = (t0: V, t1: V): number => { const tn = turnDeg(t0, t1); return tn > 90 + FACES.acuteTol ? Math.tan(((tn - 90) * Math.PI) / 180) : 0; };
 
 /** An own-shopfront street tenancy (a street-level frontage of a plot building not linked to a street piece): host = its building id, a→b its shopfront line. */
 export type Tenancy = { host: string; a: V; b: V };
@@ -311,6 +316,9 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
       // spans: per edge, exposed and not under a piece already
       type Span = { e: number; s0: number; s1: number; from: number; fam: 'side' | 'service'; svc: '' | 'court' | 'yard' | 'back-to-back' };
       const spans: Span[] = [], L = (i: number) => dist(ring[i]!, ring[(i + 1) % N]!), T = (i: number) => norm(sub(ring[(i + 1) % N]!, ring[i]!));
+      // the wall edge before / after edge i (an edge shorter than a face is a joint: the corner is read across it)
+      const edgeBefore = (i: number) => { let k = (i + N - 1) % N; for (let g = 0; g < 3 && L(k) < FACES.minFace; g++) k = (k + N - 1) % N; return k; };
+      const edgeAfter = (i: number) => { let k = (i + 1) % N; for (let g = 0; g < 3 && L(k) < FACES.minFace; g++) k = (k + 1) % N; return k; };
       for (let i = 0; i < N; i++) {
         const a = ring[i]!, z = ring[(i + 1) % N]!; if (L(i) < FACES.minFace) continue;
         const cls = clsOf(b, a, z), n = edgeN(a, z);
@@ -362,6 +370,9 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
         const face = `${m.id}#${e0}${nth ? `.${nth}` : ''}`, ent: FaceLog = { face, building: b.id, area: b.area, play: b.play, family: r.fam, length: r3(total), from: r3(r.from), to: z1, modules: 0 };
         log.push(ent);
         if (R < FACES.minFace) continue; // the corner piers cover it
+        // the corners at the run's ends: cot of the interior angle where it is sharper than square (K-6 below), else 0, and how far short of it the run stops
+        const p0 = r.parts[0]!, pz = r.parts[r.parts.length - 1]!, gap0 = p0.s0, gap1 = Math.max(0, L(pz.e) - pz.s1);
+        const cot0 = cotAcute(T(edgeBefore(p0.e)), T(p0.e)), cot1 = cotAcute(T(pz.e), T(edgeAfter(pz.e)));
         // the column: a whole-wall piece (3 or 4 storeys from the street), else the stack's bands
         let col: Module[] | null = null, variants: KitAsset[] = [], why = '', blocked: string[] = [], stacked = false, code = 0;
         const foot = Math.max(r.from, pav), minFoot = r.from > z0 + 0.01 ? Math.max(z0, pav) : foot, full = whole && Math.abs(r.from - z0) < 0.01;
@@ -391,12 +402,31 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
             else if (stacked && c0.id === FACE_KIT.stack.base && c0.z <= pav + FACES.topTol) { const a = P.get(FACE_KIT.shop.base); if (a && Math.abs(a.size[1] - c0.a.size[1]) < 0.05 && inRange(a, c0.sy)) shopRow = { ...c0, id: a.id, a }; }
           }
         }
+        // the pilaster column of the same wall: takes what no whole number of modules fills (a stretch's ends) and a shop run's ends at an acute corner
+        const PL = FACE_KIT.pilaster, pw = code ? P.get(PL.whole[code]!) : undefined;
+        let pcol: Module[] | null = null;
+        if (pw && inRange(pw, (z1 - foot) / pw.size[1])) pcol = [{ id: pw.id, z: r3(foot), sy: r3((z1 - foot) / pw.size[1]), a: pw }];
+        else { const c = column(ctx, col[0]!.z, z1, col[0]!.z, b.top, P, PL); if ('mods' in c) pcol = c.mods; }
+        // K-6, footprint containment (brief 072): where the run ends at a corner sharper than square, the neighbouring wall cuts in behind it; a piece that
+        // reaches D m behind its wall stops D·cot(interior angle) short of the corner, so no part of it stands outside the building. The side pieces (0.4 m)
+        // leave a sliver; a shop filler's 2.15 m recess pulls the shop back further, and the side pieces (pilasters) take the corner again.
+        const sideCol = col, deep = (ms: Module[] | null) => Math.max(0, ...(ms ?? []).map(m => backOf(m.a)));
+        const fit = (d: number): [number, number] => [Math.max(s0, d * cot0 - gap0), Math.min(s1, total - Math.max(0, d * cot1 - gap1))];
+        const [a0, a1] = fit(Math.max(deep(sideCol), deep(pcol)));
+        let [h0, h1] = [a0, a1];
+        if (shopCol || shopRow) {
+          [h0, h1] = fit(backOf((shopCol ?? shopRow)!.a));
+          // an end narrower than the narrowest pilaster could not be dressed: the shop pulls back to the pilaster's width
+          const pmin = pcol ? pcol[0]!.a.size[0] * pcol[0]!.a.tags.scale[0] + 1e-4 : 0;
+          if (pmin && h0 - a0 > 0.01 && h0 - a0 < pmin) h0 = a0 + pmin;
+          if (pmin && a1 - h1 > 0.01 && a1 - h1 < pmin) h1 = a1 - pmin;
+          if (h1 - h0 < FACES.shopMin) { shopCol = shopRow = null; [h0, h1] = [a0, a1]; ent.shopCut = 'acute corner'; } }
         if (shopCol) col = [shopCol];
         // the shop row: k fillers of 3 m nearest R / 3 along the run, each its own column (the Mid / Top columns above keep their 6 m joints)
         if (shopRow) {
-          const st = shopTile(R), sw = FACES.shopModule * st.sx, [cx, cz] = centreOf(shopRow.a);
+          const st = shopTile(h1 - h0), sw = FACES.shopModule * st.sx, [cx, cz] = centreOf(shopRow.a);
           for (let i = 0; i < st.k; i++) {
-            const pa = at(s0 + i * sw), pb = at(s0 + (i + 1) * sw), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], sx = r3(st.sx);
+            const pa = at(h0 + i * sw), pb = at(h0 + (i + 1) * sw), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], sx = r3(st.sx);
             const p: V = [c[0] - t[0] * cx * sx + n[0] * cz, c[1] - t[1] * cx * sx + n[1] * cz];
             push({ form: 'stack', kit: { id: shopRow.id, scale: [sx, shopRow.sy, 1], yaw: yawOf(n), at: [r3(p[0]), r3(p[1])] }, base: shopRow.z, a: [r3(pa[0]), r3(pa[1])], b: [r3(pb[0]), r3(pb[1])], edge: r.parts[0]!.e, face,
               family: familyOf(shopRow.id, 'stack'), normal: [r4(n[0]), r4(n[1])], column: { id: `${face}/s${i}`, storeys: 1 }, casts: 'proxy-l2' });
@@ -406,36 +436,53 @@ export function dressFaces(ctx: Ctx, inp: FacesIn): FacesOut {
           ent.shop = st.k;
         }
         const dropBase = (cl: Module[]) => (shopRow && cl[0] && cl[0].z <= pav + FACES.topTol && (cl[0].id === FACE_KIT.stack.base || cl[0].id === FACE_KIT.pilaster.base) ? cl.slice(1) : cl);
-        if (shopRow && dropBase(col).length === 0) continue; // the run was one base band: the shop row is all of it
-        // the pilaster column of the same wall, asked for only when no whole number of modules fills the run (a shop column tiles alone)
-        const w = col[0]!.a.size[0], range = col[0]!.a.tags.scale;
-        let tl = shopCol ? { ...shopTile(R), pil: [] as number[] } : tile(R, w, range), pcol: Module[] | null = null;
-        if (shopCol) ent.shop = tl!.k;
-        if (!tl) {
-          const PL = FACE_KIT.pilaster, pw = code ? P.get(PL.whole[code]!) : undefined;
-          if (pw && inRange(pw, (z1 - foot) / pw.size[1])) pcol = [{ id: pw.id, z: r3(foot), sy: r3((z1 - foot) / pw.size[1]), a: pw }];
-          else { const c = column(ctx, col[0]!.z, z1, col[0]!.z, b.top, P, PL); if ('mods' in c) pcol = c.mods; }
-          if (pcol) tl = tile(R, w, range, { w: pcol[0]!.a.size[0], range: pcol[0]!.a.tags.scale });
-          if (!tl) { ent.why = `face ${r3(R)} m: no whole number of ${w} m modules at ${range.join('-')}` + (pcol ? ' even with pilasters' : `; a pilaster would fill it (not adopted: ${code ? PL.whole[code] : PL.mid})`); if (!pcol) ent.blocked = [code ? PL.whole[code]! : PL.mid]; continue; }
-        }
-        // the widths in order: a pilaster at each end (two) or at the head (one), the modules between
-        const widths: { w: number; pil: boolean }[] = [...(tl.pil.length === 2 ? [{ w: tl.pil[0]!, pil: true }] : []), ...Array.from({ length: tl.k }, () => ({ w: w * tl!.sx, pil: false })), ...(tl.pil.length ? [{ w: tl.pil[tl.pil.length - 1]!, pil: true }] : [])];
-        const dock = variants.length && tl.k >= 2 ? Math.floor(rng(`${face}/dock`).f() * tl.k) : -1;
-        let sAt = s0, j = 0, q = 0;
         const svc = r.parts.find(x => x.svc)?.svc;
-        for (const seg of widths) {
-          const pa = at(sAt), pb = at(sAt + seg.w), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], yaw = yawOf(n);
-          const cl = dropBase(seg.pil ? pcol! : col), sx = cl.length ? r3(seg.w / cl[0]!.a.size[0]) : 1;
-          for (const md0 of cl) {
-            const md = !seg.pil && j === dock && cl.length === 1 ? { ...md0, id: variants[0]!.id, a: variants[0]! } : md0, [cx, cz] = centreOf(md.a);
-            const p: V = [c[0] - t[0] * cx * sx + n[0] * cz, c[1] - t[1] * cx * sx + n[1] * cz]; // kit +X runs along -t (against the ring), +Z out along n
-            const form = seg.pil ? 'pilaster' : ent.family === 'stack' ? 'stack' : r.fam;
-            push({ form, kit: { id: md.id, scale: [sx, md.sy, 1], yaw, at: [r3(p[0]), r3(p[1])] }, base: md.z, a: [r3(pa[0]), r3(pa[1])], b: [r3(pb[0]), r3(pb[1])], edge: r.parts[0]!.e, face,
-              family: familyOf(md.id, form), ...(r.fam === 'service' && svc ? { service: svc } : {}), normal: [r4(n[0]), r4(n[1])], column: { id: `${face}/c${q}`, storeys: cl.length }, casts: 'proxy-l2' });
-            (ent.dressedBy ??= []).push(placed[placed.length - 1]!.id);
+        let q = 0;
+        /** Tile from..to with column cl (its first module's width and range; a whole number of modules, else with pilasters pc at the ends; `fixed` = the
+         *  shop fillers' own tiling) and place each width's column as `pick` gives it. False when nothing fits. */
+        const lay = (from: number, to: number, cl: Module[], pc: Module[] | null, pick: (c: Module[]) => Module[], fixed?: { k: number; sx: number }, dockable = false): boolean => {
+          const len = to - from, w = cl[0]!.a.size[0], range = cl[0]!.a.tags.scale;
+          let tl = fixed ? { ...fixed, pil: [] as number[] } : tile(len, w, range);
+          if (!tl && pc) tl = tile(len, w, range, { w: pc[0]!.a.size[0], range: pc[0]!.a.tags.scale });
+          if (!tl) return false;
+          // the widths in order: a pilaster at each end (two) or at the head (one), the modules between
+          const widths: { w: number; pil: boolean }[] = [...(tl.pil.length === 2 ? [{ w: tl.pil[0]!, pil: true }] : []), ...Array.from({ length: tl.k }, () => ({ w: w * tl!.sx, pil: false })), ...(tl.pil.length ? [{ w: tl.pil[tl.pil.length - 1]!, pil: true }] : [])];
+          const dock = dockable && variants.length && tl.k >= 2 ? Math.floor(rng(`${face}/dock`).f() * tl.k) : -1;
+          let sAt = from, j = 0;
+          for (const seg of widths) {
+            const pa = at(sAt), pb = at(sAt + seg.w), t = norm(sub(pb, pa)), n: V = [t[1], -t[0]], c: V = [(pa[0] + pb[0]) / 2, (pa[1] + pb[1]) / 2], yaw = yawOf(n);
+            const cs = pick(seg.pil ? pc! : cl), sx = cs.length ? r3(seg.w / cs[0]!.a.size[0]) : 1;
+            for (const md0 of cs) {
+              const md = !seg.pil && j === dock && cs.length === 1 ? { ...md0, id: variants[0]!.id, a: variants[0]! } : md0, [cx, cz] = centreOf(md.a);
+              const p: V = [c[0] - t[0] * cx * sx + n[0] * cz, c[1] - t[1] * cx * sx + n[1] * cz]; // kit +X runs along -t (against the ring), +Z out along n
+              const form = seg.pil ? 'pilaster' : ent.family === 'stack' ? 'stack' : r.fam;
+              push({ form, kit: { id: md.id, scale: [sx, md.sy, 1], yaw, at: [r3(p[0]), r3(p[1])] }, base: md.z, a: [r3(pa[0]), r3(pa[1])], b: [r3(pb[0]), r3(pb[1])], edge: r.parts[0]!.e, face,
+                family: familyOf(md.id, form), ...(r.fam === 'service' && svc ? { service: svc } : {}), normal: [r4(n[0]), r4(n[1])], column: { id: `${face}/c${q}`, storeys: cs.length }, casts: 'proxy-l2' });
+              (ent.dressedBy ??= []).push(placed[placed.length - 1]!.id);
+            }
+            if (!seg.pil) j++;
+            ent.modules++; sAt += seg.w; q++;
           }
-          if (!seg.pil) j++;
-          ent.modules++; sAt += seg.w; q++;
+          return true;
+        };
+        /** A shop run's end at an acute corner, between where the shop fillers stop and where the side pieces may reach: the side column's pieces (a shop row's
+         *  ground band only: the storeys above run on over it), left bare when narrower than a pilaster. */
+        const ends = (from: number, to: number) => {
+          if (to - from < 1e-3) return;
+          const base = shopRow ? [sideCol[0]!] : sideCol, pb = pcol ? (shopRow ? [pcol[0]!] : pcol) : null;
+          if (!lay(from, to, base, pb, x => x)) (ent.bare ??= []).push(r3(to - from));
+        };
+        if (shopCol) {
+          ends(a0, h0);
+          lay(h0, h1, col, null, x => x, shopTile(h1 - h0)); ent.shop = shopTile(h1 - h0).k;
+          ends(h1, a1);
+          continue;
+        }
+        if (shopRow) { ends(a0, h0); ends(h1, a1); if (dropBase(col).length === 0) continue; } // the run was one base band: the shop row is all of it
+        if (a1 - a0 < FACES.minFace) { (ent.bare ??= []).push(r3(a1 - a0)); continue; }
+        if (!lay(a0, a1, col, pcol, dropBase, undefined, true)) {
+          const len = r3(a1 - a0), w = col[0]!.a.size[0], range = col[0]!.a.tags.scale;
+          ent.why = `face ${len} m: no whole number of ${w} m modules at ${range.join('-')}` + (pcol ? ' even with pilasters' : `; a pilaster would fill it (not adopted: ${code ? PL.whole[code] : PL.mid})`); if (!pcol) ent.blocked = [code ? PL.whole[code]! : PL.mid];
         }
       }
     }
