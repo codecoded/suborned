@@ -213,6 +213,25 @@
   "layerMerge": {
    "note": "Latch's take 1: small white holes at the elbows in aim. Image-to-3D meshes carry coincident layers everywhere (not only in skirts); weights are averaged over all vertices within mergeM in space across the whole mesh, so a layer never separates from the one it sits on. 5 mm is under any real gap between body parts in the intake A-pose.",
    "mergeM": 0.005
+  },
+  "fingers": {
+   "note": "Sky, 2026-10-27 ('sure'): the finger bones fitted into the generated fingers for the 52-bone figures (the crowd's 22 prune them). lib.finger_fit: the separate pieces of the hand mesh past the webs are the fingers; fewer than minFingers pieces and the hand stays rigid (the hands rule). webFrac: how far along the proximal bone the web sits (finger: the base's knuckle to web; thumb: most of its first bone is inside the palm). bridgeM: vertices of separate shells this close count as joined (generated meshes are many shells; the gaps between fingers are wider). tipBandM: a piece counts as a finger only if it reaches within this of the farthest fingertip (a cuff or a ring shell doesn't).",
+   "minFingers": 4,
+   "minVerts": 200,
+   "minPieceVerts": 20,
+   "minPieceFrac": 0.01,
+   "stepM": 0.002,
+   "webFrac": {
+    "finger": 0.45,
+    "Thumb": 0.8
+   },
+   "radiusMul": 2.2,
+   "blendFrac": 0.35,
+   "skeletons": [
+    52
+   ],
+   "bridgeM": 0.0015,
+   "tipBandM": 0.07
   }
  },
  "rest": {

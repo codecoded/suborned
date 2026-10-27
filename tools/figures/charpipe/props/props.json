@@ -70,10 +70,41 @@
     "axis": "barrel"
    },
    "grip": {
-    "belowSlideFrac": 0.4,
-    "rearFrac": 0.5,
-    "muzzleProbeFrac": 0.12,
-    "rule": "the slide's underside is the lowest point of the front muzzleProbeFrac of the length (only slide there); the grip is the part below it in the rear rearFrac; the grip point is the centre of the grip's section belowSlideFrac of the grip's height down from the slide"
+    "curlDeg": {
+     "Index": [
+      45,
+      60,
+      35
+     ],
+     "Middle": [
+      75,
+      85,
+      50
+     ],
+     "Ring": [
+      78,
+      85,
+      50
+     ],
+     "Pinky": [
+      80,
+      85,
+      50
+     ],
+     "Thumb": [
+      15,
+      25,
+      20
+     ]
+    },
+    "rule": "the closed hand of the drawn states (attach.hand.show.onlyWhile): each finger bone of the right hand turned toward the palm by its angle (bone 1, 2, 3), over the clip's own fingers. In the game this is a hand layer masked to the right hand's fingers; its Humanoid finger muscles are Latch's to tune against these angles. Only figures with finger bones (the 52-bone cell); the crowd's rigid hands hold the prop as before. Checked (fails loudly): seen down the grip's own axis, the middle and ring fingers (wrapFingers), knuckle to tip, each turn at least wrapMinDeg about the grip's centre at their height, so the grip is inside the closed fingers; the index (the trigger finger), the little finger (shortest, at the grip's raked foot) and the thumb are reported.",
+    "wrapMinDeg": 150,
+    "seatFromClosedHand": true,
+    "seatNote": "for figures with finger bones: the grip goes where the closed middle finger's circle has its centre (knuckle, last joint, tip), its height along the grip kept: attach.json hand.localPositionFingerBoned. Rigid-handed figures (the crowd) keep attach.hand.offset.",
+    "wrapFingers": [
+     "Middle",
+     "Ring"
+    ]
    },
    "texPx": 1024,
    "material": {
@@ -121,7 +152,9 @@
       ],
       "rule": "Sky, 2026-10-27: 'I would just hide the gun for now when holstered.' The pistol exists only in the right hand: SetActive(true) only while the figure's Animator state is one of onlyWhile, SetActive(false) in every other state (as the tray: tools/figures/props.json). The names are the game's states (HostViews.Figures.cs; tools/figures/clips.json): draw the raise, aim_pistol/aim the hold (an armed op standing in a fight plays aim_pistol), shoot the recoil, cover_in/cover_kneel/cover_out/cover_fire the cover set with the pistol up (cover_pin is hands over the head: hidden), run_armed the armed run, walk_armed the armed walk (in the clip set; the game walks an armed op with walk/walk_f today, so a drawn op walking shows no gun).",
       "holster": "there is no holster clip: the Holster order plays no state of its own, so the gun shows until the figure leaves the drawn states above. If Latch wants it exact, the sim's Gun.Drawn (false once HolsterAt has passed) is the switch, gated by the same list."
-     }
+     },
+     "seat": "hand",
+     "seatNote": "the grip is seated by the hand alone, not by a clip: localRotation identity under Attach_RightHand (barrel along the hand's rest forearm line, slide on the thumb side), so the closed fingers wrap the grip and the offset is the same on every figure and in both engines. Where the barrel points in a clip is the wrist's: Unity's Humanoid wrist in aim_pistol differs from Blender's (Latch's probe: pitch -18 to -5; PropCal: a single offset fitted to the level aim leaves -9 to +15 degrees of pitch and -20 to +4 of yaw over the hold), so no fixed offset holds the barrel level: the level aim is a runtime correction on the hand in the drawn states (Latch: rotate the hand, or the prop about its grip, so +Z lies on the aim line; PropCal reports the size of it)."
     },
     "holster": {
      "bone": "Attach_HipRight",
@@ -225,5 +258,9 @@
    "weapon": null,
    "holster": null
   }
+ },
+ "unityCalibration": {
+  "rule": "Unity's frame is the source of truth for every held-prop offset (Latch's probe, 2026-10-27: Blender's retarget of aim_pistol held the hand level where Unity's Humanoid pitched it -18 to -5 degrees). tools/figures/charpipe/props/unity/PropCal.cs, run in a scratch Unity project (out/scratch/forma/unityprobe) on the built figures imported by Latch's rule (Create From This Model, the _avatarT T-pose by bone name, auto-mapping off) and the game's clip with its game meta, measures the prop's offset in Unity and writes props/<prop>/a/propcal.json; prop_show.py takes the rotation from it (Blender only previews it), and its own barrel angle is reported, not failed. The barrel's rule in Unity: the mean over every aim frame of every figure, the residual pitch and yaw over the hold reported.",
+  "command": "Unity -batchmode -nographics -projectPath out/scratch/forma/unityprobe -executeMethod PropCal.Run -figs fixer_v7_H,e2e_guard_H -clip Assets/T/aim_pistol.fbx -attach Attach_RightHand -forward 0.025 -out <propcal.json> (figures and their _avatarT in Assets/F, the game's clip and walk.fbx with their metas in Assets/T)"
  }
 }

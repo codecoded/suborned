@@ -49,6 +49,8 @@ def build(fid, hybrid=False):
     for m in list(src.modifiers):
         if m.type == 'ARMATURE': src.modifiers.remove(m)       # the source is already in the fitted pose
     L.apply_rest(arm, [px])                                     # the donor proxy keeps its fitted pose; the rig's rest becomes the fitted pose
+    if L.SET in ('e2e', 'fixer') and L.budget(row)['skeleton'] in L.D['transfer'].get('fingers', {}).get('skeletons', []):
+        rule_counts['fingers'] = L.finger_fit(src, arm)         # the finger bones in the generated fingers, weighted from them (52-bone figures)
     m = src.modifiers.new('Armature', 'ARMATURE'); m.object = arm
     if L.rest_mode() == 'tpose': L.pose_blender(arm, L.standard_aims(arm)); L.apply_rest(arm, [src, px])
     tm.lap('rest')

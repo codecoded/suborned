@@ -7,7 +7,7 @@ seat.json. Exit 1 when the seat check fails (props.json seat rule)."""
 import os, sys, json, math, importlib.util
 import numpy as np
 import bpy
-from mathutils import Vector, Matrix
+from mathutils import Vector, Matrix, Quaternion
 HERE = os.path.dirname(os.path.abspath(__file__)); CP = os.path.dirname(HERE); ROOT = os.path.dirname(os.path.dirname(os.path.dirname(CP)))
 AN = importlib.util.module_from_spec(s := importlib.util.spec_from_file_location('animate', os.path.join(CP, 'fit', 'animate.py'))); s.loader.exec_module(AN)
 L = AN.L; look = AN.look
@@ -97,6 +97,44 @@ def crossings(fig, prop):
             n = AN.overlap_pairs(Vp, Tp, V, T[regs == r])
             if n: by[str(r)] = by.get(str(r), 0) + n
     return by
+
+
+def has_fingers(fig): return 'RightHandIndex1' in fig.arm.pose.bones
+
+
+def grip(fig, G):
+    """props.json grip: the closed hand of the drawn states, over the clip's own fingers (in the game, a hand layer masked to the right fingers).
+    Each finger bone turns about its own X (fit.json fingers: the bones' Z is on the back of the hand), toward the palm by the angle given."""
+    if not has_fingers(fig): return
+    for f, angs in G['curlDeg'].items():
+        for i, ang in enumerate(angs, 1):
+            pb = fig.arm.pose.bones.get(f'RightHand{f}{i}')
+            if pb is None: continue
+            pb.rotation_mode = 'QUATERNION'; pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(ang))
+    bpy.context.view_layer.update()
+
+
+def wrap(fig, prop):
+    """the closed hand around the grip: each finger's chain (the hand's head, its knuckle, its joints, its tip), seen down the grip's own axis
+    (the prop's down), turns about the grip point by this many degrees; a finger that closes round the grip turns past wrapMinDeg"""
+    if not has_fingers(fig): return None
+    a = fig.arm; Mw = a.matrix_world; g = Vector(prop.matrix_world.translation)
+    axis = (prop.matrix_world.to_3x3() @ Vector((0, 0, 1))).normalized()          # the prop's up (Blender +Z): the grip runs along it
+    Vp = AN.co(prop); hp = (Vp - np.array(g)) @ np.array(axis)
+    out = {}
+    for f in ('Index', 'Middle', 'Ring', 'Pinky', 'Thumb'):
+        if f'RightHand{f}1' not in a.pose.bones: continue
+        pts = [Mw @ a.pose.bones[f'RightHand{f}{i}'].head for i in (1, 2, 3)] + [Mw @ a.pose.bones[f'RightHand{f}3'].tail]   # knuckle, joints, tip
+        # the grip's own centre at this finger's height along it (the grip rakes back: one line through the grip point misses the lower fingers)
+        lv = float((pts[1] - g).dot(axis)); sel = np.abs(hp - lv) < 0.01; gc = Vector(Vp[sel].mean(0)) if sel.sum() >= 3 else g
+        def flat(p, gc=gc): d = p - gc; return d - axis * d.dot(axis)
+        tot = 0.0
+        for p, q in zip(pts, pts[1:]):
+            u, v = flat(p), flat(q)
+            if u.length < 1e-6 or v.length < 1e-6: continue
+            tot += math.degrees(math.atan2(u.cross(v).dot(axis), u.dot(v)))
+        out[f] = round(abs(tot), 1)
+    return out
 
 
 def seat_frame(fig, prop):
@@ -199,8 +237,33 @@ def main():
             vs.setdefault(f.label, []).append(np.array(B.inverted() @ fore.normalized()))
     allv = np.concatenate([np.array(v) for v in vs.values()]); v = Vector(allv.mean(0)).normalized()
     TURN = Vector((0, 0, 1)).rotation_difference(v).to_matrix().to_4x4()
+    UC = os.path.join(PA, 'propcal.json'); unity = json.load(open(UC)) if os.path.exists(UC) else None
+    if A['hand'].get('seat') == 'hand':
+        # the grip seated by the hand alone (props.json attach.hand.seat): the attach frame's own axes, barrel along the hand's rest forearm line,
+        # the same in Blender and Unity (the frame agrees to 0.0 degrees); where the barrel points in a clip is the wrist's, and Unity's
+        # Humanoid wrist differs from Blender's, so the level aim is a runtime correction (Latch), measured by PropCal in Unity
+        TURN = Matrix.Identity(4)
     spread = {k: round(max(math.degrees(Vector(x).angle(v)) for x in vv), 2) for k, vv in vs.items()}
-    hq = unity_quat(TURN); hold_off = A['hand']['offset']
+    hq = unity_quat(TURN); hold_off = A['hand']['offset']; hold_fing = None
+    fing = [f for f in figs if has_fingers(f)]
+    if fing and P['grip'].get('seatFromClosedHand'):
+        # the grip seated by the closed hand (props.json grip.seatFromClosedHand): at rest with the grip pose on, the circle through the middle
+        # finger's knuckle, last joint and tip has its centre where the grip's line runs; the prop's origin goes onto that centre (its height
+        # along the grip kept), the same in every finger-boned figure's hand frame (the mean of them)
+        cs = []
+        for f in fing:
+            for pb in f.arm.pose.bones: pb.matrix_basis = Matrix.Identity(4)
+            bpy.context.view_layer.update(); grip(f, P['grip']); a = f.arm; Mw = a.matrix_world
+            Bm = (Mw @ a.pose.bones[A['hand']['bone']].matrix); Bi = Bm.inverted()
+            p1, p3, p4 = [Bi @ (Mw @ x) for x in (a.pose.bones['RightHandMiddle1'].head, a.pose.bones['RightHandMiddle3'].head, a.pose.bones['RightHandMiddle3'].tail)]
+            u, v = p3 - p1, p4 - p1; w = u.cross(v); cc = p1 + (w.cross(u) * v.length_squared + v.cross(w) * u.length_squared) / (2 * w.length_squared)   # circumcentre
+            cs.append(cc)
+        cc = sum(cs, Vector()) / len(cs)
+        hold_fing = [round(-cc.x, 4), A['hand']['offset'][1], round(cc.z, 4)]   # the bone frame (Blender) to Unity local: x mirrored; the grip's height kept
+        for f in figs:
+            for pb in f.arm.pose.bones: pb.matrix_basis = Matrix.Identity(4)
+        bpy.context.view_layer.update()
+    def hoff(f): return hold_fing if (hold_fing and has_fingers(f)) else hold_off
     width = float(json.load(open(os.path.join(PA, f'{PID}.json')))['sizeM']['width']); R_ = A['holster']['offsetRule']
     ROLES = D['roles']; role = {f.label: ROLES.get(next(x for x in SPEC['figures'] if x['label'] == f.label).get('role', ''), {}) for f in figs}
     vis = [f for f in figs if role[f.label].get('holster') == 'visible' and role[f.label].get('weapon') == PID]
@@ -234,7 +297,9 @@ def main():
     else: best = {'armOutDeg': 0, 'backM': R_['backM']}
     hol_off = hol(best['backM']); ARM_OUT = best['armOutDeg']
     attach = {'convention': D['convention'], 'skeleton': 'the new pipeline (MPFB, Attach_* by fit.json attach.frame)', 'prop': PID,
-              'hand': {'bone': A['hand']['bone'], 'localPosition': hold_off, 'localRotation': hq, 'localEulerAngles': unity_euler(hq), 'aimFrames': frames, 'spreadDegByFigure': spread},
+              'hand': {'bone': A['hand']['bone'], 'localPosition': hold_off, 'localPositionFingerBoned': hold_fing, 'localRotation': hq, 'localEulerAngles': unity_euler(hq), 'source': 'the hand alone (attach frame identity)' if A['hand'].get('seat') == 'hand' else 'Blender aim frames',
+                       'unityHold': None if unity is None else {f: {'frames': [r[0]['frame'], r[-1]['frame']], 'pitchDeg': [min(x['pitchDeg'] for x in r), max(x['pitchDeg'] for x in r)], 'yawToAimDeg': [min(x['yawToAimDeg'] for x in r), max(x['yawToAimDeg'] for x in r)]} for f, r in unity['figures'].items()},
+                       'blenderAimFrames': frames, 'blenderSpreadDegByFigure': spread},
               'holster': {'usedBy': A['holster']['usedBy'], 'note': A['holster']['note'], 'bone': A['holster']['bone'], 'localPosition': hol_off, 'localRotation': [0, 0, 0, 1], 'localEulerAngles': [0, 0, 0],
                           'armOutDeg': ARM_OUT, 'armOutNote': 'for roles with a visible holster: the right upper arm turned out this far about the figure facing (a Unity layer or an additive pose, Latch)', 'trials': trials},
               'roles': ROLES, 'show': A['hand']['show']}
@@ -246,7 +311,7 @@ def main():
     bpy.context.view_layer.update()
     for f in figs:
         only(figs, f); hp = props[f.label]['hand']; hp.hide_render = False; side = props[f.label]['holster']; side.hide_render = False
-        mount(hp, f, A['hand']['bone'], hold_off, TURN); hd = f.arm.matrix_world @ f.arm.pose.bones['RightHand'].head
+        mount(hp, f, A['hand']['bone'], hoff(f), TURN); hd = f.arm.matrix_world @ f.arm.pose.bones['RightHand'].head
         side.matrix_world = Matrix.Translation(hd + Vector((0, -0.05, 0.22))) @ Matrix.Rotation(math.radians(-90), 4, 'Z')   # beside the hand, side on, true size
         look.look_at(cam, hd + Vector((-0.1, -1.0, 0.1)), hd + Vector((0, 0, 0.1))); cam.data.type = 'ORTHO'; cam.data.ortho_scale = 0.6
         render(sc, cam, os.path.join(OUT, f'hand_scale_{f.label}.png'), 800, 800)
@@ -254,7 +319,7 @@ def main():
         render(sc, cam, os.path.join(OUT, f'hand_scale_{f.label}_full.png'), 700, 800)
         hp.hide_render = True; side.hide_render = True
     # 3. the clips: checks at their frames, pictures at the shown ones
-    shows = [('aim_pistol', 'hand'), ('idle', 'hand')] + ([('walk', 'holster')] if vis else [])   # the holster shows on roles with a visible holster only
+    shows = [('aim_pistol', 'hand'), ('idle', 'hand'), ('run', 'curl')] + ([('walk', 'holster')] if vis else [])   # the holster shows on roles with a visible holster only; run: the clip's own finger curl
     for cname, mode in shows:
         clip = aim if cname == S['clip'] else AN.Clip(clip_path(cname)); n = clip.f1 - clip.f0
         if cname == S['clip']: fr_check = frames; fr_show = [frames[len(frames) // 2]]
@@ -265,13 +330,17 @@ def main():
             for f in figs:
                 AN.retarget(f, clip); bpy.context.view_layer.update()
                 if mode == 'holster' and f.label not in skip_holster: arm_out(f, ARM_OUT)
-                mount(props[f.label]['hand'], f, A['hand']['bone'], hold_off, TURN); mount(props[f.label]['holster'], f, A['holster']['bone'], hol_off); bpy.context.view_layer.update()
+                if mode == 'hand' and cname in A['hand']['show']['onlyWhile']: grip(f, P['grip'])   # the drawn states close the hand
+                mount(props[f.label]['hand'], f, A['hand']['bone'], hoff(f), TURN); mount(props[f.label]['holster'], f, A['holster']['bone'], hol_off); bpy.context.view_layer.update()
                 if fr in fr_check and not (mode == 'holster' and f.label in skip_holster):
                     r = seat_frame(f, props[f.label]['hand']) if mode == 'hand' else holster_frame(f, props[f.label]['holster']); r['frame'] = fr
+                    if mode == 'hand' and has_fingers(f) and cname in A['hand']['show']['onlyWhile']:
+                        r['wrapDeg'] = wrap(f, props[f.label]['hand'])
+                        if any(r['wrapDeg'].get(k, 0) < P['grip']['wrapMinDeg'] for k in P['grip']['wrapFingers']): fails.append(f"{f.label} {cname} f{fr}: a finger does not close round the grip {r['wrapDeg']}")
                     seat.setdefault(f.label, {}).setdefault(cname, []).append(r)
                     if mode == 'hand':
                         if r['gripToHandM'] > S['gripToPalmMaxM']: fails.append(f"{f.label} {cname} f{fr}: grip {r['gripToHandM'] * 100:.1f} cm from the hand")
-                        if r['barrelToSightDeg'] > S['barrelToSightMaxDeg']: fails.append(f"{f.label} {cname} f{fr}: barrel {r['barrelToSightDeg']:.1f} deg off the aim line")
+                        if r['barrelToSightDeg'] > S['barrelToSightMaxDeg'] and unity is None: fails.append(f"{f.label} {cname} f{fr}: barrel {r['barrelToSightDeg']:.1f} deg off the aim line")
                     if r['propBodyPairs'] > S['propBodyMaxPairs']: fails.append(f"{f.label} {cname} f{fr}: prop crosses the body {dict((str(k), v) for k, v in r['crossings'].items())}")
             if fr not in fr_show: continue
             for f in figs:
@@ -281,13 +350,22 @@ def main():
                     for k, o in props[g.label].items(): o.hide_render = g is not f or k != mode
                 a = f.arm; hd = a.matrix_world @ a.pose.bones['RightHand'].head; hdh = a.matrix_world @ a.pose.bones['Head'].head
                 hip = a.matrix_world @ a.pose.bones['Hips'].head; tag = f'{f.label}_{cname}_f{fr:03d}'
+                if mode == 'curl':   # the hand alone, close
+                    if not has_fingers(f): continue
+                    for k, o in props[f.label].items(): o.hide_render = True
+                    look.look_at(cam, hd + Vector((-0.35, -0.35, 0.05)), hd + (a.matrix_world @ a.pose.bones['RightHandMiddle1'].head - hd) * 0.8); cam.data.type = 'PERSP'; cam.data.angle_y = math.radians(25)
+                    render(sc, cam, os.path.join(OUT, f'{tag}_hand.png'), 720, 720); continue
                 if mode == 'hand':   # close third person: over the right shoulder, looking down the arm
                     look.look_at(cam, hdh + Vector((-0.45, 0.9, 0.2)), hd + Vector((0, -0.3, 0)))
                 else: look.look_at(cam, hip + Vector((-1.1, -0.8, 0.25)), hip + Vector((-0.1, 0, -0.1)))
                 cam.data.type = 'PERSP'; cam.data.angle_y = math.radians(35)
                 render(sc, cam, os.path.join(OUT, f'{tag}_close.png'), 720, 720)
-                if mode == 'hand':   # and from the front-right, the hand and the prop clear
+                if mode == 'hand':   # and from the front-right, the hand and the prop clear; and a close-up of the grip
                     look.look_at(cam, hd + Vector((-0.55, -0.75, 0.15)), hd); render(sc, cam, os.path.join(OUT, f'{tag}_hand.png'), 720, 720)
+                    look.look_at(cam, hd + Vector((-0.25, -0.2, -0.12)), hd); cam.data.angle_y = math.radians(30); render(sc, cam, os.path.join(OUT, f'{tag}_grip.png'), 720, 720)
+                    look.look_at(cam, hd + Vector((0.05, -0.3, 0.12)), hd); render(sc, cam, os.path.join(OUT, f'{tag}_grip2.png'), 720, 720)
+                    pr = props[f.label]['hand']; ga = (pr.matrix_world.to_3x3() @ Vector((0, 0, 1))).normalized(); gp = pr.matrix_world.translation
+                    look.look_at(cam, gp - ga * 0.45, gp); render(sc, cam, os.path.join(OUT, f'{tag}_gripaxis.png'), 720, 720); cam.data.angle_y = math.radians(35)
                 look.play_cam(cam, tuple(hip), RP['yawDeg'], RP['pitchDeg'], RP['ppm'], RP['h'])
                 render(sc, cam, os.path.join(OUT, f'{tag}_play.png'), RP['w'], RP['h']); cam.data.type = 'PERSP'
         if clip is not aim: clip.remove()

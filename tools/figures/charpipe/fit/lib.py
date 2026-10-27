@@ -1122,3 +1122,141 @@ def role_skips(row):
     """the test props a person doesn't get, by role: a role whose holster is visible keeps Attach_HipRight free (no cross-body bag there)"""
     r = role_props().get(row.get('role', ''), {})
     return ('bag',) if r.get('holster') == 'visible' else ()
+
+
+FINGERS = ('Thumb', 'Index', 'Middle', 'Ring', 'Pinky')
+
+
+def _comps(idx, adj):
+    """connected components of the vertex subset idx (bool mask) under the edge adjacency adj (list of neighbour arrays)"""
+    seen = np.zeros(len(idx), bool); out = []
+    for s in np.nonzero(idx)[0]:
+        if seen[s]: continue
+        st = [s]; seen[s] = True; c = []
+        while st:
+            v = st.pop(); c.append(v)
+            for u in adj[v]:
+                if idx[u] and not seen[u]: seen[u] = True; st.append(u)
+        out.append(np.array(c))
+    return out
+
+
+def finger_fit(src, arm):
+    """fit.json transfer.fingers (brief 069, Sky: "sure"): the finger bones placed in the generated mesh's own fingers and weighted from them, so a
+    52-bone figure's hand can close. In the rest (the generated pose), per hand:
+      the hand's vertices (those its rigid Hand weight holds, beyond the wrist) are swept from the fingertips back along the hand's long axis; the
+      fingers are the separate pieces of mesh beyond the deepest cut that still leaves the most pieces (the webs between the fingers). Fewer than
+      minFingers pieces: the fingers are fused, the hand stays rigid (as before).
+      each piece's own long axis (its principal direction) is the finger's line; its tip is the farthest point, its web the nearest; the knuckle
+      (Finger1's head) lies back along the line from the web by webFrac of the proximal bone (the web sits that far along it), and the three
+      bones split the knuckle-to-tip length in the base finger's own proportions. Each bone's roll puts its Z on the palm's normal, so a finger
+      curls about its X.
+      weights: every hand vertex within the finger's radius (radiusMul x its median distance from the line) and past its knuckle goes to that
+      finger, split along the line between Hand, 1, 2, 3 with a linear blend blendFrac of a bone's length wide at each joint; the rest stay Hand.
+    Returns stats per hand."""
+    R = D['transfer'].get('fingers')
+    if not R: return {}
+    names = [g.name for g in src.vertex_groups]; W = weights_of(src, names)
+    V = np.array([list(v.co) for v in src.data.vertices]) @ np.array(src.matrix_world)[:3, :3].T + np.array(src.matrix_world)[:3, 3]
+    adj = [[] for _ in range(len(V))]
+    for e in src.data.edges: a, b = e.vertices; adj[a].append(b); adj[b].append(a)
+    # generated meshes are many separate shells: vertices of different shells closer than bridgeM count as joined (a gap between fingers is wider)
+    from mathutils.kdtree import KDTree
+    kd = KDTree(len(V))
+    for i, p in enumerate(V): kd.insert(Vector(p), i)
+    kd.balance()
+    for i, p in enumerate(V):
+        for _, j, _ in kd.find_range(Vector(p), R['bridgeM']):
+            if j != i: adj[i].append(j)
+    adj = [np.array(sorted(set(x)), int) for x in adj]
+    bp.ctx(arm, 'EDIT'); eb = arm.data.edit_bones; Mw = arm.matrix_world; Mi = Mw.inverted(); out = {}
+    def wh(n): return np.array(Mw @ eb[n].head)
+    def wt(n): return np.array(Mw @ eb[n].tail)
+    for s in ('Left', 'Right'):
+        hand = f'{s}Hand'; hi = names.index(hand); h = wh(hand); fa = wh(f'{s}ForeArm')
+        famask = np.array([n == hand or (n.startswith(hand) and n[len(hand):].rstrip('0123456789') in FINGERS) for n in names])
+        dom = np.argmax(W, 1); mine = famask[dom]
+        a0 = (h - fa) / np.linalg.norm(h - fa)
+        sv = (V - h) @ a0; mine &= sv > 0.0
+        if mine.sum() < R['minVerts']: out[s] = {'fitted': False, 'why': 'too few hand vertices'}; continue
+        # the hand's own long axis: principal direction of its vertices, pointed away from the forearm
+        Q = V[mine] - V[mine].mean(0); ax = np.linalg.svd(Q, full_matrices=False)[2][0]; ax = ax if ax @ a0 > 0 else -ax
+        sv = (V - h) @ ax; smax = sv[mine].max(); minsz = max(R['minPieceVerts'], int(R['minPieceFrac'] * mine.sum()))
+        best = None
+        for t in np.arange(smax - R['stepM'], 0.0, -R['stepM']):
+            pieces = [c for c in _comps(mine & (sv > t), adj) if len(c) >= minsz and sv[c].max() > smax - R['tipBandM']]   # pieces that reach the fingertips' band
+            if best is None or len(pieces) >= len(best[1]): best = (t, pieces)
+            if best is not None and len(pieces) < len(best[1]) and len(best[1]) >= R['minFingers']: break
+        t, pieces = best
+        if len(pieces) < R['minFingers']:
+            out[s] = {'fitted': False, 'pieces': len(pieces), 'why': 'the fingers are not separated: the hand stays rigid'}; continue
+        # which finger is which: across the palm from the thumb side; the thumb, when it is a piece, is the one reaching least far down the hand
+        base = {f: (wh(f'{s}Hand{f}1'), wt(f'{s}Hand{f}3')) for f in FINGERS}
+        across = base['Index'][0] - base['Pinky'][0]; across -= ax * (across @ ax); across /= np.linalg.norm(across)
+        info = [(c, V[c].mean(0)) for c in pieces]
+        thumb = None
+        if len(info) >= 5:
+            k = int(np.argmin([float((V[c] @ ax).max()) for c, _ in info])); thumb = info.pop(k)
+        info = sorted(info, key=lambda x: -float(x[1] @ across))[:4]
+        fit = dict(zip(('Index', 'Middle', 'Ring', 'Pinky'), info))
+        if thumb is None:
+            # the thumb parts from the palm nearer the wrist than the fingers do: below the fingers' cut, cut on down until the hand is in two
+            # pieces, the palm and the thumb, the deepest cut before they join; the thumb is the one on the index side of the palm
+            taken = np.zeros(len(V), bool)
+            for c in pieces: taken[c] = True
+            tb = None
+            for t2 in np.arange(t - R['stepM'], 0.0, -R['stepM']):
+                pc = [c for c in _comps(mine & (sv > t2) & ~taken, adj) if len(c) >= minsz]
+                if len(pc) >= 2: tb = (t2, pc)
+                elif tb is not None: break
+            if tb is not None:
+                pc = sorted(tb[1], key=len)
+                cand = [c for c in pc[:-1] if float(V[c].mean(0) @ across) > float(V[pc[-1]].mean(0) @ across)]   # not the palm (the biggest); on the index side
+                if cand: thumb = (cand[-1], V[cand[-1]].mean(0))
+        if thumb is not None: fit['Thumb'] = thumb
+        nrm = np.cross(base['Index'][0] - h, base['Pinky'][0] - h); nrm /= np.linalg.norm(nrm); nrm = nrm if s == 'Left' else -nrm   # the palm side
+        lines = {}
+        for f, (c, cen) in fit.items():
+            X = V[c]; d = np.linalg.svd(X - X.mean(0), full_matrices=False)[2][0]
+            tipdir = ax if f != 'Thumb' else (X.mean(0) - h) / np.linalg.norm(X.mean(0) - h)
+            d = d if d @ tipdir > 0 else -d; u = (X - X.mean(0)) @ d
+            tip = X.mean(0) + d * u.max(); web = X.mean(0) + d * u.min()
+            bl = [np.linalg.norm(wt(f'{s}Hand{f}{i}') - wh(f'{s}Hand{f}{i}')) for i in (1, 2, 3)]; L0 = sum(bl)
+            wf = R['webFrac'][f if f == 'Thumb' else 'finger']
+            Lm = np.linalg.norm(tip - web) / max(0.2, 1 - wf * bl[0] / L0)
+            knuckle = tip - d * Lm; heads = [knuckle, knuckle + d * Lm * bl[0] / L0, knuckle + d * Lm * (bl[0] + bl[1]) / L0]
+            for i in (1, 2, 3):
+                e = eb[f'{s}Hand{f}{i}']; e.head = Vector(Mi @ Vector(heads[i - 1])); e.tail = Vector(Mi @ Vector(heads[i] if i < 3 else tip))
+                e.align_roll(Mi.to_3x3() @ Vector(nrm))
+            rad = float(np.median(np.linalg.norm((X - knuckle) - np.outer((X - knuckle) @ d, d), axis=1)))
+            lines[f] = (knuckle, d, Lm, rad, [b / L0 * Lm for b in bl])
+        # weights: hand vertices to the nearest fitted finger within its radius, blended along it; the rest Hand
+        Wn = W.copy(); cols = {f: [names.index(f'{s}Hand{f}{i}') for i in (1, 2, 3)] for f in FINGERS}
+        cand = np.nonzero(famask[dom] & (((V - h) @ ax) > -0.02))[0]; assigned = 0
+        for v in cand:
+            best_f, best_r = None, 1e9
+            for f, (kn, d, Lm, rad, seg) in lines.items():
+                u = (V[v] - kn) @ d
+                if u < -R['blendFrac'] * seg[0] or u > Lm + 0.01: continue
+                r = np.linalg.norm((V[v] - kn) - u * d)
+                if r < R['radiusMul'] * rad and r / rad < best_r: best_f, best_r = f, r / rad
+            if best_f is None: continue
+            kn, d, Lm, rad, seg = lines[best_f]; u = (V[v] - kn) @ d
+            joints = [0.0, seg[0], seg[0] + seg[1]]; bones = [hi] + cols[best_f]; w = np.zeros(len(names))
+            k = 0
+            while k < 3 and u > joints[k]: k += 1          # the bone u lies in: 0 = still Hand, k = Finger k
+            k = max(0, k); wv = {bones[k]: 1.0}
+            for j in range(3):                               # blend across the joint at joints[j] between bones[j] and bones[j+1]
+                half = R['blendFrac'] * seg[j] / 2
+                if abs(u - joints[j]) < half:
+                    t_ = (u - joints[j] + half) / (2 * half); wv = {bones[j]: 1 - t_, bones[j + 1]: t_}
+            for b, x in wv.items(): w[b] = x
+            Wn[v] = w; assigned += 1
+        W = Wn
+        out[s] = {'fitted': True, 'pieces': len(pieces), 'cutM': round(float(t), 4), 'thumb': thumb is not None, 'verts': assigned,
+                  'fingers': {f: {'lengthM': round(float(v[2]), 4), 'radiusM': round(float(v[3]), 4)} for f, v in lines.items()}}
+        if thumb is None:   # the thumb not a separate piece: its bones keep no weight (it rides the hand)
+            W[:, cols['Thumb']] = 0
+    bp.ctx(arm, 'OBJECT')
+    set_weights(src, W, names, D['transfer']['maxInfluences'])
+    return out
