@@ -85,10 +85,32 @@ def main():
             V[i, 1] = cy + (V[i, 1] - cy) * (1 + (sd - 1) * w); V[i, 0] = cx + (V[i, 0] - cx) * (1 + (sw - 1) * w)
             V[i, 2] = under - (under - z) * (1 + (sh - 1) * w)
         o.data.vertices.foreach_set('co', V.ravel()); o.data.update()
-    V = verts(objs[0]); sel = (V[:, 2] < under) & (V[:, 1] > ga - Fb['marginM']) & (V[:, 1] < gb + Fb['marginM'])
-    zm = under - 0.5 * (under - gbot); T0 = L.tris_of(objs[0]); sm = cut(V, T0, zm, ga - Fb['marginM'], gb + Fb['marginM'])
-    gbot = under - (under - gbot) * sh; grip_rep['after'] = {'heightM': round(float(under - gbot), 4), 'depthM': round(float(np.ptp(sm[:, 1])), 4), 'widthM': round(float(np.ptp(sm[:, 0])), 4)}
-    zg = under - Gs['belowFrac'] * (under - gbot); sg = cut(V, T0, zg, ga - Fb['marginM'], gb + Fb['marginM'])
+    gbot = under - (under - gbot) * sh; T0 = L.tris_of(objs[0]); ya, yb = ga - Fb['marginM'], gb + Fb['marginM']
+    def grip_size(V):
+        # the grip's depth and width: medians over its middle 60 % of height (one section at one height mis-measured it: 1.9 cm where the
+        # grip runs 4.3-4.9 cm, a section taken at the old mid height after the lengthening)
+        ds, ws = [], []
+        for zz in np.linspace(under - 0.8 * (under - gbot), under - 0.2 * (under - gbot), 9):
+            cy_ = np.polyval(ky, zz); c_ = cut(V, T0, zz, cy_ - Fb['windowM'], cy_ + Fb['windowM'])   # about the grip's own centre line (a fixed window clipped the widened grip)
+            if len(c_) >= 3: ds.append(np.ptp(c_[:, 1])); ws.append(np.ptp(c_[:, 0]))
+        return float(np.median(ds)), float(np.median(ws))
+    V0_ = verts(objs[0]); cen2 = []
+    for zz in np.linspace(under - 0.9 * (under - gbot), under - 0.15 * (under - gbot), 10):   # the centre line again, on the lengthened grip
+        c_ = cut(V0_, T0, zz, ya, yb)
+        if len(c_) >= 3: cen2.append((zz, (c_[:, 1].min() + c_[:, 1].max()) / 2, (c_[:, 0].min() + c_[:, 0].max()) / 2))
+    cen2 = np.array(cen2); ky = np.polyfit(cen2[:, 0], cen2[:, 1], 1); kx = np.polyfit(cen2[:, 0], cen2[:, 2], 1)
+    d1, w1 = grip_size(verts(objs[0]))
+    # one correction pass so the median section is the block (the first pass scaled to a single section, and the blend under the receiver)
+    kd, kw = B['depthM'] / d1, B['widthM'] / w1
+    for o in objs:
+        V = verts(o); sel = (V[:, 2] < under - Fb['blendM']) & (np.abs(V[:, 1] - np.polyval(ky, V[:, 2])) < Fb['windowM'])
+        for i in np.nonzero(sel)[0]:
+            z = V[i, 2]; cy, cx = np.polyval(ky, z), np.polyval(kx, z); V[i, 1] = cy + (V[i, 1] - cy) * kd; V[i, 0] = cx + (V[i, 0] - cx) * kw
+        o.data.vertices.foreach_set('co', V.ravel()); o.data.update()
+    V = verts(objs[0]); d2, w2 = grip_size(V)
+    grip_rep['afterFirstPass'] = {'depthM': round(d1, 4), 'widthM': round(w1, 4)}
+    grip_rep['after'] = {'heightM': round(float(under - gbot), 4), 'depthM': round(d2, 4), 'widthM': round(w2, 4), 'measure': 'median over the middle 60 % of the grip height'}
+    zg = under - Gs['belowFrac'] * (under - gbot); sg = cut(V, T0, zg, ya, yb)
     origin = np.array([(sg[:, 0].min() + sg[:, 0].max()) / 2, (sg[:, 1].min() + sg[:, 1].max()) / 2, zg])
     # sockets (in the +Y-barrel frame first)
     ys_ = origin[1] + P['support']['fromGripM']; k = int(np.argmin(np.abs(ys - ys_)))

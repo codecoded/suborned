@@ -104,6 +104,70 @@ def crossings(fig, w):
     return n
 
 
+FINGERS = ('Index', 'Middle', 'Ring', 'Pinky')
+
+
+def hand_pose(fig, HP, blk):
+    """spec.handPose: the class's closed hand solved against its grip block (an ideal box, so the inside test is exact): at rest, the block's
+    centre on Attach_RightHand (depth along the bone's working line, width across, height along its up) pushed out of the palm along the palm's
+    normal until no palm vertex is inside it; then each finger closes knuckle first, stepDeg at a time up to maxDeg, each joint stopping the step
+    before a vertex of that bone or beyond enters the block. Returns the angles (deg, about each bone's own X toward the palm) and the seat."""
+    a = fig.arm; Mw = a.matrix_world
+    for pb in a.pose.bones: pb.matrix_basis = Matrix.Identity(4)
+    bpy.context.view_layer.update()
+    body = [o for ms in fig.meshes.values() for o in ms if o.get('fit_role', 'body') == 'body'][0]
+    gi = {g.index: g.name for g in body.vertex_groups}; dom = np.array([gi[max(v.groups, key=lambda x: x.weight).group] if v.groups else '' for v in body.data.vertices])
+    Bm = Mw @ a.pose.bones['Attach_RightHand'].matrix; Bi = Bm.inverted()
+    h = Mw @ a.pose.bones['RightHand'].head; m1 = Mw @ a.pose.bones['RightHandMiddle1'].head
+    hax = np.array((m1 - h).normalized()); kn = min(float((np.array(Mw @ a.pose.bones[f'RightHand{x}1'].head) - np.array(h)) @ hax) for x in FINGERS)
+    V0 = AN.co(body); Lb = np.array([list(Bi @ Vector(p)) for p in V0])
+    # the palm proper: the hand's own vertices short of the knuckles and off the thenar (the thumb's side, bone +Y past thenarY: a grip's side
+    # sits against the thumb's root, which the thumb wraps, not the palm)
+    palm = np.nonzero((dom == 'RightHand') & (((V0 - np.array(h)) @ hax) < kn) & (Lb[:, 1] < HP['thenarY']))[0]
+    c = Vector(Bm.translation); q = h + (m1 - h) * max(0.0, min(1.0, (c - h).dot(m1 - h) / (m1 - h).length_squared))
+    out_b = (Bi.to_3x3() @ (c - q)).normalized(); off = Vector((0, 0, 0))
+    def inside(P):
+        if len(P) == 0: return 0
+        L_ = np.array([list(Bi @ Vector(p)) for p in P]) - np.array(off)
+        return int(((np.abs(L_[:, 0]) <= blk['widthM'] / 2) & (np.abs(L_[:, 2]) <= blk['depthM'] / 2) & (np.abs(L_[:, 1]) <= blk['heightM'] / 2)).sum())
+    best = None
+    for sg in (1, -1):                                   # out of the palm: whichever way along its normal clears it first
+        o_ = Vector((0, 0, 0)); k = 0
+        while True:
+            off = o_; n_ = inside(V0[palm])
+            if n_ == 0 or k >= HP['maxPushSteps']: break
+            o_ = o_ + out_b * sg * HP['stepM']; k += 1
+        if best is None or (n_, k) < best[:2]: best = (n_, k, Vector(o_), sg)
+    off = best[2]; k = best[1]
+    if os.environ.get('WDEBUG'):
+        L_ = np.array([list(Bi @ Vector(p)) for p in V0[palm]]) - np.array(off); m_ = (np.abs(L_[:, 0]) <= blk['widthM'] / 2) & (np.abs(L_[:, 2]) <= blk['depthM'] / 2) & (np.abs(L_[:, 1]) <= blk['heightM'] / 2)
+        Lall = np.array([list(Bi @ Vector(p)) for p in V0[palm]])
+        print('WDEBUG', fig.label, 'out_b', [round(x, 3) for x in out_b], 'sg', best[3], 'left', best[0], 'palm n', len(palm), 'palm extent x', np.round(Lall.min(0), 3), np.round(Lall.max(0), 3), 'inside pts', np.round(L_[m_][:5], 3).tolist())
+    ang = {}
+    for f in FINGERS + ('Thumb',):
+        ang[f] = []
+        for i in (1, 2, 3):
+            pb = a.pose.bones.get(f'RightHand{f}{i}')
+            if pb is None: ang[f].append(0.0); continue
+            ix = np.nonzero(np.isin(dom, [f'RightHand{f}{j}' for j in range(i, 4)]))[0]; got = 0.0; pb.rotation_mode = 'QUATERNION'
+            for t in np.arange(HP['stepDeg'], HP['maxDeg'][f][i - 1] + 1e-6, HP['stepDeg']):
+                pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(float(t))); bpy.context.view_layer.update()
+                if inside(AN.co(body)[ix]) > 0: break
+                got = float(t)
+            pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(got)); bpy.context.view_layer.update(); ang[f].append(got)
+    for pb in a.pose.bones: pb.matrix_basis = Matrix.Identity(4)
+    bpy.context.view_layer.update()
+    return ang, [round(-off.x, 4), round(off.y, 4), round(off.z, 4)], [k, best[3], best[0]]
+
+
+def apply_pose(fig, ang):
+    for f, aa in ang.items():
+        for i, x in enumerate(aa, 1):
+            pb = fig.arm.pose.bones.get(f'RightHand{f}{i}')
+            if pb is not None: pb.rotation_mode = 'QUATERNION'; pb.rotation_quaternion = Quaternion((1, 0, 0), -math.radians(x))
+    bpy.context.view_layer.update()
+
+
 def only(figs, f, weapons, wid):
     for g in figs:
         for ms in g.meshes.values():
@@ -119,25 +183,27 @@ def main():
     for f in figs: ensure_attach(f)
     sc, cam = AN.setup_render(); RP = L.D['render']['play']; lib = os.path.expanduser(L.D['clips']['lib'])
     weapons = {(f.label, pid): load_weapon(pid, f'{pid}_{f.label}') for f in figs for pid in SPEC['weapons']}
-    res = {'figures': {}, 'fails': []}
+    res = {'figures': {}, 'fails': []}; poses = {}
     for pid in SPEC['weapons']:
         P = D['props'][pid]; info = json.load(open(os.path.join(PA(pid), f'{pid}.json'))); sock = info['sockets']
         cs = D['clipSets'][P['class']]; clip = AN.Clip(os.path.join(lib, D['clipFiles'][cs['aim']]))
         for f in figs:
             w, _ = weapons[(f.label, pid)]; frames = aim_frames(f, clip, CK['aimFrames'])
+            HP = D['spec']['handPose']; blk = D['spec']['classes'][P['class']]['grip']
+            ang, seat_b, pushed = hand_pose(f, HP, blk); poses.setdefault(f.label, {})[P['class']] = {'curlDeg': ang, 'seat': seat_b, 'palmPushSteps': pushed}
             seats = []; radii = []; dirs = []
             for fr in frames:
                 sc.frame_set(fr); AN.retarget(f, clip); bpy.context.view_layer.update(); c_, r_ = circle_seat(f); seats.append(c_); radii.append(r_)
                 a = f.arm; Mw = a.matrix_world; Bm = Mw @ a.pose.bones['Attach_RightHand'].matrix
                 dirs.append((Bm.to_3x3().inverted() @ ((Mw @ a.pose.bones['Attach_LeftHand'].head) - (Mw @ a.pose.bones['Attach_RightHand'].head))).normalized())
-            c = sum(seats, Vector()) / len(seats); seat = [round(-c.x, 4), 0.0, round(c.z, 4)]           # bone (Blender) -> Unity local; the grip height kept
+            seat = seat_b                                                                # the block's centre: the grip socket's place in the hand
             turn = None
             if D['spec']['classes'][P['class']].get('barrelToSupportHand'):
                 # a two-handed long gun lies from the right hand toward the left: its barrel along the clip's own right-to-left hand line
                 dv = (sum(dirs, Vector()) / len(dirs)).normalized(); turn = Vector((0, 0, 1)).rotation_difference(dv).to_matrix().to_4x4()
             rows = []
             for fr in frames:
-                sc.frame_set(fr); AN.retarget(f, clip); bpy.context.view_layer.update(); mount(w, f, 'Attach_RightHand', seat, turn); bpy.context.view_layer.update()
+                sc.frame_set(fr); AN.retarget(f, clip); apply_pose(f, ang); bpy.context.view_layer.update(); mount(w, f, 'Attach_RightHand', seat, turn); bpy.context.view_layer.update()
                 a = f.arm; Mw = a.matrix_world; r = {'frame': fr, 'wrapDeg': wrap(f, w), 'handCrossPairs': crossings(f, w)}
                 if 'support' in sock: r['supportGapM'] = round(float((socket_world(w, sock['support']) - Mw @ a.pose.bones['Attach_LeftHand'].head).length), 3)
                 if 'shoulder' in sock: r['shoulderGapM'] = round(float((socket_world(w, sock['shoulder']) - Mw @ a.pose.bones['RightArm'].head).length), 3)
@@ -147,6 +213,7 @@ def main():
             q_ = (turn or Matrix.Identity(4)).to_quaternion(); res['figures'].setdefault(f.label, {})[pid] = {'clip': cs['aim'], 'seat': seat, 'localRotation': [round(q_.x, 6), round(-q_.y, 6), round(-q_.z, 6), round(q_.w, 6)], 'closedHandRadiusM': round(float(np.mean(radii)), 4), 'checks': rows}
             fr = frames[len(frames) // 2]; sc.frame_set(fr)
             for g in figs: AN.retarget(g, clip)
+            apply_pose(f, ang)
             bpy.context.view_layer.update(); mount(w, f, 'Attach_RightHand', seat, turn); bpy.context.view_layer.update(); only(figs, f, weapons, pid)
             a = f.arm; hd = a.matrix_world @ a.pose.bones['RightHand'].head; hip = a.matrix_world @ a.pose.bones['Hips'].head; tag = f'{f.label}_{pid}'
             look.look_at(cam, hd + Vector((-0.6, -0.8, 0.2)), hd + Vector((0.1, -0.1, 0))); cam.data.type = 'PERSP'; cam.data.angle_y = math.radians(35)
@@ -155,7 +222,7 @@ def main():
             look.play_cam(cam, tuple(hip), RP['yawDeg'], RP['pitchDeg'], RP['ppm'], RP['h']); sc.render.resolution_x = RP['w']; sc.render.resolution_y = RP['h']
             sc.render.filepath = os.path.join(OUT, f'{tag}_play.png'); bpy.ops.render.render(write_still=True); cam.data.type = 'PERSP'
         clip.remove()
-    res['ok'] = not res['fails']
+    res['handPoses'] = poses; res['ok'] = not res['fails']
     json.dump(res, open(os.path.join(OUT, 'checks.json'), 'w'), indent=1, sort_keys=True)
     print('WEAPONS ' + json.dumps({'ok': res['ok'], 'fails': res['fails'][:8]}))
     if res['fails']: sys.exit(1)

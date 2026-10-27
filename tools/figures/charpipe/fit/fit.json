@@ -232,7 +232,11 @@
    ],
    "bridgeM": 0.0015,
    "tipBandM": 0.07,
-   "humanLimits": "tools/figures/finger_limits.json"
+   "humanLimits": "tools/figures/finger_limits.json",
+   "knuckle": {
+    "middleOfHandLength": 0.52,
+    "rule": "the knuckle line: a finger's knuckle-to-tip length is middleOfHandLength x the hand's length (wrist to the middle fingertip) for the middle finger (anthropometry: the middle finger's MCP-to-tip length is about half the hand length; e.g. ANSUR II hand length and middle finger length) and the base skeleton's proportions for the others; the knuckle lies that far back from the tip along the finger's own line. Replaces the web rule (webFrac) for the four fingers; the thumb keeps webFrac (its first bone lies in the palm)."
+   }
   }
  },
  "rest": {

@@ -1216,14 +1216,22 @@ def finger_fit(src, arm):
         if thumb is not None: fit['Thumb'] = thumb
         nrm = np.cross(base['Index'][0] - h, base['Pinky'][0] - h); nrm /= np.linalg.norm(nrm); nrm = nrm if s == 'Left' else -nrm   # the palm side
         lines = {}
+        hand_len = float(((V[fit['Middle'][0]] - h) @ ax).max())                                   # wrist to the middle fingertip, along the hand
+        Lmid0 = sum(np.linalg.norm(wt(f'{s}HandMiddle{i}') - wh(f'{s}HandMiddle{i}')) for i in (1, 2, 3))
         for f, (c, cen) in fit.items():
             X = V[c]; d = np.linalg.svd(X - X.mean(0), full_matrices=False)[2][0]
             tipdir = ax if f != 'Thumb' else (X.mean(0) - h) / np.linalg.norm(X.mean(0) - h)
             d = d if d @ tipdir > 0 else -d; u = (X - X.mean(0)) @ d
             tip = X.mean(0) + d * u.max(); web = X.mean(0) + d * u.min()
             bl = [np.linalg.norm(wt(f'{s}Hand{f}{i}') - wh(f'{s}Hand{f}{i}')) for i in (1, 2, 3)]; L0 = sum(bl)
-            wf = R['webFrac'][f if f == 'Thumb' else 'finger']
-            Lm = np.linalg.norm(tip - web) / max(0.2, 1 - wf * bl[0] / L0)
+            if f != 'Thumb' and R.get('knuckle'):
+                # the true knuckle line (Sky via Aster: a hand that bends at the web is a wrong rig): each finger's knuckle-to-tip length from
+                # the hand's own length (wrist to the middle fingertip along the hand) by the anatomical ratio, the other fingers in the base
+                # skeleton's proportion to the middle; the knuckle lies that far back from the tip along the finger's line
+                Lm = R['knuckle']['middleOfHandLength'] * hand_len * L0 / Lmid0
+            else:
+                wf = R['webFrac'][f if f == 'Thumb' else 'finger']
+                Lm = np.linalg.norm(tip - web) / max(0.2, 1 - wf * bl[0] / L0)
             knuckle = tip - d * Lm; heads = [knuckle, knuckle + d * Lm * bl[0] / L0, knuckle + d * Lm * (bl[0] + bl[1]) / L0]
             for i in (1, 2, 3):
                 e = eb[f'{s}Hand{f}{i}']; e.head = Vector(Mi @ Vector(heads[i - 1])); e.tail = Vector(Mi @ Vector(heads[i] if i < 3 else tip))
@@ -1253,7 +1261,7 @@ def finger_fit(src, arm):
             for b, x in wv.items(): w[b] = x
             Wn[v] = w; assigned += 1
         W = Wn
-        out[s] = {'fitted': True, 'pieces': len(pieces), 'cutM': round(float(t), 4), 'thumb': thumb is not None, 'verts': assigned,
+        out[s] = {'fitted': True, 'handLengthM': round(hand_len, 4), 'pieces': len(pieces), 'cutM': round(float(t), 4), 'thumb': thumb is not None, 'verts': assigned,
                   'fingers': {f: {'lengthM': round(float(v[2]), 4), 'radiusM': round(float(v[3]), 4)} for f, v in lines.items()}}
         if thumb is None:   # the thumb not a separate piece: its bones keep no weight (it rides the hand)
             W[:, cols['Thumb']] = 0

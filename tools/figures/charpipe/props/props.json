@@ -361,7 +361,8 @@
     "blendM": 0.012,
     "marginM": 0.01,
     "rule": "as the pistol: the grip region scaled about its centre line to the class's grip block (depth and width), blended in over blendM below the receiver; and, since the carbine scaled to 0.9 m leaves its grip 4.5 cm tall (too short for a hand), lengthened downward to the block's height (height true)",
-    "height": true
+    "height": true,
+    "windowM": 0.035
    },
    "support": {
     "fromGripM": 0.29,
@@ -402,8 +403,7 @@
   "pistol_draw": "Drawing_Gun__c9c83441.fbx",
   "pistol_aim": "Pistol_Idle__c9cdb599.fbx",
   "pistol_fire": "Shooting_Pistol__c9c81565.fbx",
-  "pistol_walk": "Pistol_Walk__c9cdb8f0.fbx",
-  "pistol_run": "Pistol_Run__c9cdb75a.fbx",
+  "pistol_run": "Pistol_Run__c9c9b1f3.fbx",
   "rifle_idle": "Rifle_Idle__c9cd4f94.fbx",
   "rifle_aim": "Rifle_Aiming_Idle__c9c84492.fbx",
   "rifle_fire": "Firing_Rifle__c9c863fe.fbx",
@@ -498,6 +498,40 @@
    ],
    "handCrossMaxPairs": 30,
    "rule": "at aimFrames of the class's aim clip (the frames where the right hand is near its highest), with the clip's own fingers: the middle and ring fingers each turn at least wrapMinDeg about the grip (knuckle to tip, seen down the grip), and the right hand crosses the weapon in at most handCrossMaxPairs triangle pairs; reported: the support socket's gap to the clip's own left Attach_LeftHand (closed at runtime by Two Bone IK) and, for long guns, the shoulder socket's gap to the right shoulder. Measured in Blender (weapon_show.py, preview) and in Unity (PropCal, the truth)."
+  },
+  "handPose": {
+   "stepDeg": 2,
+   "stepM": 0.002,
+   "maxPushSteps": 25,
+   "maxDeg": {
+    "Index": [
+     80,
+     100,
+     70
+    ],
+    "Middle": [
+     90,
+     100,
+     70
+    ],
+    "Ring": [
+     90,
+     100,
+     70
+    ],
+    "Pinky": [
+     90,
+     100,
+     70
+    ],
+    "Thumb": [
+     30,
+     40,
+     30
+    ]
+   },
+   "rule": "the standard hand pose per weapon class (Sky via Aster: 'official best practice'), sized to the class's grip block, for Latch's hand-override layer: solved per figure against the block itself (weapon_show.hand_pose): the block's centre on Attach_RightHand pushed out of the palm, each finger closed knuckle first to contact. The class pose is the angles per bone (about each bone's own X, toward the palm); checks.json handPoses has them per figure, and the seat (the grip socket's localPosition under Attach_RightHand).",
+   "thenarY": 0.015
   }
  },
  "clipSets": {
@@ -516,6 +550,17 @@
    "fire": "rifle_fire",
    "walk": "rifle_walk",
    "run": "rifle_run"
+  },
+  "speedBands": {
+   "walk": [
+    1.1,
+    1.7
+   ],
+   "run": [
+    2.3,
+    3.2
+   ],
+   "rule": "a locomotion clip's natural speed (clips.py: the planted foot's speed in the hips' frame) must lie in its slot's band, the game's own walk (1.53) and run (2.48) clips' range. A weapon pack whose walk or run lies outside it (Pistol_Walk 2.51 m/s: a brisk tactical walk, 0.83 s cycle with a 0.93 m stride, the measure is right; Pistol_Run c9cdb75a 4.42 m/s, a sprint) is not used: the slot takes a clip in band (pistol_run: Pistol_Run c9c9b1f3, 2.86) or the standard split, the game's walk on the legs with the pack's aim on the upper body (pistol_walk)"
   }
  }
 }

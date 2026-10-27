@@ -742,19 +742,33 @@
   },
   {
    "name": "pistol_walk",
-   "src": "Anim/mixamo_library/Pistol_Walk__c9cdb8f0.fbx",
+   "author": "tools/figures/author_clips.py",
+   "kind": "layer",
+   "donor": "Anim/mixamo_library/Standard_Walk__c9ccc2e9.fbx",
+   "legs": {
+    "range": [
+     1,
+     36
+    ]
+   },
+   "upper": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "upperFrames": {
+    "hold": 1,
+    "shiver": 0,
+    "cycles": 0
+   },
    "loop": true,
-   "use": "pistol: walk armed, aimed, in place; the pack's grip",
    "loco": true,
    "feet": true,
    "set": "pistol",
+   "use": "pistol: walk armed: the game's walk on the legs (1.53 m/s natural), the pistol pack's two-handed aim held on the upper body. The pack's own Pistol_Walk is a brisk tactical walk (0.83 s cycle, 0.93 m stance stride: 2.51 m/s, the game's walk_armed note says the same), outside the walk band (clipSets.speedBands), so the walk takes the standard upper/lower split",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
   },
   {
    "name": "pistol_run",
-   "src": "Anim/mixamo_library/Pistol_Run__c9cdb75a.fbx",
+   "src": "Anim/mixamo_library/Pistol_Run__c9c9b1f3.fbx",
    "loop": true,
-   "use": "pistol: run armed, aimed, in place; the pack's grip",
+   "use": "pistol: run armed, two-handed (hands 4 cm), right fingers closed (181/206 deg), in place, 2.86 m/s natural: inside the run band. The pistol pack's Pistol_Run c9cdb75a is a sprint (4.42 m/s, 0.53 s cycle), outside it",
    "loco": true,
    "feet": true,
    "set": "pistol",

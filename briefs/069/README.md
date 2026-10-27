@@ -191,3 +191,9 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Gates still fail:** the fitted fingers bend at the web, so the closed hand's loop (about 2 cm inside) is smaller than the grip.
   - **Also open:** pistol walk and run speeds read 2.5 and 4.4 m/s; the carbine's stock (grip to butt) is only 0.18 m at 0.9 m against a real carbine's about 0.33–0.36 m length of pull.
 - **Animation Rigging (Latch, scratch):** package 6.6.0. Multi-Parent, Multi-Aim and Two Bone IK put the barrel within 0.27° of the target and both hands on their sockets, deterministically. It doesn't work with Optimize Game Objects (Unity staff confirm). Standard split: the crowd stays optimised; the cell runs unoptimised with the rig; guards, rivals and security deoptimise on draw and re-optimise on holster (switch being proven).
+- **Weapon round 2 (Forma):**
+  - **Pistol clip speeds:** fixed by a speed-band rule (walk 1.1–1.7, run 2.3–3.2 m/s). `pistol_walk` is walk with the pistol aim layered on (1.53 m/s); `pistol_run` is a different pack clip (2.86 m/s).
+  - **Carbine grip depth:** the 1.9 cm was a mis-measure; the grip is 4.83 × 2.99 × 10 cm.
+  - **Knuckle rule:** knuckle-to-tip from the hand's length.
+  - **Per-class hand pose:** solved against the grip block, but the gates still fail (block centred too far back on the palm).
+  - **Guards on Unity's Humanoid IK pass** (scratch): stays optimised, barrel 0.03–0.16° to target, 0 errors, deterministic; the support hand lands 0.7–3.5 cm off. The deoptimise-on-draw switch was rejected: after rig constraints bind, re-optimising stops the Animator.
