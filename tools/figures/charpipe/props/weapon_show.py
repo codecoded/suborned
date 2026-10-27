@@ -170,7 +170,13 @@ def hand_pose(fig, HP, blk):
     # the position search (spec.handPose.search): along the hand (the bone's working line) in steps, out of the palm at each, the fingers closed
     # to contact; the best is the one whose middle and ring fingers wrap the block most (the smaller of the two), no palm vertex inside it
     nonlocal_off = [Vector((0, 0, 0))]; trials = []
-    for dz in HP['search']['alongM']:
+    alongs = HP['search']['alongM']
+    if HP.get('seat') == 'knuckleLine':
+        # the grip's front face on the knuckle line (Aster: the standard seat): the block's centre half its depth behind the middle and ring
+        # knuckles' mean, along the bone's working line; the heel of the hand bears on its back
+        kz = float(np.mean([(Bi @ (Mw @ a.pose.bones[f'RightHand{x}1'].head)).z for x in ('Middle', 'Ring')]))
+        alongs = [kz - blk['depthM'] / 2]
+    for dz in alongs:
         for pb in a.pose.bones: pb.matrix_basis = Matrix.Identity(4)
         bpy.context.view_layer.update()
         b_ = push(Vector((0, 0, dz)))
@@ -217,7 +223,12 @@ def main():
         for f in figs:
             w, _ = weapons[(f.label, pid)]; frames = aim_frames(f, clip, CK['aimFrames'])
             HP = D['spec']['handPose']; blk = dict(D['spec']['classes'][P['class']]['grip']); blk['rakeDeg'] = -float((info.get('gripFit') or {}).get('rakeDeg', 0.0))   # the block leans as this weapon's grip does (a hand pose per weapon)
-            ang, seat_b, pushed = hand_pose(f, HP, blk); poses.setdefault(f.label, {})[pid] = {'curlDeg': ang, 'seat': seat_b, 'palmPushSteps': pushed}
+            if HP.get('artist', {}).get(P['class']):
+                # the artist's pose (standard practice: one hand pose per weapon class, posed once on the shared skeleton against the class's grip
+                # block, stored as data): its angles and its grip seat, the same for every finger-boned figure
+                A_ = HP['artist'][P['class']]; ang, seat_b, pushed = A_['curlDeg'], A_['seat'], {'route': 'artist pose (data)'}
+            else: ang, seat_b, pushed = hand_pose(f, HP, blk)
+            poses.setdefault(f.label, {})[pid] = {'curlDeg': ang, 'seat': seat_b, 'palmPushSteps': pushed}
             seats = []; radii = []; dirs = []
             for fr in frames:
                 sc.frame_set(fr); AN.retarget(f, clip); bpy.context.view_layer.update(); c_, r_ = circle_seat(f); seats.append(c_); radii.append(r_)
@@ -225,7 +236,17 @@ def main():
                 dirs.append((Bm.to_3x3().inverted() @ ((Mw @ a.pose.bones['Attach_LeftHand'].head) - (Mw @ a.pose.bones['Attach_RightHand'].head))).normalized())
             seat = seat_b                                                                # the block's centre: the grip socket's place in the hand
             turn = None
-            if D['spec']['classes'][P['class']].get('barrelToSupportHand'):
+            if D['spec']['classes'][P['class']].get('placeBy') == 'gripAndShoulder' and 'shoulder' in sock:
+                # the shouldered long gun's standard placement: by the grip, its butt at the shoulder; the weapon turned in the hand so its
+                # shoulder socket lies on the line from the grip to the right shoulder (the clip's own shoulder at the aim frames)
+                sp = sock['shoulder']['position']; vs = Vector((-sp[0], -sp[2], sp[1]))                     # the socket in the prop's Blender frame
+                vs_b = (M_ROT.to_3x3() @ vs).normalized(); tg = []
+                for fr in frames:
+                    sc.frame_set(fr); AN.retarget(f, clip); bpy.context.view_layer.update(); a = f.arm; Mw = a.matrix_world
+                    Bm = Mw @ a.pose.bones['Attach_RightHand'].matrix; off_b = Vector((-seat_b[0], seat_b[1], seat_b[2]))
+                    tg.append(((Bm.inverted() @ (Mw @ a.pose.bones['RightArm'].head)) - off_b).normalized())
+                tv = (sum(tg, Vector()) / len(tg)).normalized(); turn = vs_b.rotation_difference(tv).to_matrix().to_4x4()
+            elif D['spec']['classes'][P['class']].get('barrelToSupportHand'):
                 # a two-handed long gun lies from the right hand toward the left: its barrel along the clip's own right-to-left hand line
                 dv = (sum(dirs, Vector()) / len(dirs)).normalized(); turn = Vector((0, 0, 1)).rotation_difference(dv).to_matrix().to_4x4()
             rows = []

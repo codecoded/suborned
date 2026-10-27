@@ -486,9 +486,10 @@
     "lengthM": 0.9,
     "lengthStatus": "Sky, 2026-10-27: 0.9 m (the delivered carbine is 1.594 m and is scaled to it)",
     "barrelToSupportHand": true,
-    "barrelNote": "a two-handed long gun's rotation in the right hand: its barrel along the class clip's own line from the right hand to the left (the clip holds a rifle that way); the handgun stays hand-seated (identity)",
+    "barrelNote": "a shouldered long gun is placed by its grip with its butt at the shoulder (the standard): turned in the right hand so its shoulder socket lies on the line from the grip to the right shoulder; at runtime Multi-Aim turns it about the shoulder line to the target and Two Bone IK takes the left hand to the support socket. The earlier rule (barrel along the clip's right-to-left hand line) left the butt 18.5 cm off the shoulder: the clip's grip-to-shoulder distance on the Fixer is 0.359 m (the 0.35 m length of pull fits), but its hand line runs 26 degrees off the grip-to-shoulder line",
     "lengthOfPullM": 0.35,
-    "lengthOfPullNote": "Sky, 2026-10-27 ('whatever suits'): the standard length of pull, 35 cm from the grip to the butt; the stock stretched along the barrel to it and the forward section and barrel shortened to keep 0.9 m overall (prop_build_longgun.py)"
+    "lengthOfPullNote": "Sky, 2026-10-27 ('whatever suits'): the standard length of pull, 35 cm from the grip to the butt; the stock stretched along the barrel to it and the forward section and barrel shortened to keep 0.9 m overall (prop_build_longgun.py)",
+    "placeBy": "gripAndShoulder"
    }
   },
   "checks": {
@@ -547,6 +548,77 @@
      0.08
     ],
     "rule": "the block's centre tried at these offsets along the hand (the bone's working line, toward the fingers); kept only where the block touches the palm (it began inside the palm and was pushed just clear: further out it floats past the fingers and its winding reads high with the fingers straight); of those, the largest smaller-of-middle-and-ring wrap about the block's centre line"
+   },
+   "seat": "knuckleLine",
+   "artist": {
+    "handgun": {
+     "curlDeg": {
+      "Index": [
+       40,
+       55,
+       30
+      ],
+      "Middle": [
+       80,
+       95,
+       65
+      ],
+      "Ring": [
+       85,
+       95,
+       65
+      ],
+      "Pinky": [
+       85,
+       95,
+       65
+      ],
+      "Thumb": [
+       25,
+       35,
+       25
+      ]
+     },
+     "seat": [
+      -0.03,
+      0,
+      0.02
+     ]
+    },
+    "longgun": {
+     "curlDeg": {
+      "Index": [
+       40,
+       55,
+       30
+      ],
+      "Middle": [
+       80,
+       95,
+       65
+      ],
+      "Ring": [
+       85,
+       95,
+       65
+      ],
+      "Pinky": [
+       85,
+       95,
+       65
+      ],
+      "Thumb": [
+       25,
+       35,
+       25
+      ]
+     },
+     "seat": [
+      -0.03,
+      0,
+      0.02
+     ]
+    }
    }
   }
  },

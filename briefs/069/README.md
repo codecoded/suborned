@@ -202,3 +202,8 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Grip-block search:** still fails the gates (Fixer pistol middle/ring 105/77°, 238 crossings). The block's front sits ahead of the knuckles; next is seating it at the knuckle line.
   - **Carbine:** 35 cm length of pull by rule (stock ×2.14, forward ×0.75, 0.9 m kept), but the butt is still about 18.5 cm short of the shoulder in `rifle_aim`.
 - **Sky's new Enforcer design** (`paid/069-enforcer/source/enforcer_design_sky.png`): converted to an intake sheet (`paid/069-enforcer/codex/enforcer_intake_1.png`, pose check PASS). Open: its heavy gold against §15's cell rule (no gold trim), and the Tripo mesh, which needs Sky's OK.
+- **Time-boxed grip** (Forma): the knuckle-line seat still failed the gates, so the route ended on the standard one: one hand pose per weapon class, posed once (`spec.handPose.artist`) and stored as data for every finger-boned figure.
+  - **Gates:** the wrap gate still fails numerically (Unity: middle/ring 69/54°, pistol 28 of 297 hand vertices inside), but the close third-person pictures read as a closed hand on the grip.
+  - **Carbine:** placed the standard way, by the grip with the butt on the shoulder line (`placeBy` grip + shoulder). The shoulder gap is 2.1 cm (Blender) and 7.5 cm (Unity).
+  - **Unity check tool:** `props/unity/WeaponCheck.cs`.
+  - Picture: `out/scratch/forma/char-pipeline/props/weapons/sheet_weapons.png`.
