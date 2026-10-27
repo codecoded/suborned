@@ -139,3 +139,9 @@ Sky asked to redo the Fixer from her concept (`Cell/picks/fixer_P4-6.png` in the
   - **Draw calls:** the same (604 per 300 people).
   - **The cell at 30k:** negligible (+0.007 ms for four).
   - **Optimize Game Objects alone:** saves today's figures 15%. Worth moving into the game's figure code for everyone.
+
+## A: the animation fixes in today's game (2026-10-27, Sky: "A: yes")
+Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as generator rules. `tools/figures/avatar.py` ports Unity's avatar setup and matches Unity's own avatars to within 0.06° on five cases (`avatar_check.py`).
+- **Clips:** `clips.json` `avatar` names `walk` as the shared neutral-leg reference. 42 clips copy it. 16 Blender-authored clips (under an extra `Armature` node) get their own avatar with the same neutral legs. 4 old `sit_c` / `sit_f1–3` leftovers are untouched: they're not in `clips.json`, nothing references them, and they're candidates to delete.
+- **Figures:** all 26 installed figures have the neutral-leg rest with auto-mapping off (`build.py`).
+- **Checks:** reinstalled with `run.ts --install`; `avatar_verify.py` reads the metas back. Tests 23/23, typecheck clean. Unity not run yet: next is Latch's build check plus Optimize Game Objects in `FigureBuild.cs`.

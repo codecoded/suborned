@@ -1,4 +1,9 @@
 {
+ "avatar": {
+  "reference": "walk",
+  "footPitchDeg": 40,
+  "rule": "brief 069 (Latch, briefs/069/latch/leftfoot.md): every clip imports with Copy From Other Avatar from one shared reference avatar, so no clip's own frame 0 becomes its muscle zero. The reference is this clip's own Unity avatar (tools/figures/avatar.py, Unity's MakePoseValid) with neutral legs: each leg straight down, Foot->ToeBase along the hips' facing footPitchDeg down (the library's planted flat-foot pitch), the toe level; arms as Unity's T-pose."
+ },
  "clips": [
   {
    "name": "idle",
@@ -385,7 +390,7 @@
   {
    "name": "sit",
    "loop": true,
-   "use": "seated on the caf\u00e9 chair (4.3 s loop): thighs level, feet flat in front, back upright. Place by manifest.seat (the root offset from the chair)",
+   "use": "seated on the café chair (4.3 s loop): thighs level, feet flat in front, back upright. Place by manifest.seat (the root offset from the chair)",
    "loco": false,
    "feet": false,
    "author": "tools/figures/author_clips.py",

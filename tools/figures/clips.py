@@ -6,10 +6,17 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from figlib import *
 import unitymeta as um
 import author_clips
+import avatar as av
 
 STORE = os.path.expanduser(os.environ.get('SUBORNED_STORE', '~/Projects/the-suborned-store')) + '/source-art'
 a = args(); spec = json.load(open(a[0])); out = a[1]; rows = []
 os.makedirs(f'{out}/Clips', exist_ok=True)
+# brief 069: one shared neutral-leg reference avatar (clips.json `avatar`); every other clip copies it (Copy From Other Avatar)
+AV = spec['avatar']; ref = next(c for c in spec['clips'] if c['name'] == AV['reference'])
+ref_src = ref['src'] if os.path.isabs(ref['src']) else os.path.join(STORE, ref['src'])
+ref_human, ref_nodes, _ = av.neutral_avatar(ref_src, f"{AV['reference']}(Clone)", AV['footPitchDeg'])
+ref_h, ref_s = av.human_description(ref_human, ref_nodes)
+ref_rel = f"Clips/{AV['reference']}.fbx"
 for c in spec['clips']:
     if 'author' in c:   # posed here, on the donor clip's skeleton (tools/figures/author_clips.py); the donor is the recorded source
         os.makedirs(f'{out}/.authored', exist_ok=True); src = f"{out}/.authored/{c['name']}.fbx"
@@ -32,9 +39,18 @@ for c in spec['clips']:
     sp.sort(); nat = round(sp[len(sp) // 2], 2) if len(sp) > 3 else 0.0
     name = c['name']; rel = f'Clips/{name}.fbx'; dst = os.path.join(out, rel)
     shutil.copyfile(src, dst)
-    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', c.get('first', 0), f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None))
+    # a clip on the reference's rig copies its avatar; one whose hierarchy differs (the clips authored in Blender sit under an `Armature` node) can't, so it
+    # gets its own avatar with the same neutral legs (Latch's option b): the leg fix holds, its other bones keep their own frame-0 rest as today
+    rig = [] if name == AV['reference'] else av.rig_differences(ref_nodes, dst); own = name == AV['reference'] or bool(rig)
+    if own and name != AV['reference']:
+        c_human, c_nodes, _ = av.neutral_avatar(dst, f'{name}(Clone)', AV['footPitchDeg']); c_h, c_s = av.human_description(c_human, c_nodes)
+        print('AVATAR', name, 'own neutral-leg avatar: rig differs from', AV['reference'], '|', '; '.join(rig[:3]), f'({len(rig)})')
+    else: c_h, c_s = ref_h, ref_s
+    open(dst + '.meta', 'w').write(um.clip_meta(rel, name, 'mixamo.com', c.get('first', 0), f1 - f0, c.get('loop', False), feet=c.get('feet', False), bake_xz=um.bakes_xz(c), additive_ref=c.get('refPose', 0) if c.get('additive') else None,
+                                                avatar={'human': c_h, 'skeleton': c_s, 'source': None if own else um.guid(ref_rel)}))
     rows.append({'name': name, 'file': rel, 'source': c['src'], 'sha256': hashlib.sha256(open(dst, 'rb').read()).hexdigest(), 'frames': f1 - f0 + 1,
                  'fps': sc.render.fps, 'seconds': round((f1 - f0 + 1) / sc.render.fps, 3), 'loop': c.get('loop', False), 'naturalSpeedMs': nat if c.get('loco') else None, 'use': c.get('use', '')})
+    rows[-1]['avatar'] = {'own': True, 'neutralLegs': True, 'footPitchDeg': AV['footPitchDeg'], 'rigDifferences': rig} if own else {'copiedFrom': ref_rel}
     if 'author' in c: rows[-1]['authoredBy'] = c['author']
     if c.get('additive'): rows[-1]['additive'] = True; rows[-1]['additiveReferencePoseFrame'] = c.get('refPose', 0); rows[-1]['firstFrame'] = c.get('first', 0)
     if 'upper' in c: rows[-1]['upperFrom'] = c['upper']; rows[-1]['upperFromSha256'] = hashlib.sha256(open(os.path.join(STORE, c['upper']), 'rb').read()).hexdigest()

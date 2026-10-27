@@ -8,6 +8,7 @@ import sys, os, json, hashlib, shutil
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from figlib import *
 import unitymeta as um
+import avatar as av
 import numpy as np
 
 STORE = os.path.expanduser(os.environ.get('SUBORNED_STORE', '~/Projects/the-suborned-store')) + '/source-art'
@@ -451,10 +452,14 @@ def build_figure(spec, out_root, manifest_rows):
                              add_leaf_bones=False, bake_anim=False, axis_forward='-Z', axis_up='Y', apply_unit_scale=True,
                              apply_scale_options='FBX_SCALE_ALL', bake_space_transform=False, primary_bone_axis='Y', secondary_bone_axis='X',
                              armature_nodetype='NULL', mesh_smooth_type='FACE', use_tspace=True, path_mode='STRIP', embed_textures=False)
-    open(fbx + '.meta', 'w').write(um.model_meta(fbx_rel, ext_mats))
+    # brief 069 (the bow legs, Latch's leftfoot.md round 2): Unity's own avatar for this file with neutral legs (each leg straight down, each foot along
+    # the hips' facing at this body's own flat-foot pitch, the toe level), written with auto-mapping off so it sticks (tools/figures/avatar.py)
+    av_human, av_nodes, av_pitch = av.neutral_avatar(fbx, f'{fid}(Clone)', None)
+    av_h, av_s = av.human_description(av_human, av_nodes)
+    open(fbx + '.meta', 'w').write(um.model_meta(fbx_rel, ext_mats, avatar={'human': av_h, 'skeleton': av_s, 'source': None}))
     mn2, mx2 = world_bounds([objs[0]])
     row = {'id': fid, 'role': spec['role'], 'label': spec.get('label', fid), 'standIn': True, 'fbx': fbx_rel, 'sha256': sha(open(fbx, 'rb').read()),
-           'rig': {'type': 'humanoid', 'bones': len(arm0.data.bones), 'names': 'mixamo'}, 'heightM': round(mx2.z - mn2.z, 3),
+           'rig': {'type': 'humanoid', 'bones': len(arm0.data.bones), 'names': 'mixamo', 'avatar': {'neutralLegs': True, 'footPitchDeg': round(av_pitch, 3), 'humanBones': len(av_human)}}, 'heightM': round(mx2.z - mn2.z, 3),
            'lods': [{'name': o.name, 'tris': tris(o), 'tex': lods[i]['tex'], 'source': lods[i].get('src') or f"decimated from LOD{lods[i]['from']}"} for i, o in enumerate(objs)],
            'materials': list(mat_rows.values()), 'source': spec.get('source'), 'provenance': provenance(spec.get('provenance', [])), 'notes': spec.get('notes', '')}
     manifest_rows.append(row)
