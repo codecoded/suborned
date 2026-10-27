@@ -2,7 +2,7 @@
 // carriageway from standards.streetscape.roads, as the 2.5D testbed drew it (civic-road-guides.js, civic-road-finish.js, civic-roads.js):
 //   ribbon     a continuous lens of warm light set flush in the carriageway 0.10 m out from every kerb face, between brass hairlines (RoadRibbon_Straight_6m)
 //   shoulder   the pearl band beside it, 0.36 to 0.98 m out, chrome-edged (RoadShoulder_Straight_6m; standards.streetscape.roads.shoulder)
-//   pinstripe  a brass hairline in the pavement 0.5 m in from the kerb face (PaveEdge_Pinstripe_6m; roads.pinstripe)
+//   (pinstripe retired, brief 072-G, Sky said yes: the brass pavement hairline PaveEdge_Pinstripe_6m is rejected in the kit; a plan's roads.pinstripe key or a set's `drop: pinstripe` is ignored)
 //   lozenge    the pearl diamond on each carriageway's middle line (RoadMark_Lozenge), 8.5 m apart: no painted lane line
 //   seam       a chrome joint across the enamel (RoadMark_Seam), 9 m apart: the road reads as laid panels
 // Where the kerb faces are: every plot edge on a carriageway edge (capstone.kerbRuns), the circus's two kerbs, every median's edges, and the faces no plot edge runs on (standards.streetscape.roads.kerbs, Datum
@@ -11,14 +11,14 @@
 // choice at all: the phase of a lozenge comes from its run). Anything that does not fit is dropped, never squeezed (SF-6), and counted in the log. Opt-in key by key: a plan without
 // standards.streetscape.roads, or a kit without the ribbon pieces adopted, gets nothing (a pinned plan replays as it was made).
 //
-// Frame of every piece (tools/decokit/road_ribbon.py): ribbon, shoulder and pinstripe lie along +X, y 0 = the lens centre line = `offset` (0.10) out from the kerb face, the carriageway on +Y; the
+// Frame of every piece (tools/decokit/road_ribbon.py): ribbon and shoulder lie along +X, y 0 = the lens centre line = `offset` (0.10) out from the kerb face, the carriageway on +Y; the
 // export's `at` is that pivot, `yaw` = atan2(n.x, -n.y) (plan yaw θ turns +X to (cos θ, sin θ); Blender +Y is Unity -Z, i.e. (sin θ, -cos θ) in the plan), `scale` [along, 1, 1] stretches a
 // 6 m piece to fit its span (every section is flat colour or tiles in metres, so stretching along is free). Seams lie along Blender +Y (across the road): scale [1, 1, k]. z = the surface the piece
-// lies on (the carriageway 0, the pavement top for the pinstripe): the pieces keep their own few millimetres of lift.
+// lies on (the carriageway 0, a kerbed bay's floor): the pieces keep their own few millimetres of lift.
 import type { KitAsset } from '../../../../contracts/world/kit.schema';
 import type { StreetItem } from '../../../../contracts/world/world.schema';
 import { type V, dist, inPoly, lineDist, segDist } from '../../../plan/geom';
-import { FLAT_FOOT, LAND, type Ctx, r3, r4 } from '../common';
+import { FLAT_FOOT, type Ctx, r3, r4 } from '../common';
 import { adoptedBy } from '../kitrefs';
 import { kerbRuns } from './capstone';
 import { finishSet } from '../../../plan/finish-set';
@@ -42,9 +42,9 @@ export type RoadFinishLog = {
 
 type Box = [number, number, number, number];
 type Blocker = { kind: string; ring: V[]; bb: Box; /** a bay's own faces lie inside its ring: the blocker is not theirs */ owner?: string; /** the road whose lines run through it: a footway's table is the higher road's pavement, its ribbon runs on */ except?: string };
-type Family = { id: 'ribbon' | 'shoulder' | 'pinstripe' | 'edge'; kind: string; piece: KitAsset; /** pivot offset from the kerb face, + toward the carriageway */ at: number; /** lateral extent of its section from the kerb face (a < b) */ a: number; b: number; z: number };
+type Family = { id: 'ribbon' | 'shoulder' | 'edge'; kind: string; piece: KitAsset; /** pivot offset from the kerb face, + toward the carriageway */ at: number; /** lateral extent of its section from the kerb face (a < b) */ a: number; b: number; z: number };
 type Seg = { s0: number; s1: number };
-type Line = { id: string; p0: V; u: V; n: V; len: number; road: string; edge: string; plot?: boolean; /** where the face comes from (log.kerb.faceM) */ from: string; /** the bay whose face this is */ bay?: string; /** the level it lies at, else the carriageway's 0 */ z?: number; /** no pavement top beside it: no pinstripe */ noPin?: boolean; /** the level of the pavement top beside it, else ctx.pav */ padZ?: number; /** cut inside the circus ring (a reservation edge runs on into it) */ circusCut?: boolean; /** a continuous footway's kerb face across a lane's mouth (brief 061): no junction break, the higher road's light runs straight on */ through?: boolean };
+type Line = { id: string; p0: V; u: V; n: V; len: number; road: string; edge: string; plot?: boolean; /** where the face comes from (log.kerb.faceM) */ from: string; /** the bay whose face this is */ bay?: string; /** the level it lies at, else the carriageway's 0 */ z?: number; /** cut inside the circus ring (a reservation edge runs on into it) */ circusCut?: boolean; /** a continuous footway's kerb face across a lane's mouth (brief 061): no junction break, the higher road's light runs straight on */ through?: boolean };
 
 const norm2 = (a: V): V => { const l = Math.hypot(a[0], a[1]) || 1; return [a[0] / l, a[1] / l]; };
 const wrap = (y: number) => r4(Math.atan2(Math.sin(y), Math.cos(y)));
@@ -103,7 +103,6 @@ export function offsetLine(line: V[], d: number): V[] {
   return line.map((p, i) => { const a = line[Math.max(i - 1, 0)]!, b = line[Math.min(i + 1, line.length - 1)]!, u = norm2([b[0] - a[0], b[1] - a[1]]); return [p[0] - u[1] * d, p[1] + u[0] * d] as V; });
 }
 
-/** Where a pinstripe lies beside a face is the walking surface on its pavement side: a plot slab, a median or the circus island at the pavement top (ctx.pav), a foot way at FLAT_FOOT, the land under a circus band at LAND. */
 export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** tram platform rings (the world's transit.stops[].ring) */ platforms?: V[][]; /** the continuous footways' mouths (brief 061) */ mouths?: Mouth[] }): { items: StreetItem[]; log: RoadFinishLog } | undefined {
   const R = ctx.S.roads; if (!R?.ribbon || !R.breaks || !R.lozenges || !R.seams) return undefined;
   const FS = finishSet(R), lanes = FS.marks === 'lanes', M = lanes ? R.marks : undefined; // the asphalt set: white lane marks instead of lozenges and seams
@@ -117,11 +116,9 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   const stop: number = R.breaks.stopShort, off: number = R.ribbon.offset, half: number = R.ribbon.section / 2;
   const drop = new Set<string>(FS.drop); // families the finish set does not lay (the clean asphalt: only the pearl kerb beside the road)
   const fams: Family[] = drop.has('ribbon') ? [] : [{ id: 'ribbon', kind: 'road-ribbon', piece: straight, at: off, a: off - half, b: off + half, z: 0 }];
-  const sh = drop.has('shoulder') ? undefined : R.shoulder, ps = drop.has('pinstripe') ? undefined : R.pinstripe, shP = sh && adoptedBy(sh.piece), psP = ps && adoptedBy(ps.piece);
+  const sh = drop.has('shoulder') ? undefined : R.shoulder, shP = sh && adoptedBy(sh.piece); // the pinstripe is retired (072-G): roads.pinstripe, if a plan still carries it, is not read
   if (sh && shP) fams.push({ id: 'shoulder', kind: 'road-shoulder', piece: shP, at: off, a: sh.from, b: sh.to + sh.chrome, z: 0 });
   else if (sh) gap('RF', 'shoulder', `${sh.piece} is not adopted: the pearl band beside the ribbon is not laid`);
-  if (ps && psP) fams.push({ id: 'pinstripe', kind: 'road-pinstripe', piece: psP, at: -ps.offset, a: -ps.offset - ps.width / 2, b: -ps.offset + ps.width / 2, z: ctx.pav });
-  else if (ps) gap('RF', 'pinstripe', `${ps.piece} is not adopted: the pavement pinstripe is not laid`);
 
   /** the asphalt set's edge line: its pivot `offset` out from the kerb face, white enamel inlay a little proud of the road (brief 055 road test) */
   if (M?.edge && edgeP) fams.push({ id: 'edge', kind: 'road-edge-line', piece: edgeP, at: M.edge.offset, a: M.edge.offset - M.edge.width / 2, b: M.edge.offset + M.edge.width / 2, z: 0 });
@@ -152,7 +149,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
     return tracks.within(p, 0) || tracks.within([p[0] + u[0] * g, p[1] + u[1] * g], 0) || tracks.within([p[0] - u[0] * g, p[1] - u[1] * g], 0) ? 'track' : undefined;
   };
 
-  // ---- 1. ribbon, shoulder and pinstripe along every kerb face: the plots' kerbed runs, the circus's two kerbs, the medians' edges, and the faces no plot edge runs on (roads.kerbs)
+  // ---- 1. ribbon and shoulder along every kerb face: the plots' kerbed runs, the circus's two kerbs, the medians' edges, and the faces no plot edge runs on (roads.kerbs)
   const sheet = ctx.plan.sheet, zone: Box = [sheet.x[0], sheet.x[1], sheet.y[0], sheet.y[1]];
   const classes = R.ribbon.classes as string[];
   const runs = kerbRuns(ctx, zone).filter(r => classes.includes(r.cls));
@@ -182,7 +179,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
     for (let k = 0; k < nSeg; k++) {
       const a0 = (2 * Math.PI * k) / nSeg, a1 = (2 * Math.PI * (k + 1)) / nSeg, p: V = [circus.c[0] + rK * Math.cos(a0), circus.c[1] + rK * Math.sin(a0)], q: V = [circus.c[0] + rK * Math.cos(a1), circus.c[1] + rK * Math.sin(a1)];
       const mid = (a0 + a1) / 2, radial: V = [Math.cos(mid), Math.sin(mid)];
-      face(`${id}/${k}`, 'circus', 'crown-circus', p, q, inward ? [-radial[0], -radial[1]] : radial, { edge: `roadfinish/${id}`, padZ: inward ? LAND : ctx.pav });
+      face(`${id}/${k}`, 'circus', 'crown-circus', p, q, inward ? [-radial[0], -radial[1]] : radial, { edge: `roadfinish/${id}` });
     }
   };
   arcLines(circus.ring[0], false, 'circus-island'); arcLines(circus.ring[1], true, 'circus-outer');
@@ -203,9 +200,9 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   const K = R.kerbs ?? {};
   for (const f of K.circusMouths?.faces ?? []) { // brief 028: the face starts at the tangent point of the mouth's kerb return (the arc is swept in step 1c); a plan without kerbReturn keeps the square mouth
     const rt = returnsOf(ctx).find(q => q.mouth === f.id), u = norm2([f.b[0] - f.a[0], f.b[1] - f.a[1]]);
-    face(f.id, 'mouth', f.road, rt ? [f.a[0] + u[0] * rt.t, f.a[1] + u[1] * rt.t] : f.a, f.b, f.toward, { padZ: LAND });
+    face(f.id, 'mouth', f.road, rt ? [f.a[0] + u[0] * rt.t, f.a[1] + u[1] * rt.t] : f.a, f.b, f.toward);
   }
-  for (const f of K.footMouths?.faces ?? []) face(f.id, 'mouth', f.road, f.a, f.b, f.toward, { padZ: FLAT_FOOT });
+  for (const f of K.footMouths?.faces ?? []) face(f.id, 'mouth', f.road, f.a, f.b, f.toward);
   if (fwStd) for (const m of o.mouths ?? []) { const k = kerbFace(m); face(`${m.id}/kerb`, 'footway', m.road, k.a, k.b, k.toward, { through: true }); } // brief 061: the higher road's ribbon runs straight on across a gate's lane mouth (plan continuousFootway.ribbon), on the table's front edge; no break
   // a kerbed bay (brief 028: rounded by kerbReturn.bay): the ribbon goes round its outline, the straight kerb faces between the arcs here (an end, the back, an end; the arcs are swept in step 1c, the plot's run stops at the mouth corner's tangent point,
   // capstone.kerbRuns), none across the mouth; a plan without kerbReturn keeps the square bay: its back and ends as faces, the plot run cut at the mouth by a break
@@ -253,12 +250,12 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   for (const rd of ctx.d.roads) {
     if (rd.gyratory || !classes.includes(rd.class)) continue;
     for (const side of [1, -1] as const) {
-      // a carriageway edge that runs in a beyond block or along the quay: the city beyond keeps its kerbs (no pavement top beside it: no pinstripe); the quay's top is the pavement's
-      edgeFaces(rd, side, rd.w / 2, 'beyond', (p, nn) => ctx.plan.beyond.some(b => inPoly(outside(p, nn), b)) && !faced.within(p, 0.25), { noPin: true });
-      edgeFaces(rd, side, rd.w / 2, 'quay', (p, nn) => ctx.plan.quay.some(q => inPoly(outside(p, nn), q)) && !faced.within(p, 0.25), { padZ: ctx.pav });
-      // a reservation's kerb each side (the lawn track between: no pinstripe on lawn)
+      // a carriageway edge that runs in a beyond block or along the quay: the city beyond keeps its kerbs and the quay's
+      edgeFaces(rd, side, rd.w / 2, 'beyond', (p, nn) => ctx.plan.beyond.some(b => inPoly(outside(p, nn), b)) && !faced.within(p, 0.25), {});
+      edgeFaces(rd, side, rd.w / 2, 'quay', (p, nn) => ctx.plan.quay.some(q => inPoly(outside(p, nn), q)) && !faced.within(p, 0.25), {});
+      // a reservation's kerb each side (the lawn track between)
       const res = (rd as { reservation?: number }).reservation;
-      if (res) edgeFaces(rd, side, res / 2, 'reservation', () => true, { noPin: true, circusCut: true }, true);
+      if (res) edgeFaces(rd, side, res / 2, 'reservation', () => true, { circusCut: true }, true);
     }
   }
   // coverage: every carriageway edge (the outer pair, the median's or reservation's) has a face within 0.35 m, or lies in another road's carriageway (a junction) or the circus
@@ -300,7 +297,6 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
   const okAt = new Map<string, Map<number, boolean>>();
   for (const f of fams) {
     for (const L of lines) {
-      if (f.id === 'pinstripe' && L.noPin) continue;
       if (f.id === 'edge' && L.from === 'bay') continue; // a lay-by's own faces are not the carriageway's edge
       const run = runOf.get(L.id), start = run ? -ext(run, false, f) : 0, end = run ? L.len + ext(run, true, f) : L.len;
       if (end - start < (L.from === 'bay' ? 0.1 : 0.4)) continue;
@@ -326,7 +322,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
         return blockedAt(p) ?? (resW ? blockedAt([p[0] - L.n[0] * resW, p[1] - L.n[1] * resW]) : undefined);
       }, 0.2, cut);
       if (f.id === 'ribbon') { log.kerb.edgeM += end - start; log.kerb.faceM[L.from] = r3((log.kerb.faceM[L.from] ?? 0) + end - start); if (run) log.kerb.runs++; for (const [k, v] of Object.entries(cut)) log.kerb.cutM[k] = (log.kerb.cutM[k] ?? 0) + v; }
-      const yaw = Math.atan2(L.n[0], -L.n[1]), pieceLen = f.piece.size[0], z = f.id === 'pinstripe' ? (L.padZ ?? f.z) : (L.z ?? f.z);
+      const yaw = Math.atan2(L.n[0], -L.n[1]), pieceLen = f.piece.size[0], z = L.z ?? f.z;
       for (const sg of segs) {
         if (L.from === 'reservation' && sg.s1 - sg.s0 < LAWN_MIN) continue; // a stretch too short to carry a lawn (no flat in 1b) carries no kerb either: a lone bar or arc in the road (Glyph 0.2.113 nit 1)
         const [e0, e1] = lawnEnds(L, sg.s0, sg.s1);
@@ -375,7 +371,7 @@ export function dressRoadFinish(ctx: Ctx, o: { crossings: { strip: V[] }[]; /** 
       const stopF = f.id === 'edge' ? mStop : stop;
       for (const ch of chordsOf(rt, f.at)) {
         if ([ch.from, ch.at, ch.to].some(p => hit(p, stopF))) { sweep.dropped++; continue; }
-        const z = f.id === 'pinstripe' ? f.z : rt.bay ? rt.level : f.z, yaw = Math.atan2(ch.n[0], -ch.n[1]); // a bay's ribbon lies on its floor (FLAT_FOOT), the pinstripe on the pavement
+        const z = rt.bay ? rt.level : f.z, yaw = Math.atan2(ch.n[0], -ch.n[1]); // a bay's ribbon lies on its floor (FLAT_FOOT)
         put(f.kind, f.piece, ch.at, yaw, z, [r3(ch.len / f.piece.size[0]), 1, 1], `roadfinish/return/${rt.id}`);
         if (f.id === 'ribbon') { log.kerb.laidM += ch.len; log.kerb.edgeM += ch.len; log.kerb.faceM.return = r3((log.kerb.faceM.return ?? 0) + ch.len); }
         if (f.id === 'edge') log.marks.edgeM += ch.len;

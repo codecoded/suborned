@@ -1,0 +1,18 @@
+{
+ "schema": "suborned.sim.script/1",
+ "mission": "handover",
+ "note": "Careless (brief 031 §7; Sky 2026-10-20 D1: being seen watching makes the target wary), the twin of route-g-fast: route-g-fast, but the Enforcer lingers beside the guard (1.2 m, inside his 3 m sense) for about 25 s before the knockout, where route-g-fast strikes as he arrives: the guard's attention clock runs to wary (Heat 0: 20 s), a wary guard is aware at the blow, he draws, the takedown fails, and the Enforcer goes down. c038: route-g-fast takes no Reroute, so neither does its twin; the Enforcer's own Watch is refused once the Scout has watched the guard, so he simply stands there.",
+ "start": {},
+ "orders": [
+  {"tick":0,"op":"tech","do":"move","to":"cabinet","run":true},
+  {"tick":0,"op":"enforcer","do":"move","to":[5650,-4750]},
+  {"tick":0,"op":"scout","do":"move","to":[3800,-5000]},
+  {"tick":0,"op":"fixer","do":"move","to":[725,-5025]},
+  {"tick":127,"op":"tech","do":"loop","target":"entrance"},
+  {"tick":310,"op":"scout","do":"watch","target":"guard"},
+  {"tick":510,"op":"scout","do":"move","to":[725,-4625]},
+  {"tick":770,"op":"enforcer","do":"move","to":[6520,-4110]},
+  {"tick":1110,"op":"enforcer","do":"takedown","target":"guard","how":"knockout"}
+ ],
+ "until": 5100
+}

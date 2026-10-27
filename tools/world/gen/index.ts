@@ -35,7 +35,7 @@ export type Generated = {
   groundPieces?: StreetItem[]; // brief 026: the capstone programme's flat ground pieces (world.ground.pieces), kept out of the street layer so the street rules (SF-1..SF-8) never judge paving
   capstone?: CapLog; // brief 026: what the capstone programme placed and the places no rule could fill
   kerbArcs?: KerbArcLog; // brief 028: the pearl kerb laid round every kerb return (kind kerb-return)
-  roadFinish?: RoadFinishLog; // brief 028 Road: what the road finish laid (its pieces are in groundPieces, kinds road-ribbon, road-shoulder, road-pinstripe, road-lozenge, road-seam) and what it left
+  roadFinish?: RoadFinishLog; // brief 028 Road: what the road finish laid (its pieces are in groundPieces, kinds road-ribbon, road-shoulder, road-lozenge, road-seam; the pinstripe retired 072-G) and what it left
 };
 
 export function generate(ctx: Ctx, stops: Mass[], stations: Mass[]): Generated {

@@ -51,16 +51,17 @@ describe('RF-1 fails', () => {
   test('a zebra crossing control', () => f(p => { p.standards.streetscape.crossings.strip.control.access = 'zebra'; }, /crossing control on access is zebra/));
 });
 
-describe('RF-1 fails: the shoulder, the pinstripe and the kerb faces (brief 028 Road)', () => {
+describe('RF-1 fails: the shoulder, the retired pinstripe and the kerb faces (brief 028 Road; 072-G)', () => {
   const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
-  test('the committed plan carries all three', () => { const s = R(plan); expect(s.shoulder.piece).toBe('RoadShoulder_Straight_6m'); expect(s.pinstripe.piece).toBe('PaveEdge_Pinstripe_6m'); expect(s.kerbs.circusMouths.faces.length + s.kerbs.footMouths.faces.length).toBe(11); });
+  test('the committed plan carries the shoulder and the kerb faces, and no pinstripe (retired, 072-G)', () => { const s = R(plan); expect(s.shoulder.piece).toBe('RoadShoulder_Straight_6m'); expect(s.pinstripe).toBeUndefined(); expect(s.kerbs.circusMouths.faces.length + s.kerbs.footMouths.faces.length).toBe(11); });
   test('a finish key with no look surface', () => f(p => { delete R(p).finish.keys.enamel.surface; }, /finish enamel has no `surface`/));
   test('a kerb cap with no look surface', () => f(p => { delete R(p).finish.kerb.surface; }, /finish.kerb has no `surface`/));
   test('a shoulder piece without its use tag', () => f(p => { R(p).shoulder.piece = 'RoadMark_Seam'; }, /RoadMark_Seam has no use tag ground:road-shoulder/));
   test('a shoulder arc the kit does not have', () => f(p => { R(p).shoulder.arcs['4'] = 'RoadShoulder_Arc90_R5'; }, /shoulder arc R4: "RoadShoulder_Arc90_R5" is not in the kit/));
   test('a shoulder that starts under the ribbon', () => f(p => { R(p).shoulder.from = 0.1; }, /starts under the ribbon/));
   test('a shoulder that reaches the middle line', () => f(p => { R(p).shoulder.to = 4.5; }, /reaches the narrowest middle line/));
-  test('a pinstripe on the kerb crown', () => f(p => { R(p).pinstripe.offset = 0.03; }, /must exceed the kerb crown's brass/));
+  test('a pinstripe key back in the plan (retired, 072-G)', () => f(p => { R(p).pinstripe = { piece: 'PaveEdge_Pinstripe_6m', offset: 0.5, width: 0.04 }; }, /roads\.pinstripe: the pavement pinstripe is retired/));
+  test('a set that drops the retired pinstripe', () => f(p => { R(p).finish.sets.enamel.drop.push('pinstripe'); }, /finish set enamel: drop "pinstripe": the pinstripe is retired/));
   test('a mouth face off its road\'s carriageway edge', () => f(p => { R(p).kerbs.circusMouths.faces[0].a = [9.5, 42.048]; }, /circus-mouth\/crown-avenue\/e a: 0\.5\d m off crown-avenue's carriageway edge/));
   test('a mouth face ending neither on the ring nor at a plot corner', () => f(p => { R(p).kerbs.circusMouths.faces[0].b = [9, 47]; }, /b: ends neither on the circus ring/));
   test('a mouth face that points out of the carriageway', () => f(p => { R(p).kerbs.circusMouths.faces[0].toward = [1, 0]; }, /toward points out of the carriageway/));
@@ -81,7 +82,7 @@ describe('RF-2 fails', () => {
 describe('RF-1 and the asphalt finish set (brief 055 road test)', () => {
   const f = (m: (p: any) => void, re: RegExp) => { const c = run(m)['RF-1']!; expect(c.ok).toBe(false); expect(c.detail).toMatch(re); };
   test('the committed plan lists the asphalt set, off by default, and its marks pass', () => {
-    const s = R(plan); expect(s.finish.set).toBe('enamel'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder', 'pinstripe']); // brief 048: strip light, not the pearl band; brief 061 (Sky 2026-10-25): no brass pinstripe on the pavement edge
+    const s = R(plan); expect(s.finish.set).toBe('enamel'); expect(Object.keys(s.finish.sets)).toEqual(['enamel', 'asphalt']); expect(s.finish.sets.enamel.drop).toEqual(['shoulder']); // brief 048: strip light, not the pearl band; the pinstripe is retired outright (072-G), not dropped
     expect(Object.keys(s.marks.lanes).sort()).toEqual(['boulevard', 'comet-row', 'crown-road', 'harbour-road', 'sunset-way']);
     expect(run()['RF-1']!.ok).toBe(true);
   });

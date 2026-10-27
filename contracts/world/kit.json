@@ -74466,16 +74466,16 @@
    ],
    "tags": {
     "use": [
-     "ground:pave-pinstripe"
+     "ground"
     ],
     "scale": [
-     1,
-     1
+     0.9,
+     1.1
     ],
     "squash": 1,
     "wave": 2
    },
-   "status": "adopted",
+   "status": "rejected",
    "source": "generated"
   },
   {

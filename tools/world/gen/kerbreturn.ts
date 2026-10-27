@@ -1,7 +1,7 @@
 // Kerb returns (brief 028, Sky 2026-10-24: "make sure the corners of pavements are rounded like in testbed, not sharp - modern retro future world is curvy and smooth, not harsh lines and strong angles").
 // The plan's plots are rectangles that run to the carriageway edge, so every pavement corner where two kerbs meet was square. The testbed drew one rounded outline (civic-road-layout.js civicRoadBoundaries:
 // road-loop corners R 9.8, junction fillets R 1.2-2.6, bay corners R 1.4). This is that rule for the generator: ONE list of the corners the kerb side of a plot rounds, read by everything that lies on a kerb
-// (the slab, the road's carriageway fill, the kerb stones, the light ribbon, the pinstripe, the crossings, the furniture) so they all follow the same arc.
+// (the slab, the road's carriageway fill, the kerb stones, the light ribbon, the crossings, the furniture) so they all follow the same arc.
 //
 //   convex   a plot vertex where two carriageway edges meet at a corner (a junction corner, the bend of a road): the pavement corner is cut by a circular arc tangent to both kerb faces, of the radius
 //            standards.streetscape.kerbReturn.byClass[the minor road's class] (10 / 8 / 6 m: primary / district / access). The region between the old corner and the arc is carriageway now (`cut`).

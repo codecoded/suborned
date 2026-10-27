@@ -17,7 +17,6 @@ export const NEW_ROWS = [
   row('RoadShoulder_Straight_6m', [6, 0.001, 0.655], [0, -0.588], 12, ['DK_Ground_RoadPearl', 'DK_Chrome'], ['ground:road-shoulder']),
   row('RoadShoulder_Arc90_R4', [3.8126, 0.001, 3.8126], [-1.835, -2.166], 60, ['DK_Ground_RoadPearl', 'DK_Chrome'], ['ground:road-shoulder']),
   row('RoadShoulder_Arc90_R8', [7.7917, 0.001, 7.7917], [-3.845, -4.156], 84, ['DK_Ground_RoadPearl', 'DK_Chrome'], ['ground:road-shoulder']),
-  row('PaveEdge_Pinstripe_6m', [6, 0, 0.04], null, 2, ['DK_Brass_Civic'], ['ground:pave-pinstripe']),
 ];
 
 /** The committed kit with the road candidates adopted and the new pieces added, as an object. */
@@ -33,11 +32,10 @@ export function writeProposalKit(file: string): string {
   return file;
 }
 
-/** The plan's standards.streetscape.roads keys the shoulder and the pinstripe would live under. */
+/** The plan's standards.streetscape.roads key the shoulder would live under (the pinstripe's row and key are gone: retired, 072-G). */
 export const SHOULDER = { piece: 'RoadShoulder_Straight_6m', arcs: { 4: 'RoadShoulder_Arc90_R4', 8: 'RoadShoulder_Arc90_R8' }, from: 0.36, to: 0.98, chrome: 0.035, why: 'the testbed\'s pearl streamline band beside the kerb (civic-road-finish.js bandStart .36, bandEnd .98, chromeWidth .035), chrome-edged' };
-export const PINSTRIPE = { piece: 'PaveEdge_Pinstripe_6m', offset: 0.5, width: 0.04, why: 'the testbed\'s pavement pinstripe (civic-roads.js inlayParts, 0.47 to 0.52 in from the kerb face), brass not gold' };
 export function proposalPlan(plan: Plan): Plan {
   const p = structuredClone(plan), R = (p.standards as any).streetscape.roads;
-  R.shoulder ??= SHOULDER; R.pinstripe ??= PINSTRIPE;
+  R.shoulder ??= SHOULDER;
   return p;
 }

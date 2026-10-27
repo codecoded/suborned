@@ -14,7 +14,7 @@ import { cutHits, returnsOf, slabRing } from '../gen/kerbreturn';
 import { overlaps } from '../gen/street/crossings';
 
 const G = 'Streetscape';
-const SRC = 'standards.streetscape.kerbReturn (Datum 2026-10-24; kerb, ribbon, pinstripe and walk follow the arc) · brief 028 (Sky 2026-10-24) · tools/world/gen/kerbreturn.ts, street/kerbarcs.ts';
+const SRC = 'standards.streetscape.kerbReturn (Datum 2026-10-24; kerb, ribbon and walk follow the arc; the pinstripe retired 072-G) · brief 028 (Sky 2026-10-24) · tools/world/gen/kerbreturn.ts, street/kerbarcs.ts';
 /** Kinds that lie in or on the carriageway or kerb by design: the road's finish and the arc's own kerb. */
 const OWN = new Set(['road-ribbon', 'road-shoulder', 'road-pinstripe', 'road-lozenge', 'road-seam', 'road-lane-dash', 'road-edge-line', 'kerb-return', 'drain', 'manhole']);
 const CLEAR = 0.45 - 0.011; // SF-5: a kerb-zone item stands 0.45 m off the kerb face (the export rounds to a mm)
@@ -72,7 +72,7 @@ export function kerbReturnRules(c: WCtx): Check[] {
     rule('KR-4', G, 'A kerb stone lies on a pavement edge (a plot slab, a bend pad or a median), never out on the carriageway', kerbs.length, bad4, 'none', SRC),
     rule('KR-5', G, 'A reservation\'s kerb piece lies beside its lawn track: no bar or arc of kerb stands alone in the road', faces.length, bad5, 'none', SRC),
     rule('KR-3', G, 'A kerb stands only where pavement meets carriageway: no kerb stone lies across the mouth of a kerbed bay', bays.length, bad3, 'none', SRC),
-    stat('KR-2/n', G, 'Kerb returns (informational): returns, arc metres, kerb stone metres on them', `${returnsOf(gc).length} returns`, '-', true, SRC, `convex ${list.length} (junction corners, lay-by mouths, circus mouths), concave ${returnsOf(gc).filter(x => !x.convex && !x.bend).length} (a lane end, lay-by backs), bend outsides ${returnsOf(gc).filter(x => x.bend).length}, median noses ${returnsOf(gc).filter(x => x.nose).length}; ${arcM.toFixed(0)} m of arc, ${stoneM.toFixed(0)} m of stone; ${c.gen.roadFinish?.returns.chords ?? 0} ribbon and pinstripe chords`),
+    stat('KR-2/n', G, 'Kerb returns (informational): returns, arc metres, kerb stone metres on them', `${returnsOf(gc).length} returns`, '-', true, SRC, `convex ${list.length} (junction corners, lay-by mouths, circus mouths), concave ${returnsOf(gc).filter(x => !x.convex && !x.bend).length} (a lane end, lay-by backs), bend outsides ${returnsOf(gc).filter(x => x.bend).length}, median noses ${returnsOf(gc).filter(x => x.nose).length}; ${arcM.toFixed(0)} m of arc, ${stoneM.toFixed(0)} m of stone; ${c.gen.roadFinish?.returns.chords ?? 0} ribbon chords`),
   ];
 }
 /** A ring pulled in on all sides by about `d` m (a box: about its centre), so a stone that only touches a bay's edge is not "across" it. */

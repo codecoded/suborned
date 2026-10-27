@@ -33,12 +33,12 @@ const near = (p: V, ring: V[], g: number) => inPoly(p, ring) || ring.some((q, i)
 const R = (plan.standards as any).streetscape.roads, stop: number = R.breaks.stopShort;
 
 describe('the road finish', () => {
-  test('lays ribbon, lozenge and seam but neither the shoulder nor the pinstripe (the enamel set drops the pearl band, brief 048, and the brass pinstripe, brief 061); clear `drop` and both are laid too', () => {
+  test('lays ribbon, lozenge and seam but not the shoulder (the enamel set drops the pearl band, brief 048); clear `drop` and it is laid too; the pinstripe never is (retired, 072-G)', () => {
     for (const k of ['road-ribbon', 'road-lozenge', 'road-seam']) expect(res.log.counts[k], k).toBeGreaterThan(100);
     expect(res.log.counts['road-shoulder']).toBeUndefined();
     expect(res.log.counts['road-pinstripe']).toBeUndefined(); // brief 061, Sky 2026-10-25: no brass on the road edge
     expect(resBand.log.counts['road-shoulder']).toBeGreaterThan(100);
-    expect(resBand.log.counts['road-pinstripe']).toBeGreaterThan(1000);
+    expect(resBand.log.counts['road-pinstripe']).toBeUndefined(); // 072-G: retired, laid by no set and no `drop`, even with roads.pinstripe in the plan
     expect(res.items.length).toBe(Object.values(res.log.counts).reduce((a, b) => a + b, 0));
     expect(res.log.kerb.laidM).toBeGreaterThan(0.8 * res.log.kerb.edgeM); // most of the kerb face carries the ribbon; the rest is cut at crossings, platforms, drives, junctions
   });
@@ -48,12 +48,11 @@ describe('the road finish', () => {
   test('every item is a kit piece the generator knows, with ids unique', () => {
     const ids = new Set(res.items.map(i => i.id));
     expect(ids.size).toBe(res.items.length);
-    for (const i of res.items) { expect(i.source).toBe('kit'); expect(i.kit?.id).toMatch(/^(RoadRibbon|RoadShoulder|PaveEdge|RoadMark)_/); expect(i.size.every(Number.isFinite)).toBe(true); }
+    for (const i of res.items) { expect(i.source).toBe('kit'); expect(i.kit?.id).toMatch(/^(RoadRibbon|RoadShoulder|RoadMark)_/); expect(i.size.every(Number.isFinite)).toBe(true); }
   });
   test('nothing lies in a crossing strip or within stopShort of one (ribbon and shoulder ends, lozenge and seam centres)', () => {
     const bad: string[] = [];
     for (const i of res.items) {
-      if (i.kind === 'road-pinstripe') continue;
       const len = i.size[0], yaw = i.yaw, u: V = [Math.cos(yaw), Math.sin(yaw)];
       const pts: V[] = i.kind === 'road-seam' ? [i.at] : [i.at, [i.at[0] + u[0] * len / 2, i.at[1] + u[1] * len / 2], [i.at[0] - u[0] * len / 2, i.at[1] - u[1] * len / 2]];
       for (const p of pts) for (const s of strips) if (near(p, s, stop - 0.25)) { bad.push(`${i.id} at ${p}`); break; } // 0.25: the 0.2 m sampling step
@@ -93,10 +92,11 @@ describe('the road finish', () => {
   test('every carriageway edge has a kerb face: what is left is a handful of metres at median ends and bends', () => {
     expect(res.log.kerb.uncoveredM).toBeLessThan(25);
   });
-  test('the pinstripe lies at the walking surface beside its face: pavement, foot way, land; none beside beyond ground or a reservation lawn', () => {
-    const pin = resBand.items.filter(i => i.kind === 'road-pinstripe'); // the committed enamel set drops it: laid here by clearing `drop`
-    expect(pin.some(i => /roadfinish\/(beyond|.*reservation)/.test(i.edge))).toBe(false);
-    expect(new Set(pin.map(i => i.z))).toEqual(new Set([0.18, 0.02, -0.03]));
+  test('the pinstripe is retired (072-G): a plan that still carries roads.pinstripe and drops nothing lays none, and no piece is the rejected PaveEdge_Pinstripe_6m', () => {
+    const p = structuredClone(planBand) as any; p.standards.streetscape.roads.pinstripe ??= { piece: 'PaveEdge_Pinstripe_6m', offset: 0.5, width: 0.04 };
+    const r = run(p)!;
+    expect(r.items.some(i => i.kind === 'road-pinstripe' || i.kit?.id === 'PaveEdge_Pinstripe_6m')).toBe(false);
+    expect(JSON.stringify(r.items)).toBe(JSON.stringify(resBand.items));
   });
   test('the Boulevard\'s lawn track ends in quarter rounds (kerbReturn.nose): each stretch is rounded at its ends except on the sheet\'s edge, the kerb ribbon is swept round them, and the rounds keep the swept envelope clear', () => {
     const lawn = res.log.lawn.filter(l => l.ring.length > 4), arcs = res.items.filter(i => i.edge.startsWith('roadfinish/lawn/'));
@@ -108,7 +108,7 @@ describe('the road finish', () => {
     // each round is tangent to the end line: the stretch's two ends are straight between the arcs
   });
   test('a kerbed bay\'s own faces and arcs are laid on its floor, none across its mouth, and the plot run beside it stops at the mouth corner\'s tangent point (brief 028)', () => {
-    const bay = res.items.filter(i => (i.edge.startsWith('roadfinish/bay/') || i.edge.startsWith('roadfinish/return/layby/')) && i.kind !== 'road-pinstripe');
+    const bay = res.items.filter(i => (i.edge.startsWith('roadfinish/bay/') || i.edge.startsWith('roadfinish/return/layby/')));
     expect(bay.length).toBeGreaterThan(0); expect(bay.every(i => i.z === 0.02)).toBe(true);
     expect(res.log.kerb.cutM.bay ?? 0).toBe(0); // no break: the geometry stops the run (capstone.kerbRuns)
     expect(res.log.returns.returns).toBe(returnsOf(ctxOf(plan, d, civ)).filter(r => ((plan.standards as any).streetscape.roads.ribbon.classes as string[]).includes(r.cls)).length); expect(res.log.returns.chords).toBeGreaterThan(1500); // every return the road finish sweeps (brief 061: a gate's lane mouth has none once gen/kerbreturn.ts leaves it square)
@@ -160,10 +160,10 @@ describe('the asphalt finish set', () => {
     expect(Object.keys(asp.log.counts)).toEqual(['road-lane-dash']);
     expect(asp.log.counts['road-lane-dash']).toBeGreaterThan(500);
   });
-  test('dropping nothing lays the ribbon, shoulder and pinstripe as the enamel does; an edge line key lays the edge lines (the first, messy try)', () => {
+  test('dropping nothing lays the ribbon and shoulder as the enamel does; an edge line key lays the edge lines (the first, messy try)', () => {
     const p = structuredClone(ap) as any, R2 = p.standards.streetscape.roads; R2.finish.sets.asphalt.drop = []; R2.marks.edge = R2.marks.edgeOff;
     const r = lay(p);
-    for (const k of ['road-ribbon', 'road-shoulder', 'road-pinstripe']) expect(r.log.counts[k], k).toBe(resBand.log.counts[k]);
+    for (const k of ['road-ribbon', 'road-shoulder']) expect(r.log.counts[k], k).toBe(resBand.log.counts[k]);
     expect(r.log.counts['road-edge-line']).toBeGreaterThan(1000);
   });
   test('deterministic', () => {

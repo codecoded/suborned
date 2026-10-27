@@ -1,4 +1,4 @@
-// RF-3 (brief 028 Road, Sky 2026-10-22 "can try"): the road finish the generator lays (tools/world/gen/street/roadfinish.ts: ground.pieces kinds road-ribbon, road-shoulder, road-pinstripe, road-lozenge, road-seam)
+// RF-3 (brief 028 Road, Sky 2026-10-22 "can try"): the road finish the generator lays (tools/world/gen/street/roadfinish.ts: ground.pieces kinds road-ribbon, road-shoulder, road-lozenge, road-seam; road-pinstripe is retired, 072-G)
 // is what standards.streetscape.roads says. Every piece is an adopted kit piece of its family's use tag, lies at the level of the surface it is laid on, and nothing of it lies in a crossing strip, a drive or a
 // tram platform or within stopShort of one (the breaks: the road's light and the crossing's light never join, a drive's kerb is dropped, a platform edge is its own); lozenges on one carriageway keep their
 // spacing. The plan-side clauses (the standard's own keys, the kerb faces) are RF-1 in tools/plan/road-finish.ts. Failing examples: road-finish.test.ts in this folder.
@@ -9,8 +9,8 @@ import { type WCtx, rule, stat } from '../../plan/world-ctx';
 import { adopted } from '../gen/kitrefs';
 
 const G = 'Streetscape';
-const SRC = 'streetscape.roads (breaks, lozenges, shoulder, pinstripe) · brief 026/028 Road, Sky 2026-10-22 · tools/world/gen/street/roadfinish.ts';
-export const ROAD_FINISH_USE: Record<string, string> = { 'road-ribbon': 'ground:road-ribbon', 'road-shoulder': 'ground:road-shoulder', 'road-pinstripe': 'ground:pave-pinstripe', 'road-lozenge': 'ground:road-lozenge', 'road-seam': 'ground:road-seam', 'road-lane-dash': 'ground:road-lane-dash', 'road-edge-line': 'ground:road-edge-line' }; // the last two: the asphalt set's white marks (brief 055 road test)
+const SRC = 'streetscape.roads (breaks, lozenges, shoulder; the pinstripe retired, 072-G) · brief 026/028 Road, Sky 2026-10-22 · tools/world/gen/street/roadfinish.ts';
+export const ROAD_FINISH_USE: Record<string, string> = { 'road-ribbon': 'ground:road-ribbon', 'road-shoulder': 'ground:road-shoulder', 'road-pinstripe': 'ground:pave-pinstripe', 'road-lozenge': 'ground:road-lozenge', 'road-seam': 'ground:road-seam', 'road-lane-dash': 'ground:road-lane-dash', 'road-edge-line': 'ground:road-edge-line' }; // the last two: the asphalt set's white marks (brief 055 road test). road-pinstripe stays listed so a stray one fails: the piece is rejected (072-G) and no adopted piece carries ground:pave-pinstripe
 /** The levels a piece lies at: the carriageway, a kerbed bay's floor (FLAT_FOOT); a pinstripe at the pavement top, a foot way or the land under a circus band. */
 const LEVEL: Record<string, number[]> = { 'road-ribbon': [0, 0.02], 'road-shoulder': [0, 0.02], 'road-lozenge': [0], 'road-seam': [0], 'road-lane-dash': [0], 'road-edge-line': [0, 0.02], 'road-pinstripe': [0.18, 0.02, -0.03] };
 

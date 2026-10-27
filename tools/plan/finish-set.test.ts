@@ -19,7 +19,7 @@ describe('the finish set', () => {
   });
   test('the asphalt set: road-asphalt on every class, white lane marks', () => {
     const s = finishSet(withFinishSet(plan, 'asphalt').standards.streetscape.roads);
-    expect(s.marks).toBe('lanes'); expect(s.drop).toEqual(['ribbon', 'shoulder', 'pinstripe']); // the clean asphalt: the pearl kerb and the road
+    expect(s.marks).toBe('lanes'); expect(s.drop).toEqual(['ribbon', 'shoulder']); // the clean asphalt: the pearl kerb and the road
     expect(Object.values(s.byClass)).toEqual(['road-asphalt', 'road-asphalt', 'road-asphalt']);
     expect(R.finish.keys['road-asphalt'].surface).toBe('road-asphalt');
   });
