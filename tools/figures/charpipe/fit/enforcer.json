@@ -1,0 +1,97 @@
+{
+ "schema": "suborned.charpipe.e2e/1",
+ "brief": "069 the new Enforcer (Sky, 2026-10-27: Tripo at 30k 'yes', the gold to chrome): Sky's design with the gold turned to satin chrome, intake sheet enforcer_intake_chrome_1 (the exact pose, passes the pose check) -> Tripo 3.1 -> the hybrid fit -> checks",
+ "out": "out/scratch/forma/char-pipeline/enforcer",
+ "job": "069-enforcer",
+ "pass": "mesh30k",
+ "budgetUsd": 1.2,
+ "note": "Sky approved (via Aster, 2026-10-27): Tripo 3.1 at faceLimit 30000, one take at about $0.60, budget $1.00; refused or over budget: stop and report; raised to $1.20 by Sky's OK for a second take from the no-badge sheet",
+ "model": {
+  "id": "tripo:v3.1@0",
+  "settings": {
+   "texture": true,
+   "pbr": false,
+   "faceLimit": 30000,
+   "geometryQuality": "detailed",
+   "textureQuality": "detailed",
+   "orientation": "default"
+  },
+  "estUsd": 0.6,
+  "viewOrder": [
+   "front",
+   "left",
+   "back"
+  ],
+  "note": "Sky's pick for 3D (memory: Tripo 3.1, ~$0.60 via Runware). Runware's Tripo 3.1 page (https://runware.ai/docs/models/tripo-v3-1): inputs.images takes 1 to 4 images for multiview-to-3D, order not stated there; Tripo's own API orders multi-view as [front, left, back, right] with views omittable (front required, at least 2: https://developers.tripo3d.com/en/docs/generation-multiview-to-model/standard), so the three real views go in that order and no right view is invented. faceLimit by the person's kind (faceLimitByKind; the cell at 30000). Runware's page lists 20000 as Tripo's maximum, but the October Fixer was made at 30000 through Runware (28,428 triangles); the first v7 take used 20000 and returned 18,841. pbr off: the game's figures are matte. orientation default: the fit normalises facing itself.",
+  "faceLimitByKind": {
+   "cell": 30000,
+   "note": "Sky, 2026-10-27: 'Player Models should be created at 30k triangles'. A person row's kind picks its face limit; the October Fixer was made through Runware with tripo:v3.1@0 faceLimit 30000 (tools/figures/fixer_gen.py, 28,428 triangles), so Runware's documented 20000 maximum is not enforced."
+  }
+ },
+ "crop": {
+  "marginPx": 24,
+  "sizePx": 1024
+ },
+ "people": [
+  {
+   "id": "enforcer_v1",
+   "sheet": "paid/069-enforcer/codex/enforcer_intake_nobadge_1.png",
+   "sex": "m",
+   "category": "hero",
+   "wears": [
+    "coat"
+   ],
+   "label": "the Enforcer, Sky's design with satin chrome for the gold: grey hair swept back, beard, amber glasses, a knee-length ivory and black coat with chrome panels and an aubergine patch on each upper arm, black gloves with chrome discs, a black and chrome belt, black trousers with chrome chevrons at the knees, ivory boots",
+   "src": "paid/069-enforcer/meshes/enforcer_v1__tripo31_mv30k_t2.glb",
+   "kind": "cell",
+   "role": "enforcer",
+   "heightM": 1.86,
+   "heightNote": "open to Sky: 1.86 m, the tall class of the height table (fit.json heights.m.tall) for a tall, powerful build",
+   "person": "A tall, powerful man in his sixties with grey hair swept back and a short beard",
+   "srcBadge": "paid/069-enforcer/meshes/enforcer_v1__tripo31_mv30k_t1_badge.glb (parked: the first take, from the sheet with the left-shoulder badge; not used)"
+  }
+ ],
+ "looseRules": [],
+ "looseRulesNote": "none: the knee-length coat takes the band-merge rule (fit.json transfer.bandMerge) like the Fixer's skirt",
+ "hat": {
+  "note": "as e2e.json hairRule false: a person's own cap was generated with their own hair and already fits it; the hair-under-hat rule is for a hat moved onto another head (the G path). Applied here it pulled the guard's fringe under the brim into spikes, which the LOD0 reduction opened into dark cracks (2026-10-27).",
+  "shellShare": 0.6,
+  "minOwnShells": 0.8,
+  "rimM": 0.01,
+  "hairRule": false
+ },
+ "props": false,
+ "rest": {
+  "mode": "source",
+  "note": "as e2e.json: the rest is the intake A-pose she was generated in; the Humanoid T reference with neutral legs is <id>_H_avatarT.fbx"
+ },
+ "lod0": {
+  "mode": "source",
+  "note": "as e2e.json: LOD0 is the generated mesh at full detail"
+ },
+ "armpit": {
+  "mergeM": 0.015,
+  "band": [
+   0.05,
+   0.95
+  ],
+  "torsoMin": 0.05,
+  "note": "as e2e.json"
+ },
+ "deliverables": {
+  "note": "as e2e.json",
+  "dirs": [
+   "basis",
+   "fit",
+   "a"
+  ]
+ },
+ "engineSpeeds": {
+  "path": "briefs/069/latch/e2e-unity-numbers.json",
+  "figureSuffix": "_H",
+  "clips": [
+   "crouch_walk"
+  ],
+  "note": "as e2e.json"
+ }
+}

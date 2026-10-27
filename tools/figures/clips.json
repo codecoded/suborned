@@ -712,13 +712,24 @@
   },
   {
    "name": "pistol_draw",
-   "src": "Anim/mixamo_library/Drawing_Gun__c9c83441.fbx",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+    "frame": 1
+   },
+   "frames": 18,
    "loop": false,
-   "use": "pistol: the draw (the game's draw clip)",
    "loco": false,
    "feet": true,
    "set": "pistol",
-   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+   "use": "pistol: the draw as the standard layered transition (the pistol pack has no draw in its stance): the idle's hands-down pose eased into the aim's first frame over 0.6 s, so it starts where idle is and ends where pistol_aim begins",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx"
   },
   {
    "name": "pistol_aim",
@@ -732,12 +743,39 @@
   },
   {
    "name": "pistol_fire",
-   "src": "Anim/mixamo_library/Shooting_Pistol__c9c81565.fbx",
+   "author": "tools/figures/author_clips.py",
+   "kind": "additive",
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+   "refFrame": 1,
+   "refPose": 0,
+   "turns": [
+    [
+     "RightArm",
+     "pitch",
+     -8
+    ],
+    [
+     "LeftArm",
+     "pitch",
+     -8
+    ],
+    [
+     "Spine2",
+     "pitch",
+     -2
+    ]
+   ],
+   "env": {
+    "attack": 0.0333,
+    "tau": 0.09,
+    "length": 0.4,
+    "tail": 0.08
+   },
    "loop": false,
-   "use": "pistol: fire, two-handed (8 cm), right fingers closed (193/196 deg)",
    "loco": false,
    "feet": true,
    "set": "pistol",
+   "use": "pistol: fire = the aim pose held with a recoil (the arms kick up 8 deg and settle in 0.4 s), the arms staying at aim height; a full clip from the aim's own frame 1, so aim and fire share the stance and the gun's direction",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
   },
   {
@@ -823,6 +861,28 @@
    "feet": true,
    "set": "rifle",
    "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)"
+  },
+  {
+   "name": "pistol_holster",
+   "author": "tools/figures/author_clips.py",
+   "kind": "blend",
+   "from": {
+    "src": "Anim/mixamo_library/Neutral_Idle__c9c80e28.fbx",
+    "frame": 1
+   },
+   "to": {
+    "src": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx",
+    "frame": 1
+   },
+   "frames": 18,
+   "reverse": true,
+   "loop": false,
+   "loco": false,
+   "feet": true,
+   "set": "pistol",
+   "use": "pistol: the holster, the draw played back (the aim's first frame eased to the idle's hands-down pose over 0.6 s)",
+   "licence": "Adobe Mixamo: royalty-free in games and films; the raw files are not redistributed on their own (the store's mixamo_library)",
+   "donor": "Anim/mixamo_library/Pistol_Idle__c9cdb599.fbx"
   }
  ]
 }

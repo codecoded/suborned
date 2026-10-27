@@ -400,9 +400,7 @@
   "note": "clips the prop pictures play that are not in fit.json clips.list (same Mixamo library, the game's own idle)",
   "idle": "Neutral_Idle__c9c80e28.fbx",
   "pistol_idle": "Pistol_Idle__c9c6b74c.fbx",
-  "pistol_draw": "Drawing_Gun__c9c83441.fbx",
   "pistol_aim": "Pistol_Idle__c9cdb599.fbx",
-  "pistol_fire": "Shooting_Pistol__c9c81565.fbx",
   "pistol_run": "Pistol_Run__c9c9b1f3.fbx",
   "rifle_idle": "Rifle_Idle__c9cd4f94.fbx",
   "rifle_aim": "Rifle_Aiming_Idle__c9c84492.fbx",
@@ -625,12 +623,14 @@
  "clipSets": {
   "note": "Sky, 2026-10-27: weapon clip sets from the store's Mixamo library, through the clip stage (tools/figures/clips.json, the shared neutral-leg avatar, the finger limits). Picked for hands already closed on a weapon of standard size (right middle and ring fingers' summed bend 160-210 deg against 50-90 for the empty-hand clips), both hands on the weapon where the class is two-handed, in place (hips travel under 0.1 m for idle/aim/walk/run), and one pack per class so the grip matches across its clips. Survey: out/scratch/forma/char-pipeline/props/weapon_clips_survey.json. Licence: Adobe Mixamo, royalty-free in games; the raw files are not redistributed.",
   "handgun": {
-   "idle": "pistol_idle",
+   "idle": "pistol_aim",
    "draw": "pistol_draw",
    "aim": "pistol_aim",
    "fire": "pistol_fire",
+   "holster": "pistol_holster",
    "walk": "pistol_walk",
-   "run": "pistol_run"
+   "run": "pistol_run",
+   "stance": "one stance, the pistol pack's two-handed cup (Mixamo Pistol_Idle c9cdb599, the pack of Pistol_Walk and Pistol_Run c9cdb75a): aim is it; fire is it held with a recoil; draw and holster are the standard layered transition between the idle and its first frame (the library has no draw or holster in this stance: Drawing_Gun reaches behind the back, the Pistol_Start/Pistol/Pistol_To_Idle pack aims one-handed with the hands 27 cm apart); walk is the game's walk with it on the upper body. Sky, 2026-10-27: 'the pistol is really bad' (mixed sources: Drawing_Gun, Shooting_Pistol's body swing); armed idle is the aim itself (the low-ready Pistol_Idle c9c6b74c is another pack's stance)"
   },
   "longgun": {
    "idle": "rifle_idle",

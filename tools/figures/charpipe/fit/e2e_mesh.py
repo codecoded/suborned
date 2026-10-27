@@ -21,6 +21,13 @@ def crops():
     for r in E['people']:
         a = np.asarray(Image.open(os.path.join(ROOT, r['sheet'])).convert('RGB')); h, w, _ = a.shape
         m, bg, flat = ic.mask_of(a); views = {}
+        # holes inside the figure (a coat's grey shading close to the sheet's ground) are figure, not ground: only ground reached from the
+        # sheet's edge is ground (the Enforcer's back: the coat's grey gradient read as ground and left a white hole)
+        from PIL import ImageDraw
+        mi = Image.fromarray(np.where(m, 255, 0).astype(np.uint8)).copy(); H_, W_ = m.shape   # a writable copy: floodfill on the array-backed image did nothing
+        for (x_, y_) in [(x, 0) for x in range(0, W_, 16)] + [(x, H_ - 1) for x in range(0, W_, 16)] + [(0, y) for y in range(0, H_, 16)] + [(W_ - 1, y) for y in range(0, H_, 16)]:
+            if mi.getpixel((x_, y_)) == 0: ImageDraw.floodfill(mi, (x_, y_), 128)
+        m = np.asarray(mi) != 128
         for k, (name, x0, x1) in enumerate((('front', 0, w // 3), ('left', w // 3, 2 * w // 3), ('back', 2 * w // 3, w))):
             sub = a[:, x0:x1]; ms = m[:, x0:x1]
             ys, xs = np.nonzero(ms); y0, y1, xa, xb = ys.min(), ys.max(), xs.min(), xs.max(); mg = E['crop']['marginPx']

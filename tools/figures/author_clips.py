@@ -578,3 +578,26 @@ def make_additive(entry, store, dst):
         poses.append({pb.name[len('mixamorig:'):]: pb.matrix_basis.copy() for pb in arm.pose.bones})
     _key(arm, poses)
     return _export(arm, dst, len(ks))
+
+
+def make_blend(entry, store, dst):
+    """pistol_draw / pistol_holster (brief 069, Sky: the pistol set from one stance): the standard layered transition where the library has no
+    draw or holster in the aim's own stance: every bone's local rotation (and the hips' place) eased from entry['from'] ({src, frame}: the idle's
+    hands-down pose) to entry['to'] ({src, frame}: the aim's first frame), over entry['frames'] frames (smoothstep), so the clip starts exactly where
+    the idle is and ends exactly where the aim begins: no jump at either transition. entry['reverse'] plays it backwards (the holster)."""
+    bpy.ops.wm.read_factory_settings(use_empty=True)
+    sc = bpy.context.scene; sc.render.fps = FPS
+    fa = _load_arm(os.path.join(store, entry['from']['src'])); A = _sample(fa, [entry['from']['frame']])[0]; bpy.data.objects.remove(fa, do_unlink=True)
+    arm = _load_arm(os.path.join(store, entry['to']['src'])); Bp = _sample(arm, [entry['to']['frame']])[0]
+    bpy.context.view_layer.objects.active = arm; bpy.ops.object.mode_set(mode='POSE')
+    for pb in arm.pose.bones: pb.rotation_mode = 'QUATERNION'
+    n = entry['frames']; poses = []
+    for i in range(n):
+        t = i / (n - 1); t = t * t * (3 - 2 * t)
+        if entry.get('reverse'): t = 1 - t
+        P = {}
+        for b in Bp:
+            la, ra, _ = A.get(b, Bp[b]).decompose(); lb, rb, _ = Bp[b].decompose()
+            P[b] = Matrix.Translation(la.lerp(lb, t)) @ ra.slerp(rb, t).to_matrix().to_4x4()
+        poses.append(P)
+    _key(arm, poses); _export(arm, dst, n)

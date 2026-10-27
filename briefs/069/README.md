@@ -220,3 +220,10 @@ Forma put Latch's left-foot and bow-leg fix into the game's figure pipeline as g
   - **Fire clips:** they use the aim clip's blade angle.
   - **Enforcer:** Tripo was called once on the badge sheet before the hold landed ($0.60). Re-take (pass to $1.20) or paint the badge out is Sky's call.
   - Evidence: `latch/weapons-final/final-check.txt`; videos in `out/scratch/latch/char-pipeline/weapons-final/video/`.
+- **The new Enforcer (Forma):** Tripo 3.1 30k from the no-badge sheet (pass raised to $1.20 with Sky's OK; the badge take is parked).
+  - **Build:** 28,908 / 4,500 / 1,500 triangles, 52 bones, 2K, 1.852 m skeleton, byte-identical 11/11.
+  - **Coat:** open at the front, so the band merge doesn't fire (42% bridged); a hip-weight coat rule made it worse and is parked. The coat rides nearest-body weights (stretch p99 walk 1.3, run 2.3). The real fix is cutting the panels free.
+  - **Gloves:** the right glove's fingers are fitted; the left glove is fused, so that hand is rigid.
+  - **Carbine:** the butt is 8.2 cm from the shoulder in Blender.
+- **Pistol set rebuilt around one stance:** aim `Pistol_Idle c9cdb599`; fire = the aim held plus an 8° kick; draw and holster = 0.6 s blends into and out of the aim. Transitions match to 0.0 cm on the Fixer; no body swing in fire. There's no hip-holster draw in the library.
+- **Latch's spine aim** (Multi-Aim on Spine/Chest/UpperChest): the pistol hand stays on the grip (was 3.8 cm), but the old fire clip's foot drift remains (that's the clip). The carbine is worse with it, so it keeps the grip + shoulder setup.

@@ -21,7 +21,7 @@ ref_rel = f"Clips/{AV['reference']}.fbx"
 for c in spec['clips']:
     if 'author' in c:   # posed here, on the donor clip's skeleton (tools/figures/author_clips.py); the donor is the recorded source
         os.makedirs(f'{out}/.authored', exist_ok=True); src = f"{out}/.authored/{c['name']}.fbx"
-        (author_clips.make_testbed if c.get('kind') == 'testbed' else author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make_layer if c.get('kind') == 'layer' else author_clips.make_additive if c.get('kind') == 'additive' else author_clips.make)(c, STORE, src); c['src'] = c['donor']
+        (author_clips.make_testbed if c.get('kind') == 'testbed' else author_clips.make_carry if c.get('kind') in ('carry', 'tray') else author_clips.make_pinned if c.get('kind') in ('pinned', 'seated') else author_clips.make_layer if c.get('kind') == 'layer' else author_clips.make_blend if c.get('kind') == 'blend' else author_clips.make_additive if c.get('kind') == 'additive' else author_clips.make)(c, STORE, src); c['src'] = c['donor']
     else:
         src = c['src'] if os.path.isabs(c['src']) else os.path.join(STORE, c['src'])
     clean(); new = load(src); arm, _ = rigs(new)

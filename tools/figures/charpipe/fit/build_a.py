@@ -37,13 +37,13 @@ def build(fid, hybrid=False):
     for o in list(bpy.data.objects):
         if o.name.endswith('_fitproxy'): bpy.data.objects.remove(o, do_unlink=True)
     src = bpy.data.objects[f'{fid}_src']; img = L.base_color_image(src)
-    if not (L.SET in ('e2e', 'fixer') and L.E2E.get('lod0', {}).get('mode') == 'source'): L.clean_normals(src)
+    if not (L.SET in ('e2e', 'fixer', 'enforcer') and L.E2E.get('lod0', {}).get('mode') == 'source'): L.clean_normals(src)
     L.addon_utils.enable('bl_ext.user_default.mpfb', default_set=True, persistent=False)
     arm, b, px, donor = L.fitted_human(fit); tm.lap('body')
     lm = L.landmarks(arm, donor['V']); height = lm['crown']
     # LOD0: the source decimated to budget, one matte material with the source's base colour
     L.flat_material(src, img)
-    if not (L.SET in ('e2e', 'fixer') and L.E2E.get('lod0', {}).get('mode') == 'source'): L.decimate_to(src, L.D['lods']['tris'][0])
+    if not (L.SET in ('e2e', 'fixer', 'enforcer') and L.E2E.get('lod0', {}).get('mode') == 'source'): L.decimate_to(src, L.D['lods']['tris'][0])
     src.name = f'{fid}_A_LOD0'; tm.lap('lod0')
     crumbs, parts = L.drop_crumbs(src, L.D['transfer']['crumbPct'])
     Vt = np.array([list(v.co) for v in src.data.vertices]); Tt = L.tris_of(src)
@@ -52,7 +52,8 @@ def build(fid, hybrid=False):
     W, rule_counts = L.loose_rules(W, donor['names'], Vt, lab, lm, arm)
     W, pit_n = L.armpit_merge(Vt, W, donor['names']); rule_counts['armpitMerged'] = pit_n
     W, bm = L.band_merge(Vt, W, lm); rule_counts['bandMerge'] = bm
-    if L.SET in ('e2e', 'fixer'):
+    if not bm.get('applied'): W, rule_counts['coatBlend'] = L.coat_blend(Vt, W, donor['names'], lab, lm)   # an open coat: the standard hip share
+    if L.SET in ('e2e', 'fixer', 'enforcer'):
         W, rule_counts['hands'] = L.hand_rule(Vt, Tt, W, donor['names'], arm)
         W, rule_counts['layerMerge'] = L.layer_merge(Vt, W)
     tm.lap('rules')
@@ -65,7 +66,7 @@ def build(fid, hybrid=False):
     for m in list(src.modifiers):
         if m.type == 'ARMATURE': src.modifiers.remove(m)       # the source is already in the fitted pose
     L.apply_rest(arm, [px])                                     # the donor proxy keeps its fitted pose; the rig's rest becomes the fitted pose
-    if L.SET in ('e2e', 'fixer') and L.budget(row)['skeleton'] in L.D['transfer'].get('fingers', {}).get('skeletons', []):
+    if L.SET in ('e2e', 'fixer', 'enforcer') and L.budget(row)['skeleton'] in L.D['transfer'].get('fingers', {}).get('skeletons', []):
         rule_counts['fingers'] = L.finger_fit(src, arm)         # the finger bones in the generated fingers, weighted from them (52-bone figures)
     m = src.modifiers.new('Armature', 'ARMATURE'); m.object = arm
     if L.rest_mode() == 'tpose': L.pose_blender(arm, L.standard_aims(arm)); L.apply_rest(arm, [src, px])
@@ -79,8 +80,8 @@ def build(fid, hybrid=False):
     body_co = L.eval_co(px); att = L.add_attach(arm, body_co)
     extra = []; hyb = {}
     if hybrid: extra, hyb = hybrid_parts(fid, src, arm, px, att)
-    rigs = L.garment_rigs(arm, src, px, bool(rule_counts.get('bandMerge', {}).get('applied'))) if L.SET in ('e2e', 'fixer') and os.environ.get('FIT_RIGS', 'on') != 'off' else []   # FIT_RIGS=off: the same figure without garment chains
-    if L.SET in ('e2e', 'fixer') and L.budget(row)['skeleton'] == 22:
+    rigs = L.garment_rigs(arm, src, px, bool(rule_counts.get('bandMerge', {}).get('applied'))) if L.SET in ('e2e', 'fixer', 'enforcer') and os.environ.get('FIT_RIGS', 'on') != 'off' else []   # FIT_RIGS=off: the same figure without garment chains
+    if L.SET in ('e2e', 'fixer', 'enforcer') and L.budget(row)['skeleton'] == 22:
         # the crowd skeleton (fit.json budgets): the finger bones go (their weights are already in Hand: the hand rule), every other bone stays,
         # the attachment bones included (build.py's crowd_skeleton prunes to the 22 core bones and would drop them)
         import re
@@ -89,7 +90,7 @@ def build(fid, hybrid=False):
     legs, avatar = humanoid_zero(fid, arm, hybrid)
     lab_now = np.empty(len(src.data.vertices), np.int32); src.data.attributes['fit_lab'].data.foreach_get('value', lab_now)
     np.save(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'), np.array(KINDS, dtype=object)[lab_now].astype(str))
-    if L.SET in ('e2e', 'fixer'):
+    if L.SET in ('e2e', 'fixer', 'enforcer'):
         lods, tris, props, patches = budget_lods(fid, row, src, arm, extra, hybrid)
         src = lods[0]
         np.save(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'), lod_labels(src))
@@ -98,8 +99,8 @@ def build(fid, hybrid=False):
     src['fit_labels'] = os.path.join(OUT, f'{fid}_{TAGN(hybrid)}_labels.npy'); arm['fit_weight'] = fit['macros']['weight']
     L.tag(px, 'donor'); px.hide_render = True; px.name = f'{fid}_A_donor'
     arm.name = 'Armature'; tm.lap('lods')
-    bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_{TAGN(hybrid)}.blend') if L.SET in ('e2e', 'fixer') else os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.blend'), compress=True)
-    if L.SET in ('e2e', 'fixer') and img is not None:       # the material points at the texture delivered beside the FBX (e2e_textures.py), by its file name
+    bpy.ops.wm.save_as_mainfile(filepath=L.work(f'{fid}_{TAGN(hybrid)}.blend') if L.SET in ('e2e', 'fixer', 'enforcer') else os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.blend'), compress=True)
+    if L.SET in ('e2e', 'fixer', 'enforcer') and img is not None:       # the material points at the texture delivered beside the FBX (e2e_textures.py), by its file name
         ext = {'JPEG': 'jpg', 'PNG': 'png', 'WEBP': 'webp'}.get(img.file_format, 'png')       # the glb's own image format (e2e_textures.py copies it as is)
         img.name = f'{fid}_{TAGN(hybrid)}_albedo.{ext}'; img.filepath_raw = os.path.join(OUT, img.name)
     L.export_fbx(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.fbx'), [arm] + lods, arm)          # the figure: body, LODs and its own pieces; never the props
@@ -107,9 +108,9 @@ def build(fid, hybrid=False):
     tm.lap('export')
     stats = {'id': fid, 'approach': TAGN(hybrid), 'hybrid': hyb, 'sex': fit['sex'], 'macros': fit['macros'], 'lodTris': tris, 'srcTris': fit['srcTris'], 'bones': len([b for b in arm.data.bones if b.use_deform]),
              'attach': sorted(att), 'garmentRigs': rigs, 'bodyHeightM': round(float(L.eval_co(px)[:, 2].max() - L.eval_co(px)[:, 2].min()), 4),
-             'targetHeightM': fit.get('targetHeightM'), 'heightClass': fit.get('heightClass'), 'colourPatches': patches, 'kind': row.get('kind'), 'texPx': L.budget(row)['texPx'] if L.SET in ('e2e', 'fixer') else None, 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
+             'targetHeightM': fit.get('targetHeightM'), 'heightClass': fit.get('heightClass'), 'colourPatches': patches, 'kind': row.get('kind'), 'texPx': L.budget(row)['texPx'] if L.SET in ('e2e', 'fixer', 'enforcer') else None, 'rest': L.rest_mode(), 'avatarT': avatar, 'materials': 1, 'texture': list(img.size) if img else None, 'transfer': st, 'crumbsDropped': crumbs, 'sourceParts': parts, 'looseRules': rule_counts,
              'labels': {k: int((lab == k).sum()) for k in sorted(set(lab.tolist())) if k}, 'restLegs': legs, 'seconds': tm.t, 'heightM': round(height, 3)}
-    if L.SET in ('e2e', 'fixer'): json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
+    if L.SET in ('e2e', 'fixer', 'enforcer'): json.dump(stats.pop('seconds'), open(L.work(f'{fid}_{TAGN(hybrid)}.seconds.json'), 'w'), indent=1)
     json.dump(stats, open(os.path.join(OUT, f'{fid}_{TAGN(hybrid)}.json'), 'w'), indent=1, sort_keys=True)
     L.log('DONE A', fid, tris, st, rule_counts)
 
@@ -234,7 +235,7 @@ def humanoid_zero(fid, arm, hybrid):
         arm.name = 'Armature_figure'; a2.name = 'Armature'; a2.data.name = 'Armature'
         mk = L.mesh_obj(f'{fid}_avatar_marker', [(0, 0, 0), (0.001, 0, 0), (0, 0.001, 0)], [(0, 1, 2)])
         L.export_fbx(path, [a2, mk], a2); bpy.data.objects.remove(mk, do_unlink=True); a2.name = 'Armature_avatarT'; arm.name = 'Armature'
-        if L.SET in ('e2e', 'fixer'): write_avatar_meta(fid, path)
+        if L.SET in ('e2e', 'fixer', 'enforcer'): write_avatar_meta(fid, path)
     bpy.data.objects.remove(a2, do_unlink=True)
     return legs, os.path.basename(path) if path else None
 
@@ -288,7 +289,7 @@ def hybrid_parts(fid, src, arm, px, att):
             lm = L.landmarks(arm, L.eval_co(src))
             info['hairUnderHatMoved'] = L.hair_under_hat(hat, [src], (np.array(hd) + np.array(tl)) / 2, lm['brow']) if H.get('hairRule', True) else 0
         else: info['welded'] = 'the cut is not clean: the hat stays in the A mesh, rigid on Head (the loose rule)'
-    if L.SET in ('e2e', 'fixer') and L.E2E.get('props'):
+    if L.SET in ('e2e', 'fixer', 'enforcer') and L.E2E.get('props'):
         pr = L.props(arm, att, src, skip=L.role_skips({r['id']: r for r in L.D['inputs']}[fid])); out += pr; info['props'] = [o.name for o in pr]
     return out, info
 

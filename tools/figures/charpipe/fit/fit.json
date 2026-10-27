@@ -237,6 +237,16 @@
     "middleOfHandLength": 0.52,
     "rule": "the knuckle line: a finger's knuckle-to-tip length is middleOfHandLength x the hand's length (wrist to the middle fingertip) for the middle finger (anthropometry: the middle finger's MCP-to-tip length is about half the hand length; e.g. ANSUR II hand length and middle finger length) and the base skeleton's proportions for the others; the knuckle lies that far back from the tip along the finger's own line. Replaces the web rule (webFrac) for the four fingers; the thumb keeps webFrac (its first bone lies in the palm)."
    }
+  },
+  "coatBlend": {
+   "labels": [
+    "coat"
+   ],
+   "hipShare": 0.5,
+   "fadeM": 0.12,
+   "note": "the new Enforcer (2026-10-27): his knee-length coat is open at the front, so the knee band is only 42 % bridged and the band merge does not fire; with nearest-body weights each panel followed its own thigh and stretched (coat stretch p99 1.3 in walk, 2.3 in run). An open coat takes the standard game rig: below the hip joints, the coat's vertices take hipShare of their leg weight onto the hips (faded in over fadeM below the hip line). Only when the band merge does not apply.",
+   "enabled": false,
+   "result": "tried on the Enforcer and parked (enabled false): the generated coat is one surface with the trousers under it, joined at the hem and the inner panel edges, so moving the coat's weight onto the hips tore it from the legs: coat stretch p99 4.2 in walk and 7.8 in run, against 1.3 and 2.3 on nearest-body weights. An open coat that is fused to the legs needs its panels cut free first (the G path's garment cut)"
   }
  },
  "rest": {
